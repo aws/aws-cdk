@@ -1,10 +1,9 @@
-import { expect, haveResource } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import { Stack } from '@aws-cdk/core';
-import { Test } from 'nodeunit';
 import { LogGroup, LogStream } from '../lib';
 
-export = {
-  'simple instantiation'(test: Test) {
+describe('log stream', () => {
+  test('simple instantiation', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -16,9 +15,9 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::Logs::LogStream', {
-    }));
+    expect(stack).toHaveResource('AWS::Logs::LogStream', {
+    });
 
-    test.done();
-  },
-};
+
+  });
+});

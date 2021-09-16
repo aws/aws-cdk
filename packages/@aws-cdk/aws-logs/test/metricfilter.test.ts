@@ -1,11 +1,10 @@
-import { expect, haveResource } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import { Metric } from '@aws-cdk/aws-cloudwatch';
 import { Stack } from '@aws-cdk/core';
-import { Test } from 'nodeunit';
 import { FilterPattern, LogGroup, MetricFilter } from '../lib';
 
-export = {
-  'trivial instantiation'(test: Test) {
+describe('metric filter', () => {
+  test('trivial instantiation', () => {
     // GIVEN
     const stack = new Stack();
     const logGroup = new LogGroup(stack, 'LogGroup');
@@ -20,7 +19,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::Logs::MetricFilter', {
+    expect(stack).toHaveResource('AWS::Logs::MetricFilter', {
       MetricTransformations: [{
         MetricNamespace: 'AWS/Test',
         MetricName: 'Latency',
@@ -28,12 +27,12 @@ export = {
       }],
       FilterPattern: '{ $.latency = "*" }',
       LogGroupName: { Ref: 'LogGroupF5B46931' },
-    }));
+    });
 
-    test.done();
-  },
 
-  'metric filter exposes metric'(test: Test) {
+  });
+
+  test('metric filter exposes metric', () => {
     // GIVEN
     const stack = new Stack();
     const logGroup = new LogGroup(stack, 'LogGroup');
@@ -50,16 +49,16 @@ export = {
     const metric = mf.metric();
 
     // THEN
-    test.deepEqual(metric, new Metric({
+    expect(metric).toEqual(new Metric({
       metricName: 'Latency',
       namespace: 'AWS/Test',
       statistic: 'avg',
     }));
 
-    test.done();
-  },
 
-  'metric filter exposes metric with custom statistic'(test: Test) {
+  });
+
+  test('metric filter exposes metric with custom statistic', () => {
     // GIVEN
     const stack = new Stack();
     const logGroup = new LogGroup(stack, 'LogGroup');
@@ -76,12 +75,12 @@ export = {
     const metric = mf.metric({ statistic: 'maximum' });
 
     // THEN
-    test.deepEqual(metric, new Metric({
+    expect(metric).toEqual(new Metric({
       metricName: 'Latency',
       namespace: 'AWS/Test',
       statistic: 'maximum',
     }));
 
-    test.done();
-  },
-};
+
+  });
+});

@@ -1,11 +1,10 @@
-import { expect, haveResource } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
-import { Test } from 'nodeunit';
 import { CrossAccountDestination } from '../lib';
 
-export = {
-  'simple destination'(test: Test) {
+describe('destination', () => {
+  test('simple destination', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const role = new iam.Role(stack, 'Role', {
@@ -20,16 +19,16 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::Logs::Destination', {
+    expect(stack).toHaveResource('AWS::Logs::Destination', {
       DestinationName: 'MyDestination',
       RoleArn: { 'Fn::GetAtt': ['Role1ABCC5F0', 'Arn'] },
       TargetArn: 'arn:bogus',
-    }));
+    });
 
-    test.done();
-  },
 
-  'add policy to destination'(test: Test) {
+  });
+
+  test('add policy to destination', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const role = new iam.Role(stack, 'Role', {
@@ -48,12 +47,12 @@ export = {
     }));
 
     // THEN
-    expect(stack).to(haveResource('AWS::Logs::Destination', (props: any) => {
+    expect(stack).toHaveResource('AWS::Logs::Destination', (props: any) => {
       const pol = JSON.parse(props.DestinationPolicy);
 
       return pol.Statement[0].Action === 'logs:TalkToMe';
-    }));
+    });
 
-    test.done();
-  },
-};
+
+  });
+});

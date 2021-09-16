@@ -1,7 +1,6 @@
 import * as AWSSDK from 'aws-sdk';
 import * as AWS from 'aws-sdk-mock';
 import * as nock from 'nock';
-import { Test } from 'nodeunit';
 import * as sinon from 'sinon';
 import * as provider from '../lib/log-retention-provider';
 
@@ -35,14 +34,14 @@ class MyError extends Error {
   }
 }
 
-export = {
-  'tearDown'(callback: any) {
+describe('log retention provider', () => {
+  afterEach(() => {
     AWS.restore();
     nock.cleanAll();
-    callback();
-  },
 
-  async 'create event'(test: Test) {
+  });
+
+  test('create event', async () => {
     const createLogGroupFake = sinon.fake.resolves({});
     const putRetentionPolicyFake = sinon.fake.resolves({});
     const deleteRetentionPolicyFake = sinon.fake.resolves({});
@@ -85,12 +84,12 @@ export = {
 
     sinon.assert.notCalled(deleteRetentionPolicyFake);
 
-    test.equal(request.isDone(), true);
+    expect(request.isDone()).toEqual(true);
 
-    test.done();
-  },
 
-  async 'update event with new log retention'(test: Test) {
+  });
+
+  test('update event with new log retention', async () => {
     const error = new Error() as NodeJS.ErrnoException;
     error.code = 'ResourceAlreadyExistsException';
 
@@ -132,12 +131,12 @@ export = {
 
     sinon.assert.notCalled(deleteRetentionPolicyFake);
 
-    test.equal(request.isDone(), true);
+    expect(request.isDone()).toEqual(true);
 
-    test.done();
-  },
 
-  async 'update event with log retention undefined'(test: Test) {
+  });
+
+  test('update event with log retention undefined', async () => {
     const error = new Error() as NodeJS.ErrnoException;
     error.code = 'ResourceAlreadyExistsException';
 
@@ -176,12 +175,12 @@ export = {
       logGroupName: 'group',
     });
 
-    test.equal(request.isDone(), true);
+    expect(request.isDone()).toEqual(true);
 
-    test.done();
-  },
 
-  async 'delete event'(test: Test) {
+  });
+
+  test('delete event', async () => {
     const createLogGroupFake = sinon.fake.resolves({});
     const putRetentionPolicyFake = sinon.fake.resolves({});
     const deleteRetentionPolicyFake = sinon.fake.resolves({});
@@ -210,12 +209,12 @@ export = {
 
     sinon.assert.notCalled(deleteRetentionPolicyFake);
 
-    test.equal(request.isDone(), true);
+    expect(request.isDone()).toEqual(true);
 
-    test.done();
-  },
 
-  async 'responds with FAILED on error'(test: Test) {
+  });
+
+  test('responds with FAILED on error', async () => {
     const createLogGroupFake = sinon.fake.rejects(new Error('UnknownError'));
 
     AWS.mock('CloudWatchLogs', 'createLogGroup', createLogGroupFake);
@@ -234,12 +233,12 @@ export = {
 
     await provider.handler(event as AWSLambda.CloudFormationCustomResourceCreateEvent, context);
 
-    test.equal(request.isDone(), true);
+    expect(request.isDone()).toEqual(true);
 
-    test.done();
-  },
 
-  async 'does not if when operations on provider log group fails'(test: Test) {
+  });
+
+  test('does not if when operations on provider log group fails', async () => {
     let attempt = 2;
     const createLogGroupFake = (params: AWSSDK.CloudWatchLogs.CreateLogGroupRequest) => {
       if (params.logGroupName === '/aws/lambda/provider') {
@@ -276,12 +275,12 @@ export = {
 
     await provider.handler(event as AWSLambda.CloudFormationCustomResourceCreateEvent, context);
 
-    test.equal(request.isDone(), true);
+    expect(request.isDone()).toEqual(true);
 
-    test.done();
-  },
 
-  async 'does not fail if operations on CDK lambda log group fails twice'(test: Test) {
+  });
+
+  test('does not fail if operations on CDK lambda log group fails twice', async () => {
     let attempt = 2;
     const createLogGroupFake = (params: AWSSDK.CloudWatchLogs.CreateLogGroupRequest) => {
       if (params.logGroupName === 'group') {
@@ -318,12 +317,12 @@ export = {
 
     await provider.handler(event as AWSLambda.CloudFormationCustomResourceCreateEvent, context);
 
-    test.equal(request.isDone(), true);
+    expect(request.isDone()).toEqual(true);
 
-    test.done();
-  },
 
-  async 'does fail if operations on CDK lambda log group fails indefinitely'(test: Test) {
+  });
+
+  test('does fail if operations on CDK lambda log group fails indefinitely', async () => {
     const createLogGroupFake = (params: AWSSDK.CloudWatchLogs.CreateLogGroupRequest) => {
       if (params.logGroupName === 'group') {
         return Promise.reject(new MyError(
@@ -354,12 +353,12 @@ export = {
 
     await provider.handler(event as AWSLambda.CloudFormationCustomResourceCreateEvent, context);
 
-    test.equal(request.isDone(), true);
+    expect(request.isDone()).toEqual(true);
 
-    test.done();
-  },
 
-  async 'response data contains the log group name'(test: Test) {
+  });
+
+  test('response data contains the log group name', async () => {
     AWS.mock('CloudWatchLogs', 'createLogGroup', sinon.fake.resolves({}));
     AWS.mock('CloudWatchLogs', 'putRetentionPolicy', sinon.fake.resolves({}));
     AWS.mock('CloudWatchLogs', 'deleteRetentionPolicy', sinon.fake.resolves({}));
@@ -381,17 +380,17 @@ export = {
       const opEvent = { ...event, RequestType: operation };
       await provider.handler(opEvent as AWSLambda.CloudFormationCustomResourceCreateEvent, context);
 
-      test.equal(request.isDone(), true);
+      expect(request.isDone()).toEqual(true);
     }
 
     await withOperation('Create');
     await withOperation('Update');
     await withOperation('Delete');
 
-    test.done();
-  },
 
-  async 'custom log retention retry options'(test: Test) {
+  });
+
+  test('custom log retention retry options', async () => {
     AWS.mock('CloudWatchLogs', 'createLogGroup', sinon.fake.resolves({}));
     AWS.mock('CloudWatchLogs', 'putRetentionPolicy', sinon.fake.resolves({}));
     AWS.mock('CloudWatchLogs', 'deleteRetentionPolicy', sinon.fake.resolves({}));
@@ -423,12 +422,12 @@ export = {
       },
     });
 
-    test.equal(request.isDone(), true);
+    expect(request.isDone()).toEqual(true);
 
-    test.done();
-  },
 
-  async 'custom log retention region'(test: Test) {
+  });
+
+  test('custom log retention region', async () => {
     AWS.mock('CloudWatchLogs', 'createLogGroup', sinon.fake.resolves({}));
     AWS.mock('CloudWatchLogs', 'putRetentionPolicy', sinon.fake.resolves({}));
     AWS.mock('CloudWatchLogs', 'deleteRetentionPolicy', sinon.fake.resolves({}));
@@ -453,9 +452,9 @@ export = {
       region: 'us-east-1',
     });
 
-    test.equal(request.isDone(), true);
+    expect(request.isDone()).toEqual(true);
 
-    test.done();
-  },
 
-};
+  });
+
+});

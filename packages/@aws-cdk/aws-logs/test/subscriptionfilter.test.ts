@@ -1,11 +1,10 @@
-import { expect, haveResource } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import { Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { Test } from 'nodeunit';
 import { FilterPattern, ILogGroup, ILogSubscriptionDestination, LogGroup, SubscriptionFilter } from '../lib';
 
-export = {
-  'trivial instantiation'(test: Test) {
+describe('subscription filter', () => {
+  test('trivial instantiation', () => {
     // GIVEN
     const stack = new Stack();
     const logGroup = new LogGroup(stack, 'LogGroup');
@@ -18,15 +17,15 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::Logs::SubscriptionFilter', {
+    expect(stack).toHaveResource('AWS::Logs::SubscriptionFilter', {
       DestinationArn: 'arn:bogus',
       FilterPattern: 'some pattern',
       LogGroupName: { Ref: 'LogGroupF5B46931' },
-    }));
+    });
 
-    test.done();
-  },
-};
+
+  });
+});
 
 class FakeDestination implements ILogSubscriptionDestination {
   public bind(_scope: Construct, _sourceLogGroup: ILogGroup) {

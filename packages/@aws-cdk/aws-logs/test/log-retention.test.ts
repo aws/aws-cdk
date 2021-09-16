@@ -1,13 +1,13 @@
-import { ABSENT, countResources, expect, haveResource } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
+import { ABSENT } from '@aws-cdk/assert-internal';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
-import { Test } from 'nodeunit';
 import { LogRetention, RetentionDays } from '../lib';
 
 /* eslint-disable quote-props */
 
-export = {
-  'log retention construct'(test: Test) {
+describe('log retention', () => {
+  test('log retention construct', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -18,7 +18,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::IAM::Policy', {
+    expect(stack).toHaveResource('AWS::IAM::Policy', {
       'PolicyDocument': {
         'Statement': [
           {
@@ -38,14 +38,14 @@ export = {
           'Ref': 'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB',
         },
       ],
-    }));
+    });
 
-    expect(stack).to(haveResource('AWS::Lambda::Function', {
+    expect(stack).toHaveResource('AWS::Lambda::Function', {
       Handler: 'index.handler',
       Runtime: 'nodejs14.x',
-    }));
+    });
 
-    expect(stack).to(haveResource('Custom::LogRetention', {
+    expect(stack).toHaveResource('Custom::LogRetention', {
       'ServiceToken': {
         'Fn::GetAtt': [
           'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A',
@@ -54,13 +54,12 @@ export = {
       },
       'LogGroupName': 'group',
       'RetentionInDays': 30,
-    }));
+    });
 
-    test.done();
 
-  },
+  });
 
-  'with imported role'(test: Test) {
+  test('with imported role', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const role = iam.Role.fromRoleArn(stack, 'Role', 'arn:aws:iam::123456789012:role/CoolRole');
@@ -73,7 +72,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::IAM::Policy', {
+    expect(stack).toHaveResource('AWS::IAM::Policy', {
       'PolicyDocument': {
         'Statement': [
           {
@@ -91,15 +90,14 @@ export = {
       'Roles': [
         'CoolRole',
       ],
-    }));
+    });
 
-    expect(stack).to(countResources('AWS::IAM::Role', 0));
+    expect(stack).toCountResources('AWS::IAM::Role', 0);
 
-    test.done();
 
-  },
+  });
 
-  'with RetentionPeriod set to Infinity'(test: Test) {
+  test('with RetentionPeriod set to Infinity', () => {
     const stack = new cdk.Stack();
 
     new LogRetention(stack, 'MyLambda', {
@@ -107,14 +105,14 @@ export = {
       retention: RetentionDays.INFINITE,
     });
 
-    expect(stack).to(haveResource('Custom::LogRetention', {
+    expect(stack).toHaveResource('Custom::LogRetention', {
       RetentionInDays: ABSENT,
-    }));
+    });
 
-    test.done();
-  },
 
-  'with LogGroupRegion specified'(test: Test) {
+  });
+
+  test('with LogGroupRegion specified', () => {
     const stack = new cdk.Stack();
     new LogRetention(stack, 'MyLambda', {
       logGroupName: 'group',
@@ -122,14 +120,14 @@ export = {
       retention: RetentionDays.INFINITE,
     });
 
-    expect(stack).to(haveResource('Custom::LogRetention', {
+    expect(stack).toHaveResource('Custom::LogRetention', {
       LogGroupRegion: 'us-east-1',
-    }));
+    });
 
-    test.done();
-  },
 
-  'log group ARN is well formed and conforms'(test: Test) {
+  });
+
+  test('log group ARN is well formed and conforms', () => {
     const stack = new cdk.Stack();
     const group = new LogRetention(stack, 'MyLambda', {
       logGroupName: 'group',
@@ -137,13 +135,13 @@ export = {
     });
 
     const logGroupArn = group.logGroupArn;
-    test.ok(logGroupArn.indexOf('logs') > -1, 'log group ARN is not as expected');
-    test.ok(logGroupArn.indexOf('log-group') > -1, 'log group ARN is not as expected');
-    test.ok(logGroupArn.endsWith(':*'), 'log group ARN is not as expected');
-    test.done();
-  },
+    expect(logGroupArn.indexOf('logs')).toBeGreaterThan(-1);
+    expect(logGroupArn.indexOf('log-group')).toBeGreaterThan(-1);
+    expect(logGroupArn.endsWith(':*')).toEqual(true);
 
-  'log group ARN is well formed and conforms when region is specified'(test: Test) {
+  });
+
+  test('log group ARN is well formed and conforms when region is specified', () => {
     const stack = new cdk.Stack();
     const group = new LogRetention(stack, 'MyLambda', {
       logGroupName: 'group',
@@ -152,10 +150,10 @@ export = {
     });
 
     const logGroupArn = group.logGroupArn;
-    test.ok(logGroupArn.indexOf('us-west-2') > -1, 'region of log group ARN is not as expected');
-    test.ok(logGroupArn.indexOf('logs') > -1, 'log group ARN is not as expected');
-    test.ok(logGroupArn.indexOf('log-group') > -1, 'log group ARN is not as expected');
-    test.ok(logGroupArn.endsWith(':*'), 'log group ARN is not as expected');
-    test.done();
-  },
-};
+    expect(logGroupArn.indexOf('us-west-2')).toBeGreaterThan(-1);
+    expect(logGroupArn.indexOf('logs')).toBeGreaterThan(-1);
+    expect(logGroupArn.indexOf('log-group')).toBeGreaterThan(-1);
+    expect(logGroupArn.endsWith(':*')).toEqual(true);
+
+  });
+});
