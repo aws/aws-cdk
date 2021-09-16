@@ -7,6 +7,7 @@ import {
   OpenIdConnectProvider,
   SamlProvider,
   SamlMetadataDocument,
+  PolicyStatement,
   Effect,
   PolicyDocument,
 } from '@aws-cdk/aws-iam';
@@ -78,7 +79,7 @@ describe('identity pool', () => {
     temp.resourceCountIs('AWS::IAM::Policy', 3);
     temp.hasResourceProperties('AWS::Cognito::IdentityPool', {
       AllowUnauthenticatedIdentities: true,
-    })
+    });
     temp.hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
@@ -120,11 +121,13 @@ describe('identity pool', () => {
     const stack = new Stack();
     new IdentityPool(stack, 'TestIdentityPoolActions', {
       assumeAction: 'sts:AssumeRole',
-      userPermissions: [new PolicyStatement({
-        effect: Effect.ALLOW,
-        actions: ['execute-api:*'],
-        resources: ['*'],
-      })],
+      userPermissions: [
+        {
+          effect: Effect.ALLOW,
+          actions: ['execute-api:*'],
+          resources: ['*'],
+        },
+      ],
     });
     const temp = Template.fromStack(stack);
     temp.hasResourceProperties('AWS::IAM::Role', {

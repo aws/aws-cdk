@@ -507,7 +507,7 @@ export class IdentityPool extends Resource implements IIdentityPool {
    */
   public addUserPermissions(...statements: PolicyStatementProps[]): void {
     statements.forEach(statement => this.authenticatedRole.addToPolicy(
-      new PolicyStatement(statement)
+      new PolicyStatement(statement),
     ));
   }
 
@@ -516,10 +516,10 @@ export class IdentityPool extends Resource implements IIdentityPool {
    */
   public addGuestPermissions(...statements: PolicyStatementProps[]): void {
     statements.forEach(statement => this.unauthenticatedRole.addToPolicy(
-      new PolicyStatement(statement)
+      new PolicyStatement(statement),
     ));
     // Make sure `allowUnauthenticatedIdentities` is true now that there are guest permissions
-    this.node.addPropertyOverride('AllowUnauthenticatedIdentities', true);
+    (this.node.defaultChild as CfnIdentityPool).addPropertyOverride('AllowUnauthenticatedIdentities', true);
   }
 
   /**
@@ -544,7 +544,7 @@ export class IdentityPool extends Resource implements IIdentityPool {
       }, action),
     });
     additionalPermissions.forEach(statement => role.addToPolicy(
-      new PolicyStatement(statement)
+      new PolicyStatement(statement),
     ));
     return role;
   }

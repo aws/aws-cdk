@@ -40,7 +40,6 @@ new IdentityPool(stack, 'identitypool', {
     google: { appId: '12345678012.apps.googleusercontent.com' },
   },
   allowClassicFlow: true,
-  allowUnauthenticatedIdentities: true,
   identityPoolName: 'my-id-pool',
   streamOptions: {
     streamName: 'my-stream',
