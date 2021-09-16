@@ -1,4 +1,3 @@
-import { objectLike } from '@aws-cdk/assert-internal';
 import '@aws-cdk/assert-internal/jest';
 import { Attribute, AttributeType, StreamViewType, Table } from '@aws-cdk/aws-dynamodb';
 import { App, CfnOutput, Stack } from '@aws-cdk/core';
