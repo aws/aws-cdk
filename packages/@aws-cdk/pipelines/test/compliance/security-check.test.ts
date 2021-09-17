@@ -1,9 +1,8 @@
-import { anything, arrayWith, encodedJson, objectLike, stringLike } from '@aws-cdk/assert-internal';
-import '@aws-cdk/assert-internal/jest';
+import { Match, Template } from '@aws-cdk/assertions';
 import { Topic } from '@aws-cdk/aws-sns';
 import { Stack } from '@aws-cdk/core';
 import * as cdkp from '../../lib';
-import { LegacyTestGitHubNpmPipeline, ModernTestGitHubNpmPipeline, OneStackApp, PIPELINE_ENV, TestApp } from '../testhelpers';
+import { LegacyTestGitHubNpmPipeline, ModernTestGitHubNpmPipeline, OneStackApp, PIPELINE_ENV, TestApp, stringLike } from '../testhelpers';
 import { behavior } from '../testhelpers/compliance';
 
 let app: TestApp;
@@ -41,8 +40,8 @@ behavior('security check option generates lambda/codebuild at pipeline scope', (
   });
 
   function THEN_codePipelineExpectation() {
-    expect(pipelineStack).toCountResources('AWS::Lambda::Function', 1);
-    expect(pipelineStack).toHaveResourceLike('AWS::Lambda::Function', {
+    Template.fromStack(pipelineStack).resourceCountIs('AWS::Lambda::Function', 1);
+    Template.fromStack(pipelineStack).hasResourceProperties('AWS::Lambda::Function', {
       Role: {
         'Fn::GetAtt': [
           stringLike('CdkPipeline*SecurityCheckCDKPipelinesAutoApproveServiceRole*'),
@@ -51,7 +50,7 @@ behavior('security check option generates lambda/codebuild at pipeline scope', (
       },
     });
     // 1 for github build, 1 for synth stage, and 1 for the application security check
-    expect(pipelineStack).toCountResources('AWS::CodeBuild::Project', 3);
+    Template.fromStack(pipelineStack).resourceCountIs('AWS::CodeBuild::Project', 3);
   }
 });
 
@@ -78,24 +77,24 @@ behavior('security check option passes correct environment variables to check pr
   });
 
   function THEN_codePipelineExpectation() {
-    expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
-      Stages: arrayWith(
+    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+      Stages: Match.arrayWith([
         {
           Name: 'App',
-          Actions: arrayWith(
-            objectLike({
+          Actions: Match.arrayWith([
+            Match.objectLike({
               Name: stringLike('*Check'),
-              Configuration: objectLike({
-                EnvironmentVariables: encodedJson([
+              Configuration: Match.objectLike({
+                EnvironmentVariables: Match.serializedJson([
                   { name: 'STAGE_PATH', type: 'PLAINTEXT', value: 'PipelineSecurityStack/App' },
                   { name: 'STAGE_NAME', type: 'PLAINTEXT', value: 'App' },
-                  { name: 'ACTION_NAME', type: 'PLAINTEXT', value: anything() },
+                  { name: 'ACTION_NAME', type: 'PLAINTEXT', value: Match.anyValue() },
                 ]),
               }),
             }),
-          ),
+          ]),
         },
-      ),
+      ]),
     });
   }
 });
@@ -124,7 +123,7 @@ behavior('pipeline created with auto approve tags and lambda/codebuild w/ valid 
 
   function THEN_codePipelineExpectation() {
     // CodePipeline must be tagged as SECURITY_CHECK=ALLOW_APPROVE
-    expect(pipelineStack).toHaveResource('AWS::CodePipeline::Pipeline', {
+    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
       Tags: [
         {
           Key: 'SECURITY_CHECK',
@@ -133,7 +132,7 @@ behavior('pipeline created with auto approve tags and lambda/codebuild w/ valid 
       ],
     });
     // Lambda Function only has access to pipelines tagged SECURITY_CHECK=ALLOW_APPROVE
-    expect(pipelineStack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(pipelineStack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -148,9 +147,9 @@ behavior('pipeline created with auto approve tags and lambda/codebuild w/ valid 
       },
     });
     // CodeBuild must have access to the stacks and invoking the lambda function
-    expect(pipelineStack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(pipelineStack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
-        Statement: arrayWith(
+        Statement: Match.arrayWith([
           {
             Action: 'sts:AssumeRole',
             Condition: {
@@ -173,7 +172,7 @@ behavior('pipeline created with auto approve tags and lambda/codebuild w/ valid 
               ],
             },
           },
-        ),
+        ]),
       },
     });
   }
@@ -193,32 +192,32 @@ behavior('confirmBroadeningPermissions option at addApplicationStage runs securi
   suite.doesNotApply.modern();
 
   function THEN_codePipelineExpectation() {
-    expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
       Stages: [
         {
-          Actions: [{ Name: 'GitHub', RunOrder: 1 }],
+          Actions: [Match.objectLike({ Name: 'GitHub', RunOrder: 1 })],
           Name: 'Source',
         },
         {
-          Actions: [{ Name: 'Synth', RunOrder: 1 }],
+          Actions: [Match.objectLike({ Name: 'Synth', RunOrder: 1 })],
           Name: 'Build',
         },
         {
-          Actions: [{ Name: 'SelfMutate', RunOrder: 1 }],
+          Actions: [Match.objectLike({ Name: 'SelfMutate', RunOrder: 1 })],
           Name: 'UpdatePipeline',
         },
         {
           Actions: [
-            { Name: 'StageSecurityCheckStackSecurityCheck', RunOrder: 1 },
-            { Name: 'StageSecurityCheckStackManualApproval', RunOrder: 2 },
-            { Name: 'AnotherStackSecurityCheck', RunOrder: 5 },
-            { Name: 'AnotherStackManualApproval', RunOrder: 6 },
-            { Name: 'Stack.Prepare', RunOrder: 3 },
-            { Name: 'Stack.Deploy', RunOrder: 4 },
-            { Name: 'AnotherStack-Stack.Prepare', RunOrder: 7 },
-            { Name: 'AnotherStack-Stack.Deploy', RunOrder: 8 },
-            { Name: 'SkipCheckStack-Stack.Prepare', RunOrder: 9 },
-            { Name: 'SkipCheckStack-Stack.Deploy', RunOrder: 10 },
+            Match.objectLike({ Name: 'StageSecurityCheckStackSecurityCheck', RunOrder: 1 }),
+            Match.objectLike({ Name: 'StageSecurityCheckStackManualApproval', RunOrder: 2 }),
+            Match.objectLike({ Name: 'AnotherStackSecurityCheck', RunOrder: 5 }),
+            Match.objectLike({ Name: 'AnotherStackManualApproval', RunOrder: 6 }),
+            Match.objectLike({ Name: 'Stack.Prepare', RunOrder: 3 }),
+            Match.objectLike({ Name: 'Stack.Deploy', RunOrder: 4 }),
+            Match.objectLike({ Name: 'AnotherStack-Stack.Prepare', RunOrder: 7 }),
+            Match.objectLike({ Name: 'AnotherStack-Stack.Deploy', RunOrder: 8 }),
+            Match.objectLike({ Name: 'SkipCheckStack-Stack.Prepare', RunOrder: 9 }),
+            Match.objectLike({ Name: 'SkipCheckStack-Stack.Deploy', RunOrder: 10 }),
           ],
           Name: 'StageSecurityCheckStack',
         },
@@ -240,28 +239,28 @@ behavior('confirmBroadeningPermissions option at addApplication runs security ch
   suite.doesNotApply.modern();
 
   function THEN_codePipelineExpectation() {
-    expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
       Stages: [
         {
-          Actions: [{ Name: 'GitHub', RunOrder: 1 }],
+          Actions: [Match.objectLike({ Name: 'GitHub', RunOrder: 1 })],
           Name: 'Source',
         },
         {
-          Actions: [{ Name: 'Synth', RunOrder: 1 }],
+          Actions: [Match.objectLike({ Name: 'Synth', RunOrder: 1 })],
           Name: 'Build',
         },
         {
-          Actions: [{ Name: 'SelfMutate', RunOrder: 1 }],
+          Actions: [Match.objectLike({ Name: 'SelfMutate', RunOrder: 1 })],
           Name: 'UpdatePipeline',
         },
         {
           Actions: [
-            { Name: 'EnableCheckStackSecurityCheck', RunOrder: 3 },
-            { Name: 'EnableCheckStackManualApproval', RunOrder: 4 },
-            { Name: 'Stack.Prepare', RunOrder: 1 },
-            { Name: 'Stack.Deploy', RunOrder: 2 },
-            { Name: 'EnableCheckStack-Stack.Prepare', RunOrder: 5 },
-            { Name: 'EnableCheckStack-Stack.Deploy', RunOrder: 6 },
+            Match.objectLike({ Name: 'EnableCheckStackSecurityCheck', RunOrder: 3 }),
+            Match.objectLike({ Name: 'EnableCheckStackManualApproval', RunOrder: 4 }),
+            Match.objectLike({ Name: 'Stack.Prepare', RunOrder: 1 }),
+            Match.objectLike({ Name: 'Stack.Deploy', RunOrder: 2 }),
+            Match.objectLike({ Name: 'EnableCheckStack-Stack.Prepare', RunOrder: 5 }),
+            Match.objectLike({ Name: 'EnableCheckStack-Stack.Deploy', RunOrder: 6 }),
           ],
           Name: 'NoSecurityCheckStack',
         },
@@ -299,13 +298,13 @@ behavior('confirmBroadeningPermissions and notification topic options generates 
   });
 
   function THEN_codePipelineExpectation() {
-    expect(pipelineStack).toCountResources('AWS::SNS::Topic', 1);
-    expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
-      Stages: arrayWith(
+    Template.fromStack(pipelineStack).resourceCountIs('AWS::SNS::Topic', 1);
+    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+      Stages: Match.arrayWith([
         {
           Name: 'MyStack',
           Actions: [
-            objectLike({
+            Match.objectLike({
               Configuration: {
                 ProjectName: { Ref: stringLike('*SecurityCheck*') },
                 EnvironmentVariables: {
@@ -320,7 +319,7 @@ behavior('confirmBroadeningPermissions and notification topic options generates 
               Namespace: stringLike('*'),
               RunOrder: 1,
             }),
-            objectLike({
+            Match.objectLike({
               Configuration: {
                 CustomData: stringLike('#{*.MESSAGE}'),
                 ExternalEntityLink: stringLike('#{*.LINK}'),
@@ -328,11 +327,11 @@ behavior('confirmBroadeningPermissions and notification topic options generates 
               Name: stringLike('*Approv*'),
               RunOrder: 2,
             }),
-            objectLike({ Name: 'Stack.Prepare', RunOrder: 3 }),
-            objectLike({ Name: 'Stack.Deploy', RunOrder: 4 }),
+            Match.objectLike({ Name: 'Stack.Prepare', RunOrder: 3 }),
+            Match.objectLike({ Name: 'Stack.Deploy', RunOrder: 4 }),
           ],
         },
-      ),
+      ]),
     });
   }
 });
@@ -365,10 +364,10 @@ behavior('Stages declared outside the pipeline create their own ApplicationSecur
   suite.doesNotApply.modern();
 
   function THEN_codePipelineExpectation() {
-    expect(pipelineStack).toCountResources('AWS::Lambda::Function', 1);
+    Template.fromStack(pipelineStack).resourceCountIs('AWS::Lambda::Function', 1);
     // 1 for github build, 1 for synth stage, and 1 for the application security check
-    expect(pipelineStack).toCountResources('AWS::CodeBuild::Project', 3);
-    expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+    Template.fromStack(pipelineStack).resourceCountIs('AWS::CodeBuild::Project', 3);
+    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
       Tags: [
         {
           Key: 'SECURITY_CHECK',
@@ -376,28 +375,28 @@ behavior('Stages declared outside the pipeline create their own ApplicationSecur
         },
       ],
       Stages: [
-        { Name: 'Source' },
-        { Name: 'Build' },
-        { Name: 'UpdatePipeline' },
+        Match.objectLike({ Name: 'Source' }),
+        Match.objectLike({ Name: 'Build' }),
+        Match.objectLike({ Name: 'UpdatePipeline' }),
         {
           Actions: [
-            {
+            Match.objectLike({
               Configuration: {
                 ProjectName: { Ref: 'UnattachedStageStageApplicationSecurityCheckCDKSecurityCheckADCE795B' },
               },
               Name: 'UnattachedStageSecurityCheck',
               RunOrder: 1,
-            },
-            {
+            }),
+            Match.objectLike({
               Configuration: {
                 CustomData: '#{UnattachedStageSecurityCheck.MESSAGE}',
                 ExternalEntityLink: '#{UnattachedStageSecurityCheck.LINK}',
               },
               Name: 'UnattachedStageManualApproval',
               RunOrder: 2,
-            },
-            { Name: 'Stack.Prepare', RunOrder: 3 },
-            { Name: 'Stack.Deploy', RunOrder: 4 },
+            }),
+            Match.objectLike({ Name: 'Stack.Prepare', RunOrder: 3 }),
+            Match.objectLike({ Name: 'Stack.Deploy', RunOrder: 4 }),
           ],
           Name: 'UnattachedStage',
         },

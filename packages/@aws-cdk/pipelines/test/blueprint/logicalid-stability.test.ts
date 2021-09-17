@@ -1,4 +1,3 @@
-import '@aws-cdk/assert-internal/jest';
 import { Stack } from '@aws-cdk/core';
 import { mkdict } from '../../lib/private/javascript';
 import { PIPELINE_ENV, TestApp, LegacyTestGitHubNpmPipeline, ModernTestGitHubNpmPipeline, MegaAssetsApp, stackTemplate } from '../testhelpers';

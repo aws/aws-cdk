@@ -23,6 +23,69 @@
 
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
+## Job
+
+A `Job` encapsulates a script that connects to data sources, processes them, and then writes output to a data target.
+
+There are 3 types of jobs supported by AWS Glue: Spark ETL, Spark Streaming, and Python Shell jobs.
+
+The `glue.JobExecutable` allows you to specify the type of job, the language to use and the code assets required by the job.
+
+`glue.Code` allows you to refer to the different code assets required by the job, either from an existing S3 location or from a local file path.
+
+### Spark Jobs
+
+These jobs run in an Apache Spark environment managed by AWS Glue.
+
+#### ETL Jobs
+
+An ETL job processes data in batches using Apache Spark.
+
+```ts
+new glue.Job(stack, 'ScalaSparkEtlJob', {
+  executable: glue.JobExecutable.scalaEtl({
+    glueVersion: glue.GlueVersion.V2_0,
+    script: glue.Code.fromBucket(bucket, 'src/com/example/HelloWorld.scala'),
+    className: 'com.example.HelloWorld',
+    extraJars: [glue.Code.fromBucket(bucket, 'jars/HelloWorld.jar')],
+  }),
+  description: 'an example Scala ETL job',
+});
+```
+
+#### Streaming Jobs
+
+A Streaming job is similar to an ETL job, except that it performs ETL on data streams. It uses the Apache Spark Structured Streaming framework. Some Spark job features are not available to streaming ETL jobs.
+
+```ts
+new glue.Job(stack, 'PythonSparkStreamingJob', {
+  executable: glue.JobExecutable.pythonStreaming({
+    glueVersion: glue.GlueVersion.V2_0,
+    pythonVersion: glue.PythonVersion.THREE,
+    script: glue.Code.fromAsset(path.join(__dirname, 'job-script/hello_world.py')),
+  }),
+  description: 'an example Python Streaming job',
+});
+```
+
+### Python Shell Jobs
+
+A Python shell job runs Python scripts as a shell and supports a Python version that depends on the AWS Glue version you are using.
+This can be used to schedule and run tasks that don't require an Apache Spark environment.
+
+```ts
+new glue.Job(stack, 'PythonShellJob', {
+  executable: glue.JobExecutable.pythonShell({
+    glueVersion: glue.GlueVersion.V1_0,
+    pythonVersion: PythonVersion.THREE,
+    script: glue.Code.fromBucket(bucket, 'script.py'),
+  }),
+  description: 'an example Python Shell job',
+});
+```
+
+See [documentation](https://docs.aws.amazon.com/glue/latest/dg/add-job.html) for more information on adding jobs in Glue.
+
 ## Connection
 
 A `Connection` allows Glue jobs, crawlers and development endpoints to access certain types of data stores. For example, to create a network connection to connect to a data source within a VPC:
@@ -40,16 +103,6 @@ new glue.Connection(stack, 'MyConnection', {
 If you need to use a connection type that doesn't exist as a static member on `ConnectionType`, you can instantiate a `ConnectionType` object, e.g: `new glue.ConnectionType('NEW_TYPE')`.
 
 See [Adding a Connection to Your Data Store](https://docs.aws.amazon.com/glue/latest/dg/populate-add-connection.html) and [Connection Structure](https://docs.aws.amazon.com/glue/latest/dg/aws-glue-api-catalog-connections.html#aws-glue-api-catalog-connections-Connection) documentation for more information on the supported data stores and their configurations.
-
-## Database
-
-A `Database` is a logical grouping of `Tables` in the Glue Catalog.
-
-```ts
-new glue.Database(stack, 'MyDatabase', {
-  databaseName: 'my_database'
-});
-```
 
 ## SecurityConfiguration
 
@@ -84,6 +137,15 @@ new glue.SecurityConfiguration(stack, 'MySecurityConfiguration', {
 
 See [documentation](https://docs.aws.amazon.com/glue/latest/dg/encryption-security-configuration.html) for more info for Glue encrypting data written by Crawlers, Jobs, and Development Endpoints.
 
+## Database
+
+A `Database` is a logical grouping of `Tables` in the Glue Catalog.
+
+```ts
+new glue.Database(stack, 'MyDatabase', {
+  databaseName: 'my_database'
+});
+```
 
 ## Table
 
