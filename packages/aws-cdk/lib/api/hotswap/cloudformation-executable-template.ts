@@ -14,9 +14,7 @@ export interface CloudFormationExecutableTemplateProps {
 }
 
 export class CloudFormationExecutableTemplate {
-  public readonly stackResources: ListStackResources;
-
-  readonly template: { [section: string]: { [headings: string]: any } };
+  private readonly stackResources: ListStackResources;
   private readonly context: { [k: string]: string };
   private readonly account: string;
   private readonly region: string;
@@ -24,7 +22,6 @@ export class CloudFormationExecutableTemplate {
 
   constructor(props: CloudFormationExecutableTemplateProps) {
     this.stackResources = props.listStackResources;
-    this.template = props.stackArtifact.template;
     this.context = {
       'AWS::AccountId': props.account,
       'AWS::Region': props.region,
@@ -35,6 +32,11 @@ export class CloudFormationExecutableTemplate {
     this.account = props.account;
     this.region = props.region;
     this.partition = props.partition;
+  }
+
+  public async findPhysicalNameFor(logicalId: string): Promise<string | undefined> {
+    const stackResources = await this.stackResources.listStackResources();
+    return stackResources.find(sr => sr.LogicalResourceId === logicalId)?.PhysicalResourceId;
   }
 
   public async evaluateCfnExpression(cfnExpression: any): Promise<any> {
@@ -200,15 +202,26 @@ interface ArnParts {
 }
 
 const RESOURCE_TYPE_ATTRIBUTES_FORMATS: { [type: string]: { [attribute: string]: (parts: ArnParts) => string } } = {
-  'AWS::IAM::Role': {
-    Arn: iamArnFmt,
-  },
-  // ToDo add more entries here
+  'AWS::IAM::Role': { Arn: iamArnFmt },
+  'AWS::IAM::User': { Arn: iamArnFmt },
+  'AWS::IAM::Group': { Arn: iamArnFmt },
+  'AWS::S3::Bucket': { Arn: s3ArnFmt },
+  'AWS::Lambda::Function': { Arn: stdColonResourceArnFmt },
 };
 
 function iamArnFmt(parts: ArnParts): string {
   // we skip region for IAM resources
   return `arn:${parts.partition}:${parts.service}::${parts.account}:${parts.resourceType}/${parts.resourceName}`;
+}
+
+function s3ArnFmt(parts: ArnParts): string {
+  // we skip account, region and resourceType for S3 resources
+  return `arn:${parts.partition}:${parts.service}:::${parts.resourceName}`;
+}
+
+function stdColonResourceArnFmt(parts: ArnParts): string {
+  // this is a standard format for ARNs like: arn:aws:service:region:account:resourceType:resourceName
+  return `arn:${parts.partition}:${parts.service}:${parts.region}:${parts.account}:${parts.resourceType}:${parts.resourceName}`;
 }
 
 interface Intrinsic {

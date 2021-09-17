@@ -141,18 +141,10 @@ class LambdaFunctionHotswapOperation implements HotswapOperation {
       try {
         return await cfnExectuableTemplate.evaluateCfnExpression(this.lambdaFunctionResource.physicalName);
       } catch (e) {
-        // It's possible we can't evaluate the function's name -
-        // for example, it can use a Ref to a different resource,
-        // which we wouldn't have in `assetParamsWithEnv`.
-        // That's fine though - ignore any errors,
-        // and treat this case the same way as if the name wasn't provided at all,
-        // which means it will be looked up using the listStackResources() call below
+        // If we can't evaluate the function's name CloudFormation expression,
+        // just look it up in the currently deployed Stack
       }
     }
-
-    const stackResourceList = await cfnExectuableTemplate.stackResources.listStackResources();
-    return stackResourceList
-      .find(resSummary => resSummary.LogicalResourceId === this.lambdaFunctionResource.logicalId)
-      ?.PhysicalResourceId;
+    return cfnExectuableTemplate.findPhysicalNameFor(this.lambdaFunctionResource.logicalId);
   }
 }
