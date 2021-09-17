@@ -1,11 +1,10 @@
-import { expect, haveResource } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import * as sns from '@aws-cdk/aws-sns';
 import * as cdk from '@aws-cdk/core';
-import { Test } from 'nodeunit';
 import * as config from '../lib';
 
-export = {
-  'access keys rotated'(test: Test) {
+describe('access keys', () => {
+  test('rotated', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -13,17 +12,38 @@ export = {
     new config.AccessKeysRotated(stack, 'AccessKeys');
 
     // THEN
-    expect(stack).to(haveResource('AWS::Config::ConfigRule', {
+    expect(stack).toHaveResource('AWS::Config::ConfigRule', {
       Source: {
         Owner: 'AWS',
         SourceIdentifier: 'ACCESS_KEYS_ROTATED',
       },
-    }));
+    });
+  });
 
-    test.done();
-  },
+  test('rotated with max age', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
 
-  'cloudformation stack drift detection check'(test: Test) {
+    // WHEN
+    new config.AccessKeysRotated(stack, 'AccessKeys', {
+      maxAge: cdk.Duration.days(1),
+    });
+
+    // THEN
+    expect(stack).toHaveResource('AWS::Config::ConfigRule', {
+      Source: {
+        Owner: 'AWS',
+        SourceIdentifier: 'ACCESS_KEYS_ROTATED',
+      },
+      InputParameters: {
+        maxAccessKeyAge: 1,
+      },
+    });
+  });
+});
+
+describe('cloudformation stack', () => {
+  test('drift detection check', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -31,7 +51,7 @@ export = {
     new config.CloudFormationStackDriftDetectionCheck(stack, 'Drift');
 
     // THEN
-    expect(stack).to(haveResource('AWS::Config::ConfigRule', {
+    expect(stack).toHaveResource('AWS::Config::ConfigRule', {
       Source: {
         Owner: 'AWS',
         SourceIdentifier: 'CLOUDFORMATION_STACK_DRIFT_DETECTION_CHECK',
@@ -49,9 +69,9 @@ export = {
           'AWS::CloudFormation::Stack',
         ],
       },
-    }));
+    });
 
-    expect(stack).to(haveResource('AWS::IAM::Role', {
+    expect(stack).toHaveResource('AWS::IAM::Role', {
       AssumeRolePolicyDocument: {
         Statement: [
           {
@@ -78,12 +98,10 @@ export = {
           ],
         },
       ],
-    }));
+    });
+  });
 
-    test.done();
-  },
-
-  'cloudformation stack notification check'(test: Test) {
+  test('notification check', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const topic1 = new sns.Topic(stack, 'AllowedTopic1');
@@ -95,7 +113,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::Config::ConfigRule', {
+    expect(stack).toHaveResource('AWS::Config::ConfigRule', {
       Source: {
         Owner: 'AWS',
         SourceIdentifier: 'CLOUDFORMATION_STACK_NOTIFICATION_CHECK',
@@ -113,25 +131,23 @@ export = {
           'AWS::CloudFormation::Stack',
         ],
       },
-    }));
+    });
+  });
 
-    test.done();
-  },
-
-  'cloudformation stack notification check throws with more than 5 topics'(test: Test) {
+  test('notification check throws with more than 5 topics', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const topic = new sns.Topic(stack, 'AllowedTopic1');
 
     // THEN
-    test.throws(() => new config.CloudFormationStackNotificationCheck(stack, 'Notification', {
+    expect(() => new config.CloudFormationStackNotificationCheck(stack, 'Notification', {
       topics: [topic, topic, topic, topic, topic, topic],
-    }), /5 topics/);
+    })).toThrow(/5 topics/);
+  });
+});
 
-    test.done();
-  },
-
-  'ec2 instance profile attached check'(test: Test) {
+describe('ec2 instance', () => {
+  test('profile attached check', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -141,13 +157,11 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::Config::ConfigRule', {
+    expect(stack).toHaveResource('AWS::Config::ConfigRule', {
       Source: {
         Owner: 'AWS',
         SourceIdentifier: config.ManagedRuleIdentifiers.EC2_INSTANCE_PROFILE_ATTACHED,
       },
-    }));
-
-    test.done();
-  },
-};
+    });
+  });
+});
