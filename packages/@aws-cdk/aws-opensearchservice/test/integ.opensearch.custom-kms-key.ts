@@ -1,10 +1,9 @@
 /// !cdk-integ pragma:ignore-assets
-import { EbsDeviceVolumeType } from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import { App, RemovalPolicy, Stack, StackProps } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import * as es from '../lib';
+import * as opensearch from '../lib';
 
 class TestStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
@@ -12,23 +11,13 @@ class TestStack extends Stack {
 
     const key = new kms.Key(this, 'Key');
 
-    const domainProps: es.DomainProps = {
+    const domainProps: opensearch.DomainProps = {
       removalPolicy: RemovalPolicy.DESTROY,
-      version: es.ElasticsearchVersion.V7_1,
-      ebs: {
-        volumeSize: 10,
-        volumeType: EbsDeviceVolumeType.GENERAL_PURPOSE_SSD,
-      },
-      logging: {
-        slowSearchLogEnabled: true,
-        appLogEnabled: true,
-      },
-      nodeToNodeEncryption: true,
+      version: opensearch.EngineVersion.ELASTICSEARCH_7_1,
       encryptionAtRest: {
         enabled: true,
         kmsKey: key,
       },
-      // test the access policies custom resource works
       accessPolicies: [
         new iam.PolicyStatement({
           effect: iam.Effect.ALLOW,
@@ -39,10 +28,10 @@ class TestStack extends Stack {
       ],
     };
 
-    new es.Domain(this, 'Domain', domainProps);
+    new opensearch.Domain(this, 'Domain', domainProps);
   }
 }
 
 const app = new App();
-new TestStack(app, 'cdk-integ-elasticsearch-custom-kms-key');
+new TestStack(app, 'cdk-integ-opensearch-custom-kms-key');
 app.synth();
