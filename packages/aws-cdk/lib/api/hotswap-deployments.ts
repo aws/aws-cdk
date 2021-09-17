@@ -50,30 +50,38 @@ function findAllHotswappableChanges(
   let foundNonHotswappableChange = false;
   stackChanges.resources.forEachDifference((logicalId: string, change: cfn_diff.ResourceDifference) => {
     const nonHotswappableResourceFound = isNonHotswappableResourceChange(change);
-    const lambdaFunctionShortCircuitChange = isHotswappableLambdaFunctionChange(logicalId, change, assetParamsWithEnv);
-    const stepFunctionShortCircuitChange = isHotswappableStepFunctionChange(logicalId, change, assetParamsWithEnv);
 
-    const requiresFullDeployment = (lambdaFunctionShortCircuitChange === ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT) ||
-                                   (stepFunctionShortCircuitChange === ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT) ||
-                                   (nonHotswappableResourceFound === ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT);
-
-    const irrelevant = (lambdaFunctionShortCircuitChange === ChangeHotswapImpact.IRRELEVANT) &&
-                       (stepFunctionShortCircuitChange === ChangeHotswapImpact.IRRELEVANT) &&
-                       (nonHotswappableResourceFound === ChangeHotswapImpact.IRRELEVANT);
-
-    if (requiresFullDeployment) {
+    if (nonHotswappableResourceFound === ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT) {
       foundNonHotswappableChange = true;
-    } else if (irrelevant) {
-      // empty 'if' just for flow-aware typing to kick in...
-    } else {
-      if (typeof lambdaFunctionShortCircuitChange !== 'string') {
-        hotswappableResources.push(lambdaFunctionShortCircuitChange);
-      }
 
-      if (typeof stepFunctionShortCircuitChange !== 'string') {
-        hotswappableResources.push(stepFunctionShortCircuitChange);
+      return;
+    }
+
+    const detectorResults = [
+      isHotswappableLambdaFunctionChange(logicalId, change, assetParamsWithEnv),
+      isHotswappableStepFunctionChange(logicalId, change, assetParamsWithEnv),
+    ];
+
+    for (const result of detectorResults) {
+      if (typeof result !== 'string') {
+        hotswappableResources.push(result);
       }
     }
+
+    // if we found any hotswappable changes, return now
+    if (hotswappableResources.length > 0) {
+      // TODO: check that commenting this out causes tests to fail AFTER you've changed the types of the functions to return REQUIRES_FULL_DEPLOYMENT and refactored that function
+      return;
+    }
+
+    // no hotswappable changes found, so any REQUIRES_FULL_DEPLOYMENTS require a full deployment
+    for (const result of detectorResults) {
+      if (result === ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT) {
+        foundNonHotswappableChange = true;
+      }
+    }
+
+    // no REQUIRES_FULL_DEPLOYMENT implies that all results are IRRELEVANT
   });
   return foundNonHotswappableChange ? undefined : hotswappableResources;
 }
@@ -94,9 +102,9 @@ export function isNonHotswappableResourceChange(change: cfn_diff.ResourceDiffere
     return ChangeHotswapImpact.IRRELEVANT;
   }
   // The only other resource change we should see is a Lambda function or a StepFunctions StateMachine
-  if ((newResourceType !== 'AWS::Lambda::Function') && (newResourceType !== 'AWS::StepFunctions::StateMachine')) {
-    return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
-  }
+  //if ((newResourceType !== 'AWS::Lambda::Function') && (newResourceType !== 'AWS::StepFunctions::StateMachine')) {
+  //return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
+  //}
 
   return ChangeHotswapImpact.IRRELEVANT;
 }

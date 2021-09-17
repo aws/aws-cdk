@@ -23,6 +23,11 @@ export function isHotswappableLambdaFunctionChange(
       return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
     }
 
+    // TODO: see adam's ideas for dealing with this change.newValue in the detectors. Best option is to create a new type which is never undefined
+    const newResourceType = change.newValue.Type;
+    if (newResourceType !== 'AWS::Lambda::Function') {
+      return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
+    }
     let functionPhysicalName: string | undefined;
     try {
       functionPhysicalName = stringifyPotentialCfnExpression(change.newValue?.Properties?.FunctionName, assetParamsWithEnv);
