@@ -2,11 +2,11 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { App, Stack } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import { Test } from 'nodeunit';
+import '@aws-cdk/assert-internal/jest';
 import { Staging } from '../lib';
 
-export = {
-  'base case'(test: Test) {
+describe('staging', () => {
+  test('base case', () => {
     // GIVEN
     const stack = new Stack();
     const sourcePath = path.join(__dirname, 'fs', 'fixtures', 'test1');
@@ -14,13 +14,12 @@ export = {
     // WHEN
     const staging = new Staging(stack, 's1', { sourcePath });
 
-    test.deepEqual(staging.assetHash, '2f37f937c51e2c191af66acf9b09f548926008ec68c575bd2ee54b6e997c0e00');
-    test.deepEqual(staging.sourcePath, sourcePath);
-    test.deepEqual(staging.relativeStagedPath(stack), 'asset.2f37f937c51e2c191af66acf9b09f548926008ec68c575bd2ee54b6e997c0e00');
-    test.done();
-  },
+    expect(staging.assetHash).toEqual('2f37f937c51e2c191af66acf9b09f548926008ec68c575bd2ee54b6e997c0e00');
+    expect(staging.sourcePath).toEqual(sourcePath);
+    expect(staging.relativeStagedPath(stack)).toEqual('asset.2f37f937c51e2c191af66acf9b09f548926008ec68c575bd2ee54b6e997c0e00');
+  });
 
-  'staging can be disabled through context'(test: Test) {
+  test('staging can be disabled through context', () => {
     // GIVEN
     const stack = new Stack();
     stack.node.setContext(cxapi.DISABLE_ASSET_STAGING_CONTEXT, true);
@@ -29,13 +28,12 @@ export = {
     // WHEN
     const staging = new Staging(stack, 's1', { sourcePath });
 
-    test.deepEqual(staging.assetHash, '2f37f937c51e2c191af66acf9b09f548926008ec68c575bd2ee54b6e997c0e00');
-    test.deepEqual(staging.sourcePath, sourcePath);
-    test.deepEqual(staging.absoluteStagedPath, sourcePath);
-    test.done();
-  },
+    expect(staging.assetHash).toEqual('2f37f937c51e2c191af66acf9b09f548926008ec68c575bd2ee54b6e997c0e00');
+    expect(staging.sourcePath).toEqual(sourcePath);
+    expect(staging.absoluteStagedPath).toEqual(sourcePath);
+  });
 
-  'files are copied to the output directory during synth'(test: Test) {
+  test('files are copied to the output directory during synth', () => {
     // GIVEN
     const app = new App();
     const stack = new Stack(app, 'stack');
@@ -48,7 +46,7 @@ export = {
 
     // THEN
     const assembly = app.synth();
-    test.deepEqual(fs.readdirSync(assembly.directory), [
+    expect(fs.readdirSync(assembly.directory)).toEqual([
       'asset.2f37f937c51e2c191af66acf9b09f548926008ec68c575bd2ee54b6e997c0e00',
       'asset.af10ac04b3b607b0f8659c8f0cee8c343025ee75baf0b146f10f0e5311d2c46b.gz',
       'cdk.out',
@@ -56,10 +54,9 @@ export = {
       'stack.template.json',
       'tree.json',
     ]);
-    test.done();
-  },
+  });
 
-  'allow specifying extra data to include in the source hash'(test: Test) {
+  test('allow specifying extra data to include in the source hash', () => {
     // GIVEN
     const app = new App();
     const stack = new Stack(app, 'stack');
@@ -70,9 +67,8 @@ export = {
     const withExtra = new Staging(stack, 'withExtra', { sourcePath: directory, extraHash: 'boom' });
 
     // THEN
-    test.notEqual(withoutExtra.assetHash, withExtra.assetHash);
-    test.deepEqual(withoutExtra.assetHash, '2f37f937c51e2c191af66acf9b09f548926008ec68c575bd2ee54b6e997c0e00');
-    test.deepEqual(withExtra.assetHash, 'c95c915a5722bb9019e2c725d11868e5a619b55f36172f76bcbcaa8bb2d10c5f');
-    test.done();
-  },
-};
+    expect(withoutExtra.assetHash).not.toEqual(withExtra.assetHash);
+    expect(withoutExtra.assetHash).toEqual('2f37f937c51e2c191af66acf9b09f548926008ec68c575bd2ee54b6e997c0e00');
+    expect(withExtra.assetHash).toEqual('c95c915a5722bb9019e2c725d11868e5a619b55f36172f76bcbcaa8bb2d10c5f');
+  });
+});
