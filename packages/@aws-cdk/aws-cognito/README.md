@@ -885,12 +885,6 @@ new cognito.IdentityPool(this, 'myidentitypool', {
 ```ts
 const userPool = new cognito.UserPool(this, 'Pool');
 
-const provider = new cognito.UserPoolIdentityProviderAmazon(this, 'Amazon', {
-  clientId: 'amzn-client-id',
-  clientSecret: 'amzn-client-secret',
-  userPool,
-});
-
 new cognito.IdentityPool(this, 'myidentitypool', {
   identityPoolName: 'myidentitypool',
   userPermissions: [
