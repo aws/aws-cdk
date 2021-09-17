@@ -70,11 +70,14 @@ export interface ApiGatewayProps extends TargetBaseProps {
 }
 
 /**
- * Use an API Gateway REST APIs as a target for Amazon EventBridge rules.
+ * Use an API Gateway REST API as a target for Amazon EventBridge rules.
  */
-export class ApiGateway implements events.IRuleTarget {
+export class ApiGatewayTarget implements events.IRuleTarget {
 
-  constructor(public readonly restApi: api.RestApi, private readonly props?: ApiGatewayProps) {
+  /**
+   * @param iRestApi - An implementation of a Rest API to send events to
+   */
+  constructor(public readonly iRestApi: api.IRestApi, protected readonly props?: ApiGatewayProps) {
   }
 
   /**
@@ -93,15 +96,15 @@ export class ApiGateway implements events.IRuleTarget {
       throw new Error('The number of wildcards in the path does not match the number of path pathParameterValues.');
     }
 
-    const restApiArn = this.restApi.arnForExecuteApi(
+    const restApiArn = this.iRestApi.arnForExecuteApi(
       this.props?.method,
       this.props?.path || '/',
-      this.props?.stage || this.restApi.deploymentStage.stageName,
+      this.props?.stage || this.iRestApi.deploymentStage.stageName,
     );
     return {
       ...(this.props ? bindBaseTargetConfig(this.props) : {}),
       arn: restApiArn,
-      role: this.props?.eventRole || singletonEventRole(this.restApi, [new iam.PolicyStatement({
+      role: this.props?.eventRole || singletonEventRole(this.iRestApi, [new iam.PolicyStatement({
         resources: [restApiArn],
         actions: [
           'execute-api:Invoke',
@@ -110,13 +113,29 @@ export class ApiGateway implements events.IRuleTarget {
       })]),
       deadLetterConfig: this.props?.deadLetterQueue && { arn: this.props.deadLetterQueue?.queueArn },
       input: this.props?.postBody,
-      targetResource: this.restApi,
+      targetResource: this.iRestApi,
       httpParameters: {
         headerParameters: this.props?.headerParameters,
         queryStringParameters: this.props?.queryStringParameters,
         pathParameterValues: this.props?.pathParameterValues,
       },
     };
+  }
+
+}
+
+/**
+ * Use an API Gateway REST APIs as a target for Amazon EventBridge rules.
+ *
+ * @deprecated - Use ApiGatewayTarget
+ */
+export class ApiGateway extends ApiGatewayTarget {
+
+  /**
+   * @param restApi - A Rest API to send events to
+   */
+  constructor(public readonly restApi: api.RestApi, protected readonly props?: ApiGatewayProps) {
+    super(restApi, props);
   }
 
 }
