@@ -24,7 +24,7 @@ configuration properties have been changed:
 | `crossAccountKeys`             | new default is `false`; specify `crossAccountKeys: true` if you need cross-account deployments |
 | `cdkCliVersion`                | `cliVersion`                                                                                   |
 | `selfMutating`                 | `selfMutation`                                                                                 |
-| `vpc`, `subnetSelection`       | `codeBuildDefaults.vpc`, codeBuildDefaults.subnetSelection`                                    |
+| `vpc`, `subnetSelection`       | `codeBuildDefaults.vpc`, `codeBuildDefaults.subnetSelection`                                    |
 | `selfMutationBuildSpec`        | `selfMutationCodeBuildDefaults.partialBuildSpec`                                               |
 | `assetBuildSpec`               | `assetPublishingCodeBuildDefaults.partialBuildSpec`                                            |
 | `assetPreinstallCommands`      | use `assetPublishingCodeBuildDefaults.partialBuildSpec` instead                                |
