@@ -1010,8 +1010,7 @@ new cognito.IdentityPool(this, 'myidentitypool', {
 ```
 
 If you want to associate more than one provider of the same type with the identity pool, you can do so using User  
-Pools, OpenIdConnect, or Saml. You can't attach more than one provider per external service directly to the identity  
-pool.
+Pools, OpenIdConnect, or SAML. You can't attach more than one provider per external service to the identity pool.
 
 #### OpenId Connect and Saml
 
