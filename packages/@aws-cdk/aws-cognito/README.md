@@ -850,8 +850,7 @@ new cognito.IdentityPool(this, 'myidentitypool', {
 You can associate identity providers with an Identity Pool by first associating them with a Cognito User Pool or by  
 associating the provider directly with the identity pool.
 
-Here's a simple setup for an app where all authenticated users have the same permissions, and all unauthenticated users  
-are redirected to a sign up page:
+The following configures an identity pool with different permissions for authenticated and guest users:
 
 ```ts
 new cognito.IdentityPool(this, 'myidentitypool', {
