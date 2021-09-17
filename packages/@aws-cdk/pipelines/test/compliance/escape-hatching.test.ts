@@ -1,5 +1,4 @@
-import { arrayWith, objectLike } from '@aws-cdk/assert-internal';
-import '@aws-cdk/assert-internal/jest';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as cp from '@aws-cdk/aws-codepipeline';
 import * as cpa from '@aws-cdk/aws-codepipeline-actions';
 import { SecretValue, Stack } from '@aws-cdk/core';
@@ -69,11 +68,11 @@ describe('with empty existing CodePipeline', () => {
 
     function THEN_codePipelineExpectation() {
       // THEN
-      expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+      Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
         Stages: [
-          objectLike({ Name: 'Source' }),
-          objectLike({ Name: 'Build' }),
-          objectLike({ Name: 'UpdatePipeline' }),
+          Match.objectLike({ Name: 'Source' }),
+          Match.objectLike({ Name: 'Build' }),
+          Match.objectLike({ Name: 'UpdatePipeline' }),
         ],
       });
     }
@@ -118,11 +117,11 @@ describe('with custom Source stage in existing Pipeline', () => {
 
     function THEN_codePipelineExpectation() {
       // THEN
-      expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+      Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
         Stages: [
-          objectLike({ Name: 'CustomSource' }),
-          objectLike({ Name: 'Build' }),
-          objectLike({ Name: 'UpdatePipeline' }),
+          Match.objectLike({ Name: 'CustomSource' }),
+          Match.objectLike({ Name: 'Build' }),
+          Match.objectLike({ Name: 'UpdatePipeline' }),
         ],
       });
     }
@@ -167,11 +166,11 @@ describe('with Source and Build stages in existing Pipeline', () => {
 
     function THEN_codePipelineExpectation() {
       // THEN
-      expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+      Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
         Stages: [
-          objectLike({ Name: 'CustomSource' }),
-          objectLike({ Name: 'CustomBuild' }),
-          objectLike({ Name: 'UpdatePipeline' }),
+          Match.objectLike({ Name: 'CustomSource' }),
+          Match.objectLike({ Name: 'CustomBuild' }),
+          Match.objectLike({ Name: 'UpdatePipeline' }),
         ],
       });
     }
@@ -209,14 +208,14 @@ behavior('can add another action to an existing stage', (suite) => {
   });
 
   function THEN_codePipelineExpectation() {
-    expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
-      Stages: arrayWith({
+    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+      Stages: Match.arrayWith([{
         Name: 'Source',
         Actions: [
-          objectLike({ ActionTypeId: objectLike({ Provider: 'GitHub' }) }),
-          objectLike({ ActionTypeId: objectLike({ Provider: 'GitHub' }), Name: 'GitHub2' }),
+          Match.objectLike({ ActionTypeId: Match.objectLike({ Provider: 'GitHub' }) }),
+          Match.objectLike({ ActionTypeId: Match.objectLike({ Provider: 'GitHub' }), Name: 'GitHub2' }),
         ],
-      }),
+      }]),
     });
   }
 });
@@ -264,12 +263,12 @@ behavior('assets stage inserted after existing pipeline actions', (suite) => {
   });
 
   function THEN_codePipelineExpectation() {
-    expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
       Stages: [
-        objectLike({ Name: 'CustomSource' }),
-        objectLike({ Name: 'CustomBuild' }),
-        objectLike({ Name: 'Assets' }),
-        objectLike({ Name: 'App' }),
+        Match.objectLike({ Name: 'CustomSource' }),
+        Match.objectLike({ Name: 'CustomBuild' }),
+        Match.objectLike({ Name: 'Assets' }),
+        Match.objectLike({ Name: 'App' }),
       ],
     });
   }
