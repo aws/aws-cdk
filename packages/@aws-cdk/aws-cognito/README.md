@@ -772,7 +772,7 @@ Identity pools provide temporary AWS credentials for users who are guests (unaut
 authenticated and received a token. An identity pool is a store of user identity data specific to your account.
 
 Identity pools can be used in conjunction with Cognito User Pools or by accessing external federated identity providers  
-directly.
+directly. Learn more at [Amazon Cognito Identity Pools](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-identity.html).
 
 A basic Identity Pool with minimal configuration has no required props, with default authenticated and unauthenticated  
 roles applied to the identity pool: 
