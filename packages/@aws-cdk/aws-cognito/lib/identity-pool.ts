@@ -24,7 +24,6 @@ import {
 } from './cognito.generated';
 import {
   IUserPoolAuthenticationProvider,
-  UserPoolAuthenticationProvider,
 } from './user-pool-authentication-provider';
 
 /**
@@ -212,7 +211,7 @@ export interface IdentityPoolAmazonLoginProvider {
 /**
  * Login Provider for Identity Federation using Facebook Credentials
  */
- export interface IdentityPoolFacebookLoginProvider {
+export interface IdentityPoolFacebookLoginProvider {
   /**
    * App Id for Facebook Identity Federation
    */
@@ -242,7 +241,7 @@ export interface IdentityPoolGoogleLoginProvider {
 /**
  * Login Provider for Identity Federation using Twitter Credentials
  */
- export interface IdentityPoolTwitterLoginProvider {
+export interface IdentityPoolTwitterLoginProvider {
   /**
    * App Id for Twitter Identity Federation
    */
@@ -257,7 +256,7 @@ export interface IdentityPoolGoogleLoginProvider {
 /**
  * Login Provider for Identity Federation using Digits Credentials
  */
- export interface IdentityPoolDigitsLoginProvider extends IdentityPoolTwitterLoginProvider {}
+export interface IdentityPoolDigitsLoginProvider extends IdentityPoolTwitterLoginProvider {}
 
 /**
  * External Identity Providers To Connect to User Pools and Identity Pools
@@ -267,28 +266,28 @@ export interface IdentityPoolLoginProviders {
   /** App Id for Facebook Identity Federation
    * @default - No Facebook Authentication Provider used without OpenIdConnect or a User Pool
    */
-   readonly facebook?: IdentityPoolFacebookLoginProvider
+  readonly facebook?: IdentityPoolFacebookLoginProvider
 
   /** Client Id for Google Identity Federation
    * @default - No Google Authentication Provider used without OpenIdConnect or a User Pool
    */
   readonly google?: IdentityPoolGoogleLoginProvider
- 
+
   /** App Id for Amazon Identity Federation
    * @default -  No Amazon Authentication Provider used without OpenIdConnect or a User Pool
    */
   readonly amazon?: IdentityPoolAmazonLoginProvider
- 
+
   /** Services Id for Apple Identity Federation
    * @default - No Apple Authentication Provider used without OpenIdConnect or a User Pool
    */
   readonly apple?: IdentityPoolAppleLoginProvider
- 
+
   /** Consumer Key and Secret for Twitter Identity Federation
    * @default - No Twitter Authentication Provider used without OpenIdConnect or a User Pool
    */
   readonly twitter?: IdentityPoolTwitterLoginProvider
- 
+
   /** Consumer Key and Secret for Digits Identity Federation
    * @default - No Digits Authentication Provider used without OpenIdConnect or a User Pool
    */
@@ -412,8 +411,8 @@ export class IdentityPool extends Resource implements IIdentityPool {
 
   constructor(scope: Construct, private id: string, props:IdentityPoolProps = {}) {
     super(scope, id, {
-      physicalName: props.identityPoolName || Lazy.string({ produce: () => 
-        Names.uniqueId(this).substring(0,20), 
+      physicalName: props.identityPoolName || Lazy.string({
+        produce: () => Names.uniqueId(this).substring(0, 20),
       }),
     });
     this.identityPoolName = this.physicalName;
@@ -486,22 +485,22 @@ export class IdentityPool extends Resource implements IIdentityPool {
    */
   public grantGuest(...actions: string[]): Grant {
     // Make sure `allowUnauthenticatedIdentities` is true now that there are guest permissions
-    (this.node.defaultChild as CfnIdentityPool).addPropertyOverride('AllowUnauthenticatedIdentities', true);
+    this.cfnIdentityPool.addPropertyOverride('AllowUnauthenticatedIdentities', true);
     return this.grant(this.unauthenticatedRole.grantPrincipal, actions);
   }
 
   /**
    * Grant Permissions to default user role for specific resources
    */
-  public grantUserForResource(resourceArn: string, ...actions: string[]): Grant {
+  public grantUserResource(resourceArn: string, ...actions: string[]): Grant {
     return this.grant(this.authenticatedRole.grantPrincipal, actions, [resourceArn]);
   }
 
   /**
    * Grant Permissions to default guest role for specific resources
    */
-  public grantGuestForResource(resourceArn: string, ...actions: string[]): Grant {
-    (this.node.defaultChild as CfnIdentityPool).addPropertyOverride('AllowUnauthenticatedIdentities', true);
+  public grantGuestResource(resourceArn: string, ...actions: string[]): Grant {
+    this.cfnIdentityPool.addPropertyOverride('AllowUnauthenticatedIdentities', true);
     return this.grant(this.unauthenticatedRole.grantPrincipal, actions, [resourceArn]);
   }
 
@@ -511,7 +510,7 @@ export class IdentityPool extends Resource implements IIdentityPool {
   private configureDefaultRole(
     type: string,
     actions: string[] = [],
-    mainPrincipalAction: string = 'sts:AssumeRoleWithWebIdentity'
+    mainPrincipalAction: string = 'sts:AssumeRoleWithWebIdentity',
   ): Role {
     const name = `${this.id}${type}Role`;
     const assumedBy = this.configureGrantPrincipal(type.toLowerCase(), mainPrincipalAction);
@@ -520,10 +519,7 @@ export class IdentityPool extends Resource implements IIdentityPool {
       description: `Default ${type} Role for Identity Pool ${this.identityPoolName}`,
       assumedBy,
     });
-    if (actions.length) {
-      if (type === 'Authenticated') this.grantUser(...actions);
-      if (type === 'Unauthenticated') this.grantGuest(...actions);
-    }
+    if (actions.length) this.grant(role.grantPrincipal, actions);
     return role;
   }
 
@@ -569,9 +565,9 @@ export class IdentityPool extends Resource implements IIdentityPool {
   /**
    * Configure CognitoIdentityProviders from list of User Pools
    */
-  private configureUserPool(userPool: IUserPoolAuthenticationProvider): CfnIdentityPool.CognitoIdentityProviderProperty[] | undefined {
+  private configureUserPool(userPool?: IUserPoolAuthenticationProvider): CfnIdentityPool.CognitoIdentityProviderProperty[] | undefined {
     if (!userPool) return undefined;
-    return  this.configureAuthenticationProviders(userPool);
+    return this.configureAuthenticationProviders(userPool);
   }
 
   /**
@@ -596,18 +592,12 @@ export class IdentityPool extends Resource implements IIdentityPool {
   private configureLoginProviders(providers?: IdentityPoolLoginProviders): any {
     if (!providers) return undefined;
     const authenticatedProviders:any = {};
-    if (providers.amazon) authenticatedProviders[IdentityPoolLoginProviderType.AMAZON] 
-      = providers.amazon.appId;
-    if (providers.facebook) authenticatedProviders[IdentityPoolLoginProviderType.FACEBOOK] 
-      = providers.facebook.appId;
-    if (providers.google) authenticatedProviders[IdentityPoolLoginProviderType.GOOGLE] 
-      = providers.google.clientId;
-    if (providers.apple) authenticatedProviders[IdentityPoolLoginProviderType.APPLE] 
-      = providers.apple.servicesId;
-    if (providers.twitter) authenticatedProviders[IdentityPoolLoginProviderType.TWITTER] 
-      = `${providers.twitter.consumerKey};${providers.twitter.consumerSecret}`;
-    if (providers.digits) authenticatedProviders[IdentityPoolLoginProviderType.DIGITS] 
-      = `${providers.digits.consumerKey};${providers.digits.consumerSecret}`;
+    if (providers.amazon) authenticatedProviders[IdentityPoolLoginProviderType.AMAZON] = providers.amazon.appId;
+    if (providers.facebook) authenticatedProviders[IdentityPoolLoginProviderType.FACEBOOK] = providers.facebook.appId;
+    if (providers.google) authenticatedProviders[IdentityPoolLoginProviderType.GOOGLE] = providers.google.clientId;
+    if (providers.apple) authenticatedProviders[IdentityPoolLoginProviderType.APPLE] = providers.apple.servicesId;
+    if (providers.twitter) authenticatedProviders[IdentityPoolLoginProviderType.TWITTER] = `${providers.twitter.consumerKey};${providers.twitter.consumerSecret}`;
+    if (providers.digits) authenticatedProviders[IdentityPoolLoginProviderType.DIGITS] = `${providers.digits.consumerKey};${providers.digits.consumerSecret}`;
     if (!Object.keys(authenticatedProviders).length) return undefined;
     return authenticatedProviders;
   }
@@ -648,7 +638,7 @@ export class IdentityPool extends Resource implements IIdentityPool {
 
   private configureGrantPrincipal(
     type: string,
-    action: string = 'sts:AssumeRoleWithWebIdentity'
+    action: string = 'sts:AssumeRoleWithWebIdentity',
   ) {
     return new FederatedPrincipal('cognito-identity.amazonaws.com', {
       'StringEquals': {
@@ -657,16 +647,16 @@ export class IdentityPool extends Resource implements IIdentityPool {
       'ForAnyValue:StringLike': {
         'cognito-identity.amazonaws.com:amr': type,
       },
-    }, action)
+    }, action);
   }
- 
+
   /**
    * Grant Permissions to Roles attached to Identity Pool
    */
   private grant(
     grantee: IPrincipal,
     actions: string[],
-    resources: string[] = ['*']
+    resources: string[] = ['*'],
   ): Grant {
 
     return Grant.addToPrincipal({

@@ -1154,7 +1154,6 @@ new cognito.IdentityPool(this, 'myidentitypool', {
 It's now recommended to integrate [AWS AppSync](https://aws.amazon.com/appsync/) for synchronizing app data across devices, so  
 Cognito Sync features like `PushSync`, `CognitoEvents`, and `CognitoStreams` are not a part of `IdentityPool`. More    
 information can be found [here](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-sync.html).
-```
 
 ### Importing Identity Pools
 

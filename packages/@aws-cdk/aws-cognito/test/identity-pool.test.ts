@@ -61,7 +61,7 @@ describe('identity pool', () => {
       grantUserActions: ['execute-api:*'],
     });
     identityPool.grantUser('dynamodb:*');
-    identityPool.grantGuestForResource('arn:aws:execute-api:us-east-1:*:my-api/prod', 'execute-api:*');
+    identityPool.grantGuestResource('arn:aws:execute-api:us-east-1:*:my-api/prod', 'execute-api:*');
     const temp = Template.fromStack(stack);
     temp.resourceCountIs('AWS::IAM::Role', 2);
     temp.resourceCountIs('AWS::IAM::Policy', 2);
@@ -175,16 +175,13 @@ describe('identity pool', () => {
     const otherPool = new UserPool(stack, 'OtherPool');
     pool.registerIdentityProvider(poolProvider);
     otherPool.registerIdentityProvider(otherPoolProvider);
-    const userPools = [{
-      userPool: pool,
-    }];
     const idPool = new IdentityPool(stack, 'TestIdentityPoolUserPools', {
       authenticationProviders: {
-        userPool: UserPoolAuthenticationProvider.fromUserPool(stack, 'UserPoolProvider', pool),
+        userPool: new UserPoolAuthenticationProvider({ userPool: pool }),
       },
     });
     idPool.addUserPool(
-      new UserPoolAuthenticationProvider(stack, 'UserPoolProvider', {
+      new UserPoolAuthenticationProvider({
         userPool: otherPool,
         disableServerSideTokenCheck: true,
       }),
@@ -248,14 +245,14 @@ describe('identity pool', () => {
             Ref: 'PoolUserPoolClientForundefinedBF6BDE57',
           },
           ProviderName: 'poolProvider',
-          ServerSideTokenCheck: true,
+          ServerSideTokenCheck: false,
         },
         {
           ClientId: {
             Ref: 'OtherPoolUserPoolClientForundefined1B97829F',
           },
           ProviderName: 'otherPoolProvider',
-          ServerSideTokenCheck: false,
+          ServerSideTokenCheck: true,
         },
       ],
     });
@@ -309,7 +306,7 @@ describe('identity pool', () => {
       },
     });
     const temp = Template.fromStack(stack);
-    temp.resourceCountIs('AWS::IAM::Role', 4);
+    temp.resourceCountIs('AWS::IAM::Role', 2);
     temp.hasResourceProperties('AWS::Cognito::IdentityPool', {
       IdentityPoolName: 'my-id-pool',
       SupportedLoginProviders: {

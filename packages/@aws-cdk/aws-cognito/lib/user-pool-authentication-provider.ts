@@ -1,22 +1,14 @@
 import { randomBytes } from 'crypto';
-import { IUserPool } from './user-pool';
-import { 
-  IResource, 
-  Resource,
-  Lazy,
-  Names
-} from '@aws-cdk/core';
-import { Construct } from 'constructs';
-import { 
+import {
   UserPoolClient,
-  UserPoolClientProps
+  UserPoolClientProps,
 } from './user-pool-client';
 import { IUserPoolIdentityProvider } from './user-pool-idp';
 
 /**
  * Represents a UserPoolAuthenticationProvider
  */
- export interface IUserPoolAuthenticationProvider extends IResource {
+export interface IUserPoolAuthenticationProvider {
   /**
    * Client Id of the Associated User Pool Client
    */
@@ -26,7 +18,7 @@ import { IUserPoolIdentityProvider } from './user-pool-idp';
    * Whether to disable the user pool's default server side token check
    */
   readonly disableServerSideTokenCheck: boolean;
-   
+
   /**
    * The identity providers associated with the UserPool
    */
@@ -39,12 +31,6 @@ import { IUserPoolIdentityProvider } from './user-pool-idp';
 export interface UserPoolAuthenticationProviderProps extends UserPoolClientProps {
 
   /**
-   * Name of the UserPoolAuthenticationProvider
-   * @default - A name will be created
-   */
-  readonly userPoolAuthenticationProviderName?: string
-
-  /**
    * Setting this to true turns off identity pool checks for this user pool to make sure the user has not been globally signed out or deleted before the identity pool provides an OIDC token or AWS credentials for the user
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cognito-identitypool-cognitoidentityprovider.html
    * @default false
@@ -53,16 +39,9 @@ export interface UserPoolAuthenticationProviderProps extends UserPoolClientProps
 }
 
 /**
- * Define a User Pool Authentication Provider
+ * Defines a User Pool Authentication Provider
  */
-export class UserPoolAuthenticationProvider extends Resource implements IUserPoolAuthenticationProvider {
-
-  /**
-   * Form User Pool Authentication Provider from existing User Pool
-   */
-  static fromUserPool(scope: Construct, id: string, userPool: IUserPool): IUserPoolAuthenticationProvider {
-    return new UserPoolAuthenticationProvider(scope, id, { userPool });
-  }
+export class UserPoolAuthenticationProvider implements IUserPoolAuthenticationProvider {
 
   /**
    * Client Id of the Associated User Pool Client
@@ -77,14 +56,9 @@ export class UserPoolAuthenticationProvider extends Resource implements IUserPoo
   /**
    * The identity providers associated with the UserPool
    */
-  public identityProviders: IUserPoolIdentityProvider[] = [];
+  public readonly identityProviders: IUserPoolIdentityProvider[] = [];
 
-  constructor(scope: Construct, id: string, props: UserPoolAuthenticationProviderProps) {
-    super(scope, id, {
-      physicalName: props.userPoolAuthenticationProviderName || Lazy.string({ produce: () => 
-        Names.uniqueId(this).substring(0,20), 
-      }),
-    });
+  constructor(props: UserPoolAuthenticationProviderProps) {
     const client = this.configureUserPoolClient(props);
     this.clientId = client.userPoolClientId;
     this.identityProviders = props.userPool.identityProviders;
