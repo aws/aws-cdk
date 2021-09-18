@@ -769,7 +769,7 @@ const myUserPoolDomain = cognito.UserPoolDomain.fromDomainName(this, 'my-user-po
 ## Identity Pools
 
 Identity pools provide temporary AWS credentials for users who are guests (unauthenticated) and for users who have been  
-authenticated and received a token. An identity pool is a store of user identity data specific to your account.
+authenticated and received a token. An identity pool is a store of user identity data specific to an account.
 
 Identity pools can be used in conjunction with Cognito User Pools or by accessing external federated identity providers  
 directly. Learn more at [Amazon Cognito Identity Pools](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-identity.html).
@@ -783,14 +783,11 @@ new cognito.IdentityPool(this, 'myIdentityPool');
 
 ### Authenticated and Unauthenticated Identities
 
-Identity pools define two types of identities: authenticated and unauthenticated. Every identity in your identity pool  
-is either authenticated or unauthenticated. Authenticated identities belong to users who are authenticated by a public  
-login provider (Amazon Cognito user pools, Login with Amazon, Sign in with Apple, Facebook, Google, SAML, or any OpenID  
-Connect Providers) or a developer provider (your own backend authentication process). Unauthenticated identities  
-typically belong to guest users.
-
-You can add permissions to your default authenticated role to determine what base permissions an authenticated  
-user will have:
+Identity pools define two types of identities: authenticated and unauthenticated. Every identity in an identity pool  
+is either authenticated or unauthenticated. Each identity pool has a default role for authenticated identities, and a  
+default role for authenticated identities. Absent other overriding rules (see below), these are the roles that will  
+be assumed by the corresponding users in the authentication process. Permissions can be added to the default  
+authenticated role to determine what base permissions an authenticated user will have:
 
 ```ts
 new cognito.IdentityPool(this, 'myidentitypool', {
@@ -805,7 +802,7 @@ new cognito.IdentityPool(this, 'myidentitypool', {
 });
 ```
 
-If you want to allow guest users limited access, you can add permissions to the default unauthenticated role as well:
+Guest users can be given limited access by adding permissions to the default unauthenticated role:
 
 ```ts
 new cognito.IdentityPool(this, 'myidentitypool', {
@@ -828,7 +825,7 @@ new cognito.IdentityPool(this, 'myidentitypool', {
 ```
 
 The default authenticated and unauthenticated roles are preconfigured to allow users to assume their respective  
-credentials using the `sts:AssumeRoleWithWebIdentity` action. You can use a different action to assume the role with  
+credentials using the `sts:AssumeRoleWithWebIdentity` action. A different action can be used to assume the role with  
 the `assumeAction` field:
 
 ```ts
@@ -844,11 +841,6 @@ new cognito.IdentityPool(this, 'myidentitypool', {
   ],
 });
 ```
-
-### Authentication Providers
-
-You can associate identity providers with an Identity Pool by first associating them with a Cognito User Pool or by  
-associating the provider directly with the identity pool.
 
 The following configures an identity pool with different permissions for authenticated and guest users:
 
@@ -873,11 +865,17 @@ new cognito.IdentityPool(this, 'myidentitypool', {
       resources: ['arn:aws:execute-api:my-app-region:*:my-signup-api/prod'],
     },
   ],
-  authenticationProviders: {
-    facebook: 'my-facebook-app-id',
-  },
 });
 ```
+
+### Authentication Providers
+
+Authenticated identities belong to users who are authenticated by a public login provider (Amazon Cognito user pools,  
+Login with Amazon, Sign in with Apple, Facebook, Google, SAML, or any OpenID Connect Providers) or a developer provider  
+(your own backend authentication process).
+
+[Authentication providers](https://docs.aws.amazon.com/cognito/latest/developerguide/external-identity-providers.html) can be associated with an Identity Pool by first associating them with a Cognito User Pool or by  
+associating the provider directly with the identity pool.
 
 #### Associating a Provider Through a User Pool
 
@@ -900,7 +898,7 @@ new cognito.IdentityPool(this, 'myidentitypool', {
 ```
 
 When associating a user pool with an identity pool, a `UserPoolClient` is automatically created to handle the user  
-pool's providers. If you want to control the the settings of the `UserPoolClient`, you can do that as well:
+pool's providers. The settings of the `UserPoolClient` can be set as well:
 
 ```ts
 const userPool = new cognito.UserPool(this, 'Pool');
@@ -927,7 +925,7 @@ new cognito.IdentityPool(this, 'myidentitypool', {
 });
 ```
 
-You can also associate user pools with an identity pool after instantiation. The Identity Pool's `addUserPool` method  
+User pools can also be associated with an identity pool after instantiation. The Identity Pool's `addUserPool` method  
 returns the User Pool Client that has been created:
 
 ```ts
@@ -944,11 +942,11 @@ With the `IdentityPool` CDK Construct, by default the pool is configured to chec
 make sure that the user has not been globally signed out or deleted before the identity pool provides an OIDC token or  
 AWS credentials for the user. 
 
-If the user is signed out or deleted, the identity pool will return a 400 Not Authorized error. You can disable this  
-setting, however, in several ways.
+If the user is signed out or deleted, the identity pool will return a 400 Not Authorized error. This setting can be  
+disabled, however, in several ways.
 
-Setting `IdentityPoolProps.disableServerSideTokenCheck` to true will change the default behavior to no server side  
-token check:
+Setting `disableServerSideTokenCheck` to true will change the default behavior to no server side token check Learn  
+more [here](https://docs.aws.amazon.com/cognitoidentity/latest/APIReference/API_CognitoIdentityProvider.html#CognitoIdentity-Type-CognitoIdentityProvider-ServerSideTokenCheck):
 
 ```ts
 const userPool = new cognito.UserPool(this, 'Pool');
@@ -972,7 +970,7 @@ new cognito.IdentityPool(this, 'myidentitypool', {
 });
 ```
 
-You can also turn off server side token check for individual user pools setting the third argument of the Identity  
+Server side token check can also be disabled for individual user pools by setting the third argument of the Identity  
 Pool's `addUserPool` method to true:
 
 ```ts
@@ -986,8 +984,8 @@ identityPool.addUserPool(userPool, {
 
 #### Associating an External Provider Directly
 
-You can associate with one or more [external identity providers](https://docs.aws.amazon.com/cognito/latest/developerguide/external-identity-providers.html) directly with an identity pool using  
-`supportedLoginProviders`:
+One or more [external identity providers](https://docs.aws.amazon.com/cognito/latest/developerguide/external-identity-providers.html) can be associated with an identity pool directly using  
+`authenticationProviders`:
 
 ```ts
 new cognito.IdentityPool(this, 'myidentitypool', {
@@ -1000,17 +998,28 @@ new cognito.IdentityPool(this, 'myidentitypool', {
     };
   ],
   authenticationProviders: {
-    amazon: 'amzn1.application.12312k3j234j13rjiwuenf',
-    facebook: '1234567890123',
-    google: '12345678012.apps.googleusercontent.com',
-    apple: 'com.yourappleapp.auth',
-    twitter: 'my-twitter-id;my-twitter-secret',
+    amazon: {
+      appId: 'amzn1.application.12312k3j234j13rjiwuenf',
+    },
+    facebook: {
+      appId: '1234567890123',
+    },
+    google: {
+      clientId: '12345678012.apps.googleusercontent.com',
+    }
+    apple: {
+      servicesId: 'com.myappleapp.auth',
+    },
+    twitter: {
+      consumerKey: 'my-twitter-id',
+      consumerSecret: 'my-twitter-secret',
+    },
   },
 });
 ```
 
-If you want to associate more than one provider of the same type with the identity pool, you can do so using User  
-Pools, OpenIdConnect, or SAML. You can't attach more than one provider per external service to the identity pool.
+To associate more than one provider of the same type with the identity pool, use User  
+Pools, OpenIdConnect, or SAML. Only one provider per external service can be attached directly to the identity pool.
 
 #### OpenId Connect and Saml
 
@@ -1018,10 +1027,10 @@ Pools, OpenIdConnect, or SAML. You can't attach more than one provider per exter
 authentication that is supported by a number of login providers. Amazon Cognito supports linking of identities with  
 OpenID Connect providers that are configured through [AWS Identity and Access Management](http://aws.amazon.com/iam/). 
 
-You can use an identity provider that supports [Security Assertion Markup Language 2.0 (SAML 2.0)](https://docs.aws.amazon.com/cognito/latest/developerguide/saml-identity-provider.html) to provide a simple  
-onboarding flow for your users. Your SAML-supporting identity provider specifies the IAM roles that can be assumed by  
-your users so that different users can be granted different sets of permissions.  
-Associating an OpenId Connect or Saml provider with an identity pool:
+An identity provider that supports [Security Assertion Markup Language 2.0 (SAML 2.0)](https://docs.aws.amazon.com/cognito/latest/developerguide/saml-identity-provider.html) can be used to provide a simple  
+onboarding flow for users. The SAML-supporting identity provider specifies the IAM roles that can be assumed by users  
+so that different users can be granted different sets of permissions. Associating an OpenId Connect or Saml provider  
+with an identity pool:
 
 ```ts
 const openIdConnectProvider = new iam.OpenIdConnectProvider(this, 'my-openid-connect-provider', ...);
@@ -1045,12 +1054,12 @@ new cognito.IdentityPool(this, 'myidentitypool', {
 
 #### Custom Providers
 
-You can also customize your identity pool's behavior further using customized [developer authenticated identities](https://docs.aws.amazon.com/cognito/latest/developerguide/developer-authenticated-identities.html).  
-With developer authenticated identities, you can register and authenticate users via your own existing authentication  
-process, while still using Amazon Cognito to synchronize user data and access AWS resources.
+The identity pool's behavior can be customized further using custom [developer authenticated identities](https://docs.aws.amazon.com/cognito/latest/developerguide/developer-authenticated-identities.html).  
+With developer authenticated identities, users can be registered and authenticated via an existing authentication  
+process while still using Amazon Cognito to synchronize user data and access AWS resources.
 
-Like the supported external providers, though, you can only associate one custom provider directly with the identity  
-pool, so to add more you'd need to integrate them with OpenIdConnect or another provider.
+Like the supported external providers, though, only one custom provider can be directly associated with the identity  
+pool.
 
 ```ts
 new cognito.IdentityPool(this, 'myidentitypool', {
@@ -1072,10 +1081,10 @@ new cognito.IdentityPool(this, 'myidentitypool', {
 
 ### Role Mapping
 
-In addition to setting default roles for authenticated and unauthenticated users, you can also use identity pools to  
+In addition to setting default roles for authenticated and unauthenticated users, identity pools can also be used to  
 define rules to choose the role for each user based on claims in the user's ID token by using Role Mapping. When using  
-role mapping, it's important to be aware of some of the permissions your role will need. You can find an in depth  
-review of roles and role mapping [here](https://docs.aws.amazon.com/cognito/latest/developerguide/role-based-access-control.html).
+role mapping, it's important to be aware of some of the permissions the role will need. An in depth  
+review of roles and role mapping can be found [here](https://docs.aws.amazon.com/cognito/latest/developerguide/role-based-access-control.html).
 
 Using a [token-based approach](https://docs.aws.amazon.com/cognito/latest/developerguide/role-based-access-control.html#using-tokens-to-assign-roles-to-users) to role mapping will allow mapped roles to be passed through the `cognito:roles` or  
 `cognito:preferred_role` claims from the identity provider:
@@ -1090,14 +1099,12 @@ new cognito.IdentityPool(this, 'myidentitypool', {
 });
 ```
 
-Using a rule-based approach to role mapping allows you to determine your own rules for when and how roles are assigned  
-based on custom claims passed from the identity provider:
+Using a rule-based approach to role mapping allows roles to be assigned based on custom claims passed from the identity  provider:
 
 ```ts
 new cognito.IdentityPool(this, 'myidentitypool', {
   identityPoolName: 'myidentitypool',
-  // Assign specific roles to users of your app based on whether or not the custom admin claim is passed from the  
-  // identity provider
+  // Assign specific roles to users based on whether or not the custom admin claim is passed from the identity provider
   roleMappings: [{
     providerUrl: SupportedLoginProviderType.AMAZON,
     rules: [
@@ -1117,7 +1124,7 @@ new cognito.IdentityPool(this, 'myidentitypool', {
 });
 ```
 
-You can also add role mappings after instantiation with the Identity Pool's `addRoleMappings` method:
+Role mappings can also be added after instantiation with the Identity Pool's `addRoleMappings` method:
 
 ```ts
 identityPool.addRoleMappings(myAddedRoleMapping1, myAddedRoleMapping2, myAddedRoleMapping3);
@@ -1125,8 +1132,8 @@ identityPool.addRoleMappings(myAddedRoleMapping1, myAddedRoleMapping2, myAddedRo
 
 ### Authentication Flow
 
-Identity Pool [Authentication Flow](https://docs.aws.amazon.com/cognito/latest/developerguide/authentication-flow.html) defaults to the enhanced, simplified flow. If you prefer to use the Classic (basic)  
-Authentication Flow, you can do so using `IdentityPoolProps.allowClassicFlow`:
+Identity Pool [Authentication Flow](https://docs.aws.amazon.com/cognito/latest/developerguide/authentication-flow.html)  defaults to the enhanced, simplified flow. The Classic (basic) Authentication Flow  
+can also be implemented using `allowClassicFlow`:
 
 ```ts
 new cognito.IdentityPool(this, 'myidentitypool', {
@@ -1144,31 +1151,9 @@ new cognito.IdentityPool(this, 'myidentitypool', {
 
 ### Cognito Sync
 
-It's now recommended to integrate [AWS AppSync](https://aws.amazon.com/appsync/) for synchronizing app data across  devices, but you can still  
-implement [Cognito Sync] features like [Push Sync](https://docs.aws.amazon.com/cognito/latest/developerguide/push-sync.html), [Cognito Events](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-events.html), and [Cognito Streams](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-streams.html) and configured them as part  
-of an Identity Pool:
-
-```ts
-new cognito.IdentityPool(this, 'myidentitypool', {
-  identityPoolName: 'myidentitypool',
-  userPermissions: [
-    {
-      effect: iam.Effect.ALLOW,
-      actions: ['execute-api'],
-      resources: ['*'],
-    },
-  ],
-  pushSyncConfig: {
-    applicationArns: ['arn::my::application'],
-    role: Role.fromRoleArn('arn:aws:iam::123456789012:role/my-push-sync-role'),
-  },
-  streamOptions: {
-    streamName: 'my-stream',
-    enableStreamingStatus: true,
-    role: streamRole,
-  },
-  syncTrigger: Function.fromFunctionArn('arn:aws:lambda:my-lambda-region:123456789012:function:my-sync-trigger'),
-});
+It's now recommended to integrate [AWS AppSync](https://aws.amazon.com/appsync/) for synchronizing app data across devices, so  
+Cognito Sync features like `PushSync`, `CognitoEvents`, and `CognitoStreams` are not a part of `IdentityPool`. More    
+information can be found [here](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-sync.html).
 ```
 
 ### Importing Identity Pools

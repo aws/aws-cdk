@@ -11,10 +11,10 @@ import {
   Effect,
   PolicyDocument,
 } from '@aws-cdk/aws-iam';
-import { Function } from '@aws-cdk/aws-lambda';
 import { Stack } from '@aws-cdk/core';
-import { IdentityPool, AuthenticationProviderType, RoleMappingMatchType } from '../lib/identity-pool';
+import { IdentityPool, IdentityPoolLoginProviderType, RoleMappingMatchType } from '../lib/identity-pool';
 import { UserPool } from '../lib/user-pool';
+import { UserPoolAuthenticationProvider } from '../lib/user-pool-authentication-provider';
 import { UserPoolIdentityProvider } from '../lib/user-pool-idp';
 
 describe('identity pool', () => {
@@ -58,22 +58,10 @@ describe('identity pool', () => {
   test('adding actions and resources to default roles', () => {
     const stack = new Stack();
     const identityPool = new IdentityPool(stack, 'TestIdentityPoolActions', {
-      userPermissions: [{
-        effect: Effect.ALLOW,
-        actions: ['execute-api:*'],
-        resources: ['*'],
-      }],
-      guestPermissions: [{
-        effect: Effect.ALLOW,
-        actions: ['execute-api:*'],
-        resources: ['arn:aws:execute-api:us-east-1:*:my-api/prod'],
-      }],
+      grantUserActions: ['execute-api:*'],
     });
-    identityPool.addUserPermissions({
-      effect: Effect.ALLOW,
-      actions: ['dynamodb:*'],
-      resources: ['*'],
-    });
+    identityPool.grantUser('dynamodb:*');
+    identityPool.grantGuestForResource('arn:aws:execute-api:us-east-1:*:my-api/prod', 'execute-api:*');
     const temp = Template.fromStack(stack);
     temp.resourceCountIs('AWS::IAM::Role', 2);
     temp.resourceCountIs('AWS::IAM::Policy', 2);
@@ -114,13 +102,7 @@ describe('identity pool', () => {
     const stack = new Stack();
     new IdentityPool(stack, 'TestIdentityPoolActions', {
       assumeAction: 'sts:AssumeRole',
-      userPermissions: [
-        {
-          effect: Effect.ALLOW,
-          actions: ['execute-api:*'],
-          resources: ['*'],
-        },
-      ],
+      grantUserActions: ['execute-api:*'],
     });
     const temp = Template.fromStack(stack);
     temp.hasResourceProperties('AWS::IAM::Role', {
@@ -197,9 +179,16 @@ describe('identity pool', () => {
       userPool: pool,
     }];
     const idPool = new IdentityPool(stack, 'TestIdentityPoolUserPools', {
-      authenticationProviders: { userPools },
+      authenticationProviders: {
+        userPool: UserPoolAuthenticationProvider.fromUserPool(stack, 'UserPoolProvider', pool),
+      },
     });
-    idPool.addUserPool(otherPool, undefined, true);
+    idPool.addUserPool(
+      new UserPoolAuthenticationProvider(stack, 'UserPoolProvider', {
+        userPool: otherPool,
+        disableServerSideTokenCheck: true,
+      }),
+    );
     const temp = Template.fromStack(stack);
     temp.resourceCountIs('AWS::Cognito::UserPool', 2);
     temp.resourceCountIs('AWS::Cognito::UserPoolClient', 2);
@@ -310,66 +299,22 @@ describe('identity pool', () => {
     });
   });
 
-  test('pushSync, cognito events and streams, supported login providers', () => {
+  test('cognito authentication providers', () => {
     const stack = new Stack();
-    const pushSyncRole = new Role(stack, 'pushSyncRole', {
-      assumedBy: new ServicePrincipal('service.amazonaws.com'),
-    });
-    const streamRole = new Role(stack, 'streamRole', {
-      assumedBy: new ServicePrincipal('service.amazonaws.com'),
-    });
-    new IdentityPool(stack, 'TestIdentityPoolPushSyncStreamsEventsEtc', {
+    new IdentityPool(stack, 'TestIdentityPoolauthproviders', {
       identityPoolName: 'my-id-pool',
-      pushSyncConfig: {
-        applicationArns: ['arn::my::application'],
-        role: pushSyncRole,
-      },
-      streamOptions: {
-        streamName: 'my-stream',
-        enableStreamingStatus: true,
-        role: streamRole,
-      },
       authenticationProviders: {
         amazon: { appId: 'amzn1.application.12312k3j234j13rjiwuenf' },
-        google: { appId: '12345678012.apps.googleusercontent.com' },
+        google: { clientId: '12345678012.apps.googleusercontent.com' },
       },
-      syncTrigger: Function.fromFunctionArn(stack, 'my-event-function', 'arn:aws:lambda:my-lambda-region:123456789012:function:my-sync-trigger'),
     });
     const temp = Template.fromStack(stack);
     temp.resourceCountIs('AWS::IAM::Role', 4);
     temp.hasResourceProperties('AWS::Cognito::IdentityPool', {
-      CognitoEvents: {
-        SyncTrigger: 'arn:aws:lambda:my-lambda-region:123456789012:function:my-sync-trigger',
-      },
-      CognitoStreams: {
-        RoleArn: {
-          'Fn::GetAtt': [
-            'streamRoleFD11C7FD',
-            'Arn',
-          ],
-        },
-        StreamName: 'my-stream',
-        StreamingStatus: 'ENABLED',
-      },
       IdentityPoolName: 'my-id-pool',
-      PushSync: {
-        ApplicationArns: [
-          'arn::my::application',
-        ],
-        RoleArn: {
-          'Fn::GetAtt': [
-            'pushSyncRole90B6639A',
-            'Arn',
-          ],
-        },
-      },
       SupportedLoginProviders: {
-        'www.amazon.com': {
-          appId: 'amzn1.application.12312k3j234j13rjiwuenf',
-        },
-        'accounts.google.com': {
-          appId: '12345678012.apps.googleusercontent.com',
-        },
+        'www.amazon.com': 'amzn1.application.12312k3j234j13rjiwuenf',
+        'accounts.google.com': '12345678012.apps.googleusercontent.com',
       },
     });
   });
@@ -380,7 +325,7 @@ describe('role mappings', () => {
     const stack = new Stack();
     new IdentityPool(stack, 'TestIdentityPoolRoleMappingToken', {
       roleMappings: [{
-        providerUrl: AuthenticationProviderType.AMAZON,
+        providerUrl: IdentityPoolLoginProviderType.AMAZON,
         useToken: true,
       }],
     });
@@ -416,7 +361,7 @@ describe('role mappings', () => {
     const stack = new Stack();
     expect(() => new IdentityPool(stack, 'TestIdentityPoolRoleMappingErrors', {
       roleMappings: [{
-        providerUrl: AuthenticationProviderType.AMAZON,
+        providerUrl: IdentityPoolLoginProviderType.AMAZON,
       }],
     })).toThrowError('IdentityPoolRoleMapping.rules is required when useToken is false');
   });
@@ -445,7 +390,7 @@ describe('role mappings', () => {
     });
     const idPool = new IdentityPool(stack, 'TestIdentityPoolRoleMappingRules', {
       roleMappings: [{
-        providerUrl: AuthenticationProviderType.AMAZON,
+        providerUrl: IdentityPoolLoginProviderType.AMAZON,
         resolveAmbiguousRoles: true,
         rules: [
           {
@@ -463,7 +408,7 @@ describe('role mappings', () => {
       }],
     });
     idPool.addRoleMappings({
-      providerUrl: AuthenticationProviderType.FACEBOOK,
+      providerUrl: IdentityPoolLoginProviderType.FACEBOOK,
       rules: [
         {
           claim: 'iss',

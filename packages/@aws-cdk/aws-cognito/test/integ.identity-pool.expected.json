@@ -1,22 +1,5 @@
 {
   "Resources": {
-    "streamRoleFD11C7FD": {
-      "Type": "AWS::IAM::Role",
-      "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Statement": [
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": {
-                "AWS": "*"
-              }
-            }
-          ],
-          "Version": "2012-10-17"
-        }
-      }
-    },
     "PoolD3F588B8": {
       "Type": "AWS::Cognito::UserPool",
       "Properties": {
@@ -186,33 +169,11 @@
       "Properties": {
         "AllowUnauthenticatedIdentities": true,
         "AllowClassicFlow": true,
-        "CognitoEvents": {
-          "SyncTrigger": {
-            "Fn::GetAtt": [
-              "NewFunction51951D87",
-              "Arn"
-            ]
-          }
-        },
         "CognitoIdentityProviders": [],
-        "CognitoStreams": {
-          "RoleArn": {
-            "Fn::GetAtt": [
-              "streamRoleFD11C7FD",
-              "Arn"
-            ]
-          },
-          "StreamName": "my-stream",
-          "StreamingStatus": "ENABLED"
-        },
         "IdentityPoolName": "my-id-pool",
         "SupportedLoginProviders": {
-          "www.amazon.com": {
-            "appId": "amzn1.application.12312k3j234j13rjiwuenf"
-          },
-          "accounts.google.com": {
-            "appId": "12345678012.apps.googleusercontent.com"
-          }
+          "www.amazon.com": "amzn1.application.12312k3j234j13rjiwuenf",
+          "accounts.google.com": "12345678012.apps.googleusercontent.com"
         }
       }
     },
