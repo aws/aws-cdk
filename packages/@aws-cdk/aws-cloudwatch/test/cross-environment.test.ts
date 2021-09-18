@@ -78,6 +78,35 @@ describe('cross environment', () => {
 
 
     });
+
+    test('math expressions with explicit account and region will render in environment agnostic stack', () => {
+      // GIVEN
+      const expression = 'SEARCH(\'MetricName="ACount"\', \'Sum\', 300)';
+
+      const b = new MathExpression({
+        expression,
+        usingMetrics: {},
+        label: 'Test label',
+        account: '5678',
+        region: 'mars',
+      });
+
+      const graph = new GraphWidget({
+        left: [
+          b,
+        ],
+      });
+
+      // THEN
+      graphMetricsAre(new Stack(), graph, [
+        [{
+          expression,
+          accountId: '5678',
+          region: 'mars',
+          label: 'Test label',
+        }],
+      ]);
+    });
   });
 
   describe('in alarms', () => {
@@ -233,6 +262,60 @@ describe('cross environment', () => {
           },
         ],
       });
+    });
+
+    test('math expression with different account will throw', () => {
+      // Cross-region/cross-account math expressions (e.g. SEARCH) are supported in Dashboards
+      // but not in Alarms (submetrics can be cross-account for Alarms, but math expressions
+      // themselves cannot be)
+
+      // GIVEN
+      const b = new Metric({
+        namespace: 'Test',
+        metricName: 'ACount',
+        account: '1234',
+      });
+
+      const c = new MathExpression({
+        expression: 'a + b',
+        usingMetrics: { a: a.attachTo(stack3), b },
+        period: Duration.minutes(1),
+        account: '5678',
+      });
+
+      // THEN
+      expect(() => {
+        new Alarm(stack1, 'Alarm', {
+          threshold: 1,
+          evaluationPeriods: 1,
+          metric: c,
+        });
+      }).toThrow(/Cannot create an Alarm with a cross-account or cross-region math expression/);
+    });
+
+    test('match expression with different region will throw', () => {
+      // GIVEN
+      const b = new Metric({
+        namespace: 'Test',
+        metricName: 'ACount',
+        account: '1234',
+      });
+
+      const c = new MathExpression({
+        expression: 'a + b',
+        usingMetrics: { a: a.attachTo(stack3), b },
+        period: Duration.minutes(1),
+        region: 'mars',
+      });
+
+      // THEN
+      expect(() => {
+        new Alarm(stack1, 'Alarm', {
+          threshold: 1,
+          evaluationPeriods: 1,
+          metric: c,
+        });
+      }).toThrow(/Cannot create an Alarm with a cross-account or cross-region math expression/);
     });
   });
 });

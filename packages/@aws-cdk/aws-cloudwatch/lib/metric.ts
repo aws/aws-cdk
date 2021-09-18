@@ -149,6 +149,20 @@ export interface MathExpressionOptions {
    * @default Duration.minutes(5)
    */
   readonly period?: cdk.Duration;
+
+  /**
+   * Account to evaluate the expression within (for example when an expression includes SEARCH or SERVICE_QUOTA)
+   *
+   * @default - Deployment account.
+   */
+  readonly account?: string;
+
+  /**
+    * Region to evaluate the expression within (for example when an expression includes SEARCH or SERVICE_QUOTA)
+    *
+    * @default - Deployment region.
+    */
+  readonly region?: string;
 }
 
 /**
@@ -482,12 +496,24 @@ export class MathExpression implements IMetric {
    */
   public readonly period: cdk.Duration;
 
+  /**
+   * The account in which the expression is executed
+   */
+  public readonly account?: string;
+
+  /**
+   * The region in which the expression is executed
+   */
+  public readonly region?: string;
+
   constructor(props: MathExpressionProps) {
     this.period = props.period || cdk.Duration.minutes(5);
     this.expression = props.expression;
     this.usingMetrics = changeAllPeriods(props.usingMetrics, this.period);
     this.label = props.label;
     this.color = props.color;
+    this.account = props.account;
+    this.region = props.region;
 
     const invalidVariableNames = Object.keys(props.usingMetrics).filter(x => !validVariableName(x));
     if (invalidVariableNames.length > 0) {
@@ -508,7 +534,9 @@ export class MathExpression implements IMetric {
     // Short-circuit creating a new object if there would be no effective change
     if ((props.label === undefined || props.label === this.label)
       && (props.color === undefined || props.color === this.color)
-      && (props.period === undefined || props.period.toSeconds() === this.period.toSeconds())) {
+      && (props.period === undefined || props.period.toSeconds() === this.period.toSeconds())
+      && (props.account === undefined || props.account === this.account)
+      && (props.region === undefined || props.region === this.region)) {
       return this;
     }
 
@@ -518,6 +546,8 @@ export class MathExpression implements IMetric {
       label: ifUndefined(props.label, this.label),
       color: ifUndefined(props.color, this.color),
       period: ifUndefined(props.period, this.period),
+      account: ifUndefined(props.account, this.account),
+      region: ifUndefined(props.region, this.region),
     });
   }
 
@@ -541,6 +571,8 @@ export class MathExpression implements IMetric {
         period: this.period.toSeconds(),
         expression: this.expression,
         usingMetrics: this.usingMetrics,
+        account: this.account,
+        region: this.region,
       },
       renderingProperties: {
         label: this.label,

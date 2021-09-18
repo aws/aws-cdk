@@ -25,6 +25,12 @@ export function metricKey(metric: IMetric): string {
       parts.push(id);
       parts.push(metricKey(conf.mathExpression.usingMetrics[id]));
     }
+    if (conf.mathExpression.region) {
+      parts.push(conf.mathExpression.region);
+    }
+    if (conf.mathExpression.account) {
+      parts.push(conf.mathExpression.account);
+    }
   }
   if (conf.metricStat) {
     parts.push(conf.metricStat.namespace);

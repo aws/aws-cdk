@@ -334,6 +334,8 @@ export class Alarm extends AlarmBase {
                 assertSubmetricsCount(expr);
               }
 
+              self.validateMetricExpression(expr);
+
               return {
                 expression: expr.expression,
                 id: entry.id || uniqueMetricId(),
@@ -356,6 +358,17 @@ export class Alarm extends AlarmBase {
 
     if (definitelyDifferent(stat.region, stack.region)) {
       throw new Error(`Cannot create an Alarm in region '${stack.region}' based on metric '${metric}' in '${stat.region}'`);
+    }
+  }
+
+  /**
+   * Validates that if a region or account is in the given expression config, they match the Alarm
+   */
+  private validateMetricExpression(expr: MetricExpressionConfig) {
+    const stack = Stack.of(this);
+
+    if (definitelyDifferent(expr.account, stack.account) || definitelyDifferent(expr.region, stack.region)) {
+      throw new Error('Cannot create an Alarm with a cross-account or cross-region math expression');
     }
   }
 }
