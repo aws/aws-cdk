@@ -766,6 +766,8 @@ Existing domains can be imported into CDK apps using `UserPoolDomain.fromDomainN
 const myUserPoolDomain = cognito.UserPoolDomain.fromDomainName(this, 'my-user-pool-domain', 'domain-name');
 ```
 
+#TODO: Finish updating
+
 ## Identity Pools
 
 Identity pools provide temporary AWS credentials for users who are guests (unauthenticated) and for users who have been  
