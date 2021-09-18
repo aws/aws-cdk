@@ -3,7 +3,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import { CloudFormation } from 'aws-sdk';
 import { ISDK, Mode, SdkProvider } from './aws-auth';
 import { DeployStackResult } from './deploy-stack';
-import { ChangeHotswapImpact, HotswapOperation, ListStackResources } from './hotswap/common';
+import { ChangeHotswapImpact, HotswapOperation, HotswappableResourceChange, ListStackResources } from './hotswap/common';
 import { isHotswappableLambdaFunctionChange } from './hotswap/lambda-functions';
 import { isHotswappableStepFunctionChange } from './hotswap/stepfunctions-state-machines';
 import { CloudFormationStack } from './util/cloudformation';
@@ -57,6 +57,8 @@ function findAllHotswappableChanges(
       return;
     }
 
+
+    // TODO: the change parameter passed in here to both detectors comes from inNonHotswappableResourceChange()
     const detectorResults = [
       isHotswappableLambdaFunctionChange(logicalId, change, assetParamsWithEnv),
       isHotswappableStepFunctionChange(logicalId, change, assetParamsWithEnv),
@@ -90,7 +92,8 @@ function findAllHotswappableChanges(
  * returns `ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT` if a resource was deleted, or a change that we cannot short-circuit occured.
  * Returns `ChangeHotswapImpact.IRRELEVANT` if a change that does not impact shortcircuiting occured, such as a metadata change.
  */
-export function isNonHotswappableResourceChange(change: cfn_diff.ResourceDifference): ChangeHotswapImpact {
+//export function isNonHotswappableResourceChange(change: cfn_diff.ResourceDifference): cfn_diff.ResourceDifference | ChangeHotswapImpact {
+export function isNonHotswappableResourceChange(change: cfn_diff.ResourceDifference): HotswappableResourceChange | ChangeHotswapImpact {
   // change.newValue being undefined means the resource was removed; we can't short-circuit that change
   if (!change.newValue) {
     return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
@@ -101,12 +104,11 @@ export function isNonHotswappableResourceChange(change: cfn_diff.ResourceDiffere
   if (newResourceType === 'AWS::CDK::Metadata') {
     return ChangeHotswapImpact.IRRELEVANT;
   }
-  // The only other resource change we should see is a Lambda function or a StepFunctions StateMachine
-  //if ((newResourceType !== 'AWS::Lambda::Function') && (newResourceType !== 'AWS::StepFunctions::StateMachine')) {
-  //return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
-  //}
 
-  return ChangeHotswapImpact.IRRELEVANT;
+  return {
+    newValue: change.newValue,
+    propertyUpdates: change.propertyUpdates,
+  };
 }
 
 async function applyAllHotswappableChanges(

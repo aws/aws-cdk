@@ -1,6 +1,6 @@
 import * as cfn_diff from '@aws-cdk/cloudformation-diff';
 import { ISDK } from '../aws-auth';
-import { assetMetadataChanged, ChangeHotswapImpact, ChangeHotswapResult, HotswapOperation, ListStackResources, stringifyPotentialCfnExpression } from './common';
+import { assetMetadataChanged, ChangeHotswapImpact, ChangeHotswapResult, HotswapOperation, HotswappableResourceChange, ListStackResources, stringifyPotentialCfnExpression } from './common';
 
 /**
  * Returns `false` if the change cannot be short-circuited,
@@ -8,8 +8,12 @@ import { assetMetadataChanged, ChangeHotswapImpact, ChangeHotswapResult, Hotswap
  * (like a change to CDKMetadata),
  * or a LambdaFunctionResource if the change can be short-circuited.
  */
+//export function isHotswappableLambdaFunctionChange(
+//  logicalId: string, change: cfn_diff.ResourceDifference, assetParamsWithEnv: { [key: string]: string },
+//): ChangeHotswapResult {
+
 export function isHotswappableLambdaFunctionChange(
-  logicalId: string, change: cfn_diff.ResourceDifference, assetParamsWithEnv: { [key: string]: string },
+  logicalId: string, change: HotswappableResourceChange, assetParamsWithEnv: { [key: string]: string },
 ): ChangeHotswapResult {
   const lambdaCodeChange = isLambdaFunctionCodeOnlyChange(change, assetParamsWithEnv);
   if (typeof lambdaCodeChange === 'string') {
@@ -60,7 +64,8 @@ export function isHotswappableLambdaFunctionChange(
  * and only affects its Code property.
  */
 function isLambdaFunctionCodeOnlyChange(
-  change: cfn_diff.ResourceDifference, assetParamsWithEnv: { [key: string]: string },
+  //change: cfn_diff.ResourceDifference, assetParamsWithEnv: { [key: string]: string },
+  change: HotswappableResourceChange, assetParamsWithEnv: { [key: string]: string },
 ): LambdaFunctionCode | ChangeHotswapImpact {
   // if we see a different resource type, it will be caught by isNonHotswappableResourceChange()
   // this also ignores Metadata changes
@@ -68,11 +73,13 @@ function isLambdaFunctionCodeOnlyChange(
   if (newResourceType !== 'AWS::Lambda::Function') {
     return ChangeHotswapImpact.IRRELEVANT;
   }
-  if (change.oldValue?.Type == null) {
-    // this means this is a brand-new Lambda function -
-    // obviously, we can't short-circuit that!
-    return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
-  }
+
+  // TODO: move this check to isNonHotswappableResourceChange()
+  //if (change.oldValue?.Type == null) {
+  // this means this is a brand-new Lambda function -
+  // obviously, we can't short-circuit that!
+  // return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
+  //}
 
   /*
    * On first glance, we would want to initialize these using the "previous" values (change.oldValue),

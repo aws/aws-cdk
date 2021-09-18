@@ -34,6 +34,23 @@ export enum ChangeHotswapImpact {
 
 export type ChangeHotswapResult = HotswapOperation | ChangeHotswapImpact;
 
+export class HotswappableResourceChange {
+  /**
+   * TODO - docs
+   */
+  newValue: cfn_diff.Resource;
+
+  /**
+   * TODO - docs
+   */
+  propertyUpdates: { [key: string]: cfn_diff.PropertyDifference<any> };
+
+  public constructor(newValue: cfn_diff.Resource, propertyUpdates: { [key: string]: cfn_diff.PropertyDifference<any> }) {
+    this.newValue = newValue;
+    this.propertyUpdates = propertyUpdates;
+  }
+}
+
 /**
  * For old-style synthesis which uses CFN Parameters,
  * the Code properties can have the values of complex CFN expressions.
@@ -52,6 +69,6 @@ export function stringifyPotentialCfnExpression(value: any, assetParamsWithEnv: 
   return evaluateCfn(value, assetParamsWithEnv);
 }
 
-export function assetMetadataChanged(change: cfn_diff.ResourceDifference): boolean {
+export function assetMetadataChanged(change: HotswappableResourceChange): boolean {
   return !!change.newValue?.Metadata['aws:asset:path'];
 }
