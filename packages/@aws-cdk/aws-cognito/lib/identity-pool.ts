@@ -25,6 +25,11 @@ import {
 import {
   IUserPoolAuthenticationProvider,
 } from './user-pool-authentication-provider';
+import {
+  IdentityPoolRoleAttachment,
+  RoleMappingMatchType,
+  IdentityPoolRoleMapping
+} from './identity-pool-role-attachment';
 
 /**
  * Represents a Cognito IdentityPool
@@ -79,7 +84,7 @@ export interface IdentityPoolProps {
   readonly assumeAction?: string
 
   /**
-   * The Default Role to be assumed by Authenticated Users
+   * Rules for mapping roles to users
    * @default - no Role Mappings
    */
   readonly roleMappings?: IdentityPoolRoleMapping[];
@@ -95,89 +100,6 @@ export interface IdentityPoolProps {
    * @default - No Authentication Providers passed directly to Identity Pool
    */
   readonly authenticationProviders?: IdentityPoolAuthenticationProviders
-}
-
-/**
- * Map roles to users in the identity pool based on claims from the Identity Provider
- *  @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cognito-identitypoolroleattachment.html
- */
-export interface IdentityPoolRoleMapping {
-  /**
-   * The url of the provider of for which the role is mapped
-   */
-  readonly providerUrl: IdentityPoolLoginProviderType | string;
-
-  /**
-   *  If true then mapped roles must be passed through the cognito:roles or cognito:preferred_role claims from identity provider.
-   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/role-based-access-control.html#using-tokens-to-assign-roles-to-users
-   *
-   * @default false
-   */
-  readonly useToken?: boolean;
-
-  /**
-   * Allow for role assumption when results of role mapping are ambiguous
-   * @default false - Ambiguous role resolutions will lead to requester being denied
-   */
-  readonly resolveAmbiguousRoles?: boolean;
-
-  /**
-   * The claim and value that must be matched in order to assume the role. Required if useToken is false
-   * @default - No Rule Mapping Rule
-   */
-  readonly rules?: RoleMappingRule[];
-
-}
-
-/**
- * Types of matches allowed for Role Mapping
- */
-export enum RoleMappingMatchType {
-  /**
-   * The Claim from the token must equal the given value in order for a match
-   */
-  EQUALS = 'Equals',
-
-  /**
-   * The Claim from the token must contain the given value in order for a match
-   */
-  CONTAINS = 'Contains',
-
-  /**
-   * The Claim from the token must start with the given value in order for a match
-   */
-  STARTS_WITH = 'StartsWith',
-
-  /**
-   * The Claim from the token must not equal the given value in order for a match
-   */
-  NOTEQUAL = 'NotEqual',
-}
-
-/**
- * Represents an Identity Pool Role Attachment Role Mapping Rule
- */
-export interface RoleMappingRule {
-  /**
-   * The key sent in the token by the federated identity provider.
-   */
-  readonly claim: string;
-
-  /**
-    * The Role to be assumed when Claim Value is matched.
-    */
-  readonly mappedRole: IRole;
-
-  /**
-    * The value of the claim that must be matched
-    */
-  readonly claimValue: string;
-
-  /**
-   * How to match with the Claim value
-   * @default RoleMappingMatchType.EQUALS
-   */
-  readonly matchType?: RoleMappingMatchType
 }
 
 /**
@@ -409,6 +331,11 @@ export class IdentityPool extends Resource implements IIdentityPool {
    */
   private unauthenticatedRole: Role;
 
+  /**
+   * Running count of added role attachments
+   */
+  private roleAttachmentCount: number = 0;
+
   constructor(scope: Construct, private id: string, props:IdentityPoolProps = {}) {
     super(scope, id, {
       physicalName: props.identityPoolName || Lazy.string({
@@ -438,7 +365,15 @@ export class IdentityPool extends Resource implements IIdentityPool {
     });
     this.authenticatedRole = this.configureDefaultRole('Authenticated', props.grantUserActions, props.assumeAction);
     this.unauthenticatedRole = this.configureDefaultRole('Unauthenticated', props.grantGuestActions, props.assumeAction);
-    this.configureRoleAttachment(this.authenticatedRole, this.unauthenticatedRole, ...(props.roleMappings || []));
+    const attachment = new IdentityPoolRoleAttachment(this, `${this.id}DefaultRoleAttachment`, {
+      identityPoolId: this.identityPoolId,
+      roles: {
+        authenticated: this.authenticatedRole,
+        unauthenticated: this.unauthenticatedRole,
+      },
+      roleMappings: props.roleMappings
+    });
+    (attachment.node.defaultChild as CfnIdentityPoolRoleAttachment).addDependency(this.cfnIdentityPool);
   }
 
   /**
@@ -460,17 +395,19 @@ export class IdentityPool extends Resource implements IIdentityPool {
   /**
    * Adds Role Mappings to Identity Pool
   */
-  public addRoleMappings(...mappings: IdentityPoolRoleMapping[]): void {
-    if (!mappings || !mappings.length) return;
-    const name = this.id + 'RoleMappingAttachment';
-    const roleMappings = this.configureRoleMappings(...mappings);
-
-    const attachment = new CfnIdentityPoolRoleAttachment(this, name, {
+  public addRoleMappings(...roleMappings: IdentityPoolRoleMapping[]): void {
+    if (!roleMappings || !roleMappings.length) return;
+    this.roleAttachmentCount++;
+    const name = this.id + 'RoleMappingAttachment' + this.roleAttachmentCount.toString();
+    const attachment = new IdentityPoolRoleAttachment(this, name, {
       identityPoolId: this.identityPoolId,
-      roles: {},
+      roles: {
+        authenticated: this.authenticatedRole,
+        unauthenticated: this.unauthenticatedRole,
+      },
       roleMappings,
     });
-    attachment.node.addDependency(this.cfnIdentityPool);
+    (attachment.node.defaultChild as CfnIdentityPoolRoleAttachment).addDependency(this.cfnIdentityPool);
   }
 
   /**
@@ -524,32 +461,6 @@ export class IdentityPool extends Resource implements IIdentityPool {
   }
 
   /**
-   * Configure Role Attachments For Identity Pool
-  */
-  private configureRoleAttachment(
-    authenticatedRole?: IRole,
-    unauthenticatedRole?: IRole,
-    ...mappings: IdentityPoolRoleMapping[]
-  ): void {
-    const name = this.id + 'RoleAttachment';
-    let roles: any = undefined, roleMappings: any = undefined;
-    if (authenticatedRole || unauthenticatedRole) {
-      roles = {};
-      if (authenticatedRole) roles.authenticated = authenticatedRole.roleArn;
-      if (unauthenticatedRole) roles.unauthenticated = unauthenticatedRole.roleArn;
-    }
-    if (mappings) {
-      roleMappings = this.configureRoleMappings(...mappings);
-    }
-    const attachment = new CfnIdentityPoolRoleAttachment(this, name, {
-      identityPoolId: this.identityPoolId,
-      roles,
-      roleMappings,
-    });
-    attachment.node.addDependency(this.cfnIdentityPool);
-  }
-
-  /**
    * Configure Authentication Providers for User Pools
    */
   private configureAuthenticationProviders(provider: IUserPoolAuthenticationProvider): CfnIdentityPool.CognitoIdentityProviderProperty[] {
@@ -600,40 +511,6 @@ export class IdentityPool extends Resource implements IIdentityPool {
     if (providers.digits) authenticatedProviders[IdentityPoolLoginProviderType.DIGITS] = `${providers.digits.consumerKey};${providers.digits.consumerSecret}`;
     if (!Object.keys(authenticatedProviders).length) return undefined;
     return authenticatedProviders;
-  }
-
-  /**
-   * Configures Role Mappings for Identity Pool Role Attachment
-   */
-  private configureRoleMappings(
-    ...props: IdentityPoolRoleMapping[]
-  ): { [name:string]: CfnIdentityPoolRoleAttachment.RoleMappingProperty } | undefined {
-    if (!props || !props.length) return undefined;
-    return props.reduce((acc, prop) => {
-      let roleMapping: any = {
-        ambiguousRoleResolution: prop.resolveAmbiguousRoles ? 'AuthenticatedRole' : 'Deny',
-        type: prop.useToken ? 'Token' : 'Rules',
-        identityProvider: prop.providerUrl,
-      };
-      if (roleMapping.type === 'Rules') {
-        if (!prop.rules) {
-          throw new Error('IdentityPoolRoleMapping.rules is required when useToken is false');
-        }
-
-        roleMapping.rulesConfiguration = {
-          rules: prop.rules.map(rule => {
-            return {
-              claim: rule.claim,
-              value: rule.claimValue,
-              matchType: rule.matchType || RoleMappingMatchType.EQUALS,
-              roleArn: rule.mappedRole.roleArn,
-            };
-          }),
-        };
-      };
-      acc[prop.providerUrl] = roleMapping;
-      return acc;
-    }, {} as { [name:string]: CfnIdentityPoolRoleAttachment.RoleMappingProperty });
   }
 
   private configureGrantPrincipal(
