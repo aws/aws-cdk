@@ -431,7 +431,7 @@ export interface AddEventSelectorOptions {
    *
    * @default []
    */
-  readonly excludeManagementEventSources?: string[];
+  readonly excludeManagementEventSources?: ManagementEventSources[];
 }
 
 /**
