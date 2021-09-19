@@ -62,13 +62,13 @@ export interface IdentityPoolRoleAttachmentProps {
 export interface IdentityPoolDefaultRoles {
   /**
    * Default Authenticated (User) Role
-   * @default - a default role will be created
+   * @default - No default role will be added
    */
   readonly authenticated?: IRole;
 
   /**
    * Default Unauthenticated (Guest) Role
-   * @default - a default role will be created
+   * @default - No default role will be added
    */
   readonly unauthenticated?: IRole;
 }
