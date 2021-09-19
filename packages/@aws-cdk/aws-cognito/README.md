@@ -62,6 +62,7 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
     - [OpenIdConnect and Saml](#openid-connect-and-saml)
     - [Custom Providers](#custom-providers)
   - [Role Mapping](#role-mapping)
+  - [Identity Pool Role Attachments](#identity-pool-role-attachments)
   - [Authentication Flow](#authentication-flow)
   - [Cognito Sync](#cognito-sync)
   - [Importing Identity Pools](#importing-identity-pools)
@@ -1073,6 +1074,30 @@ Role mappings can also be added after instantiation with the Identity Pool's `ad
 
 ```ts
 identityPool.addRoleMappings(myAddedRoleMapping1, myAddedRoleMapping2, myAddedRoleMapping3);
+```
+
+### Identity Pool Role Attachments
+
+The `IdentityPoolRoleAttachment` Construct represents all roles attached to an identity pool. This includes default  
+roles and role mappings. The `IdentityPool` Construct uses `IdentityPoolRoleAttachments` under the hood to add default  
+roles and role mappings, so it's usually not necessary to use `IdentityPoolRoleAttachments` directly. The one use case  
+in which it may come in handy, however, is in order to replace the default roles of an existing identity pool:
+
+```ts
+new IdentityPoolRoleAttachment(this, 'My Role Attachment', {
+  identityPoolId: 'my-identity-pool',
+  // The new default roles for the identity pool
+  roles: {
+    authenticated: new Role(this, 'My Authenticated Role', {
+      ...roleProps
+    }),
+    unauthenticated: new Role(this, 'My Unauthenticated Role', {
+      ...roleProps
+    }),
+  },
+  // Optional
+  roleMappings: [...roleMappings],
+});
 ```
 
 ### Authentication Flow
