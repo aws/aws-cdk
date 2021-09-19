@@ -1,6 +1,6 @@
 import * as child_process from 'child_process';
 import * as path from 'path';
-import { callsites, exec, extractDependencies, findUp } from '../lib/util';
+import { callsites, exec, extractDependencies, extractRootDir, findUp } from '../lib/util';
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -118,5 +118,13 @@ describe('extractDependencies', () => {
       path.join(__dirname, '../package.json'),
       ['unknown'],
     )).toThrow(/Cannot extract version for module 'unknown'/);
+  });
+});
+
+describe('extractRootDir', () => {
+  test('with rootDir defined in tsconfig.json', () => {
+    expect(extractRootDir(
+      path.join(__dirname, '../tsconfig.json'),
+    )).toEqual(undefined);
   });
 });

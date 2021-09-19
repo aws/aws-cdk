@@ -110,3 +110,20 @@ export function extractDependencies(pkgPath: string, modules: string[]): { [key:
 
   return dependencies;
 }
+
+/**
+ * Extract rootDir from tsConfig.
+ */
+export function extractRootDir(tsconfigPath: string): string | undefined {
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { extends: extendedConfig, compilerOptions: { rootDir = undefined } = {} } = require(tsconfigPath);
+    if (!rootDir && extendedConfig) {
+      return extractRootDir(path.resolve(tsconfigPath.replace(/[^\/]+$/, ''), extendedConfig));
+    }
+    return rootDir;
+
+  } catch (err) {
+    return;
+  }
+}

@@ -224,6 +224,24 @@ an array of commands to run. Commands are chained with `&&`.
 The commands will run in the environment in which bundling occurs: inside the
 container for Docker bundling or on the host OS for local bundling.
 
+## Pre Compilation with TSC
+
+It is possible to run compilation using typescript compiler before bundling, 
+this is for adding support of `emitDecoratorMetadata` which `esbuild` doesn't support it natively.
+see <https://github.com/aws/aws-cdk/issues/13767>.
+
+```ts
+new lambda.NodejsFunction(this, 'my-handler', {
+  bundling: {
+    preCompilation: true,
+    tsconfig: 'tsconfig.json'
+  },
+});
+```
+
+`tsconfig` is required to enable `preCompilation` as `tsc` will use your `tsconfig` for transpilation. 
+Output of the transpilation will be found under `cdk.out/tsc-compile`
+
 ## Customizing Docker bundling
 
 Use `bundling.environment` to define environments variables when `esbuild` runs:

@@ -5,9 +5,10 @@ import * as cdk from '@aws-cdk/core';
 import { EsbuildInstallation } from './esbuild-installation';
 import { PackageManager } from './package-manager';
 import { BundlingOptions, SourceMapMode } from './types';
-import { exec, extractDependencies, findUp } from './util';
+import { exec, extractDependencies, extractRootDir, findUp } from './util';
 
 const ESBUILD_MAJOR_VERSION = '0';
+const PRE_COMPILATION_DIR = 'cdk.out/tsc-compile';
 
 /**
  * Bundling properties
@@ -32,6 +33,12 @@ export interface BundlingProps extends BundlingOptions {
    * Path to project root
    */
   readonly projectRoot: string;
+
+  /**
+   * Force pre-transpilation using TSC before bundling
+   */
+  readonly preCompilation?: boolean
+
 }
 
 /**
@@ -67,6 +74,7 @@ export class Bundling implements cdk.BundlingOptions {
   private readonly relativeDepsLockFilePath: string;
   private readonly externals: string[];
   private readonly packageManager: PackageManager;
+  private readonly preCompilation?: boolean;
 
   constructor(private readonly props: BundlingProps) {
     this.packageManager = PackageManager.fromLockFile(props.depsLockFilePath);
@@ -83,6 +91,10 @@ export class Bundling implements cdk.BundlingOptions {
 
     if (props.tsconfig) {
       this.relativeTsconfigPath = path.relative(this.projectRoot, path.resolve(props.tsconfig));
+    }
+
+    if (props.preCompilation && (/\.(tsx?)$/.test(props.entry))) {
+      this.preCompilation = true;
     }
 
     this.externals = [
@@ -122,6 +134,23 @@ export class Bundling implements cdk.BundlingOptions {
 
   private createBundlingCommand(options: BundlingCommandOptions): string {
     const pathJoin = osPathJoin(options.osPlatform);
+    const npx = options.osPlatform === 'win32' ? 'npx.cmd' : 'npx';
+
+    let compileCommand = '';
+    let relativeJsEntryPath;
+
+    if (this.preCompilation) {
+      relativeJsEntryPath = pathJoin(options.inputDir, PRE_COMPILATION_DIR, this.relativeEntryPath)
+        .replace(/\.(tsx)$/, '.jsx').replace(/\.(ts)$/, '.js');
+
+      if (this.relativeTsconfigPath) {
+        const tsconfigPath = pathJoin(options.inputDir, this.relativeTsconfigPath);
+        const rootDir = extractRootDir(tsconfigPath);
+        compileCommand =`${npx} tsc --project ${tsconfigPath} --outDir ${pathJoin(options.inputDir, PRE_COMPILATION_DIR, rootDir ?? '')}`;
+      } else {
+        throw new Error('preCompilation cannot be used when tsconfig is undefined');
+      }
+    }
 
     const loaders = Object.entries(this.props.loader ?? {});
     const defines = Object.entries(this.props.define ?? {});
@@ -129,14 +158,14 @@ export class Bundling implements cdk.BundlingOptions {
     if (this.props.sourceMap === false && this.props.sourceMapMode) {
       throw new Error('sourceMapMode cannot be used when sourceMap is false');
     }
-    // eslint-disable-next-line no-console
+
     const sourceMapEnabled = this.props.sourceMapMode ?? this.props.sourceMap;
     const sourceMapMode = this.props.sourceMapMode ?? SourceMapMode.DEFAULT;
     const sourceMapValue = sourceMapMode === SourceMapMode.DEFAULT ? '' : `=${this.props.sourceMapMode}`;
 
     const esbuildCommand: string[] = [
       options.esbuildRunner,
-      '--bundle', `"${pathJoin(options.inputDir, this.relativeEntryPath)}"`,
+      '--bundle', `"${relativeJsEntryPath ? relativeJsEntryPath : pathJoin(options.inputDir, this.relativeEntryPath)}"`,
       `--target=${this.props.target ?? toTarget(this.props.runtime)}`,
       '--platform=node',
       `--outfile="${pathJoin(options.outputDir, 'index.js')}"`,
@@ -178,6 +207,7 @@ export class Bundling implements cdk.BundlingOptions {
     }
 
     return chain([
+      compileCommand,
       ...this.props.commandHooks?.beforeBundling(options.inputDir, options.outputDir) ?? [],
       esbuildCommand.join(' '),
       ...(this.props.nodeModules && this.props.commandHooks?.beforeInstall(options.inputDir, options.outputDir)) ?? [],
