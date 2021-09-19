@@ -39,23 +39,36 @@ integTest('Termination protection', withDefaultFixture(async (fixture) => {
 }));
 
 integTest('cdk synth', withDefaultFixture(async (fixture) => {
-  await expect(fixture.cdk(['synth', fixture.fullStackName('test-1')], { verbose: false })).resolves.toEqual(
-    `Resources:
-  topic69831491:
-    Type: AWS::SNS::Topic
-    Metadata:
-      aws:cdk:path: ${fixture.stackNamePrefix}-test-1/topic/Resource`);
+  await fixture.cdk(['synth', fixture.fullStackName('test-1')]);
+  expect(fixture.template('test-1')).toEqual({
+    Resources: {
+      topic69831491: {
+        Type: 'AWS::SNS::Topic',
+        Metadata: {
+          'aws:cdk:path': `${fixture.stackNamePrefix}-test-1/topic/Resource`,
+        },
+      },
+    },
+  });
 
-  await expect(fixture.cdk(['synth', fixture.fullStackName('test-2')], { verbose: false })).resolves.toEqual(
-    `Resources:
-  topic152D84A37:
-    Type: AWS::SNS::Topic
-    Metadata:
-      aws:cdk:path: ${fixture.stackNamePrefix}-test-2/topic1/Resource
-  topic2A4FB547F:
-    Type: AWS::SNS::Topic
-    Metadata:
-      aws:cdk:path: ${fixture.stackNamePrefix}-test-2/topic2/Resource`);
+  await fixture.cdk(['synth', fixture.fullStackName('test-2')], { verbose: false });
+  expect(fixture.template('test-2')).toEqual({
+    Resources: {
+      topic152D84A37: {
+        Type: 'AWS::SNS::Topic',
+        Metadata: {
+          'aws:cdk:path': `${fixture.stackNamePrefix}-test-2/topic1/Resource`,
+        },
+      },
+      topic2A4FB547F: {
+        Type: 'AWS::SNS::Topic',
+        Metadata: {
+          'aws:cdk:path': `${fixture.stackNamePrefix}-test-2/topic2/Resource`,
+        },
+      },
+    },
+  });
+
 }));
 
 integTest('ssm parameter provider error', withDefaultFixture(async (fixture) => {

@@ -1,22 +1,21 @@
-import { expect, haveResource, haveResourceLike } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import * as logs from '@aws-cdk/aws-logs';
 import * as cdk from '@aws-cdk/core';
-import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as ecs from '../lib';
 
 let stack: cdk.Stack;
 let td: ecs.TaskDefinition;
 const image = ecs.ContainerImage.fromRegistry('test-image');
 
-nodeunitShim({
-  'setUp'(cb: () => void) {
+describe('aws log driver', () => {
+  beforeEach(() => {
     stack = new cdk.Stack();
     td = new ecs.FargateTaskDefinition(stack, 'TaskDefinition');
 
-    cb();
-  },
 
-  'create an aws log driver'(test: Test) {
+  });
+
+  test('create an aws log driver', () => {
     // WHEN
     td.addContainer('Container', {
       image,
@@ -30,11 +29,11 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::Logs::LogGroup', {
+    expect(stack).toHaveResource('AWS::Logs::LogGroup', {
       RetentionInDays: logs.RetentionDays.ONE_MONTH,
-    }));
+    });
 
-    expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+    expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
         {
           LogConfiguration: {
@@ -50,12 +49,12 @@ nodeunitShim({
           },
         },
       ],
-    }));
+    });
 
-    test.done();
-  },
 
-  'create an aws log driver using awsLogs'(test: Test) {
+  });
+
+  test('create an aws log driver using awsLogs', () => {
     // WHEN
     td.addContainer('Container', {
       image,
@@ -68,11 +67,11 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::Logs::LogGroup', {
+    expect(stack).toHaveResource('AWS::Logs::LogGroup', {
       RetentionInDays: logs.RetentionDays.ONE_MONTH,
-    }));
+    });
 
-    expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+    expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
         {
           LogConfiguration: {
@@ -87,12 +86,12 @@ nodeunitShim({
           },
         },
       ],
-    }));
+    });
 
-    test.done();
-  },
 
-  'with a defined log group'(test: Test) {
+  });
+
+  test('with a defined log group', () => {
     // GIVEN
     const logGroup = new logs.LogGroup(stack, 'LogGroup');
 
@@ -106,11 +105,11 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::Logs::LogGroup', {
+    expect(stack).toHaveResource('AWS::Logs::LogGroup', {
       RetentionInDays: logs.RetentionDays.TWO_YEARS,
-    }));
+    });
 
-    expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+    expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
         {
           LogConfiguration: {
@@ -123,12 +122,12 @@ nodeunitShim({
           },
         },
       ],
-    }));
+    });
 
-    test.done();
-  },
 
-  'without a defined log group: creates one anyway'(test: Test) {
+  });
+
+  test('without a defined log group: creates one anyway', () => {
     // GIVEN
     td.addContainer('Container', {
       image,
@@ -138,22 +137,22 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::Logs::LogGroup', {}));
+    expect(stack).toHaveResource('AWS::Logs::LogGroup', {});
 
-    test.done();
-  },
 
-  'throws when specifying log retention and log group'(test: Test) {
+  });
+
+  test('throws when specifying log retention and log group', () => {
     // GIVEN
     const logGroup = new logs.LogGroup(stack, 'LogGroup');
 
     // THEN
-    test.throws(() => new ecs.AwsLogDriver({
+    expect(() => new ecs.AwsLogDriver({
       logGroup,
       logRetention: logs.RetentionDays.FIVE_DAYS,
       streamPrefix: 'hello',
-    }), /`logGroup`.*`logRetentionDays`/);
+    })).toThrow(/`logGroup`.*`logRetentionDays`/);
 
-    test.done();
-  },
+
+  });
 });

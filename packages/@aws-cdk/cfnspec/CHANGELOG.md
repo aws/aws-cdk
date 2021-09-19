@@ -1,3 +1,291 @@
+# CloudFormation Resource Specification v41.1.0
+
+## New Resource Types
+
+* AWS::EC2::TransitGatewayVpcAttachment
+* AWS::IoT::FleetMetric
+* AWS::S3::MultiRegionAccessPoint
+* AWS::S3::MultiRegionAccessPointPolicy
+
+## Attribute Changes
+
+* AWS::ApiGateway::Account Id (__added__)
+* AWS::ApiGateway::UsagePlan Id (__added__)
+* AWS::CodeStarNotifications::NotificationRule Arn (__added__)
+* AWS::EventSchemas::Discoverer CrossAccount (__added__)
+* AWS::Location::GeofenceCollection Arn (__added__)
+* AWS::Location::RouteCalculator Arn (__added__)
+* AWS::Location::Tracker Arn (__added__)
+* AWS::Macie::CustomDataIdentifier CreatedAt (__deleted__)
+* AWS::Macie::CustomDataIdentifier Deleted (__deleted__)
+* AWS::Redshift::Cluster DeferMaintenanceIdentifier (__added__)
+* AWS::RoboMaker::Robot Arn (__added__)
+* AWS::RoboMaker::RobotApplicationVersion ApplicationVersion (__added__)
+* AWS::RoboMaker::RobotApplicationVersion Arn (__added__)
+* AWS::RoboMaker::SimulationApplicationVersion ApplicationVersion (__added__)
+* AWS::RoboMaker::SimulationApplicationVersion Arn (__added__)
+
+## Property Changes
+
+* AWS::Athena::DataCatalog Name.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::CloudTrail::Trail InsightSelectors (__added__)
+* AWS::CloudTrail::Trail IsOrganizationTrail (__added__)
+* AWS::CodeStarNotifications::NotificationRule EventTypeIds.DuplicatesAllowed (__added__)
+* AWS::CodeStarNotifications::NotificationRule Targets.DuplicatesAllowed (__added__)
+* AWS::DataSync::Task Includes (__added__)
+* AWS::ElasticLoadBalancingV2::TargetGroup IpAddressType (__added__)
+* AWS::EventSchemas::Discoverer CrossAccount (__added__)
+* AWS::ImageBuilder::InfrastructureConfiguration Logging.PrimitiveType (__deleted__)
+* AWS::Redshift::Cluster DeferMaintenanceIdentifier (__deleted__)
+* AWS::RoboMaker::Fleet Tags.PrimitiveType (__deleted__)
+* AWS::RoboMaker::Fleet Tags.PrimitiveItemType (__added__)
+* AWS::RoboMaker::Fleet Tags.Type (__added__)
+* AWS::RoboMaker::Robot Tags.PrimitiveType (__deleted__)
+* AWS::RoboMaker::Robot Tags.PrimitiveItemType (__added__)
+* AWS::RoboMaker::Robot Tags.Type (__added__)
+* AWS::RoboMaker::SimulationApplication RenderingEngine.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::RoboMaker::SimulationApplication RobotSoftwareSuite.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::RoboMaker::SimulationApplication SimulationSoftwareSuite.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::RoboMaker::SimulationApplication Tags.PrimitiveType (__deleted__)
+* AWS::RoboMaker::SimulationApplication Tags.PrimitiveItemType (__added__)
+* AWS::RoboMaker::SimulationApplication Tags.Type (__added__)
+* AWS::Transfer::Server WorkflowDetails (__added__)
+
+## Property Type Changes
+
+* AWS::SageMaker::DataQualityJobDefinition.Environment (__removed__)
+* AWS::SageMaker::ModelBiasJobDefinition.Environment (__removed__)
+* AWS::SageMaker::ModelExplainabilityJobDefinition.Environment (__removed__)
+* AWS::SageMaker::ModelQualityJobDefinition.Environment (__removed__)
+* AWS::SageMaker::MonitoringSchedule.Environment (__removed__)
+* AWS::ACMPCA::CertificateAuthority.OcspConfiguration (__added__)
+* AWS::CloudTrail::Trail.InsightSelector (__added__)
+* AWS::Events::Rule.CapacityProviderStrategyItem (__added__)
+* AWS::Events::Rule.PlacementConstraint (__added__)
+* AWS::Events::Rule.PlacementStrategy (__added__)
+* AWS::Events::Rule.Tag (__added__)
+* AWS::KinesisFirehose::DeliveryStream.DynamicPartitioningConfiguration (__added__)
+* AWS::Transfer::Server.WorkflowDetail (__added__)
+* AWS::Transfer::Server.WorkflowDetails (__added__)
+* AWS::ACMPCA::CertificateAuthority.RevocationConfiguration OcspConfiguration (__added__)
+* AWS::ApiGateway::UsagePlan.ApiStage Throttle.DuplicatesAllowed (__deleted__)
+* AWS::AppFlow::Flow.ScheduledTriggerProperties ScheduleOffset (__added__)
+* AWS::AppFlow::Flow.VeevaSourceProperties DocumentType (__added__)
+* AWS::AppFlow::Flow.VeevaSourceProperties IncludeAllVersions (__added__)
+* AWS::AppFlow::Flow.VeevaSourceProperties IncludeRenditions (__added__)
+* AWS::AppFlow::Flow.VeevaSourceProperties IncludeSourceFiles (__added__)
+* AWS::CloudTrail::Trail.EventSelector ExcludeManagementEventSources (__added__)
+* AWS::CodeStarNotifications::NotificationRule.Target TargetAddress.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::CodeStarNotifications::NotificationRule.Target TargetType.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::ElastiCache::CacheCluster.CloudWatchLogsDestinationDetails LogGroup.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::ElastiCache::CacheCluster.KinesisFirehoseDestinationDetails DeliveryStream.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::ElastiCache::CacheCluster.LogDeliveryConfigurationRequest DestinationDetails.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::ElastiCache::CacheCluster.LogDeliveryConfigurationRequest DestinationType.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::ElastiCache::CacheCluster.LogDeliveryConfigurationRequest LogFormat.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::ElastiCache::CacheCluster.LogDeliveryConfigurationRequest LogType.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::ElastiCache::ReplicationGroup.CloudWatchLogsDestinationDetails LogGroup.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::ElastiCache::ReplicationGroup.KinesisFirehoseDestinationDetails DeliveryStream.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::ElastiCache::ReplicationGroup.LogDeliveryConfigurationRequest DestinationDetails.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::ElastiCache::ReplicationGroup.LogDeliveryConfigurationRequest DestinationType.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::ElastiCache::ReplicationGroup.LogDeliveryConfigurationRequest LogFormat.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::ElastiCache::ReplicationGroup.LogDeliveryConfigurationRequest LogType.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::Events::Rule.EcsParameters CapacityProviderStrategy (__added__)
+* AWS::Events::Rule.EcsParameters EnableECSManagedTags (__added__)
+* AWS::Events::Rule.EcsParameters EnableExecuteCommand (__added__)
+* AWS::Events::Rule.EcsParameters PlacementConstraints (__added__)
+* AWS::Events::Rule.EcsParameters PlacementStrategies (__added__)
+* AWS::Events::Rule.EcsParameters PropagateTags (__added__)
+* AWS::Events::Rule.EcsParameters ReferenceId (__added__)
+* AWS::Events::Rule.EcsParameters TagList (__added__)
+* AWS::KinesisFirehose::DeliveryStream.ExtendedS3DestinationConfiguration DynamicPartitioningConfiguration (__added__)
+* AWS::SageMaker::DataQualityJobDefinition.DataQualityAppSpecification Environment.PrimitiveItemType (__added__)
+* AWS::SageMaker::DataQualityJobDefinition.DataQualityAppSpecification Environment.Type (__changed__)
+  * Old: Environment
+  * New: Map
+* AWS::SageMaker::ModelBiasJobDefinition.ModelBiasAppSpecification Environment.PrimitiveItemType (__added__)
+* AWS::SageMaker::ModelBiasJobDefinition.ModelBiasAppSpecification Environment.Type (__changed__)
+  * Old: Environment
+  * New: Map
+* AWS::SageMaker::ModelExplainabilityJobDefinition.ModelExplainabilityAppSpecification Environment.PrimitiveItemType (__added__)
+* AWS::SageMaker::ModelExplainabilityJobDefinition.ModelExplainabilityAppSpecification Environment.Type (__changed__)
+  * Old: Environment
+  * New: Map
+* AWS::SageMaker::ModelQualityJobDefinition.ModelQualityAppSpecification Environment.PrimitiveItemType (__added__)
+* AWS::SageMaker::ModelQualityJobDefinition.ModelQualityAppSpecification Environment.Type (__changed__)
+  * Old: Environment
+  * New: Map
+* AWS::SageMaker::MonitoringSchedule.MonitoringJobDefinition Environment.PrimitiveItemType (__added__)
+* AWS::SageMaker::MonitoringSchedule.MonitoringJobDefinition Environment.Type (__changed__)
+  * Old: Environment
+  * New: Map
+
+
+# CloudFormation Resource Specification v40.1.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::CE::CostCategory SplitChargeRules (__added__)
+
+## Property Type Changes
+
+* AWS::EFS::FileSystem.LifecyclePolicy TransitionToPrimaryStorageClass (__added__)
+* AWS::EFS::FileSystem.LifecyclePolicy TransitionToIA.Required (__changed__)
+  * Old: true
+  * New: false
+
+
+# CloudFormation Resource Specification v40.0.0
+
+## New Resource Types
+
+
+## Attribute Changes
+
+* AWS::EC2::DHCPOptions Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-dhcp-options.html
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-dhcpoptions.html
+* AWS::EC2::DHCPOptions DhcpOptionsId (__added__)
+
+## Property Changes
+
+* AWS::AutoScaling::ScalingPolicy PredictiveScalingConfiguration (__added__)
+* AWS::EC2::DHCPOptions DomainName.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-dhcp-options.html#cfn-ec2-dhcpoptions-domainname
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-dhcpoptions.html#cfn-ec2-dhcpoptions-domainname
+* AWS::EC2::DHCPOptions DomainNameServers.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-dhcp-options.html#cfn-ec2-dhcpoptions-domainnameservers
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-dhcpoptions.html#cfn-ec2-dhcpoptions-domainnameservers
+* AWS::EC2::DHCPOptions NetbiosNameServers.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-dhcp-options.html#cfn-ec2-dhcpoptions-netbiosnameservers
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-dhcpoptions.html#cfn-ec2-dhcpoptions-netbiosnameservers
+* AWS::EC2::DHCPOptions NetbiosNodeType.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-dhcp-options.html#cfn-ec2-dhcpoptions-netbiosnodetype
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-dhcpoptions.html#cfn-ec2-dhcpoptions-netbiosnodetype
+* AWS::EC2::DHCPOptions NtpServers.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-dhcp-options.html#cfn-ec2-dhcpoptions-ntpservers
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-dhcpoptions.html#cfn-ec2-dhcpoptions-ntpservers
+* AWS::EC2::DHCPOptions Tags.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-dhcp-options.html#cfn-ec2-dhcpoptions-tags
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-dhcpoptions.html#cfn-ec2-dhcpoptions-tags
+* AWS::Redshift::Cluster AquaConfigurationStatus (__added__)
+* AWS::Redshift::Cluster AvailabilityZoneRelocation (__added__)
+* AWS::Redshift::Cluster AvailabilityZoneRelocationStatus (__added__)
+* AWS::Redshift::Cluster Classic (__added__)
+* AWS::Redshift::Cluster DeferMaintenance (__added__)
+* AWS::Redshift::Cluster DeferMaintenanceDuration (__added__)
+* AWS::Redshift::Cluster DeferMaintenanceEndTime (__added__)
+* AWS::Redshift::Cluster DeferMaintenanceIdentifier (__added__)
+* AWS::Redshift::Cluster DeferMaintenanceStartTime (__added__)
+* AWS::Redshift::Cluster DestinationRegion (__added__)
+* AWS::Redshift::Cluster EnhancedVpcRouting (__added__)
+* AWS::Redshift::Cluster MaintenanceTrackName (__added__)
+* AWS::Redshift::Cluster ManualSnapshotRetentionPeriod (__added__)
+* AWS::Redshift::Cluster ResourceAction (__added__)
+* AWS::Redshift::Cluster RevisionTarget (__added__)
+* AWS::Redshift::Cluster RotateEncryptionKey (__added__)
+* AWS::Redshift::Cluster SnapshotCopyGrantName (__added__)
+* AWS::Redshift::Cluster SnapshotCopyManual (__added__)
+* AWS::Redshift::Cluster SnapshotCopyRetentionPeriod (__added__)
+* AWS::Redshift::Cluster AvailabilityZone.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Redshift::Cluster ElasticIp.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Redshift::Cluster Encrypted.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Redshift::Cluster KmsKeyId.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Redshift::Cluster Port.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::SageMaker::EndpointConfig AsyncInferenceConfig (__added__)
+
+## Property Type Changes
+
+* AWS::AutoScaling::ScalingPolicy.PredictiveScalingConfiguration (__added__)
+* AWS::AutoScaling::ScalingPolicy.PredictiveScalingMetricSpecification (__added__)
+* AWS::AutoScaling::ScalingPolicy.PredictiveScalingPredefinedLoadMetric (__added__)
+* AWS::AutoScaling::ScalingPolicy.PredictiveScalingPredefinedMetricPair (__added__)
+* AWS::AutoScaling::ScalingPolicy.PredictiveScalingPredefinedScalingMetric (__added__)
+* AWS::SageMaker::EndpointConfig.AsyncInferenceClientConfig (__added__)
+* AWS::SageMaker::EndpointConfig.AsyncInferenceConfig (__added__)
+* AWS::SageMaker::EndpointConfig.AsyncInferenceNotificationConfig (__added__)
+* AWS::SageMaker::EndpointConfig.AsyncInferenceOutputConfig (__added__)
+* AWS::WAFv2::WebACL.ManagedRuleGroupStatement Version (__added__)
+
+
+# CloudFormation Resource Specification v39.10.0
+
+## New Resource Types
+
+* AWS::WAFv2::LoggingConfiguration
+
+## Attribute Changes
+
+* AWS::EC2::EgressOnlyInternetGateway Id (__added__)
+* AWS::S3::AccessPoint Alias (__added__)
+
+## Property Changes
+
+* AWS::ApiGateway::DomainName OwnershipVerificationCertificateArn (__added__)
+* AWS::CodeBuild::Project ResourceAccessRole (__added__)
+* AWS::CodeBuild::Project Visibility (__added__)
+
+## Property Type Changes
+
+* AWS::Elasticsearch::Domain.ColdStorageOptions (__added__)
+* AWS::IoTAnalytics::Datastore.CustomerManagedS3Storage (__added__)
+* AWS::IoTAnalytics::Datastore.IotSiteWiseMultiLayerStorage (__added__)
+* AWS::ApiGatewayV2::DomainName.DomainNameConfiguration OwnershipVerificationCertificateArn (__added__)
+* AWS::Elasticsearch::Domain.ElasticsearchClusterConfig ColdStorageOptions (__added__)
+* AWS::IoTAnalytics::Datastore.DatastoreStorage IotSiteWiseMultiLayerStorage (__added__)
+
+
 # CloudFormation Resource Specification v39.9.0
 
 ## New Resource Types

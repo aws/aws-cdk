@@ -138,6 +138,29 @@ new BucketDeployment(this, 'HTMLBucketDeployment', {
 });
 ```
 
+## Exclude and Include Filters
+
+There are two points at which filters are evaluated in a deployment: asset bundling and the actual deployment. If you simply want to exclude files in the asset bundling process, you should leverage the `exclude` property of `AssetOptions` when defining your source:
+
+```ts
+new BucketDeployment(this, 'HTMLBucketDeployment', {
+  sources: [Source.asset('./website', { exclude: ['*', '!index.html'] })],
+  destinationBucket: bucket,
+});
+```
+
+If you want to specify filters to be used in the deployment process, you can use the `exclude` and `include` filters on `BucketDeployment`.  If excluded, these files will not be deployed to the destination bucket. In addition, if the file already exists in the destination bucket, it will not be deleted if you are using the `prune` option:
+
+```ts
+new s3deploy.BucketDeployment(this, 'DeployButExcludeSpecificFiles', {
+  sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+  destinationBucket,
+  exclude: ['*.txt']
+});
+```
+
+These filters follow the same format that is used for the AWS CLI.  See the CLI documentation for information on [Using Include and Exclude Filters](https://docs.aws.amazon.com/cli/latest/reference/s3/index.html#use-of-exclude-and-include-filters).
+
 ## Objects metadata
 
 You can specify metadata to be set on all the objects in your deployment.
@@ -217,6 +240,26 @@ size of the AWS Lambda resource handler.
 
 > NOTE: a new AWS Lambda handler will be created in your stack for each memory
 > limit configuration.
+
+## EFS Support
+
+If your workflow needs more disk space than default (512 MB) disk space, you may attach an EFS storage to underlying 
+lambda function. To Enable EFS support set `efs` and `vpc` props for BucketDeployment.
+
+Check sample usage below.
+Please note that creating VPC inline may cause stack deletion failures. It is shown as below for simplicity.
+To avoid such condition, keep your network infra (VPC) in a separate stack and pass as props.
+
+```ts
+new s3deploy.BucketDeployment(this, 'DeployMeWithEfsStorage', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+    destinationBucket,
+    destinationKeyPrefix: 'efs/',
+    useEfs: true,
+    vpc: new ec2.Vpc(this, 'Vpc'),
+    retainOnDelete: false,
+});
+```
 
 ## Notes
 
