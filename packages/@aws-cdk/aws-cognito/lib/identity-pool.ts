@@ -1,7 +1,6 @@
 import {
   IOpenIdConnectProvider,
   ISamlProvider,
-  IRole,
   Role,
   FederatedPrincipal,
   IPrincipal,
@@ -20,16 +19,14 @@ import {
 } from 'constructs';
 import {
   CfnIdentityPool,
-  CfnIdentityPoolRoleAttachment,
 } from './cognito.generated';
+import {
+  IdentityPoolRoleAttachment,
+  IdentityPoolRoleMapping,
+} from './identity-pool-role-attachment';
 import {
   IUserPoolAuthenticationProvider,
 } from './user-pool-authentication-provider';
-import {
-  IdentityPoolRoleAttachment,
-  RoleMappingMatchType,
-  IdentityPoolRoleMapping
-} from './identity-pool-role-attachment';
 
 /**
  * Represents a Cognito IdentityPool
@@ -371,9 +368,9 @@ export class IdentityPool extends Resource implements IIdentityPool {
         authenticated: this.authenticatedRole,
         unauthenticated: this.unauthenticatedRole,
       },
-      roleMappings: props.roleMappings
+      roleMappings: props.roleMappings,
     });
-    (attachment.node.defaultChild as CfnIdentityPoolRoleAttachment).addDependency(this.cfnIdentityPool);
+    attachment.node.addDependency(this);
   }
 
   /**
@@ -407,7 +404,7 @@ export class IdentityPool extends Resource implements IIdentityPool {
       },
       roleMappings,
     });
-    (attachment.node.defaultChild as CfnIdentityPoolRoleAttachment).addDependency(this.cfnIdentityPool);
+    attachment.node.addDependency(this);
   }
 
   /**

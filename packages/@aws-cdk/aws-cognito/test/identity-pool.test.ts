@@ -12,7 +12,8 @@ import {
   PolicyDocument,
 } from '@aws-cdk/aws-iam';
 import { Stack } from '@aws-cdk/core';
-import { IdentityPool, IdentityPoolLoginProviderType, RoleMappingMatchType } from '../lib/identity-pool';
+import { IdentityPool, IdentityPoolLoginProviderType } from '../lib/identity-pool';
+import { RoleMappingMatchType } from '../lib/identity-pool-role-attachment';
 import { UserPool } from '../lib/user-pool';
 import { UserPoolAuthenticationProvider } from '../lib/user-pool-authentication-provider';
 import { UserPoolIdentityProvider } from '../lib/user-pool-idp';
