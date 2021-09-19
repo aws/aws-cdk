@@ -56,7 +56,7 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
 - [Identity Pools](#identity-pools)
   - [Authenticated and Unauthenticated Identities](#authenticated-and-unauthenticated-identities)
   - [Authentication Providers](#authentication-providers)
-    - [User Pools](#associating-a-provider-through-a-user-pool)
+    - [User Pool Authentication Provider](#user-pool-authentication-provider)
     - [Server Side Token Check](#server-side-token-check)
     - [Associating an External Provider Directly](#associating-an-external-provider-directly)
     - [OpenIdConnect and Saml](#openid-connect-and-saml)
@@ -766,8 +766,6 @@ Existing domains can be imported into CDK apps using `UserPoolDomain.fromDomainN
 const myUserPoolDomain = cognito.UserPoolDomain.fromDomainName(this, 'my-user-pool-domain', 'domain-name');
 ```
 
-#TODO: Finish updating
-
 ## Identity Pools
 
 Identity pools provide temporary AWS credentials for users who are guests (unauthenticated) and for users who have been  
@@ -776,97 +774,88 @@ authenticated and received a token. An identity pool is a store of user identity
 Identity pools can be used in conjunction with Cognito User Pools or by accessing external federated identity providers  
 directly. Learn more at [Amazon Cognito Identity Pools](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-identity.html).
 
-A basic Identity Pool with minimal configuration has no required props, with default authenticated and unauthenticated  
-roles applied to the identity pool: 
+A basic Identity Pool with minimal configuration has no required props, with default authenticated (user) and  
+unauthenticated (guest) roles applied to the identity pool: 
 
 ```ts
 new cognito.IdentityPool(this, 'myIdentityPool');
 ```
 
+Keep in mind that this default configuration adds no permissions to either default role, so in effect both roles would  
+serve the same purpose. That can be rectified by granting permissions to one or both default roles either during  
+instantiation of the construct or using the `grant` methods afterward:
+
 ### Authenticated and Unauthenticated Identities
 
-Identity pools define two types of identities: authenticated and unauthenticated. Every identity in an identity pool  
-is either authenticated or unauthenticated. Each identity pool has a default role for authenticated identities, and a  
-default role for authenticated identities. Absent other overriding rules (see below), these are the roles that will  
-be assumed by the corresponding users in the authentication process. Permissions can be added to the default  
-authenticated role to determine what base permissions an authenticated user will have:
+Identity pools define two types of identities: authenticated(`user`) and unauthenticated (`guest`). Every identity in  
+an identity pool is either authenticated or unauthenticated. Each identity pool has a default role for authenticated  
+identities, and a default role for authenticated identities. Absent other overriding rules (see below), these are the  
+roles that will be assumed by the corresponding users in the authentication process. 
+
+A basic Identity Pool with minimal configuration has no required props, with default authenticated (user) and  
+unauthenticated (guest) roles applied to the identity pool: 
+
+```ts
+new cognito.IdentityPool(this, 'myIdentityPool');
+```
+
+Keep in mind that this default configuration adds no permissions to either default role, so in effect both roles would  
+serve the same purpose. This can be rectified by granting permissions to one or both default roles:
 
 ```ts
 new cognito.IdentityPool(this, 'myidentitypool', {
   identityPoolName: 'myidentitypool',
-  userPermissions: [
-    {
-      effect: iam.Effect.ALLOW,
-      actions: ['execute-api:*'],
-      resources: ['*'],
-    },
-  ],
+  // Grant permissions to authenticated users
+  grantUserActions: 'execute-api:*',
 });
 ```
 
-Guest users can be given limited access by adding permissions to the default unauthenticated role:
+The default unauthenticated role can be left as is if guest users are not allowed to access the app under any  
+circumstances, but guest users can be granted limited access in a similar way:
 
 ```ts
 new cognito.IdentityPool(this, 'myidentitypool', {
   identityPoolName: 'myidentitypool',
-  userPermissions: [
-    {
-      effect: iam.Effect.ALLOW,
-      actions: ['dynamodb:*'],
-      resources: ['*'],
-    },
-  ],
-  guestPermissions: [
-    {
-      effect: iam.Effect.ALLOW,
-      actions: ['dynamodb:Get*'],
-      resources: ['*'],
-    },
-  ],
+  // Grant permissions to authenticated users
+  grantUserActions: ['dynamodb:*'],
+  // Grant permissions to unauthenticated guest users
+  grantGuestActions: ['dynamodb:Get*', 'dynamodb:List*'],
 });
+```
+
+Permissions can also be granted for default roles after instantiation of the construct:
+
+```ts
+const identityPool = new cognito.IdentityPool(this, 'myIdentityPool');
+
+// Grant permissions to authenticated users
+identityPool.grantUser('execute-api:*', 'dynamodb:*');
+
+// Grant permissions to unauthenticated guest users
+identityPool.grantGuest('dynamodb:Get*', 'dynamodb:List*');
+```
+
+Permissions can be restricted to specific resources using the `grantResource` methods. These methods are similar to  
+the grant methods except that the the first argument they tale is a `resourceArn` for the resource the permissions  
+should pertain to:
+
+```ts
+// Grant permissions to authenticated users
+identityPool.grantUserResource('arn:aws:execute-api:us-east-1:*:my-user-api/prod', 'execute-api:*');
+
+// Grant permissions to unauthenticated guest users
+identityPool.grantGuestResource('arn:aws:execute-api:us-east-1:*:my-guest-api/prod', 'execute-api:*');
 ```
 
 The default authenticated and unauthenticated roles are preconfigured to allow users to assume their respective  
-credentials using the `sts:AssumeRoleWithWebIdentity` action. A different action can be used to assume the role with  
+credentials using the `sts:AssumeRoleWithWebIdentity` action. A different action can be used to assume the role using 
 the `assumeAction` field:
 
 ```ts
 new cognito.IdentityPool(this, 'myidentitypool', {
   identityPoolName: 'myidentitypool',
   assumeAction: 'sts:AssumeRole',
-  userPermissions: [
-    {
-      effect: iam.Effect.ALLOW,
-      actions: ['execute-api'],
-      resources: ['*'],
-    },
-  ],
-});
-```
-
-The following configures an identity pool with different permissions for authenticated and guest users:
-
-```ts
-new cognito.IdentityPool(this, 'myidentitypool', {
-  userPermissions: [
-    {
-      effect: iam.Effect.ALLOW,
-      actions: [
-        'execute-api:*',
-        'dynamodb:*',
-      ],
-      resources: ['*'],
-    },
-  ],
-  guestPermissions: [
-    {
-      effect: iam.Effect.ALLOW,
-      actions: [
-        'execute-api:invoke',
-      ],
-      resources: ['arn:aws:execute-api:my-app-region:*:my-signup-api/prod'],
-    },
-  ],
+  grantUserActions: ['execute-api'],
 });
 ```
 
@@ -879,62 +868,49 @@ Login with Amazon, Sign in with Apple, Facebook, Google, SAML, or any OpenID Con
 [Authentication providers](https://docs.aws.amazon.com/cognito/latest/developerguide/external-identity-providers.html) can be associated with an Identity Pool by first associating them with a Cognito User Pool or by  
 associating the provider directly with the identity pool.
 
-#### Associating a Provider Through a User Pool
+#### User Pool Authentication Provider
+
+In order to attach an existing user pool to an identity pool, several elements not present in the `UserPool` construct  
+are needed, so the `userPool` field of `authenticationProviders` requires an object or class that implements the  
+`IUserPoolAuthenticationProvider` interface. The most common implementation of this interface is the `UserPoolAuthenticationProvider`  
+class. The `UserPoolAuthenticationProvider` class is a special class that configures a `UserPool` and a `UserPoolClient` for use as an authentication provider. 
 
 ```ts
 const userPool = new cognito.UserPool(this, 'Pool');
 
+// using the UserPoolAuthenticationProvider class
 new cognito.IdentityPool(this, 'myidentitypool', {
   identityPoolName: 'myidentitypool',
-  userPermissions: [
-    {
-      effect: iam.Effect.ALLOW,
-      actions: ['execute-api'],
-      resources: ['*'],
+  grantUserActions: ['execute-api'],
+  authenticationProviders: {
+    userPool: new UserPoolAuthenticationProvider({ userPool }),
+  },
+});
+
+// using an object that implements the `IUserPoolAuthenticationProvider` interface
+new cognito.IdentityPool(this, 'myidentitypool', {
+  identityPoolName: 'myidentitypool',
+  grantUserActions: ['execute-api'],
+  authenticationProviders: {
+    userPool: {
+      // The User Pool Client's clientId
+      clientId: 'my-user-pool-client',
+      // A list of IUserPoolIdentityProviders
+      identityProviders: [...identityProviders],
     },
-  ],
-  authenticationProviders: {
-    userPools: [{ userPool }] 
   },
 });
 ```
 
-When associating a user pool with an identity pool, a `UserPoolClient` is automatically created to handle the user  
-pool's providers. The settings of the `UserPoolClient` can be set as well:
 
-```ts
-const userPool = new cognito.UserPool(this, 'Pool');
-new cognito.IdentityPool(this, 'myidentitypool', {
-  identityPoolName: 'myidentitypool',
-  userPermissions: [
-    {
-      effect: iam.Effect.ALLOW,
-      actions: ['execute-api'],
-      resources: ['*'],
-    };
-  ],
-  authenticationProviders: {
-    userPools: [
-      {
-        userPool,
-        // User Pool Client Options
-        userPoolClientName: 'my-user-pool-client',
-        disableOath: true,
-        refreshTokenValidity: Duration.days(14),
-      }
-    ],
-  },
-});
-```
 
 User pools can also be associated with an identity pool after instantiation. The Identity Pool's `addUserPool` method  
 returns the User Pool Client that has been created:
 
 ```ts
-const userPoolClient = identityPool.addUserPool(userpool, {
-  userPoolClientName: 'my-user-pool-client',
-  disableOath: true,
-  refreshTokenValidity: Duration.days(14),
+const userPool = new cognito.UserPool(this, 'Pool');
+const userPoolClient = identityPool.addUserPool({
+  userPool: new UserPoolAuthenticationProvider({ userPool });
 });
 ```
 
@@ -952,36 +928,21 @@ more [here](https://docs.aws.amazon.com/cognitoidentity/latest/APIReference/API_
 
 ```ts
 const userPool = new cognito.UserPool(this, 'Pool');
-new cognito.IdentityPool(this, 'myidentitypool', {
-  identityPoolName: 'myidentitypool',
-  userPermissions: [
-    {
-      effect: iam.Effect.ALLOW,
-      actions: ['execute-api'],
-      resources: ['*'],
-    };
-  ],
-  authenticationProviders: {
-    userPools: [
-      {
-        userPool,
-        disableServerSideTokenCheck: true,
-      }
-    ],
+identityPool.addUserPool({
+  userPool: new UserPoolAuthenticationProvider({ 
+    userPool,
+    disableServerSideTokenCheck: true, 
+  }),
+});
+
+// Using IUserPoolAuthorizationProvider object
+identityPool.addUserPool({
+  userPool: {
+    clientId: 'my-user-pool-client',
+    identityProviders: [...identityProviders],
+    disableServerSideTokenCheck: true,    
   },
 });
-```
-
-Server side token check can also be disabled for individual user pools by setting the third argument of the Identity  
-Pool's `addUserPool` method to true:
-
-```ts
-const userPool = new cognito.UserPool(this, 'Pool');
-identityPool.addUserPool(userPool, {
-  userPoolClientName: 'my-user-pool-client',
-  disableOath: true,
-  refreshTokenValidity: Duration.days(14),
-}, true);
 ```
 
 #### Associating an External Provider Directly
@@ -992,13 +953,7 @@ One or more [external identity providers](https://docs.aws.amazon.com/cognito/la
 ```ts
 new cognito.IdentityPool(this, 'myidentitypool', {
   identityPoolName: 'myidentitypool',
-  userPermissions: [
-    {
-      effect: iam.Effect.ALLOW,
-      actions: ['execute-api'],
-      resources: ['*'],
-    };
-  ],
+  grantUserActions: ['execute-api'],
   authenticationProviders: {
     amazon: {
       appId: 'amzn1.application.12312k3j234j13rjiwuenf',
@@ -1040,13 +995,7 @@ const samlProvider = new iam.SamlProvider(this, 'my-saml-provider', ...);
 
 new cognito.IdentityPool(this, 'myidentitypool', {
   identityPoolName: 'myidentitypool',
-  userPermissions: [
-    {
-      effect: iam.Effect.ALLOW,
-      actions: ['execute-api'],
-      resources: ['*'],
-    };
-  ],
+  grantUserActions: ['execute-api'],
   authenticationProviders: {
     openIdConnectProvider: openIdConnectProvider,
     samlProvider: samlProvider,
@@ -1066,13 +1015,7 @@ pool.
 ```ts
 new cognito.IdentityPool(this, 'myidentitypool', {
   identityPoolName: 'myidentitypool',
-  userPermissions: [
-    {
-      effect: iam.Effect.ALLOW,
-      actions: ['execute-api'],
-      resources: ['*'],
-    };
-  ],
+  grantUserActions: ['execute-api'],
   authenticationProviders: {
     google: '12345678012.apps.googleusercontent.com',
     openIdConnectProvider: openIdConnectProvider,
@@ -1140,13 +1083,7 @@ can also be implemented using `allowClassicFlow`:
 ```ts
 new cognito.IdentityPool(this, 'myidentitypool', {
   identityPoolName: 'myidentitypool',
-  userPermissions: [
-    {
-      effect: iam.Effect.ALLOW,
-      actions: ['execute-api'],
-      resources: ['*'],
-    };
-  ],
+  grantUserActions: ['execute-api'],
   allowClassicFlow: true,
 });
 ```
