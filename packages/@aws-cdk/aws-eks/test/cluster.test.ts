@@ -252,7 +252,7 @@ describe('cluster', () => {
       { 'Fn::GetAtt': ['selfmanagedInstanceSecurityGroupEA6D80C9', 'GroupId'] },
       { 'Fn::GetAtt': ['Cluster9EE0221C', 'ClusterSecurityGroupId'] },
     ]);
-  }),
+  });
 
   test('cluster security group is attached when connecting self-managed nodes', () => {
 
@@ -2890,4 +2890,4 @@ describe('cluster', () => {
     expect(providerNestedStackTemplate?.Resources?.Handler886CB40B?.Properties?.MemorySize).toEqual(4096);
 
   });
-});
+})
