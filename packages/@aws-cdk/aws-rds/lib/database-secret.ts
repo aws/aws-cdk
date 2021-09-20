@@ -53,6 +53,13 @@ export interface DatabaseSecretProps {
    * @default false
    */
   readonly replaceOnPasswordCriteriaChanges?: boolean;
+
+  /**
+   * A list of regions where to replicate this secret.
+   *
+   * @default - Secret is not replicated
+   */
+  readonly replicaRegions?: secretsmanager.ReplicaRegion[];
 }
 
 /**
@@ -77,6 +84,7 @@ export class DatabaseSecret extends secretsmanager.Secret {
         generateStringKey: 'password',
         excludeCharacters,
       },
+      replicaRegions: props.replicaRegions,
     });
 
     if (props.replaceOnPasswordCriteriaChanges) {

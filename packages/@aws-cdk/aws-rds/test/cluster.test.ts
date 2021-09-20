@@ -1784,8 +1784,32 @@ describe('cluster', () => {
         ],
       },
     });
+  });
 
+  test('fromGeneratedSecret with replica regions', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
 
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.aurora({ version: AuroraEngineVersion.VER_1_22_2 }),
+      credentials: Credentials.fromGeneratedSecret('admin', {
+        replicaRegions: [{ region: 'eu-west-1' }],
+      }),
+      instanceProps: {
+        vpc,
+      },
+    });
+
+    // THEN
+    expect(stack).toHaveResource('AWS::SecretsManager::Secret', {
+      ReplicaRegions: [
+        {
+          Region: 'eu-west-1',
+        },
+      ],
+    });
   });
 
   test('can set custom name to database secret by fromSecret', () => {
