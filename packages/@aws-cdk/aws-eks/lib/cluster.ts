@@ -849,7 +849,7 @@ abstract class ClusterBase extends Resource implements ICluster {
     // do not attempt to map the role if `kubectl` is not enabled for this
     // cluster or if `mapRole` is set to false. By default this should happen.
     let mapRole = options.mapRole ?? true;
-    if (mapRole && this instanceof Cluster) {
+    if (mapRole && !(this instanceof Cluster)) {
     // do the mapping...
       Annotations.of(autoScalingGroup).addWarning('Auto-mapping aws-auth role for imported cluster is not supported, please map role manually');
       mapRole = false;
