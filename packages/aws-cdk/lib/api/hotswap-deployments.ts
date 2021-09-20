@@ -5,7 +5,7 @@ import { ISDK, Mode, SdkProvider } from './aws-auth';
 import { DeployStackResult } from './deploy-stack';
 import { ChangeHotswapImpact, HotswapOperation, HotswappableResourceChange, ListStackResources } from './hotswap/common';
 import { isHotswappableLambdaFunctionChange } from './hotswap/lambda-functions';
-import { isHotswappableStepFunctionChange } from './hotswap/stepfunctions-state-machines';
+import { isHotswappableStateMachineChange } from './hotswap/stepfunctions-state-machines';
 import { CloudFormationStack } from './util/cloudformation';
 
 /**
@@ -53,37 +53,33 @@ function findAllHotswappableChanges(
 
     if (nonHotswappableResourceFound === ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT) {
       foundNonHotswappableChange = true;
-
-      return;
     } else if (nonHotswappableResourceFound === ChangeHotswapImpact.IRRELEVANT) {
-      return;
-    }
+      // empty if
+    } else {
+      const detectorResults = [
+        isHotswappableLambdaFunctionChange(logicalId, nonHotswappableResourceFound, assetParamsWithEnv),
+        isHotswappableStateMachineChange(logicalId, nonHotswappableResourceFound, assetParamsWithEnv),
+      ];
 
-    const detectorResults = [
-      isHotswappableLambdaFunctionChange(logicalId, nonHotswappableResourceFound, assetParamsWithEnv),
-      isHotswappableStepFunctionChange(logicalId, nonHotswappableResourceFound, assetParamsWithEnv),
-    ];
+      for (const result of detectorResults) {
+        if (typeof result !== 'string') {
+          hotswappableResources.push(result);
+        }
+      }
 
-    for (const result of detectorResults) {
-      if (typeof result !== 'string') {
-        hotswappableResources.push(result);
+      // if we found any hotswappable changes, return now
+      if (hotswappableResources.length > 0) {
+        // TODO: check that commenting this out causes tests to fail AFTER you've changed the types of the functions to return REQUIRES_FULL_DEPLOYMENT and refactored that function
+        return;
+      }
+
+      // no hotswappable changes found, so any REQUIRES_FULL_DEPLOYMENTs require a full deployment
+      for (const result of detectorResults) {
+        if (result === ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT) {
+          foundNonHotswappableChange = true;
+        }
       }
     }
-
-    // TODO: the change parameter passed in here to both detectors comes from isNonHotswappableResourceChange()
-    // if we found any hotswappable changes, return now
-    if (hotswappableResources.length > 0) {
-      // TODO: check that commenting this out causes tests to fail AFTER you've changed the types of the functions to return REQUIRES_FULL_DEPLOYMENT and refactored that function
-      return;
-    }
-
-    // no hotswappable changes found, so any REQUIRES_FULL_DEPLOYMENTS require a full deployment
-    for (const result of detectorResults) {
-      if (result === ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT) {
-        foundNonHotswappableChange = true;
-      }
-    }
-
     // no REQUIRES_FULL_DEPLOYMENT implies that all results are IRRELEVANT
   });
   return foundNonHotswappableChange ? undefined : hotswappableResources;
@@ -93,17 +89,14 @@ function findAllHotswappableChanges(
  * returns `ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT` if a resource was deleted, or a change that we cannot short-circuit occured.
  * Returns `ChangeHotswapImpact.IRRELEVANT` if a change that does not impact shortcircuiting occured, such as a metadata change.
  */
-//export function isNonHotswappableResourceChange(change: cfn_diff.ResourceDifference): cfn_diff.ResourceDifference | ChangeHotswapImpact {
 export function isNonHotswappableResourceChange(change: cfn_diff.ResourceDifference): HotswappableResourceChange | ChangeHotswapImpact {
-  // change.newValue being undefined means the resource was removed; we can't short-circuit that change
-  // change.oldValue being undefined means a new resource has been added: we can't short-circuit that change
+  // a resource has been removed OR a resource has been added; we can't short-circuit that change
   if (!change.newValue || !change.oldValue) {
     return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
   }
 
-  const newResourceType = change.newValue.Type;
   // Ignore Metadata changes
-  if (newResourceType === 'AWS::CDK::Metadata') {
+  if (change.newValue.Type === 'AWS::CDK::Metadata') {
     return ChangeHotswapImpact.IRRELEVANT;
   }
 

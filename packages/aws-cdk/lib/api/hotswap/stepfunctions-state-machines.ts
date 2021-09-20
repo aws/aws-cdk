@@ -1,14 +1,14 @@
 import { ISDK } from '../aws-auth';
 import { ChangeHotswapImpact, ChangeHotswapResult, HotswapOperation, ListStackResources, stringifyPotentialCfnExpression, HotswappableResourceChange } from './common';
 
-export function isHotswappableStepFunctionChange(
+export function isHotswappableStateMachineChange(
   logicalId: string, change: HotswappableResourceChange, assetParamsWithEnv: { [key: string]: string },
 ): ChangeHotswapResult {
-  const stepDefinitionChange = isStepFunctionDefinitionOnlyChange(change, assetParamsWithEnv);
+  const stateMachineDefinitionChange = isStateMachineDefinitionOnlyChange(change, assetParamsWithEnv);
 
-  if ((stepDefinitionChange === ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT) ||
-      (stepDefinitionChange === ChangeHotswapImpact.IRRELEVANT)) {
-    return stepDefinitionChange;
+  if ((stateMachineDefinitionChange === ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT) ||
+      (stateMachineDefinitionChange === ChangeHotswapImpact.IRRELEVANT)) {
+    return stateMachineDefinitionChange;
   }
 
   let machineName: string | undefined;
@@ -25,36 +25,20 @@ export function isHotswappableStepFunctionChange(
     machineName = undefined;
   }
 
-  return new StepFunctionHotswapOperation({
+  return new StateMachineHotswapOperation({
     logicalId: logicalId,
-    definition: stepDefinitionChange,
+    definition: stateMachineDefinitionChange,
     stateMachineName: machineName,
   });
 }
 
-/**
- * Returns `ChangeHotswapImpact.IRRELEVANT` if the change is not for a `AWS::StepFunctions::StateMachine`,
- * but doesn't prevent short-circuiting
- * (like a change to CDKMetadata resource),
- * `ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT` if the change is to a AWS::StepFunctions::StateMachine,
- * but not only to its definition property,
- * or the definition string if the change is to a AWS::StepFunctions::StateMachine,
- * and only affects its definition property.
- */
-function isStepFunctionDefinitionOnlyChange(
+function isStateMachineDefinitionOnlyChange(
   change: HotswappableResourceChange, assetParamsWithEnv: { [key: string]: string },
 ): string | ChangeHotswapImpact {
-  // if we see a different resource type, it will be caught by isNonHotswappableResourceChange()
-  // this also ignores Metadata changes
   const newResourceType = change.newValue.Type;
   if (newResourceType !== 'AWS::StepFunctions::StateMachine') {
     return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
   }
-
-  //if (change.oldValue.Type == null) {
-  // can't short-circuit a brand new StateMachine
-  //  return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
-  //}
 
   const propertyUpdates = change.propertyUpdates;
 
@@ -77,14 +61,14 @@ function isStepFunctionDefinitionOnlyChange(
   return ChangeHotswapImpact.IRRELEVANT;
 }
 
-interface StepFunctionResource {
+interface StateMachineResource {
   readonly logicalId: string;
   readonly stateMachineName?: string;
   readonly definition: string;
 }
 
-class StepFunctionHotswapOperation implements HotswapOperation {
-  constructor(private readonly stepFunctionResource: StepFunctionResource) {
+class StateMachineHotswapOperation implements HotswapOperation {
+  constructor(private readonly stepFunctionResource: StateMachineResource) {
   }
 
   public async apply(sdk: ISDK, stackResources: ListStackResources): Promise<any> {

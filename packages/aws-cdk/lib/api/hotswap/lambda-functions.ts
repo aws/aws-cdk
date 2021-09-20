@@ -68,17 +68,11 @@ function isLambdaFunctionCodeOnlyChange(
 ): LambdaFunctionCode | ChangeHotswapImpact {
   // if we see a different resource type, it will be caught by isNonHotswappableResourceChange()
   // this also ignores Metadata changes
-  const newResourceType = change.newValue?.Type;
+  const newResourceType = change.newValue.Type;
   if (newResourceType !== 'AWS::Lambda::Function') {
-    return ChangeHotswapImpact.IRRELEVANT;
+    // TODO: test case that hits this?
+    return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
   }
-
-  // TODO: move this check to isNonHotswappableResourceChange()
-  //if (change.oldValue?.Type == null) {
-  // this means this is a brand-new Lambda function -
-  // obviously, we can't short-circuit that!
-  // return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
-  //}
 
   /*
    * On first glance, we would want to initialize these using the "previous" values (change.oldValue),
