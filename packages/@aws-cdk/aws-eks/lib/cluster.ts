@@ -856,7 +856,7 @@ abstract class ClusterBase extends Resource implements ICluster {
     }
     if (mapRole) {
       // see https://docs.aws.amazon.com/en_us/eks/latest/userguide/add-user-role.html
-      this._awsAuth?.addRoleMapping(autoScalingGroup.role, {
+      this.awsAuth.addRoleMapping(autoScalingGroup.role, {
         username: 'system:node:{{EC2PrivateDNSName}}',
         groups: [
           'system:bootstrappers',
