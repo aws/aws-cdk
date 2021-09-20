@@ -55,13 +55,13 @@ function findAllHotswappableChanges(
       foundNonHotswappableChange = true;
 
       return;
+    } else if (nonHotswappableResourceFound === ChangeHotswapImpact.IRRELEVANT) {
+      return;
     }
 
-
-    // TODO: the change parameter passed in here to both detectors comes from inNonHotswappableResourceChange()
     const detectorResults = [
-      isHotswappableLambdaFunctionChange(logicalId, change, assetParamsWithEnv),
-      isHotswappableStepFunctionChange(logicalId, change, assetParamsWithEnv),
+      isHotswappableLambdaFunctionChange(logicalId, nonHotswappableResourceFound, assetParamsWithEnv),
+      isHotswappableStepFunctionChange(logicalId, nonHotswappableResourceFound, assetParamsWithEnv),
     ];
 
     for (const result of detectorResults) {
@@ -70,6 +70,7 @@ function findAllHotswappableChanges(
       }
     }
 
+    // TODO: the change parameter passed in here to both detectors comes from isNonHotswappableResourceChange()
     // if we found any hotswappable changes, return now
     if (hotswappableResources.length > 0) {
       // TODO: check that commenting this out causes tests to fail AFTER you've changed the types of the functions to return REQUIRES_FULL_DEPLOYMENT and refactored that function
@@ -95,7 +96,8 @@ function findAllHotswappableChanges(
 //export function isNonHotswappableResourceChange(change: cfn_diff.ResourceDifference): cfn_diff.ResourceDifference | ChangeHotswapImpact {
 export function isNonHotswappableResourceChange(change: cfn_diff.ResourceDifference): HotswappableResourceChange | ChangeHotswapImpact {
   // change.newValue being undefined means the resource was removed; we can't short-circuit that change
-  if (!change.newValue) {
+  // change.oldValue being undefined means a new resource has been added: we can't short-circuit that change
+  if (!change.newValue || !change.oldValue) {
     return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
   }
 

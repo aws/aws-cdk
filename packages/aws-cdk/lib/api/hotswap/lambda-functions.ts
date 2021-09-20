@@ -1,4 +1,3 @@
-import * as cfn_diff from '@aws-cdk/cloudformation-diff';
 import { ISDK } from '../aws-auth';
 import { assetMetadataChanged, ChangeHotswapImpact, ChangeHotswapResult, HotswapOperation, HotswappableResourceChange, ListStackResources, stringifyPotentialCfnExpression } from './common';
 

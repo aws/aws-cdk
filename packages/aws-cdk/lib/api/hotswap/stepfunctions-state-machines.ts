@@ -1,9 +1,8 @@
-import * as cfn_diff from '@aws-cdk/cloudformation-diff';
 import { ISDK } from '../aws-auth';
-import { ChangeHotswapImpact, ChangeHotswapResult, HotswapOperation, ListStackResources, stringifyPotentialCfnExpression } from './common';
+import { ChangeHotswapImpact, ChangeHotswapResult, HotswapOperation, ListStackResources, stringifyPotentialCfnExpression, HotswappableResourceChange } from './common';
 
 export function isHotswappableStepFunctionChange(
-  logicalId: string, change: cfn_diff.ResourceDifference, assetParamsWithEnv: { [key: string]: string },
+  logicalId: string, change: HotswappableResourceChange, assetParamsWithEnv: { [key: string]: string },
 ): ChangeHotswapResult {
   const stepDefinitionChange = isStepFunctionDefinitionOnlyChange(change, assetParamsWithEnv);
 
@@ -43,19 +42,19 @@ export function isHotswappableStepFunctionChange(
  * and only affects its definition property.
  */
 function isStepFunctionDefinitionOnlyChange(
-  change: cfn_diff.ResourceDifference, assetParamsWithEnv: { [key: string]: string },
+  change: HotswappableResourceChange, assetParamsWithEnv: { [key: string]: string },
 ): string | ChangeHotswapImpact {
   // if we see a different resource type, it will be caught by isNonHotswappableResourceChange()
   // this also ignores Metadata changes
-  const newResourceType = change.newValue?.Type;
+  const newResourceType = change.newValue.Type;
   if (newResourceType !== 'AWS::StepFunctions::StateMachine') {
-    return ChangeHotswapImpact.IRRELEVANT;
-  }
-
-  if (change.oldValue?.Type == null) {
-    // can't short-circuit a brand new StateMachine
     return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
   }
+
+  //if (change.oldValue.Type == null) {
+  // can't short-circuit a brand new StateMachine
+  //  return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
+  //}
 
   const propertyUpdates = change.propertyUpdates;
 
