@@ -1,12 +1,12 @@
-import { expect, haveResource, ResourcePart } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
+import { ResourcePart } from '@aws-cdk/assert-internal';
 import * as targets from '@aws-cdk/aws-events-targets';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
-import { Test } from 'nodeunit';
 import * as config from '../lib';
 
-export = {
-  'create a managed rule'(test: Test) {
+describe('rule', () => {
+  test('create a managed rule', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -22,7 +22,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::Config::ConfigRule', {
+    expect(stack).toHaveResource('AWS::Config::ConfigRule', {
       Source: {
         Owner: 'AWS',
         SourceIdentifier: 'AWS_SUPER_COOL',
@@ -33,12 +33,10 @@ export = {
         key: 'value',
       },
       MaximumExecutionFrequency: 'Three_Hours',
-    }));
+    });
+  });
 
-    test.done();
-  },
-
-  'create a custom rule'(test: Test) {
+  test('create a custom rule', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new lambda.Function(stack, 'Function', {
@@ -61,7 +59,7 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::Config::ConfigRule', {
+    expect(stack).toHaveResource('AWS::Config::ConfigRule', {
       Properties: {
         Source: {
           Owner: 'CUSTOM_LAMBDA',
@@ -99,13 +97,13 @@ export = {
         'Function76856677',
         'FunctionServiceRole675BB04A',
       ],
-    }, ResourcePart.CompleteDefinition));
+    }, ResourcePart.CompleteDefinition);
 
-    expect(stack).to(haveResource('AWS::Lambda::Permission', {
+    expect(stack).toHaveResource('AWS::Lambda::Permission', {
       Principal: 'config.amazonaws.com',
-    }));
+    });
 
-    expect(stack).to(haveResource('AWS::IAM::Role', {
+    expect(stack).toHaveResource('AWS::IAM::Role', {
       ManagedPolicyArns: [
         {
           'Fn::Join': [
@@ -132,12 +130,10 @@ export = {
           ],
         },
       ],
-    }));
+    });
+  });
 
-    test.done();
-  },
-
-  'scope to resource'(test: Test) {
+  test('scope to resource', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -148,19 +144,17 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::Config::ConfigRule', {
+    expect(stack).toHaveResource('AWS::Config::ConfigRule', {
       Scope: {
         ComplianceResourceId: 'i-1234',
         ComplianceResourceTypes: [
           'AWS::EC2::Instance',
         ],
       },
-    }));
+    });
+  });
 
-    test.done();
-  },
-
-  'scope to resources'(test: Test) {
+  test('scope to resources', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -171,19 +165,17 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::Config::ConfigRule', {
+    expect(stack).toHaveResource('AWS::Config::ConfigRule', {
       Scope: {
         ComplianceResourceTypes: [
           'AWS::S3::Bucket',
           'AWS::CloudFormation::Stack',
         ],
       },
-    }));
+    });
+  }),
 
-    test.done();
-  },
-
-  'scope to tag'(test: Test) {
+  test('scope to tag', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -194,17 +186,15 @@ export = {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::Config::ConfigRule', {
+    expect(stack).toHaveResource('AWS::Config::ConfigRule', {
       Scope: {
         TagKey: 'key',
         TagValue: 'value',
       },
-    }));
+    });
+  }),
 
-    test.done();
-  },
-
-  'allows scoping a custom rule without configurationChanges enabled'(test: Test) {
+  test('allows scoping a custom rule without configurationChanges enabled', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new lambda.Function(stack, 'Function', {
@@ -214,16 +204,14 @@ export = {
     });
 
     // THEN
-    test.doesNotThrow(() => new config.CustomRule(stack, 'Rule', {
+    expect(() => new config.CustomRule(stack, 'Rule', {
       lambdaFunction: fn,
       periodic: true,
       ruleScope: config.RuleScope.fromResources([config.ResourceType.of('resource')]),
-    }));
+    })).not.toThrow();
+  }),
 
-    test.done();
-  },
-
-  'throws when both configurationChanges and periodic are falsy'(test: Test) {
+  test('throws when both configurationChanges and periodic are falsy', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new lambda.Function(stack, 'Function', {
@@ -233,14 +221,12 @@ export = {
     });
 
     // THEN
-    test.throws(() => new config.CustomRule(stack, 'Rule', {
+    expect(() => new config.CustomRule(stack, 'Rule', {
       lambdaFunction: fn,
-    }), /`configurationChanges`.*`periodic`/);
+    })).toThrow(/`configurationChanges`.*`periodic`/);
+  }),
 
-    test.done();
-  },
-
-  'on compliance change event'(test: Test) {
+  test('on compliance change event', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const rule = new config.ManagedRule(stack, 'Rule', {
@@ -258,7 +244,7 @@ export = {
       target: new targets.LambdaFunction(fn),
     });
 
-    expect(stack).to(haveResource('AWS::Events::Rule', {
+    expect(stack).toHaveResource('AWS::Events::Rule', {
       EventPattern: {
         'source': [
           'aws.config',
@@ -274,8 +260,6 @@ export = {
           'Config Rules Compliance Change',
         ],
       },
-    }));
-
-    test.done();
-  },
-};
+    });
+  });
+});
