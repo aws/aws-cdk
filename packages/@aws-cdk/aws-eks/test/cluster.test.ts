@@ -2890,4 +2890,4 @@ describe('cluster', () => {
     expect(providerNestedStackTemplate?.Resources?.Handler886CB40B?.Properties?.MemorySize).toEqual(4096);
 
   });
-})
+});
