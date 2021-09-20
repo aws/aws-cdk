@@ -1,3 +1,37 @@
+# CloudFormation Resource Specification v41.2.0
+
+## New Resource Types
+
+* AWS::ACMPCA::Permission
+* AWS::APS::Workspace
+* AWS::HealthLake::FHIRDatastore
+* AWS::OpenSearchService::Domain
+
+## Attribute Changes
+
+* AWS::EFS::MountTarget Id (__added__)
+
+## Property Changes
+
+* AWS::EMR::Studio IdpAuthUrl (__added__)
+* AWS::EMR::Studio IdpRelayStateParameterName (__added__)
+* AWS::EMR::Studio UserRole.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::RoboMaker::SimulationApplication Environment (__added__)
+* AWS::RoboMaker::SimulationApplication RenderingEngine.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::RoboMaker::SimulationApplication Sources.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::SQS::Queue RedriveAllowPolicy (__added__)
+
+## Property Type Changes
+
+* AWS::S3::Bucket.MetricsConfiguration AccessPointArn (__added__)
+
+
 # CloudFormation Resource Specification v41.1.0
 
 ## New Resource Types
