@@ -1,0 +1,92 @@
+{
+  "Resources": {
+    "anomalymonitor1705FA2B": {
+      "Type": "AWS::CE::AnomalyMonitor",
+      "Properties": {
+        "MonitorName": "awscostexploreranomalymonitorCDA27264",
+        "MonitorType": "DIMENSIONAL",
+        "MonitorDimension": "SERVICE"
+      }
+    },
+    "customanomalymonitor582BB937": {
+      "Type": "AWS::CE::AnomalyMonitor",
+      "Properties": {
+        "MonitorName": "awscostexplorercustomanomalymonitorE25BCBEB",
+        "MonitorType": "CUSTOM",
+        "MonitorSpecification": "{\"Dimensions\":{\"Key\":\"LINKED_ACCOUNT\",\"Values\":[\"123456789012\"]}}"
+      }
+    },
+    "costcategory86213F9A": {
+      "Type": "AWS::CE::CostCategory",
+      "Properties": {
+        "Name": "awscostexplorercostcategory5B38150D",
+        "Rules": "[{\"Type\":\"REGULAR\",\"Value\":\"ServiceIsAmazonEC2\",\"Rule\":{\"Dimensions\":{\"Key\":\"SERVICE_CODE\",\"Values\":[\"AmazonEC2\"],\"MatchOptions\":[\"EQUALS\"]}}}]",
+        "RuleVersion": "CostCategoryExpression.v1"
+      }
+    },
+    "customanomalymonitorwithcostcategoryFB42449E": {
+      "Type": "AWS::CE::AnomalyMonitor",
+      "Properties": {
+        "MonitorName": "awscostexplorercustomanomalymonitorwithcostcategoryAA57C782",
+        "MonitorType": "CUSTOM",
+        "MonitorSpecification": "{\"CostCategories\":{\"Key\":\"awscostexplorercostcategory5B38150D\",\"Values\":[\"ServiceIsAmazonEC2\"]}}"
+      }
+    },
+    "TopicBFC7AF6E": {
+      "Type": "AWS::SNS::Topic"
+    },
+    "TopicPolicyA1747468": {
+      "Type": "AWS::SNS::TopicPolicy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sns:Publish",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "costalerts.amazonaws.com"
+              },
+              "Resource": {
+                "Ref": "TopicBFC7AF6E"
+              },
+              "Sid": "0"
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "Topics": [
+          {
+            "Ref": "TopicBFC7AF6E"
+          }
+        ]
+      }
+    },
+    "subscriptionD5B264BF": {
+      "Type": "AWS::CE::AnomalySubscription",
+      "Properties": {
+        "Frequency": "IMMEDIATE",
+        "MonitorArnList": [
+          {
+            "Ref": "anomalymonitor1705FA2B"
+          },
+          {
+            "Ref": "customanomalymonitor582BB937"
+          },
+          {
+            "Ref": "customanomalymonitorwithcostcategoryFB42449E"
+          }
+        ],
+        "Subscribers": [
+          {
+            "Address": {
+              "Ref": "TopicBFC7AF6E"
+            },
+            "Type": "SNS"
+          }
+        ],
+        "SubscriptionName": "awscostexplorersubscriptionF3C3D0BF",
+        "Threshold": 5
+      }
+    }
+  }
+}
