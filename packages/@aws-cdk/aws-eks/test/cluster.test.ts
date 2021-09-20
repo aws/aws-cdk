@@ -220,7 +220,7 @@ describe('cluster', () => {
     expect(template.Resources.ClusterselfmanagedInstanceSecurityGroup64468C3A.Properties.Tags).toEqual([
       { Key: 'Name', Value: 'Stack/Cluster/self-managed' },
     ]);
-
+  });
 
   test('connect autoscaling group with imported cluster', () => {
 

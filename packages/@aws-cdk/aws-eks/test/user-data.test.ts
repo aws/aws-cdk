@@ -35,7 +35,7 @@ describe('user data', () => {
       },
       '/opt/aws/bin/cfn-signal --exit-code $? --stack my-stack --resource ASG46ED3070 --region us-west-33',
     ]);
-
+  });
 
   test('imported cluster without clusterEndpoint', () => {
     // GIVEN
