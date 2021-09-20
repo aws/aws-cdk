@@ -45,6 +45,17 @@ const pipeline = new codepipeline.Pipeline(this, 'MyFirstPipeline', {
 });
 ```
 
+If you want to enable key rotation for the generated KMS keys,
+you can configure it by passing `enableKeyRotation: true` when creating the pipeline.
+Note that key rotation will incur an additional cost of **$1/month**.
+
+```ts
+const pipeline = new codepipeline.Pipeline(this, 'MyFirstPipeline', {
+  // ...
+  enableKeyRotation: true,
+});
+```
+
 ## Stages
 
 You can provide Stages when creating the Pipeline:
