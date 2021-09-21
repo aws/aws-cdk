@@ -28,7 +28,14 @@
         ]
       }
     },
-    "projectReferences": true
+    "projectReferences": true,
+    "metadata": {
+      "jsii": {
+        "rosetta": {
+          "strict": true
+        }
+      }
+    }
   },
   "repository": {
     "type": "git",
@@ -75,7 +82,9 @@
   "devDependencies": {
     "@aws-cdk/assertions": "0.0.0",
     "@types/jest": "^26.0.24",
+    "aws-sdk": "^2.848.0",
     "cdk-build-tools": "0.0.0",
+    "cdk-integ-tools": "0.0.0",
     "cfn2ts": "0.0.0",
     "jest": "^26.6.3",
     "pkglint": "0.0.0"
@@ -84,9 +93,11 @@
     "@aws-cdk/aws-ec2": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-kms": "0.0.0",
+    "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/aws-secretsmanager": "0.0.0",
     "@aws-cdk/core": "0.0.0",
+    "@aws-cdk/custom-resources": "0.0.0",
     "constructs": "^3.3.69"
   },
   "homepage": "https://github.com/aws/aws-cdk",
@@ -94,9 +105,11 @@
     "@aws-cdk/aws-ec2": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-kms": "0.0.0",
+    "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/aws-secretsmanager": "0.0.0",
     "@aws-cdk/core": "0.0.0",
+    "@aws-cdk/custom-resources": "0.0.0",
     "constructs": "^3.3.69"
   },
   "engines": {
@@ -111,7 +124,8 @@
       "props-physical-name:@aws-cdk/aws-redshift.ClusterParameterGroupProps",
       "props-physical-name:@aws-cdk/aws-redshift.ClusterSubnetGroupProps",
       "props-physical-name:@aws-cdk/aws-redshift.DatabaseSecretProps",
-      "resource-attribute:@aws-cdk/aws-redshift.Cluster.clusterId"
+      "resource-attribute:@aws-cdk/aws-redshift.Cluster.clusterId",
+      "resource-attribute:@aws-cdk/aws-redshift.Cluster.clusterDeferMaintenanceIdentifier"
     ]
   },
   "stability": "experimental",
