@@ -23,6 +23,7 @@ public class %name.PascalCased%Test {
         // a checked-in JSON file.
         JsonNode actual = JSON.valueToTree(app.synth().getStackArtifact(stack.getArtifactId()).getTemplate());
 
-        assertThat(new ObjectMapper().createObjectNode()).isEqualTo(actual);
+        // Update once resources have been added to the stack
+        assertThat(actual.get("Resources")).isNull();
     }
 }
