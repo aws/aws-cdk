@@ -24,6 +24,7 @@ describe('resource dependencies', () => {
     });
   });
 
+  // eslint-disable-next-line jest/valid-describe
   describe('resource in nested stack depends on a resource in the parent stack', matrixForResourceDependencyTest((addDep) => {
     // GIVEN
     const parent = new Stack(undefined, 'root');
@@ -38,9 +39,10 @@ describe('resource dependencies', () => {
     // nested stack to the nested stack resource itself so the nested stack
     // will only be deployed the dependent resource
     expect(parent).toHaveResource('AWS::CloudFormation::Stack', { DependsOn: ['ResourceInParent'] }, ResourcePart.CompleteDefinition);
-    expect(nested).toMatchTemplate({ Resources: { ResourceInNested: { Type: 'NESTED' } } }); // no DependsOn for the actual resource  
+    expect(nested).toMatchTemplate({ Resources: { ResourceInNested: { Type: 'NESTED' } } }); // no DependsOn for the actual resource
   }));
 
+  // eslint-disable-next-line jest/valid-describe
   describe('resource in nested stack depends on a resource in a grandparent stack', matrixForResourceDependencyTest((addDep) => {
     // GIVEN
     const grantparent = new Stack(undefined, 'Grandparent');
@@ -58,6 +60,7 @@ describe('resource dependencies', () => {
     expect(nested).toMatchTemplate({ Resources: { ResourceInNested: { Type: 'NESTED' } } }); // no DependsOn for the actual resource
   }));
 
+  // eslint-disable-next-line jest/valid-describe
   describe('resource in parent stack depends on resource in nested stack', matrixForResourceDependencyTest((addDep) => {
     // GIVEN
     const parent = new Stack(undefined, 'root');
@@ -71,9 +74,10 @@ describe('resource dependencies', () => {
     // THEN: resource in parent needs to depend on the nested stack
     expect(parent).toHaveResource('PARENT', {
       DependsOn: [parent.resolve(nested.nestedStackResource!.logicalId)],
-    }, ResourcePart.CompleteDefinition);  
+    }, ResourcePart.CompleteDefinition);
   }));
 
+  // eslint-disable-next-line jest/valid-describe
   describe('resource in grantparent stack depends on resource in nested stack', matrixForResourceDependencyTest((addDep) => {
     // GIVEN
     const grandparent = new Stack(undefined, 'Grandparent');
@@ -91,6 +95,7 @@ describe('resource dependencies', () => {
     }, ResourcePart.CompleteDefinition);
   }));
 
+  // eslint-disable-next-line jest/valid-describe
   describe('resource in sibling stack depends on a resource in nested stack', matrixForResourceDependencyTest((addDep) => {
     // GIVEN
     const app = new App();
@@ -112,6 +117,7 @@ describe('resource dependencies', () => {
     assertNoDependsOn(assembly, nested1);
   }));
 
+  // eslint-disable-next-line jest/valid-describe
   describe('resource in nested stack depends on a resource in sibling stack', matrixForResourceDependencyTest((addDep) => {
     // GIVEN
     const app = new App();
@@ -133,6 +139,7 @@ describe('resource dependencies', () => {
     assertNoDependsOn(assembly, nested1);
   }));
 
+  // eslint-disable-next-line jest/valid-describe
   describe('resource in nested stack depends on a resource in nested sibling stack', matrixForResourceDependencyTest((addDep) => {
     // GIVEN
     const app = new App();
