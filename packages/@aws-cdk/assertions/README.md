@@ -129,8 +129,16 @@ assert.hasOutput('*', {
 });
 ```
 
-`findOutputs()` will return a list of outputs that match the `logicalId` and `props`,
+`findOutputs()` will return a set of outputs that match the `logicalId` and `props`,
 and you can use the `'*'` special case as well.
+
+```ts
+const result = assert.findOutputs('*', {
+  Value: 'Fred',
+});
+expect(result.Foo).toEqual({ Value: 'Fred', Description: 'FooFred' });
+expect(result.Bar).toEqual({ Value: 'Fred', Description: 'BarFred' });
+```
 
 The APIs `hasMapping()` and `findMappings()` provide similar functionalities.
 
@@ -320,6 +328,47 @@ assert.hasResourceProperties('Foo::Bar', Match.objectLike({
   Fred: Match.not(['Flob', 'Cat']);
 }});
 ```
+
+### Serialized JSON
+
+Often, we find that some CloudFormation Resource types declare properties as a string,
+but actually expect JSON serialized as a string.
+For example, the [`BuildSpec` property of `AWS::CodeBuild::Project`][Pipeline BuildSpec],
+the [`Definition` property of `AWS::StepFunctions::StateMachine`][StateMachine Definition],
+to name a couple.
+
+The `Match.serializedJson()` matcher allows deep matching within a stringified JSON.
+
+```ts
+// Given a template -
+// {
+//   "Resources": {
+//     "MyBar": {
+//       "Type": "Foo::Bar",
+//       "Properties": {
+//         "Baz": "{ \"Fred\": [\"Waldo\", \"Willow\"] }"
+//       }
+//     }
+//   }
+// }
+
+// The following will NOT throw an assertion error
+assert.hasResourceProperties('Foo::Bar', {
+  Baz: Match.serializedJson({
+    Fred: Match.arrayWith(["Waldo"]),
+  }),
+});
+
+// The following will throw an assertion error
+assert.hasResourceProperties('Foo::Bar', {
+  Baz: Match.serializedJson({
+    Fred: ["Waldo", "Johnny"],
+  }),
+});
+```
+
+[Pipeline BuildSpec]: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codebuild-project-source.html#cfn-codebuild-project-source-buildspec
+[StateMachine Definition]: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-stepfunctions-statemachine.html#cfn-stepfunctions-statemachine-definition
 
 ## Capturing Values
 
