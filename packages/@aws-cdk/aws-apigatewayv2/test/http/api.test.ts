@@ -267,9 +267,9 @@ describe('HttpApi', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::VpcLink', {
       Name: 'Link-1',
     });
-    expect(Template.fromStack(stack).findResources('AWS::ApiGatewayV2::VpcLink', {
+    expect(Object.keys(Template.fromStack(stack).findResources('AWS::ApiGatewayV2::VpcLink', {
       Name: 'Link-2',
-    }).length).toEqual(0);
+    })).length).toEqual(0);
   });
 
   test('apiEndpoint is exported', () => {
