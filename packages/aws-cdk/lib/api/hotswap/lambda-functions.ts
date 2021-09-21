@@ -134,19 +134,14 @@ class LambdaFunctionHotswapOperation implements HotswapOperation {
   }
 
   public async apply(sdk: ISDK, stackResources: ListStackResources): Promise<any> {
-    let functionPhysicalName: string;
+    let functionPhysicalName: string | undefined;
     if (this.lambdaFunctionResource.physicalName) {
       functionPhysicalName = this.lambdaFunctionResource.physicalName;
     } else {
-      const stackResourceList = await stackResources.listStackResources();
-      const foundFunctionName = stackResourceList
-        .find(resSummary => resSummary.LogicalResourceId === this.lambdaFunctionResource.logicalId)
-        ?.PhysicalResourceId;
-      if (!foundFunctionName) {
-        // if we couldn't find the function in the current stack, we can't update it
+      functionPhysicalName = await stackResources.findHotswappableResource(this.lambdaFunctionResource);
+      if (!functionPhysicalName) {
         return;
       }
-      functionPhysicalName = foundFunctionName;
     }
 
     return sdk.lambda().updateFunctionCode({

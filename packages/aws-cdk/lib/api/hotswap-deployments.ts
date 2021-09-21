@@ -3,7 +3,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import { CloudFormation } from 'aws-sdk';
 import { ISDK, Mode, SdkProvider } from './aws-auth';
 import { DeployStackResult } from './deploy-stack';
-import { ChangeHotswapImpact, HotswapOperation, HotswappableResourceChange, ListStackResources } from './hotswap/common';
+import { ChangeHotswapImpact, HotswapOperation, HotswappableResourceChange, ListStackResources, HotswappableResource } from './hotswap/common';
 import { isHotswappableLambdaFunctionChange } from './hotswap/lambda-functions';
 import { isHotswappableStateMachineChange } from './hotswap/stepfunctions-state-machines';
 import { CloudFormationStack } from './util/cloudformation';
@@ -121,6 +121,19 @@ class LazyListStackResources implements ListStackResources {
   private stackResources: CloudFormation.StackResourceSummary[] | undefined;
 
   constructor(private readonly sdk: ISDK, private readonly stackName: string) {
+  }
+
+  async findHotswappableResource(resource: HotswappableResource) {
+    const stackResourceList = await this.listStackResources();
+    const foundResourceName = stackResourceList
+      .find(resSummary => resSummary.LogicalResourceId === resource.logicalId)
+      ?.PhysicalResourceId;
+    if (!foundResourceName) {
+      // if we couldn't find the resource in the current stack, we can't update it
+      return;
+    }
+
+    return foundResourceName;
   }
 
   async listStackResources(): Promise<CloudFormation.StackResourceSummary[]> {

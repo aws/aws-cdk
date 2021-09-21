@@ -72,23 +72,19 @@ class StateMachineHotswapOperation implements HotswapOperation {
   }
 
   public async apply(sdk: ISDK, stackResources: ListStackResources): Promise<any> {
-    let stateMachineName: string;
+    let stateMachineName: string | undefined;
     if (this.stepFunctionResource.stateMachineName) {
       stateMachineName = this.stepFunctionResource.stateMachineName;
     } else {
-      const stackResourceList = await stackResources.listStackResources();
-      const foundMachineName = stackResourceList
-        .find(resSummary => resSummary.LogicalResourceId === this.stepFunctionResource.logicalId)
-        ?.PhysicalResourceId;
-      if (!foundMachineName) {
-        // if we couldn't find the state machine in the current stack, we can't update it
+      stateMachineName = await stackResources.findHotswappableResource(this.stepFunctionResource);
+      if (stateMachineName === undefined) {
         return;
       }
-      stateMachineName = foundMachineName;
     }
 
     return sdk.stepFunctions().updateStateMachine({
-      // the sdk turns the stateMachineName into the required ARN for us
+      // when left unspecified, the optional properties are left unchanged
+      // even though the name of the property is stateMachineArn, passing the name of the state machine is allowed here
       stateMachineArn: stateMachineName,
       definition: this.stepFunctionResource.definition,
     }).promise();

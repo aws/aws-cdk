@@ -5,6 +5,11 @@ import { evaluateCfn } from '../util/cloudformation/evaluate-cfn';
 
 export interface ListStackResources {
   listStackResources(): Promise<CloudFormation.StackResourceSummary[]>;
+  findHotswappableResource(resource: HotswappableResource): Promise<string | undefined>;
+}
+
+export interface HotswappableResource {
+  logicalId: string,
 }
 
 /**
