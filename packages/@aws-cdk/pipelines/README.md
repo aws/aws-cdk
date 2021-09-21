@@ -1231,8 +1231,8 @@ A hypothetical recovery workflow would look something like this:
 
 ```sh
 $ env CDK_NEW_BOOTSTRAP=1 npx cdk bootstrap \
-    --qualifier randchars1234
-    --toolkit-stack-name CDKToolkitTemp
+    --qualifier random1234 \
+    --toolkit-stack-name CDKToolkitTemp \
     aws://111111111111/us-east-1
 ```
 
