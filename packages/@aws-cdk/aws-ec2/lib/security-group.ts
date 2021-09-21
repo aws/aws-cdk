@@ -382,6 +382,7 @@ export class SecurityGroup extends SecurityGroupBase {
    * An attribute that represents the security group name.
    *
    * @attribute
+   * @deprecated returns the security group ID, rather than the name.
    */
   public readonly securityGroupName: string;
 
