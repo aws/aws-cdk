@@ -131,7 +131,7 @@ export class CloudFormationInit {
       resourceLocator = `${resourceLocator} --url https://cloudformation.${Aws.REGION}.${Aws.URL_SUFFIX}`;
     }
     if (attachOptions.includeRole) {
-      resourceLocator = `${resourceLocator} --role ${attachOptions.instanceRole}`;
+      resourceLocator = `${resourceLocator} --role ${attachOptions.instanceRole.roleName}`;
     }
     const configSets = (attachOptions.configSets ?? ['default']).join(',');
     const printLog = attachOptions.printLog ?? true;
