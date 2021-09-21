@@ -1,4 +1,5 @@
 import { Matcher, MatchResult } from './matcher';
+import { getType } from './private/type';
 import { ABSENT } from './vendored/assert';
 
 /**
@@ -62,6 +63,21 @@ export abstract class Match {
    */
   public static not(pattern: any): Matcher {
     return new NotMatch('not', pattern);
+  }
+
+  /**
+   * Matches any string-encoded JSON and applies the specified pattern after parsing it.
+   * @param pattern the pattern to match after parsing the encoded JSON.
+   */
+  public static serializedJson(pattern: any): Matcher {
+    return new SerializedJson('serializedJson', pattern);
+  }
+
+  /**
+   * Matches any non-null value at the target.
+   */
+  public static anyValue(): Matcher {
+    return new AnyMatch('anyValue');
   }
 }
 
@@ -141,7 +157,7 @@ interface ArrayMatchOptions {
  * Match class that matches arrays.
  */
 class ArrayMatch extends Matcher {
-  private readonly partial: boolean;
+  private readonly subsequence: boolean;
 
   constructor(
     public readonly name: string,
@@ -149,14 +165,14 @@ class ArrayMatch extends Matcher {
     options: ArrayMatchOptions = {}) {
 
     super();
-    this.partial = options.subsequence ?? true;
+    this.subsequence = options.subsequence ?? true;
   }
 
   public test(actual: any): MatchResult {
     if (!Array.isArray(actual)) {
       return new MatchResult(actual).push(this, [], `Expected type array but received ${getType(actual)}`);
     }
-    if (!this.partial && this.pattern.length !== actual.length) {
+    if (!this.subsequence && this.pattern.length !== actual.length) {
       return new MatchResult(actual).push(this, [], `Expected array of length ${this.pattern.length} but received ${actual.length}`);
     }
 
@@ -166,10 +182,16 @@ class ArrayMatch extends Matcher {
     const result = new MatchResult(actual);
     while (patternIdx < this.pattern.length && actualIdx < actual.length) {
       const patternElement = this.pattern[patternIdx];
+
       const matcher = Matcher.isMatcher(patternElement) ? patternElement : new LiteralMatch(this.name, patternElement);
+      if (this.subsequence && matcher instanceof AnyMatch) {
+        // array subsequence matcher is not compatible with anyValue() matcher. They don't make sense to be used together.
+        throw new Error('The Matcher anyValue() cannot be nested within arrayWith()');
+      }
+
       const innerResult = matcher.test(actual[actualIdx]);
 
-      if (!this.partial || !innerResult.hasFailed()) {
+      if (!this.subsequence || !innerResult.hasFailed()) {
         result.compose(`[${actualIdx}]`, innerResult);
         patternIdx++;
         actualIdx++;
@@ -251,6 +273,39 @@ class ObjectMatch extends Matcher {
   }
 }
 
+class SerializedJson extends Matcher {
+  constructor(
+    public readonly name: string,
+    private readonly pattern: any,
+  ) {
+    super();
+  };
+
+  public test(actual: any): MatchResult {
+    const result = new MatchResult(actual);
+    if (getType(actual) !== 'string') {
+      result.push(this, [], `Expected JSON as a string but found ${getType(actual)}`);
+      return result;
+    }
+    let parsed;
+    try {
+      parsed = JSON.parse(actual);
+    } catch (err) {
+      if (err instanceof SyntaxError) {
+        result.push(this, [], `Invalid JSON string: ${actual}`);
+        return result;
+      } else {
+        throw err;
+      }
+    }
+
+    const matcher = Matcher.isMatcher(this.pattern) ? this.pattern : new LiteralMatch(this.name, this.pattern);
+    const innerResult = matcher.test(parsed);
+    result.compose(`(${this.name})`, innerResult);
+    return result;
+  }
+}
+
 class NotMatch extends Matcher {
   constructor(
     public readonly name: string,
@@ -271,6 +326,16 @@ class NotMatch extends Matcher {
   }
 }
 
-function getType(obj: any): string {
-  return Array.isArray(obj) ? 'array' : typeof obj;
+class AnyMatch extends Matcher {
+  constructor(public readonly name: string) {
+    super();
+  }
+
+  public test(actual: any): MatchResult {
+    const result = new MatchResult(actual);
+    if (actual == null) {
+      result.push(this, [], 'Expected a value but found none');
+    }
+    return result;
+  }
 }

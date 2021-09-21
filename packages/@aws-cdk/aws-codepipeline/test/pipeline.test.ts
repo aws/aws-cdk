@@ -389,6 +389,41 @@ describe('', () => {
 
 
       });
+
+      test('does not allow enabling key rotation if cross account keys have been disabled', () => {
+        const app = new cdk.App();
+        const stack = new cdk.Stack(app, 'PipelineStack');
+
+        expect(() => {
+          new codepipeline.Pipeline(stack, 'Pipeline', {
+            crossAccountKeys: false,
+            enableKeyRotation: true,
+          });
+        }).toThrow("Setting 'enableKeyRotation' to true also requires 'crossAccountKeys' to be enabled");
+      });
+
+      test("enabling key rotation sets 'EnableKeyRotation' to 'true' in the main generated KMS key", () => {
+        const app = new cdk.App();
+        const stack = new cdk.Stack(app, 'PipelineStack');
+        const sourceOutput = new codepipeline.Artifact();
+        new codepipeline.Pipeline(stack, 'Pipeline', {
+          enableKeyRotation: true,
+          stages: [
+            {
+              stageName: 'Source',
+              actions: [new FakeSourceAction({ actionName: 'Source', output: sourceOutput })],
+            },
+            {
+              stageName: 'Build',
+              actions: [new FakeBuildAction({ actionName: 'Build', input: sourceOutput })],
+            },
+          ],
+        });
+
+        expect(stack).toHaveResourceLike('AWS::KMS::Key', {
+          'EnableKeyRotation': true,
+        });
+      });
     });
   });
 });

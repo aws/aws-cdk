@@ -2,6 +2,49 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.124.0](https://github.com/aws/aws-cdk/compare/v1.123.0...v1.124.0) (2021-09-21)
+
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **assertions:** the `findResources()` API previously returned a list of resources, but now returns a map of logical id to resource.
+* **assertions:** the `findOutputs()` API previously returned a list of outputs, but now returns a map of logical id to output.
+* **assertions:** the `findMappings()` API previously returned a list of mappings, but now returns a map of logical id to mapping.
+
+### Features
+
+* **assertions:** capture matching value ([#16426](https://github.com/aws/aws-cdk/issues/16426)) ([cc74f92](https://github.com/aws/aws-cdk/commit/cc74f92f275a338cb53caa7d6f124ab0dd960f0b))
+* **assertions:** findXxx() APIs now includes the logical id as part of its result ([#16454](https://github.com/aws/aws-cdk/issues/16454)) ([532a72b](https://github.com/aws/aws-cdk/commit/532a72b133e6ebd0c7b8b7c65b273bb0e6f3293c))
+* **assertions:** match into serialized json ([#16456](https://github.com/aws/aws-cdk/issues/16456)) ([fed30fc](https://github.com/aws/aws-cdk/commit/fed30fc815bac1006003524ac6232778f3c3babe))
+* **batch:** fargate support for jobs ([#15848](https://github.com/aws/aws-cdk/issues/15848)) ([066bcb1](https://github.com/aws/aws-cdk/commit/066bcb1e5d53192bd465190c8a4f81c5838987f4)), closes [#13591](https://github.com/aws/aws-cdk/issues/13591) [#13590](https://github.com/aws/aws-cdk/issues/13590) [#13591](https://github.com/aws/aws-cdk/issues/13591)
+* **cfnspec:** cloudformation spec v41.1.0 ([#16472](https://github.com/aws/aws-cdk/issues/16472)) ([28875f9](https://github.com/aws/aws-cdk/commit/28875f9dda4911d3a2fcfcdc6e6d8358bee7c689))
+* **cfnspec:** cloudformation spec v41.1.0 ([#16524](https://github.com/aws/aws-cdk/issues/16524)) ([124a7a1](https://github.com/aws/aws-cdk/commit/124a7a1c20981c72bfdce0c857c87c46c6cb5f51))
+* **cfnspec:** cloudformation spec v41.2.0 ([#16550](https://github.com/aws/aws-cdk/issues/16550)) ([e047bd8](https://github.com/aws/aws-cdk/commit/e047bd80ab08f49a22408eb8c5401f4306747eff))
+* **ec2/ecs:** `cacheInContext` properties for machine images ([#16021](https://github.com/aws/aws-cdk/issues/16021)) ([430f50a](https://github.com/aws/aws-cdk/commit/430f50a546e9c575f8cdbd259367e440d985e68f)), closes [#12484](https://github.com/aws/aws-cdk/issues/12484)
+* **ecs-service-extensions:** Publish Extension ([#16326](https://github.com/aws/aws-cdk/issues/16326)) ([c6c5941](https://github.com/aws/aws-cdk/commit/c6c594159c7fbda66f40fe8666f70b6806bb2d5e))
+* **glue:** Job construct ([#12506](https://github.com/aws/aws-cdk/issues/12506)) ([fc74110](https://github.com/aws/aws-cdk/commit/fc74110ff7eae544d9cfc11b2f6779169f17d145)), closes [#12443](https://github.com/aws/aws-cdk/issues/12443)
+* **lambda:** configure workdir for docker image based functions ([#16111](https://github.com/aws/aws-cdk/issues/16111)) ([b3eafc2](https://github.com/aws/aws-cdk/commit/b3eafc2dc61ed69de20196fa08a4df3c29ecc894))
+* **lambda:** use bundling docker image from ECR public for dotnet and go runtimes ([#16281](https://github.com/aws/aws-cdk/issues/16281)) ([9bbfd18](https://github.com/aws/aws-cdk/commit/9bbfd185c2383612e2be7317a091b72cc5e7a120))
+* **neptune:** add engine version 1.0.5.0 ([#16394](https://github.com/aws/aws-cdk/issues/16394)) ([deaac4a](https://github.com/aws/aws-cdk/commit/deaac4a16e957bd046f24a6c26d735fc4cf980bd)), closes [#16388](https://github.com/aws/aws-cdk/issues/16388)
+* **pipeline:** allow enabling KMS key rotation for cross-region Stacks ([#16468](https://github.com/aws/aws-cdk/issues/16468)) ([2a629dd](https://github.com/aws/aws-cdk/commit/2a629dd7a86cc36c3a503bfc5957880c9edd4d49)), closes [#14381](https://github.com/aws/aws-cdk/issues/14381)
+* **rds:** region replication for generated secrets ([#16497](https://github.com/aws/aws-cdk/issues/16497)) ([1e9d8be](https://github.com/aws/aws-cdk/commit/1e9d8be0a81e1f875bf8b31c701e1069bb98728e)), closes [#16480](https://github.com/aws/aws-cdk/issues/16480)
+* **redshift:** manage database users and tables via cdk ([#15931](https://github.com/aws/aws-cdk/issues/15931)) ([a9d5118](https://github.com/aws/aws-cdk/commit/a9d51185a144cd4962c85227ae5b904510399fa4)), closes [#9815](https://github.com/aws/aws-cdk/issues/9815)
+* **s3-deployment:** enable efs support for handling large files in lambda ([#15220](https://github.com/aws/aws-cdk/issues/15220)) ([2737119](https://github.com/aws/aws-cdk/commit/27371197a24ce6c9212fc99e120c5d77fa08065e))
+* **sns:** adding support for firehose subscription protocol ([#15764](https://github.com/aws/aws-cdk/issues/15764)) ([18aff6b](https://github.com/aws/aws-cdk/commit/18aff6b4c0a5e17c64685ac384b243c16cd910f1))
+* **stepfunctions-tasks:** support Associate Workflow Executions on StepFunctionsStartExecution via associateWithParent property ([#16475](https://github.com/aws/aws-cdk/issues/16475)) ([7d3b90b](https://github.com/aws/aws-cdk/commit/7d3b90b2097aa9b7170a77befcee5822d5d0c3e7)), closes [#14778](https://github.com/aws/aws-cdk/issues/14778)
+
+
+### Bug Fixes
+
+* **apigatewayv2:** ApiMapping does not depend on DomainName ([#16201](https://github.com/aws/aws-cdk/issues/16201)) ([1e247d8](https://github.com/aws/aws-cdk/commit/1e247d89adbc09ff79b87753fcd78b238a6752e8)), closes [#15464](https://github.com/aws/aws-cdk/issues/15464)
+* **cloudformation-diff:** cdk diff not picking up differences if old/new value is in format n.n.n ([#16050](https://github.com/aws/aws-cdk/issues/16050)) ([38426c9](https://github.com/aws/aws-cdk/commit/38426c985d5e0713bbbf14fa639520eca6294124)), closes [#15935](https://github.com/aws/aws-cdk/issues/15935)
+* **config:** the IGW mapping to correct resource type ([#16464](https://github.com/aws/aws-cdk/issues/16464)) ([23d9b6a](https://github.com/aws/aws-cdk/commit/23d9b6a7d5b213e4a1ba4a71984e8e19e3657bd7)), closes [#16463](https://github.com/aws/aws-cdk/issues/16463)
+* **core:** asset hash of symlinked dir is wrong ([#16429](https://github.com/aws/aws-cdk/issues/16429)) ([36ff738](https://github.com/aws/aws-cdk/commit/36ff73809a37998e15176cb8815c118e7ea0c295))
+* **ec2:** set proper role for --role argument of cfn-init ([#16503](https://github.com/aws/aws-cdk/issues/16503)) ([cdbd65d](https://github.com/aws/aws-cdk/commit/cdbd65dc525147810650b4c32d48664a38abede1)), closes [#16501](https://github.com/aws/aws-cdk/issues/16501)
+* **logs:** log retention fails with OperationAbortedException ([#16083](https://github.com/aws/aws-cdk/issues/16083)) ([3e9f04d](https://github.com/aws/aws-cdk/commit/3e9f04dbbd7aadb8ab4394fefd6281f1d6d30fe0)), closes [aws#15709](https://github.com/aws/aws/issues/15709)
+* **route53resolver:** FirewallDomainList throws with wildcard domains ([#16538](https://github.com/aws/aws-cdk/issues/16538)) ([643e5ee](https://github.com/aws/aws-cdk/commit/643e5ee519095968a758942220f1e3a6c20f54b3)), closes [#16527](https://github.com/aws/aws-cdk/issues/16527)
+* **SSM API docs:** Typo `SecretString` -> `SecureString` and note how SecureStrings cannot be created via CDK ([#16228](https://github.com/aws/aws-cdk/issues/16228)) ([950e875](https://github.com/aws/aws-cdk/commit/950e875bfb431c051b5ee2fd405aaf7f2b47bfeb))
+
 ## [1.123.0](https://github.com/aws/aws-cdk/compare/v1.122.0...v1.123.0) (2021-09-16)
 
 
@@ -11,6 +54,12 @@ All notable changes to this project will be documented in this file. See [standa
 
 ## [1.122.0](https://github.com/aws/aws-cdk/compare/v1.121.0...v1.122.0) (2021-09-08)
 
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **assertions:** `hasOutput(props: any)` becomes `hasOutput(logicalId: string, props: any)`
+* **assertions:** `findOutputs(props: any = {})` becomes `findOutputs(logicalId: string, props: any = {})`
+* **assertions:** `hasMapping(props: any)` becomes `hasMapping(logicalId: string, props: any)`
+* **assertions:** `findMappings(props: any = {})` becomes `findMappings(logicalId: string, props: any = {})`
 
 ### Features
 
@@ -31,6 +80,7 @@ All notable changes to this project will be documented in this file. See [standa
 ### Bug Fixes
 
 * **apigatewayv2:** some methods of the `defaultStage` are not available without casting it to `IHttpStage` ([#15607](https://github.com/aws/aws-cdk/issues/15607)) ([27a0113](https://github.com/aws/aws-cdk/commit/27a0113ac68a05360faa22fa8897609f2f90b764))
+* **assertions:** output and mapping assertions do not accept logical id ([#16329](https://github.com/aws/aws-cdk/issues/16329)), closes [#16242](https://github.com/aws/aws-cdk/issues/16242)
 * **assets:** run executable command of container assets in cloud assembly root directory ([#16094](https://github.com/aws/aws-cdk/issues/16094)) ([c2852c9](https://github.com/aws/aws-cdk/commit/c2852c9c524a639a312bf296f7f23b0e3b112f6b)), closes [#15721](https://github.com/aws/aws-cdk/issues/15721)
 * **autoscaling:** EbsDeviceVolumeType.IO2 is not a valid CloudFormation value ([#16028](https://github.com/aws/aws-cdk/issues/16028)) ([492d33b](https://github.com/aws/aws-cdk/commit/492d33b27bc5b935e3da75f0bddd875bb6f9c15d)), closes [#16027](https://github.com/aws/aws-cdk/issues/16027)
 * **cli:** 'deploy' and 'diff' silently does nothing when given unknown stack name ([#16150](https://github.com/aws/aws-cdk/issues/16150)) ([74776f3](https://github.com/aws/aws-cdk/commit/74776f393462f7e7d23cb1953ef786a823adc896)), closes [#15866](https://github.com/aws/aws-cdk/issues/15866)
