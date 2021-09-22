@@ -1,6 +1,6 @@
 import * as autoscaling from '@aws-cdk/aws-autoscaling';
 import * as sns from '@aws-cdk/aws-sns';
-import { Construct } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 
 /**
  * Use an SNS topic as a hook target

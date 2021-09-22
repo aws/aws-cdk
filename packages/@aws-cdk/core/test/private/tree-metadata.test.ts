@@ -1,11 +1,12 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
+import { Construct } from 'constructs';
 import { nodeunitShim, Test } from 'nodeunit-shim';
-import { App, CfnParameter, CfnResource, Construct as CfnConstruct, Lazy, Stack, TreeInspector } from '../../lib/index';
+import { App, CfnParameter, CfnResource, Lazy, Stack, TreeInspector } from '../../lib/index';
 
 abstract class AbstractCfnResource extends CfnResource {
-  constructor(scope: CfnConstruct, id: string) {
+  constructor(scope: Construct, id: string) {
     super(scope, id, {
       type: 'CDK::UnitTest::MyCfnResource',
     });
@@ -24,7 +25,7 @@ nodeunitShim({
     const app = new App();
 
     const stack = new Stack(app, 'mystack');
-    new CfnConstruct(stack, 'myconstruct');
+    new Construct(stack, 'myconstruct');
 
     const assembly = app.synth();
     const treeArtifact = assembly.tree();
@@ -233,7 +234,7 @@ nodeunitShim({
     class MyFirstResource extends AbstractCfnResource {
       public readonly lazykey: string;
 
-      constructor(scope: CfnConstruct, id: string) {
+      constructor(scope: Construct, id: string) {
         super(scope, id);
         this.lazykey = Lazy.string({ produce: () => 'LazyResolved!' });
       }
@@ -248,7 +249,7 @@ nodeunitShim({
     class MySecondResource extends AbstractCfnResource {
       public readonly myprop: string;
 
-      constructor(scope: CfnConstruct, id: string, myprop: string) {
+      constructor(scope: Construct, id: string, myprop: string) {
         super(scope, id);
         this.myprop = myprop;
       }
