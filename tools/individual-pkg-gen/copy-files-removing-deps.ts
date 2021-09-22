@@ -43,9 +43,11 @@ function transformPackages(): void {
         continue;
       }
 
-      if (sourceFileName.match('generated') && !sourceFileName.match(/canned-metric|augmentations/)) {
+      const serviceName = pkg.name.substring('@aws-cdk/aws-'.length);
+      if (sourceFileName.startsWith(`${serviceName}.generated`)) {
         // Skip copying the generated L1 files: foo.generated.*
-        // Don't skip the augmentations and canned metrics: foo-augmentations.generated.*, foo-canned-metrics.generated.*
+        // Don't skip the augmentations and canned metrics: foo-augmentations.generated.*, foo-canned-metrics.generated.*,
+        // or any other new foo-x.generated.* format they might be introduced.
         continue;
       }
 
@@ -90,6 +92,7 @@ function transformPackages(): void {
         const sourceCodeOutput = awsCdkMigration.rewriteImports(sourceCode, sourceFileName, {
           customModules: alphaPackages,
           rewriteCfnImports: true,
+          packageUnscopedName: `${pkg.name.substring('@aws-cdk/'.length)}`,
         });
         fs.outputFileSync(destination, sourceCodeOutput);
       } else {

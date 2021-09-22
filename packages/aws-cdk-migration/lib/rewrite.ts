@@ -10,7 +10,7 @@ export interface RewriteOptions {
   readonly customModules?: { [moduleName: string]: string };
 
   /**
-   * Optional flag to set for rewriting imports in alpha packages. When true, this will rewrite imports of generated L1s to reference aws-cdk-lib.
+   * When true, this will rewrite imports of generated L1s to reference aws-cdk-lib.
    *
    * For example:
    *   import * as codestar from './codestar.generated';`
@@ -18,6 +18,11 @@ export interface RewriteOptions {
    *   import * as codestar from 'aws-cdk-lib/aws-codestar';
    */
   readonly rewriteCfnImports?: boolean;
+
+  /**
+   * The unscoped name of the package, e.g. 'aws-kinesisfirehose'.
+   */
+  readonly packageUnscopedName?: string;
 }
 
 /**
@@ -129,10 +134,8 @@ function updatedLocationOf(modulePath: string, options: RewriteOptions, imported
     return customModulePath;
   }
 
-  if (options.rewriteCfnImports && modulePath.endsWith('generated') && !modulePath.match(/canned-metric|augmentations/)) {
-    const modulePathSplit = modulePath.split(/[./]/);
-    // The following line takes the 2nd to last item in modulePathSplit, which will always be the basename of the module e.g. apigatewayv2.
-    return `aws-cdk-lib/aws-${modulePathSplit[modulePathSplit.length - 2]}`;
+  if (options.rewriteCfnImports && modulePath === `./${options.packageUnscopedName?.substr('aws-'.length)}.generated`) {
+    return `aws-cdk-lib/${options.packageUnscopedName}`;
   }
 
   if (!modulePath.startsWith('@aws-cdk/') || EXEMPTIONS.has(modulePath)) {
