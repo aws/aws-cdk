@@ -1,0 +1,9 @@
+{
+  "name": "cluster-resource-handler",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "proxy-agent": "5.0.0"
+  }
+}
