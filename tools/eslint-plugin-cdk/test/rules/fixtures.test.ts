@@ -12,10 +12,7 @@ fs.mkdirpSync(outputRoot);
 
 const fixturesRoot = path.join(__dirname, 'fixtures');
 
-fs.readdirSync(fixturesRoot).filter(f =>
-  fs.lstatSync(path.join(fixturesRoot, f)).isDirectory()
-  && !f.match('invalid-cfn-imports')
-).forEach(d => {
+fs.readdirSync(fixturesRoot).filter(f => fs.lstatSync(path.join(fixturesRoot, f)).isDirectory()).forEach(d => {
   describe(d, () => {
     const fixturesDir = path.join(fixturesRoot, d);
 
@@ -39,15 +36,35 @@ fs.readdirSync(fixturesRoot).filter(f =>
 
     fixtureFiles.forEach(f => {
       test(f, async (done) => {
-        const actualFile = await lintAndFix(path.join(fixturesDir, f), outputDir);
-        const expectedFile = path.join(fixturesDir, `${path.basename(f, '.ts')}.expected.ts`);
-        if (!fs.existsSync(expectedFile)) {
-          done.fail(`Expected file not found. Generated output at ${actualFile}`);
-        }
-        const actual = await fs.readFile(actualFile, { encoding: 'utf8' });
-        const expected = await fs.readFile(expectedFile, { encoding: 'utf8' });
-        if (actual !== expected) {
-          done.fail(`Linted file did not match expectations. Expected: ${expectedFile}. Actual: ${actualFile}`);
+        const originalFilePath = path.join(fixturesDir, f);
+        const expectedFixedFilePath = path.join(fixturesDir, `${path.basename(f, '.ts')}.expected.ts`);
+        const expectedErrorFilepath = path.join(fixturesDir, `${path.basename(f, '.ts')}.error.txt`);
+        const fix = fs.existsSync(expectedFixedFilePath);
+        const checkErrors = fs.existsSync(expectedErrorFilepath);
+        if (fix && checkErrors) {
+          done.fail(`Expected only a fixed file or an expected error. Both ${expectedFixedFilePath} and ${expectedErrorFilepath} are present.`);
+          return;
+        } else if (fix) {
+          const actualFile = await lintAndFix(originalFilePath, outputDir);
+          const actual = await fs.readFile(actualFile, { encoding: 'utf8' });
+          const expected = await fs.readFile(expectedFixedFilePath, { encoding: 'utf8' });
+          if (actual !== expected) {
+            done.fail(`Linted file did not match expectations. Expected: ${expectedFixedFilePath}. Actual: ${actualFile}`);
+            return;
+          }
+          done();
+          return;
+        } else if (checkErrors) {
+          const result = await lintAndGetErrorCountAndMessage(originalFilePath)
+          const expectedErrorMessage = await fs.readFile(expectedErrorFilepath, { encoding: 'utf8' });
+          if (result.errorMessage !== expectedErrorMessage) {
+            done.fail(`Error mesage from linter did not match expectations. Linted file: ${path.join(fixturesDir, f)}. \nExpected error message: ${expectedErrorMessage} \nActual error message: ${result.errorMessage}`);
+            return;
+          }
+          done();
+          return;
+        } else {
+          done.fail(`Expected fixed file or expected error file not found.`);
         }
         done();
       });
@@ -69,4 +86,20 @@ async function lintAndFix(file: string, outputDir: string) {
     await fs.copyFile(file, newPath);
   }
   return newPath;
+}
+
+async function lintAndGetErrorCountAndMessage(file: string) {
+  const result = await linter.lintFiles(file);
+  let errorCount = 0;
+  let errorMessage: string | undefined = undefined;
+  if (result.length === 1) {
+    errorCount = result[0].errorCount;
+    if (result[0].messages.length === 1) {
+      errorMessage = result[0].messages[0].message;
+    }
+  };
+  return {
+    errorCount,
+    errorMessage,
+  };
 }
