@@ -36,20 +36,39 @@ describe(d, () => {
   fixtureFiles.forEach(f => {
     test(f, async (done) => {
       const originalFilepath = path.join(fixturesDir, f);
-      const errorCount = await lintAndGetErrorCount(originalFilepath)
-      if (errorCount > 0) {
-        done();
-      } else {
-        done.fail(`Linter did not find any errors in the test file: ${path.join(fixturesDir, f)}`);
+      const expectedErrorFilepath = path.join(fixturesDir, `${path.basename(f, '.ts')}.error.txt`);
+      const result = await lintAndGetErrorCountAndMessage(originalFilepath)
+
+      if (!fs.existsSync(expectedErrorFilepath)) {
+        if (result.errorCount !== 0) {
+          done.fail(`Linter found errors in file: ${originalFilepath}, when none were expected because there is no corresponding ${expectedErrorFilepath} file.`);
+          return;
+        } else {
+          done();
+          return;
+        }
       }
+      const expectedErrorMessage = await fs.readFile(expectedErrorFilepath, { encoding: 'utf8' });
+      if (result.errorMessage !== expectedErrorMessage) {
+        done.fail(`Error mesage from linter did not match expectations. Linted file: ${originalFilepath}. \nExpected error message: ${expectedErrorMessage} \nActual error message: ${result.errorMessage}`);
+      }
+      done();
     });
   });
 });
 
-async function lintAndGetErrorCount(file: string) {
+async function lintAndGetErrorCountAndMessage(file: string) {
   const result = await linter.lintFiles(file);
+  let errorCount = 0;
+  let errorMessage: string | undefined = undefined;
   if (result.length === 1) {
-    return (result[0].errorCount);
+    errorCount = result[0].errorCount;
+    if (result[0].messages.length === 1) {
+      errorMessage = result[0].messages[0].message;
+    }
   };
-  return 0;
+  return {
+    errorCount,
+    errorMessage,
+  };
 }

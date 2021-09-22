@@ -45,13 +45,13 @@ export function create(context: Rule.RuleContext): Rule.NodeListener {
       if (cfnImports.length > 0 && otherImports.length > 0 && moduleSpecifier.startsWith('.')) {
         // import { CfnXXX, SomethingElse, AnotherThing } from './some/relative/path/not/ending/in/generated';
         context.report({
-          message: 'To allow rewriting imports when generating v2 experimental modules, import of `' + cfnImports.map(e => e.imported.name).join(', ') + '` must be separate from import of `' + otherImports.map(e => e.imported.name).join(', ') + '` , and imported from its specific .generated location.',
+          message: 'To allow rewriting imports when generating v2 experimental modules, import of `' + cfnImports.map(e => e.imported.name).join(', ') + '` must be separate from import of `' + otherImports.map(e => e.imported.name).join(', ') + '`, and imported from its specific .generated location.',
           node: node,
         });
       } else if (cfnImports.length > 0 && moduleSpecifier.startsWith('.')) {
         // import { CfnXXX } from './some/relative/path/not/ending/in/generated';
         context.report({
-          message: 'To allow rewriting imports when generating v2 experimental modules, import of `' + cfnImports.map(e => e.imported.name).join(', ') + 'must be imported from its specific .generated location.',
+          message: 'To allow rewriting imports when generating v2 experimental modules, import of `' + cfnImports.map(e => e.imported.name).join(', ') + ' must be imported from its specific .generated location.',
           node: node,
         });
       } else if (cfnImports.length > 0 && otherImports.length > 0 && checkIfImportedLocationIsAnAlphaPackage(moduleSpecifier)) {
@@ -89,13 +89,13 @@ function reportErrorIfImportedLocationIsNotValid(context: Rule.RuleContext, node
   if (moduleSpecifier.startsWith('.')) {
     // import * as name from './some/relative/path/not/ending/in/generated'; name.CfnConstruct();
     context.report({
-      message: 'To allow rewriting imports when generating v2 experimental modules, `' + name + '` must be imported by name from its specific .generated location. Original identifier: ' + location + ' actual original location: ' + moduleSpecifier,
+      message: 'To allow rewriting imports when generating v2 experimental modules, `' + name + '` must be imported by name from its specific .generated location.',
       node: node,
     });
   } else if (checkIfImportedLocationIsAnAlphaPackage(moduleSpecifier)) {
     // import * as name from '@aws-cdk/another-alpha-module'; name.CfnConstruct();
     context.report({
-      message: 'To allow rewriting imports when generating v2 experimental modules, `' + name + '` must be imported by name and separate from non-L1 imports, since it is being imported from an experimental package: ' + moduleSpecifier + '. Original identifier: ' + location,
+      message: 'To allow rewriting imports when generating v2 experimental modules, `' + name + '` must be imported by name and separate from non-L1 imports, since it is being imported from an experimental package: ' + moduleSpecifier,
       node: node,
     });
   }
