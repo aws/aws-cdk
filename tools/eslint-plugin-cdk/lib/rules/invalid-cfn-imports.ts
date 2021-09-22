@@ -26,7 +26,8 @@ export function create(context: Rule.RuleContext): Rule.NodeListener {
         }
       });
 
-      if (moduleSpecifier.endsWith('generated')) {
+      if (moduleSpecifier.endsWith('generated') || moduleSpecifier === '@aws-cdk/core') {
+        // If importing directly from a generated file, this is fine. Also we know that aws-cdk/core is not experimental, so that is fine as well. 
         return;
       }
 
