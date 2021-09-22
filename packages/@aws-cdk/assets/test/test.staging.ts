@@ -37,7 +37,7 @@ export = {
 
   'files are copied to the output directory during synth'(test: Test) {
     // GIVEN
-    const app = new App();
+    const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack = new Stack(app, 'stack');
     const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
     const file = path.join(__dirname, 'fs', 'fixtures.tar.gz');

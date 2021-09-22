@@ -6,7 +6,8 @@
     "include": "dependencies/node-version"
   },
   "scripts": {
-    "pkglint": "lerna --scope pkglint run build && lerna run pkglint",
+    "pkglint": "lerna run build --scope pkglint --include-dependencies && lerna run pkglint",
+    "prebuild": "node ./scripts/check-yarn-lock.js",
     "build": "./build.sh",
     "pack": "./pack.sh",
     "compat": "./scripts/check-api-compatibility.sh",
@@ -53,7 +54,7 @@
       "release.json",
       "scripts/resolve-version.js",
       "scripts/resolve-version-lib.js",
-      "version.v1.json"
+      "version.v2.json"
     ],
     "cacheBucket": "nozem-artifacts-eu",
     "cacheBucketRegion": "eu-west-1"
@@ -71,6 +72,16 @@
     "nohoist": [
       "**/jszip",
       "**/jszip/**",
+      "@aws-cdk/assertions-alpha/colors",
+      "@aws-cdk/assertions-alpha/colors/**",
+      "@aws-cdk/assertions-alpha/diff",
+      "@aws-cdk/assertions-alpha/diff/**",
+      "@aws-cdk/assertions-alpha/fast-deep-equal",
+      "@aws-cdk/assertions-alpha/fast-deep-equal/**",
+      "@aws-cdk/assertions-alpha/string-width",
+      "@aws-cdk/assertions-alpha/string-width/**",
+      "@aws-cdk/assertions-alpha/table",
+      "@aws-cdk/assertions-alpha/table/**",
       "@aws-cdk/assertions/colors",
       "@aws-cdk/assertions/colors/**",
       "@aws-cdk/assertions/diff",

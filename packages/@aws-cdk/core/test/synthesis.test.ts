@@ -4,6 +4,8 @@ import * as path from 'path';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as cdk from '../lib';
+import { synthesize } from '../lib/private/synthesis';
+import { Construct } from 'constructs';
 
 function createModernApp() {
   return new cdk.App();
@@ -61,67 +63,13 @@ nodeunitShim({
     test.done();
   },
 
-  'some random construct implements "synthesize"'(test: Test) {
-    // GIVEN
-    const app = createModernApp();
-    const stack = new cdk.Stack(app, 'one-stack');
-
-    class MyConstruct extends cdk.Construct {
-      protected synthesize(s: cdk.ISynthesisSession) {
-        writeJson(s.assembly.outdir, 'foo.json', { bar: 123 });
-        s.assembly.addArtifact('my-random-construct', {
-          type: cxschema.ArtifactType.AWS_CLOUDFORMATION_STACK,
-          environment: 'aws://12345/bar',
-          properties: {
-            templateFile: 'foo.json',
-          },
-        });
-      }
-    }
-
-    new MyConstruct(stack, 'MyConstruct');
-
-    // WHEN
-    const session = app.synth();
-
-    // THEN
-    test.ok(list(session.directory).includes('one-stack.template.json'));
-    test.ok(list(session.directory).includes('foo.json'));
-
-    test.deepEqual(readJson(session.directory, 'foo.json'), { bar: 123 });
-    test.deepEqual(session.manifest, {
-      version: cxschema.Manifest.version(),
-      artifacts: {
-        'Tree': {
-          type: 'cdk:tree',
-          properties: { file: 'tree.json' },
-        },
-        'my-random-construct': {
-          type: 'aws:cloudformation:stack',
-          environment: 'aws://12345/bar',
-          properties: { templateFile: 'foo.json' },
-        },
-        'one-stack': {
-          type: 'aws:cloudformation:stack',
-          environment: 'aws://unknown-account/unknown-region',
-          properties: {
-            templateFile: 'one-stack.template.json',
-            validateOnSynth: false,
-          },
-          displayName: 'one-stack',
-        },
-      },
-    });
-    test.done();
-  },
-
   'random construct uses addCustomSynthesis'(test: Test) {
     // GIVEN
     const app = createModernApp();
     const stack = new cdk.Stack(app, 'one-stack');
 
-    class MyConstruct extends cdk.Construct {
-      constructor(scope: cdk.Construct, id: string) {
+    class MyConstruct extends Construct {
+      constructor(scope: Construct, id: string) {
         super(scope, id);
 
         cdk.attachCustomSynthesis(this, {
@@ -151,7 +99,7 @@ nodeunitShim({
     test.deepEqual(readJson(session.directory, 'foo.json'), { bar: 123 });
     test.deepEqual(session.manifest, {
       version: cxschema.Manifest.version(),
-      artifacts: {
+      artifacts: expect.objectContaining({
         'Tree': {
           type: 'cdk:tree',
           properties: { file: 'tree.json' },
@@ -161,16 +109,16 @@ nodeunitShim({
           environment: 'aws://12345/bar',
           properties: { templateFile: 'foo.json' },
         },
-        'one-stack': {
+        'one-stack': expect.objectContaining({
           type: 'aws:cloudformation:stack',
           environment: 'aws://unknown-account/unknown-region',
-          properties: {
+          properties: expect.objectContaining({
             templateFile: 'one-stack.template.json',
             validateOnSynth: false,
-          },
+          }),
           displayName: 'one-stack',
-        },
-      },
+        }),
+      }),
     });
     test.done();
   },
@@ -178,12 +126,20 @@ nodeunitShim({
   'it should be possible to synthesize without an app'(test: Test) {
     const calls = new Array<string>();
 
-    class SynthesizeMe extends cdk.Construct {
+    class SynthesizeMe extends cdk.Stack {
       constructor() {
-        super(undefined as any, 'id');
+        super(undefined as any, 'id', {
+          synthesizer: new cdk.LegacyStackSynthesizer(),
+        });
+        this.node.addValidation({
+          validate: () => {
+            calls.push('validate');
+            return [];
+          },
+        });
       }
 
-      protected synthesize(session: cdk.ISynthesisSession) {
+      public _synthesizeTemplate(session: cdk.ISynthesisSession) {
         calls.push('synthesize');
 
         session.assembly.addArtifact('art', {
@@ -200,21 +156,12 @@ nodeunitShim({
 
         writeJson(session.assembly.outdir, 'hey.json', { hello: 123 });
       }
-
-      protected validate(): string[] {
-        calls.push('validate');
-        return [];
-      }
-
-      protected prepare(): void {
-        calls.push('prepare');
-      }
     }
 
     const root = new SynthesizeMe();
-    const assembly = cdk.ConstructNode.synth(root.node, { outdir: fs.mkdtempSync(path.join(os.tmpdir(), 'outdir')) });
+    const assembly = synthesize(root, { outdir: fs.mkdtempSync(path.join(os.tmpdir(), 'outdir')) });
 
-    test.deepEqual(calls, ['prepare', 'validate', 'synthesize']);
+    test.deepEqual(calls, ['validate', 'synthesize']);
     const stack = assembly.getStackByName('art');
     test.deepEqual(stack.template, { hello: 123 });
     test.deepEqual(stack.templateFile, 'hey.json');

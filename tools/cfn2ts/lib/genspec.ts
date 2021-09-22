@@ -9,6 +9,7 @@ import * as util from './util';
 
 const RESOURCE_CLASS_PREFIX = 'Cfn';
 
+export const CONSTRUCTS_NAMESPACE = 'constructs';
 export const CORE_NAMESPACE = 'cdk';
 export const CFN_PARSE_NAMESPACE = 'cfn_parse';
 
