@@ -1,6 +1,6 @@
 import * as yargs from 'yargs';
 import { shell } from '../lib/os';
-import { cdkBuildOptions, hasIntegTests } from '../lib/package-info';
+import { cdkBuildOptions, unitTestFiles, hasIntegTests } from '../lib/package-info';
 import { Timers } from '../lib/timer';
 
 async function main() {
@@ -34,7 +34,10 @@ async function main() {
     await shell(options.test, defaultShellOptions);
   }
 
-  await shell([args.jest], defaultShellOptions);
+  const testFiles = await unitTestFiles();
+  if (testFiles.length > 0) {
+    await shell([args.jest], defaultShellOptions);
+  }
 
   // Run integration test if the package has integ test files
   if (await hasIntegTests()) {
