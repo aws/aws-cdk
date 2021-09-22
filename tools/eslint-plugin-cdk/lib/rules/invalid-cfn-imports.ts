@@ -10,7 +10,7 @@ let namespaceImports: {
 export function create(context: Rule.RuleContext): Rule.NodeListener {
   // The format of Cfn imports only matters for alpha modules, so that they can be
   // formatted correctly when released separately for V2. The linter rule should only be
-  // applied if the file is in an alpha package, or it is a test rule. 
+  // applied if the file is in an alpha package, or it is a test rule.
   const filename = context.getFilename();
   if (!inAlphaPackage(filename) && !filename.match('test/rules/fixtures')) {
     return {};
