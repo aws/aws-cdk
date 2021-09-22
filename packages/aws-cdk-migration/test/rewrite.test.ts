@@ -94,6 +94,8 @@ describe(rewriteImports, () => {
     const codestar = rewriteImports(`
     // something before
     import * as codestar from './codestar.generated';
+    import { CfnY } from '../codestar.generated';
+    import { CfnX } from '../lib/codestar.generated';
     // something after
 
     console.log('Look! I did something!');`, 'subject.ts', {
@@ -104,60 +106,8 @@ describe(rewriteImports, () => {
     expect(codestar).toBe(`
     // something before
     import * as codestar from 'aws-cdk-lib/aws-codestar';
-    // something after
-
-    console.log('Look! I did something!');`);
-
-    // Glue example
-    const glue = rewriteImports(`
-    // something before
-    import { CfnConnection } from './glue.generated';
-    // something after
-
-    console.log('Look! I did something!');`, 'subject.ts', {
-      rewriteCfnImports: true,
-      packageUnscopedName: 'aws-glue',
-    });
-
-    expect(glue).toBe(`
-    // something before
-    import { CfnConnection } from 'aws-cdk-lib/aws-glue';
-    // something after
-
-    console.log('Look! I did something!');`);
-
-    // ApiGatewayV2 example
-    const apigatewayv2 = rewriteImports(`
-    // something before
-    import { CfnApi } from '../apigatewayv2.generated';
-    // something after
-
-    console.log('Look! I did something!');`, 'subject.ts', {
-      rewriteCfnImports: true,
-      packageUnscopedName: 'aws-apigatewayv2',
-    });
-
-    expect(apigatewayv2).toBe(`
-    // something before
-    import { CfnApi } from 'aws-cdk-lib/aws-apigatewayv2';
-    // something after
-
-    console.log('Look! I did something!');`);
-
-    // Cloud9 example
-    const cloud9 = rewriteImports(`
-    // something before
-    import { CfnEnvironmentEC2 } from '../lib/cloud9.generated';
-    // something after
-
-    console.log('Look! I did something!');`, 'subject.ts', {
-      rewriteCfnImports: true,
-      packageUnscopedName: 'aws-cloud9',
-    });
-
-    expect(cloud9).toBe(`
-    // something before
-    import { CfnEnvironmentEC2 } from 'aws-cdk-lib/aws-cloud9';
+    import { CfnY } from 'aws-cdk-lib/aws-codestar';
+    import { CfnX } from 'aws-cdk-lib/aws-codestar';
     // something after
 
     console.log('Look! I did something!');`);
