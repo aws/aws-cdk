@@ -47,7 +47,7 @@ function transformPackages(): void {
       if (sourceFileName.startsWith(`${serviceName}.generated`)) {
         // Skip copying the generated L1 files: foo.generated.*
         // Don't skip the augmentations and canned metrics: foo-augmentations.generated.*, foo-canned-metrics.generated.*,
-        // or any other new foo-x.generated.* format they might be introduced.
+        // or any other new foo-x.generated.* format that might be introduced.
         continue;
       }
 
