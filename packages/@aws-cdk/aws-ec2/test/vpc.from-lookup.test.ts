@@ -166,7 +166,7 @@ nodeunitShim({
       });
 
       // WHEN
-      const subnets = vpc.selectSubnets({ subnetType: SubnetType.PRIVATE, onePerAz: true });
+      const subnets = vpc.selectSubnets({ subnetType: SubnetType.PRIVATE_WITH_NAT, onePerAz: true });
 
       // THEN: we got 2 subnets and not 4
       test.deepEqual(subnets.subnets.map(s => s.availabilityZone), ['us-east-1c', 'us-east-1d']);
