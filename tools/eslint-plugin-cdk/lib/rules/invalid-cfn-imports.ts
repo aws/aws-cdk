@@ -85,6 +85,10 @@ export function create(context: Rule.RuleContext): Rule.NodeListener {
 
 function reportErrorIfImportedLocationIsNotValid(context: Rule.RuleContext, node: Identifier, name: string, barrelImportName: string) {
   const location = namespaceImports[barrelImportName];
+  if (!location) {
+    // This scenario should not happen, but if it does, we don't want users to run into weird runtime errors from the linter.
+    return;
+  }
   if (location.endsWith('generated') || location === '@aws-cdk/core') {
     return;
   }
@@ -108,20 +112,15 @@ function currentFileIsInAlphaPackage(filename: string): boolean {
   const awsCdkNamespaceIndex = filePathSplit.findIndex(e => e.match('@aws-cdk'))
   if (awsCdkNamespaceIndex !== -1) {
     const packageDir = filePathSplit.slice(0, awsCdkNamespaceIndex + 2).join('/');
-    console.log('checking if current file is in alpha package: ' + filename);
     return isAlphaPackage(packageDir);
   }
   return false;
 }
 
 function checkIfImportedLocationIsAnAlphaPackage(location: string, currentFilename: string): boolean {
-  console.log('checking if imported location is in an alpha package: ' + location);
-  console.log('current filename: ' + currentFilename);
-
   const rootDir = getCdkRootDir(currentFilename);
   if (rootDir) {
     const packageDir = rootDir + `/packages/${location}`;
-    console.log('checking if imported location is alpha. directory: ' + packageDir);
     return isAlphaPackage(packageDir);
   }
   return false;
@@ -168,6 +167,11 @@ function checkLeftAndRightForCfn(node: any): { name: string, location: string } 
     return undefined;
   }
   if (node.name?.startsWith('Cfn')) {
+    if (node.name === node.parent.left.name) {
+      // This is the scenario for a reference to CfnConstruct.subtype
+      // In this case, it is not qualified with a barrel import, so we don't need to do anything. 
+      return undefined;
+    }
     return {
       name: node.name,
       location: node.parent.left.name,
