@@ -79,9 +79,7 @@ async function lintAndFix(file: string, outputDir: string) {
 
 async function lintAndGetErrorCount(file: string) {
   const result = await linter.lintFiles(file);
-  console.log('length:' + result.length);
   if(result.length === 1) {
-    console.log('returning: ' + result[0].errorCount);
     return(result[0].errorCount);
   };
   return 0;
