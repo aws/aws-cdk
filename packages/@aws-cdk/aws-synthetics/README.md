@@ -89,19 +89,24 @@ To learn more about Synthetics capabilities, check out the [docs](https://docs.a
 
 
 ### Canary Schedule
-You can set the canary `schedule` property by assigning it a value with the `synthetics.Schedule` [class](https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_aws-synthetics.Schedule.html).
 
-Configure a run rate of up to 60 minutes with `synthetics.Schedule.rate`:
+You can specify the schedule on which a canary runs by providing a
+[`Schedule`](https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_aws-synthetics.Schedule.html)
+object to the `schedule` property.
 
-```js
-synthetics.Schedule.rate(Duration.minutes(5)), // Run every 5 minutes.
+Configure a run rate of up to 60 minutes with `Schedule.rate`:
+
+```ts
+Schedule.rate(Duration.minutes(5)), // Runs every 5 minutes.
 ```
 
-If expanded access to scheduling the canary is needed, use `synthetics.Schedule.expression` with [cron expressions, as defined here](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_cron.html), for example:
+You can also specify a [cron expression](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_cron.html) via `Schedule.expression`:
 
-```js
-synthetics.Schedule.expression('cron(0 0,8,16 * * ? *)'), // Run at 12am, 8am, 4pm UTC every day
+```ts
+Schedule.expression('cron(0 0,8,16 * * ? *)'), // Run at 12am, 8am, 4pm UTC every day
 ```
+
+If you want the canary to run just once upon deployment, you can use `Schedule.once()`.
 
 ### Configuring the Canary Script
 
