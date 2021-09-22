@@ -42,11 +42,38 @@ function isStateMachineDefinitionOnlyChange(
 
   const propertyUpdates = change.propertyUpdates;
 
+  for (const updatedPropName in propertyUpdates) {
+    const updatedProp = propertyUpdates[updatedPropName];
+    if (updatedProp.newValue === undefined) {
+      return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
+    }
+    /*eslint-disable*/
+    for (const newPropName in updatedProp.newValue) {
+      console.log('newPropName: ' + newPropName);
+    }
+  }
+
   // ensure that only changes to the definition string result in a hotswap
   for (const updatedPropName in propertyUpdates) {
     const updatedProp = propertyUpdates[updatedPropName];
 
+    console.log('name: ' + updatedPropName);
+    console.log(propertyUpdates);
+
+    if (updatedPropName === 'DefinitionString') {
+      console.log('newValue');
+      console.log(updatedProp.newValue);
+      console.log('returning: ');
+      console.log(updatedProp.newValue, assetParamsWithEnv);
+      return stringifyPotentialCfnExpression(updatedProp.newValue, assetParamsWithEnv);
+    }
+
     for (const newPropName in updatedProp.newValue) {
+      if (newPropName === 'DefinitionString') {
+        console.log('--------------------------------------');
+      }
+
+
       if (newPropName === 'Fn::Join') {
         const joinString = updatedProp.newValue[newPropName];
         const updatedDefinition = JSON.parse(joinString[1]);
