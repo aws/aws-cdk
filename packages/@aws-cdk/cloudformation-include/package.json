@@ -55,7 +55,6 @@
     "pre": [
       "node ./build.js"
     ],
-    "jest": true,
     "env": {
       "AWSLINT_BASE_CONSTRUCT": "true"
     }
