@@ -450,6 +450,8 @@ export class Color {
 
   /** red - hex #d62728 */
   public static readonly RED = '#d62728';
+
+  private constructor() {}
 }
 
 /**
