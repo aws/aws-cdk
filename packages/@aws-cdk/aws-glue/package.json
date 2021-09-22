@@ -55,7 +55,6 @@
   },
   "cdk-build": {
     "cloudformation": "AWS::Glue",
-    "jest": true,
     "env": {
       "AWSLINT_BASE_CONSTRUCT": "true"
     }
@@ -76,7 +75,6 @@
     "@types/jest": "^26.0.24",
     "@aws-cdk/assertions": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
-    "@types/nodeunit": "^0.0.32",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
     "cfn2ts": "0.0.0",

@@ -91,9 +91,6 @@
   "awscdkio": {
     "announce": false
   },
-  "cdk-build": {
-    "jest": true
-  },
   "nozem": {
     "ostools": [
       "docker"

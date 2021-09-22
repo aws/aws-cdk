@@ -62,7 +62,6 @@
   },
   "cdk-build": {
     "cloudformation": "AWS::Redshift",
-    "jest": true,
     "env": {
       "AWSLINT_BASE_CONSTRUCT": true
     }

@@ -29,9 +29,7 @@
     "standard-version": "^9.3.1",
     "typescript": "~3.9.10"
   },
-  "tap-mocha-reporter-resolutions-comment": "should be removed or reviewed when nodeunit dependency is dropped or adjusted",
   "resolutions": {
-    "tap-mocha-reporter": "^5.0.1",
     "string-width": "^4.2.2"
   },
   "repository": {

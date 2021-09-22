@@ -57,8 +57,7 @@
     "cloudformation": "AWS::Logs",
     "env": {
       "AWSLINT_BASE_CONSTRUCT": true
-    },
-    "jest": true
+    }
   },
   "keywords": [
     "aws",

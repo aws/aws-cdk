@@ -56,7 +56,6 @@
   },
   "cdk-build": {
     "cloudformation": "AWS::Timestream",
-    "jest": true,
     "env": {
       "AWSLINT_BASE_CONSTRUCT": "true"
     }

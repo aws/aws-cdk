@@ -58,7 +58,6 @@
   },
   "cdk-build": {
     "cloudformation": "AWS::ServiceCatalogAppRegistry",
-    "jest": true,
     "env": {
       "AWSLINT_BASE_CONSTRUCT": "true"
     }

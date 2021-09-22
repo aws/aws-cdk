@@ -55,7 +55,6 @@
   },
   "cdk-build": {
     "cloudformation": "AWS::KinesisFirehose",
-    "jest": true,
     "env": {
       "AWSLINT_BASE_CONSTRUCT": true
     }

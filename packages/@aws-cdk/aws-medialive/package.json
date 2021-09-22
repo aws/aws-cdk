@@ -56,7 +56,6 @@
   },
   "cdk-build": {
     "cloudformation": "AWS::MediaLive",
-    "jest": true,
     "env": {
       "AWSLINT_BASE_CONSTRUCT": true
     }

@@ -156,9 +156,6 @@
   "awscdkio": {
     "announce": false
   },
-  "cdk-build": {
-    "jest": true
-  },
   "publishConfig": {
     "tag": "latest"
   }

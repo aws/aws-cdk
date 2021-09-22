@@ -55,7 +55,6 @@
   },
   "cdk-build": {
     "cloudformation": "AWS::ElasticLoadBalancing",
-    "jest": true,
     "env": {
       "AWSLINT_BASE_CONSTRUCT": true
     }
