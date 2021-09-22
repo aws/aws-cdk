@@ -36,7 +36,6 @@
     "organization": true
   },
   "license": "Apache-2.0",
-  "cdk-build": {},
   "devDependencies": {
     "@types/jest": "^26.0.24",
     "cdk-build-tools": "0.0.0",

@@ -30,7 +30,6 @@
     },
     "projectReferences": true
   },
-  "cdk-build": {},
   "scripts": {
     "gen": "bash build-tools/generate.sh",
     "build": "cdk-build",

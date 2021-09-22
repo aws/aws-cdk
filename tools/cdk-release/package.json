@@ -61,7 +61,6 @@
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"
   },
-  "cdk-build": {},
   "ubergen": {
     "exclude": true
   }

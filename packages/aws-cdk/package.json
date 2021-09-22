@@ -27,7 +27,6 @@
     "build+extract": "yarn build",
     "build+test+extract": "yarn build+test"
   },
-  "cdk-build": {},
   "cdk-package": {
     "shrinkWrap": true
   },

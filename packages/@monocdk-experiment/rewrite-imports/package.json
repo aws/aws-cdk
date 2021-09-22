@@ -19,7 +19,6 @@
     "build+extract": "yarn build",
     "build+test+extract": "yarn build+test"
   },
-  "cdk-build": {},
   "keywords": [
     "aws",
     "cdk",

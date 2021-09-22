@@ -107,18 +107,7 @@
     "node": ">= 10.13.0 <13 || >=13.7.0"
   },
   "nozem": {
-    "ostools": [
-      "dirname",
-      "cd",
-      "bash",
-      "rm",
-      "xargs",
-      "sed",
-      "mkdir",
-      "rsync",
-      "cat",
-      "find"
-    ],
+    "ostools": ["dirname", "cd", "bash", "rm", "xargs", "sed", "mkdir", "rsync", "cat", "find" ],
     "additionalDirs": [
       "../cfnspec/lib",
       "ARTIFACTS:../cfnspec/spec",

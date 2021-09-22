@@ -81,7 +81,6 @@
     "url": "https://aws.amazon.com",
     "organization": true
   },
-  "cdk-build": {},
   "keywords": [
     "aws",
     "cdk"

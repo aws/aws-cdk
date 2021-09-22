@@ -97,7 +97,6 @@
       "docker"
     ]
   },
-  "cdk-build": {},
   "publishConfig": {
     "tag": "latest"
   }

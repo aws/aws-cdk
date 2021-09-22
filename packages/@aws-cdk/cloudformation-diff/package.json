@@ -55,7 +55,6 @@
   },
   "stability": "stable",
   "maturity": "stable",
-  "cdk-build": {},
   "publishConfig": {
     "tag": "latest"
   }

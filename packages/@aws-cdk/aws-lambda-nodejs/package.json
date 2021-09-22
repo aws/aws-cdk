@@ -93,7 +93,6 @@
     "announce": false
   },
   "nozem": false,
-  "cdk-build": {},
   "publishConfig": {
     "tag": "latest"
   }

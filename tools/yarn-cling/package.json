@@ -22,7 +22,6 @@
     "build+extract": "yarn build",
     "build+test+extract": "yarn build+test"
   },
-  "cdk-build": {},
   "author": {
     "name": "Amazon Web Services",
     "url": "https://aws.amazon.com",
