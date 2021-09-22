@@ -90,30 +90,80 @@ describe(rewriteImports, () => {
   });
 
   test('correctly rewrites Cfn imports', () => {
-    const output = rewriteImports(`
+    // Codestar example
+    const codestar = rewriteImports(`
     // something before
     import * as codestar from './codestar.generated';
+    // something after
+
+    console.log('Look! I did something!');`, 'subject.ts', {
+      rewriteCfnImports: true,
+      packageUnscopedName: 'aws-codestar',
+    });
+
+    expect(codestar).toBe(`
+    // something before
+    import * as codestar from 'aws-cdk-lib/aws-codestar';
+    // something after
+
+    console.log('Look! I did something!');`);
+
+    // Glue example
+    const glue = rewriteImports(`
+    // something before
     import { CfnConnection } from './glue.generated';
+    // something after
+
+    console.log('Look! I did something!');`, 'subject.ts', {
+      rewriteCfnImports: true,
+      packageUnscopedName: 'aws-glue',
+    });
+
+    expect(glue).toBe(`
+    // something before
+    import { CfnConnection } from 'aws-cdk-lib/aws-glue';
+    // something after
+
+    console.log('Look! I did something!');`);
+
+    // ApiGatewayV2 example
+    const apigatewayv2 = rewriteImports(`
+    // something before
     import { CfnApi } from '../apigatewayv2.generated';
+    // something after
+
+    console.log('Look! I did something!');`, 'subject.ts', {
+      rewriteCfnImports: true,
+      packageUnscopedName: 'aws-apigatewayv2',
+    });
+
+    expect(apigatewayv2).toBe(`
+    // something before
+    import { CfnApi } from 'aws-cdk-lib/aws-apigatewayv2';
+    // something after
+
+    console.log('Look! I did something!');`);
+
+    // Cloud9 example
+    const cloud9 = rewriteImports(`
+    // something before
     import { CfnEnvironmentEC2 } from '../lib/cloud9.generated';
     // something after
 
     console.log('Look! I did something!');`, 'subject.ts', {
       rewriteCfnImports: true,
+      packageUnscopedName: 'aws-cloud9',
     });
 
-    expect(output).toBe(`
+    expect(cloud9).toBe(`
     // something before
-    import * as codestar from 'aws-cdk-lib/aws-codestar';
-    import { CfnConnection } from 'aws-cdk-lib/aws-glue';
-    import { CfnApi } from 'aws-cdk-lib/aws-apigatewayv2';
     import { CfnEnvironmentEC2 } from 'aws-cdk-lib/aws-cloud9';
     // something after
 
     console.log('Look! I did something!');`);
   });
 
-  test('correctly rewrites Cfn imports for an alpha module', () => {
+  test('correctly rewrites Cfn imports from an alpha module', () => {
     const customModules = {
       '@aws-cdk/aws-kinesisfirehose': 'aws-kinesisfirehose-alpha',
     };

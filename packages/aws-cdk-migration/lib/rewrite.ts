@@ -134,7 +134,7 @@ function updatedLocationOf(modulePath: string, options: RewriteOptions, imported
     return customModulePath;
   }
 
-  if (options.rewriteCfnImports && modulePath === `./${options.packageUnscopedName?.substr('aws-'.length)}.generated`) {
+  if (options.rewriteCfnImports && modulePath.endsWith(`${options.packageUnscopedName?.substr('aws-'.length)}.generated`)) {
     return `aws-cdk-lib/${options.packageUnscopedName}`;
   }
 
