@@ -44,9 +44,9 @@ body:
       label: Acknowledge
       options:
         - label: I may be able to implement this feature request
-          required: true
+          required: false
         - label: This feature might incur a breaking change
-          required: true
+          required: false
 
   - type: markdown
     attributes:
