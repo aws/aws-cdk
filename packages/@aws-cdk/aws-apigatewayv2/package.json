@@ -60,7 +60,6 @@
   },
   "cdk-build": {
     "cloudformation": "AWS::ApiGatewayV2",
-    "jest": true,
     "env": {
       "AWSLINT_BASE_CONSTRUCT": true
     }

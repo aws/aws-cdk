@@ -58,7 +58,6 @@
   },
   "cdk-build": {
     "cloudformation": "AWS::APS",
-    "jest": true,
     "env": {
       "AWSLINT_BASE_CONSTRUCT": "true"
     }
