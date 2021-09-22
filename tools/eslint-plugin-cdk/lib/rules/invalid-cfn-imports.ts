@@ -84,7 +84,7 @@ export function create(context: Rule.RuleContext): Rule.NodeListener {
 
 function reportErrorIfImportedLocationIsNotValid(context: Rule.RuleContext, node: Identifier, name: string, location: string) {
   const moduleSpecifier = namespaceImports[location];
-  if (moduleSpecifier.endsWith('generated')) {
+  if (moduleSpecifier.endsWith('generated') || moduleSpecifier === '@aws-cdk/core') {
     return;
   }
   if (moduleSpecifier.startsWith('.')) {
