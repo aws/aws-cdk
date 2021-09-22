@@ -12,7 +12,7 @@ export function create(context: Rule.RuleContext): Rule.NodeListener {
   // formatted correctly when released separately for V2. The linter rule should only be
   // applied if the file is in an alpha package, or it is a test rule.
   const filename = context.getFilename();
-  if (!inAlphaPackage(filename) && !filename.match('test/rules/fixtures')) {
+  if (!currentFileIsInAlphaPackage(filename) && !filename.match('test/rules/fixtures')) {
     return {};
   }
 
@@ -56,7 +56,7 @@ export function create(context: Rule.RuleContext): Rule.NodeListener {
           message: 'To allow rewriting imports when generating v2 experimental modules, import of `' + cfnImports.map(e => e.imported.name).join(', ') + ' must be imported from its specific .generated location.',
           node: node,
         });
-      } else if (cfnImports.length > 0 && otherImports.length > 0 && checkIfImportedLocationIsAnAlphaPackage(moduleSpecifier)) {
+      } else if (cfnImports.length > 0 && otherImports.length > 0 && checkIfImportedLocationIsAnAlphaPackage(moduleSpecifier, context.getFilename())) {
         // import { CfnXXX, SomethingElse, AnotherThing } from '@aws-cdk/another-alpha-module';
         context.report({
           message: 'To allow rewriting imports when generating v2 experimental modules, import of `' + cfnImports.map(e => e.imported.name).join(', ') + '` must be separate from import of `' + otherImports.map(e => e.imported.name).join(', ') + '`',
@@ -94,7 +94,7 @@ function reportErrorIfImportedLocationIsNotValid(context: Rule.RuleContext, node
       message: 'To allow rewriting imports when generating v2 experimental modules, `' + name + '` must be imported by name from its specific .generated location.',
       node: node,
     });
-  } else if (checkIfImportedLocationIsAnAlphaPackage(moduleSpecifier)) {
+  } else if (checkIfImportedLocationIsAnAlphaPackage(moduleSpecifier, context.getFilename())) {
     // import * as name from '@aws-cdk/another-alpha-module'; name.CfnConstruct();
     context.report({
       message: 'To allow rewriting imports when generating v2 experimental modules, `' + name + '` must be imported by name and separate from non-L1 imports, since it is being imported from an experimental package: ' + moduleSpecifier,
@@ -103,32 +103,61 @@ function reportErrorIfImportedLocationIsNotValid(context: Rule.RuleContext, node
   }
 }
 
-function checkIfImportedLocationIsAnAlphaPackage(_moduleName: string): boolean {
-  // TODO
-  return true;
-}
-
-function inAlphaPackage(filename: string): boolean {
-  const filenameSplit = filename.split('/');
-  const awsCdkNamespaceIndex = filenameSplit.findIndex(e => e.match('@aws-cdk'));
+function currentFileIsInAlphaPackage(filename: string): boolean {
+  const filePathSplit = filename.split('/');
+  const awsCdkNamespaceIndex = filePathSplit.findIndex(e => e.match('@aws-cdk'))
   if (awsCdkNamespaceIndex !== -1) {
-    const moduleDir = filenameSplit.slice(0, awsCdkNamespaceIndex + 2).join('/');
-    const pkg = JSON.parse(fs.readFileSync(path.join(moduleDir, 'package.json'), { encoding: 'utf-8' }));
-
-    const separateModule = pkg['separate-module'];
-    if (separateModule !== undefined) {
-      return separateModule;
-    }
-
-    const maturity = pkg.maturity;
-    if (maturity !== 'experimental' && maturity !== 'developer-preview') {
-      return false;
-    }
-    // we're only interested in '@aws-cdk/' packages,
-    // and those that are JSII-enabled (so no @aws-cdk/assert)
-    return pkg.name.startsWith('@aws-cdk/') && !!pkg['jsii'];
+    const moduleDir = filePathSplit.slice(0, awsCdkNamespaceIndex + 2).join('/');
+    console.log('checking if current file is in alpha package: ' + filename);
+    return isAlphaPackage(moduleDir);
   }
   return false;
+}
+
+function checkIfImportedLocationIsAnAlphaPackage(location: string, currentFilename: string): boolean {
+  console.log('checking if imported location is in an alpha package: ' + location);
+  console.log('current filename: ' + currentFilename);
+
+  const rootDir = getCdkRootDir(currentFilename);
+  if (rootDir) {
+    const moduleDir = rootDir + `/packages/${location}`;
+    console.log('checking if imported location is alpha. directory: ' + moduleDir);
+    return isAlphaPackage(moduleDir);
+  }
+  return false;
+}
+
+function getCdkRootDir(filename: string): string | undefined {
+  const filenameSplit = filename.split('/');
+  // for test files
+  let rootDirIndex = filenameSplit.findIndex(e => e.match('tools'));
+
+  // for package files
+  if (rootDirIndex === -1) {
+    rootDirIndex = filenameSplit.findIndex(e => e.match('packages'));
+  }
+
+  if (rootDirIndex !== -1) {
+    return filenameSplit.slice(0, rootDirIndex).join('/');
+  }
+  return undefined;
+}
+
+function isAlphaPackage(moduleDir: string): boolean {
+  const pkg = JSON.parse(fs.readFileSync(path.join(moduleDir, 'package.json'), { encoding: 'utf-8' }));
+
+  const separateModule = pkg['separate-module'];
+  if (separateModule !== undefined) {
+    return separateModule;
+  }
+
+  const maturity = pkg.maturity;
+  if (maturity !== 'experimental' && maturity !== 'developer-preview') {
+    return false;
+  }
+  // we're only interested in '@aws-cdk/' packages,
+  // and those that are JSII-enabled (so no @aws-cdk/assert)
+  return pkg.name.startsWith('@aws-cdk/') && !!pkg['jsii'];
 }
 
 function checkLeftAndRightForCfn(node: any): { name: string, location: string } | undefined {
