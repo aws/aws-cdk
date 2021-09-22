@@ -8,9 +8,9 @@ let namespaceImports: {
 } = {};
 
 export function create(context: Rule.RuleContext): Rule.NodeListener {
-  // The format of Cfn imports only matters for alpha modules, so that they can be
+  // The format of Cfn imports only matters for alpha packages, so that they can be
   // formatted correctly when released separately for V2. The linter rule should only be
-  // applied if the file is in an alpha package, or it is a test rule.
+  // applied if the file is in an alpha package, or it is a test file.
   const filename = context.getFilename();
   if (!currentFileIsInAlphaPackage(filename) && !filename.match('test/rules/fixtures')) {
     return {};
@@ -18,16 +18,16 @@ export function create(context: Rule.RuleContext): Rule.NodeListener {
 
   return {
     ImportDeclaration: node => {
-      const moduleSpecifier = node.source.value as string;
+      const location = node.source.value as string;
       // Store all of the 'import * as name from location' imports, so that we can check the location when
       // we find name.CfnXXX references.
       node.specifiers.forEach(e => {
         if (e.type === 'ImportNamespaceSpecifier') {
-          namespaceImports[e.local.name] = moduleSpecifier;
+          namespaceImports[e.local.name] = location;
         }
       });
 
-      if (moduleSpecifier.endsWith('generated') || moduleSpecifier === '@aws-cdk/core') {
+      if (location.endsWith('generated') || location === '@aws-cdk/core') {
         // If importing directly from a generated file, this is fine. Also we know that aws-cdk/core is not experimental, so that is fine as well. 
         return;
       }
@@ -44,22 +44,22 @@ export function create(context: Rule.RuleContext): Rule.NodeListener {
         }
       });
 
-      if (cfnImports.length > 0 && otherImports.length > 0 && moduleSpecifier.startsWith('.')) {
+      if (cfnImports.length > 0 && otherImports.length > 0 && location.startsWith('.')) {
         // import { CfnXXX, SomethingElse, AnotherThing } from './some/relative/path/not/ending/in/generated';
         context.report({
-          message: 'To allow rewriting imports when generating v2 experimental modules, import of `' + cfnImports.map(e => e.imported.name).join(', ') + '` must be separate from import of `' + otherImports.map(e => e.imported.name).join(', ') + '`, and imported from its specific .generated location.',
+          message: 'To allow rewriting imports when generating v2 experimental packages, import of `' + cfnImports.map(e => e.imported.name).join(', ') + '` must be separate from import of `' + otherImports.map(e => e.imported.name).join(', ') + '`, and imported from its specific .generated location.',
           node: node,
         });
-      } else if (cfnImports.length > 0 && moduleSpecifier.startsWith('.')) {
+      } else if (cfnImports.length > 0 && location.startsWith('.')) {
         // import { CfnXXX } from './some/relative/path/not/ending/in/generated';
         context.report({
-          message: 'To allow rewriting imports when generating v2 experimental modules, import of `' + cfnImports.map(e => e.imported.name).join(', ') + ' must be imported from its specific .generated location.',
+          message: 'To allow rewriting imports when generating v2 experimental packages, import of `' + cfnImports.map(e => e.imported.name).join(', ') + ' must be imported from its specific .generated location.',
           node: node,
         });
-      } else if (cfnImports.length > 0 && otherImports.length > 0 && checkIfImportedLocationIsAnAlphaPackage(moduleSpecifier, context.getFilename())) {
-        // import { CfnXXX, SomethingElse, AnotherThing } from '@aws-cdk/another-alpha-module';
+      } else if (cfnImports.length > 0 && otherImports.length > 0 && checkIfImportedLocationIsAnAlphaPackage(location, context.getFilename())) {
+        // import { CfnXXX, SomethingElse, AnotherThing } from '@aws-cdk/another-alpha-package';
         context.report({
-          message: 'To allow rewriting imports when generating v2 experimental modules, import of `' + cfnImports.map(e => e.imported.name).join(', ') + '` must be separate from import of `' + otherImports.map(e => e.imported.name).join(', ') + '`',
+          message: 'To allow rewriting imports when generating v2 experimental packages, import of `' + cfnImports.map(e => e.imported.name).join(', ') + '` must be separate from import of `' + otherImports.map(e => e.imported.name).join(', ') + '`',
           node: node,
         });
       }
@@ -83,21 +83,21 @@ export function create(context: Rule.RuleContext): Rule.NodeListener {
   };
 }
 
-function reportErrorIfImportedLocationIsNotValid(context: Rule.RuleContext, node: Identifier, name: string, location: string) {
-  const moduleSpecifier = namespaceImports[location];
-  if (moduleSpecifier.endsWith('generated') || moduleSpecifier === '@aws-cdk/core') {
+function reportErrorIfImportedLocationIsNotValid(context: Rule.RuleContext, node: Identifier, name: string, barrelImportName: string) {
+  const location = namespaceImports[barrelImportName];
+  if (location.endsWith('generated') || location === '@aws-cdk/core') {
     return;
   }
-  if (moduleSpecifier.startsWith('.')) {
+  if (location.startsWith('.')) {
     // import * as name from './some/relative/path/not/ending/in/generated'; name.CfnConstruct();
     context.report({
-      message: 'To allow rewriting imports when generating v2 experimental modules, `' + name + '` must be imported by name from its specific .generated location.',
+      message: 'To allow rewriting imports when generating v2 experimental packages, `' + name + '` must be imported by name from its specific .generated location.',
       node: node,
     });
-  } else if (checkIfImportedLocationIsAnAlphaPackage(moduleSpecifier, context.getFilename())) {
-    // import * as name from '@aws-cdk/another-alpha-module'; name.CfnConstruct();
+  } else if (checkIfImportedLocationIsAnAlphaPackage(location, context.getFilename())) {
+    // import * as name from '@aws-cdk/another-alpha-package'; name.CfnConstruct();
     context.report({
-      message: 'To allow rewriting imports when generating v2 experimental modules, `' + name + '` must be imported by name and separate from non-L1 imports, since it is being imported from an experimental package: ' + moduleSpecifier,
+      message: 'To allow rewriting imports when generating v2 experimental packages, `' + name + '` must be imported by name and separate from non-L1 imports, since it is being imported from an experimental package: ' + location,
       node: node,
     });
   }
@@ -107,9 +107,9 @@ function currentFileIsInAlphaPackage(filename: string): boolean {
   const filePathSplit = filename.split('/');
   const awsCdkNamespaceIndex = filePathSplit.findIndex(e => e.match('@aws-cdk'))
   if (awsCdkNamespaceIndex !== -1) {
-    const moduleDir = filePathSplit.slice(0, awsCdkNamespaceIndex + 2).join('/');
+    const packageDir = filePathSplit.slice(0, awsCdkNamespaceIndex + 2).join('/');
     console.log('checking if current file is in alpha package: ' + filename);
-    return isAlphaPackage(moduleDir);
+    return isAlphaPackage(packageDir);
   }
   return false;
 }
@@ -120,9 +120,9 @@ function checkIfImportedLocationIsAnAlphaPackage(location: string, currentFilena
 
   const rootDir = getCdkRootDir(currentFilename);
   if (rootDir) {
-    const moduleDir = rootDir + `/packages/${location}`;
-    console.log('checking if imported location is alpha. directory: ' + moduleDir);
-    return isAlphaPackage(moduleDir);
+    const packageDir = rootDir + `/packages/${location}`;
+    console.log('checking if imported location is alpha. directory: ' + packageDir);
+    return isAlphaPackage(packageDir);
   }
   return false;
 }
@@ -143,8 +143,8 @@ function getCdkRootDir(filename: string): string | undefined {
   return undefined;
 }
 
-function isAlphaPackage(moduleDir: string): boolean {
-  const pkg = JSON.parse(fs.readFileSync(path.join(moduleDir, 'package.json'), { encoding: 'utf-8' }));
+function isAlphaPackage(packageDir: string): boolean {
+  const pkg = JSON.parse(fs.readFileSync(path.join(packageDir, 'package.json'), { encoding: 'utf-8' }));
 
   const separateModule = pkg['separate-module'];
   if (separateModule !== undefined) {
