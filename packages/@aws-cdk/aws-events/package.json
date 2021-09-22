@@ -76,7 +76,6 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@types/jest": "^26.0.24",
-    "@types/nodeunit": "^0.0.32",
     "cdk-build-tools": "0.0.0",
     "cfn2ts": "0.0.0",
     "jest": "^26.6.3",
