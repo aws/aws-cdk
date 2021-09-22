@@ -75,6 +75,14 @@ export function rewriteImports(sourceText: string, fileName: string = 'index.ts'
 
   return updatedSourceText;
 
+  /**
+   * Returns the module specifier (location) of an import statement in one of the following forms:
+   *   import from 'location';
+   *   import * as name from 'location';
+   *   import { Type } = require('location');
+   *   import name = require('location');
+   *   require('location');
+   */
   function getModuleSpecifier(node: ts.Node): ts.StringLiteral | undefined {
     if (ts.isImportDeclaration(node)) {
       // import style
@@ -125,7 +133,7 @@ function updatedLocationOf(modulePath: string, options: RewriteOptions, imported
       if (e.name.text.startsWith('Cfn') || e.propertyName?.text.startsWith('Cfn')) {
         // This is an L1 import, so don't return the customModulePath (which is the alpha module).
         // Return the relevant aws-cdk-lib location.
-        awsCdkLibLocation = `aws-cdk-lib/${modulePath.substring(9)}`;
+        awsCdkLibLocation = `aws-cdk-lib/${modulePath.substring('@aws-cdk/'.length)}`;
       }
     });
     if (awsCdkLibLocation) {
@@ -165,9 +173,13 @@ function updatedLocationOf(modulePath: string, options: RewriteOptions, imported
     return '@aws-cdk/assert/jest';
   }
 
-  return `aws-cdk-lib/${modulePath.substring(9)}`;
+  return `aws-cdk-lib/${modulePath.substring('@aws-cdk/'.length)}`;
 }
 
+/**
+ * Returns the names of all types imported via named imports of the form:
+ * import { Type } from 'location'
+ */
 function getImportedElements(node: ts.Node): ts.NodeArray<ts.ImportSpecifier> | undefined {
   if (
     ts.isImportDeclaration(node)
