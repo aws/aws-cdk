@@ -74,13 +74,6 @@ export async function listFiles(dirName: string, predicate: (x: File) => boolean
   }
 }
 
-/**
- * Return the unit test files for this package
- */
-export async function unitTestFiles(): Promise<File[]> {
-  return listFiles('test', f => f.filename.startsWith('test.') && f.filename.endsWith('.js'));
-}
-
 export async function hasIntegTests(): Promise<boolean> {
   const files = await listFiles('test', f => f.filename.startsWith('integ.') && f.filename.endsWith('.js'));
   return files.length > 0;

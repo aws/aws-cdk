@@ -98,9 +98,7 @@
     "announce": false
   },
   "maturity": "stable",
-  "cdk-build": {
-    "jest": true
-  },
+  "cdk-build": {},
   "publishConfig": {
     "tag": "latest"
   }

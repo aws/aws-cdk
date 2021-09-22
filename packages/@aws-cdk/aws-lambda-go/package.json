@@ -97,9 +97,7 @@
       "docker"
     ]
   },
-  "cdk-build": {
-    "jest": true
-  },
+  "cdk-build": {},
   "publishConfig": {
     "tag": "latest"
   }

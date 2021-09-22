@@ -55,7 +55,6 @@
   },
   "cdk-build": {
     "cloudformation": "AWS::Events",
-    "jest": true,
     "env": {
       "AWSLINT_BASE_CONSTRUCT": "true"
     }

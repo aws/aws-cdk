@@ -41,9 +41,7 @@
     },
     "projectReferences": true
   },
-  "cdk-build": {
-    "jest": true
-  },
+  "cdk-build": {},
   "keywords": [
     "aws",
     "cdk",

@@ -57,8 +57,7 @@
     "cloudformation": "AWS::Route53",
     "env": {
       "AWSLINT_BASE_CONSTRUCT": true
-    },
-    "jest": true
+    }
   },
   "keywords": [
     "aws",
