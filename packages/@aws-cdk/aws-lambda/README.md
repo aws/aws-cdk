@@ -78,6 +78,9 @@ new DockerImageFunction(this, 'ECRFunction', {
 });
 ```
 
+The props for these docker image resources allow overriding the image's `CMD`, `ENTRYPOINT`, and `WORKDIR`
+configurations. See their docs for more information.
+
 ## Execution Role
 
 Lambda functions assume an IAM role during execution. In CDK by default, Lambda
@@ -321,6 +324,28 @@ new LayerVersion(this, 'MyLayer', {
   removalPolicy: cdk.RemovalPolicy.RETAIN,
   code: Code.fromAsset(path.join(__dirname, 'lambda-handler')),
 });
+```
+
+## Lambda Insights
+
+Lambda functions can be configured to use CloudWatch [Lambda Insights](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Lambda-Insights.html)
+which provides low-level runtime metrics for a Lambda functions.
+
+```ts
+import * as lambda from '@aws-cdk/lambda';
+
+new Function(this, 'MyFunction', {
+  insightsVersion: lambda.LambdaInsightsVersion.VERSION_1_0_98_0
+})
+```
+
+If the version of insights is not yet available in the CDK, you can also provide the ARN directly as so -
+
+```ts
+const layerArn = 'arn:aws:lambda:us-east-1:580247275435:layer:LambdaInsightsExtension:14';
+new Function(this, 'MyFunction', {
+  insightsVersion: lambda.LambdaInsightsVersion.fromInsightVersionArn(layerArn)
+})
 ```
 
 ## Event Rule Target
@@ -579,14 +604,14 @@ Example with Python:
 new Function(this, 'Function', {
   code: Code.fromAsset(path.join(__dirname, 'my-python-handler'), {
     bundling: {
-      image: Runtime.PYTHON_3_8.bundlingImage,
+      image: Runtime.PYTHON_3_9.bundlingImage,
       command: [
         'bash', '-c',
         'pip install -r requirements.txt -t /asset-output && cp -au . /asset-output'
       ],
     },
   }),
-  runtime: Runtime.PYTHON_3_8,
+  runtime: Runtime.PYTHON_3_9,
   handler: 'index.handler',
 });
 ```
@@ -610,7 +635,7 @@ new Function(this, 'Function', {
       command: ['my', 'cool', 'command'],
     },
   }),
-  runtime: Runtime.PYTHON_3_8,
+  runtime: Runtime.PYTHON_3_9,
   handler: 'index.handler',
 });
 ```

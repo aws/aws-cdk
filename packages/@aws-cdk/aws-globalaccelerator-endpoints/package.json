@@ -52,7 +52,6 @@
     "build+test+extract": "yarn build+test && yarn rosetta:extract"
   },
   "cdk-build": {
-    "jest": true,
     "env": {
       "AWSLINT_BASE_CONSTRUCT": true
     }
@@ -70,7 +69,7 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/jest": "^26.0.23",
+    "@types/jest": "^26.0.24",
     "@aws-cdk/assert-internal": "0.0.0",
     "aws-sdk": "^2.848.0",
     "aws-sdk-mock": "^5.2.1",

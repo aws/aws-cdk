@@ -670,6 +670,7 @@
       "Type": "AWS::RDS::DBCluster",
       "Properties": {
         "Engine": "aurora",
+        "CopyTagsToSnapshot": true,
         "DBSubnetGroupName": {
           "Ref": "DatabaseSubnets56F17B9A"
         },

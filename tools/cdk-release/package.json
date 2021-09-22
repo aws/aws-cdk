@@ -28,9 +28,9 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/fs-extra": "^8.1.1",
-    "@types/jest": "^26.0.23",
-    "@types/yargs": "^15.0.13",
+    "@types/fs-extra": "^8.1.2",
+    "@types/jest": "^26.0.24",
+    "@types/yargs": "^15.0.14",
     "cdk-build-tools": "0.0.0",
     "jest": "^26.6.3",
     "pkglint": "0.0.0"
@@ -40,7 +40,7 @@
     "conventional-changelog": "^3.1.24",
     "conventional-changelog-config-spec": "^2.1.0",
     "conventional-changelog-preset-loader": "^2.3.4",
-    "conventional-commits-parser": "^3.2.1",
+    "conventional-commits-parser": "^3.2.2",
     "conventional-changelog-writer": "^4.1.0",
     "fs-extra": "^9.1.0",
     "git-raw-commits": "^2.0.10",
@@ -60,9 +60,6 @@
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"
-  },
-  "cdk-build": {
-    "jest": true
   },
   "ubergen": {
     "exclude": true

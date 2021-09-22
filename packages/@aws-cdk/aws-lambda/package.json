@@ -55,7 +55,6 @@
   },
   "cdk-build": {
     "cloudformation": "AWS::Lambda",
-    "jest": true,
     "env": {
       "AWSLINT_BASE_CONSTRUCT": "true"
     }
@@ -77,9 +76,9 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/jest": "^26.0.23",
-    "@types/aws-lambda": "^8.10.77",
-    "@types/lodash": "^4.14.170",
+    "@types/jest": "^26.0.24",
+    "@types/aws-lambda": "^8.10.79",
+    "@types/lodash": "^4.14.171",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",
     "cfn2ts": "0.0.0",
@@ -106,6 +105,7 @@
     "@aws-cdk/aws-sqs": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
+    "@aws-cdk/region-info": "0.0.0",
     "constructs": "^3.3.69"
   },
   "homepage": "https://github.com/aws/aws-cdk",
@@ -127,6 +127,7 @@
     "@aws-cdk/aws-sqs": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
+    "@aws-cdk/region-info": "0.0.0",
     "constructs": "^3.3.69"
   },
   "engines": {

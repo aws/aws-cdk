@@ -839,13 +839,15 @@ function cdkModuleName(name: string) {
   const pythonName = name.replace(/^@/g, '').replace(/\//g, '.').split('.').map(caseUtils.kebab).join('.');
 
   return {
-    javaPackage: `software.amazon.awscdk${isLegacyCdkPkg ? '' : `.${name.replace(/^aws-/, 'services-').replace(/-/g, '.')}`}`,
+    javaPackage: `software.amazon.awscdk${isLegacyCdkPkg ? '' : `.${name.replace(/aws-/, 'services-').replace(/-/g, '.')}`}`,
     mavenArtifactId:
-      isLegacyCdkPkg ? 'cdk'
-        : isCdkPkg ? 'core'
-          : name.startsWith('aws-') || name.startsWith('alexa-') ? name.replace(/^aws-/, '')
-            : name.startsWith('cdk-') ? name
-              : `cdk-${name}`,
+      isLegacyCdkPkg
+        ? 'cdk'
+        : (isCdkPkg
+          ? 'core'
+          : (name.startsWith('aws-') || name.startsWith('alexa-')
+            ? name.replace(/aws-/, '')
+            : (name.startsWith('cdk-') ? name : `cdk-${name}`))),
     dotnetNamespace: `Amazon.CDK${isCdkPkg ? '' : `.${dotnetSuffix}`}`,
     python: {
       distName: `aws-cdk.${pythonName}`,
@@ -1634,6 +1636,7 @@ export class NoExperimentalDependents extends ValidationRule {
     ['@aws-cdk/aws-apigatewayv2-integrations', ['@aws-cdk/aws-apigatewayv2']],
     ['@aws-cdk/aws-apigatewayv2-authorizers', ['@aws-cdk/aws-apigatewayv2']],
     ['@aws-cdk/aws-events-targets', ['@aws-cdk/aws-kinesisfirehose']],
+    ['@aws-cdk/aws-kinesisfirehose-destinations', ['@aws-cdk/aws-kinesisfirehose']],
   ]);
 
   private readonly excludedModules = ['@aws-cdk/cloudformation-include'];
@@ -1805,7 +1808,7 @@ function readBannerFile(file: string): string {
   return fs.readFileSync(path.join(__dirname, 'banners', file), { encoding: 'utf-8' }).trim();
 }
 
-function cdkMajorVersion() {
+function cdkMajorVersion(): number {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const releaseJson = require(`${monoRepoRoot()}/release.json`);
   return releaseJson.majorVersion as number;

@@ -1,13 +1,14 @@
-import * as fs from 'fs';
 import * as path from 'path';
-import { filterCommits, getConventionalCommitsFromGitHistory } from './conventional-commits';
+import * as fs from 'fs-extra';
+import { getConventionalCommitsFromGitHistory } from './conventional-commits';
 import { defaults } from './defaults';
 import { bump } from './lifecycles/bump';
-import { changelog } from './lifecycles/changelog';
+import { writeChangelogs } from './lifecycles/changelog';
 import { commit } from './lifecycles/commit';
 import { debug, debugObject } from './private/print';
-import { ReleaseOptions } from './types';
-import { resolveUpdaterObjectFromArgument } from './updaters';
+import { PackageInfo, ReleaseOptions, Versions } from './types';
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const lerna_project = require('@lerna/project');
 
 module.exports = async function main(opts: ReleaseOptions): Promise<void> {
   // handle the default options
@@ -17,41 +18,43 @@ module.exports = async function main(opts: ReleaseOptions): Promise<void> {
   };
   debugObject(args, 'options are (including defaults)', args);
 
-  const packageInfo = determinePackageInfo(args);
-  debugObject(args, 'packageInfo is', packageInfo);
+  const currentVersion = readVersion(args.versionFile);
+  debugObject(args, 'Current version info', currentVersion);
 
-  const currentVersion = packageInfo.version;
-  debug(args, 'Current version is: ' + currentVersion);
+  const newVersion = await bump(args, currentVersion);
+  debugObject(args, 'New version is', newVersion);
 
-  const commits = await getConventionalCommitsFromGitHistory(`v${currentVersion}`);
-  const filteredCommits = filterCommits(args, commits);
-  debugObject(args, 'Found and filtered commits', filteredCommits);
+  debug(args, 'Reading Git commits');
+  const commits = await getConventionalCommitsFromGitHistory(args, `v${currentVersion.stableVersion}`);
 
-  const bumpResult = await bump(args, currentVersion);
-  const newVersion = bumpResult.newVersion;
-  debug(args, 'New version is: ' + newVersion);
+  debug(args, 'Writing Changelog');
+  const changelogResults = await writeChangelogs({ ...args, currentVersion, newVersion, commits, packages: getProjectPackageInfos() });
 
-  const changelogResult = await changelog(args, currentVersion, newVersion, filteredCommits);
-
-  await commit(args, newVersion, [...bumpResult.changedFiles, ...changelogResult.changedFiles]);
+  debug(args, 'Committing result');
+  await commit(args, newVersion.stableVersion, [args.versionFile, ...changelogResults.map(r => r.filePath)]);
 };
 
-interface PackageInfo {
-  version: string;
-  private: string | boolean | null | undefined;
+function readVersion(versionFile: string): Versions {
+  const versionPath = path.resolve(process.cwd(), versionFile);
+  const contents = JSON.parse(fs.readFileSync(versionPath, { encoding: 'utf-8' }));
+  return {
+    stableVersion: contents.version,
+    alphaVersion: contents.alphaVersion,
+  };
 }
 
-function determinePackageInfo(args: ReleaseOptions): PackageInfo {
-  for (const packageFile of args.packageFiles ?? []) {
-    const updater = resolveUpdaterObjectFromArgument(packageFile);
-    const pkgPath = path.resolve(process.cwd(), updater.filename);
-    const contents = fs.readFileSync(pkgPath, 'utf8');
-    // we stop on the first (successful) option
-    return {
-      version: updater.updater.readVersion(contents),
-      private: typeof updater.updater.isPrivate === 'function' ? updater.updater.isPrivate(contents) : false,
-    };
-  }
+function getProjectPackageInfos(): PackageInfo[] {
+  const packages = lerna_project.Project.getPackagesSync();
 
-  throw new Error('Could not establish the version to bump!');
+  return packages.map((pkg: any) => {
+    const maturity = pkg.get('maturity');
+    const alpha = pkg.name.startsWith('@aws-cdk/')
+      && (maturity === 'experimental' || maturity === 'developer-preview');
+
+    return {
+      name: pkg.name,
+      location: pkg.location,
+      alpha,
+    };
+  });
 }

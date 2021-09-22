@@ -151,13 +151,22 @@ new synthetics.Canary(this, 'Bucket Canary', {
 });
 ```
 
-> **Note:** For `code.fromAsset()` and `code.fromBucket()`, the canary resource requires the following folder structure:
+> **Note:** Synthetics have a specified folder structure for canaries. For Node scripts supplied via `code.fromAsset()` or `code.fromBucket()`, the canary resource requires the following folder structure:
 >
 > ```plaintext
 > canary/
 > ├── nodejs/
 >    ├── node_modules/
 >         ├── <filename>.js
+> ```
+>
+>
+> For Python scripts supplied via `code.fromAsset()` or `code.fromBucket()`, the canary resource requires the following folder structure:
+>
+> ```plaintext
+> canary/
+> ├── python/
+>     ├── <filename>.py
 > ```
 >
 > See Synthetics [docs](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_WritingCanary.html).

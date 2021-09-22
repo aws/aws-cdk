@@ -11,9 +11,11 @@
 
 This module allows bundling Docker images as assets.
 
+## Images from Dockerfile
+
 Images are built from a local Docker context directory (with a `Dockerfile`),
-uploaded to ECR by the CDK toolkit and/or your app's CI-CD pipeline, and can be
-naturally referenced in your CDK app.
+uploaded to Amazon Elastic Container Registry (ECR) by the CDK toolkit
+and/or your app's CI/CD pipeline, and can be naturally referenced in your CDK app.
 
 ```ts
 import { DockerImageAsset } from '@aws-cdk/aws-ecr-assets';
@@ -26,7 +28,7 @@ const asset = new DockerImageAsset(this, 'MyBuildImage', {
 The directory `my-image` must include a `Dockerfile`.
 
 This will instruct the toolkit to build a Docker image from `my-image`, push it
-to an AWS ECR repository and wire the name of the repository as CloudFormation
+to an Amazon ECR repository and wire the name of the repository as CloudFormation
 parameters to your stack.
 
 By default, all files in the given directory will be copied into the docker
@@ -44,7 +46,7 @@ interpreted. The recommended setting for Docker image assets is
 old projects) then `IgnoreMode.DOCKER` is the default and you don't need to
 configure it on the asset itself.
 
-Use `asset.imageUri` to reference the image (it includes both the ECR image URL
+Use `asset.imageUri` to reference the image. It includes both the ECR image URL
 and tag.
 
 You can optionally pass build args to the `docker build` command by specifying
@@ -68,6 +70,23 @@ const asset = new DockerImageAsset(this, 'MyBuildImage', {
   target: 'a-target'
 })
 ```
+
+## Images from Tarball
+
+Images are loaded from a local tarball, uploaded to ECR by the CDK toolkit and/or your app's CI-CD pipeline, and can be
+naturally referenced in your CDK app.
+
+```ts
+import { TarballImageAsset } from '@aws-cdk/aws-ecr-assets';
+
+const asset = new TarballImageAsset(this, 'MyBuildImage', {
+  tarballFile: 'local-image.tar'
+});
+```
+
+This will instruct the toolkit to add the tarball as a file asset. During deployment it will load the container image
+from `local-image.tar`, push it to an Amazon ECR repository and wire the name of the repository as CloudFormation parameters
+to your stack.
 
 ## Publishing images to ECR repositories
 

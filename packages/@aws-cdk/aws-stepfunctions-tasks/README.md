@@ -205,6 +205,28 @@ const submitJob = new tasks.LambdaInvoke(this, 'Invoke Handler', {
 });
 ```
 
+You can also use [intrinsic functions](https://docs.aws.amazon.com/step-functions/latest/dg/amazon-states-language-intrinsic-functions.html) with `JsonPath.stringAt()`. 
+Here is an example of starting an Athena query that is dynamically created using the task input:
+
+```ts
+const startQueryExecutionJob = new tasks.AthenaStartQueryExecution(this, 'Athena Start Query', {
+  queryString: sfn.JsonPath.stringAt("States.Format('select contacts where year={};', $.year)"),
+  queryExecutionContext: {
+    databaseName: 'interactions',
+  },
+  resultConfiguration: {
+    encryptionConfiguration: {
+      encryptionOption: tasks.EncryptionOption.S3_MANAGED,
+    },
+    outputLocation: {
+      bucketName: 'mybucket',
+      objectKey: 'myprefix',
+    },
+  },
+  integrationPattern: sfn.IntegrationPattern.RUN_JOB,
+});
+```
+
 Each service integration has its own set of parameters that can be supplied.
 
 ## Evaluate Expression
@@ -1028,7 +1050,23 @@ const topic = new sns.Topic(this, 'Topic');
 const task1 = new tasks.SnsPublish(this, 'Publish1', {
   topic,
   integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
-  message: sfn.TaskInput.fromJsonPathAt('$.state.message'),
+  message: sfn.TaskInput.fromDataAt('$.state.message'),
+  messageAttributes: {
+    place: {
+      value: sfn.JsonPath.stringAt('$.place'),
+    },
+    pic: {
+      // BINARY must be explicitly set
+      type: MessageAttributeDataType.BINARY,
+      value: sfn.JsonPath.stringAt('$.pic'),
+    },
+    people: {
+      value: 4,
+    },
+    handles: {
+      value: ['@kslater', '@jjf', null, '@mfanning'],
+    },
+
 });
 
 // Combine a field from the execution data with
@@ -1072,6 +1110,21 @@ new sfn.StateMachine(this, 'ParentStateMachine', {
   definition: task
 });
 ```
+
+You can utilize [Associate Workflow Executions](https://docs.aws.amazon.com/step-functions/latest/dg/concepts-nested-workflows.html#nested-execution-startid)
+via the `associateWithParent` property. This allows the Step Functions UI to link child
+executions from parent executions, making it easier to trace execution flow across state machines.
+
+```ts
+const task = new tasks.StepFunctionsStartExecution(this, 'ChildTask', {
+  stateMachine: child,
+  associateWithParent: true,
+});
+```
+
+This will add the payload `AWS_STEP_FUNCTIONS_STARTED_BY_EXECUTION_ID.$: $$.Execution.Id` to the
+`input`property for you, which will pass the execution ID from the context object to the
+execution input. It requires `input` to be an object or not be set at all.
 
 ### Invoke Activity
 

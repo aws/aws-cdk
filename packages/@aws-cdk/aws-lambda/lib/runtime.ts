@@ -77,7 +77,7 @@ export class Runtime {
   /**
    * The NodeJS 14.x runtime (nodejs14.x)
    */
-  public static readonly NODEJS_14_X = new Runtime('nodejs14.x', RuntimeFamily.NODEJS, { supportsInlineCode: false });
+  public static readonly NODEJS_14_X = new Runtime('nodejs14.x', RuntimeFamily.NODEJS, { supportsInlineCode: true });
 
   /**
    * The Python 2.7 runtime (python2.7)
@@ -104,6 +104,14 @@ export class Runtime {
    * The Python 3.8 runtime (python3.8)
    */
   public static readonly PYTHON_3_8 = new Runtime('python3.8', RuntimeFamily.PYTHON, {
+    supportsInlineCode: true,
+    supportsCodeGuruProfiling: true,
+  });
+
+  /**
+   * The Python 3.9 runtime (python3.9)
+   */
+  public static readonly PYTHON_3_9 = new Runtime('python3.9', RuntimeFamily.PYTHON, {
     supportsInlineCode: true,
     supportsCodeGuruProfiling: true,
   });
@@ -144,23 +152,17 @@ export class Runtime {
   /**
    * The .NET Core 2.1 runtime (dotnetcore2.1)
    */
-  public static readonly DOTNET_CORE_2_1 = new Runtime('dotnetcore2.1', RuntimeFamily.DOTNET_CORE, {
-    bundlingDockerImage: 'lambci/lambda:build-dotnetcore2.1',
-  });
+  public static readonly DOTNET_CORE_2_1 = new Runtime('dotnetcore2.1', RuntimeFamily.DOTNET_CORE);
 
   /**
    * The .NET Core 3.1 runtime (dotnetcore3.1)
    */
-  public static readonly DOTNET_CORE_3_1 = new Runtime('dotnetcore3.1', RuntimeFamily.DOTNET_CORE, {
-    bundlingDockerImage: 'lambci/lambda:build-dotnetcore3.1',
-  });
+  public static readonly DOTNET_CORE_3_1 = new Runtime('dotnetcore3.1', RuntimeFamily.DOTNET_CORE);
 
   /**
    * The Go 1.x runtime (go1.x)
    */
-  public static readonly GO_1_X = new Runtime('go1.x', RuntimeFamily.GO, {
-    bundlingDockerImage: 'lambci/lambda:build-go1.x',
-  });
+  public static readonly GO_1_X = new Runtime('go1.x', RuntimeFamily.GO);
 
   /**
    * The Ruby 2.5 runtime (ruby2.5)

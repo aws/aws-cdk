@@ -4,6 +4,7 @@ export * from './base/task-definition';
 
 export * from './container-definition';
 export * from './container-image';
+export * from './amis';
 export * from './cluster';
 export * from './environment-file';
 export * from './firelens-log-router';
@@ -14,6 +15,9 @@ export * from './ec2/ec2-task-definition';
 
 export * from './fargate/fargate-service';
 export * from './fargate/fargate-task-definition';
+
+export * from './external/external-service';
+export * from './external/external-task-definition';
 
 export * from './linux-parameters';
 

@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import { HttpApi, HttpIntegrationType, HttpRouteIntegrationBindOptions, IHttpRouteIntegration, PayloadFormatVersion } from '@aws-cdk/aws-apigatewayv2';
 import { UserPool } from '@aws-cdk/aws-cognito';
 import { Stack } from '@aws-cdk/core';
@@ -24,7 +24,7 @@ describe('HttpUserPoolAuthorizer', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGatewayV2::Authorizer', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Authorizer', {
       AuthorizerType: 'JWT',
       IdentitySource: ['$request.header.Authorization'],
       JwtConfiguration: {
@@ -68,7 +68,7 @@ describe('HttpUserPoolAuthorizer', () => {
     });
 
     // THEN
-    expect(stack).toCountResources('AWS::ApiGatewayV2::Authorizer', 1);
+    Template.fromStack(stack).resourceCountIs('AWS::ApiGatewayV2::Authorizer', 1);
   });
 });
 

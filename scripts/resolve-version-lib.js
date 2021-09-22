@@ -37,7 +37,8 @@ function resolveVersion(rootdir) {
   // validate that current version matches the requirements
   //
 
-  const currentVersion = require(versionFilePath).version;
+  const versions = require(versionFilePath);
+  const currentVersion = versions.version;
   if (!currentVersion.startsWith(`${majorVersion}.`)) {
     throw new Error(`current version "${currentVersion}" does not use the expected major version ${majorVersion}`);
   }
@@ -51,12 +52,16 @@ function resolveVersion(rootdir) {
   }
 
   //
-  // determine changelog file name
+  // determine changelog file names
   //
 
   const changelogFile = majorVersion === 1
     ? 'CHANGELOG.md'
     : `CHANGELOG.v${majorVersion}.md`;
+
+  const alphaChangelogFile = majorVersion === 1
+    ? undefined
+    : `CHANGELOG.v${majorVersion}.alpha.md`;
 
   //
   // export all of it
@@ -64,8 +69,10 @@ function resolveVersion(rootdir) {
 
   return {
     version: currentVersion,
-    versionFile: versionFile,
-    changelogFile: changelogFile,
+    alphaVersion: versions.alphaVersion,
+    versionFile,
+    changelogFile,
+    alphaChangelogFile,
     prerelease: releaseType !== 'stable' ? releaseType : undefined,
     marker: '0.0.0',
   };
