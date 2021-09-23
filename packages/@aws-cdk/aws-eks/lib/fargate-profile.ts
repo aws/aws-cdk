@@ -1,6 +1,6 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { CustomResource, ITaggable, Lazy, TagManager, TagType } from '@aws-cdk/core';
+import { Annotations, CustomResource, ITaggable, Lazy, TagManager, TagType } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { Cluster } from './cluster';
 import { FARGATE_PROFILE_RESOURCE_TYPE } from './cluster-resource-handler/consts';
@@ -155,6 +155,10 @@ export class FargateProfile extends CoreConstruct implements ITaggable {
     });
 
     this.podExecutionRole.grantPassRole(props.cluster.adminRole);
+
+    if (props.subnetSelection && !props.vpc) {
+      Annotations.of(this).addWarning('Vpc must be defined to use a custom subnet selection. All private subnets belonging to the EKS cluster will be used by default');
+    }
 
     let subnets: string[] | undefined;
     if (props.vpc) {
