@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import { Duration, Stack } from '@aws-cdk/core';
 import { EventBus } from '../lib';
 import { Archive } from '../lib/archive';
@@ -20,11 +20,11 @@ describe('archive', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Events::EventBus', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Events::EventBus', {
       Name: 'Bus',
     });
 
-    expect(stack).toHaveResource('AWS::Events::Archive', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Events::Archive', {
       EventPattern: {
         account: [{
           Ref: 'AWS::AccountId',
@@ -58,11 +58,11 @@ describe('archive', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Events::EventBus', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Events::EventBus', {
       Name: 'Bus',
     });
 
-    expect(stack).toHaveResource('AWS::Events::Archive', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Events::Archive', {
       EventPattern: {
         'account': [{
           Ref: 'AWS::AccountId',
