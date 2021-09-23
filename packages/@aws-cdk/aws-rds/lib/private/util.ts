@@ -100,6 +100,7 @@ export function renderCredentials(scope: Construct, engine: IEngine, credentials
         // if username must be referenced as a string we can safely replace the
         // secret when customization options are changed without risking a replacement
         replaceOnPasswordCriteriaChanges: credentials?.usernameAsString,
+        replicaRegions: renderedCredentials.replicaRegions,
       }),
       // pass username if it must be referenced as a string
       credentials?.usernameAsString ? renderedCredentials.username : undefined,
