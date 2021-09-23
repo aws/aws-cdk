@@ -57,8 +57,7 @@
     "cloudformation": "AWS::Route53",
     "env": {
       "AWSLINT_BASE_CONSTRUCT": true
-    },
-    "jest": true
+    }
   },
   "keywords": [
     "aws",
@@ -75,7 +74,6 @@
   "devDependencies": {
     "@types/aws-lambda": "^8.10.79",
     "@types/jest": "^26.0.24",
-    "@types/nodeunit": "^0.0.32",
     "aws-sdk": "^2.848.0",
     "cdk-build-tools": "0.0.0",
     "cdk-integ-tools": "0.0.0",

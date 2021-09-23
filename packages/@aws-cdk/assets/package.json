@@ -54,8 +54,7 @@
   "cdk-build": {
     "pre": [
       "rm -rf test/fs/fixtures && cd test/fs && tar -xzvf fixtures.tar.gz"
-    ],
-    "jest": true
+    ]
   },
   "keywords": [
     "aws",
