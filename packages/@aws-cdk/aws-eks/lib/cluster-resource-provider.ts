@@ -59,12 +59,13 @@ export class ClusterResourceProvider extends NestedStack {
   private constructor(scope: Construct, id: string, props: ClusterResourceProviderProps) {
     super(scope as CoreConstruct, id);
 
+    // Using NodejsFunction so that NPM dependencies (proxy-agent) are installed at synth time.
     const onEvent = new NodejsFunction(this, 'OnEventHandler', {
-      entry: HANDLER_DIR,
+      entry: path.join(HANDLER_DIR, 'index.ts'),
       description: 'onEvent handler for EKS cluster resource provider',
       runtime: HANDLER_RUNTIME,
       environment: props.environment,
-      handler: 'index.onEvent',
+      handler: 'onEvent',
       timeout: Duration.minutes(1),
       vpc: props.subnets ? props.vpc : undefined,
       vpcSubnets: props.subnets ? { subnets: props.subnets } : undefined,
