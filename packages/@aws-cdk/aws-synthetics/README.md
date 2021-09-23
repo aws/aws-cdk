@@ -87,6 +87,27 @@ The Canary code will be executed in a lambda function created by Synthetics on y
 
 To learn more about Synthetics capabilities, check out the [docs](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries.html).
 
+
+### Canary Schedule
+
+You can specify the schedule on which a canary runs by providing a
+[`Schedule`](https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_aws-synthetics.Schedule.html)
+object to the `schedule` property.
+
+Configure a run rate of up to 60 minutes with `Schedule.rate`:
+
+```ts
+Schedule.rate(Duration.minutes(5)), // Runs every 5 minutes.
+```
+
+You can also specify a [cron expression](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_cron.html) via `Schedule.expression`:
+
+```ts
+Schedule.expression('cron(0 0,8,16 * * ? *)'), // Run at 12am, 8am, 4pm UTC every day
+```
+
+If you want the canary to run just once upon deployment, you can use `Schedule.once()`.
+
 ### Configuring the Canary Script
 
 To configure the script the canary executes, use the `test` property. The `test` property accepts a `Test` instance that can be initialized by the `Test` class static methods. Currently, the only implemented method is `Test.custom()`, which allows you to bring your own code. In the future, other methods will be added. `Test.custom()` accepts `code` and `handler` properties -- both are required by Synthetics to create a lambda function on your behalf.
