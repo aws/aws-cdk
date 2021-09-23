@@ -54,7 +54,7 @@ export interface FargateProfileOptions {
    * Select which subnets to launch your pods into. At this time, pods running
    * on Fargate are not assigned public IP addresses, so only private subnets
    * (with no direct route to an Internet Gateway) are allowed.
-   * 
+   *
    * You must specify the VPC to customize the subnet selection
    *
    * @default - all private subnets of the VPC are selected.
