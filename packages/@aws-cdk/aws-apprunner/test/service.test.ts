@@ -7,17 +7,13 @@ import * as cdk from '@aws-cdk/core';
 import { Service, GitHubConnection, Runtime, Source, Cpu, Memory, ConfigurationSourceType } from '../lib';
 
 let app: cdk.App;
-let env: { region: string; account: string };
+// let env: { region: string; account: string };
 let stack: cdk.Stack;
 
 
 beforeEach(() => {
   app = new cdk.App();
-  env = {
-    region: 'us-east-1',
-    account: '123456789012',
-  };
-  stack = new cdk.Stack(app, 'demo-stack', { env });
+  stack = new cdk.Stack(app, 'demo-stack');
 });
 
 test('create a service with ECR Public(image repository type: ECR_PUBLIC)', () => {
@@ -90,7 +86,14 @@ test('create a service from existing ECR repository(image repository type: ECR)'
           'Fn::Join': [
             '',
             [
-              '123456789012.dkr.ecr.us-east-1.',
+              {
+                Ref: 'AWS::AccountId',
+              },
+              '.dkr.ecr.',
+              {
+                Ref: 'AWS::Region',
+              },
+              '.',
               {
                 Ref: 'AWS::URLSuffix',
               },
@@ -152,7 +155,14 @@ test('create a service with local assets(image repository type: ECR)', () => {
           'Fn::Join': [
             '',
             [
-              '123456789012.dkr.ecr.us-east-1.',
+              {
+                Ref: 'AWS::AccountId',
+              },
+              '.dkr.ecr.',
+              {
+                Ref: 'AWS::Region',
+              },
+              '.',
               {
                 Ref: 'AWS::URLSuffix',
               },
@@ -325,7 +335,14 @@ test('custom IAM access role and instance role are allowed', () => {
           'Fn::Join': [
             '',
             [
-              '123456789012.dkr.ecr.us-east-1.',
+              {
+                Ref: 'AWS::AccountId',
+              },
+              '.dkr.ecr.',
+              {
+                Ref: 'AWS::Region',
+              },
+              '.',
               {
                 Ref: 'AWS::URLSuffix',
               },
