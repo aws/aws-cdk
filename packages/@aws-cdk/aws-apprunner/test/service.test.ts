@@ -7,9 +7,7 @@ import * as cdk from '@aws-cdk/core';
 import { Service, GitHubConnection, Runtime, Source, Cpu, Memory, ConfigurationSourceType } from '../lib';
 
 let app: cdk.App;
-// let env: { region: string; account: string };
 let stack: cdk.Stack;
-
 
 beforeEach(() => {
   app = new cdk.App();
