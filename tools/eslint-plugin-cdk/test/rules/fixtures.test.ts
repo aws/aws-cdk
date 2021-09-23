@@ -42,7 +42,7 @@ fs.readdirSync(fixturesRoot).filter(f => fs.lstatSync(path.join(fixturesRoot, f)
         const fix = fs.existsSync(expectedFixedFilePath);
         const checkErrors = fs.existsSync(expectedErrorFilepath);
         if (fix && checkErrors) {
-          done.fail(`Expected only a fixed file or an expected error. Both ${expectedFixedFilePath} and ${expectedErrorFilepath} are present.`);
+          done.fail(`Expected only a fixed file or an expected error message file. Both ${expectedFixedFilePath} and ${expectedErrorFilepath} are present.`);
           return;
         } else if (fix) {
           const actualFile = await lintAndFix(originalFilePath, outputDir);
@@ -55,12 +55,18 @@ fs.readdirSync(fixturesRoot).filter(f => fs.lstatSync(path.join(fixturesRoot, f)
           done();
           return;
         } else if (checkErrors) {
-          const result = await lintAndGetErrorCountAndMessage(originalFilePath)
-          const expectedErrorMessage = await fs.readFile(expectedErrorFilepath, { encoding: 'utf8' });
-          if (result.errorMessage !== expectedErrorMessage) {
-            done.fail(`Error mesage from linter did not match expectations. Linted file: ${path.join(fixturesDir, f)}. \nExpected error message: ${expectedErrorMessage} \nActual error message: ${result.errorMessage}`);
+          const actualErrorMessages = await lint(originalFilePath)
+          const expectedErrorMessages = await (await fs.readFile(expectedErrorFilepath, { encoding: 'utf8' })).split('\n');
+          if (expectedErrorMessages.length !== actualErrorMessages?.length) {
+            done.fail(`Number of messages from linter did not match expectations. Linted file: ${originalFilePath}. Expected number of messages: ${expectedErrorMessages.length}. Actual number of messages: ${actualErrorMessages?.length}.`);
             return;
           }
+          actualErrorMessages.forEach(actualMessage => {
+            if(!(expectedErrorMessages.find(expectedMessage => expectedMessage === actualMessage.message))) {
+              done.fail(`Error message not found in .error.txt file. Linted file: ${originalFilePath}. Actual message: ${actualMessage.message}. Expected messages: ${expectedErrorMessages}`);
+              return;
+            }
+          });
           done();
           return;
         } else {
@@ -88,18 +94,11 @@ async function lintAndFix(file: string, outputDir: string) {
   return newPath;
 }
 
-async function lintAndGetErrorCountAndMessage(file: string) {
+async function lint(file: string) {
   const result = await linter.lintFiles(file);
-  let errorCount = 0;
-  let errorMessage: string | undefined = undefined;
+  // If you only lint one file, then result.length will always be one.
   if (result.length === 1) {
-    errorCount = result[0].errorCount;
-    if (result[0].messages.length === 1) {
-      errorMessage = result[0].messages[0].message;
-    }
-  };
-  return {
-    errorCount,
-    errorMessage,
-  };
+    return result[0].messages;
+  }
+  return undefined;
 }
