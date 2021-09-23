@@ -1,8 +1,10 @@
 /* eslint-disable no-console */
 
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { IsCompleteResponse } from '@aws-cdk/custom-resources/lib/provider-framework/types';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import * as aws from 'aws-sdk';
+
 import { ClusterResourceHandler } from './cluster';
 import { EksClient } from './common';
 import * as consts from './consts';
