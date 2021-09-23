@@ -141,7 +141,6 @@
   "cdk-build": {
     "cloudformation": "AWS::CloudFormation",
     "cfn2ts-core-import": ".",
-    "jest": true,
     "pre": [
       "rm -rf test/fs/fixtures",
       "cd test/fs",

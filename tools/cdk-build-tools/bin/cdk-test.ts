@@ -1,7 +1,6 @@
-import * as fs from 'fs-extra';
 import * as yargs from 'yargs';
 import { shell } from '../lib/os';
-import { cdkBuildOptions, configFilePath, hasIntegTests, unitTestFiles } from '../lib/package-info';
+import { cdkBuildOptions, unitTestFiles, hasIntegTests } from '../lib/package-info';
 import { Timers } from '../lib/timer';
 
 async function main() {
@@ -20,12 +19,6 @@ async function main() {
       default: require.resolve('nyc/bin/nyc'),
       defaultDescription: 'nyc provided by node dependencies',
     })
-    .option('nodeunit', {
-      type: 'string',
-      desc: 'Specify a different nodeunit executable',
-      default: require.resolve('nodeunit/bin/nodeunit'),
-      defaultDescription: 'nodeunit provided by node dependencies',
-    })
     .argv;
 
   const options = cdkBuildOptions();
@@ -42,37 +35,8 @@ async function main() {
   }
 
   const testFiles = await unitTestFiles();
-  const useJest = options.jest;
-
-  if (useJest) {
-    if (testFiles.length > 0) {
-      throw new Error(`Jest is enabled, but ${testFiles.length} nodeunit tests were found!: ${testFiles.map(f => f.filename)}`);
-    }
+  if (testFiles.length > 0) {
     await shell([args.jest], defaultShellOptions);
-  } else if (testFiles.length > 0) {
-    const testCommand: string[] = [];
-
-    // We cannot pass the nyc.config.js config file using '--nycrc-path', because
-    // that can only be a filename relative to '--cwd', but if we set '--cwd'
-    // nyc doesn't find the source files anymore.
-    //
-    // We end up copying nyc.config.js into the package.
-    const nycConfig = 'nyc.config.js';
-
-    // Delete file if it exists
-    try {
-      await fs.unlink(nycConfig);
-    } catch (e) {
-      if (e.code !== 'ENOENT') { return; }
-    }
-
-    await fs.copyFile(configFilePath('nyc.config.js'), nycConfig);
-    testCommand.push(...[args.nyc, '--clean']);
-
-    testCommand.push(args.nodeunit);
-    testCommand.push(...testFiles.map(f => f.path));
-
-    await shell(testCommand, defaultShellOptions);
   }
 
   // Run integration test if the package has integ test files
