@@ -50,6 +50,10 @@
       "jsii/java",
       "jsii/python",
       "jsii/dotnet"
+    ],
+    "attribution": [
+      "kubectl",
+      "helm"
     ]
   },
   "jsii": {
