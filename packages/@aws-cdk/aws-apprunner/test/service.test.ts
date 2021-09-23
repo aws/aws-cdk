@@ -1,5 +1,5 @@
-import '@aws-cdk/assert-internal/jest';
 import * as path from 'path';
+import { Template } from '@aws-cdk/assertions';
 import * as ecr from '@aws-cdk/aws-ecr';
 import * as ecr_assets from '@aws-cdk/aws-ecr-assets';
 import * as iam from '@aws-cdk/aws-iam';
@@ -18,7 +18,7 @@ test('create a service with ECR Public(image repository type: ECR_PUBLIC)', () =
     }),
   });
   // we should have the service
-  expect(stack).toHaveResource('AWS::AppRunner::Service', {
+  Template.fromStack(stack).hasResourceProperties('AWS::AppRunner::Service', {
     SourceConfiguration: {
       AuthenticationConfiguration: {},
       ImageRepository: {
@@ -46,7 +46,7 @@ test('create a service from existing ECR repository(image repository type: ECR)'
 
   // THEN
   // we should have an IAM role
-  expect(stack).toHaveResource('AWS::IAM::Role', {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
     AssumeRolePolicyDocument: {
       Statement: [
         {
@@ -61,7 +61,7 @@ test('create a service from existing ECR repository(image repository type: ECR)'
     },
   });
   // we should have the service
-  expect(stack).toHaveResource('AWS::AppRunner::Service', {
+  Template.fromStack(stack).hasResourceProperties('AWS::AppRunner::Service', {
     SourceConfiguration: {
       AuthenticationConfiguration: {
         AccessRoleArn: {
@@ -117,7 +117,7 @@ test('create a service with local assets(image repository type: ECR)', () => {
 
   // THEN
   // we should have an IAM role
-  expect(stack).toHaveResource('AWS::IAM::Role', {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
     AssumeRolePolicyDocument: {
       Statement: [
         {
@@ -132,7 +132,7 @@ test('create a service with local assets(image repository type: ECR)', () => {
     },
   });
   // we should have the service
-  expect(stack).toHaveResource('AWS::AppRunner::Service', {
+  Template.fromStack(stack).hasResourceProperties('AWS::AppRunner::Service', {
     SourceConfiguration: {
       AuthenticationConfiguration: {
         AccessRoleArn: {
@@ -188,7 +188,7 @@ test('create a service with github repository', () => {
 
   // THEN
   // we should have the service
-  expect(stack).toHaveResource('AWS::AppRunner::Service', {
+  Template.fromStack(stack).hasResourceProperties('AWS::AppRunner::Service', {
     SourceConfiguration: {
       AuthenticationConfiguration: {
         ConnectionArn: 'MOCK',
@@ -226,7 +226,7 @@ test('create a service with github repository - undefined branch name is allowed
 
   // THEN
   // we should have the service with the branch value as 'main'
-  expect(stack).toHaveResource('AWS::AppRunner::Service', {
+  Template.fromStack(stack).hasResourceProperties('AWS::AppRunner::Service', {
     SourceConfiguration: {
       AuthenticationConfiguration: {
         ConnectionArn: 'MOCK',
@@ -293,7 +293,7 @@ test('undefined imageConfiguration port is allowed', () => {
 
   // THEN
   // we should have the service
-  expect(stack).toHaveResource('AWS::AppRunner::Service', {
+  Template.fromStack(stack).hasResourceProperties('AWS::AppRunner::Service', {
     SourceConfiguration: {
       AuthenticationConfiguration: {},
       ImageRepository: {
@@ -329,7 +329,7 @@ test('custom IAM access role and instance role are allowed', () => {
   });
   // THEN
   // we should have the service with the branch value as 'main'
-  expect(stack).toHaveResource('AWS::AppRunner::Service', {
+  Template.fromStack(stack).hasResourceProperties('AWS::AppRunner::Service', {
     SourceConfiguration: {
       AuthenticationConfiguration: {
         AccessRoleArn: {
@@ -389,7 +389,7 @@ test('cpu and memory properties are allowed', () => {
     memory: Memory.THREE_GB,
   });
   // THEN
-  expect(stack).toHaveResource('AWS::AppRunner::Service', {
+  Template.fromStack(stack).hasResourceProperties('AWS::AppRunner::Service', {
     InstanceConfiguration: {
       Cpu: '1 vCPU',
       Memory: '3 GB',
@@ -410,7 +410,7 @@ test('custom cpu and memory units are allowed', () => {
     memory: Memory.of('Some GB'),
   });
   // THEN
-  expect(stack).toHaveResource('AWS::AppRunner::Service', {
+  Template.fromStack(stack).hasResourceProperties('AWS::AppRunner::Service', {
     InstanceConfiguration: {
       Cpu: 'Some vCPU',
       Memory: 'Some GB',
