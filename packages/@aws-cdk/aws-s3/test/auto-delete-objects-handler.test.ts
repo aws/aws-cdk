@@ -284,7 +284,7 @@ test('does nothing when the bucket does not exist', async () => {
   await invokeHandler(event);
 
   expect(mockS3Client.listObjectVersions).not.toHaveBeenCalled();
-  expect(mockS3Client.listObjectVersions).not.toHaveBeenCalled();
+  expect(mockS3Client.deleteObjects).not.toHaveBeenCalled();
 });
 
 // helper function to get around TypeScript expecting a complete event object,
