@@ -77,7 +77,7 @@ describe('Matchers', () => {
     });
 
     test('absent', () => {
-      expect(() => Match.exact(Match.absentProperty()).test('foo')).toThrow(/absentProperty/);
+      expect(() => Match.exact(Match.absentProperty())).toThrow(/cannot directly contain another matcher/);
     });
   });
 
@@ -125,8 +125,9 @@ describe('Matchers', () => {
       expectFailure(matcher, [{ foo: 'baz', fred: 'waldo' }], [/Missing element at pattern index 0/]);
     });
 
-    test('absent', () => {
-      expect(() => Match.arrayWith([Match.absentProperty()]).test(['foo'])).toThrow(/absentProperty/);
+    test('incompatible with absent', () => {
+      matcher = Match.arrayWith(['foo', Match.absentProperty()]);
+      expect(() => matcher.test(['foo', 'bar'])).toThrow(/absentProperty\(\) cannot be nested within arrayWith\(\)/);
     });
 
     test('incompatible with anyValue', () => {
@@ -186,7 +187,7 @@ describe('Matchers', () => {
     test('absent', () => {
       matcher = Match.objectLike({ foo: Match.absentProperty() });
       expectPass(matcher, { bar: 'baz' });
-      expectFailure(matcher, { foo: 'baz' }, [/Key should be absent at \/foo/]);
+      expectFailure(matcher, { foo: 'baz' }, [/key should be absent at \/foo/]);
     });
   });
 
@@ -361,6 +362,26 @@ describe('Matchers', () => {
       matcher = Match.serializedJson({ Foo: 'Bar' });
 
       expectFailure(matcher, '{ "Foo"', [/invalid JSON string/i]);
+    });
+  });
+
+  describe('absent property', () => {
+    let matcher: Matcher;
+
+    test('simple', () => {
+      matcher = Match.absentProperty();
+      expectFailure(matcher, 'foo', ['Received foo, but key should be absent']);
+      expectPass(matcher, undefined);
+    });
+
+    test('nested in object', () => {
+      matcher = Match.objectLike({ foo: Match.absentProperty() });
+      expectFailure(matcher, { foo: 'bar' }, [/key should be absent at \/foo/]);
+      expectFailure(matcher, { foo: [1, 2] }, [/key should be absent at \/foo/]);
+      expectFailure(matcher, { foo: null }, [/key should be absent at \/foo/]);
+
+      expectPass(matcher, { foo: undefined });
+      expectPass(matcher, {});
     });
   });
 });
