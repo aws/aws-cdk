@@ -69,7 +69,7 @@ export class ClusterResourceProvider extends NestedStack {
       description: 'onEvent handler for EKS cluster resource provider',
       runtime: HANDLER_RUNTIME,
       environment: props.environment,
-      handler: 'onEvent',
+      handler: 'index.onEvent',
       timeout: Duration.minutes(1),
       vpc: props.subnets ? props.vpc : undefined,
       vpcSubnets: props.subnets ? { subnets: props.subnets } : undefined,
