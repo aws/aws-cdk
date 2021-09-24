@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import { App, Stack, Token } from '@aws-cdk/core';
 import * as sinon from 'sinon';
 import * as iam from '../lib';
@@ -20,7 +20,7 @@ describe('OpenIdConnectProvider resource', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('Custom::AWSCDKOpenIdConnectProvider', {
+    Template.fromStack(stack).hasResourceProperties('Custom::AWSCDKOpenIdConnectProvider', {
       Url: 'https://openid-endpoint',
     });
   });
@@ -61,7 +61,7 @@ describe('OpenIdConnectProvider resource', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('Custom::AWSCDKOpenIdConnectProvider', {
+    Template.fromStack(stack).hasResourceProperties('Custom::AWSCDKOpenIdConnectProvider', {
       Url: 'https://my-url',
       ClientIDList: ['client1', 'client2'],
       ThumbprintList: ['thumb1'],
@@ -103,7 +103,7 @@ describe('custom resource provider infrastructure', () => {
     new iam.OpenIdConnectProvider(stack, 'Provider1', { url: 'provider1' });
 
     // THEN
-    expect(stack).toHaveResource('AWS::IAM::Role', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
       Policies: [
         {
           PolicyName: 'Inline',
