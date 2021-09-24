@@ -1,0 +1,12 @@
+{
+  "Resources": {
+    "MyWebsocketApiEBAC53DF": {
+      "Type": "AWS::ApiGatewayV2::Api",
+      "Properties": {
+        "Name": "MyWebsocketApi",
+        "ProtocolType": "WEBSOCKET",
+        "RouteSelectionExpression": "$request.body.action"
+      }
+    }
+  }
+}

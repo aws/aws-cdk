@@ -45,6 +45,12 @@ export interface WebSocketRouteProps extends WebSocketRouteOptions {
    * The key to this route.
    */
   readonly routeKey: string;
+
+  /**
+   * Whether the route requires an API Key to be provided
+   * @default - false
+   */
+  readonly apiKeyRequired?: boolean;
 }
 
 /**
@@ -76,6 +82,7 @@ export class WebSocketRoute extends Resource implements IWebSocketRoute {
 
     const route = new CfnRoute(this, 'Resource', {
       apiId: props.webSocketApi.apiId,
+      apiKeyRequired: props.apiKeyRequired,
       routeKey: props.routeKey,
       target: `integrations/${integration.integrationId}`,
     });

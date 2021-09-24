@@ -2,6 +2,7 @@ import { Match, Template } from '@aws-cdk/assertions';
 import { User } from '@aws-cdk/aws-iam';
 import { Stack } from '@aws-cdk/core';
 import {
+  ApiKeySelectionExpression,
   IWebSocketRouteIntegration, WebSocketApi, WebSocketIntegrationType,
   WebSocketRouteIntegrationBindOptions, WebSocketRouteIntegrationConfig,
 } from '../../lib';
@@ -16,6 +17,27 @@ describe('WebSocketApi', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Api', {
+      Name: 'api',
+      ProtocolType: 'WEBSOCKET',
+    });
+
+    Template.fromStack(stack).resourceCountIs('AWS::ApiGatewayV2::Stage', 0);
+    Template.fromStack(stack).resourceCountIs('AWS::ApiGatewayV2::Route', 0);
+    Template.fromStack(stack).resourceCountIs('AWS::ApiGatewayV2::Integration', 0);
+  });
+
+  test('apiKeySelectionExpression: given a value', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new WebSocketApi(stack, 'api', {
+      apiKeySelectionExpression: ApiKeySelectionExpression.USAGE_IDENTIFIER_KEY,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Api', {
+      ApiKeySelectionExpression: '$context.authorizer.usageIdentifierKey',
       Name: 'api',
       ProtocolType: 'WEBSOCKET',
     });

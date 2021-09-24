@@ -41,6 +41,44 @@ describe('WebSocketRoute', () => {
       IntegrationUri: 'some-uri',
     });
   });
+
+  test('Api Key is required for route when apiKeyIsRequired is true', () => {
+    // GIVEN
+    const stack = new Stack();
+    const webSocketApi = new WebSocketApi(stack, 'Api');
+
+    // WHEN
+    new WebSocketRoute(stack, 'Route', {
+      webSocketApi,
+      integration: new DummyIntegration(),
+      routeKey: 'message',
+      apiKeyRequired: true,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Route', {
+      ApiId: stack.resolve(webSocketApi.apiId),
+      ApiKeyRequired: true,
+      RouteKey: 'message',
+      Target: {
+        'Fn::Join': [
+          '',
+          [
+            'integrations/',
+            {
+              Ref: 'RouteWebSocketIntegrationb7742333c7ab20d7b2b178df59bb17f20338431E',
+            },
+          ],
+        ],
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Integration', {
+      ApiId: stack.resolve(webSocketApi.apiId),
+      IntegrationType: 'AWS_PROXY',
+      IntegrationUri: 'some-uri',
+    });
+  });
 });
 
 

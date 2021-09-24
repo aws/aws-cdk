@@ -19,6 +19,24 @@ export interface IWebSocketApi extends IApi {
 }
 
 /**
+ * Represents the currently available API Key Selection Expressions
+ */
+export enum ApiKeySelectionExpression {
+  /**
+ * x-api-key type
+ * This represents an API Key that is provided via an `x-api-key` header in the user request.
+ */
+  X_API_KEY = '$request.header.x-api-key',
+
+  /**
+ * usageIdentifierKey type
+ * This represents an API Key that is provided via the context of an Lambda Authorizer
+ * See https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-lambda-authorizer-output.html
+ */
+  USAGE_IDENTIFIER_KEY = '$context.authorizer.usageIdentifierKey'
+}
+
+/**
  * Props for WebSocket API
  */
 export interface WebSocketApiProps {
@@ -27,6 +45,13 @@ export interface WebSocketApiProps {
    * @default - id of the WebSocketApi construct.
    */
   readonly apiName?: string;
+
+  /**
+   * An API key selection expression. Providing this option will require an API Key be provided to access the API.
+   * Currently only supports '$request.header.x-api-key' and '$context.authorizer.usageIdentifierKey'
+   * @default - none
+   */
+  readonly apiKeySelectionExpression?: ApiKeySelectionExpression
 
   /**
    * The description of the API.
@@ -82,6 +107,7 @@ export class WebSocketApi extends ApiBase implements IWebSocketApi {
 
     const resource = new CfnApi(this, 'Resource', {
       name: this.webSocketApiName,
+      apiKeySelectionExpression: props?.apiKeySelectionExpression,
       protocolType: 'WEBSOCKET',
       description: props?.description,
       routeSelectionExpression: props?.routeSelectionExpression ?? '$request.body.action',
