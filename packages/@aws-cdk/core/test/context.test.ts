@@ -1,4 +1,5 @@
-import { Construct, Stack } from '../lib';
+import { Construct } from 'constructs';
+import { Stack } from '../lib';
 import { ContextProvider } from '../lib/context-provider';
 import { synthesize } from '../lib/private/synthesis';
 
