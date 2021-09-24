@@ -70,7 +70,8 @@
         }
       },
       "DependsOn": [
-        "BucketPolicyE9A3008A"
+        "BucketPolicyE9A3008A",
+        "Bucket83908E77"
       ],
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
@@ -235,7 +236,8 @@
         }
       },
       "DependsOn": [
-        "BackupBucketPolicy8C403F71"
+        "BackupBucketPolicy8C403F71",
+        "BackupBucket26B8E51C"
       ],
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
