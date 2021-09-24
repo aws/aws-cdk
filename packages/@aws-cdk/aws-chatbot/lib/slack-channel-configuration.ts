@@ -152,6 +152,7 @@ abstract class SlackChannelConfigurationBase extends cdk.Resource implements ISl
 
   abstract readonly role?: iam.IRole;
 
+
   /**
    * Adds extra permission to iam-role of Slack channel configuration
    * @param statement
@@ -239,7 +240,6 @@ export class SlackChannelConfiguration extends SlackChannelConfigurationBase {
         } else {
           this.slackChannelConfigurationName = resourceName.substring('slack-channel/'.length);
         }
-
       }
     }
 
@@ -268,6 +268,13 @@ export class SlackChannelConfiguration extends SlackChannelConfigurationBase {
 
   readonly grantPrincipal: iam.IPrincipal;
 
+  /**
+   * The SNS topic that deliver notifications to AWS Chatbot.
+   * @attribute
+   */
+  readonly notificationTopics: sns.ITopic[];
+
+
   constructor(scope: Construct, id: string, props: SlackChannelConfigurationProps) {
     super(scope, id, {
       physicalName: props.slackChannelConfigurationName,
@@ -279,12 +286,14 @@ export class SlackChannelConfiguration extends SlackChannelConfigurationBase {
 
     this.grantPrincipal = this.role;
 
+    this.notificationTopics = props.notificationTopics ?? [];
+
     const configuration = new CfnSlackChannelConfiguration(this, 'Resource', {
       configurationName: props.slackChannelConfigurationName,
       iamRoleArn: this.role.roleArn,
       slackWorkspaceId: props.slackWorkspaceId,
       slackChannelId: props.slackChannelId,
-      snsTopicArns: props.notificationTopics?.map(topic => topic.topicArn),
+      snsTopicArns: cdk.Lazy.list({ produce: () => this.renderTopics() }, { omitEmpty: true } ),
       loggingLevel: props.loggingLevel?.toString(),
     });
 
@@ -302,6 +311,18 @@ export class SlackChannelConfiguration extends SlackChannelConfigurationBase {
 
     this.slackChannelConfigurationArn = configuration.ref;
     this.slackChannelConfigurationName = props.slackChannelConfigurationName;
+  }
+
+  /**
+   * Adds a SNS topic that deliver notifications to AWS Chatbot.
+   * @param notificationTopic
+   */
+  public addNotificationTopic(notificationTopic: sns.ITopic): void {
+    this.notificationTopics.push(notificationTopic);
+  }
+
+  private renderTopics(): string[] {
+    return this.notificationTopics?.map(topic => topic.topicArn) || [];
   }
 }
 
