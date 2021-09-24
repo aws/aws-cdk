@@ -43,9 +43,9 @@ export abstract class ResourceHandler {
     if (proxyAddress) {
       this.log(`Using proxy server: ${proxyAddress}`);
       // eslint-disable-next-line @typescript-eslint/no-require-imports, import/no-extraneous-dependencies
-      const ProxyAgent: any = require('proxy-agent');
+      const HttpProxyAgent: any = require('http-proxy-agent');
       aws.config.update({
-        httpOptions: { agent: new ProxyAgent(proxyAddress) },
+        httpOptions: { agent: new HttpProxyAgent(proxyAddress) },
       });
     }
   }
