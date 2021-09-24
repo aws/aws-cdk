@@ -1,6 +1,6 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
-import { Construct, ConstructNode, ConstructOrder, IConstruct } from 'constructs';
-import { App as Root, Aws, Names, Lazy, ValidationError } from '../lib';
+import { Construct, ConstructOrder, IConstruct } from 'constructs';
+import { Names } from '../lib';
 import { Annotations } from '../lib/annotations';
 import { reEnableStackTraceCollection, restoreStackTraceColection } from './util';
 
@@ -11,7 +11,7 @@ describe('construct', () => {
     const root = new Root();
     expect(root.node.id).toEqual('');
     expect(root.node.scope).toBeUndefined();
-    expect(root.node.children.length).toEqual(1);
+    expect(root.node.children.length).toEqual(0);
 
   });
 
@@ -61,16 +61,6 @@ describe('construct', () => {
   test('if "undefined" is forcefully used as an "id", it will be treated as an empty string', () => {
     const c = new Construct(undefined as any, undefined as any);
     expect(c.node.id).toEqual('');
-
-  });
-
-  test('dont allow unresolved tokens to be used in construct IDs', () => {
-    // GIVEN
-    const root = new Root();
-    const token = Lazy.string({ produce: () => 'lazy' });
-
-    // WHEN + THEN
-    expect(() => new Construct(root, `MyID: ${token}`)).toThrow(/Cannot use tokens in construct ID: MyID: \${Token/);
 
   });
 
@@ -202,13 +192,6 @@ describe('construct', () => {
 
   });
 
-  test('fails if context key contains unresolved tokens', () => {
-    const root = new Root();
-    expect(() => root.node.setContext(`my-${Aws.REGION}`, 'foo')).toThrow(/Invalid context key/);
-    expect(() => root.node.tryGetContext(Aws.REGION)).toThrow(/Invalid context key/);
-
-  });
-
   test('construct.pathParts returns an array of strings of all names from root to node', () => {
     const tree = createTree();
     expect(tree.root.node.path).toEqual('');
@@ -256,6 +239,7 @@ describe('construct', () => {
     con.node.addMetadata('key', 'value', { stackTrace: true });
     con.node.addMetadata('number', 103);
     con.node.addMetadata('array', [123, 456]);
+    restoreStackTraceColection(previousValue);
 
     expect(con.node.metadata[0].type).toEqual('key');
     expect(con.node.metadata[0].data).toEqual('value');
@@ -417,13 +401,6 @@ describe('construct', () => {
     expect(() => new Construct(c0a, 'fail1')).toThrow(/Cannot add children to "c0a" during synthesis/);
     expect(() => new Construct(c1a, 'fail2')).toThrow(/Cannot add children to "c0a\/c1a" during synthesis/);
     expect(() => new Construct(c1b, 'fail3')).toThrow(/Cannot add children to "c0a\/c1b" during synthesis/);
-
-    c0a.unlockMe();
-
-    new Construct(c0a, 'c0aZ');
-    new Construct(c1a, 'c1aZ');
-    new Construct(c1b, 'c1bZ');
-
 
   });
 

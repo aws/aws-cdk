@@ -1,4 +1,3 @@
-import { nodeunitShim, Test } from 'nodeunit-shim';
 import { App, CfnOutput, CfnResource, Stack } from '../lib';
 import { toCloudFormation } from './util';
 
