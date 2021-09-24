@@ -273,7 +273,7 @@ describe('Template', () => {
     test('absent', () => {
       const stack = new Stack();
       new CfnResource(stack, 'Foo', {
-        type: 'Foo::Bar', 
+        type: 'Foo::Bar',
         properties: { baz: 'qux' },
       });
 
