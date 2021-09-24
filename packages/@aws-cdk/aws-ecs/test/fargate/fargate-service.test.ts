@@ -2173,9 +2173,6 @@ describe('fargate service', () => {
             Rollback: true,
           },
         },
-        DeploymentController: {
-          Type: ecs.DeploymentControllerType.ECS,
-        },
       });
 
 
