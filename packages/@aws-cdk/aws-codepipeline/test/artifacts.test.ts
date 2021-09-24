@@ -40,7 +40,10 @@ describe('artifacts', () => {
         ],
       });
 
-      const errors = validate(stack);
+      // synthesize - this is where names for artifact without names are allocated
+      SynthUtils.synthesize(stack, { skipValidation: true });
+
+      const errors = pipeline.node.validate();
 
       expect(errors.length).toEqual(1);
       const error = errors[0];
@@ -76,7 +79,7 @@ describe('artifacts', () => {
         ],
       });
 
-      const errors = validate(stack);
+      const errors = pipeline.node.validate();
 
       expect(errors.length).toEqual(1);
       const error = errors[0];
@@ -281,10 +284,3 @@ describe('artifacts', () => {
     });
   });
 });
-
-/* eslint-disable cdk/no-core-construct */
-function validate(construct: cdk.IConstruct): cdk.ValidationError[] {
-  cdk.ConstructNode.prepare(construct.node);
-  return cdk.ConstructNode.validate(construct.node);
-}
-/* eslint-enable cdk/no-core-construct */
