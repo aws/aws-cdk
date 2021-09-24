@@ -136,6 +136,7 @@ test('LookupMachineImage default search', () => {
       props: {
         account: '1234',
         region: 'testregion',
+        lookupRoleArn: 'arn:${AWS::Partition}:iam::1234:role/cdk-hnb659fds-lookup-role-1234-testregion',
         owners: ['amazon'],
         filters: {
           'name': ['bla*'],

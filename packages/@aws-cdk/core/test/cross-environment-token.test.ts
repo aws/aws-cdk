@@ -1,4 +1,5 @@
-import { App, CfnOutput, CfnResource, Construct, PhysicalName, Resource, Stack } from '../lib';
+import { Construct } from 'constructs';
+import { App, CfnOutput, CfnResource, PhysicalName, Resource, Stack } from '../lib';
 import { toCloudFormation } from './util';
 
 /* eslint-disable quote-props */

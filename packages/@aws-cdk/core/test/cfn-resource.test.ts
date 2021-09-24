@@ -1,3 +1,4 @@
+import { Construct } from 'constructs';
 import * as core from '../lib';
 
 describe('cfn resource', () => {
@@ -144,7 +145,7 @@ describe('cfn resource', () => {
 
     const app = new core.App();
     const stack = new core.Stack(app, 'TestStack');
-    const subtree = new core.Construct(stack, 'subtree');
+    const subtree = new Construct(stack, 'subtree');
 
     // WHEN
     new HiddenCfnResource(subtree, 'R1', { type: 'Foo::R1' });
