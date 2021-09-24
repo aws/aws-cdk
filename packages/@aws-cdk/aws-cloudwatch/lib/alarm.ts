@@ -362,13 +362,12 @@ export class Alarm extends AlarmBase {
   }
 
   /**
-   * Validates that if a region or account is in the given expression config, they match the Alarm
+   * Validates that the expression config does not specify searchAccount or searchRegion props
+   * as search expressions are not supported by Alarms.
    */
   private validateMetricExpression(expr: MetricExpressionConfig) {
-    const stack = Stack.of(this);
-
-    if (definitelyDifferent(expr.account, stack.account) || definitelyDifferent(expr.region, stack.region)) {
-      throw new Error('Cannot create an Alarm with a cross-account or cross-region math expression');
+    if (expr.searchAccount !== undefined || expr.searchRegion !== undefined) {
+      throw new Error('Cannot create an Alarm based on a MathExpression which specifies a searchAccount or searchRegion');
     }
   }
 }

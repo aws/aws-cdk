@@ -151,18 +151,24 @@ export interface MathExpressionOptions {
   readonly period?: cdk.Duration;
 
   /**
-   * Account to evaluate the expression within (for example when an expression includes SEARCH or SERVICE_QUOTA)
+   * Account to evaluate search expressions within.
+   *
+   * Specifying a searchAccount has no effect to the account used
+   * for metrics within the expression (passed via usingMetrics).
    *
    * @default - Deployment account.
    */
-  readonly account?: string;
+  readonly searchAccount?: string;
 
   /**
-    * Region to evaluate the expression within (for example when an expression includes SEARCH or SERVICE_QUOTA)
+    * Region to evaluate search expressions within.
+    *
+    * Specifying a searchRegion has no effect to the region used
+    * for metrics within the expression (passed via usingMetrics).
     *
     * @default - Deployment region.
     */
-  readonly region?: string;
+  readonly searchRegion?: string;
 }
 
 /**
@@ -171,6 +177,9 @@ export interface MathExpressionOptions {
 export interface MathExpressionProps extends MathExpressionOptions {
   /**
    * The expression defining the metric.
+   *
+   * When an expression contains a SEARCH function, it cannot be used
+   * within an Alarm.
    */
   readonly expression: string;
 
@@ -179,8 +188,10 @@ export interface MathExpressionProps extends MathExpressionOptions {
    *
    * The key is the identifier that represents the given metric in the
    * expression, and the value is the actual Metric object.
+   *
+   * @default - Empty map.
    */
-  readonly usingMetrics: Record<string, IMetric>;
+  readonly usingMetrics?: Record<string, IMetric>;
 }
 
 /**
@@ -465,6 +476,10 @@ function asString(x?: unknown): string | undefined {
  * It makes sense to embed this in here, so that compound constructs can attach
  * that metadata to metrics they expose.
  *
+ * MathExpression can also be used for search expressions. In this case,
+ * it also optionally accepts a searchRegion and searchAccount property for cross-environment
+ * search expressions.
+ *
  * This class does not represent a resource, so hence is not a construct. Instead,
  * MathExpression is an abstraction that makes it easy to specify metrics for use in both
  * alarms and graphs.
@@ -497,25 +512,25 @@ export class MathExpression implements IMetric {
   public readonly period: cdk.Duration;
 
   /**
-   * The account in which the expression is executed
+   * Account to evaluate search expressions within.
    */
-  public readonly account?: string;
+  public readonly searchAccount?: string;
 
   /**
-   * The region in which the expression is executed
+   * Region to evaluate search expressions within.
    */
-  public readonly region?: string;
+  public readonly searchRegion?: string;
 
   constructor(props: MathExpressionProps) {
     this.period = props.period || cdk.Duration.minutes(5);
     this.expression = props.expression;
-    this.usingMetrics = changeAllPeriods(props.usingMetrics, this.period);
+    this.usingMetrics = changeAllPeriods(props.usingMetrics ?? {}, this.period);
     this.label = props.label;
     this.color = props.color;
-    this.account = props.account;
-    this.region = props.region;
+    this.searchAccount = props.searchAccount;
+    this.searchRegion = props.searchRegion;
 
-    const invalidVariableNames = Object.keys(props.usingMetrics).filter(x => !validVariableName(x));
+    const invalidVariableNames = Object.keys(this.usingMetrics).filter(x => !validVariableName(x));
     if (invalidVariableNames.length > 0) {
       throw new Error(`Invalid variable names in expression: ${invalidVariableNames}. Must start with lowercase letter and only contain alphanumerics.`);
     }
@@ -535,8 +550,8 @@ export class MathExpression implements IMetric {
     if ((props.label === undefined || props.label === this.label)
       && (props.color === undefined || props.color === this.color)
       && (props.period === undefined || props.period.toSeconds() === this.period.toSeconds())
-      && (props.account === undefined || props.account === this.account)
-      && (props.region === undefined || props.region === this.region)) {
+      && (props.searchAccount === undefined || props.searchAccount === this.searchAccount)
+      && (props.searchRegion === undefined || props.searchRegion === this.searchRegion)) {
       return this;
     }
 
@@ -546,8 +561,8 @@ export class MathExpression implements IMetric {
       label: ifUndefined(props.label, this.label),
       color: ifUndefined(props.color, this.color),
       period: ifUndefined(props.period, this.period),
-      account: ifUndefined(props.account, this.account),
-      region: ifUndefined(props.region, this.region),
+      searchAccount: ifUndefined(props.searchAccount, this.searchAccount),
+      searchRegion: ifUndefined(props.searchRegion, this.searchRegion),
     });
   }
 
@@ -571,8 +586,8 @@ export class MathExpression implements IMetric {
         period: this.period.toSeconds(),
         expression: this.expression,
         usingMetrics: this.usingMetrics,
-        account: this.account,
-        region: this.region,
+        searchAccount: this.searchAccount,
+        searchRegion: this.searchRegion,
       },
       renderingProperties: {
         label: this.label,

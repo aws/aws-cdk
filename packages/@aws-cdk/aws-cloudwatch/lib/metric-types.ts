@@ -324,18 +324,18 @@ export interface MetricExpressionConfig {
   readonly period: number;
 
   /**
-   * Account to evaluate the expression within (for example when an expression includes SEARCH or SERVICE_QUOTA)
+   * Account to evaluate search expressions within.
    *
-   * @default Deployment account.
+   * @default - Deployment account.
    */
-  readonly account?: string;
+  readonly searchAccount?: string;
 
   /**
-   * Region to evaluate the expression within (for example when an expression includes SEARCH or SERVICE_QUOTA)
+   * Region to evaluate search expressions within.
    *
-   * @default Deployment region.
+   * @default - Deployment region.
    */
-  readonly region?: string;
+  readonly searchRegion?: string;
 }
 
 /**

@@ -87,8 +87,8 @@ describe('cross environment', () => {
         expression,
         usingMetrics: {},
         label: 'Test label',
-        account: '5678',
-        region: 'mars',
+        searchAccount: '5678',
+        searchRegion: 'mars',
       });
 
       const graph = new GraphWidget({
@@ -264,11 +264,7 @@ describe('cross environment', () => {
       });
     });
 
-    test('math expression with different account will throw', () => {
-      // Cross-region/cross-account math expressions (e.g. SEARCH) are supported in Dashboards
-      // but not in Alarms (submetrics can be cross-account for Alarms, but math expressions
-      // themselves cannot be)
-
+    test('math expression with different searchAccount will throw', () => {
       // GIVEN
       const b = new Metric({
         namespace: 'Test',
@@ -280,7 +276,7 @@ describe('cross environment', () => {
         expression: 'a + b',
         usingMetrics: { a: a.attachTo(stack3), b },
         period: Duration.minutes(1),
-        account: '5678',
+        searchAccount: '5678',
       });
 
       // THEN
@@ -290,10 +286,10 @@ describe('cross environment', () => {
           evaluationPeriods: 1,
           metric: c,
         });
-      }).toThrow(/Cannot create an Alarm with a cross-account or cross-region math expression/);
+      }).toThrow(/Cannot create an Alarm based on a MathExpression which specifies a searchAccount or searchRegion/);
     });
 
-    test('match expression with different region will throw', () => {
+    test('match expression with different searchRegion will throw', () => {
       // GIVEN
       const b = new Metric({
         namespace: 'Test',
@@ -305,7 +301,7 @@ describe('cross environment', () => {
         expression: 'a + b',
         usingMetrics: { a: a.attachTo(stack3), b },
         period: Duration.minutes(1),
-        region: 'mars',
+        searchRegion: 'mars',
       });
 
       // THEN
@@ -315,7 +311,7 @@ describe('cross environment', () => {
           evaluationPeriods: 1,
           metric: c,
         });
-      }).toThrow(/Cannot create an Alarm with a cross-account or cross-region math expression/);
+      }).toThrow(/Cannot create an Alarm based on a MathExpression which specifies a searchAccount or searchRegion/);
     });
   });
 });
