@@ -291,15 +291,15 @@
   "Parameters": {
     "AssetParametersd8291c70c0da6a84892573601fd1c781209cf3228f777e82d6377c33113c476dS3Bucket6A113751": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"fe5df38824187483182e1459db47adfae2a515aa4caedd437fc4033a0c5b3de9\""
+      "Description": "S3 bucket for asset \"d8291c70c0da6a84892573601fd1c781209cf3228f777e82d6377c33113c476d\""
     },
     "AssetParametersd8291c70c0da6a84892573601fd1c781209cf3228f777e82d6377c33113c476dS3VersionKey2F0E63D3": {
       "Type": "String",
-      "Description": "S3 key for asset version \"fe5df38824187483182e1459db47adfae2a515aa4caedd437fc4033a0c5b3de9\""
+      "Description": "S3 key for asset version \"d8291c70c0da6a84892573601fd1c781209cf3228f777e82d6377c33113c476d\""
     },
     "AssetParametersd8291c70c0da6a84892573601fd1c781209cf3228f777e82d6377c33113c476dArtifactHash93377C23": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"fe5df38824187483182e1459db47adfae2a515aa4caedd437fc4033a0c5b3de9\""
+      "Description": "Artifact hash for asset \"d8291c70c0da6a84892573601fd1c781209cf3228f777e82d6377c33113c476d\""
     },
     "AssetParametersf7ee44e9b6217d201200d9abd42c6493b0b11e86be8a7f36163c3ea049c54653S3BucketDB5FAF47": {
       "Type": "String",
