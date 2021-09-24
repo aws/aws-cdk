@@ -141,6 +141,9 @@ a statement to the vault access policy that prevents recovery point deletions in
 new backup.BackupVault(this, 'Vault', {
   blockRecoveryPointDeletion: true,
 });
+
+const plan = backup.BackupPlan.dailyMonthly1YearRetention(this, 'Plan');
+plan.backupVault.blockRecoveryPointDeletion();
 ```
 
 By default access is not restricted.
