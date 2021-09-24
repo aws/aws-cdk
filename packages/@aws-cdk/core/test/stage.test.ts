@@ -116,9 +116,6 @@ describe('stage', () => {
       stack2.addDependency(stack1);
     }).toThrow(/dependency cannot cross stage boundaries/);
 
-    test.done();
-  },
-
   });
 
   test('When we synth() a stage, aspects inside it must have been applied', () => {

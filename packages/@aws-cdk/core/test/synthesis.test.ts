@@ -59,8 +59,9 @@ describe('synthesis', () => {
 
     // THEN
     expect(list(session.directory).includes('one-stack.template.json')).toEqual(true);
+  });
 
-    test('random construct uses addCustomSynthesis'() => {
+  test('random construct uses addCustomSynthesis', () => {
     // GIVEN
     const app = createModernApp();
     const stack = new cdk.Stack(app, 'one-stack');

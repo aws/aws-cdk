@@ -1,7 +1,6 @@
 import { ContextProvider } from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
-import { nodeunitShim, Test } from 'nodeunit-shim';
 import { CfnResource, DefaultStackSynthesizer, Stack, StackProps } from '../lib';
 import { Annotations } from '../lib/annotations';
 import { App, AppProps } from '../lib/app';
