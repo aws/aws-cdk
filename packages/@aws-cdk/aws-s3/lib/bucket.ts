@@ -1943,6 +1943,8 @@ export class Bucket extends BucketBase {
     if (this.policy) {
       customResource.node.addDependency(this.policy);
     }
+
+    customResource.node.addDependency(this);
   }
 }
 

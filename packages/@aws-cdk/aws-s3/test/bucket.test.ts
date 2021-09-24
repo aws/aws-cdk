@@ -2440,6 +2440,7 @@ describe('bucket', () => {
       },
       'DependsOn': [
         'MyBucketPolicyE7FBAC7B',
+        'MyBucketF68F3FF0',
       ],
     }, ResourcePart.CompleteDefinition);
 
