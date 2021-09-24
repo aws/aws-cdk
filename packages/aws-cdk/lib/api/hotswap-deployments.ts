@@ -24,10 +24,14 @@ export async function tryHotswapDeployment(
 
   // resolve the environment, so we can substitute things like AWS::Region in CFN expressions
   const resolvedEnv = await sdkProvider.resolveEnvironment(stackArtifact.environment);
+  if (!resolvedEnv.partition) {
+    throw new Error('unable to resolve partition to use.');
+  }
   const hotswappableChanges = findAllHotswappableChanges(stackChanges, {
     ...assetParams,
     'AWS::Region': resolvedEnv.region,
     'AWS::AccountId': resolvedEnv.account,
+    'AWS::Partition': resolvedEnv.partition,
   });
   if (!hotswappableChanges) {
     // this means there were changes to the template that cannot be short-circuited

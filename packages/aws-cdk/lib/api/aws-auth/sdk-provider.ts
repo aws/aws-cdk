@@ -202,7 +202,10 @@ export class SdkProvider {
    */
   public async resolveEnvironment(env: cxapi.Environment): Promise<cxapi.Environment> {
     const region = env.region !== cxapi.UNKNOWN_REGION ? env.region : this.defaultRegion;
-    const account = env.account !== cxapi.UNKNOWN_ACCOUNT ? env.account : (await this.defaultAccount())?.accountId;
+
+    const defaultAccount = await this.defaultAccount();
+    const account = env.account !== cxapi.UNKNOWN_ACCOUNT ? env.account : defaultAccount?.accountId;
+    const partition = env.partition ? env.account : defaultAccount?.partition;
 
     if (!account) {
       throw new Error('Unable to resolve AWS account to use. It must be either configured when you define your CDK Stack, or through the environment');
@@ -211,6 +214,7 @@ export class SdkProvider {
     return {
       region,
       account,
+      partition,
       name: cxapi.EnvironmentUtils.format(account, region),
     };
   }

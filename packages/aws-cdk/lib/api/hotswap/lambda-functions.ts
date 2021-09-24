@@ -92,21 +92,21 @@ function isLambdaFunctionCodeOnlyChange(
   for (const updatedPropName in propertyUpdates) {
     const updatedProp = propertyUpdates[updatedPropName];
     /*eslint-disable*/
-    console.log('lambda updateProp');
-    console.log(updatedProp);
+    //console.log('lambda updateProp');
+    //console.log(updatedProp);
     if (updatedProp.newValue === undefined) {
       return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
     }
-    console.log('lambda newValue');
-    console.log(updatedProp.newValue);
+    //console.log('lambda newValue');
+    //console.log(updatedProp.newValue);
     for (const newPropName in updatedProp.newValue) {
-    console.log('lambda newPropName');
-    console.log(newPropName);
+    //console.log('lambda newPropName');
+    //console.log(newPropName);
       switch (newPropName) {
         case 'S3Bucket':
           foundCodeDifference = true;
-    console.log('lambda updatedProp.newValue[newPropName]');
-    console.log(updatedProp.newValue[newPropName]);
+    //console.log('lambda updatedProp.newValue[newPropName]');
+    //console.log(updatedProp.newValue[newPropName]);
           s3Bucket = stringifyPotentialCfnExpression(updatedProp.newValue[newPropName], assetParamsWithEnv);
           break;
         case 'S3Key':
