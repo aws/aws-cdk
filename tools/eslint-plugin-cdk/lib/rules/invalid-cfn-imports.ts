@@ -53,7 +53,7 @@ export function create(context: Rule.RuleContext): Rule.NodeListener {
       } else if (cfnImports.length > 0 && location.startsWith('.')) {
         // import { CfnXXX } from './some/relative/path/not/ending/in/generated';
         context.report({
-          message: 'To allow rewriting imports when generating v2 experimental packages, import of `' + cfnImports.map(e => e.imported.name).join(', ') + ' must be imported from its specific .generated location.',
+          message: 'To allow rewriting imports when generating v2 experimental packages, import of `' + cfnImports.map(e => e.imported.name).join(', ') + '` must be imported from its specific .generated location.',
           node: node,
         });
       } else if (cfnImports.length > 0 && otherImports.length > 0 && checkIfImportedLocationIsAnAlphaPackage(location, context.getFilename())) {
