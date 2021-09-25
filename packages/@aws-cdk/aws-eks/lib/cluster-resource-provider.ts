@@ -2,6 +2,7 @@ import * as path from 'path';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
+import { NodejsFunction } from '@aws-cdk/aws-lambda-nodejs';
 import { Duration, NestedStack, Stack } from '@aws-cdk/core';
 import * as cr from '@aws-cdk/custom-resources';
 import { Construct } from 'constructs';
@@ -58,12 +59,17 @@ export class ClusterResourceProvider extends NestedStack {
   private constructor(scope: Construct, id: string, props: ClusterResourceProviderProps) {
     super(scope as CoreConstruct, id);
 
-    const onEvent = new lambda.Function(this, 'OnEventHandler', {
-      code: lambda.Code.fromAsset(HANDLER_DIR),
+    // Using NodejsFunction so that NPM dependencies (http-proxy-agent) are installed at synth time.
+    const onEvent = new NodejsFunction(this, 'OnEventHandler', {
+      entry: path.join(HANDLER_DIR, 'index.ts'),
+      bundling: {
+        nodeModules: ['http-proxy-agent'],
+        externalModules: ['aws-sdk'],
+      },
       description: 'onEvent handler for EKS cluster resource provider',
       runtime: HANDLER_RUNTIME,
       environment: props.environment,
-      handler: 'index.onEvent',
+      handler: 'onEvent',
       timeout: Duration.minutes(1),
       vpc: props.subnets ? props.vpc : undefined,
       vpcSubnets: props.subnets ? { subnets: props.subnets } : undefined,
