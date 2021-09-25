@@ -146,9 +146,10 @@ describe('cfn resource', () => {
 
     // THEN - only R2 is synthesized
     expect(app.synth().getStackByName(stack.stackName).template?.Resources).toEqual({
-      R2: { Type: 'Foo::R2' },
-
-      // No DependsOn!
+      R2: {
+        Type: 'Foo::R2',
+        // No DependsOn!
+      },
     });
 
 
