@@ -32,7 +32,6 @@
     "organization": true
   },
   "devDependencies": {
-    "@aws-cdk/assert-internal": "0.0.0",
     "@aws-cdk/assertions": "0.0.0",
     "@aws-cdk/aws-apigateway": "0.0.0",
     "@aws-cdk/aws-ecr-assets": "0.0.0",
@@ -99,7 +98,6 @@
   "stability": "stable",
   "maturity": "stable",
   "cdk-build": {
-    "jest": true,
     "env": {
       "AWSLINT_BASE_CONSTRUCT": true
     }
