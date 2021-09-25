@@ -77,9 +77,6 @@
   },
   "deprecated": "merged into @aws-cdk/cloud-assembly-schema",
   "maturity": "deprecated",
-  "cdk-build": {
-    "jest": true
-  },
   "publishConfig": {
     "tag": "latest"
   }

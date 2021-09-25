@@ -49,7 +49,6 @@
     "projectReferences": true
   },
   "cdk-build": {
-    "jest": true,
     "pre": [
       "./vendor-in.sh"
     ]

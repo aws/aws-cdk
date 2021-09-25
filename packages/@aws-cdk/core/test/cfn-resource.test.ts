@@ -1,10 +1,9 @@
 import { Construct } from 'constructs';
-import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as core from '../lib';
 
-nodeunitShim({
-  '._toCloudFormation': {
-    'does not call renderProperties with an undefined value'(test: Test) {
+describe('cfn resource', () => {
+  describe('._toCloudFormation', () => {
+    test('does not call renderProperties with an undefined value', () => {
       const app = new core.App();
       const stack = new core.Stack(app, 'TestStack');
       const resource = new core.CfnResource(stack, 'DefaultResource', { type: 'Test::Resource::Fake' });
@@ -12,20 +11,20 @@ nodeunitShim({
       let called = false;
       (resource as any).renderProperties = (val: any) => {
         called = true;
-        test.notEqual(val, null);
+        expect(val).not.toBeNull();
       };
 
-      test.deepEqual(app.synth().getStackByName(stack.stackName).template?.Resources, {
+      expect(app.synth().getStackByName(stack.stackName).template?.Resources).toEqual({
         DefaultResource: {
           Type: 'Test::Resource::Fake',
         },
       });
-      test.ok(called, 'renderProperties must be called called');
+      expect(called).toEqual(true);
 
-      test.done();
-    },
 
-    'renders "Properties" for a resource that has only properties set to "false"'(test: Test) {
+    });
+
+    test('renders "Properties" for a resource that has only properties set to "false"', () => {
       const app = new core.App();
       const stack = new core.Stack(app, 'TestStack');
       new core.CfnResource(stack, 'Resource', {
@@ -35,7 +34,7 @@ nodeunitShim({
         },
       });
 
-      test.deepEqual(app.synth().getStackByName(stack.stackName).template?.Resources, {
+      expect(app.synth().getStackByName(stack.stackName).template?.Resources).toEqual({
         Resource: {
           Type: 'Test::Resource::Fake',
           Properties: {
@@ -44,11 +43,11 @@ nodeunitShim({
         },
       });
 
-      test.done();
-    },
-  },
 
-  'applyRemovalPolicy default includes Update policy'(test: Test) {
+    });
+  });
+
+  test('applyRemovalPolicy default includes Update policy', () => {
     // GIVEN
     const app = new core.App();
     const stack = new core.Stack(app, 'TestStack');
@@ -58,7 +57,7 @@ nodeunitShim({
     resource.applyRemovalPolicy(core.RemovalPolicy.RETAIN);
 
     // THEN
-    test.deepEqual(app.synth().getStackByName(stack.stackName).template?.Resources, {
+    expect(app.synth().getStackByName(stack.stackName).template?.Resources).toEqual({
       DefaultResource: {
         Type: 'Test::Resource::Fake',
         DeletionPolicy: 'Retain',
@@ -66,10 +65,10 @@ nodeunitShim({
       },
     });
 
-    test.done();
-  },
 
-  'can switch off updating Update policy'(test: Test) {
+  });
+
+  test('can switch off updating Update policy', () => {
     // GIVEN
     const app = new core.App();
     const stack = new core.Stack(app, 'TestStack');
@@ -81,17 +80,17 @@ nodeunitShim({
     });
 
     // THEN
-    test.deepEqual(app.synth().getStackByName(stack.stackName).template?.Resources, {
+    expect(app.synth().getStackByName(stack.stackName).template?.Resources).toEqual({
       DefaultResource: {
         Type: 'Test::Resource::Fake',
         DeletionPolicy: 'Retain',
       },
     });
 
-    test.done();
-  },
 
-  'can add metadata'(test: Test) {
+  });
+
+  test('can add metadata', () => {
     // GIVEN
     const app = new core.App();
     const stack = new core.Stack(app, 'TestStack');
@@ -101,7 +100,7 @@ nodeunitShim({
     resource.addMetadata('Beep', 'Boop');
 
     // THEN
-    test.deepEqual(app.synth().getStackByName(stack.stackName).template?.Resources, {
+    expect(app.synth().getStackByName(stack.stackName).template?.Resources).toEqual({
       DefaultResource: {
         Type: 'Test::Resource::Fake',
         Metadata: {
@@ -110,10 +109,10 @@ nodeunitShim({
       },
     });
 
-    test.done();
-  },
 
-  'can read metadata'(test: Test) {
+  });
+
+  test('can read metadata', () => {
     // GIVEN
     const app = new core.App();
     const stack = new core.Stack(app, 'TestStack');
@@ -123,10 +122,10 @@ nodeunitShim({
     // THEN
     expect(resource.getMetadata('Beep')).toEqual('Boop');
 
-    test.done();
-  },
 
-  'subclasses can override "shouldSynthesize" to lazy-determine if the resource should be included'(test: Test) {
+  });
+
+  test('subclasses can override "shouldSynthesize" to lazy-determine if the resource should be included', () => {
     // GIVEN
     class HiddenCfnResource extends core.CfnResource {
       protected shouldSynthesize() {
@@ -146,42 +145,40 @@ nodeunitShim({
     r2.node.addDependency(subtree);
 
     // THEN - only R2 is synthesized
-    test.deepEqual(app.synth().getStackByName(stack.stackName).template?.Resources, {
+    expect(app.synth().getStackByName(stack.stackName).template?.Resources).toEqual({
       R2: {
         Type: 'Foo::R2',
         // No DependsOn!
       },
     });
 
-    test.done();
-  },
 
-  'CfnResource cannot be created outside Stack'(test: Test) {
+  });
+
+  test('CfnResource cannot be created outside Stack', () => {
     const app = new core.App();
-    test.throws(() => {
+    expect(() => {
       new core.CfnResource(app, 'Resource', {
         type: 'Some::Resource',
       });
-    }, /should be created in the scope of a Stack, but no Stack found/);
+    }).toThrow(/should be created in the scope of a Stack, but no Stack found/);
 
 
-    test.done();
-  },
+  });
 
   /**
    * Stages start a new scope, which does not count as a Stack anymore
    */
-  'CfnResource cannot be in Stage in Stack'(test: Test) {
+  test('CfnResource cannot be in Stage in Stack', () => {
     const app = new core.App();
     const stack = new core.Stack(app, 'Stack');
     const stage = new core.Stage(stack, 'Stage');
-    test.throws(() => {
+    expect(() => {
       new core.CfnResource(stage, 'Resource', {
         type: 'Some::Resource',
       });
-    }, /should be created in the scope of a Stack, but no Stack found/);
+    }).toThrow(/should be created in the scope of a Stack, but no Stack found/);
 
 
-    test.done();
-  },
+  });
 });

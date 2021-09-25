@@ -101,7 +101,6 @@
     "pre": [
       "layer/build.sh"
     ],
-    "jest": true,
     "env": {
       "AWSLINT_BASE_CONSTRUCT": true
     }

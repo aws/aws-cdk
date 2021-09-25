@@ -58,8 +58,7 @@
     "cloudformation": "AWS::ECR",
     "env": {
       "AWSLINT_BASE_CONSTRUCT": true
-    },
-    "jest": true
+    }
   },
   "nyc": {
     "lines": 78,

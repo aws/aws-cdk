@@ -58,7 +58,6 @@
   },
   "cdk-build": {
     "cloudformation": "AWS::AppIntegrations",
-    "jest": true,
     "env": {
       "AWSLINT_BASE_CONSTRUCT": "true"
     }

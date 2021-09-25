@@ -57,7 +57,6 @@
   },
   "cdk-build": {
     "cloudformation": "AWS::IoTThingsGraph",
-    "jest": true,
     "env": {
       "AWSLINT_BASE_CONSTRUCT": true
     }

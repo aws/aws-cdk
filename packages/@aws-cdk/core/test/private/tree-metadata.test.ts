@@ -2,7 +2,6 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { Construct } from 'constructs';
-import { nodeunitShim, Test } from 'nodeunit-shim';
 import { App, CfnParameter, CfnResource, Lazy, Stack, TreeInspector } from '../../lib/index';
 
 abstract class AbstractCfnResource extends CfnResource {
@@ -20,8 +19,8 @@ abstract class AbstractCfnResource extends CfnResource {
   protected abstract get cfnProperties(): { [key: string]: any };
 }
 
-nodeunitShim({
-  'tree metadata is generated as expected'(test: Test) {
+describe('tree metadata', () => {
+  test('tree metadata is generated as expected', () => {
     const app = new App();
 
     const stack = new Stack(app, 'mystack');
@@ -29,9 +28,9 @@ nodeunitShim({
 
     const assembly = app.synth();
     const treeArtifact = assembly.tree();
-    test.ok(treeArtifact);
+    expect(treeArtifact).toBeDefined();
 
-    test.deepEqual(readJson(assembly.directory, treeArtifact!.file), {
+    expect(readJson(assembly.directory, treeArtifact!.file)).toEqual({
       version: 'tree-0.1',
       tree: expect.objectContaining({
         id: 'App',
@@ -54,10 +53,10 @@ nodeunitShim({
         },
       }),
     });
-    test.done();
-  },
 
-  'tree metadata for a Cfn resource'(test: Test) {
+  });
+
+  test('tree metadata for a Cfn resource', () => {
     class MyCfnResource extends AbstractCfnResource {
       protected get cfnProperties(): { [key: string]: any } {
         return {
@@ -77,9 +76,9 @@ nodeunitShim({
 
     const assembly = app.synth();
     const treeArtifact = assembly.tree();
-    test.ok(treeArtifact);
+    expect(treeArtifact).toBeDefined();
 
-    test.deepEqual(readJson(assembly.directory, treeArtifact!.file), {
+    expect(readJson(assembly.directory, treeArtifact!.file)).toEqual({
       version: 'tree-0.1',
       tree: expect.objectContaining({
         id: 'App',
@@ -113,10 +112,10 @@ nodeunitShim({
         },
       }),
     });
-    test.done();
-  },
 
-  'tree metadata has construct class & version in there'(test: Test) {
+  });
+
+  test('tree metadata has construct class & version in there', () => {
     // The runtime metadata this test relies on is only available if the most
     // recent compile has happened using 'jsii', as the jsii compiler injects
     // this metadata.
@@ -144,11 +143,11 @@ nodeunitShim({
 
     const assembly = app.synth();
     const treeArtifact = assembly.tree();
-    test.ok(treeArtifact);
+    expect(treeArtifact).toBeDefined();
 
     const codeBuild = !!process.env.CODEBUILD_BUILD_ID;
 
-    test.deepEqual(readJson(assembly.directory, treeArtifact!.file), {
+    expect(readJson(assembly.directory, treeArtifact!.file)).toEqual({
       version: 'tree-0.1',
       tree: expect.objectContaining({
         children: expect.objectContaining({
@@ -170,10 +169,10 @@ nodeunitShim({
       }),
     });
 
-    test.done();
-  },
 
-  'token resolution & cfn parameter'(test: Test) {
+  });
+
+  test('token resolution & cfn parameter', () => {
     const app = new App();
     const stack = new Stack(app, 'mystack');
     const cfnparam = new CfnParameter(stack, 'mycfnparam');
@@ -191,9 +190,9 @@ nodeunitShim({
 
     const assembly = app.synth();
     const treeArtifact = assembly.tree();
-    test.ok(treeArtifact);
+    expect(treeArtifact).toBeDefined();
 
-    test.deepEqual(readJson(assembly.directory, treeArtifact!.file), {
+    expect(readJson(assembly.directory, treeArtifact!.file)).toEqual({
       version: 'tree-0.1',
       tree: expect.objectContaining({
         id: 'App',
@@ -227,10 +226,10 @@ nodeunitShim({
         },
       }),
     });
-    test.done();
-  },
 
-  'cross-stack tokens'(test: Test) {
+  });
+
+  test('cross-stack tokens', () => {
     class MyFirstResource extends AbstractCfnResource {
       public readonly lazykey: string;
 
@@ -269,9 +268,9 @@ nodeunitShim({
 
     const assembly = app.synth();
     const treeArtifact = assembly.tree();
-    test.ok(treeArtifact);
+    expect(treeArtifact).toBeDefined();
 
-    test.deepEqual(readJson(assembly.directory, treeArtifact!.file), {
+    expect(readJson(assembly.directory, treeArtifact!.file)).toEqual({
       version: 'tree-0.1',
       tree: expect.objectContaining({
         id: 'App',
@@ -317,10 +316,10 @@ nodeunitShim({
       }),
     });
 
-    test.done();
-  },
 
-  'failing nodes'(test: Test) {
+  });
+
+  test('failing nodes', () => {
     class MyCfnResource extends CfnResource {
       public inspect(_: TreeInspector) {
         throw new Error('Forcing an inspect error');
@@ -335,7 +334,7 @@ nodeunitShim({
 
     const assembly = app.synth();
     const treeArtifact = assembly.tree();
-    test.ok(treeArtifact);
+    expect(treeArtifact).toBeDefined();
 
     const treenode = app.node.findChild('Tree');
 
@@ -344,10 +343,10 @@ nodeunitShim({
         && /Forcing an inspect error/.test(md.data as string)
         && /mycfnresource/.test(md.data as string);
     });
-    test.ok(warn);
+    expect(warn).toBeDefined();
 
     // assert that the rest of the construct tree is rendered
-    test.deepEqual(readJson(assembly.directory, treeArtifact!.file), {
+    expect(readJson(assembly.directory, treeArtifact!.file)).toEqual({
       version: 'tree-0.1',
       tree: expect.objectContaining({
         id: 'App',
@@ -365,8 +364,8 @@ nodeunitShim({
       }),
     });
 
-    test.done();
-  },
+
+  });
 });
 
 function readJson(outdir: string, file: string) {

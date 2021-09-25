@@ -55,9 +55,6 @@
   },
   "stability": "stable",
   "maturity": "stable",
-  "cdk-build": {
-    "jest": true
-  },
   "publishConfig": {
     "tag": "next"
   }
