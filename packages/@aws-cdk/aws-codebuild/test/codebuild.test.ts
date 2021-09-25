@@ -1590,6 +1590,40 @@ describe('ARM image', () => {
       });
     });
 
+    test('can be used with ComputeType SMALL', () => {
+      const stack = new cdk.Stack();
+      new codebuild.PipelineProject(stack, 'Project', {
+        environment: {
+          computeType: codebuild.ComputeType.SMALL,
+          buildImage: codebuild.LinuxBuildImage.AMAZON_LINUX_2_ARM,
+        },
+      });
+
+      expect(stack).toHaveResourceLike('AWS::CodeBuild::Project', {
+        'Environment': {
+          'Type': 'ARM_CONTAINER',
+          'ComputeType': 'BUILD_GENERAL1_SMALL',
+        },
+      });
+    });
+
+    test('can be used with ComputeType LARGE', () => {
+      const stack = new cdk.Stack();
+      new codebuild.PipelineProject(stack, 'Project', {
+        environment: {
+          computeType: codebuild.ComputeType.LARGE,
+          buildImage: codebuild.LinuxBuildImage.AMAZON_LINUX_2_ARM,
+        },
+      });
+
+      expect(stack).toHaveResourceLike('AWS::CodeBuild::Project', {
+        'Environment': {
+          'Type': 'ARM_CONTAINER',
+          'ComputeType': 'BUILD_GENERAL1_LARGE',
+        },
+      });
+    });
+
     test('cannot be used in conjunction with ComputeType MEDIUM', () => {
       const stack = new cdk.Stack();
 

@@ -1656,7 +1656,8 @@ class ArmBuildImage implements IBuildImage {
   public validate(buildEnvironment: BuildEnvironment): string[] {
     const ret = [];
     if (buildEnvironment.computeType &&
-        buildEnvironment.computeType !== (ComputeType.SMALL || ComputeType.LARGE)) {
+        buildEnvironment.computeType !== ComputeType.SMALL &&
+        buildEnvironment.computeType !== ComputeType.LARGE) {
       ret.push(`ARM images only support ComputeTypes '${ComputeType.SMALL}' and '${ComputeType.LARGE}' - ` +
         `'${buildEnvironment.computeType}' was given`);
     }
