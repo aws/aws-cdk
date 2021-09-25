@@ -43,6 +43,14 @@ function transformPackages(): void {
         continue;
       }
 
+      const serviceName = pkg.name.substring('@aws-cdk/aws-'.length);
+      if (sourceFileName.startsWith(`${serviceName}.generated`)) {
+        // Skip copying the generated L1 files: foo.generated.*
+        // Don't skip the augmentations and canned metrics: foo-augmentations.generated.*, foo-canned-metrics.generated.*,
+        // or any other new foo-x.generated.* format that might be introduced.
+        continue;
+      }
+
       const source = path.join(srcDir, sourceFileName);
       const destination = path.join(destDir, sourceFileName);
 
@@ -71,10 +79,20 @@ function transformPackages(): void {
           }
         }
         fs.outputFileSync(destination, resultFileLines.join('\n'));
+      } else if (sourceFileName === 'index.ts') {
+        // Remove any exports for generated L1s, e.g.:
+        // export * from './apigatewayv2.generated';
+        const indexLines = fs.readFileSync(source, 'utf8')
+          .split('\n')
+          .filter(line => !line.match(/export \* from '.*\.generated'/))
+          .join('\n');
+        fs.outputFileSync(destination, indexLines);
       } else if (sourceFileName.endsWith('.ts') && !sourceFileName.endsWith('.d.ts')) {
         const sourceCode = fs.readFileSync(source).toString();
         const sourceCodeOutput = awsCdkMigration.rewriteImports(sourceCode, sourceFileName, {
           customModules: alphaPackages,
+          rewriteCfnImports: true,
+          packageUnscopedName: `${pkg.name.substring('@aws-cdk/'.length)}`,
         });
         fs.outputFileSync(destination, sourceCodeOutput);
       } else {

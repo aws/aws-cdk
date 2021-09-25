@@ -1,0 +1,1 @@
+To allow rewriting imports when generating v2 experimental packages, `CfnDeliveryStream` must be imported by name and separate from non-L1 imports, since it is being imported from an experimental package: @aws-cdk/aws-kinesisfirehose
