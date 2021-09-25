@@ -56,7 +56,6 @@
   },
   "cdk-build": {
     "cloudformation": "AWS::NetworkFirewall",
-    "jest": true,
     "env": {
       "AWSLINT_BASE_CONSTRUCT": "true"
     }

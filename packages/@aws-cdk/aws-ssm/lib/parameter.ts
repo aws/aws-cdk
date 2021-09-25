@@ -202,7 +202,9 @@ export enum ParameterType {
   STRING = 'String',
   /**
    * Secure String
+   *
    * Parameter Store uses an AWS Key Management Service (KMS) customer master key (CMK) to encrypt the parameter value.
+   * Parameters of type SecureString cannot be created directly from a CDK application.
    */
   SECURE_STRING = 'SecureString',
   /**

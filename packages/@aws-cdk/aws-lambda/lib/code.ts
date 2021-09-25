@@ -199,6 +199,14 @@ export interface CodeImageConfig {
    * @default - use the ENTRYPOINT in the docker image or Dockerfile.
    */
   readonly entrypoint?: string[];
+
+  /**
+   * Specify or override the WORKDIR on the specified Docker image or Dockerfile.
+   * A WORKDIR allows you to configure the working directory the container will use.
+   * @see https://docs.docker.com/engine/reference/builder/#workdir
+   * @default - use the WORKDIR in the docker image or Dockerfile.
+   */
+  readonly workingDirectory?: string;
 }
 
 /**
@@ -433,6 +441,14 @@ export interface EcrImageCodeProps {
   readonly entrypoint?: string[];
 
   /**
+   * Specify or override the WORKDIR on the specified Docker image or Dockerfile.
+   * A WORKDIR allows you to configure the working directory the container will use.
+   * @see https://docs.docker.com/engine/reference/builder/#workdir
+   * @default - use the WORKDIR in the docker image or Dockerfile.
+   */
+  readonly workingDirectory?: string;
+
+  /**
    * The image tag to use when pulling the image from ECR.
    * @default 'latest'
    */
@@ -457,6 +473,7 @@ export class EcrImageCode extends Code {
         imageUri: this.repository.repositoryUriForTag(this.props?.tag ?? 'latest'),
         cmd: this.props.cmd,
         entrypoint: this.props.entrypoint,
+        workingDirectory: this.props.workingDirectory,
       },
     };
   }
@@ -482,6 +499,14 @@ export interface AssetImageCodeProps extends ecr_assets.DockerImageAssetOptions 
    * @default - use the ENTRYPOINT in the docker image or Dockerfile.
    */
   readonly entrypoint?: string[];
+
+  /**
+   * Specify or override the WORKDIR on the specified Docker image or Dockerfile.
+   * A WORKDIR allows you to configure the working directory the container will use.
+   * @see https://docs.docker.com/engine/reference/builder/#workdir
+   * @default - use the WORKDIR in the docker image or Dockerfile.
+   */
+  readonly workingDirectory?: string;
 }
 
 /**
@@ -507,6 +532,7 @@ export class AssetImageCode extends Code {
         imageUri: asset.imageUri,
         entrypoint: this.props.entrypoint,
         cmd: this.props.cmd,
+        workingDirectory: this.props.workingDirectory,
       },
     };
   }

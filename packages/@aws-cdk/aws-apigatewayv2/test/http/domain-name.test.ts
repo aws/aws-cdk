@@ -102,7 +102,9 @@ describe('DomainName', () => {
       ApiId: {
         Ref: 'ApiF70053CD',
       },
-      DomainName: 'example.com',
+      DomainName: {
+        Ref: 'DNFDC76583',
+      },
       Stage: 'beta',
       ApiMappingKey: 'beta',
     });
@@ -139,7 +141,9 @@ describe('DomainName', () => {
       ApiId: {
         Ref: 'ApiF70053CD',
       },
-      DomainName: 'example.com',
+      DomainName: {
+        Ref: 'DNFDC76583',
+      },
       Stage: '$default',
     });
   });

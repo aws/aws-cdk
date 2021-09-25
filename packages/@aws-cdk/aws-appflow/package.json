@@ -56,8 +56,7 @@
     "build+test+extract": "yarn build+test && yarn rosetta:extract"
   },
   "cdk-build": {
-    "cloudformation": "AWS::AppFlow",
-    "jest": true
+    "cloudformation": "AWS::AppFlow"
   },
   "keywords": [
     "aws",

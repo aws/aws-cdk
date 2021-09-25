@@ -3,8 +3,6 @@ import * as awsCdkMigration from 'aws-cdk-migration';
 import * as fs from 'fs-extra';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const lerna_project = require('@lerna/project');
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const ver = require('../../scripts/resolve-version');
 
 transformPackages();
 
@@ -100,9 +98,6 @@ function transformPackageJson(pkg: any, source: string, destination: string, alp
   const pkgUnscopedName = `${pkg.name.substring('@aws-cdk/'.length)}`;
 
   packageJson.name += '-alpha';
-  if (ver.alphaVersion) {
-    packageJson.version = ver.alphaVersion;
-  }
   packageJson.repository.directory = `packages/individual-packages/${pkgUnscopedName}`;
 
   // disable awslint (some rules are hard-coded to @aws-cdk/core)
@@ -165,7 +160,7 @@ function transformPackageJsonDependencies(packageJson: any, pkg: any, alphaPacka
         break;
       default:
         if (alphaPackages[dependency]) {
-          alphaDependencies[alphaPackages[dependency]] = packageJson.version;
+          alphaDependencies[alphaPackages[dependency]] = pkg.version;
         } else if (v1BundledDependencies.indexOf(dependency) !== -1) {
           // ...other than third-party dependencies, which are in bundledDependencies
           bundledDependencies[dependency] = packageJson.dependencies[dependency];
@@ -185,7 +180,7 @@ function transformPackageJsonDependencies(packageJson: any, pkg: any, alphaPacka
         break;
       default:
         if (alphaPackages[v1DevDependency]) {
-          alphaDevDependencies[alphaPackages[v1DevDependency]] = packageJson.version;
+          alphaDevDependencies[alphaPackages[v1DevDependency]] = pkg.version;
         } else if (!v1DevDependency.startsWith('@aws-cdk/')) {
           devDependencies[v1DevDependency] = packageJson.devDependencies[v1DevDependency];
         }

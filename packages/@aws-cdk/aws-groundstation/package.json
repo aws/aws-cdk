@@ -58,7 +58,6 @@
   },
   "cdk-build": {
     "cloudformation": "AWS::GroundStation",
-    "jest": true,
     "env": {
       "AWSLINT_BASE_CONSTRUCT": "true"
     }
