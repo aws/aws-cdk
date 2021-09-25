@@ -1,4 +1,5 @@
 import '@aws-cdk/assert-internal/jest';
+import { SynthUtils } from '@aws-cdk/assert-internal';
 import * as cdk from '@aws-cdk/core';
 import * as codepipeline from '../lib';
 import { FakeBuildAction } from './fake-build-action';
@@ -47,8 +48,7 @@ describe('artifacts', () => {
 
       expect(errors.length).toEqual(1);
       const error = errors[0];
-      expect(error.source).toEqual(pipeline);
-      expect(error.message).toEqual("Action 'Build' is using an unnamed input Artifact, which is not being produced in this pipeline");
+      expect(error).toEqual("Action 'Build' is using an unnamed input Artifact, which is not being produced in this pipeline");
 
 
     });
@@ -83,8 +83,7 @@ describe('artifacts', () => {
 
       expect(errors.length).toEqual(1);
       const error = errors[0];
-      expect(error.source).toEqual(pipeline);
-      expect(error.message).toEqual("Action 'Build' is using input Artifact 'named', which is not being produced in this pipeline");
+      expect(error).toEqual("Action 'Build' is using input Artifact 'named', which is not being produced in this pipeline");
 
 
     });
@@ -116,12 +115,12 @@ describe('artifacts', () => {
         ],
       });
 
-      const errors = validate(stack);
+      SynthUtils.synthesize(stack, { skipValidation: true });
 
+      const errors = pipeline.node.validate();
       expect(errors.length).toEqual(1);
       const error = errors[0];
-      expect(error.source).toEqual(pipeline);
-      expect(error.message).toEqual("Both Actions 'Source' and 'Build' are producting Artifact 'Artifact_Source_Source'. Every artifact can only be produced once.");
+      expect(error).toEqual("Both Actions 'Source' and 'Build' are producting Artifact 'Artifact_Source_Source'. Every artifact can only be produced once.");
 
 
     });
@@ -216,12 +215,11 @@ describe('artifacts', () => {
         ],
       });
 
-      const errors = validate(stack);
+      const errors = pipeline.node.validate();
 
       expect(errors.length).toEqual(1);
       const error = errors[0];
-      expect(error.source).toEqual(pipeline);
-      expect(error.message).toEqual("Stage 2 Action 2 ('Build'/'build2') is consuming input Artifact 'buildOutput1' before it is being produced at Stage 2 Action 3 ('Build'/'build1')");
+      expect(error).toEqual("Stage 2 Action 2 ('Build'/'build2') is consuming input Artifact 'buildOutput1' before it is being produced at Stage 2 Action 3 ('Build'/'build1')");
 
 
     });
