@@ -6,7 +6,6 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
-import * as ssm from '@aws-cdk/aws-ssm';
 import { Duration, Lazy, IResource, Resource, Stack, Aspects, IAspect } from '@aws-cdk/core';
 import { Construct, IConstruct } from 'constructs';
 import { BottleRocketImage, EcsOptimizedAmi } from './amis';
