@@ -1,14 +1,13 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as cxapi from '@aws-cdk/cx-api';
-import { nodeunitShim, Test } from 'nodeunit-shim';
 import { App, AssetStaging, CustomResourceProvider, CustomResourceProviderRuntime, DockerImageAssetLocation, DockerImageAssetSource, Duration, FileAssetLocation, FileAssetSource, ISynthesisSession, Size, Stack } from '../../lib';
 import { toCloudFormation } from '../util';
 
 const TEST_HANDLER = `${__dirname}/mock-provider`;
 
-nodeunitShim({
-  'minimal configuration'(test: Test) {
+describe('custom resource provider', () => {
+  test('minimal configuration', () => {
     // GIVEN
     const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack = new Stack(app);
@@ -20,7 +19,7 @@ nodeunitShim({
     });
 
     // THEN
-    test.ok(fs.existsSync(path.join(TEST_HANDLER, '__entrypoint__.js')), 'expecting entrypoint to be copied to the handler directory');
+    expect(fs.existsSync(path.join(TEST_HANDLER, '__entrypoint__.js'))).toEqual(true);
     const cfn = toCloudFormation(stack);
 
     // The asset hash constantly changes, so in order to not have to chase it, just look
@@ -32,7 +31,7 @@ nodeunitShim({
     const keyParam = paramNames[1];
     const hashParam = paramNames[2];
 
-    test.deepEqual(cfn, {
+    expect(cfn).toEqual({
       Resources: {
         CustomMyResourceTypeCustomResourceProviderRoleBD5E655F: {
           Type: 'AWS::IAM::Role',
@@ -122,10 +121,10 @@ nodeunitShim({
         },
       },
     });
-    test.done();
-  },
 
-  'custom resource provided creates asset in new-style synthesis with relative path'(test: Test) {
+  });
+
+  test('custom resource provided creates asset in new-style synthesis with relative path', () => {
     // GIVEN
 
     let assetFilename : string | undefined;
@@ -159,10 +158,10 @@ nodeunitShim({
       throw new Error(`Asset filename must be a relative path, got: ${assetFilename}`);
     }
 
-    test.done();
-  },
 
-  'policyStatements can be used to add statements to the inline policy'(test: Test) {
+  });
+
+  test('policyStatements can be used to add statements to the inline policy', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -179,17 +178,17 @@ nodeunitShim({
     // THEN
     const template = toCloudFormation(stack);
     const role = template.Resources.CustomMyResourceTypeCustomResourceProviderRoleBD5E655F;
-    test.deepEqual(role.Properties.Policies, [{
+    expect(role.Properties.Policies).toEqual([{
       PolicyName: 'Inline',
       PolicyDocument: {
         Version: '2012-10-17',
         Statement: [{ statement1: 123 }, { statement2: { foo: 111 } }],
       },
     }]);
-    test.done();
-  },
 
-  'memorySize, timeout and description'(test: Test) {
+  });
+
+  test('memorySize, timeout and description', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -205,13 +204,13 @@ nodeunitShim({
     // THEN
     const template = toCloudFormation(stack);
     const lambda = template.Resources.CustomMyResourceTypeCustomResourceProviderHandler29FBDD2A;
-    test.deepEqual(lambda.Properties.MemorySize, 2048);
-    test.deepEqual(lambda.Properties.Timeout, 300);
-    test.deepEqual(lambda.Properties.Description, 'veni vidi vici');
-    test.done();
-  },
+    expect(lambda.Properties.MemorySize).toEqual(2048);
+    expect(lambda.Properties.Timeout).toEqual(300);
+    expect(lambda.Properties.Description).toEqual('veni vidi vici');
 
-  'environment variables'(test: Test) {
+  });
+
+  test('environment variables', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -228,16 +227,16 @@ nodeunitShim({
     // THEN
     const template = toCloudFormation(stack);
     const lambda = template.Resources.CustomMyResourceTypeCustomResourceProviderHandler29FBDD2A;
-    test.deepEqual(lambda.Properties.Environment, {
+    expect(lambda.Properties.Environment).toEqual({
       Variables: {
         A: 'a',
         B: 'b',
       },
     });
-    test.done();
-  },
 
-  'roleArn'(test: Test) {
+  });
+
+  test('roleArn', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -248,13 +247,13 @@ nodeunitShim({
     });
 
     // THEN
-    test.deepEqual(stack.resolve(cr.roleArn), {
+    expect(stack.resolve(cr.roleArn)).toEqual({
       'Fn::GetAtt': [
         'CustomMyResourceTypeCustomResourceProviderRoleBD5E655F',
         'Arn',
       ],
     });
-    test.done();
-  },
+
+  });
 });
 

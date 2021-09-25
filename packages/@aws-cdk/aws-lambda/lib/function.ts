@@ -675,6 +675,7 @@ export class Function extends FunctionBase {
       imageConfig: undefinedIfNoKeys({
         command: code.image?.cmd,
         entryPoint: code.image?.entrypoint,
+        workingDirectory: code.image?.workingDirectory,
       }),
       kmsKeyArn: props.environmentEncryption?.keyArn,
       fileSystemConfigs,

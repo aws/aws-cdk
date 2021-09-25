@@ -57,7 +57,6 @@
   },
   "cdk-build": {
     "cloudformation": "AWS::Route53Resolver",
-    "jest": true,
     "env": {
       "AWSLINT_BASE_CONSTRUCT": true
     }

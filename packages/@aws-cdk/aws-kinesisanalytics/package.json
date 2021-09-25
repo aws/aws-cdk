@@ -59,7 +59,6 @@
       "AWS::KinesisAnalytics",
       "AWS::KinesisAnalyticsV2"
     ],
-    "jest": true,
     "env": {
       "AWSLINT_BASE_CONSTRUCT": true
     }

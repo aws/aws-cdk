@@ -1,11 +1,10 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct, IConstruct } from 'constructs';
-import { nodeunitShim, Test } from 'nodeunit-shim';
 import { App, CfnResource, IAspect, Stack, Stage, Aspects } from '../lib';
 
-nodeunitShim({
-  'Stack inherits unspecified part of the env from Stage'(test: Test) {
+describe('stage', () => {
+  test('Stack inherits unspecified part of the env from Stage', () => {
     // GIVEN
     const app = new App();
     const stage = new Stage(app, 'Stage', {
@@ -17,13 +16,13 @@ nodeunitShim({
     const stack2 = new Stack(stage, 'Stack2', { env: { account: 'tnuocca' } });
 
     // THEN
-    test.deepEqual(acctRegion(stack1), ['account', 'elsewhere']);
-    test.deepEqual(acctRegion(stack2), ['tnuocca', 'region']);
+    expect(acctRegion(stack1)).toEqual(['account', 'elsewhere']);
+    expect(acctRegion(stack2)).toEqual(['tnuocca', 'region']);
 
-    test.done();
-  },
 
-  'envs are inherited deeply'(test: Test) {
+  });
+
+  test('envs are inherited deeply', () => {
     // GIVEN
     const app = new App();
     const outer = new Stage(app, 'Stage', {
@@ -36,14 +35,14 @@ nodeunitShim({
     const innerNeither = new Stage(outer, 'Neither');
 
     // THEN
-    test.deepEqual(acctRegion(new Stack(innerAcct, 'Stack')), ['tnuocca', 'region']);
-    test.deepEqual(acctRegion(new Stack(innerRegion, 'Stack')), ['account', 'elsewhere']);
-    test.deepEqual(acctRegion(new Stack(innerNeither, 'Stack')), ['account', 'region']);
+    expect(acctRegion(new Stack(innerAcct, 'Stack'))).toEqual(['tnuocca', 'region']);
+    expect(acctRegion(new Stack(innerRegion, 'Stack'))).toEqual(['account', 'elsewhere']);
+    expect(acctRegion(new Stack(innerNeither, 'Stack'))).toEqual(['account', 'region']);
 
-    test.done();
-  },
 
-  'The Stage Assembly is in the app Assembly\'s manifest'(test: Test) {
+  });
+
+  test('The Stage Assembly is in the app Assembly\'s manifest', () => {
     // WHEN
     const app = new App();
     const stage = new Stage(app, 'Stage');
@@ -53,12 +52,12 @@ nodeunitShim({
     const appAsm = app.synth();
 
     const artifact = appAsm.artifacts.find(x => x instanceof cxapi.NestedCloudAssemblyArtifact);
-    test.ok(artifact);
+    expect(artifact).toBeDefined();
 
-    test.done();
-  },
 
-  'Stacks in Stage are in a different cxasm than Stacks in App'(test: Test) {
+  });
+
+  test('Stacks in Stage are in a different cxasm than Stacks in App', () => {
     // WHEN
     const app = new App();
     const stack1 = new BogusStack(app, 'Stack1');
@@ -67,15 +66,15 @@ nodeunitShim({
 
     // THEN
     const stageAsm = stage.synth();
-    test.deepEqual(stageAsm.stacks.map(s => s.stackName), [stack2.stackName]);
+    expect(stageAsm.stacks.map(s => s.stackName)).toEqual([stack2.stackName]);
 
     const appAsm = app.synth();
-    test.deepEqual(appAsm.stacks.map(s => s.stackName), [stack1.stackName]);
+    expect(appAsm.stacks.map(s => s.stackName)).toEqual([stack1.stackName]);
 
-    test.done();
-  },
 
-  'Can nest Stages inside other Stages'(test: Test) {
+  });
+
+  test('Can nest Stages inside other Stages', () => {
     // WHEN
     const app = new App();
     const outer = new Stage(app, 'Outer');
@@ -87,25 +86,25 @@ nodeunitShim({
     const outerAsm = appAsm.getNestedAssembly(outer.artifactId);
     const innerAsm = outerAsm.getNestedAssembly(inner.artifactId);
 
-    test.ok(innerAsm.tryGetArtifact(stack.artifactId));
+    expect(innerAsm.tryGetArtifact(stack.artifactId)).toBeDefined();
 
-    test.done();
-  },
 
-  'Default stack name in Stage objects incorporates the Stage name and no hash'(test: Test) {
+  });
+
+  test('Default stack name in Stage objects incorporates the Stage name and no hash', () => {
     // WHEN
     const app = new App();
     const stage = new Stage(app, 'MyStage');
     const stack = new BogusStack(stage, 'MyStack');
 
     // THEN
-    test.equal(stage.stageName, 'MyStage');
-    test.equal(stack.stackName, 'MyStage-MyStack');
+    expect(stage.stageName).toEqual('MyStage');
+    expect(stack.stackName).toEqual('MyStage-MyStack');
 
-    test.done();
-  },
 
-  'Can not have dependencies to stacks outside the nested asm'(test: Test) {
+  });
+
+  test('Can not have dependencies to stacks outside the nested asm', () => {
     // GIVEN
     const app = new App();
     const stack1 = new BogusStack(app, 'Stack1');
@@ -113,14 +112,13 @@ nodeunitShim({
     const stack2 = new BogusStack(stage, 'Stack2');
 
     // WHEN
-    test.throws(() => {
+    expect(() => {
       stack2.addDependency(stack1);
-    }, /dependency cannot cross stage boundaries/);
+    }).toThrow(/dependency cannot cross stage boundaries/);
 
-    test.done();
-  },
+  });
 
-  'When we synth() a stage, aspects inside it must have been applied'(test: Test) {
+  test('When we synth() a stage, aspects inside it must have been applied', () => {
     // GIVEN
     const app = new App();
     const stage = new Stage(app, 'MyStage');
@@ -132,15 +130,15 @@ nodeunitShim({
 
     // THEN
     app.synth();
-    test.deepEqual(aspect.visits.map(c => c.node.path), [
+    expect(aspect.visits.map(c => c.node.path)).toEqual([
       'MyStage/Stack',
       'MyStage/Stack/Resource',
     ]);
 
-    test.done();
-  },
 
-  'Aspects do not apply inside a Stage'(test: Test) {
+  });
+
+  test('Aspects do not apply inside a Stage', () => {
     // GIVEN
     const app = new App();
     const stage = new Stage(app, 'MyStage');
@@ -152,14 +150,14 @@ nodeunitShim({
 
     // THEN
     app.synth();
-    test.deepEqual(aspect.visits.map(c => c.node.path), [
+    expect(aspect.visits.map(c => c.node.path)).toEqual([
       '',
       'Tree',
     ]);
-    test.done();
-  },
 
-  'Automatic dependencies inside a stage are available immediately after synth'(test: Test) {
+  });
+
+  test('Automatic dependencies inside a stage are available immediately after synth', () => {
     // GIVEN
     const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stage = new Stage(app, 'MyStage');
@@ -180,14 +178,14 @@ nodeunitShim({
     const asm = stage.synth();
 
     // THEN
-    test.deepEqual(
-      asm.getStackArtifact(stack2.artifactId).dependencies.map(d => d.id),
+    expect(
+      asm.getStackArtifact(stack2.artifactId).dependencies.map(d => d.id)).toEqual(
       [stack1.artifactId]);
 
-    test.done();
-  },
 
-  'Assemblies can be deeply nested'(test: Test) {
+  });
+
+  test('Assemblies can be deeply nested', () => {
     // GIVEN
     const app = new App({ treeMetadata: false });
 
@@ -199,7 +197,7 @@ nodeunitShim({
     const rootAssembly = app.synth();
 
     // THEN
-    test.deepEqual(rootAssembly.manifest.artifacts, {
+    expect(rootAssembly.manifest.artifacts).toEqual({
       'assembly-StageLevel1': {
         type: 'cdk:cloud-assembly',
         properties: {
@@ -210,7 +208,7 @@ nodeunitShim({
     });
 
     const assemblyLevel1 = rootAssembly.getNestedAssembly('assembly-StageLevel1');
-    test.deepEqual(assemblyLevel1.manifest.artifacts, {
+    expect(assemblyLevel1.manifest.artifacts).toEqual({
       'assembly-StageLevel1-StageLevel2': {
         type: 'cdk:cloud-assembly',
         properties: {
@@ -221,7 +219,7 @@ nodeunitShim({
     });
 
     const assemblyLevel2 = assemblyLevel1.getNestedAssembly('assembly-StageLevel1-StageLevel2');
-    test.deepEqual(assemblyLevel2.manifest.artifacts, {
+    expect(assemblyLevel2.manifest.artifacts).toEqual({
       'assembly-StageLevel1-StageLevel2-StageLevel3': {
         type: 'cdk:cloud-assembly',
         properties: {
@@ -231,10 +229,10 @@ nodeunitShim({
       },
     });
 
-    test.done();
-  },
 
-  'stage name validation'(test: Test) {
+  });
+
+  test('stage name validation', () => {
     const app = new App();
 
     new Stage(app, 'abcd');
@@ -243,38 +241,38 @@ nodeunitShim({
     new Stage(app, 'abcd123-588dfjjk.sss');
     new Stage(app, 'abcd123-588dfjjk.sss_ajsid');
 
-    test.throws(() => new Stage(app, 'abcd123-588dfjjk.sss_ajsid '), /invalid stage name "abcd123-588dfjjk.sss_ajsid "/);
-    test.throws(() => new Stage(app, 'abcd123-588dfjjk.sss_ajsid/dfo'), /invalid stage name "abcd123-588dfjjk.sss_ajsid\/dfo"/);
-    test.throws(() => new Stage(app, '&'), /invalid stage name "&"/);
-    test.throws(() => new Stage(app, '45hello'), /invalid stage name "45hello"/);
-    test.throws(() => new Stage(app, 'f'), /invalid stage name "f"/);
+    expect(() => new Stage(app, 'abcd123-588dfjjk.sss_ajsid ')).toThrow(/invalid stage name "abcd123-588dfjjk.sss_ajsid "/);
+    expect(() => new Stage(app, 'abcd123-588dfjjk.sss_ajsid/dfo')).toThrow(/invalid stage name "abcd123-588dfjjk.sss_ajsid\/dfo"/);
+    expect(() => new Stage(app, '&')).toThrow(/invalid stage name "&"/);
+    expect(() => new Stage(app, '45hello')).toThrow(/invalid stage name "45hello"/);
+    expect(() => new Stage(app, 'f')).toThrow(/invalid stage name "f"/);
 
-    test.done();
-  },
 
-  'outdir cannot be specified for nested stages'(test: Test) {
+  });
+
+  test('outdir cannot be specified for nested stages', () => {
     // WHEN
     const app = new App();
 
     // THEN
-    test.throws(() => new Stage(app, 'mystage', { outdir: '/tmp/foo/bar' }), /"outdir" cannot be specified for nested stages/);
-    test.done();
-  },
+    expect(() => new Stage(app, 'mystage', { outdir: '/tmp/foo/bar' })).toThrow(/"outdir" cannot be specified for nested stages/);
 
-  'Stage.isStage indicates that a construct is a stage'(test: Test) {
+  });
+
+  test('Stage.isStage indicates that a construct is a stage', () => {
     // WHEN
     const app = new App();
     const stack = new Stack();
     const stage = new Stage(app, 'Stage');
 
     // THEN
-    test.ok(Stage.isStage(stage));
-    test.ok(Stage.isStage(app));
-    test.ok(!Stage.isStage(stack));
-    test.done();
-  },
+    expect(Stage.isStage(stage)).toEqual(true);
+    expect(Stage.isStage(app)).toEqual(true);
+    expect(Stage.isStage(stack)).toEqual(false);
 
-  'Stage.isStage indicates that a construct is a stage based on symbol'(test: Test) {
+  });
+
+  test('Stage.isStage indicates that a construct is a stage based on symbol', () => {
     // WHEN
     const app = new App();
     const stage = new Stage(app, 'Stage');
@@ -284,11 +282,11 @@ nodeunitShim({
     Object.defineProperty(externalStage, STAGE_SYMBOL, { value: true });
 
     // THEN
-    test.ok(Stage.isStage(stage));
-    test.ok(Stage.isStage(app));
-    test.ok(Stage.isStage(externalStage));
-    test.done();
-  },
+    expect(Stage.isStage(stage)).toEqual(true);
+    expect(Stage.isStage(app)).toEqual(true);
+    expect(Stage.isStage(externalStage)).toEqual(true);
+
+  });
 });
 
 test('missing context in Stages is propagated up to root assembly', () => {

@@ -56,7 +56,6 @@
   },
   "cdk-build": {
     "cloudformation": "AWS::AutoScalingPlans",
-    "jest": true,
     "env": {
       "AWSLINT_BASE_CONSTRUCT": true
     }

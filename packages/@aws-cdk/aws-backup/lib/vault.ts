@@ -83,6 +83,14 @@ export interface BackupVaultProps {
    * @default RemovalPolicy.RETAIN
    */
   readonly removalPolicy?: RemovalPolicy;
+
+  /**
+   * Whether to add statements to the vault access policy that prevents anyone
+   * from deleting a recovery point.
+   *
+   * @default false
+   */
+  readonly blockRecoveryPointDeletion?: boolean;
 }
 
 /**
@@ -206,9 +214,23 @@ export class BackupVault extends BackupVaultBase {
       props.notificationTopic.grantPublish(new iam.ServicePrincipal('backup.amazonaws.com'));
     }
 
+    const accessPolicy = props.accessPolicy ?? new iam.PolicyDocument();
+    if (props.blockRecoveryPointDeletion) {
+      accessPolicy.addStatements(new iam.PolicyStatement({
+        effect: iam.Effect.DENY,
+        actions: [
+          'backup:DeleteRecoveryPoint',
+          'backup:UpdateRecoveryPointLifecycle',
+        ],
+        principals: [new iam.AnyPrincipal()],
+        resources: ['*'],
+      }),
+      );
+    }
+
     const vault = new CfnBackupVault(this, 'Resource', {
       backupVaultName: props.backupVaultName || this.uniqueVaultName(),
-      accessPolicy: props.accessPolicy && props.accessPolicy.toJSON(),
+      accessPolicy: accessPolicy.toJSON(),
       encryptionKeyArn: props.encryptionKey && props.encryptionKey.keyArn,
       notifications,
     });

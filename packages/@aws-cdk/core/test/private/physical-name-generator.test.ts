@@ -1,23 +1,22 @@
-import { nodeunitShim, Test } from 'nodeunit-shim';
 import { App, Aws, Lazy, Resource, Stack, Token } from '../../lib';
 import { GeneratedWhenNeededMarker, generatePhysicalName, isGeneratedWhenNeededMarker } from '../../lib/private/physical-name-generator';
 
-nodeunitShim({
-  generatePhysicalName: {
-    'generates correct physical names'(test: Test) {
+describe('physical name generator', () => {
+  describe('generatePhysicalName', () => {
+    test('generates correct physical names', () => {
       const app = new App();
       const stack = new Stack(app, 'TestStack', { env: { account: '012345678912', region: 'bermuda-triangle-1' } });
 
       const testResourceA = new TestResource(stack, 'A');
       const testResourceB = new TestResource(testResourceA, 'B');
 
-      test.equal(generatePhysicalName(testResourceA), 'teststackteststackaa164c141d59b37c1b663');
-      test.equal(generatePhysicalName(testResourceB), 'teststackteststackab27595cd34d8188283a1f');
+      expect(generatePhysicalName(testResourceA)).toEqual('teststackteststackaa164c141d59b37c1b663');
+      expect(generatePhysicalName(testResourceB)).toEqual('teststackteststackab27595cd34d8188283a1f');
 
-      test.done();
-    },
 
-    'generates different names in different accounts'(test: Test) {
+    });
+
+    test('generates different names in different accounts', () => {
       const appA = new App();
       const stackA = new Stack(appA, 'TestStack', { env: { account: '012345678912', region: 'bermuda-triangle-1' } });
       const resourceA = new TestResource(stackA, 'Resource');
@@ -26,12 +25,12 @@ nodeunitShim({
       const stackB = new Stack(appB, 'TestStack', { env: { account: '012345678913', region: 'bermuda-triangle-1' } });
       const resourceB = new TestResource(stackB, 'Resource');
 
-      test.notEqual(generatePhysicalName(resourceA), generatePhysicalName(resourceB));
+      expect(generatePhysicalName(resourceA)).not.toEqual(generatePhysicalName(resourceB));
 
-      test.done();
-    },
 
-    'generates different names in different regions'(test: Test) {
+    });
+
+    test('generates different names in different regions', () => {
       const appA = new App();
       const stackA = new Stack(appA, 'TestStack', { env: { account: '012345678912', region: 'bermuda-triangle-1' } });
       const resourceA = new TestResource(stackA, 'Resource');
@@ -40,84 +39,84 @@ nodeunitShim({
       const stackB = new Stack(appB, 'TestStack', { env: { account: '012345678912', region: 'bermuda-triangle-2' } });
       const resourceB = new TestResource(stackB, 'Resource');
 
-      test.notEqual(generatePhysicalName(resourceA), generatePhysicalName(resourceB));
+      expect(generatePhysicalName(resourceA)).not.toEqual(generatePhysicalName(resourceB));
 
-      test.done();
-    },
 
-    'fails when the region is an unresolved token'(test: Test) {
+    });
+
+    test('fails when the region is an unresolved token', () => {
       const app = new App();
       const stack = new Stack(app, 'TestStack', { env: { account: '012345678912', region: Aws.REGION } });
       const testResource = new TestResource(stack, 'A');
 
-      test.throws(() => generatePhysicalName(testResource),
+      expect(() => generatePhysicalName(testResource)).toThrow(
         /Cannot generate a physical name for TestStack\/A, because the region is un-resolved or missing/);
 
-      test.done();
-    },
 
-    'fails when the region is not provided'(test: Test) {
+    });
+
+    test('fails when the region is not provided', () => {
       const app = new App();
       const stack = new Stack(app, 'TestStack', { env: { account: '012345678912' } });
       const testResource = new TestResource(stack, 'A');
 
-      test.throws(() => generatePhysicalName(testResource),
+      expect(() => generatePhysicalName(testResource)).toThrow(
         /Cannot generate a physical name for TestStack\/A, because the region is un-resolved or missing/);
 
-      test.done();
-    },
 
-    'fails when the account is an unresolved token'(test: Test) {
+    });
+
+    test('fails when the account is an unresolved token', () => {
       const app = new App();
       const stack = new Stack(app, 'TestStack', { env: { account: Aws.ACCOUNT_ID, region: 'bermuda-triangle-1' } });
       const testResource = new TestResource(stack, 'A');
 
-      test.throws(() => generatePhysicalName(testResource),
+      expect(() => generatePhysicalName(testResource)).toThrow(
         /Cannot generate a physical name for TestStack\/A, because the account is un-resolved or missing/);
 
-      test.done();
-    },
 
-    'fails when the account is not provided'(test: Test) {
+    });
+
+    test('fails when the account is not provided', () => {
       const app = new App();
       const stack = new Stack(app, 'TestStack', { env: { region: 'bermuda-triangle-1' } });
       const testResource = new TestResource(stack, 'A');
 
-      test.throws(() => generatePhysicalName(testResource),
+      expect(() => generatePhysicalName(testResource)).toThrow(
         /Cannot generate a physical name for TestStack\/A, because the account is un-resolved or missing/);
 
-      test.done();
-    },
-  },
 
-  GeneratedWhenNeededMarker: {
-    'is correctly recognized'(test: Test) {
+    });
+  });
+
+  describe('GeneratedWhenNeededMarker', () => {
+    test('is correctly recognized', () => {
       const marker = new GeneratedWhenNeededMarker();
       const asString = Token.asString(marker);
 
-      test.ok(isGeneratedWhenNeededMarker(asString));
+      expect(isGeneratedWhenNeededMarker(asString)).toEqual(true);
 
-      test.done();
-    },
 
-    'throws when resolved'(test: Test) {
+    });
+
+    test('throws when resolved', () => {
       const marker = new GeneratedWhenNeededMarker();
       const asString = Token.asString(marker);
 
-      test.throws(() => new Stack().resolve(asString), /Use "this.physicalName" instead/);
+      expect(() => new Stack().resolve(asString)).toThrow(/Use "this.physicalName" instead/);
 
-      test.done();
-    },
-  },
 
-  isGeneratedWhenNeededMarker: {
-    'correctly response for other tokens'(test: Test) {
-      test.ok(!isGeneratedWhenNeededMarker('this is not even a token!'));
-      test.ok(!isGeneratedWhenNeededMarker(Lazy.string({ produce: () => 'Bazinga!' })));
+    });
+  });
 
-      test.done();
-    },
-  },
+  describe('isGeneratedWhenNeededMarker', () => {
+    test('correctly response for other tokens', () => {
+      expect(isGeneratedWhenNeededMarker('this is not even a token!')).toEqual(false);
+      expect(isGeneratedWhenNeededMarker(Lazy.string({ produce: () => 'Bazinga!' }))).toEqual(false);
+
+
+    });
+  });
 });
 
 class TestResource extends Resource {}

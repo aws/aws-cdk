@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as dynamodb from '@aws-cdk/aws-dynamodb';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as efs from '@aws-cdk/aws-efs';
@@ -26,7 +26,7 @@ test('create a selection', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::Backup::BackupSelection', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Backup::BackupSelection', {
     BackupPlanId: {
       'Fn::GetAtt': [
         'PlanDAF4E53A',
@@ -60,7 +60,7 @@ test('create a selection', () => {
     },
   });
 
-  expect(stack).toHaveResource('AWS::IAM::Role', {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
     ManagedPolicyArns: [
       {
         'Fn::Join': [
@@ -89,7 +89,7 @@ test('allow restores', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::IAM::Role', {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
     ManagedPolicyArns: [
       {
         'Fn::Join': [
@@ -154,7 +154,7 @@ test('fromConstruct', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::Backup::BackupSelection', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Backup::BackupSelection', {
     BackupSelection: {
       IamRoleArn: {
         'Fn::GetAtt': [
@@ -255,7 +255,7 @@ test('fromEc2Instance', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::Backup::BackupSelection', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Backup::BackupSelection', {
     BackupSelection: {
       IamRoleArn: {
         'Fn::GetAtt': [
@@ -312,7 +312,7 @@ test('fromDynamoDbTable', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::Backup::BackupSelection', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Backup::BackupSelection', {
     BackupSelection: {
       IamRoleArn: {
         'Fn::GetAtt': [

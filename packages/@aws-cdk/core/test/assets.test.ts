@@ -1,20 +1,18 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
-import { nodeunitShim, Test } from 'nodeunit-shim';
 import { App, FileAssetPackaging, Stack } from '../lib';
 import { toCloudFormation } from './util';
 
-let app: App;
-let stack: Stack;
+describe('assets', () => {
+  let app: App;
+  let stack: Stack;
 
-nodeunitShim({
-  'setUp'(cb: () => void) {
+  beforeEach(() => {
     app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     stack = new Stack(app);
-    cb();
-  },
+  });
 
-  'addFileAsset correctly sets metadata and creates S3 parameters'(test: Test) {
+  test('addFileAsset correctly sets metadata and creates S3 parameters', () => {
     // WHEN
     stack.addFileAsset({
       fileName: 'file-name',
@@ -25,17 +23,17 @@ nodeunitShim({
     // THEN
     const assetMetadata = stack.node.metadata.find(({ type }) => type === cxschema.ArtifactMetadataEntryType.ASSET);
 
-    test.ok(assetMetadata && assetMetadata.data);
+    expect(assetMetadata && assetMetadata.data).toBeDefined();
 
     if (assetMetadata && assetMetadata.data) {
       const data = assetMetadata.data as cxschema.AssetMetadataEntry;
-      test.equal(data.path, 'file-name');
-      test.equal(data.id, 'source-hash');
-      test.equal(data.packaging, FileAssetPackaging.ZIP_DIRECTORY);
-      test.equal(data.sourceHash, 'source-hash');
+      expect(data.path).toEqual('file-name');
+      expect(data.id).toEqual('source-hash');
+      expect(data.packaging).toEqual(FileAssetPackaging.ZIP_DIRECTORY);
+      expect(data.sourceHash).toEqual('source-hash');
     }
 
-    test.deepEqual(toCloudFormation(stack), {
+    expect(toCloudFormation(stack)).toEqual({
       Parameters: {
         AssetParameterssourcehashS3BucketE6E91E3E: {
           Type: 'String',
@@ -52,10 +50,10 @@ nodeunitShim({
       },
     });
 
-    test.done();
-  },
 
-  'addFileAsset correctly sets object urls'(test: Test) {
+  });
+
+  test('addFileAsset correctly sets object urls', () => {
     // WHEN
     const assetLocation = stack.addFileAsset({
       fileName: 'file-name',
@@ -67,15 +65,15 @@ nodeunitShim({
     const expectedS3UrlPrefix = 's3://';
     const expectedHttpUrlPrefix = `https://s3.${stack.region}.${stack.urlSuffix}/`;
 
-    test.equal(
-      assetLocation.s3ObjectUrl.replace(expectedS3UrlPrefix, ''),
+    expect(
+      assetLocation.s3ObjectUrl.replace(expectedS3UrlPrefix, '')).toEqual(
       assetLocation.httpUrl.replace(expectedHttpUrlPrefix, ''),
     );
 
-    test.done();
-  },
 
-  'addDockerImageAsset correctly sets metadata'(test: Test) {
+  });
+
+  test('addDockerImageAsset correctly sets metadata', () => {
     // WHEN
     stack.addDockerImageAsset({
       sourceHash: 'source-hash',
@@ -86,22 +84,22 @@ nodeunitShim({
     // THEN
     const assetMetadata = stack.node.metadata.find(({ type }) => type === cxschema.ArtifactMetadataEntryType.ASSET);
 
-    test.ok(assetMetadata && assetMetadata.data);
+    expect(assetMetadata && assetMetadata.data).toBeDefined();
 
     if (assetMetadata && assetMetadata.data) {
       const data = assetMetadata.data as cxschema.ContainerImageAssetMetadataEntry;
-      test.equal(data.packaging, 'container-image');
-      test.equal(data.path, 'directory-name');
-      test.equal(data.sourceHash, 'source-hash');
-      test.equal(data.repositoryName, 'repository-name');
-      test.equal(data.imageTag, 'source-hash');
+      expect(data.packaging).toEqual('container-image');
+      expect(data.path).toEqual('directory-name');
+      expect(data.sourceHash).toEqual('source-hash');
+      expect(data.repositoryName).toEqual('repository-name');
+      expect(data.imageTag).toEqual('source-hash');
     }
 
-    test.deepEqual(toCloudFormation(stack), { });
-    test.done();
-  },
+    expect(toCloudFormation(stack)).toEqual({ });
 
-  'addDockerImageAsset uses the default repository name'(test: Test) {
+  });
+
+  test('addDockerImageAsset uses the default repository name', () => {
     // WHEN
     stack.addDockerImageAsset({
       sourceHash: 'source-hash',
@@ -111,22 +109,22 @@ nodeunitShim({
     // THEN
     const assetMetadata = stack.node.metadata.find(({ type }) => type === cxschema.ArtifactMetadataEntryType.ASSET);
 
-    test.ok(assetMetadata && assetMetadata.data);
+    expect(assetMetadata && assetMetadata.data).toBeDefined();
 
     if (assetMetadata && assetMetadata.data) {
       const data = assetMetadata.data as cxschema.ContainerImageAssetMetadataEntry;
-      test.equal(data.packaging, 'container-image');
-      test.equal(data.path, 'directory-name');
-      test.equal(data.sourceHash, 'source-hash');
-      test.equal(data.repositoryName, 'aws-cdk/assets');
-      test.equal(data.imageTag, 'source-hash');
+      expect(data.packaging).toEqual('container-image');
+      expect(data.path).toEqual('directory-name');
+      expect(data.sourceHash).toEqual('source-hash');
+      expect(data.repositoryName).toEqual('aws-cdk/assets');
+      expect(data.imageTag).toEqual('source-hash');
     }
 
-    test.deepEqual(toCloudFormation(stack), { });
-    test.done();
-  },
+    expect(toCloudFormation(stack)).toEqual({ });
 
-  'addDockerImageAsset supports overriding repository name through a context key as a workaround until we have API for that'(test: Test) {
+  });
+
+  test('addDockerImageAsset supports overriding repository name through a context key as a workaround until we have API for that', () => {
     stack.node.setContext('assets-ecr-repository-name', 'my-custom-repo-name');
 
     // WHEN
@@ -138,18 +136,18 @@ nodeunitShim({
     // THEN
     const assetMetadata = stack.node.metadata.find(({ type }) => type === cxschema.ArtifactMetadataEntryType.ASSET);
 
-    test.ok(assetMetadata && assetMetadata.data);
+    expect(assetMetadata && assetMetadata.data).toBeDefined();
 
     if (assetMetadata && assetMetadata.data) {
       const data = assetMetadata.data as cxschema.ContainerImageAssetMetadataEntry;
-      test.equal(data.packaging, 'container-image');
-      test.equal(data.path, 'directory-name');
-      test.equal(data.sourceHash, 'source-hash');
-      test.equal(data.repositoryName, 'my-custom-repo-name');
-      test.equal(data.imageTag, 'source-hash');
+      expect(data.packaging).toEqual('container-image');
+      expect(data.path).toEqual('directory-name');
+      expect(data.sourceHash).toEqual('source-hash');
+      expect(data.repositoryName).toEqual('my-custom-repo-name');
+      expect(data.imageTag).toEqual('source-hash');
     }
 
-    test.deepEqual(toCloudFormation(stack), { });
-    test.done();
-  },
+    expect(toCloudFormation(stack)).toEqual({ });
+
+  });
 });

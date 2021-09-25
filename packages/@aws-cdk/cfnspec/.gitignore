@@ -12,3 +12,5 @@ dist
 .LAST_PACKAGE
 *.snk
 !.eslintrc.js
+
+!jest.config.js

@@ -53,7 +53,7 @@ export interface BaseNetworkListenerProps {
   readonly protocol?: Protocol;
 
   /**
-   * Certificate list of ACM cert ARNs
+   * Certificate list of ACM cert ARNs. You must provide exactly one certificate if the listener protocol is HTTPS or TLS.
    *
    * @default - No certificates.
    */

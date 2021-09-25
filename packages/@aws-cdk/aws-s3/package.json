@@ -58,8 +58,7 @@
     "cloudformation": "AWS::S3",
     "env": {
       "AWSLINT_BASE_CONSTRUCT": "true"
-    },
-    "jest": true
+    }
   },
   "keywords": [
     "aws",

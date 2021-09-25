@@ -106,7 +106,6 @@
   },
   "maturity": "stable",
   "cdk-build": {
-    "jest": true,
     "env": {
       "AWSLINT_BASE_CONSTRUCT": true
     }

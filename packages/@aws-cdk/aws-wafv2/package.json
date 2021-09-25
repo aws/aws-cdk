@@ -57,7 +57,6 @@
   },
   "cdk-build": {
     "cloudformation": "AWS::WAFv2",
-    "jest": true,
     "env": {
       "AWSLINT_BASE_CONSTRUCT": true
     }

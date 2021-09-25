@@ -12,7 +12,11 @@ beforeEach(() => {
 test('domain list from strings', () => {
   // WHEN
   new FirewallDomainList(stack, 'List', {
-    domains: FirewallDomains.fromList(['first-domain.com', 'second-domain.net']),
+    domains: FirewallDomains.fromList([
+      'first-domain.com',
+      'second-domain.net',
+      '*.wildcard.com',
+    ]),
   });
 
   // THEN
@@ -20,6 +24,7 @@ test('domain list from strings', () => {
     Domains: [
       'first-domain.com',
       'second-domain.net',
+      '*.wildcard.com',
     ],
   });
 });

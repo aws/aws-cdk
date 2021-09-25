@@ -43,7 +43,7 @@ describe('DatabaseInstance', () => {
     });
 
     // THEN
-    Template.fromStack(stack).hasOutput({
+    Template.fromStack(stack).hasOutput(exportName, {
       Export: { Name: exportName },
       Value: {
         'Fn::Join': [
@@ -78,7 +78,7 @@ describe('DatabaseInstance', () => {
     });
 
     // THEN
-    Template.fromStack(stack).hasOutput({
+    Template.fromStack(stack).hasOutput('EndpointOutput', {
       Export: { Name: endpointExportName },
       Value: `${instanceEndpointAddress}:${port}`,
     });
