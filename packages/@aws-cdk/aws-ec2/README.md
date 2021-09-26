@@ -1092,6 +1092,7 @@ asset.grantRead( instance.role );
 ```
 
 ### Fetch Asset via S3 VPC Gateway
+
 To specify the region in the `S3DownloadCommand` use the following:
 
 ```ts
