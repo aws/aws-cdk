@@ -57,8 +57,7 @@
     "cloudformation": "AWS::ApiGateway",
     "env": {
       "AWSLINT_BASE_CONSTRUCT": true
-    },
-    "jest": true
+    }
   },
   "keywords": [
     "aws",
@@ -323,6 +322,7 @@
       "attribute-tag:@aws-cdk/aws-apigateway.LambdaRestApi.restApiName",
       "from-method:@aws-cdk/aws-apigateway.Stage",
       "resource-attribute:@aws-cdk/aws-apigateway.ApiKey.apiKeyId",
+      "resource-attribute:@aws-cdk/aws-apigateway.GatewayResponse.gatewayResponseId",
       "resource-attribute:@aws-cdk/aws-apigateway.RateLimitedApiKey.apiKeyId"
     ]
   },

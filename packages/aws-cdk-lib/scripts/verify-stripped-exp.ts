@@ -30,7 +30,7 @@ async function main(tempDir: string) {
     if (pkgJson.stability !== 'experimental') {
       continue;
     }
-    if (pkgJson['cdk-build'].cloudformation) {
+    if (pkgJson['cdk-build']?.cloudformation) {
       // if a cfn module, verify only the allowed files exists
       const files = await listAllFiles(path.join(installedAwsCdkLibPath, module));
       const invalidFiles = new Array();
