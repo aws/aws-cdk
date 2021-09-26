@@ -1091,6 +1091,24 @@ instance.userData.addExecuteFileCommand({
 asset.grantRead( instance.role );
 ```
 
+### Fetch Asset via S3 VPC Gateway
+To specify the region in the `S3DownloadCommand` use the following:
+
+```ts
+const asset = new Asset(this, 'Asset', {path: path.join(__dirname, 'configure.sh')});
+const instance = new ec2.Instance(this, 'Instance', {
+  // ...
+  });
+const localPath = instance.userData.addS3DownloadCommand({
+  bucket:asset.bucket,
+  bucketKey:asset.s3ObjectKey,
+	region: 'us-east-1',
+});
+// ...
+```
+
+Note, that the region will not be set automatically, only if you explicitly specify it.
+
 ### Multipart user data
 
 In addition, to above the `MultipartUserData` can be used to change instance startup behavior. Multipart user data are composed
