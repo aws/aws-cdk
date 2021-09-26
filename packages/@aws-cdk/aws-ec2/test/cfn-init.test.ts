@@ -204,13 +204,13 @@ describe('userdata', () => {
     expectLine(lines, cmdArg('cfn-init', `--region ${Aws.REGION}`));
     expectLine(lines, cmdArg('cfn-init', `--stack ${Aws.STACK_NAME}`));
     expectLine(lines, cmdArg('cfn-init', `--resource ${resource.logicalId}`));
-    expectLine(lines, cmdArg('cfn-init', `--role ${instanceRole}`));
+    expectLine(lines, cmdArg('cfn-init', `--role ${instanceRole.roleName}`));
     expectLine(lines, cmdArg('cfn-init', `--url https://cloudformation.${Aws.REGION}.${Aws.URL_SUFFIX}`));
     expectLine(lines, cmdArg('cfn-init', '-c default'));
     expectLine(lines, cmdArg('cfn-signal', `--region ${Aws.REGION}`));
     expectLine(lines, cmdArg('cfn-signal', `--stack ${Aws.STACK_NAME}`));
     expectLine(lines, cmdArg('cfn-signal', `--resource ${resource.logicalId}`));
-    expectLine(lines, cmdArg('cfn-init', `--role ${instanceRole}`));
+    expectLine(lines, cmdArg('cfn-init', `--role ${instanceRole.roleName}`));
     expectLine(lines, cmdArg('cfn-init', `--url https://cloudformation.${Aws.REGION}.${Aws.URL_SUFFIX}`));
     expectLine(lines, cmdArg('cfn-signal', '-e $?'));
     expectLine(lines, cmdArg('cat', 'cfn-init.log'));
