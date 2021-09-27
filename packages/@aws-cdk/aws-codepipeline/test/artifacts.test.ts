@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as cdk from '@aws-cdk/core';
 import * as codepipeline from '../lib';
 import { FakeBuildAction } from './fake-build-action';
@@ -165,7 +165,7 @@ describe('artifacts', () => {
         ],
       });
 
-      expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline');
+      Template.fromStack(stack).resourceCountIs('AWS::CodePipeline::Pipeline', 1);
 
 
     });
@@ -250,7 +250,7 @@ describe('artifacts', () => {
         ],
       });
 
-      expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+      Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
         'Stages': [
           {
             'Name': 'Source.@',

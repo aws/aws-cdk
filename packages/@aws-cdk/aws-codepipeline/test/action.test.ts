@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import * as codepipeline from '../lib';
@@ -121,7 +121,7 @@ describe('action', () => {
       });
 
       expect(() => {
-        expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+        Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
         });
       }).toThrow(/Build\/Fake cannot have more than 3 input artifacts/);
 
@@ -166,7 +166,7 @@ describe('action', () => {
       });
 
       expect(() => {
-        expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+        Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
         });
       }).toThrow(/Source\/Fake cannot have more than 4 output artifacts/);
 
@@ -199,7 +199,7 @@ describe('action', () => {
       ],
     });
 
-    expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
       'Stages': [
         {
           'Name': 'Source',

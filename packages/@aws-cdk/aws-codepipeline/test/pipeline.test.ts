@@ -1,5 +1,4 @@
-import { expect as ourExpect, ResourcePart, arrayWith, objectLike, haveResourceLike } from '@aws-cdk/assert-internal';
-import '@aws-cdk/assert-internal/jest';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
@@ -22,14 +21,14 @@ describe('', () => {
         role,
       });
 
-      ourExpect(stack, true).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+      Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
         'RoleArn': {
           'Fn::GetAtt': [
             'Role1ABCC5F0',
             'Arn',
           ],
         },
-      }));
+      });
 
 
     });
@@ -109,7 +108,7 @@ describe('', () => {
           ],
         });
 
-        expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+        Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
           'ArtifactStores': [
             {
               'Region': replicationRegion,
@@ -138,7 +137,7 @@ describe('', () => {
           ],
         });
 
-        expect(replicationStack).toHaveResourceLike('AWS::KMS::Key', {
+        Template.fromStack(replicationStack).hasResourceProperties('AWS::KMS::Key', {
           'KeyPolicy': {
             'Statement': [
               {
@@ -204,7 +203,7 @@ describe('', () => {
           ],
         });
 
-        expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+        Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
           'ArtifactStores': [
             {
               'Region': replicationRegion,
@@ -233,10 +232,10 @@ describe('', () => {
           ],
         });
 
-        expect(pipeline.crossRegionSupport[replicationRegion].stack).toHaveResourceLike('AWS::KMS::Alias', {
+        Template.fromStack(pipeline.crossRegionSupport[replicationRegion].stack).hasResource('AWS::KMS::Alias', {
           'DeletionPolicy': 'Delete',
           'UpdateReplacePolicy': 'Delete',
-        }, ResourcePart.CompleteDefinition);
+        });
 
 
       });
@@ -276,7 +275,7 @@ describe('', () => {
           ],
         });
 
-        expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+        Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
           'ArtifactStores': [
             {
               'Region': replicationRegion,
@@ -420,7 +419,7 @@ describe('', () => {
           ],
         });
 
-        expect(stack).toHaveResourceLike('AWS::KMS::Key', {
+        Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
           'EnableKeyRotation': true,
         });
       });
@@ -455,14 +454,14 @@ describe('test with shared setup', () => {
     pipeline.stage('Build').addAction(new FakeBuildAction({ actionName: 'debug.com', input: sourceArtifact }));
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
-      Stages: arrayWith({
+    Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+      Stages: Match.arrayWith([{
         Name: 'Build',
         Actions: [
-          objectLike({ Name: 'Gcc' }),
-          objectLike({ Name: 'debug.com' }),
+          Match.objectLike({ Name: 'Gcc' }),
+          Match.objectLike({ Name: 'debug.com' }),
         ],
-      }),
+      }]),
     });
   });
 });

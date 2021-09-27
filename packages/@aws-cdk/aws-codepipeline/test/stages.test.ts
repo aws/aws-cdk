@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as cdk from '@aws-cdk/core';
 import * as codepipeline from '../lib';
 import { Stage } from '../lib/private/stage';
@@ -33,7 +33,7 @@ describe('stages', () => {
       }));
       // --
 
-      expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+      Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
         'Stages': [
           { 'Name': 'FirstStage' },
           { 'Name': 'SecondStage' },
@@ -72,7 +72,7 @@ describe('stages', () => {
       }));
       // --
 
-      expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+      Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
         'Stages': [
           { 'Name': 'FirstStage' },
           { 'Name': 'SecondStage' },

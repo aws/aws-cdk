@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import { Stack, App } from '@aws-cdk/core';
@@ -49,8 +49,8 @@ describe.each(['legacy', 'modern'])('with %s synthesis', (synthesisStyle: string
 
     test('creates a bucket but no keys', () => {
       // THEN
-      expect(stack).not.toHaveResource('AWS::KMS::Key');
-      expect(stack).toHaveResource('AWS::S3::Bucket');
+      Template.fromStack(stack).resourceCountIs('AWS::KMS::Key', 0);
+      Template.fromStack(stack).resourceCountIs('AWS::S3::Bucket', 1);
     });
 
     describe('prevents adding a cross-account action', () => {
@@ -118,8 +118,8 @@ describe.each(['legacy', 'modern'])('with %s synthesis', (synthesisStyle: string
         const supportStack = asm.getStackByName(`${stack.stackName}-support-eu-west-1`);
 
         // THEN
-        expect(supportStack).not.toHaveResource('AWS::KMS::Key');
-        expect(supportStack).toHaveResource('AWS::S3::Bucket');
+        Template.fromJSON(supportStack.template).resourceCountIs('AWS::KMS::Key', 0);
+        Template.fromJSON(supportStack.template).resourceCountIs('AWS::S3::Bucket', 1);
       });
 
       test('when twiddling another stack', () => {
@@ -133,8 +133,8 @@ describe.each(['legacy', 'modern'])('with %s synthesis', (synthesisStyle: string
         }));
 
         // THEN
-        expect(stack2).not.toHaveResource('AWS::KMS::Key');
-        expect(stack2).toHaveResource('AWS::S3::Bucket');
+        Template.fromStack(stack2).resourceCountIs('AWS::KMS::Key', 0);
+        Template.fromStack(stack2).resourceCountIs('AWS::S3::Bucket', 1);
       });
     });
   });
@@ -183,11 +183,11 @@ describe('cross-environment CodePipeline', function () {
 
     const asm = app.synth();
     const supportStack = asm.getStackByName(`${pipelineStack.stackName}-support-456`);
-    expect(supportStack).toHaveResourceLike('AWS::IAM::Role', {
+    Template.fromJSON(supportStack.template).hasResourceProperties('AWS::IAM::Role', {
       RoleName: 'pipelinestack-support-456dbuildactionrole91c6f1a469fd11d52dfe',
     });
 
-    expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
       Stages: [
         { Name: 'Source' },
         {
