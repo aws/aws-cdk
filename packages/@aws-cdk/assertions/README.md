@@ -195,7 +195,7 @@ match.
 ### Presence and Absence
 
 The `Match.absent()` matcher can be used to specify that a specific
-property should not exist on the target. This can be used within `Match.objectLike()`
+value should not exist on the target. This can be used within `Match.objectLike()`
 or outside of any matchers.
 
 ```ts
