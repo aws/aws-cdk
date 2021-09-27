@@ -57,8 +57,7 @@
     "cloudformation": "AWS::ServiceDiscovery",
     "env": {
       "AWSLINT_BASE_CONSTRUCT": true
-    },
-    "jest": true
+    }
   },
   "nyc": {
     "statements": 75

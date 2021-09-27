@@ -79,9 +79,6 @@
   "bundledDependencies": [
     "yaml"
   ],
-  "cdk-build": {
-    "jest": true
-  },
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"
   },

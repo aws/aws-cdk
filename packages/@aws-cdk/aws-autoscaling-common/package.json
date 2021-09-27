@@ -115,8 +115,7 @@
   "cdk-build": {
     "env": {
       "AWSLINT_BASE_CONSTRUCT": true
-    },
-    "jest": true
+    }
   },
   "publishConfig": {
     "tag": "latest"
