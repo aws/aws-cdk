@@ -78,6 +78,35 @@ describe('cross environment', () => {
 
 
     });
+
+    test('math expressions with explicit account and region will render in environment agnostic stack', () => {
+      // GIVEN
+      const expression = 'SEARCH(\'MetricName="ACount"\', \'Sum\', 300)';
+
+      const b = new MathExpression({
+        expression,
+        usingMetrics: {},
+        label: 'Test label',
+        searchAccount: '5678',
+        searchRegion: 'mars',
+      });
+
+      const graph = new GraphWidget({
+        left: [
+          b,
+        ],
+      });
+
+      // THEN
+      graphMetricsAre(new Stack(), graph, [
+        [{
+          expression,
+          accountId: '5678',
+          region: 'mars',
+          label: 'Test label',
+        }],
+      ]);
+    });
   });
 
   describe('in alarms', () => {
@@ -233,6 +262,56 @@ describe('cross environment', () => {
           },
         ],
       });
+    });
+
+    test('math expression with different searchAccount will throw', () => {
+      // GIVEN
+      const b = new Metric({
+        namespace: 'Test',
+        metricName: 'ACount',
+        account: '1234',
+      });
+
+      const c = new MathExpression({
+        expression: 'a + b',
+        usingMetrics: { a: a.attachTo(stack3), b },
+        period: Duration.minutes(1),
+        searchAccount: '5678',
+      });
+
+      // THEN
+      expect(() => {
+        new Alarm(stack1, 'Alarm', {
+          threshold: 1,
+          evaluationPeriods: 1,
+          metric: c,
+        });
+      }).toThrow(/Cannot create an Alarm based on a MathExpression which specifies a searchAccount or searchRegion/);
+    });
+
+    test('match expression with different searchRegion will throw', () => {
+      // GIVEN
+      const b = new Metric({
+        namespace: 'Test',
+        metricName: 'ACount',
+        account: '1234',
+      });
+
+      const c = new MathExpression({
+        expression: 'a + b',
+        usingMetrics: { a: a.attachTo(stack3), b },
+        period: Duration.minutes(1),
+        searchRegion: 'mars',
+      });
+
+      // THEN
+      expect(() => {
+        new Alarm(stack1, 'Alarm', {
+          threshold: 1,
+          evaluationPeriods: 1,
+          metric: c,
+        });
+      }).toThrow(/Cannot create an Alarm based on a MathExpression which specifies a searchAccount or searchRegion/);
     });
   });
 });
