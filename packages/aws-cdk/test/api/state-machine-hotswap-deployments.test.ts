@@ -10,7 +10,7 @@ const STACK_NAME = 'withouterrors';
 const STACK_ID = 'stackId';
 
 let mockSdkProvider: MockSdkProvider;
-let mockUpdateMachineCode: (params: StepFunctions.Types.UpdateStateMachineInput) => StepFunctions.Types.UpdateStateMachineOutput;
+let mockUpdateMachineDefinition: (params: StepFunctions.Types.UpdateStateMachineInput) => StepFunctions.Types.UpdateStateMachineOutput;
 let mockListStackResources: (params: CloudFormation.Types.ListStackResourcesInput) => CloudFormation.Types.ListStackResourcesOutput;
 let currentCfnStack: FakeCloudformationStack;
 
@@ -31,12 +31,12 @@ beforeEach(() => {
 
     return { StackResourceSummaries: summaries };
   });
-  mockUpdateMachineCode = jest.fn();
+  mockUpdateMachineDefinition = jest.fn();
   mockSdkProvider.stubCloudFormation({
     listStackResources: mockListStackResources,
   });
   mockSdkProvider.stubStepFunctions({
-    updateStateMachine: mockUpdateMachineCode,
+    updateStateMachine: mockUpdateMachineDefinition,
   });
   currentCfnStack = new FakeCloudformationStack({
     stackName: STACK_NAME,
@@ -109,7 +109,7 @@ test('calls the updateStateMachine() API when it receives only a definitionStrin
 
   // THEN
   expect(deployStackResult).not.toBeUndefined();
-  expect(mockUpdateMachineCode).toHaveBeenCalledWith({
+  expect(mockUpdateMachineDefinition).toHaveBeenCalledWith({
     definition: '{"Prop":"new-value","AnotherProp":"another-new-value"}',
     stateMachineArn: 'my-machine',
   });
@@ -159,7 +159,7 @@ test('calls the updateStateMachine() API when it receives a change to the defini
 
   // THEN
   expect(deployStackResult).not.toBeUndefined();
-  expect(mockUpdateMachineCode).toHaveBeenCalledWith({
+  expect(mockUpdateMachineDefinition).toHaveBeenCalledWith({
     definition: '{"Prop":"new-value"}',
     stateMachineArn: 'mock-machine-resource-id', // the sdk will convert the ID to the arn in a production environment
   });
@@ -215,7 +215,7 @@ test('does not call the updateStateMachine() API when it receives a change to a 
 
   // THEN
   expect(deployStackResult).toBeUndefined();
-  expect(mockUpdateMachineCode).not.toHaveBeenCalled();
+  expect(mockUpdateMachineDefinition).not.toHaveBeenCalled();
 });
 
 function cdkStackArtifactOf(testStackArtifact: Partial<TestStackArtifact> = {}): cxapi.CloudFormationStackArtifact {

@@ -200,15 +200,19 @@ export class SdkProvider {
    * It is an error if `UNKNOWN_ACCOUNT` is used but the user hasn't configured
    * any SDK credentials.
    */
-  public async resolveEnvironment(env: cxapi.Environment): Promise<cxapi.Environment> {
+  public async resolveEnvironment(env: cxapi.Environment): Promise<cxapi.partitionEnvironment> {
     const region = env.region !== cxapi.UNKNOWN_REGION ? env.region : this.defaultRegion;
 
     const defaultAccount = await this.defaultAccount();
     const account = env.account !== cxapi.UNKNOWN_ACCOUNT ? env.account : defaultAccount?.accountId;
-    const partition = env.partition ? env.account : defaultAccount?.partition;
+    const partition = defaultAccount?.partition;
 
     if (!account) {
       throw new Error('Unable to resolve AWS account to use. It must be either configured when you define your CDK Stack, or through the environment');
+    }
+
+    if (!partition) {
+      throw new Error('Unable to resolve AWS partition to use.');
     }
 
     return {
