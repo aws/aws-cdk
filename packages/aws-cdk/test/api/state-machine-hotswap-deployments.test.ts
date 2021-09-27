@@ -110,7 +110,7 @@ test('calls the updateStateMachine() API when it receives only a definitionStrin
   // THEN
   expect(deployStackResult).not.toBeUndefined();
   expect(mockUpdateMachineDefinition).toHaveBeenCalledWith({
-    definition: '{"Prop":"new-value","AnotherProp":"another-new-value"}',
+    definition: '{ "Prop" : "new-value", "AnotherProp" : "another-new-value" }',
     stateMachineArn: 'my-machine',
   });
 });
@@ -160,7 +160,7 @@ test('calls the updateStateMachine() API when it receives a change to the defini
   // THEN
   expect(deployStackResult).not.toBeUndefined();
   expect(mockUpdateMachineDefinition).toHaveBeenCalledWith({
-    definition: '{"Prop":"new-value"}',
+    definition: '{ "Prop" : "new-value" }',
     stateMachineArn: 'mock-machine-resource-id', // the sdk will convert the ID to the arn in a production environment
   });
 });

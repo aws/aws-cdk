@@ -1,6 +1,6 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import { Lambda, CloudFormation } from 'aws-sdk';
-import { StackResourceSummaries } from 'aws-sdk/clients/cloudformation';
+import { StackResourceSummary } from 'aws-sdk/clients/cloudformation';
 import { tryHotswapDeployment } from '../../lib/api/hotswap-deployments';
 import { testStack, TestStackArtifact } from '../util';
 import { MockSdkProvider } from '../util/mock-sdk';
@@ -12,24 +12,19 @@ const STACK_ID = 'stackId';
 let mockSdkProvider: MockSdkProvider;
 let mockUpdateLambdaCode: (params: Lambda.Types.UpdateFunctionCodeRequest) => Lambda.Types.FunctionConfiguration;
 let mockListStackResources: (params: CloudFormation.Types.ListStackResourcesInput) => CloudFormation.Types.ListStackResourcesOutput;
+let mockStackResource: StackResourceSummary = {
+  LogicalResourceId: 'Func',
+  ResourceType: 'AWS::Lambda::Function',
+  ResourceStatus: 'CREATE_COMPLETE',
+  LastUpdatedTimestamp: new Date(),
+};
 let currentCfnStack: FakeCloudformationStack;
 
 beforeEach(() => {
   jest.resetAllMocks();
   mockSdkProvider = new MockSdkProvider({ realSdk: false });
   mockListStackResources = jest.fn(() => {
-    let summaries: StackResourceSummaries = [];
-
-    // Mock lambda stack resource
-    summaries[0] = {
-      LogicalResourceId: 'Func',
-      ResourceType: 'AWS::Lambda::Function',
-      ResourceStatus: 'CREATE_COMPLETE',
-      LastUpdatedTimestamp: new Date(),
-      PhysicalResourceId: 'mock-function-resource-id',
-    };
-
-    return { StackResourceSummaries: summaries };
+    return { StackResourceSummaries: [mockStackResource] };
   });
   mockUpdateLambdaCode = jest.fn();
   mockSdkProvider.stubCloudFormation({
@@ -152,6 +147,7 @@ test('calls the updateLambdaCode() API when it receives a code difference in a L
   });
 
   // WHEN
+  mockStackResource.PhysicalResourceId = 'mock-function-resource-id';
   const deployStackResult = await tryHotswapDeployment(mockSdkProvider, {}, currentCfnStack, cdkStackArtifact);
 
   // THEN
