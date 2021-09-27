@@ -1,6 +1,6 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import { StepFunctions, CloudFormation } from 'aws-sdk';
-import { StackResourceSummaries } from 'aws-sdk/clients/cloudformation';
+import { StackResourceSummary } from 'aws-sdk/clients/cloudformation';
 import { tryHotswapDeployment } from '../../lib/api/hotswap-deployments';
 import { testStack, TestStackArtifact } from '../util';
 import { MockSdkProvider } from '../util/mock-sdk';
@@ -12,24 +12,19 @@ const STACK_ID = 'stackId';
 let mockSdkProvider: MockSdkProvider;
 let mockUpdateMachineDefinition: (params: StepFunctions.Types.UpdateStateMachineInput) => StepFunctions.Types.UpdateStateMachineOutput;
 let mockListStackResources: (params: CloudFormation.Types.ListStackResourcesInput) => CloudFormation.Types.ListStackResourcesOutput;
+let mockStackResource: StackResourceSummary = {
+  LogicalResourceId: 'Machine',
+  ResourceType: 'AWS::StepFunctions::StateMachine',
+  ResourceStatus: 'CREATE_COMPLETE',
+  LastUpdatedTimestamp: new Date(),
+};
 let currentCfnStack: FakeCloudformationStack;
 
 beforeEach(() => {
   jest.resetAllMocks();
   mockSdkProvider = new MockSdkProvider({ realSdk: false });
   mockListStackResources = jest.fn(() => {
-    let summaries: StackResourceSummaries = [];
-
-    // Mock state machine stack resource
-    summaries[0] = {
-      LogicalResourceId: 'Machine',
-      ResourceType: 'AWS::StepFunctions::StateMachine',
-      ResourceStatus: 'CREATE_COMPLETE',
-      LastUpdatedTimestamp: new Date(),
-      PhysicalResourceId: 'mock-machine-resource-id',
-    };
-
-    return { StackResourceSummaries: summaries };
+    return { StackResourceSummaries: [mockStackResource] };
   });
   mockUpdateMachineDefinition = jest.fn();
   mockSdkProvider.stubCloudFormation({
@@ -155,6 +150,7 @@ test('calls the updateStateMachine() API when it receives a change to the defini
   });
 
   // WHEN
+  mockStackResource.PhysicalResourceId = 'mock-machine-resource-id';
   const deployStackResult = await tryHotswapDeployment(mockSdkProvider, {}, currentCfnStack, cdkStackArtifact);
 
   // THEN
