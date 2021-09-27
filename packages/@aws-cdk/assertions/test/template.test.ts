@@ -286,7 +286,7 @@ describe('Template', () => {
       })).toThrow(/key should be absent at \/Properties\/baz/);
     });
 
-    test('absent properties', () => {
+    test('absent - no properties on template', () => {
       const stack = new Stack();
       new CfnResource(stack, 'Foo', {
         type: 'Foo::Bar',

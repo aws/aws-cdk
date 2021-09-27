@@ -365,7 +365,7 @@ describe('Matchers', () => {
     });
   });
 
-  describe('absent property', () => {
+  describe('absent', () => {
     let matcher: Matcher;
 
     test('simple', () => {
