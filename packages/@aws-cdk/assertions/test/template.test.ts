@@ -269,6 +269,63 @@ describe('Template', () => {
     });
   });
 
+  describe('hasResourceProperties', () => {
+    test('exact match', () => {
+      const stack = new Stack();
+      new CfnResource(stack, 'Foo', {
+        type: 'Foo::Bar',
+        properties: { baz: 'qux' },
+      });
+
+      const inspect = Template.fromStack(stack);
+      inspect.hasResourceProperties('Foo::Bar', { baz: 'qux' });
+
+      expect(() => inspect.hasResourceProperties('Foo::Bar', { baz: 'waldo' }))
+        .toThrow(/Expected waldo but received qux at \/Properties\/baz/);
+
+      expect(() => inspect.hasResourceProperties('Foo::Bar', { baz: 'qux', fred: 'waldo' }))
+        .toThrow(/Missing key at \/Properties\/fred/);
+    });
+
+    test('absent with properties', () => {
+      const stack = new Stack();
+      new CfnResource(stack, 'Foo', {
+        type: 'Foo::Bar',
+        properties: { baz: 'qux' },
+      });
+
+      const inspect = Template.fromStack(stack);
+      inspect.hasResourceProperties('Foo::Bar', { bar: Match.absentProperty() });
+
+      expect(() => inspect.hasResourceProperties('Foo::Bar', { baz: Match.absentProperty() }))
+        .toThrow(/Key should be absent at \/Properties\/baz/);
+    });
+
+    test('absent with no properties', () => {
+      const stack = new Stack();
+      new CfnResource(stack, 'Foo', {
+        type: 'Foo::Bar', 
+      });
+
+      const inspect = Template.fromStack(stack);
+      inspect.hasResourceProperties('Foo::Bar', { bar: Match.absentProperty() });
+      expect(() => inspect.hasResourceProperties('Foo::Bar', { bar: Match.absentProperty(), baz: 'qux' }))
+        .toThrow(/Missing key at \/Properties\/baz/);
+      // Add the below line when this is merged: https://github.com/aws/aws-cdk/pull/16653    
+      // expect(inspect.hasResourceProperties('Foo::Bar', Match.absent()));
+    });
+
+    test('match with not', () => {
+      const stack = new Stack();
+      new CfnResource(stack, 'Foo', {
+        type: 'Foo::Bar', 
+      });
+
+      const inspect = Template.fromStack(stack);
+      expect(inspect.hasResourceProperties('Foo::Bar', Match.not({ baz: 'qux'})));
+    });
+  });
+
   describe('getResources', () => {
     test('matching resource type', () => {
       const stack = new Stack();

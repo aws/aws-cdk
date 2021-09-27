@@ -79,10 +79,6 @@ export abstract class Match {
   public static anyValue(): Matcher {
     return new AnyMatch('anyValue');
   }
-
-  private static propertyMatch(pattern: {[key: string]: any}): Matcher {
-    return new ObjectMatch('propertyMatch', pattern, { hasResourceProperties: true });
-  }
 }
 
 /**
@@ -224,13 +220,6 @@ interface ObjectMatchOptions {
    * @default true
    */
   readonly partial?: boolean;
-
-  /**
-   * Whether the ObjectMatch originates from the `hasResourceProperties()` method.
-   * Used for special casing.
-   * @default false
-   */
-  readonly hasResourceProperties?: boolean;
 }
 
 /**
