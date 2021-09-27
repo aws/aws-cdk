@@ -145,7 +145,7 @@ describe('node count', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Redshift::Cluster', {
       ClusterType: 'single-node',
-      NumberOfNodes: Match.absentProperty(),
+      NumberOfNodes: Match.absent(),
     });
   });
 
@@ -163,7 +163,7 @@ describe('node count', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Redshift::Cluster', {
       ClusterType: 'single-node',
-      NumberOfNodes: Match.absentProperty(),
+      NumberOfNodes: Match.absent(),
     });
   });
 
