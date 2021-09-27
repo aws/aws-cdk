@@ -18,9 +18,11 @@ export function setupHotswapTests(mockStackResource: StackResourceSummary) {
   mockListStackResources = jest.fn(() => {
     return { StackResourceSummaries: [mockStackResource] };
   });
+
   mockSdkProvider.stubCloudFormation({
     listStackResources: mockListStackResources,
   });
+
   currentCfnStack = new FakeCloudformationStack({
     stackName: STACK_NAME,
     stackId: STACK_ID,
