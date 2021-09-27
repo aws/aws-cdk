@@ -1,3 +1,110 @@
+# CloudFormation Resource Specification v42.0.0
+
+## New Resource Types
+
+* AWS::MemoryDB::ACL
+* AWS::MemoryDB::Cluster
+* AWS::MemoryDB::ParameterGroup
+* AWS::MemoryDB::SubnetGroup
+* AWS::MemoryDB::User
+
+## Attribute Changes
+
+* AWS::ApiGateway::GatewayResponse Id (__added__)
+* AWS::Config::AggregationAuthorization AggregationAuthorizationArn (__added__)
+
+## Property Changes
+
+* AWS::ApiGateway::GatewayResponse ResponseParameters.DuplicatesAllowed (__deleted__)
+* AWS::ApiGateway::GatewayResponse ResponseTemplates.DuplicatesAllowed (__deleted__)
+* AWS::AppSync::DataSource OpenSearchServiceConfig (__added__)
+* AWS::Backup::BackupVault LockConfiguration (__added__)
+* AWS::Config::AggregationAuthorization Tags.DuplicatesAllowed (__added__)
+* AWS::MSK::Cluster ClientAuthentication.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::MSK::Cluster EncryptionInfo.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+
+## Property Type Changes
+
+* AWS::AppSync::DataSource.OpenSearchServiceConfig (__added__)
+* AWS::Backup::BackupVault.LockConfigurationType (__added__)
+* AWS::IoT::TopicRule.OpenSearchAction (__added__)
+* AWS::MSK::Cluster.Unauthenticated (__added__)
+* AWS::ImageBuilder::ImageRecipe.AdditionalInstanceConfiguration UserDataOverride.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::ImageBuilder::ImageRecipe.SystemsManagerAgent UninstallAfterBuild.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::IoT::TopicRule.Action OpenSearch (__added__)
+* AWS::MSK::Cluster.ClientAuthentication Unauthenticated (__added__)
+* AWS::MSK::Cluster.ClientAuthentication Sasl.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::MSK::Cluster.ClientAuthentication Tls.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::MSK::Cluster.EncryptionInTransit ClientBroker.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::MSK::Cluster.EncryptionInfo EncryptionInTransit.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::MSK::Cluster.Iam Enabled.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::MSK::Cluster.Sasl Iam.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::MSK::Cluster.Sasl Scram.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::MSK::Cluster.Scram Enabled.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::MSK::Cluster.Tls Enabled (__added__)
+* AWS::MSK::Cluster.Tls CertificateAuthorityArnList.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+
+
+# CloudFormation Resource Specification v41.2.0
+
+## New Resource Types
+
+* AWS::ACMPCA::Permission
+* AWS::APS::Workspace
+* AWS::HealthLake::FHIRDatastore
+* AWS::OpenSearchService::Domain
+
+## Attribute Changes
+
+* AWS::EFS::MountTarget Id (__added__)
+
+## Property Changes
+
+* AWS::EMR::Studio IdpAuthUrl (__added__)
+* AWS::EMR::Studio IdpRelayStateParameterName (__added__)
+* AWS::EMR::Studio UserRole.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::RoboMaker::SimulationApplication Environment (__added__)
+* AWS::RoboMaker::SimulationApplication RenderingEngine.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::RoboMaker::SimulationApplication Sources.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::SQS::Queue RedriveAllowPolicy (__added__)
+
+## Property Type Changes
+
+* AWS::S3::Bucket.MetricsConfiguration AccessPointArn (__added__)
+
+
 # CloudFormation Resource Specification v41.1.0
 
 ## New Resource Types

@@ -17,7 +17,6 @@
     "build+test+extract": "yarn build+test"
   },
   "cdk-build": {
-    "jest": true,
     "pre": [
       "./clone.sh"
     ],
