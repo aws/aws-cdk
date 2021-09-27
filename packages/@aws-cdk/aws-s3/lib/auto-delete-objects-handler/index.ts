@@ -54,7 +54,6 @@ async function onDelete(bucketName?: string) {
   }
 
   try {
-    await s3.headBucket({ Bucket: bucketName }).promise();
     await emptyBucket(bucketName);
   } catch (e) {
     // Bucket doesn't exist. Ignoring
