@@ -8,8 +8,8 @@ export abstract class Match {
   /**
    * Use this matcher in the place of a field's value, if the field must not be present.
    */
-  public static absentProperty(): Matcher {
-    return new AbsentMatch('absentProperty');
+  public static absent(): Matcher {
+    return new AbsentMatch('absent');
   }
 
   /**
@@ -180,8 +180,8 @@ class ArrayMatch extends Matcher {
 
       const matcher = Matcher.isMatcher(patternElement) ? patternElement : new LiteralMatch(this.name, patternElement);
       const matcherName = matcher.name;
-      if (this.subsequence && (matcherName == 'absentProperty' || matcherName == 'anyValue')) {
-        // array subsequence matcher is not compatible with anyValue() or absentProperty() matcher. They don't make sense to be used together.
+      if (this.subsequence && (matcherName == 'absent' || matcherName == 'anyValue')) {
+        // array subsequence matcher is not compatible with anyValue() or absent() matcher. They don't make sense to be used together.
         throw new Error(`The Matcher ${matcherName}() cannot be nested within arrayWith()`);
       }
 

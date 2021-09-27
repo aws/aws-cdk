@@ -194,7 +194,7 @@ match.
 
 ### Presence and Absence
 
-The `Match.absentProperty()` matcher can be used to specify that a specific
+The `Match.absent()` matcher can be used to specify that a specific
 property should not exist on the target. This can be used within `Match.objectLike()`
 or outside of any matchers.
 
@@ -216,15 +216,15 @@ or outside of any matchers.
 // The following will NOT throw an assertion error
 assert.hasResourceProperties('Foo::Bar', {
   Fred: Match.objectLike({
-    Bob: Match.absentProperty(),
+    Bob: Match.absent(),
   }),
 });
 
 // The following will throw an assertion error
 assert.hasResourceProperties('Foo::Bar', {
   Fred: Match.objectLike({
-    Wobble: Match.absentProperty(),
-  })
+    Wobble: Match.absent(),
+  }),
 });
 ```
 

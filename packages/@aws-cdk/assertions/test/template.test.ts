@@ -248,10 +248,10 @@ describe('Template', () => {
 
       const inspect = Template.fromStack(stack);
       inspect.hasResource('Foo::Bar', {
-        Properties: Match.objectLike({ foo: Match.absentProperty() }),
+        Properties: Match.objectLike({ foo: Match.absent() }),
       });
       expect(() => inspect.hasResource('Foo::Bar', {
-        Properties: Match.objectLike({ baz: Match.absentProperty() }),
+        Properties: Match.objectLike({ baz: Match.absent() }),
       })).toThrow(/key should be absent at \/Properties\/baz/);
     });
 
@@ -279,10 +279,10 @@ describe('Template', () => {
 
       const inspect = Template.fromStack(stack);
       inspect.hasResourceProperties('Foo::Bar', {
-        bar: Match.absentProperty(),
+        bar: Match.absent(),
       });
       expect(() => inspect.hasResourceProperties('Foo::Bar', {
-        baz: Match.absentProperty(),
+        baz: Match.absent(),
       })).toThrow(/key should be absent at \/Properties\/baz/);
     });
 
@@ -293,7 +293,7 @@ describe('Template', () => {
       });
 
       const inspect = Template.fromStack(stack);
-      inspect.hasResourceProperties('Foo::Bar', Match.absentProperty());
+      inspect.hasResourceProperties('Foo::Bar', Match.absent());
     });
 
     test('not', () => {
