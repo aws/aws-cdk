@@ -304,25 +304,26 @@ describe('Template', () => {
     test('absent with no properties', () => {
       const stack = new Stack();
       new CfnResource(stack, 'Foo', {
-        type: 'Foo::Bar', 
+        type: 'Foo::Bar',
       });
 
       const inspect = Template.fromStack(stack);
       inspect.hasResourceProperties('Foo::Bar', { bar: Match.absentProperty() });
+
       expect(() => inspect.hasResourceProperties('Foo::Bar', { bar: Match.absentProperty(), baz: 'qux' }))
         .toThrow(/Missing key at \/Properties\/baz/);
-      // Add the below line when this is merged: https://github.com/aws/aws-cdk/pull/16653    
+      // Add the below line when this is merged: https://github.com/aws/aws-cdk/pull/16653
       // expect(inspect.hasResourceProperties('Foo::Bar', Match.absent()));
     });
 
     test('match with not', () => {
       const stack = new Stack();
       new CfnResource(stack, 'Foo', {
-        type: 'Foo::Bar', 
+        type: 'Foo::Bar',
       });
 
       const inspect = Template.fromStack(stack);
-      expect(inspect.hasResourceProperties('Foo::Bar', Match.not({ baz: 'qux'})));
+      expect(inspect.hasResourceProperties('Foo::Bar', Match.not({ baz: 'qux' })));
     });
   });
 

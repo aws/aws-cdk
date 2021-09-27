@@ -73,7 +73,7 @@ export class Template {
    * @param type the resource type; ex: `AWS::S3::Bucket`
    * @param props the 'Properties' section of the resource as should be expected in the template.
    */
-  public hasResourceProperties(type: string, props: any): void { 
+  public hasResourceProperties(type: string, props: any): void {
     // const addProperties = !(props instanceof AbsentMatch);
     // Add the above line in place of below when this is merged: https://github.com/aws/aws-cdk/pull/16653
     const addProperties = true;
