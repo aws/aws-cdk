@@ -1,47 +1,27 @@
-import * as cxapi from '@aws-cdk/cx-api';
-import { Lambda, CloudFormation } from 'aws-sdk';
+import { Lambda } from 'aws-sdk';
 import { StackResourceSummary } from 'aws-sdk/clients/cloudformation';
 import { tryHotswapDeployment } from '../../lib/api/hotswap-deployments';
-import { testStack, TestStackArtifact } from '../util';
-import { MockSdkProvider } from '../util/mock-sdk';
-import { FakeCloudformationStack } from './fake-cloudformation-stack';
+import * as setup from './hotswap-test-setup';
 
-const STACK_NAME = 'withouterrors';
-const STACK_ID = 'stackId';
-
-let mockSdkProvider: MockSdkProvider;
 let mockUpdateLambdaCode: (params: Lambda.Types.UpdateFunctionCodeRequest) => Lambda.Types.FunctionConfiguration;
-let mockListStackResources: (params: CloudFormation.Types.ListStackResourcesInput) => CloudFormation.Types.ListStackResourcesOutput;
 let mockStackResource: StackResourceSummary = {
   LogicalResourceId: 'Func',
   ResourceType: 'AWS::Lambda::Function',
   ResourceStatus: 'CREATE_COMPLETE',
   LastUpdatedTimestamp: new Date(),
 };
-let currentCfnStack: FakeCloudformationStack;
 
 beforeEach(() => {
-  jest.resetAllMocks();
-  mockSdkProvider = new MockSdkProvider({ realSdk: false });
-  mockListStackResources = jest.fn(() => {
-    return { StackResourceSummaries: [mockStackResource] };
-  });
+  setup.setupHotswapTests(mockStackResource);
   mockUpdateLambdaCode = jest.fn();
-  mockSdkProvider.stubCloudFormation({
-    listStackResources: mockListStackResources,
-  });
-  mockSdkProvider.stubLambda({
+  setup.mockSdkProvider.stubLambda({
     updateFunctionCode: mockUpdateLambdaCode,
-  });
-  currentCfnStack = new FakeCloudformationStack({
-    stackName: STACK_NAME,
-    stackId: STACK_ID,
   });
 });
 
 test('returns undefined when a new Lambda function is added to the Stack', async () => {
   // GIVEN
-  const cdkStackArtifact = cdkStackArtifactOf({
+  const cdkStackArtifact = setup.cdkStackArtifactOf({
     template: {
       Resources: {
         Func: {
@@ -52,7 +32,7 @@ test('returns undefined when a new Lambda function is added to the Stack', async
   });
 
   // WHEN
-  const deployStackResult = await tryHotswapDeployment(mockSdkProvider, {}, currentCfnStack, cdkStackArtifact);
+  const deployStackResult = await tryHotswapDeployment(setup.mockSdkProvider, {}, setup.currentCfnStack, cdkStackArtifact);
 
   // THEN
   expect(deployStackResult).toBeUndefined();
@@ -60,7 +40,7 @@ test('returns undefined when a new Lambda function is added to the Stack', async
 
 test('calls the updateLambdaCode() API when it receives only a code difference in a Lambda function', async () => {
   // GIVEN
-  currentCfnStack.setTemplate({
+  setup.currentCfnStack.setTemplate({
     Resources: {
       Func: {
         Type: 'AWS::Lambda::Function',
@@ -77,7 +57,7 @@ test('calls the updateLambdaCode() API when it receives only a code difference i
       },
     },
   });
-  const cdkStackArtifact = cdkStackArtifactOf({
+  const cdkStackArtifact = setup.cdkStackArtifactOf({
     template: {
       Resources: {
         Func: {
@@ -98,7 +78,7 @@ test('calls the updateLambdaCode() API when it receives only a code difference i
   });
 
   // WHEN
-  const deployStackResult = await tryHotswapDeployment(mockSdkProvider, {}, currentCfnStack, cdkStackArtifact);
+  const deployStackResult = await tryHotswapDeployment(setup.mockSdkProvider, {}, setup.currentCfnStack, cdkStackArtifact);
 
   // THEN
   expect(deployStackResult).not.toBeUndefined();
@@ -111,7 +91,7 @@ test('calls the updateLambdaCode() API when it receives only a code difference i
 
 test('calls the updateLambdaCode() API when it receives a code difference in a Lambda function with no name', async () => {
   // GIVEN
-  currentCfnStack.setTemplate({
+  setup.currentCfnStack.setTemplate({
     Resources: {
       Func: {
         Type: 'AWS::Lambda::Function',
@@ -127,7 +107,7 @@ test('calls the updateLambdaCode() API when it receives a code difference in a L
       },
     },
   });
-  const cdkStackArtifact = cdkStackArtifactOf({
+  const cdkStackArtifact = setup.cdkStackArtifactOf({
     template: {
       Resources: {
         Func: {
@@ -148,7 +128,7 @@ test('calls the updateLambdaCode() API when it receives a code difference in a L
 
   // WHEN
   mockStackResource.PhysicalResourceId = 'mock-function-resource-id';
-  const deployStackResult = await tryHotswapDeployment(mockSdkProvider, {}, currentCfnStack, cdkStackArtifact);
+  const deployStackResult = await tryHotswapDeployment(setup.mockSdkProvider, {}, setup.currentCfnStack, cdkStackArtifact);
 
   // THEN
   expect(deployStackResult).not.toBeUndefined();
@@ -161,7 +141,7 @@ test('calls the updateLambdaCode() API when it receives a code difference in a L
 
 test('does not call the updateLambdaCode() API when it receives a change that is not a code difference in a Lambda function', async () => {
   // GIVEN
-  currentCfnStack.setTemplate({
+  setup.currentCfnStack.setTemplate({
     Resources: {
       Func: {
         Type: 'AWS::Lambda::Function',
@@ -175,7 +155,7 @@ test('does not call the updateLambdaCode() API when it receives a change that is
       },
     },
   });
-  const cdkStackArtifact = cdkStackArtifactOf({
+  const cdkStackArtifact = setup.cdkStackArtifactOf({
     template: {
       Resources: {
         Func: {
@@ -193,16 +173,9 @@ test('does not call the updateLambdaCode() API when it receives a change that is
   });
 
   // WHEN
-  const deployStackResult = await tryHotswapDeployment(mockSdkProvider, {}, currentCfnStack, cdkStackArtifact);
+  const deployStackResult = await tryHotswapDeployment(setup.mockSdkProvider, {}, setup.currentCfnStack, cdkStackArtifact);
 
   // THEN
   expect(deployStackResult).toBeUndefined();
   expect(mockUpdateLambdaCode).not.toHaveBeenCalled();
 });
-
-function cdkStackArtifactOf(testStackArtifact: Partial<TestStackArtifact> = {}): cxapi.CloudFormationStackArtifact {
-  return testStack({
-    stackName: STACK_NAME,
-    ...testStackArtifact,
-  });
-}

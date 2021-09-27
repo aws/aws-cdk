@@ -1,47 +1,27 @@
-import * as cxapi from '@aws-cdk/cx-api';
-import { StepFunctions, CloudFormation } from 'aws-sdk';
+import { StepFunctions } from 'aws-sdk';
 import { StackResourceSummary } from 'aws-sdk/clients/cloudformation';
 import { tryHotswapDeployment } from '../../lib/api/hotswap-deployments';
-import { testStack, TestStackArtifact } from '../util';
-import { MockSdkProvider } from '../util/mock-sdk';
-import { FakeCloudformationStack } from './fake-cloudformation-stack';
+import * as setup from './hotswap-test-setup';
 
-const STACK_NAME = 'withouterrors';
-const STACK_ID = 'stackId';
-
-let mockSdkProvider: MockSdkProvider;
 let mockUpdateMachineDefinition: (params: StepFunctions.Types.UpdateStateMachineInput) => StepFunctions.Types.UpdateStateMachineOutput;
-let mockListStackResources: (params: CloudFormation.Types.ListStackResourcesInput) => CloudFormation.Types.ListStackResourcesOutput;
 let mockStackResource: StackResourceSummary = {
   LogicalResourceId: 'Machine',
   ResourceType: 'AWS::StepFunctions::StateMachine',
   ResourceStatus: 'CREATE_COMPLETE',
   LastUpdatedTimestamp: new Date(),
 };
-let currentCfnStack: FakeCloudformationStack;
 
 beforeEach(() => {
-  jest.resetAllMocks();
-  mockSdkProvider = new MockSdkProvider({ realSdk: false });
-  mockListStackResources = jest.fn(() => {
-    return { StackResourceSummaries: [mockStackResource] };
-  });
+  setup.setupHotswapTests(mockStackResource);
   mockUpdateMachineDefinition = jest.fn();
-  mockSdkProvider.stubCloudFormation({
-    listStackResources: mockListStackResources,
-  });
-  mockSdkProvider.stubStepFunctions({
+  setup.mockSdkProvider.stubStepFunctions({
     updateStateMachine: mockUpdateMachineDefinition,
-  });
-  currentCfnStack = new FakeCloudformationStack({
-    stackName: STACK_NAME,
-    stackId: STACK_ID,
   });
 });
 
 test('returns undefined when a new StateMachine is added to the Stack', async () => {
   // GIVEN
-  const cdkStackArtifact = cdkStackArtifactOf({
+  const cdkStackArtifact = setup.cdkStackArtifactOf({
     template: {
       Resources: {
         Machine: {
@@ -52,7 +32,7 @@ test('returns undefined when a new StateMachine is added to the Stack', async ()
   });
 
   // WHEN
-  const deployStackResult = await tryHotswapDeployment(mockSdkProvider, {}, currentCfnStack, cdkStackArtifact);
+  const deployStackResult = await tryHotswapDeployment(setup.mockSdkProvider, {}, setup.currentCfnStack, cdkStackArtifact);
 
   // THEN
   expect(deployStackResult).toBeUndefined();
@@ -60,7 +40,7 @@ test('returns undefined when a new StateMachine is added to the Stack', async ()
 
 test('calls the updateStateMachine() API when it receives only a definitionString change in a state machine', async () => {
   // GIVEN
-  currentCfnStack.setTemplate({
+  setup.currentCfnStack.setTemplate({
     Resources: {
       Machine: {
         Type: 'AWS::StepFunctions::StateMachine',
@@ -78,7 +58,7 @@ test('calls the updateStateMachine() API when it receives only a definitionStrin
       },
     },
   });
-  const cdkStackArtifact = cdkStackArtifactOf({
+  const cdkStackArtifact = setup.cdkStackArtifactOf({
     template: {
       Resources: {
         Machine: {
@@ -100,7 +80,7 @@ test('calls the updateStateMachine() API when it receives only a definitionStrin
   });
 
   // WHEN
-  const deployStackResult = await tryHotswapDeployment(mockSdkProvider, {}, currentCfnStack, cdkStackArtifact);
+  const deployStackResult = await tryHotswapDeployment(setup.mockSdkProvider, {}, setup.currentCfnStack, cdkStackArtifact);
 
   // THEN
   expect(deployStackResult).not.toBeUndefined();
@@ -112,7 +92,7 @@ test('calls the updateStateMachine() API when it receives only a definitionStrin
 
 test('calls the updateStateMachine() API when it receives a change to the definitionString in a state machine that has no name', async () => {
   // GIVEN
-  currentCfnStack.setTemplate({
+  setup.currentCfnStack.setTemplate({
     Resources: {
       Machine: {
         Type: 'AWS::StepFunctions::StateMachine',
@@ -129,7 +109,7 @@ test('calls the updateStateMachine() API when it receives a change to the defini
       },
     },
   });
-  const cdkStackArtifact = cdkStackArtifactOf({
+  const cdkStackArtifact = setup.cdkStackArtifactOf({
     template: {
       Resources: {
         Machine: {
@@ -151,7 +131,7 @@ test('calls the updateStateMachine() API when it receives a change to the defini
 
   // WHEN
   mockStackResource.PhysicalResourceId = 'mock-machine-resource-id';
-  const deployStackResult = await tryHotswapDeployment(mockSdkProvider, {}, currentCfnStack, cdkStackArtifact);
+  const deployStackResult = await tryHotswapDeployment(setup.mockSdkProvider, {}, setup.currentCfnStack, cdkStackArtifact);
 
   // THEN
   expect(deployStackResult).not.toBeUndefined();
@@ -163,7 +143,7 @@ test('calls the updateStateMachine() API when it receives a change to the defini
 
 test('does not call the updateStateMachine() API when it receives a change to a parameter that is not the definitionString in a state machine', async () => {
   // GIVEN
-  currentCfnStack.setTemplate({
+  setup.currentCfnStack.setTemplate({
     Resources: {
       Machine: {
         Type: 'AWS::StepFunctions::StateMachine',
@@ -183,7 +163,7 @@ test('does not call the updateStateMachine() API when it receives a change to a 
       },
     },
   });
-  const cdkStackArtifact = cdkStackArtifactOf({
+  const cdkStackArtifact = setup.cdkStackArtifactOf({
     template: {
       Resources: {
         Machine: {
@@ -207,16 +187,9 @@ test('does not call the updateStateMachine() API when it receives a change to a 
   });
 
   // WHEN
-  const deployStackResult = await tryHotswapDeployment(mockSdkProvider, {}, currentCfnStack, cdkStackArtifact);
+  const deployStackResult = await tryHotswapDeployment(setup.mockSdkProvider, {}, setup.currentCfnStack, cdkStackArtifact);
 
   // THEN
   expect(deployStackResult).toBeUndefined();
   expect(mockUpdateMachineDefinition).not.toHaveBeenCalled();
 });
-
-function cdkStackArtifactOf(testStackArtifact: Partial<TestStackArtifact> = {}): cxapi.CloudFormationStackArtifact {
-  return testStack({
-    stackName: STACK_NAME,
-    ...testStackArtifact,
-  });
-}
