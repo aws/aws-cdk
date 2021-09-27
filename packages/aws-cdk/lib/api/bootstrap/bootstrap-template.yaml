@@ -12,8 +12,13 @@ Parameters:
     Default: ''
     Type: CommaDelimitedList
   CloudFormationExecutionPolicies:
-    Description: List of the ManagedPolicy ARN(s) to attach to the CloudFormation
+    Description: List of ManagedPolicy ARN(s) to attach to the CloudFormation
       deployment role
+    Default: ''
+    Type: CommaDelimitedList
+  PermissionsBoundaryArns:
+    Description: List of ManagedPolicy ARN(s) to require as Permission Boundaries
+      for the CloudFormation execution role
     Default: ''
     Type: CommaDelimitedList
   FileAssetsBucketName:
@@ -64,6 +69,13 @@ Conditions:
           - Fn::Join:
               - ''
               - Ref: CloudFormationExecutionPolicies
+  HasPermissionsBoundaryArns:
+    Fn::Not:
+      - Fn::Equals:
+          - ''
+          - Fn::Join:
+              - ''
+              - Ref: PermissionsBoundaryArns
   HasCustomFileAssetsBucketName:
     Fn::Not:
       - Fn::Equals:
@@ -482,6 +494,48 @@ Resources:
             - - Fn::Sub: "arn:${AWS::Partition}:iam::aws:policy/AdministratorAccess"
       RoleName:
         Fn::Sub: cdk-${Qualifier}-cfn-exec-role-${AWS::AccountId}-${AWS::Region}
+
+  # Policy that restricts Execution Role permissions to only be able to create
+  # roles with Permission Boundaries, and will not be able to fiddle with them
+  CloudFormationExecutionRolePermissionBoundaries:
+    Type: AWS::IAM::Policy
+    Condition: HasPermissionsBoundaryArns
+    Properties:
+      PolicyDocument:
+        Statement:
+          - Sid: RequirePermissionsBoundary
+            Effect: Deny
+            Action:
+              - iam:CreateUser
+              - iam:CreateRole
+              - iam:PutUserPermissionsBoundary
+              - iam:PutRolePermissionsBoundary
+            Resource: *
+            Condition:
+              StringNotEquals:
+                "iam:PermissionsBoundary": { Ref: PermissionsBoundaryArns }
+          - Sid: CannotRemovePermissionsBoundary
+            Effect: Deny
+            Action:
+              - iam:DeleteUserPermissionsBoundary
+              - iam:DeleteRolePermissionsBoundary
+            Resource: *
+            Condition:
+              StringEquals:
+                "iam:PermissionsBoundary": { Ref: PermissionsBoundaryArns }
+          - Sid: CannotModifyPermissionsBoundary
+            Effect: Deny
+            Action:
+              - iam:DeletePolicy
+              - iam:DeletePolicyVersion
+              - iam:CreatePolicyVersion
+              - iam:SetDefaultPolicyVersion
+            Resource: { Ref: PermissionsBoundaryArns }
+        Version: '2012-10-17'
+      Roles:
+        - Ref: CloudFormationExecutionRole
+      PolicyName: PermissionBoundaries
+
   # The SSM parameter is used in pipeline-deployed templates to verify the version
   # of the bootstrap resources.
   CdkBootstrapVersion:
