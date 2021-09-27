@@ -22,6 +22,7 @@ example](https://docs.aws.amazon.com/step-functions/latest/dg/job-status-poller-
 ## Example
 
 ```ts
+import * as cdk from '@aws-cdk/core';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as tasks from '@aws-cdk/aws-stepfunctions-tasks';
 import * as lambda from '@aws-cdk/aws-lambda';
@@ -70,7 +71,7 @@ const definition = submitJob
 
 new sfn.StateMachine(this, 'StateMachine', {
     definition,
-    timeout: Duration.minutes(5)
+    timeout: cdk.Duration.minutes(5)
 });
 ```
 
@@ -353,8 +354,8 @@ the State Machine uses.
 The following example uses the `DynamoDB` service integration to insert data into a DynamoDB table.
 
 ```ts
-import * as ddb from '@aws-cdk/aws-dynamodb';
 import * as cdk from '@aws-cdk/core';
+import * as ddb from '@aws-cdk/aws-dynamodb';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 
 // create a table
