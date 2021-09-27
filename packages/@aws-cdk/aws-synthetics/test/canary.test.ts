@@ -229,7 +229,7 @@ test('environment variables are skipped if not provided', () => {
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
-    RunConfig: Match.(),
+    RunConfig: Match.absent(),
   });
 });
 
