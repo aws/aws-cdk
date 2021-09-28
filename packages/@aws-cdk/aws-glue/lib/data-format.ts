@@ -208,7 +208,7 @@ export interface DataFormatProps {
  */
 export class DataFormat {
   /**
-   * DataFormat for Apache Web Server Logs. Also works for CloudFront logs
+   * DataFormat for Apache Web Server Logs.
    *
    * @see https://docs.aws.amazon.com/athena/latest/ug/apache.html
    */
@@ -302,7 +302,8 @@ export class DataFormat {
   });
 
   /**
-   * DataFormat for TSV (Tab-Separated Values)
+   * DataFormat for TSV (Tab-Separated Values), also works for CloudFront logs when supplied with
+   * additional SerdeInfo parameters (field.delim and serialization.format set to "\t")
    *
    * @see https://docs.aws.amazon.com/athena/latest/ug/lazy-simple-serde.html
    */
