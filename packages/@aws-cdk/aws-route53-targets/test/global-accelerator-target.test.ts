@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as globalaccelerator from '@aws-cdk/aws-globalaccelerator';
 import * as route53 from '@aws-cdk/aws-route53';
 import { Stack } from '@aws-cdk/core';
@@ -22,7 +22,7 @@ test('GlobalAcceleratorTarget creates an alias resource with a string domain nam
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::Route53::RecordSet', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
     AliasTarget: {
       DNSName: 'xyz.awsglobalaccelerator.com',
       HostedZoneId: 'Z2BJ6XQ5FK7U4H',
@@ -45,7 +45,7 @@ test('GlobalAcceleratorTarget creates an alias resource with a Global Accelerato
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::Route53::RecordSet', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
     AliasTarget: {
       DNSName: {
         'Fn::GetAtt': [
