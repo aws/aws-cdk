@@ -19,7 +19,6 @@ beforeEach(() => {
   });
 });
 
-/*
 test('returns undefined when a new StateMachine is added to the Stack', async () => {
   // GIVEN
   const cdkStackArtifact = setup.cdkStackArtifactOf({
@@ -38,7 +37,6 @@ test('returns undefined when a new StateMachine is added to the Stack', async ()
   // THEN
   expect(deployStackResult).toBeUndefined();
 });
-*/
 
 test('calls the updateStateMachine() API when it receives only a definitionString change without Fn::Join in a state machine', async () => {
   // GIVEN
@@ -82,7 +80,6 @@ test('calls the updateStateMachine() API when it receives only a definitionStrin
   });
 });
 
-/*
 test('calls the updateStateMachine() API when it receives only a definitionString change with Fn::Join in a state machine', async () => {
   // GIVEN
   setup.currentCfnStack.setTemplate({
@@ -218,7 +215,7 @@ test('does not call the updateStateMachine() API when it receives a change to a 
               'Fn::Join': [
                 '',
                 [
-                  '{ "Prop" : "old-value" }',
+                  '{ "Prop" : "new-value" }',
                 ],
               ],
             },
@@ -238,4 +235,3 @@ test('does not call the updateStateMachine() API when it receives a change to a 
   expect(deployStackResult).toBeUndefined();
   expect(mockUpdateMachineDefinition).not.toHaveBeenCalled();
 });
-*/

@@ -47,56 +47,18 @@ function isStateMachineDefinitionOnlyChange(
     if (updatedProp.newValue === undefined) {
       return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
     }
-    /*eslint-disable*/
-    //for (const newPropName in updatedProp.newValue) {
-      //console.log('newPropName: ' + newPropName);
-    //}
   }
 
   // ensure that only changes to the definition string result in a hotswap
   for (const updatedPropName in propertyUpdates) {
-    const updatedProp = propertyUpdates[updatedPropName];
-
-    //console.log('name: ' + updatedPropName);
-    //console.log(propertyUpdates);
-
-    if (updatedPropName === 'DefinitionString') {
-        //const joinString = updatedProp.newValue['Fn::Join'];
-        //const updatedDefinition = JSON.parse(joinString[1]);
-      //console.log('newValue');
-      //console.log(updatedProp.newValue);
-      //console.log('returning: ');
-      //console.log(stringifyPotentialCfnExpression(JSON.stringify(updatedProp.newValue), assetParamsWithEnv));
-      //return stringifyPotentialCfnExpression(updatedDefinition, assetParamsWithEnv);
-      //return stringifyPotentialCfnExpression(JSON.stringify(updatedProp.newValue), assetParamsWithEnv);
-      //return stringifyPotentialCfnExpression(JSON.parse(JSON.stringify(updatedProp.newValue)), assetParamsWithEnv);
-      console.log('updatedProp.newValue');
-      console.log(updatedProp.newValue);
-      console.log('typeof: ' + typeof updatedProp.newValue);
-      console.log('return:');
-      console.log(stringifyPotentialCfnExpression(updatedProp.newValue, assetParamsWithEnv));
-      console.log(typeof stringifyPotentialCfnExpression(updatedProp.newValue, assetParamsWithEnv))
-      return stringifyPotentialCfnExpression(updatedProp.newValue, assetParamsWithEnv);
-    }
-
-    /*for (const newPropName in updatedProp.newValue) {
-      if (newPropName === 'DefinitionString') {
-        //console.log('--------------------------------------');
-      }
-
-
-      if (newPropName === 'Fn::Join') {
-        const joinString = updatedProp.newValue[newPropName];
-        const updatedDefinition = JSON.parse(joinString[1]);
-
-        return stringifyPotentialCfnExpression(JSON.stringify(updatedDefinition), assetParamsWithEnv);
-      }
-
+    if (updatedPropName !== 'DefinitionString') {
       return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
-    }*/
+    }
   }
 
-  return ChangeHotswapImpact.IRRELEVANT;
+  const definitionString = propertyUpdates.DefinitionString;
+
+  return 'DefinitionString' in propertyUpdates ? stringifyPotentialCfnExpression(definitionString.newValue, assetParamsWithEnv) : ChangeHotswapImpact.IRRELEVANT;
 }
 
 interface StateMachineResource {
