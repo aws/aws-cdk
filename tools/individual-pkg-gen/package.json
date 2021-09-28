@@ -1,5 +1,5 @@
 {
-  "name": "individual-pkg-gen",
+  "name": "@aws-cdk/individual-pkg-gen",
   "version": "0.0.0",
   "private": true,
   "description": "A tool for copying V1 packages to be released separately in V2",
@@ -26,10 +26,10 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "cdk-build-tools": "0.0.0",
-    "pkglint": "0.0.0",
-    "@types/jest": "^26.0.24",
-    "@types/fs-extra": "^8.1.2"
+    "@aws-cdk/cdk-build-tools": "0.0.0",
+    "@aws-cdk/pkglint": "0.0.0",
+    "@types/fs-extra": "^8.1.2",
+    "@types/jest": "^26.0.24"
   },
   "dependencies": {
     "aws-cdk-migration": "0.0.0",

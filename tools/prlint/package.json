@@ -1,5 +1,5 @@
 {
-  "name": "prlint",
+  "name": "@aws-cdk/prlint",
   "private": true,
   "version": "0.0.0",
   "description": "",

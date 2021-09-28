@@ -1,5 +1,5 @@
 {
-  "name": "script-tests",
+  "name": "@aws-cdk/script-tests",
   "private": true,
   "version": "0.0.0",
   "description": "various tests for development and build scripts",

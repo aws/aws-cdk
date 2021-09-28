@@ -1,5 +1,5 @@
 {
-  "name": "cfn2ts",
+  "name": "@aws-cdk/cfn2ts",
   "private": true,
   "version": "0.0.0",
   "description": "Generates typescript types from CloudFormation spec, with support for enrichments",
@@ -38,12 +38,12 @@
     "yargs": "^16.2.0"
   },
   "devDependencies": {
+    "@aws-cdk/cdk-build-tools": "0.0.0",
+    "@aws-cdk/pkglint": "0.0.0",
     "@types/fs-extra": "^8.1.2",
     "@types/jest": "^26.0.24",
     "@types/yargs": "^15.0.14",
-    "cdk-build-tools": "0.0.0",
-    "jest": "^26.6.3",
-    "pkglint": "0.0.0"
+    "jest": "^26.6.3"
   },
   "keywords": [
     "aws",
