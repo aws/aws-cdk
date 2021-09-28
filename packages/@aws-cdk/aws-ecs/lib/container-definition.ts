@@ -254,6 +254,15 @@ export interface ContainerDefinitionOptions {
   readonly privileged?: boolean;
 
   /**
+   * Specifies whether the container is marked as privileged.
+   * When this parameter is true, a TTY is allocated. This parameter maps to Tty in the "Create a container section" of the
+   * Docker Remote API and the --tty option to `docker run`.
+   *
+   * @default false
+   */
+  readonly pseudoTerminal?: boolean;
+
+  /**
    * When this parameter is true, the container is given read-only access to its root file system.
    *
    * @default false
@@ -651,6 +660,7 @@ export class ContainerDefinition extends CoreConstruct {
       name: this.containerName,
       portMappings: cdk.Lazy.any({ produce: () => this.portMappings.map(renderPortMapping) }, { omitEmptyArray: true }),
       privileged: this.props.privileged,
+      pseudoTerminal: this.props.pseudoTerminal,
       readonlyRootFilesystem: this.props.readonlyRootFilesystem,
       repositoryCredentials: this.imageConfig.repositoryCredentials,
       startTimeout: this.props.startTimeout && this.props.startTimeout.toSeconds(),
