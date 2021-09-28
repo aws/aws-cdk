@@ -1,13 +1,13 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
-import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as patterns from '@aws-cdk/aws-ecs-patterns';
+import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
 import { App, CfnOutput, Stack, StackProps } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import * as targets from '../lib';
 
 class TestStack extends Stack {
-  constructor(scope: Construct, id: string, props: StackProps) {
+  constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
     const vpc = new ec2.Vpc(this, 'Vpc', { maxAzs: 2, natGateways: 1 });
@@ -16,37 +16,31 @@ class TestStack extends Stack {
     task.addContainer('nginx', {
       image: ecs.ContainerImage.fromRegistry('public.ecr.aws/nginx/nginx:latest'),
       portMappings: [{ containerPort: 80 }],
-    })
+    });
     const svc = new patterns.ApplicationLoadBalancedFargateService(this, 'Service', {
       vpc,
       taskDefinition: task,
       publicLoadBalancer: false,
-    })
+    });
 
     const nlb = new elbv2.NetworkLoadBalancer(this, 'Nlb', {
       vpc,
       crossZoneEnabled: true,
       internetFacing: true,
-    })
+    });
     const listener = nlb.addListener('listener', {
-      port: 80, 
-    })
+      port: 80,
+    });
 
     listener.addTargets('Targets', {
       targets: [new targets.AlbTarget(svc.loadBalancer, 80)],
       port: 80,
     });
 
-    new CfnOutput(this, 'NlbEndpoint', { value: `http://${nlb.loadBalancerDnsName}`})
+    new CfnOutput(this, 'NlbEndpoint', { value: `http://${nlb.loadBalancerDnsName}` });
   }
 }
 
 const app = new App();
-
-const env = {
-  region:  process.env.CDK_DEFAULT_REGION,
-  account:  process.env.CDK_DEFAULT_ACCOUNT,
-};
-
-new TestStack(app, 'TestStack', { env });
+new TestStack(app, 'TestStack');
 app.synth();

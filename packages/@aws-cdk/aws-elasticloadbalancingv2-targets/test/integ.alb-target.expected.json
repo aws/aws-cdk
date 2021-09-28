@@ -380,7 +380,7 @@
             "Value": "false"
           }
         ],
-        "Scheme": "internet-facing",
+        "Scheme": "internal",
         "SecurityGroups": [
           {
             "Fn::GetAtt": [
@@ -391,18 +391,14 @@
         ],
         "Subnets": [
           {
-            "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
+            "Ref": "VpcPrivateSubnet1Subnet536B997A"
           },
           {
-            "Ref": "VpcPublicSubnet2Subnet691E08A3"
+            "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
           }
         ],
         "Type": "application"
-      },
-      "DependsOn": [
-        "VpcPublicSubnet1DefaultRoute3DA9E72A",
-        "VpcPublicSubnet2DefaultRoute97F91067"
-      ]
+      }
     },
     "ServiceLBSecurityGroupF7435A5C": {
       "Type": "AWS::EC2::SecurityGroup",
