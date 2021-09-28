@@ -12,8 +12,11 @@ import {
   PolicyDocument,
 } from '@aws-cdk/aws-iam';
 import { Stack } from '@aws-cdk/core';
-import { IdentityPool, IdentityPoolLoginProviderType } from '../lib/identity-pool';
-import { RoleMappingMatchType } from '../lib/identity-pool-role-attachment';
+import { 
+  IdentityPool,
+  IdentityPoolLoginProviderType,
+  RoleMappingMatchType,
+} from '../lib/identity-pool';
 import { UserPool } from '../lib/user-pool';
 import { UserPoolAuthenticationProvider } from '../lib/user-pool-authentication-provider';
 import { UserPoolIdentityProvider } from '../lib/user-pool-idp';
@@ -55,14 +58,60 @@ describe('identity pool', () => {
     });
 
   });
+  
+  test('providing default roles directly', () => {
+    const stack = new Stack();
+    const authenticatedRole = new Role(stack, 'authRole', {
+      assumedBy: new ServicePrincipal('service.amazonaws.com'),
+    });
+    const unauthenticatedRole = new Role(stack, 'unauthRole', {
+      assumedBy: new ServicePrincipal('service.amazonaws.com'),
+    });
+    const identityPool = new IdentityPool(stack, 'TestIdentityPoolActions', {
+      authenticatedRole, unauthenticatedRole
+    });
+    identityPool.grantUser('*', 'execute-api:*', 'dynamodb:*');
+    identityPool.grantGuest('arn:aws:execute-api:us-east-1:*:my-api/prod', 'execute-api:*');
+    const temp = Template.fromStack(stack);
+    temp.resourceCountIs('AWS::IAM::Role', 2);
+    temp.resourceCountIs('AWS::IAM::Policy', 2);
+    temp.hasResourceProperties('AWS::Cognito::IdentityPool', {
+      AllowUnauthenticatedIdentities: true,
+    });
+    temp.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'execute-api:*',
+            Effect: 'Allow',
+            Resource: 'arn:aws:execute-api:us-east-1:*:my-api/prod',
+          },
+        ],
+      },
+    });
 
+    temp.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'execute-api:*',
+            Effect: 'Allow',
+            Resource: '*',
+          },
+          {
+            Action: 'dynamodb:*',
+            Effect: 'Allow',
+            Resource: '*',
+          },
+        ],
+      },
+    });
+  });
   test('adding actions and resources to default roles', () => {
     const stack = new Stack();
-    const identityPool = new IdentityPool(stack, 'TestIdentityPoolActions', {
-      grantUserActions: ['execute-api:*'],
-    });
-    identityPool.grantUser('dynamodb:*');
-    identityPool.grantGuestResource('arn:aws:execute-api:us-east-1:*:my-api/prod', 'execute-api:*');
+    const identityPool = new IdentityPool(stack, 'TestIdentityPoolActions');
+    identityPool.grantUser('*', 'execute-api:*', 'dynamodb:*');
+    identityPool.grantGuest('arn:aws:execute-api:us-east-1:*:my-api/prod', 'execute-api:*');
     const temp = Template.fromStack(stack);
     temp.resourceCountIs('AWS::IAM::Role', 2);
     temp.resourceCountIs('AWS::IAM::Policy', 2);
@@ -101,10 +150,10 @@ describe('identity pool', () => {
 
   test('changing assume action', () => {
     const stack = new Stack();
-    new IdentityPool(stack, 'TestIdentityPoolActions', {
-      assumeAction: 'sts:AssumeRole',
-      grantUserActions: ['execute-api:*'],
+    const idPool = new IdentityPool(stack, 'TestIdentityPoolActions', {
+      assumeAction: 'sts:AssumeRole'
     });
+    idPool.grantUser('*', 'execute-api:*');
     const temp = Template.fromStack(stack);
     temp.hasResourceProperties('AWS::IAM::Role', {
       AssumeRolePolicyDocument: {
@@ -181,7 +230,7 @@ describe('identity pool', () => {
         userPool: new UserPoolAuthenticationProvider({ userPool: pool }),
       },
     });
-    idPool.addUserPool(
+    idPool.addUserPoolAuthentication(
       new UserPoolAuthenticationProvider({
         userPool: otherPool,
         disableServerSideTokenCheck: true,

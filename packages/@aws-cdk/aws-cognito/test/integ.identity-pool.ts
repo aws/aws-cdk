@@ -10,8 +10,6 @@ const userPool = new UserPool(stack, 'Pool');
 const otherPool = new UserPool(stack, 'OtherPool');
 
 const idPool = new IdentityPool(stack, 'identitypool', {
-  grantUserActions: ['dynamodb:*'],
-  grantGuestActions: ['dynamodb:Get*'],
   authenticationProviders: {
     userPool: new UserPoolAuthenticationProvider({ userPool }),
     amazon: { appId: 'amzn1.application.12312k3j234j13rjiwuenf' },
@@ -20,5 +18,7 @@ const idPool = new IdentityPool(stack, 'identitypool', {
   allowClassicFlow: true,
   identityPoolName: 'my-id-pool',
 });
-idPool.addUserPool(new UserPoolAuthenticationProvider({ userPool: otherPool }));
+idPool.grantUser('*', 'dynamodb:*');
+idPool.grantGuest('*', 'dynamodb:Get*');
+idPool.addUserPoolAuthentication(new UserPoolAuthenticationProvider({ userPool: otherPool }));
 app.synth();
