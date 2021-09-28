@@ -13,7 +13,8 @@ interface ImdsAspectProps {
 
   /**
    * Whether warning annotations from this Aspect should be suppressed or not.
-   * @default false
+   *
+   * @default - false
    */
   readonly suppressWarnings?: boolean;
 }
@@ -34,6 +35,7 @@ abstract class ImdsAspect implements cdk.IAspect {
 
   /**
    * Adds a warning annotation to a node, unless `suppressWarnings` is true.
+   *
    * @param node The scope to add the warning to.
    * @param message The warning message.
    */
@@ -58,13 +60,12 @@ export class AutoScalingGroupImdsAspect extends ImdsAspect {
   }
 
   visit(node: cdk.IConstruct): void {
-    /* istanbul ignore next */
-    if (node === undefined || !(node instanceof AutoScalingGroup)) {
+    if (!(node instanceof AutoScalingGroup)) {
       return;
     }
 
     const launchConfig = node.node.tryFindChild('LaunchConfig') as CfnLaunchConfiguration;
-    if (launchConfig.metadataOptions !== undefined && implementsIResolvable(launchConfig.metadataOptions)) {
+    if (cdk.isResolvableObject(launchConfig.metadataOptions)) {
       this.warn(node, 'CfnLaunchConfiguration.MetadataOptions field is a CDK token.');
       return;
     }
@@ -74,10 +75,4 @@ export class AutoScalingGroupImdsAspect extends ImdsAspect {
       httpTokens: this.enableImdsV1 ? 'optional' : 'required',
     };
   }
-}
-
-function implementsIResolvable(obj: any): boolean {
-  return 'resolve' in obj && typeof(obj.resolve) === 'function' &&
-         'creationStack' in obj && Array.isArray(obj.creationStack) &&
-         'toString' in obj && typeof(obj.toString) === 'function';
 }

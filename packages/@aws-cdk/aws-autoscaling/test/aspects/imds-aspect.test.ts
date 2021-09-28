@@ -61,19 +61,19 @@ describe('ImdsAspect', () => {
       const aspect = new AutoScalingGroupImdsAspect({ enableImdsV1: false });
 
       // WHEN
-      aspect.visit(asg);
+      cdk.Aspects.of(stack).add(aspect);
 
       // THEN
-      expect(asg.node.metadataEntry).toContainEqual({
-        data: expect.stringContaining('CfnLaunchConfiguration.MetadataOptions field is a CDK token.'),
-        type: 'aws:cdk:warning',
-        trace: undefined,
-      });
       expectCDK(stack).notTo(haveResourceLike('AWS::AutoScaling::LaunchConfiguration', {
         MetadataOptions: {
           HttpTokens: 'required',
         },
       }));
+      expect(asg.node.metadataEntry).toContainEqual({
+        data: expect.stringContaining('CfnLaunchConfiguration.MetadataOptions field is a CDK token.'),
+        type: 'aws:cdk:warning',
+        trace: undefined,
+      });
     });
 
     test.each([
@@ -81,7 +81,7 @@ describe('ImdsAspect', () => {
       [false],
     ])('toggles IMDSv1 (enabled=%s)', (enableImdsV1: boolean) => {
       // GIVEN
-      const asg = new AutoScalingGroup(stack, 'AutoScalingGroup', {
+      new AutoScalingGroup(stack, 'AutoScalingGroup', {
         vpc,
         instanceType: new ec2.InstanceType('t2.micro'),
         machineImage: ec2.MachineImage.latestAmazonLinux(),
@@ -89,7 +89,7 @@ describe('ImdsAspect', () => {
       const aspect = new AutoScalingGroupImdsAspect({ enableImdsV1 });
 
       // WHEN
-      aspect.visit(asg);
+      cdk.Aspects.of(stack).add(aspect);
 
       // THEN
       expectCDK(stack).to(haveResourceLike('AWS::AutoScaling::LaunchConfiguration', {
