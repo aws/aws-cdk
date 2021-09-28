@@ -302,8 +302,11 @@ export class DataFormat {
   });
 
   /**
-   * DataFormat for TSV (Tab-Separated Values), also works for CloudFront logs when supplied with
-   * additional SerdeInfo parameters (field.delim and serialization.format set to "\t")
+   * DataFormat for TSV (Tab-Separated Values)
+   *
+   * @remarks Also works for CloudFront logs when supplied with
+   * additional SerdeInfo parameters (`field.delim` and
+   * `serialization.format` set to "\t")
    *
    * @see https://docs.aws.amazon.com/athena/latest/ug/lazy-simple-serde.html
    */
