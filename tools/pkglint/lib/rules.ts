@@ -59,9 +59,11 @@ export class PublishConfigTagIsRequired extends ValidationRule {
 
     // While v2 is still under development, we publish all v2 packages with the 'next'
     // distribution tag, while still tagging all v1 packages as 'latest'.
-    // The one exception is 'aws-cdk-lib', since it's a new package for v2.
+    // There are two sets of exceptions:
+    // 'aws-cdk-lib' (new v2 package) and all of the '*-alpha' modules, since they are also new packages for v2.
     const newV2Packages = ['aws-cdk-lib'];
-    const defaultPublishTag = (cdkMajorVersion() === 2 && !newV2Packages.includes(pkg.json.name)) ? 'next' : 'latest';
+    const isNewPackageForV2 = newV2Packages.includes(pkg.json.name) || pkg.packageName.endsWith('-alpha');
+    const defaultPublishTag = (cdkMajorVersion() === 2 && !isNewPackageForV2) ? 'next' : 'latest';
 
     if (pkg.json.publishConfig?.tag !== defaultPublishTag) {
       pkg.report({
@@ -1571,7 +1573,7 @@ export class JestSetup extends ValidationRule {
 export class UbergenPackageVisibility extends ValidationRule {
   public readonly name = 'ubergen/package-visibility';
 
-  // The ONLY packages that should be published for v2.
+  // The ONLY (non-alpha) packages that should be published for v2.
   // These include dependencies of the CDK CLI (aws-cdk).
   private readonly v2PublicPackages = [
     '@aws-cdk/assert',
@@ -1589,7 +1591,7 @@ export class UbergenPackageVisibility extends ValidationRule {
 
   public validate(pkg: PackageJson): void {
     if (cdkMajorVersion() === 2) {
-      // Only packages in the publicPackages list should be "public". Everything else should be private.
+      // Only alpha packages and packages in the publicPackages list should be "public". Everything else should be private.
       if (this.v2PublicPackages.includes(pkg.json.name) && pkg.json.private === true) {
         pkg.report({
           ruleName: this.name,
@@ -1598,7 +1600,7 @@ export class UbergenPackageVisibility extends ValidationRule {
             delete pkg.json.private;
           },
         });
-      } else if (!this.v2PublicPackages.includes(pkg.json.name) && pkg.json.private !== true) {
+      } else if (!this.v2PublicPackages.includes(pkg.json.name) && pkg.json.private !== true && !pkg.packageName.endsWith('-alpha')) {
         pkg.report({
           ruleName: this.name,
           message: 'Package must not be public',
