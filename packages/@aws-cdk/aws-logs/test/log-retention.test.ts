@@ -105,7 +105,7 @@ describe('log retention', () => {
     });
 
     Template.fromStack(stack).hasResourceProperties('Custom::LogRetention', {
-      RetentionInDays: Match.absentProperty(),
+      RetentionInDays: Match.absent(),
     });
 
 

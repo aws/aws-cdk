@@ -210,7 +210,7 @@ describe('SlackChannelConfiguration', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
       Namespace: 'AWS/Chatbot',
       MetricName: 'MetricName',
-      Dimensions: Match.absentProperty(),
+      Dimensions: Match.absent(),
       ComparisonOperator: 'GreaterThanThreshold',
       EvaluationPeriods: 1,
       Threshold: 0,

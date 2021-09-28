@@ -149,11 +149,11 @@ test('unapply inherited boundary from a user: order 1', () => {
 
   // THEN
   // Template.fromStack(stack).hasResource('AWS::IAM::User', {
-  //   PermissionsBoundary: Match.absentProperty(),
+  //   PermissionsBoundary: Match.absent(),
   // });
   // Correct after when this issue is fixed - https://github.com/aws/aws-cdk/issues/16626
   Template.fromStack(stack).hasResource('AWS::IAM::User', {
-    Properties: Match.absentProperty(),
+    Properties: Match.absent(),
   });
 });
 
@@ -167,10 +167,10 @@ test('unapply inherited boundary from a user: order 2', () => {
 
   // THEN
   // Template.fromStack(stack).hasResource('AWS::IAM::User', {
-  //   PermissionsBoundary: Match.absentProperty(),
+  //   PermissionsBoundary: Match.absent(),
   // });
   // Correct after when this issue is fixed - https://github.com/aws/aws-cdk/issues/16626
   Template.fromStack(stack).hasResource('AWS::IAM::User', {
-    Properties: Match.absentProperty(),
+    Properties: Match.absent(),
   });
 });

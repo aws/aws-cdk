@@ -110,7 +110,7 @@ describe('scalable target', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
-      Period: Match.absentProperty(),
+      Period: Match.absent(),
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
