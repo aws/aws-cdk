@@ -56,6 +56,9 @@ async function onDelete(bucketName?: string) {
   try {
     await emptyBucket(bucketName);
   } catch (e) {
+    if (e.code !== 'NoSuchBucket') {
+      throw e;
+    }
     // Bucket doesn't exist. Ignoring
   }
 }
