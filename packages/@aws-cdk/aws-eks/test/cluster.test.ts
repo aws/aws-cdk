@@ -35,14 +35,7 @@ describe('cluster', () => {
     const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.ClusterResourceProvider') as cdk.NestedStack;
 
     const template = SynthUtils.toCloudFormation(nested);
-    expect(template.Resources.OnEventHandler42BEBAE0.Properties.Environment).toEqual({
-      Variables: {
-        AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
-        foo: 'bar',
-      },
-    });
-
-
+    expect(template.Resources.OnEventHandler42BEBAE0.Properties.Environment).toEqual({ Variables: { foo: 'bar' } });
   });
 
   test('throws when trying to place cluster handlers in a vpc with no private subnets', () => {
