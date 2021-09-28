@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { HostedZone, PublicHostedZone } from '../lib';
@@ -42,7 +42,7 @@ describe('hosted zone', () => {
     cdk.Tags.of(hostedZone).add('zoneTag', 'inMyZone');
 
     // THEN
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       Resources: {
         HostedZoneDB99F866: {
           Type: 'AWS::Route53::HostedZone',
@@ -76,7 +76,7 @@ describe('hosted zone', () => {
     });
 
     // THEN
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       Resources: {
         HostedZoneDB99F866: {
           Type: 'AWS::Route53::HostedZone',
