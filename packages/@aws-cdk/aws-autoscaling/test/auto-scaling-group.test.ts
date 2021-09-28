@@ -1364,6 +1364,27 @@ describe('auto scaling group', () => {
 
 
   });
+
+  test('disables imdsv1', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = mockVpc(stack);
+
+    // WHEN
+    new autoscaling.AutoScalingGroup(stack, 'MyASG', {
+      vpc,
+      instanceType: new ec2.InstanceType('t2.micro'),
+      machineImage: ec2.MachineImage.latestAmazonLinux(),
+      disableImdsv1: true,
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::AutoScaling::LaunchConfiguration', {
+      MetadataOptions: {
+        HttpTokens: 'required',
+      },
+    });
+  });
 });
 
 function mockVpc(stack: cdk.Stack) {
