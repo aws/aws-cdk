@@ -67,9 +67,13 @@ export class HotswappableResourceChange {
 export function stringifyPotentialCfnExpression(value: any, assetParamsWithEnv: { [key: string]: string }): string {
   // if we already have a string, nothing to do
   if (value == null || typeof value === 'string') {
+    /*eslint-disable*/
+    //console.log('value: ' + value);
     return value;
   }
 
+  //console.log('outside value: ');
+  //console.log(value);
   // otherwise, we assume this is a CloudFormation expression that we need to evaluate
   return evaluateCfn(value, assetParamsWithEnv);
 }

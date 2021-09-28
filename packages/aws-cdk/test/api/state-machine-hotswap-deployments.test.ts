@@ -19,6 +19,7 @@ beforeEach(() => {
   });
 });
 
+/*
 test('returns undefined when a new StateMachine is added to the Stack', async () => {
   // GIVEN
   const cdkStackArtifact = setup.cdkStackArtifactOf({
@@ -37,8 +38,52 @@ test('returns undefined when a new StateMachine is added to the Stack', async ()
   // THEN
   expect(deployStackResult).toBeUndefined();
 });
+*/
 
-test('calls the updateStateMachine() API when it receives only a definitionString change in a state machine', async () => {
+test('calls the updateStateMachine() API when it receives only a definitionString change without Fn::Join in a state machine', async () => {
+  // GIVEN
+  setup.currentCfnStack.setTemplate({
+    Resources: {
+      Machine: {
+        Type: 'AWS::StepFunctions::StateMachine',
+        Properties: {
+          DefinitionString: {
+            Prop: 'old-value',
+          },
+          StateMachineName: 'my-machine',
+        },
+      },
+    },
+  });
+  const cdkStackArtifact = setup.cdkStackArtifactOf({
+    template: {
+      Resources: {
+        Machine: {
+          Type: 'AWS::StepFunctions::StateMachine',
+          Properties: {
+            DefinitionString: {
+              Prop: 'new-value',
+            },
+            StateMachineName: 'my-machine',
+          },
+        },
+      },
+    },
+  });
+
+  // WHEN
+  const deployStackResult = await tryHotswapDeployment(setup.mockSdkProvider, {}, setup.currentCfnStack, cdkStackArtifact);
+
+  // THEN
+  expect(deployStackResult).not.toBeUndefined();
+  expect(mockUpdateMachineDefinition).toHaveBeenCalledWith({
+    definition: { Prop: 'new-value' },
+    stateMachineArn: 'my-machine',
+  });
+});
+
+/*
+test('calls the updateStateMachine() API when it receives only a definitionString change with Fn::Join in a state machine', async () => {
   // GIVEN
   setup.currentCfnStack.setTemplate({
     Resources: {
@@ -193,3 +238,4 @@ test('does not call the updateStateMachine() API when it receives a change to a 
   expect(deployStackResult).toBeUndefined();
   expect(mockUpdateMachineDefinition).not.toHaveBeenCalled();
 });
+*/

@@ -70,10 +70,16 @@ function isStateMachineDefinitionOnlyChange(
       //return stringifyPotentialCfnExpression(updatedDefinition, assetParamsWithEnv);
       //return stringifyPotentialCfnExpression(JSON.stringify(updatedProp.newValue), assetParamsWithEnv);
       //return stringifyPotentialCfnExpression(JSON.parse(JSON.stringify(updatedProp.newValue)), assetParamsWithEnv);
+      console.log('updatedProp.newValue');
+      console.log(updatedProp.newValue);
+      console.log('typeof: ' + typeof updatedProp.newValue);
+      console.log('return:');
+      console.log(stringifyPotentialCfnExpression(updatedProp.newValue, assetParamsWithEnv));
+      console.log(typeof stringifyPotentialCfnExpression(updatedProp.newValue, assetParamsWithEnv))
       return stringifyPotentialCfnExpression(updatedProp.newValue, assetParamsWithEnv);
     }
 
-    for (const newPropName in updatedProp.newValue) {
+    /*for (const newPropName in updatedProp.newValue) {
       if (newPropName === 'DefinitionString') {
         //console.log('--------------------------------------');
       }
@@ -87,7 +93,7 @@ function isStateMachineDefinitionOnlyChange(
       }
 
       return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
-    }
+    }*/
   }
 
   return ChangeHotswapImpact.IRRELEVANT;
