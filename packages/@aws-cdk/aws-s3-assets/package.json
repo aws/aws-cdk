@@ -52,7 +52,6 @@
     "build+test+extract": "yarn build+test && yarn rosetta:extract"
   },
   "cdk-build": {
-    "jest": true,
     "env": {
       "AWSLINT_BASE_CONSTRUCT": true
     }
@@ -76,7 +75,7 @@
     "cdk-integ-tools": "0.0.0",
     "pkglint": "0.0.0",
     "@aws-cdk/cloud-assembly-schema": "0.0.0",
-    "@aws-cdk/assert-internal": "0.0.0"
+    "@aws-cdk/assertions": "0.0.0"
   },
   "dependencies": {
     "@aws-cdk/assets": "0.0.0",
