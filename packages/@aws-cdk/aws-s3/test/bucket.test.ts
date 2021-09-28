@@ -1,6 +1,5 @@
-import '@aws-cdk/assert-internal/jest';
 import { EOL } from 'os';
-import { ResourcePart, SynthUtils, arrayWith, objectLike } from '@aws-cdk/assert-internal';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as cdk from '@aws-cdk/core';
@@ -19,7 +18,7 @@ describe('bucket', () => {
 
     new s3.Bucket(stack, 'MyBucket');
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       'Resources': {
         'MyBucketF68F3FF0': {
           'Type': 'AWS::S3::Bucket',
@@ -39,7 +38,7 @@ describe('bucket', () => {
     });
 
     expect(() => {
-      SynthUtils.synthesize(stack);
+      Template.fromStack(stack).toJSON();
     }).toThrow(/bucketName: 5 should be a string/);
 
 
@@ -51,7 +50,7 @@ describe('bucket', () => {
       encryption: s3.BucketEncryption.UNENCRYPTED,
     });
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       'Resources': {
         'MyBucketF68F3FF0': {
           'Type': 'AWS::S3::Bucket',
@@ -70,7 +69,7 @@ describe('bucket', () => {
       encryption: s3.BucketEncryption.KMS_MANAGED,
     });
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       'Resources': {
         'MyBucketF68F3FF0': {
           'Type': 'AWS::S3::Bucket',
@@ -257,9 +256,9 @@ describe('bucket', () => {
 
     new s3.Bucket(stack, 'MyBucket', { encryptionKey, encryption: s3.BucketEncryption.KMS });
 
-    expect(stack).toHaveResource('AWS::KMS::Key');
+    Template.fromStack(stack).resourceCountIs('AWS::KMS::Key', 1);
 
-    expect(stack).toHaveResource('AWS::S3::Bucket', {
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
       'BucketEncryption': {
         'ServerSideEncryptionConfiguration': [
           {
@@ -283,7 +282,7 @@ describe('bucket', () => {
     const stack = new cdk.Stack();
     new s3.Bucket(stack, 'MyBucket', { enforceSSL: true });
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       'Resources': {
         'MyBucketF68F3FF0': {
           'Type': 'AWS::S3::Bucket',
@@ -344,7 +343,7 @@ describe('bucket', () => {
 
     new s3.Bucket(stack, 'MyBucket', { bucketKeyEnabled: true, encryption: s3.BucketEncryption.KMS });
 
-    expect(stack).toHaveResource('AWS::S3::Bucket', {
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
       'BucketEncryption': {
         'ServerSideEncryptionConfiguration': [
           {
@@ -384,7 +383,7 @@ describe('bucket', () => {
       versioned: true,
     });
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       'Resources': {
         'MyBucketF68F3FF0': {
           'Type': 'AWS::S3::Bucket',
@@ -407,7 +406,7 @@ describe('bucket', () => {
       blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
     });
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       'Resources': {
         'MyBucketF68F3FF0': {
           'Type': 'AWS::S3::Bucket',
@@ -433,7 +432,7 @@ describe('bucket', () => {
       blockPublicAccess: s3.BlockPublicAccess.BLOCK_ACLS,
     });
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       'Resources': {
         'MyBucketF68F3FF0': {
           'Type': 'AWS::S3::Bucket',
@@ -457,7 +456,7 @@ describe('bucket', () => {
       blockPublicAccess: new s3.BlockPublicAccess({ restrictPublicBuckets: true }),
     });
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       'Resources': {
         'MyBucketF68F3FF0': {
           'Type': 'AWS::S3::Bucket',
@@ -480,7 +479,7 @@ describe('bucket', () => {
       accessControl: s3.BucketAccessControl.LOG_DELIVERY_WRITE,
     });
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       'Resources': {
         'MyBucketF68F3FF0': {
           'Type': 'AWS::S3::Bucket',
@@ -507,7 +506,7 @@ describe('bucket', () => {
         principals: [new iam.AnyPrincipal()],
       }));
 
-      expect(stack).toMatchTemplate({
+      Template.fromStack(stack).templateMatches({
         'Resources': {
           'MyBucketF68F3FF0': {
             'Type': 'AWS::S3::Bucket',
@@ -632,7 +631,7 @@ describe('bucket', () => {
       encryption: s3.BucketEncryption.UNENCRYPTED,
     });
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       Resources: {
         MyBucketF68F3FF0: {
           Type: 'AWS::S3::Bucket',
@@ -677,7 +676,7 @@ describe('bucket', () => {
       expect(bucket.bucketArn).toEqual(bucketArn);
       expect(stack.resolve(bucket.bucketName)).toEqual('my-bucket');
 
-      expect(SynthUtils.synthesize(stack).template).toEqual({});
+      expect(Template.fromStack(stack).toJSON()).toEqual({});
 
     });
 
@@ -691,7 +690,7 @@ describe('bucket', () => {
       }));
 
       // at this point we technically didn't create any resources in the consuming stack.
-      expect(stack).toMatchTemplate({});
+      Template.fromStack(stack).templateMatches({});
 
     });
 
@@ -708,7 +707,7 @@ describe('bucket', () => {
         actions: ['s3:*'],
       }));
 
-      expect(stack).toMatchTemplate({
+      Template.fromStack(stack).templateMatches({
         'Resources': {
           'MyUserDC45028B': {
             'Type': 'AWS::IAM::User',
@@ -762,7 +761,7 @@ describe('bucket', () => {
     const reader = new iam.User(stack, 'Reader');
     const bucket = new s3.Bucket(stack, 'MyBucket');
     bucket.grantRead(reader);
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       'Resources': {
         'ReaderF7BF189D': {
           'Type': 'AWS::IAM::User',
@@ -830,7 +829,7 @@ describe('bucket', () => {
       const user = new iam.User(stack, 'MyUser');
       bucket.grantReadWrite(user);
 
-      expect(stack).toMatchTemplate({
+      Template.fromStack(stack).templateMatches({
         'Resources': {
           'MyBucketF68F3FF0': {
             'Type': 'AWS::S3::Bucket',
@@ -904,7 +903,7 @@ describe('bucket', () => {
       bucket.grantRead(new iam.OrganizationPrincipal('o-1234'));
 
       // THEN
-      expect(stack).toHaveResource('AWS::S3::BucketPolicy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
         PolicyDocument: {
           'Version': '2012-10-17',
           'Statement': [
@@ -922,9 +921,9 @@ describe('bucket', () => {
         },
       });
 
-      expect(stack).toHaveResourceLike('AWS::KMS::Key', {
+      Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
         'KeyPolicy': {
-          'Statement': arrayWith(
+          'Statement': Match.arrayWith([
             {
               'Action': ['kms:Decrypt', 'kms:DescribeKey'],
               'Effect': 'Allow',
@@ -932,7 +931,7 @@ describe('bucket', () => {
               'Principal': { AWS: '*' },
               'Condition': { 'StringEquals': { 'aws:PrincipalOrgID': 'o-1234' } },
             },
-          ),
+          ]),
           'Version': '2012-10-17',
         },
 
@@ -947,7 +946,7 @@ describe('bucket', () => {
       const user = new iam.User(stack, 'MyUser');
       bucket.grantReadWrite(user);
 
-      expect(stack).toMatchTemplate({
+      Template.fromStack(stack).templateMatches({
         'Resources': {
           'MyBucketKeyC17130CF': {
             'Type': 'AWS::KMS::Key',
@@ -1121,10 +1120,10 @@ describe('bucket', () => {
 
       bucket.grantReadWrite(user);
 
-      expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         'PolicyDocument': {
           'Statement': [
-            {
+            Match.objectLike({
               'Action': [
                 's3:GetObject*',
                 's3:GetBucket*',
@@ -1142,7 +1141,7 @@ describe('bucket', () => {
                   ]],
                 },
               ],
-            },
+            }),
           ],
         },
       });
@@ -1158,7 +1157,7 @@ describe('bucket', () => {
       const user = new iam.User(stack, 'MyUser');
       bucket.grantWrite(user);
 
-      expect(stack).toHaveResource('AWS::IAM::Policy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         'PolicyDocument': {
           'Statement': [
             {
@@ -1227,10 +1226,10 @@ describe('bucket', () => {
 
       bucket.grantWrite(user);
 
-      expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         'PolicyDocument': {
           'Statement': [
-            {
+            Match.objectLike({
               'Action': [
                 's3:DeleteObject*',
                 's3:PutObject',
@@ -1245,7 +1244,7 @@ describe('bucket', () => {
                   ]],
                 },
               ],
-            },
+            }),
           ],
         },
       });
@@ -1262,10 +1261,10 @@ describe('bucket', () => {
 
       bucket.grantPut(user);
 
-      expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         'PolicyDocument': {
           'Statement': [
-            {
+            Match.objectLike({
               'Action': [
                 's3:PutObject',
                 's3:Abort*',
@@ -1276,7 +1275,7 @@ describe('bucket', () => {
                   '/*',
                 ]],
               },
-            },
+            }),
           ],
         },
       });
@@ -1296,7 +1295,7 @@ describe('bucket', () => {
     bucket.grantWrite(writer);
     bucket.grantDelete(deleter);
 
-    const resources = SynthUtils.synthesize(stack).template.Resources;
+    const resources = Template.fromStack(stack).toJSON().Resources;
     const actions = (id: string) => resources[id].Properties.PolicyDocument.Statement[0].Action;
 
     expect(actions('WriterDefaultPolicyDC585BCE')).toEqual(['s3:DeleteObject*', 's3:PutObject', 's3:Abort*']);
@@ -1320,7 +1319,7 @@ describe('bucket', () => {
     bucket.grantDelete(deleter);
 
     // then
-    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       'PolicyDocument': {
         'Statement': [
           {
@@ -1359,7 +1358,7 @@ describe('bucket', () => {
       const user = new iam.User(stackB, 'UserWhoNeedsAccess');
       bucketFromStackA.grantRead(user);
 
-      expect(stackA).toMatchTemplate({
+      Template.fromStack(stackA).templateMatches({
         'Resources': {
           'MyBucketF68F3FF0': {
             'Type': 'AWS::S3::Bucket',
@@ -1382,7 +1381,7 @@ describe('bucket', () => {
         },
       });
 
-      expect(stackB).toMatchTemplate({
+      Template.fromStack(stackB).templateMatches({
         'Resources': {
           'UserWhoNeedsAccessF8959C3D': {
             'Type': 'AWS::IAM::User',
@@ -1450,10 +1449,10 @@ describe('bucket', () => {
       bucketFromStackA.grantRead(roleFromStackB);
 
       // then
-      expect(stackA).toHaveResourceLike('AWS::S3::BucketPolicy', {
+      Template.fromStack(stackA).hasResourceProperties('AWS::S3::BucketPolicy', {
         'PolicyDocument': {
           'Statement': [
-            {
+            Match.objectLike({
               'Action': [
                 's3:GetObject*',
                 's3:GetBucket*',
@@ -1474,12 +1473,12 @@ describe('bucket', () => {
                   ],
                 },
               },
-            },
+            }),
           ],
         },
       });
 
-      expect(stackB).toHaveResourceLike('AWS::IAM::Policy', {
+      Template.fromStack(stackB).hasResourceProperties('AWS::IAM::Policy', {
         'PolicyDocument': {
           'Statement': [
             {
@@ -1543,13 +1542,10 @@ describe('bucket', () => {
       bucketFromStackA.grantRead(roleFromStackB);
 
       // then
-      expect(stackA).toHaveResourceLike('AWS::KMS::Key', {
+      Template.fromStack(stackA).hasResourceProperties('AWS::KMS::Key', {
         'KeyPolicy': {
-          'Statement': [
-            {
-              // grant to the root of the owning account
-            },
-            {
+          'Statement': Match.arrayWith([
+            Match.objectLike({
               'Action': [
                 'kms:Decrypt',
                 'kms:DescribeKey',
@@ -1569,17 +1565,14 @@ describe('bucket', () => {
                   ],
                 },
               },
-            },
-          ],
+            }),
+          ]),
         },
       });
 
-      expect(stackB).toHaveResourceLike('AWS::IAM::Policy', {
+      Template.fromStack(stackB).hasResourceProperties('AWS::IAM::Policy', {
         'PolicyDocument': {
-          'Statement': [
-            {
-              // Bucket grant
-            },
+          'Statement': Match.arrayWith([
             {
               'Action': [
                 'kms:Decrypt',
@@ -1588,7 +1581,7 @@ describe('bucket', () => {
               'Effect': 'Allow',
               'Resource': '*',
             },
-          ],
+          ]),
         },
       });
 
@@ -1609,7 +1602,7 @@ describe('bucket', () => {
     new cdk.CfnOutput(stack, 'YourFileURL', { value: bucket.urlForObject('/your/file.txt') }); // "/" is optional
     new cdk.CfnOutput(stack, 'RegionBucketURL', { value: bucketWithRegion.urlForObject() });
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       'Resources': {
         'MyBucketF68F3FF0': {
           'Type': 'AWS::S3::Bucket',
@@ -1711,7 +1704,7 @@ describe('bucket', () => {
     new cdk.CfnOutput(stack, 'MyFileS3URL', { value: bucket.s3UrlForObject('my/file.txt') });
     new cdk.CfnOutput(stack, 'YourFileS3URL', { value: bucket.s3UrlForObject('/your/file.txt') }); // "/" is optional
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       'Resources': {
         'MyBucketF68F3FF0': {
           'Type': 'AWS::S3::Bucket',
@@ -1777,7 +1770,7 @@ describe('bucket', () => {
       bucket.grantPublicAccess();
 
       // THEN
-      expect(stack).toHaveResource('AWS::S3::BucketPolicy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
         'PolicyDocument': {
           'Statement': [
             {
@@ -1802,7 +1795,7 @@ describe('bucket', () => {
       bucket.grantPublicAccess('only/access/these/*');
 
       // THEN
-      expect(stack).toHaveResource('AWS::S3::BucketPolicy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
         'PolicyDocument': {
           'Statement': [
             {
@@ -1827,7 +1820,7 @@ describe('bucket', () => {
       bucket.grantPublicAccess('*', 's3:GetObject', 's3:PutObject');
 
       // THEN
-      expect(stack).toHaveResource('AWS::S3::BucketPolicy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
         'PolicyDocument': {
           'Statement': [
             {
@@ -1853,7 +1846,7 @@ describe('bucket', () => {
       result.resourceStatement!.addCondition('IpAddress', { 'aws:SourceIp': '54.240.143.0/24' });
 
       // THEN
-      expect(stack).toHaveResource('AWS::S3::BucketPolicy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
         'PolicyDocument': {
           'Statement': [
             {
@@ -1892,7 +1885,7 @@ describe('bucket', () => {
       new s3.Bucket(stack, 'Website', {
         websiteIndexDocument: 'index2.html',
       });
-      expect(stack).toHaveResource('AWS::S3::Bucket', {
+      Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
         WebsiteConfiguration: {
           IndexDocument: 'index2.html',
         },
@@ -1914,7 +1907,7 @@ describe('bucket', () => {
         websiteIndexDocument: 'index2.html',
         websiteErrorDocument: 'error.html',
       });
-      expect(stack).toHaveResource('AWS::S3::Bucket', {
+      Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
         WebsiteConfiguration: {
           IndexDocument: 'index2.html',
           ErrorDocument: 'error.html',
@@ -1990,7 +1983,7 @@ describe('bucket', () => {
           protocol: s3.RedirectProtocol.HTTPS,
         },
       });
-      expect(stack).toHaveResource('AWS::S3::Bucket', {
+      Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
         WebsiteConfiguration: {
           RedirectAllRequestsTo: {
             HostName: 'www.example.com',
@@ -2039,7 +2032,7 @@ describe('bucket', () => {
           },
         }],
       });
-      expect(stack).toHaveResource('AWS::S3::Bucket', {
+      Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
         WebsiteConfiguration: {
           RoutingRules: [{
             RedirectRule: {
@@ -2173,7 +2166,7 @@ describe('bucket', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::S3::Bucket', {
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
       LoggingConfiguration: {
         DestinationBucketName: {
           Ref: 'AccessLogs8B620ECA',
@@ -2196,7 +2189,7 @@ describe('bucket', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::S3::Bucket', {
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
       LoggingConfiguration: {
         DestinationBucketName: {
           Ref: 'AccessLogs8B620ECA',
@@ -2217,7 +2210,7 @@ describe('bucket', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::S3::Bucket', {
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
       LoggingConfiguration: {
         LogFilePrefix: 'hello',
       },
@@ -2259,7 +2252,7 @@ describe('bucket', () => {
       ],
     });
 
-    expect(stack).toHaveResourceLike('AWS::S3::Bucket', {
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
       InventoryConfigurations: [
         {
           Enabled: true,
@@ -2274,10 +2267,10 @@ describe('bucket', () => {
       ],
     });
 
-    expect(stack).toHaveResourceLike('AWS::S3::BucketPolicy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
       Bucket: { Ref: 'InventoryBucketA869B8CB' },
       PolicyDocument: {
-        Statement: arrayWith(objectLike({
+        Statement: Match.arrayWith([Match.objectLike({
           Action: 's3:PutObject',
           Principal: { Service: 's3.amazonaws.com' },
           Resource: [
@@ -2288,7 +2281,7 @@ describe('bucket', () => {
               'Fn::Join': ['', [{ 'Fn::GetAtt': ['InventoryBucketA869B8CB', 'Arn'] }, '/*']],
             },
           ],
-        })),
+        })]),
       },
     });
 
@@ -2300,7 +2293,7 @@ describe('bucket', () => {
     new s3.Bucket(stack, 'MyBucket', {
       objectOwnership: s3.ObjectOwnership.BUCKET_OWNER_PREFERRED,
     });
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       'Resources': {
         'MyBucketF68F3FF0': {
           'Type': 'AWS::S3::Bucket',
@@ -2326,7 +2319,7 @@ describe('bucket', () => {
     new s3.Bucket(stack, 'MyBucket', {
       objectOwnership: s3.ObjectOwnership.OBJECT_WRITER,
     });
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       'Resources': {
         'MyBucketF68F3FF0': {
           'Type': 'AWS::S3::Bucket',
@@ -2352,7 +2345,7 @@ describe('bucket', () => {
     new s3.Bucket(stack, 'MyBucket', {
       objectOwnership: undefined,
     });
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       'Resources': {
         'MyBucketF68F3FF0': {
           'Type': 'AWS::S3::Bucket',
@@ -2372,12 +2365,12 @@ describe('bucket', () => {
       autoDeleteObjects: true,
     });
 
-    expect(stack).toHaveResource('AWS::S3::Bucket', {
+    Template.fromStack(stack).hasResource('AWS::S3::Bucket', {
       UpdateReplacePolicy: 'Delete',
       DeletionPolicy: 'Delete',
-    }, ResourcePart.CompleteDefinition);
+    });
 
-    expect(stack).toHaveResource('AWS::S3::BucketPolicy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
       Bucket: {
         Ref: 'MyBucketF68F3FF0',
       },
@@ -2426,7 +2419,7 @@ describe('bucket', () => {
       },
     });
 
-    expect(stack).toHaveResource('Custom::S3AutoDeleteObjects', {
+    Template.fromStack(stack).hasResource('Custom::S3AutoDeleteObjects', {
       'Properties': {
         'ServiceToken': {
           'Fn::GetAtt': [
@@ -2441,7 +2434,7 @@ describe('bucket', () => {
       'DependsOn': [
         'MyBucketPolicyE7FBAC7B',
       ],
-    }, ResourcePart.CompleteDefinition);
+    });
 
 
   });
@@ -2459,7 +2452,7 @@ describe('bucket', () => {
       autoDeleteObjects: true,
     });
 
-    expect(stack).toCountResources('AWS::Lambda::Function', 1);
+    Template.fromStack(stack).resourceCountIs('AWS::Lambda::Function', 1);
 
 
   });

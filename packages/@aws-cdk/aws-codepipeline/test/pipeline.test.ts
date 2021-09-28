@@ -1,5 +1,4 @@
-import { expect as ourExpect, ResourcePart, arrayWith, objectLike, haveResourceLike } from '@aws-cdk/assert-internal';
-import '@aws-cdk/assert-internal/jest';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
@@ -18,18 +17,36 @@ describe('', () => {
       const role = new iam.Role(stack, 'Role', {
         assumedBy: new iam.ServicePrincipal('codepipeline.amazonaws.com'),
       });
-      new codepipeline.Pipeline(stack, 'Pipeline', {
+      const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
         role,
       });
 
-      ourExpect(stack, true).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+      // Adding 2 stages with actions so pipeline validation will pass
+      const sourceArtifact = new codepipeline.Artifact();
+      pipeline.addStage({
+        stageName: 'Source',
+        actions: [new FakeSourceAction({
+          actionName: 'FakeSource',
+          output: sourceArtifact,
+        })],
+      });
+
+      pipeline.addStage({
+        stageName: 'Build',
+        actions: [new FakeBuildAction({
+          actionName: 'FakeBuild',
+          input: sourceArtifact,
+        })],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
         'RoleArn': {
           'Fn::GetAtt': [
             'Role1ABCC5F0',
             'Arn',
           ],
         },
-      }));
+      });
 
 
     });
@@ -109,9 +126,9 @@ describe('', () => {
           ],
         });
 
-        expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+        Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
           'ArtifactStores': [
-            {
+            Match.objectLike({
               'Region': replicationRegion,
               'ArtifactStore': {
                 'Type': 'S3',
@@ -131,19 +148,16 @@ describe('', () => {
                   },
                 },
               },
-            },
-            {
+            }),
+            Match.objectLike({
               'Region': pipelineRegion,
-            },
+            }),
           ],
         });
 
-        expect(replicationStack).toHaveResourceLike('AWS::KMS::Key', {
+        Template.fromStack(replicationStack).hasResourceProperties('AWS::KMS::Key', {
           'KeyPolicy': {
-            'Statement': [
-              {
-                // owning account management permissions - we don't care about them in this test
-              },
+            'Statement': Match.arrayWith([
               {
                 // KMS verifies whether the principal given in its key policy exists when creating that key.
                 // Since the replication bucket must be deployed before the pipeline,
@@ -168,7 +182,7 @@ describe('', () => {
                 },
                 'Resource': '*',
               },
-            ],
+            ]),
           },
         });
 
@@ -204,9 +218,9 @@ describe('', () => {
           ],
         });
 
-        expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+        Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
           'ArtifactStores': [
-            {
+            Match.objectLike({
               'Region': replicationRegion,
               'ArtifactStore': {
                 'Type': 'S3',
@@ -226,17 +240,17 @@ describe('', () => {
                   },
                 },
               },
-            },
-            {
+            }),
+            Match.objectLike({
               'Region': pipelineRegion,
-            },
+            }),
           ],
         });
 
-        expect(pipeline.crossRegionSupport[replicationRegion].stack).toHaveResourceLike('AWS::KMS::Alias', {
+        Template.fromStack(pipeline.crossRegionSupport[replicationRegion].stack).hasResource('AWS::KMS::Alias', {
           'DeletionPolicy': 'Delete',
           'UpdateReplacePolicy': 'Delete',
-        }, ResourcePart.CompleteDefinition);
+        });
 
 
       });
@@ -276,9 +290,9 @@ describe('', () => {
           ],
         });
 
-        expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+        Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
           'ArtifactStores': [
-            {
+            Match.objectLike({
               'Region': replicationRegion,
               'ArtifactStore': {
                 'Type': 'S3',
@@ -288,10 +302,10 @@ describe('', () => {
                   'Id': 'arn:aws:kms:us-west-1:123456789012:key/1234-5678-9012',
                 },
               },
-            },
-            {
+            }),
+            Match.objectLike({
               'Region': pipelineRegion,
-            },
+            }),
           ],
         });
 
@@ -420,7 +434,7 @@ describe('', () => {
           ],
         });
 
-        expect(stack).toHaveResourceLike('AWS::KMS::Key', {
+        Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
           'EnableKeyRotation': true,
         });
       });
@@ -455,14 +469,14 @@ describe('test with shared setup', () => {
     pipeline.stage('Build').addAction(new FakeBuildAction({ actionName: 'debug.com', input: sourceArtifact }));
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
-      Stages: arrayWith({
+    Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+      Stages: Match.arrayWith([{
         Name: 'Build',
         Actions: [
-          objectLike({ Name: 'Gcc' }),
-          objectLike({ Name: 'debug.com' }),
+          Match.objectLike({ Name: 'Gcc' }),
+          Match.objectLike({ Name: 'debug.com' }),
         ],
-      }),
+      }]),
     });
   });
 });

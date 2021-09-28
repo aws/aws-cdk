@@ -1,5 +1,4 @@
-import { ResourcePart } from '@aws-cdk/assert-internal';
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import { CfnParameter, Duration, Stack, App, Token } from '@aws-cdk/core';
@@ -13,7 +12,7 @@ test('default properties', () => {
 
   expect(q.fifo).toEqual(false);
 
-  expect(stack).toMatchTemplate({
+  Template.fromStack(stack).templateMatches({
     'Resources': {
       'Queue4A7E3555': {
         'Type': 'AWS::SQS::Queue',
@@ -23,9 +22,9 @@ test('default properties', () => {
     },
   });
 
-  expect(stack).toHaveResource('AWS::SQS::Queue', {
+  Template.fromStack(stack).hasResource('AWS::SQS::Queue', {
     DeletionPolicy: 'Delete',
-  }, ResourcePart.CompleteDefinition);
+  });
 });
 
 test('with a dead letter queue', () => {
@@ -33,7 +32,7 @@ test('with a dead letter queue', () => {
   const dlq = new sqs.Queue(stack, 'DLQ');
   new sqs.Queue(stack, 'Queue', { deadLetterQueue: { queue: dlq, maxReceiveCount: 3 } });
 
-  expect(stack).toMatchTemplate({
+  Template.fromStack(stack).templateMatches({
     'Resources': {
       'DLQ581697C4': {
         'Type': 'AWS::SQS::Queue',
@@ -88,7 +87,7 @@ test('message retention period can be provided as a parameter', () => {
   });
 
   // THEN
-  expect(stack).toMatchTemplate({
+  Template.fromStack(stack).templateMatches({
     'Parameters': {
       'myretentionperiod': {
         'Type': 'Number',
@@ -119,7 +118,7 @@ test('addToPolicy will automatically create a policy for this queue', () => {
     principals: [new iam.ArnPrincipal('arn')],
   }));
 
-  expect(stack).toMatchTemplate({
+  Template.fromStack(stack).templateMatches({
     'Resources': {
       'MyQueueE6CA6235': {
         'Type': 'AWS::SQS::Queue',
@@ -320,7 +319,7 @@ describe('grants', () => {
 
     queue.grantPurge(user);
 
-    expect(stack).toHaveResource('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       'PolicyDocument': {
         'Statement': [
           {
@@ -347,7 +346,7 @@ describe('queue encryption', () => {
     const queue = new sqs.Queue(stack, 'Queue', { encryptionMasterKey: key });
 
     expect(queue.encryptionMasterKey).toEqual(key);
-    expect(stack).toHaveResource('AWS::SQS::Queue', {
+    Template.fromStack(stack).hasResourceProperties('AWS::SQS::Queue', {
       'KmsMasterKeyId': { 'Fn::GetAtt': ['CustomKey1E6D0D07', 'Arn'] },
     });
   });
@@ -357,8 +356,8 @@ describe('queue encryption', () => {
 
     new sqs.Queue(stack, 'Queue', { encryption: sqs.QueueEncryption.KMS });
 
-    expect(stack).toHaveResource('AWS::KMS::Key');
-    expect(stack).toHaveResource('AWS::SQS::Queue', {
+    Template.fromStack(stack).resourceCountIs('AWS::KMS::Key', 1);
+    Template.fromStack(stack).hasResourceProperties('AWS::SQS::Queue', {
       'KmsMasterKeyId': {
         'Fn::GetAtt': [
           'QueueKey39FCBAE6',
@@ -372,7 +371,7 @@ describe('queue encryption', () => {
     const stack = new Stack();
 
     new sqs.Queue(stack, 'Queue', { encryption: sqs.QueueEncryption.KMS_MANAGED });
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       'Resources': {
         'Queue4A7E3555': {
           'Type': 'AWS::SQS::Queue',
@@ -400,7 +399,7 @@ describe('queue encryption', () => {
     queue.grantSendMessages(role);
 
     // THEN
-    expect(stack).toHaveResource('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       'PolicyDocument': {
         'Statement': [
           {
@@ -437,7 +436,7 @@ test('test ".fifo" suffixed queues register as fifo', () => {
 
   expect(queue.fifo).toEqual(true);
 
-  expect(stack).toMatchTemplate({
+  Template.fromStack(stack).templateMatches({
     'Resources': {
       'Queue4A7E3555': {
         'Type': 'AWS::SQS::Queue',
@@ -460,7 +459,7 @@ test('test a fifo queue is observed when the "fifo" property is specified', () =
 
   expect(queue.fifo).toEqual(true);
 
-  expect(stack).toMatchTemplate({
+  Template.fromStack(stack).templateMatches({
     'Resources': {
       'Queue4A7E3555': {
         'Type': 'AWS::SQS::Queue',
@@ -483,7 +482,7 @@ test('test a fifo queue is observed when high throughput properties are specifie
   });
 
   expect(queue.fifo).toEqual(true);
-  expect(stack).toMatchTemplate({
+  Template.fromStack(stack).templateMatches({
     'Resources': {
       'Queue4A7E3555': {
         'Type': 'AWS::SQS::Queue',
@@ -581,7 +580,7 @@ function testGrant(action: (q: sqs.Queue, principal: iam.IPrincipal) => void, ..
 
   action(queue, principal);
 
-  expect(stack).toHaveResource('AWS::IAM::Policy', {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     'PolicyDocument': {
       'Statement': [
         {

@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import { Metric } from '@aws-cdk/aws-cloudwatch';
 import { Stack } from '@aws-cdk/core';
 import { FilterPattern, LogGroup, MetricFilter } from '../lib';
@@ -19,7 +19,7 @@ describe('metric filter', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Logs::MetricFilter', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::MetricFilter', {
       MetricTransformations: [{
         MetricNamespace: 'AWS/Test',
         MetricName: 'Latency',

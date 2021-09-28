@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import { Stack } from '@aws-cdk/core';
 import { Bucket } from '../lib';
 
@@ -14,7 +14,7 @@ describe('metrics', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::S3::Bucket', {
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
       MetricsConfigurations: [{
         Id: 'test',
       }],
@@ -36,7 +36,7 @@ describe('metrics', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::S3::Bucket', {
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
       MetricsConfigurations: [{
         Id: 'test',
         Prefix: 'prefix',
@@ -59,7 +59,7 @@ describe('metrics', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::S3::Bucket', {
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
       MetricsConfigurations: [{
         Id: 'test',
         TagFilters: [
@@ -92,7 +92,7 @@ describe('metrics', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::S3::Bucket', {
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
       MetricsConfigurations: [{
         Id: 'test',
         TagFilters: [
