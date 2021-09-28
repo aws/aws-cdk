@@ -125,13 +125,8 @@ export class CloudFormationInit {
     // To identify the resources that have the metadata and where the signal
     // needs to be sent, we need { region, stackName, logicalId }
     let resourceLocator = `--region ${Aws.REGION} --stack ${Aws.STACK_NAME} --resource ${attachedResource.logicalId}`;
-    let notifyResourceLocator = `--region ${Aws.REGION} --stack ${
-      Aws.STACK_NAME
-    } --resource ${
-      attachOptions.signalResource
-        ? attachOptions.signalResource.logicalId
-        : attachedResource.logicalId
-    }`;
+    const signalResource = attachOptions.signalResource?.logicalId ?? attachedResource.logicalId;
+    let notifyResourceLocator = `--region ${Aws.REGION} --stack ${Aws.STACK_NAME} --resource ${signalResource}`;
 
     // If specified in attachOptions, include arguments in cfn-init/cfn-signal commands
     if (attachOptions.includeUrl) {
