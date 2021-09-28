@@ -1,5 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
-import { expect, haveResource, MatchStyle } from '@aws-cdk/assert-internal';
+import { Template } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
 import * as constructs from 'constructs';
@@ -18,12 +17,10 @@ describe('scheduled action', () => {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::AutoScaling::ScheduledAction', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::ScheduledAction', {
       Recurrence: '0 8 * * *',
       MinSize: 10,
-    }));
-
-
+    });
   });
 
   test('correctly formats date objects', () => {
@@ -39,11 +36,9 @@ describe('scheduled action', () => {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::AutoScaling::ScheduledAction', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::ScheduledAction', {
       StartTime: '2033-09-10T12:00:00Z',
-    }));
-
-
+    });
   });
 
   test('autoscaling group has recommended updatepolicy for scheduled actions', () => {
@@ -58,53 +53,40 @@ describe('scheduled action', () => {
     });
 
     // THEN
-    expect(stack).toMatch({
-      Resources: {
-        ASG46ED3070: {
-          Type: 'AWS::AutoScaling::AutoScalingGroup',
-          Properties: {
-            MaxSize: '1',
-            MinSize: '1',
-            LaunchConfigurationName: { Ref: 'ASGLaunchConfigC00AF12B' },
-            Tags: [
-              {
-                Key: 'Name',
-                PropagateAtLaunch: true,
-                Value: 'Default/ASG',
-              },
-            ],
-            VPCZoneIdentifier: [
-              { Ref: 'VPCPrivateSubnet1Subnet8BCA10E0' },
-              { Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A' },
-            ],
+    Template.fromStack(stack).hasResource('AWS::AutoScaling::AutoScalingGroup', {
+      Properties: {
+        MaxSize: '1',
+        MinSize: '1',
+        LaunchConfigurationName: { Ref: 'ASGLaunchConfigC00AF12B' },
+        Tags: [
+          {
+            Key: 'Name',
+            PropagateAtLaunch: true,
+            Value: 'Default/ASG',
           },
-          UpdatePolicy: {
-            AutoScalingRollingUpdate: {
-              WaitOnResourceSignals: false,
-              PauseTime: 'PT0S',
-              SuspendProcesses: [
-                'HealthCheck',
-                'ReplaceUnhealthy',
-                'AZRebalance',
-                'AlarmNotification',
-                'ScheduledActions',
-              ],
-            },
-            AutoScalingScheduledAction: {
-              IgnoreUnmodifiedGroupSizeProperties: true,
-            },
-          },
+        ],
+        VPCZoneIdentifier: [
+          { Ref: 'VPCPrivateSubnet1Subnet8BCA10E0' },
+          { Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A' },
+        ],
+      },
+      UpdatePolicy: {
+        AutoScalingRollingUpdate: {
+          WaitOnResourceSignals: false,
+          PauseTime: 'PT0S',
+          SuspendProcesses: [
+            'HealthCheck',
+            'ReplaceUnhealthy',
+            'AZRebalance',
+            'AlarmNotification',
+            'ScheduledActions',
+          ],
+        },
+        AutoScalingScheduledAction: {
+          IgnoreUnmodifiedGroupSizeProperties: true,
         },
       },
-      Parameters: {
-        SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter: {
-          Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>',
-          Default: '/aws/service/ami-amazon-linux-latest/amzn-ami-hvm-x86_64-gp2',
-        },
-      },
-    }, MatchStyle.SUPERSET);
-
-
+    });
   });
 });
 

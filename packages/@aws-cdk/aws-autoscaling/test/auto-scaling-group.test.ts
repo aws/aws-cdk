@@ -1,5 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
-import { ABSENT, InspectionFailure, ResourcePart } from '@aws-cdk/assert-internal';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
@@ -21,7 +20,7 @@ describe('auto scaling group', () => {
       vpc,
     });
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       'Parameters': {
         'SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter': {
           'Type': 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>',
@@ -152,7 +151,7 @@ describe('auto scaling group', () => {
       desiredCapacity: 0,
     });
 
-    expect(stack).toHaveResource('AWS::AutoScaling::AutoScalingGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::AutoScalingGroup', {
       MinSize: '0',
       MaxSize: '0',
       DesiredCapacity: '0',
@@ -176,7 +175,7 @@ describe('auto scaling group', () => {
     });
 
     // THEN: no exception
-    expect(stack).toHaveResource('AWS::AutoScaling::AutoScalingGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::AutoScalingGroup', {
       MinSize: '5',
       MaxSize: '1',
       DesiredCapacity: '20',
@@ -250,7 +249,7 @@ describe('auto scaling group', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::AutoScaling::AutoScalingGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::AutoScalingGroup', {
       MinSize: '10',
       MaxSize: '10',
     },
@@ -273,7 +272,7 @@ describe('auto scaling group', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::AutoScaling::AutoScalingGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::AutoScalingGroup', {
       MinSize: '1',
       MaxSize: '10',
     },
@@ -296,7 +295,7 @@ describe('auto scaling group', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::AutoScaling::AutoScalingGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::AutoScalingGroup', {
       MinSize: '1',
       MaxSize: '10',
       DesiredCapacity: '10',
@@ -321,7 +320,7 @@ describe('auto scaling group', () => {
       resources: ['*'],
     }));
 
-    expect(stack).toHaveResource('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Version: '2012-10-17',
         Statement: [
@@ -351,7 +350,7 @@ describe('auto scaling group', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AutoScaling::AutoScalingGroup', {
+    Template.fromStack(stack).hasResource('AWS::AutoScaling::AutoScalingGroup', {
       UpdatePolicy: {
         AutoScalingReplacingUpdate: {
           WillReplace: true,
@@ -362,7 +361,7 @@ describe('auto scaling group', () => {
           MinSuccessfulInstancesPercent: 50,
         },
       },
-    }, ResourcePart.CompleteDefinition);
+    });
 
 
   });
@@ -385,7 +384,7 @@ describe('auto scaling group', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AutoScaling::AutoScalingGroup', {
+    Template.fromStack(stack).hasResource('AWS::AutoScaling::AutoScalingGroup', {
       UpdatePolicy: {
         'AutoScalingRollingUpdate': {
           'MinSuccessfulInstancesPercent': 50,
@@ -394,7 +393,7 @@ describe('auto scaling group', () => {
           'SuspendProcesses': ['HealthCheck', 'ReplaceUnhealthy', 'AZRebalance', 'AlarmNotification', 'ScheduledActions'],
         },
       },
-    }, ResourcePart.CompleteDefinition);
+    });
 
 
   });
@@ -414,14 +413,14 @@ describe('auto scaling group', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AutoScaling::AutoScalingGroup', {
+    Template.fromStack(stack).hasResource('AWS::AutoScaling::AutoScalingGroup', {
       CreationPolicy: {
         ResourceSignal: {
           Count: 5,
           Timeout: 'PT11M6S',
         },
       },
-    }, ResourcePart.CompleteDefinition);
+    });
 
 
   });
@@ -440,7 +439,7 @@ describe('auto scaling group', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AutoScaling::AutoScalingGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::AutoScalingGroup', {
       HealthCheckType: 'EC2',
     });
 
@@ -461,7 +460,7 @@ describe('auto scaling group', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AutoScaling::AutoScalingGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::AutoScalingGroup', {
       HealthCheckType: 'ELB',
       HealthCheckGracePeriod: 900,
     });
@@ -481,7 +480,7 @@ describe('auto scaling group', () => {
       vpc,
     });
     asg.addSecurityGroup(mockSecurityGroup(stack));
-    expect(stack).toHaveResource('AWS::AutoScaling::LaunchConfiguration', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::LaunchConfiguration', {
       SecurityGroups: [
         {
           'Fn::GetAtt': [
@@ -517,7 +516,7 @@ describe('auto scaling group', () => {
     cdk.Tags.of(asg).add('notsuper', 'caramel', { applyToLaunchedInstances: false });
 
     // THEN
-    expect(stack).toHaveResource('AWS::AutoScaling::AutoScalingGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::AutoScalingGroup', {
       Tags: [
         {
           Key: 'Name',
@@ -555,7 +554,7 @@ describe('auto scaling group', () => {
 
     // THEN
     expect(asg.spotPrice).toEqual('0.05');
-    expect(stack).toHaveResource('AWS::AutoScaling::LaunchConfiguration', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::LaunchConfiguration', {
       SpotPrice: '0.05',
     });
 
@@ -581,7 +580,7 @@ describe('auto scaling group', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::AutoScaling::LaunchConfiguration', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::LaunchConfiguration', {
       AssociatePublicIpAddress: true,
     },
     );
@@ -625,7 +624,7 @@ describe('auto scaling group', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::AutoScaling::LaunchConfiguration', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::LaunchConfiguration', {
       AssociatePublicIpAddress: false,
     },
     );
@@ -648,15 +647,19 @@ describe('auto scaling group', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::AutoScaling::LaunchConfiguration', (resource: any, errors: InspectionFailure) => {
-      for (const key of Object.keys(resource)) {
-        if (key === 'AssociatePublicIpAddress') {
-          errors.failureReason = 'Has AssociatePublicIpAddress';
-          return false;
-        }
-      }
-      return true;
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::LaunchConfiguration', {
+      AssociatePublicIpAddress: Match.absentProperty(),
     });
+
+    // expect(stack).toHaveResource('AWS::AutoScaling::LaunchConfiguration', (resource: any, errors: InspectionFailure) => {
+    //   for (const key of Object.keys(resource)) {
+    //     if (key === 'AssociatePublicIpAddress') {
+    //       errors.failureReason = 'Has AssociatePublicIpAddress';
+    //       return false;
+    //     }
+    //   }
+    //   return true;
+    // });
 
   });
 
@@ -675,7 +678,7 @@ describe('auto scaling group', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::AutoScaling::LaunchConfiguration', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::LaunchConfiguration', {
       SecurityGroups: ['most-secure'],
     },
     );
@@ -698,7 +701,7 @@ describe('auto scaling group', () => {
 
     // THEN
     expect(asg.role).toEqual(importedRole);
-    expect(stack).toHaveResource('AWS::IAM::InstanceProfile', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::InstanceProfile', {
       'Roles': ['HelloDude'],
     });
 
@@ -758,7 +761,7 @@ describe('auto scaling group', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::AutoScaling::LaunchConfiguration', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::LaunchConfiguration', {
       BlockDeviceMappings: [
         {
           DeviceName: 'ebs',
@@ -769,7 +772,7 @@ describe('auto scaling group', () => {
             VolumeSize: 15,
             VolumeType: 'io1',
           },
-          NoDevice: ABSENT,
+          NoDevice: Match.absentProperty(),
         },
         {
           DeviceName: 'ebs-snapshot',
@@ -779,12 +782,12 @@ describe('auto scaling group', () => {
             VolumeSize: 500,
             VolumeType: 'sc1',
           },
-          NoDevice: ABSENT,
+          NoDevice: Match.absentProperty(),
         },
         {
           DeviceName: 'ephemeral',
           VirtualName: 'ephemeral0',
-          NoDevice: ABSENT,
+          NoDevice: Match.absentProperty(),
         },
         {
           DeviceName: 'disabled',
@@ -812,7 +815,7 @@ describe('auto scaling group', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::AutoScaling::AutoScalingGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::AutoScalingGroup', {
       'MaxInstanceLifetime': 604800,
     });
 
@@ -869,7 +872,7 @@ describe('auto scaling group', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::AutoScaling::LaunchConfiguration', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::LaunchConfiguration', {
       InstanceMonitoring: false,
     });
 
@@ -888,8 +891,8 @@ describe('auto scaling group', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::AutoScaling::LaunchConfiguration', {
-      InstanceMonitoring: ABSENT,
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::LaunchConfiguration', {
+      InstanceMonitoring: Match.absentProperty(),
     });
 
   });
@@ -1018,7 +1021,7 @@ describe('auto scaling group', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::CloudWatch::Alarm', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
       ComparisonOperator: 'LessThanOrEqualToThreshold',
       EvaluationPeriods: 1,
       MetricName: 'Metric',
@@ -1059,11 +1062,11 @@ describe('auto scaling group', () => {
     });
 
     // THEN
-    expect(stack).not.toHaveResource('AWS::CloudWatch::Alarm', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', Match.not({
       Period: 60,
-    });
+    }));
 
-    expect(stack).toHaveResource('AWS::CloudWatch::Alarm', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
       'ComparisonOperator': 'LessThanOrEqualToThreshold',
       'EvaluationPeriods': 1,
       'Metrics': [
@@ -1103,11 +1106,11 @@ describe('auto scaling group', () => {
     });
 
     // Then
-    expect(stack).toHaveResource('AWS::AutoScaling::AutoScalingGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::AutoScalingGroup', {
       MetricsCollection: [
         {
           Granularity: '1Minute',
-          Metrics: ABSENT,
+          Metrics: Match.absentProperty(),
         },
       ],
     });
@@ -1138,7 +1141,7 @@ describe('auto scaling group', () => {
     });
 
     // Then
-    expect(stack).toHaveResource('AWS::AutoScaling::AutoScalingGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::AutoScalingGroup', {
       MetricsCollection: [
         {
           Granularity: '1Minute',
@@ -1168,7 +1171,7 @@ describe('auto scaling group', () => {
     });
 
     // Then
-    expect(stack).toHaveResource('AWS::AutoScaling::AutoScalingGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::AutoScalingGroup', {
       MetricsCollection: [
         {
           Granularity: '1Minute',
@@ -1203,7 +1206,7 @@ describe('auto scaling group', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::AutoScaling::AutoScalingGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::AutoScalingGroup', {
       NotificationConfigurations: [
         {
           TopicARN: { Ref: 'MyTopic86869434' },
@@ -1265,7 +1268,7 @@ describe('auto scaling group', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::AutoScaling::AutoScalingGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::AutoScalingGroup', {
       NotificationConfigurations: [
         {
           TopicARN: { Ref: 'MyTopic86869434' },
@@ -1298,7 +1301,7 @@ describe('auto scaling group', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::AutoScaling::AutoScalingGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::AutoScalingGroup', {
       NotificationConfigurations: [
         {
           TopicARN: { Ref: 'MyTopic86869434' },
@@ -1336,7 +1339,7 @@ describe('auto scaling group', () => {
 
     // THEN
     expect(asg.areNewInstancesProtectedFromScaleIn()).toEqual(true);
-    expect(stack).toHaveResourceLike('AWS::AutoScaling::AutoScalingGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::AutoScalingGroup', {
       NewInstancesProtectedFromScaleIn: true,
     });
 
@@ -1358,7 +1361,7 @@ describe('auto scaling group', () => {
 
     // THEN
     expect(asg.areNewInstancesProtectedFromScaleIn()).toEqual(true);
-    expect(stack).toHaveResourceLike('AWS::AutoScaling::AutoScalingGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::AutoScalingGroup', {
       NewInstancesProtectedFromScaleIn: true,
     });
 
@@ -1390,7 +1393,7 @@ test('Can set autoScalingGroupName', () => {
   });
 
   // THEN
-  expect(stack).toHaveResourceLike('AWS::AutoScaling::AutoScalingGroup', {
+  Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::AutoScalingGroup', {
     AutoScalingGroupName: 'MyAsg',
   });
 });
@@ -1427,7 +1430,7 @@ test('can use Vpc imported from unparseable list tokens', () => {
   });
 
   // THEN
-  expect(stack).toHaveResourceLike('AWS::AutoScaling::AutoScalingGroup', {
+  Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::AutoScalingGroup', {
     VPCZoneIdentifier: {
       'Fn::Split': [',', { 'Fn::ImportValue': 'myPrivateSubnetIds' }],
     },

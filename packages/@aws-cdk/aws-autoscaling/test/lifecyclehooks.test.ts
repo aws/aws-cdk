@@ -1,5 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
-import { expect, haveResource, ResourcePart } from '@aws-cdk/assert-internal';
+import { Template } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
@@ -25,21 +24,21 @@ describe('lifecycle hooks', () => {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::AutoScaling::LifecycleHook', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::LifecycleHook', {
       LifecycleTransition: 'autoscaling:EC2_INSTANCE_LAUNCHING',
       DefaultResult: 'ABANDON',
       NotificationTargetARN: 'target:arn',
-    }));
+    });
 
     // Lifecycle Hook has a dependency on the policy object
-    expect(stack).to(haveResource('AWS::AutoScaling::LifecycleHook', {
+    Template.fromStack(stack).hasResource('AWS::AutoScaling::LifecycleHook', {
       DependsOn: [
         'ASGLifecycleHookTransitionRoleDefaultPolicy2E50C7DB',
         'ASGLifecycleHookTransitionRole3AAA6BB7',
       ],
-    }, ResourcePart.CompleteDefinition));
+    });
 
-    expect(stack).to(haveResource('AWS::IAM::Role', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
       AssumeRolePolicyDocument: {
         Version: '2012-10-17',
         Statement: [
@@ -52,9 +51,9 @@ describe('lifecycle hooks', () => {
           },
         ],
       },
-    }));
+    });
 
-    expect(stack).to(haveResource('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Version: '2012-10-17',
         Statement: [
@@ -65,9 +64,7 @@ describe('lifecycle hooks', () => {
           },
         ],
       },
-    }));
-
-
+    });
   });
 });
 
