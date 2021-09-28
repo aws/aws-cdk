@@ -44,6 +44,7 @@ module.exports = {
     'cdk/construct-import-order': [ 'error' ],
     'cdk/no-core-construct': [ 'error' ],
     'cdk/no-qualified-construct': [ 'error' ],
+    'cdk/invalid-cfn-imports': [ 'error' ],
     // Require use of the `import { foo } from 'bar';` form instead of `import foo = require('bar');`
     '@typescript-eslint/no-require-imports': ['error'],
     '@typescript-eslint/indent': ['error', 2],

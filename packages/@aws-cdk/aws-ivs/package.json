@@ -65,7 +65,6 @@
   },
   "cdk-build": {
     "cloudformation": "AWS::IVS",
-    "jest": true,
     "env": {
       "AWSLINT_BASE_CONSTRUCT": "true"
     }

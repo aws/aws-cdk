@@ -58,7 +58,6 @@
   },
   "cdk-build": {
     "cloudformation": "AWS::S3Outposts",
-    "jest": true,
     "env": {
       "AWSLINT_BASE_CONSTRUCT": "true"
     }
