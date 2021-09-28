@@ -65,7 +65,8 @@
       "packages/@monocdk-experiment/*",
       "packages/@aws-cdk/*/lambda-packages/*",
       "tools/*",
-      "scripts/script-tests"
+      "scripts/script-tests",
+      "packages/individual-packages/*"
     ],
     "nohoist": [
       "**/jszip",

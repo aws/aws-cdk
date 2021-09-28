@@ -65,8 +65,7 @@ async function main() {
     // good thing we're getting rid of it...
     opts.verbose = !!process.env.VERBOSE;
     if (majorVersion > 1) {
-      // NOTE - Once we start publishing alpha modules independently, this needs to be flipped to 'separate'
-      opts.experimentalChangesTreatment = 'strip';
+      opts.experimentalChangesTreatment = 'separate';
     }
     // Rename some options to match cdk-release inputs (replaces bumpFiles, packageFiles, and infile)
     opts.versionFile = ver.versionFile;
