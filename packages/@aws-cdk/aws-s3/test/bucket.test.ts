@@ -1123,7 +1123,7 @@ describe('bucket', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         'PolicyDocument': {
           'Statement': [
-            {
+            Match.objectLike({
               'Action': [
                 's3:GetObject*',
                 's3:GetBucket*',
@@ -1141,7 +1141,7 @@ describe('bucket', () => {
                   ]],
                 },
               ],
-            },
+            }),
           ],
         },
       });
@@ -1229,7 +1229,7 @@ describe('bucket', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         'PolicyDocument': {
           'Statement': [
-            {
+            Match.objectLike({
               'Action': [
                 's3:DeleteObject*',
                 's3:PutObject',
@@ -1244,7 +1244,7 @@ describe('bucket', () => {
                   ]],
                 },
               ],
-            },
+            }),
           ],
         },
       });
@@ -1264,7 +1264,7 @@ describe('bucket', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         'PolicyDocument': {
           'Statement': [
-            {
+            Match.objectLike({
               'Action': [
                 's3:PutObject',
                 's3:Abort*',
@@ -1275,7 +1275,7 @@ describe('bucket', () => {
                   '/*',
                 ]],
               },
-            },
+            }),
           ],
         },
       });
@@ -1452,7 +1452,7 @@ describe('bucket', () => {
       Template.fromStack(stackA).hasResourceProperties('AWS::S3::BucketPolicy', {
         'PolicyDocument': {
           'Statement': [
-            {
+            Match.objectLike({
               'Action': [
                 's3:GetObject*',
                 's3:GetBucket*',
@@ -1473,7 +1473,7 @@ describe('bucket', () => {
                   ],
                 },
               },
-            },
+            }),
           ],
         },
       });
@@ -1544,11 +1544,8 @@ describe('bucket', () => {
       // then
       Template.fromStack(stackA).hasResourceProperties('AWS::KMS::Key', {
         'KeyPolicy': {
-          'Statement': [
-            {
-              // grant to the root of the owning account
-            },
-            {
+          'Statement': Match.arrayWith([
+            Match.objectLike({
               'Action': [
                 'kms:Decrypt',
                 'kms:DescribeKey',
@@ -1568,17 +1565,14 @@ describe('bucket', () => {
                   ],
                 },
               },
-            },
-          ],
+            }),
+          ]),
         },
       });
 
       Template.fromStack(stackB).hasResourceProperties('AWS::IAM::Policy', {
         'PolicyDocument': {
-          'Statement': [
-            {
-              // Bucket grant
-            },
+          'Statement': Match.arrayWith([
             {
               'Action': [
                 'kms:Decrypt',
@@ -1587,7 +1581,7 @@ describe('bucket', () => {
               'Effect': 'Allow',
               'Resource': '*',
             },
-          ],
+          ]),
         },
       });
 
