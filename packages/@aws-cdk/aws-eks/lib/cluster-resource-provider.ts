@@ -36,7 +36,7 @@ export interface ClusterResourceProviderProps {
   readonly environment?: { [key: string]: string };
 
   /**
-    * An AWS Lambda layer that includes the NPM dependency`proxy-agent`.
+    * An AWS Lambda layer that includes the NPM dependency `proxy-agent`.
     *
     * If not defined, a default layer will be used.
     */

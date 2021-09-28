@@ -130,7 +130,7 @@ export interface ICluster extends IResource, ec2.IConnectable {
   readonly kubectlMemory?: Size;
 
   /**
-    * An AWS Lambda layer that includes the NPM dependency`proxy-agent`.
+    * An AWS Lambda layer that includes the NPM dependency `proxy-agent`.
     *
     * If not defined, a default layer will be used.
     */
@@ -484,11 +484,11 @@ export interface ClusterOptions extends CommonClusterOptions {
    * ```ts
    * const layer = new lambda.LayerVersion(this, 'node-proxy-agent-layer', {
    *   code: lambda.Code.fromAsset(`${__dirname}/layer.zip`)),
-   *   compatibleRuntimes: [lambda.Runtime.PROVIDED]
+   *   compatibleRuntimes: [lambda.Runtime.NODEJS_14_X]
    * })
    * ```
    *
-   * @default - the layer provided by the `aws-lambda-layer-nodesjs-proxy-agent` SAR app.
+   * @default - the layer provided by the `aws-lambda-layer-node-proxy-agent` SAR app.
    * @see https://github.com/aws-samples/aws-lambda-layer-node-proxy-agent
    */
   readonly onEventLayer?: lambda.ILayerVersion;
