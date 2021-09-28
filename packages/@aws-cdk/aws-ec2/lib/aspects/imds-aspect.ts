@@ -14,7 +14,8 @@ interface ImdsAspectProps {
 
   /**
    * Whether warning annotations from this Aspect should be suppressed or not.
-   * @default false
+   *
+   * @default - false
    */
   readonly suppressWarnings?: boolean;
 }
@@ -35,6 +36,7 @@ abstract class ImdsAspect implements cdk.IAspect {
 
   /**
    * Adds a warning annotation to a node, unless `suppressWarnings` is true.
+   *
    * @param node The scope to add the warning to.
    * @param message The warning message.
    */
@@ -55,7 +57,8 @@ export interface InstanceImdsAspectProps extends ImdsAspectProps {
    *
    * You can set this to `true` if `LaunchTemplateImdsAspect` is being used alongside this Aspect to
    * suppress false-positive warnings because any Launch Templates associated with Instances will still be covered.
-   * @default false
+   *
+   * @default - false
    */
   readonly suppressLaunchTemplateWarning?: boolean;
 }
@@ -79,7 +82,6 @@ export class InstanceImdsAspect extends ImdsAspect {
   }
 
   visit(node: cdk.IConstruct): void {
-    /* istanbul ignore next */
     if (!(node instanceof Instance)) {
       return;
     }
@@ -117,6 +119,7 @@ export interface LaunchTemplateImdsAspectProps extends ImdsAspectProps {}
 
 /**
  * Aspect that applies IMDS configuration on EC2 Launch Template constructs.
+ *
  * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-metadataoptions.html
  */
 export class LaunchTemplateImdsAspect extends ImdsAspect {
@@ -125,25 +128,19 @@ export class LaunchTemplateImdsAspect extends ImdsAspect {
   }
 
   visit(node: cdk.IConstruct): void {
-    /* istanbul ignore next */
     if (!(node instanceof LaunchTemplate)) {
       return;
     }
 
     const launchTemplate = node.node.tryFindChild('Resource') as CfnLaunchTemplate;
-    if (launchTemplate === undefined || !(launchTemplate instanceof CfnLaunchTemplate)) {
-      this.warn(node, 'CfnLaunchTemplate cannot be found because the LaunchTemplate construct implementation has changed.');
-      return;
-    }
-
     const data = launchTemplate.launchTemplateData;
-    if (data !== undefined && implementsIResolvable(data)) {
+    if (cdk.isResolvableObject(data)) {
       this.warn(node, 'LaunchTemplateData is a CDK token.');
       return;
     }
 
     const metadataOptions = (data as CfnLaunchTemplate.LaunchTemplateDataProperty).metadataOptions;
-    if (metadataOptions !== undefined && implementsIResolvable(metadataOptions)) {
+    if (cdk.isResolvableObject(metadataOptions)) {
       this.warn(node, 'LaunchTemplateData.MetadataOptions is a CDK token.');
       return;
     }
@@ -157,10 +154,4 @@ export class LaunchTemplateImdsAspect extends ImdsAspect {
     };
     launchTemplate.launchTemplateData = newData;
   }
-}
-
-function implementsIResolvable(obj: any): boolean {
-  return 'resolve' in obj && typeof(obj.resolve) === 'function' &&
-         'creationStack' in obj && Array.isArray(obj.creationStack) &&
-         'toString' in obj && typeof(obj.toString) === 'function';
 }

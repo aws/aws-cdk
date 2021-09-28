@@ -67,7 +67,8 @@ describe('ImdsAspect', () => {
       const aspect = new InstanceImdsAspect({ enableImdsV1 });
 
       // WHEN
-      aspect.visit(instance);
+      cdk.Aspects.of(stack).add(aspect);
+      app.synth();
 
       // THEN
       const launchTemplate = instance.node.tryFindChild('LaunchTemplate') as LaunchTemplate;
@@ -101,7 +102,7 @@ describe('ImdsAspect', () => {
       const aspect = new InstanceImdsAspect({ enableImdsV1: false });
 
       // WHEN
-      aspect.visit(instance);
+      cdk.Aspects.of(stack).add(aspect);
 
       // THEN
       // Aspect normally creates a LaunchTemplate for the Instance to toggle IMDSv1,
@@ -143,23 +144,6 @@ describe('ImdsAspect', () => {
   });
 
   describe('LaunchTemplateImdsAspect', () => {
-    test('warns when CfnLaunchTemplate cannot be found', () => {
-      // GIVEN
-      const launchTemplate = new LaunchTemplate(stack, 'LaunchTemplate');
-      launchTemplate.node.tryRemoveChild('Resource');
-      const aspect = new LaunchTemplateImdsAspect({ enableImdsV1: false });
-
-      // WHEN
-      aspect.visit(launchTemplate);
-
-      // THEN
-      expect(launchTemplate.node.metadataEntry).toContainEqual({
-        data: expect.stringContaining('CfnLaunchTemplate cannot be found because the LaunchTemplate construct implementation has changed.'),
-        type: 'aws:cdk:warning',
-        trace: undefined,
-      });
-    });
-
     test('warns when LaunchTemplateData is a CDK token', () => {
       // GIVEN
       const launchTemplate = new LaunchTemplate(stack, 'LaunchTemplate');
@@ -203,11 +187,11 @@ describe('ImdsAspect', () => {
       [false],
     ])('toggles IMDSv1 (enabled=%s)', (enableImdsV1: boolean) => {
       // GIVEN
-      const launchTemplate = new LaunchTemplate(stack, 'LaunchTemplate');
+      new LaunchTemplate(stack, 'LaunchTemplate');
       const aspect = new LaunchTemplateImdsAspect({ enableImdsV1 });
 
       // WHEN
-      aspect.visit(launchTemplate);
+      cdk.Aspects.of(stack).add(aspect);
 
       // THEN
       expectCDK(stack).to(haveResourceLike('AWS::EC2::LaunchTemplate', {
