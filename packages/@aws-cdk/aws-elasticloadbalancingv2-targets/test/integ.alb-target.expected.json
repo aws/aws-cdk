@@ -610,6 +610,7 @@
     "NlblistenerTargetsGroupDD2A3CB0": {
       "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
       "Properties": {
+        "HealthCheckProtocol": "HTTP",
         "Port": 80,
         "Protocol": "TCP",
         "Targets": [
