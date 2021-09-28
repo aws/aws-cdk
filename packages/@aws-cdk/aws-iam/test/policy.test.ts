@@ -1,5 +1,4 @@
-import { ResourcePart } from '@aws-cdk/assert-internal';
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import { App, CfnResource, Stack } from '@aws-cdk/core';
 import { AnyPrincipal, CfnPolicy, Group, Policy, PolicyDocument, PolicyStatement, Role, ServicePrincipal, User } from '../lib';
 
@@ -28,7 +27,7 @@ describe('IAM policy', () => {
     const group = new Group(stack, 'MyGroup');
     group.attachInlinePolicy(policy);
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       Resources:
       {
         MyPolicy39D66CF6:
@@ -69,7 +68,7 @@ describe('IAM policy', () => {
     const group = new Group(stack, 'MyGroup');
     group.attachInlinePolicy(policy);
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       Resources: {
         MyPolicy39D66CF6: {
           Type: 'AWS::IAM::Policy',
@@ -96,7 +95,7 @@ describe('IAM policy', () => {
     const user = new User(stack, 'MyUser');
     user.attachInlinePolicy(policy);
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       Resources:
       {
         MyPolicy39D66CF6:
@@ -135,7 +134,7 @@ describe('IAM policy', () => {
       statements: [new PolicyStatement({ resources: ['*'], actions: ['dynamodb:PutItem'] })],
     });
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       Resources:
       {
         User1E278A736: { Type: 'AWS::IAM::User' },
@@ -186,7 +185,7 @@ describe('IAM policy', () => {
     p.attachToUser(user);
     p.attachToUser(user);
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       Resources:
       {
         MyPolicy39D66CF6:
@@ -219,7 +218,7 @@ describe('IAM policy', () => {
     p.attachToRole(new Role(stack, 'Role1', { assumedBy: new ServicePrincipal('test.service') }));
     p.addStatements(new PolicyStatement({ resources: ['*'], actions: ['dynamodb:GetItem'] }));
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       Resources:
       {
         MyTestPolicy316BDB50:
@@ -275,7 +274,7 @@ describe('IAM policy', () => {
 
     policy.addStatements(new PolicyStatement({ resources: ['*'], actions: ['*'] }));
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       Resources:
       {
         MyPolicy39D66CF6:
@@ -349,7 +348,7 @@ describe('IAM policy', () => {
   test("generated policy name is the same as the logical id if it's shorter than 128 characters", () => {
     createPolicyWithLogicalId(stack, 'Foo');
 
-    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       'PolicyName': 'Foo',
     });
   });
@@ -360,7 +359,7 @@ describe('IAM policy', () => {
 
     createPolicyWithLogicalId(stack, logicalIdOver128);
 
-    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       'PolicyName': logicalId128,
     });
 
@@ -385,7 +384,7 @@ describe('IAM policy', () => {
     res.node.addDependency(pol);
 
     // THEN
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       Resources: {
         Resource: {
           Type: 'Some::Resource',
@@ -411,10 +410,10 @@ describe('IAM policy', () => {
     res.node.addDependency(pol);
 
     // THEN
-    expect(stack).toHaveResource('Some::Resource', {
+    Template.fromStack(stack).hasResource('Some::Resource', {
       Type: 'Some::Resource',
       DependsOn: ['Pol0FE9AD5D'],
-    }, ResourcePart.CompleteDefinition);
+    });
   });
 
   test('empty policy is OK if force=false', () => {
