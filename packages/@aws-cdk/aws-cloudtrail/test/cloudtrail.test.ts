@@ -1,5 +1,4 @@
-import { ABSENT, SynthUtils } from '@aws-cdk/assert-internal';
-import '@aws-cdk/assert-internal/jest';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as lambda from '@aws-cdk/aws-lambda';
@@ -68,11 +67,11 @@ describe('cloudtrail', () => {
     test('with no properties', () => {
       const stack = getTestStack();
       new Trail(stack, 'MyAmazingCloudTrail');
-      expect(stack).toHaveResource('AWS::CloudTrail::Trail');
-      expect(stack).toHaveResource('AWS::S3::Bucket');
-      expect(stack).toHaveResource('AWS::S3::BucketPolicy', ExpectedBucketPolicyProperties);
-      expect(stack).not.toHaveResource('AWS::Logs::LogGroup');
-      const trail: any = SynthUtils.synthesize(stack).template.Resources.MyAmazingCloudTrail54516E8D;
+      Template.fromStack(stack).resourceCountIs('AWS::CloudTrail::Trail', 1);
+      Template.fromStack(stack).resourceCountIs('AWS::S3::Bucket', 1);
+      Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', ExpectedBucketPolicyProperties);
+      Template.fromStack(stack).resourceCountIs('AWS::Logs::LogGroup', 0);
+      const trail: any = Template.fromStack(stack).toJSON().Resources.MyAmazingCloudTrail54516E8D;
       expect(trail.DependsOn).toEqual(['MyAmazingCloudTrailS3Policy39C120B0']);
     });
 
@@ -97,22 +96,21 @@ describe('cloudtrail', () => {
 
       new Trail(stack, 'Trail', { bucket: Trailbucket });
 
-      expect(stack).toHaveResource('AWS::CloudTrail::Trail');
-      expect(stack).toHaveResource('AWS::S3::Bucket');
-      expect(stack).toHaveResource('AWS::S3::BucketPolicy');
-      expect(stack).not.toHaveResource('AWS::Logs::LogGroup');
+      Template.fromStack(stack).resourceCountIs('AWS::CloudTrail::Trail', 1);
+      Template.fromStack(stack).resourceCountIs('AWS::S3::Bucket', 1);
+      Template.fromStack(stack).resourceCountIs('AWS::S3::BucketPolicy', 1);
+      Template.fromStack(stack).resourceCountIs('AWS::Logs::LogGroup', 0);
     });
 
     test('with sns topic', () => {
       const stack = getTestStack();
       const topic = new sns.Topic(stack, 'Topic');
 
-
       new Trail(stack, 'Trail', { snsTopic: topic });
 
-      expect(stack).toHaveResource('AWS::CloudTrail::Trail');
-      expect(stack).not.toHaveResource('AWS::Logs::LogGroup');
-      expect(stack).toHaveResource('AWS::SNS::TopicPolicy', {
+      Template.fromStack(stack).resourceCountIs('AWS::CloudTrail::Trail', 1);
+      Template.fromStack(stack).resourceCountIs('AWS::Logs::LogGroup', 0);
+      Template.fromStack(stack).hasResourceProperties('AWS::SNS::TopicPolicy', {
         PolicyDocument: {
           Statement: [
             {
@@ -136,7 +134,7 @@ describe('cloudtrail', () => {
       // WHEN
       new Trail(stack, 'Trail', { bucket });
 
-      expect(stack).toHaveResource('AWS::CloudTrail::Trail', {
+      Template.fromStack(stack).hasResourceProperties('AWS::CloudTrail::Trail', {
         S3BucketName: 'SomeBucket',
       });
     });
@@ -148,9 +146,9 @@ describe('cloudtrail', () => {
       // WHEN
       new Trail(stack, 'Trail', { s3KeyPrefix: 'someprefix' });
 
-      expect(stack).toHaveResource('AWS::CloudTrail::Trail');
-      expect(stack).toHaveResource('AWS::S3::Bucket');
-      expect(stack).toHaveResource('AWS::S3::BucketPolicy', {
+      Template.fromStack(stack).resourceCountIs('AWS::CloudTrail::Trail', 1);
+      Template.fromStack(stack).resourceCountIs('AWS::S3::Bucket', 1);
+      Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
         Bucket: { Ref: 'TrailS30071F172' },
         PolicyDocument: {
           Statement: [
@@ -203,21 +201,21 @@ describe('cloudtrail', () => {
         kmsKey: key,
       })).toThrow(/Both kmsKey and encryptionKey must not be specified/);
 
-      expect(stack).toHaveResource('AWS::CloudTrail::Trail', {
+      Template.fromStack(stack).hasResourceProperties('AWS::CloudTrail::Trail', {
         TrailName: 'EncryptionKeyTrail',
         KMSKeyId: {
           'Fn::GetAtt': ['keyFEDD6EC0', 'Arn'],
         },
       });
-      expect(stack).toHaveResource('AWS::CloudTrail::Trail', {
+      Template.fromStack(stack).hasResourceProperties('AWS::CloudTrail::Trail', {
         TrailName: 'KmsKeyTrail',
         KMSKeyId: {
           'Fn::GetAtt': ['keyFEDD6EC0', 'Arn'],
         },
       });
-      expect(stack).toHaveResource('AWS::CloudTrail::Trail', {
+      Template.fromStack(stack).hasResourceProperties('AWS::CloudTrail::Trail', {
         TrailName: 'UnencryptedTrail',
-        KMSKeyId: ABSENT,
+        KMSKeyId: Match.absentProperty(),
       });
     });
 
@@ -228,13 +226,13 @@ describe('cloudtrail', () => {
           sendToCloudWatchLogs: true,
         });
 
-        expect(stack).toHaveResource('AWS::CloudTrail::Trail');
-        expect(stack).toHaveResource('AWS::S3::Bucket');
-        expect(stack).toHaveResource('AWS::S3::BucketPolicy', ExpectedBucketPolicyProperties);
-        expect(stack).toHaveResource('AWS::Logs::LogGroup');
-        expect(stack).toHaveResource('AWS::IAM::Role');
-        expect(stack).toHaveResource('AWS::Logs::LogGroup', { RetentionInDays: 365 });
-        expect(stack).toHaveResource('AWS::IAM::Policy', {
+        Template.fromStack(stack).resourceCountIs('AWS::CloudTrail::Trail', 1);
+        Template.fromStack(stack).resourceCountIs('AWS::S3::Bucket', 1);
+        Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', ExpectedBucketPolicyProperties);
+        Template.fromStack(stack).resourceCountIs('AWS::Logs::LogGroup', 1);
+        Template.fromStack(stack).resourceCountIs('AWS::IAM::Role', 1);
+        Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', { RetentionInDays: 365 });
+        Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
           PolicyDocument: {
             Version: '2012-10-17',
             Statement: [{
@@ -248,7 +246,7 @@ describe('cloudtrail', () => {
           PolicyName: logsRolePolicyName,
           Roles: [{ Ref: 'MyAmazingCloudTrailLogsRoleF2CCF977' }],
         });
-        const trail: any = SynthUtils.synthesize(stack).template.Resources.MyAmazingCloudTrail54516E8D;
+        const trail: any = Template.fromStack(stack).toJSON().Resources.MyAmazingCloudTrail54516E8D;
         expect(trail.DependsOn).toEqual([logsRolePolicyName, logsRoleName, 'MyAmazingCloudTrailS3Policy39C120B0']);
       });
 
@@ -259,15 +257,15 @@ describe('cloudtrail', () => {
           cloudWatchLogsRetention: RetentionDays.ONE_WEEK,
         });
 
-        expect(stack).toHaveResource('AWS::CloudTrail::Trail');
-        expect(stack).toHaveResource('AWS::S3::Bucket');
-        expect(stack).toHaveResource('AWS::S3::BucketPolicy', ExpectedBucketPolicyProperties);
-        expect(stack).toHaveResource('AWS::Logs::LogGroup');
-        expect(stack).toHaveResource('AWS::IAM::Role');
-        expect(stack).toHaveResource('AWS::Logs::LogGroup', {
+        Template.fromStack(stack).resourceCountIs('AWS::CloudTrail::Trail', 1);
+        Template.fromStack(stack).resourceCountIs('AWS::S3::Bucket', 1);
+        Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', ExpectedBucketPolicyProperties);
+        Template.fromStack(stack).resourceCountIs('AWS::Logs::LogGroup', 1);
+        Template.fromStack(stack).resourceCountIs('AWS::IAM::Role', 1);
+        Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', {
           RetentionInDays: 7,
         });
-        const trail: any = SynthUtils.synthesize(stack).template.Resources.MyAmazingCloudTrail54516E8D;
+        const trail: any = Template.fromStack(stack).toJSON().Resources.MyAmazingCloudTrail54516E8D;
         expect(trail.DependsOn).toEqual([logsRolePolicyName, logsRoleName, 'MyAmazingCloudTrailS3Policy39C120B0']);
       });
 
@@ -282,15 +280,15 @@ describe('cloudtrail', () => {
           cloudWatchLogGroup,
         });
 
-        expect(stack).toHaveResource('AWS::Logs::LogGroup', {
+        Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', {
           RetentionInDays: 5,
         });
 
-        expect(stack).toHaveResource('AWS::CloudTrail::Trail', {
+        Template.fromStack(stack).hasResourceProperties('AWS::CloudTrail::Trail', {
           CloudWatchLogsLogGroupArn: stack.resolve(cloudWatchLogGroup.logGroupArn),
         });
 
-        expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+        Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
           PolicyDocument: {
             Statement: [{
               Resource: stack.resolve(cloudWatchLogGroup.logGroupArn),
@@ -306,7 +304,7 @@ describe('cloudtrail', () => {
           cloudWatchLogsRetention: RetentionDays.ONE_WEEK,
         });
         expect(t.logGroup).toBeUndefined();
-        expect(stack).not.toHaveResource('AWS::Logs::LogGroup');
+        Template.fromStack(stack).resourceCountIs('AWS::Logs::LogGroup', 0);
       });
     });
 
@@ -317,7 +315,7 @@ describe('cloudtrail', () => {
         const cloudTrail = new Trail(stack, 'MyAmazingCloudTrail');
         cloudTrail.logAllS3DataEvents();
 
-        expect(stack).toHaveResourceLike('AWS::CloudTrail::Trail', {
+        Template.fromStack(stack).hasResourceProperties('AWS::CloudTrail::Trail', {
           EventSelectors: [
             {
               DataResources: [{
@@ -337,8 +335,8 @@ describe('cloudtrail', () => {
                   },
                 ],
               }],
-              IncludeManagementEvents: ABSENT,
-              ReadWriteType: ABSENT,
+              IncludeManagementEvents: Match.absentProperty(),
+              ReadWriteType: Match.absentProperty(),
             },
           ],
         });
@@ -355,7 +353,7 @@ describe('cloudtrail', () => {
           objectPrefix: 'prefix-1/prefix-2',
         }]);
 
-        expect(stack).toHaveResourceLike('AWS::CloudTrail::Trail', {
+        Template.fromStack(stack).hasResourceProperties('AWS::CloudTrail::Trail', {
           EventSelectors: [
             {
               DataResources: [{
@@ -393,7 +391,7 @@ describe('cloudtrail', () => {
         const stack = getTestStack();
         const cloudTrail = new Trail(stack, 'MyAmazingCloudTrail');
         cloudTrail.addS3EventSelector([]);
-        expect(stack).toHaveResourceLike('AWS::CloudTrail::Trail', {
+        Template.fromStack(stack).hasResourceProperties('AWS::CloudTrail::Trail', {
           EventSelectors: [],
         });
       });
@@ -404,7 +402,7 @@ describe('cloudtrail', () => {
         const cloudTrail = new Trail(stack, 'MyAmazingCloudTrail');
         cloudTrail.logAllS3DataEvents({ includeManagementEvents: false, readWriteType: ReadWriteType.READ_ONLY });
 
-        expect(stack).toHaveResourceLike('AWS::CloudTrail::Trail', {
+        Template.fromStack(stack).hasResourceProperties('AWS::CloudTrail::Trail', {
           EventSelectors: [
             {
               DataResources: [{
@@ -436,7 +434,7 @@ describe('cloudtrail', () => {
 
         new Trail(stack, 'MyAmazingCloudTrail', { managementEvents: ReadWriteType.WRITE_ONLY });
 
-        expect(stack).toHaveResourceLike('AWS::CloudTrail::Trail', {
+        Template.fromStack(stack).hasResourceProperties('AWS::CloudTrail::Trail', {
           EventSelectors: [
             {
               IncludeManagementEvents: true,
@@ -457,7 +455,7 @@ describe('cloudtrail', () => {
         const cloudTrail = new Trail(stack, 'MyAmazingCloudTrail');
         cloudTrail.addLambdaEventSelector([lambdaFunction]);
 
-        expect(stack).toHaveResourceLike('AWS::CloudTrail::Trail', {
+        Template.fromStack(stack).hasResourceProperties('AWS::CloudTrail::Trail', {
           EventSelectors: [
             {
               DataResources: [{
@@ -477,7 +475,7 @@ describe('cloudtrail', () => {
         const cloudTrail = new Trail(stack, 'MyAmazingCloudTrail');
         cloudTrail.logAllLambdaDataEvents();
 
-        expect(stack).toHaveResourceLike('AWS::CloudTrail::Trail', {
+        Template.fromStack(stack).hasResourceProperties('AWS::CloudTrail::Trail', {
           EventSelectors: [
             {
               DataResources: [{
@@ -509,7 +507,7 @@ describe('cloudtrail', () => {
           managementEvents: ReadWriteType.NONE,
         });
 
-        expect(stack).toHaveResourceLike('AWS::CloudTrail::Trail', {
+        Template.fromStack(stack).hasResourceProperties('AWS::CloudTrail::Trail', {
           EventSelectors: [
             {
               IncludeManagementEvents: false,
@@ -536,7 +534,7 @@ describe('cloudtrail', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource('AWS::Events::Rule', {
+      Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
         EventPattern: {
           'detail-type': [
             'AWS API Call via CloudTrail',
