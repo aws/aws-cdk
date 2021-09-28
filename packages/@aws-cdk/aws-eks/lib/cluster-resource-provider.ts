@@ -66,7 +66,6 @@ export class ClusterResourceProvider extends NestedStack {
   private constructor(scope: Construct, id: string, props: ClusterResourceProviderProps) {
     super(scope as CoreConstruct, id);
 
-    // Using NodejsFunction so that NPM dependencies (http-proxy-agent) are installed at synth time.
     const onEvent = new lambda.Function(this, 'OnEventHandler', {
       code: lambda.Code.fromAsset(HANDLER_DIR),
       description: 'onEvent handler for EKS cluster resource provider',
@@ -80,6 +79,7 @@ export class ClusterResourceProvider extends NestedStack {
 
     // Allow user to customize the layer
     if (!props.onEventLayer) {
+      // `NodeProxyAgentLayer` provides `proxy-agent` which is needed to configure `aws-sdk-js` with a user provided proxy.
       onEvent.addLayers(new NodeProxyAgentLayer(this, 'NodeProxyAgentLayer'));
     } else {
       onEvent.addLayers(props.onEventLayer);
