@@ -61,7 +61,7 @@ interface PackageJson {
   readonly version: string;
   readonly stability: string;
   readonly [key: string]: unknown;
-  readonly 'cdk-build': {
+  readonly 'cdk-build'?: {
     readonly cloudformation: string[] | string;
   };
   readonly ubergen?: {
@@ -274,7 +274,7 @@ async function transformPackage(
 
   if (uberPackageJson.ubergen?.excludeExperimentalModules && library.packageJson.stability === 'experimental') {
     // when stripExperimental is enabled, we only want to add the L1s of experimental modules.
-    let cfnScopes = library.packageJson['cdk-build'].cloudformation;
+    let cfnScopes = library.packageJson['cdk-build']?.cloudformation;
 
     if (cfnScopes === undefined) {
       return false;

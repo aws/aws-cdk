@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as cdk from '@aws-cdk/core';
 import * as appscaling from '../lib';
@@ -19,7 +19,7 @@ describe('scalable target', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApplicationAutoScaling::ScalableTarget', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApplicationAutoScaling::ScalableTarget', {
       ServiceNamespace: 'dynamodb',
       ScalableDimension: 'test:TestCount',
       ResourceId: 'test:this/test',
@@ -44,7 +44,7 @@ describe('scalable target', () => {
     });
 
     // THEN: no exception
-    expect(stack).toHaveResource('AWS::ApplicationAutoScaling::ScalableTarget', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApplicationAutoScaling::ScalableTarget', {
       ServiceNamespace: 'dynamodb',
       ScalableDimension: 'test:TestCount',
       ResourceId: 'test:this/test',
@@ -68,7 +68,7 @@ describe('scalable target', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApplicationAutoScaling::ScalableTarget', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApplicationAutoScaling::ScalableTarget', {
       ScheduledActions: [
         {
           ScalableTargetAction: {
@@ -109,11 +109,11 @@ describe('scalable target', () => {
     });
 
     // THEN
-    expect(stack).not.toHaveResource('AWS::CloudWatch::Alarm', {
-      Period: 60,
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
+      Period: Match.absentProperty(),
     });
 
-    expect(stack).toHaveResource('AWS::CloudWatch::Alarm', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
       ComparisonOperator: 'LessThanOrEqualToThreshold',
       EvaluationPeriods: 1,
       Metrics: [
