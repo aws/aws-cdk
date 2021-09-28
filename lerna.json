@@ -9,7 +9,8 @@
     "packages/@monocdk-experiment/*",
     "packages/@aws-cdk/*/lambda-packages/*",
     "tools/*",
-    "scripts/script-tests"
+    "scripts/script-tests",
+    "packages/individual-packages/*"
   ],
   "rejectCycles": "true",
   "version": "0.0.0"
