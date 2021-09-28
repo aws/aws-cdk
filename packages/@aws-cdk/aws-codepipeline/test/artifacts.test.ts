@@ -1,4 +1,4 @@
-import { Template } from '@aws-cdk/assertions';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as cdk from '@aws-cdk/core';
 import * as codepipeline from '../lib';
 import { FakeBuildAction } from './fake-build-action';
@@ -255,23 +255,23 @@ describe('artifacts', () => {
           {
             'Name': 'Source.@',
             'Actions': [
-              {
+              Match.objectLike({
                 'Name': 'source1',
                 'OutputArtifacts': [
                   { 'Name': 'Artifact_Source_source1' },
                 ],
-              },
+              }),
             ],
           },
           {
             'Name': 'Build',
             'Actions': [
-              {
+              Match.objectLike({
                 'Name': 'build1',
                 'InputArtifacts': [
                   { 'Name': 'Artifact_Source_source1' },
                 ],
-              },
+              }),
             ],
           },
         ],

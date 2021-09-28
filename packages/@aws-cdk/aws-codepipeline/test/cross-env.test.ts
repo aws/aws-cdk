@@ -1,4 +1,4 @@
-import { Template } from '@aws-cdk/assertions';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import { Stack, App } from '@aws-cdk/core';
@@ -189,11 +189,11 @@ describe('cross-environment CodePipeline', function () {
 
     Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
       Stages: [
-        { Name: 'Source' },
-        {
+        Match.objectLike({ Name: 'Source' }),
+        Match.objectLike({
           Name: 'Build',
           Actions: [
-            {
+            Match.objectLike({
               Name: 'Build',
               RoleArn: {
                 'Fn::Join': ['', [
@@ -202,9 +202,9 @@ describe('cross-environment CodePipeline', function () {
                   ':iam::456:role/pipelinestack-support-456dbuildactionrole91c6f1a469fd11d52dfe',
                 ]],
               },
-            },
+            }),
           ],
-        },
+        }),
       ],
     });
   });

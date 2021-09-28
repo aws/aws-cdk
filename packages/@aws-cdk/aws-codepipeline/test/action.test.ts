@@ -1,4 +1,4 @@
-import { Template } from '@aws-cdk/assertions';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import * as codepipeline from '../lib';
@@ -204,20 +204,20 @@ describe('action', () => {
         {
           'Name': 'Source',
           'Actions': [
-            {
+            Match.objectLike({
               'Name': 'CodeCommit',
               'OutputArtifacts': [
                 {
                   'Name': 'Artifact_Source_CodeCommit',
                 },
               ],
-            },
+            }),
           ],
         },
         {
           'Name': 'Build',
           'Actions': [
-            {
+            Match.objectLike({
               'Name': 'CodeBuild',
               'InputArtifacts': [
                 {
@@ -229,7 +229,7 @@ describe('action', () => {
                   'Name': 'Artifact_Build_CodeBuild',
                 },
               ],
-            },
+            }),
           ],
         },
       ],

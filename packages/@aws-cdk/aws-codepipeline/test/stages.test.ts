@@ -1,4 +1,4 @@
-import { Template } from '@aws-cdk/assertions';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as cdk from '@aws-cdk/core';
 import * as codepipeline from '../lib';
 import { Stage } from '../lib/private/stage';
@@ -35,8 +35,8 @@ describe('stages', () => {
 
       Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
         'Stages': [
-          { 'Name': 'FirstStage' },
-          { 'Name': 'SecondStage' },
+          Match.objectLike({ 'Name': 'FirstStage' }),
+          Match.objectLike({ 'Name': 'SecondStage' }),
         ],
       });
 
@@ -74,9 +74,9 @@ describe('stages', () => {
 
       Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
         'Stages': [
-          { 'Name': 'FirstStage' },
-          { 'Name': 'SecondStage' },
-          { 'Name': 'ThirdStage' },
+          Match.objectLike({ 'Name': 'FirstStage' }),
+          Match.objectLike({ 'Name': 'SecondStage' }),
+          Match.objectLike({ 'Name': 'ThirdStage' }),
         ],
       });
 

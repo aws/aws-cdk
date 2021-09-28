@@ -38,17 +38,17 @@ describe('variables', () => {
       // --
 
       Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
-        'Stages': [
+        'Stages': Match.arrayWith([
           {
             'Name': 'Source',
             'Actions': [
-              {
+              Match.objectLike({
                 'Name': 'Source',
                 'Namespace': 'MyNamespace',
-              },
+              }),
             ],
           },
-        ],
+        ]),
       });
 
 
@@ -81,18 +81,18 @@ describe('variables', () => {
 
       Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
         'Stages': [
-          {
+          Match.objectLike({
             'Name': 'Source',
-          },
+          }),
           {
             'Name': 'Build',
             'Actions': [
-              {
+              Match.objectLike({
                 'Name': 'Build',
                 'Configuration': {
                   'CustomConfigKey': '#{SourceVariables.FirstVariable}',
                 },
-              },
+              }),
             ],
           },
         ],

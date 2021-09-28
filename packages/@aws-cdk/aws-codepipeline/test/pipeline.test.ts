@@ -17,8 +17,26 @@ describe('', () => {
       const role = new iam.Role(stack, 'Role', {
         assumedBy: new iam.ServicePrincipal('codepipeline.amazonaws.com'),
       });
-      new codepipeline.Pipeline(stack, 'Pipeline', {
+      const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
         role,
+      });
+
+      // Adding 2 stages with actions so pipeline validation will pass
+      const sourceArtifact = new codepipeline.Artifact();
+      pipeline.addStage({
+        stageName: 'Source',
+        actions: [new FakeSourceAction({
+          actionName: 'FakeSource',
+          output: sourceArtifact,
+        })],
+      });
+
+      pipeline.addStage({
+        stageName: 'Build',
+        actions: [new FakeBuildAction({
+          actionName: 'FakeBuild',
+          input: sourceArtifact,
+        })],
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
@@ -110,7 +128,7 @@ describe('', () => {
 
         Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
           'ArtifactStores': [
-            {
+            Match.objectLike({
               'Region': replicationRegion,
               'ArtifactStore': {
                 'Type': 'S3',
@@ -130,19 +148,16 @@ describe('', () => {
                   },
                 },
               },
-            },
-            {
+            }),
+            Match.objectLike({
               'Region': pipelineRegion,
-            },
+            }),
           ],
         });
 
         Template.fromStack(replicationStack).hasResourceProperties('AWS::KMS::Key', {
           'KeyPolicy': {
-            'Statement': [
-              {
-                // owning account management permissions - we don't care about them in this test
-              },
+            'Statement': Match.arrayWith([
               {
                 // KMS verifies whether the principal given in its key policy exists when creating that key.
                 // Since the replication bucket must be deployed before the pipeline,
@@ -167,7 +182,7 @@ describe('', () => {
                 },
                 'Resource': '*',
               },
-            ],
+            ]),
           },
         });
 
@@ -205,7 +220,7 @@ describe('', () => {
 
         Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
           'ArtifactStores': [
-            {
+            Match.objectLike({
               'Region': replicationRegion,
               'ArtifactStore': {
                 'Type': 'S3',
@@ -225,10 +240,10 @@ describe('', () => {
                   },
                 },
               },
-            },
-            {
+            }),
+            Match.objectLike({
               'Region': pipelineRegion,
-            },
+            }),
           ],
         });
 
@@ -277,7 +292,7 @@ describe('', () => {
 
         Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
           'ArtifactStores': [
-            {
+            Match.objectLike({
               'Region': replicationRegion,
               'ArtifactStore': {
                 'Type': 'S3',
@@ -287,10 +302,10 @@ describe('', () => {
                   'Id': 'arn:aws:kms:us-west-1:123456789012:key/1234-5678-9012',
                 },
               },
-            },
-            {
+            }),
+            Match.objectLike({
               'Region': pipelineRegion,
-            },
+            }),
           ],
         });
 
