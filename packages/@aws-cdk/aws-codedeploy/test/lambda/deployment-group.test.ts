@@ -1,5 +1,4 @@
-import { ResourcePart } from '@aws-cdk/assert-internal';
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
@@ -33,7 +32,7 @@ describe('CodeDeploy Lambda DeploymentGroup', () => {
       deploymentConfig: codedeploy.LambdaDeploymentConfig.ALL_AT_ONCE,
     });
 
-    expect(stack).toHaveResource('AWS::CodeDeploy::DeploymentGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeDeploy::DeploymentGroup', {
       ApplicationName: {
         Ref: 'MyApp3CE31C26',
       },
@@ -56,7 +55,7 @@ describe('CodeDeploy Lambda DeploymentGroup', () => {
       },
     });
 
-    expect(stack).toHaveResource('AWS::Lambda::Alias', {
+    Template.fromStack(stack).hasResource('AWS::Lambda::Alias', {
       Type: 'AWS::Lambda::Alias',
       Properties: {
         FunctionName: {
@@ -80,9 +79,9 @@ describe('CodeDeploy Lambda DeploymentGroup', () => {
           },
         },
       },
-    }, ResourcePart.CompleteDefinition);
+    });
 
-    expect(stack).toHaveResource('AWS::IAM::Role', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
       AssumeRolePolicyDocument: {
         Statement: [{
           Action: 'sts:AssumeRole',
@@ -120,7 +119,7 @@ describe('CodeDeploy Lambda DeploymentGroup', () => {
       deploymentGroupName: 'test',
     });
 
-    expect(stack).toHaveResourceLike('AWS::CodeDeploy::DeploymentGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeDeploy::DeploymentGroup', {
       DeploymentGroupName: 'test',
     });
   });
@@ -140,7 +139,7 @@ describe('CodeDeploy Lambda DeploymentGroup', () => {
       role: serviceRole,
     });
 
-    expect(stack).toHaveResource('AWS::IAM::Role', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
       AssumeRolePolicyDocument: {
         Statement: [{
           Action: 'sts:AssumeRole',
@@ -176,7 +175,7 @@ describe('CodeDeploy Lambda DeploymentGroup', () => {
       deploymentConfig: codedeploy.LambdaDeploymentConfig.LINEAR_10PERCENT_EVERY_1MINUTE,
     });
 
-    expect(stack).toHaveResource('AWS::CodeDeploy::DeploymentGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeDeploy::DeploymentGroup', {
       ApplicationName: {
         Ref: 'MyApp3CE31C26',
       },
@@ -216,7 +215,7 @@ describe('CodeDeploy Lambda DeploymentGroup', () => {
       })],
     });
 
-    expect(stack).toHaveResourceLike('AWS::CodeDeploy::DeploymentGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeDeploy::DeploymentGroup', {
       AlarmConfiguration: {
         Alarms: [{
           Name: {
@@ -268,7 +267,7 @@ describe('CodeDeploy Lambda DeploymentGroup', () => {
       deploymentConfig: codedeploy.LambdaDeploymentConfig.ALL_AT_ONCE,
     });
 
-    expect(stack).toHaveResourceLike('AWS::Lambda::Alias', {
+    Template.fromStack(stack).hasResource('AWS::Lambda::Alias', {
       UpdatePolicy: {
         CodeDeployLambdaAliasUpdate: {
           ApplicationName: {
@@ -282,9 +281,9 @@ describe('CodeDeploy Lambda DeploymentGroup', () => {
           },
         },
       },
-    }, ResourcePart.CompleteDefinition);
+    });
 
-    expect(stack).toHaveResource('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyName: 'MyDGServiceRoleDefaultPolicy65E8E1EA',
       Roles: [{
         Ref: 'MyDGServiceRole5E94FD88',
@@ -316,7 +315,7 @@ describe('CodeDeploy Lambda DeploymentGroup', () => {
     });
     group.addPreHook(mockFunction(stack, 'PreHook'));
 
-    expect(stack).toHaveResourceLike('AWS::Lambda::Alias', {
+    Template.fromStack(stack).hasResource('AWS::Lambda::Alias', {
       UpdatePolicy: {
         CodeDeployLambdaAliasUpdate: {
           ApplicationName: {
@@ -330,9 +329,9 @@ describe('CodeDeploy Lambda DeploymentGroup', () => {
           },
         },
       },
-    }, ResourcePart.CompleteDefinition);
+    });
 
-    expect(stack).toHaveResource('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyName: 'MyDGServiceRoleDefaultPolicy65E8E1EA',
       Roles: [{
         Ref: 'MyDGServiceRole5E94FD88',
@@ -364,7 +363,7 @@ describe('CodeDeploy Lambda DeploymentGroup', () => {
       deploymentConfig: codedeploy.LambdaDeploymentConfig.ALL_AT_ONCE,
     });
 
-    expect(stack).toHaveResourceLike('AWS::Lambda::Alias', {
+    Template.fromStack(stack).hasResource('AWS::Lambda::Alias', {
       UpdatePolicy: {
         CodeDeployLambdaAliasUpdate: {
           ApplicationName: {
@@ -378,9 +377,9 @@ describe('CodeDeploy Lambda DeploymentGroup', () => {
           },
         },
       },
-    }, ResourcePart.CompleteDefinition);
+    });
 
-    expect(stack).toHaveResource('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyName: 'MyDGServiceRoleDefaultPolicy65E8E1EA',
       Roles: [{
         Ref: 'MyDGServiceRole5E94FD88',
@@ -412,7 +411,7 @@ describe('CodeDeploy Lambda DeploymentGroup', () => {
     });
     group.addPostHook(mockFunction(stack, 'PostHook'));
 
-    expect(stack).toHaveResourceLike('AWS::Lambda::Alias', {
+    Template.fromStack(stack).hasResource('AWS::Lambda::Alias', {
       UpdatePolicy: {
         CodeDeployLambdaAliasUpdate: {
           ApplicationName: {
@@ -426,9 +425,9 @@ describe('CodeDeploy Lambda DeploymentGroup', () => {
           },
         },
       },
-    }, ResourcePart.CompleteDefinition);
+    });
 
-    expect(stack).toHaveResource('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyName: 'MyDGServiceRoleDefaultPolicy65E8E1EA',
       Roles: [{
         Ref: 'MyDGServiceRole5E94FD88',
@@ -467,7 +466,7 @@ describe('CodeDeploy Lambda DeploymentGroup', () => {
       })],
     });
 
-    expect(stack).toHaveResourceLike('AWS::CodeDeploy::DeploymentGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeDeploy::DeploymentGroup', {
       AlarmConfiguration: {
         Alarms: [{
           Name: {
@@ -494,7 +493,7 @@ describe('CodeDeploy Lambda DeploymentGroup', () => {
       },
     });
 
-    expect(stack).toHaveResource('AWS::CodeDeploy::DeploymentGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeDeploy::DeploymentGroup', {
       ApplicationName: {
         Ref: 'MyApp3CE31C26',
       },
@@ -526,7 +525,7 @@ describe('CodeDeploy Lambda DeploymentGroup', () => {
       },
     });
 
-    expect(stack).toHaveResourceLike('AWS::CodeDeploy::DeploymentGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeDeploy::DeploymentGroup', {
       AutoRollbackConfiguration: {
         Enabled: true,
         Events: [
@@ -557,7 +556,7 @@ describe('CodeDeploy Lambda DeploymentGroup', () => {
       })],
     });
 
-    expect(stack).toHaveResourceLike('AWS::CodeDeploy::DeploymentGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeDeploy::DeploymentGroup', {
       AutoRollbackConfiguration: {
         Enabled: true,
         Events: [
