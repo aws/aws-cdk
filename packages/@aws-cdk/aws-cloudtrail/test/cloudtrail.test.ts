@@ -290,9 +290,9 @@ describe('cloudtrail', () => {
 
         Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
           PolicyDocument: {
-            Statement: [{
+            Statement: [Match.objectLike({
               Resource: stack.resolve(cloudWatchLogGroup.logGroupArn),
-            }],
+            })],
           },
         });
       });
