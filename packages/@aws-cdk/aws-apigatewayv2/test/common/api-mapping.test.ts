@@ -26,7 +26,6 @@ describe('ApiMapping', () => {
       ApiId: {
         Ref: 'ApiF70053CD',
       },
-      DomainName: 'example.com',
       Stage: '$default',
     });
   });
@@ -58,7 +57,6 @@ describe('ApiMapping', () => {
       ApiId: {
         Ref: 'ApiF70053CD',
       },
-      DomainName: 'example.com',
       Stage: 'beta',
       ApiMappingKey: 'beta',
     });

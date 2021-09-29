@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { expect as ourExpect, haveResource } from '@aws-cdk/assert-internal';
+import { Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { App, DefaultStackSynthesizer, IgnoreMode, Lazy, LegacyStackSynthesizer, Stack, Stage } from '@aws-cdk/core';
@@ -100,7 +100,7 @@ describe('image asset', () => {
     asset.repository.grantPull(user);
 
     // THEN
-    ourExpect(stack).to(haveResource('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         'Statement': [
           {
@@ -145,7 +145,7 @@ describe('image asset', () => {
           'Ref': 'MyUserDC45028B',
         },
       ],
-    }));
+    });
 
 
   });
