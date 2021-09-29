@@ -105,7 +105,9 @@ export function recurseObject(obj: object | undefined, handlers: FieldHandlers, 
       Object.assign(ret, recurseArray(key, value, handlers, visited));
     } else if (typeof value === 'boolean') {
       Object.assign(ret, handlers.handleBoolean(key, value));
-    } else if (value === null || value === undefined) {
+    } else if (value === null) {
+      Object.assign(ret, null);
+    } else if (value === undefined) {
       // Nothing
     } else if (typeof value === 'object') {
       ret[key] = recurseObject(value, handlers, visited);
