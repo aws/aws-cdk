@@ -1,18 +1,11 @@
 import { StepFunctions } from 'aws-sdk';
-import { StackResourceSummary } from 'aws-sdk/clients/cloudformation';
 import { tryHotswapDeployment } from '../../lib/api/hotswap-deployments';
 import * as setup from './hotswap-test-setup';
 
 let mockUpdateMachineDefinition: (params: StepFunctions.Types.UpdateStateMachineInput) => StepFunctions.Types.UpdateStateMachineOutput;
-let mockStackResource: StackResourceSummary = {
-  LogicalResourceId: 'Machine',
-  ResourceType: 'AWS::StepFunctions::StateMachine',
-  ResourceStatus: 'CREATE_COMPLETE',
-  LastUpdatedTimestamp: new Date(),
-};
 
 beforeEach(() => {
-  setup.setupHotswapTests(mockStackResource);
+  setup.setupHotswapTests();
   mockUpdateMachineDefinition = jest.fn();
   setup.mockSdkProvider.stubStepFunctions({
     updateStateMachine: mockUpdateMachineDefinition,
@@ -172,7 +165,7 @@ test('calls the updateStateMachine() API when it receives a change to the defini
   });
 
   // WHEN
-  mockStackResource.PhysicalResourceId = 'mock-machine-resource-id';
+  setup.currentCfnStackResources.push(setup.stackSummaryOf('Machine', 'AWS::StepFunctions::StateMachine', 'mock-machine-resource-id'));
   const deployStackResult = await tryHotswapDeployment(setup.mockSdkProvider, {}, setup.currentCfnStack, cdkStackArtifact);
 
   // THEN

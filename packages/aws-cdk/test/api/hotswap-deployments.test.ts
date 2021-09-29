@@ -145,9 +145,11 @@ test('resource deletions require full deployments', async () => {
   expect(mockUpdateMachineCode).not.toHaveBeenCalled();
 });
 
+
 function cdkStackArtifactOf(testStackArtifact: Partial<TestStackArtifact> = {}): cxapi.CloudFormationStackArtifact {
   return testStack({
     stackName: STACK_NAME,
     ...testStackArtifact,
   });
 }
+

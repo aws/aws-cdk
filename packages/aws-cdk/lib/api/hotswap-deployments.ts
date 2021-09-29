@@ -3,6 +3,8 @@ import * as cxapi from '@aws-cdk/cx-api';
 import { CloudFormation } from 'aws-sdk';
 import { ISDK, Mode, SdkProvider } from './aws-auth';
 import { DeployStackResult } from './deploy-stack';
+//import { ChangeHotswapImpact, HotswapOperation, HotswappableResourceChange, ListStackResources, HotswappableResource } from './hotswap/common';
+import { CloudFormationExecutableTemplate } from './hotswap/cloudformation-executable-template';
 import { ChangeHotswapImpact, HotswapOperation, HotswappableResourceChange, ListStackResources, HotswappableResource } from './hotswap/common';
 import { isHotswappableLambdaFunctionChange } from './hotswap/lambda-functions';
 import { isHotswappableStateMachineChange } from './hotswap/stepfunctions-state-machines';
@@ -24,12 +26,13 @@ export async function tryHotswapDeployment(
 
   // resolve the environment, so we can substitute things like AWS::Region in CFN expressions
   const resolvedEnv = await sdkProvider.resolveEnvironment(stackArtifact.environment);
-  const hotswappableChanges = findAllHotswappableChanges(stackChanges, {
+  /*const hotswappableChanges = findAllHotswappableChanges(stackChanges, {
     ...assetParams,
     'AWS::Region': resolvedEnv.region,
     'AWS::AccountId': resolvedEnv.account,
     'AWS::Partition': resolvedEnv.partition,
-  });
+  });*/
+  const hotswappableChanges = findAllHotswappableChanges(stackChanges);
   if (!hotswappableChanges) {
     // this means there were changes to the template that cannot be short-circuited
     return undefined;
@@ -38,15 +41,30 @@ export async function tryHotswapDeployment(
   // create a new SDK using the CLI credentials, because the default one will not work for new-style synthesis -
   // it assumes the bootstrap deploy Role, which doesn't have permissions to update Lambda functions
   const sdk = await sdkProvider.forEnvironment(resolvedEnv, Mode.ForWriting);
+
+  // The current resources of the Stack.
+  // We need them to figure out the physical name of a function in case it wasn't specified by the user.
+  // We fetch it lazily, to save a service call, in case all updated Lambdas have their names set.
+  const listStackResources = new LazyListStackResources(sdk, stackArtifact.stackName);
+  const cfnExecutableTemplate = new CloudFormationExecutableTemplate({
+    stackArtifact,
+    parameters: assetParams,
+    account: resolvedEnv.account,
+    region: resolvedEnv.region,
+    // ToDo make this better:
+    partition: 'aws',
+    // ToDo make this better:
+    urlSuffix: 'amazonaws.com',
+    listStackResources,
+  });
+
   // apply the short-circuitable changes
-  await applyAllHotswappableChanges(sdk, stackArtifact, hotswappableChanges);
+  await applyAllHotswappableChanges(sdk, cfnExecutableTemplate, hotswappableChanges);
 
   return { noOp: hotswappableChanges.length === 0, stackArn: cloudFormationStack.stackId, outputs: cloudFormationStack.outputs, stackArtifact };
 }
 
-function findAllHotswappableChanges(
-  stackChanges: cfn_diff.TemplateDiff, assetParamsWithEnv: { [key: string]: string },
-): HotswapOperation[] | undefined {
+function findAllHotswappableChanges(stackChanges: cfn_diff.TemplateDiff): HotswapOperation[] | undefined {
   const hotswappableResources = new Array<HotswapOperation>();
   let foundNonHotswappableChange = false;
   stackChanges.resources.forEachDifference((logicalId: string, change: cfn_diff.ResourceDifference) => {
@@ -58,8 +76,8 @@ function findAllHotswappableChanges(
       // empty if
     } else {
       const detectorResults = [
-        isHotswappableLambdaFunctionChange(logicalId, nonHotswappableResourceFound, assetParamsWithEnv),
-        isHotswappableStateMachineChange(logicalId, nonHotswappableResourceFound, assetParamsWithEnv),
+        isHotswappableLambdaFunctionChange(logicalId, nonHotswappableResourceFound/*, assetParamsWithEnv*/),
+        isHotswappableStateMachineChange(logicalId, nonHotswappableResourceFound/*, assetParamsWithEnv*/),
       ];
 
       for (const result of detectorResults) {
@@ -108,14 +126,11 @@ export function isResourceChangeHotswappable(change: cfn_diff.ResourceDifference
 }
 
 async function applyAllHotswappableChanges(
-  sdk: ISDK, stackArtifact: cxapi.CloudFormationStackArtifact, hotswappableChanges: HotswapOperation[],
+  sdk: ISDK, cfnExecutableTemplate: CloudFormationExecutableTemplate, hotswappableChanges: HotswapOperation[],
 ): Promise<void[]> {
-  // The current resources of the Stack.
-  // We need them to figure out the physical name of a function in case it wasn't specified by the user.
-  // We fetch it lazily, to save a service call, in case all updated Lambdas have their names set.
-  const listStackResources = new LazyListStackResources(sdk, stackArtifact.stackName);
-
-  return Promise.all(hotswappableChanges.map(hotswapOperation => hotswapOperation.apply(sdk, listStackResources)));
+  return Promise.all(hotswappableChanges.map(hotswapOperation => {
+    return hotswapOperation.apply(sdk, cfnExecutableTemplate);
+  }));
 }
 
 class LazyListStackResources implements ListStackResources {

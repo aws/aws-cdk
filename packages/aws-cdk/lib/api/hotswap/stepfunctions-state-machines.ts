@@ -1,17 +1,18 @@
 import { ISDK } from '../aws-auth';
-import { ChangeHotswapImpact, ChangeHotswapResult, HotswapOperation, ListStackResources, stringifyPotentialCfnExpression, HotswappableResourceChange } from './common';
+import { CloudFormationExecutableTemplate } from './cloudformation-executable-template';
+import { ChangeHotswapImpact, ChangeHotswapResult, HotswapOperation/*, ListStackResources/*, stringifyPotentialCfnExpression*/, HotswappableResourceChange } from './common';
 
 export function isHotswappableStateMachineChange(
-  logicalId: string, change: HotswappableResourceChange, assetParamsWithEnv: { [key: string]: string },
+  logicalId: string, change: HotswappableResourceChange,
 ): ChangeHotswapResult {
-  const stateMachineDefinitionChange = isStateMachineDefinitionOnlyChange(change, assetParamsWithEnv);
+  const stateMachineDefinitionChange = isStateMachineDefinitionOnlyChange(change);
 
   if ((stateMachineDefinitionChange === ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT) ||
       (stateMachineDefinitionChange === ChangeHotswapImpact.IRRELEVANT)) {
     return stateMachineDefinitionChange;
   }
 
-  let machineName: string | undefined;
+  /*let machineName: string | undefined;
   try {
     machineName = stringifyPotentialCfnExpression(change.newValue?.Properties?.StateMachineName, assetParamsWithEnv);
   } catch (e) {
@@ -23,17 +24,17 @@ export function isHotswappableStateMachineChange(
     // which means it will be looked up using the listStackResources() call
     // by the later phase (which actually does the StepFunctions state machine update)
     machineName = undefined;
-  }
+  }*/
 
   return new StateMachineHotswapOperation({
     logicalId: logicalId,
     definition: stateMachineDefinitionChange,
-    stateMachineName: machineName,
+    stateMachineName: change.newValue?.Properties?.StateMachineName,
   });
 }
 
 function isStateMachineDefinitionOnlyChange(
-  change: HotswappableResourceChange, assetParamsWithEnv: { [key: string]: string },
+  change: HotswappableResourceChange,
 ): string | ChangeHotswapImpact {
   const newResourceType = change.newValue.Type;
   if (newResourceType !== 'AWS::StepFunctions::StateMachine') {
@@ -58,7 +59,7 @@ function isStateMachineDefinitionOnlyChange(
 
   const definitionString = propertyUpdates.DefinitionString;
 
-  return 'DefinitionString' in propertyUpdates ? stringifyPotentialCfnExpression(definitionString.newValue, assetParamsWithEnv) : ChangeHotswapImpact.IRRELEVANT;
+  return 'DefinitionString' in propertyUpdates ? definitionString.newValue : ChangeHotswapImpact.IRRELEVANT;
 }
 
 interface StateMachineResource {
@@ -71,22 +72,33 @@ class StateMachineHotswapOperation implements HotswapOperation {
   constructor(private readonly stepFunctionResource: StateMachineResource) {
   }
 
-  public async apply(sdk: ISDK, stackResources: ListStackResources): Promise<any> {
-    let stateMachineName: string | undefined;
-    if (this.stepFunctionResource.stateMachineName) {
-      stateMachineName = this.stepFunctionResource.stateMachineName;
-    } else {
-      stateMachineName = await stackResources.findHotswappableResource(this.stepFunctionResource);
-      if (stateMachineName === undefined) {
-        return;
-      }
+  public async apply(sdk: ISDK, cfnExecutableTemplate: CloudFormationExecutableTemplate): Promise<any> {
+    const stateMachineName = await this.establishFunctionPhysicalName(cfnExecutableTemplate);
+    if (!stateMachineName) {
+      console.log('bad');
+      return;
     }
 
+    const machineDefinition = await cfnExecutableTemplate.evaluateCfnExpression(this.stepFunctionResource.definition);
+
+    console.log('good');
     return sdk.stepFunctions().updateStateMachine({
       // when left unspecified, the optional properties are left unchanged
       // even though the name of the property is stateMachineArn, passing the name of the state machine is allowed here
       stateMachineArn: stateMachineName,
-      definition: this.stepFunctionResource.definition,
+      definition: machineDefinition,
     }).promise();
+  }
+
+  private async establishFunctionPhysicalName(cfnExectuableTemplate: CloudFormationExecutableTemplate): Promise<string | undefined> {
+    if (this.stepFunctionResource.stateMachineName) {
+      try {
+        return await cfnExectuableTemplate.evaluateCfnExpression(this.stepFunctionResource.stateMachineName);
+      } catch (e) {
+        // If we can't evaluate the function's name CloudFormation expression,
+        // just look it up in the currently deployed Stack
+      }
+    }
+    return cfnExectuableTemplate.findPhysicalNameFor(this.stepFunctionResource.logicalId);
   }
 }

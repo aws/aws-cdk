@@ -1,5 +1,6 @@
 import { ISDK } from '../aws-auth';
-import { assetMetadataChanged, ChangeHotswapImpact, ChangeHotswapResult, HotswapOperation, HotswappableResourceChange, ListStackResources, stringifyPotentialCfnExpression } from './common';
+import { CloudFormationExecutableTemplate } from './cloudformation-executable-template';
+import { assetMetadataChanged, ChangeHotswapImpact, ChangeHotswapResult, HotswapOperation, HotswappableResourceChange /*ListStackResources?*/ } from './common';
 
 /**
  * Returns `false` if the change cannot be short-circuited,
@@ -12,9 +13,9 @@ import { assetMetadataChanged, ChangeHotswapImpact, ChangeHotswapResult, Hotswap
 //): ChangeHotswapResult {
 
 export function isHotswappableLambdaFunctionChange(
-  logicalId: string, change: HotswappableResourceChange, assetParamsWithEnv: { [key: string]: string },
+  logicalId: string, change: HotswappableResourceChange,
 ): ChangeHotswapResult {
-  const lambdaCodeChange = isLambdaFunctionCodeOnlyChange(change, assetParamsWithEnv);
+  const lambdaCodeChange = isLambdaFunctionCodeOnlyChange(change);
   if (typeof lambdaCodeChange === 'string') {
     return lambdaCodeChange;
   } else {
@@ -27,7 +28,7 @@ export function isHotswappableLambdaFunctionChange(
     }
 
     // TODO: see adam's ideas for dealing with this change.newValue in the detectors. Best option is to create a new type which is never undefined
-    const newResourceType = change.newValue.Type;
+    /*const newResourceType = change.newValue.Type;
     if (newResourceType !== 'AWS::Lambda::Function') {
       return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
     }
@@ -43,11 +44,11 @@ export function isHotswappableLambdaFunctionChange(
       // which means it will be looked up using the listStackResources() call
       // by the later phase (which actually does the Lambda function update)
       functionPhysicalName = undefined;
-    }
+    }*/
 
     return new LambdaFunctionHotswapOperation({
       logicalId,
-      physicalName: functionPhysicalName,
+      physicalName: change.newValue?.Properties?.FunctionName,
       code: lambdaCodeChange,
     });
   }
@@ -63,8 +64,7 @@ export function isHotswappableLambdaFunctionChange(
  * and only affects its Code property.
  */
 function isLambdaFunctionCodeOnlyChange(
-  //change: cfn_diff.ResourceDifference, assetParamsWithEnv: { [key: string]: string },
-  change: HotswappableResourceChange, assetParamsWithEnv: { [key: string]: string },
+  change: HotswappableResourceChange,
 ): LambdaFunctionCode | ChangeHotswapImpact {
   // if we see a different resource type, it will be caught by isNonHotswappableResourceChange()
   // this also ignores Metadata changes
@@ -83,9 +83,9 @@ function isLambdaFunctionCodeOnlyChange(
    * which means we don't have the correct values available to evaluate the CFN expression with.
    * Fortunately, the diff will always include both the s3Bucket and s3Key parts of the Lambda's Code property,
    * even if only one of them was actually changed,
-   * which means we don't need the "old" values at all, and we can safely initialize these with just `''`.
+   * which means we don't need the "old" values at all, and we can safely let these be uninitialized.
    */
-  let s3Bucket = '', s3Key = '';
+  let s3Bucket: any, s3Key: any;
   let foundCodeDifference = false;
   // Make sure only the code in the Lambda function changed
   const propertyUpdates = change.propertyUpdates;
@@ -98,11 +98,11 @@ function isLambdaFunctionCodeOnlyChange(
       switch (newPropName) {
         case 'S3Bucket':
           foundCodeDifference = true;
-          s3Bucket = stringifyPotentialCfnExpression(updatedProp.newValue[newPropName], assetParamsWithEnv);
+          s3Bucket = updatedProp.newValue[newPropName];
           break;
         case 'S3Key':
           foundCodeDifference = true;
-          s3Key = stringifyPotentialCfnExpression(updatedProp.newValue[newPropName], assetParamsWithEnv);
+          s3Key = updatedProp.newValue[newPropName];
           break;
         default:
           return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
@@ -119,13 +119,13 @@ function isLambdaFunctionCodeOnlyChange(
 }
 
 interface LambdaFunctionCode {
-  readonly s3Bucket: string;
-  readonly s3Key: string;
+  readonly s3Bucket: any;
+  readonly s3Key: any;
 }
 
 interface LambdaFunctionResource {
   readonly logicalId: string;
-  readonly physicalName?: string;
+  readonly physicalName?: any;
   readonly code: LambdaFunctionCode;
 }
 
@@ -133,21 +133,30 @@ class LambdaFunctionHotswapOperation implements HotswapOperation {
   constructor(private readonly lambdaFunctionResource: LambdaFunctionResource) {
   }
 
-  public async apply(sdk: ISDK, stackResources: ListStackResources): Promise<any> {
-    let functionPhysicalName: string | undefined;
-    if (this.lambdaFunctionResource.physicalName) {
-      functionPhysicalName = this.lambdaFunctionResource.physicalName;
-    } else {
-      functionPhysicalName = await stackResources.findHotswappableResource(this.lambdaFunctionResource);
-      if (!functionPhysicalName) {
-        return;
-      }
+  public async apply(sdk: ISDK, cfnExectuableTemplate: CloudFormationExecutableTemplate): Promise<any> {
+    const functionPhysicalName = await this.establishFunctionPhysicalName(cfnExectuableTemplate);
+    if (!functionPhysicalName) {
+      return;
     }
+    const codeS3Bucket = await cfnExectuableTemplate.evaluateCfnExpression(this.lambdaFunctionResource.code.s3Bucket);
+    const codeS3Key = await cfnExectuableTemplate.evaluateCfnExpression(this.lambdaFunctionResource.code.s3Key);
 
     return sdk.lambda().updateFunctionCode({
       FunctionName: functionPhysicalName,
-      S3Bucket: this.lambdaFunctionResource.code.s3Bucket,
-      S3Key: this.lambdaFunctionResource.code.s3Key,
+      S3Bucket: codeS3Bucket,
+      S3Key: codeS3Key,
     }).promise();
+  }
+
+  private async establishFunctionPhysicalName(cfnExectuableTemplate: CloudFormationExecutableTemplate): Promise<string | undefined> {
+    if (this.lambdaFunctionResource.physicalName) {
+      try {
+        return await cfnExectuableTemplate.evaluateCfnExpression(this.lambdaFunctionResource.physicalName);
+      } catch (e) {
+        // If we can't evaluate the function's name CloudFormation expression,
+        // just look it up in the currently deployed Stack
+      }
+    }
+    return cfnExectuableTemplate.findPhysicalNameFor(this.lambdaFunctionResource.logicalId);
   }
 }
