@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import { Stack } from '@aws-cdk/core';
 import { ReceiptRule, ReceiptRuleSet, TlsPolicy } from '../lib';
 
@@ -26,7 +26,7 @@ describe('receipt rule', () => {
     });
 
     // THEN
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       'Resources': {
         'RuleSetE30C6C48': {
           'Type': 'AWS::SES::ReceiptRuleSet',
@@ -82,7 +82,7 @@ describe('receipt rule', () => {
     });
 
     // THEN
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       'Resources': {
         'RuleSetE30C6C48': {
           'Type': 'AWS::SES::ReceiptRuleSet',
@@ -124,7 +124,7 @@ describe('receipt rule', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::SES::ReceiptRule', {
+    Template.fromStack(stack).hasResourceProperties('AWS::SES::ReceiptRule', {
       'Rule': {
         'Actions': [
           {
@@ -159,7 +159,7 @@ describe('receipt rule', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::SES::ReceiptRule', {
+    Template.fromStack(stack).hasResourceProperties('AWS::SES::ReceiptRule', {
       'Rule': {
         'Actions': [
           {
