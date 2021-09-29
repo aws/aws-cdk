@@ -24,14 +24,14 @@ Higher level constructs for Domain | ![Stable](https://img.shields.io/badge/stab
 
 Amazon OpenSearch Service is the successor to Amazon Elasticsearch Service.
 
-See [Migrating to OpenSearch](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-elasticsearch-readme.html#migrating-to-opensearch) for migration instructions from `@aws-cdk/aws-elasticsearch` to this module, `@aws-cdk/aws-opensearch`.
+See [Migrating to OpenSearch](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-elasticsearch-readme.html#migrating-to-opensearch) for migration instructions from `@aws-cdk/aws-elasticsearch` to this module, `@aws-cdk/aws-opensearchservice`.
 
 ## Quick start
 
 Create a development cluster by simply specifying the version:
 
 ```ts
-import * as opensearch from '@aws-cdk/aws-opensearch';
+import * as opensearch from '@aws-cdk/aws-opensearchservice';
 
 const devDomain = new opensearch.Domain(this, 'Domain', {
     version: opensearch.EngineVersion.OPENSEARCH_1_0,
@@ -41,7 +41,7 @@ const devDomain = new opensearch.Domain(this, 'Domain', {
 To perform version upgrades without replacing the entire domain, specify the `enableVersionUpgrade` property.
 
 ```ts
-import * as opensearch from '@aws-cdk/aws-opensearch';
+import * as opensearch from '@aws-cdk/aws-opensearchservice';
 
 const devDomain = new opensearch.Domain(this, 'Domain', {
     version: opensearch.EngineVersion.OPENSEARCH_1_0,
