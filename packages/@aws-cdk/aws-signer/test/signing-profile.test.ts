@@ -10,7 +10,7 @@ beforeEach( () => {
 } );
 
 describe('signing profile', () => {
-  test( 'default', () => {
+  test('default', () => {
     const platform = signer.Platform.AWS_LAMBDA_SHA384_ECDSA;
     new signer.SigningProfile( stack, 'SigningProfile', { platform } );
 
@@ -23,7 +23,7 @@ describe('signing profile', () => {
     });
   });
 
-  test( 'default with signature validity period', () => {
+  test('default with signature validity period', () => {
     const platform = signer.Platform.AWS_LAMBDA_SHA384_ECDSA;
     new signer.SigningProfile( stack, 'SigningProfile', {
       platform,
@@ -39,7 +39,7 @@ describe('signing profile', () => {
     });
   });
 
-  test( 'default with some tags', () => {
+  test('default with some tags', () => {
     const platform = signer.Platform.AWS_LAMBDA_SHA384_ECDSA;
     const signing = new signer.SigningProfile( stack, 'SigningProfile', { platform } );
 
@@ -95,6 +95,7 @@ describe('signing profile', () => {
           ],
         },
       );
+
       expect(stack.resolve(signingProfile.signingProfileVersionArn)).toStrictEqual({
         'Fn::Join': [
           '',
@@ -111,5 +112,5 @@ describe('signing profile', () => {
       });
       Template.fromStack(stack).templateMatches({});
     });
-  } );
+  });
 });
