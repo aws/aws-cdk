@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import { Attribute, AttributeType, StreamViewType, Table } from '@aws-cdk/aws-dynamodb';
 import { App, CfnOutput, Stack } from '@aws-cdk/core';
 import { GlobalTable, GlobalTableProps } from '../lib';
@@ -25,7 +25,7 @@ describe('Default Global DynamoDB stack', () => {
     const topStack = stack.node.findChild(CONSTRUCT_NAME) as Stack;
     for ( const reg of STACK_PROPS.regions ) {
       const tableStack = topStack.node.findChild(CONSTRUCT_NAME + '-' + reg) as Stack;
-      expect(tableStack).toHaveResource('AWS::DynamoDB::Table', {
+      Template.fromStack(tableStack).hasResourceProperties('AWS::DynamoDB::Table', {
         'KeySchema': [
           {
             'AttributeName': 'hashKey',
@@ -45,12 +45,12 @@ describe('Default Global DynamoDB stack', () => {
       });
     }
     const customResourceStack = stack.node.findChild(CONSTRUCT_NAME + '-CustomResource') as Stack;
-    expect(customResourceStack).toHaveResource('AWS::Lambda::Function', {
+    Template.fromStack(customResourceStack).hasResourceProperties('AWS::Lambda::Function', {
       Description: 'Lambda to make DynamoDB a global table',
       Handler: 'index.handler',
       Timeout: 300,
     });
-    expect(customResourceStack).toHaveResource('AWS::CloudFormation::CustomResource', {
+    Template.fromStack(customResourceStack).hasResourceProperties('AWS::CloudFormation::CustomResource', {
       Regions: STACK_PROPS.regions,
       ResourceType: 'Custom::DynamoGlobalTableCoordinator',
       TableName: TABLE_NAME,
@@ -74,7 +74,7 @@ test('GlobalTable generated stacks inherit their account from the parent stack',
     value: globalTable.regionalTables[0].tableStreamArn!,
   });
 
-  expect(stack).toMatchTemplate({
+  Template.fromStack(stack).templateMatches({
     'Outputs': {
       'DynamoDbOutput': {
         'Value': {
