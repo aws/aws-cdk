@@ -1,6 +1,6 @@
+import { Template } from '@aws-cdk/assertions';
 import { Stack } from '@aws-cdk/core';
 import { AwsCliLayer } from '../lib';
-import '@aws-cdk/assert-internal/jest';
 
 test('synthesized to a layer version', () => {
   //GIVEN
@@ -10,7 +10,7 @@ test('synthesized to a layer version', () => {
   new AwsCliLayer(stack, 'MyLayer');
 
   // THEN
-  expect(stack).toHaveResource('AWS::Lambda::LayerVersion', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::LayerVersion', {
     Description: '/opt/awscli/aws',
   });
 });
