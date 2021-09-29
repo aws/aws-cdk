@@ -1,4 +1,4 @@
-import { expect, haveResource } from '@aws-cdk/assert-internal';
+import { Template } from '@aws-cdk/assertions';
 import { Stack } from '@aws-cdk/core';
 import { ClusterParameterGroup } from '../lib';
 
@@ -18,13 +18,13 @@ describe('ClusterParameterGroup', () => {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::DocDB::DBClusterParameterGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::DocDB::DBClusterParameterGroup', {
       Description: 'desc',
       Family: 'hello',
       Parameters: {
         key: 'value',
       },
-    }));
+    });
 
   });
 
@@ -41,13 +41,13 @@ describe('ClusterParameterGroup', () => {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::DocDB::DBClusterParameterGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::DocDB::DBClusterParameterGroup', {
       Description: 'Cluster parameter group for hello',
       Family: 'hello',
       Parameters: {
         key: 'value',
       },
-    }));
+    });
 
   });
 });

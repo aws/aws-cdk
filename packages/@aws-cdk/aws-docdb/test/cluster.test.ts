@@ -1,4 +1,4 @@
-import { expect as expectCDK, haveResource, ResourcePart, arrayWith } from '@aws-cdk/assert-internal';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as kms from '@aws-cdk/aws-kms';
 import * as cdk from '@aws-cdk/core';
@@ -23,7 +23,7 @@ describe('DatabaseCluster', () => {
     });
 
     // THEN
-    expectCDK(stack).to(haveResource('AWS::DocDB::DBCluster', {
+    Template.fromStack(stack).hasResource('AWS::DocDB::DBCluster', {
       Properties: {
         DBSubnetGroupName: { Ref: 'DatabaseSubnets56F17B9A' },
         MasterUsername: 'admin',
@@ -33,20 +33,20 @@ describe('DatabaseCluster', () => {
       },
       DeletionPolicy: 'Retain',
       UpdateReplacePolicy: 'Retain',
-    }, ResourcePart.CompleteDefinition));
+    });
 
-    expectCDK(stack).to(haveResource('AWS::DocDB::DBInstance', {
+    Template.fromStack(stack).hasResource('AWS::DocDB::DBInstance', {
       DeletionPolicy: 'Retain',
       UpdateReplacePolicy: 'Retain',
-    }, ResourcePart.CompleteDefinition));
+    });
 
-    expectCDK(stack).to(haveResource('AWS::DocDB::DBSubnetGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::DocDB::DBSubnetGroup', {
       SubnetIds: [
         { Ref: 'VPCPrivateSubnet1Subnet8BCA10E0' },
         { Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A' },
         { Ref: 'VPCPrivateSubnet3Subnet3EDCD457' },
       ],
-    }));
+    });
   });
 
   test('can create a cluster with a single instance', () => {
@@ -66,12 +66,12 @@ describe('DatabaseCluster', () => {
     });
 
     // THEN
-    expectCDK(stack).to(haveResource('AWS::DocDB::DBCluster', {
+    Template.fromStack(stack).hasResourceProperties('AWS::DocDB::DBCluster', {
       DBSubnetGroupName: { Ref: 'DatabaseSubnets56F17B9A' },
       MasterUsername: 'admin',
       MasterUserPassword: 'tooshort',
       VpcSecurityGroupIds: [{ 'Fn::GetAtt': ['DatabaseSecurityGroup5C91FDCB', 'GroupId'] }],
-    }));
+    });
   });
 
   test('errors when less than one instance is specified', () => {
@@ -131,11 +131,11 @@ describe('DatabaseCluster', () => {
     });
 
     // THEN
-    expectCDK(stack).to(haveResource('AWS::SecretsManager::SecretTargetAttachment', {
+    Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::SecretTargetAttachment', {
       SecretId: { Ref: 'DatabaseSecret3B817195' },
       TargetId: { Ref: 'DatabaseB269D8BB' },
       TargetType: 'AWS::DocDB::DBCluster',
-    }));
+    });
   });
 
   test('can create a cluster with imported vpc and security group', () => {
@@ -159,12 +159,12 @@ describe('DatabaseCluster', () => {
     });
 
     // THEN
-    expectCDK(stack).to(haveResource('AWS::DocDB::DBCluster', {
+    Template.fromStack(stack).hasResourceProperties('AWS::DocDB::DBCluster', {
       DBSubnetGroupName: { Ref: 'DatabaseSubnets56F17B9A' },
       MasterUsername: 'admin',
       MasterUserPassword: 'tooshort',
       VpcSecurityGroupIds: ['SecurityGroupId12345'],
-    }));
+    });
   });
 
   test('can configure cluster deletion protection', () => {
@@ -183,9 +183,9 @@ describe('DatabaseCluster', () => {
     });
 
     // THEN
-    expectCDK(stack).to(haveResource('AWS::DocDB::DBCluster', {
+    Template.fromStack(stack).hasResourceProperties('AWS::DocDB::DBCluster', {
       DeletionProtection: true,
-    }));
+    });
   });
 
   test('cluster with parameter group', () => {
@@ -212,9 +212,9 @@ describe('DatabaseCluster', () => {
     });
 
     // THEN
-    expectCDK(stack).to(haveResource('AWS::DocDB::DBCluster', {
+    Template.fromStack(stack).hasResourceProperties('AWS::DocDB::DBCluster', {
       DBClusterParameterGroupName: { Ref: 'ParamsA8366201' },
-    }));
+    });
   });
 
   test('cluster with imported parameter group', () => {
@@ -236,9 +236,9 @@ describe('DatabaseCluster', () => {
     });
 
     // THEN
-    expectCDK(stack).to(haveResource('AWS::DocDB::DBCluster', {
+    Template.fromStack(stack).hasResourceProperties('AWS::DocDB::DBCluster', {
       DBClusterParameterGroupName: 'ParamGroupName',
-    }));
+    });
   });
 
   test('creates a secret when master credentials are not specified', () => {
@@ -256,7 +256,7 @@ describe('DatabaseCluster', () => {
     });
 
     // THEN
-    expectCDK(stack).to(haveResource('AWS::DocDB::DBCluster', {
+    Template.fromStack(stack).hasResourceProperties('AWS::DocDB::DBCluster', {
       MasterUsername: {
         'Fn::Join': [
           '',
@@ -281,16 +281,16 @@ describe('DatabaseCluster', () => {
           ],
         ],
       },
-    }));
+    });
 
-    expectCDK(stack).to(haveResource('AWS::SecretsManager::Secret', {
+    Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::Secret', {
       GenerateSecretString: {
         ExcludeCharacters: '\"@/',
         GenerateStringKey: 'password',
         PasswordLength: 41,
         SecretStringTemplate: '{"username":"admin"}',
       },
-    }));
+    });
   });
 
   test('create an encrypted cluster with custom KMS key', () => {
@@ -309,7 +309,7 @@ describe('DatabaseCluster', () => {
     });
 
     // THEN
-    expectCDK(stack).to(haveResource('AWS::DocDB::DBCluster', {
+    Template.fromStack(stack).hasResourceProperties('AWS::DocDB::DBCluster', {
       KmsKeyId: {
         'Fn::GetAtt': [
           'Key961B73FD',
@@ -317,7 +317,7 @@ describe('DatabaseCluster', () => {
         ],
       },
       StorageEncrypted: true,
-    }));
+    });
   });
 
   test('creating a cluster defaults to using encryption', () => {
@@ -335,9 +335,9 @@ describe('DatabaseCluster', () => {
     });
 
     // THEN
-    expectCDK(stack).to(haveResource('AWS::DocDB::DBCluster', {
+    Template.fromStack(stack).hasResourceProperties('AWS::DocDB::DBCluster', {
       StorageEncrypted: true,
-    }));
+    });
   });
 
   test('supplying a KMS key with storageEncryption false throws an error', () => {
@@ -397,9 +397,9 @@ describe('DatabaseCluster', () => {
     });
 
     // THEN
-    expectCDK(stack).to(haveResource('AWS::DocDB::DBInstance', {
+    Template.fromStack(stack).hasResourceProperties('AWS::DocDB::DBInstance', {
       DBInstanceIdentifier: `${instanceIdentifierBase}1`,
-    }));
+    });
   });
 
   test('cluster identifier used', () => {
@@ -419,9 +419,9 @@ describe('DatabaseCluster', () => {
     });
 
     // THEN
-    expectCDK(stack).to(haveResource('AWS::DocDB::DBInstance', {
+    Template.fromStack(stack).hasResourceProperties('AWS::DocDB::DBInstance', {
       DBInstanceIdentifier: `${clusterIdentifier}instance1`,
-    }));
+    });
   });
 
   test('imported cluster has supplied attributes', () => {
@@ -470,9 +470,9 @@ describe('DatabaseCluster', () => {
     cluster.connections.allowToAnyIpv4(ec2.Port.tcp(443));
 
     // THEN
-    expectCDK(stack).to(haveResource('AWS::EC2::SecurityGroupEgress', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroupEgress', {
       GroupId: 'sg-123456789',
-    }));
+    });
   });
 
   test('backup retention period respected', () => {
@@ -493,9 +493,9 @@ describe('DatabaseCluster', () => {
     });
 
     // THEN
-    expectCDK(stack).to(haveResource('AWS::DocDB::DBCluster', {
+    Template.fromStack(stack).hasResourceProperties('AWS::DocDB::DBCluster', {
       BackupRetentionPeriod: 20,
-    }));
+    });
   });
 
   test('backup maintenance window respected', () => {
@@ -517,10 +517,10 @@ describe('DatabaseCluster', () => {
     });
 
     // THEN
-    expectCDK(stack).to(haveResource('AWS::DocDB::DBCluster', {
+    Template.fromStack(stack).hasResourceProperties('AWS::DocDB::DBCluster', {
       BackupRetentionPeriod: 20,
       PreferredBackupWindow: '07:34-08:04',
-    }));
+    });
   });
 
   test('regular maintenance window respected', () => {
@@ -539,9 +539,9 @@ describe('DatabaseCluster', () => {
     });
 
     // THEN
-    expectCDK(stack).to(haveResource('AWS::DocDB::DBCluster', {
+    Template.fromStack(stack).hasResourceProperties('AWS::DocDB::DBCluster', {
       PreferredMaintenanceWindow: '07:34-08:04',
-    }));
+    });
   });
 
   test('single user rotation', () => {
@@ -560,7 +560,7 @@ describe('DatabaseCluster', () => {
     cluster.addRotationSingleUser(cdk.Duration.days(5));
 
     // THEN
-    expectCDK(stack).to(haveResource('AWS::Serverless::Application', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Serverless::Application', {
       Location: {
         ApplicationId: { 'Fn::FindInMap': ['DatabaseRotationSingleUserSARMapping9AEB3E55', { Ref: 'AWS::Partition' }, 'applicationId'] },
         SemanticVersion: { 'Fn::FindInMap': ['DatabaseRotationSingleUserSARMapping9AEB3E55', { Ref: 'AWS::Partition' }, 'semanticVersion'] },
@@ -592,8 +592,8 @@ describe('DatabaseCluster', () => {
           'Fn::GetAtt': ['DatabaseRotationSingleUserSecurityGroupAC6E0E73', 'GroupId'],
         },
       },
-    }));
-    expectCDK(stack).to(haveResource('AWS::SecretsManager::RotationSchedule', {
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::RotationSchedule', {
       SecretId: { Ref: 'DatabaseSecretAttachmentE5D1B020' },
       RotationLambdaARN: {
         'Fn::GetAtt': ['DatabaseRotationSingleUser65F55654', 'Outputs.RotationLambdaARN'],
@@ -601,7 +601,7 @@ describe('DatabaseCluster', () => {
       RotationRules: {
         AutomaticallyAfterDays: 5,
       },
-    }));
+    });
   });
 
   test('single user rotation requires secret', () => {
@@ -672,7 +672,7 @@ describe('DatabaseCluster', () => {
     });
 
     // THEN
-    expectCDK(stack).to(haveResource('AWS::Serverless::Application', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Serverless::Application', {
       Location: {
         ApplicationId: { 'Fn::FindInMap': ['DatabaseRotationSARMappingE46CFA92', { Ref: 'AWS::Partition' }, 'applicationId'] },
         SemanticVersion: { 'Fn::FindInMap': ['DatabaseRotationSARMappingE46CFA92', { Ref: 'AWS::Partition' }, 'semanticVersion'] },
@@ -705,8 +705,8 @@ describe('DatabaseCluster', () => {
         },
         masterSecretArn: { Ref: 'DatabaseSecretAttachmentE5D1B020' },
       },
-    }));
-    expectCDK(stack).to(haveResource('AWS::SecretsManager::RotationSchedule', {
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::RotationSchedule', {
       SecretId: { Ref: 'UserSecret0463E4F5' },
       RotationLambdaARN: {
         'Fn::GetAtt': ['DatabaseRotation6B6E1D86', 'Outputs.RotationLambdaARN'],
@@ -714,7 +714,7 @@ describe('DatabaseCluster', () => {
       RotationRules: {
         AutomaticallyAfterDays: 5,
       },
-    }));
+    });
   });
 
   test('multi user rotation requires secret', () => {
@@ -765,9 +765,9 @@ describe('DatabaseCluster', () => {
     cluster.addSecurityGroups(securityGroup);
 
     // THEN
-    expectCDK(stack).to(haveResource('AWS::DocDB::DBCluster', {
-      VpcSecurityGroupIds: arrayWith(stack.resolve(securityGroup.securityGroupId)),
-    }));
+    Template.fromStack(stack).hasResourceProperties('AWS::DocDB::DBCluster', {
+      VpcSecurityGroupIds: Match.arrayWith([stack.resolve(securityGroup.securityGroupId)]),
+    });
   });
 });
 
