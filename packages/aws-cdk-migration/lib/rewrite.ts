@@ -123,6 +123,12 @@ export function rewriteImports(sourceText: string, fileName: string = 'index.ts'
 
 const EXEMPTIONS = new Set([
   '@aws-cdk/cloudformation-diff',
+  // The dev-tools
+  '@aws-cdk/cdk-build-tools',
+  '@aws-cdk/cdk-integ-tools',
+  '@aws-cdk/cfn2ts',
+  '@aws-cdk/eslint-plugin',
+  '@aws-cdk/pkglint',
 ]);
 
 function updatedLocationOf(modulePath: string, options: RewriteOptions, importedElements?: ts.NodeArray<ts.ImportSpecifier>): string | undefined {
