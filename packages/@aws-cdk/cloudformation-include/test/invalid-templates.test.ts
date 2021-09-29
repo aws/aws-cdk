@@ -1,6 +1,5 @@
 import * as path from 'path';
-import { SynthUtils } from '@aws-cdk/assert-internal';
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as core from '@aws-cdk/core';
 import * as constructs from 'constructs';
 import * as inc from '../lib';
@@ -22,7 +21,7 @@ describe('CDK Include', () => {
     includeTestTemplate(stack, 'bucket-with-cors-rules-not-an-array.json');
 
     expect(() => {
-      SynthUtils.synthesize(stack);
+      Template.fromStack(stack);
     }).toThrow(/corsRules: "CorsRules!" should be a list/);
   });
 
@@ -30,7 +29,7 @@ describe('CDK Include', () => {
     includeTestTemplate(stack, 'bucket-with-cors-rules-null-element.json');
 
     expect(() => {
-      SynthUtils.synthesize(stack);
+      Template.fromStack(stack);
     }).toThrow(/allowedMethods: required but missing/);
   });
 
@@ -38,7 +37,7 @@ describe('CDK Include', () => {
     includeTestTemplate(stack, 'bucket-with-invalid-cors-rule.json');
 
     expect(() => {
-      SynthUtils.synthesize(stack);
+      Template.fromStack(stack);
     }).toThrow(/allowedOrigins: required but missing/);
   });
 
@@ -130,7 +129,7 @@ describe('CDK Include', () => {
     includeTestTemplate(stack, 'alphabetical-string-passed-to-number.json');
 
     expect(() => {
-      SynthUtils.synthesize(stack);
+      Template.fromStack(stack);
     }).toThrow(/"abc" should be a number/);
   });
 

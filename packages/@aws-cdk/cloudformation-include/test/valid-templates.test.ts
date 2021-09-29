@@ -1,6 +1,5 @@
 import * as path from 'path';
-import { ResourcePart } from '@aws-cdk/assert-internal';
-import '@aws-cdk/assert-internal/jest';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as ssm from '@aws-cdk/aws-ssm';
@@ -22,7 +21,7 @@ describe('CDK Include', () => {
   test('can ingest a template with only an empty S3 Bucket, and output it unchanged', () => {
     includeTestTemplate(stack, 'only-empty-bucket.json');
 
-    expect(stack).toMatchTemplate(
+    Template.fromStack(stack).templateMatches(
       loadTestFileToJsObject('only-empty-bucket.json'),
     );
   });
@@ -41,7 +40,7 @@ describe('CDK Include', () => {
     const cfnBucket = cfnTemplate.getResource('Bucket') as s3.CfnBucket;
     cfnBucket.bucketName = 'my-bucket-name';
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       "Resources": {
         "Bucket": {
           "Type": "AWS::S3::Bucket",
@@ -58,7 +57,7 @@ describe('CDK Include', () => {
     const cfnBucket = cfnTemplate.getResource('Bucket') as s3.CfnBucket;
 
     expect((cfnBucket.corsConfiguration as any).corsRules).toHaveLength(1);
-    expect(stack).toMatchTemplate(
+    Template.fromStack(stack).templateMatches(
       loadTestFileToJsObject('only-bucket-complex-props.json'),
     );
   });
@@ -75,10 +74,10 @@ describe('CDK Include', () => {
       resources: [cfnBucket.attrArn],
     }));
 
-    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       "PolicyDocument": {
         "Statement": [
-          {
+          Match.objectLike({
             "Action": "s3:*",
             "Resource": {
               "Fn::GetAtt": [
@@ -86,7 +85,7 @@ describe('CDK Include', () => {
                 "Arn",
               ],
             },
-          },
+          }),
         ],
       },
     });
@@ -95,7 +94,7 @@ describe('CDK Include', () => {
   test('can ingest a template with a Bucket Ref-erencing a KMS Key, and output it unchanged', () => {
     includeTestTemplate(stack, 'bucket-with-encryption-key.json');
 
-    expect(stack).toMatchTemplate(
+    Template.fromStack(stack).templateMatches(
       loadTestFileToJsObject('bucket-with-encryption-key.json'),
     );
   });
@@ -103,7 +102,7 @@ describe('CDK Include', () => {
   test('accepts strings for properties with type number', () => {
     includeTestTemplate(stack, 'string-for-number.json');
 
-    expect(stack).toMatchTemplate(
+    Template.fromStack(stack).templateMatches(
       loadTestFileToJsObject('string-for-number.json'),
     );
   });
@@ -111,7 +110,7 @@ describe('CDK Include', () => {
   test('accepts numbers for properties with type string', () => {
     includeTestTemplate(stack, 'number-for-string.json');
 
-    expect(stack).toMatchTemplate(
+    Template.fromStack(stack).templateMatches(
       loadTestFileToJsObject('number-for-string.json'),
     );
   });
@@ -119,7 +118,7 @@ describe('CDK Include', () => {
   test('accepts booleans for properties with type string', () => {
     includeTestTemplate(stack, 'boolean-for-string.json');
 
-    expect(stack).toMatchTemplate(
+    Template.fromStack(stack).templateMatches(
       loadTestFileToJsObject('boolean-for-string.json'),
     );
   });
@@ -135,7 +134,7 @@ describe('CDK Include', () => {
     const cfnBucket = cfnTemplate.getResource('Bucket') as s3.CfnBucket;
     cfnBucket.bucketName = 'my-bucket-name';
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       "Resources": {
         "MyScopeKey7673692F": {
           "Type": "AWS::KMS::Key",
@@ -202,7 +201,7 @@ describe('CDK Include', () => {
   test('can ingest a template with an Fn::If expression for simple values, and output it unchanged', () => {
     includeTestTemplate(stack, 'if-simple-property.json');
 
-    expect(stack).toMatchTemplate(
+    Template.fromStack(stack).templateMatches(
       loadTestFileToJsObject('if-simple-property.json'),
     );
   });
@@ -210,7 +209,7 @@ describe('CDK Include', () => {
   test('can ingest a template with an Fn::If expression for complex values, and output it unchanged', () => {
     includeTestTemplate(stack, 'if-complex-property.json');
 
-    expect(stack).toMatchTemplate(
+    Template.fromStack(stack).templateMatches(
       loadTestFileToJsObject('if-complex-property.json'),
     );
   });
@@ -218,7 +217,7 @@ describe('CDK Include', () => {
   test('can ingest a UserData script, and output it unchanged', () => {
     includeTestTemplate(stack, 'user-data.json');
 
-    expect(stack).toMatchTemplate(
+    Template.fromStack(stack).templateMatches(
       loadTestFileToJsObject('user-data.json'),
     );
   });
@@ -226,7 +225,7 @@ describe('CDK Include', () => {
   test('can correctly ingest a resource with a property of type: Map of Lists of primitive types', () => {
     const cfnTemplate = includeTestTemplate(stack, 'ssm-association.json');
 
-    expect(stack).toMatchTemplate(
+    Template.fromStack(stack).templateMatches(
       loadTestFileToJsObject('ssm-association.json'),
     );
     const association = cfnTemplate.getResource('Association') as ssm.CfnAssociation;
@@ -236,7 +235,7 @@ describe('CDK Include', () => {
   test('can ingest a template with intrinsic functions and conditions, and output it unchanged', () => {
     includeTestTemplate(stack, 'functions-and-conditions.json');
 
-    expect(stack).toMatchTemplate(
+    Template.fromStack(stack).templateMatches(
       loadTestFileToJsObject('functions-and-conditions.json'),
     );
   });
@@ -244,7 +243,7 @@ describe('CDK Include', () => {
   test('can ingest a JSON template with string-form Fn::GetAtt, and output it unchanged', () => {
     includeTestTemplate(stack, 'get-att-string-form.json');
 
-    expect(stack).toMatchTemplate(
+    Template.fromStack(stack).templateMatches(
       loadTestFileToJsObject('get-att-string-form.json'),
     );
   });
@@ -252,7 +251,7 @@ describe('CDK Include', () => {
   test('can ingest a template with Fn::Sub in string form with escaped and unescaped references and output it unchanged', () => {
     includeTestTemplate(stack, 'fn-sub-string.json');
 
-    expect(stack).toMatchTemplate(
+    Template.fromStack(stack).templateMatches(
       loadTestFileToJsObject('fn-sub-string.json'),
     );
   });
@@ -260,7 +259,7 @@ describe('CDK Include', () => {
   test('can parse the string argument Fn::Sub with escaped references that contain whitespace', () => {
     includeTestTemplate(stack, 'fn-sub-escaping.json');
 
-    expect(stack).toMatchTemplate(
+    Template.fromStack(stack).templateMatches(
       loadTestFileToJsObject('fn-sub-escaping.json'),
     );
   });
@@ -268,7 +267,7 @@ describe('CDK Include', () => {
   test('can ingest a template with Fn::Sub in map form and output it unchanged', () => {
     includeTestTemplate(stack, 'fn-sub-map-dotted-attributes.json');
 
-    expect(stack).toMatchTemplate(
+    Template.fromStack(stack).templateMatches(
       loadTestFileToJsObject('fn-sub-map-dotted-attributes.json'),
     );
   });
@@ -276,7 +275,7 @@ describe('CDK Include', () => {
   test('preserves an empty map passed to Fn::Sub', () => {
     includeTestTemplate(stack, 'fn-sub-map-empty.json');
 
-    expect(stack).toMatchTemplate(
+    Template.fromStack(stack).templateMatches(
       loadTestFileToJsObject('fn-sub-map-empty.json'),
     );
   });
@@ -284,7 +283,7 @@ describe('CDK Include', () => {
   test('can ingest a template with Fn::Sub shadowing a logical ID from the template and output it unchanged', () => {
     includeTestTemplate(stack, 'fn-sub-shadow.json');
 
-    expect(stack).toMatchTemplate(
+    Template.fromStack(stack).templateMatches(
       loadTestFileToJsObject('fn-sub-shadow.json'),
     );
   });
@@ -292,7 +291,7 @@ describe('CDK Include', () => {
   test('can ingest a template with Fn::Sub attribute expression shadowing a logical ID from the template, and output it unchanged', () => {
     includeTestTemplate(stack, 'fn-sub-shadow-attribute.json');
 
-    expect(stack).toMatchTemplate(
+    Template.fromStack(stack).templateMatches(
       loadTestFileToJsObject('fn-sub-shadow-attribute.json'),
     );
   });
@@ -302,7 +301,7 @@ describe('CDK Include', () => {
 
     cfnTemplate.getResource('AnotherBucket').overrideLogicalId('NewBucket');
 
-    expect(stack).toHaveResourceLike('AWS::S3::Bucket', {
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
       "BucketName": {
         "Fn::Sub": [
           "${AnotherBucket}",
@@ -319,7 +318,7 @@ describe('CDK Include', () => {
 
     cfnTemplate.getResource('Bucket').overrideLogicalId('NewBucket');
 
-    expect(stack).toHaveResourceLike('AWS::S3::Bucket', {
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
       "BucketName": {
         "Fn::Sub": "${NewBucket}-${!Bucket}-${NewBucket.DomainName}",
       },
@@ -329,7 +328,7 @@ describe('CDK Include', () => {
   test('can ingest a template with Fn::Sub with brace edge cases and output it unchanged', () => {
     includeTestTemplate(stack, 'fn-sub-brace-edges.json');
 
-    expect(stack).toMatchTemplate(
+    Template.fromStack(stack).templateMatches(
       loadTestFileToJsObject('fn-sub-brace-edges.json'),
     );
   });
@@ -342,7 +341,7 @@ describe('CDK Include', () => {
       },
     });
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       "Parameters": {
         "AnotherParam": {
           "Type": "String",
@@ -375,7 +374,7 @@ describe('CDK Include', () => {
   test('can ingest a template with a Ref expression for an array value, and output it unchanged', () => {
     includeTestTemplate(stack, 'ref-array-property.json');
 
-    expect(stack).toMatchTemplate(
+    Template.fromStack(stack).templateMatches(
       loadTestFileToJsObject('ref-array-property.json'),
     );
   });
@@ -383,7 +382,7 @@ describe('CDK Include', () => {
   test('renders non-Resources sections unchanged', () => {
     includeTestTemplate(stack, 'only-empty-bucket-with-parameters.json');
 
-    expect(stack).toMatchTemplate(
+    Template.fromStack(stack).templateMatches(
       loadTestFileToJsObject('only-empty-bucket-with-parameters.json'),
     );
   });
@@ -394,14 +393,14 @@ describe('CDK Include', () => {
 
     expect(cfnBucket2.node.dependencies).toHaveLength(1);
     // we always render dependsOn as an array, even if it's a single string
-    expect(stack).toHaveResourceLike('AWS::S3::Bucket', {
+    Template.fromStack(stack).hasResource('AWS::S3::Bucket', {
       "Properties": {
         "BucketName": "bucket2",
       },
       "DependsOn": [
         "Bucket1",
       ],
-    }, ResourcePart.CompleteDefinition);
+    });
   });
 
   test('resolves DependsOn with an array of String values to the actual L1 class instances', () => {
@@ -409,7 +408,7 @@ describe('CDK Include', () => {
     const cfnBucket2 = cfnTemplate.getResource('Bucket2');
 
     expect(cfnBucket2.node.dependencies).toHaveLength(2);
-    expect(stack).toHaveResourceLike('AWS::S3::Bucket', {
+    Template.fromStack(stack).hasResource('AWS::S3::Bucket', {
       "Properties": {
         "BucketName": "bucket2",
       },
@@ -417,7 +416,7 @@ describe('CDK Include', () => {
         "Bucket0",
         "Bucket1",
       ],
-    }, ResourcePart.CompleteDefinition);
+    });
   });
 
   test('correctly parses Conditions and the Condition resource attribute', () => {
@@ -426,7 +425,7 @@ describe('CDK Include', () => {
     const cfnBucket = cfnTemplate.getResource('Bucket');
 
     expect(cfnBucket.cfnOptions.condition).toBe(alwaysFalseCondition);
-    expect(stack).toMatchTemplate(
+    Template.fromStack(stack).templateMatches(
       loadTestFileToJsObject('resource-attribute-condition.json'),
     );
   });
@@ -434,7 +433,7 @@ describe('CDK Include', () => {
   test('allows Conditions to reference Mappings', () => {
     includeTestTemplate(stack, 'condition-using-mapping.json');
 
-    expect(stack).toMatchTemplate(
+    Template.fromStack(stack).templateMatches(
       loadTestFileToJsObject('condition-using-mapping.json'),
     );
   });
@@ -444,7 +443,7 @@ describe('CDK Include', () => {
     const alwaysFalse = cfnTemplate.getCondition('AlwaysFalse');
     alwaysFalse.overrideLogicalId('TotallyFalse');
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       "Parameters": {
         "Param": {
           "Type": "String",
@@ -481,7 +480,7 @@ describe('CDK Include', () => {
     });
 
     const originalTemplate = loadTestFileToJsObject('bucket-with-parameters.json');
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       "Resources": {
         ...originalTemplate.Resources,
         "NewBucket": {
@@ -526,7 +525,7 @@ describe('CDK Include', () => {
     numberParam.type = "NewType";
     const originalTemplate = loadTestFileToJsObject('bucket-with-parameters.json');
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       "Resources": {
         ...originalTemplate.Resources,
       },
@@ -559,7 +558,7 @@ describe('CDK Include', () => {
 
     alwaysFalseCondition.expression = core.Fn.conditionEquals(1, 2);
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       "Conditions": {
         "AlwaysFalseCond": {
           "Fn::Equals": [1, 2],
@@ -580,7 +579,7 @@ describe('CDK Include', () => {
 
     expect(cfnBucket.cfnOptions.creationPolicy).toBeDefined();
 
-    expect(stack).toMatchTemplate(
+    Template.fromStack(stack).templateMatches(
       loadTestFileToJsObject('resource-attribute-creation-policy.json'),
     );
   });
@@ -591,7 +590,7 @@ describe('CDK Include', () => {
 
     expect(cfnBucket.cfnOptions.updatePolicy).toBeDefined();
 
-    expect(stack).toMatchTemplate(
+    Template.fromStack(stack).templateMatches(
       loadTestFileToJsObject('resource-attribute-update-policy.json'),
     );
   });
@@ -612,7 +611,7 @@ describe('CDK Include', () => {
       resources: [cfnBucket.attrArn],
     }));
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       ...loadTestFileToJsObject('only-empty-bucket.json'),
       "Outputs": {
         "ExportsOutputFnGetAttBucketArn436138FE": {
@@ -626,15 +625,15 @@ describe('CDK Include', () => {
       },
     });
 
-    expect(otherStack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(otherStack).hasResourceProperties('AWS::IAM::Policy', {
       "PolicyDocument": {
         "Statement": [
-          {
+          Match.objectLike({
             "Action": "s3:*",
             "Resource": {
               "Fn::ImportValue": "MyStack:ExportsOutputFnGetAttBucketArn436138FE",
             },
-          },
+          }),
         ],
       },
     });
@@ -646,7 +645,7 @@ describe('CDK Include', () => {
     cfnKey.overrideLogicalId('TotallyDifferentKey');
 
     const originalTemplate = loadTestFileToJsObject('bucket-with-encryption-key.json');
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       "Resources": {
         "Bucket": {
           "Type": "AWS::S3::Bucket",
@@ -679,7 +678,7 @@ describe('CDK Include', () => {
 
   test('can include a template with a custom resource that uses attributes', () => {
     const cfnTemplate = includeTestTemplate(stack, 'custom-resource-with-attributes.json');
-    expect(stack).toMatchTemplate(
+    Template.fromStack(stack).templateMatches(
       loadTestFileToJsObject('custom-resource-with-attributes.json'),
     );
 
@@ -706,7 +705,7 @@ describe('CDK Include', () => {
 
     const originalTemplate = loadTestFileToJsObject('outputs-with-references.json');
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       "Conditions": {
         ...originalTemplate.Conditions,
         "MyCondition": {
@@ -747,7 +746,7 @@ describe('CDK Include', () => {
     expect(output.value).toBeDefined();
     expect(output.exportName).toBeDefined();
 
-    expect(stack).toMatchTemplate(
+    Template.fromStack(stack).templateMatches(
       loadTestFileToJsObject('outputs-with-references.json'),
     );
   });
@@ -766,7 +765,7 @@ describe('CDK Include', () => {
 
     someMapping.setValue('region', 'key2', 'value2');
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       "Mappings": {
         "SomeMapping": {
           "region": {
@@ -803,7 +802,7 @@ describe('CDK Include', () => {
   test('can ingest a template that uses Fn::FindInMap with the first argument being a dynamic reference', () => {
     includeTestTemplate(stack, 'find-in-map-with-dynamic-mapping.json');
 
-    expect(stack).toMatchTemplate(
+    Template.fromStack(stack).templateMatches(
       loadTestFileToJsObject('find-in-map-with-dynamic-mapping.json'),
     );
   });
@@ -814,7 +813,7 @@ describe('CDK Include', () => {
 
     someMapping.overrideLogicalId('DifferentMapping');
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       "Mappings": {
         "DifferentMapping": {
           "region": {
@@ -842,7 +841,7 @@ describe('CDK Include', () => {
   test('can ingest a template that uses Fn::FindInMap for the value of a boolean property', () => {
     includeTestTemplate(stack, 'find-in-map-for-boolean-property.json');
 
-    expect(stack).toMatchTemplate(
+    Template.fromStack(stack).templateMatches(
       loadTestFileToJsObject('find-in-map-for-boolean-property.json'),
     );
   });
@@ -853,7 +852,7 @@ describe('CDK Include', () => {
 
     expect(rule).toBeDefined();
 
-    expect(stack).toMatchTemplate(
+    Template.fromStack(stack).templateMatches(
       loadTestFileToJsObject('only-parameters-and-rule.json'),
     );
   });
@@ -881,7 +880,7 @@ describe('CDK Include', () => {
     const hook = cfnTemplate.getHook('EcsBlueGreenCodeDeployHook');
 
     expect(hook).toBeDefined();
-    expect(stack).toMatchTemplate(
+    Template.fromStack(stack).templateMatches(
       loadTestFileToJsObject('hook-code-deploy-blue-green-ecs.json'),
     );
   });
@@ -901,7 +900,7 @@ describe('CDK Include', () => {
       },
     });
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       "Transform": {
         "Name": "AWS::Include",
         "Parameters": {
@@ -948,7 +947,7 @@ describe('CDK Include', () => {
       },
     });
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       "Resources": {
         "Bucket": {
           "Type": "AWS::S3::Bucket",
@@ -973,7 +972,7 @@ describe('CDK Include', () => {
       },
     });
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       "Resources": {
         "Bucket": {
           "Type": "AWS::S3::Bucket",
@@ -994,7 +993,7 @@ describe('CDK Include', () => {
       },
     });
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       "Resources": {
         "Bucket": {
           "Type": "AWS::S3::Bucket",
@@ -1020,7 +1019,7 @@ describe('CDK Include', () => {
       },
     });
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       "Resources": {
         "Bucket": {
           "Type": "AWS::S3::Bucket",
@@ -1065,7 +1064,7 @@ describe('CDK Include', () => {
   test('can ingest a template that contains properties not in the current CFN spec, and output it unchanged', () => {
     includeTestTemplate(stack, 'properties-not-in-cfn-spec.json');
 
-    expect(stack).toMatchTemplate(
+    Template.fromStack(stack).templateMatches(
       loadTestFileToJsObject('properties-not-in-cfn-spec.json'),
     );
   });
