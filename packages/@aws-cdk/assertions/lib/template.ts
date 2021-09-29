@@ -1,3 +1,5 @@
+import * as fs from 'fs';
+import * as path from 'path';
 import { Stack, Stage } from '@aws-cdk/core';
 import { Match } from './match';
 import { Matcher } from './matcher';
@@ -171,5 +173,11 @@ function toTemplate(stack: Stack): any {
     throw new Error('unexpected: all stacks must be part of a Stage or an App');
   }
   const assembly = root.synth();
+
+  // if this is a nested stack (it has a parent), then just read the template as a string
+  if (stack.nestedStackParent) {
+    return JSON.parse(fs.readFileSync(path.join(assembly.directory, stack.templateFile)).toString('utf-8'));
+  }
+
   return assembly.getStackArtifact(stack.artifactId).template;
 }

@@ -34,17 +34,16 @@ test('use CloudFrontTarget hosted zone id mappings in nested stacks', () => {
   targets.CloudFrontTarget.getHostedZoneId(nestedStackB);
 
   // THEN
-  // for (let nestedStack of [nestedStackA, nestedStackB]) {
-  //   console.log(nestedStackA.artifactId, nestedStackA.stackName);
-  //   Template.fromStack(nestedStack).hasMapping('AWSCloudFrontPartitionHostedZoneIdMap', {
-  //     'aws': {
-  //       zoneId: 'Z2FDTNDATAQYW2',
-  //     },
-  //     'aws-cn': {
-  //       zoneId: 'Z3RFFRIM2A3IF5',
-  //     },
-  //   });
-  // }
+  for (let nestedStack of [nestedStackA, nestedStackB]) {
+    Template.fromStack(nestedStack).hasMapping('AWSCloudFrontPartitionHostedZoneIdMap', {
+      'aws': {
+        zoneId: 'Z2FDTNDATAQYW2',
+      },
+      'aws-cn': {
+        zoneId: 'Z3RFFRIM2A3IF5',
+      },
+    });
+  }
 });
 
 test('use CloudFront as record target', () => {
