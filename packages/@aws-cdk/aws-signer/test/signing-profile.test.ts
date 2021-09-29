@@ -109,7 +109,8 @@ describe('signing profile', () => {
           ],
         ],
       });
-      Template.fromStack(stack).templateMatches({});
+      // No resources
+      expect(Template.fromStack(stack).toJSON().Resources).toBeFalsy();
     });
   } );
 });
