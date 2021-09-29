@@ -326,6 +326,31 @@ new LayerVersion(this, 'MyLayer', {
 });
 ```
 
+## Architecture
+
+Lambda functions, by default, run on compute systems that have the 64 bit x86 architecture.
+
+The AWS Lambda service also runs compute on the ARM architecture, which can reduce cost
+for some workloads.
+
+A lambda function can be configured to be run on one or both of these platforms -
+
+```ts
+new Function(this, 'MyFunction', {
+  ...
+  architectures: [ Architecture.X86_64, Architecture.ARM_64 ],
+});
+```
+
+Similarly, lambda layer versions can also be tagged with architectures it is compatible with.
+
+```ts
+new LayerVersion(this, 'MyLayer', {
+  ...
+  compatibleArchitectures: [ Architecture.X86_64, Architecture.ARM_64 ],
+});
+```
+
 ## Lambda Insights
 
 Lambda functions can be configured to use CloudWatch [Lambda Insights](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Lambda-Insights.html)
