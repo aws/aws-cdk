@@ -1,5 +1,5 @@
 {
-  "name": "aws-global-lambda-coordinator",
+  "name": "@aws-cdk/aws-global-lambda-coordinator",
   "private": true,
   "version": "0.0.0",
   "description": "This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.",

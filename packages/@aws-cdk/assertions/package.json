@@ -60,12 +60,12 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/jest": "^26.0.24",
-    "cdk-build-tools": "0.0.0",
+    "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/cfnspec": "0.0.0",
+    "@aws-cdk/pkglint": "0.0.0",
+    "@types/jest": "^26.0.24",
     "constructs": "^3.3.69",
     "jest": "^26.6.3",
-    "pkglint": "0.0.0",
     "ts-jest": "^26.5.6"
   },
   "dependencies": {
@@ -107,7 +107,18 @@
     "node": ">= 10.13.0 <13 || >=13.7.0"
   },
   "nozem": {
-    "ostools": ["dirname", "cd", "bash", "rm", "xargs", "sed", "mkdir", "rsync", "cat", "find"],
+    "ostools": [
+      "dirname",
+      "cd",
+      "bash",
+      "rm",
+      "xargs",
+      "sed",
+      "mkdir",
+      "rsync",
+      "cat",
+      "find"
+    ],
     "additionalDirs": [
       "../cfnspec/lib",
       "ARTIFACTS:../cfnspec/spec",
