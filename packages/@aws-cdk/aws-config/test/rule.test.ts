@@ -1,5 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
-import { ResourcePart } from '@aws-cdk/assert-internal';
+import { Template } from '@aws-cdk/assertions';
 import * as targets from '@aws-cdk/aws-events-targets';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
@@ -22,7 +21,7 @@ describe('rule', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Config::ConfigRule', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Config::ConfigRule', {
       Source: {
         Owner: 'AWS',
         SourceIdentifier: 'AWS_SUPER_COOL',
@@ -59,7 +58,7 @@ describe('rule', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Config::ConfigRule', {
+    Template.fromStack(stack).hasResource('AWS::Config::ConfigRule', {
       Properties: {
         Source: {
           Owner: 'CUSTOM_LAMBDA',
@@ -97,13 +96,13 @@ describe('rule', () => {
         'Function76856677',
         'FunctionServiceRole675BB04A',
       ],
-    }, ResourcePart.CompleteDefinition);
+    });
 
-    expect(stack).toHaveResource('AWS::Lambda::Permission', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
       Principal: 'config.amazonaws.com',
     });
 
-    expect(stack).toHaveResource('AWS::IAM::Role', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
       ManagedPolicyArns: [
         {
           'Fn::Join': [
@@ -144,7 +143,7 @@ describe('rule', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Config::ConfigRule', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Config::ConfigRule', {
       Scope: {
         ComplianceResourceId: 'i-1234',
         ComplianceResourceTypes: [
@@ -165,7 +164,7 @@ describe('rule', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Config::ConfigRule', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Config::ConfigRule', {
       Scope: {
         ComplianceResourceTypes: [
           'AWS::S3::Bucket',
@@ -186,7 +185,7 @@ describe('rule', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Config::ConfigRule', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Config::ConfigRule', {
       Scope: {
         TagKey: 'key',
         TagValue: 'value',
@@ -244,7 +243,7 @@ describe('rule', () => {
       target: new targets.LambdaFunction(fn),
     });
 
-    expect(stack).toHaveResource('AWS::Events::Rule', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
       EventPattern: {
         'source': [
           'aws.config',
