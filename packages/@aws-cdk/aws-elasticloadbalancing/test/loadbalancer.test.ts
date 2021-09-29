@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import { Connections, Peer, SubnetType, Vpc } from '@aws-cdk/aws-ec2';
 import { Duration, Stack } from '@aws-cdk/core';
 import { ILoadBalancerTarget, LoadBalancer, LoadBalancingProtocol } from '../lib';
@@ -18,7 +18,7 @@ describe('tests', () => {
       internalPort: 8080,
     });
 
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancing::LoadBalancer', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancing::LoadBalancer', {
       Listeners: [{
         InstancePort: '8080',
         InstanceProtocol: 'http',
@@ -45,7 +45,7 @@ describe('tests', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancing::LoadBalancer', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancing::LoadBalancer', {
       HealthCheck: {
         HealthyThreshold: '2',
         Interval: '60',
@@ -75,7 +75,7 @@ describe('tests', () => {
     elb.addTarget(new FakeTarget());
 
     // THEN: at the very least it added a security group rule for the backend
-    expect(stack).toHaveResource('AWS::EC2::SecurityGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroup', {
       SecurityGroupEgress: [
         {
           Description: 'Port 8080 LB to fleet',
@@ -100,7 +100,7 @@ describe('tests', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancing::LoadBalancer', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancing::LoadBalancer', {
       CrossZone: true,
     });
   });
@@ -117,7 +117,7 @@ describe('tests', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancing::LoadBalancer', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancing::LoadBalancer', {
       CrossZone: false,
     });
   });
@@ -133,7 +133,7 @@ describe('tests', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancing::LoadBalancer', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancing::LoadBalancer', {
       CrossZone: true,
     });
   });
@@ -170,7 +170,7 @@ describe('tests', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancing::LoadBalancer', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancing::LoadBalancer', {
       Subnets: vpc.selectSubnets({
         subnetGroupName: 'private1',
       }).subnetIds.map((subnetId: string) => stack.resolve(subnetId)),
@@ -193,7 +193,7 @@ describe('tests', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancing::LoadBalancer', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancing::LoadBalancer', {
       Listeners: [{
         InstancePort: '8080',
         InstanceProtocol: 'http',
@@ -220,7 +220,7 @@ describe('tests', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancing::LoadBalancer', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancing::LoadBalancer', {
       Listeners: [{
         InstancePort: '8080',
         InstanceProtocol: 'http',
@@ -265,7 +265,7 @@ describe('tests', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancing::LoadBalancer', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancing::LoadBalancer', {
       AccessLoggingPolicy: {
         Enabled: true,
         S3BucketName: 'fakeBucket',
@@ -288,7 +288,7 @@ describe('tests', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancing::LoadBalancer', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancing::LoadBalancer', {
       AccessLoggingPolicy: {
         Enabled: false,
         S3BucketName: 'fakeBucket',
