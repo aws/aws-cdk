@@ -1,27 +1,28 @@
 {
-  "name": "@aws-cdk/aws-eks",
+  "name": "@aws-cdk/lambda-layer-node-proxy-agent",
+  "private": false,
   "version": "0.0.0",
-  "description": "The CDK Construct Library for AWS::EKS",
+  "description": "An AWS Lambda layer that contains the `proxy-agent` NPM dependency",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "software.amazon.awscdk.services.eks",
+        "package": "software.amazon.awscdk.lambda.layer.node.proxy.agent",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "eks"
+          "artifactId": "cdk-lambda-layer-node-proxy-agent"
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.EKS",
-        "packageId": "Amazon.CDK.AWS.EKS",
+        "namespace": "Amazon.CDK.LambdaLayer.NodeProxyAgent",
+        "packageId": "Amazon.CDK.LambdaLayer.NodeProxyAgent",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
       "python": {
-        "distName": "aws-cdk.aws-eks",
-        "module": "aws_cdk.aws_eks",
+        "distName": "aws-cdk.lambda-layer-node-proxy-agent",
+        "module": "aws_cdk.lambda_layer_node_proxy_agent",
         "classifiers": [
           "Framework :: AWS CDK",
           "Framework :: AWS CDK :: 1"
@@ -33,7 +34,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/aws/aws-cdk.git",
-    "directory": "packages/@aws-cdk/aws-eks"
+    "directory": "packages/@aws-cdk/lambda-layer-node-proxy-agent"
   },
   "scripts": {
     "build": "cdk-build",
@@ -44,26 +45,19 @@
     "pkglint": "pkglint -f",
     "package": "cdk-package",
     "awslint": "cdk-awslint",
-    "cfn2ts": "cfn2ts",
-    "build+test+package": "yarn build+test && yarn package",
     "build+test": "yarn build && yarn test",
+    "build+test+package": "yarn build+test && yarn package",
     "compat": "cdk-compat",
-    "gen": "cfn2ts",
     "rosetta:extract": "yarn --silent jsii-rosetta extract",
     "build+extract": "yarn build && yarn rosetta:extract",
     "build+test+extract": "yarn build+test && yarn rosetta:extract"
   },
-  "cdk-build": {
-    "cloudformation": "AWS::EKS",
-    "env": {
-      "AWSLINT_BASE_CONSTRUCT": true
-    }
-  },
   "keywords": [
     "aws",
     "cdk",
-    "constructs",
-    "eks"
+    "example",
+    "construct",
+    "library"
   ],
   "author": {
     "name": "Amazon Web Services",
@@ -75,66 +69,45 @@
     "@aws-cdk/assert-internal": "0.0.0",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/cdk-integ-tools": "0.0.0",
-    "@aws-cdk/cfn2ts": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/aws-lambda": "^8.10.79",
     "@types/jest": "^26.0.24",
-    "@types/sinon": "^9.0.11",
-    "@types/yaml": "1.9.6",
-    "aws-sdk": "^2.848.0",
-    "cdk8s": "^0.33.0",
-    "cdk8s-plus": "^0.33.0",
-    "jest": "^26.6.3",
-    "sinon": "^9.2.4"
+    "jest": "^26.6.3"
   },
   "dependencies": {
-    "@aws-cdk/aws-autoscaling": "0.0.0",
-    "@aws-cdk/aws-ec2": "0.0.0",
-    "@aws-cdk/aws-iam": "0.0.0",
-    "@aws-cdk/aws-kms": "0.0.0",
     "@aws-cdk/aws-lambda": "0.0.0",
-    "@aws-cdk/aws-lambda-nodejs": "0.0.0",
-    "@aws-cdk/aws-ssm": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "@aws-cdk/custom-resources": "0.0.0",
-    "@aws-cdk/lambda-layer-awscli": "0.0.0",
-    "@aws-cdk/lambda-layer-kubectl": "0.0.0",
-    "@aws-cdk/lambda-layer-node-proxy-agent": "0.0.0",
-    "constructs": "^3.3.69",
-    "yaml": "1.10.2"
+    "constructs": "^3.3.69"
   },
-  "bundledDependencies": [
-    "yaml"
-  ],
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-autoscaling": "0.0.0",
-    "@aws-cdk/aws-ec2": "0.0.0",
-    "@aws-cdk/aws-iam": "0.0.0",
-    "@aws-cdk/aws-kms": "0.0.0",
     "@aws-cdk/aws-lambda": "0.0.0",
-    "@aws-cdk/aws-lambda-nodejs": "0.0.0",
-    "@aws-cdk/aws-ssm": "0.0.0",
     "@aws-cdk/core": "0.0.0",
-    "@aws-cdk/custom-resources": "0.0.0",
-    "@aws-cdk/lambda-layer-awscli": "0.0.0",
-    "@aws-cdk/lambda-layer-kubectl": "0.0.0",
-    "@aws-cdk/lambda-layer-node-proxy-agent": "0.0.0",
     "constructs": "^3.3.69"
   },
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"
   },
-  "awslint": {
-    "exclude": [
-      "props-no-arn-refs:@aws-cdk/aws-eks.ClusterProps.outputMastersRoleArn",
-      "props-physical-name:@aws-cdk/aws-eks.OpenIdConnectProviderProps"
-    ]
-  },
   "stability": "stable",
   "maturity": "stable",
   "awscdkio": {
     "announce": false
+  },
+  "cdk-build": {
+    "pre": [
+      "layer/build.sh"
+    ],
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
+  },
+  "nozem": {
+    "ostools": [
+      "dirname",
+      "docker"
+    ]
+  },
+  "ubergen": {
+    "exclude": false
   },
   "publishConfig": {
     "tag": "latest"
