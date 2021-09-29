@@ -5,7 +5,7 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
 import { App, Duration, Stack } from '@aws-cdk/core';
 import { CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021 } from '@aws-cdk/cx-api';
-import { testFutureBehavior, testLegacyBehavior } from 'cdk-build-tools/lib/feature-flag';
+import { testFutureBehavior, testLegacyBehavior } from '@aws-cdk/cdk-build-tools/lib/feature-flag';
 import {
   CfnDistribution,
   Distribution,
@@ -126,7 +126,7 @@ test('ensure comment prop is not greater than max lenght', () => {
   const origin = defaultOrigin();
   new Distribution(stack, 'MyDist', {
     defaultBehavior: { origin },
-    comment: `Adding a comment longer than 128 characters should be trimmed and added the 
+    comment: `Adding a comment longer than 128 characters should be trimmed and added the\x20
 ellipsis so a user would know there was more to read and everything beyond this point should not show up`,
   });
 
@@ -138,7 +138,7 @@ ellipsis so a user would know there was more to read and everything beyond this 
         TargetOriginId: 'StackMyDistOrigin1D6D5E535',
         ViewerProtocolPolicy: 'allow-all',
       },
-      Comment: `Adding a comment longer than 128 characters should be trimmed and added the 
+      Comment: `Adding a comment longer than 128 characters should be trimmed and added the\x20
 ellipsis so a user would know there was more to ...`,
       Enabled: true,
       HttpVersion: 'http2',

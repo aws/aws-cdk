@@ -1,2 +1,2 @@
-const baseConfig = require('../../../tools/cdk-build-tools/config/jest.config');
+const baseConfig = require('../../../tools/@aws-cdk/cdk-build-tools/config/jest.config');
 module.exports = baseConfig;

@@ -1,5 +1,5 @@
 {
-  "name": "individual-packages",
+  "name": "@aws-cdk/individual-packages",
   "version": "0.0.0",
   "private": true,
   "scripts": {
