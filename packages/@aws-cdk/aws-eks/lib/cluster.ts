@@ -1846,7 +1846,7 @@ class ImportedCluster extends ClusterBase {
   }
 
   public get awsAuth(): AwsAuth {
-    throw new Error('"awsAuth" supported in imported cluster');
+    throw new Error('"awsAuth" is not supported on imported clusters');
   }
 }
 
