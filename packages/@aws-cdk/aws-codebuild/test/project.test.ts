@@ -1,5 +1,4 @@
-import { objectLike, ResourcePart, arrayWith } from '@aws-cdk/assert-internal';
-import '@aws-cdk/assert-internal/jest';
+import { Match, Matcher, MatchResult, Template } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
@@ -24,7 +23,7 @@ test('can use filename as buildspec', () => {
   });
 
   // THEN
-  expect(stack).toHaveResourceLike('AWS::CodeBuild::Project', {
+  Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
     Source: {
       BuildSpec: 'hello.yml',
     },
@@ -41,7 +40,7 @@ test('can use buildspec literal', () => {
   });
 
   // THEN
-  expect(stack).toHaveResourceLike('AWS::CodeBuild::Project', {
+  Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
     Source: {
       BuildSpec: '{\n  "phases": [\n    "say hi"\n  ]\n}',
     },
@@ -67,7 +66,7 @@ test('can use yamlbuildspec literal', () => {
   });
 
   // THEN
-  expect(stack).toHaveResourceLike('AWS::CodeBuild::Project', {
+  Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
     Source: {
       BuildSpec: 'text: text\ndecimal: 10\nlist:\n  - say hi\nobj:\n  text: text\n  decimal: 10\n  list:\n    - say hi\n',
     },
@@ -110,7 +109,7 @@ describe('GitHub source', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::CodeBuild::Project', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
       Source: {
         Type: 'GITHUB',
         Location: 'https://github.com/testowner/testrepo.git',
@@ -134,7 +133,7 @@ describe('GitHub source', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::CodeBuild::Project', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
       SourceVersion: 'testbranch',
     });
   });
@@ -153,7 +152,7 @@ describe('GitHub source', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::CodeBuild::Project', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
       Source: {
         ReportBuildStatus: false,
       },
@@ -174,7 +173,7 @@ describe('GitHub source', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::CodeBuild::Project', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
       Triggers: {
         Webhook: true,
       },
@@ -207,7 +206,7 @@ describe('GitHub source', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::CodeBuild::SourceCredential', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::SourceCredential', {
       'ServerType': 'GITHUB',
       'AuthType': 'PERSONAL_ACCESS_TOKEN',
       'Token': 'my-access-token',
@@ -229,7 +228,7 @@ describe('GitHub Enterprise source', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::CodeBuild::Project', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
       SourceVersion: 'testbranch',
     });
   });
@@ -244,7 +243,7 @@ describe('GitHub Enterprise source', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::CodeBuild::SourceCredential', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::SourceCredential', {
       'ServerType': 'GITHUB_ENTERPRISE',
       'AuthType': 'PERSONAL_ACCESS_TOKEN',
       'Token': 'my-access-token',
@@ -267,7 +266,7 @@ describe('BitBucket source', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::CodeBuild::Project', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
       SourceVersion: 'testbranch',
     });
   });
@@ -283,7 +282,7 @@ describe('BitBucket source', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::CodeBuild::SourceCredential', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::SourceCredential', {
       'ServerType': 'BITBUCKET',
       'AuthType': 'BASIC_AUTH',
       'Username': 'my-username',
@@ -308,7 +307,7 @@ test('project with s3 cache bucket', () => {
   });
 
   // THEN
-  expect(stack).toHaveResourceLike('AWS::CodeBuild::Project', {
+  Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
     Cache: {
       Type: 'S3',
       Location: {
@@ -342,7 +341,7 @@ test('s3 codebuild project with sourceVersion', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::CodeBuild::Project', {
+  Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
     SourceVersion: 's3version',
   });
 });
@@ -362,7 +361,7 @@ test('project with local cache modes', () => {
   });
 
   // THEN
-  expect(stack).toHaveResourceLike('AWS::CodeBuild::Project', {
+  Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
     Cache: {
       Type: 'LOCAL',
       Modes: [
@@ -387,9 +386,9 @@ test('project by default has no cache modes', () => {
   });
 
   // THEN
-  expect(stack).not.toHaveResourceLike('AWS::CodeBuild::Project', {
+  Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', Match.not({
     Cache: {},
-  });
+  }));
 });
 
 test('if a role is shared between projects in a VPC, the VPC Policy is only attached once', () => {
@@ -411,18 +410,18 @@ test('if a role is shared between projects in a VPC, the VPC Policy is only atta
   // - 1 is for `ec2:CreateNetworkInterfacePermission`, deduplicated as they're part of a single policy
   // - 1 is for `ec2:CreateNetworkInterface`, this is the separate Policy we're deduplicating
   // We would have found 3 if the deduplication didn't work.
-  expect(stack).toCountResources('AWS::IAM::Policy', 2);
+  Template.fromStack(stack).resourceCountIs('AWS::IAM::Policy', 2);
 
   // THEN - both Projects have a DependsOn on the same policy
-  expect(stack).toHaveResourceLike('AWS::CodeBuild::Project', {
+  Template.fromStack(stack).hasResource('AWS::CodeBuild::Project', {
     Properties: { Name: 'P1' },
     DependsOn: ['Project1PolicyDocumentF9761562'],
-  }, ResourcePart.CompleteDefinition);
+  });
 
-  expect(stack).toHaveResourceLike('AWS::CodeBuild::Project', {
+  Template.fromStack(stack).hasResource('AWS::CodeBuild::Project', {
     Properties: { Name: 'P1' },
     DependsOn: ['Project1PolicyDocumentF9761562'],
-  }, ResourcePart.CompleteDefinition);
+  });
 });
 
 test('can use an imported Role for a Project within a VPC', () => {
@@ -439,9 +438,7 @@ test('can use an imported Role for a Project within a VPC', () => {
     vpc,
   });
 
-  expect(stack).toHaveResourceLike('AWS::CodeBuild::Project', {
-    // no need to do any assertions
-  });
+  Template.fromStack(stack).resourceCountIs('AWS::CodeBuild::Project', 1);
 });
 
 test('can use an imported Role with mutable = false for a Project within a VPC', () => {
@@ -461,15 +458,9 @@ test('can use an imported Role with mutable = false for a Project within a VPC',
     vpc,
   });
 
-  expect(stack).toCountResources('AWS::IAM::Policy', 0);
-
+  Template.fromStack(stack).resourceCountIs('AWS::IAM::Policy', 0);
   // Check that the CodeBuild project does not have a DependsOn
-  expect(stack).toHaveResource('AWS::CodeBuild::Project', (res: any) => {
-    if (res.DependsOn && res.DependsOn.length > 0) {
-      throw new Error(`CodeBuild project should have no DependsOn, but got: ${JSON.stringify(res, undefined, 2)}`);
-    }
-    return true;
-  }, ResourcePart.CompleteDefinition);
+  Template.fromStack(stack).hasResource('AWS::CodeBuild::Project', new NoDependencyMatcher());
 });
 
 test('can use an ImmutableRole for a Project within a VPC', () => {
@@ -489,15 +480,10 @@ test('can use an ImmutableRole for a Project within a VPC', () => {
     vpc,
   });
 
-  expect(stack).toCountResources('AWS::IAM::Policy', 0);
+  Template.fromStack(stack).resourceCountIs('AWS::IAM::Policy', 0);
 
   // Check that the CodeBuild project does not have a DependsOn
-  expect(stack).toHaveResource('AWS::CodeBuild::Project', (res: any) => {
-    if (res.DependsOn && res.DependsOn.length > 0) {
-      throw new Error(`CodeBuild project should have no DependsOn, but got: ${JSON.stringify(res, undefined, 2)}`);
-    }
-    return true;
-  }, ResourcePart.CompleteDefinition);
+  Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', new NoDependencyMatcher());
 });
 
 test('metric method generates a valid CloudWatch metric', () => {
@@ -514,6 +500,18 @@ test('metric method generates a valid CloudWatch metric', () => {
   expect(metric.period.toSeconds()).toEqual(cdk.Duration.minutes(5).toSeconds());
   expect(metric.statistic).toEqual('Average');
 });
+
+class NoDependencyMatcher extends Matcher {
+  public name = 'NoDependencyMatcher';
+
+  public test(actual: any): MatchResult {
+    const result = new MatchResult(actual);
+    if (actual.DependsOn && actual.DependsOn.length > 0) {
+      result.push(this, ['/DependsOn'], `CodeBuild project should have no DependsOn, but got: ${actual.DependsOn}`);
+    }
+    return result;
+  }
+}
 
 describe('CodeBuild test reports group', () => {
   test('adds the appropriate permissions when reportGroup.grantWrite() is called', () => {
@@ -534,11 +532,10 @@ describe('CodeBuild test reports group', () => {
     });
     reportGroup.grantWrite(project);
 
-    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       'PolicyDocument': {
-        'Statement': [
-          {},
-          {
+        'Statement': Match.arrayWith([
+          Match.objectLike({
             'Action': [
               'codebuild:CreateReport',
               'codebuild:UpdateReport',
@@ -550,8 +547,8 @@ describe('CodeBuild test reports group', () => {
                 'Arn',
               ],
             },
-          },
-        ],
+          }),
+        ]),
       },
     });
   });
@@ -575,8 +572,8 @@ describe('Environment', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::CodeBuild::Project', {
-      Environment: objectLike({
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
+      Environment: Match.objectLike({
         RegistryCredential: {
           CredentialProvider: 'SECRETS_MANAGER',
           Credential: { 'Ref': 'SecretA720EF05' },
@@ -602,8 +599,8 @@ describe('Environment', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::CodeBuild::Project', {
-      Environment: objectLike({
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
+      Environment: Match.objectLike({
         RegistryCredential: {
           CredentialProvider: 'SECRETS_MANAGER',
           Credential: 'MySecretName',
@@ -632,8 +629,8 @@ describe('Environment', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::CodeBuild::Project', {
-      LogsConfig: objectLike({
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
+      LogsConfig: Match.objectLike({
         CloudWatchLogs: {
           GroupName: 'MyLogGroupName',
           Status: 'ENABLED',
@@ -661,8 +658,8 @@ describe('Environment', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::CodeBuild::Project', {
-      LogsConfig: objectLike({
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
+      LogsConfig: Match.objectLike({
         CloudWatchLogs: {
           Status: 'DISABLED',
         },
@@ -690,8 +687,8 @@ describe('Environment', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::CodeBuild::Project', {
-      LogsConfig: objectLike({
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
+      LogsConfig: Match.objectLike({
         S3Logs: {
           Location: 'MyBucketName/my-logs',
           Status: 'ENABLED',
@@ -723,8 +720,8 @@ describe('Environment', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::CodeBuild::Project', {
-      LogsConfig: objectLike({
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
+      LogsConfig: Match.objectLike({
         CloudWatchLogs: {
           GroupName: 'MyLogGroupName',
           Status: 'ENABLED',
@@ -757,8 +754,8 @@ describe('Environment', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::CodeBuild::Project', {
-      Environment: objectLike({
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
+      Environment: Match.objectLike({
         Certificate: {
           'Fn::Join': ['', [
             'arn:',
@@ -795,8 +792,8 @@ describe('EnvironmentVariables', () => {
       });
 
       // THEN
-      expect(stack).toHaveResourceLike('AWS::CodeBuild::Project', {
-        Environment: objectLike({
+      Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
+        Environment: Match.objectLike({
           EnvironmentVariables: [{
             Name: 'ENV_VAR1',
             Type: 'PARAMETER_STORE',
@@ -832,9 +829,9 @@ describe('EnvironmentVariables', () => {
       });
 
       // THEN
-      expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         'PolicyDocument': {
-          'Statement': arrayWith(objectLike({
+          'Statement': Match.arrayWith([Match.objectLike({
             'Action': 'ssm:GetParameters',
             'Effect': 'Allow',
             'Resource': [{
@@ -877,7 +874,7 @@ describe('EnvironmentVariables', () => {
                 ],
               ],
             }],
-          })),
+          })]),
         },
       });
     });
@@ -905,14 +902,14 @@ describe('EnvironmentVariables', () => {
       });
 
       // THEN
-      expect(stack).not.toHaveResourceLike('AWS::IAM::Policy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', Match.not({
         'PolicyDocument': {
-          'Statement': arrayWith(objectLike({
+          'Statement': Match.arrayWith([Match.objectLike({
             'Action': 'ssm:GetParameters',
             'Effect': 'Allow',
-          })),
+          })]),
         },
-      });
+      }));
     });
   });
 
@@ -932,7 +929,7 @@ describe('EnvironmentVariables', () => {
       });
 
       // THEN
-      expect(stack).toHaveResourceLike('AWS::CodeBuild::Project', {
+      Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
         'Environment': {
           'EnvironmentVariables': [
             {
@@ -945,9 +942,9 @@ describe('EnvironmentVariables', () => {
       });
 
       // THEN
-      expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         'PolicyDocument': {
-          'Statement': arrayWith({
+          'Statement': Match.arrayWith([{
             'Action': 'secretsmanager:GetSecretValue',
             'Effect': 'Allow',
             'Resource': {
@@ -961,7 +958,7 @@ describe('EnvironmentVariables', () => {
                 ':secret:my-secret-??????',
               ]],
             },
-          }),
+          }]),
         },
       });
     });
@@ -981,7 +978,7 @@ describe('EnvironmentVariables', () => {
       });
 
       // THEN
-      expect(stack).toHaveResourceLike('AWS::CodeBuild::Project', {
+      Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
         'Environment': {
           'EnvironmentVariables': [
             {
@@ -994,9 +991,9 @@ describe('EnvironmentVariables', () => {
       });
 
       // THEN
-      expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         'PolicyDocument': {
-          'Statement': arrayWith({
+          'Statement': Match.arrayWith([{
             'Action': 'secretsmanager:GetSecretValue',
             'Effect': 'Allow',
             'Resource': {
@@ -1010,7 +1007,7 @@ describe('EnvironmentVariables', () => {
                 ':secret:my-secret-??????',
               ]],
             },
-          }),
+          }]),
         },
       });
     });
@@ -1030,7 +1027,7 @@ describe('EnvironmentVariables', () => {
       });
 
       // THEN
-      expect(stack).toHaveResourceLike('AWS::CodeBuild::Project', {
+      Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
         'Environment': {
           'EnvironmentVariables': [
             {
@@ -1043,26 +1040,26 @@ describe('EnvironmentVariables', () => {
       });
 
       // THEN
-      expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         'PolicyDocument': {
-          'Statement': arrayWith({
+          'Statement': Match.arrayWith([{
             'Action': 'secretsmanager:GetSecretValue',
             'Effect': 'Allow',
             'Resource': 'arn:aws:secretsmanager:us-west-2:123456789012:secret:my-secret-123456*',
-          }),
+          }]),
         },
       });
 
       // THEN
-      expect(stack).not.toHaveResourceLike('AWS::IAM::Policy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', Match.not({
         'PolicyDocument': {
-          'Statement': arrayWith({
+          'Statement': Match.arrayWith([{
             'Action': 'kms:Decrypt',
             'Effect': 'Allow',
             'Resource': 'arn:aws:kms:us-west-2:123456789012:key/*',
-          }),
+          }]),
         },
-      });
+      }));
     });
 
     test('can be provided as a verbatim partial secret ARN', () => {
@@ -1080,7 +1077,7 @@ describe('EnvironmentVariables', () => {
       });
 
       // THEN
-      expect(stack).toHaveResourceLike('AWS::CodeBuild::Project', {
+      Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
         'Environment': {
           'EnvironmentVariables': [
             {
@@ -1093,26 +1090,26 @@ describe('EnvironmentVariables', () => {
       });
 
       // THEN
-      expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         'PolicyDocument': {
-          'Statement': arrayWith({
+          'Statement': Match.arrayWith([{
             'Action': 'secretsmanager:GetSecretValue',
             'Effect': 'Allow',
             'Resource': 'arn:aws:secretsmanager:us-west-2:123456789012:secret:mysecret*',
-          }),
+          }]),
         },
       });
 
       // THEN
-      expect(stack).not.toHaveResourceLike('AWS::IAM::Policy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', Match.not({
         'PolicyDocument': {
-          'Statement': arrayWith({
+          'Statement': Match.arrayWith([{
             'Action': 'kms:Decrypt',
             'Effect': 'Allow',
             'Resource': 'arn:aws:kms:us-west-2:123456789012:key/*',
-          }),
+          }]),
         },
-      });
+      }));
     });
 
     test("when provided as a verbatim partial secret ARN from another account, adds permission to decrypt keys in the Secret's account", () => {
@@ -1133,13 +1130,13 @@ describe('EnvironmentVariables', () => {
       });
 
       // THEN
-      expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         'PolicyDocument': {
-          'Statement': arrayWith({
+          'Statement': Match.arrayWith([{
             'Action': 'kms:Decrypt',
             'Effect': 'Allow',
             'Resource': 'arn:aws:kms:us-west-2:901234567890:key/*',
-          }),
+          }]),
         },
       });
     });
@@ -1166,13 +1163,13 @@ describe('EnvironmentVariables', () => {
       });
 
       // THEN
-      expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         'PolicyDocument': {
-          'Statement': arrayWith({
+          'Statement': Match.arrayWith([{
             'Action': 'kms:Decrypt',
             'Effect': 'Allow',
             'Resource': 'arn:aws:kms:us-west-2:901234567890:key/*',
-          }),
+          }]),
         },
       });
     });
@@ -1193,7 +1190,7 @@ describe('EnvironmentVariables', () => {
       });
 
       // THEN
-      expect(stack).toHaveResourceLike('AWS::CodeBuild::Project', {
+      Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
         'Environment': {
           'EnvironmentVariables': [
             {
@@ -1206,13 +1203,13 @@ describe('EnvironmentVariables', () => {
       });
 
       // THEN
-      expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         'PolicyDocument': {
-          'Statement': arrayWith({
+          'Statement': Match.arrayWith([{
             'Action': 'secretsmanager:GetSecretValue',
             'Effect': 'Allow',
             'Resource': { 'Ref': 'SecretA720EF05' },
-          }),
+          }]),
         },
       });
     });
@@ -1237,7 +1234,7 @@ describe('EnvironmentVariables', () => {
       });
 
       // THEN
-      expect(stack).toHaveResourceLike('AWS::CodeBuild::Project', {
+      Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
         'Environment': {
           'EnvironmentVariables': [
             {
@@ -1255,13 +1252,13 @@ describe('EnvironmentVariables', () => {
       });
 
       // THEN
-      expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         'PolicyDocument': {
-          'Statement': arrayWith({
+          'Statement': Match.arrayWith([{
             'Action': 'secretsmanager:GetSecretValue',
             'Effect': 'Allow',
             'Resource': { 'Ref': 'SecretA720EF05' },
-          }),
+          }]),
         },
       });
     });
@@ -1282,7 +1279,7 @@ describe('EnvironmentVariables', () => {
       });
 
       // THEN
-      expect(stack).toHaveResourceLike('AWS::CodeBuild::Project', {
+      Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
         'Environment': {
           'EnvironmentVariables': [
             {
@@ -1300,13 +1297,13 @@ describe('EnvironmentVariables', () => {
       });
 
       // THEN
-      expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         'PolicyDocument': {
-          'Statement': arrayWith({
+          'Statement': Match.arrayWith([{
             'Action': 'secretsmanager:GetSecretValue',
             'Effect': 'Allow',
             'Resource': { 'Ref': 'SecretA720EF05' },
-          }),
+          }]),
         },
       });
     });
@@ -1327,7 +1324,7 @@ describe('EnvironmentVariables', () => {
       });
 
       // THEN
-      expect(stack).toHaveResourceLike('AWS::CodeBuild::Project', {
+      Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
         'Environment': {
           'EnvironmentVariables': [
             {
@@ -1340,9 +1337,9 @@ describe('EnvironmentVariables', () => {
       });
 
       // THEN
-      expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         'PolicyDocument': {
-          'Statement': arrayWith({
+          'Statement': Match.arrayWith([{
             'Action': 'secretsmanager:GetSecretValue',
             'Effect': 'Allow',
             'Resource': {
@@ -1356,7 +1353,7 @@ describe('EnvironmentVariables', () => {
                 ':secret:mysecret-??????',
               ]],
             },
-          }),
+          }]),
         },
       });
     });
@@ -1378,7 +1375,7 @@ describe('EnvironmentVariables', () => {
       });
 
       // THEN
-      expect(stack).toHaveResourceLike('AWS::CodeBuild::Project', {
+      Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
         'Environment': {
           'EnvironmentVariables': [
             {
@@ -1391,13 +1388,13 @@ describe('EnvironmentVariables', () => {
       });
 
       // THEN
-      expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         'PolicyDocument': {
-          'Statement': arrayWith({
+          'Statement': Match.arrayWith([{
             'Action': 'secretsmanager:GetSecretValue',
             'Effect': 'Allow',
             'Resource': 'arn:aws:secretsmanager:us-west-2:123456789012:secret:mysecret*',
-          }),
+          }]),
         },
       });
     });
@@ -1419,7 +1416,7 @@ describe('EnvironmentVariables', () => {
       });
 
       // THEN
-      expect(stack).toHaveResourceLike('AWS::CodeBuild::Project', {
+      Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
         'Environment': {
           'EnvironmentVariables': [
             {
@@ -1432,13 +1429,13 @@ describe('EnvironmentVariables', () => {
       });
 
       // THEN
-      expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         'PolicyDocument': {
-          'Statement': arrayWith({
+          'Statement': Match.arrayWith([{
             'Action': 'secretsmanager:GetSecretValue',
             'Effect': 'Allow',
             'Resource': 'arn:aws:secretsmanager:us-west-2:123456789012:secret:mysecret-123456*',
-          }),
+          }]),
         },
       });
     });
@@ -1465,7 +1462,7 @@ describe('EnvironmentVariables', () => {
       });
 
       // THEN
-      expect(stack).toHaveResourceLike('AWS::CodeBuild::Project', {
+      Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
         'Environment': {
           'EnvironmentVariables': [
             {
@@ -1485,9 +1482,9 @@ describe('EnvironmentVariables', () => {
         },
       });
 
-      expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         'PolicyDocument': {
-          'Statement': arrayWith({
+          'Statement': Match.arrayWith([{
             'Action': 'secretsmanager:GetSecretValue',
             'Effect': 'Allow',
             'Resource': {
@@ -1499,13 +1496,13 @@ describe('EnvironmentVariables', () => {
                 ':012345678912:secret:secret-name-??????',
               ]],
             },
-          }),
+          }]),
         },
       });
 
-      expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         'PolicyDocument': {
-          'Statement': arrayWith({
+          'Statement': Match.arrayWith([{
             'Action': 'kms:Decrypt',
             'Effect': 'Allow',
             'Resource': {
@@ -1517,7 +1514,7 @@ describe('EnvironmentVariables', () => {
                 ':012345678912:key/*',
               ]],
             },
-          }),
+          }]),
         },
       });
     });
@@ -1544,7 +1541,7 @@ describe('EnvironmentVariables', () => {
       });
 
       // THEN
-      expect(stack).toHaveResourceLike('AWS::CodeBuild::Project', {
+      Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
         'Environment': {
           'EnvironmentVariables': [
             {
@@ -1564,9 +1561,9 @@ describe('EnvironmentVariables', () => {
         },
       });
 
-      expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         'PolicyDocument': {
-          'Statement': arrayWith({
+          'Statement': Match.arrayWith([{
             'Action': 'secretsmanager:GetSecretValue',
             'Effect': 'Allow',
             'Resource': {
@@ -1578,13 +1575,13 @@ describe('EnvironmentVariables', () => {
                 ':012345678912:secret:secret-name*',
               ]],
             },
-          }),
+          }]),
         },
       });
 
-      expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         'PolicyDocument': {
-          'Statement': arrayWith({
+          'Statement': Match.arrayWith([{
             'Action': 'kms:Decrypt',
             'Effect': 'Allow',
             'Resource': {
@@ -1596,7 +1593,7 @@ describe('EnvironmentVariables', () => {
                 ':012345678912:key/*',
               ]],
             },
-          }),
+          }]),
         },
       });
     });
@@ -1621,7 +1618,7 @@ describe('EnvironmentVariables', () => {
       });
 
       // THEN
-      expect(stack).toHaveResourceLike('AWS::CodeBuild::Project', {
+      Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
         'Environment': {
           'EnvironmentVariables': [
             {
@@ -1633,23 +1630,23 @@ describe('EnvironmentVariables', () => {
         },
       });
 
-      expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         'PolicyDocument': {
-          'Statement': arrayWith({
+          'Statement': Match.arrayWith([{
             'Action': 'secretsmanager:GetSecretValue',
             'Effect': 'Allow',
             'Resource': `${secretArn}*`,
-          }),
+          }]),
         },
       });
 
-      expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         'PolicyDocument': {
-          'Statement': arrayWith({
+          'Statement': Match.arrayWith([{
             'Action': 'kms:Decrypt',
             'Effect': 'Allow',
             'Resource': 'arn:aws:kms:us-west-2:901234567890:key/*',
-          }),
+          }]),
         },
       });
     });
@@ -1721,7 +1718,7 @@ describe('Timeouts', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::CodeBuild::Project', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
       QueuedTimeoutInMinutes: 30,
     });
   });
@@ -1740,7 +1737,7 @@ describe('Timeouts', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::CodeBuild::Project', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
       TimeoutInMinutes: 30,
     });
   });
@@ -1761,7 +1758,7 @@ describe('Maximum concurrency', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::CodeBuild::Project', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
       ConcurrentBuildLimit: 1,
     });
   });
