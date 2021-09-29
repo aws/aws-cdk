@@ -143,9 +143,7 @@
           "Ref": "VpcIGWD7BA715C"
         }
       },
-      "DependsOn": [
-        "VpcVPCGWBF912B6E"
-      ]
+      "DependsOn": ["VpcVPCGWBF912B6E"]
     },
     "VpcPublicSubnet1EIPD7E02669": {
       "Type": "AWS::EC2::EIP",
@@ -170,10 +168,7 @@
           "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
         },
         "AllocationId": {
-          "Fn::GetAtt": [
-            "VpcPublicSubnet1EIPD7E02669",
-            "AllocationId"
-          ]
+          "Fn::GetAtt": ["VpcPublicSubnet1EIPD7E02669", "AllocationId"]
         },
         "Tags": [
           {
@@ -256,9 +251,7 @@
           "Ref": "VpcIGWD7BA715C"
         }
       },
-      "DependsOn": [
-        "VpcVPCGWBF912B6E"
-      ]
+      "DependsOn": ["VpcVPCGWBF912B6E"]
     },
     "VpcPublicSubnet3SubnetBE12F0B6": {
       "Type": "AWS::EC2::Subnet",
@@ -329,9 +322,7 @@
           "Ref": "VpcIGWD7BA715C"
         }
       },
-      "DependsOn": [
-        "VpcVPCGWBF912B6E"
-      ]
+      "DependsOn": ["VpcVPCGWBF912B6E"]
     },
     "VpcPrivateSubnet1Subnet536B997A": {
       "Type": "AWS::EC2::Subnet",
@@ -619,16 +610,10 @@
         "Description": "from awscdkeksclustertestClusterNodesInstanceSecurityGroupD0B64C54:443",
         "FromPort": 443,
         "GroupId": {
-          "Fn::GetAtt": [
-            "ClusterControlPlaneSecurityGroupD274242C",
-            "GroupId"
-          ]
+          "Fn::GetAtt": ["ClusterControlPlaneSecurityGroupD274242C", "GroupId"]
         },
         "SourceSecurityGroupId": {
-          "Fn::GetAtt": [
-            "ClusterNodesInstanceSecurityGroup899246BD",
-            "GroupId"
-          ]
+          "Fn::GetAtt": ["ClusterNodesInstanceSecurityGroup899246BD", "GroupId"]
         },
         "ToPort": 443
       }
@@ -640,10 +625,7 @@
         "Description": "from awscdkeksclustertestClusterNodesArmInstanceSecurityGroup52C45858:443",
         "FromPort": 443,
         "GroupId": {
-          "Fn::GetAtt": [
-            "ClusterControlPlaneSecurityGroupD274242C",
-            "GroupId"
-          ]
+          "Fn::GetAtt": ["ClusterControlPlaneSecurityGroupD274242C", "GroupId"]
         },
         "SourceSecurityGroupId": {
           "Fn::GetAtt": [
@@ -661,10 +643,7 @@
         "Description": "from awscdkeksclustertestClusterBottlerocketNodesInstanceSecurityGroup83FE7914:443",
         "FromPort": 443,
         "GroupId": {
-          "Fn::GetAtt": [
-            "ClusterControlPlaneSecurityGroupD274242C",
-            "GroupId"
-          ]
+          "Fn::GetAtt": ["ClusterControlPlaneSecurityGroupD274242C", "GroupId"]
         },
         "SourceSecurityGroupId": {
           "Fn::GetAtt": [
@@ -682,16 +661,10 @@
         "Description": "from awscdkeksclustertestClusterspotInstanceSecurityGroupF50F5D47:443",
         "FromPort": 443,
         "GroupId": {
-          "Fn::GetAtt": [
-            "ClusterControlPlaneSecurityGroupD274242C",
-            "GroupId"
-          ]
+          "Fn::GetAtt": ["ClusterControlPlaneSecurityGroupD274242C", "GroupId"]
         },
         "SourceSecurityGroupId": {
-          "Fn::GetAtt": [
-            "ClusterspotInstanceSecurityGroup01F7B1CE",
-            "GroupId"
-          ]
+          "Fn::GetAtt": ["ClusterspotInstanceSecurityGroup01F7B1CE", "GroupId"]
         },
         "ToPort": 443
       }
@@ -703,10 +676,7 @@
         "Description": "from awscdkeksclustertestClusterInferenceInstancesInstanceSecurityGroup42C57C51:443",
         "FromPort": 443,
         "GroupId": {
-          "Fn::GetAtt": [
-            "ClusterControlPlaneSecurityGroupD274242C",
-            "GroupId"
-          ]
+          "Fn::GetAtt": ["ClusterControlPlaneSecurityGroupD274242C", "GroupId"]
         },
         "SourceSecurityGroupId": {
           "Fn::GetAtt": [
@@ -785,10 +755,7 @@
               "Action": "iam:PassRole",
               "Effect": "Allow",
               "Resource": {
-                "Fn::GetAtt": [
-                  "ClusterRoleFA261979",
-                  "Arn"
-                ]
+                "Fn::GetAtt": ["ClusterRoleFA261979", "Arn"]
               }
             },
             {
@@ -804,9 +771,7 @@
                 "eks:UntagResource"
               ],
               "Effect": "Allow",
-              "Resource": [
-                "*"
-              ]
+              "Resource": ["*"]
             },
             {
               "Action": [
@@ -817,10 +782,7 @@
               "Resource": "*"
             },
             {
-              "Action": [
-                "iam:GetRole",
-                "iam:listAttachedRolePolicies"
-              ],
+              "Action": ["iam:GetRole", "iam:listAttachedRolePolicies"],
               "Effect": "Allow",
               "Resource": "*"
             },
@@ -851,10 +813,7 @@
               ],
               "Effect": "Allow",
               "Resource": {
-                "Fn::GetAtt": [
-                  "SecretsKey317DCF94",
-                  "Arn"
-                ]
+                "Fn::GetAtt": ["SecretsKey317DCF94", "Arn"]
               }
             },
             {
@@ -921,24 +880,16 @@
         "Config": {
           "version": "1.21",
           "roleArn": {
-            "Fn::GetAtt": [
-              "ClusterRoleFA261979",
-              "Arn"
-            ]
+            "Fn::GetAtt": ["ClusterRoleFA261979", "Arn"]
           },
           "encryptionConfig": [
             {
               "provider": {
                 "keyArn": {
-                  "Fn::GetAtt": [
-                    "SecretsKey317DCF94",
-                    "Arn"
-                  ]
+                  "Fn::GetAtt": ["SecretsKey317DCF94", "Arn"]
                 }
               },
-              "resources": [
-                "secrets"
-              ]
+              "resources": ["secrets"]
             }
           ],
           "resourcesVpcConfig": {
@@ -975,10 +926,7 @@
           }
         },
         "AssumeRoleArn": {
-          "Fn::GetAtt": [
-            "ClusterCreationRole360249B6",
-            "Arn"
-          ]
+          "Fn::GetAtt": ["ClusterCreationRole360249B6", "Arn"]
         },
         "AttributesRevision": 2
       },
@@ -1039,16 +987,10 @@
         "Description": "from awscdkeksclustertestClusterNodesInstanceSecurityGroupD0B64C54:443",
         "FromPort": 443,
         "GroupId": {
-          "Fn::GetAtt": [
-            "Cluster9EE0221C",
-            "ClusterSecurityGroupId"
-          ]
+          "Fn::GetAtt": ["Cluster9EE0221C", "ClusterSecurityGroupId"]
         },
         "SourceSecurityGroupId": {
-          "Fn::GetAtt": [
-            "ClusterNodesInstanceSecurityGroup899246BD",
-            "GroupId"
-          ]
+          "Fn::GetAtt": ["ClusterNodesInstanceSecurityGroup899246BD", "GroupId"]
         },
         "ToPort": 443
       }
@@ -1060,10 +1002,7 @@
         "Description": "from awscdkeksclustertestClusterNodesArmInstanceSecurityGroup52C45858:443",
         "FromPort": 443,
         "GroupId": {
-          "Fn::GetAtt": [
-            "Cluster9EE0221C",
-            "ClusterSecurityGroupId"
-          ]
+          "Fn::GetAtt": ["Cluster9EE0221C", "ClusterSecurityGroupId"]
         },
         "SourceSecurityGroupId": {
           "Fn::GetAtt": [
@@ -1081,10 +1020,7 @@
         "Description": "from awscdkeksclustertestClusterBottlerocketNodesInstanceSecurityGroup83FE7914:443",
         "FromPort": 443,
         "GroupId": {
-          "Fn::GetAtt": [
-            "Cluster9EE0221C",
-            "ClusterSecurityGroupId"
-          ]
+          "Fn::GetAtt": ["Cluster9EE0221C", "ClusterSecurityGroupId"]
         },
         "SourceSecurityGroupId": {
           "Fn::GetAtt": [
@@ -1102,16 +1038,10 @@
         "Description": "from awscdkeksclustertestClusterspotInstanceSecurityGroupF50F5D47:443",
         "FromPort": 443,
         "GroupId": {
-          "Fn::GetAtt": [
-            "Cluster9EE0221C",
-            "ClusterSecurityGroupId"
-          ]
+          "Fn::GetAtt": ["Cluster9EE0221C", "ClusterSecurityGroupId"]
         },
         "SourceSecurityGroupId": {
-          "Fn::GetAtt": [
-            "ClusterspotInstanceSecurityGroup01F7B1CE",
-            "GroupId"
-          ]
+          "Fn::GetAtt": ["ClusterspotInstanceSecurityGroup01F7B1CE", "GroupId"]
         },
         "ToPort": 443
       }
@@ -1123,10 +1053,7 @@
         "Description": "from awscdkeksclustertestClusterInferenceInstancesInstanceSecurityGroup42C57C51:443",
         "FromPort": 443,
         "GroupId": {
-          "Fn::GetAtt": [
-            "Cluster9EE0221C",
-            "ClusterSecurityGroupId"
-          ]
+          "Fn::GetAtt": ["Cluster9EE0221C", "ClusterSecurityGroupId"]
         },
         "SourceSecurityGroupId": {
           "Fn::GetAtt": [
@@ -1152,17 +1079,11 @@
             [
               "[{\"apiVersion\":\"v1\",\"kind\":\"ConfigMap\",\"metadata\":{\"name\":\"aws-auth\",\"namespace\":\"kube-system\",\"labels\":{\"aws.cdk.eks/prune-c842be348c45337cd97b8759de76d5a68b4910d487\":\"\"}},\"data\":{\"mapRoles\":\"[{\\\"rolearn\\\":\\\"",
               {
-                "Fn::GetAtt": [
-                  "AdminRole38563C57",
-                  "Arn"
-                ]
+                "Fn::GetAtt": ["AdminRole38563C57", "Arn"]
               },
               "\\\",\\\"username\\\":\\\"",
               {
-                "Fn::GetAtt": [
-                  "AdminRole38563C57",
-                  "Arn"
-                ]
+                "Fn::GetAtt": ["AdminRole38563C57", "Arn"]
               },
               "\\\",\\\"groups\\\":[\\\"system:masters\\\"]},{\\\"rolearn\\\":\\\"",
               {
@@ -1180,17 +1101,11 @@
               },
               "\\\",\\\"username\\\":\\\"system:node:{{SessionName}}\\\",\\\"groups\\\":[\\\"system:bootstrappers\\\",\\\"system:nodes\\\",\\\"system:node-proxier\\\"]},{\\\"rolearn\\\":\\\"",
               {
-                "Fn::GetAtt": [
-                  "ClusterNodesInstanceRoleC3C01328",
-                  "Arn"
-                ]
+                "Fn::GetAtt": ["ClusterNodesInstanceRoleC3C01328", "Arn"]
               },
               "\\\",\\\"username\\\":\\\"system:node:{{EC2PrivateDNSName}}\\\",\\\"groups\\\":[\\\"system:bootstrappers\\\",\\\"system:nodes\\\"]},{\\\"rolearn\\\":\\\"",
               {
-                "Fn::GetAtt": [
-                  "ClusterNodesArmInstanceRoleB93D3298",
-                  "Arn"
-                ]
+                "Fn::GetAtt": ["ClusterNodesArmInstanceRoleB93D3298", "Arn"]
               },
               "\\\",\\\"username\\\":\\\"system:node:{{EC2PrivateDNSName}}\\\",\\\"groups\\\":[\\\"system:bootstrappers\\\",\\\"system:nodes\\\"]},{\\\"rolearn\\\":\\\"",
               {
@@ -1201,10 +1116,7 @@
               },
               "\\\",\\\"username\\\":\\\"system:node:{{EC2PrivateDNSName}}\\\",\\\"groups\\\":[\\\"system:bootstrappers\\\",\\\"system:nodes\\\"]},{\\\"rolearn\\\":\\\"",
               {
-                "Fn::GetAtt": [
-                  "ClusterspotInstanceRole39043830",
-                  "Arn"
-                ]
+                "Fn::GetAtt": ["ClusterspotInstanceRole39043830", "Arn"]
               },
               "\\\",\\\"username\\\":\\\"system:node:{{EC2PrivateDNSName}}\\\",\\\"groups\\\":[\\\"system:bootstrappers\\\",\\\"system:nodes\\\"]},{\\\"rolearn\\\":\\\"",
               {
@@ -1249,17 +1161,12 @@
           "Ref": "Cluster9EE0221C"
         },
         "RoleArn": {
-          "Fn::GetAtt": [
-            "ClusterCreationRole360249B6",
-            "Arn"
-          ]
+          "Fn::GetAtt": ["ClusterCreationRole360249B6", "Arn"]
         },
         "PruneLabel": "aws.cdk.eks/prune-c842be348c45337cd97b8759de76d5a68b4910d487",
         "Overwrite": true
       },
-      "DependsOn": [
-        "ClusterKubectlReadyBarrier200052AF"
-      ],
+      "DependsOn": ["ClusterKubectlReadyBarrier200052AF"],
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
     },
@@ -1353,9 +1260,7 @@
         ],
         "AmiType": "AL2_x86_64",
         "ForceUpdateEnabled": true,
-        "InstanceTypes": [
-          "m5.large"
-        ],
+        "InstanceTypes": ["m5.large"],
         "ScalingConfig": {
           "DesiredSize": 2,
           "MaxSize": 2,
@@ -1404,10 +1309,7 @@
           ]
         },
         "AssumeRoleArn": {
-          "Fn::GetAtt": [
-            "ClusterCreationRole360249B6",
-            "Arn"
-          ]
+          "Fn::GetAtt": ["ClusterCreationRole360249B6", "Arn"]
         },
         "Config": {
           "clusterName": {
@@ -1457,16 +1359,10 @@
         "IpProtocol": "-1",
         "Description": "from awscdkeksclustertestClusterNodesInstanceSecurityGroupD0B64C54:ALL TRAFFIC",
         "GroupId": {
-          "Fn::GetAtt": [
-            "ClusterNodesInstanceSecurityGroup899246BD",
-            "GroupId"
-          ]
+          "Fn::GetAtt": ["ClusterNodesInstanceSecurityGroup899246BD", "GroupId"]
         },
         "SourceSecurityGroupId": {
-          "Fn::GetAtt": [
-            "ClusterNodesInstanceSecurityGroup899246BD",
-            "GroupId"
-          ]
+          "Fn::GetAtt": ["ClusterNodesInstanceSecurityGroup899246BD", "GroupId"]
         }
       }
     },
@@ -1477,16 +1373,10 @@
         "Description": "from awscdkeksclustertestClusterClusterSecurityGroupF7265A32:443",
         "FromPort": 443,
         "GroupId": {
-          "Fn::GetAtt": [
-            "ClusterNodesInstanceSecurityGroup899246BD",
-            "GroupId"
-          ]
+          "Fn::GetAtt": ["ClusterNodesInstanceSecurityGroup899246BD", "GroupId"]
         },
         "SourceSecurityGroupId": {
-          "Fn::GetAtt": [
-            "Cluster9EE0221C",
-            "ClusterSecurityGroupId"
-          ]
+          "Fn::GetAtt": ["Cluster9EE0221C", "ClusterSecurityGroupId"]
         },
         "ToPort": 443
       }
@@ -1498,16 +1388,10 @@
         "Description": "from awscdkeksclustertestClusterControlPlaneSecurityGroup2F130134:443",
         "FromPort": 443,
         "GroupId": {
-          "Fn::GetAtt": [
-            "ClusterNodesInstanceSecurityGroup899246BD",
-            "GroupId"
-          ]
+          "Fn::GetAtt": ["ClusterNodesInstanceSecurityGroup899246BD", "GroupId"]
         },
         "SourceSecurityGroupId": {
-          "Fn::GetAtt": [
-            "ClusterControlPlaneSecurityGroupD274242C",
-            "GroupId"
-          ]
+          "Fn::GetAtt": ["ClusterControlPlaneSecurityGroupD274242C", "GroupId"]
         },
         "ToPort": 443
       }
@@ -1519,16 +1403,10 @@
         "Description": "from awscdkeksclustertestClusterClusterSecurityGroupF7265A32:1025-65535",
         "FromPort": 1025,
         "GroupId": {
-          "Fn::GetAtt": [
-            "ClusterNodesInstanceSecurityGroup899246BD",
-            "GroupId"
-          ]
+          "Fn::GetAtt": ["ClusterNodesInstanceSecurityGroup899246BD", "GroupId"]
         },
         "SourceSecurityGroupId": {
-          "Fn::GetAtt": [
-            "Cluster9EE0221C",
-            "ClusterSecurityGroupId"
-          ]
+          "Fn::GetAtt": ["Cluster9EE0221C", "ClusterSecurityGroupId"]
         },
         "ToPort": 65535
       }
@@ -1540,16 +1418,10 @@
         "Description": "from awscdkeksclustertestClusterControlPlaneSecurityGroup2F130134:1025-65535",
         "FromPort": 1025,
         "GroupId": {
-          "Fn::GetAtt": [
-            "ClusterNodesInstanceSecurityGroup899246BD",
-            "GroupId"
-          ]
+          "Fn::GetAtt": ["ClusterNodesInstanceSecurityGroup899246BD", "GroupId"]
         },
         "SourceSecurityGroupId": {
-          "Fn::GetAtt": [
-            "ClusterControlPlaneSecurityGroupD274242C",
-            "GroupId"
-          ]
+          "Fn::GetAtt": ["ClusterControlPlaneSecurityGroupD274242C", "GroupId"]
         },
         "ToPort": 65535
       }
@@ -1667,10 +1539,7 @@
             ]
           },
           {
-            "Fn::GetAtt": [
-              "Cluster9EE0221C",
-              "ClusterSecurityGroupId"
-            ]
+            "Fn::GetAtt": ["Cluster9EE0221C", "ClusterSecurityGroupId"]
           }
         ],
         "UserData": {
@@ -1684,17 +1553,11 @@
                 },
                 " --kubelet-extra-args \"--node-labels lifecycle=OnDemand\" --apiserver-endpoint '",
                 {
-                  "Fn::GetAtt": [
-                    "Cluster9EE0221C",
-                    "Endpoint"
-                  ]
+                  "Fn::GetAtt": ["Cluster9EE0221C", "Endpoint"]
                 },
                 "' --b64-cluster-ca '",
                 {
-                  "Fn::GetAtt": [
-                    "Cluster9EE0221C",
-                    "CertificateAuthorityData"
-                  ]
+                  "Fn::GetAtt": ["Cluster9EE0221C", "CertificateAuthorityData"]
                 },
                 "' --use-max-pods true\n/opt/aws/bin/cfn-signal --exit-code $? --stack aws-cdk-eks-cluster-test --resource ClusterNodesASGF172BD19 --region test-region"
               ]
@@ -1702,9 +1565,7 @@
           }
         }
       },
-      "DependsOn": [
-        "ClusterNodesInstanceRoleC3C01328"
-      ]
+      "DependsOn": ["ClusterNodesInstanceRoleC3C01328"]
     },
     "ClusterNodesASGF172BD19": {
       "Type": "AWS::AutoScaling::AutoScalingGroup",
@@ -1808,10 +1669,7 @@
           ]
         },
         "SourceSecurityGroupId": {
-          "Fn::GetAtt": [
-            "Cluster9EE0221C",
-            "ClusterSecurityGroupId"
-          ]
+          "Fn::GetAtt": ["Cluster9EE0221C", "ClusterSecurityGroupId"]
         },
         "ToPort": 443
       }
@@ -1829,10 +1687,7 @@
           ]
         },
         "SourceSecurityGroupId": {
-          "Fn::GetAtt": [
-            "ClusterControlPlaneSecurityGroupD274242C",
-            "GroupId"
-          ]
+          "Fn::GetAtt": ["ClusterControlPlaneSecurityGroupD274242C", "GroupId"]
         },
         "ToPort": 443
       }
@@ -1850,10 +1705,7 @@
           ]
         },
         "SourceSecurityGroupId": {
-          "Fn::GetAtt": [
-            "Cluster9EE0221C",
-            "ClusterSecurityGroupId"
-          ]
+          "Fn::GetAtt": ["Cluster9EE0221C", "ClusterSecurityGroupId"]
         },
         "ToPort": 65535
       }
@@ -1871,10 +1723,7 @@
           ]
         },
         "SourceSecurityGroupId": {
-          "Fn::GetAtt": [
-            "ClusterControlPlaneSecurityGroupD274242C",
-            "GroupId"
-          ]
+          "Fn::GetAtt": ["ClusterControlPlaneSecurityGroupD274242C", "GroupId"]
         },
         "ToPort": 65535
       }
@@ -1992,10 +1841,7 @@
             ]
           },
           {
-            "Fn::GetAtt": [
-              "Cluster9EE0221C",
-              "ClusterSecurityGroupId"
-            ]
+            "Fn::GetAtt": ["Cluster9EE0221C", "ClusterSecurityGroupId"]
           }
         ],
         "UserData": {
@@ -2009,17 +1855,11 @@
                 },
                 " --kubelet-extra-args \"--node-labels lifecycle=OnDemand\" --apiserver-endpoint '",
                 {
-                  "Fn::GetAtt": [
-                    "Cluster9EE0221C",
-                    "Endpoint"
-                  ]
+                  "Fn::GetAtt": ["Cluster9EE0221C", "Endpoint"]
                 },
                 "' --b64-cluster-ca '",
                 {
-                  "Fn::GetAtt": [
-                    "Cluster9EE0221C",
-                    "CertificateAuthorityData"
-                  ]
+                  "Fn::GetAtt": ["Cluster9EE0221C", "CertificateAuthorityData"]
                 },
                 "' --use-max-pods true\n/opt/aws/bin/cfn-signal --exit-code $? --stack aws-cdk-eks-cluster-test --resource ClusterNodesArmASG40A593D0 --region test-region"
               ]
@@ -2027,9 +1867,7 @@
           }
         }
       },
-      "DependsOn": [
-        "ClusterNodesArmInstanceRoleB93D3298"
-      ]
+      "DependsOn": ["ClusterNodesArmInstanceRoleB93D3298"]
     },
     "ClusterNodesArmASG40A593D0": {
       "Type": "AWS::AutoScaling::AutoScalingGroup",
@@ -2133,10 +1971,7 @@
           ]
         },
         "SourceSecurityGroupId": {
-          "Fn::GetAtt": [
-            "Cluster9EE0221C",
-            "ClusterSecurityGroupId"
-          ]
+          "Fn::GetAtt": ["Cluster9EE0221C", "ClusterSecurityGroupId"]
         },
         "ToPort": 443
       }
@@ -2154,10 +1989,7 @@
           ]
         },
         "SourceSecurityGroupId": {
-          "Fn::GetAtt": [
-            "ClusterControlPlaneSecurityGroupD274242C",
-            "GroupId"
-          ]
+          "Fn::GetAtt": ["ClusterControlPlaneSecurityGroupD274242C", "GroupId"]
         },
         "ToPort": 443
       }
@@ -2175,10 +2007,7 @@
           ]
         },
         "SourceSecurityGroupId": {
-          "Fn::GetAtt": [
-            "Cluster9EE0221C",
-            "ClusterSecurityGroupId"
-          ]
+          "Fn::GetAtt": ["Cluster9EE0221C", "ClusterSecurityGroupId"]
         },
         "ToPort": 65535
       }
@@ -2196,10 +2025,7 @@
           ]
         },
         "SourceSecurityGroupId": {
-          "Fn::GetAtt": [
-            "ClusterControlPlaneSecurityGroupD274242C",
-            "GroupId"
-          ]
+          "Fn::GetAtt": ["ClusterControlPlaneSecurityGroupD274242C", "GroupId"]
         },
         "ToPort": 65535
       }
@@ -2317,10 +2143,7 @@
             ]
           },
           {
-            "Fn::GetAtt": [
-              "Cluster9EE0221C",
-              "ClusterSecurityGroupId"
-            ]
+            "Fn::GetAtt": ["Cluster9EE0221C", "ClusterSecurityGroupId"]
           }
         ],
         "UserData": {
@@ -2330,17 +2153,11 @@
               [
                 "\n[settings.kubernetes]\napi-server=\"",
                 {
-                  "Fn::GetAtt": [
-                    "Cluster9EE0221C",
-                    "Endpoint"
-                  ]
+                  "Fn::GetAtt": ["Cluster9EE0221C", "Endpoint"]
                 },
                 "\"\ncluster-certificate=\"",
                 {
-                  "Fn::GetAtt": [
-                    "Cluster9EE0221C",
-                    "CertificateAuthorityData"
-                  ]
+                  "Fn::GetAtt": ["Cluster9EE0221C", "CertificateAuthorityData"]
                 },
                 "\"\ncluster-name=\"",
                 {
@@ -2352,9 +2169,7 @@
           }
         }
       },
-      "DependsOn": [
-        "ClusterBottlerocketNodesInstanceRole68E4BCFB"
-      ]
+      "DependsOn": ["ClusterBottlerocketNodesInstanceRole68E4BCFB"]
     },
     "ClusterBottlerocketNodesASGA27A9B70": {
       "Type": "AWS::AutoScaling::AutoScalingGroup",
@@ -2432,16 +2247,10 @@
         "IpProtocol": "-1",
         "Description": "from awscdkeksclustertestClusterspotInstanceSecurityGroupF50F5D47:ALL TRAFFIC",
         "GroupId": {
-          "Fn::GetAtt": [
-            "ClusterspotInstanceSecurityGroup01F7B1CE",
-            "GroupId"
-          ]
+          "Fn::GetAtt": ["ClusterspotInstanceSecurityGroup01F7B1CE", "GroupId"]
         },
         "SourceSecurityGroupId": {
-          "Fn::GetAtt": [
-            "ClusterspotInstanceSecurityGroup01F7B1CE",
-            "GroupId"
-          ]
+          "Fn::GetAtt": ["ClusterspotInstanceSecurityGroup01F7B1CE", "GroupId"]
         }
       }
     },
@@ -2452,16 +2261,10 @@
         "Description": "from awscdkeksclustertestClusterClusterSecurityGroupF7265A32:443",
         "FromPort": 443,
         "GroupId": {
-          "Fn::GetAtt": [
-            "ClusterspotInstanceSecurityGroup01F7B1CE",
-            "GroupId"
-          ]
+          "Fn::GetAtt": ["ClusterspotInstanceSecurityGroup01F7B1CE", "GroupId"]
         },
         "SourceSecurityGroupId": {
-          "Fn::GetAtt": [
-            "Cluster9EE0221C",
-            "ClusterSecurityGroupId"
-          ]
+          "Fn::GetAtt": ["Cluster9EE0221C", "ClusterSecurityGroupId"]
         },
         "ToPort": 443
       }
@@ -2473,16 +2276,10 @@
         "Description": "from awscdkeksclustertestClusterControlPlaneSecurityGroup2F130134:443",
         "FromPort": 443,
         "GroupId": {
-          "Fn::GetAtt": [
-            "ClusterspotInstanceSecurityGroup01F7B1CE",
-            "GroupId"
-          ]
+          "Fn::GetAtt": ["ClusterspotInstanceSecurityGroup01F7B1CE", "GroupId"]
         },
         "SourceSecurityGroupId": {
-          "Fn::GetAtt": [
-            "ClusterControlPlaneSecurityGroupD274242C",
-            "GroupId"
-          ]
+          "Fn::GetAtt": ["ClusterControlPlaneSecurityGroupD274242C", "GroupId"]
         },
         "ToPort": 443
       }
@@ -2494,16 +2291,10 @@
         "Description": "from awscdkeksclustertestClusterClusterSecurityGroupF7265A32:1025-65535",
         "FromPort": 1025,
         "GroupId": {
-          "Fn::GetAtt": [
-            "ClusterspotInstanceSecurityGroup01F7B1CE",
-            "GroupId"
-          ]
+          "Fn::GetAtt": ["ClusterspotInstanceSecurityGroup01F7B1CE", "GroupId"]
         },
         "SourceSecurityGroupId": {
-          "Fn::GetAtt": [
-            "Cluster9EE0221C",
-            "ClusterSecurityGroupId"
-          ]
+          "Fn::GetAtt": ["Cluster9EE0221C", "ClusterSecurityGroupId"]
         },
         "ToPort": 65535
       }
@@ -2515,16 +2306,10 @@
         "Description": "from awscdkeksclustertestClusterControlPlaneSecurityGroup2F130134:1025-65535",
         "FromPort": 1025,
         "GroupId": {
-          "Fn::GetAtt": [
-            "ClusterspotInstanceSecurityGroup01F7B1CE",
-            "GroupId"
-          ]
+          "Fn::GetAtt": ["ClusterspotInstanceSecurityGroup01F7B1CE", "GroupId"]
         },
         "SourceSecurityGroupId": {
-          "Fn::GetAtt": [
-            "ClusterControlPlaneSecurityGroupD274242C",
-            "GroupId"
-          ]
+          "Fn::GetAtt": ["ClusterControlPlaneSecurityGroupD274242C", "GroupId"]
         },
         "ToPort": 65535
       }
@@ -2642,10 +2427,7 @@
             ]
           },
           {
-            "Fn::GetAtt": [
-              "Cluster9EE0221C",
-              "ClusterSecurityGroupId"
-            ]
+            "Fn::GetAtt": ["Cluster9EE0221C", "ClusterSecurityGroupId"]
           }
         ],
         "SpotPrice": "0.1094",
@@ -2660,17 +2442,11 @@
                 },
                 " --kubelet-extra-args \"--node-labels lifecycle=Ec2Spot --register-with-taints=spotInstance=true:PreferNoSchedule --node-labels foo=bar,goo=far\" --apiserver-endpoint '",
                 {
-                  "Fn::GetAtt": [
-                    "Cluster9EE0221C",
-                    "Endpoint"
-                  ]
+                  "Fn::GetAtt": ["Cluster9EE0221C", "Endpoint"]
                 },
                 "' --b64-cluster-ca '",
                 {
-                  "Fn::GetAtt": [
-                    "Cluster9EE0221C",
-                    "CertificateAuthorityData"
-                  ]
+                  "Fn::GetAtt": ["Cluster9EE0221C", "CertificateAuthorityData"]
                 },
                 "' --use-max-pods true --aws-api-retry-attempts 5\n/opt/aws/bin/cfn-signal --exit-code $? --stack aws-cdk-eks-cluster-test --resource ClusterspotASG857494B6 --region test-region"
               ]
@@ -2678,9 +2454,7 @@
           }
         }
       },
-      "DependsOn": [
-        "ClusterspotInstanceRole39043830"
-      ]
+      "DependsOn": ["ClusterspotInstanceRole39043830"]
     },
     "ClusterspotASG857494B6": {
       "Type": "AWS::AutoScaling::AutoScalingGroup",
@@ -2743,10 +2517,7 @@
           "Ref": "Cluster9EE0221C"
         },
         "RoleArn": {
-          "Fn::GetAtt": [
-            "ClusterCreationRole360249B6",
-            "Arn"
-          ]
+          "Fn::GetAtt": ["ClusterCreationRole360249B6", "Arn"]
         },
         "Release": "ksclustertestclusterchartspotinterrupthandlerf41ba997",
         "Chart": "aws-node-termination-handler",
@@ -2756,9 +2527,7 @@
         "Repository": "https://aws.github.io/eks-charts",
         "CreateNamespace": true
       },
-      "DependsOn": [
-        "ClusterKubectlReadyBarrier200052AF"
-      ],
+      "DependsOn": ["ClusterKubectlReadyBarrier200052AF"],
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
     },
@@ -2816,10 +2585,7 @@
           ]
         },
         "SourceSecurityGroupId": {
-          "Fn::GetAtt": [
-            "Cluster9EE0221C",
-            "ClusterSecurityGroupId"
-          ]
+          "Fn::GetAtt": ["Cluster9EE0221C", "ClusterSecurityGroupId"]
         },
         "ToPort": 443
       }
@@ -2837,10 +2603,7 @@
           ]
         },
         "SourceSecurityGroupId": {
-          "Fn::GetAtt": [
-            "ClusterControlPlaneSecurityGroupD274242C",
-            "GroupId"
-          ]
+          "Fn::GetAtt": ["ClusterControlPlaneSecurityGroupD274242C", "GroupId"]
         },
         "ToPort": 443
       }
@@ -2858,10 +2621,7 @@
           ]
         },
         "SourceSecurityGroupId": {
-          "Fn::GetAtt": [
-            "Cluster9EE0221C",
-            "ClusterSecurityGroupId"
-          ]
+          "Fn::GetAtt": ["Cluster9EE0221C", "ClusterSecurityGroupId"]
         },
         "ToPort": 65535
       }
@@ -2879,10 +2639,7 @@
           ]
         },
         "SourceSecurityGroupId": {
-          "Fn::GetAtt": [
-            "ClusterControlPlaneSecurityGroupD274242C",
-            "GroupId"
-          ]
+          "Fn::GetAtt": ["ClusterControlPlaneSecurityGroupD274242C", "GroupId"]
         },
         "ToPort": 65535
       }
@@ -3000,10 +2757,7 @@
             ]
           },
           {
-            "Fn::GetAtt": [
-              "Cluster9EE0221C",
-              "ClusterSecurityGroupId"
-            ]
+            "Fn::GetAtt": ["Cluster9EE0221C", "ClusterSecurityGroupId"]
           }
         ],
         "UserData": {
@@ -3017,17 +2771,11 @@
                 },
                 " --kubelet-extra-args \"--node-labels lifecycle=OnDemand\" --apiserver-endpoint '",
                 {
-                  "Fn::GetAtt": [
-                    "Cluster9EE0221C",
-                    "Endpoint"
-                  ]
+                  "Fn::GetAtt": ["Cluster9EE0221C", "Endpoint"]
                 },
                 "' --b64-cluster-ca '",
                 {
-                  "Fn::GetAtt": [
-                    "Cluster9EE0221C",
-                    "CertificateAuthorityData"
-                  ]
+                  "Fn::GetAtt": ["Cluster9EE0221C", "CertificateAuthorityData"]
                 },
                 "' --use-max-pods true\n/opt/aws/bin/cfn-signal --exit-code $? --stack aws-cdk-eks-cluster-test --resource ClusterInferenceInstancesASGE90717C7 --region test-region"
               ]
@@ -3035,9 +2783,7 @@
           }
         }
       },
-      "DependsOn": [
-        "ClusterInferenceInstancesInstanceRole59AC6F56"
-      ]
+      "DependsOn": ["ClusterInferenceInstancesInstanceRole59AC6F56"]
     },
     "ClusterInferenceInstancesASGE90717C7": {
       "Type": "AWS::AutoScaling::AutoScalingGroup",
@@ -3101,16 +2847,11 @@
           "Ref": "Cluster9EE0221C"
         },
         "RoleArn": {
-          "Fn::GetAtt": [
-            "ClusterCreationRole360249B6",
-            "Arn"
-          ]
+          "Fn::GetAtt": ["ClusterCreationRole360249B6", "Arn"]
         },
         "PruneLabel": "aws.cdk.eks/prune-c88223d575036bcf663303b6778373ae4854f1fe3b"
       },
-      "DependsOn": [
-        "ClusterKubectlReadyBarrier200052AF"
-      ],
+      "DependsOn": ["ClusterKubectlReadyBarrier200052AF"],
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
     },
@@ -3186,10 +2927,7 @@
           "Ref": "Cluster9EE0221C"
         },
         "NodeRole": {
-          "Fn::GetAtt": [
-            "ClusterNodegroupextrangNodeGroupRole23AE23D0",
-            "Arn"
-          ]
+          "Fn::GetAtt": ["ClusterNodegroupextrangNodeGroupRole23AE23D0", "Arn"]
         },
         "Subnets": [
           {
@@ -3204,9 +2942,7 @@
         ],
         "AmiType": "AL2_x86_64",
         "ForceUpdateEnabled": true,
-        "InstanceTypes": [
-          "t3.small"
-        ],
+        "InstanceTypes": ["t3.small"],
         "ScalingConfig": {
           "DesiredSize": 1,
           "MaxSize": 1,
@@ -3305,11 +3041,7 @@
         "AmiType": "AL2_x86_64",
         "CapacityType": "SPOT",
         "ForceUpdateEnabled": true,
-        "InstanceTypes": [
-          "c5.large",
-          "c5a.large",
-          "c5d.large"
-        ],
+        "InstanceTypes": ["c5.large", "c5a.large", "c5d.large"],
         "ScalingConfig": {
           "DesiredSize": 3,
           "MaxSize": 3,
@@ -3407,9 +3139,7 @@
         ],
         "AmiType": "AL2_ARM_64",
         "ForceUpdateEnabled": true,
-        "InstanceTypes": [
-          "m6g.medium"
-        ],
+        "InstanceTypes": ["m6g.medium"],
         "ScalingConfig": {
           "DesiredSize": 1,
           "MaxSize": 1,
@@ -3446,10 +3176,7 @@
             "Ref": "LaunchTemplate"
           },
           "Version": {
-            "Fn::GetAtt": [
-              "LaunchTemplate",
-              "DefaultVersionNumber"
-            ]
+            "Fn::GetAtt": ["LaunchTemplate", "DefaultVersionNumber"]
           }
         },
         "ScalingConfig": {
@@ -3473,16 +3200,11 @@
           "Ref": "Cluster9EE0221C"
         },
         "RoleArn": {
-          "Fn::GetAtt": [
-            "ClusterCreationRole360249B6",
-            "Arn"
-          ]
+          "Fn::GetAtt": ["ClusterCreationRole360249B6", "Arn"]
         },
         "PruneLabel": "aws.cdk.eks/prune-c8f0f7140f7358e29b7f58e81b507dcf744a3908f4"
       },
-      "DependsOn": [
-        "ClusterKubectlReadyBarrier200052AF"
-      ],
+      "DependsOn": ["ClusterKubectlReadyBarrier200052AF"],
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
     },
@@ -3499,10 +3221,7 @@
           "Ref": "Cluster9EE0221C"
         },
         "RoleArn": {
-          "Fn::GetAtt": [
-            "ClusterCreationRole360249B6",
-            "Arn"
-          ]
+          "Fn::GetAtt": ["ClusterCreationRole360249B6", "Arn"]
         },
         "Release": "awscdkeksclustertestclusterchartdashboard1f3d83fe",
         "Chart": "kubernetes-dashboard",
@@ -3510,9 +3229,7 @@
         "Repository": "https://kubernetes.github.io/dashboard/",
         "CreateNamespace": true
       },
-      "DependsOn": [
-        "ClusterKubectlReadyBarrier200052AF"
-      ],
+      "DependsOn": ["ClusterKubectlReadyBarrier200052AF"],
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
     },
@@ -3541,16 +3258,11 @@
           "Ref": "Cluster9EE0221C"
         },
         "RoleArn": {
-          "Fn::GetAtt": [
-            "ClusterCreationRole360249B6",
-            "Arn"
-          ]
+          "Fn::GetAtt": ["ClusterCreationRole360249B6", "Arn"]
         },
         "PruneLabel": "aws.cdk.eks/prune-c8cd9cb2e127e0b0375ebc544f18d8513721895a27"
       },
-      "DependsOn": [
-        "ClusterKubectlReadyBarrier200052AF"
-      ],
+      "DependsOn": ["ClusterKubectlReadyBarrier200052AF"],
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
     },
@@ -3568,16 +3280,11 @@
           "Ref": "Cluster9EE0221C"
         },
         "RoleArn": {
-          "Fn::GetAtt": [
-            "ClusterCreationRole360249B6",
-            "Arn"
-          ]
+          "Fn::GetAtt": ["ClusterCreationRole360249B6", "Arn"]
         },
         "PruneLabel": "aws.cdk.eks/prune-c84fd26f70b01a84daa5d3646e813820af6fde0970"
       },
-      "DependsOn": [
-        "ClusterKubectlReadyBarrier200052AF"
-      ],
+      "DependsOn": ["ClusterKubectlReadyBarrier200052AF"],
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
     },
@@ -3594,10 +3301,7 @@
           "Ref": "Cluster9EE0221C"
         },
         "RoleArn": {
-          "Fn::GetAtt": [
-            "ClusterCreationRole360249B6",
-            "Arn"
-          ]
+          "Fn::GetAtt": ["ClusterCreationRole360249B6", "Arn"]
         },
         "Release": "awscdkeksclustertestclusterchartnginxingressa7f70129",
         "Chart": "nginx-ingress",
@@ -3704,10 +3408,7 @@
             [
               "[{\"apiVersion\":\"v1\",\"kind\":\"ServiceAccount\",\"metadata\":{\"name\":\"awscdkeksclustertestclustermyserviceaccount4080bcdd\",\"namespace\":\"default\",\"labels\":{\"aws.cdk.eks/prune-c8f8dbf23319159cc2fef46283f7450b814e818252\":\"\",\"app.kubernetes.io/name\":\"awscdkeksclustertestclustermyserviceaccount4080bcdd\"},\"annotations\":{\"eks.amazonaws.com/role-arn\":\"",
               {
-                "Fn::GetAtt": [
-                  "ClusterMyServiceAccountRole85337B29",
-                  "Arn"
-                ]
+                "Fn::GetAtt": ["ClusterMyServiceAccountRole85337B29", "Arn"]
               },
               "\"}}}]"
             ]
@@ -3717,16 +3418,11 @@
           "Ref": "Cluster9EE0221C"
         },
         "RoleArn": {
-          "Fn::GetAtt": [
-            "ClusterCreationRole360249B6",
-            "Arn"
-          ]
+          "Fn::GetAtt": ["ClusterCreationRole360249B6", "Arn"]
         },
         "PruneLabel": "aws.cdk.eks/prune-c8f8dbf23319159cc2fef46283f7450b814e818252"
       },
-      "DependsOn": [
-        "ClusterKubectlReadyBarrier200052AF"
-      ],
+      "DependsOn": ["ClusterKubectlReadyBarrier200052AF"],
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
     },
@@ -3739,17 +3435,10 @@
             "Arn"
           ]
         },
-        "ClientIDList": [
-          "sts.amazonaws.com"
-        ],
-        "ThumbprintList": [
-          "9e99a48a9960b14926bb7f3b02e22da2b0ab7280"
-        ],
+        "ClientIDList": ["sts.amazonaws.com"],
+        "ThumbprintList": ["9e99a48a9960b14926bb7f3b02e22da2b0ab7280"],
         "Url": {
-          "Fn::GetAtt": [
-            "Cluster9EE0221C",
-            "OpenIdConnectIssuerUrl"
-          ]
+          "Fn::GetAtt": ["Cluster9EE0221C", "OpenIdConnectIssuerUrl"]
         }
       },
       "UpdateReplacePolicy": "Delete",
@@ -3769,16 +3458,11 @@
           "Ref": "Cluster9EE0221C"
         },
         "RoleArn": {
-          "Fn::GetAtt": [
-            "ClusterCreationRole360249B6",
-            "Arn"
-          ]
+          "Fn::GetAtt": ["ClusterCreationRole360249B6", "Arn"]
         },
         "PruneLabel": "aws.cdk.eks/prune-c8b6a5b3e6f9f4f1aa9dc400a13c96633da4822b2d"
       },
-      "DependsOn": [
-        "ClusterKubectlReadyBarrier200052AF"
-      ],
+      "DependsOn": ["ClusterKubectlReadyBarrier200052AF"],
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
     },
@@ -3797,10 +3481,7 @@
             [
               "[{\"kind\":\"Service\",\"apiVersion\":\"v1\",\"metadata\":{\"name\":\"webservice\",\"annotations\":{\"service.beta.kubernetes.io/aws-load-balancer-internal\":\"true\",\"service.beta.kubernetes.io/aws-load-balancer-extra-security-groups\":\"",
               {
-                "Fn::GetAtt": [
-                  "WebServiceSecurityGroupA556AEB5",
-                  "GroupId"
-                ]
+                "Fn::GetAtt": ["WebServiceSecurityGroupA556AEB5", "GroupId"]
               },
               "\"},\"labels\":{\"aws.cdk.eks/prune-c84c09bc8d75d4cc4d672e0d3872dcdb35f628dc2c\":\"\"}},\"spec\":{\"type\":\"LoadBalancer\",\"ports\":[{\"port\":9000,\"targetPort\":80}],\"selector\":{\"app\":\"simple-web\"}}}]"
             ]
@@ -3810,16 +3491,11 @@
           "Ref": "Cluster9EE0221C"
         },
         "RoleArn": {
-          "Fn::GetAtt": [
-            "ClusterCreationRole360249B6",
-            "Arn"
-          ]
+          "Fn::GetAtt": ["ClusterCreationRole360249B6", "Arn"]
         },
         "PruneLabel": "aws.cdk.eks/prune-c84c09bc8d75d4cc4d672e0d3872dcdb35f628dc2c"
       },
-      "DependsOn": [
-        "ClusterKubectlReadyBarrier200052AF"
-      ],
+      "DependsOn": ["ClusterKubectlReadyBarrier200052AF"],
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
     },
@@ -3836,10 +3512,7 @@
           "Ref": "Cluster9EE0221C"
         },
         "RoleArn": {
-          "Fn::GetAtt": [
-            "ClusterCreationRole360249B6",
-            "Arn"
-          ]
+          "Fn::GetAtt": ["ClusterCreationRole360249B6", "Arn"]
         },
         "ObjectType": "service",
         "ObjectName": "webservice",
@@ -3847,9 +3520,7 @@
         "JsonPath": ".status.loadBalancer.ingress[0].hostname",
         "TimeoutSeconds": 300
       },
-      "DependsOn": [
-        "ClusterKubectlReadyBarrier200052AF"
-      ],
+      "DependsOn": ["ClusterKubectlReadyBarrier200052AF"],
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
     },
@@ -3866,7 +3537,7 @@
               },
               "/",
               {
-                "Ref": "AssetParameters5598bd5ce38da10f7a9c6f8e54d4f50d7c0befd5309540ab64d64985236f2ef9S3BucketC3BFBE73"
+                "Ref": "AssetParameters4eac204c18d7034bdb83d685748ca8f285edfd054338f3a045a749dbbf285996S3BucketDEC09A4A"
               },
               "/",
               {
@@ -3876,7 +3547,7 @@
                     "Fn::Split": [
                       "||",
                       {
-                        "Ref": "AssetParameters5598bd5ce38da10f7a9c6f8e54d4f50d7c0befd5309540ab64d64985236f2ef9S3VersionKeyFA8225D5"
+                        "Ref": "AssetParameters4eac204c18d7034bdb83d685748ca8f285edfd054338f3a045a749dbbf285996S3VersionKey454B1BD5"
                       }
                     ]
                   }
@@ -3889,7 +3560,7 @@
                     "Fn::Split": [
                       "||",
                       {
-                        "Ref": "AssetParameters5598bd5ce38da10f7a9c6f8e54d4f50d7c0befd5309540ab64d64985236f2ef9S3VersionKeyFA8225D5"
+                        "Ref": "AssetParameters4eac204c18d7034bdb83d685748ca8f285edfd054338f3a045a749dbbf285996S3VersionKey454B1BD5"
                       }
                     ]
                   }
@@ -3900,16 +3571,19 @@
         },
         "Parameters": {
           "referencetoawscdkeksclustertestClusterCreationRole95F44854Arn": {
-            "Fn::GetAtt": [
-              "ClusterCreationRole360249B6",
-              "Arn"
-            ]
+            "Fn::GetAtt": ["ClusterCreationRole360249B6", "Arn"]
           },
-          "referencetoawscdkeksclustertestAssetParameters87b1e2c41f84590d14f7ab8cb0f338c51d6fa3efe78943867af07fa959593dbaS3Bucket1516DB0ARef": {
-            "Ref": "AssetParameters87b1e2c41f84590d14f7ab8cb0f338c51d6fa3efe78943867af07fa959593dbaS3Bucket14D204F9"
+          "referencetoawscdkeksclustertestAssetParametersf9e3ed49f5734f267f6dfffed3c6038e2d31d096ca7e70ce257b16aa613a3ffcS3BucketF0C34111Ref": {
+            "Ref": "AssetParametersf9e3ed49f5734f267f6dfffed3c6038e2d31d096ca7e70ce257b16aa613a3ffcS3Bucket85C441D9"
           },
-          "referencetoawscdkeksclustertestAssetParameters87b1e2c41f84590d14f7ab8cb0f338c51d6fa3efe78943867af07fa959593dbaS3VersionKey2B8F3ED3Ref": {
-            "Ref": "AssetParameters87b1e2c41f84590d14f7ab8cb0f338c51d6fa3efe78943867af07fa959593dbaS3VersionKeyDE8A2F1F"
+          "referencetoawscdkeksclustertestAssetParametersf9e3ed49f5734f267f6dfffed3c6038e2d31d096ca7e70ce257b16aa613a3ffcS3VersionKey01A2F046Ref": {
+            "Ref": "AssetParametersf9e3ed49f5734f267f6dfffed3c6038e2d31d096ca7e70ce257b16aa613a3ffcS3VersionKeyABBEC6F6"
+          },
+          "referencetoawscdkeksclustertestAssetParameters80bcd5b0641df4315e277c71a1069094a5d7c76f9e2565c46b68a990c522eaefS3Bucket1C7DAFD3Ref": {
+            "Ref": "AssetParameters80bcd5b0641df4315e277c71a1069094a5d7c76f9e2565c46b68a990c522eaefS3Bucket208EDB42"
+          },
+          "referencetoawscdkeksclustertestAssetParameters80bcd5b0641df4315e277c71a1069094a5d7c76f9e2565c46b68a990c522eaefS3VersionKey6FBDB806Ref": {
+            "Ref": "AssetParameters80bcd5b0641df4315e277c71a1069094a5d7c76f9e2565c46b68a990c522eaefS3VersionKey08C22772"
           },
           "referencetoawscdkeksclustertestAssetParametersdaeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1S3Bucket0815E7B5Ref": {
             "Ref": "AssetParametersdaeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1S3BucketDC4B98B1"
@@ -3935,7 +3609,7 @@
               },
               "/",
               {
-                "Ref": "AssetParameterscbbfa09db37e6a37ee43fbb48d73d4d96f216270558c932674a48e856763ce79S3Bucket2C7FA0F3"
+                "Ref": "AssetParameters0504b861a4c2a9b4228d6d618fb8a60f19b1c36575b96db9f1716e0eb6a2ee52S3Bucket1BC62BBD"
               },
               "/",
               {
@@ -3945,7 +3619,7 @@
                     "Fn::Split": [
                       "||",
                       {
-                        "Ref": "AssetParameterscbbfa09db37e6a37ee43fbb48d73d4d96f216270558c932674a48e856763ce79S3VersionKey4D3075F9"
+                        "Ref": "AssetParameters0504b861a4c2a9b4228d6d618fb8a60f19b1c36575b96db9f1716e0eb6a2ee52S3VersionKey94294964"
                       }
                     ]
                   }
@@ -3958,7 +3632,7 @@
                     "Fn::Split": [
                       "||",
                       {
-                        "Ref": "AssetParameterscbbfa09db37e6a37ee43fbb48d73d4d96f216270558c932674a48e856763ce79S3VersionKey4D3075F9"
+                        "Ref": "AssetParameters0504b861a4c2a9b4228d6d618fb8a60f19b1c36575b96db9f1716e0eb6a2ee52S3VersionKey94294964"
                       }
                     ]
                   }
@@ -3969,22 +3643,16 @@
         },
         "Parameters": {
           "referencetoawscdkeksclustertestClusterD76DFF87Arn": {
-            "Fn::GetAtt": [
-              "Cluster9EE0221C",
-              "Arn"
-            ]
+            "Fn::GetAtt": ["Cluster9EE0221C", "Arn"]
           },
           "referencetoawscdkeksclustertestClusterCreationRole95F44854Arn": {
-            "Fn::GetAtt": [
-              "ClusterCreationRole360249B6",
-              "Arn"
-            ]
+            "Fn::GetAtt": ["ClusterCreationRole360249B6", "Arn"]
           },
-          "referencetoawscdkeksclustertestAssetParametersbafd50ae9f214e496ff8c72c6425f93dca3ccd590e20963706d5d610d9c75757S3Bucket174F3576Ref": {
-            "Ref": "AssetParametersbafd50ae9f214e496ff8c72c6425f93dca3ccd590e20963706d5d610d9c75757S3Bucket008DBB35"
+          "referencetoawscdkeksclustertestAssetParameters4129bbca38164ecb28fee8e5b674f0d05e5957b4b8ed97d9c950527b5cc4ce10S3Bucket3929FA93Ref": {
+            "Ref": "AssetParameters4129bbca38164ecb28fee8e5b674f0d05e5957b4b8ed97d9c950527b5cc4ce10S3BucketC6FAEEC9"
           },
-          "referencetoawscdkeksclustertestAssetParametersbafd50ae9f214e496ff8c72c6425f93dca3ccd590e20963706d5d610d9c75757S3VersionKeyE8595856Ref": {
-            "Ref": "AssetParametersbafd50ae9f214e496ff8c72c6425f93dca3ccd590e20963706d5d610d9c75757S3VersionKey97C3E1A0"
+          "referencetoawscdkeksclustertestAssetParameters4129bbca38164ecb28fee8e5b674f0d05e5957b4b8ed97d9c950527b5cc4ce10S3VersionKey14530D6BRef": {
+            "Ref": "AssetParameters4129bbca38164ecb28fee8e5b674f0d05e5957b4b8ed97d9c950527b5cc4ce10S3VersionKeyA7EE7421"
           },
           "referencetoawscdkeksclustertestVpcPrivateSubnet1Subnet32A4EC2ARef": {
             "Ref": "VpcPrivateSubnet1Subnet536B997A"
@@ -3996,10 +3664,7 @@
             "Ref": "VpcPrivateSubnet3SubnetF258B56E"
           },
           "referencetoawscdkeksclustertestClusterD76DFF87ClusterSecurityGroupId": {
-            "Fn::GetAtt": [
-              "Cluster9EE0221C",
-              "ClusterSecurityGroupId"
-            ]
+            "Fn::GetAtt": ["Cluster9EE0221C", "ClusterSecurityGroupId"]
           },
           "referencetoawscdkeksclustertestAssetParameterse9882ab123687399f934da0d45effe675ecc8ce13b40cb946f3e1d6141fe8d68S3BucketB4E9C142Ref": {
             "Ref": "AssetParameterse9882ab123687399f934da0d45effe675ecc8ce13b40cb946f3e1d6141fe8d68S3BucketAEADE8C7"
@@ -4007,11 +3672,11 @@
           "referencetoawscdkeksclustertestAssetParameterse9882ab123687399f934da0d45effe675ecc8ce13b40cb946f3e1d6141fe8d68S3VersionKey1C7C1F5FRef": {
             "Ref": "AssetParameterse9882ab123687399f934da0d45effe675ecc8ce13b40cb946f3e1d6141fe8d68S3VersionKeyE415415F"
           },
-          "referencetoawscdkeksclustertestAssetParameterscd15c6fb3a2eee6979f62b25e35a7df43d506bc62054eb8bf9355d1a71a3a793S3BucketBEBB0185Ref": {
-            "Ref": "AssetParameterscd15c6fb3a2eee6979f62b25e35a7df43d506bc62054eb8bf9355d1a71a3a793S3BucketD4F52C82"
+          "referencetoawscdkeksclustertestAssetParametersea17febe6d04c66048f3e8e060c71685c0cb53122abceff44842d27bc0d4a03eS3Bucket6ADB5CE5Ref": {
+            "Ref": "AssetParametersea17febe6d04c66048f3e8e060c71685c0cb53122abceff44842d27bc0d4a03eS3BucketD3288998"
           },
-          "referencetoawscdkeksclustertestAssetParameterscd15c6fb3a2eee6979f62b25e35a7df43d506bc62054eb8bf9355d1a71a3a793S3VersionKey8BEC8371Ref": {
-            "Ref": "AssetParameterscd15c6fb3a2eee6979f62b25e35a7df43d506bc62054eb8bf9355d1a71a3a793S3VersionKey9D243E8D"
+          "referencetoawscdkeksclustertestAssetParametersea17febe6d04c66048f3e8e060c71685c0cb53122abceff44842d27bc0d4a03eS3VersionKey314C5B11Ref": {
+            "Ref": "AssetParametersea17febe6d04c66048f3e8e060c71685c0cb53122abceff44842d27bc0d4a03eS3VersionKeyB00C0565"
           },
           "referencetoawscdkeksclustertestAssetParametersdaeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1S3Bucket0815E7B5Ref": {
             "Ref": "AssetParametersdaeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1S3BucketDC4B98B1"
@@ -4062,17 +3727,12 @@
           "Ref": "Cluster9EE0221C"
         },
         "RoleArn": {
-          "Fn::GetAtt": [
-            "ClusterCreationRole360249B6",
-            "Arn"
-          ]
+          "Fn::GetAtt": ["ClusterCreationRole360249B6", "Arn"]
         },
         "PruneLabel": "aws.cdk.eks/prune-c89cbcc5d9bdd35cfc69c0334c0a9af21d1e0e372e",
         "SkipValidation": true
       },
-      "DependsOn": [
-        "ClusterKubectlReadyBarrier200052AF"
-      ],
+      "DependsOn": ["ClusterKubectlReadyBarrier200052AF"],
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
     },
@@ -4249,9 +3909,7 @@
         },
         "Runtime": "nodejs12.x"
       },
-      "DependsOn": [
-        "AWSCDKCfnUtilsProviderCustomResourceProviderRoleFE0EE867"
-      ]
+      "DependsOn": ["AWSCDKCfnUtilsProviderCustomResourceProviderRoleFE0EE867"]
     },
     "WebServiceSecurityGroupA556AEB5": {
       "Type": "AWS::EC2::SecurityGroup",
@@ -4276,16 +3934,10 @@
         "Description": "allow http 9000 access from myself",
         "FromPort": 9000,
         "GroupId": {
-          "Fn::GetAtt": [
-            "WebServiceSecurityGroupA556AEB5",
-            "GroupId"
-          ]
+          "Fn::GetAtt": ["WebServiceSecurityGroupA556AEB5", "GroupId"]
         },
         "SourceSecurityGroupId": {
-          "Fn::GetAtt": [
-            "WebServiceSecurityGroupA556AEB5",
-            "GroupId"
-          ]
+          "Fn::GetAtt": ["WebServiceSecurityGroupA556AEB5", "GroupId"]
         },
         "ToPort": 9000
       }
@@ -4375,10 +4027,7 @@
           }
         },
         "Role": {
-          "Fn::GetAtt": [
-            "ServicePingerFunctionServiceRole3120191B",
-            "Arn"
-          ]
+          "Fn::GetAtt": ["ServicePingerFunctionServiceRole3120191B", "Arn"]
         },
         "Handler": "index.handler",
         "Runtime": "python3.6",
@@ -4386,10 +4035,7 @@
         "VpcConfig": {
           "SecurityGroupIds": [
             {
-              "Fn::GetAtt": [
-                "WebServiceSecurityGroupA556AEB5",
-                "GroupId"
-              ]
+              "Fn::GetAtt": ["WebServiceSecurityGroupA556AEB5", "GroupId"]
             }
           ],
           "SubnetIds": [
@@ -4405,9 +4051,7 @@
           ]
         }
       },
-      "DependsOn": [
-        "ServicePingerFunctionServiceRole3120191B"
-      ]
+      "DependsOn": ["ServicePingerFunctionServiceRole3120191B"]
     },
     "ServicePingerProviderframeworkonEventServiceRole3DB083B7": {
       "Type": "AWS::IAM::Role",
@@ -4449,10 +4093,7 @@
               "Action": "lambda:InvokeFunction",
               "Effect": "Allow",
               "Resource": {
-                "Fn::GetAtt": [
-                  "ServicePingerFunctionADF51BAF",
-                  "Arn"
-                ]
+                "Fn::GetAtt": ["ServicePingerFunctionADF51BAF", "Arn"]
               }
             }
           ],
@@ -4517,10 +4158,7 @@
         "Environment": {
           "Variables": {
             "USER_ON_EVENT_FUNCTION_ARN": {
-              "Fn::GetAtt": [
-                "ServicePingerFunctionADF51BAF",
-                "Arn"
-              ]
+              "Fn::GetAtt": ["ServicePingerFunctionADF51BAF", "Arn"]
             }
           }
         },
@@ -4537,10 +4175,7 @@
       "Type": "AWS::CloudFormation::CustomResource",
       "Properties": {
         "ServiceToken": {
-          "Fn::GetAtt": [
-            "ServicePingerProviderframeworkonEventEC59DE20",
-            "Arn"
-          ]
+          "Fn::GetAtt": ["ServicePingerProviderframeworkonEventEC59DE20", "Arn"]
         },
         "Url": {
           "Fn::Join": [
@@ -4574,10 +4209,7 @@
             },
             " --region test-region --role-arn ",
             {
-              "Fn::GetAtt": [
-                "AdminRole38563C57",
-                "Arn"
-              ]
+              "Fn::GetAtt": ["AdminRole38563C57", "Arn"]
             }
           ]
         ]
@@ -4594,10 +4226,7 @@
             },
             " --region test-region --role-arn ",
             {
-              "Fn::GetAtt": [
-                "AdminRole38563C57",
-                "Arn"
-              ]
+              "Fn::GetAtt": ["AdminRole38563C57", "Arn"]
             }
           ]
         ]
@@ -4605,50 +4234,32 @@
     },
     "Response": {
       "Value": {
-        "Fn::GetAtt": [
-          "ServicePinger01F6DA06",
-          "Value"
-        ]
+        "Fn::GetAtt": ["ServicePinger01F6DA06", "Value"]
       }
     },
     "ClusterEndpoint": {
       "Value": {
-        "Fn::GetAtt": [
-          "Cluster9EE0221C",
-          "Endpoint"
-        ]
+        "Fn::GetAtt": ["Cluster9EE0221C", "Endpoint"]
       }
     },
     "ClusterArn": {
       "Value": {
-        "Fn::GetAtt": [
-          "Cluster9EE0221C",
-          "Arn"
-        ]
+        "Fn::GetAtt": ["Cluster9EE0221C", "Arn"]
       }
     },
     "ClusterCertificateAuthorityData": {
       "Value": {
-        "Fn::GetAtt": [
-          "Cluster9EE0221C",
-          "CertificateAuthorityData"
-        ]
+        "Fn::GetAtt": ["Cluster9EE0221C", "CertificateAuthorityData"]
       }
     },
     "ClusterSecurityGroupId": {
       "Value": {
-        "Fn::GetAtt": [
-          "Cluster9EE0221C",
-          "ClusterSecurityGroupId"
-        ]
+        "Fn::GetAtt": ["Cluster9EE0221C", "ClusterSecurityGroupId"]
       }
     },
     "ClusterEncryptionConfigKeyArn": {
       "Value": {
-        "Fn::GetAtt": [
-          "Cluster9EE0221C",
-          "EncryptionConfigKeyArn"
-        ]
+        "Fn::GetAtt": ["Cluster9EE0221C", "EncryptionConfigKeyArn"]
       }
     },
     "ClusterName": {
@@ -4658,17 +4269,29 @@
     }
   },
   "Parameters": {
-    "AssetParameters87b1e2c41f84590d14f7ab8cb0f338c51d6fa3efe78943867af07fa959593dbaS3Bucket14D204F9": {
+    "AssetParametersf9e3ed49f5734f267f6dfffed3c6038e2d31d096ca7e70ce257b16aa613a3ffcS3Bucket85C441D9": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"87b1e2c41f84590d14f7ab8cb0f338c51d6fa3efe78943867af07fa959593dba\""
+      "Description": "S3 bucket for asset \"f9e3ed49f5734f267f6dfffed3c6038e2d31d096ca7e70ce257b16aa613a3ffc\""
     },
-    "AssetParameters87b1e2c41f84590d14f7ab8cb0f338c51d6fa3efe78943867af07fa959593dbaS3VersionKeyDE8A2F1F": {
+    "AssetParametersf9e3ed49f5734f267f6dfffed3c6038e2d31d096ca7e70ce257b16aa613a3ffcS3VersionKeyABBEC6F6": {
       "Type": "String",
-      "Description": "S3 key for asset version \"87b1e2c41f84590d14f7ab8cb0f338c51d6fa3efe78943867af07fa959593dba\""
+      "Description": "S3 key for asset version \"f9e3ed49f5734f267f6dfffed3c6038e2d31d096ca7e70ce257b16aa613a3ffc\""
     },
-    "AssetParameters87b1e2c41f84590d14f7ab8cb0f338c51d6fa3efe78943867af07fa959593dbaArtifactHash54822A43": {
+    "AssetParametersf9e3ed49f5734f267f6dfffed3c6038e2d31d096ca7e70ce257b16aa613a3ffcArtifactHashC6D6393C": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"87b1e2c41f84590d14f7ab8cb0f338c51d6fa3efe78943867af07fa959593dba\""
+      "Description": "Artifact hash for asset \"f9e3ed49f5734f267f6dfffed3c6038e2d31d096ca7e70ce257b16aa613a3ffc\""
+    },
+    "AssetParameters80bcd5b0641df4315e277c71a1069094a5d7c76f9e2565c46b68a990c522eaefS3Bucket208EDB42": {
+      "Type": "String",
+      "Description": "S3 bucket for asset \"80bcd5b0641df4315e277c71a1069094a5d7c76f9e2565c46b68a990c522eaef\""
+    },
+    "AssetParameters80bcd5b0641df4315e277c71a1069094a5d7c76f9e2565c46b68a990c522eaefS3VersionKey08C22772": {
+      "Type": "String",
+      "Description": "S3 key for asset version \"80bcd5b0641df4315e277c71a1069094a5d7c76f9e2565c46b68a990c522eaef\""
+    },
+    "AssetParameters80bcd5b0641df4315e277c71a1069094a5d7c76f9e2565c46b68a990c522eaefArtifactHash861FF133": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"80bcd5b0641df4315e277c71a1069094a5d7c76f9e2565c46b68a990c522eaef\""
     },
     "AssetParametersdaeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1S3BucketDC4B98B1": {
       "Type": "String",
@@ -4682,17 +4305,17 @@
       "Type": "String",
       "Description": "Artifact hash for asset \"daeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1\""
     },
-    "AssetParametersbafd50ae9f214e496ff8c72c6425f93dca3ccd590e20963706d5d610d9c75757S3Bucket008DBB35": {
+    "AssetParameters4129bbca38164ecb28fee8e5b674f0d05e5957b4b8ed97d9c950527b5cc4ce10S3BucketC6FAEEC9": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"bafd50ae9f214e496ff8c72c6425f93dca3ccd590e20963706d5d610d9c75757\""
+      "Description": "S3 bucket for asset \"4129bbca38164ecb28fee8e5b674f0d05e5957b4b8ed97d9c950527b5cc4ce10\""
     },
-    "AssetParametersbafd50ae9f214e496ff8c72c6425f93dca3ccd590e20963706d5d610d9c75757S3VersionKey97C3E1A0": {
+    "AssetParameters4129bbca38164ecb28fee8e5b674f0d05e5957b4b8ed97d9c950527b5cc4ce10S3VersionKeyA7EE7421": {
       "Type": "String",
-      "Description": "S3 key for asset version \"bafd50ae9f214e496ff8c72c6425f93dca3ccd590e20963706d5d610d9c75757\""
+      "Description": "S3 key for asset version \"4129bbca38164ecb28fee8e5b674f0d05e5957b4b8ed97d9c950527b5cc4ce10\""
     },
-    "AssetParametersbafd50ae9f214e496ff8c72c6425f93dca3ccd590e20963706d5d610d9c75757ArtifactHashF584A7D8": {
+    "AssetParameters4129bbca38164ecb28fee8e5b674f0d05e5957b4b8ed97d9c950527b5cc4ce10ArtifactHash528547CD": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"bafd50ae9f214e496ff8c72c6425f93dca3ccd590e20963706d5d610d9c75757\""
+      "Description": "Artifact hash for asset \"4129bbca38164ecb28fee8e5b674f0d05e5957b4b8ed97d9c950527b5cc4ce10\""
     },
     "AssetParameterse9882ab123687399f934da0d45effe675ecc8ce13b40cb946f3e1d6141fe8d68S3BucketAEADE8C7": {
       "Type": "String",
@@ -4706,17 +4329,17 @@
       "Type": "String",
       "Description": "Artifact hash for asset \"e9882ab123687399f934da0d45effe675ecc8ce13b40cb946f3e1d6141fe8d68\""
     },
-    "AssetParameterscd15c6fb3a2eee6979f62b25e35a7df43d506bc62054eb8bf9355d1a71a3a793S3BucketD4F52C82": {
+    "AssetParametersea17febe6d04c66048f3e8e060c71685c0cb53122abceff44842d27bc0d4a03eS3BucketD3288998": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"cd15c6fb3a2eee6979f62b25e35a7df43d506bc62054eb8bf9355d1a71a3a793\""
+      "Description": "S3 bucket for asset \"ea17febe6d04c66048f3e8e060c71685c0cb53122abceff44842d27bc0d4a03e\""
     },
-    "AssetParameterscd15c6fb3a2eee6979f62b25e35a7df43d506bc62054eb8bf9355d1a71a3a793S3VersionKey9D243E8D": {
+    "AssetParametersea17febe6d04c66048f3e8e060c71685c0cb53122abceff44842d27bc0d4a03eS3VersionKeyB00C0565": {
       "Type": "String",
-      "Description": "S3 key for asset version \"cd15c6fb3a2eee6979f62b25e35a7df43d506bc62054eb8bf9355d1a71a3a793\""
+      "Description": "S3 key for asset version \"ea17febe6d04c66048f3e8e060c71685c0cb53122abceff44842d27bc0d4a03e\""
     },
-    "AssetParameterscd15c6fb3a2eee6979f62b25e35a7df43d506bc62054eb8bf9355d1a71a3a793ArtifactHash42EBA5B2": {
+    "AssetParametersea17febe6d04c66048f3e8e060c71685c0cb53122abceff44842d27bc0d4a03eArtifactHash4654D012": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"cd15c6fb3a2eee6979f62b25e35a7df43d506bc62054eb8bf9355d1a71a3a793\""
+      "Description": "Artifact hash for asset \"ea17febe6d04c66048f3e8e060c71685c0cb53122abceff44842d27bc0d4a03e\""
     },
     "AssetParametersb7d38dc0eeb2c5d024919020e09d2590b68559eab4a5264c3b1aa7a429d1edd4S3BucketF7BC1777": {
       "Type": "String",
@@ -4754,29 +4377,29 @@
       "Type": "String",
       "Description": "Artifact hash for asset \"5f49893093e1ad14831626016699156d48da5f0890f19eb930bc3c46cf5f636d\""
     },
-    "AssetParameters5598bd5ce38da10f7a9c6f8e54d4f50d7c0befd5309540ab64d64985236f2ef9S3BucketC3BFBE73": {
+    "AssetParameters4eac204c18d7034bdb83d685748ca8f285edfd054338f3a045a749dbbf285996S3BucketDEC09A4A": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"5598bd5ce38da10f7a9c6f8e54d4f50d7c0befd5309540ab64d64985236f2ef9\""
+      "Description": "S3 bucket for asset \"4eac204c18d7034bdb83d685748ca8f285edfd054338f3a045a749dbbf285996\""
     },
-    "AssetParameters5598bd5ce38da10f7a9c6f8e54d4f50d7c0befd5309540ab64d64985236f2ef9S3VersionKeyFA8225D5": {
+    "AssetParameters4eac204c18d7034bdb83d685748ca8f285edfd054338f3a045a749dbbf285996S3VersionKey454B1BD5": {
       "Type": "String",
-      "Description": "S3 key for asset version \"5598bd5ce38da10f7a9c6f8e54d4f50d7c0befd5309540ab64d64985236f2ef9\""
+      "Description": "S3 key for asset version \"4eac204c18d7034bdb83d685748ca8f285edfd054338f3a045a749dbbf285996\""
     },
-    "AssetParameters5598bd5ce38da10f7a9c6f8e54d4f50d7c0befd5309540ab64d64985236f2ef9ArtifactHash8F06BD93": {
+    "AssetParameters4eac204c18d7034bdb83d685748ca8f285edfd054338f3a045a749dbbf285996ArtifactHashC56B9B67": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"5598bd5ce38da10f7a9c6f8e54d4f50d7c0befd5309540ab64d64985236f2ef9\""
+      "Description": "Artifact hash for asset \"4eac204c18d7034bdb83d685748ca8f285edfd054338f3a045a749dbbf285996\""
     },
-    "AssetParameterscbbfa09db37e6a37ee43fbb48d73d4d96f216270558c932674a48e856763ce79S3Bucket2C7FA0F3": {
+    "AssetParameters0504b861a4c2a9b4228d6d618fb8a60f19b1c36575b96db9f1716e0eb6a2ee52S3Bucket1BC62BBD": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"cbbfa09db37e6a37ee43fbb48d73d4d96f216270558c932674a48e856763ce79\""
+      "Description": "S3 bucket for asset \"0504b861a4c2a9b4228d6d618fb8a60f19b1c36575b96db9f1716e0eb6a2ee52\""
     },
-    "AssetParameterscbbfa09db37e6a37ee43fbb48d73d4d96f216270558c932674a48e856763ce79S3VersionKey4D3075F9": {
+    "AssetParameters0504b861a4c2a9b4228d6d618fb8a60f19b1c36575b96db9f1716e0eb6a2ee52S3VersionKey94294964": {
       "Type": "String",
-      "Description": "S3 key for asset version \"cbbfa09db37e6a37ee43fbb48d73d4d96f216270558c932674a48e856763ce79\""
+      "Description": "S3 key for asset version \"0504b861a4c2a9b4228d6d618fb8a60f19b1c36575b96db9f1716e0eb6a2ee52\""
     },
-    "AssetParameterscbbfa09db37e6a37ee43fbb48d73d4d96f216270558c932674a48e856763ce79ArtifactHashF865E7E6": {
+    "AssetParameters0504b861a4c2a9b4228d6d618fb8a60f19b1c36575b96db9f1716e0eb6a2ee52ArtifactHash179183BB": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"cbbfa09db37e6a37ee43fbb48d73d4d96f216270558c932674a48e856763ce79\""
+      "Description": "Artifact hash for asset \"0504b861a4c2a9b4228d6d618fb8a60f19b1c36575b96db9f1716e0eb6a2ee52\""
     },
     "SsmParameterValueawsserviceeksoptimizedami121amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
       "Type": "AWS::SSM::Parameter::Value<String>",

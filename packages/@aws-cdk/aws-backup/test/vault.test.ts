@@ -138,6 +138,62 @@ test('merges statements from accessPolicy and blockRecoveryPointDeletion', () =>
   });
 });
 
+test('addToAccessPolicy()', () => {
+  // GIVEN
+  const vault = new BackupVault(stack, 'Vault');
+
+  // WHEN
+  vault.addToAccessPolicy(new iam.PolicyStatement({
+    effect: iam.Effect.DENY,
+    principals: [new iam.ArnPrincipal('arn:aws:iam::123456789012:role/MyRole')],
+    actions: ['backup:StartRestoreJob'],
+  }));
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Backup::BackupVault', {
+    AccessPolicy: {
+      Version: '2012-10-17',
+      Statement: [
+        {
+          Action: 'backup:StartRestoreJob',
+          Effect: 'Deny',
+          Principal: {
+            AWS: 'arn:aws:iam::123456789012:role/MyRole',
+          },
+        },
+      ],
+    },
+  });
+});
+
+test('blockRecoveryPointDeletion()', () => {
+  // GIVEN
+  const vault = new BackupVault(stack, 'Vault');
+
+  // WHEN
+  vault.blockRecoveryPointDeletion();
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Backup::BackupVault', {
+    AccessPolicy: {
+      Version: '2012-10-17',
+      Statement: [
+        {
+          Effect: 'Deny',
+          Principal: {
+            AWS: '*',
+          },
+          Action: [
+            'backup:DeleteRecoveryPoint',
+            'backup:UpdateRecoveryPointLifecycle',
+          ],
+          Resource: '*',
+        },
+      ],
+    },
+  });
+});
+
 test('with encryption key', () => {
   // GIVEN
   const encryptionKey = new kms.Key(stack, 'Key');

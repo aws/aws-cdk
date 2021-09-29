@@ -41,9 +41,6 @@
     },
     "projectReferences": true
   },
-  "cdk-build": {
-    "jest": true
-  },
   "keywords": [
     "aws",
     "cdk",
@@ -59,12 +56,12 @@
     "constructs": "^3.3.69"
   },
   "devDependencies": {
+    "@aws-cdk/assert-internal": "0.0.0",
+    "@aws-cdk/cdk-build-tools": "0.0.0",
+    "@aws-cdk/cdk-integ-tools": "0.0.0",
+    "@aws-cdk/pkglint": "0.0.0",
     "@types/jest": "^26.0.24",
-    "cdk-build-tools": "0.0.0",
-    "cdk-integ-tools": "0.0.0",
-    "jest": "^26.6.3",
-    "pkglint": "0.0.0",
-    "@aws-cdk/assert-internal": "0.0.0"
+    "jest": "^26.6.3"
   },
   "peerDependencies": {
     "@aws-cdk/aws-dynamodb": "0.0.0",

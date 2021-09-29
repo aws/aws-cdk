@@ -1,5 +1,5 @@
 /* eslint-disable object-curly-newline */
-import '@aws-cdk/assert-internal/jest';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { EventBus, EventField, IRule, IRuleTarget, RuleTargetConfig, RuleTargetInput, Schedule } from '../lib';
@@ -15,7 +15,7 @@ describe('rule', () => {
       schedule: Schedule.rate(cdk.Duration.minutes(10)),
     });
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       'Resources': {
         'MyRuleA44AB831': {
           'Type': 'AWS::Events::Rule',
@@ -42,7 +42,7 @@ describe('rule', () => {
       },
     });
 
-    expect(stack).toHaveResource('Test::Resource', {
+    Template.fromStack(stack).hasResourceProperties('Test::Resource', {
       RuleName: { Ref: 'MyRuleA44AB831' },
     });
 
@@ -60,7 +60,7 @@ describe('rule', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::Events::Rule', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
       'Name': 'rateInMinutes',
       'ScheduleExpression': 'rate(5 minutes)',
     });
@@ -93,7 +93,7 @@ describe('rule', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Events::Rule', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
       Name: 'PhysicalName',
     });
 
@@ -119,7 +119,7 @@ describe('rule', () => {
       },
     });
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       'Resources': {
         'MyRuleA44AB831': {
           'Type': 'AWS::Events::Rule',
@@ -173,7 +173,7 @@ describe('rule', () => {
       },
     });
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       'Resources': {
         'MyRuleA44AB831': {
           'Type': 'AWS::Events::Rule',
@@ -217,7 +217,7 @@ describe('rule', () => {
       detailType: ['EC2 Instance State-change Notification', 'AWS API Call via CloudTrail'],
     });
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       'Resources': {
         'MyRuleA44AB831': {
           'Type': 'AWS::Events::Rule',
@@ -261,7 +261,7 @@ describe('rule', () => {
 
     rule.addTarget(t2);
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       'Resources': {
         'EventRule5A491D2C': {
           'Type': 'AWS::Events::Rule',
@@ -337,7 +337,7 @@ describe('rule', () => {
       }),
     });
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       'Resources': {
         'EventRule5A491D2C': {
           'Type': 'AWS::Events::Rule',
@@ -404,7 +404,7 @@ describe('rule', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::Events::Rule', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
       'Targets': [
         {
           'Arn': 'ARN2',
@@ -442,24 +442,24 @@ describe('rule', () => {
     });
 
     // THEN
-    expect(ruleStack).toHaveResourceLike('AWS::Events::Rule', {
+    Template.fromStack(ruleStack).hasResourceProperties('AWS::Events::Rule', {
       Targets: [
-        {
+        Match.objectLike({
           Arn: { 'Fn::Join': ['', [
             'arn:',
             { 'Ref': 'AWS::Partition' },
             ':events:us-east-1:5678:event-bus/default',
           ]] },
-        },
+        }),
       ],
     });
-    expect(targetStack).toHaveResourceLike('AWS::Events::Rule', {
+    Template.fromStack(targetStack).hasResourceProperties('AWS::Events::Rule', {
       'Targets': [
-        {
+        Match.objectLike({
           'Arn': 'ARN2',
           'Id': 'Target0',
           'RoleArn': { 'Fn::GetAtt': ['SomeRole6DDC54DD', 'Arn'] },
-        },
+        }),
       ],
     });
 
@@ -517,7 +517,7 @@ describe('rule', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Events::Rule', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
       'State': 'DISABLED',
     });
 
@@ -535,22 +535,22 @@ describe('rule', () => {
     rule.addTarget(new SomeTarget());
 
     // THEN
-    expect(stack).toHaveResource('AWS::Events::Rule', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
       Targets: [
-        {
+        Match.objectLike({
           'Arn': 'ARN1',
           'Id': 'Target0',
           'KinesisParameters': {
             'PartitionKeyPath': 'partitionKeyPath',
           },
-        },
-        {
+        }),
+        Match.objectLike({
           'Arn': 'ARN1',
           'Id': 'Target1',
           'KinesisParameters': {
             'PartitionKeyPath': 'partitionKeyPath',
           },
-        },
+        }),
       ],
     });
 
@@ -572,15 +572,15 @@ describe('rule', () => {
       targets: [t1],
     });
 
-    expect(stack).toHaveResource('AWS::Events::Rule', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
       Targets: [
-        {
+        Match.objectLike({
           'Arn': 'ARN1',
           'Id': 'Target0',
           'SqsParameters': {
             'MessageGroupId': 'messageGroupId',
           },
-        },
+        }),
       ],
     });
 
@@ -600,7 +600,7 @@ describe('rule', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Events::Rule', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
       EventBusName: {
         Ref: 'EventBus7B8748AA',
       },
@@ -639,15 +639,15 @@ describe('rule', () => {
 
     rule.addTarget(new SomeTarget('T', resource));
 
-    expect(sourceStack).toHaveResource('AWS::Events::Rule', {
+    Template.fromStack(sourceStack).hasResourceProperties('AWS::Events::Rule', {
       Targets: [
-        {
+        Match.objectLike({
           'Arn': 'ARN1',
           'Id': 'T',
           'KinesisParameters': {
             'PartitionKeyPath': 'partitionKeyPath',
           },
-        },
+        }),
       ],
     });
 
@@ -726,7 +726,7 @@ describe('rule', () => {
 
       rule.addTarget(new SomeTarget('T', resource));
 
-      expect(sourceStack).toHaveResourceLike('AWS::Events::Rule', {
+      Template.fromStack(sourceStack).hasResourceProperties('AWS::Events::Rule', {
         'State': 'ENABLED',
         'Targets': [
           {
@@ -745,7 +745,7 @@ describe('rule', () => {
         ],
       });
 
-      expect(targetStack).toHaveResource('AWS::Events::Rule', {
+      Template.fromStack(targetStack).hasResourceProperties('AWS::Events::Rule', {
         Targets: [
           {
             'Arn': 'ARN1',
@@ -779,10 +779,10 @@ describe('rule', () => {
 
       rule.addTarget(new SomeTarget('T', resource));
 
-      expect(sourceStack).toHaveResourceLike('AWS::Events::Rule', {
+      Template.fromStack(sourceStack).hasResourceProperties('AWS::Events::Rule', {
         'State': 'ENABLED',
         'Targets': [
-          {
+          Match.objectLike({
             'Id': 'T',
             'Arn': {
               'Fn::Join': [
@@ -794,19 +794,19 @@ describe('rule', () => {
                 ],
               ],
             },
-          },
+          }),
         ],
       });
 
-      expect(targetStack).toHaveResource('AWS::Events::Rule', {
+      Template.fromStack(targetStack).hasResourceProperties('AWS::Events::Rule', {
         Targets: [
-          {
+          Match.objectLike({
             'Arn': 'ARN1',
             'Id': 'T',
             'KinesisParameters': {
               'PartitionKeyPath': 'partitionKeyPath',
             },
-          },
+          }),
         ],
       });
 
@@ -834,10 +834,10 @@ describe('rule', () => {
       // same target should be skipped
       rule.addTarget(new SomeTarget('T1', resource));
 
-      expect(sourceStack).toHaveResourceLike('AWS::Events::Rule', {
+      Template.fromStack(sourceStack).hasResourceProperties('AWS::Events::Rule', {
         'State': 'ENABLED',
         'Targets': [
-          {
+          Match.objectLike({
             'Id': 'T',
             'Arn': {
               'Fn::Join': [
@@ -849,14 +849,14 @@ describe('rule', () => {
                 ],
               ],
             },
-          },
+          }),
         ],
       });
 
-      expect(sourceStack).not.toHaveResourceLike('AWS::Events::Rule', {
+      Template.fromStack(sourceStack).hasResourceProperties('AWS::Events::Rule', Match.not({
         'State': 'ENABLED',
         'Targets': [
-          {
+          Match.objectLike({
             'Id': 'T1',
             'Arn': {
               'Fn::Join': [
@@ -868,9 +868,9 @@ describe('rule', () => {
                 ],
               ],
             },
-          },
+          }),
         ],
-      });
+      }));
 
 
     });
@@ -944,7 +944,7 @@ describe('rule', () => {
       rule.addTarget(new SomeTarget('T1', resource1));
       rule.addTarget(new SomeTarget('T2', resource2));
 
-      expect(sourceStack).toHaveResourceLike('AWS::Events::Rule', {
+      Template.fromStack(sourceStack).hasResourceProperties('AWS::Events::Rule', {
         'EventPattern': {
           'source': [
             'some-event',
@@ -952,7 +952,7 @@ describe('rule', () => {
         },
         'State': 'ENABLED',
         'Targets': [
-          {
+          Match.objectLike({
             'Id': 'T1',
             'Arn': {
               'Fn::Join': [
@@ -964,11 +964,11 @@ describe('rule', () => {
                 ],
               ],
             },
-          },
+          }),
         ],
       });
 
-      expect(targetStack).toHaveResourceLike('AWS::Events::Rule', {
+      Template.fromStack(targetStack).hasResourceProperties('AWS::Events::Rule', {
         'EventPattern': {
           'source': [
             'some-event',
@@ -976,13 +976,13 @@ describe('rule', () => {
         },
         'State': 'ENABLED',
         'Targets': [
-          {
+          Match.objectLike({
             'Id': 'T1',
             'Arn': 'ARN1',
-          },
+          }),
         ],
       });
-      expect(targetStack).toHaveResourceLike('AWS::Events::Rule', {
+      Template.fromStack(targetStack).hasResourceProperties('AWS::Events::Rule', {
         'EventPattern': {
           'source': [
             'some-event',
@@ -990,15 +990,15 @@ describe('rule', () => {
         },
         'State': 'ENABLED',
         'Targets': [
-          {
+          Match.objectLike({
             'Id': 'T2',
             'Arn': 'ARN1',
-          },
+          }),
         ],
       });
 
       const eventBusPolicyStack = app.node.findChild(`EventBusPolicy-${sourceAccount}-us-west-2-${targetAccount}`) as cdk.Stack;
-      expect(eventBusPolicyStack).toHaveResourceLike('AWS::Events::EventBusPolicy', {
+      Template.fromStack(eventBusPolicyStack).hasResourceProperties('AWS::Events::EventBusPolicy', {
         'Action': 'events:PutEvents',
         'StatementId': `Allow-account-${sourceAccount}`,
         'Principal': sourceAccount,
@@ -1034,7 +1034,7 @@ describe('rule', () => {
         source: ['some-event'],
       });
 
-      expect(targetStack).toHaveResourceLike('AWS::Events::Rule', {
+      Template.fromStack(targetStack).hasResourceProperties('AWS::Events::Rule', {
         'EventPattern': {
           'source': [
             'some-event',
@@ -1042,10 +1042,10 @@ describe('rule', () => {
         },
         'State': 'ENABLED',
         'Targets': [
-          {
+          Match.objectLike({
             'Id': 'T',
             'Arn': 'ARN1',
-          },
+          }),
         ],
       });
 
@@ -1055,7 +1055,7 @@ describe('rule', () => {
 });
 
 class SomeTarget implements IRuleTarget {
-  // eslint-disable-next-line cdk/no-core-construct
+  // eslint-disable-next-line @aws-cdk/no-core-construct
   public constructor(private readonly id?: string, private readonly resource?: cdk.IConstruct) {
   }
 

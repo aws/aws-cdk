@@ -178,11 +178,11 @@ async function main() {
       },
       license: 'Apache-2.0',
       devDependencies: {
-        '@types/jest': '^26.0.22',
         '@aws-cdk/assertions': version,
-        'cdk-build-tools': version,
-        'cfn2ts': version,
-        'pkglint': version,
+        '@aws-cdk/cdk-build-tools': version,
+        '@aws-cdk/cfn2ts': version,
+        '@aws-cdk/pkglint': version,
+        '@types/jest': '^26.0.22',
       },
       dependencies: {
         '@aws-cdk/core': version,
@@ -295,13 +295,13 @@ async function main() {
     ]);
 
     await write('.eslintrc.js', [
-      "const baseConfig = require('cdk-build-tools/config/eslintrc');",
+      "const baseConfig = require('@aws-cdk/cdk-build-tools/config/eslintrc');",
       "baseConfig.parserOptions.project = __dirname + '/tsconfig.json';",
       'module.exports = baseConfig;',
     ]);
 
     await write('jest.config.js', [
-      "const baseConfig = require('cdk-build-tools/config/jest.config');",
+      "const baseConfig = require('@aws-cdk/cdk-build-tools/config/jest.config');",
       'module.exports = baseConfig;',
     ]);
 

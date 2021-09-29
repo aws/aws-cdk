@@ -7,7 +7,7 @@ import * as cfn from '../lib';
 // eslint-disable-next-line no-duplicate-imports, import/order
 import { Construct } from '@aws-cdk/core';
 
-/* eslint-disable cdk/no-core-construct */
+/* eslint-disable @aws-cdk/no-core-construct */
 
 class YourNestedStack extends cfn.NestedStack {
   constructor(scope: Construct, id: string) {

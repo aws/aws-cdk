@@ -2,6 +2,12 @@ version: 0.2
 
 # This buildspec is intended to be used by GitHub PR builds.
 
+env:
+  variables:
+    # Globally allow node to use a lot of memory
+    NODE_OPTIONS: --max-old-space-size=4096
+    JSII_ROSETTA_MAX_WORKER_COUNT: 8
+
 phases:
   install:
     commands:

@@ -9,7 +9,7 @@ import { Construct } from '@aws-cdk/core';
 
 // non-nested non-parent stack consumes a resource from a nested stack
 
-/* eslint-disable cdk/no-core-construct */
+/* eslint-disable @aws-cdk/no-core-construct */
 
 class ProducerNestedStack extends cfn.NestedStack {
   public readonly topic: sns.Topic;

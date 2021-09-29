@@ -9,7 +9,7 @@ import { Construct } from '@aws-cdk/core';
 
 // references between siblings
 
-/* eslint-disable cdk/no-core-construct */
+/* eslint-disable @aws-cdk/no-core-construct */
 
 class ProducerNestedStack extends cfn.NestedStack {
   public readonly topic: sns.Topic;

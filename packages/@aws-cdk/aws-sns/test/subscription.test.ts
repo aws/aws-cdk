@@ -153,6 +153,40 @@ describe('Subscription', () => {
 
   });
 
+  test('with numeric filter and 0 values', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const topic = new sns.Topic(stack, 'Topic');
+
+    // WHEN
+    new sns.Subscription(stack, 'Subscription', {
+      endpoint: 'endpoint',
+      filterPolicy: {
+        price: sns.SubscriptionFilter.numericFilter({
+          greaterThan: 0,
+          greaterThanOrEqualTo: 0,
+          lessThan: 0,
+          lessThanOrEqualTo: 0,
+        }),
+      },
+      protocol: sns.SubscriptionProtocol.LAMBDA,
+      topic,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::SNS::Subscription', {
+      FilterPolicy: {
+        price: [
+          { numeric: ['>', 0] },
+          { numeric: ['>=', 0] },
+          { numeric: ['<', 0] },
+          { numeric: ['<=', 0] },
+        ],
+      },
+    });
+
+  });
+
   test('with existsFilter', () => {
     // GIVEN
     const stack = new cdk.Stack();
