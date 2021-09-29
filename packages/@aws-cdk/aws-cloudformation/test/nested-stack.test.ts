@@ -1,7 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { SynthUtils } from '@aws-cdk/assert-internal';
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as s3_assets from '@aws-cdk/aws-s3-assets';
 import * as sns from '@aws-cdk/aws-sns';
 import { App, CfnParameter, CfnResource, ContextProvider, LegacyStackSynthesizer, Names, Stack } from '@aws-cdk/core';
@@ -63,7 +62,7 @@ test('the template of the nested stack is synthesized into the cloud assembly', 
 
   // THEN
   const template = JSON.parse(fs.readFileSync(path.join(assembly.directory, `${Names.uniqueId(nested)}.nested.template.json`), 'utf-8'));
-  expect(template).toEqual({
+  Template.fromJSON(template).templateMatches({
     Resources: {
       ResourceInNestedStack: {
         Type: 'AWS::Resource::Nested',
@@ -114,12 +113,12 @@ test('aws::cloudformation::stack is synthesized in the parent scope', () => {
 
   // the template includes our resource
   const filePath = path.join(assembly.directory, assembly.stacks[0].assets[0].path);
-  expect(JSON.parse(fs.readFileSync(filePath).toString('utf-8'))).toEqual({
+  Template.fromJSON(JSON.parse(fs.readFileSync(filePath).toString('utf-8'))).templateMatches({
     Resources: { ResourceInNestedStack: { Type: 'AWS::Resource::Nested' } },
   });
 
   // the parent template includes the parameters and the nested stack resource which points to the s3 url
-  expect(parent).toMatchTemplate({
+  Template.fromStack(parent).templateMatches({
     Resources: {
       nestedstackNestedStacknestedstackNestedStackResource71CDD241: {
         Type: 'AWS::CloudFormation::Stack',
@@ -273,7 +272,7 @@ test('references to a resource from the parent stack in a nested stack is transl
   app.synth();
 
   // nested template should use a parameter to reference the resource from the parent stack
-  expect(nested).toMatchTemplate({
+  Template.fromStack(nested).templateMatches({
     Resources:
     {
       resource:
@@ -300,7 +299,7 @@ test('references to a resource from the parent stack in a nested stack is transl
   });
 
   // parent template should pass in the value through the parameter
-  expect(parentStack).toHaveResource('AWS::CloudFormation::Stack', {
+  Template.fromStack(parentStack).hasResourceProperties('AWS::CloudFormation::Stack', {
     Parameters: {
       referencetoparentparentresourceD56EA8F7Ref: {
         Ref: 'parentresource',
@@ -344,7 +343,7 @@ test('references to a resource in the nested stack in the parent is translated i
   app.synth();
 
   // nested template should use a parameter to reference the resource from the parent stack
-  expect(nested).toMatchTemplate({
+  Template.fromStack(nested).templateMatches({
     Resources: {
       resource: { Type: 'AWS::Child::Resource' },
     },
@@ -354,7 +353,7 @@ test('references to a resource in the nested stack in the parent is translated i
   });
 
   // parent template should pass in the value through the parameter
-  expect(parentStack).toHaveResource('AWS::Parent::Resource', {
+  Template.fromStack(parentStack).hasResourceProperties('AWS::Parent::Resource', {
     RefToResourceInNestedStack: {
       'Fn::GetAtt': [
         'nestedNestedStacknestedNestedStackResource3DD143BF',
@@ -384,7 +383,7 @@ test('nested stack references a resource from another non-nested stack (not the 
   const assembly = app.synth();
 
   // producing stack should have an export
-  expect(stack2).toMatchTemplate({
+  Template.fromStack(stack2).templateMatches({
     Resources: {
       ResourceInStack2: { Type: 'MyResource' },
     },
@@ -397,7 +396,7 @@ test('nested stack references a resource from another non-nested stack (not the 
   });
 
   // nested stack uses Fn::ImportValue like normal
-  expect(nestedUnderStack1).toMatchTemplate({
+  Template.fromStack(nestedUnderStack1).templateMatches({
     Resources: {
       ResourceInNestedStack1: {
         Type: 'Nested::Resource',
@@ -461,7 +460,7 @@ test('another non-nested stack takes a reference on a resource within the nested
   const assembly = app.synth();
 
   // nested stack should output this value as if it was referenced by the parent (without the export)
-  expect(nestedUnderStack1).toMatchTemplate({
+  Template.fromStack(nestedUnderStack1).templateMatches({
     Resources: {
       ResourceInNestedStack: {
         Type: 'MyResource',
@@ -480,15 +479,13 @@ test('another non-nested stack takes a reference on a resource within the nested
   });
 
   // parent stack (stack1) should export this value
-  expect(assembly.getStackByName(stack1.stackName).template.Outputs).toEqual({
-    ExportsOutputFnGetAttNestedUnderStack1NestedStackNestedUnderStack1NestedStackResourceF616305BOutputsStack1NestedUnderStack1ResourceInNestedStack6EE9DCD2MyAttribute564EECF3: {
-      Value: { 'Fn::GetAtt': ['NestedUnderStack1NestedStackNestedUnderStack1NestedStackResourceF616305B', 'Outputs.Stack1NestedUnderStack1ResourceInNestedStack6EE9DCD2MyAttribute'] },
-      Export: { Name: 'Stack1:ExportsOutputFnGetAttNestedUnderStack1NestedStackNestedUnderStack1NestedStackResourceF616305BOutputsStack1NestedUnderStack1ResourceInNestedStack6EE9DCD2MyAttribute564EECF3' },
-    },
-  });
+  Template.fromStack(stack1).hasOutput('*', {
+    Value: { 'Fn::GetAtt': ['NestedUnderStack1NestedStackNestedUnderStack1NestedStackResourceF616305B', 'Outputs.Stack1NestedUnderStack1ResourceInNestedStack6EE9DCD2MyAttribute'] },
+    Export: { Name: 'Stack1:ExportsOutputFnGetAttNestedUnderStack1NestedStackNestedUnderStack1NestedStackResourceF616305BOutputsStack1NestedUnderStack1ResourceInNestedStack6EE9DCD2MyAttribute564EECF3' },
+  }),
 
   // consuming stack should use ImportValue to import the value from the parent stack
-  expect(stack2).toMatchTemplate({
+  Template.fromStack(stack2).templateMatches({
     Resources: {
       ResourceInStack2: {
         Type: 'JustResource',
@@ -529,7 +526,7 @@ test('references between sibling nested stacks should output from one and getAtt
   app.synth();
 
   // producing nested stack
-  expect(nested1).toMatchTemplate({
+  Template.fromStack(nested1).templateMatches({
     Resources: {
       Resource1: {
         Type: 'Resource1',
@@ -545,7 +542,7 @@ test('references between sibling nested stacks should output from one and getAtt
   });
 
   // consuming nested stack
-  expect(nested2).toMatchTemplate({
+  Template.fromStack(nested2).templateMatches({
     Resources: {
       Resource2: {
         Type: 'Resource2',
@@ -564,7 +561,7 @@ test('references between sibling nested stacks should output from one and getAtt
   });
 
   // parent
-  expect(parent).toHaveResource('AWS::CloudFormation::Stack', {
+  Template.fromStack(parent).hasResourceProperties('AWS::CloudFormation::Stack', {
     Parameters: {
       referencetoParentNested1NestedStackNested1NestedStackResource9C05342COutputsParentNested1Resource15F3F0657Ref: {
         'Fn::GetAtt': [
@@ -588,7 +585,7 @@ test('stackId returns AWS::StackId when referenced from the context of the neste
   });
 
   // THEN
-  expect(nested).toHaveResource('Nested::Resource', {
+  Template.fromStack(nested).hasResourceProperties('Nested::Resource', {
     MyStackId: { Ref: 'AWS::StackId' },
   });
 });
@@ -605,7 +602,7 @@ test('stackId returns the REF of the CloudFormation::Stack resource when referen
   });
 
   // THEN
-  expect(parent).toHaveResource('Parent::Resource', {
+  Template.fromStack(parent).hasResourceProperties('Parent::Resource', {
     NestedStackId: { Ref: 'NestedStackNestedStackNestedStackNestedStackResourceB70834FD' },
   });
 });
@@ -622,7 +619,7 @@ test('stackName returns AWS::StackName when referenced from the context of the n
   });
 
   // THEN
-  expect(nested).toHaveResource('Nested::Resource', {
+  Template.fromStack(nested).hasResourceProperties('Nested::Resource', {
     MyStackName: { Ref: 'AWS::StackName' },
   });
 });
@@ -639,7 +636,7 @@ test('stackName returns the REF of the CloudFormation::Stack resource when refer
   });
 
   // THEN
-  expect(parent).toHaveResource('Parent::Resource', {
+  Template.fromStack(parent).hasResourceProperties('Parent::Resource', {
     NestedStackName: {
       'Fn::Select': [
         1,
@@ -686,7 +683,7 @@ test('double-nested stack', () => {
   const assembly = app.synth();
 
   // nested2 is a "leaf", so it's just the resource
-  expect(nested2).toMatchTemplate({
+  Template.fromStack(nested2).templateMatches({
     Resources: {
       Resource2: { Type: 'Resource::2' },
     },
@@ -698,17 +695,16 @@ test('double-nested stack', () => {
   const hashSuffix = 'E28F0693';
 
   // nested1 wires the nested2 template through parameters, so we expect those
-  expect(nested1).toHaveResource('Resource::1');
-  const nested2Template = SynthUtils.toCloudFormation(nested1);
-  expect(nested2Template.Parameters).toEqual({
+  Template.fromStack(nested1).resourceCountIs('Resource::1', 1);
+  const nested2Template = Template.fromStack(nested1);
+  expect(nested2Template.toJSON().Parameters).toEqual({
     referencetostackAssetParameters8169c6f8aaeaf5e2e8620f5f895ffe2099202ccb4b6889df48fe0967a894235cS3BucketE8768F5CRef: { Type: 'String' },
     referencetostackAssetParameters8169c6f8aaeaf5e2e8620f5f895ffe2099202ccb4b6889df48fe0967a894235cS3VersionKey49DD83A2Ref: { Type: 'String' },
   });
 
   // parent stack should have two sets of parameters. one for the first nested stack and the second
   // for the second nested stack, passed in as parameters to the first
-  const template = SynthUtils.toCloudFormation(parent);
-  expect(template.Parameters).toEqual({
+  expect(Template.fromStack(parent).toJSON().Parameters).toEqual({
     AssetParameters8169c6f8aaeaf5e2e8620f5f895ffe2099202ccb4b6889df48fe0967a894235cS3BucketDE3B88D6: { Type: 'String', Description: 'S3 bucket for asset "8169c6f8aaeaf5e2e8620f5f895ffe2099202ccb4b6889df48fe0967a894235c"' },
     AssetParameters8169c6f8aaeaf5e2e8620f5f895ffe2099202ccb4b6889df48fe0967a894235cS3VersionKey3A62EFEA: { Type: 'String', Description: 'S3 key for asset version "8169c6f8aaeaf5e2e8620f5f895ffe2099202ccb4b6889df48fe0967a894235c"' },
     AssetParameters8169c6f8aaeaf5e2e8620f5f895ffe2099202ccb4b6889df48fe0967a894235cArtifactHash7DC546E0: { Type: 'String', Description: 'Artifact hash for asset "8169c6f8aaeaf5e2e8620f5f895ffe2099202ccb4b6889df48fe0967a894235c"' },
@@ -718,7 +714,7 @@ test('double-nested stack', () => {
   });
 
   // proxy asset params to nested stack
-  expect(parent).toHaveResource('AWS::CloudFormation::Stack', {
+  Template.fromStack(parent).hasResourceProperties('AWS::CloudFormation::Stack', {
     Parameters: {
       referencetostackAssetParameters8169c6f8aaeaf5e2e8620f5f895ffe2099202ccb4b6889df48fe0967a894235cS3BucketE8768F5CRef: { Ref: 'AssetParameters8169c6f8aaeaf5e2e8620f5f895ffe2099202ccb4b6889df48fe0967a894235cS3BucketDE3B88D6' },
       referencetostackAssetParameters8169c6f8aaeaf5e2e8620f5f895ffe2099202ccb4b6889df48fe0967a894235cS3VersionKey49DD83A2Ref: { Ref: 'AssetParameters8169c6f8aaeaf5e2e8620f5f895ffe2099202ccb4b6889df48fe0967a894235cS3VersionKey3A62EFEA' },
@@ -777,20 +773,19 @@ test('assets within nested stacks are proxied from the parent', () => {
 
   // THEN
   const assembly = app.synth();
-  const template = SynthUtils.toCloudFormation(parent);
 
   // two sets of asset parameters: one for the nested stack itself and one as a proxy for the asset within the stack
-  expect(template.Parameters).toEqual({
+  expect(Template.fromStack(parent).toJSON().Parameters).toEqual(({
     AssetParametersdb01ee2eb7adc7915e364dc410d861e569543f9be3761d535a68d5c2cc181281S3BucketC188F637: { Type: 'String', Description: 'S3 bucket for asset "db01ee2eb7adc7915e364dc410d861e569543f9be3761d535a68d5c2cc181281"' },
     AssetParametersdb01ee2eb7adc7915e364dc410d861e569543f9be3761d535a68d5c2cc181281S3VersionKeyC7F4DBF2: { Type: 'String', Description: 'S3 key for asset version "db01ee2eb7adc7915e364dc410d861e569543f9be3761d535a68d5c2cc181281"' },
     AssetParametersdb01ee2eb7adc7915e364dc410d861e569543f9be3761d535a68d5c2cc181281ArtifactHash373B14D2: { Type: 'String', Description: 'Artifact hash for asset "db01ee2eb7adc7915e364dc410d861e569543f9be3761d535a68d5c2cc181281"' },
     AssetParameters46b107d6db798ca46046b8669d057a4debcbdbaaddb6170400748c2f9e4f9d71S3Bucket3C4265E9: { Type: 'String', Description: 'S3 bucket for asset "46b107d6db798ca46046b8669d057a4debcbdbaaddb6170400748c2f9e4f9d71"' },
     AssetParameters46b107d6db798ca46046b8669d057a4debcbdbaaddb6170400748c2f9e4f9d71S3VersionKey8E981535: { Type: 'String', Description: 'S3 key for asset version "46b107d6db798ca46046b8669d057a4debcbdbaaddb6170400748c2f9e4f9d71"' },
     AssetParameters46b107d6db798ca46046b8669d057a4debcbdbaaddb6170400748c2f9e4f9d71ArtifactHash45A28583: { Type: 'String', Description: 'Artifact hash for asset "46b107d6db798ca46046b8669d057a4debcbdbaaddb6170400748c2f9e4f9d71"' },
-  });
+  }));
 
   // asset proxy parameters are passed to the nested stack
-  expect(parent).toHaveResource('AWS::CloudFormation::Stack', {
+  Template.fromStack(parent).hasResourceProperties('AWS::CloudFormation::Stack', {
     Parameters: {
       referencetoParentStackAssetParametersdb01ee2eb7adc7915e364dc410d861e569543f9be3761d535a68d5c2cc181281S3Bucket82C55B96Ref: { Ref: 'AssetParametersdb01ee2eb7adc7915e364dc410d861e569543f9be3761d535a68d5c2cc181281S3BucketC188F637' },
       referencetoParentStackAssetParametersdb01ee2eb7adc7915e364dc410d861e569543f9be3761d535a68d5c2cc181281S3VersionKeyA43C3CC6Ref: { Ref: 'AssetParametersdb01ee2eb7adc7915e364dc410d861e569543f9be3761d535a68d5c2cc181281S3VersionKeyC7F4DBF2' },
@@ -884,7 +879,7 @@ test('referencing attributes with period across stacks', () => {
   });
 
   // THEN
-  expect(nested).toMatchTemplate({
+  Template.fromStack(nested).templateMatches({
     Resources: {
       resourceinnested: {
         Type: 'CONSUMED',
@@ -902,7 +897,7 @@ test('referencing attributes with period across stacks', () => {
     },
   });
 
-  expect(parent).toHaveResource('CONSUMER', {
+  Template.fromStack(parent).hasResourceProperties('CONSUMER', {
     ConsumedAttribute: {
       'Fn::GetAtt': [
         'nestedNestedStacknestedNestedStackResource3DD143BF',
@@ -981,7 +976,7 @@ test('references to a resource from a deeply nested stack', () => {
   });
 
   // THEN
-  expect(top).toHaveResource('AWS::CloudFormation::Stack', {
+  Template.fromStack(top).hasResourceProperties('AWS::CloudFormation::Stack', {
     Parameters: {
       referencetostackAssetParameters842982bd421cce9742ba27151ef12ed699d44d22801f41e8029f63f2358a3f2fS3Bucket5DA5D2E7Ref: {
         Ref: 'AssetParameters842982bd421cce9742ba27151ef12ed699d44d22801f41e8029f63f2358a3f2fS3BucketDD4D96B5',
@@ -995,7 +990,7 @@ test('references to a resource from a deeply nested stack', () => {
     },
   });
 
-  expect(nested1).toHaveResource('AWS::CloudFormation::Stack', {
+  Template.fromStack(nested1).hasResourceProperties('AWS::CloudFormation::Stack', {
     Parameters: {
       referencetostacktoplevelBB16BF13Ref: {
         Ref: 'referencetostacktoplevelBB16BF13Ref',
@@ -1003,7 +998,7 @@ test('references to a resource from a deeply nested stack', () => {
     },
   });
 
-  expect(nested2).toMatchTemplate({
+  Template.fromStack(nested2).templateMatches({
     Resources: {
       refToTopLevel: {
         Type: 'BottomLevel',
@@ -1045,7 +1040,7 @@ test('bottom nested stack consumes value from a top-level stack through a parame
   const paramName = 'referencetoGrandparentResourceInGrandparent010E997ARef';
 
   // child (bottom) references through a parameter.
-  expect(bottom).toMatchTemplate({
+  Template.fromStack(bottom).templateMatches({
     Resources: {
       ResourceInChild: {
         Type: 'ResourceInChild',
@@ -1060,14 +1055,14 @@ test('bottom nested stack consumes value from a top-level stack through a parame
   });
 
   // the parent (middle) sets the value of this parameter to be a reference to another parameter
-  expect(middle).toHaveResource('AWS::CloudFormation::Stack', {
+  Template.fromStack(middle).hasResourceProperties('AWS::CloudFormation::Stack', {
     Parameters: {
       [paramName]: { Ref: paramName },
     },
   });
 
   // grandparent (top) assigns the actual value to the parameter
-  expect(top).toHaveResource('AWS::CloudFormation::Stack', {
+  Template.fromStack(top).hasResourceProperties('AWS::CloudFormation::Stack', {
     Parameters: {
       [paramName]: { Ref: 'ResourceInGrandparent' },
 
