@@ -72,7 +72,7 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/aws-lambda": "^8.10.79",
+    "@types/aws-lambda": "^8.10.83",
     "@types/jest": "^26.0.24",
     "aws-sdk": "^2.848.0",
     "cdk-build-tools": "0.0.0",
