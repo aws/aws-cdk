@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Match, Template } from '@aws-cdk/assertions';
 import { Vpc } from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import { CompositePrincipal, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
@@ -21,9 +21,9 @@ describe('When Application Load Balancer', () => {
     });
 
     // THEN - stack contains a load balancer and a service
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::LoadBalancer');
+    Template.fromStack(stack).resourceCountIs('AWS::ElasticLoadBalancingV2::LoadBalancer', 1);
 
-    expect(stack).toHaveResource('AWS::ECS::Service', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
       DesiredCount: 1,
       LaunchType: 'FARGATE',
       LoadBalancers: [
@@ -37,9 +37,9 @@ describe('When Application Load Balancer', () => {
       ],
     });
 
-    expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
-        {
+        Match.objectLike({
           Image: 'test',
           LogConfiguration: {
             LogDriver: 'awslogs',
@@ -60,7 +60,7 @@ describe('When Application Load Balancer', () => {
               Protocol: 'tcp',
             },
           ],
-        },
+        }),
       ],
       Cpu: '256',
       ExecutionRoleArn: {
@@ -135,7 +135,7 @@ describe('When Application Load Balancer', () => {
     });
 
     // THEN - stack contains a load balancer and a service
-    expect(stack).toHaveResource('AWS::ECS::Service', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
       DesiredCount: 3,
       EnableECSManagedTags: true,
       HealthCheckGracePeriodSeconds: 2,
@@ -182,7 +182,7 @@ describe('When Application Load Balancer', () => {
       ServiceName: 'myService',
     });
 
-    expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
         {
           Environment: [
@@ -314,11 +314,11 @@ describe('When Application Load Balancer', () => {
     });
 
     // THEN - stack contains a load balancer and a service
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
       Name: 'alb-test-load-balancer',
     });
 
-    expect(stack).toHaveResource('AWS::ECS::Service', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
       DesiredCount: 1,
       LaunchType: 'FARGATE',
       LoadBalancers: [
@@ -332,9 +332,9 @@ describe('When Application Load Balancer', () => {
       ],
     });
 
-    expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
-        {
+        Match.objectLike({
           Image: 'test',
           LogConfiguration: {
             LogDriver: 'awslogs',
@@ -355,7 +355,7 @@ describe('When Application Load Balancer', () => {
               Protocol: 'tcp',
             },
           ],
-        },
+        }),
       ],
       Cpu: '256',
       ExecutionRoleArn: {
@@ -390,9 +390,9 @@ describe('When Network Load Balancer', () => {
     });
 
     // THEN - stack contains a load balancer and a service
-    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::LoadBalancer');
+    Template.fromStack(stack).resourceCountIs('AWS::ElasticLoadBalancingV2::LoadBalancer', 1);
 
-    expect(stack).toHaveResource('AWS::ECS::Service', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
       DesiredCount: 1,
       LaunchType: 'FARGATE',
       LoadBalancers: [
@@ -406,9 +406,9 @@ describe('When Network Load Balancer', () => {
       ],
     });
 
-    expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
-        {
+        Match.objectLike({
           Image: 'test',
           LogConfiguration: {
             LogDriver: 'awslogs',
@@ -429,7 +429,7 @@ describe('When Network Load Balancer', () => {
               Protocol: 'tcp',
             },
           ],
-        },
+        }),
       ],
       Cpu: '256',
       ExecutionRoleArn: {
@@ -500,7 +500,7 @@ describe('When Network Load Balancer', () => {
     });
 
     // THEN - stack contains a load balancer and a service
-    expect(stack).toHaveResource('AWS::ECS::Service', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
       DesiredCount: 3,
       EnableECSManagedTags: true,
       HealthCheckGracePeriodSeconds: 2,
@@ -546,7 +546,7 @@ describe('When Network Load Balancer', () => {
       ServiceName: 'myService',
     });
 
-    expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
         {
           Environment: [

@@ -1,5 +1,4 @@
-import { SynthUtils } from '@aws-cdk/assert-internal';
-import '@aws-cdk/assert-internal/jest';
+import { Match, Template } from '@aws-cdk/assertions';
 import { DnsValidatedCertificate } from '@aws-cdk/aws-certificatemanager';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
@@ -24,7 +23,7 @@ test('setting loadBalancerType to Network creates an NLB Public', () => {
   });
 
   // THEN
-  expect(stack).toHaveResourceLike('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+  Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
     Type: 'network',
     Scheme: 'internet-facing',
   });
@@ -46,7 +45,7 @@ test('setting loadBalancerType to Network and publicLoadBalancer to false create
   });
 
   // THEN
-  expect(stack).toHaveResourceLike('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+  Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
     Type: 'network',
     Scheme: 'internal',
   });
@@ -92,7 +91,7 @@ test('setting executionRole updated taskDefinition with given execution role', (
   });
 
   // THEN
-  const serviceTaskDefinition = SynthUtils.synthesize(stack).template.Resources.ServiceTaskDef1922A00F;
+  const serviceTaskDefinition = Template.fromStack(stack).toJSON().Resources.ServiceTaskDef1922A00F;
   expect(serviceTaskDefinition.Properties.ExecutionRoleArn).toEqual({ 'Fn::GetAtt': ['ExecutionRole605A040B', 'Arn'] });
 });
 
@@ -119,7 +118,7 @@ test('setting taskRole updated taskDefinition with given task role', () => {
   });
 
   // THEN
-  const serviceTaskDefinition = SynthUtils.synthesize(stack).template.Resources.ServiceTaskDef1922A00F;
+  const serviceTaskDefinition = Template.fromStack(stack).toJSON().Resources.ServiceTaskDef1922A00F;
   expect(serviceTaskDefinition.Properties.TaskRoleArn).toEqual({ 'Fn::GetAtt': ['taskRoleTest9DA66B6E', 'Arn'] });
 });
 
@@ -139,7 +138,7 @@ test('setting containerName updates container name with given name', () => {
   });
 
   // THEN
-  const serviceTaskDefinition = SynthUtils.synthesize(stack).template.Resources.ServiceTaskDef1922A00F;
+  const serviceTaskDefinition = Template.fromStack(stack).toJSON().Resources.ServiceTaskDef1922A00F;
   expect(serviceTaskDefinition.Properties.ContainerDefinitions[0].Name).toEqual('bob');
 });
 
@@ -158,7 +157,7 @@ test('not setting containerName updates container name with default', () => {
   });
 
   // THEN
-  const serviceTaskDefinition = SynthUtils.synthesize(stack).template.Resources.ServiceTaskDef1922A00F;
+  const serviceTaskDefinition = Template.fromStack(stack).toJSON().Resources.ServiceTaskDef1922A00F;
   expect(serviceTaskDefinition.Properties.ContainerDefinitions[0].Name).toEqual('web');
 });
 
@@ -177,7 +176,7 @@ test('setting servicename updates service name with given name', () => {
     serviceName: 'bob',
   });
   // THEN
-  const serviceTaskDefinition = SynthUtils.synthesize(stack).template.Resources.Service9571FDD8;
+  const serviceTaskDefinition = Template.fromStack(stack).toJSON().Resources.Service9571FDD8;
   expect(serviceTaskDefinition.Properties.ServiceName).toEqual('bob');
 });
 
@@ -196,7 +195,7 @@ test('not setting servicename updates service name with default', () => {
   });
 
   // THEN
-  const serviceTaskDefinition = SynthUtils.synthesize(stack).template.Resources.Service9571FDD8;
+  const serviceTaskDefinition = Template.fromStack(stack).toJSON().Resources.Service9571FDD8;
   expect(serviceTaskDefinition.Properties.ServiceName).toBeUndefined();
 });
 
@@ -212,7 +211,7 @@ test('setting healthCheckGracePeriod works', () => {
     healthCheckGracePeriod: cdk.Duration.seconds(600),
   });
   // THEN
-  const serviceTaskDefinition = SynthUtils.synthesize(stack).template.Resources.Service9571FDD8;
+  const serviceTaskDefinition = Template.fromStack(stack).toJSON().Resources.Service9571FDD8;
   expect(serviceTaskDefinition.Properties.HealthCheckGracePeriodSeconds).toEqual(600);
 });
 
@@ -245,7 +244,7 @@ test('selecting correct vpcSubnets', () => {
     },
   });
   // THEN
-  expect(stack).toHaveResourceLike('AWS::ECS::Service', {
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
     NetworkConfiguration: {
       AwsvpcConfiguration: {
         Subnets: [
@@ -272,7 +271,7 @@ test('target group uses HTTP/80 as default', () => {
     },
   });
   // THEN
-  expect(stack).toHaveResourceLike('AWS::ElasticLoadBalancingV2::TargetGroup', {
+  Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
     Port: 80,
     Protocol: 'HTTP',
   });
@@ -290,7 +289,7 @@ test('target group uses HTTPS/443 when configured', () => {
     targetProtocol: ApplicationProtocol.HTTPS,
   });
   // THEN
-  expect(stack).toHaveResourceLike('AWS::ElasticLoadBalancingV2::TargetGroup', {
+  Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
     Port: 443,
     Protocol: 'HTTPS',
   });
@@ -308,7 +307,7 @@ test('setting platform version', () => {
     platformVersion: ecs.FargatePlatformVersion.VERSION1_4,
   });
   // THEN
-  expect(stack).toHaveResource('AWS::ECS::Service', {
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
     PlatformVersion: ecs.FargatePlatformVersion.VERSION1_4,
   });
 });
@@ -338,15 +337,15 @@ test('test load balanced service with family defined', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::ECS::Service', {
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
     DesiredCount: 2,
     LaunchType: 'FARGATE',
     ServiceName: 'fargate-test-service',
   });
 
-  expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
     ContainerDefinitions: [
-      {
+      Match.objectLike({
         Environment: [
           {
             Name: 'TEST_ENVIRONMENT_VARIABLE1',
@@ -358,7 +357,7 @@ test('test load balanced service with family defined', () => {
           },
         ],
         Image: '/aws/aws-example-app',
-      },
+      }),
     ],
     Family: 'fargate-task-family',
   });
@@ -379,7 +378,7 @@ test('setting ALB deployment controller', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::ECS::Service', {
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
     DeploymentController: {
       Type: 'CODE_DEPLOY',
     },
@@ -401,7 +400,7 @@ test('setting NLB deployment controller', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::ECS::Service', {
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
     DeploymentController: {
       Type: 'CODE_DEPLOY',
     },
@@ -421,7 +420,7 @@ test('setting ALB circuitBreaker works', () => {
   });
 
   // THEN
-  expect(stack).toHaveResourceLike('AWS::ECS::Service', {
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
     DeploymentConfiguration: {
       DeploymentCircuitBreaker: {
         Enable: true,
@@ -447,7 +446,7 @@ test('setting NLB circuitBreaker works', () => {
   });
 
   // THEN
-  expect(stack).toHaveResourceLike('AWS::ECS::Service', {
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
     DeploymentConfiguration: {
       DeploymentCircuitBreaker: {
         Enable: true,
@@ -477,11 +476,11 @@ test('setting NLB special listener port to create the listener', () => {
   });
 
   // THEN
-  expect(stack).toHaveResourceLike('AWS::ElasticLoadBalancingV2::Listener', {
+  Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::Listener', {
     DefaultActions: [
-      {
+      Match.objectLike({
         Type: 'forward',
-      },
+      }),
     ],
     Port: 2015,
     Protocol: 'TCP',
@@ -505,11 +504,11 @@ test('setting ALB special listener port to create the listener', () => {
   });
 
   // THEN
-  expect(stack).toHaveResourceLike('AWS::ElasticLoadBalancingV2::Listener', {
+  Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::Listener', {
     DefaultActions: [
-      {
+      Match.objectLike({
         Type: 'forward',
-      },
+      }),
     ],
     Port: 2015,
     Protocol: 'HTTP',
@@ -538,11 +537,11 @@ test('setting ALB HTTPS protocol to create the listener on 443', () => {
   });
 
   // THEN
-  expect(stack).toHaveResourceLike('AWS::ElasticLoadBalancingV2::Listener', {
+  Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::Listener', {
     DefaultActions: [
-      {
+      Match.objectLike({
         Type: 'forward',
-      },
+      }),
     ],
     Port: 443,
     Protocol: 'HTTPS',
@@ -571,7 +570,7 @@ test('setting ALB HTTPS correctly sets the recordset name', () => {
   });
 
   // THEN
-  expect(stack).toHaveResourceLike('AWS::Route53::RecordSet', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
     Name: 'test.domain.com.',
   });
 });
@@ -599,7 +598,7 @@ test('setting ALB cname option correctly sets the recordset type', () => {
   });
 
   // THEN
-  expect(stack).toHaveResourceLike('AWS::Route53::RecordSet', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
     Name: 'test.domain.com.',
     Type: 'CNAME',
   });
@@ -628,7 +627,7 @@ test('setting ALB record type to NONE correctly omits the recordset', () => {
   });
 
   // THEN
-  expect(stack).not.toHaveResource('AWS::Route53::RecordSet');
+  Template.fromStack(stack).resourceCountIs('AWS::Route53::RecordSet', 0);
 });
 
 
@@ -654,7 +653,7 @@ test('setting NLB cname option correctly sets the recordset type', () => {
   });
 
   // THEN
-  expect(stack).toHaveResourceLike('AWS::Route53::RecordSet', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
     Name: 'test.domain.com.',
     Type: 'CNAME',
   });
@@ -682,7 +681,7 @@ test('setting NLB record type to NONE correctly omits the recordset', () => {
   });
 
   // THEN
-  expect(stack).not.toHaveResource('AWS::Route53::RecordSet');
+  Template.fromStack(stack).resourceCountIs('AWS::Route53::RecordSet', 0);
 });
 
 test('setting ALB HTTP protocol to create the listener on 80', () => {
@@ -702,11 +701,11 @@ test('setting ALB HTTP protocol to create the listener on 80', () => {
   });
 
   // THEN
-  expect(stack).toHaveResourceLike('AWS::ElasticLoadBalancingV2::Listener', {
+  Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::Listener', {
     DefaultActions: [
-      {
+      Match.objectLike({
         Type: 'forward',
-      },
+      }),
     ],
     Port: 80,
     Protocol: 'HTTP',
@@ -729,11 +728,11 @@ test('setting ALB without any protocol or listenerPort to create the listener on
   });
 
   // THEN
-  expect(stack).toHaveResourceLike('AWS::ElasticLoadBalancingV2::Listener', {
+  Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::Listener', {
     DefaultActions: [
-      {
+      Match.objectLike({
         Type: 'forward',
-      },
+      }),
     ],
     Port: 80,
     Protocol: 'HTTP',
@@ -756,11 +755,11 @@ test('passing in existing network load balancer to NLB Fargate Service', () => {
   });
 
   // THEN
-  expect(stack).toHaveResourceLike('AWS::ECS::Service', {
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
     LaunchType: 'FARGATE',
   });
 
-  expect(stack).toHaveResourceLike('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+  Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
     Type: 'network',
   });
 });
@@ -804,14 +803,19 @@ test('passing in imported network load balancer and resources to NLB Fargate ser
   });
 
   // THEN
-  expect(stack2).toHaveResourceLike('AWS::ECS::Service', {
+  Template.fromStack(stack2).hasResourceProperties('AWS::ECS::Service', {
     LaunchType: 'FARGATE',
-    LoadBalancers: [{ ContainerName: 'myContainer', ContainerPort: 80 }],
+    LoadBalancers: [
+      Match.objectLike({
+        ContainerName: 'myContainer',
+        ContainerPort: 80,
+      }),
+    ],
   });
 
-  expect(stack2).toHaveResourceLike('AWS::ElasticLoadBalancingV2::TargetGroup');
+  Template.fromStack(stack2).resourceCountIs('AWS::ElasticLoadBalancingV2::TargetGroup', 1);
 
-  expect(stack2).toHaveResourceLike('AWS::ElasticLoadBalancingV2::Listener', {
+  Template.fromStack(stack2).hasResourceProperties('AWS::ElasticLoadBalancingV2::Listener', {
     LoadBalancerArn: nlb2.loadBalancerArn,
     Port: 80,
   });
@@ -836,11 +840,11 @@ test('passing in previously created application load balancer to ALB Fargate Ser
   });
 
   // THEN
-  expect(stack).toHaveResourceLike('AWS::ECS::Service', {
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
     LaunchType: 'FARGATE',
   });
 
-  expect(stack).toHaveResourceLike('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+  Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
     Type: 'application',
   });
 });
@@ -881,14 +885,19 @@ test('passing in imported application load balancer and resources to ALB Fargate
   });
 
   // THEN
-  expect(stack1).toHaveResourceLike('AWS::ECS::Service', {
+  Template.fromStack(stack1).hasResourceProperties('AWS::ECS::Service', {
     LaunchType: 'FARGATE',
-    LoadBalancers: [{ ContainerName: 'Container', ContainerPort: 80 }],
+    LoadBalancers: [
+      Match.objectLike({
+        ContainerName: 'Container',
+        ContainerPort: 80,
+      }),
+    ],
   });
 
-  expect(stack1).toHaveResourceLike('AWS::ElasticLoadBalancingV2::TargetGroup');
+  Template.fromStack(stack1).resourceCountIs('AWS::ElasticLoadBalancingV2::TargetGroup', 1);
 
-  expect(stack1).toHaveResourceLike('AWS::ElasticLoadBalancingV2::Listener', {
+  Template.fromStack(stack1).hasResourceProperties('AWS::ElasticLoadBalancingV2::Listener', {
     LoadBalancerArn: alb.loadBalancerArn,
     Port: 80,
   });
@@ -916,11 +925,11 @@ test('passing in previously created security groups to ALB Fargate Service', () 
   });
 
   // THEN
-  expect(stack).toHaveResourceLike('AWS::ECS::Service', {
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
     LaunchType: 'FARGATE',
   });
 
-  expect(stack).toHaveResource('AWS::EC2::SecurityGroup', {
+  Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroup', {
     GroupDescription: 'Example',
     GroupName: 'Rolly',
     SecurityGroupEgress: [
@@ -964,9 +973,7 @@ test('domainName and domainZone not required for HTTPS listener with provided ce
   });
 
   // THEN
-  expect(stack).not.toHaveResourceLike('AWS::Route53::RecordSet', {
-    Name: 'test.domain.com.',
-  });
+  expect(Template.fromStack(stack).findResources('AWS::Route53::RecordSet')).toEqual({});
 });
 
 test('test ALB load balanced service with docker labels defined', () => {
@@ -985,15 +992,15 @@ test('test ALB load balanced service with docker labels defined', () => {
   });
 
   // THEN
-  expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
     ContainerDefinitions: [
-      {
+      Match.objectLike({
         Image: '/aws/aws-example-app',
         DockerLabels: {
           label1: 'labelValue1',
           label2: 'labelValue2',
         },
-      },
+      }),
     ],
   });
 });
@@ -1014,15 +1021,15 @@ test('test Network load balanced service with docker labels defined', () => {
   });
 
   // THEN
-  expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
     ContainerDefinitions: [
-      {
+      Match.objectLike({
         Image: '/aws/aws-example-app',
         DockerLabels: {
           label1: 'labelValue1',
           label2: 'labelValue2',
         },
-      },
+      }),
     ],
   });
 });

@@ -1,5 +1,4 @@
-import { ABSENT } from '@aws-cdk/assert-internal';
-import '@aws-cdk/assert-internal/jest';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as autoscaling from '@aws-cdk/aws-autoscaling';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
@@ -23,12 +22,12 @@ test('test ECS queue worker service construct - with only required props', () =>
   });
 
   // THEN - QueueWorker is of EC2 launch type, an SQS queue is created and all default properties are set.
-  expect(stack).toHaveResource('AWS::ECS::Service', {
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
     DesiredCount: 1,
     LaunchType: 'EC2',
   });
 
-  expect(stack).toHaveResource('AWS::SQS::Queue', {
+  Template.fromStack(stack).hasResourceProperties('AWS::SQS::Queue', {
     RedrivePolicy: {
       deadLetterTargetArn: {
         'Fn::GetAtt': [
@@ -40,13 +39,13 @@ test('test ECS queue worker service construct - with only required props', () =>
     },
   });
 
-  expect(stack).toHaveResource('AWS::SQS::Queue', {
+  Template.fromStack(stack).hasResourceProperties('AWS::SQS::Queue', {
     MessageRetentionPeriod: 1209600,
   });
 
-  expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
     ContainerDefinitions: [
-      {
+      Match.objectLike({
         Environment: [
           {
             Name: 'QUEUE_NAME',
@@ -73,7 +72,7 @@ test('test ECS queue worker service construct - with only required props', () =>
         Essential: true,
         Image: 'test',
         Memory: 512,
-      },
+      }),
     ],
     Family: 'ServiceQueueProcessingTaskDef83DB34F1',
   });
@@ -96,8 +95,8 @@ test('test ECS queue worker service construct - with remove default desiredCount
   });
 
   // THEN - QueueWorker is of EC2 launch type, and desiredCount is not defined on the Ec2Service.
-  expect(stack).toHaveResource('AWS::ECS::Service', {
-    DesiredCount: ABSENT,
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+    DesiredCount: Match.absentProperty(),
     LaunchType: 'EC2',
   });
 });
@@ -120,12 +119,12 @@ test('test ECS queue worker service construct - with optional props for queues',
   });
 
   // THEN - QueueWorker is of EC2 launch type, an SQS queue is created and all default properties are set.
-  expect(stack).toHaveResource('AWS::ECS::Service', {
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
     DesiredCount: 1,
     LaunchType: 'EC2',
   });
 
-  expect(stack).toHaveResource('AWS::SQS::Queue', {
+  Template.fromStack(stack).hasResourceProperties('AWS::SQS::Queue', {
     RedrivePolicy: {
       deadLetterTargetArn: {
         'Fn::GetAtt': [
@@ -138,13 +137,13 @@ test('test ECS queue worker service construct - with optional props for queues',
     VisibilityTimeout: 300,
   });
 
-  expect(stack).toHaveResource('AWS::SQS::Queue', {
+  Template.fromStack(stack).hasResourceProperties('AWS::SQS::Queue', {
     MessageRetentionPeriod: 604800,
   });
 
-  expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
     ContainerDefinitions: [
-      {
+      Match.objectLike({
         Environment: [
           {
             Name: 'QUEUE_NAME',
@@ -171,7 +170,7 @@ test('test ECS queue worker service construct - with optional props for queues',
         Essential: true,
         Image: 'test',
         Memory: 512,
-      },
+      }),
     ],
     Family: 'ServiceQueueProcessingTaskDef83DB34F1',
   });
@@ -210,7 +209,7 @@ test('test ECS queue worker service construct - with optional props', () => {
   });
 
   // THEN - QueueWorker is of EC2 launch type, an SQS queue is created and all optional properties are set.
-  expect(stack).toHaveResource('AWS::ECS::Service', {
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
     DesiredCount: 2,
     DeploymentConfiguration: {
       MinimumHealthyPercent: 60,
@@ -227,13 +226,13 @@ test('test ECS queue worker service construct - with optional props', () => {
     },
   });
 
-  expect(stack).toHaveResource('AWS::SQS::Queue', {
+  Template.fromStack(stack).hasResourceProperties('AWS::SQS::Queue', {
     QueueName: 'ecs-test-sqs-queue',
   });
 
-  expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
     ContainerDefinitions: [
-      {
+      Match.objectLike({
         Command: [
           '-c',
           '4',
@@ -266,7 +265,7 @@ test('test ECS queue worker service construct - with optional props', () => {
             Value: '256',
           },
         ],
-      },
+      }),
     ],
     Family: 'ecs-task-family',
   });
@@ -289,7 +288,7 @@ test('can set desiredTaskCount to 0', () => {
   });
 
   // THEN - QueueWorker is of EC2 launch type, an SQS queue is created and all default properties are set.
-  expect(stack).toHaveResource('AWS::ECS::Service', {
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
     DesiredCount: 0,
     LaunchType: 'EC2',
   });
@@ -329,11 +328,11 @@ test('can set custom containerName', () => {
   });
 
   // THEN
-  expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
     ContainerDefinitions: [
-      {
+      Match.objectLike({
         Name: 'my-container',
-      },
+      }),
     ],
   });
 });
@@ -366,8 +365,8 @@ test('can set capacity provider strategies', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::ECS::Service', {
-    LaunchType: ABSENT,
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+    LaunchType: Match.absentProperty(),
     CapacityProviderStrategy: [
       {
         CapacityProvider: {

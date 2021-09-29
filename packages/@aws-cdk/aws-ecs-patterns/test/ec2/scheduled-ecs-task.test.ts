@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as events from '@aws-cdk/aws-events';
@@ -24,7 +24,7 @@ test('Can create a scheduled Ec2 Task - with only required props', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::Events::Rule', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
     State: 'ENABLED',
     Targets: [
       {
@@ -40,7 +40,7 @@ test('Can create a scheduled Ec2 Task - with only required props', () => {
     ],
   });
 
-  expect(stack).toHaveResource('AWS::ECS::TaskDefinition', {
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
     ContainerDefinitions: [
       {
         Essential: true,
@@ -89,7 +89,7 @@ test('Can create a scheduled Ec2 Task - with optional props', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::Events::Rule', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
     Name: 'sample-scheduled-task-rule',
     State: 'DISABLED',
     Targets: [
@@ -106,7 +106,7 @@ test('Can create a scheduled Ec2 Task - with optional props', () => {
     ],
   });
 
-  expect(stack).toHaveResource('AWS::ECS::TaskDefinition', {
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
     ContainerDefinitions: [
       {
         Cpu: 2,
@@ -157,7 +157,7 @@ test('Scheduled ECS Task - with securityGroups defined', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::Events::Rule', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
     Targets: [
       {
         Arn: { 'Fn::GetAtt': ['EcsCluster97242B84', 'Arn'] },
@@ -209,7 +209,7 @@ test('Scheduled Ec2 Task - with MemoryReservation defined', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::ECS::TaskDefinition', {
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
     ContainerDefinitions: [
       {
         Essential: true,
@@ -253,7 +253,7 @@ test('Scheduled Ec2 Task - with Command defined', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::ECS::TaskDefinition', {
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
     ContainerDefinitions: [
       {
         Command: [
