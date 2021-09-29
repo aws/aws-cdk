@@ -1,5 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
-import { expect as assertExpect, ResourcePart } from '@aws-cdk/assert-internal';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as lambda from '@aws-cdk/aws-lambda';
@@ -19,7 +18,7 @@ test('default secret', () => {
   new secretsmanager.Secret(stack, 'Secret');
 
   // THEN
-  expect(stack).toHaveResource('AWS::SecretsManager::Secret', {
+  Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::Secret', {
     GenerateSecretString: {},
   });
 });
@@ -31,10 +30,10 @@ test('set removalPolicy to secret', () => {
   });
 
   // THEN
-  expect(stack).toHaveResourceLike('AWS::SecretsManager::Secret',
+  Template.fromStack(stack).hasResource('AWS::SecretsManager::Secret',
     {
       DeletionPolicy: 'Retain',
-    }, ResourcePart.CompleteDefinition,
+    },
   );
 });
 
@@ -46,10 +45,9 @@ test('secret with kms', () => {
   new secretsmanager.Secret(stack, 'Secret', { encryptionKey: key });
 
   // THEN
-  expect(stack).toHaveResourceLike('AWS::KMS::Key', {
+  Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
     KeyPolicy: {
-      Statement: [
-        {},
+      Statement: Match.arrayWith([
         {
           Effect: 'Allow',
           Resource: '*',
@@ -136,7 +134,7 @@ test('secret with kms', () => {
             },
           },
         },
-      ],
+      ]),
       Version: '2012-10-17',
     },
   });
@@ -152,7 +150,7 @@ test('secret with generate secret string options', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::SecretsManager::Secret', {
+  Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::Secret', {
     GenerateSecretString: {
       ExcludeUppercase: true,
       PasswordLength: 20,
@@ -170,7 +168,7 @@ test('templated secret string', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::SecretsManager::Secret', {
+  Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::Secret', {
     GenerateSecretString: {
       SecretStringTemplate: '{"username":"username"}',
       GenerateStringKey: 'password',
@@ -188,7 +186,7 @@ test('grantRead', () => {
   secret.grantRead(role);
 
   // THEN
-  expect(stack).toHaveResource('AWS::IAM::Policy', {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
       Version: '2012-10-17',
       Statement: [{
@@ -201,12 +199,9 @@ test('grantRead', () => {
       }],
     },
   });
-  expect(stack).toHaveResourceLike('AWS::KMS::Key', {
+  Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
     KeyPolicy: {
-      Statement: [
-        {},
-        {},
-        {},
+      Statement: Match.arrayWith([
         {
           Action: 'kms:Decrypt',
           Condition: {
@@ -236,7 +231,7 @@ test('grantRead', () => {
           },
           Resource: '*',
         },
-      ],
+      ]),
       Version: '2012-10-17',
     },
   });
@@ -252,7 +247,7 @@ test('grantRead cross account', () => {
   secret.grantRead(principal, ['FOO', 'bar']).assertSuccess();
 
   // THEN
-  expect(stack).toHaveResource('AWS::SecretsManager::ResourcePolicy', {
+  Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::ResourcePolicy', {
     ResourcePolicy: {
       Statement: [
         {
@@ -295,12 +290,9 @@ test('grantRead cross account', () => {
     },
   });
 
-  expect(stack).toHaveResourceLike('AWS::KMS::Key', {
+  Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
     KeyPolicy: {
-      Statement: [
-        {},
-        {},
-        {},
+      Statement: Match.arrayWith([
         {
           Action: 'kms:Decrypt',
           Condition: {
@@ -336,7 +328,7 @@ test('grantRead cross account', () => {
           },
           Resource: '*',
         },
-      ],
+      ]),
       Version: '2012-10-17',
     },
   });
@@ -352,7 +344,7 @@ test('grantRead with version label constraint', () => {
   secret.grantRead(role, ['FOO', 'bar']);
 
   // THEN
-  expect(stack).toHaveResource('AWS::IAM::Policy', {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
       Version: '2012-10-17',
       Statement: [{
@@ -370,12 +362,9 @@ test('grantRead with version label constraint', () => {
       }],
     },
   });
-  expect(stack).toHaveResourceLike('AWS::KMS::Key', {
+  Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
     KeyPolicy: {
-      Statement: [
-        {},
-        {},
-        {},
+      Statement: Match.arrayWith([
         {
           Action: 'kms:Decrypt',
           Condition: {
@@ -405,7 +394,7 @@ test('grantRead with version label constraint', () => {
           },
           Resource: '*',
         },
-      ],
+      ]),
       Version: '2012-10-17',
     },
   });
@@ -420,7 +409,7 @@ test('grantWrite', () => {
   secret.grantWrite(role);
 
   // THEN
-  expect(stack).toHaveResource('AWS::IAM::Policy', {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
       Version: '2012-10-17',
       Statement: [{
@@ -445,8 +434,8 @@ test('grantWrite with kms', () => {
   secret.grantWrite(role);
 
   // THEN
-  const expectStack = expect(stack);
-  expectStack.toHaveResource('AWS::IAM::Policy', {
+  const expectStack = Template.fromStack(stack);
+  expectStack.hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
       Version: '2012-10-17',
       Statement: [{
@@ -459,12 +448,9 @@ test('grantWrite with kms', () => {
       }],
     },
   });
-  expectStack.toHaveResourceLike('AWS::KMS::Key', {
+  expectStack.hasResourceProperties('AWS::KMS::Key', {
     KeyPolicy: {
-      Statement: [
-        {},
-        {},
-        {},
+      Statement: Match.arrayWith([
         {
           Action: [
             'kms:Encrypt',
@@ -498,7 +484,7 @@ test('grantWrite with kms', () => {
           },
           Resource: '*',
         },
-      ],
+      ]),
     },
   });
 });
@@ -517,7 +503,7 @@ test('secretValue', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('CDK::Phony::Resource', {
+  Template.fromStack(stack).hasResourceProperties('CDK::Phony::Resource', {
     value: {
       'Fn::Join': ['', [
         '{{resolve:secretsmanager:',
@@ -536,9 +522,8 @@ describe('secretName', () => {
       });
 
       // Creates secret name by parsing ARN.
-      expect(stack).toHaveOutput({
-        outputName: 'MySecretName',
-        outputValue: { 'Fn::Select': [6, { 'Fn::Split': [':', { Ref: 'SecretA720EF05' }] }] },
+      Template.fromStack(stack).hasOutput('MySecretName', {
+        Value: { 'Fn::Select': [6, { 'Fn::Split': [':', { Ref: 'SecretA720EF05' }] }] },
       });
     }
 
@@ -571,9 +556,8 @@ describe('secretName', () => {
 
       const resourceName = { 'Fn::Select': [6, { 'Fn::Split': [':', { Ref: 'SecretA720EF05' }] }] };
 
-      expect(stack).toHaveOutput({
-        outputName: 'MySecretName',
-        outputValue: {
+      Template.fromStack(stack).hasOutput('MySecretName', {
+        Value: {
           'Fn::Join': ['-', [
             { 'Fn::Select': [0, { 'Fn::Split': ['-', resourceName] }] },
             { 'Fn::Select': [1, { 'Fn::Split': ['-', resourceName] }] },
@@ -592,9 +576,8 @@ describe('secretName', () => {
 
       const resourceName = { 'Fn::Select': [6, { 'Fn::Split': [':', { Ref: 'SecretA720EF05' }] }] };
 
-      expect(stack).toHaveOutput({
-        outputName: 'MySecretName',
-        outputValue: {
+      Template.fromStack(stack).hasOutput('MySecretName', {
+        Value: {
           'Fn::Select': [0, { 'Fn::Split': ['-', resourceName] }],
         },
       });
@@ -611,9 +594,8 @@ describe('secretName', () => {
         secretNameSegments.push({ 'Fn::Select': [i, { 'Fn::Split': ['-', resourceName] }] });
       }
 
-      expect(stack).toHaveOutput({
-        outputName: 'MySecretName',
-        outputValue: {
+      Template.fromStack(stack).hasOutput('MySecretName', {
+        Value: {
           'Fn::Join': ['-', secretNameSegments],
         },
       });
@@ -651,7 +633,7 @@ describe('secretName', () => {
         value: secret2.secretName,
       });
 
-      const outputs = assertExpect(stack).value.Outputs;
+      const outputs = Template.fromStack(stack).toJSON().Outputs;
       expect(outputs.MySecretName1).toEqual(outputs.MySecretName2);
     });
   });
@@ -717,9 +699,8 @@ test('import by secretArn supports tokens for ARNs', () => {
 
   // THEN
   expect(secretB.secretArn).toBe(secretA.secretArn);
-  expect(stackB).toHaveOutput({
-    outputName: 'secretBSecretName',
-    outputValue: { 'Fn::Select': [6, { 'Fn::Split': [':', { 'Fn::ImportValue': 'StackA:ExportsOutputRefSecretA188F281703FC8A52' }] }] },
+  Template.fromStack(stackB).hasOutput('secretBSecretName', {
+    Value: { 'Fn::Select': [6, { 'Fn::Split': [':', { 'Fn::ImportValue': 'StackA:ExportsOutputRefSecretA188F281703FC8A52' }] }] },
   });
 });
 
@@ -764,7 +745,7 @@ test('fromSecretCompleteArn - grants', () => {
   secret.grantWrite(role);
 
   // THEN
-  expect(stack).toHaveResource('AWS::IAM::Policy', {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
       Version: '2012-10-17',
       Statement: [{
@@ -801,7 +782,7 @@ test('fromSecretCompleteArn - can be assigned to a property with type number', (
   });
 
   // THEN
-  expect(stack).toHaveResourceLike('AWS::Lambda::Function', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
     MemorySize: `{{resolve:secretsmanager:${secretArn}:SecretString:LambdaFunctionMemorySize::}}`,
   });
 });
@@ -833,7 +814,7 @@ test('fromSecretPartialArn - grants', () => {
   secret.grantWrite(role);
 
   // THEN
-  expect(stack).toHaveResource('AWS::IAM::Policy', {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
       Version: '2012-10-17',
       Statement: [{
@@ -958,7 +939,7 @@ test('import by secret name with grants', () => {
       ':secret:MySecret*',
     ]],
   };
-  expect(stack).toHaveResource('AWS::IAM::Policy', {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
       Version: '2012-10-17',
       Statement: [{
@@ -1026,7 +1007,7 @@ test('import by secret name v2 with grants', () => {
       ':secret:MySecret-??????',
     ]],
   };
-  expect(stack).toHaveResource('AWS::IAM::Policy', {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
       Version: '2012-10-17',
       Statement: [{
@@ -1062,7 +1043,7 @@ test('can attach a secret with attach()', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::SecretsManager::SecretTargetAttachment', {
+  Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::SecretTargetAttachment', {
     SecretId: {
       Ref: 'SecretA720EF05',
     },
@@ -1107,7 +1088,7 @@ test('add a rotation schedule to an attached secret', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::SecretsManager::RotationSchedule', {
+  Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::RotationSchedule', {
     SecretId: {
       Ref: 'SecretAttachment2E1B7C3B', // The secret returned by the attachment, not the secret itself.
     },
@@ -1154,7 +1135,7 @@ test('can add to the resource policy of a secret', () => {
   }));
 
   // THEN
-  expect(stack).toHaveResource('AWS::SecretsManager::ResourcePolicy', {
+  Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::ResourcePolicy', {
     ResourcePolicy: {
       Statement: [
         {
@@ -1216,7 +1197,7 @@ test('with replication regions', () => {
   secret.addReplicaRegion('eu-central-1', kms.Key.fromKeyArn(stack, 'Key', 'arn:aws:kms:eu-central-1:123456789012:key/my-key-id'));
 
   // THEN
-  expect(stack).toHaveResource('AWS::SecretsManager::Secret', {
+  Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::Secret', {
     ReplicaRegions: [
       {
         Region: 'eu-west-1',
