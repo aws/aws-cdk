@@ -75,9 +75,6 @@ export abstract class ResourceHandler {
     console.log(JSON.stringify(x, undefined, 2));
   }
 
-  /**
-   * Find and return the configured HTTP proxy address
-   */
   private httpProxyFromEnvironment(): string | undefined {
     if (process.env.http_proxy) {
       return process.env.http_proxy;

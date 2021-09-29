@@ -84,9 +84,7 @@
           "Ref": "FargateClusterDefaultVpcIGWFD9278DA"
         }
       },
-      "DependsOn": [
-        "FargateClusterDefaultVpcVPCGWA7F012E1"
-      ]
+      "DependsOn": ["FargateClusterDefaultVpcVPCGWA7F012E1"]
     },
     "FargateClusterDefaultVpcPublicSubnet1EIP0093A4E0": {
       "Type": "AWS::EC2::EIP",
@@ -197,9 +195,7 @@
           "Ref": "FargateClusterDefaultVpcIGWFD9278DA"
         }
       },
-      "DependsOn": [
-        "FargateClusterDefaultVpcVPCGWA7F012E1"
-      ]
+      "DependsOn": ["FargateClusterDefaultVpcVPCGWA7F012E1"]
     },
     "FargateClusterDefaultVpcPublicSubnet2EIPA4C07B68": {
       "Type": "AWS::EC2::EIP",
@@ -310,9 +306,7 @@
           "Ref": "FargateClusterDefaultVpcIGWFD9278DA"
         }
       },
-      "DependsOn": [
-        "FargateClusterDefaultVpcVPCGWA7F012E1"
-      ]
+      "DependsOn": ["FargateClusterDefaultVpcVPCGWA7F012E1"]
     },
     "FargateClusterDefaultVpcPublicSubnet3EIP46E028EF": {
       "Type": "AWS::EC2::EIP",
@@ -705,10 +699,7 @@
               "Action": "iam:PassRole",
               "Effect": "Allow",
               "Resource": {
-                "Fn::GetAtt": [
-                  "FargateClusterRole8E36B33A",
-                  "Arn"
-                ]
+                "Fn::GetAtt": ["FargateClusterRole8E36B33A", "Arn"]
               }
             },
             {
@@ -724,9 +715,7 @@
                 "eks:UntagResource"
               ],
               "Effect": "Allow",
-              "Resource": [
-                "*"
-              ]
+              "Resource": ["*"]
             },
             {
               "Action": [
@@ -737,10 +726,7 @@
               "Resource": "*"
             },
             {
-              "Action": [
-                "iam:GetRole",
-                "iam:listAttachedRolePolicies"
-              ],
+              "Action": ["iam:GetRole", "iam:listAttachedRolePolicies"],
               "Effect": "Allow",
               "Resource": "*"
             },
@@ -830,10 +816,7 @@
         "Config": {
           "version": "1.21",
           "roleArn": {
-            "Fn::GetAtt": [
-              "FargateClusterRole8E36B33A",
-              "Arn"
-            ]
+            "Fn::GetAtt": ["FargateClusterRole8E36B33A", "Arn"]
           },
           "resourcesVpcConfig": {
             "subnetIds": [
@@ -869,10 +852,7 @@
           }
         },
         "AssumeRoleArn": {
-          "Fn::GetAtt": [
-            "FargateClusterCreationRole8C524AD8",
-            "Arn"
-          ]
+          "Fn::GetAtt": ["FargateClusterCreationRole8C524AD8", "Arn"]
         },
         "AttributesRevision": 2
       },
@@ -973,17 +953,11 @@
             [
               "[{\"apiVersion\":\"v1\",\"kind\":\"ConfigMap\",\"metadata\":{\"name\":\"aws-auth\",\"namespace\":\"kube-system\"},\"data\":{\"mapRoles\":\"[{\\\"rolearn\\\":\\\"",
               {
-                "Fn::GetAtt": [
-                  "FargateClusterMastersRole50BAF9FD",
-                  "Arn"
-                ]
+                "Fn::GetAtt": ["FargateClusterMastersRole50BAF9FD", "Arn"]
               },
               "\\\",\\\"username\\\":\\\"",
               {
-                "Fn::GetAtt": [
-                  "FargateClusterMastersRole50BAF9FD",
-                  "Arn"
-                ]
+                "Fn::GetAtt": ["FargateClusterMastersRole50BAF9FD", "Arn"]
               },
               "\\\",\\\"groups\\\":[\\\"system:masters\\\"]},{\\\"rolearn\\\":\\\"",
               {
@@ -1000,16 +974,11 @@
           "Ref": "FargateCluster019F03E8"
         },
         "RoleArn": {
-          "Fn::GetAtt": [
-            "FargateClusterCreationRole8C524AD8",
-            "Arn"
-          ]
+          "Fn::GetAtt": ["FargateClusterCreationRole8C524AD8", "Arn"]
         },
         "Overwrite": true
       },
-      "DependsOn": [
-        "FargateClusterKubectlReadyBarrier93746934"
-      ],
+      "DependsOn": ["FargateClusterKubectlReadyBarrier93746934"],
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
     },
@@ -1030,16 +999,11 @@
           "Ref": "FargateCluster019F03E8"
         },
         "RoleArn": {
-          "Fn::GetAtt": [
-            "FargateClusterCreationRole8C524AD8",
-            "Arn"
-          ]
+          "Fn::GetAtt": ["FargateClusterCreationRole8C524AD8", "Arn"]
         },
         "PatchType": "strategic"
       },
-      "DependsOn": [
-        "FargateClusterKubectlReadyBarrier93746934"
-      ],
+      "DependsOn": ["FargateClusterKubectlReadyBarrier93746934"],
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
     },
@@ -1084,10 +1048,7 @@
           ]
         },
         "AssumeRoleArn": {
-          "Fn::GetAtt": [
-            "FargateClusterCreationRole8C524AD8",
-            "Arn"
-          ]
+          "Fn::GetAtt": ["FargateClusterCreationRole8C524AD8", "Arn"]
         },
         "Config": {
           "clusterName": {
@@ -1159,10 +1120,7 @@
         },
         "Parameters": {
           "referencetoawscdkeksfargateclustertestFargateClusterCreationRoleFB2229CFArn": {
-            "Fn::GetAtt": [
-              "FargateClusterCreationRole8C524AD8",
-              "Arn"
-            ]
+            "Fn::GetAtt": ["FargateClusterCreationRole8C524AD8", "Arn"]
           },
           "referencetoawscdkeksfargateclustertestAssetParameters2fbc509041827d9042c1a07f5a1b3629c583224b5543800048ed8be264460e7eS3Bucket276E8116Ref": {
             "Ref": "AssetParameters2fbc509041827d9042c1a07f5a1b3629c583224b5543800048ed8be264460e7eS3Bucket575E2F4C"
@@ -1234,16 +1192,10 @@
         },
         "Parameters": {
           "referencetoawscdkeksfargateclustertestFargateCluster8588769EArn": {
-            "Fn::GetAtt": [
-              "FargateCluster019F03E8",
-              "Arn"
-            ]
+            "Fn::GetAtt": ["FargateCluster019F03E8", "Arn"]
           },
           "referencetoawscdkeksfargateclustertestFargateClusterCreationRoleFB2229CFArn": {
-            "Fn::GetAtt": [
-              "FargateClusterCreationRole8C524AD8",
-              "Arn"
-            ]
+            "Fn::GetAtt": ["FargateClusterCreationRole8C524AD8", "Arn"]
           },
           "referencetoawscdkeksfargateclustertestAssetParameters4129bbca38164ecb28fee8e5b674f0d05e5957b4b8ed97d9c950527b5cc4ce10S3BucketC4DF4301Ref": {
             "Ref": "AssetParameters4129bbca38164ecb28fee8e5b674f0d05e5957b4b8ed97d9c950527b5cc4ce10S3BucketC6FAEEC9"
@@ -1261,10 +1213,7 @@
             "Ref": "FargateClusterDefaultVpcPrivateSubnet3Subnet1F8A52F1"
           },
           "referencetoawscdkeksfargateclustertestFargateCluster8588769EClusterSecurityGroupId": {
-            "Fn::GetAtt": [
-              "FargateCluster019F03E8",
-              "ClusterSecurityGroupId"
-            ]
+            "Fn::GetAtt": ["FargateCluster019F03E8", "ClusterSecurityGroupId"]
           },
           "referencetoawscdkeksfargateclustertestAssetParameterse9882ab123687399f934da0d45effe675ecc8ce13b40cb946f3e1d6141fe8d68S3Bucket4F20F642Ref": {
             "Ref": "AssetParameterse9882ab123687399f934da0d45effe675ecc8ce13b40cb946f3e1d6141fe8d68S3BucketAEADE8C7"
@@ -1302,10 +1251,7 @@
             },
             " --region test-region --role-arn ",
             {
-              "Fn::GetAtt": [
-                "FargateClusterMastersRole50BAF9FD",
-                "Arn"
-              ]
+              "Fn::GetAtt": ["FargateClusterMastersRole50BAF9FD", "Arn"]
             }
           ]
         ]
@@ -1322,10 +1268,7 @@
             },
             " --region test-region --role-arn ",
             {
-              "Fn::GetAtt": [
-                "FargateClusterMastersRole50BAF9FD",
-                "Arn"
-              ]
+              "Fn::GetAtt": ["FargateClusterMastersRole50BAF9FD", "Arn"]
             }
           ]
         ]

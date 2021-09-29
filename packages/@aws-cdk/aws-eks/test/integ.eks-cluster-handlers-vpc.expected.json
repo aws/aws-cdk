@@ -84,9 +84,7 @@
           "Ref": "EksAllHandlersInVpcStackDefaultVpcIGW916D42F1"
         }
       },
-      "DependsOn": [
-        "EksAllHandlersInVpcStackDefaultVpcVPCGW5DC3BDB4"
-      ]
+      "DependsOn": ["EksAllHandlersInVpcStackDefaultVpcVPCGW5DC3BDB4"]
     },
     "EksAllHandlersInVpcStackDefaultVpcPublicSubnet1EIP9380B54C": {
       "Type": "AWS::EC2::EIP",
@@ -197,9 +195,7 @@
           "Ref": "EksAllHandlersInVpcStackDefaultVpcIGW916D42F1"
         }
       },
-      "DependsOn": [
-        "EksAllHandlersInVpcStackDefaultVpcVPCGW5DC3BDB4"
-      ]
+      "DependsOn": ["EksAllHandlersInVpcStackDefaultVpcVPCGW5DC3BDB4"]
     },
     "EksAllHandlersInVpcStackDefaultVpcPublicSubnet2EIP9186922F": {
       "Type": "AWS::EC2::EIP",
@@ -310,9 +306,7 @@
           "Ref": "EksAllHandlersInVpcStackDefaultVpcIGW916D42F1"
         }
       },
-      "DependsOn": [
-        "EksAllHandlersInVpcStackDefaultVpcVPCGW5DC3BDB4"
-      ]
+      "DependsOn": ["EksAllHandlersInVpcStackDefaultVpcVPCGW5DC3BDB4"]
     },
     "EksAllHandlersInVpcStackDefaultVpcPublicSubnet3EIPBF5ED908": {
       "Type": "AWS::EC2::EIP",
@@ -705,10 +699,7 @@
               "Action": "iam:PassRole",
               "Effect": "Allow",
               "Resource": {
-                "Fn::GetAtt": [
-                  "EksAllHandlersInVpcStackRoleC36F09F0",
-                  "Arn"
-                ]
+                "Fn::GetAtt": ["EksAllHandlersInVpcStackRoleC36F09F0", "Arn"]
               }
             },
             {
@@ -724,9 +715,7 @@
                 "eks:UntagResource"
               ],
               "Effect": "Allow",
-              "Resource": [
-                "*"
-              ]
+              "Resource": ["*"]
             },
             {
               "Action": [
@@ -737,10 +726,7 @@
               "Resource": "*"
             },
             {
-              "Action": [
-                "iam:GetRole",
-                "iam:listAttachedRolePolicies"
-              ],
+              "Action": ["iam:GetRole", "iam:listAttachedRolePolicies"],
               "Effect": "Allow",
               "Resource": "*"
             },
@@ -820,10 +806,7 @@
         "Config": {
           "version": "1.21",
           "roleArn": {
-            "Fn::GetAtt": [
-              "EksAllHandlersInVpcStackRoleC36F09F0",
-              "Arn"
-            ]
+            "Fn::GetAtt": ["EksAllHandlersInVpcStackRoleC36F09F0", "Arn"]
           },
           "resourcesVpcConfig": {
             "subnetIds": [
@@ -859,10 +842,7 @@
           }
         },
         "AssumeRoleArn": {
-          "Fn::GetAtt": [
-            "EksAllHandlersInVpcStackCreationRole0BAA4CDC",
-            "Arn"
-          ]
+          "Fn::GetAtt": ["EksAllHandlersInVpcStackCreationRole0BAA4CDC", "Arn"]
         },
         "AttributesRevision": 2
       },
@@ -988,17 +968,12 @@
           "Ref": "EksAllHandlersInVpcStack9ED695D7"
         },
         "RoleArn": {
-          "Fn::GetAtt": [
-            "EksAllHandlersInVpcStackCreationRole0BAA4CDC",
-            "Arn"
-          ]
+          "Fn::GetAtt": ["EksAllHandlersInVpcStackCreationRole0BAA4CDC", "Arn"]
         },
         "PruneLabel": "aws.cdk.eks/prune-c8fa2698c0d935568a51a7732ad19350286b302ae8",
         "Overwrite": true
       },
-      "DependsOn": [
-        "EksAllHandlersInVpcStackKubectlReadyBarrier8687350F"
-      ],
+      "DependsOn": ["EksAllHandlersInVpcStackKubectlReadyBarrier8687350F"],
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
     },
@@ -1092,9 +1067,7 @@
         ],
         "AmiType": "AL2_x86_64",
         "ForceUpdateEnabled": true,
-        "InstanceTypes": [
-          "m5.large"
-        ],
+        "InstanceTypes": ["m5.large"],
         "ScalingConfig": {
           "DesiredSize": 2,
           "MaxSize": 2,
@@ -1236,10 +1209,7 @@
         },
         "Parameters": {
           "referencetoawscdkekshandlersinvpctestEksAllHandlersInVpcStack429D29C0Arn": {
-            "Fn::GetAtt": [
-              "EksAllHandlersInVpcStack9ED695D7",
-              "Arn"
-            ]
+            "Fn::GetAtt": ["EksAllHandlersInVpcStack9ED695D7", "Arn"]
           },
           "referencetoawscdkekshandlersinvpctestEksAllHandlersInVpcStackCreationRoleADAAC7FDArn": {
             "Fn::GetAtt": [
