@@ -380,20 +380,17 @@ function parseHttpOptions(options: SdkHttpOptions) {
   if (proxyAddress && caBundlePath) {
     debug('Using proxy server: %s', proxyAddress);
     debug('Using CA bundle path: %s', caBundlePath);
-
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const ProxyAgent: any = require('proxy-agent');
     config.httpOptions.agent = new ProxyAgent(proxyAddress);
     (config.httpOptions as any).ca = readIfPossible(caBundlePath);
-  }
-  else if (proxyAddress) { // Ignore empty string on purpose
+  } else if (proxyAddress) { // Ignore empty string on purpose
     // https://aws.amazon.com/blogs/developer/using-the-aws-sdk-for-javascript-from-behind-a-proxy/
     debug('Using proxy server: %s', proxyAddress);
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const ProxyAgent: any = require('proxy-agent');
     config.httpOptions.agent = new ProxyAgent(proxyAddress);
-  }
-  else if (caBundlePath) {
+  } else if (caBundlePath) {
     debug('Using CA bundle path: %s', caBundlePath);
     config.httpOptions.agent = new https.Agent({
       ca: readIfPossible(caBundlePath),
