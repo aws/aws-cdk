@@ -1,3 +1,4 @@
+import { Effect, PolicyStatement } from '@aws-cdk/aws-iam';
 import { App, Stack } from '@aws-cdk/core';
 import { IdentityPool } from '../lib/identity-pool';
 import { UserPool } from '../lib/user-pool';
@@ -18,7 +19,15 @@ const idPool = new IdentityPool(stack, 'identitypool', {
   allowClassicFlow: true,
   identityPoolName: 'my-id-pool',
 });
-idPool.grantUser('*', 'dynamodb:*');
-idPool.grantGuest('*', 'dynamodb:Get*');
+idPool.authenticatedRole.addToPrincipalPolicy(new PolicyStatement({
+  effect: Effect.ALLOW,
+  actions: ['dynamodb:*'],
+  resources: ['*'],
+}));
+idPool.unauthenticatedRole.addToPrincipalPolicy(new PolicyStatement({
+  effect: Effect.ALLOW,
+  actions: ['dynamodb:Get*'],
+  resources: ['*'],
+}));
 idPool.addUserPoolAuthentication(new UserPoolAuthenticationProvider({ userPool: otherPool }));
 app.synth();

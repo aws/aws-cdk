@@ -117,7 +117,7 @@
     "identitypool51BC8967": {
       "Type": "AWS::Cognito::IdentityPool",
       "Properties": {
-        "AllowUnauthenticatedIdentities": true,
+        "AllowUnauthenticatedIdentities": false,
         "AllowClassicFlow": true,
         "CognitoIdentityProviders": [],
         "IdentityPoolName": "my-id-pool",

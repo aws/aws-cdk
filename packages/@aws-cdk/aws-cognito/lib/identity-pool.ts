@@ -3,9 +3,7 @@ import {
   ISamlProvider,
   Role,
   FederatedPrincipal,
-  IPrincipal,
   IRole,
-  Grant,
 } from '@aws-cdk/aws-iam';
 import {
   Resource,
@@ -64,19 +62,19 @@ export interface IdentityPoolProps {
    * The Default Role to be assumed by Authenticated Users
    * @default - A Default Authenticated Role will be added
    */
-   readonly authenticatedRole?: IRole;
-
-   /**
-    * The Default Role to be assumed by Unauthenticated Users
-    * @default - A Default Unauthenticated Role will be added
-    */
-   readonly unauthenticatedRole?: IRole;
+  readonly authenticatedRole?: IRole;
 
   /**
-   * The action used with credentials to assume the default authenticated or unauthenticated role
-   * @default - 'sts:AssumeRoleWithWebIdentity'
+   * The Default Role to be assumed by Unauthenticated Users
+   * @default - A Default Unauthenticated Role will be added
    */
-  readonly assumeAction?: string
+  readonly unauthenticatedRole?: IRole;
+
+  /**
+   * Wwhether the identity pool supports unauthenticated logins
+   * @default - false
+   */
+  readonly allowUnauthenticatedIdentities?: boolean
 
   /**
    * Rules for mapping roles to users
@@ -100,7 +98,7 @@ export interface IdentityPoolProps {
 /**
  * Types of Identity Pool Login Providers
  */
- export enum IdentityPoolLoginProviderType {
+export enum IdentityPoolProviderType {
   /** Facebook Provider type */
   FACEBOOK = 'Facebook',
   /** Google Provider Type */
@@ -126,40 +124,50 @@ export interface IdentityPoolProps {
 /**
  * Keys for Login Providers - correspond to client id's of respective federation identity providers
  */
- export class IdentityPoolLoginProviderUrl {
+export class IdentityPoolProviderUrl {
   /** Facebook Provider Url */
-  public static readonly FACEBOOK = new IdentityPoolLoginProviderUrl(IdentityPoolLoginProviderType.FACEBOOK, 'graph.facebook.com');
-  
+  public static readonly FACEBOOK = new IdentityPoolProviderUrl(IdentityPoolProviderType.FACEBOOK, 'graph.facebook.com');
+
   /** Google Provider Url */
-  public static readonly GOOGLE = new IdentityPoolLoginProviderUrl(IdentityPoolLoginProviderType.GOOGLE, 'accounts.google.com');
-  
+  public static readonly GOOGLE = new IdentityPoolProviderUrl(IdentityPoolProviderType.GOOGLE, 'accounts.google.com');
+
   /** Amazon Provider Url */
-  public static readonly AMAZON = new IdentityPoolLoginProviderUrl(IdentityPoolLoginProviderType.AMAZON, 'www.amazon.com');
-  
+  public static readonly AMAZON = new IdentityPoolProviderUrl(IdentityPoolProviderType.AMAZON, 'www.amazon.com');
+
   /** Apple Provider Url */
-  public static readonly APPLE = new IdentityPoolLoginProviderUrl(IdentityPoolLoginProviderType.APPLE, 'appleid.apple.com');
-  
+  public static readonly APPLE = new IdentityPoolProviderUrl(IdentityPoolProviderType.APPLE, 'appleid.apple.com');
+
   /** Twitter Provider Url */
-  public static readonly TWITTER = new IdentityPoolLoginProviderUrl(IdentityPoolLoginProviderType.TWITTER, 'api.twitter.com');
-  
+  public static readonly TWITTER = new IdentityPoolProviderUrl(IdentityPoolProviderType.TWITTER, 'api.twitter.com');
+
   /** Digits Provider Url */
-  public static readonly DIGITS = new IdentityPoolLoginProviderUrl(IdentityPoolLoginProviderType.DIGITS, 'www.digits.com');
+  public static readonly DIGITS = new IdentityPoolProviderUrl(IdentityPoolProviderType.DIGITS, 'www.digits.com');
 
   /** OpenId Provider Url */
-  public static readonly OPEN_ID = (url: string) => new IdentityPoolLoginProviderUrl(IdentityPoolLoginProviderType.OPEN_ID, url);
+  public static openId(url: string): IdentityPoolProviderUrl {
+    return new IdentityPoolProviderUrl(IdentityPoolProviderType.OPEN_ID, url);
+  }
 
   /** Saml Provider Url */
-  public static readonly SAML = (url: string) => new IdentityPoolLoginProviderUrl(IdentityPoolLoginProviderType.SAML, url);
+  public static saml(url: string): IdentityPoolProviderUrl {
+    return new IdentityPoolProviderUrl(IdentityPoolProviderType.SAML, url);
+  }
 
   /** User Pool Provider Url */
-  public static readonly USER_POOL = (url: string) => new IdentityPoolLoginProviderUrl(IdentityPoolLoginProviderType.USER_POOL, url);
+  public static userPool(url: string): IdentityPoolProviderUrl {
+    return new IdentityPoolProviderUrl(IdentityPoolProviderType.USER_POOL, url);
+  }
 
   /** Custom Provider Url */
-  public static readonly CUSTOM = (url: string) => new IdentityPoolLoginProviderUrl(IdentityPoolLoginProviderType.CUSTOM, url);
+  public static custom(url: string): IdentityPoolProviderUrl {
+    return new IdentityPoolProviderUrl(IdentityPoolProviderType.CUSTOM, url);
+  }
 
   constructor(
-    public readonly type: IdentityPoolLoginProviderType, 
-    public readonly value: string
+    /** type of Provider Url */
+    public readonly type: IdentityPoolProviderType,
+    /** value of Provider Url */
+    public readonly value: string,
   ) {}
 }
 
@@ -226,7 +234,7 @@ export interface IdentityPoolDigitsLoginProvider extends IdentityPoolTwitterLogi
 /**
  * External Identity Providers To Connect to User Pools and Identity Pools
  */
-export interface IdentityPoolLoginProviders {
+export interface IdentityPoolProviders {
 
   /** App Id for Facebook Identity Federation
    * @default - No Facebook Authentication Provider used without OpenIdConnect or a User Pool
@@ -263,7 +271,7 @@ export interface IdentityPoolLoginProviders {
  * Authentication providers for using in identity pool.
  * @see https://docs.aws.amazon.com/cognito/latest/developerguide/external-identity-providers.html
  */
-export interface IdentityPoolAuthenticationProviders extends IdentityPoolLoginProviders {
+export interface IdentityPoolAuthenticationProviders extends IdentityPoolProviders {
 
   /**
    * The User Pool Authentication Provider associated with this Identity Pool
@@ -293,7 +301,7 @@ export interface IdentityPoolAuthenticationProviders extends IdentityPoolLoginPr
 /**
  * Represents an Identity Pool Role Attachment
  */
- export interface IIdentityPoolRoleAttachment extends IResource {
+export interface IIdentityPoolRoleAttachment extends IResource {
   /**
    * Id of the Attachments Underlying Identity Pool
    */
@@ -354,7 +362,7 @@ export interface IdentityPoolRoleMapping {
   /**
    * The url of the provider of for which the role is mapped
    */
-  readonly providerUrl: IdentityPoolLoginProviderUrl;
+  readonly providerUrl: IdentityPoolProviderUrl;
 
   /**
    *  If true then mapped roles must be passed through the cognito:roles or cognito:preferred_role claims from identity provider.
@@ -565,12 +573,12 @@ export class IdentityPool extends Resource implements IIdentityPool {
   /**
    * Default role for authenticated users
    */
-  public readonly authenticatedRole: Role;
+  public readonly authenticatedRole: IRole;
 
   /**
     * Default role for unauthenticated users
     */
-  public readonly unauthenticatedRole: Role;
+  public readonly unauthenticatedRole: IRole;
 
   /**
    * The Identity Pool Cloud Formation Construct
@@ -598,7 +606,7 @@ export class IdentityPool extends Resource implements IIdentityPool {
     const providers = this.configureUserPool(authProviders.userPool);
     if (providers && providers.length) this.cognitoIdentityProviders = providers;
     this.cfnIdentityPool = new CfnIdentityPool(this, id, {
-      allowUnauthenticatedIdentities: props.unauthenticatedRole ? true : false,
+      allowUnauthenticatedIdentities: props.allowUnauthenticatedIdentities ? true : false,
       allowClassicFlow: props.allowClassicFlow,
       identityPoolName: props.identityPoolName,
       developerProviderName: authProviders.customProvider,
@@ -617,7 +625,7 @@ export class IdentityPool extends Resource implements IIdentityPool {
     this.authenticatedRole = props.authenticatedRole ? props.authenticatedRole : this.configureDefaultRole('Authenticated');
     this.unauthenticatedRole = props.unauthenticatedRole ? props.unauthenticatedRole : this.configureDefaultRole('Unauthenticated');
     const attachment = new IdentityPoolRoleAttachment(this, `${this.id}DefaultRoleAttachment`, {
-      identityPoolId: this.identityPoolId,
+      identityPool: this,
       roles: {
         authenticated: this.authenticatedRole,
         unauthenticated: this.unauthenticatedRole,
@@ -651,7 +659,7 @@ export class IdentityPool extends Resource implements IIdentityPool {
     this.roleAttachmentCount++;
     const name = this.id + 'RoleMappingAttachment' + this.roleAttachmentCount.toString();
     const attachment = new IdentityPoolRoleAttachment(this, name, {
-      identityPoolId: this.identityPoolId,
+      identityPool: this,
       roles: {
         authenticated: this.authenticatedRole,
         unauthenticated: this.unauthenticatedRole,
@@ -701,15 +709,15 @@ export class IdentityPool extends Resource implements IIdentityPool {
   /**
    * Formats authentication providers
    */
-  private configureLoginProviders(providers?: IdentityPoolLoginProviders): any {
+  private configureLoginProviders(providers?: IdentityPoolProviders): any {
     if (!providers) return undefined;
     const authenticatedProviders:any = {};
-    if (providers.amazon) authenticatedProviders[IdentityPoolLoginProviderUrl.AMAZON.value] = providers.amazon.appId;
-    if (providers.facebook) authenticatedProviders[IdentityPoolLoginProviderUrl.FACEBOOK.value] = providers.facebook.appId;
-    if (providers.google) authenticatedProviders[IdentityPoolLoginProviderUrl.GOOGLE.value] = providers.google.clientId;
-    if (providers.apple) authenticatedProviders[IdentityPoolLoginProviderUrl.APPLE.value] = providers.apple.servicesId;
-    if (providers.twitter) authenticatedProviders[IdentityPoolLoginProviderUrl.TWITTER.value] = `${providers.twitter.consumerKey};${providers.twitter.consumerSecret}`;
-    if (providers.digits) authenticatedProviders[IdentityPoolLoginProviderUrl.DIGITS.value] = `${providers.digits.consumerKey};${providers.digits.consumerSecret}`;
+    if (providers.amazon) authenticatedProviders[IdentityPoolProviderUrl.AMAZON.value] = providers.amazon.appId;
+    if (providers.facebook) authenticatedProviders[IdentityPoolProviderUrl.FACEBOOK.value] = providers.facebook.appId;
+    if (providers.google) authenticatedProviders[IdentityPoolProviderUrl.GOOGLE.value] = providers.google.clientId;
+    if (providers.apple) authenticatedProviders[IdentityPoolProviderUrl.APPLE.value] = providers.apple.servicesId;
+    if (providers.twitter) authenticatedProviders[IdentityPoolProviderUrl.TWITTER.value] = `${providers.twitter.consumerKey};${providers.twitter.consumerSecret}`;
+    if (providers.digits) authenticatedProviders[IdentityPoolProviderUrl.DIGITS.value] = `${providers.digits.consumerKey};${providers.digits.consumerSecret}`;
     if (!Object.keys(authenticatedProviders).length) return undefined;
     return authenticatedProviders;
   }
@@ -717,14 +725,14 @@ export class IdentityPool extends Resource implements IIdentityPool {
   /**
    * Configure Default Roles For Identity Pool
    */
-  private configureDefaultRole(type: string): Role {
+  private configureDefaultRole(type: string): IRole {
     const name = `${this.id}${type}Role`;
     const assumedBy = this.configureDefaultGrantPrincipal(type.toLowerCase());
     const role = new Role(this, name, {
       roleName: name,
       description: `Default ${type} Role for Identity Pool ${this.identityPoolName}`,
       assumedBy,
-    }); 
+    });
 
     return role;
   }

@@ -12,9 +12,9 @@ import {
   PolicyDocument,
 } from '@aws-cdk/aws-iam';
 import { Stack } from '@aws-cdk/core';
-import { 
+import {
   IdentityPool,
-  IdentityPoolLoginProviderType,
+  IdentityPoolProviderUrl,
   RoleMappingMatchType,
 } from '../lib/identity-pool';
 import { UserPool } from '../lib/user-pool';
@@ -58,7 +58,7 @@ describe('identity pool', () => {
     });
 
   });
-  
+
   test('providing default roles directly', () => {
     const stack = new Stack();
     const authenticatedRole = new Role(stack, 'authRole', {
@@ -68,10 +68,18 @@ describe('identity pool', () => {
       assumedBy: new ServicePrincipal('service.amazonaws.com'),
     });
     const identityPool = new IdentityPool(stack, 'TestIdentityPoolActions', {
-      authenticatedRole, unauthenticatedRole
+      authenticatedRole, unauthenticatedRole, allowUnauthenticatedIdentities: true,
     });
-    identityPool.grantUser('*', 'execute-api:*', 'dynamodb:*');
-    identityPool.grantGuest('arn:aws:execute-api:us-east-1:*:my-api/prod', 'execute-api:*');
+    identityPool.authenticatedRole.addToPrincipalPolicy(new PolicyStatement({
+      effect: Effect.ALLOW,
+      actions: ['execute-api:*', 'dynamodb:*'],
+      resources: ['*'],
+    }));
+    identityPool.unauthenticatedRole.addToPrincipalPolicy(new PolicyStatement({
+      effect: Effect.ALLOW,
+      actions: ['execute-api:*'],
+      resources: ['arn:aws:execute-api:us-east-1:*:my-api/prod'],
+    }));
     const temp = Template.fromStack(stack);
     temp.resourceCountIs('AWS::IAM::Role', 2);
     temp.resourceCountIs('AWS::IAM::Policy', 2);
@@ -110,14 +118,19 @@ describe('identity pool', () => {
   test('adding actions and resources to default roles', () => {
     const stack = new Stack();
     const identityPool = new IdentityPool(stack, 'TestIdentityPoolActions');
-    identityPool.grantUser('*', 'execute-api:*', 'dynamodb:*');
-    identityPool.grantGuest('arn:aws:execute-api:us-east-1:*:my-api/prod', 'execute-api:*');
+    identityPool.authenticatedRole.addToPrincipalPolicy(new PolicyStatement({
+      effect: Effect.ALLOW,
+      actions: ['execute-api:*', 'dynamodb:*'],
+      resources: ['*'],
+    }));
+    identityPool.unauthenticatedRole.addToPrincipalPolicy(new PolicyStatement({
+      effect: Effect.ALLOW,
+      actions: ['execute-api:*'],
+      resources: ['arn:aws:execute-api:us-east-1:*:my-api/prod'],
+    }));
     const temp = Template.fromStack(stack);
     temp.resourceCountIs('AWS::IAM::Role', 2);
     temp.resourceCountIs('AWS::IAM::Policy', 2);
-    temp.hasResourceProperties('AWS::Cognito::IdentityPool', {
-      AllowUnauthenticatedIdentities: true,
-    });
     temp.hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
@@ -144,60 +157,6 @@ describe('identity pool', () => {
             Resource: '*',
           },
         ],
-      },
-    });
-  });
-
-  test('changing assume action', () => {
-    const stack = new Stack();
-    const idPool = new IdentityPool(stack, 'TestIdentityPoolActions', {
-      assumeAction: 'sts:AssumeRole'
-    });
-    idPool.grantUser('*', 'execute-api:*');
-    const temp = Template.fromStack(stack);
-    temp.hasResourceProperties('AWS::IAM::Role', {
-      AssumeRolePolicyDocument: {
-        Statement: [
-          {
-            Action: 'sts:AssumeRole',
-            Condition: {
-              'StringEquals': {
-                'cognito-identity.amazonaws.com:aud': {
-                  Ref: 'TestIdentityPoolActions02A84B9A',
-                },
-              },
-              'ForAnyValue:StringLike': {
-                'cognito-identity.amazonaws.com:amr': 'authenticated',
-              },
-            },
-            Effect: 'Allow',
-            Principal: {
-              Federated: 'cognito-identity.amazonaws.com',
-            },
-          },
-        ],
-      },
-    });
-
-    temp.resourceCountIs('AWS::IAM::Role', 2);
-
-    temp.hasResourceProperties('AWS::Cognito::IdentityPoolRoleAttachment', {
-      IdentityPoolId: {
-        Ref: 'TestIdentityPoolActions02A84B9A',
-      },
-      Roles: {
-        authenticated: {
-          'Fn::GetAtt': [
-            'TestIdentityPoolActionsTestIdentityPoolActionsAuthenticatedRoleC93FFB7C',
-            'Arn',
-          ],
-        },
-        unauthenticated: {
-          'Fn::GetAtt': [
-            'TestIdentityPoolActionsTestIdentityPoolActionsUnauthenticatedRoleE17FC01D',
-            'Arn',
-          ],
-        },
       },
     });
   });
@@ -372,7 +331,7 @@ describe('role mappings', () => {
     const stack = new Stack();
     new IdentityPool(stack, 'TestIdentityPoolRoleMappingToken', {
       roleMappings: [{
-        providerUrl: IdentityPoolLoginProviderType.AMAZON,
+        providerUrl: IdentityPoolProviderUrl.AMAZON,
         useToken: true,
       }],
     });
@@ -408,7 +367,7 @@ describe('role mappings', () => {
     const stack = new Stack();
     expect(() => new IdentityPool(stack, 'TestIdentityPoolRoleMappingErrors', {
       roleMappings: [{
-        providerUrl: IdentityPoolLoginProviderType.AMAZON,
+        providerUrl: IdentityPoolProviderUrl.AMAZON,
       }],
     })).toThrowError('IdentityPoolRoleMapping.rules is required when useToken is false');
   });
@@ -435,9 +394,12 @@ describe('role mappings', () => {
     const facebookRole = new Role(stack, 'facebookRole', {
       assumedBy: new ArnPrincipal('arn:aws:iam::123456789012:user/FacebookUser'),
     });
+    const customRole = new Role(stack, 'customRole', {
+      assumedBy: new ArnPrincipal('arn:aws:iam::123456789012:user/CustomUser'),
+    });
     const idPool = new IdentityPool(stack, 'TestIdentityPoolRoleMappingRules', {
       roleMappings: [{
-        providerUrl: IdentityPoolLoginProviderType.AMAZON,
+        providerUrl: IdentityPoolProviderUrl.AMAZON,
         resolveAmbiguousRoles: true,
         rules: [
           {
@@ -455,12 +417,22 @@ describe('role mappings', () => {
       }],
     });
     idPool.addRoleMappings({
-      providerUrl: IdentityPoolLoginProviderType.FACEBOOK,
+      providerUrl: IdentityPoolProviderUrl.FACEBOOK,
       rules: [
         {
           claim: 'iss',
           claimValue: 'https://graph.facebook.com',
           mappedRole: facebookRole,
+        },
+      ],
+    },
+    {
+      providerUrl: IdentityPoolProviderUrl.custom('https://example.com'),
+      rules: [
+        {
+          claim: 'iss',
+          claimValue: 'https://example.com',
+          mappedRole: customRole,
         },
       ],
     });
@@ -538,6 +510,26 @@ describe('role mappings', () => {
                   ],
                 },
                 Value: 'https://graph.facebook.com',
+              },
+            ],
+          },
+          Type: 'Rules',
+        },
+        'example.com': {
+          AmbiguousRoleResolution: 'Deny',
+          IdentityProvider: 'example.com',
+          RulesConfiguration: {
+            Rules: [
+              {
+                Claim: 'iss',
+                MatchType: 'Equals',
+                RoleARN: {
+                  'Fn::GetAtt': [
+                    'customRole9D649CD8',
+                    'Arn',
+                  ],
+                },
+                Value: 'https://example.com',
               },
             ],
           },
