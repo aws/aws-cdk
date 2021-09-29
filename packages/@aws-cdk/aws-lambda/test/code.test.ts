@@ -1,6 +1,5 @@
-import '@aws-cdk/assert-internal/jest';
 import * as path from 'path';
-import { ABSENT, ResourcePart } from '@aws-cdk/assert-internal';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as ecr from '@aws-cdk/aws-ecr';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
@@ -71,12 +70,12 @@ describe('code', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource('AWS::Lambda::Function', {
+      Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
         Metadata: {
           [cxapi.ASSET_RESOURCE_METADATA_PATH_KEY]: 'asset.9678c34eca93259d11f2d714177347afd66c50116e1e08996eff893d3ca81232',
           [cxapi.ASSET_RESOURCE_METADATA_PROPERTY_KEY]: 'Code',
         },
-      }, ResourcePart.CompleteDefinition);
+      });
     });
 
     test('fails if asset is bound with a second stack', () => {
@@ -110,7 +109,7 @@ describe('code', () => {
         handler: 'index.handler',
       });
 
-      expect(stack).toHaveResourceLike('AWS::Lambda::Function', {
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
         Code: {
           S3Bucket: {
             Ref: 'FunctionLambdaSourceBucketNameParameter9E9E108F',
@@ -156,7 +155,7 @@ describe('code', () => {
         handler: 'index.handler',
       });
 
-      expect(stack).toHaveResourceLike('AWS::Lambda::Function', {
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
         Code: {
           S3Bucket: {
             Ref: 'BucketNameParam',
@@ -206,11 +205,11 @@ describe('code', () => {
       });
 
       // then
-      expect(stack).toHaveResource('AWS::Lambda::Function', {
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
         Code: {
           ImageUri: stack.resolve(repo.repositoryUriForTag('latest')),
         },
-        ImageConfig: ABSENT,
+        ImageConfig: Match.absentProperty(),
       });
     });
 
@@ -232,7 +231,7 @@ describe('code', () => {
       });
 
       // then
-      expect(stack).toHaveResource('AWS::Lambda::Function', {
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
         Code: {
           ImageUri: stack.resolve(repo.repositoryUriForTag('mytag')),
         },
@@ -257,7 +256,7 @@ describe('code', () => {
       });
 
       // then
-      expect(stack).toHaveResourceLike('AWS::ECR::Repository', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository', {
         RepositoryPolicyText: {
           Statement: [
             {
@@ -291,7 +290,7 @@ describe('code', () => {
       });
 
       // then
-      expect(stack).toHaveResource('AWS::Lambda::Function', {
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
         Code: {
           ImageUri: {
             'Fn::Join': ['', [
@@ -304,7 +303,7 @@ describe('code', () => {
             ]],
           },
         },
-        ImageConfig: ABSENT,
+        ImageConfig: Match.absentProperty(),
       });
     });
 
@@ -324,7 +323,7 @@ describe('code', () => {
       });
 
       // then
-      expect(stack).toHaveResource('AWS::Lambda::Function', {
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
         ImageConfig: {
           Command: ['cmd', 'param1'],
           EntryPoint: ['entrypoint', 'param2'],
@@ -365,12 +364,12 @@ describe('code', () => {
       });
 
       // then
-      expect(stack).toHaveResource('AWS::Lambda::Function', {
+      Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
         Metadata: {
           [cxapi.ASSET_RESOURCE_METADATA_PATH_KEY]: 'asset.fbafdbb9ae8d1bae0def415b791a93c486d18ebc63270c748abecc3ac0ab9533',
           [cxapi.ASSET_RESOURCE_METADATA_PROPERTY_KEY]: 'Code',
         },
-      }, ResourcePart.CompleteDefinition);
+      });
 
       expect(fromBuildMock).toHaveBeenCalledWith(path.join(__dirname, 'docker-build-lambda'), {});
       expect(cpMock).toHaveBeenCalledWith('/asset/.', undefined);

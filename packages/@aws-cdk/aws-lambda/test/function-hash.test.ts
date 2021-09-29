@@ -1,4 +1,3 @@
-import '@aws-cdk/assert-internal/jest';
 import * as path from 'path';
 import { App, CfnOutput, CfnResource, Stack } from '@aws-cdk/core';
 import { LAMBDA_RECOGNIZE_VERSION_PROPS } from '@aws-cdk/cx-api';

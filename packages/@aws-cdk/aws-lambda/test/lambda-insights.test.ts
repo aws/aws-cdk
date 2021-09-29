@@ -1,5 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
-import { MatchStyle } from '@aws-cdk/assert-internal';
+import { Template } from '@aws-cdk/assertions';
 import * as cdk from '@aws-cdk/core';
 import * as lambda from '../lib';
 
@@ -19,7 +18,7 @@ function functionWithInsightsVersion(stack: cdk.Stack, id: string, insightsVersi
  * Check if the function's Role has the Lambda Insights IAM policy
  */
 function verifyRoleHasCorrectPolicies(stack: cdk.Stack) {
-  expect(stack).toHaveResource('AWS::IAM::Role', {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
     ManagedPolicyArns:
       [
         { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole']] },
@@ -38,7 +37,7 @@ describe('lambda-insights', () => {
 
     verifyRoleHasCorrectPolicies(stack);
 
-    expect(stack).toHaveResource('AWS::Lambda::Function', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
       Layers: [layerArn],
     });
 
@@ -55,7 +54,7 @@ describe('lambda-insights', () => {
 
     verifyRoleHasCorrectPolicies(stack);
 
-    expect(stack).toHaveResource('AWS::Lambda::Function', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
       Layers: ['arn:aws:lambda:us-east-1:580247275435:layer:LambdaInsightsExtension:2'],
     });
 
@@ -83,7 +82,7 @@ describe('lambda-insights', () => {
     functionWithInsightsVersion(stack, 'MyLambda', lambda.LambdaInsightsVersion.VERSION_1_0_54_0);
 
     // Should be looking up a mapping
-    expect(stack).toHaveResource('AWS::Lambda::Function', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
       Layers: [{
         'Fn::FindInMap': [
           'LambdaInsightsVersions10540',
@@ -108,7 +107,7 @@ describe('lambda-insights', () => {
     functionWithInsightsVersion(stack, 'MyLambda2', lambda.LambdaInsightsVersion.VERSION_1_0_54_0);
 
     /* eslint-disable quote-props */
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       Resources: {
         MyLambda1ServiceRole69A7E1EA: {
           'Type': 'AWS::IAM::Role',
@@ -309,7 +308,7 @@ describe('lambda-insights', () => {
           },
         },
       },
-    }, MatchStyle.EXACT);
+    });
     // On synthesis it should not throw an error
     expect(() => app.synth()).not.toThrow();
   });

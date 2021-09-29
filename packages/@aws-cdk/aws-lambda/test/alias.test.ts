@@ -1,5 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
-import { arrayWith, objectLike } from '@aws-cdk/assert-internal';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import { Lazy, Stack } from '@aws-cdk/core';
@@ -21,11 +20,11 @@ describe('alias', () => {
       version,
     });
 
-    expect(stack).toHaveResource('AWS::Lambda::Version', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Version', {
       FunctionName: { Ref: 'MyLambdaCCE802FB' },
     });
 
-    expect(stack).toHaveResource('AWS::Lambda::Alias', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Alias', {
       FunctionName: { Ref: 'MyLambdaCCE802FB' },
       FunctionVersion: stack.resolve(version.version),
       Name: 'prod',
@@ -45,12 +44,12 @@ describe('alias', () => {
       version: fn.latestVersion,
     });
 
-    expect(stack).toHaveResource('AWS::Lambda::Alias', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Alias', {
       FunctionName: { Ref: 'MyLambdaCCE802FB' },
       FunctionVersion: '$LATEST',
       Name: 'latest',
     });
-    expect(stack).not.toHaveResource('AWS::Lambda::Version');
+    Template.fromStack(stack).resourceCountIs('AWS::Lambda::Version', 0);
   });
 
   test('can use newVersion to create a new Version', () => {
@@ -68,11 +67,11 @@ describe('alias', () => {
       version,
     });
 
-    expect(stack).toHaveResourceLike('AWS::Lambda::Version', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Version', {
       FunctionName: { Ref: 'MyLambdaCCE802FB' },
     });
 
-    expect(stack).toHaveResourceLike('AWS::Lambda::Alias', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Alias', {
       FunctionName: { Ref: 'MyLambdaCCE802FB' },
       Name: 'prod',
     });
@@ -96,7 +95,7 @@ describe('alias', () => {
       additionalVersions: [{ version: version2, weight: 0.1 }],
     });
 
-    expect(stack).toHaveResource('AWS::Lambda::Alias', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Alias', {
       FunctionVersion: stack.resolve(version1.version),
       RoutingConfig: {
         AdditionalVersionWeights: [
@@ -126,13 +125,13 @@ describe('alias', () => {
       provisionedConcurrentExecutions: pce,
     });
 
-    expect(stack).toHaveResource('AWS::Lambda::Version', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Version', {
       ProvisionedConcurrencyConfig: {
         ProvisionedConcurrentExecutions: 5,
       },
     });
 
-    expect(stack).toHaveResource('AWS::Lambda::Alias', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Alias', {
       FunctionVersion: stack.resolve(version.version),
       Name: 'prod',
       ProvisionedConcurrencyConfig: {
@@ -193,7 +192,7 @@ describe('alias', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::CloudWatch::Alarm', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
       Dimensions: [{
         Name: 'FunctionName',
         Value: {
@@ -325,7 +324,7 @@ describe('alias', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Lambda::EventInvokeConfig', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventInvokeConfig', {
       FunctionName: {
         Ref: 'fn5FF616E3',
       },
@@ -385,7 +384,7 @@ describe('alias', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Lambda::EventInvokeConfig', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventInvokeConfig', {
       FunctionName: 'function-name',
       Qualifier: 'alias-name',
       MaximumRetryAttempts: 1,
@@ -412,22 +411,23 @@ describe('alias', () => {
     alias.addAutoScaling({ maxCapacity: 5 });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApplicationAutoScaling::ScalableTarget', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApplicationAutoScaling::ScalableTarget', {
       MinCapacity: 1,
       MaxCapacity: 5,
-      ResourceId: objectLike({
-        'Fn::Join': arrayWith(arrayWith(
+      ResourceId: Match.objectLike({
+        'Fn::Join': Match.arrayWith([Match.arrayWith([
           'function:',
-          objectLike({
-            'Fn::Select': arrayWith(
+          Match.objectLike({
+            'Fn::Select': Match.arrayWith([
               {
-                'Fn::Split': arrayWith(
-                  { Ref: 'Alias325C5727' }),
+                'Fn::Split': Match.arrayWith([
+                  { Ref: 'Alias325C5727' },
+                ]),
               },
-            ),
+            ]),
           }),
           ':prod',
-        )),
+        ])]),
       }),
     });
   });
@@ -453,26 +453,27 @@ describe('alias', () => {
     alias.addAutoScaling({ maxCapacity: 5 });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApplicationAutoScaling::ScalableTarget', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApplicationAutoScaling::ScalableTarget', {
       MinCapacity: 1,
       MaxCapacity: 5,
-      ResourceId: objectLike({
-        'Fn::Join': arrayWith(arrayWith(
+      ResourceId: Match.objectLike({
+        'Fn::Join': Match.arrayWith([Match.arrayWith([
           'function:',
-          objectLike({
-            'Fn::Select': arrayWith(
+          Match.objectLike({
+            'Fn::Select': Match.arrayWith([
               {
-                'Fn::Split': arrayWith(
-                  { Ref: 'Alias325C5727' }),
+                'Fn::Split': Match.arrayWith([
+                  { Ref: 'Alias325C5727' },
+                ]),
               },
-            ),
+            ]),
           }),
           ':prod',
-        )),
+        ])]),
       }),
     });
 
-    expect(stack).toHaveResourceLike('AWS::Lambda::Alias', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Alias', {
       ProvisionedConcurrencyConfig: {
         ProvisionedConcurrentExecutions: 10,
       },
@@ -502,7 +503,7 @@ describe('alias', () => {
     target.scaleOnUtilization({ utilizationTarget: Lazy.number({ produce: () => 0.95 }) });
 
     // THEN: no exception
-    expect(stack).toHaveResource('AWS::ApplicationAutoScaling::ScalingPolicy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApplicationAutoScaling::ScalingPolicy', {
       PolicyType: 'TargetTrackingScaling',
       TargetTrackingScalingPolicyConfiguration: {
         PredefinedMetricSpecification: { PredefinedMetricType: 'LambdaProvisionedConcurrencyUtilization' },
@@ -581,7 +582,7 @@ describe('alias', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::ApplicationAutoScaling::ScalableTarget', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApplicationAutoScaling::ScalableTarget', {
       ScheduledActions: [
         {
           ScalableTargetAction: { MaxCapacity: 10 },

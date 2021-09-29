@@ -1,4 +1,3 @@
-import '@aws-cdk/assert-internal/jest';
 import * as lambda from '../lib';
 
 describe('runtime', () => {
