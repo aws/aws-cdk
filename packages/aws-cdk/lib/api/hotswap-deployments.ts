@@ -51,8 +51,7 @@ export async function tryHotswapDeployment(
     parameters: assetParams,
     account: resolvedEnv.account,
     region: resolvedEnv.region,
-    // ToDo make this better:
-    partition: 'aws',
+    partition: resolvedEnv.partition,
     // ToDo make this better:
     urlSuffix: 'amazonaws.com',
     listStackResources,
@@ -101,6 +100,7 @@ function findAllHotswappableChanges(stackChanges: cfn_diff.TemplateDiff): Hotswa
     }
     // no REQUIRES_FULL_DEPLOYMENT implies that all results are IRRELEVANT
   });
+
   return foundNonHotswappableChange ? undefined : hotswappableResources;
 }
 

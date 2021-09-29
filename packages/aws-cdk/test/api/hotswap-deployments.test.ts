@@ -145,6 +145,75 @@ test('resource deletions require full deployments', async () => {
   expect(mockUpdateMachineCode).not.toHaveBeenCalled();
 });
 
+test('can correctly reference AWS::Partition in hotswappable changes', async () => {
+  // GIVEN
+  currentCfnStack.setTemplate({
+    Resources: {
+      Func: {
+        Type: 'AWS::Lambda::Function',
+        Properties: {
+          Code: {
+            S3Bucket: 'current-bucket',
+            S3Key: 'current-key',
+          },
+          FunctionName: {
+            'Fn::Join': [
+              '',
+              [
+                { Ref: 'AWS::Partition' },
+                '-',
+                'my-function',
+              ],
+            ],
+          },
+        },
+        Metadata: {
+          'aws:asset:path': 'new-path',
+        },
+      },
+    },
+  });
+  const cdkStackArtifact = cdkStackArtifactOf({
+    template: {
+      Resources: {
+        Func: {
+          Type: 'AWS::Lambda::Function',
+          Properties: {
+            Code: {
+              S3Bucket: 'current-bucket',
+              S3Key: 'new-key',
+            },
+            FunctionName: {
+              'Fn::Join': [
+                '',
+                [
+                  { Ref: 'AWS::Partition' },
+                  '-',
+                  'my-function',
+                ],
+              ],
+            },
+          },
+          Metadata: {
+            'aws:asset:path': 'new-path',
+          },
+        },
+      },
+    },
+  });
+
+  // WHEN
+  const deployStackResult = await tryHotswapDeployment(mockSdkProvider, {}, currentCfnStack, cdkStackArtifact);
+
+  // THEN
+  expect(deployStackResult).not.toBeUndefined();
+  expect(mockUpdateLambdaCode).toHaveBeenCalledWith({
+    FunctionName: 'aws-my-function',
+    S3Bucket: 'current-bucket',
+    S3Key: 'new-key',
+  });
+});
+
 
 function cdkStackArtifactOf(testStackArtifact: Partial<TestStackArtifact> = {}): cxapi.CloudFormationStackArtifact {
   return testStack({

@@ -75,13 +75,11 @@ class StateMachineHotswapOperation implements HotswapOperation {
   public async apply(sdk: ISDK, cfnExecutableTemplate: CloudFormationExecutableTemplate): Promise<any> {
     const stateMachineName = await this.establishFunctionPhysicalName(cfnExecutableTemplate);
     if (!stateMachineName) {
-      console.log('bad');
       return;
     }
 
     const machineDefinition = await cfnExecutableTemplate.evaluateCfnExpression(this.stepFunctionResource.definition);
 
-    console.log('good');
     return sdk.stepFunctions().updateStateMachine({
       // when left unspecified, the optional properties are left unchanged
       // even though the name of the property is stateMachineArn, passing the name of the state machine is allowed here
