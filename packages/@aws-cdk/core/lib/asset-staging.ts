@@ -189,7 +189,7 @@ export class AssetStaging extends CoreConstruct {
     if (props.bundling) {
       // Check if we actually have to bundle for this stack
       const bundlingStacks: string[] = this.node.tryGetContext(cxapi.BUNDLING_STACKS) ?? ['*'];
-      skip = !bundlingStacks.find(pattern => minimatch(Stack.of(this).stackName, pattern));
+      skip = !bundlingStacks.find(pattern => minimatch(Stack.of(this).node.id, pattern));
       const bundling = props.bundling;
       stageThisAsset = () => this.stageByBundling(bundling, skip);
     } else {
