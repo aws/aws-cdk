@@ -1,7 +1,7 @@
 import * as cfn_diff from '@aws-cdk/cloudformation-diff';
 import { ISDK } from '../aws-auth';
-import { CloudFormationExecutableTemplate } from './cloudformation-executable-template';
 import { assetMetadataChanged, ChangeHotswapImpact, ChangeHotswapResult, HotswapOperation } from './common';
+import { EvaluateCloudFormationTemplate } from './evaluate-cloudformation-template';
 
 /**
  * Returns `false` if the change cannot be short-circuited,
@@ -121,13 +121,13 @@ class LambdaFunctionHotswapOperation implements HotswapOperation {
   constructor(private readonly lambdaFunctionResource: LambdaFunctionResource) {
   }
 
-  public async apply(sdk: ISDK, cfnExectuableTemplate: CloudFormationExecutableTemplate): Promise<any> {
-    const functionPhysicalName = await this.establishFunctionPhysicalName(cfnExectuableTemplate);
+  public async apply(sdk: ISDK, evaluateCfnTemplate: EvaluateCloudFormationTemplate): Promise<any> {
+    const functionPhysicalName = await this.establishFunctionPhysicalName(evaluateCfnTemplate);
     if (!functionPhysicalName) {
       return;
     }
-    const codeS3Bucket = await cfnExectuableTemplate.evaluateCfnExpression(this.lambdaFunctionResource.code.s3Bucket);
-    const codeS3Key = await cfnExectuableTemplate.evaluateCfnExpression(this.lambdaFunctionResource.code.s3Key);
+    const codeS3Bucket = await evaluateCfnTemplate.evaluateCfnExpression(this.lambdaFunctionResource.code.s3Bucket);
+    const codeS3Key = await evaluateCfnTemplate.evaluateCfnExpression(this.lambdaFunctionResource.code.s3Key);
 
     return sdk.lambda().updateFunctionCode({
       FunctionName: functionPhysicalName,
@@ -136,15 +136,15 @@ class LambdaFunctionHotswapOperation implements HotswapOperation {
     }).promise();
   }
 
-  private async establishFunctionPhysicalName(cfnExectuableTemplate: CloudFormationExecutableTemplate): Promise<string | undefined> {
+  private async establishFunctionPhysicalName(evaluateCfnTemplate: EvaluateCloudFormationTemplate): Promise<string | undefined> {
     if (this.lambdaFunctionResource.physicalName) {
       try {
-        return await cfnExectuableTemplate.evaluateCfnExpression(this.lambdaFunctionResource.physicalName);
+        return await evaluateCfnTemplate.evaluateCfnExpression(this.lambdaFunctionResource.physicalName);
       } catch (e) {
         // If we can't evaluate the function's name CloudFormation expression,
         // just look it up in the currently deployed Stack
       }
     }
-    return cfnExectuableTemplate.findPhysicalNameFor(this.lambdaFunctionResource.logicalId);
+    return evaluateCfnTemplate.findPhysicalNameFor(this.lambdaFunctionResource.logicalId);
   }
 }

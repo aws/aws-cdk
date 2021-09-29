@@ -3,8 +3,8 @@ import * as cxapi from '@aws-cdk/cx-api';
 import { CloudFormation } from 'aws-sdk';
 import { ISDK, Mode, SdkProvider } from './aws-auth';
 import { DeployStackResult } from './deploy-stack';
-import { CloudFormationExecutableTemplate } from './hotswap/cloudformation-executable-template';
 import { ChangeHotswapImpact, HotswapOperation, ListStackResources } from './hotswap/common';
+import { EvaluateCloudFormationTemplate } from './hotswap/evaluate-cloudformation-template';
 import { isHotswappableLambdaFunctionChange } from './hotswap/lambda-functions';
 import { CloudFormationStack } from './util/cloudformation';
 
@@ -38,7 +38,7 @@ export async function tryHotswapDeployment(
   // We need them to figure out the physical name of a function in case it wasn't specified by the user.
   // We fetch it lazily, to save a service call, in case all updated Lambdas have their names set.
   const listStackResources = new LazyListStackResources(sdk, stackArtifact.stackName);
-  const cfnExecutableTemplate = new CloudFormationExecutableTemplate({
+  const evaluateCfnTemplate = new EvaluateCloudFormationTemplate({
     stackArtifact,
     parameters: assetParams,
     account: resolvedEnv.account,
@@ -51,7 +51,7 @@ export async function tryHotswapDeployment(
   });
 
   // apply the short-circuitable changes
-  await applyAllHotswappableChanges(sdk, cfnExecutableTemplate, hotswappableChanges);
+  await applyAllHotswappableChanges(sdk, evaluateCfnTemplate, hotswappableChanges);
 
   return { noOp: hotswappableChanges.length === 0, stackArn: cloudFormationStack.stackId, outputs: cloudFormationStack.outputs, stackArtifact };
 }
@@ -73,10 +73,10 @@ function findAllHotswappableChanges(stackChanges: cfn_diff.TemplateDiff): Hotswa
 }
 
 async function applyAllHotswappableChanges(
-  sdk: ISDK, cfnExecutableTemplate: CloudFormationExecutableTemplate, hotswappableChanges: HotswapOperation[],
+  sdk: ISDK, evaluateCfnTemplate: EvaluateCloudFormationTemplate, hotswappableChanges: HotswapOperation[],
 ): Promise<void[]> {
   return Promise.all(hotswappableChanges.map(hotswapOperation => {
-    return hotswapOperation.apply(sdk, cfnExecutableTemplate);
+    return hotswapOperation.apply(sdk, evaluateCfnTemplate);
   }));
 }
 

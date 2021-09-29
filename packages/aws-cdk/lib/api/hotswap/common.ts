@@ -1,7 +1,7 @@
 import * as cfn_diff from '@aws-cdk/cloudformation-diff';
 import { CloudFormation } from 'aws-sdk';
 import { ISDK } from '../aws-auth';
-import { CloudFormationExecutableTemplate } from './cloudformation-executable-template';
+import { EvaluateCloudFormationTemplate } from './evaluate-cloudformation-template';
 
 export interface ListStackResources {
   listStackResources(): Promise<CloudFormation.StackResourceSummary[]>;
@@ -11,7 +11,7 @@ export interface ListStackResources {
  * An interface that represents a change that can be deployed in a short-circuit manner.
  */
 export interface HotswapOperation {
-  apply(sdk: ISDK, cfnExecutableTemplate: CloudFormationExecutableTemplate): Promise<any>;
+  apply(sdk: ISDK, evaluateCfnTemplate: EvaluateCloudFormationTemplate): Promise<any>;
 }
 
 /**

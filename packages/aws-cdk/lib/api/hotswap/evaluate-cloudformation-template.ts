@@ -2,7 +2,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import * as AWS from 'aws-sdk';
 import { ListStackResources } from './common';
 
-export interface CloudFormationExecutableTemplateProps {
+export interface EvaluateCloudFormationTemplateProps {
   readonly stackArtifact: cxapi.CloudFormationStackArtifact;
   readonly parameters: { [parameterName: string]: string };
   readonly account: string;
@@ -13,14 +13,14 @@ export interface CloudFormationExecutableTemplateProps {
   readonly listStackResources: ListStackResources;
 }
 
-export class CloudFormationExecutableTemplate {
+export class EvaluateCloudFormationTemplate {
   private readonly stackResources: ListStackResources;
   private readonly context: { [k: string]: string };
   private readonly account: string;
   private readonly region: string;
   private readonly partition: string;
 
-  constructor(props: CloudFormationExecutableTemplateProps) {
+  constructor(props: EvaluateCloudFormationTemplateProps) {
     this.stackResources = props.listStackResources;
     this.context = {
       'AWS::AccountId': props.account,
