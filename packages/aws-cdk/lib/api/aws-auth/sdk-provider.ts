@@ -378,21 +378,22 @@ function parseHttpOptions(options: SdkHttpOptions) {
   const caBundlePath = options.caBundlePath || caBundlePathFromEnvironment();
 
   if (proxyAddress && caBundlePath) {
-    throw new Error(`At the moment, cannot specify Proxy (${proxyAddress}) and CA Bundle (${caBundlePath}) at the same time. See https://github.com/aws/aws-cdk/issues/5804`);
-    // Maybe it's possible after all, but I've been staring at
-    // https://github.com/TooTallNate/node-proxy-agent/blob/master/index.js#L79
-    // a while now trying to figure out what to pass in so that the underlying Agent
-    // object will get the 'ca' argument. It's not trivial and I don't want to risk it.
-  }
+    debug('Using proxy server: %s', proxyAddress);
+    debug('Using CA bundle path: %s', caBundlePath);
 
-  if (proxyAddress) { // Ignore empty string on purpose
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const ProxyAgent: any = require('proxy-agent');
+    config.httpOptions.agent = new ProxyAgent(proxyAddress);
+    config.httpOptions.ca = readIfPossible(caBundlePath);
+  }
+  else if (proxyAddress) { // Ignore empty string on purpose
     // https://aws.amazon.com/blogs/developer/using-the-aws-sdk-for-javascript-from-behind-a-proxy/
     debug('Using proxy server: %s', proxyAddress);
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const ProxyAgent: any = require('proxy-agent');
     config.httpOptions.agent = new ProxyAgent(proxyAddress);
   }
-  if (caBundlePath) {
+  else if (caBundlePath) {
     debug('Using CA bundle path: %s', caBundlePath);
     config.httpOptions.agent = new https.Agent({
       ca: readIfPossible(caBundlePath),
