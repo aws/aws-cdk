@@ -126,7 +126,7 @@ test('ensure comment prop is not greater than max lenght', () => {
   const origin = defaultOrigin();
   new Distribution(stack, 'MyDist', {
     defaultBehavior: { origin },
-    comment: `Adding a comment longer than 128 characters should be trimmed and added the
+    comment: `Adding a comment longer than 128 characters should be trimmed and added the\x20
 ellipsis so a user would know there was more to read and everything beyond this point should not show up`,
   });
 
@@ -138,7 +138,7 @@ ellipsis so a user would know there was more to read and everything beyond this 
         TargetOriginId: 'StackMyDistOrigin1D6D5E535',
         ViewerProtocolPolicy: 'allow-all',
       },
-      Comment: `Adding a comment longer than 128 characters should be trimmed and added the
+      Comment: `Adding a comment longer than 128 characters should be trimmed and added the\x20
 ellipsis so a user would know there was more to ...`,
       Enabled: true,
       HttpVersion: 'http2',
