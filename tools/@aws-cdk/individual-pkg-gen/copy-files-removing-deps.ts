@@ -4,6 +4,18 @@ import * as fs from 'fs-extra';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const lerna_project = require('@lerna/project');
 
+/**
+ * @aws-cdk/ scoped packages that may be present in devDependencies and need to
+ * be retained (or else pkglint might declare the package unworthy).
+ */
+const REQUIRED_TOOLS = new Set([
+  '@aws-cdk/cdk-build-tools',
+  '@aws-cdk/cdk-integ-tools',
+  '@aws-cdk/cfn2ts',
+  '@aws-cdk/eslint-plugin',
+  '@aws-cdk/pkglint',
+]);
+
 transformPackages();
 
 function transformPackages(): void {
@@ -199,7 +211,7 @@ function transformPackageJsonDependencies(packageJson: any, pkg: any, alphaPacka
       default:
         if (alphaPackages[v1DevDependency]) {
           alphaDevDependencies[alphaPackages[v1DevDependency]] = pkg.version;
-        } else if (!v1DevDependency.startsWith('@aws-cdk/')) {
+        } else if (!v1DevDependency.startsWith('@aws-cdk/') || isRequiredTool(v1DevDependency)) {
           devDependencies[v1DevDependency] = packageJson.devDependencies[v1DevDependency];
         }
     }
@@ -259,4 +271,8 @@ function packageIsAlpha(pkg: any): boolean {
   // we're only interested in '@aws-cdk/' packages,
   // and those that are JSII-enabled (so no @aws-cdk/assert)
   return pkg.name.startsWith('@aws-cdk/') && !!pkg.get('jsii');
+}
+
+function isRequiredTool(name: string) {
+  return REQUIRED_TOOLS.has(name);
 }
