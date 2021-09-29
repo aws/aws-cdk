@@ -282,44 +282,187 @@ describe('tests', () => {
     });
   });
 
-  test('Interval equal to timeout', () => {
-    // GIVEN
-    const app = new cdk.App();
-    const stack = new cdk.Stack(app, 'Stack');
-    const vpc = new ec2.Vpc(stack, 'VPC', {});
+  test.each([elbv2.Protocol.UDP, elbv2.Protocol.TCP_UDP, elbv2.Protocol.TLS])(
+    'Throws validation error, when `healthCheck` has `protocol` set to %s',
+    (protocol) => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'Stack');
+      const vpc = new ec2.Vpc(stack, 'VPC', {});
 
-    // WHEN
-    const tg = new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', {
-      vpc,
+      // WHEN
+      new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', {
+        vpc,
+        healthCheck: {
+          protocol: protocol,
+        },
+      });
+
+      // THEN
+      expect(() => {
+        app.synth();
+      }).toThrow(`Health check protocol '${protocol}' is not supported. Must be one of [HTTP, HTTPS]`);
     });
 
-    // THEN
-    expect(() => {
+  test.each([elbv2.Protocol.UDP, elbv2.Protocol.TCP_UDP, elbv2.Protocol.TLS])(
+    'Throws validation error, when `configureHealthCheck()` has `protocol` set to %s',
+    (protocol) => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'Stack');
+      const vpc = new ec2.Vpc(stack, 'VPC', {});
+      const tg = new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', {
+        vpc,
+      });
+
+      // WHEN
+      tg.configureHealthCheck({
+        protocol: protocol,
+      });
+
+      // THEN
+      expect(() => {
+        app.synth();
+      }).toThrow(`Health check protocol '${protocol}' is not supported. Must be one of [HTTP, HTTPS]`);
+    });
+
+  test.each([elbv2.Protocol.HTTP, elbv2.Protocol.HTTPS])(
+    'Does not throw validation error, when `healthCheck` has `protocol` set to %s',
+    (protocol) => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'Stack');
+      const vpc = new ec2.Vpc(stack, 'VPC', {});
+
+      // WHEN
+      new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', {
+        vpc,
+        healthCheck: {
+          protocol: protocol,
+        },
+      });
+
+      // THEN
+      expect(() => {
+        app.synth();
+      }).not.toThrowError();
+    });
+
+  test.each([elbv2.Protocol.HTTP, elbv2.Protocol.HTTPS])(
+    'Does not throw validation error, when `configureHealthCheck()` has `protocol` set to %s',
+    (protocol) => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'Stack');
+      const vpc = new ec2.Vpc(stack, 'VPC', {});
+      const tg = new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', {
+        vpc,
+      });
+
+      // WHEN
+      tg.configureHealthCheck({
+        protocol: protocol,
+      });
+
+      // THEN
+      expect(() => {
+        app.synth();
+      }).not.toThrowError();
+    });
+
+  test.each([elbv2.Protocol.HTTP, elbv2.Protocol.HTTPS])(
+    'Throws validation error, when `healthCheck` has `protocol` set to %s and `interval` is equal to `timeout`',
+    (protocol) => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'Stack');
+      const vpc = new ec2.Vpc(stack, 'VPC', {});
+
+      // WHEN
+      new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', {
+        vpc,
+        healthCheck: {
+          interval: cdk.Duration.seconds(60),
+          timeout: cdk.Duration.seconds(60),
+          protocol: protocol,
+        },
+      });
+
+      // THEN
+      expect(() => {
+        app.synth();
+      }).toThrow('Healthcheck interval 1 minute must be greater than the timeout 1 minute');
+    });
+
+  test.each([elbv2.Protocol.HTTP, elbv2.Protocol.HTTPS])(
+    'Throws validation error, when `healthCheck` has `protocol` set to %s and `interval` is smaller than `timeout`',
+    (protocol) => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'Stack');
+      const vpc = new ec2.Vpc(stack, 'VPC', {});
+
+      // WHEN
+      new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', {
+        vpc,
+        healthCheck: {
+          interval: cdk.Duration.seconds(60),
+          timeout: cdk.Duration.seconds(120),
+          protocol: protocol,
+        },
+      });
+
+      // THEN
+      expect(() => {
+        app.synth();
+      }).toThrow('Healthcheck interval 1 minute must be greater than the timeout 2 minutes');
+    });
+
+  test.each([elbv2.Protocol.HTTP, elbv2.Protocol.HTTPS])(
+    'Throws validation error, when `configureHealthCheck()` has `protocol` set to %s and `interval` is equal to `timeout`',
+    (protocol) => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'Stack');
+      const vpc = new ec2.Vpc(stack, 'VPC', {});
+      const tg = new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', {
+        vpc,
+      });
+
+      // WHEN
       tg.configureHealthCheck({
         interval: cdk.Duration.seconds(60),
         timeout: cdk.Duration.seconds(60),
+        protocol: protocol,
       });
-    }).toThrow(/Healthcheck interval 1 minute must be greater than the timeout 1 minute/);
-  });
 
-  test('Interval smaller than timeout', () => {
-    // GIVEN
-    const app = new cdk.App();
-    const stack = new cdk.Stack(app, 'Stack');
-    const vpc = new ec2.Vpc(stack, 'VPC', {});
-
-    // WHEN
-    const tg = new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', {
-      vpc,
+      // THEN
+      expect(() => {
+        app.synth();
+      }).toThrow('Healthcheck interval 1 minute must be greater than the timeout 1 minute');
     });
 
-    // THEN
-    expect(() => {
+  test.each([elbv2.Protocol.HTTP, elbv2.Protocol.HTTPS])(
+    'Throws validation error, when `configureHealthCheck()` has `protocol` set to %s and `interval` is smaller than `timeout`',
+    (protocol) => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'Stack');
+      const vpc = new ec2.Vpc(stack, 'VPC', {});
+      const tg = new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', {
+        vpc,
+      });
+
+      // WHEN
       tg.configureHealthCheck({
         interval: cdk.Duration.seconds(60),
         timeout: cdk.Duration.seconds(120),
+        protocol: protocol,
       });
-    }).toThrow(/Healthcheck interval 1 minute must be greater than the timeout 2 minutes/);
-  });
 
+      // THEN
+      expect(() => {
+        app.synth();
+      }).toThrow('Healthcheck interval 1 minute must be greater than the timeout 2 minutes');
+    });
 });
