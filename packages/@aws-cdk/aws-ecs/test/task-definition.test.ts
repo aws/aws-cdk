@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import * as ecs from '../lib';
@@ -17,11 +17,9 @@ describe('task definition', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource('AWS::ECS::TaskDefinition', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
         NetworkMode: 'awsvpc',
       });
-
-
     });
   });
 
@@ -38,8 +36,6 @@ describe('task definition', () => {
       expect(taskDefinition.taskDefinitionArn).toEqual(taskDefinitionArn);
       expect(taskDefinition.compatibility).toEqual(ecs.Compatibility.EC2_AND_FARGATE);
       expect(taskDefinition.executionRole).toEqual(undefined);
-
-
     });
 
     test('can import a Task Definition using attributes', () => {
@@ -66,8 +62,6 @@ describe('task definition', () => {
       expect(taskDefinition.executionRole).toEqual(undefined);
       expect(taskDefinition.networkMode).toEqual(expectNetworkMode);
       expect(taskDefinition.taskRole).toEqual(expectTaskRole);
-
-
     });
 
     test('returns an imported TaskDefinition that will throw an error when trying to access its yet to defined networkMode', () => {
@@ -91,8 +85,6 @@ describe('task definition', () => {
         taskDefinition.networkMode;
       }).toThrow('This operation requires the networkMode in ImportedTaskDefinition to be defined. ' +
         'Add the \'networkMode\' in ImportedTaskDefinitionProps to instantiate ImportedTaskDefinition');
-
-
     });
 
     test('returns an imported TaskDefinition that will throw an error when trying to access its yet to defined taskRole', () => {
@@ -114,8 +106,6 @@ describe('task definition', () => {
         taskDefinition.taskRole;
       }).toThrow('This operation requires the taskRole in ImportedTaskDefinition to be defined. ' +
         'Add the \'taskRole\' in ImportedTaskDefinitionProps to instantiate ImportedTaskDefinition');
-
-
     });
   });
 });

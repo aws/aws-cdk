@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as cdk from '@aws-cdk/core';
 import * as ecs from '../lib';
 
@@ -33,7 +33,7 @@ describe('app mesh proxy configuration', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
       ProxyConfiguration: {
         ContainerName: 'envoy',
         ProxyConfigurationProperties: [
@@ -69,7 +69,6 @@ describe('app mesh proxy configuration', () => {
         Type: 'APPMESH',
       },
     });
-
   });
 
   test('correctly sets appMeshProxyConfiguration with default properties set', () => {
@@ -99,7 +98,7 @@ describe('app mesh proxy configuration', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
       ProxyConfiguration: {
         ContainerName: 'envoy',
         ProxyConfigurationProperties: [
@@ -123,7 +122,6 @@ describe('app mesh proxy configuration', () => {
         Type: 'APPMESH',
       },
     });
-
   });
 
   test('correctly sets appMeshProxyConfiguration with empty egressIgnoredPorts and egressIgnoredIPs', () => {
@@ -155,7 +153,7 @@ describe('app mesh proxy configuration', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
       ProxyConfiguration: {
         ContainerName: 'envoy',
         ProxyConfigurationProperties: [
@@ -179,7 +177,6 @@ describe('app mesh proxy configuration', () => {
         Type: 'APPMESH',
       },
     });
-
   });
 
   test('throws when neither of IgnoredUID and IgnoredGID is set', () => {
@@ -200,7 +197,5 @@ describe('app mesh proxy configuration', () => {
         }),
       });
     }).toThrow(/At least one of ignoredUID or ignoredGID should be specified./);
-
-
   });
 });

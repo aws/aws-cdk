@@ -1,5 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
-import { ABSENT, SynthUtils } from '@aws-cdk/assert-internal';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
@@ -32,7 +31,7 @@ describe('fargate service', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource('AWS::ECS::Service', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
         TaskDefinition: {
           Ref: 'FargateTaskDefC6FB60B4',
         },
@@ -68,7 +67,7 @@ describe('fargate service', () => {
         },
       });
 
-      expect(stack).toHaveResource('AWS::EC2::SecurityGroup', {
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroup', {
         GroupDescription: 'Default/FargateService/SecurityGroup',
         SecurityGroupEgress: [
           {
@@ -83,8 +82,6 @@ describe('fargate service', () => {
       });
 
       expect(service.node.defaultChild).toBeDefined();
-
-
     });
 
     test('can create service with default settings if VPC only has public subnets', () => {
@@ -112,7 +109,6 @@ describe('fargate service', () => {
       });
 
       // THEN -- did not throw
-
     });
 
     test('does not set launchType when capacity provider strategies specified (deprecated)', () => {
@@ -147,15 +143,19 @@ describe('fargate service', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource('AWS::ECS::Cluster', {
-        CapacityProviders: ABSENT,
+      // Correct after when this issue is fixed - https://github.com/aws/aws-cdk/issues/16626
+      // Template.fromStack(stack).hasResourceProperties('AWS::ECS::Cluster', {
+      //   CapacityProviders: Match.absentProperty(),
+      // });
+      Template.fromStack(stack).hasResource('AWS::ECS::Cluster', {
+        Properties: Match.absentProperty(),
       });
 
-      expect(stack).toHaveResource('AWS::ECS::ClusterCapacityProviderAssociations', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::ClusterCapacityProviderAssociations', {
         CapacityProviders: ['FARGATE', 'FARGATE_SPOT'],
       });
 
-      expect(stack).toHaveResource('AWS::ECS::Service', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
         TaskDefinition: {
           Ref: 'FargateTaskDefC6FB60B4',
         },
@@ -200,8 +200,6 @@ describe('fargate service', () => {
           },
         },
       });
-
-
     });
 
     test('does not set launchType when capacity provider strategies specified', () => {
@@ -237,15 +235,19 @@ describe('fargate service', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource('AWS::ECS::Cluster', {
-        CapacityProviders: ABSENT,
+      // Correct after when this issue is fixed - https://github.com/aws/aws-cdk/issues/16626
+      // Template.fromStack(stack).hasResourceProperties('AWS::ECS::Cluster', {
+      //   CapacityProviders: Match.absentProperty(),
+      // });
+      Template.fromStack(stack).hasResource('AWS::ECS::Cluster', {
+        Properties: Match.absentProperty(),
       });
 
-      expect(stack).toHaveResource('AWS::ECS::ClusterCapacityProviderAssociations', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::ClusterCapacityProviderAssociations', {
         CapacityProviders: ['FARGATE', 'FARGATE_SPOT'],
       });
 
-      expect(stack).toHaveResource('AWS::ECS::Service', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
         TaskDefinition: {
           Ref: 'FargateTaskDefC6FB60B4',
         },
@@ -257,7 +259,7 @@ describe('fargate service', () => {
           MinimumHealthyPercent: 50,
         },
         // no launch type
-        LaunchType: ABSENT,
+        LaunchType: Match.absentProperty(),
         CapacityProviderStrategy: [
           {
             CapacityProvider: 'FARGATE_SPOT',
@@ -291,8 +293,6 @@ describe('fargate service', () => {
           },
         },
       });
-
-
     });
 
     test('with custom cloudmap namespace', () => {
@@ -324,7 +324,7 @@ describe('fargate service', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource('AWS::ServiceDiscovery::Service', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ServiceDiscovery::Service', {
         DnsConfig: {
           DnsRecords: [
             {
@@ -352,14 +352,12 @@ describe('fargate service', () => {
         },
       });
 
-      expect(stack).toHaveResource('AWS::ServiceDiscovery::PrivateDnsNamespace', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ServiceDiscovery::PrivateDnsNamespace', {
         Name: 'scorekeep.com',
         Vpc: {
           Ref: 'MyVpcF9F0CA6F',
         },
       });
-
-
     });
 
     test('with user-provided cloudmap service', () => {
@@ -399,7 +397,7 @@ describe('fargate service', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource('AWS::ECS::Service', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
         ServiceRegistries: [
           {
             ContainerName: 'web',
@@ -408,8 +406,6 @@ describe('fargate service', () => {
           },
         ],
       });
-
-
     });
 
     test('errors when more than one service registry used', () => {
@@ -453,8 +449,6 @@ describe('fargate service', () => {
           containerPort: 8000,
         });
       }).toThrow(/at most one service registry/i);
-
-
     });
 
     test('with all properties set', () => {
@@ -505,7 +499,7 @@ describe('fargate service', () => {
       // THEN
       expect(svc.cloudMapService).toBeDefined();
 
-      expect(stack).toHaveResource('AWS::ECS::Service', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
         TaskDefinition: {
           Ref: 'FargateTaskDefC6FB60B4',
         },
@@ -559,8 +553,6 @@ describe('fargate service', () => {
           },
         ],
       });
-
-
     });
 
     test('throws when task definition is not Fargate compatible', () => {
@@ -582,8 +574,6 @@ describe('fargate service', () => {
           taskDefinition,
         });
       }).toThrow(/Supplied TaskDefinition is not configured for compatibility with Fargate/);
-
-
     });
 
     test('throws whith secret json field on unsupported platform version', () => {
@@ -607,8 +597,6 @@ describe('fargate service', () => {
           platformVersion: ecs.FargatePlatformVersion.VERSION1_3,
         });
       }).toThrow(new RegExp(`uses at least one container that references a secret JSON field.+platform version ${ecs.FargatePlatformVersion.VERSION1_4} or later`));
-
-
     });
 
     test('ignore task definition and launch type if deployment controller is set to be EXTERNAL', () => {
@@ -632,7 +620,7 @@ describe('fargate service', () => {
 
       // THEN
       expect(service.node.metadata[0].data).toEqual('taskDefinition and launchType are blanked out when using external deployment controller.');
-      expect(stack).toHaveResource('AWS::ECS::Service', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
         Cluster: {
           Ref: 'EcsCluster97242B84',
         },
@@ -666,8 +654,6 @@ describe('fargate service', () => {
           },
         },
       });
-
-
     });
 
     test('errors when no container specified on task definition', () => {
@@ -685,10 +671,8 @@ describe('fargate service', () => {
 
       // THEN
       expect(() => {
-        SynthUtils.synthesize(stack);
+        Template.fromStack(stack);
       }).toThrow(/one essential container/);
-
-
     });
 
     test('allows adding the default container after creating the service', () => {
@@ -709,15 +693,13 @@ describe('fargate service', () => {
       });
 
       // THEN
-      expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
         ContainerDefinitions: [
-          {
+          Match.objectLike({
             Name: 'main',
-          },
+          }),
         ],
       });
-
-
     });
 
     test('allows specifying assignPublicIP as enabled', () => {
@@ -738,15 +720,13 @@ describe('fargate service', () => {
       });
 
       // THEN
-      expect(stack).toHaveResourceLike('AWS::ECS::Service', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
         NetworkConfiguration: {
           AwsvpcConfiguration: {
             AssignPublicIp: 'ENABLED',
           },
         },
       });
-
-
     });
 
     test('allows specifying 0 for minimumHealthyPercent', () => {
@@ -767,13 +747,11 @@ describe('fargate service', () => {
       });
 
       // THEN
-      expect(stack).toHaveResourceLike('AWS::ECS::Service', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
         DeploymentConfiguration: {
           MinimumHealthyPercent: 0,
         },
       });
-
-
     });
 
     test('throws when securityGroup and securityGroups are supplied', () => {
@@ -808,8 +786,6 @@ describe('fargate service', () => {
           securityGroups: [securityGroup2],
         });
       }).toThrow(/Only one of SecurityGroup or SecurityGroups can be populated./);
-
-
     });
 
     test('with multiple securty groups, it correctly updates cloudformation template', () => {
@@ -842,7 +818,7 @@ describe('fargate service', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource('AWS::ECS::Service', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
         TaskDefinition: {
           Ref: 'FargateTaskDefC6FB60B4',
         },
@@ -884,7 +860,7 @@ describe('fargate service', () => {
         },
       });
 
-      expect(stack).toHaveResource('AWS::EC2::SecurityGroup', {
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroup', {
         GroupDescription: 'Example',
         GroupName: 'Bingo',
         SecurityGroupEgress: [
@@ -899,7 +875,7 @@ describe('fargate service', () => {
         },
       });
 
-      expect(stack).toHaveResource('AWS::EC2::SecurityGroup', {
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroup', {
         GroupDescription: 'Example',
         GroupName: 'Rolly',
         SecurityGroupEgress: [
@@ -915,8 +891,6 @@ describe('fargate service', () => {
           Ref: 'MyVpcF9F0CA6F',
         },
       });
-
-
     });
 
   });
@@ -940,11 +914,9 @@ describe('fargate service', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource('AWS::ECS::Service', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
         HealthCheckGracePeriodSeconds: 10,
       });
-
-
     });
   });
 
@@ -976,7 +948,7 @@ describe('fargate service', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource('AWS::ApplicationAutoScaling::ScalableTarget', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ApplicationAutoScaling::ScalableTarget', {
         MaxCapacity: 10,
         MinCapacity: 1,
         ResourceId: {
@@ -999,7 +971,7 @@ describe('fargate service', () => {
         },
       });
 
-      expect(stack).toHaveResource('AWS::ApplicationAutoScaling::ScalingPolicy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ApplicationAutoScaling::ScalingPolicy', {
         TargetTrackingScalingPolicyConfiguration: {
           PredefinedMetricSpecification: {
             PredefinedMetricType: 'ALBRequestCountPerTarget',
@@ -1016,13 +988,11 @@ describe('fargate service', () => {
         },
       });
 
-      expect(stack).toHaveResource('AWS::ECS::Service', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
         // if any load balancer is configured and healthCheckGracePeriodSeconds is not
         // set, then it should default to 60 seconds.
         HealthCheckGracePeriodSeconds: 60,
       });
-
-
     });
 
     test('allows auto scaling by ALB with new service arn format', () => {
@@ -1056,7 +1026,7 @@ describe('fargate service', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource('AWS::ApplicationAutoScaling::ScalableTarget', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ApplicationAutoScaling::ScalableTarget', {
         MaxCapacity: 10,
         MinCapacity: 1,
         ResourceId: {
@@ -1078,8 +1048,6 @@ describe('fargate service', () => {
           ],
         },
       });
-
-
     });
 
     describe('allows specify any existing container name and port in a service', () => {
@@ -1111,7 +1079,7 @@ describe('fargate service', () => {
         });
 
         // THEN
-        expect(stack).toHaveResource('AWS::ECS::Service', {
+        Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
           LoadBalancers: [
             {
               ContainerName: 'MainContainer',
@@ -1123,19 +1091,17 @@ describe('fargate service', () => {
           ],
         });
 
-        expect(stack).toHaveResource('AWS::EC2::SecurityGroupIngress', {
+        Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroupIngress', {
           Description: 'Load balancer to target',
           FromPort: 8000,
           ToPort: 8000,
         });
 
-        expect(stack).toHaveResource('AWS::EC2::SecurityGroupEgress', {
+        Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroupEgress', {
           Description: 'Load balancer to target',
           FromPort: 8000,
           ToPort: 8000,
         });
-
-
       });
 
       test('with TCP protocol', () => {
@@ -1168,8 +1134,6 @@ describe('fargate service', () => {
             protocol: ecs.Protocol.TCP,
           })],
         });
-
-
       });
 
       test('with UDP protocol', () => {
@@ -1202,8 +1166,6 @@ describe('fargate service', () => {
             protocol: ecs.Protocol.UDP,
           })],
         });
-
-
       });
 
       test('throws when protocol does not match', () => {
@@ -1238,8 +1200,6 @@ describe('fargate service', () => {
             })],
           });
         }).toThrow(/Container 'Default\/FargateTaskDef\/MainContainer' has no mapping for port 8001 and protocol tcp. Did you call "container.addPortMappings\(\)"\?/);
-
-
       });
 
       test('throws when port does not match', () => {
@@ -1273,8 +1233,6 @@ describe('fargate service', () => {
             })],
           });
         }).toThrow(/Container 'Default\/FargateTaskDef\/MainContainer' has no mapping for port 8002 and protocol tcp. Did you call "container.addPortMappings\(\)"\?/);
-
-
       });
 
       test('throws when container does not exist', () => {
@@ -1308,8 +1266,6 @@ describe('fargate service', () => {
             })],
           });
         }).toThrow(/No container named 'SideContainer'. Did you call "addContainer()"?/);
-
-
       });
     });
 
@@ -1345,7 +1301,7 @@ describe('fargate service', () => {
           );
 
           // THEN
-          expect(stack).toHaveResource('AWS::ECS::Service', {
+          Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
             LoadBalancers: [
               {
                 ContainerName: 'MainContainer',
@@ -1357,12 +1313,10 @@ describe('fargate service', () => {
             ],
           });
 
-          expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
+          Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
             Port: 80,
             Protocol: 'HTTP',
           });
-
-
         });
 
         test('with default target group port and HTTP protocol', () => {
@@ -1397,7 +1351,7 @@ describe('fargate service', () => {
           );
 
           // THEN
-          expect(stack).toHaveResource('AWS::ECS::Service', {
+          Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
             LoadBalancers: [
               {
                 ContainerName: 'MainContainer',
@@ -1409,12 +1363,10 @@ describe('fargate service', () => {
             ],
           });
 
-          expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
+          Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
             Port: 80,
             Protocol: 'HTTP',
           });
-
-
         });
 
         test('with default target group port and HTTPS protocol', () => {
@@ -1449,7 +1401,7 @@ describe('fargate service', () => {
           );
 
           // THEN
-          expect(stack).toHaveResource('AWS::ECS::Service', {
+          Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
             LoadBalancers: [
               {
                 ContainerName: 'MainContainer',
@@ -1461,12 +1413,10 @@ describe('fargate service', () => {
             ],
           });
 
-          expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
+          Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
             Port: 443,
             Protocol: 'HTTPS',
           });
-
-
         });
 
         test('with any target group port and protocol', () => {
@@ -1502,7 +1452,7 @@ describe('fargate service', () => {
           );
 
           // THEN
-          expect(stack).toHaveResource('AWS::ECS::Service', {
+          Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
             LoadBalancers: [
               {
                 ContainerName: 'MainContainer',
@@ -1514,12 +1464,10 @@ describe('fargate service', () => {
             ],
           });
 
-          expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
+          Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
             Port: 83,
             Protocol: 'HTTP',
           });
-
-
         });
       });
 
@@ -1554,7 +1502,7 @@ describe('fargate service', () => {
           );
 
           // THEN
-          expect(stack).toHaveResource('AWS::ECS::Service', {
+          Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
             LoadBalancers: [
               {
                 ContainerName: 'MainContainer',
@@ -1566,12 +1514,10 @@ describe('fargate service', () => {
             ],
           });
 
-          expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
+          Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
             Port: 80,
             Protocol: 'TCP',
           });
-
-
         });
 
         test('with any target group port', () => {
@@ -1606,7 +1552,7 @@ describe('fargate service', () => {
           );
 
           // THEN
-          expect(stack).toHaveResource('AWS::ECS::Service', {
+          Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
             LoadBalancers: [
               {
                 ContainerName: 'MainContainer',
@@ -1618,12 +1564,10 @@ describe('fargate service', () => {
             ],
           });
 
-          expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
+          Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
             Port: 81,
             Protocol: 'TCP',
           });
-
-
         });
       });
     });
@@ -1653,7 +1597,7 @@ describe('fargate service', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApplicationAutoScaling::ScalableTarget', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApplicationAutoScaling::ScalableTarget', {
       ScheduledActions: [
         {
           ScalableTargetAction: {
@@ -1664,8 +1608,6 @@ describe('fargate service', () => {
         },
       ],
     });
-
-
   });
 
   test('allows scaling on a specified metric value', () => {
@@ -1696,7 +1638,7 @@ describe('fargate service', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApplicationAutoScaling::ScalingPolicy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApplicationAutoScaling::ScalingPolicy', {
       PolicyType: 'StepScaling',
       ScalingTargetId: {
         Ref: 'ServiceTaskCountTarget23E25614',
@@ -1712,8 +1654,6 @@ describe('fargate service', () => {
         ],
       },
     });
-
-
   });
 
   test('allows scaling on a target CPU utilization', () => {
@@ -1739,15 +1679,13 @@ describe('fargate service', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApplicationAutoScaling::ScalingPolicy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApplicationAutoScaling::ScalingPolicy', {
       PolicyType: 'TargetTrackingScaling',
       TargetTrackingScalingPolicyConfiguration: {
         PredefinedMetricSpecification: { PredefinedMetricType: 'ECSServiceAverageCPUUtilization' },
         TargetValue: 30,
       },
     });
-
-
   });
 
   test('allows scaling on memory utilization', () => {
@@ -1773,15 +1711,13 @@ describe('fargate service', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApplicationAutoScaling::ScalingPolicy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApplicationAutoScaling::ScalingPolicy', {
       PolicyType: 'TargetTrackingScaling',
       TargetTrackingScalingPolicyConfiguration: {
         PredefinedMetricSpecification: { PredefinedMetricType: 'ECSServiceAverageMemoryUtilization' },
         TargetValue: 30,
       },
     });
-
-
   });
 
   test('allows scaling on custom CloudWatch metric', () => {
@@ -1808,7 +1744,7 @@ describe('fargate service', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApplicationAutoScaling::ScalingPolicy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApplicationAutoScaling::ScalingPolicy', {
       PolicyType: 'TargetTrackingScaling',
       TargetTrackingScalingPolicyConfiguration: {
         CustomizedMetricSpecification: {
@@ -1819,8 +1755,6 @@ describe('fargate service', () => {
         TargetValue: 5,
       },
     });
-
-
   });
 
   describe('When enabling service discovery', () => {
@@ -1846,8 +1780,6 @@ describe('fargate service', () => {
           },
         });
       }).toThrow(/Cannot enable service discovery if a Cloudmap Namespace has not been created in the cluster./);
-
-
     });
 
     test('creates cloud map service for Private DNS namespace', () => {
@@ -1876,7 +1808,7 @@ describe('fargate service', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource('AWS::ServiceDiscovery::Service', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ServiceDiscovery::Service', {
         DnsConfig: {
           DnsRecords: [
             {
@@ -1903,8 +1835,6 @@ describe('fargate service', () => {
           ],
         },
       });
-
-
     });
 
     test('creates AWS Cloud Map service for Private DNS namespace with SRV records with proper defaults', () => {
@@ -1937,7 +1867,7 @@ describe('fargate service', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource('AWS::ServiceDiscovery::Service', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ServiceDiscovery::Service', {
         DnsConfig: {
           DnsRecords: [
             {
@@ -1964,8 +1894,6 @@ describe('fargate service', () => {
           ],
         },
       });
-
-
     });
 
     test('creates AWS Cloud Map service for Private DNS namespace with SRV records with overriden defaults', () => {
@@ -1999,7 +1927,7 @@ describe('fargate service', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource('AWS::ServiceDiscovery::Service', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ServiceDiscovery::Service', {
         DnsConfig: {
           DnsRecords: [
             {
@@ -2026,8 +1954,6 @@ describe('fargate service', () => {
           ],
         },
       });
-
-
     });
 
     test('user can select any container and port', () => {
@@ -2063,7 +1989,7 @@ describe('fargate service', () => {
         },
       });
 
-      expect(stack).toHaveResourceLike('AWS::ECS::Service', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
         ServiceRegistries: [
           {
             RegistryArn: { 'Fn::GetAtt': ['ServiceCloudmapService046058A4', 'Arn'] },
@@ -2072,8 +1998,6 @@ describe('fargate service', () => {
           },
         ],
       });
-
-
     });
   });
 
@@ -2104,8 +2028,6 @@ describe('fargate service', () => {
       period: cdk.Duration.minutes(5),
       statistic: 'Average',
     });
-
-
   });
 
   describe('When import a Fargate Service', () => {
@@ -2123,8 +2045,6 @@ describe('fargate service', () => {
       // THEN
       expect(service.serviceArn).toEqual('arn:aws:ecs:us-west-2:123456789012:service/my-http-service');
       expect(service.serviceName).toEqual('my-http-service');
-
-
     });
 
     test('with serviceName', () => {
@@ -2142,8 +2062,6 @@ describe('fargate service', () => {
       // THEN
       expect(stack.resolve(service.serviceArn)).toEqual(stack.resolve(`arn:${pseudo.partition}:ecs:${pseudo.region}:${pseudo.accountId}:service/my-http-service`));
       expect(service.serviceName).toEqual('my-http-service');
-
-
     });
 
     test('with circuit breaker', () => {
@@ -2164,7 +2082,7 @@ describe('fargate service', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource('AWS::ECS::Service', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
         DeploymentConfiguration: {
           MaximumPercent: 200,
           MinimumHealthyPercent: 50,
@@ -2177,8 +2095,6 @@ describe('fargate service', () => {
           Type: ecs.DeploymentControllerType.ECS,
         },
       });
-
-
     });
 
     test('throws an exception if both serviceArn and serviceName were provided for fromEc2ServiceAttributes', () => {
@@ -2193,8 +2109,6 @@ describe('fargate service', () => {
           cluster,
         });
       }).toThrow(/only specify either serviceArn or serviceName/);
-
-
     });
 
     test('throws an exception if neither serviceArn nor serviceName were provided for fromEc2ServiceAttributes', () => {
@@ -2207,8 +2121,6 @@ describe('fargate service', () => {
           cluster,
         });
       }).toThrow(/only specify either serviceArn or serviceName/);
-
-
     });
 
     test('allows setting enable execute command', () => {
@@ -2229,7 +2141,7 @@ describe('fargate service', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource('AWS::ECS::Service', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
         TaskDefinition: {
           Ref: 'FargateTaskDefC6FB60B4',
         },
@@ -2266,7 +2178,7 @@ describe('fargate service', () => {
         },
       });
 
-      expect(stack).toHaveResource('AWS::IAM::Policy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         PolicyDocument: {
           Statement: [
             {
@@ -2303,8 +2215,6 @@ describe('fargate service', () => {
           },
         ],
       });
-
-
     });
 
     test('no logging enabled when logging field is set to NONE', () => {
@@ -2340,7 +2250,7 @@ describe('fargate service', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource('AWS::IAM::Policy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         PolicyDocument: {
           Statement: [
             {
@@ -2363,8 +2273,6 @@ describe('fargate service', () => {
           },
         ],
       });
-
-
     });
 
     test('enables execute command logging with logging field set to OVERRIDE', () => {
@@ -2403,7 +2311,7 @@ describe('fargate service', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource('AWS::IAM::Policy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         PolicyDocument: {
           Statement: [
             {
@@ -2480,8 +2388,6 @@ describe('fargate service', () => {
           },
         ],
       });
-
-
     });
 
     test('enables only execute command session encryption', () => {
@@ -2523,7 +2429,7 @@ describe('fargate service', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource('AWS::IAM::Policy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         PolicyDocument: {
           Statement: [
             {
@@ -2614,7 +2520,7 @@ describe('fargate service', () => {
         ],
       });
 
-      expect(stack).toHaveResource('AWS::KMS::Key', {
+      Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
         KeyPolicy: {
           Statement: [
             {
@@ -2679,8 +2585,6 @@ describe('fargate service', () => {
           Version: '2012-10-17',
         },
       });
-
-
     });
 
     test('enables encryption for execute command logging', () => {
@@ -2729,7 +2633,7 @@ describe('fargate service', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource('AWS::IAM::Policy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         PolicyDocument: {
           Statement: [
             {
@@ -2835,7 +2739,7 @@ describe('fargate service', () => {
         ],
       });
 
-      expect(stack).toHaveResource('AWS::KMS::Key', {
+      Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
         KeyPolicy: {
           Statement: [
             {
@@ -2945,8 +2849,6 @@ describe('fargate service', () => {
           Version: '2012-10-17',
         },
       });
-
-
     });
 
     test('with both propagateTags and propagateTaskTagsFrom defined', () => {

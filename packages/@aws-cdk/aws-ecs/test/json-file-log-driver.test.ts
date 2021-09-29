@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as cdk from '@aws-cdk/core';
 import * as ecs from '../lib';
 
@@ -10,8 +10,6 @@ describe('json file log driver', () => {
   beforeEach(() => {
     stack = new cdk.Stack();
     td = new ecs.Ec2TaskDefinition(stack, 'TaskDefinition');
-
-
   });
 
   test('create a json-file log driver with options', () => {
@@ -25,20 +23,18 @@ describe('json file log driver', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
-        {
+        Match.objectLike({
           LogConfiguration: {
             LogDriver: 'json-file',
             Options: {
               env: 'hello',
             },
           },
-        },
+        }),
       ],
     });
-
-
   });
 
   test('create a json-file log driver without options', () => {
@@ -50,17 +46,15 @@ describe('json file log driver', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
-        {
+        Match.objectLike({
           LogConfiguration: {
             LogDriver: 'json-file',
           },
-        },
+        }),
       ],
     });
-
-
   });
 
   test('create a json-file log driver using json-file', () => {
@@ -72,17 +66,15 @@ describe('json file log driver', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
-        {
+        Match.objectLike({
           LogConfiguration: {
             LogDriver: 'json-file',
             Options: {},
           },
-        },
+        }),
       ],
     });
-
-
   });
 });

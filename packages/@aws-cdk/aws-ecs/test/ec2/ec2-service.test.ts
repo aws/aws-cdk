@@ -1,5 +1,4 @@
-import { SynthUtils } from '@aws-cdk/assert-internal';
-import '@aws-cdk/assert-internal/jest';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as autoscaling from '@aws-cdk/aws-autoscaling';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as elb from '@aws-cdk/aws-elasticloadbalancing';
@@ -34,7 +33,7 @@ describe('ec2 service', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource('AWS::ECS::Service', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
         TaskDefinition: {
           Ref: 'Ec2TaskDef0226F28C',
         },
@@ -51,8 +50,6 @@ describe('ec2 service', () => {
       });
 
       expect(service.node.defaultChild).toBeDefined();
-
-
     });
 
     test('allows setting enable execute command', () => {
@@ -75,7 +72,7 @@ describe('ec2 service', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource('AWS::ECS::Service', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
         TaskDefinition: {
           Ref: 'Ec2TaskDef0226F28C',
         },
@@ -92,7 +89,7 @@ describe('ec2 service', () => {
         EnableExecuteCommand: true,
       });
 
-      expect(stack).toHaveResource('AWS::IAM::Policy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         PolicyDocument: {
           Statement: [
             {
@@ -129,8 +126,6 @@ describe('ec2 service', () => {
           },
         ],
       });
-
-
     });
 
     test('no logging enabled when logging field is set to NONE', () => {
@@ -166,7 +161,7 @@ describe('ec2 service', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource('AWS::IAM::Policy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         PolicyDocument: {
           Statement: [
             {
@@ -189,8 +184,6 @@ describe('ec2 service', () => {
           },
         ],
       });
-
-
     });
 
     test('enables execute command logging when logging field is set to OVERRIDE', () => {
@@ -229,7 +222,7 @@ describe('ec2 service', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource('AWS::IAM::Policy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         PolicyDocument: {
           Statement: [
             {
@@ -306,8 +299,6 @@ describe('ec2 service', () => {
           },
         ],
       });
-
-
     });
 
     test('enables only execute command session encryption', () => {
@@ -349,7 +340,7 @@ describe('ec2 service', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource('AWS::IAM::Policy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         PolicyDocument: {
           Statement: [
             {
@@ -440,7 +431,7 @@ describe('ec2 service', () => {
         ],
       });
 
-      expect(stack).toHaveResource('AWS::KMS::Key', {
+      Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
         KeyPolicy: {
           Statement: [
             {
@@ -505,8 +496,6 @@ describe('ec2 service', () => {
           Version: '2012-10-17',
         },
       });
-
-
     });
 
     test('enables encryption for execute command logging', () => {
@@ -555,7 +544,7 @@ describe('ec2 service', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource('AWS::IAM::Policy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         PolicyDocument: {
           Statement: [
             {
@@ -661,7 +650,7 @@ describe('ec2 service', () => {
         ],
       });
 
-      expect(stack).toHaveResource('AWS::KMS::Key', {
+      Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
         KeyPolicy: {
           Statement: [
             {
@@ -771,8 +760,6 @@ describe('ec2 service', () => {
           Version: '2012-10-17',
         },
       });
-
-
     });
 
     test('with custom cloudmap namespace', () => {
@@ -805,7 +792,7 @@ describe('ec2 service', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource('AWS::ServiceDiscovery::Service', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ServiceDiscovery::Service', {
         DnsConfig: {
           DnsRecords: [
             {
@@ -833,14 +820,12 @@ describe('ec2 service', () => {
         },
       });
 
-      expect(stack).toHaveResource('AWS::ServiceDiscovery::PrivateDnsNamespace', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ServiceDiscovery::PrivateDnsNamespace', {
         Name: 'scorekeep.com',
         Vpc: {
           Ref: 'MyVpcF9F0CA6F',
         },
       });
-
-
     });
 
     test('with all properties set', () => {
@@ -896,7 +881,7 @@ describe('ec2 service', () => {
       service.addPlacementStrategies(PlacementStrategy.spreadAcross(ecs.BuiltInAttributes.AVAILABILITY_ZONE));
 
       // THEN
-      expect(stack).toHaveResource('AWS::ECS::Service', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
         TaskDefinition: {
           Ref: 'Ec2TaskDef0226F28C',
         },
@@ -958,8 +943,6 @@ describe('ec2 service', () => {
           },
         ],
       });
-
-
     });
 
     test('with autoscaling group capacity provider', () => {
@@ -1002,7 +985,7 @@ describe('ec2 service', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource('AWS::ECS::Service', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
         CapacityProviderStrategy: [
           {
             CapacityProvider: {
@@ -1053,7 +1036,7 @@ describe('ec2 service', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource('AWS::ECS::Service', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
         TaskDefinition: {
           Ref: 'Ec2TaskDef0226F28C',
         },
@@ -1093,7 +1076,7 @@ describe('ec2 service', () => {
         ServiceName: 'bonjour',
       });
 
-      expect(stack).toHaveResource('AWS::EC2::SecurityGroup', {
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroup', {
         GroupDescription: 'Example',
         GroupName: 'Bingo',
         SecurityGroupEgress: [
@@ -1108,7 +1091,7 @@ describe('ec2 service', () => {
         },
       });
 
-      expect(stack).toHaveResource('AWS::EC2::SecurityGroup', {
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroup', {
         GroupDescription: 'Example',
         GroupName: 'Rolly',
         SecurityGroupEgress: [
@@ -1124,8 +1107,6 @@ describe('ec2 service', () => {
           Ref: 'MyVpcF9F0CA6F',
         },
       });
-
-
     });
 
     test('throws when both securityGroup and securityGroups are supplied', () => {
@@ -1169,8 +1150,6 @@ describe('ec2 service', () => {
           vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
         });
       }).toThrow(/Only one of SecurityGroup or SecurityGroups can be populated./);
-
-
     });
 
     test('throws when task definition is not EC2 compatible', () => {
@@ -1194,8 +1173,6 @@ describe('ec2 service', () => {
           taskDefinition,
         });
       }).toThrow(/Supplied TaskDefinition is not configured for compatibility with EC2/);
-
-
     });
 
     test('ignore task definition and launch type if deployment controller is set to be EXTERNAL', () => {
@@ -1221,7 +1198,7 @@ describe('ec2 service', () => {
 
       // THEN
       expect(service.node.metadata[0].data).toEqual('taskDefinition and launchType are blanked out when using external deployment controller.');
-      expect(stack).toHaveResource('AWS::ECS::Service', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
         Cluster: {
           Ref: 'EcsCluster97242B84',
         },
@@ -1232,8 +1209,6 @@ describe('ec2 service', () => {
         SchedulingStrategy: 'REPLICA',
         EnableECSManagedTags: false,
       });
-
-
     });
 
     test('errors if daemon and desiredCount both specified', () => {
@@ -1257,8 +1232,6 @@ describe('ec2 service', () => {
           desiredCount: 2,
         });
       }).toThrow(/Don't supply desiredCount/);
-
-
     });
 
     test('errors if daemon and maximumPercent not 100', () => {
@@ -1282,8 +1255,6 @@ describe('ec2 service', () => {
           maxHealthyPercent: 300,
         });
       }).toThrow(/Maximum percent must be 100 for daemon mode./);
-
-
     });
 
     test('errors if minimum not less than maximum', () => {
@@ -1308,8 +1279,6 @@ describe('ec2 service', () => {
           maxHealthyPercent: 100,
         });
       }).toThrow(/Minimum healthy percent must be less than maximum healthy percent./);
-
-
     });
 
     test('errors if no container definitions', () => {
@@ -1327,10 +1296,8 @@ describe('ec2 service', () => {
 
       // THEN
       expect(() => {
-        SynthUtils.synthesize(stack);
+        Template.fromStack(stack);
       }).toThrow(/one essential container/);
-
-
     });
 
     test('allows adding the default container after creating the service', () => {
@@ -1353,15 +1320,13 @@ describe('ec2 service', () => {
       });
 
       // THEN
-      expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
         ContainerDefinitions: [
-          {
+          Match.objectLike({
             Name: 'main',
-          },
+          }),
         ],
       });
-
-
     });
 
     test('sets daemon scheduling strategy', () => {
@@ -1384,15 +1349,13 @@ describe('ec2 service', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource('AWS::ECS::Service', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
         SchedulingStrategy: 'DAEMON',
         DeploymentConfiguration: {
           MaximumPercent: 100,
           MinimumHealthyPercent: 0,
         },
       });
-
-
     });
 
     describe('with a TaskDefinition with Bridge network mode', () => {
@@ -1423,7 +1386,6 @@ describe('ec2 service', () => {
         });
 
         // THEN
-
       });
 
       test('it errors if assignPublicIp is true', () => {
@@ -1451,7 +1413,6 @@ describe('ec2 service', () => {
         }).toThrow(/vpcSubnets, securityGroup\(s\) and assignPublicIp can only be used in AwsVpc networking mode/);
 
         // THEN
-
       });
 
       test('it errors if vpc subnets is provided', () => {
@@ -1485,7 +1446,6 @@ describe('ec2 service', () => {
         }).toThrow(/vpcSubnets, securityGroup\(s\) and assignPublicIp can only be used in AwsVpc networking mode/);
 
         // THEN
-
       });
 
       test('it errors if security group is provided', () => {
@@ -1513,7 +1473,6 @@ describe('ec2 service', () => {
         }).toThrow(/vpcSubnets, securityGroup\(s\) and assignPublicIp can only be used in AwsVpc networking mode/);
 
         // THEN
-
       });
 
       test('it errors if multiple security groups is provided', () => {
@@ -1544,7 +1503,6 @@ describe('ec2 service', () => {
         }).toThrow(/vpcSubnets, securityGroup\(s\) and assignPublicIp can only be used in AwsVpc networking mode/);
 
         // THEN
-
       });
     });
 
@@ -1570,7 +1528,7 @@ describe('ec2 service', () => {
         });
 
         // THEN
-        expect(stack).toHaveResource('AWS::ECS::Service', {
+        Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
           NetworkConfiguration: {
             AwsvpcConfiguration: {
               AssignPublicIp: 'DISABLED',
@@ -1593,8 +1551,6 @@ describe('ec2 service', () => {
             },
           },
         });
-
-
       });
 
       test('it allows vpcSubnets', () => {
@@ -1621,7 +1577,6 @@ describe('ec2 service', () => {
         });
 
         // THEN
-
       });
     });
 
@@ -1645,13 +1600,11 @@ describe('ec2 service', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource('AWS::ECS::Service', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
         PlacementConstraints: [{
           Type: 'distinctInstance',
         }],
       });
-
-
     });
 
     test('with memberOf placement constraints', () => {
@@ -1675,14 +1628,12 @@ describe('ec2 service', () => {
       service.addPlacementConstraints(PlacementConstraint.memberOf('attribute:ecs.instance-type =~ t2.*'));
 
       // THEN
-      expect(stack).toHaveResource('AWS::ECS::Service', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
         PlacementConstraints: [{
           Expression: 'attribute:ecs.instance-type =~ t2.*',
           Type: 'memberOf',
         }],
       });
-
-
     });
 
     test('with spreadAcross container instances strategy', () => {
@@ -1707,14 +1658,12 @@ describe('ec2 service', () => {
       service.addPlacementStrategies(PlacementStrategy.spreadAcrossInstances());
 
       // THEN
-      expect(stack).toHaveResource('AWS::ECS::Service', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
         PlacementStrategies: [{
           Field: 'instanceId',
           Type: 'spread',
         }],
       });
-
-
     });
 
     test('with spreadAcross placement strategy', () => {
@@ -1738,14 +1687,12 @@ describe('ec2 service', () => {
       service.addPlacementStrategies(PlacementStrategy.spreadAcross(ecs.BuiltInAttributes.AVAILABILITY_ZONE));
 
       // THEN
-      expect(stack).toHaveResource('AWS::ECS::Service', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
         PlacementStrategies: [{
           Field: 'attribute:ecs.availability-zone',
           Type: 'spread',
         }],
       });
-
-
     });
 
     test('can turn PlacementStrategy into json format', () => {
@@ -1754,8 +1701,6 @@ describe('ec2 service', () => {
         type: 'spread',
         field: 'attribute:ecs.availability-zone',
       }]);
-
-
     });
 
     test('can turn PlacementConstraints into json format', () => {
@@ -1763,8 +1708,6 @@ describe('ec2 service', () => {
       expect(PlacementConstraint.distinctInstances().toJson()).toEqual([{
         type: 'distinctInstance',
       }]);
-
-
     });
 
     test('errors when spreadAcross with no input', () => {
@@ -1789,8 +1732,6 @@ describe('ec2 service', () => {
       expect(() => {
         service.addPlacementStrategies(PlacementStrategy.spreadAcross());
       }).toThrow('spreadAcross: give at least one field to spread by');
-
-
     });
 
     test('errors with spreadAcross placement strategy if daemon specified', () => {
@@ -1816,8 +1757,6 @@ describe('ec2 service', () => {
       expect(() => {
         service.addPlacementStrategies(PlacementStrategy.spreadAcross(ecs.BuiltInAttributes.AVAILABILITY_ZONE));
       });
-
-
     });
 
     test('with no placement constraints', () => {
@@ -1839,11 +1778,9 @@ describe('ec2 service', () => {
       });
 
       // THEN
-      expect(stack).not.toHaveResource('AWS::ECS::Service', {
-        PlacementConstraints: undefined,
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+        PlacementConstraints: Match.absentProperty(),
       });
-
-
     });
 
     test('with both propagateTags and propagateTaskTagsFrom defined', () => {
@@ -1867,7 +1804,6 @@ describe('ec2 service', () => {
           propagateTaskTagsFrom: PropagatedTagSource.SERVICE,
         });
       }).toThrow(/You can only specify either propagateTags or propagateTaskTagsFrom. Alternatively, you can leave both blank/);
-
     });
 
     test('with no placement strategy if daemon specified', () => {
@@ -1890,11 +1826,9 @@ describe('ec2 service', () => {
       });
 
       // THEN
-      expect(stack).not.toHaveResource('AWS::ECS::Service', {
-        PlacementStrategies: undefined,
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+        PlacementStrategies: Match.absentProperty(),
       });
-
-
     });
 
     test('with random placement strategy', () => {
@@ -1918,13 +1852,11 @@ describe('ec2 service', () => {
       service.addPlacementStrategies(PlacementStrategy.randomly());
 
       // THEN
-      expect(stack).toHaveResource('AWS::ECS::Service', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
         PlacementStrategies: [{
           Type: 'random',
         }],
       });
-
-
     });
 
     test('errors with random placement strategy if daemon specified', () => {
@@ -1950,8 +1882,6 @@ describe('ec2 service', () => {
       expect(() => {
         service.addPlacementStrategies(PlacementStrategy.randomly());
       }).toThrow();
-
-
     });
 
     test('with packedbyCpu placement strategy', () => {
@@ -1975,14 +1905,12 @@ describe('ec2 service', () => {
       service.addPlacementStrategies(PlacementStrategy.packedByCpu());
 
       // THEN
-      expect(stack).toHaveResource('AWS::ECS::Service', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
         PlacementStrategies: [{
           Field: 'cpu',
           Type: 'binpack',
         }],
       });
-
-
     });
 
     test('with packedbyMemory placement strategy', () => {
@@ -2006,14 +1934,12 @@ describe('ec2 service', () => {
       service.addPlacementStrategies(PlacementStrategy.packedByMemory());
 
       // THEN
-      expect(stack).toHaveResource('AWS::ECS::Service', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
         PlacementStrategies: [{
           Field: 'memory',
           Type: 'binpack',
         }],
       });
-
-
     });
 
     test('with packedBy placement strategy', () => {
@@ -2037,14 +1963,12 @@ describe('ec2 service', () => {
       service.addPlacementStrategies(PlacementStrategy.packedBy(ecs.BinPackResource.MEMORY));
 
       // THEN
-      expect(stack).toHaveResource('AWS::ECS::Service', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
         PlacementStrategies: [{
           Field: 'memory',
           Type: 'binpack',
         }],
       });
-
-
     });
 
     test('errors with packedBy placement strategy if daemon specified', () => {
@@ -2070,8 +1994,6 @@ describe('ec2 service', () => {
       expect(() => {
         service.addPlacementStrategies(PlacementStrategy.packedBy(ecs.BinPackResource.MEMORY));
       }).toThrow();
-
-
     });
   });
 
@@ -2096,8 +2018,6 @@ describe('ec2 service', () => {
       // THEN
       const lb = new elb.LoadBalancer(stack, 'LB', { vpc });
       service.attachToClassicLB(lb);
-
-
     });
 
     test('allows network mode of task definition to be bridge', () => {
@@ -2120,8 +2040,6 @@ describe('ec2 service', () => {
       // THEN
       const lb = new elb.LoadBalancer(stack, 'LB', { vpc });
       service.attachToClassicLB(lb);
-
-
     });
 
     test('throws when network mode of task definition is AwsVpc', () => {
@@ -2146,8 +2064,6 @@ describe('ec2 service', () => {
       expect(() => {
         service.attachToClassicLB(lb);
       }).toThrow(/Cannot use a Classic Load Balancer if NetworkMode is AwsVpc. Use Host or Bridge instead./);
-
-
     });
 
     test('throws when network mode of task definition is none', () => {
@@ -2172,8 +2088,6 @@ describe('ec2 service', () => {
       expect(() => {
         service.attachToClassicLB(lb);
       }).toThrow(/Cannot use a Classic Load Balancer if NetworkMode is None. Use Host or Bridge instead./);
-
-
     });
   });
 
@@ -2202,8 +2116,6 @@ describe('ec2 service', () => {
 
       // THEN
       service.attachToApplicationTargetGroup(targetGroup);
-
-
     });
 
     test('throws when network mode of task definition is none', () => {
@@ -2232,8 +2144,6 @@ describe('ec2 service', () => {
       expect(() => {
         service.attachToApplicationTargetGroup(targetGroup);
       }).toThrow(/Cannot use a load balancer if NetworkMode is None. Use Bridge, Host or AwsVpc instead./);
-
-
     });
 
     describe('correctly setting ingress and egress port', () => {
@@ -2269,20 +2179,18 @@ describe('ec2 service', () => {
           });
 
           // THEN
-          expect(stack).toHaveResource('AWS::EC2::SecurityGroupIngress', {
+          Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroupIngress', {
             Description: 'Load balancer to target',
             FromPort: 32768,
             ToPort: 65535,
           });
 
-          expect(stack).toHaveResource('AWS::EC2::SecurityGroupEgress', {
+          Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroupEgress', {
             Description: 'Load balancer to target',
             FromPort: 32768,
             ToPort: 65535,
           });
         });
-
-
       });
 
       test('with bridge/NAT network mode and host port other than 0', () => {
@@ -2317,20 +2225,18 @@ describe('ec2 service', () => {
           });
 
           // THEN
-          expect(stack).toHaveResource('AWS::EC2::SecurityGroupIngress', {
+          Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroupIngress', {
             Description: 'Load balancer to target',
             FromPort: 80,
             ToPort: 80,
           });
 
-          expect(stack).toHaveResource('AWS::EC2::SecurityGroupEgress', {
+          Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroupEgress', {
             Description: 'Load balancer to target',
             FromPort: 80,
             ToPort: 80,
           });
         });
-
-
       });
 
       test('with host network mode', () => {
@@ -2364,19 +2270,17 @@ describe('ec2 service', () => {
         });
 
         // THEN
-        expect(stack).toHaveResource('AWS::EC2::SecurityGroupIngress', {
+        Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroupIngress', {
           Description: 'Load balancer to target',
           FromPort: 8001,
           ToPort: 8001,
         });
 
-        expect(stack).toHaveResource('AWS::EC2::SecurityGroupEgress', {
+        Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroupEgress', {
           Description: 'Load balancer to target',
           FromPort: 8001,
           ToPort: 8001,
         });
-
-
       });
 
       test('with aws_vpc network mode', () => {
@@ -2410,19 +2314,17 @@ describe('ec2 service', () => {
         });
 
         // THEN
-        expect(stack).toHaveResource('AWS::EC2::SecurityGroupIngress', {
+        Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroupIngress', {
           Description: 'Load balancer to target',
           FromPort: 8001,
           ToPort: 8001,
         });
 
-        expect(stack).toHaveResource('AWS::EC2::SecurityGroupEgress', {
+        Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroupEgress', {
           Description: 'Load balancer to target',
           FromPort: 8001,
           ToPort: 8001,
         });
-
-
       });
     });
   });
@@ -2452,8 +2354,6 @@ describe('ec2 service', () => {
 
       // THEN
       service.attachToNetworkTargetGroup(targetGroup);
-
-
     });
 
     test('throws when network mode of task definition is none', () => {
@@ -2482,8 +2382,6 @@ describe('ec2 service', () => {
       expect(() => {
         service.attachToNetworkTargetGroup(targetGroup);
       }).toThrow(/Cannot use a load balancer if NetworkMode is None. Use Bridge, Host or AwsVpc instead./);
-
-
     });
   });
 
@@ -2510,7 +2408,7 @@ describe('ec2 service', () => {
       lb.addTarget(service);
 
       // THEN
-      expect(stack).toHaveResource('AWS::ECS::Service', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
         LoadBalancers: [
           {
             ContainerName: 'web',
@@ -2520,13 +2418,11 @@ describe('ec2 service', () => {
         ],
       });
 
-      expect(stack).toHaveResource('AWS::ECS::Service', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
         // if any load balancer is configured and healthCheckGracePeriodSeconds is not
         // set, then it should default to 60 seconds.
         HealthCheckGracePeriodSeconds: 60,
       });
-
-
     });
 
     test('can attach any container and port as a target', () => {
@@ -2555,7 +2451,7 @@ describe('ec2 service', () => {
       }));
 
       // THEN
-      expect(stack).toHaveResource('AWS::ECS::Service', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
         LoadBalancers: [
           {
             ContainerName: 'web',
@@ -2564,8 +2460,6 @@ describe('ec2 service', () => {
           },
         ],
       });
-
-
     });
   });
 
@@ -2595,8 +2489,6 @@ describe('ec2 service', () => {
           },
         });
       }).toThrow(/Cannot enable service discovery if a Cloudmap Namespace has not been created in the cluster./);
-
-
     });
 
     test('throws if network mode is none', () => {
@@ -2626,8 +2518,6 @@ describe('ec2 service', () => {
           },
         });
       }).toThrow(/Cannot use a service discovery if NetworkMode is None. Use Bridge, Host or AwsVpc instead./);
-
-
     });
 
     test('creates AWS Cloud Map service for Private DNS namespace with bridge network mode', () => {
@@ -2660,7 +2550,7 @@ describe('ec2 service', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource('AWS::ECS::Service', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
         ServiceRegistries: [
           {
             ContainerName: 'MainContainer',
@@ -2675,7 +2565,7 @@ describe('ec2 service', () => {
         ],
       });
 
-      expect(stack).toHaveResource('AWS::ServiceDiscovery::Service', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ServiceDiscovery::Service', {
         DnsConfig: {
           DnsRecords: [
             {
@@ -2702,8 +2592,6 @@ describe('ec2 service', () => {
           ],
         },
       });
-
-
     });
 
     test('creates AWS Cloud Map service for Private DNS namespace with host network mode', () => {
@@ -2737,7 +2625,7 @@ describe('ec2 service', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource('AWS::ECS::Service', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
         ServiceRegistries: [
           {
             ContainerName: 'MainContainer',
@@ -2752,7 +2640,7 @@ describe('ec2 service', () => {
         ],
       });
 
-      expect(stack).toHaveResource('AWS::ServiceDiscovery::Service', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ServiceDiscovery::Service', {
         DnsConfig: {
           DnsRecords: [
             {
@@ -2779,8 +2667,6 @@ describe('ec2 service', () => {
           ],
         },
       });
-
-
     });
 
     test('throws if wrong DNS record type specified with bridge network mode', () => {
@@ -2813,8 +2699,6 @@ describe('ec2 service', () => {
           },
         });
       }).toThrow(/SRV records must be used when network mode is Bridge or Host./);
-
-
     });
 
     test('creates AWS Cloud Map service for Private DNS namespace with AwsVpc network mode', () => {
@@ -2848,7 +2732,7 @@ describe('ec2 service', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource('AWS::ECS::Service', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
         ServiceRegistries: [
           {
             RegistryArn: {
@@ -2861,7 +2745,7 @@ describe('ec2 service', () => {
         ],
       });
 
-      expect(stack).toHaveResource('AWS::ServiceDiscovery::Service', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ServiceDiscovery::Service', {
         DnsConfig: {
           DnsRecords: [
             {
@@ -2888,8 +2772,6 @@ describe('ec2 service', () => {
           ],
         },
       });
-
-
     });
 
     test('creates AWS Cloud Map service for Private DNS namespace with AwsVpc network mode with SRV records', () => {
@@ -2924,7 +2806,7 @@ describe('ec2 service', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource('AWS::ECS::Service', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
         ServiceRegistries: [
           {
             ContainerName: 'MainContainer',
@@ -2939,7 +2821,7 @@ describe('ec2 service', () => {
         ],
       });
 
-      expect(stack).toHaveResource('AWS::ServiceDiscovery::Service', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ServiceDiscovery::Service', {
         DnsConfig: {
           DnsRecords: [
             {
@@ -2966,8 +2848,6 @@ describe('ec2 service', () => {
           ],
         },
       });
-
-
     });
 
     test('user can select any container and port', () => {
@@ -3008,7 +2888,7 @@ describe('ec2 service', () => {
       });
 
       // THEN
-      expect(stack).toHaveResourceLike('AWS::ECS::Service', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
         ServiceRegistries: [
           {
             RegistryArn: { 'Fn::GetAtt': ['ServiceCloudmapService046058A4', 'Arn'] },
@@ -3017,8 +2897,6 @@ describe('ec2 service', () => {
           },
         ],
       });
-
-
     });
 
     test('By default, the container name is the default', () => {
@@ -3053,14 +2931,12 @@ describe('ec2 service', () => {
       });
 
       // THEN
-      expect(stack).toHaveResourceLike('AWS::ECS::Service', {
-        ServiceRegistries: [{
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+        ServiceRegistries: [Match.objectLike({
           ContainerName: 'main',
-          ContainerPort: undefined,
-        }],
+          ContainerPort: Match.anyValue(),
+        })],
       });
-
-
     });
 
     test('For SRV, by default, container name is default container and port is the default container port', () => {
@@ -3097,14 +2973,12 @@ describe('ec2 service', () => {
       });
 
       // THEN
-      expect(stack).toHaveResourceLike('AWS::ECS::Service', {
-        ServiceRegistries: [{
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+        ServiceRegistries: [Match.objectLike({
           ContainerName: 'main',
           ContainerPort: 1234,
-        }],
+        })],
       });
-
-
     });
 
     test('allows SRV service discovery to select the container and port', () => {
@@ -3144,14 +3018,12 @@ describe('ec2 service', () => {
       });
 
       // THEN
-      expect(stack).toHaveResourceLike('AWS::ECS::Service', {
-        ServiceRegistries: [{
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+        ServiceRegistries: [Match.objectLike({
           ContainerName: 'second',
           ContainerPort: 4321,
-        }],
+        })],
       });
-
-
     });
 
     test('throws if SRV and container is not part of task definition', () => {
@@ -3193,8 +3065,6 @@ describe('ec2 service', () => {
           },
         });
       }).toThrow(/another task definition/i);
-
-
     });
 
     test('throws if SRV and the container port is not mapped', () => {
@@ -3228,8 +3098,6 @@ describe('ec2 service', () => {
           },
         });
       }).toThrow(/container port.*not.*mapped/i);
-
-
     });
   });
 
@@ -3272,8 +3140,6 @@ describe('ec2 service', () => {
       period: cdk.Duration.minutes(5),
       statistic: 'Average',
     });
-
-
   });
 
   describe('When import an EC2 Service', () => {
@@ -3291,8 +3157,6 @@ describe('ec2 service', () => {
       // THEN
       expect(service.serviceArn).toEqual('arn:aws:ecs:us-west-2:123456789012:service/my-http-service');
       expect(service.serviceName).toEqual('my-http-service');
-
-
     });
 
     test('with serviceName', () => {
@@ -3310,8 +3174,6 @@ describe('ec2 service', () => {
       // THEN
       expect(stack.resolve(service.serviceArn)).toEqual(stack.resolve(`arn:${pseudo.partition}:ecs:${pseudo.region}:${pseudo.accountId}:service/my-http-service`));
       expect(service.serviceName).toEqual('my-http-service');
-
-
     });
 
     test('throws an exception if both serviceArn and serviceName were provided for fromEc2ServiceAttributes', () => {
@@ -3326,8 +3188,6 @@ describe('ec2 service', () => {
           cluster,
         });
       }).toThrow(/only specify either serviceArn or serviceName/);
-
-
     });
 
     test('throws an exception if neither serviceArn nor serviceName were provided for fromEc2ServiceAttributes', () => {
@@ -3340,8 +3200,6 @@ describe('ec2 service', () => {
           cluster,
         });
       }).toThrow(/only specify either serviceArn or serviceName/);
-
-
     });
   });
 });

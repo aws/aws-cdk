@@ -1,5 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
-import { ABSENT } from '@aws-cdk/assert-internal';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as autoscaling from '@aws-cdk/aws-autoscaling';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as kms from '@aws-cdk/aws-kms';
@@ -20,9 +19,9 @@ describe('cluster', () => {
         instanceType: new ec2.InstanceType('t2.micro'),
       });
 
-      expect(stack).toHaveResource('AWS::ECS::Cluster');
+      Template.fromStack(stack).resourceCountIs('AWS::ECS::Cluster', 1);
 
-      expect(stack).toHaveResource('AWS::EC2::VPC', {
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPC', {
         CidrBlock: '10.0.0.0/16',
         EnableDnsHostnames: true,
         EnableDnsSupport: true,
@@ -35,7 +34,7 @@ describe('cluster', () => {
         ],
       });
 
-      expect(stack).toHaveResource('AWS::AutoScaling::LaunchConfiguration', {
+      Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::LaunchConfiguration', {
         ImageId: {
           Ref: 'SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter',
         },
@@ -68,7 +67,7 @@ describe('cluster', () => {
         },
       });
 
-      expect(stack).toHaveResource('AWS::AutoScaling::AutoScalingGroup', {
+      Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::AutoScalingGroup', {
         MaxSize: '1',
         MinSize: '1',
         LaunchConfigurationName: {
@@ -91,7 +90,7 @@ describe('cluster', () => {
         ],
       });
 
-      expect(stack).toHaveResource('AWS::EC2::SecurityGroup', {
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroup', {
         GroupDescription: 'Default/EcsCluster/DefaultAutoScalingGroup/InstanceSecurityGroup',
         SecurityGroupEgress: [
           {
@@ -111,7 +110,7 @@ describe('cluster', () => {
         },
       });
 
-      expect(stack).toHaveResource('AWS::IAM::Role', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
         AssumeRolePolicyDocument: {
           Statement: [
             {
@@ -126,7 +125,7 @@ describe('cluster', () => {
         },
       });
 
-      expect(stack).toHaveResource('AWS::IAM::Policy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         PolicyDocument: {
           Statement: [
             {
@@ -175,8 +174,6 @@ describe('cluster', () => {
           Version: '2012-10-17',
         },
       });
-
-
     });
 
     test('with only vpc set, it correctly sets default properties', () => {
@@ -191,9 +188,9 @@ describe('cluster', () => {
         instanceType: new ec2.InstanceType('t2.micro'),
       });
 
-      expect(stack).toHaveResource('AWS::ECS::Cluster');
+      Template.fromStack(stack).resourceCountIs('AWS::ECS::Cluster', 1);
 
-      expect(stack).toHaveResource('AWS::EC2::VPC', {
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPC', {
         CidrBlock: '10.0.0.0/16',
         EnableDnsHostnames: true,
         EnableDnsSupport: true,
@@ -206,7 +203,7 @@ describe('cluster', () => {
         ],
       });
 
-      expect(stack).toHaveResource('AWS::AutoScaling::LaunchConfiguration', {
+      Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::LaunchConfiguration', {
         ImageId: {
           Ref: 'SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter',
         },
@@ -239,7 +236,7 @@ describe('cluster', () => {
         },
       });
 
-      expect(stack).toHaveResource('AWS::AutoScaling::AutoScalingGroup', {
+      Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::AutoScalingGroup', {
         MaxSize: '1',
         MinSize: '1',
         LaunchConfigurationName: {
@@ -262,7 +259,7 @@ describe('cluster', () => {
         ],
       });
 
-      expect(stack).toHaveResource('AWS::EC2::SecurityGroup', {
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroup', {
         GroupDescription: 'Default/EcsCluster/DefaultAutoScalingGroup/InstanceSecurityGroup',
         SecurityGroupEgress: [
           {
@@ -282,7 +279,7 @@ describe('cluster', () => {
         },
       });
 
-      expect(stack).toHaveResource('AWS::IAM::Role', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
         AssumeRolePolicyDocument: {
           Statement: [
             {
@@ -297,7 +294,7 @@ describe('cluster', () => {
         },
       });
 
-      expect(stack).toHaveResource('AWS::IAM::Policy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         PolicyDocument: {
           Statement: [
             {
@@ -346,8 +343,6 @@ describe('cluster', () => {
           Version: '2012-10-17',
         },
       });
-
-
     });
 
     test('multiple clusters with default capacity', () => {
@@ -362,8 +357,6 @@ describe('cluster', () => {
           instanceType: new ec2.InstanceType('m3.medium'),
         });
       }
-
-
     });
 
     test('lifecycle hook is automatically added', () => {
@@ -380,7 +373,7 @@ describe('cluster', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource('AWS::AutoScaling::LifecycleHook', {
+      Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::LifecycleHook', {
         AutoScalingGroupName: { Ref: 'EcsClusterDefaultAutoScalingGroupASGC1A785DB' },
         LifecycleTransition: 'autoscaling:EC2_INSTANCE_TERMINATING',
         DefaultResult: 'CONTINUE',
@@ -389,7 +382,7 @@ describe('cluster', () => {
         RoleARN: { 'Fn::GetAtt': ['EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookRoleA38EC83B', 'Arn'] },
       });
 
-      expect(stack).toHaveResource('AWS::Lambda::Function', {
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
         Timeout: 310,
         Environment: {
           Variables: {
@@ -401,7 +394,7 @@ describe('cluster', () => {
         Handler: 'index.lambda_handler',
       });
 
-      expect(stack).toHaveResource('AWS::IAM::Policy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         PolicyDocument: {
           Statement: [
             {
@@ -501,8 +494,6 @@ describe('cluster', () => {
           },
         ],
       });
-
-
     });
 
     test('lifecycle hook with encrypted SNS is added correctly', () => {
@@ -521,7 +512,7 @@ describe('cluster', () => {
       });
 
       // THEN
-      expect(stack).toHaveResourceLike('AWS::SNS::Topic', {
+      Template.fromStack(stack).hasResourceProperties('AWS::SNS::Topic', {
         KmsMasterKeyId: {
           'Fn::GetAtt': [
             'Key961B73FD',
@@ -529,8 +520,6 @@ describe('cluster', () => {
           ],
         },
       });
-
-
     });
 
     test('with capacity and cloudmap namespace properties set', () => {
@@ -548,16 +537,16 @@ describe('cluster', () => {
       });
 
       // THEN
-      expect(stack).toHaveResource('AWS::ServiceDiscovery::PrivateDnsNamespace', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ServiceDiscovery::PrivateDnsNamespace', {
         Name: 'foo.com',
         Vpc: {
           Ref: 'MyVpcF9F0CA6F',
         },
       });
 
-      expect(stack).toHaveResource('AWS::ECS::Cluster');
+      Template.fromStack(stack).resourceCountIs('AWS::ECS::Cluster', 1);
 
-      expect(stack).toHaveResource('AWS::EC2::VPC', {
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPC', {
         CidrBlock: '10.0.0.0/16',
         EnableDnsHostnames: true,
         EnableDnsSupport: true,
@@ -570,7 +559,7 @@ describe('cluster', () => {
         ],
       });
 
-      expect(stack).toHaveResource('AWS::AutoScaling::LaunchConfiguration', {
+      Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::LaunchConfiguration', {
         ImageId: {
           Ref: 'SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter',
         },
@@ -603,7 +592,7 @@ describe('cluster', () => {
         },
       });
 
-      expect(stack).toHaveResource('AWS::AutoScaling::AutoScalingGroup', {
+      Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::AutoScalingGroup', {
         MaxSize: '1',
         MinSize: '1',
         LaunchConfigurationName: {
@@ -626,7 +615,7 @@ describe('cluster', () => {
         ],
       });
 
-      expect(stack).toHaveResource('AWS::EC2::SecurityGroup', {
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroup', {
         GroupDescription: 'Default/EcsCluster/DefaultAutoScalingGroup/InstanceSecurityGroup',
         SecurityGroupEgress: [
           {
@@ -646,7 +635,7 @@ describe('cluster', () => {
         },
       });
 
-      expect(stack).toHaveResource('AWS::IAM::Role', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
         AssumeRolePolicyDocument: {
           Statement: [
             {
@@ -661,7 +650,7 @@ describe('cluster', () => {
         },
       });
 
-      expect(stack).toHaveResource('AWS::IAM::Policy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         PolicyDocument: {
           Statement: [
             {
@@ -710,8 +699,6 @@ describe('cluster', () => {
           Version: '2012-10-17',
         },
       });
-
-
     });
   });
 
@@ -726,11 +713,9 @@ describe('cluster', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::AutoScaling::LaunchConfiguration', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::LaunchConfiguration', {
       InstanceType: 'm3.large',
     });
-
-
   });
 
   test('allows specifying cluster size', () => {
@@ -745,11 +730,9 @@ describe('cluster', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::AutoScaling::AutoScalingGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::AutoScalingGroup', {
       MaxSize: '3',
     });
-
-
   });
 
   test('configures userdata with powershell if windows machine image is specified', () => {
@@ -766,7 +749,7 @@ describe('cluster', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::AutoScaling::LaunchConfiguration', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::LaunchConfiguration', {
       ImageId: {
         Ref: 'SsmParameterValueawsserviceecsoptimizedamiwindowsserver2019englishfullrecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter',
       },
@@ -801,8 +784,6 @@ describe('cluster', () => {
         },
       },
     });
-
-
   });
 
   /*
@@ -825,7 +806,7 @@ describe('cluster', () => {
     // THEN
     const assembly = app.synth();
     const template = assembly.getStackByName(stack.stackName).template;
-    expect(stack).toHaveResource('AWS::AutoScaling::LaunchConfiguration', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::LaunchConfiguration', {
       ImageId: {
         Ref: 'SsmParameterValueawsserviceecsoptimizedamiamazonlinux2gpurecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter',
       },
@@ -837,8 +818,6 @@ describe('cluster', () => {
         Default: '/aws/service/ecs/optimized-ami/amazon-linux-2/gpu/recommended/image_id',
       },
     });
-
-
   });
 
   test('errors if amazon linux given with special HW type', () => {
@@ -858,8 +837,6 @@ describe('cluster', () => {
         }),
       });
     }).toThrow(/Amazon Linux does not support special hardware type/);
-
-
   });
 
   test('allows specifying windows image', () => {
@@ -885,8 +862,6 @@ describe('cluster', () => {
         Default: '/aws/service/ecs/optimized-ami/windows_server/2019/english/full/recommended/image_id',
       },
     });
-
-
   });
 
   test('errors if windows given with special HW type', () => {
@@ -906,8 +881,6 @@ describe('cluster', () => {
         }),
       });
     }).toThrow(/Windows Server does not support special hardware type/);
-
-
   });
 
   test('errors if windowsVersion and linux generation are set', () => {
@@ -927,8 +900,6 @@ describe('cluster', () => {
         }),
       });
     }).toThrow(/"windowsVersion" and Linux image "generation" cannot be both set/);
-
-
   });
 
   test('allows returning the correct image for windows for EcsOptimizedAmi', () => {
@@ -939,8 +910,6 @@ describe('cluster', () => {
     });
 
     expect(ami.getImage(stack).osType).toEqual(ec2.OperatingSystemType.WINDOWS);
-
-
   });
 
   test('allows returning the correct image for linux for EcsOptimizedAmi', () => {
@@ -951,8 +920,6 @@ describe('cluster', () => {
     });
 
     expect(ami.getImage(stack).osType).toEqual(ec2.OperatingSystemType.LINUX);
-
-
   });
 
   test('allows returning the correct image for linux 2 for EcsOptimizedAmi', () => {
@@ -963,8 +930,6 @@ describe('cluster', () => {
     });
 
     expect(ami.getImage(stack).osType).toEqual(ec2.OperatingSystemType.LINUX);
-
-
   });
 
   test('allows returning the correct image for linux for EcsOptimizedImage', () => {
@@ -973,8 +938,6 @@ describe('cluster', () => {
 
     expect(ecs.EcsOptimizedImage.amazonLinux().getImage(stack).osType).toEqual(
       ec2.OperatingSystemType.LINUX);
-
-
   });
 
   test('allows returning the correct image for linux 2 for EcsOptimizedImage', () => {
@@ -983,8 +946,6 @@ describe('cluster', () => {
 
     expect(ecs.EcsOptimizedImage.amazonLinux2().getImage(stack).osType).toEqual(
       ec2.OperatingSystemType.LINUX);
-
-
   });
 
   test('allows returning the correct image for linux 2 for EcsOptimizedImage with ARM hardware', () => {
@@ -993,19 +954,13 @@ describe('cluster', () => {
 
     expect(ecs.EcsOptimizedImage.amazonLinux2(ecs.AmiHardwareType.ARM).getImage(stack).osType).toEqual(
       ec2.OperatingSystemType.LINUX);
-
-
   });
-
-
   test('allows returning the correct image for windows for EcsOptimizedImage', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
     expect(ecs.EcsOptimizedImage.windows(ecs.WindowsOptimizedVersion.SERVER_2019).getImage(stack).osType).toEqual(
       ec2.OperatingSystemType.WINDOWS);
-
-
   });
 
   /*
@@ -1027,7 +982,7 @@ describe('cluster', () => {
     // THEN
     const assembly = app.synth();
     const template = assembly.getStackByName(stack.stackName).template;
-    expect(stack).toHaveResource('AWS::AutoScaling::LaunchConfiguration', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::LaunchConfiguration', {
       ImageId: {
         Ref: 'SsmParameterValueawsserviceecsoptimizedamiamazonlinux2gpurecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter',
       },
@@ -1039,8 +994,6 @@ describe('cluster', () => {
         Default: '/aws/service/ecs/optimized-ami/amazon-linux-2/gpu/recommended/image_id',
       },
     });
-
-
   });
 
   test('allows specifying Amazon Linux v1 AMI', () => {
@@ -1058,7 +1011,7 @@ describe('cluster', () => {
     // THEN
     const assembly = app.synth();
     const template = assembly.getStackByName(stack.stackName).template;
-    expect(stack).toHaveResource('AWS::AutoScaling::LaunchConfiguration', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::LaunchConfiguration', {
       ImageId: {
         Ref: 'SsmParameterValueawsserviceecsoptimizedamiamazonlinuxrecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter',
       },
@@ -1070,8 +1023,6 @@ describe('cluster', () => {
         Default: '/aws/service/ecs/optimized-ami/amazon-linux/recommended/image_id',
       },
     });
-
-
   });
 
   test('allows specifying windows image v2', () => {
@@ -1095,8 +1046,6 @@ describe('cluster', () => {
         Default: '/aws/service/ecs/optimized-ami/windows_server/2019/english/full/recommended/image_id',
       },
     });
-
-
   });
 
   test('allows specifying spot fleet', () => {
@@ -1111,11 +1060,9 @@ describe('cluster', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::AutoScaling::LaunchConfiguration', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::LaunchConfiguration', {
       SpotPrice: '0.31',
     });
-
-
   });
 
   test('allows specifying drain time', () => {
@@ -1130,11 +1077,9 @@ describe('cluster', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::AutoScaling::LifecycleHook', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::LifecycleHook', {
       HeartbeatTimeout: 60,
     });
-
-
   });
 
   test('allows specifying automated spot draining', () => {
@@ -1150,7 +1095,7 @@ describe('cluster', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::AutoScaling::LaunchConfiguration', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::LaunchConfiguration', {
       UserData: {
         'Fn::Base64': {
           'Fn::Join': [
@@ -1166,8 +1111,6 @@ describe('cluster', () => {
         },
       },
     });
-
-
   });
 
   test('allows containers access to instance metadata service', () => {
@@ -1182,7 +1125,7 @@ describe('cluster', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::AutoScaling::LaunchConfiguration', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::LaunchConfiguration', {
       UserData: {
         'Fn::Base64': {
           'Fn::Join': [
@@ -1198,8 +1141,6 @@ describe('cluster', () => {
         },
       },
     });
-
-
   });
 
   test('allows adding default service discovery namespace', () => {
@@ -1218,14 +1159,12 @@ describe('cluster', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ServiceDiscovery::PrivateDnsNamespace', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ServiceDiscovery::PrivateDnsNamespace', {
       Name: 'foo.com',
       Vpc: {
         Ref: 'MyVpcF9F0CA6F',
       },
     });
-
-
   });
 
   test('allows adding public service discovery namespace', () => {
@@ -1245,13 +1184,11 @@ describe('cluster', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ServiceDiscovery::PublicDnsNamespace', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ServiceDiscovery::PublicDnsNamespace', {
       Name: 'foo.com',
     });
 
     expect(cluster.defaultCloudMapNamespace!.type).toEqual(cloudmap.NamespaceType.DNS_PUBLIC);
-
-
   });
 
   test('throws if default service discovery namespace added more than once', () => {
@@ -1275,8 +1212,6 @@ describe('cluster', () => {
         name: 'foo.com',
       });
     }).toThrow(/Can only add default namespace once./);
-
-
   });
 
   test('export/import of a cluster with a namespace', () => {
@@ -1308,8 +1243,6 @@ describe('cluster', () => {
 
     // Can retrieve subnets from VPC - will throw 'There are no 'Private' subnets in this VPC. Use a different VPC subnet selection.' if broken.
     cluster2.vpc.selectSubnets();
-
-
   });
 
   test('imported cluster with imported security groups honors allowAllOutbound', () => {
@@ -1330,13 +1263,11 @@ describe('cluster', () => {
     cluster.connections.allowToAnyIpv4(ec2.Port.tcp(443));
 
     // THEN
-    expect(stack).toHaveResource('AWS::EC2::SecurityGroupEgress', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroupEgress', {
       GroupId: 'sg-1',
     });
 
-    expect(stack).toCountResources('AWS::EC2::SecurityGroupEgress', 1);
-
-
+    Template.fromStack(stack).resourceCountIs('AWS::EC2::SecurityGroupEgress', 1);
   });
 
   test('Metric', () => {
@@ -1376,8 +1307,6 @@ describe('cluster', () => {
       period: cdk.Duration.minutes(5),
       statistic: 'Average',
     });
-
-
   });
 
   test('ASG with a public VPC without NAT Gateways', () => {
@@ -1402,9 +1331,9 @@ describe('cluster', () => {
       },
     });
 
-    expect(stack).toHaveResource('AWS::ECS::Cluster');
+    Template.fromStack(stack).resourceCountIs('AWS::ECS::Cluster', 1);
 
-    expect(stack).toHaveResource('AWS::EC2::VPC', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPC', {
       CidrBlock: '10.0.0.0/16',
       EnableDnsHostnames: true,
       EnableDnsSupport: true,
@@ -1417,7 +1346,7 @@ describe('cluster', () => {
       ],
     });
 
-    expect(stack).toHaveResource('AWS::AutoScaling::LaunchConfiguration', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::LaunchConfiguration', {
       ImageId: {
         Ref: 'SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter',
       },
@@ -1451,7 +1380,7 @@ describe('cluster', () => {
       },
     });
 
-    expect(stack).toHaveResource('AWS::AutoScaling::AutoScalingGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::AutoScalingGroup', {
       MaxSize: '1',
       MinSize: '1',
       LaunchConfigurationName: {
@@ -1474,7 +1403,7 @@ describe('cluster', () => {
       ],
     });
 
-    expect(stack).toHaveResource('AWS::EC2::SecurityGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroup', {
       GroupDescription: 'Default/EcsCluster/DefaultAutoScalingGroup/InstanceSecurityGroup',
       SecurityGroupEgress: [
         {
@@ -1506,7 +1435,7 @@ describe('cluster', () => {
     new ecs.Cluster(stack, 'EcsCluster', { containerInsights: true });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ECS::Cluster', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Cluster', {
       ClusterSettings: [
         {
           Name: 'containerInsights',
@@ -1514,8 +1443,6 @@ describe('cluster', () => {
         },
       ],
     });
-
-
   });
 
   test('disable container insights', () => {
@@ -1526,7 +1453,7 @@ describe('cluster', () => {
     new ecs.Cluster(stack, 'EcsCluster', { containerInsights: false });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ECS::Cluster', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Cluster', {
       ClusterSettings: [
         {
           Name: 'containerInsights',
@@ -1534,8 +1461,6 @@ describe('cluster', () => {
         },
       ],
     });
-
-
   });
 
   test('default container insights is undefined', () => {
@@ -1554,8 +1479,6 @@ describe('cluster', () => {
       template.Resources.EcsCluster97242B84.Properties === undefined ||
       template.Resources.EcsCluster97242B84.Properties.ClusterSettings === undefined,
     ).toEqual(true);
-
-
   });
 
   test('BottleRocketImage() returns correct AMI', () => {
@@ -1592,9 +1515,9 @@ describe('cluster', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ECS::Cluster');
-    expect(stack).toHaveResource('AWS::AutoScaling::AutoScalingGroup');
-    expect(stack).toHaveResource('AWS::AutoScaling::LaunchConfiguration', {
+    Template.fromStack(stack).resourceCountIs('AWS::ECS::Cluster', 1);
+    Template.fromStack(stack).resourceCountIs('AWS::AutoScaling::AutoScalingGroup', 1);
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::LaunchConfiguration', {
       ImageId: {
         Ref: 'SsmParameterValueawsservicebottlerocketawsecs1x8664latestimageidC96584B6F00A464EAD1953AFF4B05118Parameter',
       },
@@ -1613,7 +1536,7 @@ describe('cluster', () => {
         },
       },
     });
-    expect(stack).toHaveResourceLike('AWS::IAM::Role', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
       AssumeRolePolicyDocument: {
         Statement: [
           {
@@ -1684,7 +1607,7 @@ describe('cluster', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::AutoScaling::LaunchConfiguration', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::LaunchConfiguration', {
       ImageId: {
         Ref: 'SsmParameterValueawsservicebottlerocketawsecs1arm64latestimageidC96584B6F00A464EAD1953AFF4B05118Parameter',
       },
@@ -1713,7 +1636,7 @@ describe('cluster', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AutoScaling::LaunchConfiguration', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::LaunchConfiguration', {
       UserData: {
         'Fn::Base64': {
           'Fn::Join': [
@@ -1741,15 +1664,17 @@ describe('cluster', () => {
     new ecs.Cluster(stack, 'EcsCluster', { capacityProviders: ['FARGATE_SPOT'] });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ECS::Cluster', {
-      CapacityProviders: ABSENT,
+    Template.fromStack(stack).hasResource('AWS::ECS::Cluster', {
+      Properties: Match.absentProperty(),
     });
+    // Correct after when this issue is fixed - https://github.com/aws/aws-cdk/issues/16626
+    // Template.fromStack(stack).hasResourceProperties('AWS::ECS::Cluster', {
+    //   CapacityProviders: Match.absentProperty(),
+    // });
 
-    expect(stack).toHaveResource('AWS::ECS::ClusterCapacityProviderAssociations', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::ClusterCapacityProviderAssociations', {
       CapacityProviders: ['FARGATE_SPOT'],
     });
-
-
   });
 
   test('allows specifying Fargate capacityProviders', () => {
@@ -1763,15 +1688,17 @@ describe('cluster', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ECS::Cluster', {
-      CapacityProviders: ABSENT,
+    Template.fromStack(stack).hasResource('AWS::ECS::Cluster', {
+      Properties: Match.absentProperty(),
     });
+    // Correct after when this issue is fixed - https://github.com/aws/aws-cdk/issues/16626
+    // Template.fromStack(stack).hasResourceProperties('AWS::ECS::Cluster', {
+    //   CapacityProviders: Match.absentProperty(),
+    // });
 
-    expect(stack).toHaveResource('AWS::ECS::ClusterCapacityProviderAssociations', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::ClusterCapacityProviderAssociations', {
       CapacityProviders: ['FARGATE', 'FARGATE_SPOT'],
     });
-
-
   });
 
   test('allows specifying capacityProviders (alternate method)', () => {
@@ -1784,15 +1711,17 @@ describe('cluster', () => {
     cluster.enableFargateCapacityProviders();
 
     // THEN
-    expect(stack).toHaveResource('AWS::ECS::Cluster', {
-      CapacityProviders: ABSENT,
+    Template.fromStack(stack).hasResource('AWS::ECS::Cluster', {
+      Properties: Match.absentProperty(),
     });
+    // Correct after when this issue is fixed - https://github.com/aws/aws-cdk/issues/16626
+    // Template.fromStack(stack).hasResourceProperties('AWS::ECS::Cluster', {
+    //   CapacityProviders: Match.absentProperty(),
+    // });
 
-    expect(stack).toHaveResource('AWS::ECS::ClusterCapacityProviderAssociations', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::ClusterCapacityProviderAssociations', {
       CapacityProviders: ['FARGATE', 'FARGATE_SPOT'],
     });
-
-
   });
 
   test('allows adding capacityProviders post-construction (deprecated)', () => {
@@ -1806,15 +1735,17 @@ describe('cluster', () => {
     cluster.addCapacityProvider('FARGATE'); // does not add twice
 
     // THEN
-    expect(stack).toHaveResource('AWS::ECS::Cluster', {
-      CapacityProviders: ABSENT,
+    Template.fromStack(stack).hasResource('AWS::ECS::Cluster', {
+      Properties: Match.absentProperty(),
     });
+    // Correct after when this issue is fixed - https://github.com/aws/aws-cdk/issues/16626
+    // Template.fromStack(stack).hasResourceProperties('AWS::ECS::Cluster', {
+    //   CapacityProviders: Match.absentProperty(),
+    // });
 
-    expect(stack).toHaveResource('AWS::ECS::ClusterCapacityProviderAssociations', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::ClusterCapacityProviderAssociations', {
       CapacityProviders: ['FARGATE'],
     });
-
-
   });
 
   test('allows adding capacityProviders post-construction', () => {
@@ -1828,15 +1759,17 @@ describe('cluster', () => {
     cluster.addCapacityProvider('FARGATE'); // does not add twice
 
     // THEN
-    expect(stack).toHaveResource('AWS::ECS::Cluster', {
-      CapacityProviders: ABSENT,
+    Template.fromStack(stack).hasResource('AWS::ECS::Cluster', {
+      Properties: Match.absentProperty(),
     });
+    // Correct after when this issue is fixed - https://github.com/aws/aws-cdk/issues/16626
+    // Template.fromStack(stack).hasResourceProperties('AWS::ECS::Cluster', {
+    //   CapacityProviders: Match.absentProperty(),
+    // });
 
-    expect(stack).toHaveResource('AWS::ECS::ClusterCapacityProviderAssociations', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::ClusterCapacityProviderAssociations', {
       CapacityProviders: ['FARGATE'],
     });
-
-
   });
 
   test('throws for unsupported capacity providers', () => {
@@ -1849,8 +1782,6 @@ describe('cluster', () => {
     expect(() => {
       cluster.addCapacityProvider('HONK');
     }).toThrow(/CapacityProvider not supported/);
-
-
   });
 
   test('creates ASG capacity providers with expected defaults', () => {
@@ -1870,7 +1801,7 @@ describe('cluster', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ECS::CapacityProvider', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::CapacityProvider', {
       AutoScalingGroupProvider: {
         AutoScalingGroupArn: {
           Ref: 'asgASG4D014670',
@@ -1903,12 +1834,12 @@ describe('cluster', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ECS::CapacityProvider', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::CapacityProvider', {
       AutoScalingGroupProvider: {
         AutoScalingGroupArn: {
           Ref: 'asgASG4D014670',
         },
-        ManagedScaling: ABSENT,
+        ManagedScaling: Match.absentProperty(),
         ManagedTerminationProtection: 'ENABLED',
       },
     });
@@ -1932,7 +1863,7 @@ describe('cluster', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::AutoScaling::AutoScalingGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::AutoScalingGroup', {
       NewInstancesProtectedFromScaleIn: true,
     });
 
@@ -1956,10 +1887,9 @@ describe('cluster', () => {
     });
 
     // THEN
-    expect(stack).not.toHaveResource('AWS::AutoScaling::AutoScalingGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::AutoScalingGroup', Match.not({
       NewInstancesProtectedFromScaleIn: true,
-    });
-
+    }));
   });
 
   test('can add ASG capacity via Capacity Provider', () => {
@@ -1988,7 +1918,7 @@ describe('cluster', () => {
     cluster.addAsgCapacityProvider(capacityProvider);
 
     // THEN
-    expect(stack).toHaveResource('AWS::ECS::ClusterCapacityProviderAssociations', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::ClusterCapacityProviderAssociations', {
       Cluster: {
         Ref: 'EcsCluster97242B84',
       },
@@ -2035,7 +1965,7 @@ describe('cluster', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ECS::Cluster', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Cluster', {
       Configuration: {
         ExecuteCommandConfiguration: {
           KmsKeyId: {
@@ -2059,8 +1989,6 @@ describe('cluster', () => {
         },
       },
     });
-
-
   });
 
   test('throws when no log configuration is provided when logging is set to OVERRIDE', () => {
@@ -2076,8 +2004,6 @@ describe('cluster', () => {
         },
       });
     }).toThrow(/Execute command log configuration must only be specified when logging is OVERRIDE./);
-
-
   });
 
   test('throws when log configuration provided but logging is set to DEFAULT', () => {
@@ -2098,8 +2024,6 @@ describe('cluster', () => {
         },
       });
     }).toThrow(/Execute command log configuration must only be specified when logging is OVERRIDE./);
-
-
   });
 
   test('throws when CloudWatchEncryptionEnabled without providing CloudWatch Logs log group name', () => {
@@ -2118,8 +2042,6 @@ describe('cluster', () => {
         },
       });
     }).toThrow(/You must specify a CloudWatch log group in the execute command log configuration to enable CloudWatch encryption./);
-
-
   });
 
   test('throws when S3EncryptionEnabled without providing S3 Bucket name', () => {
@@ -2138,7 +2060,5 @@ describe('cluster', () => {
         },
       });
     }).toThrow(/You must specify an S3 bucket name in the execute command log configuration to enable S3 encryption./);
-
-
   });
 });

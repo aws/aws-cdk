@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import * as ecs from '../../lib';
@@ -11,15 +11,13 @@ describe('fargate task definition', () => {
       new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
 
       // THEN
-      expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
         Family: 'FargateTaskDef',
         NetworkMode: ecs.NetworkMode.AWS_VPC,
         RequiresCompatibilities: ['FARGATE'],
         Cpu: '256',
         Memory: '512',
       });
-
-
     });
 
     test('support lazy cpu and memory values', () => {
@@ -32,12 +30,10 @@ describe('fargate task definition', () => {
       });
 
       // THEN
-      expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
         Cpu: '128',
         Memory: '1024',
       });
-
-
     });
 
     test('with all properties set', () => {
@@ -68,7 +64,7 @@ describe('fargate task definition', () => {
       });
 
       // THEN
-      expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
         Cpu: '128',
         ExecutionRoleArn: {
           'Fn::GetAtt': [
@@ -100,8 +96,6 @@ describe('fargate task definition', () => {
           },
         ],
       });
-
-
     });
 
     test('throws when adding placement constraint', () => {
@@ -113,8 +107,6 @@ describe('fargate task definition', () => {
       expect(() => {
         taskDefinition.addPlacementConstraint(ecs.PlacementConstraint.memberOf('attribute:ecs.instance-type =~ t2.*'));
       }).toThrow(/Cannot set placement constraints on tasks that run on Fargate/);
-
-
     });
 
     test('throws when adding inference accelerators', () => {
@@ -131,8 +123,6 @@ describe('fargate task definition', () => {
       expect(() => {
         taskDefinition.addInferenceAccelerator(inferenceAccelerator);
       }).toThrow(/Cannot use inference accelerators on tasks that run on Fargate/);
-
-
     });
 
     test('throws when ephemeral storage request is too high', () => {
@@ -171,7 +161,6 @@ describe('fargate task definition', () => {
 
       // THEN
       expect(taskDefinition.taskDefinitionArn).toEqual(expectTaskDefinitionArn);
-
     });
 
     test('can succeed using attributes', () => {
@@ -197,8 +186,6 @@ describe('fargate task definition', () => {
       expect(taskDefinition.isEc2Compatible).toEqual(false);
       expect(taskDefinition.networkMode).toEqual(expectNetworkMode);
       expect(taskDefinition.taskRole).toEqual(expectTaskRole);
-
-
     });
 
     test('returns a Fargate TaskDefinition that will throw an error when trying to access its networkMode but its networkMode is undefined', () => {
@@ -220,8 +207,6 @@ describe('fargate task definition', () => {
         taskDefinition.networkMode;
       }).toThrow('This operation requires the networkMode in ImportedTaskDefinition to be defined. ' +
         'Add the \'networkMode\' in ImportedTaskDefinitionProps to instantiate ImportedTaskDefinition');
-
-
     });
 
     test('returns a Fargate TaskDefinition that will throw an error when trying to access its taskRole but its taskRole is undefined', () => {
@@ -241,8 +226,6 @@ describe('fargate task definition', () => {
         taskDefinition.taskRole;
       }).toThrow('This operation requires the taskRole in ImportedTaskDefinition to be defined. ' +
         'Add the \'taskRole\' in ImportedTaskDefinitionProps to instantiate ImportedTaskDefinition');
-
-
     });
   });
 });

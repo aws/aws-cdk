@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
 import { App, Stack } from '@aws-cdk/core';
@@ -35,8 +35,6 @@ describe('cross stack', () => {
       cluster,
       taskDefinition,
     });
-
-
   });
 
   test('ALB next to Service', () => {
@@ -49,11 +47,9 @@ describe('cross stack', () => {
     });
 
     // THEN: it shouldn't throw due to cyclic dependencies
-    expect(stack2).toHaveResource('AWS::ECS::Service');
+    Template.fromStack(stack2).resourceCountIs('AWS::ECS::Service', 1);
 
     expectIngress(stack2);
-
-
   });
 
   test('ALB next to Cluster', () => {
@@ -66,10 +62,9 @@ describe('cross stack', () => {
     });
 
     // THEN: it shouldn't throw due to cyclic dependencies
-    expect(stack2).toHaveResource('AWS::ECS::Service');
+    Template.fromStack(stack2).resourceCountIs('AWS::ECS::Service', 1);
+
     expectIngress(stack2);
-
-
   });
 
   test('ALB in its own stack', () => {
@@ -83,15 +78,14 @@ describe('cross stack', () => {
     });
 
     // THEN: it shouldn't throw due to cyclic dependencies
-    expect(stack2).toHaveResource('AWS::ECS::Service');
+    Template.fromStack(stack2).resourceCountIs('AWS::ECS::Service', 1);
+
     expectIngress(stack2);
-
-
   });
 });
 
 function expectIngress(stack: Stack) {
-  expect(stack).toHaveResource('AWS::EC2::SecurityGroupIngress', {
+  Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroupIngress', {
     FromPort: 32768,
     ToPort: 65535,
     GroupId: { 'Fn::ImportValue': 'Stack1:ExportsOutputFnGetAttClusterDefaultAutoScalingGroupInstanceSecurityGroup1D15236AGroupIdEAB9C5E1' },
