@@ -102,12 +102,7 @@ describe('identity pool', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: 'execute-api:*',
-            Effect: 'Allow',
-            Resource: '*',
-          },
-          {
-            Action: 'dynamodb:*',
+            Action: ['execute-api:*', 'dynamodb:*'],
             Effect: 'Allow',
             Resource: '*',
           },
@@ -147,12 +142,7 @@ describe('identity pool', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: 'execute-api:*',
-            Effect: 'Allow',
-            Resource: '*',
-          },
-          {
-            Action: 'dynamodb:*',
+            Action: ['execute-api:*', 'dynamodb:*'],
             Effect: 'Allow',
             Resource: '*',
           },
@@ -427,7 +417,7 @@ describe('role mappings', () => {
       ],
     },
     {
-      providerUrl: IdentityPoolProviderUrl.custom('https://example.com'),
+      providerUrl: IdentityPoolProviderUrl.custom('example.com'),
       rules: [
         {
           claim: 'iss',
@@ -525,7 +515,7 @@ describe('role mappings', () => {
                 MatchType: 'Equals',
                 RoleARN: {
                   'Fn::GetAtt': [
-                    'customRole9D649CD8',
+                    'customRole4C920FF0',
                     'Arn',
                   ],
                 },
