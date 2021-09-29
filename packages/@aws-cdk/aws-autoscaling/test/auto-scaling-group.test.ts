@@ -650,17 +650,6 @@ describe('auto scaling group', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::LaunchConfiguration', {
       AssociatePublicIpAddress: Match.absentProperty(),
     });
-
-    // expect(stack).toHaveResource('AWS::AutoScaling::LaunchConfiguration', (resource: any, errors: InspectionFailure) => {
-    //   for (const key of Object.keys(resource)) {
-    //     if (key === 'AssociatePublicIpAddress') {
-    //       errors.failureReason = 'Has AssociatePublicIpAddress';
-    //       return false;
-    //     }
-    //   }
-    //   return true;
-    // });
-
   });
 
   test('an existing security group can be specified instead of auto-created', () => {
