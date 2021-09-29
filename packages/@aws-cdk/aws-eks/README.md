@@ -372,7 +372,7 @@ const asg = new ec2.AutoScalingGroup(...);
 cluster.connectAutoScalingGroupCapacity(asg);
 ```
 
-To connect a self-managed node group to imported cluster, use the `cluster.connectAutoScalingGroupCapacity()` method:
+To connect a self-managed node group to an imported cluster, use the `cluster.connectAutoScalingGroupCapacity()` method:
 
 ```ts
 const importedCluster = eks.Cluster.fromClusterAttributes(stack, 'ImportedCluster', {
