@@ -384,7 +384,7 @@ function parseHttpOptions(options: SdkHttpOptions) {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const ProxyAgent: any = require('proxy-agent');
     config.httpOptions.agent = new ProxyAgent(proxyAddress);
-    config.httpOptions.ca = readIfPossible(caBundlePath);
+    (config.httpOptions as any).ca = readIfPossible(caBundlePath);
   }
   else if (proxyAddress) { // Ignore empty string on purpose
     // https://aws.amazon.com/blogs/developer/using-the-aws-sdk-for-javascript-from-behind-a-proxy/
