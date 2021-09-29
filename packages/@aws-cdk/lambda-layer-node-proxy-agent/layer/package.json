@@ -1,0 +1,9 @@
+{
+  "name": "node-proxy-agent-layer",
+  "private": true,
+  "version": "0.0.1",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "proxy-agent": "^5.0.0"
+  }
+}
