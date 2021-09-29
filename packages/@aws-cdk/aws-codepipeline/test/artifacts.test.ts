@@ -15,7 +15,8 @@ describe('artifacts', () => {
     });
 
     test('without a name, when used as an input without being used as an output first - should fail validation', () => {
-      const stack = new cdk.Stack();
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app);
       const sourceOutput = new codepipeline.Artifact();
       const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
         stages: [
@@ -40,12 +41,14 @@ describe('artifacts', () => {
         ],
       });
 
-      const errors = validate(stack);
+      // synthesize - this is where names for artifact without names are allocated
+      app.synth({ skipValidation: true });
+
+      const errors = pipeline.node.validate();
 
       expect(errors.length).toEqual(1);
       const error = errors[0];
-      expect(error.source).toEqual(pipeline);
-      expect(error.message).toEqual("Action 'Build' is using an unnamed input Artifact, which is not being produced in this pipeline");
+      expect(error).toEqual("Action 'Build' is using an unnamed input Artifact, which is not being produced in this pipeline");
 
 
     });
@@ -76,18 +79,18 @@ describe('artifacts', () => {
         ],
       });
 
-      const errors = validate(stack);
+      const errors = pipeline.node.validate();
 
       expect(errors.length).toEqual(1);
       const error = errors[0];
-      expect(error.source).toEqual(pipeline);
-      expect(error.message).toEqual("Action 'Build' is using input Artifact 'named', which is not being produced in this pipeline");
+      expect(error).toEqual("Action 'Build' is using input Artifact 'named', which is not being produced in this pipeline");
 
 
     });
 
     test('without a name, when used as an output multiple times - should fail validation', () => {
-      const stack = new cdk.Stack();
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app);
       const sourceOutput = new codepipeline.Artifact();
       const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
         stages: [
@@ -113,12 +116,12 @@ describe('artifacts', () => {
         ],
       });
 
-      const errors = validate(stack);
+      app.synth({ skipValidation: true });
 
+      const errors = pipeline.node.validate();
       expect(errors.length).toEqual(1);
       const error = errors[0];
-      expect(error.source).toEqual(pipeline);
-      expect(error.message).toEqual("Both Actions 'Source' and 'Build' are producting Artifact 'Artifact_Source_Source'. Every artifact can only be produced once.");
+      expect(error).toEqual("Both Actions 'Source' and 'Build' are producting Artifact 'Artifact_Source_Source'. Every artifact can only be produced once.");
 
 
     });
@@ -213,12 +216,11 @@ describe('artifacts', () => {
         ],
       });
 
-      const errors = validate(stack);
+      const errors = pipeline.node.validate();
 
       expect(errors.length).toEqual(1);
       const error = errors[0];
-      expect(error.source).toEqual(pipeline);
-      expect(error.message).toEqual("Stage 2 Action 2 ('Build'/'build2') is consuming input Artifact 'buildOutput1' before it is being produced at Stage 2 Action 3 ('Build'/'build1')");
+      expect(error).toEqual("Stage 2 Action 2 ('Build'/'build2') is consuming input Artifact 'buildOutput1' before it is being produced at Stage 2 Action 3 ('Build'/'build1')");
 
 
     });
@@ -281,10 +283,3 @@ describe('artifacts', () => {
     });
   });
 });
-
-/* eslint-disable @aws-cdk/no-core-construct */
-function validate(construct: cdk.IConstruct): cdk.ValidationError[] {
-  cdk.ConstructNode.prepare(construct.node);
-  return cdk.ConstructNode.validate(construct.node);
-}
-/* eslint-enable @aws-cdk/no-core-construct */
