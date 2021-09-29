@@ -6,7 +6,7 @@ import * as kinesis from '@aws-cdk/aws-kinesis';
 import * as kms from '@aws-cdk/aws-kms';
 import { App, Aws, CfnDeletionPolicy, ConstructNode, Duration, PhysicalName, RemovalPolicy, Resource, Stack, Tags } from '@aws-cdk/core';
 import * as cr from '@aws-cdk/custom-resources';
-import { testLegacyBehavior } from 'cdk-build-tools/lib/feature-flag';
+import { testLegacyBehavior } from '@aws-cdk/cdk-build-tools/lib/feature-flag';
 import { Construct } from 'constructs';
 import {
   Attribute,
