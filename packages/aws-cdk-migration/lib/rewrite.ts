@@ -152,7 +152,11 @@ function updatedLocationOf(modulePath: string, options: RewriteOptions, imported
     return `aws-cdk-lib/${options.packageUnscopedName}`;
   }
 
-  if (!modulePath.startsWith('@aws-cdk/') || EXEMPTIONS.has(modulePath)) {
+  if (
+    !modulePath.startsWith('@aws-cdk/')
+    || EXEMPTIONS.has(modulePath)
+    || Array.from(EXEMPTIONS).some((ex) => modulePath.startsWith(`${ex}/`))
+  ) {
     return undefined;
   }
 
