@@ -98,21 +98,69 @@ export interface IdentityPoolProps {
 }
 
 /**
- * Keys for Login Providers - correspond to client id's of respective federation identity providers
+ * Types of Identity Pool Login Providers
  */
  export enum IdentityPoolLoginProviderType {
   /** Facebook Provider type */
-  FACEBOOK = 'graph.facebook.com',
+  FACEBOOK = 'Facebook',
   /** Google Provider Type */
-  GOOGLE = 'accounts.google.com',
+  GOOGLE = 'Google',
   /** Amazon Provider Type */
-  AMAZON = 'www.amazon.com',
+  AMAZON = 'Amazon',
   /** Apple Provider Type */
-  APPLE = 'appleid.apple.com',
+  APPLE = 'Apple',
   /** Twitter Provider Type */
-  TWITTER = 'api.twitter.com',
+  TWITTER = 'Twitter',
   /** Digits Provider Type */
-  DIGITS = 'www.digits.com'
+  DIGITS = 'Digits',
+  /** Open Id Provider Type */
+  OPEN_ID = 'OpenId',
+  /** Saml Provider Type */
+  SAML = 'Saml',
+  /** User Pool Provider Type */
+  USER_POOL = 'UserPool',
+  /** Custom Provider Type */
+  CUSTOM = 'Custom',
+}
+
+/**
+ * Keys for Login Providers - correspond to client id's of respective federation identity providers
+ */
+ export class IdentityPoolLoginProviderUrl {
+  /** Facebook Provider Url */
+  public static readonly FACEBOOK = new IdentityPoolLoginProviderUrl(IdentityPoolLoginProviderType.FACEBOOK, 'graph.facebook.com');
+  
+  /** Google Provider Url */
+  public static readonly GOOGLE = new IdentityPoolLoginProviderUrl(IdentityPoolLoginProviderType.GOOGLE, 'accounts.google.com');
+  
+  /** Amazon Provider Url */
+  public static readonly AMAZON = new IdentityPoolLoginProviderUrl(IdentityPoolLoginProviderType.AMAZON, 'www.amazon.com');
+  
+  /** Apple Provider Url */
+  public static readonly APPLE = new IdentityPoolLoginProviderUrl(IdentityPoolLoginProviderType.APPLE, 'appleid.apple.com');
+  
+  /** Twitter Provider Url */
+  public static readonly TWITTER = new IdentityPoolLoginProviderUrl(IdentityPoolLoginProviderType.TWITTER, 'api.twitter.com');
+  
+  /** Digits Provider Url */
+  public static readonly DIGITS = new IdentityPoolLoginProviderUrl(IdentityPoolLoginProviderType.DIGITS, 'www.digits.com');
+
+  /** OpenId Provider Url */
+  public static readonly OPEN_ID = (url: string) => new IdentityPoolLoginProviderUrl(IdentityPoolLoginProviderType.OPEN_ID, url);
+
+  /** Saml Provider Url */
+  public static readonly SAML = (url: string) => new IdentityPoolLoginProviderUrl(IdentityPoolLoginProviderType.SAML, url);
+
+  /** User Pool Provider Url */
+  public static readonly USER_POOL = (url: string) => new IdentityPoolLoginProviderUrl(IdentityPoolLoginProviderType.USER_POOL, url);
+
+  /** Custom Provider Url */
+  public static readonly CUSTOM = (url: string) => new IdentityPoolLoginProviderUrl(IdentityPoolLoginProviderType.CUSTOM, url);
+
+  constructor(
+    public readonly type: IdentityPoolLoginProviderType, 
+    public readonly value: string
+  ) {}
 }
 
 /**
@@ -242,8 +290,6 @@ export interface IdentityPoolAuthenticationProviders extends IdentityPoolLoginPr
   readonly customProvider?: string;
 }
 
-
-
 /**
  * Represents an Identity Pool Role Attachment
  */
@@ -308,7 +354,7 @@ export interface IdentityPoolRoleMapping {
   /**
    * The url of the provider of for which the role is mapped
    */
-  readonly providerUrl: IdentityPoolLoginProviderType;
+  readonly providerUrl: IdentityPoolLoginProviderUrl;
 
   /**
    *  If true then mapped roles must be passed through the cognito:roles or cognito:preferred_role claims from identity provider.
@@ -429,7 +475,7 @@ export class IdentityPoolRoleAttachment extends Resource implements IIdentityPoo
       let roleMapping: any = {
         ambiguousRoleResolution: prop.resolveAmbiguousRoles ? 'AuthenticatedRole' : 'Deny',
         type: prop.useToken ? 'Token' : 'Rules',
-        identityProvider: prop.providerUrl,
+        identityProvider: prop.providerUrl.value,
       };
       if (roleMapping.type === 'Rules') {
         if (!prop.rules) {
@@ -446,7 +492,7 @@ export class IdentityPoolRoleAttachment extends Resource implements IIdentityPoo
           }),
         };
       };
-      acc[prop.providerUrl] = roleMapping;
+      acc[prop.providerUrl.value] = roleMapping;
       return acc;
     }, {} as { [name:string]: CfnIdentityPoolRoleAttachment.RoleMappingProperty });
   }
@@ -517,6 +563,16 @@ export class IdentityPool extends Resource implements IIdentityPool {
   public readonly identityPoolName: string;
 
   /**
+   * Default role for authenticated users
+   */
+  public readonly authenticatedRole: Role;
+
+  /**
+    * Default role for unauthenticated users
+    */
+  public readonly unauthenticatedRole: Role;
+
+  /**
    * The Identity Pool Cloud Formation Construct
    */
   private cfnIdentityPool: CfnIdentityPool;
@@ -525,16 +581,6 @@ export class IdentityPool extends Resource implements IIdentityPool {
    * List of Identity Providers added in constructor for use with property overrides
    */
   private cognitoIdentityProviders: CfnIdentityPool.CognitoIdentityProviderProperty[] = [];
-
-  /**
-   * Default role for authenticated users
-   */
-  private authenticatedRole: Role;
-
-  /**
-   * Default role for unauthenticated users
-   */
-  private unauthenticatedRole: Role;
 
   /**
    * Running count of added role attachments
@@ -568,8 +614,8 @@ export class IdentityPool extends Resource implements IIdentityPool {
       resourceName: this.identityPoolId,
       arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
     });
-    this.authenticatedRole = props.authenticatedRole ? props.authenticatedRole : this.configureDefaultRole('Authenticated', props.assumeAction);
-    this.unauthenticatedRole = props.unauthenticatedRole ? props.unauthenticatedRole : this.configureDefaultRole('Unauthenticated', props.assumeAction);
+    this.authenticatedRole = props.authenticatedRole ? props.authenticatedRole : this.configureDefaultRole('Authenticated');
+    this.unauthenticatedRole = props.unauthenticatedRole ? props.unauthenticatedRole : this.configureDefaultRole('Unauthenticated');
     const attachment = new IdentityPoolRoleAttachment(this, `${this.id}DefaultRoleAttachment`, {
       identityPoolId: this.identityPoolId,
       roles: {
@@ -615,40 +661,6 @@ export class IdentityPool extends Resource implements IIdentityPool {
     attachment.node.addDependency(this);
   }
 
- /** 
-  * Grant permissions to default role for authenticated users
-  */
-  public grantUser(resourceArn: string, ...actions: string[]): Grant {
-    return this.grant(this.authenticatedRole.grantPrincipal, actions, [resourceArn]);
-  }
-
-  /**
-   * Grant permissions to default role for unauthenticated guest users
-   */
-  public grantGuest(resourceArn: string, ...actions: string[]): Grant {
-    // Make sure `allowUnauthenticatedIdentities` is true now that there are guest permissions
-    this.cfnIdentityPool.addPropertyOverride('AllowUnauthenticatedIdentities', true);
-    return this.grant(this.unauthenticatedRole.grantPrincipal, actions, [resourceArn]);
-  }
-
-  /**
-   * Configure Default Roles For Identity Pool
-   */
-  private configureDefaultRole(
-    type: string,
-    mainPrincipalAction: string = 'sts:AssumeRoleWithWebIdentity',
-  ): Role {
-    const name = `${this.id}${type}Role`;
-    const assumedBy = this.configureGrantPrincipal(type.toLowerCase(), mainPrincipalAction);
-    const role = new Role(this, name, {
-      roleName: name,
-      description: `Default ${type} Role for Identity Pool ${this.identityPoolName}`,
-      assumedBy,
-    });
-
-    return role;
-  }
-
   /**
    * Configure Authentication Providers for User Pools
    */
@@ -692,20 +704,32 @@ export class IdentityPool extends Resource implements IIdentityPool {
   private configureLoginProviders(providers?: IdentityPoolLoginProviders): any {
     if (!providers) return undefined;
     const authenticatedProviders:any = {};
-    if (providers.amazon) authenticatedProviders[IdentityPoolLoginProviderType.AMAZON] = providers.amazon.appId;
-    if (providers.facebook) authenticatedProviders[IdentityPoolLoginProviderType.FACEBOOK] = providers.facebook.appId;
-    if (providers.google) authenticatedProviders[IdentityPoolLoginProviderType.GOOGLE] = providers.google.clientId;
-    if (providers.apple) authenticatedProviders[IdentityPoolLoginProviderType.APPLE] = providers.apple.servicesId;
-    if (providers.twitter) authenticatedProviders[IdentityPoolLoginProviderType.TWITTER] = `${providers.twitter.consumerKey};${providers.twitter.consumerSecret}`;
-    if (providers.digits) authenticatedProviders[IdentityPoolLoginProviderType.DIGITS] = `${providers.digits.consumerKey};${providers.digits.consumerSecret}`;
+    if (providers.amazon) authenticatedProviders[IdentityPoolLoginProviderUrl.AMAZON.value] = providers.amazon.appId;
+    if (providers.facebook) authenticatedProviders[IdentityPoolLoginProviderUrl.FACEBOOK.value] = providers.facebook.appId;
+    if (providers.google) authenticatedProviders[IdentityPoolLoginProviderUrl.GOOGLE.value] = providers.google.clientId;
+    if (providers.apple) authenticatedProviders[IdentityPoolLoginProviderUrl.APPLE.value] = providers.apple.servicesId;
+    if (providers.twitter) authenticatedProviders[IdentityPoolLoginProviderUrl.TWITTER.value] = `${providers.twitter.consumerKey};${providers.twitter.consumerSecret}`;
+    if (providers.digits) authenticatedProviders[IdentityPoolLoginProviderUrl.DIGITS.value] = `${providers.digits.consumerKey};${providers.digits.consumerSecret}`;
     if (!Object.keys(authenticatedProviders).length) return undefined;
     return authenticatedProviders;
   }
 
-  private configureGrantPrincipal(
-    type: string,
-    action: string = 'sts:AssumeRoleWithWebIdentity',
-  ) {
+  /**
+   * Configure Default Roles For Identity Pool
+   */
+  private configureDefaultRole(type: string): Role {
+    const name = `${this.id}${type}Role`;
+    const assumedBy = this.configureDefaultGrantPrincipal(type.toLowerCase());
+    const role = new Role(this, name, {
+      roleName: name,
+      description: `Default ${type} Role for Identity Pool ${this.identityPoolName}`,
+      assumedBy,
+    }); 
+
+    return role;
+  }
+
+  private configureDefaultGrantPrincipal(type: string) {
     return new FederatedPrincipal('cognito-identity.amazonaws.com', {
       'StringEquals': {
         'cognito-identity.amazonaws.com:aud': this.identityPoolId,
@@ -713,23 +737,6 @@ export class IdentityPool extends Resource implements IIdentityPool {
       'ForAnyValue:StringLike': {
         'cognito-identity.amazonaws.com:amr': type,
       },
-    }, action);
-  }
-
-  /**
-   * Grant Permissions to Roles attached to Identity Pool
-   */
-  private grant(
-    grantee: IPrincipal,
-    actions: string[],
-    resources: string[] = ['*'],
-  ): Grant {
-
-    return Grant.addToPrincipal({
-      grantee,
-      actions,
-      resourceArns: resources,
-      scope: this,
-    });
+    }, 'sts:AssumeRoleWithWebIdentity');
   }
 }

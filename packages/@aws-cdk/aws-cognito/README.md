@@ -849,24 +849,10 @@ associating the provider directly with the identity pool.
 ```ts
 const userPool = new cognito.UserPool(this, 'Pool');
 
-// using the UserPoolAuthenticationProvider class
 new cognito.IdentityPool(this, 'myidentitypool', {
   identityPoolName: 'myidentitypool',
   authenticationProviders: {
     userPool: new UserPoolAuthenticationProvider({ userPool }),
-  },
-});
-
-// using an object that implements the `IUserPoolAuthenticationProvider` interface
-new cognito.IdentityPool(this, 'myidentitypool', {
-  identityPoolName: 'myidentitypool',
-  authenticationProviders: {
-    userPool: {
-      // The User Pool Client's clientId
-      clientId: 'my-user-pool-client',
-      // A list of IUserPoolIdentityProviders
-      identityProviders: [...identityProviders],
-    },
   },
 });
 ```
