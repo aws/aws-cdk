@@ -130,6 +130,13 @@ export interface ICluster extends IResource, ec2.IConnectable {
   readonly kubectlMemory?: Size;
 
   /**
+    * An AWS Lambda layer that includes the NPM dependency `proxy-agent`.
+    *
+    * If not defined, a default layer will be used.
+    */
+  readonly onEventLayer?: lambda.ILayerVersion;
+
+  /**
    * Indicates whether Kubernetes resources can be automatically pruned. When
    * this is enabled (default), prune labels will be allocated and injected to
    * each resource. These labels will then be used when issuing the `kubectl
@@ -303,6 +310,18 @@ export interface ClusterAttributes {
   readonly kubectlMemory?: Size;
 
   /**
+   * An AWS Lambda Layer which includes the NPM dependency `proxy-agent`. This layer
+   * is used by the onEvent handler to route AWS SDK requests through a proxy.
+   *
+   * The handler expects the layer to include the following node_modules:
+   *
+   *    proxy-agent
+   *
+   * @default - a layer bundled with this module.
+   */
+  readonly onEventLayer?: lambda.ILayerVersion;
+
+  /**
    * Indicates whether Kubernetes resources added through `addManifest()` can be
    * automatically pruned. When this is enabled (default), prune labels will be
    * allocated and injected to each resource. These labels will then be used
@@ -470,6 +489,30 @@ export interface ClusterOptions extends CommonClusterOptions {
    * @default Size.gibibytes(1)
    */
   readonly kubectlMemory?: Size;
+
+  /**
+   * An AWS Lambda Layer which includes the NPM dependency `proxy-agent`.
+   *
+   * By default, the provider will use the layer included in the
+   * "aws-lambda-layer-node-proxy-agent" SAR application which is available in all
+   * commercial regions.
+   *
+   * To deploy the layer locally, visit
+   * https://github.com/aws-samples/aws-lambda-layer-node-proxy-agent/blob/master/cdk/README.md
+   * for instructions on how to prepare the .zip file and then define it in your
+   * app as follows:
+   *
+   * ```ts
+   * const layer = new lambda.LayerVersion(this, 'node-proxy-agent-layer', {
+   *   code: lambda.Code.fromAsset(`${__dirname}/layer.zip`)),
+   *   compatibleRuntimes: [lambda.Runtime.NODEJS_14_X]
+   * })
+   * ```
+   *
+   * @default - the layer provided by the `aws-lambda-layer-node-proxy-agent` SAR app.
+   * @see https://github.com/aws-samples/aws-lambda-layer-node-proxy-agent
+   */
+  readonly onEventLayer?: lambda.ILayerVersion;
 
   /**
    * Indicates whether Kubernetes resources added through `addManifest()` can be
@@ -1048,6 +1091,12 @@ export class Cluster extends ClusterBase {
   public readonly kubectlMemory?: Size;
 
   /**
+   * The AWS Lambda layer that contains the NPM dependency `proxy-agent`. If
+   * undefined, a SAR app that contains this layer will be used.
+   */
+  public readonly onEventLayer?: lambda.ILayerVersion;
+
+  /**
    * Determines if Kubernetes resources can be pruned automatically.
    */
   public readonly prune: boolean;
@@ -1130,6 +1179,7 @@ export class Cluster extends ClusterBase {
     this.endpointAccess = props.endpointAccess ?? EndpointAccess.PUBLIC_AND_PRIVATE;
     this.kubectlEnvironment = props.kubectlEnvironment;
     this.kubectlLayer = props.kubectlLayer;
+    this.onEventLayer = props.onEventLayer;
     this.kubectlMemory = props.kubectlMemory;
 
     const privateSubents = this.selectPrivateSubnets().slice(0, 16);
@@ -1179,6 +1229,7 @@ export class Cluster extends ClusterBase {
       secretsEncryptionKey: props.secretsEncryptionKey,
       vpc: this.vpc,
       subnets: placeClusterHandlerInVpc ? privateSubents : undefined,
+      onEventLayer: this.onEventLayer,
     });
 
     if (this.endpointAccess._config.privateAccess && privateSubents.length !== 0) {
@@ -1764,6 +1815,7 @@ class ImportedCluster extends ClusterBase {
   public readonly kubectlSecurityGroup?: ec2.ISecurityGroup | undefined;
   public readonly kubectlPrivateSubnets?: ec2.ISubnet[] | undefined;
   public readonly kubectlLayer?: lambda.ILayerVersion;
+  public readonly onEventLayer?: lambda.ILayerVersion;
   public readonly kubectlMemory?: Size;
   public readonly prune: boolean;
 
@@ -1781,6 +1833,7 @@ class ImportedCluster extends ClusterBase {
     this.kubectlEnvironment = props.kubectlEnvironment;
     this.kubectlPrivateSubnets = props.kubectlPrivateSubnetIds ? props.kubectlPrivateSubnetIds.map((subnetid, index) => ec2.Subnet.fromSubnetId(this, `KubectlSubnet${index}`, subnetid)) : undefined;
     this.kubectlLayer = props.kubectlLayer;
+    this.onEventLayer = props.onEventLayer;
     this.kubectlMemory = props.kubectlMemory;
     this.prune = props.prune ?? true;
 

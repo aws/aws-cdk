@@ -57,8 +57,7 @@
     "cloudformation": "AWS::EKS",
     "env": {
       "AWSLINT_BASE_CONSTRUCT": true
-    },
-    "jest": true
+    }
   },
   "keywords": [
     "aws",
@@ -73,20 +72,20 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/aws-lambda": "^8.10.79",
-    "@types/sinon": "^9.0.11",
+    "@aws-cdk/assert-internal": "0.0.0",
+    "@aws-cdk/cdk-build-tools": "0.0.0",
+    "@aws-cdk/cdk-integ-tools": "0.0.0",
+    "@aws-cdk/cfn2ts": "0.0.0",
+    "@aws-cdk/pkglint": "0.0.0",
+    "@types/aws-lambda": "^8.10.83",
     "@types/jest": "^26.0.24",
+    "@types/sinon": "^9.0.11",
     "@types/yaml": "1.9.6",
     "aws-sdk": "^2.848.0",
-    "cdk-build-tools": "0.0.0",
-    "cdk-integ-tools": "0.0.0",
-    "cfn2ts": "0.0.0",
-    "jest": "^26.6.3",
-    "pkglint": "0.0.0",
-    "sinon": "^9.2.4",
-    "cdk8s-plus": "^0.33.0",
     "cdk8s": "^0.33.0",
-    "@aws-cdk/assert-internal": "0.0.0"
+    "cdk8s-plus": "^0.33.0",
+    "jest": "^26.6.3",
+    "sinon": "^9.2.4"
   },
   "dependencies": {
     "@aws-cdk/aws-autoscaling": "0.0.0",
@@ -94,11 +93,13 @@
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-kms": "0.0.0",
     "@aws-cdk/aws-lambda": "0.0.0",
+    "@aws-cdk/aws-lambda-nodejs": "0.0.0",
     "@aws-cdk/aws-ssm": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/custom-resources": "0.0.0",
     "@aws-cdk/lambda-layer-awscli": "0.0.0",
     "@aws-cdk/lambda-layer-kubectl": "0.0.0",
+    "@aws-cdk/lambda-layer-node-proxy-agent": "0.0.0",
     "constructs": "^3.3.69",
     "yaml": "1.10.2"
   },
@@ -112,12 +113,14 @@
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-kms": "0.0.0",
     "@aws-cdk/aws-lambda": "0.0.0",
+    "@aws-cdk/aws-lambda-nodejs": "0.0.0",
     "@aws-cdk/aws-ssm": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/custom-resources": "0.0.0",
-    "constructs": "^3.3.69",
     "@aws-cdk/lambda-layer-awscli": "0.0.0",
-    "@aws-cdk/lambda-layer-kubectl": "0.0.0"
+    "@aws-cdk/lambda-layer-kubectl": "0.0.0",
+    "@aws-cdk/lambda-layer-node-proxy-agent": "0.0.0",
+    "constructs": "^3.3.69"
   },
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"
