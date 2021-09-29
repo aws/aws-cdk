@@ -1,5 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
-import { arrayWith } from '@aws-cdk/assert-internal';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as autoscaling from '@aws-cdk/aws-autoscaling';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as kms from '@aws-cdk/aws-kms';
@@ -36,7 +35,7 @@ describe('given an AutoScalingGroup', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::AutoScaling::LifecycleHook', { NotificationTargetARN: { 'Fn::GetAtt': ['Queue4A7E3555', 'Arn'] } });
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::LifecycleHook', { NotificationTargetARN: { 'Fn::GetAtt': ['Queue4A7E3555', 'Arn'] } });
   });
 
   test('can use topic as hook target', () => {
@@ -50,7 +49,7 @@ describe('given an AutoScalingGroup', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::AutoScaling::LifecycleHook', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::LifecycleHook', {
       NotificationTargetARN: { Ref: 'TopicBFC7AF6E' },
     });
   });
@@ -70,10 +69,10 @@ describe('given an AutoScalingGroup', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::AutoScaling::LifecycleHook', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::LifecycleHook', {
       NotificationTargetARN: { Ref: 'ASGLifecycleHookTransTopic9B0D4842' },
     });
-    expect(stack).toHaveResource('AWS::SNS::Subscription', {
+    Template.fromStack(stack).hasResourceProperties('AWS::SNS::Subscription', {
       Protocol: 'lambda',
       TopicArn: { Ref: 'ASGLifecycleHookTransTopic9B0D4842' },
       Endpoint: { 'Fn::GetAtt': ['Fn9270CBC0', 'Arn'] },
@@ -96,7 +95,7 @@ describe('given an AutoScalingGroup', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::SNS::Topic', {
+    Template.fromStack(stack).hasResourceProperties('AWS::SNS::Topic', {
       KmsMasterKeyId: {
         'Fn::GetAtt': [
           'keyFEDD6EC0',
@@ -104,9 +103,9 @@ describe('given an AutoScalingGroup', () => {
         ],
       },
     });
-    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
-        Statement: arrayWith(
+        Statement: Match.arrayWith([
           {
             Effect: 'Allow',
             Action: [
@@ -120,9 +119,8 @@ describe('given an AutoScalingGroup', () => {
               ],
             },
           },
-        ),
+        ]),
       },
     });
   });
-
 });
