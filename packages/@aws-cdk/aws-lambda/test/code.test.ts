@@ -4,7 +4,7 @@ import { ABSENT, ResourcePart } from '@aws-cdk/assert-internal';
 import * as ecr from '@aws-cdk/aws-ecr';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import { testFutureBehavior } from 'cdk-build-tools/lib/feature-flag';
+import { testFutureBehavior } from '@aws-cdk/cdk-build-tools/lib/feature-flag';
 import * as lambda from '../lib';
 
 /* eslint-disable dot-notation */
@@ -225,6 +225,7 @@ describe('code', () => {
           cmd: ['cmd', 'param1'],
           entrypoint: ['entrypoint', 'param2'],
           tag: 'mytag',
+          workingDirectory: '/some/path',
         }),
         handler: lambda.Handler.FROM_IMAGE,
         runtime: lambda.Runtime.FROM_IMAGE,
@@ -238,6 +239,7 @@ describe('code', () => {
         ImageConfig: {
           Command: ['cmd', 'param1'],
           EntryPoint: ['entrypoint', 'param2'],
+          WorkingDirectory: '/some/path',
         },
       });
     });
@@ -315,6 +317,7 @@ describe('code', () => {
         code: lambda.Code.fromAssetImage(path.join(__dirname, 'docker-lambda-handler'), {
           cmd: ['cmd', 'param1'],
           entrypoint: ['entrypoint', 'param2'],
+          workingDirectory: '/some/path',
         }),
         handler: lambda.Handler.FROM_IMAGE,
         runtime: lambda.Runtime.FROM_IMAGE,
@@ -325,6 +328,7 @@ describe('code', () => {
         ImageConfig: {
           Command: ['cmd', 'param1'],
           EntryPoint: ['entrypoint', 'param2'],
+          WorkingDirectory: '/some/path',
         },
       });
     });
