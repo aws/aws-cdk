@@ -791,6 +791,7 @@ new cognito.IdentityPool(this, 'myIdentityPool');
 
 By default, both the authenticated and unauthenticated roles will have no permissions attached. Grant permissions 
 to roles using the public `authenticatedRole` and `unauthenticatedRole` properties: 
+
 ```ts
 const identityPool = new cognito.IdentityPool(this, 'myIdentityPool');
 const table = new dynamodb.Table(this, 'MyTable');
