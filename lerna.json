@@ -10,7 +10,8 @@
     "packages/@aws-cdk/*/lambda-packages/*",
     "tools/*",
     "tools/@aws-cdk/*",
-    "scripts/script-tests"
+    "scripts/script-tests",
+    "packages/individual-packages/*"
   ],
   "rejectCycles": "true",
   "version": "0.0.0"
