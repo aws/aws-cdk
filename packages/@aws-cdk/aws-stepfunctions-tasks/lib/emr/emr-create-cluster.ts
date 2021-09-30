@@ -386,7 +386,7 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
 
   /**
    * Validates the release label string is in proper format.
-   * Release labels are in the form emr-x.x.x. For example, emr-5.33.0.
+   * Release labels are in the form `emr-x.x.x`. For example, `emr-5.33.0`.
    *
    * @see https://docs.aws.amazon.com/emr/latest/ReleaseGuide/emr-release-components.html
    */
