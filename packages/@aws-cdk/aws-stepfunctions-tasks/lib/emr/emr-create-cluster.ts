@@ -202,14 +202,14 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
 
     this.taskPolicies = this.createPolicyStatements(this._serviceRole, this._clusterRole, this._autoScalingRole);
 
-    if (this.props.stepConcurrencyLevel) {
+    if (this.props.stepConcurrencyLevel !== undefined) {
       if (this.props.stepConcurrencyLevel < 1 || this.props.stepConcurrencyLevel > 256) {
-        throw new Error('Step concurrency level must be in range [1, 256]');
+        throw new Error(`Step concurrency level must be in range [1, 256], but got ${this.props.stepConcurrencyLevel}.`);
       }
       if (this.props.releaseLabel) {
         const [major, minor] = this.props.releaseLabel.substr(4).split('.');
         if (Number(major) < 5 || (Number(major) === 5 && Number(minor) < 28)) {
-          throw new Error('Step concurrency is only supported in EMR release version 5.28.0 and above');
+          throw new Error(`Step concurrency is only supported in EMR release version 5.28.0 and above but got ${this.props.releaseLabel}.`);
         }
       }
     }

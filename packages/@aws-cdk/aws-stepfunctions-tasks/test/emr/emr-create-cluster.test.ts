@@ -172,51 +172,61 @@ test('Create Cluster with clusterConfiguration Name from payload', () => {
   });
 });
 
-test('Create Cluster with StepConcurrencyLevel', async () => {
-  // WHEN
-  const task = new EmrCreateCluster(stack, 'Task', {
-    instances: {},
-    clusterRole,
-    name: 'Cluster',
-    serviceRole,
-    autoScalingRole,
-    stepConcurrencyLevel: 2,
-    integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
+describe('Cluster with StepConcurrencyLevel', () => {
+  test('can be specified', async () => {
+    // WHEN
+    const task = new EmrCreateCluster(stack, 'Task', {
+      instances: {},
+      clusterRole,
+      name: 'Cluster',
+      serviceRole,
+      autoScalingRole,
+      stepConcurrencyLevel: 2,
+      integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
+    });
+
+    // THEN
+    expect(stack.resolve(task.toStateJson())).toMatchObject({
+      Parameters: {
+        Name: 'Cluster',
+        StepConcurrencyLevel: 2,
+      },
+    });
   });
 
-  // THEN
-  expect(stack.resolve(task.toStateJson())).toEqual({
-    Type: 'Task',
-    Resource: {
-      'Fn::Join': [
-        '',
-        [
-          'arn:',
-          {
-            Ref: 'AWS::Partition',
-          },
-          ':states:::elasticmapreduce:createCluster',
-        ],
-      ],
-    },
-    End: true,
-    Parameters: {
-      Name: 'Cluster',
-      Instances: {
-        KeepJobFlowAliveWhenNoSteps: true,
-      },
-      VisibleToAllUsers: true,
-      JobFlowRole: {
-        Ref: 'ClusterRoleD9CA7471',
-      },
-      ServiceRole: {
-        Ref: 'ServiceRole4288B192',
-      },
-      AutoScalingRole: {
-        Ref: 'AutoScalingRole015ADA0A',
-      },
-      StepConcurrencyLevel: 2,
-    },
+  test('throws if < 1 or > 256', async () => {
+    expect(() => new EmrCreateCluster(stack, 'Task1', {
+      instances: {},
+      clusterRole,
+      name: 'Cluster',
+      serviceRole,
+      autoScalingRole,
+      stepConcurrencyLevel: 0,
+      integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
+    })).toThrow('Step concurrency level must be in range [1, 256], but got 0.');
+
+    expect(() => new EmrCreateCluster(stack, 'Task2', {
+      instances: {},
+      clusterRole,
+      name: 'Cluster',
+      serviceRole,
+      autoScalingRole,
+      stepConcurrencyLevel: 257,
+      integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
+    })).toThrow('Step concurrency level must be in range [1, 256], but got 257.');
+  });
+
+  test('throws if EMR release label below 5.28', async () => {
+    expect(() => new EmrCreateCluster(stack, 'Task', {
+      instances: {},
+      clusterRole,
+      name: 'Cluster',
+      serviceRole,
+      autoScalingRole,
+      stepConcurrencyLevel: 1,
+      releaseLabel: 'emr-5.14.0',
+      integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
+    })).toThrow('Step concurrency is only supported in EMR release version 5.28.0 and above but got emr-5.14.0.');
   });
 });
 
