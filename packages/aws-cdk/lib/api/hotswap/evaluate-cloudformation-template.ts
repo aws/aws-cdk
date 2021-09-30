@@ -2,6 +2,8 @@ import * as cxapi from '@aws-cdk/cx-api';
 import * as AWS from 'aws-sdk';
 import { ListStackResources } from './common';
 
+export class CfnEvaluationException extends Error {}
+
 export interface EvaluateCloudFormationTemplateProps {
   readonly stackArtifact: cxapi.CloudFormationStackArtifact;
   readonly parameters: { [parameterName: string]: string };
@@ -45,7 +47,7 @@ export class EvaluateCloudFormationTemplate {
       public evaluateIntrinsic(intrinsic: Intrinsic): any {
         const intrinsicFunc = (this as any)[intrinsic.name];
         if (!intrinsicFunc) {
-          throw new Error(`CloudFormation function ${intrinsic.name} is not supported`);
+          throw new CfnEvaluationException(`CloudFormation function ${intrinsic.name} is not supported`);
         }
 
         const argsAsArray = Array.isArray(intrinsic.args) ? intrinsic.args : [intrinsic.args];
@@ -73,7 +75,7 @@ export class EvaluateCloudFormationTemplate {
         if (refTarget) {
           return refTarget;
         } else {
-          throw new Error(`Reference target '${logicalId}' was not found`);
+          throw new CfnEvaluationException(`Parameter or resource '${logicalId}' could not be found for evaluation`);
         }
       }
 
@@ -83,21 +85,38 @@ export class EvaluateCloudFormationTemplate {
         if (attrValue) {
           return attrValue;
         } else {
-          throw new Error(`Trying to evaluate Fn::GetAtt of '${logicalId}.${attributeName}' but not in context!`);
+          throw new CfnEvaluationException(`Attribute '${attributeName}' of resource '${logicalId}' could not be found for evaluation`);
         }
       }
 
       async 'Fn::Sub'(template: string, explicitPlaceholders?: { [variable: string]: string }): Promise<string> {
         const placeholders = explicitPlaceholders
-          ? { ...self.context, ...(await self.evaluateCfnExpression(explicitPlaceholders)) }
-          : self.context;
+          ? await self.evaluateCfnExpression(explicitPlaceholders)
+          : {};
 
-        return template.replace(/\${([^}]*)}/g, (_: string, key: string) => {
+        // this code is a little convoluted, because we need to deal with async operations
+        const marker = '######';
+        const keys = new Array<string>();
+        const templateWithMarkers = template.replace(/\${([^}]*)}/g, (_: string, key: string) => {
           if (key in placeholders) {
             return placeholders[key];
           } else {
-            throw new Error(`Fn::Sub target '${key}' was not found`);
+            keys.push(key);
+            return marker;
           }
+        });
+        const promises = keys.map(key => {
+          const splitKey = key.split('.');
+          return splitKey.length === 1
+            ? this.Ref(key)
+            : this['Fn::GetAtt'](splitKey[0], splitKey.slice(1).join('.'));
+        });
+        return Promise.all(promises).then(keyValues => {
+          let ret = templateWithMarkers;
+          for (const keyValue of keyValues) {
+            ret = ret.replace(marker, keyValue);
+          }
+          return ret;
         });
       }
     }
@@ -168,11 +187,11 @@ export class EvaluateCloudFormationTemplate {
 
     const resourceTypeFormats = RESOURCE_TYPE_ATTRIBUTES_FORMATS[resource.ResourceType];
     if (!resourceTypeFormats) {
-      return physicalId;
+      return undefined;
     }
     const attributeFmtFunc = resourceTypeFormats[attribute];
     if (!attributeFmtFunc) {
-      return physicalId;
+      return undefined;
     }
     const service = this.getServiceOfResource(resource);
     const resourceTypeArnPart = this.getResourceTypeArnPartOfResource(resource);
