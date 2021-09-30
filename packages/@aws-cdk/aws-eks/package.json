@@ -100,7 +100,7 @@
     "@aws-cdk/lambda-layer-awscli": "0.0.0",
     "@aws-cdk/lambda-layer-kubectl": "0.0.0",
     "@aws-cdk/lambda-layer-node-proxy-agent": "0.0.0",
-    "constructs": "^3.3.69",
+    "constructs": "^10.0.0",
     "yaml": "1.10.2"
   },
   "bundledDependencies": [
@@ -120,7 +120,7 @@
     "@aws-cdk/lambda-layer-awscli": "0.0.0",
     "@aws-cdk/lambda-layer-kubectl": "0.0.0",
     "@aws-cdk/lambda-layer-node-proxy-agent": "0.0.0",
-    "constructs": "^3.3.69"
+    "constructs": "^10.0.0"
   },
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"
@@ -137,6 +137,7 @@
     "announce": false
   },
   "publishConfig": {
-    "tag": "latest"
-  }
+    "tag": "next"
+  },
+  "private": true
 }

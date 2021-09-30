@@ -97,7 +97,7 @@
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/lambda-layer-awscli": "0.0.0",
     "case": "1.6.3",
-    "constructs": "^3.3.69"
+    "constructs": "^10.0.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
@@ -110,7 +110,7 @@
     "@aws-cdk/aws-s3-assets": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/lambda-layer-awscli": "0.0.0",
-    "constructs": "^3.3.69"
+    "constructs": "^10.0.0"
   },
   "bundledDependencies": [
     "case"
@@ -133,6 +133,7 @@
     ]
   },
   "publishConfig": {
-    "tag": "latest"
-  }
+    "tag": "next"
+  },
+  "private": true
 }
