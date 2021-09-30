@@ -14,7 +14,7 @@ export class TestOrigin extends OriginBase {
 
 export class TestOriginGroup implements IOrigin {
   constructor(private readonly primaryDomainName: string, private readonly secondaryDomainName: string) { }
-  /* eslint-disable cdk/no-core-construct */
+  /* eslint-disable @aws-cdk/no-core-construct */
   public bind(scope: Construct, options: OriginBindOptions): OriginBindConfig {
     const primaryOrigin = new TestOrigin(this.primaryDomainName);
     const secondaryOrigin = new TestOrigin(this.secondaryDomainName);
