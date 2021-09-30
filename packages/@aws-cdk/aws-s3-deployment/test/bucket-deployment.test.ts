@@ -6,7 +6,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import { testFutureBehavior } from 'cdk-build-tools/lib/feature-flag';
+import { testFutureBehavior } from '@aws-cdk/cdk-build-tools/lib/feature-flag';
 import * as s3deploy from '../lib';
 
 /* eslint-disable max-len */

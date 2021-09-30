@@ -5,9 +5,9 @@ import { Repository } from '@aws-cdk/aws-ecr';
 import * as iam from '@aws-cdk/aws-iam';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as ssm from '@aws-cdk/aws-ssm';
+import { testLegacyBehavior } from '@aws-cdk/cdk-build-tools/lib/feature-flag';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import { testLegacyBehavior } from 'cdk-build-tools/lib/feature-flag';
 import * as ecs from '../../lib';
 
 describe('ec2 task definition', () => {

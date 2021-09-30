@@ -2,7 +2,7 @@
 
 // nested stack references a resource from a non-nested non-parent stack
 
-/* eslint-disable cdk/no-core-construct */
+/* eslint-disable @aws-cdk/no-core-construct */
 
 import * as sns from '@aws-cdk/aws-sns';
 import { App, Stack } from '@aws-cdk/core';

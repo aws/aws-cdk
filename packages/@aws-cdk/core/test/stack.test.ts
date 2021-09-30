@@ -1,5 +1,5 @@
+import { testFutureBehavior, testLegacyBehavior } from '@aws-cdk/cdk-build-tools/lib/feature-flag';
 import * as cxapi from '@aws-cdk/cx-api';
-import { testFutureBehavior, testLegacyBehavior } from 'cdk-build-tools/lib/feature-flag';
 import { Construct } from 'constructs';
 import {
   App, CfnCondition, CfnInclude, CfnOutput, CfnParameter,

@@ -36,8 +36,6 @@ describe('cluster', () => {
 
     const template = SynthUtils.toCloudFormation(nested);
     expect(template.Resources.OnEventHandler42BEBAE0.Properties.Environment).toEqual({ Variables: { foo: 'bar' } });
-
-
   });
 
   test('throws when trying to place cluster handlers in a vpc with no private subnets', () => {
@@ -651,7 +649,7 @@ describe('cluster', () => {
     const { stack } = testFixtureNoVpc();
 
     // WHEN
-    new eks.Cluster(stack, 'cluster', { version: CLUSTER_VERSION, prune: false }) ;
+    new eks.Cluster(stack, 'cluster', { version: CLUSTER_VERSION, prune: false });
 
     // THEN
     expect(stack).toHaveResource('AWS::EC2::VPC');
@@ -2469,7 +2467,7 @@ describe('cluster', () => {
         version: CLUSTER_VERSION,
         prune: false,
         endpointAccess:
-        eks.EndpointAccess.PRIVATE,
+          eks.EndpointAccess.PRIVATE,
         vpcSubnets: [{
           subnets: [ec2.PrivateSubnet.fromSubnetAttributes(stack, 'Private1', {
             subnetId: 'subnet1',
@@ -2568,14 +2566,14 @@ describe('cluster', () => {
       const subnetConfiguration: ec2.SubnetConfiguration[] = [];
 
       for (let i = 0; i < 20; i++) {
-        subnetConfiguration.push( {
+        subnetConfiguration.push({
           subnetType: ec2.SubnetType.PRIVATE,
           name: `Private${i}`,
         },
         );
       }
 
-      subnetConfiguration.push( {
+      subnetConfiguration.push({
         subnetType: ec2.SubnetType.PUBLIC,
         name: 'Public1',
       });
@@ -2619,14 +2617,14 @@ describe('cluster', () => {
       const subnetConfiguration: ec2.SubnetConfiguration[] = [];
 
       for (let i = 0; i < 20; i++) {
-        subnetConfiguration.push( {
+        subnetConfiguration.push({
           subnetType: ec2.SubnetType.PRIVATE,
           name: `Private${i}`,
         },
         );
       }
 
-      subnetConfiguration.push( {
+      subnetConfiguration.push({
         subnetType: ec2.SubnetType.PUBLIC,
         name: 'Public1',
       });

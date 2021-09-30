@@ -12,7 +12,7 @@ import { NestedStack } from '../lib/nested-stack';
 // eslint-disable-next-line no-duplicate-imports, import/order
 import { Construct } from 'constructs';
 
-/* eslint-disable cdk/no-core-construct */
+/* eslint-disable @aws-cdk/no-core-construct */
 /* eslint-disable max-len */
 
 test('fails if defined as a root', () => {

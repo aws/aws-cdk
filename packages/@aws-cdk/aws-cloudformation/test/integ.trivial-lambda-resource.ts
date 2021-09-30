@@ -4,8 +4,6 @@ import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CustomResource, CustomResourceProvider } from '../lib';
 
-/* eslint-disable cdk/no-core-construct */
-
 interface DemoResourceProps {
   /**
    * Message to echo
