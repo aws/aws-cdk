@@ -1,7 +1,7 @@
 import * as child_process from 'child_process';
 import * as os from 'os';
 import * as path from 'path';
-import { Code, Runtime } from '@aws-cdk/aws-lambda';
+import { Code, Runtime, Architecture } from '@aws-cdk/aws-lambda';
 import { AssetHashType, DockerImage } from '@aws-cdk/core';
 import { Bundling } from '../lib/bundling';
 import * as util from '../lib/util';
@@ -18,7 +18,7 @@ beforeEach(() => {
   fromAssetMock.mockReturnValue({
     image: 'built-image',
     cp: () => 'built-image',
-    run: () => {},
+    run: () => { },
     toJSON: () => 'build-image',
   });
 });
@@ -310,6 +310,61 @@ test('with command hooks', () => {
       command: [
         'bash', '-c',
         expect.stringMatching(/^echo hello > \/asset-input\/a.txt && cp \/asset-input\/a.txt \/asset-output && .+ && cp \/asset-input\/b.txt \/asset-output\/txt$/),
+      ],
+    }),
+  });
+});
+
+test('bundling with arm64 architecture', () => {
+  Bundling.bundle({
+    entry,
+    runtime: Runtime.PROVIDED_AL2,
+    moduleDir,
+    forcedDockerBundling: true,
+    architecture: Architecture.ARM_64,
+  });
+
+  expect(Code.fromAsset).toHaveBeenCalledWith(path.dirname(moduleDir), {
+    assetHashType: AssetHashType.OUTPUT,
+    bundling: expect.objectContaining({
+      environment: {
+        CGO_ENABLED: '0',
+        GO111MODULE: 'on',
+        GOARCH: 'arm64',
+        GOOS: 'linux',
+      },
+      command: [
+        'bash', '-c',
+        [
+          'go build -o /asset-output/bootstrap ./cmd/api',
+        ].join(' && '),
+      ],
+    }),
+  });
+});
+
+test('bundling with default architecture', () => {
+  Bundling.bundle({
+    entry,
+    runtime: Runtime.PROVIDED_AL2,
+    moduleDir,
+    forcedDockerBundling: true,
+  });
+
+  expect(Code.fromAsset).toHaveBeenCalledWith(path.dirname(moduleDir), {
+    assetHashType: AssetHashType.OUTPUT,
+    bundling: expect.objectContaining({
+      environment: {
+        CGO_ENABLED: '0',
+        GO111MODULE: 'on',
+        GOARCH: 'amd64',
+        GOOS: 'linux',
+      },
+      command: [
+        'bash', '-c',
+        [
+          'go build -o /asset-output/bootstrap ./cmd/api',
+        ].join(' && '),
       ],
     }),
   });

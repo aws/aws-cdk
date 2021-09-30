@@ -1,6 +1,6 @@
 import * as path from 'path';
 import { Template } from '@aws-cdk/assertions';
-import { Runtime } from '@aws-cdk/aws-lambda';
+import { Runtime, Architecture } from '@aws-cdk/aws-lambda';
 import { Stack } from '@aws-cdk/core';
 import { GoFunction } from '../lib';
 import { Bundling } from '../lib/bundling';
@@ -144,4 +144,20 @@ test('custom moduleDir with file path can be used', () => {
   Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
     Handler: 'bootstrap',
   });
+});
+
+test('throws if using arm64 with go1.x runtime', () => {
+  expect(() => new GoFunction(stack, 'handler', {
+    entry: 'test/lambda-handler-vendor/cmd/api',
+    architectures: [Architecture.ARM_64],
+    runtime: Runtime.GO_1_X,
+  })).toThrow(/Runtime go1.x does not support the ARM_64 architecture/);
+});
+
+test('throws if using arm64 with provided runtime', () => {
+  expect(() => new GoFunction(stack, 'handler', {
+    entry: 'test/lambda-handler-vendor/cmd/api',
+    architectures: [Architecture.ARM_64],
+    runtime: Runtime.PROVIDED,
+  })).toThrow(/Runtime provided does not support the ARM_64 architecture/);
 });

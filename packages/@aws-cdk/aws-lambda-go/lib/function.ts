@@ -98,12 +98,18 @@ export class GoFunction extends lambda.Function {
     } else {
       const modFile = findUp('go.mod', entry);
       if (!modFile) {
-        throw new Error ('Cannot find go.mod. Please specify it with `moduleDir`.');
+        throw new Error('Cannot find go.mod. Please specify it with `moduleDir`.');
       }
       moduleDir = modFile;
     }
 
     const runtime = props.runtime ?? lambda.Runtime.PROVIDED_AL2;
+
+    const architecture = props.architectures !== undefined ? props.architectures[0] : undefined;
+
+    if (runtime !== lambda.Runtime.PROVIDED_AL2 && architecture === lambda.Architecture.ARM_64) {
+      throw new Error(`Runtime ${runtime} does not support the ARM_64 architecture. To use ARM_64 with Go Lambdas you must use the provided.al2 runtime`);
+    }
 
     super(scope, id, {
       ...props,
@@ -113,6 +119,7 @@ export class GoFunction extends lambda.Function {
         entry,
         runtime,
         moduleDir,
+        architecture,
       }),
       handler: 'bootstrap', // setting name to bootstrap so that the 'provided' runtime can also be used
     });

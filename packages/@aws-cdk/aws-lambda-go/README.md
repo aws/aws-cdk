@@ -80,9 +80,9 @@ by your function. Otherwise bundling will fail.
 
 The `GoFunction` can be used with either the `GO_1_X` runtime or the provided runtimes (`PROVIDED`/`PROVIDED_AL2`).
 By default it will use the `PROVIDED_AL2` runtime. The `GO_1_X` runtime does not support things like
-[Lambda Extensions](https://docs.aws.amazon.com/lambda/latest/dg/using-extensions.html), whereas the provided runtimes do.
-The [aws-lambda-go](https://github.com/aws/aws-lambda-go) library has built in support for the provided runtime as long as
-you name the handler `bootstrap` (which we do by default).
+[Lambda Extensions](https://docs.aws.amazon.com/lambda/latest/dg/using-extensions.html) or [Arm Architecture](https://aws.amazon.com/blogs/aws/aws-lambda-functions-powered-by-aws-graviton2-processor-run-your-functions-on-arm-and-get-up-to-34-better-price-performance/), 
+whereas the provided runtimes do. The [aws-lambda-go](https://github.com/aws/aws-lambda-go) library has built in support for 
+the provided runtime as long as you name the handler `bootstrap` (which we do by default).
 
 ## Dependencies
 
@@ -199,6 +199,20 @@ an array of commands to run. Commands are chained with `&&`.
 
 The commands will run in the environment in which bundling occurs: inside the
 container for Docker bundling or on the host OS for local bundling.
+
+## Lambda Architecture
+
+For Go Lambda Functions you can specify either the `Architecture.X86_64` or `Architecture.ARM_64` architecture.
+The `GoFunction` construct will set the `GOARCH` environment variable based on the architecture you specify, with
+the default being `GOARCH=amd64`. All you need to do to switch your Go Lambda functions to use `ARM_64` is to set
+the `architectures`.
+
+```ts
+new GoFunction(this, 'handler', {
+  entry: 'app/cmd/api',
+  architectures: [lambda.Architecture.ARM_64],
+});
+```
 
 ## Additional considerations
 

@@ -1,6 +1,6 @@
 import * as os from 'os';
 import * as path from 'path';
-import { AssetCode, Code, Runtime } from '@aws-cdk/aws-lambda';
+import { AssetCode, Code, Runtime, Architecture } from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
 import { BundlingOptions } from './types';
 import { exec, findUp, getGoBuildVersion } from './util';
@@ -55,6 +55,13 @@ export interface BundlingProps extends BundlingOptions {
    * The runtime of the lambda function
    */
   readonly runtime: Runtime;
+
+  /**
+   * The Lambda architecture that should be built to
+   *
+   * @default lambda.Architecture.X86_64
+   */
+  readonly architecture?: Architecture;
 }
 
 /**
@@ -101,10 +108,12 @@ export class Bundling implements cdk.BundlingOptions {
 
     const cgoEnabled = props.cgoEnabled ? '1' : '0';
 
+    const goArch = props.architecture === Architecture.ARM_64 ? 'arm64' : 'amd64';
+
     const environment = {
       CGO_ENABLED: cgoEnabled,
       GO111MODULE: 'on',
-      GOARCH: 'amd64',
+      GOARCH: goArch,
       GOOS: 'linux',
       ...props.environment,
     };
@@ -168,7 +177,7 @@ export class Bundling implements cdk.BundlingOptions {
 
     const goBuildCommand: string = [
       'go', 'build',
-      hasVendor ? '-mod=vendor': '',
+      hasVendor ? '-mod=vendor' : '',
       '-o', `${pathJoin(outputDir, 'bootstrap')}`,
       `${this.props.goBuildFlags ? this.props.goBuildFlags.join(' ') : ''}`,
       `${this.relativeEntryPath.replace(/\\/g, '/')}`,
