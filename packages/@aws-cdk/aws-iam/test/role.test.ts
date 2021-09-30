@@ -1,4 +1,4 @@
-import { Template } from '@aws-cdk/assertions';
+import '@aws-cdk/assert-internal/jest';
 import { Duration, Stack, App } from '@aws-cdk/core';
 import { AnyPrincipal, ArnPrincipal, CompositePrincipal, FederatedPrincipal, ManagedPolicy, PolicyStatement, Role, ServicePrincipal, User, Policy, PolicyDocument } from '../lib';
 
@@ -10,7 +10,7 @@ describe('IAM role', () => {
       assumedBy: new ServicePrincipal('sns.amazonaws.com'),
     });
 
-    Template.fromStack(stack).templateMatches({
+    expect(stack).toMatchTemplate({
       Resources:
       {
         MyRoleF48FFE04:
@@ -44,7 +44,7 @@ describe('IAM role', () => {
     role.grantPassRole(user);
 
     // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -69,7 +69,7 @@ describe('IAM role', () => {
     });
 
     // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+    expect(stack).toHaveResource('AWS::IAM::Role', {
       AssumeRolePolicyDocument: {
         Statement: [
           {
@@ -97,7 +97,7 @@ describe('IAM role', () => {
     });
 
     // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+    expect(stack).toHaveResource('AWS::IAM::Role', {
       AssumeRolePolicyDocument: {
         Statement: [
           {
@@ -125,7 +125,7 @@ describe('IAM role', () => {
     });
 
     // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+    expect(stack).toHaveResource('AWS::IAM::Role', {
       AssumeRolePolicyDocument: {
         Statement: [
           {
@@ -146,13 +146,13 @@ describe('IAM role', () => {
     // by default we don't expect a role policy
     const before = new Stack();
     new Role(before, 'MyRole', { assumedBy: new ServicePrincipal('sns.amazonaws.com') });
-    Template.fromStack(before).resourceCountIs('AWS::IAM::Policy', 0);
+    expect(before).not.toHaveResource('AWS::IAM::Policy');
 
     // add a policy to the role
     const after = new Stack();
     const afterRole = new Role(after, 'MyRole', { assumedBy: new ServicePrincipal('sns.amazonaws.com') });
     afterRole.addToPolicy(new PolicyStatement({ resources: ['myresource'], actions: ['service:myaction'] }));
-    Template.fromStack(after).hasResourceProperties('AWS::IAM::Policy', {
+    expect(after).toHaveResource('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -182,7 +182,7 @@ describe('IAM role', () => {
     });
 
     role.addManagedPolicy({ managedPolicyArn: 'managed3' });
-    Template.fromStack(stack).templateMatches({
+    expect(stack).toMatchTemplate({
       Resources:
       {
         MyRoleF48FFE04:
@@ -217,7 +217,7 @@ describe('IAM role', () => {
 
     new Role(stack, 'MyRole', { assumedBy: cognitoPrincipal });
 
-    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+    expect(stack).toHaveResource('AWS::IAM::Role', {
       AssumeRolePolicyDocument: {
         Version: '2012-10-17',
         Statement: [
@@ -239,7 +239,7 @@ describe('IAM role', () => {
     test('is not specified by default', () => {
       const stack = new Stack();
       new Role(stack, 'MyRole', { assumedBy: new ServicePrincipal('sns.amazonaws.com') });
-      Template.fromStack(stack).templateMatches({
+      expect(stack).toMatchTemplate({
         Resources: {
           MyRoleF48FFE04: {
             Type: 'AWS::IAM::Role',
@@ -267,7 +267,7 @@ describe('IAM role', () => {
 
       new Role(stack, 'MyRole', { maxSessionDuration: Duration.seconds(3700), assumedBy: new ServicePrincipal('sns.amazonaws.com') });
 
-      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+      expect(stack).toHaveResource('AWS::IAM::Role', {
         MaxSessionDuration: 3700,
       });
     });
@@ -300,7 +300,7 @@ describe('IAM role', () => {
       ),
     });
 
-    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+    expect(stack).toHaveResource('AWS::IAM::Role', {
       AssumeRolePolicyDocument: {
         Statement: [
           {
@@ -328,7 +328,7 @@ describe('IAM role', () => {
       permissionsBoundary,
     });
 
-    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+    expect(stack).toHaveResource('AWS::IAM::Role', {
       PermissionsBoundary: {
         'Fn::Join': [
           '',
@@ -356,7 +356,7 @@ describe('IAM role', () => {
       assumedBy: new AnyPrincipal(),
     });
 
-    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+    expect(stack).toHaveResource('AWS::IAM::Role', {
       AssumeRolePolicyDocument: {
         Statement: [
           {
@@ -378,7 +378,7 @@ describe('IAM role', () => {
       description: 'This is a role description.',
     });
 
-    Template.fromStack(stack).templateMatches({
+    expect(stack).toMatchTemplate({
       Resources:
       {
         MyRoleF48FFE04:
@@ -411,7 +411,7 @@ describe('IAM role', () => {
       description: '',
     });
 
-    Template.fromStack(stack).templateMatches({
+    expect(stack).toMatchTemplate({
       Resources:
       {
         MyRoleF48FFE04:
@@ -548,7 +548,7 @@ test('managed policy ARNs are deduplicated', () => {
   });
   role.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('SuperDeveloper'));
 
-  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+  expect(stack).toHaveResource('AWS::IAM::Role', {
     ManagedPolicyArns: [
       {
         'Fn::Join': [
