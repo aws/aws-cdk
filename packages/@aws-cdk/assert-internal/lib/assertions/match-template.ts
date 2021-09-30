@@ -78,16 +78,15 @@ class StackMatchesTemplateAssertion extends Assertion<StackInspector> {
         }
 
         for (const change of Object.values(diff.parameters.changes)) {
-          if (change.isAddition) { return false; }
+          if (!change.isAddition) { return false; }
         }
 
         for (const change of Object.values(diff.outputs.changes)) {
-          if (change.isAddition || change.isUpdate) { return false; }
+          if (!change.isAddition) { return false; }
         }
 
         return true;
     }
-    throw new Error(`Unsupported match style: ${this.matchStyle}`);
   }
 
   public get description(): string {

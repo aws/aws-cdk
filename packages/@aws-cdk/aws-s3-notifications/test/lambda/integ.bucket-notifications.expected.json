@@ -246,7 +246,7 @@
             "Arn"
           ]
         },
-        "Runtime": "python3.8",
+        "Runtime": "python3.7",
         "Timeout": 300
       },
       "DependsOn": [

@@ -1,5 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
-import { ABSENT } from '@aws-cdk/assert-internal';
+import { Match, Template } from '@aws-cdk/assertions';
 import { HttpApi, HttpIntegrationType, HttpRouteIntegrationBindOptions, IHttpRouteIntegration, PayloadFormatVersion } from '@aws-cdk/aws-apigatewayv2';
 import { Code, Function, Runtime } from '@aws-cdk/aws-lambda';
 import { Duration, Stack } from '@aws-cdk/core';
@@ -31,7 +30,7 @@ describe('HttpLambdaAuthorizer', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGatewayV2::Authorizer', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Authorizer', {
       Name: 'default-authorizer',
       AuthorizerType: 'REQUEST',
       AuthorizerResultTtlInSeconds: 300,
@@ -41,7 +40,7 @@ describe('HttpLambdaAuthorizer', () => {
       ],
     });
 
-    expect(stack).toHaveResource('AWS::ApiGatewayV2::Route', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Route', {
       AuthorizationType: 'CUSTOM',
     });
   });
@@ -71,7 +70,7 @@ describe('HttpLambdaAuthorizer', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGatewayV2::Authorizer', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Authorizer', {
       AuthorizerPayloadFormatVersion: '2.0',
       EnableSimpleResponses: true,
     });
@@ -102,9 +101,9 @@ describe('HttpLambdaAuthorizer', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGatewayV2::Authorizer', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Authorizer', {
       AuthorizerPayloadFormatVersion: '1.0',
-      EnableSimpleResponses: ABSENT,
+      EnableSimpleResponses: Match.absentProperty(),
     });
   });
 
@@ -133,7 +132,7 @@ describe('HttpLambdaAuthorizer', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGatewayV2::Authorizer', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Authorizer', {
       AuthorizerPayloadFormatVersion: '2.0',
       EnableSimpleResponses: true,
     });
@@ -165,7 +164,7 @@ describe('HttpLambdaAuthorizer', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGatewayV2::Authorizer', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Authorizer', {
       AuthorizerResultTtlInSeconds: 600,
     });
   });

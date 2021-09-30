@@ -4,11 +4,11 @@ import { Construct } from 'constructs';
 import { CfnApi, CfnApiProps } from '../apigatewayv2.generated';
 import { IApi } from '../common/api';
 import { ApiBase } from '../common/base';
-import { DomainMappingOptions, IStage } from '../common/stage';
+import { DomainMappingOptions } from '../common/stage';
 import { IHttpRouteAuthorizer } from './authorizer';
 import { IHttpRouteIntegration, HttpIntegration, HttpRouteIntegrationConfig } from './integration';
 import { BatchHttpRouteOptions, HttpMethod, HttpRoute, HttpRouteKey } from './route';
-import { HttpStage, HttpStageOptions } from './stage';
+import { IHttpStage, HttpStage, HttpStageOptions } from './stage';
 import { VpcLink, VpcLinkProps } from './vpc-link';
 
 /**
@@ -84,7 +84,7 @@ export interface IHttpApi extends IApi {
  */
 export interface HttpApiProps {
   /**
-   * Name for the HTTP API resoruce
+   * Name for the HTTP API resource
    * @default - id of the HttpApi construct.
    */
   readonly apiName?: string;
@@ -209,7 +209,7 @@ export interface CorsPreflightOptions {
 }
 
 /**
- * Options for the Route with Integration resoruce
+ * Options for the Route with Integration resource
  */
 export interface AddRoutesOptions extends BatchHttpRouteOptions {
   /**
@@ -366,7 +366,7 @@ export class HttpApi extends HttpApiBase {
   /**
    * The default stage of this API
    */
-  public readonly defaultStage: IStage | undefined;
+  public readonly defaultStage: IHttpStage | undefined;
 
   private readonly _apiEndpoint: string;
 

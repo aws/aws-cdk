@@ -95,6 +95,20 @@ topic.addSubscription(new subs.LambdaSubscription(fn, {
 }));
 ```
 
+### Example of Firehose Subscription
+
+```typescript
+  import { Subscription, SubscriptionProtocol, Topic } from '@aws-cdk/aws-sns';
+  import { DeliveryStream } from '@aws-cdk/aws-kinesisfirehose';
+  const topic = new Topic(stack, 'Topic');
+  const stream = new DeliveryStream(stack, 'DeliveryStream', ...)
+  new Subscription(stack, 'Subscription', {
+    endpoint: stream.deliveryStreamArn,
+    protocol: SubscriptionProtocol.FIREHOSE,
+    subscriptionRoleArn: "SAMPLE_ARN", //role with permissions to send messages to a firehose delivery stream
+  })
+```
+
 ## DLQ setup for SNS Subscription
 
 CDK can attach provided Queue as DLQ for your SNS subscription.

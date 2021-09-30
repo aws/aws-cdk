@@ -3,11 +3,12 @@ import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { Annotations, App, Aws, CfnOutput, Fn, Lazy, PhysicalName, Stack, Stage } from '@aws-cdk/core';
+import { Annotations, App, CfnOutput, Fn, Lazy, PhysicalName, Stack, Stage } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { AssetType } from '../blueprint/asset-type';
 import { dockerCredentialsInstallCommands, DockerCredential, DockerCredentialUsage } from '../docker-credentials';
 import { ApplicationSecurityCheck } from '../private/application-security-check';
+import { AssetSingletonRole } from '../private/asset-singleton-role';
 import { appOf, assemblyBuilderOf } from '../private/construct-internals';
 import { DeployCdkStackAction, PublishAssetsAction, UpdatePipelineAction } from './actions';
 import { AddStageOptions, AssetPublishingCommand, BaseStageOptions, CdkStage, StackOutput } from './stage';
@@ -85,6 +86,19 @@ export interface CdkPipelineProps {
    */
   readonly crossAccountKeys?: boolean;
   // @deprecated(v2): switch to default false
+
+
+  /**
+   * Enables KMS key rotation for cross-account keys.
+   *
+   * Cannot be set if `crossAccountKeys` was set to `false`.
+   *
+   * Key rotation costs $1/month when enabled.
+   *
+   * @default - false (key rotation is disabled)
+   */
+  readonly enableKeyRotation?: boolean;
+
 
   /**
    * CDK CLI version to use in pipeline
@@ -220,12 +234,16 @@ export class CdkPipeline extends CoreConstruct {
       if (props.crossAccountKeys !== undefined) {
         throw new Error('Cannot set \'crossAccountKeys\' if an existing CodePipeline is given using \'codePipeline\'');
       }
+      if (props.enableKeyRotation !== undefined) {
+        throw new Error('Cannot set \'enableKeyRotation\' if an existing CodePipeline is given using \'codePipeline\'');
+      }
 
       this._pipeline = props.codePipeline;
     } else {
       this._pipeline = new codepipeline.Pipeline(this, 'Pipeline', {
         pipelineName: props.pipelineName,
         crossAccountKeys: props.crossAccountKeys,
+        enableKeyRotation: props.enableKeyRotation,
         restartExecutionOnUpdate: true,
       });
     }
@@ -580,49 +598,10 @@ class AssetPublishing extends CoreConstruct {
     if (this.assetRoles[assetType]) { return this.assetRoles[assetType]; }
 
     const rolePrefix = assetType === AssetType.DOCKER_IMAGE ? 'Docker' : 'File';
-    const assetRole = new iam.Role(this, `${rolePrefix}Role`, {
+    const assetRole = new AssetSingletonRole(this, `${rolePrefix}Role`, {
       roleName: PhysicalName.GENERATE_IF_NEEDED,
       assumedBy: new iam.CompositePrincipal(new iam.ServicePrincipal('codebuild.amazonaws.com'), new iam.AccountPrincipal(Stack.of(this).account)),
     });
-
-    // Logging permissions
-    const logGroupArn = Stack.of(this).formatArn({
-      service: 'logs',
-      resource: 'log-group',
-      sep: ':',
-      resourceName: '/aws/codebuild/*',
-    });
-    assetRole.addToPolicy(new iam.PolicyStatement({
-      resources: [logGroupArn],
-      actions: ['logs:CreateLogGroup', 'logs:CreateLogStream', 'logs:PutLogEvents'],
-    }));
-
-    // CodeBuild report groups
-    const codeBuildArn = Stack.of(this).formatArn({
-      service: 'codebuild',
-      resource: 'report-group',
-      resourceName: '*',
-    });
-    assetRole.addToPolicy(new iam.PolicyStatement({
-      actions: [
-        'codebuild:CreateReportGroup',
-        'codebuild:CreateReport',
-        'codebuild:UpdateReport',
-        'codebuild:BatchPutTestCases',
-        'codebuild:BatchPutCodeCoverages',
-      ],
-      resources: [codeBuildArn],
-    }));
-
-    // CodeBuild start/stop
-    assetRole.addToPolicy(new iam.PolicyStatement({
-      resources: ['*'],
-      actions: [
-        'codebuild:BatchGetBuilds',
-        'codebuild:StartBuild',
-        'codebuild:StopBuild',
-      ],
-    }));
 
     // Publishing role access
     // The ARNs include raw AWS pseudo parameters (e.g., ${AWS::Partition}), which need to be substituted.
@@ -637,46 +616,7 @@ class AssetPublishing extends CoreConstruct {
       this.dockerCredentials.forEach(reg => reg.grantRead(assetRole, DockerCredentialUsage.ASSET_PUBLISHING));
     }
 
-    // Artifact access
-    this.pipeline.artifactBucket.grantRead(assetRole);
-
-    // VPC permissions required for CodeBuild
-    // Normally CodeBuild itself takes care of this but we're creating a singleton role so now
-    // we need to do this.
-    if (this.props.vpc) {
-      const vpcPolicy = new iam.Policy(assetRole, 'VpcPolicy', {
-        statements: [
-          new iam.PolicyStatement({
-            resources: [`arn:${Aws.PARTITION}:ec2:${Aws.REGION}:${Aws.ACCOUNT_ID}:network-interface/*`],
-            actions: ['ec2:CreateNetworkInterfacePermission'],
-            conditions: {
-              StringEquals: {
-                'ec2:Subnet': this.props.vpc
-                  .selectSubnets(this.props.subnetSelection).subnetIds
-                  .map(si => `arn:${Aws.PARTITION}:ec2:${Aws.REGION}:${Aws.ACCOUNT_ID}:subnet/${si}`),
-                'ec2:AuthorizedService': 'codebuild.amazonaws.com',
-              },
-            },
-          }),
-          new iam.PolicyStatement({
-            resources: ['*'],
-            actions: [
-              'ec2:CreateNetworkInterface',
-              'ec2:DescribeNetworkInterfaces',
-              'ec2:DeleteNetworkInterface',
-              'ec2:DescribeSubnets',
-              'ec2:DescribeSecurityGroups',
-              'ec2:DescribeDhcpOptions',
-              'ec2:DescribeVpcs',
-            ],
-          }),
-        ],
-      });
-      assetRole.attachInlinePolicy(vpcPolicy);
-      this.assetAttachedPolicies[assetType] = vpcPolicy;
-    }
-
-    this.assetRoles[assetType] = assetRole.withoutPolicyUpdates();
+    this.assetRoles[assetType] = assetRole;
     return this.assetRoles[assetType];
   }
 }

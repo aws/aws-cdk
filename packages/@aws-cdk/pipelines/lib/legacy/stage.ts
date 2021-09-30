@@ -9,6 +9,7 @@ import { Construct, Node } from 'constructs';
 import { AssetType } from '../blueprint/asset-type';
 import { ApplicationSecurityCheck } from '../private/application-security-check';
 import { AssetManifestReader, DockerImageManifestEntry, FileManifestEntry } from '../private/asset-manifest';
+import { pipelineSynth } from '../private/construct-internals';
 import { topologicalSort } from '../private/toposort';
 import { DeployCdkStackAction } from './actions';
 import { CdkPipeline } from './pipeline';
@@ -16,7 +17,6 @@ import { CdkPipeline } from './pipeline';
 // v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
 // eslint-disable-next-line
 import { Construct as CoreConstruct } from '@aws-cdk/core';
-import { pipelineSynth } from '../private/construct-internals';
 
 /**
  * Construction properties for a CdkStage

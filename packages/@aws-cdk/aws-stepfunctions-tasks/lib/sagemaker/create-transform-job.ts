@@ -227,7 +227,8 @@ export class SageMakerCreateTransformJob extends sfn.TaskStateBase {
     return {
       TransformResources: {
         InstanceCount: resources.instanceCount,
-        InstanceType: 'ml.' + resources.instanceType,
+        InstanceType: sfn.JsonPath.isEncodedJsonPath(resources.instanceType.toString())
+          ? resources.instanceType.toString() : `ml.${resources.instanceType}`,
         ...(resources.volumeEncryptionKey ? { VolumeKmsKeyId: resources.volumeEncryptionKey.keyArn } : {}),
       },
     };

@@ -22,6 +22,7 @@ example](https://docs.aws.amazon.com/step-functions/latest/dg/job-status-poller-
 ## Example
 
 ```ts
+import * as cdk from '@aws-cdk/core';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as tasks from '@aws-cdk/aws-stepfunctions-tasks';
 import * as lambda from '@aws-cdk/aws-lambda';
@@ -70,7 +71,7 @@ const definition = submitJob
 
 new sfn.StateMachine(this, 'StateMachine', {
     definition,
-    timeout: Duration.minutes(5)
+    timeout: cdk.Duration.minutes(5)
 });
 ```
 
@@ -353,8 +354,8 @@ the State Machine uses.
 The following example uses the `DynamoDB` service integration to insert data into a DynamoDB table.
 
 ```ts
-import * as ddb from '@aws-cdk/aws-dynamodb';
 import * as cdk from '@aws-cdk/core';
+import * as ddb from '@aws-cdk/aws-dynamodb';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 
 // create a table
@@ -555,6 +556,22 @@ new cloudwatch.Alarm(this, 'ThrottledAlarm', {
 });
 ```
 
+## Error names
+
+Step Functions identifies errors in the Amazon States Language using case-sensitive strings, known as error names. 
+The Amazon States Language defines a set of built-in strings that name well-known errors, all beginning with the `States.` prefix. 
+
+* `States.ALL` - A wildcard that matches any known error name.
+* `States.Runtime` - An execution failed due to some exception that could not be processed. Often these are caused by errors at runtime, such as attempting to apply InputPath or OutputPath on a null JSON payload. A `States.Runtime` error is not retriable, and will always cause the execution to fail. A retry or catch on `States.ALL` will NOT catch States.Runtime errors.
+* `States.DataLimitExceeded` - A States.DataLimitExceeded exception will be thrown for the following:
+  * When the output of a connector is larger than payload size quota.
+  * When the output of a state is larger than payload size quota.
+  * When, after Parameters processing, the input of a state is larger than the payload size quota.
+  * See [the AWS documentation](https://docs.aws.amazon.com/step-functions/latest/dg/limits-overview.html) to learn more about AWS Step Functions Quotas.
+* `States.HeartbeatTimeout` - A Task state failed to send a heartbeat for a period longer than the HeartbeatSeconds value.
+* `States.Timeout` - A Task state either ran longer than the TimeoutSeconds value, or failed to send a heartbeat for a period longer than the HeartbeatSeconds value.
+* `States.TaskFailed`- A Task state failed during the execution. When used in a retry or catch, `States.TaskFailed` acts as a wildcard that matches any known error name except for `States.Timeout`.
+
 ## Logging
 
 Enable logging to CloudWatch by passing a logging configuration with a
@@ -577,8 +594,6 @@ new sfn.StateMachine(stack, 'MyStateMachine', {
 Enable X-Ray tracing for StateMachine:
 
 ```ts
-const logGroup = new logs.LogGroup(stack, 'MyLogGroup');
-
 new sfn.StateMachine(stack, 'MyStateMachine', {
     definition: sfn.Chain.start(new sfn.Pass(stack, 'Pass')),
     tracingEnabled: true

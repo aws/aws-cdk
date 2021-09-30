@@ -3,13 +3,7 @@
 
 ---
 
-![cdk-constructs: Developer Preview](https://img.shields.io/badge/cdk--constructs-developer--preview-informational.svg?style=for-the-badge)
-
-> The APIs of higher level constructs in this module are in **developer preview** before they
-> become stable. We will only make breaking changes to address unforeseen API issues. Therefore,
-> these APIs are not subject to [Semantic Versioning](https://semver.org/), and breaking changes
-> will be announced in release notes. This means that while you may use them, you may need to
-> update your source code when upgrading to a newer version of this package.
+![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
 
@@ -28,7 +22,7 @@ to the new version if possible.
 > allows more control of CodeBuild project generation; supports deployment
 > engines other than CodePipeline.
 >
-> The README for the original API can be found in [our GitHub repository](https://github.com/aws/aws-cdk/blob/master/packages/@aws-cdk/pipelines/ORIGINAL_API.md).
+> The README for the original API, as well as a migration guide, can be found in [our GitHub repository](https://github.com/aws/aws-cdk/blob/master/packages/@aws-cdk/pipelines/ORIGINAL_API.md).
 
 ## At a glance
 
@@ -204,10 +198,10 @@ expected to produce the CDK Cloud Assembly as its single output (the contents of
 the `cdk.out` directory after running `cdk synth`). "Steps" are arbitrary
 actions in the pipeline, typically used to run scripts or commands.
 
-For the synth, use a `ShellStep` and specify the commands necessary to build
-your project and run `cdk synth`; the specific commands required will depend on
-the programming language you are using. For a typical NPM-based project, the synth
-will look like this:
+For the synth, use a `ShellStep` and specify the commands necessary to install
+dependencies, the CDK CLI, build your project and run `cdk synth`; the specific
+commands required will depend on the programming language you are using. For a
+typical NPM-based project, the synth will look like this:
 
 ```ts
 const source = /* the repository source */;
@@ -249,6 +243,63 @@ when `app.synth()` is called. You can also force it to be produced
 earlier by calling `pipeline.buildPipeline()`. After you've called
 that method, you can inspect the constructs that were produced by
 accessing the properties of the `pipeline` object.
+
+#### Commands for other languages and package managers
+
+The commands you pass to `new ShellStep` will be very similar to the commands
+you run on your own workstation to install dependencies and synth your CDK
+project. Here are some (non-exhaustive) examples for what those commands might
+look like in a number of different situations.
+
+For Yarn, the install commands are different:
+
+```ts
+const pipeline = new CodePipeline(this, 'Pipeline', {
+  synth: new ShellStep('Synth', {
+    input: source,
+    commands: [
+      'yarn install --frozen-lockfile',
+      'yarn build',
+      'npx cdk synth',
+    ],
+  })
+});
+```
+
+For Python projects, remember to install the CDK CLI globally (as
+there is no `package.json` to automatically install it for you):
+
+```ts
+const pipeline = new CodePipeline(this, 'Pipeline', {
+  synth: new ShellStep('Synth', {
+    input: source,
+    commands: [
+      'pip install -r requirements.txt',
+      'npm install -g aws-cdk',
+      'cdk synth',
+    ],
+  })
+});
+```
+
+For Java projects, remember to install the CDK CLI globally (as
+there is no `package.json` to automatically install it for you),
+and the Maven compilation step is automatically executed for you
+as you run `cdk synth`:
+
+```ts
+const pipeline = new CodePipeline(this, 'Pipeline', {
+  synth: new ShellStep('Synth', {
+    input: source,
+    commands: [
+      'npm install -g aws-cdk',
+      'cdk synth',
+    ],
+  })
+});
+```
+
+You can adapt these examples to your own situation.
 
 #### CodePipeline Sources
 
@@ -405,10 +456,11 @@ const pipeline = new CodePipeline(this, 'Pipeline', {
 Every `addStage()` and `addWave()` command takes additional options. As part of these options,
 you can specify `pre` and `post` steps, which are arbitrary steps that run before or after
 the contents of the stage or wave, respectively. You can use these to add validations like
-manual or automated gates to your pipeline.
+manual or automated gates to your pipeline. We recommend putting manual approval gates in the set of `pre` steps, and automated approval gates in
+the set of `post` steps.
 
 The following example shows both an automated approval in the form of a `ShellStep`, and
-a manual approvel in the form of a `ManualApprovalStep` added to the pipeline. Both must
+a manual approval in the form of a `ManualApprovalStep` added to the pipeline. Both must
 pass in order to promote from the `PreProd` to the `Prod` environment:
 
 ```ts
@@ -426,6 +478,22 @@ pipeline.addStage(prod, {
   pre: [
     new ManualApprovalStep('PromoteToProd'),
   ],
+});
+```
+
+You can also specify steps to be executed at the stack level. To achieve this, you can specify the stack and step via the `stackSteps` property:
+
+```ts
+pipeline.addStage(prod, {
+  stackSteps: [{
+    stack: prod.stack1,
+    pre: [new ManualApprovalStep('Pre-Stack Check')], // Executed before stack is prepared
+    changeSet: [new ManualApprovalStep('ChangeSet Approval')], // Executed after stack is prepared but before the stack is deployed
+    post: [new ManualApprovalStep('Post-Deploy Check')], // Executed after staack is deployed
+  }, {
+    stack: prod.stack2,
+    post: [new ManualApprovalStep('Post-Deploy Check')], // Executed after staack is deployed
+  }],
 });
 ```
 
@@ -495,7 +563,7 @@ of properties that allow you to customize various aspects of the projects:
 
 ```ts
 new CodeBuildStep('Synth', {
-  // ...standard RunScript props...
+  // ...standard ShellStep props...
   commands: [/* ... */],
   env: { /* ... */ },
 
@@ -523,15 +591,15 @@ new CodeBuildStep('Synth', {
   securityGroups: [mySecurityGroup],
 
   // Additional policy statements for the execution role
-  rolePolicy: [
+  rolePolicyStatements: [
     new iam.PolicyStatement({ /* ... */ }),
   ],
 });
 ```
 
 You can also configure defaults for *all* CodeBuild projects by passing `codeBuildDefaults`,
-or just for the asset publishing and self-mutation projects by passing `assetPublishingCodeBuildDefaults`
-or `selfMutationCodeBuildDefaults`:
+or just for the synth, asset publishing, and self-mutation projects by passing `synthCodeBuildDefaults`,
+`assetPublishingCodeBuildDefaults`, or `selfMutationCodeBuildDefaults`:
 
 ```ts
 new CodePipeline(this, 'Pipeline', {
@@ -561,6 +629,7 @@ new CodePipeline(this, 'Pipeline', {
     ],
   },
 
+  synthCodeBuildDefaults: { /* ... */ },
   assetPublishingCodeBuildDefaults: { /* ... */ },
   selfMutationCodeBuildDefaults: { /* ... */ },
 });
@@ -572,7 +641,7 @@ If you want to add a type of CodePipeline action to the CDK Pipeline that
 doesn't have a matching class yet, you can define your own step class that extends
 `Step` and implements `ICodePipelineActionFactory`.
 
-Here's a simple example that adds a Jenkins step:
+Here's an example that adds a Jenkins step:
 
 ```ts
 class MyJenkinsStep extends Step implements ICodePipelineActionFactory {
@@ -739,9 +808,9 @@ to it, it's important that you don't delete the stack or change its *Qualifier*,
 or future deployments to this environment will fail. If you want to upgrade
 the bootstrap stack to a newer version, do that by updating it in-place.
 
-> This library requires a newer version of the bootstrapping stack which has
-> been updated specifically to support cross-account continuous delivery. In the future,
-> this new bootstrapping stack will become the default, but for now it is still
+> This library requires the *modern* bootstrapping stack which has
+> been updated specifically to support cross-account continuous delivery. Starting,
+> in CDK v2 this new bootstrapping stack will become the default, but for now it is still
 > opt-in.
 >
 > The commands below assume you are running `cdk bootstrap` in a directory
@@ -792,17 +861,27 @@ These command lines explained:
   flag out if either the AWS default credentials or the `AWS_*` environment
   variables confer these permissions.
 * `--cloudformation-execution-policies`: ARN of the managed policy that future CDK
-  deployments should execute with. You can tailor this to the needs of your organization
-  and give more constrained permissions than `AdministratorAccess`.
+  deployments should execute with. By default this is `AdministratorAccess`, but
+  if you also specify the `--trust` flag to give another Account permissions to
+  deploy into the current account, you must specify a value here.
 * `--trust`: indicates which other account(s) should have permissions to deploy
   CDK applications into this account. In this case we indicate the Pipeline's account,
   but you could also use this for developer accounts (don't do that for production
   application accounts though!).
-* `--trust-for-lookup`: similar to `--trust`, but gives a more limited set of permissions to the
-  trusted account, allowing it to only look up values, such as availability zones, EC2 images and
-  VPCs. Note that if you provide an account using `--trust`, that account can also do lookups.
-  So you only need to pass `--trust-for-lookup` if you need to use a different account.
+* `--trust-for-lookup`: gives a more limited set of permissions to the
+  trusted account, only allowing it to look up values such as availability zones, EC2 images and
+  VPCs. `--trust-for-lookup` does not give permissions to modify anything in the account.
+  Note that `--trust` implies `--trust-for-lookup`, so you don't need to specify
+  the same acocunt twice.
 * `aws://222222222222/us-east-2`: the account and region we're bootstrapping.
+
+> Be aware that anyone who has access to the trusted Accounts **effectively has all
+> permissions conferred by the configured CloudFormation execution policies**,
+> allowing them to do things like read arbitrary S3 buckets and create arbitrary
+> infrastructure in the bootstrapped account.  Restrict the list of `--trust`ed Accounts,
+> or restrict the policies configured by `--cloudformation-execution-policies`.
+
+<br>
 
 > **Security tip**: we recommend that you use administrative credentials to an
 > account only to bootstrap it and provision the initial pipeline. Otherwise,
@@ -892,7 +971,7 @@ new CodePipeline(this, 'Pipeline', {
         resources: ['*'],
         conditions: {
           StringEquals: {
-            'iam:ResourceTag/aws-cdk:bootstrap-role': 'deploy',
+            'iam:ResourceTag/aws-cdk:bootstrap-role': 'lookup',
           },
         },
       }),
@@ -1152,8 +1231,8 @@ A hypothetical recovery workflow would look something like this:
 
 ```sh
 $ env CDK_NEW_BOOTSTRAP=1 npx cdk bootstrap \
-    --qualifier randchars1234
-    --toolkit-stack-name CDKToolkitTemp
+    --qualifier random1234 \
+    --toolkit-stack-name CDKToolkitTemp \
     aws://111111111111/us-east-1
 ```
 
@@ -1194,6 +1273,27 @@ encryption key policy for the artifacts bucket may have a statement that looks l
 ```
 
 Any resource or policy that references the qualifier (`hnb659fds` by default) will need to be updated.
+
+### This CDK CLI is not compatible with the CDK library used by your application
+
+The CDK CLI version used in your pipeline is too old to read the Cloud Assembly
+produced by your CDK app.
+
+Most likely this happens in the `SelfMutate` action, you are passing the `cliVersion`
+parameter to control the version of the CDK CLI, and you just updated the CDK
+framework version that your application uses. You either forgot to change the
+`cliVersion` parameter, or changed the `cliVersion` in the same commit in which
+you changed the framework version. Because a change to the pipeline settings needs
+a successful run of the `SelfMutate` step to be applied, the next iteration of the
+`SelfMutate` step still executes with the *old* CLI version, and that old CLI version
+is not able to read the cloud assembly produced by the new framework version.
+
+Solution: change the `cliVersion` first, commit, push and deploy, and only then
+change the framework version.
+ 
+We recommend you avoid specifying the `cliVersion` parameter at all. By default
+the pipeline will use the latest CLI version, which will support all cloud assembly
+versions.
 
 ## Known Issues
 

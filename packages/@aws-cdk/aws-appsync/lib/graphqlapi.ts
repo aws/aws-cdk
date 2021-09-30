@@ -492,10 +492,10 @@ export class GraphqlApi extends GraphqlApiBase {
   private validateAuthorizationProps(modes: AuthorizationMode[]) {
     modes.map((mode) => {
       if (mode.authorizationType === AuthorizationType.OIDC && !mode.openIdConnectConfig) {
-        throw new Error('Missing default OIDC Configuration');
+        throw new Error('Missing OIDC Configuration');
       }
       if (mode.authorizationType === AuthorizationType.USER_POOL && !mode.userPoolConfig) {
-        throw new Error('Missing default OIDC Configuration');
+        throw new Error('Missing User Pool Configuration');
       }
     });
     if (modes.filter((mode) => mode.authorizationType === AuthorizationType.API_KEY).length > 1) {

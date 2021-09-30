@@ -2,7 +2,10 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as sns from '@aws-cdk/aws-sns';
 import * as cdk from '@aws-cdk/core';
 import { MessageLanguage } from './common';
-import { CommonConstraintOptions, TagUpdateConstraintOptions } from './constraints';
+import {
+  CloudFormationRuleConstraintOptions, CommonConstraintOptions,
+  StackSetsConstraintOptions, TagUpdateConstraintOptions,
+} from './constraints';
 import { AssociationManager } from './private/association-manager';
 import { hashValues } from './private/util';
 import { InputValidator } from './private/validation';
@@ -89,6 +92,11 @@ export interface IPortfolio extends cdk.IResource {
   associateTagOptions(tagOptions: TagOptions): void;
 
   /**
+   * Add a Resource Update Constraint.
+   */
+  constrainTagUpdates(product: IProduct, options?: TagUpdateConstraintOptions): void;
+
+  /**
    * Add notifications for supplied topics on the provisioned product.
    * @param product A service catalog product.
    * @param topic A SNS Topic to receive notifications on events related to the provisioned product.
@@ -96,9 +104,28 @@ export interface IPortfolio extends cdk.IResource {
   notifyOnStackEvents(product: IProduct, topic: sns.ITopic, options?: CommonConstraintOptions): void;
 
   /**
-   * Add a Resource Update Constraint.
+   * Set provisioning rules for the product.
+   * @param product A service catalog product.
+   * @param options options for the constraint.
    */
-  constrainTagUpdates(product: IProduct, options?: TagUpdateConstraintOptions): void;
+  constrainCloudFormationParameters(product:IProduct, options: CloudFormationRuleConstraintOptions): void;
+
+  /**
+   * Force users to assume a certain role when launching a product.
+   *
+   * @param product A service catalog product.
+   * @param launchRole The IAM role a user must assume when provisioning the product.
+   * @param options options for the constraint.
+   */
+  setLaunchRole(product: IProduct, launchRole: iam.IRole, options?: CommonConstraintOptions): void;
+
+  /**
+   * Configure deployment options using AWS Cloudformaiton StackSets
+   *
+   * @param product A service catalog product.
+   * @param options Configuration options for the constraint.
+   */
+  deployWithStackSets(product: IProduct, options: StackSetsConstraintOptions): void;
 }
 
 abstract class PortfolioBase extends cdk.Resource implements IPortfolio {
@@ -119,7 +146,7 @@ abstract class PortfolioBase extends cdk.Resource implements IPortfolio {
   }
 
   public addProduct(product: IProduct): void {
-    AssociationManager.associateProductWithPortfolio(this, product);
+    AssociationManager.associateProductWithPortfolio(this, product, undefined);
   }
 
   public shareWithAccount(accountId: string, options: PortfolioShareOptions = {}): void {
@@ -136,12 +163,24 @@ abstract class PortfolioBase extends cdk.Resource implements IPortfolio {
     AssociationManager.associateTagOptions(this, tagOptions);
   }
 
+  public constrainTagUpdates(product: IProduct, options: TagUpdateConstraintOptions = {}): void {
+    AssociationManager.constrainTagUpdates(this, product, options);
+  }
+
   public notifyOnStackEvents(product: IProduct, topic: sns.ITopic, options: CommonConstraintOptions = {}): void {
     AssociationManager.notifyOnStackEvents(this, product, topic, options);
   }
 
-  public constrainTagUpdates(product: IProduct, options: TagUpdateConstraintOptions = {}): void {
-    AssociationManager.constrainTagUpdates(this, product, options);
+  public constrainCloudFormationParameters(product: IProduct, options: CloudFormationRuleConstraintOptions): void {
+    AssociationManager.constrainCloudFormationParameters(this, product, options);
+  }
+
+  public setLaunchRole(product: IProduct, launchRole: iam.IRole, options: CommonConstraintOptions = {}): void {
+    AssociationManager.setLaunchRole(this, product, launchRole, options);
+  }
+
+  public deployWithStackSets(product: IProduct, options: StackSetsConstraintOptions) {
+    AssociationManager.deployWithStackSets(this, product, options);
   }
 
   /**
