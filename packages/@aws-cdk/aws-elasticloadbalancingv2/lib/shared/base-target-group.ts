@@ -265,7 +265,7 @@ export abstract class TargetGroupBase extends Construct implements ITargetGroup 
       healthyThresholdCount: cdk.Lazy.number({ produce: () => this.healthCheck?.healthyThresholdCount }),
       unhealthyThresholdCount: cdk.Lazy.number({ produce: () => this.healthCheck?.unhealthyThresholdCount }),
       matcher: cdk.Lazy.any({
-        produce: () => this.healthCheck?.healthyHttpCodes !== undefined || this.healthCheck?.healthyGrpcCodes !== undefined ? {
+        produce: () => this.healthCheck?.healthyHttpCodes !== undefined || this.healthCheck?.healthyGrpcCodes !== undefined ? {
           grpcCode: this.healthCheck.healthyGrpcCodes,
           httpCode: this.healthCheck.healthyHttpCodes,
         } : undefined,
@@ -295,11 +295,6 @@ export abstract class TargetGroupBase extends Construct implements ITargetGroup 
    * Set/replace the target group's health check
    */
   public configureHealthCheck(healthCheck: HealthCheck) {
-    if (healthCheck.interval && healthCheck.timeout) {
-      if (healthCheck.interval.toMilliseconds() <= healthCheck.timeout.toMilliseconds()) {
-        throw new Error(`Healthcheck interval ${healthCheck.interval.toHumanString()} must be greater than the timeout ${healthCheck.timeout.toHumanString()}`);
-      }
-    }
     this.healthCheck = healthCheck;
   }
 

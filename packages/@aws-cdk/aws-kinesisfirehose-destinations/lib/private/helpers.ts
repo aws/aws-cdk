@@ -1,5 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as firehose from '@aws-cdk/aws-kinesisfirehose';
+import { CfnDeliveryStream } from '@aws-cdk/aws-kinesisfirehose';
 import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
@@ -48,14 +49,14 @@ export interface DestinationLoggingConfig extends ConfigWithDependables {
   /**
    * Logging options that will be injected into the destination configuration.
    */
-  readonly loggingOptions: firehose.CfnDeliveryStream.CloudWatchLoggingOptionsProperty;
+  readonly loggingOptions: CfnDeliveryStream.CloudWatchLoggingOptionsProperty;
 }
 
 export interface DestinationBackupConfig extends ConfigWithDependables {
   /**
    * S3 backup configuration that will be injected into the destination configuration.
    */
-  readonly backupConfig: firehose.CfnDeliveryStream.S3DestinationConfigurationProperty;
+  readonly backupConfig: CfnDeliveryStream.S3DestinationConfigurationProperty;
 }
 
 export function createLoggingOptions(scope: Construct, props: DestinationLoggingProps): DestinationLoggingConfig | undefined {
@@ -80,7 +81,7 @@ export function createLoggingOptions(scope: Construct, props: DestinationLogging
 export function createBufferingHints(
   interval?: cdk.Duration,
   size?: cdk.Size,
-): firehose.CfnDeliveryStream.BufferingHintsProperty | undefined {
+): CfnDeliveryStream.BufferingHintsProperty | undefined {
   if (!interval && !size) {
     return undefined;
   }
@@ -99,7 +100,7 @@ export function createBufferingHints(
 export function createEncryptionConfig(
   role: iam.IRole,
   encryptionKey?: kms.IKey,
-): firehose.CfnDeliveryStream.EncryptionConfigurationProperty | undefined {
+): CfnDeliveryStream.EncryptionConfigurationProperty | undefined {
   encryptionKey?.grantEncryptDecrypt(role);
   return encryptionKey
     ? { kmsEncryptionConfig: { awskmsKeyArn: encryptionKey.keyArn } }
@@ -110,7 +111,7 @@ export function createProcessingConfig(
   scope: Construct,
   role: iam.IRole,
   dataProcessor?: firehose.IDataProcessor,
-): firehose.CfnDeliveryStream.ProcessingConfigurationProperty | undefined {
+): CfnDeliveryStream.ProcessingConfigurationProperty | undefined {
   return dataProcessor
     ? {
       enabled: true,
@@ -123,7 +124,7 @@ function renderDataProcessor(
   processor: firehose.IDataProcessor,
   scope: Construct,
   role: iam.IRole,
-): firehose.CfnDeliveryStream.ProcessorProperty {
+): CfnDeliveryStream.ProcessorProperty {
   const processorConfig = processor.bind(scope, { role });
   const parameters = [{ parameterName: 'RoleArn', parameterValue: role.roleArn }];
   parameters.push(processorConfig.processorIdentifier);

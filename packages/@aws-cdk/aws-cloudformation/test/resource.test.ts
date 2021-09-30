@@ -9,7 +9,7 @@ import { CustomResource, CustomResourceProvider } from '../lib';
 // eslint-disable-next-line no-duplicate-imports, import/order
 import { Construct } from 'constructs';
 
-/* eslint-disable cdk/no-core-construct */
+/* eslint-disable @aws-cdk/no-core-construct */
 /* eslint-disable quote-props */
 
 describe('custom resources honor removalPolicy', () => {

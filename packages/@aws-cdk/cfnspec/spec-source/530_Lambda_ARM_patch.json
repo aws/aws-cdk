@@ -1,0 +1,41 @@
+{
+  "ResourceType": {
+    "AWS::Lambda::Function": {
+      "patch": {
+        "description": "AWS::Lambda::Function changes for early support of Lambda ARM launch. Remove once CFN spec is updated",
+        "operations": [
+          {
+            "op": "add",
+            "path": "/Properties/Architectures",
+            "value": {
+              "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lambda-function.html#cfn-lambda-function-architectures",
+              "UpdateType": "Mutable",
+              "Required": false,
+              "Type": "List",
+              "PrimitiveItemType": "String",
+              "DuplicatesAllowed": true
+            }
+          }
+        ]
+      }
+    },
+    "AWS::Lambda::LayerVersion": {
+      "patch": {
+        "description": "AWS::Lambda::LayerVersion changes for early support of Lambda ARM launch. Remove once CFN spec is updated",
+        "operations": [
+          {
+            "op": "add",
+            "path": "/Properties/CompatibleArchitectures",
+            "value": {
+              "PrimitiveItemType": "String",
+              "Type": "List",
+              "Required": false,
+              "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lambda-layerversion.html#cfn-lambda-layerversion-compatiblearchitectures",
+              "UpdateType": "Immutable"
+            }
+          }
+        ]
+      }
+    }
+  }
+}

@@ -49,6 +49,10 @@
       "jsii/java",
       "jsii/python",
       "jsii/dotnet"
+    ],
+    "attribution": [
+      "kubectl",
+      "helm"
     ]
   },
   "jsii": {
@@ -114,7 +118,7 @@
     "minimatch": "^3.0.4",
     "punycode": "^2.1.1",
     "semver": "^7.3.5",
-    "string-width": "^4.2.2",
+    "string-width": "^4.2.3",
     "table": "^6.7.1",
     "yaml": "1.10.2"
   },
@@ -263,6 +267,7 @@
     "@aws-cdk/aws-medialive": "0.0.0",
     "@aws-cdk/aws-mediapackage": "0.0.0",
     "@aws-cdk/aws-mediastore": "0.0.0",
+    "@aws-cdk/aws-memorydb": "0.0.0",
     "@aws-cdk/aws-msk": "0.0.0",
     "@aws-cdk/aws-mwaa": "0.0.0",
     "@aws-cdk/aws-neptune": "0.0.0",
@@ -328,17 +333,18 @@
     "@aws-cdk/cx-api": "0.0.0",
     "@aws-cdk/lambda-layer-awscli": "0.0.0",
     "@aws-cdk/lambda-layer-kubectl": "0.0.0",
+    "@aws-cdk/lambda-layer-node-proxy-agent": "0.0.0",
     "@aws-cdk/pipelines": "0.0.0",
     "@aws-cdk/region-info": "0.0.0",
     "@types/fs-extra": "^8.1.2",
     "@types/node": "^10.17.60",
-    "cdk-build-tools": "0.0.0",
+    "@aws-cdk/cdk-build-tools": "0.0.0",
     "constructs": "^10.0.0",
     "fs-extra": "^9.1.0",
-    "pkglint": "0.0.0",
+    "@aws-cdk/pkglint": "0.0.0",
     "ts-node": "^9.1.1",
     "typescript": "~3.8.3",
-    "ubergen": "0.0.0"
+    "@aws-cdk/ubergen": "0.0.0"
   },
   "peerDependencies": {
     "constructs": "^10.0.0"
