@@ -94,29 +94,15 @@ export class EvaluateCloudFormationTemplate {
           ? await self.evaluateCfnExpression(explicitPlaceholders)
           : {};
 
-        // this code is a little convoluted, because we need to deal with async operations
-        const marker = '######';
-        const keys = new Array<string>();
-        const templateWithMarkers = template.replace(/\${([^}]*)}/g, (_: string, key: string) => {
+        return asyncGlobalReplace(template, /\${([^}]*)}/g, key => {
           if (key in placeholders) {
             return placeholders[key];
           } else {
-            keys.push(key);
-            return marker;
+            const splitKey = key.split('.');
+            return splitKey.length === 1
+              ? this.Ref(key)
+              : this['Fn::GetAtt'](splitKey[0], splitKey.slice(1).join('.'));
           }
-        });
-        const promises = keys.map(key => {
-          const splitKey = key.split('.');
-          return splitKey.length === 1
-            ? this.Ref(key)
-            : this['Fn::GetAtt'](splitKey[0], splitKey.slice(1).join('.'));
-        });
-        return Promise.all(promises).then(keyValues => {
-          let ret = templateWithMarkers;
-          for (const keyValue of keyValues) {
-            ret = ret.replace(marker, keyValue);
-          }
-          return ret;
         });
       }
     }
@@ -251,4 +237,23 @@ function stdColonResourceArnFmt(parts: ArnParts): string {
 interface Intrinsic {
   readonly name: string;
   readonly args: any;
+}
+
+async function asyncGlobalReplace(str: string, regex: RegExp, cb: (x: string) => Promise<string>): Promise<string> {
+  if (!regex.global) { throw new Error('Regex must be created with /g flag'); }
+
+  const ret = new Array<string>();
+  let start = 0;
+  while (true) {
+    const match = regex.exec(str);
+    if (!match) { break; }
+
+    ret.push(str.substring(start, match.index));
+    ret.push(await cb(match[1]));
+
+    start = regex.lastIndex;
+  }
+  ret.push(str.substr(start));
+
+  return ret.join('');
 }
