@@ -1,4 +1,4 @@
-import { Template } from '@aws-cdk/assertions';
+import '@aws-cdk/assert-internal/jest';
 import { Stack } from '@aws-cdk/core';
 import { Bucket, HttpMethods } from '../lib';
 
@@ -15,7 +15,7 @@ describe('cors', () => {
     });
 
     // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+    expect(stack).toHaveResource('AWS::S3::Bucket', {
       CorsConfiguration: {
         CorsRules: [{
           AllowedMethods: ['GET', 'HEAD'],
@@ -73,7 +73,7 @@ describe('cors', () => {
     });
 
     // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+    expect(stack).toHaveResource('AWS::S3::Bucket', {
       CorsConfiguration: {
         CorsRules: [
           {

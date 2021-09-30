@@ -1,4 +1,5 @@
-import { Template } from '@aws-cdk/assertions';
+import '@aws-cdk/assert-internal/jest';
+import { SynthUtils } from '@aws-cdk/assert-internal';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as cdk from '@aws-cdk/core';
 import * as fc from 'fast-check';
@@ -131,7 +132,7 @@ describe('step scaling policy', () => {
     });
 
     // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::ApplicationAutoScaling::ScalingPolicy', {
+    expect(stack).toHaveResource('AWS::ApplicationAutoScaling::ScalingPolicy', {
       PolicyType: 'StepScaling',
       ScalingTargetId: {
         Ref: 'Target3191CF44',
@@ -168,14 +169,14 @@ describe('step scaling policy', () => {
     });
 
     // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::ApplicationAutoScaling::ScalingPolicy', {
+    expect(stack).toHaveResourceLike('AWS::ApplicationAutoScaling::ScalingPolicy', {
       PolicyType: 'StepScaling',
       StepScalingPolicyConfiguration: {
         AdjustmentType: 'ChangeInCapacity',
         MetricAggregationType: 'Average',
       },
     });
-    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
+    expect(stack).toHaveResource('AWS::CloudWatch::Alarm', {
       ComparisonOperator: 'GreaterThanOrEqualToThreshold',
       EvaluationPeriods: 1,
       AlarmActions: [
@@ -208,14 +209,14 @@ describe('step scaling policy', () => {
     });
 
     // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::ApplicationAutoScaling::ScalingPolicy', {
+    expect(stack).toHaveResourceLike('AWS::ApplicationAutoScaling::ScalingPolicy', {
       PolicyType: 'StepScaling',
       StepScalingPolicyConfiguration: {
         AdjustmentType: 'ChangeInCapacity',
         MetricAggregationType: 'Maximum',
       },
     });
-    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
+    expect(stack).toHaveResource('AWS::CloudWatch::Alarm', {
       ComparisonOperator: 'GreaterThanOrEqualToThreshold',
       EvaluationPeriods: 10,
       ExtendedStatistic: 'p99',
@@ -240,7 +241,7 @@ function setupStepScaling(intervals: appscaling.ScalingInterval[]) {
     scalingSteps: intervals,
   });
 
-  return new ScalingStackTemplate(Template.fromStack(stack).toJSON());
+  return new ScalingStackTemplate(SynthUtils.synthesize(stack).template);
 }
 
 class ScalingStackTemplate {

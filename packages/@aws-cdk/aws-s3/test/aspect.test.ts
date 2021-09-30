@@ -1,3 +1,5 @@
+import '@aws-cdk/assert-internal/jest';
+import { SynthUtils } from '@aws-cdk/assert-internal';
 import * as cdk from '@aws-cdk/core';
 import { IConstruct } from 'constructs';
 import * as s3 from '../lib';
@@ -5,15 +7,14 @@ import * as s3 from '../lib';
 describe('aspect', () => {
   test('bucket must have versioning: failure', () => {
     // GIVEN
-    const app = new cdk.App();
-    const stack = new cdk.Stack(app);
+    const stack = new cdk.Stack();
     new s3.Bucket(stack, 'MyBucket');
 
     // WHEN
     cdk.Aspects.of(stack).add(new BucketVersioningChecker());
 
     // THEN
-    const assembly = app.synth().getStackArtifact(stack.artifactId);
+    const assembly = SynthUtils.synthesize(stack);
     const errorMessage = assembly.messages.find(m => m.entry.data === 'Bucket versioning is not enabled');
     expect(errorMessage).toBeDefined();
 
@@ -22,8 +23,7 @@ describe('aspect', () => {
 
   test('bucket must have versioning: success', () => {
     // GIVEN
-    const app = new cdk.App();
-    const stack = new cdk.Stack(app);
+    const stack = new cdk.Stack();
     new s3.Bucket(stack, 'MyBucket', {
       versioned: true,
     });
@@ -32,7 +32,7 @@ describe('aspect', () => {
     cdk.Aspects.of(stack).add(new BucketVersioningChecker());
 
     // THEN
-    const assembly = app.synth().getStackArtifact(stack.artifactId);
+    const assembly = SynthUtils.synthesize(stack);
     expect(assembly.messages.length).toEqual(0);
 
 

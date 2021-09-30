@@ -1,4 +1,4 @@
-import { Template } from '@aws-cdk/assertions';
+import '@aws-cdk/assert-internal/jest';
 import { Duration, Stack } from '@aws-cdk/core';
 import { Bucket, StorageClass } from '../lib';
 
@@ -15,7 +15,7 @@ describe('rules', () => {
     });
 
     // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+    expect(stack).toHaveResource('AWS::S3::Bucket', {
       LifecycleConfiguration: {
         Rules: [{
           ExpirationInDays: 30,
@@ -38,7 +38,7 @@ describe('rules', () => {
     });
 
     // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+    expect(stack).toHaveResource('AWS::S3::Bucket', {
       LifecycleConfiguration: {
         Rules: [{
           ExpirationInDays: 30,
@@ -62,7 +62,7 @@ describe('rules', () => {
     });
 
     // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+    expect(stack).toHaveResource('AWS::S3::Bucket', {
       LifecycleConfiguration: {
         Rules: [{
           ExpirationDate: '2018-01-01T00:00:00',
@@ -89,7 +89,7 @@ describe('rules', () => {
     });
 
     // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+    expect(stack).toHaveResource('AWS::S3::Bucket', {
       LifecycleConfiguration: {
         Rules: [{
           Transitions: [{
@@ -140,7 +140,7 @@ describe('rules', () => {
     });
 
     // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+    expect(stack).toHaveResource('AWS::S3::Bucket', {
       LifecycleConfiguration: {
         Rules: [{
           ExpiredObjectDeleteMarker: true,

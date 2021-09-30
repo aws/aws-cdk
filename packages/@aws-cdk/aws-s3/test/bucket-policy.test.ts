@@ -1,4 +1,4 @@
-import { Template } from '@aws-cdk/assertions';
+import '@aws-cdk/assert-internal/jest';
 import { AnyPrincipal, PolicyStatement } from '@aws-cdk/aws-iam';
 import { RemovalPolicy, Stack, App } from '@aws-cdk/core';
 import * as s3 from '../lib';
@@ -20,7 +20,7 @@ describe('bucket policy', () => {
       principals: [new AnyPrincipal()],
     }));
 
-    Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
+    expect(stack).toHaveResource('AWS::S3::BucketPolicy', {
       Bucket: {
         'Ref': 'MyBucketF68F3FF0',
       },
@@ -54,7 +54,7 @@ describe('bucket policy', () => {
       principals: [new AnyPrincipal()],
     }));
 
-    Template.fromStack(stack).templateMatches({
+    expect(stack).toMatchTemplate({
       'Resources': {
         'MyBucketF68F3FF0': {
           'Type': 'AWS::S3::Bucket',
@@ -99,7 +99,7 @@ describe('bucket policy', () => {
     }));
     myBucket.policy?.applyRemovalPolicy(RemovalPolicy.RETAIN);
 
-    Template.fromStack(stack).templateMatches({
+    expect(stack).toMatchTemplate({
       'Resources': {
         'MyBucketF68F3FF0': {
           'Type': 'AWS::S3::Bucket',

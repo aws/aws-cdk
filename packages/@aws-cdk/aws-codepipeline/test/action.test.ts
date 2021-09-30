@@ -1,4 +1,4 @@
-import { Match, Template } from '@aws-cdk/assertions';
+import '@aws-cdk/assert-internal/jest';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import * as codepipeline from '../lib';
@@ -121,7 +121,7 @@ describe('action', () => {
       });
 
       expect(() => {
-        Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+        expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
         });
       }).toThrow(/Build\/Fake cannot have more than 3 input artifacts/);
 
@@ -166,7 +166,7 @@ describe('action', () => {
       });
 
       expect(() => {
-        Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+        expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
         });
       }).toThrow(/Source\/Fake cannot have more than 4 output artifacts/);
 
@@ -199,25 +199,25 @@ describe('action', () => {
       ],
     });
 
-    Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+    expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
       'Stages': [
         {
           'Name': 'Source',
           'Actions': [
-            Match.objectLike({
+            {
               'Name': 'CodeCommit',
               'OutputArtifacts': [
                 {
                   'Name': 'Artifact_Source_CodeCommit',
                 },
               ],
-            }),
+            },
           ],
         },
         {
           'Name': 'Build',
           'Actions': [
-            Match.objectLike({
+            {
               'Name': 'CodeBuild',
               'InputArtifacts': [
                 {
@@ -229,7 +229,7 @@ describe('action', () => {
                   'Name': 'Artifact_Build_CodeBuild',
                 },
               ],
-            }),
+            },
           ],
         },
       ],

@@ -1,4 +1,5 @@
-import { Match, Template } from '@aws-cdk/assertions';
+import '@aws-cdk/assert-internal/jest';
+import { ABSENT } from '@aws-cdk/assert-internal';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
@@ -20,7 +21,7 @@ describe('SlackChannelConfiguration', () => {
       slackChannelConfigurationName: 'Test',
     });
 
-    Template.fromStack(stack).hasResourceProperties('AWS::Chatbot::SlackChannelConfiguration', {
+    expect(stack).toHaveResourceLike('AWS::Chatbot::SlackChannelConfiguration', {
       ConfigurationName: 'Test',
       IamRoleArn: {
         'Fn::GetAtt': [
@@ -32,7 +33,7 @@ describe('SlackChannelConfiguration', () => {
       SlackWorkspaceId: 'ABC123',
     });
 
-    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+    expect(stack).toHaveResourceLike('AWS::IAM::Role', {
       AssumeRolePolicyDocument: {
         Statement: [
           {
@@ -56,7 +57,7 @@ describe('SlackChannelConfiguration', () => {
       loggingLevel: chatbot.LoggingLevel.ERROR,
     });
 
-    Template.fromStack(stack).hasResourceProperties('AWS::Chatbot::SlackChannelConfiguration', {
+    expect(stack).toHaveResourceLike('AWS::Chatbot::SlackChannelConfiguration', {
       ConfigurationName: 'Test',
       IamRoleArn: {
         'Fn::GetAtt': [
@@ -80,7 +81,7 @@ describe('SlackChannelConfiguration', () => {
       notificationTopics: [topic],
     });
 
-    Template.fromStack(stack).hasResourceProperties('AWS::Chatbot::SlackChannelConfiguration', {
+    expect(stack).toHaveResourceLike('AWS::Chatbot::SlackChannelConfiguration', {
       ConfigurationName: 'Test',
       IamRoleArn: {
         'Fn::GetAtt': [
@@ -108,7 +109,7 @@ describe('SlackChannelConfiguration', () => {
       role: role,
     });
 
-    Template.fromStack(stack).resourceCountIs('AWS::IAM::Role', 0);
+    expect(stack).toCountResources('AWS::IAM::Role', 0);
   });
 
   test('created with new role and extra iam policies', () => {
@@ -126,7 +127,7 @@ describe('SlackChannelConfiguration', () => {
       resources: ['arn:aws:s3:::abc/xyz/123.txt'],
     }));
 
-    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -148,7 +149,7 @@ describe('SlackChannelConfiguration', () => {
       logRetention: logs.RetentionDays.ONE_MONTH,
     });
 
-    Template.fromStack(stack).hasResourceProperties('Custom::LogRetention', {
+    expect(stack).toHaveResourceLike('Custom::LogRetention', {
       LogGroupName: '/aws/chatbot/ConfigurationName',
       RetentionInDays: 30,
       LogGroupRegion: 'us-east-1',
@@ -178,7 +179,7 @@ describe('SlackChannelConfiguration', () => {
       },
       metricName: 'MetricName',
     }));
-    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
+    expect(stack).toHaveResourceLike('AWS::CloudWatch::Alarm', {
       Namespace: 'AWS/Chatbot',
       MetricName: 'MetricName',
       Dimensions: [
@@ -207,10 +208,10 @@ describe('SlackChannelConfiguration', () => {
       region: 'us-east-1',
       metricName: 'MetricName',
     }));
-    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
+    expect(stack).toHaveResourceLike('AWS::CloudWatch::Alarm', {
       Namespace: 'AWS/Chatbot',
       MetricName: 'MetricName',
-      Dimensions: Match.absentProperty(),
+      Dimensions: ABSENT,
       ComparisonOperator: 'GreaterThanThreshold',
       EvaluationPeriods: 1,
       Threshold: 0,
@@ -228,8 +229,8 @@ describe('SlackChannelConfiguration', () => {
       resources: ['arn:aws:s3:::abc/xyz/123.txt'],
     }));
 
-    Template.fromStack(stack).resourceCountIs('AWS::IAM::Role', 0);
-    Template.fromStack(stack).resourceCountIs('AWS::IAM::Policy', 0);
+    expect(stack).toCountResources('AWS::IAM::Role', 0);
+    expect(stack).toCountResources('AWS::IAM::Policy', 0);
   });
 
   test('should throw error if ARN invalid', () => {
