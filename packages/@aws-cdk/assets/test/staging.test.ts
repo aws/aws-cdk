@@ -2,6 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { App, Stack } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
+import '@aws-cdk/assert-internal/jest';
 import { Staging } from '../lib';
 
 describe('staging', () => {
