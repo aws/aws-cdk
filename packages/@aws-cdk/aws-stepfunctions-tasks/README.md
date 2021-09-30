@@ -651,7 +651,7 @@ and 256 inclusive, where the default concurrency of 1 means no step concurrency 
 
 ```ts
 new tasks.EmrCreateCluster(this, 'Create Cluster', {
-  ...
+  // ...
   stepConcurrencyLevel: 10,
 });
 ```
