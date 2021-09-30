@@ -243,6 +243,41 @@ describe('Cluster with StepConcurrencyLevel', () => {
   });
 });
 
+test('Cluster with invalid release label will throw', async () => {
+  expect(() => new EmrCreateCluster(stack, 'Task1', {
+    instances: {},
+    clusterRole,
+    name: 'Cluster',
+    serviceRole,
+    autoScalingRole,
+    releaseLabel: 'emra-5.14.0',
+    stepConcurrencyLevel: 1,
+    integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
+  })).toThrow('The release label must be in the format \'emr-x.x.x\' but got emra-5.14.0');
+
+  expect(() => new EmrCreateCluster(stack, 'Task2', {
+    instances: {},
+    clusterRole,
+    name: 'Cluster',
+    serviceRole,
+    autoScalingRole,
+    releaseLabel: 'emr-5.14.a',
+    stepConcurrencyLevel: 1,
+    integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
+  })).toThrow('The release label must be in the format \'emr-x.x.x\' but got emr-5.14.a');
+
+  expect(() => new EmrCreateCluster(stack, 'Task3', {
+    instances: {},
+    clusterRole,
+    name: 'Cluster',
+    serviceRole,
+    autoScalingRole,
+    releaseLabel: 'emr-5.14.0.0',
+    stepConcurrencyLevel: 1,
+    integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
+  })).toThrow('The release label must be in the format \'emr-x.x.x\' but got emr-5.14.0.0');
+});
+
 test('Create Cluster with Tags', () => {
   // WHEN
   const task = new EmrCreateCluster(stack, 'Task', {

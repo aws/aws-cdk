@@ -202,6 +202,10 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
 
     this.taskPolicies = this.createPolicyStatements(this._serviceRole, this._clusterRole, this._autoScalingRole);
 
+    if (this.props.releaseLabel !== undefined) {
+      this.validateReleaseLabel(this.props.releaseLabel);
+    }
+
     if (this.props.stepConcurrencyLevel !== undefined) {
       if (this.props.stepConcurrencyLevel < 1 || this.props.stepConcurrencyLevel > 256) {
         throw new Error(`Step concurrency level must be in range [1, 256], but got ${this.props.stepConcurrencyLevel}.`);
@@ -378,6 +382,22 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
     );
 
     return role;
+  }
+
+  /**
+   * Validates the release label string is in proper format.
+   */
+  private validateReleaseLabel(releaseLabel: string): string {
+    const prefix = releaseLabel.substr(0, 4);
+    const versions = releaseLabel.substr(4).split('.');
+    if (prefix !== 'emr-' || versions.length !== 3 || versions.some((e) => isNotANumber(e))) {
+      throw new Error(`The release label must be in the format 'emr-x.x.x' but got ${releaseLabel}`);
+    }
+    return releaseLabel;
+
+    function isNotANumber(value: string): boolean {
+      return value === '' || isNaN(Number(value));
+    }
   }
 }
 
