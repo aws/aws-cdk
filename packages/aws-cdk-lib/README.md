@@ -205,6 +205,13 @@ Duration.days(7)        // 7 days
 Duration.parse('PT5M')  // 5 minutes
 ```
 
+Durations can be added or subtracted together:
+
+```ts
+Duration.minutes(1).add(Duration.seconds(60)); // 2 minutes
+Duration.minutes(5).subtract(Duration.seconds(10)); // 290 secondes
+```
+
 ## Size (Digital Information Quantity)
 
 To make specification of digital storage quantities unambiguous, a class called
