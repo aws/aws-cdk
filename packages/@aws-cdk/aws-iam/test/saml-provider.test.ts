@@ -1,4 +1,4 @@
-import { Template } from '@aws-cdk/assertions';
+import '@aws-cdk/assert-internal/jest';
 import { Stack } from '@aws-cdk/core';
 import { SamlMetadataDocument, SamlProvider } from '../lib';
 
@@ -12,7 +12,7 @@ test('SAML provider', () => {
     metadataDocument: SamlMetadataDocument.fromXml('document'),
   });
 
-  Template.fromStack(stack).hasResourceProperties('AWS::IAM::SAMLProvider', {
+  expect(stack).toHaveResource('AWS::IAM::SAMLProvider', {
     SamlMetadataDocument: 'document',
   });
 });
@@ -23,7 +23,7 @@ test('SAML provider name', () => {
     name: 'provider-name',
   });
 
-  Template.fromStack(stack).hasResourceProperties('AWS::IAM::SAMLProvider', {
+  expect(stack).toHaveResource('AWS::IAM::SAMLProvider', {
     SamlMetadataDocument: 'document',
     Name: 'provider-name',
   });

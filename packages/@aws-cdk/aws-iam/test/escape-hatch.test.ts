@@ -1,7 +1,7 @@
 // tests for the L1 escape hatches (overrides). those are in the IAM module
 // because we want to verify them end-to-end, as a complement to the unit
 // tests in the @aws-cdk/core module
-import { Template } from '@aws-cdk/assertions';
+import '@aws-cdk/assert-internal/jest';
 import { Stack } from '@aws-cdk/core';
 import * as iam from '../lib';
 
@@ -17,7 +17,7 @@ describe('IAM escape hatches', () => {
     const cfn = user.node.findChild('Resource') as iam.CfnUser;
     cfn.addPropertyOverride('UserName', 'OverriddenUserName');
 
-    Template.fromStack(stack).templateMatches({
+    expect(stack).toMatchTemplate({
       'Resources': {
         'user2C2B57AE': {
           'Type': 'AWS::IAM::User',
@@ -39,7 +39,7 @@ describe('IAM escape hatches', () => {
     cfn.addPropertyOverride('Hello.World', 'Boom');
 
     // THEN
-    Template.fromStack(stack).templateMatches({
+    expect(stack).toMatchTemplate({
       'Resources': {
         'user2C2B57AE': {
           'Type': 'AWS::IAM::User',
@@ -69,7 +69,7 @@ describe('IAM escape hatches', () => {
     cfn.addOverride('UpdatePolicy.UseOnlineResharding.Type', 'None');
 
     // THEN
-    Template.fromStack(stack).templateMatches({
+    expect(stack).toMatchTemplate({
       'Resources': {
         'user2C2B57AE': {
           'Type': 'AWS::IAM::User',
