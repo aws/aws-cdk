@@ -1,6 +1,5 @@
 {
   "name": "aws-cdk-lib",
-  "private": "true",
   "version": "0.0.0",
   "description": "The AWS Cloud Development Kit library",
   "main": "lib/index.js",
@@ -365,5 +364,8 @@
   "ubergen": {
     "exclude": true,
     "excludeExperimentalModules": true
+  },
+  "publishConfig": {
+    "tag": "latest"
   }
 }

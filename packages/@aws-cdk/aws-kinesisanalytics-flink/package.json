@@ -8,14 +8,14 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "software.amazon.awscdk.services.kinesis.analytics.flink",
+        "package": "software.amazon.awscdk.services.kinesisanalytics.flink",
         "maven": {
           "groupId": "software.amazon.awscdk",
           "artifactId": "kinesisanalytics-flink"
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.KinesisAnalyticsFlink",
+        "namespace": "Amazon.CDK.AWS.Kinesisanalytics.Flink",
         "packageId": "Amazon.CDK.AWS.KinesisAnalyticsFlink",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png"
       },
@@ -82,6 +82,7 @@
     "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/aws-s3-assets": "0.0.0",
     "@aws-cdk/core": "0.0.0",
+    "@aws-cdk/cx-api": "0.0.0",
     "constructs": "^10.0.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
@@ -94,6 +95,7 @@
     "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/aws-s3-assets": "0.0.0",
     "@aws-cdk/core": "0.0.0",
+    "@aws-cdk/cx-api": "0.0.0",
     "constructs": "^10.0.0"
   },
   "engines": {
