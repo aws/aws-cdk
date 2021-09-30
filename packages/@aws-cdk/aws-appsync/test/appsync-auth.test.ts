@@ -630,3 +630,7 @@ describe('AppSync OIDC Authorization', () => {
     });
   });
 });
+
+describe('AppSync Lambda Authorization', () => {
+  test()
+});

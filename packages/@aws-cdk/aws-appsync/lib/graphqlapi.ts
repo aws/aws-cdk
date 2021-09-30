@@ -1,6 +1,5 @@
 import { IUserPool } from '@aws-cdk/aws-cognito';
 import { ManagedPolicy, Role, IRole, ServicePrincipal, Grant, IGrantable } from '@aws-cdk/aws-iam';
-import { IFunction } from '@aws-cdk/aws-lambda';
 import { CfnResource, Duration, Expiration, IResolvable, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnApiKey, CfnGraphQLApi, CfnGraphQLSchema } from './appsync.generated';
@@ -67,7 +66,7 @@ export interface AuthorizationMode {
    * If authorizationType is `AuthorizationType.LAMBDA`, this option is required.
    * @default - none
    */
-  readonly lambdaConfig?: LambdaConfig;
+  readonly lambdaAuthorizerConfig?: lambdaAuthorizerConfig;
 }
 
 /**
@@ -163,14 +162,21 @@ export interface OpenIdConnectConfig {
 /**
  * Configuration for Lambda authorization in AppSync
  */
-export interface LambdaConfig {
+export interface lambdaAuthorizerConfig {
   /**
-   * The handler for the authorizer lambda function.
+   * The ARN for the authorizer lambda function. This may be a standard Lambda ARN, a version ARN (.../v3) or alias ARN.
+   * Note: This Lambda function must have the following resource-based policy assigned to it.
+   * When configuring Lambda authorizers in the console, this is done for you.
+   * To do so with the AWS CLI, run the following:
+   *
+   * `aws lambda add-permission --function-name "arn:aws:lambda:us-east-2:111122223333:function:my-function" --statement-id "appsync" --principal appsync.amazonaws.com --action lambda:InvokeFunction`
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-appsync-graphqlapi-lambdaauthorizerconfig.html
    */
-  readonly handler: IFunction;
+  readonly functionArn: string;
 
   /**
-   * How long APIGateway should cache the results. Max 1 hour.
+   * How long the results are cached.
    * Disable caching by setting this to 0.
    *
    * @default Duration.minutes(5)
@@ -178,13 +184,13 @@ export interface LambdaConfig {
   readonly resultsCacheTtl?: Duration;
 
   /**
-   * An optional regex to be matched against the authorization token. When matched the authorizer lambda is invoked,
-   * otherwise a 401 Unauthorized is returned to the client.
+   * A regular expression for validation of tokens before the Lambda function is called. 
    *
    * @default - no regex filter will be applied.
    */
   readonly validationRegex?: string;
 }
+
 /**
  * Configuration of the API authorization modes.
  */
@@ -453,6 +459,7 @@ export class GraphqlApi extends GraphqlApiBase {
       logConfig: this.setupLogConfig(props.logConfig),
       openIdConnectConfig: this.setupOpenIdConnectConfig(defaultMode.openIdConnectConfig),
       userPoolConfig: this.setupUserPoolConfig(defaultMode.userPoolConfig),
+      lambdaAuthorizerConfig: this.setupLambdaAuthorizerConfig(defaultMode.lambdaAuthorizerConfig),
       additionalAuthenticationProviders: this.setupAdditionalAuthorizationModes(additionalModes),
       xrayEnabled: props.xrayEnabled,
     });
@@ -532,6 +539,9 @@ export class GraphqlApi extends GraphqlApiBase {
       if (mode.authorizationType === AuthorizationType.USER_POOL && !mode.userPoolConfig) {
         throw new Error('Missing User Pool Configuration');
       }
+      if (mode.authorizationType === AuthorizationType.LAMBDA && !mode.lambdaAuthorizerConfig) {
+        throw new Error('Missing Lambda Configuration');
+      }
     });
     if (modes.filter((mode) => mode.authorizationType === AuthorizationType.API_KEY).length > 1) {
       throw new Error('You can\'t duplicate API_KEY configuration. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html');
@@ -584,6 +594,15 @@ export class GraphqlApi extends GraphqlApiBase {
       appIdClientRegex: config.appIdClientRegex,
       defaultAction: config.defaultAction || UserPoolDefaultAction.ALLOW,
     };
+  }
+
+  private setupLambdaAuthorizerConfig(config?: lambdaAuthorizerConfig) {
+    if (!config) return undefined;
+    return {
+      authorizerResultTtlInSeconds: config.resultsCacheTtl?.toSeconds(),
+      authorizerUri: config.functionArn,
+      identityValidationExpression: config.validationRegex,
+    }
   }
 
   private setupAdditionalAuthorizationModes(modes?: AuthorizationMode[]) {
