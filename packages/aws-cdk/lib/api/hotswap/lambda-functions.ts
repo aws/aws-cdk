@@ -1,6 +1,7 @@
 import * as cfn_diff from '@aws-cdk/cloudformation-diff';
 import { ISDK } from '../aws-auth';
-import { assetMetadataChanged, ChangeHotswapImpact, ChangeHotswapResult, HotswapOperation, ListStackResources, stringifyPotentialCfnExpression } from './common';
+import { assetMetadataChanged, ChangeHotswapImpact, ChangeHotswapResult, HotswapOperation } from './common';
+import { CfnEvaluationException, EvaluateCloudFormationTemplate } from './evaluate-cloudformation-template';
 
 /**
  * Returns `false` if the change cannot be short-circuited,
@@ -8,10 +9,10 @@ import { assetMetadataChanged, ChangeHotswapImpact, ChangeHotswapResult, Hotswap
  * (like a change to CDKMetadata),
  * or a LambdaFunctionResource if the change can be short-circuited.
  */
-export function isHotswappableLambdaFunctionChange(
-  logicalId: string, change: cfn_diff.ResourceDifference, assetParamsWithEnv: { [key: string]: string },
-): ChangeHotswapResult {
-  const lambdaCodeChange = isLambdaFunctionCodeOnlyChange(change, assetParamsWithEnv);
+export async function isHotswappableLambdaFunctionChange(
+  logicalId: string, change: cfn_diff.ResourceDifference, evaluateCfnTemplate: EvaluateCloudFormationTemplate,
+): Promise<ChangeHotswapResult> {
+  const lambdaCodeChange = await isLambdaFunctionCodeOnlyChange(change, evaluateCfnTemplate);
   if (typeof lambdaCodeChange === 'string') {
     return lambdaCodeChange;
   } else {
@@ -23,23 +24,13 @@ export function isHotswappableLambdaFunctionChange(
       return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
     }
 
-    let functionPhysicalName: string | undefined;
-    try {
-      functionPhysicalName = stringifyPotentialCfnExpression(change.newValue?.Properties?.FunctionName, assetParamsWithEnv);
-    } catch (e) {
-      // It's possible we can't evaluate the function's name -
-      // for example, it can use a Ref to a different resource,
-      // which we wouldn't have in `assetParamsWithEnv`.
-      // That's fine though - ignore any errors,
-      // and treat this case the same way as if the name wasn't provided at all,
-      // which means it will be looked up using the listStackResources() call
-      // by the later phase (which actually does the Lambda function update)
-      functionPhysicalName = undefined;
+    const functionName = await establishFunctionPhysicalName(logicalId, change, evaluateCfnTemplate);
+    if (!functionName) {
+      return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
     }
 
     return new LambdaFunctionHotswapOperation({
-      logicalId,
-      physicalName: functionPhysicalName,
+      physicalName: functionName,
       code: lambdaCodeChange,
     });
   }
@@ -54,9 +45,9 @@ export function isHotswappableLambdaFunctionChange(
  * or a LambdaFunctionCode if the change is to a AWS::Lambda::Function,
  * and only affects its Code property.
  */
-function isLambdaFunctionCodeOnlyChange(
-  change: cfn_diff.ResourceDifference, assetParamsWithEnv: { [key: string]: string },
-): LambdaFunctionCode | ChangeHotswapImpact {
+async function isLambdaFunctionCodeOnlyChange(
+  change: cfn_diff.ResourceDifference, evaluateCfnTemplate: EvaluateCloudFormationTemplate,
+): Promise<LambdaFunctionCode | ChangeHotswapImpact> {
   if (!change.newValue) {
     return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
   }
@@ -99,11 +90,11 @@ function isLambdaFunctionCodeOnlyChange(
       switch (newPropName) {
         case 'S3Bucket':
           foundCodeDifference = true;
-          s3Bucket = stringifyPotentialCfnExpression(updatedProp.newValue[newPropName], assetParamsWithEnv);
+          s3Bucket = await evaluateCfnTemplate.evaluateCfnExpression(updatedProp.newValue[newPropName]);
           break;
         case 'S3Key':
           foundCodeDifference = true;
-          s3Key = stringifyPotentialCfnExpression(updatedProp.newValue[newPropName], assetParamsWithEnv);
+          s3Key = await evaluateCfnTemplate.evaluateCfnExpression(updatedProp.newValue[newPropName]);
           break;
         default:
           return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
@@ -125,8 +116,7 @@ interface LambdaFunctionCode {
 }
 
 interface LambdaFunctionResource {
-  readonly logicalId: string;
-  readonly physicalName?: string;
+  readonly physicalName: string;
   readonly code: LambdaFunctionCode;
 }
 
@@ -134,26 +124,29 @@ class LambdaFunctionHotswapOperation implements HotswapOperation {
   constructor(private readonly lambdaFunctionResource: LambdaFunctionResource) {
   }
 
-  public async apply(sdk: ISDK, stackResources: ListStackResources): Promise<any> {
-    let functionPhysicalName: string;
-    if (this.lambdaFunctionResource.physicalName) {
-      functionPhysicalName = this.lambdaFunctionResource.physicalName;
-    } else {
-      const stackResourceList = await stackResources.listStackResources();
-      const foundFunctionName = stackResourceList
-        .find(resSummary => resSummary.LogicalResourceId === this.lambdaFunctionResource.logicalId)
-        ?.PhysicalResourceId;
-      if (!foundFunctionName) {
-        // if we couldn't find the function in the current stack, we can't update it
-        return;
-      }
-      functionPhysicalName = foundFunctionName;
-    }
-
+  public async apply(sdk: ISDK): Promise<any> {
     return sdk.lambda().updateFunctionCode({
-      FunctionName: functionPhysicalName,
+      FunctionName: this.lambdaFunctionResource.physicalName,
       S3Bucket: this.lambdaFunctionResource.code.s3Bucket,
       S3Key: this.lambdaFunctionResource.code.s3Key,
     }).promise();
   }
+}
+
+async function establishFunctionPhysicalName(
+  logicalId: string, change: cfn_diff.ResourceDifference, evaluateCfnTemplate: EvaluateCloudFormationTemplate,
+): Promise<string | undefined> {
+  const functionNameInCfnTemplate = change.newValue?.Properties?.FunctionName;
+  if (functionNameInCfnTemplate != null) {
+    try {
+      return await evaluateCfnTemplate.evaluateCfnExpression(functionNameInCfnTemplate);
+    } catch (e) {
+      // If we can't evaluate the function's name CloudFormation expression,
+      // just look it up in the currently deployed Stack
+      if (!(e instanceof CfnEvaluationException)) {
+        throw e;
+      }
+    }
+  }
+  return evaluateCfnTemplate.findPhysicalNameFor(logicalId);
 }
