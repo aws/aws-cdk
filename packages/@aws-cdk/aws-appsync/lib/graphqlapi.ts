@@ -1,5 +1,6 @@
 import { IUserPool } from '@aws-cdk/aws-cognito';
 import { ManagedPolicy, Role, IRole, ServicePrincipal, Grant, IGrantable } from '@aws-cdk/aws-iam';
+import { IFunction } from '@aws-cdk/aws-lambda';
 import { CfnResource, Duration, Expiration, IResolvable, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnApiKey, CfnGraphQLApi, CfnGraphQLSchema } from './appsync.generated';
@@ -29,6 +30,10 @@ export enum AuthorizationType {
    * OpenID Connect authorization type
    */
   OIDC = 'OPENID_CONNECT',
+  /**
+   * Lambda authorization type
+   */
+  LAMBDA = 'AWS_LAMBDA',
 }
 
 /**
@@ -58,6 +63,11 @@ export interface AuthorizationMode {
    * @default - none
    */
   readonly openIdConnectConfig?: OpenIdConnectConfig;
+  /**
+   * If authorizationType is `AuthorizationType.LAMBDA`, this option is required.
+   * @default - none
+   */
+  readonly lambdaConfig?: LambdaConfig;
 }
 
 /**
@@ -150,6 +160,31 @@ export interface OpenIdConnectConfig {
   readonly oidcProvider: string;
 }
 
+/**
+ * Configuration for Lambda authorization in AppSync
+ */
+export interface LambdaConfig {
+  /**
+   * The handler for the authorizer lambda function.
+   */
+  readonly handler: IFunction;
+
+  /**
+   * How long APIGateway should cache the results. Max 1 hour.
+   * Disable caching by setting this to 0.
+   *
+   * @default Duration.minutes(5)
+   */
+  readonly resultsCacheTtl?: Duration;
+
+  /**
+   * An optional regex to be matched against the authorization token. When matched the authorizer lambda is invoked,
+   * otherwise a 401 Unauthorized is returned to the client.
+   *
+   * @default - no regex filter will be applied.
+   */
+  readonly validationRegex?: string;
+}
 /**
  * Configuration of the API authorization modes.
  */
