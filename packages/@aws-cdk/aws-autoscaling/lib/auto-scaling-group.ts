@@ -387,6 +387,24 @@ export interface AutoScalingGroupProps extends CommonAutoScalingGroupProps {
 }
 
 /**
+ * Properties that reference an external AutoScalingGroup
+ */
+export interface AutoScalingGroupAttributes {
+  /**
+   * AutoScalingGroup's name
+   * @default - The construct's name (id)
+   */
+  readonly autoScalingGroupName?: string;
+
+  /**
+   * AutoScalingGroup's role
+   *
+   * @default - A role will automatically be created
+   */
+  readonly role?: iam.IRole;
+}
+
+/**
  * Configure whether the AutoScalingGroup waits for signals
  *
  * If you do configure waiting for signals, you should make sure the instances
@@ -851,16 +869,26 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
   elbv2.INetworkLoadBalancerTarget {
 
   public static fromAutoScalingGroupName(scope: Construct, id: string, autoScalingGroupName: string): IAutoScalingGroup {
+    return AutoScalingGroup.fromAutoScalingGroupAttributes(scope, id, { autoScalingGroupName });
+  }
+
+  /**
+   * Imports an existing autoscaling group.
+   */
+  public static fromAutoScalingGroupAttributes(scope: Construct, id: string, attrs: AutoScalingGroupAttributes): IAutoScalingGroup {
     class Import extends AutoScalingGroupBase {
-      public autoScalingGroupName = autoScalingGroupName;
+      public autoScalingGroupName = attrs.autoScalingGroupName ? attrs.autoScalingGroupName : id;
       public autoScalingGroupArn = Stack.of(this).formatArn({
         service: 'autoscaling',
         resource: 'autoScalingGroup:*:autoScalingGroupName',
-        resourceName: this.autoScalingGroupName,
+        resourceName: attrs.autoScalingGroupName,
       });
       public readonly osType = ec2.OperatingSystemType.UNKNOWN;
+      public readonly role?: iam.IRole = attrs.role || new iam.Role(this, 'InstanceRole', {
+        roleName: PhysicalName.GENERATE_IF_NEEDED,
+        assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
+      });
     }
-
     return new Import(scope, id);
   }
 
@@ -877,7 +905,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
   /**
    * The IAM role assumed by instances of this fleet.
    */
-  public readonly role: iam.IRole;
+  public readonly role?: iam.IRole;
 
   /**
    * The principal to grant permissions to
@@ -1119,7 +1147,9 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
    * Adds a statement to the IAM role assumed by instances of this fleet.
    */
   public addToRolePolicy(statement: iam.PolicyStatement) {
-    this.role.addToPrincipalPolicy(statement);
+    if (this.role !== undefined) {
+      this.role.addToPrincipalPolicy(statement);
+    }
   }
 
   /**
@@ -1139,7 +1169,10 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
 
     init.attach(this.autoScalingGroup, {
       platform: this.osType,
-      instanceRole: this.role,
+      instanceRole: this.role || new iam.Role(this, 'InstanceRole', {
+        roleName: PhysicalName.GENERATE_IF_NEEDED,
+        assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
+      }),
       userData: this.userData,
       configSets: options.configSets,
       embedFingerprint: options.embedFingerprint,
@@ -1592,6 +1625,13 @@ export interface IAutoScalingGroup extends IResource, iam.IGrantable {
    * Is 'UNKNOWN' for imported ASGs.
    */
   readonly osType: ec2.OperatingSystemType;
+
+  /**
+   * The IAM role of the AutoScalingGroup.
+   *
+   * @default - A role will automatically be created
+   */
+  readonly role?: iam.IRole;
 
   /**
    * Add command to the startup script of fleet instances.

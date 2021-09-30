@@ -1362,7 +1362,20 @@ describe('auto scaling group', () => {
       NewInstancesProtectedFromScaleIn: true,
     });
 
+  });
 
+  test('Can configure role to import', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const importedRole = iam.Role.fromRoleArn(stack, 'ImportedRole', 'arn:aws:iam::123456789012:role/HelloFriend');
+
+    // WHEN
+    const asg = autoscaling.AutoScalingGroup.fromAutoScalingGroupAttributes(stack, 'MyASG', {
+      role: importedRole,
+    });
+
+    // THEN
+    expect(asg.role).toEqual(importedRole);
   });
 });
 
