@@ -1,5 +1,5 @@
 import { EOL } from 'os';
-import { Template } from '@aws-cdk/assertions';
+import { expect as expectCDK, haveResource, haveResourceLike, ResourcePart } from '@aws-cdk/assert-internal';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import * as ecr from '../lib';
@@ -15,7 +15,7 @@ describe('repository', () => {
     new ecr.Repository(stack, 'Repo');
 
     // THEN
-    Template.fromStack(stack).templateMatches({
+    expectCDK(stack).toMatch({
       Resources: {
         Repo02AC86CF: {
           Type: 'AWS::ECR::Repository',
@@ -34,11 +34,11 @@ describe('repository', () => {
     new ecr.Repository(stack, 'Repo', { imageScanOnPush: true });
 
     // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository', {
+    expectCDK(stack).to(haveResource('AWS::ECR::Repository', {
       ImageScanningConfiguration: {
         ScanOnPush: true,
       },
-    });
+    }));
   });
 
   test('tag-based lifecycle policy', () => {
@@ -50,12 +50,12 @@ describe('repository', () => {
     repo.addLifecycleRule({ tagPrefixList: ['abc'], maxImageCount: 1 });
 
     // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository', {
+    expectCDK(stack).to(haveResource('AWS::ECR::Repository', {
       LifecyclePolicy: {
         // eslint-disable-next-line max-len
         LifecyclePolicyText: '{"rules":[{"rulePriority":1,"selection":{"tagStatus":"tagged","tagPrefixList":["abc"],"countType":"imageCountMoreThan","countNumber":1},"action":{"type":"expire"}}]}',
       },
-    });
+    }));
   });
 
   test('image tag mutability can be set', () => {
@@ -64,9 +64,9 @@ describe('repository', () => {
     new ecr.Repository(stack, 'Repo', { imageTagMutability: ecr.TagMutability.IMMUTABLE });
 
     // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository', {
+    expectCDK(stack).to(haveResource('AWS::ECR::Repository', {
       ImageTagMutability: 'IMMUTABLE',
-    });
+    }));
   });
 
   test('add day-based lifecycle policy', () => {
@@ -80,12 +80,12 @@ describe('repository', () => {
     });
 
     // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository', {
+    expectCDK(stack).to(haveResource('AWS::ECR::Repository', {
       LifecyclePolicy: {
         // eslint-disable-next-line max-len
         LifecyclePolicyText: '{"rules":[{"rulePriority":1,"selection":{"tagStatus":"any","countType":"sinceImagePushed","countNumber":5,"countUnit":"days"},"action":{"type":"expire"}}]}',
       },
-    });
+    }));
   });
 
   test('add count-based lifecycle policy', () => {
@@ -99,12 +99,12 @@ describe('repository', () => {
     });
 
     // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository', {
+    expectCDK(stack).to(haveResource('AWS::ECR::Repository', {
       LifecyclePolicy: {
         // eslint-disable-next-line max-len
         LifecyclePolicyText: '{"rules":[{"rulePriority":1,"selection":{"tagStatus":"any","countType":"imageCountMoreThan","countNumber":5},"action":{"type":"expire"}}]}',
       },
-    });
+    }));
   });
 
   test('mixing numbered and unnumbered rules', () => {
@@ -117,12 +117,12 @@ describe('repository', () => {
     repo.addLifecycleRule({ rulePriority: 10, tagStatus: ecr.TagStatus.TAGGED, tagPrefixList: ['b'], maxImageCount: 5 });
 
     // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository', {
+    expectCDK(stack).to(haveResource('AWS::ECR::Repository', {
       LifecyclePolicy: {
         // eslint-disable-next-line max-len
         LifecyclePolicyText: '{"rules":[{"rulePriority":10,"selection":{"tagStatus":"tagged","tagPrefixList":["b"],"countType":"imageCountMoreThan","countNumber":5},"action":{"type":"expire"}},{"rulePriority":11,"selection":{"tagStatus":"tagged","tagPrefixList":["a"],"countType":"imageCountMoreThan","countNumber":5},"action":{"type":"expire"}}]}',
       },
-    });
+    }));
   });
 
   test('tagstatus Any is automatically sorted to the back', () => {
@@ -135,12 +135,12 @@ describe('repository', () => {
     repo.addLifecycleRule({ tagStatus: ecr.TagStatus.TAGGED, tagPrefixList: ['important'], maxImageCount: 999 });
 
     // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository', {
+    expectCDK(stack).to(haveResource('AWS::ECR::Repository', {
       LifecyclePolicy: {
         // eslint-disable-next-line max-len
         LifecyclePolicyText: '{"rules":[{"rulePriority":1,"selection":{"tagStatus":"tagged","tagPrefixList":["important"],"countType":"imageCountMoreThan","countNumber":999},"action":{"type":"expire"}},{"rulePriority":2,"selection":{"tagStatus":"any","countType":"imageCountMoreThan","countNumber":5},"action":{"type":"expire"}}]}',
       },
-    });
+    }));
   });
 
   test('lifecycle rules can be added upon initialization', () => {
@@ -155,12 +155,12 @@ describe('repository', () => {
     });
 
     // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository', {
+    expectCDK(stack).to(haveResource('AWS::ECR::Repository', {
       'LifecyclePolicy': {
         // eslint-disable-next-line max-len
         'LifecyclePolicyText': '{"rules":[{"rulePriority":1,"selection":{"tagStatus":"any","countType":"imageCountMoreThan","countNumber":3},"action":{"type":"expire"}}]}',
       },
-    });
+    }));
   });
 
   test('calculate repository URI', () => {
@@ -173,7 +173,7 @@ describe('repository', () => {
 
     // THEN
     const arnSplit = { 'Fn::Split': [':', { 'Fn::GetAtt': ['Repo02AC86CF', 'Arn'] }] };
-    expect(stack.resolve(uri)).toEqual({
+    expectCDK(stack.resolve(uri)).toMatch({
       'Fn::Join': ['', [
         { 'Fn::Select': [4, arnSplit] },
         '.dkr.ecr.',
@@ -219,8 +219,8 @@ describe('repository', () => {
     });
 
     // THEN
-    expect(stack.resolve(repo.repositoryArn)).toEqual({ 'Fn::GetAtt': ['Boom', 'Arn'] });
-    expect(stack.resolve(repo.repositoryName)).toEqual({ 'Fn::GetAtt': ['Boom', 'Name'] });
+    expectCDK(stack.resolve(repo.repositoryArn)).toMatch({ 'Fn::GetAtt': ['Boom', 'Arn'] });
+    expectCDK(stack.resolve(repo.repositoryName)).toMatch({ 'Fn::GetAtt': ['Boom', 'Name'] });
   });
 
   test('import only with a repository name (arn is deduced)', () => {
@@ -231,7 +231,7 @@ describe('repository', () => {
     const repo = ecr.Repository.fromRepositoryName(stack, 'just-name', 'my-repo');
 
     // THEN
-    expect(stack.resolve(repo.repositoryArn)).toEqual({
+    expectCDK(stack.resolve(repo.repositoryArn)).toMatch({
       'Fn::Join': ['', [
         'arn:',
         { Ref: 'AWS::Partition' },
@@ -257,8 +257,8 @@ describe('repository', () => {
     });
 
     // THEN
-    expect(stack.resolve(repo.repositoryName)).toEqual({ 'Fn::GetAtt': ['Boom', 'Name'] });
-    expect(stack.resolve(repo.repositoryArn)).toEqual({
+    expectCDK(stack.resolve(repo.repositoryName)).toMatch({ 'Fn::GetAtt': ['Boom', 'Name'] });
+    expectCDK(stack.resolve(repo.repositoryArn)).toMatch({
       'Fn::Join': ['', [
         'arn:',
         { Ref: 'AWS::Partition' },
@@ -284,7 +284,7 @@ describe('repository', () => {
     }));
 
     // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository', {
+    expectCDK(stack).to(haveResource('AWS::ECR::Repository', {
       RepositoryPolicyText: {
         Statement: [
           {
@@ -295,7 +295,7 @@ describe('repository', () => {
         ],
         Version: '2012-10-17',
       },
-    });
+    }));
   });
 
   test('fails if repository policy has no actions', () => {
@@ -341,7 +341,7 @@ describe('repository', () => {
         },
       });
 
-      Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+      expectCDK(stack).to(haveResourceLike('AWS::Events::Rule', {
         'EventPattern': {
           'source': [
             'aws.ecr',
@@ -360,7 +360,7 @@ describe('repository', () => {
           },
         },
         'State': 'ENABLED',
-      });
+      }));
     });
 
     test('onImageScanCompleted without imageTags creates the correct event', () => {
@@ -373,7 +373,7 @@ describe('repository', () => {
         },
       });
 
-      Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+      expectCDK(stack).to(haveResourceLike('AWS::Events::Rule', {
         'EventPattern': {
           'source': [
             'aws.ecr',
@@ -390,7 +390,7 @@ describe('repository', () => {
           },
         },
         'State': 'ENABLED',
-      });
+      }));
     });
 
     test('onImageScanCompleted with one imageTag creates the correct event', () => {
@@ -404,7 +404,7 @@ describe('repository', () => {
         },
       });
 
-      Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+      expectCDK(stack).to(haveResourceLike('AWS::Events::Rule', {
         'EventPattern': {
           'source': [
             'aws.ecr',
@@ -424,7 +424,7 @@ describe('repository', () => {
           },
         },
         'State': 'ENABLED',
-      });
+      }));
     });
 
     test('onImageScanCompleted with multiple imageTags creates the correct event', () => {
@@ -438,7 +438,7 @@ describe('repository', () => {
         },
       });
 
-      Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+      expectCDK(stack).to(haveResourceLike('AWS::Events::Rule', {
         'EventPattern': {
           'source': [
             'aws.ecr',
@@ -460,7 +460,7 @@ describe('repository', () => {
           },
         },
         'State': 'ENABLED',
-      });
+      }));
     });
 
     test('removal policy is "Retain" by default', () => {
@@ -471,10 +471,10 @@ describe('repository', () => {
       new ecr.Repository(stack, 'Repo');
 
       // THEN
-      Template.fromStack(stack).hasResource('AWS::ECR::Repository', {
+      expectCDK(stack).to(haveResource('AWS::ECR::Repository', {
         'Type': 'AWS::ECR::Repository',
         'DeletionPolicy': 'Retain',
-      });
+      }, ResourcePart.CompleteDefinition));
     });
 
     test('"Delete" removal policy can be set explicitly', () => {
@@ -487,10 +487,10 @@ describe('repository', () => {
       });
 
       // THEN
-      Template.fromStack(stack).hasResource('AWS::ECR::Repository', {
+      expectCDK(stack).to(haveResource('AWS::ECR::Repository', {
         'Type': 'AWS::ECR::Repository',
         'DeletionPolicy': 'Delete',
-      });
+      }, ResourcePart.CompleteDefinition));
     });
 
     test('grant adds appropriate resource-*', () => {
@@ -502,7 +502,7 @@ describe('repository', () => {
       repo.grantPull(new iam.AnyPrincipal());
 
       // THEN
-      Template.fromStack(stack).hasResourceProperties('AWS::ECR::Repository', {
+      expectCDK(stack).to(haveResource('AWS::ECR::Repository', {
         'RepositoryPolicyText': {
           'Statement': [
             {
@@ -517,7 +517,7 @@ describe('repository', () => {
           ],
           'Version': '2012-10-17',
         },
-      });
+      }));
     });
   });
 
