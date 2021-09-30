@@ -612,6 +612,7 @@ export class GraphqlApi extends GraphqlApiBase {
         authenticationType: mode.authorizationType,
         userPoolConfig: this.setupUserPoolConfig(mode.userPoolConfig),
         openIdConnectConfig: this.setupOpenIdConnectConfig(mode.openIdConnectConfig),
+        lambdaAuthorizerConfig: this.setupLambdaAuthorizerConfig(mode.lambdaAuthorizerConfig),
       },
     ], []);
   }
