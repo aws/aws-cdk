@@ -39,14 +39,17 @@ export enum ChangeHotswapImpact {
 
 export type ChangeHotswapResult = HotswapOperation | ChangeHotswapImpact;
 
+/**
+ * Represents a change that can be hotswapped.
+ */
 export class HotswappableResourceChange {
   /**
-   * TODO - docs
+   * The value the resource is being updated to.
    */
   newValue: cfn_diff.Resource;
 
   /**
-   * TODO - docs
+   * The changes made to the resource properties.
    */
   propertyUpdates: { [key: string]: cfn_diff.PropertyDifference<any> };
 

@@ -109,9 +109,11 @@ class LambdaFunctionHotswapOperation implements HotswapOperation {
     const physicalName = this.lambdaFunctionResource.physicalName;
     const logicalId = this.lambdaFunctionResource.logicalId;
     const functionPhysicalName = await establishHotswappableResourceName(cfnExectuableTemplate, physicalName, logicalId);
+
     if (!functionPhysicalName) {
       return;
     }
+
     const codeS3Bucket = await cfnExectuableTemplate.evaluateCfnExpression(this.lambdaFunctionResource.code.s3Bucket);
     const codeS3Key = await cfnExectuableTemplate.evaluateCfnExpression(this.lambdaFunctionResource.code.s3Key);
 

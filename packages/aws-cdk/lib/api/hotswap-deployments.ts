@@ -68,8 +68,8 @@ function findAllHotswappableChanges(stackChanges: cfn_diff.TemplateDiff): Hotswa
       // empty if
     } else {
       const detectorResults = [
-        isHotswappableLambdaFunctionChange(logicalId, nonHotswappableResourceFound/*, assetParamsWithEnv*/),
-        isHotswappableStateMachineChange(logicalId, nonHotswappableResourceFound/*, assetParamsWithEnv*/),
+        isHotswappableLambdaFunctionChange(logicalId, nonHotswappableResourceFound),
+        isHotswappableStateMachineChange(logicalId, nonHotswappableResourceFound),
       ];
 
       for (const result of detectorResults) {
@@ -80,7 +80,6 @@ function findAllHotswappableChanges(stackChanges: cfn_diff.TemplateDiff): Hotswa
 
       // if we found any hotswappable changes, return now
       if (hotswappableResources.length > 0) {
-        // TODO: check that commenting this out causes tests to fail AFTER you've changed the types of the functions to return REQUIRES_FULL_DEPLOYMENT and refactored that function
         return;
       }
 
