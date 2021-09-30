@@ -216,17 +216,30 @@ describe('Cluster with StepConcurrencyLevel', () => {
     })).toThrow('Step concurrency level must be in range [1, 256], but got 257.');
   });
 
-  test('throws if EMR release label below 5.28', async () => {
-    expect(() => new EmrCreateCluster(stack, 'Task', {
+  test('throws if EMR release label below 5.28 and StepConcurrencyLevel !== 1', async () => {
+    expect(() => new EmrCreateCluster(stack, 'Task2', {
       instances: {},
       clusterRole,
       name: 'Cluster',
       serviceRole,
       autoScalingRole,
-      stepConcurrencyLevel: 1,
       releaseLabel: 'emr-5.14.0',
+      stepConcurrencyLevel: 2,
       integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
     })).toThrow('Step concurrency is only supported in EMR release version 5.28.0 and above but got emr-5.14.0.');
+  });
+
+  test('does not throw if EMR release label below 5.28 and StepConcurrencyLevel === 1', async () => {
+    new EmrCreateCluster(stack, 'Task1', {
+      instances: {},
+      clusterRole,
+      name: 'Cluster',
+      serviceRole,
+      autoScalingRole,
+      releaseLabel: 'emr-5.14.0',
+      stepConcurrencyLevel: 1,
+      integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
+    });
   });
 });
 
