@@ -602,7 +602,7 @@ The following linters are used:
 
 #### eslint
 
-All packages in the repo use a standard base configuration found at [eslintrc.js](tools/cdk-build-tools/config/eslintrc.js).
+All packages in the repo use a standard base configuration found at [eslintrc.js](tools/@aws-cdk/cdk-build-tools/config/eslintrc.js).
 This can be customized for any package by modifying the `.eslintrc` file found at its root.
 
 If you're using the VS Code and would like to see eslint violations on it, install the [eslint
@@ -780,7 +780,7 @@ the feature flag.
 A couple of [jest helper methods] are available for use with unit tests. These help run unit tests that test
 behaviour when flags are enabled or disabled in the two major versions.
 
-[jest helper methods]: https://github.com/aws/aws-cdk/blob/master/tools/cdk-build-tools/lib/feature-flag.ts
+[jest helper methods]: https://github.com/aws/aws-cdk/blob/master/tools/@aws-cdk/cdk-build-tools/lib/feature-flag.ts
 
 ## Versioning and Release
 
