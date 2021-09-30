@@ -122,9 +122,7 @@ export function rewriteImports(sourceText: string, fileName: string = 'index.ts'
 }
 
 const EXEMPTIONS = new Set([
-  '@aws-cdk/cloud-assembly-schema',
   '@aws-cdk/cloudformation-diff',
-  '@aws-cdk/cx-api',
   // The dev-tools
   '@aws-cdk/cdk-build-tools',
   '@aws-cdk/cdk-integ-tools',
