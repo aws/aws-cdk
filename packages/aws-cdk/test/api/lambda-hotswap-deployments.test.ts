@@ -305,3 +305,48 @@ test("correctly falls back to taking the function's name from the current stack 
   });
 });
 
+test('does not call the updateLambdaCode() API when a resource with type that is not AWS::Lambda::Function but has the same properties is changed', async () => {
+  // GIVEN
+  setup.currentCfnStack.setTemplate({
+    Resources: {
+      Func: {
+        Type: 'AWS::NotLambda::NotAFunction',
+        Properties: {
+          Code: {
+            S3Bucket: 'current-bucket',
+            S3Key: 'current-key',
+          },
+        },
+        Metadata: {
+          'aws:asset:path': 'old-path',
+        },
+      },
+    },
+  });
+  const cdkStackArtifact = setup.cdkStackArtifactOf({
+    template: {
+      Resources: {
+        Func: {
+          Type: 'AWS::NotLambda::NotAFunction',
+          Properties: {
+            Code: {
+              S3Bucket: 'current-bucket',
+              S3Key: 'new-key',
+            },
+          },
+          Metadata: {
+            'aws:asset:path': 'old-path',
+          },
+        },
+      },
+    },
+  });
+
+  // WHEN
+  const deployStackResult = await tryHotswapDeployment(setup.mockSdkProvider, {}, setup.currentCfnStack, cdkStackArtifact);
+
+  // THEN
+  expect(deployStackResult).toBeUndefined();
+  expect(mockUpdateLambdaCode).not.toHaveBeenCalled();
+});
+

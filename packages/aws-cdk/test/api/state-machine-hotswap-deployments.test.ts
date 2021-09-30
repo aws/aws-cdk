@@ -228,3 +228,40 @@ test('does not call the updateStateMachine() API when it receives a change to a 
   expect(deployStackResult).toBeUndefined();
   expect(mockUpdateMachineDefinition).not.toHaveBeenCalled();
 });
+
+test('does not call the updateStateMachine() API when a resource with type that is not AWS::StepFunctions::StateMachine but has the same properties is changed', async () => {
+  // GIVEN
+  setup.currentCfnStack.setTemplate({
+    Resources: {
+      Machine: {
+        Type: 'AWS::NotStepFunctions::NotStateMachine',
+        Properties: {
+          DefinitionString: {
+            Prop: 'old-value',
+          },
+        },
+      },
+    },
+  });
+  const cdkStackArtifact = setup.cdkStackArtifactOf({
+    template: {
+      Resources: {
+        Machine: {
+          Type: 'AWS::NotStepFunctions::NotStateMachine',
+          Properties: {
+            DefinitionString: {
+              Prop: 'new-value',
+            },
+          },
+        },
+      },
+    },
+  });
+
+  // WHEN
+  const deployStackResult = await tryHotswapDeployment(setup.mockSdkProvider, {}, setup.currentCfnStack, cdkStackArtifact);
+
+  // THEN
+  expect(deployStackResult).toBeUndefined();
+  expect(mockUpdateMachineDefinition).not.toHaveBeenCalled();
+});
