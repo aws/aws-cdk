@@ -187,11 +187,13 @@ export class EvaluateCloudFormationTemplate {
 
     const resourceTypeFormats = RESOURCE_TYPE_ATTRIBUTES_FORMATS[resource.ResourceType];
     if (!resourceTypeFormats) {
-      return undefined;
+      throw new CfnEvaluationException(`We don't support attributes of the '${resource.ResourceType}' resource. This is a CDK limitation. ` +
+        'Please report it at https://github.com/aws/aws-cdk/issues/new/choose');
     }
     const attributeFmtFunc = resourceTypeFormats[attribute];
     if (!attributeFmtFunc) {
-      return undefined;
+      throw new CfnEvaluationException(`We don't support the '${attribute}' attribute of the '${resource.ResourceType}' resource. This is a CDK limitation. ` +
+        'Please report it at https://github.com/aws/aws-cdk/issues/new/choose');
     }
     const service = this.getServiceOfResource(resource);
     const resourceTypeArnPart = this.getResourceTypeArnPartOfResource(resource);

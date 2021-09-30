@@ -350,7 +350,7 @@ test("will not perform a hotswap deployment if it doesn't know how to handle a s
   // THEN
   await expect(() =>
     tryHotswapDeployment(mockSdkProvider, {}, currentCfnStack, cdkStackArtifact),
-  ).rejects.toThrow(/Attribute 'UnknownAttribute' of resource 'Bucket' could not be found for evaluation/);
+  ).rejects.toThrow("We don't support the 'UnknownAttribute' attribute of the 'AWS::S3::Bucket' resource. This is a CDK limitation. Please report it at https://github.com/aws/aws-cdk/issues/new/choose");
 });
 
 function cdkStackArtifactOf(testStackArtifact: Partial<TestStackArtifact> = {}): cxapi.CloudFormationStackArtifact {
