@@ -186,8 +186,9 @@ new lambda.NodejsFunction(this, 'my-handler', {
     keepNames: true, // defaults to false
     tsconfig: 'custom-tsconfig.json', // use custom-tsconfig.json instead of default,
     metafile: true, // include meta file, defaults to false
-    banner : '/* comments */', // requires esbuild >= 0.9.0, defaults to none
-    footer : '/* comments */', // requires esbuild >= 0.9.0, defaults to none
+    banner: '/* comments */', // requires esbuild >= 0.9.0, defaults to none
+    footer: '/* comments */', // requires esbuild >= 0.9.0, defaults to none
+    charset: Charset.UTF8, // do not escape non-ASCII characters, defaults to Charset.ASCII
   },
 });
 ```

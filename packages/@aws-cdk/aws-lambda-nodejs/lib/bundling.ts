@@ -151,6 +151,7 @@ export class Bundling implements cdk.BundlingOptions {
       ...this.props.metafile ? [`--metafile=${pathJoin(options.outputDir, 'index.meta.json')}`] : [],
       ...this.props.banner ? [`--banner:js=${JSON.stringify(this.props.banner)}`] : [],
       ...this.props.footer ? [`--footer:js=${JSON.stringify(this.props.footer)}`] : [],
+      ...this.props.charset ? [`--charset=${this.props.charset}`] : [],
     ];
 
     let depsCommand = '';
