@@ -1411,6 +1411,31 @@ test('device tracking is configured correctly', () => {
   });
 });
 
+test('User pool w/same lambda trigger', () => {
+  // GIVEN
+  const stack = new Stack();
+  const fn = fooFunction(stack, 'preSignUp');
+
+  // WHEN
+  new UserPool(stack, 'UserPool-1', {
+    lambdaTriggers: {
+      preSignUp: fn,
+    },
+  });
+
+  new UserPool(stack, 'UserPool-2', {
+    lambdaTriggers: {
+      preSignUp: fn,
+    },
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
+    LambdaConfig: {
+      PreSignUp: stack.resolve(fn.functionArn),
+    },
+  });
+});
 
 function fooFunction(scope: Construct, name: string): lambda.IFunction {
   return new lambda.Function(scope, name, {

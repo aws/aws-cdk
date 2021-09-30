@@ -757,16 +757,6 @@ export class UserPool extends UserPoolBase {
 
     const signIn = this.signInConfiguration(props);
 
-    if (props.lambdaTriggers) {
-      for (const t of Object.keys(props.lambdaTriggers)) {
-        const trigger = props.lambdaTriggers[t];
-        if (trigger !== undefined) {
-          this.addLambdaPermission(trigger as lambda.IFunction, t);
-          (this.triggers as any)[t] = (trigger as lambda.IFunction).functionArn;
-        }
-      }
-    }
-
     const verificationMessageTemplate = this.verificationMessageConfiguration(props);
     let emailVerificationMessage;
     let emailVerificationSubject;
@@ -822,6 +812,17 @@ export class UserPool extends UserPoolBase {
 
     this.userPoolProviderName = userPool.attrProviderName;
     this.userPoolProviderUrl = userPool.attrProviderUrl;
+
+    if (props.lambdaTriggers) {
+      for (const t of Object.keys(props.lambdaTriggers)) {
+        const trigger = props.lambdaTriggers[t];
+        if (trigger !== undefined) {
+          const name = `${t}${id}`;
+          this.addLambdaPermission(trigger as lambda.IFunction, name);
+          (this.triggers as any)[t] = (trigger as lambda.IFunction).functionArn;
+        }
+      }
+    }
   }
 
   /**
