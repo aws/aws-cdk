@@ -3,7 +3,6 @@ import * as cxapi from '@aws-cdk/cx-api';
 import { CloudFormation } from 'aws-sdk';
 import { ISDK, Mode, SdkProvider } from './aws-auth';
 import { DeployStackResult } from './deploy-stack';
-//import { ChangeHotswapImpact, HotswapOperation, HotswappableResourceChange, ListStackResources, HotswappableResource } from './hotswap/common';
 import { CloudFormationExecutableTemplate } from './hotswap/cloudformation-executable-template';
 import { ChangeHotswapImpact, HotswapOperation, HotswappableResourceChange, ListStackResources, HotswappableResource } from './hotswap/common';
 import { isHotswappableLambdaFunctionChange } from './hotswap/lambda-functions';
@@ -26,12 +25,6 @@ export async function tryHotswapDeployment(
 
   // resolve the environment, so we can substitute things like AWS::Region in CFN expressions
   const resolvedEnv = await sdkProvider.resolveEnvironment(stackArtifact.environment);
-  /*const hotswappableChanges = findAllHotswappableChanges(stackChanges, {
-    ...assetParams,
-    'AWS::Region': resolvedEnv.region,
-    'AWS::AccountId': resolvedEnv.account,
-    'AWS::Partition': resolvedEnv.partition,
-  });*/
   const hotswappableChanges = findAllHotswappableChanges(stackChanges);
   if (!hotswappableChanges) {
     // this means there were changes to the template that cannot be short-circuited
