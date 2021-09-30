@@ -132,16 +132,11 @@ function transformPackageJson(pkg: any, source: string, destination: string, alp
 
   // All individual packages are private by default on v2.
   // This needs to be removed for the alpha modules to be published.
-<<<<<<< HEAD:tools/@aws-cdk/individual-pkg-gen/transform-packages.ts
   // However, we should only do this for packages we intend to publish (those with a `publishConfig`)
   if (packageJson.publishConfig) {
     packageJson.private = undefined;
     packageJson.publishConfig.tag = 'latest';
   }
-=======
-  packageJson.private = undefined;
-  packageJson.publishConfig.tag = 'latest';
->>>>>>> origin/v2-main:tools/@aws-cdk/cfn2ts/transform-packages.ts
 
   // disable awslint (some rules are hard-coded to @aws-cdk/core)
   packageJson.awslint = {
