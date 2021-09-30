@@ -56,6 +56,19 @@ export class HotswappableResourceChange {
   }
 }
 
+export async function establishHotswappableResourceName(cfnExectuableTemplate: CloudFormationExecutableTemplate,
+  resourceName: string | undefined, logicalId: string): Promise<string | undefined> {
+  if (resourceName) {
+    try {
+      return await cfnExectuableTemplate.evaluateCfnExpression(resourceName);
+    } catch (e) {
+      // If we can't evaluate the resource's name CloudFormation expression,
+      // just look it up in the currently deployed Stack
+    }
+  }
+  return cfnExectuableTemplate.findPhysicalNameFor(logicalId);
+}
+
 export function assetMetadataChanged(change: HotswappableResourceChange): boolean {
   return !!change.newValue?.Metadata['aws:asset:path'];
 }

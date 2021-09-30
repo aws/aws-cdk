@@ -1,6 +1,6 @@
 import { ISDK } from '../aws-auth';
 import { CloudFormationExecutableTemplate } from './cloudformation-executable-template';
-import { assetMetadataChanged, ChangeHotswapImpact, ChangeHotswapResult, HotswapOperation, HotswappableResourceChange /*ListStackResources?*/ } from './common';
+import { assetMetadataChanged, ChangeHotswapImpact, ChangeHotswapResult, HotswapOperation, HotswappableResourceChange, establishHotswappableResourceName } from './common';
 
 /**
  * Returns `false` if the change cannot be short-circuited,
@@ -8,10 +8,6 @@ import { assetMetadataChanged, ChangeHotswapImpact, ChangeHotswapResult, Hotswap
  * (like a change to CDKMetadata),
  * or a LambdaFunctionResource if the change can be short-circuited.
  */
-//export function isHotswappableLambdaFunctionChange(
-//  logicalId: string, change: cfn_diff.ResourceDifference, assetParamsWithEnv: { [key: string]: string },
-//): ChangeHotswapResult {
-
 export function isHotswappableLambdaFunctionChange(
   logicalId: string, change: HotswappableResourceChange,
 ): ChangeHotswapResult {
@@ -44,14 +40,9 @@ export function isHotswappableLambdaFunctionChange(
  * or a LambdaFunctionCode if the change is to a AWS::Lambda::Function,
  * and only affects its Code property.
  */
-function isLambdaFunctionCodeOnlyChange(
-  change: HotswappableResourceChange,
-): LambdaFunctionCode | ChangeHotswapImpact {
-  // if we see a different resource type, it will be caught by isNonHotswappableResourceChange()
-  // this also ignores Metadata changes
+function isLambdaFunctionCodeOnlyChange(change: HotswappableResourceChange): LambdaFunctionCode | ChangeHotswapImpact {
   const newResourceType = change.newValue.Type;
   if (newResourceType !== 'AWS::Lambda::Function') {
-    // TODO: test case that hits this?
     return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
   }
 
@@ -115,7 +106,9 @@ class LambdaFunctionHotswapOperation implements HotswapOperation {
   }
 
   public async apply(sdk: ISDK, cfnExectuableTemplate: CloudFormationExecutableTemplate): Promise<any> {
-    const functionPhysicalName = await this.establishFunctionPhysicalName(cfnExectuableTemplate);
+    const physicalName = this.lambdaFunctionResource.physicalName;
+    const logicalId = this.lambdaFunctionResource.logicalId;
+    const functionPhysicalName = await establishHotswappableResourceName(cfnExectuableTemplate, physicalName, logicalId);
     if (!functionPhysicalName) {
       return;
     }
@@ -127,17 +120,5 @@ class LambdaFunctionHotswapOperation implements HotswapOperation {
       S3Bucket: codeS3Bucket,
       S3Key: codeS3Key,
     }).promise();
-  }
-
-  private async establishFunctionPhysicalName(cfnExectuableTemplate: CloudFormationExecutableTemplate): Promise<string | undefined> {
-    if (this.lambdaFunctionResource.physicalName) {
-      try {
-        return await cfnExectuableTemplate.evaluateCfnExpression(this.lambdaFunctionResource.physicalName);
-      } catch (e) {
-        // If we can't evaluate the function's name CloudFormation expression,
-        // just look it up in the currently deployed Stack
-      }
-    }
-    return cfnExectuableTemplate.findPhysicalNameFor(this.lambdaFunctionResource.logicalId);
   }
 }
