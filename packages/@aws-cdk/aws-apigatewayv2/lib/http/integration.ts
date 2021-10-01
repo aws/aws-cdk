@@ -1,5 +1,5 @@
 /* eslint-disable quotes */
-import { Resource } from '@aws-cdk/core';
+import { Resource, Duration } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnIntegration } from '../apigatewayv2.generated';
 import { IIntegration } from '../common';
@@ -85,42 +85,79 @@ export interface HttpIntegrationProps {
   readonly httpApi: IHttpApi;
 
   /**
-   * Integration type
-   */
+    * The description of the integration
+    *
+    * @default - undefined
+    */
+  readonly description?: string;
+
+  /**
+    * Specifies the credentials ARN required for the integration, if any.
+    *
+    * @default - undefined
+    */
+  readonly credentials?: string;
+
+  /**
+    * Integration type
+    */
   readonly integrationType: HttpIntegrationType;
 
   /**
-   * Integration URI.
-   * This will be the function ARN in the case of `HttpIntegrationType.LAMBDA_PROXY`,
-   * or HTTP URL in the case of `HttpIntegrationType.HTTP_PROXY`.
-   */
-  readonly integrationUri: string;
+    * Specifies the AWS service action to invoke.
+    *
+    * @default - undefined
+    */
+  readonly integrationSubtype?: string;
 
   /**
-   * The HTTP method to use when calling the underlying HTTP proxy
-   * @default - none. required if the integration type is `HttpIntegrationType.HTTP_PROXY`.
-   */
+    * Custom timeout for HTTP APIs
+    *
+    * @default - undefined
+    */
+  readonly timeout?: Duration;
+
+  /**
+    * Request parameters are a key-value map specifying parameters that are passed to AWS_PROXY integrations.
+    *
+    * @default - undefined
+    */
+  readonly requestParameters?: { [key: string]: any };
+
+  /**
+    * Integration URI.
+    * This will be the function ARN in the case of `HttpIntegrationType.LAMBDA_PROXY`,
+    * or HTTP URL in the case of `HttpIntegrationType.HTTP_PROXY`.
+    *
+    * @default - undefined
+    */
+  readonly integrationUri?: string;
+
+  /**
+    * The HTTP method to use when calling the underlying HTTP proxy
+    * @default - none. required if the integration type is `HttpIntegrationType.HTTP_PROXY`.
+    */
   readonly method?: HttpMethod;
 
   /**
-   * The ID of the VPC link for a private integration. Supported only for HTTP APIs.
-   *
-   * @default - undefined
-   */
+    * The ID of the VPC link for a private integration. Supported only for HTTP APIs.
+    *
+    * @default - undefined
+    */
   readonly connectionId?: string;
 
   /**
-   * The type of the network connection to the integration endpoint
-   *
-   * @default HttpConnectionType.INTERNET
-   */
+    * The type of the network connection to the integration endpoint
+    *
+    * @default HttpConnectionType.INTERNET
+    */
   readonly connectionType?: HttpConnectionType;
 
   /**
-   * The version of the payload format
-   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-lambda.html
-   * @default - defaults to latest in the case of HttpIntegrationType.LAMBDA_PROXY`, irrelevant otherwise.
-   */
+    * The version of the payload format
+    * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-lambda.html
+    * @default - defaults to latest in the case of HttpIntegrationType.LAMBDA_PROXY`, irrelevant otherwise.
+    */
   readonly payloadFormatVersion?: PayloadFormatVersion;
 
   /**
@@ -149,15 +186,24 @@ export class HttpIntegration extends Resource implements IHttpIntegration {
 
   constructor(scope: Construct, id: string, props: HttpIntegrationProps) {
     super(scope, id);
+
+    if (props.timeout && (props.timeout.toMilliseconds() < 50 || props.timeout.toMilliseconds() > 30000)) {
+      throw new Error(`The timeout of HTTP integration should be between 50 and 30,000, got ${props.timeout.toMilliseconds()}.`);
+    }
+
     const integ = new CfnIntegration(this, 'Resource', {
       apiId: props.httpApi.apiId,
+      description: props.description,
       integrationType: props.integrationType,
+      integrationSubtype: props.integrationSubtype,
       integrationUri: props.integrationUri,
       integrationMethod: props.method,
+      credentialsArn: props.credentials,
+      requestParameters: props.parameterMapping?.mappings,
       connectionId: props.connectionId,
       connectionType: props.connectionType,
       payloadFormatVersion: props.payloadFormatVersion?.version,
-      requestParameters: props.parameterMapping?.mappings,
+      timeoutInMillis: props.timeout?.toMilliseconds(),
     });
 
     if (props.secureServerName) {
@@ -203,41 +249,78 @@ export interface IHttpRouteIntegration {
  */
 export interface HttpRouteIntegrationConfig {
   /**
-   * Integration type.
+   * The description of the integration
+   *
+   * @default - undefined
    */
+  readonly description?: string;
+
+  /**
+    * Integration type.
+    */
   readonly type: HttpIntegrationType;
 
   /**
-   * Integration URI
-   */
-  readonly uri: string;
+    * Specifies the credentials ARN required for the integration, if any.
+    *
+    * @default - undefined
+    */
+  readonly credentials?: string;
 
   /**
-   * The HTTP method that must be used to invoke the underlying proxy.
-   * Required for `HttpIntegrationType.HTTP_PROXY`
-   * @default - undefined
-   */
+    * Specifies the AWS service action to invoke.
+    *
+    * @default - undefined
+    */
+  readonly subtype?: string;
+
+  /**
+    * Custom timeout for HTTP APIs
+    *
+    * @default - undefined
+    */
+  readonly timeout?: Duration;
+
+  /**
+    * Request parameters are a key-value map specifying parameters that are passed to AWS_PROXY integrations.
+    *
+    * @default - undefined
+    */
+  readonly requestParameters?: { [key: string]: any };
+
+  /**
+    * Integration URI
+    *
+    * @default - undefined
+    */
+  readonly uri?: string;
+
+  /**
+    * The HTTP method that must be used to invoke the underlying proxy.
+    * Required for `HttpIntegrationType.HTTP_PROXY`
+    * @default - undefined
+    */
   readonly method?: HttpMethod;
 
   /**
-   * The ID of the VPC link for a private integration. Supported only for HTTP APIs.
-   *
-   * @default - undefined
-   */
+    * The ID of the VPC link for a private integration. Supported only for HTTP APIs.
+    *
+    * @default - undefined
+    */
   readonly connectionId?: string;
 
   /**
-   * The type of the network connection to the integration endpoint
-   *
-   * @default HttpConnectionType.INTERNET
-   */
+    * The type of the network connection to the integration endpoint
+    *
+    * @default HttpConnectionType.INTERNET
+    */
   readonly connectionType?: HttpConnectionType;
 
   /**
-   * Payload format version in the case of lambda proxy integration
-   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-lambda.html
-   * @default - undefined
-   */
+    * Payload format version in the case of lambda proxy integration
+    * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-lambda.html
+    * @default - undefined
+    */
   readonly payloadFormatVersion: PayloadFormatVersion;
 
   /**
