@@ -47,9 +47,6 @@ export async function isHotswappableLambdaFunctionChange(
 async function isLambdaFunctionCodeOnlyChange(
   change: HotswappableResourceChange, evaluateCfnTemplate: EvaluateCloudFormationTemplate,
 ): Promise<LambdaFunctionCode | ChangeHotswapImpact> {
-  if (!change.newValue) {
-    return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
-  }
   const newResourceType = change.newValue.Type;
   if (newResourceType !== 'AWS::Lambda::Function') {
     return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
