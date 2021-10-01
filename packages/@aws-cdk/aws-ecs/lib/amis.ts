@@ -3,7 +3,7 @@ import * as ssm from '@aws-cdk/aws-ssm';
 
 // v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
 // eslint-disable-next-line
-import { Construct as CoreConstruct } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 
 /**
  * The ECS-optimized AMI variant to use. For more information, see
@@ -145,7 +145,7 @@ export class EcsOptimizedAmi implements ec2.IMachineImage {
   /**
    * Return the correct image
    */
-  public getImage(scope: CoreConstruct): ec2.MachineImageConfig {
+  public getImage(scope: Construct): ec2.MachineImageConfig {
     const ami = lookupImage(scope, this.cachedInContext, this.amiParameterName);
 
     const osType = this.windowsVersion ? ec2.OperatingSystemType.WINDOWS : ec2.OperatingSystemType.LINUX;
@@ -258,7 +258,7 @@ export class EcsOptimizedImage implements ec2.IMachineImage {
   /**
    * Return the correct image
    */
-  public getImage(scope: CoreConstruct): ec2.MachineImageConfig {
+  public getImage(scope: Construct): ec2.MachineImageConfig {
     const ami = lookupImage(scope, this.cachedInContext, this.amiParameterName);
 
     const osType = this.windowsVersion ? ec2.OperatingSystemType.WINDOWS : ec2.OperatingSystemType.LINUX;
@@ -355,7 +355,7 @@ export class BottleRocketImage implements ec2.IMachineImage {
   /**
    * Return the correct image
    */
-  public getImage(scope: CoreConstruct): ec2.MachineImageConfig {
+  public getImage(scope: Construct): ec2.MachineImageConfig {
     const ami = lookupImage(scope, this.cachedInContext, this.amiParameterName);
 
     return {
@@ -366,7 +366,7 @@ export class BottleRocketImage implements ec2.IMachineImage {
   }
 }
 
-function lookupImage(scope: CoreConstruct, cachedInContext: boolean | undefined, parameterName: string) {
+function lookupImage(scope: Construct, cachedInContext: boolean | undefined, parameterName: string) {
   return cachedInContext
     ? ssm.StringParameter.valueFromLookup(scope, parameterName)
     : ssm.StringParameter.valueForTypedStringParameter(scope, parameterName, ssm.ParameterType.AWS_EC2_IMAGE_ID);
