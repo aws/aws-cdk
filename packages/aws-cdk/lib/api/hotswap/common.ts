@@ -7,10 +7,6 @@ export interface ListStackResources {
   listStackResources(): Promise<CloudFormation.StackResourceSummary[]>;
 }
 
-export interface HotswappableResource {
-  logicalId: string,
-}
-
 /**
  * An interface that represents a change that can be deployed in a short-circuit manner.
  */
