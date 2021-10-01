@@ -349,4 +349,3 @@ test('does not call the updateLambdaCode() API when a resource with type that is
   expect(deployStackResult).toBeUndefined();
   expect(mockUpdateLambdaCode).not.toHaveBeenCalled();
 });
-

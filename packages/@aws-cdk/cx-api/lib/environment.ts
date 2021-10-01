@@ -19,11 +19,6 @@ export interface Environment {
   readonly region: string;
 }
 
-export interface partitionEnvironment extends Environment {
-  /** The AWS partition the environment deploys into */
-  readonly partition: string;
-}
-
 export const UNKNOWN_ACCOUNT = 'unknown-account';
 export const UNKNOWN_REGION = 'unknown-region';
 

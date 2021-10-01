@@ -3,8 +3,6 @@ import * as cxapi from '@aws-cdk/cx-api';
 import { CloudFormation } from 'aws-sdk';
 import { ISDK, Mode, SdkProvider } from './aws-auth';
 import { DeployStackResult } from './deploy-stack';
-//import { CloudFormationExecutableTemplate } from './hotswap/cloudformation-executable-template';
-//import { ChangeHotswapImpact, HotswapOperation, HotswappableResourceChange, ListStackResources, HotswappableResource } from './hotswap/common';
 import { ChangeHotswapImpact, ChangeHotswapResult, HotswapOperation, ListStackResources, HotswappableResourceChange, HotswappableResource } from './hotswap/common';
 import { EvaluateCloudFormationTemplate } from './hotswap/evaluate-cloudformation-template';
 import { isHotswappableLambdaFunctionChange } from './hotswap/lambda-functions';
@@ -52,74 +50,14 @@ export async function tryHotswapDeployment(
     return undefined;
   }
 
-  /*// create a new SDK using the CLI credentials, because the default one will not work for new-style synthesis -
-  // it assumes the bootstrap deploy Role, which doesn't have permissions to update Lambda functions
-  const sdk = await sdkProvider.forEnvironment(resolvedEnv, Mode.ForWriting);
-
-  // The current resources of the Stack.
-  // We need them to figure out the physical name of a function in case it wasn't specified by the user.
-  // We fetch it lazily, to save a service call, in case all updated Lambdas have their names set.
-  const listStackResources = new LazyListStackResources(sdk, stackArtifact.stackName);
-  const cfnExecutableTemplate = new CloudFormationExecutableTemplate({
-    stackArtifact,
-    parameters: assetParams,
-    account: resolvedEnv.account,
-    region: resolvedEnv.region,
-    partition: resolvedEnv.partition,
-    // ToDo make this better:
-    urlSuffix: 'amazonaws.com',
-    listStackResources,
-  });
-
-  // apply the short-circuitable changes
-  await applyAllHotswappableChanges(sdk, cfnExecutableTemplate, hotswappableChanges);*/
   // apply the short-circuitable changes
   await applyAllHotswappableChanges(sdk, hotswappableChanges);
 
   return { noOp: hotswappableChanges.length === 0, stackArn: cloudFormationStack.stackId, outputs: cloudFormationStack.outputs, stackArtifact };
 }
 
-// my original
-/*function findAllHotswappableChanges(stackChanges: cfn_diff.TemplateDiff): HotswapOperation[] | undefined {
-  const hotswappableResources = new Array<HotswapOperation>();
-  let foundNonHotswappableChange = false;
-  stackChanges.resources.forEachDifference((logicalId: string, change: cfn_diff.ResourceDifference) => {
-    const nonHotswappableResourceFound = isResourceChangeHotswappable(change);
-
-    if (nonHotswappableResourceFound === ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT) {
-      foundNonHotswappableChange = true;
-    } else if (nonHotswappableResourceFound === ChangeHotswapImpact.IRRELEVANT) {
-      // empty if
-    } else {
-      const detectorResults = [
-        isHotswappableLambdaFunctionChange(logicalId, nonHotswappableResourceFound),
-        isHotswappableStateMachineChange(logicalId, nonHotswappableResourceFound),
-      ];
-
-      for (const result of detectorResults) {
-        if (typeof result !== 'string') {
-          hotswappableResources.push(result);
-        }
-      }
-
-      // if we found any hotswappable changes, return now
-      if (hotswappableResources.length > 0) {
-        return;
-      }
-
-      // no hotswappable changes found, so any REQUIRES_FULL_DEPLOYMENTs require a full deployment
-      for (const result of detectorResults) {
-        if (result === ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT) {
-          foundNonHotswappableChange = true;
-        }
-      }
-    }
-    // no REQUIRES_FULL_DEPLOYMENT implies that all results are IRRELEVANT
-  });
-
-  return foundNonHotswappableChange ? undefined : hotswappableResources;*/
-
-async function findAllHotswappableChanges(stackChanges: cfn_diff.TemplateDiff, evaluateCfnTemplate: EvaluateCloudFormationTemplate): Promise<HotswapOperation[] | undefined> {
+async function findAllHotswappableChanges(stackChanges: cfn_diff.TemplateDiff, evaluateCfnTemplate: EvaluateCloudFormationTemplate):
+Promise<HotswapOperation[] | undefined> {
   const hotswappableResources = new Array<HotswapOperation>();
   let foundNonHotswappableChange = false;
   const promises: Array<Array<Promise<ChangeHotswapResult>>> = [];
@@ -131,7 +69,7 @@ async function findAllHotswappableChanges(stackChanges: cfn_diff.TemplateDiff, e
     if (nonHotswappableResourceFound === ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT) {
       foundNonHotswappableChange = true;
     } else if (nonHotswappableResourceFound === ChangeHotswapImpact.IRRELEVANT) {
-      // empty if
+      // empty 'if' just for flow-aware typing to kick in...
     } else {
       const detectorResults = new Array<Promise<ChangeHotswapResult>>();
       detectorResults.push(isHotswappableLambdaFunctionChange(logicalId, nonHotswappableResourceFound, evaluateCfnTemplate));
@@ -141,105 +79,32 @@ async function findAllHotswappableChanges(stackChanges: cfn_diff.TemplateDiff, e
     }
   });
 
-  // resolve all the detector results
-  //return await Promise.all(promises).then(async hotswapDetectionResults => await Promise.all(hotswapDetectionResults).then(result => {
+  // resolve all detector results
   for (const detectorResultPromises of promises) {
     await Promise.all(detectorResultPromises).then(hotswapDetectionResults => {
-
-    for (const result of hotswapDetectionResults) {
-      if (typeof result !== 'string') {
-        hotswappableResources.push(result);
+      for (const result of hotswapDetectionResults) {
+        if (typeof result !== 'string') {
+          hotswappableResources.push(result);
+        }
       }
-    }
 
-    // if we found any hotswappable changes, return now
-    if (hotswappableResources.length > 0) {
-      return;
-    }
-
-    // no hotswappable changes found, so any REQUIRES_FULL_DEPLOYMENTs imply a non-hotswappable change
-    for (const result of hotswapDetectionResults) {
-      if (result === ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT) {
-        foundNonHotswappableChange = true;
+      // if we found any hotswappable changes, return now
+      if (hotswappableResources.length > 0) {
+        return;
       }
-    }
-    // no REQUIRES_FULL_DEPLOYMENT implies that all results are IRRELEVANT
+
+      // no hotswappable changes found, so any REQUIRES_FULL_DEPLOYMENTs imply a non-hotswappable change
+      for (const result of hotswapDetectionResults) {
+        if (result === ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT) {
+          foundNonHotswappableChange = true;
+        }
+      }
+      // no REQUIRES_FULL_DEPLOYMENT implies that all results are IRRELEVANT
     });
   }
 
   return foundNonHotswappableChange ? undefined : hotswappableResources;
 }
-  /*stackChanges.resources.forEachDifference((logicalId: string, change: cfn_diff.ResourceDifference) => {
-    const nonHotswappableResourceFound = isResourceChangeHotswappable(change);
-
-    if (nonHotswappableResourceFound === ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT) {
-      foundNonHotswappableChange = true;
-    } else if (nonHotswappableResourceFound === ChangeHotswapImpact.IRRELEVANT) {
-      // empty if
-    } else {
-      const promises = new Array<Promise<ChangeHotswapResult>>();
-      promises.push(isHotswappableLambdaFunctionChange(logicalId, nonHotswappableResourceFound, evaluateCfnTemplate));
-      promises.push(isHotswappableStateMachineChange(logicalId, nonHotswappableResourceFound, evaluateCfnTemplate));
-
-      Promise.all(promises).then(hotswapDetectionResults => {
-        console.log('results')
-        for (const result of hotswapDetectionResults) {
-          console.log(result)
-          if (typeof result !== 'string') {
-            console.log('pushing')
-            hotswappableResources.push(result);
-          }
-        }
-
-        // if we found any hotswappable changes, return now
-        if (hotswappableResources.length > 0) {
-          console.log('len > 0')
-          return;
-        }
-
-        console.log('found no hotswappable changes')
-
-        // no hotswappable changes found, so any REQUIRES_FULL_DEPLOYMENTs imply a non-hotswappable change
-        for (const result of hotswapDetectionResults) {
-          if (result === ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT) {
-            foundNonHotswappableChange = true;
-          }
-        }
-        // no REQUIRES_FULL_DEPLOYMENT implies that all results are IRRELEVANT
-      });
-    }
-  });
-
-  return foundNonHotswappableChange ? undefined : hotswappableResources;
-}*/
-
-  // adam's original
-/*async function findAllHotswappableChanges(
-  stackChanges: cfn_diff.TemplateDiff, evaluateCfnTemplate: EvaluateCloudFormationTemplate,
-): Promise<HotswapOperation[] | undefined> {
-  const promises = new Array<Promise<ChangeHotswapResult>>();
-
-  stackChanges.resources.forEachDifference(async (logicalId: string, change: cfn_diff.ResourceDifference) => {
-    promises.push(isHotswappableLambdaFunctionChange(logicalId, change, evaluateCfnTemplate));
-  });
-
-  return Promise.all(promises).then(hotswapDetectionResults => {
-    const hotswappableResources = new Array<HotswapOperation>();
-    let foundNonHotswappableChange = false;
-
-    for (const lambdaFunctionShortCircuitChange of hotswapDetectionResults) {
-      if (lambdaFunctionShortCircuitChange === ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT) {
-        foundNonHotswappableChange = true;
-      } else if (lambdaFunctionShortCircuitChange === ChangeHotswapImpact.IRRELEVANT) {
-        // empty 'if' just for flow-aware typing to kick in...
-      } else {
-        hotswappableResources.push(lambdaFunctionShortCircuitChange);
-      }
-    }
-
-    return foundNonHotswappableChange ? undefined : hotswappableResources;
-  });
-}*/
 
 /**
  * returns `ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT` if a resource was deleted, or a change that we cannot short-circuit occured.
@@ -263,10 +128,6 @@ export function isResourceChangeHotswappable(change: cfn_diff.ResourceDifference
 }
 
 async function applyAllHotswappableChanges(
-  /*sdk: ISDK, cfnExecutableTemplate: CloudFormationExecutableTemplate, hotswappableChanges: HotswapOperation[],
-): Promise<void[]> {
-  return Promise.all(hotswappableChanges.map(hotswapOperation => {
-    return hotswapOperation.apply(sdk, cfnExecutableTemplate);*/
   sdk: ISDK, hotswappableChanges: HotswapOperation[],
 ): Promise<void[]> {
   return Promise.all(hotswappableChanges.map(hotswapOperation => {

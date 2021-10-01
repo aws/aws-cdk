@@ -1,6 +1,6 @@
 import { ISDK } from '../aws-auth';
 import { ChangeHotswapImpact, ChangeHotswapResult, HotswapOperation, HotswappableResourceChange, establishHotswappableResourceName } from './common';
-import { /*CfnEvaluationException,*/ EvaluateCloudFormationTemplate } from './evaluate-cloudformation-template';
+import { EvaluateCloudFormationTemplate } from './evaluate-cloudformation-template';
 
 export async function isHotswappableStateMachineChange(
   logicalId: string, change: HotswappableResourceChange, evaluateCfnTemplate: EvaluateCloudFormationTemplate,
@@ -26,7 +26,8 @@ export async function isHotswappableStateMachineChange(
   });
 }
 
-async function isStateMachineDefinitionOnlyChange(change: HotswappableResourceChange, evaluateCfnTemplate: EvaluateCloudFormationTemplate): Promise<string | ChangeHotswapImpact> {
+async function isStateMachineDefinitionOnlyChange(change: HotswappableResourceChange,
+  evaluateCfnTemplate: EvaluateCloudFormationTemplate): Promise<string | ChangeHotswapImpact> {
   const newResourceType = change.newValue.Type;
   if (newResourceType !== 'AWS::StepFunctions::StateMachine') {
     return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
@@ -48,7 +49,6 @@ async function isStateMachineDefinitionOnlyChange(change: HotswappableResourceCh
     }
   }
 
-  //const definitionString = propertyUpdates.DefinitionString;
   const definitionString = await evaluateCfnTemplate.evaluateCfnExpression(propertyUpdates.DefinitionString);
 
   return 'DefinitionString' in propertyUpdates ? definitionString.newValue : ChangeHotswapImpact.IRRELEVANT;
@@ -56,7 +56,6 @@ async function isStateMachineDefinitionOnlyChange(change: HotswappableResourceCh
 
 interface StateMachineResource {
   readonly logicalId: string;
-  //readonly stateMachineName?: string;
   readonly stateMachineName: string;
   readonly definition: string;
 }
@@ -71,22 +70,4 @@ class StateMachineHotswapOperation implements HotswapOperation {
       definition: this.stepFunctionResource.definition,
     }).promise();
   }
-  /*public async apply(sdk: ISDK, cfnExecutableTemplate: CloudFormationExecutableTemplate): Promise<any> {
-    const machineName = this.stepFunctionResource.stateMachineName;
-    const logicalId = this.stepFunctionResource.logicalId;
-    const stateMachineName = await establishHotswappableResourceName(cfnExecutableTemplate, machineName, logicalId);
-
-    if (!stateMachineName) {
-      return;
-    }
-
-    const machineDefinition = await cfnExecutableTemplate.evaluateCfnExpression(this.stepFunctionResource.definition);
-
-    return sdk.stepFunctions().updateStateMachine({
-      // when left unspecified, the optional properties are left unchanged
-      // even though the name of the property is stateMachineArn, passing the name of the state machine is allowed here
-      stateMachineArn: stateMachineName,
-      definition: machineDefinition,
-    }).promise();
-  }*/
 }

@@ -1,6 +1,4 @@
 import { ISDK } from '../aws-auth';
-//import { CloudFormationExecutableTemplate } from './cloudformation-executable-template';
-//import { assetMetadataChanged, ChangeHotswapImpact, ChangeHotswapResult, HotswapOperation, HotswappableResourceChange, establishHotswappableResourceName } from './common';
 import { assetMetadataChanged, ChangeHotswapImpact, ChangeHotswapResult, HotswapOperation, HotswappableResourceChange, establishHotswappableResourceName } from './common';
 import { /*CfnEvaluationException,*/ EvaluateCloudFormationTemplate } from './evaluate-cloudformation-template';
 
@@ -10,12 +8,7 @@ import { /*CfnEvaluationException,*/ EvaluateCloudFormationTemplate } from './ev
  * (like a change to CDKMetadata),
  * or a LambdaFunctionResource if the change can be short-circuited.
  */
-/*export function isHotswappableLambdaFunctionChange(
-  logicalId: string, change: HotswappableResourceChange,
-): ChangeHotswapResult {
-  const lambdaCodeChange = isLambdaFunctionCodeOnlyChange(change);*/
 export async function isHotswappableLambdaFunctionChange(
-  //logicalId: string, change: cfn_diff.ResourceDifference, evaluateCfnTemplate: EvaluateCloudFormationTemplate,
   logicalId: string, change: HotswappableResourceChange, evaluateCfnTemplate: EvaluateCloudFormationTemplate,
 ): Promise<ChangeHotswapResult> {
   const lambdaCodeChange = await isLambdaFunctionCodeOnlyChange(change, evaluateCfnTemplate);
@@ -30,9 +23,6 @@ export async function isHotswappableLambdaFunctionChange(
       return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
     }
 
-    /*return new LambdaFunctionHotswapOperation({
-      logicalId,
-      physicalName: change.newValue?.Properties?.FunctionName,*/
     const functionNameInCfnTemplate = change.newValue?.Properties?.FunctionName;
     const functionName = await establishHotswappableResourceName(logicalId, evaluateCfnTemplate, functionNameInCfnTemplate);
     if (!functionName) {
@@ -55,7 +45,6 @@ export async function isHotswappableLambdaFunctionChange(
  * or a LambdaFunctionCode if the change is to a AWS::Lambda::Function,
  * and only affects its Code property.
  */
-//function isLambdaFunctionCodeOnlyChange(change: HotswappableResourceChange): LambdaFunctionCode | ChangeHotswapImpact {
 async function isLambdaFunctionCodeOnlyChange(
   change: HotswappableResourceChange, evaluateCfnTemplate: EvaluateCloudFormationTemplate,
 ): Promise<LambdaFunctionCode | ChangeHotswapImpact> {
@@ -91,11 +80,6 @@ async function isLambdaFunctionCodeOnlyChange(
       switch (newPropName) {
         case 'S3Bucket':
           foundCodeDifference = true;
-          /*s3Bucket = updatedProp.newValue[newPropName];
-          break;
-        case 'S3Key':
-          foundCodeDifference = true;
-          s3Key = updatedProp.newValue[newPropName];*/
           s3Bucket = await evaluateCfnTemplate.evaluateCfnExpression(updatedProp.newValue[newPropName]);
           break;
         case 'S3Key':
@@ -122,8 +106,6 @@ interface LambdaFunctionCode {
 }
 
 interface LambdaFunctionResource {
-  //readonly logicalId: string;
-  //readonly physicalName?: any;
   readonly physicalName: string;
   readonly code: LambdaFunctionCode;
 }
@@ -132,22 +114,6 @@ class LambdaFunctionHotswapOperation implements HotswapOperation {
   constructor(private readonly lambdaFunctionResource: LambdaFunctionResource) {
   }
 
-  /*public async apply(sdk: ISDK, cfnExectuableTemplate: CloudFormationExecutableTemplate): Promise<any> {
-    const physicalName = this.lambdaFunctionResource.physicalName;
-    const logicalId = this.lambdaFunctionResource.logicalId;
-    const functionPhysicalName = await establishHotswappableResourceName(cfnExectuableTemplate, physicalName, logicalId);
-
-    if (!functionPhysicalName) {
-      return;
-    }
-
-    const codeS3Bucket = await cfnExectuableTemplate.evaluateCfnExpression(this.lambdaFunctionResource.code.s3Bucket);
-    const codeS3Key = await cfnExectuableTemplate.evaluateCfnExpression(this.lambdaFunctionResource.code.s3Key);
-
-    return sdk.lambda().updateFunctionCode({
-      FunctionName: functionPhysicalName,
-      S3Bucket: codeS3Bucket,
-      S3Key: codeS3Key,*/
   public async apply(sdk: ISDK): Promise<any> {
     return sdk.lambda().updateFunctionCode({
       FunctionName: this.lambdaFunctionResource.physicalName,
@@ -156,4 +122,3 @@ class LambdaFunctionHotswapOperation implements HotswapOperation {
     }).promise();
   }
 }
-

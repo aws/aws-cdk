@@ -59,19 +59,6 @@ export class HotswappableResourceChange {
   }
 }
 
-/*export async function establishHotswappableResourceName(cfnExectuableTemplate: CloudFormationExecutableTemplate,
-  resourceName: string | undefined, logicalId: string): Promise<string | undefined> {
-  if (resourceName) {
-    try {
-      return await cfnExectuableTemplate.evaluateCfnExpression(resourceName);
-    } catch (e) {
-      // If we can't evaluate the resource's name CloudFormation expression,
-      // just look it up in the currently deployed Stack
-    }
-  }
-  return cfnExectuableTemplate.findPhysicalNameFor(logicalId);
-}*/
-
 export async function establishHotswappableResourceName(
   logicalId: string, evaluateCfnTemplate: EvaluateCloudFormationTemplate, nameInCfnTemplate: any,
 ): Promise<string | undefined> {
@@ -90,6 +77,5 @@ export async function establishHotswappableResourceName(
 }
 
 export function assetMetadataChanged(change: HotswappableResourceChange): boolean {
-//export function assetMetadataChanged(change: cfn_diff.ResourceDifference): boolean {
   return !!change.newValue?.Metadata['aws:asset:path'];
 }
