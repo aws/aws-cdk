@@ -1,4 +1,4 @@
-import { Template } from '@aws-cdk/assertions';
+import '@aws-cdk/assert-internal/jest';
 import { App, CfnOutput, Stack } from '@aws-cdk/core';
 import * as iam from '../lib';
 
@@ -20,7 +20,7 @@ test('use of cross-stack role reference does not lead to URLSuffix being exporte
   // THEN
   app.synth();
 
-  Template.fromStack(first).templateMatches({
+  expect(first).toMatchTemplate({
     Resources: {
       Role1ABCC5F0: {
         Type: 'AWS::IAM::Role',
@@ -144,7 +144,7 @@ test('SAML principal', () => {
 
   // THEN
   expect(stack.resolve(principal.federated)).toStrictEqual({ Ref: 'MyProvider730BA1C8' });
-  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+  expect(stack).toHaveResource('AWS::IAM::Role', {
     AssumeRolePolicyDocument: {
       Statement: [
         {
@@ -184,7 +184,7 @@ test('PrincipalWithConditions.addCondition should work', () => {
   });
 
   // THEN
-  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+  expect(stack).toHaveResource('AWS::IAM::Role', {
     AssumeRolePolicyDocument: {
       Statement: [
         {

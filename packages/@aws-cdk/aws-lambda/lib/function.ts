@@ -7,6 +7,7 @@ import * as logs from '@aws-cdk/aws-logs';
 import * as sqs from '@aws-cdk/aws-sqs';
 import { Annotations, CfnResource, Duration, Fn, Lazy, Names, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
+import { Architecture } from './architecture';
 import { Code, CodeConfig } from './code';
 import { ICodeSigningConfig } from './code-signing-config';
 import { EventInvokeConfigOptions } from './event-invoke-config';
@@ -310,6 +311,12 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    * @default - Not Sign the Code
    */
   readonly codeSigningConfig?: ICodeSigningConfig;
+
+  /**
+   * The system architectures compatible with this lambda function.
+   * @default [Architecture.X86_64]
+   */
+  readonly architectures?: Architecture[];
 }
 
 export interface FunctionProps extends FunctionOptions {
@@ -680,6 +687,7 @@ export class Function extends FunctionBase {
       kmsKeyArn: props.environmentEncryption?.keyArn,
       fileSystemConfigs,
       codeSigningConfigArn: props.codeSigningConfig?.codeSigningConfigArn,
+      architectures: props.architectures?.map(a => a.name),
     });
 
     resource.node.addDependency(this.role);
@@ -792,6 +800,11 @@ export class Function extends FunctionBase {
         const runtimes = layer.compatibleRuntimes.map(runtime => runtime.name).join(', ');
         throw new Error(`This lambda function uses a runtime that is incompatible with this layer (${this.runtime.name} is not in [${runtimes}])`);
       }
+
+      // Currently no validations for compatible architectures since Lambda service
+      // allows layers configured with one architecture to be used with a Lambda function
+      // from another architecture.
+
       this.layers.push(layer);
     }
   }
