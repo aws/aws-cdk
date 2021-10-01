@@ -60,7 +60,11 @@ export class CallAwsService extends sfn.TaskStateBase {
    */
   protected _renderTask(): any {
     return {
-      Resource: integrationResourceArn('aws-sdk', `${this.props.service}:${this.props.action}`, this.props.integrationPattern),
+      Resource: integrationResourceArn(
+        'aws-sdk',
+        `${this.props.service.toLowerCase()}:${this.props.action}`,
+        this.props.integrationPattern,
+      ),
       Parameters: sfn.FieldUtils.renderObject(this.props.parameters ?? {}), // Parameters is required for aws-sdk
     };
   }
