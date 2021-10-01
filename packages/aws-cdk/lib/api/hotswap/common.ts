@@ -45,12 +45,12 @@ export class HotswappableResourceChange {
   /**
    * The value the resource is being updated to.
    */
-  newValue: cfn_diff.Resource;
+  public readonly newValue: cfn_diff.Resource;
 
   /**
    * The changes made to the resource properties.
    */
-  propertyUpdates: { [key: string]: cfn_diff.PropertyDifference<any> };
+  public readonly propertyUpdates: { [key: string]: cfn_diff.PropertyDifference<any> };
 
   public constructor(newValue: cfn_diff.Resource, propertyUpdates: { [key: string]: cfn_diff.PropertyDifference<any> }) {
     this.newValue = newValue;
