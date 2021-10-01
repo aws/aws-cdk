@@ -4,6 +4,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { Duration, NestedStack, Stack } from '@aws-cdk/core';
 import * as cr from '@aws-cdk/custom-resources';
+import { NodeProxyAgentLayer } from '@aws-cdk/lambda-layer-node-proxy-agent';
 import { Construct } from 'constructs';
 
 // v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
@@ -33,6 +34,13 @@ export interface ClusterResourceProviderProps {
    * Environment to add to the handler.
    */
   readonly environment?: { [key: string]: string };
+
+  /**
+    * An AWS Lambda layer that includes the NPM dependency `proxy-agent`.
+    *
+    * If not defined, a default layer will be used.
+    */
+  readonly onEventLayer?: lambda.ILayerVersion;
 }
 
 /**
@@ -68,6 +76,14 @@ export class ClusterResourceProvider extends NestedStack {
       vpc: props.subnets ? props.vpc : undefined,
       vpcSubnets: props.subnets ? { subnets: props.subnets } : undefined,
     });
+
+    // Allow user to customize the layer
+    if (!props.onEventLayer) {
+      // `NodeProxyAgentLayer` provides `proxy-agent` which is needed to configure `aws-sdk-js` with a user provided proxy.
+      onEvent.addLayers(new NodeProxyAgentLayer(this, 'NodeProxyAgentLayer'));
+    } else {
+      onEvent.addLayers(props.onEventLayer);
+    }
 
     const isComplete = new lambda.Function(this, 'IsCompleteHandler', {
       code: lambda.Code.fromAsset(HANDLER_DIR),
