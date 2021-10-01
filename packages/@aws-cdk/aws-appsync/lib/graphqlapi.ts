@@ -1,5 +1,6 @@
 import { IUserPool } from '@aws-cdk/aws-cognito';
 import { ManagedPolicy, Role, IRole, ServicePrincipal, Grant, IGrantable } from '@aws-cdk/aws-iam';
+import { IFunction } from '@aws-cdk/aws-lambda';
 import { CfnResource, Duration, Expiration, IResolvable, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnApiKey, CfnGraphQLApi, CfnGraphQLSchema } from './appsync.generated';
@@ -164,7 +165,7 @@ export interface OpenIdConnectConfig {
  */
 export interface LambdaAuthorizerConfig {
   /**
-   * The ARN for the authorizer lambda function. This may be a standard Lambda ARN, a version ARN (.../v3) or alias ARN.
+   * The authorizer lambda function.
    * Note: This Lambda function must have the following resource-based policy assigned to it.
    * When configuring Lambda authorizers in the console, this is done for you.
    * To do so with the AWS CLI, run the following:
@@ -173,7 +174,7 @@ export interface LambdaAuthorizerConfig {
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-appsync-graphqlapi-lambdaauthorizerconfig.html
    */
-  readonly functionArn: string;
+  readonly handler: IFunction;
 
   /**
    * How long the results are cached.
@@ -603,7 +604,7 @@ export class GraphqlApi extends GraphqlApiBase {
     if (!config) return undefined;
     return {
       authorizerResultTtlInSeconds: config.resultsCacheTtl?.toSeconds(),
-      authorizerUri: config.functionArn,
+      authorizerUri: config.handler.functionArn,
       identityValidationExpression: config.validationRegex,
     };
   }

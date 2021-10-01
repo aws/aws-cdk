@@ -651,7 +651,7 @@ describe('AppSync Lambda Authorization', () => {
         defaultAuthorization: {
           authorizationType: appsync.AuthorizationType.LAMBDA,
           lambdaAuthorizerConfig: {
-            functionArn: fn.functionArn,
+            handler: fn,
           },
         },
       },
@@ -680,7 +680,7 @@ describe('AppSync Lambda Authorization', () => {
         defaultAuthorization: {
           authorizationType: appsync.AuthorizationType.LAMBDA,
           lambdaAuthorizerConfig: {
-            functionArn: fn.functionArn,
+            handler: fn,
             resultsCacheTtl: cdk.Duration.seconds(300),
             validationRegex: 'custom-.*',
           },
@@ -713,7 +713,7 @@ describe('AppSync Lambda Authorization', () => {
         additionalAuthorizationModes: [{
           authorizationType: appsync.AuthorizationType.LAMBDA,
           lambdaAuthorizerConfig: {
-            functionArn: fn.functionArn,
+            handler: fn,
           },
         }],
       },
@@ -744,7 +744,7 @@ describe('AppSync Lambda Authorization', () => {
         additionalAuthorizationModes: [{
           authorizationType: appsync.AuthorizationType.LAMBDA,
           lambdaAuthorizerConfig: {
-            functionArn: fn.functionArn,
+            handler: fn,
             resultsCacheTtl: cdk.Duration.seconds(300),
             validationRegex: 'custom-.*',
           },
@@ -778,14 +778,14 @@ describe('AppSync Lambda Authorization', () => {
         defaultAuthorization: {
           authorizationType: appsync.AuthorizationType.LAMBDA,
           lambdaAuthorizerConfig: {
-            functionArn: fn.functionArn,
+            handler: fn,
           },
         },
         additionalAuthorizationModes: [
           {
             authorizationType: appsync.AuthorizationType.LAMBDA,
             lambdaAuthorizerConfig: {
-              functionArn: fn.functionArn,
+              handler: fn,
               resultsCacheTtl: cdk.Duration.seconds(300),
               validationRegex: 'custom-.*',
             },
@@ -803,7 +803,7 @@ describe('AppSync Lambda Authorization', () => {
           {
             authorizationType: appsync.AuthorizationType.LAMBDA,
             lambdaAuthorizerConfig: {
-              functionArn: fn.functionArn,
+              handler: fn,
               resultsCacheTtl: cdk.Duration.seconds(300),
               validationRegex: 'custom-.*',
             },
@@ -811,7 +811,7 @@ describe('AppSync Lambda Authorization', () => {
           {
             authorizationType: appsync.AuthorizationType.LAMBDA,
             lambdaAuthorizerConfig: {
-              functionArn: fn.functionArn,
+              handler: fn,
               resultsCacheTtl: cdk.Duration.seconds(300),
               validationRegex: 'custom-.*',
             },
