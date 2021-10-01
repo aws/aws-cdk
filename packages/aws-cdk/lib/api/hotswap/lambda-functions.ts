@@ -1,6 +1,6 @@
 import { ISDK } from '../aws-auth';
 import { assetMetadataChanged, ChangeHotswapImpact, ChangeHotswapResult, HotswapOperation, HotswappableResourceChange, establishHotswappableResourceName } from './common';
-import { /*CfnEvaluationException,*/ EvaluateCloudFormationTemplate } from './evaluate-cloudformation-template';
+import { EvaluateCloudFormationTemplate } from './evaluate-cloudformation-template';
 
 /**
  * Returns `false` if the change cannot be short-circuited,
