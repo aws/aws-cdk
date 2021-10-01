@@ -682,7 +682,7 @@ describe('AppSync Lambda Authorization', () => {
           lambdaAuthorizerConfig: {
             functionArn: fn.functionArn,
             resultsCacheTtl: cdk.Duration.seconds(300),
-            validationRegex: 'abc',
+            validationRegex: 'custom-.*',
           },
         },
       },
@@ -699,7 +699,7 @@ describe('AppSync Lambda Authorization', () => {
           ],
         },
         AuthorizerResultTtlInSeconds: 300,
-        IdentityValidationExpression: 'abc',
+        IdentityValidationExpression: 'custom-.*',
       },
     });
   });
@@ -746,7 +746,7 @@ describe('AppSync Lambda Authorization', () => {
           lambdaAuthorizerConfig: {
             functionArn: fn.functionArn,
             resultsCacheTtl: cdk.Duration.seconds(300),
-            validationRegex: 'abc',
+            validationRegex: 'custom-.*',
           },
         }],
       },
@@ -764,15 +764,14 @@ describe('AppSync Lambda Authorization', () => {
             ],
           },
           AuthorizerResultTtlInSeconds: 300,
-          IdentityValidationExpression: 'abc',
+          IdentityValidationExpression: 'custom-.*',
         },
       }],
     });
   });
 
-  test('Lambda authorization configurable in with multiple authorization', () => {
-    // WHEN
-    new appsync.GraphqlApi(stack, 'api', {
+  test('Lambda authorization throws with multiple lambda authorization', () => {
+    expect(() => new appsync.GraphqlApi(stack, 'api', {
       name: 'api',
       schema: appsync.Schema.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
       authorizationConfig: {
@@ -788,60 +787,50 @@ describe('AppSync Lambda Authorization', () => {
             lambdaAuthorizerConfig: {
               functionArn: fn.functionArn,
               resultsCacheTtl: cdk.Duration.seconds(300),
-              validationRegex: 'abc',
+              validationRegex: 'custom-.*',
+            },
+          },
+        ],
+      },
+    })).toThrow('You can only have a single AWS Lambda function configured to authorize your API.');
+
+    expect(() => new appsync.GraphqlApi(stack, 'api2', {
+      name: 'api',
+      schema: appsync.Schema.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
+      authorizationConfig: {
+        defaultAuthorization: { authorizationType: appsync.AuthorizationType.IAM },
+        additionalAuthorizationModes: [
+          {
+            authorizationType: appsync.AuthorizationType.LAMBDA,
+            lambdaAuthorizerConfig: {
+              functionArn: fn.functionArn,
+              resultsCacheTtl: cdk.Duration.seconds(300),
+              validationRegex: 'custom-.*',
             },
           },
           {
             authorizationType: appsync.AuthorizationType.LAMBDA,
             lambdaAuthorizerConfig: {
               functionArn: fn.functionArn,
-              resultsCacheTtl: cdk.Duration.minutes(0),
-              validationRegex: 'abc',
+              resultsCacheTtl: cdk.Duration.seconds(300),
+              validationRegex: 'custom-.*',
             },
           },
         ],
       },
-    });
+    })).toThrow('You can only have a single AWS Lambda function configured to authorize your API.');
+  });
 
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLApi', {
-      AuthenticationType: 'AWS_LAMBDA',
-      LambdaAuthorizerConfig: {
-        AuthorizerUri: {
-          'Fn::GetAtt': [
-            'authfunction96361832',
-            'Arn',
-          ],
+  test('throws if authorization type and mode do not match', () => {
+    expect(() => new appsync.GraphqlApi(stack, 'api', {
+      name: 'api',
+      schema: appsync.Schema.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
+      authorizationConfig: {
+        defaultAuthorization: {
+          authorizationType: appsync.AuthorizationType.LAMBDA,
+          openIdConnectConfig: { oidcProvider: 'test' },
         },
       },
-      AdditionalAuthenticationProviders: [
-        {
-          AuthenticationType: 'AWS_LAMBDA',
-          LambdaAuthorizerConfig: {
-            AuthorizerUri: {
-              'Fn::GetAtt': [
-                'authfunction96361832',
-                'Arn',
-              ],
-            },
-            AuthorizerResultTtlInSeconds: 300,
-            IdentityValidationExpression: 'abc',
-          },
-        },
-        {
-          AuthenticationType: 'AWS_LAMBDA',
-          LambdaAuthorizerConfig: {
-            AuthorizerUri: {
-              'Fn::GetAtt': [
-                'authfunction96361832',
-                'Arn',
-              ],
-            },
-            AuthorizerResultTtlInSeconds: 0,
-            IdentityValidationExpression: 'abc',
-          },
-        },
-      ],
-    });
+    })).toThrow('Missing Lambda Configuration');
   });
 });

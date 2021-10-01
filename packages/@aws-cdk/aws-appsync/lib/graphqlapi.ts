@@ -66,7 +66,7 @@ export interface AuthorizationMode {
    * If authorizationType is `AuthorizationType.LAMBDA`, this option is required.
    * @default - none
    */
-  readonly lambdaAuthorizerConfig?: lambdaAuthorizerConfig;
+  readonly lambdaAuthorizerConfig?: LambdaAuthorizerConfig;
 }
 
 /**
@@ -160,9 +160,9 @@ export interface OpenIdConnectConfig {
 }
 
 /**
- * Configuration for Lambda authorization in AppSync
+ * Configuration for Lambda authorization in AppSync. Note that you can only have a single AWS Lambda function configured to authorize your API.
  */
-export interface lambdaAuthorizerConfig {
+export interface LambdaAuthorizerConfig {
   /**
    * The ARN for the authorizer lambda function. This may be a standard Lambda ARN, a version ARN (.../v3) or alias ARN.
    * Note: This Lambda function must have the following resource-based policy assigned to it.
@@ -532,6 +532,9 @@ export class GraphqlApi extends GraphqlApiBase {
   }
 
   private validateAuthorizationProps(modes: AuthorizationMode[]) {
+    if (modes.filter((mode) => mode.authorizationType === AuthorizationType.LAMBDA).length > 1) {
+      throw new Error('You can only have a single AWS Lambda function configured to authorize your API.');
+    }
     modes.map((mode) => {
       if (mode.authorizationType === AuthorizationType.OIDC && !mode.openIdConnectConfig) {
         throw new Error('Missing OIDC Configuration');
@@ -596,7 +599,7 @@ export class GraphqlApi extends GraphqlApiBase {
     };
   }
 
-  private setupLambdaAuthorizerConfig(config?: lambdaAuthorizerConfig) {
+  private setupLambdaAuthorizerConfig(config?: LambdaAuthorizerConfig) {
     if (!config) return undefined;
     return {
       authorizerResultTtlInSeconds: config.resultsCacheTtl?.toSeconds(),
