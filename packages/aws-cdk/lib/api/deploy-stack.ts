@@ -10,6 +10,7 @@ import { publishAssets } from '../util/asset-publishing';
 import { contentHash } from '../util/content-hash';
 import { ISDK, SdkProvider } from './aws-auth';
 import { tryHotswapDeployment } from './hotswap-deployments';
+import { CfnEvaluationException } from './hotswap/evaluate-cloudformation-template';
 import { ToolkitInfo } from './toolkit-info';
 import {
   changeSetHasNoChanges, CloudFormationStack, TemplateParameters, waitForChangeSet,
@@ -252,12 +253,19 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
 
   if (options.hotswap) {
     // attempt to short-circuit the deployment if possible
-    const hotswapDeploymentResult = await tryHotswapDeployment(options.sdkProvider, assetParams, cloudFormationStack, stackArtifact);
-    if (hotswapDeploymentResult) {
-      return hotswapDeploymentResult;
+    try {
+      const hotswapDeploymentResult = await tryHotswapDeployment(options.sdkProvider, assetParams, cloudFormationStack, stackArtifact);
+      if (hotswapDeploymentResult) {
+        return hotswapDeploymentResult;
+      }
+      // could not short-circuit the deployment, perform a full CFN deploy instead
+      print('Could not perform a hotswap deployment, as the stack %s contains non-Asset changes', stackArtifact.displayName);
+    } catch (e) {
+      if (!(e instanceof CfnEvaluationException)) {
+        throw e;
+      }
+      print('Could not perform a hotswap deployment, because the CloudFormation template could not be resolved: %s', e.message);
     }
-    // could not short-circuit the deployment, perform a full CFN deploy instead
-    print('Could not perform a hotswap deployment, as the stack %s contains non-Asset changes', stackArtifact.displayName);
     print('Falling back to doing a full deployment');
   }
 
