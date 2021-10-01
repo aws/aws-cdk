@@ -11,7 +11,7 @@ import * as yaml from 'yaml';
  * - The target bucket is created in a deployment that gets rolled back
  *
  * In particular, it should NOT clear the bucket in a case the custom resource is deleted
- * but the target bucket is unaffected. This could happen in the follwoing cases:
+ * but the target bucket is unaffected. This could happen in the following cases:
  *
  * - The autoDelete feature used to be turned on, and now gets turned off (leads to removal
  *   of the CR from the template, without affecting the bucket)
