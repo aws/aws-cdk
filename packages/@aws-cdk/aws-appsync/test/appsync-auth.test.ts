@@ -4,7 +4,6 @@ import * as cognito from '@aws-cdk/aws-cognito';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
 import * as appsync from '../lib';
-import { Duration } from '@aws-cdk/core';
 
 // GIVEN
 let stack: cdk.Stack;
@@ -682,7 +681,7 @@ describe('AppSync Lambda Authorization', () => {
           authorizationType: appsync.AuthorizationType.LAMBDA,
           lambdaAuthorizerConfig: {
             functionArn: fn.functionArn,
-            resultsCacheTtl: Duration.seconds(300),
+            resultsCacheTtl: cdk.Duration.seconds(300),
             validationRegex: 'abc',
           },
         },
@@ -746,7 +745,7 @@ describe('AppSync Lambda Authorization', () => {
           authorizationType: appsync.AuthorizationType.LAMBDA,
           lambdaAuthorizerConfig: {
             functionArn: fn.functionArn,
-            resultsCacheTtl: Duration.seconds(300),
+            resultsCacheTtl: cdk.Duration.seconds(300),
             validationRegex: 'abc',
           },
         }],
@@ -788,7 +787,7 @@ describe('AppSync Lambda Authorization', () => {
             authorizationType: appsync.AuthorizationType.LAMBDA,
             lambdaAuthorizerConfig: {
               functionArn: fn.functionArn,
-              resultsCacheTtl: Duration.seconds(300),
+              resultsCacheTtl: cdk.Duration.seconds(300),
               validationRegex: 'abc',
             },
           },
@@ -796,7 +795,7 @@ describe('AppSync Lambda Authorization', () => {
             authorizationType: appsync.AuthorizationType.LAMBDA,
             lambdaAuthorizerConfig: {
               functionArn: fn.functionArn,
-              resultsCacheTtl: Duration.minutes(0),
+              resultsCacheTtl: cdk.Duration.minutes(0),
               validationRegex: 'abc',
             },
           },
@@ -807,13 +806,13 @@ describe('AppSync Lambda Authorization', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLApi', {
       AuthenticationType: 'AWS_LAMBDA',
-      LambdaAuthorizerConfig: { 
+      LambdaAuthorizerConfig: {
         AuthorizerUri: {
           'Fn::GetAtt': [
             'authfunction96361832',
             'Arn',
           ],
-        }, 
+        },
       },
       AdditionalAuthenticationProviders: [
         {

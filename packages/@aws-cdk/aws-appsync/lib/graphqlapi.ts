@@ -184,7 +184,7 @@ export interface lambdaAuthorizerConfig {
   readonly resultsCacheTtl?: Duration;
 
   /**
-   * A regular expression for validation of tokens before the Lambda function is called. 
+   * A regular expression for validation of tokens before the Lambda function is called.
    *
    * @default - no regex filter will be applied.
    */
@@ -602,7 +602,7 @@ export class GraphqlApi extends GraphqlApiBase {
       authorizerResultTtlInSeconds: config.resultsCacheTtl?.toSeconds(),
       authorizerUri: config.functionArn,
       identityValidationExpression: config.validationRegex,
-    }
+    };
   }
 
   private setupAdditionalAuthorizationModes(modes?: AuthorizationMode[]) {
