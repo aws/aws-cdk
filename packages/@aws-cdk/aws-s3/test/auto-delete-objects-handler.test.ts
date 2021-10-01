@@ -264,7 +264,7 @@ test('delete event where bucket has many objects does recurse appropriately', as
 
 test('does nothing when the bucket does not exist', async () => {
   // GIVEN
-  mockS3Client.promise.mockRejectedValue({ code: 'NotFound' });
+  mockS3Client.promise.mockRejectedValue({ code: 'NoSuchBucket' });
 
   // WHEN
   const event: Partial<AWSLambda.CloudFormationCustomResourceDeleteEvent> = {
