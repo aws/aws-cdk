@@ -63,16 +63,16 @@ async function findAllHotswappableChanges(
 
   // gather the results of the detector functions
   stackChanges.resources.forEachDifference((logicalId: string, change: cfn_diff.ResourceDifference) => {
-    const nonHotswappableResourceFound = isResourceChangeHotswappable(change);
+    const resourceHotswapEvaluation = isResourceChangeHotswappable(change);
 
-    if (nonHotswappableResourceFound === ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT) {
+    if (resourceHotswapEvaluation === ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT) {
       foundNonHotswappableChange = true;
-    } else if (nonHotswappableResourceFound === ChangeHotswapImpact.IRRELEVANT) {
+    } else if (resourceHotswapEvaluation === ChangeHotswapImpact.IRRELEVANT) {
       // empty 'if' just for flow-aware typing to kick in...
     } else {
       const detectorResults = new Array<Promise<ChangeHotswapResult>>();
-      detectorResults.push(isHotswappableLambdaFunctionChange(logicalId, nonHotswappableResourceFound, evaluateCfnTemplate));
-      detectorResults.push(isHotswappableStateMachineChange(logicalId, nonHotswappableResourceFound, evaluateCfnTemplate));
+      detectorResults.push(isHotswappableLambdaFunctionChange(logicalId, resourceHotswapEvaluation, evaluateCfnTemplate));
+      detectorResults.push(isHotswappableStateMachineChange(logicalId, resourceHotswapEvaluation, evaluateCfnTemplate));
 
       promises.push(detectorResults);
     }
