@@ -1,4 +1,4 @@
-import { Template } from '@aws-cdk/assertions';
+import '@aws-cdk/assert-internal/jest';
 import { ArnPrincipal, PolicyStatement } from '@aws-cdk/aws-iam';
 import { App, CfnOutput, Stack } from '@aws-cdk/core';
 import { Alias } from '../lib/alias';
@@ -15,7 +15,7 @@ test('default alias', () => {
 
   new Alias(stack, 'Alias', { targetKey: key, aliasName: 'alias/foo' });
 
-  Template.fromStack(stack).hasResourceProperties('AWS::KMS::Alias', {
+  expect(stack).toHaveResource('AWS::KMS::Alias', {
     AliasName: 'alias/foo',
     TargetKeyId: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
   });
@@ -35,7 +35,7 @@ test('add "alias/" prefix if not given.', () => {
     targetKey: key,
   });
 
-  Template.fromStack(stack).hasResourceProperties('AWS::KMS::Alias', {
+  expect(stack).toHaveResource('AWS::KMS::Alias', {
     AliasName: 'alias/foo',
     TargetKeyId: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
   });
@@ -51,7 +51,7 @@ test('can create alias directly while creating the key', () => {
     alias: 'foo',
   });
 
-  Template.fromStack(stack).hasResourceProperties('AWS::KMS::Alias', {
+  expect(stack).toHaveResource('AWS::KMS::Alias', {
     AliasName: 'alias/foo',
     TargetKeyId: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
   });
@@ -140,11 +140,13 @@ test('can be used wherever a key is expected', () => {
   new MyConstruct(stack, 'MyConstruct', myAlias);
   /* eslint-enable @aws-cdk/no-core-construct */
 
-  Template.fromStack(stack).hasOutput('OutId', {
-    Value: 'alias/myAlias',
+  expect(stack).toHaveOutput({
+    outputName: 'OutId',
+    outputValue: 'alias/myAlias',
   });
-  Template.fromStack(stack).hasOutput('OutArn', {
-    Value: {
+  expect(stack).toHaveOutput({
+    outputName: 'OutArn',
+    outputValue: {
       'Fn::Join': ['', [
         'arn:',
         { Ref: 'AWS::Partition' },
@@ -179,11 +181,13 @@ test('imported alias by name - can be used where a key is expected', () => {
   new MyConstruct(stack, 'MyConstruct', myAlias);
   /* eslint-enable @aws-cdk/no-core-construct */
 
-  Template.fromStack(stack).hasOutput('OutId', {
-    Value: 'alias/myAlias',
+  expect(stack).toHaveOutput({
+    outputName: 'OutId',
+    outputValue: 'alias/myAlias',
   });
-  Template.fromStack(stack).hasOutput('OutArn', {
-    Value: {
+  expect(stack).toHaveOutput({
+    outputName: 'OutArn',
+    outputValue: {
       'Fn::Join': ['', [
         'arn:',
         { Ref: 'AWS::Partition' },
