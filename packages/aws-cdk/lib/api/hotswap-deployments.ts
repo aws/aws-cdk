@@ -55,8 +55,9 @@ export async function tryHotswapDeployment(
   return { noOp: hotswappableChanges.length === 0, stackArn: cloudFormationStack.stackId, outputs: cloudFormationStack.outputs, stackArtifact };
 }
 
-async function findAllHotswappableChanges(stackChanges: cfn_diff.TemplateDiff, evaluateCfnTemplate: EvaluateCloudFormationTemplate):
-Promise<HotswapOperation[] | undefined> {
+async function findAllHotswappableChanges(
+  stackChanges: cfn_diff.TemplateDiff, evaluateCfnTemplate: EvaluateCloudFormationTemplate,
+): Promise<HotswapOperation[] | undefined> {
   const hotswappableResources = new Array<HotswapOperation>();
   let foundNonHotswappableChange = false;
   const promises: Array<Array<Promise<ChangeHotswapResult>>> = [];
