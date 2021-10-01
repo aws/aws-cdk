@@ -61,9 +61,9 @@ async function isLambdaFunctionCodeOnlyChange(
    * which means we don't have the correct values available to evaluate the CFN expression with.
    * Fortunately, the diff will always include both the s3Bucket and s3Key parts of the Lambda's Code property,
    * even if only one of them was actually changed,
-   * which means we don't need the "old" values at all, and we can safely let these be uninitialized.
+   * which means we don't need the "old" values at all, and we can safely initialize these with just `''`.
    */
-  let s3Bucket: any, s3Key: any;
+  let s3Bucket = '', s3Key = ''; 
   let foundCodeDifference = false;
   // Make sure only the code in the Lambda function changed
   const propertyUpdates = change.propertyUpdates;
@@ -97,8 +97,8 @@ async function isLambdaFunctionCodeOnlyChange(
 }
 
 interface LambdaFunctionCode {
-  readonly s3Bucket: any;
-  readonly s3Key: any;
+  readonly s3Bucket: string;
+  readonly s3Key: string;
 }
 
 interface LambdaFunctionResource {
