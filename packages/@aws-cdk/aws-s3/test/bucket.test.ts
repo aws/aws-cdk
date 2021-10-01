@@ -2437,6 +2437,7 @@ describe('bucket', () => {
         'BucketName': {
           'Ref': 'MyBucketF68F3FF0',
         },
+        'BucketLogicalId': 'MyBucketF68F3FF0',
       },
       'DependsOn': [
         'MyBucketPolicyE7FBAC7B',

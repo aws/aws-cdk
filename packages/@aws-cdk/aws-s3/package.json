@@ -55,6 +55,7 @@
   },
   "cdk-build": {
     "cloudformation": "AWS::S3",
+    "pre": ["./pre-build.sh"],
     "env": {
       "AWSLINT_BASE_CONSTRUCT": "true"
     }
@@ -87,8 +88,13 @@
     "@aws-cdk/aws-kms": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
-    "constructs": "^3.3.69"
+    "constructs": "^3.3.69",
+    "yaml": "1.10.2",
+    "aws-sdk": "^2"
   },
+  "bundledDependencies": [
+    "yaml"
+  ],
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
     "@aws-cdk/aws-events": "0.0.0",

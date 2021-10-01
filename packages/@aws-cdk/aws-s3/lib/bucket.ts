@@ -4,7 +4,7 @@ import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import {
-  Fn, IResource, Lazy, RemovalPolicy, Resource, ResourceProps, Stack, Token,
+  Aws, Fn, IResource, Lazy, RemovalPolicy, Resource, ResourceProps, Stack, Token,
   CustomResource, CustomResourceProvider, CustomResourceProviderRuntime, FeatureFlags,
 } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
@@ -460,7 +460,7 @@ export abstract class BucketBase extends Resource implements IBucket {
    * Indicates if a bucket resource policy should automatically created upon
    * the first call to `addToResourcePolicy`.
    */
-  protected abstract autoCreatePolicy = false;
+  protected abstract autoCreatePolicy: boolean;
 
   /**
    * Whether to disallow public access
@@ -1443,6 +1443,7 @@ export class Bucket extends BucketBase {
   private readonly metrics: BucketMetrics[] = [];
   private readonly cors: CorsRule[] = [];
   private readonly inventories: Inventory[] = [];
+  private readonly _resource: CfnBucket;
 
   constructor(scope: Construct, id: string, props: BucketProps = {}) {
     super(scope, id, {
@@ -1470,6 +1471,7 @@ export class Bucket extends BucketBase {
       inventoryConfigurations: Lazy.any({ produce: () => this.parseInventoryConfiguration() }),
       ownershipControls: this.parseOwnershipControls(props),
     });
+    this._resource = resource;
 
     resource.applyRemovalPolicy(props.removalPolicy);
 
@@ -1912,6 +1914,14 @@ export class Bucket extends BucketBase {
       codeDirectory: path.join(__dirname, 'auto-delete-objects-handler'),
       runtime: CustomResourceProviderRuntime.NODEJS_12_X,
       description: `Lambda function for auto-deleting objects in ${this.bucketName} S3 bucket.`,
+      policyStatements: [
+        // As a reminder: these are not `iam.PolicyStatement`s, but plain JSON IAM statements
+        {
+          Effect: 'Allow',
+          Action: ['cloudformation:DescribeStacks', 'cloudformation:GetTemplate'],
+          Resource: Aws.STACK_ID,
+        },
+      ],
     });
 
     // Use a bucket policy to allow the custom resource to delete
@@ -1934,6 +1944,7 @@ export class Bucket extends BucketBase {
       serviceToken: provider.serviceToken,
       properties: {
         BucketName: this.bucketName,
+        BucketLogicalId: this._resource.logicalId,
       },
     });
 
