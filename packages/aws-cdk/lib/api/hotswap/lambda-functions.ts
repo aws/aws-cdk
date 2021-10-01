@@ -63,7 +63,7 @@ async function isLambdaFunctionCodeOnlyChange(
    * even if only one of them was actually changed,
    * which means we don't need the "old" values at all, and we can safely initialize these with just `''`.
    */
-  let s3Bucket = '', s3Key = ''; 
+  let s3Bucket = '', s3Key = '';
   let foundCodeDifference = false;
   // Make sure only the code in the Lambda function changed
   const propertyUpdates = change.propertyUpdates;

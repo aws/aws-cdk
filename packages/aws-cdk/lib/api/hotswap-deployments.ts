@@ -91,7 +91,7 @@ async function findAllHotswappableChanges(
     const perChangeHotswappableResources = new Array<HotswapOperation>();
 
     for (const result of hotswapDetectionResults) {
-    if (typeof result !== 'string') {
+      if (typeof result !== 'string') {
         perChangeHotswappableResources.push(result);
       }
     }

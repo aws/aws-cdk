@@ -28,7 +28,7 @@ export async function isHotswappableStateMachineChange(
 
 async function isStateMachineDefinitionOnlyChange(
   change: HotswappableResourceChange, evaluateCfnTemplate: EvaluateCloudFormationTemplate):
-Promise<string | ChangeHotswapImpact> {
+  Promise<string | ChangeHotswapImpact> {
   const newResourceType = change.newValue.Type;
   if (newResourceType !== 'AWS::StepFunctions::StateMachine') {
     return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
@@ -50,7 +50,8 @@ Promise<string | ChangeHotswapImpact> {
 
   const definitionString = await evaluateCfnTemplate.evaluateCfnExpression(propertyUpdates.DefinitionString);
 
-  return 'DefinitionString' in propertyUpdates ? definitionString.newValue : ChangeHotswapImpact.IRRELEVANT;
+  //return 'DefinitionString' in propertyUpdates ? definitionString.newValue : ChangeHotswapImpact.IRRELEVANT;
+  return definitionString.newValue;
 }
 
 interface StateMachineResource {
