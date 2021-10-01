@@ -31,7 +31,7 @@ test('Resources that are not lambdas or step functions result in a full deployme
   // GIVEN
   setup.currentCfnStack.setTemplate({
     Resources: {
-      Machine: {
+      SomethingElse: {
         Type: 'AWS::CloudFormation::SomethingElse',
         Properties: {
           Prop: 'old-value',
@@ -42,7 +42,7 @@ test('Resources that are not lambdas or step functions result in a full deployme
   const cdkStackArtifact = setup.cdkStackArtifactOf({
     template: {
       Resources: {
-        Machine: {
+        SomethingElse: {
           Type: 'AWS::CloudFormation::SomethingElse',
           Properties: {
             Prop: 'new-value',
@@ -60,6 +60,67 @@ test('Resources that are not lambdas or step functions result in a full deployme
   expect(mockUpdateMachineDefinition).not.toHaveBeenCalled();
   expect(mockUpdateLambdaCode).not.toHaveBeenCalled();
 });
+
+test('Resources that are not lambdas or step functions result in a full deployment even when a hotswappable change is present', async () => {
+  // GIVEN
+  setup.currentCfnStack.setTemplate({
+    Resources: {
+      Func: {
+        Type: 'AWS::Lambda::Function',
+        Properties: {
+          Code: {
+            S3Bucket: 'current-bucket',
+            S3Key: 'current-key',
+          },
+          FunctionName: 'my-function',
+        },
+        Metadata: {
+          'aws:asset:path': 'old-path',
+        },
+      },
+      SomethingElse: {
+        Type: 'AWS::CloudFormation::SomethingElse',
+        Properties: {
+          Prop: 'old-value',
+        },
+      },
+    },
+  });
+  const cdkStackArtifact = setup.cdkStackArtifactOf({
+    template: {
+      Resources: {
+        Func: {
+          Type: 'AWS::Lambda::Function',
+          Properties: {
+            Code: {
+              S3Bucket: 'current-bucket',
+              S3Key: 'new-key',
+            },
+            FunctionName: 'my-function',
+          },
+          Metadata: {
+            'aws:asset:path': 'new-path',
+          },
+        },
+        SomethingElse: {
+          Type: 'AWS::CloudFormation::SomethingElse',
+          Properties: {
+            Prop: 'new-value',
+          },
+        },
+      },
+    },
+  });
+
+  // WHEN
+  const deployStackResult = await tryHotswapDeployment(setup.mockSdkProvider, {}, setup.currentCfnStack, cdkStackArtifact);
+
+  // THEN
+  expect(deployStackResult).toBeUndefined();
+  expect(mockUpdateMachineDefinition).not.toHaveBeenCalled();
+  expect(mockUpdateLambdaCode).not.toHaveBeenCalled();
+});
+
 
 test('changes to CDK::Metadata result in a noOp', async () => {
   // GIVEN

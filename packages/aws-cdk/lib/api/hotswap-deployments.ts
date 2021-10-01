@@ -83,14 +83,17 @@ async function findAllHotswappableChanges(
   // resolve all detector results
   for (const detectorResultPromises of promises) {
     await Promise.all(detectorResultPromises).then(hotswapDetectionResults => {
+      const perChangeHotswappableResources = new Array<HotswapOperation>();
+
       for (const result of hotswapDetectionResults) {
         if (typeof result !== 'string') {
-          hotswappableResources.push(result);
+          perChangeHotswappableResources.push(result);
         }
       }
 
       // if we found any hotswappable changes, return now
-      if (hotswappableResources.length > 0) {
+      if (perChangeHotswappableResources.length > 0) {
+        hotswappableResources.push(...perChangeHotswappableResources);
         return;
       }
 
