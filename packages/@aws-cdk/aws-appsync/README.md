@@ -371,7 +371,7 @@ new appsync.GraphqlApi(stack, 'api', {
     defaultAuthorization: {
       authorizationType: appsync.AuthorizationType.LAMBDA,
       lambdaAuthorizerConfig: {
-        functionArn: authFunction.functionArn, 
+        handler: authFunction, 
         // can also specify `resultsCacheTtl` and `validationRegex`.
       },
     },
