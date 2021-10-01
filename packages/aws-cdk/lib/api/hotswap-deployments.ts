@@ -58,7 +58,6 @@ export async function tryHotswapDeployment(
 async function findAllHotswappableChanges(
   stackChanges: cfn_diff.TemplateDiff, evaluateCfnTemplate: EvaluateCloudFormationTemplate,
 ): Promise<HotswapOperation[] | undefined> {
-  const hotswappableResources = new Array<HotswapOperation>();
   let foundNonHotswappableChange = false;
   const promises: Array<Array<Promise<ChangeHotswapResult>>> = [];
 
@@ -78,6 +77,8 @@ async function findAllHotswappableChanges(
       promises.push(detectorResults);
     }
   });
+
+  const hotswappableResources = new Array<HotswapOperation>();
 
   // resolve all detector results
   for (const detectorResultPromises of promises) {
