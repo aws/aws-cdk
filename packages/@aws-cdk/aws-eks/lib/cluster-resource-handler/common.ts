@@ -39,13 +39,15 @@ export abstract class ResourceHandler {
       RoleSessionName: `AWSCDK.EKSCluster.${this.requestType}.${this.requestId}`,
     });
 
-    // Configure the proxy agent. By default, this will use HTTPS?_PROXY and
-    // NO_PROXY environment variables to determine which proxy to use for each
-    // request.
-    //
-    // eslint-disable-next-line @typescript-eslint/no-require-imports, import/no-extraneous-dependencies
-    const ProxyAgent: any = require('proxy-agent');
-    aws.config.update({ httpOptions: { agent: new ProxyAgent() } });
+    const proxyAddress = this.httpProxyFromEnvironment();
+    if (proxyAddress) {
+      this.log(`Using proxy server: ${proxyAddress}`);
+      // eslint-disable-next-line @typescript-eslint/no-require-imports, import/no-extraneous-dependencies
+      const ProxyAgent: any = require('proxy-agent');
+      aws.config.update({
+        httpOptions: { agent: new ProxyAgent(proxyAddress) },
+      });
+    }
   }
 
   public onEvent() {
@@ -71,6 +73,16 @@ export abstract class ResourceHandler {
   protected log(x: any) {
     // eslint-disable-next-line no-console
     console.log(JSON.stringify(x, undefined, 2));
+  }
+
+  private httpProxyFromEnvironment(): string | undefined {
+    if (process.env.http_proxy) {
+      return process.env.http_proxy;
+    }
+    if (process.env.HTTP_PROXY) {
+      return process.env.HTTP_PROXY;
+    }
+    return undefined;
   }
 
   protected abstract async onCreate(): Promise<OnEventResponse>;
