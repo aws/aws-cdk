@@ -31,7 +31,6 @@ class TestStack extends cdk.Stack {
         ...commonParameters,
       },
       iamResources: ['*'],
-
     });
 
     const getObject = new tasks.CallAwsService(this, 'GetObject', {
