@@ -79,32 +79,36 @@ async function findAllHotswappableChanges(
   });
 
   const hotswappableResources = new Array<HotswapOperation>();
+  const changesDetectionResults: Array<Array<ChangeHotswapResult>> = [];
+
+  for (const detectorResultPromises of promises) {
+    const hotswapDetectionResults = await Promise.all(detectorResultPromises);
+    changesDetectionResults.push(hotswapDetectionResults);
+  }
 
   // resolve all detector results
-  for (const detectorResultPromises of promises) {
-    await Promise.all(detectorResultPromises).then(hotswapDetectionResults => {
-      const perChangeHotswappableResources = new Array<HotswapOperation>();
+  for (const hotswapDetectionResults of changesDetectionResults) {
+    const perChangeHotswappableResources = new Array<HotswapOperation>();
 
-      for (const result of hotswapDetectionResults) {
-        if (typeof result !== 'string') {
-          perChangeHotswappableResources.push(result);
-        }
+    for (const result of hotswapDetectionResults) {
+    if (typeof result !== 'string') {
+        perChangeHotswappableResources.push(result);
       }
+    }
 
-      // if we found any hotswappable changes, return now
-      if (perChangeHotswappableResources.length > 0) {
-        hotswappableResources.push(...perChangeHotswappableResources);
-        return;
-      }
+    // if we found any hotswappable changes, return now
+    if (perChangeHotswappableResources.length > 0) {
+      hotswappableResources.push(...perChangeHotswappableResources);
+      continue;
+    }
 
-      // no hotswappable changes found, so any REQUIRES_FULL_DEPLOYMENTs imply a non-hotswappable change
-      for (const result of hotswapDetectionResults) {
-        if (result === ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT) {
-          foundNonHotswappableChange = true;
-        }
+    // no hotswappable changes found, so any REQUIRES_FULL_DEPLOYMENTs imply a non-hotswappable change
+    for (const result of hotswapDetectionResults) {
+      if (result === ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT) {
+        foundNonHotswappableChange = true;
       }
-      // no REQUIRES_FULL_DEPLOYMENT implies that all results are IRRELEVANT
-    });
+    }
+    // no REQUIRES_FULL_DEPLOYMENT implies that all results are IRRELEVANT
   }
 
   return foundNonHotswappableChange ? undefined : hotswappableResources;
