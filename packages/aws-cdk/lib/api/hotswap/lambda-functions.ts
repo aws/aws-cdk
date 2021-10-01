@@ -24,7 +24,7 @@ export async function isHotswappableLambdaFunctionChange(
     }
 
     const functionNameInCfnTemplate = change.newValue?.Properties?.FunctionName;
-    const functionName = await establishHotswappableResourceName(logicalId, evaluateCfnTemplate, functionNameInCfnTemplate);
+    const functionName = await establishHotswappableResourceName(logicalId, functionNameInCfnTemplate, evaluateCfnTemplate);
     if (!functionName) {
       return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
     }

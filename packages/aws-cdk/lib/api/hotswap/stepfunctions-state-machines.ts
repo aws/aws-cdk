@@ -13,7 +13,7 @@ export async function isHotswappableStateMachineChange(
   }
 
   const machineNameInCfnTemplate = change.newValue?.Properties?.StateMachineName;
-  const machineName = await establishHotswappableResourceName(logicalId, evaluateCfnTemplate, machineNameInCfnTemplate);
+  const machineName = await establishHotswappableResourceName(logicalId, machineNameInCfnTemplate, evaluateCfnTemplate);
 
   if (!machineName) {
     return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
