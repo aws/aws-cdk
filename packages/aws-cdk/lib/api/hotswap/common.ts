@@ -1,7 +1,7 @@
 import * as cfn_diff from '@aws-cdk/cloudformation-diff';
 import { CloudFormation } from 'aws-sdk';
 import { ISDK } from '../aws-auth';
-import { CloudFormationExecutableTemplate } from './cloudformation-executable-template';
+import { CfnEvaluationException, EvaluateCloudFormationTemplate } from './evaluate-cloudformation-template';
 
 export interface ListStackResources {
   listStackResources(): Promise<CloudFormation.StackResourceSummary[]>;
@@ -16,7 +16,7 @@ export interface HotswappableResource {
  * An interface that represents a change that can be deployed in a short-circuit manner.
  */
 export interface HotswapOperation {
-  apply(sdk: ISDK, cfnExecutableTemplate: CloudFormationExecutableTemplate): Promise<any>;
+  apply(sdk: ISDK): Promise<any>;
 }
 
 /**
@@ -59,7 +59,7 @@ export class HotswappableResourceChange {
   }
 }
 
-export async function establishHotswappableResourceName(cfnExectuableTemplate: CloudFormationExecutableTemplate,
+/*export async function establishHotswappableResourceName(cfnExectuableTemplate: CloudFormationExecutableTemplate,
   resourceName: string | undefined, logicalId: string): Promise<string | undefined> {
   if (resourceName) {
     try {
@@ -70,8 +70,27 @@ export async function establishHotswappableResourceName(cfnExectuableTemplate: C
     }
   }
   return cfnExectuableTemplate.findPhysicalNameFor(logicalId);
+}*/
+
+export async function establishHotswappableResourceName(
+  logicalId: string, change: HotswappableResourceChange, evaluateCfnTemplate: EvaluateCloudFormationTemplate,
+): Promise<string | undefined> {
+  const functionNameInCfnTemplate = change.newValue?.Properties?.FunctionName;
+  if (functionNameInCfnTemplate != null) {
+    try {
+      return await evaluateCfnTemplate.evaluateCfnExpression(functionNameInCfnTemplate);
+    } catch (e) {
+      // If we can't evaluate the function's name CloudFormation expression,
+      // just look it up in the currently deployed Stack
+      if (!(e instanceof CfnEvaluationException)) {
+        throw e;
+      }
+    }
+  }
+  return evaluateCfnTemplate.findPhysicalNameFor(logicalId);
 }
 
 export function assetMetadataChanged(change: HotswappableResourceChange): boolean {
+//export function assetMetadataChanged(change: cfn_diff.ResourceDifference): boolean {
   return !!change.newValue?.Metadata['aws:asset:path'];
 }

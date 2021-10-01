@@ -1,4 +1,4 @@
-import { Match, Template } from '@aws-cdk/assertions';
+import '@aws-cdk/assert-internal/jest';
 import * as cdk from '@aws-cdk/core';
 import * as codepipeline from '../lib';
 import { FakeBuildAction } from './fake-build-action';
@@ -165,7 +165,7 @@ describe('artifacts', () => {
         ],
       });
 
-      Template.fromStack(stack).resourceCountIs('AWS::CodePipeline::Pipeline', 1);
+      expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline');
 
 
     });
@@ -250,28 +250,28 @@ describe('artifacts', () => {
         ],
       });
 
-      Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+      expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
         'Stages': [
           {
             'Name': 'Source.@',
             'Actions': [
-              Match.objectLike({
+              {
                 'Name': 'source1',
                 'OutputArtifacts': [
                   { 'Name': 'Artifact_Source_source1' },
                 ],
-              }),
+              },
             ],
           },
           {
             'Name': 'Build',
             'Actions': [
-              Match.objectLike({
+              {
                 'Name': 'build1',
                 'InputArtifacts': [
                   { 'Name': 'Artifact_Source_source1' },
                 ],
-              }),
+              },
             ],
           },
         ],
@@ -282,9 +282,9 @@ describe('artifacts', () => {
   });
 });
 
-/* eslint-disable cdk/no-core-construct */
+/* eslint-disable @aws-cdk/no-core-construct */
 function validate(construct: cdk.IConstruct): cdk.ValidationError[] {
   cdk.ConstructNode.prepare(construct.node);
   return cdk.ConstructNode.validate(construct.node);
 }
-/* eslint-enable cdk/no-core-construct */
+/* eslint-enable @aws-cdk/no-core-construct */

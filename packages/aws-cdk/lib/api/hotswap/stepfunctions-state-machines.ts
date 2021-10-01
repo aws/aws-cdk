@@ -1,25 +1,30 @@
 import { ISDK } from '../aws-auth';
-import { CloudFormationExecutableTemplate } from './cloudformation-executable-template';
 import { ChangeHotswapImpact, ChangeHotswapResult, HotswapOperation, HotswappableResourceChange, establishHotswappableResourceName } from './common';
+import { /*CfnEvaluationException,*/ EvaluateCloudFormationTemplate } from './evaluate-cloudformation-template';
 
-export function isHotswappableStateMachineChange(
-  logicalId: string, change: HotswappableResourceChange,
-): ChangeHotswapResult {
-  const stateMachineDefinitionChange = isStateMachineDefinitionOnlyChange(change);
+export async function isHotswappableStateMachineChange(
+  logicalId: string, change: HotswappableResourceChange, evaluateCfnTemplate: EvaluateCloudFormationTemplate,
+): Promise<ChangeHotswapResult> {
+  const stateMachineDefinitionChange = await isStateMachineDefinitionOnlyChange(change, evaluateCfnTemplate);
 
   if ((stateMachineDefinitionChange === ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT) ||
       (stateMachineDefinitionChange === ChangeHotswapImpact.IRRELEVANT)) {
     return stateMachineDefinitionChange;
   }
 
+  const machineName = await establishHotswappableResourceName(logicalId, change, evaluateCfnTemplate);
+  if (!machineName) {
+    return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
+  }
+
   return new StateMachineHotswapOperation({
     logicalId: logicalId,
     definition: stateMachineDefinitionChange,
-    stateMachineName: change.newValue?.Properties?.StateMachineName,
+    stateMachineName: machineName,
   });
 }
 
-function isStateMachineDefinitionOnlyChange(change: HotswappableResourceChange): string | ChangeHotswapImpact {
+async function isStateMachineDefinitionOnlyChange(change: HotswappableResourceChange, evaluateCfnTemplate: EvaluateCloudFormationTemplate): Promise<string | ChangeHotswapImpact> {
   const newResourceType = change.newValue.Type;
   if (newResourceType !== 'AWS::StepFunctions::StateMachine') {
     return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
@@ -41,14 +46,16 @@ function isStateMachineDefinitionOnlyChange(change: HotswappableResourceChange):
     }
   }
 
-  const definitionString = propertyUpdates.DefinitionString;
+  //const definitionString = propertyUpdates.DefinitionString;
+  const definitionString = await evaluateCfnTemplate.evaluateCfnExpression(propertyUpdates.DefinitionString);
 
   return 'DefinitionString' in propertyUpdates ? definitionString.newValue : ChangeHotswapImpact.IRRELEVANT;
 }
 
 interface StateMachineResource {
   readonly logicalId: string;
-  readonly stateMachineName?: string;
+  //readonly stateMachineName?: string;
+  readonly stateMachineName: string;
   readonly definition: string;
 }
 
@@ -56,7 +63,13 @@ class StateMachineHotswapOperation implements HotswapOperation {
   constructor(private readonly stepFunctionResource: StateMachineResource) {
   }
 
-  public async apply(sdk: ISDK, cfnExecutableTemplate: CloudFormationExecutableTemplate): Promise<any> {
+  public async apply(sdk: ISDK): Promise<any> {
+    return sdk.stepFunctions().updateStateMachine({
+      stateMachineArn: this.stepFunctionResource.stateMachineName,
+      definition: this.stepFunctionResource.definition,
+    }).promise();
+  }
+  /*public async apply(sdk: ISDK, cfnExecutableTemplate: CloudFormationExecutableTemplate): Promise<any> {
     const machineName = this.stepFunctionResource.stateMachineName;
     const logicalId = this.stepFunctionResource.logicalId;
     const stateMachineName = await establishHotswappableResourceName(cfnExecutableTemplate, machineName, logicalId);
@@ -73,5 +86,5 @@ class StateMachineHotswapOperation implements HotswapOperation {
       stateMachineArn: stateMachineName,
       definition: machineDefinition,
     }).promise();
-  }
+  }*/
 }
