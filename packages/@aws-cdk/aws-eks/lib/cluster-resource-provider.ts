@@ -2,9 +2,9 @@ import * as path from 'path';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { NodejsFunction } from '@aws-cdk/aws-lambda-nodejs';
 import { Duration, NestedStack, Stack } from '@aws-cdk/core';
 import * as cr from '@aws-cdk/custom-resources';
+import { NodeProxyAgentLayer } from '@aws-cdk/lambda-layer-node-proxy-agent';
 import { Construct } from 'constructs';
 
 // v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
@@ -34,6 +34,13 @@ export interface ClusterResourceProviderProps {
    * Environment to add to the handler.
    */
   readonly environment?: { [key: string]: string };
+
+  /**
+    * An AWS Lambda layer that includes the NPM dependency `proxy-agent`.
+    *
+    * If not defined, a default layer will be used.
+    */
+  readonly onEventLayer?: lambda.ILayerVersion;
 }
 
 /**
@@ -59,17 +66,24 @@ export class ClusterResourceProvider extends NestedStack {
   private constructor(scope: Construct, id: string, props: ClusterResourceProviderProps) {
     super(scope as CoreConstruct, id);
 
-    // Using NodejsFunction so that NPM dependencies (proxy-agent) are installed at synth time.
-    const onEvent = new NodejsFunction(this, 'OnEventHandler', {
-      entry: path.join(HANDLER_DIR, 'index.ts'),
+    const onEvent = new lambda.Function(this, 'OnEventHandler', {
+      code: lambda.Code.fromAsset(HANDLER_DIR),
       description: 'onEvent handler for EKS cluster resource provider',
       runtime: HANDLER_RUNTIME,
       environment: props.environment,
-      handler: 'onEvent',
+      handler: 'index.onEvent',
       timeout: Duration.minutes(1),
       vpc: props.subnets ? props.vpc : undefined,
       vpcSubnets: props.subnets ? { subnets: props.subnets } : undefined,
     });
+
+    // Allow user to customize the layer
+    if (!props.onEventLayer) {
+      // `NodeProxyAgentLayer` provides `proxy-agent` which is needed to configure `aws-sdk-js` with a user provided proxy.
+      onEvent.addLayers(new NodeProxyAgentLayer(this, 'NodeProxyAgentLayer'));
+    } else {
+      onEvent.addLayers(props.onEventLayer);
+    }
 
     const isComplete = new lambda.Function(this, 'IsCompleteHandler', {
       code: lambda.Code.fromAsset(HANDLER_DIR),
