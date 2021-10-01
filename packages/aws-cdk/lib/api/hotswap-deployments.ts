@@ -122,7 +122,9 @@ export async function tryHotswapDeployment(
 async function findAllHotswappableChanges(stackChanges: cfn_diff.TemplateDiff, evaluateCfnTemplate: EvaluateCloudFormationTemplate): Promise<HotswapOperation[] | undefined> {
   const hotswappableResources = new Array<HotswapOperation>();
   let foundNonHotswappableChange = false;
-  //                                         TODO: not all code paths return a value
+  const promises: Array<Array<Promise<ChangeHotswapResult>>> = [];
+
+  // gather the results of the detector functions
   stackChanges.resources.forEachDifference((logicalId: string, change: cfn_diff.ResourceDifference) => {
     const nonHotswappableResourceFound = isResourceChangeHotswappable(change);
 
@@ -131,35 +133,85 @@ async function findAllHotswappableChanges(stackChanges: cfn_diff.TemplateDiff, e
     } else if (nonHotswappableResourceFound === ChangeHotswapImpact.IRRELEVANT) {
       // empty if
     } else {
-      //const detectorResults = [
+      const detectorResults = new Array<Promise<ChangeHotswapResult>>();
+      detectorResults.push(isHotswappableLambdaFunctionChange(logicalId, nonHotswappableResourceFound, evaluateCfnTemplate));
+      detectorResults.push(isHotswappableStateMachineChange(logicalId, nonHotswappableResourceFound, evaluateCfnTemplate));
+
+      promises.push(detectorResults);
+    }
+  });
+
+  // resolve all the detector results
+  //return await Promise.all(promises).then(async hotswapDetectionResults => await Promise.all(hotswapDetectionResults).then(result => {
+  for (const detectorResultPromises of promises) {
+    await Promise.all(detectorResultPromises).then(hotswapDetectionResults => {
+
+    for (const result of hotswapDetectionResults) {
+      if (typeof result !== 'string') {
+        hotswappableResources.push(result);
+      }
+    }
+
+    // if we found any hotswappable changes, return now
+    if (hotswappableResources.length > 0) {
+      return;
+    }
+
+    // no hotswappable changes found, so any REQUIRES_FULL_DEPLOYMENTs imply a non-hotswappable change
+    for (const result of hotswapDetectionResults) {
+      if (result === ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT) {
+        foundNonHotswappableChange = true;
+      }
+    }
+    // no REQUIRES_FULL_DEPLOYMENT implies that all results are IRRELEVANT
+    });
+  }
+
+  return foundNonHotswappableChange ? undefined : hotswappableResources;
+}
+  /*stackChanges.resources.forEachDifference((logicalId: string, change: cfn_diff.ResourceDifference) => {
+    const nonHotswappableResourceFound = isResourceChangeHotswappable(change);
+
+    if (nonHotswappableResourceFound === ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT) {
+      foundNonHotswappableChange = true;
+    } else if (nonHotswappableResourceFound === ChangeHotswapImpact.IRRELEVANT) {
+      // empty if
+    } else {
       const promises = new Array<Promise<ChangeHotswapResult>>();
       promises.push(isHotswappableLambdaFunctionChange(logicalId, nonHotswappableResourceFound, evaluateCfnTemplate));
       promises.push(isHotswappableStateMachineChange(logicalId, nonHotswappableResourceFound, evaluateCfnTemplate));
 
-      return Promise.all(promises).then(hotswapDetectionResults => {
-      for (const result of hotswapDetectionResults) {
-        if (typeof result !== 'string') {
-          hotswappableResources.push(result);
+      Promise.all(promises).then(hotswapDetectionResults => {
+        console.log('results')
+        for (const result of hotswapDetectionResults) {
+          console.log(result)
+          if (typeof result !== 'string') {
+            console.log('pushing')
+            hotswappableResources.push(result);
+          }
         }
-      }
 
-      // if we found any hotswappable changes, return now
-      if (hotswappableResources.length > 0) {
-        return;
-      }
-
-      // no hotswappable changes found, so any REQUIRES_FULL_DEPLOYMENTs require a full deployment
-      for (const result of hotswapDetectionResults) {
-        if (result === ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT) {
-          foundNonHotswappableChange = true;
+        // if we found any hotswappable changes, return now
+        if (hotswappableResources.length > 0) {
+          console.log('len > 0')
+          return;
         }
-      }
-    });
-    // no REQUIRES_FULL_DEPLOYMENT implies that all results are IRRELEVANT
 
-  // TODO: not all code paths return a value
+        console.log('found no hotswappable changes')
+
+        // no hotswappable changes found, so any REQUIRES_FULL_DEPLOYMENTs imply a non-hotswappable change
+        for (const result of hotswapDetectionResults) {
+          if (result === ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT) {
+            foundNonHotswappableChange = true;
+          }
+        }
+        // no REQUIRES_FULL_DEPLOYMENT implies that all results are IRRELEVANT
+      });
+    }
+  });
+
   return foundNonHotswappableChange ? undefined : hotswappableResources;
-}
+}*/
 
   // adam's original
 /*async function findAllHotswappableChanges(

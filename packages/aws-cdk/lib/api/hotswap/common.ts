@@ -73,12 +73,11 @@ export class HotswappableResourceChange {
 }*/
 
 export async function establishHotswappableResourceName(
-  logicalId: string, change: HotswappableResourceChange, evaluateCfnTemplate: EvaluateCloudFormationTemplate,
+  logicalId: string, evaluateCfnTemplate: EvaluateCloudFormationTemplate, nameInCfnTemplate: any,
 ): Promise<string | undefined> {
-  const functionNameInCfnTemplate = change.newValue?.Properties?.FunctionName;
-  if (functionNameInCfnTemplate != null) {
+  if (nameInCfnTemplate != null) {
     try {
-      return await evaluateCfnTemplate.evaluateCfnExpression(functionNameInCfnTemplate);
+      return await evaluateCfnTemplate.evaluateCfnExpression(nameInCfnTemplate);
     } catch (e) {
       // If we can't evaluate the function's name CloudFormation expression,
       // just look it up in the currently deployed Stack
