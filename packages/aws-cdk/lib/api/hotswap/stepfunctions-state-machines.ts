@@ -41,10 +41,8 @@ Promise<string | ChangeHotswapImpact> {
     if (updatedProp.newValue === undefined) {
       return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
     }
-  }
 
-  // ensure that only changes to the definition string result in a hotswap
-  for (const updatedPropName in propertyUpdates) {
+    // ensure that only changes to the definition string result in a hotswap
     if (updatedPropName !== 'DefinitionString') {
       return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
     }
