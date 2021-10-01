@@ -1,6 +1,7 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
+import * as lambda from '@aws-cdk/aws-lambda';
 import { ArnComponents, CustomResource, Token, Stack, Lazy } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CLUSTER_RESOURCE_TYPE } from './cluster-resource-handler/consts';
@@ -24,6 +25,7 @@ export interface ClusterResourceProps {
   readonly environment?: { [key: string]: string };
   readonly subnets?: ec2.ISubnet[];
   readonly secretsEncryptionKey?: kms.IKey;
+  readonly onEventLayer?: lambda.ILayerVersion;
 }
 
 /**
@@ -62,6 +64,7 @@ export class ClusterResource extends CoreConstruct {
       subnets: props.subnets,
       vpc: props.vpc,
       environment: props.environment,
+      onEventLayer: props.onEventLayer,
     });
 
     const resource = new CustomResource(this, 'Resource', {
