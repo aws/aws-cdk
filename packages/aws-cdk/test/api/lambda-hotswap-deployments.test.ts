@@ -349,3 +349,5 @@ test('does not call the updateLambdaCode() API when a resource with type that is
   expect(deployStackResult).toBeUndefined();
   expect(mockUpdateLambdaCode).not.toHaveBeenCalled();
 });
+
+// TODO: put the tests that adam added in the Cli chore PR here.
