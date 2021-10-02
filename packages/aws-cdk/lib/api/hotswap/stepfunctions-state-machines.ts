@@ -64,7 +64,9 @@ class StateMachineHotswapOperation implements HotswapOperation {
   }
 
   public async apply(sdk: ISDK): Promise<any> {
+    // not passing the optional properties leaves them unchanged
     return sdk.stepFunctions().updateStateMachine({
+      // even though the name of the property is stateMachineArn, passing the name of the state machine is allowed here
       stateMachineArn: this.stepFunctionResource.stateMachineName,
       definition: this.stepFunctionResource.definition,
     }).promise();
