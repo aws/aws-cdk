@@ -122,7 +122,7 @@ test('Resources that are not lambdas or step functions result in a full deployme
 });
 
 
-test('changes to CDK::Metadata result in a noOp', async () => {
+test('changes only to CDK::Metadata result in a noOp', async () => {
   // GIVEN
   setup.currentCfnStack.setTemplate({
     Resources: {
