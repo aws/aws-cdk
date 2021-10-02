@@ -20,7 +20,6 @@ export async function isHotswappableStateMachineChange(
   }
 
   return new StateMachineHotswapOperation({
-    logicalId: logicalId,
     definition: stateMachineDefinitionChange,
     stateMachineName: machineName,
   });
@@ -54,7 +53,6 @@ async function isStateMachineDefinitionOnlyChange(
 }
 
 interface StateMachineResource {
-  readonly logicalId: string;
   readonly stateMachineName: string;
   readonly definition: string;
 }
