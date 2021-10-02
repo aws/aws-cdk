@@ -5,7 +5,7 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
-import { Construct, Node } from 'constructs';
+import { Construct, IDependable, Node } from 'constructs';
 import { DestinationS3BackupProps } from '../common';
 
 export interface DestinationLoggingProps {
@@ -42,7 +42,7 @@ interface ConfigWithDependables {
   /**
    * Resources that were created by the sub-config creator that must be deployed before the delivery stream is deployed.
    */
-  readonly dependables: cdk.IDependable[];
+  readonly dependables: IDependable[];
 }
 
 export interface DestinationLoggingConfig extends ConfigWithDependables {
