@@ -1,5 +1,6 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
-import { App as Root, Aws, Construct, ConstructNode, ConstructOrder, IConstruct, Lazy, ValidationError } from '../lib';
+import { Construct, ConstructOrder, IConstruct } from 'constructs';
+import { Names } from '../lib';
 import { Annotations } from '../lib/annotations';
 import { reEnableStackTraceCollection, restoreStackTraceColection } from './util';
 
@@ -10,7 +11,7 @@ describe('construct', () => {
     const root = new Root();
     expect(root.node.id).toEqual('');
     expect(root.node.scope).toBeUndefined();
-    expect(root.node.children.length).toEqual(1);
+    expect(root.node.children.length).toEqual(0);
 
   });
 
@@ -63,16 +64,6 @@ describe('construct', () => {
 
   });
 
-  test('dont allow unresolved tokens to be used in construct IDs', () => {
-    // GIVEN
-    const root = new Root();
-    const token = Lazy.string({ produce: () => 'lazy' });
-
-    // WHEN + THEN
-    expect(() => new Construct(root, `MyID: ${token}`)).toThrow(/Cannot use tokens in construct ID: MyID: \${Token/);
-
-  });
-
   test('construct.uniqueId returns a tree-unique alphanumeric id of this construct', () => {
     const root = new Root();
 
@@ -83,15 +74,15 @@ describe('construct', () => {
 
     expect(c1.node.path).toEqual('This is the first child/Second level/My construct');
     expect(c2.node.path).toEqual('This is the first child/My construct');
-    expect(c1.node.uniqueId).toEqual('ThisisthefirstchildSecondlevelMyconstruct202131E0');
-    expect(c2.node.uniqueId).toEqual('ThisisthefirstchildMyconstruct8C288DF9');
+    expect(Names.uniqueId(c1)).toEqual('ThisisthefirstchildSecondlevelMyconstruct202131E0');
+    expect(Names.uniqueId(c2)).toEqual('ThisisthefirstchildMyconstruct8C288DF9');
 
   });
 
   test('cannot calculate uniqueId if the construct path is ["Default"]', () => {
     const root = new Root();
     const c = new Construct(root, 'Default');
-    expect(() => c.node.uniqueId).toThrow(/Unable to calculate a unique id for an empty set of components/);
+    expect(() => Names.uniqueId(c)).toThrow(/Unable to calculate a unique id for an empty set of components/);
 
   });
 
@@ -100,7 +91,7 @@ describe('construct', () => {
     const child = new Construct(root, 'Child1');
     new Construct(root, 'Child2');
     expect(child.node.children.length).toEqual(0);
-    expect(root.node.children.length).toEqual(3);
+    expect(root.node.children.length).toEqual(2);
 
   });
 
@@ -142,7 +133,7 @@ describe('construct', () => {
     expect(t.root.toString()).toEqual('<root>');
     expect(t.child1_1_1.toString()).toEqual('HighChild/Child1/Child11/Child111');
     expect(t.child2.toString()).toEqual('HighChild/Child2');
-    expect(toTreeString(t.root)).toEqual('App\n  TreeMetadata [Tree]\n  Construct [HighChild]\n    Construct [Child1]\n      Construct [Child11]\n        Construct [Child111]\n      Construct [Child12]\n    Construct [Child2]\n      Construct [Child21]\n');
+    expect(toTreeString(t.root)).toEqual('Root\n  Construct [HighChild]\n    Construct [Child1]\n      Construct [Child11]\n        Construct [Child111]\n      Construct [Child12]\n    Construct [Child2]\n      Construct [Child21]\n');
 
   });
 
@@ -201,13 +192,6 @@ describe('construct', () => {
 
   });
 
-  test('fails if context key contains unresolved tokens', () => {
-    const root = new Root();
-    expect(() => root.node.setContext(`my-${Aws.REGION}`, 'foo')).toThrow(/Invalid context key/);
-    expect(() => root.node.tryGetContext(Aws.REGION)).toThrow(/Invalid context key/);
-
-  });
-
   test('construct.pathParts returns an array of strings of all names from root to node', () => {
     const tree = createTree();
     expect(tree.root.node.path).toEqual('');
@@ -232,7 +216,7 @@ describe('construct', () => {
     // THEN: They have different paths
     expect(() => {
       new Construct(root, 'SameName');
-    }).toThrow(/There is already a Construct with name 'SameName' in App/);
+    }).toThrow(/There is already a Construct with name 'SameName' in Root/);
 
     // WHEN
     const c0 = new Construct(root, 'c0');
@@ -252,7 +236,7 @@ describe('construct', () => {
     const con = new Construct(root, 'MyConstruct');
     expect(con.node.metadata).toEqual([]);
 
-    con.node.addMetadata('key', 'value');
+    con.node.addMetadata('key', 'value', { stackTrace: true });
     con.node.addMetadata('number', 103);
     con.node.addMetadata('array', [123, 456]);
     restoreStackTraceColection(previousValue);
@@ -337,14 +321,16 @@ describe('construct', () => {
   test('construct.validate() can be implemented to perform validation, ConstructNode.validate(construct.node) will return all errors from the subtree (DFS)', () => {
 
     class MyConstruct extends Construct {
-      protected validate() {
-        return ['my-error1', 'my-error2'];
+      constructor(scope: Construct, id: string) {
+        super(scope, id);
+        this.node.addValidation({ validate: () => ['my-error1', 'my-error2'] });
       }
     }
 
     class YourConstruct extends Construct {
-      protected validate() {
-        return ['your-error1'];
+      constructor(scope: Construct, id: string) {
+        super(scope, id);
+        this.node.addValidation({ validate: () => ['your-error1'] });
       }
     }
 
@@ -353,10 +339,7 @@ describe('construct', () => {
         super(scope, id);
 
         new YourConstruct(this, 'YourConstruct');
-      }
-
-      protected validate() {
-        return ['their-error'];
+        this.node.addValidation({ validate: () => ['their-error'] });
       }
     }
 
@@ -366,24 +349,30 @@ describe('construct', () => {
 
         new MyConstruct(this, 'MyConstruct');
         new TheirConstruct(this, 'TheirConstruct');
-      }
 
-      protected validate() {
-        return ['stack-error'];
+        this.node.addValidation({ validate: () => ['stack-error'] });
       }
     }
 
     const stack = new TestStack();
 
-    const errors = ConstructNode.validate(stack.node).map((v: ValidationError) => ({ path: v.source.node.path, message: v.message }));
+    const errors = new Array<{ path: string, message: string }>();
+    for (const child of stack.node.findAll()) {
+      for (const message of child.node.validate()) {
+        errors.push({
+          path: child.node.path,
+          message,
+        });
+      }
+    }
 
     // validate DFS
     expect(errors).toEqual([
+      { path: '', message: 'stack-error' },
       { path: 'MyConstruct', message: 'my-error1' },
       { path: 'MyConstruct', message: 'my-error2' },
-      { path: 'TheirConstruct/YourConstruct', message: 'your-error1' },
       { path: 'TheirConstruct', message: 'their-error' },
-      { path: '', message: 'stack-error' },
+      { path: 'TheirConstruct/YourConstruct', message: 'your-error1' },
     ]);
 
 
@@ -393,11 +382,7 @@ describe('construct', () => {
 
     class LockableConstruct extends Construct {
       public lockMe() {
-        (this.node._actualNode as any)._lock();
-      }
-
-      public unlockMe() {
-        (this.node._actualNode as any)._unlock();
+        this.node.lock();
       }
     }
 
@@ -416,13 +401,6 @@ describe('construct', () => {
     expect(() => new Construct(c0a, 'fail1')).toThrow(/Cannot add children to "c0a" during synthesis/);
     expect(() => new Construct(c1a, 'fail2')).toThrow(/Cannot add children to "c0a\/c1a" during synthesis/);
     expect(() => new Construct(c1b, 'fail3')).toThrow(/Cannot add children to "c0a\/c1b" during synthesis/);
-
-    c0a.unlockMe();
-
-    new Construct(c0a, 'c0aZ');
-    new Construct(c1a, 'c1aZ');
-    new Construct(c1b, 'c1bZ');
-
 
   });
 
@@ -545,4 +523,10 @@ function toTreeString(node: IConstruct, depth = 0) {
     out += toTreeString(child, depth + 1);
   }
   return out;
+}
+
+class Root extends Construct {
+  constructor() {
+    super(undefined as any, undefined as any);
+  }
 }
