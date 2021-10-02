@@ -265,3 +265,43 @@ test('does not call the updateStateMachine() API when a resource with type that 
   expect(deployStackResult).toBeUndefined();
   expect(mockUpdateMachineDefinition).not.toHaveBeenCalled();
 });
+
+test('can correctly hotswap old style synth changes', async () => {
+  // GIVEN
+  setup.currentCfnStack.setTemplate({
+    Parameters: { AssetParam1: { Type: 'String' } },
+    Resources: {
+      SM: {
+        Type: 'AWS::StepFunctions::StateMachine',
+        Properties: {
+          DefinitionString: { Ref: 'AssetParam1' },
+          StateMachineName: 'machine-name',
+        },
+      },
+    }
+  });
+  const cdkStackArtifact = setup.cdkStackArtifactOf({
+    template: {
+      Parameters: { AssetParam2: { Type: String } },
+      Resources: {
+        SM: {
+          Type: 'AWS::StepFunctions::StateMachine',
+          Properties: {
+            DefinitionString: { Ref: 'AssetParam2' },
+            StateMachineName: 'machine-name',
+          },
+        },
+      }
+    }
+  });
+
+  // WHEN
+  const deployStackResult = await tryHotswapDeployment(setup.mockSdkProvider, { AssetParam2: 'asset-param-2' }, setup.currentCfnStack, cdkStackArtifact);
+
+  // THEN
+  expect(deployStackResult).not.toBeUndefined();
+  expect(mockUpdateMachineDefinition).toHaveBeenCalledWith({
+    definition: 'asset-param-2',
+    stateMachineArn: 'machine-name',
+  });
+});

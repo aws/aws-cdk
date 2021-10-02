@@ -48,10 +48,9 @@ async function isStateMachineDefinitionOnlyChange(
     }
   }
 
-  const definitionString = await evaluateCfnTemplate.evaluateCfnExpression(propertyUpdates.DefinitionString);
+  const definitionString = await evaluateCfnTemplate.evaluateCfnExpression(propertyUpdates.DefinitionString.newValue);
 
-  //return 'DefinitionString' in propertyUpdates ? definitionString.newValue : ChangeHotswapImpact.IRRELEVANT;
-  return definitionString.newValue;
+  return definitionString;
 }
 
 interface StateMachineResource {
