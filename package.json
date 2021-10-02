@@ -103,6 +103,8 @@
       "@aws-cdk/aws-eks/yaml/**",
       "@aws-cdk/aws-events-targets/aws-sdk",
       "@aws-cdk/aws-events-targets/aws-sdk/**",
+      "@aws-cdk/aws-lambda/object-hash",
+      "@aws-cdk/aws-lambda/object-hash/**",
       "@aws-cdk/aws-s3-deployment/case",
       "@aws-cdk/aws-s3-deployment/case/**",
       "@aws-cdk/cloud-assembly-schema/jsonschema",
