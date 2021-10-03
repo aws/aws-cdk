@@ -4,6 +4,7 @@ import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import {
   CfnDynamicReference, CfnDynamicReferenceService, CfnParameter,
   Construct as CompatConstruct, ContextProvider, Fn, IResource, Resource, Stack, Token,
+  Tokenization,
 } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import * as ssm from './ssm.generated';
@@ -201,7 +202,9 @@ export enum ParameterType {
   STRING = 'String',
   /**
    * Secure String
+   *
    * Parameter Store uses an AWS Key Management Service (KMS) customer master key (CMK) to encrypt the parameter value.
+   * Parameters of type SecureString cannot be created directly from a CDK application.
    */
   SECURE_STRING = 'SecureString',
   /**
@@ -324,7 +327,7 @@ export class StringParameter extends ParameterBase implements IStringParameter {
     const type = attrs.type || ParameterType.STRING;
 
     const stringValue = attrs.version
-      ? new CfnDynamicReference(CfnDynamicReferenceService.SSM, `${attrs.parameterName}:${attrs.version}`).toString()
+      ? new CfnDynamicReference(CfnDynamicReferenceService.SSM, `${attrs.parameterName}:${Tokenization.stringifyNumber(attrs.version)}`).toString()
       : new CfnParameter(scope as CompatConstruct, `${id}.Parameter`, { type: `AWS::SSM::Parameter::Value<${type}>`, default: attrs.parameterName }).valueAsString;
 
     class Import extends ParameterBase {
@@ -341,7 +344,7 @@ export class StringParameter extends ParameterBase implements IStringParameter {
    * Imports a secure string parameter from the SSM parameter store.
    */
   public static fromSecureStringParameterAttributes(scope: Construct, id: string, attrs: SecureStringParameterAttributes): IStringParameter {
-    const stringValue = new CfnDynamicReference(CfnDynamicReferenceService.SSM_SECURE, `${attrs.parameterName}:${attrs.version}`).toString();
+    const stringValue = new CfnDynamicReference(CfnDynamicReferenceService.SSM_SECURE, `${attrs.parameterName}:${Tokenization.stringifyNumber(attrs.version)}`).toString();
 
     class Import extends ParameterBase {
       public readonly parameterName = attrs.parameterName;

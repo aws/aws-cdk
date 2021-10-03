@@ -334,6 +334,8 @@ export class AuroraMysqlEngineVersion {
   public static readonly VER_2_09_1 = AuroraMysqlEngineVersion.builtIn_5_7('2.09.1');
   /** Version "5.7.mysql_aurora.2.09.2". */
   public static readonly VER_2_09_2 = AuroraMysqlEngineVersion.builtIn_5_7('2.09.2');
+  /** Version "5.7.mysql_aurora.2.10.0". */
+  public static readonly VER_2_10_0 = AuroraMysqlEngineVersion.builtIn_5_7('2.10.0');
 
   /**
    * Create a new AuroraMysqlEngineVersion with an arbitrary version.
@@ -403,7 +405,7 @@ export interface AuroraPostgresEngineFeatures {
   readonly s3Import?: boolean;
 
   /**
-   * Whether this version of the Aurora Postgres cluster engine supports the S3 data import feature.
+   * Whether this version of the Aurora Postgres cluster engine supports the S3 data export feature.
    *
    * @default false
    */
@@ -465,6 +467,8 @@ export class AuroraPostgresEngineVersion {
   public static readonly VER_12_4 = AuroraPostgresEngineVersion.of('12.4', '12', { s3Import: true, s3Export: true });
   /** Version "12.6". */
   public static readonly VER_12_6 = AuroraPostgresEngineVersion.of('12.6', '12', { s3Import: true, s3Export: true });
+  /** Version "13.3". */
+  public static readonly VER_13_3 = AuroraPostgresEngineVersion.of('13.3', '13', { s3Import: true, s3Export: true });
 
   /**
    * Create a new AuroraPostgresEngineVersion with an arbitrary version.

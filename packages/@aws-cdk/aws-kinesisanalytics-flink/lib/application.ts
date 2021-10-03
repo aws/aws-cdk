@@ -1,5 +1,5 @@
 import * as iam from '@aws-cdk/aws-iam';
-import * as ka from '@aws-cdk/aws-kinesisanalytics';
+import { CfnApplicationCloudWatchLoggingOptionV2, CfnApplicationV2 } from '@aws-cdk/aws-kinesisanalytics';
 import * as logs from '@aws-cdk/aws-logs';
 import * as core from '@aws-cdk/core';
 import { Construct } from 'constructs';
@@ -261,7 +261,7 @@ export class Application extends ApplicationBase {
     const code = props.code.bind(this);
     code.bucket.grantRead(this);
 
-    const resource = new ka.CfnApplicationV2(this, 'Resource', {
+    const resource = new CfnApplicationV2(this, 'Resource', {
       applicationName: props.applicationName,
       runtimeEnvironment: props.runtime.value,
       serviceExecutionRole: this.role.roleArn,
@@ -313,7 +313,7 @@ export class Application extends ApplicationBase {
       resources: [logStreamArn],
     }));
 
-    new ka.CfnApplicationCloudWatchLoggingOptionV2(this, 'LoggingOption', {
+    new CfnApplicationCloudWatchLoggingOptionV2(this, 'LoggingOption', {
       applicationName: resource.ref,
       cloudWatchLoggingOption: {
         logStreamArn,

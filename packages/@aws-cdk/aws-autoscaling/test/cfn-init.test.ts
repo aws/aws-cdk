@@ -1,3 +1,4 @@
+import '@aws-cdk/assert-internal/jest';
 import { anything, arrayWith, expect, haveResourceLike, ResourcePart } from '@aws-cdk/assert-internal';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import { Duration, Stack } from '@aws-cdk/core';

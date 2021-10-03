@@ -229,6 +229,14 @@ export class Settings {
 
   /**
    * Parse Settings out of CLI arguments.
+   *
+   * CLI arguments in must be accessed in the CLI code via
+   * `configuration.settings.get(['argName'])` instead of via `args.argName`.
+   *
+   * The advantage is that they can be configured via `cdk.json` and
+   * `$HOME/.cdk.json`. Arguments not listed below and accessed via this object
+   * can only be specified on the command line.
+   *
    * @param argv the received CLI arguments.
    * @returns a new Settings object.
    */
@@ -272,6 +280,7 @@ export class Settings {
       progress: argv.progress,
       bundlingStacks,
       lookups: argv.lookups,
+      rollback: argv.rollback,
     });
   }
 

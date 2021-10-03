@@ -200,7 +200,7 @@ export class BundlingDockerImage {
       ...options.user
         ? ['-u', options.user]
         : [],
-      ...flatten(volumes.map(v => ['-v', `${v.hostPath}:${v.containerPath}:${v.consistency ?? DockerVolumeConsistency.DELEGATED}`])),
+      ...flatten(volumes.map(v => ['-v', `${v.hostPath}:${v.containerPath}:${isSeLinux() ? 'z,' : ''}${v.consistency ?? DockerVolumeConsistency.DELEGATED}`])),
       ...flatten(Object.entries(environment).map(([k, v]) => ['--env', `${k}=${v}`])),
       ...options.workingDirectory
         ? ['-w', options.workingDirectory]
@@ -480,4 +480,29 @@ function dockerExec(args: string[], options?: SpawnSyncOptions) {
   }
 
   return proc;
+}
+
+function isSeLinux() : boolean {
+  if (process.platform != 'linux') {
+    return false;
+  }
+  const prog = 'selinuxenabled';
+  const proc = spawnSync(prog, [], {
+    stdio: [ // show selinux status output
+      'pipe', // get value of stdio
+      process.stderr, // redirect stdout to stderr
+      'inherit', // inherit stderr
+    ],
+  });
+  if (proc.error) {
+    // selinuxenabled not a valid command, therefore not enabled
+    return false;
+  }
+  if (proc.status == 0) {
+    // selinux enabled
+    return true;
+  } else {
+    // selinux not enabled
+    return false;
+  }
 }

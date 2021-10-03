@@ -269,7 +269,7 @@ export abstract class TargetGroupBase extends CoreConstruct implements ITargetGr
       healthyThresholdCount: cdk.Lazy.number({ produce: () => this.healthCheck?.healthyThresholdCount }),
       unhealthyThresholdCount: cdk.Lazy.number({ produce: () => this.healthCheck?.unhealthyThresholdCount }),
       matcher: cdk.Lazy.any({
-        produce: () => this.healthCheck?.healthyHttpCodes !== undefined || this.healthCheck?.healthyGrpcCodes !== undefined ? {
+        produce: () => this.healthCheck?.healthyHttpCodes !== undefined || this.healthCheck?.healthyGrpcCodes !== undefined ? {
           grpcCode: this.healthCheck.healthyGrpcCodes,
           httpCode: this.healthCheck.healthyHttpCodes,
         } : undefined,
