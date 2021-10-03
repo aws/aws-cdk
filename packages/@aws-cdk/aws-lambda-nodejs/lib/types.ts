@@ -200,8 +200,8 @@ export interface BundlingOptions {
   /**
   * Force pre-transpilation using TSC before running file through bundling step.
   * This usually is not required unless you are using new experimental features that
-  * are only supported by typescript's`tsc` compiler.
-  * One example of such feature is `experimentalDecorators`.
+  * are only supported by typescript's `tsc` compiler.
+  * One example of such feature is `emitDecoratorMetadata`.
   *
   * @default false
   */

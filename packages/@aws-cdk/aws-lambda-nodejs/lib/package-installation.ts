@@ -2,13 +2,13 @@ import { spawnSync } from 'child_process';
 import { tryGetModuleVersion } from './util';
 
 /**
- * An esbuild installation
+ * Package installation
  */
-export abstract class EsbuildInstallation {
-  public static detect(): EsbuildInstallation | undefined {
+export abstract class PackageInstallation {
+  public static detect(module: string): PackageInstallation | undefined {
     try {
       // Check local version first
-      const version = tryGetModuleVersion('esbuild');
+      const version = tryGetModuleVersion(module);
       if (version) {
         return {
           isLocal: true,
@@ -17,7 +17,7 @@ export abstract class EsbuildInstallation {
       }
 
       // Fallback to a global version
-      const esbuild = spawnSync('esbuild', ['--version']);
+      const esbuild = spawnSync(module, ['--version']);
       if (esbuild.status === 0 && !esbuild.error) {
         return {
           isLocal: false,

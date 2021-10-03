@@ -2,7 +2,7 @@ import * as os from 'os';
 import * as path from 'path';
 import { AssetCode, Code, Runtime } from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
-import { EsbuildInstallation } from './esbuild-installation';
+import { PackageInstallation } from './package-installation';
 import { PackageManager } from './package-manager';
 import { BundlingOptions, SourceMapMode } from './types';
 import { exec, extractDependencies, extractRootDir, findUp } from './util';
@@ -59,7 +59,12 @@ export class Bundling implements cdk.BundlingOptions {
     this.esbuildInstallation = undefined;
   }
 
-  private static esbuildInstallation?: EsbuildInstallation;
+  public static clearTscInstallationCache(): void {
+    this.tscInstallation = undefined;
+  }
+
+  private static esbuildInstallation?: PackageInstallation;
+  private static tscInstallation?: PackageInstallation;
 
   // Core bundling options
   public readonly image: cdk.DockerImage;
@@ -74,12 +79,12 @@ export class Bundling implements cdk.BundlingOptions {
   private readonly relativeDepsLockFilePath: string;
   private readonly externals: string[];
   private readonly packageManager: PackageManager;
-  private readonly preCompilation?: boolean;
 
   constructor(private readonly props: BundlingProps) {
     this.packageManager = PackageManager.fromLockFile(props.depsLockFilePath);
 
-    Bundling.esbuildInstallation = Bundling.esbuildInstallation ?? EsbuildInstallation.detect();
+    Bundling.esbuildInstallation = Bundling.esbuildInstallation ?? PackageInstallation.detect('esbuild');
+    Bundling.tscInstallation = Bundling.tscInstallation ?? PackageInstallation.detect('tsc');
 
     this.projectRoot = props.projectRoot;
     this.relativeEntryPath = path.relative(this.projectRoot, path.resolve(props.entry));
@@ -93,8 +98,8 @@ export class Bundling implements cdk.BundlingOptions {
       this.relativeTsconfigPath = path.relative(this.projectRoot, path.resolve(props.tsconfig));
     }
 
-    if (props.preCompilation && (/\.(tsx?)$/.test(props.entry))) {
-      this.preCompilation = true;
+    if (props.preCompilation && !/\.tsx?$/.test(props.entry)) {
+      throw new Error('preCompilation can only be used with typescript files');
     }
 
     this.externals = [
@@ -104,8 +109,8 @@ export class Bundling implements cdk.BundlingOptions {
 
     // Docker bundling
     const shouldBuildImage = props.forceDockerBundling || !Bundling.esbuildInstallation;
-    this.image = shouldBuildImage
-      ? props.dockerImage ?? cdk.DockerImage.fromBuild(path.join(__dirname, '../lib'), {
+    this.image = shouldBuildImage ? props.dockerImage ?? cdk.DockerImage.fromBuild(path.join(__dirname, '../lib'),
+      {
         buildArgs: {
           ...props.buildArgs ?? {},
           IMAGE: props.runtime.bundlingImage.image,
@@ -118,6 +123,7 @@ export class Bundling implements cdk.BundlingOptions {
       inputDir: cdk.AssetStaging.BUNDLING_INPUT_DIR,
       outputDir: cdk.AssetStaging.BUNDLING_OUTPUT_DIR,
       esbuildRunner: 'esbuild', // esbuild is installed globally in the docker image
+      tscRunner: 'tsc', // tsc is installed globally in the docker image
       osPlatform: 'linux', // linux docker image
     });
     this.command = ['bash', '-c', bundlingCommand];
@@ -134,23 +140,22 @@ export class Bundling implements cdk.BundlingOptions {
 
   private createBundlingCommand(options: BundlingCommandOptions): string {
     const pathJoin = osPathJoin(options.osPlatform);
-    const npx = options.osPlatform === 'win32' ? 'npx.cmd' : 'npx';
 
-    let compileCommand = '';
-    let relativeJsEntryPath;
+    let tscCommand = '';
+    let relativeEntryPath = this.relativeEntryPath;
 
-    if (this.preCompilation) {
-      relativeJsEntryPath = pathJoin(options.inputDir, PRE_COMPILATION_DIR, this.relativeEntryPath)
-        .replace(/\.(tsx)$/, '.jsx').replace(/\.(ts)$/, '.js');
-
-      if (this.relativeTsconfigPath) {
-        const tsconfigPath = pathJoin(options.inputDir, this.relativeTsconfigPath);
-        const rootDir = extractRootDir(tsconfigPath);
-        compileCommand =`${npx} tsc --project ${tsconfigPath} --outDir ${pathJoin(options.inputDir, PRE_COMPILATION_DIR, rootDir ?? '')}`;
-      } else {
+    if (this.props.preCompilation) {
+      if (!this.relativeTsconfigPath) {
         throw new Error('preCompilation cannot be used when tsconfig is undefined');
       }
+      relativeEntryPath = pathJoin(PRE_COMPILATION_DIR, relativeEntryPath).replace(/\.ts(x?)$/, '.js$1');
+
+      const tsconfigPath = pathJoin(options.inputDir, this.relativeTsconfigPath);
+      const rootDir = extractRootDir(tsconfigPath);
+      process.stderr.write(`Compiling your project using typescript compiler version: ${Bundling.tscInstallation?.version} \n`);
+      tscCommand =`${options.tscRunner} --project ${tsconfigPath} --outDir ${pathJoin(options.inputDir, PRE_COMPILATION_DIR, rootDir ?? '')}`;
     }
+
 
     const loaders = Object.entries(this.props.loader ?? {});
     const defines = Object.entries(this.props.define ?? {});
@@ -165,7 +170,7 @@ export class Bundling implements cdk.BundlingOptions {
 
     const esbuildCommand: string[] = [
       options.esbuildRunner,
-      '--bundle', `"${relativeJsEntryPath ? relativeJsEntryPath : pathJoin(options.inputDir, this.relativeEntryPath)}"`,
+      '--bundle', `"${pathJoin(options.inputDir, relativeEntryPath)}"`,
       `--target=${this.props.target ?? toTarget(this.props.runtime)}`,
       '--platform=node',
       `--outfile="${pathJoin(options.outputDir, 'index.js')}"`,
@@ -207,8 +212,8 @@ export class Bundling implements cdk.BundlingOptions {
     }
 
     return chain([
-      compileCommand,
       ...this.props.commandHooks?.beforeBundling(options.inputDir, options.outputDir) ?? [],
+      tscCommand,
       esbuildCommand.join(' '),
       ...(this.props.nodeModules && this.props.commandHooks?.beforeInstall(options.inputDir, options.outputDir)) ?? [],
       depsCommand,
@@ -218,10 +223,11 @@ export class Bundling implements cdk.BundlingOptions {
 
   private getLocalBundlingProvider(): cdk.ILocalBundling {
     const osPlatform = os.platform();
-    const createLocalCommand = (outputDir: string, esbuild: EsbuildInstallation) => this.createBundlingCommand({
+    const createLocalCommand = (outputDir: string, esbuild: PackageInstallation, tsc: PackageInstallation) => this.createBundlingCommand({
       inputDir: this.projectRoot,
       outputDir,
       esbuildRunner: esbuild.isLocal ? this.packageManager.runBinCommand('esbuild') : 'esbuild',
+      tscRunner: tsc.isLocal ? this.packageManager.runBinCommand('tsc') : 'tsc',
       osPlatform,
     });
     const environment = this.props.environment ?? {};
@@ -238,7 +244,11 @@ export class Bundling implements cdk.BundlingOptions {
           throw new Error(`Expected esbuild version ${ESBUILD_MAJOR_VERSION}.x but got ${Bundling.esbuildInstallation.version}`);
         }
 
-        const localCommand = createLocalCommand(outputDir, Bundling.esbuildInstallation);
+        if (!Bundling.tscInstallation) {
+          throw new Error('Unable to find typescript locally or globally make sure install typescript in you dependencies');
+        }
+
+        const localCommand = createLocalCommand(outputDir, Bundling.esbuildInstallation, Bundling.tscInstallation);
 
         exec(
           osPlatform === 'win32' ? 'cmd' : 'bash',
@@ -267,6 +277,7 @@ interface BundlingCommandOptions {
   readonly inputDir: string;
   readonly outputDir: string;
   readonly esbuildRunner: string;
+  readonly tscRunner: string;
   readonly osPlatform: NodeJS.Platform;
 }
 

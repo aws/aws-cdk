@@ -5,7 +5,7 @@ import { Code, Runtime } from '@aws-cdk/aws-lambda';
 import { AssetHashType, DockerImage } from '@aws-cdk/core';
 import { version as delayVersion } from 'delay/package.json';
 import { Bundling } from '../lib/bundling';
-import { EsbuildInstallation } from '../lib/esbuild-installation';
+import { PackageInstallation } from '../lib/package-installation';
 import { LogLevel, SourceMapMode } from '../lib/types';
 import * as util from '../lib/util';
 
@@ -13,23 +13,24 @@ jest.mock('@aws-cdk/aws-lambda');
 
 // Mock DockerImage.fromAsset() to avoid building the image
 let fromBuildMock: jest.SpyInstance<DockerImage>;
-let detectEsbuildMock: jest.SpyInstance<EsbuildInstallation | undefined>;
+let detectPackageInstallationMock: jest.SpyInstance<PackageInstallation | undefined>;
 beforeEach(() => {
   jest.clearAllMocks();
   jest.resetAllMocks();
   jest.restoreAllMocks();
   Bundling.clearEsbuildInstallationCache();
-
-  detectEsbuildMock = jest.spyOn(EsbuildInstallation, 'detect').mockReturnValue({
-    isLocal: true,
-    version: '0.8.8',
-  });
+  Bundling.clearTscInstallationCache();
 
   fromBuildMock = jest.spyOn(DockerImage, 'fromBuild').mockReturnValue({
     image: 'built-image',
     cp: () => 'dest-path',
     run: () => {},
     toJSON: () => 'built-image',
+  });
+
+  detectPackageInstallationMock = jest.spyOn(PackageInstallation, 'detect').mockReturnValue({
+    isLocal: true,
+    version: '0.8.8',
   });
 });
 
@@ -236,7 +237,7 @@ test('esbuild bundling with pre-compilations', () => {
       command: [
         'bash', '-c',
         [
-          'npx tsc --project /asset-input/lib/custom-tsconfig.ts --outDir /asset-input/cdk.out/tsc-compile &&',
+          'tsc --project /asset-input/lib/custom-tsconfig.ts --outDir /asset-input/cdk.out/tsc-compile &&',
           'esbuild --bundle \"/asset-input/cdk.out/tsc-compile/lib/handler.js\" --target=node14 --platform=node --outfile=\"/asset-output/index.js\"',
           '--external:aws-sdk --tsconfig=/asset-input/lib/custom-tsconfig.ts',
         ].join(' '),
@@ -450,7 +451,7 @@ test('Local bundling', () => {
 
 
 test('Incorrect esbuild version', () => {
-  detectEsbuildMock.mockReturnValueOnce({
+  detectPackageInstallationMock.mockReturnValueOnce({
     isLocal: true,
     version: '3.4.5',
   });
