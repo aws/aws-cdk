@@ -1,4 +1,4 @@
-import { Template } from '@aws-cdk/assertions';
+import '@aws-cdk/assert-internal/jest';
 import { Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import { Stack } from '@aws-cdk/core';
 import { Repository, RepositoryProps } from '../lib';
@@ -16,7 +16,7 @@ describe('codecommit', () => {
 
       new Repository(stack, 'MyRepository', props).notify(snsArn);
 
-      Template.fromStack(stack).templateMatches({
+      expect(stack).toMatchTemplate({
         Resources: {
           MyRepository4C4BD5FC: {
             Type: 'AWS::CodeCommit::Repository',
@@ -172,7 +172,7 @@ describe('codecommit', () => {
       repository.grantPullPush(role);
 
       // THEN
-      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      expect(stack).toHaveResource('AWS::IAM::Policy', {
         PolicyDocument: {
           Statement: [
             {
