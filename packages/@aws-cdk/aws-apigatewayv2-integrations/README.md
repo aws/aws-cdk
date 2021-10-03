@@ -178,18 +178,14 @@ const httpEndpoint = new HttpApi(stack, 'HttpProxyPrivateApi', {
 });
 ```
 
-
-
-To use values which does not yet have any helper functions, you can use the custom methods:
+To use keys and values which does not yet have any helper functions, you can use the custom method:
 
 ```ts
 const httpEndpoint = new HttpApi(stack, 'HttpProxyPrivateApi', {
   defaultIntegration: new HttpAlbIntegration({
     listener,
-    requestParameters: new RequestParameters()
-      .addParameter({
-        mappingKey: MappingKey.custom('new.header'),
-        mappingValue: MappingValue.custom('new.value'),
+    requestParameters: new ParameterMapping()
+      .custom('myKey', 'myValue'),
     }),
   }),
 });
