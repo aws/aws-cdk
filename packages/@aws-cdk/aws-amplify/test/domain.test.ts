@@ -1,5 +1,5 @@
+import { Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
-import '@aws-cdk/assert-internal/jest';
 import { App, SecretValue, Stack } from '@aws-cdk/core';
 import * as amplify from '../lib';
 
@@ -28,7 +28,7 @@ test('create a domain', () => {
   domain.mapSubDomain(devBranch);
 
   // THEN
-  expect(stack).toHaveResource('AWS::Amplify::Domain', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Amplify::Domain', {
     AppId: {
       'Fn::GetAtt': [
         'AppF1B96344',
@@ -81,7 +81,7 @@ test('map a branch to the domain root', () => {
   domain.mapRoot(prodBranch);
 
   // THEN
-  expect(stack).toHaveResource('AWS::Amplify::Domain', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Amplify::Domain', {
     AppId: {
       'Fn::GetAtt': [
         'AppF1B96344',
@@ -141,7 +141,7 @@ test('auto subdomain all branches', () => {
   domain.mapRoot(prodBranch);
 
   // THEN
-  expect(stack).toHaveResource('AWS::Amplify::Domain', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Amplify::Domain', {
     EnableAutoSubDomain: true,
     AutoSubDomainCreationPatterns: [
       '*',
@@ -176,7 +176,7 @@ test('auto subdomain some branches', () => {
   domain.mapRoot(prodBranch);
 
   // THEN
-  expect(stack).toHaveResource('AWS::Amplify::Domain', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Amplify::Domain', {
     EnableAutoSubDomain: true,
     AutoSubDomainCreationPatterns: ['features/**'],
     AutoSubDomainIAMRole: {
@@ -214,7 +214,7 @@ test('auto subdomain with IAM role', () => {
   domain.mapRoot(prodBranch);
 
   // THEN
-  expect(stack).toHaveResource('AWS::Amplify::Domain', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Amplify::Domain', {
     EnableAutoSubDomain: true,
     AutoSubDomainCreationPatterns: ['features/**'],
     AutoSubDomainIAMRole: {

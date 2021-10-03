@@ -63,10 +63,26 @@ The above example defines the following resources:
 ## Sources
 
 There are two main methods of sourcing input data: Kinesis Data Streams and via a "direct
-put". This construct library currently only supports "direct put". See [#15500](https://github.com/aws/aws-cdk/issues/15500) to track the status of adding support for Kinesis Data Streams.
+put".
 
 See: [Sending Data to a Delivery Stream](https://docs.aws.amazon.com/firehose/latest/dev/basic-write.html)
 in the *Kinesis Data Firehose Developer Guide*.
+
+### Kinesis Data Stream
+
+A delivery stream can read directly from a Kinesis data stream as a consumer of the data
+stream. Configure this behaviour by providing a data stream in the `sourceStream`
+property when constructing a delivery stream:
+
+```ts fixture=with-destination
+import * as kinesis from '@aws-cdk/aws-kinesis';
+
+const sourceStream = new kinesis.Stream(this, 'Source Stream');
+new DeliveryStream(this, 'Delivery Stream', {
+  sourceStream: sourceStream,
+  destinations: [destination],
+});
+```
 
 ### Direct Put
 
@@ -288,6 +304,134 @@ new DeliveryStream(this, 'Delivery Stream', {
 ```
 
 See: [Data Delivery Frequency](https://docs.aws.amazon.com/firehose/latest/dev/basic-deliver.html#frequency)
+in the *Kinesis Data Firehose Developer Guide*.
+
+## Destination Encryption
+
+Your data can be automatically encrypted when it is delivered to S3 as a final or
+an intermediary/backup destination. Kinesis Data Firehose supports Amazon S3 server-side
+encryption with AWS Key Management Service (AWS KMS) for encrypting delivered data
+in Amazon S3. You can choose to not encrypt the data or to encrypt with a key from
+the list of AWS KMS keys that you own. For more information, see [Protecting Data
+Using Server-Side Encryption with AWS KMS–Managed Keys (SSE-KMS)](https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingKMSEncryption.html). Data is not encrypted by default.
+
+```ts fixture=with-bucket
+import * as cdk from '@aws-cdk/core';
+import * as kms from '@aws-cdk/aws-kms';
+
+const destination = new destinations.S3Bucket(bucket, {
+  encryptionKey: new kms.Key(this, 'MyKey'),
+});
+new DeliveryStream(this, 'Delivery Stream', {
+  destinations: [destination],
+});
+```
+
+## Backup
+
+A delivery stream can be configured to backup data to S3 that it attempted to deliver to
+the configured destination. Backed up data can be all the data that the delivery stream
+attempted to deliver or just data that it failed to deliver (Redshift and S3 destinations
+can only backup all data). CDK can create a new S3 bucket where it will back up data or
+you can provide a bucket where data will be backed up. You can also provide a prefix under
+which your backed-up data will be placed within the bucket. By default, source data is not
+backed up to S3.
+
+```ts fixture=with-bucket
+import * as destinations from '@aws-cdk/aws-kinesisfirehose-destinations';
+import * as s3 from '@aws-cdk/aws-s3';
+
+// Enable backup of all source records (to an S3 bucket created by CDK).
+new DeliveryStream(this, 'Delivery Stream Backup All', {
+  destinations: [
+    new destinations.S3Bucket(bucket, {
+      s3Backup: {
+        mode: BackupMode.ALL,
+      }
+    }),
+  ],
+});
+// Explicitly provide an S3 bucket to which all source records will be backed up.
+const backupBucket = new s3.Bucket(this, 'Bucket');
+new DeliveryStream(this, 'Delivery Stream Backup All Explicit Bucket', {
+  destinations: [
+    new destinations.S3Bucket(bucket, {
+      s3Backup: {
+        bucket: backupBucket,
+      }
+    }),
+  ],
+});
+// Explicitly provide an S3 prefix under which all source records will be backed up.
+new DeliveryStream(this, 'Delivery Stream Backup All Explicit Prefix', {
+  destinations: [
+    new destinations.S3Bucket(bucket, {
+      s3Backup: {
+        mode: BackupMode.ALL,
+        dataOutputPrefix: 'mybackup',
+      },
+    }),
+  ],
+});
+```
+
+If any Data Processing or Transformation is configured on your Delivery Stream, the source
+records will be backed up in their original format.
+
+## Data Processing/Transformation
+
+Data can be transformed before being delivered to destinations. There are two types of
+data processing for delivery streams: record transformation with AWS Lambda, and record
+format conversion using a schema stored in an AWS Glue table. If both types of data
+processing are configured, then the Lambda transformation is performed first. By default,
+no data processing occurs. This construct library currently only supports data
+transformation with AWS Lambda. See [#15501](https://github.com/aws/aws-cdk/issues/15501)
+to track the status of adding support for record format conversion.
+
+### Data transformation with AWS Lambda
+
+To transform the data, Kinesis Data Firehose will call a Lambda function that you provide
+and deliver the data returned in place of the source record. The function must return a
+result that contains records in a specific format, including the following fields:
+
+- `recordId` -- the ID of the input record that corresponds the results.
+- `result` -- the status of the transformation of the record: "Ok" (success), "Dropped"
+  (not processed intentionally), or "ProcessingFailed" (not processed due to an error).
+- `data` -- the transformed data, Base64-encoded.
+
+The data is buffered up to 1 minute and up to 3 MiB by default before being sent to the
+function, but can be configured using `bufferInterval` and `bufferSize` in the processor
+configuration (see: [Buffering](#buffering)). If the function invocation fails due to a
+network timeout or because of hitting an invocation limit, the invocation is retried 3
+times by default, but can be configured using `retries` in the processor configuration.
+
+```ts fixture=with-bucket
+import * as cdk from '@aws-cdk/core';
+import * as lambda from '@aws-cdk/aws-lambda';
+
+// Provide a Lambda function that will transform records before delivery, with custom
+// buffering and retry configuration
+const lambdaFunction = new lambda.Function(this, 'Processor', {
+  runtime: lambda.Runtime.NODEJS_12_X,
+  handler: 'index.handler',
+  code: lambda.Code.fromAsset(path.join(__dirname, 'process-records')),
+});
+const lambdaProcessor = new LambdaFunctionProcessor(lambdaFunction, {
+  bufferingInterval: cdk.Duration.minutes(5),
+  bufferingSize: cdk.Size.mebibytes(5),
+  retries: 5,
+});
+const s3Destination = new destinations.S3Bucket(bucket, {
+  processor: lambdaProcessor,
+});
+new DeliveryStream(this, 'Delivery Stream', {
+  destinations: [destination],
+});
+```
+
+[Example Lambda data processor performing the identity transformation.](../aws-kinesisfirehose-destinations/test/integ.s3-bucket.lit.ts)
+
+See: [Data Transformation](https://docs.aws.amazon.com/firehose/latest/dev/data-transformation.html)
 in the *Kinesis Data Firehose Developer Guide*.
 
 ## Specifying an IAM role

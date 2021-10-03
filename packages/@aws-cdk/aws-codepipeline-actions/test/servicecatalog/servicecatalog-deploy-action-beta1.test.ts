@@ -1,14 +1,13 @@
-import { expect, haveResourceLike } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import * as codecommit from '@aws-cdk/aws-codecommit';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import { Stack } from '@aws-cdk/core';
-import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as cpactions from '../../lib';
 
 /* eslint-disable quote-props */
 
-nodeunitShim({
-  'addAction succesfully leads to creation of codepipeline service catalog action with properly formatted TemplateFilePath'(test: Test) {
+describe('ServiceCatalog Deploy Action', () => {
+  test('addAction succesfully leads to creation of codepipeline service catalog action with properly formatted TemplateFilePath', () => {
     // GIVEN
     const stack = new TestFixture();
     // WHEN
@@ -20,7 +19,7 @@ nodeunitShim({
       productId: 'prod-xxxxxxxxx',
     }));
     // THEN
-    expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+    expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
       'Stages': [
         { 'Name': 'Source' /* don't care about the rest */ },
         {
@@ -50,11 +49,11 @@ nodeunitShim({
           ],
         },
       ],
-    }));
+    });
 
-    test.done();
-  },
-  'deployment without a description works successfully'(test: Test) {
+
+  });
+  test('deployment without a description works successfully', () => {
     // GIVEN
     const stack = new TestFixture();
     // WHEN
@@ -65,7 +64,7 @@ nodeunitShim({
       productId: 'prod-xxxxxxxxx',
     }));
     // THEN
-    expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+    expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
       'Stages': [
         { 'Name': 'Source' /* don't care about the rest */ },
         {
@@ -94,10 +93,10 @@ nodeunitShim({
           ],
         },
       ],
-    }));
+    });
 
-    test.done();
-  },
+
+  });
 });
 
 /**

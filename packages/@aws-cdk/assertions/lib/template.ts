@@ -1,7 +1,9 @@
 import { Stack, Stage } from '@aws-cdk/core';
 import { Match } from './match';
 import { Matcher } from './matcher';
-import { findResources, hasResource } from './private/resource';
+import { findMappings, hasMapping } from './private/mappings';
+import { findOutputs, hasOutput } from './private/outputs';
+import { findResources, hasResource } from './private/resources';
 import * as assert from './vendored/assert';
 
 /**
@@ -9,37 +11,47 @@ import * as assert from './vendored/assert';
  * Typically used, as part of unit tests, to validate that the rendered
  * CloudFormation template has expected resources and properties.
  */
-export class TemplateAssertions {
+export class Template {
 
   /**
    * Base your assertions on the CloudFormation template synthesized by a CDK `Stack`.
    * @param stack the CDK Stack to run assertions on
    */
-  public static fromStack(stack: Stack): TemplateAssertions {
-    return new TemplateAssertions(toTemplate(stack));
+  public static fromStack(stack: Stack): Template {
+    return new Template(toTemplate(stack));
+  }
+
+  /**
+   * Base your assertions from an existing CloudFormation template formatted as an in-memory
+   * JSON object.
+   * @param template the CloudFormation template formatted as a nested set of records
+   */
+  public static fromJSON(template: { [key: string] : any }): Template {
+    return new Template(template);
   }
 
   /**
    * Base your assertions from an existing CloudFormation template formatted as a
-   * nested set of records.
-   * @param template the CloudFormation template formatted as a nested set of records
+   * JSON string.
+   * @param template the CloudFormation template in
    */
-  public static fromTemplate(template: { [key: string] : any }): TemplateAssertions {
-    return new TemplateAssertions(template);
+  public static fromString(template: string): Template {
+    return new Template(JSON.parse(template));
+  }
+
+  private readonly template: { [key: string]: any };
+  private readonly inspector: assert.StackInspector;
+
+  private constructor(template: { [key: string]: any }) {
+    this.template = template;
+    this.inspector = new assert.StackInspector(template);
   }
 
   /**
-   * Base your assertions from an existing CloudFormation template formatted as a string.
-   * @param template the CloudFormation template in
+   * The CloudFormation template deserialized into an object.
    */
-  public static fromString(template: string): TemplateAssertions {
-    return new TemplateAssertions(JSON.parse(template));
-  }
-
-  private readonly inspector: assert.StackInspector;
-
-  private constructor(template: any) {
-    this.inspector = new assert.StackInspector(template);
+  public toJSON(): { [key: string]: any } {
+    return this.template;
   }
 
   /**
@@ -89,8 +101,58 @@ export class TemplateAssertions {
    * When a literal is provided, performs a partial match via `Match.objectLike()`.
    * Use the `Match` APIs to configure a different behaviour.
    */
-  public findResources(type: string, props: any = {}): { [key: string]: any }[] {
+  public findResources(type: string, props: any = {}): { [key: string]: { [key: string]: any } } {
     return findResources(this.inspector, type, props);
+  }
+
+  /**
+   * Assert that an Output with the given properties exists in the CloudFormation template.
+   * By default, performs partial matching on the resource, via the `Match.objectLike()`.
+   * To configure different behavour, use other matchers in the `Match` class.
+   * @param logicalId the name of the output. Provide `'*'` to match all outputs in the template.
+   * @param props the output as should be expected in the template.
+   */
+  public hasOutput(logicalId: string, props: any): void {
+    const matchError = hasOutput(this.inspector, logicalId, props);
+    if (matchError) {
+      throw new Error(matchError);
+    }
+  }
+
+  /**
+   * Get the set of matching Outputs that match the given properties in the CloudFormation template.
+   * @param logicalId the name of the output. Provide `'*'` to match all outputs in the template.
+   * @param props by default, matches all Outputs in the template.
+   * When a literal object is provided, performs a partial match via `Match.objectLike()`.
+   * Use the `Match` APIs to configure a different behaviour.
+   */
+  public findOutputs(logicalId: string, props: any = {}): { [key: string]: { [key: string]: any } } {
+    return findOutputs(this.inspector, logicalId, props);
+  }
+
+  /**
+   * Assert that a Mapping with the given properties exists in the CloudFormation template.
+   * By default, performs partial matching on the resource, via the `Match.objectLike()`.
+   * To configure different behavour, use other matchers in the `Match` class.
+   * @param logicalId the name of the mapping. Provide `'*'` to match all mappings in the template.
+   * @param props the output as should be expected in the template.
+   */
+  public hasMapping(logicalId: string, props: any): void {
+    const matchError = hasMapping(this.inspector, logicalId, props);
+    if (matchError) {
+      throw new Error(matchError);
+    }
+  }
+
+  /**
+   * Get the set of matching Mappings that match the given properties in the CloudFormation template.
+   * @param logicalId the name of the mapping. Provide `'*'` to match all mappings in the template.
+   * @param props by default, matches all Mappings in the template.
+   * When a literal object is provided, performs a partial match via `Match.objectLike()`.
+   * Use the `Match` APIs to configure a different behaviour.
+   */
+  public findMappings(logicalId: string, props: any = {}): { [key: string]: { [key: string]: any } } {
+    return findMappings(this.inspector, logicalId, props);
   }
 
   /**

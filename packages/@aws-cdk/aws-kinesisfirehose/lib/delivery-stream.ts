@@ -1,6 +1,7 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
+import * as kinesis from '@aws-cdk/aws-kinesis';
 import * as kms from '@aws-cdk/aws-kms';
 import * as cdk from '@aws-cdk/core';
 import { RegionInfo } from '@aws-cdk/region-info';
@@ -197,6 +198,13 @@ export interface DeliveryStreamProps {
   readonly deliveryStreamName?: string;
 
   /**
+   * The Kinesis data stream to use as a source for this delivery stream.
+   *
+   * @default - data must be written to the delivery stream via a direct put.
+   */
+  readonly sourceStream?: kinesis.IStream;
+
+  /**
    * The IAM role associated with this delivery stream.
    *
    * Assumed by Kinesis Data Firehose to read from sources and encrypt data server-side.
@@ -319,6 +327,12 @@ export class DeliveryStream extends DeliveryStreamBase {
     });
     this.grantPrincipal = role;
 
+    if (
+      props.sourceStream &&
+        (props.encryption === StreamEncryption.AWS_OWNED || props.encryption === StreamEncryption.CUSTOMER_MANAGED || props.encryptionKey)
+    ) {
+      throw new Error('Requested server-side encryption but delivery stream source is a Kinesis data stream. Specify server-side encryption on the data stream instead.');
+    }
     if ((props.encryption === StreamEncryption.AWS_OWNED || props.encryption === StreamEncryption.UNENCRYPTED) && props.encryptionKey) {
       throw new Error(`Specified stream encryption as ${StreamEncryption[props.encryption]} but provided a customer-managed key`);
     }
@@ -339,15 +353,33 @@ export class DeliveryStream extends DeliveryStreamBase {
      */
     encryptionKey?.grantEncryptDecrypt(role);
 
+    const sourceStreamConfig = props.sourceStream ? {
+      kinesisStreamArn: props.sourceStream.streamArn,
+      roleArn: role.roleArn,
+    } : undefined;
+    const readStreamGrant = props.sourceStream?.grantRead(role);
+    /*
+     * Firehose still uses the deprecated DescribeStream API instead of the modern DescribeStreamSummary API.
+     * kinesis.IStream.grantRead does not provide DescribeStream permissions so we add it manually here.
+     */
+    if (readStreamGrant && readStreamGrant.principalStatement) {
+      readStreamGrant.principalStatement.addActions('kinesis:DescribeStream');
+    }
+
     const destinationConfig = props.destinations[0].bind(this, {});
 
     const resource = new CfnDeliveryStream(this, 'Resource', {
       deliveryStreamEncryptionConfigurationInput: encryptionConfig,
       deliveryStreamName: props.deliveryStreamName,
-      deliveryStreamType: 'DirectPut',
+      deliveryStreamType: props.sourceStream ? 'KinesisStreamAsSource' : 'DirectPut',
+      kinesisStreamSourceConfiguration: sourceStreamConfig,
       ...destinationConfig,
     });
+
     destinationConfig.dependables?.forEach(dependable => resource.node.addDependency(dependable));
+    if (readStreamGrant) {
+      resource.node.addDependency(readStreamGrant);
+    }
 
     this.deliveryStreamArn = this.getResourceArnAttribute(resource.attrArn, {
       service: 'kinesis',

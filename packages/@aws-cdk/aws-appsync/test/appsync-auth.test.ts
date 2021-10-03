@@ -1,5 +1,5 @@
-import '@aws-cdk/assert-internal/jest';
 import * as path from 'path';
+import { Template } from '@aws-cdk/assertions';
 import * as cognito from '@aws-cdk/aws-cognito';
 import * as cdk from '@aws-cdk/core';
 import * as appsync from '../lib';
@@ -19,7 +19,7 @@ describe('AppSync API Key Authorization', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::AppSync::ApiKey');
+    Template.fromStack(stack).resourceCountIs('AWS::AppSync::ApiKey', 1);
   });
 
   test('AppSync creates api key from additionalAuthorizationModes', () => {
@@ -36,7 +36,7 @@ describe('AppSync API Key Authorization', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::AppSync::ApiKey');
+    Template.fromStack(stack).resourceCountIs('AWS::AppSync::ApiKey', 1);
   });
 
   test('AppSync does not create unspecified api key from additionalAuthorizationModes', () => {
@@ -50,7 +50,7 @@ describe('AppSync API Key Authorization', () => {
     });
 
     // THEN
-    expect(stack).not.toHaveResource('AWS::AppSync::ApiKey');
+    Template.fromStack(stack).resourceCountIs('AWS::AppSync::ApiKey', 0);
   });
 
   test('appsync does not create unspecified api key with empty additionalAuthorizationModes', () => {
@@ -65,7 +65,7 @@ describe('AppSync API Key Authorization', () => {
     });
 
     // THEN
-    expect(stack).not.toHaveResource('AWS::AppSync::ApiKey');
+    Template.fromStack(stack).resourceCountIs('AWS::AppSync::ApiKey', 0);
   });
 
   test('appsync creates configured api key with additionalAuthorizationModes', () => {
@@ -83,7 +83,7 @@ describe('AppSync API Key Authorization', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::ApiKey', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::ApiKey', {
       Description: 'Custom Description',
     });
   });
@@ -105,7 +105,7 @@ describe('AppSync API Key Authorization', () => {
       },
     });
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::ApiKey', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::ApiKey', {
       ApiId: { 'Fn::GetAtt': ['API62EA1CFF', 'ApiId'] },
       Expires: expirationDate,
     });
@@ -174,7 +174,7 @@ describe('AppSync API Key Authorization', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::ApiKey', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::ApiKey', {
       Description: 'Custom Description',
     });
   });
@@ -240,7 +240,7 @@ describe('AppSync IAM Authorization', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLApi', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLApi', {
       AuthenticationType: 'AWS_IAM',
     });
   });
@@ -256,7 +256,7 @@ describe('AppSync IAM Authorization', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLApi', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLApi', {
       AdditionalAuthenticationProviders: [{ AuthenticationType: 'AWS_IAM' }],
     });
   });
@@ -311,7 +311,7 @@ describe('AppSync User Pool Authorization', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLApi', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLApi', {
       AuthenticationType: 'AMAZON_COGNITO_USER_POOLS',
       UserPoolConfig: {
         AwsRegion: { Ref: 'AWS::Region' },
@@ -339,7 +339,7 @@ describe('AppSync User Pool Authorization', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLApi', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLApi', {
       AuthenticationType: 'AMAZON_COGNITO_USER_POOLS',
       UserPoolConfig: {
         AwsRegion: { Ref: 'AWS::Region' },
@@ -364,7 +364,7 @@ describe('AppSync User Pool Authorization', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLApi', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLApi', {
       AdditionalAuthenticationProviders: [{
         AuthenticationType: 'AMAZON_COGNITO_USER_POOLS',
         UserPoolConfig: {
@@ -393,7 +393,7 @@ describe('AppSync User Pool Authorization', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLApi', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLApi', {
       AdditionalAuthenticationProviders: [{
         AuthenticationType: 'AMAZON_COGNITO_USER_POOLS',
         UserPoolConfig: {
@@ -433,7 +433,7 @@ describe('AppSync User Pool Authorization', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLApi', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLApi', {
       AuthenticationType: 'AMAZON_COGNITO_USER_POOLS',
       UserPoolConfig: {
         AwsRegion: { Ref: 'AWS::Region' },
@@ -476,7 +476,7 @@ describe('AppSync OIDC Authorization', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLApi', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLApi', {
       AuthenticationType: 'OPENID_CONNECT',
       OpenIDConnectConfig: {
         Issuer: 'test',
@@ -503,7 +503,7 @@ describe('AppSync OIDC Authorization', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLApi', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLApi', {
       AuthenticationType: 'OPENID_CONNECT',
       OpenIDConnectConfig: {
         AuthTTL: 1,
@@ -528,7 +528,7 @@ describe('AppSync OIDC Authorization', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLApi', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLApi', {
       AdditionalAuthenticationProviders: [{
         AuthenticationType: 'OPENID_CONNECT',
         OpenIDConnectConfig: {
@@ -557,7 +557,7 @@ describe('AppSync OIDC Authorization', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLApi', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLApi', {
       AdditionalAuthenticationProviders: [{
         AuthenticationType: 'OPENID_CONNECT',
         OpenIDConnectConfig: {
@@ -604,7 +604,7 @@ describe('AppSync OIDC Authorization', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLApi', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLApi', {
       AuthenticationType: 'OPENID_CONNECT',
       OpenIDConnectConfig: { Issuer: 'test' },
       AdditionalAuthenticationProviders: [

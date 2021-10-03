@@ -1,4 +1,4 @@
-import { TemplateAssertions, Match } from '@aws-cdk/assertions';
+import { Template, Match } from '@aws-cdk/assertions';
 import { SecurityGroup, SubnetType, Vpc } from '@aws-cdk/aws-ec2';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { Secret } from '@aws-cdk/aws-secretsmanager';
@@ -24,7 +24,7 @@ describe('KafkaEventSource', () => {
         }));
 
       // THEN
-      TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         PolicyDocument: {
           Statement: [
             {
@@ -47,7 +47,7 @@ describe('KafkaEventSource', () => {
         ],
       });
 
-      TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
         EventSourceArn: clusterArn,
         FunctionName: {
           Ref: 'Fn9270CBC0',
@@ -79,7 +79,7 @@ describe('KafkaEventSource', () => {
         }));
 
       // THEN
-      TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         PolicyDocument: {
           Statement: [
             {
@@ -112,7 +112,7 @@ describe('KafkaEventSource', () => {
         ],
       });
 
-      TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
         EventSourceArn: clusterArn,
         FunctionName: {
           Ref: 'Fn9270CBC0',
@@ -155,7 +155,7 @@ describe('KafkaEventSource', () => {
         }));
 
       // THEN
-      TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         PolicyDocument: {
           Statement: [
             {
@@ -179,7 +179,7 @@ describe('KafkaEventSource', () => {
         ],
       });
 
-      TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
         FunctionName: {
           Ref: 'Fn9270CBC0',
         },
@@ -245,8 +245,8 @@ describe('KafkaEventSource', () => {
           }));
 
         // THEN
-        TemplateAssertions.fromStack(stack).resourceCountIs('AWS::IAM::Policy', 0);
-        TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+        Template.fromStack(stack).resourceCountIs('AWS::IAM::Policy', 0);
+        Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
           FunctionName: {
             Ref: 'Fn9270CBC0',
           },
@@ -305,7 +305,7 @@ describe('KafkaEventSource', () => {
           }));
 
         // THEN
-        TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
           PolicyDocument: {
             Statement: [
               {
@@ -329,7 +329,7 @@ describe('KafkaEventSource', () => {
           ],
         });
 
-        TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+        Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
           FunctionName: {
             Ref: 'Fn9270CBC0',
           },
@@ -442,7 +442,7 @@ describe('KafkaEventSource', () => {
           authenticationMethod: sources.AuthenticationMethod.SASL_SCRAM_256_AUTH,
         }));
 
-      TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
         SourceAccessConfigurations: Match.arrayWith([
           {
             Type: 'SASL_SCRAM_256_AUTH',

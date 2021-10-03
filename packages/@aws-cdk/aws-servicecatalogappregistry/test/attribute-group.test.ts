@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as cdk from '@aws-cdk/core';
 import * as appreg from '../lib';
 
@@ -6,7 +6,12 @@ describe('Attribute Group', () => {
   let stack: cdk.Stack;
 
   beforeEach(() => {
-    stack = new cdk.Stack();
+    const app = new cdk.App({
+      context: {
+        '@aws-cdk/core:newStyleStackSynthesis': false,
+      },
+    });
+    stack = new cdk.Stack(app);
   });
 
   test('default attribute group creation', () => {
@@ -17,7 +22,7 @@ describe('Attribute Group', () => {
       },
     });
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       Resources: {
         MyAttributeGroup99099500: {
           Type: 'AWS::ServiceCatalogAppRegistry::AttributeGroup',
@@ -42,7 +47,7 @@ describe('Attribute Group', () => {
       description: description,
     });
 
-    expect(stack).toHaveResourceLike('AWS::ServiceCatalogAppRegistry::AttributeGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ServiceCatalogAppRegistry::AttributeGroup', {
       Description: description,
     });
   }),
@@ -58,7 +63,7 @@ describe('Attribute Group', () => {
     cdk.Tags.of(attributeGroup).add('key1', 'value1');
     cdk.Tags.of(attributeGroup).add('key2', 'value2');
 
-    expect(stack).toHaveResourceLike('AWS::ServiceCatalogAppRegistry::AttributeGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ServiceCatalogAppRegistry::AttributeGroup', {
       Tags: {
         key1: 'value1',
         key2: 'value2',
@@ -90,7 +95,7 @@ describe('Attribute Group', () => {
       description: tokenDescription.valueAsString,
     });
 
-    expect(stack).toHaveResourceLike('AWS::ServiceCatalogAppRegistry::AttributeGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ServiceCatalogAppRegistry::AttributeGroup', {
       Description: {
         Ref: 'Description',
       },
@@ -107,7 +112,7 @@ describe('Attribute Group', () => {
       },
     });
 
-    expect(stack).toHaveResourceLike('AWS::ServiceCatalogAppRegistry::AttributeGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ServiceCatalogAppRegistry::AttributeGroup', {
       Name: {
         Ref: 'AttributeGroupName',
       },
@@ -165,7 +170,7 @@ describe('Attribute Group', () => {
       attributes: {},
     });
 
-    expect(stack).toHaveResourceLike('AWS::ServiceCatalogAppRegistry::AttributeGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ServiceCatalogAppRegistry::AttributeGroup', {
       Attributes: {},
     });
   });

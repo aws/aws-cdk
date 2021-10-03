@@ -183,11 +183,6 @@ export enum EbsDeviceVolumeType {
   IO1 = 'io1',
 
   /**
-   *  Provisioned IOPS SSD - IO2
-   */
-  IO2 = 'io2',
-
-  /**
    * General Purpose SSD - GP2
    */
   GP2 = 'gp2',

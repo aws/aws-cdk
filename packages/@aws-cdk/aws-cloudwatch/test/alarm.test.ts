@@ -1,4 +1,4 @@
-import { Match, TemplateAssertions } from '@aws-cdk/assertions';
+import { Match, Template } from '@aws-cdk/assertions';
 import { Duration, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { Alarm, IAlarm, IAlarmAction, Metric, MathExpression, IMetric } from '../lib';
@@ -67,7 +67,7 @@ describe('Alarm', () => {
     });
 
     // THEN
-    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
       ComparisonOperator: 'GreaterThanOrEqualToThreshold',
       EvaluationPeriods: 3,
       MetricName: 'Metric',
@@ -93,7 +93,7 @@ describe('Alarm', () => {
     });
 
     // THEN
-    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
       ComparisonOperator: 'GreaterThanOrEqualToThreshold',
       EvaluationPeriods: 3,
       MetricName: 'Metric',
@@ -119,7 +119,7 @@ describe('Alarm', () => {
     });
 
     // THEN
-    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
       ComparisonOperator: 'GreaterThanOrEqualToThreshold',
       EvaluationPeriods: 3,
       MetricName: 'Metric',
@@ -146,7 +146,7 @@ describe('Alarm', () => {
     });
 
     // THEN
-    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
       ComparisonOperator: 'GreaterThanOrEqualToThreshold',
       EvaluationPeriods: 3,
       MetricName: 'Metric',
@@ -173,7 +173,7 @@ describe('Alarm', () => {
     });
 
     // THEN
-    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
       ComparisonOperator: 'GreaterThanOrEqualToThreshold',
       EvaluationPeriods: 3,
       DatapointsToAlarm: 2,
@@ -203,7 +203,7 @@ describe('Alarm', () => {
     alarm.addOkAction(new TestAlarmAction('C'));
 
     // THEN
-    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
       AlarmActions: ['A'],
       InsufficientDataActions: ['B'],
       OKActions: ['C'],
@@ -225,7 +225,7 @@ describe('Alarm', () => {
     });
 
     // THEN
-    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
       ComparisonOperator: 'GreaterThanOrEqualToThreshold',
       EvaluationPeriods: 2,
       MetricName: 'Metric',
@@ -250,7 +250,7 @@ describe('Alarm', () => {
     });
 
     // THEN
-    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
       ExtendedStatistic: 'p99.9',
     });
 
@@ -269,7 +269,7 @@ describe('Alarm', () => {
     });
 
     // THEN
-    TemplateAssertions.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
       Statistic: Match.absentProperty(),
       ExtendedStatistic: 'tm99.9999999999',
     });

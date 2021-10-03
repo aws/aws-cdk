@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as cdk from '@aws-cdk/core';
 import * as appsync from '../lib';
 import * as t from './scalar-type-defintions';
@@ -36,7 +36,7 @@ describe('testing Object Type properties', () => {
     const out = `${gql_interface}${gql_object}`;
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLSchema', {
       Definition: `${out}`,
     });
   });
@@ -65,7 +65,7 @@ describe('testing Object Type properties', () => {
     const out = `${gql_interface}${gql_object}`;
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLSchema', {
       Definition: `${out}`,
     });
   });
@@ -87,7 +87,7 @@ describe('testing Object Type properties', () => {
     const out = 'type Test {\n  test: baseTest\n}\n';
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLSchema', {
       Definition: `${out}`,
     });
   });
@@ -112,7 +112,7 @@ describe('testing Object Type properties', () => {
     const out = 'type Test {\n  test: String\n  resolve(arg: Int): String\n}\n';
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLSchema', {
       Definition: `${out}`,
     });
   });
@@ -137,7 +137,7 @@ describe('testing Object Type properties', () => {
     const out = 'type Test {\n  test: String\n  resolve(arg: Int): String\n}\n';
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLSchema', {
       Definition: `${out}`,
     });
   });
@@ -171,7 +171,7 @@ describe('testing Object Type properties', () => {
     api.addType(test);
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::Resolver', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::Resolver', {
       Kind: 'PIPELINE',
       PipelineConfig: {
         Functions: [
@@ -202,10 +202,10 @@ describe('testing Object Type properties', () => {
     const out = 'type Test {\n  test: String\n  resolve(arg: Int): String\n  dynamic: String\n}\n';
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLSchema', {
       Definition: `${out}`,
     });
-    expect(stack).toHaveResource('AWS::AppSync::Resolver');
+    Template.fromStack(stack).resourceCountIs('AWS::AppSync::Resolver', 1);
   });
 
   test('Object Type can generate Fields with Directives', () => {
@@ -227,7 +227,7 @@ describe('testing Object Type properties', () => {
     const out = 'type Test {\n  test: String\n  resolve: String\n  @aws_api_key\n}\n';
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLSchema', {
       Definition: `${out}`,
     });
   });
@@ -254,10 +254,10 @@ describe('testing Object Type properties', () => {
     const out = 'type Test {\n  test: String\n  resolve(arg: String): String\n  @aws_api_key\n}\n';
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLSchema', {
       Definition: `${out}`,
     });
-    expect(stack).toHaveResource('AWS::AppSync::Resolver');
+    Template.fromStack(stack).resourceCountIs('AWS::AppSync::Resolver', 1);
   });
 
   test('appsync fails addField with ObjectType missing fieldName', () => {

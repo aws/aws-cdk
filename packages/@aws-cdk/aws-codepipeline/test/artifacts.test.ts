@@ -1,21 +1,20 @@
-import { expect, haveResourceLike } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import * as cdk from '@aws-cdk/core';
-import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as codepipeline from '../lib';
 import { FakeBuildAction } from './fake-build-action';
 import { FakeSourceAction } from './fake-source-action';
 
 /* eslint-disable quote-props */
 
-nodeunitShim({
-  'Artifacts in CodePipeline': {
-    'cannot be created with an empty name'(test: Test) {
-      test.throws(() => new codepipeline.Artifact(''), /Artifact name must match regular expression/);
+describe('artifacts', () => {
+  describe('Artifacts in CodePipeline', () => {
+    test('cannot be created with an empty name', () => {
+      expect(() => new codepipeline.Artifact('')).toThrow(/Artifact name must match regular expression/);
 
-      test.done();
-    },
 
-    'without a name, when used as an input without being used as an output first - should fail validation'(test: Test) {
+    });
+
+    test('without a name, when used as an input without being used as an output first - should fail validation', () => {
       const stack = new cdk.Stack();
       const sourceOutput = new codepipeline.Artifact();
       const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
@@ -43,15 +42,15 @@ nodeunitShim({
 
       const errors = validate(stack);
 
-      test.equal(errors.length, 1);
+      expect(errors.length).toEqual(1);
       const error = errors[0];
-      test.same(error.source, pipeline);
-      test.equal(error.message, "Action 'Build' is using an unnamed input Artifact, which is not being produced in this pipeline");
+      expect(error.source).toEqual(pipeline);
+      expect(error.message).toEqual("Action 'Build' is using an unnamed input Artifact, which is not being produced in this pipeline");
 
-      test.done();
-    },
 
-    'with a name, when used as an input without being used as an output first - should fail validation'(test: Test) {
+    });
+
+    test('with a name, when used as an input without being used as an output first - should fail validation', () => {
       const stack = new cdk.Stack();
       const sourceOutput = new codepipeline.Artifact();
       const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
@@ -79,15 +78,15 @@ nodeunitShim({
 
       const errors = validate(stack);
 
-      test.equal(errors.length, 1);
+      expect(errors.length).toEqual(1);
       const error = errors[0];
-      test.same(error.source, pipeline);
-      test.equal(error.message, "Action 'Build' is using input Artifact 'named', which is not being produced in this pipeline");
+      expect(error.source).toEqual(pipeline);
+      expect(error.message).toEqual("Action 'Build' is using input Artifact 'named', which is not being produced in this pipeline");
 
-      test.done();
-    },
 
-    'without a name, when used as an output multiple times - should fail validation'(test: Test) {
+    });
+
+    test('without a name, when used as an output multiple times - should fail validation', () => {
       const stack = new cdk.Stack();
       const sourceOutput = new codepipeline.Artifact();
       const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
@@ -116,15 +115,15 @@ nodeunitShim({
 
       const errors = validate(stack);
 
-      test.equal(errors.length, 1);
+      expect(errors.length).toEqual(1);
       const error = errors[0];
-      test.same(error.source, pipeline);
-      test.equal(error.message, "Both Actions 'Source' and 'Build' are producting Artifact 'Artifact_Source_Source'. Every artifact can only be produced once.");
+      expect(error.source).toEqual(pipeline);
+      expect(error.message).toEqual("Both Actions 'Source' and 'Build' are producting Artifact 'Artifact_Source_Source'. Every artifact can only be produced once.");
 
-      test.done();
-    },
 
-    "an Action's output can be used as input for an Action in the same Stage with a higher runOrder"(test: Test) {
+    });
+
+    test("an Action's output can be used as input for an Action in the same Stage with a higher runOrder", () => {
       const stack = new cdk.Stack();
 
       const sourceOutput1 = new codepipeline.Artifact('sourceOutput1');
@@ -166,14 +165,12 @@ nodeunitShim({
         ],
       });
 
-      expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
-        //
-      }));
+      expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline');
 
-      test.done();
-    },
 
-    'violation of runOrder constraints is detected and reported'(test: Test) {
+    });
+
+    test('violation of runOrder constraints is detected and reported', () => {
       const stack = new cdk.Stack();
 
       const sourceOutput1 = new codepipeline.Artifact('sourceOutput1');
@@ -218,15 +215,15 @@ nodeunitShim({
 
       const errors = validate(stack);
 
-      test.equal(errors.length, 1);
+      expect(errors.length).toEqual(1);
       const error = errors[0];
-      test.same(error.source, pipeline);
-      test.equal(error.message, "Stage 2 Action 2 ('Build'/'build2') is consuming input Artifact 'buildOutput1' before it is being produced at Stage 2 Action 3 ('Build'/'build1')");
+      expect(error.source).toEqual(pipeline);
+      expect(error.message).toEqual("Stage 2 Action 2 ('Build'/'build2') is consuming input Artifact 'buildOutput1' before it is being produced at Stage 2 Action 3 ('Build'/'build1')");
 
-      test.done();
-    },
 
-    'without a name, sanitize the auto stage-action derived name'(test: Test) {
+    });
+
+    test('without a name, sanitize the auto stage-action derived name', () => {
       const stack = new cdk.Stack();
 
       const sourceOutput = new codepipeline.Artifact();
@@ -253,7 +250,7 @@ nodeunitShim({
         ],
       });
 
-      expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+      expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
         'Stages': [
           {
             'Name': 'Source.@',
@@ -278,16 +275,16 @@ nodeunitShim({
             ],
           },
         ],
-      }));
+      });
 
-      test.done();
-    },
-  },
+
+    });
+  });
 });
 
-/* eslint-disable cdk/no-core-construct */
+/* eslint-disable @aws-cdk/no-core-construct */
 function validate(construct: cdk.IConstruct): cdk.ValidationError[] {
   cdk.ConstructNode.prepare(construct.node);
   return cdk.ConstructNode.validate(construct.node);
 }
-/* eslint-enable cdk/no-core-construct */
+/* eslint-enable @aws-cdk/no-core-construct */
