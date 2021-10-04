@@ -152,7 +152,6 @@ abstract class SlackChannelConfigurationBase extends cdk.Resource implements ISl
 
   abstract readonly role?: iam.IRole;
 
-
   /**
    * Adds extra permission to iam-role of Slack channel configuration
    * @param statement
@@ -272,8 +271,7 @@ export class SlackChannelConfiguration extends SlackChannelConfigurationBase {
    * The SNS topic that deliver notifications to AWS Chatbot.
    * @attribute
    */
-  readonly notificationTopics: sns.ITopic[];
-
+  private readonly notificationTopics: sns.ITopic[];
 
   constructor(scope: Construct, id: string, props: SlackChannelConfigurationProps) {
     super(scope, id, {
@@ -293,7 +291,7 @@ export class SlackChannelConfiguration extends SlackChannelConfigurationBase {
       iamRoleArn: this.role.roleArn,
       slackWorkspaceId: props.slackWorkspaceId,
       slackChannelId: props.slackChannelId,
-      snsTopicArns: cdk.Lazy.list({ produce: () => this.renderTopics() }, { omitEmpty: true } ),
+      snsTopicArns: cdk.Lazy.list({ produce: () => this.notificationTopics.map(topic => topic.topicArn) }, { omitEmpty: true } ),
       loggingLevel: props.loggingLevel?.toString(),
     });
 
@@ -319,10 +317,6 @@ export class SlackChannelConfiguration extends SlackChannelConfigurationBase {
    */
   public addNotificationTopic(notificationTopic: sns.ITopic): void {
     this.notificationTopics.push(notificationTopic);
-  }
-
-  private renderTopics(): string[] {
-    return this.notificationTopics?.map(topic => topic.topicArn) || [];
   }
 }
 

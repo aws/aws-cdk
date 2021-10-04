@@ -99,7 +99,7 @@ describe('SlackChannelConfiguration', () => {
     });
   });
 
-  test('adding topic after creating SlackChannel', () => {
+  test('allows adding a Topic after creating the SlackChannel', () => {
     const slackChannel = new chatbot.SlackChannelConfiguration(stack, 'MySlackChannel', {
       slackWorkspaceId: 'ABC123',
       slackChannelId: 'DEF456',
@@ -111,14 +111,6 @@ describe('SlackChannelConfiguration', () => {
 
     expect(stack).toHaveResourceLike('AWS::Chatbot::SlackChannelConfiguration', {
       ConfigurationName: 'Test',
-      IamRoleArn: {
-        'Fn::GetAtt': [
-          'MySlackChannelConfigurationRole1D3F23AE',
-          'Arn',
-        ],
-      },
-      SlackChannelId: 'DEF456',
-      SlackWorkspaceId: 'ABC123',
       SnsTopicArns: [
         {
           Ref: 'MyTopic86869434',
