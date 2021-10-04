@@ -8,10 +8,12 @@ describe('HttpJwtAuthorizer', () => {
     // GIVEN
     const stack = new Stack();
     const api = new HttpApi(stack, 'HttpApi');
+    const authorizerName = 'JwtAuthorizer';
 
     const authorizer = new HttpJwtAuthorizer({
       jwtAudience: ['3131231'],
       jwtIssuer: 'https://test.us.auth0.com',
+      authorizerName,
     });
 
     // WHEN
@@ -36,10 +38,12 @@ describe('HttpJwtAuthorizer', () => {
     // GIVEN
     const stack = new Stack();
     const api = new HttpApi(stack, 'HttpApi');
+    const authorizerName = 'JwtAuthorizer';
 
     const authorizer = new HttpJwtAuthorizer({
       jwtAudience: ['3131231'],
       jwtIssuer: 'https://test.us.auth0.com',
+      authorizerName,
     });
 
     // WHEN

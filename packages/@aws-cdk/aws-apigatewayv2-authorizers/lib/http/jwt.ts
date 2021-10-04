@@ -14,9 +14,8 @@ export interface HttpJwtAuthorizerProps {
 
   /**
    * The name of the authorizer
-   * @default 'JwtAuthorizer'
    */
-  readonly authorizerName?: string;
+  readonly authorizerName: string;
 
   /**
    * The identity source for which authorization is requested.
@@ -49,9 +48,10 @@ export class HttpJwtAuthorizer implements IHttpRouteAuthorizer {
 
   public bind(options: HttpRouteAuthorizerBindOptions): HttpRouteAuthorizerConfig {
     if (!this.authorizer) {
-      const id = this.props.authorizerName && !Token.isUnresolved(this.props.authorizerName) ?
-        this.props.authorizerName : 'JwtAuthorizer';
-
+      if (Token.isUnresolved(this.props.authorizerName)) {
+        throw new Error('`authorizerName` cannot be a token');
+      }
+      const id = this.props.authorizerName;
       this.authorizer = new HttpAuthorizer(options.scope, id, {
         httpApi: options.route.httpApi,
         identitySource: this.props.identitySource ?? ['$request.header.Authorization'],
