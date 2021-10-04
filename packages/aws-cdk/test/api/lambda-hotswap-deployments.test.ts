@@ -350,4 +350,105 @@ test('does not call the updateLambdaCode() API when a resource with type that is
   expect(mockUpdateLambdaCode).not.toHaveBeenCalled();
 });
 
-// TODO: put the tests that adam added in the Cli chore PR here.
+test("will not perform a hotswap deployment if it cannot find a Ref target (outside the function's name)", async () => {
+  // GIVEN
+  setup.currentCfnStack.setTemplate({
+    Parameters: {
+      Param1: { Type: 'String' },
+    },
+    Resources: {
+      Func: {
+        Type: 'AWS::Lambda::Function',
+        Properties: {
+          Code: {
+            S3Bucket: { 'Fn::Sub': '${Param1}' },
+            S3Key: 'current-key',
+          },
+        },
+        Metadata: {
+          'aws:asset:path': 'old-path',
+        },
+      },
+    },
+  });
+  setup.currentCfnStackResources.push(setup.stackSummaryOf('Func', 'AWS::Lambda::Function', 'my-func'));
+  const cdkStackArtifact = setup.cdkStackArtifactOf({
+    template: {
+      Parameters: {
+        Param1: { Type: 'String' },
+      },
+      Resources: {
+        Func: {
+          Type: 'AWS::Lambda::Function',
+          Properties: {
+            Code: {
+              S3Bucket: { 'Fn::Sub': '${Param1}' },
+              S3Key: 'new-key',
+            },
+          },
+          Metadata: {
+            'aws:asset:path': 'new-path',
+          },
+        },
+      },
+    },
+  });
+
+  // THEN
+  await expect(() =>
+    tryHotswapDeployment(setup.mockSdkProvider, {}, setup.currentCfnStack, cdkStackArtifact),
+  ).rejects.toThrow(/Parameter or resource 'Param1' could not be found for evaluation/);
+});
+
+test("will not perform a hotswap deployment if it doesn't know how to handle a specific attribute (outside the function's name)", async () => {
+  // GIVEN
+  setup.currentCfnStack.setTemplate({
+    Resources: {
+      Bucket: {
+        Type: 'AWS::S3::Bucket',
+      },
+      Func: {
+        Type: 'AWS::Lambda::Function',
+        Properties: {
+          Code: {
+            S3Bucket: { 'Fn::GetAtt': ['Bucket', 'UnknownAttribute'] },
+            S3Key: 'current-key',
+          },
+        },
+        Metadata: {
+          'aws:asset:path': 'old-path',
+        },
+      },
+    },
+  });
+  setup.currentCfnStackResources.push(
+    setup.stackSummaryOf('Func', 'AWS::Lambda::Function', 'my-func'),
+    setup.stackSummaryOf('Bucket', 'AWS::S3::Bucket', 'my-bucket'),
+  );
+  const cdkStackArtifact = setup.cdkStackArtifactOf({
+    template: {
+      Resources: {
+        Bucket: {
+          Type: 'AWS::S3::Bucket',
+        },
+        Func: {
+          Type: 'AWS::Lambda::Function',
+          Properties: {
+            Code: {
+              S3Bucket: { 'Fn::GetAtt': ['Bucket', 'UnknownAttribute'] },
+              S3Key: 'new-key',
+            },
+          },
+          Metadata: {
+            'aws:asset:path': 'new-path',
+          },
+        },
+      },
+    },
+  });
+
+  // THEN
+  await expect(() =>
+    tryHotswapDeployment(setup.mockSdkProvider, {}, setup.currentCfnStack, cdkStackArtifact),
+  ).rejects.toThrow("We don't support the 'UnknownAttribute' attribute of the 'AWS::S3::Bucket' resource. This is a CDK limitation. Please report it at https://github.com/aws/aws-cdk/issues/new/choose");
+});
