@@ -305,7 +305,9 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
    * Grant the given identity permissions to invoke this Lambda
    */
   public grantInvoke(grantee: iam.IGrantable): iam.Grant {
-    const identifier = `Invoke${MD5(grantee.grantPrincipal)}`; // calls the .toString() of the principal
+    // identifier should be based on the hash of the Grantable object so that policies are created accurately
+    // when grantInvoke is called more than once with same service principal but different conditions (conditional principal̦).
+    const identifier = `Invoke${MD5(grantee.grantPrincipal)}`;
 
     // Memoize the result so subsequent grantInvoke() calls are idempotent
     let grant = this._invocationGrants[identifier];
