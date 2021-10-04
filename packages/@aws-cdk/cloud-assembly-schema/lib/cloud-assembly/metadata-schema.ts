@@ -131,6 +131,14 @@ export interface ContainerImageAssetMetadataEntry extends BaseAssetMetadataEntry
    * @default - no file is passed
    */
   readonly file?: string;
+
+  /**
+   * Specify this property to build images for a specific platform. Support docker API 1.38+.
+   *
+   * @default - no specific platform
+   *
+   */
+  readonly platform?: string;
 }
 
 /**

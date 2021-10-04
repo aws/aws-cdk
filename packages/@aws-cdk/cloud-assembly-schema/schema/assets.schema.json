@@ -154,6 +154,10 @@
                     "additionalProperties": {
                         "type": "string"
                     }
+                },
+                "platform": {
+                    "description": "Set platform if server is multi-platform capable. _Requires Docker Engine API v1.38+_. (Default - no platform specified.)",
+                    "type": "string"
                 }
             }
         },

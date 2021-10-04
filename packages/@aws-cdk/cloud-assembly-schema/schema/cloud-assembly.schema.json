@@ -226,6 +226,10 @@
                     "description": "Path to the Dockerfile (relative to the directory). (Default - no file is passed)",
                     "type": "string"
                 },
+                "platform": {
+                    "description": "Specify this property to build images for a specific platform. Support docker API 1.38+. (Default - no specific platform)",
+                    "type": "string"
+                },
                 "id": {
                     "description": "Logical identifier for the asset",
                     "type": "string"

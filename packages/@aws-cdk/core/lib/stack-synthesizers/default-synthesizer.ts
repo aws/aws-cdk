@@ -382,6 +382,7 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
         dockerBuildArgs: asset.dockerBuildArgs,
         dockerBuildTarget: asset.dockerBuildTarget,
         dockerFile: asset.dockerFile,
+        platform: asset.platform,
       },
       destinations: {
         [this.manifestEnvName]: {

@@ -70,7 +70,49 @@
             {
               "Ref": "AWS::URLSuffix"
             },
-            "/aws-cdk/assets:8c1d9ca9f5d37b1c4870c13a9f855301bb42c1848dbcdd5edc8fe2c6c7261d48"
+            "/aws-cdk/assets:fb6ad3362aa71538b0ce17454c243ca49731097121770c6921d7599b5c9d5e8d"
+          ]
+        ]
+      }
+    },
+    "ImageUri2": {
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            {
+              "Ref": "AWS::AccountId"
+            },
+            ".dkr.ecr.",
+            {
+              "Ref": "AWS::Region"
+            },
+            ".",
+            {
+              "Ref": "AWS::URLSuffix"
+            },
+            "/aws-cdk/assets:fb6ad3362aa71538b0ce17454c243ca49731097121770c6921d7599b5c9d5e8d"
+          ]
+        ]
+      }
+    },
+    "ImageUri3": {
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            {
+              "Ref": "AWS::AccountId"
+            },
+            ".dkr.ecr.",
+            {
+              "Ref": "AWS::Region"
+            },
+            ".",
+            {
+              "Ref": "AWS::URLSuffix"
+            },
+            "/aws-cdk/assets:c8d2956edc328f723046aae96eda8d738a466563ecf936579ae18875ff43c6e7"
           ]
         ]
       }

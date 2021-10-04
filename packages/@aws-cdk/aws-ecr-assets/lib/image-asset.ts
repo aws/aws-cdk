@@ -178,6 +178,7 @@ export class DockerImageAsset extends CoreConstruct implements IAsset {
     if (props.target) { extraHash.target = props.target; }
     if (props.file) { extraHash.file = props.file; }
     if (props.repositoryName) { extraHash.repositoryName = props.repositoryName; }
+    if (props.platform) { extraHash.platform = props.platform; }
 
     // add "salt" to the hash in order to invalidate the image in the upgrade to
     // 1.21.0 which removes the AdoptedRepository resource (and will cause the
