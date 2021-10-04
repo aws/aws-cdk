@@ -38,9 +38,7 @@ test('calls the updateStateMachine() API when it receives only a definitionStrin
       Machine: {
         Type: 'AWS::StepFunctions::StateMachine',
         Properties: {
-          DefinitionString: {
-            Prop: 'old-value',
-          },
+          DefinitionString: '{ Prop: "old-value" }',
           StateMachineName: 'my-machine',
         },
       },
@@ -52,9 +50,7 @@ test('calls the updateStateMachine() API when it receives only a definitionStrin
         Machine: {
           Type: 'AWS::StepFunctions::StateMachine',
           Properties: {
-            DefinitionString: {
-              Prop: 'new-value',
-            },
+            DefinitionString: '{ Prop: "new-value" }',
             StateMachineName: 'my-machine',
           },
         },
@@ -68,7 +64,7 @@ test('calls the updateStateMachine() API when it receives only a definitionStrin
   // THEN
   expect(deployStackResult).not.toBeUndefined();
   expect(mockUpdateMachineDefinition).toHaveBeenCalledWith({
-    definition: { Prop: 'new-value' },
+    definition: '{ Prop: "new-value" }',
     stateMachineArn: 'my-machine',
   });
 });
@@ -236,9 +232,7 @@ test('does not call the updateStateMachine() API when a resource with type that 
       Machine: {
         Type: 'AWS::NotStepFunctions::NotStateMachine',
         Properties: {
-          DefinitionString: {
-            Prop: 'old-value',
-          },
+          DefinitionString: '{ Prop: "old-value" }',
         },
       },
     },
@@ -249,9 +243,7 @@ test('does not call the updateStateMachine() API when a resource with type that 
         Machine: {
           Type: 'AWS::NotStepFunctions::NotStateMachine',
           Properties: {
-            DefinitionString: {
-              Prop: 'new-value',
-            },
+            DefinitionString: '{ Prop: "new-value" }',
           },
         },
       },
