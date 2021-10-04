@@ -203,6 +203,12 @@ export interface DockerImageAssetSource {
    * @deprecated repository name should be specified at the environment-level and not at the image level
    */
   readonly repositoryName?: string;
+  /**
+   *  Set platform if server is multi-platform capable. _Requires Docker Engine API v1.38+_.
+   * 
+   *  @default - no platform specified.
+   */
+  readonly platform?: string;
 }
 
 /**

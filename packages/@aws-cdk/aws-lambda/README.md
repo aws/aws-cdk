@@ -81,6 +81,18 @@ new DockerImageFunction(this, 'ECRFunction', {
 The props for these docker image resources allow overriding the image's `CMD`, `ENTRYPOINT`, and `WORKDIR`
 configurations. See their docs for more information.
 
+To deploy a `DockerImageFunction` on Lambda `arm64` architecture, specify the `platform` property with `ARM_64`. This will
+build and bundle docker image assets for `arm64` architecture even you run it on `x86_64` architecture.
+
+```ts
+new DockerImageFunction(this, 'AssetFunction', {
+  code: DockerImageCode.fromImageAsset(path.join(__dirname, 'docker-arm64-handler'), {
+    platform: DockerPlatform.ARM_64,
+  }),
+  architectures: [Architecture.ARM_64],
+});
+```
+
 ## Execution Role
 
 Lambda functions assume an IAM role during execution. In CDK by default, Lambda

@@ -62,6 +62,12 @@ export interface DockerImageSource {
    * @default - No additional build arguments
    */
   readonly dockerBuildArgs?: { [name: string]: string };
+  /**
+   *  Set platform if server is multi-platform capable. _Requires Docker Engine API v1.38+_.
+   * 
+   *  @default - no platform specified.
+   */
+  readonly platform?: string;
 }
 
 /**

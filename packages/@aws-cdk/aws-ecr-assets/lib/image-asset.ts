@@ -12,6 +12,21 @@ import { FingerprintOptions, FollowMode, IAsset } from '@aws-cdk/assets';
 // eslint-disable-next-line no-duplicate-imports, import/order
 import { Construct as CoreConstruct } from '@aws-cdk/core';
 
+
+/**
+ * options for the --platform flag
+ */
+export enum DockerPlatform {
+  /**
+   * 'linux/arm64' platform.
+   */
+  ARM_64 = 'linux/arm64',
+  /**
+   * 'linux/amd64' platform.
+   */
+  AMD_64 = 'linux/amd64',
+}
+
 /**
  * Options for DockerImageAsset
  */
@@ -54,6 +69,14 @@ export interface DockerImageAssetOptions extends FingerprintOptions, FileFingerp
    * @default 'Dockerfile'
    */
   readonly file?: string;
+
+  /**
+   * Specify this property to build images for a specific platform. Support docker API 1.38+.
+   *
+   * @default - no specific platform
+   *
+   */
+  readonly platform?: DockerPlatform;
 }
 
 /**
@@ -182,6 +205,7 @@ export class DockerImageAsset extends CoreConstruct implements IAsset {
       dockerBuildTarget: props.target,
       dockerFile: props.file,
       sourceHash: staging.assetHash,
+      platform: props.platform,
     });
 
     this.repository = ecr.Repository.fromRepositoryName(this, 'Repository', location.repositoryName);
