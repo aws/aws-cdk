@@ -136,6 +136,9 @@ function transformPackageJson(pkg: any, source: string, destination: string, alp
   if (packageJson.publishConfig) {
     packageJson.private = !packageJson.private;
     packageJson.publishConfig.tag = 'latest';
+    if (packageJson.private) {
+      packageJson.ubergen = { exclude: true };
+    }
   }
 
   // disable awslint (some rules are hard-coded to @aws-cdk/core)
