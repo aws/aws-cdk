@@ -307,6 +307,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly STEP_FUNCTIONS = new InterfaceVpcEndpointAwsService('states');
   public static readonly LAMBDA = new InterfaceVpcEndpointAwsService('lambda');
   public static readonly TRANSCRIBE = new InterfaceVpcEndpointAwsService('transcribe');
+  public static readonly XRAY = new InterfaceVpcEndpointAwsService('xray');
 
   /**
    * The name of the service.
