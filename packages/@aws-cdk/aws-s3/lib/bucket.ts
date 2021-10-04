@@ -5,7 +5,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import {
   Fn, IResource, Lazy, RemovalPolicy, Resource, ResourceProps, Stack, Token,
-  CustomResource, CustomResourceProvider, CustomResourceProviderRuntime, FeatureFlags,
+  CustomResource, CustomResourceProvider, CustomResourceProviderRuntime, FeatureFlags, Tags
 } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
@@ -18,6 +18,7 @@ import { CfnBucket } from './s3.generated';
 import { parseBucketArn, parseBucketName } from './util';
 
 const AUTO_DELETE_OBJECTS_RESOURCE_TYPE = 'Custom::S3AutoDeleteObjects';
+const AUTO_DELETE_OBJECTS_TAG = 'aws-cdk:auto-delete-objects';
 
 export interface IBucket extends IResource {
   /**
@@ -460,7 +461,7 @@ export abstract class BucketBase extends Resource implements IBucket {
    * Indicates if a bucket resource policy should automatically created upon
    * the first call to `addToResourcePolicy`.
    */
-  protected abstract autoCreatePolicy = false;
+  protected abstract autoCreatePolicy: boolean;
 
   /**
    * Whether to disallow public access
@@ -1228,6 +1229,11 @@ export interface BucketProps {
    *
    * Requires the `removalPolicy` to be set to `RemovalPolicy.DESTROY`.
    *
+   * **Warning** if you have deployed a bucket with `autoDeleteObjects: true`,
+   * switching this to `false` in a CDK version *before* `1.126.0` will lead to
+   * all objects in the bucket being deleted. Be sure to update to version `1.126.0`
+   * or later before switching this value to `false`.
+   *
    * @default false
    */
   readonly autoDeleteObjects?: boolean;
@@ -1443,6 +1449,7 @@ export class Bucket extends BucketBase {
   private readonly metrics: BucketMetrics[] = [];
   private readonly cors: CorsRule[] = [];
   private readonly inventories: Inventory[] = [];
+  private readonly _resource: CfnBucket;
 
   constructor(scope: Construct, id: string, props: BucketProps = {}) {
     super(scope, id, {
@@ -1470,6 +1477,7 @@ export class Bucket extends BucketBase {
       inventoryConfigurations: Lazy.any({ produce: () => this.parseInventoryConfiguration() }),
       ownershipControls: this.parseOwnershipControls(props),
     });
+    this._resource = resource;
 
     resource.applyRemovalPolicy(props.removalPolicy);
 
@@ -1943,6 +1951,13 @@ export class Bucket extends BucketBase {
     if (this.policy) {
       customResource.node.addDependency(this.policy);
     }
+
+    // We also tag the bucket to record the fact that we want it autodeleted.
+    // The custom resource will check this tag before actually doing the delete.
+    // Because tagging and untagging will ALWAYS happen before the CR is deleted,
+    // we can set `autoDeleteObjects: false` without the removal of the CR emptying
+    // the bucket as a side effect.
+    Tags.of(this._resource).add(AUTO_DELETE_OBJECTS_TAG, 'true');
   }
 }
 
