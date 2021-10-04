@@ -278,7 +278,8 @@ function packageIsAlpha(pkg: any): boolean {
   }
   // we're only interested in '@aws-cdk/' packages,
   // and those that are JSII-enabled (so no @aws-cdk/assert)
-  return pkg.name.startsWith('@aws-cdk/') && !!pkg.get('jsii');
+  // Also, don't re-alpha already alpha-ed packages
+  return pkg.name.startsWith('@aws-cdk/') && !!pkg.get('jsii') && !pkg.name.endsWith('-alpha');
 }
 
 function isRequiredTool(name: string) {
