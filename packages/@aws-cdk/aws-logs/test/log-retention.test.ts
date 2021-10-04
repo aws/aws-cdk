@@ -1,4 +1,5 @@
-import { Match, Template } from '@aws-cdk/assertions';
+import '@aws-cdk/assert-internal/jest';
+import { ABSENT } from '@aws-cdk/assert-internal';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { LogRetention, RetentionDays } from '../lib';
@@ -17,7 +18,7 @@ describe('log retention', () => {
     });
 
     // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    expect(stack).toHaveResource('AWS::IAM::Policy', {
       'PolicyDocument': {
         'Statement': [
           {
@@ -39,12 +40,12 @@ describe('log retention', () => {
       ],
     });
 
-    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+    expect(stack).toHaveResource('AWS::Lambda::Function', {
       Handler: 'index.handler',
       Runtime: 'nodejs14.x',
     });
 
-    Template.fromStack(stack).hasResourceProperties('Custom::LogRetention', {
+    expect(stack).toHaveResource('Custom::LogRetention', {
       'ServiceToken': {
         'Fn::GetAtt': [
           'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A',
@@ -71,7 +72,7 @@ describe('log retention', () => {
     });
 
     // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    expect(stack).toHaveResource('AWS::IAM::Policy', {
       'PolicyDocument': {
         'Statement': [
           {
@@ -91,7 +92,7 @@ describe('log retention', () => {
       ],
     });
 
-    Template.fromStack(stack).resourceCountIs('AWS::IAM::Role', 0);
+    expect(stack).toCountResources('AWS::IAM::Role', 0);
 
 
   });
@@ -104,8 +105,8 @@ describe('log retention', () => {
       retention: RetentionDays.INFINITE,
     });
 
-    Template.fromStack(stack).hasResourceProperties('Custom::LogRetention', {
-      RetentionInDays: Match.absent(),
+    expect(stack).toHaveResource('Custom::LogRetention', {
+      RetentionInDays: ABSENT,
     });
 
 
@@ -119,7 +120,7 @@ describe('log retention', () => {
       retention: RetentionDays.INFINITE,
     });
 
-    Template.fromStack(stack).hasResourceProperties('Custom::LogRetention', {
+    expect(stack).toHaveResource('Custom::LogRetention', {
       LogGroupRegion: 'us-east-1',
     });
 
