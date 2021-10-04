@@ -1,6 +1,8 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { S3 } from 'aws-sdk';
 
+const AUTO_DELETE_OBJECTS_TAG = 'aws-cdk:auto-delete-objects';
+
 const s3 = new S3();
 
 export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent) {
@@ -52,6 +54,10 @@ async function onDelete(bucketName?: string) {
   if (!bucketName) {
     throw new Error('No BucketName was provided.');
   }
+  if (!await isBucketTaggedForDeletion(bucketName)) {
+    process.stdout.write(`Bucket does not have '${AUTO_DELETE_OBJECTS_TAG}' tag, skipping cleaning.\n`);
+    return;
+  }
 
   try {
     await emptyBucket(bucketName);
@@ -61,4 +67,17 @@ async function onDelete(bucketName?: string) {
     }
     // Bucket doesn't exist. Ignoring
   }
+}
+
+/**
+ * The bucket will only be tagged for deletion if it's being deleted in the same
+ * deployment as this Custom Resource.
+ *
+ * If the Custom Resource is every deleted before the bucket, it must be because
+ * `autoDeleteObjects` has been switched to false, in which case the tag would have
+ * been removed before we get to this Delete event.
+ */
+async function isBucketTaggedForDeletion(bucketName: string) {
+  const response = await s3.getBucketTagging({ Bucket: bucketName }).promise();
+  return response.TagSet.some(tag => tag.Key === AUTO_DELETE_OBJECTS_TAG && tag.Value === 'true');
 }
