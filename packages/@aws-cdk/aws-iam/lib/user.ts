@@ -156,6 +156,9 @@ export class User extends Resource implements IIdentity, IUser {
   /**
    * Import an existing user given a user ARN.
    *
+   * If the ARN comes from a Token, the User cannot have a path; if so, any attempt
+   * to reference its username will fail.
+   *
    * @param scope construct scope
    * @param id construct id
    * @param userArn the ARN of an existing user to import
@@ -167,6 +170,9 @@ export class User extends Resource implements IIdentity, IUser {
   /**
    * Import an existing user given user attributes.
    *
+   * If the ARN comes from a Token, the User cannot have a path; if so, any attempt
+   * to reference its username will fail.
+   *
    * @param scope construct scope
    * @param id construct id
    * @param attrs the attributes of the user to import
@@ -176,7 +182,8 @@ export class User extends Resource implements IIdentity, IUser {
       public readonly grantPrincipal: IPrincipal = this;
       public readonly principalAccount = Aws.ACCOUNT_ID;
       // Resource name with path can have multiple elements separated by slash.
-      // Therefore, use element after last slash as userName.
+      // Therefore, use element after last slash as userName. Happens to work for Tokens since
+      // they don't have a '/' in them.
       public readonly userName: string = Arn.extractResourceName(attrs.userArn, 'user').split('/').pop()!;
       public readonly userArn: string = attrs.userArn;
       public readonly assumeRoleAction: string = 'sts:AssumeRole';
