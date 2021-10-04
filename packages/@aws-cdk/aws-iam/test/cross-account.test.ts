@@ -1,4 +1,4 @@
-import { Match, Template } from '@aws-cdk/assertions';
+import '@aws-cdk/assert-internal/jest';
 import * as cdk from '@aws-cdk/core';
 import * as constructs from 'constructs';
 import * as iam from '../lib';
@@ -191,7 +191,7 @@ function doGrant(resource: FakeResource, principal: iam.IPrincipal) {
 }
 
 function assertTrustCreated(stack: cdk.Stack, principal: any) {
-  Template.fromStack(stack).hasResourceProperties('Test::Fake::Resource', {
+  expect(stack).toHaveResource('Test::Fake::Resource', {
     ResourcePolicy: {
       Statement: [
         {
@@ -207,19 +207,17 @@ function assertTrustCreated(stack: cdk.Stack, principal: any) {
 }
 
 function noTrustCreated(stack: cdk.Stack) {
-  Template.fromStack(stack).hasResource('Test::Fake::Resource', Match.not({
-    Properties: {
-      ResourcePolicy: {
-        Statement: [
-          {},
-        ],
-      },
+  expect(stack).not.toHaveResourceLike('Test::Fake::Resource', {
+    ResourcePolicy: {
+      Statement: [
+        {},
+      ],
     },
-  }));
+  });
 }
 
 function assertPolicyCreated(stack: cdk.Stack) {
-  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+  expect(stack).toHaveResource('AWS::IAM::Policy', {
     PolicyDocument: {
       Statement: [
         {
@@ -234,5 +232,5 @@ function assertPolicyCreated(stack: cdk.Stack) {
 }
 
 function noPolicyCreated(stack: cdk.Stack) {
-  Template.fromStack(stack).resourceCountIs('AWS::IAM::Policy', 0);
+  expect(stack).not.toHaveResource('AWS::IAM::Policy');
 }
