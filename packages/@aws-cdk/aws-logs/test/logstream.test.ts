@@ -1,4 +1,4 @@
-import { Template } from '@aws-cdk/assertions';
+import '@aws-cdk/assert-internal/jest';
 import { Stack } from '@aws-cdk/core';
 import { LogGroup, LogStream } from '../lib';
 
@@ -15,7 +15,7 @@ describe('log stream', () => {
     });
 
     // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogStream', {
+    expect(stack).toHaveResource('AWS::Logs::LogStream', {
     });
 
 
