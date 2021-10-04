@@ -1,6 +1,6 @@
 import { Template } from '@aws-cdk/assertions';
-import { Stack } from '@aws-cdk/core';
-import { Alarm, GraphWidget, IWidget, Metric } from '../lib';
+import { Duration, Stack } from '@aws-cdk/core';
+import { Alarm, GraphWidget, IWidget, MathExpression, Metric } from '../lib';
 
 const a = new Metric({ namespace: 'Test', metricName: 'ACount' });
 
@@ -77,6 +77,35 @@ describe('cross environment', () => {
       ]);
 
 
+    });
+
+    test('math expressions with explicit account and region will render in environment agnostic stack', () => {
+      // GIVEN
+      const expression = 'SEARCH(\'MetricName="ACount"\', \'Sum\', 300)';
+
+      const b = new MathExpression({
+        expression,
+        usingMetrics: {},
+        label: 'Test label',
+        searchAccount: '5678',
+        searchRegion: 'mars',
+      });
+
+      const graph = new GraphWidget({
+        left: [
+          b,
+        ],
+      });
+
+      // THEN
+      graphMetricsAre(new Stack(), graph, [
+        [{
+          expression,
+          accountId: '5678',
+          region: 'mars',
+          label: 'Test label',
+        }],
+      ]);
     });
   });
 
@@ -176,6 +205,113 @@ describe('cross environment', () => {
           },
         ],
       });
+    });
+
+    test('math expression can render in a different account', () => {
+      // GIVEN
+      const b = new Metric({
+        namespace: 'Test',
+        metricName: 'ACount',
+        account: '1234',
+      });
+
+      const c = new MathExpression({
+        expression: 'a + b',
+        usingMetrics: { a: a.attachTo(stack3), b },
+        period: Duration.minutes(1),
+      });
+
+      new Alarm(stack1, 'Alarm', {
+        threshold: 1,
+        evaluationPeriods: 1,
+        metric: c,
+      });
+
+      // THEN
+      Template.fromStack(stack1).hasResourceProperties('AWS::CloudWatch::Alarm', {
+        Metrics: [
+          {
+            Expression: 'a + b',
+            Id: 'expr_1',
+          },
+          {
+            AccountId: '0000',
+            Id: 'a',
+            MetricStat: {
+              Metric: {
+                MetricName: 'ACount',
+                Namespace: 'Test',
+              },
+              Period: 60,
+              Stat: 'Average',
+            },
+            ReturnData: false,
+          },
+          {
+            AccountId: '1234',
+            Id: 'b',
+            MetricStat: {
+              Metric: {
+                MetricName: 'ACount',
+                Namespace: 'Test',
+              },
+              Period: 60,
+              Stat: 'Average',
+            },
+            ReturnData: false,
+          },
+        ],
+      });
+    });
+
+    test('math expression with different searchAccount will throw', () => {
+      // GIVEN
+      const b = new Metric({
+        namespace: 'Test',
+        metricName: 'ACount',
+        account: '1234',
+      });
+
+      const c = new MathExpression({
+        expression: 'a + b',
+        usingMetrics: { a: a.attachTo(stack3), b },
+        period: Duration.minutes(1),
+        searchAccount: '5678',
+      });
+
+      // THEN
+      expect(() => {
+        new Alarm(stack1, 'Alarm', {
+          threshold: 1,
+          evaluationPeriods: 1,
+          metric: c,
+        });
+      }).toThrow(/Cannot create an Alarm based on a MathExpression which specifies a searchAccount or searchRegion/);
+    });
+
+    test('match expression with different searchRegion will throw', () => {
+      // GIVEN
+      const b = new Metric({
+        namespace: 'Test',
+        metricName: 'ACount',
+        account: '1234',
+      });
+
+      const c = new MathExpression({
+        expression: 'a + b',
+        usingMetrics: { a: a.attachTo(stack3), b },
+        period: Duration.minutes(1),
+        searchRegion: 'mars',
+      });
+
+      // THEN
+      expect(() => {
+        new Alarm(stack1, 'Alarm', {
+          threshold: 1,
+          evaluationPeriods: 1,
+          metric: c,
+        });
+      }).toThrow(/Cannot create an Alarm based on a MathExpression which specifies a searchAccount or searchRegion/);
     });
   });
 });

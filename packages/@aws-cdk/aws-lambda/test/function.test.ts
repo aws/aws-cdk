@@ -2112,6 +2112,7 @@ describe('function', () => {
             imageUri: 'ecr image uri',
             cmd: ['cmd', 'param1'],
             entrypoint: ['entrypoint', 'param2'],
+            workingDirectory: '/some/path',
           },
         }),
         handler: lambda.Handler.FROM_IMAGE,
@@ -2122,6 +2123,7 @@ describe('function', () => {
         ImageConfig: {
           Command: ['cmd', 'param1'],
           EntryPoint: ['entrypoint', 'param2'],
+          WorkingDirectory: '/some/path',
         },
       });
     });
@@ -2170,6 +2172,21 @@ describe('function', () => {
       code: lambda.DockerImageCode.fromImageAsset(path.join(__dirname, 'docker-lambda-handler')),
       layers: [layer],
     })).toThrow(/Layers are not supported for container image functions/);
+  });
+
+  test('specified architecture is recognized', () => {
+    const stack = new cdk.Stack();
+    new lambda.Function(stack, 'MyFunction', {
+      code: lambda.Code.fromInline('foo'),
+      runtime: lambda.Runtime.NODEJS_12_X,
+      handler: 'index.handler',
+
+      architectures: [lambda.Architecture.ARM_64],
+    });
+
+    expect(stack).toHaveResource('AWS::Lambda::Function', {
+      Architectures: ['arm64'],
+    });
   });
 
 });
