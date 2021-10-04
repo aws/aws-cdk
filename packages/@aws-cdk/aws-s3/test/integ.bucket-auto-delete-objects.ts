@@ -1,4 +1,3 @@
-/// !cdk-integ pragma:ignore-assets
 import * as path from 'path';
 import { App, CustomResource, CustomResourceProvider, CustomResourceProviderRuntime, RemovalPolicy, Stack, StackProps } from '@aws-cdk/core';
 import { Construct } from 'constructs';
