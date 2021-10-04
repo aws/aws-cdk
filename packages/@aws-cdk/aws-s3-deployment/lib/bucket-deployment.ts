@@ -278,7 +278,7 @@ export class BucketDeployment extends CoreConstruct {
       uuid: this.renderSingletonUuid(props.memoryLimit, props.vpc),
       code: lambda.Code.fromAsset(path.join(__dirname, 'lambda')),
       layers: [new AwsCliLayer(this, 'AwsCliLayer')],
-      runtime: lambda.Runtime.PYTHON_3_6,
+      runtime: lambda.Runtime.PYTHON_3_7,
       environment: props.useEfs ? {
         MOUNT_PATH: mountPath,
       } : undefined,
