@@ -10,7 +10,7 @@ import { DockerImageAsset } from '../lib';
 
 /* eslint-disable quote-props */
 
-const DEMO_IMAGE_ASSET_HASH = 'fb6ad3362aa71538b0ce17454c243ca49731097121770c6921d7599b5c9d5e8d';
+const DEMO_IMAGE_ASSET_HASH = '8c1d9ca9f5d37b1c4870c13a9f855301bb42c1848dbcdd5edc8fe2c6c7261d48';
 
 const flags = { [cxapi.DOCKER_IGNORE_SUPPORT]: true };
 
@@ -29,11 +29,11 @@ describe('image asset', () => {
     expect(artifact.assets).toEqual([
       {
         repositoryName: 'aws-cdk/assets',
-        imageTag: 'fb6ad3362aa71538b0ce17454c243ca49731097121770c6921d7599b5c9d5e8d',
-        id: 'fb6ad3362aa71538b0ce17454c243ca49731097121770c6921d7599b5c9d5e8d',
+        imageTag: '8c1d9ca9f5d37b1c4870c13a9f855301bb42c1848dbcdd5edc8fe2c6c7261d48',
+        id: '8c1d9ca9f5d37b1c4870c13a9f855301bb42c1848dbcdd5edc8fe2c6c7261d48',
         packaging: 'container-image',
-        path: 'asset.fb6ad3362aa71538b0ce17454c243ca49731097121770c6921d7599b5c9d5e8d',
-        sourceHash: 'fb6ad3362aa71538b0ce17454c243ca49731097121770c6921d7599b5c9d5e8d',
+        path: 'asset.8c1d9ca9f5d37b1c4870c13a9f855301bb42c1848dbcdd5edc8fe2c6c7261d48',
+        sourceHash: '8c1d9ca9f5d37b1c4870c13a9f855301bb42c1848dbcdd5edc8fe2c6c7261d48',
       },
     ]);
 

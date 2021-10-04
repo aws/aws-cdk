@@ -2,11 +2,20 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
 import * as cdk from '@aws-cdk/core';
 import * as ecs from '../../lib';
+import * as path from 'path';
+import { DockerPlatform } from '@aws-cdk/aws-ecr-assets';
 
 const app = new cdk.App();
-const stack = new cdk.Stack(app, 'aws-ecs-integ');
 
-const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 2 });
+const env = {
+  region: process.env.CDK_DEFAULT_REGION,
+  account: process.env.CDK_DEFAULT_ACCOUNT,
+};
+
+const stack = new cdk.Stack(app, 'aws-ecs-integ', { env });
+
+// const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 2 });
+const vpc = ec2.Vpc.fromLookup(stack, 'Vpc', { isDefault: true })
 
 const cluster = new ecs.Cluster(stack, 'FargateCluster', { vpc });
 
@@ -15,11 +24,20 @@ const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef', {
   cpu: 512,
 });
 
+// taskDefinition.addContainer('web', {
+//   image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+//   portMappings: [{
+//     containerPort: 80,
+//     protocol: ecs.Protocol.TCP,
+//   }],
+// });
+
 taskDefinition.addContainer('web', {
-  image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+  image: ecs.ContainerImage.fromAsset(path.join(__dirname, '../demo-image'), {
+    platform: DockerPlatform.AMD_64,
+  }),
   portMappings: [{
-    containerPort: 80,
-    protocol: ecs.Protocol.TCP,
+    containerPort: 8000,
   }],
 });
 

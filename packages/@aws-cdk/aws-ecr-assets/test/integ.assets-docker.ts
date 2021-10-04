@@ -29,7 +29,6 @@ const asset2 = new assets.DockerImageAsset(stack, 'DockerImage2', {
 const asset3 = new assets.DockerImageAsset(stack, 'DockerImage3', {
   directory: path.join(__dirname, 'demo-image'),
   platform: DockerPlatform.ARM_64,
-  file: 'Dockerfile-arm64',
 });
 
 const user = new iam.User(stack, 'MyUser');
