@@ -18,8 +18,8 @@ ${pwd}/install.sh
 # dependency, not `@aws-cdk/cfnspec` itself).
 yarn lerna run build --stream     \
   --scope=@aws-cdk/cfnspec        \
-  --scope=cfn2ts                  \
-  --scope=ubergen                 \
+  --scope=@aws-cdk/cfn2ts         \
+  --scope=@aws-cdk/ubergen        \
   --include-dependencies
 
 # Run the cfnspec update
