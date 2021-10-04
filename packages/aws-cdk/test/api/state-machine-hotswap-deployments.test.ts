@@ -1,5 +1,4 @@
 import { StepFunctions } from 'aws-sdk';
-import { tryHotswapDeployment } from '../../lib/api/hotswap-deployments';
 import * as setup from './hotswap-test-setup';
 
 let mockUpdateMachineDefinition: (params: StepFunctions.Types.UpdateStateMachineInput) => StepFunctions.Types.UpdateStateMachineOutput;
@@ -7,9 +6,7 @@ let mockUpdateMachineDefinition: (params: StepFunctions.Types.UpdateStateMachine
 beforeEach(() => {
   setup.setupHotswapTests();
   mockUpdateMachineDefinition = jest.fn();
-  setup.mockSdkProvider.stubStepFunctions({
-    updateStateMachine: mockUpdateMachineDefinition,
-  });
+  setup.setUpdateStateMachineMock(mockUpdateMachineDefinition);
 });
 
 test('returns undefined when a new StateMachine is added to the Stack', async () => {
@@ -25,7 +22,7 @@ test('returns undefined when a new StateMachine is added to the Stack', async ()
   });
 
   // WHEN
-  const deployStackResult = await tryHotswapDeployment(setup.mockSdkProvider, {}, setup.currentCfnStack, cdkStackArtifact);
+  const deployStackResult = await setup.tryHotswapDeployment({}, cdkStackArtifact);
 
   // THEN
   expect(deployStackResult).toBeUndefined();
@@ -33,7 +30,7 @@ test('returns undefined when a new StateMachine is added to the Stack', async ()
 
 test('calls the updateStateMachine() API when it receives only a definitionString change without Fn::Join in a state machine', async () => {
   // GIVEN
-  setup.currentCfnStack.setTemplate({
+  setup.setTemplate({
     Resources: {
       Machine: {
         Type: 'AWS::StepFunctions::StateMachine',
@@ -59,7 +56,7 @@ test('calls the updateStateMachine() API when it receives only a definitionStrin
   });
 
   // WHEN
-  const deployStackResult = await tryHotswapDeployment(setup.mockSdkProvider, {}, setup.currentCfnStack, cdkStackArtifact);
+  const deployStackResult = await setup.tryHotswapDeployment({}, cdkStackArtifact);
 
   // THEN
   expect(deployStackResult).not.toBeUndefined();
@@ -71,7 +68,7 @@ test('calls the updateStateMachine() API when it receives only a definitionStrin
 
 test('calls the updateStateMachine() API when it receives only a definitionString change with Fn::Join in a state machine', async () => {
   // GIVEN
-  setup.currentCfnStack.setTemplate({
+  setup.setTemplate({
     Resources: {
       Machine: {
         Type: 'AWS::StepFunctions::StateMachine',
@@ -111,7 +108,7 @@ test('calls the updateStateMachine() API when it receives only a definitionStrin
   });
 
   // WHEN
-  const deployStackResult = await tryHotswapDeployment(setup.mockSdkProvider, {}, setup.currentCfnStack, cdkStackArtifact);
+  const deployStackResult = await setup.tryHotswapDeployment({}, cdkStackArtifact);
 
   // THEN
   expect(deployStackResult).not.toBeUndefined();
@@ -123,7 +120,7 @@ test('calls the updateStateMachine() API when it receives only a definitionStrin
 
 test('calls the updateStateMachine() API when it receives a change to the definitionString in a state machine that has no name', async () => {
   // GIVEN
-  setup.currentCfnStack.setTemplate({
+  setup.setTemplate({
     Resources: {
       Machine: {
         Type: 'AWS::StepFunctions::StateMachine',
@@ -161,8 +158,8 @@ test('calls the updateStateMachine() API when it receives a change to the defini
   });
 
   // WHEN
-  setup.currentCfnStackResources.push(setup.stackSummaryOf('Machine', 'AWS::StepFunctions::StateMachine', 'mock-machine-resource-id'));
-  const deployStackResult = await tryHotswapDeployment(setup.mockSdkProvider, {}, setup.currentCfnStack, cdkStackArtifact);
+  setup.pushStackResources(setup.stackSummaryOf('Machine', 'AWS::StepFunctions::StateMachine', 'mock-machine-resource-id'));
+  const deployStackResult = await setup.tryHotswapDeployment({}, cdkStackArtifact);
 
   // THEN
   expect(deployStackResult).not.toBeUndefined();
@@ -174,7 +171,7 @@ test('calls the updateStateMachine() API when it receives a change to the defini
 
 test('does not call the updateStateMachine() API when it receives a change to a parameter that is not the definitionString in a state machine', async () => {
   // GIVEN
-  setup.currentCfnStack.setTemplate({
+  setup.setTemplate({
     Resources: {
       Machine: {
         Type: 'AWS::StepFunctions::StateMachine',
@@ -218,7 +215,7 @@ test('does not call the updateStateMachine() API when it receives a change to a 
   });
 
   // WHEN
-  const deployStackResult = await tryHotswapDeployment(setup.mockSdkProvider, {}, setup.currentCfnStack, cdkStackArtifact);
+  const deployStackResult = await setup.tryHotswapDeployment({}, cdkStackArtifact);
 
   // THEN
   expect(deployStackResult).toBeUndefined();
@@ -227,7 +224,7 @@ test('does not call the updateStateMachine() API when it receives a change to a 
 
 test('does not call the updateStateMachine() API when a resource with type that is not AWS::StepFunctions::StateMachine but has the same properties is changed', async () => {
   // GIVEN
-  setup.currentCfnStack.setTemplate({
+  setup.setTemplate({
     Resources: {
       Machine: {
         Type: 'AWS::NotStepFunctions::NotStateMachine',
@@ -251,7 +248,7 @@ test('does not call the updateStateMachine() API when a resource with type that 
   });
 
   // WHEN
-  const deployStackResult = await tryHotswapDeployment(setup.mockSdkProvider, {}, setup.currentCfnStack, cdkStackArtifact);
+  const deployStackResult = await setup.tryHotswapDeployment({}, cdkStackArtifact);
 
   // THEN
   expect(deployStackResult).toBeUndefined();
@@ -260,7 +257,7 @@ test('does not call the updateStateMachine() API when a resource with type that 
 
 test('can correctly hotswap old style synth changes', async () => {
   // GIVEN
-  setup.currentCfnStack.setTemplate({
+  setup.setTemplate({
     Parameters: { AssetParam1: { Type: 'String' } },
     Resources: {
       SM: {
@@ -288,7 +285,7 @@ test('can correctly hotswap old style synth changes', async () => {
   });
 
   // WHEN
-  const deployStackResult = await tryHotswapDeployment(setup.mockSdkProvider, { AssetParam2: 'asset-param-2' }, setup.currentCfnStack, cdkStackArtifact);
+  const deployStackResult = await setup.tryHotswapDeployment({ AssetParam2: 'asset-param-2' }, cdkStackArtifact);
 
   // THEN
   expect(deployStackResult).not.toBeUndefined();

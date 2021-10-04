@@ -3,15 +3,18 @@ import { CloudFormation } from 'aws-sdk';
 import * as lambda from 'aws-sdk/clients/lambda';
 import * as stepfunctions from 'aws-sdk/clients/stepfunctions';
 import { testStack, TestStackArtifact } from '../util';
+import { Template } from '../../lib/api/util/cloudformation';
 import { MockSdkProvider } from '../util/mock-sdk';
 import { FakeCloudformationStack } from './fake-cloudformation-stack';
+import { DeployStackResult } from '../../lib';
+import * as deployments from '../../lib/api/hotswap-deployments';
 
 const STACK_NAME = 'withouterrors';
 export const STACK_ID = 'stackId';
 
-export let mockSdkProvider: MockSdkProvider;
-export let currentCfnStack: FakeCloudformationStack;
-export const currentCfnStackResources: CloudFormation.StackResourceSummary[] = [];
+let mockSdkProvider: MockSdkProvider;
+let currentCfnStack: FakeCloudformationStack;
+const currentCfnStackResources: CloudFormation.StackResourceSummary[] = [];
 
 export function setupHotswapTests() {
   jest.resetAllMocks();
@@ -54,6 +57,14 @@ export function cdkStackArtifactOf(testStackArtifact: Partial<TestStackArtifact>
   });
 }
 
+export function pushStackResources(...items: CloudFormation.StackResourceSummary[]) {
+    currentCfnStackResources.push(...items);
+}
+
+export function setTemplate(template: Template) {
+    currentCfnStack.setTemplate(template);
+}
+
 export function stackSummaryOf(logicalId: string, resourceType: string, physicalResourceId: string): CloudFormation.StackResourceSummary {
   return {
     LogicalResourceId: logicalId,
@@ -62,4 +73,11 @@ export function stackSummaryOf(logicalId: string, resourceType: string, physical
     ResourceStatus: 'CREATE_COMPLETE',
     LastUpdatedTimestamp: new Date(),
   };
+}
+
+export async function tryHotswapDeployment(
+  assetParams: { [key: string]: string },
+  stackArtifact: cxapi.CloudFormationStackArtifact,
+): Promise<DeployStackResult | undefined> {
+    return await deployments.tryHotswapDeployment(mockSdkProvider, assetParams, currentCfnStack, stackArtifact);
 }

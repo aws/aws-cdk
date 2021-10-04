@@ -1,5 +1,4 @@
 import { Lambda } from 'aws-sdk';
-import { tryHotswapDeployment } from '../../lib/api/hotswap-deployments';
 import * as setup from './hotswap-test-setup';
 
 let mockUpdateLambdaCode: (params: Lambda.Types.UpdateFunctionCodeRequest) => Lambda.Types.FunctionConfiguration;
@@ -7,9 +6,7 @@ let mockUpdateLambdaCode: (params: Lambda.Types.UpdateFunctionCodeRequest) => La
 beforeEach(() => {
   setup.setupHotswapTests();
   mockUpdateLambdaCode = jest.fn();
-  setup.mockSdkProvider.stubLambda({
-    updateFunctionCode: mockUpdateLambdaCode,
-  });
+  setup.setUpdateFunctionCodeMock(mockUpdateLambdaCode);
 });
 
 test('returns undefined when a new Lambda function is added to the Stack', async () => {
@@ -25,7 +22,7 @@ test('returns undefined when a new Lambda function is added to the Stack', async
   });
 
   // WHEN
-  const deployStackResult = await tryHotswapDeployment(setup.mockSdkProvider, {}, setup.currentCfnStack, cdkStackArtifact);
+  const deployStackResult = await setup.tryHotswapDeployment({}, cdkStackArtifact);
 
   // THEN
   expect(deployStackResult).toBeUndefined();
@@ -33,7 +30,7 @@ test('returns undefined when a new Lambda function is added to the Stack', async
 
 test('calls the updateLambdaCode() API when it receives only a code difference in a Lambda function', async () => {
   // GIVEN
-  setup.currentCfnStack.setTemplate({
+  setup.setTemplate({
     Resources: {
       Func: {
         Type: 'AWS::Lambda::Function',
@@ -71,7 +68,7 @@ test('calls the updateLambdaCode() API when it receives only a code difference i
   });
 
   // WHEN
-  const deployStackResult = await tryHotswapDeployment(setup.mockSdkProvider, {}, setup.currentCfnStack, cdkStackArtifact);
+  const deployStackResult = await setup.tryHotswapDeployment({}, cdkStackArtifact);
 
   // THEN
   expect(deployStackResult).not.toBeUndefined();
@@ -84,7 +81,7 @@ test('calls the updateLambdaCode() API when it receives only a code difference i
 
 test('calls the updateLambdaCode() API when it receives a code difference in a Lambda function with no name', async () => {
   // GIVEN
-  setup.currentCfnStack.setTemplate({
+  setup.setTemplate({
     Resources: {
       Func: {
         Type: 'AWS::Lambda::Function',
@@ -120,8 +117,8 @@ test('calls the updateLambdaCode() API when it receives a code difference in a L
   });
 
   // WHEN
-  setup.currentCfnStackResources.push(setup.stackSummaryOf('Func', 'AWS::Lambda::Function', 'mock-function-resource-id'));
-  const deployStackResult = await tryHotswapDeployment(setup.mockSdkProvider, {}, setup.currentCfnStack, cdkStackArtifact);
+  setup.pushStackResources(setup.stackSummaryOf('Func', 'AWS::Lambda::Function', 'mock-function-resource-id'));
+  const deployStackResult = await setup.tryHotswapDeployment({}, cdkStackArtifact);
 
   // THEN
   expect(deployStackResult).not.toBeUndefined();
@@ -134,7 +131,7 @@ test('calls the updateLambdaCode() API when it receives a code difference in a L
 
 test('does not call the updateLambdaCode() API when it receives a change that is not a code difference in a Lambda function', async () => {
   // GIVEN
-  setup.currentCfnStack.setTemplate({
+  setup.setTemplate({
     Resources: {
       Func: {
         Type: 'AWS::Lambda::Function',
@@ -166,7 +163,7 @@ test('does not call the updateLambdaCode() API when it receives a change that is
   });
 
   // WHEN
-  const deployStackResult = await tryHotswapDeployment(setup.mockSdkProvider, {}, setup.currentCfnStack, cdkStackArtifact);
+  const deployStackResult = await setup.tryHotswapDeployment({}, cdkStackArtifact);
 
   // THEN
   expect(deployStackResult).toBeUndefined();
@@ -175,7 +172,7 @@ test('does not call the updateLambdaCode() API when it receives a change that is
 
 test("correctly evaluates the function's name when it references a different resource from the template", async () => {
   // GIVEN
-  setup.currentCfnStack.setTemplate({
+  setup.setTemplate({
     Resources: {
       Bucket: {
         Type: 'AWS::S3::Bucket',
@@ -201,7 +198,7 @@ test("correctly evaluates the function's name when it references a different res
       },
     },
   });
-  setup.currentCfnStackResources.push(setup.stackSummaryOf('Bucket', 'AWS::S3::Bucket', 'mybucket'));
+  setup.pushStackResources(setup.stackSummaryOf('Bucket', 'AWS::S3::Bucket', 'mybucket'));
   const cdkStackArtifact = setup.cdkStackArtifactOf({
     template: {
       Resources: {
@@ -232,7 +229,7 @@ test("correctly evaluates the function's name when it references a different res
   });
 
   // WHEN
-  const deployStackResult = await tryHotswapDeployment(setup.mockSdkProvider, {}, setup.currentCfnStack, cdkStackArtifact);
+  const deployStackResult = await setup.tryHotswapDeployment({}, cdkStackArtifact);
 
   // THEN
   expect(deployStackResult).not.toBeUndefined();
@@ -245,7 +242,7 @@ test("correctly evaluates the function's name when it references a different res
 
 test("correctly falls back to taking the function's name from the current stack if it can't evaluate it in the template", async () => {
   // GIVEN
-  setup.currentCfnStack.setTemplate({
+  setup.setTemplate({
     Parameters: {
       Param1: { Type: 'String' },
       AssetBucketParam: { Type: 'String' },
@@ -266,7 +263,7 @@ test("correctly falls back to taking the function's name from the current stack 
       },
     },
   });
-  setup.currentCfnStackResources.push(setup.stackSummaryOf('Func', 'AWS::Lambda::Function', 'my-function'));
+  setup.pushStackResources(setup.stackSummaryOf('Func', 'AWS::Lambda::Function', 'my-function'));
   const cdkStackArtifact = setup.cdkStackArtifactOf({
     template: {
       Parameters: {
@@ -292,9 +289,7 @@ test("correctly falls back to taking the function's name from the current stack 
   });
 
   // WHEN
-  const deployStackResult = await tryHotswapDeployment(setup.mockSdkProvider, {
-    AssetBucketParam: 'asset-bucket',
-  }, setup.currentCfnStack, cdkStackArtifact);
+  const deployStackResult = await setup.tryHotswapDeployment({ AssetBucketParam: 'asset-bucket' }, cdkStackArtifact);
 
   // THEN
   expect(deployStackResult).not.toBeUndefined();
@@ -307,7 +302,7 @@ test("correctly falls back to taking the function's name from the current stack 
 
 test('does not call the updateLambdaCode() API when a resource with type that is not AWS::Lambda::Function but has the same properties is changed', async () => {
   // GIVEN
-  setup.currentCfnStack.setTemplate({
+  setup.setTemplate({
     Resources: {
       Func: {
         Type: 'AWS::NotLambda::NotAFunction',
@@ -343,7 +338,7 @@ test('does not call the updateLambdaCode() API when a resource with type that is
   });
 
   // WHEN
-  const deployStackResult = await tryHotswapDeployment(setup.mockSdkProvider, {}, setup.currentCfnStack, cdkStackArtifact);
+  const deployStackResult = await setup.tryHotswapDeployment({}, cdkStackArtifact);
 
   // THEN
   expect(deployStackResult).toBeUndefined();
@@ -352,7 +347,7 @@ test('does not call the updateLambdaCode() API when a resource with type that is
 
 test("will not perform a hotswap deployment if it cannot find a Ref target (outside the function's name)", async () => {
   // GIVEN
-  setup.currentCfnStack.setTemplate({
+  setup.setTemplate({
     Parameters: {
       Param1: { Type: 'String' },
     },
@@ -371,7 +366,7 @@ test("will not perform a hotswap deployment if it cannot find a Ref target (outs
       },
     },
   });
-  setup.currentCfnStackResources.push(setup.stackSummaryOf('Func', 'AWS::Lambda::Function', 'my-func'));
+  setup.pushStackResources(setup.stackSummaryOf('Func', 'AWS::Lambda::Function', 'my-func'));
   const cdkStackArtifact = setup.cdkStackArtifactOf({
     template: {
       Parameters: {
@@ -396,13 +391,13 @@ test("will not perform a hotswap deployment if it cannot find a Ref target (outs
 
   // THEN
   await expect(() =>
-    tryHotswapDeployment(setup.mockSdkProvider, {}, setup.currentCfnStack, cdkStackArtifact),
+    setup.tryHotswapDeployment({}, cdkStackArtifact),
   ).rejects.toThrow(/Parameter or resource 'Param1' could not be found for evaluation/);
 });
 
 test("will not perform a hotswap deployment if it doesn't know how to handle a specific attribute (outside the function's name)", async () => {
   // GIVEN
-  setup.currentCfnStack.setTemplate({
+  setup.setTemplate({
     Resources: {
       Bucket: {
         Type: 'AWS::S3::Bucket',
@@ -421,7 +416,7 @@ test("will not perform a hotswap deployment if it doesn't know how to handle a s
       },
     },
   });
-  setup.currentCfnStackResources.push(
+  setup.pushStackResources(
     setup.stackSummaryOf('Func', 'AWS::Lambda::Function', 'my-func'),
     setup.stackSummaryOf('Bucket', 'AWS::S3::Bucket', 'my-bucket'),
   );
@@ -449,6 +444,6 @@ test("will not perform a hotswap deployment if it doesn't know how to handle a s
 
   // THEN
   await expect(() =>
-    tryHotswapDeployment(setup.mockSdkProvider, {}, setup.currentCfnStack, cdkStackArtifact),
+    setup.tryHotswapDeployment({}, cdkStackArtifact),
   ).rejects.toThrow("We don't support the 'UnknownAttribute' attribute of the 'AWS::S3::Bucket' resource. This is a CDK limitation. Please report it at https://github.com/aws/aws-cdk/issues/new/choose");
 });

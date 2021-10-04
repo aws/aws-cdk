@@ -1,5 +1,4 @@
 import { Lambda, StepFunctions } from 'aws-sdk';
-import { tryHotswapDeployment } from '../../lib/api/hotswap-deployments';
 import * as setup from './hotswap-test-setup';
 
 let mockUpdateLambdaCode: (params: Lambda.Types.UpdateFunctionCodeRequest) => Lambda.Types.FunctionConfiguration;
@@ -15,7 +14,7 @@ beforeEach(() => {
 
 test('returns a deployStackResult with noOp=true when it receives an empty set of changes', async () => {
   // WHEN
-  const deployStackResult = await tryHotswapDeployment(setup.mockSdkProvider, {}, setup.currentCfnStack, setup.cdkStackArtifactOf());
+  const deployStackResult = await setup.tryHotswapDeployment({}, setup.cdkStackArtifactOf());
 
   // THEN
   expect(deployStackResult).not.toBeUndefined();
@@ -25,7 +24,7 @@ test('returns a deployStackResult with noOp=true when it receives an empty set o
 
 test('Resources that are not lambdas or step functions result in a full deployment', async () => {
   // GIVEN
-  setup.currentCfnStack.setTemplate({
+  setup.setTemplate({
     Resources: {
       SomethingElse: {
         Type: 'AWS::CloudFormation::SomethingElse',
@@ -49,7 +48,7 @@ test('Resources that are not lambdas or step functions result in a full deployme
   });
 
   // WHEN
-  const deployStackResult = await tryHotswapDeployment(setup.mockSdkProvider, {}, setup.currentCfnStack, cdkStackArtifact);
+  const deployStackResult = await setup.tryHotswapDeployment({}, cdkStackArtifact);
 
   // THEN
   expect(deployStackResult).toBeUndefined();
@@ -59,7 +58,7 @@ test('Resources that are not lambdas or step functions result in a full deployme
 
 test('Resources that are not lambdas or step functions result in a full deployment even when a hotswappable change is present', async () => {
   // GIVEN
-  setup.currentCfnStack.setTemplate({
+  setup.setTemplate({
     Resources: {
       Func: {
         Type: 'AWS::Lambda::Function',
@@ -109,7 +108,7 @@ test('Resources that are not lambdas or step functions result in a full deployme
   });
 
   // WHEN
-  const deployStackResult = await tryHotswapDeployment(setup.mockSdkProvider, {}, setup.currentCfnStack, cdkStackArtifact);
+  const deployStackResult = await setup.tryHotswapDeployment({}, cdkStackArtifact);
 
   // THEN
   expect(deployStackResult).toBeUndefined();
@@ -120,7 +119,7 @@ test('Resources that are not lambdas or step functions result in a full deployme
 
 test('changes only to CDK::Metadata result in a noOp', async () => {
   // GIVEN
-  setup.currentCfnStack.setTemplate({
+  setup.setTemplate({
     Resources: {
       MetaData: {
         Type: 'AWS::CDK::MetaData',
@@ -144,7 +143,7 @@ test('changes only to CDK::Metadata result in a noOp', async () => {
   });
 
   // WHEN
-  const deployStackResult = await tryHotswapDeployment(setup.mockSdkProvider, {}, setup.currentCfnStack, cdkStackArtifact);
+  const deployStackResult = await setup.tryHotswapDeployment({}, cdkStackArtifact);
 
   // THEN
   expect(deployStackResult).not.toBeUndefined();
@@ -155,7 +154,7 @@ test('changes only to CDK::Metadata result in a noOp', async () => {
 
 test('resource deletions require full deployments', async () => {
   // GIVEN
-  setup.currentCfnStack.setTemplate({
+  setup.setTemplate({
     Resources: {
       Machine: {
         Type: 'AWS::StepFunctions::StateMachine',
@@ -181,7 +180,7 @@ test('resource deletions require full deployments', async () => {
   });
 
   // WHEN
-  const deployStackResult = await tryHotswapDeployment(setup.mockSdkProvider, {}, setup.currentCfnStack, cdkStackArtifact);
+  const deployStackResult = await setup.tryHotswapDeployment({}, cdkStackArtifact);
 
   // THEN
   expect(deployStackResult).toBeUndefined();
@@ -191,7 +190,7 @@ test('resource deletions require full deployments', async () => {
 
 test('can correctly reference AWS::Partition in hotswappable changes', async () => {
   // GIVEN
-  setup.currentCfnStack.setTemplate({
+  setup.setTemplate({
     Resources: {
       Func: {
         Type: 'AWS::Lambda::Function',
@@ -247,7 +246,7 @@ test('can correctly reference AWS::Partition in hotswappable changes', async () 
   });
 
   // WHEN
-  const deployStackResult = await tryHotswapDeployment(setup.mockSdkProvider, {}, setup.currentCfnStack, cdkStackArtifact);
+  const deployStackResult = await setup.tryHotswapDeployment({}, cdkStackArtifact);
 
   // THEN
   expect(deployStackResult).not.toBeUndefined();
