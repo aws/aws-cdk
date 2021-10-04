@@ -1,6 +1,5 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
-import { Annotations } from '.';
 import { addCustomSynthesis, ICustomSynthesis } from './private/synthesis';
 import { TreeMetadata } from './private/tree-metadata';
 import { Stage } from './stage';
@@ -110,10 +109,6 @@ export class App extends Stage {
     super(undefined as any, '', {
       outdir: props.outdir ?? process.env[cxapi.OUTDIR_ENV],
     });
-
-    if (process.env[cxapi.OUTDIR_ENV] && props.outdir) {
-      Annotations.of(this).addWarning('Do not pass the \'outdir\' property when synthesizing via the CDK CLI. Use the CLI\'s \'--output\' flag only.');
-    }
 
     Object.defineProperty(this, APP_SYMBOL, { value: true });
 
