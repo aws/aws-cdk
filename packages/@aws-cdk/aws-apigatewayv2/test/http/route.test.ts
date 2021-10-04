@@ -3,7 +3,9 @@ import { Stack, App } from '@aws-cdk/core';
 import {
   HttpApi, HttpAuthorizer, HttpAuthorizerType, HttpConnectionType, HttpIntegrationType, HttpMethod, HttpRoute,
   HttpRouteAuthorizerBindOptions, HttpRouteAuthorizerConfig, HttpRouteIntegrationConfig, HttpRouteKey, IHttpRouteAuthorizer, IHttpRouteIntegration,
-  MappingValue, ParameterMapping, PayloadFormatVersion,
+  MappingValue,
+  ParameterMapping,
+  PayloadFormatVersion,
 } from '../../lib';
 
 describe('HttpRoute', () => {
@@ -232,7 +234,7 @@ describe('HttpRoute', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGatewayV2::Integration', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Integration', {
       IntegrationType: 'HTTP_PROXY',
       IntegrationMethod: 'ANY',
       IntegrationUri: 'some-target-arn',
@@ -243,7 +245,7 @@ describe('HttpRoute', () => {
       },
     });
 
-    expect(stack).not.toHaveResource('AWS::ApiGatewayV2::VpcLink');
+    Template.fromStack(stack).resourceCountIs('AWS::ApiGatewayV2::VpcLink', 0);
   });
 
   test('can create route with an authorizer attached', () => {
