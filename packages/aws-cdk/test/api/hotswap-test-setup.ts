@@ -1,5 +1,7 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import { CloudFormation } from 'aws-sdk';
+import * as lambda from 'aws-sdk/clients/lambda';
+import * as stepfunctions from 'aws-sdk/clients/stepfunctions';
 import { testStack, TestStackArtifact } from '../util';
 import { MockSdkProvider } from '../util/mock-sdk';
 import { FakeCloudformationStack } from './fake-cloudformation-stack';
@@ -30,6 +32,18 @@ export function setupHotswapTests() {
   currentCfnStack = new FakeCloudformationStack({
     stackName: STACK_NAME,
     stackId: STACK_ID,
+  });
+}
+
+export function setUpdateFunctionCodeMock(mockUpdateLambdaCode: (input: lambda.UpdateFunctionCodeRequest) => lambda.FunctionConfiguration) {
+  mockSdkProvider.stubLambda({
+    updateFunctionCode: mockUpdateLambdaCode,
+  });
+}
+
+export function setUpdateStateMachineMock(mockUpdateMachineDefinition: (input: stepfunctions.UpdateStateMachineInput) => stepfunctions.UpdateStateMachineOutput) {
+  mockSdkProvider.stubStepFunctions({
+    updateStateMachine: mockUpdateMachineDefinition,
   });
 }
 

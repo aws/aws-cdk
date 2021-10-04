@@ -8,13 +8,9 @@ let mockUpdateMachineDefinition: (params: StepFunctions.Types.UpdateStateMachine
 beforeEach(() => {
   setup.setupHotswapTests();
   mockUpdateLambdaCode = jest.fn();
-  setup.mockSdkProvider.stubLambda({
-    updateFunctionCode: mockUpdateLambdaCode,
-  });
   mockUpdateMachineDefinition = jest.fn();
-  setup.mockSdkProvider.stubStepFunctions({
-    updateStateMachine: mockUpdateMachineDefinition,
-  });
+  setup.setUpdateFunctionCodeMock(mockUpdateLambdaCode);
+  setup.setUpdateStateMachineMock(mockUpdateMachineDefinition);
 });
 
 test('returns a deployStackResult with noOp=true when it receives an empty set of changes', async () => {
