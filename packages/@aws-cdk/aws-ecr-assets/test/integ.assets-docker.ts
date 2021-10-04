@@ -22,8 +22,8 @@ const asset2 = new assets.DockerImageAsset(stack, 'DockerImage2', {
 
 /**
  * build the image for arm64. On image built, validate with
- * `docker inspect ${ImageUri3} | jq -r '. | {os: .[0].Os, arch: .[0].Architecture }'`
- * and it should return: { "os": "linux", "arch": "arm64" }
+ * `docker inspect ${ImageUri3} --format='{"os": "{{.Os}}", "arch": "{{.Architecture}}" }'`
+ * and it should return: {"os": "linux", "arch": "arm64" }
  *
  */
 const asset3 = new assets.DockerImageAsset(stack, 'DockerImage3', {
