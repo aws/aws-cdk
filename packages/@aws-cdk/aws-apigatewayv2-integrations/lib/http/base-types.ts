@@ -1,5 +1,4 @@
-import { HttpMethod, IVpcLink } from '@aws-cdk/aws-apigatewayv2';
-import { ParameterMapping } from '@aws-cdk/aws-apigatewayv2/lib/parameter-mapping';
+import { HttpMethod, IVpcLink, ParameterMapping } from '@aws-cdk/aws-apigatewayv2';
 
 /**
  * Base options for private integration

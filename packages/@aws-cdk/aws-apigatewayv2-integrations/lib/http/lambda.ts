@@ -4,8 +4,8 @@ import {
   HttpRouteIntegrationConfig,
   IHttpRouteIntegration,
   PayloadFormatVersion,
+  ParameterMapping,
 } from '@aws-cdk/aws-apigatewayv2';
-import { ParameterMapping } from '@aws-cdk/aws-apigatewayv2/lib/parameter-mapping';
 import { ServicePrincipal } from '@aws-cdk/aws-iam';
 import { IFunction } from '@aws-cdk/aws-lambda';
 import { Names, Stack } from '@aws-cdk/core';

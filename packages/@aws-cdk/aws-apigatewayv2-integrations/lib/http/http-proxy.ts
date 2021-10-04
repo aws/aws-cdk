@@ -4,9 +4,9 @@ import {
   HttpRouteIntegrationConfig,
   HttpMethod,
   IHttpRouteIntegration,
+  ParameterMapping,
   PayloadFormatVersion,
 } from '@aws-cdk/aws-apigatewayv2';
-import { ParameterMapping } from '@aws-cdk/aws-apigatewayv2/lib/parameter-mapping';
 
 /**
  * Properties to initialize a new `HttpProxyIntegration`.

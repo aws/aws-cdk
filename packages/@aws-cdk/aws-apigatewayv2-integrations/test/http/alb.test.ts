@@ -1,6 +1,5 @@
 import { Template } from '@aws-cdk/assertions';
-import { HttpApi, HttpMethod, HttpRoute, HttpRouteKey, VpcLink } from '@aws-cdk/aws-apigatewayv2';
-import { MappingValue, ParameterMapping } from '@aws-cdk/aws-apigatewayv2/lib/parameter-mapping';
+import { HttpApi, HttpMethod, HttpRoute, HttpRouteKey, VpcLink, ParameterMapping, MappingValue } from '@aws-cdk/aws-apigatewayv2';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
 import { Stack } from '@aws-cdk/core';
