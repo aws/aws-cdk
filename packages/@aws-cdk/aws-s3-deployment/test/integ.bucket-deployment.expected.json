@@ -352,7 +352,7 @@
             "Ref": "DeployMeAwsCliLayer5F9219E9"
           }
         ],
-        "Runtime": "python3.6",
+        "Runtime": "python3.7",
         "Timeout": 900
       },
       "DependsOn": [
@@ -1495,7 +1495,7 @@
             "Ref": "DeployMeWithEfsStorageAwsCliLayer1619A3EE"
           }
         ],
-        "Runtime": "python3.6",
+        "Runtime": "python3.7",
         "Timeout": 900,
         "VpcConfig": {
           "SecurityGroupIds": [

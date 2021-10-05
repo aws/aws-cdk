@@ -644,6 +644,18 @@ new tasks.EmrCreateCluster(this, 'Create Cluster', {
 });
 ```
 
+If you want to run multiple steps in [parallel](https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-concurrent-steps.html),
+you can specify the `stepConcurrencyLevel` property. The concurrency range is between 1
+and 256 inclusive, where the default concurrency of 1 means no step concurrency is allowed.
+`stepConcurrencyLevel` requires the EMR release label to be 5.28.0 or above.
+
+```ts
+new tasks.EmrCreateCluster(this, 'Create Cluster', {
+  // ...
+  stepConcurrencyLevel: 10,
+});
+```
+
 ### Termination Protection
 
 Locks a cluster (job flow) so the EC2 instances in the cluster cannot be

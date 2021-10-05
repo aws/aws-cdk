@@ -43,7 +43,7 @@ const metric = new Metric({
   dimensionsMap: {
     HostedZoneId: hostedZone.hostedZoneId
   }
-})
+});
 ```
 
 ### Instantiating a new Metric object
@@ -73,7 +73,7 @@ const allProblems = new MathExpression({
     errors: myConstruct.metricErrors(),
     faults: myConstruct.metricFaults(),
   }
-})
+});
 ```
 
 You can use `MathExpression` objects like any other metric, including using
@@ -86,8 +86,24 @@ const problemPercentage = new MathExpression({
     problems: allProblems,
     invocations: myConstruct.metricInvocations()
   }
-})
+});
 ```
+
+### Search Expressions
+
+Math expressions also support search expressions. For example, the following
+search expression returns all CPUUtilization metrics that it finds, with the
+graph showing the Average statistic with an aggregation period of 5 minutes:
+
+```ts
+const cpuUtilization = new MathExpression({
+  expression: "SEARCH('{AWS/EC2,InstanceId} MetricName=\"CPUUtilization\"', 'Average', 300)"
+});
+```
+
+Cross-account and cross-region search expressions are also supported. Use
+the `searchAccount` and `searchRegion` properties to specify the account
+and/or region to evaluate the search expression against.
 
 ### Aggregation
 

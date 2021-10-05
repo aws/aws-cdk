@@ -82,10 +82,10 @@ describe('Template', () => {
       const inspect = Template.fromStack(stack);
       inspect.resourceCountIs('Foo::Bar', 1);
 
-      expect(() => inspect.resourceCountIs('Foo::Bar', 0)).toThrow(/has 1 resource of type Foo::Bar/);
-      expect(() => inspect.resourceCountIs('Foo::Bar', 2)).toThrow(/has 1 resource of type Foo::Bar/);
+      expect(() => inspect.resourceCountIs('Foo::Bar', 0)).toThrow('Expected 0 resources of type Foo::Bar but found 1');
+      expect(() => inspect.resourceCountIs('Foo::Bar', 2)).toThrow('Expected 2 resources of type Foo::Bar but found 1');
 
-      expect(() => inspect.resourceCountIs('Foo::Baz', 1)).toThrow(/has 0 resource of type Foo::Baz/);
+      expect(() => inspect.resourceCountIs('Foo::Baz', 1)).toThrow('Expected 1 resources of type Foo::Baz but found 0');
     });
 
     test('no resource', () => {
@@ -94,7 +94,7 @@ describe('Template', () => {
       const inspect = Template.fromStack(stack);
       inspect.resourceCountIs('Foo::Bar', 0);
 
-      expect(() => inspect.resourceCountIs('Foo::Bar', 1)).toThrow(/has 0 resource of type Foo::Bar/);
+      expect(() => inspect.resourceCountIs('Foo::Bar', 1)).toThrow('Expected 1 resources of type Foo::Bar but found 0');
     });
   });
 
@@ -132,7 +132,7 @@ describe('Template', () => {
             Properties: { baz: 'waldo' },
           },
         },
-      })).toThrowError();
+      })).toThrowError(/Expected waldo but received qux at \/Resources\/Foo\/Properties\/baz/);
     });
   });
 

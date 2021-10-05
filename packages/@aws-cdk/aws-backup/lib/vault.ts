@@ -1,7 +1,7 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as sns from '@aws-cdk/aws-sns';
-import { IResource, Names, RemovalPolicy, Resource, Stack } from '@aws-cdk/core';
+import { IResource, Lazy, Names, RemovalPolicy, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnBackupVault } from './backup.generated';
 
@@ -198,6 +198,8 @@ export class BackupVault extends BackupVaultBase {
   public readonly backupVaultName: string;
   public readonly backupVaultArn: string;
 
+  private readonly accessPolicy: iam.PolicyDocument;
+
   constructor(scope: Construct, id: string, props: BackupVaultProps = {}) {
     super(scope, id);
 
@@ -214,23 +216,14 @@ export class BackupVault extends BackupVaultBase {
       props.notificationTopic.grantPublish(new iam.ServicePrincipal('backup.amazonaws.com'));
     }
 
-    const accessPolicy = props.accessPolicy ?? new iam.PolicyDocument();
+    this.accessPolicy = props.accessPolicy ?? new iam.PolicyDocument();
     if (props.blockRecoveryPointDeletion) {
-      accessPolicy.addStatements(new iam.PolicyStatement({
-        effect: iam.Effect.DENY,
-        actions: [
-          'backup:DeleteRecoveryPoint',
-          'backup:UpdateRecoveryPointLifecycle',
-        ],
-        principals: [new iam.AnyPrincipal()],
-        resources: ['*'],
-      }),
-      );
+      this.blockRecoveryPointDeletion();
     }
 
     const vault = new CfnBackupVault(this, 'Resource', {
       backupVaultName: props.backupVaultName || this.uniqueVaultName(),
-      accessPolicy: accessPolicy.toJSON(),
+      accessPolicy: Lazy.any({ produce: () => this.accessPolicy.toJSON() }),
       encryptionKeyArn: props.encryptionKey && props.encryptionKey.keyArn,
       notifications,
     });
@@ -238,6 +231,29 @@ export class BackupVault extends BackupVaultBase {
 
     this.backupVaultName = vault.attrBackupVaultName;
     this.backupVaultArn = vault.attrBackupVaultArn;
+  }
+
+  /**
+   * Adds a statement to the vault access policy
+   */
+  public addToAccessPolicy(statement: iam.PolicyStatement) {
+    this.accessPolicy.addStatements(statement);
+  }
+
+  /**
+   * Adds a statement to the vault access policy that prevents anyone
+   * from deleting a recovery point.
+   */
+  public blockRecoveryPointDeletion() {
+    this.addToAccessPolicy(new iam.PolicyStatement({
+      effect: iam.Effect.DENY,
+      actions: [
+        'backup:DeleteRecoveryPoint',
+        'backup:UpdateRecoveryPointLifecycle',
+      ],
+      principals: [new iam.AnyPrincipal()],
+      resources: ['*'],
+    }));
   }
 
   private uniqueVaultName() {

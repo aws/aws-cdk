@@ -72,7 +72,10 @@
             "Arn"
           ]
         },
-        "Principal": "config.amazonaws.com"
+        "Principal": "config.amazonaws.com",
+        "SourceAccount": {
+          "Ref": "AWS::AccountId"
+        }
       }
     },
     "Custom8166710A": {

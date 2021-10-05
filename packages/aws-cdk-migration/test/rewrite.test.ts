@@ -88,4 +88,52 @@ describe(rewriteImports, () => {
 
     console.log('Look! I did something!');`);
   });
+
+  test('correctly rewrites Cfn imports', () => {
+    // Codestar example
+    const codestar = rewriteImports(`
+    // something before
+    import * as codestar from './codestar.generated';
+    import { CfnY } from '../codestar.generated';
+    import { CfnX } from '../lib/codestar.generated';
+    // something after
+
+    console.log('Look! I did something!');`, 'subject.ts', {
+      rewriteCfnImports: true,
+      packageUnscopedName: 'aws-codestar',
+    });
+
+    expect(codestar).toBe(`
+    // something before
+    import * as codestar from 'aws-cdk-lib/aws-codestar';
+    import { CfnY } from 'aws-cdk-lib/aws-codestar';
+    import { CfnX } from 'aws-cdk-lib/aws-codestar';
+    // something after
+
+    console.log('Look! I did something!');`);
+  });
+
+  test('correctly rewrites Cfn imports from an alpha module', () => {
+    const customModules = {
+      '@aws-cdk/aws-kinesisfirehose': 'aws-kinesisfirehose-alpha',
+    };
+    const output = rewriteImports(`
+    // something before
+    import * as firehose from '@aws-cdk/aws-kinesisfirehose';
+    import { CfnDeliveryStream } from '@aws-cdk/aws-kinesisfirehose';
+    // something after
+
+    console.log('Look! I did something!');`, 'subject.ts', {
+      rewriteCfnImports: true,
+      customModules: customModules,
+    });
+
+    expect(output).toBe(`
+    // something before
+    import * as firehose from 'aws-kinesisfirehose-alpha';
+    import { CfnDeliveryStream } from 'aws-cdk-lib/aws-kinesisfirehose';
+    // something after
+
+    console.log('Look! I did something!');`);
+  });
 });

@@ -1267,7 +1267,7 @@
             "Ref": "EnvFileDeploymentAwsCliLayerA8FC897D"
           }
         ],
-        "Runtime": "python3.6",
+        "Runtime": "python3.7",
         "Timeout": 900
       },
       "DependsOn": [

@@ -1,13 +1,8 @@
-import { StackInspector } from '../vendored/assert';
 import { formatFailure, matchSection } from './section';
+import { Resource, Template } from './template';
 
-// Partial type for CloudFormation Resource
-type Resource = {
-  Type: string;
-}
-
-export function findResources(inspector: StackInspector, type: string, props: any = {}): { [key: string]: { [key: string]: any } } {
-  const section: { [key: string] : Resource } = inspector.value.Resources;
+export function findResources(template: Template, type: string, props: any = {}): { [key: string]: { [key: string]: any } } {
+  const section = template.Resources;
   const result = matchSection(filterType(section, type), props);
 
   if (!result.match) {
@@ -17,8 +12,8 @@ export function findResources(inspector: StackInspector, type: string, props: an
   return result.matches;
 }
 
-export function hasResource(inspector: StackInspector, type: string, props: any): string | void {
-  const section: { [key: string]: Resource } = inspector.value.Resources;
+export function hasResource(template: Template, type: string, props: any): string | void {
+  const section = template.Resources;
   const result = matchSection(filterType(section, type), props);
 
   if (result.match) {
@@ -33,6 +28,13 @@ export function hasResource(inspector: StackInspector, type: string, props: any)
     `Template has ${result.analyzedCount} resources with type ${type}, but none match as expected.`,
     formatFailure(result.closestResult),
   ].join('\n');
+}
+
+export function countResources(template: Template, type: string): number {
+  const section = template.Resources;
+  const types = filterType(section, type);
+
+  return Object.entries(types).length;
 }
 
 function filterType(section: { [key: string]: Resource }, type: string): { [key: string]: Resource } {

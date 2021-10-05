@@ -9,7 +9,8 @@ import * as core from '@aws-cdk/core';
 import * as cr from '@aws-cdk/custom-resources';
 import * as constructs from 'constructs';
 import { addressOf } from 'constructs/lib/private/uniqueid';
-import { CfnCluster, KafkaVersion } from './';
+import { KafkaVersion } from './';
+import { CfnCluster } from './msk.generated';
 
 /**
  * Represents a MSK Cluster
