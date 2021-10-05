@@ -10,13 +10,6 @@ interface ImdsAspectProps {
    * Whether IMDSv1 should be enabled or not.
    */
   readonly enableImdsV1: boolean;
-
-  /**
-   * Whether warning annotations from this Aspect should be suppressed or not.
-   *
-   * @default - false
-   */
-  readonly suppressWarnings?: boolean;
 }
 
 /**
@@ -24,25 +17,21 @@ interface ImdsAspectProps {
  */
 abstract class ImdsAspect implements cdk.IAspect {
   protected readonly enableImdsV1: boolean;
-  protected readonly suppressWarnings: boolean;
 
   constructor(props: ImdsAspectProps) {
     this.enableImdsV1 = props.enableImdsV1;
-    this.suppressWarnings = props.suppressWarnings ?? false;
   }
 
   abstract visit(node: cdk.IConstruct): void;
 
   /**
-   * Adds a warning annotation to a node, unless `suppressWarnings` is true.
+   * Adds a warning annotation to a node.
    *
    * @param node The scope to add the warning to.
    * @param message The warning message.
    */
   protected warn(node: cdk.IConstruct, message: string) {
-    if (this.suppressWarnings !== true) {
-      cdk.Annotations.of(node).addWarning(`${ImdsAspect.name} failed on node ${node.node.id}: ${message}`);
-    }
+    cdk.Annotations.of(node).addWarning(`${ImdsAspect.name} failed on node ${node.node.id}: ${message}`);
   }
 }
 

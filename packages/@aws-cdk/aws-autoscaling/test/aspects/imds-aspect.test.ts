@@ -5,7 +5,6 @@ import {
 import '@aws-cdk/assert-internal/jest';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
-import * as sinon from 'sinon';
 import {
   AutoScalingGroup,
   AutoScalingGroupImdsAspect,
@@ -21,31 +20,6 @@ describe('ImdsAspect', () => {
     app = new cdk.App();
     stack = new cdk.Stack(app, 'Stack');
     vpc = new ec2.Vpc(stack, 'Vpc');
-  });
-
-  test('suppresses warnings', () => {
-    // GIVEN
-    const aspect = new AutoScalingGroupImdsAspect({
-      enableImdsV1: true,
-      suppressWarnings: true,
-    });
-    const errmsg = 'ERROR';
-    const stub = sinon.stub(aspect, 'visit').callsFake((node) => {
-      // @ts-ignore
-      aspect.warn(node, errmsg);
-    });
-    const construct = new cdk.Construct(stack, 'Construct');
-
-    // WHEN
-    aspect.visit(construct);
-
-    // THEN
-    expect(stub.calledOnce).toBeTruthy();
-    expect(construct.node.metadataEntry).not.toContainEqual({
-      data: expect.stringContaining(errmsg),
-      type: 'aws:cdk:warning',
-      trace: undefined,
-    });
   });
 
   describe('AutoScalingGroupImdsAspect', () => {
