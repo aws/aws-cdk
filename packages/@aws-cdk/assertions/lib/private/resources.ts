@@ -30,6 +30,14 @@ export function hasResource(template: Template, type: string, props: any): strin
   ].join('\n');
 }
 
+function addEmptyProperties(sections: { [key: string]: Resource}): { [key: string]: Resource } {
+  Object.keys(sections).map((key) => {
+    if (!sections[key].Properties) {
+      sections[key].Properties = {};
+    }
+  });
+  return sections;
+
 export function countResources(template: Template, type: string): number {
   const section = template.Resources;
   const types = filterType(section, type);

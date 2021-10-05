@@ -74,9 +74,16 @@ export class Template {
    * @param props the 'Properties' section of the resource as should be expected in the template.
    */
   public hasResourceProperties(type: string, props: any): void {
-    this.hasResource(type, Match.objectLike({
+    // const addProperties = !(props instanceof AbsentMatch);
+    // Add the above line in place of below when this is merged: https://github.com/aws/aws-cdk/pull/16653
+    const addProperties = true;
+
+    const matchError = hasResource(this.inspector, type, Match.objectLike({
       Properties: Matcher.isMatcher(props) ? props : Match.objectLike(props),
-    }));
+    }), addProperties);
+    if (matchError) {
+      throw new Error(matchError);
+    }
   }
 
   /**
