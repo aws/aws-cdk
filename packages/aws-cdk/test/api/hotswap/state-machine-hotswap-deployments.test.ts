@@ -267,7 +267,7 @@ test('can correctly hotswap old style synth changes', async () => {
           StateMachineName: 'machine-name',
         },
       },
-    }
+    },
   });
   const cdkStackArtifact = setup.cdkStackArtifactOf({
     template: {
@@ -280,8 +280,8 @@ test('can correctly hotswap old style synth changes', async () => {
             StateMachineName: 'machine-name',
           },
         },
-      }
-    }
+      },
+    },
   });
 
   // WHEN
@@ -351,7 +351,7 @@ test('calls the updateStateMachine() API when it receives a change to the defini
   // THEN
   expect(deployStackResult).not.toBeUndefined();
   expect(mockUpdateMachineDefinition).toHaveBeenCalledWith({
-    definition: "{ Prop: \"new-value\" }, { \"S3Bucket\" : { \"Fn::GetAtt\": [ \"Bucket\", \"Arn\" ] } }",
+    definition: '{ Prop: \"new-value\" }, { \"S3Bucket\" : { \"Fn::GetAtt\": [ \"Bucket\", \"Arn\" ] } }',
     stateMachineArn: 'my-machine',
   });
 });
@@ -372,7 +372,7 @@ test("will not perform a hotswap deployment if it cannot find a Ref target (outs
               [
                 '{ Prop: "old-value" }, ',
                 '{ "Param" : ',
-                { "Fn::Sub": "${Param1}" },
+                { 'Fn::Sub': '${Param1}' },
                 ' }',
               ],
             ],
@@ -397,7 +397,7 @@ test("will not perform a hotswap deployment if it cannot find a Ref target (outs
                 [
                   '{ Prop: "new-value" }, ',
                   '{ "Param" : ',
-                  { "Fn::Sub": "${Param1}" },
+                  { 'Fn::Sub': '${Param1}' },
                   ' }',
                 ],
               ],
@@ -430,7 +430,7 @@ test("will not perform a hotswap deployment if it doesn't know how to handle a s
               [
                 '{ Prop: "old-value" }, ',
                 '{ "S3Bucket" : ',
-                { "Fn::GetAtt": [ "Bucket", "UnknownAttribute" ] },
+                { 'Fn::GetAtt': ['Bucket', 'UnknownAttribute'] },
                 ' }',
               ],
             ],
@@ -459,7 +459,7 @@ test("will not perform a hotswap deployment if it doesn't know how to handle a s
                 [
                   '{ Prop: "new-value" }, ',
                   '{ "S3Bucket" : ',
-                  { "Fn::GetAtt": [ "Bucket", "UnknownAttribute" ] },
+                  { 'Fn::GetAtt': ['Bucket', 'UnknownAttribute'] },
                   ' }',
                 ],
               ],
