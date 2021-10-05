@@ -1,14 +1,8 @@
-import { StackInspector } from '../vendored/assert';
 import { formatFailure, matchSection } from './section';
+import { Resource, Template } from './template';
 
-// Partial type for CloudFormation Resource
-type Resource = {
-  Type: string;
-  Properties?: {};
-}
-
-export function findResources(inspector: StackInspector, type: string, props: any = {}): { [key: string]: { [key: string]: any } } {
-  const section: { [key: string] : Resource } = inspector.value.Resources;
+export function findResources(template: Template, type: string, props: any = {}): { [key: string]: { [key: string]: any } } {
+  const section = template.Resources;
   const result = matchSection(filterType(section, type), props);
 
   if (!result.match) {
@@ -18,9 +12,9 @@ export function findResources(inspector: StackInspector, type: string, props: an
   return result.matches;
 }
 
-export function hasResource(inspector: StackInspector, type: string, props: any, addProperties?: boolean): string | void {
-  const section: { [key: string]: Resource } = inspector.value.Resources;
-  const result = matchSection(addProperties ? addEmptyProperties(filterType(section, type)) : filterType(section, type), props);
+export function hasResource(template: Template, type: string, props: any): string | void {
+  const section = template.Resources;
+  const result = matchSection(filterType(section, type), props);
 
   if (result.match) {
     return;
@@ -43,6 +37,12 @@ function addEmptyProperties(sections: { [key: string]: Resource}): { [key: strin
     }
   });
   return sections;
+
+export function countResources(template: Template, type: string): number {
+  const section = template.Resources;
+  const types = filterType(section, type);
+
+  return Object.entries(types).length;
 }
 
 function filterType(section: { [key: string]: Resource }, type: string): { [key: string]: Resource } {
