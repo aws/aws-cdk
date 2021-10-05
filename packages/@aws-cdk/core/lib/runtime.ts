@@ -1,4 +1,4 @@
-import { Construct } from './construct-compat';
+import { Construct } from 'constructs';
 
 // ----------------------------------------------------------------------
 // PROPERTY MAPPERS

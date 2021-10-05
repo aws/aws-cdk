@@ -1,4 +1,5 @@
-import { CfnResource, Construct, Stack } from '../lib';
+import { Construct } from 'constructs';
+import { CfnResource, Stack } from '../lib';
 import { capitalizePropertyNames, filterUndefined, findLastCommonElement, ignoreEmpty, pathToTopLevelStack } from '../lib/util';
 
 describe('util', () => {
