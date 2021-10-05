@@ -23,7 +23,7 @@ test('channel default properties', () => {
   new ivs.Channel(stack, 'Channel');
 
   Template.fromStack(stack).hasResource('AWS::IVS::Channel', {
-    Properties: Match.absentProperty(),
+    Properties: Match.absent(),
   });
 });
 

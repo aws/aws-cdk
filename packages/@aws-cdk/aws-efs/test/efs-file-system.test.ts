@@ -42,7 +42,7 @@ testLegacyBehavior('when @aws-cdk/aws-efs:defaultEncryptionAtRest is missing, en
   });
 
   Template.fromStack(customStack).hasResourceProperties('AWS::EFS::FileSystem', {
-    Encrypted: Match.absentProperty(),
+    Encrypted: Match.absent(),
   });
 
 });
