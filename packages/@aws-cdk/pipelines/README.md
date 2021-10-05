@@ -38,7 +38,7 @@ with the same amount of code. The *CDK Pipelines* library takes care of the
 details.
 
 CDK Pipelines supports multiple *deployment engines* (see below), and comes with
-a deployment engine that deployes CDK apps using AWS CodePipeline. To use the
+a deployment engine that deploys CDK apps using AWS CodePipeline. To use the
 CodePipeline engine, define a `CodePipeline` construct.  The following
 example creates a CodePipeline that deploys an application from GitHub:
 
