@@ -149,10 +149,12 @@ export interface MachineImageConfig {
  * on the instance if you are using this image.
  *
  * The AMI ID is selected using the values published to the SSM parameter store.
- *
- * @deprecated Use `MachineImage.fromSsmParameter()` instead
  */
 export class GenericSSMParameterImage implements IMachineImage {
+  // FIXME: this class ought to be `@deprecated` and removed from v2, but that
+  // is causing build failure right now. Ref: https://github.com/aws/jsii/issues/3025
+  // @-deprecated Use `MachineImage.fromSsmParameter()` instead
+
   /**
    * Name of the SSM parameter we're looking up
    */
