@@ -1,3 +1,4 @@
+import { Matcher } from '..';
 import { formatFailure, matchSection } from './section';
 import { Resource, Template } from './template';
 
@@ -30,19 +31,32 @@ export function hasResource(template: Template, type: string, props: any): strin
   ].join('\n');
 }
 
-function addEmptyProperties(sections: { [key: string]: Resource}): { [key: string]: Resource } {
-  Object.keys(sections).map((key) => {
-    if (!sections[key].Properties) {
-      sections[key].Properties = {};
-    }
-  });
-  return sections;
+export function hasResourceProperties(template: Template, type: string, props: any): string | void {
+  let amended = template; //JSON.parse(JSON.stringify(template));
+  if (!Matcher.isMatcher(props)) {
+    amended = addEmptyProperties(template);
+  }
+  return hasResource(amended, type, props);
+}
 
 export function countResources(template: Template, type: string): number {
   const section = template.Resources;
   const types = filterType(section, type);
 
   return Object.entries(types).length;
+}
+
+function addEmptyProperties(template: Template): Template {
+  let resources = template.Resources;
+  console.log(template);
+  Object.keys(resources).map((key) => {
+    if (!resources[key].hasOwnProperty('Properties')) {
+      console.log('here');
+      resources[key].Properties = {};
+    }
+  });
+  console.log(template);
+  return template;
 }
 
 function filterType(section: { [key: string]: Resource }, type: string): { [key: string]: Resource } {

@@ -281,7 +281,7 @@ describe('Template', () => {
       inspect.hasResourceProperties('Foo::Bar', { baz: 'qux' });
 
       expect(() => inspect.hasResourceProperties('Foo::Bar', { baz: 'waldo' }))
-        .toThrow(/Expected waldo but received qux at \/Properties\/baz/);
+        .toThrow(/Missing key at \/baz/);
 
       expect(() => inspect.hasResourceProperties('Foo::Bar', { baz: 'qux', fred: 'waldo' }))
         .toThrow(/Missing key at \/Properties\/fred/);
@@ -311,7 +311,7 @@ describe('Template', () => {
       inspect.hasResourceProperties('Foo::Bar', { bar: Match.absentProperty() });
 
       expect(() => inspect.hasResourceProperties('Foo::Bar', { bar: Match.absentProperty(), baz: 'qux' }))
-        .toThrow(/Missing key at \/Properties\/baz/);
+        .toThrow(/Missing key at \/baz/);
       // Add the below line when this is merged: https://github.com/aws/aws-cdk/pull/16653
       // expect(inspect.hasResourceProperties('Foo::Bar', Match.absent()));
     });
