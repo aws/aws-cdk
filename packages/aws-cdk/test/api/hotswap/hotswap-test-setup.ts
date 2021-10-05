@@ -2,12 +2,12 @@ import * as cxapi from '@aws-cdk/cx-api';
 import { CloudFormation } from 'aws-sdk';
 import * as lambda from 'aws-sdk/clients/lambda';
 import * as stepfunctions from 'aws-sdk/clients/stepfunctions';
-import { testStack, TestStackArtifact } from '../util';
-import { Template } from '../../lib/api/util/cloudformation';
-import { MockSdkProvider } from '../util/mock-sdk';
+import { testStack, TestStackArtifact } from '../../util';
+import { Template } from '../../../lib/api/util/cloudformation';
+import { MockSdkProvider } from '../../util/mock-sdk';
 import { FakeCloudformationStack } from './fake-cloudformation-stack';
-import { DeployStackResult } from '../../lib';
-import * as deployments from '../../lib/api/hotswap-deployments';
+import { DeployStackResult } from '../../../lib';
+import * as deployments from '../../../lib/api/hotswap-deployments';
 
 const STACK_NAME = 'withouterrors';
 export const STACK_ID = 'stackId';
@@ -44,7 +44,9 @@ export function setUpdateFunctionCodeMock(mockUpdateLambdaCode: (input: lambda.U
   });
 }
 
-export function setUpdateStateMachineMock(mockUpdateMachineDefinition: (input: stepfunctions.UpdateStateMachineInput) => stepfunctions.UpdateStateMachineOutput) {
+export function setUpdateStateMachineMock(mockUpdateMachineDefinition:
+(input: stepfunctions.UpdateStateMachineInput) =>
+stepfunctions.UpdateStateMachineOutput) {
   mockSdkProvider.stubStepFunctions({
     updateStateMachine: mockUpdateMachineDefinition,
   });
@@ -58,11 +60,11 @@ export function cdkStackArtifactOf(testStackArtifact: Partial<TestStackArtifact>
 }
 
 export function pushStackMocks(...items: CloudFormation.StackResourceSummary[]) {
-    currentCfnStackResources.push(...items);
+  currentCfnStackResources.push(...items);
 }
 
 export function setTemplate(template: Template) {
-    currentCfnStack.setTemplate(template);
+  currentCfnStack.setTemplate(template);
 }
 
 export function stackSummaryOf(logicalId: string, resourceType: string, physicalResourceId: string): CloudFormation.StackResourceSummary {
@@ -79,5 +81,5 @@ export async function tryHotswapDeployment(
   assetParams: { [key: string]: string },
   stackArtifact: cxapi.CloudFormationStackArtifact,
 ): Promise<DeployStackResult | undefined> {
-    return await deployments.tryHotswapDeployment(mockSdkProvider, assetParams, currentCfnStack, stackArtifact);
+  return deployments.tryHotswapDeployment(mockSdkProvider, assetParams, currentCfnStack, stackArtifact);
 }

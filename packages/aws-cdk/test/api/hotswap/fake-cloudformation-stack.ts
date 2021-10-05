@@ -1,6 +1,6 @@
 import { CloudFormation } from 'aws-sdk';
-import { CloudFormationStack, Template } from '../../lib/api/util/cloudformation';
-import { instanceMockFrom } from '../util';
+import { CloudFormationStack, Template } from '../../../lib/api/util/cloudformation';
+import { instanceMockFrom } from '../../util';
 
 export interface FakeCloudFormationStackProps {
   readonly stackName: string;
