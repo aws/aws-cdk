@@ -340,8 +340,10 @@ async function prepareAndExecuteChangeSet(
     await cfn.executeChangeSet({ StackName: deployName, ChangeSetName: changeSetName, ...disableRollback }).promise();
 
     // eslint-disable-next-line max-len
+    const changeSetLength: number = (changeSetDescription.Changes ?? []).length;
     const monitor = options.quiet ? undefined : StackActivityMonitor.withDefaultPrinter(cfn, deployName, stackArtifact, {
-      resourcesTotal: (changeSetDescription.Changes ?? []).length,
+      // +1 for the extra event emitted from updates.
+      resourcesTotal: cloudFormationStack.exists ? changeSetLength + 1 : changeSetLength,
       progress: options.progress,
       changeSetCreationTime: changeSetDescription.CreationTime,
     }).start();
