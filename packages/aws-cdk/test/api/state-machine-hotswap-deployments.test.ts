@@ -158,7 +158,7 @@ test('calls the updateStateMachine() API when it receives a change to the defini
   });
 
   // WHEN
-  setup.pushStackResources(setup.stackSummaryOf('Machine', 'AWS::StepFunctions::StateMachine', 'mock-machine-resource-id'));
+  setup.pushStackMocks(setup.stackSummaryOf('Machine', 'AWS::StepFunctions::StateMachine', 'mock-machine-resource-id'));
   const deployStackResult = await setup.tryHotswapDeployment({}, cdkStackArtifact);
 
   // THEN
@@ -293,4 +293,186 @@ test('can correctly hotswap old style synth changes', async () => {
     definition: 'asset-param-2',
     stateMachineArn: 'machine-name',
   });
+});
+
+test('calls the updateStateMachine() API when it receives a change to the definitionString that uses Attributes in a state machine', async () => {
+  // GIVEN
+  setup.setTemplate({
+    Resources: {
+      Bucket: {
+        Type: 'AWS::S3::Bucket',
+      },
+      Machine: {
+        Type: 'AWS::StepFunctions::StateMachine',
+        Properties: {
+          DefinitionString: {
+            'Fn::Join': [
+              '',
+              [
+                '{ Prop: "old-value" }, ',
+                '{ "S3Bucket" : { "Fn::GetAtt": [ "Bucket", "Arn" ] } }',
+              ],
+            ],
+          },
+          StateMachineName: 'my-machine',
+        },
+      },
+    },
+  });
+  const cdkStackArtifact = setup.cdkStackArtifactOf({
+    template: {
+      Resources: {
+        Bucket: {
+          Type: 'AWS::S3::Bucket',
+        },
+        Machine: {
+          Type: 'AWS::StepFunctions::StateMachine',
+          Properties: {
+            DefinitionString: {
+              'Fn::Join': [
+                '',
+                [
+                  '{ Prop: "new-value" }, ',
+                  '{ "S3Bucket" : { "Fn::GetAtt": [ "Bucket", "Arn" ] } }',
+                ],
+              ],
+            },
+            StateMachineName: 'my-machine',
+          },
+        },
+      },
+    },
+  });
+
+  // WHEN
+  setup.pushStackMocks(setup.stackSummaryOf('Machine', 'AWS::StepFunctions::StateMachine', 'mock-machine-resource-id'));
+  const deployStackResult = await setup.tryHotswapDeployment({}, cdkStackArtifact);
+
+  // THEN
+  expect(deployStackResult).not.toBeUndefined();
+  expect(mockUpdateMachineDefinition).toHaveBeenCalledWith({
+    definition: "{ Prop: \"new-value\" }, { \"S3Bucket\" : { \"Fn::GetAtt\": [ \"Bucket\", \"Arn\" ] } }",
+    stateMachineArn: 'my-machine',
+  });
+});
+
+test("will not perform a hotswap deployment if it cannot find a Ref target (outside the function's name)", async () => {
+  // GIVEN
+  setup.setTemplate({
+    Parameters: {
+      Param1: { Type: 'String' },
+    },
+    Resources: {
+      Machine: {
+        Type: 'AWS::StepFunctions::StateMachine',
+        Properties: {
+          DefinitionString: {
+            'Fn::Join': [
+              '',
+              [
+                '{ Prop: "old-value" }, ',
+                '{ "Param" : ',
+                { "Fn::Sub": "${Param1}" },
+                ' }',
+              ],
+            ],
+          },
+        },
+      },
+    },
+  });
+  setup.pushStackMocks(setup.stackSummaryOf('Machine', 'AWS::StepFunctions::StateMachine', 'my-machine'));
+  const cdkStackArtifact = setup.cdkStackArtifactOf({
+    template: {
+      Parameters: {
+        Param1: { Type: 'String' },
+      },
+      Resources: {
+        Machine: {
+          Type: 'AWS::StepFunctions::StateMachine',
+          Properties: {
+            DefinitionString: {
+              'Fn::Join': [
+                '',
+                [
+                  '{ Prop: "new-value" }, ',
+                  '{ "Param" : ',
+                  { "Fn::Sub": "${Param1}" },
+                  ' }',
+                ],
+              ],
+            },
+          },
+        },
+      },
+    },
+  });
+
+  // THEN
+  await expect(() =>
+    setup.tryHotswapDeployment({}, cdkStackArtifact),
+  ).rejects.toThrow(/Parameter or resource 'Param1' could not be found for evaluation/);
+});
+
+test("will not perform a hotswap deployment if it doesn't know how to handle a specific attribute (outside the state machines's name)", async () => {
+  // GIVEN
+  setup.setTemplate({
+    Resources: {
+      Bucket: {
+        Type: 'AWS::S3::Bucket',
+      },
+      Machine: {
+        Type: 'AWS::StepFunctions::StateMachine',
+        Properties: {
+          DefinitionString: {
+            'Fn::Join': [
+              '',
+              [
+                '{ Prop: "old-value" }, ',
+                '{ "S3Bucket" : ',
+                { "Fn::GetAtt": [ "Bucket", "UnknownAttribute" ] },
+                ' }',
+              ],
+            ],
+          },
+          StateMachineName: 'my-machine',
+        },
+      },
+    },
+  });
+  setup.pushStackMocks(
+    setup.stackSummaryOf('Machine', 'AWS::StepFunctions::StateMachine', 'my-machine'),
+    setup.stackSummaryOf('Bucket', 'AWS::S3::Bucket', 'my-bucket'),
+  );
+  const cdkStackArtifact = setup.cdkStackArtifactOf({
+    template: {
+      Resources: {
+        Bucket: {
+          Type: 'AWS::Lambda::Function',
+        },
+        Machine: {
+          Type: 'AWS::StepFunctions::StateMachine',
+          Properties: {
+            DefinitionString: {
+              'Fn::Join': [
+                '',
+                [
+                  '{ Prop: "new-value" }, ',
+                  '{ "S3Bucket" : ',
+                  { "Fn::GetAtt": [ "Bucket", "UnknownAttribute" ] },
+                  ' }',
+                ],
+              ],
+            },
+            StateMachineName: 'my-machine',
+          },
+        },
+      },
+    },
+  });
+
+  // THEN
+  await expect(() =>
+    setup.tryHotswapDeployment({}, cdkStackArtifact),
+  ).rejects.toThrow("We don't support the 'UnknownAttribute' attribute of the 'AWS::S3::Bucket' resource. This is a CDK limitation. Please report it at https://github.com/aws/aws-cdk/issues/new/choose");
 });
