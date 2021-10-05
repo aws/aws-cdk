@@ -1,6 +1,7 @@
 import { Matcher, MatchResult } from './matcher';
 import { getType } from './private/type';
-import { ABSENT } from './vendored/assert';
+
+const ABSENT = '{{ABSENT}}';
 
 /**
  * Partial and special matching during template assertions.

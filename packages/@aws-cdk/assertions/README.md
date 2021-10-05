@@ -144,9 +144,9 @@ The APIs `hasMapping()` and `findMappings()` provide similar functionalities.
 
 ## Special Matchers
 
-The expectation provided to the `hasXXX()` and `findXXX()` methods, besides
-carrying literal values, as seen in the above examples, also accept special
-matchers. 
+The expectation provided to the `hasXxx()`, `findXxx()` and `templateMatches()`
+APIs, besides carrying literal values, as seen in the above examples, also accept
+special matchers. 
 
 They are available as part of the `Match` class.
 
