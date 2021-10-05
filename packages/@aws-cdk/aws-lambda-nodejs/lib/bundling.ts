@@ -65,6 +65,7 @@ export class Bundling implements cdk.BundlingOptions {
 
   private static esbuildInstallation?: PackageInstallation;
   private static tscInstallation?: PackageInstallation;
+  private static tscCompiled = false
 
   // Core bundling options
   public readonly image: cdk.DockerImage;
@@ -148,12 +149,17 @@ export class Bundling implements cdk.BundlingOptions {
       if (!this.relativeTsconfigPath) {
         throw new Error('preCompilation cannot be used when tsconfig is undefined');
       }
+
       relativeEntryPath = pathJoin(PRE_COMPILATION_DIR, relativeEntryPath).replace(/\.ts(x?)$/, '.js$1');
 
-      const tsconfigPath = pathJoin(options.inputDir, this.relativeTsconfigPath);
-      const rootDir = extractRootDir(tsconfigPath);
-      process.stderr.write(`Compiling your project using typescript compiler version: ${Bundling.tscInstallation?.version} \n`);
-      tscCommand =`${options.tscRunner} --project ${tsconfigPath} --outDir ${pathJoin(options.inputDir, PRE_COMPILATION_DIR, rootDir ?? '')}`;
+      if (!Bundling.tscCompiled) {
+        const tsconfigPath = pathJoin(options.inputDir, this.relativeTsconfigPath);
+        const rootDir = extractRootDir(tsconfigPath);
+        process.stderr.write(`Compiling your project using typescript compiler version: ${Bundling.tscInstallation?.version} \n`);
+        tscCommand = `${options.tscRunner} --project ${tsconfigPath} --outDir ${pathJoin(options.inputDir, PRE_COMPILATION_DIR, rootDir ?? '')}`;
+        // Setting this to avoid running tsc on every function
+        Bundling.tscCompiled = true;
+      }
     }
 
 
@@ -223,11 +229,11 @@ export class Bundling implements cdk.BundlingOptions {
 
   private getLocalBundlingProvider(): cdk.ILocalBundling {
     const osPlatform = os.platform();
-    const createLocalCommand = (outputDir: string, esbuild: PackageInstallation, tsc: PackageInstallation) => this.createBundlingCommand({
+    const createLocalCommand = (outputDir: string, esbuild: PackageInstallation, tsc?: PackageInstallation) => this.createBundlingCommand({
       inputDir: this.projectRoot,
       outputDir,
       esbuildRunner: esbuild.isLocal ? this.packageManager.runBinCommand('esbuild') : 'esbuild',
-      tscRunner: tsc.isLocal ? this.packageManager.runBinCommand('tsc') : 'tsc',
+      tscRunner: tsc && (tsc.isLocal ? this.packageManager.runBinCommand('tsc') : 'tsc'),
       osPlatform,
     });
     const environment = this.props.environment ?? {};
@@ -242,10 +248,6 @@ export class Bundling implements cdk.BundlingOptions {
 
         if (!Bundling.esbuildInstallation.version.startsWith(`${ESBUILD_MAJOR_VERSION}.`)) {
           throw new Error(`Expected esbuild version ${ESBUILD_MAJOR_VERSION}.x but got ${Bundling.esbuildInstallation.version}`);
-        }
-
-        if (!Bundling.tscInstallation) {
-          throw new Error('Unable to find typescript locally or globally make sure install typescript in you dependencies');
         }
 
         const localCommand = createLocalCommand(outputDir, Bundling.esbuildInstallation, Bundling.tscInstallation);
@@ -277,7 +279,7 @@ interface BundlingCommandOptions {
   readonly inputDir: string;
   readonly outputDir: string;
   readonly esbuildRunner: string;
-  readonly tscRunner: string;
+  readonly tscRunner?: string;
   readonly osPlatform: NodeJS.Platform;
 }
 

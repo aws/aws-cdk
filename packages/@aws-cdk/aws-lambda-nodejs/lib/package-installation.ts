@@ -17,11 +17,11 @@ export abstract class PackageInstallation {
       }
 
       // Fallback to a global version
-      const esbuild = spawnSync(module, ['--version']);
-      if (esbuild.status === 0 && !esbuild.error) {
+      const proc = spawnSync(module, ['--version']);
+      if (proc.status === 0 && !proc.error) {
         return {
           isLocal: false,
-          version: esbuild.stdout.toString().trim(),
+          version: proc.stdout.toString().trim(),
         };
       }
       return undefined;
