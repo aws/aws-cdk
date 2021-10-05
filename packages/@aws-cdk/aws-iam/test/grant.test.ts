@@ -1,4 +1,5 @@
-import { Template } from '@aws-cdk/assertions';
+import { ResourcePart } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import { CfnResource, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import * as iam from '../lib';
@@ -108,9 +109,9 @@ function applyGrantWithDependencyTo(principal: iam.IPrincipal) {
 }
 
 function expectDependencyOn(id: string) {
-  Template.fromStack(stack).hasResource('CDK::Test::SomeResource', (props: any) => {
+  expect(stack).toHaveResource('CDK::Test::SomeResource', (props: any) => {
     return (props?.DependsOn ?? []).includes(id);
-  });
+  }, ResourcePart.CompleteDefinition);
 }
 
 class FakeResourceWithPolicy extends Resource implements iam.IResourceWithPolicy {
