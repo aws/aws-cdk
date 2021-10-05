@@ -1,4 +1,4 @@
-import { Matcher } from '..';
+import { Match, Matcher } from '..';
 import { formatFailure, matchSection } from './section';
 import { Resource, Template } from './template';
 
@@ -16,7 +16,6 @@ export function findResources(template: Template, type: string, props: any = {})
 export function hasResource(template: Template, type: string, props: any): string | void {
   const section = template.Resources;
   const result = matchSection(filterType(section, type), props);
-
   if (result.match) {
     return;
   }
@@ -32,11 +31,16 @@ export function hasResource(template: Template, type: string, props: any): strin
 }
 
 export function hasResourceProperties(template: Template, type: string, props: any): string | void {
-  let amended = template; //JSON.parse(JSON.stringify(template));
-  if (!Matcher.isMatcher(props)) {
-    amended = addEmptyProperties(template);
+  // amended needs to be a deep copy to avoid modifying the template.
+  let amended = JSON.parse(JSON.stringify(template));
+
+  if (!Matcher.isMatcher(props) || !(props.name === 'absent')) {
+    amended = addEmptyProperties(amended);
   }
-  return hasResource(amended, type, props);
+
+  return hasResource(amended, type, Match.objectLike({
+    Properties: props,
+  }));
 }
 
 export function countResources(template: Template, type: string): number {
@@ -47,15 +51,14 @@ export function countResources(template: Template, type: string): number {
 }
 
 function addEmptyProperties(template: Template): Template {
-  let resources = template.Resources;
-  console.log(template);
-  Object.keys(resources).map((key) => {
-    if (!resources[key].hasOwnProperty('Properties')) {
-      console.log('here');
-      resources[key].Properties = {};
+  let section = template.Resources;
+
+  Object.keys(section).map((key) => {
+    if (!section[key].hasOwnProperty('Properties')) {
+      section[key].Properties = {};
     }
   });
-  console.log(template);
+
   return template;
 }
 
