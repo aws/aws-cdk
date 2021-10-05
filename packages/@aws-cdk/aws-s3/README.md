@@ -99,7 +99,7 @@ const result = bucket.addToResourcePolicy(new iam.PolicyStatement({
 }));
 ```
 
-If you try to add a policy statement to an existing bucket, this method will 
+If you try to add a policy statement to an existing bucket, this method will
 not do anything:
 
 ```ts
@@ -111,8 +111,8 @@ const result = bucket.addToResourcePolicy(new iam.PolicyStatement({
 }));
 ```
 
-That's because it's not possible to tell whether the bucket 
-already has a policy attached, let alone to re-use that policy to add more 
+That's because it's not possible to tell whether the bucket
+already has a policy attached, let alone to re-use that policy to add more
 statements to it. We recommend that you always check the result of the call:
 
 ```ts
@@ -445,3 +445,8 @@ const bucket = new Bucket(this, 'MyTempFileBucket', {
   autoDeleteObjects: true,
 });
 ```
+
+**Warning** if you have deployed a bucket with `autoDeleteObjects: true`,
+switching this to `false` in a CDK version *before* `1.126.0` will lead to all
+objects in the bucket being deleted. Be sure to update to version `1.126.0` or
+later before switching this value to `false`.
