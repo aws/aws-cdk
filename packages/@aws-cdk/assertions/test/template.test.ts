@@ -280,11 +280,11 @@ describe('Template', () => {
       const inspect = Template.fromStack(stack);
       inspect.hasResourceProperties('Foo::Bar', { baz: 'qux' });
 
-      // expect(() => inspect.hasResourceProperties('Foo::Bar', { baz: 'waldo' }))
-      //   .toThrow(/Missing key at \/baz/);
+      expect(() => inspect.hasResourceProperties('Foo::Bar', { baz: 'waldo' }))
+        .toThrow(/Expected waldo but received qux at \/Properties\/baz/);
 
-      // expect(() => inspect.hasResourceProperties('Foo::Bar', { baz: 'qux', fred: 'waldo' }))
-      //   .toThrow(/Missing key at \/Properties\/fred/);
+      expect(() => inspect.hasResourceProperties('Foo::Bar', { baz: 'qux', fred: 'waldo' }))
+        .toThrow(/Missing key at \/Properties\/fred/);
     });
 
     test('absent - with properties', () => {
@@ -295,9 +295,11 @@ describe('Template', () => {
       });
 
       const inspect = Template.fromStack(stack);
+
       inspect.hasResourceProperties('Foo::Bar', {
         bar: Match.absent(),
       });
+
       expect(() => inspect.hasResourceProperties('Foo::Bar', {
         baz: Match.absent(),
       })).toThrow(/key should be absent at \/Properties\/baz/);
@@ -310,8 +312,10 @@ describe('Template', () => {
       });
 
       const inspect = Template.fromStack(stack);
+
       expect(() => inspect.hasResourceProperties('Foo::Bar', { bar: Match.absent(), baz: 'qux' }))
         .toThrow(/Missing key at \/Properties\/baz/);
+
       inspect.hasResourceProperties('Foo::Bar', Match.absent());
     });
 
