@@ -6,7 +6,7 @@ FROM $IMAGE
 # Ensure rsync is installed
 RUN yum -q list installed rsync &>/dev/null || yum install -y rsync
 
-# create non root user and change allow execute command for non root user
+# Create non root user and allow execute command for non root user
 RUN /usr/sbin/useradd -u 1000 user && chmod 711 /
 
 CMD [ "python" ]
