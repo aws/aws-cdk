@@ -1,9 +1,8 @@
 import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource } from '../assets';
-import { ISynthesisSession } from '../construct-compat';
 import { Stack } from '../stack';
 import { assertBound } from './_shared';
 import { StackSynthesizer } from './stack-synthesizer';
-import { IStackSynthesizer } from './types';
+import { IStackSynthesizer, ISynthesisSession } from './types';
 
 /**
  * Deployment environment for a nested stack
