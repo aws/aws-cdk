@@ -1,4 +1,5 @@
 import { Match, Matcher } from '..';
+import { AbsentMatch } from './absentMatch';
 import { formatFailure, matchSection } from './section';
 import { Resource, Template } from './template';
 
@@ -34,7 +35,8 @@ export function hasResourceProperties(template: Template, type: string, props: a
   // amended needs to be a deep copy to avoid modifying the template.
   let amended = JSON.parse(JSON.stringify(template));
 
-  if (!Matcher.isMatcher(props) || !(props.name === 'absent')) {
+  // special case to exclude AbsentMatch because adding an empty Properties object will affect its evaluation.
+  if (!Matcher.isMatcher(props) || !(props instanceof AbsentMatch)) {
     amended = addEmptyProperties(amended);
   }
 
