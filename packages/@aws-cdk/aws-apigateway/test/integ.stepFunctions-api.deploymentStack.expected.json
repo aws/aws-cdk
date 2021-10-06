@@ -1,0 +1,261 @@
+{
+  "Resources": {
+    "StateMachineRoleB840431D": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "states.",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ".amazonaws.com"
+                    ]
+                  ]
+                }
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
+    "StateMachine2E01A3A5": {
+      "Type": "AWS::StepFunctions::StateMachine",
+      "Properties": {
+        "RoleArn": {
+          "Fn::GetAtt": [
+            "StateMachineRoleB840431D",
+            "Arn"
+          ]
+        },
+        "DefinitionString": "{\"StartAt\":\"PassTask\",\"States\":{\"PassTask\":{\"Type\":\"Pass\",\"Result\":\"Hello\",\"End\":true}}}",
+        "StateMachineType": "EXPRESS"
+      },
+      "DependsOn": [
+        "StateMachineRoleB840431D"
+      ]
+    },
+    "StepFunctionsRestApiDeploymentStackStateMachineapiRoleE9B057CB": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "apigateway.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
+    "AllowStartSyncExecutionE0A8041C": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "states:StartSyncExecution",
+              "Effect": "Allow",
+              "Resource": {
+                "Ref": "StateMachine2E01A3A5"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "AllowStartSyncExecutionE0A8041C",
+        "Roles": [
+          {
+            "Ref": "StepFunctionsRestApiDeploymentStackStateMachineapiRoleE9B057CB"
+          }
+        ]
+      }
+    },
+    "StepFunctionsRestApiC6E3E883": {
+      "Type": "AWS::ApiGateway::RestApi",
+      "Properties": {
+        "Name": "StepFunctionsRestApi"
+      }
+    },
+    "StepFunctionsRestApiCloudWatchRoleB06ACDB9": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "apigateway.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "StepFunctionsRestApiAccountBD0CCC0E": {
+      "Type": "AWS::ApiGateway::Account",
+      "Properties": {
+        "CloudWatchRoleArn": {
+          "Fn::GetAtt": [
+            "StepFunctionsRestApiCloudWatchRoleB06ACDB9",
+            "Arn"
+          ]
+        }
+      },
+      "DependsOn": [
+        "StepFunctionsRestApiC6E3E883"
+      ]
+    },
+    "StepFunctionsRestApiANY7699CA92": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "HttpMethod": "ANY",
+        "ResourceId": {
+          "Fn::GetAtt": [
+            "StepFunctionsRestApiC6E3E883",
+            "RootResourceId"
+          ]
+        },
+        "RestApiId": {
+          "Ref": "StepFunctionsRestApiC6E3E883"
+        },
+        "AuthorizationType": "NONE",
+        "Integration": {
+          "Credentials": {
+            "Fn::GetAtt": [
+              "StepFunctionsRestApiDeploymentStackStateMachineapiRoleE9B057CB",
+              "Arn"
+            ]
+          },
+          "IntegrationHttpMethod": "POST",
+          "IntegrationResponses": [
+            {
+              "ResponseTemplates": {
+                "application/json": "#set($inputRoot = $input.path('$'))\n                #if($input.path('$.status').toString().equals(\"FAILED\"))\n                    #set($context.responseOverride.status = 500)\n                    { \n                      \"error\": \"$input.path('$.error')\",\n                      \"cause\": \"$input.path('$.cause')\"\n                    }\n                #else\n                    $input.path('$.output')\n                #end"
+              },
+              "StatusCode": "200"
+            },
+            {
+              "ResponseTemplates": {
+                "application/json": "{\n            \"error\": \"Bad input!\"\n          }"
+              },
+              "SelectionPattern": "4\\d{2}",
+              "StatusCode": "400"
+            },
+            {
+              "ResponseTemplates": {
+                "application/json": "\"error\": $input.path('$.error')"
+              },
+              "SelectionPattern": "5\\d{2}",
+              "StatusCode": "500"
+            }
+          ],
+          "PassthroughBehavior": "NEVER",
+          "RequestTemplates": {
+            "application/json": {
+              "Fn::Join": [
+                "",
+                [
+                  "\n        #set($inputRoot = $input.path('$')) {\n            \"input\": \"$util.escapeJavaScript($input.json('$'))\",\n            \"stateMachineArn\": \"",
+                  {
+                    "Ref": "StateMachine2E01A3A5"
+                  },
+                  "\"\n          }"
+                ]
+              ]
+            }
+          },
+          "Type": "AWS",
+          "Uri": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":apigateway:",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ":states:action/StartSyncExecution"
+              ]
+            ]
+          }
+        },
+        "MethodResponses": [
+          {
+            "ResponseModels": {
+              "application/json": "Empty"
+            },
+            "StatusCode": "200"
+          },
+          {
+            "ResponseModels": {
+              "application/json": "Error"
+            },
+            "StatusCode": "400"
+          },
+          {
+            "ResponseModels": {
+              "application/json": "Error"
+            },
+            "StatusCode": "500"
+          }
+        ]
+      }
+    },
+    "deployment33381975b5dafda9a97138f301ea25da405640e8": {
+      "Type": "AWS::ApiGateway::Deployment",
+      "Properties": {
+        "RestApiId": {
+          "Ref": "StepFunctionsRestApiC6E3E883"
+        }
+      },
+      "DependsOn": [
+        "StepFunctionsRestApiANY7699CA92"
+      ]
+    },
+    "stage0661E4AC": {
+      "Type": "AWS::ApiGateway::Stage",
+      "Properties": {
+        "RestApiId": {
+          "Ref": "StepFunctionsRestApiC6E3E883"
+        },
+        "DeploymentId": {
+          "Ref": "deployment33381975b5dafda9a97138f301ea25da405640e8"
+        },
+        "StageName": "prod"
+      }
+    }
+  }
+}

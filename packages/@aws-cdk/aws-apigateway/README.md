@@ -22,6 +22,7 @@ running on AWS Lambda, or any web application.
 - [Defining APIs](#defining-apis)
   - [Breaking up Methods and Resources across Stacks](#breaking-up-methods-and-resources-across-stacks)
 - [AWS Lambda-backed APIs](#aws-lambda-backed-apis)
+- [AWS StepFunctions backed APIs](#aws-stepfunctions-backed-APIs)
 - [Integration Targets](#integration-targets)
 - [Usage Plan & API Keys](#usage-plan--api-keys)
 - [Working with models](#working-with-models)
@@ -104,6 +105,31 @@ item.addMethod('GET');   // GET /items/{item}
 // the default integration for methods is "handler", but one can
 // customize this behavior per method or even a sub path.
 item.addMethod('DELETE', new apigateway.HttpIntegration('http://amazon.com'));
+```
+
+## AWS StepFunctions backed APIs
+
+You can use Amazon API Gateway with AWS Step Functions as the backend integration, specifically Synchronous Express Workflows.
+
+The `StepFunctionsRestApi` construct makes this easy and also sets up input, output and error mapping. The `StepFunctionsRestApi` construct sets up the API Gateway REST API with an `ANY` HTTP method and sets up the api role with the required permission to invoke `StartSyncExecution` action on the AWS StepFunctions state machine. This will enable you to invoke any one of the API Gateway HTTP methods and get a response from the backend AWS StepFunctions state machine.
+
+The following code defines a REST API that routes all requests to the specified AWS StepFunctions state machine:
+
+```ts
+const stateMachine = new stepFunctions.StateMachine(this, 'StateMachine', ...);
+new apigateway.StepFunctionsRestApi(this, 'StepFunctionsRestApi', { 
+  stateMachine: stateMachine,
+});
+```
+
+You can add requestContext (similar to input requestContext from lambda input) to the input. The 'requestContext' parameter includes account ID, user identity, etc. that can be used by customers that want to know the identity of authorized users on the state machine side. The following code defines a REST API like above but also adds 'requestContext' to the input of the State Machine:
+
+```ts
+const stateMachine = new stepFunctions.StateMachine(this, 'StateMachine', ...);
+new apigateway.StepFunctionsRestApi(this, 'StepFunctionsRestApi', { 
+  stateMachine: stateMachine,
+  includeRequestContext: true,
+});
 ```
 
 ### Breaking up Methods and Resources across Stacks
