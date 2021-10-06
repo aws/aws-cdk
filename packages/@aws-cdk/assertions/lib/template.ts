@@ -3,7 +3,7 @@ import { Match } from './match';
 import { Matcher } from './matcher';
 import { findMappings, hasMapping } from './private/mappings';
 import { findOutputs, hasOutput } from './private/outputs';
-import { countResources, findResources, hasResource } from './private/resources';
+import { countResources, findResources, hasResource, hasResourceProperties } from './private/resources';
 import { Template as TemplateType } from './private/template';
 
 /**
@@ -74,9 +74,10 @@ export class Template {
    * @param props the 'Properties' section of the resource as should be expected in the template.
    */
   public hasResourceProperties(type: string, props: any): void {
-    this.hasResource(type, Match.objectLike({
-      Properties: Matcher.isMatcher(props) ? props : Match.objectLike(props),
-    }));
+    const matchError = hasResourceProperties(this.template, type, props);
+    if (matchError) {
+      throw new Error(matchError);
+    }
   }
 
   /**
