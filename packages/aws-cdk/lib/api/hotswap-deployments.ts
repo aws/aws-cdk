@@ -70,11 +70,10 @@ async function findAllHotswappableChanges(
     } else if (resourceHotswapEvaluation === ChangeHotswapImpact.IRRELEVANT) {
       // empty 'if' just for flow-aware typing to kick in...
     } else {
-      const detectorResults = new Array<Promise<ChangeHotswapResult>>();
-      detectorResults.push(isHotswappableLambdaFunctionChange(logicalId, resourceHotswapEvaluation, evaluateCfnTemplate));
-      detectorResults.push(isHotswappableStateMachineChange(logicalId, resourceHotswapEvaluation, evaluateCfnTemplate));
-
-      promises.push(detectorResults);
+      promises.push([
+        isHotswappableLambdaFunctionChange(logicalId, resourceHotswapEvaluation, evaluateCfnTemplate),
+        isHotswappableStateMachineChange(logicalId, resourceHotswapEvaluation, evaluateCfnTemplate),
+      ]);
     }
   });
 

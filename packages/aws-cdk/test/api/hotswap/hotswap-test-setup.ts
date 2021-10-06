@@ -2,12 +2,12 @@ import * as cxapi from '@aws-cdk/cx-api';
 import { CloudFormation } from 'aws-sdk';
 import * as lambda from 'aws-sdk/clients/lambda';
 import * as stepfunctions from 'aws-sdk/clients/stepfunctions';
-import { testStack, TestStackArtifact } from '../../util';
-import { Template } from '../../../lib/api/util/cloudformation';
-import { MockSdkProvider } from '../../util/mock-sdk';
-import { FakeCloudformationStack } from './fake-cloudformation-stack';
 import { DeployStackResult } from '../../../lib';
 import * as deployments from '../../../lib/api/hotswap-deployments';
+import { Template } from '../../../lib/api/util/cloudformation';
+import { testStack, TestStackArtifact } from '../../util';
+import { MockSdkProvider } from '../../util/mock-sdk';
+import { FakeCloudformationStack } from './fake-cloudformation-stack';
 
 const STACK_NAME = 'withouterrors';
 export const STACK_ID = 'stackId';
