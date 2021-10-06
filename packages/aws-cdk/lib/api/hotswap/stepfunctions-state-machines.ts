@@ -33,11 +33,6 @@ async function isStateMachineDefinitionOnlyChange(
 
   const propertyUpdates = change.propertyUpdates;
   for (const updatedPropName in propertyUpdates) {
-    const updatedProp = propertyUpdates[updatedPropName];
-    if (updatedProp.newValue === undefined) {
-      return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
-    }
-
     // ensure that only changes to the definition string result in a hotswap
     if (updatedPropName !== 'DefinitionString') {
       return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;

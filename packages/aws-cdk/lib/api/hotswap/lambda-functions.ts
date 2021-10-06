@@ -69,9 +69,6 @@ async function isLambdaFunctionCodeOnlyChange(
   const propertyUpdates = change.propertyUpdates;
   for (const updatedPropName in propertyUpdates) {
     const updatedProp = propertyUpdates[updatedPropName];
-    if (updatedProp.newValue === undefined) {
-      return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
-    }
     for (const newPropName in updatedProp.newValue) {
       switch (newPropName) {
         case 'S3Bucket':
