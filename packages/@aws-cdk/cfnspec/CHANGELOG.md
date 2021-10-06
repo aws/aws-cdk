@@ -1,3 +1,100 @@
+# CloudFormation Resource Specification v43.0.0
+
+## New Resource Types
+
+* AWS::APS::RuleGroupsNamespace
+
+## Attribute Changes
+
+* AWS::MediaConnect::Flow Source.SourceIngestPort (__added__)
+* AWS::MediaConnect::FlowSource SourceIngestPort (__added__)
+* AWS::OpenSearchService::Domain DomainArn (__added__)
+* AWS::SQS::QueuePolicy Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-policy.html
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sqs-queuepolicy.html
+* AWS::SQS::QueuePolicy Id (__added__)
+
+## Property Changes
+
+* AWS::APS::Workspace AlertManagerDefinition (__added__)
+* AWS::EKS::Cluster Logging (__added__)
+* AWS::EKS::Cluster Tags (__added__)
+* AWS::EKS::Cluster ResourcesVpcConfig.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::KinesisFirehose::DeliveryStream AmazonopensearchserviceDestinationConfiguration (__added__)
+* AWS::Lambda::Function Architectures (__added__)
+* AWS::Lambda::LayerVersion CompatibleArchitectures (__added__)
+* AWS::MediaConnect::FlowOutput MinLatency (__added__)
+* AWS::SQS::QueuePolicy PolicyDocument.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-policy.html#cfn-sqs-queuepolicy-policydoc
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sqs-queuepolicy.html#cfn-sqs-queuepolicy-policydocument
+* AWS::SQS::QueuePolicy Queues.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-policy.html#cfn-sqs-queuepolicy-queues
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sqs-queuepolicy.html#cfn-sqs-queuepolicy-queues
+
+## Property Type Changes
+
+* AWS::EKS::Cluster.Provider (__removed__)
+* AWS::EC2::LaunchTemplate.AcceleratorCount (__added__)
+* AWS::EC2::LaunchTemplate.AcceleratorTotalMemoryMiB (__added__)
+* AWS::EC2::LaunchTemplate.BaselineEbsBandwidthMbps (__added__)
+* AWS::EC2::LaunchTemplate.MemoryGiBPerVCpu (__added__)
+* AWS::EC2::LaunchTemplate.MemoryMiB (__added__)
+* AWS::EC2::LaunchTemplate.NetworkInterfaceCount (__added__)
+* AWS::EC2::LaunchTemplate.TotalLocalStorageGB (__added__)
+* AWS::EC2::LaunchTemplate.VCpuCount (__added__)
+* AWS::ECR::ReplicationConfiguration.RepositoryFilter (__added__)
+* AWS::EKS::Cluster.ClusterLogging (__added__)
+* AWS::EKS::Cluster.Logging (__added__)
+* AWS::EKS::Cluster.LoggingTypeConfig (__added__)
+* AWS::Kendra::DataSource.ProxyConfiguration (__added__)
+* AWS::Kendra::DataSource.WebCrawlerAuthenticationConfiguration (__added__)
+* AWS::Kendra::DataSource.WebCrawlerBasicAuthentication (__added__)
+* AWS::Kendra::DataSource.WebCrawlerConfiguration (__added__)
+* AWS::Kendra::DataSource.WebCrawlerSeedUrlConfiguration (__added__)
+* AWS::Kendra::DataSource.WebCrawlerSiteMapsConfiguration (__added__)
+* AWS::Kendra::DataSource.WebCrawlerUrls (__added__)
+* AWS::Kendra::DataSource.WorkDocsConfiguration (__added__)
+* AWS::KinesisFirehose::DeliveryStream.AmazonopensearchserviceBufferingHints (__added__)
+* AWS::KinesisFirehose::DeliveryStream.AmazonopensearchserviceDestinationConfiguration (__added__)
+* AWS::KinesisFirehose::DeliveryStream.AmazonopensearchserviceRetryOptions (__added__)
+* AWS::ECR::ReplicationConfiguration.ReplicationRule RepositoryFilters (__added__)
+* AWS::EKS::Cluster.EncryptionConfig Provider.Type (__deleted__)
+* AWS::EKS::Cluster.EncryptionConfig Provider.PrimitiveType (__added__)
+* AWS::EKS::Cluster.EncryptionConfig Provider.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EKS::Cluster.EncryptionConfig Resources.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EKS::Cluster.KubernetesNetworkConfig ServiceIpv4Cidr.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EKS::Cluster.ResourcesVpcConfig EndpointPrivateAccess (__added__)
+* AWS::EKS::Cluster.ResourcesVpcConfig EndpointPublicAccess (__added__)
+* AWS::EKS::Cluster.ResourcesVpcConfig PublicAccessCidrs (__added__)
+* AWS::EKS::Cluster.ResourcesVpcConfig SecurityGroupIds.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EKS::Cluster.ResourcesVpcConfig SubnetIds.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::Kendra::DataSource.DataSourceConfiguration WebCrawlerConfiguration (__added__)
+* AWS::Kendra::DataSource.DataSourceConfiguration WorkDocsConfiguration (__added__)
+* AWS::Kendra::DataSource.ServiceNowConfiguration AuthenticationType (__added__)
+* AWS::Kendra::DataSource.ServiceNowKnowledgeArticleConfiguration FilterQuery (__added__)
+* AWS::Kendra::DataSource.SharePointConfiguration SslCertificateS3Path (__added__)
+* AWS::MediaConnect::Flow.Encryption Algorithm.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::MediaConnect::Flow.Source MinLatency (__added__)
+* AWS::MediaConnect::Flow.Source SourceIngestPort (__added__)
+* AWS::MediaConnect::FlowOutput.Encryption Algorithm.Required (__changed__)
+  * Old: true
+  * New: false
+
+
 # CloudFormation Resource Specification v42.0.0
 
 ## New Resource Types
