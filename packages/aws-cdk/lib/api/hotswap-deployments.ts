@@ -63,7 +63,7 @@ async function findAllHotswappableChanges(
 
   // gather the results of the detector functions
   stackChanges.resources.forEachDifference((logicalId: string, change: cfn_diff.ResourceDifference) => {
-    const resourceHotswapEvaluation = isResourceChangeHotswappable(change);
+    const resourceHotswapEvaluation = isCandidateForHotswapping(change);
 
     if (resourceHotswapEvaluation === ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT) {
       foundNonHotswappableChange = true;
@@ -118,7 +118,7 @@ async function findAllHotswappableChanges(
  * returns `ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT` if a resource was deleted, or a change that we cannot short-circuit occured.
  * Returns `ChangeHotswapImpact.IRRELEVANT` if a change that does not impact shortcircuiting occured, such as a metadata change.
  */
-export function isResourceChangeHotswappable(change: cfn_diff.ResourceDifference): HotswappableResourceChange | ChangeHotswapImpact {
+export function isCandidateForHotswapping(change: cfn_diff.ResourceDifference): HotswappableResourceChange | ChangeHotswapImpact {
   // a resource has been removed OR a resource has been added; we can't short-circuit that change
   if (!change.newValue || !change.oldValue) {
     return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
