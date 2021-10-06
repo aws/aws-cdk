@@ -107,3 +107,42 @@ test('with custom IAM action', () => {
     },
   });
 });
+
+test('with unresolved tokens', () => {
+  // WHEN
+  const task = new tasks.CallAwsService(stack, 'ListBuckets', {
+    service: new cdk.CfnParameter(stack, 'Service').valueAsString,
+    action: new cdk.CfnParameter(stack, 'Action').valueAsString,
+    iamResources: ['*'],
+  });
+
+  new sfn.StateMachine(stack, 'StateMachine', {
+    definition: task,
+  });
+
+  // THEN
+  expect(stack.resolve(task.toStateJson())).toEqual({
+    Type: 'Task',
+    Resource: {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          {
+            Ref: 'AWS::Partition',
+          },
+          ':states:::aws-sdk:',
+          {
+            Ref: 'Service',
+          },
+          ':',
+          {
+            Ref: 'Action',
+          },
+        ],
+      ],
+    },
+    End: true,
+    Parameters: {},
+  });
+});

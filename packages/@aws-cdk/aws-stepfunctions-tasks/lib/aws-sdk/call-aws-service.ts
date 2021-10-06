@@ -1,5 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
+import { Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { integrationResourceArn } from '../private/task-utils';
 
@@ -59,13 +60,19 @@ export class CallAwsService extends sfn.TaskStateBase {
    * @internal
    */
   protected _renderTask(): any {
+    let service = this.props.service;
+
+    if (!Token.isUnresolved(service)) {
+      service = service.toLowerCase();
+    }
+
     return {
       Resource: integrationResourceArn(
         'aws-sdk',
-        `${this.props.service.toLowerCase()}:${this.props.action}`,
+        `${service}:${this.props.action}`,
         this.props.integrationPattern,
       ),
-      Parameters: sfn.FieldUtils.renderObject(this.props.parameters ?? {}), // Parameters is required for aws-sdk
+      Parameters: sfn.FieldUtils.renderObject(this.props.parameters) ?? {}, // Parameters is required for aws-sdk
     };
   }
 }
