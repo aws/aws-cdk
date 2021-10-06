@@ -334,6 +334,8 @@ export class Alarm extends AlarmBase {
                 assertSubmetricsCount(expr);
               }
 
+              self.validateMetricExpression(expr);
+
               return {
                 expression: expr.expression,
                 id: entry.id || uniqueMetricId(),
@@ -356,6 +358,16 @@ export class Alarm extends AlarmBase {
 
     if (definitelyDifferent(stat.region, stack.region)) {
       throw new Error(`Cannot create an Alarm in region '${stack.region}' based on metric '${metric}' in '${stat.region}'`);
+    }
+  }
+
+  /**
+   * Validates that the expression config does not specify searchAccount or searchRegion props
+   * as search expressions are not supported by Alarms.
+   */
+  private validateMetricExpression(expr: MetricExpressionConfig) {
+    if (expr.searchAccount !== undefined || expr.searchRegion !== undefined) {
+      throw new Error('Cannot create an Alarm based on a MathExpression which specifies a searchAccount or searchRegion');
     }
   }
 }
