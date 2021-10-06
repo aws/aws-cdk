@@ -1,9 +1,12 @@
+///<reference types="@types/node" />
+
 import { randomBytes } from 'crypto';
+import { DependableTrait, IConstruct } from '@aws-cdk/core';
 import {
   UserPoolClient,
   UserPoolClientProps,
-} from './user-pool-client';
-import { IUserPoolIdentityProvider } from './user-pool-idp';
+  IUserPoolIdentityProvider
+} from '@aws-cdk/aws-cognito';
 
 /**
  * Represents a UserPoolAuthenticationProvider
@@ -41,7 +44,7 @@ export interface UserPoolAuthenticationProviderProps extends UserPoolClientProps
 /**
  * Defines a User Pool Authentication Provider
  */
-export class UserPoolAuthenticationProvider implements IUserPoolAuthenticationProvider {
+export class UserPoolAuthenticationProvider implements IUserPoolAuthenticationProvider, DependableTrait {
 
   /**
    * Client Id of the Associated User Pool Client
@@ -58,10 +61,19 @@ export class UserPoolAuthenticationProvider implements IUserPoolAuthenticationPr
    */
   public readonly identityProviders: IUserPoolIdentityProvider[] = [];
 
+  /**
+   * Set underlying Constructs that can be dependencies
+   */
+  public dependencyRoots: IConstruct[];
+
   constructor(props: UserPoolAuthenticationProviderProps) {
     const client = this.configureUserPoolClient(props);
     this.clientId = client.userPoolClientId;
     this.identityProviders = props.userPool.identityProviders;
+    this.dependencyRoots = [
+      props.userPool,
+      client,
+    ];
     this.disableServerSideTokenCheck = props.disableServerSideTokenCheck ? true : false;
   }
 
