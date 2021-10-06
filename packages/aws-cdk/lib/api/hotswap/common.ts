@@ -61,7 +61,7 @@ export async function establishResourcePhysicalName(
     try {
       return await evaluateCfnTemplate.evaluateCfnExpression(physicalNameInCfnTemplate);
     } catch (e) {
-      // If we can't evaluate the function's name CloudFormation expression,
+      // If we can't evaluate the resource's name CloudFormation expression,
       // just look it up in the currently deployed Stack
       if (!(e instanceof CfnEvaluationException)) {
         throw e;
