@@ -16,9 +16,9 @@ let us know if it's not up-to-date (even better, submit a PR with your  correcti
 - [Getting Started](#getting-started)
 - [Pull Requests](#pull-requests)
   - [Step 1: Find something to work on](#step-1-find-something-to-work-on)
-  - [Step 2: Design (optional)](#step-2-design-optional)
+  - [Step 2: Design (optional)](#step-2-design)
   - [Step 3: Work your Magic](#step-3-work-your-magic)
-  - [Step 4: Pull Request](#step-5-pull-request)
+  - [Step 4: Pull Request](#step-4-pull-request)
   - [Step 5: Merge](#step-5-merge)
 - [Breaking Changes](#breaking-changes)
 - [Documentation](#documentation)
@@ -602,7 +602,7 @@ The following linters are used:
 
 #### eslint
 
-All packages in the repo use a standard base configuration found at [eslintrc.js](tools/cdk-build-tools/config/eslintrc.js).
+All packages in the repo use a standard base configuration found at [eslintrc.js](tools/@aws-cdk/cdk-build-tools/config/eslintrc.js).
 This can be customized for any package by modifying the `.eslintrc` file found at its root.
 
 If you're using the VS Code and would like to see eslint violations on it, install the [eslint
@@ -780,7 +780,7 @@ the feature flag.
 A couple of [jest helper methods] are available for use with unit tests. These help run unit tests that test
 behaviour when flags are enabled or disabled in the two major versions.
 
-[jest helper methods]: https://github.com/aws/aws-cdk/blob/master/tools/cdk-build-tools/lib/feature-flag.ts
+[jest helper methods]: https://github.com/aws/aws-cdk/blob/master/tools/@aws-cdk/cdk-build-tools/lib/feature-flag.ts
 
 ## Versioning and Release
 

@@ -3,7 +3,7 @@ import * as assets from '@aws-cdk/aws-ecr-assets';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { CfnService } from './';
+import { CfnService } from './apprunner.generated';
 
 /**
  * The image repository types
