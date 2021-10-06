@@ -65,7 +65,7 @@ const queue = new sqs.Queue(this, 'Queue');
 
 rule.addTarget(new targets.LambdaFunction(fn, {
   deadLetterQueue: queue, // Optional: add a dead letter queue
-  maxEventAge: cdk.Duration.hours(2), // Otional: set the maxEventAge retry policy
+  maxEventAge: cdk.Duration.hours(2), // Optional: set the maxEventAge retry policy
   retryAttempts: 2, // Optional: set the max number of retry attempts
 }));
 ```
