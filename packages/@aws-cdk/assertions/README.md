@@ -55,6 +55,11 @@ const expected = {
 template.templateMatches(expected);
 ```
 
+By default, the `templateMatches()` API will use the an 'object-like' comparison,
+which means that it will allow for the actual template to be a superset of the
+given expectation. See [Special Matchers](#special-matchers) for details on how
+to change this.
+
 Snapshot testing is a common technique to store a snapshot of the output and
 compare it during future changes. Since CloudFormation templates are human readable,
 they are a good target for åßsnapshot testing.
