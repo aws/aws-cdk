@@ -345,7 +345,7 @@ The following example uses both:
 const taskDefinition = new ecs.TaskDefinition(this, 'TaskDef', {
   memoryMiB: '512',
   cpu: '256',
-  networkMode: NetworkMode.AWS_VPC,
+  networkMode: ecs.NetworkMode.AWS_VPC,
   compatibility: ecs.Compatibility.EC2_AND_FARGATE,
 });
 ```
