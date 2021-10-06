@@ -1,10 +1,10 @@
 import { randomBytes } from 'crypto';
+import { DependableTrait } from '@aws-cdk/core';
 import {
   UserPoolClient,
   UserPoolClientProps,
 } from './user-pool-client';
 import { IUserPoolIdentityProvider } from './user-pool-idp';
-import { DependableTrait } from '@aws-cdk/core';
 
 /**
  * Represents a UserPoolAuthenticationProvider
@@ -65,7 +65,7 @@ export class UserPoolAuthenticationProvider implements IUserPoolAuthenticationPr
     this.identityProviders = props.userPool.identityProviders;
     this.disableServerSideTokenCheck = props.disableServerSideTokenCheck ? true : false;
     DependableTrait.implement(this, {
-      dependencyRoots:  [
+      dependencyRoots: [
         props.userPool,
         client,
       ],
