@@ -39,9 +39,7 @@ async function isStateMachineDefinitionOnlyChange(
     }
   }
 
-  const definitionString = await evaluateCfnTemplate.evaluateCfnExpression(propertyUpdates.DefinitionString.newValue);
-
-  return definitionString;
+  return evaluateCfnTemplate.evaluateCfnExpression(propertyUpdates.DefinitionString.newValue);
 }
 
 interface StateMachineResource {
