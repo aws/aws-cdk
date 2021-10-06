@@ -1,3 +1,247 @@
+# CloudFormation Resource Specification v43.0.0
+
+## New Resource Types
+
+* AWS::Backup::Framework
+* AWS::Backup::ReportPlan
+* AWS::Lightsail::Disk
+* AWS::Lightsail::Instance
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::EKS::Cluster Logging (__deleted__)
+* AWS::EKS::Cluster Tags (__deleted__)
+* AWS::EKS::Cluster ResourcesVpcConfig.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::SSM::MaintenanceWindowTask CutoffBehavior (__added__)
+
+## Property Type Changes
+
+* AWS::EKS::Cluster.ClusterLogging (__removed__)
+* AWS::EKS::Cluster.Logging (__removed__)
+* AWS::EKS::Cluster.LoggingTypeConfig (__removed__)
+* AWS::EKS::Cluster.Provider (__added__)
+* AWS::Backup::BackupVault.LockConfigurationType changeableForDays (__deleted__)
+* AWS::Backup::BackupVault.LockConfigurationType maxRetentionDays (__deleted__)
+* AWS::Backup::BackupVault.LockConfigurationType minRetentionDays (__deleted__)
+* AWS::Backup::BackupVault.LockConfigurationType ChangeableForDays (__added__)
+* AWS::Backup::BackupVault.LockConfigurationType MaxRetentionDays (__added__)
+* AWS::Backup::BackupVault.LockConfigurationType MinRetentionDays (__added__)
+* AWS::EC2::LaunchTemplate.MetadataOptions HttpProtocolIpv6 (__added__)
+* AWS::EKS::Cluster.EncryptionConfig Provider.PrimitiveType (__deleted__)
+* AWS::EKS::Cluster.EncryptionConfig Provider.Type (__added__)
+* AWS::EKS::Cluster.EncryptionConfig Provider.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::EKS::Cluster.EncryptionConfig Resources.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::EKS::Cluster.KubernetesNetworkConfig ServiceIpv4Cidr.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::EKS::Cluster.ResourcesVpcConfig EndpointPrivateAccess (__deleted__)
+* AWS::EKS::Cluster.ResourcesVpcConfig EndpointPublicAccess (__deleted__)
+* AWS::EKS::Cluster.ResourcesVpcConfig PublicAccessCidrs (__deleted__)
+* AWS::EKS::Cluster.ResourcesVpcConfig SecurityGroupIds.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::EKS::Cluster.ResourcesVpcConfig SubnetIds.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+
+# Serverless Application Model (SAM) Resource Specification v2016-10-31
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+
+## Property Type Changes
+
+* AWS::Serverless::Function.EventInvokeDestinationConfig (__added__)
+* AWS::Serverless::Function.DestinationConfig OnSuccess (__deleted__)
+* AWS::Serverless::Function.EventInvokeConfig DestinationConfig.Type (__changed__)
+  * Old: DestinationConfig
+  * New: EventInvokeDestinationConfig
+
+# CloudFormation Resource Specification v43.0.0
+
+## New Resource Types
+
+* AWS::APS::RuleGroupsNamespace
+
+## Attribute Changes
+
+* AWS::MediaConnect::Flow Source.SourceIngestPort (__added__)
+* AWS::MediaConnect::FlowSource SourceIngestPort (__added__)
+* AWS::OpenSearchService::Domain DomainArn (__added__)
+* AWS::SQS::QueuePolicy Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-policy.html
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sqs-queuepolicy.html
+* AWS::SQS::QueuePolicy Id (__added__)
+
+## Property Changes
+
+* AWS::APS::Workspace AlertManagerDefinition (__added__)
+* AWS::EKS::Cluster Logging (__added__)
+* AWS::EKS::Cluster Tags (__added__)
+* AWS::EKS::Cluster ResourcesVpcConfig.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::KinesisFirehose::DeliveryStream AmazonopensearchserviceDestinationConfiguration (__added__)
+* AWS::Lambda::Function Architectures (__added__)
+* AWS::Lambda::LayerVersion CompatibleArchitectures (__added__)
+* AWS::MediaConnect::FlowOutput MinLatency (__added__)
+* AWS::SQS::QueuePolicy PolicyDocument.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-policy.html#cfn-sqs-queuepolicy-policydoc
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sqs-queuepolicy.html#cfn-sqs-queuepolicy-policydocument
+* AWS::SQS::QueuePolicy Queues.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sqs-policy.html#cfn-sqs-queuepolicy-queues
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sqs-queuepolicy.html#cfn-sqs-queuepolicy-queues
+
+## Property Type Changes
+
+* AWS::EKS::Cluster.Provider (__removed__)
+* AWS::EC2::LaunchTemplate.AcceleratorCount (__added__)
+* AWS::EC2::LaunchTemplate.AcceleratorTotalMemoryMiB (__added__)
+* AWS::EC2::LaunchTemplate.BaselineEbsBandwidthMbps (__added__)
+* AWS::EC2::LaunchTemplate.MemoryGiBPerVCpu (__added__)
+* AWS::EC2::LaunchTemplate.MemoryMiB (__added__)
+* AWS::EC2::LaunchTemplate.NetworkInterfaceCount (__added__)
+* AWS::EC2::LaunchTemplate.TotalLocalStorageGB (__added__)
+* AWS::EC2::LaunchTemplate.VCpuCount (__added__)
+* AWS::ECR::ReplicationConfiguration.RepositoryFilter (__added__)
+* AWS::EKS::Cluster.ClusterLogging (__added__)
+* AWS::EKS::Cluster.Logging (__added__)
+* AWS::EKS::Cluster.LoggingTypeConfig (__added__)
+* AWS::Kendra::DataSource.ProxyConfiguration (__added__)
+* AWS::Kendra::DataSource.WebCrawlerAuthenticationConfiguration (__added__)
+* AWS::Kendra::DataSource.WebCrawlerBasicAuthentication (__added__)
+* AWS::Kendra::DataSource.WebCrawlerConfiguration (__added__)
+* AWS::Kendra::DataSource.WebCrawlerSeedUrlConfiguration (__added__)
+* AWS::Kendra::DataSource.WebCrawlerSiteMapsConfiguration (__added__)
+* AWS::Kendra::DataSource.WebCrawlerUrls (__added__)
+* AWS::Kendra::DataSource.WorkDocsConfiguration (__added__)
+* AWS::KinesisFirehose::DeliveryStream.AmazonopensearchserviceBufferingHints (__added__)
+* AWS::KinesisFirehose::DeliveryStream.AmazonopensearchserviceDestinationConfiguration (__added__)
+* AWS::KinesisFirehose::DeliveryStream.AmazonopensearchserviceRetryOptions (__added__)
+* AWS::ECR::ReplicationConfiguration.ReplicationRule RepositoryFilters (__added__)
+* AWS::EKS::Cluster.EncryptionConfig Provider.Type (__deleted__)
+* AWS::EKS::Cluster.EncryptionConfig Provider.PrimitiveType (__added__)
+* AWS::EKS::Cluster.EncryptionConfig Provider.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EKS::Cluster.EncryptionConfig Resources.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EKS::Cluster.KubernetesNetworkConfig ServiceIpv4Cidr.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EKS::Cluster.ResourcesVpcConfig EndpointPrivateAccess (__added__)
+* AWS::EKS::Cluster.ResourcesVpcConfig EndpointPublicAccess (__added__)
+* AWS::EKS::Cluster.ResourcesVpcConfig PublicAccessCidrs (__added__)
+* AWS::EKS::Cluster.ResourcesVpcConfig SecurityGroupIds.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EKS::Cluster.ResourcesVpcConfig SubnetIds.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::Kendra::DataSource.DataSourceConfiguration WebCrawlerConfiguration (__added__)
+* AWS::Kendra::DataSource.DataSourceConfiguration WorkDocsConfiguration (__added__)
+* AWS::Kendra::DataSource.ServiceNowConfiguration AuthenticationType (__added__)
+* AWS::Kendra::DataSource.ServiceNowKnowledgeArticleConfiguration FilterQuery (__added__)
+* AWS::Kendra::DataSource.SharePointConfiguration SslCertificateS3Path (__added__)
+* AWS::MediaConnect::Flow.Encryption Algorithm.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::MediaConnect::Flow.Source MinLatency (__added__)
+* AWS::MediaConnect::Flow.Source SourceIngestPort (__added__)
+* AWS::MediaConnect::FlowOutput.Encryption Algorithm.Required (__changed__)
+  * Old: true
+  * New: false
+
+
+# CloudFormation Resource Specification v42.0.0
+
+## New Resource Types
+
+* AWS::MemoryDB::ACL
+* AWS::MemoryDB::Cluster
+* AWS::MemoryDB::ParameterGroup
+* AWS::MemoryDB::SubnetGroup
+* AWS::MemoryDB::User
+
+## Attribute Changes
+
+* AWS::ApiGateway::GatewayResponse Id (__added__)
+* AWS::Config::AggregationAuthorization AggregationAuthorizationArn (__added__)
+
+## Property Changes
+
+* AWS::ApiGateway::GatewayResponse ResponseParameters.DuplicatesAllowed (__deleted__)
+* AWS::ApiGateway::GatewayResponse ResponseTemplates.DuplicatesAllowed (__deleted__)
+* AWS::AppSync::DataSource OpenSearchServiceConfig (__added__)
+* AWS::Backup::BackupVault LockConfiguration (__added__)
+* AWS::Config::AggregationAuthorization Tags.DuplicatesAllowed (__added__)
+* AWS::MSK::Cluster ClientAuthentication.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::MSK::Cluster EncryptionInfo.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+
+## Property Type Changes
+
+* AWS::AppSync::DataSource.OpenSearchServiceConfig (__added__)
+* AWS::Backup::BackupVault.LockConfigurationType (__added__)
+* AWS::IoT::TopicRule.OpenSearchAction (__added__)
+* AWS::MSK::Cluster.Unauthenticated (__added__)
+* AWS::ImageBuilder::ImageRecipe.AdditionalInstanceConfiguration UserDataOverride.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::ImageBuilder::ImageRecipe.SystemsManagerAgent UninstallAfterBuild.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::IoT::TopicRule.Action OpenSearch (__added__)
+* AWS::MSK::Cluster.ClientAuthentication Unauthenticated (__added__)
+* AWS::MSK::Cluster.ClientAuthentication Sasl.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::MSK::Cluster.ClientAuthentication Tls.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::MSK::Cluster.EncryptionInTransit ClientBroker.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::MSK::Cluster.EncryptionInfo EncryptionInTransit.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::MSK::Cluster.Iam Enabled.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::MSK::Cluster.Sasl Iam.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::MSK::Cluster.Sasl Scram.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::MSK::Cluster.Scram Enabled.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::MSK::Cluster.Tls Enabled (__added__)
+* AWS::MSK::Cluster.Tls CertificateAuthorityArnList.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+
+
 # CloudFormation Resource Specification v41.2.0
 
 ## New Resource Types

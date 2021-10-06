@@ -126,7 +126,7 @@ describe('Alarm', () => {
       Namespace: 'CDK/Test',
       Period: 300,
       Statistic: 'Maximum',
-      ExtendedStatistic: Match.absentProperty(),
+      ExtendedStatistic: Match.absent(),
       Threshold: 1000,
     });
 
@@ -152,7 +152,7 @@ describe('Alarm', () => {
       MetricName: 'Metric',
       Namespace: 'CDK/Test',
       Period: 300,
-      Statistic: Match.absentProperty(),
+      Statistic: Match.absent(),
       ExtendedStatistic: 'p99',
       Threshold: 1000,
     });
@@ -270,7 +270,7 @@ describe('Alarm', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
-      Statistic: Match.absentProperty(),
+      Statistic: Match.absent(),
       ExtendedStatistic: 'tm99.9999999999',
     });
 

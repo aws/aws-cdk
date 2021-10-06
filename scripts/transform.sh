@@ -61,7 +61,7 @@ export NODE_OPTIONS="--max-old-space-size=4096 --experimental-worker ${NODE_OPTI
 individual_packages_folder=${scriptdir}/../packages/individual-packages
 # copy & build the packages that are individually released from 'aws-cdk-lib'
 cd "$individual_packages_folder"
-../../tools/individual-pkg-gen/bin/individual-pkg-gen
+../../tools/@aws-cdk/individual-pkg-gen/bin/individual-pkg-gen
 
 createSymlinks "$individual_packages_folder"
 

@@ -2174,6 +2174,21 @@ describe('function', () => {
     })).toThrow(/Layers are not supported for container image functions/);
   });
 
+  test('specified architecture is recognized', () => {
+    const stack = new cdk.Stack();
+    new lambda.Function(stack, 'MyFunction', {
+      code: lambda.Code.fromInline('foo'),
+      runtime: lambda.Runtime.NODEJS_12_X,
+      handler: 'index.handler',
+
+      architectures: [lambda.Architecture.ARM_64],
+    });
+
+    expect(stack).toHaveResource('AWS::Lambda::Function', {
+      Architectures: ['arm64'],
+    });
+  });
+
 });
 
 function newTestLambda(scope: constructs.Construct) {
