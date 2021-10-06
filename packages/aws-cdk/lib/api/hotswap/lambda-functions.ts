@@ -1,5 +1,5 @@
 import { ISDK } from '../aws-auth';
-import { assetMetadataChanged, ChangeHotswapImpact, ChangeHotswapResult, HotswapOperation, HotswappableResourceChange, establishHotswappableResourceName } from './common';
+import { assetMetadataChanged, ChangeHotswapImpact, ChangeHotswapResult, HotswapOperation, HotswappableChangeCandidate, establishHotswappableResourceName } from './common';
 import { EvaluateCloudFormationTemplate } from './evaluate-cloudformation-template';
 
 /**
@@ -9,7 +9,7 @@ import { EvaluateCloudFormationTemplate } from './evaluate-cloudformation-templa
  * or a LambdaFunctionResource if the change can be short-circuited.
  */
 export async function isHotswappableLambdaFunctionChange(
-  logicalId: string, change: HotswappableResourceChange, evaluateCfnTemplate: EvaluateCloudFormationTemplate,
+  logicalId: string, change: HotswappableChangeCandidate, evaluateCfnTemplate: EvaluateCloudFormationTemplate,
 ): Promise<ChangeHotswapResult> {
   const lambdaCodeChange = await isLambdaFunctionCodeOnlyChange(change, evaluateCfnTemplate);
   if (typeof lambdaCodeChange === 'string') {
@@ -45,7 +45,7 @@ export async function isHotswappableLambdaFunctionChange(
  * and only affects its Code property.
  */
 async function isLambdaFunctionCodeOnlyChange(
-  change: HotswappableResourceChange, evaluateCfnTemplate: EvaluateCloudFormationTemplate,
+  change: HotswappableChangeCandidate, evaluateCfnTemplate: EvaluateCloudFormationTemplate,
 ): Promise<LambdaFunctionCode | ChangeHotswapImpact> {
   const newResourceType = change.newValue.Type;
   if (newResourceType !== 'AWS::Lambda::Function') {

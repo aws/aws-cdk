@@ -3,7 +3,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import { CloudFormation } from 'aws-sdk';
 import { ISDK, Mode, SdkProvider } from './aws-auth';
 import { DeployStackResult } from './deploy-stack';
-import { ChangeHotswapImpact, ChangeHotswapResult, HotswapOperation, ListStackResources, HotswappableResourceChange } from './hotswap/common';
+import { ChangeHotswapImpact, ChangeHotswapResult, HotswapOperation, ListStackResources, HotswappableChangeCandidate } from './hotswap/common';
 import { EvaluateCloudFormationTemplate } from './hotswap/evaluate-cloudformation-template';
 import { isHotswappableLambdaFunctionChange } from './hotswap/lambda-functions';
 import { isHotswappableStateMachineChange } from './hotswap/stepfunctions-state-machines';
@@ -117,7 +117,7 @@ async function findAllHotswappableChanges(
  * returns `ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT` if a resource was deleted, or a change that we cannot short-circuit occured.
  * Returns `ChangeHotswapImpact.IRRELEVANT` if a change that does not impact shortcircuiting occured, such as a metadata change.
  */
-export function isCandidateForHotswapping(change: cfn_diff.ResourceDifference): HotswappableResourceChange | ChangeHotswapImpact {
+export function isCandidateForHotswapping(change: cfn_diff.ResourceDifference): HotswappableChangeCandidate | ChangeHotswapImpact {
   // a resource has been removed OR a resource has been added; we can't short-circuit that change
   if (!change.newValue || !change.oldValue) {
     return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;

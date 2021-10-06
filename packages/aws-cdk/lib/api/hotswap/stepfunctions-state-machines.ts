@@ -1,9 +1,9 @@
 import { ISDK } from '../aws-auth';
-import { ChangeHotswapImpact, ChangeHotswapResult, HotswapOperation, HotswappableResourceChange, establishHotswappableResourceName } from './common';
+import { ChangeHotswapImpact, ChangeHotswapResult, HotswapOperation, HotswappableChangeCandidate, establishHotswappableResourceName } from './common';
 import { EvaluateCloudFormationTemplate } from './evaluate-cloudformation-template';
 
 export async function isHotswappableStateMachineChange(
-  logicalId: string, change: HotswappableResourceChange, evaluateCfnTemplate: EvaluateCloudFormationTemplate,
+  logicalId: string, change: HotswappableChangeCandidate, evaluateCfnTemplate: EvaluateCloudFormationTemplate,
 ): Promise<ChangeHotswapResult> {
   const stateMachineDefinitionChange = await isStateMachineDefinitionOnlyChange(change, evaluateCfnTemplate);
 
@@ -26,7 +26,7 @@ export async function isHotswappableStateMachineChange(
 }
 
 async function isStateMachineDefinitionOnlyChange(
-  change: HotswappableResourceChange, evaluateCfnTemplate: EvaluateCloudFormationTemplate):
+  change: HotswappableChangeCandidate, evaluateCfnTemplate: EvaluateCloudFormationTemplate):
   Promise<string | ChangeHotswapImpact> {
   const newResourceType = change.newValue.Type;
   if (newResourceType !== 'AWS::StepFunctions::StateMachine') {

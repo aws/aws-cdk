@@ -37,7 +37,7 @@ export type ChangeHotswapResult = HotswapOperation | ChangeHotswapImpact;
 /**
  * Represents a change that can be hotswapped.
  */
-export class HotswappableResourceChange {
+export class HotswappableChangeCandidate {
   /**
    * The value the resource is being updated to.
    */
@@ -71,6 +71,6 @@ export async function establishHotswappableResourceName(
   return evaluateCfnTemplate.findPhysicalNameFor(logicalId);
 }
 
-export function assetMetadataChanged(change: HotswappableResourceChange): boolean {
+export function assetMetadataChanged(change: HotswappableChangeCandidate): boolean {
   return !!change.newValue?.Metadata['aws:asset:path'];
 }
