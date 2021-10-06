@@ -78,7 +78,6 @@ async function findAllHotswappableChanges(
   });
 
   const changesDetectionResults: Array<Array<ChangeHotswapResult>> = [];
-
   for (const detectorResultPromises of promises) {
     const hotswapDetectionResults = await Promise.all(detectorResultPromises);
     changesDetectionResults.push(hotswapDetectionResults);
