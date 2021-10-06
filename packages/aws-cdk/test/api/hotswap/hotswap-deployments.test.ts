@@ -56,7 +56,7 @@ test('Resources that are not lambdas or step functions result in a full deployme
   expect(mockUpdateLambdaCode).not.toHaveBeenCalled();
 });
 
-test('Resources that are not lambdas or step functions result in a full deployment even when a hotswappable change is present', async () => {
+test('A change to both a hotswappable resource and a non-hotswappable resource results in a full deployment', async () => {
   // GIVEN
   setup.setTemplate({
     Resources: {
@@ -115,7 +115,6 @@ test('Resources that are not lambdas or step functions result in a full deployme
   expect(mockUpdateMachineDefinition).not.toHaveBeenCalled();
   expect(mockUpdateLambdaCode).not.toHaveBeenCalled();
 });
-
 
 test('changes only to CDK::Metadata result in a noOp', async () => {
   // GIVEN
