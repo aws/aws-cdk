@@ -77,13 +77,14 @@ async function findAllHotswappableChanges(
     }
   });
 
-  const hotswappableResources = new Array<HotswapOperation>();
   const changesDetectionResults: Array<Array<ChangeHotswapResult>> = [];
 
   for (const detectorResultPromises of promises) {
     const hotswapDetectionResults = await Promise.all(detectorResultPromises);
     changesDetectionResults.push(hotswapDetectionResults);
   }
+
+  const hotswappableResources = new Array<HotswapOperation>();
 
   // resolve all detector results
   for (const hotswapDetectionResults of changesDetectionResults) {
