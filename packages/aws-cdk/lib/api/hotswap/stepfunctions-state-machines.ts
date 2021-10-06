@@ -7,8 +7,8 @@ export async function isHotswappableStateMachineChange(
 ): Promise<ChangeHotswapResult> {
   const stateMachineDefinitionChange = await isStateMachineDefinitionOnlyChange(change, evaluateCfnTemplate);
 
-  if ((stateMachineDefinitionChange === ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT) ||
-      (stateMachineDefinitionChange === ChangeHotswapImpact.IRRELEVANT)) {
+  if (stateMachineDefinitionChange === ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT ||
+      stateMachineDefinitionChange === ChangeHotswapImpact.IRRELEVANT) {
     return stateMachineDefinitionChange;
   }
 
