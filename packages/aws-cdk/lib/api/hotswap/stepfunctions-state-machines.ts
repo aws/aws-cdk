@@ -32,7 +32,6 @@ async function isStateMachineDefinitionOnlyChange(
   }
 
   const propertyUpdates = change.propertyUpdates;
-
   for (const updatedPropName in propertyUpdates) {
     const updatedProp = propertyUpdates[updatedPropName];
     if (updatedProp.newValue === undefined) {
