@@ -355,6 +355,7 @@ export class CustomRule extends RuleNew {
 
     props.lambdaFunction.addPermission('Permission', {
       principal: new iam.ServicePrincipal('config.amazonaws.com'),
+      sourceAccount: this.env.account,
     });
 
     if (props.lambdaFunction.role) {

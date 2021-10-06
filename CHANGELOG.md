@@ -2,6 +2,54 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.126.0](https://github.com/aws/aws-cdk/compare/v1.125.0...v1.126.0) (2021-10-05)
+
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **assertions:** The `templateMatches()` API previously performed
+an exact match. The default behavior has been updated to be
+"object-like".
+
+### Features
+
+* **assertions:** matcher support for `templateMatches()` API ([#16789](https://github.com/aws/aws-cdk/issues/16789)) ([0fb2179](https://github.com/aws/aws-cdk/commit/0fb21799b0da3185c2d4ba91a8ef9729c71fbd5a))
+* **apprunner:** support the Service L2 construct ([#15810](https://github.com/aws/aws-cdk/issues/15810)) ([3cea941](https://github.com/aws/aws-cdk/commit/3cea9419b6c02b3b5eb952b7e03b5a132e5e9630)), closes [#14813](https://github.com/aws/aws-cdk/issues/14813)
+* **aws-ec2:** userdata cfn-signal signal resource which is different than the attached resource ([#16264](https://github.com/aws/aws-cdk/issues/16264)) ([f24a1ae](https://github.com/aws/aws-cdk/commit/f24a1ae21b30868146b30a0897dc659f99241de4))
+* **backup:** expose method to add statements to the vault policy ([#16597](https://github.com/aws/aws-cdk/issues/16597)) ([3ff1537](https://github.com/aws/aws-cdk/commit/3ff15378c1463920d010231df7d4c801d28b4486))
+* **cfnspec:** cloudformation spec v42.0.0 ([#16639](https://github.com/aws/aws-cdk/issues/16639)) ([2157acd](https://github.com/aws/aws-cdk/commit/2157acd4287dc9df1ae4642bbe049c181e3432b6))
+* **cloudfront:** support Behavior-specific viewer protocol policy for CloudFrontWebDistribution ([#16389](https://github.com/aws/aws-cdk/issues/16389)) ([5c028c5](https://github.com/aws/aws-cdk/commit/5c028c54aa7635dd55095257ebe81bdf2158ea39)), closes [#7086](https://github.com/aws/aws-cdk/issues/7086)
+* **cloudwatch:** support cross-environment search expressions ([#16539](https://github.com/aws/aws-cdk/issues/16539)) ([c165138](https://github.com/aws/aws-cdk/commit/c165138fa7c3456e530ffeab9b7a038914cc2dca)), closes [#9039](https://github.com/aws/aws-cdk/issues/9039)
+* **eks:** `connectAutoScalingGroupCapacity` on imported clusters ([#14650](https://github.com/aws/aws-cdk/issues/14650)) ([7f7be08](https://github.com/aws/aws-cdk/commit/7f7be089fa84afd0ab009a7feca2df4315749bc3))
+* **eks:** add warning to fargateProfile ([#16631](https://github.com/aws/aws-cdk/issues/16631)) ([41fdebb](https://github.com/aws/aws-cdk/commit/41fdebb974a2b29ba461757d210fa3a8b8cdc73d)), closes [#16349](https://github.com/aws/aws-cdk/issues/16349)
+* **stepfunctions-tasks:** add step concurrency level to EmrCreateCluster ([#15242](https://github.com/aws/aws-cdk/issues/15242)) ([1deea90](https://github.com/aws/aws-cdk/commit/1deea9005656c2f0f25c56e773145b6e0ebcbb1b)), closes [#15223](https://github.com/aws/aws-cdk/issues/15223)
+* allow stale bot trigger manually ([#16586](https://github.com/aws/aws-cdk/issues/16586)) ([fc8cfee](https://github.com/aws/aws-cdk/commit/fc8cfee77008314d59eda8f18d2c91c23e2a23ab))
+
+
+### Bug Fixes
+
+* **eks:** Support for http proxy in EKS onEvent lambda ([#16609](https://github.com/aws/aws-cdk/issues/16609)) ([cf22280](https://github.com/aws/aws-cdk/commit/cf222806f781c3476dd942c57787ad0f4924dc04)), closes [/github.com/aws/aws-cdk/blob/7dae114b7aac46321b8d8572e6837428b4c633b2/tools/pkglint/lib/rules.ts#L1332](https://github.com/aws//github.com/aws/aws-cdk/blob/7dae114b7aac46321b8d8572e6837428b4c633b2/tools/pkglint/lib/rules.ts/issues/L1332)
+* **eks:** support http proxy in EKS onEvent lambda ([#16657](https://github.com/aws/aws-cdk/issues/16657)) ([87c9570](https://github.com/aws/aws-cdk/commit/87c957029ba5adecc9dddd72d9190d8a7abb913f)), closes [/github.com/aws/aws-cdk/pull/16657#issuecomment-928260661](https://github.com/aws//github.com/aws/aws-cdk/pull/16657/issues/issuecomment-928260661) [/github.com/aws/aws-cdk/pull/16657#issuecomment-928529421](https://github.com/aws//github.com/aws/aws-cdk/pull/16657/issues/issuecomment-928529421) [/github.com/aws/aws-cdk/blob/7dae114b7aac46321b8d8572e6837428b4c633b2/tools/pkglint/lib/rules.ts#L1332](https://github.com/aws//github.com/aws/aws-cdk/blob/7dae114b7aac46321b8d8572e6837428b4c633b2/tools/pkglint/lib/rules.ts/issues/L1332)
+* **cli:** progress bar overshoots count by 1 for stack updates ([#16168](https://github.com/aws/aws-cdk/issues/16168)) ([0c8ecb8](https://github.com/aws/aws-cdk/commit/0c8ecb8cfc2cec9fd8c9f238c049b604a0f149fe))
+* **config:** add SourceAccount condition to Lambda permission ([#16617](https://github.com/aws/aws-cdk/issues/16617)) ([cfcaf45](https://github.com/aws/aws-cdk/commit/cfcaf452da163efa33df752b0ff026b3ea608dfc))
+* **elasticloadbalancingv2:** Incorrect validation on `NetworkLoadBalancer.configureHealthCheck()` ([#16445](https://github.com/aws/aws-cdk/issues/16445)) ([140892a](https://github.com/aws/aws-cdk/commit/140892af639c78eebebecf687eb1b37ab75d643d))
+* **iam:** `User.fromUserArn` does not work for ARNs that include a path ([#16269](https://github.com/aws/aws-cdk/issues/16269)) ([5c69c94](https://github.com/aws/aws-cdk/commit/5c69c941bc5e7284f5873110e7c7c86cdeba42fb)), closes [40aws-cdk/aws-iam/lib/role.ts#L191-L194](https://github.com/40aws-cdk/aws-iam/lib/role.ts/issues/L191-L194) [#16256](https://github.com/aws/aws-cdk/issues/16256)
+* **s3:** setting `autoDeleteObjects` to `false` empties the bucket ([#16756](https://github.com/aws/aws-cdk/issues/16756)) ([21836f2](https://github.com/aws/aws-cdk/commit/21836f249395045a4a697fbfe553fe17e1c5e6a1)), closes [#16603](https://github.com/aws/aws-cdk/issues/16603)
+* **route53-targets:** ApiGateway does not accept RestApiBase ([#16610](https://github.com/aws/aws-cdk/issues/16610)) ([20071bb](https://github.com/aws/aws-cdk/commit/20071bb12648adeab96e4dbcb31f5bd50c5f631d)), closes [#16227](https://github.com/aws/aws-cdk/issues/16227)
+* **sns:** cannot use numeric filter policy with 0 values ([#16551](https://github.com/aws/aws-cdk/issues/16551)) ([62b6762](https://github.com/aws/aws-cdk/commit/62b6762195324cf04758ab96ed20925b4939b773)), closes [#16549](https://github.com/aws/aws-cdk/issues/16549)
+
+
+### Reverts
+
+* **aws-eks:** "fix(aws-eks): Support for http proxy in EKS onEvent lambda" ([#16651](https://github.com/aws/aws-cdk/issues/16651)) ([376c837](https://github.com/aws/aws-cdk/commit/376c83749cd4b5260df724dabe2e44e0dc3f792a))
+
+## [1.125.0](https://github.com/aws/aws-cdk/compare/v1.124.0...v1.125.0) (2021-09-29)
+
+
+### Features
+
+* **lambda:** support for ARM architecture ([b3ba35e](https://github.com/aws/aws-cdk/commit/b3ba35e9b8b157303a29350031885eff0c73b05b))
+
 ## [1.124.0](https://github.com/aws/aws-cdk/compare/v1.123.0...v1.124.0) (2021-09-21)
 
 

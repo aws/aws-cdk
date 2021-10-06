@@ -1,5 +1,5 @@
-import { Template } from '@aws-cdk/assertions';
-import { App, SecretValue, Stack } from '@aws-cdk/core';
+import '@aws-cdk/assert-internal/jest';
+import { App, SecretValue, Stack, Token } from '@aws-cdk/core';
 import { Group, ManagedPolicy, Policy, PolicyStatement, User } from '../lib';
 
 describe('IAM user', () => {
@@ -7,7 +7,7 @@ describe('IAM user', () => {
     const app = new App();
     const stack = new Stack(app, 'MyStack');
     new User(stack, 'MyUser');
-    Template.fromStack(stack).templateMatches({
+    expect(stack).toMatchTemplate({
       Resources: { MyUserDC45028B: { Type: 'AWS::IAM::User' } },
     });
   });
@@ -19,7 +19,7 @@ describe('IAM user', () => {
       password: SecretValue.plainText('1234'),
     });
 
-    Template.fromStack(stack).templateMatches({
+    expect(stack).toMatchTemplate({
       Resources:
       {
         MyUserDC45028B:
@@ -48,7 +48,7 @@ describe('IAM user', () => {
     });
 
     // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::IAM::User', {
+    expect(stack).toHaveResource('AWS::IAM::User', {
       ManagedPolicyArns: [
         { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/asdf']] },
       ],
@@ -65,7 +65,7 @@ describe('IAM user', () => {
       permissionsBoundary,
     });
 
-    Template.fromStack(stack).hasResourceProperties('AWS::IAM::User', {
+    expect(stack).toHaveResource('AWS::IAM::User', {
       PermissionsBoundary: {
         'Fn::Join': [
           '',
@@ -106,6 +106,58 @@ describe('IAM user', () => {
     expect(stack.resolve(user.userName)).toStrictEqual(userName);
   });
 
+  test('user imported by tokenized user ARN has a name', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const user = User.fromUserArn(stack, 'import', Token.asString({ Ref: 'ARN' }));
+
+    // THEN
+    expect(stack.resolve(user.userName)).toStrictEqual({
+      'Fn::Select': [1, { 'Fn::Split': [':user/', { Ref: 'ARN' }] }],
+    });
+  });
+
+  test('user imported by user ARN with path', () => {
+    // GIVEN
+    const stack = new Stack();
+    const userName = 'MyUserName';
+
+    // WHEN
+    const user = User.fromUserArn(stack, 'import', `arn:aws:iam::account-id:user/path/${userName}`);
+
+    // THEN
+    expect(stack.resolve(user.userName)).toStrictEqual(userName);
+  });
+
+  test('user imported by user ARN with path (multiple elements)', () => {
+    // GIVEN
+    const stack = new Stack();
+    const userName = 'MyUserName';
+
+    // WHEN
+    const user = User.fromUserArn(stack, 'import', `arn:aws:iam::account-id:user/p/a/t/h/${userName}`);
+
+    // THEN
+    expect(stack.resolve(user.userName)).toStrictEqual(userName);
+  });
+
+  test('user imported by tokenized user attributes has a name', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const user = User.fromUserAttributes(stack, 'import', {
+      userArn: Token.asString({ Ref: 'ARN' }),
+    });
+
+    // THEN
+    expect(stack.resolve(user.userName)).toStrictEqual({
+      'Fn::Select': [1, { 'Fn::Split': [':user/', { Ref: 'ARN' }] }],
+    });
+  });
+
   test('user imported by user attributes has a name', () => {
     // GIVEN
     const stack = new Stack();
@@ -114,6 +166,34 @@ describe('IAM user', () => {
     // WHEN
     const user = User.fromUserAttributes(stack, 'import', {
       userArn: `arn:aws:iam::account-id:user/${userName}`,
+    });
+
+    // THEN
+    expect(stack.resolve(user.userName)).toStrictEqual(userName);
+  });
+
+  test('user imported by user attributes with path has a name', () => {
+    // GIVEN
+    const stack = new Stack();
+    const userName = 'MyUserName';
+
+    // WHEN
+    const user = User.fromUserAttributes(stack, 'import', {
+      userArn: `arn:aws:iam::account-id:user/path/${userName}`,
+    });
+
+    // THEN
+    expect(stack.resolve(user.userName)).toStrictEqual(userName);
+  });
+
+  test('user imported by user attributes with path (multiple elements) has a name', () => {
+    // GIVEN
+    const stack = new Stack();
+    const userName = 'MyUserName';
+
+    // WHEN
+    const user = User.fromUserAttributes(stack, 'import', {
+      userArn: `arn:aws:iam::account-id:user/p/a/t/h/${userName}`,
     });
 
     // THEN
@@ -132,7 +212,7 @@ describe('IAM user', () => {
     }));
 
     // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    expect(stack).toHaveResource('AWS::IAM::Policy', {
       Users: ['john'],
       PolicyDocument: {
         Statement: [
@@ -163,7 +243,7 @@ describe('IAM user', () => {
     }));
 
     // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    expect(stack).toHaveResource('AWS::IAM::Policy', {
       Users: ['john'],
       PolicyDocument: {
         Statement: [
@@ -190,7 +270,7 @@ describe('IAM user', () => {
     otherGroup.addUser(user);
 
     // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::IAM::UserToGroupAddition', {
+    expect(stack).toHaveResource('AWS::IAM::UserToGroupAddition', {
       GroupName: {
         Ref: 'GroupC77FDACD',
       },
@@ -199,7 +279,7 @@ describe('IAM user', () => {
       ],
     });
 
-    Template.fromStack(stack).hasResourceProperties('AWS::IAM::UserToGroupAddition', {
+    expect(stack).toHaveResource('AWS::IAM::UserToGroupAddition', {
       GroupName: {
         Ref: 'OtherGroup85E5C653',
       },
