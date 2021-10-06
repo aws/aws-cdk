@@ -4,6 +4,7 @@ import {
   UserPoolClientProps,
 } from './user-pool-client';
 import { IUserPoolIdentityProvider } from './user-pool-idp';
+import { DependableTrait } from '@aws-cdk/core';
 
 /**
  * Represents a UserPoolAuthenticationProvider
@@ -63,6 +64,12 @@ export class UserPoolAuthenticationProvider implements IUserPoolAuthenticationPr
     this.clientId = client.userPoolClientId;
     this.identityProviders = props.userPool.identityProviders;
     this.disableServerSideTokenCheck = props.disableServerSideTokenCheck ? true : false;
+    DependableTrait.implement(this, {
+      dependencyRoots:  [
+        props.userPool,
+        client,
+      ],
+    });
   }
 
   /**
