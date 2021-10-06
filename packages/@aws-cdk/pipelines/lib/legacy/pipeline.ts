@@ -14,10 +14,6 @@ import { DeployCdkStackAction, PublishAssetsAction, UpdatePipelineAction } from 
 import { AddStageOptions, AssetPublishingCommand, BaseStageOptions, CdkStage, StackOutput } from './stage';
 import { SimpleSynthAction } from './synths';
 
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from '@aws-cdk/core';
-
 const CODE_BUILD_LENGTH_LIMIT = 100;
 /**
  * Properties for a CdkPipeline
@@ -207,7 +203,7 @@ export interface CdkPipelineProps {
  * - Keeping the pipeline up-to-date as the CDK apps change.
  * - Using stack outputs later on in the pipeline.
  */
-export class CdkPipeline extends CoreConstruct {
+export class CdkPipeline extends Construct {
   private readonly _pipeline: codepipeline.Pipeline;
   private readonly _assets: AssetPublishing;
   private readonly _stages: CdkStage[] = [];
@@ -304,6 +300,8 @@ export class CdkPipeline extends CoreConstruct {
       buildSpec: props.assetBuildSpec,
       dockerCredentials: this._dockerCredentials,
     });
+
+    this.node.addValidation({ validate: () => this.validatePipeline() });
   }
 
   /**
@@ -409,7 +407,7 @@ export class CdkPipeline extends CoreConstruct {
    * Our own convenience methods will never generate a pipeline that does that (although
    * this is a nice verification), but a user can also add the stacks by hand.
    */
-  protected validate(): string[] {
+  private validatePipeline(): string[] {
     const ret = new Array<string>();
 
     ret.push(...this.validateDeployOrder());
@@ -478,7 +476,7 @@ interface AssetPublishingProps {
 /**
  * Add appropriate publishing actions to the asset publishing stage
  */
-class AssetPublishing extends CoreConstruct {
+class AssetPublishing extends Construct {
   // CodePipelines has a hard limit of 50 actions per stage. See https://github.com/aws/aws-cdk/issues/9353
   private readonly MAX_PUBLISHERS_PER_STAGE = 50;
 

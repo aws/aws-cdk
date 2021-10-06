@@ -1,5 +1,5 @@
 import * as cloudfront from '@aws-cdk/aws-cloudfront';
-import { Construct } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 
 /** Construction properties for {@link OriginGroup}. */
 export interface OriginGroupProps {

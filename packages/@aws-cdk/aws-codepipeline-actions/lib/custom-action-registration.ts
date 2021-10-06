@@ -1,8 +1,5 @@
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 
 /**
  * The creation attributes used for defining a configuration property
