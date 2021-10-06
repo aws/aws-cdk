@@ -7,7 +7,7 @@ import * as deployments from '../../../lib/api/hotswap-deployments';
 import { Template } from '../../../lib/api/util/cloudformation';
 import { testStack, TestStackArtifact } from '../../util';
 import { MockSdkProvider } from '../../util/mock-sdk';
-import { FakeCloudformationStack } from './fake-cloudformation-stack';
+import { FakeCloudformationStack } from '../fake-cloudformation-stack';
 
 const STACK_NAME = 'withouterrors';
 export const STACK_ID = 'stackId';
