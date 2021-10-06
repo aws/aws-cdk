@@ -1,5 +1,5 @@
 import { Matcher, MatchResult } from './matcher';
-import { AbsentMatch } from './private/absentMatch';
+import { AbsentMatch } from './private/matchers/absent';
 import { getType } from './private/type';
 
 /**

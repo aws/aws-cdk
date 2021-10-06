@@ -1,4 +1,4 @@
-import { Matcher, MatchResult } from '../matcher';
+import { Matcher, MatchResult } from '../../matcher';
 
 export class AbsentMatch extends Matcher {
   constructor(public readonly name: string) {
