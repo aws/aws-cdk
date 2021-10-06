@@ -1,5 +1,5 @@
 import { ISDK } from '../aws-auth';
-import { ChangeHotswapImpact, ChangeHotswapResult, HotswapOperation, HotswappableChangeCandidate, establishHotswappableResourceName } from './common';
+import { ChangeHotswapImpact, ChangeHotswapResult, HotswapOperation, HotswappableChangeCandidate, establishResourcePhysicalName } from './common';
 import { EvaluateCloudFormationTemplate } from './evaluate-cloudformation-template';
 
 export async function isHotswappableStateMachineChange(
@@ -13,7 +13,7 @@ export async function isHotswappableStateMachineChange(
   }
 
   const machineNameInCfnTemplate = change.newValue?.Properties?.StateMachineName;
-  const machineName = await establishHotswappableResourceName(logicalId, machineNameInCfnTemplate, evaluateCfnTemplate);
+  const machineName = await establishResourcePhysicalName(logicalId, machineNameInCfnTemplate, evaluateCfnTemplate);
 
   if (!machineName) {
     return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;

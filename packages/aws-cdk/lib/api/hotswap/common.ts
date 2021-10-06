@@ -54,7 +54,7 @@ export class HotswappableChangeCandidate {
   }
 }
 
-export async function establishHotswappableResourceName(
+export async function establishResourcePhysicalName(
   logicalId: string, nameInCfnTemplate: any, evaluateCfnTemplate: EvaluateCloudFormationTemplate,
 ): Promise<string | undefined> {
   if (nameInCfnTemplate != null) {
