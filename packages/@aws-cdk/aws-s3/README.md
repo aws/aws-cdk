@@ -99,7 +99,7 @@ const result = bucket.addToResourcePolicy(new iam.PolicyStatement({
 }));
 ```
 
-If you try to add a policy statement to an existing bucket, this method will 
+If you try to add a policy statement to an existing bucket, this method will
 not do anything:
 
 ```ts
@@ -111,8 +111,8 @@ const result = bucket.addToResourcePolicy(new iam.PolicyStatement({
 }));
 ```
 
-That's because it's not possible to tell whether the bucket 
-already has a policy attached, let alone to re-use that policy to add more 
+That's because it's not possible to tell whether the bucket
+already has a policy attached, let alone to re-use that policy to add more
 statements to it. We recommend that you always check the result of the call:
 
 ```ts
@@ -402,13 +402,13 @@ bucket.virtualHostedUrlForObject('objectname'); // Virtual Hosted-Style URL
 bucket.virtualHostedUrlForObject('objectname', { regional: false }); // Virtual Hosted-Style URL but non-regional
 ```
 
-### Object Ownership
+## Object Ownership
 
 You can use the two following properties to specify the bucket [object Ownership].
 
 [object Ownership]: https://docs.aws.amazon.com/AmazonS3/latest/dev/about-object-ownership.html
 
-#### Object writer
+### Object writer
 
 The Uploading account will own the object.
 
@@ -418,7 +418,7 @@ new s3.Bucket(this, 'MyBucket', {
 });
 ```
 
-#### Bucket owner preferred
+### Bucket owner preferred
 
 The bucket owner will own the object if the object is uploaded with the bucket-owner-full-control canned ACL. Without this setting and canned ACL, the object is uploaded and remains owned by the uploading account.
 
@@ -428,7 +428,7 @@ new s3.Bucket(this, 'MyBucket', {
 });
 ```
 
-### Bucket deletion
+## Bucket deletion
 
 When a bucket is removed from a stack (or the stack is deleted), the S3
 bucket will be removed according to its removal policy (which by default will
@@ -445,3 +445,8 @@ const bucket = new Bucket(this, 'MyTempFileBucket', {
   autoDeleteObjects: true,
 });
 ```
+
+**Warning** if you have deployed a bucket with `autoDeleteObjects: true`,
+switching this to `false` in a CDK version *before* `1.126.0` will lead to all
+objects in the bucket being deleted. Be sure to update to version `1.126.0` or
+later before switching this value to `false`.
