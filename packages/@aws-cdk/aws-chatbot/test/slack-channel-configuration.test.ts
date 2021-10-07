@@ -1,5 +1,5 @@
-import '@aws-cdk/assert-internal/jest';
 import { ABSENT } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
@@ -91,6 +91,26 @@ describe('SlackChannelConfiguration', () => {
       },
       SlackChannelId: 'DEF456',
       SlackWorkspaceId: 'ABC123',
+      SnsTopicArns: [
+        {
+          Ref: 'MyTopic86869434',
+        },
+      ],
+    });
+  });
+
+  test('allows adding a Topic after creating the SlackChannel', () => {
+    const slackChannel = new chatbot.SlackChannelConfiguration(stack, 'MySlackChannel', {
+      slackWorkspaceId: 'ABC123',
+      slackChannelId: 'DEF456',
+      slackChannelConfigurationName: 'Test',
+    });
+
+    const topic = new sns.Topic(stack, 'MyTopic');
+    slackChannel.addNotificationTopic(topic);
+
+    expect(stack).toHaveResourceLike('AWS::Chatbot::SlackChannelConfiguration', {
+      ConfigurationName: 'Test',
       SnsTopicArns: [
         {
           Ref: 'MyTopic86869434',
