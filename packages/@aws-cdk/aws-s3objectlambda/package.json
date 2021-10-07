@@ -83,10 +83,12 @@
     "@types/jest": "^26.0.24"
   },
   "dependencies": {
-    "@aws-cdk/core": "0.0.0"
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^10.0.0"
   },
   "peerDependencies": {
-    "@aws-cdk/core": "0.0.0"
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^10.0.0"
   },
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"
@@ -97,6 +99,7 @@
     "announce": false
   },
   "publishConfig": {
-    "tag": "latest"
-  }
+    "tag": "next"
+  },
+  "private": true
 }
