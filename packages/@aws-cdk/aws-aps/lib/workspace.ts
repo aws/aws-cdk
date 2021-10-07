@@ -88,7 +88,11 @@ export class WorkSpace extends cdk.Resource {
   public static fromWorkSpaceId(scope: Construct, id: string, workSpaceId: string): IWorkSpace {
 
     class Import extends cdk.Resource {
-      public workspaceArn = `arn:aws:aps:${cdk.Stack.of(this).region}:${cdk.Stack.of(this).account}:workspace/${workSpaceId}`;;
+      public workspaceArn = cdk.Stack.of(this).formatArn({
+        resource: 'workspace',
+        service: 'aps',
+        resourceName: workSpaceId,
+      });
       public workspaceId = workSpaceId;
       public prometheusEndpoint = `https://aps-workspaces.${cdk.Stack.of(this).region}.amazonaws.com/workspaces/${workSpaceId}/`;
     }
