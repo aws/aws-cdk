@@ -189,7 +189,7 @@ level, the list of keys in the target is a subset of the provided pattern.
 const expected = {
   Fred: Match.objectLike({
     Wobble: 'Flob',
-  } as Record<string, any>),
+  }),
 };
 template.hasResourceProperties('Foo::Bar', expected);
 
@@ -197,7 +197,7 @@ template.hasResourceProperties('Foo::Bar', expected);
 const unexpected = {
   Fred: Match.objectLike({
     Brew: 'Coffee',
-  } as Record<string, any>),
+  }),
 }
 template.hasResourceProperties('Foo::Bar', unexpected);
 ```
@@ -230,7 +230,7 @@ or outside of any matchers.
 const expected = {
   Fred: Match.objectLike({
     Bob: Match.absent(),
-  } as Record<string, any>),
+  }),
 };
 template.hasResourceProperties('Foo::Bar', expected);
 
@@ -238,7 +238,7 @@ template.hasResourceProperties('Foo::Bar', expected);
 const unexpected = {
   Fred: Match.objectLike({
     Wobble: Match.absent(),
-  } as Record<string, any>),
+  }),
 };
 template.hasResourceProperties('Foo::Bar', unexpected);
 ```
@@ -265,7 +265,7 @@ This matcher can be combined with any of the other matchers.
 // }
 
 // The following will NOT throw an assertion error
-const expected: Record<string, any> = {
+const expected = {
   Fred: {
     Wobble: [Match.anyValue(), "Flip"],
   },
@@ -273,7 +273,7 @@ const expected: Record<string, any> = {
 template.hasResourceProperties('Foo::Bar', expected);
 
 // The following will throw an assertion error
-const unexpected: Record<string, any> = {
+const unexpected = {
   Fred: {
     Wimble: Match.anyValue(),
   },
@@ -301,7 +301,7 @@ This API will perform subset match on the target.
 // }
 
 // The following will NOT throw an assertion error
-const expected: Record<string, any> = {
+const expected = {
   Fred: Match.arrayWith(['Flob']),
 };
 template.hasResourceProperties('Foo::Bar', expected);
@@ -309,7 +309,7 @@ template.hasResourceProperties('Foo::Bar', expected);
 // The following will throw an assertion error
 const unexpected = Match.objectLike({
   Fred: Match.arrayWith(['Wobble']),
-} as Record<string, any>);
+});
 template.hasResourceProperties('Foo::Bar', unexpected);
 ```
 
@@ -338,7 +338,7 @@ not match the pattern specified.
 // }
 
 // The following will NOT throw an assertion error
-const expected: Record<string, any> = {
+const expected = {
   Fred: Match.not(['Flob']),
 };
 template.hasResourceProperties('Foo::Bar', expected);
@@ -346,7 +346,7 @@ template.hasResourceProperties('Foo::Bar', expected);
 // The following will throw an assertion error
 const unexpected = Match.objectLike({
   Fred: Match.not(['Flob', 'Cat']),
-} as Record<string, any>);
+});
 template.hasResourceProperties('Foo::Bar', unexpected);
 ```
 
@@ -377,7 +377,7 @@ The `Match.serializedJson()` matcher allows deep matching within a stringified J
 const expected = {
   Baz: Match.serializedJson({
     Fred: Match.arrayWith(["Waldo"]),
-  } as Record<string, any>),
+  }),
 };
 template.hasResourceProperties('Foo::Bar', expected);
 
@@ -385,7 +385,7 @@ template.hasResourceProperties('Foo::Bar', expected);
 const unexpected = {
   Baz: Match.serializedJson({
     Fred: ["Waldo", "Johnny"],
-  } as Record<string, any>),
+  }),
 };
 template.hasResourceProperties('Foo::Bar', unexpected);
 ```
