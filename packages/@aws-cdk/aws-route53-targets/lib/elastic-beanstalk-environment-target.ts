@@ -13,12 +13,11 @@ export class ElasticBeanstalkEnvironmentEndpointTarget implements route53.IAlias
   }
 
   public bind(_record: route53.IRecordSet, _zone?: route53.IHostedZone): route53.AliasRecordTargetConfig {
-    const dnsName = this.environmentEndpoint;
-
-    if (cdk.Token.isUnresolved(dnsName)) {
-      throw new Error('Cannot use an EBS alias in `dnsName`. You must find your EBS environment endpoint via the AWS console. See the Elastic Beanstalk developer guide: https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/customdomains.html');
+    if (cdk.Token.isUnresolved(this.environmentEndpoint)) {
+      throw new Error('Cannot use an EBS alias as `environmentEndpoint`. You must find your EBS environment endpoint via the AWS console. See the Elastic Beanstalk developer guide: https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/customdomains.html');
     }
 
+    const dnsName = this.environmentEndpoint;
     const region = cdk.Fn.select(2, cdk.Fn.split('.', dnsName));
     const { ebsEnvEndpointHostedZoneId: hostedZoneId } = RegionInfo.get(region);
 
