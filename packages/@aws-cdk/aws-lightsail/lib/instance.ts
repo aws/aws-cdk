@@ -364,7 +364,7 @@ export class Instance extends cdk.Resource implements IInstance {
     *
     * @attribute
     */
-  readonly instanceIsStaticIp: string;
+  readonly instanceIsStaticIp: cdk.IResolvable;
   /**
     * The Amazon Resource Name (ARN) of the instance (for example,
     * `arn:aws:lightsail:us-east-2:123456789101:Instance/244ad76f-8aad-4741-809f-12345EXAMPLE`).
@@ -407,7 +407,7 @@ export class Instance extends cdk.Resource implements IInstance {
     this.instanceLocationRegionName = resource.attrLocationRegionName;
     this.instanceLocationAvailabilityZone = resource.attrLocationAvailabilityZone;
     this.instanceKeyPairName = resource.attrKeyPairName;
-    this.instanceIsStaticIp = resource.attrIsStaticIp.toString();
+    this.instanceIsStaticIp = resource.attrIsStaticIp;
     this.instanceArn = resource.attrInstanceArn;
     this.instanceHardwareRamSizeInGb = resource.attrHardwareRamSizeInGb;
     this.instanceHardwareCpuCount = resource.attrHardwareCpuCount;
