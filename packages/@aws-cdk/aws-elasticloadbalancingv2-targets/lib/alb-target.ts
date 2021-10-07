@@ -1,7 +1,7 @@
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
 
 /**
- * An single Applicatoin Load Balancer as the target for load balancing.
+ * A single Application Load Balancer as the target for load balancing.
  */
 export class AlbArnTarget implements elbv2.INetworkLoadBalancerTarget {
   /**
@@ -32,7 +32,7 @@ export class AlbArnTarget implements elbv2.INetworkLoadBalancerTarget {
 }
 
 /**
- * An single Applicatoin Load Balancer as the target for load balancing.
+ * A single Application Load Balancer as the target for load balancing.
  */
 export class AlbTarget extends AlbArnTarget {
   /**
