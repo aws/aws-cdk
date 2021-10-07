@@ -382,14 +382,6 @@ function parseHttpOptions(options: SdkHttpOptions) {
     // https://github.com/TooTallNate/node-proxy-agent/blob/master/index.js#L79
     // a while now trying to figure out what to pass in so that the underlying Agent
     // object will get the 'ca' argument. It's not trivial and I don't want to risk it.
-  } else {
-    // Configure the proxy agent. By default, this will use HTTPS?_PROXY and
-    // NO_PROXY environment variables to determine which proxy to use for each
-    // request.
-    //
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const ProxyAgent: any = require('proxy-agent');
-    config.httpOptions.agent = new ProxyAgent();
   }
 
   if (caBundlePath) {
@@ -398,6 +390,14 @@ function parseHttpOptions(options: SdkHttpOptions) {
       ca: readIfPossible(caBundlePath),
       keepAlive: true,
     });
+  } else {
+    // Configure the proxy agent. By default, this will use HTTPS?_PROXY and
+    // NO_PROXY environment variables to determine which proxy to use for each
+    // request.
+    //
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const ProxyAgent: any = require('proxy-agent');
+    config.httpOptions.agent = new ProxyAgent();
   }
 
   return config;
