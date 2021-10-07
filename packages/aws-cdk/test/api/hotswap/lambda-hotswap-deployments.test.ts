@@ -79,97 +79,6 @@ test('calls the updateLambdaCode() API when it receives only a code difference i
   });
 });
 
-test('calls the updateLambdaCode() API when it receives a code difference in a Lambda function with no name', async () => {
-  // GIVEN
-  setup.setTemplate({
-    Resources: {
-      Func: {
-        Type: 'AWS::Lambda::Function',
-        Properties: {
-          Code: {
-            S3Bucket: 'current-bucket',
-            S3Key: 'current-key',
-          },
-        },
-        Metadata: {
-          'aws:asset:path': 'old-path',
-        },
-      },
-    },
-  });
-  const cdkStackArtifact = setup.cdkStackArtifactOf({
-    template: {
-      Resources: {
-        Func: {
-          Type: 'AWS::Lambda::Function',
-          Properties: {
-            Code: {
-              S3Bucket: 'current-bucket',
-              S3Key: 'new-key',
-            },
-          },
-          Metadata: {
-            'aws:asset:path': 'new-path',
-          },
-        },
-      },
-    },
-  });
-
-  // WHEN
-  setup.pushStackMocks(setup.stackSummaryOf('Func', 'AWS::Lambda::Function', 'mock-function-resource-id'));
-  const deployStackResult = await setup.tryHotswapDeployment({}, cdkStackArtifact);
-
-  // THEN
-  expect(deployStackResult).not.toBeUndefined();
-  expect(mockUpdateLambdaCode).toHaveBeenCalledWith({
-    FunctionName: 'mock-function-resource-id',
-    S3Bucket: 'current-bucket',
-    S3Key: 'new-key',
-  });
-});
-
-test('does not call the updateLambdaCode() API when it receives a change that is not a code difference in a Lambda function', async () => {
-  // GIVEN
-  setup.setTemplate({
-    Resources: {
-      Func: {
-        Type: 'AWS::Lambda::Function',
-        Properties: {
-          Code: {
-            S3Bucket: 'current-bucket',
-            S3Key: 'current-key',
-          },
-          PackageType: 'Zip',
-        },
-      },
-    },
-  });
-  const cdkStackArtifact = setup.cdkStackArtifactOf({
-    template: {
-      Resources: {
-        Func: {
-          Type: 'AWS::Lambda::Function',
-          Properties: {
-            Code: {
-              S3Bucket: 'current-bucket',
-              S3Key: 'current-key',
-            },
-            PackageType: 'Image',
-          },
-        },
-      },
-    },
-  });
-
-  // WHEN
-  const deployStackResult = await setup.tryHotswapDeployment({}, cdkStackArtifact);
-
-  // THEN
-  expect(deployStackResult).toBeUndefined();
-  expect(mockUpdateLambdaCode).not.toHaveBeenCalled();
-});
-
 test("correctly evaluates the function's name when it references a different resource from the template", async () => {
   // GIVEN
   setup.setTemplate({
@@ -300,51 +209,6 @@ test("correctly falls back to taking the function's name from the current stack 
   });
 });
 
-test('does not call the updateLambdaCode() API when a resource with type that is not AWS::Lambda::Function but has the same properties is changed', async () => {
-  // GIVEN
-  setup.setTemplate({
-    Resources: {
-      Func: {
-        Type: 'AWS::NotLambda::NotAFunction',
-        Properties: {
-          Code: {
-            S3Bucket: 'current-bucket',
-            S3Key: 'current-key',
-          },
-        },
-        Metadata: {
-          'aws:asset:path': 'old-path',
-        },
-      },
-    },
-  });
-  const cdkStackArtifact = setup.cdkStackArtifactOf({
-    template: {
-      Resources: {
-        Func: {
-          Type: 'AWS::NotLambda::NotAFunction',
-          Properties: {
-            Code: {
-              S3Bucket: 'current-bucket',
-              S3Key: 'new-key',
-            },
-          },
-          Metadata: {
-            'aws:asset:path': 'old-path',
-          },
-        },
-      },
-    },
-  });
-
-  // WHEN
-  const deployStackResult = await setup.tryHotswapDeployment({}, cdkStackArtifact);
-
-  // THEN
-  expect(deployStackResult).toBeUndefined();
-  expect(mockUpdateLambdaCode).not.toHaveBeenCalled();
-});
-
 test("will not perform a hotswap deployment if it cannot find a Ref target (outside the function's name)", async () => {
   // GIVEN
   setup.setTemplate({
@@ -446,4 +310,140 @@ test("will not perform a hotswap deployment if it doesn't know how to handle a s
   await expect(() =>
     setup.tryHotswapDeployment({}, cdkStackArtifact),
   ).rejects.toThrow("We don't support the 'UnknownAttribute' attribute of the 'AWS::S3::Bucket' resource. This is a CDK limitation. Please report it at https://github.com/aws/aws-cdk/issues/new/choose");
+});
+
+test('calls the updateLambdaCode() API when it receives a code difference in a Lambda function with no name', async () => {
+  // GIVEN
+  setup.setTemplate({
+    Resources: {
+      Func: {
+        Type: 'AWS::Lambda::Function',
+        Properties: {
+          Code: {
+            S3Bucket: 'current-bucket',
+            S3Key: 'current-key',
+          },
+        },
+        Metadata: {
+          'aws:asset:path': 'old-path',
+        },
+      },
+    },
+  });
+  const cdkStackArtifact = setup.cdkStackArtifactOf({
+    template: {
+      Resources: {
+        Func: {
+          Type: 'AWS::Lambda::Function',
+          Properties: {
+            Code: {
+              S3Bucket: 'current-bucket',
+              S3Key: 'new-key',
+            },
+          },
+          Metadata: {
+            'aws:asset:path': 'new-path',
+          },
+        },
+      },
+    },
+  });
+
+  // WHEN
+  setup.pushStackMocks(setup.stackSummaryOf('Func', 'AWS::Lambda::Function', 'mock-function-resource-id'));
+  const deployStackResult = await setup.tryHotswapDeployment({}, cdkStackArtifact);
+
+  // THEN
+  expect(deployStackResult).not.toBeUndefined();
+  expect(mockUpdateLambdaCode).toHaveBeenCalledWith({
+    FunctionName: 'mock-function-resource-id',
+    S3Bucket: 'current-bucket',
+    S3Key: 'new-key',
+  });
+});
+
+test('does not call the updateLambdaCode() API when it receives a change that is not a code difference in a Lambda function', async () => {
+  // GIVEN
+  setup.setTemplate({
+    Resources: {
+      Func: {
+        Type: 'AWS::Lambda::Function',
+        Properties: {
+          Code: {
+            S3Bucket: 'current-bucket',
+            S3Key: 'current-key',
+          },
+          PackageType: 'Zip',
+        },
+      },
+    },
+  });
+  const cdkStackArtifact = setup.cdkStackArtifactOf({
+    template: {
+      Resources: {
+        Func: {
+          Type: 'AWS::Lambda::Function',
+          Properties: {
+            Code: {
+              S3Bucket: 'current-bucket',
+              S3Key: 'current-key',
+            },
+            PackageType: 'Image',
+          },
+        },
+      },
+    },
+  });
+
+  // WHEN
+  const deployStackResult = await setup.tryHotswapDeployment({}, cdkStackArtifact);
+
+  // THEN
+  expect(deployStackResult).toBeUndefined();
+  expect(mockUpdateLambdaCode).not.toHaveBeenCalled();
+});
+
+test('does not call the updateLambdaCode() API when a resource with type that is not AWS::Lambda::Function but has the same properties is changed', async () => {
+  // GIVEN
+  setup.setTemplate({
+    Resources: {
+      Func: {
+        Type: 'AWS::NotLambda::NotAFunction',
+        Properties: {
+          Code: {
+            S3Bucket: 'current-bucket',
+            S3Key: 'current-key',
+          },
+        },
+        Metadata: {
+          'aws:asset:path': 'old-path',
+        },
+      },
+    },
+  });
+  const cdkStackArtifact = setup.cdkStackArtifactOf({
+    template: {
+      Resources: {
+        Func: {
+          Type: 'AWS::NotLambda::NotAFunction',
+          Properties: {
+            Code: {
+              S3Bucket: 'current-bucket',
+              S3Key: 'new-key',
+            },
+          },
+          Metadata: {
+            'aws:asset:path': 'old-path',
+          },
+        },
+      },
+    },
+  });
+
+  // WHEN
+  const deployStackResult = await setup.tryHotswapDeployment({}, cdkStackArtifact);
+
+  // THEN
+  expect(deployStackResult).toBeUndefined();
+  expect(mockUpdateLambdaCode).not.toHaveBeenCalled();
 });
