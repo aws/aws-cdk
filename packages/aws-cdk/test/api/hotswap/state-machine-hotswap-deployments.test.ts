@@ -152,16 +152,7 @@ test('calls the updateStateMachine() API when it receives a change to the defini
             'Fn::Join': [
               '',
               [
-                '{',
-                '  "StartAt" : "SuccessState"',
-                '  "States" : {',
-                '    "SuccessState": {',
-                '      "Type": "Pass"',
-                '      "Result": "Success"',
-                '      "End": true',
-                '    }',
-                '  }',
-                '}',
+                '{ "Prop" : "old-value" }',
               ],
             ],
           },
@@ -177,16 +168,9 @@ test('calls the updateStateMachine() API when it receives a change to the defini
           Properties: {
             DefinitionString: {
               'Fn::Join': [
-                '\n',
+                '',
                 [
-                  '{',
-                  '  "StartAt": "SuccessState",',
-                  '  "States": {',
-                  '    "SuccessState": {',
-                  '      "Type": "Succeed"',
-                  '    }',
-                  '  }',
-                  '}',
+                  '{ "Prop" : "new-value" }',
                 ],
               ],
             },
