@@ -315,7 +315,7 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
   /**
    * DEPRECATED
    * @default [Architecture.X86_64]
-   * @deprecated use architecture
+   * @deprecated use `architecture`
    */
   readonly architectures?: Architecture[];
 
