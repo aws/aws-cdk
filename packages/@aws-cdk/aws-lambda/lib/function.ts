@@ -313,10 +313,17 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
   readonly codeSigningConfig?: ICodeSigningConfig;
 
   /**
-   * The system architectures compatible with this lambda function.
+   * DEPRECATED
    * @default [Architecture.X86_64]
+   * @deprecated use `architecture`
    */
   readonly architectures?: Architecture[];
+
+  /**
+   * The system architectures compatible with this lambda function.
+   * @default Architecture.X86_64
+   */
+  readonly architecture?: Architecture;
 }
 
 export interface FunctionProps extends FunctionOptions {
@@ -655,6 +662,14 @@ export class Function extends FunctionBase {
       }];
     }
 
+    if (props.architecture && props.architectures !== undefined) {
+      throw new Error('Either architecture or architectures must be specified but not both.');
+    }
+    if (props.architectures && props.architectures.length > 1) {
+      throw new Error('Only one architecture must be specified.');
+    }
+    const architecture = props.architecture ?? (props.architectures && props.architectures[0]);
+
     const resource: CfnFunction = new CfnFunction(this, 'Resource', {
       functionName: this.physicalName,
       description: props.description,
@@ -687,7 +702,7 @@ export class Function extends FunctionBase {
       kmsKeyArn: props.environmentEncryption?.keyArn,
       fileSystemConfigs,
       codeSigningConfigArn: props.codeSigningConfig?.codeSigningConfigArn,
-      architectures: props.architectures?.map(a => a.name),
+      architectures: architecture ? [architecture.name] : undefined,
     });
 
     resource.node.addDependency(this.role);
