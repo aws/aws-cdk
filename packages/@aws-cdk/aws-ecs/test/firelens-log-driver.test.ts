@@ -35,6 +35,9 @@ describe('firelens log driver', () => {
           Essential: true,
           FirelensConfiguration: {
             Type: 'fluentbit',
+            Options: {
+              'enable-ecs-log-metadata': 'true',
+            },
           },
         },
       ],
@@ -211,6 +214,9 @@ describe('firelens log driver', () => {
           Essential: true,
           FirelensConfiguration: {
             Type: 'fluentbit',
+            Options: {
+              'enable-ecs-log-metadata': 'true',
+            },
           },
         },
       ],
@@ -250,6 +256,9 @@ describe('firelens log driver', () => {
           Essential: true,
           FirelensConfiguration: {
             Type: 'fluentbit',
+            Options: {
+              'enable-ecs-log-metadata': 'true',
+            },
           },
         },
       ],
@@ -279,6 +288,9 @@ describe('firelens log driver', () => {
             Name: 'log_router',
             FirelensConfiguration: {
               Type: 'fluentd',
+              Options: {
+                'enable-ecs-log-metadata': 'true',
+              },
             },
           },
         ],
@@ -359,8 +371,6 @@ describe('firelens log driver', () => {
           },
         ],
       });
-
-
     });
   });
 });
