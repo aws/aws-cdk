@@ -148,14 +148,7 @@ test('calls the updateStateMachine() API when it receives a change to the defini
       Machine: {
         Type: 'AWS::StepFunctions::StateMachine',
         Properties: {
-          DefinitionString: {
-            'Fn::Join': [
-              '',
-              [
-                '{ "Prop" : "old-value" }',
-              ],
-            ],
-          },
+          DefinitionString: '{ "Prop" : "old-value" }',
         },
       },
     },
@@ -166,14 +159,7 @@ test('calls the updateStateMachine() API when it receives a change to the defini
         Machine: {
           Type: 'AWS::StepFunctions::StateMachine',
           Properties: {
-            DefinitionString: {
-              'Fn::Join': [
-                '',
-                [
-                  '{ "Prop" : "new-value" }',
-                ],
-              ],
-            },
+            DefinitionString: '{ "Prop" : "new-value" }',
           },
         },
       },
@@ -199,14 +185,7 @@ test('does not call the updateStateMachine() API when it receives a change to a 
       Machine: {
         Type: 'AWS::StepFunctions::StateMachine',
         Properties: {
-          DefinitionString: {
-            'Fn::Join': [
-              '',
-              [
-                '{ "Prop" : "old-value" }',
-              ],
-            ],
-          },
+          DefinitionString: '{ "Prop" : "old-value" }',
           LoggingConfiguration: { // non-definitionString property
             IncludeExecutionData: true,
           },
@@ -220,14 +199,7 @@ test('does not call the updateStateMachine() API when it receives a change to a 
         Machine: {
           Type: 'AWS::StepFunctions::StateMachine',
           Properties: {
-            DefinitionString: {
-              'Fn::Join': [
-                '',
-                [
-                  '{ "Prop" : "new-value" }',
-                ],
-              ],
-            },
+            DefinitionString: '{ "Prop" : "new-value" }',
             LoggingConfiguration: {
               IncludeExecutionData: false,
             },
