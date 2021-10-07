@@ -1,0 +1,33 @@
+{
+  "Resources": {
+    "demoworkspaceC20181C7": {
+      "Type": "AWS::APS::Workspace",
+      "Properties": {
+        "Alias": "demo-workspace"
+      }
+    }
+  },
+  "Outputs": {
+    "prometheusUrl": {
+      "Value": {
+        "Fn::GetAtt": [
+          "demoworkspaceC20181C7",
+          "PrometheusEndpoint"
+        ]
+      }
+    },
+    "arn": {
+      "Value": {
+        "Ref": "demoworkspaceC20181C7"
+      }
+    },
+    "workspaceId": {
+      "Value": {
+        "Fn::GetAtt": [
+          "demoworkspaceC20181C7",
+          "WorkspaceId"
+        ]
+      }
+    }
+  }
+}
