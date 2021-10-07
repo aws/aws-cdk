@@ -81,14 +81,12 @@ new DockerImageFunction(this, 'ECRFunction', {
 The props for these docker image resources allow overriding the image's `CMD`, `ENTRYPOINT`, and `WORKDIR`
 configurations. See their docs for more information.
 
-To deploy a `DockerImageFunction` on Lambda `arm64` architecture, specify the `platform` property with `ARM_64`. This will
-build and bundle docker image assets for `arm64` architecture even you run it on `x86_64` architecture.
+To deploy a `DockerImageFunction` on Lambda `arm64` architecture, make sure you specify `[Architecture.ARM_64]` in the `architectures`.
+This will bundle docker image assets for `arm64` architecture with `--platform linux/arm64` implicitly even you build it from a `x86_64` architecture.
 
 ```ts
 new DockerImageFunction(this, 'AssetFunction', {
-  code: DockerImageCode.fromImageAsset(path.join(__dirname, 'docker-arm64-handler'), {
-    platform: DockerPlatform.ARM_64,
-  }),
+  code: DockerImageCode.fromImageAsset(path.join(__dirname, 'docker-arm64-handler')),
   architectures: [Architecture.ARM_64],
 });
 ```
