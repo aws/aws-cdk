@@ -1,0 +1,12 @@
+{
+  "Resources": {
+    "InstanceC1063A87": {
+      "Type": "AWS::Lightsail::Instance",
+      "Properties": {
+        "BlueprintId": "amazon_linux_2",
+        "BundleId": "small_2_0",
+        "InstanceName": "Instance"
+      }
+    }
+  }
+}
