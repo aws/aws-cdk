@@ -106,7 +106,7 @@ All other properties of `lambda.Function` are supported, see also the [AWS Lambd
 By default the following environment variables are set for you:
 
 * `GOOS=linux`
-* `GOARCH=amd64`
+* `GOARCH`: based on the target architecture of the Lambda function
 * `GO111MODULE=on`
 
 Use the `environment` prop to define additional environment variables when go runs:

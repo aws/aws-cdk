@@ -109,7 +109,7 @@ export class Bundling implements cdk.BundlingOptions {
     const environment = {
       CGO_ENABLED: cgoEnabled,
       GO111MODULE: 'on',
-      GOARCH: 'amd64',
+      GOARCH: props.architecture.dockerPlatform.split('/')[1],
       GOOS: 'linux',
       ...props.environment,
     };
