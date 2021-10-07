@@ -217,7 +217,7 @@ test('does not call the updateStateMachine() API when it receives a change to a 
   expect(mockUpdateMachineDefinition).not.toHaveBeenCalled();
 });
 
-test('does not call the updateStateMachine() API when a resource with type that is not AWS::StepFunctions::StateMachine but has the same properties is changed', async () => {
+test('does not call the updateStateMachine() API when a resource with type that is not AWS::StepFunctions::StateMachine but has a DefinitionString property is changed', async () => {
   // GIVEN
   setup.setCurrentCfnStackTemplate({
     Resources: {
@@ -360,7 +360,7 @@ test('calls the updateStateMachine() API when it receives a change to the defini
   });
 });
 
-test("will not perform a hotswap deployment if it cannot find a Ref target (outside the function's name)", async () => {
+test("will not perform a hotswap deployment if it cannot find a Ref target (outside the state machine's name)", async () => {
   // GIVEN
   setup.setCurrentCfnStackTemplate({
     Parameters: {
