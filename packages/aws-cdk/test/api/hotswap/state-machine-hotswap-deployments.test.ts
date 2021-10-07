@@ -217,7 +217,7 @@ test('does not call the updateStateMachine() API when it receives a change to a 
   expect(mockUpdateMachineDefinition).not.toHaveBeenCalled();
 });
 
-test('does not call the updateStateMachine() API when a resource with type that is not AWS::StepFunctions::StateMachine but has a DefinitionString property is changed', async () => {
+test('does not call the updateStateMachine() API when a resource has a DefinitionString property but is not an AWS::StepFunctions::StateMachine is changed', async () => {
   // GIVEN
   setup.setCurrentCfnStackTemplate({
     Resources: {
