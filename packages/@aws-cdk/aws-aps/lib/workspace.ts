@@ -2,7 +2,6 @@ import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnWorkspace } from './aps.generated';
 
-
 /**
  * Represents the Prometheus WorkSpace.
  */
