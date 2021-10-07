@@ -63,7 +63,7 @@ export function pushStackResourceSummaries(...items: CloudFormation.StackResourc
   currentCfnStackResources.push(...items);
 }
 
-export function setTemplate(template: Template) {
+export function setCurrentCfnStackTemplate(template: Template) {
   currentCfnStack.setTemplate(template);
 }
 

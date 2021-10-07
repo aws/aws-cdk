@@ -24,7 +24,7 @@ test('returns a deployStackResult with noOp=true when it receives an empty set o
 
 test('A change to only a non-hotswappable resource results in a full deployment', async () => {
   // GIVEN
-  setup.setTemplate({
+  setup.setCurrentCfnStackTemplate({
     Resources: {
       SomethingElse: {
         Type: 'AWS::CloudFormation::SomethingElse',
@@ -58,7 +58,7 @@ test('A change to only a non-hotswappable resource results in a full deployment'
 
 test('A change to both a hotswappable resource and a non-hotswappable resource results in a full deployment', async () => {
   // GIVEN
-  setup.setTemplate({
+  setup.setCurrentCfnStackTemplate({
     Resources: {
       Func: {
         Type: 'AWS::Lambda::Function',
@@ -118,7 +118,7 @@ test('A change to both a hotswappable resource and a non-hotswappable resource r
 
 test('changes only to CDK::Metadata result in a noOp', async () => {
   // GIVEN
-  setup.setTemplate({
+  setup.setCurrentCfnStackTemplate({
     Resources: {
       MetaData: {
         Type: 'AWS::CDK::MetaData',
@@ -153,7 +153,7 @@ test('changes only to CDK::Metadata result in a noOp', async () => {
 
 test('resource deletions require full deployments', async () => {
   // GIVEN
-  setup.setTemplate({
+  setup.setCurrentCfnStackTemplate({
     Resources: {
       Machine: {
         Type: 'AWS::StepFunctions::StateMachine',
@@ -173,7 +173,7 @@ test('resource deletions require full deployments', async () => {
 
 test('can correctly reference AWS::Partition in hotswappable changes', async () => {
   // GIVEN
-  setup.setTemplate({
+  setup.setCurrentCfnStackTemplate({
     Resources: {
       Func: {
         Type: 'AWS::Lambda::Function',

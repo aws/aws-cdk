@@ -30,7 +30,7 @@ test('returns undefined when a new StateMachine is added to the Stack', async ()
 
 test('calls the updateStateMachine() API when it receives only a definitionString change without Fn::Join in a state machine', async () => {
   // GIVEN
-  setup.setTemplate({
+  setup.setCurrentCfnStackTemplate({
     Resources: {
       Machine: {
         Type: 'AWS::StepFunctions::StateMachine',
@@ -68,7 +68,7 @@ test('calls the updateStateMachine() API when it receives only a definitionStrin
 
 test('calls the updateStateMachine() API when it receives only a definitionString change with Fn::Join in a state machine', async () => {
   // GIVEN
-  setup.setTemplate({
+  setup.setCurrentCfnStackTemplate({
     Resources: {
       Machine: {
         Type: 'AWS::StepFunctions::StateMachine',
@@ -143,7 +143,7 @@ test('calls the updateStateMachine() API when it receives only a definitionStrin
 
 test('calls the updateStateMachine() API when it receives a change to the definitionString in a state machine that has no name', async () => {
   // GIVEN
-  setup.setTemplate({
+  setup.setCurrentCfnStackTemplate({
     Resources: {
       Machine: {
         Type: 'AWS::StepFunctions::StateMachine',
@@ -180,7 +180,7 @@ test('calls the updateStateMachine() API when it receives a change to the defini
 
 test('does not call the updateStateMachine() API when it receives a change to a parameter that is not the definitionString in a state machine', async () => {
   // GIVEN
-  setup.setTemplate({
+  setup.setCurrentCfnStackTemplate({
     Resources: {
       Machine: {
         Type: 'AWS::StepFunctions::StateMachine',
@@ -219,7 +219,7 @@ test('does not call the updateStateMachine() API when it receives a change to a 
 
 test('does not call the updateStateMachine() API when a resource with type that is not AWS::StepFunctions::StateMachine but has the same properties is changed', async () => {
   // GIVEN
-  setup.setTemplate({
+  setup.setCurrentCfnStackTemplate({
     Resources: {
       Machine: {
         Type: 'AWS::NotStepFunctions::NotStateMachine',
@@ -252,7 +252,7 @@ test('does not call the updateStateMachine() API when a resource with type that 
 
 test('can correctly hotswap old style synth changes', async () => {
   // GIVEN
-  setup.setTemplate({
+  setup.setCurrentCfnStackTemplate({
     Parameters: { AssetParam1: { Type: 'String' } },
     Resources: {
       SM: {
@@ -292,7 +292,7 @@ test('can correctly hotswap old style synth changes', async () => {
 
 test('calls the updateStateMachine() API when it receives a change to the definitionString that uses Attributes in a state machine', async () => {
   // GIVEN
-  setup.setTemplate({
+  setup.setCurrentCfnStackTemplate({
     Resources: {
       Func: {
         Type: 'AWS::Lambda::Function',
@@ -362,7 +362,7 @@ test('calls the updateStateMachine() API when it receives a change to the defini
 
 test("will not perform a hotswap deployment if it cannot find a Ref target (outside the function's name)", async () => {
   // GIVEN
-  setup.setTemplate({
+  setup.setCurrentCfnStackTemplate({
     Parameters: {
       Param1: { Type: 'String' },
     },
@@ -420,7 +420,7 @@ test("will not perform a hotswap deployment if it cannot find a Ref target (outs
 
 test("will not perform a hotswap deployment if it doesn't know how to handle a specific attribute (outside the state machines's name)", async () => {
   // GIVEN
-  setup.setTemplate({
+  setup.setCurrentCfnStackTemplate({
     Resources: {
       Bucket: {
         Type: 'AWS::S3::Bucket',

@@ -30,7 +30,7 @@ test('returns undefined when a new Lambda function is added to the Stack', async
 
 test('calls the updateLambdaCode() API when it receives only a code difference in a Lambda function', async () => {
   // GIVEN
-  setup.setTemplate({
+  setup.setCurrentCfnStackTemplate({
     Resources: {
       Func: {
         Type: 'AWS::Lambda::Function',
@@ -81,7 +81,7 @@ test('calls the updateLambdaCode() API when it receives only a code difference i
 
 test("correctly evaluates the function's name when it references a different resource from the template", async () => {
   // GIVEN
-  setup.setTemplate({
+  setup.setCurrentCfnStackTemplate({
     Resources: {
       Bucket: {
         Type: 'AWS::S3::Bucket',
@@ -151,7 +151,7 @@ test("correctly evaluates the function's name when it references a different res
 
 test("correctly falls back to taking the function's name from the current stack if it can't evaluate it in the template", async () => {
   // GIVEN
-  setup.setTemplate({
+  setup.setCurrentCfnStackTemplate({
     Parameters: {
       Param1: { Type: 'String' },
       AssetBucketParam: { Type: 'String' },
@@ -211,7 +211,7 @@ test("correctly falls back to taking the function's name from the current stack 
 
 test("will not perform a hotswap deployment if it cannot find a Ref target (outside the function's name)", async () => {
   // GIVEN
-  setup.setTemplate({
+  setup.setCurrentCfnStackTemplate({
     Parameters: {
       Param1: { Type: 'String' },
     },
@@ -261,7 +261,7 @@ test("will not perform a hotswap deployment if it cannot find a Ref target (outs
 
 test("will not perform a hotswap deployment if it doesn't know how to handle a specific attribute (outside the function's name)", async () => {
   // GIVEN
-  setup.setTemplate({
+  setup.setCurrentCfnStackTemplate({
     Resources: {
       Bucket: {
         Type: 'AWS::S3::Bucket',
@@ -314,7 +314,7 @@ test("will not perform a hotswap deployment if it doesn't know how to handle a s
 
 test('calls the updateLambdaCode() API when it receives a code difference in a Lambda function with no name', async () => {
   // GIVEN
-  setup.setTemplate({
+  setup.setCurrentCfnStackTemplate({
     Resources: {
       Func: {
         Type: 'AWS::Lambda::Function',
@@ -364,7 +364,7 @@ test('calls the updateLambdaCode() API when it receives a code difference in a L
 
 test('does not call the updateLambdaCode() API when it receives a change that is not a code difference in a Lambda function', async () => {
   // GIVEN
-  setup.setTemplate({
+  setup.setCurrentCfnStackTemplate({
     Resources: {
       Func: {
         Type: 'AWS::Lambda::Function',
@@ -405,7 +405,7 @@ test('does not call the updateLambdaCode() API when it receives a change that is
 
 test('does not call the updateLambdaCode() API when a resource with type that is not AWS::Lambda::Function but has the same properties is changed', async () => {
   // GIVEN
-  setup.setTemplate({
+  setup.setCurrentCfnStackTemplate({
     Resources: {
       Func: {
         Type: 'AWS::NotLambda::NotAFunction',
