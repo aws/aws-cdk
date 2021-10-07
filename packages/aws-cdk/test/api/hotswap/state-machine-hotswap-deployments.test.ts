@@ -178,7 +178,7 @@ test('calls the updateStateMachine() API when it receives a change to the defini
   });
 });
 
-test('does not call the updateStateMachine() API when it receives a change to a parameter that is not the definitionString in a state machine', async () => {
+test('does not call the updateStateMachine() API when it receives a change to a property that is not the definitionString in a state machine', async () => {
   // GIVEN
   setup.setCurrentCfnStackTemplate({
     Resources: {
