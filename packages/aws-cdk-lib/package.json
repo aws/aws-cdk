@@ -254,6 +254,7 @@
     "@aws-cdk/aws-lambda-nodejs": "0.0.0",
     "@aws-cdk/aws-lambda-python": "0.0.0",
     "@aws-cdk/aws-licensemanager": "0.0.0",
+    "@aws-cdk/aws-lightsail": "0.0.0",
     "@aws-cdk/aws-location": "0.0.0",
     "@aws-cdk/aws-logs": "0.0.0",
     "@aws-cdk/aws-logs-destinations": "0.0.0",
@@ -326,6 +327,7 @@
     "@aws-cdk/aws-wafv2": "0.0.0",
     "@aws-cdk/aws-workspaces": "0.0.0",
     "@aws-cdk/aws-xray": "0.0.0",
+    "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/cloud-assembly-schema": "0.0.0",
     "@aws-cdk/cloudformation-include": "0.0.0",
     "@aws-cdk/core": "0.0.0",
@@ -335,16 +337,15 @@
     "@aws-cdk/lambda-layer-kubectl": "0.0.0",
     "@aws-cdk/lambda-layer-node-proxy-agent": "0.0.0",
     "@aws-cdk/pipelines": "0.0.0",
+    "@aws-cdk/pkglint": "0.0.0",
     "@aws-cdk/region-info": "0.0.0",
+    "@aws-cdk/ubergen": "0.0.0",
     "@types/fs-extra": "^8.1.2",
     "@types/node": "^10.17.60",
-    "@aws-cdk/cdk-build-tools": "0.0.0",
     "constructs": "^10.0.0",
     "fs-extra": "^9.1.0",
-    "@aws-cdk/pkglint": "0.0.0",
     "ts-node": "^9.1.1",
-    "typescript": "~3.8.3",
-    "@aws-cdk/ubergen": "0.0.0"
+    "typescript": "~3.8.3"
   },
   "peerDependencies": {
     "constructs": "^10.0.0"

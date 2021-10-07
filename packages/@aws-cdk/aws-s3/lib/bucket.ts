@@ -933,7 +933,7 @@ export interface BucketMetrics {
    * Specifies a list of tag filters to use as a metrics configuration filter.
    * The metrics configuration includes only objects that meet the filter's criteria.
    */
-  readonly tagFilters?: {[tag: string]: any};
+  readonly tagFilters?: { [tag: string]: any };
 }
 
 /**
@@ -1227,8 +1227,8 @@ export interface BucketProps {
    *
    * **Warning** if you have deployed a bucket with `autoDeleteObjects: true`,
    * switching this to `false` in a CDK version *before* `1.126.0` will lead to
-   * all objects in the bucket being deleted. Be sure to update to version `1.126.0`
-   * or later before switching this value to `false`.
+   * all objects in the bucket being deleted. Be sure to update your bucket resources
+   * by deploying with CDK version `1.126.0` or later **before** switching this value to `false`.
    *
    * @default false
    */
@@ -1793,7 +1793,7 @@ export class Bucket extends BucketBase {
     }
   }
 
-  private parseTagFilters(tagFilters?: {[tag: string]: any}) {
+  private parseTagFilters(tagFilters?: { [tag: string]: any }) {
     if (!tagFilters || tagFilters.length === 0) {
       return undefined;
     }
