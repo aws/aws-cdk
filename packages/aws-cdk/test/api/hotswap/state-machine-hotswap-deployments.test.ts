@@ -294,18 +294,24 @@ test('calls the updateStateMachine() API when it receives a change to the defini
   // GIVEN
   setup.setTemplate({
     Resources: {
-      Bucket: {
-        Type: 'AWS::S3::Bucket',
+      Func: {
+        Type: 'AWS::Lambda::Function',
       },
       Machine: {
         Type: 'AWS::StepFunctions::StateMachine',
         Properties: {
           DefinitionString: {
             'Fn::Join': [
-              '',
+              '\n',
               [
-                '{ Prop: "old-value" }, ',
-                '{ "S3Bucket" : { "Fn::GetAtt": [ "Bucket", "Arn" ] } }',
+                '{',
+                '  "StartAt" : "SuccessState"',
+                '  "States" : {',
+                '    "SuccessState": {',
+                '      "Type": "Succeed"',
+                '    }',
+                '  }',
+                '}',
               ],
             ],
           },
@@ -317,8 +323,8 @@ test('calls the updateStateMachine() API when it receives a change to the defini
   const cdkStackArtifact = setup.cdkStackArtifactOf({
     template: {
       Resources: {
-        Bucket: {
-          Type: 'AWS::S3::Bucket',
+        Func: {
+          Type: 'AWS::Lambda::Function',
         },
         Machine: {
           Type: 'AWS::StepFunctions::StateMachine',
@@ -327,8 +333,8 @@ test('calls the updateStateMachine() API when it receives a change to the defini
               'Fn::Join': [
                 '',
                 [
-                  '{ Prop: "new-value" }, ',
-                  '{ "S3Bucket" : { "Fn::GetAtt": [ "Bucket", "Arn" ] } }',
+                  '"Resource": ',
+                  { 'Fn::GetAtt': ['Func', 'Arn'] },
                 ],
               ],
             },
@@ -341,12 +347,13 @@ test('calls the updateStateMachine() API when it receives a change to the defini
 
   // WHEN
   setup.pushStackMocks(setup.stackSummaryOf('Machine', 'AWS::StepFunctions::StateMachine', 'mock-machine-resource-id'));
+  setup.pushStackMocks(setup.stackSummaryOf('Func', 'AWS::Lambda::Function', 'my-func'));
   const deployStackResult = await setup.tryHotswapDeployment({}, cdkStackArtifact);
 
   // THEN
   expect(deployStackResult).not.toBeUndefined();
   expect(mockUpdateMachineDefinition).toHaveBeenCalledWith({
-    definition: '{ Prop: \"new-value\" }, { \"S3Bucket\" : { \"Fn::GetAtt\": [ \"Bucket\", \"Arn\" ] } }',
+    definition: '"Resource": arn:aws:lambda:here:123456789012:function:my-func',
     stateMachineArn: 'my-machine',
   });
 });
