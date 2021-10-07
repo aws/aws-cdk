@@ -24,7 +24,7 @@ test('create a RuleGroupsNamespace', () => {
       for: 2m`,
   });
 
-  // we should have the service
+  // we should have the RuleGroupsNamespace
   Template.fromStack(stack).hasResourceProperties('AWS::APS::RuleGroupsNamespace', {
     Data: 'groups:\n  - name: test\n    rules:\n    - record: metric:recording_rule\n      expr: avg(rate(container_cpu_usage_seconds_total[5m]))\n  - name: alert-test\n    rules:\n    - alert: metric:alerting_rule\n        expr: avg(rate(container_cpu_usage_seconds_total[5m])) > 0\n      for: 2m',
     Workspace: {

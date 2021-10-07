@@ -25,7 +25,7 @@ alertmanager_config: |
           value: value1`,
   });
 
-  // we should have the service
+  // we should have the Workspace
   Template.fromStack(stack).hasResourceProperties('AWS::APS::Workspace', {
     AlertManagerDefinition: "\nalertmanager_config: |\n  route:\n    receiver: 'default'\n  receivers:\n    - name: 'default'\n      sns_configs:\n      - topic_arn: arn:aws:sns:us-east-2:123456789012:My-Topic\n        sigv4:\n          region: us-east-2\n        attributes:\n          key: key1\n          value: value1",
     Alias: 'demo-workspace',
