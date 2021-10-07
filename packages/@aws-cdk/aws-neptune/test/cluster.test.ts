@@ -446,7 +446,7 @@ describe('DatabaseCluster', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Neptune::DBCluster', {
-      IamAuthEnabled: Match.absentProperty(),
+      IamAuthEnabled: Match.absent(),
     });
   });
 

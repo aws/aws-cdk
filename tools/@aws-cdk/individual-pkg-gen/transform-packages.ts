@@ -130,6 +130,17 @@ function transformPackageJson(pkg: any, source: string, destination: string, alp
   packageJson.name += '-alpha';
   packageJson.repository.directory = `packages/individual-packages/${pkgUnscopedName}`;
 
+  // All individual packages are public by default on v1, and private by default on v2.
+  // We need to flip these around, so we don't publish alphas on v1, but *do* on v2.
+  // We also should only do this for packages we intend to publish (those with a `publishConfig`)
+  if (packageJson.publishConfig) {
+    packageJson.private = !packageJson.private;
+    packageJson.publishConfig.tag = 'latest';
+    if (packageJson.private) {
+      packageJson.ubergen = { exclude: true };
+    }
+  }
+
   // disable awslint (some rules are hard-coded to @aws-cdk/core)
   packageJson.awslint = {
     exclude: ['*:*'],
@@ -270,7 +281,8 @@ function packageIsAlpha(pkg: any): boolean {
   }
   // we're only interested in '@aws-cdk/' packages,
   // and those that are JSII-enabled (so no @aws-cdk/assert)
-  return pkg.name.startsWith('@aws-cdk/') && !!pkg.get('jsii');
+  // Also, don't re-transform already alpha-ed packages
+  return pkg.name.startsWith('@aws-cdk/') && !!pkg.get('jsii') && !pkg.name.endsWith('-alpha');
 }
 
 function isRequiredTool(name: string) {
