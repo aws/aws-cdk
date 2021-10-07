@@ -7,7 +7,7 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'integ-workspace');
 
 const workspace = new WorkSpace(stack, 'demo-workspace', {
-    alias: 'demo-workspace',
+  alias: 'demo-workspace',
 });
 new cdk.CfnOutput(stack, 'prometheusUrl', { value: workspace.prometheusEndpoint });
 

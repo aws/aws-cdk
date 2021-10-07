@@ -26,6 +26,7 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
 ```ts
 import aps = require('@aws-cdk/aws-aps');
 ```
+
 ## Introduction
 
 Amazon Managed Service for Prometheus is a Prometheus-compatible monitoring and alerting service that makes it easy to monitor containerized applications and infrastructure at scale. The Cloud Native Computing Foundation’s Prometheus project is a popular open source monitoring and alerting solution optimized for container environments. With Amazon Managed Service for Prometheus, you can use the open source Prometheus query language (PromQL) to monitor and alert on the performance of containerized workloads, without having to scale and operate the underlying infrastructure. Amazon Managed Service for Prometheus automatically scales the ingestion, storage, alerting, and querying of operational metrics as workloads grow or shrink, and is integrated with AWS security services to enable fast and secure access to data. The service is integrated with Amazon Elastic Kubernetes Service (Amazon EKS), Amazon Elastic Container Service (Amazon ECS), and AWS Distro for OpenTelemetry.

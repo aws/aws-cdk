@@ -1,13 +1,13 @@
-import { Construct } from 'constructs';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnWorkspace } from './aps.generated';
 
 
 /**
  * Represents the Prometheus WorkSpace.
  */
- export interface IWorkSpace extends cdk.IResource { 
-     /**
+export interface IWorkSpace extends cdk.IResource {
+  /**
    * The ARN of the WorkSpace.
    */
   readonly workspaceArn: string;
@@ -26,7 +26,7 @@ import { CfnWorkspace } from './aps.generated';
 /**
  * Attributes for the WorkSpace.
  */
- export interface WorkSpaceAttributes {
+export interface WorkSpaceAttributes {
 
   /**
    * The ARN of the WorkSpace.
@@ -47,7 +47,8 @@ import { CfnWorkspace } from './aps.generated';
 export interface WorkSpaceProps {
   /**
    * The alert manager definition for the workspace, as a string. For more information,
-   * @see [Alert manager and templating](https://docs.aws.amazon.com/prometheus/latest/userguide/AMP-alert-manager.html). 
+   * @see [Alert manager and templating](https://docs.aws.amazon.com/prometheus/latest/userguide/AMP-alert-manager.html).
+   * @default - no values will be passed.
    */
   readonly alertManagerDefinition?: string;
 
@@ -55,35 +56,15 @@ export interface WorkSpaceProps {
    * An alias that you assign to this workspace to help you identify it. It does not need to be unique.
    * The alias can be as many as 100 characters and can include any type of characters.
    * Amazon Managed Service for Prometheus automatically strips any blank spaces from the beginning and end of the alias that you specify.
+   * @default - none.
    */
-  readonly alias?: string; 
+  readonly alias?: string;
 }
 
+/**
+ * The Workspace type specifies an Amazon Managed Service for Prometheus (Amazon Managed Service for Prometheus) workspace.
+ */
 export class WorkSpace extends cdk.Resource {
-  private alertManagerDefinition?: string;
-  private alias?: string;
-
-  /**
-   * The ARN of the workspace. 
-   * For example: `arn:aws:aps:us-west-2:123456789012:workspace/ws-EXAMPLE-3687-4ac9-853c-EXAMPLEe8f`.
-   * @attribute
-   */
-  public workspaceArn: string;
-
-  /**
-   * The Prometheus endpoint attribute of the workspace. 
-   * This is the endpoint prefix without the remote_write or query API appended.
-   * For example: https://aps-workspaces.us-west-2.amazonaws.com/workspaces/ws-EXAMPLE-3687-4ac9-853c-EXAMPLEe8f/.
-   * @attribute
-   */
-  public prometheusEndpoint: string;
-
-  /**
-   * The workspace ID. For example: `ws-EXAMPLE-3687-4ac9-853c-EXAMPLEe8f`.
-   * @attribute
-   */
-  public workspaceId: string;
-
   /**
    * Import from workspace attributes.
    */
@@ -93,9 +74,9 @@ export class WorkSpace extends cdk.Resource {
     const prometheusEndpoint = attrs.prometheusEndpoint;
 
     class Import extends cdk.Resource {
-      public readonly workspaceArn = workspaceArn;
-      public readonly workspaceId = workspaceId;
-      public readonly prometheusEndpoint = prometheusEndpoint;
+      public workspaceArn = workspaceArn;
+      public workspaceId = workspaceId;
+      public prometheusEndpoint = prometheusEndpoint;
     }
 
     return new Import(scope, id);
@@ -104,16 +85,40 @@ export class WorkSpace extends cdk.Resource {
   /**
    * Import from workspace Id.
    */
-   public static fromWorkSpaceId(scope: Construct, id: string, workspaceId: string): IWorkSpace {
-    
+  public static fromWorkSpaceId(scope: Construct, id: string, workSpaceId: string): IWorkSpace {
+
     class Import extends cdk.Resource {
-      public readonly workspaceArn = `arn:aws:aps:${cdk.Stack.of(this).region}:${cdk.Stack.of(this).account}:workspace/${workspaceId}`;;
-      public readonly workspaceId = workspaceId;
-      public readonly prometheusEndpoint = `https://aps-workspaces.${cdk.Stack.of(this).region}.amazonaws.com/workspaces/${workspaceId}/`;
+      public workspaceArn = `arn:aws:aps:${cdk.Stack.of(this).region}:${cdk.Stack.of(this).account}:workspace/${workSpaceId}`;;
+      public workspaceId = workSpaceId;
+      public prometheusEndpoint = `https://aps-workspaces.${cdk.Stack.of(this).region}.amazonaws.com/workspaces/${workSpaceId}/`;
     }
 
     return new Import(scope, id);
   }
+
+  private alertManagerDefinition?: string;
+  private alias?: string;
+
+  /**
+   * The ARN of the workspace.
+   * For example: `arn:aws:aps:us-west-2:123456789012:workspace/ws-EXAMPLE-3687-4ac9-853c-EXAMPLEe8f`.
+   * @attribute
+   */
+  readonly workspaceArn: string;
+
+  /**
+   * The Prometheus endpoint attribute of the workspace.
+   * This is the endpoint prefix without the remote_write or query API appended.
+   * For example: https://aps-workspaces.us-west-2.amazonaws.com/workspaces/ws-EXAMPLE-3687-4ac9-853c-EXAMPLEe8f/.
+   * @attribute
+   */
+  readonly prometheusEndpoint: string;
+
+  /**
+   * The workspace ID. For example: `ws-EXAMPLE-3687-4ac9-853c-EXAMPLEe8f`.
+   * @attribute
+   */
+  readonly workspaceId: string;
 
   public constructor(scope: Construct, id: string, props?: WorkSpaceProps) {
     super(scope, id);

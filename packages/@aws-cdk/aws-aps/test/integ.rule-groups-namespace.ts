@@ -7,13 +7,13 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'integ-rule-groups-namespace');
 
 const workspace = new WorkSpace(stack, 'demo-workspace', {
-    alias: 'demo-rule-groups-namespace',
+  alias: 'demo-rule-groups-namespace',
 });
 
 const ruleGroupsNamespace = new RuleGroupsNamespace(stack, 'DemoWorkSpace', {
-    name: 'DemoRuleGroupsNamespace',
-    workspace: workspace.workspaceArn,
-    data: `groups:
+  name: 'DemoRuleGroupsNamespace',
+  workspace: workspace.workspaceArn,
+  data: `groups:
   - name: test
     rules:
     - record: metric:recording_rule
@@ -22,6 +22,7 @@ const ruleGroupsNamespace = new RuleGroupsNamespace(stack, 'DemoWorkSpace', {
     rules:
     - alert: metric:alerting_rule
       expr: avg(rate(container_cpu_usage_seconds_total[5m])) > 0
-      for: 2m`});
+      for: 2m`,
+});
 
-new cdk.CfnOutput(stack, 'arn', { value: ruleGroupsNamespace.ruleGroupsNameArn });
+new cdk.CfnOutput(stack, 'arn', { value: ruleGroupsNamespace.ruleGroupsNamespaceArn });
