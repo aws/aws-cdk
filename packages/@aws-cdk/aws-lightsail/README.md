@@ -27,7 +27,7 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
 import lightsail = require('@aws-cdk/aws-lightsail');
 ```
 
-# Instance
+## Instance
 
 Use the `Instance` construct to create an Lightsail instance:
 
