@@ -28,7 +28,7 @@ APIs that use GraphQL.
 
 ### DynamoDB
 
-Example of a GraphQL API with `AWS_IAM` authorization resolving into a DynamoDb
+Example of a GraphQL API with `AWS_IAM` [authorization](#authorization) resolving into a DynamoDb
 backend data source.
 
 GraphQL schema file `schema.graphql`:
@@ -344,6 +344,40 @@ importedApi.addDynamoDbDataSource('TableDataSource', table);
 If you don't specify `graphqlArn` in `fromXxxAttributes`, CDK will autogenerate
 the expected `arn` for the imported api, given the `apiId`. For creating data
 sources and resolvers, an `apiId` is sufficient.
+
+## Authorization
+
+There are multiple authorization types available for GraphQL API to cater to different
+access use cases. They are:
+
+- API Keys (`AuthorizationType.API_KEY`)
+- Amazon Cognito User Pools (`AuthorizationType.USER_POOL`)
+- OpenID Connect (`AuthorizationType.OPENID_CONNECT`)
+- AWS Identity and Access Management (`AuthorizationType.AWS_IAM`)
+- AWS Lambda (`AuthorizationType.AWS_LAMBDA`)
+
+These types can be used simultaneously in a single API, allowing different types of clients to
+access data. When you specify an authorization type, you can also specify the corresponding
+authorization mode to finish defining your authorization. For example, this is a GraphQL API
+with AWS Lambda Authorization.
+
+```ts
+authFunction = new lambda.Function(stack, 'auth-function', {});
+
+new appsync.GraphqlApi(stack, 'api', {
+  name: 'api',
+  schema: appsync.Schema.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
+  authorizationConfig: {
+    defaultAuthorization: {
+      authorizationType: appsync.AuthorizationType.LAMBDA,
+      lambdaAuthorizerConfig: {
+        handler: authFunction, 
+        // can also specify `resultsCacheTtl` and `validationRegex`.
+      },
+    },
+  },
+});
+```
 
 ## Permissions
 
