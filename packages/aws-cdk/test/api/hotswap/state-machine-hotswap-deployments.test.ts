@@ -75,9 +75,18 @@ test('calls the updateStateMachine() API when it receives only a definitionStrin
         Properties: {
           DefinitionString: {
             'Fn::Join': [
-              '',
+              '\n',
               [
-                '{ "Prop" : "old-value", "AnotherProp" : "another-old-value" }',
+                '{',
+                '  "StartAt" : "SuccessState"',
+                '  "States" : {',
+                '    "SuccessState": {',
+                '      "Type": "Pass"',
+                '      "Result": "Success"',
+                '      "End": true',
+                '    }',
+                '  }',
+                '}',
               ],
             ],
           },
@@ -94,9 +103,16 @@ test('calls the updateStateMachine() API when it receives only a definitionStrin
           Properties: {
             DefinitionString: {
               'Fn::Join': [
-                '',
+                '\n',
                 [
-                  '{ "Prop" : "new-value", "AnotherProp" : "another-new-value" }',
+                  '{',
+                  '  "StartAt": "SuccessState",',
+                  '  "States": {',
+                  '    "SuccessState": {',
+                  '      "Type": "Succeed"',
+                  '    }',
+                  '  }',
+                  '}',
                 ],
               ],
             },
@@ -113,7 +129,14 @@ test('calls the updateStateMachine() API when it receives only a definitionStrin
   // THEN
   expect(deployStackResult).not.toBeUndefined();
   expect(mockUpdateMachineDefinition).toHaveBeenCalledWith({
-    definition: '{ "Prop" : "new-value", "AnotherProp" : "another-new-value" }',
+    definition: JSON.stringify({
+      StartAt: 'SuccessState',
+      States: {
+        SuccessState: {
+          Type: 'Succeed',
+        },
+      },
+    }, null, 2),
     stateMachineArn: 'my-machine',
   });
 });
@@ -129,7 +152,16 @@ test('calls the updateStateMachine() API when it receives a change to the defini
             'Fn::Join': [
               '',
               [
-                '{ "Prop" : "old-value" }',
+                '{',
+                '  "StartAt" : "SuccessState"',
+                '  "States" : {',
+                '    "SuccessState": {',
+                '      "Type": "Pass"',
+                '      "Result": "Success"',
+                '      "End": true',
+                '    }',
+                '  }',
+                '}',
               ],
             ],
           },
@@ -145,9 +177,16 @@ test('calls the updateStateMachine() API when it receives a change to the defini
           Properties: {
             DefinitionString: {
               'Fn::Join': [
-                '',
+                '\n',
                 [
-                  '{ "Prop" : "new-value" }',
+                  '{',
+                  '  "StartAt": "SuccessState",',
+                  '  "States": {',
+                  '    "SuccessState": {',
+                  '      "Type": "Succeed"',
+                  '    }',
+                  '  }',
+                  '}',
                 ],
               ],
             },
