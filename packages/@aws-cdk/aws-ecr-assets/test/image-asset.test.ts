@@ -63,7 +63,7 @@ describe('image asset', () => {
 
   });
 
-  testFutureBehavior('with hash options', flags, App, (app) => {
+  testLegacyBehavior('with hash options', App, (app) => {
     // WHEN
     const stack = new Stack(app);
     new DockerImageAsset(stack, 'Image1', {
@@ -94,7 +94,7 @@ describe('image asset', () => {
     // THEN
     const asm = app.synth();
     const artifact = asm.getStackArtifact(stack.artifactId);
-    expect(artifact.template).toEqual({});
+    expect(artifact.template.Resources).toBeUndefined();
     expect(artifact.assets).toEqual([
       {
         'buildArgs': {
