@@ -22,7 +22,7 @@ test('returns undefined when a new Lambda function is added to the Stack', async
   });
 
   // WHEN
-  const deployStackResult = await setup.tryHotswapDeployment({}, cdkStackArtifact);
+  const deployStackResult = await setup.tryHotswapDeployment(cdkStackArtifact);
 
   // THEN
   expect(deployStackResult).toBeUndefined();
@@ -68,7 +68,7 @@ test('calls the updateLambdaCode() API when it receives only a code difference i
   });
 
   // WHEN
-  const deployStackResult = await setup.tryHotswapDeployment({}, cdkStackArtifact);
+  const deployStackResult = await setup.tryHotswapDeployment(cdkStackArtifact);
 
   // THEN
   expect(deployStackResult).not.toBeUndefined();
@@ -138,7 +138,7 @@ test("correctly evaluates the function's name when it references a different res
   });
 
   // WHEN
-  const deployStackResult = await setup.tryHotswapDeployment({}, cdkStackArtifact);
+  const deployStackResult = await setup.tryHotswapDeployment(cdkStackArtifact);
 
   // THEN
   expect(deployStackResult).not.toBeUndefined();
@@ -198,7 +198,7 @@ test("correctly falls back to taking the function's name from the current stack 
   });
 
   // WHEN
-  const deployStackResult = await setup.tryHotswapDeployment({ AssetBucketParam: 'asset-bucket' }, cdkStackArtifact);
+  const deployStackResult = await setup.tryHotswapDeployment(cdkStackArtifact, { AssetBucketParam: 'asset-bucket' });
 
   // THEN
   expect(deployStackResult).not.toBeUndefined();
@@ -255,7 +255,7 @@ test("will not perform a hotswap deployment if it cannot find a Ref target (outs
 
   // THEN
   await expect(() =>
-    setup.tryHotswapDeployment({}, cdkStackArtifact),
+    setup.tryHotswapDeployment(cdkStackArtifact),
   ).rejects.toThrow(/Parameter or resource 'Param1' could not be found for evaluation/);
 });
 
@@ -308,7 +308,7 @@ test("will not perform a hotswap deployment if it doesn't know how to handle a s
 
   // THEN
   await expect(() =>
-    setup.tryHotswapDeployment({}, cdkStackArtifact),
+    setup.tryHotswapDeployment(cdkStackArtifact),
   ).rejects.toThrow("We don't support the 'UnknownAttribute' attribute of the 'AWS::S3::Bucket' resource. This is a CDK limitation. Please report it at https://github.com/aws/aws-cdk/issues/new/choose");
 });
 
@@ -351,7 +351,7 @@ test('calls the updateLambdaCode() API when it receives a code difference in a L
 
   // WHEN
   setup.pushStackResourceSummaries(setup.stackSummaryOf('Func', 'AWS::Lambda::Function', 'mock-function-resource-id'));
-  const deployStackResult = await setup.tryHotswapDeployment({}, cdkStackArtifact);
+  const deployStackResult = await setup.tryHotswapDeployment(cdkStackArtifact);
 
   // THEN
   expect(deployStackResult).not.toBeUndefined();
@@ -396,7 +396,7 @@ test('does not call the updateLambdaCode() API when it receives a change that is
   });
 
   // WHEN
-  const deployStackResult = await setup.tryHotswapDeployment({}, cdkStackArtifact);
+  const deployStackResult = await setup.tryHotswapDeployment(cdkStackArtifact);
 
   // THEN
   expect(deployStackResult).toBeUndefined();
@@ -441,7 +441,7 @@ test('does not call the updateLambdaCode() API when a resource with type that is
   });
 
   // WHEN
-  const deployStackResult = await setup.tryHotswapDeployment({}, cdkStackArtifact);
+  const deployStackResult = await setup.tryHotswapDeployment(cdkStackArtifact);
 
   // THEN
   expect(deployStackResult).toBeUndefined();

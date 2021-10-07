@@ -14,7 +14,7 @@ beforeEach(() => {
 
 test('returns a deployStackResult with noOp=true when it receives an empty set of changes', async () => {
   // WHEN
-  const deployStackResult = await setup.tryHotswapDeployment({}, setup.cdkStackArtifactOf());
+  const deployStackResult = await setup.tryHotswapDeployment(setup.cdkStackArtifactOf());
 
   // THEN
   expect(deployStackResult).not.toBeUndefined();
@@ -48,7 +48,7 @@ test('A change to only a non-hotswappable resource results in a full deployment'
   });
 
   // WHEN
-  const deployStackResult = await setup.tryHotswapDeployment({}, cdkStackArtifact);
+  const deployStackResult = await setup.tryHotswapDeployment(cdkStackArtifact);
 
   // THEN
   expect(deployStackResult).toBeUndefined();
@@ -108,7 +108,7 @@ test('A change to both a hotswappable resource and a non-hotswappable resource r
   });
 
   // WHEN
-  const deployStackResult = await setup.tryHotswapDeployment({}, cdkStackArtifact);
+  const deployStackResult = await setup.tryHotswapDeployment(cdkStackArtifact);
 
   // THEN
   expect(deployStackResult).toBeUndefined();
@@ -142,7 +142,7 @@ test('changes only to CDK::Metadata result in a noOp', async () => {
   });
 
   // WHEN
-  const deployStackResult = await setup.tryHotswapDeployment({}, cdkStackArtifact);
+  const deployStackResult = await setup.tryHotswapDeployment(cdkStackArtifact);
 
   // THEN
   expect(deployStackResult).not.toBeUndefined();
@@ -163,7 +163,7 @@ test('resource deletions require full deployments', async () => {
   const cdkStackArtifact = setup.cdkStackArtifactOf();
 
   // WHEN
-  const deployStackResult = await setup.tryHotswapDeployment({}, cdkStackArtifact);
+  const deployStackResult = await setup.tryHotswapDeployment(cdkStackArtifact);
 
   // THEN
   expect(deployStackResult).toBeUndefined();
@@ -229,7 +229,7 @@ test('can correctly reference AWS::Partition in hotswappable changes', async () 
   });
 
   // WHEN
-  const deployStackResult = await setup.tryHotswapDeployment({}, cdkStackArtifact);
+  const deployStackResult = await setup.tryHotswapDeployment(cdkStackArtifact);
 
   // THEN
   expect(deployStackResult).not.toBeUndefined();

@@ -22,7 +22,7 @@ test('returns undefined when a new StateMachine is added to the Stack', async ()
   });
 
   // WHEN
-  const deployStackResult = await setup.tryHotswapDeployment({}, cdkStackArtifact);
+  const deployStackResult = await setup.tryHotswapDeployment(cdkStackArtifact);
 
   // THEN
   expect(deployStackResult).toBeUndefined();
@@ -56,7 +56,7 @@ test('calls the updateStateMachine() API when it receives only a definitionStrin
   });
 
   // WHEN
-  const deployStackResult = await setup.tryHotswapDeployment({}, cdkStackArtifact);
+  const deployStackResult = await setup.tryHotswapDeployment(cdkStackArtifact);
 
   // THEN
   expect(deployStackResult).not.toBeUndefined();
@@ -124,7 +124,7 @@ test('calls the updateStateMachine() API when it receives only a definitionStrin
   });
 
   // WHEN
-  const deployStackResult = await setup.tryHotswapDeployment({}, cdkStackArtifact);
+  const deployStackResult = await setup.tryHotswapDeployment(cdkStackArtifact);
 
   // THEN
   expect(deployStackResult).not.toBeUndefined();
@@ -168,7 +168,7 @@ test('calls the updateStateMachine() API when it receives a change to the defini
 
   // WHEN
   setup.pushStackResourceSummaries(setup.stackSummaryOf('Machine', 'AWS::StepFunctions::StateMachine', 'mock-machine-resource-id'));
-  const deployStackResult = await setup.tryHotswapDeployment({}, cdkStackArtifact);
+  const deployStackResult = await setup.tryHotswapDeployment(cdkStackArtifact);
 
   // THEN
   expect(deployStackResult).not.toBeUndefined();
@@ -210,7 +210,7 @@ test('does not call the updateStateMachine() API when it receives a change to a 
   });
 
   // WHEN
-  const deployStackResult = await setup.tryHotswapDeployment({}, cdkStackArtifact);
+  const deployStackResult = await setup.tryHotswapDeployment(cdkStackArtifact);
 
   // THEN
   expect(deployStackResult).toBeUndefined();
@@ -243,7 +243,7 @@ test('does not call the updateStateMachine() API when a resource with type that 
   });
 
   // WHEN
-  const deployStackResult = await setup.tryHotswapDeployment({}, cdkStackArtifact);
+  const deployStackResult = await setup.tryHotswapDeployment(cdkStackArtifact);
 
   // THEN
   expect(deployStackResult).toBeUndefined();
@@ -280,7 +280,7 @@ test('can correctly hotswap old style synth changes', async () => {
   });
 
   // WHEN
-  const deployStackResult = await setup.tryHotswapDeployment({ AssetParam2: 'asset-param-2' }, cdkStackArtifact);
+  const deployStackResult = await setup.tryHotswapDeployment(cdkStackArtifact, { AssetParam2: 'asset-param-2' });
 
   // THEN
   expect(deployStackResult).not.toBeUndefined();
@@ -350,7 +350,7 @@ test('calls the updateStateMachine() API when it receives a change to the defini
     setup.stackSummaryOf('Machine', 'AWS::StepFunctions::StateMachine', 'mock-machine-resource-id'),
     setup.stackSummaryOf('Func', 'AWS::Lambda::Function', 'my-func'),
   );
-  const deployStackResult = await setup.tryHotswapDeployment({}, cdkStackArtifact);
+  const deployStackResult = await setup.tryHotswapDeployment(cdkStackArtifact);
 
   // THEN
   expect(deployStackResult).not.toBeUndefined();
@@ -414,7 +414,7 @@ test("will not perform a hotswap deployment if it cannot find a Ref target (outs
 
   // THEN
   await expect(() =>
-    setup.tryHotswapDeployment({}, cdkStackArtifact),
+    setup.tryHotswapDeployment(cdkStackArtifact),
   ).rejects.toThrow(/Parameter or resource 'Param1' could not be found for evaluation/);
 });
 
@@ -477,6 +477,6 @@ test("will not perform a hotswap deployment if it doesn't know how to handle a s
 
   // THEN
   await expect(() =>
-    setup.tryHotswapDeployment({}, cdkStackArtifact),
+    setup.tryHotswapDeployment(cdkStackArtifact),
   ).rejects.toThrow("We don't support the 'UnknownAttribute' attribute of the 'AWS::S3::Bucket' resource. This is a CDK limitation. Please report it at https://github.com/aws/aws-cdk/issues/new/choose");
 });

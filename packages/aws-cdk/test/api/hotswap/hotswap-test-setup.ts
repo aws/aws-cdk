@@ -78,8 +78,8 @@ export function stackSummaryOf(logicalId: string, resourceType: string, physical
 }
 
 export async function tryHotswapDeployment(
-  assetParams: { [key: string]: string },
   stackArtifact: cxapi.CloudFormationStackArtifact,
+  assetParams: { [key: string]: string } = {},
 ): Promise<DeployStackResult | undefined> {
   return deployments.tryHotswapDeployment(mockSdkProvider, assetParams, currentCfnStack, stackArtifact);
 }
