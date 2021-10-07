@@ -22,7 +22,7 @@ test('returns a deployStackResult with noOp=true when it receives an empty set o
   expect(deployStackResult?.stackArn).toEqual(setup.STACK_ID);
 });
 
-test('Resources that are not lambdas or step functions result in a full deployment', async () => {
+test('A change to only a non-hotswappable resource results in a full deployment', async () => {
   // GIVEN
   setup.setTemplate({
     Resources: {
@@ -157,17 +157,6 @@ test('resource deletions require full deployments', async () => {
     Resources: {
       Machine: {
         Type: 'AWS::StepFunctions::StateMachine',
-        Properties: {
-          DefinitionString: {
-            'Fn::Join': [
-              '',
-              [
-                '{ "Prop" : "old-value", "AnotherProp" : "another-old-value" }',
-              ],
-            ],
-          },
-          StateMachineName: 'my-machine',
-        },
       },
     },
   });
