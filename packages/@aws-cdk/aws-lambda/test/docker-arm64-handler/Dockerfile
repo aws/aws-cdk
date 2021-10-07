@@ -1,4 +1,4 @@
-FROM public.ecr.aws/lambda/python:latest-arm64
+FROM public.ecr.aws/lambda/python:latest
 
 ARG FUNCTION_DIR="/var/task"
 COPY index.py ${FUNCTION_DIR}
