@@ -328,10 +328,10 @@ const getObject = new tasks.CallAwsService(this, 'GetObject', {
   service: 's3',
   action: 'getObject',
   parameters: {
-    Bucket: sfn.JsonPath.stringAt('$.bucket'),
+    Bucket: myBucket,
     Key: sfn.JsonPath.stringAt('$.key')
   },
-  iamResources: ['*'],
+  iamResources: [myBucket.arnForObjects('*')],
 });
 ```
 

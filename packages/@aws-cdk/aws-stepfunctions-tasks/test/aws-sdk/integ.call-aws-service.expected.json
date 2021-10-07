@@ -41,17 +41,56 @@
             {
               "Action": "s3:putObject",
               "Effect": "Allow",
-              "Resource": "*"
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    {
+                      "Fn::GetAtt": [
+                        "Bucket83908E77",
+                        "Arn"
+                      ]
+                    },
+                    "/*"
+                  ]
+                ]
+              }
             },
             {
               "Action": "s3:getObject",
               "Effect": "Allow",
-              "Resource": "*"
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    {
+                      "Fn::GetAtt": [
+                        "Bucket83908E77",
+                        "Arn"
+                      ]
+                    },
+                    "/*"
+                  ]
+                ]
+              }
             },
             {
               "Action": "s3:deleteObject",
               "Effect": "Allow",
-              "Resource": "*"
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    {
+                      "Fn::GetAtt": [
+                        "Bucket83908E77",
+                        "Arn"
+                      ]
+                    },
+                    "/*"
+                  ]
+                ]
+              }
             }
           ],
           "Version": "2012-10-17"

@@ -23,6 +23,8 @@ class TestStack extends cdk.Stack {
       Key: 'test.txt',
     };
 
+    const iamResources = [bucket.arnForObjects('*')];
+
     const putObject = new tasks.CallAwsService(this, 'PutObject', {
       service: 's3',
       action: 'putObject',
@@ -30,21 +32,21 @@ class TestStack extends cdk.Stack {
         Body: sfn.JsonPath.stringAt('$.body'),
         ...commonParameters,
       },
-      iamResources: ['*'],
+      iamResources,
     });
 
     const getObject = new tasks.CallAwsService(this, 'GetObject', {
       service: 's3',
       action: 'getObject',
       parameters: commonParameters,
-      iamResources: ['*'],
+      iamResources,
     });
 
     const deleteObject = new tasks.CallAwsService(this, 'DeleteObject', {
       service: 's3',
       action: 'deleteObject',
       parameters: commonParameters,
-      iamResources: ['*'],
+      iamResources,
       resultPath: JsonPath.DISCARD,
     });
 

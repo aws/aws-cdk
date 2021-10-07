@@ -5,21 +5,26 @@ import { Construct } from 'constructs';
 import { integrationResourceArn } from '../private/task-utils';
 
 /**
- * Properties for CallAwsService Task
+ * Properties for calling an AWS service's API action from your
+ * state machine.
+ *
+ * @see https://docs.aws.amazon.com/step-functions/latest/dg/supported-services-awssdk.html
  */
 export interface CallAwsServiceProps extends sfn.TaskStateBaseProps {
   /**
-   * The service to call
+   * The AWS service to call
+   *
+   * @see https://docs.aws.amazon.com/step-functions/latest/dg/supported-services-awssdk.html
    */
   readonly service: string;
 
   /**
-   * The action to call
+   * The API action to call
    */
   readonly action: string;
 
   /**
-   * Parameters for the call
+   * Parameters for the API action call
    *
    * @default - no parameters
    */
