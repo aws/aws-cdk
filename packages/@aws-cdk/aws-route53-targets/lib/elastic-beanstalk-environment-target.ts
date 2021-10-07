@@ -1,5 +1,5 @@
-import * as cdk from '@aws-cdk/core';
 import * as route53 from '@aws-cdk/aws-route53';
+import * as cdk from '@aws-cdk/core';
 import { RegionInfo } from '@aws-cdk/region-info';
 
 /**
@@ -14,6 +14,11 @@ export class ElasticBeanstalkEnvironmentEndpointTarget implements route53.IAlias
 
   public bind(_record: route53.IRecordSet, _zone?: route53.IHostedZone): route53.AliasRecordTargetConfig {
     const dnsName = this.environmentEndpoint;
+
+    if (cdk.Token.isUnresolved(dnsName)) {
+      throw new Error('Cannot use an EBS alias in `dnsName`. You must find your EBS environment endpoint via the AWS console. See the Elastic Beanstalk developer guide: https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/customdomains.html');
+    }
+
     const region = cdk.Fn.select(2, cdk.Fn.split('.', dnsName));
     const { ebsEnvEndpointHostedZoneId: hostedZoneId } = RegionInfo.get(region);
 
