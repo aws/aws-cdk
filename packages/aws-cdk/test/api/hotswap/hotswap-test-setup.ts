@@ -12,44 +12,21 @@ import { FakeCloudformationStack } from '../fake-cloudformation-stack';
 const STACK_NAME = 'withouterrors';
 export const STACK_ID = 'stackId';
 
-let mockSdkProvider: MockSdkProvider;
+let cfnMockProvider: CfnMockProvider;
 let currentCfnStack: FakeCloudformationStack;
 const currentCfnStackResources: CloudFormation.StackResourceSummary[] = [];
 
 export function setupHotswapTests() {
   jest.resetAllMocks();
-  mockSdkProvider = new MockSdkProvider({ realSdk: false });
   // clear the array
   currentCfnStackResources.splice(0);
-  mockSdkProvider.stubCloudFormation({
-    listStackResources: ({ StackName: stackName }) => {
-      if (stackName !== STACK_NAME) {
-        throw new Error(`Expected Stack name in listStackResources() call to be: '${STACK_NAME}', but received: ${stackName}'`);
-      }
-      return {
-        StackResourceSummaries: currentCfnStackResources,
-      };
-    },
-  });
-
+  cfnMockProvider = new CfnMockProvider();
   currentCfnStack = new FakeCloudformationStack({
     stackName: STACK_NAME,
     stackId: STACK_ID,
   });
-}
 
-export function setUpdateFunctionCodeMock(mockUpdateLambdaCode: (input: lambda.UpdateFunctionCodeRequest) => lambda.FunctionConfiguration) {
-  mockSdkProvider.stubLambda({
-    updateFunctionCode: mockUpdateLambdaCode,
-  });
-}
-
-export function setUpdateStateMachineMock(mockUpdateMachineDefinition:
-(input: stepfunctions.UpdateStateMachineInput) =>
-stepfunctions.UpdateStateMachineOutput) {
-  mockSdkProvider.stubStepFunctions({
-    updateStateMachine: mockUpdateMachineDefinition,
-  });
+  return cfnMockProvider;
 }
 
 export function cdkStackArtifactOf(testStackArtifact: Partial<TestStackArtifact> = {}): cxapi.CloudFormationStackArtifact {
@@ -77,9 +54,42 @@ export function stackSummaryOf(logicalId: string, resourceType: string, physical
   };
 }
 
-export async function tryHotswapDeployment(
-  stackArtifact: cxapi.CloudFormationStackArtifact,
-  assetParams: { [key: string]: string } = {},
-): Promise<DeployStackResult | undefined> {
-  return deployments.tryHotswapDeployment(mockSdkProvider, assetParams, currentCfnStack, stackArtifact);
+export class CfnMockProvider {
+  private mockSdkProvider: MockSdkProvider;
+
+  constructor() {
+    this.mockSdkProvider = new MockSdkProvider({ realSdk: false });
+
+    this.mockSdkProvider.stubCloudFormation({
+      listStackResources: ({ StackName: stackName }) => {
+        if (stackName !== STACK_NAME) {
+          throw new Error(`Expected Stack name in listStackResources() call to be: '${STACK_NAME}', but received: ${stackName}'`);
+        }
+        return {
+          StackResourceSummaries: currentCfnStackResources,
+        };
+      },
+    });
+  }
+
+  public setUpdateStateMachineMock(mockUpdateMachineDefinition:
+  (input: stepfunctions.UpdateStateMachineInput) =>
+  stepfunctions.UpdateStateMachineOutput) {
+    this.mockSdkProvider.stubStepFunctions({
+      updateStateMachine: mockUpdateMachineDefinition,
+    });
+  }
+
+  public setUpdateFunctionCodeMock(mockUpdateLambdaCode: (input: lambda.UpdateFunctionCodeRequest) => lambda.FunctionConfiguration) {
+    this.mockSdkProvider.stubLambda({
+      updateFunctionCode: mockUpdateLambdaCode,
+    });
+  }
+
+  public tryHotswapDeployment(
+    stackArtifact: cxapi.CloudFormationStackArtifact,
+    assetParams: { [key: string]: string } = {},
+  ): Promise<DeployStackResult | undefined> {
+    return deployments.tryHotswapDeployment(this.mockSdkProvider, assetParams, currentCfnStack, stackArtifact);
+  }
 }
