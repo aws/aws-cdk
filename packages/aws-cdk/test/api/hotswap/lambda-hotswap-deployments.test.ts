@@ -325,7 +325,7 @@ test('calls the updateLambdaCode() API when it receives a code difference in a L
           },
         },
         Metadata: {
-          'aws:asset:path': 'old-path',
+          'aws:asset:path': 'current-path',
         },
       },
     },
@@ -342,7 +342,7 @@ test('calls the updateLambdaCode() API when it receives a code difference in a L
             },
           },
           Metadata: {
-            'aws:asset:path': 'new-path',
+            'aws:asset:path': 'current-path',
           },
         },
       },
