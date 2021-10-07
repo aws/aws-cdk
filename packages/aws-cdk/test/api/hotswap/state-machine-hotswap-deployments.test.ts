@@ -167,7 +167,7 @@ test('calls the updateStateMachine() API when it receives a change to the defini
   });
 
   // WHEN
-  setup.pushStackMocks(setup.stackSummaryOf('Machine', 'AWS::StepFunctions::StateMachine', 'mock-machine-resource-id'));
+  setup.pushStackResourceSummaries(setup.stackSummaryOf('Machine', 'AWS::StepFunctions::StateMachine', 'mock-machine-resource-id'));
   const deployStackResult = await setup.tryHotswapDeployment({}, cdkStackArtifact);
 
   // THEN
@@ -346,8 +346,10 @@ test('calls the updateStateMachine() API when it receives a change to the defini
   });
 
   // WHEN
-  setup.pushStackMocks(setup.stackSummaryOf('Machine', 'AWS::StepFunctions::StateMachine', 'mock-machine-resource-id'));
-  setup.pushStackMocks(setup.stackSummaryOf('Func', 'AWS::Lambda::Function', 'my-func'));
+  setup.pushStackResourceSummaries(
+    setup.stackSummaryOf('Machine', 'AWS::StepFunctions::StateMachine', 'mock-machine-resource-id'),
+    setup.stackSummaryOf('Func', 'AWS::Lambda::Function', 'my-func'),
+  );
   const deployStackResult = await setup.tryHotswapDeployment({}, cdkStackArtifact);
 
   // THEN
@@ -383,7 +385,7 @@ test("will not perform a hotswap deployment if it cannot find a Ref target (outs
       },
     },
   });
-  setup.pushStackMocks(setup.stackSummaryOf('Machine', 'AWS::StepFunctions::StateMachine', 'my-machine'));
+  setup.pushStackResourceSummaries(setup.stackSummaryOf('Machine', 'AWS::StepFunctions::StateMachine', 'my-machine'));
   const cdkStackArtifact = setup.cdkStackArtifactOf({
     template: {
       Parameters: {
@@ -442,7 +444,7 @@ test("will not perform a hotswap deployment if it doesn't know how to handle a s
       },
     },
   });
-  setup.pushStackMocks(
+  setup.pushStackResourceSummaries(
     setup.stackSummaryOf('Machine', 'AWS::StepFunctions::StateMachine', 'my-machine'),
     setup.stackSummaryOf('Bucket', 'AWS::S3::Bucket', 'my-bucket'),
   );

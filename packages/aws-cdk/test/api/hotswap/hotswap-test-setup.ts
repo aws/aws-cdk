@@ -59,7 +59,7 @@ export function cdkStackArtifactOf(testStackArtifact: Partial<TestStackArtifact>
   });
 }
 
-export function pushStackMocks(...items: CloudFormation.StackResourceSummary[]) {
+export function pushStackResourceSummaries(...items: CloudFormation.StackResourceSummary[]) {
   currentCfnStackResources.push(...items);
 }
 

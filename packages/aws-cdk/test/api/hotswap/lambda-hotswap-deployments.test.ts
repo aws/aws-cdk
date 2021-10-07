@@ -107,7 +107,7 @@ test("correctly evaluates the function's name when it references a different res
       },
     },
   });
-  setup.pushStackMocks(setup.stackSummaryOf('Bucket', 'AWS::S3::Bucket', 'mybucket'));
+  setup.pushStackResourceSummaries(setup.stackSummaryOf('Bucket', 'AWS::S3::Bucket', 'mybucket'));
   const cdkStackArtifact = setup.cdkStackArtifactOf({
     template: {
       Resources: {
@@ -172,7 +172,7 @@ test("correctly falls back to taking the function's name from the current stack 
       },
     },
   });
-  setup.pushStackMocks(setup.stackSummaryOf('Func', 'AWS::Lambda::Function', 'my-function'));
+  setup.pushStackResourceSummaries(setup.stackSummaryOf('Func', 'AWS::Lambda::Function', 'my-function'));
   const cdkStackArtifact = setup.cdkStackArtifactOf({
     template: {
       Parameters: {
@@ -230,7 +230,7 @@ test("will not perform a hotswap deployment if it cannot find a Ref target (outs
       },
     },
   });
-  setup.pushStackMocks(setup.stackSummaryOf('Func', 'AWS::Lambda::Function', 'my-func'));
+  setup.pushStackResourceSummaries(setup.stackSummaryOf('Func', 'AWS::Lambda::Function', 'my-func'));
   const cdkStackArtifact = setup.cdkStackArtifactOf({
     template: {
       Parameters: {
@@ -280,7 +280,7 @@ test("will not perform a hotswap deployment if it doesn't know how to handle a s
       },
     },
   });
-  setup.pushStackMocks(
+  setup.pushStackResourceSummaries(
     setup.stackSummaryOf('Func', 'AWS::Lambda::Function', 'my-func'),
     setup.stackSummaryOf('Bucket', 'AWS::S3::Bucket', 'my-bucket'),
   );
@@ -350,7 +350,7 @@ test('calls the updateLambdaCode() API when it receives a code difference in a L
   });
 
   // WHEN
-  setup.pushStackMocks(setup.stackSummaryOf('Func', 'AWS::Lambda::Function', 'mock-function-resource-id'));
+  setup.pushStackResourceSummaries(setup.stackSummaryOf('Func', 'AWS::Lambda::Function', 'mock-function-resource-id'));
   const deployStackResult = await setup.tryHotswapDeployment({}, cdkStackArtifact);
 
   // THEN
