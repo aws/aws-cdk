@@ -589,7 +589,7 @@ export class Anyone extends AnyPrincipal { }
  * should use `AnyPrincipal` instead.
  */
 export class StarPrincipal extends PrincipalBase {
-  public policyFragment: PrincipalPolicyFragment = {
+  public readonly policyFragment: PrincipalPolicyFragment = {
     principalJson: { [LITERAL_STRING_KEY]: ['*'] },
     conditions: {},
   };
