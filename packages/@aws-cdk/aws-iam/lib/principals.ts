@@ -4,7 +4,7 @@ import { IDependable } from 'constructs';
 import { IOpenIdConnectProvider } from './oidc-provider';
 import { Condition, Conditions, PolicyStatement } from './policy-statement';
 import { ISamlProvider } from './saml-provider';
-import { mergePrincipal } from './util';
+import { LITERAL_STRING_KEY, mergePrincipal } from './util';
 
 /**
  * Any object that has an associated principal that a permission can be granted to
@@ -253,6 +253,15 @@ export class PrincipalWithConditions implements IPrincipal {
  *
  * This consists of the JSON used in the "Principal" field, and optionally a
  * set of "Condition"s that need to be applied to the policy.
+ *
+ * Generally, a principal looks like:
+ *
+ *     { '<TYPE>': ['ID', 'ID', ...] }
+ *
+ * And this is also the type of the field `principalJson`.  However, there is a
+ * special type of principal that is just the string '*', which is treated
+ * differently by some services. To represent that principal, `principalJson`
+ * should contain `{ 'LiteralString': ['*'] }`.
  */
 export class PrincipalPolicyFragment {
   /**
@@ -546,7 +555,14 @@ export class AccountRootPrincipal extends AccountPrincipal {
 }
 
 /**
- * A principal representing all identities in all accounts
+ * A principal representing all AWS identities in all accounts
+ *
+ * Some services behave differently when you specify `Principal: '*'`
+ * or `Principal: { AWS: "*" }` in their resource policy.
+ *
+ * `AnyPrincipal` renders to `Principal: { AWS: "*" }`. This is correct
+ * most of the time, but in cases where you need the other principal,
+ * use `StarPrincipal` instead.
  */
 export class AnyPrincipal extends ArnPrincipal {
   constructor() {
@@ -563,6 +579,26 @@ export class AnyPrincipal extends ArnPrincipal {
  * @deprecated use `AnyPrincipal`
  */
 export class Anyone extends AnyPrincipal { }
+
+/**
+ * A principal that uses a literal '*' in the IAM JSON language
+ *
+ * Some services behave differently when you specify `Principal: "*"`
+ * or `Principal: { AWS: "*" }` in their resource policy.
+ *
+ * `StarPrincipal` renders to `Principal: *`. Most of the time, you
+ * should use `AnyPrincipal` instead.
+ */
+export class StarPrincipal extends PrincipalBase {
+  public readonly policyFragment: PrincipalPolicyFragment = {
+    principalJson: { [LITERAL_STRING_KEY]: ['*'] },
+    conditions: {},
+  };
+
+  public toString() {
+    return 'StarPrincipal()';
+  }
+}
 
 /**
  * Represents a principal that has multiple types of principals. A composite principal cannot

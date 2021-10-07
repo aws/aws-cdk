@@ -74,15 +74,18 @@ export interface MethodOptions {
    *
    * @example
    *
+   *     declare const api: apigateway.RestApi;
+   *     declare const userLambda: lambda.Function;
+   *
    *     const userModel: apigateway.Model = api.addModel('UserModel', {
    *         schema: {
-   *             type: apigateway.JsonSchemaType.OBJECT
+   *             type: apigateway.JsonSchemaType.OBJECT,
    *             properties: {
    *                 userId: {
-   *                     type: apigateway.JsonSchema.STRING
+   *                     type: apigateway.JsonSchemaType.STRING
    *                 },
    *                 name: {
-   *                     type: apigateway.JsonSchema.STRING
+   *                     type: apigateway.JsonSchemaType.STRING
    *                 }
    *             },
    *             required: ['userId']

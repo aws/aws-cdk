@@ -167,6 +167,35 @@ test('SAML principal', () => {
   });
 });
 
+test('StarPrincipal', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  const pol = new iam.PolicyDocument({
+    statements: [
+      new iam.PolicyStatement({
+        actions: ['service:action'],
+        resources: ['*'],
+        principals: [new iam.StarPrincipal()],
+      }),
+    ],
+  });
+
+  // THEN
+  expect(stack.resolve(pol)).toEqual({
+    Statement: [
+      {
+        Action: 'service:action',
+        Effect: 'Allow',
+        Principal: '*',
+        Resource: '*',
+      },
+    ],
+    Version: '2012-10-17',
+  });
+});
+
 test('PrincipalWithConditions.addCondition should work', () => {
   // GIVEN
   const stack = new Stack();

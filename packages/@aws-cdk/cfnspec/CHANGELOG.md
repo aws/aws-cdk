@@ -2,6 +2,50 @@
 
 ## New Resource Types
 
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::EKS::Cluster Logging (__deleted__)
+* AWS::EKS::Cluster Tags (__deleted__)
+* AWS::EKS::Cluster ResourcesVpcConfig.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+
+## Property Type Changes
+
+* AWS::EKS::Cluster.ClusterLogging (__removed__)
+* AWS::EKS::Cluster.Logging (__removed__)
+* AWS::EKS::Cluster.LoggingTypeConfig (__removed__)
+* AWS::EKS::Cluster.Provider (__added__)
+* AWS::EKS::Cluster.EncryptionConfig Provider.PrimitiveType (__deleted__)
+* AWS::EKS::Cluster.EncryptionConfig Provider.Type (__added__)
+* AWS::EKS::Cluster.EncryptionConfig Provider.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::EKS::Cluster.EncryptionConfig Resources.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::EKS::Cluster.KubernetesNetworkConfig ServiceIpv4Cidr.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::EKS::Cluster.ResourcesVpcConfig EndpointPrivateAccess (__deleted__)
+* AWS::EKS::Cluster.ResourcesVpcConfig EndpointPublicAccess (__deleted__)
+* AWS::EKS::Cluster.ResourcesVpcConfig PublicAccessCidrs (__deleted__)
+* AWS::EKS::Cluster.ResourcesVpcConfig SecurityGroupIds.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::EKS::Cluster.ResourcesVpcConfig SubnetIds.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+
+
+# CloudFormation Resource Specification v43.0.0
+
+## New Resource Types
+
 * AWS::Backup::Framework
 * AWS::Backup::ReportPlan
 * AWS::Lightsail::Disk
