@@ -665,10 +665,10 @@ export class Function extends FunctionBase {
     if (props.architecture && props.architectures !== undefined) {
       throw new Error('Either architecture or architectures must be specified but not both.');
     }
-    if (props.architectures && props.architectures.length > 0) {
+    if (props.architectures && props.architectures.length > 1) {
       throw new Error('Only one architecture must be specified.');
     }
-    const architecture = props.architecture ?? props.architectures?.at(0);
+    const architecture = props.architecture ?? (props.architectures && props.architectures[0]);
 
     const resource: CfnFunction = new CfnFunction(this, 'Resource', {
       functionName: this.physicalName,
