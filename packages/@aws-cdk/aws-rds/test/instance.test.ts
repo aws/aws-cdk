@@ -9,7 +9,7 @@ import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import { testFutureBehavior } from 'cdk-build-tools/lib/feature-flag';
+import { testFutureBehavior } from '@aws-cdk/cdk-build-tools/lib/feature-flag';
 import * as rds from '../lib';
 
 let stack: cdk.Stack;
@@ -348,8 +348,25 @@ describe('instance', () => {
           'Fn::Join': ['', ['{{resolve:secretsmanager:', { Ref: 'InstanceSecretB6DFA6BE8ee0a797cad8a68dbeb85f8698cdb5bb' }, ':SecretString:password::}}']],
         },
       });
+    });
 
+    test('fromGeneratedSecret with replica regions', () => {
+      new rds.DatabaseInstanceFromSnapshot(stack, 'Instance', {
+        snapshotIdentifier: 'my-snapshot',
+        engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
+        vpc,
+        credentials: rds.SnapshotCredentials.fromGeneratedSecret('admin', {
+          replicaRegions: [{ region: 'eu-west-1' }],
+        }),
+      });
 
+      expect(stack).toHaveResource('AWS::SecretsManager::Secret', {
+        ReplicaRegions: [
+          {
+            Region: 'eu-west-1',
+          },
+        ],
+      });
     });
 
     test('throws if generating a new password without a username', () => {
@@ -1227,8 +1244,26 @@ describe('instance', () => {
         ],
       },
     });
+  });
 
+  test('fromGeneratedSecret with replica regions', () => {
+    // WHEN
+    new rds.DatabaseInstance(stack, 'Database', {
+      engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_12_3 }),
+      vpc,
+      credentials: rds.Credentials.fromGeneratedSecret('postgres', {
+        replicaRegions: [{ region: 'eu-west-1' }],
+      }),
+    });
 
+    // THEN
+    expect(stack).toHaveResource('AWS::SecretsManager::Secret', {
+      ReplicaRegions: [
+        {
+          Region: 'eu-west-1',
+        },
+      ],
+    });
   });
 
   test('fromPassword', () => {

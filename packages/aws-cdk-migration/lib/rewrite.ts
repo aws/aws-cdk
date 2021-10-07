@@ -8,6 +8,21 @@ export interface RewriteOptions {
    * Optional module names that should result in replacing to something different than just 'aws-cdk-lib'.
    */
   readonly customModules?: { [moduleName: string]: string };
+
+  /**
+   * When true, this will rewrite imports of generated L1s to reference aws-cdk-lib.
+   *
+   * For example:
+   *   import * as codestar from './codestar.generated';`
+   * becomes:
+   *   import * as codestar from 'aws-cdk-lib/aws-codestar';
+   */
+  readonly rewriteCfnImports?: boolean;
+
+  /**
+   * The unscoped name of the package, e.g. 'aws-kinesisfirehose'.
+   */
+  readonly packageUnscopedName?: string;
 }
 
 /**
@@ -38,7 +53,7 @@ export function rewriteImports(sourceText: string, fileName: string = 'index.ts'
 
   const visitor = <T extends ts.Node>(node: T): ts.VisitResult<T> => {
     const moduleSpecifier = getModuleSpecifier(node);
-    const newTarget = moduleSpecifier && updatedLocationOf(moduleSpecifier.text, options);
+    const newTarget = moduleSpecifier && updatedLocationOf(moduleSpecifier.text, options, getImportedElements(node));
 
     if (moduleSpecifier != null && newTarget != null) {
       replacements.push({ original: moduleSpecifier, updatedLocation: newTarget });
@@ -60,6 +75,14 @@ export function rewriteImports(sourceText: string, fileName: string = 'index.ts'
 
   return updatedSourceText;
 
+  /**
+   * Returns the module specifier (location) of an import statement in one of the following forms:
+   *   import from 'location';
+   *   import * as name from 'location';
+   *   import { Type } = require('location');
+   *   import name = require('location');
+   *   require('location');
+   */
   function getModuleSpecifier(node: ts.Node): ts.StringLiteral | undefined {
     if (ts.isImportDeclaration(node)) {
       // import style
@@ -100,15 +123,40 @@ export function rewriteImports(sourceText: string, fileName: string = 'index.ts'
 
 const EXEMPTIONS = new Set([
   '@aws-cdk/cloudformation-diff',
+  // The dev-tools
+  '@aws-cdk/cdk-build-tools',
+  '@aws-cdk/cdk-integ-tools',
+  '@aws-cdk/cfn2ts',
+  '@aws-cdk/eslint-plugin',
+  '@aws-cdk/pkglint',
 ]);
 
-function updatedLocationOf(modulePath: string, options: RewriteOptions): string | undefined {
+function updatedLocationOf(modulePath: string, options: RewriteOptions, importedElements?: ts.NodeArray<ts.ImportSpecifier>): string | undefined {
   const customModulePath = options.customModules?.[modulePath];
   if (customModulePath) {
+    let awsCdkLibLocation = undefined;
+    importedElements?.forEach(e => {
+      if (e.name.text.startsWith('Cfn') || e.propertyName?.text.startsWith('Cfn')) {
+        // This is an L1 import, so don't return the customModulePath (which is the alpha module).
+        // Return the relevant aws-cdk-lib location.
+        awsCdkLibLocation = `aws-cdk-lib/${modulePath.substring('@aws-cdk/'.length)}`;
+      }
+    });
+    if (awsCdkLibLocation) {
+      return awsCdkLibLocation;
+    }
     return customModulePath;
   }
 
-  if (!modulePath.startsWith('@aws-cdk/') || EXEMPTIONS.has(modulePath)) {
+  if (options.rewriteCfnImports && modulePath.endsWith(`${options.packageUnscopedName?.substr('aws-'.length)}.generated`)) {
+    return `aws-cdk-lib/${options.packageUnscopedName}`;
+  }
+
+  if (
+    !modulePath.startsWith('@aws-cdk/')
+    || EXEMPTIONS.has(modulePath)
+    || Array.from(EXEMPTIONS).some((ex) => modulePath.startsWith(`${ex}/`))
+  ) {
     return undefined;
   }
 
@@ -135,5 +183,22 @@ function updatedLocationOf(modulePath: string, options: RewriteOptions): string 
     return '@aws-cdk/assert/jest';
   }
 
-  return `aws-cdk-lib/${modulePath.substring(9)}`;
+  return `aws-cdk-lib/${modulePath.substring('@aws-cdk/'.length)}`;
+}
+
+/**
+ * Returns the names of all types imported via named imports of the form:
+ * import { Type } from 'location'
+ */
+function getImportedElements(node: ts.Node): ts.NodeArray<ts.ImportSpecifier> | undefined {
+  if (
+    ts.isImportDeclaration(node)
+    && ts.isStringLiteral(node.moduleSpecifier)
+    && node.importClause
+    && node.importClause.namedBindings
+    && ts.isNamedImports(node.importClause.namedBindings)
+  ) {
+    return node.importClause.namedBindings.elements;
+  }
+  return undefined;
 }

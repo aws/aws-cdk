@@ -644,6 +644,18 @@ new tasks.EmrCreateCluster(this, 'Create Cluster', {
 });
 ```
 
+If you want to run multiple steps in [parallel](https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-concurrent-steps.html),
+you can specify the `stepConcurrencyLevel` property. The concurrency range is between 1
+and 256 inclusive, where the default concurrency of 1 means no step concurrency is allowed.
+`stepConcurrencyLevel` requires the EMR release label to be 5.28.0 or above.
+
+```ts
+new tasks.EmrCreateCluster(this, 'Create Cluster', {
+  // ...
+  stepConcurrencyLevel: 10,
+});
+```
+
 ### Termination Protection
 
 Locks a cluster (job flow) so the EC2 instances in the cluster cannot be
@@ -1110,6 +1122,21 @@ new sfn.StateMachine(this, 'ParentStateMachine', {
   definition: task
 });
 ```
+
+You can utilize [Associate Workflow Executions](https://docs.aws.amazon.com/step-functions/latest/dg/concepts-nested-workflows.html#nested-execution-startid)
+via the `associateWithParent` property. This allows the Step Functions UI to link child
+executions from parent executions, making it easier to trace execution flow across state machines.
+
+```ts
+const task = new tasks.StepFunctionsStartExecution(this, 'ChildTask', {
+  stateMachine: child,
+  associateWithParent: true,
+});
+```
+
+This will add the payload `AWS_STEP_FUNCTIONS_STARTED_BY_EXECUTION_ID.$: $$.Execution.Id` to the
+`input`property for you, which will pass the execution ID from the context object to the
+execution input. It requires `input` to be an object or not be set at all.
 
 ### Invoke Activity
 
