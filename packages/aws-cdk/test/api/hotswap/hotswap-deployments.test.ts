@@ -171,12 +171,7 @@ test('resource deletions require full deployments', async () => {
       },
     },
   });
-  const cdkStackArtifact = setup.cdkStackArtifactOf({
-    template: {
-      Resources: {
-      },
-    },
-  });
+  const cdkStackArtifact = setup.cdkStackArtifactOf();
 
   // WHEN
   const deployStackResult = await setup.tryHotswapDeployment({}, cdkStackArtifact);
