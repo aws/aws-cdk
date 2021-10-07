@@ -7,7 +7,7 @@ import { RegionInfo } from '@aws-cdk/region-info';
  *
  * Only supports Elastic Beanstalk environments created after 2016 that have a regional endpoint.
  */
-export class ElasticBeanstalkEnvironmentTarget implements route53.IAliasRecordTarget {
+export class ElasticBeanstalkEnvironmentEndpointTarget implements route53.IAliasRecordTarget {
   constructor(private readonly environmentEndpoint: string) {
   }
 

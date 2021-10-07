@@ -136,7 +136,7 @@ See [the Developer Guide](https://docs.aws.amazon.com/Route53/latest/DeveloperGu
   ```ts
   new route53.ARecord(this, 'AliasRecord', {
     zone,
-    target: route53.RecordTarget.fromAlias(new alias.ElasticBeanstalkEnvironmentTarget(ebsEnvironmentUrl)),
+    target: route53.RecordTarget.fromAlias(new alias.ElasticBeanstalkEnvironmentEndpointTarget(ebsEnvironmentUrl)),
   });
   ```
 

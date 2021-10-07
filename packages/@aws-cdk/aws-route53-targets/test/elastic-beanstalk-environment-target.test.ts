@@ -12,7 +12,7 @@ test('use EBS environment as record target', () => {
   new route53.ARecord(stack, 'Alias', {
     zone,
     recordName: '_foo',
-    target: route53.RecordTarget.fromAlias(new targets.ElasticBeanstalkEnvironmentTarget('mysampleenvironment.xyz.us-east-1.elasticbeanstalk.com')),
+    target: route53.RecordTarget.fromAlias(new targets.ElasticBeanstalkEnvironmentEndpointTarget('mysampleenvironment.xyz.us-east-1.elasticbeanstalk.com')),
   });
 
   // THEN
