@@ -1,4 +1,4 @@
-import { Template } from '@aws-cdk/assertions';
+import { Match, Template } from '@aws-cdk/assertions';
 import { Duration, Stack } from '@aws-cdk/core';
 import { Alarm, GraphWidget, IWidget, MathExpression, Metric } from '../lib';
 
@@ -124,12 +124,10 @@ describe('cross environment', () => {
         Namespace: 'Test',
         Period: 300,
       });
-
-
     });
 
     test('metric attached to stack1 will throw in stack2', () => {
-      // Cross-region/cross-account metrics are supported in Dashboards but not in Alarms
+      // Cross-region metrics are supported in Dashboards but not in Alarms
 
       // GIVEN
       expect(() => {
@@ -139,8 +137,6 @@ describe('cross environment', () => {
           metric: a.attachTo(stack1),
         });
       }).toThrow(/Cannot create an Alarm in region 'mars' based on metric 'ACount' in 'pluto'/);
-
-
     });
 
     test('metric attached to stack3 will render in stack1', () => {
@@ -207,12 +203,49 @@ describe('cross environment', () => {
       });
     });
 
+    test('metric from same account as stack will not have accountId', () => {
+      // GIVEN
+
+      // including label property will force Alarm configuration to "modern" config.
+      const b = new Metric({
+        namespace: 'Test',
+        metricName: 'ACount',
+        label: 'my-label',
+      });
+
+      new Alarm(stack1, 'Alarm', {
+        threshold: 1,
+        evaluationPeriods: 1,
+        metric: b,
+      });
+
+      // THEN
+      Template.fromStack(stack1).hasResourceProperties('AWS::CloudWatch::Alarm', {
+        Metrics: [
+          {
+            AccountId: Match.absent(),
+            Id: 'm1',
+            Label: 'my-label',
+            MetricStat: {
+              Metric: {
+                MetricName: 'ACount',
+                Namespace: 'Test',
+              },
+              Period: 300,
+              Stat: 'Average',
+            },
+            ReturnData: true,
+          },
+        ],
+      });
+    });
+
     test('math expression can render in a different account', () => {
       // GIVEN
       const b = new Metric({
         namespace: 'Test',
         metricName: 'ACount',
-        account: '1234',
+        account: '5678',
       });
 
       const c = new MathExpression({
@@ -248,7 +281,64 @@ describe('cross environment', () => {
             ReturnData: false,
           },
           {
-            AccountId: '1234',
+            AccountId: '5678',
+            Id: 'b',
+            MetricStat: {
+              Metric: {
+                MetricName: 'ACount',
+                Namespace: 'Test',
+              },
+              Period: 60,
+              Stat: 'Average',
+            },
+            ReturnData: false,
+          },
+        ],
+      });
+    });
+
+    test('math expression from same account as stack will not have accountId', () => {
+      // GIVEN
+      const b = new Metric({
+        namespace: 'Test',
+        metricName: 'ACount',
+        account: '1234',
+      });
+
+      const c = new MathExpression({
+        expression: 'a + b',
+        usingMetrics: { a: a.attachTo(stack1), b },
+        period: Duration.minutes(1),
+      });
+
+      new Alarm(stack1, 'Alarm', {
+        threshold: 1,
+        evaluationPeriods: 1,
+        metric: c,
+      });
+
+      // THEN
+      Template.fromStack(stack1).hasResourceProperties('AWS::CloudWatch::Alarm', {
+        Metrics: [
+          {
+            Expression: 'a + b',
+            Id: 'expr_1',
+          },
+          {
+            AccountId: Match.absent(),
+            Id: 'a',
+            MetricStat: {
+              Metric: {
+                MetricName: 'ACount',
+                Namespace: 'Test',
+              },
+              Period: 60,
+              Stat: 'Average',
+            },
+            ReturnData: false,
+          },
+          {
+            AccountId: Match.absent(),
             Id: 'b',
             MetricStat: {
               Metric: {
@@ -289,7 +379,7 @@ describe('cross environment', () => {
       }).toThrow(/Cannot create an Alarm based on a MathExpression which specifies a searchAccount or searchRegion/);
     });
 
-    test('match expression with different searchRegion will throw', () => {
+    test('math expression with different searchRegion will throw', () => {
       // GIVEN
       const b = new Metric({
         namespace: 'Test',

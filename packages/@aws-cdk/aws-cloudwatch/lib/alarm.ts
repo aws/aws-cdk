@@ -286,7 +286,7 @@ export class Alarm extends AlarmBase {
                 unit: stat.unitFilter,
               },
               id: 'm1',
-              accountId: stat.account,
+              accountId: (stat.account === Stack.of(self).account) ? undefined : stat.account,
               label: conf.renderingProperties?.label,
               returnData: true,
             } as CfnAlarm.MetricDataQueryProperty,
@@ -321,7 +321,7 @@ export class Alarm extends AlarmBase {
                   unit: stat.unitFilter,
                 },
                 id: entry.id || uniqueMetricId(),
-                accountId: stat.account,
+                accountId: (stat.account === Stack.of(self).account) ? undefined : stat.account,
                 label: conf.renderingProperties?.label,
                 returnData: entry.tag ? undefined : false, // entry.tag evaluates to true if the metric is the math expression the alarm is based on.
               };
