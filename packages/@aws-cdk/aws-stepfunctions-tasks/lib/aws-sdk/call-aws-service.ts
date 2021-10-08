@@ -67,6 +67,8 @@ export class CallAwsService extends sfn.TaskStateBase {
     this.taskPolicies = [
       new iam.PolicyStatement({
         resources: props.iamResources,
+        // The prefix and the action name are case insensitive
+        // https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_action.html
         actions: [props.iamAction ?? `${props.service}:${props.action}`],
       }),
     ];
