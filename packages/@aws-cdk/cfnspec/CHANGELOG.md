@@ -2,6 +2,124 @@
 
 ## New Resource Types
 
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::EKS::Cluster Logging (__deleted__)
+* AWS::EKS::Cluster Tags (__deleted__)
+* AWS::EKS::Cluster ResourcesVpcConfig.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+
+## Property Type Changes
+
+* AWS::EKS::Cluster.ClusterLogging (__removed__)
+* AWS::EKS::Cluster.Logging (__removed__)
+* AWS::EKS::Cluster.LoggingTypeConfig (__removed__)
+* AWS::EKS::Cluster.Provider (__added__)
+* AWS::EKS::Cluster.EncryptionConfig Provider.PrimitiveType (__deleted__)
+* AWS::EKS::Cluster.EncryptionConfig Provider.Type (__added__)
+* AWS::EKS::Cluster.EncryptionConfig Provider.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::EKS::Cluster.EncryptionConfig Resources.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::EKS::Cluster.KubernetesNetworkConfig ServiceIpv4Cidr.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::EKS::Cluster.ResourcesVpcConfig EndpointPrivateAccess (__deleted__)
+* AWS::EKS::Cluster.ResourcesVpcConfig EndpointPublicAccess (__deleted__)
+* AWS::EKS::Cluster.ResourcesVpcConfig PublicAccessCidrs (__deleted__)
+* AWS::EKS::Cluster.ResourcesVpcConfig SecurityGroupIds.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::EKS::Cluster.ResourcesVpcConfig SubnetIds.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+
+
+# CloudFormation Resource Specification v43.0.0
+
+## New Resource Types
+
+* AWS::Backup::Framework
+* AWS::Backup::ReportPlan
+* AWS::Lightsail::Disk
+* AWS::Lightsail::Instance
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::EKS::Cluster Logging (__deleted__)
+* AWS::EKS::Cluster Tags (__deleted__)
+* AWS::EKS::Cluster ResourcesVpcConfig.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::SSM::MaintenanceWindowTask CutoffBehavior (__added__)
+
+## Property Type Changes
+
+* AWS::EKS::Cluster.ClusterLogging (__removed__)
+* AWS::EKS::Cluster.Logging (__removed__)
+* AWS::EKS::Cluster.LoggingTypeConfig (__removed__)
+* AWS::EKS::Cluster.Provider (__added__)
+* AWS::Backup::BackupVault.LockConfigurationType changeableForDays (__deleted__)
+* AWS::Backup::BackupVault.LockConfigurationType maxRetentionDays (__deleted__)
+* AWS::Backup::BackupVault.LockConfigurationType minRetentionDays (__deleted__)
+* AWS::Backup::BackupVault.LockConfigurationType ChangeableForDays (__added__)
+* AWS::Backup::BackupVault.LockConfigurationType MaxRetentionDays (__added__)
+* AWS::Backup::BackupVault.LockConfigurationType MinRetentionDays (__added__)
+* AWS::EC2::LaunchTemplate.MetadataOptions HttpProtocolIpv6 (__added__)
+* AWS::EKS::Cluster.EncryptionConfig Provider.PrimitiveType (__deleted__)
+* AWS::EKS::Cluster.EncryptionConfig Provider.Type (__added__)
+* AWS::EKS::Cluster.EncryptionConfig Provider.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::EKS::Cluster.EncryptionConfig Resources.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::EKS::Cluster.KubernetesNetworkConfig ServiceIpv4Cidr.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::EKS::Cluster.ResourcesVpcConfig EndpointPrivateAccess (__deleted__)
+* AWS::EKS::Cluster.ResourcesVpcConfig EndpointPublicAccess (__deleted__)
+* AWS::EKS::Cluster.ResourcesVpcConfig PublicAccessCidrs (__deleted__)
+* AWS::EKS::Cluster.ResourcesVpcConfig SecurityGroupIds.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::EKS::Cluster.ResourcesVpcConfig SubnetIds.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+
+# Serverless Application Model (SAM) Resource Specification v2016-10-31
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+
+## Property Type Changes
+
+* AWS::Serverless::Function.EventInvokeDestinationConfig (__added__)
+* AWS::Serverless::Function.DestinationConfig OnSuccess (__deleted__)
+* AWS::Serverless::Function.EventInvokeConfig DestinationConfig.Type (__changed__)
+  * Old: DestinationConfig
+  * New: EventInvokeDestinationConfig
+
+# CloudFormation Resource Specification v43.0.0
+
+## New Resource Types
+
 * AWS::APS::RuleGroupsNamespace
 
 ## Attribute Changes
