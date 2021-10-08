@@ -1,4 +1,5 @@
-import { Template } from '@aws-cdk/assertions';
+import { Match, Template } from '@aws-cdk/assertions';
+import { User } from '@aws-cdk/aws-iam';
 import { Stack } from '@aws-cdk/core';
 import {
   IWebSocketRouteIntegration, WebSocketApi, WebSocketIntegrationType,
@@ -78,6 +79,27 @@ describe('WebSocketApi', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Route', {
       ApiId: stack.resolve(api.apiId),
       RouteKey: '$default',
+    });
+  });
+
+  test('grantManagementApiAccess: adds an IAM policy to the principal', () => {
+    // GIVEN
+    const stack = new Stack();
+    const api = new WebSocketApi(stack, 'api');
+    const principal = new User(stack, 'user');
+
+    // WHEN
+    api.grantManagementApiAccess(principal);
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([{
+          Action: 'execute-api:ManageConnections',
+          Effect: 'Allow',
+          Resource: stack.resolve(`${api.apiArn}/*`),
+        }]),
+      },
     });
   });
 });

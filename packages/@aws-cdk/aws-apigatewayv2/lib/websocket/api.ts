@@ -1,3 +1,5 @@
+import { Grant, IGrantable } from '@aws-cdk/aws-iam';
+import { Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnApi } from '../apigatewayv2.generated';
 import { IApi } from '../common/api';
@@ -67,11 +69,14 @@ export interface WebSocketApiProps {
 export class WebSocketApi extends ApiBase implements IWebSocketApi {
   public readonly apiId: string;
   public readonly apiEndpoint: string;
+  public readonly apiArn: string;
 
   /**
    * A human friendly name for this WebSocket API. Note that this is different from `webSocketApiId`.
    */
   public readonly webSocketApiName?: string;
+
+  private readonly connectRoute?: WebSocketRoute;
 
   constructor(scope: Construct, id: string, props?: WebSocketApiProps) {
     super(scope, id);
@@ -86,6 +91,10 @@ export class WebSocketApi extends ApiBase implements IWebSocketApi {
     });
     this.apiId = resource.ref;
     this.apiEndpoint = resource.attrApiEndpoint;
+    this.apiArn = Stack.of(this).formatArn({
+      service: 'execute-api',
+      resource: this.apiId,
+    });
 
     if (props?.connectRouteOptions) {
       this.addRoute('$connect', props.connectRouteOptions);
@@ -125,6 +134,20 @@ export class WebSocketApi extends ApiBase implements IWebSocketApi {
       webSocketApi: this,
       routeKey,
       ...options,
+    });
+  }
+
+  /**
+   * Grant access to the API Gateway management API for this WebSocket API to an IAM
+   * principal (Role/Group/User).
+   *
+   * @param identity The principal
+   */
+  public grantManagementApiAccess(identity: IGrantable): Grant {
+    return Grant.addToPrincipal({
+      grantee: identity,
+      actions: ['execute-api:ManageConnections'],
+      resourceArns: [`${this.apiArn}/*`],
     });
   }
 }
