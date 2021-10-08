@@ -384,7 +384,6 @@ export class Alarm extends AlarmBase {
     // if this is a region-agnostic stack, we can't assume anything about stat.account
     // and therefore we assume its a cross-account call
     if (Token.isUnresolved(stackAccount)) {
-      console.log(stackAccount);
       return true;
     }
 

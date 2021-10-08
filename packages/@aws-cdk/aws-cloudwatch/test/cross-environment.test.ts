@@ -7,11 +7,13 @@ const a = new Metric({ namespace: 'Test', metricName: 'ACount' });
 let stack1: Stack;
 let stack2: Stack;
 let stack3: Stack;
+let stack4: Stack;
 describe('cross environment', () => {
   beforeEach(() => {
     stack1 = new Stack(undefined, undefined, { env: { region: 'pluto', account: '1234' } });
     stack2 = new Stack(undefined, undefined, { env: { region: 'mars', account: '5678' } });
     stack3 = new Stack(undefined, undefined, { env: { region: 'pluto', account: '0000' } });
+    stack4 = new Stack(undefined, undefined);
   });
 
   describe('in graphs', () => {
@@ -402,6 +404,107 @@ describe('cross environment', () => {
           metric: c,
         });
       }).toThrow(/Cannot create an Alarm based on a MathExpression which specifies a searchAccount or searchRegion/);
+    });
+
+    describe('accountId requirements', () => {
+      test('metric account is not defined', () => {
+        const metric = new Metric({
+          namespace: 'Test',
+          metricName: 'ACount',
+        });
+
+        new Alarm(stack4, 'Alarm', {
+          threshold: 1,
+          evaluationPeriods: 1,
+          metric,
+        });
+
+        // Alarm will be defined as legacy alarm.
+        Template.fromStack(stack4).hasResourceProperties('AWS::CloudWatch::Alarm', {
+          Threshold: 1,
+          EvaluationPeriods: 1,
+          MetricName: 'ACount',
+          Namespace: 'Test',
+        });
+      });
+
+      test('metric account is defined and stack account is token', () => {
+        const metric = new Metric({
+          namespace: 'Test',
+          metricName: 'ACount',
+          account: '123456789',
+        });
+
+        new Alarm(stack4, 'Alarm', {
+          threshold: 1,
+          evaluationPeriods: 1,
+          metric,
+        });
+
+        // Alarm will be defined as modern alarm.
+        Template.fromStack(stack4).hasResourceProperties('AWS::CloudWatch::Alarm', {
+          Metrics: Match.anyValue(),
+        });
+      });
+
+      test('metric account is attached to stack account', () => {
+        const metric = new Metric({
+          namespace: 'Test',
+          metricName: 'ACount',
+        });
+
+        new Alarm(stack4, 'Alarm', {
+          threshold: 1,
+          evaluationPeriods: 1,
+          metric: metric.attachTo(stack4),
+        });
+
+        // Alarm will be defined as legacy alarm.
+        Template.fromStack(stack4).hasResourceProperties('AWS::CloudWatch::Alarm', {
+          Threshold: 1,
+          EvaluationPeriods: 1,
+          MetricName: 'ACount',
+          Namespace: 'Test',
+        });
+      });
+
+      test('metric account === stack account, but both are tokens', () => {
+        const metric = new Metric({
+          namespace: 'Test',
+          metricName: 'ACount',
+          account: stack4.account,
+        });
+
+        new Alarm(stack4, 'Alarm', {
+          threshold: 1,
+          evaluationPeriods: 1,
+          metric,
+        });
+
+        // Alarm will be defined as modern alarm, since there is no way of knowing that the two tokens are equal.
+        Template.fromStack(stack4).hasResourceProperties('AWS::CloudWatch::Alarm', {
+          Metrics: Match.anyValue(),
+        });
+      });
+
+      test('metric account !== stack account', () => {
+        const metric = new Metric({
+          namespace: 'Test',
+          metricName: 'ACount',
+          account: '123456789',
+        });
+
+        new Alarm(stack1, 'Alarm', {
+          threshold: 1,
+          evaluationPeriods: 1,
+          metric,
+        });
+
+        // Alarm will be defined as modern alarm.
+        Template.fromStack(stack1).hasResourceProperties('AWS::CloudWatch::Alarm', {
+          Metrics: Match.anyValue(),
+        });
+      });
     });
   });
 });
