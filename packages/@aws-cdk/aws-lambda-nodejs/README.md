@@ -234,13 +234,11 @@ see <https://github.com/aws/aws-cdk/issues/13767>.
 new lambda.NodejsFunction(this, 'my-handler', {
   bundling: {
     preCompilation: true,
-    tsconfig: 'tsconfig.json'
   },
 });
 ```
 
 `tsconfig` is required to enable `preCompilation` as `tsc` will use your `tsconfig` for transpilation. 
-Output of the transpilation will be found under `cdk.out/tsc-compile`
 
 ## Customizing Docker bundling
 
