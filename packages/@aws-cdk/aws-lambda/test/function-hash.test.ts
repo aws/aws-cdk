@@ -2,7 +2,7 @@ import '@aws-cdk/assert-internal/jest';
 import * as path from 'path';
 import { resourceSpecification } from '@aws-cdk/cfnspec';
 import { App, CfnOutput, CfnResource, Stack } from '@aws-cdk/core';
-import { LAMBDA_RECOGNIZE_VERSION_PROPS } from '@aws-cdk/cx-api';
+import * as cxapi from '@aws-cdk/cx-api';
 import * as lambda from '../lib';
 import { calculateFunctionHash, trimFromStart, VERSION_LOCKED } from '../lib/function-hash';
 
@@ -24,14 +24,19 @@ describe('function hash', () => {
 
   describe('calcHash', () => {
     test('same configuration and code yields the same hash', () => {
-      const stack1 = new Stack();
+      const app = new App({
+        context: {
+          [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
+        },
+      });
+      const stack1 = new Stack(app, 'Stack1');
       const fn1 = new lambda.Function(stack1, 'MyFunction1', {
         runtime: lambda.Runtime.NODEJS_12_X,
         code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
         handler: 'index.handler',
       });
 
-      const stack2 = new Stack();
+      const stack2 = new Stack(app, 'Stack2');
       const fn2 = new lambda.Function(stack2, 'MyFunction1', {
         runtime: lambda.Runtime.NODEJS_12_X,
         code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
@@ -44,7 +49,12 @@ describe('function hash', () => {
   });
 
   test('code impacts hash', () => {
-    const stack1 = new Stack();
+    const app = new App({
+      context: {
+        [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
+      },
+    });
+    const stack1 = new Stack(app);
     const fn1 = new lambda.Function(stack1, 'MyFunction1', {
       runtime: lambda.Runtime.NODEJS_12_X,
       code: lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler')),
@@ -56,7 +66,12 @@ describe('function hash', () => {
   });
 
   test('environment variables impact hash', () => {
-    const stack1 = new Stack();
+    const app = new App({
+      context: {
+        [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
+      },
+    });
+    const stack1 = new Stack(app, 'Stack1');
     const fn1 = new lambda.Function(stack1, 'MyFunction', {
       runtime: lambda.Runtime.NODEJS_12_X,
       code: lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler')),
@@ -66,7 +81,7 @@ describe('function hash', () => {
       },
     });
 
-    const stack2 = new Stack();
+    const stack2 = new Stack(app);
     const fn2 = new lambda.Function(stack2, 'MyFunction', {
       runtime: lambda.Runtime.NODEJS_12_X,
       code: lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler')),
@@ -81,7 +96,12 @@ describe('function hash', () => {
   });
 
   test('runtime impacts hash', () => {
-    const stack1 = new Stack();
+    const app = new App({
+      context: {
+        [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
+      },
+    });
+    const stack1 = new Stack(app, 'Stack1');
     const fn1 = new lambda.Function(stack1, 'MyFunction', {
       runtime: lambda.Runtime.NODEJS_12_X,
       code: lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler')),
@@ -91,7 +111,7 @@ describe('function hash', () => {
       },
     });
 
-    const stack2 = new Stack();
+    const stack2 = new Stack(app);
     const fn2 = new lambda.Function(stack2, 'MyFunction', {
       runtime: lambda.Runtime.NODEJS_10_X,
       code: lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler')),
@@ -186,7 +206,12 @@ describe('function hash', () => {
   describe('corrected function hash', () => {
     let app: App;
     beforeEach(() => {
-      app = new App({ context: { [LAMBDA_RECOGNIZE_VERSION_PROPS]: true } });
+      app = new App({
+        context: {
+          [cxapi.LAMBDA_RECOGNIZE_VERSION_PROPS]: true,
+          [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
+        },
+      });
     });
 
     test('DependsOn does not impact function hash', () => {
