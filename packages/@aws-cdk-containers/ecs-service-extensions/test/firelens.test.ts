@@ -78,6 +78,9 @@ describe('firelens', () => {
           Essential: true,
           FirelensConfiguration: {
             Type: 'fluentbit',
+            Options: {
+              'enable-ecs-log-metadata': 'true',
+            },
           },
           Image: {
             Ref: 'SsmParameterValueawsserviceawsforfluentbitlatestC96584B6F00A464EAD1953AFF4B05118Parameter',
