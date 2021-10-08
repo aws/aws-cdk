@@ -295,9 +295,11 @@ describe('Template', () => {
       });
 
       const inspect = Template.fromStack(stack);
+
       inspect.hasResourceProperties('Foo::Bar', {
         bar: Match.absent(),
       });
+
       expect(() => inspect.hasResourceProperties('Foo::Bar', {
         baz: Match.absent(),
       })).toThrow(/key should be absent at \/Properties\/baz/);
