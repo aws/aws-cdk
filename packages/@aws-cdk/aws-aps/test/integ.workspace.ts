@@ -1,12 +1,12 @@
 import * as cdk from '@aws-cdk/core';
-import { WorkSpace } from '../lib';
+import { Workspace } from '../lib';
 
 
 const app = new cdk.App();
 
 const stack = new cdk.Stack(app, 'integ-workspace');
 
-const workspace = new WorkSpace(stack, 'demo-workspace', {
+const workspace = new Workspace(stack, 'demo-workspace', {
   alias: 'demo-workspace',
 });
 new cdk.CfnOutput(stack, 'prometheusUrl', { value: workspace.prometheusEndpoint });

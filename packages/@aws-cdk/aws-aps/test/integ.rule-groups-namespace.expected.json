@@ -6,7 +6,7 @@
         "Alias": "demo-rule-groups-namespace"
       }
     },
-    "DemoWorkSpace80CB32C1": {
+    "DemoWorkspace05DB12C3": {
       "Type": "AWS::APS::RuleGroupsNamespace",
       "Properties": {
         "Data": "groups:\n  - name: test\n    rules:\n    - record: metric:recording_rule\n      expr: avg(rate(container_cpu_usage_seconds_total[5m]))\n  - name: alert-test\n    rules:\n    - alert: metric:alerting_rule\n      expr: avg(rate(container_cpu_usage_seconds_total[5m])) > 0\n      for: 2m",
@@ -20,7 +20,7 @@
   "Outputs": {
     "arn": {
       "Value": {
-        "Ref": "DemoWorkSpace80CB32C1"
+        "Ref": "DemoWorkspace05DB12C3"
       }
     }
   }

@@ -1,14 +1,14 @@
 import { Template } from '@aws-cdk/assertions';
 import * as cdk from '@aws-cdk/core';
-import { WorkSpace } from '../lib/';
+import { Workspace } from '../lib/';
 
 
-test('create a WorkSpace', () => {
+test('create a Workspace', () => {
   // GIVEN
   const app = new cdk.App();
   const stack = new cdk.Stack(app, 'demo-stack');
   // WHEN
-  new WorkSpace(stack, 'DemoWorkSpace', {
+  new Workspace(stack, 'DemoWorkspace', {
     alias: 'demo-workspace',
     alertManagerDefinition: `
 alertmanager_config: |
@@ -38,19 +38,19 @@ test('import from workspace id', () => {
   const app = new cdk.App();
   const stack = new cdk.Stack(app, 'demo-stack');
   // WHEN
-  const workspace = WorkSpace.fromWorkSpaceId(stack, 'ImportWorkSpace', 'example-workid');
+  const workspace = Workspace.fromWorkspaceId(stack, 'ImportWorkspace', 'example-workspaceid');
   // THEN
   expect(workspace).toHaveProperty('workspaceId');
   expect(workspace).toHaveProperty('workspaceArn');
   expect(workspace).toHaveProperty('prometheusEndpoint');
 });
 
-test('import from WorkSpace attributes', () => {
+test('import from Workspace attributes', () => {
   // GIVEN
   const app = new cdk.App();
   const stack = new cdk.Stack(app, 'demo-stack');
   // WHEN
-  const workspace = WorkSpace.fromWorkSpaceAttributes(stack, 'ImportWorkSpace', {
+  const workspace = Workspace.fromWorkSpaceAttributes(stack, 'ImportWorkspace', {
     workspaceArn: 'mock',
     workspaceId: 'mock',
     prometheusEndpoint: 'mock',

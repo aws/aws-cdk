@@ -82,7 +82,7 @@
     "@aws-cdk/pkglint": "0.0.0",
     "@types/jest": "^26.0.24",
     "constructs": "^3.3.69",
-    "@aws-cdk/cdk-integ-tools" : "0.0.0"
+    "@aws-cdk/cdk-integ-tools": "0.0.0"
   },
   "dependencies": {
     "@aws-cdk/core": "0.0.0",
@@ -98,10 +98,9 @@
   "awslint": {
     "exclude": [
       "docs-public-apis:@aws-cdk/aws-aps.RuleGroupsNamespaceProps",
-      "docs-public-apis:@aws-cdk/aws-aps.WorkSpaceProps",
-      "props-physical-name:@aws-cdk/aws-aps.WorkSpaceProps",
+      "docs-public-apis:@aws-cdk/aws-aps.WorkspaceProps",
+      "props-physical-name:@aws-cdk/aws-aps.WorkspaceProps",
       "props-physical-name:@aws-cdk/aws-aps.RuleGroupsNamespaceProps"
-
     ]
   },
   "stability": "experimental",

@@ -5,45 +5,45 @@ import { CfnWorkspace } from './aps.generated';
 /**
  * Represents the Prometheus WorkSpace.
  */
-export interface IWorkSpace extends cdk.IResource {
+export interface IWorkspace extends cdk.IResource {
   /**
-   * The ARN of the WorkSpace.
+   * The ARN of the Workspace.
    */
   readonly workspaceArn: string;
 
   /**
-   * The prometheus endpoint of the WorkSpace.
+   * The prometheus endpoint of the Workspace.
    */
   readonly prometheusEndpoint: string;
 
   /**
-   * The workspaceId of the WorkSpace.
+   * The workspaceId of the Workspace.
    */
   readonly workspaceId: string;
 }
 
 /**
- * Attributes for the WorkSpace.
+ * Attributes for the Workspace.
  */
-export interface WorkSpaceAttributes {
+export interface WorkspaceAttributes {
 
   /**
-   * The ARN of the WorkSpace.
+   * The ARN of the Workspace.
    */
   readonly workspaceArn: string;
 
   /**
-   * The prometheus endpoint of the WorkSpace.
+   * The prometheus endpoint of the Workspace.
    */
   readonly prometheusEndpoint: string;
 
   /**
-   * The workspaceId of the WorkSpace.
+   * The workspaceId of the Workspace.
    */
   readonly workspaceId: string;
 }
 
-export interface WorkSpaceProps {
+export interface WorkspaceProps {
   /**
    * The alert manager definition for the workspace, as a string. For more information,
    * @see [Alert manager and templating](https://docs.aws.amazon.com/prometheus/latest/userguide/AMP-alert-manager.html).
@@ -63,11 +63,11 @@ export interface WorkSpaceProps {
 /**
  * The Workspace type specifies an Amazon Managed Service for Prometheus (Amazon Managed Service for Prometheus) workspace.
  */
-export class WorkSpace extends cdk.Resource {
+export class Workspace extends cdk.Resource {
   /**
    * Import from workspace attributes.
    */
-  public static fromWorkSpaceAttributes(scope: Construct, id: string, attrs: WorkSpaceAttributes): IWorkSpace {
+  public static fromWorkSpaceAttributes(scope: Construct, id: string, attrs: WorkspaceAttributes): IWorkspace {
     const workspaceArn = attrs.workspaceArn;
     const workspaceId = attrs.workspaceId;
     const prometheusEndpoint = attrs.prometheusEndpoint;
@@ -84,16 +84,17 @@ export class WorkSpace extends cdk.Resource {
   /**
    * Import from workspace Id.
    */
-  public static fromWorkSpaceId(scope: Construct, id: string, workSpaceId: string): IWorkSpace {
-
+  public static fromWorkspaceId(scope: Construct, id: string, workspaceId: string): IWorkspace {
+    const region = cdk.Stack.of(scope).region;
+    const urlSuffix = cdk.Stack.of(scope).urlSuffix;
     class Import extends cdk.Resource {
       public workspaceArn = cdk.Stack.of(this).formatArn({
         resource: 'workspace',
         service: 'aps',
-        resourceName: workSpaceId,
+        resourceName: workspaceId,
       });
-      public workspaceId = workSpaceId;
-      public prometheusEndpoint = `https://aps-workspaces.${cdk.Stack.of(this).region}.amazonaws.com/workspaces/${workSpaceId}/`;
+      public workspaceId = workspaceId;
+      public prometheusEndpoint = `https://aps-workspaces.${region}.${urlSuffix}/workspaces/${workspaceId}/`;
     }
 
     return new Import(scope, id);
@@ -123,7 +124,7 @@ export class WorkSpace extends cdk.Resource {
    */
   readonly workspaceId: string;
 
-  public constructor(scope: Construct, id: string, props?: WorkSpaceProps) {
+  public constructor(scope: Construct, id: string, props?: WorkspaceProps) {
     super(scope, id);
     this.alertManagerDefinition = props?.alertManagerDefinition;
     this.alias = props?.alias;

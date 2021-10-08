@@ -1,6 +1,6 @@
 import { Template } from '@aws-cdk/assertions';
 import * as cdk from '@aws-cdk/core';
-import { RuleGroupsNamespace, WorkSpace } from '../lib/';
+import { RuleGroupsNamespace, Workspace } from '../lib/';
 
 
 test('create a RuleGroupsNamespace', () => {
@@ -8,7 +8,7 @@ test('create a RuleGroupsNamespace', () => {
   const app = new cdk.App();
   const stack = new cdk.Stack(app, 'demo-stack');
   // WHEN
-  const workspace = new WorkSpace(stack, 'Demoworkspace');
+  const workspace = new Workspace(stack, 'Demoworkspace');
   new RuleGroupsNamespace(stack, 'DemoWorkSpace', {
     name: 'DemoRuleGroupsNamespace',
     workspace: workspace.workspaceArn,

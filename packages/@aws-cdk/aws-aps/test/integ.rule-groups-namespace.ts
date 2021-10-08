@@ -1,16 +1,16 @@
 import * as cdk from '@aws-cdk/core';
-import { WorkSpace, RuleGroupsNamespace } from '../lib';
+import { Workspace, RuleGroupsNamespace } from '../lib';
 
 
 const app = new cdk.App();
 
 const stack = new cdk.Stack(app, 'integ-rule-groups-namespace');
 
-const workspace = new WorkSpace(stack, 'demo-workspace', {
+const workspace = new Workspace(stack, 'demo-workspace', {
   alias: 'demo-rule-groups-namespace',
 });
 
-const ruleGroupsNamespace = new RuleGroupsNamespace(stack, 'DemoWorkSpace', {
+const ruleGroupsNamespace = new RuleGroupsNamespace(stack, 'DemoWorkspace', {
   name: 'DemoRuleGroupsNamespace',
   workspace: workspace.workspaceArn,
   data: `groups:
