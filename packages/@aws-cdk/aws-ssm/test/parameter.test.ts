@@ -36,7 +36,7 @@ test('type cannot be specified as AWS_EC2_IMAGE_ID', () => {
   expect(() => new ssm.StringParameter(stack, 'myParam', {
     stringValue: 'myValue',
     type: ssm.ParameterType.AWS_EC2_IMAGE_ID,
-  })).toThrow('The type must either be ParameterType.STRING or ParameterType.STRING_LIST');
+  })).toThrow('The type must either be ParameterType.STRING or ParameterType.STRING_LIST. Did you mean to set dataType: "aws:ec2:image" instead?');
 });
 
 test('dataType can be specified', () => {

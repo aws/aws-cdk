@@ -444,7 +444,7 @@ export class StringParameter extends ParameterBase implements IStringParameter {
     }
 
     if (props.type && props.type === ParameterType.AWS_EC2_IMAGE_ID) {
-      throw new Error('The type must either be ParameterType.STRING or ParameterType.STRING_LIST');
+      throw new Error('The type must either be ParameterType.STRING or ParameterType.STRING_LIST. Did you mean to set dataType: "aws:ec2:image" instead?');
     }
 
     const resource = new ssm.CfnParameter(this, 'Resource', {
