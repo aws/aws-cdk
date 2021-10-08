@@ -76,8 +76,6 @@ export class WebSocketApi extends ApiBase implements IWebSocketApi {
    */
   public readonly webSocketApiName?: string;
 
-  private readonly connectRoute?: WebSocketRoute;
-
   constructor(scope: Construct, id: string, props?: WebSocketApiProps) {
     super(scope, id);
 
