@@ -112,16 +112,17 @@ export function extractDependencies(pkgPath: string, modules: string[]): { [key:
 }
 
 /**
- * Extract rootDir from tsConfig.
+ * Returns compilerOptions from tsconfig.json
  */
-export function extractRootDir(tsconfigPath: string): string | undefined {
+export function extractCompilerOptions(tsconfigPath: string, previous?: { [key: string]: string }): any | undefined {
   try {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const { extends: extendedConfig, compilerOptions: { rootDir = undefined } = {} } = require(tsconfigPath);
-    if (!rootDir && extendedConfig) {
-      return extractRootDir(path.resolve(tsconfigPath.replace(/[^\/]+$/, ''), extendedConfig));
+    const { extends: extendedConfig, compilerOptions: current } = require(tsconfigPath);
+    const merged = { ...previous, ...current };
+    if (extendedConfig) {
+      return extractCompilerOptions(path.resolve(tsconfigPath.replace(/[^\/]+$/, ''), extendedConfig), merged);
     }
-    return rootDir;
+    return merged;
 
   } catch (err) {
     return;

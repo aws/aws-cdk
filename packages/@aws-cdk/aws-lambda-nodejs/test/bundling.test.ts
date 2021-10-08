@@ -219,46 +219,6 @@ test('esbuild bundling with esbuild options', () => {
   expect(bundleProcess.stdout.toString()).toMatchSnapshot();
 });
 
-test('esbuild bundling with pre-compilations', () => {
-  Bundling.bundle({
-    entry,
-    projectRoot,
-    depsLockFilePath,
-    runtime: Runtime.NODEJS_14_X,
-    forceDockerBundling: true,
-    tsconfig,
-    preCompilation: true,
-  });
-
-  // Correctly bundles with esbuild
-  expect(Code.fromAsset).toHaveBeenCalledWith(path.dirname(depsLockFilePath), {
-    assetHashType: AssetHashType.OUTPUT,
-    bundling: expect.objectContaining({
-      command: [
-        'bash', '-c',
-        [
-          'tsc --project /asset-input/lib/custom-tsconfig.ts --outDir /asset-input/cdk.out/tsc-compile &&',
-          'esbuild --bundle \"/asset-input/cdk.out/tsc-compile/lib/handler.js\" --target=node14 --platform=node --outfile=\"/asset-output/index.js\"',
-          '--external:aws-sdk --tsconfig=/asset-input/lib/custom-tsconfig.ts',
-        ].join(' '),
-      ],
-    }),
-  });
-});
-
-test('esbuild bundling with pre-compilations without tsconfig', () => {
-  expect(() => {
-    Bundling.bundle({
-      entry,
-      projectRoot,
-      depsLockFilePath,
-      runtime: Runtime.NODEJS_14_X,
-      forceDockerBundling: true,
-      preCompilation: true,
-    });
-  }).toThrow('preCompilation cannot be used when tsconfig is undefined');
-});
-
 test('esbuild bundling source map default', () => {
   Bundling.bundle({
     entry,
@@ -567,6 +527,96 @@ test('esbuild bundling with projectRoot and externals and dependencies', () => {
           'cd /asset-output',
           'npm ci',
         ].join(' && '),
+      ],
+    }),
+  });
+});
+
+test('esbuild bundling with pre compilations', () => {
+  jest.spyOn(util, 'findUp').mockReturnValueOnce(tsconfig);
+  jest.spyOn(util, 'extractCompilerOptions').mockReturnValueOnce({});
+
+  Bundling.bundle({
+    entry,
+    projectRoot,
+    depsLockFilePath,
+    runtime: Runtime.NODEJS_14_X,
+    forceDockerBundling: true,
+    tsconfig,
+    preCompilation: true,
+  });
+
+  // Correctly bundles with esbuild
+  expect(Code.fromAsset).toHaveBeenCalledWith(path.dirname(depsLockFilePath), {
+    assetHashType: AssetHashType.OUTPUT,
+    bundling: expect.objectContaining({
+      command: [
+        'bash', '-c',
+        [
+          'tsc --project /asset-input/lib/custom-tsconfig.ts &&',
+          'esbuild --bundle \"/asset-input/lib/handler.js\" --target=node14 --platform=node --outfile=\"/asset-output/index.js\"',
+          '--external:aws-sdk --tsconfig=/asset-input/lib/custom-tsconfig.ts',
+        ].join(' '),
+      ],
+    }),
+  });
+});
+
+test('esbuild bundling with pre compilations ( should skip preCompilation as already compiled )', () => {
+  jest.spyOn(util, 'findUp').mockReturnValueOnce(tsconfig);
+  jest.spyOn(util, 'extractCompilerOptions').mockReturnValueOnce({});
+
+  Bundling.bundle({
+    entry,
+    projectRoot,
+    depsLockFilePath,
+    runtime: Runtime.NODEJS_14_X,
+    forceDockerBundling: true,
+    tsconfig,
+    preCompilation: true,
+  });
+
+  // Correctly bundles with esbuild
+  expect(Code.fromAsset).toHaveBeenCalledWith(path.dirname(depsLockFilePath), {
+    assetHashType: AssetHashType.OUTPUT,
+    bundling: expect.objectContaining({
+      command: [
+        'bash', '-c',
+        [
+          'esbuild --bundle \"/asset-input/lib/handler.js\" --target=node14 --platform=node --outfile=\"/asset-output/index.js\"',
+          '--external:aws-sdk --tsconfig=/asset-input/lib/custom-tsconfig.ts',
+        ].join(' '),
+      ],
+    }),
+  });
+});
+
+test('esbuild bundling with pre compilations and tsc compiler options ', () => {
+  Bundling.clearTscCompilationCache();
+  jest.spyOn(util, 'findUp').mockReturnValueOnce(tsconfig);
+  jest.spyOn(util, 'extractCompilerOptions').mockReturnValueOnce({ rootDir: 'src', outDir: 'dist' });
+
+  Bundling.bundle({
+    entry,
+    projectRoot,
+    depsLockFilePath,
+    runtime: Runtime.NODEJS_14_X,
+    forceDockerBundling: true,
+    tsconfig,
+    preCompilation: true,
+  });
+
+  // Correctly bundles with esbuild
+  expect(Code.fromAsset).toHaveBeenCalledWith(path.dirname(depsLockFilePath), {
+    assetHashType: AssetHashType.OUTPUT,
+    bundling: expect.objectContaining({
+      command: [
+        'bash', '-c',
+        [
+          'tsc --project /asset-input/lib/custom-tsconfig.ts --outDir /asset-input/dist/src &&',
+          'esbuild --bundle \"/asset-input/dist/lib/handler.js\" --target=node14 --platform=node --outfile=\"/asset-output/index.js\"',
+          '--external:aws-sdk --tsconfig=/asset-input/lib/custom-tsconfig.ts',
+        ].join(' '),
       ],
     }),
   });

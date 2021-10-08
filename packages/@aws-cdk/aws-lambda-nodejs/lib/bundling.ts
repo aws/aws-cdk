@@ -5,10 +5,9 @@ import * as cdk from '@aws-cdk/core';
 import { PackageInstallation } from './package-installation';
 import { PackageManager } from './package-manager';
 import { BundlingOptions, SourceMapMode } from './types';
-import { exec, extractDependencies, extractRootDir, findUp } from './util';
+import { exec, extractDependencies, extractCompilerOptions, findUp } from './util';
 
 const ESBUILD_MAJOR_VERSION = '0';
-const PRE_COMPILATION_DIR = 'cdk.out/tsc-compile';
 
 /**
  * Bundling properties
@@ -61,6 +60,10 @@ export class Bundling implements cdk.BundlingOptions {
 
   public static clearTscInstallationCache(): void {
     this.tscInstallation = undefined;
+  }
+
+  public static clearTscCompilationCache(): void {
+    this.tscCompiled = false;
   }
 
   private static esbuildInstallation?: PackageInstallation;
@@ -141,24 +144,24 @@ export class Bundling implements cdk.BundlingOptions {
 
   private createBundlingCommand(options: BundlingCommandOptions): string {
     const pathJoin = osPathJoin(options.osPlatform);
+    const tsconfig = pathJoin(options.inputDir, this.relativeTsconfigPath ?? 'tsconfig.json');
 
-    let tscCommand = '';
+    let tscCommand: string[] = [];
     let relativeEntryPath = this.relativeEntryPath;
 
     if (this.props.preCompilation) {
-      if (!this.relativeTsconfigPath) {
-        throw new Error('preCompilation cannot be used when tsconfig is undefined');
-      }
+      if (tsconfig) {
+        const { rootDir = '', outDir = '' } = extractCompilerOptions(tsconfig);
+        relativeEntryPath = pathJoin(outDir, relativeEntryPath).replace(/\.ts(x?)$/, '.js$1');
 
-      relativeEntryPath = pathJoin(PRE_COMPILATION_DIR, relativeEntryPath).replace(/\.ts(x?)$/, '.js$1');
+        if (!Bundling.tscCompiled) {
 
-      if (!Bundling.tscCompiled) {
-        const tsconfigPath = pathJoin(options.inputDir, this.relativeTsconfigPath);
-        const rootDir = extractRootDir(tsconfigPath);
-        process.stderr.write(`Compiling your project using typescript compiler version: ${Bundling.tscInstallation?.version} \n`);
-        tscCommand = `${options.tscRunner} --project ${tsconfigPath} --outDir ${pathJoin(options.inputDir, PRE_COMPILATION_DIR, rootDir ?? '')}`;
-        // Setting this to avoid running tsc on every function
-        Bundling.tscCompiled = true;
+          tscCommand = [
+            `${options.tscRunner} --project ${tsconfig}`,
+            ...outDir ? [`--outDir ${pathJoin(options.inputDir, outDir, rootDir)}`] : [],
+          ];
+          Bundling.tscCompiled = true;
+        }
       }
     }
 
@@ -219,7 +222,7 @@ export class Bundling implements cdk.BundlingOptions {
 
     return chain([
       ...this.props.commandHooks?.beforeBundling(options.inputDir, options.outputDir) ?? [],
-      tscCommand,
+      tscCommand.join(' '),
       esbuildCommand.join(' '),
       ...(this.props.nodeModules && this.props.commandHooks?.beforeInstall(options.inputDir, options.outputDir)) ?? [],
       depsCommand,
