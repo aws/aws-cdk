@@ -65,6 +65,14 @@ export interface DockerImageAssetInvalidationOptions {
    * @default true
    */
   readonly repositoryName?: boolean;
+
+  /**
+   * Use `platform` while calculating the asset hash
+   *
+   * @default true
+   *
+   */
+  readonly platform?: boolean;
 }
 
 /**
@@ -117,7 +125,7 @@ export interface DockerImageAssetOptions extends FingerprintOptions, FileFingerp
    *
    */
   readonly platform?: DockerPlatform;
-  
+
   /**
    * Options to control which parameters are used to invalidate the asset hash.
    *

@@ -43,12 +43,12 @@ export abstract class DockerImageCode {
    */
   public static fromImageAsset(directory: string, props: AssetImageCodeProps = {}): DockerImageCode {
     return {
-      _bind(arch?: Architecture[]) {
+      _bind(arch?: Architecture) {
         return new AssetImageCode(directory, {
           /**
            * If platform is undefined, we determine it from the `architectures`.
            */
-          platform: arch?.includes(Architecture.ARM_64) ? DockerPlatform.ARM_64 : undefined,
+          platform: arch === Architecture.ARM_64 ? DockerPlatform.ARM_64 : undefined,
           ...props,
         });
       },
@@ -59,7 +59,7 @@ export abstract class DockerImageCode {
    * Produce a `Code` instance from this `DockerImageCode`.
    * @internal
    */
-  public abstract _bind(arch?: Architecture[]): Code;
+  public abstract _bind(arch?: Architecture): Code;
 }
 
 /**
@@ -71,7 +71,7 @@ export class DockerImageFunction extends Function {
       ...props,
       handler: Handler.FROM_IMAGE,
       runtime: Runtime.FROM_IMAGE,
-      code: props.code._bind(props.architectures),
+      code: props.code._bind(props.architecture),
     });
   }
 }
