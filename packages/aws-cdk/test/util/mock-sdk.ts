@@ -101,6 +101,10 @@ export class MockSdkProvider extends SdkProvider {
   public stubLambda(stubs: SyncHandlerSubsetOf<AWS.Lambda>) {
     (this.sdk as any).lambda = jest.fn().mockReturnValue(partialAwsService<AWS.Lambda>(stubs));
   }
+
+  public stubStepFunctions(stubs: SyncHandlerSubsetOf<AWS.StepFunctions>) {
+    (this.sdk as any).stepFunctions = jest.fn().mockReturnValue(partialAwsService<AWS.StepFunctions>(stubs));
+  }
 }
 
 export class MockSdk implements ISDK {
@@ -115,6 +119,7 @@ export class MockSdk implements ISDK {
   public readonly elbv2 = jest.fn();
   public readonly secretsManager = jest.fn();
   public readonly kms = jest.fn();
+  public readonly stepFunctions = jest.fn();
 
   public currentAccount(): Promise<Account> {
     return Promise.resolve({ accountId: '123456789012', partition: 'aws' });

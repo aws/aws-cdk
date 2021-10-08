@@ -248,11 +248,11 @@ describe('Template', () => {
 
       const inspect = Template.fromStack(stack);
       inspect.hasResource('Foo::Bar', {
-        Properties: Match.objectLike({ foo: Match.absentProperty() }),
+        Properties: Match.objectLike({ foo: Match.absent() }),
       });
       expect(() => inspect.hasResource('Foo::Bar', {
-        Properties: Match.objectLike({ baz: Match.absentProperty() }),
-      })).toThrow(/Key should be absent at \/Properties\/baz/);
+        Properties: Match.objectLike({ baz: Match.absent() }),
+      })).toThrow(/key should be absent at \/Properties\/baz/);
     });
 
     test('incorrect types', () => {
@@ -266,6 +266,80 @@ describe('Template', () => {
       expect(() => inspect.hasResource('Foo::Baz', {
         Properties: Match.objectLike({ baz: 'qux' }),
       })).toThrow(/No resource/);
+    });
+  });
+
+  describe('hasResourceProperties', () => {
+    test('exact match', () => {
+      const stack = new Stack();
+      new CfnResource(stack, 'Foo', {
+        type: 'Foo::Bar',
+        properties: { baz: 'qux' },
+      });
+
+      const inspect = Template.fromStack(stack);
+      inspect.hasResourceProperties('Foo::Bar', { baz: 'qux' });
+
+      expect(() => inspect.hasResourceProperties('Foo::Bar', { baz: 'waldo' }))
+        .toThrow(/Expected waldo but received qux at \/Properties\/baz/);
+
+      expect(() => inspect.hasResourceProperties('Foo::Bar', { baz: 'qux', fred: 'waldo' }))
+        .toThrow(/Missing key at \/Properties\/fred/);
+    });
+
+    test('absent - with properties', () => {
+      const stack = new Stack();
+      new CfnResource(stack, 'Foo', {
+        type: 'Foo::Bar',
+        properties: { baz: 'qux' },
+      });
+
+      const inspect = Template.fromStack(stack);
+
+      inspect.hasResourceProperties('Foo::Bar', {
+        bar: Match.absent(),
+      });
+
+      expect(() => inspect.hasResourceProperties('Foo::Bar', {
+        baz: Match.absent(),
+      })).toThrow(/key should be absent at \/Properties\/baz/);
+    });
+
+    test('absent - no properties', () => {
+      const stack = new Stack();
+      new CfnResource(stack, 'Foo', {
+        type: 'Foo::Bar',
+      });
+
+      const inspect = Template.fromStack(stack);
+
+      expect(() => inspect.hasResourceProperties('Foo::Bar', { bar: Match.absent(), baz: 'qux' }))
+        .toThrow(/Missing key at \/Properties\/baz/);
+
+      inspect.hasResourceProperties('Foo::Bar', Match.absent());
+    });
+
+    test('not - with properties', () => {
+      const stack = new Stack();
+      new CfnResource(stack, 'Foo', {
+        type: 'Foo::Bar',
+        properties: { baz: 'qux' },
+      });
+
+      const inspect = Template.fromStack(stack);
+      inspect.hasResourceProperties('Foo::Bar', Match.not({
+        baz: 'boo',
+      }));
+    });
+
+    test('not - no properties', () => {
+      const stack = new Stack();
+      new CfnResource(stack, 'Foo', {
+        type: 'Foo::Bar',
+      });
+
+      const inspect = Template.fromStack(stack);
+      inspect.hasResourceProperties('Foo::Bar', Match.not({ baz: 'qux' }));
     });
   });
 
