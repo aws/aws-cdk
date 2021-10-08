@@ -137,6 +137,13 @@ export interface StringParameterProps extends ParameterOptions {
    * @default ParameterType.STRING
    */
   readonly type?: ParameterType;
+
+  /**
+   * The data type of the parameter, such as `text` or `aws:ec2:image`.
+   *
+   * @default - 'text'
+   */
+  readonly dataType?: string;
 }
 
 /**
@@ -436,12 +443,17 @@ export class StringParameter extends ParameterBase implements IStringParameter {
       throw new Error('Description cannot be longer than 1024 characters.');
     }
 
+    if (props.type && props.type === ParameterType.AWS_EC2_IMAGE_ID) {
+      throw new Error('The type must either be ParameterType.STRING or ParameterType.STRING_LIST');
+    }
+
     const resource = new ssm.CfnParameter(this, 'Resource', {
       allowedPattern: props.allowedPattern,
       description: props.description,
       name: this.physicalName,
       tier: props.tier,
       type: props.type || ParameterType.STRING,
+      dataType: props.dataType,
       value: props.stringValue,
     });
 
