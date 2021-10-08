@@ -32,8 +32,9 @@ export interface LambdaIntegrationOptions extends IntegrationOptions {
  *
  * @example
  *
- *    const handler = new lambda.Function(this, 'MyFunction', ...);
- *    api.addMethod('GET', new LambdaIntegration(handler));
+ *    declare const resource: apigateway.Resource;
+ *    declare const handler: lambda.Function;
+ *    resource.addMethod('GET', new apigateway.LambdaIntegration(handler));
  *
  */
 export class LambdaIntegration extends AwsIntegration {

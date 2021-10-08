@@ -1,7 +1,6 @@
 import { Matcher, MatchResult } from './matcher';
+import { AbsentMatch } from './private/matchers/absent';
 import { getType } from './private/type';
-
-const ABSENT = '{{ABSENT}}';
 
 /**
  * Partial and special matching during template assertions.
@@ -10,8 +9,8 @@ export abstract class Match {
   /**
    * Use this matcher in the place of a field's value, if the field must not be present.
    */
-  public static absentProperty(): string {
-    return ABSENT;
+  public static absent(): Matcher {
+    return new AbsentMatch('absent');
   }
 
   /**
@@ -129,10 +128,6 @@ class LiteralMatch extends Matcher {
       return result;
     }
 
-    if (this.pattern === ABSENT) {
-      throw new Error('absentProperty() can only be used in an object matcher');
-    }
-
     if (actual !== this.pattern) {
       result.push(this, [], `Expected ${this.pattern} but received ${actual}`);
     }
@@ -185,9 +180,10 @@ class ArrayMatch extends Matcher {
       const patternElement = this.pattern[patternIdx];
 
       const matcher = Matcher.isMatcher(patternElement) ? patternElement : new LiteralMatch(this.name, patternElement);
-      if (this.subsequence && matcher instanceof AnyMatch) {
-        // array subsequence matcher is not compatible with anyValue() matcher. They don't make sense to be used together.
-        throw new Error('The Matcher anyValue() cannot be nested within arrayWith()');
+      const matcherName = matcher.name;
+      if (this.subsequence && (matcherName == 'absent' || matcherName == 'anyValue')) {
+        // array subsequence matcher is not compatible with anyValue() or absent() matcher. They don't make sense to be used together.
+        throw new Error(`The Matcher ${matcherName}() cannot be nested within arrayWith()`);
       }
 
       const innerResult = matcher.test(actual[actualIdx]);
@@ -253,13 +249,7 @@ class ObjectMatch extends Matcher {
     }
 
     for (const [patternKey, patternVal] of Object.entries(this.pattern)) {
-      if (patternVal === ABSENT) {
-        if (patternKey in actual) {
-          result.push(this, [`/${patternKey}`], 'Key should be absent');
-        }
-        continue;
-      }
-      if (!(patternKey in actual)) {
+      if (!(patternKey in actual) && !(patternVal instanceof AbsentMatch)) {
         result.push(this, [`/${patternKey}`], 'Missing key');
         continue;
       }

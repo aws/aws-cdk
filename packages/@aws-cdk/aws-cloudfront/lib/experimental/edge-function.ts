@@ -148,7 +148,9 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
     if (Token.isUnresolved(this.env.region)) {
       throw new Error('stacks which use EdgeFunctions must have an explicitly set region');
     }
-    const parameterName = `${parameterNamePrefix}/${this.env.region}/${this.node.path}`;
+    // SSM parameter names must only contain letters, numbers, ., _, -, or /.
+    const sanitizedPath = this.node.path.replace(/[^\/\w.-]/g, '_');
+    const parameterName = `${parameterNamePrefix}/${this.env.region}/${sanitizedPath}`;
     const functionStack = this.edgeStack(props.stackId);
 
     const edgeFunction = new lambda.Function(functionStack, id, props);

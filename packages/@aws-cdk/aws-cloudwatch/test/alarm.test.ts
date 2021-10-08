@@ -9,9 +9,7 @@ const testMetric = new Metric({
 });
 
 describe('Alarm', () => {
-
   test('alarm does not accept a math expression with more than 10 metrics', () => {
-
     const stack = new Stack();
 
     const usingMetrics: Record<string, IMetric> = {};
@@ -30,19 +28,15 @@ describe('Alarm', () => {
     });
 
     expect(() => {
-
       new Alarm(stack, 'Alarm', {
         metric: math,
         threshold: 1000,
         evaluationPeriods: 3,
       });
-
     }).toThrow(/Alarms on math expressions cannot contain more than 10 individual metrics/);
-
-
   });
-  test('non ec2 instance related alarm does not accept EC2 action', () => {
 
+  test('non ec2 instance related alarm does not accept EC2 action', () => {
     const stack = new Stack();
     const alarm = new Alarm(stack, 'Alarm', {
       metric: testMetric,
@@ -53,8 +47,8 @@ describe('Alarm', () => {
     expect(() => {
       alarm.addAlarmAction(new Ec2TestAlarmAction('arn:aws:automate:us-east-1:ec2:reboot'));
     }).toThrow(/EC2 alarm actions requires an EC2 Per-Instance Metric. \(.+ does not have an 'InstanceId' dimension\)/);
-
   });
+
   test('can make simple alarm', () => {
     // GIVEN
     const stack = new Stack();
@@ -76,8 +70,6 @@ describe('Alarm', () => {
       Statistic: 'Average',
       Threshold: 1000,
     });
-
-
   });
 
   test('override metric period in Alarm', () => {
@@ -102,8 +94,6 @@ describe('Alarm', () => {
       Statistic: 'Average',
       Threshold: 1000,
     });
-
-
   });
 
   test('override statistic Alarm', () => {
@@ -126,11 +116,9 @@ describe('Alarm', () => {
       Namespace: 'CDK/Test',
       Period: 300,
       Statistic: 'Maximum',
-      ExtendedStatistic: Match.absentProperty(),
+      ExtendedStatistic: Match.absent(),
       Threshold: 1000,
     });
-
-
   });
 
   test('can use percentile in Alarm', () => {
@@ -152,12 +140,10 @@ describe('Alarm', () => {
       MetricName: 'Metric',
       Namespace: 'CDK/Test',
       Period: 300,
-      Statistic: Match.absentProperty(),
+      Statistic: Match.absent(),
       ExtendedStatistic: 'p99',
       Threshold: 1000,
     });
-
-
   });
 
   test('can set DatapointsToAlarm', () => {
@@ -183,8 +169,6 @@ describe('Alarm', () => {
       Statistic: 'Average',
       Threshold: 1000,
     });
-
-
   });
 
   test('can add actions to alarms', () => {
@@ -208,8 +192,6 @@ describe('Alarm', () => {
       InsufficientDataActions: ['B'],
       OKActions: ['C'],
     });
-
-
   });
 
   test('can make alarm directly from metric', () => {
@@ -234,8 +216,6 @@ describe('Alarm', () => {
       Statistic: 'Minimum',
       Threshold: 1000,
     });
-
-
   });
 
   test('can use percentile string to make alarm', () => {
@@ -253,8 +233,6 @@ describe('Alarm', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
       ExtendedStatistic: 'p99.9',
     });
-
-
   });
 
   test('can use a generic string for extended statistic to make alarm', () => {
@@ -270,12 +248,10 @@ describe('Alarm', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
-      Statistic: Match.absentProperty(),
+      Statistic: Match.absent(),
       ExtendedStatistic: 'tm99.9999999999',
     });
-
   });
-
 });
 
 class TestAlarmAction implements IAlarmAction {
