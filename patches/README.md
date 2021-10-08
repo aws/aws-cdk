@@ -28,16 +28,10 @@ lerna success exec Executed command in 219 packages: "pwd"
         1.11 real         0.99 user         0.82 sys
 ```
 
-## jsii-rosetta+1.28.0.patch
+## jsii-pacmak+1.38.0.patch
 
-jsii-rosetta uses multiple worker threads by default to speed up sample extraction.
-It defaults to spawning workers equal to half the number of cores. On extremely
-powerful build machines (e.g., CodeBuild X2_LARGE compute with 72 vCPUs),
-the high number of workers (36) results in thrash and high memory usage due to
-duplicate loads of source files. This was causing the v2 builds to fail with:
-"FATAL ERROR: NewSpace::Rebalance Allocation failed - JavaScript heap out of memory"
-
-The patch simply limits the top number of worker threads to an arbitrarily-chosen
-maximum limit of 16. We could simply disable the worker threads, but this takes much
-longer to process. With single-threading, rosetta takes ~35 minutes to extract samples
-from the CDK; with 16 workers, it takes ~3.5 minutes.
+jsii-pacmak@1.38.0 has a bug that means all packages are packed in parallel for
+several languages. This can cause issues on the v2 build, where the alpha modules
+rely on aws-cdk-lib, but may be packed first. A fix will go out in 1.39.0, but in
+the meantime, this patch allows us to more quickly verify the fix and get our
+pipeline green again.
