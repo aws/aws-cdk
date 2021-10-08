@@ -12,31 +12,42 @@ import { integrationResourceArn } from '../private/task-utils';
  */
 export interface CallAwsServiceProps extends sfn.TaskStateBaseProps {
   /**
-   * The AWS service to call
+   * The AWS service to call.
    *
    * @see https://docs.aws.amazon.com/step-functions/latest/dg/supported-services-awssdk.html
    */
   readonly service: string;
 
   /**
-   * The API action to call
+   * The API action to call.
+   *
+   * Use camelCase.
    */
   readonly action: string;
 
   /**
-   * Parameters for the API action call
+   * Parameters for the API action call.
+   *
+   * Use PascalCase for the parameter names.
    *
    * @default - no parameters
    */
   readonly parameters?: { [key: string]: any };
 
   /**
-   * The resources for the IAM statement
+   * The resources for the IAM statement that will be added to the state
+   * machine role's policy to allow the state machine to make the API call.
+   *
+   * By default the action for this IAM statement will be `service:action`.
    */
   readonly iamResources: string[];
 
   /**
-   * The name of the action for the IAM statement
+   * The action for the IAM statement that will be added to the state
+   * machine role's policy to allow the state machine to make the API call.
+   *
+   * Use in the case where the IAM action name does not match with the
+   * API service/action name, e.g. `s3:ListBuckets` requires `s3:ListAllMyBuckets`.
    *
    * @default - service:action
    */
