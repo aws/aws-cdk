@@ -1,10 +1,9 @@
 import { Resource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { WebSocketNoneAuthorizer } from '.';
 import { CfnRoute } from '../apigatewayv2.generated';
 import { IRoute } from '../common';
 import { IWebSocketApi } from './api';
-import { IWebSocketRouteAuthorizer } from './authorizer';
+import { IWebSocketRouteAuthorizer, WebSocketNoneAuthorizer } from './authorizer';
 import { IWebSocketRouteIntegration } from './integration';
 
 /**
@@ -73,7 +72,7 @@ export class WebSocketRoute extends Resource implements IWebSocketRoute {
     super(scope, id);
 
     if (props.routeKey != '$connect' && props.authorizer) {
-      throw new Error('You cannot set any authorizer to other than $connect route.');
+      throw new Error('You can only set a WebSocket authorizer to a $connect route.');
     }
 
     this.webSocketApi = props.webSocketApi;
@@ -86,7 +85,7 @@ export class WebSocketRoute extends Resource implements IWebSocketRoute {
 
     const integration = props.webSocketApi._addIntegration(this, config);
 
-    const authorizer = props.authorizer ?? new WebSocketNoneAuthorizer();
+    const authorizer = props.authorizer ?? new WebSocketNoneAuthorizer(); // must be explicitly NONE (not undefined) for stack updates to work correctly
     const authBindResult = authorizer.bind({
       route: this,
       scope: this.webSocketApi instanceof Construct ? this.webSocketApi : this, // scope under the API if it's not imported
@@ -96,8 +95,8 @@ export class WebSocketRoute extends Resource implements IWebSocketRoute {
       apiId: props.webSocketApi.apiId,
       routeKey: props.routeKey,
       target: `integrations/${integration.integrationId}`,
-      authorizerId: authBindResult?.authorizerId,
-      authorizationType: authBindResult?.authorizationType ?? 'NONE', // must be explicitly NONE (not undefined) for stack updates to work correctly
+      authorizerId: authBindResult.authorizerId,
+      authorizationType: authBindResult.authorizationType,
     });
     this.routeId = route.ref;
   }
