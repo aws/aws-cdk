@@ -12,6 +12,13 @@ import { WebSocketRoute, WebSocketRouteOptions } from './route';
  */
 export interface IWebSocketApi extends IApi {
   /**
+   * The ARN of the WebSocket API.
+   *
+   * @attribute
+   */
+  readonly apiArn: string;
+
+  /**
    * Add a websocket integration
    * @internal
    */
@@ -67,25 +74,8 @@ export interface WebSocketApiProps {
  * @resource AWS::ApiGatewayV2::Api
  */
 export class WebSocketApi extends ApiBase implements IWebSocketApi {
-  /**
-   * The ID of the WebSocket API.
-   *
-   * @attribute
-   */
   public readonly apiId: string;
-
-  /**
-   * The Endpoint of the WebSocket API.
-   *
-   * @attribute
-   */
   public readonly apiEndpoint: string;
-
-  /**
-   * The ARN of the WebSocket API.
-   *
-   * @attribute
-   */
   public readonly apiArn: string;
 
   /**
