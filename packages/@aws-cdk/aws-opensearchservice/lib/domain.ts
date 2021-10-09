@@ -1391,8 +1391,8 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       throw new Error('M3, R3, and T2 instance types do not support encryption of data at rest.');
     }
 
-    if (isInstanceType('t2.micro') && !(isElasticsearchVersion && versionNum <= 2.3)) {
-      throw new Error('The t2.micro.search instance type supports only Elasticsearch versions 1.5 and 2.3.');
+    if (isInstanceType('t2.micro') && isElasticsearchVersion && versionNum > 2.3) {
+      throw new Error('The t2.micro.search instance type supports only Elasticsearch 1.5 and 2.3 or any version of OpenSearch.');
     }
 
     if (isSomeInstanceType('t2', 't3') && warmEnabled) {
