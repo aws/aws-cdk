@@ -1,8 +1,10 @@
 import { Resource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
+import { WebSocketNoneAuthorizer } from '.';
 import { CfnRoute } from '../apigatewayv2.generated';
 import { IRoute } from '../common';
 import { IWebSocketApi } from './api';
+import { IWebSocketRouteAuthorizer } from './authorizer';
 import { IWebSocketRouteIntegration } from './integration';
 
 /**
@@ -29,15 +31,21 @@ export interface WebSocketRouteOptions {
    * The integration to be configured on this route.
    */
   readonly integration: IWebSocketRouteIntegration;
-}
 
+  /**
+   * The authorize to this route. You can only set authorizer to a $connect route.
+   *
+   * @default - No Authorizer
+   */
+  readonly authorizer?: IWebSocketRouteAuthorizer;
+}
 
 /**
  * Properties to initialize a new Route
  */
 export interface WebSocketRouteProps extends WebSocketRouteOptions {
   /**
-   * the API the route is associated with
+   * The API the route is associated with.
    */
   readonly webSocketApi: IWebSocketApi;
 
@@ -64,6 +72,10 @@ export class WebSocketRoute extends Resource implements IWebSocketRoute {
   constructor(scope: Construct, id: string, props: WebSocketRouteProps) {
     super(scope, id);
 
+    if (props.routeKey != '$connect' && props.authorizer) {
+      throw new Error('You cannot set any authorizer to other than $connect route.');
+    }
+
     this.webSocketApi = props.webSocketApi;
     this.routeKey = props.routeKey;
 
@@ -74,10 +86,18 @@ export class WebSocketRoute extends Resource implements IWebSocketRoute {
 
     const integration = props.webSocketApi._addIntegration(this, config);
 
+    const authorizer = props.authorizer ?? new WebSocketNoneAuthorizer();
+    const authBindResult = authorizer.bind({
+      route: this,
+      scope: this.webSocketApi instanceof Construct ? this.webSocketApi : this, // scope under the API if it's not imported
+    });
+
     const route = new CfnRoute(this, 'Resource', {
       apiId: props.webSocketApi.apiId,
       routeKey: props.routeKey,
       target: `integrations/${integration.integrationId}`,
+      authorizerId: authBindResult?.authorizerId,
+      authorizationType: authBindResult?.authorizationType ?? 'NONE', // must be explicitly NONE (not undefined) for stack updates to work correctly
     });
     this.routeId = route.ref;
   }

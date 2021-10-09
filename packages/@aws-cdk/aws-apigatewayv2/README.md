@@ -28,17 +28,20 @@ Higher level constructs for Websocket APIs | ![Experimental](https://img.shields
 
 ## Table of Contents
 
-- [Introduction](#introduction)
-- [HTTP API](#http-api)
-  - [Defining HTTP APIs](#defining-http-apis)
-  - [Cross Origin Resource Sharing (CORS)](#cross-origin-resource-sharing-cors)
-  - [Publishing HTTP APIs](#publishing-http-apis)
-  - [Custom Domain](#custom-domain)
-  - [Managing access](#managing-access)
-  - [Metrics](#metrics)
-  - [VPC Link](#vpc-link)
-  - [Private Integration](#private-integration)
-- [WebSocket API](#websocket-api)
+- [AWS::APIGatewayv2 Construct Library](#awsapigatewayv2-construct-library)
+  - [Table of Contents](#table-of-contents)
+  - [Introduction](#introduction)
+  - [HTTP API](#http-api)
+    - [Defining HTTP APIs](#defining-http-apis)
+    - [Cross Origin Resource Sharing (CORS)](#cross-origin-resource-sharing-cors)
+    - [Publishing HTTP APIs](#publishing-http-apis)
+    - [Custom Domain](#custom-domain)
+    - [Managing access](#managing-access)
+    - [Metrics](#metrics)
+    - [VPC Link](#vpc-link)
+    - [Private Integration](#private-integration)
+  - [WebSocket API](#websocket-api)
+    - [Managing access](#managing-access-1)
 
 ## Introduction
 
@@ -336,3 +339,9 @@ webSocketApi.addRoute('sendmessage', {
   }),
 });
 ```
+
+### Managing access
+
+API Gateway supports multiple mechanisms for [controlling and managing access to a WebSocket API](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api-control-access.html) through authorizers.
+
+These authorizers can be found in the [APIGatewayV2-Authorizers](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-apigatewayv2-authorizers-readme.html) constructs library.

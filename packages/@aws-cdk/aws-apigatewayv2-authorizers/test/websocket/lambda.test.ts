@@ -1,0 +1,48 @@
+import { Template } from '@aws-cdk/assertions';
+import { WebSocketApi } from '@aws-cdk/aws-apigatewayv2';
+import { LambdaWebSocketIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
+import { Code, Function, Runtime } from '@aws-cdk/aws-lambda';
+import { Stack } from '@aws-cdk/core';
+import { WebSocketLambdaAuthorizer } from '../../lib';
+
+describe('WebSocketLambdaAuthorizer', () => {
+  test('default', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    const handler = new Function(stack, 'auth-function', {
+      runtime: Runtime.NODEJS_12_X,
+      code: Code.fromInline('exports.handler = () => {return true}'),
+      handler: 'index.handler',
+    });
+    const integration = new LambdaWebSocketIntegration({
+      handler,
+    });
+
+    const authorizer = new WebSocketLambdaAuthorizer({
+      authorizerName: 'default-authorizer',
+      handler,
+    });
+
+    // WHEN
+    new WebSocketApi(stack, 'WebSocketApi', {
+      connectRouteOptions: {
+        integration,
+        authorizer,
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Authorizer', {
+      Name: 'default-authorizer',
+      AuthorizerType: 'REQUEST',
+      IdentitySource: [
+        '$request.header.Authorization',
+      ],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Route', {
+      AuthorizationType: 'CUSTOM',
+    });
+  });
+});
