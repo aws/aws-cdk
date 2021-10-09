@@ -34,12 +34,12 @@ Higher level constructs for Websocket APIs | ![Experimental](https://img.shields
   - [Cross Origin Resource Sharing (CORS)](#cross-origin-resource-sharing-cors)
   - [Publishing HTTP APIs](#publishing-http-apis)
   - [Custom Domain](#custom-domain)
-  - [Managing access](#managing-access)
+  - [Managing access to HTTP APIs](#managing-access-to-http-apis)
   - [Metrics](#metrics)
   - [VPC Link](#vpc-link)
   - [Private Integration](#private-integration)
 - [WebSocket API](#websocket-api)
-  - [Managing access](#managing-access-1)
+  - [Managing access to WebSocket APIs](#managing-access-to-websocket-apis)
 
 ## Introduction
 
@@ -231,7 +231,7 @@ You can retrieve the full domain URL with mapping key using the `domainUrl` prop
 const demoDomainUrl = apiDemo.defaultStage.domainUrl; // returns "https://example.com/demo"
 ```
 
-### Managing access
+### Managing access to HTTP APIs
 
 API Gateway supports multiple mechanisms for [controlling and managing access to your HTTP
 API](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-access-control.html) through authorizers.
@@ -338,7 +338,7 @@ webSocketApi.addRoute('sendmessage', {
 });
 ```
 
-### Managing access
+### Managing access to WebSocket APIs
 
 API Gateway supports multiple mechanisms for [controlling and managing access to a WebSocket API](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api-control-access.html) through authorizers.
 
