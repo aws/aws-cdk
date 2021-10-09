@@ -126,7 +126,7 @@ export class WebSocketStage extends StageBase implements IWebSocketStage {
     return Grant.addToPrincipal({
       grantee: identity,
       actions: ['execute-api:ManageConnections'],
-      resourceArns: [`${this.api.apiArn}/${this.stageName}/POST/@connections`],
+      resourceArns: [`${this.api.apiArn}/${this.stageName}/POST/@connections/*`],
     });
   }
 }

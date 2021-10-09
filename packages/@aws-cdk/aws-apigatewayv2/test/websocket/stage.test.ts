@@ -80,7 +80,7 @@ describe('WebSocketStage', () => {
         Statement: Match.arrayWith([{
           Action: 'execute-api:ManageConnections',
           Effect: 'Allow',
-          Resource: stack.resolve(`${api.apiArn}/${defaultStage.stageName}/POST/@connections`),
+          Resource: stack.resolve(`${api.apiArn}/${defaultStage.stageName}/POST/@connections/*`),
         }]),
       },
     });
