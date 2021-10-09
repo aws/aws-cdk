@@ -1435,7 +1435,7 @@ describe('custom error responses', () => {
       capacity: {
         masterNodeInstanceType: 't2.micro.search',
       },
-    })).toThrow(/t2.micro.search instance type supports only Elasticsearch versions 1.5 and 2.3/);
+    })).toThrow(/t2.micro.search instance type supports only Elasticsearch 1.5 and 2.3 or any version of OpenSearch/);
   });
 
   test('error when any instance type other than R3, I3 and R6GD are specified without EBS enabled', () => {
