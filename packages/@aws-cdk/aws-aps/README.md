@@ -33,12 +33,11 @@ Amazon Managed Service for Prometheus is a Prometheus-compatible monitoring and 
 
 ## Workspace
 
-The `Workspace` construct allows you to create Amazon Managed Service for Prometheus workspace:
+The `Workspace` construct allows you to create Amazon Managed Service for Prometheus workspace: 
+> This is the bare minimum to get going
 
 ```ts
-const workspace = new Workspace(stack, 'workspace', {
-    alias: 'workspace',
-});
+const workspace = new Workspace(stack, 'workspace');
 ```
 
 ## RuleGroupsNamespace
@@ -46,13 +45,11 @@ const workspace = new Workspace(stack, 'workspace', {
 The `RuleGroupsNamespace` construct allows you to add namespace into Amazon Managed Service for Prometheus(AMP) workspace:
 
 ```ts
-const workspace = new Workspace(stack, 'workspace', {
-    alias: 'workspace',
-});
+const workspace = new Workspace(stack, 'workspace');
 
 const ruleGroupsNamespace = new RuleGroupsNamespace(stack, 'DemoWorkspace', {
     name: 'DemoRuleGroupsNamespace',
-    workspace: workspace.workspaceArn,
+    workspace,
     data: `groups:
   - name: test
     rules:

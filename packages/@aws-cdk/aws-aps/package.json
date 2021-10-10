@@ -82,12 +82,22 @@
     "@aws-cdk/pkglint": "0.0.0",
     "@types/jest": "^26.0.24",
     "constructs": "^3.3.69",
+    "@types/yaml": "1.9.6",
     "@aws-cdk/cdk-integ-tools": "0.0.0"
+  },
+  "pkglint": {
+    "attribution": [
+      "yaml"
+    ]
   },
   "dependencies": {
     "@aws-cdk/core": "0.0.0",
-    "constructs": "^3.3.69"
+    "constructs": "^3.3.69",
+    "yaml": "1.10.2"
   },
+  "bundledDependencies": [
+    "yaml"
+  ],
   "peerDependencies": {
     "@aws-cdk/core": "0.0.0",
     "constructs": "^3.3.69"
@@ -100,7 +110,13 @@
       "docs-public-apis:@aws-cdk/aws-aps.RuleGroupsNamespaceProps",
       "docs-public-apis:@aws-cdk/aws-aps.WorkspaceProps",
       "props-physical-name:@aws-cdk/aws-aps.WorkspaceProps",
-      "props-physical-name:@aws-cdk/aws-aps.RuleGroupsNamespaceProps"
+      "props-physical-name:@aws-cdk/aws-aps.RuleGroupsNamespaceProps",
+      "docs-public-apis:@aws-cdk/aws-aps.RuleGroupsNamespaceData",
+      "docs-public-apis:@aws-cdk/aws-aps.RuleGroupsNamespaceData.group",
+      "docs-public-apis:@aws-cdk/aws-aps.RuleGroupsNamespaceData.addRules",
+      "docs-public-apis:@aws-cdk/aws-aps.RuleGroupsNamespaceData.toYaml",
+      "docs-public-apis:@aws-cdk/aws-aps.IRecordGroups",
+      "docs-public-apis:@aws-cdk/aws-aps.IRuleGroupsNamespaceData.groups"
     ]
   },
   "stability": "experimental",
