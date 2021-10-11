@@ -5,7 +5,7 @@ export class Architecture {
   /**
    * 64 bit architecture with x86 instruction set.
    */
-  public static readonly X86_64 = new Architecture('x86_64');
+  public static readonly X86_64 = new Architecture('x86_64', 'linux/amd64');
 
   /**
    * 64 bit architecture with the ARM instruction set.
@@ -16,9 +16,10 @@ export class Architecture {
    * Used to specify a custom architecture name.
    * Use this if the architecture name is not yet supported by the CDK.
    * @param name the architecture name as recognized by AWS Lambda.
+   * @param [dockerPlatform=linux/amd64] the docker platform to use when building a container for this architecture
    */
   public static custom(name: string, dockerPlatform?: string) {
-    return new Architecture(name, dockerPlatform);
+    return new Architecture(name, dockerPlatform ?? 'linux/amd64');
   }
 
   /**
@@ -31,8 +32,8 @@ export class Architecture {
    */
   public readonly dockerPlatform: string;
 
-  private constructor(archName: string, dockerPlatform?: string) {
+  private constructor(archName: string, dockerPlatform: string) {
     this.name = archName;
-    this.dockerPlatform = dockerPlatform ?? 'linux/amd64';
+    this.dockerPlatform = dockerPlatform;
   }
 }
