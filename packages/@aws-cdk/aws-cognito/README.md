@@ -108,7 +108,7 @@ new cognito.UserPool(this, 'myuserpool', {
   userInvitation: {
     emailSubject: 'Invite to join our awesome app!',
     emailBody: 'Hello {username}, you have been invited to join our awesome app! Your temporary password is {####}',
-    smsMessage: 'Your temporary password for our awesome app is {####}'
+    smsMessage: 'Hello {username}, your temporary password for our awesome app is {####}'
   }
 });
 ```
