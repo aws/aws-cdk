@@ -56,7 +56,7 @@ describe('Example Resource', () => {
             'Ref': 'ExampleResourceWaitConditionHandle9C53A8D3',
           },
           // this is how you can check a given property is _not_ set
-          'RandomProperty': Match.absentProperty(),
+          'RandomProperty': Match.absent(),
         });
       });
 
