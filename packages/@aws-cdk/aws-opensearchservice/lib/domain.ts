@@ -1325,9 +1325,8 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       return instanceTypes.some(isInstanceType);
     };
 
-    function isEveryInstanceType(...instanceTypes: string[]): Boolean {
-      return instanceTypes.some(t => dedicatedMasterType.startsWith(t))
-        && instanceTypes.some(t => instanceType.startsWith(t));
+    function isEveryDatanodeInstanceType(...instanceTypes: string[]): Boolean {
+      return instanceTypes.some(t => instanceType.startsWith(t));
     };
 
     // Validate feature support for the given Elasticsearch/OpenSearch version, per
@@ -1401,7 +1400,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
 
     // Only R3, I3 and r6gd support instance storage, per
     // https://aws.amazon.com/opensearch-service/pricing/
-    if (!ebsEnabled && !isEveryInstanceType('r3', 'i3', 'r6gd')) {
+    if (!ebsEnabled && !isEveryDatanodeInstanceType('r3', 'i3', 'r6gd')) {
       throw new Error('EBS volumes are required when using instance types other than r3, i3 or r6gd.');
     }
 
