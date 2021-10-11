@@ -144,24 +144,26 @@ export class Bundling implements cdk.BundlingOptions {
 
   private createBundlingCommand(options: BundlingCommandOptions): string {
     const pathJoin = osPathJoin(options.osPlatform);
-    const tsconfig = pathJoin(options.inputDir, this.relativeTsconfigPath ?? 'tsconfig.json');
-
     let tscCommand: string[] = [];
     let relativeEntryPath = this.relativeEntryPath;
 
     if (this.props.preCompilation) {
-      if (tsconfig) {
-        const { rootDir = '', outDir = '' } = extractCompilerOptions(tsconfig);
-        relativeEntryPath = pathJoin(outDir, relativeEntryPath).replace(/\.ts(x?)$/, '.js$1');
+      const tsconfig = this.relativeTsconfigPath ?
+        pathJoin(options.inputDir, this.relativeTsconfigPath) :
+        findUp('tsconfig.json', path.dirname(this.props.entry));
 
-        if (!Bundling.tscCompiled) {
+      if (!tsconfig) {
+        throw new Error('Unable to find tsconfig, please specify the prop: tsconfig');
+      }
 
-          tscCommand = [
-            `${options.tscRunner} --project ${tsconfig}`,
-            ...outDir ? [`--outDir ${pathJoin(options.inputDir, outDir, rootDir)}`] : [],
-          ];
-          Bundling.tscCompiled = true;
-        }
+      const { rootDir = '', outDir = '' } = extractCompilerOptions(tsconfig);
+      relativeEntryPath = pathJoin(outDir, this.relativeEntryPath).replace(/\.ts(x?)$/, '.js$1');
+      if (!Bundling.tscCompiled) {
+        tscCommand = [
+          ...[`${options.tscRunner} --project ${tsconfig}`],
+          ...outDir ? [`--outDir ${pathJoin(options.inputDir, outDir, rootDir)}`] : [],
+        ];
+        Bundling.tscCompiled = true;
       }
     }
 
