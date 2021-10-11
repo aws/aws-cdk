@@ -31,7 +31,6 @@ export * from './log-drivers/base-log-driver';
 export * from './log-drivers/firelens-log-driver';
 export * from './log-drivers/fluentd-log-driver';
 export * from './log-drivers/gelf-log-driver';
-export * from './log-drivers/generic-log-driver';
 export * from './log-drivers/journald-log-driver';
 export * from './log-drivers/json-file-log-driver';
 export * from './log-drivers/splunk-log-driver';

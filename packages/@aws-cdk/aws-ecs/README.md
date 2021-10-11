@@ -779,25 +779,6 @@ taskDefinition.addContainer('TheContainer', {
 });
 ```
 
-### Generic Log Driver
-
-A generic log driver object exists to provide a lower level abstraction of the log driver configuration.
-
-```ts
-// Create a Task Definition for the container to start
-const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
-taskDefinition.addContainer('TheContainer', {
-  image: ecs.ContainerImage.fromRegistry('example-image'),
-  memoryLimitMiB: 256,
-  logging: new ecs.GenericLogDriver({
-    logDriver: 'fluentd',
-    options: {
-      tag: 'example-tag'
-    },
-  }),
-});
-```
-
 ## CloudMap Service Discovery
 
 To register your ECS service with a CloudMap Service Registry, you may add the
