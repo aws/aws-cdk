@@ -26,7 +26,7 @@ const resourceArnSuffix: Record<IntegrationPattern, string> = {
   [IntegrationPattern.WAIT_FOR_TASK_TOKEN]: '.waitForTaskToken',
 };
 
-export function integrationResourceArn(service: string, api: string, integrationPattern: IntegrationPattern): string {
+export function integrationResourceArn(service: string, api: string, integrationPattern?: IntegrationPattern): string {
   if (!service || !api) {
     throw new Error("Both 'service' and 'api' must be provided to build the resource ARN.");
   }
