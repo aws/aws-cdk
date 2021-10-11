@@ -801,7 +801,7 @@ const regionTable = new CfnMapping(this, 'RegionTable', {
   lazy: true,
 });
 
-regionTable.findInMap('us-east-2', 'regionName')
+regionTable.findInMap('us-east-2', 'regionName');
 ```
 
 On the other hand, the following code will produce the "Mappings" section shown above,
@@ -809,7 +809,7 @@ since the top-level key is an unresolved token. The call to `findInMap` will ret
 `{ "Fn::FindInMap": [ "RegionTable", { "Ref": "AWS::Region" }, "regionName" ] }`.
 
 ```ts
-regionTable.findInMap(Aws.REGION, 'regionName')
+regionTable.findInMap(Aws.REGION, 'regionName');
 ```
 
 [cfn-mappings]: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/mappings-section-structure.html
