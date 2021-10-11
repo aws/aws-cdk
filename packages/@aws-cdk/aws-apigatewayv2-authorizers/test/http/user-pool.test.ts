@@ -13,7 +13,7 @@ describe('HttpUserPoolAuthorizer', () => {
     const userPoolClient = userPool.addClient('UserPoolClient');
     const authorizer = new HttpUserPoolAuthorizer({
       userPool,
-      userPoolClient,
+      userPoolClients: [userPoolClient],
     });
 
     // WHEN
@@ -52,7 +52,7 @@ describe('HttpUserPoolAuthorizer', () => {
     const userPoolClient = userPool.addClient('UserPoolClient');
     const authorizer = new HttpUserPoolAuthorizer({
       userPool,
-      userPoolClient,
+      userPoolClients: [userPoolClient],
     });
 
     // WHEN
