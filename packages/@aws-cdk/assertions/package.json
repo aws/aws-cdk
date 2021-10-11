@@ -46,7 +46,19 @@
         ]
       }
     },
-    "projectReferences": true
+    "projectReferences": true,
+    "metadata": {
+      "jsii": {
+        "rosetta": {
+          "strict": true
+        }
+      }
+    }
+  },
+  "cdk-build": {
+    "post": [
+      "yarn rosetta:extract"
+    ]
   },
   "author": {
     "name": "Amazon Web Services",
