@@ -16,7 +16,7 @@ export class Architecture {
    * Used to specify a custom architecture name.
    * Use this if the architecture name is not yet supported by the CDK.
    * @param name the architecture name as recognized by AWS Lambda.
-   * @param [dockerPlatform=linux/amd64] the docker platform to use when building a container for this architecture
+   * @param [dockerPlatform=linux/amd64] the platform to use for this architecture when building with Docker
    */
   public static custom(name: string, dockerPlatform?: string) {
     return new Architecture(name, dockerPlatform ?? 'linux/amd64');
