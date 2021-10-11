@@ -67,7 +67,7 @@ describe('external service', () => {
       cluster,
       taskDefinition,
       desiredCount: 2,
-      healthCheckGracePeriod: cdk.Duration.seconds(60),
+      healthCheckGracePeriod: cdk.Duration.seconds(300),
       maxHealthyPercent: 150,
       minHealthyPercent: 55,
       securityGroups: [new ec2.SecurityGroup(stack, 'SecurityGroup1', {
@@ -117,7 +117,7 @@ describe('external service', () => {
       cluster,
       taskDefinition,
       desiredCount: 2,
-      healthCheckGracePeriod: cdk.Duration.seconds(60),
+      healthCheckGracePeriod: cdk.Duration.seconds(300),
       maxHealthyPercent: 150,
       minHealthyPercent: 55,
       securityGroups: [new ec2.SecurityGroup(stack, 'SecurityGroup1', {

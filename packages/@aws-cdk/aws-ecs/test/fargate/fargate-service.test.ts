@@ -485,7 +485,7 @@ describe('fargate service', () => {
           dnsTtl: cdk.Duration.seconds(50),
           failureThreshold: 20,
         },
-        healthCheckGracePeriod: cdk.Duration.seconds(60),
+        healthCheckGracePeriod: cdk.Duration.seconds(300),
         maxHealthyPercent: 150,
         minHealthyPercent: 55,
         deploymentController: {
@@ -524,7 +524,7 @@ describe('fargate service', () => {
           Type: ecs.DeploymentControllerType.ECS,
         },
         DesiredCount: 2,
-        HealthCheckGracePeriodSeconds: 60,
+        HealthCheckGracePeriodSeconds: 300,
         LaunchType: LaunchType.FARGATE,
         NetworkConfiguration: {
           AwsvpcConfiguration: {
@@ -1018,8 +1018,8 @@ describe('fargate service', () => {
 
       expect(stack).toHaveResource('AWS::ECS::Service', {
         // if any load balancer is configured and healthCheckGracePeriodSeconds is not
-        // set, then it should default to 60 seconds.
-        HealthCheckGracePeriodSeconds: 60,
+        // set, then it should default to 300 seconds.
+        HealthCheckGracePeriodSeconds: 300,
       });
 
 

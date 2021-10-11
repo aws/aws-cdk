@@ -900,7 +900,7 @@ export abstract class BaseService extends Resource
    */
   private evaluateHealthGracePeriod(providedHealthCheckGracePeriod?: Duration): IResolvable {
     return Lazy.any({
-      produce: () => providedHealthCheckGracePeriod?.toSeconds() ?? (this.loadBalancers.length > 0 ? 60 : undefined),
+      produce: () => providedHealthCheckGracePeriod?.toSeconds() ?? (this.loadBalancers.length > 0 ? 300 : undefined),
     });
   }
 

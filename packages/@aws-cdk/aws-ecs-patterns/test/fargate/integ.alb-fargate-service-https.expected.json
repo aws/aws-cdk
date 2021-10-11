@@ -664,7 +664,7 @@
           "MinimumHealthyPercent": 50
         },
         "EnableECSManagedTags": true,
-        "HealthCheckGracePeriodSeconds": 60,
+        "HealthCheckGracePeriodSeconds": 300,
         "LaunchType": "FARGATE",
         "LoadBalancers": [
           {

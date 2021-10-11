@@ -57,7 +57,7 @@ export interface ApplicationMultipleTargetGroupsServiceBaseProps {
    * The period of time, in seconds, that the Amazon ECS service scheduler ignores unhealthy
    * Elastic Load Balancing target health checks after a task has first started.
    *
-   * @default - defaults to 60 seconds if at least one load balancer is in-use and it is not already set
+   * @default - defaults to 300 seconds if at least one load balancer is in-use and it is not already set
    */
   readonly healthCheckGracePeriod?: Duration;
 
