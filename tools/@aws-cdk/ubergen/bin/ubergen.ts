@@ -2,6 +2,7 @@ import * as console from 'console';
 import * as path from 'path';
 import * as process from 'process';
 import cfn2ts from '@aws-cdk/cfn2ts';
+import * as cfnspec from '@aws-cdk/cfnspec';
 import * as fs from 'fs-extra';
 import * as ts from 'typescript';
 
@@ -291,11 +292,8 @@ async function transformPackage(
       cfnScopes.map(s => (s === 'AWS::Serverless' ? 'AWS::SAM' : s).split('::')[1].toLocaleLowerCase())
         .map(s => `export * from './${s}.generated';`)
         .join('\n'));
-    fs.writeFileSync(path.join(destination, 'README.md'), [
-      `# ${cfnScopes[0]} Construct Library`,
-      '',
-      'This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.',
-    ].join('\n'));
+    await cfnspec.createLibraryReadme(cfnScopes[0], path.join(destination, 'README.md'));
+
     await copyOrTransformFiles(destination, destination, allLibraries, uberPackageJson);
   } else {
     await copyOrTransformFiles(library.root, destination, allLibraries, uberPackageJson);
