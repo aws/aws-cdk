@@ -11,8 +11,6 @@ import * as util from '../lib/util';
 
 jest.mock('@aws-cdk/aws-lambda');
 
-// Mock DockerImage.fromAsset() to avoid building the image
-let fromBuildMock: jest.SpyInstance<DockerImage>;
 let detectPackageInstallationMock: jest.SpyInstance<PackageInstallation | undefined>;
 beforeEach(() => {
   jest.clearAllMocks();
@@ -570,6 +568,7 @@ test('esbuild bundling with pre compilations', () => {
     forceDockerBundling: true,
     tsconfig,
     preCompilation: true,
+    architecture: Architecture.X86_64,
   });
 
   // Correctly bundles with esbuild
@@ -600,6 +599,7 @@ test('esbuild bundling with pre compilations ( should skip preCompilation as alr
     forceDockerBundling: true,
     tsconfig,
     preCompilation: true,
+    architecture: Architecture.X86_64,
   });
 
   // Correctly bundles with esbuild
@@ -629,6 +629,7 @@ test('esbuild bundling with pre compilations and tsc compiler options ', () => {
     forceDockerBundling: true,
     tsconfig,
     preCompilation: true,
+    architecture: Architecture.X86_64,
   });
 
   // Correctly bundles with esbuild
@@ -659,6 +660,7 @@ test('esbuild bundling with pre compilations and tsc compiler options different 
     forceDockerBundling: true,
     tsconfig,
     preCompilation: true,
+    architecture: Architecture.X86_64,
   });
 
   // Correctly bundles with esbuild
@@ -686,6 +688,7 @@ test('esbuild bundling with pre compilations and undefined tsconfig', () => {
       runtime: Runtime.NODEJS_14_X,
       forceDockerBundling: true,
       preCompilation: true,
+      architecture: Architecture.X86_64,
     });
   }).toThrow('Unable to find tsconfig, please specify the prop: tsconfig');
 
