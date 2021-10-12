@@ -845,6 +845,7 @@ function cdkModuleName(name: string) {
     '@aws-cdk/core': 'core',
     '@aws-cdk/cdk': 'cdk',
     '@aws-cdk/assertions': 'assertions',
+    '@aws-cdk/assertions-alpha': 'assertions-alpha',
   };
   /* eslint-disable @typescript-eslint/indent */
   const mavenArtifactId =
