@@ -32,6 +32,7 @@ export interface ISDK {
   elbv2(): AWS.ELBv2;
   secretsManager(): AWS.SecretsManager;
   kms(): AWS.KMS;
+  stepFunctions(): AWS.StepFunctions;
 }
 
 /**
@@ -126,6 +127,10 @@ export class SDK implements ISDK {
 
   public kms(): AWS.KMS {
     return this.wrapServiceErrorHandling(new AWS.KMS(this.config));
+  }
+
+  public stepFunctions(): AWS.StepFunctions {
+    return this.wrapServiceErrorHandling(new AWS.StepFunctions(this.config));
   }
 
   public async currentAccount(): Promise<Account> {
