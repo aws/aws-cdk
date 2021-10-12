@@ -258,7 +258,6 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
       if (hotswapDeploymentResult) {
         return hotswapDeploymentResult;
       }
-      // could not short-circuit the deployment, perform a full CFN deploy instead
       print('Could not perform a hotswap deployment, as the stack %s contains non-Asset changes', stackArtifact.displayName);
     } catch (e) {
       if (!(e instanceof CfnEvaluationException)) {
@@ -269,6 +268,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
     print('Falling back to doing a full deployment');
   }
 
+  // could not short-circuit the deployment, perform a full CFN deploy instead
   return prepareAndExecuteChangeSet(options, cloudFormationStack, stackArtifact, stackParams, bodyParameter);
 }
 
