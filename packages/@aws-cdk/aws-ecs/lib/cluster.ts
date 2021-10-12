@@ -324,7 +324,7 @@ export class Cluster extends Resource implements ICluster {
    *
    * @param provider the capacity provider to add to this cluster.
    */
-  public addAsgCapacityProvider(provider: AsgCapacityProvider, options?: AddAutoScalingGroupCapacityOptions) {
+  public addAsgCapacityProvider(provider: AsgCapacityProvider, options: AddAutoScalingGroupCapacityOptions= {}) {
     // Don't add the same capacity provider more than once.
     if (this._capacityProviderNames.includes(provider.capacityProviderName)) {
       return;
@@ -334,7 +334,7 @@ export class Cluster extends Resource implements ICluster {
       ...options,
       machineImageType: provider.machineImageType,
       // Don't enable the instance-draining lifecycle hook if managed termination protection is enabled
-      taskDrainTime: provider.enableManagedTerminationProtection ? Duration.seconds(0) : options?.taskDrainTime,
+      taskDrainTime: provider.enableManagedTerminationProtection ? Duration.seconds(0) : options.taskDrainTime,
     });
 
     this._capacityProviderNames.push(provider.capacityProviderName);
@@ -1067,8 +1067,7 @@ export class AsgCapacityProvider extends CoreConstruct {
   /**
    * Auto Scaling Group machineImageType.
    */
-  readonly machineImageType: MachineImageType
-  ;
+  readonly machineImageType: MachineImageType;
 
   /**
    * Whether managed termination protection is enabled
@@ -1080,7 +1079,7 @@ export class AsgCapacityProvider extends CoreConstruct {
 
     this.autoScalingGroup = props.autoScalingGroup as autoscaling.AutoScalingGroup;
 
-    this.machineImageType = props.machineImageType!;
+    this.machineImageType = props.machineImageType ?? MachineImageType.AMAZON_LINUX_2;
 
     this.enableManagedTerminationProtection =
       props.enableManagedTerminationProtection === undefined ? true : props.enableManagedTerminationProtection;

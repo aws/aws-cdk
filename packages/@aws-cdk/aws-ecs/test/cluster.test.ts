@@ -2143,8 +2143,7 @@ describe('cluster', () => {
   });
 });
 
-
-test('can add ASG capacity via Capacity Provider not specify mahcineImageType', () => {
+test('can add ASG capacity via Capacity Provider by not specifying machineImageType', () => {
   // GIVEN
   const app = new cdk.App();
   const stack = new cdk.Stack(app, 'test');
