@@ -50,6 +50,10 @@
       "jsii/java",
       "jsii/python",
       "jsii/dotnet"
+    ],
+    "attribution": [
+      "kubectl",
+      "helm"
     ]
   },
   "jsii": {
@@ -115,8 +119,8 @@
     "minimatch": "^3.0.4",
     "punycode": "^2.1.1",
     "semver": "^7.3.5",
-    "string-width": "^4.2.2",
-    "table": "^6.7.1",
+    "string-width": "^4.2.3",
+    "table": "^6.7.2",
     "yaml": "1.10.2"
   },
   "devDependencies": {
@@ -141,6 +145,7 @@
     "@aws-cdk/aws-apprunner": "0.0.0",
     "@aws-cdk/aws-appstream": "0.0.0",
     "@aws-cdk/aws-appsync": "0.0.0",
+    "@aws-cdk/aws-aps": "0.0.0",
     "@aws-cdk/aws-athena": "0.0.0",
     "@aws-cdk/aws-auditmanager": "0.0.0",
     "@aws-cdk/aws-autoscaling": "0.0.0",
@@ -221,6 +226,7 @@
     "@aws-cdk/aws-greengrassv2": "0.0.0",
     "@aws-cdk/aws-groundstation": "0.0.0",
     "@aws-cdk/aws-guardduty": "0.0.0",
+    "@aws-cdk/aws-healthlake": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-imagebuilder": "0.0.0",
     "@aws-cdk/aws-inspector": "0.0.0",
@@ -249,6 +255,7 @@
     "@aws-cdk/aws-lambda-nodejs": "0.0.0",
     "@aws-cdk/aws-lambda-python": "0.0.0",
     "@aws-cdk/aws-licensemanager": "0.0.0",
+    "@aws-cdk/aws-lightsail": "0.0.0",
     "@aws-cdk/aws-location": "0.0.0",
     "@aws-cdk/aws-logs": "0.0.0",
     "@aws-cdk/aws-logs-destinations": "0.0.0",
@@ -262,12 +269,14 @@
     "@aws-cdk/aws-medialive": "0.0.0",
     "@aws-cdk/aws-mediapackage": "0.0.0",
     "@aws-cdk/aws-mediastore": "0.0.0",
+    "@aws-cdk/aws-memorydb": "0.0.0",
     "@aws-cdk/aws-msk": "0.0.0",
     "@aws-cdk/aws-mwaa": "0.0.0",
     "@aws-cdk/aws-neptune": "0.0.0",
     "@aws-cdk/aws-networkfirewall": "0.0.0",
     "@aws-cdk/aws-networkmanager": "0.0.0",
     "@aws-cdk/aws-nimblestudio": "0.0.0",
+    "@aws-cdk/aws-opensearchservice": "0.0.0",
     "@aws-cdk/aws-opsworks": "0.0.0",
     "@aws-cdk/aws-opsworkscm": "0.0.0",
     "@aws-cdk/aws-pinpoint": "0.0.0",
@@ -319,6 +328,7 @@
     "@aws-cdk/aws-wafv2": "0.0.0",
     "@aws-cdk/aws-workspaces": "0.0.0",
     "@aws-cdk/aws-xray": "0.0.0",
+    "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/cloud-assembly-schema": "0.0.0",
     "@aws-cdk/cloudformation-include": "0.0.0",
     "@aws-cdk/core": "0.0.0",
@@ -326,17 +336,17 @@
     "@aws-cdk/cx-api": "0.0.0",
     "@aws-cdk/lambda-layer-awscli": "0.0.0",
     "@aws-cdk/lambda-layer-kubectl": "0.0.0",
+    "@aws-cdk/lambda-layer-node-proxy-agent": "0.0.0",
     "@aws-cdk/pipelines": "0.0.0",
+    "@aws-cdk/pkglint": "0.0.0",
     "@aws-cdk/region-info": "0.0.0",
+    "@aws-cdk/ubergen": "0.0.0",
     "@types/fs-extra": "^8.1.2",
     "@types/node": "^10.17.60",
-    "cdk-build-tools": "0.0.0",
     "constructs": "^3.3.69",
     "fs-extra": "^9.1.0",
-    "pkglint": "0.0.0",
     "ts-node": "^9.1.1",
-    "typescript": "~3.8.3",
-    "ubergen": "0.0.0"
+    "typescript": "~3.8.3"
   },
   "peerDependencies": {
     "constructs": "^3.3.69"

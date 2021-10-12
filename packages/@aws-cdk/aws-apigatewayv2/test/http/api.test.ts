@@ -127,7 +127,7 @@ describe('HttpApi', () => {
       new HttpApi(stack, 'HttpApi');
 
       Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Api', {
-        CorsConfiguration: Match.absentProperty(),
+        CorsConfiguration: Match.absent(),
       });
     });
 
@@ -267,9 +267,9 @@ describe('HttpApi', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::VpcLink', {
       Name: 'Link-1',
     });
-    expect(Template.fromStack(stack).findResources('AWS::ApiGatewayV2::VpcLink', {
+    expect(Object.keys(Template.fromStack(stack).findResources('AWS::ApiGatewayV2::VpcLink', {
       Name: 'Link-2',
-    }).length).toEqual(0);
+    })).length).toEqual(0);
   });
 
   test('apiEndpoint is exported', () => {
@@ -447,7 +447,7 @@ describe('HttpApi', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Route', {
         RouteKey: 'GET /chickens',
         AuthorizationType: 'NONE',
-        AuthorizerId: Match.absentProperty(),
+        AuthorizerId: Match.absent(),
       });
     });
 
@@ -469,7 +469,7 @@ describe('HttpApi', () => {
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Route', {
-        AuthorizationScopes: Match.absentProperty(),
+        AuthorizationScopes: Match.absent(),
       });
     });
 

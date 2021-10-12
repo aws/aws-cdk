@@ -33,6 +33,7 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
   - [API Gateway](#api-gateway)
     - [Call REST API Endpoint](#call-rest-api-endpoint)
     - [Call HTTP API Endpoint](#call-http-api-endpoint)
+  - [AWS SDK](#aws-sdk)
   - [Athena](#athena)
     - [StartQueryExecution](#startqueryexecution)
     - [GetQueryExecution](#getqueryexecution)
@@ -205,7 +206,7 @@ const submitJob = new tasks.LambdaInvoke(this, 'Invoke Handler', {
 });
 ```
 
-You can also use [intrinsic functions](https://docs.aws.amazon.com/step-functions/latest/dg/amazon-states-language-intrinsic-functions.html) with `JsonPath.stringAt()`. 
+You can also use [intrinsic functions](https://docs.aws.amazon.com/step-functions/latest/dg/amazon-states-language-intrinsic-functions.html) with `JsonPath.stringAt()`.
 Here is an example of starting an Athena query that is dynamically created using the task input:
 
 ```ts
@@ -311,6 +312,43 @@ const invokeTask = new tasks.CallApiGatewayHttpApiEndpoint(stack, 'Call HTTP API
   apiId: httpApi.apiId,
   apiStack: cdk.Stack.of(httpApi),
   method: HttpMethod.GET,
+});
+```
+
+### AWS SDK
+
+Step Functions supports calling [AWS service's API actions](https://docs.aws.amazon.com/step-functions/latest/dg/supported-services-awssdk.html)
+through the service integration pattern.
+
+You can use Step Functions' AWS SDK integrations to call any of the over two hundred AWS services
+directly from your state machine, giving you access to over nine thousand API actions.
+
+```ts
+const getObject = new tasks.CallAwsService(this, 'GetObject', {
+  service: 's3',
+  action: 'getObject',
+  parameters: {
+    Bucket: myBucket.bucketName,
+    Key: sfn.JsonPath.stringAt('$.key')
+  },
+  iamResources: [myBucket.arnForObjects('*')],
+});
+```
+
+Use camelCase for actions and PascalCase for parameter names.
+
+The task automatically adds an IAM statement to the state machine role's policy based on the
+service and action called. The resources for this statement must be specified in `iamResources`.
+
+Use the `iamAction` prop to manually specify the IAM action name in the case where the IAM
+action name does not match with the API service/action name:
+
+```ts
+const listBuckets = new tasks.CallAwsService(this, 'ListBuckets', {
+  service: 's3',
+  action: 'ListBuckets',
+  iamResources: ['*'],
+  iamAction: 's3:ListAllMyBuckets'
 });
 ```
 
@@ -641,6 +679,18 @@ new tasks.EmrCreateCluster(this, 'Create Cluster', {
   name: sfn.TaskInput.fromJsonPathAt('$.ClusterName').value,
   serviceRole,
   autoScalingRole,
+});
+```
+
+If you want to run multiple steps in [parallel](https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-concurrent-steps.html),
+you can specify the `stepConcurrencyLevel` property. The concurrency range is between 1
+and 256 inclusive, where the default concurrency of 1 means no step concurrency is allowed.
+`stepConcurrencyLevel` requires the EMR release label to be 5.28.0 or above.
+
+```ts
+new tasks.EmrCreateCluster(this, 'Create Cluster', {
+  // ...
+  stepConcurrencyLevel: 10,
 });
 ```
 
@@ -1110,6 +1160,21 @@ new sfn.StateMachine(this, 'ParentStateMachine', {
   definition: task
 });
 ```
+
+You can utilize [Associate Workflow Executions](https://docs.aws.amazon.com/step-functions/latest/dg/concepts-nested-workflows.html#nested-execution-startid)
+via the `associateWithParent` property. This allows the Step Functions UI to link child
+executions from parent executions, making it easier to trace execution flow across state machines.
+
+```ts
+const task = new tasks.StepFunctionsStartExecution(this, 'ChildTask', {
+  stateMachine: child,
+  associateWithParent: true,
+});
+```
+
+This will add the payload `AWS_STEP_FUNCTIONS_STARTED_BY_EXECUTION_ID.$: $$.Execution.Id` to the
+`input`property for you, which will pass the execution ID from the context object to the
+execution input. It requires `input` to be an object or not be set at all.
 
 ### Invoke Activity
 
