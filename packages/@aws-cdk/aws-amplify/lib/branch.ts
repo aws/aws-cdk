@@ -1,5 +1,19 @@
+import * as path from 'path';
 import * as codebuild from '@aws-cdk/aws-codebuild';
-import { IResource, Lazy, Resource } from '@aws-cdk/core';
+import * as iam from '@aws-cdk/aws-iam';
+import * as lambda from '@aws-cdk/aws-lambda';
+import { NodejsFunction } from '@aws-cdk/aws-lambda-nodejs';
+import { Asset } from '@aws-cdk/aws-s3-assets';
+import {
+  CustomResource,
+  IResource,
+  Lazy,
+  Resource,
+  Duration,
+  NestedStack,
+  Stack,
+} from '@aws-cdk/core';
+import { Provider } from '@aws-cdk/custom-resources';
 import { Construct } from 'constructs';
 import { CfnBranch } from './amplify.generated';
 import { IApp } from './app';
@@ -125,6 +139,8 @@ export class Branch extends Resource implements IBranch {
 
   public readonly branchName: string;
 
+  private readonly appId: string;
+
   private readonly environmentVariables: { [name: string]: string };
 
   constructor(scope: Construct, id: string, props: BranchProps) {
@@ -148,6 +164,7 @@ export class Branch extends Resource implements IBranch {
 
     this.arn = branch.attrArn;
     this.branchName = branch.attrBranchName;
+    this.appId = props.app.appId;
   }
 
   /**
@@ -159,5 +176,97 @@ export class Branch extends Resource implements IBranch {
   public addEnvironment(name: string, value: string) {
     this.environmentVariables[name] = value;
     return this;
+  }
+
+  /**
+   * Allows deployment of S3 assets to Amplify via a custom resource.
+   *
+   * The Amplify app must not have a sourceCodeProvider configured as this resource uses Amplify's
+   * startDeployment API to initiate and deploy a S3 asset onto the App.
+   */
+  public addAssetDeployment(asset: Asset) {
+    new CustomResource(this, 'DeploymentResource', {
+      serviceToken: AmplifyAssetDeploymentProvider.getOrCreate(this),
+      resourceType: 'Custom::AmplifyAssetDeployment',
+      properties: {
+        AppId: this.appId,
+        BranchName: this.branchName,
+        S3ObjectKey: asset.s3ObjectKey,
+        S3BucketName: asset.s3BucketName,
+      },
+    });
+  }
+}
+
+class AmplifyAssetDeploymentProvider extends NestedStack {
+  /**
+   * Returns the singleton provider.
+   */
+  public static getOrCreate(scope: Construct) {
+    const providerId =
+      'com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider';
+    const stack = Stack.of(scope);
+    const group =
+      (stack.node.tryFindChild(providerId) as AmplifyAssetDeploymentProvider) ?? new AmplifyAssetDeploymentProvider(stack, providerId);
+    return group.provider.serviceToken;
+  }
+
+  private readonly provider: Provider;
+
+  constructor(scope: Construct, id: string) {
+    super(scope, id);
+
+    const onEvent = new NodejsFunction(
+      this,
+      'amplify-asset-deployment-on-event',
+      {
+        entry: path.join(
+          __dirname,
+          'asset-deployment-handler/index.ts',
+        ),
+        runtime: lambda.Runtime.NODEJS_14_X,
+        handler: 'onEvent',
+        initialPolicy: [
+          new iam.PolicyStatement({
+            resources: ['*'],
+            actions: [
+              's3:GetObject',
+              's3:GetSignedUrl',
+              'amplify:ListJobs',
+              'amplify:StartDeployment',
+            ],
+          }),
+        ],
+      },
+    );
+
+    const isComplete = new NodejsFunction(
+      this,
+      'amplify-asset-deployment-is-complete',
+      {
+        entry: path.join(
+          __dirname,
+          'asset-deployment-handler/index.ts',
+        ),
+        runtime: lambda.Runtime.NODEJS_14_X,
+        handler: 'isComplete',
+        initialPolicy: [
+          new iam.PolicyStatement({
+            resources: ['*'],
+            actions: ['amplify:GetJob*'],
+          }),
+        ],
+      },
+    );
+
+    this.provider = new Provider(
+      this,
+      'amplify-asset-deployment-handler-provider',
+      {
+        onEventHandler: onEvent,
+        isCompleteHandler: isComplete,
+        totalTimeout: Duration.minutes(5),
+      },
+    );
   }
 }
