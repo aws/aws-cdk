@@ -14,9 +14,8 @@ import {
   monoRepoRoot,
 } from './util';
 
-const AWS_SERVICE_NAMES = require('./aws-service-official-names.json'); // eslint-disable-line @typescript-eslint/no-require-imports
-
 const PKGLINT_VERSION = require('../package.json').version; // eslint-disable-line @typescript-eslint/no-require-imports
+const AWS_SERVICE_NAMES = require('./aws-service-official-names.json'); // eslint-disable-line @typescript-eslint/no-require-imports
 
 /**
  * Verify that the package name matches the directory name
@@ -831,25 +830,32 @@ function cdkModuleName(name: string) {
   const isCdkPkg = name === '@aws-cdk/core';
   const isLegacyCdkPkg = name === '@aws-cdk/cdk';
 
-  name = name.replace(/^aws-cdk-/, '');
-  name = name.replace(/^@aws-cdk\//, '');
+  let suffix = name;
+  suffix = suffix.replace(/^aws-cdk-/, '');
+  suffix = suffix.replace(/^@aws-cdk\//, '');
 
-  const dotnetSuffix = name.split('-')
+  const dotnetSuffix = suffix.split('-')
     .map(s => s === 'aws' ? 'AWS' : caseUtils.pascal(s))
     .join('.');
 
-  const pythonName = name.replace(/^@/g, '').replace(/\//g, '.').split('.').map(caseUtils.kebab).join('.');
+  const pythonName = suffix.replace(/^@/g, '').replace(/\//g, '.').split('.').map(caseUtils.kebab).join('.');
+
+  // list of packages with special-cased Maven ArtifactId.
+  const mavenIdMap: Record<string, string> = {
+    '@aws-cdk/core': 'core',
+    '@aws-cdk/cdk': 'cdk',
+    '@aws-cdk/assertions': 'assertions',
+  };
+  /* eslint-disable @typescript-eslint/indent */
+  const mavenArtifactId =
+    name in mavenIdMap ? mavenIdMap[name] :
+    (suffix.startsWith('aws-') || suffix.startsWith('alexa-')) ? suffix.replace(/aws-/, '') :
+    suffix.startsWith('cdk-') ? suffix : `cdk-${suffix}`;
+  /* eslint-enable @typescript-eslint/indent */
 
   return {
-    javaPackage: `software.amazon.awscdk${isLegacyCdkPkg ? '' : `.${name.replace(/aws-/, 'services-').replace(/-/g, '.')}`}`,
-    mavenArtifactId:
-      isLegacyCdkPkg
-        ? 'cdk'
-        : (isCdkPkg
-          ? 'core'
-          : (name.startsWith('aws-') || name.startsWith('alexa-')
-            ? name.replace(/aws-/, '')
-            : (name.startsWith('cdk-') ? name : `cdk-${name}`))),
+    javaPackage: `software.amazon.awscdk${isLegacyCdkPkg ? '' : `.${suffix.replace(/aws-/, 'services-').replace(/-/g, '.')}`}`,
+    mavenArtifactId,
     dotnetNamespace: `Amazon.CDK${isCdkPkg ? '' : `.${dotnetSuffix}`}`,
     python: {
       distName: `aws-cdk.${pythonName}`,
