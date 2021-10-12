@@ -29,7 +29,7 @@
         "package": "software.amazon.awscdk.assertions",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "cdk-assertions"
+          "artifactId": "assertions"
         }
       },
       "dotnet": {
