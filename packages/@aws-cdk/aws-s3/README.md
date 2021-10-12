@@ -447,6 +447,6 @@ const bucket = new Bucket(this, 'MyTempFileBucket', {
 ```
 
 **Warning** if you have deployed a bucket with `autoDeleteObjects: true`,
-switching this to `false` in a CDK version *before* `1.126.0` will lead to all
-objects in the bucket being deleted. Be sure to update to version `1.126.0` or
-later before switching this value to `false`.
+switching this to `false` in a CDK version *before* `1.126.0` will lead to
+all objects in the bucket being deleted. Be sure to update your bucket resources
+by deploying with CDK version `1.126.0` or later **before** switching this value to `false`.
