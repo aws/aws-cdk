@@ -49,7 +49,7 @@ export interface CdkPipelineProps {
    * You can choose to not pass this value, in which case a new CodePipeline is
    * created with default settings.
    *
-   * If you pass an existing CodePipeline, it should should have been created
+   * If you pass an existing CodePipeline, it should have been created
    * with `restartExecutionOnUpdate: true`.
    *
    * [disable-awslint:ref-via-interface]
