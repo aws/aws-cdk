@@ -821,11 +821,9 @@ export interface AddCapacityOptions extends AddAutoScalingGroupCapacityOptions, 
    * To use an image that does not update on every deployment, pass:
    *
    * ```ts
-   * {
-   *   machineImage: EcsOptimizedImage.amazonLinux2(AmiHardwareType.STANDARD, {
-   *     cachedInContext: true,
-   *   }),
-   * }
+   * const machineImage = ecs.EcsOptimizedImage.amazonLinux2(ecs.AmiHardwareType.STANDARD, {
+   *   cachedInContext: true,
+   * });
    * ```
    *
    * For more information, see [Amazon ECS-optimized
