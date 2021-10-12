@@ -651,6 +651,7 @@ Currently Supported Log Drivers:
 - splunk
 - syslog
 - awsfirelens
+- Generic
 
 ### awslogs Log Driver
 
@@ -774,6 +775,25 @@ taskDefinition.addContainer('TheContainer', {
     secretOptions: { // Retrieved from AWS Secrets Manager or AWS Systems Manager Parameter Store
       apikey: ecs.Secret.fromSecretsManager(secret),
       host: ecs.Secret.fromSsmParameter(parameter),
+    },
+  }),
+});
+```
+
+### Generic Log Driver
+
+A generic log driver object exists to provide a lower level abstraction of the log driver configuration.
+
+```ts
+// Create a Task Definition for the container to start
+const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
+taskDefinition.addContainer('TheContainer', {
+  image: ecs.ContainerImage.fromRegistry('example-image'),
+  memoryLimitMiB: 256,
+  logging: new ecs.GenericLogDriver({
+    logDriver: 'fluentd',
+    options: {
+      tag: 'example-tag',
     },
   }),
 });
