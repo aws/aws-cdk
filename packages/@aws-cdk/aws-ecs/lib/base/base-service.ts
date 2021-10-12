@@ -409,9 +409,7 @@ export abstract class BaseService extends Resource
       },
       propagateTags: propagateTagsFromSource === PropagatedTagSource.NONE ? undefined : props.propagateTags,
       enableEcsManagedTags: props.enableECSManagedTags ?? false,
-      deploymentController: props.circuitBreaker ? {
-        type: DeploymentControllerType.ECS,
-      } : props.deploymentController,
+      deploymentController: props.deploymentController,
       launchType: launchType,
       enableExecuteCommand: props.enableExecuteCommand,
       capacityProviderStrategy: props.capacityProviderStrategies,
@@ -424,6 +422,9 @@ export abstract class BaseService extends Resource
 
     if (props.deploymentController?.type === DeploymentControllerType.EXTERNAL) {
       Annotations.of(this).addWarning('taskDefinition and launchType are blanked out when using external deployment controller.');
+    }
+    if (props.circuitBreaker && props.deploymentController?.type !== DeploymentControllerType.ECS) {
+      Annotations.of(this).addWarning('DeploymentCircuitBreaker requires the ECS DeploymentControllerType.');
     }
 
     this.serviceArn = this.getResourceArnAttribute(this.resource.ref, {
