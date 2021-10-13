@@ -569,20 +569,20 @@ taskDefinition.addContainer('TheContainer', {
 });
 
 const runTask = new tasks.EcsRunTask(this, 'Run', {
-    integrationPattern: sfn.IntegrationPattern.RUN_JOB,
-    cluster,
-    taskDefinition,
-    launchTarget: new tasks.EcsEc2LaunchTarget({
-      placementStrategies: [
-        ecs.PlacementStrategy.spreadAcrossInstances(),
-        ecs.PlacementStrategy.packedByCpu(),
-        ecs.PlacementStrategy.randomly(),
-      ],
-      placementConstraints: [
-        ecs.PlacementConstraint.memberOf('blieptuut')
-      ],
-    }),
-  });
+  integrationPattern: sfn.IntegrationPattern.RUN_JOB,
+  cluster,
+  taskDefinition,
+  launchTarget: new tasks.EcsEc2LaunchTarget({
+    placementStrategies: [
+      ecs.PlacementStrategy.spreadAcrossInstances(),
+      ecs.PlacementStrategy.packedByCpu(),
+      ecs.PlacementStrategy.randomly(),
+    ],
+    placementConstraints: [
+      ecs.PlacementConstraint.memberOf('blieptuut')
+    ],
+  }),
+});
 ```
 
 #### Fargate
@@ -726,10 +726,10 @@ Corresponds to the [`addJobFlowSteps`](https://docs.aws.amazon.com/emr/latest/AP
 
 ```ts
 new tasks.EmrAddStep(this, 'Task', {
-    clusterId: 'ClusterId',
-    name: 'StepName',
-    jar: 'Jar',
-    actionOnFailure: tasks.ActionOnFailure.CONTINUE,
+  clusterId: 'ClusterId',
+  name: 'StepName',
+  jar: 'Jar',
+  actionOnFailure: tasks.ActionOnFailure.CONTINUE,
 });
 ```
 
@@ -797,9 +797,9 @@ import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as tasks from '@aws-cdk/aws-stepfunctions-tasks';
 
 const myEksCluster = new eks.Cluster(this, 'my sample cluster', {
-   version: eks.KubernetesVersion.V1_18,
-   clusterName: 'myEksCluster',
- });
+  version: eks.KubernetesVersion.V1_18,
+  clusterName: 'myEksCluster',
+});
 
 new tasks.EksCall(stack, 'Call a EKS Endpoint', {
   cluster: myEksCluster,
@@ -1059,9 +1059,9 @@ new tasks.SageMakerCreateEndpointConfig(this, 'SagemakerEndpointConfig', {
   productionVariants: [{
   initialInstanceCount: 2,
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.XLARGE),
-     modelName: 'MyModel',
-     variantName: 'awesome-variant',
-   }],
+    modelName: 'MyModel',
+    variantName: 'awesome-variant',
+  }],
 });
 ```
 
@@ -1073,9 +1073,9 @@ You can call the [`CreateModel`](https://docs.aws.amazon.com/sagemaker/latest/AP
 new tasks.SageMakerCreateModel(this, 'Sagemaker', {
   modelName: 'MyModel',
   primaryContainer: new tasks.ContainerDefinition({
-   image: tasks.DockerImage.fromJsonExpression(sfn.JsonPath.stringAt('$.Model.imageName')),
-   mode: tasks.Mode.SINGLE_MODEL,
-   modelS3Location: tasks.S3Location.fromJsonExpression('$.TrainingJob.ModelArtifacts.S3ModelArtifacts'),
+    image: tasks.DockerImage.fromJsonExpression(sfn.JsonPath.stringAt('$.Model.imageName')),
+    mode: tasks.Mode.SINGLE_MODEL,
+    modelS3Location: tasks.S3Location.fromJsonExpression('$.TrainingJob.ModelArtifacts.S3ModelArtifacts'),
   }),
 });
 ```
@@ -1086,9 +1086,9 @@ You can call the [`UpdateEndpoint`](https://docs.aws.amazon.com/sagemaker/latest
 
 ```ts
 new tasks.SageMakerUpdateEndpoint(this, 'SagemakerEndpoint', {
-    endpointName: sfn.JsonPath.stringAt('$.Endpoint.Name'),
-    endpointConfigName: sfn.JsonPath.stringAt('$.Endpoint.EndpointConfig'),
-  });
+  endpointName: sfn.JsonPath.stringAt('$.Endpoint.Name'),
+  endpointConfigName: sfn.JsonPath.stringAt('$.Endpoint.EndpointConfig'),
+});
 ```
 
 ## SNS
@@ -1120,7 +1120,7 @@ const task1 = new tasks.SnsPublish(this, 'Publish1', {
     handles: {
       value: ['@kslater', '@jjf', null, '@mfanning'],
     },
-
+  },
 });
 
 // Combine a field from the execution data with
@@ -1130,7 +1130,7 @@ const task2 = new tasks.SnsPublish(this, 'Publish2', {
   message: sfn.TaskInput.fromObject({
     field1: 'somedata',
     field2: sfn.JsonPath.stringAt('$.field2'),
-  })
+  }),
 });
 ```
 
@@ -1145,7 +1145,7 @@ AWS Step Functions supports it's own [`StartExecution`](https://docs.aws.amazon.
 ```ts
 // Define a state machine with one Pass state
 const child = new sfn.StateMachine(this, 'ChildStateMachine', {
-    definition: sfn.Chain.start(new sfn.Pass(this, 'PassState')),
+  definition: sfn.Chain.start(new sfn.Pass(this, 'PassState')),
 });
 
 // Include the state machine in a Task state with callback pattern
@@ -1154,14 +1154,14 @@ const task = new tasks.StepFunctionsStartExecution(this, 'ChildTask', {
   integrationPattern: sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
   input: sfn.TaskInput.fromObject({
     token: sfn.JsonPath.taskToken,
-    foo: 'bar'
+    foo: 'bar',
   }),
-  name: 'MyExecutionName'
+  name: 'MyExecutionName',
 });
 
 // Define a second state machine with the Task state above
 new sfn.StateMachine(this, 'ParentStateMachine', {
-  definition: task
+  definition: task,
 });
 ```
 
