@@ -309,7 +309,7 @@ export interface IBucket extends IResource {
    *
    * @example
    *
-   *    declare const myLambda: lambda.IFunction;
+   *    declare const myLambda: lambda.Function;
    *    const bucket = new s3.Bucket(this, 'MyBucket');
    *    bucket.addEventNotification(s3.EventType.OBJECT_CREATED, new s3n.LambdaDestination(myLambda), {prefix: 'home/myusername/*'})
    *
@@ -787,7 +787,7 @@ export abstract class BucketBase extends Resource implements IBucket {
    *
    * @example
    *
-   *    declare const myLambda: lambda.IFunction;
+   *    declare const myLambda: lambda.Function;
    *    const bucket = new s3.Bucket(this, 'MyBucket');
    *    bucket.addEventNotification(s3.EventType.OBJECT_CREATED, new s3n.LambdaDestination(myLambda), {prefix: 'home/myusername/*'});
    *
