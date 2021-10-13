@@ -33,7 +33,7 @@ export interface SageMakerCreateTrainingJobProps extends sfn.TaskStateBaseProps 
   readonly algorithmSpecification: AlgorithmSpecification;
 
   /**
-   * Isolates the model container. No inbound or outbound network calls can be made to or from the model container.
+   * Isolates the training container. No inbound or outbound network calls can be made to or from the training container.
    *
    * @default false
    */
