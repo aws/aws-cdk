@@ -53,7 +53,8 @@ export function fingerprint(fileOrDirectory: string, options: FingerprintOptions
   return hash.digest('hex');
 
   function _processFileOrDirectory(symbolicPath: string, isRootDir: boolean = false, realPath = symbolicPath) {
-    const relativePath = path.relative(fileOrDirectory, symbolicPath);
+    // Normalize relative path with forward slashes to ensure same hash on Windows and Linux
+    const relativePath = path.relative(fileOrDirectory, symbolicPath).replace(/\\/g, '/');
 
     if (!isRootDir && ignoreStrategy.ignores(symbolicPath)) {
       return;
