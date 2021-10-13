@@ -931,6 +931,8 @@ disable this behavior.
 
 Step Functions supports [AWS SageMaker](https://docs.aws.amazon.com/step-functions/latest/dg/connect-sagemaker.html) through the service integration pattern.
 
+[Network isolation is required](https://docs.aws.amazon.com/sagemaker/latest/dg/mkt-algo-model-internet-free.html) to run training jobs and models using resources from AWS Marketplace. In that case, you are requierd to pass `enableNetworkIsolation=true` to `SageMakerCreateModel` and `SageMakerCreateTrainingJob`.
+
 ### Create Training Job
 
 You can call the [`CreateTrainingJob`](https://docs.aws.amazon.com/sagemaker/latest/dg/API_CreateTrainingJob.html) API from a `Task` state.
