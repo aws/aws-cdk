@@ -15,7 +15,7 @@ import {
   Tokenization, withResolved,
 } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { AutoScalingGroupImdsAspect } from './aspects';
+import { AutoScalingGroupRequireImdsv2Aspect } from './aspects';
 import { CfnAutoScalingGroup, CfnAutoScalingGroupProps, CfnLaunchConfiguration } from './autoscaling.generated';
 import { BasicLifecycleHookProps, LifecycleHook } from './lifecycle-hook';
 import { BasicScheduledActionProps, ScheduledAction } from './scheduled-action';
@@ -388,11 +388,11 @@ export interface AutoScalingGroupProps extends CommonAutoScalingGroupProps {
   readonly initOptions?: ApplyCloudFormationInitOptions;
 
   /**
-   * Whether IMDSv1 should be disabled on launched instances.
+   * Whether IMDSv2 should be required on launched instances.
    *
    * @default - false
    */
-  readonly disableImdsv1?: boolean;
+  readonly requireImdsv2?: boolean;
 }
 
 /**
@@ -1075,8 +1075,8 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
 
     this.spotPrice = props.spotPrice;
 
-    if (props.disableImdsv1 === true) {
-      Aspects.of(this).add(new AutoScalingGroupImdsAspect({ enableImdsV1: false }));
+    if (props.requireImdsv2) {
+      Aspects.of(this).add(new AutoScalingGroupRequireImdsv2Aspect());
     }
   }
 

@@ -1365,7 +1365,7 @@ describe('auto scaling group', () => {
 
   });
 
-  test('disables imdsv1', () => {
+  test('requires imdsv2', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = mockVpc(stack);
@@ -1375,7 +1375,7 @@ describe('auto scaling group', () => {
       vpc,
       instanceType: new ec2.InstanceType('t2.micro'),
       machineImage: ec2.MachineImage.latestAmazonLinux(),
-      disableImdsv1: true,
+      requireImdsv2: true,
     });
 
     // THEN

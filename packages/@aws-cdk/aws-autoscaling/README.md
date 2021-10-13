@@ -385,23 +385,21 @@ new autoscaling.AutoScalingGroup(stack, 'ASG', {
 You can configure [EC2 Instance Metadata Service](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-metadata.html) options to either
 allow both IMDSv1 and IMDSv2 or enforce IMDSv2 when interacting with the IMDS.
 
-To do this for a single `AutoScalingGroup`, you can use set the `disableImdsv1` property.
-The example below demonstrates IMDSv1 being disabled on a single `AutoScalingGroup`:
+To do this for a single `AutoScalingGroup`, you can use set the `requireImdsv2` property.
+The example below demonstrates IMDSv2 being required on a single `AutoScalingGroup`:
 
 ```ts
 new autoscaling.AutoScalingGroup(stack, 'ASG', {
-  disableImdsv1: true,
+  requireImdsv2: true,
   // ...
 });
 ```
 
-You can also use `AutoScalingGroupImdsAspect` to apply the operation to multiple AutoScalingGroups.
-The example below demonstrates the `AutoScalingGroupImdsAspect` being used to disable IMDSv1 for all AutoScalingGroups in a stack:
+You can also use `AutoScalingGroupRequireImdsv2Aspect` to apply the operation to multiple AutoScalingGroups.
+The example below demonstrates the `AutoScalingGroupRequireImdsv2Aspect` being used to require IMDSv2 for all AutoScalingGroups in a stack:
 
 ```ts
-const aspect = new autoscaling.AutoScalingGroupImdsAspect({
-  enableImdsV1: false,
-});
+const aspect = new autoscaling.AutoScalingGroupRequireImdsv2Aspect();
 
 Aspects.of(stack).add(aspect);
 ```
