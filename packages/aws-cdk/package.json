@@ -38,7 +38,7 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/core": "0.0.0",
-    "@octokit/rest": "^18.11.4",
+    "@octokit/rest": "^18.12.0",
     "@types/archiver": "^5.3.0",
     "@types/fs-extra": "^8.1.2",
     "@types/glob": "^7.1.4",
@@ -71,7 +71,7 @@
     "@aws-cdk/cloudformation-diff": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
     "@aws-cdk/region-info": "0.0.0",
-    "@jsii/check-node": "1.38.0",
+    "@jsii/check-node": "1.39.0",
     "archiver": "^5.3.0",
     "aws-sdk": "^2.979.0",
     "camelcase": "^6.2.0",
