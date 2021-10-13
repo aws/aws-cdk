@@ -13,7 +13,7 @@ export enum AwsIotSqlVersion {
   /**
    * 2015-10-08 – The original SQL version built on 2015-10-08.
    */
-  SQL_2015_10_08 = '2015-10-08',
+  VER_2015_10_08 = '2015-10-08',
   /**
    * 2016-03-23 – The SQL version built on 2016-03-23.
    */
