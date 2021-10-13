@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { ContainerDefinition, Secret } from '../container-definition';
-import { LogDriver, LogDriverConfig } from '../index';
+import { LogDriver, LogDriverConfig } from './log-driver';
 import { removeEmpty, renderLogDriverSecretOptions } from './utils';
 
 /**

@@ -1,6 +1,6 @@
 import * as os from 'os';
 import * as path from 'path';
-import { AssetCode, Code, Runtime } from '@aws-cdk/aws-lambda';
+import { Architecture, AssetCode, Code, Runtime } from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
 import { EsbuildInstallation } from './esbuild-installation';
 import { PackageManager } from './package-manager';
@@ -27,6 +27,11 @@ export interface BundlingProps extends BundlingOptions {
    * The runtime of the lambda function
    */
   readonly runtime: Runtime;
+
+  /**
+   * The system architecture of the lambda function
+   */
+  readonly architecture: Architecture;
 
   /**
    * Path to project root
@@ -99,6 +104,7 @@ export class Bundling implements cdk.BundlingOptions {
           IMAGE: props.runtime.bundlingImage.image,
           ESBUILD_VERSION: props.esbuildVersion ?? ESBUILD_MAJOR_VERSION,
         },
+        platform: props.architecture.dockerPlatform,
       })
       : cdk.DockerImage.fromRegistry('dummy'); // Do not build if we don't need to
 

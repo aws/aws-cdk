@@ -320,15 +320,15 @@ export class Cluster extends Resource implements ICluster {
    *
    * @param provider the capacity provider to add to this cluster.
    */
-  public addAsgCapacityProvider(provider: AsgCapacityProvider, options: AddAutoScalingGroupCapacityOptions = {}) {
+  public addAsgCapacityProvider(provider: AsgCapacityProvider, options: AddAutoScalingGroupCapacityOptions= {}) {
     // Don't add the same capacity provider more than once.
     if (this._capacityProviderNames.includes(provider.capacityProviderName)) {
       return;
     }
-
     this._hasEc2Capacity = true;
     this.configureAutoScalingGroup(provider.autoScalingGroup, {
       ...options,
+      machineImageType: provider.machineImageType,
       // Don't enable the instance-draining lifecycle hook if managed termination protection is enabled
       taskDrainTime: provider.enableManagedTerminationProtection ? Duration.seconds(0) : options.taskDrainTime,
     });
@@ -817,11 +817,9 @@ export interface AddCapacityOptions extends AddAutoScalingGroupCapacityOptions, 
    * To use an image that does not update on every deployment, pass:
    *
    * ```ts
-   * {
-   *   machineImage: EcsOptimizedImage.amazonLinux2(AmiHardwareType.STANDARD, {
-   *     cachedInContext: true,
-   *   }),
-   * }
+   * const machineImage = ecs.EcsOptimizedImage.amazonLinux2(ecs.AmiHardwareType.STANDARD, {
+   *   cachedInContext: true,
+   * });
    * ```
    *
    * For more information, see [Amazon ECS-optimized
@@ -1061,6 +1059,11 @@ export class AsgCapacityProvider extends Construct {
   readonly autoScalingGroup: autoscaling.AutoScalingGroup;
 
   /**
+   * Auto Scaling Group machineImageType.
+   */
+  readonly machineImageType: MachineImageType;
+
+  /**
    * Whether managed termination protection is enabled
    */
   readonly enableManagedTerminationProtection?: boolean;
@@ -1069,6 +1072,8 @@ export class AsgCapacityProvider extends Construct {
     super(scope, id);
 
     this.autoScalingGroup = props.autoScalingGroup as autoscaling.AutoScalingGroup;
+
+    this.machineImageType = props.machineImageType ?? MachineImageType.AMAZON_LINUX_2;
 
     this.enableManagedTerminationProtection =
       props.enableManagedTerminationProtection === undefined ? true : props.enableManagedTerminationProtection;

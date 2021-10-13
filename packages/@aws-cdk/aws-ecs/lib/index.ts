@@ -36,6 +36,7 @@ export * from './log-drivers/json-file-log-driver';
 export * from './log-drivers/splunk-log-driver';
 export * from './log-drivers/syslog-log-driver';
 export * from './log-drivers/log-driver';
+export * from './log-drivers/generic-log-driver';
 export * from './log-drivers/log-drivers';
 
 export * from './proxy-configuration/app-mesh-proxy-configuration';

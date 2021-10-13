@@ -62,6 +62,57 @@
                 ]
               }
             }
+          },
+          {
+            "DisableTemplateValidation": false,
+            "Info": {
+              "LoadTemplateFromURL": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "https://s3.",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ".",
+                    {
+                      "Ref": "AWS::URLSuffix"
+                    },
+                    "/",
+                    {
+                      "Ref": "AssetParameters6412a5f4524c6b41d26fbeee226c68c2dad735393940a51008d77e6f8b1038f5S3Bucket85C3FF42"
+                    },
+                    "/",
+                    {
+                      "Fn::Select": [
+                        0,
+                        {
+                          "Fn::Split": [
+                            "||",
+                            {
+                              "Ref": "AssetParameters6412a5f4524c6b41d26fbeee226c68c2dad735393940a51008d77e6f8b1038f5S3VersionKey34A02667"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "Fn::Select": [
+                        1,
+                        {
+                          "Fn::Split": [
+                            "||",
+                            {
+                              "Ref": "AssetParameters6412a5f4524c6b41d26fbeee226c68c2dad735393940a51008d77e6f8b1038f5S3VersionKey34A02667"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                ]
+              }
+            }
           }
         ]
       }
@@ -79,6 +130,18 @@
     "AssetParametersb59f768286e16b69628bb23b9c1a1f07300a24101b8979d8e2a94ff1ab03d09eArtifactHashB9EF04B2": {
       "Type": "String",
       "Description": "Artifact hash for asset \"b59f768286e16b69628bb23b9c1a1f07300a24101b8979d8e2a94ff1ab03d09e\""
+    },
+    "AssetParameters6412a5f4524c6b41d26fbeee226c68c2dad735393940a51008d77e6f8b1038f5S3Bucket85C3FF42": {
+      "Type": "String",
+      "Description": "S3 bucket for asset \"6412a5f4524c6b41d26fbeee226c68c2dad735393940a51008d77e6f8b1038f5\""
+    },
+    "AssetParameters6412a5f4524c6b41d26fbeee226c68c2dad735393940a51008d77e6f8b1038f5S3VersionKey34A02667": {
+      "Type": "String",
+      "Description": "S3 key for asset version \"6412a5f4524c6b41d26fbeee226c68c2dad735393940a51008d77e6f8b1038f5\""
+    },
+    "AssetParameters6412a5f4524c6b41d26fbeee226c68c2dad735393940a51008d77e6f8b1038f5ArtifactHashDC26AFAC": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"6412a5f4524c6b41d26fbeee226c68c2dad735393940a51008d77e6f8b1038f5\""
     }
   }
 }

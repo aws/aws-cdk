@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as lambda from '@aws-cdk/aws-lambda';
+import { Architecture } from '@aws-cdk/aws-lambda';
 import { Construct } from 'constructs';
 import { Bundling } from './bundling';
 import { PackageManager } from './package-manager';
@@ -92,6 +93,7 @@ export class NodejsFunction extends lambda.Function {
     const entry = path.resolve(findEntry(id, props.entry));
     const handler = props.handler ?? 'handler';
     const runtime = props.runtime ?? lambda.Runtime.NODEJS_14_X;
+    const architecture = props.architecture ?? Architecture.X86_64;
     const depsLockFilePath = findLockFile(props.depsLockFilePath);
     const projectRoot = props.projectRoot ?? path.dirname(depsLockFilePath);
 
@@ -102,6 +104,7 @@ export class NodejsFunction extends lambda.Function {
         ...props.bundling ?? {},
         entry,
         runtime,
+        architecture,
         depsLockFilePath,
         projectRoot,
       }),
