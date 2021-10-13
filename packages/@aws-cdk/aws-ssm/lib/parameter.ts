@@ -141,9 +141,9 @@ export interface StringParameterProps extends ParameterOptions {
   /**
    * The data type of the parameter, such as `text` or `aws:ec2:image`.
    *
-   * @default - 'text'
+   * @default - none
    */
-  readonly dataType?: string;
+  readonly dataType?: ParameterDataType;
 }
 
 /**
@@ -222,6 +222,20 @@ export enum ParameterType {
    * An Amazon EC2 image ID, such as ami-0ff8a91507f77f867
    */
   AWS_EC2_IMAGE_ID = 'AWS::EC2::Image::Id',
+}
+
+/**
+ * SSM parameter data type
+ */
+export enum ParameterDataType {
+  /**
+   * Text
+   */
+  TEXT = 'text',
+  /**
+   * Aws Ec2 Image
+   */
+  AWS_EC2_IMAGE = 'aws:ec2:image',
 }
 
 /**
@@ -444,7 +458,7 @@ export class StringParameter extends ParameterBase implements IStringParameter {
     }
 
     if (props.type && props.type === ParameterType.AWS_EC2_IMAGE_ID) {
-      throw new Error('The type must either be ParameterType.STRING or ParameterType.STRING_LIST. Did you mean to set dataType: "aws:ec2:image" instead?');
+      throw new Error('The type must either be ParameterType.STRING or ParameterType.STRING_LIST. Did you mean to set dataType: ParameterDataType.AWS_EC2_IMAGE instead?');
     }
 
     const resource = new ssm.CfnParameter(this, 'Resource', {
