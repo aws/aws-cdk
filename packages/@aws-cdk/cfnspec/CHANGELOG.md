@@ -1,3 +1,25 @@
+# CloudFormation Resource Specification v43.1.0
+
+## New Resource Types
+
+* AWS::IoT::JobTemplate
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::CodeStarNotifications::NotificationRule CreatedBy (__added__)
+* AWS::CodeStarNotifications::NotificationRule EventTypeId (__added__)
+* AWS::CodeStarNotifications::NotificationRule TargetAddress (__added__)
+* AWS::Synthetics::Canary ArtifactConfig (__added__)
+
+## Property Type Changes
+
+* AWS::Synthetics::Canary.ArtifactConfig (__added__)
+* AWS::Synthetics::Canary.S3Encryption (__added__)
+
+
 # CloudFormation Resource Specification v43.0.0
 
 ## New Resource Types
