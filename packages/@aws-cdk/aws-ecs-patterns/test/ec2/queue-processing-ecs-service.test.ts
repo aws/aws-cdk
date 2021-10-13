@@ -222,9 +222,6 @@ test('test ECS queue worker service construct - with optional props', () => {
     },
     LaunchType: 'EC2',
     ServiceName: 'ecs-test-service',
-    DeploymentController: {
-      Type: 'ECS',
-    },
   });
 
   expect(stack).toHaveResource('AWS::SQS::Queue', {

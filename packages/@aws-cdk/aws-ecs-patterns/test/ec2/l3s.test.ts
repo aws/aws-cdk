@@ -1101,9 +1101,6 @@ test('ALB with circuit breaker', () => {
         Rollback: true,
       },
     },
-    DeploymentController: {
-      Type: 'ECS',
-    },
   });
 });
 

@@ -354,9 +354,6 @@ test('test Fargate queue worker service construct - with optional props', () => 
     LaunchType: 'FARGATE',
     ServiceName: 'fargate-test-service',
     PlatformVersion: ecs.FargatePlatformVersion.VERSION1_4,
-    DeploymentController: {
-      Type: 'ECS',
-    },
   });
 
   expect(stack).toHaveResource('AWS::SQS::Queue', { QueueName: 'fargate-test-sqs-queue' });
