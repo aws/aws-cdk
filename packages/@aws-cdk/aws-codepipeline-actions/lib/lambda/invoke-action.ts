@@ -139,7 +139,7 @@ export class LambdaInvokeAction extends Action {
     return {
       configuration: {
         FunctionName: this.props.lambda.functionName,
-        UserParameters: this.props.userParametersString || Stack.of(scope).toJsonString(this.props.userParameters),
+        UserParameters: this.props.userParametersString ?? Stack.of(scope).toJsonString(this.props.userParameters),
       },
     };
   }
