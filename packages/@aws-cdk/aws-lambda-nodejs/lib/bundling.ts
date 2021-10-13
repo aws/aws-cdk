@@ -162,7 +162,6 @@ export class Bundling implements cdk.BundlingOptions {
         throw new Error('Unable to find tsconfig, please specify the prop: tsconfig');
       }
 
-
       relativeEntryPath = relativeEntryPath.replace(/\.ts(x?)$/, '.js$1');
       if (!Bundling.tscCompiled) {
         tscCommand = [
@@ -172,7 +171,6 @@ export class Bundling implements cdk.BundlingOptions {
         Bundling.tscCompiled = true;
       }
     }
-
 
     const loaders = Object.entries(this.props.loader ?? {});
     const defines = Object.entries(this.props.define ?? {});

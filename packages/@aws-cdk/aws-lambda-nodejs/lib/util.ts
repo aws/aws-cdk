@@ -111,20 +111,3 @@ export function extractDependencies(pkgPath: string, modules: string[]): { [key:
   return dependencies;
 }
 
-/**
- * Returns compilerOptions from tsconfig.json
- */
-export function extractCompilerOptions(tsconfigPath: string, previous?: { [key: string]: string }): any | undefined {
-  try {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const { extends: extendedConfig, compilerOptions: current } = require(tsconfigPath);
-    const merged = { ...previous, ...current };
-    if (extendedConfig) {
-      return extractCompilerOptions(path.resolve(tsconfigPath.replace(/[^\/]+$/, ''), extendedConfig), merged);
-    }
-    return merged;
-
-  } catch (err) {
-    return;
-  }
-}

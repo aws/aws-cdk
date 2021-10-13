@@ -1,6 +1,6 @@
 import * as child_process from 'child_process';
 import * as path from 'path';
-import { callsites, exec, extractDependencies, extractCompilerOptions, findUp } from '../lib/util';
+import { callsites, exec, extractDependencies, findUp } from '../lib/util';
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -121,10 +121,3 @@ describe('extractDependencies', () => {
   });
 });
 
-describe('tsconfig', () => {
-  test('extract compiler options from tsconfig.json', () => {
-    expect(extractCompilerOptions(
-      path.join(__dirname, '../tsconfig.json'),
-    )).toBeDefined();
-  });
-});
