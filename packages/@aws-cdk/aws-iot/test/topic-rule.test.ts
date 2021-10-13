@@ -1,21 +1,17 @@
 import { Template } from '@aws-cdk/assertions';
 import * as cdk from '@aws-cdk/core';
-import { TopicRule, IAction, AwsIotSqlVersion } from '../lib';
+import { TopicRule, IAction } from '../lib';
 
 test('Default property', () => {
   const stack = new cdk.Stack();
 
   new TopicRule(stack, 'MyTopicRule', {
-    topicRulePayload: {
-      sql: "SELECT topic(2) as device_id, temperature FROM 'device/+/data'",
-    },
+    sql: "SELECT topic(2) as device_id, temperature FROM 'device/+/data'",
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::IoT::TopicRule', {
     TopicRulePayload: {
       Actions: [],
-      AwsIotSqlVersion: '2015-10-08',
-      RuleDisabled: false,
       Sql: "SELECT topic(2) as device_id, temperature FROM 'device/+/data'",
     },
   });
@@ -24,9 +20,7 @@ test('Default property', () => {
 test('Can get topic rule name', () => {
   const stack = new cdk.Stack();
   const rule = new TopicRule(stack, 'MyTopicRule', {
-    topicRulePayload: {
-      sql: "SELECT topic(2) as device_id, temperature FROM 'device/+/data'",
-    },
+    sql: "SELECT topic(2) as device_id, temperature FROM 'device/+/data'",
   });
 
   new cdk.CfnResource(stack, 'Res', {
@@ -44,9 +38,7 @@ test('Can get topic rule name', () => {
 test('Can get topic rule arn', () => {
   const stack = new cdk.Stack();
   const rule = new TopicRule(stack, 'MyTopicRule', {
-    topicRulePayload: {
-      sql: "SELECT topic(2) as device_id, temperature FROM 'device/+/data'",
-    },
+    sql: "SELECT topic(2) as device_id, temperature FROM 'device/+/data'",
   });
 
   new cdk.CfnResource(stack, 'Res', {
@@ -70,9 +62,7 @@ test('Can set physical name', () => {
   // WHEN
   new TopicRule(stack, 'MyTopicRule', {
     topicRuleName: 'PhysicalName',
-    topicRulePayload: {
-      sql: "SELECT topic(2) as device_id, temperature FROM 'device/+/data'",
-    },
+    sql: "SELECT topic(2) as device_id, temperature FROM 'device/+/data'",
   });
 
   // THEN
@@ -81,86 +71,27 @@ test('Can set physical name', () => {
   });
 });
 
-test('Can set awsIotSqlVersion', () => {
-  const stack = new cdk.Stack();
-
-  new TopicRule(stack, 'MyTopicRule', {
-    topicRulePayload: {
-      awsIotSqlVersion: AwsIotSqlVersion.SQL_BETA,
-      sql: "SELECT topic(2) as device_id, temperature FROM 'device/+/data'",
-    },
-  });
-
-  Template.fromStack(stack).hasResourceProperties('AWS::IoT::TopicRule', {
-    TopicRulePayload: {
-      Actions: [],
-      AwsIotSqlVersion: 'beta',
-      RuleDisabled: false,
-      Sql: "SELECT topic(2) as device_id, temperature FROM 'device/+/data'",
-    },
-  });
-});
-
-test('Can set description', () => {
-  const stack = new cdk.Stack();
-
-  new TopicRule(stack, 'MyTopicRule', {
-    topicRulePayload: {
-      description: 'test-description',
-      sql: "SELECT topic(2) as device_id, temperature FROM 'device/+/data'",
-    },
-  });
-
-  Template.fromStack(stack).hasResourceProperties('AWS::IoT::TopicRule', {
-    TopicRulePayload: {
-      Actions: [],
-      AwsIotSqlVersion: '2015-10-08',
-      Description: 'test-description',
-      RuleDisabled: false,
-      Sql: "SELECT topic(2) as device_id, temperature FROM 'device/+/data'",
-    },
-  });
-});
-
-test('Can set ruleDisabled', () => {
-  const stack = new cdk.Stack();
-
-  new TopicRule(stack, 'MyTopicRule', {
-    topicRulePayload: {
-      ruleDisabled: true,
-      sql: "SELECT topic(2) as device_id, temperature FROM 'device/+/data'",
-    },
-  });
-
-  Template.fromStack(stack).hasResourceProperties('AWS::IoT::TopicRule', {
-    TopicRulePayload: {
-      Actions: [],
-      AwsIotSqlVersion: '2015-10-08',
-      RuleDisabled: true,
-      Sql: "SELECT topic(2) as device_id, temperature FROM 'device/+/data'",
-    },
-  });
-});
-
 test('Can set actions', () => {
   const stack = new cdk.Stack();
 
   const action1: IAction = {
     bind: () => ({
-      http: { url: 'http://example.com' },
+      configuration: {
+        http: { url: 'http://example.com' },
+      },
     }),
   };
   const action2: IAction = {
     bind: () => ({
-      lambda: { functionArn: 'test-functionArn' },
+      configuration: {
+        lambda: { functionArn: 'test-functionArn' },
+      },
     }),
   };
 
   new TopicRule(stack, 'MyTopicRule', {
-    topicRulePayload: {
-      sql: "SELECT topic(2) as device_id, temperature FROM 'device/+/data'",
-      actions: [action1, action2],
-    },
+    sql: "SELECT topic(2) as device_id, temperature FROM 'device/+/data'",
+    actions: [action1, action2],
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::IoT::TopicRule', {
@@ -173,37 +104,6 @@ test('Can set actions', () => {
           Lambda: { FunctionArn: 'test-functionArn' },
         },
       ],
-      AwsIotSqlVersion: '2015-10-08',
-      RuleDisabled: false,
-      Sql: "SELECT topic(2) as device_id, temperature FROM 'device/+/data'",
-    },
-  });
-});
-
-test('Can set errorAction', () => {
-  const stack = new cdk.Stack();
-
-  const action: IAction = {
-    bind: () => ({
-      http: { url: 'http://example.com' },
-    }),
-  };
-
-  new TopicRule(stack, 'MyTopicRule', {
-    topicRulePayload: {
-      sql: "SELECT topic(2) as device_id, temperature FROM 'device/+/data'",
-      errorAction: action,
-    },
-  });
-
-  Template.fromStack(stack).hasResourceProperties('AWS::IoT::TopicRule', {
-    TopicRulePayload: {
-      ErrorAction: {
-        Http: { Url: 'http://example.com' },
-      },
-      Actions: [],
-      AwsIotSqlVersion: '2015-10-08',
-      RuleDisabled: false,
       Sql: "SELECT topic(2) as device_id, temperature FROM 'device/+/data'",
     },
   });
@@ -213,18 +113,20 @@ test('Can add actions', () => {
   const stack = new cdk.Stack();
 
   const topicRule = new TopicRule(stack, 'MyTopicRule', {
-    topicRulePayload: {
-      sql: "SELECT topic(2) as device_id, temperature FROM 'device/+/data'",
-    },
+    sql: "SELECT topic(2) as device_id, temperature FROM 'device/+/data'",
   });
   topicRule.addAction({
     bind: () => ({
-      http: { url: 'http://example.com' },
+      configuration: {
+        http: { url: 'http://example.com' },
+      },
     }),
   });
   topicRule.addAction({
     bind: () => ({
-      lambda: { functionArn: 'test-functionArn' },
+      configuration: {
+        lambda: { functionArn: 'test-functionArn' },
+      },
     }),
   });
 
@@ -238,8 +140,6 @@ test('Can add actions', () => {
           Lambda: { FunctionArn: 'test-functionArn' },
         },
       ],
-      AwsIotSqlVersion: '2015-10-08',
-      RuleDisabled: false,
       Sql: "SELECT topic(2) as device_id, temperature FROM 'device/+/data'",
     },
   });
@@ -249,11 +149,9 @@ test('Can not set empty query', () => {
   const stack = new cdk.Stack();
 
   expect(() => new TopicRule(stack, 'MyTopicRule', {
-    topicRulePayload: {
-      sql: '',
-    },
+    sql: '',
   })).toThrowError(
-    '\'topicRulePayload.sql\' cannot be empty.',
+    'sql cannot be empty.',
   );
 });
 
@@ -261,12 +159,12 @@ test('Can not add actions have no action property', () => {
   const stack = new cdk.Stack();
 
   const topicRule = new TopicRule(stack, 'MyTopicRule', {
-    topicRulePayload: {
-      sql: "SELECT topic(2) as device_id, temperature FROM 'device/+/data'",
-    },
+    sql: "SELECT topic(2) as device_id, temperature FROM 'device/+/data'",
   });
   const emptyAction: IAction = {
-    bind: () => ({}),
+    bind: () => ({
+      configuration: {},
+    }),
   };
 
   expect(() => topicRule.addAction(emptyAction)).toThrowError(
@@ -278,14 +176,14 @@ test('Can not add actions have multiple action properties', () => {
   const stack = new cdk.Stack();
 
   const topicRule = new TopicRule(stack, 'MyTopicRule', {
-    topicRulePayload: {
-      sql: "SELECT topic(2) as device_id, temperature FROM 'device/+/data'",
-    },
+    sql: "SELECT topic(2) as device_id, temperature FROM 'device/+/data'",
   });
   const multipleAction: IAction = {
     bind: () => ({
-      http: { url: 'http://example.com' },
-      lambda: { functionArn: 'test-functionArn' },
+      configuration: {
+        http: { url: 'http://example.com' },
+        lambda: { functionArn: 'test-functionArn' },
+      },
     }),
   };
 

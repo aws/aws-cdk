@@ -21,10 +21,6 @@
 
 <!--END STABILITY BANNER-->
 
-This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
-
-## Rules
-
 The `TopicRule` construct defined Rules that give your devices the ability to interact with AWS services.
 Rules are analyzed and actions are performed based on the MQTT topic stream.
 The `TopicRule` construct can use actions like these:
@@ -44,19 +40,41 @@ The `TopicRule` construct can use actions like these:
 - Send message data an asset property in AWS IoT SiteWise. (*To be developed*)
 - Send message data to a web application or service. (*To be developed*)
 
-For example, to define a rule that triggers to invoke a lambda function and to put to a S3 bucket:
+## Installation
+
+Install the module:
+
+```console
+$ npm i @aws-cdk/aws-iot
+```
+
+Import it into your code:
 
 ```ts
-new TopicRule(stack, 'MyTopicRule', {
+import * as iot from '@aws-cdk/aws-iot';
+```
+
+The `iot.Project` construct represents a build project resource. See the reference documentation for a comprehensive list of initialization properties, methods and attributes.
+
+## `TopicRule`
+
+For example, to define a rule that triggers to put to a S3 bucket:
+
+```ts
+new iot.TopicRule(stack, 'MyTopicRule', {
   topicRuleName: 'MyRuleName', // optional property
-  topicRulePayload: {
-    description: 'Some description.', // optional property
-    sql: "SELECT topic(2) as device_id, temperature FROM 'device/+/data'",
-    acctions: [
-      new actions.LambdaAction(lambdaFn),
-      new actions.S3Action(bucket),
-    ],
-  },
+  sql: "SELECT topic(2) as device_id, temperature FROM 'device/+/data'",
+  acctions: [
+    {
+      configration: {
+        s3: {
+          bucketName: 'your-bucket-name',
+          key: 'your-bucket-key',
+          roleArn: 'your-role-arn',
+        }
+      }
+    }
+  ],
 });
 ```
 
@@ -64,98 +82,11 @@ Or you can add action after constructing instance as following:
 
 ```ts
 const topicRule = new TopicRule(stack, 'MyTopicRule', {
-  topicRulePayload: {
-    sql: "SELECT topic(2) as device_id, temperature FROM 'device/+/data'",
-  },
+  sql: "SELECT topic(2) as device_id, temperature FROM 'device/+/data'",
 });
-topicRule.addAction(new actions.LambdaAction(lambdaFn));
-```
-
-If a problem occurs when triggering actions, the rules engine triggers an error action, if one is specified for the rule:
-
-```ts
-new TopicRule(stack, 'MyTopicRule', {
-  topicRulePayload: {
-    sql: "SELECT topic(2) as device_id, temperature FROM 'device/+/data'",
-    errorAction: new actions.CloudwatchLogsAction(logGroup),
-  },
+topicRule.addAction({
+  configration: {
+    functionArn: 'your-lambda-function-arn',
+  }
 });
-```
-
-### Add action to set state of an Amazon CloudWatch alarm
-
-```ts
-topicRule.addAction(
-  new iot.CloudwatchAlarmAction(
-    cloudwatchAlarm,
-    cloudwatch.AlarmState.ALARM,
-  ),
-);
-```
-
-### Add action to send data to Amazon CloudWatch Logs
-
-```ts
-topicRule.addAction(new iot.CloudwatchLogsAction(logGroup));
-```
-
-### Add action to capture an Amazon CloudWatch metric
-
-```ts
-topicRule.addAction(new iot.CloudwatchMetricAction({
-  metricName: '${topic(2)}',
-  metricNamespace: '${namespace}',
-  metricUnit: '${unit}',
-  metricValue: '${value}',
-  metricTimestamp: '${timestamp}',
-}));
-```
-
-### Add action to write all or part of an MQTT message to an Amazon DynamoDB table
-
-```ts
-topicRule.addAction(new iot.DynamoDBAction({
-  table,
-  partitionKeyValue: '${topic(2)}',
-  sortKeyValue: '${timestamp()}',
-  payloadField: 'custom-payload-field',
-}));
-```
-
-Or you can define more easily with dynamodb v2 action:
-
-```ts
-topicRule.addAction(new iot.DynamoDBv2Action(table));
-```
-
-Dynamodb v2 action is easy to use, but only v1 action supports [substitution templates](https://docs.aws.amazon.com/iot/latest/developerguide/iot-substitution-templates.html).
-
-### Add action to invoke an AWS Lambda function, passing in an MQTT message
-
-```ts
-topicRule.addAction(new actions.LambdaAction(lambdaFn));
-```
-
-### Add action to republish an MQTT message to another MQTT topic
-
-```ts
-topicRule.addAction(new iot.RepublishAction('test-topic'));
-```
-
-### Add action to write the data from an MQTT message to an Amazon S3 bucket
-
-```ts
-topicRule.addAction(new iot.S3Action(bucket));
-```
-
-### Add action to send the data from an MQTT message as an Amazon SNS push notification
-
-```ts
-topicRule.addAction(new iot.SnsAction(topic));
-```
-
-### Add action to send data from an MQTT message to an Amazon SQS queue
-
-```ts
-topicRule.addAction(new iot.SqsAction(queue));
 ```

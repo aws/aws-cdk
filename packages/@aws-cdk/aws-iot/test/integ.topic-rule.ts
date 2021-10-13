@@ -1,6 +1,6 @@
 /// !cdk-integ pragma:ignore-assets
 import * as cdk from '@aws-cdk/core';
-import * as iot from '../../../lib';
+import * as iot from '../lib';
 
 const app = new cdk.App();
 
@@ -9,13 +9,18 @@ class TestStack extends cdk.Stack {
     super(scope, id, props);
 
     const topicRule = new iot.TopicRule(this, 'TopicRule', {
-      topicRulePayload: {
-        sql: "SELECT topic(2) as device_id FROM 'device/+/data'",
-      },
+      sql: "SELECT topic(2) as device_id FROM 'device/+/data'",
     });
-    topicRule.addAction(new iot.RepublishAction(
-      'test-topic',
-    ));
+
+    topicRule.addAction({
+      bind: () => ({
+        configuration: {
+          lambda: {
+            functionArn: 'test-arn',
+          },
+        },
+      }),
+    });
   }
 }
 

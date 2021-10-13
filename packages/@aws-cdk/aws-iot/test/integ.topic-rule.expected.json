@@ -1,0 +1,19 @@
+{
+  "Resources": {
+    "TopicRule40A4EA44": {
+      "Type": "AWS::IoT::TopicRule",
+      "Properties": {
+        "TopicRulePayload": {
+          "Actions": [
+            {
+              "Lambda": {
+                "FunctionArn": "test-arn"
+              }
+            }
+          ],
+          "Sql": "SELECT topic(2) as device_id FROM 'device/+/data'"
+        }
+      }
+    }
+  }
+}
