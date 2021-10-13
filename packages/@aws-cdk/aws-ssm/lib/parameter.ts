@@ -141,7 +141,7 @@ export interface StringParameterProps extends ParameterOptions {
   /**
    * The data type of the parameter, such as `text` or `aws:ec2:image`.
    *
-   * @default - none
+   * @default - undefined
    */
   readonly dataType?: ParameterDataType;
 }
