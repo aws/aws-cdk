@@ -4,7 +4,7 @@ import * as fs from 'fs-extra';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const lerna_project = require('@lerna/project');
 // eslint-disable-next-line @typescript-eslint/no-require-imports
-const ver = require('../../scripts/resolve-version');
+const ver = require('../../../scripts/resolve-version');
 
 /**
  * @aws-cdk/ scoped packages that may be present in devDependencies and need to
