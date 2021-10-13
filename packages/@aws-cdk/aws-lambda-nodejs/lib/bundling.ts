@@ -5,7 +5,7 @@ import * as cdk from '@aws-cdk/core';
 import { PackageInstallation } from './package-installation';
 import { PackageManager } from './package-manager';
 import { BundlingOptions, SourceMapMode } from './types';
-import { exec, extractDependencies, extractCompilerOptions, findUp } from './util';
+import { exec, extractDependencies, findUp } from './util';
 
 const ESBUILD_MAJOR_VERSION = '0';
 
@@ -162,12 +162,12 @@ export class Bundling implements cdk.BundlingOptions {
         throw new Error('Unable to find tsconfig, please specify the prop: tsconfig');
       }
 
-      const { rootDir = '', outDir = '' } = extractCompilerOptions(tsconfig);
-      relativeEntryPath = pathJoin(outDir, this.relativeEntryPath).replace(/\.ts(x?)$/, '.js$1');
+
+      relativeEntryPath = relativeEntryPath.replace(/\.ts(x?)$/, '.js$1');
       if (!Bundling.tscCompiled) {
         tscCommand = [
-          ...[`${options.tscRunner} --project ${tsconfig}`],
-          ...outDir ? [`--outDir ${pathJoin(options.inputDir, outDir, rootDir)}`] : [],
+          // Setting explicity rootDir and outDir, so that the compiled js file always end up next ts file.
+          ...[`${options.tscRunner} --project ${tsconfig} --rootDir ./ --outDir ./`],
         ];
         Bundling.tscCompiled = true;
       }

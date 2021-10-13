@@ -557,9 +557,6 @@ test('esbuild bundling with projectRoot and externals and dependencies', () => {
 });
 
 test('esbuild bundling with pre compilations', () => {
-  jest.spyOn(util, 'findUp').mockReturnValueOnce(tsconfig);
-  jest.spyOn(util, 'extractCompilerOptions').mockReturnValueOnce({});
-
   Bundling.bundle({
     entry,
     projectRoot,
@@ -578,7 +575,7 @@ test('esbuild bundling with pre compilations', () => {
       command: [
         'bash', '-c',
         [
-          'tsc --project /asset-input/lib/custom-tsconfig.ts &&',
+          'tsc --project /asset-input/lib/custom-tsconfig.ts --rootDir ./ --outDir ./ &&',
           'esbuild --bundle \"/asset-input/lib/handler.js\" --target=node14 --platform=node --outfile=\"/asset-output/index.js\"',
           '--external:aws-sdk --tsconfig=/asset-input/lib/custom-tsconfig.ts',
         ].join(' '),
@@ -587,10 +584,7 @@ test('esbuild bundling with pre compilations', () => {
   });
 });
 
-test('esbuild bundling with pre compilations ( should skip preCompilation as already compiled )', () => {
-  jest.spyOn(util, 'findUp').mockReturnValueOnce(tsconfig);
-  jest.spyOn(util, 'extractCompilerOptions').mockReturnValueOnce({});
-
+test('esbuild bundling with pre compilations ( Should skip preCompilation as already compiled )', () => {
   Bundling.bundle({
     entry,
     projectRoot,
@@ -617,9 +611,9 @@ test('esbuild bundling with pre compilations ( should skip preCompilation as alr
   });
 });
 
-test('esbuild bundling with pre compilations and tsc compiler options ', () => {
+test('esbuild bundling with pre compilations with undefined tsconfig ( Should find in root directory )', () => {
   Bundling.clearTscCompilationCache();
-  jest.spyOn(util, 'extractCompilerOptions').mockReturnValueOnce({ rootDir: 'lib', outDir: 'dist' });
+  jest.spyOn(util, 'findUp').mockReturnValueOnce('/asset-input/lib/custom-tsconfig.ts');
 
   Bundling.bundle({
     entry,
@@ -627,7 +621,6 @@ test('esbuild bundling with pre compilations and tsc compiler options ', () => {
     depsLockFilePath,
     runtime: Runtime.NODEJS_14_X,
     forceDockerBundling: true,
-    tsconfig,
     preCompilation: true,
     architecture: Architecture.X86_64,
   });
@@ -639,47 +632,16 @@ test('esbuild bundling with pre compilations and tsc compiler options ', () => {
       command: [
         'bash', '-c',
         [
-          'tsc --project /asset-input/lib/custom-tsconfig.ts --outDir /asset-input/dist/lib &&',
-          'esbuild --bundle \"/asset-input/dist/lib/handler.js\" --target=node14 --platform=node --outfile=\"/asset-output/index.js\"',
-          '--external:aws-sdk --tsconfig=/asset-input/lib/custom-tsconfig.ts',
+          'tsc --project /asset-input/lib/custom-tsconfig.ts --rootDir ./ --outDir ./ &&',
+          'esbuild --bundle \"/asset-input/lib/handler.js\" --target=node14 --platform=node --outfile=\"/asset-output/index.js\"',
+          '--external:aws-sdk',
         ].join(' '),
       ],
     }),
   });
 });
 
-test('esbuild bundling with pre compilations and tsc compiler options different combinations ', () => {
-  Bundling.clearTscCompilationCache();
-  jest.spyOn(util, 'extractCompilerOptions').mockReturnValueOnce({ rootDir: undefined, outDir: 'dist' });
-
-  Bundling.bundle({
-    entry,
-    projectRoot,
-    depsLockFilePath,
-    runtime: Runtime.NODEJS_14_X,
-    forceDockerBundling: true,
-    tsconfig,
-    preCompilation: true,
-    architecture: Architecture.X86_64,
-  });
-
-  // Correctly bundles with esbuild
-  expect(Code.fromAsset).toHaveBeenCalledWith(path.dirname(depsLockFilePath), {
-    assetHashType: AssetHashType.OUTPUT,
-    bundling: expect.objectContaining({
-      command: [
-        'bash', '-c',
-        [
-          'tsc --project /asset-input/lib/custom-tsconfig.ts --outDir /asset-input/dist &&',
-          'esbuild --bundle \"/asset-input/dist/lib/handler.js\" --target=node14 --platform=node --outfile=\"/asset-output/index.js\"',
-          '--external:aws-sdk --tsconfig=/asset-input/lib/custom-tsconfig.ts',
-        ].join(' '),
-      ],
-    }),
-  });
-});
-
-test('esbuild bundling with pre compilations and undefined tsconfig', () => {
+test('esbuild bundling with pre compilations and undefined tsconfig ( Should throw) ', () => {
   expect(() => {
     Bundling.bundle({
       entry,
