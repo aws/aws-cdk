@@ -1,6 +1,7 @@
 import { EOL } from 'os';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
+import * as kms from '@aws-cdk/aws-kms';
 import { ArnFormat, IResource, Lazy, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
 import { IConstruct, Construct } from 'constructs';
 import { CfnRepository } from './ecr.generated';
@@ -328,6 +329,27 @@ export interface RepositoryProps {
   readonly repositoryName?: string;
 
   /**
+   * The kind of server-side encryption to apply to this repository.
+   *
+   * If you choose KMS, you can specify a KMS key via `encryptionKey`. If
+   * encryption key is not specified, an AWS managed KMS key is used.
+   *
+   * @default - `KMS` if `encryptionKey` is specified, or `AES256` otherwise.
+   */
+  readonly encryption?: RepositoryEncryption;
+
+  /**
+   * External KMS key to use for repository encryption.
+   *
+   * The 'encryption' property must be either not specified or set to "KMS".
+   * An error will be emitted if encryption is set to "AES256".
+   *
+   * @default - If encryption is set to `KMS` and this property is undefined,
+   * an AWS managed KMS key is used.
+   */
+  readonly encryptionKey?: kms.IKey;
+
+  /**
    * Life cycle rules to apply to this registry
    *
    * @default No life cycle rules
@@ -481,6 +503,8 @@ export class Repository extends RepositoryBase {
 
     Repository.validateRepositoryName(this.physicalName);
 
+    const encryptionConfiguration = this.parseEncryption(props);
+
     const resource = new CfnRepository(this, 'Resource', {
       repositoryName: this.physicalName,
       // It says "Text", but they actually mean "Object".
@@ -490,6 +514,7 @@ export class Repository extends RepositoryBase {
         scanOnPush: true,
       },
       imageTagMutability: props.imageTagMutability || undefined,
+      encryptionConfiguration: encryptionConfiguration,
     });
 
     resource.applyRemovalPolicy(props.removalPolicy);
@@ -602,6 +627,40 @@ export class Repository extends RepositoryBase {
     validateAnyRuleLast(ret);
     return ret;
   }
+
+  /**
+   * Set up key properties and return the Repository encryption property from the
+   * user's configuration.
+   */
+  private parseEncryption(props: RepositoryProps): CfnRepository.EncryptionConfigurationProperty | undefined {
+
+    // default based on whether encryptionKey is specified
+    let encryptionType = props.encryption;
+    if (encryptionType === undefined) {
+      encryptionType = props.encryptionKey ? RepositoryEncryption.KMS : RepositoryEncryption.AES_256;
+    }
+
+    // if encryption key is set, encryption must be set to KMS.
+    if (encryptionType !== RepositoryEncryption.KMS && props.encryptionKey) {
+      throw new Error(`encryptionKey is specified, so 'encryption' must be set to KMS (value: ${encryptionType})`);
+    }
+
+    if (encryptionType === RepositoryEncryption.AES_256) {
+      return undefined;
+    }
+
+    if (encryptionType === RepositoryEncryption.KMS) {
+      const encryptionKey = props.encryptionKey;
+
+      const encryptionConfiguration = {
+        encryptionType: 'KMS',
+        kmsKey: encryptionKey?.keyArn,
+      };
+      return encryptionConfiguration;
+    }
+
+    throw new Error(`Unexpected 'encryptionType': ${encryptionType}`);
+  }
 }
 
 function validateAnyRuleLast(rules: LifecycleRule[]) {
@@ -663,4 +722,22 @@ export enum TagMutability {
    */
   IMMUTABLE = 'IMMUTABLE',
 
+}
+
+/**
+ * Indicates whether server-side encryption is enabled for the object, and whether that encryption is
+ * from the AWS Key Management Service (AWS KMS) or from Amazon S3 managed encryption (SSE-S3).
+ * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#SysMetadata
+ */
+export enum RepositoryEncryption {
+
+  /**
+   * 'AES256'
+   */
+  AES_256 = 'AES256',
+
+  /**
+   * 'KMS'
+   */
+  KMS = 'KMS'
 }

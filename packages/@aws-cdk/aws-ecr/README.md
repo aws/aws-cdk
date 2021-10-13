@@ -79,6 +79,24 @@ You can set tag immutability on images in our repository using the `imageTagMuta
 new ecr.Repository(this, 'Repo', { imageTagMutability: ecr.TagMutability.IMMUTABLE });
 ```
 
+### Encryption
+
+By default a Repository is server-side encrypted with AES-256 by AWS. However, you can use AWS managed KMS or customer managed KMS. When an encryptionKey is set, the `encryptionType` must be `KMS` or empty.
+
+```ts
+new ecr.Repository(stack, 'Repo', { encryptionType: ecr.RepositoryEncryption.KMS })
+```
+
+or
+
+```ts
+import * as kms from '@aws-cdk/aws-kms';
+
+const my_kms = kms.Key(stack, 'Key');
+
+new ecr.Repository(stack, 'Repo', { encryptionKey: my_kms })
+```
+
 ## Automatically clean up repositories
 
 You can set life cycle rules to automatically clean up old images from your
