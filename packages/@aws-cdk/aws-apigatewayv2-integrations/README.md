@@ -170,7 +170,7 @@ const httpEndpoint = new HttpApi(stack, 'HttpProxyPrivateApi', {
 });
 ```
 
-To use keys and values which does not yet have any helper functions, you can use the custom method:
+To add mapping keys and values not yet supported by the CDK, use the `custom()` method:
 
 ```ts
 const httpEndpoint = new HttpApi(stack, 'HttpProxyPrivateApi', {
