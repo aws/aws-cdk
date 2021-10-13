@@ -118,6 +118,13 @@ export class Runtime {
   private constructor(public readonly name: string) { }
 }
 
+/**
+ * The environment variable for the service.
+ */
+interface EnvironmentVariable {
+  readonly name: string;
+  readonly value: string;
+}
 
 /**
  * Result of binding `Source` into a `Service`.
@@ -707,6 +714,10 @@ export class Service extends cdk.Resource {
   private readonly props: ServiceProps;
   private accessRole?: iam.IRole;
   private source: SourceConfig;
+  /**
+   * Environment variables for this service
+   */
+  private environment?: { [key: string]: string } = {};
 
   /**
    * The ARN of the Service.
@@ -805,15 +816,30 @@ export class Service extends cdk.Resource {
   }
   private renderImageRepository(): any {
     const repo = this.source.imageRepository!;
+    this.environment = repo.imageConfiguration?.environment;
     if (repo.imageConfiguration?.port) {
       // convert port from type number to string
       return Object.assign(repo, {
         imageConfiguration: {
           port: repo.imageConfiguration.port.toString(),
+          startCommand: repo.imageConfiguration.startCommand,
+          runtimeEnvironmentVariables: this.renderEnvironmentVariables(),
         },
       });
     } else {
       return repo;
+    }
+  }
+
+  private renderEnvironmentVariables(): EnvironmentVariable[] | undefined {
+    if (this.environment) {
+      let env: EnvironmentVariable[] = [];
+      for (const [key, value] of Object.entries(this.environment)) {
+        env.push({ name: key, value: value });
+      }
+      return env;
+    } else {
+      return undefined;
     }
   }
 
