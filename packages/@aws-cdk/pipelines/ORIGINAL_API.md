@@ -41,9 +41,9 @@ all commands necessary to do a full CDK build and synth, so do include
 installing dependencies and running the CDK CLI. For example, the old API:
 
 ```ts
-declare const sourceArtifact: codepipeline.SArtifact;
-declare const cloudAssemblyArtifact: codepipeline.Artifact;
-SimpleSynthAction.standardNpmSynth({
+const sourceArtifact = new codepipeline.Artifact();
+const cloudAssemblyArtifact = new codepipeline.Artifact();
+pipelines.SimpleSynthAction.standardNpmSynth({
   sourceArtifact,
   cloudAssemblyArtifact,
 
@@ -56,8 +56,10 @@ SimpleSynthAction.standardNpmSynth({
 Becomes:
 
 ```ts
-new ShellStep('Synth', {
-  input: /* source */,
+new pipelines.ShellStep('Synth', {
+  input: pipelines.CodePipelineSource.connection('my-org/my-app', 'main', {
+    connectionArn: 'arn:aws:codestar-connections:us-east-1:222222222222:connection/7d2469ff-514a-4e4f-9003-5ca4a43cdc41', // Created using the AWS console * });',
+  }),
   commands: [
     'npm ci',
     'npm run build',
@@ -73,7 +75,7 @@ You can use any of the factory functions on `CodePipelineSource`.
 For example, for a GitHub source, the following old API:
 
 ```ts
-sourceAction: new codepipeline_actions.GitHubSourceAction({
+sourceAction: new cpactions.GitHubSourceAction({
   actionName: 'GitHub',
   output: sourceArtifact,
   // Replace these with your actual GitHub project name
@@ -86,8 +88,8 @@ sourceAction: new codepipeline_actions.GitHubSourceAction({
 Translates into:
 
 ```ts
-input: CodePipelineSource.gitHub('OWNER/REPO', 'main', {
-  authentication: SecretValue.secretsManager('GITHUB_TOKEN_NAME'),
+input: pipelines.CodePipelineSource.gitHub('OWNER/REPO', 'main', {
+  authentication: cdk.SecretValue.secretsManager('GITHUB_TOKEN_NAME'),
 }),
 ```
 
@@ -113,8 +115,9 @@ putting manual approvals in `pre` steps, and automated approvals in `post` steps
 For example, specifying a manual approval on a stage deployment in old API:
 
 ```ts
+declare const pipeline: pipelines.CdkPipeline;
 const stage = pipeline.addApplicationStage(...);
-stage.addAction(new ManualApprovalAction({
+stage.addAction(new pipelines.ManualApprovalAction({
   actionName: 'ManualApproval',
   runOrder: testingStage.nextSequentialRunOrder(),
 }));
@@ -123,9 +126,10 @@ stage.addAction(new ManualApprovalAction({
 Becomes:
 
 ```ts
+const stage = new 
 pipeline.addStage(..., {
   pre: [
-    new ManualApprovalStep('ManualApproval'),
+    new pipelines.ManualApprovalStep('ManualApproval'),
   ],
 });
 ```
