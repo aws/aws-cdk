@@ -38,7 +38,6 @@ async function releaseNoteContents(currentVersion: Versions, opts: ReleaseNotesO
 
   // See https://github.com/aws/aws-cdk-rfcs/blob/master/text/0249-v2-experiments.md#changelog--release-notes for format
   return [
-    '## aws-cdk-lib', // Assumption: we only have stable + alpha changelogs on v2+, where aws-cdk-lib is the stable module.
     stableChangelogContents,
     '---',
     `## Alpha modules (${currentVersion.alphaVersion})`,

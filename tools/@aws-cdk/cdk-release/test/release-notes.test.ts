@@ -35,7 +35,6 @@ test('with alpha releases the contents of both are returned as separate sections
   await createReleaseNotes({ ...DEFAULT_OPTS, alphaChangelogFile: 'CHANGELOG.alpha.md' });
 
   expectReleaseNotes([
-    '## aws-cdk-lib',
     'foo',
     '---',
     '## Alpha modules (1.2.3-alpha)',
