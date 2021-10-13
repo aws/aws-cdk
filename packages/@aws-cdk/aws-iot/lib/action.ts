@@ -22,6 +22,7 @@ export interface ActionConfig {
    * @default None
    */
   readonly cloudwatchAlarm?: CfnTopicRule.CloudwatchAlarmActionProperty;
+
   /**
    * An action to send data to Amazon CloudWatch Logs.
    * @default None
