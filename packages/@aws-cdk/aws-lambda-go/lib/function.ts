@@ -101,6 +101,7 @@ export class GoFunction extends lambda.Function {
     }
 
     const runtime = props.runtime ?? lambda.Runtime.PROVIDED_AL2;
+    const architecture = props.architecture ?? lambda.Architecture.X86_64;
 
     super(scope, id, {
       ...props,
@@ -109,6 +110,7 @@ export class GoFunction extends lambda.Function {
         ...props.bundling ?? {},
         entry,
         runtime,
+        architecture,
         moduleDir,
       }),
       handler: 'bootstrap', // setting name to bootstrap so that the 'provided' runtime can also be used
