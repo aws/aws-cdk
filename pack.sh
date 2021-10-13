@@ -7,18 +7,6 @@ export PATH=$PWD/node_modules/.bin:$PATH
 export NODE_OPTIONS="--max-old-space-size=8192 ${NODE_OPTIONS:-}"
 root=$PWD
 
-### HACKS - Remove once jsii-pacmak@>=1.39.0
-# Temporary work-around
-# The pack on v2 is currently broken due to a bug in jsii-pacmak <= 1.38.0 that packs all modules in
-# parallel, regardless of dependencies between the modules. That breaks on building the alpha modules,
-# since they rely on aws-cdk-lib, but often end up being packed first. A fix was created in jsii
-# (https://github.com/aws/jsii/pull/3045), but to unblock the build earlier, a patch was created to
-# apply the fix within the CDK prior to the next jsii release (https://github.com/aws/aws-cdk/pull/16871).
-# Unfortunately, our build "transform" step runs a `lerna` command that re-installs jsii-pacmak, removing
-# the patch. Calling `yarn install` here again to re-install and re-apply the patch prior to packing.
-yarn install --frozen-lockfile
-### HACKS - Remove once jsii-pacmak@>=1.39.0
-
 # Get version and changelog file name (these require that .versionrc.json would have been generated)
 version=$(node -p "require('./scripts/resolve-version').version")
 changelog_file=$(node -p "require('./scripts/resolve-version').changelogFile")
