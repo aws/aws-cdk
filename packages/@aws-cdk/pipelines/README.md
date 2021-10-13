@@ -50,7 +50,6 @@ example creates a CodePipeline that deploys an application from GitHub:
   */
 import { DatabaseStack, ComputeStack } from '../lib/my-stacks';
 import { Construct, Stage, Stack, StackProps, StageProps } from '@aws-cdk/core';
-import { CodePipeline, CodePipelineSource, ShellStep } from '@aws-cdk/pipelines';
 
 /**
  * Stack to hold the pipeline
@@ -59,11 +58,11 @@ class MyPipelineStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    const pipeline = new CodePipeline(this, 'Pipeline', {
-      synth: new ShellStep('Synth', {
+    const pipeline = new pipelines.CodePipeline(this, 'Pipeline', {
+      synth: new pipelines.ShellStep('Synth', {
         // Use a connection created using the AWS console to authenticate to GitHub
         // Other sources are available.
-        input: CodePipelineSource.connection('my-org/my-app', 'main', {
+        input: pipelines.CodePipelineSource.connection('my-org/my-app', 'main', {
           connectionArn: 'arn:aws:codestar-connections:us-east-1:222222222222:connection/7d2469ff-514a-4e4f-9003-5ca4a43cdc41', // Created using the AWS console * });',
         }),
         commands: [
@@ -1047,10 +1046,7 @@ create an SNS Topic, subscribe your own email address, and pass it in as
 as the `notificationTopic` property:
 
 ```ts
-import * as sns from '@aws-cdk/aws-sns';
-import * as subscriptions from '@aws-cdk/aws-sns-subscriptions';
-import * as pipelines from '@aws-cdk/pipelines';
-
+declare const pipeline = pipelines.CodePipeline;
 const topic = new sns.Topic(this, 'SecurityChangesTopic');
 topic.addSubscription(new subscriptions.EmailSubscription('test@email.com'));
 
@@ -1162,19 +1158,19 @@ that bundles asset using tools run via Docker, like `aws-lambda-nodejs`, `aws-la
 
 Make sure you set the `privileged` environment variable to `true` in the synth definition:
 
-```typescript
-    const pipeline = new CdkPipeline(this, 'MyPipeline', {
-      ...
-
-      synthAction: SimpleSynthAction.standardNpmSynth({
-        sourceArtifact: ...,
-        cloudAssemblyArtifact: ...,
-
-        environment: {
-          privileged: true,
-        },
-      }),
-    });
+```ts
+declare const sourceArtifact: codepipeline.Artifact;
+declare const cloudAssemblyArtifact: codepipeline.Artifact;
+const pipeline = new pipelines.CdkPipeline(this, 'MyPipeline', {
+  cloudAssemblyArtifact,
+  synthAction: pipelines.SimpleSynthAction.standardNpmSynth({
+    sourceArtifact,
+    cloudAssemblyArtifact,
+    environment: {
+      privileged: true,
+    },
+  }),
+});
 ```
 
 After turning on `privilegedMode: true`, you will need to do a one-time manual cdk deploy of your
@@ -1201,10 +1197,11 @@ This happens because the pipeline is not self-mutating and, as a consequence, th
 build projects get out-of-sync with the generated templates. To fix this, make sure the
 `selfMutating` property is set to `true`:
 
-```typescript
-const pipeline = new CdkPipeline(this, 'MyPipeline', {
+```ts
+declare const cloudAssemblyArtifact: codepipeline.Artifact;
+const pipeline = new pipelines.CdkPipeline(this, 'MyPipeline', {
   selfMutating: true,
-  ...
+  cloudAssemblyArtifact,
 });
 ```
 
@@ -1240,9 +1237,9 @@ $ env CDK_NEW_BOOTSTRAP=1 npx cdk bootstrap \
 See https://docs.aws.amazon.com/cdk/latest/guide/bootstrapping.html for more info.
 
 ```ts
-new MyStack(this, 'MyStack', {
+new Stack(this, 'MyStack', {
   // Update this qualifier to match the one used above.
-  synthesizer: new DefaultStackSynthesizer({
+  synthesizer: new cdk.DefaultStackSynthesizer({
     qualifier: 'randchars1234',
   }),
 });

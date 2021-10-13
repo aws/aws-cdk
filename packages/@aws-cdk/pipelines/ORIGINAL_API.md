@@ -41,6 +41,8 @@ all commands necessary to do a full CDK build and synth, so do include
 installing dependencies and running the CDK CLI. For example, the old API:
 
 ```ts
+declare const sourceArtifact: codepipeline.SArtifact;
+declare const cloudAssemblyArtifact: codepipeline.Artifact;
 SimpleSynthAction.standardNpmSynth({
   sourceArtifact,
   cloudAssemblyArtifact,
@@ -153,7 +155,7 @@ stage.addActions(new ShellScriptAction({
 Becomes:
 
 ```ts
-const stage = new MyStage(...);
+const stage = new MyApplicationStage(this, 'MyApplication');
 pipeline.addStage(stage, {
   post: [
     new CodeBuildStep('MyValidation', {
@@ -174,7 +176,19 @@ customizations (like `buildEnvironment`).
 #### Change set approvals
 
 In the old API, there were two properties that were used to add actions to the pipeline
-in between the `CreateChangeSet` and `ExecuteChangeSet` actions: `manualApprovals` and `extraRunOrderSpace`. These are not supported in the new API.
+in between the `CreateChangeSet` and `ExecuteChangeSet` actions: `manualApprovals` and `extraRunOrderSpace`.
+This can be achieved in the modern API via the `stackSteps` property, which allows steps to be added
+at the stack level:
+
+```ts
+const stage = new MyApplicationStage(this, 'MyApplication');
+pipeline.addStage(stage, {
+  stackSteps: [{
+    stack: stage.stack1,
+    changeSet: [new ManualApprovalStep('ChangeSet Approval')],
+  }],
+});
+```
 
 ### Custom CodePipeline Actions
 
@@ -203,7 +217,7 @@ class MyPipelineStack extends Stack {
     const sourceArtifact = new codepipeline.Artifact();
     const cloudAssemblyArtifact = new codepipeline.Artifact();
 
-    const pipeline = new CdkPipeline(this, 'Pipeline', {
+    const pipeline = new pipelines.CdkPipeline(this, 'Pipeline', {
       cloudAssemblyArtifact,
 
       sourceAction: new codepipeline_actions.GitHubSourceAction({

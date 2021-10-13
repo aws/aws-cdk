@@ -1,0 +1,21 @@
+// Fixture with packages imported, but nothing else
+import { Construct, Stage, Stack, StackProps, StageProps } from '@aws-cdk/core';
+import cdk = require('@aws-cdk/core');
+import codepipeline = require('@aws-cdk/aws-codepipeline');
+import pipelines = require('@aws-cdk/pipelines');
+import sns = require('@aws-cdk/aws-sns');
+import subscriptions = require('@aws-cdk/aws-sns-subscriptions');
+import s3 = require('@aws-cdk/aws-s3');
+
+class MyApplicationStage extends Stage {
+  constructor(scope: Construct, id: string, props?: StageProps) {
+    super(scope, id, props);
+  }
+}
+
+class Fixture extends Stack {
+  constructor(scope: Construct, id: string) {
+    super(scope, id);
+    /// here
+  }
+}
