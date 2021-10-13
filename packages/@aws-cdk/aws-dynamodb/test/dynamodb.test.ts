@@ -2438,6 +2438,60 @@ describe('global', () => {
     });
   });
 
+  test('create replicas with a removalPolicy', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new Table(stack, 'Table', {
+      partitionKey: {
+        name: 'id',
+        type: AttributeType.STRING,
+      },
+      replicationRegions: [
+        'eu-west-2',
+        'eu-central-1',
+      ],
+      removalPolicy: RemovalPolicy.RETAIN,
+    });
+
+    // THEN
+    expect(stack).toHaveResource('Custom::DynamoDBReplica', {
+      Properties: {
+        TableName: {
+          Ref: 'TableCD117FA1',
+        },
+        Region: 'eu-west-2',
+      },
+      Condition: 'TableStackRegionNotEqualseuwest2A03859E7',
+      DeletionPolicy: CfnDeletionPolicy.RETAIN,
+    }, ResourcePart.CompleteDefinition);
+
+    expect(stack).toHaveResource('Custom::DynamoDBReplica', {
+      Properties: {
+        TableName: {
+          Ref: 'TableCD117FA1',
+        },
+        Region: 'eu-central-1',
+      },
+      Condition: 'TableStackRegionNotEqualseucentral199D46FC0',
+      DeletionPolicy: CfnDeletionPolicy.RETAIN,
+    }, ResourcePart.CompleteDefinition);
+
+    expect(SynthUtils.toCloudFormation(stack).Conditions).toEqual({
+      TableStackRegionNotEqualseuwest2A03859E7: {
+        'Fn::Not': [
+          { 'Fn::Equals': ['eu-west-2', { Ref: 'AWS::Region' }] },
+        ],
+      },
+      TableStackRegionNotEqualseucentral199D46FC0: {
+        'Fn::Not': [
+          { 'Fn::Equals': ['eu-central-1', { Ref: 'AWS::Region' }] },
+        ],
+      },
+    });
+  });
+
   test('grantReadData', () => {
     const stack = new Stack();
     const table = new Table(stack, 'Table', {

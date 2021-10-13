@@ -1152,7 +1152,7 @@ export class Table extends TableBase {
     }
 
     if (props.replicationRegions && props.replicationRegions.length > 0) {
-      this.createReplicaTables(props.replicationRegions, props.replicationTimeout);
+      this.createReplicaTables(props.replicationRegions, props.replicationTimeout, props.removalPolicy);
     }
   }
 
@@ -1494,7 +1494,7 @@ export class Table extends TableBase {
    *
    * @param regions regions where to create tables
    */
-  private createReplicaTables(regions: string[], timeout?: Duration) {
+  private createReplicaTables(regions: string[], timeout?: Duration, removalPolicy?: RemovalPolicy) {
     const stack = Stack.of(this);
 
     if (!Token.isUnresolved(stack.region) && regions.includes(stack.region)) {
@@ -1521,6 +1521,7 @@ export class Table extends TableBase {
       const currentRegion = new CustomResource(this, `Replica${region}`, {
         serviceToken: provider.provider.serviceToken,
         resourceType: 'Custom::DynamoDBReplica',
+        removalPolicy: removalPolicy,
         properties: {
           TableName: this.tableName,
           Region: region,
