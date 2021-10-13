@@ -4,6 +4,7 @@ import {
   HttpRouteIntegrationConfig,
   HttpMethod,
   IHttpRouteIntegration,
+  ParameterMapping,
   PayloadFormatVersion,
 } from '@aws-cdk/aws-apigatewayv2';
 
@@ -21,6 +22,13 @@ export interface HttpProxyIntegrationProps {
    * @default HttpMethod.ANY
    */
   readonly method?: HttpMethod;
+
+  /**
+   * Specifies how to transform HTTP requests before sending them to the backend
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-parameter-mapping.html
+   * @default undefined requests are sent to the backend unmodified
+   */
+  readonly parameterMapping?: ParameterMapping;
 }
 
 /**
@@ -36,6 +44,7 @@ export class HttpProxyIntegration implements IHttpRouteIntegration {
       payloadFormatVersion: PayloadFormatVersion.VERSION_1_0, // 1.0 is required and is the only supported format
       type: HttpIntegrationType.HTTP_PROXY,
       uri: this.props.url,
+      parameterMapping: this.props.parameterMapping,
     };
   }
 }
