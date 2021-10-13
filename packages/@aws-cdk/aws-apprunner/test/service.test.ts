@@ -13,7 +13,13 @@ test('create a service with ECR Public(image repository type: ECR_PUBLIC)', () =
   // WHEN
   new Service(stack, 'DemoService', {
     source: Source.fromEcrPublic({
-      imageConfiguration: { port: 8000 },
+      imageConfiguration: {
+        port: 8000,
+        environment: {
+          foo: 'bar',
+        },
+        startCommand: '/root/start-command.sh',
+      },
       imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
     }),
   });
@@ -24,6 +30,13 @@ test('create a service with ECR Public(image repository type: ECR_PUBLIC)', () =
       ImageRepository: {
         ImageConfiguration: {
           Port: '8000',
+          RuntimeEnvironmentVariables: [
+            {
+              Name: 'foo',
+              Value: 'bar',
+            },
+          ],
+          StartCommand: '/root/start-command.sh',
         },
         ImageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
         ImageRepositoryType: 'ECR_PUBLIC',
@@ -39,7 +52,13 @@ test('create a service from existing ECR repository(image repository type: ECR)'
   // WHEN
   new Service(stack, 'Service', {
     source: Source.fromEcr({
-      imageConfiguration: { port: 80 },
+      imageConfiguration: {
+        port: 80,
+        environment: {
+          foo: 'bar',
+        },
+        startCommand: '/root/start-command.sh',
+      },
       repository: ecr.Repository.fromRepositoryName(stack, 'NginxRepository', 'nginx'),
     }),
   });
@@ -74,6 +93,13 @@ test('create a service from existing ECR repository(image repository type: ECR)'
       ImageRepository: {
         ImageConfiguration: {
           Port: '80',
+          RuntimeEnvironmentVariables: [
+            {
+              Name: 'foo',
+              Value: 'bar',
+            },
+          ],
+          StartCommand: '/root/start-command.sh',
         },
         ImageIdentifier: {
           'Fn::Join': [
