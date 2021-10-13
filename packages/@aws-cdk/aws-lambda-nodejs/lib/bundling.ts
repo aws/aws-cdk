@@ -166,7 +166,7 @@ export class Bundling implements cdk.BundlingOptions {
       relativeEntryPath = relativeEntryPath.replace(/\.ts(x?)$/, '.js$1');
       if (!Bundling.tscCompiled) {
         tscCommand = [
-          // Setting explicity rootDir and outDir, so that the compiled js file always end up next ts file.
+          // Intentionally Setting rootDir and outDir, so that the compiled js file always end up next ts file.
           ...[`${options.tscRunner} --project ${tsconfig} --rootDir ./ --outDir ./`],
         ];
         Bundling.tscCompiled = true;
