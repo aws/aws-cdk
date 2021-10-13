@@ -1128,10 +1128,7 @@ test('NLB with circuit breaker', () => {
         Enable: true,
         Rollback: true,
       },
-    },
-    DeploymentController: {
-      Type: 'ECS',
-    },
+    }
   });
 });
 
