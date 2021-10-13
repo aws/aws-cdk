@@ -153,23 +153,15 @@ const httpEndpoint = new HttpApi(stack, 'HttpProxyPrivateApi', {
 ### Request Parameters
 
 Request parameter mapping allows API requests from clients to be modified before they reach backend integrations.
-To use parameter mapping, you specify API request parameters to modify, and specify how to modify the parameters. 
+Parameter mapping can be used to specify modifications to request parameters. See [Transforming API requests and
+responses](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-parameter-mapping.html).
 
-Request parameter mapping is supported through a set of helper methods.
-The following example renames a request header from header1 to header2 by generating mappings
-`append:header.header2: $request.header.header1` and `remove:header.header1: ''`:
+The following example creates a new header - `header2` - as a copy of `header1` and removes `header1`.
 
 ```ts
-const vpc = new ec2.Vpc(stack, 'VPC');
-const lb = new elbv2.ALB(stack, 'lb', { vpc });
-const listener = lb.addListener('listener', { port: 80 });
-listener.addTargets('target', {
-  port: 80,
-});
-
 const httpEndpoint = new HttpApi(stack, 'HttpProxyPrivateApi', {
   defaultIntegration: new HttpAlbIntegration({
-    listener,
+    // ...
     requestParameters: new ParameterMapping()
       .appendHeader('header2', MappingValue.header('header1'))
       .removeHeader('header1');
