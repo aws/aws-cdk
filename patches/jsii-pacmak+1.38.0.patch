@@ -1,0 +1,25 @@
+diff --git a/node_modules/jsii-pacmak/lib/builder.js b/node_modules/jsii-pacmak/lib/builder.js
+index 3d0f8b3..0d1e868 100644
+--- a/node_modules/jsii-pacmak/lib/builder.js
++++ b/node_modules/jsii-pacmak/lib/builder.js
+@@ -15,10 +15,16 @@ class OneByOneBuilder {
+         this.options = options;
+     }
+     async buildModules() {
+-        const promises = this.modules.map((module) => this.options.codeOnly
+-            ? this.generateModuleCode(module, this.options)
+-            : this.buildModule(module, this.options));
+-        await Promise.all(promises);
++        for (const module of this.modules) {
++            if (this.options.codeOnly) {
++                // eslint-disable-next-line no-await-in-loop
++                await this.generateModuleCode(module, this.options);
++            }
++            else {
++                // eslint-disable-next-line no-await-in-loop
++                await this.buildModule(module, this.options);
++            }
++        }
+     }
+     async generateModuleCode(module, options) {
+         const outputDir = this.finalOutputDir(module, options);
