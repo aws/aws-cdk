@@ -809,9 +809,13 @@ export class Service extends cdk.Resource {
 
   }
   private renderCodeConfigurationValues(props: CodeConfigurationValues): any {
+    this.environment = props.environment;
     return {
-      ...props,
+      port: props.port,
+      buildCommand: props.buildCommand,
       runtime: props.runtime.name,
+      runtimeEnvironmentVariables: this.renderEnvironmentVariables(),
+      startCommand: props.startCommand,
     };
   }
   private renderImageRepository(): any {
