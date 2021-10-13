@@ -120,4 +120,3 @@ describe('extractDependencies', () => {
     )).toThrow(/Cannot extract version for module 'unknown'/);
   });
 });
-
