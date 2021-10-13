@@ -1,4 +1,5 @@
 import * as s3_assets from '@aws-cdk/aws-s3-assets';
+import { hashValues } from './private/util';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
@@ -76,7 +77,7 @@ class CloudFormationAssetTemplate extends CloudFormationTemplate {
   public bind(scope: Construct): CloudFormationTemplateConfig {
     // If the same AssetCode is used multiple times, retain only the first instantiation.
     if (!this.asset) {
-      this.asset = new s3_assets.Asset(scope, 'Template', {
+      this.asset = new s3_assets.Asset(scope, `Template${hashValues(this.path)}`, {
         path: this.path,
         ...this.options,
       });
