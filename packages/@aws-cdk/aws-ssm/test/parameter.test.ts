@@ -28,6 +28,34 @@ test('creating a String SSM Parameter', () => {
   });
 });
 
+test('type cannot be specified as AWS_EC2_IMAGE_ID', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+
+  // THEN
+  expect(() => new ssm.StringParameter(stack, 'myParam', {
+    stringValue: 'myValue',
+    type: ssm.ParameterType.AWS_EC2_IMAGE_ID,
+  })).toThrow('The type must either be ParameterType.STRING or ParameterType.STRING_LIST. Did you mean to set dataType: ParameterDataType.AWS_EC2_IMAGE instead?');
+});
+
+test('dataType can be specified', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+
+  // WHEN
+  new ssm.StringParameter(stack, 'myParam', {
+    stringValue: 'myValue',
+    dataType: ssm.ParameterDataType.AWS_EC2_IMAGE,
+  });
+
+  // THEN
+  expect(stack).toHaveResource('AWS::SSM::Parameter', {
+    Value: 'myValue',
+    DataType: 'aws:ec2:image',
+  });
+});
+
 test('expect String SSM Parameter to have tier properly set', () => {
   // GIVEN
   const stack = new cdk.Stack();
