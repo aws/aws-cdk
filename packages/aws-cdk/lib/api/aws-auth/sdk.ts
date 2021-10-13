@@ -29,9 +29,11 @@ export interface ISDK {
   s3(): AWS.S3;
   route53(): AWS.Route53;
   ecr(): AWS.ECR;
+  ecs(): AWS.ECS;
   elbv2(): AWS.ELBv2;
   secretsManager(): AWS.SecretsManager;
   kms(): AWS.KMS;
+  stepFunctions(): AWS.StepFunctions;
 }
 
 /**
@@ -116,6 +118,10 @@ export class SDK implements ISDK {
     return this.wrapServiceErrorHandling(new AWS.ECR(this.config));
   }
 
+  public ecs(): AWS.ECS {
+    return this.wrapServiceErrorHandling(new AWS.ECS(this.config));
+  }
+
   public elbv2(): AWS.ELBv2 {
     return this.wrapServiceErrorHandling(new AWS.ELBv2(this.config));
   }
@@ -126,6 +132,10 @@ export class SDK implements ISDK {
 
   public kms(): AWS.KMS {
     return this.wrapServiceErrorHandling(new AWS.KMS(this.config));
+  }
+
+  public stepFunctions(): AWS.StepFunctions {
+    return this.wrapServiceErrorHandling(new AWS.StepFunctions(this.config));
   }
 
   public async currentAccount(): Promise<Account> {
