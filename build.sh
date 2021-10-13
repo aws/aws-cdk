@@ -93,4 +93,7 @@ if [ "$check_compat" == "true" ]; then
   /bin/bash scripts/check-api-compatibility.sh
 fi
 
+# Create the release notes for the current version. These are ephemeral and not saved in source.
+node ./scripts/create-release-notes.js
+
 touch $BUILD_INDICATOR
