@@ -48,7 +48,7 @@ export abstract class DockerImageCode {
           /**
            * If platform is undefined, we determine it from `architecture`.
            */
-          platform: arch === Architecture.ARM_64 ? DockerPlatform.ARM_64 : undefined,
+          platform: arch?.dockerPlatform,
           ...props,
         });
       },
