@@ -42,11 +42,11 @@ All other properties of `lambda.Function` are supported, see also the [AWS Lambd
 
 If `requirements.txt` or `Pipfile` exists at the entry path, the construct will handle installing
 all required modules in a [Lambda compatible Docker container](https://gallery.ecr.aws/sam/build-python3.7)
-according to the `runtime`.
+according to the `runtime` and with the Docker platform based on the target architecture of the Lambda function.
 
-Python bundles are only recreated and published when a file in a source directory has changed. 
+Python bundles are only recreated and published when a file in a source directory has changed.
 Therefore (and as a general best-practice), it is highly recommended to commit a lockfile with a
-list of all transitive dependencies and their exact versions. 
+list of all transitive dependencies and their exact versions.
 This will ensure that when any dependency version is updated, the bundle asset is recreated and uploaded.
 
 To that end, we recommend using [`pipenv`] or [`poetry`] which has lockfile support.

@@ -1,12 +1,13 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import { CloudFormation } from 'aws-sdk';
+import * as AWS from 'aws-sdk';
 import * as lambda from 'aws-sdk/clients/lambda';
 import * as stepfunctions from 'aws-sdk/clients/stepfunctions';
-import { DeployStackResult } from '../../../lib';
+import { DeployStackResult } from '../../../lib/api';
 import * as deployments from '../../../lib/api/hotswap-deployments';
 import { Template } from '../../../lib/api/util/cloudformation';
 import { testStack, TestStackArtifact } from '../../util';
-import { MockSdkProvider } from '../../util/mock-sdk';
+import { MockSdkProvider, SyncHandlerSubsetOf } from '../../util/mock-sdk';
 import { FakeCloudformationStack } from '../fake-cloudformation-stack';
 
 const STACK_NAME = 'withouterrors';
@@ -72,9 +73,9 @@ export class CfnMockProvider {
     });
   }
 
-  public setUpdateStateMachineMock(mockUpdateMachineDefinition:
-  (input: stepfunctions.UpdateStateMachineInput) =>
-  stepfunctions.UpdateStateMachineOutput) {
+  public setUpdateStateMachineMock(
+    mockUpdateMachineDefinition: (input: stepfunctions.UpdateStateMachineInput) => stepfunctions.UpdateStateMachineOutput,
+  ) {
     this.mockSdkProvider.stubStepFunctions({
       updateStateMachine: mockUpdateMachineDefinition,
     });
@@ -84,6 +85,10 @@ export class CfnMockProvider {
     this.mockSdkProvider.stubLambda({
       updateFunctionCode: mockUpdateLambdaCode,
     });
+  }
+
+  public stubEcs(stubs: SyncHandlerSubsetOf<AWS.ECS>, additionalProperties: { [key: string]: any } = {}): void {
+    this.mockSdkProvider.stubEcs(stubs, additionalProperties);
   }
 
   public tryHotswapDeployment(

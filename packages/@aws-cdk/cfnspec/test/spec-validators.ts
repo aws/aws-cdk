@@ -110,7 +110,8 @@ function validateProperties(
 
     } else {
       // eslint-disable-next-line no-console
-      console.error(`${typeName}.Properties.${name} has known type: ${JSON.stringify(property)}`);
+      console.error(`${typeName}.Properties.${name} does not declare a type.` +
+        `Property definition is: ${JSON.stringify(property, undefined, 2)}`);
       expect(false).toBeTruthy();
     }
 
