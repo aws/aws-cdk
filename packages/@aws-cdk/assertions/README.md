@@ -21,20 +21,20 @@ The `Template` class includes a set of methods for writing assertions against Cl
 
 To create `Template` from CDK stack, start off with:
 
-```ts
+```ts nofixture
 import { Stack } from '@aws-cdk/core';
 import { Template } from '@aws-cdk/assertions';
 
-const stack = new Stack(...)
-...
-const assert = Template.fromStack(stack);
+const stack = new Stack(/* ... */);
+// ...
+const template = Template.fromStack(stack);
 ```
 
 Alternatively, assertions can be run on an existing CloudFormation template -
 
-```ts
-const template = fs.readFileSync('/path/to/template/file');
-const assert = Template.fromString(template);
+```ts fixture=init
+const templateJson = '{ "Resources": ... }'; /* The CloudFormation template as JSON serialized string. */
+const template = Template.fromString(templateJson);
 ```
 
 ## Full Template Match
@@ -43,26 +43,32 @@ The simplest assertion would be to assert that the template matches a given
 template.
 
 ```ts
-assert.templateMatches({
+const expected = {
   Resources: {
     Type: 'Foo::Bar',
     Properties: {
       Baz: 'Qux',
     },
   },
-});
+};
+
+template.templateMatches(expected);
 ```
 
-The `Template` class also supports [snapshot
-testing](https://jestjs.io/docs/snapshot-testing) using jest.
+By default, the `templateMatches()` API will use the an 'object-like' comparison,
+which means that it will allow for the actual template to be a superset of the
+given expectation. See [Special Matchers](#special-matchers) for details on how
+to change this.
 
-```ts
-// using jest
-expect(Template.fromStack(stack)).toMatchSnapshot();
-```
+Snapshot testing is a common technique to store a snapshot of the output and
+compare it during future changes. Since CloudFormation templates are human readable,
+they are a good target for åßsnapshot testing.
 
-For non-javascript languages, the `toJSON()` can be called to get an in-memory object
-of the template.
+The `toJSON()` method on the `Template` can be used to produce a well formatted JSON
+of the CloudFormation template that can be used as a snapshot.
+
+See [Snapshot Testing in Jest](https://jestjs.io/docs/snapshot-testing) and [Snapshot
+Testing in Java](https://json-snapshot.github.io/).
 
 ## Counting Resources
 
@@ -70,7 +76,7 @@ This module allows asserting the number of resources of a specific type found
 in a template.
 
 ```ts
-assert.resourceCountIs('Foo::Bar', 2);
+template.resourceCountIs('Foo::Bar', 2);
 ```
 
 ## Resource Matching & Retrieval
@@ -82,21 +88,23 @@ The following code asserts that the `Properties` section of a resource of type
 `Foo::Bar` contains the specified properties -
 
 ```ts
-assert.hasResourceProperties('Foo::Bar', {
+const expected = {
   Foo: 'Bar',
   Baz: 5,
   Qux: [ 'Waldo', 'Fred' ],
-});
+};
+template.hasResourceProperties('Foo::Bar', expected);
 ```
 
 Alternatively, if you would like to assert the entire resource definition, you
 can use the `hasResource()` API.
 
 ```ts
-assert.hasResource('Foo::Bar', {
+const expected = {
   Properties: { Foo: 'Bar' },
   DependsOn: [ 'Waldo', 'Fred' ],
-});
+};
+template.hasResource('Foo::Bar', expected);
 ```
 
 Beyond assertions, the module provides APIs to retrieve matching resources.
@@ -114,28 +122,31 @@ that matches specific properties. The following code asserts that a template con
 an Output with a `logicalId` of `Foo` and the specified properties -
 
 ```ts
-assert.hasOutput('Foo', { 
+const expected = { 
   Value: 'Bar',
   Export: { Name: 'ExportBaz' }, 
-});
+};
+template.hasOutput('Foo', expected);
 ```
 
 If you want to match against all Outputs in the template, use `*` as the `logicalId`.
 
 ```ts
-assert.hasOutput('*', {
+const expected = {
   Value: 'Bar',
   Export: { Name: 'ExportBaz' },
-});
+};
+template.hasOutput('*', expected);
 ```
 
 `findOutputs()` will return a set of outputs that match the `logicalId` and `props`,
 and you can use the `'*'` special case as well.
 
 ```ts
-const result = assert.findOutputs('*', {
+const expected = {
   Value: 'Fred',
-});
+};
+const result = template.findOutputs('*', expected);
 expect(result.Foo).toEqual({ Value: 'Fred', Description: 'FooFred' });
 expect(result.Bar).toEqual({ Value: 'Fred', Description: 'BarFred' });
 ```
@@ -175,18 +186,20 @@ level, the list of keys in the target is a subset of the provided pattern.
 // }
 
 // The following will NOT throw an assertion error
-assert.hasResourceProperties('Foo::Bar', {
+const expected = {
   Fred: Match.objectLike({
     Wobble: 'Flob',
   }),
-});
+};
+template.hasResourceProperties('Foo::Bar', expected);
 
 // The following will throw an assertion error
-assert.hasResourceProperties('Foo::Bar', {
+const unexpected = {
   Fred: Match.objectLike({
     Brew: 'Coffee',
-  })
-});
+  }),
+}
+template.hasResourceProperties('Foo::Bar', unexpected);
 ```
 
 The `Match.objectEquals()` API can be used to assert a target as a deep exact
@@ -214,18 +227,20 @@ or outside of any matchers.
 // }
 
 // The following will NOT throw an assertion error
-assert.hasResourceProperties('Foo::Bar', {
+const expected = {
   Fred: Match.objectLike({
     Bob: Match.absent(),
   }),
-});
+};
+template.hasResourceProperties('Foo::Bar', expected);
 
 // The following will throw an assertion error
-assert.hasResourceProperties('Foo::Bar', {
+const unexpected = {
   Fred: Match.objectLike({
     Wobble: Match.absent(),
   }),
-});
+};
+template.hasResourceProperties('Foo::Bar', unexpected);
 ```
 
 The `Match.anyValue()` matcher can be used to specify that a specific value should be found
@@ -250,18 +265,20 @@ This matcher can be combined with any of the other matchers.
 // }
 
 // The following will NOT throw an assertion error
-assert.hasResourceProperties('Foo::Bar', {
+const expected = {
   Fred: {
     Wobble: [Match.anyValue(), "Flip"],
   },
-});
+};
+template.hasResourceProperties('Foo::Bar', expected);
 
 // The following will throw an assertion error
-assert.hasResourceProperties('Foo::Bar', {
+const unexpected = {
   Fred: {
     Wimble: Match.anyValue(),
   },
-});
+};
+template.hasResourceProperties('Foo::Bar', unexpected);
 ```
 
 ### Array Matchers
@@ -284,14 +301,16 @@ This API will perform subset match on the target.
 // }
 
 // The following will NOT throw an assertion error
-assert.hasResourceProperties('Foo::Bar', {
+const expected = {
   Fred: Match.arrayWith(['Flob']),
-});
+};
+template.hasResourceProperties('Foo::Bar', expected);
 
 // The following will throw an assertion error
-assert.hasResourceProperties('Foo::Bar', Match.objectLike({
-  Fred: Match.arrayWith(['Wobble']);
-}});
+const unexpected = Match.objectLike({
+  Fred: Match.arrayWith(['Wobble']),
+});
+template.hasResourceProperties('Foo::Bar', unexpected);
 ```
 
 *Note:* The list of items in the pattern array should be in order as they appear in the
@@ -319,14 +338,16 @@ not match the pattern specified.
 // }
 
 // The following will NOT throw an assertion error
-assert.hasResourceProperties('Foo::Bar', {
+const expected = {
   Fred: Match.not(['Flob']),
-});
+};
+template.hasResourceProperties('Foo::Bar', expected);
 
 // The following will throw an assertion error
-assert.hasResourceProperties('Foo::Bar', Match.objectLike({
-  Fred: Match.not(['Flob', 'Cat']);
-}});
+const unexpected = Match.objectLike({
+  Fred: Match.not(['Flob', 'Cat']),
+});
+template.hasResourceProperties('Foo::Bar', unexpected);
 ```
 
 ### Serialized JSON
@@ -353,18 +374,20 @@ The `Match.serializedJson()` matcher allows deep matching within a stringified J
 // }
 
 // The following will NOT throw an assertion error
-assert.hasResourceProperties('Foo::Bar', {
+const expected = {
   Baz: Match.serializedJson({
     Fred: Match.arrayWith(["Waldo"]),
   }),
-});
+};
+template.hasResourceProperties('Foo::Bar', expected);
 
 // The following will throw an assertion error
-assert.hasResourceProperties('Foo::Bar', {
+const unexpected = {
   Baz: Match.serializedJson({
     Fred: ["Waldo", "Johnny"],
   }),
-});
+};
+template.hasResourceProperties('Foo::Bar', unexpected);
 ```
 
 [Pipeline BuildSpec]: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codebuild-project-source.html#cfn-codebuild-project-source-buildspec
@@ -392,37 +415,12 @@ matching resource.
 
 const fredCapture = new Capture();
 const waldoCapture = new Capture();
-assert.hasResourceProperties('Foo::Bar', {
+const expected = {
   Fred: fredCapture,
   Waldo: ["Qix", waldoCapture],
-});
+}
+template.hasResourceProperties('Foo::Bar', expected);
 
 fredCapture.asArray(); // returns ["Flob", "Cat"]
 waldoCapture.asString(); // returns "Qux"
-```
-
-## Strongly typed languages
-
-Some of the APIs documented above, such as `templateMatches()` and
-`hasResourceProperties()` accept fluently an arbitrary JSON (like) structure 
-its parameter.
-This fluency is available only in dynamically typed languages like javascript
-and Python.
-
-For strongly typed languages, like Java, you can achieve similar fluency using
-any popular JSON deserializer. The following Java example uses `Gson` -
-
-```java
-// In Java, using text blocks and Gson
-import com.google.gson.Gson;
-
-String json = """
-  {
-    "Foo": "Bar",
-    "Baz": 5,
-    "Qux": [ "Waldo", "Fred" ],
-  } """;
-
-Map expected = new Gson().fromJson(json, Map.class);
-assert.hasResourceProperties("Foo::Bar", expected);
 ```

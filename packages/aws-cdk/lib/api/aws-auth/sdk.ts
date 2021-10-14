@@ -29,6 +29,7 @@ export interface ISDK {
   s3(): AWS.S3;
   route53(): AWS.Route53;
   ecr(): AWS.ECR;
+  ecs(): AWS.ECS;
   elbv2(): AWS.ELBv2;
   secretsManager(): AWS.SecretsManager;
   kms(): AWS.KMS;
@@ -115,6 +116,10 @@ export class SDK implements ISDK {
 
   public ecr(): AWS.ECR {
     return this.wrapServiceErrorHandling(new AWS.ECR(this.config));
+  }
+
+  public ecs(): AWS.ECS {
+    return this.wrapServiceErrorHandling(new AWS.ECS(this.config));
   }
 
   public elbv2(): AWS.ELBv2 {

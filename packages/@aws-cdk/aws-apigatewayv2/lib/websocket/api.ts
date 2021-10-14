@@ -21,7 +21,7 @@ export interface IWebSocketApi extends IApi {
  */
 export interface WebSocketApiProps {
   /**
-   * Name for the WebSocket API resoruce
+   * Name for the WebSocket API resource
    * @default - id of the WebSocketApi construct.
    */
   readonly apiName?: string;

@@ -4,6 +4,7 @@ import { CloudFormation } from 'aws-sdk';
 import { ISDK, Mode, SdkProvider } from './aws-auth';
 import { DeployStackResult } from './deploy-stack';
 import { ChangeHotswapImpact, ChangeHotswapResult, HotswapOperation, ListStackResources, HotswappableChangeCandidate } from './hotswap/common';
+import { isHotswappableEcsServiceChange } from './hotswap/ecs-services';
 import { EvaluateCloudFormationTemplate } from './hotswap/evaluate-cloudformation-template';
 import { isHotswappableLambdaFunctionChange } from './hotswap/lambda-functions';
 import { isHotswappableStateMachineChange } from './hotswap/stepfunctions-state-machines';
@@ -73,6 +74,7 @@ async function findAllHotswappableChanges(
       promises.push([
         isHotswappableLambdaFunctionChange(logicalId, resourceHotswapEvaluation, evaluateCfnTemplate),
         isHotswappableStateMachineChange(logicalId, resourceHotswapEvaluation, evaluateCfnTemplate),
+        isHotswappableEcsServiceChange(logicalId, resourceHotswapEvaluation, evaluateCfnTemplate),
       ]);
     }
   });
