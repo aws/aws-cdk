@@ -109,7 +109,10 @@ function validateProperties(
       }
 
     } else {
-      expect(false).toBeTruthy(); //`${typeName}.Properties.${name} has known type`
+      // eslint-disable-next-line no-console
+      console.error(`${typeName}.Properties.${name} does not declare a type.` +
+        `Property definition is: ${JSON.stringify(property, undefined, 2)}`);
+      expect(false).toBeTruthy();
     }
 
     expect(without(Object.keys(property), expectedKeys)).toEqual([]);
