@@ -85,6 +85,9 @@ describe('container definition', () => {
         secrets: {
           SECRET: ecs.Secret.fromSecretsManager(secret),
         },
+        systemControls: [
+          { namespace: 'SomeNamespace', value: 'SomeValue' },
+        ],
       });
 
       // THEN
@@ -218,6 +221,12 @@ describe('container definition', () => {
             ],
             StartTimeout: 2,
             StopTimeout: 5,
+            SystemControls: [
+              {
+                Namespace: 'SomeNamespace',
+                Value: 'SomeValue',
+              },
+            ],
             User: 'rootUser',
             WorkingDirectory: 'a/b/c',
           },
