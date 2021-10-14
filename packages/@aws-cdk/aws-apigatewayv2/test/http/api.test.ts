@@ -1,9 +1,10 @@
 import { Match, Template } from '@aws-cdk/assertions';
+import { Certificate } from '@aws-cdk/aws-certificatemanager';
 import { Metric } from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import { Duration, Stack } from '@aws-cdk/core';
 import {
-  CorsHttpMethod,
+  CorsHttpMethod, DomainName,
   HttpApi, HttpAuthorizer, HttpIntegrationType, HttpMethod, HttpRouteAuthorizerBindOptions, HttpRouteAuthorizerConfig,
   HttpRouteIntegrationBindOptions, HttpRouteIntegrationConfig, IHttpRouteAuthorizer, IHttpRouteIntegration, HttpNoneAuthorizer, PayloadFormatVersion,
 } from '../../lib';
@@ -372,6 +373,27 @@ describe('HttpApi', () => {
     const api = HttpApi.fromHttpApiAttributes(stack, 'imported', { httpApiId: 'api-1234' });
 
     expect(() => api.apiEndpoint).toThrow(/apiEndpoint is not configured/);
+  });
+
+  test('domainUrl can be retrieved for default stage', () => {
+    const stack = new Stack();
+    const dn = new DomainName(stack, 'DN', {
+      domainName: 'example.com',
+      certificate: Certificate.fromCertificateArn(stack, 'cert', 'arn:aws:acm:us-east-1:111111111111:certificate'),
+    });
+
+    const api = new HttpApi(stack, 'Api', {
+      createDefaultStage: true,
+      defaultDomainMapping: {
+        domainName: dn,
+      },
+    });
+
+    expect(stack.resolve(api.defaultStage?.domainUrl)).toEqual({
+      'Fn::Join': ['', [
+        'https://', { Ref: 'DNFDC76583' }, '/',
+      ]],
+    });
   });
 
 
