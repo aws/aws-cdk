@@ -15,7 +15,7 @@ import { Construct as CoreConstruct } from '@aws-cdk/core';
 /**
  * platform supported by docker
  */
- export class DockerPlatform {
+export class DockerPlatform {
   /**
    * 64 bit architecture with x86 instruction set.
    */
@@ -31,12 +31,12 @@ import { Construct as CoreConstruct } from '@aws-cdk/core';
    * Use this if the platform name is not yet supported by the CDK.
    * @param [platform=linux/amd64] the platform to use for docker build.
    */
-   public static custom(platform?: string) {
+  public static custom(platform?: string) {
     return new DockerPlatform(platform ?? 'linux/amd64');
   }
 
   /**
-   * 
+   *
    * @param platform The platform to use for docker build.
    */
   private constructor(public readonly platform: string) {}
