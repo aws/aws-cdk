@@ -12,19 +12,34 @@ import { FingerprintOptions, FollowMode, IAsset } from '@aws-cdk/assets';
 // eslint-disable-next-line no-duplicate-imports, import/order
 import { Construct as CoreConstruct } from '@aws-cdk/core';
 
-
 /**
- * options for the --platform flag
+ * platform supported by docker
  */
-export enum DockerPlatform {
+ export class DockerPlatform {
   /**
-   * 'linux/arm64' platform.
+   * 64 bit architecture with x86 instruction set.
    */
-  ARM_64 = 'linux/arm64',
+  public static readonly X86_64 = new DockerPlatform('linux/amd64');
+
   /**
-   * 'linux/amd64' platform.
+   * 64 bit architecture with the ARM instruction set.
    */
-  AMD_64 = 'linux/amd64',
+  public static readonly ARM_64 = new DockerPlatform('linux/arm64');
+
+  /**
+   * Used to specify a custom platform name.
+   * Use this if the platform name is not yet supported by the CDK.
+   * @param [platform=linux/amd64] the platform to use for docker build.
+   */
+   public static custom(platform?: string) {
+    return new DockerPlatform(platform ?? 'linux/amd64');
+  }
+
+  /**
+   * 
+   * @param platform The platform to use for docker build.
+   */
+  private constructor(public readonly platform: string) {}
 }
 
 /**
@@ -261,7 +276,7 @@ export class DockerImageAsset extends CoreConstruct implements IAsset {
       dockerBuildTarget: props.target,
       dockerFile: props.file,
       sourceHash: staging.assetHash,
-      platform: props.platform,
+      platform: props.platform?.platform,
     });
 
     this.repository = ecr.Repository.fromRepositoryName(this, 'Repository', location.repositoryName);

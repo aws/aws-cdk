@@ -50,7 +50,7 @@
                 {
                   "Ref": "AWS::URLSuffix"
                 },
-                "/aws-cdk/assets:53a595b247ba16efa3124fb029e5b39ce1c74144d6e7e873690826db269530f5"
+                "/aws-cdk/assets:166017f6f6f219800dee266c149e208fe18dea1788d822b1783afbc008c25db7"
               ]
             ]
           }
