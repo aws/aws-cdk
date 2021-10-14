@@ -93,4 +93,11 @@ if [ "$check_compat" == "true" ]; then
   /bin/bash scripts/check-api-compatibility.sh
 fi
 
+# Create the release notes for the current version. These are ephemeral and not saved in source.
+# Skip this step for a "bump candidate" build, where a new, fake version number has been created
+# without any corresponding changelog entries.
+if ! ${BUMP_CANDIDATE:-false}; then
+    node ./scripts/create-release-notes.js
+fi
+
 touch $BUILD_INDICATOR
