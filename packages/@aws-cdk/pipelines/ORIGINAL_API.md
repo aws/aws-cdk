@@ -126,8 +126,8 @@ stage.addAction(new pipelines.ManualApprovalAction({
 Becomes:
 
 ```ts
-const stage = new 
-pipeline.addStage(..., {
+const stage = new MyApplicationStage(this, 'MyApplication');
+pipeline.addStage(stage, {
   pre: [
     new pipelines.ManualApprovalStep('ManualApproval'),
   ],
@@ -145,7 +145,7 @@ For example, specifying an automated approval after a stage is deployed in the f
 
 ```ts
 const stage = pipeline.addApplicationStage(...);
-stage.addActions(new ShellScriptAction({
+stage.addActions(new pipelines.ShellScriptAction({
   actionName: 'MyValidation',
   commands: ['curl -Ssf $VAR'],
   useOutputs: {
@@ -162,7 +162,7 @@ Becomes:
 const stage = new MyApplicationStage(this, 'MyApplication');
 pipeline.addStage(stage, {
   post: [
-    new CodeBuildStep('MyValidation', {
+    new pipelines.CodeBuildStep('MyValidation', {
       commands: ['curl -Ssf $VAR'],
       envFromCfnOutput: {
         VAR: stage.cfnOutput,
@@ -189,7 +189,7 @@ const stage = new MyApplicationStage(this, 'MyApplication');
 pipeline.addStage(stage, {
   stackSteps: [{
     stack: stage.stack1,
-    changeSet: [new ManualApprovalStep('ChangeSet Approval')],
+    changeSet: [new pipelines.ManualApprovalStep('ChangeSet Approval')],
   }],
 });
 ```
@@ -208,7 +208,6 @@ artifacts:
 
 ```ts
 import { Construct, Stage, Stack, StackProps, StageProps } from '@aws-cdk/core';
-import { CdkPipeline } from '@aws-cdk/pipelines';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 
 /**
@@ -224,17 +223,17 @@ class MyPipelineStack extends Stack {
     const pipeline = new pipelines.CdkPipeline(this, 'Pipeline', {
       cloudAssemblyArtifact,
 
-      sourceAction: new codepipeline_actions.GitHubSourceAction({
+      sourceAction: new cpactions.GitHubSourceAction({
         actionName: 'GitHub',
         output: sourceArtifact,
-        oauthToken: SecretValue.secretsManager('GITHUB_TOKEN_NAME'),
+        oauthToken: cdk.SecretValue.secretsManager('GITHUB_TOKEN_NAME'),
         // Replace these with your actual GitHub project name
         owner: 'OWNER',
         repo: 'REPO',
         branch: 'main', // default: 'master'
       }),
 
-      synthAction: SimpleSynthAction.standardNpmSynth({
+      synthAction: pipelines.SimpleSynthAction.standardNpmSynth({
         sourceArtifact,
         cloudAssemblyArtifact,
 
@@ -292,21 +291,21 @@ class MyPipelineStack extends Stack {
     const sourceArtifact = new codepipeline.Artifact();
     const cloudAssemblyArtifact = new codepipeline.Artifact();
 
-    const pipeline = new CdkPipeline(this, 'Pipeline', {
+    const pipeline = new pipelines.CdkPipeline(this, 'Pipeline', {
       pipelineName: 'MyAppPipeline',
       cloudAssemblyArtifact,
 
-      sourceAction: new codepipeline_actions.GitHubSourceAction({
+      sourceAction: new cpactions.GitHubSourceAction({
         actionName: 'GitHub',
         output: sourceArtifact,
-        oauthToken: SecretValue.secretsManager('GITHUB_TOKEN_NAME'),
+        oauthToken: cdk.SecretValue.secretsManager('GITHUB_TOKEN_NAME'),
         // Replace these with your actual GitHub project name
         owner: 'OWNER',
         repo: 'REPO',
         branch: 'main', // default: 'master'
       }),
 
-      synthAction: SimpleSynthAction.standardNpmSynth({
+      synthAction: pipelines.SimpleSynthAction.standardNpmSynth({
         sourceArtifact,
         cloudAssemblyArtifact,
 
@@ -334,7 +333,7 @@ If you prefer more control over the underlying CodePipeline object, you can
 create one yourself, including custom Source and Build stages:
 
 ```ts
-const codePipeline = new cp.Pipeline(pipelineStack, 'CodePipeline', {
+const codePipeline = new codepipeline.Pipeline(pipelineStack, 'CodePipeline', {
   stages: [
     {
       stageName: 'CustomSource',
@@ -348,7 +347,7 @@ const codePipeline = new cp.Pipeline(pipelineStack, 'CodePipeline', {
 });
 
 const app = new App();
-const cdkPipeline = new CdkPipeline(app, 'CdkPipeline', {
+const cdkPipeline = new pipelines.CdkPipeline(app, 'CdkPipeline', {
   codePipeline,
   cloudAssemblyArtifact,
 });
@@ -378,9 +377,9 @@ using these, the source repository does not need to have a `buildspec.yml`. An e
 of using `SimpleSynthAction` to run a Maven build followed by a CDK synth:
 
 ```ts
-const pipeline = new CdkPipeline(this, 'Pipeline', {
+const pipeline = new pipelines.CdkPipeline(this, 'Pipeline', {
   // ...
-  synthAction: new SimpleSynthAction({
+  synthAction: new pipelines.SimpleSynthAction({
     sourceArtifact,
     cloudAssemblyArtifact,
     installCommands: ['npm install -g aws-cdk'],
@@ -414,16 +413,16 @@ from the CA repo instead of NPM.
 class MyPipelineStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     ...
-    const pipeline = new CdkPipeline(this, 'Pipeline', {
+    const pipeline = new pipelines.CdkPipeline(this, 'Pipeline', {
       ...
-      synthAction: SimpleSynthAction.standardNpmSynth({
+      synthAction: pipelines.SimpleSynthAction.standardNpmSynth({
         sourceArtifact,
         cloudAssemblyArtifact,
 
         // Use this to customize and a permissions required for the build
         // and synth
         rolePolicyStatements: [
-          new PolicyStatement({
+          new iam.PolicyStatement({
             actions: ['codeartifact:*', 'sts:GetServiceBearerToken'],
             resources: ['arn:codeartifact:repo:arn'],
           }),
@@ -495,7 +494,7 @@ const testingStage = pipeline.addApplicationStage(new MyApplication(this, 'Testi
 // Add a action -- in this case, a Manual Approval action
 // (for illustration purposes: testingStage.addManualApprovalAction() is a
 // convenience shorthand that does the same)
-testingStage.addAction(new ManualApprovalAction({
+testingStage.addAction(new pipelines.ManualApprovalAction({
   actionName: 'ManualApproval',
   runOrder: testingStage.nextSequentialRunOrder(),
 }));
@@ -540,7 +539,7 @@ In its simplest form, adding validation actions looks like this:
 ```ts
 const stage = pipeline.addApplicationStage(new MyApplication(/* ... */));
 
-stage.addActions(new ShellScriptAction({
+stage.addActions(new pipelines.ShellScriptAction({
   actionName: 'MyValidation',
   commands: ['curl -Ssf https://my.webservice.com/'],
   // Optionally specify a VPC if, for example, the service is deployed with a private load balancer
@@ -581,7 +580,7 @@ const lbApp = new MyLbApplication(this, 'MyApp', {
   env: { /* ... */ }
 });
 const stage = pipeline.addApplicationStage(lbApp);
-stage.addActions(new ShellScriptAction({
+stage.addActions(new pipelines.ShellScriptAction({
   // ...
   useOutputs: {
     // When the test is executed, this will make $URL contain the
@@ -612,7 +611,7 @@ two ways.
 Either pass additional policy statements in the `rolePolicyStatements` property:
 
 ```ts
-new ShellScriptAction({
+new pipelines.ShellScriptAction({
   // ...
   rolePolicyStatements: [
     new iam.PolicyStatement({
@@ -626,7 +625,7 @@ new ShellScriptAction({
 The Action can also be used as a Grantable after having been added to a Pipeline:
 
 ```ts
-const action = new ShellScriptAction({ /* ... */ });
+const action = new pipelines.ShellScriptAction({ /* ... */ });
 pipeline.addStage('Test').addActions(action);
 
 bucket.grantRead(action);
@@ -641,11 +640,11 @@ if they are executable shell scripts themselves). Pass the `sourceArtifact`:
 ```ts
 const sourceArtifact = new codepipeline.Artifact();
 
-const pipeline = new CdkPipeline(this, 'Pipeline', {
+const pipeline = new pipelines.CdkPipeline(this, 'Pipeline', {
   // ...
 });
 
-const validationAction = new ShellScriptAction({
+const validationAction = new pipelines.ShellScriptAction({
   actionName: 'TestUsingSourceArtifact',
   additionalArtifacts: [sourceArtifact],
 
@@ -669,8 +668,8 @@ in the `ShellScriptAction`'s `additionalArtifacts`:
 const cloudAssemblyArtifact = new codepipeline.Artifact('CloudAsm');
 const integTestsArtifact = new codepipeline.Artifact('IntegTests');
 
-const pipeline = new CdkPipeline(this, 'Pipeline', {
-  synthAction: SimpleSynthAction.standardNpmSynth({
+const pipeline = new pipelines.CdkPipeline(this, 'Pipeline', {
+  synthAction: pipelines.SimpleSynthAction.standardNpmSynth({
     sourceArtifact,
     cloudAssemblyArtifact,
     buildCommands: ['npm run build'],
@@ -684,7 +683,7 @@ const pipeline = new CdkPipeline(this, 'Pipeline', {
   // ...
 });
 
-const validationAction = new ShellScriptAction({
+const validationAction = new pipelines.ShellScriptAction({
   actionName: 'TestUsingBuildArtifact',
   additionalArtifacts: [integTestsArtifact],
   // 'test.js' was produced from 'test/test.ts' during the synth step
@@ -733,12 +732,11 @@ create an SNS Topic, subscribe your own email address, and pass it in via
 ```ts
 import * as sns from '@aws-cdk/aws-sns';
 import * as subscriptions from '@aws-cdk/aws-sns-subscriptions';
-import * as pipelines from '@aws-cdk/pipelines';
 
 const topic = new sns.Topic(this, 'SecurityChangesTopic');
 topic.addSubscription(new subscriptions.EmailSubscription('test@email.com'));
 
-const pipeline = new CdkPipeline(app, 'Pipeline', { /* ... */ });
+const pipeline = new pipelines.CdkPipeline(app, 'Pipeline', { /* ... */ });
 const stage = pipeline.addApplicationStage(new MyApplication(this, 'PreProd'), {
   confirmBroadeningPermissions: true,
   securityNotificationTopic: topic,
