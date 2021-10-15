@@ -568,6 +568,8 @@ export abstract class BaseService extends Resource
    *
    * @example
    *
+   * declare const listener: elbv2.ApplicationListener;
+   * declare const service: ecs.BaseService;
    * listener.addTargets('ECS', {
    *   port: 80,
    *   targets: [service.loadBalancerTarget({
@@ -603,6 +605,8 @@ export abstract class BaseService extends Resource
    *
    * @example
    *
+   * declare const listener: elbv2.ApplicationListener;
+   * declare const service: ecs.BaseService;
    * service.registerLoadBalancerTargets(
    *   {
    *     containerName: 'web',

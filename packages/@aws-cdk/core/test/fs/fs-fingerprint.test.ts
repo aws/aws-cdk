@@ -178,4 +178,22 @@ describe('fs fingerprint', () => {
 
     });
   });
+
+  test('normalizes relative path', () => {
+    // Simulate a Windows path.relative()
+    const originalPathRelative = path.relative;
+    const pathRelativeSpy = jest.spyOn(path, 'relative').mockImplementation((from: string, to: string): string => {
+      return originalPathRelative(from, to).replace(/\//g, '\\');
+    });
+
+    const hash1 = FileSystem.fingerprint(path.join(__dirname, 'fixtures', 'test1'));
+
+    // Restore Linux behavior
+    pathRelativeSpy.mockRestore();
+
+    const hash2 = FileSystem.fingerprint(path.join(__dirname, 'fixtures', 'test1'));
+
+    // Relative paths are normalized
+    expect(hash1).toEqual(hash2);
+  });
 });
