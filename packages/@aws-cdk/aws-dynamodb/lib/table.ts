@@ -242,7 +242,7 @@ export interface TableOptions extends SchemaOptions {
    * at a time. CDK overcomes this limitation by waiting for replication to
    * finish before starting new replicationRegion.
    *
-   * @see <a href="https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dynamodb-globaltable.html#cfn-dynamodb-globaltable-replicas">CloudFormation Documentation</a>
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dynamodb-globaltable.html#cfn-dynamodb-globaltable-replicas
    * @default true
    */
   readonly waitForReplicationToFinish?: boolean;
