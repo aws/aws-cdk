@@ -150,24 +150,24 @@ export class Bundling implements cdk.BundlingOptions {
 
   private createBundlingCommand(options: BundlingCommandOptions): string {
     const pathJoin = osPathJoin(options.osPlatform);
-    let tscCommand: string[] = [];
+    let tscCommand: string = '';
     let relativeEntryPath = this.relativeEntryPath;
 
     if (this.props.preCompilation) {
-      const tsconfig = this.relativeTsconfigPath ?
-        pathJoin(options.inputDir, this.relativeTsconfigPath) :
-        findUp('tsconfig.json', path.dirname(this.props.entry));
 
+      let tsconfig = this.relativeTsconfigPath;
       if (!tsconfig) {
-        throw new Error('Unable to find tsconfig, please specify the prop: tsconfig');
+        const findConfig = findUp('tsconfig.json', path.dirname(this.props.entry));
+        if (!findConfig) {
+          throw new Error('Cannot find a tsconfig.json, please specify the prop: tsconfig');
+        }
+        tsconfig = path.relative(this.projectRoot, findConfig);
       }
 
       relativeEntryPath = relativeEntryPath.replace(/\.ts(x?)$/, '.js$1');
       if (!Bundling.tscCompiled) {
-        tscCommand = [
-          // Intentionally Setting rootDir and outDir, so that the compiled js file always end up next ts file.
-          ...[`${options.tscRunner} --project ${tsconfig} --rootDir ./ --outDir ./`],
-        ];
+        // Intentionally Setting rootDir and outDir, so that the compiled js file always end up next ts file.
+        tscCommand = `${options.tscRunner} --project ${pathJoin(options.inputDir, tsconfig)} --rootDir ./ --outDir ./`;
         Bundling.tscCompiled = true;
       }
     }
@@ -228,7 +228,7 @@ export class Bundling implements cdk.BundlingOptions {
 
     return chain([
       ...this.props.commandHooks?.beforeBundling(options.inputDir, options.outputDir) ?? [],
-      tscCommand.join(' '),
+      tscCommand,
       esbuildCommand.join(' '),
       ...(this.props.nodeModules && this.props.commandHooks?.beforeInstall(options.inputDir, options.outputDir)) ?? [],
       depsCommand,

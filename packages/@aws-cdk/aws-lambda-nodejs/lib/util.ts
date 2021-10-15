@@ -110,4 +110,3 @@ export function extractDependencies(pkgPath: string, modules: string[]): { [key:
 
   return dependencies;
 }
-

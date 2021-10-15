@@ -613,12 +613,12 @@ test('esbuild bundling with pre compilations ( Should skip preCompilation as alr
 
 test('esbuild bundling with pre compilations with undefined tsconfig ( Should find in root directory )', () => {
   Bundling.clearTscCompilationCache();
-  jest.spyOn(util, 'findUp').mockReturnValueOnce('/asset-input/lib/custom-tsconfig.ts');
+  const packageLock = path.join(__dirname, '..', 'package-lock.json');
 
   Bundling.bundle({
-    entry,
-    projectRoot,
-    depsLockFilePath,
+    entry: __filename.replace('.js', '.ts'),
+    projectRoot: path.dirname(packageLock),
+    depsLockFilePath: packageLock,
     runtime: Runtime.NODEJS_14_X,
     forceDockerBundling: true,
     preCompilation: true,
@@ -626,14 +626,14 @@ test('esbuild bundling with pre compilations with undefined tsconfig ( Should fi
   });
 
   // Correctly bundles with esbuild
-  expect(Code.fromAsset).toHaveBeenCalledWith(path.dirname(depsLockFilePath), {
+  expect(Code.fromAsset).toHaveBeenCalledWith(path.dirname(packageLock), {
     assetHashType: AssetHashType.OUTPUT,
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',
         [
-          'tsc --project /asset-input/lib/custom-tsconfig.ts --rootDir ./ --outDir ./ &&',
-          'esbuild --bundle \"/asset-input/lib/handler.js\" --target=node14 --platform=node --outfile=\"/asset-output/index.js\"',
+          'tsc --project /asset-input/tsconfig.json --rootDir ./ --outDir ./ &&',
+          'esbuild --bundle \"/asset-input/test/bundling.test.js\" --target=node14 --platform=node --outfile=\"/asset-output/index.js\"',
           '--external:aws-sdk',
         ].join(' '),
       ],
@@ -652,6 +652,6 @@ test('esbuild bundling with pre compilations and undefined tsconfig ( Should thr
       preCompilation: true,
       architecture: Architecture.X86_64,
     });
-  }).toThrow('Unable to find tsconfig, please specify the prop: tsconfig');
+  }).toThrow('Cannot find a tsconfig.json, please specify the prop: tsconfig');
 
 });
