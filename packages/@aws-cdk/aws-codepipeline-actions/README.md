@@ -243,6 +243,8 @@ and your Pipeline will not react to changes in the Bucket.
 You can do it through the CDK:
 
 ```ts
+import * as cloudtrail from '@aws-cdk/aws-cloudtrail';
+
 declare const sourceBucket: s3.Bucket;
 const sourceOutput = new codepipeline.Artifact();
 const key = 'some/key.zip';
@@ -295,6 +297,8 @@ new codepipeline_actions.CodeBuildAction({
 To use an ECR Repository as a source in a Pipeline:
 
 ```ts
+import * as ecr from '@aws-cdk/aws-ecr';
+
 declare const ecrRepository: ecr.Repository;
 const pipeline = new codepipeline.Pipeline(this, 'MyPipeline');
 const sourceOutput = new codepipeline.Artifact();
@@ -313,6 +317,8 @@ pipeline.addStage({
 The ECR source action emits variables:
 
 ```ts
+import * as ecr from '@aws-cdk/aws-ecr';
+
 const sourceOutput = new codepipeline.Artifact();
 declare const ecrRepository: ecr.Repository;
 const sourceAction = new codepipeline_actions.EcrSourceAction({
@@ -702,6 +708,8 @@ CodePipeline can deploy an ECS service.
 The deploy Action receives one input Artifact which contains the [image definition file]:
 
 ```ts
+import * as ecs from '@aws-cdk/aws-ecs';
+
 declare const service: ecs.FargateService;
 const pipeline = new codepipeline.Pipeline(this, 'MyPipeline');
 const buildOutput = new codepipeline.Artifact();
@@ -767,6 +775,7 @@ and use the AWS CLI to invalidate the cache:
 
 ```ts
 // Create a Cloudfront Web Distribution
+import * as cloudfront from '@aws-cdk/aws-cloudfront';
 declare const distribution: cloudfront.Distribution;
 
 // Create the build project that will invalidate the cache
@@ -899,6 +908,8 @@ const serviceCatalogDeployAction = new codepipeline_actions.ServiceCatalogDeploy
 This package contains an Action that stops the Pipeline until someone manually clicks the approve button:
 
 ```ts
+import * as sns from '@aws-cdk/aws-sns';
+
 const pipeline = new codepipeline.Pipeline(this, 'MyPipeline');
 const approveStage = pipeline.addStage({ stageName: 'Approve' });
 const manualApprovalAction = new codepipeline_actions.ManualApprovalAction({
@@ -1024,6 +1035,7 @@ on how to write a Lambda function invoked from CodePipeline.
 This module contains an Action that allows you to invoke a Step Function in a Pipeline:
 
 ```ts
+import * as stepfunctions from '@aws-cdk/aws-stepfunctions';
 const pipeline = new codepipeline.Pipeline(this, 'MyPipeline');
 const startState = new stepfunctions.Pass(this, 'StartState');
 const simpleStateMachine  = new stepfunctions.StateMachine(this, 'SimpleStateMachine', {
@@ -1044,6 +1056,8 @@ The `StateMachineInput` can be created with one of 2 static factory methods:
 `literal`, which takes an arbitrary map as its only argument, or `filePath`:
 
 ```ts
+import * as stepfunctions from '@aws-cdk/aws-stepfunctions';
+
 const pipeline = new codepipeline.Pipeline(this, 'MyPipeline');
 const inputArtifact = new codepipeline.Artifact();
 const startState = new stepfunctions.Pass(this, 'StartState');
