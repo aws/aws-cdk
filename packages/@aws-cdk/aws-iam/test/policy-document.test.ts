@@ -1,3 +1,4 @@
+import '@aws-cdk/assert-internal/jest';
 import { Lazy, Stack, Token } from '@aws-cdk/core';
 import {
   AccountPrincipal, Anyone, AnyPrincipal, ArnPrincipal, CanonicalUserPrincipal, CompositePrincipal,
@@ -763,6 +764,7 @@ describe('IAM policy document', () => {
         });
       }).toThrow(/Statement must be an array/);
     });
+
   });
 
   test('adding another condition with the same operator does not delete the original', () => {
