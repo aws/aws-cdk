@@ -131,7 +131,7 @@ export class TopicRule extends Resource implements ITopicRule {
       throw new Error('Empty actions are not allowed. Please define one type of action');
     }
     if (keys.length >= 2) {
-      throw new Error(`Each object in the actions list can only have one action defined. keys: ${keys}`);
+      throw new Error(`Each IoT Action can only define a single service it integrates with, received: ${keys}`);
     }
 
     this.actions.push(configuration);
