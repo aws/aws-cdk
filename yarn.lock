@@ -1621,6 +1621,11 @@
   dependencies:
     "@babel/types" "^7.3.0"
 
+"@types/changelog-parser@^2.7.1":
+  version "2.7.1"
+  resolved "https://registry.npmjs.org/@types/changelog-parser/-/changelog-parser-2.7.1.tgz#da124373fc8abfb6951fef83718ea5f041fea527"
+  integrity sha512-OFZB7OlG6nrkcnvJhcyV2Zm/PUGk40oHyfaEBRjlm+ghrKxbFQI+xao/IzYL0G72fpLCTGGs3USrhe38/FF6QQ==
+
 "@types/eslint@^7.28.1":
   version "7.28.1"
   resolved "https://registry.npmjs.org/@types/eslint/-/eslint-7.28.1.tgz#50b07747f1f84c2ba8cd394cf0fe0ba07afce320"
@@ -2704,6 +2709,14 @@ chalk@^4.0.0, chalk@^4.1.0, chalk@^4.1.2:
   dependencies:
     ansi-styles "^4.1.0"
     supports-color "^7.1.0"
+
+changelog-parser@^2.8.0:
+  version "2.8.0"
+  resolved "https://registry.npmjs.org/changelog-parser/-/changelog-parser-2.8.0.tgz#c14293e3e8fab797913c722de965480198650108"
+  integrity sha512-ZtSwN0hY7t+WpvaXqqXz98RHCNhWX9HsvCRAv1aBLlqJ7BpKtqdM6Nu6JOiUhRAWR7Gov0aN0fUnmflTz0WgZg==
+  dependencies:
+    line-reader "^0.2.4"
+    remove-markdown "^0.2.2"
 
 char-regex@^1.0.2:
   version "1.0.2"
@@ -6334,6 +6347,11 @@ lie@~3.3.0:
   dependencies:
     immediate "~3.0.5"
 
+line-reader@^0.2.4:
+  version "0.2.4"
+  resolved "https://registry.npmjs.org/line-reader/-/line-reader-0.2.4.tgz#c4392b587dea38580c9678570e6e8e49fce52622"
+  integrity sha1-xDkrWH3qOFgMlnhXDm6OSfzlJiI=
+
 lines-and-columns@^1.1.6:
   version "1.1.6"
   resolved "https://registry.npmjs.org/lines-and-columns/-/lines-and-columns-1.1.6.tgz#1c00c743b433cd0a4e80758f7b64a57440d9ff00"
@@ -8210,6 +8228,11 @@ release-zalgo@^1.0.0:
   integrity sha1-CXALflB0Mpc5Mw5TXFqQ+2eFFzA=
   dependencies:
     es6-error "^4.0.1"
+
+remove-markdown@^0.2.2:
+  version "0.2.2"
+  resolved "https://registry.npmjs.org/remove-markdown/-/remove-markdown-0.2.2.tgz#66b0ceeba9fb77ca9636bb1b0307ce21a32a12a6"
+  integrity sha1-ZrDO66n7d8qWNrsbAwfOIaMqEqY=
 
 remove-trailing-separator@^1.0.1:
   version "1.1.0"

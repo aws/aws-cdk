@@ -19,6 +19,11 @@ export interface IHttpStage extends IStage {
   readonly api: IHttpApi;
 
   /**
+   * The custom domain URL to this stage
+   */
+  readonly domainUrl: string;
+
+  /**
    * Metric for the number of client-side errors captured in a given period.
    *
    * @default - sum over 5 minutes
@@ -96,6 +101,7 @@ export interface HttpStageAttributes extends StageAttributes {
 }
 
 abstract class HttpStageBase extends StageBase implements IHttpStage {
+  public abstract readonly domainUrl: string;
   public abstract readonly api: IHttpApi;
 
   public metricClientError(props?: MetricOptions): Metric {
@@ -140,6 +146,10 @@ export class HttpStage extends HttpStageBase {
       get url(): string {
         throw new Error('url is not available for imported stages.');
       }
+
+      get domainUrl(): string {
+        throw new Error('domainUrl is not available for imported stages.');
+      }
     }
     return new Import(scope, id);
   }
@@ -177,9 +187,6 @@ export class HttpStage extends HttpStageBase {
     return `https://${this.api.apiId}.execute-api.${s.region}.${s.urlSuffix}/${urlPath}`;
   }
 
-  /**
-   * The custom domain URL to this stage
-   */
   public get domainUrl(): string {
     if (!this._apiMapping) {
       throw new Error('domainUrl is not available when no API mapping is associated with the Stage');

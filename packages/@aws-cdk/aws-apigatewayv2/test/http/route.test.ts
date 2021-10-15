@@ -1,8 +1,11 @@
 import { Template } from '@aws-cdk/assertions';
 import { Stack, App } from '@aws-cdk/core';
 import {
-  HttpApi, HttpAuthorizer, HttpAuthorizerType, HttpConnectionType, HttpIntegrationType, HttpMethod, HttpRoute, HttpRouteAuthorizerBindOptions,
-  HttpRouteAuthorizerConfig, HttpRouteIntegrationConfig, HttpRouteKey, IHttpRouteAuthorizer, IHttpRouteIntegration, PayloadFormatVersion,
+  HttpApi, HttpAuthorizer, HttpAuthorizerType, HttpConnectionType, HttpIntegrationType, HttpMethod, HttpRoute,
+  HttpRouteAuthorizerBindOptions, HttpRouteAuthorizerConfig, HttpRouteIntegrationConfig, HttpRouteKey, IHttpRouteAuthorizer, IHttpRouteIntegration,
+  MappingValue,
+  ParameterMapping,
+  PayloadFormatVersion,
 } from '../../lib';
 
 describe('HttpRoute', () => {
@@ -174,6 +177,9 @@ describe('HttpRoute', () => {
           connectionType: HttpConnectionType.VPC_LINK,
           uri: 'some-target-arn',
           secureServerName: 'some-server-name',
+          parameterMapping: new ParameterMapping()
+            .appendHeader('header2', MappingValue.requestHeader('header1'))
+            .removeHeader('header1'),
         };
       }
     }
@@ -195,6 +201,47 @@ describe('HttpRoute', () => {
       PayloadFormatVersion: '1.0',
       TlsConfig: {
         ServerNameToVerify: 'some-server-name',
+      },
+    });
+
+    Template.fromStack(stack).resourceCountIs('AWS::ApiGatewayV2::VpcLink', 0);
+  });
+
+  test('configures private integration correctly when parameter mappings are passed', () => {
+    // GIVEN
+    const stack = new Stack();
+    const httpApi = new HttpApi(stack, 'HttpApi');
+
+    class PrivateIntegration implements IHttpRouteIntegration {
+      public bind(): HttpRouteIntegrationConfig {
+        return {
+          method: HttpMethod.ANY,
+          payloadFormatVersion: PayloadFormatVersion.VERSION_1_0,
+          type: HttpIntegrationType.HTTP_PROXY,
+          uri: 'some-target-arn',
+          parameterMapping: new ParameterMapping()
+            .appendHeader('header2', MappingValue.requestHeader('header1'))
+            .removeHeader('header1'),
+        };
+      }
+    }
+
+    // WHEN
+    new HttpRoute(stack, 'HttpRoute', {
+      httpApi,
+      integration: new PrivateIntegration(),
+      routeKey: HttpRouteKey.with('/books', HttpMethod.GET),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Integration', {
+      IntegrationType: 'HTTP_PROXY',
+      IntegrationMethod: 'ANY',
+      IntegrationUri: 'some-target-arn',
+      PayloadFormatVersion: '1.0',
+      RequestParameters: {
+        'append:header.header2': '$request.header.header1',
+        'remove:header.header1': '',
       },
     });
 
