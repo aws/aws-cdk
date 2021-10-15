@@ -1,6 +1,6 @@
 import { Template } from '@aws-cdk/assertions';
 import * as cdk from '@aws-cdk/core';
-import { TopicRule, IAction } from '../lib';
+import * as iot from '../lib';
 
 test('Default property', () => {
   const stack = new cdk.Stack();
