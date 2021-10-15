@@ -2412,6 +2412,7 @@ describe('global', () => {
         Region: 'eu-west-2',
       },
       Condition: 'TableStackRegionNotEqualseuwest2A03859E7',
+      DeletionPolicy: CfnDeletionPolicy.RETAIN,
     }, ResourcePart.CompleteDefinition);
 
     expect(stack).toHaveResource('Custom::DynamoDBReplica', {
@@ -2422,6 +2423,7 @@ describe('global', () => {
         Region: 'eu-central-1',
       },
       Condition: 'TableStackRegionNotEqualseucentral199D46FC0',
+      DeletionPolicy: CfnDeletionPolicy.RETAIN,
     }, ResourcePart.CompleteDefinition);
 
     expect(SynthUtils.toCloudFormation(stack).Conditions).toEqual({
@@ -2490,6 +2492,47 @@ describe('global', () => {
         ],
       },
     });
+  });
+
+  test('create replicas with a removalPolicy', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new Table(stack, 'Table', {
+      partitionKey: {
+        name: 'id',
+        type: AttributeType.STRING,
+      },
+      replicationRegions: [
+        'eu-west-2',
+        'eu-central-1',
+      ],
+      removalPolicy: RemovalPolicy.SNAPSHOT,
+    });
+
+    // THEN
+    expect(stack).toHaveResource('Custom::DynamoDBReplica', {
+      Properties: {
+        TableName: {
+          Ref: 'TableCD117FA1',
+        },
+        Region: 'eu-west-2',
+      },
+      Condition: 'TableStackRegionNotEqualseuwest2A03859E7',
+      DeletionPolicy: CfnDeletionPolicy.SNAPSHOT,
+    }, ResourcePart.CompleteDefinition);
+
+    expect(stack).toHaveResource('Custom::DynamoDBReplica', {
+      Properties: {
+        TableName: {
+          Ref: 'TableCD117FA1',
+        },
+        Region: 'eu-central-1',
+      },
+      Condition: 'TableStackRegionNotEqualseucentral199D46FC0',
+      DeletionPolicy: CfnDeletionPolicy.SNAPSHOT,
+    }, ResourcePart.CompleteDefinition);
   });
 
   test('grantReadData', () => {
