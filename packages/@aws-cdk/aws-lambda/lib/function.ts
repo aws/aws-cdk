@@ -573,6 +573,11 @@ export class Function extends FunctionBase {
    */
   public readonly deadLetterQueue?: sqs.IQueue;
 
+  /**
+   * The timeout configured for this lambda.
+   */
+  public readonly timeout?: Duration;
+
   public readonly permissionsNode = this.node;
 
   protected readonly canCreatePermissions = true;
@@ -720,6 +725,7 @@ export class Function extends FunctionBase {
     });
 
     this.runtime = props.runtime;
+    this.timeout = props.timeout;
 
     if (props.layers) {
       if (props.runtime === Runtime.FROM_IMAGE) {
