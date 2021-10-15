@@ -1,6 +1,5 @@
 // Fixture with packages imported, but nothing else
-import { Construct, Stack } from '@aws-cdk/core';
-import cdk = require('@aws-cdk/core');
+import { Arn, Construct, Duration, SecretValue, Stack } from '@aws-cdk/core';
 import cloudformation = require('@aws-cdk/aws-cloudformation');
 import cloudfront = require('@aws-cdk/aws-cloudfront');
 import cloudtrail = require('@aws-cdk/aws-cloudtrail');

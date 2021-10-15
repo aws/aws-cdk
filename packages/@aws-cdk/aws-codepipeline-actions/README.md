@@ -115,9 +115,9 @@ If you want to use a GitHub repository as the source, you must create:
   with the value of the **GitHub Access Token**. Pick whatever name you want (for example `my-github-token`).
   This token can be stored either as Plaintext or as a Secret key/value.
   If you stored the token as Plaintext,
-  set `cdk.SecretValue.secretsManager('my-github-token')` as the value of `oauthToken`.
+  set `SecretValue.secretsManager('my-github-token')` as the value of `oauthToken`.
   If you stored it as a Secret key/value,
-  you must set `cdk.SecretValue.secretsManager('my-github-token', { jsonField : 'my-github-token' })` as the value of `oauthToken`.
+  you must set `SecretValue.secretsManager('my-github-token', { jsonField : 'my-github-token' })` as the value of `oauthToken`.
 
 To use GitHub as the source of a CodePipeline:
 
@@ -129,7 +129,7 @@ const sourceAction = new codepipeline_actions.GitHubSourceAction({
   actionName: 'GitHub_Source',
   owner: 'awslabs',
   repo: 'aws-cdk',
-  oauthToken: cdk.SecretValue.secretsManager('my-github-token'),
+  oauthToken: SecretValue.secretsManager('my-github-token'),
   output: sourceOutput,
   branch: 'develop', // default: 'master'
 });
@@ -150,7 +150,7 @@ const sourceAction = new codepipeline_actions.GitHubSourceAction({
   output: sourceOutput,
   owner: 'my-owner',
   repo: 'my-repo',
-  oauthToken: cdk.SecretValue.secretsManager('my-github-token'),
+  oauthToken: SecretValue.secretsManager('my-github-token'),
   variablesNamespace: 'MyNamespace', // optional - by default, a name will be generated for you
 });
 
@@ -621,12 +621,14 @@ in that case, the `account` property is ignored,
 and the action will operate in the same account the role belongs to:
 
 ```ts
+import { PhysicalName } from '@aws-cdk/core';
+
 // in stack for account 123456789012...
 declare const otherAccountStack: Stack;
 const actionRole = new iam.Role(otherAccountStack, 'ActionRole', {
   assumedBy: new iam.AccountPrincipal('123456789012'),
   // the role has to have a physical name set
-  roleName: cdk.PhysicalName.GENERATE_IF_NEEDED,
+  roleName: PhysicalName.GENERATE_IF_NEEDED,
 });
 
 // in the pipeline stack...
@@ -717,7 +719,7 @@ const deployStage = pipeline.addStage({
       // use the `imageFile` property,
       // and leave out the `input` property
       imageFile: buildOutput.atPath('imageDef.json'),
-      deploymentTimeout: cdk.Duration.minutes(60), // optional, default is 60 minutes
+      deploymentTimeout: Duration.minutes(60), // optional, default is 60 minutes
     }),
   ],
 });
@@ -827,9 +829,9 @@ You can deploy to Alexa using CodePipeline with the following Action:
 
 ```ts
 // Read the secrets from ParameterStore
-const clientId = cdk.SecretValue.secretsManager('AlexaClientId');
-const clientSecret = cdk.SecretValue.secretsManager('AlexaClientSecret');
-const refreshToken = cdk.SecretValue.secretsManager('AlexaRefreshToken');
+const clientId = SecretValue.secretsManager('AlexaClientId');
+const clientSecret = SecretValue.secretsManager('AlexaClientSecret');
+const refreshToken = SecretValue.secretsManager('AlexaRefreshToken');
 
 // Add deploy action
 const sourceOutput = new codepipeline.Artifact();
@@ -859,9 +861,9 @@ const executeChangeSetAction = new codepipeline_actions.CloudFormationExecuteCha
 });
 
 // Provide CFN output as manifest overrides
-const clientId = cdk.SecretValue.secretsManager('AlexaClientId');
-const clientSecret = cdk.SecretValue.secretsManager('AlexaClientSecret');
-const refreshToken = cdk.SecretValue.secretsManager('AlexaRefreshToken');
+const clientId = SecretValue.secretsManager('AlexaClientId');
+const clientSecret = SecretValue.secretsManager('AlexaClientSecret');
+const refreshToken = SecretValue.secretsManager('AlexaRefreshToken');
 const sourceOutput = new codepipeline.Artifact();
 new codepipeline_actions.AlexaSkillDeployAction({
   actionName: 'DeploySkill',
@@ -928,7 +930,7 @@ const manualApprovalAction = new codepipeline_actions.ManualApprovalAction({
 });
 approveStage.addAction(manualApprovalAction);
 
-const role = iam.Role.fromRoleArn(this, 'Admin', cdk.Arn.format({ service: 'iam', resource: 'role', resourceName: 'Admin' }, this));
+const role = iam.Role.fromRoleArn(this, 'Admin', Arn.format({ service: 'iam', resource: 'role', resourceName: 'Admin' }, this));
 manualApprovalAction.grantManualApproval(role);
 ```
 
