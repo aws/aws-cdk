@@ -983,6 +983,25 @@ const lambdaAction = new codepipeline_actions.LambdaInvokeAction({
 });
 ```
 
+The Lambda Action supports custom user parameters that pipeline
+will pass to the Lambda function:
+
+```ts
+import * as lambda from '@aws-cdk/aws-lambda';
+
+const pipeline = new codepipeline.Pipeline(this, 'MyPipeline');
+const lambdaAction = new codepipeline_actions.LambdaInvokeAction({
+  actionName: 'Lambda',
+  lambda: fn,
+  userParameters: {
+    foo: 'bar',
+    baz: 'qux',
+  },
+  // OR
+  userParametersString: 'my-parameter-string',
+});
+```
+
 The Lambda invoke action emits variables.
 Unlike many other actions, the variables are not static,
 but dynamic, defined by the function calling the `PutJobSuccessResult`
