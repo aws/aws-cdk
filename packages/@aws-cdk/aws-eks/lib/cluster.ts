@@ -312,7 +312,7 @@ export interface ClusterAttributes {
   /**
    * KubectlProvider for issuing kubectl commands.
    *
-   * @default - undefined. if undefined - create new
+   * @default - Default CDK provider
    */
   readonly kubectlProvider?: IKubectlProvider;
 
