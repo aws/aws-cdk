@@ -167,9 +167,9 @@ test('Can not add actions have no action property', () => {
     }),
   };
 
-  expect(() => topicRule.addAction(emptyAction)).toThrowError(
-    'Empty actions are not allowed. Please define one type of action',
-  );
+  expect(() => {
+    topicRule.addAction(emptyAction);
+  }).toThrow('Empty actions are not allowed. Please define one type of action');
 });
 
 test('Can not add actions have multiple action properties', () => {
