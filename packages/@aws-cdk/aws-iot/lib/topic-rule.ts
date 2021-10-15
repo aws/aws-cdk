@@ -70,7 +70,9 @@ export class TopicRule extends Resource implements ITopicRule {
       public readonly topicRuleArn = topicRuleArn;
       public readonly topicRuleName = resourceName;
     }
-    return new Import(scope, id);
+    return new Import(scope, id, {
+      environmentFromArn: topicRuleArn,
+    });
   }
 
   /**
