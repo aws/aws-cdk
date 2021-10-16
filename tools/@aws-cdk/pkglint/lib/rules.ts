@@ -119,7 +119,9 @@ export class RepositoryCorrect extends ValidationRule {
     expectJSON(this.name, pkg, 'repository.type', 'git');
     expectJSON(this.name, pkg, 'repository.url', 'https://github.com/aws/aws-cdk.git');
     const pkgDir = path.relative(monoRepoRoot(), pkg.packageRoot);
-    expectJSON(this.name, pkg, 'repository.directory', pkgDir);
+    // Enforcing '/' separator for builds to work in Windows.
+    const osPkgDir = pkgDir.split(path.sep).join('/');
+    expectJSON(this.name, pkg, 'repository.directory', osPkgDir);
   }
 }
 
