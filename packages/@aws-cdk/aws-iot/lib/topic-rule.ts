@@ -4,6 +4,26 @@ import { IAction } from './action';
 import { CfnTopicRule } from './iot.generated';
 
 /**
+ * Represents an AWS IoT Rule
+ */
+export interface ITopicRule extends IResource {
+  /**
+   * The value of the topic rule Amazon Resource Name (ARN), such as
+   * arn:aws:iot:us-east-2:123456789012:rule/rule_name
+   *
+   * @attribute
+   */
+  readonly topicRuleArn: string;
+
+  /**
+   * The name topic rule
+   *
+   * @attribute
+   */
+  readonly topicRuleName: string;
+}
+
+/**
  * Properties for defining an AWS IoT Rule
  */
 export interface TopicRuleProps {
@@ -26,26 +46,6 @@ export interface TopicRuleProps {
    * @see https://docs.aws.amazon.com/iot/latest/developerguide/iot-sql-reference.html
    */
   readonly sql: string;
-}
-
-/**
- * Represents an AWS IoT Rule
- */
-export interface ITopicRule extends IResource {
-  /**
-   * The value of the topic rule Amazon Resource Name (ARN), such as
-   * arn:aws:iot:us-east-2:123456789012:rule/rule_name
-   *
-   * @attribute
-   */
-  readonly topicRuleArn: string;
-
-  /**
-   * The name topic rule
-   *
-   * @attribute
-   */
-  readonly topicRuleName: string;
 }
 
 /**

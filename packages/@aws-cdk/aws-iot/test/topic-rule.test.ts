@@ -5,7 +5,7 @@ import * as iot from '../lib';
 test('Default property', () => {
   const stack = new cdk.Stack();
 
-  new TopicRule(stack, 'MyTopicRule', {
+  new iot.TopicRule(stack, 'MyTopicRule', {
     sql: "SELECT topic(2) as device_id, temperature FROM 'device/+/data'",
   });
 
@@ -19,7 +19,7 @@ test('Default property', () => {
 
 test('Can get topic rule name', () => {
   const stack = new cdk.Stack();
-  const rule = new TopicRule(stack, 'MyTopicRule', {
+  const rule = new iot.TopicRule(stack, 'MyTopicRule', {
     sql: "SELECT topic(2) as device_id, temperature FROM 'device/+/data'",
   });
 
@@ -37,7 +37,7 @@ test('Can get topic rule name', () => {
 
 test('Can get topic rule arn', () => {
   const stack = new cdk.Stack();
-  const rule = new TopicRule(stack, 'MyTopicRule', {
+  const rule = new iot.TopicRule(stack, 'MyTopicRule', {
     sql: "SELECT topic(2) as device_id, temperature FROM 'device/+/data'",
   });
 
@@ -60,7 +60,7 @@ test('Can set physical name', () => {
   const stack = new cdk.Stack();
 
   // WHEN
-  new TopicRule(stack, 'MyTopicRule', {
+  new iot.TopicRule(stack, 'MyTopicRule', {
     topicRuleName: 'PhysicalName',
     sql: "SELECT topic(2) as device_id, temperature FROM 'device/+/data'",
   });
@@ -74,14 +74,14 @@ test('Can set physical name', () => {
 test('Can set actions', () => {
   const stack = new cdk.Stack();
 
-  const action1: IAction = {
+  const action1: iot.IAction = {
     bind: () => ({
       configuration: {
         http: { url: 'http://example.com' },
       },
     }),
   };
-  const action2: IAction = {
+  const action2: iot.IAction = {
     bind: () => ({
       configuration: {
         lambda: { functionArn: 'test-functionArn' },
@@ -89,7 +89,7 @@ test('Can set actions', () => {
     }),
   };
 
-  new TopicRule(stack, 'MyTopicRule', {
+  new iot.TopicRule(stack, 'MyTopicRule', {
     sql: "SELECT topic(2) as device_id, temperature FROM 'device/+/data'",
     actions: [action1, action2],
   });
@@ -112,7 +112,7 @@ test('Can set actions', () => {
 test('Can add actions', () => {
   const stack = new cdk.Stack();
 
-  const topicRule = new TopicRule(stack, 'MyTopicRule', {
+  const topicRule = new iot.TopicRule(stack, 'MyTopicRule', {
     sql: "SELECT topic(2) as device_id, temperature FROM 'device/+/data'",
   });
   topicRule.addAction({
@@ -148,9 +148,9 @@ test('Can add actions', () => {
 test('Can not set empty query', () => {
   const stack = new cdk.Stack();
 
-  expect(() => new TopicRule(stack, 'MyTopicRule', {
-    sql: '',
-  })).toThrowError(
+  expect(() => {
+    new iot.TopicRule(stack, 'MyTopicRule', { sql: '' });
+  }).toThrow(
     'sql cannot be empty.',
   );
 });
@@ -158,10 +158,10 @@ test('Can not set empty query', () => {
 test('Can not add actions have no action property', () => {
   const stack = new cdk.Stack();
 
-  const topicRule = new TopicRule(stack, 'MyTopicRule', {
+  const topicRule = new iot.TopicRule(stack, 'MyTopicRule', {
     sql: "SELECT topic(2) as device_id, temperature FROM 'device/+/data'",
   });
-  const emptyAction: IAction = {
+  const emptyAction: iot.IAction = {
     bind: () => ({
       configuration: {},
     }),
@@ -175,10 +175,10 @@ test('Can not add actions have no action property', () => {
 test('Can not add actions have multiple action properties', () => {
   const stack = new cdk.Stack();
 
-  const topicRule = new TopicRule(stack, 'MyTopicRule', {
+  const topicRule = new iot.TopicRule(stack, 'MyTopicRule', {
     sql: "SELECT topic(2) as device_id, temperature FROM 'device/+/data'",
   });
-  const multipleAction: IAction = {
+  const multipleAction: iot.IAction = {
     bind: () => ({
       configuration: {
         http: { url: 'http://example.com' },
@@ -187,8 +187,10 @@ test('Can not add actions have multiple action properties', () => {
     }),
   };
 
-  expect(() => topicRule.addAction(multipleAction)).toThrowError(
-    'Each object in the actions list can only have one action defined. keys: http,lambda',
+  expect(() => {
+    topicRule.addAction(multipleAction);
+  }).toThrow(
+    'Each IoT Action can only define a single service it integrates with, received: http,lambda',
   );
 });
 
@@ -197,7 +199,7 @@ test('Can import from topic rule arn', () => {
 
   const topicRuleArn = 'arn:aws:iot:ap-northeast-1:123456789012:rule/my-rule-name';
 
-  const topicRule = TopicRule.fromTopicRuleArn(stack, 'TopicRuleFromArn', topicRuleArn);
+  const topicRule = iot.TopicRule.fromTopicRuleArn(stack, 'TopicRuleFromArn', topicRuleArn);
 
   expect(topicRule).toMatchObject({
     topicRuleArn,
@@ -210,7 +212,9 @@ test('Can not import if invalid topic rule arn', () => {
 
   const topicRuleArn = 'arn:aws:iot:ap-northeast-1:123456789012:rule/';
 
-  expect(() => TopicRule.fromTopicRuleArn(stack, 'TopicRuleFromArn', topicRuleArn)).toThrowError(
+  expect(() => {
+    iot.TopicRule.fromTopicRuleArn(stack, 'TopicRuleFromArn', topicRuleArn);
+  }).toThrow(
     'Invalid topic rule arn: topicRuleArn has no resource name.',
   );
 });

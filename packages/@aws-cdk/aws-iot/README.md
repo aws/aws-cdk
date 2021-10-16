@@ -21,24 +21,8 @@
 
 <!--END STABILITY BANNER-->
 
-The `TopicRule` construct defined Rules that give your devices the ability to interact with AWS services.
-Rules are analyzed and actions are performed based on the MQTT topic stream.
-The `TopicRule` construct can use actions like these:
-
-- Write data received from a device to an Amazon DynamoDB database.
-- Save a file to Amazon S3.
-- Send a push notification to all users using Amazon SNS.
-- Publish data to an Amazon SQS queue.
-- Invoke a Lambda function to extract data.
-- Process messages from a large number of devices using Amazon Kinesis. (*To be developed*)
-- Send data to the Amazon OpenSearch Service. (*To be developed*)
-- Capture a CloudWatch metric.
-- Change a CloudWatch alarm.
-- Send message data to an AWS IoT Analytics channel. (*To be developed*)
-- Start execution of a Step Functions state machine. (*To be developed*)
-- Send message data to an AWS IoT Events input. (*To be developed*)
-- Send message data an asset property in AWS IoT SiteWise. (*To be developed*)
-- Send message data to a web application or service. (*To be developed*)
+AWS IoT Core lets you connect billions of IoT devices and route trillions of
+messages to AWS services without managing infrastructure.
 
 ## Installation
 
@@ -54,9 +38,27 @@ Import it into your code:
 import * as iot from '@aws-cdk/aws-iot';
 ```
 
-The `iot.Project` construct represents a build project resource. See the reference documentation for a comprehensive list of initialization properties, methods and attributes.
-
 ## `TopicRule`
+
+The `TopicRule` construct defined Rules that give your devices the ability to
+interact with AWS services. Rules are analyzed and actions are performed based
+on the MQTT topic stream. The `TopicRule` construct can use actions like these:
+
+- Augment or filter data received from a device.
+- Write data received from a device to an Amazon DynamoDB database.
+- Save a file to Amazon S3.
+- Send a push notification to all users using Amazon SNS.
+- Publish data to an Amazon SQS queue.
+- Invoke a Lambda function to extract data.
+- Process messages from a large number of devices using Amazon Kinesis.
+- Send data to the Amazon OpenSearch Service.
+- Capture a CloudWatch metric.
+- Change a CloudWatch alarm.
+- Send message data to an AWS IoT Analytics channel.
+- Start execution of a Step Functions state machine.
+- Send message data to an AWS IoT Events input.
+- Send message data an asset property in AWS IoT SiteWise.
+- Send message data to a web application or service.
 
 For example, to define a rule that triggers to put to a S3 bucket:
 
@@ -66,14 +68,16 @@ new iot.TopicRule(stack, 'MyTopicRule', {
   sql: "SELECT topic(2) as device_id, temperature FROM 'device/+/data'",
   acctions: [
     {
-      configration: {
-        s3: {
-          bucketName: 'your-bucket-name',
-          key: 'your-bucket-key',
-          roleArn: 'your-role-arn',
-        }
-      }
-    }
+      bind: () => ({
+        configuration: {
+          s3: {
+            bucketName: 'your-bucket-name',
+            key: 'your-bucket-key',
+            roleArn: 'your-role-arn',
+          },
+        },
+      }),
+    },
   ],
 });
 ```
@@ -85,8 +89,12 @@ const topicRule = new TopicRule(stack, 'MyTopicRule', {
   sql: "SELECT topic(2) as device_id, temperature FROM 'device/+/data'",
 });
 topicRule.addAction({
-  configration: {
-    functionArn: 'your-lambda-function-arn',
-  }
+  bind: () => ({
+    configuration: {
+      lambda: {
+        functionArn: 'your-lambda-function-arn',
+      },
+    },
+  }),
 });
 ```
