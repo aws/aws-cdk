@@ -1472,9 +1472,9 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
 
     if (props.logging?.auditLogEnabled) {
       this.auditLogGroup = props.logging.auditLogGroup ??
-          new logs.LogGroup(this, 'AuditLogs', {
-            retention: logs.RetentionDays.ONE_MONTH,
-          });
+        new logs.LogGroup(this, 'AuditLogs', {
+          retention: logs.RetentionDays.ONE_MONTH,
+        });
 
       logGroups.push(this.auditLogGroup);
     };
@@ -1624,7 +1624,17 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
 
     if (logGroupResourcePolicy) { this.domain.node.addDependency(logGroupResourcePolicy); }
 
-    if (props.domainName) { this.node.addMetadata('aws:cdk:hasPhysicalName', props.domainName); }
+    if (props.domainName) {
+      if (!cdk.Token.isUnresolved(props.domainName) && !props.domainName.match(/^[a-z][a-z0-9\-]{2,26}$/)) {
+        // https://docs.aws.amazon.com/opensearch-service/latest/developerguide/configuration-api.html#configuration-api-datatypes-domainname
+        throw new Error(
+          `domainName '${props.domainName}' failed to satisfy constraint. ` +
+          'It must start with a lowercase letter and must be between 3 and 28 characters. ' +
+          'Valid characters are a-z (lowercase only), 0-9, and – (hyphen).',
+        );
+      }
+      this.node.addMetadata('aws:cdk:hasPhysicalName', props.domainName);
+    }
 
     this.domainName = this.getResourceNameAttribute(this.domain.ref);
 
