@@ -1,13 +1,13 @@
 import { Match } from '../match';
 import { Matcher, MatchResult } from '../matcher';
 
-export type MatchSuccess = { match: true, matches: {[key: string]: any} };
+export type MatchSuccess = { match: true, matches: { [key: string]: any } };
 export type MatchFailure = { match: false, closestResult?: MatchResult, analyzedCount: number };
 
 export function matchSection(section: any, props: any): MatchSuccess | MatchFailure {
   const matcher = Matcher.isMatcher(props) ? props : Match.objectLike(props);
   let closestResult: MatchResult | undefined = undefined;
-  let matching: {[key: string]: any} = {};
+  let matching: { [key: string]: any } = {};
   let count = 0;
 
   eachEntryInSection(
@@ -26,6 +26,22 @@ export function matchSection(section: any, props: any): MatchSuccess | MatchFail
     },
   );
   if (Object.keys(matching).length > 0) {
+    if (Object.keys(section).length > Object.keys(matching).length) {
+      let matching2: { [key: string]: any } = {};
+
+      eachEntryInSection(
+        matching,
+
+        (logicalId, entry) => {
+          const result = matcher.test(entry);
+          if (!result.hasFailed()) {
+            matching2[logicalId] = entry;
+          }
+        },
+      );
+      return { match: true, matches: matching2 };
+    }
+
     return { match: true, matches: matching };
   } else {
     return { match: false, closestResult, analyzedCount: count };
@@ -34,7 +50,7 @@ export function matchSection(section: any, props: any): MatchSuccess | MatchFail
 
 function eachEntryInSection(
   section: any,
-  cb: (logicalId: string, entry: {[key: string]: any}) => void): void {
+  cb: (logicalId: string, entry: { [key: string]: any }) => void): void {
 
   for (const logicalId of Object.keys(section ?? {})) {
     const resource: { [key: string]: any } = section[logicalId];

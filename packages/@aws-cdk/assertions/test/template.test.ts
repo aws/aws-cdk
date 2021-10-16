@@ -1,6 +1,6 @@
 import { App, CfnMapping, CfnOutput, CfnResource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { Match, Template } from '../lib';
+import { Match, Template, Capture } from '../lib';
 
 describe('Template', () => {
   describe('asObject', () => {
@@ -267,6 +267,17 @@ describe('Template', () => {
         Properties: Match.objectLike({ baz: 'qux' }),
       })).toThrow(/No resource/);
     });
+
+    test('captures values from matched resources', () => {
+      const stack = new Stack();
+      new CfnResource(stack, 'res1', { type: 'res', properties: { Name: 'foo', fred: 'waldo' } });
+      new CfnResource(stack, 'res2', { type: 'res', properties: { Name: 'bar', fred: 'fred' } });
+
+      const inspect = Template.fromStack(stack);
+      const capture = new Capture();
+      inspect.hasResource('res', { Properties: { Name: 'foo', fred: capture } });
+      expect(capture.asString()).toEqual('waldo');
+    });
   });
 
   describe('hasResourceProperties', () => {
@@ -343,7 +354,7 @@ describe('Template', () => {
     });
   });
 
-  describe('getResources', () => {
+  describe('findResources', () => {
     test('matching resource type', () => {
       const stack = new Stack();
       new CfnResource(stack, 'Foo', {
@@ -407,6 +418,18 @@ describe('Template', () => {
       expect(Object.keys(result).length).toEqual(2);
       expect(result.Foo).toEqual({ Type: 'Foo::Bar' });
       expect(result.Bar).toEqual({ Type: 'Foo::Bar' });
+    });
+
+    test('captures values from matched resources', () => {
+      const stack = new Stack();
+      new CfnResource(stack, 'res1', { type: 'res', properties: { Name: 'foo', fred: 'waldo' } });
+      new CfnResource(stack, 'res2', { type: 'res', properties: { Name: 'bar', fred: 'fred' } });
+
+      const inspect = Template.fromStack(stack);
+      const capture = new Capture();
+      const result = inspect.findResources('res', { Properties: { Name: 'foo', fred: capture } });
+      expect(Object.keys(result).length).toEqual(1);
+      expect(capture.asString()).toEqual('waldo');
     });
   });
 

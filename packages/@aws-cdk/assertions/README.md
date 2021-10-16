@@ -396,7 +396,8 @@ template.hasResourceProperties('Foo::Bar', unexpected);
 ## Capturing Values
 
 This matcher APIs documented above allow capturing values in the matching entry
-(Resource, Output, Mapping, etc.). The following code captures a string from a
+(Resource, Output, Mapping, etc.). In case of multiple matching entries the values
+from the last match are beeing captured. The following code captures a string from a
 matching resource.
 
 ```ts
