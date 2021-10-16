@@ -170,6 +170,11 @@ export enum TargetType {
    * Target is a single Lambda Function
    */
   LAMBDA = 'lambda',
+
+  /**
+   * Target is a single Application Load Balancer
+   */
+  ALB = 'alb',
 }
 
 /**

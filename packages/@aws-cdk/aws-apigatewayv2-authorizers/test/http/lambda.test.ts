@@ -103,7 +103,7 @@ describe('HttpLambdaAuthorizer', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Authorizer', {
       AuthorizerPayloadFormatVersion: '1.0',
-      EnableSimpleResponses: Match.absentProperty(),
+      EnableSimpleResponses: Match.absent(),
     });
   });
 
