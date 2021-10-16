@@ -9,7 +9,6 @@ import { PackageInstallation } from '../lib/package-installation';
 import { LogLevel, SourceMapMode } from '../lib/types';
 import * as util from '../lib/util';
 
-jest.mock('@aws-cdk/aws-lambda');
 
 let detectPackageInstallationMock: jest.SpyInstance<PackageInstallation | undefined>;
 beforeEach(() => {
@@ -19,16 +18,18 @@ beforeEach(() => {
   Bundling.clearEsbuildInstallationCache();
   Bundling.clearTscInstallationCache();
 
+  jest.spyOn(Code, 'fromAsset');
+
+  detectPackageInstallationMock = jest.spyOn(PackageInstallation, 'detect').mockReturnValue({
+    isLocal: true,
+    version: '0.8.8',
+  });
+
   jest.spyOn(DockerImage, 'fromBuild').mockReturnValue({
     image: 'built-image',
     cp: () => 'dest-path',
     run: () => {},
     toJSON: () => 'built-image',
-  });
-
-  detectPackageInstallationMock = jest.spyOn(PackageInstallation, 'detect').mockReturnValue({
-    isLocal: true,
-    version: '0.8.8',
   });
 });
 
@@ -582,9 +583,7 @@ test('esbuild bundling with pre compilations', () => {
       ],
     }),
   });
-});
 
-test('esbuild bundling with pre compilations ( Should skip preCompilation as already compiled )', () => {
   Bundling.bundle({
     entry,
     projectRoot,
@@ -609,6 +608,7 @@ test('esbuild bundling with pre compilations ( Should skip preCompilation as alr
       ],
     }),
   });
+
 });
 
 test('esbuild bundling with pre compilations with undefined tsconfig ( Should find in root directory )', () => {
