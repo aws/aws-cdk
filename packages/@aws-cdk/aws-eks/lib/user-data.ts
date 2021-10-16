@@ -1,9 +1,9 @@
 import * as autoscaling from '@aws-cdk/aws-autoscaling';
 import { Stack } from '@aws-cdk/core';
-import { BootstrapOptions, ICluster, Cluster } from './cluster';
+import { BootstrapOptions, ICluster } from './cluster';
 
 // eslint-disable-next-line max-len
-export function renderAmazonLinuxUserData(cluster: Cluster, autoScalingGroup: autoscaling.AutoScalingGroup, options: BootstrapOptions = {}): string[] {
+export function renderAmazonLinuxUserData(cluster: ICluster, autoScalingGroup: autoscaling.AutoScalingGroup, options: BootstrapOptions = {}): string[] {
 
   const stack = Stack.of(autoScalingGroup);
 
@@ -13,8 +13,21 @@ export function renderAmazonLinuxUserData(cluster: Cluster, autoScalingGroup: au
 
   const extraArgs = new Array<string>();
 
-  extraArgs.push(`--apiserver-endpoint '${cluster.clusterEndpoint}'`);
-  extraArgs.push(`--b64-cluster-ca '${cluster.clusterCertificateAuthorityData}'`);
+  try {
+    const clusterEndpoint = cluster.clusterEndpoint;
+    const clusterCertificateAuthorityData =
+      cluster.clusterCertificateAuthorityData;
+    extraArgs.push(`--apiserver-endpoint '${clusterEndpoint}'`);
+    extraArgs.push(`--b64-cluster-ca '${clusterCertificateAuthorityData}'`);
+  } catch (e) {
+    /**
+     * Errors are ignored here.
+     * apiserver-endpoint and b64-cluster-ca arguments are added in #12659 to make nodes join the cluster faster.
+     * As these are not necessary arguments, we don't need to pass these arguments when they don't exist.
+     *
+     * @see https://github.com/aws/aws-cdk/pull/12659
+     */
+  }
 
   extraArgs.push(`--use-max-pods ${options.useMaxPods ?? true}`);
 
