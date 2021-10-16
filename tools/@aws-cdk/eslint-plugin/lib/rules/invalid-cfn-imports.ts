@@ -127,7 +127,7 @@ function checkIfImportedLocationIsAnAlphaPackage(location: string, currentFilena
 }
 
 function getCdkRootDir(filename: string): string | undefined {
-  const filenameSplit = filename.split('/');
+  const filenameSplit = filename.split(path.sep);
   // for test files
   let rootDirIndex = filenameSplit.findIndex(e => e.match('tools'));
 
@@ -143,6 +143,7 @@ function getCdkRootDir(filename: string): string | undefined {
 }
 
 function isAlphaPackage(packageDir: string): boolean {
+  console.log(`Checking ${packageDir}`);
   const pkg = JSON.parse(fs.readFileSync(path.join(packageDir, 'package.json'), { encoding: 'utf-8' }));
 
   const separateModule = pkg['separate-module'];
