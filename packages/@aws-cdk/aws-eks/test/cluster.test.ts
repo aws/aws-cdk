@@ -2888,4 +2888,26 @@ describe('cluster', () => {
     expect(providerNestedStackTemplate?.Resources?.Handler886CB40B?.Properties?.MemorySize).toEqual(4096);
 
   });
+
+  test('create a cluster using custom kubernetes network config', () => {
+    // GIVEN
+    const { stack } = testFixture();
+    const customCidr = '172.16.0.0/12';
+
+    // WHEN
+    new eks.Cluster(stack, 'Cluster', {
+      version: CLUSTER_VERSION,
+      serviceIpv4Cidr: customCidr,
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('Custom::AWSCDK-EKS-Cluster', {
+      Config: {
+        kubernetesNetworkConfig: {
+          serviceIpv4Cidr: customCidr,
+        },
+      },
+    });
+
+  });
 });
