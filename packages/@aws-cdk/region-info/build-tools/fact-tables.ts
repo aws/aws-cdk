@@ -135,6 +135,7 @@ export const DLC_REPOSITORY_ACCOUNTS: { [region: string]: string } = {
 };
 
 // https://docs.aws.amazon.com/app-mesh/latest/userguide/envoy.html
+// https://docs.amazonaws.cn/app-mesh/latest/userguide/envoy.html
 export const APPMESH_ECR_ACCOUNTS: { [region: string]: string } = {
   'af-south-1': '924023996002',
   'ap-east-1': '856666278305',
@@ -145,6 +146,8 @@ export const APPMESH_ECR_ACCOUNTS: { [region: string]: string } = {
   'ap-southeast-1': '840364872350',
   'ap-southeast-2': '840364872350',
   'ca-central-1': '840364872350',
+  'cn-north-1': '919366029133',
+  'cn-northwest-1': '919830735681',
   'eu-central-1': '840364872350',
   'eu-north-1': '840364872350',
   'eu-south-1': '422531588944',
