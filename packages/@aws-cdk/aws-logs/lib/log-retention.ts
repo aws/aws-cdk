@@ -128,8 +128,11 @@ export class LogRetention extends CoreConstruct {
 /**
  * Private provider Lambda function to support the log retention custom resource.
  */
-class LogRetentionFunction extends CoreConstruct {
+class LogRetentionFunction extends CoreConstruct implements cdk.ITaggable {
   public readonly functionArn: cdk.Reference;
+  readonly cfnFunction: cdk.CfnResource;
+
+  tags: cdk.TagManager = new cdk.TagManager(cdk.TagType.KEY_VALUE, 'AWS::Lambda::Function');
 
   constructor(scope: Construct, id: string, props: LogRetentionProps) {
     super(scope, id);
@@ -154,7 +157,7 @@ class LogRetentionFunction extends CoreConstruct {
     }));
 
     // Lambda function
-    const resource = new cdk.CfnResource(this, 'Resource', {
+    this.cfnFunction = new cdk.CfnResource(this, 'Resource', {
       type: 'AWS::Lambda::Function',
       properties: {
         Handler: 'index.handler',
@@ -166,16 +169,25 @@ class LogRetentionFunction extends CoreConstruct {
         Role: role.roleArn,
       },
     });
-    this.functionArn = resource.getAtt('Arn');
+    this.functionArn = this.cfnFunction.getAtt('Arn');
 
     // Function dependencies
     role.node.children.forEach((child) => {
       if (cdk.CfnResource.isCfnResource(child)) {
-        resource.addDependsOn(child);
+        this.cfnFunction.addDependsOn(child);
       }
       if (cdk.Construct.isConstruct(child) && child.node.defaultChild && cdk.CfnResource.isCfnResource(child.node.defaultChild)) {
-        resource.addDependsOn(child.node.defaultChild);
+        this.cfnFunction.addDependsOn(child.node.defaultChild);
       }
     });
+  }
+
+  prepare() {
+    // Because we're using a CfnResource to avoid a cyclic dependency on aws-lambda
+    // we lose the automatic application of tags. We have to add them again manually.
+    // This has to be done in the prepare phase, after Tag Aspects have applied.
+    if (this.tags.hasTags()) {
+      this.cfnFunction.addPropertyOverride('Tags', this.tags.renderTags());
+    }
   }
 }
