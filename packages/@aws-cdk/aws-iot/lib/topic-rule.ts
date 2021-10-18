@@ -1,6 +1,7 @@
 import { ArnFormat, Lazy, Resource, Stack, IResource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { IAction } from './action';
+import { IotSql } from './iot-sql';
 import { CfnTopicRule } from './iot.generated';
 
 /**
@@ -45,7 +46,7 @@ export interface TopicRuleProps {
    *
    * @see https://docs.aws.amazon.com/iot/latest/developerguide/iot-sql-reference.html
    */
-  readonly sql: string;
+  readonly sql: IotSql;
 }
 
 /**
@@ -94,15 +95,14 @@ export class TopicRule extends Resource implements ITopicRule {
       physicalName: props.topicRuleName,
     });
 
-    if (props.sql === '') {
-      throw new Error('sql cannot be empty.');
-    }
+    const sqlConfig = props.sql.bind(this);
 
     const resource = new CfnTopicRule(this, 'Resource', {
       ruleName: this.physicalName,
       topicRulePayload: {
         actions: Lazy.any({ produce: () => this.actions }),
-        sql: props.sql,
+        awsIotSqlVersion: sqlConfig.awsIotSqlVersion,
+        sql: sqlConfig.sql,
       },
     });
 

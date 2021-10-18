@@ -6,7 +6,7 @@ test('Default property', () => {
   const stack = new cdk.Stack();
 
   new iot.TopicRule(stack, 'MyTopicRule', {
-    sql: "SELECT topic(2) as device_id, temperature FROM 'device/+/data'",
+    sql: iot.IotSql.fromStringAsVer20151008("SELECT topic(2) as device_id, temperature FROM 'device/+/data'"),
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::IoT::TopicRule', {
@@ -20,7 +20,7 @@ test('Default property', () => {
 test('Can get topic rule name', () => {
   const stack = new cdk.Stack();
   const rule = new iot.TopicRule(stack, 'MyTopicRule', {
-    sql: "SELECT topic(2) as device_id, temperature FROM 'device/+/data'",
+    sql: iot.IotSql.fromStringAsVer20151008("SELECT topic(2) as device_id, temperature FROM 'device/+/data'"),
   });
 
   new cdk.CfnResource(stack, 'Res', {
@@ -38,7 +38,7 @@ test('Can get topic rule name', () => {
 test('Can get topic rule arn', () => {
   const stack = new cdk.Stack();
   const rule = new iot.TopicRule(stack, 'MyTopicRule', {
-    sql: "SELECT topic(2) as device_id, temperature FROM 'device/+/data'",
+    sql: iot.IotSql.fromStringAsVer20151008("SELECT topic(2) as device_id, temperature FROM 'device/+/data'"),
   });
 
   new cdk.CfnResource(stack, 'Res', {
@@ -62,12 +62,54 @@ test('Can set physical name', () => {
   // WHEN
   new iot.TopicRule(stack, 'MyTopicRule', {
     topicRuleName: 'PhysicalName',
-    sql: "SELECT topic(2) as device_id, temperature FROM 'device/+/data'",
+    sql: iot.IotSql.fromStringAsVer20151008("SELECT topic(2) as device_id, temperature FROM 'device/+/data'"),
   });
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::IoT::TopicRule', {
     RuleName: 'PhysicalName',
+  });
+});
+
+test('Can set sql as version 2015-10-08', () => {
+  const stack = new cdk.Stack();
+
+  new iot.TopicRule(stack, 'MyTopicRule', {
+    sql: iot.IotSql.fromStringAsVer20151008("SELECT topic(2) as device_id, temperature FROM 'device/+/data'"),
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::IoT::TopicRule', {
+    TopicRulePayload: {
+      AwsIotSqlVersion: '2015-10-08',
+    },
+  });
+});
+
+test('Can set sql as version 2016-03-23', () => {
+  const stack = new cdk.Stack();
+
+  new iot.TopicRule(stack, 'MyTopicRule', {
+    sql: iot.IotSql.fromStringAsVer20160323("SELECT topic(2) as device_id, temperature FROM 'device/+/data'"),
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::IoT::TopicRule', {
+    TopicRulePayload: {
+      AwsIotSqlVersion: '2016-03-23',
+    },
+  });
+});
+
+test('Can set sql as version newest', () => {
+  const stack = new cdk.Stack();
+
+  new iot.TopicRule(stack, 'MyTopicRule', {
+    sql: iot.IotSql.fromStringAsVerNewestUnstable("SELECT topic(2) as device_id, temperature FROM 'device/+/data'"),
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::IoT::TopicRule', {
+    TopicRulePayload: {
+      AwsIotSqlVersion: 'beta',
+    },
   });
 });
 
@@ -90,7 +132,7 @@ test('Can set actions', () => {
   };
 
   new iot.TopicRule(stack, 'MyTopicRule', {
-    sql: "SELECT topic(2) as device_id, temperature FROM 'device/+/data'",
+    sql: iot.IotSql.fromStringAsVer20151008("SELECT topic(2) as device_id, temperature FROM 'device/+/data'"),
     actions: [action1, action2],
   });
 
@@ -113,7 +155,7 @@ test('Can add actions', () => {
   const stack = new cdk.Stack();
 
   const topicRule = new iot.TopicRule(stack, 'MyTopicRule', {
-    sql: "SELECT topic(2) as device_id, temperature FROM 'device/+/data'",
+    sql: iot.IotSql.fromStringAsVer20151008("SELECT topic(2) as device_id, temperature FROM 'device/+/data'"),
   });
   topicRule.addAction({
     bind: () => ({
@@ -145,21 +187,11 @@ test('Can add actions', () => {
   });
 });
 
-test('Can not set empty query', () => {
-  const stack = new cdk.Stack();
-
-  expect(() => {
-    new iot.TopicRule(stack, 'MyTopicRule', { sql: '' });
-  }).toThrow(
-    'sql cannot be empty.',
-  );
-});
-
 test('Can not add actions have no action property', () => {
   const stack = new cdk.Stack();
 
   const topicRule = new iot.TopicRule(stack, 'MyTopicRule', {
-    sql: "SELECT topic(2) as device_id, temperature FROM 'device/+/data'",
+    sql: iot.IotSql.fromStringAsVer20151008("SELECT topic(2) as device_id, temperature FROM 'device/+/data'"),
   });
   const emptyAction: iot.IAction = {
     bind: () => ({
@@ -176,7 +208,7 @@ test('Can not add actions have multiple action properties', () => {
   const stack = new cdk.Stack();
 
   const topicRule = new iot.TopicRule(stack, 'MyTopicRule', {
-    sql: "SELECT topic(2) as device_id, temperature FROM 'device/+/data'",
+    sql: iot.IotSql.fromStringAsVer20151008("SELECT topic(2) as device_id, temperature FROM 'device/+/data'"),
   });
   const multipleAction: iot.IAction = {
     bind: () => ({

@@ -9,7 +9,7 @@ class TestStack extends cdk.Stack {
     super(scope, id, props);
 
     const topicRule = new iot.TopicRule(this, 'TopicRule', {
-      sql: "SELECT topic(2) as device_id FROM 'device/+/data'",
+      sql: iot.IotSql.fromStringAsVer20151008("SELECT topic(2) as device_id FROM 'device/+/data'"),
     });
 
     topicRule.addAction({
