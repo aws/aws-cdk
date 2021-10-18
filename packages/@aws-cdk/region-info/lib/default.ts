@@ -84,6 +84,10 @@ export class Default {
       case 'states':
         return `${service}.${region}.amazonaws.com`;
 
+      // Services for SSM
+      case 'ssm':
+        return `${service}.${region}.amazonaws.com`;
+
       // Services with a partitional principal
       case 'ec2':
         return `${service}.${urlSuffix}`;
