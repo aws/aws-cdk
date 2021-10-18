@@ -19,11 +19,19 @@ Owner: Core CDK team
 and commits the results.
 Owner: Core CDK team
 
+### Label Assigner
+[issue-label-assign.yml](issue-label-assign.yml): Github action for automatically adding labels and/or setting assignees when an Issue or PR is opened or edited based on user-defined Area
+Owner: CDK support team
+
 ## Issue Triggered
 
 ### Closed Issue Message
 [closed-issue-message.yml](closed-issue-message.yml): Adds a reminder message
 to issues that are closed.
+Owner: CDK support team
+
+### Label Assigner
+[issue-label-assign.yml](issue-label-assign.yml): Github action for automatically adding labels and/or setting assignees when an Issue or PR is opened or edited based on user-defined Area
 Owner: CDK support team
 
 ## Scheduled Actions
