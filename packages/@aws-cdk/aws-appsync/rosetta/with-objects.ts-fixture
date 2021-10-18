@@ -1,0 +1,58 @@
+// Fixture with packages imported, but nothing else
+import { Construct, Stack } from '@aws-cdk/core';
+import appsync = require('@aws-cdk/aws-appsync');
+const pluralize = require('pluralize');
+
+// Workaround to simulate these values in 'scalar-types.ts'
+namespace scalar {
+  export const string = appsync.GraphqlType.string();
+  export const int = appsync.GraphqlType.int();
+  export const required_string = appsync.GraphqlType.string({ isRequired: true });
+}
+
+// Workaround to simulate these values in 'object-types.ts'
+namespace schema {
+  export const args = {
+    after: scalar.string,
+    first: scalar.int,
+    before: scalar.string,
+    last: scalar.int,
+  };
+
+  export const Node = new appsync.InterfaceType('Node', {
+    definition: { id: scalar.string }
+  });
+  export const FilmNode = new appsync.ObjectType('FilmNode', {
+    interfaceTypes: [Node],
+    definition: { filmName: scalar.string }
+  });
+
+  export function generateEdgeAndConnection(base: appsync.ObjectType) {
+    const edge = new appsync.ObjectType(`${base.name}Edge`, {
+      definition: { node: base.attribute(), cursor: scalar.string }
+    });
+    const connection = new appsync.ObjectType(`${base.name}Connection`, {
+      definition: {
+        edges: edge.attribute({ isList: true }),
+        [pluralize(base.name)]: base.attribute({ isList: true }),
+        totalCount: scalar.int,
+      }
+    });
+    return { edge: edge, connection: connection };
+  }
+
+  export const demo = new appsync.ObjectType('Demo', {
+    definition: {
+      id: scalar.required_string,
+      version: scalar.required_string,
+    },
+  });
+}
+
+class Fixture extends Stack {
+  constructor(scope: Construct, id: string) {
+    super(scope, id);
+
+    /// here
+  }
+}
