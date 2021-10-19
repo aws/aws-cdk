@@ -7,6 +7,7 @@ import * as sns from '@aws-cdk/aws-sns';
 
 import {
   Annotations,
+  Aspects,
   Aws,
   CfnAutoScalingRollingUpdate, CfnCreationPolicy, CfnUpdatePolicy,
   Duration, Fn, IResource, Lazy, PhysicalName, Resource, Stack, Tags,
@@ -14,6 +15,7 @@ import {
   Tokenization, withResolved,
 } from '@aws-cdk/core';
 import { Construct } from 'constructs';
+import { AutoScalingGroupRequireImdsv2Aspect } from './aspects';
 import { CfnAutoScalingGroup, CfnAutoScalingGroupProps, CfnLaunchConfiguration } from './autoscaling.generated';
 import { BasicLifecycleHookProps, LifecycleHook } from './lifecycle-hook';
 import { BasicScheduledActionProps, ScheduledAction } from './scheduled-action';
@@ -384,6 +386,13 @@ export interface AutoScalingGroupProps extends CommonAutoScalingGroupProps {
    * @default - default options
    */
   readonly initOptions?: ApplyCloudFormationInitOptions;
+
+  /**
+   * Whether IMDSv2 should be required on launched instances.
+   *
+   * @default - false
+   */
+  readonly requireImdsv2?: boolean;
 }
 
 /**
@@ -1065,6 +1074,10 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     }
 
     this.spotPrice = props.spotPrice;
+
+    if (props.requireImdsv2) {
+      Aspects.of(this).add(new AutoScalingGroupRequireImdsv2Aspect());
+    }
   }
 
   /**
