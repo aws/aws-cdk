@@ -187,7 +187,7 @@ test('Can add actions', () => {
   });
 });
 
-test('Can not add actions have no action property', () => {
+test('cannot add actions that have no action property', () => {
   const stack = new cdk.Stack();
 
   const topicRule = new iot.TopicRule(stack, 'MyTopicRule', {
