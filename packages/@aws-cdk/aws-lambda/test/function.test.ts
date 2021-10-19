@@ -1082,6 +1082,8 @@ describe('function', () => {
       const fn = lambda.Function.fromFunctionArn(stack, 'Function', 'arn:aws:lambda:us-east-1:123456789012:function:MyFn');
 
       // THEN
+      expect(fn.env.account).toEqual('123456789012');
+      expect(fn.env.region).toEqual('us-east-1');
       expect(() => { fn.grantInvoke(new iam.ServicePrincipal('elasticloadbalancing.amazonaws.com')); })
         .toThrow(/Cannot modify permission to lambda function/);
     });

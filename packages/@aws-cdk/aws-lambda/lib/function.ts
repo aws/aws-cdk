@@ -470,7 +470,9 @@ export class Function extends FunctionBase {
       }
     }
 
-    return new Import(scope, id);
+    return new Import(scope, id, {
+      environmentFromArn: functionArn,
+    });
   }
 
   /**
