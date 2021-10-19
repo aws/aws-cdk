@@ -63,7 +63,7 @@ export class TopicRule extends Resource implements ITopicRule {
   public static fromTopicRuleArn(scope: Construct, id: string, topicRuleArn: string): ITopicRule {
     const parts = Stack.of(scope).splitArn(topicRuleArn, ArnFormat.SLASH_RESOURCE_NAME);
     if (!parts.resourceName) {
-      throw new Error('Invalid topic rule arn: topicRuleArn has no resource name.');
+      throw new Error(`Missing topic rule name in ARN: '${topicRuleArn}'`);
     }
     const resourceName = parts.resourceName;
 
