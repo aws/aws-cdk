@@ -550,45 +550,38 @@ Above we see a schema that allows for generating paginated responses. For exampl
 we can query `allFilms(first: 100)` since `FilmConnection` acts as an intermediary
 for holding `FilmEdges` we can write a resolver to return the first 100 films.
 
-In a separate file, we can declare our scalar types: `scalar-types.ts`.
-
-```ts nofixture
-import * as appsync from '@aws-cdk/aws-appsync';
-export const string = appsync.GraphqlType.string();
-export const int = appsync.GraphqlType.int();
-```
-
-In another separate file, we can declare our object types and related functions.
+In a separate file, we can declare our object types and related functions.
 We will call this file `object-types.ts` and we will have created it in a way that
 allows us to generate other `XxxConnection` and `XxxEdges` in the future.
 
-```ts fixture=with-scalars
+```ts nofixture
+import * as appsync from '@aws-cdk/aws-appsync';
 const pluralize = require('pluralize');
 
 export const args = {
-  after: scalar.string,
-  first: scalar.int,
-  before: scalar.string,
-  last: scalar.int,
+  after: appsync.GraphqlType.string(),
+  first: appsync.GraphqlType.int(),
+  before: appsync.GraphqlType.string(),
+  last: appsync.GraphqlType.int(),
 };
 
 export const Node = new appsync.InterfaceType('Node', {
-  definition: { id: scalar.string }
+  definition: { id: appsync.GraphqlType.string() }
 });
 export const FilmNode = new appsync.ObjectType('FilmNode', {
   interfaceTypes: [Node],
-  definition: { filmName: scalar.string }
+  definition: { filmName: appsync.GraphqlType.string() }
 });
 
 export function generateEdgeAndConnection(base: appsync.ObjectType) {
   const edge = new appsync.ObjectType(`${base.name}Edge`, {
-    definition: { node: base.attribute(), cursor: scalar.string }
+    definition: { node: base.attribute(), cursor: appsync.GraphqlType.string() }
   });
   const connection = new appsync.ObjectType(`${base.name}Connection`, {
     definition: {
       edges: edge.attribute({ isList: true }),
       [pluralize(base.name)]: base.attribute({ isList: true }),
-      totalCount: scalar.int,
+      totalCount: appsync.GraphqlType.int(),
     }
   });
   return { edge: edge, connection: connection };
@@ -606,20 +599,20 @@ const api = new appsync.GraphqlApi(this, 'Api', {
   name: 'demo',
 });
 
-const objectTypes = [ schema.Node, schema.FilmNode ];
+const objectTypes = [ Node, FilmNode ];
 
-const filmConnections = schema.generateEdgeAndConnection(schema.FilmNode);
+const filmConnections = generateEdgeAndConnection(FilmNode);
 
 api.addQuery('allFilms', new appsync.ResolvableField({
   returnType: filmConnections.connection.attribute(),
-  args: schema.args,
+  args: args,
   dataSource: api.addNoneDataSource('none'),
   requestMappingTemplate: dummyRequest,
   responseMappingTemplate: dummyResponse,
 }));
 
-api.addType(schema.Node);
-api.addType(schema.FilmNode);
+api.addType(Node);
+api.addType(FilmNode);
 api.addType(filmConnections.edge);
 api.addType(filmConnections.connection);
 ```
@@ -822,20 +815,14 @@ You can create Object Types in two ways:
     > This method allows for reusability and modularity, ideal for larger projects.
     For example, imagine moving all Object Type definition outside the stack.
 
-    `scalar-types.ts` - a file for scalar type definitions
+    `object-types.ts` - a file for object type definitions
 
     ```ts nofixture
     import * as appsync from '@aws-cdk/aws-appsync';
-    export const required_string = appsync.GraphqlType.string({ isRequired: true });
-    ```
-
-    `object-types.ts` - a file for object type definitions
-
-    ```ts fixture=with-scalars
     export const demo = new appsync.ObjectType('Demo', {
       definition: {
-        id: scalar.required_string,
-        version: scalar.required_string,
+        id: appsync.GraphqlType.string({ isRequired: true }),
+        version: appsync.GraphqlType.string({ isRequired: true }),
       },
     });
     ```
@@ -844,7 +831,7 @@ You can create Object Types in two ways:
 
     ```ts fixture=with-objects
     declare const api: appsync.GraphqlApi;
-    api.addType(schema.demo);
+    api.addType(demo);
     ```
 
 2. Object Types can be created ***externally*** from an Interface Type.
