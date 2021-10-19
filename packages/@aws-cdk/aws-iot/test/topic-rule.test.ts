@@ -246,7 +246,5 @@ test('Can not import if invalid topic rule arn', () => {
 
   expect(() => {
     iot.TopicRule.fromTopicRuleArn(stack, 'TopicRuleFromArn', topicRuleArn);
-  }).toThrow(
-    'Invalid topic rule arn: topicRuleArn has no resource name.',
-  );
+  }).toThrow('Invalid topic rule arn: topicRuleArn has no resource name.');
 });
