@@ -4,8 +4,9 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import { testFutureBehavior } from 'cdk-build-tools/lib/feature-flag';
+import { testFutureBehavior } from '@aws-cdk/cdk-build-tools/lib/feature-flag';
 import * as glue from '../lib';
+import { CfnTable } from '../lib/glue.generated';
 
 const s3GrantWriteCtx = { [cxapi.S3_GRANT_WRITE_WITHOUT_ACL]: true };
 
@@ -245,7 +246,7 @@ test('table.node.defaultChild', () => {
   });
 
   // THEN
-  expect(table.node.defaultChild instanceof glue.CfnTable).toEqual(true);
+  expect(table.node.defaultChild instanceof CfnTable).toEqual(true);
 });
 
 test('encrypted table: SSE-S3', () => {

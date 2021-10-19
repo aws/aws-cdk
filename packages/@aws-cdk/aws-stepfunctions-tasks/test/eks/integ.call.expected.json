@@ -84,9 +84,7 @@
           "Ref": "EksClusterDefaultVpcIGWCA6A3220"
         }
       },
-      "DependsOn": [
-        "EksClusterDefaultVpcVPCGW0E4A5673"
-      ]
+      "DependsOn": ["EksClusterDefaultVpcVPCGW0E4A5673"]
     },
     "EksClusterDefaultVpcPublicSubnet1EIPF53713C9": {
       "Type": "AWS::EC2::EIP",
@@ -197,9 +195,7 @@
           "Ref": "EksClusterDefaultVpcIGWCA6A3220"
         }
       },
-      "DependsOn": [
-        "EksClusterDefaultVpcVPCGW0E4A5673"
-      ]
+      "DependsOn": ["EksClusterDefaultVpcVPCGW0E4A5673"]
     },
     "EksClusterDefaultVpcPublicSubnet2EIP16D41D80": {
       "Type": "AWS::EC2::EIP",
@@ -310,9 +306,7 @@
           "Ref": "EksClusterDefaultVpcIGWCA6A3220"
         }
       },
-      "DependsOn": [
-        "EksClusterDefaultVpcVPCGW0E4A5673"
-      ]
+      "DependsOn": ["EksClusterDefaultVpcVPCGW0E4A5673"]
     },
     "EksClusterDefaultVpcPublicSubnet3EIPF8D34EDE": {
       "Type": "AWS::EC2::EIP",
@@ -709,10 +703,7 @@
               "Action": "iam:PassRole",
               "Effect": "Allow",
               "Resource": {
-                "Fn::GetAtt": [
-                  "EksClusterRoleC84B376F",
-                  "Arn"
-                ]
+                "Fn::GetAtt": ["EksClusterRoleC84B376F", "Arn"]
               }
             },
             {
@@ -799,10 +790,7 @@
               }
             },
             {
-              "Action": [
-                "iam:GetRole",
-                "iam:listAttachedRolePolicies"
-              ],
+              "Action": ["iam:GetRole", "iam:listAttachedRolePolicies"],
               "Effect": "Allow",
               "Resource": "*"
             },
@@ -883,10 +871,7 @@
           "name": "eksCluster",
           "version": "1.18",
           "roleArn": {
-            "Fn::GetAtt": [
-              "EksClusterRoleC84B376F",
-              "Arn"
-            ]
+            "Fn::GetAtt": ["EksClusterRoleC84B376F", "Arn"]
           },
           "resourcesVpcConfig": {
             "subnetIds": [
@@ -922,10 +907,7 @@
           }
         },
         "AssumeRoleArn": {
-          "Fn::GetAtt": [
-            "EksClusterCreationRole75AABE42",
-            "Arn"
-          ]
+          "Fn::GetAtt": ["EksClusterCreationRole75AABE42", "Arn"]
         },
         "AttributesRevision": 2
       },
@@ -1028,17 +1010,11 @@
             [
               "[{\"apiVersion\":\"v1\",\"kind\":\"ConfigMap\",\"metadata\":{\"name\":\"aws-auth\",\"namespace\":\"kube-system\",\"labels\":{\"aws.cdk.eks/prune-c8f58087a1a3e6c10f65d847befda9c1aa2145a8fc\":\"\"}},\"data\":{\"mapRoles\":\"[{\\\"rolearn\\\":\\\"",
               {
-                "Fn::GetAtt": [
-                  "EksClusterMastersRole3F49FAC3",
-                  "Arn"
-                ]
+                "Fn::GetAtt": ["EksClusterMastersRole3F49FAC3", "Arn"]
               },
               "\\\",\\\"username\\\":\\\"",
               {
-                "Fn::GetAtt": [
-                  "EksClusterMastersRole3F49FAC3",
-                  "Arn"
-                ]
+                "Fn::GetAtt": ["EksClusterMastersRole3F49FAC3", "Arn"]
               },
               "\\\",\\\"groups\\\":[\\\"system:masters\\\"]},{\\\"rolearn\\\":\\\"",
               {
@@ -1049,17 +1025,11 @@
               },
               "\\\",\\\"username\\\":\\\"system:node:{{EC2PrivateDNSName}}\\\",\\\"groups\\\":[\\\"system:bootstrappers\\\",\\\"system:nodes\\\"]},{\\\"rolearn\\\":\\\"",
               {
-                "Fn::GetAtt": [
-                  "Role1ABCC5F0",
-                  "Arn"
-                ]
+                "Fn::GetAtt": ["Role1ABCC5F0", "Arn"]
               },
               "\\\",\\\"username\\\":\\\"",
               {
-                "Fn::GetAtt": [
-                  "Role1ABCC5F0",
-                  "Arn"
-                ]
+                "Fn::GetAtt": ["Role1ABCC5F0", "Arn"]
               },
               "\\\",\\\"groups\\\":[\\\"system:masters\\\"]}]\",\"mapUsers\":\"[]\",\"mapAccounts\":\"[]\"}}]"
             ]
@@ -1069,17 +1039,12 @@
           "Ref": "EksClusterFAB68BDB"
         },
         "RoleArn": {
-          "Fn::GetAtt": [
-            "EksClusterCreationRole75AABE42",
-            "Arn"
-          ]
+          "Fn::GetAtt": ["EksClusterCreationRole75AABE42", "Arn"]
         },
         "PruneLabel": "aws.cdk.eks/prune-c8f58087a1a3e6c10f65d847befda9c1aa2145a8fc",
         "Overwrite": true
       },
-      "DependsOn": [
-        "EksClusterKubectlReadyBarrier502B0E83"
-      ],
+      "DependsOn": ["EksClusterKubectlReadyBarrier502B0E83"],
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
     },
@@ -1173,9 +1138,7 @@
         ],
         "AmiType": "AL2_x86_64",
         "ForceUpdateEnabled": true,
-        "InstanceTypes": [
-          "m5.large"
-        ],
+        "InstanceTypes": ["m5.large"],
         "ScalingConfig": {
           "DesiredSize": 2,
           "MaxSize": 2,
@@ -1234,10 +1197,7 @@
         },
         "Parameters": {
           "referencetoawsstepfunctionstasksekscallintegEksClusterCreationRole00B486C4Arn": {
-            "Fn::GetAtt": [
-              "EksClusterCreationRole75AABE42",
-              "Arn"
-            ]
+            "Fn::GetAtt": ["EksClusterCreationRole75AABE42", "Arn"]
           },
           "referencetoawsstepfunctionstasksekscallintegAssetParameters2fbc509041827d9042c1a07f5a1b3629c583224b5543800048ed8be264460e7eS3Bucket7F9374E5Ref": {
             "Ref": "AssetParameters2fbc509041827d9042c1a07f5a1b3629c583224b5543800048ed8be264460e7eS3Bucket575E2F4C"
@@ -1313,16 +1273,10 @@
         },
         "Parameters": {
           "referencetoawsstepfunctionstasksekscallintegEksClusterCA674174Arn": {
-            "Fn::GetAtt": [
-              "EksClusterFAB68BDB",
-              "Arn"
-            ]
+            "Fn::GetAtt": ["EksClusterFAB68BDB", "Arn"]
           },
           "referencetoawsstepfunctionstasksekscallintegEksClusterCreationRole00B486C4Arn": {
-            "Fn::GetAtt": [
-              "EksClusterCreationRole75AABE42",
-              "Arn"
-            ]
+            "Fn::GetAtt": ["EksClusterCreationRole75AABE42", "Arn"]
           },
           "referencetoawsstepfunctionstasksekscallintegAssetParameters4129bbca38164ecb28fee8e5b674f0d05e5957b4b8ed97d9c950527b5cc4ce10S3BucketF4AF10B8Ref": {
             "Ref": "AssetParameters4129bbca38164ecb28fee8e5b674f0d05e5957b4b8ed97d9c950527b5cc4ce10S3BucketC6FAEEC9"
@@ -1340,10 +1294,7 @@
             "Ref": "EksClusterDefaultVpcPrivateSubnet3Subnet6C4BFC07"
           },
           "referencetoawsstepfunctionstasksekscallintegEksClusterCA674174ClusterSecurityGroupId": {
-            "Fn::GetAtt": [
-              "EksClusterFAB68BDB",
-              "ClusterSecurityGroupId"
-            ]
+            "Fn::GetAtt": ["EksClusterFAB68BDB", "ClusterSecurityGroupId"]
           },
           "referencetoawsstepfunctionstasksekscallintegAssetParameterse9882ab123687399f934da0d45effe675ecc8ce13b40cb946f3e1d6141fe8d68S3Bucket3F56B6C0Ref": {
             "Ref": "AssetParameterse9882ab123687399f934da0d45effe675ecc8ce13b40cb946f3e1d6141fe8d68S3BucketAEADE8C7"
@@ -1401,10 +1352,7 @@
       "Type": "AWS::StepFunctions::StateMachine",
       "Properties": {
         "RoleArn": {
-          "Fn::GetAtt": [
-            "Role1ABCC5F0",
-            "Arn"
-          ]
+          "Fn::GetAtt": ["Role1ABCC5F0", "Arn"]
         },
         "DefinitionString": {
           "Fn::Join": [
@@ -1420,26 +1368,18 @@
               },
               "\",\"CertificateAuthority\":\"",
               {
-                "Fn::GetAtt": [
-                  "EksClusterFAB68BDB",
-                  "CertificateAuthorityData"
-                ]
+                "Fn::GetAtt": ["EksClusterFAB68BDB", "CertificateAuthorityData"]
               },
               "\",\"Endpoint\":\"",
               {
-                "Fn::GetAtt": [
-                  "EksClusterFAB68BDB",
-                  "Endpoint"
-                ]
+                "Fn::GetAtt": ["EksClusterFAB68BDB", "Endpoint"]
               },
               "\",\"Method\":\"GET\",\"Path\":\"/api/v1/namespaces/default/pods\"}}},\"TimeoutSeconds\":30}"
             ]
           ]
         }
       },
-      "DependsOn": [
-        "Role1ABCC5F0"
-      ]
+      "DependsOn": ["Role1ABCC5F0"]
     }
   },
   "Outputs": {
@@ -1458,10 +1398,7 @@
             },
             " --role-arn ",
             {
-              "Fn::GetAtt": [
-                "EksClusterMastersRole3F49FAC3",
-                "Arn"
-              ]
+              "Fn::GetAtt": ["EksClusterMastersRole3F49FAC3", "Arn"]
             }
           ]
         ]
@@ -1482,10 +1419,7 @@
             },
             " --role-arn ",
             {
-              "Fn::GetAtt": [
-                "EksClusterMastersRole3F49FAC3",
-                "Arn"
-              ]
+              "Fn::GetAtt": ["EksClusterMastersRole3F49FAC3", "Arn"]
             }
           ]
         ]

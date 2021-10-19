@@ -35,12 +35,7 @@ describe('cluster', () => {
     const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.ClusterResourceProvider') as cdk.NestedStack;
 
     const template = SynthUtils.toCloudFormation(nested);
-    expect(template.Resources.OnEventHandler42BEBAE0.Properties.Environment).toEqual({
-      Variables: {
-        AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
-        foo: 'bar',
-      },
-    });
+    expect(template.Resources.OnEventHandler42BEBAE0.Properties.Environment).toEqual({ Variables: { foo: 'bar' } });
   });
 
   test('throws when trying to place cluster handlers in a vpc with no private subnets', () => {
@@ -223,8 +218,38 @@ describe('cluster', () => {
     expect(template.Resources.ClusterselfmanagedInstanceSecurityGroup64468C3A.Properties.Tags).toEqual([
       { Key: 'Name', Value: 'Stack/Cluster/self-managed' },
     ]);
+  });
 
+  test('connect autoscaling group with imported cluster', () => {
 
+    // GIVEN
+    const { stack, vpc } = testFixture();
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+      prune: false,
+    });
+
+    const importedCluster = eks.Cluster.fromClusterAttributes(stack, 'ImportedCluster', {
+      clusterName: cluster.clusterName,
+      clusterSecurityGroupId: cluster.clusterSecurityGroupId,
+    });
+
+    const selfManaged = new asg.AutoScalingGroup(stack, 'self-managed', {
+      instanceType: new ec2.InstanceType('t2.medium'),
+      vpc: vpc,
+      machineImage: new ec2.AmazonLinuxImage(),
+    });
+
+    // WHEN
+    importedCluster.connectAutoScalingGroupCapacity(selfManaged, {});
+
+    const template = SynthUtils.toCloudFormation(stack);
+    expect(template.Resources.selfmanagedLaunchConfigD41289EB.Properties.SecurityGroups).toEqual([
+      { 'Fn::GetAtt': ['selfmanagedInstanceSecurityGroupEA6D80C9', 'GroupId'] },
+      { 'Fn::GetAtt': ['Cluster9EE0221C', 'ClusterSecurityGroupId'] },
+    ]);
   });
 
   test('cluster security group is attached when connecting self-managed nodes', () => {
@@ -2861,6 +2886,28 @@ describe('cluster', () => {
     const casm = app.synth();
     const providerNestedStackTemplate = JSON.parse(fs.readFileSync(path.join(casm.directory, 'StackStackImported1CBA9C50KubectlProviderAA00BA49.nested.template.json'), 'utf-8'));
     expect(providerNestedStackTemplate?.Resources?.Handler886CB40B?.Properties?.MemorySize).toEqual(4096);
+
+  });
+
+  test('create a cluster using custom kubernetes network config', () => {
+    // GIVEN
+    const { stack } = testFixture();
+    const customCidr = '172.16.0.0/12';
+
+    // WHEN
+    new eks.Cluster(stack, 'Cluster', {
+      version: CLUSTER_VERSION,
+      serviceIpv4Cidr: customCidr,
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('Custom::AWSCDK-EKS-Cluster', {
+      Config: {
+        kubernetesNetworkConfig: {
+          serviceIpv4Cidr: customCidr,
+        },
+      },
+    });
 
   });
 });
