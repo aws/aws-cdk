@@ -762,6 +762,40 @@ describe('container definition', () => {
     });
   });
 
+  test('can specify system controls', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+
+    // WHEN
+    taskDefinition.addContainer('cont', {
+      image: ecs.ContainerImage.fromRegistry('test'),
+      memoryLimitMiB: 1024,
+      systemControls: [
+        { namespace: 'SomeNamespace1', value: 'SomeValue1' },
+        { namespace: 'SomeNamespace2', value: 'SomeValue2' },
+      ],
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+      ContainerDefinitions: [
+        {
+          SystemControls: [
+            {
+              Namespace: 'SomeNamespace1',
+              Value: 'SomeValue1',
+            },
+            {
+              Namespace: 'SomeNamespace2',
+              Value: 'SomeValue2',
+            },
+          ],
+        },
+      ],
+    });
+  });
+
   describe('Environment Files', () => {
     describe('with EC2 task definitions', () => {
       test('can add asset environment file to the container definition', () => {
