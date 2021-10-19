@@ -1317,6 +1317,21 @@ describe('custom error responses', () => {
     })).toThrow(/Unknown Elasticsearch version: 5\.4/);
   });
 
+  test('error when invalid domain name is given', () => {
+    expect(() => new Domain(stack, 'Domain1', {
+      version: ElasticsearchVersion.V7_4,
+      domainName: 'InvalidName',
+    })).toThrow(/Valid characters are a-z/);
+    expect(() => new Domain(stack, 'Domain2', {
+      version: ElasticsearchVersion.V7_4,
+      domainName: 'a'.repeat(29),
+    })).toThrow(/It must be between 3 and 28 characters/);
+    expect(() => new Domain(stack, 'Domain3', {
+      version: ElasticsearchVersion.V7_4,
+      domainName: 'Domain123',
+    })).toThrow(/It must start with a lowercase letter/);
+  });
+
   test('error when error log publishing is enabled for elasticsearch version < 5.1', () => {
     const error = /Error logs publishing requires Elasticsearch version 5.1 or later/;
     expect(() => new Domain(stack, 'Domain1', {
