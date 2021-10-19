@@ -1319,16 +1319,19 @@ describe('custom error responses', () => {
     })).toThrow('Unknown Elasticsearch version: 5.4');
   });
 
-
   test('error when invalid domain name is given', () => {
     expect(() => new Domain(stack, 'Domain1', {
       version: EngineVersion.OPENSEARCH_1_0,
       domainName: 'InvalidName',
-    })).toThrow(/domainName 'InvalidName' failed to satisfy constraint/);
-    expect(() => new Domain(stack, 'Domain1', {
+    })).toThrow(/Valid characters are a-z/);
+    expect(() => new Domain(stack, 'Domain2', {
       version: EngineVersion.OPENSEARCH_1_0,
       domainName: 'a'.repeat(29),
-    })).toThrow(/domainName 'a{29}' failed to satisfy constraint/);
+    })).toThrow(/It must be between 3 and 28 characters/);
+    expect(() => new Domain(stack, 'Domain3', {
+      version: EngineVersion.OPENSEARCH_1_0,
+      domainName: 'Domain123',
+    })).toThrow(/It must start with a lowercase letter/);
   });
 
   test('error when error log publishing is enabled for Elasticsearch version < 5.1', () => {

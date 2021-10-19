@@ -1625,13 +1625,17 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
     if (logGroupResourcePolicy) { this.domain.node.addDependency(logGroupResourcePolicy); }
 
     if (props.domainName) {
-      if (!cdk.Token.isUnresolved(props.domainName) && !props.domainName.match(/^[a-z][a-z0-9\-]{2,26}$/)) {
+      if (!cdk.Token.isUnresolved(props.domainName)) {
         // https://docs.aws.amazon.com/opensearch-service/latest/developerguide/configuration-api.html#configuration-api-datatypes-domainname
-        throw new Error(
-          `domainName '${props.domainName}' failed to satisfy constraint. ` +
-          'It must start with a lowercase letter and must be between 3 and 28 characters. ' +
-          'Valid characters are a-z (lowercase only), 0-9, and – (hyphen).',
-        );
+        if (!props.domainName.match(/[a-z0-9\-]+/)) {
+          throw new Error(`Invalid domainName '${props.domainName}'. Valid characters are a-z (lowercase only), 0-9, and – (hyphen).`);
+        }
+        if (props.domainName.length < 3 || props.domainName.length > 28) {
+          throw new Error(`Invalid domainName '${props.domainName}'. It must be between 3 and 28 characters`);
+        }
+        if (props.domainName[0] < 'a' || props.domainName[0] > 'z') {
+          throw new Error(`Invalid domainName '${props.domainName}'. It must start with a lowercase letter`);
+        }
       }
       this.node.addMetadata('aws:cdk:hasPhysicalName', props.domainName);
     }
