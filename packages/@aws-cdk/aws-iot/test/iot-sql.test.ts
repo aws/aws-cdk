@@ -11,7 +11,7 @@ describe('sql version 2015-10-08', () => {
     });
   });
 
-  test('Can\'t set empty sql', () => {
+  test("Can't set empty sql", () => {
     expect(() => {
       iot.IotSql.fromStringAsVer20151008('');
     }).toThrow('sql cannot be empty.');
