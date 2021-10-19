@@ -204,7 +204,7 @@ test('cannot add actions that have no action property', () => {
   }).toThrow('Empty actions are not allowed. Please define one type of action');
 });
 
-test('Can not add actions have multiple action properties', () => {
+test('cannot add actions that have multiple action properties', () => {
   const stack = new cdk.Stack();
 
   const topicRule = new iot.TopicRule(stack, 'MyTopicRule', {
