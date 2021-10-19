@@ -3260,6 +3260,8 @@ describe('ec2 service', () => {
       expect(service.serviceArn).toEqual('arn:aws:ecs:us-west-2:123456789012:service/my-http-service');
       expect(service.serviceName).toEqual('my-http-service');
 
+      expect(service.env.account).toEqual('123456789012');
+      expect(service.env.region).toEqual('us-west-2');
 
     });
 

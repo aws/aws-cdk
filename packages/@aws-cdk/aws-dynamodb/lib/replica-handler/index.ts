@@ -49,12 +49,13 @@ export async function isCompleteHandler(event: IsCompleteRequest): Promise<IsCom
   const replicas = data.Table?.Replicas ?? [];
   const regionReplica = replicas.find(r => r.RegionName === event.ResourceProperties.Region);
   const replicaActive = !!(regionReplica?.ReplicaStatus === 'ACTIVE');
+  const skipReplicationCompletedWait = event.ResourceProperties.SkipReplicationCompletedWait ?? false;
 
   switch (event.RequestType) {
     case 'Create':
     case 'Update':
       // Complete when replica is reported as ACTIVE
-      return { IsComplete: tableActive && replicaActive };
+      return { IsComplete: tableActive && (replicaActive || skipReplicationCompletedWait) };
     case 'Delete':
       // Complete when replica is gone
       return { IsComplete: tableActive && regionReplica === undefined };

@@ -65,11 +65,11 @@ export interface ShellStepProps {
    * following configuration:
    *
    * ```ts
-   * const script = new ShellStep('MainScript', {
-   *   // ...
-   *   input: MyEngineSource.gitHub('org/source1'),
+   * const script = new pipelines.ShellStep('MainScript', {
+   *   commands: ['npm ci','npm run build','npx cdk synth'],
+   *   input: pipelines.CodePipelineSource.gitHub('org/source1', 'main'),
    *   additionalInputs: {
-   *     '../siblingdir': MyEngineSource.gitHub('org/source2'),
+   *     '../siblingdir': pipelines.CodePipelineSource.gitHub('org/source2', 'main'),
    *   }
    * });
    * ```

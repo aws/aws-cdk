@@ -536,6 +536,15 @@ export interface ClusterOptions extends CommonClusterOptions {
    *            using AWS-Managed encryption keys.
    */
   readonly secretsEncryptionKey?: kms.IKey;
+
+  /**
+   * The CIDR block to assign Kubernetes service IP addresses from.
+   *
+   * @default - Kubernetes assigns addresses from either the
+   *            10.100.0.0/16 or 172.20.0.0/16 CIDR blocks
+   * @see https://docs.aws.amazon.com/eks/latest/APIReference/API_KubernetesNetworkConfigRequest.html#AmazonEKS-Type-KubernetesNetworkConfigRequest-serviceIpv4Cidr
+   */
+  readonly serviceIpv4Cidr?: string;
 }
 
 /**
@@ -1219,6 +1228,9 @@ export class Cluster extends ClusterBase {
           resources: ['secrets'],
         }],
       } : {}),
+      kubernetesNetworkConfig: props.serviceIpv4Cidr ? {
+        serviceIpv4Cidr: props.serviceIpv4Cidr,
+      } : undefined,
       endpointPrivateAccess: this.endpointAccess._config.privateAccess,
       endpointPublicAccess: this.endpointAccess._config.publicAccess,
       publicAccessCidrs: this.endpointAccess._config.publicCidrs,

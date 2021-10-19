@@ -1590,17 +1590,21 @@ describe('ARM image', () => {
       });
     });
 
-    test('cannot be used in conjunction with ComputeType SMALL', () => {
+    test('can be used with ComputeType SMALL', () => {
       const stack = new cdk.Stack();
+      new codebuild.PipelineProject(stack, 'Project', {
+        environment: {
+          computeType: codebuild.ComputeType.SMALL,
+          buildImage: codebuild.LinuxBuildImage.AMAZON_LINUX_2_ARM,
+        },
+      });
 
-      expect(() => {
-        new codebuild.PipelineProject(stack, 'Project', {
-          environment: {
-            buildImage: codebuild.LinuxBuildImage.AMAZON_LINUX_2_ARM,
-            computeType: codebuild.ComputeType.SMALL,
-          },
-        });
-      }).toThrow(/ARM images only support ComputeType 'BUILD_GENERAL1_LARGE' - 'BUILD_GENERAL1_SMALL' was given/);
+      expect(stack).toHaveResourceLike('AWS::CodeBuild::Project', {
+        'Environment': {
+          'Type': 'ARM_CONTAINER',
+          'ComputeType': 'BUILD_GENERAL1_SMALL',
+        },
+      });
     });
 
     test('cannot be used in conjunction with ComputeType MEDIUM', () => {
@@ -1613,7 +1617,24 @@ describe('ARM image', () => {
             computeType: codebuild.ComputeType.MEDIUM,
           },
         });
-      }).toThrow(/ARM images only support ComputeType 'BUILD_GENERAL1_LARGE' - 'BUILD_GENERAL1_MEDIUM' was given/);
+      }).toThrow(/ARM images only support ComputeTypes 'BUILD_GENERAL1_SMALL' and 'BUILD_GENERAL1_LARGE' - 'BUILD_GENERAL1_MEDIUM' was given/);
+    });
+
+    test('can be used with ComputeType LARGE', () => {
+      const stack = new cdk.Stack();
+      new codebuild.PipelineProject(stack, 'Project', {
+        environment: {
+          computeType: codebuild.ComputeType.LARGE,
+          buildImage: codebuild.LinuxBuildImage.AMAZON_LINUX_2_ARM,
+        },
+      });
+
+      expect(stack).toHaveResourceLike('AWS::CodeBuild::Project', {
+        'Environment': {
+          'Type': 'ARM_CONTAINER',
+          'ComputeType': 'BUILD_GENERAL1_LARGE',
+        },
+      });
     });
 
     test('cannot be used in conjunction with ComputeType X2_LARGE', () => {
@@ -1626,7 +1647,7 @@ describe('ARM image', () => {
             computeType: codebuild.ComputeType.X2_LARGE,
           },
         });
-      }).toThrow(/ARM images only support ComputeType 'BUILD_GENERAL1_LARGE' - 'BUILD_GENERAL1_2XLARGE' was given/);
+      }).toThrow(/ARM images only support ComputeTypes 'BUILD_GENERAL1_SMALL' and 'BUILD_GENERAL1_LARGE' - 'BUILD_GENERAL1_2XLARGE' was given/);
     });
   });
 });

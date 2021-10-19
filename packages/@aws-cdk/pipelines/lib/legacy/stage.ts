@@ -16,6 +16,8 @@ import { CdkPipeline } from './pipeline';
 
 /**
  * Construction properties for a CdkStage
+ *
+ * @deprecated This class is part of the old API. Use the API based on the `CodePipeline` class instead
  */
 export interface CdkStageProps {
   /**
@@ -66,6 +68,8 @@ export interface CdkStageProps {
  *
  * You don't need to instantiate this class directly. Use
  * `cdkPipeline.addStage()` instead.
+ *
+ * @deprecated This class is part of the old API. Use the API based on the `CodePipeline` class instead
  */
 export class CdkStage extends Construct {
   private _nextSequentialRunOrder = 1; // Must start at 1 eh
@@ -392,6 +396,8 @@ export class CdkStage extends Construct {
 
 /**
  * Additional options for adding a stack deployment
+ *
+ * @deprecated This class is part of the old API. Use the API based on the `CodePipeline` class instead
  */
 export interface AddStackOptions {
   /**
@@ -411,6 +417,8 @@ export interface AddStackOptions {
 
 /**
  * A single output of a Stack
+ *
+ * @deprecated This class is part of the old API. Use the API based on the `CodePipeline` class instead
  */
 export class StackOutput {
   /**
@@ -444,6 +452,8 @@ function isAssetManifest(s: cxapi.CloudArtifact): s is cxapi.AssetManifestArtifa
 
 /**
  * Features that the Stage needs from its environment
+ *
+ * @deprecated This class is part of the old API. Use the API based on the `CodePipeline` class instead
  */
 export interface IStageHost {
   /**
@@ -459,6 +469,8 @@ export interface IStageHost {
 
 /**
  * Instructions to publish certain assets
+ *
+ * @deprecated This class is part of the old API. Use the API based on the `CodePipeline` class instead
  */
 export interface AssetPublishingCommand {
   /**
@@ -489,6 +501,8 @@ export interface AssetPublishingCommand {
 
 /**
  * Base options for a pipelines stage
+ *
+ * @deprecated This class is part of the old API. Use the API based on the `CodePipeline` class instead
  */
 export interface BaseStageOptions {
   /**
@@ -518,6 +532,8 @@ export interface BaseStageOptions {
 
 /**
  * Options for adding an application stage to a pipeline
+ *
+ * @deprecated This class is part of the old API. Use the API based on the `CodePipeline` class instead
  */
 export interface AddStageOptions extends BaseStageOptions {
   /**
@@ -542,6 +558,8 @@ export interface AddStageOptions extends BaseStageOptions {
 
 /**
  * Options for addManualApproval
+ *
+ * @deprecated This class is part of the old API. Use the API based on the `CodePipeline` class instead
  */
 export interface AddManualApprovalOptions {
   /**
