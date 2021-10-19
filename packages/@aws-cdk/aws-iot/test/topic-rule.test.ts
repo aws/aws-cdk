@@ -239,7 +239,7 @@ test('Can import from topic rule arn', () => {
   });
 });
 
-test('Can not import if invalid topic rule arn', () => {
+test('fails importing a TopicRule by ARN if the ARN is missing the name of the TopicRule', () => {
   const stack = new cdk.Stack();
 
   const topicRuleArn = 'arn:aws:iot:ap-northeast-1:123456789012:rule/';
