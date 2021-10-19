@@ -323,6 +323,47 @@ listener.addTargets('Targets', {
 
 Only a single Lambda function can be added to a single listener rule.
 
+## Using Application Load Balancer Targets
+
+To use a single application load balancer as a target for the network load balancer, use the integration class in the
+`@aws-cdk/aws-elasticloadbalancingv2-targets` package:
+
+```ts
+import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
+import * as targets from '@aws-cdk/aws-elasticloadbalancingv2-targets';
+import * as ecs from '@aws-cdk/aws-ecs';
+import * as patterns from '@aws-cdk/aws-ecs-patterns';
+
+const task = new ecs.FargateTaskDefinition(this, 'Task', { cpu: 256, memoryLimitMiB: 512 });
+task.addContainer('nginx', {
+  image: ecs.ContainerImage.fromRegistry('public.ecr.aws/nginx/nginx:latest'),
+  portMappings: [{ containerPort: 80 }],
+});
+
+const svc = new patterns.ApplicationLoadBalancedFargateService(this, 'Service', {
+  vpc,
+  taskDefinition: task,
+  publicLoadBalancer: false,
+});
+
+const nlb = new elbv2.NetworkLoadBalancer(this, 'Nlb', {
+  vpc,
+  crossZoneEnabled: true,
+  internetFacing: true,
+});
+
+const listener = nlb.addListener('listener', { port: 80 });
+
+listener.addTargets('Targets', {
+  targets: [new targets.AlbTarget(svc.loadBalancer, 80)],
+  port: 80,
+});
+
+new CfnOutput(this, 'NlbEndpoint', { value: `http://${nlb.loadBalancerDnsName}`})
+```
+
+Only the network load balancer is allowed to add the application load balancer as the target.
+
 ## Configuring Health Checks
 
 Health checks are configured upon creation of a target group:

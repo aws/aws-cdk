@@ -5,7 +5,6 @@
 set -eu
 export PATH=$PWD/node_modules/.bin:$PATH
 export NODE_OPTIONS="--max-old-space-size=8192 ${NODE_OPTIONS:-}"
-export JSII_ROSETTA_MAX_WORKER_COUNT="${JSII_ROSETTA_MAX_WORKER_COUNT:-8}"
 root=$PWD
 
 # Get version and changelog file name (these require that .versionrc.json would have been generated)
