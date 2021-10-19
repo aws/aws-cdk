@@ -226,7 +226,7 @@ test('Can not add actions have multiple action properties', () => {
   );
 });
 
-test('Can import from topic rule arn', () => {
+test('can import a TopicRule by ARN', () => {
   const stack = new cdk.Stack();
 
   const topicRuleArn = 'arn:aws:iot:ap-northeast-1:123456789012:rule/my-rule-name';
