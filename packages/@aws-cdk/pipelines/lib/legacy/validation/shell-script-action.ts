@@ -12,6 +12,8 @@ import { Construct } from 'constructs';
 
 /**
  * Properties for ShellScriptAction
+ *
+ * @deprecated This class is part of the old API. Use the API based on the `CodePipeline` class instead
  */
 export interface ShellScriptActionProps {
   /**
@@ -121,6 +123,8 @@ export interface ShellScriptActionProps {
 
 /**
  * Validate a revision using shell commands
+ *
+ * @deprecated This class is part of the old API. Use the API based on the `CodePipeline` class instead
  */
 export class ShellScriptAction implements codepipeline.IAction, iam.IGrantable {
   private _project?: codebuild.IProject;
