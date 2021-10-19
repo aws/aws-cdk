@@ -24,6 +24,10 @@ const queue = new sqs.Queue(stack, 'MyQueue', {
   encryptionMasterKey: key,
 });
 
-event.addTarget(new targets.SqsQueue(queue));
+const deadLetterQueue = new sqs.Queue(stack, 'MyDeadLetterQueue');
+
+event.addTarget(new targets.SqsQueue(queue, {
+  deadLetterQueue,
+}));
 
 app.synth();
