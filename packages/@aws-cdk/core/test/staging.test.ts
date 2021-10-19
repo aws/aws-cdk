@@ -169,7 +169,7 @@ describe('staging', () => {
 
   test('files are copied to the output directory during synth', () => {
     // GIVEN
-    const app = new App();
+    const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack = new Stack(app, 'stack');
 
     // WHEN
@@ -233,7 +233,7 @@ describe('staging', () => {
 
   test('with bundling', () => {
     // GIVEN
-    const app = new App();
+    const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack = new Stack(app, 'stack');
     const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
     const processStdErrWriteSpy = sinon.spy(process.stderr, 'write');
@@ -269,7 +269,7 @@ describe('staging', () => {
 
   test('bundled resources have absolute path when staging is disabled', () => {
     // GIVEN
-    const app = new App();
+    const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack = new Stack(app, 'stack');
     stack.node.setContext(cxapi.DISABLE_ASSET_STAGING_CONTEXT, true);
     const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
@@ -307,7 +307,7 @@ describe('staging', () => {
 
   test('bundler reuses its output when it can', () => {
     // GIVEN
-    const app = new App();
+    const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack = new Stack(app, 'stack');
     const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
 
@@ -350,7 +350,7 @@ describe('staging', () => {
 
   test('uses asset hash cache with AssetHashType.OUTPUT', () => {
     // GIVEN
-    const app = new App();
+    const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack = new Stack(app, 'stack');
     const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
     const fingerPrintSpy = sinon.spy(FileSystem, 'fingerprint');
@@ -400,7 +400,7 @@ describe('staging', () => {
 
   test('bundler considers its options when reusing bundle output', () => {
     // GIVEN
-    const app = new App();
+    const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack = new Stack(app, 'stack');
     const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
 
@@ -449,7 +449,7 @@ describe('staging', () => {
 
   test('bundler outputs to intermediate dir and renames to asset', () => {
     // GIVEN
-    const app = new App();
+    const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack = new Stack(app, 'stack');
     const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
     const ensureDirSync = sinon.spy(fs, 'ensureDirSync');
@@ -515,7 +515,7 @@ describe('staging', () => {
       fs.removeSync(TEST_OUTDIR);
     }
 
-    const app = new App({ outdir: TEST_OUTDIR });
+    const app = new App({ outdir: TEST_OUTDIR, context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack = new Stack(app, 'stack');
     const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
 
@@ -533,7 +533,7 @@ describe('staging', () => {
     AssetStaging.clearAssetHashCache();
 
     // GIVEN
-    const app2 = new App({ outdir: TEST_OUTDIR });
+    const app2 = new App({ outdir: TEST_OUTDIR, context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack2 = new Stack(app2, 'stack');
 
     // WHEN
@@ -916,7 +916,7 @@ describe('staging', () => {
 
   test('bundling that produces a single archive file is autodiscovered', () => {
     // GIVEN
-    const app = new App();
+    const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack = new Stack(app, 'stack');
     const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
 
@@ -998,7 +998,7 @@ describe('staging', () => {
 
   test('bundling that produces a single archive file with NOT_ARCHIVED', () => {
     // GIVEN
-    const app = new App();
+    const app = new App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack = new Stack(app, 'stack');
     const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
 
