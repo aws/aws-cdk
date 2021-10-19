@@ -1328,7 +1328,7 @@ describe('custom error responses', () => {
     })).toThrow(/It must be between 3 and 28 characters/);
     expect(() => new Domain(stack, 'Domain3', {
       version: ElasticsearchVersion.V7_4,
-      domainName: 'Domain123',
+      domainName: '123domain',
     })).toThrow(/It must start with a lowercase letter/);
   });
 
