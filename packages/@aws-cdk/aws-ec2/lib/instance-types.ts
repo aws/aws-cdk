@@ -229,6 +229,11 @@ export enum InstanceClass {
   C5A = 'c5a',
 
   /**
+  * Compute optimized instances with local NVME drive based on AMD EPYC, 5th generation  
+  */
+  C5AD = 'c5ad',
+
+  /**
    * Compute optimized instances with local NVME drive, 5th generation
    */
   C5D = 'c5d',
