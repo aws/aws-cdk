@@ -1,29 +1,26 @@
 package com.myorg;
 
 import software.amazon.awscdk.App;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-
+import software.amazon.awscdk.assertions.alpha.Template;
+import software.amazon.awscdk.assertions.alpha.Match;
 import java.io.IOException;
 
+import java.util.*;
+
 import org.junit.jupiter.api.Test;
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class %name.PascalCased%Test {
-    private final static ObjectMapper JSON =
-        new ObjectMapper().configure(SerializationFeature.INDENT_OUTPUT, true);
 
     @Test
     public void testStack() throws IOException {
         App app = new App();
         %name.PascalCased%Stack stack = new %name.PascalCased%Stack(app, "test");
 
-        // synthesize the stack to a CloudFormation template and compare against
-        // a checked-in JSON file.
-        JsonNode actual = JSON.valueToTree(app.synth().getStackArtifact(stack.getArtifactId()).getTemplate());
+        Template template = Template.fromStack(stack);
 
         // Update once resources have been added to the stack
-        assertThat(actual.get("Resources")).isNull();
+        Map<String, Object> expected = Map.of();
+
+        template.templateMatches(expected);
     }
 }

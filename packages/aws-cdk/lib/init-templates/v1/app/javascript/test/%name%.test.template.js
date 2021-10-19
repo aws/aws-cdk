@@ -1,4 +1,4 @@
-const { expect, matchTemplate, MatchStyle } = require('@aws-cdk/assert');
+const { Template } = require('@aws-cdk/assertions');
 const cdk = require('@aws-cdk/core');
 const %name.PascalCased% = require('../lib/%name%-stack');
 
@@ -7,7 +7,7 @@ test('Empty Stack', () => {
     // WHEN
     const stack = new %name.PascalCased%.%name.PascalCased%Stack(app, 'MyTestStack');
     // THEN
-    expect(stack).to(matchTemplate({
-      "Resources": {}
-    }, MatchStyle.EXACT))
+    const template = Template.fromStack(stack);
+
+    template.templateMatches({});
 });

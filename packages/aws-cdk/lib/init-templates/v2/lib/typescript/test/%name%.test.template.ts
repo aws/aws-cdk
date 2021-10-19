@@ -1,4 +1,5 @@
 import * as cdk from 'aws-cdk-lib';
+import { Template } from '@aws-cdk/assertions-alpha';
 import * as %name.PascalCased% from '../lib/index';
 
 test('Empty Stack', () => {
@@ -7,6 +8,6 @@ test('Empty Stack', () => {
   // WHEN
   new %name.PascalCased%.%name.PascalCased%(stack, 'MyTestConstruct');
   // THEN
-  const actual = app.synth().getStackArtifact(stack.artifactId).template;
-  expect(actual.Resources ?? {}).toEqual({});
+  const template = Template.fromStack(stack);
+  template.templateMatches({});
 });

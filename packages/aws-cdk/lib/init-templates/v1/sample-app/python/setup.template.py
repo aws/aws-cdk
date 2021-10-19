@@ -25,6 +25,7 @@ setuptools.setup(
         "aws-cdk.aws_sns==%cdk-version%",
         "aws-cdk.aws_sns_subscriptions==%cdk-version%",
         "aws-cdk.aws_s3==%cdk-version%",
+        "aws-cdk.assertions==%cdk-version%",
     ],
 
     python_requires=">=3.6",

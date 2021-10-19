@@ -1,5 +1,6 @@
 import aws_cdk as core
 import aws_cdk.assertions_alpha as assertions
+
 from %name.PythonModule%.%name.PythonModule%_stack import %name.PascalCased%Stack
 
 
@@ -10,11 +11,5 @@ def get_template():
     return template
 
 
-def test_sqs_queue_created():
-    get_template().has_resource_properties("AWS::SQS::Queue", {
-        "VisibilityTimeout": 300
-    })
-
-
-def test_sns_topic_created():
-    get_template().has_resource("AWS::SNS::Topic", assertions.Match.any_value())
+def test_empty_stack():
+    get_template().template_matches({})
