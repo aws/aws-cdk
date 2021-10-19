@@ -17,7 +17,7 @@ test('Default property', () => {
   });
 });
 
-test('Can get topic rule name', () => {
+test('can get topic rule name', () => {
   const stack = new cdk.Stack();
   const rule = new iot.TopicRule(stack, 'MyTopicRule', {
     sql: iot.IotSql.fromStringAsVer20151008("SELECT topic(2) as device_id, temperature FROM 'device/+/data'"),
@@ -35,7 +35,7 @@ test('Can get topic rule name', () => {
   });
 });
 
-test('Can get topic rule arn', () => {
+test('can get topic rule arn', () => {
   const stack = new cdk.Stack();
   const rule = new iot.TopicRule(stack, 'MyTopicRule', {
     sql: iot.IotSql.fromStringAsVer20151008("SELECT topic(2) as device_id, temperature FROM 'device/+/data'"),
@@ -55,7 +55,7 @@ test('Can get topic rule arn', () => {
   });
 });
 
-test('Can set physical name', () => {
+test('can set physical name', () => {
   // GIVEN
   const stack = new cdk.Stack();
 
@@ -71,49 +71,36 @@ test('Can set physical name', () => {
   });
 });
 
-test('Can set sql as version 2015-10-08', () => {
+test.each([
+  ['fromStringAsVer20151008', iot.IotSql.fromStringAsVer20151008, '2015-10-08'],
+  ['fromStringAsVer20160323', iot.IotSql.fromStringAsVer20160323, '2016-03-23'],
+  ['fromStringAsVerNewestUnstable', iot.IotSql.fromStringAsVerNewestUnstable, 'beta'],
+])('can set sql with using %s', (_, factoryMethod, version) => {
   const stack = new cdk.Stack();
 
   new iot.TopicRule(stack, 'MyTopicRule', {
-    sql: iot.IotSql.fromStringAsVer20151008("SELECT topic(2) as device_id, temperature FROM 'device/+/data'"),
+    sql: factoryMethod("SELECT topic(2) as device_id, temperature FROM 'device/+/data'"),
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::IoT::TopicRule', {
     TopicRulePayload: {
-      AwsIotSqlVersion: '2015-10-08',
+      AwsIotSqlVersion: version,
+      Sql: "SELECT topic(2) as device_id, temperature FROM 'device/+/data'",
     },
   });
 });
 
-test('Can set sql as version 2016-03-23', () => {
-  const stack = new cdk.Stack();
-
-  new iot.TopicRule(stack, 'MyTopicRule', {
-    sql: iot.IotSql.fromStringAsVer20160323("SELECT topic(2) as device_id, temperature FROM 'device/+/data'"),
-  });
-
-  Template.fromStack(stack).hasResourceProperties('AWS::IoT::TopicRule', {
-    TopicRulePayload: {
-      AwsIotSqlVersion: '2016-03-23',
-    },
-  });
+test.each([
+  ['fromStringAsVer20151008', iot.IotSql.fromStringAsVer20151008],
+  ['fromStringAsVer20160323', iot.IotSql.fromStringAsVer20160323],
+  ['fromStringAsVerNewestUnstable', iot.IotSql.fromStringAsVerNewestUnstable],
+])('Using %s fails when setting empty sql', (_, factoryMethod) => {
+  expect(() => {
+    factoryMethod('');
+  }).toThrow('IoT SQL string cannot be empty');
 });
 
-test('Can set sql as version newest', () => {
-  const stack = new cdk.Stack();
-
-  new iot.TopicRule(stack, 'MyTopicRule', {
-    sql: iot.IotSql.fromStringAsVerNewestUnstable("SELECT topic(2) as device_id, temperature FROM 'device/+/data'"),
-  });
-
-  Template.fromStack(stack).hasResourceProperties('AWS::IoT::TopicRule', {
-    TopicRulePayload: {
-      AwsIotSqlVersion: 'beta',
-    },
-  });
-});
-
-test('Can set actions', () => {
+test('can set actions', () => {
   const stack = new cdk.Stack();
 
   const action1: iot.IAction = {
@@ -151,7 +138,7 @@ test('Can set actions', () => {
   });
 });
 
-test('Can add actions', () => {
+test('can add actions', () => {
   const stack = new cdk.Stack();
 
   const topicRule = new iot.TopicRule(stack, 'MyTopicRule', {
@@ -246,5 +233,5 @@ test('fails importing a TopicRule by ARN if the ARN is missing the name of the T
 
   expect(() => {
     iot.TopicRule.fromTopicRuleArn(stack, 'TopicRuleFromArn', topicRuleArn);
-  }).toThrow('Invalid topic rule arn: topicRuleArn has no resource name.');
+  }).toThrow("Missing topic rule name in ARN: 'arn:aws:iot:ap-northeast-1:123456789012:rule/'");
 });

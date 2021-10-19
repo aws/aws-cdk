@@ -65,7 +65,9 @@ For example, to define a rule that triggers to put to a S3 bucket:
 ```ts
 new iot.TopicRule(stack, 'MyTopicRule', {
   topicRuleName: 'MyRuleName', // optional property
-  sql: "SELECT topic(2) as device_id, temperature FROM 'device/+/data'",
+  sql: iot.IotSql.fromStringAsVer20160323(
+    "SELECT topic(2) as device_id, temperature FROM 'device/+/data'",
+  ),
   acctions: [
     {
       bind: () => ({
@@ -86,7 +88,9 @@ Or you can add action after constructing instance as following:
 
 ```ts
 const topicRule = new TopicRule(stack, 'MyTopicRule', {
-  sql: "SELECT topic(2) as device_id, temperature FROM 'device/+/data'",
+  sql: iot.IotSql.fromStringAsVer20160323(
+    "SELECT topic(2) as device_id, temperature FROM 'device/+/data'",
+  ),
 });
 topicRule.addAction({
   bind: () => ({

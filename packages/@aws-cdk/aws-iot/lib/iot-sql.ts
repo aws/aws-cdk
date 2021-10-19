@@ -26,7 +26,7 @@ export abstract class IotSql {
    * @returns Instance of IotSql
    */
   public static fromStringAsVer20151008(sql: string): IotSql {
-    return new Ver_2015_10_08_IotSql(sql);
+    return new IotSqlImpl('2015-10-08', sql);
   }
 
   /**
@@ -36,7 +36,7 @@ export abstract class IotSql {
    * @returns Instance of IotSql
    */
   public static fromStringAsVer20160323(sql: string): IotSql {
-    return new Ver_2016_03_23_IotSql(sql);
+    return new IotSqlImpl('2016-03-23', sql);
   }
 
   /**
@@ -47,7 +47,7 @@ export abstract class IotSql {
    * @returns Instance of IotSql
    */
   public static fromStringAsVerNewestUnstable(sql: string): IotSql {
-    return new VerNewestUnstableIotSql(sql);
+    return new IotSqlImpl('beta', sql);
   }
 
   /**
@@ -56,53 +56,20 @@ export abstract class IotSql {
   public abstract bind(scope: Construct): IotSqlConfig;
 }
 
-class Ver_2015_10_08_IotSql extends IotSql {
-  constructor(private readonly sql: string) {
+
+class IotSqlImpl extends IotSql {
+  constructor(private readonly version: string, private readonly sql: string) {
     super();
 
-    validateSqlEmpty(sql);
+    if (sql === '') {
+      throw new Error('IoT SQL string cannot be empty');
+    }
   }
 
   bind(_scope: Construct): IotSqlConfig {
     return {
-      awsIotSqlVersion: '2015-10-08',
+      awsIotSqlVersion: this.version,
       sql: this.sql,
     };
-  }
-}
-
-class Ver_2016_03_23_IotSql extends IotSql {
-  constructor(private readonly sql: string) {
-    super();
-
-    validateSqlEmpty(sql);
-  }
-
-  bind(_scope: Construct): IotSqlConfig {
-    return {
-      awsIotSqlVersion: '2016-03-23',
-      sql: this.sql,
-    };
-  }
-}
-
-class VerNewestUnstableIotSql extends IotSql {
-  constructor(private readonly sql: string) {
-    super();
-
-    validateSqlEmpty(sql);
-  }
-
-  bind(_scope: Construct): IotSqlConfig {
-    return {
-      awsIotSqlVersion: 'beta',
-      sql: this.sql,
-    };
-  }
-}
-
-function validateSqlEmpty(sql: string) {
-  if (sql === '') {
-    throw new Error('sql cannot be empty.');
   }
 }
