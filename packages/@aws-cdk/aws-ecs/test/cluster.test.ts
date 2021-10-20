@@ -1,11 +1,5 @@
-import {
-  countResources,
-  expect,
-  haveResource,
-  haveResourceLike,
-  ResourcePart,
-  ABSENT,
-} from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
+import { ABSENT } from '@aws-cdk/assert-internal';
 import * as autoscaling from '@aws-cdk/aws-autoscaling';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as kms from '@aws-cdk/aws-kms';
@@ -13,12 +7,11 @@ import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import * as cdk from '@aws-cdk/core';
-import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as ecs from '../lib';
 
-nodeunitShim({
-  'When creating an ECS Cluster': {
-    'with no properties set, it correctly sets default properties'(test: Test) {
+describe('cluster', () => {
+  describe('When creating an ECS Cluster', () => {
+    test('with no properties set, it correctly sets default properties', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const cluster = new ecs.Cluster(stack, 'EcsCluster');
@@ -27,9 +20,9 @@ nodeunitShim({
         instanceType: new ec2.InstanceType('t2.micro'),
       });
 
-      expect(stack).to(haveResource('AWS::ECS::Cluster'));
+      expect(stack).toHaveResource('AWS::ECS::Cluster');
 
-      expect(stack).to(haveResource('AWS::EC2::VPC', {
+      expect(stack).toHaveResource('AWS::EC2::VPC', {
         CidrBlock: '10.0.0.0/16',
         EnableDnsHostnames: true,
         EnableDnsSupport: true,
@@ -40,9 +33,9 @@ nodeunitShim({
             Value: 'Default/EcsCluster/Vpc',
           },
         ],
-      }));
+      });
 
-      expect(stack).to(haveResource('AWS::AutoScaling::LaunchConfiguration', {
+      expect(stack).toHaveResource('AWS::AutoScaling::LaunchConfiguration', {
         ImageId: {
           Ref: 'SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter',
         },
@@ -73,9 +66,9 @@ nodeunitShim({
             ],
           },
         },
-      }));
+      });
 
-      expect(stack).to(haveResource('AWS::AutoScaling::AutoScalingGroup', {
+      expect(stack).toHaveResource('AWS::AutoScaling::AutoScalingGroup', {
         MaxSize: '1',
         MinSize: '1',
         LaunchConfigurationName: {
@@ -96,9 +89,9 @@ nodeunitShim({
             Ref: 'EcsClusterVpcPrivateSubnet2SubnetC2B7B1BA',
           },
         ],
-      }));
+      });
 
-      expect(stack).to(haveResource('AWS::EC2::SecurityGroup', {
+      expect(stack).toHaveResource('AWS::EC2::SecurityGroup', {
         GroupDescription: 'Default/EcsCluster/DefaultAutoScalingGroup/InstanceSecurityGroup',
         SecurityGroupEgress: [
           {
@@ -116,9 +109,9 @@ nodeunitShim({
         VpcId: {
           Ref: 'EcsClusterVpc779914AB',
         },
-      }));
+      });
 
-      expect(stack).to(haveResource('AWS::IAM::Role', {
+      expect(stack).toHaveResource('AWS::IAM::Role', {
         AssumeRolePolicyDocument: {
           Statement: [
             {
@@ -131,9 +124,9 @@ nodeunitShim({
           ],
           Version: '2012-10-17',
         },
-      }));
+      });
 
-      expect(stack).to(haveResource('AWS::IAM::Policy', {
+      expect(stack).toHaveResource('AWS::IAM::Policy', {
         PolicyDocument: {
           Statement: [
             {
@@ -181,12 +174,12 @@ nodeunitShim({
           ],
           Version: '2012-10-17',
         },
-      }));
+      });
 
-      test.done();
-    },
 
-    'with only vpc set, it correctly sets default properties'(test: Test) {
+    });
+
+    test('with only vpc set, it correctly sets default properties', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -198,9 +191,9 @@ nodeunitShim({
         instanceType: new ec2.InstanceType('t2.micro'),
       });
 
-      expect(stack).to(haveResource('AWS::ECS::Cluster'));
+      expect(stack).toHaveResource('AWS::ECS::Cluster');
 
-      expect(stack).to(haveResource('AWS::EC2::VPC', {
+      expect(stack).toHaveResource('AWS::EC2::VPC', {
         CidrBlock: '10.0.0.0/16',
         EnableDnsHostnames: true,
         EnableDnsSupport: true,
@@ -211,9 +204,9 @@ nodeunitShim({
             Value: 'Default/MyVpc',
           },
         ],
-      }));
+      });
 
-      expect(stack).to(haveResource('AWS::AutoScaling::LaunchConfiguration', {
+      expect(stack).toHaveResource('AWS::AutoScaling::LaunchConfiguration', {
         ImageId: {
           Ref: 'SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter',
         },
@@ -244,9 +237,9 @@ nodeunitShim({
             ],
           },
         },
-      }));
+      });
 
-      expect(stack).to(haveResource('AWS::AutoScaling::AutoScalingGroup', {
+      expect(stack).toHaveResource('AWS::AutoScaling::AutoScalingGroup', {
         MaxSize: '1',
         MinSize: '1',
         LaunchConfigurationName: {
@@ -267,9 +260,9 @@ nodeunitShim({
             Ref: 'MyVpcPrivateSubnet2Subnet0040C983',
           },
         ],
-      }));
+      });
 
-      expect(stack).to(haveResource('AWS::EC2::SecurityGroup', {
+      expect(stack).toHaveResource('AWS::EC2::SecurityGroup', {
         GroupDescription: 'Default/EcsCluster/DefaultAutoScalingGroup/InstanceSecurityGroup',
         SecurityGroupEgress: [
           {
@@ -287,9 +280,9 @@ nodeunitShim({
         VpcId: {
           Ref: 'MyVpcF9F0CA6F',
         },
-      }));
+      });
 
-      expect(stack).to(haveResource('AWS::IAM::Role', {
+      expect(stack).toHaveResource('AWS::IAM::Role', {
         AssumeRolePolicyDocument: {
           Statement: [
             {
@@ -302,9 +295,9 @@ nodeunitShim({
           ],
           Version: '2012-10-17',
         },
-      }));
+      });
 
-      expect(stack).to(haveResource('AWS::IAM::Policy', {
+      expect(stack).toHaveResource('AWS::IAM::Policy', {
         PolicyDocument: {
           Statement: [
             {
@@ -352,12 +345,12 @@ nodeunitShim({
           ],
           Version: '2012-10-17',
         },
-      }));
+      });
 
-      test.done();
-    },
 
-    'multiple clusters with default capacity'(test: Test) {
+    });
+
+    test('multiple clusters with default capacity', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -370,10 +363,10 @@ nodeunitShim({
         });
       }
 
-      test.done();
-    },
 
-    'lifecycle hook is automatically added'(test: Test) {
+    });
+
+    test('lifecycle hook is automatically added', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -387,16 +380,16 @@ nodeunitShim({
       });
 
       // THEN
-      expect(stack).to(haveResource('AWS::AutoScaling::LifecycleHook', {
+      expect(stack).toHaveResource('AWS::AutoScaling::LifecycleHook', {
         AutoScalingGroupName: { Ref: 'EcsClusterDefaultAutoScalingGroupASGC1A785DB' },
         LifecycleTransition: 'autoscaling:EC2_INSTANCE_TERMINATING',
         DefaultResult: 'CONTINUE',
         HeartbeatTimeout: 300,
         NotificationTargetARN: { Ref: 'EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicACD2D4A4' },
         RoleARN: { 'Fn::GetAtt': ['EcsClusterDefaultAutoScalingGroupLifecycleHookDrainHookRoleA38EC83B', 'Arn'] },
-      }));
+      });
 
-      expect(stack).to(haveResource('AWS::Lambda::Function', {
+      expect(stack).toHaveResource('AWS::Lambda::Function', {
         Timeout: 310,
         Environment: {
           Variables: {
@@ -406,9 +399,9 @@ nodeunitShim({
           },
         },
         Handler: 'index.lambda_handler',
-      }));
+      });
 
-      expect(stack).to(haveResource('AWS::IAM::Policy', {
+      expect(stack).toHaveResource('AWS::IAM::Policy', {
         PolicyDocument: {
           Statement: [
             {
@@ -507,12 +500,12 @@ nodeunitShim({
             Ref: 'EcsClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRole94543EDA',
           },
         ],
-      }));
+      });
 
-      test.done();
-    },
 
-    'lifecycle hook with encrypted SNS is added correctly'(test: Test) {
+    });
+
+    test('lifecycle hook with encrypted SNS is added correctly', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -528,19 +521,19 @@ nodeunitShim({
       });
 
       // THEN
-      expect(stack).to(haveResourceLike('AWS::SNS::Topic', {
+      expect(stack).toHaveResourceLike('AWS::SNS::Topic', {
         KmsMasterKeyId: {
           'Fn::GetAtt': [
             'Key961B73FD',
             'Arn',
           ],
         },
-      }));
+      });
 
-      test.done();
-    },
 
-    'with capacity and cloudmap namespace properties set'(test: Test) {
+    });
+
+    test('with capacity and cloudmap namespace properties set', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -555,16 +548,16 @@ nodeunitShim({
       });
 
       // THEN
-      expect(stack).to(haveResource('AWS::ServiceDiscovery::PrivateDnsNamespace', {
+      expect(stack).toHaveResource('AWS::ServiceDiscovery::PrivateDnsNamespace', {
         Name: 'foo.com',
         Vpc: {
           Ref: 'MyVpcF9F0CA6F',
         },
-      }));
+      });
 
-      expect(stack).to(haveResource('AWS::ECS::Cluster'));
+      expect(stack).toHaveResource('AWS::ECS::Cluster');
 
-      expect(stack).to(haveResource('AWS::EC2::VPC', {
+      expect(stack).toHaveResource('AWS::EC2::VPC', {
         CidrBlock: '10.0.0.0/16',
         EnableDnsHostnames: true,
         EnableDnsSupport: true,
@@ -575,9 +568,9 @@ nodeunitShim({
             Value: 'Default/MyVpc',
           },
         ],
-      }));
+      });
 
-      expect(stack).to(haveResource('AWS::AutoScaling::LaunchConfiguration', {
+      expect(stack).toHaveResource('AWS::AutoScaling::LaunchConfiguration', {
         ImageId: {
           Ref: 'SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter',
         },
@@ -608,9 +601,9 @@ nodeunitShim({
             ],
           },
         },
-      }));
+      });
 
-      expect(stack).to(haveResource('AWS::AutoScaling::AutoScalingGroup', {
+      expect(stack).toHaveResource('AWS::AutoScaling::AutoScalingGroup', {
         MaxSize: '1',
         MinSize: '1',
         LaunchConfigurationName: {
@@ -631,9 +624,9 @@ nodeunitShim({
             Ref: 'MyVpcPrivateSubnet2Subnet0040C983',
           },
         ],
-      }));
+      });
 
-      expect(stack).to(haveResource('AWS::EC2::SecurityGroup', {
+      expect(stack).toHaveResource('AWS::EC2::SecurityGroup', {
         GroupDescription: 'Default/EcsCluster/DefaultAutoScalingGroup/InstanceSecurityGroup',
         SecurityGroupEgress: [
           {
@@ -651,9 +644,9 @@ nodeunitShim({
         VpcId: {
           Ref: 'MyVpcF9F0CA6F',
         },
-      }));
+      });
 
-      expect(stack).to(haveResource('AWS::IAM::Role', {
+      expect(stack).toHaveResource('AWS::IAM::Role', {
         AssumeRolePolicyDocument: {
           Statement: [
             {
@@ -666,9 +659,9 @@ nodeunitShim({
           ],
           Version: '2012-10-17',
         },
-      }));
+      });
 
-      expect(stack).to(haveResource('AWS::IAM::Policy', {
+      expect(stack).toHaveResource('AWS::IAM::Policy', {
         PolicyDocument: {
           Statement: [
             {
@@ -716,13 +709,13 @@ nodeunitShim({
           ],
           Version: '2012-10-17',
         },
-      }));
+      });
 
-      test.done();
-    },
-  },
 
-  'allows specifying instance type'(test: Test) {
+    });
+  });
+
+  test('allows specifying instance type', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -733,14 +726,14 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::AutoScaling::LaunchConfiguration', {
+    expect(stack).toHaveResource('AWS::AutoScaling::LaunchConfiguration', {
       InstanceType: 'm3.large',
-    }));
+    });
 
-    test.done();
-  },
 
-  'allows specifying cluster size'(test: Test) {
+  });
+
+  test('allows specifying cluster size', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -752,14 +745,14 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::AutoScaling::AutoScalingGroup', {
+    expect(stack).toHaveResource('AWS::AutoScaling::AutoScalingGroup', {
       MaxSize: '3',
-    }));
+    });
 
-    test.done();
-  },
 
-  'configures userdata with powershell if windows machine image is specified'(test: Test) {
+  });
+
+  test('configures userdata with powershell if windows machine image is specified', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -773,7 +766,7 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::AutoScaling::LaunchConfiguration', {
+    expect(stack).toHaveResource('AWS::AutoScaling::LaunchConfiguration', {
       ImageId: {
         Ref: 'SsmParameterValueawsserviceecsoptimizedamiwindowsserver2019englishfullrecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter',
       },
@@ -807,15 +800,15 @@ nodeunitShim({
           ],
         },
       },
-    }));
+    });
 
-    test.done();
-  },
+
+  });
 
   /*
    * TODO:v2.0.0 BEGINNING OF OBSOLETE BLOCK
    */
-  'allows specifying special HW AMI Type'(test: Test) {
+  test('allows specifying special HW AMI Type', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
@@ -832,23 +825,23 @@ nodeunitShim({
     // THEN
     const assembly = app.synth();
     const template = assembly.getStackByName(stack.stackName).template;
-    expect(stack).to(haveResource('AWS::AutoScaling::LaunchConfiguration', {
+    expect(stack).toHaveResource('AWS::AutoScaling::LaunchConfiguration', {
       ImageId: {
         Ref: 'SsmParameterValueawsserviceecsoptimizedamiamazonlinux2gpurecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter',
       },
-    }));
+    });
 
-    test.deepEqual(template.Parameters, {
+    expect(template.Parameters).toEqual({
       SsmParameterValueawsserviceecsoptimizedamiamazonlinux2gpurecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter: {
         Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>',
         Default: '/aws/service/ecs/optimized-ami/amazon-linux-2/gpu/recommended/image_id',
       },
     });
 
-    test.done();
-  },
 
-  'errors if amazon linux given with special HW type'(test: Test) {
+  });
+
+  test('errors if amazon linux given with special HW type', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -856,7 +849,7 @@ nodeunitShim({
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
 
     // THEN
-    test.throws(() => {
+    expect(() => {
       cluster.addCapacity('GpuAutoScalingGroup', {
         instanceType: new ec2.InstanceType('t2.micro'),
         machineImage: new ecs.EcsOptimizedAmi({
@@ -864,12 +857,12 @@ nodeunitShim({
           hardwareType: ecs.AmiHardwareType.GPU,
         }),
       });
-    }, /Amazon Linux does not support special hardware type/);
+    }).toThrow(/Amazon Linux does not support special hardware type/);
 
-    test.done();
-  },
 
-  'allows specifying windows image'(test: Test) {
+  });
+
+  test('allows specifying windows image', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
@@ -886,17 +879,17 @@ nodeunitShim({
     // THEN
     const assembly = app.synth();
     const template = assembly.getStackByName(stack.stackName).template;
-    test.deepEqual(template.Parameters, {
+    expect(template.Parameters).toEqual({
       SsmParameterValueawsserviceecsoptimizedamiwindowsserver2019englishfullrecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter: {
         Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>',
         Default: '/aws/service/ecs/optimized-ami/windows_server/2019/english/full/recommended/image_id',
       },
     });
 
-    test.done();
-  },
 
-  'errors if windows given with special HW type'(test: Test) {
+  });
+
+  test('errors if windows given with special HW type', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -904,7 +897,7 @@ nodeunitShim({
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
 
     // THEN
-    test.throws(() => {
+    expect(() => {
       cluster.addCapacity('WindowsGpuAutoScalingGroup', {
         instanceType: new ec2.InstanceType('t2.micro'),
         machineImage: new ecs.EcsOptimizedAmi({
@@ -912,12 +905,12 @@ nodeunitShim({
           hardwareType: ecs.AmiHardwareType.GPU,
         }),
       });
-    }, /Windows Server does not support special hardware type/);
+    }).toThrow(/Windows Server does not support special hardware type/);
 
-    test.done();
-  },
 
-  'errors if windowsVersion and linux generation are set'(test: Test) {
+  });
+
+  test('errors if windowsVersion and linux generation are set', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -925,7 +918,7 @@ nodeunitShim({
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
 
     // THEN
-    test.throws(() => {
+    expect(() => {
       cluster.addCapacity('WindowsScalingGroup', {
         instanceType: new ec2.InstanceType('t2.micro'),
         machineImage: new ecs.EcsOptimizedAmi({
@@ -933,93 +926,93 @@ nodeunitShim({
           generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX,
         }),
       });
-    }, /"windowsVersion" and Linux image "generation" cannot be both set/);
+    }).toThrow(/"windowsVersion" and Linux image "generation" cannot be both set/);
 
-    test.done();
-  },
 
-  'allows returning the correct image for windows for EcsOptimizedAmi'(test: Test) {
+  });
+
+  test('allows returning the correct image for windows for EcsOptimizedAmi', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const ami = new ecs.EcsOptimizedAmi({
       windowsVersion: ecs.WindowsOptimizedVersion.SERVER_2019,
     });
 
-    test.equal(ami.getImage(stack).osType, ec2.OperatingSystemType.WINDOWS);
+    expect(ami.getImage(stack).osType).toEqual(ec2.OperatingSystemType.WINDOWS);
 
-    test.done();
-  },
 
-  'allows returning the correct image for linux for EcsOptimizedAmi'(test: Test) {
+  });
+
+  test('allows returning the correct image for linux for EcsOptimizedAmi', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const ami = new ecs.EcsOptimizedAmi({
       generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX,
     });
 
-    test.equal(ami.getImage(stack).osType, ec2.OperatingSystemType.LINUX);
+    expect(ami.getImage(stack).osType).toEqual(ec2.OperatingSystemType.LINUX);
 
-    test.done();
-  },
 
-  'allows returning the correct image for linux 2 for EcsOptimizedAmi'(test: Test) {
+  });
+
+  test('allows returning the correct image for linux 2 for EcsOptimizedAmi', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const ami = new ecs.EcsOptimizedAmi({
       generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2,
     });
 
-    test.equal(ami.getImage(stack).osType, ec2.OperatingSystemType.LINUX);
+    expect(ami.getImage(stack).osType).toEqual(ec2.OperatingSystemType.LINUX);
 
-    test.done();
-  },
 
-  'allows returning the correct image for linux for EcsOptimizedImage'(test: Test) {
+  });
+
+  test('allows returning the correct image for linux for EcsOptimizedImage', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
-    test.equal(ecs.EcsOptimizedImage.amazonLinux().getImage(stack).osType,
+    expect(ecs.EcsOptimizedImage.amazonLinux().getImage(stack).osType).toEqual(
       ec2.OperatingSystemType.LINUX);
 
-    test.done();
-  },
 
-  'allows returning the correct image for linux 2 for EcsOptimizedImage'(test: Test) {
+  });
+
+  test('allows returning the correct image for linux 2 for EcsOptimizedImage', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
-    test.equal(ecs.EcsOptimizedImage.amazonLinux2().getImage(stack).osType,
+    expect(ecs.EcsOptimizedImage.amazonLinux2().getImage(stack).osType).toEqual(
       ec2.OperatingSystemType.LINUX);
 
-    test.done();
-  },
 
-  'allows returning the correct image for linux 2 for EcsOptimizedImage with ARM hardware'(test: Test) {
+  });
+
+  test('allows returning the correct image for linux 2 for EcsOptimizedImage with ARM hardware', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
-    test.equal(ecs.EcsOptimizedImage.amazonLinux2(ecs.AmiHardwareType.ARM).getImage(stack).osType,
+    expect(ecs.EcsOptimizedImage.amazonLinux2(ecs.AmiHardwareType.ARM).getImage(stack).osType).toEqual(
       ec2.OperatingSystemType.LINUX);
 
-    test.done();
-  },
+
+  });
 
 
-  'allows returning the correct image for windows for EcsOptimizedImage'(test: Test) {
+  test('allows returning the correct image for windows for EcsOptimizedImage', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
-    test.equal(ecs.EcsOptimizedImage.windows(ecs.WindowsOptimizedVersion.SERVER_2019).getImage(stack).osType,
+    expect(ecs.EcsOptimizedImage.windows(ecs.WindowsOptimizedVersion.SERVER_2019).getImage(stack).osType).toEqual(
       ec2.OperatingSystemType.WINDOWS);
 
-    test.done();
-  },
+
+  });
 
   /*
    * TODO:v2.0.0 END OF OBSOLETE BLOCK
    */
 
-  'allows specifying special HW AMI Type v2'(test: Test) {
+  test('allows specifying special HW AMI Type v2', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
@@ -1034,23 +1027,23 @@ nodeunitShim({
     // THEN
     const assembly = app.synth();
     const template = assembly.getStackByName(stack.stackName).template;
-    expect(stack).to(haveResource('AWS::AutoScaling::LaunchConfiguration', {
+    expect(stack).toHaveResource('AWS::AutoScaling::LaunchConfiguration', {
       ImageId: {
         Ref: 'SsmParameterValueawsserviceecsoptimizedamiamazonlinux2gpurecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter',
       },
-    }));
+    });
 
-    test.deepEqual(template.Parameters, {
+    expect(template.Parameters).toEqual({
       SsmParameterValueawsserviceecsoptimizedamiamazonlinux2gpurecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter: {
         Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>',
         Default: '/aws/service/ecs/optimized-ami/amazon-linux-2/gpu/recommended/image_id',
       },
     });
 
-    test.done();
-  },
 
-  'allows specifying Amazon Linux v1 AMI'(test: Test) {
+  });
+
+  test('allows specifying Amazon Linux v1 AMI', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
@@ -1065,23 +1058,23 @@ nodeunitShim({
     // THEN
     const assembly = app.synth();
     const template = assembly.getStackByName(stack.stackName).template;
-    expect(stack).to(haveResource('AWS::AutoScaling::LaunchConfiguration', {
+    expect(stack).toHaveResource('AWS::AutoScaling::LaunchConfiguration', {
       ImageId: {
         Ref: 'SsmParameterValueawsserviceecsoptimizedamiamazonlinuxrecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter',
       },
-    }));
+    });
 
-    test.deepEqual(template.Parameters, {
+    expect(template.Parameters).toEqual({
       SsmParameterValueawsserviceecsoptimizedamiamazonlinuxrecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter: {
         Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>',
         Default: '/aws/service/ecs/optimized-ami/amazon-linux/recommended/image_id',
       },
     });
 
-    test.done();
-  },
 
-  'allows specifying windows image v2'(test: Test) {
+  });
+
+  test('allows specifying windows image v2', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
@@ -1096,17 +1089,17 @@ nodeunitShim({
     // THEN
     const assembly = app.synth();
     const template = assembly.getStackByName(stack.stackName).template;
-    test.deepEqual(template.Parameters, {
+    expect(template.Parameters).toEqual({
       SsmParameterValueawsserviceecsoptimizedamiwindowsserver2019englishfullrecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter: {
         Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>',
         Default: '/aws/service/ecs/optimized-ami/windows_server/2019/english/full/recommended/image_id',
       },
     });
 
-    test.done();
-  },
 
-  'allows specifying spot fleet'(test: Test) {
+  });
+
+  test('allows specifying spot fleet', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -1118,14 +1111,14 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::AutoScaling::LaunchConfiguration', {
+    expect(stack).toHaveResource('AWS::AutoScaling::LaunchConfiguration', {
       SpotPrice: '0.31',
-    }));
+    });
 
-    test.done();
-  },
 
-  'allows specifying drain time'(test: Test) {
+  });
+
+  test('allows specifying drain time', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -1137,14 +1130,14 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::AutoScaling::LifecycleHook', {
+    expect(stack).toHaveResource('AWS::AutoScaling::LifecycleHook', {
       HeartbeatTimeout: 60,
-    }));
+    });
 
-    test.done();
-  },
 
-  'allows specifying automated spot draining'(test: Test) {
+  });
+
+  test('allows specifying automated spot draining', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -1157,7 +1150,7 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::AutoScaling::LaunchConfiguration', {
+    expect(stack).toHaveResource('AWS::AutoScaling::LaunchConfiguration', {
       UserData: {
         'Fn::Base64': {
           'Fn::Join': [
@@ -1172,12 +1165,12 @@ nodeunitShim({
           ],
         },
       },
-    }));
+    });
 
-    test.done();
-  },
 
-  'allows containers access to instance metadata service'(test: Test) {
+  });
+
+  test('allows containers access to instance metadata service', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -1189,7 +1182,7 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::AutoScaling::LaunchConfiguration', {
+    expect(stack).toHaveResource('AWS::AutoScaling::LaunchConfiguration', {
       UserData: {
         'Fn::Base64': {
           'Fn::Join': [
@@ -1204,12 +1197,12 @@ nodeunitShim({
           ],
         },
       },
-    }));
+    });
 
-    test.done();
-  },
 
-  'allows adding default service discovery namespace'(test: Test) {
+  });
+
+  test('allows adding default service discovery namespace', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -1225,17 +1218,17 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ServiceDiscovery::PrivateDnsNamespace', {
+    expect(stack).toHaveResource('AWS::ServiceDiscovery::PrivateDnsNamespace', {
       Name: 'foo.com',
       Vpc: {
         Ref: 'MyVpcF9F0CA6F',
       },
-    }));
+    });
 
-    test.done();
-  },
 
-  'allows adding public service discovery namespace'(test: Test) {
+  });
+
+  test('allows adding public service discovery namespace', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -1252,16 +1245,16 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ServiceDiscovery::PublicDnsNamespace', {
+    expect(stack).toHaveResource('AWS::ServiceDiscovery::PublicDnsNamespace', {
       Name: 'foo.com',
-    }));
+    });
 
-    test.equal(cluster.defaultCloudMapNamespace!.type, cloudmap.NamespaceType.DNS_PUBLIC);
+    expect(cluster.defaultCloudMapNamespace!.type).toEqual(cloudmap.NamespaceType.DNS_PUBLIC);
 
-    test.done();
-  },
 
-  'throws if default service discovery namespace added more than once'(test: Test) {
+  });
+
+  test('throws if default service discovery namespace added more than once', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -1277,16 +1270,16 @@ nodeunitShim({
     });
 
     // THEN
-    test.throws(() => {
+    expect(() => {
       cluster.addDefaultCloudMapNamespace({
         name: 'foo.com',
       });
-    }, /Can only add default namespace once./);
+    }).toThrow(/Can only add default namespace once./);
 
-    test.done();
-  },
 
-  'export/import of a cluster with a namespace'(test: Test) {
+  });
+
+  test('export/import of a cluster with a namespace', () => {
     // GIVEN
     const stack1 = new cdk.Stack();
     const vpc1 = new ec2.Vpc(stack1, 'Vpc');
@@ -1310,16 +1303,16 @@ nodeunitShim({
     });
 
     // THEN
-    test.equal(cluster2.defaultCloudMapNamespace!.type, cloudmap.NamespaceType.DNS_PRIVATE);
-    test.deepEqual(stack2.resolve(cluster2.defaultCloudMapNamespace!.namespaceId), 'import-namespace-id');
+    expect(cluster2.defaultCloudMapNamespace!.type).toEqual(cloudmap.NamespaceType.DNS_PRIVATE);
+    expect(stack2.resolve(cluster2.defaultCloudMapNamespace!.namespaceId)).toEqual('import-namespace-id');
 
     // Can retrieve subnets from VPC - will throw 'There are no 'Private' subnets in this VPC. Use a different VPC subnet selection.' if broken.
     cluster2.vpc.selectSubnets();
 
-    test.done();
-  },
 
-  'imported cluster with imported security groups honors allowAllOutbound'(test: Test) {
+  });
+
+  test('imported cluster with imported security groups honors allowAllOutbound', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'Vpc');
@@ -1337,16 +1330,16 @@ nodeunitShim({
     cluster.connections.allowToAnyIpv4(ec2.Port.tcp(443));
 
     // THEN
-    expect(stack).to(haveResource('AWS::EC2::SecurityGroupEgress', {
+    expect(stack).toHaveResource('AWS::EC2::SecurityGroupEgress', {
       GroupId: 'sg-1',
-    }));
+    });
 
-    expect(stack).to(countResources('AWS::EC2::SecurityGroupEgress', 1));
+    expect(stack).toCountResources('AWS::EC2::SecurityGroupEgress', 1);
 
-    test.done();
-  },
 
-  'Metric'(test: Test) {
+  });
+
+  test('Metric', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -1354,7 +1347,7 @@ nodeunitShim({
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
 
     // THEN
-    test.deepEqual(stack.resolve(cluster.metricCpuReservation()), {
+    expect(stack.resolve(cluster.metricCpuReservation())).toEqual({
       dimensions: {
         ClusterName: { Ref: 'EcsCluster97242B84' },
       },
@@ -1364,7 +1357,7 @@ nodeunitShim({
       statistic: 'Average',
     });
 
-    test.deepEqual(stack.resolve(cluster.metricMemoryReservation()), {
+    expect(stack.resolve(cluster.metricMemoryReservation())).toEqual({
       dimensions: {
         ClusterName: { Ref: 'EcsCluster97242B84' },
       },
@@ -1374,7 +1367,7 @@ nodeunitShim({
       statistic: 'Average',
     });
 
-    test.deepEqual(stack.resolve(cluster.metric('myMetric')), {
+    expect(stack.resolve(cluster.metric('myMetric'))).toEqual({
       dimensions: {
         ClusterName: { Ref: 'EcsCluster97242B84' },
       },
@@ -1384,10 +1377,10 @@ nodeunitShim({
       statistic: 'Average',
     });
 
-    test.done();
-  },
 
-  'ASG with a public VPC without NAT Gateways'(test: Test) {
+  });
+
+  test('ASG with a public VPC without NAT Gateways', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'MyPublicVpc', {
@@ -1409,9 +1402,9 @@ nodeunitShim({
       },
     });
 
-    expect(stack).to(haveResource('AWS::ECS::Cluster'));
+    expect(stack).toHaveResource('AWS::ECS::Cluster');
 
-    expect(stack).to(haveResource('AWS::EC2::VPC', {
+    expect(stack).toHaveResource('AWS::EC2::VPC', {
       CidrBlock: '10.0.0.0/16',
       EnableDnsHostnames: true,
       EnableDnsSupport: true,
@@ -1422,9 +1415,9 @@ nodeunitShim({
           Value: 'Default/MyPublicVpc',
         },
       ],
-    }));
+    });
 
-    expect(stack).to(haveResource('AWS::AutoScaling::LaunchConfiguration', {
+    expect(stack).toHaveResource('AWS::AutoScaling::LaunchConfiguration', {
       ImageId: {
         Ref: 'SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter',
       },
@@ -1456,9 +1449,9 @@ nodeunitShim({
           ],
         },
       },
-    }));
+    });
 
-    expect(stack).to(haveResource('AWS::AutoScaling::AutoScalingGroup', {
+    expect(stack).toHaveResource('AWS::AutoScaling::AutoScalingGroup', {
       MaxSize: '1',
       MinSize: '1',
       LaunchConfigurationName: {
@@ -1479,9 +1472,9 @@ nodeunitShim({
           Ref: 'MyPublicVpcingressSubnet2SubnetD2F2E034',
         },
       ],
-    }));
+    });
 
-    expect(stack).to(haveResource('AWS::EC2::SecurityGroup', {
+    expect(stack).toHaveResource('AWS::EC2::SecurityGroup', {
       GroupDescription: 'Default/EcsCluster/DefaultAutoScalingGroup/InstanceSecurityGroup',
       SecurityGroupEgress: [
         {
@@ -1499,13 +1492,13 @@ nodeunitShim({
       VpcId: {
         Ref: 'MyPublicVpcA2BF6CDA',
       },
-    }));
+    });
 
     // THEN
-    test.done();
-  },
 
-  'enable container insights'(test: Test) {
+  });
+
+  test('enable container insights', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
@@ -1513,19 +1506,19 @@ nodeunitShim({
     new ecs.Cluster(stack, 'EcsCluster', { containerInsights: true });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ECS::Cluster', {
+    expect(stack).toHaveResource('AWS::ECS::Cluster', {
       ClusterSettings: [
         {
           Name: 'containerInsights',
           Value: 'enabled',
         },
       ],
-    }, ResourcePart.Properties));
+    });
 
-    test.done();
-  },
 
-  'disable container insights'(test: Test) {
+  });
+
+  test('disable container insights', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
@@ -1533,19 +1526,19 @@ nodeunitShim({
     new ecs.Cluster(stack, 'EcsCluster', { containerInsights: false });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ECS::Cluster', {
+    expect(stack).toHaveResource('AWS::ECS::Cluster', {
       ClusterSettings: [
         {
           Name: 'containerInsights',
           Value: 'disabled',
         },
       ],
-    }, ResourcePart.Properties));
+    });
 
-    test.done();
-  },
 
-  'default container insights is undefined'(test: Test) {
+  });
+
+  test('default container insights is undefined', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
@@ -1557,17 +1550,15 @@ nodeunitShim({
     const stackAssembly = assembly.getStackByName(stack.stackName);
     const template = stackAssembly.template;
 
-    test.equal(
+    expect(
       template.Resources.EcsCluster97242B84.Properties === undefined ||
       template.Resources.EcsCluster97242B84.Properties.ClusterSettings === undefined,
-      true,
-      'ClusterSettings should not be defined',
-    );
+    ).toEqual(true);
 
-    test.done();
-  },
 
-  'BottleRocketImage() returns correct AMI'(test: Test) {
+  });
+
+  test('BottleRocketImage() returns correct AMI', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
@@ -1578,18 +1569,18 @@ nodeunitShim({
     // THEN
     const assembly = app.synth();
     const parameters = assembly.getStackByName(stack.stackName).template.Parameters;
-    test.ok(Object.entries(parameters).some(
+    expect(Object.entries(parameters).some(
       ([k, v]) => k.startsWith('SsmParameterValueawsservicebottlerocketawsecs') &&
         (v as any).Default.includes('/bottlerocket/'),
-    ), 'Bottlerocket AMI should be in ssm parameters');
-    test.ok(Object.entries(parameters).some(
+    )).toEqual(true);
+    expect(Object.entries(parameters).some(
       ([k, v]) => k.startsWith('SsmParameterValueawsservicebottlerocketawsecs') &&
         (v as any).Default.includes('/aws-ecs-1/'),
-    ), 'ecs variant should be in ssm parameters');
-    test.done();
-  },
+    )).toEqual(true);
 
-  'cluster capacity with bottlerocket AMI, by setting machineImageType'(test: Test) {
+  });
+
+  test('cluster capacity with bottlerocket AMI, by setting machineImageType', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
@@ -1601,9 +1592,9 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ECS::Cluster'));
-    expect(stack).to(haveResource('AWS::AutoScaling::AutoScalingGroup'));
-    expect(stack).to(haveResource('AWS::AutoScaling::LaunchConfiguration', {
+    expect(stack).toHaveResource('AWS::ECS::Cluster');
+    expect(stack).toHaveResource('AWS::AutoScaling::AutoScalingGroup');
+    expect(stack).toHaveResource('AWS::AutoScaling::LaunchConfiguration', {
       ImageId: {
         Ref: 'SsmParameterValueawsservicebottlerocketawsecs1x8664latestimageidC96584B6F00A464EAD1953AFF4B05118Parameter',
       },
@@ -1621,8 +1612,8 @@ nodeunitShim({
           ],
         },
       },
-    }));
-    expect(stack).to(haveResourceLike('AWS::IAM::Role', {
+    });
+    expect(stack).toHaveResourceLike('AWS::IAM::Role', {
       AssumeRolePolicyDocument: {
         Statement: [
           {
@@ -1677,12 +1668,40 @@ nodeunitShim({
           Value: 'test/EcsCluster/bottlerocket-asg',
         },
       ],
-    }),
-    );
-    test.done();
-  },
+    });
 
-  'cluster capacity with bottlerocket AMI, by setting the machineImage'(test: Test) {
+  });
+
+  test('correct bottlerocket AMI for ARM64 architecture', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+
+    const cluster = new ecs.Cluster(stack, 'EcsCluster');
+    cluster.addCapacity('bottlerocket-asg', {
+      instanceType: new ec2.InstanceType('m6g.large'),
+      machineImageType: ecs.MachineImageType.BOTTLEROCKET,
+    });
+
+    // THEN
+    expect(stack).toHaveResource('AWS::AutoScaling::LaunchConfiguration', {
+      ImageId: {
+        Ref: 'SsmParameterValueawsservicebottlerocketawsecs1arm64latestimageidC96584B6F00A464EAD1953AFF4B05118Parameter',
+      },
+    });
+
+    const assembly = app.synth();
+    const template = assembly.getStackByName(stack.stackName).template;
+    expect(template.Parameters).toEqual({
+      SsmParameterValueawsservicebottlerocketawsecs1arm64latestimageidC96584B6F00A464EAD1953AFF4B05118Parameter: {
+        Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>',
+        Default: '/aws/service/bottlerocket/aws-ecs-1/arm64/latest/image_id',
+      },
+    });
+
+  });
+
+  test('throws when machineImage and machineImageType both specified', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
@@ -1694,7 +1713,7 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResourceLike('AWS::AutoScaling::LaunchConfiguration', {
+    expect(stack).toHaveResourceLike('AWS::AutoScaling::LaunchConfiguration', {
       UserData: {
         'Fn::Base64': {
           'Fn::Join': [
@@ -1709,11 +1728,11 @@ nodeunitShim({
           ],
         },
       },
-    }));
-    test.done();
-  },
+    });
 
-  'allows specifying capacityProviders (deprecated)'(test: Test) {
+  });
+
+  test('allows specifying capacityProviders (deprecated)', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
@@ -1722,18 +1741,18 @@ nodeunitShim({
     new ecs.Cluster(stack, 'EcsCluster', { capacityProviders: ['FARGATE_SPOT'] });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ECS::Cluster', {
+    expect(stack).toHaveResource('AWS::ECS::Cluster', {
       CapacityProviders: ABSENT,
-    }));
+    });
 
-    expect(stack).to(haveResource('AWS::ECS::ClusterCapacityProviderAssociations', {
+    expect(stack).toHaveResource('AWS::ECS::ClusterCapacityProviderAssociations', {
       CapacityProviders: ['FARGATE_SPOT'],
-    }));
+    });
 
-    test.done();
-  },
 
-  'allows specifying Fargate capacityProviders'(test: Test) {
+  });
+
+  test('allows specifying Fargate capacityProviders', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
@@ -1744,18 +1763,18 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ECS::Cluster', {
+    expect(stack).toHaveResource('AWS::ECS::Cluster', {
       CapacityProviders: ABSENT,
-    }));
+    });
 
-    expect(stack).to(haveResource('AWS::ECS::ClusterCapacityProviderAssociations', {
+    expect(stack).toHaveResource('AWS::ECS::ClusterCapacityProviderAssociations', {
       CapacityProviders: ['FARGATE', 'FARGATE_SPOT'],
-    }));
+    });
 
-    test.done();
-  },
 
-  'allows specifying capacityProviders (alternate method)'(test: Test) {
+  });
+
+  test('allows specifying capacityProviders (alternate method)', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
@@ -1765,18 +1784,18 @@ nodeunitShim({
     cluster.enableFargateCapacityProviders();
 
     // THEN
-    expect(stack).to(haveResource('AWS::ECS::Cluster', {
+    expect(stack).toHaveResource('AWS::ECS::Cluster', {
       CapacityProviders: ABSENT,
-    }));
+    });
 
-    expect(stack).to(haveResource('AWS::ECS::ClusterCapacityProviderAssociations', {
+    expect(stack).toHaveResource('AWS::ECS::ClusterCapacityProviderAssociations', {
       CapacityProviders: ['FARGATE', 'FARGATE_SPOT'],
-    }));
+    });
 
-    test.done();
-  },
 
-  'allows adding capacityProviders post-construction (deprecated)'(test: Test) {
+  });
+
+  test('allows adding capacityProviders post-construction (deprecated)', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
@@ -1787,18 +1806,18 @@ nodeunitShim({
     cluster.addCapacityProvider('FARGATE'); // does not add twice
 
     // THEN
-    expect(stack).to(haveResource('AWS::ECS::Cluster', {
+    expect(stack).toHaveResource('AWS::ECS::Cluster', {
       CapacityProviders: ABSENT,
-    }));
+    });
 
-    expect(stack).to(haveResource('AWS::ECS::ClusterCapacityProviderAssociations', {
+    expect(stack).toHaveResource('AWS::ECS::ClusterCapacityProviderAssociations', {
       CapacityProviders: ['FARGATE'],
-    }));
+    });
 
-    test.done();
-  },
 
-  'allows adding capacityProviders post-construction'(test: Test) {
+  });
+
+  test('allows adding capacityProviders post-construction', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
@@ -1809,32 +1828,32 @@ nodeunitShim({
     cluster.addCapacityProvider('FARGATE'); // does not add twice
 
     // THEN
-    expect(stack).to(haveResource('AWS::ECS::Cluster', {
+    expect(stack).toHaveResource('AWS::ECS::Cluster', {
       CapacityProviders: ABSENT,
-    }));
+    });
 
-    expect(stack).to(haveResource('AWS::ECS::ClusterCapacityProviderAssociations', {
+    expect(stack).toHaveResource('AWS::ECS::ClusterCapacityProviderAssociations', {
       CapacityProviders: ['FARGATE'],
-    }));
+    });
 
-    test.done();
-  },
 
-  'throws for unsupported capacity providers'(test: Test) {
+  });
+
+  test('throws for unsupported capacity providers', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
     const cluster = new ecs.Cluster(stack, 'EcsCluster');
 
     // THEN
-    test.throws(() => {
+    expect(() => {
       cluster.addCapacityProvider('HONK');
-    }, /CapacityProvider not supported/);
+    }).toThrow(/CapacityProvider not supported/);
 
-    test.done();
-  },
 
-  'creates ASG capacity providers with expected defaults'(test: Test) {
+  });
+
+  test('creates ASG capacity providers with expected defaults', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
@@ -1851,7 +1870,7 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ECS::CapacityProvider', {
+    expect(stack).toHaveResource('AWS::ECS::CapacityProvider', {
       AutoScalingGroupProvider: {
         AutoScalingGroupArn: {
           Ref: 'asgASG4D014670',
@@ -1862,11 +1881,11 @@ nodeunitShim({
         },
         ManagedTerminationProtection: 'ENABLED',
       },
-    }));
-    test.done();
-  },
+    });
 
-  'can disable managed scaling for ASG capacity provider'(test: Test) {
+  });
+
+  test('can disable managed scaling for ASG capacity provider', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
@@ -1884,7 +1903,7 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ECS::CapacityProvider', {
+    expect(stack).toHaveResource('AWS::ECS::CapacityProvider', {
       AutoScalingGroupProvider: {
         AutoScalingGroupArn: {
           Ref: 'asgASG4D014670',
@@ -1892,11 +1911,11 @@ nodeunitShim({
         ManagedScaling: ABSENT,
         ManagedTerminationProtection: 'ENABLED',
       },
-    }));
-    test.done();
-  },
+    });
 
-  'capacity provider enables ASG new instance scale-in protection by default'(test: Test) {
+  });
+
+  test('capacity provider enables ASG new instance scale-in protection by default', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
@@ -1913,13 +1932,13 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::AutoScaling::AutoScalingGroup', {
+    expect(stack).toHaveResource('AWS::AutoScaling::AutoScalingGroup', {
       NewInstancesProtectedFromScaleIn: true,
-    }));
-    test.done();
-  },
+    });
 
-  'capacity provider disables ASG new instance scale-in protection'(test: Test) {
+  });
+
+  test('capacity provider disables ASG new instance scale-in protection', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
@@ -1937,13 +1956,13 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).notTo(haveResource('AWS::AutoScaling::AutoScalingGroup', {
+    expect(stack).not.toHaveResource('AWS::AutoScaling::AutoScalingGroup', {
       NewInstancesProtectedFromScaleIn: true,
-    }));
-    test.done();
-  },
+    });
 
-  'can add ASG capacity via Capacity Provider'(test: Test) {
+  });
+
+  test('can add ASG capacity via Capacity Provider', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
@@ -1969,7 +1988,7 @@ nodeunitShim({
     cluster.addAsgCapacityProvider(capacityProvider);
 
     // THEN
-    expect(stack).to(haveResource('AWS::ECS::ClusterCapacityProviderAssociations', {
+    expect(stack).toHaveResource('AWS::ECS::ClusterCapacityProviderAssociations', {
       Cluster: {
         Ref: 'EcsCluster97242B84',
       },
@@ -1981,11 +2000,11 @@ nodeunitShim({
         },
       ],
       DefaultCapacityProviderStrategy: [],
-    }));
-    test.done();
-  },
+    });
 
-  'correctly sets log configuration for execute command'(test: Test) {
+  });
+
+  test('correctly sets log configuration for execute command', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
@@ -2016,7 +2035,7 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ECS::Cluster', {
+    expect(stack).toHaveResource('AWS::ECS::Cluster', {
       Configuration: {
         ExecuteCommandConfiguration: {
           KmsKeyId: {
@@ -2039,29 +2058,29 @@ nodeunitShim({
           Logging: 'OVERRIDE',
         },
       },
-    }));
+    });
 
-    test.done();
-  },
 
-  'throws when no log configuration is provided when logging is set to OVERRIDE'(test: Test) {
+  });
+
+  test('throws when no log configuration is provided when logging is set to OVERRIDE', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
 
     // THEN
-    test.throws(() => {
+    expect(() => {
       new ecs.Cluster(stack, 'EcsCluster', {
         executeCommandConfiguration: {
           logging: ecs.ExecuteCommandLogging.OVERRIDE,
         },
       });
-    }, /Execute command log configuration must only be specified when logging is OVERRIDE./);
+    }).toThrow(/Execute command log configuration must only be specified when logging is OVERRIDE./);
 
-    test.done();
-  },
 
-  'throws when log configuration provided but logging is set to DEFAULT'(test: Test) {
+  });
+
+  test('throws when log configuration provided but logging is set to DEFAULT', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
@@ -2069,7 +2088,7 @@ nodeunitShim({
     const logGroup = new logs.LogGroup(stack, 'LogGroup');
 
     // THEN
-    test.throws(() => {
+    expect(() => {
       new ecs.Cluster(stack, 'EcsCluster', {
         executeCommandConfiguration: {
           logConfiguration: {
@@ -2078,18 +2097,18 @@ nodeunitShim({
           logging: ecs.ExecuteCommandLogging.DEFAULT,
         },
       });
-    }, /Execute command log configuration must only be specified when logging is OVERRIDE./);
+    }).toThrow(/Execute command log configuration must only be specified when logging is OVERRIDE./);
 
-    test.done();
-  },
 
-  'throws when CloudWatchEncryptionEnabled without providing CloudWatch Logs log group name'(test: Test) {
+  });
+
+  test('throws when CloudWatchEncryptionEnabled without providing CloudWatch Logs log group name', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
 
     // THEN
-    test.throws(() => {
+    expect(() => {
       new ecs.Cluster(stack, 'EcsCluster', {
         executeCommandConfiguration: {
           logConfiguration: {
@@ -2098,18 +2117,18 @@ nodeunitShim({
           logging: ecs.ExecuteCommandLogging.OVERRIDE,
         },
       });
-    }, /You must specify a CloudWatch log group in the execute command log configuration to enable CloudWatch encryption./);
+    }).toThrow(/You must specify a CloudWatch log group in the execute command log configuration to enable CloudWatch encryption./);
 
-    test.done();
-  },
 
-  'throws when S3EncryptionEnabled without providing S3 Bucket name'(test: Test) {
+  });
+
+  test('throws when S3EncryptionEnabled without providing S3 Bucket name', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
 
     // THEN
-    test.throws(() => {
+    expect(() => {
       new ecs.Cluster(stack, 'EcsCluster', {
         executeCommandConfiguration: {
           logConfiguration: {
@@ -2118,8 +2137,112 @@ nodeunitShim({
           logging: ecs.ExecuteCommandLogging.OVERRIDE,
         },
       });
-    }, /You must specify an S3 bucket name in the execute command log configuration to enable S3 encryption./);
+    }).toThrow(/You must specify an S3 bucket name in the execute command log configuration to enable S3 encryption./);
 
-    test.done();
-  },
+
+  });
+});
+
+test('can add ASG capacity via Capacity Provider by not specifying machineImageType', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'test');
+  const vpc = new ec2.Vpc(stack, 'Vpc');
+  const cluster = new ecs.Cluster(stack, 'EcsCluster');
+
+  const autoScalingGroupAl2 = new autoscaling.AutoScalingGroup(stack, 'asgal2', {
+    vpc,
+    instanceType: new ec2.InstanceType('bogus'),
+    machineImage: ecs.EcsOptimizedImage.amazonLinux2(),
+  });
+
+  const autoScalingGroupBottlerocket = new autoscaling.AutoScalingGroup(stack, 'asgBottlerocket', {
+    vpc,
+    instanceType: new ec2.InstanceType('bogus'),
+    machineImage: new ecs.BottleRocketImage(),
+  });
+
+  // WHEN
+  const capacityProviderAl2 = new ecs.AsgCapacityProvider(stack, 'provideral2', {
+    autoScalingGroup: autoScalingGroupAl2,
+    enableManagedTerminationProtection: false,
+  });
+
+  const capacityProviderBottlerocket = new ecs.AsgCapacityProvider(stack, 'providerBottlerocket', {
+    autoScalingGroup: autoScalingGroupBottlerocket,
+    enableManagedTerminationProtection: false,
+    machineImageType: ecs.MachineImageType.BOTTLEROCKET,
+  });
+
+  cluster.enableFargateCapacityProviders();
+
+  // Ensure not added twice
+  cluster.addAsgCapacityProvider(capacityProviderAl2);
+  cluster.addAsgCapacityProvider(capacityProviderAl2);
+
+  // Add Bottlerocket ASG Capacity Provider
+  cluster.addAsgCapacityProvider(capacityProviderBottlerocket);
+
+
+  // THEN Bottlerocket LaunchConfiguration
+  expect(stack).toHaveResource('AWS::AutoScaling::LaunchConfiguration', {
+    ImageId: {
+      Ref: 'SsmParameterValueawsservicebottlerocketawsecs1x8664latestimageidC96584B6F00A464EAD1953AFF4B05118Parameter',
+
+    },
+    UserData: {
+      'Fn::Base64': {
+        'Fn::Join': [
+          '',
+          [
+            '\n[settings.ecs]\ncluster = \"',
+            {
+              Ref: 'EcsCluster97242B84',
+            },
+            '\"',
+          ],
+        ],
+      },
+    },
+  });
+
+  // THEN AmazonLinux2 LaunchConfiguration
+  expect(stack).toHaveResource('AWS::AutoScaling::LaunchConfiguration', {
+    ImageId: {
+      Ref: 'SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter',
+    },
+    UserData: {
+      'Fn::Base64': {
+        'Fn::Join': [
+          '',
+          [
+            '#!/bin/bash\necho ECS_CLUSTER=',
+            {
+              Ref: 'EcsCluster97242B84',
+
+            },
+            ' >> /etc/ecs/ecs.config\nsudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nsudo service iptables save\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config',
+          ],
+        ],
+      },
+    },
+  });
+
+  expect(stack).toHaveResource('AWS::ECS::ClusterCapacityProviderAssociations', {
+    CapacityProviders: [
+      'FARGATE',
+      'FARGATE_SPOT',
+      {
+        Ref: 'provideral2A427CBC0',
+      },
+      {
+        Ref: 'providerBottlerocket90C039FA',
+      },
+    ],
+    Cluster: {
+      Ref: 'EcsCluster97242B84',
+    },
+    DefaultCapacityProviderStrategy: [],
+  });
+
 });

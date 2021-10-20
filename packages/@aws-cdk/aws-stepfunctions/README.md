@@ -22,6 +22,7 @@ example](https://docs.aws.amazon.com/step-functions/latest/dg/job-status-poller-
 ## Example
 
 ```ts
+import * as cdk from '@aws-cdk/core';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as tasks from '@aws-cdk/aws-stepfunctions-tasks';
 import * as lambda from '@aws-cdk/aws-lambda';
@@ -36,7 +37,7 @@ const submitJob = new tasks.LambdaInvoke(this, 'Submit Job', {
 });
 
 const waitX = new sfn.Wait(this, 'Wait X Seconds', {
-    time: sfn.WaitTime.secondsPath('$.waitSeconds'),
+  time: sfn.WaitTime.secondsPath('$.waitSeconds'),
 });
 
 const getStatus = new tasks.LambdaInvoke(this, 'Get Job Status', {
@@ -48,8 +49,8 @@ const getStatus = new tasks.LambdaInvoke(this, 'Get Job Status', {
 });
 
 const jobFailed = new sfn.Fail(this, 'Job Failed', {
-    cause: 'AWS Batch Job Failed',
-    error: 'DescribeJob returned FAILED',
+  cause: 'AWS Batch Job Failed',
+  error: 'DescribeJob returned FAILED',
 });
 
 const finalStatus = new tasks.LambdaInvoke(this, 'Get Final Job Status', {
@@ -60,17 +61,17 @@ const finalStatus = new tasks.LambdaInvoke(this, 'Get Final Job Status', {
 });
 
 const definition = submitJob
-    .next(waitX)
-    .next(getStatus)
-    .next(new sfn.Choice(this, 'Job Complete?')
-        // Look at the "status" field
-        .when(sfn.Condition.stringEquals('$.status', 'FAILED'), jobFailed)
-        .when(sfn.Condition.stringEquals('$.status', 'SUCCEEDED'), finalStatus)
-        .otherwise(waitX));
+  .next(waitX)
+  .next(getStatus)
+  .next(new sfn.Choice(this, 'Job Complete?')
+    // Look at the "status" field
+    .when(sfn.Condition.stringEquals('$.status', 'FAILED'), jobFailed)
+    .when(sfn.Condition.stringEquals('$.status', 'SUCCEEDED'), finalStatus)
+    .otherwise(waitX));
 
 new sfn.StateMachine(this, 'StateMachine', {
-    definition,
-    timeout: Duration.minutes(5)
+  definition,
+  timeout: cdk.Duration.minutes(5),
 });
 ```
 
@@ -87,7 +88,7 @@ all states reachable from the start state:
 const startState = new sfn.Pass(this, 'StartState');
 
 new sfn.StateMachine(this, 'StateMachine', {
-    definition: startState
+  definition: startState,
 });
 ```
 
@@ -157,7 +158,7 @@ and also injects a field called `otherData`.
 const pass = new sfn.Pass(this, 'Filter input and inject data', {
   parameters: { // input to the pass state
     input: sfn.JsonPath.stringAt('$.input.greeting'),
-    otherData: 'some-extra-stuff'
+    otherData: 'some-extra-stuff',
   },
 });
 ```
@@ -178,7 +179,7 @@ state.
 // Wait until it's the time mentioned in the the state object's "triggerTime"
 // field.
 const wait = new sfn.Wait(this, 'Wait For Trigger Time', {
-    time: sfn.WaitTime.timestampPath('$.triggerTime'),
+  time: sfn.WaitTime.timestampPath('$.triggerTime'),
 });
 
 // Set the next state
@@ -309,8 +310,8 @@ Failures can be caught by encompassing `Parallel` states.
 
 ```ts
 const success = new sfn.Fail(this, 'Fail', {
-    error: 'WorkflowFailure',
-    cause: "Something went wrong"
+  error: 'WorkflowFailure',
+  cause: "Something went wrong",
 });
 ```
 
@@ -324,8 +325,8 @@ execute the same steps for multiple entries of an array in the state input.
 
 ```ts
 const map = new sfn.Map(this, 'Map State', {
-    maxConcurrency: 1,
-    itemsPath: sfn.JsonPath.stringAt('$.inputForMap')
+  maxConcurrency: 1,
+  itemsPath: sfn.JsonPath.stringAt('$.inputForMap'),
 });
 map.iterator(new sfn.Pass(this, 'Pass State'));
 ```
@@ -353,8 +354,8 @@ the State Machine uses.
 The following example uses the `DynamoDB` service integration to insert data into a DynamoDB table.
 
 ```ts
-import * as ddb from '@aws-cdk/aws-dynamodb';
 import * as cdk from '@aws-cdk/core';
+import * as ddb from '@aws-cdk/aws-dynamodb';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 
 // create a table
@@ -389,7 +390,7 @@ const custom = new sfn.CustomState(this, 'my custom task', {
 });
 
 const chain = sfn.Chain.start(custom)
-      .next(finalStatus);
+  .next(finalStatus);
 
 const sm = new sfn.StateMachine(this, 'StateMachine', {
   definition: chain,
@@ -410,18 +411,18 @@ targets of `Choice.on` or `Parallel.branch`:
 
 ```ts
 const definition = step1
-    .next(step2)
-    .next(choice
-        .when(condition1, step3.next(step4).next(step5))
-        .otherwise(step6)
-        .afterwards())
-    .next(parallel
-        .branch(step7.next(step8))
-        .branch(step9.next(step10)))
-    .next(finish);
+  .next(step2)
+  .next(choice
+    .when(condition1, step3.next(step4).next(step5))
+    .otherwise(step6)
+    .afterwards())
+  .next(parallel
+    .branch(step7.next(step8))
+    .branch(step9.next(step10)))
+  .next(finish);
 
 new sfn.StateMachine(this, 'StateMachine', {
-    definition,
+  definition,
 });
 ```
 
@@ -430,10 +431,10 @@ step, you can use `Chain.start`:
 
 ```ts
 const definition = sfn.Chain
-    .start(step1)
-    .next(step2)
-    .next(step3)
-    // ...
+  .start(step1)
+  .next(step2)
+  .next(step3)
+  // ...
 ```
 
 ## State Machine Fragments
@@ -457,30 +458,30 @@ machine as a subclass of this, it will be convenient to use:
 
 ```ts
 interface MyJobProps {
-    jobFlavor: string;
+  jobFlavor: string;
 }
 
 class MyJob extends sfn.StateMachineFragment {
-    public readonly startState: sfn.State;
-    public readonly endStates: sfn.INextable[];
+  public readonly startState: sfn.State;
+  public readonly endStates: sfn.INextable[];
 
-    constructor(parent: cdk.Construct, id: string, props: MyJobProps) {
-        super(parent, id);
+  constructor(parent: cdk.Construct, id: string, props: MyJobProps) {
+    super(parent, id);
 
-        const first = new sfn.Task(this, 'First', { ... });
-        // ...
-        const last = new sfn.Task(this, 'Last', { ... });
+    const first = new sfn.Task(this, 'First', { ... });
+    // ...
+    const last = new sfn.Task(this, 'Last', { ... });
 
-        this.startState = first;
-        this.endStates = [last];
-    }
+    this.startState = first;
+    this.endStates = [last];
+  }
 }
 
 // Do 3 different variants of MyJob in parallel
 new sfn.Parallel(this, 'All jobs')
-    .branch(new MyJob(this, 'Quick', { jobFlavor: 'quick' }).prefixStates())
-    .branch(new MyJob(this, 'Medium', { jobFlavor: 'medium' }).prefixStates())
-    .branch(new MyJob(this, 'Slow', { jobFlavor: 'slow' }).prefixStates());
+  .branch(new MyJob(this, 'Quick', { jobFlavor: 'quick' }).prefixStates())
+  .branch(new MyJob(this, 'Medium', { jobFlavor: 'medium' }).prefixStates())
+  .branch(new MyJob(this, 'Slow', { jobFlavor: 'slow' }).prefixStates());
 ```
 
 A few utility functions are available to parse state machine fragments.
@@ -529,9 +530,9 @@ to create an alarm on a particular task failing:
 
 ```ts
 new cloudwatch.Alarm(this, 'TaskAlarm', {
-    metric: task.metricFailed(),
-    threshold: 1,
-    evaluationPeriods: 1,
+  metric: task.metricFailed(),
+  threshold: 1,
+  evaluationPeriods: 1,
 });
 ```
 
@@ -539,9 +540,9 @@ There are also metrics on the complete state machine:
 
 ```ts
 new cloudwatch.Alarm(this, 'StateMachineAlarm', {
-    metric: stateMachine.metricFailed(),
-    threshold: 1,
-    evaluationPeriods: 1,
+  metric: stateMachine.metricFailed(),
+  threshold: 1,
+  evaluationPeriods: 1,
 });
 ```
 
@@ -549,9 +550,9 @@ And there are metrics on the capacity of all state machines in your account:
 
 ```ts
 new cloudwatch.Alarm(this, 'ThrottledAlarm', {
-    metric: StateTransitionMetrics.metricThrottledEvents(),
-    threshold: 10,
-    evaluationPeriods: 2,
+  metric: StateTransitionMetrics.metricThrottledEvents(),
+  threshold: 10,
+  evaluationPeriods: 2,
 });
 ```
 
@@ -580,11 +581,11 @@ destination LogGroup:
 const logGroup = new logs.LogGroup(stack, 'MyLogGroup');
 
 new sfn.StateMachine(stack, 'MyStateMachine', {
-    definition: sfn.Chain.start(new sfn.Pass(stack, 'Pass')),
-    logs: {
-      destination: logGroup,
-      level: sfn.LogLevel.ALL,
-    }
+  definition: sfn.Chain.start(new sfn.Pass(stack, 'Pass')),
+  logs: {
+    destination: logGroup,
+    level: sfn.LogLevel.ALL,
+  },
 });
 ```
 
@@ -593,11 +594,9 @@ new sfn.StateMachine(stack, 'MyStateMachine', {
 Enable X-Ray tracing for StateMachine:
 
 ```ts
-const logGroup = new logs.LogGroup(stack, 'MyLogGroup');
-
 new sfn.StateMachine(stack, 'MyStateMachine', {
-    definition: sfn.Chain.start(new sfn.Pass(stack, 'Pass')),
-    tracingEnabled: true
+  definition: sfn.Chain.start(new sfn.Pass(stack, 'Pass')),
+  tracingEnabled: true,
 });
 ```
 
@@ -734,5 +733,6 @@ const stack = new Stack(app, 'MyStack');
 sfn.StateMachine.fromStateMachineArn(
   stack,
   'ImportedStateMachine',
-  'arn:aws:states:us-east-1:123456789012:stateMachine:StateMachine2E01A3A5-N5TJppzoevKQ');
+  'arn:aws:states:us-east-1:123456789012:stateMachine:StateMachine2E01A3A5-N5TJppzoevKQ',
+);
 ```

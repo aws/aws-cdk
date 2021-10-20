@@ -55,7 +55,6 @@
   },
   "cdk-build": {
     "cloudformation": "AWS::EC2",
-    "jest": true,
     "env": {
       "AWSLINT_BASE_CONSTRUCT": "true"
     }
@@ -73,16 +72,16 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/aws-lambda": "^8.10.79",
-    "@types/jest": "^26.0.24",
-    "@aws-cdk/cx-api": "0.0.0",
-    "cdk-build-tools": "0.0.0",
-    "cdk-integ-tools": "0.0.0",
-    "cfn2ts": "0.0.0",
-    "nodeunit-shim": "0.0.0",
-    "pkglint": "0.0.0",
+    "@aws-cdk/assert-internal": "0.0.0",
+    "@aws-cdk/cdk-build-tools": "0.0.0",
+    "@aws-cdk/cdk-integ-tools": "0.0.0",
+    "@aws-cdk/cfn2ts": "0.0.0",
     "@aws-cdk/cloud-assembly-schema": "0.0.0",
-    "@aws-cdk/assert-internal": "0.0.0"
+    "@aws-cdk/cx-api": "0.0.0",
+    "@aws-cdk/pkglint": "0.0.0",
+    "@types/aws-lambda": "^8.10.84",
+    "@types/jest": "^26.0.24",
+    "jest": "^26.6.3"
   },
   "dependencies": {
     "@aws-cdk/aws-cloudwatch": "0.0.0",
@@ -107,9 +106,9 @@
     "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/aws-s3-assets": "0.0.0",
     "@aws-cdk/aws-ssm": "0.0.0",
+    "@aws-cdk/cloud-assembly-schema": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
-    "@aws-cdk/cloud-assembly-schema": "0.0.0",
     "@aws-cdk/region-info": "0.0.0",
     "constructs": "^3.3.69"
   },
@@ -239,6 +238,7 @@
       "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.ELASTIC_INFERENCE_RUNTIME",
       "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.ELASTIC_LOAD_BALANCING",
       "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.GLUE",
+      "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.KEYSPACES",
       "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.KINESIS_STREAMS",
       "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.KINESIS_FIREHOSE",
       "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.KMS",

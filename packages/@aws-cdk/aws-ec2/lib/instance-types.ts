@@ -373,6 +373,16 @@ export enum InstanceClass {
   X1E = 'x1e',
 
   /**
+   * Memory-intensive instances, 2nd generation with Graviton2 processors and local NVME drive
+   */
+  MEMORY_INTENSIVE_2_GRAVITON2_NVME_DRIVE = 'x2gd',
+
+  /**
+   * Memory-intensive instances, 2nd generation with Graviton2 processors and local NVME drive
+   */
+  X2GD = 'x2gd',
+
+  /**
    * Instances with customizable hardware acceleration, 1st generation
    */
   FPGA1 = 'f1',
@@ -441,6 +451,16 @@ export enum InstanceClass {
    * Arm processor based instances, 2nd generation
    */
   M6G = 'm6g',
+
+  /**
+   * Standard instances based on Intel (Ice Lake), 6th generation.
+   */
+  STANDARD6_INTEL = 'm6i',
+
+  /**
+   * Standard instances based on Intel (Ice Lake), 6th generation.
+   */
+  M6I = 'm6i',
 
   /**
    * Standard instances, 6th generation with Graviton2 processors and local NVME drive

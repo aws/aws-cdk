@@ -17,7 +17,7 @@ describe('User Pool', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
       AdminCreateUserConfig: {
         AllowAdminCreateUserOnly: true,
-        InviteMessageTemplate: Match.absentProperty(),
+        InviteMessageTemplate: Match.absent(),
       },
       EmailVerificationMessage: 'The verification code to your new account is {####}',
       EmailVerificationSubject: 'Verify your new account',
@@ -28,9 +28,9 @@ describe('User Pool', () => {
         EmailSubject: 'Verify your new account',
         SmsMessage: 'The verification code to your new account is {####}',
       },
-      SmsAuthenticationMessage: Match.absentProperty(),
-      SmsConfiguration: Match.absentProperty(),
-      lambdaTriggers: Match.absentProperty(),
+      SmsAuthenticationMessage: Match.absent(),
+      SmsConfiguration: Match.absent(),
+      lambdaTriggers: Match.absent(),
     });
 
     Template.fromStack(stack).hasResource('AWS::Cognito::UserPool', {
@@ -68,8 +68,8 @@ describe('User Pool', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
-      EmailVerificationMessage: Match.absentProperty(),
-      EmailVerificationSubject: Match.absentProperty(),
+      EmailVerificationMessage: Match.absent(),
+      EmailVerificationSubject: Match.absent(),
       SmsVerificationMessage: 'The verification code to your new account is {####}',
       VerificationMessageTemplate: {
         DefaultEmailOption: 'CONFIRM_WITH_LINK',
@@ -415,8 +415,8 @@ describe('User Pool', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
-      UsernameAttributes: Match.absentProperty(),
-      AliasAttributes: Match.absentProperty(),
+      UsernameAttributes: Match.absent(),
+      AliasAttributes: Match.absent(),
     });
   });
 
@@ -438,7 +438,7 @@ describe('User Pool', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
-      UsernameAttributes: Match.absentProperty(),
+      UsernameAttributes: Match.absent(),
       AliasAttributes: ['email'],
     });
   });
@@ -455,7 +455,7 @@ describe('User Pool', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
       UsernameAttributes: ['email', 'phone_number'],
-      AliasAttributes: Match.absentProperty(),
+      AliasAttributes: Match.absent(),
     });
   });
 
@@ -526,7 +526,7 @@ describe('User Pool', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
-      UsernameConfiguration: Match.absentProperty(),
+      UsernameConfiguration: Match.absent(),
     });
   });
 
@@ -638,7 +638,7 @@ describe('User Pool', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
       UserPoolName: 'Pool',
-      Schema: Match.absentProperty(),
+      Schema: Match.absent(),
     });
   });
 
@@ -687,14 +687,14 @@ describe('User Pool', () => {
         {
           Name: 'custom-string-attr',
           AttributeDataType: 'String',
-          StringAttributeConstraints: Match.absentProperty(),
-          NumberAttributeConstraints: Match.absentProperty(),
+          StringAttributeConstraints: Match.absent(),
+          NumberAttributeConstraints: Match.absent(),
         },
         {
           Name: 'custom-number-attr',
           AttributeDataType: 'Number',
-          StringAttributeConstraints: Match.absentProperty(),
-          NumberAttributeConstraints: Match.absentProperty(),
+          StringAttributeConstraints: Match.absent(),
+          NumberAttributeConstraints: Match.absent(),
         },
       ],
     });
@@ -759,13 +759,13 @@ describe('User Pool', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
       UserPoolName: 'Pool1',
-      MfaConfiguration: Match.absentProperty(),
-      EnabledMfas: Match.absentProperty(),
+      MfaConfiguration: Match.absent(),
+      EnabledMfas: Match.absent(),
     });
     Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
       UserPoolName: 'Pool2',
       MfaConfiguration: 'OFF',
-      EnabledMfas: Match.absentProperty(),
+      EnabledMfas: Match.absent(),
     });
   });
 
@@ -1120,7 +1120,7 @@ describe('User Pool', () => {
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
-        AccountRecoverySetting: Match.absentProperty(),
+        AccountRecoverySetting: Match.absent(),
       });
     });
 
@@ -1153,7 +1153,7 @@ describe('User Pool', () => {
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
-        SmsConfiguration: Match.absentProperty(),
+        SmsConfiguration: Match.absent(),
       });
     });
 
@@ -1245,7 +1245,7 @@ describe('User Pool', () => {
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
-        SmsConfiguration: Match.absentProperty(),
+        SmsConfiguration: Match.absent(),
       });
     });
 
@@ -1267,7 +1267,7 @@ describe('User Pool', () => {
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
-        SmsConfiguration: Match.absentProperty(),
+        SmsConfiguration: Match.absent(),
       });
     });
 
@@ -1351,7 +1351,7 @@ describe('User Pool', () => {
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
-        SmsConfiguration: Match.absentProperty(),
+        SmsConfiguration: Match.absent(),
       });
     });
 
@@ -1387,6 +1387,27 @@ describe('User Pool', () => {
         ReplyToEmailAddress: 'ответить@xn--d1acufc.xn--p1ai',
       },
     });
+  });
+});
+
+test('device tracking is configured correctly', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  new UserPool(stack, 'Pool', {
+    deviceTracking: {
+      challengeRequiredOnNewDevice: true,
+      deviceOnlyRememberedOnUserPrompt: true,
+    },
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
+    DeviceConfiguration: {
+      ChallengeRequiredOnNewDevice: true,
+      DeviceOnlyRememberedOnUserPrompt: true,
+    },
   });
 });
 

@@ -45,6 +45,7 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
     - [Multi-factor Authentication](#multi-factor-authentication-mfa)
     - [Account Recovery Settings](#account-recovery-settings)
   - [Emails](#emails)
+  - [Device Tracking](#device-tracking)
   - [Lambda Triggers](#lambda-triggers)
     - [Trigger Permissions](#trigger-permissions)
   - [Import](#importing-user-pools)
@@ -107,7 +108,7 @@ new cognito.UserPool(this, 'myuserpool', {
   userInvitation: {
     emailSubject: 'Invite to join our awesome app!',
     emailBody: 'Hello {username}, you have been invited to join our awesome app! Your temporary password is {####}',
-    smsMessage: 'Your temporary password for our awesome app is {####}'
+    smsMessage: 'Hello {username}, your temporary password for our awesome app is {####}'
   }
 });
 ```
@@ -336,6 +337,23 @@ layer](https://docs.aws.amazon.com/cdk/latest/guide/cfn_layer.html) to configure
 
 If an email address contains non-ASCII characters, it will be encoded using the [punycode
 encoding](https://en.wikipedia.org/wiki/Punycode) when generating the template for Cloudformation.
+
+### Device Tracking
+
+User pools can be configured to track devices that users have logged in to.
+Read more at [Device Tracking](https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-device-tracking.html)
+
+```ts
+new cognito.UserPool(this, 'myuserpool', {
+  // ...
+  deviceTracking: {
+    challengeRequiredOnNewDevice: true,
+    deviceOnlyRememberedOnUserPrompt: true,
+  },
+});
+```
+
+The default is to not track devices.
 
 ### Lambda Triggers
 

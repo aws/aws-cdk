@@ -29,11 +29,6 @@ async function main() {
     }
   };
 
-  const majorVersion = semver.major(ver.version);
-  if (majorVersion > 1) {
-    opts.stripExperimentalChanges = true;
-  }
-
   const forTesting = process.env.BUMP_CANDIDATE || false;
   if (forTesting) {
     opts.skip.commit = true;
@@ -45,6 +40,8 @@ async function main() {
     opts.prerelease = ver.prerelease || 'rc';
     console.error(`BUMP_CANDIDATE is set, so bumping version for testing (with the "${opts.prerelease}" prerelease tag)`);
   }
+
+  const majorVersion = semver.major(ver.version);
 
   const useLegacyBump = process.env.LEGACY_BUMP || false;
   if (useLegacyBump) {
@@ -67,13 +64,17 @@ async function main() {
     // this is incredible, but passing this option to standard-version actually makes it crash!
     // good thing we're getting rid of it...
     opts.verbose = !!process.env.VERBOSE;
+    if (majorVersion > 1) {
+      opts.experimentalChangesTreatment = 'separate';
+    }
     // Rename some options to match cdk-release inputs (replaces bumpFiles, packageFiles, and infile)
     opts.versionFile = ver.versionFile;
     opts.changelogFile = ver.changelogFile;
+    opts.alphaChangelogFile = ver.alphaChangelogFile;
     console.error("🎉 Calling our 'cdk-release' package to make the bump");
     console.error("ℹ️ Set the LEGACY_BUMP env variable to use the old 'standard-version' bump instead");
-    const cdkRelease = require('cdk-release');
-    cdkRelease(opts);
+    const cdkRelease = require('@aws-cdk/cdk-release');
+    cdkRelease.createRelease(opts);
   }
 }
 

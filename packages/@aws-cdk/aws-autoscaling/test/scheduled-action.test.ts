@@ -1,12 +1,12 @@
+import '@aws-cdk/assert-internal/jest';
 import { expect, haveResource, MatchStyle } from '@aws-cdk/assert-internal';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
 import * as constructs from 'constructs';
-import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as autoscaling from '../lib';
 
-nodeunitShim({
-  'can schedule an action'(test: Test) {
+describe('scheduled action', () => {
+  test('can schedule an action', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const asg = makeAutoScalingGroup(stack);
@@ -23,10 +23,10 @@ nodeunitShim({
       MinSize: 10,
     }));
 
-    test.done();
-  },
 
-  'correctly formats date objects'(test: Test) {
+  });
+
+  test('correctly formats date objects', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const asg = makeAutoScalingGroup(stack);
@@ -43,10 +43,10 @@ nodeunitShim({
       StartTime: '2033-09-10T12:00:00Z',
     }));
 
-    test.done();
-  },
 
-  'autoscaling group has recommended updatepolicy for scheduled actions'(test: Test) {
+  });
+
+  test('autoscaling group has recommended updatepolicy for scheduled actions', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const asg = makeAutoScalingGroup(stack);
@@ -104,8 +104,8 @@ nodeunitShim({
       },
     }, MatchStyle.SUPERSET);
 
-    test.done();
-  },
+
+  });
 });
 
 function makeAutoScalingGroup(scope: constructs.Construct) {
