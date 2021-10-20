@@ -10,8 +10,8 @@ test('SQS Queue and SNS Topic Created', () => {
 
   const template = Template.fromStack(stack);
 
-  template.hasResourceProperties("AWS::SQS::Queue", {
+  template.hasResourceProperties('AWS::SQS::Queue', {
     VisibilityTimeout: 300
   });
-  template.hasResource("AWS::SNS::Topic", Match.anyValue());
+  template.hasResource('AWS::SNS::Topic', Match.anyValue());
 });
