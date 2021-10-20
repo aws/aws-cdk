@@ -68,41 +68,41 @@ export interface CustomActionRegistrationProps {
   /**
    * The category of the Action.
    */
-  category: codepipeline.ActionCategory;
+  readonly category: codepipeline.ActionCategory;
 
   /**
    * The artifact bounds of the Action.
    */
-  artifactBounds: codepipeline.ActionArtifactBounds;
+  readonly artifactBounds: codepipeline.ActionArtifactBounds;
 
   /**
    * The provider of the Action.
    */
-  provider: string;
+  readonly provider: string;
 
   /**
    * The version of your Action.
    *
    * @default '1'
    */
-  version?: string;
+  readonly version?: string;
 
   /**
    * The URL shown for the entire Action in the Pipeline UI.
    */
-  entityUrl?: string;
+  readonly entityUrl?: string;
 
   /**
    * The URL shown for a particular execution of an Action in the Pipeline UI.
    */
-  executionUrl?: string;
+  readonly executionUrl?: string;
 
   /**
    * The properties used for customizing the instance of your Action.
    *
    * @default []
    */
-  actionProperties?: CustomActionProperty[];
+  readonly actionProperties?: CustomActionProperty[];
 }
 
 /**
