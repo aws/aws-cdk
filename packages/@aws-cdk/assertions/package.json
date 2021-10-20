@@ -55,11 +55,6 @@
       }
     }
   },
-  "cdk-build": {
-    "post": [
-      "yarn rosetta:extract"
-    ]
-  },
   "author": {
     "name": "Amazon Web Services",
     "url": "https://aws.amazon.com",
