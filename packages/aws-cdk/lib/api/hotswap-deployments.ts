@@ -26,6 +26,12 @@ export async function tryHotswapDeployment(
   // create a new SDK using the CLI credentials, because the default one will not work for new-style synthesis -
   // it assumes the bootstrap deploy Role, which doesn't have permissions to update Lambda functions
   const sdk = await sdkProvider.forEnvironment(resolvedEnv, Mode.ForWriting);
+  const resolvedPartition = await sdkProvider.baseCredentialsPartition(resolvedEnv, Mode.ForWriting);
+
+  if (!resolvedPartition) {
+    throw new Error('Unable to resolve partition to use.');
+  }
+
   // The current resources of the Stack.
   // We need them to figure out the physical name of a resource in case it wasn't specified by the user.
   // We fetch it lazily, to save a service call, in case all hotswapped resources have their physical names set.
