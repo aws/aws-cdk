@@ -16,7 +16,6 @@ enum ContainerProviderTypes {
    * @returns 'EKS'
    */
   EKS = 'EKS'
-
 }
 
 /**

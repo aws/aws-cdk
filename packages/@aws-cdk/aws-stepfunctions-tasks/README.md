@@ -789,7 +789,7 @@ The [DeleteVirtualCluster](https://docs.aws.amazon.com/emr-on-eks/latest/APIRefe
 
 ```ts
 import * as sfn from '@aws-cdk/aws-stepfunctions';
-import * as tasks from '@aws-cdk/aws-stepfunctions-tasks'
+import * as tasks from '@aws-cdk/aws-stepfunctions-tasks';
 
 new tasks.EmrContainersDeleteVirtualCluster(this, 'Delete a Virtual Cluster', {
   virtualClusterId: sfn.TaskInput.fromJsonPathAt('$.VirtualClusterId'),
@@ -802,7 +802,7 @@ The [StartJobRun](https://docs.aws.amazon.com/emr-on-eks/latest/APIReference/API
 
 Required setup:
 
- - If not done already, follow the EMR on EKS [setting up steps](https://docs.aws.amazon.com/emr/latest/EMR-on-EKS-DevelopmentGuide/setting-up.html) and [create an EKS Cluster](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-eks-readme.html#quick-start).
+ - If not done already, follow the [steps](https://docs.aws.amazon.com/emr/latest/EMR-on-EKS-DevelopmentGuide/setting-up.html) to set up EMR on EKS and [create an EKS Cluster](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-eks-readme.html#quick-start).
  - Enable [Cluster access](https://docs.aws.amazon.com/emr/latest/EMR-on-EKS-DevelopmentGuide/setting-up-cluster-access.html)
  - Enable [IAM Role access](https://docs.aws.amazon.com/emr/latest/EMR-on-EKS-DevelopmentGuide/setting-up-enable-IAM.html)
 
@@ -811,7 +811,7 @@ The following actions must be performed if the virtual cluster ID is supplied fr
  - Create an [IAM role](https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_aws-iam.Role.html)
  - Update the [Role Trust Policy](https://docs.aws.amazon.com/emr/latest/EMR-on-EKS-DevelopmentGuide/setting-up-trust-policy.html) of the Job Execution Role.
 
-The job can be configured with spark submit parameters such as the instances, memory, and cores in each job.
+The job can be configured with spark submit parameters:
 
 ```ts
 import * as iam from '@aws-cdk/aws-iam';
@@ -830,7 +830,7 @@ new tasks.EmrContainersStartJobRun(this, 'EMR Containers Start Job Run', {
 });
 ```
 
-Configuring the job can also be done via application configuration instead of spark submit parameters.
+Configuring the job can also be done via application configuration:
 
 ```ts
 import * as iam from '@aws-cdk/aws-iam';
@@ -855,7 +855,7 @@ new tasks.EmrContainersStartJobRun(this, 'EMR Containers Start Job Run', {
 });
 ```
 
-If needed, monitoring a job can be enabled if `monitoring.logging` is set true. Automatically generates S3 bucket and CloudWatch logs resources.
+Job monitoring can be enabled if `monitoring.logging` is set true. This automatically generates an S3 bucket and CloudWatch logs.
 
 ```ts
 import * as iam from '@aws-cdk/aws-iam';
