@@ -223,8 +223,8 @@ describe('Fields', () => {
       },
     )).toStrictEqual({
       reference1: {
-        'nullParameter': null,
-      }
-    })
-  })
+        nullParameter: null,
+      },
+    });
+  });
 });

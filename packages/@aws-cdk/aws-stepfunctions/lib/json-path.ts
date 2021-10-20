@@ -73,7 +73,7 @@ export function findReferencedPaths(obj: object | undefined): Set<string> {
 
     handleNull(_key: string, _x: null) {
       return {};
-    }
+    },
   });
 
   return found;
@@ -213,7 +213,7 @@ function renderBoolean(key: string, value: boolean): {[key: string]: boolean} {
  * Render a parameter null value
  */
 function renderNull(key: string, _value: null): {[key: string]: null} {
-  return { [key]: null};
+  return { [key]: null };
 }
 
 /**
