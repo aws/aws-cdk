@@ -38,6 +38,7 @@ export function renderObject(obj: object | undefined): object | undefined {
     handleList: renderStringList,
     handleNumber: renderNumber,
     handleBoolean: renderBoolean,
+    handleNull: renderNull,
   });
 }
 
@@ -69,6 +70,10 @@ export function findReferencedPaths(obj: object | undefined): Set<string> {
     handleBoolean(_key: string, _x: boolean) {
       return {};
     },
+
+    handleNull(_key: string, _x: null) {
+      return {};
+    }
   });
 
   return found;
@@ -79,6 +84,7 @@ interface FieldHandlers {
   handleList(key: string, x: string[]): {[key: string]: string[] | string };
   handleNumber(key: string, x: number): {[key: string]: number | string};
   handleBoolean(key: string, x: boolean): {[key: string]: boolean};
+  handleNull(key: string, x: null): {[key: string]: null};
 }
 
 export function recurseObject(obj: object | undefined, handlers: FieldHandlers, visited: object[] = []): object | undefined {
@@ -105,7 +111,9 @@ export function recurseObject(obj: object | undefined, handlers: FieldHandlers, 
       Object.assign(ret, recurseArray(key, value, handlers, visited));
     } else if (typeof value === 'boolean') {
       Object.assign(ret, handlers.handleBoolean(key, value));
-    } else if (value === null || value === undefined) {
+    } else if (value === null) {
+      Object.assign(ret, handlers.handleNull(key, value));
+    } else if (value === undefined) {
       // Nothing
     } else if (typeof value === 'object') {
       ret[key] = recurseObject(value, handlers, visited);
@@ -199,6 +207,13 @@ function renderNumber(key: string, value: number): {[key: string]: number | stri
  */
 function renderBoolean(key: string, value: boolean): {[key: string]: boolean} {
   return { [key]: value };
+}
+
+/**
+ * Render a parameter null value
+ */
+function renderNull(key: string, _value: null): {[key: string]: null} {
+  return { [key]: null};
 }
 
 /**

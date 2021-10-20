@@ -212,4 +212,19 @@ describe('Fields', () => {
       },
     });
   });
+
+  test('null value rendered', () => {
+    const object = {
+      nullParameter: null,
+    };
+    expect(FieldUtils.renderObject(
+      {
+        reference1: object,
+      },
+    )).toStrictEqual({
+      reference1: {
+        'nullParameter': null,
+      }
+    })
+  })
 });
