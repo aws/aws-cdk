@@ -1,1 +1,1 @@
-export * from './imds-aspect';
+export * from './require-imdsv2-aspect';

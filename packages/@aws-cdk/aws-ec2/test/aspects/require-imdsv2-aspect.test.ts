@@ -5,19 +5,18 @@ import {
 } from '@aws-cdk/assert-internal';
 import '@aws-cdk/assert-internal/jest';
 import * as cdk from '@aws-cdk/core';
-import * as sinon from 'sinon';
 import {
   CfnLaunchTemplate,
   Instance,
-  InstanceImdsAspect,
+  InstanceRequireImdsv2Aspect,
   InstanceType,
   LaunchTemplate,
-  LaunchTemplateImdsAspect,
+  LaunchTemplateRequireImdsv2Aspect,
   MachineImage,
   Vpc,
 } from '../../lib';
 
-describe('ImdsAspect', () => {
+describe('RequireImdsv2Aspect', () => {
   let app: cdk.App;
   let stack: cdk.Stack;
   let vpc: Vpc;
@@ -30,12 +29,11 @@ describe('ImdsAspect', () => {
 
   test('suppresses warnings', () => {
     // GIVEN
-    const aspect = new LaunchTemplateImdsAspect({
-      enableImdsV1: true,
+    const aspect = new LaunchTemplateRequireImdsv2Aspect({
       suppressWarnings: true,
     });
     const errmsg = 'ERROR';
-    const stub = sinon.stub(aspect, 'visit').callsFake((node) => {
+    const visitMock = jest.spyOn(aspect, 'visit').mockImplementation((node) => {
       // @ts-ignore
       aspect.warn(node, errmsg);
     });
@@ -45,7 +43,7 @@ describe('ImdsAspect', () => {
     aspect.visit(construct);
 
     // THEN
-    expect(stub.calledOnce).toBeTruthy();
+    expect(visitMock).toHaveBeenCalled();
     expect(construct.node.metadataEntry).not.toContainEqual({
       data: expect.stringContaining(errmsg),
       type: 'aws:cdk:warning',
@@ -53,18 +51,15 @@ describe('ImdsAspect', () => {
     });
   });
 
-  describe('InstanceImdsAspect', () => {
-    test.each([
-      [true],
-      [false],
-    ])('toggles IMDSv1 (enabled=%s)', (enableImdsV1: boolean) => {
+  describe('InstanceRequireImdsv2Aspect', () => {
+    test('requires IMDSv2', () => {
       // GIVEN
       const instance = new Instance(stack, 'Instance', {
         vpc,
         instanceType: new InstanceType('t2.micro'),
         machineImage: MachineImage.latestAmazonLinux(),
       });
-      const aspect = new InstanceImdsAspect({ enableImdsV1 });
+      const aspect = new InstanceRequireImdsv2Aspect();
 
       // WHEN
       cdk.Aspects.of(stack).add(aspect);
@@ -77,7 +72,7 @@ describe('ImdsAspect', () => {
         LaunchTemplateName: stack.resolve(launchTemplate.launchTemplateName),
         LaunchTemplateData: {
           MetadataOptions: {
-            HttpTokens: enableImdsV1 ? 'optional' : 'required',
+            HttpTokens: 'required',
           },
         },
       }));
@@ -99,7 +94,7 @@ describe('ImdsAspect', () => {
         launchTemplateName: 'name',
         version: 'version',
       };
-      const aspect = new InstanceImdsAspect({ enableImdsV1: false });
+      const aspect = new InstanceRequireImdsv2Aspect();
 
       // WHEN
       cdk.Aspects.of(stack).add(aspect);
@@ -126,8 +121,7 @@ describe('ImdsAspect', () => {
         launchTemplateName: 'name',
         version: 'version',
       };
-      const aspect = new InstanceImdsAspect({
-        enableImdsV1: false,
+      const aspect = new InstanceRequireImdsv2Aspect({
         suppressLaunchTemplateWarning: true,
       });
 
@@ -143,13 +137,13 @@ describe('ImdsAspect', () => {
     });
   });
 
-  describe('LaunchTemplateImdsAspect', () => {
+  describe('LaunchTemplateRequireImdsv2Aspect', () => {
     test('warns when LaunchTemplateData is a CDK token', () => {
       // GIVEN
       const launchTemplate = new LaunchTemplate(stack, 'LaunchTemplate');
       const cfnLaunchTemplate = launchTemplate.node.tryFindChild('Resource') as CfnLaunchTemplate;
       cfnLaunchTemplate.launchTemplateData = fakeToken();
-      const aspect = new LaunchTemplateImdsAspect({ enableImdsV1: false });
+      const aspect = new LaunchTemplateRequireImdsv2Aspect();
 
       // WHEN
       aspect.visit(launchTemplate);
@@ -169,7 +163,7 @@ describe('ImdsAspect', () => {
       cfnLaunchTemplate.launchTemplateData = {
         metadataOptions: fakeToken(),
       } as CfnLaunchTemplate.LaunchTemplateDataProperty;
-      const aspect = new LaunchTemplateImdsAspect({ enableImdsV1: false });
+      const aspect = new LaunchTemplateRequireImdsv2Aspect();
 
       // WHEN
       aspect.visit(launchTemplate);
@@ -182,13 +176,10 @@ describe('ImdsAspect', () => {
       });
     });
 
-    test.each([
-      [true],
-      [false],
-    ])('toggles IMDSv1 (enabled=%s)', (enableImdsV1: boolean) => {
+    test('requires IMDSv2', () => {
       // GIVEN
       new LaunchTemplate(stack, 'LaunchTemplate');
-      const aspect = new LaunchTemplateImdsAspect({ enableImdsV1 });
+      const aspect = new LaunchTemplateRequireImdsv2Aspect();
 
       // WHEN
       cdk.Aspects.of(stack).add(aspect);
@@ -197,7 +188,7 @@ describe('ImdsAspect', () => {
       expectCDK(stack).to(haveResourceLike('AWS::EC2::LaunchTemplate', {
         LaunchTemplateData: {
           MetadataOptions: {
-            HttpTokens: enableImdsV1 ? 'optional' : 'required',
+            HttpTokens: 'required',
           },
         },
       }));

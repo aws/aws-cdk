@@ -4,14 +4,9 @@ import { Instance } from '../instance';
 import { LaunchTemplate } from '../launch-template';
 
 /**
- * Properties for `ImdsAspect`.
+ * Properties for `RequireImdsv2Aspect`.
  */
-interface ImdsAspectProps {
-  /**
-   * Whether IMDSv1 should be enabled or not.
-   */
-  readonly enableImdsV1: boolean;
-
+interface RequireImdsv2AspectProps {
   /**
    * Whether warning annotations from this Aspect should be suppressed or not.
    *
@@ -21,15 +16,13 @@ interface ImdsAspectProps {
 }
 
 /**
- * Base class for IMDS configuration Aspect.
+ * Base class for Aspect that makes IMDSv2 required.
  */
-abstract class ImdsAspect implements cdk.IAspect {
-  protected readonly enableImdsV1: boolean;
+abstract class RequireImdsv2Aspect implements cdk.IAspect {
   protected readonly suppressWarnings: boolean;
 
-  constructor(props: ImdsAspectProps) {
-    this.enableImdsV1 = props.enableImdsV1;
-    this.suppressWarnings = props.suppressWarnings ?? false;
+  constructor(props?: RequireImdsv2AspectProps) {
+    this.suppressWarnings = props?.suppressWarnings ?? false;
   }
 
   abstract visit(node: cdk.IConstruct): void;
@@ -42,15 +35,15 @@ abstract class ImdsAspect implements cdk.IAspect {
    */
   protected warn(node: cdk.IConstruct, message: string) {
     if (this.suppressWarnings !== true) {
-      cdk.Annotations.of(node).addWarning(`${ImdsAspect.name} failed on node ${node.node.id}: ${message}`);
+      cdk.Annotations.of(node).addWarning(`${RequireImdsv2Aspect.name} failed on node ${node.node.id}: ${message}`);
     }
   }
 }
 
 /**
- * Properties for `InstanceImdsAspect`.
+ * Properties for `InstanceRequireImdsv2Aspect`.
  */
-export interface InstanceImdsAspectProps extends ImdsAspectProps {
+export interface InstanceRequireImdsv2AspectProps extends RequireImdsv2AspectProps {
   /**
    * Whether warnings that would be raised when an Instance is associated with an existing Launch Template
    * should be suppressed or not.
@@ -73,12 +66,12 @@ export interface InstanceImdsAspectProps extends ImdsAspectProps {
  *
  * To cover Instances already associated with Launch Templates, use `LaunchTemplateImdsAspect`.
  */
-export class InstanceImdsAspect extends ImdsAspect {
+export class InstanceRequireImdsv2Aspect extends RequireImdsv2Aspect {
   private readonly suppressLaunchTemplateWarning: boolean;
 
-  constructor(props: InstanceImdsAspectProps) {
+  constructor(props?: InstanceRequireImdsv2AspectProps) {
     super(props);
-    this.suppressLaunchTemplateWarning = props.suppressLaunchTemplateWarning ?? false;
+    this.suppressLaunchTemplateWarning = props?.suppressLaunchTemplateWarning ?? false;
   }
 
   visit(node: cdk.IConstruct): void {
@@ -94,7 +87,7 @@ export class InstanceImdsAspect extends ImdsAspect {
     const launchTemplate = new CfnLaunchTemplate(node, 'LaunchTemplate', {
       launchTemplateData: {
         metadataOptions: {
-          httpTokens: this.enableImdsV1 ? 'optional' : 'required',
+          httpTokens: 'required',
         },
       },
       launchTemplateName: name,
@@ -113,17 +106,17 @@ export class InstanceImdsAspect extends ImdsAspect {
 }
 
 /**
- * Properties for `LaunchTemplateImdsAspect`.
+ * Properties for `LaunchTemplateRequireImdsv2Aspect`.
  */
-export interface LaunchTemplateImdsAspectProps extends ImdsAspectProps {}
+export interface LaunchTemplateRequireImdsv2AspectProps extends RequireImdsv2AspectProps {}
 
 /**
  * Aspect that applies IMDS configuration on EC2 Launch Template constructs.
  *
  * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-metadataoptions.html
  */
-export class LaunchTemplateImdsAspect extends ImdsAspect {
-  constructor(props: LaunchTemplateImdsAspectProps) {
+export class LaunchTemplateRequireImdsv2Aspect extends RequireImdsv2Aspect {
+  constructor(props?: LaunchTemplateRequireImdsv2AspectProps) {
     super(props);
   }
 
@@ -149,7 +142,7 @@ export class LaunchTemplateImdsAspect extends ImdsAspect {
       ...data,
       metadataOptions: {
         ...metadataOptions,
-        httpTokens: this.enableImdsV1 ? 'optional' : 'required',
+        httpTokens: 'required',
       },
     };
     launchTemplate.launchTemplateData = newData;
