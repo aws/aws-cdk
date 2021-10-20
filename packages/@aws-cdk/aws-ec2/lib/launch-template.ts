@@ -12,8 +12,10 @@ import {
   TagType,
   Tags,
   Token,
+  Aspects,
 } from '@aws-cdk/core';
 import { Construct } from 'constructs';
+import { LaunchTemplateRequireImdsv2Aspect } from '.';
 import { Connections, IConnectable } from './connections';
 import { CfnLaunchTemplate } from './ec2.generated';
 import { InstanceType } from './instance-types';
@@ -332,6 +334,13 @@ export interface LaunchTemplateProps {
    * @default No security group is assigned.
    */
   readonly securityGroup?: ISecurityGroup;
+
+  /**
+   * Whether IMDSv2 should be required on launched instances.
+   *
+   * @default - false
+   */
+  readonly requireImdsv2?: boolean;
 }
 
 /**
@@ -637,6 +646,10 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
     this.latestVersionNumber = resource.attrLatestVersionNumber;
     this.launchTemplateId = resource.ref;
     this.versionNumber = Token.asString(resource.getAtt('LatestVersionNumber'));
+
+    if (props.requireImdsv2) {
+      Aspects.of(this).add(new LaunchTemplateRequireImdsv2Aspect());
+    }
   }
 
   /**

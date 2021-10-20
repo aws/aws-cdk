@@ -1,3 +1,4 @@
+export * from './aspects';
 export * from './bastion-host';
 export * from './connections';
 export * from './cfn-init';

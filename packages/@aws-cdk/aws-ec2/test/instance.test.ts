@@ -7,7 +7,7 @@ import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { Stack } from '@aws-cdk/core';
 import {
   AmazonLinuxImage, BlockDeviceVolume, CloudFormationInit,
-  EbsDeviceVolumeType, InitCommand, Instance, InstanceArchitecture, InstanceClass, InstanceSize, InstanceType, UserData, Vpc,
+  EbsDeviceVolumeType, InitCommand, Instance, InstanceArchitecture, InstanceClass, InstanceSize, InstanceType, LaunchTemplate, UserData, Vpc,
 } from '../lib';
 
 
@@ -360,6 +360,36 @@ describe('instance', () => {
     });
 
 
+  });
+
+  test('instance requires IMDSv2', () => {
+    // WHEN
+    const instance = new Instance(stack, 'Instance', {
+      vpc,
+      machineImage: new AmazonLinuxImage(),
+      instanceType: new InstanceType('t2.micro'),
+      requireImdsv2: true,
+    });
+
+    // Force stack synth so the InstanceRequireImdsv2Aspect is applied
+    SynthUtils.synthesize(stack);
+
+    // THEN
+    const launchTemplate = instance.node.tryFindChild('LaunchTemplate') as LaunchTemplate;
+    expect(launchTemplate).toBeDefined();
+    expect(stack).toHaveResourceLike('AWS::EC2::LaunchTemplate', {
+      LaunchTemplateName: stack.resolve(launchTemplate.launchTemplateName),
+      LaunchTemplateData: {
+        MetadataOptions: {
+          HttpTokens: 'required',
+        },
+      },
+    });
+    expect(stack).toHaveResourceLike('AWS::EC2::Instance', {
+      LaunchTemplate: {
+        LaunchTemplateName: stack.resolve(launchTemplate.launchTemplateName),
+      },
+    });
   });
 });
 
