@@ -81,7 +81,7 @@ logical application. You can then treat that new unit the same way you used
 to be able to treat a single stack: by instantiating it multiple times
 for different instances of your application.
 
-You can define a custom subclass of `Construct`, holding one or more
+You can define a custom subclass of `Stage`, holding one or more
 `Stack`s, to represent a single logical instance of your application.
 
 As a final note: `Stack`s are not a unit of reuse. They describe physical
