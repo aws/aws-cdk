@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.0.0-rc.25](https://github.com/aws/aws-cdk/compare/v2.0.0-rc.24...v2.0.0-rc.25) (2021-10-20)
+
+
+### Features
+
+* **codebuild:** add support for small ARM machine type ([#16635](https://github.com/aws/aws-cdk/issues/16635)) ([55fbc86](https://github.com/aws/aws-cdk/commit/55fbc866ef0195fdfc722206e4d69a1f4469cd40)), closes [#16633](https://github.com/aws/aws-cdk/issues/16633)
+* **codepipeline:** add support for string user parameters to the Lambda invoke action ([#16946](https://github.com/aws/aws-cdk/issues/16946)) ([e19ea31](https://github.com/aws/aws-cdk/commit/e19ea31dbf62446edaf5131c75246098ab05da6e)), closes [#16776](https://github.com/aws/aws-cdk/issues/16776)
+* **dynamodb:** add option to skip waiting for global replication to finish ([#16983](https://github.com/aws/aws-cdk/issues/16983)) ([254601f](https://github.com/aws/aws-cdk/commit/254601f477a4da309e81f5384140427f1b958bfd)), closes [#16611](https://github.com/aws/aws-cdk/issues/16611)
+* **eks:** configure serviceIpv4Cidr on the cluster ([#16957](https://github.com/aws/aws-cdk/issues/16957)) ([72102c7](https://github.com/aws/aws-cdk/commit/72102c750bfd6564cd51c1a5d8abc79b1ba1d3ce)), closes [/docs.aws.amazon.com/eks/latest/APIReference/API_KubernetesNetworkConfigRequest.html#AmazonEKS-Type-KubernetesNetworkConfigRequest-serviceIpv4](https://github.com/aws//docs.aws.amazon.com/eks/latest/APIReference/API_KubernetesNetworkConfigRequest.html/issues/AmazonEKS-Type-KubernetesNetworkConfigRequest-serviceIpv4) [#16541](https://github.com/aws/aws-cdk/issues/16541)
+* **stepfunctions-tasks:** add `enableNetworkIsolation` property to `SageMakerCreateTrainingJobProps`  ([#16792](https://github.com/aws/aws-cdk/issues/16792)) ([69ac520](https://github.com/aws/aws-cdk/commit/69ac520452b219bf242f2fbb4740f6b1b8b8790f)), closes [#16779](https://github.com/aws/aws-cdk/issues/16779)
+
+
+### Bug Fixes
+
+* **core:** asset hash is different between linux and windows ([#16945](https://github.com/aws/aws-cdk/issues/16945)) ([59950dd](https://github.com/aws/aws-cdk/commit/59950dd331635fb707aac819529614c0f3e47ee5)), closes [#14555](https://github.com/aws/aws-cdk/issues/14555) [#16928](https://github.com/aws/aws-cdk/issues/16928)
+* **ecs:** imported services don't have account & region set correctly ([#16997](https://github.com/aws/aws-cdk/issues/16997)) ([dc6f743](https://github.com/aws/aws-cdk/commit/dc6f7433f01b9bc2c8206fb03d72ab8404fe4f6a)), closes [#11199](https://github.com/aws/aws-cdk/issues/11199) [#11199](https://github.com/aws/aws-cdk/issues/11199) [#15944](https://github.com/aws/aws-cdk/issues/15944)
+* **ecs-patterns:** minScalingCapacity cannot be set to 0 ([#16961](https://github.com/aws/aws-cdk/issues/16961)) ([589f284](https://github.com/aws/aws-cdk/commit/589f284acec8530aa9824b75a5daef4632e98985)), closes [#15632](https://github.com/aws/aws-cdk/issues/15632) [#14336](https://github.com/aws/aws-cdk/issues/14336)
+* **lambda:** docker image function fails when insightsVersion is specified ([#16781](https://github.com/aws/aws-cdk/issues/16781)) ([d0e15cc](https://github.com/aws/aws-cdk/commit/d0e15ccaca22c5e05b9186aa1a241e744d67c96a)), closes [#16642](https://github.com/aws/aws-cdk/issues/16642)
+* **ssm:**  StringParameter accepts ParameterType.AWS_EC2_IMAGE_ID as type ([#16884](https://github.com/aws/aws-cdk/issues/16884)) ([2b353be](https://github.com/aws/aws-cdk/commit/2b353be5291cbcdc56a8863038eed4a5f2adc65f)), closes [#16806](https://github.com/aws/aws-cdk/issues/16806)
+
 ## [2.0.0-rc.24](https://github.com/aws/aws-cdk/compare/v2.0.0-rc.23...v2.0.0-rc.24) (2021-10-13)
 
 
