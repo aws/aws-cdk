@@ -13,14 +13,14 @@ export interface CustomActionProperty {
    * The name of the property.
    * You use this name in the `configuration` attribute when defining your custom Action class.
    */
-  name: string;
+  readonly name: string;
 
   /**
    * The description of the property.
    *
    * @default the description will be empty
    */
-  description?: string;
+  readonly description?: string;
 
   /**
    * Whether this property is a key.
@@ -28,7 +28,7 @@ export interface CustomActionProperty {
    * @default false
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-codepipeline-customactiontype-configurationproperties.html#cfn-codepipeline-customactiontype-configurationproperties-key
    */
-  key?: boolean;
+  readonly key?: boolean;
 
   /**
    * Whether this property is queryable.
@@ -37,12 +37,12 @@ export interface CustomActionProperty {
    * @default false
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-codepipeline-customactiontype-configurationproperties.html#cfn-codepipeline-customactiontype-configurationproperties-queryable
    */
-  queryable?: boolean;
+  readonly queryable?: boolean;
 
   /**
    * Whether this property is required.
    */
-  required: boolean;
+  readonly required: boolean;
 
   /**
    * Whether this property is secret,
@@ -50,7 +50,7 @@ export interface CustomActionProperty {
    *
    * @default false
    */
-  secret?: boolean;
+  readonly secret?: boolean;
 
   /**
    * The type of the property,
@@ -58,7 +58,7 @@ export interface CustomActionProperty {
    *
    * @default 'String'
    */
-  type?: string;
+  readonly type?: string;
 }
 
 /**
