@@ -8,10 +8,6 @@ import { KubectlLayer } from '@aws-cdk/lambda-layer-kubectl';
 import { Construct } from 'constructs';
 import { ICluster, Cluster } from './cluster';
 
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from '@aws-cdk/core';
-
 export interface KubectlProviderProps {
   /**
    * The cluster to control.
@@ -55,7 +51,7 @@ export class KubectlProvider extends NestedStack {
   public readonly handlerRole: iam.IRole;
 
   public constructor(scope: Construct, id: string, props: KubectlProviderProps) {
-    super(scope as CoreConstruct, id);
+    super(scope, id);
 
     const cluster = props.cluster;
 

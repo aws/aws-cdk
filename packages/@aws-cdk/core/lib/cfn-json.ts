@@ -7,10 +7,6 @@ import { IResolvable, IResolveContext } from './resolvable';
 import { Stack } from './stack';
 import { captureStackTrace } from './stack-trace';
 
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from './construct-compat';
-
 export interface CfnJsonProps {
   /**
    * The value to resolve. Can be any JavaScript object, including tokens and
@@ -33,7 +29,7 @@ export interface CfnJsonProps {
  *
  * This construct is backed by a custom resource.
  */
-export class CfnJson extends CoreConstruct implements IResolvable {
+export class CfnJson extends Construct implements IResolvable {
   public readonly creationStack: string[] = [];
 
   /**
