@@ -1,6 +1,5 @@
-import { ArnFormat, Lazy, Resource, Stack, IResource } from '@aws-cdk/core';
+import { ArnFormat, Resource, Stack, IResource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { IAction } from './action';
 import { IotSql } from './iot-sql';
 import { CfnTopicRule } from './iot.generated';
 
@@ -33,13 +32,6 @@ export interface TopicRuleProps {
    * @default None
    */
   readonly topicRuleName?: string;
-
-  /**
-   * The actions associated with the rule.
-   *
-   * @default No actions will be perform
-   */
-  readonly actions?: Array<IAction>;
 
   /**
    * A simplified SQL syntax to filter messages received on an MQTT topic and push the data elsewhere.
@@ -88,8 +80,6 @@ export class TopicRule extends Resource implements ITopicRule {
    */
   public readonly topicRuleName: string;
 
-  private readonly actions = new Array<CfnTopicRule.ActionProperty>();
-
   constructor(scope: Construct, id: string, props: TopicRuleProps) {
     super(scope, id, {
       physicalName: props.topicRuleName,
@@ -100,7 +90,7 @@ export class TopicRule extends Resource implements ITopicRule {
     const resource = new CfnTopicRule(this, 'Resource', {
       ruleName: this.physicalName,
       topicRulePayload: {
-        actions: Lazy.any({ produce: () => this.actions }),
+        actions: [],
         awsIotSqlVersion: sqlConfig.awsIotSqlVersion,
         sql: sqlConfig.sql,
       },
@@ -112,28 +102,5 @@ export class TopicRule extends Resource implements ITopicRule {
       resourceName: this.physicalName,
     });
     this.topicRuleName = this.getResourceNameAttribute(resource.ref);
-
-    props.actions?.forEach(action => {
-      this.addAction(action);
-    });
-  }
-
-  /**
-   * Add a action to the rule.
-   *
-   * @param action the action to associate with the rule.
-   */
-  public addAction(action: IAction): void {
-    const { configuration } = action.bind(this);
-
-    const keys = Object.keys(configuration);
-    if (keys.length === 0) {
-      throw new Error('Empty actions are not allowed. Please define one type of action');
-    }
-    if (keys.length >= 2) {
-      throw new Error(`Each IoT Action can only define a single service it integrates with, received: ${keys}`);
-    }
-
-    this.actions.push(configuration);
   }
 }

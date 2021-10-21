@@ -8,18 +8,8 @@ class TestStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    const topicRule = new iot.TopicRule(this, 'TopicRule', {
+    new iot.TopicRule(this, 'TopicRule', {
       sql: iot.IotSql.fromStringAsVer20151008("SELECT topic(2) as device_id FROM 'device/+/data'"),
-    });
-
-    topicRule.addAction({
-      bind: () => ({
-        configuration: {
-          lambda: {
-            functionArn: 'test-arn',
-          },
-        },
-      }),
     });
   }
 }
