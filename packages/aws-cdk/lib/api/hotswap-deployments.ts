@@ -10,6 +10,10 @@ import { isHotswappableLambdaFunctionChange } from './hotswap/lambda-functions';
 import { isHotswappableStateMachineChange } from './hotswap/stepfunctions-state-machines';
 import { CloudFormationStack } from './util/cloudformation';
 
+/* eslint-disable @typescript-eslint/no-require-imports */
+const regionUtil = require('aws-sdk/lib/region_config');
+/* eslint-enable @typescript-eslint/no-require-imports */
+
 /**
  * Perform a hotswap deployment,
  * short-circuiting CloudFormation if possible.
@@ -32,6 +36,12 @@ export async function tryHotswapDeployment(
     throw new Error('Unable to resolve partition to use.');
   }
 
+  const suffix:string|undefined = regionUtil.getEndpointSuffix(resolvedEnv.region);
+
+  if (!suffix) {
+    throw new Error('Unable to resolve urlSuffix to use.');
+  }
+
   // The current resources of the Stack.
   // We need them to figure out the physical name of a resource in case it wasn't specified by the user.
   // We fetch it lazily, to save a service call, in case all hotswapped resources have their physical names set.
@@ -43,7 +53,7 @@ export async function tryHotswapDeployment(
     region: resolvedEnv.region,
     partition: resolvedPartition,
     // ToDo make this better:
-    urlSuffix: 'amazonaws.com',
+    urlSuffix: suffix,
     listStackResources,
   });
 
