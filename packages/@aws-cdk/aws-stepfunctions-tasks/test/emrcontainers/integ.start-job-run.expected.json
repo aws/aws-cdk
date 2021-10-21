@@ -1,0 +1,855 @@
+{
+  "Resources": {
+    "Createavirtualcluster": {
+      "Type": "AWS::EMRContainers::VirtualCluster",
+      "Properties": {
+        "ContainerProvider": {
+          "Id": "test-eks",
+          "Info": {
+            "EksInfo": {
+              "Namespace": "spark2"
+            }
+          },
+          "Type": "EKS"
+        },
+        "Name": "Virtual-Cluster-Name"
+      }
+    },
+    "StartaJobRunMonitoringLogGroupD033B7AF": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "RetentionInDays": 731
+      },
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain"
+    },
+    "StartaJobRunMonitoringBucket899C33D9": {
+      "Type": "AWS::S3::Bucket",
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain"
+    },
+    "StartaJobRunJobExecutionRole157B6BE1": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": [
+                  "emr-containers.amazonaws.com",
+                  {
+                    "Fn::Join": [
+                      "",
+                      [
+                        "states.",
+                        {
+                          "Ref": "AWS::Region"
+                        },
+                        ".amazonaws.com"
+                      ]
+                    ]
+                  }
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
+    "StartaJobRunJobExecutionRoleDefaultPolicyEA7882C0": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*",
+                "s3:DeleteObject*",
+                "s3:PutObject",
+                "s3:Abort*"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "StartaJobRunMonitoringBucket899C33D9",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "StartaJobRunMonitoringBucket899C33D9",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": [
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "StartaJobRunMonitoringLogGroupD033B7AF",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": "logs:DescribeLogStreams",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "StartaJobRunMonitoringLogGroupD033B7AF",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": "logs:DescribeLogGroups",
+              "Effect": "Allow",
+              "Resource": "arn:aws:logs:*:*:*"
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "StartaJobRunJobExecutionRoleDefaultPolicyEA7882C0",
+        "Roles": [
+          {
+            "Ref": "StartaJobRunJobExecutionRole157B6BE1"
+          }
+        ]
+      }
+    },
+    "StartaJobRunGetEksClusterInfoCustomResourcePolicy7AA7B106": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "emr-containers:DescribeVirtualCluster",
+              "Effect": "Allow",
+              "Resource": "*"
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "StartaJobRunGetEksClusterInfoCustomResourcePolicy7AA7B106",
+        "Roles": [
+          {
+            "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
+          }
+        ]
+      }
+    },
+    "StartaJobRunGetEksClusterInfoD0E31373": {
+      "Type": "Custom::AWS",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "AWS679f53fac002430cb0da5b7982bd22872D164C4C",
+            "Arn"
+          ]
+        },
+        "Create": {
+          "Fn::Join": [
+            "",
+            [
+              "{\"service\":\"EMRcontainers\",\"action\":\"describeVirtualCluster\",\"parameters\":{\"id\":\"",
+              {
+                "Fn::GetAtt": [
+                  "Createavirtualcluster",
+                  "Id"
+                ]
+              },
+              "\"},\"outputPaths\":[\"virtualCluster.containerProvider.info.eksInfo.namespace\",\"virtualCluster.containerProvider.id\"],\"physicalResourceId\":{\"id\":\"id\"}}"
+            ]
+          ]
+        },
+        "InstallLatestAwsSdk": true
+      },
+      "DependsOn": [
+        "StartaJobRunGetEksClusterInfoCustomResourcePolicy7AA7B106"
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "StartaJobRunawsclilayer110EEF0B": {
+      "Type": "AWS::Lambda::LayerVersion",
+      "Properties": {
+        "Content": {
+          "S3Bucket": {
+            "Ref": "AssetParameterse9882ab123687399f934da0d45effe675ecc8ce13b40cb946f3e1d6141fe8d68S3BucketAEADE8C7"
+          },
+          "S3Key": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Fn::Select": [
+                    0,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParameterse9882ab123687399f934da0d45effe675ecc8ce13b40cb946f3e1d6141fe8d68S3VersionKeyE415415F"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Fn::Select": [
+                    1,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParameterse9882ab123687399f934da0d45effe675ecc8ce13b40cb946f3e1d6141fe8d68S3VersionKeyE415415F"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            ]
+          }
+        },
+        "Description": "/opt/awscli/aws"
+      }
+    },
+    "StartaJobRunCustomResourceProviderframeworkonEventServiceRole1D6E2464": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "StartaJobRunCustomResourceProviderframeworkonEventServiceRoleDefaultPolicy95FB1565": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "lambda:InvokeFunction",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "SingletonLambda8693BB64968944B69AAFB0CC9EB8757CB6182A5B",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "StartaJobRunCustomResourceProviderframeworkonEventServiceRoleDefaultPolicy95FB1565",
+        "Roles": [
+          {
+            "Ref": "StartaJobRunCustomResourceProviderframeworkonEventServiceRole1D6E2464"
+          }
+        ]
+      }
+    },
+    "StartaJobRunCustomResourceProviderframeworkonEventAC961165": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "AssetParametersdaeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1S3BucketDC4B98B1"
+          },
+          "S3Key": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Fn::Select": [
+                    0,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParametersdaeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1S3VersionKeyA495226F"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Fn::Select": [
+                    1,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParametersdaeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1S3VersionKeyA495226F"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            ]
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "StartaJobRunCustomResourceProviderframeworkonEventServiceRole1D6E2464",
+            "Arn"
+          ]
+        },
+        "Description": "AWS CDK resource provider framework - onEvent (aws-stepfunctions-tasks-emr-containers-start-job-run-integ-test/Start a Job Run/CustomResourceProvider)",
+        "Environment": {
+          "Variables": {
+            "USER_ON_EVENT_FUNCTION_ARN": {
+              "Fn::GetAtt": [
+                "SingletonLambda8693BB64968944B69AAFB0CC9EB8757CB6182A5B",
+                "Arn"
+              ]
+            }
+          }
+        },
+        "Handler": "framework.onEvent",
+        "Runtime": "nodejs14.x",
+        "Timeout": 900
+      },
+      "DependsOn": [
+        "StartaJobRunCustomResourceProviderframeworkonEventServiceRoleDefaultPolicy95FB1565",
+        "StartaJobRunCustomResourceProviderframeworkonEventServiceRole1D6E2464"
+      ]
+    },
+    "StartaJobRunCustomResource3BD90664": {
+      "Type": "AWS::CloudFormation::CustomResource",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "StartaJobRunCustomResourceProviderframeworkonEventAC961165",
+            "Arn"
+          ]
+        }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "AWS679f53fac002430cb0da5b7982bd22872D164C4C": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "AssetParameters5c61041c12314e1ad8e67a0107fa3733382a206a78cdc1576fffa7e93caca5b4S3BucketB17E5ABD"
+          },
+          "S3Key": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Fn::Select": [
+                    0,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParameters5c61041c12314e1ad8e67a0107fa3733382a206a78cdc1576fffa7e93caca5b4S3VersionKey77778F6A"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Fn::Select": [
+                    1,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParameters5c61041c12314e1ad8e67a0107fa3733382a206a78cdc1576fffa7e93caca5b4S3VersionKey77778F6A"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            ]
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2",
+            "Arn"
+          ]
+        },
+        "Handler": "index.handler",
+        "Runtime": "nodejs12.x",
+        "Timeout": 120
+      },
+      "DependsOn": [
+        "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
+      ]
+    },
+    "SingletonLambda8693BB64968944B69AAFB0CC9EB8757CServiceRoleF99BDB4C": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "SingletonLambda8693BB64968944B69AAFB0CC9EB8757CServiceRoleDefaultPolicy87B52EEA": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "eks:DescribeCluster",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":eks:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":cluster/",
+                    {
+                      "Fn::GetAtt": [
+                        "StartaJobRunGetEksClusterInfoD0E31373",
+                        "virtualCluster.containerProvider.id"
+                      ]
+                    }
+                  ]
+                ]
+              }
+            },
+            {
+              "Action": [
+                "iam:GetRole",
+                "iam:UpdateAssumeRolePolicy"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "StartaJobRunJobExecutionRole157B6BE1",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "SingletonLambda8693BB64968944B69AAFB0CC9EB8757CServiceRoleDefaultPolicy87B52EEA",
+        "Roles": [
+          {
+            "Ref": "SingletonLambda8693BB64968944B69AAFB0CC9EB8757CServiceRoleF99BDB4C"
+          }
+        ]
+      }
+    },
+    "SingletonLambda8693BB64968944B69AAFB0CC9EB8757CB6182A5B": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "AssetParametersb071da515a753b089ebbeaed1b03acccc511ddd6e412e61944809ebe4aab904dS3BucketA4134174"
+          },
+          "S3Key": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Fn::Select": [
+                    0,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParametersb071da515a753b089ebbeaed1b03acccc511ddd6e412e61944809ebe4aab904dS3VersionKey8D410D66"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Fn::Select": [
+                    1,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParametersb071da515a753b089ebbeaed1b03acccc511ddd6e412e61944809ebe4aab904dS3VersionKey8D410D66"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            ]
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "SingletonLambda8693BB64968944B69AAFB0CC9EB8757CServiceRoleF99BDB4C",
+            "Arn"
+          ]
+        },
+        "Environment": {
+          "Variables": {
+            "eksNamespace": {
+              "Fn::GetAtt": [
+                "StartaJobRunGetEksClusterInfoD0E31373",
+                "virtualCluster.containerProvider.info.eksInfo.namespace"
+              ]
+            },
+            "eksClusterId": {
+              "Fn::GetAtt": [
+                "StartaJobRunGetEksClusterInfoD0E31373",
+                "virtualCluster.containerProvider.id"
+              ]
+            },
+            "roleName": {
+              "Ref": "StartaJobRunJobExecutionRole157B6BE1"
+            }
+          }
+        },
+        "Handler": "index.handler",
+        "Layers": [
+          {
+            "Ref": "StartaJobRunawsclilayer110EEF0B"
+          }
+        ],
+        "MemorySize": 256,
+        "Runtime": "python3.6",
+        "Timeout": 30
+      },
+      "DependsOn": [
+        "SingletonLambda8693BB64968944B69AAFB0CC9EB8757CServiceRoleDefaultPolicy87B52EEA",
+        "SingletonLambda8693BB64968944B69AAFB0CC9EB8757CServiceRoleF99BDB4C"
+      ]
+    },
+    "StateMachineRoleB840431D": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "states.",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ".amazonaws.com"
+                    ]
+                  ]
+                }
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
+    "StateMachineRoleDefaultPolicyDF1E6607": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "emr-containers:StartJobRun",
+              "Condition": {
+                "StringEquals": {
+                  "emr-containers:ExecutionRoleArn": {
+                    "Fn::GetAtt": [
+                      "StartaJobRunJobExecutionRole157B6BE1",
+                      "Arn"
+                    ]
+                  }
+                }
+              },
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":emr-containers:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":/virtualclusters/",
+                    {
+                      "Fn::GetAtt": [
+                        "Createavirtualcluster",
+                        "Id"
+                      ]
+                    }
+                  ]
+                ]
+              }
+            },
+            {
+              "Action": [
+                "emr-containers:DescribeJobRun",
+                "emr-containers:CancelJobRun"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":emr-containers:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":/virtualclusters/",
+                    {
+                      "Fn::GetAtt": [
+                        "Createavirtualcluster",
+                        "Id"
+                      ]
+                    },
+                    "/jobruns/*"
+                  ]
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "StateMachineRoleDefaultPolicyDF1E6607",
+        "Roles": [
+          {
+            "Ref": "StateMachineRoleB840431D"
+          }
+        ]
+      }
+    },
+    "StateMachine2E01A3A5": {
+      "Type": "AWS::StepFunctions::StateMachine",
+      "Properties": {
+        "RoleArn": {
+          "Fn::GetAtt": [
+            "StateMachineRoleB840431D",
+            "Arn"
+          ]
+        },
+        "DefinitionString": {
+          "Fn::Join": [
+            "",
+            [
+              "{\"StartAt\":\"Start a Job Run\",\"States\":{\"Start a Job Run\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":states:::emr-containers:startJobRun.sync\",\"Parameters\":{\"VirtualClusterId\":\"",
+              {
+                "Fn::GetAtt": [
+                  "Createavirtualcluster",
+                  "Id"
+                ]
+              },
+              "\",\"Name\":\"EMR-Containers-Job\",\"ExecutionRoleArn\":\"",
+              {
+                "Fn::GetAtt": [
+                  "StartaJobRunJobExecutionRole157B6BE1",
+                  "Arn"
+                ]
+              },
+              "\",\"ReleaseLabel\":\"emr-6.2.0-latest\",\"JobDriver\":{\"SparkSubmitJobDriver\":{\"EntryPoint\":\"local:///usr/lib/spark/examples/src/main/python/pi.py\",\"EntryPointArguments\":[\"2\"],\"SparkSubmitParameters\":\"--conf spark.driver.memory=512M --conf spark.kubernetes.driver.request.cores=0.2 --conf spark.kubernetes.executor.request.cores=0.2 --conf spark.sql.shuffle.partitions=60 --conf spark.dynamicAllocation.enabled=false\"}},\"ConfigurationOverrides\":{\"ApplicationConfiguration\":[{\"Classification\":\"spark-defaults\",\"Properties\":{\"spark.executor.instances\":\"1\",\"spark.executor.memory\":\"512M\"}}],\"MonitoringConfiguration\":{\"CloudWatchMonitoringConfiguration\":{\"LogGroupName\":\"",
+              {
+                "Ref": "StartaJobRunMonitoringLogGroupD033B7AF"
+              },
+              "\"},\"PersistentAppUI\":\"ENABLED\",\"S3MonitoringConfiguration\":{\"LogUri\":\"s3://",
+              {
+                "Ref": "StartaJobRunMonitoringBucket899C33D9"
+              },
+              "\"}}}}}},\"TimeoutSeconds\":1000}"
+            ]
+          ]
+        }
+      },
+      "DependsOn": [
+        "StateMachineRoleDefaultPolicyDF1E6607",
+        "StateMachineRoleB840431D"
+      ]
+    }
+  },
+  "Parameters": {
+    "AssetParameters5c61041c12314e1ad8e67a0107fa3733382a206a78cdc1576fffa7e93caca5b4S3BucketB17E5ABD": {
+      "Type": "String",
+      "Description": "S3 bucket for asset \"5c61041c12314e1ad8e67a0107fa3733382a206a78cdc1576fffa7e93caca5b4\""
+    },
+    "AssetParameters5c61041c12314e1ad8e67a0107fa3733382a206a78cdc1576fffa7e93caca5b4S3VersionKey77778F6A": {
+      "Type": "String",
+      "Description": "S3 key for asset version \"5c61041c12314e1ad8e67a0107fa3733382a206a78cdc1576fffa7e93caca5b4\""
+    },
+    "AssetParameters5c61041c12314e1ad8e67a0107fa3733382a206a78cdc1576fffa7e93caca5b4ArtifactHash580E429C": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"5c61041c12314e1ad8e67a0107fa3733382a206a78cdc1576fffa7e93caca5b4\""
+    },
+    "AssetParameterse9882ab123687399f934da0d45effe675ecc8ce13b40cb946f3e1d6141fe8d68S3BucketAEADE8C7": {
+      "Type": "String",
+      "Description": "S3 bucket for asset \"e9882ab123687399f934da0d45effe675ecc8ce13b40cb946f3e1d6141fe8d68\""
+    },
+    "AssetParameterse9882ab123687399f934da0d45effe675ecc8ce13b40cb946f3e1d6141fe8d68S3VersionKeyE415415F": {
+      "Type": "String",
+      "Description": "S3 key for asset version \"e9882ab123687399f934da0d45effe675ecc8ce13b40cb946f3e1d6141fe8d68\""
+    },
+    "AssetParameterse9882ab123687399f934da0d45effe675ecc8ce13b40cb946f3e1d6141fe8d68ArtifactHashD9A515C3": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"e9882ab123687399f934da0d45effe675ecc8ce13b40cb946f3e1d6141fe8d68\""
+    },
+    "AssetParametersb071da515a753b089ebbeaed1b03acccc511ddd6e412e61944809ebe4aab904dS3BucketA4134174": {
+      "Type": "String",
+      "Description": "S3 bucket for asset \"b071da515a753b089ebbeaed1b03acccc511ddd6e412e61944809ebe4aab904d\""
+    },
+    "AssetParametersb071da515a753b089ebbeaed1b03acccc511ddd6e412e61944809ebe4aab904dS3VersionKey8D410D66": {
+      "Type": "String",
+      "Description": "S3 key for asset version \"b071da515a753b089ebbeaed1b03acccc511ddd6e412e61944809ebe4aab904d\""
+    },
+    "AssetParametersb071da515a753b089ebbeaed1b03acccc511ddd6e412e61944809ebe4aab904dArtifactHashBFC6502B": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"b071da515a753b089ebbeaed1b03acccc511ddd6e412e61944809ebe4aab904d\""
+    },
+    "AssetParametersdaeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1S3BucketDC4B98B1": {
+      "Type": "String",
+      "Description": "S3 bucket for asset \"daeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1\""
+    },
+    "AssetParametersdaeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1S3VersionKeyA495226F": {
+      "Type": "String",
+      "Description": "S3 key for asset version \"daeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1\""
+    },
+    "AssetParametersdaeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1ArtifactHashA521A16F": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"daeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1\""
+    }
+  },
+  "Outputs": {
+    "stateMachineArn": {
+      "Value": {
+        "Ref": "StateMachine2E01A3A5"
+      }
+    }
+  }
+}
