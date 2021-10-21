@@ -1,7 +1,7 @@
 name: General Issue
 description: Create a new issue
 title: "(module name): short issue description"
-labels: [needs-triage, guidance]
+labels: [guidance]
 body:
   - type: markdown
     attributes:
