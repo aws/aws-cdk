@@ -1,5 +1,6 @@
 import { CustomResource, Stack } from '@aws-cdk/core';
 import { Construct, Node } from 'constructs';
+import { AlbController } from './alb-controller';
 import { ICluster } from './cluster';
 import { KubectlProvider } from './kubectl-provider';
 
@@ -117,6 +118,8 @@ export class KubernetesManifest extends CoreConstruct {
       ? this.injectPruneLabel(props.manifest)
       : undefined;
 
+    this.injectIngressAlbAnnotations(props.cluster, props.manifest);
+
     new CustomResource(this, 'Resource', {
       serviceToken: provider.serviceToken,
       resourceType: KubernetesManifest.RESOURCE_TYPE,
@@ -166,5 +169,36 @@ export class KubernetesManifest extends CoreConstruct {
     }
 
     return pruneLabel;
+  }
+
+  /**
+   * Inject the necessary ingress annontations if possible (and requested).
+   *
+   * @see https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.2/guide/ingress/annotations/
+   */
+  private injectIngressAlbAnnotations(cluster: ICluster, manifest: Record<string, any>[]) {
+
+    const albController = AlbController.get(cluster);
+
+    if (!albController || !albController.autoDiscoverIngress) {
+      return;
+    }
+
+    for (const resource of manifest) {
+
+      // skip resource if it's not an object or if it does not have a "kind"
+      if (typeof(resource) !== 'object' || !resource.kind) {
+        continue;
+      }
+
+      if (resource.kind === 'Ingress') {
+        resource.metadata.annotations = {
+          'kubernetes.io/ingress.class': 'alb',
+          'alb.ingress.kubernetes.io/scheme': albController.autoDiscoverIngressScheme,
+          ...resource.metadata.annotations,
+        };
+      }
+    }
+
   }
 }

@@ -9,6 +9,7 @@ import * as ssm from '@aws-cdk/aws-ssm';
 import { Annotations, CfnOutput, CfnResource, IResource, Resource, Stack, Tags, Token, Duration, Size } from '@aws-cdk/core';
 import { Construct, Node } from 'constructs';
 import * as YAML from 'yaml';
+import { AlbController, AlbControllerOptions } from './alb-controller';
 import { AwsAuth } from './aws-auth';
 import { ClusterResource, clusterArnComponents } from './cluster-resource';
 import { FargateProfile, FargateProfileOptions } from './fargate-profile';
@@ -402,142 +403,6 @@ export interface CommonClusterOptions {
    * @default true
    */
   readonly outputConfigCommand?: boolean;
-}
-
-export enum AlbScheme {
-
-  /**
-   * The nodes of an internal load balancer have only private IP addresses.
-   * The DNS name of an internal load balancer is publicly resolvable to the private IP addresses of the nodes.
-   * Therefore, internal load balancers can only route requests from clients with access to the VPC for the load balancer.
-   */
-  INTERNAL = 'internal',
-
-  /**
-   * An internet-facing load balancer has a publicly resolvable DNS name, so it can route requests from clients over the internet
-   * to the EC2 instances that are registered with the load balancer.
-   */
-  INTERNET_FACING = 'internet-facing'
-}
-
-export class AlbControllerVersion {
-
-  /**
-   * v2.0.0
-   */
-  public static readonly V2_0_0 = new AlbControllerVersion('v2.0.0', false);
-
-  /**
-   * v2.0.1
-   */
-  public static readonly V2_0_1 = new AlbControllerVersion('v2.0.1', false);
-
-  /**
-   * v2.1.0
-   */
-  public static readonly V2_1_0 = new AlbControllerVersion('v2.1.0', false);
-
-  /**
-   * v2.1.1
-   */
-  public static readonly V2_1_1 = new AlbControllerVersion('v2.1.1', false);
-
-  /**
-   * v2.1.2
-   */
-  public static readonly V2_1_2 = new AlbControllerVersion('v2.1.2', false);
-
-  /**
-   * v2.1.3
-   */
-  public static readonly V2_1_3 = new AlbControllerVersion('v2.1.3', false);
-
-  /**
-   * v2.0.0
-   */
-  public static readonly V2_2_0 = new AlbControllerVersion('v2.2.0', false);
-
-  /**
-   * v2.2.1
-   */
-  public static readonly V2_2_1 = new AlbControllerVersion('v2.2.1', false);
-
-  /**
-   * v2.2.2
-   */
-  public static readonly V2_2_2 = new AlbControllerVersion('v2.2.2', false);
-
-  /**
-   * v2.2.3
-   */
-  public static readonly V2_2_3 = new AlbControllerVersion('v2.2.3', false);
-
-  /**
-   * v2.2.4
-   */
-  public static readonly V2_2_4 = new AlbControllerVersion('v2.2.4', false);
-
-  /**
-   * v2.3.0
-   */
-  public static readonly V2_3_0 = new AlbControllerVersion('v2.3.0', false);
-
-  /**
-   * Specify a custom version.
-   *
-   * @param version The version number.
-   */
-  public static of(version: string) {
-    return new AlbControllerVersion(version, true);
-  }
-
-  private constructor(public readonly version: string, public readonly custom: boolean) {}
-}
-
-export interface AlbControllerOptions {
-
-  readonly version: AlbControllerVersion;
-
-  /**
-   * The repository to pull the controller image from.
-   *
-   * Note that the default repository works for most regions, but not all.
-   * If the repository is not applicable to your region, use a custom repository
-   * according to the information here: https://github.com/kubernetes-sigs/aws-load-balancer-controller/releases.
-   *
-   * @default '602401143452.dkr.ecr.us-west-2.amazonaws.com/amazon/aws-load-balancer-controller'
-   */
-  readonly repository?: string;
-
-  /**
-   * The IAM policy to apply to the service account.
-   *
-   * If you're using one of the built-in versions, this is not required since
-   * CDK ships with the appropriate policies for those versions.
-   *
-   * However, if you are using a custom version, this is required (and validated).
-   *
-   * @default - Corresponds to the predefined version.
-   */
-  readonly policy?: any;
-
-  /**
-   * Automatically discover Ingress resources added via `addManifest` to the cluster and
-   * annotate them so they are picked up by the controller.
-   *
-   * @default true
-   */
-  readonly autoDiscoverIngress?: boolean;
-
-  /**
-   * The scheme to apply to Ingress resources when auto discover is turned on.
-   * This corresponds to the 'alb.ingress.kubernetes.io/scheme' annotation.
-   *
-   * @see https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.2/guide/ingress/annotations/#scheme
-   *
-   * @default AlbScheme.INTERNAL
-   */
-  readonly autoDiscoverIngressScheme?: AlbScheme;
 }
 
 /**
@@ -1490,7 +1355,7 @@ export class Cluster extends ClusterBase {
     this.defineCoreDnsComputeType(props.coreDnsComputeType ?? CoreDnsComputeType.EC2);
 
     if (props.albController) {
-      this.addAlbController(props.albController)
+      AlbController.getOrCreate({ ...props.albController, cluster: this });
     }
   }
 
@@ -1798,55 +1663,6 @@ export class Cluster extends ClusterBase {
       applyPatch: renderPatch(CoreDnsComputeType.FARGATE),
       restorePatch: renderPatch(CoreDnsComputeType.EC2),
     });
-  }
-
-  private addAlbController(options: AlbControllerOptions) {
-
-    const namespace = 'kube-system';
-    const serviceAccount = this.addServiceAccount('alb-sa', { namespace, name: 'aws-load-balancer-controller' });
-
-    if (options.version.custom && !options.policy) {
-      throw new Error("albControllerOptions.policy is required when using a custom controller version");
-    }
-
-    // https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.2/deploy/installation/#iam-permissions
-    const policy: any = options.policy ?? fs.readFileSync(path.join(__dirname, `addons/alb-iam-policy-${options.version}.json`), 'utf8');
-
-    for (const statement of policy['Statement']) {
-      serviceAccount.addToPrincipalPolicy(iam.PolicyStatement.fromJson(statement));
-    }
-
-    // https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.2/deploy/installation/#add-controller-to-cluster
-    const chart = this.addHelmChart('Chart', {
-      chart: 'aws-load-balancer-controller',
-      repository: 'https://aws.github.io/eks-charts',
-      namespace,
-      release: 'aws-load-balancer-controller',
-
-      // latest at the time of writing. We intentionally don't
-      // want to expose this since helm here is just an implementation detail
-      // for installing a specific version of the controller itself.
-      version: '1.3.0',
-
-      wait: true,
-      timeout: Duration.minutes(15),
-      values: {
-        clusterName: this.clusterName,
-        serviceAccount: {
-          create: false,
-          name: serviceAccount.serviceAccountName,
-        },
-        region: Stack.of(this).region,
-        vpcId: this.vpc.vpcId,
-        repository: options.repository ?? '602401143452.dkr.ecr.us-west-2.amazonaws.com/amazon/aws-load-balancer-controller',
-        tag: options.version.version
-      }
-     });
-
-    chart.node.addDependency(serviceAccount);
-    chart.node.addDependency(this.openIdConnectProvider);
-    chart.node.addDependency(this.awsAuth);
-
   }
 }
 
