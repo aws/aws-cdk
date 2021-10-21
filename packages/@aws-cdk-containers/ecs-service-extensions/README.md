@@ -211,37 +211,23 @@ In addition to using the default service extensions that come with this module, 
 can choose to implement your own custom service extensions. The `ServiceExtension`
 class is an abstract class you can implement yourself. The following example
 implements a custom service extension that could be added to a service in order to
-autoscale it based on CPU:
+autoscale it based on scaling intervals of SQS Queue size:
 
 ```ts
 export class MyCustomAutoscaling extends ServiceExtension {
   constructor() {
     super('my-custom-autoscaling');
-  }
-
-  // This function modifies properties of the service prior
-  // to construct creation.
-  public modifyServiceProps(props: ServiceBuild) {
-    return {
-      ...props,
-
-      // Initially launch 10 copies of the service
-      desiredCount: 10
-    } as ServiceBuild;
+    // Scaling intervals for the step scaling policy
+    this.scalingSteps = [{ upper: 0, change: -1 }, { lower: 100, change: +1 }, { lower: 500, change: +5 }];
+    this.sqsQueue = new sqs.Queue(this.scope, 'my-queue');
   }
 
   // This hook utilizes the resulting service construct
   // once it is created
   public useService(service: ecs.Ec2Service | ecs.FargateService) {
-    const scalingTarget = service.autoScaleTaskCount({
-      minCapacity: 5, // Min 5 tasks
-      maxCapacity: 20 // Max 20 tasks
-    });
-
-    scalingTarget.scaleOnCpuUtilization('TargetCpuUtilization50', {
-      targetUtilizationPercent: 50,
-      scaleInCooldown: cdk.Duration.seconds(60),
-      scaleOutCooldown: cdk.Duration.seconds(60),
+    this.parentService.scalableTaskCount.scaleOnMetric('QueueMessagesVisibleScaling', {
+      metric: this.sqsQueue.metricApproximateNumberOfMessagesVisible(),
+      scalingSteps: this.scalingSteps,
     });
   }
 }
