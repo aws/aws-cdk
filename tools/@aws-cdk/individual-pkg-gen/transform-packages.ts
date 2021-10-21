@@ -175,9 +175,11 @@ function transformPackageJson(pkg: any, source: string, destination: string, alp
   jsiiTargets.python.distName += '-alpha';
   jsiiTargets.python.module += '_alpha';
   // Typically, only our top-level packages have a Go target.
-  // moduleName is needed; packageName will be automatically derived by from the package name.
+  // packageName has unusable chars and redundant 'aws' stripped.
+  // This generates names like 'awscdkfoobaralpha' (rather than 'awscdkawsfoobaralpha').
   jsiiTargets.go = {
     moduleName: 'github.com/aws/aws-cdk-go',
+    packageName: packageJson.name.replace('/aws-', '').replace(/[^a-z0-9.]/gi, '').toLowerCase(),
   };
 
   const finalPackageJson = transformPackageJsonDependencies(packageJson, pkg, alphaPackages);
