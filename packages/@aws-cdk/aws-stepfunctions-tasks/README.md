@@ -780,6 +780,7 @@ new tasks.EmrModifyInstanceGroupByName(this, 'Task', {
   },
 });
 ```
+
 ## EMR on EKS
 
 Step Functions supports Amazon EMR on EKS through the service integration pattern.
