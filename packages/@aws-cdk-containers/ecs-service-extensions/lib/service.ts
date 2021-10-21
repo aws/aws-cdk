@@ -30,6 +30,42 @@ export interface ServiceProps {
    * @default - A task role is automatically created for you.
    */
   readonly taskRole?: iam.IRole;
+
+  /**
+   * The desired number of instantiations of the task definition to keep running on the service.
+   *
+   * @default - 1
+   */
+  readonly desiredCount?: number;
+
+  /**
+   * The options for configuring the auto scaling target.
+   */
+  readonly autoScaleTaskCount?: AutoScalingOptions;
+}
+
+export interface AutoScalingOptions {
+  /**
+   * The minimum number of tasks when scaling in.
+   *
+   * @default - 1
+   */
+  readonly minTaskCount?: number;
+
+  /**
+    * The maximum number of tasks when scaling out.
+    */
+  readonly maxTaskCount: number;
+
+  /**
+   * The target value for CPU utilization across all tasks in the service.
+   */
+  readonly targetCpuUtilization?: number;
+
+  /**
+   * The target value for memory utilization across all tasks in the service.
+   */
+  readonly targetMemoryUtilization?: number;
 }
 
 /**
@@ -76,6 +112,11 @@ export class Service extends Construct {
   public readonly environment: IEnvironment;
 
   /**
+   * The scalable attribute representing task count.
+   */
+  public readonly scalableTaskCount?: ecs.ScalableTaskCount;
+
+  /**
    * The generated task definition for this service. It is only
    * generated after .prepare() has been executed.
    */
@@ -88,6 +129,14 @@ export class Service extends Construct {
 
   private readonly scope: cdk.Construct;
 
+  /**
+   * The desired number of instantiations of the task definition to keep running on the service.
+   *
+   * @default - When creating the service, default is 1; when updating the service, default uses
+   * the current task number.
+   */
+  private readonly desiredCount: number;
+
   constructor(scope: Construct, id: string, props: ServiceProps) {
     super(scope, id);
 
@@ -98,6 +147,7 @@ export class Service extends Construct {
     this.cluster = props.environment.cluster;
     this.capacityType = props.environment.capacityType;
     this.serviceDescription = props.serviceDescription;
+    this.desiredCount = props.desiredCount || 1;
 
     // Check to make sure that the user has actually added a container
     const containerextension = this.serviceDescription.get('service-container');
@@ -160,6 +210,9 @@ export class Service extends Construct {
       }
     }
 
+    // Set desiredCount to `undefined` if auto scaling is configured for the service
+    const desiredCount = props.autoScaleTaskCount ? undefined : this.desiredCount;
+
     // Give each extension a chance to mutate the service props before
     // service creation
     let serviceProps = {
@@ -167,7 +220,7 @@ export class Service extends Construct {
       taskDefinition: this.taskDefinition,
       minHealthyPercent: 100,
       maxHealthyPercent: 200,
-      desiredCount: 1,
+      desiredCount,
     } as ServiceBuild;
 
     for (const extensions in this.serviceDescription.extensions) {
@@ -217,6 +270,28 @@ export class Service extends Construct {
       this.ecsService = new ecs.FargateService(this.scope, `${this.id}-service`, serviceProps);
     } else {
       throw new Error(`Unknown capacity type for service ${this.id}`);
+    }
+
+    // Create the auto scaling target and configure target tracking policies after the service is created
+    if (props.autoScaleTaskCount) {
+      this.scalableTaskCount = this.ecsService.autoScaleTaskCount({
+        maxCapacity: props.autoScaleTaskCount.maxTaskCount,
+        minCapacity: props.autoScaleTaskCount.minTaskCount,
+      });
+
+      if (props.autoScaleTaskCount.targetCpuUtilization) {
+        const targetUtilizationPercent = props.autoScaleTaskCount.targetCpuUtilization;
+        this.scalableTaskCount.scaleOnCpuUtilization(`${this.id}-target-cpu-utilization-${targetUtilizationPercent}`, {
+          targetUtilizationPercent,
+        });
+      }
+
+      if (props.autoScaleTaskCount.targetMemoryUtilization) {
+        const targetUtilizationPercent = props.autoScaleTaskCount.targetMemoryUtilization;
+        this.scalableTaskCount.scaleOnMemoryUtilization(`${this.id}-target-memory-utilization-${targetUtilizationPercent}`, {
+          targetUtilizationPercent,
+        });
+      }
     }
 
     // Now give all extensions a chance to use the service
