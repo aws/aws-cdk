@@ -109,6 +109,10 @@ export class MockSdkProvider extends SdkProvider {
   public stubStepFunctions(stubs: SyncHandlerSubsetOf<AWS.StepFunctions>) {
     (this.sdk as any).stepFunctions = jest.fn().mockReturnValue(partialAwsService<AWS.StepFunctions>(stubs));
   }
+
+  public stubGetEndpointSuffix(stub: (region:string) => string) {
+    this.sdk.getEndpointSuffix = jest.fn().mockReturnValue(stub);
+  }
 }
 
 export class MockSdk implements ISDK {
@@ -149,6 +153,10 @@ export class MockSdk implements ISDK {
    */
   public stubSsm(stubs: SyncHandlerSubsetOf<AWS.SSM>) {
     this.ssm.mockReturnValue(partialAwsService<AWS.SSM>(stubs));
+  }
+
+  public getEndpointSuffix(region: string): string {
+    return 'amazonaws.com' + region;
   }
 }
 

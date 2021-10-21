@@ -32,6 +32,10 @@ if (!regionUtil.getEndpointSuffix) {
   throw new Error('This version of AWS SDK for JS does not have the \'getEndpointSuffix\' function!');
 }
 
+/*export function getEndpointSuffix(region: string) {
+  return regionUtil.getEndpointSuffix(region)
+}*/
+
 type TemplateBodyParameter = {
   TemplateBody?: string
   TemplateURL?: string

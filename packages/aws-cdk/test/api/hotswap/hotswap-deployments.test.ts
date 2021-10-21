@@ -4,15 +4,19 @@ import * as setup from './hotswap-test-setup';
 let cfnMockProvider: setup.CfnMockProvider;
 let mockUpdateLambdaCode: (params: Lambda.Types.UpdateFunctionCodeRequest) => Lambda.Types.FunctionConfiguration;
 let mockUpdateMachineDefinition: (params: StepFunctions.Types.UpdateStateMachineInput) => StepFunctions.Types.UpdateStateMachineOutput;
+let getEndpointSuffix: ((region: string) => string);
 
 beforeEach(() => {
   cfnMockProvider = setup.setupHotswapTests();
   mockUpdateLambdaCode = jest.fn();
   mockUpdateMachineDefinition = jest.fn();
+  getEndpointSuffix = jest.fn((region: string) => { return 'amazonaws.com' + region; });
   cfnMockProvider.setUpdateFunctionCodeMock(mockUpdateLambdaCode);
   cfnMockProvider.setUpdateStateMachineMock(mockUpdateMachineDefinition);
+  cfnMockProvider.stubGetEndpointSuffix(getEndpointSuffix);
 });
 
+/*
 test('returns a deployStackResult with noOp=true when it receives an empty set of changes', async () => {
   // WHEN
   const deployStackResult = await cfnMockProvider.tryHotswapDeployment(setup.cdkStackArtifactOf());
@@ -236,6 +240,76 @@ test('can correctly reference AWS::Partition in hotswappable changes', async () 
   expect(deployStackResult).not.toBeUndefined();
   expect(mockUpdateLambdaCode).toHaveBeenCalledWith({
     FunctionName: 'aws-my-function',
+    S3Bucket: 'current-bucket',
+    S3Key: 'new-key',
+  });
+});
+*/
+
+test('can correctly reference AWS::URLSuffix in hotswappable changes', async () => {
+  // GIVEN
+  setup.setCurrentCfnStackTemplate({
+    Resources: {
+      Func: {
+        Type: 'AWS::Lambda::Function',
+        Properties: {
+          Code: {
+            S3Bucket: 'current-bucket',
+            S3Key: 'current-key',
+          },
+          FunctionName: {
+            'Fn::Join': [
+              '',
+              [
+                'my-function',
+                '-',
+                { Ref: 'AWS::URLSuffix' },
+              ],
+            ],
+          },
+        },
+        Metadata: {
+          'aws:asset:path': 'new-path',
+        },
+      },
+    },
+  });
+  const cdkStackArtifact = setup.cdkStackArtifactOf({
+    template: {
+      Resources: {
+        Func: {
+          Type: 'AWS::Lambda::Function',
+          Properties: {
+            Code: {
+              S3Bucket: 'current-bucket',
+              S3Key: 'new-key',
+            },
+            FunctionName: {
+              'Fn::Join': [
+                '',
+                [
+                  'my-function',
+                  '-',
+                  { Ref: 'AWS::URLSuffix' },
+                ],
+              ],
+            },
+          },
+          Metadata: {
+            'aws:asset:path': 'new-path',
+          },
+        },
+      },
+    },
+  });
+
+  // WHEN
+  const deployStackResult = await cfnMockProvider.tryHotswapDeployment(cdkStackArtifact);
+
+  // THEN
+  expect(deployStackResult).not.toBeUndefined();
+  expect(mockUpdateLambdaCode).toHaveBeenCalledWith({
+    FunctionName: 'my-function-amazonaws.com',
     S3Bucket: 'current-bucket',
     S3Key: 'new-key',
   });
