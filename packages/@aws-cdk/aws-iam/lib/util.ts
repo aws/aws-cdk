@@ -4,6 +4,8 @@ import { IPolicy } from './policy';
 
 const MAX_POLICY_NAME_LEN = 128;
 
+export const LITERAL_STRING_KEY = 'LiteralString';
+
 export function undefinedIfEmpty(f: () => string[]): string[] {
   return Lazy.list({
     produce: () => {
@@ -67,10 +69,18 @@ export class AttachedPolicies {
 
 /**
  * Merge two dictionaries that represent IAM principals
+ *
+ * Does an in-place merge.
  */
 export function mergePrincipal(target: { [key: string]: string[] }, source: { [key: string]: string[] }) {
+  // If one represents a literal string, the other one must be empty
+  if ((LITERAL_STRING_KEY in source && !isEmptyObject(target)) ||
+    (LITERAL_STRING_KEY in target && !isEmptyObject(source))) {
+    throw new Error(`Cannot merge principals ${JSON.stringify(target)} and ${JSON.stringify(source)}; if one uses a literal principal string the other one must be empty`);
+  }
+
   for (const key of Object.keys(source)) {
-    target[key] = target[key] || [];
+    target[key] = target[key] ?? [];
 
     let value = source[key];
     if (!Array.isArray(value)) {
@@ -123,4 +133,8 @@ export class UniqueStringSet implements IResolvable, IPostProcessor {
   public toString(): string {
     return Token.asString(this);
   }
+}
+
+function isEmptyObject(x: { [key: string]: any }): boolean {
+  return Object.keys(x).length === 0;
 }
