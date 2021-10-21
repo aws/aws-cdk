@@ -50,13 +50,18 @@ Use `asset.imageUri` to reference the image. It includes both the ECR image URL
 and tag.
 
 You can optionally pass build args to the `docker build` command by specifying
-the `buildArgs` property:
+the `buildArgs` property. It is recommended to skip hashing of `buildArgs` for
+values that can change between different machines to maintain a consistent
+asset hash.
 
 ```ts
 const asset = new DockerImageAsset(this, 'MyBuildImage', {
   directory: path.join(__dirname, 'my-image'),
   buildArgs: {
     HTTP_PROXY: 'http://10.20.30.2:1234'
+  },
+  invalidation: {
+    buildArgs: false
   }
 });
 ```

@@ -16,6 +16,8 @@ import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * Customization options for a DeployCdkStackAction
+ *
+ * @deprecated This class is part of the old API. Use the API based on the `CodePipeline` class instead
  */
 export interface DeployCdkStackActionOptions {
   /**
@@ -68,6 +70,8 @@ export interface DeployCdkStackActionOptions {
 
 /**
  * Properties for a DeployCdkStackAction
+ *
+ * @deprecated This class is part of the old API. Use the API based on the `CodePipeline` class instead
  */
 export interface DeployCdkStackActionProps extends DeployCdkStackActionOptions {
   /**
@@ -129,6 +133,8 @@ export interface DeployCdkStackActionProps extends DeployCdkStackActionOptions {
 
 /**
  * Options for the 'fromStackArtifact' operation
+ *
+ * @deprecated This class is part of the old API. Use the API based on the `CodePipeline` class instead
  */
 export interface CdkStackActionFromArtifactOptions extends DeployCdkStackActionOptions {
   /**
@@ -147,6 +153,8 @@ export interface CdkStackActionFromArtifactOptions extends DeployCdkStackActionO
  *
  * You do not need to instantiate this action yourself -- it will automatically
  * be added by the pipeline when you add stack artifacts or entire stages.
+ *
+ * @deprecated This class is part of the old API. Use the API based on the `CodePipeline` class instead
  */
 export class DeployCdkStackAction implements codepipeline.IAction {
   /**
@@ -317,6 +325,8 @@ function roleFromPlaceholderArn(scope: Construct, region: string | undefined,
 
 /**
  * Options for CdkDeployAction.fromStackArtifact
+ *
+ * @deprecated This class is part of the old API. Use the API based on the `CodePipeline` class instead
  */
 export interface FromStackArtifactOptions {
   /**

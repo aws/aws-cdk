@@ -1,0 +1,13 @@
+import { Construct, Stack } from '@aws-cdk/core';
+import { Capture, Match, Template } from '@aws-cdk/assertions';
+
+class Fixture extends Stack {
+  constructor(scope: Construct, id: string) {
+    super(scope, id);
+
+    const stack = new Stack();
+    const template = Template.fromStack(stack);
+
+    /// here
+  }
+}

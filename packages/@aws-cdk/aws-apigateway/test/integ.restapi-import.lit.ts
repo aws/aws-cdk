@@ -31,7 +31,7 @@ class RootStack extends Stack {
     });
     new DeployStack(this, {
       restApiId: restApi.restApiId,
-      methods: [...petsStack.methods, ...booksStack.methods],
+      methods: petsStack.methods.concat(booksStack.methods),
     });
 
     new CfnOutput(this, 'PetsURL', {
@@ -117,7 +117,11 @@ class DeployStack extends NestedStack {
     const deployment = new Deployment(this, 'Deployment', {
       api: RestApi.fromRestApiId(this, 'RestApi', props.restApiId),
     });
-    (props.methods ?? []).forEach((method) => deployment.node.addDependency(method));
+    if (props.methods) {
+      for (const method of props.methods) {
+        deployment.node.addDependency(method);
+      }
+    }
     new Stage(this, 'Stage', { deployment });
   }
 }

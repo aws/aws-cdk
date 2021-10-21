@@ -15,7 +15,10 @@ new servicecatalog.CloudFormationProduct(stack, 'TestProduct', {
         'https://awsdocs.s3.amazonaws.com/servicecatalog/development-environment.template'),
     },
     {
-      cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromAsset(path.join(__dirname, 'development-environment.template.json')),
+      cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromAsset(path.join(__dirname, 'product1.template.json')),
+    },
+    {
+      cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromAsset(path.join(__dirname, 'product2.template.json')),
     },
   ],
 });

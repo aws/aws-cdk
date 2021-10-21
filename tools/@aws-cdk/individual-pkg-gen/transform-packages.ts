@@ -3,6 +3,8 @@ import * as awsCdkMigration from 'aws-cdk-migration';
 import * as fs from 'fs-extra';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const lerna_project = require('@lerna/project');
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const ver = require('../../../scripts/resolve-version');
 
 /**
  * @aws-cdk/ scoped packages that may be present in devDependencies and need to
@@ -128,6 +130,9 @@ function transformPackageJson(pkg: any, source: string, destination: string, alp
   const pkgUnscopedName = `${pkg.name.substring('@aws-cdk/'.length)}`;
 
   packageJson.name += '-alpha';
+  if (ver.alphaVersion) {
+    packageJson.version = ver.alphaVersion;
+  }
   packageJson.repository.directory = `packages/individual-packages/${pkgUnscopedName}`;
 
   // All individual packages are public by default on v1, and private by default on v2.
@@ -170,9 +175,11 @@ function transformPackageJson(pkg: any, source: string, destination: string, alp
   jsiiTargets.python.distName += '-alpha';
   jsiiTargets.python.module += '_alpha';
   // Typically, only our top-level packages have a Go target.
-  // moduleName is needed; packageName will be automatically derived by from the package name.
+  // packageName has unusable chars and redundant 'aws' stripped.
+  // This generates names like 'awscdkfoobaralpha' (rather than 'awscdkawsfoobaralpha').
   jsiiTargets.go = {
     moduleName: 'github.com/aws/aws-cdk-go',
+    packageName: packageJson.name.replace('/aws-', '').replace(/[^a-z0-9.]/gi, '').toLowerCase(),
   };
 
   const finalPackageJson = transformPackageJsonDependencies(packageJson, pkg, alphaPackages);
@@ -201,7 +208,7 @@ function transformPackageJsonDependencies(packageJson: any, pkg: any, alphaPacka
         break;
       default:
         if (alphaPackages[dependency]) {
-          alphaDependencies[alphaPackages[dependency]] = pkg.version;
+          alphaDependencies[alphaPackages[dependency]] = packageJson.version;
         } else if (v1BundledDependencies.indexOf(dependency) !== -1) {
           // ...other than third-party dependencies, which are in bundledDependencies
           bundledDependencies[dependency] = packageJson.dependencies[dependency];
@@ -221,7 +228,7 @@ function transformPackageJsonDependencies(packageJson: any, pkg: any, alphaPacka
         break;
       default:
         if (alphaPackages[v1DevDependency]) {
-          alphaDevDependencies[alphaPackages[v1DevDependency]] = pkg.version;
+          alphaDevDependencies[alphaPackages[v1DevDependency]] = packageJson.version;
         } else if (!v1DevDependency.startsWith('@aws-cdk/') || isRequiredTool(v1DevDependency)) {
           devDependencies[v1DevDependency] = packageJson.devDependencies[v1DevDependency];
         }

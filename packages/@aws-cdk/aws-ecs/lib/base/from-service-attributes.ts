@@ -54,5 +54,7 @@ export function fromServiceAtrributes(scope: Construct, id: string, attrs: Servi
     public readonly serviceName = name;
     public readonly cluster = attrs.cluster;
   }
-  return new Import(scope, id);
+  return new Import(scope, id, {
+    environmentFromArn: arn,
+  });
 }

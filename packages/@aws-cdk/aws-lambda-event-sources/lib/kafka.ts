@@ -49,6 +49,10 @@ export enum AuthenticationMethod {
    * SASL_SCRAM_256_AUTH authentication method for your Kafka cluster
    */
   SASL_SCRAM_256_AUTH = 'SASL_SCRAM_256_AUTH',
+  /**
+   * BASIC_AUTH (SASL/PLAIN) authentication method for your Kafka cluster
+   */
+  BASIC_AUTH = 'BASIC_AUTH',
 }
 
 /**
@@ -193,6 +197,9 @@ export class SelfManagedKafkaEventSource extends StreamEventSource {
   private sourceAccessConfigurations() {
     let authType;
     switch (this.innerProps.authenticationMethod) {
+      case AuthenticationMethod.BASIC_AUTH:
+        authType = lambda.SourceAccessConfigurationType.BASIC_AUTH;
+        break;
       case AuthenticationMethod.SASL_SCRAM_256_AUTH:
         authType = lambda.SourceAccessConfigurationType.SASL_SCRAM_256_AUTH;
         break;

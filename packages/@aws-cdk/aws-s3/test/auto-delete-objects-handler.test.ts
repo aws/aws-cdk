@@ -287,6 +287,23 @@ test('delete event where bucket has many objects does recurse appropriately', as
   });
 });
 
+test('does nothing when the bucket does not exist', async () => {
+  // GIVEN
+  mockS3Client.promise.mockRejectedValue({ code: 'NoSuchBucket' });
+
+  // WHEN
+  const event: Partial<AWSLambda.CloudFormationCustomResourceDeleteEvent> = {
+    RequestType: 'Delete',
+    ResourceProperties: {
+      ServiceToken: 'Foo',
+      BucketName: 'MyBucket',
+    },
+  };
+  await invokeHandler(event);
+
+  expect(mockS3Client.deleteObjects).not.toHaveBeenCalled();
+});
+
 // helper function to get around TypeScript expecting a complete event object,
 // even though our tests only need some of the fields
 async function invokeHandler(event: Partial<AWSLambda.CloudFormationCustomResourceEvent>) {

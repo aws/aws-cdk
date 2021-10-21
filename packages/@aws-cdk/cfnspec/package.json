@@ -35,12 +35,12 @@
     "@types/jest": "^26.0.24",
     "@types/md5": "^2.3.1",
     "fast-json-patch": "^2.2.1",
-    "fs-extra": "^9.1.0",
     "jest": "^26.6.3",
     "json-diff": "^0.5.4",
     "sort-json": "^2.0.0"
   },
   "dependencies": {
+    "fs-extra": "^9.1.0",
     "md5": "^2.3.0"
   },
   "repository": {

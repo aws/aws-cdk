@@ -333,12 +333,12 @@ Lambda functions, by default, run on compute systems that have the 64 bit x86 ar
 The AWS Lambda service also runs compute on the ARM architecture, which can reduce cost
 for some workloads.
 
-A lambda function can be configured to be run on one or both of these platforms -
+A lambda function can be configured to be run on one of these platforms:
 
 ```ts
 new Function(this, 'MyFunction', {
   ...
-  architectures: [ Architecture.X86_64, Architecture.ARM_64 ],
+  architecture: Architecture.ARM_64,
 });
 ```
 
@@ -347,7 +347,7 @@ Similarly, lambda layer versions can also be tagged with architectures it is com
 ```ts
 new LayerVersion(this, 'MyLayer', {
   ...
-  compatibleArchitectures: [ Architecture.X86_64, Architecture.ARM_64 ],
+  compatibleArchitectures: [Architecture.X86_64, Architecture.ARM_64],
 });
 ```
 
@@ -674,7 +674,7 @@ Language-specific higher level constructs are provided in separate modules:
 
 ## Code Signing
 
-Code signing for AWS Lambda helps to ensure that only trusted code runs in your Lambda functions. 
+Code signing for AWS Lambda helps to ensure that only trusted code runs in your Lambda functions.
 When enabled, AWS Lambda checks every code deployment and verifies that the code package is signed by a trusted source.
 For more information, see [Configuring code signing for AWS Lambda](https://docs.aws.amazon.com/lambda/latest/dg/configuration-codesigning.html).
 The following code configures a function with code signing.

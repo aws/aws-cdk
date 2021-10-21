@@ -58,7 +58,14 @@ async function onDelete(bucketName?: string) {
     process.stdout.write(`Bucket does not have '${AUTO_DELETE_OBJECTS_TAG}' tag, skipping cleaning.\n`);
     return;
   }
-  await emptyBucket(bucketName);
+  try {
+    await emptyBucket(bucketName);
+  } catch (e) {
+    if (e.code !== 'NoSuchBucket') {
+      throw e;
+    }
+    // Bucket doesn't exist. Ignoring
+  }
 }
 
 /**

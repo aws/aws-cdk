@@ -99,13 +99,17 @@ function calculateTemplateDiff(currentTemplate: { [key: string]: any }, newTempl
   for (const key of unionOf(Object.keys(currentTemplate), Object.keys(newTemplate)).sort()) {
     const oldValue = currentTemplate[key];
     const newValue = newTemplate[key];
-    if (deepEqual(oldValue, newValue)) { continue; }
+    if (deepEqual(oldValue, newValue)) {
+      continue;
+    }
     const handler: DiffHandler = DIFF_HANDLERS[key]
                   || ((_diff, oldV, newV) => unknown[key] = impl.diffUnknown(oldV, newV));
     handler(differences, oldValue, newValue);
 
   }
-  if (Object.keys(unknown).length > 0) { differences.unknown = new types.DifferenceCollection(unknown); }
+  if (Object.keys(unknown).length > 0) {
+    differences.unknown = new types.DifferenceCollection(unknown);
+  }
 
   return new types.TemplateDiff(differences);
 }

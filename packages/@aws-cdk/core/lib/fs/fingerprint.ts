@@ -53,13 +53,15 @@ export function fingerprint(fileOrDirectory: string, options: FingerprintOptions
   return hash.digest('hex');
 
   function _processFileOrDirectory(symbolicPath: string, isRootDir: boolean = false, realPath = symbolicPath) {
-    const relativePath = path.relative(fileOrDirectory, symbolicPath);
-
     if (!isRootDir && ignoreStrategy.ignores(symbolicPath)) {
       return;
     }
 
     const stat = fs.lstatSync(realPath);
+
+    // Use relative path as hash component. Normalize it with forward slashes to ensure
+    // same hash on Windows and Linux.
+    const hashComponent = path.relative(fileOrDirectory, symbolicPath).replace(/\\/g, '/');
 
     if (stat.isSymbolicLink()) {
       const linkTarget = fs.readlinkSync(realPath);
@@ -67,10 +69,10 @@ export function fingerprint(fileOrDirectory: string, options: FingerprintOptions
       if (shouldFollow(follow, rootDirectory, resolvedLinkTarget)) {
         _processFileOrDirectory(symbolicPath, false, resolvedLinkTarget);
       } else {
-        _hashField(hash, `link:${relativePath}`, linkTarget);
+        _hashField(hash, `link:${hashComponent}`, linkTarget);
       }
     } else if (stat.isFile()) {
-      _hashField(hash, `file:${relativePath}`, contentFingerprint(realPath));
+      _hashField(hash, `file:${hashComponent}`, contentFingerprint(realPath));
     } else if (stat.isDirectory()) {
       for (const item of fs.readdirSync(realPath).sort()) {
         _processFileOrDirectory(path.join(symbolicPath, item), false, path.join(realPath, item));

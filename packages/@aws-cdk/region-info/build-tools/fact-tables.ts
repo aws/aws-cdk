@@ -43,7 +43,7 @@ export const AWS_CDK_METADATA = new Set([
 /**
  * The hosted zone Id if using an alias record in Route53.
  *
- * @see https://docs.aws.amazon.com/general/latest/gr/rande.html#s3_website_region_endpoints
+ * @see https://docs.aws.amazon.com/general/latest/gr/s3.html#s3_region
  */
 export const ROUTE_53_BUCKET_WEBSITE_ZONE_IDS: { [region: string]: string } = {
   'af-south-1': 'Z11KHD8FBVPUYU',
@@ -55,6 +55,7 @@ export const ROUTE_53_BUCKET_WEBSITE_ZONE_IDS: { [region: string]: string } = {
   'ap-southeast-1': 'Z3O0J2DXBE1FTB',
   'ap-southeast-2': 'Z1WCIGYICN2BYD',
   'ca-central-1': 'Z1QDHH18159H29',
+  'cn-northwest-1': 'Z282HJ1KT0DH03',
   'eu-central-1': 'Z21DNDUVLTQW6Q',
   'eu-north-1': 'Z3BAZG2TWCNX0D',
   'eu-south-1': 'Z3IXVV8C73GIO3',
@@ -135,6 +136,7 @@ export const DLC_REPOSITORY_ACCOUNTS: { [region: string]: string } = {
 };
 
 // https://docs.aws.amazon.com/app-mesh/latest/userguide/envoy.html
+// https://docs.amazonaws.cn/app-mesh/latest/userguide/envoy.html
 export const APPMESH_ECR_ACCOUNTS: { [region: string]: string } = {
   'af-south-1': '924023996002',
   'ap-east-1': '856666278305',
@@ -145,6 +147,8 @@ export const APPMESH_ECR_ACCOUNTS: { [region: string]: string } = {
   'ap-southeast-1': '840364872350',
   'ap-southeast-2': '840364872350',
   'ca-central-1': '840364872350',
+  'cn-north-1': '919366029133',
+  'cn-northwest-1': '919830735681',
   'eu-central-1': '840364872350',
   'eu-north-1': '840364872350',
   'eu-south-1': '422531588944',

@@ -2,6 +2,72 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.128.0](https://github.com/aws/aws-cdk/compare/v1.127.0...v1.128.0) (2021-10-14)
+
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **assertions:** Starting this release, the `assertions` module will be
+published to Maven with the name 'assertions' instead of
+'cdk-assertions'.
+
+### Features
+
+* **apigatewayv2-integrations:** http api - support for request parameter mapping ([#15630](https://github.com/aws/aws-cdk/issues/15630)) ([0452aed](https://github.com/aws/aws-cdk/commit/0452aed2f00198e05bd65b1d20246f7de0b24e20))
+* **cli:** hotswap deployments for ECS Services ([#16864](https://github.com/aws/aws-cdk/issues/16864)) ([ad7288f](https://github.com/aws/aws-cdk/commit/ad7288f35a17fcfbecd7080e99ece4873fa99ad2))
+* **codepipeline:** add support for string user parameters to the Lambda invoke action ([#16946](https://github.com/aws/aws-cdk/issues/16946)) ([e19ea31](https://github.com/aws/aws-cdk/commit/e19ea31dbf62446edaf5131c75246098ab05da6e)), closes [#16776](https://github.com/aws/aws-cdk/issues/16776)
+* **lambda:** docker platform for architecture ([#16858](https://github.com/aws/aws-cdk/issues/16858)) ([5c258a3](https://github.com/aws/aws-cdk/commit/5c258a30367a4922e404eb26e5aa076720846fbe))
+* **lambda-event-sources:** self managed kafka: support sasl/plain authentication ([#16712](https://github.com/aws/aws-cdk/issues/16712)) ([d4ad93f](https://github.com/aws/aws-cdk/commit/d4ad93f30877b26b851caa81d3a4a1d80df55164))
+* **stepfunctions-tasks:** AWS SDK service integrations ([#16746](https://github.com/aws/aws-cdk/issues/16746)) ([ae840ff](https://github.com/aws/aws-cdk/commit/ae840ff1abb8283a1290dae5859f5729a9cf72b1)), closes [#16780](https://github.com/aws/aws-cdk/issues/16780)
+
+
+### Bug Fixes
+
+* **ecs:** add ASG capacity via Capacity Provider by not specifying machineImageType ([#16361](https://github.com/aws/aws-cdk/issues/16361)) ([93b3fdc](https://github.com/aws/aws-cdk/commit/93b3fdce80f0997d7b809f9ef7e3edd1e75e1f42)), closes [#16360](https://github.com/aws/aws-cdk/issues/16360)
+* **servicecatalog:** Allow users to create multiple product versions from assets.  ([#16914](https://github.com/aws/aws-cdk/issues/16914)) ([958d755](https://github.com/aws/aws-cdk/commit/958d755ff7acaf016e3f8969bf5ab07d4dc2977b))
+* **codebuild:** add build image AMAZON_LINUX_2_ARM_2 ([#16931](https://github.com/aws/aws-cdk/issues/16931)) ([370cb31](https://github.com/aws/aws-cdk/commit/370cb310cce3fccc5381d8d53130e21b266de868)), closes [#16930](https://github.com/aws/aws-cdk/issues/16930)
+* **core:** asset hash is different between linux and windows ([#16945](https://github.com/aws/aws-cdk/issues/16945)) ([59950dd](https://github.com/aws/aws-cdk/commit/59950dd331635fb707aac819529614c0f3e47ee5)), closes [#14555](https://github.com/aws/aws-cdk/issues/14555) [#16928](https://github.com/aws/aws-cdk/issues/16928)
+* **ecs-patterns:** minScalingCapacity cannot be set to 0 ([#16961](https://github.com/aws/aws-cdk/issues/16961)) ([589f284](https://github.com/aws/aws-cdk/commit/589f284acec8530aa9824b75a5daef4632e98985)), closes [#15632](https://github.com/aws/aws-cdk/issues/15632) [#14336](https://github.com/aws/aws-cdk/issues/14336)
+* **ssm:**  StringParameter accepts ParameterType.AWS_EC2_IMAGE_ID as type ([#16884](https://github.com/aws/aws-cdk/issues/16884)) ([2b353be](https://github.com/aws/aws-cdk/commit/2b353be5291cbcdc56a8863038eed4a5f2adc65f)), closes [#16806](https://github.com/aws/aws-cdk/issues/16806)
+* use registry.npmjs.com to fix shinkwrap resolves ([#16607](https://github.com/aws/aws-cdk/issues/16607)) ([8f91531](https://github.com/aws/aws-cdk/commit/8f91531c3c25900316d40d5564450566a03e27ee))
+
+
+### Miscellaneous Chores
+
+* **assertions:** consistent naming in maven ([#16921](https://github.com/aws/aws-cdk/issues/16921)) ([0dcd9ec](https://github.com/aws/aws-cdk/commit/0dcd9eca3a1014c39f92d9e052b67974fc751af0))
+
+## [1.127.0](https://github.com/aws/aws-cdk/compare/v1.126.0...v1.127.0) (2021-10-08)
+
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **assertions:** `Match.absentProperty()` becomes `Match.absent()`, and its type changes from `string` to `Matcher`.
+
+### Features
+
+* **appsync:** Lambda Authorizer for AppSync GraphqlApi ([#16743](https://github.com/aws/aws-cdk/issues/16743)) ([bdbe8b6](https://github.com/aws/aws-cdk/commit/bdbe8b6cf6ab1ae261dddeb39576749e768183b3)), closes [#16380](https://github.com/aws/aws-cdk/issues/16380)
+* **chatbot:** allow adding a sns topic in existing SlackChannel ([#16643](https://github.com/aws/aws-cdk/issues/16643)) ([d29a20b](https://github.com/aws/aws-cdk/commit/d29a20bece48829e5dddbf3fd9045a96f1440c02)), closes [#15588](https://github.com/aws/aws-cdk/issues/15588)
+* **cfnspec:** cloudformation spec v43.0.0 ([#16748](https://github.com/aws/aws-cdk/issues/16748)) ([7c473a6](https://github.com/aws/aws-cdk/commit/7c473a6efa1f7e07799a96f649cb32f66d178e43))
+* **cli:** hotswap deployments for StepFunctions State Machines ([#16489](https://github.com/aws/aws-cdk/issues/16489)) ([c3417f6](https://github.com/aws/aws-cdk/commit/c3417f651e45170efd339960fbb0e4957bcbd3a3))
+* **ec2:** add X2gd instances ([#16810](https://github.com/aws/aws-cdk/issues/16810)) ([6d468d2](https://github.com/aws/aws-cdk/commit/6d468d2f742aad8bc9de6bfe9650c3cdccd30a32)), closes [#16794](https://github.com/aws/aws-cdk/issues/16794)
+* **ecr-assets:** control docker image asset hash ([#16070](https://github.com/aws/aws-cdk/issues/16070)) ([13f67e7](https://github.com/aws/aws-cdk/commit/13f67e7dbcf2ca7a921e7ffb932f260c74005408)), closes [#15936](https://github.com/aws/aws-cdk/issues/15936)
+* **elbv2:** support ALB target for NLB ([#16687](https://github.com/aws/aws-cdk/issues/16687)) ([27cc821](https://github.com/aws/aws-cdk/commit/27cc82186c73db5e68e00448133dd6e79e13d90c)), closes [#16679](https://github.com/aws/aws-cdk/issues/16679)
+
+
+### Bug Fixes
+
+* **assertions:** `hasResourceProperties` is incompatible with `Match.not` and `Match.absent` ([#16678](https://github.com/aws/aws-cdk/issues/16678)) ([6f0a507](https://github.com/aws/aws-cdk/commit/6f0a5076b1e074fd33ed118af8e48b72d7593418)), closes [#16626](https://github.com/aws/aws-cdk/issues/16626)
+* **cloudfront:** EdgeFunctions cannot be created when IDs contain spaces ([#16845](https://github.com/aws/aws-cdk/issues/16845)) ([b0752c5](https://github.com/aws/aws-cdk/commit/b0752c5dcd0f1fa64b39d1b80ab2c0e0a99a72b0)), closes [#16832](https://github.com/aws/aws-cdk/issues/16832)
+* **cloudwatch:** alarms with accountId fails in regions that don't support cross-account alarms ([#16875](https://github.com/aws/aws-cdk/issues/16875)) ([54472a0](https://github.com/aws/aws-cdk/commit/54472a0ccebe208dca3402367626a938731544b0)), closes [#16874](https://github.com/aws/aws-cdk/issues/16874)
+* **iam:** not possible to represent `Principal: *` ([#16843](https://github.com/aws/aws-cdk/issues/16843)) ([6829a2a](https://github.com/aws/aws-cdk/commit/6829a2abe4d020d6a6eae7ff31e23b43d8762920))
+* **lambda:** currentVersion fails when architecture specified ([#16849](https://github.com/aws/aws-cdk/issues/16849)) ([8a0d369](https://github.com/aws/aws-cdk/commit/8a0d3699d7fc3dff70aa6416d30a30b57d29ff7e)), closes [#16814](https://github.com/aws/aws-cdk/issues/16814)
+* **s3:** auto-delete fails when bucket has been deleted manually ([#16645](https://github.com/aws/aws-cdk/issues/16645)) ([7b4fa72](https://github.com/aws/aws-cdk/commit/7b4fa721deac1d263d86c1d552c984fa1486f42e)), closes [#16619](https://github.com/aws/aws-cdk/issues/16619)
+
+
+### Miscellaneous Chores
+
+* **assertions:** replace `absentProperty()` with `absent()` and support it as a `Matcher` type ([#16653](https://github.com/aws/aws-cdk/issues/16653)) ([c980185](https://github.com/aws/aws-cdk/commit/c980185142c58821b7ae7ef0b88c6c98ca8f0246))
+
 ## [1.126.0](https://github.com/aws/aws-cdk/compare/v1.125.0...v1.126.0) (2021-10-05)
 
 

@@ -220,6 +220,10 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    * Specify the version of CloudWatch Lambda insights to use for monitoring
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Lambda-Insights.html
    *
+   * When used with `DockerImageFunction` or `DockerImageCode`, the Docker image should have
+   * the Lambda insights agent installed.
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Lambda-Insights-Getting-Started-docker.html
+   *
    * @default - No Lambda Insights
    */
   readonly insightsVersion?: LambdaInsightsVersion;
@@ -313,10 +317,17 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
   readonly codeSigningConfig?: ICodeSigningConfig;
 
   /**
-   * The system architectures compatible with this lambda function.
+   * DEPRECATED
    * @default [Architecture.X86_64]
+   * @deprecated use `architecture`
    */
   readonly architectures?: Architecture[];
+
+  /**
+   * The system architectures compatible with this lambda function.
+   * @default Architecture.X86_64
+   */
+  readonly architecture?: Architecture;
 }
 
 export interface FunctionProps extends FunctionOptions {
@@ -655,6 +666,14 @@ export class Function extends FunctionBase {
       }];
     }
 
+    if (props.architecture && props.architectures !== undefined) {
+      throw new Error('Either architecture or architectures must be specified but not both.');
+    }
+    if (props.architectures && props.architectures.length > 1) {
+      throw new Error('Only one architecture must be specified.');
+    }
+    const architecture = props.architecture ?? (props.architectures && props.architectures[0]);
+
     const resource: CfnFunction = new CfnFunction(this, 'Resource', {
       functionName: this.physicalName,
       description: props.description,
@@ -687,7 +706,7 @@ export class Function extends FunctionBase {
       kmsKeyArn: props.environmentEncryption?.keyArn,
       fileSystemConfigs,
       codeSigningConfigArn: props.codeSigningConfig?.codeSigningConfigArn,
-      architectures: props.architectures?.map(a => a.name),
+      architectures: architecture ? [architecture.name] : undefined,
     });
 
     resource.node.addDependency(this.role);
@@ -767,9 +786,7 @@ export class Function extends FunctionBase {
     }
 
     // Configure Lambda insights
-    if (props.insightsVersion !== undefined) {
-      this.configureLambdaInsights(props.insightsVersion);
-    }
+    this.configureLambdaInsights(props);
   }
 
   /**
@@ -897,8 +914,15 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
    *
    * https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Lambda-Insights-extension-versions.html
    */
-  private configureLambdaInsights(insightsVersion: LambdaInsightsVersion): void {
-    this.addLayers(LayerVersion.fromLayerVersionArn(this, 'LambdaInsightsLayer', insightsVersion.layerVersionArn));
+  private configureLambdaInsights(props: FunctionProps): void {
+    if (props.insightsVersion === undefined) {
+      return;
+    }
+    if (props.runtime !== Runtime.FROM_IMAGE) {
+      // Layers cannot be added to Lambda container images. The image should have the insights agent installed.
+      // See https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Lambda-Insights-Getting-Started-docker.html
+      this.addLayers(LayerVersion.fromLayerVersionArn(this, 'LambdaInsightsLayer', props.insightsVersion.layerVersionArn));
+    }
     this.role?.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('CloudWatchLambdaInsightsExecutionRolePolicy'));
   }
 

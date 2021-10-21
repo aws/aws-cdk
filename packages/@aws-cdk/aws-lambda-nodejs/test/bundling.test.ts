@@ -1,7 +1,7 @@
 import * as child_process from 'child_process';
 import * as os from 'os';
 import * as path from 'path';
-import { Code, Runtime } from '@aws-cdk/aws-lambda';
+import { Architecture, Code, Runtime } from '@aws-cdk/aws-lambda';
 import { AssetHashType, DockerImage } from '@aws-cdk/core';
 import { version as delayVersion } from 'delay/package.json';
 import { Bundling } from '../lib/bundling';
@@ -9,10 +9,6 @@ import { EsbuildInstallation } from '../lib/esbuild-installation';
 import { LogLevel, SourceMapMode } from '../lib/types';
 import * as util from '../lib/util';
 
-jest.mock('@aws-cdk/aws-lambda');
-
-// Mock DockerImage.fromAsset() to avoid building the image
-let fromBuildMock: jest.SpyInstance<DockerImage>;
 let detectEsbuildMock: jest.SpyInstance<EsbuildInstallation | undefined>;
 beforeEach(() => {
   jest.clearAllMocks();
@@ -20,12 +16,14 @@ beforeEach(() => {
   jest.restoreAllMocks();
   Bundling.clearEsbuildInstallationCache();
 
+  jest.spyOn(Code, 'fromAsset');
+
   detectEsbuildMock = jest.spyOn(EsbuildInstallation, 'detect').mockReturnValue({
     isLocal: true,
     version: '0.8.8',
   });
 
-  fromBuildMock = jest.spyOn(DockerImage, 'fromBuild').mockReturnValue({
+  jest.spyOn(DockerImage, 'fromBuild').mockReturnValue({
     image: 'built-image',
     cp: () => 'dest-path',
     run: () => {},
@@ -44,6 +42,7 @@ test('esbuild bundling in Docker', () => {
     projectRoot,
     depsLockFilePath,
     runtime: Runtime.NODEJS_12_X,
+    architecture: Architecture.X86_64,
     environment: {
       KEY: 'value',
     },
@@ -67,6 +66,13 @@ test('esbuild bundling in Docker', () => {
       workingDirectory: '/',
     }),
   });
+
+  expect(DockerImage.fromBuild).toHaveBeenCalledWith(expect.stringMatching(/aws-lambda-nodejs\/lib$/), expect.objectContaining({
+    buildArgs: expect.objectContaining({
+      IMAGE: expect.stringMatching(/build-nodejs/),
+    }),
+    platform: 'linux/amd64',
+  }));
 });
 
 test('esbuild bundling with handler named index.ts', () => {
@@ -75,6 +81,7 @@ test('esbuild bundling with handler named index.ts', () => {
     projectRoot,
     depsLockFilePath,
     runtime: Runtime.NODEJS_12_X,
+    architecture: Architecture.X86_64,
     forceDockerBundling: true,
   });
 
@@ -96,6 +103,7 @@ test('esbuild bundling with tsx handler', () => {
     projectRoot,
     depsLockFilePath,
     runtime: Runtime.NODEJS_12_X,
+    architecture: Architecture.X86_64,
     forceDockerBundling: true,
   });
 
@@ -121,6 +129,7 @@ test('esbuild with Windows paths', () => {
   Bundling.bundle({
     entry: 'C:\\my-project\\lib\\entry.ts',
     runtime: Runtime.NODEJS_12_X,
+    architecture: Architecture.X86_64,
     projectRoot: 'C:\\my-project',
     depsLockFilePath: 'C:\\my-project\\package-lock.json',
     forceDockerBundling: true,
@@ -144,6 +153,7 @@ test('esbuild bundling with externals and dependencies', () => {
     projectRoot: path.dirname(packageLock),
     depsLockFilePath: packageLock,
     runtime: Runtime.NODEJS_12_X,
+    architecture: Architecture.X86_64,
     externalModules: ['abc'],
     nodeModules: ['delay'],
     forceDockerBundling: true,
@@ -173,6 +183,7 @@ test('esbuild bundling with esbuild options', () => {
     projectRoot,
     depsLockFilePath,
     runtime: Runtime.NODEJS_12_X,
+    architecture: Architecture.X86_64,
     minify: true,
     sourceMap: true,
     target: 'es2020',
@@ -224,6 +235,7 @@ test('esbuild bundling source map default', () => {
     projectRoot,
     depsLockFilePath,
     runtime: Runtime.NODEJS_14_X,
+    architecture: Architecture.X86_64,
     sourceMap: true,
     sourceMapMode: SourceMapMode.DEFAULT,
   });
@@ -249,6 +261,7 @@ test('esbuild bundling source map inline', () => {
     projectRoot,
     depsLockFilePath,
     runtime: Runtime.NODEJS_14_X,
+    architecture: Architecture.X86_64,
     sourceMap: true,
     sourceMapMode: SourceMapMode.INLINE,
   });
@@ -274,6 +287,7 @@ test('esbuild bundling source map enabled when only source map mode exists', () 
     projectRoot,
     depsLockFilePath,
     runtime: Runtime.NODEJS_14_X,
+    architecture: Architecture.X86_64,
     sourceMapMode: SourceMapMode.INLINE,
   });
 
@@ -299,6 +313,7 @@ test('esbuild bundling throws when sourceMapMode used with false sourceMap', () 
       projectRoot,
       depsLockFilePath,
       runtime: Runtime.NODEJS_14_X,
+      architecture: Architecture.X86_64,
       sourceMap: false,
       sourceMapMode: SourceMapMode.INLINE,
     });
@@ -312,6 +327,7 @@ test('Detects yarn.lock', () => {
     projectRoot: path.dirname(yarnLock),
     depsLockFilePath: yarnLock,
     runtime: Runtime.NODEJS_12_X,
+    architecture: Architecture.X86_64,
     nodeModules: ['delay'],
     forceDockerBundling: true,
   });
@@ -334,6 +350,7 @@ test('Detects pnpm-lock.yaml', () => {
     projectRoot,
     depsLockFilePath: pnpmLock,
     runtime: Runtime.NODEJS_12_X,
+    architecture: Architecture.X86_64,
     nodeModules: ['delay'],
     forceDockerBundling: true,
   });
@@ -355,13 +372,14 @@ test('with Docker build args', () => {
     projectRoot,
     depsLockFilePath,
     runtime: Runtime.NODEJS_12_X,
+    architecture: Architecture.X86_64,
     buildArgs: {
       HELLO: 'WORLD',
     },
     forceDockerBundling: true,
   });
 
-  expect(fromBuildMock).toHaveBeenCalledWith(expect.stringMatching(/lib$/), expect.objectContaining({
+  expect(DockerImage.fromBuild).toHaveBeenCalledWith(expect.stringMatching(/lib$/), expect.objectContaining({
     buildArgs: expect.objectContaining({
       HELLO: 'WORLD',
     }),
@@ -383,6 +401,7 @@ test('Local bundling', () => {
     projectRoot,
     depsLockFilePath,
     runtime: Runtime.NODEJS_12_X,
+    architecture: Architecture.X86_64,
     environment: {
       KEY: 'value',
     },
@@ -403,7 +422,7 @@ test('Local bundling', () => {
   );
 
   // Docker image is not built
-  expect(fromBuildMock).not.toHaveBeenCalled();
+  expect(DockerImage.fromBuild).not.toHaveBeenCalled();
 
   spawnSyncMock.mockRestore();
 });
@@ -420,6 +439,7 @@ test('Incorrect esbuild version', () => {
     projectRoot,
     depsLockFilePath,
     runtime: Runtime.NODEJS_12_X,
+    architecture: Architecture.X86_64,
   });
 
   expect(() => bundler.local?.tryBundle('/outdir', {
@@ -433,6 +453,7 @@ test('Custom bundling docker image', () => {
     projectRoot,
     depsLockFilePath,
     runtime: Runtime.NODEJS_12_X,
+    architecture: Architecture.X86_64,
     dockerImage: DockerImage.fromRegistry('my-custom-image'),
     forceDockerBundling: true,
   });
@@ -451,6 +472,7 @@ test('with command hooks', () => {
     projectRoot,
     depsLockFilePath,
     runtime: Runtime.NODEJS_12_X,
+    architecture: Architecture.X86_64,
     commandHooks: {
       beforeBundling(inputDir: string, outputDir: string): string[] {
         return [
@@ -486,6 +508,7 @@ test('esbuild bundling with projectRoot', () => {
     depsLockFilePath,
     tsconfig,
     runtime: Runtime.NODEJS_12_X,
+    architecture: Architecture.X86_64,
   });
 
   // Correctly bundles with esbuild
@@ -508,6 +531,7 @@ test('esbuild bundling with projectRoot and externals and dependencies', () => {
     projectRoot: repoRoot,
     depsLockFilePath: packageLock,
     runtime: Runtime.NODEJS_12_X,
+    architecture: Architecture.X86_64,
     externalModules: ['abc'],
     nodeModules: ['delay'],
     forceDockerBundling: true,

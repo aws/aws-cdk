@@ -21,6 +21,7 @@
   - [Lambda Integration](#lambda)
   - [HTTP Proxy Integration](#http-proxy)
   - [Private Integration](#private-integration)
+  - [Request Parameters](#request-parameters)
 - [WebSocket APIs](#websocket-apis)
   - [Lambda WebSocket Integration](#lambda-websocket-integration)
 
@@ -148,6 +149,40 @@ const httpEndpoint = new HttpApi(stack, 'HttpProxyPrivateApi', {
   }),
 });
 ```
+
+### Request Parameters
+
+Request parameter mapping allows API requests from clients to be modified before they reach backend integrations.
+Parameter mapping can be used to specify modifications to request parameters. See [Transforming API requests and
+responses](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-parameter-mapping.html).
+
+The following example creates a new header - `header2` - as a copy of `header1` and removes `header1`.
+
+```ts
+const httpEndpoint = new HttpApi(stack, 'HttpProxyPrivateApi', {
+  defaultIntegration: new HttpAlbIntegration({
+    // ...
+    requestParameters: new ParameterMapping()
+      .appendHeader('header2', MappingValue.header('header1'))
+      .removeHeader('header1');
+    }),
+  }),
+});
+```
+
+To add mapping keys and values not yet supported by the CDK, use the `custom()` method:
+
+```ts
+const httpEndpoint = new HttpApi(stack, 'HttpProxyPrivateApi', {
+  defaultIntegration: new HttpAlbIntegration({
+    listener,
+    requestParameters: new ParameterMapping()
+      .custom('myKey', 'myValue'),
+    }),
+  }),
+});
+```
+
 
 ## WebSocket APIs
 
