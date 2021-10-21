@@ -337,7 +337,7 @@ test('Detects yarn.lock', () => {
     assetHashType: AssetHashType.OUTPUT,
     bundling: expect.objectContaining({
       command: expect.arrayContaining([
-        expect.stringMatching(/yarn\.lock.+yarn install/),
+        expect.stringMatching(/yarn\.lock.+yarn install --no-immutable/),
       ]),
     }),
   });
