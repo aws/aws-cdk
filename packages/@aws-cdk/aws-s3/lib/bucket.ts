@@ -309,7 +309,9 @@ export interface IBucket extends IResource {
    *
    * @example
    *
-   *    bucket.addEventNotification(EventType.OnObjectCreated, myLambda, 'home/myusername/*')
+   *    declare const myLambda: lambda.Function;
+   *    const bucket = new s3.Bucket(this, 'MyBucket');
+   *    bucket.addEventNotification(s3.EventType.OBJECT_CREATED, new s3n.LambdaDestination(myLambda), {prefix: 'home/myusername/*'})
    *
    * @see
    * https://docs.aws.amazon.com/AmazonS3/latest/dev/NotificationHowTo.html
@@ -319,7 +321,7 @@ export interface IBucket extends IResource {
   /**
    * Subscribes a destination to receive notifications when an object is
    * created in the bucket. This is identical to calling
-   * `onEvent(EventType.ObjectCreated)`.
+   * `onEvent(s3.EventType.OBJECT_CREATED)`.
    *
    * @param dest The notification destination (see onEvent)
    * @param filters Filters (see onEvent)
@@ -329,7 +331,7 @@ export interface IBucket extends IResource {
   /**
    * Subscribes a destination to receive notifications when an object is
    * removed from the bucket. This is identical to calling
-   * `onEvent(EventType.ObjectRemoved)`.
+   * `onEvent(EventType.OBJECT_REMOVED)`.
    *
    * @param dest The notification destination (see onEvent)
    * @param filters Filters (see onEvent)
@@ -785,7 +787,9 @@ export abstract class BucketBase extends Resource implements IBucket {
    *
    * @example
    *
-   *    bucket.addEventNotification(EventType.OnObjectCreated, myLambda, 'home/myusername/*')
+   *    declare const myLambda: lambda.Function;
+   *    const bucket = new s3.Bucket(this, 'MyBucket');
+   *    bucket.addEventNotification(s3.EventType.OBJECT_CREATED, new s3n.LambdaDestination(myLambda), {prefix: 'home/myusername/*'});
    *
    * @see
    * https://docs.aws.amazon.com/AmazonS3/latest/dev/NotificationHowTo.html
@@ -797,7 +801,7 @@ export abstract class BucketBase extends Resource implements IBucket {
   /**
    * Subscribes a destination to receive notifications when an object is
    * created in the bucket. This is identical to calling
-   * `onEvent(EventType.ObjectCreated)`.
+   * `onEvent(EventType.OBJECT_CREATED)`.
    *
    * @param dest The notification destination (see onEvent)
    * @param filters Filters (see onEvent)
@@ -809,7 +813,7 @@ export abstract class BucketBase extends Resource implements IBucket {
   /**
    * Subscribes a destination to receive notifications when an object is
    * removed from the bucket. This is identical to calling
-   * `onEvent(EventType.ObjectRemoved)`.
+   * `onEvent(EventType.OBJECT_REMOVED)`.
    *
    * @param dest The notification destination (see onEvent)
    * @param filters Filters (see onEvent)
@@ -937,7 +941,7 @@ export interface BucketMetrics {
    * Specifies a list of tag filters to use as a metrics configuration filter.
    * The metrics configuration includes only objects that meet the filter's criteria.
    */
-  readonly tagFilters?: {[tag: string]: any};
+  readonly tagFilters?: { [tag: string]: any };
 }
 
 /**
@@ -1231,8 +1235,8 @@ export interface BucketProps {
    *
    * **Warning** if you have deployed a bucket with `autoDeleteObjects: true`,
    * switching this to `false` in a CDK version *before* `1.126.0` will lead to
-   * all objects in the bucket being deleted. Be sure to update to version `1.126.0`
-   * or later before switching this value to `false`.
+   * all objects in the bucket being deleted. Be sure to update your bucket resources
+   * by deploying with CDK version `1.126.0` or later **before** switching this value to `false`.
    *
    * @default false
    */
@@ -1797,7 +1801,7 @@ export class Bucket extends BucketBase {
     }
   }
 
-  private parseTagFilters(tagFilters?: {[tag: string]: any}) {
+  private parseTagFilters(tagFilters?: { [tag: string]: any }) {
     if (!tagFilters || tagFilters.length === 0) {
       return undefined;
     }
