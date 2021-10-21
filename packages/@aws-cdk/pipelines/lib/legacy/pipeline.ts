@@ -21,6 +21,8 @@ import { Construct as CoreConstruct } from '@aws-cdk/core';
 const CODE_BUILD_LENGTH_LIMIT = 100;
 /**
  * Properties for a CdkPipeline
+ *
+ * @deprecated This class is part of the old API. Use the API based on the `CodePipeline` class instead
  */
 export interface CdkPipelineProps {
   /**
@@ -49,7 +51,7 @@ export interface CdkPipelineProps {
    * You can choose to not pass this value, in which case a new CodePipeline is
    * created with default settings.
    *
-   * If you pass an existing CodePipeline, it should should have been created
+   * If you pass an existing CodePipeline, it should have been created
    * with `restartExecutionOnUpdate: true`.
    *
    * [disable-awslint:ref-via-interface]
@@ -206,6 +208,8 @@ export interface CdkPipelineProps {
  * - Asset publishing.
  * - Keeping the pipeline up-to-date as the CDK apps change.
  * - Using stack outputs later on in the pipeline.
+ *
+ * @deprecated This class is part of the old API. Use the API based on the `CodePipeline` class instead
  */
 export class CdkPipeline extends CoreConstruct {
   private readonly _pipeline: codepipeline.Pipeline;
