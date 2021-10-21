@@ -276,6 +276,8 @@ export class EventBus extends EventBusBase {
           );
         }
         return { eventBusName: eventSourceName, eventSourceName };
+      } else {
+        return { eventBusName: props.eventBusName };
       }
     }
     return { eventBusName: defaultEventBusName };
@@ -311,7 +313,7 @@ export class EventBus extends EventBusBase {
     super(scope, id, { physicalName: eventBusName });
 
     const eventBus = new CfnEventBus(this, 'Resource', {
-      name: eventBusName,
+      name: this.physicalName,
       eventSourceName,
     });
 

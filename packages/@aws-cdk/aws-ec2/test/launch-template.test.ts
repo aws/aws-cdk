@@ -509,6 +509,22 @@ describe('LaunchTemplate', () => {
       },
     });
   });
+
+  test('Requires IMDSv2', () => {
+    // WHEN
+    new LaunchTemplate(stack, 'Template', {
+      requireImdsv2: true,
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::EC2::LaunchTemplate', {
+      LaunchTemplateData: {
+        MetadataOptions: {
+          HttpTokens: 'required',
+        },
+      },
+    });
+  });
 });
 
 describe('LaunchTemplate marketOptions', () => {
