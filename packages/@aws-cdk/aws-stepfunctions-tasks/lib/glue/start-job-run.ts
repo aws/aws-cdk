@@ -82,7 +82,7 @@ export class GlueStartJobRun extends sfn.TaskStateBase {
    * @internal
    */
   protected _renderTask(): any {
-    const notificationProperty = this.props.notifyDelayAfter ? { NotifyDelayAfter: this.props.notifyDelayAfter.toMinutes() } : null;
+    const notificationProperty = this.props.notifyDelayAfter ? { NotifyDelayAfter: this.props.notifyDelayAfter.toMinutes() } : undefined;
     return {
       Resource: integrationResourceArn('glue', 'startJobRun', this.integrationPattern),
       Parameters: sfn.FieldUtils.renderObject({
