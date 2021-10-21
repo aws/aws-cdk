@@ -41,7 +41,7 @@ describe('Invoke emr-containers CreateVirtualCluster with ', () => {
       },
       End: true,
       Parameters: {
-        'Name.$': "States.Format('{}/{}', $$.Execution.Name, $$.StateMachine.Name)",
+        'Name.$': "States.Format('{}/{}', $$.Execution.Name, $$.State.Name)",
         'ContainerProvider': {
           Id: clusterId,
           Info: {

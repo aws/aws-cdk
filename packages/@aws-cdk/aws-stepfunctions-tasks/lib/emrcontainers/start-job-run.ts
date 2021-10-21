@@ -147,8 +147,8 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
       throw new Error('Execution role cannot be undefined when the virtual cluster ID is not a concrete value. Provide an execution role with the correct trust policy');
     }
 
-    this.logGroup = this.props.monitoring?.logGroup ?? this.props.monitoring?.logging ? new logs.LogGroup(this, 'Monitoring Log Group') : undefined;
-    this.logBucket = this.props.monitoring?.logBucket ?? this.props.monitoring?.logging ? new s3.Bucket(this, 'Monitoring Bucket') : undefined;
+    this.logGroup = this.props.monitoring?.logGroup ?? (this.props.monitoring?.logging ? new logs.LogGroup(this, 'Monitoring Log Group') : undefined);
+    this.logBucket = this.props.monitoring?.logBucket ?? (this.props.monitoring?.logging ? new s3.Bucket(this, 'Monitoring Bucket') : undefined);
     this.role = this.props.executionRole ?? this.createJobExecutionRole();
     this.grantPrincipal = this.role;
 

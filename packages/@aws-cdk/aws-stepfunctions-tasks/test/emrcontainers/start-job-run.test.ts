@@ -367,22 +367,26 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
               Effect: 'Allow',
               Resource: [
                 {
-                  'Fn::GetAtt': [
-                    'EMRContainersStartJobRunMonitoringBucket8BB3FC54',
-                    'Arn',
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      {
+                        Ref: 'AWS::Partition',
+                      },
+                      ':s3:::providedbucket',
+                    ],
                   ],
                 },
                 {
                   'Fn::Join': [
                     '',
                     [
+                      'arn:',
                       {
-                        'Fn::GetAtt': [
-                          'EMRContainersStartJobRunMonitoringBucket8BB3FC54',
-                          'Arn',
-                        ],
+                        Ref: 'AWS::Partition',
                       },
-                      '/*',
+                      ':s3:::providedbucket/*',
                     ],
                   ],
                 },
@@ -395,9 +399,23 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
               ],
               Effect: 'Allow',
               Resource: {
-                'Fn::GetAtt': [
-                  'EMRContainersStartJobRunMonitoringLogGroup882D450C',
-                  'Arn',
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':logs:',
+                    {
+                      Ref: 'AWS::Region',
+                    },
+                    ':',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    ':log-group:providedloggroup:*',
+                  ],
                 ],
               },
             },
@@ -405,9 +423,23 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
               Action: 'logs:DescribeLogStreams',
               Effect: 'Allow',
               Resource: {
-                'Fn::GetAtt': [
-                  'EMRContainersStartJobRunMonitoringLogGroup882D450C',
-                  'Arn',
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':logs:',
+                    {
+                      Ref: 'AWS::Region',
+                    },
+                    ':',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    ':log-group:providedloggroup:*',
+                  ],
                 ],
               },
             },
@@ -433,23 +465,11 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
           ConfigurationOverrides: {
             MonitoringConfiguration: {
               CloudWatchMonitoringConfiguration: {
-                LogGroupName: {
-                  Ref: 'EMRContainersStartJobRunMonitoringLogGroup882D450C',
-                },
+                LogGroupName: logGroup.logGroupName,
                 LogStreamNamePrefix: prefixName,
               },
               S3MonitoringConfiguration: {
-                LogUri: {
-                  'Fn::Join': [
-                    '',
-                    [
-                      's3://',
-                      {
-                        Ref: 'EMRContainersStartJobRunMonitoringBucket8BB3FC54',
-                      },
-                    ],
-                  ],
-                },
+                LogUri: 's3://' + s3Bucket.bucketName,
               },
             },
           },
