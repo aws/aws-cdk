@@ -150,7 +150,7 @@ export interface OpenIdConnectConfig {
   /**
    * The client identifier of the Relying party at the OpenID identity provider.
    * A regular expression can be specified so AppSync can validate against multiple client identifiers at a time.
-   * @example - 'ABCD|CDEF' where ABCD and CDEF are two different clientId
+   * @example - 'ABCD|CDEF' // where ABCD and CDEF are two different clientId
    * @default - * (All)
    */
   readonly clientId?: string;

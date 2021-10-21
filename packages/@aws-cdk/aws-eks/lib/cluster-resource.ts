@@ -16,6 +16,7 @@ export interface ClusterResourceProps {
   readonly resourcesVpcConfig: CfnCluster.ResourcesVpcConfigProperty;
   readonly roleArn: string;
   readonly encryptionConfig?: Array<CfnCluster.EncryptionConfigProperty>;
+  readonly kubernetesNetworkConfig?: CfnCluster.KubernetesNetworkConfigProperty;
   readonly name: string;
   readonly version?: string;
   readonly endpointPrivateAccess: boolean;
@@ -78,6 +79,7 @@ export class ClusterResource extends CoreConstruct {
           version: props.version,
           roleArn: props.roleArn,
           encryptionConfig: props.encryptionConfig,
+          kubernetesNetworkConfig: props.kubernetesNetworkConfig,
           resourcesVpcConfig: {
             subnetIds: (props.resourcesVpcConfig as CfnCluster.ResourcesVpcConfigProperty).subnetIds,
             securityGroupIds: (props.resourcesVpcConfig as CfnCluster.ResourcesVpcConfigProperty).securityGroupIds,

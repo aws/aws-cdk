@@ -994,6 +994,33 @@ instance.userData.addCommands(
 );
 ```
 
+### Configuring Instance Metadata Service (IMDS)
+
+#### Toggling IMDSv1
+
+You can configure [EC2 Instance Metadata Service](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-metadata.html) options to either
+allow both IMDSv1 and IMDSv2 or enforce IMDSv2 when interacting with the IMDS.
+
+To do this for a single `Instance`, you can use the `requireImdsv2` property.
+The example below demonstrates IMDSv2 being required on a single `Instance`:
+
+```ts
+new ec2.Instance(this, 'Instance', {
+  requireImdsv2: true,
+  // ...
+});
+```
+
+You can also use the either the `InstanceRequireImdsv2Aspect` for EC2 instances or the `LaunchTemplateRequireImdsv2Aspect` for EC2 launch templates
+to apply the operation to multiple instances or launch templates, respectively.
+
+The following example demonstrates how to use the `InstanceRequireImdsv2Aspect` to require IMDSv2 for all EC2 instances in a stack:
+
+```ts
+const aspect = new ec2.InstanceRequireImdsv2Aspect();
+Aspects.of(stack).add(aspect);
+```
+
 ## VPC Flow Logs
 
 VPC Flow Logs is a feature that enables you to capture information about the IP traffic going to and from network interfaces in your VPC. Flow log data can be published to Amazon CloudWatch Logs and Amazon S3. After you've created a flow log, you can retrieve and view its data in the chosen destination. (<https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs.html>).
