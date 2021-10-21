@@ -394,3 +394,34 @@ test('with auto branch deletion', () => {
     EnableBranchAutoDeletion: true,
   });
 });
+
+test('with custom headers', () => {
+  // WHEN
+  new amplify.App(stack, 'App', {
+    sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
+      owner: 'aws',
+      repository: 'aws-cdk',
+      oauthToken: SecretValue.plainText('secret'),
+    }),
+    customHeaders: [
+      {
+        pattern: '*.json',
+        headers: [
+          { key: 'custom-header-name-1', value: 'custom-header-value-1' },
+          { key: 'custom-header-name-2', value: 'custom-header-value-2' },
+        ],
+      },
+      {
+        pattern: '/path/*',
+        headers: [
+          { key: 'custom-header-name-1', value: 'custom-header-value-2' },
+        ],
+      },
+    ],
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Amplify::App', {
+    CustomHeaders: 'customHeaders:\n  - pattern: "*.json"\n    headers:\n      - key: custom-header-name-1\n        value: custom-header-value-1\n      - key: custom-header-name-2\n        value: custom-header-value-2\n  - pattern: /path/*\n    headers:\n      - key: custom-header-name-1\n        value: custom-header-value-2\n',
+  });
+});

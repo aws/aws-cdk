@@ -2,6 +2,7 @@ import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as iam from '@aws-cdk/aws-iam';
 import { IResource, Lazy, Resource, SecretValue } from '@aws-cdk/core';
 import { Construct } from 'constructs';
+import * as YAML from 'yaml';
 import { CfnApp } from './amplify.generated';
 import { BasicAuth } from './basic-auth';
 import { Branch, BranchOptions } from './branch';
@@ -117,6 +118,16 @@ export interface AppProps {
    * @default - no build spec
    */
   readonly buildSpec?: codebuild.BuildSpec;
+
+
+  /**
+   * The custom HTTP headers for an Amplify app.
+   *
+   * @see https://docs.aws.amazon.com/amplify/latest/userguide/custom-headers.html
+   *
+   * @default - no custom headers
+   */
+  readonly customHeaders?: CustomHeader[];
 
   /**
    * Custom rewrite/redirect rules for the application
@@ -238,6 +249,7 @@ export class App extends Resource implements IApp, iam.IGrantable {
       name: props.appName || this.node.id,
       oauthToken: sourceCodeProviderOptions?.oauthToken?.toString(),
       repository: sourceCodeProviderOptions?.repository,
+      customHeaders: props.customHeaders ? renderCustomHeaders(props.customHeaders) : undefined,
     });
 
     this.appId = app.attrAppId;
@@ -485,4 +497,39 @@ export class CustomRule {
     this.status = options.status;
     this.condition = options.condition;
   }
+}
+
+/**
+ * Custom header of an Amplify App.
+ */
+export interface CustomHeader {
+  /**
+   * The pattern used to match files to be applied with this header.
+   */
+  readonly pattern: string;
+
+  /**
+   * The array of custom header options to be applied.
+   */
+  readonly headers: CustomHeaderOptions[];
+}
+
+/**
+ * Options for any custom header for an Amplify App.
+ */
+export interface CustomHeaderOptions {
+  /**
+   * The name of the custom header.
+   */
+  readonly key: string;
+
+  /**
+   * The value of the custom header.
+   */
+  readonly value: string;
+}
+
+function renderCustomHeaders(customHeaders: CustomHeader[]): string {
+  const customHeadersObject = { customHeaders };
+  return YAML.stringify(customHeadersObject);
 }

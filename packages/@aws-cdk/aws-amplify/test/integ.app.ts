@@ -9,6 +9,21 @@ class TestStack extends Stack {
     const amplifyApp = new amplify.App(this, 'App', {
       basicAuth: amplify.BasicAuth.fromGeneratedPassword('aws'),
       autoBranchCreation: {},
+      customHeaders: [
+        {
+          pattern: '*.json',
+          headers: [
+            { key: 'custom-header-name-1', value: 'custom-header-value-1' },
+            { key: 'custom-header-name-2', value: 'custom-header-value-2' },
+          ],
+        },
+        {
+          pattern: '/path/*',
+          headers: [
+            { key: 'custom-header-name-1', value: 'custom-header-value-2' },
+          ],
+        },
+      ],
     });
 
     amplifyApp.addCustomRule({
