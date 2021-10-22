@@ -592,9 +592,14 @@ class SESEmail extends EmailBeta1 {
       throw new Error(`Your stack is in ${region}, which is not a SES Region. Please provide a valid value for 'sesRegion'`);
     }
 
+    let from = this.options.from.email;
+    if (this.options.from.name) {
+      from = `${this.options.from.name} <${this.options.from.email}>`;
+    }
+
     return {
       emailConfig: {
-        from: encodePuny(`${this.options.from.name} <${this.options.from.email}>`),
+        from: encodePuny(from),
         replyToEmailAddress: encodePuny(this.options.replyTo),
         configurationSet: this.options.configurationSetName,
         emailSendingAccount: 'DEVELOPER',

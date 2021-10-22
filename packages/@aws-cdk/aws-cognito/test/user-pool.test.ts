@@ -1450,7 +1450,7 @@ describe('User Pool', () => {
     const stack = new Stack();
 
     // WHEN
-    expect(() =>new UserPool(stack, 'Pool', {
+    expect(() => new UserPool(stack, 'Pool', {
       email: EmailBeta1.withCognito({
         fromEmail: 'mycustomemail@example.com',
         replyTo: 'reply@example.com',
@@ -1464,7 +1464,7 @@ describe('User Pool', () => {
     const stack = new Stack();
 
     // WHEN
-    expect(() =>new UserPool(stack, 'Pool', {
+    expect(() => new UserPool(stack, 'Pool', {
       email: EmailBeta1.withSES({
         from: {
           email: 'mycustomemail@example.com',
@@ -1472,6 +1472,50 @@ describe('User Pool', () => {
         replyTo: 'reply@example.com',
       }),
     })).toThrow(/Your stack region cannot be determined/);
+
+  });
+
+  test('email withSES with no name', () => {
+    // GIVEN
+    const stack = new Stack(undefined, undefined, {
+      env: {
+        region: 'us-east-1',
+        account: '11111111111',
+      },
+    });
+
+    // WHEN
+    new UserPool(stack, 'Pool', {
+      email: EmailBeta1.withSES({
+        from: {
+          email: 'mycustomemail@example.com',
+        },
+        replyTo: 'reply@example.com',
+        configurationSetName: 'default',
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
+      EmailConfiguration: {
+        EmailSendingAccount: 'DEVELOPER',
+        From: 'mycustomemail@example.com',
+        ReplyToEmailAddress: 'reply@example.com',
+        ConfigurationSet: 'default',
+        SourceArn: {
+          'Fn::Join': [
+            '',
+            [
+              'arn:',
+              {
+                Ref: 'AWS::Partition',
+              },
+              ':ses:us-east-1:11111111111:identity/mycustomemail@example.com',
+            ],
+          ],
+        },
+      },
+    });
 
   });
 
