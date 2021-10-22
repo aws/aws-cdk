@@ -59,7 +59,7 @@ import * as logs from '@aws-cdk/aws-logs';
 
 const flinkApp = new flink.Application(this, 'Application', {
   code: flink.ApplicationCode.fromBucket(bucket, 'my-app.jar'),
-  runtime: file.Runtime.FLINK_1_11,
+  runtime: file.Runtime.FLINK_1_13,
   checkpointingEnabled: true, // default is true
   checkpointInterval: cdk.Duration.seconds(30), // default is 1 minute
   minPauseBetweenCheckpoints: cdk.Duration.seconds(10), // default is 5 seconds
