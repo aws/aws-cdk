@@ -304,7 +304,7 @@ export class DataFormat {
   /**
    * DataFormat for TSV (Tab-Separated Values)
    *
-   * @remarks Also works for CloudFront logs when supplied with
+   * This works for CloudFront logs when supplied with
    * additional SerdeInfo parameters (`field.delim` and
    * `serialization.format` set to "\t")
    *
