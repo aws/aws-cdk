@@ -68,7 +68,8 @@ export class VpcNetworkContextProviderPlugin implements ContextProviderPlugin {
       let type = getTag('aws-cdk:subnet-type', subnet.Tags);
       if (type === undefined && subnet.MapPublicIpOnLaunch) { type = SubnetType.Public; }
       if (type === undefined && routeTables.hasRouteToIgw(subnet.SubnetId)) { type = SubnetType.Public; }
-      if (type === undefined) { type = SubnetType.Private; }
+      if (type === undefined && routeTables.hasRouteToNatGateway(subnet.SubnetId)) { type = SubnetType.Private; }
+      if (type === undefined) { type = SubnetType.Isolated; }
 
       if (!isValidSubnetType(type)) {
         // eslint-disable-next-line max-len
@@ -152,6 +153,15 @@ class RouteTables {
   public routeTableIdForSubnetId(subnetId: string | undefined): string | undefined {
     const table = this.tableForSubnet(subnetId);
     return (table && table.RouteTableId) || (this.mainRouteTable && this.mainRouteTable.RouteTableId);
+  }
+
+  /**
+   * Whether the given subnet has a route to a NAT Gateway
+   */
+  public hasRouteToNatGateway(subnetId: string | undefined): boolean {
+    const table = this.tableForSubnet(subnetId);
+
+    return !!table && !!table.Routes && table.Routes.some(route => !!route.NatGatewayId);
   }
 
   /**
