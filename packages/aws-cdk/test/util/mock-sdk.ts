@@ -111,10 +111,7 @@ export class MockSdkProvider extends SdkProvider {
   }
 
   public stubGetEndpointSuffix(stub: () => string) {
-    /*eslint-disable*/
-    //console.log(stub());
-    this.sdk.getEndpointSuffix = jest.fn().mockReturnValue(stub());
-    //console.log(this.sdk.getEndpointSuffix(''));
+    this.sdk.getEndpointSuffix = stub;
   }
 }
 

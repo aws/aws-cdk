@@ -4,16 +4,14 @@ import * as setup from './hotswap-test-setup';
 let cfnMockProvider: setup.CfnMockProvider;
 let mockUpdateLambdaCode: (params: Lambda.Types.UpdateFunctionCodeRequest) => Lambda.Types.FunctionConfiguration;
 let mockUpdateMachineDefinition: (params: StepFunctions.Types.UpdateStateMachineInput) => StepFunctions.Types.UpdateStateMachineOutput;
-let getEndpointSuffix: (() => string);
 
 beforeEach(() => {
   cfnMockProvider = setup.setupHotswapTests();
   mockUpdateLambdaCode = jest.fn();
   mockUpdateMachineDefinition = jest.fn();
-  getEndpointSuffix = jest.fn(() => { return 'amazonaws.com'; });
   cfnMockProvider.setUpdateFunctionCodeMock(mockUpdateLambdaCode);
   cfnMockProvider.setUpdateStateMachineMock(mockUpdateMachineDefinition);
-  cfnMockProvider.stubGetEndpointSuffix(getEndpointSuffix);
+  cfnMockProvider.stubGetEndpointSuffix(() => 'amazonaws.com');
 });
 
 test('returns a deployStackResult with noOp=true when it receives an empty set of changes', async () => {
