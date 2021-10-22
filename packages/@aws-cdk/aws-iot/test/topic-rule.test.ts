@@ -100,6 +100,119 @@ test.each([
   }).toThrow('IoT SQL string cannot be empty');
 });
 
+test('can set actions', () => {
+  const stack = new cdk.Stack();
+
+  const action1: iot.IAction = {
+    bind: () => ({
+      configuration: {
+        http: { url: 'http://example.com' },
+      },
+    }),
+  };
+  const action2: iot.IAction = {
+    bind: () => ({
+      configuration: {
+        lambda: { functionArn: 'test-functionArn' },
+      },
+    }),
+  };
+
+  new iot.TopicRule(stack, 'MyTopicRule', {
+    sql: iot.IotSql.fromStringAsVer20151008("SELECT topic(2) as device_id, temperature FROM 'device/+/data'"),
+    actions: [action1, action2],
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::IoT::TopicRule', {
+    TopicRulePayload: {
+      Actions: [
+        {
+          Http: { Url: 'http://example.com' },
+        },
+        {
+          Lambda: { FunctionArn: 'test-functionArn' },
+        },
+      ],
+      Sql: "SELECT topic(2) as device_id, temperature FROM 'device/+/data'",
+    },
+  });
+});
+
+test('can add an action', () => {
+  const stack = new cdk.Stack();
+
+  const topicRule = new iot.TopicRule(stack, 'MyTopicRule', {
+    sql: iot.IotSql.fromStringAsVer20151008("SELECT topic(2) as device_id, temperature FROM 'device/+/data'"),
+  });
+  topicRule.addAction({
+    bind: () => ({
+      configuration: {
+        http: { url: 'http://example.com' },
+      },
+    }),
+  });
+  topicRule.addAction({
+    bind: () => ({
+      configuration: {
+        lambda: { functionArn: 'test-functionArn' },
+      },
+    }),
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::IoT::TopicRule', {
+    TopicRulePayload: {
+      Actions: [
+        {
+          Http: { Url: 'http://example.com' },
+        },
+        {
+          Lambda: { FunctionArn: 'test-functionArn' },
+        },
+      ],
+      Sql: "SELECT topic(2) as device_id, temperature FROM 'device/+/data'",
+    },
+  });
+});
+
+test('cannot add an action as empty object', () => {
+  const stack = new cdk.Stack();
+  const topicRule = new iot.TopicRule(stack, 'MyTopicRule', {
+    sql: iot.IotSql.fromStringAsVer20151008("SELECT topic(2) as device_id, temperature FROM 'device/+/data'"),
+  });
+
+  const emptyKeysAction: iot.IAction = {
+    bind: () => ({
+      configuration: {},
+    }),
+  };
+
+  expect(() => {
+    topicRule.addAction(emptyKeysAction);
+  }).toThrow('An action property cannot be an empty object.');
+});
+
+test('cannot add an action that have multiple keys', () => {
+  const stack = new cdk.Stack();
+  const topicRule = new iot.TopicRule(stack, 'MyTopicRule', {
+    sql: iot.IotSql.fromStringAsVer20151008("SELECT topic(2) as device_id, temperature FROM 'device/+/data'"),
+  });
+
+  const multipleKeysAction: iot.IAction = {
+    bind: () => ({
+      configuration: {
+        http: { url: 'http://example.com' },
+        lambda: { functionArn: 'test-functionArn' },
+      },
+    }),
+  };
+
+  expect(() => {
+    topicRule.addAction(multipleKeysAction);
+  }).toThrow(
+    'An action property cannot have multiple keys, received: http,lambda',
+  );
+});
+
 test('can import a TopicRule by ARN', () => {
   const stack = new cdk.Stack();
 

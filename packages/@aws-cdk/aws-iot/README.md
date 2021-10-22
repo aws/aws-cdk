@@ -40,16 +40,44 @@ import * as iot from '@aws-cdk/aws-iot';
 
 ## `TopicRule`
 
-The `TopicRule` construct defined Rules that give your devices the ability to
-interact with AWS services.
-
-For example, to define a rule:
+Create a rule that give your devices the ability to interact with AWS services.
+You can create a rule with an action that invoke the Lambda action as following:
 
 ```ts
+import * as iot from '@aws-cdk/aws-iot';
+
 new iot.TopicRule(stack, 'MyTopicRule', {
   topicRuleName: 'MyRuleName', // optional property
   sql: iot.IotSql.fromStringAsVer20160323(
     "SELECT topic(2) as device_id, temperature FROM 'device/+/data'",
   ),
+  actions: [
+    {
+      bind: () => ({
+        configuration: {
+          lambda: { functionArn: 'test-functionArn' },
+        },
+      }),
+    },
+  ],
 });
+```
+
+Or, you can add an action after constructing the `TopicRule` instance as following:
+
+```ts
+import * as iot from '@aws-cdk/aws-iot';
+
+const topicRule = new iot.TopicRule(stack, 'MyTopicRule', {
+  sql: iot.IotSql.fromStringAsVer20160323(
+    "SELECT topic(2) as device_id, temperature FROM 'device/+/data'",
+  ),
+});
+topicRule.addAction({
+  bind: () => ({
+    configuration: {
+      lambda: { functionArn: 'test-functionArn' },
+    },
+  }),
+})
 ```
