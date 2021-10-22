@@ -371,6 +371,246 @@ export interface PasswordPolicy {
 }
 
 /**
+ * Configuration for what from email address and name Cognito will
+ * use to send emails via SES
+ */
+export interface EmailFromBeta1 {
+  /**
+   * The verified Amazon SES email address that Cognito should
+   * use to send emails.
+   */
+  readonly email: string;
+
+  /**
+   * An optional name that should be used as the sender's name
+   * along with the email.
+   *
+   * @default - no name
+   */
+  readonly name?: string;
+}
+
+/**
+ * Valid Amazon SES configuration regions
+ */
+export enum SESRegionBeta1 {
+  /**
+   * Amazon SES region in 'us-east-1'
+   */
+  US_EAST_1 = 'us-east-1',
+
+  /**
+   * Amazon SES region in 'us-west-2'
+   */
+  US_WEST_2 = 'us-west-2',
+
+  /**
+   * Amazon SES region in 'eu-west-1'
+   */
+  EU_WEST_1 = 'eu-west-1',
+}
+
+/**
+ * Configuration for Cognito sending emails via Amazon SES
+ */
+export interface SESOptionsBeta1 {
+  /**
+   * Identifies either the sender's email address or the
+   * sender's name with their email address.
+   *
+   * The email address used must be a verified email address
+   * in Amazon SES and must be configured to allow Cognito to
+   * send emails.
+   *
+   * https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-email.html
+   */
+  readonly from: EmailFromBeta1;
+
+  /**
+   * The destination to which the receiver of the email should reploy to.
+   *
+   * @default - same as the fromEmail
+   */
+  readonly replyTo?: string;
+
+  /**
+   * The name of a configuration set in SES that should
+   * be applied to emails sent via Cognito.
+   *
+   * @default - no configuration set
+   */
+  readonly configurationSetName?: string;
+
+  /**
+   * Required if the UserPool region is different than the SES region.
+   *
+   * If sending emails with a Amazon SES verified email address,
+   * and the region that SES is configured is different than the
+   * region in which the UserPool is deployed, you must specify that
+   * region here.
+   *
+   * @default - The same region as the Cognito UserPool
+   */
+  readonly sesRegion?: SESRegionBeta1;
+}
+
+/**
+ * Configuration settings for Cognito default email
+ */
+export interface CognitoEmailOptionsBeta1 {
+  /**
+   * The verified email address in Amazon SES that
+   * Cognito will use to send emails. You must have already
+   * configured Amazon SES to allow Cognito to send Emails
+   * through this address.
+   *
+   * https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-email.html
+   *
+   * @default - Cognito default email address will be used
+   * 'no-reply@verificationemail.com'
+   */
+  readonly fromEmail?: string;
+
+  /**
+   * The destination to which the receiver of the email should reploy to.
+   *
+   * @default - same as the fromEmail
+   */
+  readonly replyTo?: string;
+
+  /**
+   * Required if the UserPool region is different than the SES region.
+   *
+   * If sending emails with a Amazon SES verified email address,
+   * and the region that SES is configured is different than the
+   * region in which the UserPool is deployed, you must specify that
+   * region here.
+   *
+   * @default - The same region as the Cognito UserPool
+   */
+  readonly sesRegion?: SESRegionBeta1;
+}
+
+/**
+ * Configuration for Cognito email settings
+ */
+export interface EmailConfigurationBeta1 {
+  /**
+   * UserPool CFN configuration for email configuration
+   */
+  readonly emailConfig: CfnUserPool.EmailConfigurationProperty;
+}
+
+/**
+ * Configure how Cognito sends emails
+ */
+export abstract class EmailBeta1 {
+  /**
+   * Send email using Cognito
+   */
+  public static withCognito(options?: CognitoEmailOptionsBeta1): EmailBeta1 {
+    return new CognitoEmail(options);
+  }
+
+  /**
+   * Send email using SES
+   */
+  public static withSES(options: SESOptionsBeta1): EmailBeta1 {
+    return new SESEmail(options);
+  }
+
+  /**
+   * The valid Amazon SES configuration regions
+   */
+  protected readonly regions = ['us-east-1', 'us-west-2', 'eu-west-1'];
+
+  /**
+   * Returns the email configuration for a Cognito UserPool
+   * that controls how Cognito will send emails
+   */
+  public abstract bind(scope: Construct): EmailConfigurationBeta1;
+
+}
+
+class CognitoEmail extends EmailBeta1 {
+  constructor(private readonly options?: CognitoEmailOptionsBeta1) {
+    super();
+  }
+
+  public bind(scope: Construct): EmailConfigurationBeta1 {
+    const region = Stack.of(scope).region;
+
+    // if a custom email is provided that means that cognito is going to use an SES email
+    // and we need to provide the sourceArn which requires a valid region
+    let sourceArn: string | undefined = undefined;
+    if (this.options?.fromEmail) {
+      if (this.options.fromEmail != 'no-reply@verificationemail.com') {
+        if (Token.isUnresolved(region) && !this.options.sesRegion) {
+          throw new Error('Your stack region cannot be determined so "sesRegion" is required in CognitoEmailOptions');
+        }
+        if (this.options?.sesRegion && !this.regions.includes(this.options.sesRegion)) {
+          throw new Error(`sesRegion must be one of 'us-east-1', 'us-west-2', 'eu-west-1'. received ${this.options.sesRegion}`);
+        } else if (!this.options?.sesRegion && !this.regions.includes(region)) {
+          throw new Error(`Your stack is in ${region}, which is not a SES Region. Please provide a valid value for 'sesRegion'`);
+        }
+        sourceArn = Stack.of(scope).formatArn({
+          service: 'ses',
+          resource: 'identity',
+          resourceName: this.options.fromEmail,
+          region: this.options.sesRegion ?? region,
+        });
+      }
+    }
+
+
+    return {
+      emailConfig: {
+        replyToEmailAddress: encodePuny(this.options?.replyTo),
+        emailSendingAccount: 'COGNITO_DEFAULT',
+        sourceArn,
+      },
+    };
+
+  }
+}
+
+class SESEmail extends EmailBeta1 {
+  constructor(private readonly options: SESOptionsBeta1) {
+    super();
+  }
+
+  public bind(scope: Construct): EmailConfigurationBeta1 {
+    const region = Stack.of(scope).region;
+
+    if (Token.isUnresolved(region) && !this.options.sesRegion) {
+      throw new Error('Your stack region cannot be determined so "sesRegion" is required in SESOptions');
+    }
+
+    if (this.options.sesRegion && !this.regions.includes(this.options.sesRegion)) {
+      throw new Error(`sesRegion must be one of 'us-east-1', 'us-west-2', 'eu-west-1'. received ${this.options.sesRegion}`);
+    } else if (!this.options.sesRegion && !this.regions.includes(region)) {
+      throw new Error(`Your stack is in ${region}, which is not a SES Region. Please provide a valid value for 'sesRegion'`);
+    }
+
+    return {
+      emailConfig: {
+        from: encodePuny(`${this.options.from.name} <${this.options.from.email}>`),
+        replyToEmailAddress: encodePuny(this.options.replyTo),
+        configurationSet: this.options.configurationSetName,
+        emailSendingAccount: 'DEVELOPER',
+        sourceArn: Stack.of(scope).formatArn({
+          service: 'ses',
+          resource: 'identity',
+          resourceName: this.options.from.email,
+          region: this.options.sesRegion ?? region,
+        }),
+      },
+    };
+  }
+}
+
+
+/**
  * Email settings for the user pool.
  */
 export interface EmailSettings {
@@ -573,6 +813,12 @@ export interface UserPoolProps {
    * @default - see defaults on each property of EmailSettings.
    */
   readonly emailSettings?: EmailSettings;
+
+  /**
+   * Email settings for a user pool.
+   * @default - cognito will use the default email configuration
+   */
+  readonly email?: EmailBeta1;
 
   /**
    * Lambda functions to use for supported Cognito triggers.
@@ -788,6 +1034,14 @@ export class UserPool extends UserPoolBase {
 
     const passwordPolicy = this.configurePasswordPolicy(props);
 
+    if (props.email && props.emailSettings) {
+      throw new Error('you must either provide "email" or "emailSettings", but not both');
+    }
+    const emailConfiguration = props.email ? props.email.bind(this).emailConfig : undefinedIfNoKeys({
+      from: encodePuny(props.emailSettings?.from),
+      replyToEmailAddress: encodePuny(props.emailSettings?.replyTo),
+    });
+
     const userPool = new CfnUserPool(this, 'Resource', {
       userPoolName: props.userPoolName,
       usernameAttributes: signIn.usernameAttrs,
@@ -805,10 +1059,7 @@ export class UserPool extends UserPoolBase {
       mfaConfiguration: props.mfa,
       enabledMfas: this.mfaConfiguration(props),
       policies: passwordPolicy !== undefined ? { passwordPolicy } : undefined,
-      emailConfiguration: undefinedIfNoKeys({
-        from: encodePuny(props.emailSettings?.from),
-        replyToEmailAddress: encodePuny(props.emailSettings?.replyTo),
-      }),
+      emailConfiguration,
       usernameConfiguration: undefinedIfNoKeys({
         caseSensitive: props.signInCaseSensitive,
       }),

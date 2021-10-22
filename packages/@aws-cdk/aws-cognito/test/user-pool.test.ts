@@ -3,7 +3,7 @@ import { Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { CfnParameter, Duration, Stack, Tags } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { AccountRecovery, Mfa, NumberAttribute, StringAttribute, UserPool, UserPoolIdentityProvider, UserPoolOperation, VerificationEmailStyle } from '../lib';
+import { AccountRecovery, Mfa, NumberAttribute, StringAttribute, UserPool, UserPoolIdentityProvider, UserPoolOperation, VerificationEmailStyle, EmailBeta1, SESRegionBeta1 } from '../lib';
 
 describe('User Pool', () => {
   test('default setup', () => {
@@ -1387,6 +1387,224 @@ describe('User Pool', () => {
         ReplyToEmailAddress: 'ответить@xn--d1acufc.xn--p1ai',
       },
     });
+  });
+
+  test('email withCognito', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new UserPool(stack, 'Pool', {
+      email: EmailBeta1.withCognito(),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
+      EmailConfiguration: {
+        EmailSendingAccount: 'COGNITO_DEFAULT',
+      },
+    });
+  });
+
+  test('email withCognito with custom email', () => {
+    // GIVEN
+    const stack = new Stack(undefined, undefined, {
+      env: {
+        region: 'us-east-1',
+        account: '11111111111',
+      },
+    });
+
+    // WHEN
+    new UserPool(stack, 'Pool', {
+      email: EmailBeta1.withCognito({
+        fromEmail: 'mycustomemail@example.com',
+        replyTo: 'reply@example.com',
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
+      EmailConfiguration: {
+        EmailSendingAccount: 'COGNITO_DEFAULT',
+        ReplyToEmailAddress: 'reply@example.com',
+        SourceArn: {
+          'Fn::Join': [
+            '',
+            [
+              'arn:',
+              {
+                Ref: 'AWS::Partition',
+              },
+              ':ses:us-east-1:11111111111:identity/mycustomemail@example.com',
+            ],
+          ],
+        },
+      },
+    });
+
+  });
+
+  test('email withCognito with custom email and no region', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    expect(() =>new UserPool(stack, 'Pool', {
+      email: EmailBeta1.withCognito({
+        fromEmail: 'mycustomemail@example.com',
+        replyTo: 'reply@example.com',
+      }),
+    })).toThrow(/Your stack region cannot be determined/);
+
+  });
+
+  test('email withSES with custom email and no region', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    expect(() =>new UserPool(stack, 'Pool', {
+      email: EmailBeta1.withSES({
+        from: {
+          email: 'mycustomemail@example.com',
+        },
+        replyTo: 'reply@example.com',
+      }),
+    })).toThrow(/Your stack region cannot be determined/);
+
+  });
+
+  test('email withSES', () => {
+    // GIVEN
+    const stack = new Stack(undefined, undefined, {
+      env: {
+        region: 'us-east-1',
+        account: '11111111111',
+      },
+    });
+
+    // WHEN
+    new UserPool(stack, 'Pool', {
+      email: EmailBeta1.withSES({
+        from: {
+          email: 'mycustomemail@example.com',
+          name: 'My Custom Email',
+        },
+        replyTo: 'reply@example.com',
+        configurationSetName: 'default',
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
+      EmailConfiguration: {
+        EmailSendingAccount: 'DEVELOPER',
+        From: 'My Custom Email <mycustomemail@example.com>',
+        ReplyToEmailAddress: 'reply@example.com',
+        ConfigurationSet: 'default',
+        SourceArn: {
+          'Fn::Join': [
+            '',
+            [
+              'arn:',
+              {
+                Ref: 'AWS::Partition',
+              },
+              ':ses:us-east-1:11111111111:identity/mycustomemail@example.com',
+            ],
+          ],
+        },
+      },
+    });
+
+  });
+
+  test('email withSES with valid region', () => {
+    // GIVEN
+    const stack = new Stack(undefined, undefined, {
+      env: {
+        region: 'us-east-2',
+        account: '11111111111',
+      },
+    });
+
+    // WHEN
+    new UserPool(stack, 'Pool', {
+      email: EmailBeta1.withSES({
+        from: {
+          email: 'mycustomemail@example.com',
+          name: 'My Custom Email',
+        },
+        sesRegion: SESRegionBeta1.US_EAST_1,
+        replyTo: 'reply@example.com',
+        configurationSetName: 'default',
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
+      EmailConfiguration: {
+        EmailSendingAccount: 'DEVELOPER',
+        From: 'My Custom Email <mycustomemail@example.com>',
+        ReplyToEmailAddress: 'reply@example.com',
+        ConfigurationSet: 'default',
+        SourceArn: {
+          'Fn::Join': [
+            '',
+            [
+              'arn:',
+              {
+                Ref: 'AWS::Partition',
+              },
+              ':ses:us-east-1:11111111111:identity/mycustomemail@example.com',
+            ],
+          ],
+        },
+      },
+    });
+
+  });
+  test('email withSES invalid region throws error', () => {
+    // GIVEN
+    const stack = new Stack(undefined, undefined, {
+      env: {
+        region: 'us-east-2',
+        account: '11111111111',
+      },
+    });
+
+    // WHEN
+    expect(() => new UserPool(stack, 'Pool', {
+      email: EmailBeta1.withSES({
+        from: {
+          email: 'mycustomemail@example.com',
+          name: 'My Custom Email',
+        },
+        replyTo: 'reply@example.com',
+        configurationSetName: 'default',
+      }),
+    })).toThrow(/Please provide a valid value/);
+
+  });
+
+  test('email withCognito invalid region throws error', () => {
+    // GIVEN
+    const stack = new Stack(undefined, undefined, {
+      env: {
+        region: 'us-east-2',
+        account: '11111111111',
+      },
+    });
+
+    // WHEN
+    expect(() => new UserPool(stack, 'Pool', {
+      email: EmailBeta1.withCognito({
+        fromEmail: 'mycustomemail@example.com',
+        replyTo: 'reply@example.com',
+      }),
+    })).toThrow(/Please provide a valid value/);
+
   });
 });
 
