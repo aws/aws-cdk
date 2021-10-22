@@ -60,6 +60,24 @@ const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', {
 cluster.addSecurityGroups(securityGroup);
 ```
 
+## Deletion protection
+
+Deletion protection can be enabled on an Amazon DocumentDB cluster to prevent accidental deletion of the cluster:
+
+```ts
+const cluster = new DatabaseCluster(this, 'Database', {
+    masterUser: {
+        username: 'myuser'
+    },
+    instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.LARGE),
+    vpcSubnets: {
+        subnetType: ec2.SubnetType.PUBLIC,
+    },
+    vpc,
+    deletionProtection: true  // Enable deletion protection.
+});
+```
+
 ## Rotating credentials
 
 When the master password is generated and stored in AWS Secrets Manager, it can be rotated automatically:

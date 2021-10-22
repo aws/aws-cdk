@@ -1,7 +1,9 @@
+/* eslint-disable quotes */
 import { Resource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnIntegration } from '../apigatewayv2.generated';
 import { IIntegration } from '../common';
+import { ParameterMapping } from '../parameter-mapping';
 import { IHttpApi } from './api';
 import { HttpMethod, IHttpRoute } from './route';
 
@@ -120,6 +122,20 @@ export interface HttpIntegrationProps {
    * @default - defaults to latest in the case of HttpIntegrationType.LAMBDA_PROXY`, irrelevant otherwise.
    */
   readonly payloadFormatVersion?: PayloadFormatVersion;
+
+  /**
+   * Specifies the TLS configuration for a private integration
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apigatewayv2-integration-tlsconfig.html
+   * @default undefined private integration traffic will use HTTP protocol
+   */
+  readonly secureServerName?: string;
+
+  /**
+   * Specifies how to transform HTTP requests before sending them to the backend
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-parameter-mapping.html
+   * @default undefined requests are sent to the backend unmodified
+   */
+  readonly parameterMapping?: ParameterMapping;
 }
 
 /**
@@ -141,7 +157,15 @@ export class HttpIntegration extends Resource implements IHttpIntegration {
       connectionId: props.connectionId,
       connectionType: props.connectionType,
       payloadFormatVersion: props.payloadFormatVersion?.version,
+      requestParameters: props.parameterMapping?.mappings,
     });
+
+    if (props.secureServerName) {
+      integ.tlsConfig = {
+        serverNameToVerify: props.secureServerName,
+      };
+    }
+
     this.integrationId = integ.ref;
     this.httpApi = props.httpApi;
   }
@@ -215,4 +239,18 @@ export interface HttpRouteIntegrationConfig {
    * @default - undefined
    */
   readonly payloadFormatVersion: PayloadFormatVersion;
+
+  /**
+   * Specifies the server name to verified by HTTPS when calling the backend integration
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apigatewayv2-integration-tlsconfig.html
+   * @default undefined private integration traffic will use HTTP protocol
+   */
+  readonly secureServerName?: string;
+
+  /**
+  * Specifies how to transform HTTP requests before sending them to the backend
+  * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-parameter-mapping.html
+  * @default undefined requests are sent to the backend unmodified
+  */
+  readonly parameterMapping?: ParameterMapping;
 }

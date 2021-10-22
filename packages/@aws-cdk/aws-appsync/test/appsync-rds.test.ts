@@ -1,5 +1,5 @@
-import '@aws-cdk/assert-internal/jest';
 import * as path from 'path';
+import { Template } from '@aws-cdk/assertions';
 import { Vpc, SecurityGroup, SubnetType } from '@aws-cdk/aws-ec2';
 import { DatabaseSecret, DatabaseClusterEngine, AuroraMysqlEngineVersion, ServerlessCluster } from '@aws-cdk/aws-rds';
 import * as cdk from '@aws-cdk/core';
@@ -47,7 +47,7 @@ describe('Rds Data Source configuration', () => {
     api.addRdsDataSource('ds', cluster, secret);
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Version: '2012-10-17',
         Statement: [{
@@ -117,7 +117,7 @@ describe('Rds Data Source configuration', () => {
     api.addRdsDataSource('ds', cluster, secret);
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::DataSource', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
       Type: 'RELATIONAL_DATABASE',
       RelationalDatabaseConfig: {
         RdsHttpEndpointConfig: {
@@ -144,7 +144,7 @@ describe('Rds Data Source configuration', () => {
     api.addRdsDataSource('ds', cluster, secret, testDatabaseName);
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::DataSource', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
       Type: 'RELATIONAL_DATABASE',
       RelationalDatabaseConfig: {
         RdsHttpEndpointConfig: {
@@ -171,7 +171,7 @@ describe('Rds Data Source configuration', () => {
     api.addRdsDataSource('ds', cluster, secret);
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::DataSource', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
       Type: 'RELATIONAL_DATABASE',
       Name: 'ds',
     });
@@ -184,7 +184,7 @@ describe('Rds Data Source configuration', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::DataSource', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
       Type: 'RELATIONAL_DATABASE',
       Name: 'custom',
     });
@@ -198,7 +198,7 @@ describe('Rds Data Source configuration', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::DataSource', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
       Type: 'RELATIONAL_DATABASE',
       Name: 'custom',
       Description: 'custom description',
@@ -249,7 +249,7 @@ describe('adding rds data source from imported api', () => {
     importedApi.addRdsDataSource('ds', cluster, secret);
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::DataSource', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
       Type: 'RELATIONAL_DATABASE',
       ApiId: { 'Fn::GetAtt': ['baseApiCDA4D43A', 'ApiId'] },
     });
@@ -264,7 +264,7 @@ describe('adding rds data source from imported api', () => {
     importedApi.addRdsDataSource('ds', cluster, secret);
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::DataSource', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
       Type: 'RELATIONAL_DATABASE',
       ApiId: { 'Fn::GetAtt': ['baseApiCDA4D43A', 'ApiId'] },
     });

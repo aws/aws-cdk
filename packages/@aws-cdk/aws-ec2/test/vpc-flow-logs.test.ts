@@ -1,23 +1,20 @@
-import { countResources, expect, haveResource } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import { Stack } from '@aws-cdk/core';
-import { nodeunitShim, Test } from 'nodeunit-shim';
 import { FlowLog, FlowLogDestination, FlowLogResourceType, Vpc } from '../lib';
 
-nodeunitShim({
-  'with defaults set, it successfully creates with cloudwatch logs destination'(
-    test: Test,
-  ) {
+describe('vpc flow logs', () => {
+  test('with defaults set, it successfully creates with cloudwatch logs destination', () => {
     const stack = getTestStack();
 
     new FlowLog(stack, 'FlowLogs', {
       resourceType: FlowLogResourceType.fromNetworkInterfaceId('eni-123455'),
     });
 
-    expect(stack).to(
-      haveResource('AWS::EC2::FlowLog', {
+    expect(stack).
+      toHaveResource('AWS::EC2::FlowLog', {
         ResourceType: 'NetworkInterface',
         TrafficType: 'ALL',
         ResourceId: 'eni-123455',
@@ -27,15 +24,15 @@ nodeunitShim({
         LogGroupName: {
           Ref: 'FlowLogsLogGroup9853A85F',
         },
-      }),
-    );
+      },
+      );
 
-    expect(stack).to(countResources('AWS::Logs::LogGroup', 1));
-    expect(stack).to(countResources('AWS::IAM::Role', 1));
-    expect(stack).notTo(haveResource('AWS::S3::Bucket'));
-    test.done();
-  },
-  'with cloudwatch logs as the destination, allows use of existing resources'(test: Test) {
+    expect(stack).toCountResources('AWS::Logs::LogGroup', 1);
+    expect(stack).toCountResources('AWS::IAM::Role', 1);
+    expect(stack).not.toHaveResource('AWS::S3::Bucket');
+
+  });
+  test('with cloudwatch logs as the destination, allows use of existing resources', () => {
     const stack = getTestStack();
 
     new FlowLog(stack, 'FlowLogs', {
@@ -51,16 +48,16 @@ nodeunitShim({
       ),
     });
 
-    expect(stack).to(haveResource('AWS::Logs::LogGroup', {
+    expect(stack).toHaveResource('AWS::Logs::LogGroup', {
       RetentionInDays: 5,
-    }));
-    expect(stack).to(haveResource('AWS::IAM::Role', {
+    });
+    expect(stack).toHaveResource('AWS::IAM::Role', {
       RoleName: 'TestName',
-    }));
-    expect(stack).notTo(haveResource('AWS::S3::Bucket'));
-    test.done();
-  },
-  'with s3 as the destination, allows use of existing resources'(test: Test) {
+    });
+    expect(stack).not.toHaveResource('AWS::S3::Bucket');
+
+  });
+  test('with s3 as the destination, allows use of existing resources', () => {
     const stack = getTestStack();
 
     new FlowLog(stack, 'FlowLogs', {
@@ -72,14 +69,14 @@ nodeunitShim({
       ),
     });
 
-    expect(stack).notTo(haveResource('AWS::Logs::LogGroup'));
-    expect(stack).notTo(haveResource('AWS::IAM::Role'));
-    expect(stack).to(haveResource('AWS::S3::Bucket', {
+    expect(stack).not.toHaveResource('AWS::Logs::LogGroup');
+    expect(stack).not.toHaveResource('AWS::IAM::Role');
+    expect(stack).toHaveResource('AWS::S3::Bucket', {
       BucketName: 'testbucket',
-    }));
-    test.done();
-  },
-  'with s3 as the destination, allows use of key prefix'(test: Test) {
+    });
+
+  });
+  test('with s3 as the destination, allows use of key prefix', () => {
     const stack = getTestStack();
 
     new FlowLog(stack, 'FlowLogs', {
@@ -92,16 +89,14 @@ nodeunitShim({
       ),
     });
 
-    expect(stack).notTo(haveResource('AWS::Logs::LogGroup'));
-    expect(stack).notTo(haveResource('AWS::IAM::Role'));
-    expect(stack).to(haveResource('AWS::S3::Bucket', {
+    expect(stack).not.toHaveResource('AWS::Logs::LogGroup');
+    expect(stack).not.toHaveResource('AWS::IAM::Role');
+    expect(stack).toHaveResource('AWS::S3::Bucket', {
       BucketName: 'testbucket',
-    }));
-    test.done();
-  },
-  'with s3 as the destination and all the defaults set, it successfully creates all the resources'(
-    test: Test,
-  ) {
+    });
+
+  });
+  test('with s3 as the destination and all the defaults set, it successfully creates all the resources', () => {
     const stack = getTestStack();
 
     new FlowLog(stack, 'FlowLogs', {
@@ -109,22 +104,22 @@ nodeunitShim({
       destination: FlowLogDestination.toS3(),
     });
 
-    expect(stack).to(
-      haveResource('AWS::EC2::FlowLog', {
+    expect(stack).
+      toHaveResource('AWS::EC2::FlowLog', {
         ResourceType: 'NetworkInterface',
         TrafficType: 'ALL',
         ResourceId: 'eni-123456',
         LogDestination: {
           'Fn::GetAtt': ['FlowLogsBucket87F67F60', 'Arn'],
         },
-      }),
-    );
-    expect(stack).notTo(haveResource('AWS::Logs::LogGroup'));
-    expect(stack).notTo(haveResource('AWS::IAM::Role'));
-    expect(stack).to(countResources('AWS::S3::Bucket', 1));
-    test.done();
-  },
-  'create with vpc'(test: Test) {
+      },
+      );
+    expect(stack).not.toHaveResource('AWS::Logs::LogGroup');
+    expect(stack).not.toHaveResource('AWS::IAM::Role');
+    expect(stack).toCountResources('AWS::S3::Bucket', 1);
+
+  });
+  test('create with vpc', () => {
     const stack = getTestStack();
 
     new Vpc(stack, 'VPC', {
@@ -133,9 +128,9 @@ nodeunitShim({
       },
     });
 
-    expect(stack).to(haveResource('AWS::EC2::VPC'));
-    expect(stack).to(
-      haveResource('AWS::EC2::FlowLog', {
+    expect(stack).toHaveResource('AWS::EC2::VPC');
+    expect(stack).
+      toHaveResource('AWS::EC2::FlowLog', {
         ResourceType: 'VPC',
         TrafficType: 'ALL',
         ResourceId: {
@@ -147,19 +142,19 @@ nodeunitShim({
         LogGroupName: {
           Ref: 'VPCflowLogsLogGroupE900F980',
         },
-      }),
-    );
-    test.done();
-  },
-  'add to vpc'(test: Test) {
+      },
+      );
+
+  });
+  test('add to vpc', () => {
     const stack = getTestStack();
 
     const vpc = new Vpc(stack, 'VPC');
     vpc.addFlowLog('FlowLogs');
 
-    expect(stack).to(haveResource('AWS::EC2::VPC'));
-    expect(stack).to(
-      haveResource('AWS::EC2::FlowLog', {
+    expect(stack).toHaveResource('AWS::EC2::VPC');
+    expect(stack).
+      toHaveResource('AWS::EC2::FlowLog', {
         ResourceType: 'VPC',
         TrafficType: 'ALL',
         ResourceId: {
@@ -171,10 +166,10 @@ nodeunitShim({
         LogGroupName: {
           Ref: 'VPCFlowLogsLogGroupF48E1B0A',
         },
-      }),
-    );
-    test.done();
-  },
+      },
+      );
+
+  });
 });
 
 function getTestStack(): Stack {

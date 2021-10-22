@@ -1,11 +1,13 @@
 import * as path from 'path';
 import * as cloudfront from '@aws-cdk/aws-cloudfront';
 import * as ec2 from '@aws-cdk/aws-ec2';
+import * as efs from '@aws-cdk/aws-efs';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import { AwsCliLayer } from '@aws-cdk/lambda-layer-awscli';
+import { kebab as toKebabCase } from 'case';
 import { Construct } from 'constructs';
 import { ISource, SourceConfig } from './source';
 
@@ -33,6 +35,29 @@ export interface BucketDeploymentProps {
    * @default "/" (unzip to root of the destination bucket)
    */
   readonly destinationKeyPrefix?: string;
+
+  /**
+   * If this is set, matching files or objects will be excluded from the deployment's sync
+   * command. This can be used to exclude a file from being pruned in the destination bucket.
+   *
+   * If you want to just exclude files from the deployment package (which excludes these files
+   * evaluated when invalidating the asset), you should leverage the `exclude` property of
+   * `AssetOptions` when defining your source.
+   *
+   * @default - No exclude filters are used
+   * @see https://docs.aws.amazon.com/cli/latest/reference/s3/index.html#use-of-exclude-and-include-filters
+   */
+  readonly exclude?: string[]
+
+  /**
+   * If this is set, matching files or objects will be included with the deployment's sync
+   * command. Since all files from the deployment package are included by default, this property
+   * is usually leveraged alongside an `exclude` filter.
+   *
+   * @default - No include filters are used and all files are included with the sync command
+   * @see https://docs.aws.amazon.com/cli/latest/reference/s3/index.html#use-of-exclude-and-include-filters
+   */
+  readonly include?: string[]
 
   /**
    * If this is set to false, files in the destination bucket that
@@ -82,6 +107,14 @@ export interface BucketDeploymentProps {
    * @default 128
    */
   readonly memoryLimit?: number;
+
+  /**
+   *  Mount an EFS file system. Enable this if your assets are large and you encounter disk space errors.
+   *  Enabling this option will require a VPC to be specified.
+   *
+   * @default - No EFS. Lambda has access only to 512MB of disk space.
+   */
+  readonly useEfs?: boolean
 
   /**
    * Execution role associated with this function
@@ -164,9 +197,16 @@ export interface BucketDeploymentProps {
    * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/ServerSideEncryptionCustomerKeys.html#sse-c-how-to-programmatically-intro
    */
   readonly serverSideEncryptionCustomerAlgorithm?: string;
+  /**
+   * System-defined x-amz-acl metadata to be set on all objects in the deployment.
+   * @default - Not set.
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/acl-overview.html#canned-acl
+   */
+  readonly accessControl?: s3.BucketAccessControl;
 
   /**
    * The VPC network to place the deployment lambda handler in.
+   * This is required if `useEfs` is set.
    *
    * @default None
    */
@@ -189,15 +229,59 @@ export class BucketDeployment extends CoreConstruct {
   constructor(scope: Construct, id: string, props: BucketDeploymentProps) {
     super(scope, id);
 
-    if (props.distributionPaths && !props.distribution) {
-      throw new Error('Distribution must be specified if distribution paths are specified');
+    if (props.distributionPaths) {
+      if (!props.distribution) {
+        throw new Error('Distribution must be specified if distribution paths are specified');
+      }
+      if (!cdk.Token.isUnresolved(props.distributionPaths)) {
+        if (!props.distributionPaths.every(distributionPath => cdk.Token.isUnresolved(distributionPath) || distributionPath.startsWith('/'))) {
+          throw new Error('Distribution paths must start with "/"');
+        }
+      }
     }
 
+    if (props.useEfs && !props.vpc) {
+      throw new Error('Vpc must be specified if useEfs is set');
+    }
+
+    const accessPointPath = '/lambda';
+    let accessPoint;
+    if (props.useEfs && props.vpc) {
+      const accessMode = '0777';
+      const fileSystem = this.getOrCreateEfsFileSystem(scope, {
+        vpc: props.vpc,
+        removalPolicy: cdk.RemovalPolicy.DESTROY,
+      });
+      accessPoint = fileSystem.addAccessPoint('AccessPoint', {
+        path: accessPointPath,
+        createAcl: {
+          ownerUid: '1001',
+          ownerGid: '1001',
+          permissions: accessMode,
+        },
+        posixUser: {
+          uid: '1001',
+          gid: '1001',
+        },
+      });
+      accessPoint.node.addDependency(fileSystem.mountTargetsAvailable);
+    }
+
+    // Making VPC dependent on BucketDeployment so that CFN stack deletion is smooth.
+    // Refer comments on https://github.com/aws/aws-cdk/pull/15220 for more details.
+    if (props.vpc) {
+      this.node.addDependency(props.vpc);
+    }
+
+    const mountPath = `/mnt${accessPointPath}`;
     const handler = new lambda.SingletonFunction(this, 'CustomResourceHandler', {
-      uuid: this.renderSingletonUuid(props.memoryLimit),
+      uuid: this.renderSingletonUuid(props.memoryLimit, props.vpc),
       code: lambda.Code.fromAsset(path.join(__dirname, 'lambda')),
       layers: [new AwsCliLayer(this, 'AwsCliLayer')],
-      runtime: lambda.Runtime.PYTHON_3_6,
+      runtime: lambda.Runtime.PYTHON_3_7,
+      environment: props.useEfs ? {
+        MOUNT_PATH: mountPath,
+      } : undefined,
       handler: 'index.handler',
       lambdaPurpose: 'Custom::CDKBucketDeployment',
       timeout: cdk.Duration.minutes(15),
@@ -205,6 +289,10 @@ export class BucketDeployment extends CoreConstruct {
       memorySize: props.memoryLimit,
       vpc: props.vpc,
       vpcSubnets: props.vpcSubnets,
+      filesystem: accessPoint ? lambda.FileSystem.fromEfsAccessPoint(
+        accessPoint,
+        mountPath,
+      ): undefined,
     });
 
     const handlerRole = handler.role;
@@ -231,6 +319,8 @@ export class BucketDeployment extends CoreConstruct {
         DestinationBucketKeyPrefix: props.destinationKeyPrefix,
         RetainOnDelete: props.retainOnDelete,
         Prune: props.prune ?? true,
+        Exclude: props.exclude,
+        Include: props.include,
         UserMetadata: props.metadata ? mapUserMetadata(props.metadata) : undefined,
         SystemMetadata: mapSystemMetadata(props),
         DistributionId: props.distribution?.distributionId,
@@ -240,7 +330,7 @@ export class BucketDeployment extends CoreConstruct {
 
   }
 
-  private renderSingletonUuid(memoryLimit?: number) {
+  private renderSingletonUuid(memoryLimit?: number, vpc?: ec2.IVpc) {
     let uuid = '8693BB64-9689-44B6-9AAF-B0CC9EB8756C';
 
     // if user specify a custom memory limit, define another singleton handler
@@ -254,7 +344,27 @@ export class BucketDeployment extends CoreConstruct {
       uuid += `-${memoryLimit.toString()}MiB`;
     }
 
+    // if user specify to use VPC, define another singleton handler
+    // with this configuration. otherwise, it won't be possible to use multiple
+    // configurations since we have a singleton.
+    // A VPC is a must if EFS storage is used and that's why we are only using VPC in uuid.
+    if (vpc) {
+      uuid += `-${vpc.node.addr}`;
+    }
+
     return uuid;
+  }
+
+  /**
+   * Function to get/create a stack singleton instance of EFS FileSystem per vpc.
+   *
+   * @param scope Construct
+   * @param fileSystemProps EFS FileSystemProps
+   */
+  private getOrCreateEfsFileSystem(scope: Construct, fileSystemProps: efs.FileSystemProps): efs.FileSystem {
+    const stack = cdk.Stack.of(scope);
+    const uuid = `BucketDeploymentEFS-VPC-${fileSystemProps.vpc.node.addr}`;
+    return stack.node.tryFindChild(uuid) as efs.FileSystem ?? new efs.FileSystem(scope, uuid, fileSystemProps);
   }
 }
 
@@ -282,6 +392,7 @@ function mapSystemMetadata(metadata: BucketDeploymentProps) {
   if (metadata.websiteRedirectLocation) { res['website-redirect'] = metadata.websiteRedirectLocation; }
   if (metadata.serverSideEncryptionAwsKmsKeyId) { res['sse-kms-key-id'] = metadata.serverSideEncryptionAwsKmsKeyId; }
   if (metadata.serverSideEncryptionCustomerAlgorithm) { res['sse-c-copy-source'] = metadata.serverSideEncryptionCustomerAlgorithm; }
+  if (metadata.accessControl) { res.acl = toKebabCase(metadata.accessControl.toString()); }
 
   return Object.keys(res).length === 0 ? undefined : res;
 }

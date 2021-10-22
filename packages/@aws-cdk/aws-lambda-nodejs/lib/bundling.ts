@@ -1,10 +1,10 @@
 import * as os from 'os';
 import * as path from 'path';
-import { AssetCode, Code, Runtime } from '@aws-cdk/aws-lambda';
+import { Architecture, AssetCode, Code, Runtime } from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
 import { EsbuildInstallation } from './esbuild-installation';
 import { PackageManager } from './package-manager';
-import { BundlingOptions } from './types';
+import { BundlingOptions, SourceMapMode } from './types';
 import { exec, extractDependencies, findUp } from './util';
 
 const ESBUILD_MAJOR_VERSION = '0';
@@ -27,6 +27,11 @@ export interface BundlingProps extends BundlingOptions {
    * The runtime of the lambda function
    */
   readonly runtime: Runtime;
+
+  /**
+   * The system architecture of the lambda function
+   */
+  readonly architecture: Architecture;
 
   /**
    * Path to project root
@@ -99,6 +104,7 @@ export class Bundling implements cdk.BundlingOptions {
           IMAGE: props.runtime.bundlingImage.image,
           ESBUILD_VERSION: props.esbuildVersion ?? ESBUILD_MAJOR_VERSION,
         },
+        platform: props.architecture.dockerPlatform,
       })
       : cdk.DockerImage.fromRegistry('dummy'); // Do not build if we don't need to
 
@@ -126,6 +132,14 @@ export class Bundling implements cdk.BundlingOptions {
     const loaders = Object.entries(this.props.loader ?? {});
     const defines = Object.entries(this.props.define ?? {});
 
+    if (this.props.sourceMap === false && this.props.sourceMapMode) {
+      throw new Error('sourceMapMode cannot be used when sourceMap is false');
+    }
+    // eslint-disable-next-line no-console
+    const sourceMapEnabled = this.props.sourceMapMode ?? this.props.sourceMap;
+    const sourceMapMode = this.props.sourceMapMode ?? SourceMapMode.DEFAULT;
+    const sourceMapValue = sourceMapMode === SourceMapMode.DEFAULT ? '' : `=${this.props.sourceMapMode}`;
+
     const esbuildCommand: string[] = [
       options.esbuildRunner,
       '--bundle', `"${pathJoin(options.inputDir, this.relativeEntryPath)}"`,
@@ -133,7 +147,7 @@ export class Bundling implements cdk.BundlingOptions {
       '--platform=node',
       `--outfile="${pathJoin(options.outputDir, 'index.js')}"`,
       ...this.props.minify ? ['--minify'] : [],
-      ...this.props.sourceMap ? ['--sourcemap'] : [],
+      ...sourceMapEnabled ? [`--sourcemap${sourceMapValue}`] : [],
       ...this.externals.map(external => `--external:${external}`),
       ...loaders.map(([ext, name]) => `--loader:${ext}=${name}`),
       ...defines.map(([key, value]) => `--define:${key}=${JSON.stringify(value)}`),

@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import { Stack } from '@aws-cdk/core';
 import { SubnetGroup } from '../lib';
@@ -17,7 +17,7 @@ test('creates a subnet group from minimal properties', () => {
     vpc,
   });
 
-  expect(stack).toHaveResource('AWS::Neptune::DBSubnetGroup', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Neptune::DBSubnetGroup', {
     DBSubnetGroupDescription: 'MyGroup',
     SubnetIds: [
       { Ref: 'VPCPrivateSubnet1Subnet8BCA10E0' },
@@ -34,7 +34,7 @@ test('creates a subnet group from all properties', () => {
     vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE },
   });
 
-  expect(stack).toHaveResource('AWS::Neptune::DBSubnetGroup', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Neptune::DBSubnetGroup', {
     DBSubnetGroupDescription: 'My Shared Group',
     DBSubnetGroupName: 'SharedGroup',
     SubnetIds: [
@@ -51,7 +51,7 @@ describe('subnet selection', () => {
       vpc,
     });
 
-    expect(stack).toHaveResource('AWS::Neptune::DBSubnetGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Neptune::DBSubnetGroup', {
       DBSubnetGroupDescription: 'MyGroup',
       SubnetIds: [
         { Ref: 'VPCPrivateSubnet1Subnet8BCA10E0' },
@@ -67,7 +67,7 @@ describe('subnet selection', () => {
       vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
     });
 
-    expect(stack).toHaveResource('AWS::Neptune::DBSubnetGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Neptune::DBSubnetGroup', {
       DBSubnetGroupDescription: 'MyGroup',
       SubnetIds: [
         { Ref: 'VPCPublicSubnet1SubnetB4246D30' },

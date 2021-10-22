@@ -410,6 +410,7 @@ export interface DomainProps {
   /**
    * Additional options to specify for the Amazon ES domain.
    *
+   * @see https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/es-createupdatedomains.html#es-createdomain-configure-advanced-options
    * @default - no advanced options are specified
    */
   readonly advancedOptions?: { [key: string]: (string) };
@@ -1415,12 +1416,8 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
     // Validate feature support for the given Elasticsearch version, per
     // https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/aes-features-by-version.html
     if (elasticsearchVersionNum < 5.1) {
-      if (
-        props.logging?.slowIndexLogEnabled
-        || props.logging?.appLogEnabled
-        || props.logging?.slowSearchLogEnabled
-      ) {
-        throw new Error('Error and slow logs publishing requires Elasticsearch version 5.1 or later.');
+      if (props.logging?.appLogEnabled) {
+        throw new Error('Error logs publishing requires Elasticsearch version 5.1 or later.');
       }
       if (props.encryptionAtRest?.enabled) {
         throw new Error('Encryption of data at rest requires Elasticsearch version 5.1 or later.');
@@ -1543,9 +1540,9 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
 
     if (props.logging?.auditLogEnabled) {
       this.auditLogGroup = props.logging.auditLogGroup ??
-          new logs.LogGroup(this, 'AuditLogs', {
-            retention: logs.RetentionDays.ONE_MONTH,
-          });
+        new logs.LogGroup(this, 'AuditLogs', {
+          retention: logs.RetentionDays.ONE_MONTH,
+        });
 
       logGroups.push(this.auditLogGroup);
     };
@@ -1682,6 +1679,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
           },
         }
         : undefined,
+      advancedOptions: props.advancedOptions,
     });
     this.domain.applyRemovalPolicy(props.removalPolicy);
 
@@ -1694,7 +1692,21 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
 
     if (logGroupResourcePolicy) { this.domain.node.addDependency(logGroupResourcePolicy); }
 
-    if (props.domainName) { this.node.addMetadata('aws:cdk:hasPhysicalName', props.domainName); }
+    if (props.domainName) {
+      if (!cdk.Token.isUnresolved(props.domainName)) {
+        // https://docs.aws.amazon.com/opensearch-service/latest/developerguide/configuration-api.html#configuration-api-datatypes-domainname
+        if (!props.domainName.match(/^[a-z0-9\-]+$/)) {
+          throw new Error(`Invalid domainName '${props.domainName}'. Valid characters are a-z (lowercase only), 0-9, and – (hyphen).`);
+        }
+        if (props.domainName.length < 3 || props.domainName.length > 28) {
+          throw new Error(`Invalid domainName '${props.domainName}'. It must be between 3 and 28 characters`);
+        }
+        if (props.domainName[0] < 'a' || props.domainName[0] > 'z') {
+          throw new Error(`Invalid domainName '${props.domainName}'. It must start with a lowercase letter`);
+        }
+      }
+      this.node.addMetadata('aws:cdk:hasPhysicalName', props.domainName);
+    }
 
     this.domainName = this.getResourceNameAttribute(this.domain.ref);
 

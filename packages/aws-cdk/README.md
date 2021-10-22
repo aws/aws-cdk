@@ -140,7 +140,7 @@ $ cdk diff --app='node bin/main.js' MyStackName --template=path/to/template.yml
 
 ### `cdk deploy`
 
-Deploys a stack of your CDK app to it's environment. During the deployment, the toolkit will output progress
+Deploys a stack of your CDK app to its environment. During the deployment, the toolkit will output progress
 indications, similar to what can be observed in the AWS CloudFormation Console. If the environment was never
 bootstrapped (using `cdk bootstrap`), only stacks that are not using assets and synthesize to a template that is under
 51,200 bytes will successfully deploy.
@@ -153,6 +153,24 @@ Before creating a change set, `cdk deploy` will compare the template and tags of
 currently deployed stack to the template and tags that are about to be deployed and
 will skip deployment if they are identical. Use `--force` to override this behavior
 and always deploy the stack.
+
+#### Disabling Rollback
+
+If a resource fails to be created or updated, the deployment will *roll back* before the CLI returns. All changes made
+up to that point will be undone (resources that were created will be deleted, updates that were made will be changed
+back) in order to leave the stack in a consistent state at the end of the operation. If you are using the CDK CLI
+to iterate on a development stack in your personal account, you might not require CloudFormation to leave your
+stack in a consistent state, but instead would prefer to update your CDK application and try again.
+
+To disable the rollback feature, specify `--no-rollback` (`-R` for short):
+
+```console
+$ cdk deploy --no-rollback
+$ cdk deploy -R
+```
+
+NOTE: you cannot use `--no-rollback` for any updates that would cause a resource replacement, only for updates
+and creations of new resources.
 
 #### Deploying multiple stacks
 
@@ -315,6 +333,44 @@ execute.
 ```console
 $ cdk deploy --no-execute --change-set-name MyChangeSetName
 ```
+
+#### Hotswap deployments for faster development
+
+You can pass the `--hotswap` flag to the `deploy` command:
+
+```console
+$ cdk deploy --hotswap [StackNames]
+```
+
+This will attempt to perform a faster, short-circuit deployment if possible
+(for example, if you only changed the code of a Lambda function in your CDK app,
+but nothing else in your CDK code),
+skipping CloudFormation, and updating the affected resources directly.
+If the tool detects that the change does not support hotswapping,
+it will fall back and perform a full CloudFormation deployment,
+exactly like `cdk deploy` does without the `--hotswap` flag.
+
+Passing this option to `cdk deploy` will make it use your current AWS credentials to perform the API calls -
+it will not assume the Roles from your bootstrap stack,
+even if the `@aws-cdk/core:newStyleStackSynthesis` feature flag is set to `true`
+(as those Roles do not have the necessary permissions to update AWS resources directly, without using CloudFormation).
+For that reason, make sure that your credentials are for the same AWS account that the Stack(s)
+you are performing the hotswap deployment for belong to,
+and that you have the necessary IAM permissions to update the resources that are being deployed.
+
+Hotswapping is currently supported for the following changes
+(additional changes will be supported in the future):
+
+- Code asset changes of AWS Lambda functions.
+- Definition changes of AWS Step Functions State Machines.
+- Container asset changes of AWS ECS Services.
+
+**⚠ Note #1**: This command deliberately introduces drift in CloudFormation stacks in order to speed up deployments.
+For this reason, only use it for development purposes.
+**Never use this flag for your production deployments**!
+
+**⚠ Note #2**: This command is considered experimental,
+and might have breaking changes in the future.
 
 ### `cdk destroy`
 

@@ -7,6 +7,7 @@ import * as sns from '@aws-cdk/aws-sns';
 
 import {
   Annotations,
+  Aspects,
   Aws,
   CfnAutoScalingRollingUpdate, CfnCreationPolicy, CfnUpdatePolicy,
   Duration, Fn, IResource, Lazy, PhysicalName, Resource, Stack, Tags,
@@ -14,6 +15,7 @@ import {
   Tokenization, withResolved,
 } from '@aws-cdk/core';
 import { Construct } from 'constructs';
+import { AutoScalingGroupRequireImdsv2Aspect } from './aspects';
 import { CfnAutoScalingGroup, CfnAutoScalingGroupProps, CfnLaunchConfiguration } from './autoscaling.generated';
 import { BasicLifecycleHookProps, LifecycleHook } from './lifecycle-hook';
 import { BasicScheduledActionProps, ScheduledAction } from './scheduled-action';
@@ -384,6 +386,13 @@ export interface AutoScalingGroupProps extends CommonAutoScalingGroupProps {
    * @default - default options
    */
   readonly initOptions?: ApplyCloudFormationInitOptions;
+
+  /**
+   * Whether IMDSv2 should be required on launched instances.
+   *
+   * @default - false
+   */
+  readonly requireImdsv2?: boolean;
 }
 
 /**
@@ -1065,6 +1074,10 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     }
 
     this.spotPrice = props.spotPrice;
+
+    if (props.requireImdsv2) {
+      Aspects.of(this).add(new AutoScalingGroupRequireImdsv2Aspect());
+    }
   }
 
   /**
@@ -1145,6 +1158,8 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       embedFingerprint: options.embedFingerprint,
       printLog: options.printLog,
       ignoreFailures: options.ignoreFailures,
+      includeRole: options.includeRole,
+      includeUrl: options.includeUrl,
     });
   }
 
@@ -1461,6 +1476,12 @@ export class ScalingEvents {
   public static readonly LAUNCH_EVENTS = new ScalingEvents(ScalingEvent.INSTANCE_LAUNCH, ScalingEvent.INSTANCE_LAUNCH_ERROR);
 
   /**
+   * Fleet termination launch events
+   */
+  public static readonly TERMINATION_EVENTS = new ScalingEvents(ScalingEvent.INSTANCE_TERMINATE, ScalingEvent.INSTANCE_TERMINATE_ERROR);
+
+
+  /**
    * @internal
    */
   public readonly _types: ScalingEvent[];
@@ -1774,4 +1795,23 @@ export interface ApplyCloudFormationInitOptions {
    * @default false
    */
   readonly ignoreFailures?: boolean;
+
+  /**
+   * Include --url argument when running cfn-init and cfn-signal commands
+   *
+   * This will be the cloudformation endpoint in the deployed region
+   * e.g. https://cloudformation.us-east-1.amazonaws.com
+   *
+   * @default false
+   */
+  readonly includeUrl?: boolean;
+
+  /**
+  * Include --role argument when running cfn-init and cfn-signal commands
+  *
+  * This will be the IAM instance profile attached to the EC2 instance
+  *
+  * @default false
+  */
+  readonly includeRole?: boolean;
 }

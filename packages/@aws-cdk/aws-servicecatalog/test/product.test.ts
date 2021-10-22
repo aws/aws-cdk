@@ -1,5 +1,5 @@
-import '@aws-cdk/assert-internal/jest';
 import * as path from 'path';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as cdk from '@aws-cdk/core';
 import * as servicecatalog from '../lib';
 
@@ -24,7 +24,7 @@ describe('Product', () => {
       ],
     });
 
-    expect(stack).toHaveResourceLike('AWS::ServiceCatalog::CloudFormationProduct', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ServiceCatalog::CloudFormationProduct', {
       Name: 'testProduct',
       Owner: 'testOwner',
       ProvisioningArtifactParameters: [
@@ -50,7 +50,7 @@ describe('Product', () => {
       ],
     });
 
-    expect(stack).toHaveResourceLike('AWS::ServiceCatalog::CloudFormationProduct', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ServiceCatalog::CloudFormationProduct', {
       Name: 'testProduct',
       Owner: 'testOwner',
       ProvisioningArtifactParameters: [
@@ -70,7 +70,7 @@ describe('Product', () => {
       owner: 'testOwner',
       productVersions: [
         {
-          cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromAsset(path.join(__dirname, 'development-environment.template.json')),
+          cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromAsset(path.join(__dirname, 'product1.template.json')),
         },
       ],
     });
@@ -78,6 +78,27 @@ describe('Product', () => {
     const assembly = app.synth();
     const synthesized = assembly.stacks[0];
     expect(synthesized.assets.length).toEqual(1);
+  }),
+
+  test('multiple product versions from Assets', () => {
+    new servicecatalog.CloudFormationProduct(stack, 'MyProduct', {
+      productName: 'testProduct',
+      owner: 'testOwner',
+      productVersions: [
+        {
+          productVersionName: 'v1',
+          cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromAsset(path.join(__dirname, 'product1.template.json')),
+        },
+        {
+          productVersionName: 'v2',
+          cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromAsset(path.join(__dirname, 'product2.template.json')),
+        },
+      ],
+    });
+
+    const assembly = app.synth();
+    const synthesized = assembly.stacks[0];
+    expect(synthesized.assets.length).toEqual(2);
   }),
 
   test('product test from multiple sources', () => {
@@ -95,21 +116,21 @@ describe('Product', () => {
         },
         {
           productVersionName: 'v3',
-          cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromAsset(path.join(__dirname, 'development-environment.template.json')),
+          cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromAsset(path.join(__dirname, 'product1.template.json')),
         },
       ],
     });
 
-    expect(stack).toHaveResourceLike('AWS::ServiceCatalog::CloudFormationProduct', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ServiceCatalog::CloudFormationProduct', {
       Name: 'testProduct',
       Owner: 'testOwner',
-      ProvisioningArtifactParameters: [
-        {
+      ProvisioningArtifactParameters: Match.arrayWith([
+        Match.objectLike({
           'Info': {
             'LoadTemplateFromURL': 'https://awsdocs.s3.amazonaws.com/servicecatalog/development-environment.template',
           },
-        },
-      ],
+        }),
+      ]),
     });
   }),
 

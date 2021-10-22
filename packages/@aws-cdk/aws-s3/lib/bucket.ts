@@ -5,7 +5,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import {
   Fn, IResource, Lazy, RemovalPolicy, Resource, ResourceProps, Stack, Token,
-  CustomResource, CustomResourceProvider, CustomResourceProviderRuntime, FeatureFlags,
+  CustomResource, CustomResourceProvider, CustomResourceProviderRuntime, FeatureFlags, Tags,
 } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
@@ -18,6 +18,7 @@ import { CfnBucket } from './s3.generated';
 import { parseBucketArn, parseBucketName } from './util';
 
 const AUTO_DELETE_OBJECTS_RESOURCE_TYPE = 'Custom::S3AutoDeleteObjects';
+const AUTO_DELETE_OBJECTS_TAG = 'aws-cdk:auto-delete-objects';
 
 export interface IBucket extends IResource {
   /**
@@ -82,9 +83,23 @@ export interface IBucket extends IResource {
 
   /**
    * Adds a statement to the resource policy for a principal (i.e.
-   * account/role/service) to perform actions on this bucket and/or it's
+   * account/role/service) to perform actions on this bucket and/or its
    * contents. Use `bucketArn` and `arnForObjects(keys)` to obtain ARNs for
    * this bucket or objects.
+   *
+   * Note that the policy statement may or may not be added to the policy.
+   * For example, when an `IBucket` is created from an existing bucket,
+   * it's not possible to tell whether the bucket already has a policy
+   * attached, let alone to re-use that policy to add more statements to it.
+   * So it's safest to do nothing in these cases.
+   *
+   * @param permission the policy statement to be added to the bucket's
+   * policy.
+   * @returns metadata about the execution of this method. If the policy
+   * was not added, the value of `statementAdded` will be `false`. You
+   * should always check this value to make sure that the operation was
+   * actually carried out. Otherwise, synthesis and deploy will terminate
+   * silently, which may be confusing.
    */
   addToResourcePolicy(permission: iam.PolicyStatement): iam.AddToResourcePolicyResult;
 
@@ -294,7 +309,9 @@ export interface IBucket extends IResource {
    *
    * @example
    *
-   *    bucket.addEventNotification(EventType.OnObjectCreated, myLambda, 'home/myusername/*')
+   *    declare const myLambda: lambda.Function;
+   *    const bucket = new s3.Bucket(this, 'MyBucket');
+   *    bucket.addEventNotification(s3.EventType.OBJECT_CREATED, new s3n.LambdaDestination(myLambda), {prefix: 'home/myusername/*'})
    *
    * @see
    * https://docs.aws.amazon.com/AmazonS3/latest/dev/NotificationHowTo.html
@@ -304,7 +321,7 @@ export interface IBucket extends IResource {
   /**
    * Subscribes a destination to receive notifications when an object is
    * created in the bucket. This is identical to calling
-   * `onEvent(EventType.ObjectCreated)`.
+   * `onEvent(s3.EventType.OBJECT_CREATED)`.
    *
    * @param dest The notification destination (see onEvent)
    * @param filters Filters (see onEvent)
@@ -314,7 +331,7 @@ export interface IBucket extends IResource {
   /**
    * Subscribes a destination to receive notifications when an object is
    * removed from the bucket. This is identical to calling
-   * `onEvent(EventType.ObjectRemoved)`.
+   * `onEvent(EventType.OBJECT_REMOVED)`.
    *
    * @param dest The notification destination (see onEvent)
    * @param filters Filters (see onEvent)
@@ -446,7 +463,7 @@ export abstract class BucketBase extends Resource implements IBucket {
    * Indicates if a bucket resource policy should automatically created upon
    * the first call to `addToResourcePolicy`.
    */
-  protected abstract autoCreatePolicy = false;
+  protected abstract autoCreatePolicy: boolean;
 
   /**
    * Whether to disallow public access
@@ -546,9 +563,23 @@ export abstract class BucketBase extends Resource implements IBucket {
 
   /**
    * Adds a statement to the resource policy for a principal (i.e.
-   * account/role/service) to perform actions on this bucket and/or it's
+   * account/role/service) to perform actions on this bucket and/or its
    * contents. Use `bucketArn` and `arnForObjects(keys)` to obtain ARNs for
    * this bucket or objects.
+   *
+   * Note that the policy statement may or may not be added to the policy.
+   * For example, when an `IBucket` is created from an existing bucket,
+   * it's not possible to tell whether the bucket already has a policy
+   * attached, let alone to re-use that policy to add more statements to it.
+   * So it's safest to do nothing in these cases.
+   *
+   * @param permission the policy statement to be added to the bucket's
+   * policy.
+   * @returns metadata about the execution of this method. If the policy
+   * was not added, the value of `statementAdded` will be `false`. You
+   * should always check this value to make sure that the operation was
+   * actually carried out. Otherwise, synthesis and deploy will terminate
+   * silently, which may be confusing.
    */
   public addToResourcePolicy(permission: iam.PolicyStatement): iam.AddToResourcePolicyResult {
     if (!this.policy && this.autoCreatePolicy) {
@@ -720,6 +751,9 @@ export abstract class BucketBase extends Resource implements IBucket {
    *     const grant = bucket.grantPublicAccess();
    *     grant.resourceStatement!.addCondition(‘IpAddress’, { “aws:SourceIp”: “54.240.143.0/24” });
    *
+   * Note that if this `IBucket` refers to an existing bucket, possibly not
+   * managed by CloudFormation, this method will have no effect, since it's
+   * impossible to modify the policy of an existing bucket.
    *
    * @param keyPrefix the prefix of S3 object keys (e.g. `home/*`). Default is "*".
    * @param allowedActions the set of S3 actions to allow. Default is "s3:GetObject".
@@ -753,7 +787,9 @@ export abstract class BucketBase extends Resource implements IBucket {
    *
    * @example
    *
-   *    bucket.addEventNotification(EventType.OnObjectCreated, myLambda, 'home/myusername/*')
+   *    declare const myLambda: lambda.Function;
+   *    const bucket = new s3.Bucket(this, 'MyBucket');
+   *    bucket.addEventNotification(s3.EventType.OBJECT_CREATED, new s3n.LambdaDestination(myLambda), {prefix: 'home/myusername/*'});
    *
    * @see
    * https://docs.aws.amazon.com/AmazonS3/latest/dev/NotificationHowTo.html
@@ -765,7 +801,7 @@ export abstract class BucketBase extends Resource implements IBucket {
   /**
    * Subscribes a destination to receive notifications when an object is
    * created in the bucket. This is identical to calling
-   * `onEvent(EventType.ObjectCreated)`.
+   * `onEvent(EventType.OBJECT_CREATED)`.
    *
    * @param dest The notification destination (see onEvent)
    * @param filters Filters (see onEvent)
@@ -777,7 +813,7 @@ export abstract class BucketBase extends Resource implements IBucket {
   /**
    * Subscribes a destination to receive notifications when an object is
    * removed from the bucket. This is identical to calling
-   * `onEvent(EventType.ObjectRemoved)`.
+   * `onEvent(EventType.OBJECT_REMOVED)`.
    *
    * @param dest The notification destination (see onEvent)
    * @param filters Filters (see onEvent)
@@ -905,7 +941,7 @@ export interface BucketMetrics {
    * Specifies a list of tag filters to use as a metrics configuration filter.
    * The metrics configuration includes only objects that meet the filter's criteria.
    */
-  readonly tagFilters?: {[tag: string]: any};
+  readonly tagFilters?: { [tag: string]: any };
 }
 
 /**
@@ -1197,6 +1233,11 @@ export interface BucketProps {
    *
    * Requires the `removalPolicy` to be set to `RemovalPolicy.DESTROY`.
    *
+   * **Warning** if you have deployed a bucket with `autoDeleteObjects: true`,
+   * switching this to `false` in a CDK version *before* `1.126.0` will lead to
+   * all objects in the bucket being deleted. Be sure to update your bucket resources
+   * by deploying with CDK version `1.126.0` or later **before** switching this value to `false`.
+   *
    * @default false
    */
   readonly autoDeleteObjects?: boolean;
@@ -1412,6 +1453,7 @@ export class Bucket extends BucketBase {
   private readonly metrics: BucketMetrics[] = [];
   private readonly cors: CorsRule[] = [];
   private readonly inventories: Inventory[] = [];
+  private readonly _resource: CfnBucket;
 
   constructor(scope: Construct, id: string, props: BucketProps = {}) {
     super(scope, id, {
@@ -1439,6 +1481,7 @@ export class Bucket extends BucketBase {
       inventoryConfigurations: Lazy.any({ produce: () => this.parseInventoryConfiguration() }),
       ownershipControls: this.parseOwnershipControls(props),
     });
+    this._resource = resource;
 
     resource.applyRemovalPolicy(props.removalPolicy);
 
@@ -1758,7 +1801,7 @@ export class Bucket extends BucketBase {
     }
   }
 
-  private parseTagFilters(tagFilters?: {[tag: string]: any}) {
+  private parseTagFilters(tagFilters?: { [tag: string]: any }) {
     if (!tagFilters || tagFilters.length === 0) {
       return undefined;
     }
@@ -1912,6 +1955,13 @@ export class Bucket extends BucketBase {
     if (this.policy) {
       customResource.node.addDependency(this.policy);
     }
+
+    // We also tag the bucket to record the fact that we want it autodeleted.
+    // The custom resource will check this tag before actually doing the delete.
+    // Because tagging and untagging will ALWAYS happen before the CR is deleted,
+    // we can set `autoDeleteObjects: false` without the removal of the CR emptying
+    // the bucket as a side effect.
+    Tags.of(this._resource).add(AUTO_DELETE_OBJECTS_TAG, 'true');
   }
 }
 

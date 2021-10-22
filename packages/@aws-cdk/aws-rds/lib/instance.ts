@@ -5,7 +5,7 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
-import { ArnComponents, Duration, FeatureFlags, IResource, Lazy, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
+import { ArnComponents, Duration, FeatureFlags, IResource, Lazy, RemovalPolicy, Resource, Stack, Token, Tokenization } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { DatabaseSecret } from './database-secret';
@@ -124,7 +124,7 @@ export abstract class DatabaseInstanceBase extends Resource implements IDatabase
       });
       public readonly instanceIdentifier = attrs.instanceIdentifier;
       public readonly dbInstanceEndpointAddress = attrs.instanceEndpointAddress;
-      public readonly dbInstanceEndpointPort = attrs.port.toString();
+      public readonly dbInstanceEndpointPort = Tokenization.stringifyNumber(attrs.port);
       public readonly instanceEndpoint = new Endpoint(attrs.instanceEndpointAddress, attrs.port);
       public readonly engine = attrs.engine;
       protected enableIamAuthentication = true;
@@ -1065,6 +1065,7 @@ export class DatabaseInstanceFromSnapshot extends DatabaseInstanceSource impleme
         encryptionKey: credentials.encryptionKey,
         excludeCharacters: credentials.excludeCharacters,
         replaceOnPasswordCriteriaChanges: credentials.replaceOnPasswordCriteriaChanges,
+        replicaRegions: credentials.replicaRegions,
       });
     }
 

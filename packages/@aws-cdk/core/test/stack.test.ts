@@ -1,5 +1,5 @@
 import * as cxapi from '@aws-cdk/cx-api';
-import { testFutureBehavior, testLegacyBehavior } from 'cdk-build-tools/lib/feature-flag';
+import { testFutureBehavior, testLegacyBehavior } from '@aws-cdk/cdk-build-tools/lib/feature-flag';
 import {
   App, CfnCondition, CfnInclude, CfnOutput, CfnParameter,
   CfnResource, Construct, Lazy, ScopedAws, Stack, validateString,
@@ -59,7 +59,7 @@ describe('stack', () => {
 
     expect(() => {
       app.synth();
-    }).toThrow('Number of resources: 1000 is greater than allowed maximum of 500');
+    }).toThrow('Number of resources in stack \'MyStack\': 1000 is greater than allowed maximum of 500');
 
 
   });
@@ -81,7 +81,7 @@ describe('stack', () => {
 
     expect(() => {
       app.synth();
-    }).toThrow('Number of resources: 200 is greater than allowed maximum of 100');
+    }).toThrow('Number of resources in stack \'MyStack\': 200 is greater than allowed maximum of 100');
 
 
   });

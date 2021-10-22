@@ -21,7 +21,7 @@ export class AssetManifestReader {
 
       return new AssetManifestReader(path.dirname(fileName), obj);
     } catch (e) {
-      throw new Error(`Canot read asset manifest '${fileName}': ${e.message}`);
+      throw new Error(`Cannot read asset manifest '${fileName}': ${e.message}`);
     }
   }
 
@@ -63,7 +63,7 @@ export class AssetManifestReader {
     if (selection === undefined) { return this; }
 
     const ret: AssetManifest & Required<Pick<AssetManifest, AssetType>>
-     = { version: this.manifest.version, dockerImages: {}, files: {} };
+      = { version: this.manifest.version, dockerImages: {}, files: {} };
 
     for (const assetType of ASSET_TYPES) {
       for (const [assetId, asset] of Object.entries(this.manifest[assetType] || {})) {
@@ -267,7 +267,7 @@ export class DestinationPattern {
    */
   public matches(id: DestinationIdentifier) {
     return (this.assetId === undefined || this.assetId === id.assetId)
-    && (this.destinationId === undefined || this.destinationId === id.destinationId);
+      && (this.destinationId === undefined || this.destinationId === id.destinationId);
   }
 
   /**

@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as ecr from '@aws-cdk/aws-ecr';
-import { Annotations, AssetStaging, FeatureFlags, FileFingerprintOptions, IgnoreMode, Stack, SymlinkFollowMode, Token } from '@aws-cdk/core';
+import { Annotations, AssetStaging, FeatureFlags, FileFingerprintOptions, IgnoreMode, Stack, SymlinkFollowMode, Token, Stage } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 
@@ -11,6 +11,46 @@ import { FingerprintOptions, FollowMode, IAsset } from '@aws-cdk/assets';
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
 import { Construct as CoreConstruct } from '@aws-cdk/core';
+
+/**
+ * Options to control invalidation of `DockerImageAsset` asset hashes
+ */
+export interface DockerImageAssetInvalidationOptions {
+  /**
+   * Use `extraHash` while calculating the asset hash
+   *
+   * @default true
+   */
+  readonly extraHash?: boolean;
+
+  /**
+   * Use `buildArgs` while calculating the asset hash
+   *
+   * @default true
+   */
+  readonly buildArgs?: boolean;
+
+  /**
+   * Use `target` while calculating the asset hash
+   *
+   * @default true
+   */
+  readonly target?: boolean;
+
+  /**
+   * Use `file` while calculating the asset hash
+   *
+   * @default true
+   */
+  readonly file?: boolean;
+
+  /**
+   * Use `repositoryName` while calculating the asset hash
+   *
+   * @default true
+   */
+  readonly repositoryName?: boolean;
+}
 
 /**
  * Options for DockerImageAsset
@@ -54,6 +94,13 @@ export interface DockerImageAssetOptions extends FingerprintOptions, FileFingerp
    * @default 'Dockerfile'
    */
   readonly file?: string;
+
+  /**
+   * Options to control which parameters are used to invalidate the asset hash.
+   *
+   * @default - hash all parameters
+   */
+  readonly invalidation?: DockerImageAssetInvalidationOptions;
 }
 
 /**
@@ -62,6 +109,8 @@ export interface DockerImageAssetOptions extends FingerprintOptions, FileFingerp
 export interface DockerImageAssetProps extends DockerImageAssetOptions {
   /**
    * The directory where the Dockerfile is stored
+   *
+   * Any directory inside with a name that matches the CDK output folder (cdk.out by default) will be excluded from the asset
    */
   readonly directory: string;
 }
@@ -138,18 +187,21 @@ export class DockerImageAsset extends CoreConstruct implements IAsset {
 
     // Ensure the Dockerfile is included no matter what.
     exclude.push('!' + path.basename(file));
+    // Ensure the cdk.out folder is not included to avoid infinite loops.
+    const cdkout = Stage.of(this)?.outdir ?? 'cdk.out';
+    exclude.push(cdkout);
 
     if (props.repositoryName) {
       Annotations.of(this).addWarning('DockerImageAsset.repositoryName is deprecated. Override "core.Stack.addDockerImageAsset" to control asset locations');
     }
 
     // include build context in "extra" so it will impact the hash
-    const extraHash: { [field: string]: any } = { };
-    if (props.extraHash) { extraHash.user = props.extraHash; }
-    if (props.buildArgs) { extraHash.buildArgs = props.buildArgs; }
-    if (props.target) { extraHash.target = props.target; }
-    if (props.file) { extraHash.file = props.file; }
-    if (props.repositoryName) { extraHash.repositoryName = props.repositoryName; }
+    const extraHash: { [field: string]: any } = {};
+    if (props.invalidation?.extraHash !== false && props.extraHash) { extraHash.user = props.extraHash; }
+    if (props.invalidation?.buildArgs !== false && props.buildArgs) { extraHash.buildArgs = props.buildArgs; }
+    if (props.invalidation?.target !== false && props.target) { extraHash.target = props.target; }
+    if (props.invalidation?.file !== false && props.file) { extraHash.file = props.file; }
+    if (props.invalidation?.repositoryName !== false && props.repositoryName) { extraHash.repositoryName = props.repositoryName; }
 
     // add "salt" to the hash in order to invalidate the image in the upgrade to
     // 1.21.0 which removes the AdoptedRepository resource (and will cause the

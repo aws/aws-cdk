@@ -1,4 +1,5 @@
-import { expect, haveResource, haveResourceLike, ABSENT } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
+import { ABSENT, SynthUtils } from '@aws-cdk/assert-internal';
 import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
@@ -9,13 +10,12 @@ import * as s3 from '@aws-cdk/aws-s3';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import * as cdk from '@aws-cdk/core';
-import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as ecs from '../../lib';
 import { DeploymentControllerType, LaunchType, PropagatedTagSource } from '../../lib/base/base-service';
 
-nodeunitShim({
-  'When creating a Fargate Service': {
-    'with only required properties set, it correctly sets default properties'(test: Test) {
+describe('fargate service', () => {
+  describe('When creating a Fargate Service', () => {
+    test('with only required properties set, it correctly sets default properties', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -32,7 +32,7 @@ nodeunitShim({
       });
 
       // THEN
-      expect(stack).to(haveResource('AWS::ECS::Service', {
+      expect(stack).toHaveResource('AWS::ECS::Service', {
         TaskDefinition: {
           Ref: 'FargateTaskDefC6FB60B4',
         },
@@ -66,9 +66,9 @@ nodeunitShim({
             ],
           },
         },
-      }));
+      });
 
-      expect(stack).to(haveResource('AWS::EC2::SecurityGroup', {
+      expect(stack).toHaveResource('AWS::EC2::SecurityGroup', {
         GroupDescription: 'Default/FargateService/SecurityGroup',
         SecurityGroupEgress: [
           {
@@ -80,14 +80,14 @@ nodeunitShim({
         VpcId: {
           Ref: 'MyVpcF9F0CA6F',
         },
-      }));
+      });
 
-      test.notEqual(service.node.defaultChild, undefined);
+      expect(service.node.defaultChild).toBeDefined();
 
-      test.done();
-    },
 
-    'can create service with default settings if VPC only has public subnets'(test: Test) {
+    });
+
+    test('can create service with default settings if VPC only has public subnets', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {
@@ -112,10 +112,10 @@ nodeunitShim({
       });
 
       // THEN -- did not throw
-      test.done();
-    },
 
-    'does not set launchType when capacity provider strategies specified (deprecated)'(test: Test) {
+    });
+
+    test('does not set launchType when capacity provider strategies specified (deprecated)', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -147,15 +147,15 @@ nodeunitShim({
       });
 
       // THEN
-      expect(stack).to(haveResource('AWS::ECS::Cluster', {
+      expect(stack).toHaveResource('AWS::ECS::Cluster', {
         CapacityProviders: ABSENT,
-      }));
+      });
 
-      expect(stack).to(haveResource('AWS::ECS::ClusterCapacityProviderAssociations', {
+      expect(stack).toHaveResource('AWS::ECS::ClusterCapacityProviderAssociations', {
         CapacityProviders: ['FARGATE', 'FARGATE_SPOT'],
-      }));
+      });
 
-      expect(stack).to(haveResource('AWS::ECS::Service', {
+      expect(stack).toHaveResource('AWS::ECS::Service', {
         TaskDefinition: {
           Ref: 'FargateTaskDefC6FB60B4',
         },
@@ -199,12 +199,12 @@ nodeunitShim({
             ],
           },
         },
-      }));
+      });
 
-      test.done();
-    },
 
-    'does not set launchType when capacity provider strategies specified'(test: Test) {
+    });
+
+    test('does not set launchType when capacity provider strategies specified', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -237,15 +237,15 @@ nodeunitShim({
       });
 
       // THEN
-      expect(stack).to(haveResource('AWS::ECS::Cluster', {
+      expect(stack).toHaveResource('AWS::ECS::Cluster', {
         CapacityProviders: ABSENT,
-      }));
+      });
 
-      expect(stack).to(haveResource('AWS::ECS::ClusterCapacityProviderAssociations', {
+      expect(stack).toHaveResource('AWS::ECS::ClusterCapacityProviderAssociations', {
         CapacityProviders: ['FARGATE', 'FARGATE_SPOT'],
-      }));
+      });
 
-      expect(stack).to(haveResource('AWS::ECS::Service', {
+      expect(stack).toHaveResource('AWS::ECS::Service', {
         TaskDefinition: {
           Ref: 'FargateTaskDefC6FB60B4',
         },
@@ -290,12 +290,12 @@ nodeunitShim({
             ],
           },
         },
-      }));
+      });
 
-      test.done();
-    },
 
-    'with custom cloudmap namespace'(test: Test) {
+    });
+
+    test('with custom cloudmap namespace', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -324,7 +324,7 @@ nodeunitShim({
       });
 
       // THEN
-      expect(stack).to(haveResource('AWS::ServiceDiscovery::Service', {
+      expect(stack).toHaveResource('AWS::ServiceDiscovery::Service', {
         DnsConfig: {
           DnsRecords: [
             {
@@ -350,19 +350,19 @@ nodeunitShim({
             'Id',
           ],
         },
-      }));
+      });
 
-      expect(stack).to(haveResource('AWS::ServiceDiscovery::PrivateDnsNamespace', {
+      expect(stack).toHaveResource('AWS::ServiceDiscovery::PrivateDnsNamespace', {
         Name: 'scorekeep.com',
         Vpc: {
           Ref: 'MyVpcF9F0CA6F',
         },
-      }));
+      });
 
-      test.done();
-    },
 
-    'with user-provided cloudmap service'(test: Test) {
+    });
+
+    test('with user-provided cloudmap service', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -399,7 +399,7 @@ nodeunitShim({
       });
 
       // THEN
-      expect(stack).to(haveResource('AWS::ECS::Service', {
+      expect(stack).toHaveResource('AWS::ECS::Service', {
         ServiceRegistries: [
           {
             ContainerName: 'web',
@@ -407,12 +407,12 @@ nodeunitShim({
             RegistryArn: { 'Fn::GetAtt': ['ServiceDBC79909', 'Arn'] },
           },
         ],
-      }));
+      });
 
-      test.done();
-    },
 
-    'errors when more than one service registry used'(test: Test) {
+    });
+
+    test('errors when more than one service registry used', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -446,18 +446,18 @@ nodeunitShim({
       });
 
       // WHEN / THEN
-      test.throws(() => {
+      expect(() => {
         ecsService.associateCloudMapService({
           service: cloudMapService,
           container: container,
           containerPort: 8000,
         });
-      }, /at most one service registry/i);
+      }).toThrow(/at most one service registry/i);
 
-      test.done();
-    },
 
-    'with all properties set'(test: Test) {
+    });
+
+    test('with all properties set', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -503,9 +503,9 @@ nodeunitShim({
       });
 
       // THEN
-      test.ok(svc.cloudMapService !== undefined);
+      expect(svc.cloudMapService).toBeDefined();
 
-      expect(stack).to(haveResource('AWS::ECS::Service', {
+      expect(stack).toHaveResource('AWS::ECS::Service', {
         TaskDefinition: {
           Ref: 'FargateTaskDefC6FB60B4',
         },
@@ -558,12 +558,12 @@ nodeunitShim({
             },
           },
         ],
-      }));
+      });
 
-      test.done();
-    },
 
-    'throws when task definition is not Fargate compatible'(test: Test) {
+    });
+
+    test('throws when task definition is not Fargate compatible', () => {
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
@@ -576,17 +576,17 @@ nodeunitShim({
       });
 
       // THEN
-      test.throws(() => {
+      expect(() => {
         new ecs.FargateService(stack, 'FargateService', {
           cluster,
           taskDefinition,
         });
-      }, /Supplied TaskDefinition is not configured for compatibility with Fargate/);
+      }).toThrow(/Supplied TaskDefinition is not configured for compatibility with Fargate/);
 
-      test.done();
-    },
 
-    'throws whith secret json field on unsupported platform version'(test: Test) {
+    });
+
+    test('throws whith secret json field on unsupported platform version', () => {
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
@@ -600,18 +600,18 @@ nodeunitShim({
       });
 
       // THEN
-      test.throws(() => {
+      expect(() => {
         new ecs.FargateService(stack, 'FargateService', {
           cluster,
           taskDefinition,
           platformVersion: ecs.FargatePlatformVersion.VERSION1_3,
         });
-      }, new RegExp(`uses at least one container that references a secret JSON field.+platform version ${ecs.FargatePlatformVersion.VERSION1_4} or later`));
+      }).toThrow(new RegExp(`uses at least one container that references a secret JSON field.+platform version ${ecs.FargatePlatformVersion.VERSION1_4} or later`));
 
-      test.done();
-    },
 
-    'ignore task definition and launch type if deployment controller is set to be EXTERNAL'(test: Test) {
+    });
+
+    test('ignore task definition and launch type if deployment controller is set to be EXTERNAL', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -631,8 +631,8 @@ nodeunitShim({
       });
 
       // THEN
-      test.deepEqual(service.node.metadata[0].data, 'taskDefinition and launchType are blanked out when using external deployment controller.');
-      expect(stack).to(haveResource('AWS::ECS::Service', {
+      expect(service.node.metadata[0].data).toEqual('taskDefinition and launchType are blanked out when using external deployment controller.');
+      expect(stack).toHaveResource('AWS::ECS::Service', {
         Cluster: {
           Ref: 'EcsCluster97242B84',
         },
@@ -665,12 +665,12 @@ nodeunitShim({
             ],
           },
         },
-      }));
+      });
 
-      test.done();
-    },
 
-    'errors when no container specified on task definition'(test: Test) {
+    });
+
+    test('errors when no container specified on task definition', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -684,14 +684,14 @@ nodeunitShim({
       });
 
       // THEN
-      test.throws(() => {
-        expect(stack);
-      }, /one essential container/);
+      expect(() => {
+        SynthUtils.synthesize(stack);
+      }).toThrow(/one essential container/);
 
-      test.done();
-    },
 
-    'allows adding the default container after creating the service'(test: Test) {
+    });
+
+    test('allows adding the default container after creating the service', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -709,18 +709,18 @@ nodeunitShim({
       });
 
       // THEN
-      expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+      expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
         ContainerDefinitions: [
           {
             Name: 'main',
           },
         ],
-      }));
+      });
 
-      test.done();
-    },
 
-    'allows specifying assignPublicIP as enabled'(test: Test) {
+    });
+
+    test('allows specifying assignPublicIP as enabled', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -738,18 +738,18 @@ nodeunitShim({
       });
 
       // THEN
-      expect(stack).to(haveResourceLike('AWS::ECS::Service', {
+      expect(stack).toHaveResourceLike('AWS::ECS::Service', {
         NetworkConfiguration: {
           AwsvpcConfiguration: {
             AssignPublicIp: 'ENABLED',
           },
         },
-      }));
+      });
 
-      test.done();
-    },
 
-    'allows specifying 0 for minimumHealthyPercent'(test: Test) {
+    });
+
+    test('allows specifying 0 for minimumHealthyPercent', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -767,16 +767,16 @@ nodeunitShim({
       });
 
       // THEN
-      expect(stack).to(haveResourceLike('AWS::ECS::Service', {
+      expect(stack).toHaveResourceLike('AWS::ECS::Service', {
         DeploymentConfiguration: {
           MinimumHealthyPercent: 0,
         },
-      }));
+      });
 
-      test.done();
-    },
 
-    'throws when securityGroup and securityGroups are supplied'(test: Test) {
+    });
+
+    test('throws when securityGroup and securityGroups are supplied', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -800,19 +800,19 @@ nodeunitShim({
       });
 
       // THEN
-      test.throws(() => {
+      expect(() => {
         new ecs.FargateService(stack, 'FargateService', {
           cluster,
           taskDefinition,
           securityGroup: securityGroup1,
           securityGroups: [securityGroup2],
         });
-      }, /Only one of SecurityGroup or SecurityGroups can be populated./);
+      }).toThrow(/Only one of SecurityGroup or SecurityGroups can be populated./);
 
-      test.done();
-    },
 
-    'with multiple securty groups, it correctly updates cloudformation template'(test: Test) {
+    });
+
+    test('with multiple securty groups, it correctly updates cloudformation template', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -842,7 +842,7 @@ nodeunitShim({
       });
 
       // THEN
-      expect(stack).to(haveResource('AWS::ECS::Service', {
+      expect(stack).toHaveResource('AWS::ECS::Service', {
         TaskDefinition: {
           Ref: 'FargateTaskDefC6FB60B4',
         },
@@ -882,9 +882,9 @@ nodeunitShim({
             ],
           },
         },
-      }));
+      });
 
-      expect(stack).to(haveResource('AWS::EC2::SecurityGroup', {
+      expect(stack).toHaveResource('AWS::EC2::SecurityGroup', {
         GroupDescription: 'Example',
         GroupName: 'Bingo',
         SecurityGroupEgress: [
@@ -897,9 +897,9 @@ nodeunitShim({
         VpcId: {
           Ref: 'MyVpcF9F0CA6F',
         },
-      }));
+      });
 
-      expect(stack).to(haveResource('AWS::EC2::SecurityGroup', {
+      expect(stack).toHaveResource('AWS::EC2::SecurityGroup', {
         GroupDescription: 'Example',
         GroupName: 'Rolly',
         SecurityGroupEgress: [
@@ -914,15 +914,15 @@ nodeunitShim({
         VpcId: {
           Ref: 'MyVpcF9F0CA6F',
         },
-      }));
+      });
 
-      test.done();
-    },
 
-  },
+    });
 
-  'When setting up a health check': {
-    'grace period is respected'(test: Test) {
+  });
+
+  describe('When setting up a health check', () => {
+    test('grace period is respected', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -940,16 +940,16 @@ nodeunitShim({
       });
 
       // THEN
-      expect(stack).to(haveResource('AWS::ECS::Service', {
+      expect(stack).toHaveResource('AWS::ECS::Service', {
         HealthCheckGracePeriodSeconds: 10,
-      }));
+      });
 
-      test.done();
-    },
-  },
 
-  'When adding an app load balancer': {
-    'allows auto scaling by ALB request per target'(test: Test) {
+    });
+  });
+
+  describe('When adding an app load balancer', () => {
+    test('allows auto scaling by ALB request per target', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -976,7 +976,7 @@ nodeunitShim({
       });
 
       // THEN
-      expect(stack).to(haveResource('AWS::ApplicationAutoScaling::ScalableTarget', {
+      expect(stack).toHaveResource('AWS::ApplicationAutoScaling::ScalableTarget', {
         MaxCapacity: 10,
         MinCapacity: 1,
         ResourceId: {
@@ -997,9 +997,9 @@ nodeunitShim({
             ],
           ],
         },
-      }));
+      });
 
-      expect(stack).to(haveResource('AWS::ApplicationAutoScaling::ScalingPolicy', {
+      expect(stack).toHaveResource('AWS::ApplicationAutoScaling::ScalingPolicy', {
         TargetTrackingScalingPolicyConfiguration: {
           PredefinedMetricSpecification: {
             PredefinedMetricType: 'ALBRequestCountPerTarget',
@@ -1014,18 +1014,18 @@ nodeunitShim({
           },
           TargetValue: 1000,
         },
-      }));
+      });
 
-      expect(stack).to(haveResource('AWS::ECS::Service', {
+      expect(stack).toHaveResource('AWS::ECS::Service', {
         // if any load balancer is configured and healthCheckGracePeriodSeconds is not
         // set, then it should default to 60 seconds.
         HealthCheckGracePeriodSeconds: 60,
-      }));
+      });
 
-      test.done();
-    },
 
-    'allows auto scaling by ALB with new service arn format'(test: Test) {
+    });
+
+    test('allows auto scaling by ALB with new service arn format', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -1056,7 +1056,7 @@ nodeunitShim({
       });
 
       // THEN
-      expect(stack).to(haveResource('AWS::ApplicationAutoScaling::ScalableTarget', {
+      expect(stack).toHaveResource('AWS::ApplicationAutoScaling::ScalableTarget', {
         MaxCapacity: 10,
         MinCapacity: 1,
         ResourceId: {
@@ -1077,13 +1077,13 @@ nodeunitShim({
             ],
           ],
         },
-      }));
+      });
 
-      test.done();
-    },
 
-    'allows specify any existing container name and port in a service': {
-      'with default setting'(test: Test) {
+    });
+
+    describe('allows specify any existing container name and port in a service', () => {
+      test('with default setting', () => {
         // GIVEN
         const stack = new cdk.Stack();
         const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -1111,7 +1111,7 @@ nodeunitShim({
         });
 
         // THEN
-        expect(stack).to(haveResource('AWS::ECS::Service', {
+        expect(stack).toHaveResource('AWS::ECS::Service', {
           LoadBalancers: [
             {
               ContainerName: 'MainContainer',
@@ -1121,24 +1121,24 @@ nodeunitShim({
               },
             },
           ],
-        }));
+        });
 
-        expect(stack).to(haveResource('AWS::EC2::SecurityGroupIngress', {
+        expect(stack).toHaveResource('AWS::EC2::SecurityGroupIngress', {
           Description: 'Load balancer to target',
           FromPort: 8000,
           ToPort: 8000,
-        }));
+        });
 
-        expect(stack).to(haveResource('AWS::EC2::SecurityGroupEgress', {
+        expect(stack).toHaveResource('AWS::EC2::SecurityGroupEgress', {
           Description: 'Load balancer to target',
           FromPort: 8000,
           ToPort: 8000,
-        }));
+        });
 
-        test.done();
-      },
 
-      'with TCP protocol'(test: Test) {
+      });
+
+      test('with TCP protocol', () => {
         // GIVEN
         const stack = new cdk.Stack();
         const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -1169,10 +1169,10 @@ nodeunitShim({
           })],
         });
 
-        test.done();
-      },
 
-      'with UDP protocol'(test: Test) {
+      });
+
+      test('with UDP protocol', () => {
         // GIVEN
         const stack = new cdk.Stack();
         const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -1203,10 +1203,10 @@ nodeunitShim({
           })],
         });
 
-        test.done();
-      },
 
-      'throws when protocol does not match'(test: Test) {
+      });
+
+      test('throws when protocol does not match', () => {
         // GIVEN
         const stack = new cdk.Stack();
         const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -1228,7 +1228,7 @@ nodeunitShim({
         const listener = lb.addListener('listener', { port: 80 });
 
         // THEN
-        test.throws(() => {
+        expect(() => {
           listener.addTargets('target', {
             port: 80,
             targets: [service.loadBalancerTarget({
@@ -1237,12 +1237,12 @@ nodeunitShim({
               protocol: ecs.Protocol.TCP,
             })],
           });
-        }, /Container 'Default\/FargateTaskDef\/MainContainer' has no mapping for port 8001 and protocol tcp. Did you call "container.addPortMappings\(\)"\?/);
+        }).toThrow(/Container 'Default\/FargateTaskDef\/MainContainer' has no mapping for port 8001 and protocol tcp. Did you call "container.addPortMappings\(\)"\?/);
 
-        test.done();
-      },
 
-      'throws when port does not match'(test: Test) {
+      });
+
+      test('throws when port does not match', () => {
         // GIVEN
         const stack = new cdk.Stack();
         const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -1264,7 +1264,7 @@ nodeunitShim({
         const listener = lb.addListener('listener', { port: 80 });
 
         // THEN
-        test.throws(() => {
+        expect(() => {
           listener.addTargets('target', {
             port: 80,
             targets: [service.loadBalancerTarget({
@@ -1272,12 +1272,12 @@ nodeunitShim({
               containerPort: 8002,
             })],
           });
-        }, /Container 'Default\/FargateTaskDef\/MainContainer' has no mapping for port 8002 and protocol tcp. Did you call "container.addPortMappings\(\)"\?/);
+        }).toThrow(/Container 'Default\/FargateTaskDef\/MainContainer' has no mapping for port 8002 and protocol tcp. Did you call "container.addPortMappings\(\)"\?/);
 
-        test.done();
-      },
 
-      'throws when container does not exist'(test: Test) {
+      });
+
+      test('throws when container does not exist', () => {
         // GIVEN
         const stack = new cdk.Stack();
         const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -1299,7 +1299,7 @@ nodeunitShim({
         const listener = lb.addListener('listener', { port: 80 });
 
         // THEN
-        test.throws(() => {
+        expect(() => {
           listener.addTargets('target', {
             port: 80,
             targets: [service.loadBalancerTarget({
@@ -1307,15 +1307,15 @@ nodeunitShim({
               containerPort: 8001,
             })],
           });
-        }, /No container named 'SideContainer'. Did you call "addContainer()"?/);
+        }).toThrow(/No container named 'SideContainer'. Did you call "addContainer()"?/);
 
-        test.done();
-      },
-    },
 
-    'allows load balancing to any container and port of service': {
-      'with application load balancers': {
-        'with default target group port and protocol'(test: Test) {
+      });
+    });
+
+    describe('allows load balancing to any container and port of service', () => {
+      describe('with application load balancers', () => {
+        test('with default target group port and protocol', () => {
           // GIVEN
           const stack = new cdk.Stack();
           const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -1345,7 +1345,7 @@ nodeunitShim({
           );
 
           // THEN
-          expect(stack).to(haveResource('AWS::ECS::Service', {
+          expect(stack).toHaveResource('AWS::ECS::Service', {
             LoadBalancers: [
               {
                 ContainerName: 'MainContainer',
@@ -1355,17 +1355,17 @@ nodeunitShim({
                 },
               },
             ],
-          }));
+          });
 
-          expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
+          expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
             Port: 80,
             Protocol: 'HTTP',
-          }));
+          });
 
-          test.done();
-        },
 
-        'with default target group port and HTTP protocol'(test: Test) {
+        });
+
+        test('with default target group port and HTTP protocol', () => {
           // GIVEN
           const stack = new cdk.Stack();
           const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -1397,7 +1397,7 @@ nodeunitShim({
           );
 
           // THEN
-          expect(stack).to(haveResource('AWS::ECS::Service', {
+          expect(stack).toHaveResource('AWS::ECS::Service', {
             LoadBalancers: [
               {
                 ContainerName: 'MainContainer',
@@ -1407,17 +1407,17 @@ nodeunitShim({
                 },
               },
             ],
-          }));
+          });
 
-          expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
+          expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
             Port: 80,
             Protocol: 'HTTP',
-          }));
+          });
 
-          test.done();
-        },
 
-        'with default target group port and HTTPS protocol'(test: Test) {
+        });
+
+        test('with default target group port and HTTPS protocol', () => {
           // GIVEN
           const stack = new cdk.Stack();
           const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -1449,7 +1449,7 @@ nodeunitShim({
           );
 
           // THEN
-          expect(stack).to(haveResource('AWS::ECS::Service', {
+          expect(stack).toHaveResource('AWS::ECS::Service', {
             LoadBalancers: [
               {
                 ContainerName: 'MainContainer',
@@ -1459,17 +1459,17 @@ nodeunitShim({
                 },
               },
             ],
-          }));
+          });
 
-          expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
+          expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
             Port: 443,
             Protocol: 'HTTPS',
-          }));
+          });
 
-          test.done();
-        },
 
-        'with any target group port and protocol'(test: Test) {
+        });
+
+        test('with any target group port and protocol', () => {
           // GIVEN
           const stack = new cdk.Stack();
           const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -1502,7 +1502,7 @@ nodeunitShim({
           );
 
           // THEN
-          expect(stack).to(haveResource('AWS::ECS::Service', {
+          expect(stack).toHaveResource('AWS::ECS::Service', {
             LoadBalancers: [
               {
                 ContainerName: 'MainContainer',
@@ -1512,19 +1512,19 @@ nodeunitShim({
                 },
               },
             ],
-          }));
+          });
 
-          expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
+          expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
             Port: 83,
             Protocol: 'HTTP',
-          }));
+          });
 
-          test.done();
-        },
-      },
 
-      'with network load balancers': {
-        'with default target group port'(test: Test) {
+        });
+      });
+
+      describe('with network load balancers', () => {
+        test('with default target group port', () => {
           // GIVEN
           const stack = new cdk.Stack();
           const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -1554,7 +1554,7 @@ nodeunitShim({
           );
 
           // THEN
-          expect(stack).to(haveResource('AWS::ECS::Service', {
+          expect(stack).toHaveResource('AWS::ECS::Service', {
             LoadBalancers: [
               {
                 ContainerName: 'MainContainer',
@@ -1564,17 +1564,17 @@ nodeunitShim({
                 },
               },
             ],
-          }));
+          });
 
-          expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
+          expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
             Port: 80,
             Protocol: 'TCP',
-          }));
+          });
 
-          test.done();
-        },
 
-        'with any target group port'(test: Test) {
+        });
+
+        test('with any target group port', () => {
           // GIVEN
           const stack = new cdk.Stack();
           const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -1606,7 +1606,7 @@ nodeunitShim({
           );
 
           // THEN
-          expect(stack).to(haveResource('AWS::ECS::Service', {
+          expect(stack).toHaveResource('AWS::ECS::Service', {
             LoadBalancers: [
               {
                 ContainerName: 'MainContainer',
@@ -1616,20 +1616,20 @@ nodeunitShim({
                 },
               },
             ],
-          }));
+          });
 
-          expect(stack).to(haveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
+          expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
             Port: 81,
             Protocol: 'TCP',
-          }));
+          });
 
-          test.done();
-        },
-      },
-    },
-  },
 
-  'allows scaling on a specified scheduled time'(test: Test) {
+        });
+      });
+    });
+  });
+
+  test('allows scaling on a specified scheduled time', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -1653,7 +1653,7 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ApplicationAutoScaling::ScalableTarget', {
+    expect(stack).toHaveResource('AWS::ApplicationAutoScaling::ScalableTarget', {
       ScheduledActions: [
         {
           ScalableTargetAction: {
@@ -1663,12 +1663,12 @@ nodeunitShim({
           ScheduledActionName: 'ScaleOnSchedule',
         },
       ],
-    }));
+    });
 
-    test.done();
-  },
 
-  'allows scaling on a specified metric value'(test: Test) {
+  });
+
+  test('allows scaling on a specified metric value', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -1696,7 +1696,7 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ApplicationAutoScaling::ScalingPolicy', {
+    expect(stack).toHaveResource('AWS::ApplicationAutoScaling::ScalingPolicy', {
       PolicyType: 'StepScaling',
       ScalingTargetId: {
         Ref: 'ServiceTaskCountTarget23E25614',
@@ -1711,12 +1711,12 @@ nodeunitShim({
           },
         ],
       },
-    }));
+    });
 
-    test.done();
-  },
 
-  'allows scaling on a target CPU utilization'(test: Test) {
+  });
+
+  test('allows scaling on a target CPU utilization', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -1739,18 +1739,18 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ApplicationAutoScaling::ScalingPolicy', {
+    expect(stack).toHaveResource('AWS::ApplicationAutoScaling::ScalingPolicy', {
       PolicyType: 'TargetTrackingScaling',
       TargetTrackingScalingPolicyConfiguration: {
         PredefinedMetricSpecification: { PredefinedMetricType: 'ECSServiceAverageCPUUtilization' },
         TargetValue: 30,
       },
-    }));
+    });
 
-    test.done();
-  },
 
-  'allows scaling on memory utilization'(test: Test) {
+  });
+
+  test('allows scaling on memory utilization', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -1773,18 +1773,18 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ApplicationAutoScaling::ScalingPolicy', {
+    expect(stack).toHaveResource('AWS::ApplicationAutoScaling::ScalingPolicy', {
       PolicyType: 'TargetTrackingScaling',
       TargetTrackingScalingPolicyConfiguration: {
         PredefinedMetricSpecification: { PredefinedMetricType: 'ECSServiceAverageMemoryUtilization' },
         TargetValue: 30,
       },
-    }));
+    });
 
-    test.done();
-  },
 
-  'allows scaling on custom CloudWatch metric'(test: Test) {
+  });
+
+  test('allows scaling on custom CloudWatch metric', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -1808,7 +1808,7 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::ApplicationAutoScaling::ScalingPolicy', {
+    expect(stack).toHaveResource('AWS::ApplicationAutoScaling::ScalingPolicy', {
       PolicyType: 'TargetTrackingScaling',
       TargetTrackingScalingPolicyConfiguration: {
         CustomizedMetricSpecification: {
@@ -1818,13 +1818,13 @@ nodeunitShim({
         },
         TargetValue: 5,
       },
-    }));
+    });
 
-    test.done();
-  },
 
-  'When enabling service discovery': {
-    'throws if namespace has not been added to cluster'(test: Test) {
+  });
+
+  describe('When enabling service discovery', () => {
+    test('throws if namespace has not been added to cluster', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -1837,7 +1837,7 @@ nodeunitShim({
       container.addPortMappings({ containerPort: 8000 });
 
       // THEN
-      test.throws(() => {
+      expect(() => {
         new ecs.FargateService(stack, 'Service', {
           cluster,
           taskDefinition,
@@ -1845,12 +1845,12 @@ nodeunitShim({
             name: 'myApp',
           },
         });
-      }, /Cannot enable service discovery if a Cloudmap Namespace has not been created in the cluster./);
+      }).toThrow(/Cannot enable service discovery if a Cloudmap Namespace has not been created in the cluster./);
 
-      test.done();
-    },
 
-    'creates cloud map service for Private DNS namespace'(test: Test) {
+    });
+
+    test('creates cloud map service for Private DNS namespace', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -1876,7 +1876,7 @@ nodeunitShim({
       });
 
       // THEN
-      expect(stack).to(haveResource('AWS::ServiceDiscovery::Service', {
+      expect(stack).toHaveResource('AWS::ServiceDiscovery::Service', {
         DnsConfig: {
           DnsRecords: [
             {
@@ -1902,12 +1902,12 @@ nodeunitShim({
             'Id',
           ],
         },
-      }));
+      });
 
-      test.done();
-    },
 
-    'creates AWS Cloud Map service for Private DNS namespace with SRV records with proper defaults'(test: Test) {
+    });
+
+    test('creates AWS Cloud Map service for Private DNS namespace with SRV records with proper defaults', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -1937,7 +1937,7 @@ nodeunitShim({
       });
 
       // THEN
-      expect(stack).to(haveResource('AWS::ServiceDiscovery::Service', {
+      expect(stack).toHaveResource('AWS::ServiceDiscovery::Service', {
         DnsConfig: {
           DnsRecords: [
             {
@@ -1963,12 +1963,12 @@ nodeunitShim({
             'Id',
           ],
         },
-      }));
+      });
 
-      test.done();
-    },
 
-    'creates AWS Cloud Map service for Private DNS namespace with SRV records with overriden defaults'(test: Test) {
+    });
+
+    test('creates AWS Cloud Map service for Private DNS namespace with SRV records with overriden defaults', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -1999,7 +1999,7 @@ nodeunitShim({
       });
 
       // THEN
-      expect(stack).to(haveResource('AWS::ServiceDiscovery::Service', {
+      expect(stack).toHaveResource('AWS::ServiceDiscovery::Service', {
         DnsConfig: {
           DnsRecords: [
             {
@@ -2025,12 +2025,12 @@ nodeunitShim({
             'Id',
           ],
         },
-      }));
+      });
 
-      test.done();
-    },
 
-    'user can select any container and port'(test: Test) {
+    });
+
+    test('user can select any container and port', () => {
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
@@ -2063,7 +2063,7 @@ nodeunitShim({
         },
       });
 
-      expect(stack).to(haveResourceLike('AWS::ECS::Service', {
+      expect(stack).toHaveResourceLike('AWS::ECS::Service', {
         ServiceRegistries: [
           {
             RegistryArn: { 'Fn::GetAtt': ['ServiceCloudmapService046058A4', 'Arn'] },
@@ -2071,13 +2071,13 @@ nodeunitShim({
             ContainerPort: 8001,
           },
         ],
-      }));
+      });
 
-      test.done();
-    },
-  },
 
-  'Metric'(test: Test) {
+    });
+  });
+
+  test('Metric', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -2094,7 +2094,7 @@ nodeunitShim({
     });
 
     // THEN
-    test.deepEqual(stack.resolve(service.metricCpuUtilization()), {
+    expect(stack.resolve(service.metricCpuUtilization())).toEqual({
       dimensions: {
         ClusterName: { Ref: 'EcsCluster97242B84' },
         ServiceName: { 'Fn::GetAtt': ['ServiceD69D759B', 'Name'] },
@@ -2105,11 +2105,11 @@ nodeunitShim({
       statistic: 'Average',
     });
 
-    test.done();
-  },
 
-  'When import a Fargate Service': {
-    'with serviceArn'(test: Test) {
+  });
+
+  describe('When import a Fargate Service', () => {
+    test('with serviceArn', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const cluster = new ecs.Cluster(stack, 'EcsCluster');
@@ -2121,13 +2121,15 @@ nodeunitShim({
       });
 
       // THEN
-      test.equal(service.serviceArn, 'arn:aws:ecs:us-west-2:123456789012:service/my-http-service');
-      test.equal(service.serviceName, 'my-http-service');
+      expect(service.serviceArn).toEqual('arn:aws:ecs:us-west-2:123456789012:service/my-http-service');
+      expect(service.serviceName).toEqual('my-http-service');
 
-      test.done();
-    },
+      expect(service.env.account).toEqual('123456789012');
+      expect(service.env.region).toEqual('us-west-2');
 
-    'with serviceName'(test: Test) {
+    });
+
+    test('with serviceName', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const pseudo = new cdk.ScopedAws(stack);
@@ -2140,13 +2142,13 @@ nodeunitShim({
       });
 
       // THEN
-      test.deepEqual(stack.resolve(service.serviceArn), stack.resolve(`arn:${pseudo.partition}:ecs:${pseudo.region}:${pseudo.accountId}:service/my-http-service`));
-      test.equal(service.serviceName, 'my-http-service');
+      expect(stack.resolve(service.serviceArn)).toEqual(stack.resolve(`arn:${pseudo.partition}:ecs:${pseudo.region}:${pseudo.accountId}:service/my-http-service`));
+      expect(service.serviceName).toEqual('my-http-service');
 
-      test.done();
-    },
 
-    'with circuit breaker'(test: Test) {
+    });
+
+    test('with circuit breaker', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const cluster = new ecs.Cluster(stack, 'EcsCluster');
@@ -2164,7 +2166,7 @@ nodeunitShim({
       });
 
       // THEN
-      expect(stack).to(haveResource('AWS::ECS::Service', {
+      expect(stack).toHaveResource('AWS::ECS::Service', {
         DeploymentConfiguration: {
           MaximumPercent: 200,
           MinimumHealthyPercent: 50,
@@ -2176,42 +2178,42 @@ nodeunitShim({
         DeploymentController: {
           Type: ecs.DeploymentControllerType.ECS,
         },
-      }));
+      });
 
-      test.done();
-    },
 
-    'throws an exception if both serviceArn and serviceName were provided for fromEc2ServiceAttributes'(test: Test) {
+    });
+
+    test('throws an exception if both serviceArn and serviceName were provided for fromEc2ServiceAttributes', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const cluster = new ecs.Cluster(stack, 'EcsCluster');
 
-      test.throws(() => {
+      expect(() => {
         ecs.FargateService.fromFargateServiceAttributes(stack, 'EcsService', {
           serviceArn: 'arn:aws:ecs:us-west-2:123456789012:service/my-http-service',
           serviceName: 'my-http-service',
           cluster,
         });
-      }, /only specify either serviceArn or serviceName/);
+      }).toThrow(/only specify either serviceArn or serviceName/);
 
-      test.done();
-    },
 
-    'throws an exception if neither serviceArn nor serviceName were provided for fromEc2ServiceAttributes'(test: Test) {
+    });
+
+    test('throws an exception if neither serviceArn nor serviceName were provided for fromEc2ServiceAttributes', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const cluster = new ecs.Cluster(stack, 'EcsCluster');
 
-      test.throws(() => {
+      expect(() => {
         ecs.FargateService.fromFargateServiceAttributes(stack, 'EcsService', {
           cluster,
         });
-      }, /only specify either serviceArn or serviceName/);
+      }).toThrow(/only specify either serviceArn or serviceName/);
 
-      test.done();
-    },
 
-    'allows setting enable execute command'(test: Test) {
+    });
+
+    test('allows setting enable execute command', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -2229,7 +2231,7 @@ nodeunitShim({
       });
 
       // THEN
-      expect(stack).to(haveResource('AWS::ECS::Service', {
+      expect(stack).toHaveResource('AWS::ECS::Service', {
         TaskDefinition: {
           Ref: 'FargateTaskDefC6FB60B4',
         },
@@ -2264,9 +2266,9 @@ nodeunitShim({
             ],
           },
         },
-      }));
+      });
 
-      expect(stack).to(haveResource('AWS::IAM::Policy', {
+      expect(stack).toHaveResource('AWS::IAM::Policy', {
         PolicyDocument: {
           Statement: [
             {
@@ -2302,12 +2304,12 @@ nodeunitShim({
             Ref: 'FargateTaskDefTaskRole0B257552',
           },
         ],
-      }));
+      });
 
-      test.done();
-    },
 
-    'no logging enabled when logging field is set to NONE'(test: Test) {
+    });
+
+    test('no logging enabled when logging field is set to NONE', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -2340,7 +2342,7 @@ nodeunitShim({
       });
 
       // THEN
-      expect(stack).to(haveResource('AWS::IAM::Policy', {
+      expect(stack).toHaveResource('AWS::IAM::Policy', {
         PolicyDocument: {
           Statement: [
             {
@@ -2362,12 +2364,12 @@ nodeunitShim({
             Ref: 'FargateTaskDefTaskRole0B257552',
           },
         ],
-      }));
+      });
 
-      test.done();
-    },
 
-    'enables execute command logging with logging field set to OVERRIDE'(test: Test) {
+    });
+
+    test('enables execute command logging with logging field set to OVERRIDE', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -2403,7 +2405,7 @@ nodeunitShim({
       });
 
       // THEN
-      expect(stack).to(haveResource('AWS::IAM::Policy', {
+      expect(stack).toHaveResource('AWS::IAM::Policy', {
         PolicyDocument: {
           Statement: [
             {
@@ -2479,12 +2481,12 @@ nodeunitShim({
             Ref: 'FargateTaskDefTaskRole0B257552',
           },
         ],
-      }));
+      });
 
-      test.done();
-    },
 
-    'enables only execute command session encryption'(test: Test) {
+    });
+
+    test('enables only execute command session encryption', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -2523,7 +2525,7 @@ nodeunitShim({
       });
 
       // THEN
-      expect(stack).to(haveResource('AWS::IAM::Policy', {
+      expect(stack).toHaveResource('AWS::IAM::Policy', {
         PolicyDocument: {
           Statement: [
             {
@@ -2612,9 +2614,9 @@ nodeunitShim({
             Ref: 'FargateTaskDefTaskRole0B257552',
           },
         ],
-      }));
+      });
 
-      expect(stack).to(haveResource('AWS::KMS::Key', {
+      expect(stack).toHaveResource('AWS::KMS::Key', {
         KeyPolicy: {
           Statement: [
             {
@@ -2678,12 +2680,12 @@ nodeunitShim({
           ],
           Version: '2012-10-17',
         },
-      }));
+      });
 
-      test.done();
-    },
 
-    'enables encryption for execute command logging'(test: Test) {
+    });
+
+    test('enables encryption for execute command logging', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -2729,7 +2731,7 @@ nodeunitShim({
       });
 
       // THEN
-      expect(stack).to(haveResource('AWS::IAM::Policy', {
+      expect(stack).toHaveResource('AWS::IAM::Policy', {
         PolicyDocument: {
           Statement: [
             {
@@ -2833,9 +2835,9 @@ nodeunitShim({
             Ref: 'FargateTaskDefTaskRole0B257552',
           },
         ],
-      }));
+      });
 
-      expect(stack).to(haveResource('AWS::KMS::Key', {
+      expect(stack).toHaveResource('AWS::KMS::Key', {
         KeyPolicy: {
           Statement: [
             {
@@ -2944,12 +2946,12 @@ nodeunitShim({
           ],
           Version: '2012-10-17',
         },
-      }));
+      });
 
-      test.done();
-    },
 
-    'with both propagateTags and propagateTaskTagsFrom defined'(test: Test) {
+    });
+
+    test('with both propagateTags and propagateTaskTagsFrom defined', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -2962,15 +2964,15 @@ nodeunitShim({
       });
 
       // THEN
-      test.throws(() => {
+      expect(() => {
         new ecs.FargateService(stack, 'FargateService', {
           cluster,
           taskDefinition,
           propagateTags: PropagatedTagSource.SERVICE,
           propagateTaskTagsFrom: PropagatedTagSource.SERVICE,
         });
-      }, /You can only specify either propagateTags or propagateTaskTagsFrom. Alternatively, you can leave both blank/);
-      test.done();
-    },
-  },
+      }).toThrow(/You can only specify either propagateTags or propagateTaskTagsFrom. Alternatively, you can leave both blank/);
+
+    });
+  });
 });
