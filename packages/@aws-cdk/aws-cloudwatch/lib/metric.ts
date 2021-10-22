@@ -10,7 +10,7 @@ import { normalizeStatistic, parseStatistic } from './private/statistic';
 // eslint-disable-next-line no-duplicate-imports, import/order
 import { Construct } from '@aws-cdk/core';
 
-export type DimensionHash = {[dim: string]: any};
+export type DimensionHash = { [dim: string]: any };
 
 export type DimensionsMap = { [dim: string]: string };
 
@@ -126,6 +126,13 @@ export interface MetricOptions extends CommonMetricOptions {
  * Configurable options for MathExpressions
  */
 export interface MathExpressionOptions {
+  /**
+   * An alias for the math expression.
+   *
+   * @default - CloudWatch will assign an id
+   */
+  readonly id?: string;
+
   /**
    * Label for this metric when added to a Graph in a Dashboard
    *
@@ -500,6 +507,11 @@ export class MathExpression implements IMetric {
   public readonly label?: string;
 
   /**
+   * Id for this metric when added to a Graph.
+   */
+  public readonly id?: string;
+
+  /**
    * The hex color code, prefixed with '#' (e.g. '#00ff00'), to use when this metric is rendered on a graph.
    * The `Color` class has a set of standard colors that can be used here.
    */
@@ -528,6 +540,11 @@ export class MathExpression implements IMetric {
     this.color = props.color;
     this.searchAccount = props.searchAccount;
     this.searchRegion = props.searchRegion;
+    this.id = props.id;
+
+    if (this.id && !validVariableName(this.id)) {
+      throw new Error(`Invalid id: "${this.id}". id Must start with lowercase letter and only contain alphanumerics.`);
+    }
 
     const invalidVariableNames = Object.keys(this.usingMetrics).filter(x => !validVariableName(x));
     if (invalidVariableNames.length > 0) {
@@ -555,6 +572,7 @@ export class MathExpression implements IMetric {
     }
 
     return new MathExpression({
+      id: ifUndefined(props.id, this.id),
       expression: this.expression,
       usingMetrics: this.usingMetrics,
       label: ifUndefined(props.label, this.label),
@@ -589,6 +607,7 @@ export class MathExpression implements IMetric {
         searchRegion: this.searchRegion,
       },
       renderingProperties: {
+        id: this.id,
         label: this.label,
         color: this.color,
       },

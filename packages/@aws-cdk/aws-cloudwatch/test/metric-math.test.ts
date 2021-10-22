@@ -57,6 +57,17 @@ describe('Metric Math', () => {
 
   });
 
+  test('can not use invalid id in MathExpression', () => {
+    expect(() => {
+      new MathExpression({
+        id: '1abc',
+        expression: 'a+b',
+        usingMetrics: { a, b },
+      });
+    }).toThrow(/Invalid id: "1abc". id Must start with/);
+
+  });
+
   test('MathExpression optimization: "with" with the same period returns the same object', () => {
     const m = new MathExpression({ expression: 'SUM(METRICS())', usingMetrics: {}, period: Duration.minutes(10) });
 
@@ -70,6 +81,33 @@ describe('Metric Math', () => {
   });
 
   describe('in graphs', () => {
+    test('can specify an id for MathExpressions', () => {
+      // GIVEN
+      const expr1 = new MathExpression({
+        expression: 'metric1+metric2',
+        id: 'myid1',
+        usingMetrics: {
+          ['metric1']: a,
+          ['metric2']: b,
+        },
+        label: 'Math expr label 1',
+      });
+
+      const graph = new GraphWidget({
+        left: [
+          expr1,
+        ],
+      });
+
+      // THEN
+      graphMetricsAre(graph, [
+        [{ expression: 'metric1+metric2', label: 'Math expr label 1', id: 'myid1' }],
+        ['Test', 'ACount', { visible: false, id: 'metric1' }],
+        ['Test', 'BCount', { visible: false, id: 'metric2' }],
+      ]);
+
+
+    });
     test('MathExpressions can be added to a graph', () => {
       // GIVEN
       const graph = new GraphWidget({

@@ -96,6 +96,36 @@ const problemPercentage = new cloudwatch.MathExpression({
 });
 ```
 
+If you are creating multiple math expressions that reference other math expressions,
+it may be useful to specify an `id` for the `MathExpression` so that you can
+differentiate them in the console. For example:
+
+```ts
+new GraphWidget({
+  left: [
+    new MathExpression({
+      id: 'errors_faults',
+      expression: "errors+faults",
+      usingMetrics: {
+        errors: myConstruct.metricErrors(),
+        faults: myConstruct.metricFaults(),
+      },
+    }),
+    new MathExpression({
+      id: 'problems_invocations',
+      expression: "(problems / invocations) * 100",
+      usingMetrics: {
+        problems: allProblems,
+        invocations: myConstruct.metricInvocations(),
+      },
+    }),
+  ],
+});
+```
+
+By default if you do not provide an `id` both `MathExpression` metrics will
+get assigned the `id` of `m1`.
+
 ### Search Expressions
 
 Math expressions also support search expressions. For example, the following
