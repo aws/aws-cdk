@@ -2,7 +2,7 @@ import { promises as fs } from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import { retry, sleep } from '../helpers/aws';
-import { cloneDirectory, shell, withDefaultFixture } from '../helpers/cdk';
+import { cloneDirectory, MAJOR_VERSION, shell, withDefaultFixture } from '../helpers/cdk';
 import { integTest } from '../helpers/test-helpers';
 
 jest.setTimeout(600 * 1000);
@@ -40,7 +40,7 @@ integTest('Termination protection', withDefaultFixture(async (fixture) => {
 
 integTest('cdk synth', withDefaultFixture(async (fixture) => {
   await fixture.cdk(['synth', fixture.fullStackName('test-1')]);
-  expect(fixture.template('test-1')).toEqual({
+  expect(fixture.template('test-1')).toEqual(expect.objectContaining({
     Resources: {
       topic69831491: {
         Type: 'AWS::SNS::Topic',
@@ -49,10 +49,10 @@ integTest('cdk synth', withDefaultFixture(async (fixture) => {
         },
       },
     },
-  });
+  }));
 
   await fixture.cdk(['synth', fixture.fullStackName('test-2')], { verbose: false });
-  expect(fixture.template('test-2')).toEqual({
+  expect(fixture.template('test-2')).toEqual(expect.objectContaining({
     Resources: {
       topic152D84A37: {
         Type: 'AWS::SNS::Topic',
@@ -67,8 +67,7 @@ integTest('cdk synth', withDefaultFixture(async (fixture) => {
         },
       },
     },
-  });
-
+  }));
 }));
 
 integTest('ssm parameter provider error', withDefaultFixture(async (fixture) => {
@@ -223,12 +222,12 @@ integTest('deploy with parameters', withDefaultFixture(async (fixture) => {
     StackName: stackArn,
   });
 
-  expect(response.Stacks?.[0].Parameters).toEqual([
+  expect(response.Stacks?.[0].Parameters).toContainEqual(
     {
       ParameterKey: 'TopicNameParam',
       ParameterValue: `${fixture.stackNamePrefix}bazinga`,
     },
-  ]);
+  );
 }));
 
 integTest('update to stack in ROLLBACK_COMPLETE state will delete stack and create a new one', withDefaultFixture(async (fixture) => {
@@ -262,12 +261,12 @@ integTest('update to stack in ROLLBACK_COMPLETE state will delete stack and crea
   // THEN
   expect (stackArn).not.toEqual(newStackArn); // new stack was created
   expect(newStackResponse.Stacks?.[0].StackStatus).toEqual('CREATE_COMPLETE');
-  expect(newStackResponse.Stacks?.[0].Parameters).toEqual([
+  expect(newStackResponse.Stacks?.[0].Parameters).toContainEqual(
     {
       ParameterKey: 'TopicNameParam',
       ParameterValue: `${fixture.stackNamePrefix}allgood`,
     },
-  ]);
+  );
 }));
 
 integTest('stack in UPDATE_ROLLBACK_COMPLETE state can be updated', withDefaultFixture(async (fixture) => {
@@ -313,12 +312,12 @@ integTest('stack in UPDATE_ROLLBACK_COMPLETE state can be updated', withDefaultF
 
   // THEN
   expect(response.Stacks?.[0].StackStatus).toEqual('UPDATE_COMPLETE');
-  expect(response.Stacks?.[0].Parameters).toEqual([
+  expect(response.Stacks?.[0].Parameters).toContainEqual(
     {
       ParameterKey: 'TopicNameParam',
       ParameterValue: `${fixture.stackNamePrefix}allgood`,
     },
-  ]);
+  );
 }));
 
 integTest('deploy with wildcard and parameters', withDefaultFixture(async (fixture) => {
@@ -348,16 +347,18 @@ integTest('deploy with parameters multi', withDefaultFixture(async (fixture) => 
     StackName: stackArn,
   });
 
-  expect(response.Stacks?.[0].Parameters).toEqual([
+  expect(response.Stacks?.[0].Parameters).toContainEqual(
     {
       ParameterKey: 'DisplayNameParam',
       ParameterValue: paramVal1,
     },
+  );
+  expect(response.Stacks?.[0].Parameters).toContainEqual(
     {
       ParameterKey: 'OtherDisplayNameParam',
       ParameterValue: paramVal2,
     },
-  ]);
+  );
 }));
 
 integTest('deploy with notification ARN', withDefaultFixture(async (fixture) => {
@@ -382,82 +383,86 @@ integTest('deploy with notification ARN', withDefaultFixture(async (fixture) => 
   }
 }));
 
-integTest('deploy with role', withDefaultFixture(async (fixture) => {
-  const roleName = `${fixture.stackNamePrefix}-test-role`;
+if (MAJOR_VERSION === '1') {
+  // NOTE: this doesn't currently work with modern-style synthesis, as the bootstrap
+  // role by default will not have permission to iam:PassRole the created role.
+  integTest('deploy with role', withDefaultFixture(async (fixture) => {
+    const roleName = `${fixture.stackNamePrefix}-test-role`;
 
-  await deleteRole();
+    await deleteRole();
 
-  const createResponse = await fixture.aws.iam('createRole', {
-    RoleName: roleName,
-    AssumeRolePolicyDocument: JSON.stringify({
-      Version: '2012-10-17',
-      Statement: [{
-        Action: 'sts:AssumeRole',
-        Principal: { Service: 'cloudformation.amazonaws.com' },
-        Effect: 'Allow',
-      }, {
-        Action: 'sts:AssumeRole',
-        Principal: { AWS: (await fixture.aws.sts('getCallerIdentity', {})).Arn },
-        Effect: 'Allow',
-      }],
-    }),
-  });
-  const roleArn = createResponse.Role.Arn;
-  try {
-    await fixture.aws.iam('putRolePolicy', {
+    const createResponse = await fixture.aws.iam('createRole', {
       RoleName: roleName,
-      PolicyName: 'DefaultPolicy',
-      PolicyDocument: JSON.stringify({
+      AssumeRolePolicyDocument: JSON.stringify({
         Version: '2012-10-17',
         Statement: [{
-          Action: '*',
-          Resource: '*',
+          Action: 'sts:AssumeRole',
+          Principal: { Service: 'cloudformation.amazonaws.com' },
+          Effect: 'Allow',
+        }, {
+          Action: 'sts:AssumeRole',
+          Principal: { AWS: (await fixture.aws.sts('getCallerIdentity', {})).Arn },
           Effect: 'Allow',
         }],
       }),
     });
-
-    await retry(fixture.output, 'Trying to assume fresh role', retry.forSeconds(300), async () => {
-      await fixture.aws.sts('assumeRole', {
-        RoleArn: roleArn,
-        RoleSessionName: 'testing',
-      });
-    });
-
-    // In principle, the role has replicated from 'us-east-1' to wherever we're testing.
-    // Give it a little more sleep to make sure CloudFormation is not hitting a box
-    // that doesn't have it yet.
-    await sleep(5000);
-
-    await fixture.cdkDeploy('test-2', {
-      options: ['--role-arn', roleArn],
-    });
-
-    // Immediately delete the stack again before we delete the role.
-    //
-    // Since roles are sticky, if we delete the role before the stack, subsequent DeleteStack
-    // operations will fail when CloudFormation tries to assume the role that's already gone.
-    await fixture.cdkDestroy('test-2');
-
-  } finally {
-    await deleteRole();
-  }
-
-  async function deleteRole() {
+    const roleArn = createResponse.Role.Arn;
     try {
-      for (const policyName of (await fixture.aws.iam('listRolePolicies', { RoleName: roleName })).PolicyNames) {
-        await fixture.aws.iam('deleteRolePolicy', {
-          RoleName: roleName,
-          PolicyName: policyName,
+      await fixture.aws.iam('putRolePolicy', {
+        RoleName: roleName,
+        PolicyName: 'DefaultPolicy',
+        PolicyDocument: JSON.stringify({
+          Version: '2012-10-17',
+          Statement: [{
+            Action: '*',
+            Resource: '*',
+            Effect: 'Allow',
+          }],
+        }),
+      });
+
+      await retry(fixture.output, 'Trying to assume fresh role', retry.forSeconds(300), async () => {
+        await fixture.aws.sts('assumeRole', {
+          RoleArn: roleArn,
+          RoleSessionName: 'testing',
         });
-      }
-      await fixture.aws.iam('deleteRole', { RoleName: roleName });
-    } catch (e) {
-      if (e.message.indexOf('cannot be found') > -1) { return; }
-      throw e;
+      });
+
+      // In principle, the role has replicated from 'us-east-1' to wherever we're testing.
+      // Give it a little more sleep to make sure CloudFormation is not hitting a box
+      // that doesn't have it yet.
+      await sleep(5000);
+
+      await fixture.cdkDeploy('test-2', {
+        options: ['--role-arn', roleArn],
+      });
+
+      // Immediately delete the stack again before we delete the role.
+      //
+      // Since roles are sticky, if we delete the role before the stack, subsequent DeleteStack
+      // operations will fail when CloudFormation tries to assume the role that's already gone.
+      await fixture.cdkDestroy('test-2');
+
+    } finally {
+      await deleteRole();
     }
-  }
-}));
+
+    async function deleteRole() {
+      try {
+        for (const policyName of (await fixture.aws.iam('listRolePolicies', { RoleName: roleName })).PolicyNames) {
+          await fixture.aws.iam('deleteRolePolicy', {
+            RoleName: roleName,
+            PolicyName: policyName,
+          });
+        }
+        await fixture.aws.iam('deleteRole', { RoleName: roleName });
+      } catch (e) {
+        if (e.message.indexOf('cannot be found') > -1) { return; }
+        throw e;
+      }
+    }
+  }));
+}
 
 integTest('cdk diff', withDefaultFixture(async (fixture) => {
   const diff1 = await fixture.cdk(['diff', fixture.fullStackName('test-1')]);
@@ -607,36 +612,40 @@ integTest('IAM diff', withDefaultFixture(async (fixture) => {
   expect(output).toContain('ec2.amazonaws.com');
 }));
 
-integTest('fast deploy', withDefaultFixture(async (fixture) => {
-  // we are using a stack with a nested stack because CFN will always attempt to
-  // update a nested stack, which will allow us to verify that updates are actually
-  // skipped unless --force is specified.
-  const stackArn = await fixture.cdkDeploy('with-nested-stack', { captureStderr: false });
-  const changeSet1 = await getLatestChangeSet();
+if (MAJOR_VERSION === '1') {
+  // Broken for v2 until https://github.com/aws/aws-cdk/pull/17099 has been merged
 
-  // Deploy the same stack again, there should be no new change set created
-  await fixture.cdkDeploy('with-nested-stack');
-  const changeSet2 = await getLatestChangeSet();
-  expect(changeSet2.ChangeSetId).toEqual(changeSet1.ChangeSetId);
+  integTest('fast deploy', withDefaultFixture(async (fixture) => {
+    // we are using a stack with a nested stack because CFN will always attempt to
+    // update a nested stack, which will allow us to verify that updates are actually
+    // skipped unless --force is specified.
+    const stackArn = await fixture.cdkDeploy('with-nested-stack', { captureStderr: false });
+    const changeSet1 = await getLatestChangeSet();
 
-  // Deploy the stack again with --force, now we should create a changeset
-  await fixture.cdkDeploy('with-nested-stack', { options: ['--force'] });
-  const changeSet3 = await getLatestChangeSet();
-  expect(changeSet3.ChangeSetId).not.toEqual(changeSet2.ChangeSetId);
+    // Deploy the same stack again, there should be no new change set created
+    await fixture.cdkDeploy('with-nested-stack');
+    const changeSet2 = await getLatestChangeSet();
+    expect(changeSet2.ChangeSetId).toEqual(changeSet1.ChangeSetId);
 
-  // Deploy the stack again with tags, expected to create a new changeset
-  // even though the resources didn't change.
-  await fixture.cdkDeploy('with-nested-stack', { options: ['--tags', 'key=value'] });
-  const changeSet4 = await getLatestChangeSet();
-  expect(changeSet4.ChangeSetId).not.toEqual(changeSet3.ChangeSetId);
+    // Deploy the stack again with --force, now we should create a changeset
+    await fixture.cdkDeploy('with-nested-stack', { options: ['--force'] });
+    const changeSet3 = await getLatestChangeSet();
+    expect(changeSet3.ChangeSetId).not.toEqual(changeSet2.ChangeSetId);
 
-  async function getLatestChangeSet() {
-    const response = await fixture.aws.cloudFormation('describeStacks', { StackName: stackArn });
-    if (!response.Stacks?.[0]) { throw new Error('Did not get a ChangeSet at all'); }
-    fixture.log(`Found Change Set ${response.Stacks?.[0].ChangeSetId}`);
-    return response.Stacks?.[0];
-  }
-}));
+    // Deploy the stack again with tags, expected to create a new changeset
+    // even though the resources didn't change.
+    await fixture.cdkDeploy('with-nested-stack', { options: ['--tags', 'key=value'] });
+    const changeSet4 = await getLatestChangeSet();
+    expect(changeSet4.ChangeSetId).not.toEqual(changeSet3.ChangeSetId);
+
+    async function getLatestChangeSet() {
+      const response = await fixture.aws.cloudFormation('describeStacks', { StackName: stackArn });
+      if (!response.Stacks?.[0]) { throw new Error('Did not get a ChangeSet at all'); }
+      fixture.log(`Found Change Set ${response.Stacks?.[0].ChangeSetId}`);
+      return response.Stacks?.[0];
+    }
+  }));
+}
 
 integTest('failed deploy does not hang', withDefaultFixture(async (fixture) => {
   // this will hang if we introduce https://github.com/aws/aws-cdk/issues/6403 again.
@@ -734,7 +743,7 @@ integTest('templates on disk contain metadata resource, also in nested assemblie
   expect(JSON.parse(templateContents).Resources.CDKMetadata).toBeTruthy();
 
   // Load template from nested assembly
-  const nestedTemplateContents = await fixture.shell(['cat', 'cdk.out/assembly-*-stage/*-stage-StackInStage.template.json']);
+  const nestedTemplateContents = await fixture.shell(['cat', 'cdk.out/assembly-*-stage/*StackInStage*.template.json']);
 
   expect(JSON.parse(nestedTemplateContents).Resources.CDKMetadata).toBeTruthy();
 }));
