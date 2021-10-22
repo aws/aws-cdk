@@ -156,27 +156,11 @@ const nameService = new Service(stack, 'name', {
 
 ## Task Auto-Scaling
 
-You can configure the task count of a service to match demand. The recommended way of achieving this is to configure target tracking policies for your service which scale in or out the service in order to keep a metric around a target value.
+You can configure the task count of a service to match demand. The recommended way of achieving this is to configure target tracking policies for your service which scales in and out in order to keep metrics around target values.
 
-You need to configure an auto scaling target for the service by configuring the `minTaskCount` (defaults to 1) and `maxTaskCount` in the `Service` construct. Then you can specify target values for CPU or Memory Utilization across all tasks in your service. Note that the `desiredCount` value will be set to `undefined` whenever the auto scaling target is configured for the service.
+You need to configure an auto scaling target for the service by setting the `minTaskCount` (defaults to 1) and `maxTaskCount` in the `Service` construct. Then you can specify target values for "CPU Utilization" or "Memory Utilization" across all tasks in your service. Note that the `desiredCount` value will be set to `undefined` if the auto scaling target is configured.
 
-```ts
-const nameService = new Service(stack, 'name', {
-  environment: environment,
-  serviceDescription: nameDescription,
-  desiredCount: 5,
-  // Task auto-scaling construct for the service
-  autoScaleTaskCount: {
-    maxTaskCount: 10,
-    targetCpuUtilization: 70,
-    targetMemoryUtilization: 50,
-  },
-});
-```
-
-If you want to configure auto-scaling policies for other resources like Application Load Balancer or SQS Queues, you can configure the auto scaling target for the service by setting the `minTaskCount` and `maxTaskCount` as shown above and set the respective resource-specific fields in the extension. 
-
-For example, you can enable target tracking scaling based on Application Load Balancer request count as follows:
+If you want to configure auto-scaling policies based on resources like Application Load Balancer or SQS Queues, you can set the corresponding resource-specific fields in the extension. For example, you can enable target tracking scaling based on Application Load Balancer request count as follows:
 
 ```ts
 const stack = new cdk.Stack();
@@ -191,14 +175,18 @@ serviceDescription.add(new Container({
 }));
 
 // Add the extension with target `requestsPerTarget` value set
-serviceDescription.add(new HttpLoadBalancerExtension({ requestsPerTarget: 100 }));
+serviceDescription.add(new HttpLoadBalancerExtension({ requestsPerTarget: 10 }));
 
 // Configure the auto scaling target
 new Service(stack, 'my-service', {
   environment,
   serviceDescription,
+  desiredCount: 5,
+  // Task auto-scaling constuct for the service
   autoScaleTaskCount: {
-    maxTaskCount: 5,
+    maxTaskCount: 10,
+    targetCpuUtilization: 70,
+    targetMemoryUtilization: 50,
   },
 });
 ```

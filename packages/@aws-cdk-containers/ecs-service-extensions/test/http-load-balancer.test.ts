@@ -132,7 +132,7 @@ describe('http load balancer', () => {
         environment,
         serviceDescription,
       });
-    }).toThrow(/Auto scaling target for the service 'my-service' hasn't been configured. Please use Service construct to configure min and max task count./);
+    }).toThrow(/Auto scaling target for the service 'my-service' hasn't been configured. Please use Service construct to configure 'minTaskCount' and 'maxTaskCount'./);
   });
 
 });

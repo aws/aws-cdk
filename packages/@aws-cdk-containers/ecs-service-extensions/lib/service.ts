@@ -34,7 +34,8 @@ export interface ServiceProps {
   /**
    * The desired number of instantiations of the task definition to keep running on the service.
    *
-   * @default - 1
+   * @default - When creating the service, default is 1; when updating the service, default uses
+   * the current task number.
    */
   readonly desiredCount?: number;
 
@@ -129,14 +130,6 @@ export class Service extends Construct {
 
   private readonly scope: cdk.Construct;
 
-  /**
-   * The desired number of instantiations of the task definition to keep running on the service.
-   *
-   * @default - When creating the service, default is 1; when updating the service, default uses
-   * the current task number.
-   */
-  private readonly desiredCount: number;
-
   constructor(scope: Construct, id: string, props: ServiceProps) {
     super(scope, id);
 
@@ -147,7 +140,6 @@ export class Service extends Construct {
     this.cluster = props.environment.cluster;
     this.capacityType = props.environment.capacityType;
     this.serviceDescription = props.serviceDescription;
-    this.desiredCount = props.desiredCount || 1;
 
     // Check to make sure that the user has actually added a container
     const containerextension = this.serviceDescription.get('service-container');
@@ -211,7 +203,7 @@ export class Service extends Construct {
     }
 
     // Set desiredCount to `undefined` if auto scaling is configured for the service
-    const desiredCount = props.autoScaleTaskCount ? undefined : this.desiredCount;
+    const desiredCount = props.autoScaleTaskCount ? undefined : (props.desiredCount || 1);
 
     // Give each extension a chance to mutate the service props before
     // service creation

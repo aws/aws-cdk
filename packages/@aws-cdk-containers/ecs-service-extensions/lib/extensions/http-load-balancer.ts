@@ -71,13 +71,12 @@ export class HttpLoadBalancerExtension extends ServiceExtension {
 
     if (this.requestsPerTarget) {
       if (!this.parentService.scalableTaskCount) {
-        throw Error(`Auto scaling target for the service '${this.parentService.id}' hasn't been configured. Please use Service construct to configure min and max task count.`);
-      } else {
-        this.parentService.scalableTaskCount.scaleOnRequestCount(`${this.parentService.id}-target-request-count-${this.requestsPerTarget}`, {
-          requestsPerTarget: this.requestsPerTarget,
-          targetGroup,
-        });
+        throw Error(`Auto scaling target for the service '${this.parentService.id}' hasn't been configured. Please use Service construct to configure 'minTaskCount' and 'maxTaskCount'.`);
       }
+      this.parentService.scalableTaskCount.scaleOnRequestCount(`${this.parentService.id}-target-request-count-${this.requestsPerTarget}`, {
+        requestsPerTarget: this.requestsPerTarget,
+        targetGroup,
+      });
     }
   }
 }
