@@ -16,7 +16,7 @@ import { Construct } from 'constructs';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct as CoreConstruct } from '@aws-cdk/core';
+import { Construct as CoreConstruct, Token } from '@aws-cdk/core';
 
 /**
  * Describes the type of DNS record the service should create
@@ -413,7 +413,7 @@ export abstract class ApplicationLoadBalancedServiceBase extends CoreConstruct {
     }
     this.cluster = props.cluster || this.getDefaultCluster(this, props.vpc);
 
-    if (props.desiredCount !== undefined && props.desiredCount < 1) {
+    if (Token.isUnresolved(props.desiredCount) && props.desiredCount !== undefined && props.desiredCount < 1) {
       throw new Error('You must specify a desiredCount greater than 0');
     }
 
