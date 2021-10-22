@@ -1,4 +1,5 @@
 import * as cdk from '@aws-cdk/core';
+import { IConstruct } from 'constructs';
 import { CfnLaunchTemplate } from '../ec2.generated';
 import { Instance } from '../instance';
 import { LaunchTemplate } from '../launch-template';
@@ -25,7 +26,7 @@ abstract class RequireImdsv2Aspect implements cdk.IAspect {
     this.suppressWarnings = props?.suppressWarnings ?? false;
   }
 
-  abstract visit(node: cdk.IConstruct): void;
+  abstract visit(node: IConstruct): void;
 
   /**
    * Adds a warning annotation to a node, unless `suppressWarnings` is true.
@@ -33,7 +34,7 @@ abstract class RequireImdsv2Aspect implements cdk.IAspect {
    * @param node The scope to add the warning to.
    * @param message The warning message.
    */
-  protected warn(node: cdk.IConstruct, message: string) {
+  protected warn(node: IConstruct, message: string) {
     if (this.suppressWarnings !== true) {
       cdk.Annotations.of(node).addWarning(`${RequireImdsv2Aspect.name} failed on node ${node.node.id}: ${message}`);
     }
@@ -74,7 +75,7 @@ export class InstanceRequireImdsv2Aspect extends RequireImdsv2Aspect {
     this.suppressLaunchTemplateWarning = props?.suppressLaunchTemplateWarning ?? false;
   }
 
-  visit(node: cdk.IConstruct): void {
+  visit(node: IConstruct): void {
     if (!(node instanceof Instance)) {
       return;
     }
@@ -98,7 +99,7 @@ export class InstanceRequireImdsv2Aspect extends RequireImdsv2Aspect {
     };
   }
 
-  protected warn(node: cdk.IConstruct, message: string) {
+  protected warn(node: IConstruct, message: string) {
     if (this.suppressLaunchTemplateWarning !== true) {
       super.warn(node, message);
     }
@@ -120,7 +121,7 @@ export class LaunchTemplateRequireImdsv2Aspect extends RequireImdsv2Aspect {
     super(props);
   }
 
-  visit(node: cdk.IConstruct): void {
+  visit(node: IConstruct): void {
     if (!(node instanceof LaunchTemplate)) {
       return;
     }

@@ -3,10 +3,6 @@ import { Construct, Node } from 'constructs';
 import { ICluster } from './cluster';
 import { KubectlProvider } from './kubectl-provider';
 
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from '@aws-cdk/core';
-
 const PRUNE_LABEL_PREFIX = 'aws.cdk.eks/prune-';
 
 /**
@@ -100,7 +96,7 @@ export interface KubernetesManifestProps extends KubernetesManifestOptions {
  *
  * Applies/deletes the manifest using `kubectl`.
  */
-export class KubernetesManifest extends CoreConstruct {
+export class KubernetesManifest extends Construct {
   /**
    * The CloudFormation reosurce type.
    */

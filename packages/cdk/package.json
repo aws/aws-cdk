@@ -37,5 +37,8 @@
  },
   "engines": {
     "node": ">= 8.10.0"
+  },
+  "publishConfig": {
+    "tag": "next"
   }
 }
