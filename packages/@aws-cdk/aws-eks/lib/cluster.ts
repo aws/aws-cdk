@@ -540,6 +540,15 @@ export interface ClusterOptions extends CommonClusterOptions {
    *            using AWS-Managed encryption keys.
    */
   readonly secretsEncryptionKey?: kms.IKey;
+
+  /**
+   * The CIDR block to assign Kubernetes service IP addresses from.
+   *
+   * @default - Kubernetes assigns addresses from either the
+   *            10.100.0.0/16 or 172.20.0.0/16 CIDR blocks
+   * @see https://docs.aws.amazon.com/eks/latest/APIReference/API_KubernetesNetworkConfigRequest.html#AmazonEKS-Type-KubernetesNetworkConfigRequest-serviceIpv4Cidr
+   */
+  readonly serviceIpv4Cidr?: string;
 }
 
 /**
@@ -1182,7 +1191,7 @@ export class Cluster extends ClusterBase {
     this.onEventLayer = props.onEventLayer;
     this.kubectlMemory = props.kubectlMemory;
 
-    const privateSubents = this.selectPrivateSubnets().slice(0, 16);
+    const privateSubnets = this.selectPrivateSubnets().slice(0, 16);
     const publicAccessDisabled = !this.endpointAccess._config.publicAccess;
     const publicAccessRestricted = !publicAccessDisabled
       && this.endpointAccess._config.publicCidrs
@@ -1190,19 +1199,19 @@ export class Cluster extends ClusterBase {
 
     // validate endpoint access configuration
 
-    if (privateSubents.length === 0 && publicAccessDisabled) {
+    if (privateSubnets.length === 0 && publicAccessDisabled) {
       // no private subnets and no public access at all, no good.
       throw new Error('Vpc must contain private subnets when public endpoint access is disabled');
     }
 
-    if (privateSubents.length === 0 && publicAccessRestricted) {
-      // no private subents and public access is restricted, no good.
+    if (privateSubnets.length === 0 && publicAccessRestricted) {
+      // no private subnets and public access is restricted, no good.
       throw new Error('Vpc must contain private subnets when public endpoint access is restricted');
     }
 
     const placeClusterHandlerInVpc = props.placeClusterHandlerInVpc ?? false;
 
-    if (placeClusterHandlerInVpc && privateSubents.length === 0) {
+    if (placeClusterHandlerInVpc && privateSubnets.length === 0) {
       throw new Error('Cannot place cluster handler in the VPC since no private subnets could be selected');
     }
 
@@ -1223,16 +1232,19 @@ export class Cluster extends ClusterBase {
           resources: ['secrets'],
         }],
       } : {}),
+      kubernetesNetworkConfig: props.serviceIpv4Cidr ? {
+        serviceIpv4Cidr: props.serviceIpv4Cidr,
+      } : undefined,
       endpointPrivateAccess: this.endpointAccess._config.privateAccess,
       endpointPublicAccess: this.endpointAccess._config.publicAccess,
       publicAccessCidrs: this.endpointAccess._config.publicCidrs,
       secretsEncryptionKey: props.secretsEncryptionKey,
       vpc: this.vpc,
-      subnets: placeClusterHandlerInVpc ? privateSubents : undefined,
+      subnets: placeClusterHandlerInVpc ? privateSubnets : undefined,
       onEventLayer: this.onEventLayer,
     });
 
-    if (this.endpointAccess._config.privateAccess && privateSubents.length !== 0) {
+    if (this.endpointAccess._config.privateAccess && privateSubnets.length !== 0) {
 
       // when private access is enabled and the vpc has private subnets, lets connect
       // the provider to the vpc so that it will work even when restricting public access.
@@ -1242,7 +1254,7 @@ export class Cluster extends ClusterBase {
         throw new Error('Private endpoint access requires the VPC to have DNS support and DNS hostnames enabled. Use `enableDnsHostnames: true` and `enableDnsSupport: true` when creating the VPC.');
       }
 
-      this.kubectlPrivateSubnets = privateSubents;
+      this.kubectlPrivateSubnets = privateSubnets;
 
       // the vpc must exist in order to properly delete the cluster (since we run `kubectl delete`).
       // this ensures that.

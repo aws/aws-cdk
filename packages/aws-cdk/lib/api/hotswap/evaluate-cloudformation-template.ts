@@ -4,6 +4,12 @@ import { ListStackResources } from './common';
 
 export class CfnEvaluationException extends Error {}
 
+export interface ResourceDefinition {
+  readonly LogicalId: string;
+  readonly Type: string;
+  readonly Properties: { [p: string]: any };
+}
+
 export interface EvaluateCloudFormationTemplateProps {
   readonly stackArtifact: cxapi.CloudFormationStackArtifact;
   readonly parameters: { [parameterName: string]: string };
@@ -11,12 +17,12 @@ export interface EvaluateCloudFormationTemplateProps {
   readonly region: string;
   readonly partition: string;
   readonly urlSuffix: string;
-
   readonly listStackResources: ListStackResources;
 }
 
 export class EvaluateCloudFormationTemplate {
   private readonly stackResources: ListStackResources;
+  private readonly template: { [section: string]: { [headings: string]: any } };
   private readonly context: { [k: string]: string };
   private readonly account: string;
   private readonly region: string;
@@ -24,6 +30,7 @@ export class EvaluateCloudFormationTemplate {
 
   constructor(props: EvaluateCloudFormationTemplateProps) {
     this.stackResources = props.listStackResources;
+    this.template = props.stackArtifact.template;
     this.context = {
       'AWS::AccountId': props.account,
       'AWS::Region': props.region,
@@ -39,6 +46,19 @@ export class EvaluateCloudFormationTemplate {
   public async findPhysicalNameFor(logicalId: string): Promise<string | undefined> {
     const stackResources = await this.stackResources.listStackResources();
     return stackResources.find(sr => sr.LogicalResourceId === logicalId)?.PhysicalResourceId;
+  }
+
+  public findReferencesTo(logicalId: string): Array<ResourceDefinition> {
+    const ret = new Array<ResourceDefinition>();
+    for (const [resourceLogicalId, resourceDef] of Object.entries(this.template?.Resources ?? {})) {
+      if (logicalId !== resourceLogicalId && this.references(logicalId, resourceDef)) {
+        ret.push({
+          ...(resourceDef as any),
+          LogicalId: resourceLogicalId,
+        });
+      }
+    }
+    return ret;
   }
 
   public async evaluateCfnExpression(cfnExpression: any): Promise<any> {
@@ -129,6 +149,26 @@ export class EvaluateCloudFormationTemplate {
     }
 
     return cfnExpression;
+  }
+
+  private references(logicalId: string, templateElement: any): boolean {
+    if (typeof templateElement === 'string') {
+      return logicalId === templateElement;
+    }
+
+    if (templateElement == null) {
+      return false;
+    }
+
+    if (Array.isArray(templateElement)) {
+      return templateElement.some(el => this.references(logicalId, el));
+    }
+
+    if (typeof templateElement === 'object') {
+      return Object.values(templateElement).some(el => this.references(logicalId, el));
+    }
+
+    return false;
   }
 
   private parseIntrinsic(x: any): Intrinsic | undefined {
