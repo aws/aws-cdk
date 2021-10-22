@@ -144,9 +144,9 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
         }
         this.setAttribute('slow_start.duration_seconds', props.slowStart.toSeconds().toString());
       }
-      if (props.stickinessCookieDuration) {
-        this.enableCookieStickiness(props.stickinessCookieDuration, props.stickinessCookieName);
-      }
+
+      this.enableCookieStickiness(props.stickinessCookieDuration, props.stickinessCookieName);
+
       if (props.loadBalancingAlgorithmType) {
         this.setAttribute('load_balancing.algorithm.type', props.loadBalancingAlgorithmType);
       }
@@ -172,7 +172,12 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
    *
    * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/sticky-sessions.html
    */
-  public enableCookieStickiness(duration: Duration, cookieName?: string) {
+  public enableCookieStickiness(duration?: Duration, cookieName?: string) {
+    if (typeof duration === 'undefined') {
+      this.setAttribute('stickiness.enabled', 'false');
+      return;
+    }
+
     if (duration.toSeconds() < 1 || duration.toSeconds() > 604800) {
       throw new Error('Stickiness cookie duration value must be between 1 second and 7 days (604800 seconds).');
     }
