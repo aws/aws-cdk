@@ -244,5 +244,24 @@ describe('fargate task definition', () => {
 
 
     });
+    test('Passing in token for ephemeral storage will not throw error', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      const param = new cdk.CfnParameter(stack, 'prammm', {
+        type: 'Number',
+        default: 1,
+      });
+
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef', {
+        ephemeralStorageGiB: param.valueAsNumber,
+      });
+
+      // THEN
+      expect(() => {
+        taskDefinition.ephemeralStorageGiB;
+      }).toBeTruthy;
+    });
   });
 });
