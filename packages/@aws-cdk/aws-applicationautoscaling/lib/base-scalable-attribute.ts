@@ -82,7 +82,7 @@ export abstract class BaseScalableAttribute extends Construct {
 }
 
 /**
- * Properties for enabling DynamoDB capacity scaling
+ * Properties for enabling Application Auto Scaling
  */
 export interface EnableScalingProps {
   /**
