@@ -185,7 +185,7 @@ export class EvaluateCloudFormationTemplate {
 
   private async findRefTarget(logicalId: string): Promise<string | undefined> {
     // first, check to see if the Ref is a Parameter who's value we have
-    if (logicalId === 'AWS::UrlSuffix') {
+    if (logicalId === 'AWS::URLSuffix') {
       return this.urlSuffix(this.region);
     }
 

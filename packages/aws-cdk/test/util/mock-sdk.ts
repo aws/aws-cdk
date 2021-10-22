@@ -110,8 +110,8 @@ export class MockSdkProvider extends SdkProvider {
     (this.sdk as any).stepFunctions = jest.fn().mockReturnValue(partialAwsService<AWS.StepFunctions>(stubs));
   }
 
-  public stubGetEndpointSuffix(stub: (region:string) => string) {
-    this.sdk.getEndpointSuffix = jest.fn().mockReturnValue(stub);
+  public stubGetEndpointSuffix(stub: () => string) {
+    this.sdk.getEndpointSuffix = jest.fn().mockReturnValue(stub());
   }
 }
 
@@ -129,6 +129,7 @@ export class MockSdk implements ISDK {
   public readonly secretsManager = jest.fn();
   public readonly kms = jest.fn();
   public readonly stepFunctions = jest.fn();
+  public readonly getEndpointSuffix = jest.fn();
 
   public currentAccount(): Promise<Account> {
     return Promise.resolve({ accountId: '123456789012', partition: 'aws' });
@@ -153,10 +154,6 @@ export class MockSdk implements ISDK {
    */
   public stubSsm(stubs: SyncHandlerSubsetOf<AWS.SSM>) {
     this.ssm.mockReturnValue(partialAwsService<AWS.SSM>(stubs));
-  }
-
-  public getEndpointSuffix(region: string): string {
-    return 'amazonaws.com' + region;
   }
 }
 

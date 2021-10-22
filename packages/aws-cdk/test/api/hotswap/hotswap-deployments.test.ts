@@ -4,19 +4,18 @@ import * as setup from './hotswap-test-setup';
 let cfnMockProvider: setup.CfnMockProvider;
 let mockUpdateLambdaCode: (params: Lambda.Types.UpdateFunctionCodeRequest) => Lambda.Types.FunctionConfiguration;
 let mockUpdateMachineDefinition: (params: StepFunctions.Types.UpdateStateMachineInput) => StepFunctions.Types.UpdateStateMachineOutput;
-let getEndpointSuffix: ((region: string) => string);
+let getEndpointSuffix: (() => string);
 
 beforeEach(() => {
   cfnMockProvider = setup.setupHotswapTests();
   mockUpdateLambdaCode = jest.fn();
   mockUpdateMachineDefinition = jest.fn();
-  getEndpointSuffix = jest.fn((region: string) => { return 'amazonaws.com' + region; });
+  getEndpointSuffix = jest.fn(() => { return 'amazonaws.com'; });
   cfnMockProvider.setUpdateFunctionCodeMock(mockUpdateLambdaCode);
   cfnMockProvider.setUpdateStateMachineMock(mockUpdateMachineDefinition);
   cfnMockProvider.stubGetEndpointSuffix(getEndpointSuffix);
 });
 
-/*
 test('returns a deployStackResult with noOp=true when it receives an empty set of changes', async () => {
   // WHEN
   const deployStackResult = await cfnMockProvider.tryHotswapDeployment(setup.cdkStackArtifactOf());
@@ -244,7 +243,6 @@ test('can correctly reference AWS::Partition in hotswappable changes', async () 
     S3Key: 'new-key',
   });
 });
-*/
 
 test('can correctly reference AWS::URLSuffix in hotswappable changes', async () => {
   // GIVEN
@@ -269,7 +267,7 @@ test('can correctly reference AWS::URLSuffix in hotswappable changes', async () 
           },
         },
         Metadata: {
-          'aws:asset:path': 'new-path',
+          'aws:asset:path': 'old-path',
         },
       },
     },

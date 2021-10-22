@@ -210,7 +210,6 @@ export class SDK implements ISDK {
     return regionUtil.getEndpointSuffix(region);
   }
 
-
   /**
    * Return a wrapping object for the underlying service object
    *
