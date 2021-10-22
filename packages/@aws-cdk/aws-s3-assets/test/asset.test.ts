@@ -1,11 +1,12 @@
-import * as fs from 'fs';
-import * as os from 'os';
-import * as path from 'path';
-import { Match, Template } from '@aws-cdk/assertions';
+import { ResourcePart, SynthUtils } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
+import * as fs from 'fs';
+import * as os from 'os';
+import * as path from 'path';
 import { Asset } from '../lib/asset';
 
 const SAMPLE_ASSET_DIR = path.join(__dirname, 'sample-asset-directory');
@@ -78,7 +79,7 @@ test('"file" assets', () => {
   expect(entry).toBeTruthy();
 
   // synthesize first so "prepare" is called
-  const template = Template.fromStack(stack).toJSON();
+  const template = SynthUtils.synthesize(stack).template;
 
   expect(stack.resolve(entry!.data)).toEqual({
     path: 'asset.78add9eaf468dfa2191da44a7da92a21baba4c686cf6053d772556768ef21197.txt',
@@ -107,7 +108,7 @@ test('"readers" or "grantRead" can be used to grant read permissions on the asse
 
   asset.grantRead(group);
 
-  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+  expect(stack).toHaveResource('AWS::IAM::Policy', {
     PolicyDocument: {
       Version: '2012-10-17',
       Statement: [
@@ -199,12 +200,12 @@ test('addResourceMetadata can be used to add CFN metadata to resources', () => {
   asset.addResourceMetadata(resource, 'PropName');
 
   // THEN
-  Template.fromStack(stack).hasResource('My::Resource::Type', {
+  expect(stack).toHaveResource('My::Resource::Type', {
     Metadata: {
       'aws:asset:path': 'asset.6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2',
       'aws:asset:property': 'PropName',
     },
-  });
+  }, ResourcePart.CompleteDefinition);
 });
 
 test('asset metadata is only emitted if ASSET_RESOURCE_METADATA_ENABLED_CONTEXT is defined', () => {
@@ -218,12 +219,12 @@ test('asset metadata is only emitted if ASSET_RESOURCE_METADATA_ENABLED_CONTEXT 
   asset.addResourceMetadata(resource, 'PropName');
 
   // THEN
-  Template.fromStack(stack).hasResource('My::Resource::Type', Match.not({
+  expect(stack).not.toHaveResource('My::Resource::Type', {
     Metadata: {
       'aws:asset:path': SAMPLE_ASSET_DIR,
       'aws:asset:property': 'PropName',
     },
-  }));
+  }, ResourcePart.CompleteDefinition);
 });
 
 test('nested assemblies share assets: legacy synth edition', () => {
@@ -347,7 +348,7 @@ describe('staging', () => {
     // WHEN
     asset.addResourceMetadata(resource, 'PropName');
 
-    const template = Template.fromStack(stack).toJSON();
+    const template = SynthUtils.synthesize(stack).template;
     expect(template.Resources.MyResource.Metadata).toEqual({
       'aws:asset:path': 'asset.6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2',
       'aws:asset:property': 'PropName',
@@ -373,7 +374,7 @@ describe('staging', () => {
     // WHEN
     asset.addResourceMetadata(resource, 'PropName');
 
-    const template = Template.fromStack(stack).toJSON();
+    const template = SynthUtils.synthesize(stack).template;
     expect(template.Resources.MyResource.Metadata).toEqual({
       'aws:asset:path': SAMPLE_ASSET_DIR,
       'aws:asset:property': 'PropName',

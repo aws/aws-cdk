@@ -1,4 +1,4 @@
-import { Template } from '@aws-cdk/assertions';
+import '@aws-cdk/assert-internal/jest';
 import { App, Aws, CfnElement, Lazy, Stack } from '@aws-cdk/core';
 import { AnyPrincipal, ArnPrincipal, IRole, Policy, PolicyStatement, Role } from '../lib';
 
@@ -196,7 +196,7 @@ describe('IAM Role.fromRoleArn', () => {
           });
 
           test("does NOT generate a default Policy resource pointing at the imported role's physical name", () => {
-            Template.fromStack(roleStack).resourceCountIs('AWS::IAM::Policy', 0);
+            expect(roleStack).not.toHaveResourceLike('AWS::IAM::Policy');
           });
         });
 
@@ -283,7 +283,7 @@ describe('IAM Role.fromRoleArn', () => {
         });
 
         test("does NOT generate a default Policy resource pointing at the imported role's physical name", () => {
-          Template.fromStack(roleStack).resourceCountIs('AWS::IAM::Policy', 0);
+          expect(roleStack).not.toHaveResourceLike('AWS::IAM::Policy');
         });
       });
 
@@ -322,7 +322,7 @@ describe('IAM Role.fromRoleArn', () => {
         });
 
         test("does NOT generate a default Policy resource pointing at the imported role's physical name", () => {
-          Template.fromStack(roleStack).resourceCountIs('AWS::IAM::Policy', 0);
+          expect(roleStack).not.toHaveResourceLike('AWS::IAM::Policy');
         });
       });
     });
@@ -357,7 +357,7 @@ describe('IAM Role.fromRoleArn', () => {
           assumedBy: new ArnPrincipal(importedRole.roleName),
         });
 
-        Template.fromStack(roleStack).hasResourceProperties('AWS::IAM::Role', {
+        expect(roleStack).toHaveResourceLike('AWS::IAM::Role', {
           'AssumeRolePolicyDocument': {
             'Statement': [
               {
@@ -515,7 +515,7 @@ describe('IAM Role.fromRoleArn', () => {
           roles: [importedRole],
         });
 
-        Template.fromStack(roleStack).hasResourceProperties('AWS::IAM::Policy', {
+        expect(roleStack).toHaveResourceLike('AWS::IAM::Policy', {
           'Roles': [
             'codebuild-role',
           ],
@@ -535,7 +535,7 @@ describe('IAM Role.fromRoleArn', () => {
           roles: [importedRole],
         });
 
-        Template.fromStack(roleStack).hasResourceProperties('AWS::IAM::Policy', {
+        expect(roleStack).toHaveResourceLike('AWS::IAM::Policy', {
           'Roles': [
             'codebuild-role',
           ],
@@ -611,5 +611,5 @@ function _assertStackContainsPolicyResource(stack: Stack, roleNames: any[], name
     expected.PolicyName = nameOfPolicy;
   }
 
-  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', expected);
+  expect(stack).toHaveResourceLike('AWS::IAM::Policy', expected);
 }

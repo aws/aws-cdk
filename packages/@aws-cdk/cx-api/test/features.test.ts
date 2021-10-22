@@ -1,4 +1,4 @@
-import { testLegacyBehavior } from 'cdk-build-tools/lib/feature-flag';
+import { testLegacyBehavior } from '@aws-cdk/cdk-build-tools/lib/feature-flag';
 import * as feats from '../lib/features';
 
 test('all future flags have defaults configured', () => {
