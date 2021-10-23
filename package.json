@@ -94,7 +94,7 @@
       "@aws-cdk/aws-amplify/yaml",
       "@aws-cdk/aws-amplify/yaml/**",
       "@aws-cdk/aws-amplify-alpha/yaml",
-      "@aws-cdk/aws-amplify/yaml-alpha/**",
+      "@aws-cdk/aws-amplify-alpha/yaml/**",
       "@aws-cdk/aws-codebuild/yaml",
       "@aws-cdk/aws-codebuild/yaml/**",
       "@aws-cdk/aws-codepipeline-actions/case",
