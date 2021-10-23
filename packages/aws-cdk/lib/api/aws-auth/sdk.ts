@@ -22,14 +22,18 @@ export interface ISDK {
    */
   currentAccount(): Promise<Account>;
 
+  lambda(): AWS.Lambda;
   cloudFormation(): AWS.CloudFormation;
   ec2(): AWS.EC2;
   ssm(): AWS.SSM;
   s3(): AWS.S3;
   route53(): AWS.Route53;
   ecr(): AWS.ECR;
+  ecs(): AWS.ECS;
   elbv2(): AWS.ELBv2;
   secretsManager(): AWS.SecretsManager;
+  kms(): AWS.KMS;
+  stepFunctions(): AWS.StepFunctions;
 }
 
 /**
@@ -83,6 +87,10 @@ export class SDK implements ISDK {
     this.currentRegion = region;
   }
 
+  public lambda(): AWS.Lambda {
+    return this.wrapServiceErrorHandling(new AWS.Lambda(this.config));
+  }
+
   public cloudFormation(): AWS.CloudFormation {
     return this.wrapServiceErrorHandling(new AWS.CloudFormation({
       ...this.config,
@@ -110,12 +118,24 @@ export class SDK implements ISDK {
     return this.wrapServiceErrorHandling(new AWS.ECR(this.config));
   }
 
+  public ecs(): AWS.ECS {
+    return this.wrapServiceErrorHandling(new AWS.ECS(this.config));
+  }
+
   public elbv2(): AWS.ELBv2 {
     return this.wrapServiceErrorHandling(new AWS.ELBv2(this.config));
   }
 
   public secretsManager(): AWS.SecretsManager {
     return this.wrapServiceErrorHandling(new AWS.SecretsManager(this.config));
+  }
+
+  public kms(): AWS.KMS {
+    return this.wrapServiceErrorHandling(new AWS.KMS(this.config));
+  }
+
+  public stepFunctions(): AWS.StepFunctions {
+    return this.wrapServiceErrorHandling(new AWS.StepFunctions(this.config));
   }
 
   public async currentAccount(): Promise<Account> {

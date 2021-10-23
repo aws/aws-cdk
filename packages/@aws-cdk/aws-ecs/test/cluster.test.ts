@@ -1694,7 +1694,7 @@ describe('cluster', () => {
     const template = assembly.getStackByName(stack.stackName).template;
     expect(template.Parameters).toEqual({
       SsmParameterValueawsservicebottlerocketawsecs1arm64latestimageidC96584B6F00A464EAD1953AFF4B05118Parameter: {
-        Type: 'AWS::SSM::Parameter::Value<String>',
+        Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>',
         Default: '/aws/service/bottlerocket/aws-ecs-1/arm64/latest/image_id',
       },
     });
@@ -2141,4 +2141,108 @@ describe('cluster', () => {
 
 
   });
+});
+
+test('can add ASG capacity via Capacity Provider by not specifying machineImageType', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'test');
+  const vpc = new ec2.Vpc(stack, 'Vpc');
+  const cluster = new ecs.Cluster(stack, 'EcsCluster');
+
+  const autoScalingGroupAl2 = new autoscaling.AutoScalingGroup(stack, 'asgal2', {
+    vpc,
+    instanceType: new ec2.InstanceType('bogus'),
+    machineImage: ecs.EcsOptimizedImage.amazonLinux2(),
+  });
+
+  const autoScalingGroupBottlerocket = new autoscaling.AutoScalingGroup(stack, 'asgBottlerocket', {
+    vpc,
+    instanceType: new ec2.InstanceType('bogus'),
+    machineImage: new ecs.BottleRocketImage(),
+  });
+
+  // WHEN
+  const capacityProviderAl2 = new ecs.AsgCapacityProvider(stack, 'provideral2', {
+    autoScalingGroup: autoScalingGroupAl2,
+    enableManagedTerminationProtection: false,
+  });
+
+  const capacityProviderBottlerocket = new ecs.AsgCapacityProvider(stack, 'providerBottlerocket', {
+    autoScalingGroup: autoScalingGroupBottlerocket,
+    enableManagedTerminationProtection: false,
+    machineImageType: ecs.MachineImageType.BOTTLEROCKET,
+  });
+
+  cluster.enableFargateCapacityProviders();
+
+  // Ensure not added twice
+  cluster.addAsgCapacityProvider(capacityProviderAl2);
+  cluster.addAsgCapacityProvider(capacityProviderAl2);
+
+  // Add Bottlerocket ASG Capacity Provider
+  cluster.addAsgCapacityProvider(capacityProviderBottlerocket);
+
+
+  // THEN Bottlerocket LaunchConfiguration
+  expect(stack).toHaveResource('AWS::AutoScaling::LaunchConfiguration', {
+    ImageId: {
+      Ref: 'SsmParameterValueawsservicebottlerocketawsecs1x8664latestimageidC96584B6F00A464EAD1953AFF4B05118Parameter',
+
+    },
+    UserData: {
+      'Fn::Base64': {
+        'Fn::Join': [
+          '',
+          [
+            '\n[settings.ecs]\ncluster = \"',
+            {
+              Ref: 'EcsCluster97242B84',
+            },
+            '\"',
+          ],
+        ],
+      },
+    },
+  });
+
+  // THEN AmazonLinux2 LaunchConfiguration
+  expect(stack).toHaveResource('AWS::AutoScaling::LaunchConfiguration', {
+    ImageId: {
+      Ref: 'SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter',
+    },
+    UserData: {
+      'Fn::Base64': {
+        'Fn::Join': [
+          '',
+          [
+            '#!/bin/bash\necho ECS_CLUSTER=',
+            {
+              Ref: 'EcsCluster97242B84',
+
+            },
+            ' >> /etc/ecs/ecs.config\nsudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nsudo service iptables save\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config',
+          ],
+        ],
+      },
+    },
+  });
+
+  expect(stack).toHaveResource('AWS::ECS::ClusterCapacityProviderAssociations', {
+    CapacityProviders: [
+      'FARGATE',
+      'FARGATE_SPOT',
+      {
+        Ref: 'provideral2A427CBC0',
+      },
+      {
+        Ref: 'providerBottlerocket90C039FA',
+      },
+    ],
+    Cluster: {
+      Ref: 'EcsCluster97242B84',
+    },
+    DefaultCapacityProviderStrategy: [],
+  });
+
 });

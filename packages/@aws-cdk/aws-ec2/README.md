@@ -38,15 +38,15 @@ instances for your project.
 A VPC consists of one or more subnets that instances can be placed into. CDK
 distinguishes three different subnet types:
 
-* **Public** - public subnets connect directly to the Internet using an
+* **Public (`SubnetType.PUBLIC`)** - public subnets connect directly to the Internet using an
   Internet Gateway. If you want your instances to have a public IP address
   and be directly reachable from the Internet, you must place them in a
   public subnet.
-* **Private** - instances in private subnets are not directly routable from the
+* **Private with Internet Access (`SubnetType.PRIVATE_WITH_NAT`)** - instances in private subnets are not directly routable from the
   Internet, and connect out to the Internet via a NAT gateway. By default, a
   NAT gateway is created in every public subnet for maximum availability. Be
   aware that you will be charged for NAT gateways.
-* **Isolated** - isolated subnets do not route from or to the Internet, and
+* **Isolated (`SubnetType.PRIVATE_ISOLATED`)** - isolated subnets do not route from or to the Internet, and
   as such do not require NAT gateways. They can only connect to or be
   connected to from other instances in the same VPC. A default VPC configuration
   will not include isolated subnets,
@@ -245,12 +245,12 @@ const vpc = new ec2.Vpc(this, 'TheVPC', {
     {
       cidrMask: 24,
       name: 'Application',
-      subnetType: ec2.SubnetType.PRIVATE,
+      subnetType: ec2.SubnetType.PRIVATE_WITH_NAT,
     },
     {
       cidrMask: 28,
       name: 'Database',
-      subnetType: ec2.SubnetType.ISOLATED,
+      subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
 
       // 'reserved' can be used to reserve IP address space. No resources will
       // be created for this subnet, but the IP range will be kept available for
@@ -345,12 +345,12 @@ const vpc = new ec2.Vpc(this, 'TheVPC', {
     {
       cidrMask: 26,
       name: 'Application1',
-      subnetType: ec2.SubnetType.PRIVATE,
+      subnetType: ec2.SubnetType.PRIVATE_WITH_NAT,
     },
     {
       cidrMask: 26,
       name: 'Application2',
-      subnetType: ec2.SubnetType.PRIVATE,
+      subnetType: ec2.SubnetType.PRIVATE_WITH_NAT,
       reserved: true,   // <---- This subnet group is reserved
     },
     {
@@ -663,6 +663,14 @@ new InterfaceVpcEndpoint(stack, 'VPC Endpoint', {
 });
 ```
 
+Pre-defined AWS services are defined in the [InterfaceVpcEndpointAwsService](lib/vpc-endpoint.ts) class, and can be used to
+create VPC endpoints without having to configure name, ports, etc. For example, a Keyspaces endpoint can be created for
+use in your VPC:
+
+``` ts
+new InterfaceVpcEndpoint(stack, 'VPC Endpoint', { vpc, service: InterfaceVpcEndpointAwsService.KEYSPACES });
+```
+
 #### Security groups for interface VPC endpoints
 
 By default, interface VPC endpoints create a new security group and traffic is **not**
@@ -824,6 +832,12 @@ new ec2.Instance(this, 'Instance', {
 
     // Optional, how long the installation is expected to take (5 minutes by default)
     timeout: Duration.minutes(30),
+
+    // Optional, whether to include the --url argument when running cfn-init and cfn-signal commands (false by default)
+    includeUrl: true
+
+    // Optional, whether to include the --role argument when running cfn-init and cfn-signal commands (false by default)
+    includeRole: true
   },
 });
 ```
@@ -978,6 +992,33 @@ instance.userData.addCommands(
   `while ! test -e ${targetDevice}; do sleep 1; done`
   // The volume will now be mounted. You may have to add additional code to format the volume if it has not been prepared.
 );
+```
+
+### Configuring Instance Metadata Service (IMDS)
+
+#### Toggling IMDSv1
+
+You can configure [EC2 Instance Metadata Service](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-metadata.html) options to either
+allow both IMDSv1 and IMDSv2 or enforce IMDSv2 when interacting with the IMDS.
+
+To do this for a single `Instance`, you can use the `requireImdsv2` property.
+The example below demonstrates IMDSv2 being required on a single `Instance`:
+
+```ts
+new ec2.Instance(this, 'Instance', {
+  requireImdsv2: true,
+  // ...
+});
+```
+
+You can also use the either the `InstanceRequireImdsv2Aspect` for EC2 instances or the `LaunchTemplateRequireImdsv2Aspect` for EC2 launch templates
+to apply the operation to multiple instances or launch templates, respectively.
+
+The following example demonstrates how to use the `InstanceRequireImdsv2Aspect` to require IMDSv2 for all EC2 instances in a stack:
+
+```ts
+const aspect = new ec2.InstanceRequireImdsv2Aspect();
+Aspects.of(stack).add(aspect);
 ```
 
 ## VPC Flow Logs

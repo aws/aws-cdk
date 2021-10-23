@@ -78,6 +78,9 @@ new DockerImageFunction(this, 'ECRFunction', {
 });
 ```
 
+The props for these docker image resources allow overriding the image's `CMD`, `ENTRYPOINT`, and `WORKDIR`
+configurations. See their docs for more information.
+
 ## Execution Role
 
 Lambda functions assume an IAM role during execution. In CDK by default, Lambda
@@ -320,6 +323,31 @@ import * as cdk from '@aws-cdk/core';
 new LayerVersion(this, 'MyLayer', {
   removalPolicy: cdk.RemovalPolicy.RETAIN,
   code: Code.fromAsset(path.join(__dirname, 'lambda-handler')),
+});
+```
+
+## Architecture
+
+Lambda functions, by default, run on compute systems that have the 64 bit x86 architecture.
+
+The AWS Lambda service also runs compute on the ARM architecture, which can reduce cost
+for some workloads.
+
+A lambda function can be configured to be run on one of these platforms:
+
+```ts
+new Function(this, 'MyFunction', {
+  ...
+  architecture: Architecture.ARM_64,
+});
+```
+
+Similarly, lambda layer versions can also be tagged with architectures it is compatible with.
+
+```ts
+new LayerVersion(this, 'MyLayer', {
+  ...
+  compatibleArchitectures: [Architecture.X86_64, Architecture.ARM_64],
 });
 ```
 
@@ -601,14 +629,14 @@ Example with Python:
 new Function(this, 'Function', {
   code: Code.fromAsset(path.join(__dirname, 'my-python-handler'), {
     bundling: {
-      image: Runtime.PYTHON_3_8.bundlingImage,
+      image: Runtime.PYTHON_3_9.bundlingImage,
       command: [
         'bash', '-c',
         'pip install -r requirements.txt -t /asset-output && cp -au . /asset-output'
       ],
     },
   }),
-  runtime: Runtime.PYTHON_3_8,
+  runtime: Runtime.PYTHON_3_9,
   handler: 'index.handler',
 });
 ```
@@ -632,7 +660,7 @@ new Function(this, 'Function', {
       command: ['my', 'cool', 'command'],
     },
   }),
-  runtime: Runtime.PYTHON_3_8,
+  runtime: Runtime.PYTHON_3_9,
   handler: 'index.handler',
 });
 ```
@@ -646,7 +674,7 @@ Language-specific higher level constructs are provided in separate modules:
 
 ## Code Signing
 
-Code signing for AWS Lambda helps to ensure that only trusted code runs in your Lambda functions. 
+Code signing for AWS Lambda helps to ensure that only trusted code runs in your Lambda functions.
 When enabled, AWS Lambda checks every code deployment and verifies that the code package is signed by a trusted source.
 For more information, see [Configuring code signing for AWS Lambda](https://docs.aws.amazon.com/lambda/latest/dg/configuration-codesigning.html).
 The following code configures a function with code signing.
