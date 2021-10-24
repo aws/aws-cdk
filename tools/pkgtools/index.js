@@ -1,3 +1,0 @@
-"use strict";
-// Empty file so that this package can be imported
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW5kZXguanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyJpbmRleC50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiO0FBQUEsa0RBQWtEIiwic291cmNlc0NvbnRlbnQiOlsiLy8gRW1wdHkgZmlsZSBzbyB0aGF0IHRoaXMgcGFja2FnZSBjYW4gYmUgaW1wb3J0ZWRcbiJdfQ==
