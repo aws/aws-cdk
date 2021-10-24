@@ -304,7 +304,7 @@
         "LambdaServiceRoleA8ED4D3B"
       ]
     },
-    "LambdaInvokeServicePrincipalsecretsmanageramazonawscomB927629E": {
+    "LambdaInvoke5b3326831df17bb0a41bb6a5816118e85114090A": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
