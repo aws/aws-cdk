@@ -1317,72 +1317,6 @@
         "vpcVPCGW7984C166"
       ]
     },
-    "batchfargatecomputeenvResourceServiceInstanceRole94D7AA5F": {
-      "Type": "AWS::IAM::Role",
-      "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Statement": [
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": {
-                "Service": "batch.amazonaws.com"
-              }
-            }
-          ],
-          "Version": "2012-10-17"
-        },
-        "ManagedPolicyArns": [
-          {
-            "Fn::Join": [
-              "",
-              [
-                "arn:",
-                {
-                  "Ref": "AWS::Partition"
-                },
-                ":iam::aws:policy/service-role/AWSBatchServiceRole"
-              ]
-            ]
-          }
-        ]
-      },
-      "DependsOn": [
-        "vpcIGWE57CBDCA",
-        "vpcPrivateSubnet1DefaultRoute1AA8E2E5",
-        "vpcPrivateSubnet1RouteTableB41A48CC",
-        "vpcPrivateSubnet1RouteTableAssociation67945127",
-        "vpcPrivateSubnet1Subnet934893E8",
-        "vpcPrivateSubnet2DefaultRouteB0E07F99",
-        "vpcPrivateSubnet2RouteTable7280F23E",
-        "vpcPrivateSubnet2RouteTableAssociation007E94D3",
-        "vpcPrivateSubnet2Subnet7031C2BA",
-        "vpcPrivateSubnet3DefaultRoute30C45F47",
-        "vpcPrivateSubnet3RouteTable24DA79A0",
-        "vpcPrivateSubnet3RouteTableAssociationC58B3C2C",
-        "vpcPrivateSubnet3Subnet985AC459",
-        "vpcPublicSubnet1DefaultRoute10708846",
-        "vpcPublicSubnet1EIPDA49DCBE",
-        "vpcPublicSubnet1NATGateway9C16659E",
-        "vpcPublicSubnet1RouteTable48A2DF9B",
-        "vpcPublicSubnet1RouteTableAssociation5D3F4579",
-        "vpcPublicSubnet1Subnet2E65531E",
-        "vpcPublicSubnet2DefaultRouteA1EC0F60",
-        "vpcPublicSubnet2EIP9B3743B1",
-        "vpcPublicSubnet2NATGateway9B8AE11A",
-        "vpcPublicSubnet2RouteTableEB40D4CB",
-        "vpcPublicSubnet2RouteTableAssociation21F81B59",
-        "vpcPublicSubnet2Subnet009B674F",
-        "vpcPublicSubnet3DefaultRoute3F356A11",
-        "vpcPublicSubnet3EIP2C3B9D91",
-        "vpcPublicSubnet3NATGateway82F6CA9E",
-        "vpcPublicSubnet3RouteTableA3C00665",
-        "vpcPublicSubnet3RouteTableAssociationD102D1C4",
-        "vpcPublicSubnet3Subnet11B92D7C",
-        "vpcA2121C38",
-        "vpcVPCGW7984C166"
-      ]
-    },
     "batchfargatecomputeenvE9C3FCA4": {
       "Type": "AWS::Batch::ComputeEnvironment",
       "Properties": {
@@ -1411,9 +1345,19 @@
           "Type": "FARGATE"
         },
         "ServiceRole": {
-          "Fn::GetAtt": [
-            "batchfargatecomputeenvResourceServiceInstanceRole94D7AA5F",
-            "Arn"
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":iam::",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":role/aws-service-role/batch.amazonaws.com/AWSServiceRoleForBatch"
+            ]
           ]
         },
         "State": "ENABLED"
@@ -1505,72 +1449,6 @@
         "vpcVPCGW7984C166"
       ]
     },
-    "batchfargatespotcomputeenvResourceServiceInstanceRole6462BFB0": {
-      "Type": "AWS::IAM::Role",
-      "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Statement": [
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": {
-                "Service": "batch.amazonaws.com"
-              }
-            }
-          ],
-          "Version": "2012-10-17"
-        },
-        "ManagedPolicyArns": [
-          {
-            "Fn::Join": [
-              "",
-              [
-                "arn:",
-                {
-                  "Ref": "AWS::Partition"
-                },
-                ":iam::aws:policy/service-role/AWSBatchServiceRole"
-              ]
-            ]
-          }
-        ]
-      },
-      "DependsOn": [
-        "vpcIGWE57CBDCA",
-        "vpcPrivateSubnet1DefaultRoute1AA8E2E5",
-        "vpcPrivateSubnet1RouteTableB41A48CC",
-        "vpcPrivateSubnet1RouteTableAssociation67945127",
-        "vpcPrivateSubnet1Subnet934893E8",
-        "vpcPrivateSubnet2DefaultRouteB0E07F99",
-        "vpcPrivateSubnet2RouteTable7280F23E",
-        "vpcPrivateSubnet2RouteTableAssociation007E94D3",
-        "vpcPrivateSubnet2Subnet7031C2BA",
-        "vpcPrivateSubnet3DefaultRoute30C45F47",
-        "vpcPrivateSubnet3RouteTable24DA79A0",
-        "vpcPrivateSubnet3RouteTableAssociationC58B3C2C",
-        "vpcPrivateSubnet3Subnet985AC459",
-        "vpcPublicSubnet1DefaultRoute10708846",
-        "vpcPublicSubnet1EIPDA49DCBE",
-        "vpcPublicSubnet1NATGateway9C16659E",
-        "vpcPublicSubnet1RouteTable48A2DF9B",
-        "vpcPublicSubnet1RouteTableAssociation5D3F4579",
-        "vpcPublicSubnet1Subnet2E65531E",
-        "vpcPublicSubnet2DefaultRouteA1EC0F60",
-        "vpcPublicSubnet2EIP9B3743B1",
-        "vpcPublicSubnet2NATGateway9B8AE11A",
-        "vpcPublicSubnet2RouteTableEB40D4CB",
-        "vpcPublicSubnet2RouteTableAssociation21F81B59",
-        "vpcPublicSubnet2Subnet009B674F",
-        "vpcPublicSubnet3DefaultRoute3F356A11",
-        "vpcPublicSubnet3EIP2C3B9D91",
-        "vpcPublicSubnet3NATGateway82F6CA9E",
-        "vpcPublicSubnet3RouteTableA3C00665",
-        "vpcPublicSubnet3RouteTableAssociationD102D1C4",
-        "vpcPublicSubnet3Subnet11B92D7C",
-        "vpcA2121C38",
-        "vpcVPCGW7984C166"
-      ]
-    },
     "batchfargatespotcomputeenv374749B0": {
       "Type": "AWS::Batch::ComputeEnvironment",
       "Properties": {
@@ -1599,9 +1477,19 @@
           "Type": "FARGATE_SPOT"
         },
         "ServiceRole": {
-          "Fn::GetAtt": [
-            "batchfargatespotcomputeenvResourceServiceInstanceRole6462BFB0",
-            "Arn"
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":iam::",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":role/aws-service-role/batch.amazonaws.com/AWSServiceRoleForBatch"
+            ]
           ]
         },
         "State": "ENABLED"
@@ -1725,8 +1613,14 @@
           "Privileged": false,
           "ReadonlyRootFilesystem": false,
           "ResourceRequirements": [
-            { "Type": "VCPU", "Value": "1" },
-            { "Type": "MEMORY", "Value": "4" }
+            {
+              "Type": "VCPU",
+              "Value": "1"
+            },
+            {
+              "Type": "MEMORY",
+              "Value": "4"
+            }
           ]
         },
         "PlatformCapabilities": [
@@ -1747,8 +1641,14 @@
           "Privileged": false,
           "ReadonlyRootFilesystem": false,
           "ResourceRequirements": [
-            { "Type": "VCPU", "Value": "1" },
-            { "Type": "MEMORY", "Value": "4" }
+            {
+              "Type": "VCPU",
+              "Value": "1"
+            },
+            {
+              "Type": "MEMORY",
+              "Value": "4"
+            }
           ]
         },
         "PlatformCapabilities": [

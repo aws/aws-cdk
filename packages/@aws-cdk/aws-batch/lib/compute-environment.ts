@@ -1,6 +1,6 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { IResource, Resource, Stack } from '@aws-cdk/core';
+import { ArnFormat, IResource, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnComputeEnvironment } from './batch.generated';
 
@@ -403,13 +403,7 @@ export class ComputeEnvironment extends Resource implements IComputeEnvironment 
     const computeEnvironment = new CfnComputeEnvironment(this, 'Resource', {
       computeEnvironmentName: this.physicalName,
       computeResources,
-      serviceRole: props.serviceRole?.roleArn
-        ?? new iam.Role(this, 'Resource-Service-Instance-Role', {
-          managedPolicies: [
-            iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSBatchServiceRole'),
-          ],
-          assumedBy: new iam.ServicePrincipal('batch.amazonaws.com'),
-        }).roleArn,
+      serviceRole: props.serviceRole?.roleArn ?? this.buildComputeEnvironmentDefaultServiceRoleArn(isFargate),
       state: props.enabled === undefined ? 'ENABLED' : (props.enabled ? 'ENABLED' : 'DISABLED'),
       type: this.isManaged(props) ? 'MANAGED' : 'UNMANAGED',
     });
@@ -563,6 +557,25 @@ export class ComputeEnvironment extends Resource implements IComputeEnvironment 
     }
 
     return securityGroups.map((group: ec2.ISecurityGroup) => group.securityGroupId);
+  }
+
+  private buildComputeEnvironmentDefaultServiceRoleArn(isFargate:boolean): string {
+    if (isFargate) {
+      return Stack.of(this).formatArn({
+        service: 'iam',
+        region: '',
+        resource: 'role',
+        arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
+        resourceName: 'aws-service-role/batch.amazonaws.com/AWSServiceRoleForBatch',
+      });
+    } else {
+      return new iam.Role(this, 'Resource-Service-Instance-Role', {
+        managedPolicies: [
+          iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSBatchServiceRole'),
+        ],
+        assumedBy: new iam.ServicePrincipal('batch.amazonaws.com'),
+      }).roleArn;
+    }
   }
 
   /**

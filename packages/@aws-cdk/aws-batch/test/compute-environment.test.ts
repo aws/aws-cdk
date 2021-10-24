@@ -81,6 +81,55 @@ describe('Batch Compute Environment', () => {
       });
     });
   });
+
+  describe('using default service role', () => {
+    test('should use role with managed policy for ON_DEMAND', () => {
+      // WHEN
+      new batch.ComputeEnvironment(stack, 'test-compute-env', {
+        managed: true,
+        computeResources: {
+          vpc,
+        },
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
+        ...defaultServiceRole,
+      });
+    });
+
+    test('should use service linked role for FARGATE', () => {
+      // WHEN
+      new batch.ComputeEnvironment(stack, 'test-compute-env', {
+        managed: true,
+        computeResources: {
+          vpc,
+          type: batch.ComputeResourceType.FARGATE,
+        },
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
+        ServiceRole: {
+          'Fn::Join': [
+            '',
+            [
+              'arn:',
+              {
+                Ref: 'AWS::Partition',
+              },
+              ':iam::',
+              {
+                Ref: 'AWS::AccountId',
+              },
+              ':role/aws-service-role/batch.amazonaws.com/AWSServiceRoleForBatch',
+            ],
+          ],
+        },
+      });
+    });
+  });
+
   describe('using fargate resources', () => {
     test('should deny setting bid percentage', () => {
       // THEN
