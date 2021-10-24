@@ -9,4 +9,15 @@
 
 <!--END STABILITY BANNER-->
 
-A short description here.
+## Kinesis destination
+
+You can pass an existing IAM ``roleArn`` to be assumed for writing logs in a Kinesis destination. If not, a new one will be created.
+
+```ts
+const id = 'CloudWatchLogsCanPutRecords';
+const destinationRole = new iam.Role(this, id, {
+    assumedBy: new iam.ServicePrincipal('logs.amazonaws.com'),
+});
+
+const kinesisDestination = new LogsDestinations.KinesisDestination(kinesisStream, { role: destinationRole } );
+```

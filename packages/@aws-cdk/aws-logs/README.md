@@ -93,14 +93,18 @@ new SubscriptionFilter(this, 'Subscription', {
 });
 ```
 
-You can pass an existing IAM ``roleArn`` to be assumed for writing logs in the destination. If not, a new one will be created.
+You can pass an existing IAM ``roleArn`` to be assumed for writing logs in a Kinesis destination. If not, a new one will be created.
 
-```
+```ts
+const id = 'CloudWatchLogsCanPutRecords';
+const destinationRole = new iam.Role(this, id, {
+    assumedBy: new iam.ServicePrincipal('logs.amazonaws.com'),
+});
+
 new SubscriptionFilter(this, 'Subscription', {
     logGroup,
-    destination: new LogsDestinations.LambdaDestination(fn),
+    destination: new LogsDestinations.KinesisDestination(kinesisStream, { role: destinationRole } ),
     filterPattern: FilterPattern.allTerms("ERROR", "MainThread")
-    roleArn: role.roleArn
 });
 ```
 
