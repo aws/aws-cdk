@@ -7,7 +7,7 @@ import {
   BaseTargetGroupProps, ITargetGroup, loadBalancerNameFromListenerArn, LoadBalancerTargetProps,
   TargetGroupAttributes, TargetGroupBase, TargetGroupImportProps,
 } from '../shared/base-target-group';
-import { ApplicationProtocol, Protocol, TargetType } from '../shared/enums';
+import { ApplicationProtocol, ApplicationProtocolVersion, Protocol, TargetType, TargetGroupLoadBalancingAlgorithmType } from '../shared/enums';
 import { ImportedTargetGroupBase } from '../shared/imported';
 import { determineProtocolAndPort } from '../shared/util';
 import { IApplicationListener } from './application-listener';
@@ -27,6 +27,13 @@ export interface ApplicationTargetGroupProps extends BaseTargetGroupProps {
    * @default - Determined from port if known, optional for Lambda targets.
    */
   readonly protocol?: ApplicationProtocol;
+
+  /**
+   * The protocol version to use
+   *
+   * @default ApplicationProtocolVersion.HTTP1
+   */
+  readonly protocolVersion?: ApplicationProtocolVersion;
 
   /**
    * The port on which the listener listens for requests.
@@ -72,6 +79,13 @@ export interface ApplicationTargetGroupProps extends BaseTargetGroupProps {
   readonly stickinessCookieName?: string;
 
   /**
+   * The load balancing algorithm to select targets for routing requests.
+   *
+   * @default TargetGroupLoadBalancingAlgorithmType.ROUND_ROBIN
+   */
+  readonly loadBalancingAlgorithmType?: TargetGroupLoadBalancingAlgorithmType;
+
+  /**
    * The targets to add to this target group.
    *
    * Can be `Instance`, `IPAddress`, or any self-registering load balancing
@@ -110,8 +124,10 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
 
   constructor(scope: Construct, id: string, props: ApplicationTargetGroupProps = {}) {
     const [protocol, port] = determineProtocolAndPort(props.protocol, props.port);
+    const { protocolVersion } = props;
     super(scope, id, { ...props }, {
       protocol,
+      protocolVersion,
       port,
     });
 
@@ -130,6 +146,9 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
       }
       if (props.stickinessCookieDuration) {
         this.enableCookieStickiness(props.stickinessCookieDuration, props.stickinessCookieName);
+      }
+      if (props.loadBalancingAlgorithmType) {
+        this.setAttribute('load_balancing.algorithm.type', props.loadBalancingAlgorithmType);
       }
       this.addTarget(...(props.targets || []));
     }
@@ -357,11 +376,21 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
       ret.push('At least one of \'port\' or \'protocol\' is required for a non-Lambda TargetGroup');
     }
 
-    if (this.healthCheck && this.healthCheck.protocol && !ALB_HEALTH_CHECK_PROTOCOLS.includes(this.healthCheck.protocol)) {
-      ret.push([
-        `Health check protocol '${this.healthCheck.protocol}' is not supported. `,
-        `Must be one of [${ALB_HEALTH_CHECK_PROTOCOLS.join(', ')}]`,
-      ].join(''));
+    if (this.healthCheck && this.healthCheck.protocol) {
+
+      if (ALB_HEALTH_CHECK_PROTOCOLS.includes(this.healthCheck.protocol)) {
+        if (this.healthCheck.interval && this.healthCheck.timeout &&
+          this.healthCheck.interval.toMilliseconds() <= this.healthCheck.timeout.toMilliseconds()) {
+          ret.push(`Healthcheck interval ${this.healthCheck.interval.toHumanString()} must be greater than the timeout ${this.healthCheck.timeout.toHumanString()}`);
+        }
+      }
+
+      if (!ALB_HEALTH_CHECK_PROTOCOLS.includes(this.healthCheck.protocol)) {
+        ret.push([
+          `Health check protocol '${this.healthCheck.protocol}' is not supported. `,
+          `Must be one of [${ALB_HEALTH_CHECK_PROTOCOLS.join(', ')}]`,
+        ].join(''));
+      }
     }
 
     return ret;

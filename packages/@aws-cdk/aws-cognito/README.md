@@ -45,6 +45,7 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
     - [Multi-factor Authentication](#multi-factor-authentication-mfa)
     - [Account Recovery Settings](#account-recovery-settings)
   - [Emails](#emails)
+  - [Device Tracking](#device-tracking)
   - [Lambda Triggers](#lambda-triggers)
     - [Trigger Permissions](#trigger-permissions)
   - [Import](#importing-user-pools)
@@ -87,9 +88,9 @@ new cognito.UserPool(this, 'myuserpool', {
   selfSignUpEnabled: true,
   userVerification: {
     emailSubject: 'Verify your email for our awesome app!',
-    emailBody: 'Hello {username}, Thanks for signing up to our awesome app! Your verification code is {####}',
+    emailBody: 'Thanks for signing up to our awesome app! Your verification code is {####}',
     emailStyle: cognito.VerificationEmailStyle.CODE,
-    smsMessage: 'Hello {username}, Thanks for signing up to our awesome app! Your verification code is {####}',
+    smsMessage: 'Thanks for signing up to our awesome app! Your verification code is {####}',
   }
 });
 ```
@@ -107,7 +108,7 @@ new cognito.UserPool(this, 'myuserpool', {
   userInvitation: {
     emailSubject: 'Invite to join our awesome app!',
     emailBody: 'Hello {username}, you have been invited to join our awesome app! Your temporary password is {####}',
-    smsMessage: 'Your temporary password for our awesome app is {####}'
+    smsMessage: 'Hello {username}, your temporary password for our awesome app is {####}'
   }
 });
 ```
@@ -213,6 +214,12 @@ Custom attributes cannot be marked as required.
 
 All custom attributes share the property `mutable` that specifies whether the value of the attribute can be changed.
 The default value is `false`.
+
+User pools come with two 'built-in' attributes - `email_verified` and `phone_number_verified`. These cannot be
+configured (required-ness or mutability) as part of user pool creation. However, user pool administrators can modify
+them for specific users using the [AdminUpdateUserAttributes API].
+
+[AdminUpdateUserAttributes API]: https://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/API_AdminUpdateUserAttributes.html
 
 ### Security
 
@@ -331,6 +338,23 @@ layer](https://docs.aws.amazon.com/cdk/latest/guide/cfn_layer.html) to configure
 If an email address contains non-ASCII characters, it will be encoded using the [punycode
 encoding](https://en.wikipedia.org/wiki/Punycode) when generating the template for Cloudformation.
 
+### Device Tracking
+
+User pools can be configured to track devices that users have logged in to.
+Read more at [Device Tracking](https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-device-tracking.html)
+
+```ts
+new cognito.UserPool(this, 'myuserpool', {
+  // ...
+  deviceTracking: {
+    challengeRequiredOnNewDevice: true,
+    deviceOnlyRememberedOnUserPrompt: true,
+  },
+});
+```
+
+The default is to not track devices.
+
 ### Lambda Triggers
 
 User pools can be configured such that AWS Lambda functions can be triggered when certain user operations or actions
@@ -345,7 +369,7 @@ on the construct, as so -
 const authChallengeFn = new lambda.Function(this, 'authChallengeFn', {
   runtime: lambda.Runtime.NODEJS_12_X,
   handler: 'index.handler',
-  code: lambda.Code.fromInline('auth challenge'),
+  code: lambda.Code.fromAsset(/* path to lambda asset */),
 });
 
 const userpool = new cognito.UserPool(this, 'myuserpool', {
@@ -359,7 +383,7 @@ const userpool = new cognito.UserPool(this, 'myuserpool', {
 userpool.addTrigger(cognito.UserPoolOperation.USER_MIGRATION, new lambda.Function(this, 'userMigrationFn', {
     runtime: lambda.Runtime.NODEJS_12_X,
   handler: 'index.handler',
-  code: lambda.Code.fromInline('user migration'),
+  code: lambda.Code.fromAsset(/* path to lambda asset */),
 }));
 ```
 
@@ -485,7 +509,7 @@ new cognito.UserPoolClient(this, 'customer-app-client', {
 ```
 
 Clients can be configured with authentication flows. Authentication flows allow users on a client to be authenticated
-with a user pool. Cognito user pools provide several several different types of authentication, such as, SRP (Secure
+with a user pool. Cognito user pools provide several different types of authentication, such as, SRP (Secure
 Remote Password) authentication, username-and-password authentication, etc. Learn more about this at [UserPool Authentication
 Flow](https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-authentication-flow.html).
 
@@ -559,6 +583,21 @@ pool.addClient('app-client', {
 });
 ```
 
+If the identity provider and the app client are created in the same stack, specify the dependency between both constructs to make sure that the identity provider already exists when the app client will be created. The app client cannot handle the dependency to the identity provider automatically because the client does not have access to the provider's construct.
+
+```ts
+const provider = new cognito.UserPoolIdentityProviderAmazon(this, 'Amazon', {
+  // ...
+});
+const client = pool.addClient('app-client', {
+  // ...
+  supportedIdentityProviders: [
+    cognito.UserPoolClientIdentityProvider.AMAZON,
+  ],
+}
+client.node.addDependency(provider);
+```
+
 In accordance with the OIDC open standard, Cognito user pool clients provide access tokens, ID tokens and refresh tokens.
 More information is available at [Using Tokens with User Pools](https://docs.aws.amazon.com/en_us/cognito/latest/developerguide/amazon-cognito-user-pools-using-tokens-with-identity-providers.html).
 The expiration time for these tokens can be configured as shown below.
@@ -596,6 +635,17 @@ pool.addClient('app-client', {
   writeAttributes: clientWriteAttributes,
 });
 ```
+
+[Token revocation](https://docs.aws.amazon.com/cognito/latest/developerguide/token-revocation.html
+) can be configured to be able to revoke refresh tokens in app clients. By default, token revocation is enabled for new user pools. The property can be used to enable the token revocation in existing app clients or to change the default behavior.
+
+```ts
+const pool = new cognito.UserPool(this, 'Pool');
+pool.addClient('app-client', {
+  // ...
+  enableTokenRevocation: true,
+});
+``` 
 
 ### Resource Servers
 

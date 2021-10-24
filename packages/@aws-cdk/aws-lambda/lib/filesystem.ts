@@ -5,7 +5,6 @@ import { IDependable, Stack } from '@aws-cdk/core';
 
 /**
  * FileSystem configurations for the Lambda function
- * @experimental
  */
 export interface FileSystemConfig {
   /**
@@ -42,7 +41,6 @@ export interface FileSystemConfig {
 
 /**
  * Represents the filesystem for the Lambda function
- * @experimental
  */
 export class FileSystem {
   /**

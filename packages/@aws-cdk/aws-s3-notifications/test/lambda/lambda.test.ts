@@ -1,6 +1,6 @@
-// import { SynthUtils } from '@aws-cdk/assert';
-import { ResourcePart } from '@aws-cdk/assert';
-import '@aws-cdk/assert/jest';
+// import { SynthUtils } from '@aws-cdk/assert-internal';
+import { ResourcePart } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
 import { Stack, App } from '@aws-cdk/core';

@@ -133,7 +133,7 @@ The `corsPreflight` option lets you specify a CORS configuration for an API.
 new HttpApi(stack, 'HttpProxyApi', {
   corsPreflight: {
     allowHeaders: ['Authorization'],
-    allowMethods: [HttpMethod.GET, HttpMethod.HEAD, HttpMethod.OPTIONS, HttpMethod.POST],
+    allowMethods: [CorsHttpMethod.GET, CorsHttpMethod.HEAD, CorsHttpMethod.OPTIONS, CorsHttpMethod.POST],
     allowOrigins: ['*'],
     maxAge: Duration.days(10),
   },
@@ -187,7 +187,7 @@ const api = new HttpApi(stack, 'HttpProxyProdApi', {
 });
 ```
 
-To associate a specifc `Stage` to a custom domain mapping -
+To associate a specific `Stage` to a custom domain mapping -
 
 ```ts
 api.addStage('beta', {
@@ -223,6 +223,12 @@ with 3 API mapping resources across different APIs and Stages.
 | api | $default  |   `https://${domainName}/foo`  |
 | api | beta  |   `https://${domainName}/bar`  |
 | apiDemo | $default  |   `https://${domainName}/demo`  |
+
+You can retrieve the full domain URL with mapping key using the `domainUrl` property as so -
+
+```ts
+const demoDomainUrl = apiDemo.defaultStage.domainUrl; // returns "https://example.com/demo"
+```
 
 ### Managing access
 
@@ -309,6 +315,15 @@ new WebSocketStage(stack, 'mystage', {
   stageName: 'dev',
   autoDeploy: true,
 });
+```
+
+To retrieve a websocket URL and a callback URL:
+
+```ts
+const webSocketURL = webSocketStage.url;
+// wss://${this.api.apiId}.execute-api.${s.region}.${s.urlSuffix}/${urlPath}
+const callbackURL = webSocketStage.callbackUrl;
+// https://${this.api.apiId}.execute-api.${s.region}.${s.urlSuffix}/${urlPath}
 ```
 
 To add any other route:

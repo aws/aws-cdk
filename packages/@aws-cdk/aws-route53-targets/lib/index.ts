@@ -7,3 +7,4 @@ export * from './load-balancer-target';
 export * from './interface-vpc-endpoint-target';
 export * from './userpool-domain';
 export * from './global-accelerator-target';
+export * from './route53-record';

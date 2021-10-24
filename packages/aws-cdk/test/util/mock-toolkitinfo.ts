@@ -1,4 +1,4 @@
-import { ISDK, ToolkitInfo } from '../../lib';
+import { ISDK, ToolkitInfo } from '../../lib/api';
 import { CloudFormationStack } from '../../lib/api/util/cloudformation';
 
 export interface MockToolkitInfoProps {

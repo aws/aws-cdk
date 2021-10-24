@@ -19,6 +19,8 @@ Guide](https://docs.aws.amazon.com/cdk/latest/guide/home.html) for
 information of most of the capabilities of this library. The rest of this
 README will only cover topics not already covered in the Developer Guide.
 
+<!--BEGIN CORE DOCUMENTATION-->
+
 ## Stacks and Stages
 
 A `Stack` is the smallest physical unit of deployment, and maps directly onto
@@ -46,7 +48,7 @@ logical application. You can then treat that new unit the same way you used
 to be able to treat a single stack: by instantiating it multiple times
 for different instances of your application.
 
-You can define a custom subclass of `Construct`, holding one or more
+You can define a custom subclass of `Stage`, holding one or more
 `Stack`s, to represent a single logical instance of your application.
 
 As a final note: `Stack`s are not a unit of reuse. They describe physical
@@ -751,16 +753,19 @@ CloudFormation [mappings][cfn-mappings] are created and queried using the
 ```ts
 const regionTable = new CfnMapping(this, 'RegionTable', {
   mapping: {
-    regionName: {
-      'us-east-1': 'US East (N. Virginia)',
-      'us-east-2': 'US East (Ohio)',
+    'us-east-1': {
+      regionName: 'US East (N. Virginia)',
+      // ...
+    },
+    'us-east-2': {
+      regionName: 'US East (Ohio)',
       // ...
     },
     // ...
   }
 });
 
-regionTable.findInMap('regionName', Aws.REGION);
+regionTable.findInMap(Aws.REGION, 'regionName')
 ```
 
 This will yield the following template:
@@ -768,9 +773,43 @@ This will yield the following template:
 ```yaml
 Mappings:
   RegionTable:
-    regionName:
-      us-east-1: US East (N. Virginia)
-      us-east-2: US East (Ohio)
+    us-east-1:
+      regionName: US East (N. Virginia)
+    us-east-2:
+      regionName: US East (Ohio)
+```
+
+Mappings can also be synthesized "lazily"; lazy mappings will only render a "Mappings"
+section in the synthesized CloudFormation template if some `findInMap` call is unable to
+immediately return a concrete value due to one or both of the keys being unresolved tokens
+(some value only available at deploy-time).
+
+For example, the following code will not produce anything in the "Mappings" section. The
+call to `findInMap` will be able to resolve the value during synthesis and simply return
+`'US East (Ohio)'`.
+
+```ts
+const regionTable = new CfnMapping(this, 'RegionTable', {
+  mapping: {
+    'us-east-1': {
+      regionName: 'US East (N. Virginia)',
+    },
+    'us-east-2': {
+      regionName: 'US East (Ohio)',
+    },
+  },
+  lazy: true,
+});
+
+regionTable.findInMap('us-east-2', 'regionName');
+```
+
+On the other hand, the following code will produce the "Mappings" section shown above,
+since the top-level key is an unresolved token. The call to `findInMap` will return a token that resolves to 
+`{ "Fn::FindInMap": [ "RegionTable", { "Ref": "AWS::Region" }, "regionName" ] }`.
+
+```ts
+regionTable.findInMap(Aws.REGION, 'regionName');
 ```
 
 [cfn-mappings]: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/mappings-section-structure.html
@@ -911,3 +950,5 @@ When deploying to AWS CloudFormation, it needs to keep in check the amount of re
 It's possible to synthesize the project with more Resources than the allowed (or even reduce the number of Resources).
 
 Set the context key `@aws-cdk/core:stackResourceLimit` with the proper value, being 0 for disable the limit of resources.
+
+<!--END CORE DOCUMENTATION-->

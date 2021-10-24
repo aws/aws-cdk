@@ -1,5 +1,6 @@
 export * from './cache-policy';
 export * from './distribution';
+export * from './function';
 export * from './geo-restriction';
 export * from './key-group';
 export * from './origin';

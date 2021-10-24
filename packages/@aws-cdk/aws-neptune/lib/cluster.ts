@@ -46,6 +46,10 @@ export class EngineVersion {
    * Neptune engine version 1.0.4.1
    */
   public static readonly V1_0_4_1 = new EngineVersion('1.0.4.1');
+  /**
+   * Neptune engine version 1.0.5.0
+   */
+  public static readonly V1_0_5_0 = new EngineVersion('1.0.5.0');
 
   /**
    * Constructor for specifying a custom engine version
@@ -230,6 +234,12 @@ export interface IDatabaseCluster extends IResource, ec2.IConnectable {
   readonly clusterIdentifier: string;
 
   /**
+   * Resource identifier of the cluster
+   * @attribute ClusterResourceId
+   */
+  readonly clusterResourceIdentifier: string;
+
+  /**
    * The endpoint to use for read/write operations
    * @attribute Endpoint,Port
    */
@@ -267,6 +277,11 @@ export interface DatabaseClusterAttributes {
   readonly clusterIdentifier: string;
 
   /**
+   * Resource Identifier for the cluster
+   */
+  readonly clusterResourceIdentifier: string;
+
+  /**
    * Cluster endpoint address
    */
   readonly clusterEndpointAddress: string;
@@ -293,6 +308,7 @@ export abstract class DatabaseClusterBase extends Resource implements IDatabaseC
         defaultPort: this.defaultPort,
       });
       public readonly clusterIdentifier = attrs.clusterIdentifier;
+      public readonly clusterResourceIdentifier = attrs.clusterResourceIdentifier;
       public readonly clusterEndpoint = new Endpoint(attrs.clusterEndpointAddress, attrs.port);
       public readonly clusterReadEndpoint = new Endpoint(attrs.readerEndpointAddress, attrs.port);
       protected enableIamAuthentication = true;
@@ -305,6 +321,11 @@ export abstract class DatabaseClusterBase extends Resource implements IDatabaseC
    * Identifier of the cluster
    */
   public abstract readonly clusterIdentifier: string;
+
+  /**
+   * Resource identifier of the cluster
+   */
+  public abstract readonly clusterResourceIdentifier: string;
 
   /**
    * The endpoint to use for read/write operations
@@ -339,7 +360,7 @@ export abstract class DatabaseClusterBase extends Resource implements IDatabaseC
           'neptune-db',
           Aws.REGION,
           Aws.ACCOUNT_ID,
-          `${this.clusterIdentifier}/*`,
+          `${this.clusterResourceIdentifier}/*`,
         ].join(':'),
       ],
     });
@@ -486,7 +507,7 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
         dbClusterIdentifier: cluster.ref,
         dbInstanceIdentifier: instanceIdentifier,
         // Instance properties
-        dbInstanceClass: props.instanceType,
+        dbInstanceClass: props.instanceType._instanceType,
         dbParameterGroupName: props.parameterGroup?.parameterGroupName,
       });
 

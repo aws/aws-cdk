@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import '@aws-cdk/assert-internal/jest';
 import * as cloudfront from '@aws-cdk/aws-cloudfront';
 import { App, Duration, Stack } from '@aws-cdk/core';
 import { HttpOrigin } from '../lib';

@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import '@aws-cdk/assert-internal/jest';
 import * as globalaccelerator from '@aws-cdk/aws-globalaccelerator';
 import * as route53 from '@aws-cdk/aws-route53';
 import { Stack } from '@aws-cdk/core';

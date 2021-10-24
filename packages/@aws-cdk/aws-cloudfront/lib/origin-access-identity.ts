@@ -115,7 +115,7 @@ export class OriginAccessIdentity extends OriginAccessIdentityBase implements IO
     // physical id - OAI name
     this.originAccessIdentityName = this.getResourceNameAttribute(this.resource.ref);
 
-    // Canonical user to whitelist in S3 Bucket Policy
+    // Canonical user to grant access to in the S3 Bucket Policy
     this.cloudFrontOriginAccessIdentityS3CanonicalUserId = this.resource.attrS3CanonicalUserId;
     // The principal for must be either the canonical user or a special ARN
     // with the CloudFront Origin Access Id (see `arn()` method). For

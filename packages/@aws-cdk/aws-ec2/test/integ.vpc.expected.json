@@ -567,20 +567,6 @@
             "FromPort": 800,
             "IpProtocol": "udp",
             "ToPort": 801
-          },
-          {
-            "CidrIp": "0.0.0.0/0",
-            "Description": "from 0.0.0.0/0:ESP 50",
-            "FromPort": 50,
-            "IpProtocol": "esp",
-            "ToPort": 50
-          },
-          {
-            "CidrIp": "0.0.0.0/0",
-            "Description": "from 0.0.0.0/0:AH 51",
-            "FromPort": 51,
-            "IpProtocol": "ah",
-            "ToPort": 51
           }
         ],
         "VpcId": {

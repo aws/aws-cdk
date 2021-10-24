@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import '@aws-cdk/assert-internal/jest';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
 import * as tasks from '../../lib';
@@ -87,7 +87,7 @@ test('Cancel a Step with static ClusterId and StepId from payload', () => {
   // WHEN
   const task = new tasks.EmrCancelStep(stack, 'Task', {
     clusterId: 'ClusterId',
-    stepId: sfn.TaskInput.fromDataAt('$.StepId').value,
+    stepId: sfn.TaskInput.fromJsonPathAt('$.StepId').value,
   });
 
   // THEN
@@ -116,7 +116,7 @@ test('Cancel a Step with static ClusterId and StepId from payload', () => {
 test('Cancel a Step with ClusterId from payload and static StepId', () => {
   // WHEN
   const task = new tasks.EmrCancelStep(stack, 'Task', {
-    clusterId: sfn.TaskInput.fromDataAt('$.ClusterId').value,
+    clusterId: sfn.TaskInput.fromJsonPathAt('$.ClusterId').value,
     stepId: 'StepId',
   });
 

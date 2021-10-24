@@ -36,9 +36,16 @@ export class LambdaWebSocketIntegration implements IWebSocketRouteIntegration {
       }),
     });
 
+    const integrationUri = Stack.of(route).formatArn({
+      service: 'apigateway',
+      account: 'lambda',
+      resource: 'path/2015-03-31/functions',
+      resourceName: `${this.props.handler.functionArn}/invocations`,
+    });
+
     return {
       type: WebSocketIntegrationType.AWS_PROXY,
-      uri: this.props.handler.functionArn,
+      uri: integrationUri,
     };
   }
 }

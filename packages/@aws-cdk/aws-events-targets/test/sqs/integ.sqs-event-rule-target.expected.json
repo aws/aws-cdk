@@ -1,5 +1,53 @@
 {
   "Resources": {
+    "MyKey6AB29FA6": {
+      "Type": "AWS::KMS::Key",
+      "Properties": {
+        "KeyPolicy": {
+          "Statement": [
+            {
+              "Action": "kms:*",
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":root"
+                    ]
+                  ]
+                }
+              },
+              "Resource": "*"
+            },
+            {
+              "Action": [
+                "kms:Decrypt",
+                "kms:Encrypt",
+                "kms:ReEncrypt*",
+                "kms:GenerateDataKey*"
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "events.amazonaws.com"
+              },
+              "Resource": "*"
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      },
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain"
+    },
     "MyRuleA44AB831": {
       "Type": "AWS::Events::Rule",
       "Properties": {
@@ -13,6 +61,14 @@
                 "Arn"
               ]
             },
+            "DeadLetterConfig": {
+              "Arn": {
+                "Fn::GetAtt": [
+                  "MyDeadLetterQueueD997968A",
+                  "Arn"
+                ]
+              }
+            },
             "Id": "Target0"
           }
         ]
@@ -20,6 +76,14 @@
     },
     "MyQueueE6CA6235": {
       "Type": "AWS::SQS::Queue",
+      "Properties": {
+        "KmsMasterKeyId": {
+          "Fn::GetAtt": [
+            "MyKey6AB29FA6",
+            "Arn"
+          ]
+        }
+      },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
     },
@@ -34,16 +98,6 @@
                 "sqs:GetQueueAttributes",
                 "sqs:GetQueueUrl"
               ],
-              "Condition": {
-                "ArnEquals": {
-                  "aws:SourceArn": {
-                    "Fn::GetAtt": [
-                      "MyRuleA44AB831",
-                      "Arn"
-                    ]
-                  }
-                }
-              },
               "Effect": "Allow",
               "Principal": {
                 "Service": "events.amazonaws.com"
@@ -61,6 +115,50 @@
         "Queues": [
           {
             "Ref": "MyQueueE6CA6235"
+          }
+        ]
+      }
+    },
+    "MyDeadLetterQueueD997968A": {
+      "Type": "AWS::SQS::Queue",
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "MyDeadLetterQueuePolicyCC35D52C": {
+      "Type": "AWS::SQS::QueuePolicy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sqs:SendMessage",
+              "Condition": {
+                "ArnEquals": {
+                  "aws:SourceArn": {
+                    "Fn::GetAtt": [
+                      "MyRuleA44AB831",
+                      "Arn"
+                    ]
+                  }
+                }
+              },
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "events.amazonaws.com"
+              },
+              "Resource": {
+                "Fn::GetAtt": [
+                  "MyDeadLetterQueueD997968A",
+                  "Arn"
+                ]
+              },
+              "Sid": "AllowEventRuleawscdksqseventtargetMyRule0027A8F4"
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "Queues": [
+          {
+            "Ref": "MyDeadLetterQueueD997968A"
           }
         ]
       }

@@ -10,7 +10,6 @@ import { renderTags } from './private/utils';
 /**
  * Properties for creating an Amazon SageMaker transform job task
  *
- *  @experimental
  */
 export interface SageMakerCreateTransformJobProps extends sfn.TaskStateBaseProps {
   /**
@@ -94,7 +93,6 @@ export interface SageMakerCreateTransformJobProps extends sfn.TaskStateBaseProps
 /**
  * Class representing the SageMaker Create Transform Job task.
  *
- *  @experimental
  */
 export class SageMakerCreateTransformJob extends sfn.TaskStateBase {
   private static readonly SUPPORTED_INTEGRATION_PATTERNS: sfn.IntegrationPattern[] = [
@@ -229,7 +227,8 @@ export class SageMakerCreateTransformJob extends sfn.TaskStateBase {
     return {
       TransformResources: {
         InstanceCount: resources.instanceCount,
-        InstanceType: 'ml.' + resources.instanceType,
+        InstanceType: sfn.JsonPath.isEncodedJsonPath(resources.instanceType.toString())
+          ? resources.instanceType.toString() : `ml.${resources.instanceType}`,
         ...(resources.volumeEncryptionKey ? { VolumeKmsKeyId: resources.volumeEncryptionKey.keyArn } : {}),
       },
     };

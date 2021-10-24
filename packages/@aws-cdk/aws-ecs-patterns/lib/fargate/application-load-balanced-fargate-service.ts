@@ -146,6 +146,7 @@ export class ApplicationLoadBalancedFargateService extends ApplicationLoadBalanc
         logging: logDriver,
         environment: taskImageOptions.environment,
         secrets: taskImageOptions.secrets,
+        dockerLabels: taskImageOptions.dockerLabels,
       });
       container.addPortMappings({
         containerPort: taskImageOptions.containerPort || 80,
@@ -170,6 +171,7 @@ export class ApplicationLoadBalancedFargateService extends ApplicationLoadBalanc
       cloudMapOptions: props.cloudMapOptions,
       platformVersion: props.platformVersion,
       deploymentController: props.deploymentController,
+      circuitBreaker: props.circuitBreaker,
       securityGroups: props.securityGroups,
       vpcSubnets: props.taskSubnets,
     });

@@ -1,13 +1,13 @@
-import '@aws-cdk/assert/jest';
+import '@aws-cdk/assert-internal/jest';
 import * as path from 'path';
-import { InspectionFailure } from '@aws-cdk/assert';
+import { InspectionFailure } from '@aws-cdk/assert-internal';
 import * as ecr_assets from '@aws-cdk/aws-ecr-assets';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as ssm from '@aws-cdk/aws-ssm';
+import { testFutureBehavior } from '@aws-cdk/cdk-build-tools/lib/feature-flag';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import { testFutureBehavior } from 'cdk-build-tools/lib/feature-flag';
 import * as ecs from '../lib';
 
 describe('container definition', () => {
@@ -48,6 +48,7 @@ describe('container definition', () => {
         taskDefinition,
         memoryLimitMiB: 1024,
         memoryReservationMiB: 512,
+        containerName: 'Example Container',
         command: ['CMD-SHELL'],
         cpu: 128,
         disableNetworking: true,
@@ -198,7 +199,7 @@ describe('container definition', () => {
             },
             Memory: 1024,
             MemoryReservation: 512,
-            Name: 'Container',
+            Name: 'Example Container',
             Privileged: true,
             ReadonlyRootFilesystem: true,
             ResourceRequirements: [
@@ -997,6 +998,176 @@ describe('container definition', () => {
     });
   });
 
+  describe('Given InferenceAccelerator resource parameter', () => {
+    test('correctly adds resource requirements to container definition using inference accelerator resource property', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      const inferenceAccelerators = [{
+        deviceName: 'device1',
+        deviceType: 'eia2.medium',
+      }];
+
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
+        inferenceAccelerators,
+      });
+
+      const inferenceAcceleratorResources = ['device1'];
+
+      // WHEN
+      taskDefinition.addContainer('cont', {
+        image: ecs.ContainerImage.fromRegistry('test'),
+        memoryLimitMiB: 1024,
+        inferenceAcceleratorResources,
+      });
+
+      // THEN
+      expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+        Family: 'Ec2TaskDef',
+        InferenceAccelerators: [{
+          DeviceName: 'device1',
+          DeviceType: 'eia2.medium',
+        }],
+        ContainerDefinitions: [
+          {
+            Image: 'test',
+            ResourceRequirements: [
+              {
+                Type: 'InferenceAccelerator',
+                Value: 'device1',
+              },
+            ],
+          },
+        ],
+      });
+
+
+    });
+    test('correctly adds resource requirements to container definition using both props and addInferenceAcceleratorResource method', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      const inferenceAccelerators = [{
+        deviceName: 'device1',
+        deviceType: 'eia2.medium',
+      }, {
+        deviceName: 'device2',
+        deviceType: 'eia2.large',
+      }];
+
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
+        inferenceAccelerators,
+      });
+
+      const inferenceAcceleratorResources = ['device1'];
+
+      const container = taskDefinition.addContainer('cont', {
+        image: ecs.ContainerImage.fromRegistry('test'),
+        memoryLimitMiB: 1024,
+        inferenceAcceleratorResources,
+      });
+
+      // WHEN
+      container.addInferenceAcceleratorResource('device2');
+
+      // THEN
+      expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+        Family: 'Ec2TaskDef',
+        InferenceAccelerators: [{
+          DeviceName: 'device1',
+          DeviceType: 'eia2.medium',
+        }, {
+          DeviceName: 'device2',
+          DeviceType: 'eia2.large',
+        }],
+        ContainerDefinitions: [
+          {
+            Image: 'test',
+            ResourceRequirements: [
+              {
+                Type: 'InferenceAccelerator',
+                Value: 'device1',
+              },
+              {
+                Type: 'InferenceAccelerator',
+                Value: 'device2',
+              },
+            ],
+          },
+        ],
+      });
+
+    });
+    test('throws when the value of inference accelerator resource does not match any inference accelerators defined in the Task Definition', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      const inferenceAccelerators = [{
+        deviceName: 'device1',
+        deviceType: 'eia2.medium',
+      }];
+
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
+        inferenceAccelerators,
+      });
+
+      const inferenceAcceleratorResources = ['device2'];
+
+      // THEN
+      expect(() => {
+        taskDefinition.addContainer('cont', {
+          image: ecs.ContainerImage.fromRegistry('test'),
+          memoryLimitMiB: 1024,
+          inferenceAcceleratorResources,
+        });
+      }).toThrow(/Resource value device2 in container definition doesn't match any inference accelerator device name in the task definition./);
+    });
+  });
+
+  test('adds resource requirements when both inference accelerator and gpu count are defined in the container definition', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    const inferenceAccelerators = [{
+      deviceName: 'device1',
+      deviceType: 'eia2.medium',
+    }];
+
+    const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
+      inferenceAccelerators,
+    });
+
+    const inferenceAcceleratorResources = ['device1'];
+
+    taskDefinition.addContainer('cont', {
+      image: ecs.ContainerImage.fromRegistry('test'),
+      memoryLimitMiB: 1024,
+      gpuCount: 2,
+      inferenceAcceleratorResources,
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+      Family: 'Ec2TaskDef',
+      InferenceAccelerators: [{
+        DeviceName: 'device1',
+        DeviceType: 'eia2.medium',
+      }],
+      ContainerDefinitions: [
+        {
+          Image: 'test',
+          ResourceRequirements: [{
+            Type: 'InferenceAccelerator',
+            Value: 'device1',
+          }, {
+            Type: 'GPU',
+            Value: '2',
+          }],
+        },
+      ],
+    });
+  });
+
   test('can add secret environment variables to the container definition', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -1416,7 +1587,7 @@ describe('container definition', () => {
     const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
     const mySecretArn = 'arn:aws:secretsmanager:region:1234567890:secret:MyRepoSecret-6f8hj3';
 
-    const repoCreds = secretsmanager.Secret.fromSecretArn(stack, 'MyRepoSecret', mySecretArn);
+    const repoCreds = secretsmanager.Secret.fromSecretCompleteArn(stack, 'MyRepoSecret', mySecretArn);
 
     // WHEN
     taskDefinition.addContainer('Container', {
@@ -1721,7 +1892,7 @@ describe('container definition', () => {
                 { Ref: 'AWS::Region' },
                 '.',
                 { Ref: 'AWS::URLSuffix' },
-                '/aws-cdk/assets:b2c69bfbfe983b634456574587443159b3b7258849856a118ad3d2772238f1a5',
+                '/aws-cdk/assets:8c1d9ca9f5d37b1c4870c13a9f855301bb42c1848dbcdd5edc8fe2c6c7261d48',
               ],
             ],
           },
@@ -1777,11 +1948,11 @@ describe('container definition', () => {
     const asm = app.synth();
     expect(asm.getStackArtifact(stack.artifactId).assets[0]).toEqual({
       repositoryName: 'aws-cdk/assets',
-      imageTag: 'ce3419d7c5d2d44e2789b13ccbd2d54ddf682557669f68bcee753231f5f1c0a5',
-      id: 'ce3419d7c5d2d44e2789b13ccbd2d54ddf682557669f68bcee753231f5f1c0a5',
+      imageTag: '9d913132f812bc1ad436aeb5a51f9216c5776b8079318c1883ad2f79f0ef1a4b',
+      id: '9d913132f812bc1ad436aeb5a51f9216c5776b8079318c1883ad2f79f0ef1a4b',
       packaging: 'container-image',
-      path: 'asset.ce3419d7c5d2d44e2789b13ccbd2d54ddf682557669f68bcee753231f5f1c0a5',
-      sourceHash: 'ce3419d7c5d2d44e2789b13ccbd2d54ddf682557669f68bcee753231f5f1c0a5',
+      path: 'asset.9d913132f812bc1ad436aeb5a51f9216c5776b8079318c1883ad2f79f0ef1a4b',
+      sourceHash: '9d913132f812bc1ad436aeb5a51f9216c5776b8079318c1883ad2f79f0ef1a4b',
       target: 'build-target',
       file: 'index.py',
     });

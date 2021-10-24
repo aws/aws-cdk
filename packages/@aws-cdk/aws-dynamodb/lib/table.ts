@@ -1,9 +1,10 @@
 import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
+import * as kinesis from '@aws-cdk/aws-kinesis';
 import * as kms from '@aws-cdk/aws-kms';
 import {
-  Aws, CfnCondition, CfnCustomResource, CustomResource, Duration,
+  Aws, CfnCondition, CfnCustomResource, CfnResource, CustomResource, Duration,
   Fn, IResource, Lazy, Names, RemovalPolicy, Resource, Stack, Token,
 } from '@aws-cdk/core';
 import { Construct } from 'constructs';
@@ -110,23 +111,28 @@ export enum TableEncryption {
 }
 
 /**
- * Properties of a DynamoDB Table
- *
- * Use {@link TableProps} for all table properties
+ * Represents the table schema attributes.
  */
-export interface TableOptions {
+export interface SchemaOptions {
   /**
    * Partition key attribute definition.
    */
   readonly partitionKey: Attribute;
 
   /**
-   * Table sort key attribute definition.
+   * Sort key attribute definition.
    *
    * @default no sort key
    */
   readonly sortKey?: Attribute;
+}
 
+/**
+ * Properties of a DynamoDB Table
+ *
+ * Use {@link TableProps} for all table properties
+ */
+export interface TableOptions extends SchemaOptions {
   /**
    * The read capacity for the table. Careful if you add Global Secondary Indexes, as
    * those will share the table's provisioned throughput.
@@ -215,7 +221,6 @@ export interface TableOptions {
    * Regions where replica tables will be created
    *
    * @default - no replica tables are created
-   * @experimental
    */
   readonly replicationRegions?: string[];
 
@@ -225,6 +230,29 @@ export interface TableOptions {
    * @default Duration.minutes(30)
    */
   readonly replicationTimeout?: Duration;
+
+  /**
+   * Indicates whether CloudFormation stack waits for replication to finish.
+   * If set to false, the CloudFormation resource will mark the resource as
+   * created and replication will be completed asynchronously. This property is
+   * ignored if replicationRegions property is not set.
+   *
+   * DO NOT UNSET this property if adding/removing multiple replicationRegions
+   * in one deployment, as CloudFormation only supports one region replication
+   * at a time. CDK overcomes this limitation by waiting for replication to
+   * finish before starting new replicationRegion.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dynamodb-globaltable.html#cfn-dynamodb-globaltable-replicas
+   * @default true
+   */
+  readonly waitForReplicationToFinish?: boolean;
+
+  /**
+   * Whether CloudWatch contributor insights is enabled.
+   *
+   * @default false
+   */
+  readonly contributorInsightsEnabled?: boolean;
 }
 
 /**
@@ -236,6 +264,13 @@ export interface TableProps extends TableOptions {
    * @default <generated>
    */
   readonly tableName?: string;
+
+  /**
+   * Kinesis Data Stream to capture item-level changes for the table.
+   *
+   * @default - no Kinesis Data Stream
+   */
+  readonly kinesisStream?: kinesis.IStream;
 }
 
 /**
@@ -263,18 +298,7 @@ export interface SecondaryIndexProps {
 /**
  * Properties for a global secondary index
  */
-export interface GlobalSecondaryIndexProps extends SecondaryIndexProps {
-  /**
-   * The attribute of a partition key for the global secondary index.
-   */
-  readonly partitionKey: Attribute;
-
-  /**
-   * The attribute of a sort key for the global secondary index.
-   * @default - No sort key
-   */
-  readonly sortKey?: Attribute;
-
+export interface GlobalSecondaryIndexProps extends SecondaryIndexProps, SchemaOptions {
   /**
    * The read capacity for the global secondary index.
    *
@@ -905,7 +929,7 @@ abstract class TableBase extends Resource implements ITable {
    */
   private combinedGrant(
     grantee: iam.IGrantable,
-    opts: {keyActions?: string[], tableActions?: string[], streamActions?: string[]},
+    opts: { keyActions?: string[], tableActions?: string[], streamActions?: string[] },
   ): iam.Grant {
     if (opts.tableActions) {
       const resources = [this.tableArn,
@@ -938,7 +962,7 @@ abstract class TableBase extends Resource implements ITable {
       });
       return ret;
     }
-    throw new Error(`Unexpected 'action', ${ opts.tableActions || opts.streamActions }`);
+    throw new Error(`Unexpected 'action', ${opts.tableActions || opts.streamActions}`);
   }
 
   private cannedMetric(
@@ -1064,7 +1088,7 @@ export class Table extends TableBase {
   private readonly globalSecondaryIndexes = new Array<CfnTable.GlobalSecondaryIndexProperty>();
   private readonly localSecondaryIndexes = new Array<CfnTable.LocalSecondaryIndexProperty>();
 
-  private readonly secondaryIndexNames = new Set<string>();
+  private readonly secondaryIndexSchemas = new Map<string, SchemaOptions>();
   private readonly nonKeyAttributes = new Set<string>();
 
   private readonly tablePartitionKey: Attribute;
@@ -1115,6 +1139,8 @@ export class Table extends TableBase {
       sseSpecification,
       streamSpecification,
       timeToLiveSpecification: props.timeToLiveAttribute ? { attributeName: props.timeToLiveAttribute, enabled: true } : undefined,
+      contributorInsightsSpecification: props.contributorInsightsEnabled !== undefined ? { enabled: props.contributorInsightsEnabled } : undefined,
+      kinesisStreamSpecification: props.kinesisStream ? { streamArn: props.kinesisStream.streamArn } : undefined,
     });
     this.table.applyRemovalPolicy(props.removalPolicy);
 
@@ -1142,7 +1168,7 @@ export class Table extends TableBase {
     }
 
     if (props.replicationRegions && props.replicationRegions.length > 0) {
-      this.createReplicaTables(props.replicationRegions, props.replicationTimeout);
+      this.createReplicaTables(props.replicationRegions, props.replicationTimeout, props.waitForReplicationToFinish);
     }
   }
 
@@ -1159,7 +1185,6 @@ export class Table extends TableBase {
     const gsiKeySchema = this.buildIndexKeySchema(props.partitionKey, props.sortKey);
     const gsiProjection = this.buildIndexProjection(props);
 
-    this.secondaryIndexNames.add(props.indexName);
     this.globalSecondaryIndexes.push({
       indexName: props.indexName,
       keySchema: gsiKeySchema,
@@ -1168,6 +1193,11 @@ export class Table extends TableBase {
         readCapacityUnits: props.readCapacity || 5,
         writeCapacityUnits: props.writeCapacity || 5,
       },
+    });
+
+    this.secondaryIndexSchemas.set(props.indexName, {
+      partitionKey: props.partitionKey,
+      sortKey: props.sortKey,
     });
 
     this.indexScaling.set(props.indexName, {});
@@ -1190,11 +1220,15 @@ export class Table extends TableBase {
     const lsiKeySchema = this.buildIndexKeySchema(this.tablePartitionKey, props.sortKey);
     const lsiProjection = this.buildIndexProjection(props);
 
-    this.secondaryIndexNames.add(props.indexName);
     this.localSecondaryIndexes.push({
       indexName: props.indexName,
       keySchema: lsiKeySchema,
       projection: lsiProjection,
+    });
+
+    this.secondaryIndexSchemas.set(props.indexName, {
+      partitionKey: this.tablePartitionKey,
+      sortKey: props.sortKey,
     });
   }
 
@@ -1299,6 +1333,25 @@ export class Table extends TableBase {
   }
 
   /**
+   * Get schema attributes of table or index.
+   *
+   * @returns Schema of table or index.
+   */
+  public schema(indexName?: string): SchemaOptions {
+    if (!indexName) {
+      return {
+        partitionKey: this.tablePartitionKey,
+        sortKey: this.tableSortKey,
+      };
+    }
+    let schema = this.secondaryIndexSchemas.get(indexName);
+    if (!schema) {
+      throw new Error(`Cannot find schema for index: ${indexName}. Use 'addGlobalSecondaryIndex' or 'addLocalSecondaryIndex' to add index`);
+    }
+    return schema;
+  }
+
+  /**
    * Validate the table construct.
    *
    * @returns an array of validation error message
@@ -1346,11 +1399,10 @@ export class Table extends TableBase {
    * @param indexName a name of global or local secondary index
    */
   private validateIndexName(indexName: string) {
-    if (this.secondaryIndexNames.has(indexName)) {
+    if (this.secondaryIndexSchemas.has(indexName)) {
       // a duplicate index name causes validation exception, status code 400, while trying to create CFN stack
       throw new Error(`a duplicate index name, ${indexName}, is not allowed`);
     }
-    this.secondaryIndexNames.add(indexName);
   }
 
   /**
@@ -1458,7 +1510,7 @@ export class Table extends TableBase {
    *
    * @param regions regions where to create tables
    */
-  private createReplicaTables(regions: string[], timeout?: Duration) {
+  private createReplicaTables(regions: string[], timeout?: Duration, waitForReplicationToFinish?: boolean) {
     const stack = Stack.of(this);
 
     if (!Token.isUnresolved(stack.region) && regions.includes(stack.region)) {
@@ -1477,7 +1529,8 @@ export class Table extends TableBase {
     this.grant(onEventHandlerPolicy, 'dynamodb:*');
     this.grant(isCompleteHandlerPolicy, 'dynamodb:DescribeTable');
 
-    let previousRegion;
+    let previousRegion: CustomResource | undefined;
+    let previousRegionCondition: CfnCondition | undefined;
     for (const region of new Set(regions)) { // Remove duplicates
       // Use multiple custom resources because multiple create/delete
       // updates cannot be combined in a single API call.
@@ -1487,6 +1540,7 @@ export class Table extends TableBase {
         properties: {
           TableName: this.tableName,
           Region: region,
+          SkipReplicationCompletedWait: waitForReplicationToFinish === undefined ? undefined : !waitForReplicationToFinish,
         },
       });
       currentRegion.node.addDependency(
@@ -1498,8 +1552,9 @@ export class Table extends TableBase {
       // Deploy time check to prevent from creating a replica in the region
       // where this stack is deployed. Only needed for environment agnostic
       // stacks.
+      let createReplica: CfnCondition | undefined;
       if (Token.isUnresolved(stack.region)) {
-        const createReplica = new CfnCondition(this, `StackRegionNotEquals${region}`, {
+        createReplica = new CfnCondition(this, `StackRegionNotEquals${region}`, {
           expression: Fn.conditionNot(Fn.conditionEquals(region, Aws.REGION)),
         });
         const cfnCustomResource = currentRegion.node.defaultChild as CfnCustomResource;
@@ -1518,14 +1573,27 @@ export class Table extends TableBase {
       // have multiple table updates at the same time. The `isCompleteHandler`
       // of the provider waits until the replica is in an ACTIVE state.
       if (previousRegion) {
-        currentRegion.node.addDependency(previousRegion);
+        if (previousRegionCondition) {
+          // we can't simply use a Dependency,
+          // because the previousRegion is protected by the "different region" Condition,
+          // and you can't have Fn::If in DependsOn.
+          // Instead, rely on Ref adding a dependency implicitly!
+          const previousRegionCfnResource = previousRegion.node.defaultChild as CfnResource;
+          const currentRegionCfnResource = currentRegion.node.defaultChild as CfnResource;
+          currentRegionCfnResource.addMetadata('DynamoDbReplicationDependency',
+            Fn.conditionIf(previousRegionCondition.logicalId, previousRegionCfnResource.ref, Aws.NO_VALUE));
+        } else {
+          currentRegion.node.addDependency(previousRegion);
+        }
       }
+
       previousRegion = currentRegion;
+      previousRegionCondition = createReplica;
     }
 
     // Permissions in the destination regions (outside of the loop to
     // minimize statements in the policy)
-    onEventHandlerPolicy.grantPrincipal.addToPolicy(new iam.PolicyStatement({
+    onEventHandlerPolicy.grantPrincipal.addToPrincipalPolicy(new iam.PolicyStatement({
       actions: ['dynamodb:*'],
       resources: this.regionalArns,
     }));
@@ -1555,7 +1623,7 @@ export class Table extends TableBase {
 
     if (encryptionType === undefined) {
       encryptionType = props.encryptionKey != null
-        // If there is a configured encyptionKey, the encryption is implicitly CUSTOMER_MANAGED
+        // If there is a configured encryptionKey, the encryption is implicitly CUSTOMER_MANAGED
         ? TableEncryption.CUSTOMER_MANAGED
         // Otherwise, if severSideEncryption is enabled, it's AWS_MANAGED; else undefined (do not set anything)
         : props.serverSideEncryption ? TableEncryption.AWS_MANAGED : undefined;
@@ -1613,7 +1681,7 @@ export enum AttributeType {
 }
 
 /**
- * DyanmoDB's Read/Write capacity modes.
+ * DynamoDB's Read/Write capacity modes.
  */
 export enum BillingMode {
   /**

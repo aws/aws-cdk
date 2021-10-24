@@ -1,5 +1,5 @@
-import { MatchStyle } from '@aws-cdk/assert';
-import '@aws-cdk/assert/jest';
+import { MatchStyle } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import * as acm from '@aws-cdk/aws-certificatemanager';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
@@ -241,6 +241,50 @@ describe('tests', () => {
       ],
       SslPolicy: 'ELBSecurityPolicy-TLS-1-2-2017-01',
     });
+  });
+
+  test('Trivial add TLS listener with ALPN', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+    const lb = new elbv2.NetworkLoadBalancer(stack, 'LB', { vpc });
+    const cert = new acm.Certificate(stack, 'Certificate', {
+      domainName: 'example.com',
+    });
+
+    // WHEN
+    lb.addListener('Listener', {
+      port: 443,
+      protocol: elbv2.Protocol.TLS,
+      alpnPolicy: elbv2.AlpnPolicy.HTTP2_ONLY,
+      certificates: [elbv2.ListenerCertificate.fromCertificateManager(cert)],
+      sslPolicy: elbv2.SslPolicy.TLS12,
+      defaultTargetGroups: [
+        new elbv2.NetworkTargetGroup(stack, 'Group', { vpc, port: 80 }),
+      ],
+    });
+
+    // THEN
+    expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::Listener', {
+      Protocol: 'TLS',
+      Port: 443,
+      AlpnPolicy: ['HTTP2Only'],
+      Certificates: [{ CertificateArn: { Ref: 'Certificate4E7ABB08' } }],
+      SslPolicy: 'ELBSecurityPolicy-TLS-1-2-2017-01',
+    });
+  });
+
+  test('Incompatible Protocol with ALPN', () => {
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+    const lb = new elbv2.NetworkLoadBalancer(stack, 'LB', { vpc });
+
+    expect(() => lb.addListener('Listener', {
+      port: 443,
+      protocol: elbv2.Protocol.TCP,
+      alpnPolicy: elbv2.AlpnPolicy.HTTP2_OPTIONAL,
+      defaultTargetGroups: [new elbv2.NetworkTargetGroup(stack, 'Group', { vpc, port: 80 })],
+    })).toThrow(/Protocol must be TLS when alpnPolicy have been specified/);
   });
 
   test('Invalid Protocol listener', () => {

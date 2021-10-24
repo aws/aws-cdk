@@ -2,7 +2,7 @@ import * as codecommit from '@aws-cdk/aws-codecommit';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as targets from '@aws-cdk/aws-events-targets';
 import * as iam from '@aws-cdk/aws-iam';
-import { Names, Token } from '@aws-cdk/core';
+import { Names, Stack, Token, TokenComparison } from '@aws-cdk/core';
 import { Action } from '../action';
 import { sourceArtifactBounds } from '../common';
 
@@ -106,6 +106,15 @@ export interface CodeCommitSourceActionProps extends codepipeline.CommonAwsActio
 
 /**
  * CodePipeline Source that is provided by an AWS CodeCommit repository.
+ *
+ * If the CodeCommit repository is in a different account, you must use
+ * `CodeCommitTrigger.EVENTS` to trigger the pipeline.
+ *
+ * (That is because the Pipeline structure normally only has a `RepositoryName`
+ * field, and that is not enough for the pipeline to locate the repository's
+ * source account. However, if the pipeline is triggered via an EventBridge
+ * event, the event itself has the full repository ARN in there, allowing the
+ * pipeline to locate the repository).
  */
 export class CodeCommitSourceAction extends Action {
   /**
@@ -171,6 +180,11 @@ export class CodeCommitSourceAction extends Action {
     // the Action will write the contents of the Git repository to the Bucket,
     // so its Role needs write permissions to the Pipeline Bucket
     options.bucket.grantReadWrite(options.role);
+    // when this action is cross-account,
+    // the Role needs the s3:PutObjectAcl permission for some not yet fully understood reason
+    if (Token.compareStrings(this.props.repository.env.account, Stack.of(stage.pipeline).account) === TokenComparison.DIFFERENT) {
+      options.bucket.grantPutAcl(options.role);
+    }
 
     // https://docs.aws.amazon.com/codecommit/latest/userguide/auth-and-access-control-permissions-reference.html#aa-acp
     options.role.addToPrincipalPolicy(new iam.PolicyStatement({

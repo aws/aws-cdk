@@ -1,19 +1,61 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import * as assets from '@aws-cdk/assets';
 import * as ecr from '@aws-cdk/aws-ecr';
-import { Annotations, FeatureFlags, IgnoreMode, Stack, Token } from '@aws-cdk/core';
+import { Annotations, AssetStaging, FeatureFlags, FileFingerprintOptions, IgnoreMode, Stack, SymlinkFollowMode, Token, Stage } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line
+import { FingerprintOptions, FollowMode, IAsset } from '@aws-cdk/assets';
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
 import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
+ * Options to control invalidation of `DockerImageAsset` asset hashes
+ */
+export interface DockerImageAssetInvalidationOptions {
+  /**
+   * Use `extraHash` while calculating the asset hash
+   *
+   * @default true
+   */
+  readonly extraHash?: boolean;
+
+  /**
+   * Use `buildArgs` while calculating the asset hash
+   *
+   * @default true
+   */
+  readonly buildArgs?: boolean;
+
+  /**
+   * Use `target` while calculating the asset hash
+   *
+   * @default true
+   */
+  readonly target?: boolean;
+
+  /**
+   * Use `file` while calculating the asset hash
+   *
+   * @default true
+   */
+  readonly file?: boolean;
+
+  /**
+   * Use `repositoryName` while calculating the asset hash
+   *
+   * @default true
+   */
+  readonly repositoryName?: boolean;
+}
+
+/**
  * Options for DockerImageAsset
  */
-export interface DockerImageAssetOptions extends assets.FingerprintOptions {
+export interface DockerImageAssetOptions extends FingerprintOptions, FileFingerprintOptions {
   /**
    * ECR repository name
    *
@@ -52,6 +94,13 @@ export interface DockerImageAssetOptions extends assets.FingerprintOptions {
    * @default 'Dockerfile'
    */
   readonly file?: string;
+
+  /**
+   * Options to control which parameters are used to invalidate the asset hash.
+   *
+   * @default - hash all parameters
+   */
+  readonly invalidation?: DockerImageAssetInvalidationOptions;
 }
 
 /**
@@ -60,6 +109,8 @@ export interface DockerImageAssetOptions extends assets.FingerprintOptions {
 export interface DockerImageAssetProps extends DockerImageAssetOptions {
   /**
    * The directory where the Dockerfile is stored
+   *
+   * Any directory inside with a name that matches the CDK output folder (cdk.out by default) will be excluded from the asset
    */
   readonly directory: string;
 }
@@ -69,7 +120,7 @@ export interface DockerImageAssetProps extends DockerImageAssetOptions {
  *
  * The image will be created in build time and uploaded to an ECR repository.
  */
-export class DockerImageAsset extends CoreConstruct implements assets.IAsset {
+export class DockerImageAsset extends CoreConstruct implements IAsset {
   /**
    * The full URI of the image (including a tag). Use this reference to pull
    * the asset.
@@ -81,7 +132,20 @@ export class DockerImageAsset extends CoreConstruct implements assets.IAsset {
    */
   public repository: ecr.IRepository;
 
+  /**
+   * A hash of the source of this asset, which is available at construction time. As this is a plain
+   * string, it can be used in construct IDs in order to enforce creation of a new resource when
+   * the content hash has changed.
+   * @deprecated use assetHash
+   */
   public readonly sourceHash: string;
+
+  /**
+   * A hash of this asset, which is available at construction time. As this is a plain string, it
+   * can be used in construct IDs in order to enforce creation of a new resource when the content
+   * hash has changed.
+   */
+  public readonly assetHash: string;
 
   constructor(scope: Construct, id: string, props: DockerImageAssetProps) {
     super(scope, id);
@@ -116,33 +180,37 @@ export class DockerImageAsset extends CoreConstruct implements assets.IAsset {
         ...dockerIgnorePatterns,
         ...exclude,
 
-        // Ensure .dockerignore is whitelisted no matter what.
+        // Ensure .dockerignore is included no matter what.
         '!.dockerignore',
       ];
     }
 
-    // Ensure the Dockerfile is whitelisted no matter what.
+    // Ensure the Dockerfile is included no matter what.
     exclude.push('!' + path.basename(file));
+    // Ensure the cdk.out folder is not included to avoid infinite loops.
+    const cdkout = Stage.of(this)?.outdir ?? 'cdk.out';
+    exclude.push(cdkout);
 
     if (props.repositoryName) {
       Annotations.of(this).addWarning('DockerImageAsset.repositoryName is deprecated. Override "core.Stack.addDockerImageAsset" to control asset locations');
     }
 
     // include build context in "extra" so it will impact the hash
-    const extraHash: { [field: string]: any } = { };
-    if (props.extraHash) { extraHash.user = props.extraHash; }
-    if (props.buildArgs) { extraHash.buildArgs = props.buildArgs; }
-    if (props.target) { extraHash.target = props.target; }
-    if (props.file) { extraHash.file = props.file; }
-    if (props.repositoryName) { extraHash.repositoryName = props.repositoryName; }
+    const extraHash: { [field: string]: any } = {};
+    if (props.invalidation?.extraHash !== false && props.extraHash) { extraHash.user = props.extraHash; }
+    if (props.invalidation?.buildArgs !== false && props.buildArgs) { extraHash.buildArgs = props.buildArgs; }
+    if (props.invalidation?.target !== false && props.target) { extraHash.target = props.target; }
+    if (props.invalidation?.file !== false && props.file) { extraHash.file = props.file; }
+    if (props.invalidation?.repositoryName !== false && props.repositoryName) { extraHash.repositoryName = props.repositoryName; }
 
     // add "salt" to the hash in order to invalidate the image in the upgrade to
     // 1.21.0 which removes the AdoptedRepository resource (and will cause the
     // deletion of the ECR repository the app used).
     extraHash.version = '1.21.0';
 
-    const staging = new assets.Staging(this, 'Staging', {
+    const staging = new AssetStaging(this, 'Staging', {
       ...props,
+      follow: props.followSymlinks ?? toSymlinkFollow(props.follow),
       exclude,
       ignoreMode,
       sourcePath: dir,
@@ -151,7 +219,8 @@ export class DockerImageAsset extends CoreConstruct implements assets.IAsset {
         : JSON.stringify(extraHash),
     });
 
-    this.sourceHash = staging.sourceHash;
+    this.sourceHash = staging.assetHash;
+    this.assetHash = staging.assetHash;
 
     const stack = Stack.of(this);
     const location = stack.synthesizer.addDockerImageAsset({
@@ -159,8 +228,7 @@ export class DockerImageAsset extends CoreConstruct implements assets.IAsset {
       dockerBuildArgs: props.buildArgs,
       dockerBuildTarget: props.target,
       dockerFile: props.file,
-      repositoryName: props.repositoryName,
-      sourceHash: staging.sourceHash,
+      sourceHash: staging.assetHash,
     });
 
     this.repository = ecr.Repository.fromRepositoryName(this, 'Repository', location.repositoryName);
@@ -183,5 +251,15 @@ function validateBuildArgs(buildArgs?: { [key: string]: string }) {
     if (Token.isUnresolved(key) || Token.isUnresolved(value)) {
       throw new Error('Cannot use tokens in keys or values of "buildArgs" since they are needed before deployment');
     }
+  }
+}
+
+function toSymlinkFollow(follow?: FollowMode): SymlinkFollowMode | undefined {
+  switch (follow) {
+    case undefined: return undefined;
+    case FollowMode.NEVER: return SymlinkFollowMode.NEVER;
+    case FollowMode.ALWAYS: return SymlinkFollowMode.ALWAYS;
+    case FollowMode.BLOCK_EXTERNAL: return SymlinkFollowMode.BLOCK_EXTERNAL;
+    case FollowMode.EXTERNAL: return SymlinkFollowMode.EXTERNAL;
   }
 }

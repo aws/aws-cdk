@@ -1,9 +1,12 @@
 import { Certificate, CertificateValidation, ICertificate } from '@aws-cdk/aws-certificatemanager';
 import { IVpc } from '@aws-cdk/aws-ec2';
-import { AwsLogDriver, BaseService, CloudMapOptions, Cluster, ContainerImage, DeploymentController, ICluster, LogDriver, PropagatedTagSource, Secret } from '@aws-cdk/aws-ecs';
 import {
-  ApplicationListener, ApplicationLoadBalancer, ApplicationProtocol, ApplicationTargetGroup,
-  IApplicationLoadBalancer, ListenerCertificate, ListenerAction, AddApplicationTargetsProps,
+  AwsLogDriver, BaseService, CloudMapOptions, Cluster, ContainerImage, DeploymentController, DeploymentCircuitBreaker,
+  ICluster, LogDriver, PropagatedTagSource, Secret,
+} from '@aws-cdk/aws-ecs';
+import {
+  ApplicationListener, ApplicationLoadBalancer, ApplicationProtocol, ApplicationProtocolVersion, ApplicationTargetGroup,
+  IApplicationLoadBalancer, ListenerCertificate, ListenerAction, AddApplicationTargetsProps, SslPolicy,
 } from '@aws-cdk/aws-elasticloadbalancingv2';
 import { IRole } from '@aws-cdk/aws-iam';
 import { ARecord, IHostedZone, RecordTarget, CnameRecord } from '@aws-cdk/aws-route53';
@@ -115,6 +118,13 @@ export interface ApplicationLoadBalancedServiceBaseProps {
   readonly protocol?: ApplicationProtocol;
 
   /**
+   * The protocol version to use
+   *
+   * @default ApplicationProtocolVersion.HTTP1
+   */
+  readonly protocolVersion?: ApplicationProtocolVersion;
+
+  /**
    * The domain name for the service, e.g. "api.example.com."
    *
    * @default - No domain name.
@@ -181,6 +191,13 @@ export interface ApplicationLoadBalancedServiceBaseProps {
   readonly listenerPort?: number;
 
   /**
+   * The security policy that defines which ciphers and protocols are supported by the ALB Listener.
+   *
+   * @default - The recommended elastic load balancing security policy
+   */
+  readonly sslPolicy?: SslPolicy;
+
+  /**
    * Specifies whether to propagate the tags from the task definition or the service to the tasks in the service.
    * Tags can only be propagated to the tasks within the service during service creation.
    *
@@ -226,6 +243,21 @@ export interface ApplicationLoadBalancedServiceBaseProps {
    * @default - Rolling update (ECS)
    */
   readonly deploymentController?: DeploymentController;
+
+  /**
+   * Whether to enable the deployment circuit breaker. If this property is defined, circuit breaker will be implicitly
+   * enabled.
+   * @default - disabled
+   */
+  readonly circuitBreaker?: DeploymentCircuitBreaker;
+
+  /**
+   * Name of the load balancer
+   *
+   * @default - Automatically generated name.
+   */
+  readonly loadBalancerName?: string;
+
 }
 
 export interface ApplicationLoadBalancedTaskImageOptions {
@@ -307,6 +339,13 @@ export interface ApplicationLoadBalancedTaskImageOptions {
    * @default - Automatically generated name.
    */
   readonly family?: string;
+
+  /**
+   * A key/value map of labels to add to the container.
+   *
+   * @default - No labels.
+   */
+  readonly dockerLabels?: { [key: string]: string };
 }
 
 /**
@@ -385,6 +424,7 @@ export abstract class ApplicationLoadBalancedServiceBase extends CoreConstruct {
 
     const lbProps = {
       vpc: this.cluster.vpc,
+      loadBalancerName: props.loadBalancerName,
       internetFacing,
     };
 
@@ -401,23 +441,26 @@ export abstract class ApplicationLoadBalancedServiceBase extends CoreConstruct {
 
     const targetProps: AddApplicationTargetsProps = {
       protocol: props.targetProtocol ?? ApplicationProtocol.HTTP,
+      protocolVersion: props.protocolVersion,
     };
 
     this.listener = loadBalancer.addListener('PublicListener', {
       protocol,
       port: props.listenerPort,
       open: props.openListener ?? true,
+      sslPolicy: props.sslPolicy,
     });
     this.targetGroup = this.listener.addTargets('ECS', targetProps);
 
     if (protocol === ApplicationProtocol.HTTPS) {
-      if (typeof props.domainName === 'undefined' || typeof props.domainZone === 'undefined') {
-        throw new Error('A domain name and zone is required when using the HTTPS protocol');
-      }
 
       if (props.certificate !== undefined) {
         this.certificate = props.certificate;
       } else {
+        if (typeof props.domainName === 'undefined' || typeof props.domainZone === 'undefined') {
+          throw new Error('A domain name and zone is required when using the HTTPS protocol');
+        }
+
         this.certificate = new Certificate(this, 'Certificate', {
           domainName: props.domainName,
           validation: CertificateValidation.fromDns(props.domainZone),

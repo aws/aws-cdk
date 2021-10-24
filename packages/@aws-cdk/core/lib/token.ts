@@ -191,6 +191,7 @@ export class Tokenization {
       scope: options.scope,
       resolver: options.resolver,
       preparing: (options.preparing ?? false),
+      removeEmpty: options.removeEmpty,
     });
   }
 
@@ -265,6 +266,13 @@ export interface ResolveOptions {
    * @default false
    */
   readonly preparing?: boolean;
+
+  /**
+   * Whether to remove undefined elements from arrays and objects when resolving.
+   *
+   * @default true
+   */
+  readonly removeEmpty?: boolean;
 }
 
 /**

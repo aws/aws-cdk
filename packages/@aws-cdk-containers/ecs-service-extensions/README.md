@@ -19,6 +19,8 @@ The `Service` construct provided by this module can be extended with optional `S
 - [AWS AppMesh](https://aws.amazon.com/app-mesh/) for adding your application to a service mesh
 - [Application Load Balancer](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html), for exposing your service to the public
 - [AWS FireLens](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/using_firelens.html), for filtering and routing application logs
+- [Injecter Extension](#injecter-extension), for allowing your service connect to other AWS services by granting permission and injecting environment variables
+- [Queue Extension](#queue-extension), for allowing your service to consume messages from an SQS Queue which can be populated by one or more SNS Topics that it is subscribed to
 - [Community Extensions](#community-extensions), providing support for advanced use cases
 
 The `ServiceExtension` class is an abstract class which you can also implement in
@@ -61,19 +63,19 @@ const nameService = new Service(stack, 'name', {
 ## Creating an `Environment`
 
 An `Environment` is a place to deploy your services. You can have multiple environments
-on a single AWS account. For example you could create a `test` environment as well
-as a `production` environment so you have a place to verify that you application
+on a single AWS account. For example, you could create a `test` environment as well
+as a `production` environment so you have a place to verify that your application
 works as intended before you deploy it to a live environment.
 
-Each environment is isolated from other environments. In specific
-by default when you create an environment the construct supplies its own VPC,
+Each environment is isolated from other environments. In other words,
+when you create an environment, by default the construct supplies its own VPC,
 ECS Cluster, and any other required resources for the environment:
 
 ```ts
 const environment = new Environment(stack, 'production');
 ```
 
-However, you can also choose to build an environment out of a pre-existing VPC,
+However, you can also choose to build an environment out of a pre-existing VPC
 or ECS Cluster:
 
 ```ts
@@ -89,7 +91,7 @@ const environment = new Environment(stack, 'production', {
 ## Defining your `ServiceDescription`
 
 The `ServiceDescription` defines what application you want the service to run and
-what optional extensions you want to add to the service. The most basic form of a `ServiceExtension` looks like this:
+what optional extensions you want to add to the service. The most basic form of a `ServiceDescription` looks like this:
 
 ```ts
 const nameDescription = new ServiceDescription();
@@ -105,9 +107,9 @@ nameDescription.add(new Container({
 ```
 
 Every `ServiceDescription` requires at minimum that you add a `Container` extension
-which defines the main application container to run for the service.
+which defines the main application (essential) container to run for the service.
 
-After that you can optionally enable additional features for the service using the `ServiceDescription.add()` method:
+After that, you can optionally enable additional features for the service using the `ServiceDescription.add()` method:
 
 ```ts
 nameDescription.add(new AppMeshExtension({ mesh }));
@@ -132,6 +134,25 @@ const nameService = new Service(stack, 'name', {
 At this point, all the service resources will be created. This includes the ECS Task
 Definition, Service, as well as any other attached resources, such as App Mesh Virtual
 Node or an Application Load Balancer.
+
+## Creating your own taskRole
+
+Sometimes the taskRole should be defined outside of the service so that you can create strict resource policies (ie. S3 bucket policies) that are restricted to a given taskRole:
+
+```ts
+const taskRole = new iam.Role(stack, 'CustomTaskRole', {
+      assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+});
+
+// Use taskRole in any CDK resource policies
+// new s3.BucketPolicy(this, 'BucketPolicy, {});
+
+const nameService = new Service(stack, 'name', {
+  environment: environment,
+  serviceDescription: nameDescription,
+  taskRole,
+});
+```
 
 ## Creating your own custom `ServiceExtension`
 
@@ -238,7 +259,7 @@ frontend.connectTo(backend);
 
 The address that a service will use to talk to another service depends on the
 type of ingress that has been created by the extension that did the connecting.
-For example if an App Mesh extension has been used then the service is accessible
+For example, if an App Mesh extension has been used, then the service is accessible
 at a DNS address of `<service name>.<environment name>`. For example:
 
 ```ts
@@ -280,7 +301,7 @@ const backend = new Service(stack, 'backend', {
 frontend.connectTo(backend);
 ```
 
-The above code uses the well known service discovery name for each
+The above code uses the well-known service discovery name for each
 service, and passes it as an environment variable to the container so
 that the container knows what address to use when communicating to
 the other service.
@@ -300,6 +321,113 @@ const environment = Environment.fromEnvironmentAttributes(stack, 'Environment', 
   cluster,
 });
 
+```
+
+## Injecter Extension
+
+This service extension accepts a list of `Injectable` resources. It grants access to these resources and adds the necessary environment variables to the tasks that are part of the service. 
+
+For example, an `InjectableTopic` is an SNS Topic that grants permission to the task role and adds the topic ARN as an environment variable to the task definition.
+
+### Publishing to SNS Topics
+
+You can use this extension to set up publishing permissions for SNS Topics.
+
+```ts
+nameDescription.add(new InjecterExtension({
+  injectables: [new InjectableTopic({
+    // SNS Topic the service will publish to
+    topic: new sns.Topic(stack, 'my-topic'),
+  })],
+}));
+```
+
+## Queue Extension
+
+This service extension creates a default SQS Queue `eventsQueue` for the service (if not provided) and optionally also accepts list of `ISubscribable` objects that the `eventsQueue` can subscribe to. The service extension creates the subscriptions and sets up permissions for the service to consume messages from the SQS Queue.
+
+### Setting up SNS Topic Subscriptions for SQS Queues
+
+You can use this extension to set up SNS Topic subscriptions for the `eventsQueue`. To do this, create a new object of type `TopicSubscription` for every SNS Topic you want the `eventsQueue` to subscribe to and provide it as input to the service extension.
+
+```ts
+const myServiceDescription = nameDescription.add(new QueueExtension({
+  // Provide list of topic subscriptions that you want the `eventsQueue` to subscribe to
+  subscriptions: [new TopicSubscription({
+    topic: new sns.Topic(stack, 'my-topic'),
+  }],
+}));
+
+// To access the `eventsQueue` for the service, use the `eventsQueue` getter for the extension
+const myQueueExtension = myServiceDescription.extensions.queue as QueueExtension;
+const myEventsQueue = myQueueExtension.eventsQueue;
+```
+
+For setting up a topic-specific queue subscription, you can provide a custom queue in the `TopicSubscription` object along with the SNS Topic. The extension will set up a topic subscription for the provided queue instead of the default `eventsQueue` of the service.
+
+```ts
+nameDescription.add(new QueueExtension({
+  queue: myEventsQueue,
+  subscriptions: [new TopicSubscription({
+    topic: new sns.Topic(stack, 'my-topic'),
+    // `myTopicQueue` will subscribe to the `my-topic` instead of `eventsQueue`
+    queue: myTopicQueue,
+  }],
+}));
+```
+
+## Publish/Subscribe Service Pattern
+
+The [Publish/Subscribe Service Pattern](https://aws.amazon.com/pub-sub-messaging/) is used for implementing asynchronous communication between services. It involves 'publisher' services emitting events to SNS Topics, which are passed to subscribed SQS queues and then consumed by 'worker' services. 
+
+The following example adds the `InjecterExtension` to a `Publisher` Service which can publish events to an SNS Topic and adds the `QueueExtension` to a `Worker` Service which can poll its `eventsQueue` to consume messages populated by the topic.
+
+```ts
+const environment = new Environment(stack, 'production');
+
+const pubServiceDescription = new ServiceDescription();
+pubServiceDescription.add(new Container({
+  cpu: 256,
+  memoryMiB: 512,
+  trafficPort: 80,
+  image: ecs.ContainerImage.fromRegistry('sns-publish'),
+}));
+
+const myTopic = new sns.Topic(stack, 'myTopic');
+
+// Add the `InjecterExtension` to the service description to allow publishing events to `myTopic`
+pubServiceDescription.add(new InjecterExtension({
+  injectables: [new InjectableTopic({
+    topic: myTopic,
+  }],
+}));
+
+// Create the `Publisher` Service
+new Service(stack, 'Publisher', {
+  environment: environment,
+  serviceDescription: pubServiceDescription,
+});
+
+const subServiceDescription = new ServiceDescription();
+subServiceDescription.add(new Container({
+  cpu: 256,
+  memoryMiB: 512,
+  trafficPort: 80,
+  image: ecs.ContainerImage.fromRegistry('sqs-reader'),
+}));
+
+// Add the `QueueExtension` to the service description to subscribe to `myTopic`
+subServiceDescription.add(new QueueExtension({
+  subscriptions: [new TopicSubscription({
+    topic: myTopic,
+  }],
+}));
+
+// Create the `Worker` Service
+new Service(stack, 'Worker', {
+  environment: environment,
+  serviceDescription: subServiceDescription,
+});
 ```
 
 ## Community Extensions

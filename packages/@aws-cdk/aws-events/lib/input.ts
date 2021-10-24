@@ -151,8 +151,6 @@ class FieldAwareEventInput extends RuleTargetInput {
       return key;
     }
 
-    const self = this;
-
     class EventFieldReplacer extends DefaultTokenResolver {
       constructor() {
         super(new StringConcat());
@@ -167,7 +165,7 @@ class FieldAwareEventInput extends RuleTargetInput {
         }
         inputPathsMap[key] = t.path;
 
-        return self.keyPlaceholder(key);
+        return `<${key}>`;
       }
     }
 
@@ -188,35 +186,32 @@ class FieldAwareEventInput extends RuleTargetInput {
       }));
     }
 
-    if (Object.keys(inputPathsMap).length === 0) {
+    const keys = Object.keys(inputPathsMap);
+
+    if (keys.length === 0) {
       // Nothing special, just return 'input'
       return { input: resolved };
     }
 
     return {
-      inputTemplate: this.unquoteKeyPlaceholders(resolved),
+      inputTemplate: this.unquoteKeyPlaceholders(resolved, keys),
       inputPathsMap,
     };
   }
 
   /**
-   * Return a template placeholder for the given key
-   *
-   * In object scope we'll need to get rid of surrounding quotes later on, so
-   * return a bracing that's unlikely to occur naturally (like tokens).
-   */
-  private keyPlaceholder(key: string) {
-    if (this.inputType !== InputType.Object) { return `<${key}>`; }
-    return UNLIKELY_OPENING_STRING + key + UNLIKELY_CLOSING_STRING;
-  }
-
-  /**
    * Removing surrounding quotes from any object placeholders
+   * when key is the lone value.
    *
    * Those have been put there by JSON.stringify(), but we need to
    * remove them.
+   *
+   * Do not remove quotes when the key is part of a larger string.
+   *
+   * Valid: { "data": "Some string with \"quotes\"<key>" } // key will be string
+   * Valid: { "data": <key> } // Key could be number, bool, obj, or string
    */
-  private unquoteKeyPlaceholders(sub: string) {
+  private unquoteKeyPlaceholders(sub: string, keys: string[]) {
     if (this.inputType !== InputType.Object) { return sub; }
 
     return Lazy.uncachedString({ produce: (ctx: IResolveContext) => Token.asString(deepUnquote(ctx.resolve(sub))) });
@@ -230,18 +225,12 @@ class FieldAwareEventInput extends RuleTargetInput {
         }
         return resolved;
       } else if (typeof(resolved) === 'string') {
-        return resolved.replace(OPENING_STRING_REGEX, '<').replace(CLOSING_STRING_REGEX, '>');
+        return keys.reduce((r, key) => r.replace(new RegExp(`(?<!\\\\)\"\<${key}\>\"`, 'g'), `<${key}>`), resolved);
       }
       return resolved;
     }
   }
 }
-
-const UNLIKELY_OPENING_STRING = '<<${';
-const UNLIKELY_CLOSING_STRING = '}>>';
-
-const OPENING_STRING_REGEX = new RegExp(regexQuote('"' + UNLIKELY_OPENING_STRING), 'g');
-const CLOSING_STRING_REGEX = new RegExp(regexQuote(UNLIKELY_CLOSING_STRING + '"'), 'g');
 
 /**
  * Represents a field in the event pattern
@@ -339,10 +328,3 @@ function isEventField(x: any): x is EventField {
 }
 
 const EVENT_FIELD_SYMBOL = Symbol.for('@aws-cdk/aws-events.EventField');
-
-/**
- * Quote a string for use in a regex
- */
-function regexQuote(s: string) {
-  return s.replace(/[.?*+^$[\]\\(){}|-]/g, '\\$&');
-}

@@ -1,22 +1,22 @@
-import { expect, haveResourceLike } from '@aws-cdk/assert';
+import '@aws-cdk/assert-internal/jest';
+import { arrayWith, objectLike } from '@aws-cdk/assert-internal';
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import { Stack } from '@aws-cdk/core';
-import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as cpactions from '../../lib';
 
 /* eslint-disable quote-props */
 
-nodeunitShim({
-  'BitBucket source Action': {
-    'produces the correct configuration when added to a pipeline'(test: Test) {
+describe('BitBucket source Action', () => {
+  describe('BitBucket source Action', () => {
+    test('produces the correct configuration when added to a pipeline', () => {
       const stack = new Stack();
 
       createBitBucketAndCodeBuildPipeline(stack, {
         codeBuildCloneOutput: false,
       });
 
-      expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+      expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
         'Stages': [
           {
             'Name': 'Source',
@@ -44,20 +44,20 @@ nodeunitShim({
             ],
           },
         ],
-      }));
+      });
 
-      test.done();
-    },
-  },
 
-  'setting codeBuildCloneOutput=true adds permission to use the connection to the following CodeBuild Project'(test: Test) {
+    });
+  });
+
+  test('setting codeBuildCloneOutput=true adds permission to use the connection to the following CodeBuild Project', () => {
     const stack = new Stack();
 
     createBitBucketAndCodeBuildPipeline(stack, {
       codeBuildCloneOutput: true,
     });
 
-    expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
       'PolicyDocument': {
         'Statement': [
           {
@@ -78,13 +78,84 @@ nodeunitShim({
           },
         ],
       },
-    }));
+    });
 
-    test.done();
-  },
+
+  });
+  test('grant s3 putObjectACL to the following CodeBuild Project', () => {
+    const stack = new Stack();
+    createBitBucketAndCodeBuildPipeline(stack, {
+      codeBuildCloneOutput: true,
+    });
+    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+      'PolicyDocument': {
+        'Statement': arrayWith(
+          objectLike({
+            'Action': 's3:PutObjectAcl',
+            'Effect': 'Allow',
+            'Resource': {
+              'Fn::Join': [
+                '',
+                [
+                  {
+                    'Fn::GetAtt': [
+                      'PipelineArtifactsBucket22248F97',
+                      'Arn',
+                    ],
+                  },
+                  '/*',
+                ],
+              ],
+            },
+          }),
+        ),
+      },
+    });
+
+  });
+  test('setting triggerOnPush=false reflects in the configuration', () => {
+    const stack = new Stack();
+
+    createBitBucketAndCodeBuildPipeline(stack, {
+      triggerOnPush: false,
+    });
+
+    expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+      'Stages': [
+        {
+          'Name': 'Source',
+          'Actions': [
+            {
+              'Name': 'BitBucket',
+              'ActionTypeId': {
+                'Owner': 'AWS',
+                'Provider': 'CodeStarSourceConnection',
+              },
+              'Configuration': {
+                'ConnectionArn': 'arn:aws:codestar-connections:us-east-1:123456789012:connection/12345678-abcd-12ab-34cdef5678gh',
+                'FullRepositoryId': 'aws/aws-cdk',
+                'BranchName': 'master',
+                'DetectChanges': false,
+              },
+            },
+          ],
+        },
+        {
+          'Name': 'Build',
+          'Actions': [
+            {
+              'Name': 'CodeBuild',
+            },
+          ],
+        },
+      ],
+    });
+
+
+  });
 });
 
-function createBitBucketAndCodeBuildPipeline(stack: Stack, props: { codeBuildCloneOutput: boolean }): void {
+function createBitBucketAndCodeBuildPipeline(stack: Stack, props: Partial<cpactions.BitBucketSourceActionProps>): void {
   const sourceOutput = new codepipeline.Artifact();
   new codepipeline.Pipeline(stack, 'Pipeline', {
     stages: [
@@ -97,7 +168,7 @@ function createBitBucketAndCodeBuildPipeline(stack: Stack, props: { codeBuildClo
             repo: 'aws-cdk',
             output: sourceOutput,
             connectionArn: 'arn:aws:codestar-connections:us-east-1:123456789012:connection/12345678-abcd-12ab-34cdef5678gh',
-            codeBuildCloneOutput: props.codeBuildCloneOutput,
+            ...props,
           }),
         ],
       },

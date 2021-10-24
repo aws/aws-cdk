@@ -4,7 +4,7 @@
 # later read by bundle-beta.sh.
 set -eu
 export PATH=$PWD/node_modules/.bin:$PATH
-export NODE_OPTIONS="--max-old-space-size=4096 ${NODE_OPTIONS:-}"
+export NODE_OPTIONS="--max-old-space-size=8192 ${NODE_OPTIONS:-}"
 root=$PWD
 
 # Get version and changelog file name (these require that .versionrc.json would have been generated)
@@ -92,8 +92,9 @@ cat > ${distdir}/build.json <<HERE
 }
 HERE
 
-# copy CHANGELOG.md to dist/ for github releases
+# copy CHANGELOG.md and RELEASE_NOTES.md to dist/ for github releases
 cp ${changelog_file} ${distdir}/CHANGELOG.md
+cp RELEASE_NOTES.md ${distdir}/RELEASE_NOTES.md
 
 # defensive: make sure our artifacts don't use the version marker (this means
 # that "pack" will always fails when building in a dev environment)

@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import { Template } from '@aws-cdk/assertions';
 import { WebSocketApi } from '@aws-cdk/aws-apigatewayv2';
 import { Code, Function, Runtime } from '@aws-cdk/aws-lambda';
 import { Stack } from '@aws-cdk/core';
@@ -19,9 +19,31 @@ describe('LambdaWebSocketIntegration', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGatewayV2::Integration', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Integration', {
       IntegrationType: 'AWS_PROXY',
-      IntegrationUri: stack.resolve(fooFn.functionArn),
+      IntegrationUri: {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':apigateway:',
+            {
+              Ref: 'AWS::Region',
+            },
+            ':lambda:path/2015-03-31/functions/',
+            {
+              'Fn::GetAtt': [
+                'Fn9270CBC0',
+                'Arn',
+              ],
+            },
+            '/invocations',
+          ],
+        ],
+      },
     });
   });
 });

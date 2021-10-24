@@ -8,5 +8,5 @@ test('Empty Stack', () => {
   new %name.PascalCased%.%name.PascalCased%(stack, 'MyTestConstruct');
   // THEN
   const actual = app.synth().getStackArtifact(stack.artifactId).template;
-  expect(actual).toEqual({});
+  expect(actual.Resources ?? {}).toEqual({});
 });

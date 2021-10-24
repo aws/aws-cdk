@@ -113,6 +113,11 @@ Routing traffic from a Load Balancer to a Target involves the following steps:
 - Create a Target Group, register the Target into the Target Group
 - Add an Action to the Listener which forwards traffic to the Target Group.
 
+A new listener can be added to the Load Balancer by calling `addListener()`.
+Listeners that have been added to the load balancer can be listed using the
+`listeners` property.  Note that the `listeners` property will throw an Error
+for imported or looked up Load Balancers.
+
 Various methods on the `Listener` take care of this work for you to a greater
 or lesser extent:
 
@@ -273,6 +278,24 @@ const tg2 = new elbv2.ApplicationTargetGroup(stack, 'TG2', {
 
 For more information see: https://docs.aws.amazon.com/elasticloadbalancing/latest/application/sticky-sessions.html#application-based-stickiness
 
+### Setting the target group protocol version
+
+By default, Application Load Balancers send requests to targets using HTTP/1.1. You can use the [protocol version](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-target-groups.html#target-group-protocol-version) to send requests to targets using HTTP/2 or gRPC.
+
+```ts
+const tg = new elbv2.ApplicationTargetGroup(stack, 'TG', {
+  targetType: elbv2.TargetType.IP,
+  port: 50051,
+  protocol: elbv2.ApplicationProtocol.HTTP,
+  protocolVersion: elbv2.ApplicationProtocolVersion.GRPC,
+  healthCheck: {
+    enabled: true,
+    healthyGrpcCodes: '0-99',
+  },
+  vpc,
+});
+```
+
 ## Using Lambda Targets
 
 To use a Lambda Function as a target, use the integration class in the
@@ -299,6 +322,47 @@ listener.addTargets('Targets', {
 ```
 
 Only a single Lambda function can be added to a single listener rule.
+
+## Using Application Load Balancer Targets
+
+To use a single application load balancer as a target for the network load balancer, use the integration class in the
+`@aws-cdk/aws-elasticloadbalancingv2-targets` package:
+
+```ts
+import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
+import * as targets from '@aws-cdk/aws-elasticloadbalancingv2-targets';
+import * as ecs from '@aws-cdk/aws-ecs';
+import * as patterns from '@aws-cdk/aws-ecs-patterns';
+
+const task = new ecs.FargateTaskDefinition(this, 'Task', { cpu: 256, memoryLimitMiB: 512 });
+task.addContainer('nginx', {
+  image: ecs.ContainerImage.fromRegistry('public.ecr.aws/nginx/nginx:latest'),
+  portMappings: [{ containerPort: 80 }],
+});
+
+const svc = new patterns.ApplicationLoadBalancedFargateService(this, 'Service', {
+  vpc,
+  taskDefinition: task,
+  publicLoadBalancer: false,
+});
+
+const nlb = new elbv2.NetworkLoadBalancer(this, 'Nlb', {
+  vpc,
+  crossZoneEnabled: true,
+  internetFacing: true,
+});
+
+const listener = nlb.addListener('listener', { port: 80 });
+
+listener.addTargets('Targets', {
+  targets: [new targets.AlbTarget(svc.loadBalancer, 80)],
+  port: 80,
+});
+
+new CfnOutput(this, 'NlbEndpoint', { value: `http://${nlb.loadBalancerDnsName}`})
+```
+
+Only the network load balancer is allowed to add the application load balancer as the target.
 
 ## Configuring Health Checks
 

@@ -33,6 +33,8 @@ export class HttpServiceDiscoveryIntegration extends HttpPrivateIntegration {
       connectionType: this.connectionType,
       connectionId: this.props.vpcLink.vpcLinkId,
       uri: this.props.service.serviceArn,
+      secureServerName: this.props.secureServerName,
+      parameterMapping: this.props.parameterMapping,
     };
   }
 }

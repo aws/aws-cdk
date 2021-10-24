@@ -38,15 +38,15 @@ instances for your project.
 A VPC consists of one or more subnets that instances can be placed into. CDK
 distinguishes three different subnet types:
 
-* **Public** - public subnets connect directly to the Internet using an
+* **Public (`SubnetType.PUBLIC`)** - public subnets connect directly to the Internet using an
   Internet Gateway. If you want your instances to have a public IP address
   and be directly reachable from the Internet, you must place them in a
   public subnet.
-* **Private** - instances in private subnets are not directly routable from the
+* **Private with Internet Access (`SubnetType.PRIVATE_WITH_NAT`)** - instances in private subnets are not directly routable from the
   Internet, and connect out to the Internet via a NAT gateway. By default, a
   NAT gateway is created in every public subnet for maximum availability. Be
   aware that you will be charged for NAT gateways.
-* **Isolated** - isolated subnets do not route from or to the Internet, and
+* **Isolated (`SubnetType.PRIVATE_ISOLATED`)** - isolated subnets do not route from or to the Internet, and
   as such do not require NAT gateways. They can only connect to or be
   connected to from other instances in the same VPC. A default VPC configuration
   will not include isolated subnets,
@@ -166,7 +166,13 @@ Which subnets are selected is evaluated as follows:
   * `onePerAz`: per availability zone, a maximum of one subnet will be returned (Useful for resource
     types that do not allow creating two ENIs in the same availability zone).
 * `subnetFilters`: additional filtering on subnets using any number of user-provided filters which
-  extend the SubnetFilter class.
+  extend `SubnetFilter`.  The following methods on the `SubnetFilter` class can be used to create
+  a filter:
+  * `byIds`: chooses subnets from a list of ids
+  * `availabilityZones`: chooses subnets in the provided list of availability zones
+  * `onePerAz`: chooses at most one subnet per availability zone
+  * `containsIpAddresses`: chooses a subnet which contains *any* of the listed ip addresses
+  * `byCidrMask`: chooses subnets that have the provided CIDR netmask
 
 ### Using NAT instances
 
@@ -239,12 +245,12 @@ const vpc = new ec2.Vpc(this, 'TheVPC', {
     {
       cidrMask: 24,
       name: 'Application',
-      subnetType: ec2.SubnetType.PRIVATE,
+      subnetType: ec2.SubnetType.PRIVATE_WITH_NAT,
     },
     {
       cidrMask: 28,
       name: 'Database',
-      subnetType: ec2.SubnetType.ISOLATED,
+      subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
 
       // 'reserved' can be used to reserve IP address space. No resources will
       // be created for this subnet, but the IP range will be kept available for
@@ -339,12 +345,12 @@ const vpc = new ec2.Vpc(this, 'TheVPC', {
     {
       cidrMask: 26,
       name: 'Application1',
-      subnetType: ec2.SubnetType.PRIVATE,
+      subnetType: ec2.SubnetType.PRIVATE_WITH_NAT,
     },
     {
       cidrMask: 26,
       name: 'Application2',
-      subnetType: ec2.SubnetType.PRIVATE,
+      subnetType: ec2.SubnetType.PRIVATE_WITH_NAT,
       reserved: true,   // <---- This subnet group is reserved
     },
     {
@@ -520,6 +526,27 @@ listener.connections.allowDefaultPortFromAnyIpv4('Allow public');
 appFleet.connections.allowDefaultPortTo(rdsDatabase, 'Fleet can access database');
 ```
 
+### Security group rules
+
+By default, security group wills be added inline to the security group in the output cloud formation
+template, if applicable.  This includes any static rules by ip address and port range.  This
+optimization helps to minimize the size of the template.
+
+In some environments this is not desirable, for example if your security group access is controlled
+via tags. You can disable inline rules per security group or globally via the context key
+`@aws-cdk/aws-ec2.securityGroupDisableInlineRules`.
+
+```ts fixture=with-vpc
+const mySecurityGroupWithoutInlineRules = new ec2.SecurityGroup(this, 'SecurityGroup', {
+  vpc,
+  description: 'Allow ssh access to ec2 instances',
+  allowAllOutbound: true,
+  disableInlineRules: true
+});
+//This will add the rule as an external cloud formation construct
+mySecurityGroupWithoutInlineRules.addIngressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(22), 'allow ssh access from the world');
+```
+
 ## Machine Images (AMIs)
 
 AMIs control the OS that gets launched when you start your EC2 instance. The EC2
@@ -636,6 +663,14 @@ new InterfaceVpcEndpoint(stack, 'VPC Endpoint', {
 });
 ```
 
+Pre-defined AWS services are defined in the [InterfaceVpcEndpointAwsService](lib/vpc-endpoint.ts) class, and can be used to
+create VPC endpoints without having to configure name, ports, etc. For example, a Keyspaces endpoint can be created for
+use in your VPC:
+
+``` ts
+new InterfaceVpcEndpoint(stack, 'VPC Endpoint', { vpc, service: InterfaceVpcEndpointAwsService.KEYSPACES });
+```
+
 #### Security groups for interface VPC endpoints
 
 By default, interface VPC endpoints create a new security group and traffic is **not**
@@ -651,13 +686,13 @@ Alternatively, existing security groups can be used by specifying the `securityG
 
 ### VPC endpoint services
 
-A VPC endpoint service enables you to expose a Network Load Balancer(s) as a provider service to consumers, who connect to your service over a VPC endpoint. You can restrict access to your service via whitelisted principals (anything that extends ArnPrincipal), and require that new connections be manually accepted.
+A VPC endpoint service enables you to expose a Network Load Balancer(s) as a provider service to consumers, who connect to your service over a VPC endpoint. You can restrict access to your service via allowed principals (anything that extends ArnPrincipal), and require that new connections be manually accepted.
 
 ```ts
 new VpcEndpointService(this, 'EndpointService', {
   vpcEndpointServiceLoadBalancers: [networkLoadBalancer1, networkLoadBalancer2],
   acceptanceRequired: true,
-  whitelistedPrincipals: [new ArnPrincipal('arn:aws:iam::123456789012:root')]
+  allowedPrincipals: [new ArnPrincipal('arn:aws:iam::123456789012:root')]
 });
 ```
 
@@ -677,6 +712,71 @@ new VpcEndpointServiceDomainName(stack, 'EndpointDomain', {
 Note: The domain name must be owned (registered through Route53) by the account the endpoint service is in, or delegated to the account.
 The VpcEndpointServiceDomainName will handle the AWS side of domain verification, the process for which can be found
 [here](https://docs.aws.amazon.com/vpc/latest/userguide/endpoint-services-dns-validation.html)
+
+### Client VPN endpoint
+
+AWS Client VPN is a managed client-based VPN service that enables you to securely access your AWS
+resources and resources in your on-premises network. With Client VPN, you can access your resources
+from any location using an OpenVPN-based VPN client.
+
+Use the `addClientVpnEndpoint()` method to add a client VPN endpoint to a VPC:
+
+```ts fixture=client-vpn
+vpc.addClientVpnEndpoint('Endpoint', {
+  cidr: '10.100.0.0/16',
+  serverCertificateArn: 'arn:aws:acm:us-east-1:123456789012:certificate/server-certificate-id',
+  // Mutual authentication
+  clientCertificateArn: 'arn:aws:acm:us-east-1:123456789012:certificate/client-certificate-id',
+  // User-based authentication
+  userBasedAuthentication: ec2.ClientVpnUserBasedAuthentication.federated(samlProvider),
+});
+```
+
+The endpoint must use at least one [authentication method](https://docs.aws.amazon.com/vpn/latest/clientvpn-admin/client-authentication.html):
+
+* Mutual authentication with a client certificate
+* User-based authentication (directory or federated)
+
+If user-based authentication is used, the [self-service portal URL](https://docs.aws.amazon.com/vpn/latest/clientvpn-user/self-service-portal.html)
+is made available via a CloudFormation output.
+
+By default, a new security group is created and logging is enabled. Moreover, a rule to
+authorize all users to the VPC CIDR is created.
+
+To customize authorization rules, set the `authorizeAllUsersToVpcCidr` prop to `false`
+and use `addaddAuthorizationRule()`:
+
+```ts fixture=client-vpn
+const endpoint = vpc.addClientVpnEndpoint('Endpoint', {
+  cidr: '10.100.0.0/16',
+  serverCertificateArn: 'arn:aws:acm:us-east-1:123456789012:certificate/server-certificate-id',
+  userBasedAuthentication: ec2.ClientVpnUserBasedAuthentication.federated(samlProvider),
+  authorizeAllUsersToVpcCidr: false,
+});
+
+endpoint.addAuthorizationRule('Rule', {
+  cidr: '10.0.10.0/32',
+  groupId: 'group-id',
+});
+```
+
+Use `addRoute()` to configure network routes:
+
+```ts fixture=client-vpn
+const endpoint = vpc.addClientVpnEndpoint('Endpoint', {
+  cidr: '10.100.0.0/16',
+  serverCertificateArn: 'arn:aws:acm:us-east-1:123456789012:certificate/server-certificate-id',
+  userBasedAuthentication: ec2.ClientVpnUserBasedAuthentication.federated(samlProvider),
+});
+
+// Client-to-client access
+endpoint.addRoute('Route', {
+  cidr: '10.100.0.0/16',
+  target: ec2.ClientVpnRouteTarget.local(),
+});
+```
+
+Use the `connections` object of the endpoint to allow traffic to other security groups.
 
 ## Instances
 
@@ -732,6 +832,12 @@ new ec2.Instance(this, 'Instance', {
 
     // Optional, how long the installation is expected to take (5 minutes by default)
     timeout: Duration.minutes(30),
+
+    // Optional, whether to include the --url argument when running cfn-init and cfn-signal commands (false by default)
+    includeUrl: true
+
+    // Optional, whether to include the --role argument when running cfn-init and cfn-signal commands (false by default)
+    includeRole: true
   },
 });
 ```
@@ -876,12 +982,43 @@ const instance = new ec2.Instance(this, 'Instance', {
 volume.grantAttachVolumeByResourceTag(instance.grantPrincipal, [instance]);
 const targetDevice = '/dev/xvdz';
 instance.userData.addCommands(
+  // Retrieve token for accessing EC2 instance metadata (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instancedata-data-retrieval.html)
+  `TOKEN=$(curl -SsfX PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")`,
+  // Retrieve the instance Id of the current EC2 instance
+  `INSTANCE_ID=$(curl -SsfH "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/meta-data/instance-id)`,
   // Attach the volume to /dev/xvdz
-  `aws --region ${Stack.of(this).region} ec2 attach-volume --volume-id ${volume.volumeId} --instance-id ${instance.instanceId} --device ${targetDevice}`,
+  `aws --region ${Stack.of(this).region} ec2 attach-volume --volume-id ${volume.volumeId} --instance-id $INSTANCE_ID --device ${targetDevice}`,
   // Wait until the volume has attached
   `while ! test -e ${targetDevice}; do sleep 1; done`
   // The volume will now be mounted. You may have to add additional code to format the volume if it has not been prepared.
 );
+```
+
+### Configuring Instance Metadata Service (IMDS)
+
+#### Toggling IMDSv1
+
+You can configure [EC2 Instance Metadata Service](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-metadata.html) options to either
+allow both IMDSv1 and IMDSv2 or enforce IMDSv2 when interacting with the IMDS.
+
+To do this for a single `Instance`, you can use the `requireImdsv2` property.
+The example below demonstrates IMDSv2 being required on a single `Instance`:
+
+```ts
+new ec2.Instance(this, 'Instance', {
+  requireImdsv2: true,
+  // ...
+});
+```
+
+You can also use the either the `InstanceRequireImdsv2Aspect` for EC2 instances or the `LaunchTemplateRequireImdsv2Aspect` for EC2 launch templates
+to apply the operation to multiple instances or launch templates, respectively.
+
+The following example demonstrates how to use the `InstanceRequireImdsv2Aspect` to require IMDSv2 for all EC2 instances in a stack:
+
+```ts
+const aspect = new ec2.InstanceRequireImdsv2Aspect();
+Aspects.of(stack).add(aspect);
 ```
 
 ## VPC Flow Logs
@@ -1022,9 +1159,26 @@ new ec2.LaunchTemplate(stack, '', {
 });
 ```
 
-For more information see 
+For more information see
 [Specifying Multiple User Data Blocks Using a MIME Multi Part Archive](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/bootstrap_container_instance.html#multi-part_user_data)
 
+#### Using add*Command on MultipartUserData
+
+To use the `add*Command` methods, that are inherited from the `UserData` interface, on `MultipartUserData` you must add a part
+to the `MultipartUserData` and designate it as the reciever for these methods. This is accomplished by using the `addUserDataPart()`
+method on `MultipartUserData` with the `makeDefault` argument set to `true`:
+
+```ts
+const multipartUserData = new ec2.MultipartUserData();
+const commandsUserData = ec2.UserData.forLinux();
+multipartUserData.addUserDataPart(commandsUserData, MultipartBody.SHELL_SCRIPT, true);
+
+// Adding commands to the multipartUserData adds them to commandsUserData, and vice-versa.
+multipartUserData.addCommands('touch /root/multi.txt');
+commandsUserData.addCommands('touch /root/userdata.txt');
+```
+
+When used on an EC2 instance, the above `multipartUserData` will create both `multi.txt` and `userdata.txt` in `/root`.
 
 ## Importing existing subnet
 

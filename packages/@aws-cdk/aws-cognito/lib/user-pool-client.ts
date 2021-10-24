@@ -232,7 +232,7 @@ export interface UserPoolClientOptions {
   readonly disableOAuth?: boolean;
 
   /**
-   * OAuth settings for this to client to interact with the app.
+   * OAuth settings for this client to interact with the app.
    * An error is thrown when this is specified and `disableOAuth` is set.
    * @default - see defaults in `OAuthSettings`. meaningless if `disableOAuth` is set.
    */
@@ -293,6 +293,13 @@ export interface UserPoolClientOptions {
    * @default - all standard and custom attributes
    */
   readonly writeAttributes?: ClientAttributes;
+
+  /**
+   * Enable token revocation for this client.
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/token-revocation.html#enable-token-revocation
+   * @default true for new user pool clients
+   */
+  readonly enableTokenRevocation?: boolean;
 }
 
 /**
@@ -381,6 +388,7 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
       supportedIdentityProviders: this.configureIdentityProviders(props),
       readAttributes: props.readAttributes?.attributes(),
       writeAttributes: props.writeAttributes?.attributes(),
+      enableTokenRevocation: props.enableTokenRevocation,
     });
     this.configureTokenValidity(resource, props);
 

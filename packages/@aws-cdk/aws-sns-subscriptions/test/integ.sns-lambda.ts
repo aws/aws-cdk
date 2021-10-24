@@ -29,11 +29,11 @@ class SnsToLambda extends cdk.Stack {
     topic.addSubscription(new subs.LambdaSubscription(fctionFiltered, {
       filterPolicy: {
         color: sns.SubscriptionFilter.stringFilter({
-          whitelist: ['red'],
+          allowlist: ['red'],
           matchPrefixes: ['bl', 'ye'],
         }),
         size: sns.SubscriptionFilter.stringFilter({
-          blacklist: ['small', 'medium'],
+          denylist: ['small', 'medium'],
         }),
         price: sns.SubscriptionFilter.numericFilter({
           between: { start: 100, stop: 200 },
