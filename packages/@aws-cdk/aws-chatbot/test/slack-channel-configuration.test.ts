@@ -1,5 +1,5 @@
-import '@aws-cdk/assert/jest';
-import { ABSENT } from '@aws-cdk/assert';
+import { ABSENT } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
@@ -91,6 +91,26 @@ describe('SlackChannelConfiguration', () => {
       },
       SlackChannelId: 'DEF456',
       SlackWorkspaceId: 'ABC123',
+      SnsTopicArns: [
+        {
+          Ref: 'MyTopic86869434',
+        },
+      ],
+    });
+  });
+
+  test('allows adding a Topic after creating the SlackChannel', () => {
+    const slackChannel = new chatbot.SlackChannelConfiguration(stack, 'MySlackChannel', {
+      slackWorkspaceId: 'ABC123',
+      slackChannelId: 'DEF456',
+      slackChannelConfigurationName: 'Test',
+    });
+
+    const topic = new sns.Topic(stack, 'MyTopic');
+    slackChannel.addNotificationTopic(topic);
+
+    expect(stack).toHaveResourceLike('AWS::Chatbot::SlackChannelConfiguration', {
+      ConfigurationName: 'Test',
       SnsTopicArns: [
         {
           Ref: 'MyTopic86869434',
@@ -244,5 +264,23 @@ describe('SlackChannelConfiguration', () => {
 
     expect(imported.slackChannelConfigurationName).toEqual('my-slack');
     expect(imported.slackChannelConfigurationArn).toEqual('arn:aws:chatbot::1234567890:chat-configuration/slack-channel/my-slack');
+  });
+
+  test('skip validation for tokenized values', () => {
+    // invalid ARN because of underscores, no error because tokenized value
+    expect(() => chatbot.SlackChannelConfiguration.fromSlackChannelConfigurationArn(stack, 'MySlackChannel',
+      cdk.Lazy.string({ produce: () => 'arn:aws:chatbot::1234567890:chat-configuration/slack_channel/my_slack' }))).not.toThrow();
+  });
+
+  test('test name and ARN from slack channel configuration ARN', () => {
+    const imported = chatbot.SlackChannelConfiguration.fromSlackChannelConfigurationArn(stack, 'MySlackChannel', cdk.Token.asString({ Ref: 'ARN' }));
+
+    // THEN
+    expect(stack.resolve(imported.slackChannelConfigurationName)).toStrictEqual({
+      'Fn::Select': [1, { 'Fn::Split': ['slack-channel/', { 'Fn::Select': [1, { 'Fn::Split': [':chat-configuration/', { Ref: 'ARN' }] }] }] }],
+    });
+    expect(stack.resolve(imported.slackChannelConfigurationArn)).toStrictEqual({
+      Ref: 'ARN',
+    });
   });
 });

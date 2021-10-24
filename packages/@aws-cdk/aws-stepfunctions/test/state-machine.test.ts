@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import '@aws-cdk/assert-internal/jest';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
@@ -89,7 +89,36 @@ describe('State Machine', () => {
 
     expect(() => {
       createStateMachine(invalidCharactersName);
-    }).toThrow(`State Machine name must match "^[0-9a-zA-Z+!@._-]+$". Received: ${invalidCharactersName}`);
+    }).toThrow(`State Machine name must match "^[a-z0-9+!@.()-=_']+$/i". Received: ${invalidCharactersName}`);
+  });
+
+  test('State Machine with valid name', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const newStateMachine = new stepfunctions.StateMachine(stack, 'dummyStateMachineToken', {
+      definition: stepfunctions.Chain.start(new stepfunctions.Pass(stack, 'dummyStateMachineTokenPass')),
+    });
+
+    // WHEN
+    const nameContainingToken = newStateMachine.stateMachineName + '-Name';
+    const validName = 'AWS-Stepfunctions_Name.Test(@aws-cdk+)!=\'1\'';
+
+    // THEN
+    expect(() => {
+      new stepfunctions.StateMachine(stack, 'TokenTest-StateMachine', {
+        stateMachineName: nameContainingToken,
+        definition: stepfunctions.Chain.start(new stepfunctions.Pass(stack, 'TokenTest-StateMachinePass')),
+        stateMachineType: stepfunctions.StateMachineType.EXPRESS,
+      });
+    }).not.toThrow();
+
+    expect(() => {
+      new stepfunctions.StateMachine(stack, 'ValidNameTest-StateMachine', {
+        stateMachineName: validName,
+        definition: stepfunctions.Chain.start(new stepfunctions.Pass(stack, 'ValidNameTest-StateMachinePass')),
+        stateMachineType: stepfunctions.StateMachineType.EXPRESS,
+      });
+    }).not.toThrow();
   });
 
   test('log configuration', () => {

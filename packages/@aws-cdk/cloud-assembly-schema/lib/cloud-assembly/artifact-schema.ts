@@ -43,6 +43,13 @@ export interface AwsCloudFormationStackProperties {
   readonly assumeRoleArn?: string;
 
   /**
+   * External ID to use when assuming role for cloudformation deployments
+   *
+   * @default - No external ID
+   */
+  readonly assumeRoleExternalId?: string;
+
+  /**
    * The role that is passed to CloudFormation to execute the change set
    *
    * @default - No role is passed (currently assumed role/credentials are used)
@@ -77,6 +84,13 @@ export interface AwsCloudFormationStackProperties {
    * @default - Bootstrap stack version number looked up
    */
   readonly bootstrapStackVersionSsmParameter?: string;
+
+  /**
+   * Whether this stack should be validated by the CLI after synthesis
+   *
+   * @default - false
+   */
+  readonly validateOnSynth?: boolean;
 }
 
 /**

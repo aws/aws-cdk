@@ -1,4 +1,4 @@
-import { Duration, Names, Resource, Token } from '@aws-cdk/core';
+import { Duration, Names, Resource, Stack, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnCachePolicy } from './cloudfront.generated';
 
@@ -125,7 +125,7 @@ export class CachePolicy extends Resource implements ICachePolicy {
       physicalName: props.cachePolicyName,
     });
 
-    const cachePolicyName = props.cachePolicyName ?? Names.uniqueId(this);
+    const cachePolicyName = props.cachePolicyName ?? `${Names.uniqueId(this)}-${Stack.of(this).region}`;
     if (!Token.isUnresolved(cachePolicyName) && !cachePolicyName.match(/^[\w-]+$/i)) {
       throw new Error(`'cachePolicyName' can only include '-', '_', and alphanumeric characters, got: '${props.cachePolicyName}'`);
     }
@@ -231,13 +231,10 @@ export class CacheHeaderBehavior {
     if (headers.length === 0) {
       throw new Error('At least one header to allow must be provided');
     }
-    if (headers.length > 10) {
-      throw new Error(`Maximum allowed headers in Cache Policy is 10; got ${headers.length}.`);
-    }
     return new CacheHeaderBehavior('whitelist', headers);
   }
 
-  /** If the no headers will be passed, or an allow list of headers. */
+  /** If no headers will be passed, or an allow list of headers. */
   public readonly behavior: string;
   /** The headers for the allow/deny list, if applicable. */
   public readonly headers?: string[];

@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import '@aws-cdk/assert-internal/jest';
 import * as iam from '@aws-cdk/aws-iam';
 import { App, Stack } from '@aws-cdk/core';
 import { ElasticsearchAccessPolicy } from '../lib/elasticsearch-access-policy';
@@ -20,7 +20,7 @@ test('minimal example renders correctly', () => {
     accessPolicies: [new iam.PolicyStatement({
       effect: iam.Effect.ALLOW,
       actions: ['es:ESHttp*'],
-      principals: [new iam.Anyone()],
+      principals: [new iam.AnyPrincipal()],
       resources: ['test:arn'],
 
     })],
@@ -38,7 +38,7 @@ test('minimal example renders correctly', () => {
       service: 'ES',
       parameters: {
         DomainName: 'TestDomain',
-        AccessPolicies: '{"Statement":[{"Action":"es:ESHttp*","Effect":"Allow","Principal":"*","Resource":"test:arn"}],"Version":"2012-10-17"}',
+        AccessPolicies: '{"Statement":[{"Action":"es:ESHttp*","Effect":"Allow","Principal":{"AWS":"*"},"Resource":"test:arn"}],"Version":"2012-10-17"}',
       },
       outputPath: 'DomainConfig.ElasticsearchClusterConfig.AccessPolicies',
       physicalResourceId: { id: 'TestDomainAccessPolicy' },
@@ -48,7 +48,7 @@ test('minimal example renders correctly', () => {
       service: 'ES',
       parameters: {
         DomainName: 'TestDomain',
-        AccessPolicies: '{"Statement":[{"Action":"es:ESHttp*","Effect":"Allow","Principal":"*","Resource":"test:arn"}],"Version":"2012-10-17"}',
+        AccessPolicies: '{"Statement":[{"Action":"es:ESHttp*","Effect":"Allow","Principal":{"AWS":"*"},"Resource":"test:arn"}],"Version":"2012-10-17"}',
       },
       outputPath: 'DomainConfig.ElasticsearchClusterConfig.AccessPolicies',
       physicalResourceId: { id: 'TestDomainAccessPolicy' },

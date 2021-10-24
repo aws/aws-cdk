@@ -151,3 +151,14 @@ test('can read assembly with asset manifest', () => {
   expect(assembly.stacks).toHaveLength(1);
   expect(assembly.artifacts).toHaveLength(2);
 });
+
+test('getStackArtifact retrieves a stack by artifact id from a nested assembly', () => {
+  const assembly = new CloudAssembly(path.join(FIXTURES, 'nested-assemblies'));
+
+  expect(assembly.getStackArtifact('topLevelStack').stackName).toEqual('topLevelStack');
+  expect(assembly.getStackArtifact('stack1').stackName).toEqual('first-stack');
+  expect(assembly.getStackArtifact('stack2').stackName).toEqual('second-stack');
+  expect(assembly.getStackArtifact('topLevelStack').id).toEqual('topLevelStack');
+  expect(assembly.getStackArtifact('stack1').id).toEqual('stack1');
+  expect(assembly.getStackArtifact('stack2').id).toEqual('stack2');
+});

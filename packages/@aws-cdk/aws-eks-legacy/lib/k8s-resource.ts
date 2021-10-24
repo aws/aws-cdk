@@ -1,5 +1,4 @@
-import * as cfn from '@aws-cdk/aws-cloudformation';
-import { Stack } from '@aws-cdk/core';
+import { CustomResource, Stack } from '@aws-cdk/core';
 import { Cluster } from './cluster';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
@@ -63,8 +62,8 @@ export class KubernetesResource extends Construct {
       throw new Error('Cannot define a KubernetesManifest resource on a cluster with kubectl disabled');
     }
 
-    new cfn.CustomResource(this, 'Resource', {
-      provider: cfn.CustomResourceProvider.lambda(handler),
+    new CustomResource(this, 'Resource', {
+      serviceToken: handler.functionArn,
       resourceType: KubernetesResource.RESOURCE_TYPE,
       properties: {
         // `toJsonString` enables embedding CDK tokens in the manifest and will

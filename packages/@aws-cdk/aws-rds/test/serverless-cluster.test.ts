@@ -1,13 +1,14 @@
-import { expect, haveResource, haveResourceLike, ResourcePart, SynthUtils } from '@aws-cdk/assert';
+import '@aws-cdk/assert-internal/jest';
+import { ResourcePart, SynthUtils } from '@aws-cdk/assert-internal';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as cdk from '@aws-cdk/core';
-import { nodeunitShim, Test } from 'nodeunit-shim';
+import * as cxapi from '@aws-cdk/cx-api';
 import { AuroraPostgresEngineVersion, ServerlessCluster, DatabaseClusterEngine, ParameterGroup, AuroraCapacityUnit, DatabaseSecret } from '../lib';
 
-nodeunitShim({
-  'can create a Serverless Cluster with Aurora Postgres database engine'(test: Test) {
+describe('serverless cluster', () => {
+  test('can create a Serverless Cluster with Aurora Postgres database engine', () => {
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -24,7 +25,7 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::RDS::DBCluster', {
+    expect(stack).toHaveResource('AWS::RDS::DBCluster', {
       Properties: {
         Engine: 'aurora-postgresql',
         DBClusterParameterGroupName: 'default.aurora-postgresql10',
@@ -46,12 +47,12 @@ nodeunitShim({
       },
       DeletionPolicy: 'Snapshot',
       UpdateReplacePolicy: 'Snapshot',
-    }, ResourcePart.CompleteDefinition));
+    }, ResourcePart.CompleteDefinition);
 
-    test.done();
-  },
 
-  'can create a Serverless Cluster with Aurora Mysql database engine'(test: Test) {
+  });
+
+  test('can create a Serverless Cluster with Aurora Mysql database engine', () => {
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -63,7 +64,7 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::RDS::DBCluster', {
+    expect(stack).toHaveResource('AWS::RDS::DBCluster', {
       Properties: {
         Engine: 'aurora-mysql',
         DBClusterParameterGroupName: 'default.aurora-mysql5.7',
@@ -107,11 +108,11 @@ nodeunitShim({
       },
       DeletionPolicy: 'Snapshot',
       UpdateReplacePolicy: 'Snapshot',
-    }, ResourcePart.CompleteDefinition));
-    test.done();
-  },
+    }, ResourcePart.CompleteDefinition);
 
-  'can create a Serverless cluster with imported vpc and security group'(test: Test) {
+  });
+
+  test('can create a Serverless cluster with imported vpc and security group', () => {
     // GIVEN
     const stack = testStack();
     const vpc = ec2.Vpc.fromLookup(stack, 'VPC', {
@@ -128,7 +129,7 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::RDS::DBCluster', {
+    expect(stack).toHaveResource('AWS::RDS::DBCluster', {
       Engine: 'aurora-postgresql',
       DBClusterParameterGroupName: 'default.aurora-postgresql10',
       EngineMode: 'serverless',
@@ -158,12 +159,12 @@ nodeunitShim({
         ],
       },
       VpcSecurityGroupIds: ['SecurityGroupId12345'],
-    }));
+    });
 
-    test.done();
-  },
 
-  "sets the retention policy of the SubnetGroup to 'Retain' if the Serverless Cluster is created with 'Retain'"(test: Test) {
+  });
+
+  test("sets the retention policy of the SubnetGroup to 'Retain' if the Serverless Cluster is created with 'Retain'", () => {
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'Vpc');
 
@@ -173,15 +174,15 @@ nodeunitShim({
       removalPolicy: cdk.RemovalPolicy.RETAIN,
     });
 
-    expect(stack).to(haveResourceLike('AWS::RDS::DBSubnetGroup', {
+    expect(stack).toHaveResourceLike('AWS::RDS::DBSubnetGroup', {
       DeletionPolicy: 'Retain',
       UpdateReplacePolicy: 'Retain',
-    }, ResourcePart.CompleteDefinition));
+    }, ResourcePart.CompleteDefinition);
 
-    test.done();
-  },
 
-  'creates a secret when master credentials are not specified'(test: Test) {
+  });
+
+  test('creates a secret when master credentials are not specified', () => {
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -197,7 +198,7 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::RDS::DBCluster', {
+    expect(stack).toHaveResource('AWS::RDS::DBCluster', {
       MasterUsername: {
         'Fn::Join': [
           '',
@@ -222,21 +223,21 @@ nodeunitShim({
           ],
         ],
       },
-    }));
+    });
 
-    expect(stack).to(haveResource('AWS::SecretsManager::Secret', {
+    expect(stack).toHaveResource('AWS::SecretsManager::Secret', {
       GenerateSecretString: {
         ExcludeCharacters: '"@/\\',
         GenerateStringKey: 'password',
         PasswordLength: 30,
         SecretStringTemplate: '{"username":"myuser"}',
       },
-    }));
+    });
 
-    test.done();
-  },
 
-  'create an Serverless cluster with custom KMS key for storage'(test: Test) {
+  });
+
+  test('create an Serverless cluster with custom KMS key for storage', () => {
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -249,19 +250,19 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::RDS::DBCluster', {
+    expect(stack).toHaveResource('AWS::RDS::DBCluster', {
       KmsKeyId: {
         'Fn::GetAtt': [
           'Key961B73FD',
           'Arn',
         ],
       },
-    }));
+    });
 
-    test.done();
-  },
 
-  'create a cluster using a specific version of Postgresql'(test: Test) {
+  });
+
+  test('create a cluster using a specific version of Postgresql', () => {
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -275,16 +276,16 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::RDS::DBCluster', {
+    expect(stack).toHaveResource('AWS::RDS::DBCluster', {
       Engine: 'aurora-postgresql',
       EngineMode: 'serverless',
       EngineVersion: '10.7',
-    }));
+    });
 
-    test.done();
-  },
 
-  'cluster exposes different read and write endpoints'(test: Test) {
+  });
+
+  test('cluster exposes different read and write endpoints', () => {
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -299,15 +300,13 @@ nodeunitShim({
     });
 
     // THEN
-    test.notDeepEqual(
-      stack.resolve(cluster.clusterEndpoint),
-      stack.resolve(cluster.clusterReadEndpoint),
-    );
+    expect(stack.resolve(cluster.clusterEndpoint)).not
+      .toEqual(stack.resolve(cluster.clusterReadEndpoint));
 
-    test.done();
-  },
 
-  'imported cluster with imported security group honors allowAllOutbound'(test: Test) {
+  });
+
+  test('imported cluster with imported security group honors allowAllOutbound', () => {
     // GIVEN
     const stack = testStack();
 
@@ -325,39 +324,39 @@ nodeunitShim({
     cluster.connections.allowToAnyIpv4(ec2.Port.tcp(443));
 
     // THEN
-    expect(stack).to(haveResource('AWS::EC2::SecurityGroupEgress', {
+    expect(stack).toHaveResource('AWS::EC2::SecurityGroupEgress', {
       GroupId: 'sg-123456789',
-    }));
+    });
 
-    test.done();
-  },
 
-  'can import a serverless cluster with minimal attributes'(test: Test) {
+  });
+
+  test('can import a serverless cluster with minimal attributes', () => {
     const stack = testStack();
 
     const cluster = ServerlessCluster.fromServerlessClusterAttributes(stack, 'Database', {
       clusterIdentifier: 'identifier',
     });
 
-    test.equals(cluster.clusterIdentifier, 'identifier');
+    expect(cluster.clusterIdentifier).toEqual('identifier');
 
-    test.done();
-  },
 
-  'minimal imported cluster throws on accessing attributes for missing parameters'(test: Test) {
+  });
+
+  test('minimal imported cluster throws on accessing attributes for missing parameters', () => {
     const stack = testStack();
 
     const cluster = ServerlessCluster.fromServerlessClusterAttributes(stack, 'Database', {
       clusterIdentifier: 'identifier',
     });
 
-    test.throws(() => cluster.clusterEndpoint, /Cannot access `clusterEndpoint` of an imported cluster/);
-    test.throws(() => cluster.clusterReadEndpoint, /Cannot access `clusterReadEndpoint` of an imported cluster/);
+    expect(() => cluster.clusterEndpoint).toThrow(/Cannot access `clusterEndpoint` of an imported cluster/);
+    expect(() => cluster.clusterReadEndpoint).toThrow(/Cannot access `clusterReadEndpoint` of an imported cluster/);
 
-    test.done();
-  },
 
-  'imported cluster can access properties if attributes are provided'(test: Test) {
+  });
+
+  test('imported cluster can access properties if attributes are provided', () => {
     const stack = testStack();
 
     const cluster = ServerlessCluster.fromServerlessClusterAttributes(stack, 'Database', {
@@ -370,13 +369,13 @@ nodeunitShim({
       })],
     });
 
-    test.equals(cluster.clusterEndpoint.socketAddress, 'addr:3306');
-    test.equals(cluster.clusterReadEndpoint.socketAddress, 'reader-address:3306');
+    expect(cluster.clusterEndpoint.socketAddress).toEqual('addr:3306');
+    expect(cluster.clusterReadEndpoint.socketAddress).toEqual('reader-address:3306');
 
-    test.done();
-  },
 
-  'throws when trying to add rotation to a serverless cluster without secret'(test: Test) {
+  });
+
+  test('throws when trying to add rotation to a serverless cluster without secret', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -392,12 +391,12 @@ nodeunitShim({
     });
 
     // THEN
-    test.throws(() => cluster.addRotationSingleUser(), /without secret/);
+    expect(() => cluster.addRotationSingleUser()).toThrow(/without secret/);
 
-    test.done();
-  },
 
-  'throws when trying to add single user rotation multiple times'(test: Test) {
+  });
+
+  test('throws when trying to add single user rotation multiple times', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -411,12 +410,12 @@ nodeunitShim({
     cluster.addRotationSingleUser();
 
     // THEN
-    test.throws(() => cluster.addRotationSingleUser(), /A single user rotation was already added to this cluster/);
+    expect(() => cluster.addRotationSingleUser()).toThrow(/A single user rotation was already added to this cluster/);
 
-    test.done();
-  },
 
-  'can set deletion protection'(test: Test) {
+  });
+
+  test('can set deletion protection', () => {
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -429,14 +428,14 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResourceLike('AWS::RDS::DBCluster', {
+    expect(stack).toHaveResourceLike('AWS::RDS::DBCluster', {
       DeletionProtection: true,
-    }));
+    });
 
-    test.done();
-  },
 
-  'can set backup retention'(test: Test) {
+  });
+
+  test('can set backup retention', () => {
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -449,14 +448,14 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResourceLike('AWS::RDS::DBCluster', {
+    expect(stack).toHaveResourceLike('AWS::RDS::DBCluster', {
       BackupRetentionPeriod: 2,
-    }));
+    });
 
-    test.done();
-  },
 
-  'does not throw (but adds a node error) if a (dummy) VPC does not have sufficient subnets'(test: Test) {
+  });
+
+  test('does not throw (but adds a node error) if a (dummy) VPC does not have sufficient subnets', () => {
     // GIVEN
     const stack = testStack();
     const vpc = ec2.Vpc.fromLookup(stack, 'VPC', { isDefault: true });
@@ -473,12 +472,12 @@ nodeunitShim({
     // THEN
     const art = SynthUtils.synthesize(stack);
     const meta = art.findMetadataByType('aws:cdk:error');
-    test.equal(meta[0].data, 'Cluster requires at least 2 subnets, got 0');
+    expect(meta[0].data).toEqual('Cluster requires at least 2 subnets, got 0');
 
-    test.done();
-  },
 
-  'can set scaling configuration'(test: Test) {
+  });
+
+  test('can set scaling configuration', () => {
     // GIVEN
     const stack = testStack();
     const vpc = ec2.Vpc.fromLookup(stack, 'VPC', { isDefault: true });
@@ -495,19 +494,19 @@ nodeunitShim({
     });
 
     //THEN
-    expect(stack).to(haveResource('AWS::RDS::DBCluster', {
+    expect(stack).toHaveResource('AWS::RDS::DBCluster', {
       ScalingConfiguration: {
         AutoPause: true,
         MaxCapacity: 128,
         MinCapacity: 1,
         SecondsUntilAutoPause: 600,
       },
-    }));
+    });
 
-    test.done();
-  },
 
-  'can enable Data API'(test: Test) {
+  });
+
+  test('can enable Data API', () => {
     // GIVEN
     const stack = testStack();
     const vpc = ec2.Vpc.fromLookup(stack, 'VPC', { isDefault: true });
@@ -520,14 +519,14 @@ nodeunitShim({
     });
 
     //THEN
-    expect(stack).to(haveResource('AWS::RDS::DBCluster', {
+    expect(stack).toHaveResource('AWS::RDS::DBCluster', {
       EnableHttpEndpoint: true,
-    }));
+    });
 
-    test.done();
-  },
 
-  'default scaling options'(test: Test) {
+  });
+
+  test('default scaling options', () => {
     // GIVEN
     const stack = testStack();
     const vpc = ec2.Vpc.fromLookup(stack, 'VPC', { isDefault: true });
@@ -540,16 +539,16 @@ nodeunitShim({
     });
 
     //THEN
-    expect(stack).to(haveResource('AWS::RDS::DBCluster', {
+    expect(stack).toHaveResource('AWS::RDS::DBCluster', {
       ScalingConfiguration: {
         AutoPause: true,
       },
-    }));
+    });
 
-    test.done();
-  },
 
-  'auto pause is disabled if a time of zero is specified'(test: Test) {
+  });
+
+  test('auto pause is disabled if a time of zero is specified', () => {
     // GIVEN
     const stack = testStack();
     const vpc = ec2.Vpc.fromLookup(stack, 'VPC', { isDefault: true });
@@ -564,72 +563,72 @@ nodeunitShim({
     });
 
     //THEN
-    expect(stack).to(haveResource('AWS::RDS::DBCluster', {
+    expect(stack).toHaveResource('AWS::RDS::DBCluster', {
       ScalingConfiguration: {
         AutoPause: false,
       },
-    }));
+    });
 
-    test.done();
-  },
 
-  'throws when invalid auto pause time is specified'(test: Test) {
+  });
+
+  test('throws when invalid auto pause time is specified', () => {
     // GIVEN
     const stack = testStack();
     const vpc = ec2.Vpc.fromLookup(stack, 'VPC', { isDefault: true });
 
     // WHEN
-    test.throws(() =>
+    expect(() =>
       new ServerlessCluster(stack, 'Database', {
         engine: DatabaseClusterEngine.AURORA_MYSQL,
         vpc,
         scaling: {
           autoPause: cdk.Duration.seconds(30),
         },
-      }), /auto pause time must be between 5 minutes and 1 day./);
+      })).toThrow(/auto pause time must be between 5 minutes and 1 day./);
 
-    test.throws(() =>
+    expect(() =>
       new ServerlessCluster(stack, 'Another Database', {
         engine: DatabaseClusterEngine.AURORA_MYSQL,
         vpc,
         scaling: {
           autoPause: cdk.Duration.days(2),
         },
-      }), /auto pause time must be between 5 minutes and 1 day./);
+      })).toThrow(/auto pause time must be between 5 minutes and 1 day./);
 
-    test.done();
-  },
 
-  'throws when invalid backup retention period is specified'(test: Test) {
+  });
+
+  test('throws when invalid backup retention period is specified', () => {
     // GIVEN
     const stack = testStack();
     const vpc = ec2.Vpc.fromLookup(stack, 'VPC', { isDefault: true });
 
     // WHEN
-    test.throws(() =>
+    expect(() =>
       new ServerlessCluster(stack, 'Database', {
         engine: DatabaseClusterEngine.AURORA_MYSQL,
         vpc,
         backupRetention: cdk.Duration.days(0),
-      }), /backup retention period must be between 1 and 35 days. received: 0/);
+      })).toThrow(/backup retention period must be between 1 and 35 days. received: 0/);
 
-    test.throws(() =>
+    expect(() =>
       new ServerlessCluster(stack, 'Another Database', {
         engine: DatabaseClusterEngine.AURORA_MYSQL,
         vpc,
         backupRetention: cdk.Duration.days(36),
-      }), /backup retention period must be between 1 and 35 days. received: 36/);
+      })).toThrow(/backup retention period must be between 1 and 35 days. received: 36/);
 
-    test.done();
-  },
 
-  'throws error when min capacity is greater than max capacity'(test: Test) {
+  });
+
+  test('throws error when min capacity is greater than max capacity', () => {
     // GIVEN
     const stack = testStack();
     const vpc = ec2.Vpc.fromLookup(stack, 'VPC', { isDefault: true });
 
     // WHEN
-    test.throws(() =>
+    expect(() =>
       new ServerlessCluster(stack, 'Database', {
         engine: DatabaseClusterEngine.AURORA_MYSQL,
         vpc,
@@ -637,12 +636,12 @@ nodeunitShim({
           minCapacity: AuroraCapacityUnit.ACU_2,
           maxCapacity: AuroraCapacityUnit.ACU_1,
         },
-      }), /maximum capacity must be greater than or equal to minimum capacity./);
+      })).toThrow(/maximum capacity must be greater than or equal to minimum capacity./);
 
-    test.done();
-  },
 
-  'check that clusterArn property works'(test: Test) {
+  });
+
+  test('check that clusterArn property works', () => {
     // GIVEN
     const stack = testStack();
     const vpc = ec2.Vpc.fromLookup(stack, 'VPC', { isDefault: true });
@@ -659,7 +658,7 @@ nodeunitShim({
     });
 
     // THEN
-    test.deepEqual(stack.resolve(cluster.clusterArn), {
+    expect(stack.resolve(cluster.clusterArn)).toEqual({
       'Fn::Join': [
         '',
         [
@@ -670,10 +669,10 @@ nodeunitShim({
         ],
       ],
     });
-    test.done();
-  },
 
-  'can grant Data API access'(test: Test) {
+  });
+
+  test('can grant Data API access', () => {
     // GIVEN
     const stack = testStack();
     const vpc = ec2.Vpc.fromLookup(stack, 'VPC', { isDefault: true });
@@ -688,7 +687,7 @@ nodeunitShim({
     cluster.grantDataApiAccess(user);
 
     // THEN
-    expect(stack).to(haveResource('AWS::IAM::Policy', {
+    expect(stack).toHaveResource('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -721,12 +720,12 @@ nodeunitShim({
           Ref: 'User00B015A1',
         },
       ],
-    }));
+    });
 
-    test.done();
-  },
 
-  'can grant Data API access on imported cluster with given secret'(test: Test) {
+  });
+
+  test('can grant Data API access on imported cluster with given secret', () => {
     // GIVEN
     const stack = testStack();
     const secret = new DatabaseSecret(stack, 'Secret', {
@@ -743,7 +742,7 @@ nodeunitShim({
     cluster.grantDataApiAccess(user);
 
     // THEN
-    expect(stack).to(haveResource('AWS::IAM::Policy', {
+    expect(stack).toHaveResource('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -776,12 +775,12 @@ nodeunitShim({
           Ref: 'User00B015A1',
         },
       ],
-    }));
+    });
 
-    test.done();
-  },
 
-  'grant Data API access enables the Data API'(test: Test) {
+  });
+
+  test('grant Data API access enables the Data API', () => {
     // GIVEN
     const stack = testStack();
     const vpc = ec2.Vpc.fromLookup(stack, 'VPC', { isDefault: true });
@@ -795,14 +794,14 @@ nodeunitShim({
     cluster.grantDataApiAccess(user);
 
     //THEN
-    expect(stack).to(haveResource('AWS::RDS::DBCluster', {
+    expect(stack).toHaveResource('AWS::RDS::DBCluster', {
       EnableHttpEndpoint: true,
-    }));
+    });
 
-    test.done();
-  },
 
-  'grant Data API access throws if the Data API is disabled'(test: Test) {
+  });
+
+  test('grant Data API access throws if the Data API is disabled', () => {
     // GIVEN
     const stack = testStack();
     const vpc = ec2.Vpc.fromLookup(stack, 'VPC', { isDefault: true });
@@ -814,15 +813,60 @@ nodeunitShim({
     const user = new iam.User(stack, 'User');
 
     // WHEN
-    test.throws(() => cluster.grantDataApiAccess(user), /Cannot grant Data API access when the Data API is disabled/);
+    expect(() => cluster.grantDataApiAccess(user)).toThrow(/Cannot grant Data API access when the Data API is disabled/);
 
-    test.done();
-  },
+
+  });
+
+  test('changes the case of the cluster identifier if the lowercaseDbIdentifier feature flag is enabled', () => {
+    // GIVEN
+    const app = new cdk.App({
+      context: { [cxapi.RDS_LOWERCASE_DB_IDENTIFIER]: true },
+    });
+    const stack = testStack(app);
+    const clusterIdentifier = 'TestClusterIdentifier';
+    const vpc = ec2.Vpc.fromLookup(stack, 'VPC', { isDefault: true });
+
+    // WHEN
+    new ServerlessCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
+      vpc,
+      clusterIdentifier,
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::RDS::DBCluster', {
+      DBClusterIdentifier: clusterIdentifier.toLowerCase(),
+    });
+
+
+  });
+
+  test('does not change the case of the cluster identifier if the lowercaseDbIdentifier feature flag is disabled', () => {
+    // GIVEN
+    const app = new cdk.App({ context: { '@aws-cdk/aws-rds:lowercaseDbIdentifier': false } });
+    const stack = testStack(app);
+    const clusterIdentifier = 'TestClusterIdentifier';
+    const vpc = ec2.Vpc.fromLookup(stack, 'VPC', { isDefault: true });
+
+    // WHEN
+    new ServerlessCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
+      vpc,
+      clusterIdentifier,
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::RDS::DBCluster', {
+      DBClusterIdentifier: clusterIdentifier,
+    });
+
+
+  });
 });
 
-
-function testStack() {
-  const stack = new cdk.Stack(undefined, undefined, { env: { account: '12345', region: 'us-test-1' } });
+function testStack(app?: cdk.App, id?: string): cdk.Stack {
+  const stack = new cdk.Stack(app, id, { env: { account: '12345', region: 'us-test-1' } });
   stack.node.setContext('availability-zones:12345:us-test-1', ['us-test-1a', 'us-test-1b']);
   return stack;
 }

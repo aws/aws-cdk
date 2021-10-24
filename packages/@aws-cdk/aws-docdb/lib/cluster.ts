@@ -8,7 +8,7 @@ import { DatabaseSecret } from './database-secret';
 import { CfnDBCluster, CfnDBInstance, CfnDBSubnetGroup } from './docdb.generated';
 import { Endpoint } from './endpoint';
 import { IClusterParameterGroup } from './parameter-group';
-import { BackupProps, InstanceProps, Login, RotationMultiUserOptions } from './props';
+import { BackupProps, Login, RotationMultiUserOptions } from './props';
 
 /**
  * Properties for a new database cluster
@@ -82,9 +82,37 @@ export interface DatabaseClusterProps {
   readonly instanceIdentifierBase?: string;
 
   /**
-   * Settings for the individual instances that are launched
+   * What type of instance to start for the replicas
    */
-  readonly instanceProps: InstanceProps;
+  readonly instanceType: ec2.InstanceType;
+
+  /**
+    * What subnets to run the DocumentDB instances in.
+    *
+    * Must be at least 2 subnets in two different AZs.
+    */
+  readonly vpc: ec2.IVpc;
+
+  /**
+    * Where to place the instances within the VPC
+    *
+    * @default private subnets
+    */
+  readonly vpcSubnets?: ec2.SubnetSelection;
+
+  /**
+    * Security group.
+    *
+    * @default a new security group is created.
+    */
+  readonly securityGroup?: ec2.ISecurityGroup;
+
+  /**
+    * The DB parameter group to associate with the instance.
+    *
+    * @default no parameter group
+    */
+  readonly parameterGroup?: IClusterParameterGroup;
 
   /**
    * A weekly time range in which maintenance should preferably execute.
@@ -100,13 +128,6 @@ export interface DatabaseClusterProps {
   readonly preferredMaintenanceWindow?: string;
 
   /**
-   * Additional parameters to pass to the database engine
-   *
-   * @default - No parameter group.
-   */
-  readonly parameterGroup?: IClusterParameterGroup;
-
-  /**
    * The removal policy to apply when the cluster and its instances are removed
    * or replaced during a stack update, or when the stack is deleted. This
    * removal policy also applies to the implicit security group created for the
@@ -115,6 +136,16 @@ export interface DatabaseClusterProps {
    * @default - Retain cluster.
    */
   readonly removalPolicy?: RemovalPolicy
+
+  /**
+   * Specifies whether this cluster can be deleted. If deletionProtection is
+   * enabled, the cluster cannot be deleted unless it is modified and
+   * deletionProtection is disabled. deletionProtection protects clusters from
+   * being accidentally deleted.
+   *
+   * @default - false
+   */
+  readonly deletionProtection?: boolean;
 }
 
 /**
@@ -263,6 +294,11 @@ export class DatabaseCluster extends DatabaseClusterBase {
   public readonly secret?: secretsmanager.ISecret;
 
   /**
+   * The underlying CloudFormation resource for a database cluster.
+   */
+  private readonly cluster: CfnDBCluster;
+
+  /**
    * The VPC where the DB subnet group is created.
    */
   private readonly vpc: ec2.IVpc;
@@ -275,8 +311,8 @@ export class DatabaseCluster extends DatabaseClusterBase {
   constructor(scope: Construct, id: string, props: DatabaseClusterProps) {
     super(scope, id);
 
-    this.vpc = props.instanceProps.vpc;
-    this.vpcSubnets = props.instanceProps.vpcSubnets;
+    this.vpc = props.vpc;
+    this.vpcSubnets = props.vpcSubnets;
 
     // Determine the subnet(s) to deploy the DocDB cluster to
     const { subnetIds, internetConnectivityEstablished } = this.vpc.selectSubnets(this.vpcSubnets);
@@ -295,8 +331,8 @@ export class DatabaseCluster extends DatabaseClusterBase {
 
     // Create the security group for the DB cluster
     let securityGroup: ec2.ISecurityGroup;
-    if (props.instanceProps.securityGroup) {
-      securityGroup = props.instanceProps.securityGroup;
+    if (props.securityGroup) {
+      securityGroup = props.securityGroup;
     } else {
       securityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', {
         description: 'DocumentDB security group',
@@ -327,7 +363,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
     }
 
     // Create the DocDB cluster
-    const cluster = new CfnDBCluster(this, 'Resource', {
+    this.cluster = new CfnDBCluster(this, 'Resource', {
       // Basic
       engineVersion: props.engineVersion,
       dbClusterIdentifier: props.dbClusterName,
@@ -335,6 +371,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
       port: props.port,
       vpcSecurityGroupIds: [this.securityGroupId],
       dbClusterParameterGroupName: props.parameterGroup?.parameterGroupName,
+      deletionProtection: props.deletionProtection,
       // Admin
       masterUsername: secret ? secret.secretValueFromJson('username').toString() : props.masterUser.username,
       masterUserPassword: secret
@@ -349,16 +386,16 @@ export class DatabaseCluster extends DatabaseClusterBase {
       storageEncrypted,
     });
 
-    cluster.applyRemovalPolicy(props.removalPolicy, {
+    this.cluster.applyRemovalPolicy(props.removalPolicy, {
       applyToUpdateReplacePolicy: true,
     });
 
-    this.clusterIdentifier = cluster.ref;
-    this.clusterResourceIdentifier = cluster.attrClusterResourceId;
+    this.clusterIdentifier = this.cluster.ref;
+    this.clusterResourceIdentifier = this.cluster.attrClusterResourceId;
 
-    const port = Token.asNumber(cluster.attrPort);
-    this.clusterEndpoint = new Endpoint(cluster.attrEndpoint, port);
-    this.clusterReadEndpoint = new Endpoint(cluster.attrReadEndpoint, port);
+    const port = Token.asNumber(this.cluster.attrPort);
+    this.clusterEndpoint = new Endpoint(this.cluster.attrEndpoint, port);
+    this.clusterReadEndpoint = new Endpoint(this.cluster.attrReadEndpoint, port);
 
     if (secret) {
       this.secret = secret.attach(this);
@@ -378,10 +415,10 @@ export class DatabaseCluster extends DatabaseClusterBase {
 
       const instance = new CfnDBInstance(this, `Instance${instanceIndex}`, {
         // Link to cluster
-        dbClusterIdentifier: cluster.ref,
+        dbClusterIdentifier: this.cluster.ref,
         dbInstanceIdentifier: instanceIdentifier,
         // Instance properties
-        dbInstanceClass: databaseInstanceType(props.instanceProps.instanceType),
+        dbInstanceClass: databaseInstanceType(props.instanceType),
       });
 
       instance.applyRemovalPolicy(props.removalPolicy, {
@@ -445,6 +482,17 @@ export class DatabaseCluster extends DatabaseClusterBase {
       vpcSubnets: this.vpcSubnets,
       target: this,
     });
+  }
+
+  /**
+   * Adds security groups to this cluster.
+   * @param securityGroups The security groups to add.
+   */
+  public addSecurityGroups(...securityGroups: ec2.ISecurityGroup[]): void {
+    if (this.cluster.vpcSecurityGroupIds === undefined) {
+      this.cluster.vpcSecurityGroupIds = [];
+    }
+    this.cluster.vpcSecurityGroupIds.push(...securityGroups.map(sg => sg.securityGroupId));
   }
 }
 

@@ -141,12 +141,12 @@ export enum InstanceClass {
   /**
    * Memory optimized instances based on AMD EPYC with local NVME drive, 5th generation
    */
-  MEMORY5_AMD_NVME_DRIVE = 'r5a',
+  MEMORY5_AMD_NVME_DRIVE = 'r5ad',
 
   /**
    * Memory optimized instances based on AMD EPYC with local NVME drive, 5th generation
    */
-  R5AD = 'r5a',
+  R5AD = 'r5ad',
 
   /**
    * Memory optimized instances that are also EBS-optimized, 5th generation
@@ -373,6 +373,16 @@ export enum InstanceClass {
   X1E = 'x1e',
 
   /**
+   * Memory-intensive instances, 2nd generation with Graviton2 processors and local NVME drive
+   */
+  MEMORY_INTENSIVE_2_GRAVITON2_NVME_DRIVE = 'x2gd',
+
+  /**
+   * Memory-intensive instances, 2nd generation with Graviton2 processors and local NVME drive
+   */
+  X2GD = 'x2gd',
+
+  /**
    * Instances with customizable hardware acceleration, 1st generation
    */
   FPGA1 = 'f1',
@@ -441,6 +451,16 @@ export enum InstanceClass {
    * Arm processor based instances, 2nd generation
    */
   M6G = 'm6g',
+
+  /**
+   * Standard instances based on Intel (Ice Lake), 6th generation.
+   */
+  STANDARD6_INTEL = 'm6i',
+
+  /**
+   * Standard instances based on Intel (Ice Lake), 6th generation.
+   */
+  M6I = 'm6i',
 
   /**
    * Standard instances, 6th generation with Graviton2 processors and local NVME drive
@@ -526,6 +546,11 @@ export enum InstanceSize {
    * Instance size XLARGE2 (2xlarge)
    */
   XLARGE2 = '2xlarge',
+
+  /**
+   * Instance size XLARGE3 (3xlarge)
+   */
+  XLARGE3 = '3xlarge',
 
   /**
    * Instance size XLARGE4 (4xlarge)

@@ -20,6 +20,7 @@ setuptools.setup(
 
     install_requires=[
         "aws-cdk-lib==%cdk-version%",
+        "constructs%constructs-version%",
     ],
 
     python_requires=">=3.6",
@@ -28,8 +29,6 @@ setuptools.setup(
         "Development Status :: 4 - Beta",
 
         "Intended Audience :: Developers",
-
-        "License :: OSI Approved :: Apache Software License",
 
         "Programming Language :: JavaScript",
         "Programming Language :: Python :: 3 :: Only",

@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import '@aws-cdk/assert-internal/jest';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '../lib';
 
@@ -15,7 +15,7 @@ test('Via service, any principal', () => {
     Action: 'abc:call',
     Condition: { StringEquals: { 'kms:ViaService': 'bla.amazonaws.com' } },
     Effect: 'Allow',
-    Principal: '*',
+    Principal: { AWS: '*' },
     Resource: '*',
   });
 });
@@ -38,7 +38,7 @@ test('Via service, principal with conditions', () => {
       },
     },
     Effect: 'Allow',
-    Principal: '*',
+    Principal: { AWS: '*' },
     Resource: '*',
   });
 });

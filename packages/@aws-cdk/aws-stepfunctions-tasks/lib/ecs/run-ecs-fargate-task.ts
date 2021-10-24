@@ -4,6 +4,7 @@ import { CommonEcsRunTaskProps, EcsRunTaskBase } from './run-ecs-task-base';
 
 /**
  * Properties to define an ECS service
+ * @deprecated replaced by `EcsRunTask` and `EcsRunTaskProps`
  */
 export interface RunEcsFargateTaskProps extends CommonEcsRunTaskProps {
   /**
@@ -41,7 +42,7 @@ export interface RunEcsFargateTaskProps extends CommonEcsRunTaskProps {
 /**
  * Start a service on an ECS cluster
  *
- * @deprecated - replaced by `EcsRunTask`
+ * @deprecated replaced by `EcsRunTask`
  */
 export class RunEcsFargateTask extends EcsRunTaskBase {
   constructor(props: RunEcsFargateTaskProps) {

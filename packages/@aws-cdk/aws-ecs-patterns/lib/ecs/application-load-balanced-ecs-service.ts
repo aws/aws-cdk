@@ -110,6 +110,7 @@ export class ApplicationLoadBalancedEc2Service extends ApplicationLoadBalancedSe
         environment: taskImageOptions.environment,
         secrets: taskImageOptions.secrets,
         logging: logDriver,
+        dockerLabels: taskImageOptions.dockerLabels,
       });
       container.addPortMappings({
         containerPort: taskImageOptions.containerPort || 80,
@@ -133,6 +134,7 @@ export class ApplicationLoadBalancedEc2Service extends ApplicationLoadBalancedSe
       enableECSManagedTags: props.enableECSManagedTags,
       cloudMapOptions: props.cloudMapOptions,
       deploymentController: props.deploymentController,
+      circuitBreaker: props.circuitBreaker,
     });
     this.addServiceAsTarget(this.service);
   }

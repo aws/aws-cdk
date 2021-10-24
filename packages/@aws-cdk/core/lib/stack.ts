@@ -5,7 +5,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import { IConstruct, Construct, Node } from 'constructs';
 import { Annotations } from './annotations';
 import { App } from './app';
-import { Arn, ArnComponents } from './arn';
+import { Arn, ArnComponents, ArnFormat } from './arn';
 import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource } from './assets';
 import { CfnElement } from './cfn-element';
 import { Fn } from './cfn-fn';
@@ -273,7 +273,6 @@ export class Stack extends CoreConstruct implements ITaggable {
    * If this is a nested stack, this represents its `AWS::CloudFormation::Stack`
    * resource. `undefined` for top-level (non-nested) stacks.
    *
-   * @experimental
    */
   public readonly nestedStackResource?: CfnResource;
 
@@ -293,7 +292,6 @@ export class Stack extends CoreConstruct implements ITaggable {
   /**
    * Synthesis method for this stack
    *
-   * @experimental
    */
   public readonly synthesizer: IStackSynthesizer;
 
@@ -425,6 +423,17 @@ export class Stack extends CoreConstruct implements ITaggable {
   }
 
   /**
+   * DEPRECATED
+   * @deprecated use `reportMissingContextKey()`
+   */
+  public reportMissingContext(report: cxapi.MissingContext) {
+    if (!Object.values(cxschema.ContextProvider).includes(report.provider as cxschema.ContextProvider)) {
+      throw new Error(`Unknown context provider requested in: ${JSON.stringify(report)}`);
+    }
+    this.reportMissingContextKey(report as cxschema.MissingContext);
+  }
+
+  /**
    * Indicate that a context key was expected
    *
    * Contains instructions which will be emitted into the cloud assembly on how
@@ -432,11 +441,8 @@ export class Stack extends CoreConstruct implements ITaggable {
    *
    * @param report The set of parameters needed to obtain the context
    */
-  public reportMissingContext(report: cxapi.MissingContext) {
-    if (!Object.values(cxschema.ContextProvider).includes(report.provider as cxschema.ContextProvider)) {
-      throw new Error(`Unknown context provider requested in: ${JSON.stringify(report)}`);
-    }
-    this._missingContext.push(report as cxschema.MissingContext);
+  public reportMissingContextKey(report: cxschema.MissingContext) {
+    this._missingContext.push(report);
   }
 
   /**
@@ -603,9 +609,25 @@ export class Stack extends CoreConstruct implements ITaggable {
    *
    * @returns an ArnComponents object which allows access to the various
    *      components of the ARN.
+   *
+   * @deprecated use splitArn instead
    */
   public parseArn(arn: string, sepIfToken: string = '/', hasName: boolean = true): ArnComponents {
     return Arn.parse(arn, sepIfToken, hasName);
+  }
+
+  /**
+   * Splits the provided ARN into its components.
+   * Works both if 'arn' is a string like 'arn:aws:s3:::bucket',
+   * and a Token representing a dynamic CloudFormation expression
+   * (in which case the returned components will also be dynamic CloudFormation expressions,
+   * encoded as Tokens).
+   *
+   * @param arn the ARN to split into its components
+   * @param arnFormat the expected format of 'arn' - depends on what format the service 'arn' represents uses
+   */
+  public splitArn(arn: string, arnFormat: ArnFormat): ArnComponents {
+    return Arn.split(arn, arnFormat);
   }
 
   /**
@@ -744,7 +766,7 @@ export class Stack extends CoreConstruct implements ITaggable {
    * Synthesizes the cloudformation template into a cloud assembly.
    * @internal
    */
-  public _synthesizeTemplate(session: ISynthesisSession): void {
+  public _synthesizeTemplate(session: ISynthesisSession, lookupRoleArn?: string): void {
     // In principle, stack synthesis is delegated to the
     // StackSynthesis object.
     //
@@ -763,7 +785,7 @@ export class Stack extends CoreConstruct implements ITaggable {
       const numberOfResources = Object.keys(resources).length;
 
       if (numberOfResources > this.maxResources) {
-        throw new Error(`Number of resources: ${numberOfResources} is greater than allowed maximum of ${this.maxResources}`);
+        throw new Error(`Number of resources in stack '${this.node.path}': ${numberOfResources} is greater than allowed maximum of ${this.maxResources}`);
       } else if (numberOfResources >= (this.maxResources * 0.8)) {
         Annotations.of(this).addInfo(`Number of resources: ${numberOfResources} is approaching allowed maximum of ${this.maxResources}`);
       }
@@ -771,7 +793,11 @@ export class Stack extends CoreConstruct implements ITaggable {
     fs.writeFileSync(outPath, JSON.stringify(template, undefined, 2));
 
     for (const ctx of this._missingContext) {
-      builder.addMissing(ctx);
+      if (lookupRoleArn != null) {
+        builder.addMissing({ ...ctx, props: { ...ctx.props, lookupRoleArn } });
+      } else {
+        builder.addMissing(ctx);
+      }
     }
   }
 

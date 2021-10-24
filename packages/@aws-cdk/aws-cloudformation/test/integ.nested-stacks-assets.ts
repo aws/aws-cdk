@@ -8,14 +8,14 @@ import * as cfn from '../lib';
 // eslint-disable-next-line no-duplicate-imports, import/order
 import { Construct } from '@aws-cdk/core';
 
-/* eslint-disable cdk/no-core-construct */
+/* eslint-disable @aws-cdk/no-core-construct */
 
 class NestedStack extends cfn.NestedStack {
   constructor(scope: Construct, id: string) {
     super(scope, id);
 
     new lambda.Function(this, 'Handler', {
-      code: lambda.Code.asset(path.join(__dirname, 'asset-directory-fixture')),
+      code: lambda.Code.fromAsset(path.join(__dirname, 'asset-directory-fixture')),
       runtime: lambda.Runtime.NODEJS_10_X,
       handler: 'index.handler',
     });

@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import '@aws-cdk/assert-internal/jest';
 import * as cdk from '@aws-cdk/core';
 import * as stepfunctions from '../lib';
 
@@ -40,6 +40,47 @@ describe('Map State', () => {
           },
           ItemsPath: '$.inputForMap',
           MaxConcurrency: 1,
+        },
+      },
+    });
+  }),
+  test('State Machine With Map State and ResultSelector', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const map = new stepfunctions.Map(stack, 'Map State', {
+      maxConcurrency: 1,
+      itemsPath: stepfunctions.JsonPath.stringAt('$.inputForMap'),
+      resultSelector: {
+        buz: 'buz',
+        baz: stepfunctions.JsonPath.stringAt('$.baz'),
+      },
+    });
+    map.iterator(new stepfunctions.Pass(stack, 'Pass State'));
+
+    // THEN
+    expect(render(map)).toStrictEqual({
+      StartAt: 'Map State',
+      States: {
+        'Map State': {
+          Type: 'Map',
+          End: true,
+          Iterator: {
+            StartAt: 'Pass State',
+            States: {
+              'Pass State': {
+                Type: 'Pass',
+                End: true,
+              },
+            },
+          },
+          ItemsPath: '$.inputForMap',
+          MaxConcurrency: 1,
+          ResultSelector: {
+            'buz': 'buz',
+            'baz.$': '$.baz',
+          },
         },
       },
     });

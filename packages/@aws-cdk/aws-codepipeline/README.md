@@ -45,6 +45,17 @@ const pipeline = new codepipeline.Pipeline(this, 'MyFirstPipeline', {
 });
 ```
 
+If you want to enable key rotation for the generated KMS keys,
+you can configure it by passing `enableKeyRotation: true` when creating the pipeline.
+Note that key rotation will incur an additional cost of **$1/month**.
+
+```ts
+const pipeline = new codepipeline.Pipeline(this, 'MyFirstPipeline', {
+  // ...
+  enableKeyRotation: true,
+});
+```
+
 ## Stages
 
 You can provide Stages when creating the Pipeline:
@@ -190,7 +201,7 @@ place to serve as replication buckets, you can supply these at Pipeline definiti
 time using the `crossRegionReplicationBuckets` parameter. Example:
 
 ```ts
-const pipeline = new codepipeline.Pipeline(this, 'MyFirstPipeline', { /* ... */ });
+const pipeline = new codepipeline.Pipeline(this, 'MyFirstPipeline', {
   // ...
 
   crossRegionReplicationBuckets: {
@@ -338,4 +349,19 @@ construct:
 myPipeline.onStateChange('MyPipelineStateChange', target);
 myStage.onStateChange('MyStageStateChange', target);
 myAction.onStateChange('MyActionStateChange', target);
+```
+
+## CodeStar Notifications
+
+To define CodeStar Notification rules for Pipelines, use one of the `notifyOnXxx()` methods.
+They are very similar to `onXxx()` methods for CloudWatch events:
+
+```ts
+const target = new chatbot.SlackChannelConfiguration(stack, 'MySlackChannel', {
+  slackChannelConfigurationName: 'YOUR_CHANNEL_NAME',
+  slackWorkspaceId: 'YOUR_SLACK_WORKSPACE_ID',
+  slackChannelId: 'YOUR_SLACK_CHANNEL_ID',
+});
+
+const rule = pipeline.notifyOnExecutionStateChange('NotifyOnExecutionStateChange', target);
 ```

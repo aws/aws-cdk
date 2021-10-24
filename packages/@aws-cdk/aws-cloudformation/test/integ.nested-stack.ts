@@ -9,7 +9,7 @@ import * as cfn from '../lib';
 // eslint-disable-next-line no-duplicate-imports, import/order
 import { Construct } from '@aws-cdk/core';
 
-/* eslint-disable cdk/no-core-construct */
+/* eslint-disable @aws-cdk/no-core-construct */
 
 interface MyNestedStackProps {
   readonly subscriber?: sqs.Queue;
@@ -43,7 +43,7 @@ class MyNestedStack extends cfn.NestedStack {
     if (props.subscriber) {
       new lambda.Function(this, 'fn', {
         runtime: lambda.Runtime.NODEJS_10_X,
-        code: lambda.Code.inline('console.error("hi")'),
+        code: lambda.Code.fromInline('console.error("hi")'),
         handler: 'index.handler',
         environment: {
           TOPIC_ARN: props.siblingTopic?.topicArn ?? '',

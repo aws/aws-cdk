@@ -1,10 +1,12 @@
 import * as acm from '@aws-cdk/aws-certificatemanager';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
-import { IResource, Lazy, Resource, Stack, Token, Duration, Names } from '@aws-cdk/core';
+import { IResource, Lazy, Resource, Stack, Token, Duration, Names, FeatureFlags } from '@aws-cdk/core';
+import { CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021 } from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { ICachePolicy } from './cache-policy';
 import { CfnDistribution } from './cloudfront.generated';
+import { FunctionAssociation } from './function';
 import { GeoRestriction } from './geo-restriction';
 import { IKeyGroup } from './key-group';
 import { IOrigin, OriginBindConfig, OriginBindOptions } from './origin';
@@ -214,7 +216,7 @@ export interface DistributionProps {
     * CloudFront serves your objects only to browsers or devices that support at
     * least the SSL version that you specify.
     *
-    * @default SecurityPolicyProtocol.TLS_V1_2_2019
+    * @default - SecurityPolicyProtocol.TLS_V1_2_2021 if the '@aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2_2021' feature flag is set; otherwise, SecurityPolicyProtocol.TLS_V1_2_2019.
     */
   readonly minimumProtocolVersion?: SecurityPolicyProtocol;
 }
@@ -279,6 +281,12 @@ export class Distribution extends Resource implements IDistribution {
     this.certificate = props.certificate;
     this.errorResponses = props.errorResponses ?? [];
 
+    // Comments have an undocumented limit of 128 characters
+    const trimmedComment =
+      props.comment && props.comment.length > 128
+        ? `${props.comment.substr(0, 128 - 3)}...`
+        : props.comment;
+
     const distribution = new CfnDistribution(this, 'Resource', {
       distributionConfig: {
         enabled: props.enabled ?? true,
@@ -287,7 +295,7 @@ export class Distribution extends Resource implements IDistribution {
         defaultCacheBehavior: this.defaultBehavior._renderBehavior(),
         aliases: props.domainNames,
         cacheBehaviors: Lazy.any({ produce: () => this.renderCacheBehaviors() }),
-        comment: props.comment,
+        comment: trimmedComment,
         customErrorResponses: this.renderErrorResponses(),
         defaultRootObject: props.defaultRootObject,
         httpVersion: props.httpVersion ?? HttpVersion.HTTP2,
@@ -439,7 +447,12 @@ export class Distribution extends Resource implements IDistribution {
   }
 
   private renderViewerCertificate(certificate: acm.ICertificate,
-    minimumProtocolVersion: SecurityPolicyProtocol = SecurityPolicyProtocol.TLS_V1_2_2019) : CfnDistribution.ViewerCertificateProperty {
+    minimumProtocolVersionProp?: SecurityPolicyProtocol): CfnDistribution.ViewerCertificateProperty {
+
+    const defaultVersion = FeatureFlags.of(this).isEnabled(CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021)
+      ? SecurityPolicyProtocol.TLS_V1_2_2021 : SecurityPolicyProtocol.TLS_V1_2_2019;
+    const minimumProtocolVersion = minimumProtocolVersionProp ?? defaultVersion;
+
     return {
       acmCertificateArn: certificate.certificateArn,
       sslSupportMethod: SSLMethod.SNI,
@@ -524,7 +537,8 @@ export enum SecurityPolicyProtocol {
   TLS_V1_2016 = 'TLSv1_2016',
   TLS_V1_1_2016 = 'TLSv1.1_2016',
   TLS_V1_2_2018 = 'TLSv1.2_2018',
-  TLS_V1_2_2019 = 'TLSv1.2_2019'
+  TLS_V1_2_2019 = 'TLSv1.2_2019',
+  TLS_V1_2_2021 = 'TLSv1.2_2021'
 }
 
 /**
@@ -699,6 +713,13 @@ export interface AddBehaviorOptions {
    * @default ViewerProtocolPolicy.ALLOW_ALL
    */
   readonly viewerProtocolPolicy?: ViewerProtocolPolicy;
+
+  /**
+   * The CloudFront functions to invoke before serving the contents.
+   *
+   * @default - no functions will be invoked
+   */
+  readonly functionAssociations?: FunctionAssociation[];
 
   /**
    * The Lambda@Edge functions to invoke before serving the contents.

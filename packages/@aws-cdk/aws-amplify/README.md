@@ -38,7 +38,7 @@ const amplifyApp = new amplify.App(this, 'MyApp', {
     repository: '<repo>',
     oauthToken: cdk.SecretValue.secretsManager('my-github-token')
   }),
-  buildSpec: codebuild.BuildSpec.fromObject({ // Alternatively add a `amplify.yml` to the repo
+  buildSpec: codebuild.BuildSpec.fromObjectToYaml({ // Alternatively add a `amplify.yml` to the repo
     version: '1.0',
     frontend: {
       phases: {
@@ -55,7 +55,8 @@ const amplifyApp = new amplify.App(this, 'MyApp', {
       },
       artifacts: {
         baseDirectory: 'public',
-        files: '**/*'
+        files:
+        - '**/*'
       }
     }
   })

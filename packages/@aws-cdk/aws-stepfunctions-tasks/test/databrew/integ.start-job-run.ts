@@ -72,9 +72,9 @@ class GlueDataBrewJobStack extends cdk.Stack {
 
     const dataset = new databrew.CfnDataset(this, 'DataBrew Dataset', {
       input: {
-        S3InputDefinition: {
-          Bucket: `databrew-public-datasets-${region}`,
-          Key: 'votes.csv',
+        s3InputDefinition: {
+          bucket: `databrew-public-datasets-${region}`,
+          key: 'votes.csv',
         },
       },
       name: 'dataset-1',

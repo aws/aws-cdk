@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import '@aws-cdk/assert-internal/jest';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
 import * as tasks from '../../lib';
@@ -87,7 +87,7 @@ test('Set termination protection with static ClusterId and TerminationProtected 
   // WHEN
   const task = new tasks.EmrSetClusterTerminationProtection(stack, 'Task', {
     clusterId: 'ClusterId',
-    terminationProtected: sfn.TaskInput.fromDataAt('$.TerminationProtected').value,
+    terminationProtected: sfn.TaskInput.fromJsonPathAt('$.TerminationProtected').value,
   });
 
   // THEN
@@ -116,7 +116,7 @@ test('Set termination protection with static ClusterId and TerminationProtected 
 test('Set termination protection with ClusterId from payload and static TerminationProtected', () => {
   // WHEN
   const task = new tasks.EmrSetClusterTerminationProtection(stack, 'Task', {
-    clusterId: sfn.TaskInput.fromDataAt('$.ClusterId').value,
+    clusterId: sfn.TaskInput.fromJsonPathAt('$.ClusterId').value,
     terminationProtected: false,
   });
 

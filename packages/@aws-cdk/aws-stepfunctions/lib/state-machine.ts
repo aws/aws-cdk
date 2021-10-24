@@ -1,7 +1,7 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
-import { Arn, Duration, IResource, Resource, Stack } from '@aws-cdk/core';
+import { Arn, Duration, IResource, Resource, Stack, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { StateGraph } from './state-graph';
 import { StatesMetrics } from './stepfunctions-canned-metrics.generated';
@@ -379,7 +379,7 @@ export class StateMachine extends StateMachineBase {
       physicalName: props.stateMachineName,
     });
 
-    if (props.stateMachineName != undefined) {
+    if (props.stateMachineName !== undefined) {
       this.validateStateMachineName(props.stateMachineName);
     }
 
@@ -431,11 +431,14 @@ export class StateMachine extends StateMachineBase {
   }
 
   private validateStateMachineName(stateMachineName: string) {
-    if (stateMachineName.length < 1 || stateMachineName.length > 80) {
-      throw new Error(`State Machine name must be between 1 and 80 characters. Received: ${stateMachineName}`);
-    }
-    if (!stateMachineName.match('^[0-9a-zA-Z+!@._-]+$')) {
-      throw new Error(`State Machine name must match "^[0-9a-zA-Z+!@._-]+$". Received: ${stateMachineName}`);
+    if (!Token.isUnresolved(stateMachineName)) {
+      if (stateMachineName.length < 1 || stateMachineName.length > 80) {
+        throw new Error(`State Machine name must be between 1 and 80 characters. Received: ${stateMachineName}`);
+      }
+
+      if (!stateMachineName.match(/^[a-z0-9\+\!\@\.\(\)\-\=\_\']+$/i)) {
+        throw new Error(`State Machine name must match "^[a-z0-9+!@.()-=_']+$/i". Received: ${stateMachineName}`);
+      }
     }
   }
 

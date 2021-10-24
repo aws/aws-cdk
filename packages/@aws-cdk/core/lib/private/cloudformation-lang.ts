@@ -1,6 +1,8 @@
 import { Lazy } from '../lazy';
 import { DefaultTokenResolver, IFragmentConcatenator, IResolveContext } from '../resolvable';
+import { Stack } from '../stack';
 import { Token } from '../token';
+import { CfnUtils } from './cfn-utils-provider';
 import { INTRINSIC_KEY_PREFIX, ResolutionTypeHint, resolvedTypeHint } from './resolve';
 
 /**
@@ -170,7 +172,8 @@ function tokenAwareStringify(root: any, space: number, ctx: IResolveContext) {
       // AND it's the result of a token resolution. Otherwise, we just treat this
       // value as a regular old JSON object (that happens to look a lot like an intrinsic).
       if (isIntrinsic(obj) && resolvedTypeHint(obj)) {
-        return renderIntrinsic(obj);
+        renderIntrinsic(obj);
+        return;
       }
 
       return renderCollection('{', '}', definedEntries(obj), ([key, value]) => {
@@ -211,12 +214,42 @@ function tokenAwareStringify(root: any, space: number, ctx: IResolveContext) {
         pushLiteral('"');
         pushIntrinsic(deepQuoteStringLiterals(intrinsic));
         pushLiteral('"');
-        break;
+        return;
 
-      default:
+      case ResolutionTypeHint.LIST:
+        // We need this to look like:
+        //
+        //    '{"listValue":' ++ STRINGIFY(CFN_EVAL({ Ref: MyList })) ++ '}'
+        //
+        // However, STRINGIFY would need to execute at CloudFormation deployment time, and that doesn't exist.
+        //
+        // We could *ALMOST* use:
+        //
+        //   '{"listValue":["' ++ JOIN('","', { Ref: MyList }) ++ '"]}'
+        //
+        // But that has the unfortunate side effect that if `CFN_EVAL({ Ref: MyList }) == []`, then it would
+        // evaluate to `[""]`, which is a different value. Since CloudFormation does not have arbitrary
+        // conditionals there's no way to deal with this case properly.
+        //
+        // Therefore, if we encounter lists we need to defer to a custom resource to handle
+        // them properly at deploy time.
+        const stack = Stack.of(ctx.scope);
+
+        // Because this will be called twice (once during `prepare`, once during `resolve`),
+        // we need to make sure to be idempotent, so use a cache.
+        const stringifyResponse = stringifyCache.obtain(stack, JSON.stringify(intrinsic), () =>
+          CfnUtils.stringify(stack, `CdkJsonStringify${stringifyCounter++}`, intrinsic),
+        );
+
+        pushIntrinsic(stringifyResponse);
+        return;
+
+      case ResolutionTypeHint.NUMBER:
         pushIntrinsic(intrinsic);
-        break;
+        return;
     }
+
+    throw new Error(`Unexpected type hint: ${resolvedTypeHint(intrinsic)}`);
   }
 
   /**
@@ -392,3 +425,29 @@ function quoteString(s: string) {
   s = JSON.stringify(s);
   return s.substring(1, s.length - 1);
 }
+
+let stringifyCounter = 1;
+
+/**
+ * A cache scoped to object instances, that's maintained externally to the object instances
+ */
+class ScopedCache<O extends object, K, V> {
+  private cache = new WeakMap<O, Map<K, V>>();
+
+  public obtain(object: O, key: K, init: () => V): V {
+    let kvMap = this.cache.get(object);
+    if (!kvMap) {
+      kvMap = new Map();
+      this.cache.set(object, kvMap);
+    }
+
+    let ret = kvMap.get(key);
+    if (ret === undefined) {
+      ret = init();
+      kvMap.set(key, ret);
+    }
+    return ret;
+  }
+}
+
+const stringifyCache = new ScopedCache<Stack, string, string>();

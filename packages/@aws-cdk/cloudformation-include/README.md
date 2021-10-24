@@ -118,13 +118,111 @@ role.addToPolicy(new iam.PolicyStatement({
 }));
 ```
 
-If you need, you can also convert the CloudFormation resource to a higher-level
-resource by importing it:
+### Converting L1 resources to L2
+
+The resources the `getResource` method returns are what the CDK calls
+[Layer 1 resources](https://docs.aws.amazon.com/cdk/latest/guide/cfn_layer.html#cfn_layer_cfn)
+(like `CfnBucket`).
+However, in many places in the Construct Library,
+the CDK requires so-called Layer 2 resources, like `IBucket`.
+There are two ways of going from an L1 to an L2 resource.
+
+#### Using`fromCfn*()` methods
+
+This is the preferred method of converting an L1 resource to an L2.
+It works by invoking a static method of the class of the L2 resource
+whose name starts with `fromCfn` -
+for example, for KMS Keys, that would be the `Kms.fromCfnKey()` method -
+and passing the L1 instance as an argument:
 
 ```ts
-const bucket = s3.Bucket.fromBucketName(this, 'L2Bucket', cfnBucket.ref);
-// bucket is of type s3.IBucket
+import * as kms from '@aws-cdk/aws-kms';
+
+const cfnKey = cfnTemplate.getResource('Key') as kms.CfnKey;
+const key = kms.Key.fromCfnKey(cfnKey);
 ```
+
+This returns an instance of the `kms.IKey` type that can be passed anywhere in the CDK an `IKey` is expected.
+What is more, that `IKey` instance will be mutable -
+which means calling any mutating methods on it,
+like `addToResourcePolicy()`,
+will be reflected in the resulting template.
+
+Note that, in some cases, the `fromCfn*()` method might not be able to create an L2 from the underlying L1.
+This can happen when the underlying L1 heavily uses CloudFormation functions.
+For example, if you tried to create an L2 `IKey`
+from an L1 represented as this CloudFormation template:
+
+```json
+{
+  "Resources": {
+    "Key": {
+      "Type": "AWS::KMS::Key",
+      "Properties": {
+        "KeyPolicy": {
+          "Statement": [
+            {
+              "Fn::If": [
+                "Condition",
+                {
+                  "Action": "kms:if-action",
+                  "Resource": "*",
+                  "Principal": "*",
+                  "Effect": "Allow"
+                },
+                {
+                  "Action": "kms:else-action",
+                  "Resource": "*",
+                  "Principal": "*",
+                  "Effect": "Allow"
+                }
+              ]
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    }
+  }
+}
+```
+
+The `Key.fromCfnKey()` method does not know how to translate that into CDK L2 concepts,
+and would throw an exception.
+
+In those cases, you need the use the second method of converting an L1 to an L2.
+
+#### Using `from*Name/Arn/Attributes()` methods
+
+If the resource you need does not have a `fromCfn*()` method,
+or if it does, but it throws an exception for your particular L1,
+you need to use the second method of converting an L1 resource to L2.
+
+Each L2 class has static factory methods with names like `from*Name()`,
+`from*Arn()`, and/or `from*Attributes()`.
+You can obtain an L2 resource from an L1 by passing the correct properties of the L1 as the arguments to those methods:
+
+```ts
+// using from*Name()
+const bucket = s3.Bucket.fromBucketName(this, 'L2Bucket', cfnBucket.ref);
+
+// using from*Arn()
+const key = kms.Key.fromKeyArn(this, 'L2Key', cfnKey.attrArn);
+
+// using from*Attributes()
+const vpc = ec2.Vpc.fromVpcAttributes(this, 'L2Vpc', {
+  vpcId: cfnVpc.ref,
+  availabilityZones: cdk.Fn.getAzs(),
+  privateSubnetIds: [privateCfnSubnet1.ref, privateCfnSubnet2.ref],
+});
+```
+
+As long as they just need to be referenced,
+and not changed in any way, everything should work;
+however, note that resources returned from those methods,
+unlike those returned by `fromCfn*()` methods,
+are immutable, which means calling any mutating methods on them will have no effect.
+You will have to mutate the underlying L1 in order to change them.
 
 ## Non-resource template elements
 
@@ -215,7 +313,7 @@ new inc.CfnInclude(this, 'includeTemplate', {
 ```
 
 This will replace all references to `MyParam` with the string `'my-value'`,
-and `MyParam` will be removed from the 'Parameters' section of the template.
+and `MyParam` will be removed from the 'Parameters' section of the resulting template.
 
 ## Nested Stacks
 

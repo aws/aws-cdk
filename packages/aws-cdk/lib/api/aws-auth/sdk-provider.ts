@@ -205,7 +205,7 @@ export class SdkProvider {
     const account = env.account !== cxapi.UNKNOWN_ACCOUNT ? env.account : (await this.defaultAccount())?.accountId;
 
     if (!account) {
-      throw new Error('Unable to resolve AWS account to use. It must be either configured when you define your CDK or through the environment');
+      throw new Error('Unable to resolve AWS account to use. It must be either configured when you define your CDK Stack, or through the environment');
     }
 
     return {
@@ -348,6 +348,9 @@ export interface Account {
   readonly partition: string;
 }
 
+const DEFAULT_CONNECTION_TIMEOUT = 10000;
+const DEFAULT_TIMEOUT = 300000;
+
 /**
  * Get HTTP options for the SDK
  *
@@ -360,6 +363,9 @@ function parseHttpOptions(options: SdkHttpOptions) {
   const config: ConfigurationOptions = {};
   config.httpOptions = {};
 
+  config.httpOptions.connectTimeout = DEFAULT_CONNECTION_TIMEOUT;
+  config.httpOptions.timeout = DEFAULT_TIMEOUT;
+
   let userAgent = options.userAgent;
   if (userAgent == null) {
     // Find the package.json from the main toolkit
@@ -368,46 +374,33 @@ function parseHttpOptions(options: SdkHttpOptions) {
   }
   config.customUserAgent = userAgent;
 
-  const proxyAddress = options.proxyAddress || httpsProxyFromEnvironment();
   const caBundlePath = options.caBundlePath || caBundlePathFromEnvironment();
 
-  if (proxyAddress && caBundlePath) {
-    throw new Error(`At the moment, cannot specify Proxy (${proxyAddress}) and CA Bundle (${caBundlePath}) at the same time. See https://github.com/aws/aws-cdk/issues/5804`);
+  if (options.proxyAddress && caBundlePath) {
+    throw new Error(`At the moment, cannot specify Proxy (${options.proxyAddress}) and CA Bundle (${caBundlePath}) at the same time. See https://github.com/aws/aws-cdk/issues/5804`);
     // Maybe it's possible after all, but I've been staring at
     // https://github.com/TooTallNate/node-proxy-agent/blob/master/index.js#L79
     // a while now trying to figure out what to pass in so that the underlying Agent
     // object will get the 'ca' argument. It's not trivial and I don't want to risk it.
   }
 
-  if (proxyAddress) { // Ignore empty string on purpose
-    // https://aws.amazon.com/blogs/developer/using-the-aws-sdk-for-javascript-from-behind-a-proxy/
-    debug('Using proxy server: %s', proxyAddress);
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const ProxyAgent: any = require('proxy-agent');
-    config.httpOptions.agent = new ProxyAgent(proxyAddress);
-  }
   if (caBundlePath) {
     debug('Using CA bundle path: %s', caBundlePath);
     config.httpOptions.agent = new https.Agent({
       ca: readIfPossible(caBundlePath),
       keepAlive: true,
     });
+  } else {
+    // Configure the proxy agent. By default, this will use HTTPS?_PROXY and
+    // NO_PROXY environment variables to determine which proxy to use for each
+    // request.
+    //
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const ProxyAgent: any = require('proxy-agent');
+    config.httpOptions.agent = new ProxyAgent();
   }
 
   return config;
-}
-
-/**
- * Find and return the configured HTTPS proxy address
- */
-function httpsProxyFromEnvironment(): string | undefined {
-  if (process.env.https_proxy) {
-    return process.env.https_proxy;
-  }
-  if (process.env.HTTPS_PROXY) {
-    return process.env.HTTPS_PROXY;
-  }
-  return undefined;
 }
 
 /**

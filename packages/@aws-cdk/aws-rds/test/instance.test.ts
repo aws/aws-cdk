@@ -1,5 +1,5 @@
-import '@aws-cdk/assert/jest';
-import { ABSENT, ResourcePart, anything } from '@aws-cdk/assert';
+import '@aws-cdk/assert-internal/jest';
+import { ABSENT, ResourcePart, anything } from '@aws-cdk/assert-internal';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as targets from '@aws-cdk/aws-events-targets';
 import { ManagedPolicy, Role, ServicePrincipal, AccountPrincipal } from '@aws-cdk/aws-iam';
@@ -9,7 +9,7 @@ import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import { testFutureBehavior } from 'cdk-build-tools/lib/feature-flag';
+import { testFutureBehavior } from '@aws-cdk/cdk-build-tools/lib/feature-flag';
 import * as rds from '../lib';
 
 let stack: cdk.Stack;
@@ -199,6 +199,17 @@ describe('instance', () => {
 
   });
 
+  test('throws when create database with specific AZ and multiAZ enabled', () => {
+    expect(() => {
+      new rds.DatabaseInstance(stack, 'Instance', {
+        engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
+        vpc,
+        multiAz: true,
+        availabilityZone: 'ew-west-1a',
+      });
+    }).toThrow(/Requesting a specific availability zone is not valid for Multi-AZ instances/);
+  });
+
   test('instance with option and parameter group', () => {
     const optionGroup = new rds.OptionGroup(stack, 'OptionGroup', {
       engine: rds.DatabaseInstanceEngine.oracleSe2({ version: rds.OracleEngineVersion.VER_19_0_0_0_2020_04_R1 }),
@@ -337,8 +348,25 @@ describe('instance', () => {
           'Fn::Join': ['', ['{{resolve:secretsmanager:', { Ref: 'InstanceSecretB6DFA6BE8ee0a797cad8a68dbeb85f8698cdb5bb' }, ':SecretString:password::}}']],
         },
       });
+    });
 
+    test('fromGeneratedSecret with replica regions', () => {
+      new rds.DatabaseInstanceFromSnapshot(stack, 'Instance', {
+        snapshotIdentifier: 'my-snapshot',
+        engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
+        vpc,
+        credentials: rds.SnapshotCredentials.fromGeneratedSecret('admin', {
+          replicaRegions: [{ region: 'eu-west-1' }],
+        }),
+      });
 
+      expect(stack).toHaveResource('AWS::SecretsManager::Secret', {
+        ReplicaRegions: [
+          {
+            Region: 'eu-west-1',
+          },
+        ],
+      });
     });
 
     test('throws if generating a new password without a username', () => {
@@ -389,6 +417,35 @@ describe('instance', () => {
       });
 
 
+    });
+
+    test('can create a new database instance with fromDatabaseInstanceAttributes using a token for the port', () => {
+      // GIVEN
+      const databasePort = new cdk.CfnParameter(stack, 'DatabasePort', {
+        type: 'Number',
+        default: 5432,
+      }).valueAsNumber;
+
+      // WHEN
+      const instance = rds.DatabaseInstance.fromDatabaseInstanceAttributes(stack, 'DatabaseInstance', {
+        instanceIdentifier: '',
+        securityGroups: [],
+        instanceEndpointAddress: '',
+        port: databasePort,
+      });
+
+      new cdk.CfnOutput(stack, 'portOutput', {
+        exportName: 'databaseUrl',
+        value: `${instance.dbInstanceEndpointPort}`,
+      });
+
+      // THEN
+      expect(stack).toHaveOutput({
+        exportName: 'databaseUrl',
+        outputValue: {
+          Ref: 'DatabasePort',
+        },
+      });
     });
   });
 
@@ -1187,8 +1244,26 @@ describe('instance', () => {
         ],
       },
     });
+  });
 
+  test('fromGeneratedSecret with replica regions', () => {
+    // WHEN
+    new rds.DatabaseInstance(stack, 'Database', {
+      engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_12_3 }),
+      vpc,
+      credentials: rds.Credentials.fromGeneratedSecret('postgres', {
+        replicaRegions: [{ region: 'eu-west-1' }],
+      }),
+    });
 
+    // THEN
+    expect(stack).toHaveResource('AWS::SecretsManager::Secret', {
+      ReplicaRegions: [
+        {
+          Region: 'eu-west-1',
+        },
+      ],
+    });
   });
 
   test('fromPassword', () => {
@@ -1204,8 +1279,44 @@ describe('instance', () => {
       MasterUsername: 'postgres', // username is a string
       MasterUserPassword: '{{resolve:ssm-secure:/dbPassword:1}}', // reference to SSM
     });
+  });
 
+  test('can set custom name to database secret by fromSecret', () => {
+    // WHEN
+    const secretName = 'custom-secret-name';
+    const secret = new rds.DatabaseSecret(stack, 'Secret', {
+      username: 'admin',
+      secretName,
+    } );
+    new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.mysql({
+        version: rds.MysqlEngineVersion.VER_8_0_19,
+      }),
+      credentials: rds.Credentials.fromSecret(secret),
+      vpc,
+    });
 
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::SecretsManager::Secret', {
+      Name: secretName,
+    });
+  });
+
+  test('can set custom name to database secret by fromGeneratedSecret', () => {
+    // WHEN
+    const secretName = 'custom-secret-name';
+    new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.mysql({
+        version: rds.MysqlEngineVersion.VER_8_0_19,
+      }),
+      credentials: rds.Credentials.fromGeneratedSecret('admin', { secretName }),
+      vpc,
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::SecretsManager::Secret', {
+      Name: secretName,
+    });
   });
 
   test('can set publiclyAccessible to false with public subnets', () => {
@@ -1243,6 +1354,53 @@ describe('instance', () => {
       PubliclyAccessible: true,
     });
   });
+
+  test('changes the case of the cluster identifier if the lowercaseDbIdentifier feature flag is enabled', () => {
+    // GIVEN
+    const app = new cdk.App({
+      context: { [cxapi.RDS_LOWERCASE_DB_IDENTIFIER]: true },
+    });
+    stack = new cdk.Stack( app );
+    vpc = new ec2.Vpc( stack, 'VPC' );
+
+    // WHEN
+    const instanceIdentifier = 'TestInstanceIdentifier';
+    new rds.DatabaseInstance( stack, 'DB', {
+      engine: rds.DatabaseInstanceEngine.mysql({
+        version: rds.MysqlEngineVersion.VER_8_0_19,
+      }),
+      vpc,
+      instanceIdentifier,
+    } );
+
+    // THEN
+    expect(stack).toHaveResource('AWS::RDS::DBInstance', {
+      DBInstanceIdentifier: instanceIdentifier.toLowerCase(),
+    });
+  });
+
+  test( 'does not changes the case of the cluster identifier if the lowercaseDbIdentifier feature flag is disabled', () => {
+    // GIVEN
+    const app = new cdk.App({ context: { '@aws-cdk/aws-rds:lowercaseDbIdentifier': false } });
+    stack = new cdk.Stack(app);
+    vpc = new ec2.Vpc( stack, 'VPC' );
+
+    // WHEN
+    const instanceIdentifier = 'TestInstanceIdentifier';
+    new rds.DatabaseInstance( stack, 'DB', {
+      engine: rds.DatabaseInstanceEngine.mysql({
+        version: rds.MysqlEngineVersion.VER_8_0_19,
+      }),
+      vpc,
+      instanceIdentifier,
+    } );
+
+    // THEN
+    expect(stack).toHaveResource('AWS::RDS::DBInstance', {
+      DBInstanceIdentifier: instanceIdentifier,
+    });
+  });
+
 });
 
 test.each([
@@ -1274,4 +1432,49 @@ test.each([
     DeletionPolicy: subnetValue,
     UpdateReplacePolicy: subnetValue,
   }, ResourcePart.CompleteDefinition);
+});
+
+describe('cross-account instance', () => {
+  test.each([
+    ['MyInstance', 'MyInstance', 'myinstance'],
+    ['PhysicalName.GENERATE_IF_NEEDED', cdk.PhysicalName.GENERATE_IF_NEEDED, 'instancestackncestackinstancec830ba83756a6dfc7154'],
+  ])("with database identifier '%s' can be referenced from a Stack in a different account", (_, providedInstanceId, expectedInstanceId) => {
+    const app = new cdk.App();
+    const instanceStack = new cdk.Stack(app, 'InstanceStack', {
+      env: { account: '123', region: 'my-region' },
+    });
+    const instance = new rds.DatabaseInstance(instanceStack, 'Instance', {
+      vpc: new ec2.Vpc(instanceStack, 'Vpc'),
+      engine: rds.DatabaseInstanceEngine.mariaDb({ version: rds.MariaDbEngineVersion.VER_10_5 }),
+      // physical name set
+      instanceIdentifier: providedInstanceId,
+    });
+
+    const outputStack = new cdk.Stack(app, 'OutputStack', {
+      env: { account: '456', region: 'my-region' },
+    });
+    new cdk.CfnOutput(outputStack, 'DatabaseInstanceArn', {
+      value: instance.instanceArn,
+    });
+    new cdk.CfnOutput(outputStack, 'DatabaseInstanceName', {
+      value: instance.instanceIdentifier,
+    });
+
+    expect(outputStack).toMatchTemplate({
+      Outputs: {
+        DatabaseInstanceArn: {
+          Value: {
+            'Fn::Join': ['', [
+              'arn:',
+              { Ref: 'AWS::Partition' },
+              `:rds:my-region:123:db:${expectedInstanceId}`,
+            ]],
+          },
+        },
+        DatabaseInstanceName: {
+          Value: expectedInstanceId,
+        },
+      },
+    });
+  });
 });

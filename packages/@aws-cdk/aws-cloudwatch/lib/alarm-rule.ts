@@ -91,7 +91,7 @@ export class AlarmRule {
   public static fromAlarm(alarm: IAlarm, alarmState: AlarmState): IAlarmRule {
     return new class implements IAlarmRule {
       public renderAlarmRule(): string {
-        return `${alarmState}(${alarm.alarmArn})`;
+        return `${alarmState}("${alarm.alarmArn}")`;
       }
     };
   }

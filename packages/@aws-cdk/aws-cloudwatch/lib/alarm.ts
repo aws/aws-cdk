@@ -257,8 +257,9 @@ export class Alarm extends AlarmBase {
     return dispatchMetric(metric, {
       withStat(stat, conf) {
         self.validateMetricStat(stat, metric);
-
-        if (conf.renderingProperties?.label == undefined) {
+        const canRenderAsLegacyMetric = conf.renderingProperties?.label == undefined && !self.requiresAccountId(stat);
+        // Do this to disturb existing templates as little as possible
+        if (canRenderAsLegacyMetric) {
           return dropUndefined({
             dimensions: stat.dimensions,
             namespace: stat.namespace,
@@ -283,7 +284,8 @@ export class Alarm extends AlarmBase {
                 stat: stat.statistic,
                 unit: stat.unitFilter,
               },
-              id: stat.metricName,
+              id: 'm1',
+              accountId: self.requiresAccountId(stat) ? stat.account : undefined,
               label: conf.renderingProperties?.label,
               returnData: true,
             } as CfnAlarm.MetricDataQueryProperty,
@@ -318,8 +320,9 @@ export class Alarm extends AlarmBase {
                   unit: stat.unitFilter,
                 },
                 id: entry.id || uniqueMetricId(),
+                accountId: self.requiresAccountId(stat) ? stat.account : undefined,
                 label: conf.renderingProperties?.label,
-                returnData: entry.tag ? undefined : false, // Tag stores "primary" attribute, default is "true"
+                returnData: entry.tag ? undefined : false, // entry.tag evaluates to true if the metric is the math expression the alarm is based on.
               };
             },
             withExpression(expr, conf) {
@@ -330,12 +333,14 @@ export class Alarm extends AlarmBase {
                 assertSubmetricsCount(expr);
               }
 
+              self.validateMetricExpression(expr);
+
               return {
                 expression: expr.expression,
                 id: entry.id || uniqueMetricId(),
                 label: conf.renderingProperties?.label,
                 period: hasSubmetrics ? undefined : expr.period,
-                returnData: entry.tag ? undefined : false, // Tag stores "primary" attribute, default is "true"
+                returnData: entry.tag ? undefined : false, // entry.tag evaluates to true if the metric is the math expression the alarm is based on.
               };
             },
           }) as CfnAlarm.MetricDataQueryProperty),
@@ -345,7 +350,7 @@ export class Alarm extends AlarmBase {
   }
 
   /**
-   * Validate that if a region and account are in the given stat config, they match the Alarm
+   * Validate that if a region is in the given stat config, they match the Alarm
    */
   private validateMetricStat(stat: MetricStatConfig, metric: IMetric) {
     const stack = Stack.of(this);
@@ -353,9 +358,42 @@ export class Alarm extends AlarmBase {
     if (definitelyDifferent(stat.region, stack.region)) {
       throw new Error(`Cannot create an Alarm in region '${stack.region}' based on metric '${metric}' in '${stat.region}'`);
     }
-    if (definitelyDifferent(stat.account, stack.account)) {
-      throw new Error(`Cannot create an Alarm in account '${stack.account}' based on metric '${metric}' in '${stat.account}'`);
+  }
+
+  /**
+   * Validates that the expression config does not specify searchAccount or searchRegion props
+   * as search expressions are not supported by Alarms.
+   */
+  private validateMetricExpression(expr: MetricExpressionConfig) {
+    if (expr.searchAccount !== undefined || expr.searchRegion !== undefined) {
+      throw new Error('Cannot create an Alarm based on a MathExpression which specifies a searchAccount or searchRegion');
     }
+  }
+
+  /**
+   * Determine if the accountId property should be included in the metric.
+   */
+  private requiresAccountId(stat: MetricStatConfig): boolean {
+    const stackAccount = Stack.of(this).account;
+
+    // if stat.account is undefined, it's by definition in the same account
+    if (stat.account === undefined) {
+      return false;
+    }
+
+    // if this is a region-agnostic stack, we can't assume anything about stat.account
+    // and therefore we assume its a cross-account call
+    if (Token.isUnresolved(stackAccount)) {
+      return true;
+    }
+
+    // ok, we can compare the two concrete values directly - if they are the same we
+    // can omit the account ID from the metric.
+    if (stackAccount === stat.account) {
+      return false;
+    }
+
+    return true;
   }
 }
 
@@ -393,7 +431,10 @@ function renderIfExtendedStatistic(statistic?: string): string | undefined {
     // Already percentile. Avoid parsing because we might get into
     // floating point rounding issues, return as-is but lowercase the p.
     return statistic.toLowerCase();
+  } else if (parsed.type === 'generic') {
+    return statistic;
   }
+
   return undefined;
 }
 

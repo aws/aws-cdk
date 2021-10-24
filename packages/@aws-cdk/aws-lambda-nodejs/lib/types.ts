@@ -1,4 +1,4 @@
-import { BundlingDockerImage } from '@aws-cdk/core';
+import { DockerImage } from '@aws-cdk/core';
 
 /**
  * Bundling options
@@ -17,6 +17,14 @@ export interface BundlingOptions {
    * @default false
    */
   readonly sourceMap?: boolean;
+
+  /**
+   * Source map mode to be used when bundling.
+   * @see https://esbuild.github.io/api/#sourcemap
+   *
+   * @default SourceMapMode.DEFAULT
+   */
+  readonly sourceMapMode?: SourceMapMode;
 
   /**
    * Target environment for the generated JavaScript code.
@@ -200,7 +208,7 @@ export interface BundlingOptions {
    *
    * @default - use the Docker image provided by @aws-cdk/aws-lambda-nodejs
    */
-  readonly dockerImage?: BundlingDockerImage;
+  readonly dockerImage?: DockerImage;
 
   /**
    * Command hooks
@@ -265,4 +273,30 @@ export enum LogLevel {
   ERROR = 'error',
   /** Show nothing */
   SILENT = 'silent',
+}
+
+
+/**
+ * SourceMap mode for esbuild
+ * @see https://esbuild.github.io/api/#sourcemap
+ */
+export enum SourceMapMode {
+  /**
+   * Default sourceMap mode - will generate a .js.map file alongside any generated .js file and add a special //# sourceMappingURL=
+   * comment to the bottom of the .js file pointing to the .js.map file
+   */
+  DEFAULT = 'default',
+  /**
+   *  External sourceMap mode - If you want to omit the special //# sourceMappingURL= comment from the generated .js file but you still
+   *  want to generate the .js.map files
+   */
+  EXTERNAL = 'external',
+  /**
+   * Inline sourceMap mode - If you want to insert the entire source map into the .js file instead of generating a separate .js.map file
+   */
+  INLINE = 'inline',
+  /**
+   * Both sourceMap mode - If you want to have the effect of both inline and external simultaneously
+   */
+  BOTH = 'both'
 }

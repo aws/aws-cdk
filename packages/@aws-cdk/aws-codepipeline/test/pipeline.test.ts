@@ -1,5 +1,5 @@
-import { expect as ourExpect, ResourcePart, arrayWith, objectLike, haveResourceLike } from '@aws-cdk/assert';
-import '@aws-cdk/assert/jest';
+import { expect as ourExpect, ResourcePart, arrayWith, objectLike, haveResourceLike } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
@@ -388,6 +388,41 @@ describe('', () => {
         }).toThrow(/Pipeline stack which uses cross-environment actions must have an explicitly set account/);
 
 
+      });
+
+      test('does not allow enabling key rotation if cross account keys have been disabled', () => {
+        const app = new cdk.App();
+        const stack = new cdk.Stack(app, 'PipelineStack');
+
+        expect(() => {
+          new codepipeline.Pipeline(stack, 'Pipeline', {
+            crossAccountKeys: false,
+            enableKeyRotation: true,
+          });
+        }).toThrow("Setting 'enableKeyRotation' to true also requires 'crossAccountKeys' to be enabled");
+      });
+
+      test("enabling key rotation sets 'EnableKeyRotation' to 'true' in the main generated KMS key", () => {
+        const app = new cdk.App();
+        const stack = new cdk.Stack(app, 'PipelineStack');
+        const sourceOutput = new codepipeline.Artifact();
+        new codepipeline.Pipeline(stack, 'Pipeline', {
+          enableKeyRotation: true,
+          stages: [
+            {
+              stageName: 'Source',
+              actions: [new FakeSourceAction({ actionName: 'Source', output: sourceOutput })],
+            },
+            {
+              stageName: 'Build',
+              actions: [new FakeBuildAction({ actionName: 'Build', input: sourceOutput })],
+            },
+          ],
+        });
+
+        expect(stack).toHaveResourceLike('AWS::KMS::Key', {
+          'EnableKeyRotation': true,
+        });
       });
     });
   });

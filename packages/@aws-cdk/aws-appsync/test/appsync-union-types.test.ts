@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as cdk from '@aws-cdk/core';
 import * as appsync from '../lib';
 import * as t from './scalar-type-defintions';
@@ -30,10 +30,10 @@ describe('testing Union Type properties', () => {
     });
     api.addType(union);
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLSchema', {
       Definition: `${out}`,
     });
-    expect(stack).not.toHaveResource('AWS::AppSync::Resolver');
+    Template.fromStack(stack).resourceCountIs('AWS::AppSync::Resolver', 0);
   });
 
   test('UnionType can addField', () => {
@@ -45,7 +45,7 @@ describe('testing Union Type properties', () => {
     union.addField({ field: test2.attribute() });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLSchema', {
       Definition: `${out}`,
     });
   });
@@ -90,7 +90,7 @@ describe('testing Union Type properties', () => {
     const obj = 'type Test2 {\n  union: UnionTest\n}\n';
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLSchema', {
       Definition: `${out}${obj}`,
     });
   });

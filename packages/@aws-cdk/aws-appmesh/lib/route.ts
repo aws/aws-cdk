@@ -2,6 +2,7 @@ import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnRoute } from './appmesh.generated';
 import { IMesh } from './mesh';
+import { renderMeshOwner } from './private/utils';
 import { RouteSpec } from './route-spec';
 import { IVirtualRouter, VirtualRouter } from './virtual-router';
 
@@ -120,12 +121,14 @@ export class Route extends cdk.Resource implements IRoute {
     const route = new CfnRoute(this, 'Resource', {
       routeName: this.physicalName,
       meshName: this.virtualRouter.mesh.meshName,
+      meshOwner: renderMeshOwner(this.env.account, this.virtualRouter.mesh.env.account),
       virtualRouterName: this.virtualRouter.virtualRouterName,
       spec: {
         tcpRoute: spec.tcpRouteSpec,
         httpRoute: spec.httpRouteSpec,
         http2Route: spec.http2RouteSpec,
         grpcRoute: spec.grpcRouteSpec,
+        priority: spec.priority,
       },
     });
 

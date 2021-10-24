@@ -38,9 +38,9 @@ test('Task with only the required parameters', () => {
   // WHEN
   const task = new sfn.Task(stack, 'Task', {
     task: new tasks.RunBatchJob({
-      jobDefinition: batchJobDefinition,
+      jobDefinitionArn: batchJobDefinition.jobDefinitionArn,
       jobName: 'JobName',
-      jobQueue: batchJobQueue,
+      jobQueueArn: batchJobQueue.jobQueueArn,
     }),
   });
 
@@ -72,9 +72,9 @@ test('Task with all the parameters', () => {
   // WHEN
   const task = new sfn.Task(stack, 'Task', {
     task: new tasks.RunBatchJob({
-      jobDefinition: batchJobDefinition,
+      jobDefinitionArn: batchJobDefinition.jobDefinitionArn,
       jobName: 'JobName',
-      jobQueue: batchJobQueue,
+      jobQueueArn: batchJobQueue.jobQueueArn,
       arraySize: 15,
       containerOverrides: {
         command: ['sudo', 'rm'],
@@ -135,9 +135,9 @@ test('supports tokens', () => {
   // WHEN
   const task = new sfn.Task(stack, 'Task', {
     task: new tasks.RunBatchJob({
-      jobDefinition: batchJobDefinition,
+      jobDefinitionArn: batchJobDefinition.jobDefinitionArn,
+      jobQueueArn: batchJobQueue.jobQueueArn,
       jobName: sfn.JsonPath.stringAt('$.jobName'),
-      jobQueue: batchJobQueue,
       arraySize: sfn.JsonPath.numberAt('$.arraySize'),
       timeout: cdk.Duration.seconds(sfn.JsonPath.numberAt('$.timeout')),
       attempts: sfn.JsonPath.numberAt('$.attempts'),
@@ -181,9 +181,9 @@ test('Task throws if WAIT_FOR_TASK_TOKEN is supplied as service integration patt
   expect(() => {
     new sfn.Task(stack, 'Task', {
       task: new tasks.RunBatchJob({
-        jobDefinition: batchJobDefinition,
+        jobDefinitionArn: batchJobDefinition.jobDefinitionArn,
         jobName: 'JobName',
-        jobQueue: batchJobQueue,
+        jobQueueArn: batchJobQueue.jobQueueArn,
         integrationPattern: sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN,
       }),
     });
@@ -196,9 +196,9 @@ test('Task throws if environment in containerOverrides contain env with name sta
   expect(() => {
     new sfn.Task(stack, 'Task', {
       task: new tasks.RunBatchJob({
-        jobDefinition: batchJobDefinition,
+        jobDefinitionArn: batchJobDefinition.jobDefinitionArn,
         jobName: 'JobName',
-        jobQueue: batchJobQueue,
+        jobQueueArn: batchJobQueue.jobQueueArn,
         containerOverrides: {
           environment: { AWS_BATCH_MY_NAME: 'MY_VALUE' },
         },
@@ -213,9 +213,9 @@ test('Task throws if arraySize is out of limits 2-10000', () => {
   expect(() => {
     new sfn.Task(stack, 'Task', {
       task: new tasks.RunBatchJob({
-        jobDefinition: batchJobDefinition,
+        jobDefinitionArn: batchJobDefinition.jobDefinitionArn,
         jobName: 'JobName',
-        jobQueue: batchJobQueue,
+        jobQueueArn: batchJobQueue.jobQueueArn,
         arraySize: 1,
       }),
     });
@@ -226,9 +226,9 @@ test('Task throws if arraySize is out of limits 2-10000', () => {
   expect(() => {
     new sfn.Task(stack, 'Task', {
       task: new tasks.RunBatchJob({
-        jobDefinition: batchJobDefinition,
+        jobDefinitionArn: batchJobDefinition.jobDefinitionArn,
         jobName: 'JobName',
-        jobQueue: batchJobQueue,
+        jobQueueArn: batchJobQueue.jobQueueArn,
         arraySize: 10001,
       }),
     });
@@ -241,9 +241,9 @@ test('Task throws if dependencies exceeds 20', () => {
   expect(() => {
     new sfn.Task(stack, 'Task', {
       task: new tasks.RunBatchJob({
-        jobDefinition: batchJobDefinition,
+        jobDefinitionArn: batchJobDefinition.jobDefinitionArn,
         jobName: 'JobName',
-        jobQueue: batchJobQueue,
+        jobQueueArn: batchJobQueue.jobQueueArn,
         dependsOn: [...Array(21).keys()].map(i => ({
           jobId: `${i}`,
           type: `some_type-${i}`,
@@ -259,9 +259,9 @@ test('Task throws if attempts is out of limits 1-10', () => {
   expect(() => {
     new sfn.Task(stack, 'Task', {
       task: new tasks.RunBatchJob({
-        jobDefinition: batchJobDefinition,
+        jobDefinitionArn: batchJobDefinition.jobDefinitionArn,
         jobName: 'JobName',
-        jobQueue: batchJobQueue,
+        jobQueueArn: batchJobQueue.jobQueueArn,
         attempts: 0,
       }),
     });
@@ -272,9 +272,9 @@ test('Task throws if attempts is out of limits 1-10', () => {
   expect(() => {
     new sfn.Task(stack, 'Task', {
       task: new tasks.RunBatchJob({
-        jobDefinition: batchJobDefinition,
+        jobDefinitionArn: batchJobDefinition.jobDefinitionArn,
         jobName: 'JobName',
-        jobQueue: batchJobQueue,
+        jobQueueArn: batchJobQueue.jobQueueArn,
         attempts: 11,
       }),
     });
@@ -287,9 +287,9 @@ test('Task throws if timeout is less than 60 sec', () => {
   expect(() => {
     new sfn.Task(stack, 'Task', {
       task: new tasks.RunBatchJob({
-        jobDefinition: batchJobDefinition,
+        jobDefinitionArn: batchJobDefinition.jobDefinitionArn,
         jobName: 'JobName',
-        jobQueue: batchJobQueue,
+        jobQueueArn: batchJobQueue.jobQueueArn,
         timeout: cdk.Duration.seconds(59),
       }),
     });

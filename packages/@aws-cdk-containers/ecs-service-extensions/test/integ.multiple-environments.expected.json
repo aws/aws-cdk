@@ -1304,7 +1304,11 @@
                 "Fn::Join": [
                   "",
                   [
-                    "arn:aws:ecr:",
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":ecr:",
                     {
                       "Ref": "AWS::Region"
                     },
@@ -1537,7 +1541,6 @@
             "MeshName"
           ]
         },
-        "RouteName": "name-production-route",
         "Spec": {
           "HttpRoute": {
             "Action": {
@@ -1563,7 +1566,8 @@
             "nameproductionvirtualrouter00E3366D",
             "VirtualRouterName"
           ]
-        }
+        },
+        "RouteName": "name-production-route"
       }
     },
     "nameproductionvirtualservice4D49D5F6": {
@@ -1828,7 +1832,11 @@
                 "Fn::Join": [
                   "",
                   [
-                    "arn:aws:ecr:",
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":ecr:",
                     {
                       "Ref": "AWS::Region"
                     },
@@ -2061,7 +2069,6 @@
             "MeshName"
           ]
         },
-        "RouteName": "name-development-route",
         "Spec": {
           "HttpRoute": {
             "Action": {
@@ -2087,7 +2094,8 @@
             "namedevelopmentvirtualrouter0AE5105D",
             "VirtualRouterName"
           ]
-        }
+        },
+        "RouteName": "name-development-route"
       }
     },
     "namedevelopmentvirtualserviceD936E3FD": {
@@ -2134,6 +2142,12 @@
       },
       "ca-central-1": {
         "ecrRepo": "840364872350"
+      },
+      "cn-north-1": {
+        "ecrRepo": "919366029133"
+      },
+      "cn-northwest-1": {
+        "ecrRepo": "919830735681"
       },
       "eu-central-1": {
         "ecrRepo": "840364872350"
@@ -2196,6 +2210,12 @@
       },
       "ca-central-1": {
         "ecrRepo": "840364872350"
+      },
+      "cn-north-1": {
+        "ecrRepo": "919366029133"
+      },
+      "cn-northwest-1": {
+        "ecrRepo": "919830735681"
       },
       "eu-central-1": {
         "ecrRepo": "840364872350"

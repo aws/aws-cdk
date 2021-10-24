@@ -1,22 +1,24 @@
-import { arrayWith, countResources, expect, haveResourceLike, not, objectLike } from '@aws-cdk/assert';
+import '@aws-cdk/assert-internal/jest';
+import { ABSENT, arrayWith, objectLike } from '@aws-cdk/assert-internal';
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codecommit from '@aws-cdk/aws-codecommit';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as iam from '@aws-cdk/aws-iam';
-import { Stack, Lazy } from '@aws-cdk/core';
-import { nodeunitShim, Test } from 'nodeunit-shim';
+import * as kms from '@aws-cdk/aws-kms';
+import * as s3 from '@aws-cdk/aws-s3';
+import { Stack, Lazy, App } from '@aws-cdk/core';
 import * as cpactions from '../../lib';
 
 /* eslint-disable quote-props */
 
-nodeunitShim({
-  'CodeCommit Source Action': {
-    'by default does not poll for source changes and uses Events'(test: Test) {
+describe('CodeCommit Source Action', () => {
+  describe('CodeCommit Source Action', () => {
+    test('by default does not poll for source changes and uses Events', () => {
       const stack = new Stack();
 
       minimalPipeline(stack, undefined);
 
-      expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+      expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
         'Stages': [
           {
             'Actions': [
@@ -29,19 +31,104 @@ nodeunitShim({
           },
           {},
         ],
-      }));
+      });
 
-      expect(stack).to(countResources('AWS::Events::Rule', 1));
+      expect(stack).toCountResources('AWS::Events::Rule', 1);
 
-      test.done();
-    },
 
-    'does not poll for source changes and uses Events for CodeCommitTrigger.EVENTS'(test: Test) {
+    });
+
+    test('cross-account CodeCommit Repository Source does not use target role in source stack', () => {
+      // Test for https://github.com/aws/aws-cdk/issues/15639
+      const app = new App();
+      const sourceStack = new Stack(app, 'SourceStack', { env: { account: '1234', region: 'north-pole' } });
+      const targetStack = new Stack(app, 'TargetStack', { env: { account: '5678', region: 'north-pole' } });
+
+      const repo = new codecommit.Repository(sourceStack, 'MyRepo', {
+        repositoryName: 'my-repo',
+      });
+
+      const sourceOutput = new codepipeline.Artifact();
+      new codepipeline.Pipeline(targetStack, 'MyPipeline', {
+        stages: [
+          {
+            stageName: 'Source',
+            actions: [
+              new cpactions.CodeCommitSourceAction({ actionName: 'Source', repository: repo, output: sourceOutput }),
+            ],
+          },
+          {
+            stageName: 'Build',
+            actions: [
+              new cpactions.CodeBuildAction({ actionName: 'Build', project: new codebuild.PipelineProject(targetStack, 'MyProject'), input: sourceOutput }),
+            ],
+          },
+        ],
+      });
+
+      // THEN - creates a Rule in the source stack targeting the pipeline stack's event bus using a generated role
+      expect(sourceStack).toHaveResourceLike('AWS::Events::Rule', {
+        EventPattern: {
+          source: ['aws.codecommit'],
+          resources: [
+            { 'Fn::GetAtt': ['MyRepoF4F48043', 'Arn'] },
+          ],
+        },
+        Targets: [{
+          RoleARN: ABSENT,
+          Arn: {
+            'Fn::Join': ['', [
+              'arn:',
+              { 'Ref': 'AWS::Partition' },
+              ':events:north-pole:5678:event-bus/default',
+            ]],
+          },
+        }],
+      });
+
+      // THEN - creates a Rule in the pipeline stack using the role to start the pipeline
+      expect(targetStack).toHaveResourceLike('AWS::Events::Rule', {
+        'EventPattern': {
+          'source': [
+            'aws.codecommit',
+          ],
+          'resources': [
+            {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  { 'Ref': 'AWS::Partition' },
+                  ':codecommit:north-pole:1234:my-repo',
+                ],
+              ],
+            },
+          ],
+        },
+        'Targets': [
+          {
+            'Arn': {
+              'Fn::Join': ['', [
+                'arn:',
+                { 'Ref': 'AWS::Partition' },
+                ':codepipeline:north-pole:5678:',
+                { 'Ref': 'MyPipelineAED38ECF' },
+              ]],
+            },
+            'RoleArn': { 'Fn::GetAtt': ['MyPipelineEventsRoleFAB99F32', 'Arn'] },
+          },
+        ],
+      });
+
+
+    });
+
+    test('does not poll for source changes and uses Events for CodeCommitTrigger.EVENTS', () => {
       const stack = new Stack();
 
       minimalPipeline(stack, cpactions.CodeCommitTrigger.EVENTS);
 
-      expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+      expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
         'Stages': [
           {
             'Actions': [
@@ -54,19 +141,19 @@ nodeunitShim({
           },
           {},
         ],
-      }));
+      });
 
-      expect(stack).to(countResources('AWS::Events::Rule', 1));
+      expect(stack).toCountResources('AWS::Events::Rule', 1);
 
-      test.done();
-    },
 
-    'polls for source changes and does not use Events for CodeCommitTrigger.POLL'(test: Test) {
+    });
+
+    test('polls for source changes and does not use Events for CodeCommitTrigger.POLL', () => {
       const stack = new Stack();
 
       minimalPipeline(stack, cpactions.CodeCommitTrigger.POLL);
 
-      expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+      expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
         'Stages': [
           {
             'Actions': [
@@ -79,19 +166,19 @@ nodeunitShim({
           },
           {},
         ],
-      }));
+      });
 
-      expect(stack).to(not(haveResourceLike('AWS::Events::Rule')));
+      expect(stack).not.toHaveResourceLike('AWS::Events::Rule');
 
-      test.done();
-    },
 
-    'does not poll for source changes and does not use Events for CodeCommitTrigger.NONE'(test: Test) {
+    });
+
+    test('does not poll for source changes and does not use Events for CodeCommitTrigger.NONE', () => {
       const stack = new Stack();
 
       minimalPipeline(stack, cpactions.CodeCommitTrigger.NONE);
 
-      expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+      expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
         'Stages': [
           {
             'Actions': [
@@ -104,32 +191,32 @@ nodeunitShim({
           },
           {},
         ],
-      }));
+      });
 
-      expect(stack).to(not(haveResourceLike('AWS::Events::Rule')));
+      expect(stack).not.toHaveResourceLike('AWS::Events::Rule');
 
-      test.done();
-    },
 
-    'cannot be created with an empty branch'(test: Test) {
+    });
+
+    test('cannot be created with an empty branch', () => {
       const stack = new Stack();
       const repo = new codecommit.Repository(stack, 'MyRepo', {
         repositoryName: 'my-repo',
       });
 
-      test.throws(() => {
+      expect(() => {
         new cpactions.CodeCommitSourceAction({
           actionName: 'Source2',
           repository: repo,
           output: new codepipeline.Artifact(),
           branch: '',
         });
-      }, /'branch' parameter cannot be an empty string/);
+      }).toThrow(/'branch' parameter cannot be an empty string/);
 
-      test.done();
-    },
 
-    'allows using the same repository multiple times with different branches when trigger=EVENTS'(test: Test) {
+    });
+
+    test('allows using the same repository multiple times with different branches when trigger=EVENTS', () => {
       const stack = new Stack();
 
       const repo = new codecommit.Repository(stack, 'MyRepo', {
@@ -168,10 +255,10 @@ nodeunitShim({
         ],
       });
 
-      test.done();
-    },
 
-    'exposes variables for other actions to consume'(test: Test) {
+    });
+
+    test('exposes variables for other actions to consume', () => {
       const stack = new Stack();
 
       const sourceOutput = new codepipeline.Artifact();
@@ -204,7 +291,7 @@ nodeunitShim({
         ],
       });
 
-      expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+      expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
         'Stages': [
           {
             'Name': 'Source',
@@ -221,12 +308,12 @@ nodeunitShim({
             ],
           },
         ],
-      }));
+      });
 
-      test.done();
-    },
 
-    'allows using a Token for the branch name'(test: Test) {
+    });
+
+    test('allows using a Token for the branch name', () => {
       const stack = new Stack();
 
       const sourceOutput = new codepipeline.Artifact();
@@ -258,18 +345,18 @@ nodeunitShim({
         ],
       });
 
-      expect(stack).to(haveResourceLike('AWS::Events::Rule', {
+      expect(stack).toHaveResourceLike('AWS::Events::Rule', {
         EventPattern: {
           detail: {
             referenceName: ['my-branch'],
           },
         },
-      }));
+      });
 
-      test.done();
-    },
 
-    'allows to enable full clone'(test: Test) {
+    });
+
+    test('allows to enable full clone', () => {
       const stack = new Stack();
 
       const sourceOutput = new codepipeline.Artifact();
@@ -302,7 +389,7 @@ nodeunitShim({
         ],
       });
 
-      expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+      expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
         'Stages': [
           {
             'Name': 'Source',
@@ -321,9 +408,9 @@ nodeunitShim({
             ],
           },
         ],
-      }));
+      });
 
-      expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+      expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
         'PolicyDocument': {
           'Statement': arrayWith(
             objectLike({
@@ -345,9 +432,9 @@ nodeunitShim({
             }),
           ),
         },
-      }));
+      });
 
-      expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+      expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
         'PolicyDocument': {
           'Statement': arrayWith(
             objectLike({
@@ -369,12 +456,12 @@ nodeunitShim({
             }),
           ),
         },
-      }));
+      });
 
-      test.done();
-    },
 
-    'uses the role when passed'(test: Test) {
+    });
+
+    test('uses the role when passed', () => {
       const stack = new Stack();
 
       const pipeline = new codepipeline.Pipeline(stack, 'P', {
@@ -417,7 +504,7 @@ nodeunitShim({
         actions: [buildAction],
       });
 
-      expect(stack).to(haveResourceLike('AWS::Events::Rule', {
+      expect(stack).toHaveResourceLike('AWS::Events::Rule', {
         Targets: [
           {
             Arn: stack.resolve(pipeline.pipelineArn),
@@ -425,11 +512,65 @@ nodeunitShim({
             RoleArn: stack.resolve(triggerEventTestRole.roleArn),
           },
         ],
-      }));
+      });
 
-      test.done();
-    },
-  },
+
+    });
+
+    test('grants explicit s3:PutObjectAcl permissions when the Actions is cross-account', () => {
+      const app = new App();
+
+      const repoStack = new Stack(app, 'RepoStack', {
+        env: { account: '123', region: 'us-east-1' },
+      });
+      const repoFomAnotherAccount = codecommit.Repository.fromRepositoryName(repoStack, 'Repo', 'my-repo');
+
+      const pipelineStack = new Stack(app, 'PipelineStack', {
+        env: { account: '456', region: 'us-east-1' },
+      });
+      new codepipeline.Pipeline(pipelineStack, 'Pipeline', {
+        artifactBucket: s3.Bucket.fromBucketAttributes(pipelineStack, 'PipelineBucket', {
+          bucketName: 'pipeline-bucket',
+          encryptionKey: kms.Key.fromKeyArn(pipelineStack, 'PipelineKey',
+            'arn:aws:kms:us-east-1:456:key/my-key'),
+        }),
+        stages: [
+          {
+            stageName: 'Source',
+            actions: [new cpactions.CodeCommitSourceAction({
+              actionName: 'Source',
+              output: new codepipeline.Artifact(),
+              repository: repoFomAnotherAccount,
+            })],
+          },
+          {
+            stageName: 'Approve',
+            actions: [new cpactions.ManualApprovalAction({
+              actionName: 'Approve',
+            })],
+          },
+        ],
+      });
+
+      expect(repoStack).toHaveResourceLike('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: arrayWith({
+            'Action': 's3:PutObjectAcl',
+            'Effect': 'Allow',
+            'Resource': {
+              'Fn::Join': ['', [
+                'arn:',
+                { 'Ref': 'AWS::Partition' },
+                ':s3:::pipeline-bucket/*',
+              ]],
+            },
+          }),
+        },
+      });
+
+
+    });
+  });
 });
 
 function minimalPipeline(stack: Stack, trigger: cpactions.CodeCommitTrigger | undefined): codepipeline.Pipeline {

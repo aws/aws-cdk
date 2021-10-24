@@ -4,6 +4,7 @@ import { CommonEcsRunTaskProps, EcsRunTaskBase } from './run-ecs-task-base';
 
 /**
  * Properties to run an ECS task on EC2 in StepFunctionsan ECS
+ * @deprecated use `EcsRunTask` and `EcsRunTaskProps`
  */
 export interface RunEcsEc2TaskProps extends CommonEcsRunTaskProps {
   /**

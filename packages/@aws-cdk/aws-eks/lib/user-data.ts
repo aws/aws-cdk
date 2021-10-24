@@ -3,7 +3,7 @@ import { Stack } from '@aws-cdk/core';
 import { BootstrapOptions, ICluster } from './cluster';
 
 // eslint-disable-next-line max-len
-export function renderAmazonLinuxUserData(clusterName: string, autoScalingGroup: autoscaling.AutoScalingGroup, options: BootstrapOptions = {}): string[] {
+export function renderAmazonLinuxUserData(cluster: ICluster, autoScalingGroup: autoscaling.AutoScalingGroup, options: BootstrapOptions = {}): string[] {
 
   const stack = Stack.of(autoScalingGroup);
 
@@ -12,6 +12,22 @@ export function renderAmazonLinuxUserData(clusterName: string, autoScalingGroup:
   const asgLogicalId = cfn.logicalId;
 
   const extraArgs = new Array<string>();
+
+  try {
+    const clusterEndpoint = cluster.clusterEndpoint;
+    const clusterCertificateAuthorityData =
+      cluster.clusterCertificateAuthorityData;
+    extraArgs.push(`--apiserver-endpoint '${clusterEndpoint}'`);
+    extraArgs.push(`--b64-cluster-ca '${clusterCertificateAuthorityData}'`);
+  } catch (e) {
+    /**
+     * Errors are ignored here.
+     * apiserver-endpoint and b64-cluster-ca arguments are added in #12659 to make nodes join the cluster faster.
+     * As these are not necessary arguments, we don't need to pass these arguments when they don't exist.
+     *
+     * @see https://github.com/aws/aws-cdk/pull/12659
+     */
+  }
 
   extraArgs.push(`--use-max-pods ${options.useMaxPods ?? true}`);
 
@@ -25,6 +41,10 @@ export function renderAmazonLinuxUserData(clusterName: string, autoScalingGroup:
 
   if (options.dockerConfigJson) {
     extraArgs.push(`--docker-config-json '${options.dockerConfigJson}'`);
+  }
+
+  if (options.dnsClusterIp) {
+    extraArgs.push(`--dns-cluster-ip ${options.dnsClusterIp}`);
   }
 
   if (options.additionalArgs) {
@@ -41,7 +61,7 @@ export function renderAmazonLinuxUserData(clusterName: string, autoScalingGroup:
 
   return [
     'set -o xtrace',
-    `/etc/eks/bootstrap.sh ${clusterName} --kubelet-extra-args "${kubeletExtraArgs}" ${commandLineSuffix}`.trim(),
+    `/etc/eks/bootstrap.sh ${cluster.clusterName} --kubelet-extra-args "${kubeletExtraArgs}" ${commandLineSuffix}`.trim(),
     `/opt/aws/bin/cfn-signal --exit-code $? --stack ${stack.stackName} --resource ${asgLogicalId} --region ${stack.region}`,
   ];
 }

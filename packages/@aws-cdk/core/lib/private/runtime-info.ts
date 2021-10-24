@@ -88,5 +88,11 @@ function getJsiiAgentVersion() {
     jsiiAgent = `node.js/${process.version}`;
   }
 
+  // Sanitize the agent to remove characters which might mess with the downstream
+  // prefix encoding & decoding. In particular the .NET jsii agent takes a form like:
+  // DotNet/5.0.3/.NETCoreApp,Version=v3.1/1.0.0.0
+  // The `,` in the above messes with the prefix decoding when reporting the analytics.
+  jsiiAgent = jsiiAgent.replace(/[^a-z0-9.-/=_]/gi, '-');
+
   return jsiiAgent;
 }

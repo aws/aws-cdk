@@ -1,6 +1,6 @@
 import { IConstruct, Construct, Node } from 'constructs';
 import { Condition } from '../condition';
-import { JsonPath } from '../fields';
+import { FieldUtils, JsonPath } from '../fields';
 import { StateGraph } from '../state-graph';
 import { CatchProps, Errors, IChainable, INextable, RetryProps } from '../types';
 
@@ -58,6 +58,20 @@ export interface StateProps {
    * @default $
    */
   readonly resultPath?: string;
+
+  /**
+   * The JSON that will replace the state's raw result and become the effective
+   * result before ResultPath is applied.
+   *
+   * You can use ResultSelector to create a payload with values that are static
+   * or selected from the state's raw result.
+   *
+   * @see
+   * https://docs.aws.amazon.com/step-functions/latest/dg/input-output-inputpath-params.html#input-output-resultselector
+   *
+   * @default - None
+   */
+  readonly resultSelector?: { [key: string]: any };
 }
 
 /**
@@ -149,6 +163,7 @@ export abstract class State extends CoreConstruct implements IChainable {
   protected readonly parameters?: object;
   protected readonly outputPath?: string;
   protected readonly resultPath?: string;
+  protected readonly resultSelector?: object;
   protected readonly branches: StateGraph[] = [];
   protected iteration?: StateGraph;
   protected defaultChoice?: State;
@@ -187,6 +202,7 @@ export abstract class State extends CoreConstruct implements IChainable {
     this.parameters = props.parameters;
     this.outputPath = props.outputPath;
     this.resultPath = props.resultPath;
+    this.resultSelector = props.resultSelector;
   }
 
   public get id() {
@@ -396,6 +412,15 @@ export abstract class State extends CoreConstruct implements IChainable {
       Retry: renderList(this.retries, renderRetry, (a, b) => compareErrors(a.errors, b.errors)),
       Catch: renderList(this.catches, renderCatch, (a, b) => compareErrors(a.props.errors, b.props.errors)),
     };
+  }
+
+  /**
+   * Render ResultSelector in ASL JSON format
+   */
+  protected renderResultSelector(): any {
+    return FieldUtils.renderObject({
+      ResultSelector: this.resultSelector,
+    });
   }
 
   /**

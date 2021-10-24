@@ -293,7 +293,9 @@ when queue not provided by user, CDK will create a primary queue and a dead lett
 
 ## Scheduled Tasks
 
-To define a task that runs periodically, instantiate an `ScheduledEc2Task`:
+To define a task that runs periodically, there are 2 options:
+
+* `ScheduledEc2Task`
 
 ```ts
 // Instantiate an Amazon EC2 Task to run at a scheduled interval
@@ -310,9 +312,48 @@ const ecsScheduledTask = new ScheduledEc2Task(stack, 'ScheduledTask', {
 });
 ```
 
+* `ScheduledFargateTask`
+
+```ts
+const scheduledFargateTask = new ScheduledFargateTask(stack, 'ScheduledFargateTask', {
+  cluster,
+  scheduledFargateTaskImageOptions: {
+    image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+    memoryLimitMiB: 512,
+  },
+  schedule: events.Schedule.expression('rate(1 minute)'),
+  platformVersion: ecs.FargatePlatformVersion.LATEST,
+});
+```
+
 ## Additional Examples
 
 In addition to using the constructs, users can also add logic to customize these constructs:
+
+### Configure HTTPS on an ApplicationLoadBalancedFargateService
+
+```ts
+import { ApplicationLoadBalancedFargateService } from './application-load-balanced-fargate-service';
+import { HostedZone } from '@aws-cdk/aws-route53';
+import { Certificate } from '@aws-cdk/aws-certificatemanager';
+import { SslPolicy } from '@aws-cdk/aws-elasticloadbalancingv2';
+
+const domainZone = HostedZone.fromLookup(this, 'Zone', { domainName: 'example.com' });
+const certificate = Certificate.fromCertificateArn(this, 'Cert', 'arn:aws:acm:us-east-1:123456:certificate/abcdefg');
+
+const loadBalancedFargateService = new ApplicationLoadBalancedFargateService(stack, 'Service', {
+  vpc
+  cluster,
+  certificate,
+  sslPolicy: SslPolicy.RECOMMENDED,
+  domainName: 'api.example.com',
+  domainZone,
+  redirectHTTP: true,
+  taskImageOptions: {
+    image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+  },
+});
+```
 
 ### Add Schedule-Based Auto-Scaling to an ApplicationLoadBalancedFargateService
 
@@ -394,6 +435,25 @@ const loadBalancedFargateService = new ApplicationLoadBalancedFargateService(sta
 });
 ```
 
+### Deployment circuit breaker and rollback
+
+Amazon ECS [deployment circuit breaker](https://aws.amazon.com/tw/blogs/containers/announcing-amazon-ecs-deployment-circuit-breaker/)
+automatically rolls back unhealthy service deployments without the need for manual intervention. Use `circuitBreaker` to enable
+deployment circuit breaker and optionally enable `rollback` for automatic rollback. See [Using the deployment circuit breaker](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/deployment-type-ecs.html)
+for more details.
+
+```ts
+const service = new ApplicationLoadBalancedFargateService(stack, 'Service', {
+  cluster,
+  memoryLimitMiB: 1024,
+  desiredCount: 1,
+  cpu: 512,
+  taskImageOptions: {
+    image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+  },
+  circuitBreaker: { rollback: true },
+});
+```
 
 ### Set deployment configuration on QueueProcessingService
 
@@ -436,6 +496,70 @@ const queueProcessingFargateService = new QueueProcessingFargateService(stack, '
 });
 ```
 
+### Define tasks with custom queue parameters for QueueProcessingFargateService
+
+```ts
+const queueProcessingFargateService = new QueueProcessingFargateService(stack, 'Service', {
+  vpc,
+  memoryLimitMiB: 512,
+  image: ecs.ContainerImage.fromRegistry('test'),
+  maxReceiveCount: 42,
+  retentionPeriod: cdk.Duration.days(7),
+  visibilityTimeout: cdk.Duration.minutes(5),
+});
+```
+
+### Set capacityProviderStrategies for QueueProcessingFargateService
+
+```ts
+const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
+const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+cluster.enableFargateCapacityProviders();
+
+const queueProcessingFargateService = new QueueProcessingFargateService(stack, 'Service', {
+  cluster,
+  memoryLimitMiB: 512,
+  image: ecs.ContainerImage.fromRegistry('test'),
+  capacityProviderStrategies: [
+    {
+      capacityProvider: 'FARGATE_SPOT',
+      weight: 2,
+    },
+    {
+      capacityProvider: 'FARGATE',
+      weight: 1,
+    },
+  ],
+});
+```
+
+### Set capacityProviderStrategies for QueueProcessingEc2Service
+
+```ts
+const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
+const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+const autoScalingGroup = new autoscaling.AutoScalingGroup(stack, 'asg', {
+  vpc,
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.MICRO),
+  machineImage: ecs.EcsOptimizedImage.amazonLinux2(),
+});
+const capacityProvider = new ecs.AsgCapacityProvider(stack, 'provider', {
+  autoScalingGroup,
+});
+cluster.addAsgCapacityProvider(capacityProvider);
+
+const queueProcessingFargateService = new QueueProcessingFargateService(stack, 'Service', {
+  cluster,
+  memoryLimitMiB: 512,
+  image: ecs.ContainerImage.fromRegistry('test'),
+  capacityProviderStrategies: [
+    {
+      capacityProvider: capacityProvider.capacityProviderName,
+    },
+  ],
+});
+```
+
 ### Select specific vpc subnets for ApplicationLoadBalancedFargateService
 
 ```ts
@@ -467,9 +591,28 @@ const scheduledFargateTask = new ScheduledFargateTask(stack, 'ScheduledFargateTa
 });
 ```
 
+### Set SecurityGroups for ScheduledFargateTask
+
+```ts
+const stack = new cdk.Stack();
+const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
+const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+const securityGroup = new ec2.SecurityGroup(stack, 'SG', { vpc });
+
+const scheduledFargateTask = new ScheduledFargateTask(stack, 'ScheduledFargateTask', {
+  cluster,
+  scheduledFargateTaskImageOptions: {
+    image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+    memoryLimitMiB: 512,
+  },
+  schedule: events.Schedule.expression('rate(1 minute)'),
+  securityGroups: [securityGroup],
+});
+```
+
 ### Use the REMOVE_DEFAULT_DESIRED_COUNT feature flag
 
-The REMOVE_DEFAULT_DESIRED_COUNT feature flag is used to override the default desiredCount that is autogenerated by the CDK. This will set the desiredCount of any service created by any of the following constructs to be undefined. 
+The REMOVE_DEFAULT_DESIRED_COUNT feature flag is used to override the default desiredCount that is autogenerated by the CDK. This will set the desiredCount of any service created by any of the following constructs to be undefined.
 
 * ApplicationLoadBalancedEc2Service
 * ApplicationLoadBalancedFargateService
@@ -502,5 +645,46 @@ new QueueProcessingFargateService(stack, 'QueueProcessingService', {
   vpc,
   memoryLimitMiB: 512,
   image: new ecs.AssetImage(path.join(__dirname, '..', 'sqs-reader')),
+});
+```
+
+### Deploy application and metrics sidecar
+
+The following is an example of deploying an application along with a metrics sidecar container that utilizes `dockerLabels` for discovery:
+
+```ts
+const service = new ApplicationLoadBalancedFargateService(stack, 'Service', {
+  cluster,
+  vpc,
+  desiredCount: 1,
+  taskImageOptions: {
+    image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+  },
+  dockerLabels: {
+    'application.label.one': 'first_label'
+    'application.label.two': 'second_label'
+  }
+});
+
+service.taskDefinition.addContainer('Sidecar', {
+  image: ContainerImage.fromRegistry('example/metrics-sidecar')
+}
+```
+
+### Select specific load balancer name ApplicationLoadBalancedFargateService
+
+```ts
+const loadBalancedFargateService = new ApplicationLoadBalancedFargateService(stack, 'Service', {
+  cluster,
+  memoryLimitMiB: 1024,
+  desiredCount: 1,
+  cpu: 512,
+  taskImageOptions: {
+    image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+  },
+  vpcSubnets: {
+    subnets: [ec2.Subnet.fromSubnetId(stack, 'subnet', 'VpcISOLATEDSubnet1Subnet80F07FA0')],
+  },
+  loadBalancerName: 'application-lb-name',
 });
 ```

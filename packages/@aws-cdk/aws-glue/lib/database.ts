@@ -67,7 +67,7 @@ export class Database extends Resource implements IDatabase {
   public readonly catalogArn: string;
 
   /**
-   * ID of the Glue catalog in which this database is stored.
+   * The catalog id of the database (usually, the AWS account id).
    */
   public readonly catalogId: string;
 

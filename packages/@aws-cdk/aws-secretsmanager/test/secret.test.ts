@@ -1,10 +1,10 @@
-import '@aws-cdk/assert/jest';
-import { expect as assertExpect, ResourcePart } from '@aws-cdk/assert';
+import '@aws-cdk/assert-internal/jest';
+import { expect as assertExpect, ResourcePart } from '@aws-cdk/assert-internal';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
-import { testFutureBehavior, testLegacyBehavior } from 'cdk-build-tools/lib/feature-flag';
+import { testFutureBehavior, testLegacyBehavior } from '@aws-cdk/cdk-build-tools/lib/feature-flag';
 import * as secretsmanager from '../lib';
 
 let app: cdk.App;
@@ -231,6 +231,106 @@ test('grantRead', () => {
               'Fn::GetAtt': [
                 'Role1ABCC5F0',
                 'Arn',
+              ],
+            },
+          },
+          Resource: '*',
+        },
+      ],
+      Version: '2012-10-17',
+    },
+  });
+});
+
+test('grantRead cross account', () => {
+  // GIVEN
+  const key = new kms.Key(stack, 'KMS');
+  const secret = new secretsmanager.Secret(stack, 'Secret', { encryptionKey: key });
+  const principal = new iam.AccountPrincipal('1234');
+
+  // WHEN
+  secret.grantRead(principal, ['FOO', 'bar']).assertSuccess();
+
+  // THEN
+  expect(stack).toHaveResource('AWS::SecretsManager::ResourcePolicy', {
+    ResourcePolicy: {
+      Statement: [
+        {
+          Action: [
+            'secretsmanager:GetSecretValue',
+            'secretsmanager:DescribeSecret',
+          ],
+          Effect: 'Allow',
+          Condition: {
+            'ForAnyValue:StringEquals': {
+              'secretsmanager:VersionStage': [
+                'FOO',
+                'bar',
+              ],
+            },
+          },
+          Principal: {
+            AWS: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':iam::1234:root',
+                ],
+              ],
+            },
+          },
+          Resource: {
+            Ref: 'SecretA720EF05',
+          },
+        },
+      ],
+      Version: '2012-10-17',
+    },
+    SecretId: {
+      Ref: 'SecretA720EF05',
+    },
+  });
+
+  expect(stack).toHaveResourceLike('AWS::KMS::Key', {
+    KeyPolicy: {
+      Statement: [
+        {},
+        {},
+        {},
+        {
+          Action: 'kms:Decrypt',
+          Condition: {
+            StringEquals: {
+              'kms:ViaService': {
+                'Fn::Join': [
+                  '',
+                  [
+                    'secretsmanager.',
+                    {
+                      Ref: 'AWS::Region',
+                    },
+                    '.amazonaws.com',
+                  ],
+                ],
+              },
+            },
+          },
+          Effect: 'Allow',
+          Principal: {
+            AWS: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':iam::1234:root',
+                ],
               ],
             },
           },
@@ -687,6 +787,25 @@ test('fromSecretCompleteArn - grants', () => {
   });
 });
 
+test('fromSecretCompleteArn - can be assigned to a property with type number', () => {
+  // GIVEN
+  const secretArn = 'arn:aws:secretsmanager:eu-west-1:111111111111:secret:MySecret-f3gDy9';
+  const secret = secretsmanager.Secret.fromSecretCompleteArn(stack, 'Secret', secretArn);
+
+  // WHEN
+  new lambda.Function(stack, 'MyFunction', {
+    code: lambda.Code.fromInline('foo'),
+    handler: 'bar',
+    runtime: lambda.Runtime.NODEJS,
+    memorySize: cdk.Token.asNumber(secret.secretValueFromJson('LambdaFunctionMemorySize')),
+  });
+
+  // THEN
+  expect(stack).toHaveResourceLike('AWS::Lambda::Function', {
+    MemorySize: `{{resolve:secretsmanager:${secretArn}:SecretString:LambdaFunctionMemorySize::}}`,
+  });
+});
+
 test('fromSecretPartialArn', () => {
   // GIVEN
   const secretArn = 'arn:aws:secretsmanager:eu-west-1:111111111111:secret:MySecret';
@@ -787,6 +906,19 @@ describe('fromSecretAttributes', () => {
     expect(() => secretsmanager.Secret.fromSecretAttributes(stack, 'Secret', {
       secretCompleteArn: 'arn:aws:secretsmanager:eu-west-1:111111111111:secret:MySecret',
     })).toThrow(/does not appear to be complete/);
+  });
+
+  test('parses environment from secretArn', () => {
+    // GIVEN
+    const secretAccount = '222222222222';
+
+    // WHEN
+    const secret = secretsmanager.Secret.fromSecretAttributes(stack, 'Secret', {
+      secretCompleteArn: `arn:aws:secretsmanager:eu-west-1:${secretAccount}:secret:MySecret-f3gDy9`,
+    });
+
+    // THEN
+    expect(secret.env.account).toBe(secretAccount);
   });
 });
 
@@ -1070,4 +1202,29 @@ test('fails if secret policy has no IAM principals', () => {
 
   // THEN
   expect(() => app.synth()).toThrow(/A PolicyStatement used in a resource-based policy must specify at least one IAM principal/);
+});
+
+test('with replication regions', () => {
+  // WHEN
+  const secret = new secretsmanager.Secret(stack, 'Secret', {
+    replicaRegions: [
+      {
+        region: 'eu-west-1',
+      },
+    ],
+  });
+  secret.addReplicaRegion('eu-central-1', kms.Key.fromKeyArn(stack, 'Key', 'arn:aws:kms:eu-central-1:123456789012:key/my-key-id'));
+
+  // THEN
+  expect(stack).toHaveResource('AWS::SecretsManager::Secret', {
+    ReplicaRegions: [
+      {
+        Region: 'eu-west-1',
+      },
+      {
+        KmsKeyId: 'arn:aws:kms:eu-central-1:123456789012:key/my-key-id',
+        Region: 'eu-central-1',
+      },
+    ],
+  });
 });
