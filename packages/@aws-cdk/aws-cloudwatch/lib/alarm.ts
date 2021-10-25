@@ -257,8 +257,7 @@ export class Alarm extends AlarmBase {
     return dispatchMetric(metric, {
       withStat(stat, conf) {
         self.validateMetricStat(stat, metric);
-        const canRenderAsLegacyMetric = conf.renderingProperties?.label == undefined &&
-          (stat.account == undefined || Stack.of(self).account == stat.account);
+        const canRenderAsLegacyMetric = conf.renderingProperties?.label == undefined && !self.requiresAccountId(stat);
         // Do this to disturb existing templates as little as possible
         if (canRenderAsLegacyMetric) {
           return dropUndefined({
@@ -286,7 +285,7 @@ export class Alarm extends AlarmBase {
                 unit: stat.unitFilter,
               },
               id: 'm1',
-              accountId: stat.account,
+              accountId: self.requiresAccountId(stat) ? stat.account : undefined,
               label: conf.renderingProperties?.label,
               returnData: true,
             } as CfnAlarm.MetricDataQueryProperty,
@@ -321,7 +320,7 @@ export class Alarm extends AlarmBase {
                   unit: stat.unitFilter,
                 },
                 id: entry.id || uniqueMetricId(),
-                accountId: stat.account,
+                accountId: self.requiresAccountId(stat) ? stat.account : undefined,
                 label: conf.renderingProperties?.label,
                 returnData: entry.tag ? undefined : false, // entry.tag evaluates to true if the metric is the math expression the alarm is based on.
               };
@@ -333,6 +332,8 @@ export class Alarm extends AlarmBase {
               if (hasSubmetrics) {
                 assertSubmetricsCount(expr);
               }
+
+              self.validateMetricExpression(expr);
 
               return {
                 expression: expr.expression,
@@ -357,6 +358,42 @@ export class Alarm extends AlarmBase {
     if (definitelyDifferent(stat.region, stack.region)) {
       throw new Error(`Cannot create an Alarm in region '${stack.region}' based on metric '${metric}' in '${stat.region}'`);
     }
+  }
+
+  /**
+   * Validates that the expression config does not specify searchAccount or searchRegion props
+   * as search expressions are not supported by Alarms.
+   */
+  private validateMetricExpression(expr: MetricExpressionConfig) {
+    if (expr.searchAccount !== undefined || expr.searchRegion !== undefined) {
+      throw new Error('Cannot create an Alarm based on a MathExpression which specifies a searchAccount or searchRegion');
+    }
+  }
+
+  /**
+   * Determine if the accountId property should be included in the metric.
+   */
+  private requiresAccountId(stat: MetricStatConfig): boolean {
+    const stackAccount = Stack.of(this).account;
+
+    // if stat.account is undefined, it's by definition in the same account
+    if (stat.account === undefined) {
+      return false;
+    }
+
+    // if this is a region-agnostic stack, we can't assume anything about stat.account
+    // and therefore we assume its a cross-account call
+    if (Token.isUnresolved(stackAccount)) {
+      return true;
+    }
+
+    // ok, we can compare the two concrete values directly - if they are the same we
+    // can omit the account ID from the metric.
+    if (stackAccount === stat.account) {
+      return false;
+    }
+
+    return true;
   }
 }
 

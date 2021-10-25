@@ -1,4 +1,8 @@
 # See https://doc.mergify.io
+queue_rules:
+  - name: default
+    conditions:
+      - status-success~=AWS CodeBuild us-east-1
 
 pull_request_rules:
   - name: label core
@@ -6,16 +10,15 @@ pull_request_rules:
       label:
         add: [ contribution/core ]
     conditions:
-      - author~=^(eladb|RomainMuller|garnaat|nija-at|skinny85|rix0rrr|NGL321|Jerry-AWS|MrArnoldPalmer|NetaNir|iliapolo|njlynch|ericzbeard|ccfife|fulghum|pkandasamy91|SoManyHs|uttarasridhar|otaviomacedo|BenChaimberg|madeline-k|BryanPan342|kaizen3031593|comcalvi)$
+      - author~=^(eladb|RomainMuller|garnaat|nija-at|skinny85|rix0rrr|NGL321|Jerry-AWS|MrArnoldPalmer|NetaNir|iliapolo|njlynch|ericzbeard|ccfife|fulghum|pkandasamy91|SoManyHs|uttarasridhar|otaviomacedo|BenChaimberg|madeline-k|BryanPan342|kaizen3031593|comcalvi|Chriscbr)$
       - -label~="contribution/core"
   - name: automatic merge
     actions:
       comment:
         message: Thank you for contributing! Your pull request will be updated from master and then merged automatically (do not update manually, and be sure to [allow changes to be pushed to your fork](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/allowing-changes-to-a-pull-request-branch-created-from-a-fork)).
-      merge:
-        strict: smart
+      queue:
+        name: default
         method: squash
-        strict_method: merge
         commit_message: title+body
     conditions:
       - base!=release

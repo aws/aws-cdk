@@ -576,7 +576,6 @@ export interface DatabaseInstanceNewProps {
 
   /**
    * Role that will be associated with this DB instance to enable S3 export.
-   * This feature is only supported by the Microsoft SQL Server and Oracle engines.
    *
    * This property must not be used if `s3ExportBuckets` is used.
    *
@@ -591,7 +590,6 @@ export interface DatabaseInstanceNewProps {
 
   /**
    * S3 buckets that you want to load data into.
-   * This feature is only supported by the Microsoft SQL Server and Oracle engines.
    *
    * This property must not be used if `s3ExportRole` is used.
    *
@@ -847,7 +845,10 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
     this.multiUserRotationApplication = props.engine.multiUserRotationApplication;
     this.engine = props.engine;
 
-    let { s3ImportRole, s3ExportRole } = setupS3ImportExport(this, props, true);
+    const engineType = props.engine.engineType;
+    // only Oracle and SQL Server require the import and export Roles to be the same
+    const combineRoles = engineType.startsWith('oracle-') || engineType.startsWith('sqlserver-');
+    let { s3ImportRole, s3ExportRole } = setupS3ImportExport(this, props, combineRoles);
     const engineConfig = props.engine.bindToInstance(this, {
       ...props,
       s3ImportRole,
@@ -866,8 +867,8 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
       if (!engineFeatures?.s3Export) {
         throw new Error(`Engine '${engineDescription(props.engine)}' does not support S3 export`);
       }
-      // Only add the export role and feature if they are different from the import role & feature.
-      if (s3ImportRole !== s3ExportRole || engineFeatures.s3Import !== engineFeatures?.s3Export) {
+      // only add the export feature if it's different from the import feature
+      if (engineFeatures.s3Import !== engineFeatures?.s3Export) {
         instanceAssociatedRoles.push({ roleArn: s3ExportRole.roleArn, featureName: engineFeatures?.s3Export });
       }
     }
@@ -883,7 +884,7 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
       allowMajorVersionUpgrade: props.allowMajorVersionUpgrade,
       dbName: props.databaseName,
       dbParameterGroupName: instanceParameterGroupConfig?.parameterGroupName,
-      engine: props.engine.engineType,
+      engine: engineType,
       engineVersion: props.engine.engineVersion?.fullVersion,
       licenseModel: props.licenseModel,
       timezone: props.timezone,
@@ -1065,6 +1066,7 @@ export class DatabaseInstanceFromSnapshot extends DatabaseInstanceSource impleme
         encryptionKey: credentials.encryptionKey,
         excludeCharacters: credentials.excludeCharacters,
         replaceOnPasswordCriteriaChanges: credentials.replaceOnPasswordCriteriaChanges,
+        replicaRegions: credentials.replicaRegions,
       });
     }
 
