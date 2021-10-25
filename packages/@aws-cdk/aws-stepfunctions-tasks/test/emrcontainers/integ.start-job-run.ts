@@ -1,8 +1,11 @@
 //import * as iam from '@aws-cdk/aws-iam';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as eks from '@aws-cdk/aws-eks';
+import { AwsAuthMapping } from '@aws-cdk/aws-eks';
+import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
+import { Aws } from '@aws-cdk/core';
 import { EmrContainersStartJobRun } from '../../lib';
 import { ReleaseLabel, VirtualClusterInput } from '../../lib/emrcontainers/start-job-run';
 
@@ -24,6 +27,12 @@ const eksCluster = new eks.Cluster(stack, 'integration-test-eks-cluster', {
   defaultCapacityInstance: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.XLARGE),
 });
 
+// const namespace_cluster = eksCluster.addManifest ('test', {
+//   apiVersion: 'v1',
+//   kind: 'Namespace',
+//   metadata: { name: 'test' },
+// });
+
 const virtualCluster = new cdk.CfnResource(stack, 'Virtual Cluster', {
   type: 'AWS::EMRContainers::VirtualCluster',
   properties: {
@@ -40,6 +49,37 @@ const virtualCluster = new cdk.CfnResource(stack, 'Virtual Cluster', {
   },
 });
 
+const emrRole = eksCluster.addManifest('emrRole', {
+  apiVersion: 'rbac.authorization.k8s.io/v1',
+  kind: 'Role',
+  metadata: { name: 'emr-containers', namespace: 'default' },
+  rules: [
+    { apiGroups: [''], resources: ['namespaces'], verbs: ['get'] },
+    { apiGroups: [''], resources: ['serviceaccounts', 'services', 'configmaps', 'events', 'pods', 'pods/log'], verbs: ['get', 'list', 'watch', 'describe', 'create', 'edit', 'delete', 'deletecollection', 'annotate', 'patch', 'label'] },
+    { apiGroups: [''], resources: ['secrets'], verbs: ['create', 'patch', 'delete', 'watch'] },
+    { apiGroups: ['apps'], resources: ['statefulsets', 'deployments'], verbs: ['get', 'list', 'watch', 'describe', 'create', 'edit', 'delete', 'annotate', 'patch', 'label'] },
+    { apiGroups: ['batch'], resources: ['jobs'], verbs: ['get', 'list', 'watch', 'describe', 'create', 'edit', 'delete', 'annotate', 'patch', 'label'] },
+    { apiGroups: ['extensions'], resources: ['ingresses'], verbs: ['get', 'list', 'watch', 'describe', 'create', 'edit', 'delete', 'annotate', 'patch', 'label'] },
+    { apiGroups: ['rbac.authorization.k8s.io'], resources: ['roles', 'rolebindings'], verbs: ['get', 'list', 'watch', 'describe', 'create', 'edit', 'delete', 'deletecollection', 'annotate', 'patch', 'label'] },
+  ],
+});
+
+const emrRoleBind = eksCluster.addManifest('emrRoleBind', {
+  apiVersion: 'rbac.authorization.k8s.io/v1',
+  kind: 'RoleBinding',
+  metadata: { name: 'emr-containers', namespace: 'default' },
+  subjects: [{ kind: 'User', name: 'emr-containers', apiGroup: 'rbac.authorization.k8s.io' }],
+  roleRef: { kind: 'Role', name: 'emr-containers', apiGroup: 'rbac.authorization.k8s.io' },
+});
+
+emrRoleBind.node.addDependency(emrRole);
+
+const emrServiceRole = iam.Role.fromRoleArn(stack, 'emrServiceRole', 'arn:aws:iam::'+Aws.ACCOUNT_ID+':role/AWSServiceRoleForAmazonEMRContainers');
+const authMapping: AwsAuthMapping = { groups: [], username: 'emr-containers' };
+eksCluster.awsAuth.addRoleMapping(emrServiceRole, authMapping);
+
+virtualCluster.node.addDependency(emrRoleBind);
+
 const startJobRunJob = new EmrContainersStartJobRun(stack, 'Start a Job Run', {
   virtualCluster: VirtualClusterInput.fromVirtualClusterId(virtualCluster.getAtt('Id').toString()),
   releaseLabel: ReleaseLabel.EMR_6_2_0,
@@ -53,7 +93,7 @@ const startJobRunJob = new EmrContainersStartJobRun(stack, 'Start a Job Run', {
   },
 });
 
-const chain = sfn.Chain.start(startJobRunJob);
+const chain = sfn.Chain.start(startJobRunJob);;
 
 const sm = new sfn.StateMachine(stack, 'StateMachine', {
   definition: chain,
