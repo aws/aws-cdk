@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.0.0-rc.26](https://github.com/aws/aws-cdk/compare/v2.0.0-rc.25...v2.0.0-rc.26) (2021-10-25)
+
+
+### Bug Fixes
+
+* **core:** `DefaultSynthesizer` deployments are never skipped ([#17099](https://github.com/aws/aws-cdk/issues/17099)) ([c74b012](https://github.com/aws/aws-cdk/commit/c74b0127af95f8e86b95a0be2f2c6cb30fab1103)), closes [#16959](https://github.com/aws/aws-cdk/issues/16959)
+
 ## [2.0.0-rc.25](https://github.com/aws/aws-cdk/compare/v2.0.0-rc.24...v2.0.0-rc.25) (2021-10-22)
 
 
