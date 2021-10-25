@@ -1,6 +1,7 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { IResource, Resource } from '@aws-cdk/core';
+import { IResource, Resource, ResourceProps } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { QueuePolicy } from './policy';
 
 /**
@@ -134,6 +135,12 @@ export abstract class QueueBase extends Resource implements IQueue {
 
   private policy?: QueuePolicy;
 
+  constructor(scope: Construct, id: string, props: ResourceProps = {}) {
+    super(scope, id, props);
+
+    this.node.addValidation({ validate: () => this.policy?.document.validateForResourcePolicy() ?? [] });
+  }
+
   /**
    * Adds a statement to the IAM resource policy associated with this queue.
    *
@@ -152,12 +159,6 @@ export abstract class QueueBase extends Resource implements IQueue {
     }
 
     return { statementAdded: false };
-  }
-
-  protected validate(): string[] {
-    const errors = super.validate();
-    errors.push(...this.policy?.document.validateForResourcePolicy() || []);
-    return errors;
   }
 
   /**
