@@ -600,7 +600,7 @@ function addBootstrapVersionRule(stack: Stack, requiredVersion: number, bootstra
 
   const param = new CfnParameter(stack, 'BootstrapVersion', {
     type: 'AWS::SSM::Parameter::Value<String>',
-    description: 'Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store.',
+    description: `Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. ${cxapi.SSMPARAM_NO_INVALIDATE}`,
     default: bootstrapStackVersionSsmParameter,
   });
 
