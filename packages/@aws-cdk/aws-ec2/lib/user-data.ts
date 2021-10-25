@@ -37,6 +37,12 @@ export interface S3DownloadOptions {
    */
   readonly localFile?: string;
 
+  /**
+   * The region of the S3 Bucket (needed for access via VPC Gateway)
+   * @default none
+   */
+  readonly region?: string
+
 }
 
 /**
@@ -156,7 +162,7 @@ class LinuxUserData extends UserData {
     const localPath = ( params.localFile && params.localFile.length !== 0 ) ? params.localFile : `/tmp/${ params.bucketKey }`;
     this.addCommands(
       `mkdir -p $(dirname '${localPath}')`,
-      `aws s3 cp '${s3Path}' '${localPath}'`,
+      `aws s3 cp '${s3Path}' '${localPath}'` + (params.region !== undefined ? ` --region ${params.region}` : ''),
     );
 
     return localPath;
@@ -215,7 +221,7 @@ class WindowsUserData extends UserData {
     const localPath = ( params.localFile && params.localFile.length !== 0 ) ? params.localFile : `C:/temp/${ params.bucketKey }`;
     this.addCommands(
       `mkdir (Split-Path -Path '${localPath}' ) -ea 0`,
-      `Read-S3Object -BucketName '${params.bucket.bucketName}' -key '${params.bucketKey}' -file '${localPath}' -ErrorAction Stop`,
+      `Read-S3Object -BucketName '${params.bucket.bucketName}' -key '${params.bucketKey}' -file '${localPath}' -ErrorAction Stop` + (params.region !== undefined ? ` -Region ${params.region}` : ''),
     );
     return localPath;
   }

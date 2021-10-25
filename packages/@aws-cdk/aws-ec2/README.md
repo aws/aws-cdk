@@ -1110,6 +1110,7 @@ const instance = new ec2.Instance(this, 'Instance', {
 const localPath = instance.userData.addS3DownloadCommand({
   bucket:asset.bucket,
   bucketKey:asset.s3ObjectKey,
+  region: 'us-east-1', // Optional
 });
 instance.userData.addExecuteFileCommand({
   filePath:localPath,
