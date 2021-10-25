@@ -499,7 +499,7 @@ describe('Topic', () => {
 
     // THEN
     Template.fromStack(stack).hasResource('AWS::SNS::Topic', {
-      DependsOn: [ 'my-subscription' ],
+      DependsOn: ['my-subscription'],
     });
   });
 });
