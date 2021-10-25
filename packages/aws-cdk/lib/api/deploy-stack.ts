@@ -9,7 +9,6 @@ import { AssetManifestBuilder } from '../util/asset-manifest-builder';
 import { publishAssets } from '../util/asset-publishing';
 import { contentHash } from '../util/content-hash';
 import { ISDK, SdkProvider } from './aws-auth';
-//import { Mode } from './aws-auth/credentials';
 import { tryHotswapDeployment } from './hotswap-deployments';
 import { CfnEvaluationException } from './hotswap/evaluate-cloudformation-template';
 import { ToolkitInfo } from './toolkit-info';

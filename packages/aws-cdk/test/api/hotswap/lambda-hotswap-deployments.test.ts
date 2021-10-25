@@ -448,3 +448,50 @@ test('does not call the updateLambdaCode() API when a resource with type that is
   expect(deployStackResult).toBeUndefined();
   expect(mockUpdateLambdaCode).not.toHaveBeenCalled();
 });
+
+test('AWS::Lambda::Function name changes result in a full deployment', async () => {
+  // GIVEN
+  setup.setCurrentCfnStackTemplate({
+    Resources: {
+      Func: {
+        Type: 'AWS::Lambda::Function',
+        Properties: {
+          Code: {
+            S3Bucket: 'current-bucket',
+            S3Key: 'current-key',
+          },
+          FunctionName: 'my-function',
+        },
+        Metadata: {
+          'aws:asset:path': 'old-path',
+        },
+      },
+    },
+  });
+  const cdkStackArtifact = setup.cdkStackArtifactOf({
+    template: {
+      Resources: {
+        Func: {
+          Type: 'AWS::NotLambda::NotAFunction',
+          Properties: {
+            Code: {
+              S3Bucket: 'current-bucket',
+              S3Key: 'current-key',
+            },
+            FunctionName: 'my-new-function',
+          },
+          Metadata: {
+            'aws:asset:path': 'new-path',
+          },
+        },
+      },
+    },
+  });
+
+  // WHEN
+  const deployStackResult = await cfnMockProvider.tryHotswapDeployment(cdkStackArtifact);
+
+  // THEN
+  expect(deployStackResult).toBeUndefined();
+  expect(mockUpdateLambdaCode).not.toHaveBeenCalled();
+});
