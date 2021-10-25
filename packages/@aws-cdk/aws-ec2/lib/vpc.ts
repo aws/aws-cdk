@@ -1118,9 +1118,15 @@ export class Vpc extends VpcBase {
       filter.isDefault = options.isDefault ? 'true' : 'false';
     }
 
+    const overrides: {[key: string]: string} = {};
+    if (options.region) {
+      overrides.region = options.region;
+    }
+
     const attributes: cxapi.VpcContextResponse = ContextProvider.getValue(scope, {
       provider: cxschema.ContextProvider.VPC_PROVIDER,
       props: {
+        ...overrides,
         filter,
         returnAsymmetricSubnets: true,
         subnetGroupNameTag: options.subnetGroupNameTag,
