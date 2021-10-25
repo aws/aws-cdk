@@ -14,6 +14,8 @@ import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * Props for the UpdatePipelineAction
+ *
+ * @deprecated This class is part of the old API. Use the API based on the `CodePipeline` class instead
  */
 export interface UpdatePipelineActionProps {
   /**
@@ -79,6 +81,8 @@ export interface UpdatePipelineActionProps {
  *
  * You do not need to instantiate this action -- it will automatically
  * be added by the pipeline.
+ *
+ * @deprecated This class is part of the old API. Use the API based on the `CodePipeline` class instead
  */
 export class UpdatePipelineAction extends CoreConstruct implements codepipeline.IAction {
   private readonly action: codepipeline.IAction;

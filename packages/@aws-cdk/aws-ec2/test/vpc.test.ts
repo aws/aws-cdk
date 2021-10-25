@@ -366,7 +366,7 @@ describe('vpc', () => {
       }
 
     });
-    test('with custom subents and natGateways = 2 there should be only two NATGW', () => {
+    test('with custom subnets and natGateways = 2 there should be only two NATGW', () => {
       const stack = getTestStack();
       new Vpc(stack, 'TheVPC', {
         cidr: '10.0.0.0/21',
