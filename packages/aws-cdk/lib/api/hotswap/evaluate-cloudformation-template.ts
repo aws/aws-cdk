@@ -27,7 +27,7 @@ export class EvaluateCloudFormationTemplate {
   private readonly account: string;
   private readonly region: string;
   private readonly partition: string;
-  private readonly urlSuffix: ((region: string) => string)
+  private readonly urlSuffix: (region: string) => string;
   private cachedUrlSuffix: string | undefined;
 
   constructor(props: EvaluateCloudFormationTemplateProps) {

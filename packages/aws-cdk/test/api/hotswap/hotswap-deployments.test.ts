@@ -259,8 +259,7 @@ test('can correctly reference AWS::URLSuffix in hotswappable changes', async () 
             'Fn::Join': [
               '',
               [
-                'my-function',
-                '-',
+                'my-function-',
                 { Ref: 'AWS::URLSuffix' },
                 '-',
                 { Ref: 'AWS::URLSuffix' },
@@ -288,8 +287,7 @@ test('can correctly reference AWS::URLSuffix in hotswappable changes', async () 
               'Fn::Join': [
                 '',
                 [
-                  'my-function',
-                  '-',
+                  'my-function-',
                   { Ref: 'AWS::URLSuffix' },
                   '-',
                   { Ref: 'AWS::URLSuffix' },

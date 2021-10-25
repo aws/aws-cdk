@@ -35,6 +35,7 @@ beforeEach(() => {
 
   sdkProvider = new MockSdkProvider();
   sdk = new MockSdk();
+
   cfnMocks = {
     describeStackEvents: jest.fn().mockReturnValue({}),
     describeStacks: jest.fn()
