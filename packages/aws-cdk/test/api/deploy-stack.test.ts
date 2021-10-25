@@ -29,6 +29,7 @@ const FAKE_STACK_TERMINATION_PROTECTION = testStack({
 let sdk: MockSdk;
 let sdkProvider: MockSdkProvider;
 let cfnMocks: MockedObject<SyncHandlerSubsetOf<AWS.CloudFormation>>;
+
 beforeEach(() => {
   jest.resetAllMocks();
 
@@ -62,7 +63,7 @@ beforeEach(() => {
     updateTerminationProtection: jest.fn((_o) => ({ StackId: 'stack-id' })),
   };
   sdk.stubCloudFormation(cfnMocks as any);
-
+  sdk.stubGetEndpointSuffix(() => 'amazonaws.com');
 });
 
 function standardDeployStackArguments(): DeployStackOptions {
