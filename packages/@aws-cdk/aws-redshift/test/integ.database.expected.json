@@ -580,6 +580,41 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
     },
+    "customkmskey377C6F9A": {
+      "Type": "AWS::KMS::Key",
+      "Properties": {
+        "KeyPolicy": {
+          "Statement": [
+            {
+              "Action": "kms:*",
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":root"
+                    ]
+                  ]
+                }
+              },
+              "Resource": "*"
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
     "ClusterSubnetsDCFA5CB7": {
       "Type": "AWS::Redshift::ClusterSubnetGroup",
       "Properties": {
@@ -680,6 +715,9 @@
           "Ref": "ClusterSubnetsDCFA5CB7"
         },
         "Encrypted": true,
+        "KmsKeyId": {
+          "Ref": "customkmskey377C6F9A"
+        },
         "NumberOfNodes": 2,
         "PubliclyAccessible": true,
         "VpcSecurityGroupIds": [
