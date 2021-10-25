@@ -1,0 +1,13 @@
+// Fixture with packages imported, but nothing else
+import { App, CfnOutput, Construct, Duration, Stack } from '@aws-cdk/core';
+import sfn = require('@aws-cdk/aws-stepfunctions');
+import tasks = require('@aws-cdk/aws-stepfunctions-tasks');
+import cloudwatch = require('@aws-cdk/aws-cloudwatch');
+import iam = require('@aws-cdk/aws-iam');
+
+class Fixture extends Stack {
+  constructor(scope: Construct, id: string) {
+    super(scope, id);
+    /// here
+  }
+}
