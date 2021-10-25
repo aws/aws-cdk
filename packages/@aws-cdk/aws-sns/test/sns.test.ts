@@ -499,7 +499,7 @@ describe('Topic', () => {
 
     // THEN
     Template.fromStack(stack).hasResource('AWS::IAM::User', {
-      DependsOn: ['my-subscription'],
+      DependsOn: ['Topicmysubscription1E605DD7'],
     });
   });
 });
