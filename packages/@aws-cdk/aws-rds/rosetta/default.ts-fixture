@@ -7,6 +7,7 @@ import targets = require('@aws-cdk/aws-events-targets');
 import lambda = require('@aws-cdk/aws-lambda');
 import kms = require('@aws-cdk/aws-kms');
 import iam = require('@aws-cdk/aws-iam');
+import secretsmanager = require('@aws-cdk/aws-secretsmanager');
 
 class Fixture extends Stack {
   constructor(scope: Construct, id: string) {
