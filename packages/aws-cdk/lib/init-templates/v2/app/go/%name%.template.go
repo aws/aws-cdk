@@ -2,9 +2,7 @@ package main
 
 import (
 	"github.com/aws/aws-cdk-go/awscdk/v2"
-	"github.com/aws/aws-cdk-go/awscdk/v2/awssns"
 	"github.com/aws/constructs-go/constructs/v10"
-	"github.com/aws/jsii-runtime-go"
 )
 
 type %name.PascalCased%StackProps struct {
@@ -19,11 +17,6 @@ func New%name.PascalCased%Stack(scope constructs.Construct, id string, props *%n
 	stack := awscdk.NewStack(scope, &id, &sprops)
 
 	// The code that defines your stack goes here
-
-	// as an example, here's how you would define an AWS SNS topic:
-	awssns.NewTopic(stack, jsii.String("MyTopic"), &awssns.TopicProps{
-		DisplayName: jsii.String("MyCoolTopic"),
-	})
 
 	return stack
 }

@@ -1,8 +1,12 @@
 package main
 
 import (
-	"github.com/aws/aws-cdk-go/awscdk"
-	"github.com/aws/constructs-go/constructs/v3"
+	"github.com/aws/aws-cdk-go/awscdk/v2"
+	"github.com/aws/aws-cdk-go/awscdk/v2/awssns"
+	"github.com/aws/aws-cdk-go/awscdk/v2/awssnssubscriptions"
+	"github.com/aws/aws-cdk-go/awscdk/v2/awssqs"
+	"github.com/aws/constructs-go/constructs/v10"
+	"github.com/aws/jsii-runtime-go"
 )
 
 type %name.PascalCased%StackProps struct {
@@ -16,7 +20,13 @@ func New%name.PascalCased%Stack(scope constructs.Construct, id string, props *%n
 	}
 	stack := awscdk.NewStack(scope, &id, &sprops)
 
-	// The code that defines your stack goes here
+
+	queue := awssqs.NewQueue(stack, jsii.String("%name.PascalCased%Queue"), &awssqs.QueueProps{
+		VisibilityTimeout: awscdk.Duration_Seconds(jsii.Number(300)),
+	})
+
+	topic := awssns.NewTopic(stack, jsii.String("%name.PascalCased%Topic"), &awssns.TopicProps{})
+	topic.AddSubscription(awssnssubscriptions.NewSqsSubscription(queue, &awssnssubscriptions.SqsSubscriptionProps{}))
 
 	return stack
 }

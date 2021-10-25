@@ -12,7 +12,7 @@ header Go
 #------------------------------------------------------------------
 
 if [[ "${1:-}" == "" ]]; then
-    templates="app"
+    templates="app sample-app"
 else
     templates="$@"
 fi

@@ -5,6 +5,7 @@ import (
 
 	"github.com/aws/aws-cdk-go/awscdk"
 	"github.com/aws/aws-cdk-go/awscdk/assertions"
+	"github.com/aws/jsii-runtime-go"
 )
 
 func Test%name.PascalCased%Stack(t *testing.T) {
@@ -17,5 +18,8 @@ func Test%name.PascalCased%Stack(t *testing.T) {
 	// THEN
 	template := assertions.Template_FromStack(stack)
 
-	template.TemplateMatches(map[string]interface{}{})
+	template.HasResourceProperties(jsii.String("AWS::SQS::Queue"), map[string]interface{}{
+		"VisibilityTimeout": 300,
+	})
+	template.HasResourceProperties(jsii.String("AWS::SNS::Topic"), assertions.Match_AnyValue())
 }
