@@ -79,6 +79,12 @@ export interface IVpc extends IResource {
   readonly vpcId: string;
 
   /**
+   * ARN for this VPC
+   * @attribute
+   */
+  readonly vpcArn: string;
+
+  /**
    * CIDR range for this VPC
    *
    * @attribute
