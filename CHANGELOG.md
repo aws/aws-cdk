@@ -2,6 +2,66 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.129.0](https://github.com/aws/aws-cdk/compare/v1.128.0...v1.129.0) (2021-10-21)
+
+
+### Features
+
+* **aws-autoscaling:** add flag and aspect to require imdsv2 ([#16052](https://github.com/aws/aws-cdk/issues/16052)) ([ef7e20d](https://github.com/aws/aws-cdk/commit/ef7e20df08b4321f210bfc050afa42d7b4901931))
+* **codebuild:** add support for small ARM machine type ([#16635](https://github.com/aws/aws-cdk/issues/16635)) ([55fbc86](https://github.com/aws/aws-cdk/commit/55fbc866ef0195fdfc722206e4d69a1f4469cd40)), closes [#16633](https://github.com/aws/aws-cdk/issues/16633)
+* **dynamodb:** add option to skip waiting for global replication to finish ([#16983](https://github.com/aws/aws-cdk/issues/16983)) ([254601f](https://github.com/aws/aws-cdk/commit/254601f477a4da309e81f5384140427f1b958bfd)), closes [#16611](https://github.com/aws/aws-cdk/issues/16611)
+* **ec2:** add aspect to require imdsv2 ([#16051](https://github.com/aws/aws-cdk/issues/16051)) ([0947b21](https://github.com/aws/aws-cdk/commit/0947b21c1e3186042324820ec5ab433237246f58))
+* **eks:** configure serviceIpv4Cidr on the cluster ([#16957](https://github.com/aws/aws-cdk/issues/16957)) ([72102c7](https://github.com/aws/aws-cdk/commit/72102c750bfd6564cd51c1a5d8abc79b1ba1d3ce)), closes [#16541](https://github.com/aws/aws-cdk/issues/16541)
+* **events:** Add DLQ support for SQS target ([#16916](https://github.com/aws/aws-cdk/issues/16916)) ([7fda903](https://github.com/aws/aws-cdk/commit/7fda90318e18b3a5d126b040e35a0146634d5f2d)), closes [#16417](https://github.com/aws/aws-cdk/issues/16417)
+* **msk:** add Kafka version 2.8.1 ([#16881](https://github.com/aws/aws-cdk/issues/16881)) ([7db5c8c](https://github.com/aws/aws-cdk/commit/7db5c8cdafe7b9b22b6b40cb25ed8bd1946301f4))
+* **stepfunctions-tasks:** add `enableNetworkIsolation` property to `SageMakerCreateTrainingJobProps`  ([#16792](https://github.com/aws/aws-cdk/issues/16792)) ([69ac520](https://github.com/aws/aws-cdk/commit/69ac520452b219bf242f2fbb4740f6b1b8b8790f)), closes [#16779](https://github.com/aws/aws-cdk/issues/16779)
+
+
+### Bug Fixes
+
+* **apigatewayv2:** unable to retrieve domain url for default stage ([#16854](https://github.com/aws/aws-cdk/issues/16854)) ([c6db91e](https://github.com/aws/aws-cdk/commit/c6db91eee2cb658ce347c7ac6d6e3c95bc5977dc)), closes [#16638](https://github.com/aws/aws-cdk/issues/16638)
+* **cfn-diff:** correctly handle Date strings in diff ([#16591](https://github.com/aws/aws-cdk/issues/16591)) ([86f2714](https://github.com/aws/aws-cdk/commit/86f2714613f06aaf2bcee27da2f66066c8e863d0)), closes [#16444](https://github.com/aws/aws-cdk/issues/16444)
+* **ecs:** imported services don't have account & region set correctly ([#16997](https://github.com/aws/aws-cdk/issues/16997)) ([dc6f743](https://github.com/aws/aws-cdk/commit/dc6f7433f01b9bc2c8206fb03d72ab8404fe4f6a)), closes [#11199](https://github.com/aws/aws-cdk/issues/11199) [#11199](https://github.com/aws/aws-cdk/issues/11199) [#15944](https://github.com/aws/aws-cdk/issues/15944)
+* **events:** PhysicalName.GENERATE_IF_NEEDED does not work for EventBus ([#17008](https://github.com/aws/aws-cdk/issues/17008)) ([707fa00](https://github.com/aws/aws-cdk/commit/707fa003a458039878a1ae5173b6665a84c1170b)), closes [#14337](https://github.com/aws/aws-cdk/issues/14337)
+* **lambda:** docker image function fails when insightsVersion is specified ([#16781](https://github.com/aws/aws-cdk/issues/16781)) ([d0e15cc](https://github.com/aws/aws-cdk/commit/d0e15ccaca22c5e05b9186aa1a241e744d67c96a)), closes [#16642](https://github.com/aws/aws-cdk/issues/16642)
+* **lambda-layer-node-proxy-agent:** Replace use of package.json with Dockerfile command `npm install [package]@[version]` ([#17078](https://github.com/aws/aws-cdk/issues/17078)) ([a129046](https://github.com/aws/aws-cdk/commit/a129046495a926561f94f5ce1f41c34b1df3afde))
+* **opensearch:** add validation to domainName property ([#17017](https://github.com/aws/aws-cdk/issues/17017)) ([3ec6832](https://github.com/aws/aws-cdk/commit/3ec683283e96159d588797bd46d33c82ff3076f1)), closes [#17016](https://github.com/aws/aws-cdk/issues/17016)
+* **pipelines:** `additionalInputs` fails for deep directory ([#17074](https://github.com/aws/aws-cdk/issues/17074)) ([403d3ce](https://github.com/aws/aws-cdk/commit/403d3ce3bc0f4e30e9694e5c20743f0032009464)), closes [#16936](https://github.com/aws/aws-cdk/issues/16936)
+
+## [1.128.0](https://github.com/aws/aws-cdk/compare/v1.127.0...v1.128.0) (2021-10-14)
+
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **assertions:** Starting this release, the `assertions` module will be
+published to Maven with the name 'assertions' instead of
+'cdk-assertions'.
+
+### Features
+
+* **apigatewayv2-integrations:** http api - support for request parameter mapping ([#15630](https://github.com/aws/aws-cdk/issues/15630)) ([0452aed](https://github.com/aws/aws-cdk/commit/0452aed2f00198e05bd65b1d20246f7de0b24e20))
+* **cli:** hotswap deployments for ECS Services ([#16864](https://github.com/aws/aws-cdk/issues/16864)) ([ad7288f](https://github.com/aws/aws-cdk/commit/ad7288f35a17fcfbecd7080e99ece4873fa99ad2))
+* **codepipeline:** add support for string user parameters to the Lambda invoke action ([#16946](https://github.com/aws/aws-cdk/issues/16946)) ([e19ea31](https://github.com/aws/aws-cdk/commit/e19ea31dbf62446edaf5131c75246098ab05da6e)), closes [#16776](https://github.com/aws/aws-cdk/issues/16776)
+* **lambda:** docker platform for architecture ([#16858](https://github.com/aws/aws-cdk/issues/16858)) ([5c258a3](https://github.com/aws/aws-cdk/commit/5c258a30367a4922e404eb26e5aa076720846fbe))
+* **lambda-event-sources:** self managed kafka: support sasl/plain authentication ([#16712](https://github.com/aws/aws-cdk/issues/16712)) ([d4ad93f](https://github.com/aws/aws-cdk/commit/d4ad93f30877b26b851caa81d3a4a1d80df55164))
+* **stepfunctions-tasks:** AWS SDK service integrations ([#16746](https://github.com/aws/aws-cdk/issues/16746)) ([ae840ff](https://github.com/aws/aws-cdk/commit/ae840ff1abb8283a1290dae5859f5729a9cf72b1)), closes [#16780](https://github.com/aws/aws-cdk/issues/16780)
+
+
+### Bug Fixes
+
+* **ecs:** add ASG capacity via Capacity Provider by not specifying machineImageType ([#16361](https://github.com/aws/aws-cdk/issues/16361)) ([93b3fdc](https://github.com/aws/aws-cdk/commit/93b3fdce80f0997d7b809f9ef7e3edd1e75e1f42)), closes [#16360](https://github.com/aws/aws-cdk/issues/16360)
+* **servicecatalog:** Allow users to create multiple product versions from assets.  ([#16914](https://github.com/aws/aws-cdk/issues/16914)) ([958d755](https://github.com/aws/aws-cdk/commit/958d755ff7acaf016e3f8969bf5ab07d4dc2977b))
+* **codebuild:** add build image AMAZON_LINUX_2_ARM_2 ([#16931](https://github.com/aws/aws-cdk/issues/16931)) ([370cb31](https://github.com/aws/aws-cdk/commit/370cb310cce3fccc5381d8d53130e21b266de868)), closes [#16930](https://github.com/aws/aws-cdk/issues/16930)
+* **core:** asset hash is different between linux and windows ([#16945](https://github.com/aws/aws-cdk/issues/16945)) ([59950dd](https://github.com/aws/aws-cdk/commit/59950dd331635fb707aac819529614c0f3e47ee5)), closes [#14555](https://github.com/aws/aws-cdk/issues/14555) [#16928](https://github.com/aws/aws-cdk/issues/16928)
+* **ecs-patterns:** minScalingCapacity cannot be set to 0 ([#16961](https://github.com/aws/aws-cdk/issues/16961)) ([589f284](https://github.com/aws/aws-cdk/commit/589f284acec8530aa9824b75a5daef4632e98985)), closes [#15632](https://github.com/aws/aws-cdk/issues/15632) [#14336](https://github.com/aws/aws-cdk/issues/14336)
+* **ssm:**  StringParameter accepts ParameterType.AWS_EC2_IMAGE_ID as type ([#16884](https://github.com/aws/aws-cdk/issues/16884)) ([2b353be](https://github.com/aws/aws-cdk/commit/2b353be5291cbcdc56a8863038eed4a5f2adc65f)), closes [#16806](https://github.com/aws/aws-cdk/issues/16806)
+* use registry.npmjs.com to fix shinkwrap resolves ([#16607](https://github.com/aws/aws-cdk/issues/16607)) ([8f91531](https://github.com/aws/aws-cdk/commit/8f91531c3c25900316d40d5564450566a03e27ee))
+
+
+### Miscellaneous Chores
+
+* **assertions:** consistent naming in maven ([#16921](https://github.com/aws/aws-cdk/issues/16921)) ([0dcd9ec](https://github.com/aws/aws-cdk/commit/0dcd9eca3a1014c39f92d9e052b67974fc751af0))
+
 ## [1.127.0](https://github.com/aws/aws-cdk/compare/v1.126.0...v1.127.0) (2021-10-08)
 
 
