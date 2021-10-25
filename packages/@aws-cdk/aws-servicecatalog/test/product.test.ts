@@ -4,7 +4,6 @@ import * as cdk from '@aws-cdk/core';
 import * as servicecatalog from '../lib';
 
 /* eslint-disable quote-props */
-/* eslint-disable no-console */
 describe('Product', () => {
   let app: cdk.App;
   let stack: cdk.Stack;
