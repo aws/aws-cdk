@@ -5,6 +5,13 @@ import * as servicecatalog from '../lib';
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'integ-servicecatalog-product');
 
+const productStack = new servicecatalog.ProductStack(stack, 'ProductStack');
+
+new servicecatalog.Portfolio(productStack, 'PortfolioInProductStack', {
+  displayName: 'TestProvider',
+  providerName: 'TestProvider',
+});
+
 new servicecatalog.CloudFormationProduct(stack, 'TestProduct', {
   productName: 'testProduct',
   owner: 'testOwner',
@@ -19,6 +26,9 @@ new servicecatalog.CloudFormationProduct(stack, 'TestProduct', {
     },
     {
       cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromAsset(path.join(__dirname, 'product2.template.json')),
+    },
+    {
+      cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromStack(productStack),
     },
   ],
 });

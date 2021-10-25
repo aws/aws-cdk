@@ -4,6 +4,7 @@ import * as cdk from '@aws-cdk/core';
 import * as servicecatalog from '../lib';
 
 /* eslint-disable quote-props */
+/* eslint-disable no-console */
 describe('Product', () => {
   let app: cdk.App;
   let stack: cdk.Stack;
@@ -99,6 +100,64 @@ describe('Product', () => {
     const assembly = app.synth();
     const synthesized = assembly.stacks[0];
     expect(synthesized.assets.length).toEqual(2);
+  }),
+
+  test('product test from stack', () => {
+    const productStack = new servicecatalog.ProductStack(stack, 'ProductStack');
+
+    new servicecatalog.Portfolio(productStack, 'ProductStackPortfolio', {
+      displayName: 'testPortfolio',
+      providerName: 'testProvider',
+    });
+
+    new servicecatalog.CloudFormationProduct(stack, 'MyProduct', {
+      productName: 'testProduct',
+      owner: 'testOwner',
+      productVersions: [
+        {
+          productVersionName: 'v1',
+          cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromStack(productStack),
+        },
+      ],
+    });
+
+    const assembly = app.synth();
+    expect(assembly.artifacts.length).toEqual(2);
+    expect(assembly.stacks[0].assets[0].path).toEqual('ProductStack.product.template.json');
+  }),
+
+  test('multiple product versions from stack', () => {
+    const productStackVersion1 = new servicecatalog.ProductStack(stack, 'ProductStackV1');
+    const productStackVersion2 = new servicecatalog.ProductStack(stack, 'ProductStackV2');
+
+    new servicecatalog.Portfolio(productStackVersion1, 'ProductStackPortfolioV1', {
+      displayName: 'testPortfolio1',
+      providerName: 'testProvider1',
+    });
+
+    new servicecatalog.Portfolio(productStackVersion2, 'ProductStackPortfolioV2', {
+      displayName: 'testPortfolio2',
+      providerName: 'testProvider2',
+      description: 'V2 version',
+    });
+
+    new servicecatalog.CloudFormationProduct(stack, 'MyProduct', {
+      productName: 'testProduct',
+      owner: 'testOwner',
+      productVersions: [
+        {
+          productVersionName: 'v1',
+          cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromStack(productStackVersion1),
+        },
+        {
+          productVersionName: 'v2',
+          cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromStack(productStackVersion2),
+        },
+      ],
+    });
+
+    const assembly = app.synth();
+    expect(assembly.stacks[0].assets[0].path).toEqual('ProductStackV1.product.template.json');
   }),
 
   test('product test from multiple sources', () => {
