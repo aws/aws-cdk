@@ -1,6 +1,6 @@
 /* eslint-disable max-len */
 
-import { Template } from '@aws-cdk/assertions';
+import '@aws-cdk/assert-internal/jest';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as cdk from '@aws-cdk/core';
@@ -19,12 +19,40 @@ test('creating a String SSM Parameter', () => {
   });
 
   // THEN
-  Template.fromStack(stack).hasResourceProperties('AWS::SSM::Parameter', {
+  expect(stack).toHaveResource('AWS::SSM::Parameter', {
     AllowedPattern: '.*',
     Description: 'The value Foo',
     Name: 'FooParameter',
     Type: 'String',
     Value: 'Foo',
+  });
+});
+
+test('type cannot be specified as AWS_EC2_IMAGE_ID', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+
+  // THEN
+  expect(() => new ssm.StringParameter(stack, 'myParam', {
+    stringValue: 'myValue',
+    type: ssm.ParameterType.AWS_EC2_IMAGE_ID,
+  })).toThrow('The type must either be ParameterType.STRING or ParameterType.STRING_LIST. Did you mean to set dataType: ParameterDataType.AWS_EC2_IMAGE instead?');
+});
+
+test('dataType can be specified', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+
+  // WHEN
+  new ssm.StringParameter(stack, 'myParam', {
+    stringValue: 'myValue',
+    dataType: ssm.ParameterDataType.AWS_EC2_IMAGE,
+  });
+
+  // THEN
+  expect(stack).toHaveResource('AWS::SSM::Parameter', {
+    Value: 'myValue',
+    DataType: 'aws:ec2:image',
   });
 });
 
@@ -42,7 +70,7 @@ test('expect String SSM Parameter to have tier properly set', () => {
   });
 
   // THEN
-  Template.fromStack(stack).hasResourceProperties('AWS::SSM::Parameter', {
+  expect(stack).toHaveResource('AWS::SSM::Parameter', {
     Tier: 'Advanced',
   });
 });
@@ -82,7 +110,7 @@ test('creating a StringList SSM Parameter', () => {
   });
 
   // THEN
-  Template.fromStack(stack).hasResourceProperties('AWS::SSM::Parameter', {
+  expect(stack).toHaveResource('AWS::SSM::Parameter', {
     AllowedPattern: '(Foo|Bar)',
     Description: 'The values Foo and Bar',
     Name: 'FooParameter',
@@ -141,7 +169,21 @@ test('String SSM Parameter throws on long names', () => {
       Nam eget dui. Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit amet adipiscing \
       sem neque sed ipsum.',
     });
-  }).toThrow(/Name cannot be longer than 2048 characters./);
+  }).toThrow(/name cannot be longer than 2048 characters./);
+});
+
+test.each([
+  '/parameter/with spaces',
+  'charactersOtherThan^allowed',
+  'trying;this',
+])('String SSM Parameter throws on invalid name %s', (parameterName) => {
+  // GIVEN
+  const stack = new cdk.Stack();
+
+  // THEN
+  expect(() => {
+    new ssm.StringParameter(stack, 'Parameter', { stringValue: 'Foo', parameterName });
+  }).toThrow(/name must only contain letters, numbers, and the following 4 symbols.*/);
 });
 
 test('StringList SSM Parameter throws on long descriptions', () => {
@@ -194,7 +236,21 @@ test('StringList SSM Parameter throws on long names', () => {
       Nam eget dui. Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit amet adipiscing \
       sem neque sed ipsum.',
     });
-  }).toThrow(/Name cannot be longer than 2048 characters./);
+  }).toThrow(/name cannot be longer than 2048 characters./);
+});
+
+test.each([
+  '/parameter/with spaces',
+  'charactersOtherThan^allowed',
+  'trying;this',
+])('StringList SSM Parameter throws on invalid name %s', (parameterName) => {
+  // GIVEN
+  const stack = new cdk.Stack();
+
+  // THEN
+  expect(() => {
+    new ssm.StringListParameter(stack, 'Parameter', { stringListValue: ['Foo'], parameterName });
+  }).toThrow(/name must only contain letters, numbers, and the following 4 symbols.*/);
 });
 
 test('StringList SSM Parameter values cannot contain commas', () => {
@@ -284,7 +340,7 @@ test('StringParameter.fromStringParameterName', () => {
   expect(stack.resolve(param.parameterName)).toEqual('MyParamName');
   expect(stack.resolve(param.parameterType)).toEqual('String');
   expect(stack.resolve(param.stringValue)).toEqual({ Ref: 'MyParamNameParameter' });
-  Template.fromStack(stack).templateMatches({
+  expect(stack).toMatchTemplate({
     Parameters: {
       MyParamNameParameter: {
         Type: 'AWS::SSM::Parameter::Value<String>',
@@ -431,7 +487,7 @@ test('StringParameter.fromSecureStringParameterAttributes with encryption key cr
   param.grantRead(role);
 
   // THEN
-  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+  expect(stack).toHaveResource('AWS::IAM::Policy', {
     PolicyDocument: {
       Statement: [
         {
@@ -491,7 +547,7 @@ test('StringParameter.fromSecureStringParameterAttributes with encryption key cr
   param.grantWrite(role);
 
   // THEN
-  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+  expect(stack).toHaveResource('AWS::IAM::Policy', {
     PolicyDocument: {
       Statement: [
         {
@@ -589,7 +645,7 @@ describe('valueForStringParameter', () => {
     const value = ssm.StringParameter.valueForStringParameter(stack, 'my-param-name');
 
     // THEN
-    Template.fromStack(stack).templateMatches({
+    expect(stack).toMatchTemplate({
       Parameters: {
         SsmParameterValuemyparamnameC96584B6F00A464EAD1953AFF4B05118Parameter: {
           Type: 'AWS::SSM::Parameter::Value<String>',
@@ -611,7 +667,7 @@ describe('valueForStringParameter', () => {
     ssm.StringParameter.valueForStringParameter(stack, 'my-param-name');
 
     // THEN
-    Template.fromStack(stack).templateMatches({
+    expect(stack).toMatchTemplate({
       Parameters: {
         SsmParameterValuemyparamnameC96584B6F00A464EAD1953AFF4B05118Parameter: {
           Type: 'AWS::SSM::Parameter::Value<String>',

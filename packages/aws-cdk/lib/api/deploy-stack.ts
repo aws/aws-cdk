@@ -10,10 +10,11 @@ import { publishAssets } from '../util/asset-publishing';
 import { contentHash } from '../util/content-hash';
 import { ISDK, SdkProvider } from './aws-auth';
 import { tryHotswapDeployment } from './hotswap-deployments';
+import { CfnEvaluationException } from './hotswap/evaluate-cloudformation-template';
 import { ToolkitInfo } from './toolkit-info';
 import {
   changeSetHasNoChanges, CloudFormationStack, TemplateParameters, waitForChangeSet,
-  waitForStackDeploy, waitForStackDelete, ParameterValues,
+  waitForStackDeploy, waitForStackDelete, ParameterValues, ParameterChanges,
 } from './util/cloudformation';
 import { StackActivityMonitor, StackActivityProgress } from './util/cloudformation/stack-activity-monitor';
 
@@ -252,15 +253,22 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
 
   if (options.hotswap) {
     // attempt to short-circuit the deployment if possible
-    const hotswapDeploymentResult = await tryHotswapDeployment(options.sdkProvider, assetParams, cloudFormationStack, stackArtifact);
-    if (hotswapDeploymentResult) {
-      return hotswapDeploymentResult;
+    try {
+      const hotswapDeploymentResult = await tryHotswapDeployment(options.sdkProvider, assetParams, cloudFormationStack, stackArtifact);
+      if (hotswapDeploymentResult) {
+        return hotswapDeploymentResult;
+      }
+      print('Could not perform a hotswap deployment, as the stack %s contains non-Asset changes', stackArtifact.displayName);
+    } catch (e) {
+      if (!(e instanceof CfnEvaluationException)) {
+        throw e;
+      }
+      print('Could not perform a hotswap deployment, because the CloudFormation template could not be resolved: %s', e.message);
     }
-    // could not short-circuit the deployment, perform a full CFN deploy instead
-    print('Could not perform a hotswap deployment, as the stack %s contains non-Asset changes', stackArtifact.displayName);
     print('Falling back to doing a full deployment');
   }
 
+  // could not short-circuit the deployment, perform a full CFN deploy instead
   return prepareAndExecuteChangeSet(options, cloudFormationStack, stackArtifact, stackParams, bodyParameter);
 }
 
@@ -332,8 +340,10 @@ async function prepareAndExecuteChangeSet(
     await cfn.executeChangeSet({ StackName: deployName, ChangeSetName: changeSetName, ...disableRollback }).promise();
 
     // eslint-disable-next-line max-len
+    const changeSetLength: number = (changeSetDescription.Changes ?? []).length;
     const monitor = options.quiet ? undefined : StackActivityMonitor.withDefaultPrinter(cfn, deployName, stackArtifact, {
-      resourcesTotal: (changeSetDescription.Changes ?? []).length,
+      // +1 for the extra event emitted from updates.
+      resourcesTotal: cloudFormationStack.exists ? changeSetLength + 1 : changeSetLength,
       progress: options.progress,
       changeSetCreationTime: changeSetDescription.CreationTime,
     }).start();
@@ -456,7 +466,7 @@ export async function destroyStack(options: DestroyStackOptions) {
 async function canSkipDeploy(
   deployStackOptions: DeployStackOptions,
   cloudFormationStack: CloudFormationStack,
-  parameterChanges: boolean): Promise<boolean> {
+  parameterChanges: ParameterChanges): Promise<boolean> {
 
   const deployName = deployStackOptions.deployName || deployStackOptions.stack.stackName;
   debug(`${deployName}: checking if we can skip deploy`);
@@ -499,7 +509,11 @@ async function canSkipDeploy(
 
   // Parameters have changed
   if (parameterChanges) {
-    debug(`${deployName}: parameters have changed`);
+    if (parameterChanges === 'ssm') {
+      debug(`${deployName}: some parameters come from SSM so we have to assume they may have changed`);
+    } else {
+      debug(`${deployName}: parameters have changed`);
+    }
     return false;
   }
 
