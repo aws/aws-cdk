@@ -327,7 +327,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       }),
     ];
 
-    let { s3ImportRole, s3ExportRole } = setupS3ImportExport(this, props);
+    let { s3ImportRole, s3ExportRole } = setupS3ImportExport(this, props, /* combineRoles */ false);
     // bind the engine to the Cluster
     const clusterEngineBindConfig = props.engine.bindToCluster(this, {
       s3ImportRole,
