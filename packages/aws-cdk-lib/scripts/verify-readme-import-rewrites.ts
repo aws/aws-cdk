@@ -34,7 +34,7 @@ const EXPECTED_SUBMODULE_IMPORTS = {
   // import { Rule, Schedule } from '@aws-cdk/aws-events';
   'aws-cdk-lib.aws_events': "import { Rule, Schedule } from 'aws-cdk-lib/aws-events';",
   // import * as cdk from '@aws-cdk/core';
-  'aws-cdk-lib.aws_rds': "import * as cdk from 'aws-cdk-lib';",
+  'aws-cdk-lib.aws_amplify': "import * as cdk from 'aws-cdk-lib';",
 };
 
 Object.entries(EXPECTED_SUBMODULE_IMPORTS).forEach(([submodule, importStatement]) => {
