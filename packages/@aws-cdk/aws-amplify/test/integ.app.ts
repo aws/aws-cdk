@@ -9,19 +9,19 @@ class TestStack extends Stack {
     const amplifyApp = new amplify.App(this, 'App', {
       basicAuth: amplify.BasicAuth.fromGeneratedPassword('aws'),
       autoBranchCreation: {},
-      customHeaders: [
+      customResponseHeaders: [
         {
           pattern: '*.json',
-          headers: [
-            { key: 'custom-header-name-1', value: 'custom-header-value-1' },
-            { key: 'custom-header-name-2', value: 'custom-header-value-2' },
-          ],
+          headers: {
+            'custom-header-name-1': 'custom-header-value-1',
+            'custom-header-name-2': 'custom-header-value-2',
+          },
         },
         {
           pattern: '/path/*',
-          headers: [
-            { key: 'custom-header-name-1', value: 'custom-header-value-2' },
-          ],
+          headers: {
+            'custom-header-name-1': 'custom-header-value-2',
+          },
         },
       ],
     });

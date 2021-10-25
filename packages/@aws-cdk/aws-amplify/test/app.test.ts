@@ -403,19 +403,19 @@ test('with custom headers', () => {
       repository: 'aws-cdk',
       oauthToken: SecretValue.plainText('secret'),
     }),
-    customHeaders: [
+    customResponseHeaders: [
       {
         pattern: '*.json',
-        headers: [
-          { key: 'custom-header-name-1', value: 'custom-header-value-1' },
-          { key: 'custom-header-name-2', value: 'custom-header-value-2' },
-        ],
+        headers: {
+          'custom-header-name-1': 'custom-header-value-1',
+          'custom-header-name-2': 'custom-header-value-2',
+        },
       },
       {
         pattern: '/path/*',
-        headers: [
-          { key: 'custom-header-name-1', value: 'custom-header-value-2' },
-        ],
+        headers: {
+          'custom-header-name-1': 'custom-header-value-2',
+        },
       },
     ],
   });

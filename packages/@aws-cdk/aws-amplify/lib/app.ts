@@ -121,13 +121,13 @@ export interface AppProps {
 
 
   /**
-   * The custom HTTP headers for an Amplify app.
+   * The custom HTTP response headers for an Amplify app.
    *
    * @see https://docs.aws.amazon.com/amplify/latest/userguide/custom-headers.html
    *
-   * @default - no custom headers
+   * @default - no custom response headers
    */
-  readonly customHeaders?: CustomHeader[];
+  readonly customResponseHeaders?: CustomResponseHeader[];
 
   /**
    * Custom rewrite/redirect rules for the application
@@ -249,7 +249,7 @@ export class App extends Resource implements IApp, iam.IGrantable {
       name: props.appName || this.node.id,
       oauthToken: sourceCodeProviderOptions?.oauthToken?.toString(),
       repository: sourceCodeProviderOptions?.repository,
-      customHeaders: props.customHeaders ? renderCustomHeaders(props.customHeaders) : undefined,
+      customHeaders: props.customResponseHeaders ? renderCustomResponseHeaders(props.customResponseHeaders) : undefined,
     });
 
     this.appId = app.attrAppId;
@@ -500,36 +500,26 @@ export class CustomRule {
 }
 
 /**
- * Custom header of an Amplify App.
+ * Custom response header of an Amplify App.
  */
-export interface CustomHeader {
+export interface CustomResponseHeader {
   /**
-   * The pattern used to match files to be applied with this header.
+   * These custom headers will be applied to all URL file paths that match this pattern.
    */
   readonly pattern: string;
 
   /**
-   * The array of custom header options to be applied.
+   * The map of custom headers to be applied.
    */
-  readonly headers: CustomHeaderOptions[];
+  readonly headers: { [key: string]: string };
 }
 
-/**
- * Options for any custom header for an Amplify App.
- */
-export interface CustomHeaderOptions {
-  /**
-   * The name of the custom header.
-   */
-  readonly key: string;
+function renderCustomResponseHeaders(customHeaders: CustomResponseHeader[]): string {
+  const modifiedHeaders = customHeaders.map(customHeader => ({
+    ...customHeader,
+    headers: Object.entries(customHeader.headers).map(([key, value]) => ({ key, value })),
+  }));
 
-  /**
-   * The value of the custom header.
-   */
-  readonly value: string;
-}
-
-function renderCustomHeaders(customHeaders: CustomHeader[]): string {
-  const customHeadersObject = { customHeaders };
+  const customHeadersObject = { customHeaders: modifiedHeaders };
   return YAML.stringify(customHeadersObject);
 }

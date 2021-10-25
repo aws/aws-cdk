@@ -179,9 +179,9 @@ const amplifyApp = new amplify.App(this, 'MyApp', {
 });
 ```
 
-## Adding custom headers
+## Adding custom response headers
 
-Use the `customHeaders` prop to configure custom headers for an Amplify app:
+Use the `customResponseHeaders` prop to configure custom response headers for an Amplify app:
 
 ```ts
 const amplifyApp = new amplify.App(stack, 'App', {
@@ -190,19 +190,19 @@ const amplifyApp = new amplify.App(stack, 'App', {
     repository: '<repo>',
     oauthToken: cdk.SecretValue.secretsManager('my-github-token')
   }),
-  customHeaders: [
+  customResponseHeaders: [
     {
       pattern: '*.json',
-      headers: [
-        { key: 'custom-header-name-1', value: 'custom-header-value-1' },
-        { key: 'custom-header-name-2', value: 'custom-header-value-2' },
-      ],
+      headers: {
+        'custom-header-name-1': 'custom-header-value-1',
+        'custom-header-name-2': 'custom-header-value-2',
+      },
     },
     {
       pattern: '/path/*',
-      headers: [
-        { key: 'custom-header-name-1', value: 'custom-header-value-2' },
-      ],
+      headers: {
+        'custom-header-name-1': 'custom-header-value-2',
+      },
     },
   ],
 });
