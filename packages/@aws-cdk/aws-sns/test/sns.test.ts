@@ -485,7 +485,7 @@ describe('Topic', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const topic = new sns.Topic(stack, 'Topic');
-    const anotherTopic = new sns.Topic(stack, 'Topic2');
+    const user = new iam.User(stack, 'User');
 
     // WHEN
     const subscription = topic.addSubscription({
@@ -495,10 +495,10 @@ describe('Topic', () => {
         subscriberId: 'my-subscription',
       }),
     });
-    anotherTopic.node.addDependency(subscription);
+    user.node.addDependency(subscription);
 
     // THEN
-    Template.fromStack(stack).hasResource('AWS::SNS::Topic', {
+    Template.fromStack(stack).hasResource('AWS::IAM::User', {
       DependsOn: ['my-subscription'],
     });
   });
