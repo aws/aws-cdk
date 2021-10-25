@@ -429,7 +429,7 @@ about [specifying environment variables](https://docs.aws.amazon.com/AmazonECS/l
 
 ### System controls
 
-To set system controls (kernal parameters) on the container, use the `systemControls` prop:
+To set system controls (kernel parameters) on the container, use the `systemControls` prop:
 
 ```ts
 declare const taskDefinition: ecs.TaskDefinition;

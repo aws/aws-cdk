@@ -312,6 +312,8 @@ export interface ContainerDefinitionOptions {
    * A list of namespaced kernel parameters to set in the container.
    *
    * @default - No system controls are set.
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecs-taskdefinition-systemcontrol.html
+   * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_definition_parameters.html#container_definition_systemcontrols
    */
   readonly systemControls?: SystemControl[];
 }
