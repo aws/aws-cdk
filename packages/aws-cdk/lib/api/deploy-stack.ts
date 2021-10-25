@@ -14,7 +14,7 @@ import { CfnEvaluationException } from './hotswap/evaluate-cloudformation-templa
 import { ToolkitInfo } from './toolkit-info';
 import {
   changeSetHasNoChanges, CloudFormationStack, TemplateParameters, waitForChangeSet,
-  waitForStackDeploy, waitForStackDelete, ParameterValues,
+  waitForStackDeploy, waitForStackDelete, ParameterValues, ParameterChanges,
 } from './util/cloudformation';
 import { StackActivityMonitor, StackActivityProgress } from './util/cloudformation/stack-activity-monitor';
 
@@ -466,7 +466,7 @@ export async function destroyStack(options: DestroyStackOptions) {
 async function canSkipDeploy(
   deployStackOptions: DeployStackOptions,
   cloudFormationStack: CloudFormationStack,
-  parameterChanges: boolean): Promise<boolean> {
+  parameterChanges: ParameterChanges): Promise<boolean> {
 
   const deployName = deployStackOptions.deployName || deployStackOptions.stack.stackName;
   debug(`${deployName}: checking if we can skip deploy`);
@@ -509,7 +509,11 @@ async function canSkipDeploy(
 
   // Parameters have changed
   if (parameterChanges) {
-    debug(`${deployName}: parameters have changed`);
+    if (parameterChanges === 'ssm') {
+      debug(`${deployName}: some parameters come from SSM so we have to assume they may have changed`);
+    } else {
+      debug(`${deployName}: parameters have changed`);
+    }
     return false;
   }
 
