@@ -55,7 +55,8 @@ const amplifyApp = new amplify.App(this, 'MyApp', {
       },
       artifacts: {
         baseDirectory: 'public',
-        files: '**/*'
+        files:
+        - '**/*'
       }
     }
   })

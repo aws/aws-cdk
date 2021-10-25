@@ -97,4 +97,8 @@ export class CfnMockProvider {
   ): Promise<DeployStackResult | undefined> {
     return deployments.tryHotswapDeployment(this.mockSdkProvider, assetParams, currentCfnStack, stackArtifact);
   }
+
+  public stubGetEndpointSuffix(stub: () => string) {
+    this.mockSdkProvider.stubGetEndpointSuffix(stub);
+  }
 }
