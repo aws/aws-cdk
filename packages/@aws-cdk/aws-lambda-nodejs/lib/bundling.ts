@@ -39,7 +39,7 @@ export interface BundlingProps extends BundlingOptions {
   readonly projectRoot: string;
 
   /**
-   * Force pre-transpilation using TSC before bundling
+   * Run compilation using `tsc` before bundling
    */
   readonly preCompilation?: boolean
 

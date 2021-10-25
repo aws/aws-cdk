@@ -227,9 +227,9 @@ container for Docker bundling or on the host OS for local bundling.
 
 ## Pre Compilation with TSC
 
-It is possible to run compilation using typescript compiler before bundling, 
-this is for adding support of `emitDecoratorMetadata` which `esbuild` doesn't support it natively.
-see <https://github.com/aws/aws-cdk/issues/13767>.
+In some cases, `esbuild` may not yet support some newer features of the typescript language, such as,
+[`emitDecoratorMetadata`](https://www.typescriptlang.org/tsconfig#emitDecoratorMetadata).
+In such cases, it is possible to run pre-compilation using `tsc` by setting the `preCompilation` flag.
 
 ```ts
 new lambda.NodejsFunction(this, 'my-handler', {
@@ -239,7 +239,7 @@ new lambda.NodejsFunction(this, 'my-handler', {
 });
 ```
 
-`tsconfig` is required to enable `preCompilation` as `tsc` will use your `tsconfig` for transpilation. 
+Note: A [`tsconfig.json` file](https://www.typescriptlang.org/docs/handbook/tsconfig-json.html) is required 
 
 ## Customizing Docker bundling
 
