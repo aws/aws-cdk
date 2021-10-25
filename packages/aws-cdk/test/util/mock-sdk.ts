@@ -155,6 +155,13 @@ export class MockSdk implements ISDK {
   public stubSsm(stubs: SyncHandlerSubsetOf<AWS.SSM>) {
     this.ssm.mockReturnValue(partialAwsService<AWS.SSM>(stubs));
   }
+
+  /**
+   * Replace the getEndpointSuffix client with the given object
+   */
+  public stubGetEndpointSuffix(stub: () => string) {
+    this.getEndpointSuffix.mockReturnValue(stub());
+  }
 }
 
 /**

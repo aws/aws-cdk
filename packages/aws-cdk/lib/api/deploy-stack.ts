@@ -9,7 +9,7 @@ import { AssetManifestBuilder } from '../util/asset-manifest-builder';
 import { publishAssets } from '../util/asset-publishing';
 import { contentHash } from '../util/content-hash';
 import { ISDK, SdkProvider } from './aws-auth';
-import { Mode } from './aws-auth/credentials';
+//import { Mode } from './aws-auth/credentials';
 import { tryHotswapDeployment } from './hotswap-deployments';
 import { CfnEvaluationException } from './hotswap/evaluate-cloudformation-template';
 import { ToolkitInfo } from './toolkit-info';
@@ -234,9 +234,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
     debug(`${deployName}: deploying...`);
   }
 
-  const sdk = await options.sdkProvider.forEnvironment(options.resolvedEnvironment, Mode.ForReading);
-  const bodyParameter = await makeBodyParameter(stackArtifact, options.resolvedEnvironment, legacyAssets, options.toolkitInfo, sdk);
-
+  const bodyParameter = await makeBodyParameter(stackArtifact, options.resolvedEnvironment, legacyAssets, options.toolkitInfo, options.sdk);
   await publishAssets(legacyAssets.toManifest(stackArtifact.assembly.directory), options.sdkProvider, stackEnv);
 
   if (options.hotswap) {
