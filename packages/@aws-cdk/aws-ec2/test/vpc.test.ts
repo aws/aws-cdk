@@ -36,7 +36,12 @@ describe('vpc', () => {
         const stack = getTestStack();
         const vpc = new Vpc(stack, 'TheVPC');
         expect(stack.resolve(vpc.vpcId)).toEqual({ Ref: 'TheVPC92636AB0' });
+      });
 
+      test('vpc.vpcArn returns a token to the VPC ID', () => {
+        const stack = getTestStack();
+        const vpc = new Vpc(stack, 'TheVPC');
+        expect(stack.resolve(vpc.vpcArn)).toEqual({ 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':ec2:us-east-1:123456789012:vpc/', { Ref: 'TheVPC92636AB0' }]] });
       });
 
       test('it uses the correct network range', () => {
