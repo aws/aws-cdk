@@ -171,7 +171,7 @@ import * as cdk from '@aws-cdk/core';
 const productStack = new servicecatalog.ProductStack(this, 'S3BucketCDKProduct');
 
 const bucket = new s3.Bucket(productStack, 'Bucket', {
-  bucketName: 'My Bucket',
+  bucketName: 'testbucket',
 });
 
 const product = new servicecatalog.CloudFormationProduct(this, 'MyFirstProduct', {
