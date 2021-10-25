@@ -256,15 +256,12 @@ test('can correctly reference AWS::URLSuffix in hotswappable changes', async () 
             S3Key: 'current-key',
           },
           FunctionName: {
-            'Fn::Join': [
-              '',
-              [
-                'my-function-',
-                { Ref: 'AWS::URLSuffix' },
-                '-',
-                { Ref: 'AWS::URLSuffix' },
-              ],
-            ],
+            'Fn::Join': ['', [
+              'my-function-',
+              { Ref: 'AWS::URLSuffix' },
+              '-',
+              { Ref: 'AWS::URLSuffix' },
+            ]],
           },
         },
         Metadata: {
@@ -284,15 +281,12 @@ test('can correctly reference AWS::URLSuffix in hotswappable changes', async () 
               S3Key: 'new-key',
             },
             FunctionName: {
-              'Fn::Join': [
-                '',
-                [
-                  'my-function-',
-                  { Ref: 'AWS::URLSuffix' },
-                  '-',
-                  { Ref: 'AWS::URLSuffix' },
-                ],
-              ],
+              'Fn::Join': ['', [
+                'my-function-',
+                { Ref: 'AWS::URLSuffix' },
+                '-',
+                { Ref: 'AWS::URLSuffix' },
+              ]],
             },
           },
           Metadata: {
