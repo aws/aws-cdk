@@ -28,6 +28,7 @@ export class EvaluateCloudFormationTemplate {
   private readonly region: string;
   private readonly partition: string;
   private readonly urlSuffix: ((region: string) => string)
+  private cachedUrlSuffix: string | undefined;
 
   constructor(props: EvaluateCloudFormationTemplateProps) {
     this.stackResources = props.listStackResources;
@@ -186,7 +187,11 @@ export class EvaluateCloudFormationTemplate {
   private async findRefTarget(logicalId: string): Promise<string | undefined> {
     // first, check to see if the Ref is a Parameter who's value we have
     if (logicalId === 'AWS::URLSuffix') {
-      return this.urlSuffix(this.region);
+      if (!this.cachedUrlSuffix) {
+        this.cachedUrlSuffix = this.urlSuffix(this.region);
+      }
+
+      return this.cachedUrlSuffix;
     }
 
     const parameterTarget = this.context[logicalId];

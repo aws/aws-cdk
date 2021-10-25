@@ -80,6 +80,7 @@ async function isLambdaFunctionCodeOnlyChange(
           s3Key = await evaluateCfnTemplate.evaluateCfnExpression(updatedProp.newValue[newPropName]);
           break;
         default:
+          // TODO? Lambda function name changes result in full deployment here, is that good or bad?
           return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
       }
     }

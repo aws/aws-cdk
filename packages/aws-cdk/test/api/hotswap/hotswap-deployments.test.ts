@@ -4,14 +4,16 @@ import * as setup from './hotswap-test-setup';
 let cfnMockProvider: setup.CfnMockProvider;
 let mockUpdateLambdaCode: (params: Lambda.Types.UpdateFunctionCodeRequest) => Lambda.Types.FunctionConfiguration;
 let mockUpdateMachineDefinition: (params: StepFunctions.Types.UpdateStateMachineInput) => StepFunctions.Types.UpdateStateMachineOutput;
+let mockGetEndpointSuffix: () => string;
 
 beforeEach(() => {
   cfnMockProvider = setup.setupHotswapTests();
   mockUpdateLambdaCode = jest.fn();
   mockUpdateMachineDefinition = jest.fn();
+  mockGetEndpointSuffix = jest.fn(() => 'amazonaws.com');
   cfnMockProvider.setUpdateFunctionCodeMock(mockUpdateLambdaCode);
   cfnMockProvider.setUpdateStateMachineMock(mockUpdateMachineDefinition);
-  cfnMockProvider.stubGetEndpointSuffix(() => 'amazonaws.com');
+  cfnMockProvider.stubGetEndpointSuffix(mockGetEndpointSuffix);
 });
 
 test('returns a deployStackResult with noOp=true when it receives an empty set of changes', async () => {
@@ -260,6 +262,8 @@ test('can correctly reference AWS::URLSuffix in hotswappable changes', async () 
                 'my-function',
                 '-',
                 { Ref: 'AWS::URLSuffix' },
+                '-',
+                { Ref: 'AWS::URLSuffix' },
               ],
             ],
           },
@@ -287,6 +291,8 @@ test('can correctly reference AWS::URLSuffix in hotswappable changes', async () 
                   'my-function',
                   '-',
                   { Ref: 'AWS::URLSuffix' },
+                  '-',
+                  { Ref: 'AWS::URLSuffix' },
                 ],
               ],
             },
@@ -305,8 +311,9 @@ test('can correctly reference AWS::URLSuffix in hotswappable changes', async () 
   // THEN
   expect(deployStackResult).not.toBeUndefined();
   expect(mockUpdateLambdaCode).toHaveBeenCalledWith({
-    FunctionName: 'my-function-amazonaws.com',
+    FunctionName: 'my-function-amazonaws.com-amazonaws.com',
     S3Bucket: 'current-bucket',
     S3Key: 'new-key',
   });
+  expect(mockGetEndpointSuffix).toHaveBeenCalledTimes(1);
 });
