@@ -71,7 +71,6 @@ test('diff can diff multiple stacks', async () => {
   const exitCode = await toolkit.diff({
     stackNames: ['B'],
     stream: buffer,
-    roleArn: 'arn:aws:12345::iam:role/test',
   });
 
   // THEN
@@ -79,7 +78,7 @@ test('diff can diff multiple stacks', async () => {
   expect(plainTextOutput).toContain('Stack A');
   expect(plainTextOutput).toContain('Stack B');
 
-  expect(cloudFormation.deployStack).toBeCalledWith(expect.any(CloudFormationStackArtifact), null);
+  expect(cloudFormation.readCurrentTemplate).toBeCalledWith(expect.any(CloudFormationStackArtifact), null);
   expect(exitCode).toBe(0);
 });
 
@@ -91,10 +90,11 @@ test('diff accepts and uses role-arn', async () => {
   const exitCode = await toolkit.diff({
     stackNames: ['B'],
     stream: buffer,
+    roleArn: 'arn:aws:12345::iam:role/test',
   });
 
   // THEN
-  expect(cloudFormation.deployStack).toBeCalledWith(expect.any(CloudFormationStackArtifact), 'arn:aws:12345::iam:role/test');
+  expect(cloudFormation.readCurrentTemplate).toBeCalledWith(expect.any(CloudFormationStackArtifact), 'arn:aws:12345::iam:role/test');
   expect(exitCode).toBe(0);
 });
 
