@@ -45,39 +45,29 @@ You can create a rule with an action that invoke the Lambda action as following:
 
 ```ts
 import * as iot from '@aws-cdk/aws-iot';
+import * as actions from '@aws-cdk/aws-iot-actions';
+import * as lambda from '@aws-cdk/aws-lambda';
 
-new iot.TopicRule(stack, 'MyTopicRule', {
-  topicRuleName: 'MyRuleName', // optional property
-  sql: iot.IotSql.fromStringAsVer20160323(
-    "SELECT topic(2) as device_id, temperature FROM 'device/+/data'",
-  ),
-  actions: [
-    {
-      bind: () => ({
-        configuration: {
-          lambda: { functionArn: 'test-functionArn' },
-        },
-      }),
-    },
-  ],
+const lambdaFn = new lambda.Function(this, 'MyFunction', {
+  runtime: lambda.Runtime.NODEJS_14_X,
+  handler: 'index.handler',
+  code: lambda.Code.fromInline(`
+exports.handler = (event) => {
+console.log("It is test for lambda action of AWS IoT Rule.", event)
+}`),
+});
+
+new iot.TopicRule(this, 'TopicRule', {
+  sql: iot.IotSql.fromStringAsVer20160323("SELECT topic(2) as device_id, timestamp() as timestamp FROM 'device/+/data'"),
+  actions: [new actions.LambdaAction(lambdaFn)],
 });
 ```
 
 Or, you can add an action after constructing the `TopicRule` instance as following:
 
 ```ts
-import * as iot from '@aws-cdk/aws-iot';
-
-const topicRule = new iot.TopicRule(stack, 'MyTopicRule', {
-  sql: iot.IotSql.fromStringAsVer20160323(
-    "SELECT topic(2) as device_id, temperature FROM 'device/+/data'",
-  ),
+const topicRule = new iot.TopicRule(this, 'TopicRule', {
+  sql: iot.IotSql.fromStringAsVer20160323("SELECT topic(2) as device_id, timestamp() as timestamp FROM 'device/+/data'"),
 });
-topicRule.addAction({
-  bind: () => ({
-    configuration: {
-      lambda: { functionArn: 'test-functionArn' },
-    },
-  }),
-})
+topicRule.addAction(new actions.LambdaAction(lambdaFn))
 ```
