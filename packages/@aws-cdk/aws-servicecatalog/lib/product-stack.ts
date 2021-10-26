@@ -1,6 +1,5 @@
 import * as crypto from 'crypto';
 import * as cdk from '@aws-cdk/core';
-import { Node } from 'constructs';
 import { ProductStackSynthesizer } from './private/product-stack-synthesizer';
 
 // v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
@@ -22,13 +21,11 @@ export class ProductStack extends cdk.Stack {
   private _parentStack: cdk.Stack;
 
   constructor(scope: Construct, id: string) {
-    const parentStack = findParentStack(scope);
-
     super(scope, id, {
       synthesizer: new ProductStackSynthesizer(),
     });
 
-    this._parentStack = parentStack;
+    this._parentStack = findParentStack(scope);
 
     // this is the file name of the synthesized template file within the cloud assembly
     this.templateFile = `${cdk.Names.uniqueId(this)}.product.template.json`;
@@ -83,13 +80,10 @@ export class ProductStack extends cdk.Stack {
  * Validates the scope for a product stack, which must be defined within the scope of another `Stack`.
  */
 function findParentStack(scope: Construct): cdk.Stack {
-  if (!scope) {
+  try {
+    const parentStack = cdk.Stack.of(scope);
+    return parentStack as cdk.Stack;
+  } catch (e) {
     throw new Error('Product stacks must be defined within scope of another non-product stack');
   }
-
-  const parentStack = Node.of(scope).scopes.reverse().find(p => cdk.Stack.isStack(p));
-  if (!parentStack) {
-    throw new Error('Product stacks must be defined within scope of another non-product stack');
-  }
-  return parentStack as cdk.Stack;
 }
