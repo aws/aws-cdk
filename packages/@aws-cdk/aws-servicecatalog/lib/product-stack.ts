@@ -7,8 +7,6 @@ import { ProductStackSynthesizer } from './private/product-stack-synthesizer';
 // eslint-disable-next-line
 import { Construct } from '@aws-cdk/core';
 
-const PRODUCT_STACK_SYMBOL = Symbol.for('@aws-cdk/aws-servicecatalog.ProductStack');
-
 /**
  * A Service Catalog product stack, which is similar in form to a Cloudformation nested stack.
  * You can add the resources to this stack that you want to define for your service catalog product.
@@ -19,39 +17,31 @@ const PRODUCT_STACK_SYMBOL = Symbol.for('@aws-cdk/aws-servicecatalog.ProductStac
  *
  */
 export class ProductStack extends cdk.Stack {
-  /**
-   * Checks if `x` is an object of type `ProductStack`.
-  */
-  public static isProductStack(x: any): x is ProductStack {
-    return x != null && typeof(x) === 'object' && PRODUCT_STACK_SYMBOL in x;
-  }
-
   public readonly templateFile: string;
-  private _templateUrl: string;
+  private _templateUrl?: string;
   private _parentStack: cdk.Stack;
 
   constructor(scope: Construct, id: string) {
     const parentStack = findParentStack(scope);
 
     super(scope, id, {
-      env: { account: parentStack.account, region: parentStack.region },
       synthesizer: new ProductStackSynthesizer(),
     });
 
     this._parentStack = parentStack;
 
-    Object.defineProperty(this, PRODUCT_STACK_SYMBOL, { value: true });
-
     // this is the file name of the synthesized template file within the cloud assembly
     this.templateFile = `${cdk.Names.uniqueId(this)}.product.template.json`;
 
-    this._templateUrl = this._prepareTemplateAsset();
+    this._prepareTemplateAsset();
   }
 
   /**
-   * Assign a value to one of the nested stack parameters.
+   * Fetch the template URL.
+   *
+   * @internal
    */
-  public templateUrl() {
+  public _getTemplateUrl() {
     return this._templateUrl;
   }
 
@@ -69,7 +59,10 @@ export class ProductStack extends cdk.Stack {
    *
    * @internal
    */
-  public _prepareTemplateAsset() {
+  public _prepareTemplateAsset(): boolean {
+    if (this._templateUrl) {
+      return false;
+    }
 
     const cfn = JSON.stringify(this._toCloudFormation());
     const templateHash = crypto.createHash('sha256').update(cfn).digest('hex');
@@ -82,22 +75,21 @@ export class ProductStack extends cdk.Stack {
 
     // if bucketName/objectKey are cfn parameters from a stack other than the parent stack, they will
     // be resolved as cross-stack references like any other (see "multi" tests).
-    return `https://s3.${this._parentStack.region}.${this._parentStack.urlSuffix}/${templateLocation.bucketName}/${templateLocation.objectKey}`;
+    this._templateUrl = `https://s3.${this._parentStack.region}.${this._parentStack.urlSuffix}/${templateLocation.bucketName}/${templateLocation.objectKey}`;
+    return true;
   }
 }
-
 /**
  * Validates the scope for a product stack, which must be defined within the scope of another `Stack`.
  */
 function findParentStack(scope: Construct): cdk.Stack {
   if (!scope) {
-    throw new Error('Product stacks cannot be defined as a root construct');
+    throw new Error('Product stacks must be defined within scope of another non-product stack');
   }
 
   const parentStack = Node.of(scope).scopes.reverse().find(p => cdk.Stack.isStack(p));
   if (!parentStack) {
     throw new Error('Product stacks must be defined within scope of another non-product stack');
   }
-
   return parentStack as cdk.Stack;
 }

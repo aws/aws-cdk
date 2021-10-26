@@ -127,7 +127,7 @@ const product = new servicecatalog.CloudFormationProduct(this, 'MyFirstProduct',
       cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromUrl(
         'https://raw.githubusercontent.com/awslabs/aws-cloudformation-templates/master/aws/services/ServiceCatalog/Product.yaml'),
     },
-  ]
+  ],
 });
 ```
 
@@ -153,9 +153,11 @@ const product = new servicecatalog.CloudFormationProduct(this, 'MyFirstProduct',
       productVersionName: "v2",
       cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromAsset(path.join(__dirname, 'development-environment.template.json')),
     },
-  ]
+  ],
 });
 ```
+
+The product versions do not need to be of the same type, a Product can support product versions from url, assets, and stacks. 
 
 ### Creating a product from a stack
 
@@ -166,13 +168,14 @@ product.  This will not create a separate stack during deployment.
 
 ```ts
 import * as s3 from '@aws-cdk/aws-s3';
-import * as cdk from '@aws-cdk/core';
 
-const productStack = new servicecatalog.ProductStack(this, 'S3BucketCDKProduct');
+class S3BucketProduct extends servicecatalog.ProductStack {
+  constructor(scope: cdk.Construct, id: string) {
+    super(scope,id);
 
-const bucket = new s3.Bucket(productStack, 'Bucket', {
-  bucketName: 'testbucket',
-});
+    new s3.Bucket(this, 'BucketProduct');
+  }
+}
 
 const product = new servicecatalog.CloudFormationProduct(this, 'MyFirstProduct', {
   productName: "My Product",
@@ -182,7 +185,7 @@ const product = new servicecatalog.CloudFormationProduct(this, 'MyFirstProduct',
       productVersionName: "v1",
       cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromStack(productStack),
     },
-  ]
+  ],
 });
 ```
 

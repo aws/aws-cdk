@@ -1,16 +1,18 @@
 import * as path from 'path';
+import * as sns from '@aws-cdk/aws-sns';
 import * as cdk from '@aws-cdk/core';
 import * as servicecatalog from '../lib';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'integ-servicecatalog-product');
 
-const productStack = new servicecatalog.ProductStack(stack, 'ProductStack');
+class TestProductStack extends servicecatalog.ProductStack {
+  constructor(scope: any, id: string) {
+    super(scope, id);
 
-new servicecatalog.Portfolio(productStack, 'PortfolioInProductStack', {
-  displayName: 'TestProvider',
-  providerName: 'TestProvider',
-});
+    new sns.Topic(this, 'TopicProduct');
+  }
+}
 
 new servicecatalog.CloudFormationProduct(stack, 'TestProduct', {
   productName: 'testProduct',
@@ -28,7 +30,7 @@ new servicecatalog.CloudFormationProduct(stack, 'TestProduct', {
       cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromAsset(path.join(__dirname, 'product2.template.json')),
     },
     {
-      cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromStack(productStack),
+      cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromStack(new TestProductStack(stack, 'SNSTopicProduct')),
     },
   ],
 });

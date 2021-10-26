@@ -1,5 +1,6 @@
 import * as path from 'path';
 import { Match, Template } from '@aws-cdk/assertions';
+import * as sns from '@aws-cdk/aws-sns';
 import * as cdk from '@aws-cdk/core';
 import * as servicecatalog from '../lib';
 
@@ -104,10 +105,7 @@ describe('Product', () => {
   test('product test from stack', () => {
     const productStack = new servicecatalog.ProductStack(stack, 'ProductStack');
 
-    new servicecatalog.Portfolio(productStack, 'ProductStackPortfolio', {
-      displayName: 'testPortfolio',
-      providerName: 'testProvider',
-    });
+    new sns.Topic(productStack, 'SNSTopicProductStack');
 
     new servicecatalog.CloudFormationProduct(stack, 'MyProduct', {
       productName: 'testProduct',
@@ -129,16 +127,9 @@ describe('Product', () => {
     const productStackVersion1 = new servicecatalog.ProductStack(stack, 'ProductStackV1');
     const productStackVersion2 = new servicecatalog.ProductStack(stack, 'ProductStackV2');
 
-    new servicecatalog.Portfolio(productStackVersion1, 'ProductStackPortfolioV1', {
-      displayName: 'testPortfolio1',
-      providerName: 'testProvider1',
-    });
+    new sns.Topic(productStackVersion1, 'SNSTopicProductStack1');
 
-    new servicecatalog.Portfolio(productStackVersion2, 'ProductStackPortfolioV2', {
-      displayName: 'testPortfolio2',
-      providerName: 'testProvider2',
-      description: 'V2 version',
-    });
+    new sns.Topic(productStackVersion1, 'SNSTopicProductStack2');
 
     new servicecatalog.CloudFormationProduct(stack, 'MyProduct', {
       productName: 'testProduct',

@@ -106,7 +106,6 @@
       "resource-attribute:@aws-cdk/aws-servicecatalog.Portfolio.portfolioName",
       "props-physical-name:@aws-cdk/aws-servicecatalog.PortfolioProps",
       "props-physical-name:@aws-cdk/aws-servicecatalog.ProductStack",
-      "construct-ctor:@aws-cdk/aws-servicecatalog.ProductStack",
       "construct-ctor:@aws-cdk/aws-servicecatalog.ProductStack.<initializer>.params[0]"
     ]
   },
