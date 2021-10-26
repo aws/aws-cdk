@@ -108,15 +108,20 @@ Rate must be specified in minutes, hours or days.
 
 The following example runs a task every day at 4am:
 
-```ts
-declare const cluster: ecs.Cluster;
-declare const taskDefinition: ecs.TaskDefinition;
-declare const role: iam.Role;
+```ts fixture=basic
+import { Rule, Schedule } from '@aws-cdk/aws-events';
+import { EcsTask } from '@aws-cdk/aws-events-targets';
+import { Cluster, TaskDefinition } from '@aws-cdk/aws-ecs';
+import { Role } from '@aws-cdk/aws-iam';
 
-const ecsTaskTarget = new targets.EcsTask({ cluster, taskDefinition, role });
+declare const cluster: Cluster;
+declare const taskDefinition: TaskDefinition;
+declare const role: Role;
 
-new events.Rule(this, 'ScheduleRule', {
- schedule: events.Schedule.cron({ minute: '0', hour: '4' }),
+const ecsTaskTarget = new EcsTask({ cluster, taskDefinition, role });
+
+new Rule(this, 'ScheduleRule', {
+ schedule: Schedule.cron({ minute: '0', hour: '4' }),
  targets: [ecsTaskTarget],
 });
 ```
