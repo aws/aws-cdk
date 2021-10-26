@@ -39,7 +39,7 @@ export interface TopicRuleProps {
    *
    * @default No actions will be perform
    */
-  readonly actions?: Array<IAction>;
+  readonly actions?: IAction[];
 
   /**
    * A simplified SQL syntax to filter messages received on an MQTT topic and push the data elsewhere.
@@ -88,7 +88,7 @@ export class TopicRule extends Resource implements ITopicRule {
    */
   public readonly topicRuleName: string;
 
-  private readonly actions = new Array<CfnTopicRule.ActionProperty>();
+  private readonly actions: CfnTopicRule.ActionProperty[] = [];
 
   constructor(scope: Construct, id: string, props: TopicRuleProps) {
     super(scope, id, {

@@ -126,12 +126,8 @@ test('can set actions', () => {
   Template.fromStack(stack).hasResourceProperties('AWS::IoT::TopicRule', {
     TopicRulePayload: {
       Actions: [
-        {
-          Http: { Url: 'http://example.com' },
-        },
-        {
-          Lambda: { FunctionArn: 'test-functionArn' },
-        },
+        { Http: { Url: 'http://example.com' } },
+        { Lambda: { FunctionArn: 'test-functionArn' } },
       ],
       Sql: "SELECT topic(2) as device_id, temperature FROM 'device/+/data'",
     },
@@ -162,12 +158,8 @@ test('can add an action', () => {
   Template.fromStack(stack).hasResourceProperties('AWS::IoT::TopicRule', {
     TopicRulePayload: {
       Actions: [
-        {
-          Http: { Url: 'http://example.com' },
-        },
-        {
-          Lambda: { FunctionArn: 'test-functionArn' },
-        },
+        { Http: { Url: 'http://example.com' } },
+        { Lambda: { FunctionArn: 'test-functionArn' } },
       ],
       Sql: "SELECT topic(2) as device_id, temperature FROM 'device/+/data'",
     },
@@ -208,9 +200,7 @@ test('cannot add an action that have multiple keys', () => {
 
   expect(() => {
     topicRule.addAction(multipleKeysAction);
-  }).toThrow(
-    'An action property cannot have multiple keys, received: http,lambda',
-  );
+  }).toThrow('An action property cannot have multiple keys, received: http,lambda');
 });
 
 test('can import a TopicRule by ARN', () => {
