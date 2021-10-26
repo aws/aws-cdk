@@ -488,8 +488,8 @@ Amazon RDS uses option groups to enable and configure these features. An option 
 that are available for a particular Amazon RDS DB instance.
 
 ```ts
-declare const vpc: ec2.IVpc;
-declare const securityGroup: ec2.ISecurityGroup;
+declare const vpc: ec2.Vpc;
+declare const securityGroup: ec2.SecurityGroup;
 
 new rds.OptionGroup(this, 'Options', {
   engine: rds.DatabaseInstanceEngine.oracleSe2({
