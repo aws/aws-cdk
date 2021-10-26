@@ -12,6 +12,7 @@ class SomeTarget implements events.IRuleTarget {
     };
   }
 }
+
 class Fixture extends Stack {
   constructor(scope: Construct, id: string) {
     super(scope, id);
