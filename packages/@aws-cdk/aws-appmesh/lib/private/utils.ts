@@ -1,4 +1,5 @@
 import { Token, TokenComparison } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { CfnVirtualNode } from '../appmesh.generated';
 import { GrpcGatewayRouteMatch } from '../gateway-route-spec';
 import { HeaderMatch } from '../header-match';
@@ -6,10 +7,6 @@ import { ListenerTlsOptions } from '../listener-tls-options';
 import { QueryParameterMatch } from '../query-parameter-match';
 import { GrpcRouteMatch } from '../route-spec';
 import { TlsClientPolicy } from '../tls-client-policy';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
 
 /**
  * Generated Connection pool config

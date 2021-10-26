@@ -1,9 +1,8 @@
-
 import { IAlarm } from './alarm-base';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 
 /**
  * Interface for objects that can be the targets of CloudWatch alarm actions
