@@ -31,7 +31,7 @@ export interface ITopic extends IResource, notifications.INotificationRuleTarget
   /**
    * Subscribe some endpoint to this topic
    */
-  addSubscription(subscription: ITopicSubscription): void;
+  addSubscription(subscription: ITopicSubscription): Subscription;
 
   /**
    * Adds a statement to the IAM resource policy associated with this topic.
@@ -68,7 +68,7 @@ export abstract class TopicBase extends Resource implements ITopic {
   /**
    * Subscribe some endpoint to this topic
    */
-  public addSubscription(subscription: ITopicSubscription) {
+  public addSubscription(subscription: ITopicSubscription): Subscription {
     const subscriptionConfig = subscription.bind(this);
 
     const scope = subscriptionConfig.subscriberScope || this;
@@ -83,7 +83,7 @@ export abstract class TopicBase extends Resource implements ITopic {
       throw new Error(`A subscription with id "${id}" already exists under the scope ${scope.node.path}`);
     }
 
-    new Subscription(scope, id, {
+    return new Subscription(scope, id, {
       topic: this,
       ...subscriptionConfig,
     });
