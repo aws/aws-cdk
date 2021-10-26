@@ -177,9 +177,9 @@ export class CloudFormationDeployments {
     this.sdkProvider = props.sdkProvider;
   }
 
-  public async readCurrentTemplate(stackArtifact: cxapi.CloudFormationStackArtifact): Promise<Template> {
+  public async readCurrentTemplate(stackArtifact: cxapi.CloudFormationStackArtifact, roleArn?: string): Promise<Template> {
     debug(`Reading existing template for stack ${stackArtifact.displayName}.`);
-    const { stackSdk } = await this.prepareSdkFor(stackArtifact, undefined, Mode.ForReading);
+    const { stackSdk } = await this.prepareSdkFor(stackArtifact, roleArn, Mode.ForReading);
     const cfn = stackSdk.cloudFormation();
 
     const stack = await CloudFormationStack.lookup(cfn, stackArtifact.stackName);

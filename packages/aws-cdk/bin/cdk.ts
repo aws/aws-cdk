@@ -271,6 +271,7 @@ async function initCommandLine() {
           stackNames: args.STACKS,
           exclusively: args.exclusively,
           templatePath: args.template,
+          roleArn: args.roleArn,
           strict: args.strict,
           contextLines: args.contextLines,
           securityOnly: args.securityOnly,
