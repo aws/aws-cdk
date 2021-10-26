@@ -23,6 +23,7 @@ always launch a database in a VPC. Use the `vpcSubnets` attribute to control whe
 your instances will be launched privately or publicly:
 
 ```ts
+declare const vpc: ec2.Vpc;
 const cluster = new rds.DatabaseCluster(this, 'Database', {
   engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_2_08_1 }),
   credentials: rds.Credentials.fromGeneratedSecret('clusteradmin'), // Optional - will default to 'admin' username and generated password
@@ -32,7 +33,7 @@ const cluster = new rds.DatabaseCluster(this, 'Database', {
     vpcSubnets: {
       subnetType: ec2.SubnetType.PRIVATE,
     },
-    vpc: new ec2.Vpc(this, 'vpc'),
+    vpc,
   },
 });
 ```
@@ -52,10 +53,11 @@ Your cluster will be empty by default. To add a default database upon constructi
 Use `DatabaseClusterFromSnapshot` to create a cluster from a snapshot:
 
 ```ts
+declare const vpc: ec2.Vpc;
 new rds.DatabaseClusterFromSnapshot(this, 'Database', {
   engine: rds.DatabaseClusterEngine.aurora({ version: rds.AuroraEngineVersion.VER_1_22_2 }),
   instanceProps: {
-    vpc: new ec2.Vpc(this, 'vpc'),
+    vpc,
   },
   snapshotIdentifier: 'mySnapshot',
 });
@@ -68,12 +70,13 @@ always launch a database in a VPC. Use the `vpcSubnets` attribute to control whe
 your instances will be launched privately or publicly:
 
 ```ts
+declare const vpc: ec2.Vpc;
 const instance = new rds.DatabaseInstance(this, 'Instance', {
   engine: rds.DatabaseInstanceEngine.oracleSe2({ version: rds.OracleEngineVersion.VER_19_0_0_0_2020_04_R1 }),
   // optional, defaults to m5.large
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.SMALL),
   credentials: rds.Credentials.fromGeneratedSecret('syscdk'), // Optional - will default to 'admin' username and generated password
-  vpc: new ec2.Vpc(this, 'vpc'),
+  vpc,
   vpcSubnets: {
     subnetType: ec2.SubnetType.PRIVATE,
   }
@@ -95,11 +98,12 @@ This is the upper limit to which RDS can automatically scale the storage. More i
 Example for max storage configuration:
 
 ```ts
+declare const vpc: ec2.Vpc;
 const instance = new rds.DatabaseInstance(this, 'Instance', {
   engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_12_3 }),
   // optional, defaults to m5.large
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
-  vpc: new ec2.Vpc(this, 'vpc'),
+  vpc,
   maxAllocatedStorage: 200,
 });
 ```
@@ -108,19 +112,20 @@ Use `DatabaseInstanceFromSnapshot` and `DatabaseInstanceReadReplica` to create a
 a source database respectively:
 
 ```ts
+declare const vpc: ec2.Vpc;
 new rds.DatabaseInstanceFromSnapshot(this, 'Instance', {
   snapshotIdentifier: 'my-snapshot',
   engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_12_3 }),
   // optional, defaults to m5.large
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.LARGE),
-  vpc: new ec2.Vpc(this, 'vpc'),
+  vpc,
 });
 
 declare const sourceInstance: rds.DatabaseInstance;
 new rds.DatabaseInstanceReadReplica(this, 'ReadReplica', {
   sourceDatabaseInstance: sourceInstance,
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.LARGE),
-  vpc: new ec2.Vpc(this, 'vpc'),
+  vpc,
 });
 ```
 
@@ -137,12 +142,13 @@ The default value depends on `vpcSubnets`.
 It will be `true` if `vpcSubnets` is `subnetType: SubnetType.PUBLIC`, `false` otherwise.
 
 ```ts
+declare const vpc: ec2.Vpc;
 // Setting public accessibility for DB instance
 new rds.DatabaseInstance(this, 'Instance', {
   engine: rds.DatabaseInstanceEngine.mysql({
     version: rds.MysqlEngineVersion.VER_8_0_19,
   }),
-  vpc: new ec2.Vpc(this, 'vpc'),
+  vpc,
   vpcSubnets: {
     subnetType: ec2.SubnetType.PRIVATE,
   },
@@ -153,7 +159,7 @@ new rds.DatabaseInstance(this, 'Instance', {
 new rds.DatabaseCluster(this, 'DatabaseCluster', {
   engine: rds.DatabaseClusterEngine.AURORA,
   instanceProps: {
-    vpc: new ec2.Vpc(this, 'vpc'),
+    vpc,
     vpcSubnets: {
       subnetType: ec2.SubnetType.PRIVATE,
     },
@@ -181,23 +187,24 @@ An alternative username (and password) may be specified for the admin user inste
 The following examples use a `DatabaseInstance`, but the same usage is applicable to `DatabaseCluster`.
 
 ```ts
+declare const vpc: ec2.Vpc;
 const engine = rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_12_3 });
 new rds.DatabaseInstance(this, 'InstanceWithUsername', {
   engine,
-  vpc: new ec2.Vpc(this, 'vpc'),
+  vpc,
   credentials: rds.Credentials.fromGeneratedSecret('postgres'), // Creates an admin user of postgres with a generated password
 });
 
 new rds.DatabaseInstance(this, 'InstanceWithUsernameAndPassword', {
   engine,
-  vpc: new ec2.Vpc(this, 'vpc'),
+  vpc,
   credentials: rds.Credentials.fromPassword('postgres', SecretValue.ssmSecure('/dbPassword', '1')), // Use password from SSM
 });
 
 const mySecret = secretsmanager.Secret.fromSecretName(this, 'DBSecret', 'myDBLoginInfo');
 new rds.DatabaseInstance(this, 'InstanceWithSecretLogin', {
   engine,
-  vpc: new ec2.Vpc(this, 'vpc'),
+  vpc,
   credentials: rds.Credentials.fromSecret(mySecret), // Get both username and password from existing secret
 });
 ```
@@ -205,12 +212,13 @@ new rds.DatabaseInstance(this, 'InstanceWithSecretLogin', {
 Secrets generated by `fromGeneratedSecret()` can be customized:
 
 ```ts
+declare const vpc: ec2.Vpc;
 const engine = rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_12_3 });
 const myKey = new kms.Key(this, 'MyKey');
 
 new rds.DatabaseInstance(this, 'InstanceWithCustomizedSecret', {
   engine,
-  vpc: new ec2.Vpc(this, 'vpc'),
+  vpc,
   credentials: rds.Credentials.fromGeneratedSecret('postgres', {
     secretName: 'my-cool-name',
     encryptionKey: myKey,
@@ -300,9 +308,10 @@ and a list of supported versions and limitations.
 The following example shows enabling IAM authentication for a database instance and granting connection access to an IAM role.
 
 ```ts
+declare const vpc: ec2.Vpc;
 const instance = new rds.DatabaseInstance(this, 'Instance', {
   engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
-  vpc: new ec2.Vpc(this, 'vpc'),
+  vpc,
   iamAuthentication: true, // Optional - will be automatically set if you call grantConnect().
 });
 const role = new iam.Role(this, 'DBRole', { assumedBy: new iam.AccountPrincipal(this.account) });
@@ -312,7 +321,7 @@ instance.grantConnect(role); // Grant the role connection access to the DB.
 The following example shows granting connection access for RDS Proxy to an IAM role.
 
 ```ts
-const vpc = new ec2.Vpc(this, 'vpc');
+declare const vpc: ec2.Vpc;
 const cluster = new rds.DatabaseCluster(this, 'Database', {
   engine: rds.DatabaseClusterEngine.AURORA,
   instanceProps: { vpc },
@@ -341,6 +350,7 @@ The following example shows enabling domain support for a database instance and 
 Directory Services.
 
 ```ts
+declare const vpc: ec2.Vpc;
 const role = new iam.Role(this, 'RDSDirectoryServicesRole', {
   assumedBy: new iam.ServicePrincipal('rds.amazonaws.com'),
   managedPolicies: [
@@ -349,7 +359,7 @@ const role = new iam.Role(this, 'RDSDirectoryServicesRole', {
 });
 const instance = new rds.DatabaseInstance(this, 'Instance', {
   engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
-  vpc: new ec2.Vpc(this, 'vpc'),
+  vpc,
   domain: 'd-????????', // The ID of the domain for the instance to join.
   domainRole: role, // Optional - will be create automatically if not provided.
 });
@@ -401,12 +411,13 @@ The following snippet sets up a database cluster with different S3 buckets where
 ```ts
 import * as s3 from '@aws-cdk/aws-s3';
 
+declare const vpc: ec2.Vpc;
 const importBucket = new s3.Bucket(this, 'importbucket');
 const exportBucket = new s3.Bucket(this, 'exportbucket');
 new rds.DatabaseCluster(this, 'dbcluster', {
   engine: rds.DatabaseClusterEngine.AURORA,
   instanceProps: {
-    vpc: new ec2.Vpc(this, 'vpc'),
+    vpc,
   },
   s3ImportBuckets: [importBucket],
   s3ExportBuckets: [exportBucket],
@@ -422,9 +433,9 @@ The following code configures an RDS Proxy for a `DatabaseInstance`.
 
 ```ts
 declare const vpc: ec2.Vpc;
-declare const securityGroup: ec2.ISecurityGroup;
-declare const secrets: secretsmanager.ISecret[];
-declare const dbInstance: rds.IDatabaseInstance;
+declare const securityGroup: ec2.SecurityGroup;
+declare const secrets: secretsmanager.Secret[];
+declare const dbInstance: rds.DatabaseInstance;
 
 const proxy = dbInstance.addProxy('proxy', {
     borrowTimeout: Duration.seconds(30),
@@ -443,6 +454,7 @@ instances and clusters; the types of logs available depend on the database type 
 ```ts
 import * as logs from '@aws-cdk/aws-logs';
 declare const myLogsPublishingRole: iam.Role;
+declare const vpc: ec2.Vpc;
 
 // Exporting logs from a cluster
 const cluster = new rds.DatabaseCluster(this, 'Database', {
@@ -450,7 +462,7 @@ const cluster = new rds.DatabaseCluster(this, 'Database', {
     version: rds.AuroraEngineVersion.VER_1_17_9, // different version class for each engine type
   }),
   instanceProps: {
-    vpc: new ec2.Vpc(this, 'vpc'),
+    vpc,
   },
   cloudwatchLogsExports: ['error', 'general', 'slowquery', 'audit'], // Export all available MySQL-based logs
   cloudwatchLogsRetention: logs.RetentionDays.THREE_MONTHS, // Optional - default is to never expire logs
@@ -463,7 +475,7 @@ const instance = new rds.DatabaseInstance(this, 'Instance', {
   engine: rds.DatabaseInstanceEngine.postgres({
     version: rds.PostgresEngineVersion.VER_12_3,
   }),
-  vpc: new ec2.Vpc(this, 'vpc'),
+  vpc,
   cloudwatchLogsExports: ['postgresql'], // Export the PostgreSQL logs
   // ...
 });
@@ -506,7 +518,7 @@ Aurora Serverless clusters can specify scaling properties which will be used to
 automatically scale the database cluster seamlessly based on the workload.
 
 ```ts
-const vpc = new ec2.Vpc(this, 'myrdsvpc');
+declare const vpc: ec2.Vpc;
 
 const cluster = new rds.ServerlessCluster(this, 'AnotherCluster', {
   engine: rds.DatabaseClusterEngine.AURORA_POSTGRESQL,
@@ -546,7 +558,7 @@ You can access your Aurora Serverless DB cluster using the built-in Data API. Th
 The following example shows granting Data API access to a Lamba function.
 
 ```ts
-const vpc = new ec2.Vpc(this, 'MyVPC');
+declare const vpc: ec2.Vpc;
 
 const cluster = new rds.ServerlessCluster(this, 'AnotherCluster', {
   engine: rds.DatabaseClusterEngine.AURORA_MYSQL,
