@@ -744,7 +744,7 @@ By default, a new security group is created and logging is enabled. Moreover, a 
 authorize all users to the VPC CIDR is created.
 
 To customize authorization rules, set the `authorizeAllUsersToVpcCidr` prop to `false`
-and use `addaddAuthorizationRule()`:
+and use `addAuthorizationRule()`:
 
 ```ts fixture=client-vpn
 const endpoint = vpc.addClientVpnEndpoint('Endpoint', {
@@ -1110,6 +1110,7 @@ const instance = new ec2.Instance(this, 'Instance', {
 const localPath = instance.userData.addS3DownloadCommand({
   bucket:asset.bucket,
   bucketKey:asset.s3ObjectKey,
+  region: 'us-east-1', // Optional
 });
 instance.userData.addExecuteFileCommand({
   filePath:localPath,

@@ -5,6 +5,20 @@ import { cached } from '../../util/functions';
 import { AccountAccessKeyCache } from './account-cache';
 import { Account } from './sdk-provider';
 
+// We need to map regions to domain suffixes, and the SDK already has a function to do this.
+// It's not part of the public API, but it's also unlikely to go away.
+//
+// Reuse that function, and add a safety check so we don't accidentally break if they ever
+// refactor that away.
+
+/* eslint-disable @typescript-eslint/no-require-imports */
+const regionUtil = require('aws-sdk/lib/region_config');
+/* eslint-enable @typescript-eslint/no-require-imports */
+
+if (!regionUtil.getEndpointSuffix) {
+  throw new Error('This version of AWS SDK for JS does not have the \'getEndpointSuffix\' function!');
+}
+
 export interface ISDK {
   /**
    * The region this SDK has been instantiated for
@@ -21,6 +35,8 @@ export interface ISDK {
    * represents the account available by using default credentials).
    */
   currentAccount(): Promise<Account>;
+
+  getEndpointSuffix(region: string): string;
 
   lambda(): AWS.Lambda;
   cloudFormation(): AWS.CloudFormation;
@@ -188,6 +204,10 @@ export class SDK implements ISDK {
         'with the right \'--trust\', using the latest version of the CDK CLI.',
       ].join(' '));
     }
+  }
+
+  public getEndpointSuffix(region: string): string {
+    return regionUtil.getEndpointSuffix(region);
   }
 
   /**
