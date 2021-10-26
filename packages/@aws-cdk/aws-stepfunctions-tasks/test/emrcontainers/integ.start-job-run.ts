@@ -12,7 +12,6 @@ import { ReleaseLabel, VirtualClusterInput } from '../../lib/emrcontainers/start
 /**
  * Stack verification steps:
  * Everything in the link below must be setup before running the state machine.
- * @see https://docs.aws.amazon.com/emr/latest/EMR-on-EKS-DevelopmentGuide/setting-up-cluster-access.html
  * @see https://docs.aws.amazon.com/emr/latest/EMR-on-EKS-DevelopmentGuide/setting-up-enable-IAM.html
  * aws stepfunctions start-execution --state-machine-arn <deployed state machine arn> : should return execution arn
  * aws stepfunctions describe-execution --execution-arn <exection-arn generated before> : should return status as SUCCEEDED

@@ -214,6 +214,12 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
     }
   }
 
+  private validatePropertiesNestedAppConfigBothNotUndefined(appConfig?: ApplicationConfiguration) {
+    if (appConfig?.properties === undefined && appConfig?.nestedConfig === undefined) {
+      throw new Error('Application configuration must have either properties or nested app configurations defined.');
+    }
+  }
+
   private validateAppConfigLength(config?: ApplicationConfiguration[]) {
     if (config === undefined) {
       return;
@@ -222,6 +228,7 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
     } else {
       config.forEach(element => this.validateAppConfigLength(element.nestedConfig));
       config.forEach(element => this.validateAppConfigPropertiesLength(element));
+      config.forEach(element => this.validatePropertiesNestedAppConfigBothNotUndefined(element));
     }
   }
 
