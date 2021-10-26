@@ -320,6 +320,12 @@ new codebuild.Project(this, 'Project', {
 })
 ```
 
+Alternatively, you can specify a custom image using one of the static methods on
+`LinuxGpuBuildImage`:
+
+* `LinuxGpuBuildImage.fromEcrRepository(repo[, tag])` to reference an image available in an
+  ECR repository.
+
 ## Logs
 
 CodeBuild lets you specify an S3 Bucket, CloudWatch Log Group or both to receive logs from your projects.
