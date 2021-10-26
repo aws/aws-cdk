@@ -10,7 +10,9 @@ describe('Product', () => {
 
   beforeEach(() => {
     app = new cdk.App();
-    stack = new cdk.Stack(app);
+    stack = new cdk.Stack(app, 'Stack', {
+      synthesizer: new cdk.LegacyStackSynthesizer(),
+    });
   });
 
   test('default product test', () => {
@@ -158,7 +160,7 @@ describe('Product', () => {
         ],
         supportEmail: 'invalid email',
       });
-    }).toThrowError(/Invalid support email for resource Default\/MyProduct/);
+    }).toThrowError(/Invalid support email for resource Stack\/MyProduct/);
   }),
 
   test('fails product creation with invalid url', () => {
@@ -172,7 +174,7 @@ describe('Product', () => {
           },
         ],
       });
-    }).toThrowError(/Invalid provisioning template url for resource Default\/MyProduct/);
+    }).toThrowError(/Invalid provisioning template url for resource Stack\/MyProduct/);
   }),
 
   test('fails product creation with empty productVersions', () => {
@@ -182,6 +184,6 @@ describe('Product', () => {
         owner: 'testOwner',
         productVersions: [],
       });
-    }).toThrowError(/Invalid product versions for resource Default\/MyProduct/);
+    }).toThrowError(/Invalid product versions for resource Stack\/MyProduct/);
   });
 });

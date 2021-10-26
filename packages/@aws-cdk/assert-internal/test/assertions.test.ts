@@ -320,7 +320,7 @@ function failingExample(title: string, cb: () => void) {
 }
 
 function synthesizedStack(fn: (stack: cdk.Stack) => void): cx.CloudFormationStackArtifact {
-  const app = new cdk.App();
+  const app = new cdk.App({ context: { [cx.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
   const stack = new cdk.Stack(app, 'TestStack');
   fn(stack);
 
