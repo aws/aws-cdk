@@ -1,5 +1,6 @@
 import { arrayWith, objectLike } from '@aws-cdk/assert-internal';
 import '@aws-cdk/assert-internal/jest';
+import * as ecr from '@aws-cdk/aws-ecr';
 import * as cdk from '@aws-cdk/core';
 import * as codebuild from '../lib';
 
@@ -54,6 +55,44 @@ describe('Linux GPU build image', () => {
               ]],
             },
           })),
+        },
+      });
+    });
+  });
+
+  describe('ECR Repository', () => {
+    test('allows creating a build image from an ecr repository', () => {
+      const stack = new cdk.Stack();
+
+      const repository = new ecr.Repository(stack, 'my-repo');
+
+      new codebuild.Project(stack, 'Project', {
+        buildSpec: codebuild.BuildSpec.fromObject({
+          version: '0.2',
+          phases: {
+            build: { commands: ['ls'] },
+          },
+        }),
+        environment: {
+          buildImage: codebuild.LinuxGpuBuildImage.fromEcrRepository(repository),
+        },
+      });
+
+      expect(stack).toHaveResourceLike('AWS::CodeBuild::Project', {
+        Environment: {
+          ComputeType: 'BUILD_GENERAL1_LARGE',
+          Image: {
+            'Fn::Join': ['', [
+              { Ref: 'AWS::Account' },
+              '.dkr.ecr.',
+              { Ref: 'AWS::Region' },
+              '.',
+              { Ref: 'AWS::URLSuffix' },
+              '/',
+              stack.resolve(repository.node.id),
+              'latest',
+            ]],
+          },
         },
       });
     });
