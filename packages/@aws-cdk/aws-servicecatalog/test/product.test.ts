@@ -129,7 +129,7 @@ describe('Product', () => {
 
     new sns.Topic(productStackVersion1, 'SNSTopicProductStack1');
 
-    new sns.Topic(productStackVersion1, 'SNSTopicProductStack2');
+    new sns.Topic(productStackVersion2, 'SNSTopicProductStack2');
 
     new servicecatalog.CloudFormationProduct(stack, 'MyProduct', {
       productName: 'testProduct',
