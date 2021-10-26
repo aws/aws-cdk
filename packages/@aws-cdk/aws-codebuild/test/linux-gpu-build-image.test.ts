@@ -61,7 +61,7 @@ describe('Linux GPU build image', () => {
   });
 
   describe('ECR Repository', () => {
-    test('allows creating a build image from an ecr repository', () => {
+    test('allows creating a build image from a new ECR repository', () => {
       const stack = new cdk.Stack();
 
       const repository = new ecr.Repository(stack, 'my-repo');
