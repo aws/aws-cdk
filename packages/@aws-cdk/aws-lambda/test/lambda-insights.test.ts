@@ -166,6 +166,7 @@ describe('lambda-insights', () => {
                 'Arn',
               ],
             },
+            'Architectures': ['x86_64'],
             'Handler': 'index.handler',
             'Layers': [
               {
@@ -239,6 +240,7 @@ describe('lambda-insights', () => {
                 'Arn',
               ],
             },
+            'Architectures': ['x86_64'],
             'Handler': 'index.handler',
             'Layers': [
               {
@@ -337,7 +339,7 @@ describe('lambda-insights', () => {
         ],
       },
       'ManagedPolicyArns': [
-        { },
+        {},
         {
           'Fn::Join': [
             '',

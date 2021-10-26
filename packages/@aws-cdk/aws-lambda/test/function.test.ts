@@ -44,6 +44,9 @@ describe('function', () => {
       Properties:
       {
         Code: { ZipFile: 'foo' },
+        Architectures: [
+          'x86_64',
+        ],
         Handler: 'index.handler',
         Role: { 'Fn::GetAtt': ['MyLambdaServiceRole4539ECB6', 'Arn'] },
         Runtime: 'nodejs10.x',
@@ -97,6 +100,7 @@ describe('function', () => {
     expect(stack).toHaveResource('AWS::Lambda::Function', {
       Properties: {
         Code: { ZipFile: 'foo' },
+        Architectures: ['x86_64'],
         Handler: 'index.handler',
         Role: { 'Fn::GetAtt': ['MyLambdaServiceRole4539ECB6', 'Arn'] },
         Runtime: 'nodejs10.x',
@@ -149,6 +153,9 @@ describe('function', () => {
           Code: {
             ZipFile: 'foo',
           },
+          Architectures: [
+            'x86_64',
+          ],
           Handler: 'bar',
           Role: {
             'Fn::GetAtt': [
@@ -393,6 +400,9 @@ describe('function', () => {
           ]],
         },
       },
+      Architectures: [
+        'x86_64',
+      ],
       Handler: 'index.handler',
       Role: {
         'Fn::GetAtt': [
@@ -471,6 +481,9 @@ describe('function', () => {
         Code: {
           ZipFile: 'foo',
         },
+        Architectures: [
+          'x86_64',
+        ],
         Handler: 'index.handler',
         Role: {
           'Fn::GetAtt': [
@@ -536,6 +549,9 @@ describe('function', () => {
       Code: {
         ZipFile: 'foo',
       },
+      Architectures: [
+        'x86_64',
+      ],
       Handler: 'index.handler',
       Role: {
         'Fn::GetAtt': [
@@ -699,6 +715,9 @@ describe('function', () => {
             'Arn',
           ],
         },
+        Architectures: [
+          'x86_64',
+        ],
         Runtime: 'nodejs10.x',
         TracingConfig: {
           Mode: 'Active',
@@ -748,6 +767,9 @@ describe('function', () => {
         Code: {
           ZipFile: 'foo',
         },
+        Architectures: [
+          'x86_64',
+        ],
         Handler: 'index.handler',
         Role: {
           'Fn::GetAtt': [
@@ -811,6 +833,9 @@ describe('function', () => {
             'Arn',
           ],
         },
+        Architectures: [
+          'x86_64',
+        ],
         Runtime: 'nodejs10.x',
       },
       DependsOn: [
@@ -2234,7 +2259,7 @@ describe('function', () => {
       handler: 'index.handler',
       architecture: lambda.Architecture.ARM_64,
     });
-    expect(fn.architecture.name).toEqual('arm64');
+    expect(fn.architecture?.name).toEqual('arm64');
   });
   test('Architecture returns amd64 when no architecture is set', () => {
     const stack = new cdk.Stack();
@@ -2243,7 +2268,7 @@ describe('function', () => {
       runtime: lambda.Runtime.NODEJS_14_X,
       handler: 'index.handler',
     });
-    expect(fn.architecture.name).toEqual('amd64');
+    expect(fn.architecture?.name).toEqual('x86_64');
   });
 });
 
