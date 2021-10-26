@@ -83,14 +83,14 @@ describe('Linux GPU build image', () => {
           ComputeType: 'BUILD_GENERAL1_LARGE',
           Image: {
             'Fn::Join': ['', [
-              { Ref: 'AWS::Account' },
+              { Ref: 'AWS::AccountId' },
               '.dkr.ecr.',
               { Ref: 'AWS::Region' },
               '.',
               { Ref: 'AWS::URLSuffix' },
               '/',
-              stack.resolve(repository.node.id),
-              'latest',
+              { Ref: 'myrepo5DFA62E5' },
+              ':latest',
             ]],
           },
         },
