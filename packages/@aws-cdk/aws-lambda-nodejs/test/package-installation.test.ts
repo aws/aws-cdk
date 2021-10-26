@@ -1,12 +1,12 @@
 import * as child_process from 'child_process';
-import { EsbuildInstallation } from '../lib/esbuild-installation';
+import { PackageInstallation } from '../lib/package-installation';
 import * as util from '../lib/util';
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports, import/no-extraneous-dependencies
 const version = require('esbuild/package.json').version;
 
 test('detects local version', () => {
-  expect(EsbuildInstallation.detect()).toEqual({
+  expect(PackageInstallation.detect('esbuild')).toEqual({
     isLocal: true,
     version,
   });
@@ -23,7 +23,7 @@ test('checks global version if local detection fails', () => {
     signal: null,
   });
 
-  expect(EsbuildInstallation.detect()).toEqual({
+  expect(PackageInstallation.detect('esbuild')).toEqual({
     isLocal: false,
     version: 'global-version',
   });
@@ -44,7 +44,7 @@ test('returns undefined on error', () => {
     signal: null,
   });
 
-  expect(EsbuildInstallation.detect()).toBeUndefined();
+  expect(PackageInstallation.detect('esbuild')).toBeUndefined();
 
   spawnSyncMock.mockRestore();
   getModuleVersionMock.mockRestore();
