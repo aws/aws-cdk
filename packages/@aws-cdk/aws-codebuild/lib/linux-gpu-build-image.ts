@@ -93,7 +93,7 @@ export class LinuxGpuBuildImage implements IBindableBuildImage {
 
 
   /**
-   * @returns A GPU image running Linux from an ECR repository.
+   * Returns a GPU image running Linux from an ECR repository.
    *
    * NOTE: if the repository is external (i.e. imported), then we won't be able to add
    * a resource policy statement for it so CodeBuild can pull the image.
