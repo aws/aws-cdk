@@ -78,7 +78,7 @@ test('diff can diff multiple stacks', async () => {
   expect(plainTextOutput).toContain('Stack A');
   expect(plainTextOutput).toContain('Stack B');
 
-  expect(cloudFormation.readCurrentTemplate).toBeCalledWith(expect.any(CloudFormationStackArtifact), null);
+  expect(cloudFormation.readCurrentTemplate).toBeCalledWith(expect.any(CloudFormationStackArtifact), undefined);
   expect(exitCode).toBe(0);
 });
 
