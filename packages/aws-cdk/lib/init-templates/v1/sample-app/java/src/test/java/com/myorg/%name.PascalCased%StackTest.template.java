@@ -5,7 +5,7 @@ import software.amazon.awscdk.assertions.Template;
 import software.amazon.awscdk.assertions.Match;
 import java.io.IOException;
 
-import java.util.*;
+import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
