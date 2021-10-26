@@ -480,4 +480,26 @@ describe('Topic', () => {
 
 
   });
+
+  test('result of addSubscription() can be used as a dependency', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const topic = new sns.Topic(stack, 'Topic');
+    const user = new iam.User(stack, 'User');
+
+    // WHEN
+    const subscription = topic.addSubscription({
+      bind: () => ({
+        protocol: sns.SubscriptionProtocol.HTTP,
+        endpoint: 'http://foo/bar',
+        subscriberId: 'my-subscription',
+      }),
+    });
+    user.node.addDependency(subscription);
+
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::IAM::User', {
+      DependsOn: ['Topicmysubscription1E605DD7'],
+    });
+  });
 });
