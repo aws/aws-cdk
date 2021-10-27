@@ -41,6 +41,16 @@ interface DatabaseClusterBaseProps {
   readonly instanceProps: InstanceProps;
 
   /**
+   * The number of seconds to set a cluster's target backtrack window to.
+   * This feature is only supported by the Aurora MySQL database engine and
+   * cannot be enabled on existing clusters.
+   *
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraMySQL.Managing.Backtrack.html
+   * @default 0 seconds (no backtrack)
+   */
+  readonly backtrackWindow?: Duration
+
+  /**
    * Backup settings
    *
    * @default - Backup retention period for automated backups is 1 day.
@@ -364,6 +374,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       deletionProtection: defaultDeletionProtection(props.deletionProtection, props.removalPolicy),
       enableIamDatabaseAuthentication: props.iamAuthentication,
       // Admin
+      backtrackWindow: props.backtrackWindow?.toSeconds(),
       backupRetentionPeriod: props.backup?.retention?.toDays(),
       preferredBackupWindow: props.backup?.preferredWindow,
       preferredMaintenanceWindow: props.preferredMaintenanceWindow,
