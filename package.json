@@ -26,7 +26,7 @@
     "jsii-rosetta": "^1.40.0",
     "lerna": "^4.0.0",
     "patch-package": "^6.4.7",
-    "standard-version": "^9.3.1",
+    "standard-version": "^9.3.2",
     "typescript": "~3.9.10"
   },
   "resolutions": {
