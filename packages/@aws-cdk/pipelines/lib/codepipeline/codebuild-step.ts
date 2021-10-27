@@ -131,6 +131,13 @@ export class CodeBuildStep extends ShellStep {
   public readonly role?: iam.IRole;
 
   /**
+   * The name of the namespace to use for variables emitted by this action.
+   *
+   * @default The projectName will be used if it is defined. Otherwise, the construct ID will be used.
+   */
+  public readonly variablesNamespace: string;
+
+  /**
    * Build environment
    *
    * @default - No value specified at construction time, use defaults
@@ -155,6 +162,7 @@ export class CodeBuildStep extends ShellStep {
     this.vpc = props.vpc;
     this.subnetSelection = props.subnetSelection;
     this.role = props.role;
+    this.variablesNamespace = this.projectName ?? this.id;
     this.rolePolicyStatements = props.rolePolicyStatements;
     this.securityGroups = props.securityGroups;
   }
@@ -176,6 +184,17 @@ export class CodeBuildStep extends ShellStep {
    */
   public get grantPrincipal(): iam.IPrincipal {
     return this.project.grantPrincipal;
+  }
+
+  /**
+   * Reference a CodePipeline variable defined by the CodeBuildStep.
+   *
+   * Variables in CodeBuild actions are defined using the 'exported-variables' subsection of the 'env' section of the buildspec.
+   *
+   * @param variableName the name of the variable for reference.
+   */
+  public variable(variableName: string): string {
+    return `#{${this.variablesNamespace}.${variableName}}`;
   }
 
   /**
