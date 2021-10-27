@@ -28,7 +28,7 @@ Currently supported are:
 * Put a record to a Kinesis stream
 * [Log an event into a LogGroup](#log-an-event-into-a-loggroup)
 * Put a record to a Kinesis Data Firehose stream
-* Put an event on an EventBridge bus
+* [Put an event on an EventBridge bus](#put-an-event-on-an-eventbridge-bus)
 
 See the README of the `@aws-cdk/aws-events` library for more information on
 EventBridge.
@@ -265,4 +265,24 @@ rule.addTarget(
     deadLetterQueue: dlq
   } ),
 )
+```
+
+## Put an event on an EventBridge bus
+
+Use the `EventBus` target to route event to a different EventBus.
+
+The code snippet below creates the scheduled event rule that route events to an imported event bus.
+
+```ts
+const rule = new events.Rule(this, 'Rule', {
+  schedule: events.Schedule.expression('rate(1 minute)'),
+});
+
+rule.addTarget(new targets.EventBus(
+  events.EventBus.fromEventBusArn(
+    this,
+    'External',
+    `arn:aws:events:eu-west-1:999999999999:event-bus/test-bus`,
+  ),
+));
 ```
