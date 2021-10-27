@@ -1,4 +1,5 @@
-import { Template } from '@aws-cdk/assertions';
+import '@aws-cdk/assert-internal/jest';
+import { ResourcePart } from '@aws-cdk/assert-internal';
 import * as cdk from '@aws-cdk/core';
 import * as s3 from '../lib';
 
@@ -15,8 +16,8 @@ describe('notification', () => {
       }),
     });
 
-    Template.fromStack(stack).resourceCountIs('AWS::S3::Bucket', 1);
-    Template.fromStack(stack).hasResourceProperties('Custom::S3BucketNotifications', {
+    expect(stack).toHaveResource('AWS::S3::Bucket');
+    expect(stack).toHaveResource('Custom::S3BucketNotifications', {
       NotificationConfiguration: {
         TopicConfigurations: [
           {
@@ -44,7 +45,7 @@ describe('notification', () => {
       }),
     }, { prefix: 'images/', suffix: '.png' });
 
-    Template.fromStack(stack).hasResourceProperties('Custom::S3BucketNotifications', {
+    expect(stack).toHaveResource('Custom::S3BucketNotifications', {
       NotificationConfiguration: {
         TopicConfigurations: [
           {
@@ -86,7 +87,7 @@ describe('notification', () => {
       }),
     });
 
-    Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+    expect(stack).toHaveResourceLike('AWS::Lambda::Function', {
       Type: 'AWS::Lambda::Function',
       Properties: {
         Role: {
@@ -98,7 +99,7 @@ describe('notification', () => {
       },
       DependsOn: ['BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleDefaultPolicy2CF63D36',
         'BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC'],
-    });
+    }, ResourcePart.CompleteDefinition );
 
 
   });
