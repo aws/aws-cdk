@@ -39,6 +39,11 @@ export interface IPrincipal extends IGrantable {
   readonly assumeRoleAction: string;
 
   /**
+   * When this Principal is used in an AssumeRole policy, the actions to use.
+   */
+  readonly assumeRoleActions?: string[];
+
+  /**
    * Return the policy fragment that identifies this principal in a Policy.
    */
   readonly policyFragment: PrincipalPolicyFragment;
@@ -103,6 +108,11 @@ export abstract class PrincipalBase implements IPrincipal {
    */
   public readonly assumeRoleAction: string = 'sts:AssumeRole';
 
+  /**
+   * When this Principal is used in an AssumeRole policy, the actions to use.
+   */
+  public readonly assumeRoleActions?: string[] = [];
+
   public addToPolicy(statement: PolicyStatement): boolean {
     return this.addToPrincipalPolicy(statement).statementAdded;
   }
@@ -140,6 +150,25 @@ export abstract class PrincipalBase implements IPrincipal {
    */
   public withConditions(conditions: Conditions): IPrincipal {
     return new PrincipalWithConditions(this, conditions);
+  }
+
+  /**
+   * Given we have a principal with trust relationship, we can extend the assume
+   * role actions with additional actions
+   *
+   * @param additionalAssumeRoleAction String assume role action
+   * @returns void
+   */
+  public addAssumeRoleAction(additionalAssumeRoleAction: string) {
+    // Ensure the default assumeRoleAction is included
+    if (!this.assumeRoleActions?.includes(this.assumeRoleAction)) {
+      this.assumeRoleActions?.push(this.assumeRoleAction);
+    }
+
+    // Insert the additional assume role action
+    if (!this.assumeRoleActions?.includes(additionalAssumeRoleAction)) {
+      this.assumeRoleActions?.push(additionalAssumeRoleAction);
+    }
   }
 }
 
@@ -627,14 +656,26 @@ export class CompositePrincipal extends PrincipalBase {
       if (p.assumeRoleAction !== this.assumeRoleAction) {
         throw new Error(
           'Cannot add multiple principals with different "assumeRoleAction". ' +
-          `Expecting "${this.assumeRoleAction}", got "${p.assumeRoleAction}"`);
+            `Expecting "${this.assumeRoleAction}", got "${p.assumeRoleAction}"`);
+      }
+
+      if (!(
+        Array.isArray(this.assumeRoleActions) &&
+        Array.isArray(p.assumeRoleActions) &&
+        this.assumeRoleActions.length === p.assumeRoleActions.length &&
+        this.assumeRoleActions.every((action) => p.assumeRoleActions?.includes(action))
+      )) {
+        throw new Error(
+          'Cannot add multiple principals with different "assumeRoleActions". ' +
+          `Expecting "${JSON.stringify(this.assumeRoleActions)}", got "${JSON.stringify(p.assumeRoleActions)}"`,
+        );
       }
 
       const fragment = p.policyFragment;
       if (fragment.conditions && Object.keys(fragment.conditions).length > 0) {
         throw new Error(
           'Components of a CompositePrincipal must not have conditions. ' +
-          `Tried to add the following fragment: ${JSON.stringify(fragment)}`);
+            `Tried to add the following fragment: ${JSON.stringify(fragment)}`);
       }
 
       this.principals.push(p);

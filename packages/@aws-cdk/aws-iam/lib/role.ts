@@ -486,7 +486,12 @@ export interface IRole extends IIdentity {
 function createAssumeRolePolicy(principal: IPrincipal, externalIds: string[]) {
   const statement = new AwsStarStatement();
   statement.addPrincipals(principal);
-  statement.addActions(principal.assumeRoleAction);
+
+  if (Array.isArray(principal.assumeRoleActions) && principal.assumeRoleActions.length > 1) {
+    statement.addActions(...principal.assumeRoleActions);
+  } else {
+    statement.addActions(principal.assumeRoleAction);
+  }
 
   if (externalIds.length) {
     statement.addCondition('StringEquals', { 'sts:ExternalId': externalIds.length === 1 ? externalIds[0] : externalIds });

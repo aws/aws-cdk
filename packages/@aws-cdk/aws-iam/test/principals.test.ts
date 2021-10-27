@@ -244,3 +244,41 @@ test('PrincipalWithConditions inherits principalAccount from AccountPrincipal ',
   expect(accountPrincipal.principalAccount).toStrictEqual('123456789012');
   expect(principalWithConditions.principalAccount).toStrictEqual('123456789012');
 });
+
+test('Principal assume Role actions can be extended with additional actions', () => {
+  const stack = new Stack();
+  const federatedPrincipal = new iam.FederatedPrincipal(
+    'cognito-identity.amazonaws.com',
+    { StringEquals: { hairColor: 'blond' } },
+  );
+
+  federatedPrincipal.addAssumeRoleAction('sts:TagSession');
+
+  new iam.Role(stack, 'Role', {
+    assumedBy: federatedPrincipal,
+  });
+
+  // THEN
+  expect(stack).toHaveResource('AWS::IAM::Role', {
+    AssumeRolePolicyDocument: {
+      Statement: [
+        {
+          Action: [
+            'sts:AssumeRole',
+            'sts:TagSession',
+          ],
+          Condition: {
+            StringEquals: {
+              hairColor: 'blond',
+            },
+          },
+          Effect: 'Allow',
+          Principal: {
+            Federated: 'cognito-identity.amazonaws.com',
+          },
+        },
+      ],
+      Version: '2012-10-17',
+    },
+  });
+});
