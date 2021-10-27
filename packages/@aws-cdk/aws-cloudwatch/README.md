@@ -25,6 +25,8 @@ For example, `lambda.Function` objects have the `fn.metricErrors()` method, whic
 represents the amount of errors reported by that Lambda function:
 
 ```ts
+declare const fn: lambda.Function;
+
 const errors = fn.metricErrors();
 ```
 
@@ -37,7 +39,7 @@ For example:
 
 ```ts
 const hostedZone = new route53.HostedZone(this, 'MyHostedZone', { zoneName: "example.org" });
-const metric = new Metric({
+const metric = new cloudwatch.Metric({
   namespace: 'AWS/Route53',
   metricName: 'DNSQueries',
   dimensionsMap: {
@@ -52,7 +54,7 @@ If you want to reference a metric that is not yet exposed by an existing constru
 you can instantiate a `Metric` object to represent it. For example:
 
 ```ts
-const metric = new Metric({
+const metric = new cloudwatch.Metric({
   namespace: 'MyNamespace',
   metricName: 'MyMetric',
   dimensionsMap: {
@@ -67,11 +69,13 @@ Math expressions are supported by instantiating the `MathExpression` class.
 For example, a math expression that sums two other metrics looks like this:
 
 ```ts
-const allProblems = new MathExpression({
-  expression: "errors + faults",
+declare const fn: lambda.Function;
+
+const allProblems = new cloudwatch.MathExpression({
+  expression: "errors + throttles",
   usingMetrics: {
-    errors: myConstruct.metricErrors(),
-    faults: myConstruct.metricFaults(),
+    errors: fn.metricErrors(),
+    faults: fn.metricThrottles(),
   }
 });
 ```
@@ -80,11 +84,14 @@ You can use `MathExpression` objects like any other metric, including using
 them in other math expressions:
 
 ```ts
-const problemPercentage = new MathExpression({
+declare const fn: lambda.Function;
+declare const allProblems: cloudwatch.MathExpression;
+
+const problemPercentage = new cloudwatch.MathExpression({
   expression: "(problems / invocations) * 100",
   usingMetrics: {
     problems: allProblems,
-    invocations: myConstruct.metricInvocations()
+    invocations: fn.metricInvocations()
   }
 });
 ```
@@ -96,7 +103,7 @@ search expression returns all CPUUtilization metrics that it finds, with the
 graph showing the Average statistic with an aggregation period of 5 minutes:
 
 ```ts
-const cpuUtilization = new MathExpression({
+const cpuUtilization = new cloudwatch.MathExpression({
   expression: "SEARCH('{AWS/EC2,InstanceId} MetricName=\"CPUUtilization\"', 'Average', 300)"
 });
 ```
@@ -120,6 +127,8 @@ the function or the period), you can do so by passing additional parameters
 to the metric function call:
 
 ```ts
+declare const fn: lambda.Function;
+
 const minuteErrorRate = fn.metricErrors({
   statistic: 'avg',
   period: Duration.minutes(1),
@@ -153,9 +162,10 @@ useful when embedding them in graphs, see below).
 Alarms can be created on metrics in one of two ways. Either create an `Alarm`
 object, passing the `Metric` object to set the alarm on:
 
-
 ```ts
-new Alarm(this, 'Alarm', {
+declare const fn: lambda.Function;
+
+new cloudwatch.Alarm(this, 'Alarm', {
   metric: fn.metricErrors(),
   threshold: 100,
   evaluationPeriods: 2,
@@ -165,6 +175,8 @@ new Alarm(this, 'Alarm', {
 Alternatively, you can call `metric.createAlarm()`:
 
 ```ts
+declare const fn: lambda.Function;
+
 fn.metricErrors().createAlarm(this, 'Alarm', {
   threshold: 100,
   evaluationPeriods: 2,
@@ -188,33 +200,36 @@ an SNS topic when an alarm breaches, do the following:
 
 ```ts
 import * as cw_actions from '@aws-cdk/aws-cloudwatch-actions';
+declare const alarm: cloudwatch.Alarm;
 
-// ...
-const topic = new sns.Topic(stack, 'Topic');
-const alarm = new cloudwatch.Alarm(stack, 'Alarm', { /* ... */ });
-
+const topic = new sns.Topic(this, 'Topic');
 alarm.addAlarmAction(new cw_actions.SnsAction(topic));
 ```
 
 ### Composite Alarms
 
-[Composite Alarms](https://aws.amazon.com/about-aws/whats-new/2020/03/amazon-cloudwatch-now-allows-you-to-combine-multiple-alarms/) 
+[Composite Alarms](https://aws.amazon.com/about-aws/whats-new/2020/03/amazon-cloudwatch-now-allows-you-to-combine-multiple-alarms/)
 can be created from existing Alarm resources.
 
 ```ts
-const alarmRule = AlarmRule.anyOf(
-  AlarmRule.allOf(
-    AlarmRule.anyOf(
+declare const alarm1: cloudwatch.Alarm;
+declare const alarm2: cloudwatch.Alarm;
+declare const alarm3: cloudwatch.Alarm;
+declare const alarm4: cloudwatch.Alarm;
+
+const alarmRule = cloudwatch.AlarmRule.anyOf(
+  cloudwatch.AlarmRule.allOf(
+    cloudwatch.AlarmRule.anyOf(
       alarm1,
-      AlarmRule.fromAlarm(alarm2, AlarmState.OK),
+      cloudwatch.AlarmRule.fromAlarm(alarm2, cloudwatch.AlarmState.OK),
       alarm3,
     ),
-    AlarmRule.not(AlarmRule.fromAlarm(alarm4, AlarmState.INSUFFICIENT_DATA)),
+    cloudwatch.AlarmRule.not(cloudwatch.AlarmRule.fromAlarm(alarm4, cloudwatch.AlarmState.INSUFFICIENT_DATA)),
   ),
-  AlarmRule.fromBoolean(false),
+  cloudwatch.AlarmRule.fromBoolean(false),
 );
 
-new CompositeAlarm(this, 'MyAwesomeCompositeAlarm', {
+new cloudwatch.CompositeAlarm(this, 'MyAwesomeCompositeAlarm', {
   alarmRule,
 });
 ```
@@ -260,7 +275,11 @@ A graph widget can display any number of metrics on either the `left` or
 `right` vertical axis:
 
 ```ts
-dashboard.addWidgets(new GraphWidget({
+declare const dashboard: cloudwatch.Dashboard;
+declare const executionCountMetric: cloudwatch.Metric;
+declare const errorCountMetric: cloudwatch.Metric;
+
+dashboard.addWidgets(new cloudwatch.GraphWidget({
   title: "Executions vs error rate",
 
   left: [executionCountMetric],
@@ -268,7 +287,7 @@ dashboard.addWidgets(new GraphWidget({
   right: [errorCountMetric.with({
     statistic: "average",
     label: "Error rate",
-    color: Color.GREEN
+    color: cloudwatch.Color.GREEN
   })]
 }));
 ```
@@ -278,12 +297,13 @@ Using the methods `addLeftMetric()` and `addRightMetric()` you can add metrics t
 Graph widgets can also display annotations attached to the left or the right y-axis.
 
 ```ts
-dashboard.addWidgets(new GraphWidget({
-  // ...
+declare const dashboard: cloudwatch.Dashboard;
+
+dashboard.addWidgets(new cloudwatch.GraphWidget({
   // ...
 
   leftAnnotations: [
-    { value: 1800, label: Duration.minutes(30).toHumanString(), color: Color.RED, },
+    { value: 1800, label: Duration.minutes(30).toHumanString(), color: cloudwatch.Color.RED, },
     { value: 3600, label: '1 hour', color: '#2ca02c', }
   ],
 }));
@@ -292,19 +312,21 @@ dashboard.addWidgets(new GraphWidget({
 The graph legend can be adjusted from the default position at bottom of the widget.
 
 ```ts
-dashboard.addWidgets(new GraphWidget({
-  // ...
+declare const dashboard: cloudwatch.Dashboard;
+
+dashboard.addWidgets(new cloudwatch.GraphWidget({
   // ...
 
-  legendPosition: LegendPosition.RIGHT,
+  legendPosition: cloudwatch.LegendPosition.RIGHT,
 }));
 ```
 
 The graph can publish live data within the last minute that has not been fully aggregated.
 
 ```ts
-dashboard.addWidgets(new GraphWidget({
-  // ...
+declare const dashboard: cloudwatch.Dashboard;
+
+dashboard.addWidgets(new cloudwatch.GraphWidget({
   // ...
 
   liveData: true,
@@ -314,11 +336,12 @@ dashboard.addWidgets(new GraphWidget({
 The graph view can be changed from default 'timeSeries' to 'bar' or 'pie'.
 
 ```ts
-dashboard.addWidgets(new GraphWidget({
-  // ...
+declare const dashboard: cloudwatch.Dashboard;
+
+dashboard.addWidgets(new cloudwatch.GraphWidget({
   // ...
 
-  view: GraphWidgetView.BAR,
+  view: cloudwatch.GraphWidgetView.BAR,
 }));
 ```
 
@@ -327,7 +350,10 @@ dashboard.addWidgets(new GraphWidget({
 An alarm widget shows the graph and the alarm line of a single alarm:
 
 ```ts
-dashboard.addWidgets(new AlarmWidget({
+declare const dashboard: cloudwatch.Dashboard;
+declare const errorAlarm: cloudwatch.Alarm;
+
+dashboard.addWidgets(new cloudwatch.AlarmWidget({
   title: "Errors",
   alarm: errorAlarm,
 }));
@@ -339,7 +365,11 @@ A single-value widget shows the latest value of a set of metrics (as opposed
 to a graph of the value over time):
 
 ```ts
-dashboard.addWidgets(new SingleValueWidget({
+declare const dashboard: cloudwatch.Dashboard;
+declare const visitorCount: cloudwatch.Metric;
+declare const purchaseCount: cloudwatch.Metric;
+
+dashboard.addWidgets(new cloudwatch.SingleValueWidget({
   metrics: [visitorCount, purchaseCount],
 }));
 ```
@@ -347,9 +377,10 @@ dashboard.addWidgets(new SingleValueWidget({
 Show as many digits as can fit, before rounding.
 
 ```ts
-dashboard.addWidgets(new SingleValueWidget({
-  // ..
-  // ..
+declare const dashboard: cloudwatch.Dashboard;
+
+dashboard.addWidgets(new cloudwatch.SingleValueWidget({
+  metrics: [ /* ... */ ],
 
   fullPrecision: true,
 }));
@@ -361,7 +392,9 @@ A text widget shows an arbitrary piece of MarkDown. Use this to add explanations
 to your dashboard:
 
 ```ts
-dashboard.addWidgets(new TextWidget({
+declare const dashboard: cloudwatch.Dashboard;
+
+dashboard.addWidgets(new cloudwatch.TextWidget({
   markdown: '# Key Performance Indicators'
 }));
 ```
@@ -372,8 +405,11 @@ An alarm status widget displays instantly the status of any type of alarms and g
 ability to aggregate one or more alarms together in a small surface.
 
 ```ts
+declare const dashboard: cloudwatch.Dashboard;
+declare const errorAlarm: cloudwatch.Alarm;
+
 dashboard.addWidgets(
-  new AlarmStatusWidget({
+  new cloudwatch.AlarmStatusWidget({
     alarms: [errorAlarm],
   })
 );
@@ -384,9 +420,11 @@ dashboard.addWidgets(
 A `LogQueryWidget` shows the results of a query from Logs Insights:
 
 ```ts
-dashboard.addWidgets(new LogQueryWidget({
+declare const dashboard: cloudwatch.Dashboard;
+
+dashboard.addWidgets(new cloudwatch.LogQueryWidget({
   logGroupNames: ['my-log-group'],
-  view: LogQueryVisualizationType.TABLE,
+  view: cloudwatch.LogQueryVisualizationType.TABLE,
   // The lines will be automatically combined using '\n|'.
   queryLines: [
     'fields @message',
