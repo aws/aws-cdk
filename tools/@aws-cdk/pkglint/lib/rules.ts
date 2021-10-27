@@ -14,9 +14,8 @@ import {
   monoRepoRoot,
 } from './util';
 
-const AWS_SERVICE_NAMES = require('./aws-service-official-names.json'); // eslint-disable-line @typescript-eslint/no-require-imports
-
 const PKGLINT_VERSION = require('../package.json').version; // eslint-disable-line @typescript-eslint/no-require-imports
+const AWS_SERVICE_NAMES = require('./aws-service-official-names.json'); // eslint-disable-line @typescript-eslint/no-require-imports
 
 /**
  * Verify that the package name matches the directory name
@@ -59,9 +58,11 @@ export class PublishConfigTagIsRequired extends ValidationRule {
 
     // While v2 is still under development, we publish all v2 packages with the 'next'
     // distribution tag, while still tagging all v1 packages as 'latest'.
-    // The one exception is 'aws-cdk-lib', since it's a new package for v2.
+    // There are two sets of exceptions:
+    // 'aws-cdk-lib' (new v2 package) and all of the '*-alpha' modules, since they are also new packages for v2.
     const newV2Packages = ['aws-cdk-lib'];
-    const defaultPublishTag = (cdkMajorVersion() === 2 && !newV2Packages.includes(pkg.json.name)) ? 'next' : 'latest';
+    const isNewPackageForV2 = newV2Packages.includes(pkg.json.name) || pkg.packageName.endsWith('-alpha');
+    const defaultPublishTag = (cdkMajorVersion() === 2 && !isNewPackageForV2) ? 'next' : 'latest';
 
     if (pkg.json.publishConfig?.tag !== defaultPublishTag) {
       pkg.report({
@@ -829,25 +830,33 @@ function cdkModuleName(name: string) {
   const isCdkPkg = name === '@aws-cdk/core';
   const isLegacyCdkPkg = name === '@aws-cdk/cdk';
 
-  name = name.replace(/^aws-cdk-/, '');
-  name = name.replace(/^@aws-cdk\//, '');
+  let suffix = name;
+  suffix = suffix.replace(/^aws-cdk-/, '');
+  suffix = suffix.replace(/^@aws-cdk\//, '');
 
-  const dotnetSuffix = name.split('-')
+  const dotnetSuffix = suffix.split('-')
     .map(s => s === 'aws' ? 'AWS' : caseUtils.pascal(s))
     .join('.');
 
-  const pythonName = name.replace(/^@/g, '').replace(/\//g, '.').split('.').map(caseUtils.kebab).join('.');
+  const pythonName = suffix.replace(/^@/g, '').replace(/\//g, '.').split('.').map(caseUtils.kebab).join('.');
+
+  // list of packages with special-cased Maven ArtifactId.
+  const mavenIdMap: Record<string, string> = {
+    '@aws-cdk/core': 'core',
+    '@aws-cdk/cdk': 'cdk',
+    '@aws-cdk/assertions': 'assertions',
+    '@aws-cdk/assertions-alpha': 'assertions-alpha',
+  };
+  /* eslint-disable @typescript-eslint/indent */
+  const mavenArtifactId =
+    name in mavenIdMap ? mavenIdMap[name] :
+    (suffix.startsWith('aws-') || suffix.startsWith('alexa-')) ? suffix.replace(/aws-/, '') :
+    suffix.startsWith('cdk-') ? suffix : `cdk-${suffix}`;
+  /* eslint-enable @typescript-eslint/indent */
 
   return {
-    javaPackage: `software.amazon.awscdk${isLegacyCdkPkg ? '' : `.${name.replace(/aws-/, 'services-').replace(/-/g, '.')}`}`,
-    mavenArtifactId:
-      isLegacyCdkPkg
-        ? 'cdk'
-        : (isCdkPkg
-          ? 'core'
-          : (name.startsWith('aws-') || name.startsWith('alexa-')
-            ? name.replace(/aws-/, '')
-            : (name.startsWith('cdk-') ? name : `cdk-${name}`))),
+    javaPackage: `software.amazon.awscdk${isLegacyCdkPkg ? '' : `.${suffix.replace(/aws-/, 'services-').replace(/-/g, '.')}`}`,
+    mavenArtifactId,
     dotnetNamespace: `Amazon.CDK${isCdkPkg ? '' : `.${dotnetSuffix}`}`,
     python: {
       distName: `aws-cdk.${pythonName}`,
@@ -1120,7 +1129,11 @@ export class MustHaveNodeEnginesDeclaration extends ValidationRule {
   public readonly name = 'package-info/engines';
 
   public validate(pkg: PackageJson): void {
-    expectJSON(this.name, pkg, 'engines.node', '>= 10.13.0 <13 || >=13.7.0');
+    if (cdkMajorVersion() === 2) {
+      expectJSON(this.name, pkg, 'engines.node', '>= 14.15.0');
+    } else {
+      expectJSON(this.name, pkg, 'engines.node', '>= 10.13.0 <13 || >=13.7.0');
+    }
   }
 }
 
@@ -1570,6 +1583,7 @@ export class JestSetup extends ValidationRule {
 export class UbergenPackageVisibility extends ValidationRule {
   public readonly name = 'ubergen/package-visibility';
 
+  // The ONLY (non-alpha) packages that should be published for v2.
   // These include dependencies of the CDK CLI (aws-cdk).
   private readonly publicPackages = [
     '@aws-cdk/cfnspec',
@@ -1586,7 +1600,7 @@ export class UbergenPackageVisibility extends ValidationRule {
 
   public validate(pkg: PackageJson): void {
     if (cdkMajorVersion() === 2) {
-      // Only packages in the publicPackages list should be "public". Everything else should be private.
+      // Only alpha packages and packages in the publicPackages list should be "public". Everything else should be private.
       if (this.publicPackages.includes(pkg.json.name) && pkg.json.private === true) {
         pkg.report({
           ruleName: this.name,
@@ -1595,7 +1609,7 @@ export class UbergenPackageVisibility extends ValidationRule {
             delete pkg.json.private;
           },
         });
-      } else if (!this.publicPackages.includes(pkg.json.name) && pkg.json.private !== true) {
+      } else if (!this.publicPackages.includes(pkg.json.name) && pkg.json.private !== true && !pkg.packageName.endsWith('-alpha')) {
         pkg.report({
           ruleName: this.name,
           message: 'Package must not be public',

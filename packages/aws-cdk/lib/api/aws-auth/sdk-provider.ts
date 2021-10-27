@@ -374,44 +374,24 @@ function parseHttpOptions(options: SdkHttpOptions) {
   }
   config.customUserAgent = userAgent;
 
-  const proxyAddress = options.proxyAddress || httpsProxyFromEnvironment();
   const caBundlePath = options.caBundlePath || caBundlePathFromEnvironment();
 
-  if (proxyAddress && caBundlePath) {
-    debug('Using proxy server: %s', proxyAddress);
+  if (caBundlePath) {
     debug('Using CA bundle path: %s', caBundlePath);
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const ProxyAgent: any = require('proxy-agent');
-    config.httpOptions.agent = new ProxyAgent(proxyAddress);
-    (config.httpOptions as any).ca = readIfPossible(caBundlePath);
-  } else if (proxyAddress) { // Ignore empty string on purpose
-    // https://aws.amazon.com/blogs/developer/using-the-aws-sdk-for-javascript-from-behind-a-proxy/
-    debug('Using proxy server: %s', proxyAddress);
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const ProxyAgent: any = require('proxy-agent');
-    config.httpOptions.agent = new ProxyAgent(proxyAddress);
-  } else if (caBundlePath) {
-    debug('Using CA bundle path: %s', caBundlePath);
-    config.httpOptions.agent = new https.Agent({
-      ca: readIfPossible(caBundlePath),
-      keepAlive: true,
-    });
   }
+
+  // Configure the proxy agent. By default, this will use HTTPS?_PROXY and
+  // NO_PROXY environment variables to determine which proxy to use for each
+  // request.
+  //
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const ProxyAgent: any = require('proxy-agent');
+  config.httpOptions.agent = new ProxyAgent({
+    ...caBundlePath ? { ca: readIfPossible(caBundlePath) } : undefined,
+    keepAlive: true,
+  });
 
   return config;
-}
-
-/**
- * Find and return the configured HTTPS proxy address
- */
-function httpsProxyFromEnvironment(): string | undefined {
-  if (process.env.https_proxy) {
-    return process.env.https_proxy;
-  }
-  if (process.env.HTTPS_PROXY) {
-    return process.env.HTTPS_PROXY;
-  }
-  return undefined;
 }
 
 /**

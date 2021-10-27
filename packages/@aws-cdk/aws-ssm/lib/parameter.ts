@@ -137,6 +137,13 @@ export interface StringParameterProps extends ParameterOptions {
    * @default ParameterType.STRING
    */
   readonly type?: ParameterType;
+
+  /**
+   * The data type of the parameter, such as `text` or `aws:ec2:image`.
+   *
+   * @default - undefined
+   */
+  readonly dataType?: ParameterDataType;
 }
 
 /**
@@ -215,6 +222,20 @@ export enum ParameterType {
    * An Amazon EC2 image ID, such as ami-0ff8a91507f77f867
    */
   AWS_EC2_IMAGE_ID = 'AWS::EC2::Image::Id',
+}
+
+/**
+ * SSM parameter data type
+ */
+export enum ParameterDataType {
+  /**
+   * Text
+   */
+  TEXT = 'text',
+  /**
+   * Aws Ec2 Image
+   */
+  AWS_EC2_IMAGE = 'aws:ec2:image',
 }
 
 /**
@@ -430,12 +451,14 @@ export class StringParameter extends ParameterBase implements IStringParameter {
       _assertValidValue(props.stringValue, props.allowedPattern);
     }
 
-    if (this.physicalName.length > 2048) {
-      throw new Error('Name cannot be longer than 2048 characters.');
-    }
+    validateParameterName(this.physicalName);
 
     if (props.description && props.description?.length > 1024) {
       throw new Error('Description cannot be longer than 1024 characters.');
+    }
+
+    if (props.type && props.type === ParameterType.AWS_EC2_IMAGE_ID) {
+      throw new Error('The type must either be ParameterType.STRING or ParameterType.STRING_LIST. Did you mean to set dataType: ParameterDataType.AWS_EC2_IMAGE instead?');
     }
 
     const resource = new ssm.CfnParameter(this, 'Resource', {
@@ -444,6 +467,7 @@ export class StringParameter extends ParameterBase implements IStringParameter {
       name: this.physicalName,
       tier: props.tier,
       type: props.type || ParameterType.STRING,
+      dataType: props.dataType,
       value: props.stringValue,
     });
 
@@ -497,9 +521,7 @@ export class StringListParameter extends ParameterBase implements IStringListPar
       props.stringListValue.forEach(str => _assertValidValue(str, props.allowedPattern!));
     }
 
-    if (this.physicalName.length > 2048) {
-      throw new Error('Name cannot be longer than 2048 characters.');
-    }
+    validateParameterName(this.physicalName);
 
     if (props.description && props.description?.length > 1024) {
       throw new Error('Description cannot be longer than 1024 characters.');
@@ -545,4 +567,14 @@ function _assertValidValue(value: string, allowedPattern: string): void {
 
 function makeIdentityForImportedValue(parameterName: string) {
   return `SsmParameterValue:${parameterName}:C96584B6-F00A-464E-AD19-53AFF4B05118`;
+}
+
+function validateParameterName(parameterName: string) {
+  if (Token.isUnresolved(parameterName)) { return; }
+  if (parameterName.length > 2048) {
+    throw new Error('name cannot be longer than 2048 characters.');
+  }
+  if (!parameterName.match(/^[\/\w.-]+$/)) {
+    throw new Error(`name must only contain letters, numbers, and the following 4 symbols .-_/; got ${parameterName}`);
+  }
 }
