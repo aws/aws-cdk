@@ -544,7 +544,7 @@ class CognitoEmail extends Email {
         sourceArn = Stack.of(scope).formatArn({
           service: 'ses',
           resource: 'identity',
-          resourceName: this.options.fromEmail,
+          resourceName: encodeAndTest(this.options.fromEmail),
           region: this.options.sesRegion ?? region,
         });
       }
@@ -553,7 +553,7 @@ class CognitoEmail extends Email {
 
     return {
       emailConfig: {
-        replyToEmailAddress: encodePuny(this.options?.replyTo),
+        replyToEmailAddress: encodeAndTest(this.options?.replyTo),
         emailSendingAccount: 'COGNITO_DEFAULT',
         sourceArn,
       },
@@ -587,14 +587,14 @@ class SESEmail extends Email {
 
     return {
       emailConfig: {
-        from: encodePuny(from),
-        replyToEmailAddress: encodePuny(this.options.replyTo),
+        from: encodeAndTest(from),
+        replyToEmailAddress: encodeAndTest(this.options.replyTo),
         configurationSet: this.options.configurationSetName,
         emailSendingAccount: 'DEVELOPER',
         sourceArn: Stack.of(scope).formatArn({
           service: 'ses',
           resource: 'identity',
-          resourceName: this.options.fromEmail,
+          resourceName: encodeAndTest(this.options.fromEmail),
           region: this.options.sesRegion ?? region,
         }),
       },
@@ -1355,6 +1355,17 @@ export class UserPool extends UserPoolBase {
   }
 }
 
+function encodeAndTest(input: string | undefined): string | undefined {
+  if (input) {
+    const local = input.split('@')[0];
+    if (!/[\p{ASCII}]+/u.test(local)) {
+      throw new Error('the local part of the email address must use ASCII characters only');
+    }
+    return punycodeEncode(input);
+  } else {
+    return undefined;
+  }
+}
 function undefinedIfNoKeys(struct: object): object | undefined {
   const allUndefined = Object.values(struct).every(val => val === undefined);
   return allUndefined ? undefined : struct;

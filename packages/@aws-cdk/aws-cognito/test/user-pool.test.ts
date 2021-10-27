@@ -1389,6 +1389,84 @@ describe('User Pool', () => {
     });
   });
 
+  test('email transmission with cyrillic characters in the domain are encoded', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new UserPool(stack, 'Pool', {
+      email: Email.withSES({
+        sesRegion: SESRegion.US_EAST_1,
+        fromEmail: 'user@домен.рф',
+        replyTo: 'user@домен.рф',
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
+      EmailConfiguration: {
+        From: 'user@xn--d1acufc.xn--p1ai',
+        ReplyToEmailAddress: 'user@xn--d1acufc.xn--p1ai',
+      },
+    });
+  });
+
+  test('email transmission with cyrillic characters in the local part throw error', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    expect(() => new UserPool(stack, 'Pool', {
+      email: Email.withSES({
+        sesRegion: SESRegion.US_EAST_1,
+        fromEmail: 'от@домен.рф',
+        replyTo: 'user@домен.рф',
+      }),
+    })).toThrow(/the local part of the email address must use ASCII characters only/);
+  });
+
+  test('email withCognito transmission with cyrillic characters in the local part throw error', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    expect(() => new UserPool(stack, 'Pool', {
+      email: Email.withCognito({
+        sesRegion: SESRegion.US_EAST_1,
+        fromEmail: 'от@домен.рф',
+        replyTo: 'user@домен.рф',
+      }),
+    })).toThrow(/the local part of the email address must use ASCII characters only/);
+  });
+
+  test('email transmission with cyrillic characters in the local part of replyTo throw error', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    expect(() => new UserPool(stack, 'Pool', {
+      email: Email.withSES({
+        sesRegion: SESRegion.US_EAST_1,
+        fromEmail: 'user@домен.рф',
+        replyTo: 'от@домен.рф',
+      }),
+    })).toThrow(/the local part of the email address must use ASCII characters only/);
+  });
+
+  test('email withCognito transmission with cyrillic characters in the local part of replyTo throw error', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    expect(() => new UserPool(stack, 'Pool', {
+      email: Email.withCognito({
+        sesRegion: SESRegion.US_EAST_1,
+        fromEmail: 'user@домен.рф',
+        replyTo: 'от@домен.рф',
+      }),
+    })).toThrow(/the local part of the email address must use ASCII characters only/);
+  });
+
   test('email withCognito', () => {
     // GIVEN
     const stack = new Stack();
