@@ -48,7 +48,7 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
 
   const build = config.settings.get(['build']);
   if (build) {
-    await exec(build);
+    await exec([build]);
   }
 
   const app = config.settings.get(['app']);
@@ -79,7 +79,7 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
 
   debug('env:', env);
 
-  await exec(commandLine[0], commandLine.slice(1));
+  await exec(commandLine);
 
   return createAssembly(outdir);
 
@@ -96,7 +96,7 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
     }
   }
 
-  async function exec(command: string, args: string[] = []) {
+  async function exec(commandAndArgs: string[]) {
     return new Promise<void>((ok, fail) => {
       // We use a slightly lower-level interface to:
       //
@@ -108,6 +108,8 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
       //   anyway, and if the subprocess is printing to it for debugging purposes the
       //   user gets to see it sooner. Plus, capturing doesn't interact nicely with some
       //   processes like Maven.
+      const command = commandAndArgs[0];
+      const args = commandAndArgs.slice(1);
       const proc = childProcess.spawn(command, args, {
         stdio: ['ignore', 'inherit', 'inherit'],
         detached: false,

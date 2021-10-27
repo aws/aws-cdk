@@ -464,7 +464,7 @@ Some of the interesting keys that can be used in the JSON configuration files:
 ```json5
 {
     "app": "node bin/main.js",        // Command to start the CDK app      (--app='node bin/main.js')
-    "build": "./build.sh",            // Specify pre-synth build           (no command line option)
+    "build": "mvn package",           // Specify pre-synth build           (no command line option)
     "context": {                      // Context entries                   (--context=key=value)
         "key": "value"
     },
@@ -473,6 +473,13 @@ Some of the interesting keys that can be used in the JSON configuration files:
     "versionReporting": false,         // Opt-out of version reporting      (--no-version-reporting)
 }
 ```
+
+If specified, the command in the `build` key will be executed immediately before synthesis.
+This can be used to build Lambda Functions, CDK Application code, or other assets. 
+`build` cannot be specified on the command line, and must be specified in either
+the Project configuration or the User configuration. The command specified
+in `build` will be executed by the "watch" process before deployment.
+
 
 ### Environment
 

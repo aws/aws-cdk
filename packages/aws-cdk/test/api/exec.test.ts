@@ -196,13 +196,12 @@ test('application set in --app is `*.js` and executable', async () => {
 
 test('cli throws when the `build` script fails', async () => {
   config.settings.set(['build'], 'fake-command');
-  const expectedError = 'Subprocess exited with error 127';
   mockSpawn({
     commandLine: ['fake-command'],
     exitCode: 127,
   });
 
-  await expect(execProgram(sdkProvider, config)).rejects.toEqual(new Error(expectedError));
+  await expect(execProgram(sdkProvider, config)).rejects.toEqual(new Error('Subprocess exited with error 127'));
 }, TEN_SECOND_TIMEOUT);
 
 test('cli does not throw when the `build` script succeeds', async () => {
