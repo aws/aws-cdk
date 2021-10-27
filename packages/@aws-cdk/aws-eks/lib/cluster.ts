@@ -124,7 +124,7 @@ export interface ICluster extends IResource, ec2.IConnectable {
    *
    * This role is directly passed to the lambda handler that sends Kube Ctl commands to the cluster.
    */
-  readonly kubeCtlLambdaRole?: iam.IRole;
+  readonly kubectlLambdaRole?: iam.IRole;
 
   /**
    * An AWS Lambda layer that includes `kubectl`, `helm` and the `aws` CLI.
@@ -279,7 +279,7 @@ export interface ClusterAttributes {
    * @default - if not specified, the default role created by a lambda function will
    * be used.
    */
-  readonly kubeCtlLambdaRole?: iam.IRole;
+  readonly kubectlLambdaRole?: iam.IRole;
 
   /**
    * Environment variables to use when running `kubectl` against this cluster.
@@ -700,11 +700,11 @@ export interface ClusterProps extends ClusterOptions {
 
 
   /**
-   * The IAM role to pass to the KubeCtl Lambda Handler.
+   * The IAM role to pass to the Kubectl Lambda Handler.
    *
    * @default - Default Lambda IAM Execution Role
    */
-  readonly kubeCtlLambdaRole?: iam.IRole;
+  readonly kubectlLambdaRole?: iam.IRole;
 }
 
 /**
@@ -774,7 +774,7 @@ abstract class ClusterBase extends Resource implements ICluster {
   public abstract readonly clusterSecurityGroup: ec2.ISecurityGroup;
   public abstract readonly clusterEncryptionConfigKeyArn: string;
   public abstract readonly kubectlRole?: iam.IRole;
-  public abstract readonly kubeCtlLambdaRole?: iam.IRole;
+  public abstract readonly kubectlLambdaRole?: iam.IRole;
   public abstract readonly kubectlEnvironment?: { [key: string]: string };
   public abstract readonly kubectlSecurityGroup?: ec2.ISecurityGroup;
   public abstract readonly kubectlPrivateSubnets?: ec2.ISubnet[];
@@ -1090,7 +1090,7 @@ export class Cluster extends ClusterBase {
    * be used.
    */
 
-  public readonly kubeCtlLambdaRole?: iam.IRole;
+  public readonly kubectlLambdaRole?: iam.IRole;
 
   /**
    * Custom environment variables when running `kubectl` against this cluster.
@@ -1200,7 +1200,7 @@ export class Cluster extends ClusterBase {
     this.prune = props.prune ?? true;
     this.vpc = props.vpc || new ec2.Vpc(this, 'DefaultVpc');
     this.version = props.version;
-    this.kubeCtlLambdaRole = props.kubeCtlLambdaRole ? props.kubeCtlLambdaRole : undefined;
+    this.kubectlLambdaRole = props.kubectlLambdaRole ? props.kubectlLambdaRole : undefined;
 
     this.tagSubnets();
 
@@ -1866,7 +1866,7 @@ class ImportedCluster extends ClusterBase {
   public readonly clusterArn: string;
   public readonly connections = new ec2.Connections();
   public readonly kubectlRole?: iam.IRole;
-  public readonly kubeCtlLambdaRole?: iam.IRole;
+  public readonly kubectlLambdaRole?: iam.IRole;
   public readonly kubectlEnvironment?: { [key: string]: string; } | undefined;
   public readonly kubectlSecurityGroup?: ec2.ISecurityGroup | undefined;
   public readonly kubectlPrivateSubnets?: ec2.ISubnet[] | undefined;

@@ -2174,7 +2174,7 @@ describe('cluster', () => {
 
     const { stack } = testFixture();
 
-    const kubeCtlRole = new iam.Role(stack, 'KubeCtlIamRole', {
+    const kubectlRole = new iam.Role(stack, 'KubectlIamRole', {
       assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
     });
 
@@ -2182,14 +2182,14 @@ describe('cluster', () => {
       version: CLUSTER_VERSION,
       prune: false,
       endpointAccess: eks.EndpointAccess.PRIVATE,
-      kubeCtlLambdaRole: kubeCtlRole,
+      kubectlLambdaRole: kubectlRole,
     });
 
     // the kubectl provider is inside a nested stack.
     const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
     expect(nested).toHaveResourceLike('AWS::Lambda::Function', {
       Role: {
-        Ref: 'KubeCtlIamRole',
+        Ref: 'KubectlIamRole',
       },
     });
 
