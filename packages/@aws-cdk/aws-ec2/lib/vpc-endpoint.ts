@@ -121,6 +121,8 @@ export interface GatewayVpcEndpointOptions {
    * @default - All subnets in the VPC
    * @example
    *
+   * declare const vpc: ec2.Vpc;
+   *
    * vpc.addGatewayEndpoint('DynamoDbEndpoint', {
    *   service: ec2.GatewayVpcEndpointAwsService.DYNAMODB,
    *   // Add only to ISOLATED subnets
