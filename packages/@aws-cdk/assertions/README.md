@@ -45,9 +45,11 @@ template.
 ```ts
 const expected = {
   Resources: {
-    Type: 'Foo::Bar',
-    Properties: {
-      Baz: 'Qux',
+    BarLogicalId: {
+      Type: 'Foo::Bar',
+      Properties: {
+        Baz: 'Qux',
+      },
     },
   },
 };
@@ -62,7 +64,7 @@ to change this.
 
 Snapshot testing is a common technique to store a snapshot of the output and
 compare it during future changes. Since CloudFormation templates are human readable,
-they are a good target for åßsnapshot testing.
+they are a good target for snapshot testing.
 
 The `toJSON()` method on the `Template` can be used to produce a well formatted JSON
 of the CloudFormation template that can be used as a snapshot.
