@@ -371,29 +371,9 @@ export interface PasswordPolicy {
 }
 
 /**
- * Configuration for what from email address and name Cognito will
- * use to send emails via SES
- */
-export interface EmailFromBeta1 {
-  /**
-   * The verified Amazon SES email address that Cognito should
-   * use to send emails.
-   */
-  readonly email: string;
-
-  /**
-   * An optional name that should be used as the sender's name
-   * along with the email.
-   *
-   * @default - no name
-   */
-  readonly name?: string;
-}
-
-/**
  * Valid Amazon SES configuration regions
  */
-export enum SESRegionBeta1 {
+export enum SESRegion {
   /**
    * Amazon SES region in 'us-east-1'
    */
@@ -413,10 +393,10 @@ export enum SESRegionBeta1 {
 /**
  * Configuration for Cognito sending emails via Amazon SES
  */
-export interface SESOptionsBeta1 {
+export interface SESOptions {
   /**
-   * Identifies either the sender's email address or the
-   * sender's name with their email address.
+   * The verified Amazon SES email address that Cognito should
+   * use to send emails.
    *
    * The email address used must be a verified email address
    * in Amazon SES and must be configured to allow Cognito to
@@ -424,7 +404,15 @@ export interface SESOptionsBeta1 {
    *
    * https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-email.html
    */
-  readonly from: EmailFromBeta1;
+  readonly fromEmail: string;
+
+  /**
+   * An optional name that should be used as the sender's name
+   * along with the email.
+   *
+   * @default - no name
+   */
+  readonly fromName?: string;
 
   /**
    * The destination to which the receiver of the email should reploy to.
@@ -451,13 +439,13 @@ export interface SESOptionsBeta1 {
    *
    * @default - The same region as the Cognito UserPool
    */
-  readonly sesRegion?: SESRegionBeta1;
+  readonly sesRegion?: SESRegion;
 }
 
 /**
  * Configuration settings for Cognito default email
  */
-export interface CognitoEmailOptionsBeta1 {
+export interface CognitoEmailOptions {
   /**
    * The verified email address in Amazon SES that
    * Cognito will use to send emails. You must have already
@@ -488,13 +476,13 @@ export interface CognitoEmailOptionsBeta1 {
    *
    * @default - The same region as the Cognito UserPool
    */
-  readonly sesRegion?: SESRegionBeta1;
+  readonly sesRegion?: SESRegion;
 }
 
 /**
  * Configuration for Cognito email settings
  */
-export interface EmailConfigurationBeta1 {
+export interface EmailConfiguration {
   /**
    * UserPool CFN configuration for email configuration
    */
@@ -504,18 +492,18 @@ export interface EmailConfigurationBeta1 {
 /**
  * Configure how Cognito sends emails
  */
-export abstract class EmailBeta1 {
+export abstract class Email {
   /**
    * Send email using Cognito
    */
-  public static withCognito(options?: CognitoEmailOptionsBeta1): EmailBeta1 {
+  public static withCognito(options?: CognitoEmailOptions): Email {
     return new CognitoEmail(options);
   }
 
   /**
    * Send email using SES
    */
-  public static withSES(options: SESOptionsBeta1): EmailBeta1 {
+  public static withSES(options: SESOptions): Email {
     return new SESEmail(options);
   }
 
@@ -528,16 +516,16 @@ export abstract class EmailBeta1 {
    * Returns the email configuration for a Cognito UserPool
    * that controls how Cognito will send emails
    */
-  public abstract bind(scope: Construct): EmailConfigurationBeta1;
+  public abstract bind(scope: Construct): EmailConfiguration;
 
 }
 
-class CognitoEmail extends EmailBeta1 {
-  constructor(private readonly options?: CognitoEmailOptionsBeta1) {
+class CognitoEmail extends Email {
+  constructor(private readonly options?: CognitoEmailOptions) {
     super();
   }
 
-  public bind(scope: Construct): EmailConfigurationBeta1 {
+  public bind(scope: Construct): EmailConfiguration {
     const region = Stack.of(scope).region;
 
     // if a custom email is provided that means that cognito is going to use an SES email
@@ -574,12 +562,12 @@ class CognitoEmail extends EmailBeta1 {
   }
 }
 
-class SESEmail extends EmailBeta1 {
-  constructor(private readonly options: SESOptionsBeta1) {
+class SESEmail extends Email {
+  constructor(private readonly options: SESOptions) {
     super();
   }
 
-  public bind(scope: Construct): EmailConfigurationBeta1 {
+  public bind(scope: Construct): EmailConfiguration {
     const region = Stack.of(scope).region;
 
     if (Token.isUnresolved(region) && !this.options.sesRegion) {
@@ -592,9 +580,9 @@ class SESEmail extends EmailBeta1 {
       throw new Error(`Your stack is in ${region}, which is not a SES Region. Please provide a valid value for 'sesRegion'`);
     }
 
-    let from = this.options.from.email;
-    if (this.options.from.name) {
-      from = `${this.options.from.name} <${this.options.from.email}>`;
+    let from = this.options.fromEmail;
+    if (this.options.fromName) {
+      from = `${this.options.fromName} <${this.options.fromEmail}>`;
     }
 
     return {
@@ -606,7 +594,7 @@ class SESEmail extends EmailBeta1 {
         sourceArn: Stack.of(scope).formatArn({
           service: 'ses',
           resource: 'identity',
-          resourceName: this.options.from.email,
+          resourceName: this.options.fromEmail,
           region: this.options.sesRegion ?? region,
         }),
       },
@@ -823,7 +811,7 @@ export interface UserPoolProps {
    * Email settings for a user pool.
    * @default - cognito will use the default email configuration
    */
-  readonly email?: EmailBeta1;
+  readonly email?: Email;
 
   /**
    * Lambda functions to use for supported Cognito triggers.

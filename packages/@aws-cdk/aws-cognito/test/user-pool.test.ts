@@ -3,7 +3,7 @@ import { Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { CfnParameter, Duration, Stack, Tags } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { AccountRecovery, Mfa, NumberAttribute, StringAttribute, UserPool, UserPoolIdentityProvider, UserPoolOperation, VerificationEmailStyle, EmailBeta1, SESRegionBeta1 } from '../lib';
+import { AccountRecovery, Mfa, NumberAttribute, StringAttribute, UserPool, UserPoolIdentityProvider, UserPoolOperation, VerificationEmailStyle, Email, SESRegion } from '../lib';
 
 describe('User Pool', () => {
   test('default setup', () => {
@@ -1395,7 +1395,7 @@ describe('User Pool', () => {
 
     // WHEN
     new UserPool(stack, 'Pool', {
-      email: EmailBeta1.withCognito(),
+      email: Email.withCognito(),
     });
 
     // THEN
@@ -1417,7 +1417,7 @@ describe('User Pool', () => {
 
     // WHEN
     new UserPool(stack, 'Pool', {
-      email: EmailBeta1.withCognito({
+      email: Email.withCognito({
         fromEmail: 'mycustomemail@example.com',
         replyTo: 'reply@example.com',
       }),
@@ -1451,7 +1451,7 @@ describe('User Pool', () => {
 
     // WHEN
     expect(() => new UserPool(stack, 'Pool', {
-      email: EmailBeta1.withCognito({
+      email: Email.withCognito({
         fromEmail: 'mycustomemail@example.com',
         replyTo: 'reply@example.com',
       }),
@@ -1465,10 +1465,8 @@ describe('User Pool', () => {
 
     // WHEN
     expect(() => new UserPool(stack, 'Pool', {
-      email: EmailBeta1.withSES({
-        from: {
-          email: 'mycustomemail@example.com',
-        },
+      email: Email.withSES({
+        fromEmail: 'mycustomemail@example.com',
         replyTo: 'reply@example.com',
       }),
     })).toThrow(/Your stack region cannot be determined/);
@@ -1486,10 +1484,8 @@ describe('User Pool', () => {
 
     // WHEN
     new UserPool(stack, 'Pool', {
-      email: EmailBeta1.withSES({
-        from: {
-          email: 'mycustomemail@example.com',
-        },
+      email: Email.withSES({
+        fromEmail: 'mycustomemail@example.com',
         replyTo: 'reply@example.com',
         configurationSetName: 'default',
       }),
@@ -1530,11 +1526,9 @@ describe('User Pool', () => {
 
     // WHEN
     new UserPool(stack, 'Pool', {
-      email: EmailBeta1.withSES({
-        from: {
-          email: 'mycustomemail@example.com',
-          name: 'My Custom Email',
-        },
+      email: Email.withSES({
+        fromEmail: 'mycustomemail@example.com',
+        fromName: 'My Custom Email',
         replyTo: 'reply@example.com',
         configurationSetName: 'default',
       }),
@@ -1575,12 +1569,10 @@ describe('User Pool', () => {
 
     // WHEN
     new UserPool(stack, 'Pool', {
-      email: EmailBeta1.withSES({
-        from: {
-          email: 'mycustomemail@example.com',
-          name: 'My Custom Email',
-        },
-        sesRegion: SESRegionBeta1.US_EAST_1,
+      email: Email.withSES({
+        fromEmail: 'mycustomemail@example.com',
+        fromName: 'My Custom Email',
+        sesRegion: SESRegion.US_EAST_1,
         replyTo: 'reply@example.com',
         configurationSetName: 'default',
       }),
@@ -1620,11 +1612,9 @@ describe('User Pool', () => {
 
     // WHEN
     expect(() => new UserPool(stack, 'Pool', {
-      email: EmailBeta1.withSES({
-        from: {
-          email: 'mycustomemail@example.com',
-          name: 'My Custom Email',
-        },
+      email: Email.withSES({
+        fromEmail: 'mycustomemail@example.com',
+        fromName: 'My Custom Email',
         replyTo: 'reply@example.com',
         configurationSetName: 'default',
       }),
@@ -1643,7 +1633,7 @@ describe('User Pool', () => {
 
     // WHEN
     expect(() => new UserPool(stack, 'Pool', {
-      email: EmailBeta1.withCognito({
+      email: Email.withCognito({
         fromEmail: 'mycustomemail@example.com',
         replyTo: 'reply@example.com',
       }),
