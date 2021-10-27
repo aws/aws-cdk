@@ -67,16 +67,6 @@ export interface ICluster extends IResource, ec2.IConnectable {
   readonly clusterCertificateAuthorityData: string;
 
   /**
-   * A security group to use for the Cluster Handler's `onEvent` Lambda.
-   * The `onEvent` Lambda is responsible for calling AWS's EKS API.
-   *
-   * Requires `placeClusterHandlerInVpc` to be set to true.
-   *
-   * @default - No security group.
-   */
-  readonly clusterHandlerSecurityGroup?: ec2.ISecurityGroup;
-
-  /**
    * The id of the cluster security group that was created by Amazon EKS for the cluster.
    * @attribute
    */
@@ -138,6 +128,16 @@ export interface ICluster extends IResource, ec2.IConnectable {
    * Amount of memory to allocate to the provider's lambda function.
    */
   readonly kubectlMemory?: Size;
+
+  /**
+   * A security group to associate with the Cluster Handler's Lambdas.
+   * The Cluster Handler's Lambdas are responsible for calling AWS's EKS API.
+   *
+   * Requires `placeClusterHandlerInVpc` to be set to true.
+   *
+   * @default - No security group.
+   */
+  readonly clusterHandlerSecurityGroup?: ec2.ISecurityGroup;
 
   /**
     * An AWS Lambda layer that includes the NPM dependency `proxy-agent`.
@@ -320,6 +320,14 @@ export interface ClusterAttributes {
   readonly kubectlMemory?: Size;
 
   /**
+   * A security group id to associate with the Cluster Handler's Lambdas.
+   * The Cluster Handler's Lambdas are responsible for calling AWS's EKS API.
+   *
+   * @default - No security group.
+   */
+  readonly clusterHandlerSecurityGroupId?: string;
+
+  /**
    * An AWS Lambda Layer which includes the NPM dependency `proxy-agent`. This layer
    * is used by the Cluster Handler to route AWS SDK requests through a proxy.
    * The handler expects the layer to include the following node_modules:
@@ -329,15 +337,6 @@ export interface ClusterAttributes {
    * @default - a layer bundled with this module.
    */
   readonly proxyAgentLayer?: lambda.ILayerVersion;
-
-
-  /**
-   * A security group to use for the Cluster Handler's `onEvent` Lambda.
-   * The `onEvent` Lambda is responsible for calling AWS's EKS API.
-   *
-   * @default - No security group.
-   */
-  readonly clusterHandlerSecurityGroupId?: string;
 
   /**
    * Indicates whether Kubernetes resources added through `addManifest()` can be
@@ -471,23 +470,6 @@ export interface ClusterOptions extends CommonClusterOptions {
   readonly kubectlEnvironment?: { [key: string]: string };
 
   /**
-   * Custom environment variables when interacting with the EKS endpoint to manage the cluster lifecycle.
-   *
-   * @default - No environment variables.
-   */
-  readonly clusterHandlerEnvironment?: { [key: string]: string };
-
-  /**
-   * A security group to use for the Cluster Handler's `onEvent` Lambda.
-   * The `onEvent` Lambda is responsible for calling AWS's EKS API.
-   *
-   * Requires `placeClusterHandlerInVpc` to be set to true.
-   *
-   * @default - No security group.
-   */
-  readonly clusterHandlerSecurityGroup?: ec2.ISecurityGroup;
-
-  /**
    * An AWS Lambda Layer which includes `kubectl`, Helm and the AWS CLI.
    *
    * By default, the provider will use the layer included in the
@@ -517,6 +499,23 @@ export interface ClusterOptions extends CommonClusterOptions {
    * @default Size.gibibytes(1)
    */
   readonly kubectlMemory?: Size;
+
+  /**
+   * Custom environment variables when interacting with the EKS endpoint to manage the cluster lifecycle.
+   *
+   * @default - No environment variables.
+   */
+  readonly clusterHandlerEnvironment?: { [key: string]: string };
+
+  /**
+   * A security group to associate with the Cluster Handler's Lambdas.
+   * The Cluster Handler's Lambdas are responsible for calling AWS's EKS API.
+   *
+   * Requires `placeClusterHandlerInVpc` to be set to true.
+   *
+   * @default - No security group.
+   */
+  readonly clusterHandlerSecurityGroup?: ec2.ISecurityGroup;
 
   /**
    * An AWS Lambda Layer which includes the NPM dependency `proxy-agent`.
@@ -1130,21 +1129,21 @@ export class Cluster extends ClusterBase {
   public readonly kubectlMemory?: Size;
 
   /**
-    * An AWS Lambda layer that includes the NPM dependency `proxy-agent`.
-    *
-    * If not defined, a default layer will be used.
-    */
-  public readonly proxyAgentLayer?: lambda.ILayerVersion;
-
-  /**
-   * A security group to use for the Cluster Handler's `onEvent` Lambda.
-   * The `onEvent` Lambda is responsible for calling AWS's EKS API.
+   * A security group to associate with the Cluster Handler's Lambdas.
+   * The Cluster Handler's Lambdas are responsible for calling AWS's EKS API.
    *
    * Requires `placeClusterHandlerInVpc` to be set to true.
    *
    * @default - No security group.
    */
   public readonly clusterHandlerSecurityGroup?: ec2.ISecurityGroup;
+
+  /**
+    * An AWS Lambda layer that includes the NPM dependency `proxy-agent`.
+    *
+    * If not defined, a default layer will be used.
+    */
+  public readonly proxyAgentLayer?: lambda.ILayerVersion;
 
   /**
    * Determines if Kubernetes resources can be pruned automatically.
@@ -1876,8 +1875,8 @@ class ImportedCluster extends ClusterBase {
   public readonly kubectlPrivateSubnets?: ec2.ISubnet[] | undefined;
   public readonly kubectlLayer?: lambda.ILayerVersion;
   public readonly kubectlMemory?: Size;
-  public readonly proxyAgentLayer?: lambda.ILayerVersion;
   public readonly clusterHandlerSecurityGroup?: ec2.ISecurityGroup | undefined;
+  public readonly proxyAgentLayer?: lambda.ILayerVersion;
   public readonly prune: boolean;
 
   // so that `clusterSecurityGroup` on `ICluster` can be configured without optionality, avoiding users from having
@@ -1895,8 +1894,8 @@ class ImportedCluster extends ClusterBase {
     this.kubectlPrivateSubnets = props.kubectlPrivateSubnetIds ? props.kubectlPrivateSubnetIds.map((subnetid, index) => ec2.Subnet.fromSubnetId(this, `KubectlSubnet${index}`, subnetid)) : undefined;
     this.kubectlLayer = props.kubectlLayer;
     this.kubectlMemory = props.kubectlMemory;
-    this.proxyAgentLayer = props.proxyAgentLayer;
     this.clusterHandlerSecurityGroup = props.clusterHandlerSecurityGroupId ? ec2.SecurityGroup.fromSecurityGroupId(this, 'ClusterHandlerSecurityGroup', props.clusterHandlerSecurityGroupId) : undefined;
+    this.proxyAgentLayer = props.proxyAgentLayer;
     this.prune = props.prune ?? true;
 
     let i = 1;
