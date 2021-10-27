@@ -174,7 +174,7 @@ class KeyValueFormatter implements ITagFormatter {
         Value: tag.value,
       });
     });
-    return tags;
+    return tags.length > 0 ? tags : undefined;
   }
 }
 

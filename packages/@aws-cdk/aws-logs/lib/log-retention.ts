@@ -131,7 +131,7 @@ export class LogRetention extends CoreConstruct {
 class LogRetentionFunction extends CoreConstruct implements cdk.ITaggable {
   public readonly functionArn: cdk.Reference;
 
-  tags: cdk.TagManager = new cdk.TagManager(cdk.TagType.KEY_VALUE, 'AWS::Lambda::Function');
+  public readonly tags: cdk.TagManager = new cdk.TagManager(cdk.TagType.KEY_VALUE, 'AWS::Lambda::Function');
 
   constructor(scope: Construct, id: string, props: LogRetentionProps) {
     super(scope, id);
