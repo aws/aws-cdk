@@ -98,6 +98,11 @@ describe('http load balancer', () => {
     });
 
     // THEN
+    expect(stack).toHaveResourceLike('AWS::ApplicationAutoScaling::ScalableTarget', {
+      MaxCapacity: 5,
+      MinCapacity: 1,
+    });
+
     expect(stack).toHaveResourceLike('AWS::ApplicationAutoScaling::ScalingPolicy', {
       PolicyType: 'TargetTrackingScaling',
       TargetTrackingScalingPolicyConfiguration: {

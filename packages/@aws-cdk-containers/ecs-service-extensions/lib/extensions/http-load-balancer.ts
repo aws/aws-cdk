@@ -77,6 +77,7 @@ export class HttpLoadBalancerExtension extends ServiceExtension {
         requestsPerTarget: this.requestsPerTarget,
         targetGroup,
       });
+      this.parentService.enableAutoScalingPolicy();
     }
   }
 }

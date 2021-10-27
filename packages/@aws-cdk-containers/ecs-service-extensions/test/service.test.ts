@@ -189,4 +189,31 @@ describe('service', () => {
     });
   });
 
+  test('should error when no auto scaling policies have been configured after creating the auto scaling target', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const environment = new Environment(stack, 'production');
+    const serviceDescription = new ServiceDescription();
+
+    serviceDescription.add(new Container({
+      cpu: 256,
+      memoryMiB: 512,
+      trafficPort: 80,
+      image: ecs.ContainerImage.fromRegistry('nathanpeck/name'),
+    }));
+
+    // THEN
+    expect(() => {
+      new Service(stack, 'my-service', {
+        environment,
+        serviceDescription,
+        autoScaleTaskCount: {
+          maxTaskCount: 5,
+        },
+      });
+    }).toThrow(/The auto scaling target for the service 'my-service' has been created but no auto scaling policies have been configured./);
+  });
+
 });

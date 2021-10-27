@@ -118,6 +118,12 @@ export class Service extends Construct {
   public readonly scalableTaskCount?: ecs.ScalableTaskCount;
 
   /**
+   * The flag to track if auto scaling policies have been configured
+   * for the service.
+   */
+  private autoScalingPoliciesEnabled: boolean = false;
+
+  /**
    * The generated task definition for this service. It is only
    * generated after .prepare() has been executed.
    */
@@ -276,6 +282,7 @@ export class Service extends Construct {
         this.scalableTaskCount.scaleOnCpuUtilization(`${this.id}-target-cpu-utilization-${targetUtilizationPercent}`, {
           targetUtilizationPercent,
         });
+        this.enableAutoScalingPolicy();
       }
 
       if (props.autoScaleTaskCount.targetMemoryUtilization) {
@@ -283,6 +290,7 @@ export class Service extends Construct {
         this.scalableTaskCount.scaleOnMemoryUtilization(`${this.id}-target-memory-utilization-${targetUtilizationPercent}`, {
           targetUtilizationPercent,
         });
+        this.enableAutoScalingPolicy();
       }
     }
 
@@ -291,6 +299,11 @@ export class Service extends Construct {
       if (this.serviceDescription.extensions[extensions]) {
         this.serviceDescription.extensions[extensions].useService(this.ecsService);
       }
+    }
+
+    // Error out if the auto scaling target is created but no scaling policies have been configured
+    if (this.scalableTaskCount && !this.autoScalingPoliciesEnabled) {
+      throw Error(`The auto scaling target for the service '${this.id}' has been created but no auto scaling policies have been configured.`);
     }
   }
 
@@ -332,5 +345,13 @@ export class Service extends Construct {
     }
 
     return this.urls[urlName];
+  }
+
+  /**
+   * This helper method is used to set the `autoScalingPoliciesEnabled` attribute
+   * whenever an auto scaling policy is configured for the service.
+   */
+  public enableAutoScalingPolicy() {
+    this.autoScalingPoliciesEnabled = true;
   }
 }
