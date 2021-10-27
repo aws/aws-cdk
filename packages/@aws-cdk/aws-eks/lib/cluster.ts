@@ -118,6 +118,15 @@ export interface ICluster extends IResource, ec2.IConnectable {
   readonly kubectlPrivateSubnets?: ec2.ISubnet[];
 
   /**
+   * An IAM role that can perform kubectl operations against this cluster.
+   *
+   * The role should be mapped to the `system:masters` Kubernetes RBAC role.
+   *
+   * This role is directly passed to the lambda handler that sends Kube Ctl commands to the cluster.
+   */
+  readonly kubeCtlLambdaRole?: iam.IRole;
+
+  /**
    * An AWS Lambda layer that includes `kubectl`, `helm` and the `aws` CLI.
    *
    * If not defined, a default layer will be used.
@@ -259,6 +268,18 @@ export interface ClusterAttributes {
    * against an imported cluster.
    */
   readonly kubectlRoleArn?: string;
+
+  /**
+   * An IAM role that can perform kubectl operations against this cluster.
+   *
+   * The role should be mapped to the `system:masters` Kubernetes RBAC role.
+   *
+   * This role is directly passed to the lambda handler that sends Kube Ctl commands
+   * to the cluster.
+   * @default - if not specified, the default role created by a lambda function will
+   * be used.
+   */
+  readonly kubeCtlLambdaRole?: iam.IRole;
 
   /**
    * Environment variables to use when running `kubectl` against this cluster.
@@ -676,6 +697,14 @@ export interface ClusterProps extends ClusterOptions {
    * @default NODEGROUP
    */
   readonly defaultCapacityType?: DefaultCapacityType;
+
+
+  /**
+   * The IAM role to pass to the KubeCtl Lambda Handler.
+   *
+   * @default - Default Lambda IAM Execution Role
+   */
+  readonly kubeCtlLambdaRole?: iam.IRole;
 }
 
 /**
@@ -745,6 +774,7 @@ abstract class ClusterBase extends Resource implements ICluster {
   public abstract readonly clusterSecurityGroup: ec2.ISecurityGroup;
   public abstract readonly clusterEncryptionConfigKeyArn: string;
   public abstract readonly kubectlRole?: iam.IRole;
+  public abstract readonly kubeCtlLambdaRole?: iam.IRole;
   public abstract readonly kubectlEnvironment?: { [key: string]: string };
   public abstract readonly kubectlSecurityGroup?: ec2.ISecurityGroup;
   public abstract readonly kubectlPrivateSubnets?: ec2.ISubnet[];
@@ -1051,6 +1081,18 @@ export class Cluster extends ClusterBase {
   public readonly kubectlRole?: iam.IRole;
 
   /**
+   * An IAM role that can perform kubectl operations against this cluster.
+   *
+   * The role should be mapped to the `system:masters` Kubernetes RBAC role.
+   *
+   * This role is directly passed to the lambda handler that sends Kube Ctl commands to the cluster.
+   * @default - if not specified, the default role created by a lambda function will
+   * be used.
+   */
+
+  public readonly kubeCtlLambdaRole?: iam.IRole;
+
+  /**
    * Custom environment variables when running `kubectl` against this cluster.
    */
   public readonly kubectlEnvironment?: { [key: string]: string };
@@ -1158,6 +1200,7 @@ export class Cluster extends ClusterBase {
     this.prune = props.prune ?? true;
     this.vpc = props.vpc || new ec2.Vpc(this, 'DefaultVpc');
     this.version = props.version;
+    this.kubeCtlLambdaRole = props.kubeCtlLambdaRole ? props.kubeCtlLambdaRole : undefined;
 
     this.tagSubnets();
 
@@ -1823,6 +1866,7 @@ class ImportedCluster extends ClusterBase {
   public readonly clusterArn: string;
   public readonly connections = new ec2.Connections();
   public readonly kubectlRole?: iam.IRole;
+  public readonly kubeCtlLambdaRole?: iam.IRole;
   public readonly kubectlEnvironment?: { [key: string]: string; } | undefined;
   public readonly kubectlSecurityGroup?: ec2.ISecurityGroup | undefined;
   public readonly kubectlPrivateSubnets?: ec2.ISubnet[] | undefined;
