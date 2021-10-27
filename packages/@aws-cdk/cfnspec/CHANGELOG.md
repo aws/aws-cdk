@@ -1,3 +1,163 @@
+# CloudFormation Resource Specification v45.0.0
+
+## New Resource Types
+
+* AWS::Connect::HoursOfOperation
+* AWS::Connect::User
+* AWS::Connect::UserHierarchyGroup
+* AWS::IoT::JobTemplate
+* AWS::Panorama::ApplicationInstance
+* AWS::Panorama::Package
+* AWS::Panorama::PackageVersion
+* AWS::Rekognition::Project
+* AWS::Wisdom::Assistant
+* AWS::Wisdom::AssistantAssociation
+* AWS::Wisdom::KnowledgeBase
+
+## Attribute Changes
+
+* AWS::ApiGateway::Authorizer AuthorizerId (__added__)
+* AWS::AutoScaling::LifecycleHook Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-as-lifecyclehook.html
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-autoscaling-lifecyclehook.html
+* AWS::EC2::NetworkAcl Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-network-acl.html
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-networkacl.html
+* AWS::EC2::NetworkAcl Id (__added__)
+* AWS::EC2::NetworkAclEntry Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-network-acl-entry.html
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-networkaclentry.html
+* AWS::EC2::NetworkAclEntry Id (__added__)
+* AWS::StepFunctions::Activity Arn (__added__)
+
+## Property Changes
+
+* AWS::ApiGateway::Authorizer Name.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::AutoScaling::LifecycleHook AutoScalingGroupName.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-as-lifecyclehook.html#cfn-as-lifecyclehook-autoscalinggroupname
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-autoscaling-lifecyclehook.html#cfn-autoscaling-lifecyclehook-autoscalinggroupname
+* AWS::AutoScaling::LifecycleHook DefaultResult.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-as-lifecyclehook.html#cfn-as-lifecyclehook-defaultresult
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-autoscaling-lifecyclehook.html#cfn-autoscaling-lifecyclehook-defaultresult
+* AWS::AutoScaling::LifecycleHook HeartbeatTimeout.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-as-lifecyclehook.html#cfn-as-lifecyclehook-heartbeattimeout
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-autoscaling-lifecyclehook.html#cfn-autoscaling-lifecyclehook-heartbeattimeout
+* AWS::AutoScaling::LifecycleHook LifecycleHookName.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-as-lifecyclehook.html#cfn-autoscaling-lifecyclehook-lifecyclehookname
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-autoscaling-lifecyclehook.html#cfn-autoscaling-lifecyclehook-lifecyclehookname
+* AWS::AutoScaling::LifecycleHook LifecycleTransition.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-as-lifecyclehook.html#cfn-as-lifecyclehook-lifecycletransition
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-autoscaling-lifecyclehook.html#cfn-autoscaling-lifecyclehook-lifecycletransition
+* AWS::AutoScaling::LifecycleHook NotificationMetadata.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-as-lifecyclehook.html#cfn-as-lifecyclehook-notificationmetadata
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-autoscaling-lifecyclehook.html#cfn-autoscaling-lifecyclehook-notificationmetadata
+* AWS::AutoScaling::LifecycleHook NotificationTargetARN.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-as-lifecyclehook.html#cfn-as-lifecyclehook-notificationtargetarn
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-autoscaling-lifecyclehook.html#cfn-autoscaling-lifecyclehook-notificationtargetarn
+* AWS::AutoScaling::LifecycleHook RoleARN.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-as-lifecyclehook.html#cfn-as-lifecyclehook-rolearn
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-autoscaling-lifecyclehook.html#cfn-autoscaling-lifecyclehook-rolearn
+* AWS::Batch::ComputeEnvironment UnmanagedvCpus (__added__)
+* AWS::Batch::JobDefinition SchedulingPriority (__added__)
+* AWS::Batch::JobQueue SchedulingPolicyArn (__added__)
+* AWS::Budgets::BudgetsAction Subscribers.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::Cassandra::Table DefaultTimeToLive (__added__)
+* AWS::CodeStarNotifications::NotificationRule CreatedBy (__added__)
+* AWS::CodeStarNotifications::NotificationRule EventTypeId (__added__)
+* AWS::CodeStarNotifications::NotificationRule TargetAddress (__added__)
+* AWS::EC2::NetworkAcl Tags.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-network-acl.html#cfn-ec2-networkacl-tags
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-networkacl.html#cfn-ec2-networkacl-tags
+* AWS::EC2::NetworkAcl VpcId.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-network-acl.html#cfn-ec2-networkacl-vpcid
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-networkacl.html#cfn-ec2-networkacl-vpcid
+* AWS::EC2::NetworkAclEntry CidrBlock.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-network-acl-entry.html#cfn-ec2-networkaclentry-cidrblock
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-networkaclentry.html#cfn-ec2-networkaclentry-cidrblock
+* AWS::EC2::NetworkAclEntry Egress.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-network-acl-entry.html#cfn-ec2-networkaclentry-egress
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-networkaclentry.html#cfn-ec2-networkaclentry-egress
+* AWS::EC2::NetworkAclEntry Icmp.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-network-acl-entry.html#cfn-ec2-networkaclentry-icmp
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-networkaclentry.html#cfn-ec2-networkaclentry-icmp
+* AWS::EC2::NetworkAclEntry Ipv6CidrBlock.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-network-acl-entry.html#cfn-ec2-networkaclentry-ipv6cidrblock
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-networkaclentry.html#cfn-ec2-networkaclentry-ipv6cidrblock
+* AWS::EC2::NetworkAclEntry NetworkAclId.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-network-acl-entry.html#cfn-ec2-networkaclentry-networkaclid
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-networkaclentry.html#cfn-ec2-networkaclentry-networkaclid
+* AWS::EC2::NetworkAclEntry PortRange.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-network-acl-entry.html#cfn-ec2-networkaclentry-portrange
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-networkaclentry.html#cfn-ec2-networkaclentry-portrange
+* AWS::EC2::NetworkAclEntry Protocol.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-network-acl-entry.html#cfn-ec2-networkaclentry-protocol
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-networkaclentry.html#cfn-ec2-networkaclentry-protocol
+* AWS::EC2::NetworkAclEntry RuleAction.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-network-acl-entry.html#cfn-ec2-networkaclentry-ruleaction
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-networkaclentry.html#cfn-ec2-networkaclentry-ruleaction
+* AWS::EC2::NetworkAclEntry RuleNumber.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-network-acl-entry.html#cfn-ec2-networkaclentry-rulenumber
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-networkaclentry.html#cfn-ec2-networkaclentry-rulenumber
+* AWS::ECS::TaskDefinition RuntimePlatform (__added__)
+* AWS::FMS::Policy ResourcesCleanUp (__added__)
+* AWS::Glue::Registry Tags.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Glue::Schema Tags.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::ImageBuilder::InfrastructureConfiguration InstanceMetadataOptions (__added__)
+* AWS::Location::Tracker PositionFiltering (__added__)
+* AWS::MWAA::Environment Tags.Type (__deleted__)
+* AWS::MWAA::Environment Tags.PrimitiveType (__added__)
+* AWS::MemoryDB::Cluster ACLName.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::MemoryDB::Cluster NodeType.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::MemoryDB::ParameterGroup Family.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::MemoryDB::SubnetGroup SubnetIds.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::QuickSight::Analysis SourceEntity.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::QuickSight::Dashboard SourceEntity.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::QuickSight::Template SourceEntity.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::Route53RecoveryControl::Cluster Tags (__added__)
+* AWS::Route53RecoveryControl::ControlPanel Tags (__added__)
+* AWS::Route53RecoveryControl::SafetyRule Tags (__added__)
+* AWS::SageMaker::NotebookInstance PlatformIdentifier (__added__)
+* AWS::StepFunctions::Activity Tags.DuplicatesAllowed (__added__)
+* AWS::Synthetics::Canary ArtifactConfig (__added__)
+
+## Property Type Changes
+
+* AWS::MWAA::Environment.TagMap (__removed__)
+* AWS::ECS::TaskDefinition.RuntimePlatform (__added__)
+* AWS::ImageBuilder::InfrastructureConfiguration.InstanceMetadataOptions (__added__)
+* AWS::QuickSight::DataSource.AmazonOpenSearchParameters (__added__)
+* AWS::Synthetics::Canary.ArtifactConfig (__added__)
+* AWS::Synthetics::Canary.S3Encryption (__added__)
+* AWS::Backup::BackupSelection.BackupSelectionResourceType Conditions (__added__)
+* AWS::Backup::BackupSelection.BackupSelectionResourceType NotResources (__added__)
+* AWS::CodeBuild::Project.ProjectBuildBatchConfig BatchReportMode (__added__)
+* AWS::ImageBuilder::ContainerRecipe.EbsInstanceBlockDeviceSpecification Throughput (__added__)
+* AWS::ImageBuilder::ImageRecipe.EbsInstanceBlockDeviceSpecification Throughput (__added__)
+* AWS::QuickSight::DataSource.DataSourceParameters AmazonOpenSearchParameters (__added__)
+
+
 # CloudFormation Resource Specification v43.0.0
 
 ## New Resource Types
