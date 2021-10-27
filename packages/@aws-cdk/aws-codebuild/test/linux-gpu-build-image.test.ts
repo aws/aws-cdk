@@ -107,7 +107,7 @@ describe('Linux GPU build image', () => {
             Resource: {
               'Fn::Join': ['', [
                 'arn:',
-                {  Ref: 'AWS::Partition' },
+                { Ref: 'AWS::Partition' },
                 ':ecr:',
                 { Ref: 'AWS::Region' },
                 ':',
