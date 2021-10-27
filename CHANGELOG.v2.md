@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.0.0-rc.27](https://github.com/aws/aws-cdk/compare/v2.0.0-rc.26...v2.0.0-rc.27) (2021-10-27)
+
+
+### Features
+
+* **cloudfront:** add amplify managed cache policy  ([#16880](https://github.com/aws/aws-cdk/issues/16880)) ([8d0c555](https://github.com/aws/aws-cdk/commit/8d0c555d048c07518c89e69951a1e9f21ba99bd7))
+* **ec2:** add region parameter for UserData via addS3DownloadCommand  ([#16667](https://github.com/aws/aws-cdk/issues/16667)) ([691d377](https://github.com/aws/aws-cdk/commit/691d3771d32002b3cd4cb1221af92762b749e716)), closes [#8287](https://github.com/aws/aws-cdk/issues/8287)
+* **ec2:** add vpcArn to IVpc and Vpc ([#16666](https://github.com/aws/aws-cdk/issues/16666)) ([7b31376](https://github.com/aws/aws-cdk/commit/7b31376e6349440f7b215d6e11c3dd900d50df34)), closes [#16493](https://github.com/aws/aws-cdk/issues/16493)
+* **ec2:** add X2g instances (for RDS) ([#17081](https://github.com/aws/aws-cdk/issues/17081)) ([443a23e](https://github.com/aws/aws-cdk/commit/443a23e8c1e0de97f6ae05a3e451b0407165a447)), closes [/github.com/aws/aws-cdk/issues/16948#issuecomment-946254267](https://github.com/aws//github.com/aws/aws-cdk/issues/16948/issues/issuecomment-946254267) [#16948](https://github.com/aws/aws-cdk/issues/16948)
+* **ec2:** look up VPC from different regions ([#16728](https://github.com/aws/aws-cdk/issues/16728)) ([f1e244b](https://github.com/aws/aws-cdk/commit/f1e244b331f95253030bae0525775683b5a350c4)), closes [#10208](https://github.com/aws/aws-cdk/issues/10208)
+* **route53:** Expose VpcEndpointServiceDomainName domain name as a property  ([#16458](https://github.com/aws/aws-cdk/issues/16458)) ([e063fbd](https://github.com/aws/aws-cdk/commit/e063fbd3a31bdce046b2598e4a429c45d016f055))
+
+
+### Bug Fixes
+
+* **rds:** using both Instance imports & exports for Postgres fails deployment ([#17060](https://github.com/aws/aws-cdk/issues/17060)) ([ab627c6](https://github.com/aws/aws-cdk/commit/ab627c69e9edac82b1fd07d2c9ee1b05f7dc3166)), closes [#16757](https://github.com/aws/aws-cdk/issues/16757)
+
 ## [2.0.0-rc.26](https://github.com/aws/aws-cdk/compare/v2.0.0-rc.25...v2.0.0-rc.26) (2021-10-25)
 
 
