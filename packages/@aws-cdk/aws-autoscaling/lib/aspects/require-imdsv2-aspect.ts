@@ -1,4 +1,5 @@
 import * as cdk from '@aws-cdk/core';
+import { IConstruct } from 'constructs';
 import { AutoScalingGroup } from '../auto-scaling-group';
 import { CfnLaunchConfiguration } from '../autoscaling.generated';
 
@@ -9,7 +10,7 @@ export class AutoScalingGroupRequireImdsv2Aspect implements cdk.IAspect {
   constructor() {
   }
 
-  public visit(node: cdk.IConstruct): void {
+  public visit(node: IConstruct): void {
     if (!(node instanceof AutoScalingGroup)) {
       return;
     }
@@ -32,7 +33,7 @@ export class AutoScalingGroupRequireImdsv2Aspect implements cdk.IAspect {
    * @param node The scope to add the warning to.
    * @param message The warning message.
    */
-  protected warn(node: cdk.IConstruct, message: string) {
+  protected warn(node: IConstruct, message: string) {
     cdk.Annotations.of(node).addWarning(`${AutoScalingGroupRequireImdsv2Aspect.name} failed on node ${node.node.id}: ${message}`);
   }
 }
