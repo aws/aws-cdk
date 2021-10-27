@@ -74,7 +74,7 @@ describe('Linux GPU build image', () => {
           },
         }),
         environment: {
-          buildImage: codebuild.LinuxGpuBuildImage.fromEcrRepository(repository),
+          buildImage: codebuild.LinuxGpuBuildImage.fromEcrRepository(repository, 'v1'),
         },
       });
 
@@ -90,7 +90,7 @@ describe('Linux GPU build image', () => {
               { Ref: 'AWS::URLSuffix' },
               '/',
               { Ref: 'myrepo5DFA62E5' },
-              ':latest',
+              ':v1',
             ]],
           },
         },
