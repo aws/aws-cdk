@@ -67,6 +67,16 @@ export interface ICluster extends IResource, ec2.IConnectable {
   readonly clusterCertificateAuthorityData: string;
 
   /**
+   * A security group to use for the Cluster Handler's `onEvent` Lambda.
+   * The `onEvent` Lambda is responsible for calling AWS's EKS API.
+   *
+   * Requires `placeClusterHandlerInVpc` to be set to true.
+   *
+   * @default - No security group.
+   */
+  readonly clusterHandlerSecurityGroup?: ec2.ISecurityGroup;
+
+  /**
    * The id of the cluster security group that was created by Amazon EKS for the cluster.
    * @attribute
    */
@@ -134,7 +144,7 @@ export interface ICluster extends IResource, ec2.IConnectable {
     *
     * If not defined, a default layer will be used.
     */
-  readonly onEventLayer?: lambda.ILayerVersion;
+  readonly proxyAgentLayer?: lambda.ILayerVersion;
 
   /**
    * Indicates whether Kubernetes resources can be automatically pruned. When
@@ -311,15 +321,23 @@ export interface ClusterAttributes {
 
   /**
    * An AWS Lambda Layer which includes the NPM dependency `proxy-agent`. This layer
-   * is used by the onEvent handler to route AWS SDK requests through a proxy.
-   *
+   * is used by the Cluster Handler to route AWS SDK requests through a proxy.
    * The handler expects the layer to include the following node_modules:
    *
    *    proxy-agent
    *
    * @default - a layer bundled with this module.
    */
-  readonly onEventLayer?: lambda.ILayerVersion;
+  readonly proxyAgentLayer?: lambda.ILayerVersion;
+
+
+  /**
+   * A security group to use for the Cluster Handler's `onEvent` Lambda.
+   * The `onEvent` Lambda is responsible for calling AWS's EKS API.
+   *
+   * @default - No security group.
+   */
+  readonly clusterHandlerSecurityGroupId?: string;
 
   /**
    * Indicates whether Kubernetes resources added through `addManifest()` can be
@@ -460,6 +478,16 @@ export interface ClusterOptions extends CommonClusterOptions {
   readonly clusterHandlerEnvironment?: { [key: string]: string };
 
   /**
+   * A security group to use for the Cluster Handler's `onEvent` Lambda.
+   * The `onEvent` Lambda is responsible for calling AWS's EKS API.
+   *
+   * Requires `placeClusterHandlerInVpc` to be set to true.
+   *
+   * @default - No security group.
+   */
+  readonly clusterHandlerSecurityGroup?: ec2.ISecurityGroup;
+
+  /**
    * An AWS Lambda Layer which includes `kubectl`, Helm and the AWS CLI.
    *
    * By default, the provider will use the layer included in the
@@ -497,20 +525,21 @@ export interface ClusterOptions extends CommonClusterOptions {
    * "aws-lambda-layer-node-proxy-agent" SAR application which is available in all
    * commercial regions.
    *
-   * To deploy the layer locally, visit
-   * https://github.com/aws-samples/aws-lambda-layer-node-proxy-agent/blob/master/cdk/README.md
-   * for instructions on how to prepare the .zip file and then define it in your
-   * app as follows:
+   * To deploy the layer locally define it in your app as follows:
    *
    * ```ts
-   * const layer = new lambda.LayerVersion(this, 'node-proxy-agent-layer', {
+   * const layer = new lambda.LayerVersion(this, 'proxy-agent-layer', {
    *   code: lambda.Code.fromAsset(`${__dirname}/layer.zip`)),
-   *   compatibleRuntimes: [lambda.Runtime.NODEJS_14_X]
+   *   compatibleRuntimes: [lambda.Runtime.NODEJS_12_X]
    * })
    * ```
+   */
+  readonly proxyAgentLayer?: lambda.ILayerVersion;
+
+  /**
+   * Deprecated
    *
-   * @default - the layer provided by the `aws-lambda-layer-node-proxy-agent` SAR app.
-   * @see https://github.com/aws-samples/aws-lambda-layer-node-proxy-agent
+   * @deprecated use `proxyAgentLayer` instead
    */
   readonly onEventLayer?: lambda.ILayerVersion;
 
@@ -749,6 +778,7 @@ abstract class ClusterBase extends Resource implements ICluster {
   public abstract readonly kubectlSecurityGroup?: ec2.ISecurityGroup;
   public abstract readonly kubectlPrivateSubnets?: ec2.ISubnet[];
   public abstract readonly kubectlMemory?: Size;
+  public abstract readonly clusterHandlerSecurityGroup?: ec2.ISecurityGroup;
   public abstract readonly prune: boolean;
   public abstract readonly openIdConnectProvider: iam.IOpenIdConnectProvider;
   public abstract readonly awsAuth: AwsAuth;
@@ -902,7 +932,7 @@ abstract class ClusterBase extends Resource implements ICluster {
     // cluster or if `mapRole` is set to false. By default this should happen.
     let mapRole = options.mapRole ?? true;
     if (mapRole && !(this instanceof Cluster)) {
-    // do the mapping...
+      // do the mapping...
       Annotations.of(autoScalingGroup).addWarning('Auto-mapping aws-auth role for imported cluster is not supported, please map role manually');
       mapRole = false;
     }
@@ -1100,10 +1130,21 @@ export class Cluster extends ClusterBase {
   public readonly kubectlMemory?: Size;
 
   /**
-   * The AWS Lambda layer that contains the NPM dependency `proxy-agent`. If
-   * undefined, a SAR app that contains this layer will be used.
+    * An AWS Lambda layer that includes the NPM dependency `proxy-agent`.
+    *
+    * If not defined, a default layer will be used.
+    */
+  public readonly proxyAgentLayer?: lambda.ILayerVersion;
+
+  /**
+   * A security group to use for the Cluster Handler's `onEvent` Lambda.
+   * The `onEvent` Lambda is responsible for calling AWS's EKS API.
+   *
+   * Requires `placeClusterHandlerInVpc` to be set to true.
+   *
+   * @default - No security group.
    */
-  public readonly onEventLayer?: lambda.ILayerVersion;
+  public readonly clusterHandlerSecurityGroup?: ec2.ISecurityGroup;
 
   /**
    * Determines if Kubernetes resources can be pruned automatically.
@@ -1188,8 +1229,10 @@ export class Cluster extends ClusterBase {
     this.endpointAccess = props.endpointAccess ?? EndpointAccess.PUBLIC_AND_PRIVATE;
     this.kubectlEnvironment = props.kubectlEnvironment;
     this.kubectlLayer = props.kubectlLayer;
-    this.onEventLayer = props.onEventLayer;
     this.kubectlMemory = props.kubectlMemory;
+
+    this.proxyAgentLayer = props.proxyAgentLayer;
+    this.clusterHandlerSecurityGroup = props.clusterHandlerSecurityGroup;
 
     const privateSubnets = this.selectPrivateSubnets().slice(0, 16);
     const publicAccessDisabled = !this.endpointAccess._config.publicAccess;
@@ -1213,6 +1256,10 @@ export class Cluster extends ClusterBase {
 
     if (placeClusterHandlerInVpc && privateSubnets.length === 0) {
       throw new Error('Cannot place cluster handler in the VPC since no private subnets could be selected');
+    }
+
+    if (props.clusterHandlerSecurityGroup && !placeClusterHandlerInVpc) {
+      throw new Error('Cannot specify clusterHandlerSecurityGroup without placeClusterHandlerInVpc set to true');
     }
 
     const resource = this._clusterResource = new ClusterResource(this, 'Resource', {
@@ -1241,7 +1288,8 @@ export class Cluster extends ClusterBase {
       secretsEncryptionKey: props.secretsEncryptionKey,
       vpc: this.vpc,
       subnets: placeClusterHandlerInVpc ? privateSubnets : undefined,
-      onEventLayer: this.onEventLayer,
+      clusterHandlerSecurityGroup: this.clusterHandlerSecurityGroup,
+      proxyAgentLayer: this.proxyAgentLayer,
     });
 
     if (this.endpointAccess._config.privateAccess && privateSubnets.length !== 0) {
@@ -1827,8 +1875,9 @@ class ImportedCluster extends ClusterBase {
   public readonly kubectlSecurityGroup?: ec2.ISecurityGroup | undefined;
   public readonly kubectlPrivateSubnets?: ec2.ISubnet[] | undefined;
   public readonly kubectlLayer?: lambda.ILayerVersion;
-  public readonly onEventLayer?: lambda.ILayerVersion;
   public readonly kubectlMemory?: Size;
+  public readonly proxyAgentLayer?: lambda.ILayerVersion;
+  public readonly clusterHandlerSecurityGroup?: ec2.ISecurityGroup | undefined;
   public readonly prune: boolean;
 
   // so that `clusterSecurityGroup` on `ICluster` can be configured without optionality, avoiding users from having
@@ -1845,8 +1894,9 @@ class ImportedCluster extends ClusterBase {
     this.kubectlEnvironment = props.kubectlEnvironment;
     this.kubectlPrivateSubnets = props.kubectlPrivateSubnetIds ? props.kubectlPrivateSubnetIds.map((subnetid, index) => ec2.Subnet.fromSubnetId(this, `KubectlSubnet${index}`, subnetid)) : undefined;
     this.kubectlLayer = props.kubectlLayer;
-    this.onEventLayer = props.onEventLayer;
     this.kubectlMemory = props.kubectlMemory;
+    this.proxyAgentLayer = props.proxyAgentLayer;
+    this.clusterHandlerSecurityGroup = props.clusterHandlerSecurityGroupId ? ec2.SecurityGroup.fromSecurityGroupId(this, 'ClusterHandlerSecurityGroup', props.clusterHandlerSecurityGroupId) : undefined;
     this.prune = props.prune ?? true;
 
     let i = 1;

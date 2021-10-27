@@ -3,12 +3,17 @@
 import { IsCompleteResponse } from '@aws-cdk/custom-resources/lib/provider-framework/types';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import * as aws from 'aws-sdk';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import * as ProxyAgent from 'proxy-agent';
 import { ClusterResourceHandler } from './cluster';
 import { EksClient } from './common';
 import * as consts from './consts';
 import { FargateProfileResourceHandler } from './fargate';
 
 aws.config.logger = console;
+aws.config.update({
+  httpOptions: { agent: new ProxyAgent() },
+});
 
 let eks: aws.EKS | undefined;
 

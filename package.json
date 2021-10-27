@@ -105,6 +105,8 @@
       "@aws-cdk/aws-ecr-assets/minimatch/**",
       "@aws-cdk/aws-eks/yaml",
       "@aws-cdk/aws-eks/yaml/**",
+      "@aws-cdk/aws-eks/proxy-agent",
+      "@aws-cdk/aws-eks/proxy-agent/**",
       "@aws-cdk/aws-events-targets/aws-sdk",
       "@aws-cdk/aws-events-targets/aws-sdk/**",
       "@aws-cdk/aws-s3-deployment/case",
