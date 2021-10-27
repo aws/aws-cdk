@@ -64,13 +64,13 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
+    "@aws-cdk/assert-internal": "0.0.0",
+    "@aws-cdk/cdk-build-tools": "0.0.0",
+    "@aws-cdk/cdk-integ-tools": "0.0.0",
+    "@aws-cdk/cfn2ts": "0.0.0",
+    "@aws-cdk/pkglint": "0.0.0",
     "@types/jest": "^26.0.24",
-    "cdk-build-tools": "0.0.0",
-    "cdk-integ-tools": "0.0.0",
-    "cfn2ts": "0.0.0",
-    "jest": "^26.6.3",
-    "pkglint": "0.0.0",
-    "@aws-cdk/assert-internal": "0.0.0"
+    "jest": "^26.6.3"
   },
   "dependencies": {
     "@aws-cdk/aws-iam": "0.0.0",
@@ -98,7 +98,6 @@
   },
   "maturity": "stable",
   "cdk-build": {
-    "jest": true,
     "env": {
       "AWSLINT_BASE_CONSTRUCT": true
     }
