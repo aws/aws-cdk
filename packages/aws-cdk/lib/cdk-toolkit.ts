@@ -101,7 +101,7 @@ export class CdkToolkit {
       // Compare N stacks against deployed templates
       for (const stack of stacks.stackArtifacts) {
         stream.write(format('Stack %s\n', colors.bold(stack.displayName)));
-        const currentTemplate = await this.props.cloudFormation.readCurrentTemplate(stack, options.roleArn);
+        const currentTemplate = await this.props.cloudFormation.readCurrentTemplate(stack);
         diffs += options.securityOnly
           ? numberFromBool(printSecurityDiff(currentTemplate, stack, RequireApproval.Broadening))
           : printStackDiff(currentTemplate, stack, strict, contextLines, stream);
@@ -505,11 +505,6 @@ export interface DiffOptions {
    * @default Use from the server
    */
   templatePath?: string;
-
-  /**
-   * Role to pass to CloudFormation for stack reading
-   */
-  roleArn?: string;
 
   /**
    * Strict diff mode

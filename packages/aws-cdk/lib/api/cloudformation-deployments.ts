@@ -162,6 +162,9 @@ export interface StackExistsOptions {
 
 export interface ProvisionerProps {
   sdkProvider: SdkProvider;
+  assumeRoleArn?: string;
+  assumeRoleExternalId?: string;
+  executionRoleArn?: string;
 }
 
 /**
@@ -171,15 +174,15 @@ export interface ProvisionerProps {
  * stack artifact.
  */
 export class CloudFormationDeployments {
-  private readonly sdkProvider: SdkProvider;
+  private readonly props: ProvisionerProps;
 
   constructor(props: ProvisionerProps) {
-    this.sdkProvider = props.sdkProvider;
+    this.props = props;
   }
 
-  public async readCurrentTemplate(stackArtifact: cxapi.CloudFormationStackArtifact, roleArn?: string): Promise<Template> {
+  public async readCurrentTemplate(stackArtifact: cxapi.CloudFormationStackArtifact): Promise<Template> {
     debug(`Reading existing template for stack ${stackArtifact.displayName}.`);
-    const { stackSdk } = await this.prepareSdkFor(stackArtifact, roleArn, Mode.ForReading);
+    const { stackSdk } = await this.prepareSdkFor(stackArtifact, Mode.ForReading);
     const cfn = stackSdk.cloudFormation();
 
     const stack = await CloudFormationStack.lookup(cfn, stackArtifact.stackName);
@@ -187,7 +190,7 @@ export class CloudFormationDeployments {
   }
 
   public async deployStack(options: DeployStackOptions): Promise<DeployStackResult> {
-    const { stackSdk, resolvedEnvironment, cloudFormationRoleArn } = await this.prepareSdkFor(options.stack, options.roleArn);
+    const { stackSdk, resolvedEnvironment, cloudFormationRoleArn } = await this.prepareSdkFor(options.stack);
 
     const toolkitInfo = await ToolkitInfo.lookup(resolvedEnvironment, stackSdk, options.toolkitStackName);
 
@@ -208,7 +211,7 @@ export class CloudFormationDeployments {
       notificationArns: options.notificationArns,
       quiet: options.quiet,
       sdk: stackSdk,
-      sdkProvider: this.sdkProvider,
+      sdkProvider: this.props.sdkProvider,
       roleArn: cloudFormationRoleArn,
       reuseAssets: options.reuseAssets,
       toolkitInfo,
@@ -226,7 +229,7 @@ export class CloudFormationDeployments {
   }
 
   public async destroyStack(options: DestroyStackOptions): Promise<void> {
-    const { stackSdk, cloudFormationRoleArn: roleArn } = await this.prepareSdkFor(options.stack, options.roleArn);
+    const { stackSdk, cloudFormationRoleArn: roleArn } = await this.prepareSdkFor(options.stack);
 
     return destroyStack({
       sdk: stackSdk,
@@ -238,7 +241,7 @@ export class CloudFormationDeployments {
   }
 
   public async stackExists(options: StackExistsOptions): Promise<boolean> {
-    const { stackSdk } = await this.prepareSdkFor(options.stack, undefined, Mode.ForReading);
+    const { stackSdk } = await this.prepareSdkFor(options.stack, Mode.ForReading);
     const stack = await CloudFormationStack.lookup(stackSdk.cloudFormation(), options.deployName ?? options.stack.stackName);
     return stack.exists;
   }
@@ -252,22 +255,22 @@ export class CloudFormationDeployments {
    * - SDK loaded with the right credentials for calling `CreateChangeSet`.
    * - The Execution Role that should be passed to CloudFormation.
    */
-  private async prepareSdkFor(stack: cxapi.CloudFormationStackArtifact, roleArn?: string, mode = Mode.ForWriting) {
+  private async prepareSdkFor(stack: cxapi.CloudFormationStackArtifact, mode = Mode.ForWriting) {
     if (!stack.environment) {
       throw new Error(`The stack ${stack.displayName} does not have an environment`);
     }
 
-    const resolvedEnvironment = await this.sdkProvider.resolveEnvironment(stack.environment);
+    const resolvedEnvironment = await this.props.sdkProvider.resolveEnvironment(stack.environment);
 
     // Substitute any placeholders with information about the current environment
     const arns = await replaceEnvPlaceholders({
-      assumeRoleArn: stack.assumeRoleArn,
-
       // Use the override if given, otherwise use the field from the stack
-      cloudFormationRoleArn: roleArn ?? stack.cloudFormationExecutionRoleArn,
-    }, resolvedEnvironment, this.sdkProvider);
+      assumeRoleArn: this.props.assumeRoleArn ?? stack.assumeRoleArn,
+      assumeRoleEXternalId: this.props.assumeRoleExternalId ?? stack.assumeRoleExternalId,
+      cloudFormationRoleArn: this.props.executionRoleArn ?? stack.cloudFormationExecutionRoleArn,
+    }, resolvedEnvironment, this.props.sdkProvider);
 
-    const stackSdk = await this.sdkProvider.forEnvironment(resolvedEnvironment, mode, {
+    const stackSdk = await this.props.sdkProvider.forEnvironment(resolvedEnvironment, mode, {
       assumeRoleArn: arns.assumeRoleArn,
       assumeRoleExternalId: stack.assumeRoleExternalId,
     });
@@ -283,7 +286,7 @@ export class CloudFormationDeployments {
    * Publish all asset manifests that are referenced by the given stack
    */
   private async publishStackAssets(stack: cxapi.CloudFormationStackArtifact, toolkitInfo: ToolkitInfo) {
-    const stackEnv = await this.sdkProvider.resolveEnvironment(stack.environment);
+    const stackEnv = await this.props.sdkProvider.resolveEnvironment(stack.environment);
     const assetArtifacts = stack.dependencies.filter(isAssetManifestArtifact);
 
     for (const assetArtifact of assetArtifacts) {
@@ -294,7 +297,7 @@ export class CloudFormationDeployments {
         toolkitInfo);
 
       const manifest = AssetManifest.fromFile(assetArtifact.file);
-      await publishAssets(manifest, this.sdkProvider, stackEnv);
+      await publishAssets(manifest, this.props.sdkProvider, stackEnv);
     }
   }
 

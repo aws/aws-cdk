@@ -61,7 +61,10 @@ async function parseCommandLineArguments() {
     .option('version-reporting', { type: 'boolean', desc: 'Include the "AWS::CDK::Metadata" resource in synthesized templates (enabled by default)', default: undefined })
     .option('path-metadata', { type: 'boolean', desc: 'Include "aws:cdk:path" CloudFormation metadata for each resource (enabled by default)', default: true })
     .option('asset-metadata', { type: 'boolean', desc: 'Include "aws:asset:*" CloudFormation metadata for resources that uses assets (enabled by default)', default: true })
-    .option('role-arn', { type: 'string', alias: 'r', desc: 'ARN of Role to use when invoking CloudFormation', default: undefined, requiresArg: true })
+    .option('role-arn', { type: 'string', alias: 'r', desc: 'ARN of Role for CloudFormation to execute changes (deprecated, use --execution-role-arn)', default: undefined, requiresArg: true })
+    .option('execution-role-arn', { type: 'string', alias: 'r', desc: 'ARN of Role for CloudFormation to execute changes', default: undefined, requiresArg: true })
+    .option('assume-role-arn', { type: 'string', alias: 'r', desc: 'ARN of Role to use when invoking CloudFormation', default: undefined, requiresArg: true })
+    .option('assume-role-external-id', { type: 'string', alias: 'r', desc: 'External id for Role to use when invoking CloudFormation', default: undefined, requiresArg: true })
     .option('toolkit-stack-name', { type: 'string', desc: 'The name of the CDK toolkit stack', requiresArg: true })
     .option('staging', { type: 'boolean', desc: 'Copy assets to the output directory (use --no-staging to disable, needed for local debugging the source files with SAM CLI)', default: true })
     .option('output', { type: 'string', alias: 'o', desc: 'Emits the synthesized cloud assembly into a directory (default: cdk.out)', requiresArg: true })
@@ -176,8 +179,6 @@ async function initCommandLine() {
     },
   });
 
-  const cloudFormation = new CloudFormationDeployments({ sdkProvider });
-
   const cloudExecutable = new CloudExecutable({
     configuration,
     sdkProvider,
@@ -245,6 +246,13 @@ async function initCommandLine() {
     args.STACKS = args.STACKS || [];
     args.ENVIRONMENTS = args.ENVIRONMENTS || [];
 
+    const cloudFormation = new CloudFormationDeployments({
+      sdkProvider,
+      executionRoleArn: args.executionRoleArn || args.roleArn,
+      assumeRoleArn: args.assumeRoleArn,
+      assumeRoleExternalId: args.assumeRoleEXternalId,
+    });
+
     const selector: StackSelector = {
       allTopLevel: args.all,
       patterns: args.STACKS,
@@ -271,7 +279,6 @@ async function initCommandLine() {
           stackNames: args.STACKS,
           exclusively: args.exclusively,
           templatePath: args.template,
-          roleArn: args.roleArn,
           strict: args.strict,
           contextLines: args.contextLines,
           securityOnly: args.securityOnly,
