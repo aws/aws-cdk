@@ -52,9 +52,11 @@ export abstract class CodePipelineSource extends Step implements ICodePipelineAc
    * Example:
    *
    * ```ts
-   * const bucket: IBucket = ...
-   * CodePipelineSource.s3(bucket, {
-   *   key: 'path/to/file.zip',
+   * import * as ecr from '@aws-cdk/aws-ecr';
+   *
+   * declare const repository: ecr.IRepository;
+   * pipelines.CodePipelineSource.ecr(repository, {
+   *   imageTag: 'latest',
    * });
    * ```
    */
