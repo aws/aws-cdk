@@ -198,7 +198,7 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
   /**
    * Render the EMR Containers ConfigurationProperty as JSON
    */
-  private applicationConfigPropertyToJson(property: ApplicationConfiguration) {
+  private applicationConfigPropertyToJson = (property: ApplicationConfiguration) => {
     return {
       Classification: cdk.stringToCloudFormation(property.classification.classificationStatement),
       Properties: property.properties ? cdk.objectToCloudFormation(property.properties) : undefined,

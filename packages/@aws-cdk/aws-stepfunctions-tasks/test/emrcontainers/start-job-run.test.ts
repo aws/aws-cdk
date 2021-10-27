@@ -185,6 +185,39 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
     });
   });
 
+  test('Application Configuration with nested app config and no properties', () => {
+    const properties: { [key: string]: string } = { HADOOP_DATANODE_HEAPSIZE: '2048', HADOOP_NAMENODE_OPTS: '-XX:GCTimeRatio=19' };
+    const struct = { classification: new Classification('export'), properties: properties };
+    const appConfigNested: ApplicationConfiguration[] = [struct];
+
+    const mainConfig = { classification: new Classification('hadoop-env'), nestedConfig: appConfigNested };
+    const appConfig: ApplicationConfiguration[] = [mainConfig];
+    // WHEN
+    const task = new EmrContainersStartJobRun(stack, 'EMR Containers Start Job Run', {
+      ...defaultProps,
+      applicationConfig: appConfig,
+    });
+
+    // THEN
+    expect(stack.resolve(task.toStateJson())).toMatchObject({
+      Parameters: {
+        ConfigurationOverrides: {
+          ApplicationConfiguration: [{
+            Classification: 'hadoop-env',
+            Configurations: [{
+              Classification: 'export',
+              Properties: {
+                HADOOP_DATANODE_HEAPSIZE: '2048',
+                HADOOP_NAMENODE_OPTS: '-XX:GCTimeRatio=19',
+              },
+            }],
+          }],
+        },
+      },
+    });
+  });
+
+
   test('Job Execution Role', () => {
 
     // WHEN
