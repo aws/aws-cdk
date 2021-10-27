@@ -20,8 +20,7 @@ An `AutoScalingGroup` represents a number of instances on which you run your cod
 pick the size of the fleet, the instance type and the OS image:
 
 ```ts
-import * as autoscaling from '@aws-cdk/aws-autoscaling';
-import * as ec2 from '@aws-cdk/aws-ec2';
+declare const vpc: ec2.Vpc;
 
 new autoscaling.AutoScalingGroup(this, 'ASG', {
   vpc,
@@ -36,7 +35,9 @@ your instances to be able to start arbitrary connections. Alternatively, you can
 group to attach to the instances that are launched, rather than have the group create a new one.
 
 ```ts
-const mySecurityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', {...});
+declare const vpc: ec2.Vpc;
+
+const mySecurityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', { vpc });
 new autoscaling.AutoScalingGroup(this, 'ASG', {
   vpc,
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.MICRO),
@@ -89,24 +90,31 @@ There are three ways to scale your capacity:
 The general pattern of autoscaling will look like this:
 
 ```ts
+declare const vpc: ec2.Vpc;
+declare const instanceType: ec2.InstanceType;
+declare const machineImage: ec2.IMachineImage;
+
 const autoScalingGroup = new autoscaling.AutoScalingGroup(this, 'ASG', {
+  vpc,
+  instanceType,
+  machineImage,
+
   minCapacity: 5,
   maxCapacity: 100
   // ...
 });
 
-// Step scaling
-autoScalingGroup.scaleOnMetric(...);
-
-// Target tracking scaling
-autoScalingGroup.scaleOnCpuUtilization(...);
-autoScalingGroup.scaleOnIncomingBytes(...);
-autoScalingGroup.scaleOnOutgoingBytes(...);
-autoScalingGroup.scaleOnRequestCount(...);
-autoScalingGroup.scaleToTrackMetric(...);
-
-// Scheduled scaling
-autoScalingGroup.scaleOnSchedule(...);
+// Then call one of the scaling methods (explained below)
+//
+// autoScalingGroup.scaleOnMetric(...);
+//
+// autoScalingGroup.scaleOnCpuUtilization(...);
+// autoScalingGroup.scaleOnIncomingBytes(...);
+// autoScalingGroup.scaleOnOutgoingBytes(...);
+// autoScalingGroup.scaleOnRequestCount(...);
+// autoScalingGroup.scaleToTrackMetric(...);
+//
+// autoScalingGroup.scaleOnSchedule(...);
 ```
 
 ### Step Scaling
@@ -132,12 +140,14 @@ metric representing your worker utilization from your instances. After that,
 you would configure the scaling something like this:
 
 ```ts
+declare const autoScalingGroup: autoscaling.AutoScalingGroup;
+
 const workerUtilizationMetric = new cloudwatch.Metric({
     namespace: 'MyService',
     metricName: 'WorkerUtilization'
 });
 
-capacity.scaleOnMetric('ScaleToCPU', {
+autoScalingGroup.scaleOnMetric('ScaleToCPU', {
   metric: workerUtilizationMetric,
   scalingSteps: [
     { upper: 10, change: -1 },
@@ -170,6 +180,8 @@ The following example scales to keep the CPU usage of your instances around
 50% utilization:
 
 ```ts
+declare const autoScalingGroup: autoscaling.AutoScalingGroup;
+
 autoScalingGroup.scaleOnCpuUtilization('KeepSpareCPU', {
   targetUtilizationPercent: 50
 });
@@ -178,10 +190,12 @@ autoScalingGroup.scaleOnCpuUtilization('KeepSpareCPU', {
 To scale on average network traffic in and out of your instances:
 
 ```ts
+declare const autoScalingGroup: autoscaling.AutoScalingGroup;
+
 autoScalingGroup.scaleOnIncomingBytes('LimitIngressPerInstance', {
     targetBytesPerSecond: 10 * 1024 * 1024 // 10 MB/s
 });
-autoScalingGroup.scaleOnOutcomingBytes('LimitEgressPerInstance', {
+autoScalingGroup.scaleOnOutgoingBytes('LimitEgressPerInstance', {
     targetBytesPerSecond: 10 * 1024 * 1024 // 10 MB/s
 });
 ```
@@ -191,6 +205,8 @@ AutoScalingGroups that have been attached to Application Load
 Balancers):
 
 ```ts
+declare const autoScalingGroup: autoscaling.AutoScalingGroup;
+
 autoScalingGroup.scaleOnRequestCount('LimitRPS', {
     targetRequestsPerSecond: 1000
 });
@@ -214,6 +230,8 @@ The following example scales the fleet out in the morning, going back to natural
 scaling (all the way down to 1 instance if necessary) at night:
 
 ```ts
+declare const autoScalingGroup: autoscaling.AutoScalingGroup;
+
 autoScalingGroup.scaleOnSchedule('PrescaleInTheMorning', {
   schedule: autoscaling.Schedule.cron({ hour: '8', minute: '0' }),
   minCapacity: 20,
@@ -246,7 +264,15 @@ Here's an example of using CloudFormation Init to write a file to the
 instance hosts on startup:
 
 ```ts
+declare const vpc: ec2.Vpc;
+declare const instanceType: ec2.InstanceType;
+declare const machineImage: ec2.IMachineImage;
+
 new autoscaling.AutoScalingGroup(this, 'ASG', {
+  vpc,
+  instanceType,
+  machineImage,
+
   // ...
 
   init: ec2.CloudFormationInit.fromElements(
@@ -347,16 +373,30 @@ See [EC2 docs](https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-instance
 To enable group metrics monitoring using the `groupMetrics` property:
 
 ```ts
+declare const vpc: ec2.Vpc;
+declare const instanceType: ec2.InstanceType;
+declare const machineImage: ec2.IMachineImage;
+
 // Enable monitoring of all group metrics
-new autoscaling.AutoScalingGroup(stack, 'ASG', {
-  groupMetrics: [GroupMetrics.all()],
+new autoscaling.AutoScalingGroup(this, 'ASG', {
+  vpc,
+  instanceType,
+  machineImage,
+
   // ...
+
+  groupMetrics: [autoscaling.GroupMetrics.all()],
 });
 
 // Enable monitoring for a subset of group metrics
-new autoscaling.AutoScalingGroup(stack, 'ASG', {
-  groupMetrics: [new autoscaling.GroupMetrics(GroupMetric.MIN_SIZE, GroupMetric.MAX_SIZE)],
+new autoscaling.AutoScalingGroup(this, 'ASG', {
+  vpc,
+  instanceType,
+  machineImage,
+
   // ...
+
+  groupMetrics: [new autoscaling.GroupMetrics(autoscaling.GroupMetric.MIN_SIZE, autoscaling.GroupMetric.MAX_SIZE)],
 });
 ```
 
@@ -372,9 +412,18 @@ terminated. EC2 Capacity Providers for Amazon ECS requires this attribute be
 set to `true`.
 
 ```ts
-new autoscaling.AutoScalingGroup(stack, 'ASG', {
-  newInstancesProtectedFromScaleIn: true,
+declare const vpc: ec2.Vpc;
+declare const instanceType: ec2.InstanceType;
+declare const machineImage: ec2.IMachineImage;
+
+new autoscaling.AutoScalingGroup(this, 'ASG', {
+  vpc,
+  instanceType,
+  machineImage,
+
   // ...
+
+  newInstancesProtectedFromScaleIn: true,
 });
 ```
 
@@ -389,9 +438,18 @@ To do this for a single `AutoScalingGroup`, you can use set the `requireImdsv2` 
 The example below demonstrates IMDSv2 being required on a single `AutoScalingGroup`:
 
 ```ts
-new autoscaling.AutoScalingGroup(stack, 'ASG', {
-  requireImdsv2: true,
+declare const vpc: ec2.Vpc;
+declare const instanceType: ec2.InstanceType;
+declare const machineImage: ec2.IMachineImage;
+
+new autoscaling.AutoScalingGroup(this, 'ASG', {
+  vpc,
+  instanceType,
+  machineImage,
+
   // ...
+
+  requireImdsv2: true,
 });
 ```
 
@@ -401,7 +459,7 @@ The example below demonstrates the `AutoScalingGroupRequireImdsv2Aspect` being u
 ```ts
 const aspect = new autoscaling.AutoScalingGroupRequireImdsv2Aspect();
 
-Aspects.of(stack).add(aspect);
+Aspects.of(this).add(aspect);
 ```
 
 ## Future work

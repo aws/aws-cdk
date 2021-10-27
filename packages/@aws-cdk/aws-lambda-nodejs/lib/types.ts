@@ -198,6 +198,16 @@ export interface BundlingOptions {
   readonly forceDockerBundling?: boolean;
 
   /**
+  * Run compilation using tsc before running file through bundling step.
+  * This usually is not required unless you are using new experimental features that
+  * are only supported by typescript's `tsc` compiler.
+  * One example of such feature is `emitDecoratorMetadata`.
+  *
+  * @default false
+  */
+  readonly preCompilation?: boolean
+
+  /**
    * A custom bundling Docker image.
    *
    * This image should have esbuild installed globally. If you plan to use `nodeModules`

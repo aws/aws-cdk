@@ -14,8 +14,6 @@ export interface BasicScheduledActionProps {
    * Supports cron expressions.
    *
    * For more information about cron expressions, see https://en.wikipedia.org/wiki/Cron.
-   *
-   * @example 0 8 * * ?
    */
   readonly schedule: Schedule;
 
