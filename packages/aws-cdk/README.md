@@ -480,7 +480,6 @@ This can be used to build Lambda Functions, CDK Application code, or other asset
 the Project configuration or the User configuration. The command specified
 in `build` will be executed by the "watch" process before deployment.
 
-
 ### Environment
 
 The following environment variables affect aws-cdk:
