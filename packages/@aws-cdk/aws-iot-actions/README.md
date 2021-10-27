@@ -33,17 +33,18 @@ import * as iot from '@aws-cdk/aws-iot';
 import * as actions from '@aws-cdk/aws-iot-actions';
 import * as lambda from '@aws-cdk/aws-lambda';
 
-const lambdaFn = new lambda.Function(this, 'MyFunction', {
+const func = new lambda.Function(this, 'MyFunction', {
   runtime: lambda.Runtime.NODEJS_14_X,
   handler: 'index.handler',
   code: lambda.Code.fromInline(`
-exports.handler = (event) => {
-console.log("It is test for lambda action of AWS IoT Rule.", event)
-}`),
+    exports.handler = (event) => {
+      console.log("It is test for lambda action of AWS IoT Rule.", event);
+    };`
+  ),
 });
 
 new iot.TopicRule(this, 'TopicRule', {
   sql: iot.IotSql.fromStringAsVer20160323("SELECT topic(2) as device_id, timestamp() as timestamp, temperature FROM 'device/+/data'"),
-  actions: [new actions.LambdaAction(lambdaFn)],
+  actions: [new actions.LambdaAction(func)],
 });
 ```

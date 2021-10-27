@@ -10,14 +10,14 @@ test('create a topic rule with lambda action and a lambda permission to be invok
   const topicRule = new iot.TopicRule(stack, 'MyTopicRule', {
     sql: iot.IotSql.fromStringAsVer20160323("SELECT topic(2) as device_id FROM 'device/+/data'"),
   });
-  const lambdaFn = new lambda.Function(stack, 'MyFunction', {
+  const func = new lambda.Function(stack, 'MyFunction', {
     runtime: lambda.Runtime.NODEJS_14_X,
     handler: 'index.handler',
     code: lambda.Code.fromInline('console.log("foo")'),
   });
 
   // WHEN
-  topicRule.addAction(new actions.LambdaAction(lambdaFn));
+  topicRule.addAction(new actions.LambdaAction(func));
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::IoT::TopicRule', {

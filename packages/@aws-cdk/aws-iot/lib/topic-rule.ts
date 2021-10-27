@@ -130,7 +130,7 @@ export class TopicRule extends Resource implements ITopicRule {
     if (keys.length === 0) {
       throw new Error('An action property cannot be an empty object.');
     }
-    if (keys.length >= 2) {
+    if (keys.length > 1) {
       throw new Error(`An action property cannot have multiple keys, received: ${keys}`);
     }
 
