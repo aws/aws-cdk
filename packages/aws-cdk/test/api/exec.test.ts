@@ -194,6 +194,28 @@ test('application set in --app is `*.js` and executable', async () => {
   await execProgram(sdkProvider, config);
 });
 
+test('cli throws when the `build` script fails', async () => {
+  config.settings.set(['build'], 'fake-command');
+  const expectedError = 'Subprocess exited with error 127';
+  mockSpawn({
+    commandLine: ['fake-command'],
+    exitCode: 127,
+  });
+
+  await expect(execProgram(sdkProvider, config)).rejects.toEqual(new Error(expectedError));
+}, TEN_SECOND_TIMEOUT);
+
+test('cli does not throw when the `build` script succeeds', async () => {
+  config.settings.set(['build'], 'real-command');
+  mockSpawn({
+    commandLine: ['real-command'],
+    exitCode: 0,
+  });
+
+  await expect(execProgram(sdkProvider, config)).resolves;
+}, TEN_SECOND_TIMEOUT);
+
+
 function writeOutputAssembly() {
   const asm = testAssembly({
     stacks: [],
