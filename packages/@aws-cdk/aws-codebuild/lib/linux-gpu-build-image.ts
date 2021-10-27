@@ -104,7 +104,7 @@ export class LinuxGpuBuildImage implements IBindableBuildImage {
    * @param tag Image tag (default "latest")
    */
   public static fromEcrRepository(repository: ecr.IRepository, tag: string = 'latest'): IBuildImage {
-    return new LinuxGpuBuildImage(repository.repositoryName, tag, core.Aws.ACCOUNT_ID);
+    return new LinuxGpuBuildImage(repository.repositoryName, tag, repository.env.account);
   }
 
   public readonly type = 'LINUX_GPU_CONTAINER';
