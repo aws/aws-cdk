@@ -523,8 +523,9 @@ export class HistoryActivityPrinter extends ActivityPrinterBase {
 
     this.stream.write(
       util.format(
-        ' %s%s | %s | %s | %s %s%s%s\n',
-        (progress !== false ? ` ${this.progress()} | ` : ''),
+        '%s | %s%s | %s | %s | %s %s%s%s\n',
+        e.StackName,
+        (progress !== false ? `${this.progress()} | ` : ''),
         new Date(e.Timestamp).toLocaleTimeString(),
         color(padRight(STATUS_WIDTH, (e.ResourceStatus || '').substr(0, STATUS_WIDTH))), // pad left and trim
         padRight(this.props.resourceTypeColumnWidth, e.ResourceType || ''),
