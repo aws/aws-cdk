@@ -553,6 +553,20 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
       }).toThrow(`Application configuration properties must have 100 or fewer entries. Received ${Object.keys(properties).length}`);
     });
 
+    test('Application Configuration properties is undefined and nested configuration array is undefined', () => {
+      // WHEN
+      const struct = { classification: Classification.SPARK };
+      let appConfig: ApplicationConfiguration[] = new Array(1).fill(struct);
+
+      // THEN
+      expect(() => {
+        new EmrContainersStartJobRun(stack, 'Task', {
+          ...defaultProps,
+          applicationConfig: appConfig,
+        });
+      }).toThrow('Application configuration must have either properties or nested app configurations defined.');
+    });
+
     test('Entry Point is not between 1 to 256 characters in length', () => {
       // WHEN
       const entryPointString = 'x'.repeat(257);

@@ -108,7 +108,7 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
     validatePatternSupported(this.integrationPattern, EmrContainersStartJobRun.SUPPORTED_INTEGRATION_PATTERNS);
 
     if (props.applicationConfig) {
-      this.validateAppConfigLength(this.props.applicationConfig);
+      this.validateAppConfig(this.props.applicationConfig);
     }
 
     if (props.jobDriver.sparkSubmitJobDriver?.entryPoint
@@ -220,13 +220,13 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
     }
   }
 
-  private validateAppConfigLength(config?: ApplicationConfiguration[]) {
+  private validateAppConfig(config?: ApplicationConfiguration[]) {
     if (config === undefined) {
       return;
     } else if (config.length > 100) {
       throw new Error(`Application configuration array must have 100 or fewer entries. Received ${config.length}`);
     } else {
-      config.forEach(element => this.validateAppConfigLength(element.nestedConfig));
+      config.forEach(element => this.validateAppConfig(element.nestedConfig));
       config.forEach(element => this.validateAppConfigPropertiesLength(element));
       config.forEach(element => this.validatePropertiesNestedAppConfigBothNotUndefined(element));
     }
