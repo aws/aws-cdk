@@ -16,7 +16,7 @@ export class LambdaAction implements iot.IAction {
     this.func.addPermission('invokedByAwsIotRule', {
       action: 'lambda:InvokeFunction',
       principal: new iam.ServicePrincipal('iot.amazonaws.com'),
-      sourceAccount: Stack.of(rule).account,
+      sourceAccount: rule.env.account,
       sourceArn: rule.topicRuleArn,
     });
 
