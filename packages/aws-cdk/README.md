@@ -464,6 +464,7 @@ Some of the interesting keys that can be used in the JSON configuration files:
 ```json5
 {
     "app": "node bin/main.js",        // Command to start the CDK app      (--app='node bin/main.js')
+    "build": "./build.sh",            // Specify pre-synth build           (no command line option)
     "context": {                      // Context entries                   (--context=key=value)
         "key": "value"
     },
