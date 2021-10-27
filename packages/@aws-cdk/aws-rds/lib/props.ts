@@ -147,6 +147,13 @@ export interface CredentialsBaseOptions {
    * @default - the DatabaseSecret default exclude character set (" %+~`#$&*()|[]{}:;<>?!'/@\"\\")
    */
   readonly excludeCharacters?: string;
+
+  /**
+   * A list of regions where to replicate this secret.
+   *
+   * @default - Secret is not replicated
+   */
+  readonly replicaRegions?: secretsmanager.ReplicaRegion[];
 }
 
 /**
@@ -285,6 +292,13 @@ export abstract class Credentials {
    * @default - the DatabaseSecret default exclude character set (" %+~`#$&*()|[]{}:;<>?!'/@\"\\")
    */
   public abstract readonly excludeCharacters?: string;
+
+  /**
+   * A list of regions where to replicate the generated secret.
+   *
+   * @default - Secret is not replicated
+   */
+  public abstract readonly replicaRegions?: secretsmanager.ReplicaRegion[];
 }
 
 /**
@@ -304,6 +318,13 @@ export interface SnapshotCredentialsFromGeneratedPasswordOptions {
    * @default - the DatabaseSecret default exclude character set (" %+~`#$&*()|[]{}:;<>?!'/@\"\\")
    */
   readonly excludeCharacters?: string;
+
+  /**
+   * A list of regions where to replicate this secret.
+   *
+   * @default - Secret is not replicated
+   */
+  readonly replicaRegions?: secretsmanager.ReplicaRegion[];
 }
 
 /**
@@ -420,6 +441,13 @@ export abstract class SnapshotCredentials {
    * @default - the DatabaseSecret default exclude character set (" %+~`#$&*()|[]{}:;<>?!'/@\"\\")
    */
   public abstract readonly excludeCharacters?: string;
+
+  /**
+   * A list of regions where to replicate the generated secret.
+   *
+   * @default - Secret is not replicated
+   */
+  public abstract readonly replicaRegions?: secretsmanager.ReplicaRegion[];
 }
 
 /**

@@ -308,7 +308,7 @@ export interface SecurityGroupImportOptions {
  * you would import it like this:
  *
  * ```ts
- * const securityGroup = SecurityGroup.fromSecurityGroupId(this, 'SG', 'sg-12345', {
+ * const securityGroup = ec2.SecurityGroup.fromSecurityGroupId(this, 'SG', 'sg-12345', {
  *   mutable: false
  * });
  * ```
@@ -382,6 +382,7 @@ export class SecurityGroup extends SecurityGroupBase {
    * An attribute that represents the security group name.
    *
    * @attribute
+   * @deprecated returns the security group ID, rather than the name.
    */
   public readonly securityGroupName: string;
 
