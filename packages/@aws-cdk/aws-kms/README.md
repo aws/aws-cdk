@@ -14,10 +14,8 @@
 Define a KMS key:
 
 ```ts
-import * as kms from '@aws-cdk/aws-kms';
-
 new kms.Key(this, 'MyKey', {
-    enableKeyRotation: true
+  enableKeyRotation: true,
 });
 ```
 
@@ -27,7 +25,7 @@ Specifies the number of days in the waiting period before AWS KMS deletes a CMK 
 
 ```ts
 const key = new kms.Key(this, 'MyKey', {
-  pendingWindow: 10 // Default to 30 Days
+  pendingWindow: Duration.days(10), // Default to 30 Days
 });
 ```
 
@@ -48,7 +46,7 @@ Valid `keySpec` values depends on `keyUsage` value.
 ```ts
 const key = new kms.Key(this, 'MyKey', {
   keySpec: kms.KeySpec.ECC_SECG_P256K1, // Default to SYMMETRIC_DEFAULT
-  keyUsage: kms.KeyUsage.SIGN_VERIFY    // and ENCRYPT_DECRYPT
+  keyUsage: kms.KeyUsage.SIGN_VERIFY,    // and ENCRYPT_DECRYPT
 });
 ```
 
@@ -84,10 +82,12 @@ If a Key has an associated Alias, the Alias can be imported by name and used in 
 of the Key as a reference. A common scenario for this is in referencing AWS managed keys.
 
 ```ts
+import * as cloudtrail from '@aws-cdk/aws-cloudtrail';
+
 const myKeyAlias = kms.Alias.fromAliasName(this, 'myKey', 'alias/aws/s3');
 const trail = new cloudtrail.Trail(this, 'myCloudTrail', {
-    sendToCloudWatchLogs: true,
-    kmsKey: myKeyAlias
+  sendToCloudWatchLogs: true,
+  kmsKey: myKeyAlias,
 });
 ```
 
@@ -110,7 +110,7 @@ Here's how `Key.fromLookup()` can be used:
 
 ```ts
 const myKeyLookup = kms.Key.fromLookup(this, 'MyKeyLookup', {
-  aliasName: 'alias/KeyAlias'
+  aliasName: 'alias/KeyAlias',
 });
 
 const role = new iam.Role(this, 'MyRole', {
@@ -138,7 +138,7 @@ which is set for all new projects; for existing projects, this same behavior can
 passing the `trustAccountIdentities` property as `true` when creating the key:
 
 ```ts
-new kms.Key(stack, 'MyKey', { trustAccountIdentities: true });
+new kms.Key(this, 'MyKey', { trustAccountIdentities: true });
 ```
 
 With either the `@aws-cdk/aws-kms:defaultKeyPolicies` feature flag set,
@@ -158,8 +158,8 @@ This enables the root account user -- via IAM policies -- to grant access to oth
 With the above default policy, future permissions can be added to either the key policy or IAM principal policy.
 
 ```ts
-const key = new kms.Key(stack, 'MyKey');
-const user = new iam.User(stack, 'MyUser');
+const key = new kms.Key(this, 'MyKey');
+const user = new iam.User(this, 'MyUser');
 key.grantEncrypt(user); // Adds encrypt permissions to user policy; key policy is unmodified.
 ```
 
@@ -177,12 +177,12 @@ A common addition to the key policy would be to add other key admins that are al
 via the `grantAdmin` method.
 
 ```ts
-const myTrustedAdminRole = iam.Role.fromRoleArn(stack, 'TrustedRole', 'arn:aws:iam:....');
-const key = new kms.Key(stack, 'MyKey', {
+const myTrustedAdminRole = iam.Role.fromRoleArn(this, 'TrustedRole', 'arn:aws:iam:....');
+const key = new kms.Key(this, 'MyKey', {
   admins: [myTrustedAdminRole],
 });
 
-const secondKey = new kms.Key(stack, 'MyKey2');
+const secondKey = new kms.Key(this, 'MyKey2');
 secondKey.grantAdmin(myTrustedAdminRole);
 ```
 
@@ -193,7 +193,7 @@ and with `trustedAccountIdentities` set to false (the default), specifying a pol
 provided policy to the default key policy, rather than _replacing_ the default policy.
 
 ```ts
-const myTrustedAdminRole = iam.Role.fromRoleArn(stack, 'TrustedRole', 'arn:aws:iam:....');
+const myTrustedAdminRole = iam.Role.fromRoleArn(this, 'TrustedRole', 'arn:aws:iam:....');
 // Creates a limited admin policy and assigns to the account root.
 const myCustomPolicy = new iam.PolicyDocument({
   statements: [new iam.PolicyStatement({
@@ -208,7 +208,7 @@ const myCustomPolicy = new iam.PolicyDocument({
     resources: ['*'],
   })],
 });
-const key = new kms.Key(stack, 'MyKey', {
+const key = new kms.Key(this, 'MyKey', {
   policy: myCustomPolicy,
 });
 ```
