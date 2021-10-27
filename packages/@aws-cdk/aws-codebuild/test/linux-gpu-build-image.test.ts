@@ -142,23 +142,14 @@ describe('Linux GPU build image', () => {
         Environment: {
           ComputeType: 'BUILD_GENERAL1_LARGE',
           Image: {
-            'Fn::Join': [
-              '',
-              [
-                {
-                  Ref: 'AWS::AccountId',
-                },
-                '.dkr.ecr.',
-                {
-                  Ref: 'AWS::Region',
-                },
-                '.',
-                {
-                  Ref: 'AWS::URLSuffix',
-                },
-                '/test-repo:latest',
-              ],
-            ],
+            'Fn::Join': ['', [
+              { Ref: 'AWS::AccountId' },
+              '.dkr.ecr.',
+              { Ref: 'AWS::Region' },
+              '.',
+              { Ref: 'AWS::URLSuffix' },
+              '/test-repo:latest',
+            ]],
           },
         },
       });
