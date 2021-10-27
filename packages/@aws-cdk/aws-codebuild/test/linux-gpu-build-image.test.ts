@@ -177,5 +177,59 @@ describe('Linux GPU build image', () => {
         },
       });
     });
+
+    test('allows creating a build image from an existing cross-account ECR repository', () => {
+      const stack = new cdk.Stack();
+
+      const repository = ecr.Repository.fromRepositoryArn(stack, 'my-cross-acount-repo', 'arn:aws:ecr:us-east-1:585695036304:repository/foo/bar/foo/fooo');
+
+      new codebuild.Project(stack, 'Project', {
+        buildSpec: codebuild.BuildSpec.fromObject({
+          version: '0.2',
+          phases: {
+            build: { commands: ['ls'] },
+          },
+        }),
+        environment: {
+          buildImage: codebuild.LinuxGpuBuildImage.fromEcrRepository(repository),
+        },
+      });
+
+      expect(stack).toHaveResourceLike('AWS::CodeBuild::Project', {
+        Environment: {
+          ComputeType: 'BUILD_GENERAL1_LARGE',
+          Image: {
+            'Fn::Join': ['', [
+              '585695036304.dkr.ecr.',
+              { Ref: 'AWS::Region' },
+              '.',
+              { Ref: 'AWS::URLSuffix' },
+              '/foo/bar/foo/fooo:latest',
+            ]],
+          },
+        },
+      });
+
+      expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: arrayWith(objectLike({
+            Action: [
+              'ecr:BatchCheckLayerAvailability',
+              'ecr:GetDownloadUrlForLayer',
+              'ecr:BatchGetImage',
+            ],
+            Resource: {
+              'Fn::Join': ['', [
+                'arn:',
+                { Ref: 'AWS::Partition' },
+                ':ecr:',
+                { Ref: 'AWS::Region' },
+                ':585695036304:repository/foo/bar/foo/fooo',
+              ]],
+            },
+          })),
+        },
+      });
+    });
   });
 });
