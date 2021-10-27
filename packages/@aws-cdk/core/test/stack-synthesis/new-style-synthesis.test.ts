@@ -70,6 +70,7 @@ describe('new style synthesis', () => {
     const template = app.synth().getStackByName('Stack').template;
     expect(template?.Parameters?.BootstrapVersion?.Type).toEqual('AWS::SSM::Parameter::Value<String>');
     expect(template?.Parameters?.BootstrapVersion?.Default).toEqual('/cdk-bootstrap/hnb659fds/version');
+    expect(template?.Parameters?.BootstrapVersion?.Description).toContain(cxapi.SSMPARAM_NO_INVALIDATE);
 
     const assertions = template?.Rules?.CheckBootstrapVersion?.Assertions ?? [];
     expect(assertions.length).toEqual(1);
