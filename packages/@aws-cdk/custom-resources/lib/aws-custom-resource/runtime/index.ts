@@ -167,7 +167,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
 
         const params = {
           RoleArn: call.assumedRoleArn,
-          RoleSessionName: `${physicalResourceId}-${timestamp}`,
+          RoleSessionName: `${timestamp}-${physicalResourceId}`.substring(0, 64),
         };
 
         AWS.config.credentials = new AWS.ChainableTemporaryCredentials({

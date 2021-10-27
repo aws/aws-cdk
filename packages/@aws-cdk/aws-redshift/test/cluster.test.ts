@@ -146,7 +146,7 @@ describe('node count', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Redshift::Cluster', {
       ClusterType: 'single-node',
-      NumberOfNodes: Match.absentProperty(),
+      NumberOfNodes: Match.absent(),
     });
   });
 
@@ -164,7 +164,7 @@ describe('node count', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Redshift::Cluster', {
       ClusterType: 'single-node',
-      NumberOfNodes: Match.absentProperty(),
+      NumberOfNodes: Match.absent(),
     });
   });
 
@@ -249,10 +249,7 @@ test('create an encrypted cluster with custom KMS key', () => {
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::Redshift::Cluster', {
     KmsKeyId: {
-      'Fn::GetAtt': [
-        'Key961B73FD',
-        'Arn',
-      ],
+      Ref: 'Key961B73FD',
     },
   });
 });
