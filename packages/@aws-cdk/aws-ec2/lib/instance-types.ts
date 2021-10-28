@@ -452,9 +452,19 @@ export enum InstanceClass {
   PARALLEL3 = 'p3',
 
   /**
-   * Parallel-processing optimized instances, 3nd generation
+   * Parallel-processing optimized instances, 3rd generation
    */
   P3 = 'p3',
+
+  /**
+   * Parallel-processing optimized instances, 4th generation
+   */
+  PARALLEL4 = 'p4d',
+
+  /**
+   * Parallel-processing optimized instances, 4th generation
+   */
+  P4D = 'p4d',
 
   /**
    * Arm processor based instances, 1st generation
