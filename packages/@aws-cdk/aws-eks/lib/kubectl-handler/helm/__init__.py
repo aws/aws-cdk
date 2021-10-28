@@ -33,18 +33,18 @@ def helm_handler(event, context):
     props = event['ResourceProperties']
 
     # resource properties
-    cluster_name = props['ClusterName']
-    role_arn     = props['RoleArn']
-    release      = props['Release']
-    chart        = props['Chart']
-    chart_asset_url = props.get('ChartAssetURL', None)
-    version      = props.get('Version', None)
-    wait         = props.get('Wait', False)
-    timeout      = props.get('Timeout', None)
-    namespace    = props.get('Namespace', None)
+    cluster_name     = props['ClusterName']
+    role_arn         = props['RoleArn']
+    release          = props['Release']
+    chart            = props.get('Chart', None)
+    chart_asset_url  = props.get('ChartAssetURL', None)
+    version          = props.get('Version', None)
+    wait             = props.get('Wait', False)
+    timeout          = props.get('Timeout', None)
+    namespace        = props.get('Namespace', None)
     create_namespace = props.get('CreateNamespace', None)
-    repository   = props.get('Repository', None)
-    values_text  = props.get('Values', None)
+    repository       = props.get('Repository', None)
+    values_text      = props.get('Values', None)
 
     # "log in" to the cluster
     subprocess.check_call([ 'aws', 'eks', 'update-kubeconfig',
@@ -65,9 +65,13 @@ def helm_handler(event, context):
             f.write(json.dumps(values, indent=2))
 
     if request_type == 'Create' or request_type == 'Update':
+        # Ensure chart or chart_asset_url are set
+        assert(chart != None or chart_asset_url != None)
+
         if chart_asset_url != None and chart_asset_url.startswith('s3://') and repository == None:
-            assert(version==None) # future work: support versions from s3 assets
-            chart = get_chart_asset_from_url(chart_asset_url, outdir)
+            # future work: support versions from s3 assets
+            assert(version==None)
+            chart = get_chart_asset_from_url(chart_asset_url)
 
         helm('upgrade', release, chart, repository, values_file, namespace, version, wait, timeout, create_namespace)
     elif request_type == "Delete":
