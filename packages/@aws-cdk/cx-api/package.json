@@ -32,7 +32,7 @@
     "metadata": {
       "jsii": {
         "rosetta": {
-          "strict": true
+          "strict": false
         }
       }
     }
