@@ -175,8 +175,8 @@ Duration.parse('PT5M')  // 5 minutes
 Durations can be added or subtracted together:
 
 ```ts
-Duration.minutes(1).add(Duration.seconds(60)); // 2 minutes
-Duration.minutes(5).subtract(Duration.seconds(10)); // 290 secondes
+Duration.minutes(1).plus(Duration.seconds(60)); // 2 minutes
+Duration.minutes(5).minus(Duration.seconds(10)); // 290 secondes
 ```
 
 ## Size (Digital Information Quantity)
@@ -812,7 +812,7 @@ regionTable.findInMap('us-east-2', 'regionName');
 ```
 
 On the other hand, the following code will produce the "Mappings" section shown above,
-since the top-level key is an unresolved token. The call to `findInMap` will return a token that resolves to 
+since the top-level key is an unresolved token. The call to `findInMap` will return a token that resolves to
 `{ "Fn::FindInMap": [ "RegionTable", { "Ref": "AWS::Region" }, "regionName" ] }`.
 
 ```ts

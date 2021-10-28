@@ -102,17 +102,8 @@ export class Duration {
 
   /**
    * Add two Durations together
-   *
-   * @deprecated use `add()`
    */
   public plus(rhs: Duration): Duration {
-    return this.add(rhs);
-  }
-
-  /**
-   * Add two Durations together
-   */
-  public add(rhs: Duration): Duration {
     const targetUnit = finestUnit(this.unit, rhs.unit);
     const res = convert(this.amount, this.unit, targetUnit, {}) + convert(rhs.amount, rhs.unit, targetUnit, {});
     return new Duration(res, targetUnit);
@@ -121,7 +112,7 @@ export class Duration {
   /**
    * Substract two Durations together
    */
-  public subtract(rhs: Duration): Duration {
+  public minus(rhs: Duration): Duration {
     const targetUnit = finestUnit(this.unit, rhs.unit);
     const res = convert(this.amount, this.unit, targetUnit, {}) - convert(rhs.amount, rhs.unit, targetUnit, {});
     return new Duration(res, targetUnit);
