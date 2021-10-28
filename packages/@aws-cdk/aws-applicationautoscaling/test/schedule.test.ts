@@ -11,7 +11,9 @@ describe('cron', () => {
     expect(appscaling.Schedule.cron({ hour: '18', minute: '24' }).expressionString).toEqual('cron(24 18 * * ? *)');
 
   });
+});
 
+describe('rate', () => {
   test('rate must be whole number of minutes', () => {
     expect(() => {
       appscaling.Schedule.rate(Duration.minutes(0.13456));
@@ -51,5 +53,18 @@ describe('cron', () => {
     expect('rate(1 hour)').toEqual(appscaling.Schedule.rate(Duration.hours(1))
       .expressionString);
 
+  });
+});
+
+describe('expression', () => {
+  test('test using a literal schedule expression', () => {
+    expect(appscaling.Schedule.expression('cron(0 18 * * ? *)').expressionString).toEqual('cron(0 18 * * ? *)');
+
+  });
+});
+
+describe('at', () => {
+  test('test using at with a specific Date', () => {
+    expect(appscaling.Schedule.at(new Date(2021, 10, 26)).expressionString).toEqual('at(2021-11-26T00:00:00)');
   });
 });
