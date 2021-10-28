@@ -1,7 +1,7 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
 import * as cdk from '@aws-cdk/core';
-import * as servicediscovery from '../lib';
+import * as servicediscovery from '@aws-cdk/aws-servicediscovery';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-servicediscovery-integ');

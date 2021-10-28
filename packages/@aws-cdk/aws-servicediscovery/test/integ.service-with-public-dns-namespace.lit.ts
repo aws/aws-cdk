@@ -1,5 +1,5 @@
 import * as cdk from '@aws-cdk/core';
-import * as servicediscovery from '../lib';
+import * as servicediscovery from '@aws-cdk/aws-servicediscovery';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-servicediscovery-integ');
