@@ -68,6 +68,8 @@ abstract class SecurityGroupBase extends Resource implements ISecurityGroup {
   public readonly connections: Connections = new Connections({ securityGroups: [this] });
   public readonly defaultPort?: Port;
 
+  private peerAsTokenCount: number = 0;
+
   constructor(scope: Construct, id: string, props?: ResourceProps) {
     super(scope, id, props);
 
@@ -83,7 +85,7 @@ abstract class SecurityGroupBase extends Resource implements ISecurityGroup {
       description = `from ${peer.uniqueId}:${connection}`;
     }
 
-    const [scope, id] = determineRuleScope(this, peer, connection, 'from', remoteRule);
+    const [scope, id] = this.determineRuleScope(peer, connection, 'from', remoteRule);
 
     // Skip duplicates
     if (scope.node.tryFindChild(id) === undefined) {
@@ -101,7 +103,7 @@ abstract class SecurityGroupBase extends Resource implements ISecurityGroup {
       description = `to ${peer.uniqueId}:${connection}`;
     }
 
-    const [scope, id] = determineRuleScope(this, peer, connection, 'to', remoteRule);
+    const [scope, id] = this.determineRuleScope(peer, connection, 'to', remoteRule);
 
     // Skip duplicates
     if (scope.node.tryFindChild(id) === undefined) {
@@ -120,6 +122,30 @@ abstract class SecurityGroupBase extends Resource implements ISecurityGroup {
 
   public toEgressRuleConfig(): any {
     return { destinationSecurityGroupId: this.securityGroupId };
+  }
+
+  private determineRuleScope(
+    peer: IPeer,
+    connection: Port,
+    fromTo: 'from' | 'to',
+    remoteRule?: boolean): [SecurityGroupBase, string] {
+
+    if (remoteRule && SecurityGroupBase.isSecurityGroup(peer) && differentStacks(this, peer)) {
+      // Reversed
+      const reversedFromTo = fromTo === 'from' ? 'to' : 'from';
+      return [peer, `${this.uniqueId}:${connection} ${reversedFromTo}`];
+    } else {
+      // Regular (do old ID escaping to in order to not disturb existing deployments)
+      return [this, `${fromTo} ${this.renderPeer(peer)}:${connection}`.replace('/', '_')];
+    }
+  }
+
+  private renderPeer(peer: IPeer) {
+    if (Token.isUnresolved(peer.uniqueId)) {
+      return this.peerAsTokenCount++ ? `'{IndirectPeer${this.peerAsTokenCount}}'` : '{IndirectPeer}';
+    } else {
+      return peer.uniqueId;
+    }
   }
 }
 
