@@ -6,7 +6,7 @@ import { ClusterProps, executeStatement } from './util';
 
 export async function handler(props: TableHandlerProps & ClusterProps, event: AWSLambda.CloudFormationCustomResourceEvent) {
   const tableNamePrefix = props.tableName.prefix;
-  const tableNameSuffix = props.tableName.generateSuffix ? `${event.RequestId.substring(0, 8)}` : '';
+  const tableNameSuffix = props.tableName.generateSuffix ? props.tableName.generateSuffix === 'true' : '';
   const tableColumns = props.tableColumns;
   const clusterProps = props;
 
