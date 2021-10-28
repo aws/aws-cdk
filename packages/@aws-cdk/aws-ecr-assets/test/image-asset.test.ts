@@ -5,7 +5,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { App, DefaultStackSynthesizer, IgnoreMode, Lazy, LegacyStackSynthesizer, Stack, Stage } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import { testFutureBehavior } from 'cdk-build-tools/lib/feature-flag';
+import { testFutureBehavior } from '@aws-cdk/cdk-build-tools/lib/feature-flag';
 import { DockerImageAsset } from '../lib';
 
 /* eslint-disable quote-props */
@@ -52,6 +52,65 @@ describe('image asset', () => {
     // THEN
     const assetMetadata = stack.node.metadata.find(({ type }) => type === cxschema.ArtifactMetadataEntryType.ASSET);
     expect(assetMetadata && (assetMetadata.data as cxschema.ContainerImageAssetMetadataEntry).buildArgs).toEqual({ a: 'b' });
+
+  });
+
+  testFutureBehavior('with hash options', flags, App, (app) => {
+    // WHEN
+    const stack = new Stack(app);
+    new DockerImageAsset(stack, 'Image1', {
+      directory: path.join(__dirname, 'demo-image'),
+      buildArgs: {
+        a: 'b',
+      },
+      invalidation: {
+        buildArgs: false,
+      },
+    });
+    new DockerImageAsset(stack, 'Image2', {
+      directory: path.join(__dirname, 'demo-image'),
+      buildArgs: {
+        a: 'c',
+      },
+      invalidation: {
+        buildArgs: false,
+      },
+    });
+    new DockerImageAsset(stack, 'Image3', {
+      directory: path.join(__dirname, 'demo-image'),
+      buildArgs: {
+        a: 'b',
+      },
+    });
+
+    // THEN
+    const asm = app.synth();
+    const artifact = asm.getStackArtifact(stack.artifactId);
+    expect(artifact.template).toEqual({});
+    expect(artifact.assets).toEqual([
+      {
+        'buildArgs': {
+          'a': 'b',
+        },
+        repositoryName: 'aws-cdk/assets',
+        imageTag: '8c1d9ca9f5d37b1c4870c13a9f855301bb42c1848dbcdd5edc8fe2c6c7261d48',
+        id: '8c1d9ca9f5d37b1c4870c13a9f855301bb42c1848dbcdd5edc8fe2c6c7261d48',
+        packaging: 'container-image',
+        path: 'asset.8c1d9ca9f5d37b1c4870c13a9f855301bb42c1848dbcdd5edc8fe2c6c7261d48',
+        sourceHash: '8c1d9ca9f5d37b1c4870c13a9f855301bb42c1848dbcdd5edc8fe2c6c7261d48',
+      },
+      {
+        'buildArgs': {
+          'a': 'b',
+        },
+        'id': 'd4bbfde4749763cef9707486f81ce1e95d25cedaf4cc34cfcdab7232ec1948ff',
+        'imageTag': 'd4bbfde4749763cef9707486f81ce1e95d25cedaf4cc34cfcdab7232ec1948ff',
+        'packaging': 'container-image',
+        'path': 'asset.d4bbfde4749763cef9707486f81ce1e95d25cedaf4cc34cfcdab7232ec1948ff',
+        'repositoryName': 'aws-cdk/assets',
+        'sourceHash': 'd4bbfde4749763cef9707486f81ce1e95d25cedaf4cc34cfcdab7232ec1948ff',
+      },
+    ]);
 
   });
 

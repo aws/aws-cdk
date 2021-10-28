@@ -1,6 +1,6 @@
 package com.myorg;
 
-import software.amazon.awscdk.lib.App;
+import software.amazon.awscdk.App;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -23,6 +23,7 @@ public class %name.PascalCased%Test {
         // a checked-in JSON file.
         JsonNode actual = JSON.valueToTree(app.synth().getStackArtifact(stack.getArtifactId()).getTemplate());
 
-        assertThat(new ObjectMapper().createObjectNode()).isEqualTo(actual);
+        // Update once resources have been added to the stack
+        assertThat(actual.get("Resources")).isNull();
     }
 }
