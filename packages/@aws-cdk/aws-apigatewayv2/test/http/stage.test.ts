@@ -2,7 +2,7 @@ import { Template } from '@aws-cdk/assertions';
 import { Certificate } from '@aws-cdk/aws-certificatemanager';
 import { Metric } from '@aws-cdk/aws-cloudwatch';
 import { Stack } from '@aws-cdk/core';
-import { DomainName, HttpApi, HttpStage } from '../../lib';
+import { DomainName, DomainNameConfiguration, EndpointType, HttpApi, HttpStage } from '../../lib';
 
 describe('HttpStage', () => {
   test('default', () => {
@@ -128,9 +128,16 @@ describe('HttpStage with domain mapping', () => {
       createDefaultStage: false,
     });
 
-    const dn = new DomainName(stack, 'DN', {
-      domainName,
+    const domainNameConfigurations = new Array<DomainNameConfiguration>();
+    const dnConfig: DomainNameConfiguration = {
       certificate: Certificate.fromCertificateArn(stack, 'cert', certArn),
+      endpointType: EndpointType.REGIONAL,
+    };
+    domainNameConfigurations.push(dnConfig);
+
+    const dn = new DomainName(stack, 'DomainName', {
+      domainName,
+      domainNameConfigurations,
     });
 
     const stage = new HttpStage(stack, 'DefaultStage', {
@@ -142,7 +149,7 @@ describe('HttpStage with domain mapping', () => {
 
     expect(stack.resolve(stage.domainUrl)).toEqual({
       'Fn::Join': ['', [
-        'https://', { Ref: 'DNFDC76583' }, '/',
+        'https://', { Ref: 'DomainNameEC95A6E9' }, '/',
       ]],
     });
   });

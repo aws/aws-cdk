@@ -1,7 +1,7 @@
 import { Template } from '@aws-cdk/assertions';
 import { Certificate } from '@aws-cdk/aws-certificatemanager';
 import { Stack } from '@aws-cdk/core';
-import { DomainName, HttpApi, ApiMapping, WebSocketApi } from '../../lib';
+import { DomainName, HttpApi, ApiMapping, WebSocketApi, DomainNameConfiguration, EndpointType } from '../../lib';
 
 const domainName = 'example.com';
 const certArn = 'arn:aws:acm:us-east-1:111111111111:certificate';
@@ -12,9 +12,16 @@ describe('ApiMapping', () => {
     const stack = new Stack();
     const api = new HttpApi(stack, 'Api');
 
+    const domainNameConfigurations = new Array<DomainNameConfiguration>();
+    const dnConfig: DomainNameConfiguration = {
+      certificate: Certificate.fromCertificateArn(stack, 'cert', certArn),
+      endpointType: EndpointType.REGIONAL,
+    };
+    domainNameConfigurations.push(dnConfig);
+
     const dn = new DomainName(stack, 'DomainName', {
       domainName,
-      certificate: Certificate.fromCertificateArn(stack, 'cert', certArn),
+      domainNameConfigurations,
     });
 
     new ApiMapping(stack, 'Mapping', {
@@ -41,9 +48,16 @@ describe('ApiMapping', () => {
       stageName: 'beta',
     });
 
+    const domainNameConfigurations = new Array<DomainNameConfiguration>();
+    const dnConfig: DomainNameConfiguration = {
+      certificate: Certificate.fromCertificateArn(stack, 'cert', certArn),
+      endpointType: EndpointType.REGIONAL,
+    };
+    domainNameConfigurations.push(dnConfig);
+
     const dn = new DomainName(stack, 'DomainName', {
       domainName,
-      certificate: Certificate.fromCertificateArn(stack, 'cert', certArn),
+      domainNameConfigurations,
     });
 
     new ApiMapping(stack, 'Mapping', {
@@ -67,9 +81,16 @@ describe('ApiMapping', () => {
     const stack = new Stack();
     const api = new HttpApi(stack, 'Api');
 
+    const domainNameConfigurations = new Array<DomainNameConfiguration>();
+    const dnConfig: DomainNameConfiguration = {
+      certificate: Certificate.fromCertificateArn(stack, 'cert', certArn),
+      endpointType: EndpointType.REGIONAL,
+    };
+    domainNameConfigurations.push(dnConfig);
+
     const dn = new DomainName(stack, 'DomainName', {
       domainName,
-      certificate: Certificate.fromCertificateArn(stack, 'cert', certArn),
+      domainNameConfigurations,
     });
 
     expect(() => {
@@ -86,9 +107,16 @@ describe('ApiMapping', () => {
     const stack = new Stack();
     const api = new HttpApi(stack, 'Api');
 
+    const domainNameConfigurations = new Array<DomainNameConfiguration>();
+    const dnConfig: DomainNameConfiguration = {
+      certificate: Certificate.fromCertificateArn(stack, 'cert', certArn),
+      endpointType: EndpointType.REGIONAL,
+    };
+    domainNameConfigurations.push(dnConfig);
+
     const dn = new DomainName(stack, 'DomainName', {
       domainName,
-      certificate: Certificate.fromCertificateArn(stack, 'cert', certArn),
+      domainNameConfigurations,
     });
 
     const mapping = new ApiMapping(stack, 'Mapping', {
@@ -109,9 +137,17 @@ describe('ApiMapping', () => {
     const api = new HttpApi(stack, 'Api', {
       createDefaultStage: false,
     });
+
+    const domainNameConfigurations = new Array<DomainNameConfiguration>();
+    const dnConfig: DomainNameConfiguration = {
+      certificate: Certificate.fromCertificateArn(stack, 'cert', certArn),
+      endpointType: EndpointType.REGIONAL,
+    };
+    domainNameConfigurations.push(dnConfig);
+
     const dn = new DomainName(stack, 'DomainName', {
       domainName,
-      certificate: Certificate.fromCertificateArn(stack, 'cert', certArn),
+      domainNameConfigurations,
     });
 
     // WHEN
@@ -127,9 +163,16 @@ describe('ApiMapping', () => {
     // GIVEN
     const stack = new Stack();
     const api = new WebSocketApi(stack, 'api');
+    const domainNameConfigurations = new Array<DomainNameConfiguration>();
+    const dnConfig: DomainNameConfiguration = {
+      certificate: Certificate.fromCertificateArn(stack, 'cert', certArn),
+      endpointType: EndpointType.REGIONAL,
+    };
+    domainNameConfigurations.push(dnConfig);
+
     const dn = new DomainName(stack, 'DomainName', {
       domainName,
-      certificate: Certificate.fromCertificateArn(stack, 'cert', certArn),
+      domainNameConfigurations,
     });
 
     // WHEN

@@ -82,13 +82,16 @@
     "@aws-cdk/cdk-integ-tools": "0.0.0",
     "@aws-cdk/cfn2ts": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/jest": "^26.0.24"
+    "@types/jest": "^26.0.24",
+    "ts-node": "^10.4.0"
   },
   "dependencies": {
     "@aws-cdk/aws-certificatemanager": "0.0.0",
     "@aws-cdk/aws-cloudwatch": "0.0.0",
     "@aws-cdk/aws-ec2": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
+    "@aws-cdk/aws-s3": "0.0.0",
+    "@aws-cdk/aws-s3-assets": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "constructs": "^3.3.69"
   },
@@ -98,6 +101,8 @@
     "@aws-cdk/aws-ec2": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/core": "0.0.0",
+    "@aws-cdk/aws-s3": "0.0.0",
+    "@aws-cdk/aws-s3-assets": "0.0.0",
     "constructs": "^3.3.69"
   },
   "engines": {

@@ -171,10 +171,16 @@ custom domain to the `$default` stage of the API.
 ```ts
 const certArn = 'arn:aws:acm:us-east-1:111111111111:certificate';
 const domainName = 'example.com';
+const domainNameConfigurations = new Array<DomainNameConfiguration>();
+const dnConfig: DomainNameConfiguration = {
+  certificate: Certificate.fromCertificateArn(stack, 'cert', certArn),
+  endpointType: EndpointType.REGIONAL,
+};
+domainNameConfigurations.push(dnConfig);
 
-const dn = new DomainName(stack, 'DN', {
+const dn = new DomainName(stack, 'DomainName', {
   domainName,
-  certificate: acm.Certificate.fromCertificateArn(stack, 'cert', certArn),
+  domainNameConfigurations,
 });
 
 const api = new HttpApi(stack, 'HttpProxyProdApi', {
