@@ -70,7 +70,8 @@ export interface EmrCreateClusterProps extends sfn.TaskStateBaseProps {
 
   /**
    * An auto-termination policy for an Amazon EMR cluster. An auto-termination policy defines the amount of
-   * idle time in seconds after which a cluster automatically terminates.
+   * idle time in seconds after which a cluster automatically terminates. The value must be between
+   * 60 seconds and 7 days.
    *
    * @default - None
    */
