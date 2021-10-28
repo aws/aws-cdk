@@ -195,23 +195,32 @@ test('application set in --app is `*.js` and executable', async () => {
 });
 
 test('cli throws when the `build` script fails', async () => {
+  // GIVEN
   config.settings.set(['build'], 'fake-command');
   mockSpawn({
     commandLine: ['fake-command'],
     exitCode: 127,
   });
 
+  // WHEN
   await expect(execProgram(sdkProvider, config)).rejects.toEqual(new Error('Subprocess exited with error 127'));
 }, TEN_SECOND_TIMEOUT);
 
 test('cli does not throw when the `build` script succeeds', async () => {
-  config.settings.set(['build'], 'real-command');
+  // GIVEN
+  config.settings.set(['build'], 'real command');
+  config.settings.set(['app'], 'executable-app.js');
   mockSpawn({
-    commandLine: ['real-command'],
+    commandLine: ['real command'],
     exitCode: 0,
+  },
+  {
+    commandLine: ['executable-app.js'],
+    sideEffect: () => writeOutputAssembly(),
   });
 
-  await expect(execProgram(sdkProvider, config)).resolves;
+  // WHEN
+  await execProgram(sdkProvider, config);
 }, TEN_SECOND_TIMEOUT);
 
 
