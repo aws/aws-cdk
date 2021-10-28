@@ -49,10 +49,10 @@ function isStaticClass(properties: spec.Property[] | undefined): boolean {
   return true;
 }
 
-// Pass set and assumptions
 function buildExample(context: ExampleContext, type: spec.Type, level: number): string {
-  // FIXME
-  if (level > 10) {
+  // Check if we are infinitely recursing
+  if (context.breaker.has(type.fqn)) {
+    context.assumptions.push(type.fqn);
     return '';
   }
 
@@ -61,8 +61,14 @@ function buildExample(context: ExampleContext, type: spec.Type, level: number): 
     for (const params of type.initializer?.parameters ?? []) {
       if (params.name === 'scope' || params.name === 'id') {
         example.push(`${params.name === 'scope' ? 'this' : 'id'}, `);
+      } else if (params.name === 'props') {
+        context.breaker.add(type.fqn);
+        example.push(`${addProp(context, params.type, params.name, level)}`);
+        context.breaker.delete(type.fqn);
       } else {
+        context.breaker.add(type.fqn);
         example.push(`${tab(level)}${params.name}: ${addProp(context, params.type, params.name, level)},\n`);
+        context.breaker.delete(type.fqn);
       }
     }
   } else if (spec.isClassType(type) && isStaticClass(type.properties)) {
@@ -71,7 +77,9 @@ function buildExample(context: ExampleContext, type: spec.Type, level: number): 
     example.push(`${tab(level)}${type.name}.${type.members[0].name},\n`);
   } else if (spec.isInterfaceType(type)) {
     for (const props of type.properties ?? []) {
+      context.breaker.add(type.fqn);
       example.push(`${tab(level)}${props.name}: ${addProp(context, props.type, props.name, level)},\n`);
+      context.breaker.delete(type.fqn);
     }
     example.push(tab(level-1));
   }
