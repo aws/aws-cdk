@@ -124,7 +124,7 @@ abstract class SecurityGroupBase extends Resource implements ISecurityGroup {
     return { destinationSecurityGroupId: this.securityGroupId };
   }
 
-  private determineRuleScope(
+  protected determineRuleScope(
     peer: IPeer,
     connection: Port,
     fromTo: 'from' | 'to',
@@ -197,26 +197,6 @@ abstract class SecurityGroupBase extends Resource implements ISecurityGroup {
  *   ║                     └───────────┘ ║
  *   ╚═══════════════════════════════════╝
  */
-function determineRuleScope(
-  group: SecurityGroupBase,
-  peer: IPeer,
-  connection: Port,
-  fromTo: 'from' | 'to',
-  remoteRule?: boolean): [SecurityGroupBase, string] {
-
-  if (remoteRule && SecurityGroupBase.isSecurityGroup(peer) && differentStacks(group, peer)) {
-    // Reversed
-    const reversedFromTo = fromTo === 'from' ? 'to' : 'from';
-    return [peer, `${group.uniqueId}:${connection} ${reversedFromTo}`];
-  } else {
-    // Regular (do old ID escaping to in order to not disturb existing deployments)
-    return [group, `${fromTo} ${renderPeer(peer)}:${connection}`.replace('/', '_')];
-  }
-}
-
-function renderPeer(peer: IPeer) {
-  return Token.isUnresolved(peer.uniqueId) ? '{IndirectPeer}' : peer.uniqueId;
-}
 
 function differentStacks(group1: SecurityGroupBase, group2: SecurityGroupBase) {
   return Stack.of(group1) !== Stack.of(group2);
@@ -591,13 +571,12 @@ export class SecurityGroup extends SecurityGroupBase {
    */
   private removeNoTrafficRule() {
     if (this.disableInlineRules) {
-      const [scope, id] = determineRuleScope(
-        this,
+      const [scope, id] = this.determineRuleScope(
         NO_TRAFFIC_PEER,
         NO_TRAFFIC_PORT,
         'to',
-        false);
-
+        false,
+      );
       scope.node.tryRemoveChild(id);
     } else {
       const i = this.directEgressRules.findIndex(r => egressRulesEqual(r, MATCH_NO_TRAFFIC));
