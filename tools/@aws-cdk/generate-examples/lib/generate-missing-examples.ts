@@ -9,6 +9,7 @@ export async function generateMissingExamples(assemblyLocations: string[]) {
     for (const aClass of typesystem.classes) {
       const classType = aClass.spec;
       const a = generateClassExample(typesystem, classType);
+      // eslint-disable-next-line no-console
       console.log(a);
     }
   }
