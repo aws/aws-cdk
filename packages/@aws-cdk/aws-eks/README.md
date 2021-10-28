@@ -983,8 +983,8 @@ Additionally, the `chartAsset` property can be an `aws-s3-assets.Asset`. This al
 const chartAsset = new Asset(this, 'ChartAsset', {
   path: path.join(__dirname, 'test-chart'),
 });
+
 this.cluster.addHelmChart('test-chart', {
-  chart: 'test-chart-asset',
   chartAsset: chartAsset,
 });
 ```

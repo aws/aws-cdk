@@ -14,9 +14,11 @@ import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 export interface HelmChartOptions {
   /**
-   * The name of the chart.
+   * The name of the chart to install
+   * @default - If this is not specified, chartAsset will be used. Either
+   * chart or chartAsset must specified
    */
-  readonly chart: string;
+  readonly chart?: string;
 
   /**
    * The name of the release.
@@ -38,7 +40,7 @@ export interface HelmChartOptions {
 
   /**
   * The name of a chart Asset.
-  * @default - No Asset will be used, which means the chart needs to be a repository or absolute URL.
+  * @default - No Asset will be used, which means the chart needs to be a repository or absolute URL. Either chart or chartAsset must specified
   */
   readonly chartAsset?: Asset;
 
@@ -107,6 +109,16 @@ export class HelmChart extends CoreConstruct {
     const timeout = props.timeout?.toSeconds();
     if (timeout && timeout > 900) {
       throw new Error('Helm chart timeout cannot be higher than 15 minutes.');
+    }
+
+    if (!props.chart && !props.chartAsset) {
+      throw new Error('Helm chart or chartAsset must be specified');
+    }
+
+    if (props.chartAsset && (props.repository || props.version)) {
+      throw new Error(
+        'Helm repository and version cannot be used with chartAsset',
+      );
     }
 
     // default not to wait
