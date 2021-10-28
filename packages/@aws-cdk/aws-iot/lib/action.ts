@@ -8,9 +8,9 @@ export interface IAction {
   /**
    * Returns the topic rule action specification.
    *
-   * @param rule The TopicRule that would trigger this action.
+   * @param topicRule The TopicRule that would trigger this action.
    */
-  bind(rule: ITopicRule): ActionConfig;
+  bind(topicRule: ITopicRule): ActionConfig;
 }
 
 /**

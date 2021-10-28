@@ -40,8 +40,8 @@ import * as iot from '@aws-cdk/aws-iot';
 
 ## `TopicRule`
 
-Create a rule that give your devices the ability to interact with AWS services.
-You can create a rule with an action that invoke the Lambda action as following:
+Create a topic rule that give your devices the ability to interact with AWS services.
+You can create a topic rule with an action that invoke the Lambda action as following:
 
 ```ts
 import * as iot from '@aws-cdk/aws-iot';
@@ -60,7 +60,7 @@ const func = new lambda.Function(this, 'MyFunction', {
 
 new iot.TopicRule(this, 'TopicRule', {
   sql: iot.IotSql.fromStringAsVer20160323("SELECT topic(2) as device_id, timestamp() as timestamp FROM 'device/+/data'"),
-  actions: [new actions.LambdaAction(func)],
+  actions: [new actions.LambdaFunctionAction(func)],
 });
 ```
 
@@ -70,5 +70,5 @@ Or, you can add an action after constructing the `TopicRule` instance as followi
 const topicRule = new iot.TopicRule(this, 'TopicRule', {
   sql: iot.IotSql.fromStringAsVer20160323("SELECT topic(2) as device_id, timestamp() as timestamp FROM 'device/+/data'"),
 });
-topicRule.addAction(new actions.LambdaAction(func))
+topicRule.addAction(new actions.LambdaFunctionAction(func))
 ```

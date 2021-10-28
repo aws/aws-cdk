@@ -45,6 +45,6 @@ const func = new lambda.Function(this, 'MyFunction', {
 
 new iot.TopicRule(this, 'TopicRule', {
   sql: iot.IotSql.fromStringAsVer20160323("SELECT topic(2) as device_id, timestamp() as timestamp, temperature FROM 'device/+/data'"),
-  actions: [new actions.LambdaAction(func)],
+  actions: [new actions.LambdaFunctionAction(func)],
 });
 ```

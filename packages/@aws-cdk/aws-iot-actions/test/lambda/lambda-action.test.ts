@@ -17,7 +17,7 @@ test('create a topic rule with lambda action and a lambda permission to be invok
   });
 
   // WHEN
-  topicRule.addAction(new actions.LambdaAction(func));
+  topicRule.addAction(new actions.LambdaFunctionAction(func));
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::IoT::TopicRule', {

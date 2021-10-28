@@ -29,13 +29,13 @@ export interface ITopicRule extends IResource {
  */
 export interface TopicRuleProps {
   /**
-   * The name of the rule.
+   * The name of the topic rule.
    * @default None
    */
   readonly topicRuleName?: string;
 
   /**
-   * The actions associated with the rule.
+   * The actions associated with the topic rule.
    *
    * @default No actions will be perform
    */
@@ -77,13 +77,13 @@ export class TopicRule extends Resource implements ITopicRule {
   }
 
   /**
-   * Arn of this rule
+   * Arn of this topic rule
    * @attribute
    */
   public readonly topicRuleArn: string;
 
   /**
-   * Name of this rule
+   * Name of this topic rule
    * @attribute
    */
   public readonly topicRuleName: string;
@@ -119,9 +119,9 @@ export class TopicRule extends Resource implements ITopicRule {
   }
 
   /**
-   * Add a action to the rule.
+   * Add a action to the topic rule.
    *
-   * @param action the action to associate with the rule.
+   * @param action the action to associate with the topic rule.
    */
   public addAction(action: IAction): void {
     const { configuration } = action.bind(this);

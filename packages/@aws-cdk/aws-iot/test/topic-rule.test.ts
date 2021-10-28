@@ -19,14 +19,14 @@ test('Default property', () => {
 
 test('can get topic rule name', () => {
   const stack = new cdk.Stack();
-  const rule = new iot.TopicRule(stack, 'MyTopicRule', {
+  const topicRule = new iot.TopicRule(stack, 'MyTopicRule', {
     sql: iot.IotSql.fromStringAsVer20151008("SELECT topic(2) as device_id, temperature FROM 'device/+/data'"),
   });
 
   new cdk.CfnResource(stack, 'Res', {
     type: 'Test::Resource',
     properties: {
-      TopicRuleName: rule.topicRuleName,
+      TopicRuleName: topicRule.topicRuleName,
     },
   });
 
@@ -37,14 +37,14 @@ test('can get topic rule name', () => {
 
 test('can get topic rule arn', () => {
   const stack = new cdk.Stack();
-  const rule = new iot.TopicRule(stack, 'MyTopicRule', {
+  const topicRule = new iot.TopicRule(stack, 'MyTopicRule', {
     sql: iot.IotSql.fromStringAsVer20151008("SELECT topic(2) as device_id, temperature FROM 'device/+/data'"),
   });
 
   new cdk.CfnResource(stack, 'Res', {
     type: 'Test::Resource',
     properties: {
-      TopicRuleArn: rule.topicRuleArn,
+      TopicRuleArn: topicRule.topicRuleArn,
     },
   });
 
@@ -206,13 +206,13 @@ test('cannot add an action that have multiple keys', () => {
 test('can import a TopicRule by ARN', () => {
   const stack = new cdk.Stack();
 
-  const topicRuleArn = 'arn:aws:iot:ap-northeast-1:123456789012:rule/my-rule-name';
+  const topicRuleArn = 'arn:aws:iot:ap-northeast-1:123456789012:rule/my-topic-rule-name';
 
   const topicRule = iot.TopicRule.fromTopicRuleArn(stack, 'TopicRuleFromArn', topicRuleArn);
 
   expect(topicRule).toMatchObject({
     topicRuleArn,
-    topicRuleName: 'my-rule-name',
+    topicRuleName: 'my-topic-rule-name',
   });
 });
 
