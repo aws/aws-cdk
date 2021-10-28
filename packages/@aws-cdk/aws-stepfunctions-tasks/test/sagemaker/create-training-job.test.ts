@@ -142,6 +142,7 @@ test('create complex training job', () => {
         },
       ],
     },
+    enableNetworkIsolation: true,
     hyperparameters: {
       lr: '0.1',
     },
@@ -221,6 +222,7 @@ test('create complex training job', () => {
           { Name: 'mymetric', Regex: 'regex_pattern' },
         ],
       },
+      EnableNetworkIsolation: true,
       HyperParameters: {
         lr: '0.1',
       },
