@@ -539,19 +539,17 @@ If the endpoint does not expose private access (via `EndpointAccess.PUBLIC`) **o
 
 The `ClusterHandler` is a set of Lambda functions (`onEventHandler`, `isCompleteHandler`) responsible for interacting with the EKS API in order to control the cluster lifecycle. To provision these functions inside the VPC, set the `placeClusterHandlerInVpc` property to `true`. This will place the functions inside the private subnets of the VPC based on the selection strategy specified in the [`vpcSubnets`](https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_aws-eks.Cluster.html#vpcsubnetsspan-classapi-icon-api-icon-experimental-titlethis-api-element-is-experimental-it-may-change-without-noticespan) property.
 
-The `onEventHandler` Lambda is the only Lambda used for calling AWS's EKS API.
-
-You can configure the environment of the `onEventHandler` function by specifying it at cluster instantiation. For example, this can be useful in order to configure an http proxy:
+You can configure the environment of the Cluster Handler functions by specifying it at cluster instantiation. For example, this can be useful in order to configure an http proxy:
 
 ```ts
 const cluster = new eks.Cluster(this, 'hello-eks', {
   version: eks.KubernetesVersion.V1_21,
   clusterHandlerEnvironment: {
-    'http_proxy': 'http://proxy.myproxy.com'
+    http_proxy: 'http://proxy.myproxy.com'
   },
   /**
    * If proxy is not open to public you may pass a security group to the
-   * `onEvent` cluster handler Lambda.
+   * Cluster Handler Lambdas.
    */
   clusterHandlerSecurityGroup: proxyInstanceSecurityGroup
 });
