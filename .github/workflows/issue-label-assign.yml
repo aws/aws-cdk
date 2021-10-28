@@ -217,7 +217,7 @@ jobs:
            {"area":"@aws-cdk/cfnspec","keywords":["cfn-spec"],"labels":["@aws-cdk/cfnspec"],"assignees":["rix0rrr"]},
            {"area":"@aws-cdk/cloud-assembly-schema","keywords":["cloud-assembly-schema","manifest"],"labels":["@aws-cdk/cloud-assembly-schema"],"assignees":["rix0rrr"]},
            {"area":"@aws-cdk/cloudformation-diff","keywords":["cloudformation-diff","cfn-diff"],"labels":["@aws-cdk/cloudformation-diff"],"assignees":["skinny85"]},
-           {"area":"@aws-cdk/cloudformation-include","keywords":["cloudformation-include","cfn-include"],"labels":["@aws-cdk/cloudformation-include"],"assignees":["skinny85"]},
+           {"area":"@aws-cdk/cloudformation-include","keywords":["cloudformation-include","cfn-include"],"labels":["@aws-cdk/cloudformation-include"],"assignees":["comcalvi"]},
            {"area":"@aws-cdk/core","keywords":["cross-account","nested stacks","core"],"labels":["@aws-cdk/core"],"assignees":["rix0rrr"]},
            {"area":"@aws-cdk/custom-resources","keywords":["custom-resource","provider"],"labels":["@aws-cdk/custom-resources"],"assignees":["rix0rrr"]},
            {"area":"@aws-cdk/cx-api","keywords":["cx-api","cloudartifact","cloudassembly"],"labels":["@aws-cdk/cx-api"],"assignees":["rix0rrr"]},
