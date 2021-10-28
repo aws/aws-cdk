@@ -12,13 +12,6 @@ import { WebSocketRoute, WebSocketRouteOptions } from './route';
  */
 export interface IWebSocketApi extends IApi {
   /**
-   * The ARN of the WebSocket API.
-   *
-   * @attribute
-   */
-  readonly apiArn: string;
-
-  /**
    * Add a websocket integration
    * @internal
    */
@@ -76,7 +69,6 @@ export interface WebSocketApiProps {
 export class WebSocketApi extends ApiBase implements IWebSocketApi {
   public readonly apiId: string;
   public readonly apiEndpoint: string;
-  public readonly apiArn: string;
 
   /**
    * A human friendly name for this WebSocket API. Note that this is different from `webSocketApiId`.
@@ -96,10 +88,6 @@ export class WebSocketApi extends ApiBase implements IWebSocketApi {
     });
     this.apiId = resource.ref;
     this.apiEndpoint = resource.attrApiEndpoint;
-    this.apiArn = Stack.of(this).formatArn({
-      service: 'execute-api',
-      resource: this.apiId,
-    });
 
     if (props?.connectRouteOptions) {
       this.addRoute('$connect', props.connectRouteOptions);
@@ -148,11 +136,16 @@ export class WebSocketApi extends ApiBase implements IWebSocketApi {
    *
    * @param identity The principal
    */
-  public grantManagementApiAccess(identity: IGrantable): Grant {
+  public grantManageConnections(identity: IGrantable): Grant {
+    const arn = Stack.of(this).formatArn({
+      service: 'execute-api',
+      resource: this.apiId,
+    });
+
     return Grant.addToPrincipal({
       grantee: identity,
       actions: ['execute-api:ManageConnections'],
-      resourceArns: [`${this.apiArn}/*`],
+      resourceArns: [`${arn}/*/POST/@connections/*`],
     });
   }
 }

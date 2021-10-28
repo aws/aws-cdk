@@ -28,17 +28,20 @@ Higher level constructs for Websocket APIs | ![Experimental](https://img.shields
 
 ## Table of Contents
 
-- [Introduction](#introduction)
-- [HTTP API](#http-api)
-  - [Defining HTTP APIs](#defining-http-apis)
-  - [Cross Origin Resource Sharing (CORS)](#cross-origin-resource-sharing-cors)
-  - [Publishing HTTP APIs](#publishing-http-apis)
-  - [Custom Domain](#custom-domain)
-  - [Managing access](#managing-access)
-  - [Metrics](#metrics)
-  - [VPC Link](#vpc-link)
-  - [Private Integration](#private-integration)
-- [WebSocket API](#websocket-api)
+- [AWS::APIGatewayv2 Construct Library](#awsapigatewayv2-construct-library)
+  - [Table of Contents](#table-of-contents)
+  - [Introduction](#introduction)
+  - [HTTP API](#http-api)
+    - [Defining HTTP APIs](#defining-http-apis)
+    - [Cross Origin Resource Sharing (CORS)](#cross-origin-resource-sharing-cors)
+    - [Publishing HTTP APIs](#publishing-http-apis)
+    - [Custom Domain](#custom-domain)
+    - [Managing access](#managing-access)
+    - [Metrics](#metrics)
+    - [VPC Link](#vpc-link)
+    - [Private Integration](#private-integration)
+  - [WebSocket API](#websocket-api)
+    - [Manage Connections Permission](#manage-connections-permission)
 
 ## Introduction
 
@@ -335,4 +338,22 @@ webSocketApi.addRoute('sendmessage', {
     handler: messageHandler,
   }),
 });
+```
+
+### Manage Connections Permission
+
+Grant permission to use API Gateway Management API of a WebSocket API by calling the `grantManageConnections` API.
+
+```ts
+const lambda = new lambda.Function(this, 'lambda', { /* ... */ });
+
+const webSocketApi = new WebSocketApi(stack, 'mywsapi');
+const stage = new WebSocketStage(stack, 'mystage', {
+  webSocketApi,
+  stageName: 'dev',
+});
+// per stage permission
+stage.grantManageConnections(lambda);
+// for all the stages permission
+webSocketApi.grantManageConnections(lambda);
 ```

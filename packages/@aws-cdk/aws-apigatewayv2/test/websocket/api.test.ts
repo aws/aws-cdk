@@ -82,24 +82,29 @@ describe('WebSocketApi', () => {
     });
   });
 
-  test('grantManagementApiAccess: adds an IAM policy to the principal', () => {
-    // GIVEN
-    const stack = new Stack();
-    const api = new WebSocketApi(stack, 'api');
-    const principal = new User(stack, 'user');
+  describe('grantManageConnections', () => {
+    test('adds an IAM policy to the principal', () => {
+      // GIVEN
+      const stack = new Stack();
+      const api = new WebSocketApi(stack, 'api');
+      const principal = new User(stack, 'user');
 
-    // WHEN
-    api.grantManagementApiAccess(principal);
+      // WHEN
+      api.grantManageConnections(principal);
 
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-      PolicyDocument: {
-        Statement: Match.arrayWith([{
-          Action: 'execute-api:ManageConnections',
-          Effect: 'Allow',
-          Resource: stack.resolve(`${api.apiArn}/*`),
-        }]),
-      },
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: Match.arrayWith([{
+            Action: 'execute-api:ManageConnections',
+            Effect: 'Allow',
+            Resource: stack.resolve(`${Stack.of(api).formatArn({
+              service: 'execute-api',
+              resource: api.apiId,
+            })}/*/POST/@connections/*`),
+          }]),
+        },
+      });
     });
   });
 });

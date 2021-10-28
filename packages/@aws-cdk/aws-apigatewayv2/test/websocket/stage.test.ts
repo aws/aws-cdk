@@ -61,28 +61,33 @@ describe('WebSocketStage', () => {
     expect(defaultStage.callbackUrl.startsWith('https://')).toBe(true);
   });
 
-  test('grantManagementApiAccess: adds an IAM policy to the principal', () => {
-    // GIVEN
-    const stack = new Stack();
-    const api = new WebSocketApi(stack, 'Api');
-    const defaultStage = new WebSocketStage(stack, 'Stage', {
-      webSocketApi: api,
-      stageName: 'dev',
-    });
-    const principal = new User(stack, 'User');
+  describe('grantManageConnections', () => {
+    test('adds an IAM policy to the principal', () => {
+      // GIVEN
+      const stack = new Stack();
+      const api = new WebSocketApi(stack, 'Api');
+      const defaultStage = new WebSocketStage(stack, 'Stage', {
+        webSocketApi: api,
+        stageName: 'dev',
+      });
+      const principal = new User(stack, 'User');
 
-    // WHEN
-    defaultStage.grantManagementApiAccess(principal);
+      // WHEN
+      defaultStage.grantManagementApiAccess(principal);
 
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-      PolicyDocument: {
-        Statement: Match.arrayWith([{
-          Action: 'execute-api:ManageConnections',
-          Effect: 'Allow',
-          Resource: stack.resolve(`${api.apiArn}/${defaultStage.stageName}/POST/@connections/*`),
-        }]),
-      },
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: Match.arrayWith([{
+            Action: 'execute-api:ManageConnections',
+            Effect: 'Allow',
+            Resource: stack.resolve(`${Stack.of(api).formatArn({
+              service: 'execute-api',
+              resource: api.apiId,
+            })}/${defaultStage.stageName}/POST/@connections/*`),
+          }]),
+        },
+      });
     });
   });
 });
