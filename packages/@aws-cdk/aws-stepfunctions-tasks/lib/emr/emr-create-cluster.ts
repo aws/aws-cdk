@@ -1408,7 +1408,7 @@ export namespace EmrCreateCluster {
   export interface AutoTerminationPolicyProperty {
 
     /**
-     * Specifies the amount of idle time in seconds after which the cluster automatically terminates.
+     * Specifies the amount of idle time after which the cluster automatically terminates.
      */
     readonly idleTimeout: cdk.Duration;
   }
