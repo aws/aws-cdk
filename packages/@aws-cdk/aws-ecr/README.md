@@ -27,16 +27,19 @@ const repository = new ecr.Repository(this, 'Repository');
 Amazon ECR image scanning helps in identifying software vulnerabilities in your container images. You can manually scan container images stored in Amazon ECR, or you can configure your repositories to scan images when you push them to a repository. To create a new repository to scan on push, simply enable `imageScanOnPush` in the properties
 
 ```ts
-const repository = new ecr.Repository(stack, 'Repo', {
-  imageScanOnPush: true
+const repository = new ecr.Repository(this, 'Repo', {
+  imageScanOnPush: true,
 });
 ```
 
 To create an `onImageScanCompleted` event rule and trigger the event target
 
 ```ts
+declare const repository: ecr.Repository;
+declare const target: SomeTarget;
+
 repository.onImageScanCompleted('ImageScanComplete')
-  .addTarget(...)
+  .addTarget(target);
 ```
 
 ### Authorization Token
@@ -50,10 +53,7 @@ A Docker authorization token can be obtained using the `GetAuthorizationToken` E
 grants an IAM user access to call this API.
 
 ```ts
-import * as iam from '@aws-cdk/aws-iam';
-import * as ecr from '@aws-cdk/aws-ecr';
-
-const user = new iam.User(this, 'User', { ... });
+const user = new iam.User(this, 'User');
 ecr.AuthorizationToken.grantRead(user);
 ```
 
@@ -65,10 +65,7 @@ higher rate and bandwidth limits.
 The following code snippet grants an IAM user access to retrieve an authorization token for the public gallery.
 
 ```ts
-import * as iam from '@aws-cdk/aws-iam';
-import * as ecr from '@aws-cdk/aws-ecr';
-
-const user = new iam.User(this, 'User', { ... });
+const user = new iam.User(this, 'User');
 ecr.PublicGalleryAuthorizationToken.grantRead(user);
 ```
 
@@ -79,7 +76,7 @@ This user can then proceed to login to the registry using one of the [authentica
 You can set tag immutability on images in our repository using the `imageTagMutability` construct prop.
 
 ```ts
-new ecr.Repository(stack, 'Repo', { imageTagMutability: ecr.TagMutability.IMMUTABLE });
+new ecr.Repository(this, 'Repo', { imageTagMutability: ecr.TagMutability.IMMUTABLE });
 ```
 
 ## Automatically clean up repositories
@@ -91,6 +88,7 @@ against that image. For example, the following deletes images older than
 is important here):
 
 ```ts
+declare const repository: ecr.Repository;
 repository.addLifecycleRule({ tagPrefixList: ['prod'], maxImageCount: 9999 });
-repository.addLifecycleRule({ maxImageAge: cdk.Duration.days(30) });
+repository.addLifecycleRule({ maxImageAge: Duration.days(30) });
 ```
