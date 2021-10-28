@@ -45,7 +45,8 @@
   },
   "repository": {
     "url": "https://github.com/aws/aws-cdk.git",
-    "type": "git"
+    "type": "git",
+    "directory": "packages/@aws-cdk/cfnspec"
   },
   "license": "Apache-2.0",
   "author": {

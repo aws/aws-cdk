@@ -6,7 +6,8 @@
   "types": "lib/index.d.ts",
   "repository": {
     "type": "git",
-    "url": "https://github.com/aws/aws-cdk.git"
+    "url": "https://github.com/aws/aws-cdk.git",
+    "directory": "packages/decdk"
   },
   "bin": {
     "decdk": "bin/decdk",
