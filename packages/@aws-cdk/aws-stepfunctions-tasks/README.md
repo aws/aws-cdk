@@ -700,9 +700,10 @@ you can specify the `autoTerminationPolicy` property. Set the `idleTimeout` as a
 
 ```ts
 new tasks.EmrCreateCluster(this, 'Create Cluster', {
-  // ...
+  instances: {},
+  name: 'ClusterName',
   autoTerminationPolicy: {
-    idleTimeout: cdk.Duration.seconds(120),
+    idleTimeout: Duration.seconds(120),
   },
 });
 ```
