@@ -1,9 +1,6 @@
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
+import { Construct } from 'constructs';
 import { CfnVirtualNode } from './appmesh.generated';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
 
 /**
  * Properties for VirtualNode Service Discovery

@@ -6,14 +6,10 @@ import * as codepipeline_actions from '@aws-cdk/aws-codepipeline-actions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
-import { IDependable, ISynthesisSession, Lazy, Stack, attachCustomSynthesis } from '@aws-cdk/core';
-import { Construct } from 'constructs';
+import { ISynthesisSession, Lazy, Stack, attachCustomSynthesis } from '@aws-cdk/core';
+import { IDependable, Construct } from 'constructs';
 import { AssetType } from '../../blueprint/asset-type';
 import { toPosixPath } from '../../private/fs';
-
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * Props for a PublishAssetsAction
@@ -116,7 +112,7 @@ export interface PublishAssetsActionProps {
  *
  * @deprecated This class is part of the old API. Use the API based on the `CodePipeline` class instead
  */
-export class PublishAssetsAction extends CoreConstruct implements codepipeline.IAction {
+export class PublishAssetsAction extends Construct implements codepipeline.IAction {
   private readonly action: codepipeline.IAction;
   private readonly commands = new Array<string>();
 
@@ -200,7 +196,8 @@ export class PublishAssetsAction extends CoreConstruct implements codepipeline.I
   /**
    * Exists to implement IAction
    */
-  public bind(scope: CoreConstruct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions): codepipeline.ActionConfig {
+  public bind(scope: Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
+  codepipeline.ActionConfig {
     return this.action.bind(scope, stage, options);
   }
 
