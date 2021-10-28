@@ -60,8 +60,6 @@ export function ApplicationConfigPropertyToJson(property: EmrCreateCluster.Appli
 
 /**
  * Render the AutoTerminationPolicyProperty as JSON
- *
- * @param property
  */
 export function AutoTerminationPolicyPropertyToJson(property: EmrCreateCluster.AutoTerminationPolicyProperty) {
   return {
