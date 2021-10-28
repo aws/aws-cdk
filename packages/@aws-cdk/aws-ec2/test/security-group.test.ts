@@ -225,10 +225,10 @@ describe('security group', () => {
 
     // THEN -- no crash
     expect(stack).toHaveResourceLike('AWS::EC2::SecurityGroupIngress', {
-      "Description": "Rule 1",
+      Description: 'Rule 1',
     });
     expect(stack).toHaveResourceLike('AWS::EC2::SecurityGroupIngress', {
-      "Description": "Rule 2",
+      Description: 'Rule 2',
     });
   });
 
