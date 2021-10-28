@@ -249,10 +249,7 @@ test('create an encrypted cluster with custom KMS key', () => {
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::Redshift::Cluster', {
     KmsKeyId: {
-      'Fn::GetAtt': [
-        'Key961B73FD',
-        'Arn',
-      ],
+      Ref: 'Key961B73FD',
     },
   });
 });

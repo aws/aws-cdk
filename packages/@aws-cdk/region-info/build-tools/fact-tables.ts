@@ -72,6 +72,37 @@ export const ROUTE_53_BUCKET_WEBSITE_ZONE_IDS: { [region: string]: string } = {
   'us-west-2': 'Z3BJ6K6RIION7M',
 };
 
+/**
+ * The hosted zone Id of the Elastic Beanstalk environment.
+ *
+ * @see https://docs.aws.amazon.com/general/latest/gr/elasticbeanstalk.html
+ */
+export const EBS_ENV_ENDPOINT_HOSTED_ZONE_IDS: { [region: string]: string } = {
+  'af-south-1': 'Z1EI3BVKMKK4AM',
+  'ap-east-1': 'ZPWYUBWRU171A',
+  'ap-northeast-1': 'Z1R25G3KIG2GBW',
+  'ap-northeast-2': 'Z3JE5OI70TWKCP',
+  'ap-northeast-3': 'ZNE5GEY1TIAGY',
+  'ap-south-1': 'Z18NTBI3Y7N9TZ',
+  'ap-southeast-1': 'Z16FZ9L249IFLT',
+  'ap-southeast-2': 'Z2PCDNR3VC2G1N',
+  'ca-central-1': 'ZJFCZL7SSZB5I',
+  'eu-central-1': 'Z1FRNW7UH4DEZJ',
+  'eu-north-1': 'Z23GO28BZ5AETM',
+  'eu-south-1': 'Z10VDYYOA2JFKM',
+  'eu-west-1': 'Z2NYPWQ7DFZAZH',
+  'eu-west-2': 'Z1GKAAAUGATPF1',
+  'eu-west-3': 'Z5WN6GAYWG5OB',
+  'me-south-1': 'Z2BBTEKR2I36N2',
+  'sa-east-1': 'Z10X7K2B4QSOFV',
+  'us-east-1': 'Z117KPS5GTRQ2G',
+  'us-east-2': 'Z14LCN19Q5QHIC',
+  'us-gov-east-1': 'Z35TSARG0EJ4VU',
+  'us-gov-west-1': 'Z4KAURWC4UUUG',
+  'us-west-1': 'Z1LQECGX5PH1X',
+  'us-west-2': 'Z38NKT9BP95V3O',
+};
+
 interface Region { partition: string, domainSuffix: string }
 
 export const PARTITION_MAP: { [region: string]: Region } = {
