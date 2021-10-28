@@ -17,7 +17,7 @@ export function generateClassExample(typeSystem: TypeSystem, classType: spec.Cla
   if (classType.abstract) {
     // eslint-disable-next-line no-console
     console.log(`${classType.fqn} is an abstract class`);
-  } else if (isStaticClass(classType.properties)) {
+  } else if (isStaticClass(classType)) {
     // eslint-disable-next-line no-console
     console.log(`${classType.fqn} is an enum-like class`);
   } else {
@@ -31,11 +31,14 @@ export function generateClassExample(typeSystem: TypeSystem, classType: spec.Cla
   return example.join('');
 }
 
-// TODO: not just properties but also methods
 /**
- * Checks whether a class has only static methods, excluding the constructor.
+ * Checks whether a class has only static methods or properties, excluding the constructor.
  */
-function isStaticClass(properties: spec.Property[] | undefined): boolean {
+function isStaticClass(classType: spec.ClassType): boolean {
+  return allStaticMethods(classType.methods) || allStaticProps(classType.properties);
+}
+
+function allStaticProps(properties: spec.Property[] | undefined): boolean {
   // TODO: more robust checking for constructor method.
   let once = false;
   for (const prop of properties ?? []) {
@@ -49,6 +52,15 @@ function isStaticClass(properties: spec.Property[] | undefined): boolean {
   return true;
 }
 
+function allStaticMethods(methods: spec.Method[] | undefined): boolean {
+  for (const meth of methods ?? []) {
+    if (!meth.static) {
+      return false;
+    }
+  }
+  return true;
+}
+
 function buildExample(context: ExampleContext, type: spec.Type, level: number): string {
   // Check if we are infinitely recursing
   if (context.breaker.has(type.fqn)) {
@@ -57,7 +69,7 @@ function buildExample(context: ExampleContext, type: spec.Type, level: number): 
   }
 
   const example: string[] = [];
-  if (spec.isClassType(type) && !isStaticClass(type.properties)) {
+  if (spec.isClassType(type) && !isStaticClass(type)) {
     for (const params of type.initializer?.parameters ?? []) {
       if (params.name === 'scope' || params.name === 'id') {
         example.push(`${params.name === 'scope' ? 'this' : 'id'}, `);
@@ -71,10 +83,10 @@ function buildExample(context: ExampleContext, type: spec.Type, level: number): 
         context.breaker.delete(type.fqn);
       }
     }
-  } else if (spec.isClassType(type) && isStaticClass(type.properties)) {
-    example.push(`${tab(level)}${type.name}.${type.properties![0].name},\n`);
+  } else if (spec.isClassType(type) && isStaticClass(type)) {
+    example.push(`${tab(level)}${module(type.fqn)}.${type.name}.${type.properties![0].name},\n`);
   } else if (spec.isEnumType(type)) {
-    example.push(`${tab(level)}${type.name}.${type.members[0].name},\n`);
+    example.push(`${tab(level)}${module(type.fqn)}.${type.name}.${type.members[0].name},\n`);
   } else if (spec.isInterfaceType(type)) {
     for (const props of type.properties ?? []) {
       context.breaker.add(type.fqn);
@@ -163,4 +175,10 @@ function inObject(fragment: string): string {
 
 function inArray(fragment: string): string {
   return `[${fragment}]`;
+}
+
+function module(fqn: string): string {
+  const moduleName = fqn.split('/')[1].split('.')[0];
+  const names = moduleName.split('-');
+  return names[0] === 'aws' ? names[1] : names[0];
 }
