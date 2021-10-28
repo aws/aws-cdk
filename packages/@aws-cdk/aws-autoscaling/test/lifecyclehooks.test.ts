@@ -169,7 +169,7 @@ test('adding a lifecycle hook with a role and with no notificationTarget to an A
       defaultResult: autoscaling.DefaultResult.ABANDON,
       role: myrole,
     });
-  }).toThrow( /'notificationTarget' parameter required when 'role' parameter is specified/);
+  }).toThrow(/'notificationTarget' parameter required when 'role' parameter is specified/);
 });
 
 class FakeNotificationTarget implements autoscaling.ILifecycleHookTarget {
