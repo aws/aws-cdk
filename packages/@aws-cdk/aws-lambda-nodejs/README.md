@@ -99,7 +99,8 @@ used by your function. Otherwise bundling will fail.
 ## Local bundling
 
 If `esbuild` is available it will be used to bundle your code in your environment. Otherwise,
-bundling will happen in a [Lambda compatible Docker container](https://gallery.ecr.aws/sam/build-nodejs12.x).
+bundling will happen in a [Lambda compatible Docker container](https://gallery.ecr.aws/sam/build-nodejs12.x)
+with the Docker platform based on the target architecture of the Lambda function.
 
 For macOS the recommendend approach is to install `esbuild` as Docker volume performance is really poor.
 
@@ -223,6 +224,22 @@ an array of commands to run. Commands are chained with `&&`.
 
 The commands will run in the environment in which bundling occurs: inside the
 container for Docker bundling or on the host OS for local bundling.
+
+## Pre Compilation with TSC
+
+In some cases, `esbuild` may not yet support some newer features of the typescript language, such as,
+[`emitDecoratorMetadata`](https://www.typescriptlang.org/tsconfig#emitDecoratorMetadata).
+In such cases, it is possible to run pre-compilation using `tsc` by setting the `preCompilation` flag.
+
+```ts
+new lambda.NodejsFunction(this, 'my-handler', {
+  bundling: {
+    preCompilation: true,
+  },
+});
+```
+
+Note: A [`tsconfig.json` file](https://www.typescriptlang.org/docs/handbook/tsconfig-json.html) is required 
 
 ## Customizing Docker bundling
 
