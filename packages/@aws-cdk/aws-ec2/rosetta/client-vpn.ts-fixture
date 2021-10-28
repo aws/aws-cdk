@@ -9,7 +9,7 @@ class Fixture extends Stack {
 
     const vpc = new ec2.Vpc(this, 'VPC');
     const samlProvider = new iam.SamlProvider(this, 'Provider', {
-      metadataDocument: SamlMetadataDocument.fromXml('xml'),
+      metadataDocument: iam.SamlMetadataDocument.fromXml('xml'),
     })
 
     /// here
