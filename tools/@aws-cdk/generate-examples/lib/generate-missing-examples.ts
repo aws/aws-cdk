@@ -8,7 +8,7 @@ export async function generateMissingExamples(assemblyLocations: string[]) {
     await typesystem.load(path.join(assemblyLocation, '.jsii'));
     for (const aClass of typesystem.classes) {
       const classType = aClass.spec;
-      const a = generateClassExample(typesystem, classType);
+      const a = generateClassExample(typesystem, classType).join('');
       console.log(a);
     }
   }

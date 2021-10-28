@@ -1,8 +1,8 @@
 import * as spec from '@jsii/spec';
 import { TypeSystem } from 'jsii-reflect';
 
-export function generateClassExample(typeSystem: TypeSystem, classType: spec.ClassType): string {
-  let example = '';
+export function generateClassExample(typeSystem: TypeSystem, classType: spec.ClassType): string[] {
+  const example: string[] = [];
   //if (!type.fqn.split('.')[1].startsWith('Cfn')) {
   // TODO: Classes without initializer or protected initializer
   if (classType.abstract) {
@@ -11,9 +11,9 @@ export function generateClassExample(typeSystem: TypeSystem, classType: spec.Cla
     console.log(`${classType.fqn} is an enum-like class`);
   } else {
     console.log(`${classType.fqn} could have example`);
-    example += `new ${classType.name}(this, 'My${classType.name}', {\n`;
-    example += buildExample(typeSystem, classType, 1);
-    example += '});';
+    example.push(`new ${classType.name}(this, 'My${classType.name}', {\n`);
+    example.push(buildExample(typeSystem, classType, 1).join(''));
+    example.push('});');
   }
   return example;
 }
@@ -35,23 +35,23 @@ function isStaticClass(properties: spec.Property[] | undefined): boolean {
   return true;
 }
 
-function buildExample(typeSystem: TypeSystem, type: spec.Type, level: number): string {
+function buildExample(typeSystem: TypeSystem, type: spec.Type, level: number): string[] {
   //
   if (level > 10) {
-    return '';
+    return [];
   }
-  let example = '';
+  const example: string[] = [];
   if (spec.isClassType(type)) {
     for (const params of type.initializer?.parameters ?? []) {
-      example += `${tabLevel(level)}${params.name}: ${addProp(typeSystem, params.type, params.name, level)},\n`;
+      example.push(`${tabLevel(level)}${params.name}: ${addProp(typeSystem, params.type, params.name, level)},\n`);
     }
   } else if (spec.isEnumType(type)) {
-    example += `${type.name}.${type.members[0].name},\n`;
+    example.push(`${type.name}.${type.members[0].name},\n`);
   } else if (spec.isInterfaceType(type)) {
     for (const props of type.properties ?? []) {
-      example += `\n${tabLevel(level)}${props.name}: ${addProp(typeSystem, props.type, props.name, level)},`;
+      example.push(`\n${tabLevel(level)}${props.name}: ${addProp(typeSystem, props.type, props.name, level)},`);
     }
-    example += `\n${tabLevel(level-1)}`;
+    example.push(`\n${tabLevel(level-1)}`);
   }
   return example;
 }
@@ -59,7 +59,7 @@ function buildExample(typeSystem: TypeSystem, type: spec.Type, level: number): s
 function addProp(typeSystem: TypeSystem, typeReference: spec.TypeReference, name: string, level: number): string {
   // Process primitive types, base case
   if (spec.isPrimitiveTypeReference(typeReference)) {
-    switch ((typeReference as spec.PrimitiveTypeReference).primitive) {
+    switch (typeReference.primitive) {
       case spec.PrimitiveType.String: {
         return `'${name}'`;
       }
@@ -95,7 +95,7 @@ function addProp(typeSystem: TypeSystem, typeReference: spec.TypeReference, name
   // If its a collection create a collection of one element
   if (spec.isCollectionTypeReference(typeReference)) {
     //console.log('collectioN: ',name, typeReference);
-    const collection = (typeReference as spec.CollectionTypeReference).collection;
+    const collection = typeReference.collection;
     if (collection.kind === spec.CollectionKind.Array) {
       return `[${addProp(typeSystem, collection.elementtype,name, level+1)}]`;
     } else {
@@ -106,7 +106,7 @@ function addProp(typeSystem: TypeSystem, typeReference: spec.TypeReference, name
   // Process objects recursively
   if (spec.isNamedTypeReference(typeReference)) {
     //console.log('named: ',name, typeReference);
-    const fqn = (typeReference as spec.NamedTypeReference).fqn;
+    const fqn = typeReference.fqn;
     // See if we have information on this type in the assembly
     const nextType = typeSystem.tryFindFqn(fqn)?.spec;
     //console.log('nextType: ', nextType?.fqn, typeReference.fqn);
