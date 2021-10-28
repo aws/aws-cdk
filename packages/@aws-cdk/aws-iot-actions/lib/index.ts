@@ -1,1 +1,1 @@
-export * from './lambda-action';
+export * from './lambda-function-action';
