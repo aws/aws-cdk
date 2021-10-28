@@ -795,7 +795,6 @@
                   }
                 ],
                 "Name": "Synth",
-                "Namespace": "Synth",
                 "OutputArtifacts": [
                   {
                     "Name": "Synth_Output"
