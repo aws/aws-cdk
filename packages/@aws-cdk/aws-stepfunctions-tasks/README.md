@@ -33,6 +33,7 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
   - [API Gateway](#api-gateway)
     - [Call REST API Endpoint](#call-rest-api-endpoint)
     - [Call HTTP API Endpoint](#call-http-api-endpoint)
+  - [AWS SDK](#aws-sdk)
   - [Athena](#athena)
     - [StartQueryExecution](#startqueryexecution)
     - [GetQueryExecution](#getqueryexecution)
@@ -109,9 +110,10 @@ The following example provides the field named `input` as the input to the `Task
 state that runs a Lambda function.
 
 ```ts
+declare const fn: lambda.Function;
 const submitJob = new tasks.LambdaInvoke(this, 'Invoke Handler', {
   lambdaFunction: fn,
-  inputPath: '$.input'
+  inputPath: '$.input',
 });
 ```
 
@@ -129,9 +131,10 @@ as well as other metadata.
 The following example assigns the output from the Task to a field named `result`
 
 ```ts
+declare const fn: lambda.Function;
 const submitJob = new tasks.LambdaInvoke(this, 'Invoke Handler', {
   lambdaFunction: fn,
-  outputPath: '$.Payload.result'
+  outputPath: '$.Payload.result',
 });
 ```
 
@@ -148,6 +151,7 @@ The following example extracts the output payload of a Lambda function Task and 
 it with some static values and the state name from the context object.
 
 ```ts
+declare const fn: lambda.Function;
 new tasks.LambdaInvoke(this, 'Invoke Handler', {
   lambdaFunction: fn,
   resultSelector: {
@@ -158,7 +162,7 @@ new tasks.LambdaInvoke(this, 'Invoke Handler', {
     },
     stateName: sfn.JsonPath.stringAt('$$.State.Name'),
   },
-})
+});
 ```
 
 ### ResultPath
@@ -173,9 +177,10 @@ The following example adds the item from calling DynamoDB's `getItem` API to the
 input and passes it to the next state.
 
 ```ts
+declare const myTable: dynamodb.Table;
 new tasks.DynamoPutItem(this, 'PutItem', {
   item: {
-    MessageId: tasks.DynamoAttributeValue.fromString('message-id')
+    MessageId: tasks.DynamoAttributeValue.fromString('message-id'),
   },
   table: myTable,
   resultPath: `$.Item`,
@@ -198,6 +203,7 @@ The following example provides the field named `input` as the input to the Lambd
 and invokes it asynchronously.
 
 ```ts
+declare const fn: lambda.Function;
 const submitJob = new tasks.LambdaInvoke(this, 'Invoke Handler', {
   lambdaFunction: fn,
   payload: sfn.TaskInput.fromJsonPathAt('$.input'),
@@ -205,7 +211,7 @@ const submitJob = new tasks.LambdaInvoke(this, 'Invoke Handler', {
 });
 ```
 
-You can also use [intrinsic functions](https://docs.aws.amazon.com/step-functions/latest/dg/amazon-states-language-intrinsic-functions.html) with `JsonPath.stringAt()`. 
+You can also use [intrinsic functions](https://docs.aws.amazon.com/step-functions/latest/dg/amazon-states-language-intrinsic-functions.html) with `JsonPath.stringAt()`.
 Here is an example of starting an Athena query that is dynamically created using the task input:
 
 ```ts
@@ -257,14 +263,14 @@ const publishMessage = new tasks.SnsPublish(this, 'Publish message', {
 });
 
 const wait = new sfn.Wait(this, 'Wait', {
-  time: sfn.WaitTime.secondsPath('$.waitSeconds')
+  time: sfn.WaitTime.secondsPath('$.waitSeconds'),
 });
 
 new sfn.StateMachine(this, 'StateMachine', {
   definition: convertToSeconds
     .next(createMessage)
     .next(publishMessage)
-    .next(wait)
+    .next(wait),
 });
 ```
 
@@ -285,15 +291,13 @@ Previous-generation REST APIs currently offer more features. More details can be
 The `CallApiGatewayRestApiEndpoint` calls the REST API endpoint.
 
 ```ts
-import * as sfn from '@aws-cdk/aws-stepfunctions';
-import * as tasks from `@aws-cdk/aws-stepfunctions-tasks`;
+import * as apigateway from '@aws-cdk/aws-apigateway';
+const restApi = new apigateway.RestApi(this, 'MyRestApi');
 
-const restApi = new apigateway.RestApi(stack, 'MyRestApi');
-
-const invokeTask = new tasks.CallApiGatewayRestApiEndpoint(stack, 'Call REST API', {
+const invokeTask = new tasks.CallApiGatewayRestApiEndpoint(this, 'Call REST API', {
   api: restApi,
   stageName: 'prod',
-  method: HttpMethod.GET,
+  method: tasks.HttpMethod.GET,
 });
 ```
 
@@ -302,15 +306,51 @@ const invokeTask = new tasks.CallApiGatewayRestApiEndpoint(stack, 'Call REST API
 The `CallApiGatewayHttpApiEndpoint` calls the HTTP API endpoint.
 
 ```ts
-import * as sfn from '@aws-cdk/aws-stepfunctions';
-import * as tasks from `@aws-cdk/aws-stepfunctions-tasks`;
+import * as apigatewayv2 from '@aws-cdk/aws-apigatewayv2';
+const httpApi = new apigatewayv2.HttpApi(this, 'MyHttpApi');
 
-const httpApi = new apigatewayv2.HttpApi(stack, 'MyHttpApi');
-
-const invokeTask = new tasks.CallApiGatewayHttpApiEndpoint(stack, 'Call HTTP API', {
+const invokeTask = new tasks.CallApiGatewayHttpApiEndpoint(this, 'Call HTTP API', {
   apiId: httpApi.apiId,
-  apiStack: cdk.Stack.of(httpApi),
-  method: HttpMethod.GET,
+  apiStack: Stack.of(httpApi),
+  method: tasks.HttpMethod.GET,
+});
+```
+
+### AWS SDK
+
+Step Functions supports calling [AWS service's API actions](https://docs.aws.amazon.com/step-functions/latest/dg/supported-services-awssdk.html)
+through the service integration pattern.
+
+You can use Step Functions' AWS SDK integrations to call any of the over two hundred AWS services
+directly from your state machine, giving you access to over nine thousand API actions.
+
+```ts
+declare const myBucket: s3.Bucket;
+const getObject = new tasks.CallAwsService(this, 'GetObject', {
+  service: 's3',
+  action: 'getObject',
+  parameters: {
+    Bucket: myBucket.bucketName,
+    Key: sfn.JsonPath.stringAt('$.key')
+  },
+  iamResources: [myBucket.arnForObjects('*')],
+});
+```
+
+Use camelCase for actions and PascalCase for parameter names.
+
+The task automatically adds an IAM statement to the state machine role's policy based on the
+service and action called. The resources for this statement must be specified in `iamResources`.
+
+Use the `iamAction` prop to manually specify the IAM action name in the case where the IAM
+action name does not match with the API service/action name:
+
+```ts
+const listBuckets = new tasks.CallAwsService(this, 'ListBuckets', {
+  service: 's3',
+  action: 'ListBuckets',
+  iamResources: ['*'],
+  iamAction: 's3:ListAllMyBuckets',
 });
 ```
 
@@ -378,11 +418,15 @@ Step Functions supports [Batch](https://docs.aws.amazon.com/step-functions/lates
 
 The [SubmitJob](https://docs.aws.amazon.com/batch/latest/APIReference/API_SubmitJob.html) API submits an AWS Batch job from a job definition.
 
-```ts fixture=with-batch-job
+```ts
+import * as batch from '@aws-cdk/aws-batch';
+declare const batchJobDefinition: batch.JobDefinition;
+declare const batchQueue: batch.JobQueue;
+
 const task = new tasks.BatchSubmitJob(this, 'Submit Job', {
-  jobDefinitionArn: batchJobDefinitionArn,
+  jobDefinitionArn: batchJobDefinition.jobDefinitionArn,
   jobName: 'MyJob',
-  jobQueueArn: batchQueueArn,
+  jobQueueArn: batchQueue.jobQueueArn,
 });
 ```
 
@@ -433,6 +477,7 @@ Read more about calling DynamoDB APIs [here](https://docs.aws.amazon.com/step-fu
 The [GetItem](https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_GetItem.html) operation returns a set of attributes for the item with the given primary key.
 
 ```ts
+declare const myTable: dynamodb.Table;
 new tasks.DynamoGetItem(this, 'Get Item', {
   key: { messageId: tasks.DynamoAttributeValue.fromString('message-007') },
   table: myTable,
@@ -444,6 +489,7 @@ new tasks.DynamoGetItem(this, 'Get Item', {
 The [PutItem](https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_PutItem.html) operation creates a new item, or replaces an old item with a new item.
 
 ```ts
+declare const myTable: dynamodb.Table;
 new tasks.DynamoPutItem(this, 'PutItem', {
   item: {
     MessageId: tasks.DynamoAttributeValue.fromString('message-007'),
@@ -459,6 +505,7 @@ new tasks.DynamoPutItem(this, 'PutItem', {
 The [DeleteItem](https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_DeleteItem.html) operation deletes a single item in a table by primary key.
 
 ```ts
+declare const myTable: dynamodb.Table;
 new tasks.DynamoDeleteItem(this, 'DeleteItem', {
   key: { MessageId: tasks.DynamoAttributeValue.fromString('message-007') },
   table: myTable,
@@ -472,6 +519,7 @@ The [UpdateItem](https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/
 to the table if it does not already exist.
 
 ```ts
+declare const myTable: dynamodb.Table;
 new tasks.DynamoUpdateItem(this, 'UpdateItem', {
   key: {
     MessageId: tasks.DynamoAttributeValue.fromString('message-007')
@@ -509,8 +557,6 @@ The latest ACTIVE revision of the passed task definition is used for running the
 The following example runs a job from a task definition on EC2
 
 ```ts
-import * as ecs from '@aws-cdk/aws-ecs';
-
 const vpc = ec2.Vpc.fromLookup(this, 'Vpc', {
   isDefault: true,
 });
@@ -531,20 +577,20 @@ taskDefinition.addContainer('TheContainer', {
 });
 
 const runTask = new tasks.EcsRunTask(this, 'Run', {
-    integrationPattern: sfn.IntegrationPattern.RUN_JOB,
-    cluster,
-    taskDefinition,
-    launchTarget: new tasks.EcsEc2LaunchTarget({
-      placementStrategies: [
-        ecs.PlacementStrategy.spreadAcrossInstances(),
-        ecs.PlacementStrategy.packedByCpu(),
-        ecs.PlacementStrategy.randomly(),
-      ],
-      placementConstraints: [
-        ecs.PlacementConstraint.memberOf('blieptuut')
-      ],
-    }),
-  });
+  integrationPattern: sfn.IntegrationPattern.RUN_JOB,
+  cluster,
+  taskDefinition,
+  launchTarget: new tasks.EcsEc2LaunchTarget({
+    placementStrategies: [
+      ecs.PlacementStrategy.spreadAcrossInstances(),
+      ecs.PlacementStrategy.packedByCpu(),
+      ecs.PlacementStrategy.randomly(),
+    ],
+    placementConstraints: [
+      ecs.PlacementConstraint.memberOf('blieptuut'),
+    ],
+  }),
+});
 ```
 
 #### Fargate
@@ -564,8 +610,6 @@ task definition is used for running the task. Learn more about
 The following example runs a job from a task definition on Fargate
 
 ```ts
-import * as ecs from '@aws-cdk/aws-ecs';
-
 const vpc = ec2.Vpc.fromLookup(this, 'Vpc', {
   isDefault: true,
 });
@@ -610,7 +654,6 @@ Creates and starts running a cluster (job flow).
 Corresponds to the [`runJobFlow`](https://docs.aws.amazon.com/emr/latest/APIReference/API_RunJobFlow.html) API in EMR.
 
 ```ts
-
 const clusterRole = new iam.Role(this, 'ClusterRole', {
   assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
 });
@@ -651,7 +694,8 @@ and 256 inclusive, where the default concurrency of 1 means no step concurrency 
 
 ```ts
 new tasks.EmrCreateCluster(this, 'Create Cluster', {
-  // ...
+  instances: {},
+  name: sfn.TaskInput.fromJsonPathAt('$.ClusterName').value,
   stepConcurrencyLevel: 10,
 });
 ```
@@ -677,7 +721,7 @@ Corresponds to the [`terminateJobFlows`](https://docs.aws.amazon.com/emr/latest/
 
 ```ts
 new tasks.EmrTerminateCluster(this, 'Task', {
-  clusterId: 'ClusterId'
+  clusterId: 'ClusterId',
 });
 ```
 
@@ -688,10 +732,10 @@ Corresponds to the [`addJobFlowSteps`](https://docs.aws.amazon.com/emr/latest/AP
 
 ```ts
 new tasks.EmrAddStep(this, 'Task', {
-    clusterId: 'ClusterId',
-    name: 'StepName',
-    jar: 'Jar',
-    actionOnFailure: tasks.ActionOnFailure.CONTINUE,
+  clusterId: 'ClusterId',
+  name: 'StepName',
+  jar: 'Jar',
+  actionOnFailure: tasks.ActionOnFailure.CONTINUE,
 });
 ```
 
@@ -755,17 +799,15 @@ The following code snippet includes a Task state that uses eks:call to list the 
 
 ```ts
 import * as eks from '@aws-cdk/aws-eks';
-import * as sfn from '@aws-cdk/aws-stepfunctions';
-import * as tasks from '@aws-cdk/aws-stepfunctions-tasks';
 
 const myEksCluster = new eks.Cluster(this, 'my sample cluster', {
-   version: eks.KubernetesVersion.V1_18,
-   clusterName: 'myEksCluster',
- });
+  version: eks.KubernetesVersion.V1_18,
+  clusterName: 'myEksCluster',
+});
 
-new tasks.EksCall(stack, 'Call a EKS Endpoint', {
+new tasks.EksCall(this, 'Call a EKS Endpoint', {
   cluster: myEksCluster,
-  httpMethod: MethodType.GET,
+  httpMethod: tasks.HttpMethods.GET,
   httpPath: '/api/v1/namespaces/default/pods',
 });
 ```
@@ -786,14 +828,12 @@ The following code snippet includes a Task state that uses events:putevents to s
 
 ```ts
 import * as events from '@aws-cdk/aws-events';
-import * as sfn from '@aws-cdk/aws-stepfunctions';
-import * as tasks from '@aws-cdk/aws-stepfunctions-tasks';
 
-const myEventBus = events.EventBus(stack, 'EventBus', {
+const myEventBus = new events.EventBus(this, 'EventBus', {
   eventBusName: 'MyEventBus1',
 });
 
-new tasks.EventBridgePutEvents(stack, 'Send an event to EventBridge', {
+new tasks.EventBridgePutEvents(this, 'Send an event to EventBridge', {
   entries: [{
     detail: sfn.TaskInput.fromObject({
       Message: 'Hello from Step Functions!',
@@ -817,8 +857,8 @@ new tasks.GlueStartJobRun(this, 'Task', {
   arguments: sfn.TaskInput.fromObject({
     key: 'value',
   }),
-  timeout: cdk.Duration.minutes(30),
-  notifyDelayAfter: cdk.Duration.minutes(5),
+  timeout: Duration.minutes(30),
+  notifyDelayAfter: Duration.minutes(5),
 });
 ```
 
@@ -846,6 +886,7 @@ The following snippet invokes a Lambda Function with the state input as the payl
 by referencing the `$` path.
 
 ```ts
+declare const fn: lambda.Function;
 new tasks.LambdaInvoke(this, 'Invoke with state input', {
   lambdaFunction: fn,
 });
@@ -861,6 +902,7 @@ The following snippet invokes a Lambda Function by referencing the `$.Payload` p
 to reference the output of a Lambda executed before it.
 
 ```ts
+declare const fn: lambda.Function;
 new tasks.LambdaInvoke(this, 'Invoke with empty object as payload', {
   lambdaFunction: fn,
   payload: sfn.TaskInput.fromObject({}),
@@ -877,6 +919,7 @@ The following snippet invokes a Lambda and sets the task output to only include
 the Lambda function response.
 
 ```ts
+declare const fn: lambda.Function;
 new tasks.LambdaInvoke(this, 'Invoke and set function response as task output', {
   lambdaFunction: fn,
   outputPath: '$.Payload',
@@ -889,6 +932,7 @@ Lambda function ARN directly in the "Resource" string, but it conflicts with the
 integrationPattern, invocationType, clientContext, and qualifier properties.
 
 ```ts
+declare const fn: lambda.Function;
 new tasks.LambdaInvoke(this, 'Invoke and combine function response with task input', {
   lambdaFunction: fn,
   payloadResponseOnly: true,
@@ -907,6 +951,7 @@ The following snippet invokes a Lambda with the task token as part of the input
 to the Lambda.
 
 ```ts
+declare const fn: lambda.Function;
 new tasks.LambdaInvoke(this, 'Invoke with callback', {
   lambdaFunction: fn,
   integrationPattern: sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
@@ -930,6 +975,10 @@ disable this behavior.
 ## SageMaker
 
 Step Functions supports [AWS SageMaker](https://docs.aws.amazon.com/step-functions/latest/dg/connect-sagemaker.html) through the service integration pattern.
+
+If your training job or model uses resources from AWS Marketplace,
+[network isolation is required](https://docs.aws.amazon.com/sagemaker/latest/dg/mkt-algo-model-internet-free.html).
+To do so, set the `enableNetworkIsolation` property to `true` for `SageMakerCreateModel` or `SageMakerCreateTrainingJob`.
 
 ### Create Training Job
 
@@ -956,11 +1005,11 @@ new tasks.SageMakerCreateTrainingJob(this, 'TrainSagemaker', {
   },
   resourceConfig: {
     instanceCount: 1,
-    instanceType: new ec2.InstanceType(JsonPath.stringAt('$.InstanceType')),
-    volumeSize: cdk.Size.gibibytes(50),
+    instanceType: new ec2.InstanceType(sfn.JsonPath.stringAt('$.InstanceType')),
+    volumeSize: Size.gibibytes(50),
   }, // optional: default is 1 instance of EC2 `M4.XLarge` with `10GB` volume
   stoppingCondition: {
-    maxRuntime: cdk.Duration.hours(2),
+    maxRuntime: Duration.hours(2),
   }, // optional: default is 1 hour
 });
 ```
@@ -975,7 +1024,7 @@ new tasks.SageMakerCreateTransformJob(this, 'Batch Inference', {
   modelName: 'MyModelName',
   modelClientOptions: {
     invocationsMaxRetries: 3,  // default is 0
-    invocationsTimeout: cdk.Duration.minutes(5),  // default is 60 seconds
+    invocationsTimeout: Duration.minutes(5),  // default is 60 seconds
   },
   transformInput: {
     transformDataSource: {
@@ -1017,9 +1066,9 @@ new tasks.SageMakerCreateEndpointConfig(this, 'SagemakerEndpointConfig', {
   productionVariants: [{
   initialInstanceCount: 2,
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.XLARGE),
-     modelName: 'MyModel',
-     variantName: 'awesome-variant',
-   }],
+    modelName: 'MyModel',
+    variantName: 'awesome-variant',
+  }],
 });
 ```
 
@@ -1031,9 +1080,9 @@ You can call the [`CreateModel`](https://docs.aws.amazon.com/sagemaker/latest/AP
 new tasks.SageMakerCreateModel(this, 'Sagemaker', {
   modelName: 'MyModel',
   primaryContainer: new tasks.ContainerDefinition({
-   image: tasks.DockerImage.fromJsonExpression(sfn.JsonPath.stringAt('$.Model.imageName')),
-   mode: tasks.Mode.SINGLE_MODEL,
-   modelS3Location: tasks.S3Location.fromJsonExpression('$.TrainingJob.ModelArtifacts.S3ModelArtifacts'),
+    image: tasks.DockerImage.fromJsonExpression(sfn.JsonPath.stringAt('$.Model.imageName')),
+    mode: tasks.Mode.SINGLE_MODEL,
+    modelS3Location: tasks.S3Location.fromJsonExpression('$.TrainingJob.ModelArtifacts.S3ModelArtifacts'),
   }),
 });
 ```
@@ -1044,9 +1093,9 @@ You can call the [`UpdateEndpoint`](https://docs.aws.amazon.com/sagemaker/latest
 
 ```ts
 new tasks.SageMakerUpdateEndpoint(this, 'SagemakerEndpoint', {
-    endpointName: sfn.JsonPath.stringAt('$.Endpoint.Name'),
-    endpointConfigName: sfn.JsonPath.stringAt('$.Endpoint.EndpointConfig'),
-  });
+  endpointName: sfn.JsonPath.stringAt('$.Endpoint.Name'),
+  endpointConfigName: sfn.JsonPath.stringAt('$.Endpoint.EndpointConfig'),
+});
 ```
 
 ## SNS
@@ -1069,7 +1118,7 @@ const task1 = new tasks.SnsPublish(this, 'Publish1', {
     },
     pic: {
       // BINARY must be explicitly set
-      type: MessageAttributeDataType.BINARY,
+      dataType: tasks.MessageAttributeDataType.BINARY,
       value: sfn.JsonPath.stringAt('$.pic'),
     },
     people: {
@@ -1078,7 +1127,7 @@ const task1 = new tasks.SnsPublish(this, 'Publish1', {
     handles: {
       value: ['@kslater', '@jjf', null, '@mfanning'],
     },
-
+  },
 });
 
 // Combine a field from the execution data with
@@ -1088,7 +1137,7 @@ const task2 = new tasks.SnsPublish(this, 'Publish2', {
   message: sfn.TaskInput.fromObject({
     field1: 'somedata',
     field2: sfn.JsonPath.stringAt('$.field2'),
-  })
+  }),
 });
 ```
 
@@ -1103,7 +1152,7 @@ AWS Step Functions supports it's own [`StartExecution`](https://docs.aws.amazon.
 ```ts
 // Define a state machine with one Pass state
 const child = new sfn.StateMachine(this, 'ChildStateMachine', {
-    definition: sfn.Chain.start(new sfn.Pass(this, 'PassState')),
+  definition: sfn.Chain.start(new sfn.Pass(this, 'PassState')),
 });
 
 // Include the state machine in a Task state with callback pattern
@@ -1112,14 +1161,14 @@ const task = new tasks.StepFunctionsStartExecution(this, 'ChildTask', {
   integrationPattern: sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
   input: sfn.TaskInput.fromObject({
     token: sfn.JsonPath.taskToken,
-    foo: 'bar'
+    foo: 'bar',
   }),
-  name: 'MyExecutionName'
+  name: 'MyExecutionName',
 });
 
 // Define a second state machine with the Task state above
 new sfn.StateMachine(this, 'ParentStateMachine', {
-  definition: task
+  definition: task,
 });
 ```
 
@@ -1128,6 +1177,7 @@ via the `associateWithParent` property. This allows the Step Functions UI to lin
 executions from parent executions, making it easier to trace execution flow across state machines.
 
 ```ts
+declare const child: sfn.StateMachine;
 const task = new tasks.StepFunctionsStartExecution(this, 'ChildTask', {
   stateMachine: child,
   associateWithParent: true,
