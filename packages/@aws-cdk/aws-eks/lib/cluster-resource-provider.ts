@@ -76,7 +76,6 @@ export class ClusterResourceProvider extends NestedStack {
     // Allow user to override the layer. Layer must contain `proxy-agent` node_module which is required to proxy AWS SDK requests.
     const proxyAgentLayer = props.proxyAgentLayer ? props.proxyAgentLayer : new NodeProxyAgentLayer(this, 'NodeProxyAgentLayer');
 
-    // This is the only Lambda that calls AWS's EKS API.
     const onEvent = new lambda.Function(this, 'OnEventHandler', {
       code: lambda.Code.fromAsset(HANDLER_DIR),
       description: 'onEvent handler for EKS cluster resource provider',
