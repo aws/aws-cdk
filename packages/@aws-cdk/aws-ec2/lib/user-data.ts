@@ -489,7 +489,11 @@ export class MultipartUserData extends UserData {
    * If `makeDefault` is false, then this is the same as calling:
    *
    * ```ts
-   * multiPart.addPart(MultipartBody.fromUserData(userData, contentType));
+   * declare const multiPart: ec2.MultipartUserData;
+   * declare const userData: ec2.UserData;
+   * declare const contentType: string;
+   *
+   * multiPart.addPart(ec2.MultipartBody.fromUserData(userData, contentType));
    * ```
    *
    * An undefined `makeDefault` defaults to either:

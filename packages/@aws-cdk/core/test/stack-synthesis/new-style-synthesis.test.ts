@@ -337,6 +337,30 @@ describe('new style synthesis', () => {
 
   });
 
+  test('synthesis with dockerPrefix', () => {
+    // GIVEN
+    const myapp = new App();
+
+    // WHEN
+    const mystack = new Stack(myapp, 'mystack-dockerPrefix', {
+      synthesizer: new DefaultStackSynthesizer({
+        dockerTagPrefix: 'test-prefix-',
+      }),
+    });
+
+    mystack.synthesizer.addDockerImageAsset({
+      directoryName: 'some-folder',
+      sourceHash: 'docker-asset-hash',
+    });
+
+    const asm = myapp.synth();
+
+    // THEN
+    const manifest = readAssetManifest(getAssetManifest(asm));
+    const imageTag = manifest.dockerImages?.['docker-asset-hash']?.destinations?.['current_account-current_region'].imageTag;
+    expect(imageTag).toEqual('test-prefix-docker-asset-hash');
+  });
+
   test('cannot use same synthesizer for multiple stacks', () => {
     // GIVEN
     const synthesizer = new DefaultStackSynthesizer();
