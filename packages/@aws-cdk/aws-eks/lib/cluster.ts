@@ -136,13 +136,14 @@ export interface ICluster extends IResource, ec2.IConnectable {
    * Requires `placeClusterHandlerInVpc` to be set to true.
    *
    * @default - No security group.
+   * @attribute
    */
   readonly clusterHandlerSecurityGroup?: ec2.ISecurityGroup;
 
   /**
     * An AWS Lambda layer that includes the NPM dependency `proxy-agent`.
     *
-    * If not defined, a default layer will be used.
+    * @default - If not defined, a default layer will be used.
     */
   readonly proxyAgentLayer?: lambda.ILayerVersion;
 
@@ -532,12 +533,15 @@ export interface ClusterOptions extends CommonClusterOptions {
    *   compatibleRuntimes: [lambda.Runtime.NODEJS_12_X]
    * })
    * ```
+   *
+   * @default - a layer bundled with this module.
    */
   readonly proxyAgentLayer?: lambda.ILayerVersion;
 
   /**
    * Deprecated
    *
+   * @default - a layer bundled with this module.
    * @deprecated use `proxyAgentLayer` instead
    */
   readonly onEventLayer?: lambda.ILayerVersion;
