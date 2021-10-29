@@ -172,9 +172,7 @@
       "docs-public-apis:@aws-cdk/aws-codepipeline-actions.GitHubTrigger.POLL",
       "docs-public-apis:@aws-cdk/aws-codepipeline-actions.GitHubTrigger.WEBHOOK",
       "docs-public-apis:@aws-cdk/aws-codepipeline-actions.CodeDeployEcsDeployAction",
-      "props-default-doc:@aws-cdk/aws-codepipeline-actions.CodeDeployEcsDeployActionProps.containerImageInputs",
-      "props-default-doc:@aws-cdk/aws-codepipeline-actions.CustomActionRegistrationProps.entityUrl",
-      "props-default-doc:@aws-cdk/aws-codepipeline-actions.CustomActionRegistrationProps.executionUrl"
+      "props-default-doc:@aws-cdk/aws-codepipeline-actions.CodeDeployEcsDeployActionProps.containerImageInputs"
     ]
   },
   "awscdkio": {

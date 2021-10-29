@@ -78,6 +78,7 @@ export interface CustomActionRegistrationProps {
 
   /**
    * The provider of the Action.
+   * @example 'MyCustomActionProvider'
    */
   readonly provider: string;
 
@@ -90,11 +91,13 @@ export interface CustomActionRegistrationProps {
 
   /**
    * The URL shown for the entire Action in the Pipeline UI.
+   * @default none
    */
   readonly entityUrl?: string;
 
   /**
    * The URL shown for a particular execution of an Action in the Pipeline UI.
+   * @default none
    */
   readonly executionUrl?: string;
 
