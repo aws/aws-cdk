@@ -228,6 +228,6 @@ const FUTURE_FLAGS_DEFAULTS: { [key: string]: boolean } = {
   [CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021]: true,
 };
 
-export function futureFlagDefault(flag: string): boolean {
+export function futureFlagDefault(flag: string): boolean | undefined {
   return FUTURE_FLAGS_DEFAULTS[flag];
 }

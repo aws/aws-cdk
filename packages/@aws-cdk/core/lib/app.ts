@@ -25,6 +25,12 @@ export interface AppProps {
   /**
    * The output directory into which to emit synthesized artifacts.
    *
+   * You should never need to set this value. By default, the value you pass to
+   * the CLI's `--output` flag will be used, and if you change it to a different
+   * directory the CLI will fail to pick up the generated Cloud Assembly.
+   *
+   * This property is intended for internal and testing use.
+   *
    * @default - If this value is _not_ set, considers the environment variable `CDK_OUTDIR`.
    *            If `CDK_OUTDIR` is not defined, uses a temp directory.
    */
