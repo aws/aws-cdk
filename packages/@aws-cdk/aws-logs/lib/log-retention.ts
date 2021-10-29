@@ -124,8 +124,10 @@ export class LogRetention extends Construct {
 /**
  * Private provider Lambda function to support the log retention custom resource.
  */
-class LogRetentionFunction extends Construct {
+class LogRetentionFunction extends Construct implements cdk.ITaggable {
   public readonly functionArn: cdk.Reference;
+
+  public readonly tags: cdk.TagManager = new cdk.TagManager(cdk.TagType.KEY_VALUE, 'AWS::Lambda::Function');
 
   constructor(scope: Construct, id: string, props: LogRetentionProps) {
     super(scope, id);
@@ -160,6 +162,7 @@ class LogRetentionFunction extends Construct {
           S3Key: asset.s3ObjectKey,
         },
         Role: role.roleArn,
+        Tags: this.tags.renderedTags,
       },
     });
     this.functionArn = resource.getAtt('Arn');
