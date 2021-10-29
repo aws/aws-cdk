@@ -2,13 +2,28 @@ import * as spec from '@jsii/spec';
 import * as reflect from 'jsii-reflect';
 import { TypeSystem } from 'jsii-reflect';
 
-import { Assumption, Code } from './code';
+import { Code } from './code';
 
+/**
+ * Special types that have a standard way of coming up with an example value
+ *
+ * FIXME: We will need to generate imports for these as well. Whoopsie :D
+ */
+const SPECIAL_TYPE_EXAMPLES: Record<string, string> = {
+  '@aws-cdk/core.Duration': 'Duration.minutes(30)',
+  'aws-cdk-lib.Duration': 'Duration.minutes(30)',
+};
+
+/**
+ * Context on the example that we are building.
+ * This object persists throughout the recursive call
+ * and provides the function with the same information
+ * on the typesystem and which types have already been
+ * rendered. This helps to prevent infinite recursion.
+ */
 export class ExampleContext {
   private readonly _typeSystem: TypeSystem;
   private readonly _rendered: Set<string> = new Set();
-  private readonly _assumptions: Assumption[] = [];
-  //private readonly imports: string[] = [];
 
   constructor(typeSystem: TypeSystem) {
     this._typeSystem = typeSystem;
@@ -20,16 +35,6 @@ export class ExampleContext {
 
   public get rendered() {
     return this._rendered;
-  }
-
-  public get assumptions() {
-    return this._assumptions;
-  }
-
-  public addAssumedVariableDeclaration(type: reflect.Type): Code {
-    // FIXME: Potentially a counter here if we have the same name already
-    const variableName = lowercaseFirstLetter(type.name);
-    return new Code(variableName, [{ type, variableName }]);
   }
 }
 
@@ -87,13 +92,6 @@ function generateClassInstantiationExample(initializer: reflect.Initializer): Co
     })),
     ')',
   );
-  // example.append(
-  //   '(',
-  //   initializer.parameters.map((p, i) => exampleValueForParameter(exampleContext, p, i)).join(', '),
-  //   ')',
-  // );
-  //example.unshift(...makeVariableDeclarations(exampleContext.assumptions));
-  //return example;
 }
 
 /**
@@ -114,14 +112,19 @@ function getStaticFactoryProperties(classType: reflect.ClassType): reflect.Prope
   );
 }
 
+// FIXME: add this function
 function generateStaticFactoryMethodExample(_classType: reflect.ClassType, _staticFactoryMethods: reflect.Method) {
   return undefined;
 }
 
+// FIXME: add this function
 function generateStaticFactoryPropertyExample(_classType: reflect.ClassType, _staticFactoryProperties: reflect.Property) {
   return undefined;
 }
 
+/**
+ * Generate an example value of the given parameter.
+ */
 function exampleValueForParameter(context: ExampleContext, param: reflect.Parameter, position: number): Code {
   if (param.name === 'scope' && position === 0) {
     return new Code('this');
@@ -135,7 +138,7 @@ function exampleValueForParameter(context: ExampleContext, param: reflect.Parame
 }
 
 /**
- * Given a type, generate an example value of that type
+ * Generate an example value of the given type.
  */
 function exampleValue(context: ExampleContext, typeReference: reflect.TypeReference, name: string, level: number): Code {
   // Process primitive types, base case
@@ -161,7 +164,7 @@ function exampleValue(context: ExampleContext, typeReference: reflect.TypeRefere
 
   // Just pick the first type if it is a union type
   if (typeReference.unionOfTypes !== undefined) {
-    // TODO: which element should get picked?
+    // FIXME: which element should get picked?
     for (const newType of typeReference.unionOfTypes) {
       if (newType.fqn?.endsWith('.IResolvable')) {
         continue;
@@ -180,9 +183,7 @@ function exampleValue(context: ExampleContext, typeReference: reflect.TypeRefere
     return exampleValueForMap(context, typeReference.mapOfType, name, level);
   }
 
-  // Process objects recursively
   if (typeReference.fqn) {
-    //console.log('named: ',name, typeReference);
     const fqn = typeReference.fqn;
     // See if we have information on this type in the assembly
     const type = context.typeSystem.findFqn(fqn);
@@ -205,12 +206,21 @@ function exampleValue(context: ExampleContext, typeReference: reflect.TypeRefere
     }
 
     // For all other types  we will assume you already have a variable of the appropriate type.
-    return context.addAssumedVariableDeclaration(type);
+    return addAssumedVariableDeclaration(type);
   }
 
-  return new Code('OH NO');
+  throw new Error('If this happens, then reflect.typeRefernce must have a new value');
 }
 
+function addAssumedVariableDeclaration(type: reflect.Type): Code {
+  // FIXME: Potentially a counter here if we have the same name already
+  const variableName = lowercaseFirstLetter(type.name);
+  return new Code(variableName, [{ type, variableName }]);
+}
+
+/**
+ * Helper function to generate an example value for a map.
+ */
 function exampleValueForMap(context: ExampleContext, map: reflect.TypeReference, name: string, level: number): Code {
   return Code.concatAll(
     '{\n',
@@ -219,6 +229,9 @@ function exampleValueForMap(context: ExampleContext, map: reflect.TypeReference,
   );
 }
 
+/**
+ * Helper function to generate an example value for a struct.
+ */
 function exampleValueForStruct(context: ExampleContext, struct: reflect.InterfaceType, level: number): Code {
   if (struct.allProperties.length === 0) {
     return new Code('{ }');
@@ -233,24 +246,13 @@ function exampleValueForStruct(context: ExampleContext, struct: reflect.Interfac
 }
 
 /**
- * Special types that have a standard way of coming up with an example value
- *
- * FIXME: We will need to generate imports for these as well. Whoopsie :D
+ * Returns whether the given type represents a struct
  */
-const SPECIAL_TYPE_EXAMPLES: Record<string, string> = {
-  '@aws-cdk/core.Duration': 'Duration.minutes(30)',
-  'aws-cdk-lib.Duration': 'Duration.minutes(30)',
-};
-
-function lowercaseFirstLetter(str: string): string {
-  return str.charAt(0).toLowerCase() + str.slice(1);
+function isStructType(type: reflect.Type): type is reflect.InterfaceType {
+  return type.isInterfaceType() && type.datatype;
 }
 
-function tab(level: number): string {
-  return '  '.repeat(level);
-}
-
-function extendsRef(subtype: reflect.ClassType, supertypeRef: reflect.TypeReference) {
+function extendsRef(subtype: reflect.ClassType, supertypeRef: reflect.TypeReference): boolean {
   if (!supertypeRef.fqn) {
     // Not a named type, can never extend
     return false;
@@ -260,9 +262,10 @@ function extendsRef(subtype: reflect.ClassType, supertypeRef: reflect.TypeRefere
   return subtype.extends(superType);
 }
 
-/**
- * Returns whether the given type represents a struct
- */
-function isStructType(type: reflect.Type): type is reflect.InterfaceType {
-  return type.isInterfaceType() && type.datatype;
+function lowercaseFirstLetter(str: string): string {
+  return str.charAt(0).toLowerCase() + str.slice(1);
+}
+
+function tab(level: number): string {
+  return '  '.repeat(level);
 }
