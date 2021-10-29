@@ -42,6 +42,20 @@ export interface TopicRuleProps {
   readonly actions?: IAction[];
 
   /**
+   * A textual description of the topic rule.
+   *
+   * @default None
+   */
+  readonly description?: string;
+
+  /**
+   * Specifies whether the rule is enabled.
+   *
+   * @default true
+   */
+  readonly enabled?: boolean
+
+  /**
    * A simplified SQL syntax to filter messages received on an MQTT topic and push the data elsewhere.
    *
    * @see https://docs.aws.amazon.com/iot/latest/developerguide/iot-sql-reference.html
@@ -102,6 +116,8 @@ export class TopicRule extends Resource implements ITopicRule {
       topicRulePayload: {
         actions: Lazy.any({ produce: () => this.actions }),
         awsIotSqlVersion: sqlConfig.awsIotSqlVersion,
+        description: props.description,
+        ruleDisabled: !(props.enabled ?? true),
         sql: sqlConfig.sql,
       },
     });

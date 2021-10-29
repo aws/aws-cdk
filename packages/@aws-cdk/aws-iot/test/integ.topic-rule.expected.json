@@ -12,6 +12,7 @@
             }
           ],
           "AwsIotSqlVersion": "2015-10-08",
+          "RuleDisabled": false,
           "Sql": "SELECT topic(2) as device_id FROM 'device/+/data'"
         }
       }
