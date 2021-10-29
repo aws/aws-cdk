@@ -862,6 +862,10 @@ describe('tests', () => {
           Key: 'deregistration_delay.timeout_seconds',
           Value: '30',
         },
+        {
+          Key: 'stickiness.enabled',
+          Value: 'false',
+        },
       ],
     });
   });
@@ -883,6 +887,10 @@ describe('tests', () => {
     // THEN
     expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
       TargetGroupAttributes: [
+        {
+          Key: 'stickiness.enabled',
+          Value: 'false',
+        },
         {
           Key: 'load_balancing.algorithm.type',
           Value: 'least_outstanding_requests',
