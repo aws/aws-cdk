@@ -129,4 +129,15 @@ See [the Developer Guide](https://docs.aws.amazon.com/Route53/latest/DeveloperGu
   });
   ```
 
+* Elastic Beanstalk environment:
+
+**Important:** Only supports Elastic Beanstalk environments created after 2016 that have a regional endpoint.
+
+  ```ts
+  new route53.ARecord(this, 'AliasRecord', {
+    zone,
+    target: route53.RecordTarget.fromAlias(new alias.ElasticBeanstalkEnvironmentEndpointTarget(ebsEnvironmentUrl)),
+  });
+  ```
+
 See the documentation of `@aws-cdk/aws-route53` for more information.
