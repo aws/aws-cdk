@@ -160,33 +160,21 @@
       ]
     }
   },
-  "Outputs": {
-    "myapiEndpoint3628AFE3": {
-      "Value": {
-        "Fn::Join": [
-          "",
-          [
-            "https://",
-            {
-              "Ref": "myapi4C7BF186"
-            },
-            ".execute-api.",
-            {
-              "Ref": "AWS::Region"
-            },
-            ".",
-            {
-              "Ref": "AWS::URLSuffix"
-            },
-            "/",
-            {
-              "Ref": "myapiDeploymentStageprod298F01AF"
-            },
-            "/"
-          ]
-        ]
-      }
+  "Parameters": {
+    "AssetParameters68497ac876de4e963fc8f7b5f1b28844c18ecc95e3f7c6e9e0bf250e03c037fbS3Bucket42039E29": {
+      "Type": "String",
+      "Description": "S3 bucket for asset \"68497ac876de4e963fc8f7b5f1b28844c18ecc95e3f7c6e9e0bf250e03c037fb\""
     },
+    "AssetParameters68497ac876de4e963fc8f7b5f1b28844c18ecc95e3f7c6e9e0bf250e03c037fbS3VersionKeyB590532F": {
+      "Type": "String",
+      "Description": "S3 key for asset version \"68497ac876de4e963fc8f7b5f1b28844c18ecc95e3f7c6e9e0bf250e03c037fb\""
+    },
+    "AssetParameters68497ac876de4e963fc8f7b5f1b28844c18ecc95e3f7c6e9e0bf250e03c037fbArtifactHashA9C91B6D": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"68497ac876de4e963fc8f7b5f1b28844c18ecc95e3f7c6e9e0bf250e03c037fb\""
+    }
+  },
+  "Outputs": {
     "PetsURL": {
       "Value": {
         "Fn::Join": [
@@ -238,20 +226,6 @@
           ]
         ]
       }
-    }
-  },
-  "Parameters": {
-    "AssetParameters68497ac876de4e963fc8f7b5f1b28844c18ecc95e3f7c6e9e0bf250e03c037fbS3Bucket42039E29": {
-      "Type": "String",
-      "Description": "S3 bucket for asset \"68497ac876de4e963fc8f7b5f1b28844c18ecc95e3f7c6e9e0bf250e03c037fb\""
-    },
-    "AssetParameters68497ac876de4e963fc8f7b5f1b28844c18ecc95e3f7c6e9e0bf250e03c037fbS3VersionKeyB590532F": {
-      "Type": "String",
-      "Description": "S3 key for asset version \"68497ac876de4e963fc8f7b5f1b28844c18ecc95e3f7c6e9e0bf250e03c037fb\""
-    },
-    "AssetParameters68497ac876de4e963fc8f7b5f1b28844c18ecc95e3f7c6e9e0bf250e03c037fbArtifactHashA9C91B6D": {
-      "Type": "String",
-      "Description": "Artifact hash for asset \"68497ac876de4e963fc8f7b5f1b28844c18ecc95e3f7c6e9e0bf250e03c037fb\""
     }
   }
 }

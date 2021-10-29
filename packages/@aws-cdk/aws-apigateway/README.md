@@ -689,8 +689,9 @@ By default, the `RestApi` construct will automatically create an API Gateway
 defined in your CDK app. This means that when you deploy your app, your API will
 be have open access from the internet via the stage URL.
 
-The URL of your API can be obtained from the attribute `restApi.url`, and is
-also exported as an `Output` from your stack, so it's printed when you `cdk
+The URL of your API can be obtained from the attribute `restApi.url`. If the
+context `@aws-cdk/aws-apigateway:noDefaultRestApiCfnOutput` is `false` it will
+also be exported as an `Output` from your stack, so it's printed when you `cdk
 deploy` your app:
 
 ```console
@@ -698,6 +699,9 @@ $ cdk deploy
 ...
 books.booksapiEndpointE230E8D5 = https://6lyktd4lpk.execute-api.us-east-1.amazonaws.com/prod/
 ```
+
+If the context is true (by default in new projects) then an output is only created
+when specifying the `endpointExportName` property.
 
 To disable this behavior, you can set `{ deploy: false }` when creating your
 API. This means that the API will not be deployed and a stage will not be

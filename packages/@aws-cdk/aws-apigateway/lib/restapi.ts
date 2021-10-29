@@ -2,7 +2,8 @@ import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import { IVpcEndpoint } from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import { CfnOutput, IResource as IResourceBase, Resource, Stack } from '@aws-cdk/core';
-import { Construct } from 'constructs';
+import { APIGATEWAY_REST_API_NO_CFN_OUTPUT } from '@aws-cdk/cx-api';
+import { Construct, Node } from 'constructs';
 import { ApiDefinition } from './api-definition';
 import { ApiKey, ApiKeyOptions, IApiKey } from './api-key';
 import { ApiGatewayMetrics } from './apigateway-canned-metrics.generated';
@@ -157,9 +158,11 @@ export interface RestApiBaseProps {
   readonly cloudWatchRole?: boolean;
 
   /**
-   * Export name for the CfnOutput containing the API endpoint
+   * Export name for the CfnOutput containing the API endpoint.
    *
-   * @default - when no export name is given, output will be created without export
+   * @default - If the `@aws-cdk/aws-apigateway:noDefaultRestApiCfnOutput`
+   * context is true no output will be created. If false, an output will be
+   * created but with an undefined export name.
    */
   readonly endpointExportName?: string;
 
@@ -551,7 +554,12 @@ export abstract class RestApiBase extends Resource implements IRestApi {
         ...props.deployOptions,
       });
 
-      new CfnOutput(this, 'Endpoint', { exportName: props.endpointExportName, value: this.urlForPath() });
+      // If the context is true, don't create an unnamed output.
+      // If false - or the endpointExportName is set, do create a CfnOutput.
+      const avoidEmptyExport: boolean | undefined = Node.of(this).tryGetContext(APIGATEWAY_REST_API_NO_CFN_OUTPUT);
+      if (props.endpointExportName || avoidEmptyExport !== true) {
+        new CfnOutput(this, 'Endpoint', { exportName: props.endpointExportName, value: this.urlForPath() });
+      }
     } else {
       if (props.deployOptions) {
         throw new Error('Cannot set \'deployOptions\' if \'deploy\' is disabled');

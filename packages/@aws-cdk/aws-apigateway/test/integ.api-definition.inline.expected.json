@@ -121,32 +121,6 @@
     }
   },
   "Outputs": {
-    "myapiEndpoint3628AFE3": {
-      "Value": {
-        "Fn::Join": [
-          "",
-          [
-            "https://",
-            {
-              "Ref": "myapi4C7BF186"
-            },
-            ".execute-api.",
-            {
-              "Ref": "AWS::Region"
-            },
-            ".",
-            {
-              "Ref": "AWS::URLSuffix"
-            },
-            "/",
-            {
-              "Ref": "myapiDeploymentStageprod298F01AF"
-            },
-            "/"
-          ]
-        ]
-      }
-    },
     "PetsURL": {
       "Value": {
         "Fn::Join": [

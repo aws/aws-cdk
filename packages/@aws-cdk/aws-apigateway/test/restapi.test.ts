@@ -1,7 +1,9 @@
 import '@aws-cdk/assert-internal/jest';
 import { ResourcePart, SynthUtils } from '@aws-cdk/assert-internal';
 import { GatewayVpcEndpoint } from '@aws-cdk/aws-ec2';
+import { testFutureBehavior, testLegacyBehavior } from '@aws-cdk/cdk-build-tools/lib/feature-flag';
 import { App, CfnElement, CfnResource, Stack } from '@aws-cdk/core';
+import { APIGATEWAY_REST_API_NO_CFN_OUTPUT } from '@aws-cdk/cx-api';
 import * as apigw from '../lib';
 
 describe('restapi', () => {
@@ -776,34 +778,82 @@ describe('restapi', () => {
     });
   });
 
-  test('creates output when "exportName" is not specified', () => {
-    // GIVEN
-    const stack = new Stack();
+  describe('future flag: @aws-cdk/aws-apigateway:noDefaultRestApiCfnOutput', () => {
+    testLegacyBehavior('creates output when "exportName" is not specified', App, (app) => {
+      // GIVEN
+      const stack = new Stack(app, 'stack');
 
-    // WHEN
-    const api = new apigw.RestApi(stack, 'myapi');
-    api.root.addMethod('GET');
+      // WHEN
+      const api = new apigw.RestApi(stack, 'myapi');
+      api.root.addMethod('GET');
 
-    // THEN
-    expect(SynthUtils.toCloudFormation(stack).Outputs).toEqual({
-      myapiEndpoint8EB17201: {
-        Value: {
-          'Fn::Join': [
-            '',
-            [
-              'https://',
-              { Ref: 'myapi162F20B8' },
-              '.execute-api.',
-              { Ref: 'AWS::Region' },
-              '.',
-              { Ref: 'AWS::URLSuffix' },
-              '/',
-              { Ref: 'myapiDeploymentStageprod329F21FF' },
-              '/',
+      // THEN
+      expect(SynthUtils.toCloudFormation(stack).Outputs).toEqual({
+        myapiEndpoint8EB17201: {
+          Value: {
+            'Fn::Join': [
+              '',
+              [
+                'https://',
+                { Ref: 'myapi162F20B8' },
+                '.execute-api.',
+                { Ref: 'AWS::Region' },
+                '.',
+                { Ref: 'AWS::URLSuffix' },
+                '/',
+                { Ref: 'myapiDeploymentStageprod329F21FF' },
+                '/',
+              ],
             ],
-          ],
+          },
         },
-      },
+      });
+    });
+
+    testFutureBehavior('does not create output when "exportName" is not specified', { [APIGATEWAY_REST_API_NO_CFN_OUTPUT]: true }, App, (app) => {
+      // GIVEN
+      const stack = new Stack(app, 'stack');
+      stack.node.setContext(APIGATEWAY_REST_API_NO_CFN_OUTPUT, true);
+
+      // WHEN
+      const api = new apigw.RestApi(stack, 'myapi');
+      api.root.addMethod('GET');
+
+      // THEN
+      expect(SynthUtils.toCloudFormation(stack).Outputs).toBeUndefined();
+    });
+
+    testFutureBehavior('creates output when "exportName" is specified', { [APIGATEWAY_REST_API_NO_CFN_OUTPUT]: true }, App, (app) => {
+      // GIVEN
+      const stack = new Stack(app, 'stack');
+      stack.node.setContext(APIGATEWAY_REST_API_NO_CFN_OUTPUT, true);
+
+      // WHEN
+      const api = new apigw.RestApi(stack, 'myapi', { endpointExportName: 'my-given-export-name' });
+      api.root.addMethod('GET');
+
+      // THEN
+      expect(SynthUtils.toCloudFormation(stack).Outputs).toEqual({
+        myapiEndpoint8EB17201: {
+          Value: {
+            'Fn::Join': [
+              '',
+              [
+                'https://',
+                { Ref: 'myapi162F20B8' },
+                '.execute-api.',
+                { Ref: 'AWS::Region' },
+                '.',
+                { Ref: 'AWS::URLSuffix' },
+                '/',
+                { Ref: 'myapiDeploymentStageprod329F21FF' },
+                '/',
+              ],
+            ],
+          },
+          Export: { Name: 'my-given-export-name' },
+        },
+      });
     });
   });
 

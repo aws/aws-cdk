@@ -161,6 +161,15 @@ export const LAMBDA_RECOGNIZE_VERSION_PROPS = '@aws-cdk/aws-lambda:recognizeVers
 export const CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021 = '@aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2_2021';
 
 /**
+ * API Gateway's REST API construct always creates a CfnOutput with a blank exportName. That name can be overridden
+ * by the `endpointExportName` prop but there's no option to simply not have it produce an output in the first
+ * place.
+ * If this values is true, no CfnOutput will be created by the RestApi construct, unless `endpointExportName` is
+ * provided. If false (default legacy behaviour), an output will be created but without an explicit `exportName`.
+ */
+export const APIGATEWAY_REST_API_NO_CFN_OUTPUT = '@aws-cdk/aws-apigateway:noDefaultRestApiCfnOutput';
+
+/**
  * This map includes context keys and values for feature flags that enable
  * capabilities "from the future", which we could not introduce as the default
  * behavior due to backwards compatibility for existing projects.
@@ -187,6 +196,7 @@ export const FUTURE_FLAGS: { [key: string]: any } = {
   [EFS_DEFAULT_ENCRYPTION_AT_REST]: true,
   [LAMBDA_RECOGNIZE_VERSION_PROPS]: true,
   [CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021]: true,
+  [APIGATEWAY_REST_API_NO_CFN_OUTPUT]: true,
 
   // We will advertise this flag when the feature is complete
   // [NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: 'true',
@@ -218,6 +228,7 @@ const FUTURE_FLAGS_DEFAULTS: { [key: string]: boolean } = {
   [EFS_DEFAULT_ENCRYPTION_AT_REST]: false,
   [LAMBDA_RECOGNIZE_VERSION_PROPS]: false,
   [CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021]: false,
+  [APIGATEWAY_REST_API_NO_CFN_OUTPUT]: false,
 };
 
 export function futureFlagDefault(flag: string): boolean | undefined {
