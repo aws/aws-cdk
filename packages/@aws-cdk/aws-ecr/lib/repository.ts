@@ -411,7 +411,9 @@ export class Repository extends RepositoryBase {
       }
     }
 
-    return new Import(scope, id);
+    return new Import(scope, id, {
+      environmentFromArn: repositoryArn,
+    });
   }
 
   public static fromRepositoryName(scope: Construct, id: string, repositoryName: string): IRepository {

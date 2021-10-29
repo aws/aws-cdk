@@ -176,6 +176,9 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
 
       }
 
+      if (!Object.prototype.hasOwnProperty.call(AWS, call.service)) {
+        throw Error(`Service ${call.service} does not exist in AWS SDK version ${AWS.VERSION}.`);
+      }
       const awsService = new (AWS as any)[call.service]({
         apiVersion: call.apiVersion,
         region: call.region,
