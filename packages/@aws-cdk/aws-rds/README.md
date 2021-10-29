@@ -258,9 +258,11 @@ const address = instance.instanceEndpoint.socketAddress;   // "HOSTNAME:PORT"
 When the master password is generated and stored in AWS Secrets Manager, it can be rotated automatically:
 
 ```ts
+import * as cdk from '@aws-cdk/core';
+
 declare const instance: rds.DatabaseInstance;
 instance.addRotationSingleUser({
-  automaticallyAfter: Duration.days(7), // defaults to 30 days
+  automaticallyAfter: cdk.Duration.days(7), // defaults to 30 days
   excludeCharacters: '!@#$%^&*', // defaults to the set " %+~`#$&*()|[]{}:;<>?!'/@\"\\"
 });
 ```
