@@ -2,31 +2,34 @@ import * as spec from '@jsii/spec';
 import * as reflect from 'jsii-reflect';
 import { TypeSystem } from 'jsii-reflect';
 
-interface Assumption {
-  readonly type: reflect.Type;
-  readonly variableName: string;
-}
+import { Assumption, Code } from './code';
 
 export class ExampleContext {
-  public readonly typeSystem: TypeSystem; // FIXME make this private
-  public readonly breaker: Set<string> = new Set();
-  public readonly assumptions: Assumption[] = [];
+  private readonly _typeSystem: TypeSystem;
+  private readonly _rendered: Set<string> = new Set();
+  private readonly _assumptions: Assumption[] = [];
   //private readonly imports: string[] = [];
 
   constructor(typeSystem: TypeSystem) {
-    this.typeSystem = typeSystem;
+    this._typeSystem = typeSystem;
   }
 
-  public addAssumedVariableDeclaration(type: reflect.Type): string {
-    const existing = this.assumptions.find(a => a.type === type);
-    if (existing) {
-      return existing.variableName;
-    }
+  public get typeSystem() {
+    return this._typeSystem;
+  }
 
+  public get rendered() {
+    return this._rendered;
+  }
+
+  public get assumptions() {
+    return this._assumptions;
+  }
+
+  public addAssumedVariableDeclaration(type: reflect.Type): Code {
     // FIXME: Potentially a counter here if we have the same name already
     const variableName = lowercaseFirstLetter(type.name);
-    this.assumptions.push({ type, variableName });
-    return variableName;
+    return new Code(variableName, [{ type, variableName }]);
   }
 }
 
@@ -35,11 +38,15 @@ export function generateClassAssignment(classType: reflect.ClassType): string | 
   if (!expression) {
     return undefined;
   }
-
-  return `const ${lowercaseFirstLetter(classType.name)} = ${expression};`;
+  const code = Code.concatAll(
+    `const ${lowercaseFirstLetter(classType.name)} = `,
+    expression,
+    ';',
+  );
+  return code.toString();
 }
 
-function generateClassExample(classType: reflect.ClassType): string | undefined {
+function generateClassExample(classType: reflect.ClassType): Code | undefined {
   const staticFactoryMethods = getStaticFactoryMethods(classType);
   if (staticFactoryMethods.length > 0) {
     return generateStaticFactoryMethodExample(classType, staticFactoryMethods[0]);
@@ -65,23 +72,28 @@ function getAccessibleConstructor(classType: reflect.ClassType): reflect.Initial
   return classType.initializer;
 }
 
-function generateClassInstantiationExample(initializer: reflect.Initializer) {
-  // FIXME: this should actually return a expression plus assumptions/imports (to be rendered in generateClassAssignment)
-  const example = [];
-  // eslint-disable-next-line no-console
-  console.log(`${initializer.parentType.fqn} could have example`);
-  example.push(`new ${initializer.parentType.name}`);
+function generateClassInstantiationExample(initializer: reflect.Initializer): Code {
   const exampleContext = new ExampleContext(initializer.system);
-  example.push(parenthesize(initializer.parameters.map((p, i) => exampleValueForParameter(exampleContext, p, i)).join(', ')));
-  example.unshift(...makeVariableDeclarations(exampleContext.assumptions));
-  return example.join('');
-}
 
-// FIXME: no need, just one variable for each
-function makeVariableDeclarations(assumptions: Assumption[]): string[] {
-  return assumptions.map(assumption =>
-    `declare const ${assumption.variableName}: ${module(assumption.type).importName}.${assumption.type.name};\n`,
+  return Code.concatAll(
+    `new ${initializer.parentType.name}`,
+    '(',
+    ...(initializer.parameters.map((p, i, params) => {
+      if (params.length -1 === i) {
+        return exampleValueForParameter(exampleContext, p, i);
+      } else {
+        return exampleValueForParameter(exampleContext, p, i).append(', ');
+      }
+    })),
+    ')',
   );
+  // example.append(
+  //   '(',
+  //   initializer.parameters.map((p, i) => exampleValueForParameter(exampleContext, p, i)).join(', '),
+  //   ')',
+  // );
+  //example.unshift(...makeVariableDeclarations(exampleContext.assumptions));
+  //return example;
 }
 
 /**
@@ -110,13 +122,13 @@ function generateStaticFactoryPropertyExample(_classType: reflect.ClassType, _st
   return undefined;
 }
 
-function exampleValueForParameter(context: ExampleContext, param: reflect.Parameter, position: number) {
+function exampleValueForParameter(context: ExampleContext, param: reflect.Parameter, position: number): Code {
   if (param.name === 'scope' && position === 0) {
-    return 'this';
+    return new Code('this');
   }
 
   if (param.name === 'id' && position === 1) {
-    return `'My${param.parentType.name}'`;
+    return new Code(`'My${param.parentType.name}'`);
   }
 
   return exampleValue(context, param.type, param.name, 0);
@@ -125,24 +137,24 @@ function exampleValueForParameter(context: ExampleContext, param: reflect.Parame
 /**
  * Given a type, generate an example value of that type
  */
-function exampleValue(context: ExampleContext, typeReference: reflect.TypeReference, name: string, level: number): string {
+function exampleValue(context: ExampleContext, typeReference: reflect.TypeReference, name: string, level: number): Code {
   // Process primitive types, base case
   if (typeReference.primitive !== undefined) {
     switch (typeReference.primitive) {
       case spec.PrimitiveType.String: {
-        return `'${name}'`;
+        return new Code(`'${name}'`);
       }
       case spec.PrimitiveType.Number: {
-        return '0';
+        return new Code('0');
       }
       case spec.PrimitiveType.Boolean: {
-        return 'false';
+        return new Code('false');
       }
       case spec.PrimitiveType.Any: {
-        return '\'any-value\'';
+        return new Code('\'any-value\'');
       }
       default: {
-        return '---';
+        return new Code('---');
       }
     }
   }
@@ -161,12 +173,11 @@ function exampleValue(context: ExampleContext, typeReference: reflect.TypeRefere
   }
   // If its a collection create a collection of one element
   if (typeReference.arrayOfType !== undefined) {
-    return inArray(exampleValue(context, typeReference.arrayOfType, name, level));
+    return Code.concatAll('[', exampleValue(context, typeReference.arrayOfType, name, level), ']');
   }
 
   if (typeReference.mapOfType !== undefined) {
-    // FIXME:  This is probably wrong, compare it to the rendering of structs
-    return inObject(`\n${tab(level)}${name}Key: ${exampleValue(context, typeReference.mapOfType, name, level+1)}`);
+    return exampleValueForMap(context, typeReference.mapOfType, name, level);
   }
 
   // Process objects recursively
@@ -177,19 +188,19 @@ function exampleValue(context: ExampleContext, typeReference: reflect.TypeRefere
     const type = context.typeSystem.findFqn(fqn);
 
     if (fqn in SPECIAL_TYPE_EXAMPLES) {
-      return SPECIAL_TYPE_EXAMPLES[fqn];
+      return new Code(SPECIAL_TYPE_EXAMPLES[fqn]);
     }
 
     if (type.isEnumType()) {
       // FIXME: Imports?
-      return `${type.name}.${type.members[0].name}`;
+      return new Code(`${type.name}.${type.members[0].name}`);
     }
 
     // If this is struct and we're not already rendering it (recursion breaker), expand
-    if (isStructType(type) && !context.breaker.has(type.fqn)) {
-      context.breaker.add(type.fqn);
+    if (isStructType(type) && !context.rendered.has(type.fqn)) {
+      context.rendered.add(type.fqn);
       const ret = exampleValueForStruct(context, type, level);
-      context.breaker.delete(type.fqn);
+      context.rendered.delete(type.fqn);
       return ret;
     }
 
@@ -197,20 +208,28 @@ function exampleValue(context: ExampleContext, typeReference: reflect.TypeRefere
     return context.addAssumedVariableDeclaration(type);
   }
 
-  return 'OH NO';
+  return new Code('OH NO');
 }
 
-function exampleValueForStruct(context: ExampleContext, struct: reflect.InterfaceType, level: number) {
-  if (struct.allProperties.length === 0) {
-    return '{ }';
-  }
-
-  return [
+function exampleValueForMap(context: ExampleContext, map: reflect.TypeReference, name: string, level: number): Code {
+  return Code.concatAll(
     '{\n',
-    ... (struct.allProperties ?? []).map(p =>
-      `${tab(level + 1)}${p.name}: ${exampleValue(context, p.type, p.name, level + 1)},\n`),
-    tab(level) + '}',
-  ].join('');
+    new Code(`${tab(level + 1)}${name}Key: `).append(exampleValue(context, map, name, level + 1)).append(',\n'),
+    `${tab(level)}}`,
+  );
+}
+
+function exampleValueForStruct(context: ExampleContext, struct: reflect.InterfaceType, level: number): Code {
+  if (struct.allProperties.length === 0) {
+    return new Code('{ }');
+  }
+  return Code.concatAll(
+    '{\n',
+    ...(struct.allProperties ?? []).map(p =>
+      new Code(`${tab(level + 1)}${p.name}: `).append(exampleValue(context, p.type, p.name, level + 1)).append(',\n'),
+    ),
+    `${tab(level)}}`,
+  );
 }
 
 /**
@@ -223,18 +242,6 @@ const SPECIAL_TYPE_EXAMPLES: Record<string, string> = {
   'aws-cdk-lib.Duration': 'Duration.minutes(30)',
 };
 
-
-// function isEmpty(fragment: string): string {
-//   let newFragment: string;
-//   newFragment = fragment.trim();
-//   // eslint-disable-next-line no-console
-//   if (newFragment.length === 0) {
-//     return '';
-//   } else {
-//     return fragment;
-//   }
-// }
-
 function lowercaseFirstLetter(str: string): string {
   return str.charAt(0).toLowerCase() + str.slice(1);
 }
@@ -242,40 +249,6 @@ function lowercaseFirstLetter(str: string): string {
 function tab(level: number): string {
   return '  '.repeat(level);
 }
-
-function parenthesize(fragment: string): string {
-  return `(${fragment})`;
-}
-
-function inObject(fragment: string): string {
-  return `{${fragment}}`;
-}
-
-function inArray(fragment: string): string {
-  return `[${fragment}]`;
-}
-
-interface ImportedModule {
-  readonly importName: string;
-  readonly moduleName: string;
-}
-
-function module(type: reflect.Type): ImportedModule {
-  // FIXME: Needs to be submodule-aware for v2
-
-  const parts = type.assembly.name.split('/');
-
-  const nonNamespacedPart = parts[1] ?? parts[0];
-  return {
-    importName: nonNamespacedPart.replace(/^aws-/g, '').replace(/[^a-z0-9_]/g, '_'),
-    moduleName: type.assembly.name,
-  };
-}
-
-// function typeName(fqn: string): string {
-//   const type = fqn.split('.');
-//   return type[1];
-// }
 
 function extendsRef(subtype: reflect.ClassType, supertypeRef: reflect.TypeReference) {
   if (!supertypeRef.fqn) {
