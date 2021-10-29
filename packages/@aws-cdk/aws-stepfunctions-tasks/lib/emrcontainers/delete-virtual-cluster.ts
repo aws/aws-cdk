@@ -16,7 +16,7 @@ export interface EmrContainersDeleteVirtualClusterProps extends sfn.TaskStateBas
 }
 
 /**
- * Deletes a EMR Containers virtual cluster as a Task.
+ * Deletes an EMR Containers virtual cluster as a Task.
  *
  * @see https://docs.amazonaws.cn/en_us/step-functions/latest/dg/connect-emr-eks.html
  */
