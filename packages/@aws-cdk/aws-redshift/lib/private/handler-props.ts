@@ -1,4 +1,4 @@
-import { Column } from '../table';
+import { Column } from "../table";
 
 export interface DatabaseQueryHandlerProps {
   readonly handler: string;
@@ -15,7 +15,7 @@ export interface UserHandlerProps {
 export interface TableHandlerProps {
   readonly tableName: {
     readonly prefix: string;
-    readonly generateSuffix: boolean;
+    readonly generateSuffix: string;
   };
   readonly tableColumns: Column[];
 }
