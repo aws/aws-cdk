@@ -1,6 +1,7 @@
 import * as crypto from 'crypto';
 import { Construct, Node } from 'constructs';
 import { FileAssetPackaging } from './assets';
+import { IChildStack } from './child-stack';
 import { Fn } from './cfn-fn';
 import { Aws } from './cfn-pseudo';
 import { CfnResource } from './cfn-resource';
@@ -90,8 +91,7 @@ export interface NestedStackProps {
  * outputs.
  *
  */
-export class NestedStack extends Stack {
-
+export class NestedStack extends Stack implements IChildStack {
   /**
    * Checks if `x` is an object of type `NestedStack`.
    */

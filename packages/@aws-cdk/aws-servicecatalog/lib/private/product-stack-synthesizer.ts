@@ -8,13 +8,9 @@ import * as cdk from '@aws-cdk/core';
 export class ProductStackSynthesizer extends cdk.StackSynthesizer {
   private stack?: cdk.Stack;
 
-  constructor() {
-    super();
-  }
-
   public bind(stack: cdk.Stack): void {
     if (this.stack !== undefined) {
-      throw new Error('A Stack can only be bound once, create a new instance to use with a different Stack');
+      throw new Error('A Stack Synthesizer can only be bound once, create a new instance to use with a different Stack');
     }
     this.stack = stack;
   }
@@ -24,7 +20,7 @@ export class ProductStackSynthesizer extends cdk.StackSynthesizer {
   }
 
   public addDockerImageAsset(_asset: cdk.DockerImageAssetSource): cdk.DockerImageAssetLocation {
-    throw new Error('Service Catalog Product Stacks cannot use Docker Image Assets');
+    throw new Error('Service Catalog Product Stacks cannot use Assets');
   }
 
   public synthesize(session: cdk.ISynthesisSession): void {

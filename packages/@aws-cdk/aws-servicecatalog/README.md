@@ -171,7 +171,7 @@ import * as s3 from '@aws-cdk/aws-s3';
 
 class S3BucketProduct extends servicecatalog.ProductStack {
   constructor(scope: cdk.Construct, id: string) {
-    super(scope,id);
+    super(scope, id);
 
     new s3.Bucket(this, 'BucketProduct');
   }
@@ -183,7 +183,7 @@ const product = new servicecatalog.CloudFormationProduct(this, 'MyFirstProduct',
   productVersions: [
     {
       productVersionName: "v1",
-      cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromStack(productStack),
+      cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromStack(new S3BucketProduct(this, 'S3BucketProduct')),
     },
   ],
 });

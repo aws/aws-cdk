@@ -15,7 +15,7 @@ import { Construct } from '@aws-cdk/core';
  * but rather only synthesized as a template and uploaded as an asset to S3.
  *
  */
-export class ProductStack extends cdk.Stack {
+export class ProductStack extends cdk.Stack implements cdk.IChildStack {
   public readonly templateFile: string;
   private _templateUrl?: string;
   private _parentStack: cdk.Stack;
@@ -29,8 +29,6 @@ export class ProductStack extends cdk.Stack {
 
     // this is the file name of the synthesized template file within the cloud assembly
     this.templateFile = `${cdk.Names.uniqueId(this)}.product.template.json`;
-
-    this._prepareTemplateAsset();
   }
 
   /**
@@ -38,8 +36,8 @@ export class ProductStack extends cdk.Stack {
    *
    * @internal
    */
-  public _getTemplateUrl() {
-    return this._templateUrl;
+  public _getTemplateUrl(): string {
+    return cdk.Lazy.uncachedString({ produce: () => this._templateUrl });
   }
 
   /**
@@ -76,6 +74,7 @@ export class ProductStack extends cdk.Stack {
     return true;
   }
 }
+
 /**
  * Validates the scope for a product stack, which must be defined within the scope of another `Stack`.
  */

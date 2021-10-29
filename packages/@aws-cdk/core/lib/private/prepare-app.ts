@@ -1,4 +1,5 @@
 import { ConstructOrder } from 'constructs';
+import { IChildStack } from '..';
 import { CfnResource } from '../cfn-resource';
 import { IConstruct } from '../construct-compat';
 import { Stack } from '../stack';
@@ -30,17 +31,17 @@ export function prepareApp(root: IConstruct) {
 
   resolveReferences(root);
 
-  // depth-first (children first) queue of nested stacks. We will pop a stack
+  // depth-first (children first) queue of nested and child stacks. We will pop a stack
   // from the head of this queue to prepare its template asset.
   //
-  // Depth-first since the a nested stack's template hash will be reflected in
+  // Depth-first since a child stack's template hash will be reflected in
   // its parent's template, which then changes the parent's hash, etc.
-  const queue = findAllNestedStacks(root);
+  const queue = findAllChildStacks(root);
 
   if (queue.length > 0) {
     while (queue.length > 0) {
-      const nested = queue.shift()!;
-      defineNestedStackAsset(nested);
+      const child = queue.shift()!;
+      defineChildStackAsset(child);
     }
 
     // ▷[ Given the legacy synthesizer and a 3-or-deeper nesting of nested stacks ]
@@ -58,23 +59,34 @@ export function prepareApp(root: IConstruct) {
 }
 
 /**
- * Prepares the assets for nested stacks in this app.
- * @returns `true` if assets were added to the parent of a nested stack, which
+ * Prepares the assets for child stacks in this app.
+ * @returns `true` if assets were added to the parent of a child stack, which
  * implies that another round of reference resolution is in order. If this
  * function returns `false`, we know we are done.
  */
-function defineNestedStackAsset(nestedStack: Stack) {
+function defineChildStackAsset(childStack: Stack) {
   // this is needed temporarily until we move NestedStack to '@aws-cdk/core'.
-  const nested: INestedStackPrivateApi = nestedStack as any;
-  nested._prepareTemplateAsset();
+  const child: IInternalStackPrivateApi = childStack as any;
+  child._prepareTemplateAsset();
 }
 
-function findAllNestedStacks(root: IConstruct) {
+/**
+ * Checks if the stack is a child stack, which implements
+ * its own interface and `_prepareTemplateAsset` method.
+ *
+ * @param stack The construct stack.
+ * @returns `true` if stack implements `IChildStack` interface.
+ */
+function isChildStack(stack: any): stack is IChildStack {
+  return stack._prepareTemplateAsset !== undefined;
+}
+
+function findAllChildStacks(root: IConstruct) {
   const result = new Array<Stack>();
 
   const includeStack = (stack: IConstruct): stack is Stack => {
     if (!Stack.isStack(stack)) { return false; }
-    if (!stack.nested) { return false; }
+    if (!isChildStack(stack)) { return false; }
 
     // test: if we are not within a stage, then include it.
     if (!Stage.of(stack)) { return true; }
@@ -100,6 +112,6 @@ function findCfnResources(root: IConstruct): CfnResource[] {
   return root.node.findAll().filter(CfnResource.isCfnResource);
 }
 
-interface INestedStackPrivateApi {
+interface IInternalStackPrivateApi {
   _prepareTemplateAsset(): boolean;
 }

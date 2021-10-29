@@ -110,7 +110,7 @@ class CloudFormationStackTemplate extends CloudFormationTemplate {
 
   public bind(_scope: Construct): CloudFormationTemplateConfig {
     return {
-      httpUrl: this.stack._getTemplateUrl()!,
+      httpUrl: this.stack._getTemplateUrl(),
     };
   }
 }

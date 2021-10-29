@@ -129,7 +129,9 @@ describe('Product', () => {
 
     new sns.Topic(productStackVersion1, 'SNSTopicProductStack1');
 
-    new sns.Topic(productStackVersion2, 'SNSTopicProductStack2');
+    new sns.Topic(productStackVersion2, 'SNSTopicProductStack2', {
+      displayName: 'a test',
+    });
 
     new servicecatalog.CloudFormationProduct(stack, 'MyProduct', {
       productName: 'testProduct',
@@ -147,7 +149,9 @@ describe('Product', () => {
     });
 
     const assembly = app.synth();
+
     expect(assembly.stacks[0].assets[0].path).toEqual('ProductStackV1.product.template.json');
+    expect(assembly.stacks[0].assets[1].path).toEqual('ProductStackV2.product.template.json');
   }),
 
   test('product test from multiple sources', () => {

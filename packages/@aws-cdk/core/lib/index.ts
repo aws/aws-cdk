@@ -55,6 +55,7 @@ export * from './bundling';
 export * from './fs';
 
 export * from './custom-resource';
+export * from './child-stack';
 export * from './nested-stack';
 export * from './custom-resource-provider';
 
