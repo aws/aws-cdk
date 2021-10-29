@@ -803,9 +803,6 @@ The [CreateVirtualCluster](https://docs.aws.amazon.com/emr-on-eks/latest/APIRefe
 The EKS cluster containing the Kubernetes namespace where the virtual cluster will be mapped can be passed in from the task input.
 
 ```ts
-import * as sfn from '@aws-cdk/aws-stepfunctions';
-import * as tasks from '@aws-cdk/aws-stepfunctions-tasks';
-
 new tasks.EmrContainersEksCreateVirtualCluster(this, 'Create a Virtual Cluster', {
   eksCluster: tasks.EksClusterInput.fromTaskInput(sfn.TaskInput.fromText('clusterId')),
 });
