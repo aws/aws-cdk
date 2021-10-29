@@ -48,3 +48,21 @@ new iot.TopicRule(this, 'TopicRule', {
   actions: [new actions.LambdaFunctionAction(func)],
 });
 ```
+
+## Put logs to CloudWatch Logs
+
+The code snippet below creates an AWS IoT Rule that put logs to CloudWatch Logs
+when it is triggered.
+
+```ts
+import * as iot from '@aws-cdk/aws-iot';
+import * as actions from '../../lib';
+import * as logs from '@aws-cdk/aws-logs';
+
+const logGroup = new logs.LogGroup(this, 'MyLogGroup');
+
+new iot.TopicRule(this, 'TopicRule', {
+  sql: iot.IotSql.fromStringAsVer20160323("SELECT topic(2) as device_id FROM 'device/+/data'"),
+  actions: [new actions.CloudwatchLogsAction(logGroup)],
+});
+```
