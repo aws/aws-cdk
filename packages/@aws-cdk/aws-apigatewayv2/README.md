@@ -341,6 +341,7 @@ webSocketApi.addRoute('sendmessage', {
 ### Manage Connections Permission
 
 Grant permission to use API Gateway Management API of a WebSocket API by calling the `grantManageConnections` API.
+You can use Management API to send a callback message to a connected client, get connection information, or disconnect the client. Learn more at [Use @connections commands in your backend service](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-how-to-call-websocket-api-connections.html).
 
 ```ts
 const lambda = new lambda.Function(this, 'lambda', { /* ... */ });

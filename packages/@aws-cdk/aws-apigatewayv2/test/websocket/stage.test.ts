@@ -81,10 +81,27 @@ describe('WebSocketStage', () => {
           Statement: Match.arrayWith([{
             Action: 'execute-api:ManageConnections',
             Effect: 'Allow',
-            Resource: stack.resolve(`${Stack.of(api).formatArn({
-              service: 'execute-api',
-              resource: api.apiId,
-            })}/${defaultStage.stageName}/POST/@connections/*`),
+            Resource: {
+              'Fn::Join': ['', [
+                'arn:',
+                {
+                  Ref: 'AWS::Partition',
+                },
+                ':execute-api:',
+                {
+                  Ref: 'AWS::Region',
+                },
+                ':',
+                {
+                  Ref: 'AWS::AccountId',
+                },
+                ':',
+                {
+                  Ref: 'ApiF70053CD',
+                },
+                `/${defaultStage.stageName}/POST/@connections/*`,
+              ]],
+            },
           }]),
         },
       });
