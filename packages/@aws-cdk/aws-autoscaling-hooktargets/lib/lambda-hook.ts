@@ -1,5 +1,4 @@
 import * as autoscaling from '@aws-cdk/aws-autoscaling';
-import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as sns from '@aws-cdk/aws-sns';
@@ -24,22 +23,19 @@ export class FunctionHook implements autoscaling.ILifecycleHookTarget {
   constructor(private readonly fn: lambda.IFunction, private readonly encryptionKey?: kms.IKey) {
   }
 
-  public bind(_scope: Construct, lifecycleHook: autoscaling.ILifecycleHook): autoscaling.LifecycleHookTargetConfig {
+  public bind(_scope: Construct, options: autoscaling.BindHookTargetOptions): autoscaling.BindHookTargetResult {
     const topic = new sns.Topic(_scope, 'Topic', {
       masterKey: this.encryptionKey,
     });
-    try { lifecycleHook.role; } catch (noRoleError) {
-      lifecycleHook.role = new iam.Role(_scope, 'Role', {
-        assumedBy: new iam.ServicePrincipal('autoscaling.amazonaws.com'),
-      });
-    }
+
+    const role = autoscaling.createRole(_scope, options.role);
 
     // Per: https://docs.aws.amazon.com/sns/latest/dg/sns-key-management.html#sns-what-permissions-for-sse
     // Topic's grantPublish() is in a base class that does not know there is a kms key, and so does not
     // grant appropriate permissions to the kms key. We do that here to ensure the correct permissions
     // are in place.
-    this.encryptionKey?.grant(lifecycleHook.role, 'kms:Decrypt', 'kms:GenerateDataKey');
+    this.encryptionKey?.grant(role, 'kms:Decrypt', 'kms:GenerateDataKey');
     topic.addSubscription(new subs.LambdaSubscription(this.fn));
-    return new TopicHook(topic).bind(_scope, lifecycleHook);
+    return new TopicHook(topic).bind(_scope, { lifecycleHook: options.lifecycleHook, role });
   }
 }

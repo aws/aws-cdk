@@ -9,16 +9,14 @@ export class FakeNotificationTarget implements autoscaling.ILifecycleHookTarget 
   constructor(private readonly topic: sns.ITopic) {
   }
 
-  public bind(_scope: constructs.Construct, lifecycleHook: autoscaling.LifecycleHook): autoscaling.LifecycleHookTargetConfig {
-    try { lifecycleHook.role; } catch (noRoleError) {
-      lifecycleHook.role = new iam.Role(lifecycleHook, 'Role', {
-        assumedBy: new iam.ServicePrincipal('autoscaling.amazonaws.com'),
-      });
-    }
+  public bind(_scope: constructs.Construct, options: autoscaling.BindHookTargetOptions): autoscaling.BindHookTargetResult {
+    const role = autoscaling.createRole(options.lifecycleHook, options.role);
+    this.topic.grantPublish(role);
 
-    this.topic.grantPublish(lifecycleHook.role);
-
-    return { notificationTargetArn: this.topic.topicArn };
+    return {
+      notificationTargetArn: this.topic.topicArn,
+      createdRole: role,
+    };
   }
 }
 
