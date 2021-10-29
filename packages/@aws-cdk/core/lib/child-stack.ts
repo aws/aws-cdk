@@ -5,7 +5,9 @@
  */
 export interface IChildStack {
   /**
-   * _prepare
+   * This private API is used by `App.prepare()` within a loop that rectifies
+   * references every time an asset is added.
+   * 
    * @internal
    */
   _prepareTemplateAsset(): boolean;
