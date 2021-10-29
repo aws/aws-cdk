@@ -1,16 +1,28 @@
 import * as reflect from 'jsii-reflect';
 
+/**
+ * Information for a declaration that must exist at the top of the code sample
+ * that is necessary for the code sample to compile.
+ */
 export interface Assumption {
   readonly type: reflect.Type;
   readonly variableName: string;
 }
 
+interface ImportedModule {
+  readonly importName: string;
+  readonly moduleName: string;
+}
+
+/**
+ * Information on a segment of code and the declarations necessary to make the code valid.
+ */
 export class Code {
   public static concatAll(...xs: Array<Code | string>): Code {
     return xs.map(Code.force).reduce((a, b) => a.append(b), new Code(''));
   }
 
-  public static force(x: Code | string): Code {
+  private static force(x: Code | string): Code {
     if (x instanceof Code) {
       return x;
     }
@@ -20,7 +32,11 @@ export class Code {
   constructor(public readonly code: string, public readonly declarations: Assumption[] = []) {
   }
 
-  public append(rhs: Code | string) {
+  /**
+   * Appends and returns a new Code that safely combines two code fragments along
+   * with their declarations.
+   */
+  public append(rhs: Code | string): Code {
     if (typeof rhs === 'string') {
       return new Code(this.code + rhs, this.declarations);
     }
@@ -31,34 +47,46 @@ export class Code {
     return new Code(this.code + rhs.code, declarations);
   }
 
-  public render(separator = '\n') {
-    return (this.makeVariableDeclarations().join('\n') + separator + this.code).trimStart();
-  }
-
   public toString() {
     return this.render();
   }
 
-  // FIXME: no need, just one variable for each
-  private makeVariableDeclarations(): string[] {
-    return this.declarations.map(declaration =>
-      `declare const ${declaration.variableName}: ${module(declaration.type).importName}.${declaration.type.name};\n`,
-    );
+  private render(separator = '\n\n') {
+    return (this.makeVariableDeclarations().join('\n') + separator + this.code).trimStart();
   }
-}
 
-interface ImportedModule {
-  readonly importName: string;
-  readonly moduleName: string;
-}
+  // FIXME: what to do about IXxx interfaces?
+  private makeVariableDeclarations(): string[] {
+    return Array.from(new Set(this.declarations.map(a => a.variableName)))
+      .map(variableName =>
+        `declare const ${variableName}: ${this.module(this.findDeclarationByName(variableName).type).importName}.${this.findDeclarationByName(variableName).type.name};`,
+      );
+  }
 
-function module(type: reflect.Type): ImportedModule {
-  // FIXME: Needs to be submodule-aware for v2
-  const parts = type.assembly.name.split('/');
+  /**
+   * Returns the first assumption in the array that matches the variable name.
+   * Assumes that the variable name exists in the declarations array.
+   */
+  private findDeclarationByName(variableName: string): Assumption {
+    const res = this.declarations.find(a => a.variableName === variableName);
+    if (!res) {
+      throw new Error(`Variable Name: ${variableName} not in Declaration Array`);
+    }
+    return res;
+  }
 
-  const nonNamespacedPart = parts[1] ?? parts[0];
-  return {
-    importName: nonNamespacedPart.replace(/^aws-/g, '').replace(/[^a-z0-9_]/g, '_'),
-    moduleName: type.assembly.name,
-  };
+  /**
+   * Parses the given type for human-readable information on the module
+   * that the type is from.
+   */
+  private module(type: reflect.Type): ImportedModule {
+    // FIXME: Needs to be submodule-aware for v2
+    const parts = type.assembly.name.split('/');
+
+    const nonNamespacedPart = parts[1] ?? parts[0];
+    return {
+      importName: nonNamespacedPart.replace(/^aws-/g, '').replace(/[^a-z0-9_]/g, '_'),
+      moduleName: type.assembly.name,
+    };
+  }
 }
