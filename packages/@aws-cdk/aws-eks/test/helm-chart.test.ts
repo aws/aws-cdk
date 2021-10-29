@@ -1,3 +1,4 @@
+import '@aws-cdk/assert-internal/jest';
 import * as path from 'path';
 import { Asset } from '@aws-cdk/aws-s3-assets';
 import { Duration } from '@aws-cdk/core';
@@ -29,6 +30,18 @@ describe('helm chart', () => {
       expect(stack).toHaveResource(eks.HelmChart.RESOURCE_TYPE, {
         Release: 'stackmychartff398361',
       });
+    });
+    test('should throw when chart and chartAsset not specified', () => {
+      // GIVEN
+      const { stack, cluster } = testFixtureCluster();
+
+      // WHEN
+      const t = () => {
+        new eks.HelmChart(stack, 'MyChart', { cluster });
+      };
+
+      // THEN
+      expect(t).toThrowError(new Error('Helm chart or chartAsset must be specified'));
     });
     test('should handle chart from S3 asset', () => {
       // GIVEN

@@ -148,7 +148,6 @@ class EksClusterStack extends TestStack {
       path: path.join(__dirname, 'test-chart'),
     });
     this.cluster.addHelmChart('test-chart', {
-      chart: 'test-chart-asset',
       chartAsset: chartAsset,
     });
   }

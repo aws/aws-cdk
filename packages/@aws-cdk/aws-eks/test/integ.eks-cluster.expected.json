@@ -3535,7 +3535,6 @@
           ]
         },
         "Release": "awscdkeksclustertestclustercharttestchart9d337ff7",
-        "Chart": "test-chart-asset",
         "ChartAssetURL": {
           "Fn::Join": [
             "",
