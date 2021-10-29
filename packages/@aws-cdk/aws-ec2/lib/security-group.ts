@@ -124,6 +124,55 @@ abstract class SecurityGroupBase extends Resource implements ISecurityGroup {
     return { destinationSecurityGroupId: this.securityGroupId };
   }
 
+  /**
+   * Determine where to parent a new ingress/egress rule
+   *
+   * A SecurityGroup rule is parented under the group it's related to, UNLESS
+   * we're in a cross-stack scenario with another Security Group. In that case,
+   * we respect the 'remoteRule' flag and will parent under the other security
+   * group.
+   *
+   * This is necessary to avoid cyclic dependencies between stacks, since both
+   * ingress and egress rules will reference both security groups, and a naive
+   * parenting will lead to the following situation:
+   *
+   *   ╔════════════════════╗         ╔════════════════════╗
+   *   ║  ┌───────────┐     ║         ║    ┌───────────┐   ║
+   *   ║  │  GroupA   │◀────╬─┐   ┌───╬───▶│  GroupB   │   ║
+   *   ║  └───────────┘     ║ │   │   ║    └───────────┘   ║
+   *   ║        ▲           ║ │   │   ║          ▲         ║
+   *   ║        │           ║ │   │   ║          │         ║
+   *   ║        │           ║ │   │   ║          │         ║
+   *   ║  ┌───────────┐     ║ └───┼───╬────┌───────────┐   ║
+   *   ║  │  EgressA  │─────╬─────┘   ║    │ IngressB  │   ║
+   *   ║  └───────────┘     ║         ║    └───────────┘   ║
+   *   ║                    ║         ║                    ║
+   *   ╚════════════════════╝         ╚════════════════════╝
+   *
+   * By having the ability to switch the parent, we avoid the cyclic reference by
+   * keeping all rules in a single stack.
+   *
+   * If this happens, we also have to change the construct ID, because
+   * otherwise we might have two objects with the same ID if we have
+   * multiple reversed security group relationships.
+   *
+   *   ╔═══════════════════════════════════╗
+   *   ║┌───────────┐                      ║
+   *   ║│  GroupB   │                      ║
+   *   ║└───────────┘                      ║
+   *   ║      ▲                            ║
+   *   ║      │              ┌───────────┐ ║
+   *   ║      ├────"from A"──│ IngressB  │ ║
+   *   ║      │              └───────────┘ ║
+   *   ║      │              ┌───────────┐ ║
+   *   ║      ├─────"to B"───│  EgressA  │ ║
+   *   ║      │              └───────────┘ ║
+   *   ║      │              ┌───────────┐ ║
+   *   ║      └─────"to B"───│  EgressC  │ ║  <-- oops
+   *   ║                     └───────────┘ ║
+   *   ╚═══════════════════════════════════╝
+   */
+
   protected determineRuleScope(
     peer: IPeer,
     connection: Port,
@@ -142,61 +191,15 @@ abstract class SecurityGroupBase extends Resource implements ISecurityGroup {
 
   private renderPeer(peer: IPeer) {
     if (Token.isUnresolved(peer.uniqueId)) {
+      // Need to return a unique value each time a peer
+      // is an unresolved token, else the duplicate skipper
+      // in `sg.addXxxRule` can detect unique rules as duplicates
       return this.peerAsTokenCount++ ? `'{IndirectPeer${this.peerAsTokenCount}}'` : '{IndirectPeer}';
     } else {
       return peer.uniqueId;
     }
   }
 }
-
-/**
- * Determine where to parent a new ingress/egress rule
- *
- * A SecurityGroup rule is parented under the group it's related to, UNLESS
- * we're in a cross-stack scenario with another Security Group. In that case,
- * we respect the 'remoteRule' flag and will parent under the other security
- * group.
- *
- * This is necessary to avoid cyclic dependencies between stacks, since both
- * ingress and egress rules will reference both security groups, and a naive
- * parenting will lead to the following situation:
- *
- *   ╔════════════════════╗         ╔════════════════════╗
- *   ║  ┌───────────┐     ║         ║    ┌───────────┐   ║
- *   ║  │  GroupA   │◀────╬─┐   ┌───╬───▶│  GroupB   │   ║
- *   ║  └───────────┘     ║ │   │   ║    └───────────┘   ║
- *   ║        ▲           ║ │   │   ║          ▲         ║
- *   ║        │           ║ │   │   ║          │         ║
- *   ║        │           ║ │   │   ║          │         ║
- *   ║  ┌───────────┐     ║ └───┼───╬────┌───────────┐   ║
- *   ║  │  EgressA  │─────╬─────┘   ║    │ IngressB  │   ║
- *   ║  └───────────┘     ║         ║    └───────────┘   ║
- *   ║                    ║         ║                    ║
- *   ╚════════════════════╝         ╚════════════════════╝
- *
- * By having the ability to switch the parent, we avoid the cyclic reference by
- * keeping all rules in a single stack.
- *
- * If this happens, we also have to change the construct ID, because
- * otherwise we might have two objects with the same ID if we have
- * multiple reversed security group relationships.
- *
- *   ╔═══════════════════════════════════╗
- *   ║┌───────────┐                      ║
- *   ║│  GroupB   │                      ║
- *   ║└───────────┘                      ║
- *   ║      ▲                            ║
- *   ║      │              ┌───────────┐ ║
- *   ║      ├────"from A"──│ IngressB  │ ║
- *   ║      │              └───────────┘ ║
- *   ║      │              ┌───────────┐ ║
- *   ║      ├─────"to B"───│  EgressA  │ ║
- *   ║      │              └───────────┘ ║
- *   ║      │              ┌───────────┐ ║
- *   ║      └─────"to B"───│  EgressC  │ ║  <-- oops
- *   ║                     └───────────┘ ║
- *   ╚═══════════════════════════════════╝
- */
 
 function differentStacks(group1: SecurityGroupBase, group2: SecurityGroupBase) {
   return Stack.of(group1) !== Stack.of(group2);
