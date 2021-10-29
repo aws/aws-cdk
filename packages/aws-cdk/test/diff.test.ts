@@ -49,7 +49,7 @@ beforeEach(() => {
   });
 
   // Default implementations
-  cloudFormation.readCurrentTemplate.mockImplementation((stackArtifact: CloudFormationStackArtifact, _?: string) => {
+  cloudFormation.readCurrentTemplate.mockImplementation((stackArtifact: CloudFormationStackArtifact) => {
     if (stackArtifact.stackName === 'D') {
       return Promise.resolve({ resource: 'D' });
     }
