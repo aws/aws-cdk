@@ -133,7 +133,7 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
       && this.isArrayOfStrings(props.jobDriver.sparkSubmitJobDriver.entryPointArguments.value)
         && (props.jobDriver.sparkSubmitJobDriver.entryPointArguments.value.length > 10280
           || props.jobDriver.sparkSubmitJobDriver.entryPointArguments.value.length < 1)) {
-      throw new Error(`Entry point arguments must be an string array between 1 and 10280 in length. Received ${props.jobDriver.sparkSubmitJobDriver?.entryPointArguments.value.length}.`);
+      throw new Error(`Entry point arguments must be a string array between 1 and 10280 in length. Received ${props.jobDriver.sparkSubmitJobDriver?.entryPointArguments.value.length}.`);
     }
 
     if (props.jobDriver.sparkSubmitJobDriver?.sparkSubmitParameters
