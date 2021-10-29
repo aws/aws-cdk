@@ -75,6 +75,7 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
   });
 
   test('.sync integration pattern', () => {
+    // WHEN
     const task = new EmrContainersStartJobRun(stack, 'EMR Containers Start Job Run', defaultProps);
     // THEN
     expect(stack.resolve(task.toStateJson())).toEqual({
