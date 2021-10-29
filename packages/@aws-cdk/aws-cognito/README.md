@@ -322,8 +322,8 @@ emails, password resets, etc. The address from which these emails are sent can b
 Read more at [Email settings for User Pools](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-email.html).
 
 By default, user pools are configured to use Cognito's built in email capability, which by default will send emails
-from `no-reply@verificationemail.com`. If you want to customize the from address, while still using the Cognito built-in
-email capability, you can do so by specifying a custom email address that has been configured in Amazon SES.
+from `no-reply@verificationemail.com`. To customize the from address, while still using the Cognito built-in
+email capability, specify a custom email address that has been configured in Amazon SES.
 
 ```ts
 new cognito.UserPool(this, 'myuserpool', {
@@ -334,60 +334,41 @@ new cognito.UserPool(this, 'myuserpool', {
 });
 ```
 
-In the above example a custom email address is specified as `noreply@myawesomeapp.com`. In order for this to work
-this email must be a verified email address in Amazon SES, and that email address must have an authorization policy
+The custom email address specified must first be verified in Amazon SES, and associated with an authorization policy
 that allows Cognito to send emails. Read more at [Configuring Email for your User Pool](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-email.html#user-pool-email-configure).
 
 
-For production applications it is recommended to configure your UserPool to send emails through Amazon SES. To do
-so you must first have followed the steps in the [Cognito Developer Guide](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-email.html#user-pool-email-developer)
-to verify an email address, move your account out of the SES sandbox, and grant Cognito email permissions via an
+For production applications it is recommended to configure the UserPool to send emails through Amazon SES. To do
+so, follow the steps in the [Cognito Developer Guide](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-email.html#user-pool-email-developer)
+to verify an email address, move the account out of the SES sandbox, and grant Cognito email permissions via an
 authorization policy.
 
-Once the SES setup is complete, you can configure your UserPool to use the email configured in SES.
+Once the SES setup is complete, the UserPool can be configured to use the SES email.
 
 ```ts
 new cognito.UserPool(this, 'myuserpool', {
   email: Email.withSES({
-	fromEmail: 'noreply@myawesomeapp.com',
-	fromName: 'Awesome App',
+    fromEmail: 'noreply@myawesomeapp.com',
+    fromName: 'Awesome App',
     replyTo: 'support@myawesomeapp.com',
   }),
 });
 ```
 
 Sending emails through SES requires that SES be configured in either `us-east-1`, `us-west-1`, or `eu-west-1`.
-If your UserPool is being created in a different region you must specify which SES region to use.
+If the UserPool is being created in a different region, `sesRegion` must be used to specify the correct SES region.
 
 ```ts
 new cognito.UserPool(this, 'myuserpool', {
   email: Email.withSES({
     sesRegion: SESRegion.US_EAST_1,
-	fromEmail: 'noreply@myawesomeapp.com',
-	fromName: 'Awesome App',
+    fromEmail: 'noreply@myawesomeapp.com',
+    fromName: 'Awesome App',
     replyTo: 'support@myawesomeapp.com',
   }),
 });
 
 ```
-
-#### Emails (Legacy)
-
-The legacy `emailSettings` can still be used for Cognito default settings.
-
-```ts
-new cognito.UserPool(this, 'myuserpool', {
-  // ...
-  emailSettings: {
-    from: 'noreply@myawesomeapp.com',
-    replyTo: 'support@myawesomeapp.com',
-  },
-});
-```
-
-If an email address contains non-ASCII characters, it will be encoded using the [punycode
-encoding](https://en.wikipedia.org/wiki/Punycode) when generating the template for CloudFormation.
-
 
 ### Device Tracking
 

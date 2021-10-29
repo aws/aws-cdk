@@ -3,7 +3,7 @@ import { Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { CfnParameter, Duration, Stack, Tags } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { AccountRecovery, Mfa, NumberAttribute, StringAttribute, UserPool, UserPoolIdentityProvider, UserPoolOperation, VerificationEmailStyle, Email, SESRegion } from '../lib';
+import { AccountRecovery, Mfa, NumberAttribute, StringAttribute, UserPool, UserPoolIdentityProvider, UserPoolOperation, VerificationEmailStyle, Email } from '../lib';
 
 describe('User Pool', () => {
   test('default setup', () => {
@@ -1396,7 +1396,7 @@ describe('User Pool', () => {
     // WHEN
     new UserPool(stack, 'Pool', {
       email: Email.withSES({
-        sesRegion: SESRegion.US_EAST_1,
+        sesRegion: 'us-east-1',
         fromEmail: 'user@домен.рф',
         replyTo: 'user@домен.рф',
       }),
@@ -1418,7 +1418,7 @@ describe('User Pool', () => {
     // WHEN
     expect(() => new UserPool(stack, 'Pool', {
       email: Email.withSES({
-        sesRegion: SESRegion.US_EAST_1,
+        sesRegion: 'us-east-1',
         fromEmail: 'от@домен.рф',
         replyTo: 'user@домен.рф',
       }),
@@ -1432,7 +1432,7 @@ describe('User Pool', () => {
     // WHEN
     expect(() => new UserPool(stack, 'Pool', {
       email: Email.withCognito({
-        sesRegion: SESRegion.US_EAST_1,
+        sesRegion: 'us-east-1',
         fromEmail: 'от@домен.рф',
         replyTo: 'user@домен.рф',
       }),
@@ -1446,7 +1446,7 @@ describe('User Pool', () => {
     // WHEN
     expect(() => new UserPool(stack, 'Pool', {
       email: Email.withSES({
-        sesRegion: SESRegion.US_EAST_1,
+        sesRegion: 'us-east-1',
         fromEmail: 'user@домен.рф',
         replyTo: 'от@домен.рф',
       }),
@@ -1460,7 +1460,7 @@ describe('User Pool', () => {
     // WHEN
     expect(() => new UserPool(stack, 'Pool', {
       email: Email.withCognito({
-        sesRegion: SESRegion.US_EAST_1,
+        sesRegion: 'us-east-1',
         fromEmail: 'user@домен.рф',
         replyTo: 'от@домен.рф',
       }),
@@ -1650,7 +1650,7 @@ describe('User Pool', () => {
       email: Email.withSES({
         fromEmail: 'mycustomemail@example.com',
         fromName: 'My Custom Email',
-        sesRegion: SESRegion.US_EAST_1,
+        sesRegion: 'us-east-1',
         replyTo: 'reply@example.com',
         configurationSetName: 'default',
       }),
@@ -1716,6 +1716,45 @@ describe('User Pool', () => {
         replyTo: 'reply@example.com',
       }),
     })).toThrow(/Please provide a valid value/);
+
+  });
+  test('email withSES invalid sesRegion throws error', () => {
+    // GIVEN
+    const stack = new Stack(undefined, undefined, {
+      env: {
+        account: '11111111111',
+      },
+    });
+
+    // WHEN
+    expect(() => new UserPool(stack, 'Pool', {
+      email: Email.withSES({
+        sesRegion: 'us-east-2',
+        fromEmail: 'mycustomemail@example.com',
+        fromName: 'My Custom Email',
+        replyTo: 'reply@example.com',
+        configurationSetName: 'default',
+      }),
+    })).toThrow(/sesRegion must be one of/);
+
+  });
+
+  test('email withCognito invalid region throws error', () => {
+    // GIVEN
+    const stack = new Stack(undefined, undefined, {
+      env: {
+        account: '11111111111',
+      },
+    });
+
+    // WHEN
+    expect(() => new UserPool(stack, 'Pool', {
+      email: Email.withCognito({
+        sesRegion: 'us-east-2',
+        fromEmail: 'mycustomemail@example.com',
+        replyTo: 'reply@example.com',
+      }),
+    })).toThrow(/sesRegion must be one of/);
 
   });
 });
