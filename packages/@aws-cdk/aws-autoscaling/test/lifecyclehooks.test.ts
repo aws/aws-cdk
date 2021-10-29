@@ -173,7 +173,7 @@ test('adding a lifecycle hook with a role and with no notificationTarget to an A
 });
 
 class FakeNotificationTarget implements autoscaling.ILifecycleHookTarget {
-  public bind(_scope: constructs.Construct, options: autoscaling.BindHookTargetOptions): autoscaling.BindHookTargetResult {
+  public bind(_scope: constructs.Construct, options: autoscaling.BindHookTargetOptions): autoscaling.LifecycleHookTargetConfig {
     const role = autoscaling.createRole(options.lifecycleHook, options.role);
 
     role.addToPrincipalPolicy(new iam.PolicyStatement({

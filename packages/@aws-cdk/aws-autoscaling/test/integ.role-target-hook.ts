@@ -9,7 +9,7 @@ export class FakeNotificationTarget implements autoscaling.ILifecycleHookTarget 
   constructor(private readonly topic: sns.ITopic) {
   }
 
-  public bind(_scope: constructs.Construct, options: autoscaling.BindHookTargetOptions): autoscaling.BindHookTargetResult {
+  public bind(_scope: constructs.Construct, options: autoscaling.BindHookTargetOptions): autoscaling.LifecycleHookTargetConfig {
     const role = autoscaling.createRole(options.lifecycleHook, options.role);
     this.topic.grantPublish(role);
 

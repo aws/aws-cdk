@@ -9,7 +9,7 @@ export class TopicHook implements autoscaling.ILifecycleHookTarget {
   constructor(private readonly topic: sns.ITopic) {
   }
 
-  public bind(_scope: Construct, options: autoscaling.BindHookTargetOptions): autoscaling.BindHookTargetResult {
+  public bind(_scope: Construct, options: autoscaling.BindHookTargetOptions): autoscaling.LifecycleHookTargetConfig {
     const role = autoscaling.createRole(_scope, options.role);
     this.topic.grantPublish(role);
 

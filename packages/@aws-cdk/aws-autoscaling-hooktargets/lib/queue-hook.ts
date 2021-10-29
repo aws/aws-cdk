@@ -9,7 +9,7 @@ export class QueueHook implements autoscaling.ILifecycleHookTarget {
   constructor(private readonly queue: sqs.IQueue) {
   }
 
-  public bind(_scope: Construct, options: autoscaling.BindHookTargetOptions): autoscaling.BindHookTargetResult {
+  public bind(_scope: Construct, options: autoscaling.BindHookTargetOptions): autoscaling.LifecycleHookTargetConfig {
     const role = autoscaling.createRole(_scope, options.role);
     this.queue.grantSendMessages(role);
 
