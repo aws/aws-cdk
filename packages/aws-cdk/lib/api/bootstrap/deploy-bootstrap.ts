@@ -65,7 +65,7 @@ export class BootstrapStack {
 
     const newVersion = bootstrapVersionFromTemplate(template);
     if (this.currentToolkitInfo.found && newVersion < this.currentToolkitInfo.version && !options.force) {
-      throw new Error(`Not downgrading existing bootstrap stack from version '${this.currentToolkitInfo.version}' to version '${newVersion}'. Use --force to force.`);
+      throw new Error(`Not downgrading existing bootstrap stack from version '${this.currentToolkitInfo.version}' to version '${newVersion}'. Use --force to force or set the '@aws-cdk/core:newStyleStackSynthesis' feature flag in cdk.json to use the latest bootstrap version.`);
     }
 
     const outdir = await fs.mkdtemp(path.join(os.tmpdir(), 'cdk-bootstrap'));
