@@ -138,6 +138,49 @@ describe('DynamoEventSource', () => {
 
   });
 
+  test('pass validation if batchsize is token', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const table = new dynamodb.Table(stack, 'T', {
+      partitionKey: {
+        name: 'id',
+        type: dynamodb.AttributeType.STRING,
+      },
+      stream: dynamodb.StreamViewType.NEW_IMAGE,
+    });
+    const batchSize = new cdk.CfnParameter(stack, 'BatchSize', {
+      type: 'Number',
+      default: 100,
+      minValue: 1,
+      maxValue: 1000,
+    });
+    // WHEN
+    fn.addEventSource(new sources.DynamoEventSource(table, {
+      batchSize: batchSize.valueAsNumber,
+      startingPosition: lambda.StartingPosition.LATEST,
+    }));
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+      'EventSourceArn': {
+        'Fn::GetAtt': [
+          'TD925BC7E',
+          'StreamArn',
+        ],
+      },
+      'FunctionName': {
+        'Ref': 'Fn9270CBC0',
+      },
+      'BatchSize': {
+        'Ref': 'BatchSize',
+      },
+      'StartingPosition': 'LATEST',
+    });
+
+
+  });
+
   test('fails if streaming not enabled on table', () => {
     // GIVEN
     const stack = new cdk.Stack();
