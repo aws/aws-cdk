@@ -9,6 +9,9 @@ RUN npm install --global yarn@1.22.5
 # Install pnpm
 RUN npm install --global pnpm
 
+# Install typescript
+RUN npm install --global typescript
+
 # Install esbuild
 # (unsafe-perm because esbuild has a postinstall script)
 ARG ESBUILD_VERSION=0
