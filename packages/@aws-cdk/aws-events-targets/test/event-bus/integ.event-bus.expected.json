@@ -19,6 +19,14 @@
                 ]
               ]
             },
+            "DeadLetterConfig": {
+              "Arn": {
+                "Fn::GetAtt": [
+                  "Queue4A7E3555",
+                  "Arn"
+                ]
+              }
+            },
             "Id": "Target0",
             "RoleArn": {
               "Fn::GetAtt": [
@@ -75,6 +83,50 @@
         "Roles": [
           {
             "Ref": "RuleEventsRoleC51A4248"
+          }
+        ]
+      }
+    },
+    "Queue4A7E3555": {
+      "Type": "AWS::SQS::Queue",
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "QueuePolicy25439813": {
+      "Type": "AWS::SQS::QueuePolicy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sqs:SendMessage",
+              "Condition": {
+                "ArnEquals": {
+                  "aws:SourceArn": {
+                    "Fn::GetAtt": [
+                      "Rule4C995B7F",
+                      "Arn"
+                    ]
+                  }
+                }
+              },
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "events.amazonaws.com"
+              },
+              "Resource": {
+                "Fn::GetAtt": [
+                  "Queue4A7E3555",
+                  "Arn"
+                ]
+              },
+              "Sid": "AllowEventRuleeventsourcestackRuleFCA41174"
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "Queues": [
+          {
+            "Ref": "Queue4A7E3555"
           }
         ]
       }
