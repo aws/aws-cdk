@@ -2,13 +2,16 @@ name: "Close Stale Issues"
 
 # Controls when the action will run.
 on:
+  workflow_dispatch:
   schedule:
-  - cron: "0 6 * * *"
+  - cron: "0 */4 * * *"
 
 jobs:
   cleanup:
     permissions:
       issues: write
+      contents: read
+      pull-requests: write
     runs-on: ubuntu-latest
     name: Stale issue job
     steps:
@@ -32,8 +35,8 @@ jobs:
         closed-for-staleness-label: closed-for-staleness
 
         # Issue timing
-        days-before-stale: 7
-        days-before-close: 4
+        days-before-stale: 2
+        days-before-close: 5
         days-before-ancient: 365
 
         # If you don't want to mark a issue as being ancient based on a
@@ -43,6 +46,6 @@ jobs:
         minimum-upvotes-to-exempt: 5
 
         repo-token: ${{ secrets.GITHUB_TOKEN }}
-        # loglevel: DEBUG
+        loglevel: DEBUG
         # Set dry-run to true to not perform label or close actions.
         dry-run: false

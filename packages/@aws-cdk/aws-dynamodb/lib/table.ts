@@ -232,6 +232,22 @@ export interface TableOptions extends SchemaOptions {
   readonly replicationTimeout?: Duration;
 
   /**
+   * Indicates whether CloudFormation stack waits for replication to finish.
+   * If set to false, the CloudFormation resource will mark the resource as
+   * created and replication will be completed asynchronously. This property is
+   * ignored if replicationRegions property is not set.
+   *
+   * DO NOT UNSET this property if adding/removing multiple replicationRegions
+   * in one deployment, as CloudFormation only supports one region replication
+   * at a time. CDK overcomes this limitation by waiting for replication to
+   * finish before starting new replicationRegion.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dynamodb-globaltable.html#cfn-dynamodb-globaltable-replicas
+   * @default true
+   */
+  readonly waitForReplicationToFinish?: boolean;
+
+  /**
    * Whether CloudWatch contributor insights is enabled.
    *
    * @default false
@@ -1152,7 +1168,7 @@ export class Table extends TableBase {
     }
 
     if (props.replicationRegions && props.replicationRegions.length > 0) {
-      this.createReplicaTables(props.replicationRegions, props.replicationTimeout);
+      this.createReplicaTables(props.replicationRegions, props.replicationTimeout, props.waitForReplicationToFinish);
     }
   }
 
@@ -1494,7 +1510,7 @@ export class Table extends TableBase {
    *
    * @param regions regions where to create tables
    */
-  private createReplicaTables(regions: string[], timeout?: Duration) {
+  private createReplicaTables(regions: string[], timeout?: Duration, waitForReplicationToFinish?: boolean) {
     const stack = Stack.of(this);
 
     if (!Token.isUnresolved(stack.region) && regions.includes(stack.region)) {
@@ -1524,6 +1540,7 @@ export class Table extends TableBase {
         properties: {
           TableName: this.tableName,
           Region: region,
+          SkipReplicationCompletedWait: waitForReplicationToFinish === undefined ? undefined : !waitForReplicationToFinish,
         },
       });
       currentRegion.node.addDependency(

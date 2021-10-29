@@ -355,6 +355,7 @@ export class CustomRule extends RuleNew {
 
     props.lambdaFunction.addPermission('Permission', {
       principal: new iam.ServicePrincipal('config.amazonaws.com'),
+      sourceAccount: this.env.account,
     });
 
     if (props.lambdaFunction.role) {
@@ -1355,7 +1356,7 @@ export class ResourceType {
   /** Amazon EC2 customer gateway */
   public static readonly EC2_CUSTOMER_GATEWAY = new ResourceType('AWS::EC2::CustomerGateway');
   /** Amazon EC2 internet gateway */
-  public static readonly EC2_INTERNET_GATEWAY = new ResourceType('AWS::EC2::CustomerGateway');
+  public static readonly EC2_INTERNET_GATEWAY = new ResourceType('AWS::EC2::InternetGateway');
   /** Amazon EC2 network ACL */
   public static readonly EC2_NETWORK_ACL = new ResourceType('AWS::EC2::NetworkAcl');
   /** Amazon EC2 route table */
