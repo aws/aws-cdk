@@ -135,7 +135,6 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
   });
 
   test('Tags', () => {
-
     // WHEN
     const task = new EmrContainersStartJobRun(stack, 'EMR Containers Start Job Run', {
       ...defaultProps,
@@ -156,7 +155,6 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
 
 
   test('Application Configuration', () => {
-
     // WHEN
     const task = new EmrContainersStartJobRun(stack, 'EMR Containers Start Job Run', {
       ...defaultProps,
@@ -219,7 +217,6 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
 
 
   test('Job Execution Role', () => {
-
     // WHEN
     const task = new EmrContainersStartJobRun(stack, 'EMR Containers Start Job Run', {
       ...defaultProps,
@@ -722,7 +719,6 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
   });
 
   test('Permitted role actions and resources with Start Job Run for SYNC integration pattern', () => {
-
     // WHEN
     const task = new EmrContainersStartJobRun(stack, 'EMR Containers Start Job Run', defaultProps);
 
