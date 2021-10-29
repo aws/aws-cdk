@@ -1,4 +1,4 @@
-import { IResource, Resource } from '@aws-cdk/core';
+import { IResource, Resource, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnNetworkAcl, CfnNetworkAclEntry, CfnSubnetNetworkAclAssociation } from './ec2.generated';
 import { AclCidr, AclTraffic } from './network-acl-types';
@@ -169,6 +169,11 @@ export interface INetworkAclEntry extends IResource {
    */
   readonly networkAcl: INetworkAcl
 
+  /**
+   * ID for the current Network ACL Entry
+   * @attribute
+   */
+  readonly networkAclEntryId: string
 }
 
 /**
@@ -178,6 +183,7 @@ export interface INetworkAclEntry extends IResource {
  */
 abstract class NetworkAclEntryBase extends Resource implements INetworkAclEntry {
   public abstract readonly networkAcl: INetworkAcl;
+  public abstract readonly networkAclEntryId: string;
 }
 
 /**
@@ -266,6 +272,7 @@ export interface NetworkAclEntryProps extends CommonNetworkAclEntryOptions {
  */
 export class NetworkAclEntry extends NetworkAclEntryBase {
   public readonly networkAcl: INetworkAcl;
+  public readonly networkAclEntryId: string;
 
   constructor(scope: Construct, id: string, props: NetworkAclEntryProps) {
     super(scope, id, {
@@ -274,7 +281,7 @@ export class NetworkAclEntry extends NetworkAclEntryBase {
 
     this.networkAcl = props.networkAcl;
 
-    new CfnNetworkAclEntry(this, 'Resource', {
+    const resource = new CfnNetworkAclEntry(this, 'Resource', {
       networkAclId: this.networkAcl.networkAclId,
       ruleNumber: props.ruleNumber,
       ruleAction: props.ruleAction ?? Action.ALLOW,
@@ -282,6 +289,7 @@ export class NetworkAclEntry extends NetworkAclEntryBase {
       ...props.traffic.toTrafficConfig(),
       ...props.cidr.toCidrConfig(),
     });
+    this.networkAclEntryId = Token.asString(resource.getAtt('Id'));
   }
 }
 
