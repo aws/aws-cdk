@@ -1,2 +1,2 @@
 // AWS::Panorama CloudFormation Resources:
-export * from './aws-panorama.generated';
+export * from './panorama.generated';

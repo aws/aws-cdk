@@ -1,2 +1,2 @@
 // AWS::Rekognition CloudFormation Resources:
-export * from './aws-rekognition.generated';
+export * from './rekognition.generated';
