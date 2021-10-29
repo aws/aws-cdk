@@ -28,7 +28,6 @@ beforeEach(() => {
 
 describe('Invoke EMR Containers Start Job Run with ', () => {
   test('Request/Response integration pattern', () => {
-
     // WHEN
     const task = new EmrContainersStartJobRun(stack, 'EMR Containers Start Job Run', {
       ...defaultProps,
