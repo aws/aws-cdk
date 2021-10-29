@@ -1,15 +1,15 @@
-import * as cdk from '@aws-cdk/core';
-import { Construct } from 'constructs';
-import { ICluster } from './cluster';
-import { DatabaseOptions } from './database-options';
-import { DatabaseQuery } from './private/database-query';
-import { HandlerName } from './private/database-query-provider/handler-name';
-import { TableHandlerProps } from './private/handler-props';
-import { IUser } from './user';
+import * as cdk from "@aws-cdk/core";
+import { Construct } from "constructs";
+import { ICluster } from "./cluster";
+import { DatabaseOptions } from "./database-options";
+import { DatabaseQuery } from "./private/database-query";
+import { HandlerName } from "./private/database-query-provider/handler-name";
+import { TableHandlerProps } from "./private/handler-props";
+import { IUser } from "./user";
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct as CoreConstruct } from '@aws-cdk/core';
+import { Construct as CoreConstruct } from "@aws-cdk/core";
 
 /**
  * An action that a Redshift user can be granted privilege to perform on a table.
@@ -50,7 +50,7 @@ export enum TableAction {
   /**
    * Grants all available privileges at once to the specified user or user group.
    */
-  ALL
+  ALL,
 }
 
 /**
@@ -164,13 +164,17 @@ export class Table extends TableBase {
   /**
    * Specify a Redshift table using a table name and schema that already exists.
    */
-  static fromTableAttributes(scope: Construct, id: string, attrs: TableAttributes): ITable {
-    return new class extends TableBase {
+  static fromTableAttributes(
+    scope: Construct,
+    id: string,
+    attrs: TableAttributes
+  ): ITable {
+    return new (class extends TableBase {
       readonly tableName = attrs.tableName;
       readonly tableColumns = attrs.tableColumns;
       readonly cluster = attrs.cluster;
       readonly databaseName = attrs.databaseName;
-    }(scope, id);
+    })(scope, id);
   }
 
   readonly tableName: string;
@@ -187,14 +191,14 @@ export class Table extends TableBase {
     this.cluster = props.cluster;
     this.databaseName = props.databaseName;
 
-    this.resource = new DatabaseQuery<TableHandlerProps>(this, 'Resource', {
+    this.resource = new DatabaseQuery<TableHandlerProps>(this, "Resource", {
       removalPolicy: cdk.RemovalPolicy.RETAIN,
       ...props,
       handler: HandlerName.Table,
       properties: {
         tableName: {
           prefix: props.tableName ?? cdk.Names.uniqueId(this),
-          generateSuffix: !props.tableName,
+          generateSuffix: !props.tableName ? "true" : "false",
         },
         tableColumns: this.tableColumns,
       },
