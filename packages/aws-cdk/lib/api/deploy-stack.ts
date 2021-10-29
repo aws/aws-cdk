@@ -14,23 +14,9 @@ import { CfnEvaluationException } from './hotswap/evaluate-cloudformation-templa
 import { ToolkitInfo } from './toolkit-info';
 import {
   changeSetHasNoChanges, CloudFormationStack, TemplateParameters, waitForChangeSet,
-  waitForStackDeploy, waitForStackDelete, ParameterValues,
+  waitForStackDeploy, waitForStackDelete, ParameterValues, ParameterChanges,
 } from './util/cloudformation';
 import { StackActivityMonitor, StackActivityProgress } from './util/cloudformation/stack-activity-monitor';
-
-// We need to map regions to domain suffixes, and the SDK already has a function to do this.
-// It's not part of the public API, but it's also unlikely to go away.
-//
-// Reuse that function, and add a safety check so we don't accidentally break if they ever
-// refactor that away.
-
-/* eslint-disable @typescript-eslint/no-require-imports */
-const regionUtil = require('aws-sdk/lib/region_config');
-/* eslint-enable @typescript-eslint/no-require-imports */
-
-if (!regionUtil.getEndpointSuffix) {
-  throw new Error('This version of AWS SDK for JS does not have the \'getEndpointSuffix\' function!');
-}
 
 type TemplateBodyParameter = {
   TemplateBody?: string
@@ -247,8 +233,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
     debug(`${deployName}: deploying...`);
   }
 
-  const bodyParameter = await makeBodyParameter(stackArtifact, options.resolvedEnvironment, legacyAssets, options.toolkitInfo);
-
+  const bodyParameter = await makeBodyParameter(stackArtifact, options.resolvedEnvironment, legacyAssets, options.toolkitInfo, options.sdk);
   await publishAssets(legacyAssets.toManifest(stackArtifact.assembly.directory), options.sdkProvider, stackEnv);
 
   if (options.hotswap) {
@@ -382,11 +367,12 @@ async function makeBodyParameter(
   stack: cxapi.CloudFormationStackArtifact,
   resolvedEnvironment: cxapi.Environment,
   assetManifest: AssetManifestBuilder,
-  toolkitInfo: ToolkitInfo): Promise<TemplateBodyParameter> {
+  toolkitInfo: ToolkitInfo,
+  sdk: ISDK): Promise<TemplateBodyParameter> {
 
   // If the template has already been uploaded to S3, just use it from there.
   if (stack.stackTemplateAssetObjectUrl) {
-    return { TemplateURL: restUrlFromManifest(stack.stackTemplateAssetObjectUrl, resolvedEnvironment) };
+    return { TemplateURL: restUrlFromManifest(stack.stackTemplateAssetObjectUrl, resolvedEnvironment, sdk) };
   }
 
   // Otherwise, pass via API call (if small) or upload here (if large)
@@ -466,7 +452,7 @@ export async function destroyStack(options: DestroyStackOptions) {
 async function canSkipDeploy(
   deployStackOptions: DeployStackOptions,
   cloudFormationStack: CloudFormationStack,
-  parameterChanges: boolean): Promise<boolean> {
+  parameterChanges: ParameterChanges): Promise<boolean> {
 
   const deployName = deployStackOptions.deployName || deployStackOptions.stack.stackName;
   debug(`${deployName}: checking if we can skip deploy`);
@@ -509,7 +495,11 @@ async function canSkipDeploy(
 
   // Parameters have changed
   if (parameterChanges) {
-    debug(`${deployName}: parameters have changed`);
+    if (parameterChanges === 'ssm') {
+      debug(`${deployName}: some parameters come from SSM so we have to assume they may have changed`);
+    } else {
+      debug(`${deployName}: parameters have changed`);
+    }
     return false;
   }
 
@@ -549,7 +539,7 @@ function compareTags(a: Tag[], b: Tag[]): boolean {
  * and reformats s3://.../... urls into S3 REST URLs (which CloudFormation
  * expects)
  */
-function restUrlFromManifest(url: string, environment: cxapi.Environment): string {
+function restUrlFromManifest(url: string, environment: cxapi.Environment, sdk: ISDK): string {
   const doNotUseMarker = '**DONOTUSE**';
   // This URL may contain placeholders, so still substitute those.
   url = cxapi.EnvironmentPlaceholders.replace(url, {
@@ -572,6 +562,6 @@ function restUrlFromManifest(url: string, environment: cxapi.Environment): strin
   const bucketName = s3Url[1];
   const objectKey = s3Url[2];
 
-  const urlSuffix: string = regionUtil.getEndpointSuffix(environment.region);
+  const urlSuffix: string = sdk.getEndpointSuffix(environment.region);
   return `https://s3.${environment.region}.${urlSuffix}/${bucketName}/${objectKey}`;
 }

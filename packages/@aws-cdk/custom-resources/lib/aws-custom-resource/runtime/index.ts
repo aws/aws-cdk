@@ -167,7 +167,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
 
         const params = {
           RoleArn: call.assumedRoleArn,
-          RoleSessionName: `${physicalResourceId}-${timestamp}`,
+          RoleSessionName: `${timestamp}-${physicalResourceId}`.substring(0, 64),
         };
 
         AWS.config.credentials = new AWS.ChainableTemporaryCredentials({
@@ -176,6 +176,9 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
 
       }
 
+      if (!Object.prototype.hasOwnProperty.call(AWS, call.service)) {
+        throw Error(`Service ${call.service} does not exist in AWS SDK version ${AWS.VERSION}.`);
+      }
       const awsService = new (AWS as any)[call.service]({
         apiVersion: call.apiVersion,
         region: call.region,

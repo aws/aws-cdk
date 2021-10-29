@@ -23,7 +23,7 @@ const jsiiManifest = JSON.parse(fs.readFileSync(jsiiManifestPath, { encoding: 'u
 // If this test fails because one of the below import statements is invalid,
 // please update to have a new, comparable example.
 // This is admittedly a bit fragile; if this test breaks a lot, we should reconsider validation methodology.
-// Count of times this test has been broken by README updates so far (please increment as necessary! :D): 0
+// Count of times this test has been broken by README updates so far (please increment as necessary! :D): 1
 const EXPECTED_SUBMODULE_IMPORTS = {
   // import * as origins from '@aws-cdk/aws-cloudfront-origins';
   'aws-cdk-lib.aws_cloudfront_origins': "import { aws_cloudfront_origins as origins } from 'aws-cdk-lib';",
@@ -34,7 +34,7 @@ const EXPECTED_SUBMODULE_IMPORTS = {
   // import { Rule, Schedule } from '@aws-cdk/aws-events';
   'aws-cdk-lib.aws_events': "import { Rule, Schedule } from 'aws-cdk-lib/aws-events';",
   // import * as cdk from '@aws-cdk/core';
-  'aws-cdk-lib.aws_stepfunctions': "import * as cdk from 'aws-cdk-lib';",
+  'aws-cdk-lib.aws_rds': "import * as cdk from 'aws-cdk-lib';",
 };
 
 Object.entries(EXPECTED_SUBMODULE_IMPORTS).forEach(([submodule, importStatement]) => {

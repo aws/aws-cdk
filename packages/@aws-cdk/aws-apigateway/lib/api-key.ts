@@ -40,6 +40,13 @@ export interface ApiKeyOptions extends ResourceOptions {
    * @default none
    */
   readonly value?: string;
+
+  /**
+   * A description of the purpose of the API key.
+   * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-apikey.html#cfn-apigateway-apikey-description
+   * @default none
+   */
+  readonly description?: string;
 }
 
 /**
@@ -58,13 +65,6 @@ export interface ApiKeyProps extends ApiKeyOptions {
    * @default none
    */
   readonly customerId?: string;
-
-  /**
-   * A description of the purpose of the API key.
-   * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-apikey.html#cfn-apigateway-apikey-description
-   * @default none
-   */
-  readonly description?: string;
 
   /**
    * Indicates whether the API key can be used by clients.

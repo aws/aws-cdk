@@ -78,6 +78,13 @@ export class RegionInfo {
   }
 
   /**
+  * The hosted zone ID used by Route 53 to alias a EBS environment endpoint in this region (e.g: Z2O1EMRO9K5GLX)
+  */
+  public get ebsEnvEndpointHostedZoneId(): string | undefined {
+    return Fact.find(this.name, FactName.EBS_ENV_ENDPOINT_HOSTED_ZONE_ID);
+  }
+
+  /**
    * The prefix for VPC Endpoint Service names,
    * cn.com.amazonaws.vpce for China regions,
    * com.amazonaws.vpce otherwise.
