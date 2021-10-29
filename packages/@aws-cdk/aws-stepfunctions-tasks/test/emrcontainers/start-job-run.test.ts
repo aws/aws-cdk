@@ -10,7 +10,6 @@ let stack: Stack;
 let clusterId: string;
 let defaultProps: EmrContainersStartJobRunProps;
 
-
 beforeEach(() => {
   stack = new Stack();
   clusterId = 'clusterId';
@@ -670,7 +669,7 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
             },
           },
         });
-      }).toThrow(`Entry point arguments must be an string array between 1 and 10280 in length. Received ${entryPointArgs.value.length}.`);
+      }).toThrow(`Entry point arguments must be a string array between 1 and 10280 in length. Received ${entryPointArgs.value.length}.`);
 
       // THEN
       expect(() => {
@@ -683,7 +682,7 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
             },
           },
         });
-      }).toThrow(`Entry point arguments must be an string array between 1 and 10280 in length. Received ${entryPointArgsNone.value.length}.`);
+      }).toThrow(`Entry point arguments must be a string array between 1 and 10280 in length. Received ${entryPointArgsNone.value.length}.`);
     });
 
     test('Spark Submit Parameters is NOT between 1 characters and 102400 characters in length', () => {

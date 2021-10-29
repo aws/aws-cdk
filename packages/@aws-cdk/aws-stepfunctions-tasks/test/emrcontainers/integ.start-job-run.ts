@@ -26,12 +26,6 @@ const eksCluster = new eks.Cluster(stack, 'integration-test-eks-cluster', {
   defaultCapacityInstance: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.XLARGE),
 });
 
-// const namespace_cluster = eksCluster.addManifest ('test', {
-//   apiVersion: 'v1',
-//   kind: 'Namespace',
-//   metadata: { name: 'test' },
-// });
-
 const virtualCluster = new cdk.CfnResource(stack, 'Virtual Cluster', {
   type: 'AWS::EMRContainers::VirtualCluster',
   properties: {
@@ -102,6 +96,5 @@ const sm = new sfn.StateMachine(stack, 'StateMachine', {
 new cdk.CfnOutput(stack, 'stateMachineArn', {
   value: sm.stateMachineArn,
 });
-
 
 app.synth();
