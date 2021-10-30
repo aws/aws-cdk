@@ -117,7 +117,7 @@ export class TopicRule extends Resource implements ITopicRule {
         actions: Lazy.any({ produce: () => this.actions }),
         awsIotSqlVersion: sqlConfig.awsIotSqlVersion,
         description: props.description,
-        ruleDisabled: !(props.enabled ?? true),
+        ruleDisabled: props.enabled === undefined ? undefined : !props.enabled,
         sql: sqlConfig.sql,
       },
     });

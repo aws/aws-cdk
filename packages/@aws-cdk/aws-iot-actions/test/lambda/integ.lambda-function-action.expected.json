@@ -89,7 +89,6 @@
             }
           ],
           "AwsIotSqlVersion": "2016-03-23",
-          "RuleDisabled": false,
           "Sql": "SELECT topic(2) as device_id, timestamp() as timestamp, temperature FROM 'device/+/data'"
         }
       }

@@ -13,7 +13,6 @@ test('Default property', () => {
     TopicRulePayload: {
       Actions: [],
       Sql: "SELECT topic(2) as device_id, temperature FROM 'device/+/data'",
-      RuleDisabled: false,
     },
   });
 });
