@@ -4,6 +4,7 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
+import { TaskInput } from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
 import * as cr from '@aws-cdk/custom-resources';
 import * as awscli from '@aws-cdk/lambda-layer-awscli';
@@ -111,35 +112,8 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
       this.validateAppConfig(this.props.applicationConfig);
     }
 
-    if (props.jobDriver.sparkSubmitJobDriver?.entryPoint
-      && !sfn.JsonPath.isEncodedJsonPath(props.jobDriver.sparkSubmitJobDriver?.entryPoint.value)
-      && (props.jobDriver.sparkSubmitJobDriver?.entryPoint.value.length > 256
-        || props.jobDriver.sparkSubmitJobDriver?.entryPoint.value.length < 1)) {
-      throw new Error(`Entry point must be between 1 and 256 characters in length. Received ${props.jobDriver.sparkSubmitJobDriver?.entryPoint.value.length}.`);
-    }
-
-    if (props.jobDriver.sparkSubmitJobDriver?.entryPointArguments
-       && typeof props.jobDriver.sparkSubmitJobDriver.entryPointArguments.value === 'string'
-       && !sfn.JsonPath.isEncodedJsonPath(props.jobDriver.sparkSubmitJobDriver.entryPointArguments.value)) {
-      throw new Error(`Entry point arguments must be a string array. Received ${typeof props.jobDriver.sparkSubmitJobDriver.entryPointArguments.value}.`);
-    }
-
-    if (props.jobDriver.sparkSubmitJobDriver?.entryPointArguments
-      && !this.isArrayOfStrings(props.jobDriver.sparkSubmitJobDriver.entryPointArguments.value)) {
-      throw new Error(`Entry point arguments must be a string array. Received ${typeof props.jobDriver.sparkSubmitJobDriver.entryPointArguments.value}.`);
-    }
-
-    if (props.jobDriver.sparkSubmitJobDriver?.entryPointArguments
-      && this.isArrayOfStrings(props.jobDriver.sparkSubmitJobDriver.entryPointArguments.value)
-        && (props.jobDriver.sparkSubmitJobDriver.entryPointArguments.value.length > 10280
-          || props.jobDriver.sparkSubmitJobDriver.entryPointArguments.value.length < 1)) {
-      throw new Error(`Entry point arguments must be a string array between 1 and 10280 in length. Received ${props.jobDriver.sparkSubmitJobDriver?.entryPointArguments.value.length}.`);
-    }
-
-    if (props.jobDriver.sparkSubmitJobDriver?.sparkSubmitParameters
-      && (props.jobDriver.sparkSubmitJobDriver.sparkSubmitParameters.length > 102400
-        || props.jobDriver.sparkSubmitJobDriver.sparkSubmitParameters.length < 1)) {
-      throw new Error(`Spark submit parameters must be between 1 and 102400 characters in length. Received ${props.jobDriver.sparkSubmitJobDriver.sparkSubmitParameters.length}.`);
+    if (props.jobDriver.sparkSubmitJobDriver) {
+      this.validateSparkSubmitJobDriver(props.jobDriver.sparkSubmitJobDriver);
     }
 
     if (props.executionRole === undefined
@@ -236,12 +210,60 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
     return Array.isArray(value) && value.every(item => typeof item === 'string');
   }
 
+  private validateEntryPointArguments = (entryPointArguments:sfn.TaskInput) => {
+    if (typeof entryPointArguments.value === 'string'&& !sfn.JsonPath.isEncodedJsonPath(entryPointArguments.value)) {
+      throw new Error(`Entry point arguments must be a string array. Received ${typeof entryPointArguments.value}.`);
+    }
+    if (!this.isArrayOfStrings(entryPointArguments.value)) {
+      throw new Error(`Entry point arguments must be a string array. Received ${typeof entryPointArguments.value}.`);
+    }
+  }
+
+  private validateEntryPointArgumentsLength = (entryPointArguments:sfn.TaskInput) => {
+    if (this.isArrayOfStrings(entryPointArguments.value)
+        && (entryPointArguments.value.length > 10280 || entryPointArguments.value.length < 1)) {
+      throw new Error(`Entry point arguments must be a string array between 1 and 10280 in length. Received ${entryPointArguments.value.length}.`);
+    }
+  }
+
+  private validateSparkSubmitParametersLength (sparkSubmitParameters : string) {
+    if (sparkSubmitParameters.length > 102400 || sparkSubmitParameters.length < 1) {
+      throw new Error(`Spark submit parameters must be between 1 and 102400 characters in length. Received ${sparkSubmitParameters.length}.`);
+    }
+  }
+  private validateEntryPoint (entryPoint: TaskInput) {
+    if (!sfn.JsonPath.isEncodedJsonPath(entryPoint.value)&& (entryPoint.value.length > 256|| entryPoint.value.length < 1)) {
+      throw new Error(`Entry point must be between 1 and 256 characters in length. Received ${entryPoint.value.length}.`);
+    }
+  }
+
+  private validateSparkSubmitJobDriver = (driver:SparkSubmitJobDriver) => {
+
+    this.validateEntryPoint(driver.entryPoint);
+    if (driver.entryPointArguments) {
+      this.validateEntryPointArguments(driver.entryPointArguments);
+      this.validateEntryPointArgumentsLength(driver.entryPointArguments);
+    }
+    if (driver.sparkSubmitParameters) {
+      this.validateSparkSubmitParametersLength(driver.sparkSubmitParameters);
+    }
+  }
+
+
   private assignLogGroup = () : any => {
-    return (this.props.monitoring?.logGroup ?? (this.props.monitoring?.logging ? new logs.LogGroup(this, 'Monitoring Log Group') : undefined));
+    if (this.props.monitoring?.logGroup) {
+      return (this.props.monitoring?.logGroup);
+    } else {
+      return (this.props.monitoring?.logging ? new logs.LogGroup(this, 'Monitoring Log Group') : undefined);
+    }
   }
 
   private assignLogBucket = () : any => {
-    return (this.props.monitoring?.logBucket ?? (this.props.monitoring?.logging ? new s3.Bucket(this, 'Monitoring Bucket') : undefined));
+    if (this.props.monitoring?.logBucket) {
+      return (this.props.monitoring?.logBucket);
+    } else {
+      return (this.props.monitoring?.logging ? new s3.Bucket(this, 'Monitoring Bucket') : undefined);
+    }
   }
 
   // https://docs.aws.amazon.com/emr/latest/EMR-on-EKS-DevelopmentGuide/creating-job-execution-role.html
