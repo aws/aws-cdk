@@ -466,8 +466,6 @@ export class Classification {
    *
    * For more info:
    * @see https://docs.aws.amazon.com/emr/latest/ReleaseGuide/emr-spark-configure.html#emr-spark-maximizeresourceallocation
-   *
-   * @returns 'spark'
    */
   static readonly SPARK = new Classification('spark');
 
@@ -476,8 +474,6 @@ export class Classification {
    *
    * For more info:
    * @see https://spark.apache.org/docs/latest/configuration.html
-   *
-   * @returns 'spark-defaults'
    */
   static readonly SPARK_DEFAULTS = new Classification('spark-defaults');
 
@@ -486,15 +482,11 @@ export class Classification {
    *
    * For more info:
    * @see https://spark.apache.org/docs/latest/configuration.html#environment-variables
-   *
-   * @returns 'spark-env'
    */
   static readonly SPARK_ENV = new Classification('spark-env');
 
   /**
    * Sets values in the hive-site.xml for Spark.
-   *
-   * @returns 'spark-hive-site'
    */
   static readonly SPARK_HIVE_SITE = new Classification('spark-hive-site');
 
@@ -503,8 +495,6 @@ export class Classification {
    *
    * For more settings and info:
    * @see https://github.com/apache/spark/blob/master/conf/log4j.properties.template
-   *
-   * @returns 'spark-log4j'
    */
   static readonly SPARK_LOG4J = new Classification('spark-log4j');
 
@@ -513,13 +503,11 @@ export class Classification {
    *
    * For more settings and info:
    * @see https://github.com/apache/spark/blob/master/conf/metrics.properties.template
-   *
-   * @returns 'spark-metrics'
    */
   static readonly SPARK_METRICS = new Classification('spark-metrics');
 
   /**
-   * Creates a new Classification, can be extended to support a classification
+   * Creates a new Classification
    *
    * @param classificationStatement A literal string in case a new EMR classification is released, if not already defined.
    */
@@ -536,7 +524,6 @@ export class Classification {
  * @see https://docs.aws.amazon.com/emr/latest/ReleaseGuide/emr-configure-apps.html
  */
 export interface ApplicationConfiguration {
-
   /**
    * The classification within a configuration.
    *
@@ -616,40 +603,32 @@ export interface Monitoring {
  *
  * Can be extended to include new EMR releases
  *
- * @example new Example('emr-x.xx.x-latest');
+ * For example, `new ReleaseLabel('emr-x.xx.x-latest');`
  */
 export class ReleaseLabel {
 
   /**
    * EMR Release version 5.32.0
-   *
-   * @returns 'emr-5.32.0-latest'
    */
   static readonly EMR_5_32_0 = new ReleaseLabel('emr-5.32.0-latest');
 
   /**
    * EMR Release version 5.33.0
-   *
-   * @returns 'emr-5.33.0-latest'
    */
   static readonly EMR_5_33_0 = new ReleaseLabel('emr-5.33.0-latest');
 
   /**
    * EMR Release version 6.2.0
-   *
-   * @returns 'emr-6.2.0-latest'
    */
   static readonly EMR_6_2_0 = new ReleaseLabel('emr-6.2.0-latest');
 
   /**
    * EMR Release version 6.3.0
-   *
-   * @returns 'emr-6.3.0-latest'
    */
   static readonly EMR_6_3_0 = new ReleaseLabel('emr-6.3.0-latest');
 
   /**
-   * Initializes the label string, can be extended in case a new EMR Release occurs
+   * Initializes the label string.
    *
    * @param label A literal string that contains the release-version ex. 'emr-x.x.x-latest'
    */
@@ -663,8 +642,6 @@ export class VirtualClusterInput {
 
   /**
    * Input for a virtualClusterId from a Task Input
-   *
-   * @param taskInput Task Input that contains a virtualClusterId.
    */
   static fromTaskInput(taskInput: sfn.TaskInput): VirtualClusterInput {
     return new VirtualClusterInput(taskInput.value);
@@ -672,8 +649,6 @@ export class VirtualClusterInput {
 
   /**
    * Input for virtualClusterId from a literal string
-   *
-   * @param virtualClusterId literal string containing the virtualClusterId
    */
   static fromVirtualClusterId(virtualClusterId: string): VirtualClusterInput {
     return new VirtualClusterInput(virtualClusterId);
