@@ -429,33 +429,5 @@
         "HostedZoneId": "AAAAAAAAAAAAA"
       }
     }
-  },
-  "Outputs": {
-    "apiEndpoint9349E63C": {
-      "Value": {
-        "Fn::Join": [
-          "",
-          [
-            "https://",
-            {
-              "Ref": "apiC8550315"
-            },
-            ".execute-api.",
-            {
-              "Ref": "AWS::Region"
-            },
-            ".",
-            {
-              "Ref": "AWS::URLSuffix"
-            },
-            "/",
-            {
-              "Ref": "apiDeploymentStageprod896C8101"
-            },
-            "/"
-          ]
-        ]
-      }
-    }
   }
 }
