@@ -147,8 +147,8 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
       throw new Error('Execution role cannot be undefined when the virtual cluster ID is not a concrete value. Provide an execution role with the correct trust policy');
     }
 
-    this.logGroup = this.props.monitoring?.logGroup ?? (this.props.monitoring?.logging ? new logs.LogGroup(this, 'Monitoring Log Group') : undefined);
-    this.logBucket = this.props.monitoring?.logBucket ?? (this.props.monitoring?.logging ? new s3.Bucket(this, 'Monitoring Bucket') : undefined);
+    this.logGroup = this.assignLogGroup();
+    this.logBucket = this.assignLogBucket();
     this.role = this.props.executionRole ?? this.createJobExecutionRole();
     this.grantPrincipal = this.role;
 
@@ -234,6 +234,14 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
 
   private isArrayOfStrings(value: any): boolean {
     return Array.isArray(value) && value.every(item => typeof item === 'string');
+  }
+
+  private assignLogGroup = () : any => {
+    return (this.props.monitoring?.logGroup ?? (this.props.monitoring?.logging ? new logs.LogGroup(this, 'Monitoring Log Group') : undefined));
+  }
+
+  private assignLogBucket = () : any => {
+    return (this.props.monitoring?.logBucket ?? (this.props.monitoring?.logging ? new s3.Bucket(this, 'Monitoring Bucket') : undefined));
   }
 
   // https://docs.aws.amazon.com/emr/latest/EMR-on-EKS-DevelopmentGuide/creating-job-execution-role.html
@@ -441,7 +449,6 @@ export interface JobDriver {
    *
    * @see https://docs.aws.amazon.com/emr-on-eks/latest/APIReference/API_SparkSubmitJobDriver.html
    *
-   * @default - No spark submit job driver parameters specified.
    */
   readonly sparkSubmitJobDriver: SparkSubmitJobDriver;
 }

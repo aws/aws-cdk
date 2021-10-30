@@ -1,7 +1,7 @@
 import * as eks from '@aws-cdk/aws-eks';
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
-import * as cdk from '@aws-cdk/core';
+import { Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
@@ -12,8 +12,6 @@ enum ContainerProviderTypes {
 
   /**
    * Supported container provider type for a EKS Cluster
-   *
-   * @returns 'EKS'
    */
   EKS = 'EKS'
 }
@@ -24,20 +22,14 @@ enum ContainerProviderTypes {
 export class EksClusterInput {
 
   /**
-   * Use an EKS Cluster for the EKS Cluster name
-   *
-   * @param cluster - An EKS cluster
-   * @returns The name of the EKS Cluster
+   * Specify an existing EKS Cluster as the name for this Cluster
    */
   static fromCluster(cluster: eks.ICluster): EksClusterInput {
     return new EksClusterInput(cluster.clusterName);
   }
 
   /**
-   * Use a Task Input for the cluster name.
-   *
-   * @param taskInput Task Input object that accepts multiple types of payloads, in this case a literal string.
-   * @returns The value of a Task Input object, or a literal string.
+   * Specify a Task Input as the name for this Cluster
    */
   static fromTaskInput(taskInput: sfn.TaskInput): EksClusterInput {
     return new EksClusterInput(taskInput.value);
@@ -137,7 +129,7 @@ export class EmrContainersEksCreateVirtualCluster extends sfn.TaskStateBase {
       }),
       new iam.PolicyStatement({
         resources: [
-          cdk.Stack.of(this).formatArn({
+          Stack.of(this).formatArn({
             service: 'iam',
             region: '',
             resource: 'role/aws-service-role/emr-containers.amazonaws.com',
