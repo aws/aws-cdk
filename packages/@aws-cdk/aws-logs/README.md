@@ -48,6 +48,44 @@ By default, the log group will be created in the same region as the stack. The `
 log groups in other regions. This is typically useful when controlling retention for log groups auto-created by global services that
 publish their log group to a specific region, such as AWS Chatbot creating a log group in `us-east-1`.
 
+## Resource Policy
+
+CloudWatch Resource Policies allow other AWS services or IAM Principals to put log events into the log groups.
+A resource policy is automatically created when `addToResourcePolicy` is called on the LogGroup for the first time.
+
+`ResourcePolicy` can also be created manually.
+
+```ts
+const logGroup = new LogGroup(this, 'LogGroup');
+const resourcePolicy = new ResourcePolicy(this, 'ResourcePolicy');
+resourcePolicy.document.addStatements(new iam.PolicyStatement({
+    actions: ['logs:CreateLogStream', 'logs:PutLogEvents'],
+    principals: [new iam.ServicePrincipal('es.amazonaws.com')],
+    resources: [logGroup.logGroupArn],
+}));
+```
+
+Or more conveniently, write permissions to the log group can be granted as follows which gives same result as in the above example.
+
+```ts
+const logGroup = new LogGroup(this, 'LogGroup');
+logGroup.grantWrite(iam.ServicePrincipal('es.amazonaws.com'));
+```
+
+Optionally name and policy statements can also be passed on `ResourcePolicy` construction.
+
+```ts
+const policyStatement = new new iam.PolicyStatement({
+    resources: ["*"],
+    actions: ['logs:PutLogEvents'],
+    principals: [new iam.ArnPrincipal('arn:aws:iam::123456789012:user/user-name')],
+});
+const resourcePolicy = new ResourcePolicy(this, 'ResourcePolicy', {
+    policyName: 'myResourcePolicy',
+    policyStatements: [policyStatement],
+});
+```
+
 ## Encrypting Log Groups
 
 By default, log group data is always encrypted in CloudWatch Logs. You have the
@@ -179,7 +217,6 @@ line.
   all of the terms in any of the groups (specified as arrays) matches. This is
   an OR match.
 
-
 Examples:
 
 ```ts
@@ -227,7 +264,6 @@ and then descending into it, such as `$.field` or `$.list[0].field`.
 * `FilterPattern.any(jsonPattern, jsonPattern, ...)`: matches if any of the
   given JSON patterns match. This makes an OR combination of the given
   patterns.
-
 
 Example:
 
