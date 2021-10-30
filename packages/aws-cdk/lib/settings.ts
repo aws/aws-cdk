@@ -9,6 +9,7 @@ export type SettingsMap = {[key: string]: any};
 
 export const PROJECT_CONFIG = 'cdk.json';
 export const PROJECT_CONTEXT = 'cdk.context.json';
+export const PROJECT_PACKAGE_JSON = 'package.json';
 export const USER_DEFAULTS = '~/.cdk.json';
 
 /**
@@ -108,6 +109,7 @@ export class Configuration {
    */
   public async load(): Promise<this> {
     const userConfig = await loadAndLog(USER_DEFAULTS);
+    const pkgConfig = await Settings.fromPackageJson(PROJECT_PACKAGE_JSON);
     this._projectConfig = await loadAndLog(PROJECT_CONFIG);
     this._projectContext = await loadAndLog(PROJECT_CONTEXT);
 
@@ -127,6 +129,7 @@ export class Configuration {
     // Build settings from what's left
     this.settings = this.defaultConfig
       .merge(userConfig)
+      .merge(pkgConfig)
       .merge(this.projectConfig)
       .merge(this.commandLineArguments)
       .makeReadOnly();
@@ -282,6 +285,11 @@ export class Settings {
       lookups: argv.lookups,
       rollback: argv.rollback,
     });
+  }
+
+  public static async fromPackageJson(fileName: string): Promise<Settings> {
+    const pkg = (await fs.pathExists(fileName)) ? await fs.readJson(fileName) : {};
+    return new Settings(pkg['aws/cdk'] || pkg['cdk']);
   }
 
   public static mergeAll(...settings: Settings[]): Settings {
