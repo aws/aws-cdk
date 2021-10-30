@@ -108,6 +108,7 @@ export class Configuration {
    */
   public async load(): Promise<this> {
     const userConfig = await loadAndLog(USER_DEFAULTS);
+    const envConfig = Settings.fromEnvironment();
     this._projectConfig = await loadAndLog(PROJECT_CONFIG);
     this._projectContext = await loadAndLog(PROJECT_CONTEXT);
 
@@ -128,6 +129,7 @@ export class Configuration {
     this.settings = this.defaultConfig
       .merge(userConfig)
       .merge(this.projectConfig)
+      .merge(envConfig)
       .merge(this.commandLineArguments)
       .makeReadOnly();
 
@@ -281,6 +283,16 @@ export class Settings {
       bundlingStacks,
       lookups: argv.lookups,
       rollback: argv.rollback,
+    });
+  }
+
+  public static fromEnvironment(): Settings {
+    const { CDK_APP, CDK_DEBUG, CDK_PROFILE } = process.env;
+
+    return new Settings({
+      app: CDK_APP,
+      debug: CDK_DEBUG,
+      profile: CDK_PROFILE,
     });
   }
 
