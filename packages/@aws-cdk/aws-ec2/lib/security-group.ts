@@ -6,6 +6,7 @@ import { Connections } from './connections';
 import { CfnSecurityGroup, CfnSecurityGroupEgress, CfnSecurityGroupIngress } from './ec2.generated';
 import { IPeer, Peer } from './peer';
 import { Port } from './port';
+import { SecurityGroupLookupOptions } from './security-group-lookup';
 import { IVpc } from './vpc';
 
 const SECURITY_GROUP_SYMBOL = Symbol.for('@aws-cdk/iam.SecurityGroup');
@@ -318,13 +319,32 @@ export class SecurityGroup extends SecurityGroupBase {
    * Look up a security group by id.
    */
   public static fromLookup(scope: Construct, id: string, securityGroupId: string) {
-    if (Token.isUnresolved(securityGroupId)) {
+    return this.fromLookupAttributes(scope, id, { securityGroupId });
+  }
+
+  /**
+   * Look up a security group.
+   */
+  public static fromLookupAttributes(scope: Construct, id: string, options: SecurityGroupLookupOptions) {
+    if (Token.isUnresolved(options.securityGroupId) || Token.isUnresolved(options.securityGroupName) || Token.isUnresolved(options.vpc?.vpcId)) {
       throw new Error('All arguments to look up a security group must be concrete (no Tokens)');
+    }
+
+    if (options.securityGroupId && options.securityGroupName) {
+      throw new Error('\'securityGroupId\' and \'securityGroupName\' can not be specified both when looking up a security group');
+    }
+
+    if (!options.securityGroupId && !options.securityGroupName) {
+      throw new Error('\'securityGroupId\' or \'securityGroupName\' must be specified to look up a security group');
     }
 
     const attributes: cxapi.SecurityGroupContextResponse = ContextProvider.getValue(scope, {
       provider: cxschema.ContextProvider.SECURITY_GROUP_PROVIDER,
-      props: { securityGroupId },
+      props: {
+        securityGroupId: options.securityGroupId,
+        securityGroupName: options.securityGroupName,
+        vpcId: options.vpc?.vpcId,
+      },
       dummyValue: {
         securityGroupId: 'sg-12345',
         allowAllOutbound: true,

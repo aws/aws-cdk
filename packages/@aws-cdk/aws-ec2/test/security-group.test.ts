@@ -326,8 +326,177 @@ describe('security group', () => {
     expect(securityGroup.securityGroupId).toEqual('sg-12345');
     expect(securityGroup.allowAllOutbound).toEqual(true);
 
+  });
+
+  test('can look up a security group by id', () => {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'stack', {
+      env: {
+        account: '1234',
+        region: 'us-east-1',
+      },
+    });
+
+    // WHEN
+    const securityGroup = SecurityGroup.fromLookupAttributes(stack, 'stack', {
+      securityGroupId: 'sg-12345',
+    });
+
+    // THEN
+    expect(securityGroup.securityGroupId).toEqual('sg-12345');
+    expect(securityGroup.allowAllOutbound).toEqual(true);
 
   });
+
+  test('can look up a security group by name', () => {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'stack', {
+      env: {
+        account: '1234',
+        region: 'us-east-1',
+      },
+    });
+
+    // WHEN
+    const securityGroup = SecurityGroup.fromLookupAttributes(stack, 'stack', {
+      securityGroupName: 'my-security-group',
+    });
+
+    // THEN
+    expect(securityGroup.securityGroupId).toEqual('sg-12345');
+    expect(securityGroup.allowAllOutbound).toEqual(true);
+
+  });
+
+  test('can look up a security group by name and vpc', () => {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'stack', {
+      env: {
+        account: '1234',
+        region: 'us-east-1',
+      },
+    });
+
+    const vpc = Vpc.fromVpcAttributes(stack, 'VPC', {
+      vpcId: 'vpc-1234',
+      availabilityZones: ['dummy1a', 'dummy1b', 'dummy1c'],
+    });
+
+    // WHEN
+    const securityGroup = SecurityGroup.fromLookupAttributes(stack, 'stack', {
+      securityGroupName: 'my-security-group',
+      vpc,
+    });
+
+    // THEN
+    expect(securityGroup.securityGroupId).toEqual('sg-12345');
+    expect(securityGroup.allowAllOutbound).toEqual(true);
+
+  });
+
+  test('throws when securityGroupId and securityGroupName are specified both', () => {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'stack', {
+      env: {
+        account: '1234',
+        region: 'us-east-1',
+      },
+    });
+
+    // WHEN
+    expect(() => {
+      SecurityGroup.fromLookupAttributes(stack, 'stack', {
+        securityGroupId: 'sg-12345',
+        securityGroupName: 'my-security-group',
+      });
+    }).toThrow(/\'securityGroupId\' and \'securityGroupName\' can not be specified both when looking up a security group/);
+
+  });
+
+  test('throws when neither securityGroupId nor securityGroupName are specified', () => {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'stack', {
+      env: {
+        account: '1234',
+        region: 'us-east-1',
+      },
+    });
+
+    // WHEN
+    expect(() => {
+      SecurityGroup.fromLookupAttributes(stack, 'stack', {});
+    }).toThrow(/\'securityGroupId\' or \'securityGroupName\' must be specified to look up a security group/);
+
+  });
+
+  test('throws if securityGroupId is tokenized', () => {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'stack', {
+      env: {
+        account: '1234',
+        region: 'us-east-1',
+      },
+    });
+
+    // WHEN
+    expect(() => {
+      SecurityGroup.fromLookupAttributes(stack, 'stack', {
+        securityGroupId: Lazy.string({ produce: () => 'sg-12345' }),
+      });
+    }).toThrow('All arguments to look up a security group must be concrete (no Tokens)');
+
+  });
+
+  test('throws if securityGroupName is tokenized', () => {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'stack', {
+      env: {
+        account: '1234',
+        region: 'us-east-1',
+      },
+    });
+
+    // WHEN
+    expect(() => {
+      SecurityGroup.fromLookupAttributes(stack, 'stack', {
+        securityGroupName: Lazy.string({ produce: () => 'my-security-group' }),
+      });
+    }).toThrow('All arguments to look up a security group must be concrete (no Tokens)');
+
+  });
+
+  test('throws if vpc id is tokenized', () => {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'stack', {
+      env: {
+        account: '1234',
+        region: 'us-east-1',
+      },
+    });
+
+    const vpc = Vpc.fromVpcAttributes(stack, 'VPC', {
+      vpcId: Lazy.string({ produce: () => 'vpc-1234' }),
+      availabilityZones: ['dummy1a', 'dummy1b', 'dummy1c'],
+    });
+
+    // WHEN
+    expect(() => {
+      SecurityGroup.fromLookupAttributes(stack, 'stack', {
+        securityGroupName: 'my-security-group',
+        vpc,
+      });
+    }).toThrow('All arguments to look up a security group must be concrete (no Tokens)');
+
+  });
+
 });
 
 function testRulesAreInlined(contextDisableInlineRules: boolean | undefined | null, optionsDisableInlineRules: boolean | undefined) {

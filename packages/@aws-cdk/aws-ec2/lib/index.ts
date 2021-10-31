@@ -12,6 +12,7 @@ export * from './network-acl';
 export * from './network-acl-types';
 export * from './port';
 export * from './security-group';
+export * from './security-group-lookup';
 export * from './subnet';
 export * from './peer';
 export * from './volume';

@@ -577,6 +577,33 @@ const mySecurityGroupWithoutInlineRules = new ec2.SecurityGroup(this, 'SecurityG
 mySecurityGroupWithoutInlineRules.addIngressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(22), 'allow ssh access from the world');
 ```
 
+### Importing an existing security group
+
+If you know the ID and the configuration of the security group to import, you can use `SecurityGroup.fromSecurityGroupId`:
+
+```ts
+const sg = ec2.SecurityGroup.fromSecurityGroupId(this, 'SecurityGroupImport', 'security-group-import', {
+  allowAllOutbound: true,
+});
+```
+
+Alternatively, use method `SecurityGroup.fromLookupAttributes` to import security groups if you do not know the ID or the configuration details. You can lookup a security group by `securityGroupId` or by `securityGroupName`.
+
+The result of the `SecurityGroup.fromLookupAttributes` operation will be written to a file called `cdk.context.json`. You must commit this file to source control so that the lookup values are available in non-privileged environments such as CI build steps, and to ensure your template builds are repeatable.
+
+```ts fixture=with-vpc
+const sg = ec2.SecurityGroup.fromLookupAttributes(
+  this, 'SecurityGroupLookup', {
+    // This imports a security group by name but you can also
+    // specify a 'securityGroupId.
+    securityGroupName: 'security-group-lookup',
+
+    // optional, lookup in specified VPC
+    vpc,
+  }
+);
+```
+
 ## Machine Images (AMIs)
 
 AMIs control the OS that gets launched when you start your EC2 instance. The EC2
