@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import 'source-map-support/register';
-import {} from 'dotenv/config';
+import 'dotenv/config';
 import * as cxapi from '@aws-cdk/cx-api';
 import '@jsii/check-node/run';
 import * as colors from 'colors/safe';
