@@ -1,6 +1,7 @@
-import { expect, haveResource } from '@aws-cdk/assert-internal';
+import { expect, haveResource, haveResourceLike, ResourcePart } from '@aws-cdk/assert-internal';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
+import { ListenerAction } from '@aws-cdk/aws-elasticloadbalancingv2';
 import { Stack } from '@aws-cdk/core';
 import * as targets from '../lib';
 
@@ -35,6 +36,35 @@ test('Can create target groups with alb target', () => {
       Ref: 'Stack8A423254',
     },
   }));
+});
+
+test('AlbListener target creates a dependency on the NLB target group and ALB listener', () => {
+  // GIVEN
+  const stack = new Stack();
+  const vpc = new ec2.Vpc(stack, 'Stack');
+  const alb = new elbv2.ApplicationLoadBalancer(stack, 'ALB', { vpc });
+  const albListener = alb.addListener('ALBListener', {
+    port: 80,
+    defaultAction: ListenerAction.fixedResponse(200),
+  });
+  const nlb = new elbv2.NetworkLoadBalancer(stack, 'NLB', { vpc });
+  const listener = nlb.addListener('Listener', { port: 80 });
+
+  // WHEN
+  listener.addTargets('Targets', {
+    targets: [new targets.AlbListenerTarget(albListener)],
+    port: 80,
+  });
+
+  // THEN
+  expect(stack).to(haveResourceLike('AWS::ElasticLoadBalancingV2::TargetGroup', {
+    Properties: {
+      TargetType: 'alb',
+    },
+    DependsOn: [
+      'ALBALBListenerDB80B4FD',
+    ],
+  }, ResourcePart.CompleteDefinition));
 });
 
 test('Can create target groups with alb arn target', () => {

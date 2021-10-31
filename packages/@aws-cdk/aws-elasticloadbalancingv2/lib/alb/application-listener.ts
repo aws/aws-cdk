@@ -173,14 +173,19 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
   public readonly loadBalancer: IApplicationLoadBalancer;
 
   /**
+   * Listener protocol for this listener.
+   */
+  public readonly protocol: ApplicationProtocol;
+
+  /**
+   * The port of the listener.
+   */
+  public readonly port: number;
+
+  /**
    * ARNs of certificates added to this listener
    */
   private readonly certificateArns: string[];
-
-  /**
-   * Listener protocol for this listener.
-   */
-  private readonly protocol: ApplicationProtocol;
 
   constructor(scope: Construct, id: string, props: ApplicationListenerProps) {
     const [protocol, port] = determineProtocolAndPort(props.protocol, props.port);
@@ -198,6 +203,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
 
     this.loadBalancer = props.loadBalancer;
     this.protocol = protocol;
+    this.port = port;
     this.certificateArns = [];
 
     // Attach certificates

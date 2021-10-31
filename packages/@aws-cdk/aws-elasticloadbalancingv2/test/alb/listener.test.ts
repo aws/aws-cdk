@@ -15,7 +15,7 @@ describe('tests', () => {
     const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
 
     // WHEN
-    lb.addListener('Listener', {
+    const listener = lb.addListener('Listener', {
       port: 443,
       certificateArns: ['bla'],
       defaultTargetGroups: [new elbv2.ApplicationTargetGroup(stack, 'Group', { vpc, port: 80 })],
@@ -25,6 +25,7 @@ describe('tests', () => {
     expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::Listener', {
       Protocol: 'HTTPS',
     });
+    expect(listener.protocol).toBe(elbv2.ApplicationProtocol.HTTPS);
   });
 
   test('Listener guesses port from protocol', () => {
@@ -34,7 +35,7 @@ describe('tests', () => {
     const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
 
     // WHEN
-    lb.addListener('Listener', {
+    const listener = lb.addListener('Listener', {
       protocol: elbv2.ApplicationProtocol.HTTP,
       defaultTargetGroups: [new elbv2.ApplicationTargetGroup(stack, 'Group', { vpc, port: 80 })],
     });
@@ -43,6 +44,7 @@ describe('tests', () => {
     expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::Listener', {
       Port: 80,
     });
+    expect(listener.port).toBe(80);
   });
 
   test('Listener default to open - IPv4', () => {

@@ -631,7 +631,11 @@
         "VpcId": {
           "Ref": "Vpc8378EB38"
         }
-      }
+      },
+      "DependsOn": [
+        "ServiceLBPublicListenerECSGroup0CC8688C",
+        "ServiceLBPublicListener46709EAA"
+      ]
     }
   },
   "Outputs": {
