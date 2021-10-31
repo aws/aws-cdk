@@ -359,32 +359,6 @@
     }
   },
   "Outputs": {
-    "MyRestApiEndpoint4C55E4CB": {
-      "Value": {
-        "Fn::Join": [
-          "",
-          [
-            "https://",
-            {
-              "Ref": "MyRestApi2D1F47A9"
-            },
-            ".execute-api.",
-            {
-              "Ref": "AWS::Region"
-            },
-            ".",
-            {
-              "Ref": "AWS::URLSuffix"
-            },
-            "/",
-            {
-              "Ref": "MyRestApiDeploymentStageprodC33B8E5F"
-            },
-            "/"
-          ]
-        ]
-      }
-    },
     "stateMachineArn": {
       "Value": {
         "Ref": "StateMachine2E01A3A5"
