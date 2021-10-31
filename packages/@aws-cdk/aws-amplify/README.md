@@ -179,3 +179,32 @@ const amplifyApp = new amplify.App(this, 'MyApp', {
   autoBranchDeletion: true, // Automatically disconnect a branch when you delete a branch from your repository
 });
 ```
+
+## Adding custom response headers
+
+Use the `customResponseHeaders` prop to configure custom response headers for an Amplify app:
+
+```ts
+const amplifyApp = new amplify.App(stack, 'App', {
+  sourceCodeProvider: new amplify.GitHubSourceCodeProvider({
+    owner: '<user>',
+    repository: '<repo>',
+    oauthToken: cdk.SecretValue.secretsManager('my-github-token')
+  }),
+  customResponseHeaders: [
+    {
+      pattern: '*.json',
+      headers: {
+        'custom-header-name-1': 'custom-header-value-1',
+        'custom-header-name-2': 'custom-header-value-2',
+      },
+    },
+    {
+      pattern: '/path/*',
+      headers: {
+        'custom-header-name-1': 'custom-header-value-2',
+      },
+    },
+  ],
+});
+```
