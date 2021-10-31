@@ -13,8 +13,6 @@ import { IUser } from './user';
 // eslint-disable-next-line no-duplicate-imports, import/order
 import { Construct as CoreConstruct } from '@aws-cdk/core';
 
-export { TableDistStyle, TableSortStyle } from './private/database-query-provider';
-
 /**
  * An action that a Redshift user can be granted privilege to perform on a table.
  */
