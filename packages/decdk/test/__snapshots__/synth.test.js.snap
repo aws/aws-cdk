@@ -2,34 +2,6 @@
 
 exports[`apigw.json: apigw 1`] = `
 Object {
-  "Outputs": Object {
-    "MyApiEndpoint869ABE96": Object {
-      "Value": Object {
-        "Fn::Join": Array [
-          "",
-          Array [
-            "https://",
-            Object {
-              "Ref": "MyApi49610EDF",
-            },
-            ".execute-api.",
-            Object {
-              "Ref": "AWS::Region",
-            },
-            ".",
-            Object {
-              "Ref": "AWS::URLSuffix",
-            },
-            "/",
-            Object {
-              "Ref": "MyApiDeploymentStageprodE1054AF0",
-            },
-            "/",
-          ],
-        ],
-      },
-    },
-  },
   "Parameters": Object {
     "AssetParametersa6017def6c75b1a9adc95dfc1b2d7bb3dc0dad8ef9e71da67cc1b7c3826fe30cArtifactHash47CFB54E": Object {
       "Description": "Artifact hash for asset \\"a6017def6c75b1a9adc95dfc1b2d7bb3dc0dad8ef9e71da67cc1b7c3826fe30c\\"",
@@ -903,34 +875,6 @@ Object {
 
 exports[`lambda-events.json: lambda-events 1`] = `
 Object {
-  "Outputs": Object {
-    "lambdaeventsHelloWorldFunctionAB27BB65ApiEventSourceA7A86A4FEndpointC6202FF3": Object {
-      "Value": Object {
-        "Fn::Join": Array [
-          "",
-          Array [
-            "https://",
-            Object {
-              "Ref": "lambdaeventsHelloWorldFunctionAB27BB65ApiEventSourceA7A86A4F12449C5F",
-            },
-            ".execute-api.",
-            Object {
-              "Ref": "AWS::Region",
-            },
-            ".",
-            Object {
-              "Ref": "AWS::URLSuffix",
-            },
-            "/",
-            Object {
-              "Ref": "lambdaeventsHelloWorldFunctionAB27BB65ApiEventSourceA7A86A4FDeploymentStageprod6A86C016",
-            },
-            "/",
-          ],
-        ],
-      },
-    },
-  },
   "Parameters": Object {
     "AssetParametersa6017def6c75b1a9adc95dfc1b2d7bb3dc0dad8ef9e71da67cc1b7c3826fe30cArtifactHash47CFB54E": Object {
       "Description": "Artifact hash for asset \\"a6017def6c75b1a9adc95dfc1b2d7bb3dc0dad8ef9e71da67cc1b7c3826fe30c\\"",
