@@ -289,7 +289,7 @@ export class Settings {
 
   public static async fromPackageJson(fileName: string): Promise<Settings> {
     const pkg = (await fs.pathExists(fileName)) ? await fs.readJson(fileName) : {};
-    return new Settings(pkg['aws/cdk'] || pkg['cdk']);
+    return new Settings(pkg['aws/cdk'] || pkg.cdk);
   }
 
   public static mergeAll(...settings: Settings[]): Settings {
