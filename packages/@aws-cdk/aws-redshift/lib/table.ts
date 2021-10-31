@@ -3,13 +3,17 @@ import { Construct } from 'constructs';
 import { ICluster } from './cluster';
 import { DatabaseOptions } from './database-options';
 import { DatabaseQuery } from './private/database-query';
+import { TableDistStyle, TableSortStyle } from './private/database-query-provider';
 import { HandlerName } from './private/database-query-provider/handler-name';
+import { getDistKeyColumn, getDistKeyColumns, getSortKeyColumns } from './private/database-query-provider/util';
 import { TableHandlerProps } from './private/handler-props';
 import { IUser } from './user';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
 import { Construct as CoreConstruct } from '@aws-cdk/core';
+
+export { TableDistStyle, TableSortStyle } from './private/database-query-provider';
 
 /**
  * An action that a Redshift user can be granted privilege to perform on a table.
@@ -66,6 +70,20 @@ export interface Column {
    * The data type of the column.
    */
   readonly dataType: string;
+
+  /**
+   * Boolean value that indicates whether the column is to be configured as DISTKEY.
+   *
+   * @default - column is not DISTKEY
+   */
+  readonly distKey?: boolean;
+
+  /**
+   * Boolean value that indicates whether the column is to be configured as SORTKEY.
+   *
+   * @default - column is not a SORTKEY
+   */
+  readonly sortKey?: boolean;
 }
 
 /**
@@ -83,6 +101,20 @@ export interface TableProps extends DatabaseOptions {
    * The columns of the table.
    */
   readonly tableColumns: Column[];
+
+  /**
+   * The distribution style of the table.
+   *
+   * @default TableDistStyle.AUTO
+   */
+  readonly distStyle?: TableDistStyle;
+
+  /**
+   * The sort style of the table.
+   *
+   * @default TableSortStyle.AUTO if no sort key is specified, TableSortStyle.COMPOUND if a sort key is specified
+   */
+  readonly sortStyle?: TableSortStyle;
 
   /**
    * The policy to apply when this resource is removed from the application.
@@ -183,6 +215,14 @@ export class Table extends TableBase {
   constructor(scope: Construct, id: string, props: TableProps) {
     super(scope, id);
 
+    this.validateDistKeyColumns(props.tableColumns);
+    if (props.distStyle) {
+      this.validateDistStyle(props.distStyle, props.tableColumns);
+    }
+    if (props.sortStyle) {
+      this.validateSortStyle(props.sortStyle, props.tableColumns);
+    }
+
     this.tableColumns = props.tableColumns;
     this.cluster = props.cluster;
     this.databaseName = props.databaseName;
@@ -197,6 +237,8 @@ export class Table extends TableBase {
           generateSuffix: !props.tableName,
         },
         tableColumns: this.tableColumns,
+        distStyle: props.distStyle,
+        sortStyle: props.sortStyle ?? this.getDefaultSortStyle(props.tableColumns),
       },
     });
 
@@ -218,5 +260,40 @@ export class Table extends TableBase {
    */
   public applyRemovalPolicy(policy: cdk.RemovalPolicy): void {
     this.resource.applyRemovalPolicy(policy);
+  }
+
+  private validateDistKeyColumns(columns: Column[]): void {
+    const distKeyColumns = getDistKeyColumns(columns);
+    if (distKeyColumns.length > 1) {
+      throw new Error(`Only one column can be configured as DISTKEY. Found ${distKeyColumns.length}`);
+    }
+  }
+
+  private validateDistStyle(distStyle: TableDistStyle, columns: Column[]): void {
+    const distKeyColumn = getDistKeyColumn(columns);
+    if (distKeyColumn && distStyle !== TableDistStyle.KEY) {
+      throw new Error(`Only DISTSTYLE of '${TableDistStyle.KEY}' can be configured when DISTKEY is also configured. Found ${distStyle}`);
+    }
+    if (!distKeyColumn && distStyle === TableDistStyle.KEY) {
+      throw new Error(`DISTSTYLE of '${TableDistStyle.KEY}' can only be configured when DISTKEY is also configured.`);
+    }
+  }
+
+  private validateSortStyle(sortStyle: TableSortStyle, columns: Column[]): void {
+    const sortKeyColumns = getSortKeyColumns(columns);
+    if (sortKeyColumns.length === 0 && sortStyle !== TableSortStyle.AUTO) {
+      throw new Error(`SORTSTYLE of '${sortStyle}' can only be configured when SORTKEY is also configured.`);
+    }
+    if (sortKeyColumns.length > 0 && sortStyle === TableSortStyle.AUTO) {
+      throw new Error(`SORTSTYLE of '${TableSortStyle.AUTO}' cannot be configured when SORTKEY is also configured.`);
+    }
+  }
+
+  private getDefaultSortStyle(columns: Column[]): TableSortStyle {
+    const sortKeyColumns = getSortKeyColumns(columns);
+    if (sortKeyColumns.length === 0) {
+      return TableSortStyle.AUTO;
+    }
+    return TableSortStyle.COMPOUND;
   }
 }

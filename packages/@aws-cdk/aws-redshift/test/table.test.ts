@@ -5,7 +5,10 @@ import * as redshift from '../lib';
 
 describe('cluster table', () => {
   const tableName = 'tableName';
-  const tableColumns = [{ name: 'col1', dataType: 'varchar(4)' }, { name: 'col2', dataType: 'float' }];
+  const tableColumns: redshift.Column[] = [
+    { name: 'col1', dataType: 'varchar(4)' },
+    { name: 'col2', dataType: 'float' },
+  ];
 
   let stack: cdk.Stack;
   let vpc: ec2.Vpc;
@@ -133,6 +136,112 @@ describe('cluster table', () => {
         handler: 'table',
       },
       DeletionPolicy: 'Delete',
+    });
+  });
+
+  describe('distKey and distStyle', () => {
+    it('throws if more than one distKeys are configured', () => {
+      const updatedTableColumns: redshift.Column[] = [
+        ...tableColumns,
+        { name: 'col3', dataType: 'varchar(4)', distKey: true },
+        { name: 'col4', dataType: 'float', distKey: true },
+      ];
+
+      expect(
+        () => new redshift.Table(stack, 'Table', {
+          ...databaseOptions,
+          tableColumns: updatedTableColumns,
+        }),
+      ).toThrow(/Only one column can be configured as DISTKEY. Found 2/);
+    });
+
+    it('throws if distStyle other than KEY is configured with configured distKey column', () => {
+      const updatedTableColumns: redshift.Column[] = [
+        ...tableColumns,
+        { name: 'col3', dataType: 'varchar(4)', distKey: true },
+      ];
+
+      expect(
+        () => new redshift.Table(stack, 'Table', {
+          ...databaseOptions,
+          tableColumns: updatedTableColumns,
+          distStyle: redshift.TableDistStyle.EVEN,
+        }),
+      ).toThrow(`Only DISTSTYLE of '${redshift.TableDistStyle.KEY}' can be configured when DISTKEY is also configured. Found ${redshift.TableDistStyle.EVEN}`);
+    });
+
+    it('throws if KEY distStyle is configired with no distKey column', () => {
+      expect(
+        () => new redshift.Table(stack, 'Table', {
+          ...databaseOptions,
+          tableColumns,
+          distStyle: redshift.TableDistStyle.KEY,
+        }),
+      ).toThrow(`DISTSTYLE of '${redshift.TableDistStyle.KEY}' can only be configured when DISTKEY is also configured.`);
+    });
+  });
+
+  describe('sortKeys and sortStyle', () => {
+    it('configures default sortStyle based on sortKeys if no sortStyle is passed: AUTO', () => {
+      // GIVEN
+      const tableColumnsWithoutSortKey = tableColumns;
+
+      // WHEN
+      new redshift.Table(stack, 'Table', {
+        ...databaseOptions,
+        tableColumns: tableColumnsWithoutSortKey,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('Custom::RedshiftDatabaseQuery', {
+        sortStyle: redshift.TableSortStyle.AUTO,
+      });
+    });
+
+    it('configures default sortStyle based on sortKeys if no sortStyle is passed: COMPOUND', () => {
+      // GIVEN
+      const tableColumnsWithSortKey: redshift.Column[] = [
+        ...tableColumns,
+        { name: 'col3', dataType: 'varchar(4)', sortKey: true },
+      ];
+
+      // WHEN
+      new redshift.Table(stack, 'Table', {
+        ...databaseOptions,
+        tableColumns: tableColumnsWithSortKey,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('Custom::RedshiftDatabaseQuery', {
+        sortStyle: redshift.TableSortStyle.COMPOUND,
+      });
+    });
+
+    it('throws if sortStlye other than AUTO is passed with no configured sortKeys', () => {
+      expect(
+        () => new redshift.Table(stack, 'Table', {
+          ...databaseOptions,
+          tableColumns,
+          sortStyle: redshift.TableSortStyle.COMPOUND,
+        }),
+      ).toThrow(`SORTSTYLE of '${redshift.TableSortStyle.COMPOUND}' can only be configured when SORTKEY is also configured.`);
+    });
+
+    it('throws if sortStlye of AUTO is passed with some configured sortKeys', () => {
+      // GIVEN
+      const tableColumnsWithSortKey: redshift.Column[] = [
+        ...tableColumns,
+        { name: 'col3', dataType: 'varchar(4)', sortKey: true },
+      ];
+
+      // THEN
+      expect(
+        () => new redshift.Table(stack, 'Table', {
+          ...databaseOptions,
+          tableColumns: tableColumnsWithSortKey,
+          sortStyle: redshift.TableSortStyle.AUTO,
+        }),
+      ).toThrow(`SORTSTYLE of '${redshift.TableSortStyle.AUTO}' cannot be configured when SORTKEY is also configured.`);
     });
   });
 });

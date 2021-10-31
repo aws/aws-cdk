@@ -1,4 +1,5 @@
 import { Column } from '../table';
+import { TableDistStyle, TableSortStyle } from './database-query-provider/types';
 
 export interface DatabaseQueryHandlerProps {
   readonly handler: string;
@@ -18,6 +19,8 @@ export interface TableHandlerProps {
     readonly generateSuffix: boolean;
   };
   readonly tableColumns: Column[];
+  readonly distStyle?: TableDistStyle;
+  readonly sortStyle: TableSortStyle;
 }
 
 export interface TablePrivilege {
