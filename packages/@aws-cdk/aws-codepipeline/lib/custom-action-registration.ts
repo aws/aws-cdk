@@ -1,5 +1,6 @@
-import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import { Construct } from 'constructs';
+import { ActionCategory, ActionArtifactBounds } from './action';
+import { CfnCustomActionType } from './codepipeline.generated';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
@@ -69,12 +70,12 @@ export interface CustomActionRegistrationProps {
   /**
    * The category of the Action.
    */
-  readonly category: codepipeline.ActionCategory;
+  readonly category: ActionCategory;
 
   /**
    * The artifact bounds of the Action.
    */
-  readonly artifactBounds: codepipeline.ActionArtifactBounds;
+  readonly artifactBounds: ActionArtifactBounds;
 
   /**
    * The provider of the Action.
@@ -120,7 +121,7 @@ export class CustomActionRegistration extends CoreConstruct {
   constructor(scope: Construct, id: string, props: CustomActionRegistrationProps) {
     super(scope, id);
 
-    new codepipeline.CfnCustomActionType(this, 'Resource', {
+    new CfnCustomActionType(this, 'Resource', {
       category: props.category,
       inputArtifactDetails: {
         minimumCount: props.artifactBounds.minInputs,

@@ -3,7 +3,6 @@ import * as ecs from '@aws-cdk/aws-ecs';
 import * as iam from '@aws-cdk/aws-iam';
 import { Duration } from '@aws-cdk/core';
 import { Action } from '../action';
-import { deployArtifactBounds } from '../common';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
@@ -66,7 +65,7 @@ export class EcsDeployAction extends Action {
       ...props,
       category: codepipeline.ActionCategory.DEPLOY,
       provider: 'ECS',
-      artifactBounds: deployArtifactBounds(),
+      artifactBounds: codepipeline.deployArtifactBounds(),
       inputs: [determineInputArtifact(props)],
       resource: props.service,
     });
