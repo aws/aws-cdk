@@ -309,13 +309,10 @@ describe('DatabaseCluster', () => {
     });
 
     // THEN
-    expectCDK(stack).to(haveResource('AWS::SecretsManager::Secret', {
-      GenerateSecretString: {
+    expectCDK(stack).to(haveResourceLike('AWS::SecretsManager::Secret', {
+      GenerateSecretString: objectLike({
         ExcludeCharacters: '\"@/()[]',
-        GenerateStringKey: 'password',
-        PasswordLength: 41,
-        SecretStringTemplate: '{"username":"admin"}',
-      },
+      }),
     }));
   });
 
