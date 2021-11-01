@@ -174,9 +174,9 @@ export class CustomResourceProvider extends CoreConstruct {
       sourcePath: props.codeDirectory,
     });
 
-    const asset = stack.addFileAsset({
+    const asset = stack.synthesizer.addFileAsset({
       fileName: staging.relativeStagedPath(stack),
-      sourceHash: staging.sourceHash,
+      sourceHash: staging.assetHash,
       packaging: FileAssetPackaging.ZIP_DIRECTORY,
     });
 
