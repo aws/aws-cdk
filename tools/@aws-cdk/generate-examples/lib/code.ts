@@ -1,5 +1,15 @@
 import * as reflect from 'jsii-reflect';
 
+/**
+ * Customary module import names that differ from what would be automatically generated.
+ */
+const SPECIAL_IMPORT_NAMES: Record<string, string> = {
+  '@aws-cdk/core': 'cdk',
+  '@aws-cdk/aws-applicationautoscaling': 'appscaling',
+  '@aws-cdk/aws-elasticloadbalancing': 'elb',
+  '@aws-cdk/aws-elasticloadbalancingv2': 'elbv2',
+};
+
 interface Declaration {
   readonly type: reflect.Type;
   readonly name: string;
@@ -22,7 +32,10 @@ export class Import implements Declaration {
     return module(lhs.type).moduleName.localeCompare(module(rhs.type).moduleName);
   }
 
-  public constructor(readonly type: reflect.Type, readonly name: string) {}
+  readonly name: string;
+  public constructor(readonly type: reflect.Type, name?: string) {
+    this.name = name ?? type.name;
+  }
 
   public equals(rhs: Declaration): boolean {
     return this.render() === rhs.render();
@@ -30,7 +43,7 @@ export class Import implements Declaration {
 
   public render(): string {
     const { importName, moduleName } = module(this.type);
-    return `import * as ${importName} from ${moduleName};`;
+    return `import * as ${importName} from '${moduleName}';`;
   }
 }
 
@@ -115,7 +128,7 @@ export class Code {
     const { imports, assumptions } = splitDeclarations(deduplicate(this.declarations));
     Assumption.sort(assumptions);
     Import.sort(imports);
-    return [...imports.map((d) => d.render()), ...assumptions.map((a) => a.render())];
+    return [...imports.map((d) => d.render()), '', ...assumptions.map((a) => a.render())];
   }
 }
 
@@ -147,8 +160,7 @@ function deduplicate(declarations: Declaration[]): Declaration[] {
 function module(type: reflect.Type): ImportedModule {
   // FIXME: Needs to be submodule-aware for v2
   const parts = type.assembly.name.split('/');
-
-  const nonNamespacedPart = parts[1] ?? parts[0];
+  const nonNamespacedPart = SPECIAL_IMPORT_NAMES[type.assembly.name] ?? parts[1] ?? parts[0];
   return {
     importName: nonNamespacedPart.replace(/^aws-/g, '').replace(/[^a-z0-9_]/g, '_'),
     moduleName: type.assembly.name,

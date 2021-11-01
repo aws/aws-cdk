@@ -2,16 +2,14 @@ import * as spec from '@jsii/spec';
 import * as reflect from 'jsii-reflect';
 import { TypeSystem } from 'jsii-reflect';
 
-import { Assumption, Code } from './code';
+import { Assumption, Code, Import } from './code';
 
 /**
  * Special types that have a standard way of coming up with an example value
- *
- * FIXME: We will need to generate imports for these as well. Whoopsie :D
  */
 const SPECIAL_TYPE_EXAMPLES: Record<string, string> = {
-  '@aws-cdk/core.Duration': 'Duration.minutes(30)',
-  'aws-cdk-lib.Duration': 'Duration.minutes(30)',
+  '@aws-cdk/core.Duration': 'cdk.Duration.minutes(30)',
+  'aws-cdk-lib.Duration': 'cdk.Duration.minutes(30)',
 };
 
 /**
@@ -189,12 +187,11 @@ function exampleValue(context: ExampleContext, typeReference: reflect.TypeRefere
     const type = context.typeSystem.findFqn(fqn);
 
     if (fqn in SPECIAL_TYPE_EXAMPLES) {
-      return new Code(SPECIAL_TYPE_EXAMPLES[fqn]);
+      return new Code(SPECIAL_TYPE_EXAMPLES[fqn], [new Import(type)]);
     }
 
     if (type.isEnumType()) {
-      // FIXME: Imports? Similar to generate Static factory method example
-      return new Code(`${type.name}.${type.members[0].name}`);
+      return new Code(`${type.name}.${type.members[0].name}`, [new Import(type)]);
     }
 
     // If this is struct and we're not already rendering it (recursion breaker), expand
@@ -215,7 +212,7 @@ function exampleValue(context: ExampleContext, typeReference: reflect.TypeRefere
 function addAssumedVariableDeclaration(type: reflect.Type): Code {
   // FIXME: Potentially a counter here if we have the same name already
   const variableName = lowercaseFirstLetter(type.name);
-  return new Code(variableName, [new Assumption(type, variableName)]);
+  return new Code(variableName, [new Assumption(type, variableName), new Import(type)]);
 }
 
 /**
