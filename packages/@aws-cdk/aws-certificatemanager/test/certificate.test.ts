@@ -1,5 +1,4 @@
 import '@aws-cdk/assert-internal/jest';
-import * as acmpca from '@aws-cdk/aws-acmpca';
 import * as route53 from '@aws-cdk/aws-route53';
 import { Duration, Lazy, Stack } from '@aws-cdk/core';
 import { Certificate, CertificateValidation, ValidationMethod } from '../lib';
@@ -111,82 +110,6 @@ test('validationdomains can be given for a Token', () => {
       ValidationDomain: 'example.com',
     }],
   });
-});
-
-test('private certificate authority', () => {
-  const stack = new Stack();
-
-  new Certificate(stack, 'Certificate', {
-    domainName: 'test.example.com',
-    certificateAuthority: acmpca.CertificateAuthority.fromCertificateAuthorityArn(stack, 'CA',
-      'arn:aws:acm-pca:us-east-1:123456789012:certificate-authority/023077d8-2bfa-4eb0-8f22-05c96deade77'),
-  });
-
-  expect(stack).toHaveResource('AWS::CertificateManager::Certificate', {
-    DomainName: 'test.example.com',
-    CertificateAuthorityArn: 'arn:aws:acm-pca:us-east-1:123456789012:certificate-authority/023077d8-2bfa-4eb0-8f22-05c96deade77',
-  });
-});
-
-test('private certificate authority from token', () => {
-  const stack = new Stack();
-
-  const certificateAuthority = Lazy.string({
-    produce: () => 'arn:aws:acm-pca:us-east-1:123456789012:certificate-authority/023077d8-2bfa-4eb0-8f22-05c96deade77',
-  });
-
-  new Certificate(stack, 'Certificate', {
-    domainName: 'test.example.com',
-    certificateAuthority: acmpca.CertificateAuthority.fromCertificateAuthorityArn(stack, 'CA', certificateAuthority),
-  });
-
-  expect(stack).toHaveResource('AWS::CertificateManager::Certificate', {
-    DomainName: 'test.example.com',
-    CertificateAuthorityArn: 'arn:aws:acm-pca:us-east-1:123456789012:certificate-authority/023077d8-2bfa-4eb0-8f22-05c96deade77',
-  });
-});
-
-test('private certificate does not support domain validation', () => {
-  const stack = new Stack();
-
-  expect(() => {
-    new Certificate(stack, 'Certificate', {
-      domainName: 'test.example.com',
-      certificateAuthority: acmpca.CertificateAuthority.fromCertificateAuthorityArn(stack, 'CA',
-        'arn:aws:acm-pca:us-east-1:123456789012:certificate-authority/023077d8-2bfa-4eb0-8f22-05c96deade77'),
-      validation: CertificateValidation.fromEmail({
-        'test.example.com': 'example.com',
-      }),
-    });
-  }).toThrow(/When using Private Certificate Authority, properties 'validation', 'validationMethod' and 'validationDomains' are not supported/);
-});
-
-test('private certificate does not support domain validation - deprecated field validationDomains', () => {
-  const stack = new Stack();
-
-  expect(() => {
-    new Certificate(stack, 'Certificate', {
-      domainName: 'test.example.com',
-      certificateAuthority: acmpca.CertificateAuthority.fromCertificateAuthorityArn(stack, 'CA',
-        'arn:aws:acm-pca:us-east-1:123456789012:certificate-authority/023077d8-2bfa-4eb0-8f22-05c96deade77'),
-      validationDomains: {
-        'test.example.com': 'test.example.com',
-      },
-    });
-  }).toThrow(/When using Private Certificate Authority, properties 'validation', 'validationMethod' and 'validationDomains' are not supported/);
-});
-
-test('private certificate does not support domain validation - deprecated field validationMethod', () => {
-  const stack = new Stack();
-
-  expect(() => {
-    new Certificate(stack, 'Certificate', {
-      domainName: 'test.example.com',
-      certificateAuthority: acmpca.CertificateAuthority.fromCertificateAuthorityArn(stack, 'CA',
-        'arn:aws:acm-pca:us-east-1:123456789012:certificate-authority/023077d8-2bfa-4eb0-8f22-05c96deade77'),
-      validationMethod: ValidationMethod.EMAIL,
-    });
-  }).toThrow(/When using Private Certificate Authority, properties 'validation', 'validationMethod' and 'validationDomains' are not supported/);
 });
 
 test('CertificateValidation.fromEmail', () => {

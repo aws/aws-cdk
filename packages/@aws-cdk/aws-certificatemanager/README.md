@@ -144,15 +144,3 @@ certificate.metricDaysToExpiry().createAlarm({
   threshold: 45, // Automatic rotation happens between 60 and 45 days before expiry
 });
 ```
-
-## Requesting private certificates
-
-AWS Certificate Manager can create [private certificates](https://docs.aws.amazon.com/acm/latest/userguide/gs-acm-request-private.html) issued by [Private Certificate Authority (PCA)](https://docs.aws.amazon.com/acm-pca/latest/userguide/PcaWelcome.html). Validation of private certificates is not necessary.
-
-```ts
-new Certificate(this, 'Certificate', {
-  domainName: 'test.example.com',
-  certificateAuthority: acmpca.CertificateAuthority.fromCertificateAuthorityArn(this, 'CA',
-    'arn:aws:acm-pca:us-east-1:123456789012:certificate-authority/023077d8-2bfa-4eb0-8f22-05c96deade77'),
-});
-```

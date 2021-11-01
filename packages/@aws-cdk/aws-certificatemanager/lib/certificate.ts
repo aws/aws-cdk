@@ -1,4 +1,3 @@
-import * as acmpca from '@aws-cdk/aws-acmpca';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as route53 from '@aws-cdk/aws-route53';
 import { IResource, Token } from '@aws-cdk/core';
@@ -73,13 +72,6 @@ export interface CertificateProps {
    * @default CertificateValidation.fromEmail()
    */
   readonly validation?: CertificateValidation;
-
-  /**
-   * How to validate this certificate
-   *
-   * @default CertificateValidation.fromEmail()
-   */
-  readonly certificateAuthority?: acmpca.ICertificateAuthority;
 }
 
 /**
@@ -209,21 +201,24 @@ export class Certificate extends CertificateBase implements ICertificate {
   constructor(scope: Construct, id: string, props: CertificateProps) {
     super(scope, id);
 
-    let validationMethod: string | undefined;
-    let domainValidationOptions: CfnCertificate.DomainValidationOptionProperty[] | undefined;
-
-    if (props.certificateAuthority) {
-      handleDomainValidationPrivate(props);
-    } else {
-      ({ domainValidationOptions, validationMethod } = handleDomainValidationPublic(props));
+    let validation: CertificateValidation;
+    if (props.validation) {
+      validation = props.validation;
+    } else { // Deprecated props
+      if (props.validationMethod === ValidationMethod.DNS) {
+        validation = CertificateValidation.fromDns();
+      } else {
+        validation = CertificateValidation.fromEmail(props.validationDomains);
+      }
     }
+
+    const allDomainNames = [props.domainName].concat(props.subjectAlternativeNames || []);
 
     const cert = new CfnCertificate(this, 'Resource', {
       domainName: props.domainName,
       subjectAlternativeNames: props.subjectAlternativeNames,
-      domainValidationOptions,
-      validationMethod,
-      certificateAuthorityArn: props.certificateAuthority?.certificateAuthorityArn,
+      domainValidationOptions: renderDomainValidation(validation, allDomainNames),
+      validationMethod: validation.method,
     });
 
     this.certificateArn = cert.ref;
@@ -247,39 +242,6 @@ export enum ValidationMethod {
    * @see https://docs.aws.amazon.com/acm/latest/userguide/gs-acm-validate-dns.html
    */
   DNS = 'DNS',
-}
-
-/**
- * Handle certificate validation for publicly trusted certificates.
- */
-function handleDomainValidationPublic(props: CertificateProps) {
-  let validationMethod: string | undefined;
-  let domainValidationOptions: CfnCertificate.DomainValidationOptionProperty[] | undefined;
-  let validation: CertificateValidation | undefined = undefined;
-  if (props.validation) {
-    validation = props.validation;
-  } else { // Deprecated props
-    if (props.validationMethod === ValidationMethod.DNS) {
-      validation = CertificateValidation.fromDns();
-    } else {
-      validation = CertificateValidation.fromEmail(props.validationDomains);
-    }
-  }
-
-  const allDomainNames = [props.domainName].concat(props.subjectAlternativeNames || []);
-  domainValidationOptions = renderDomainValidation(validation, allDomainNames);
-  validationMethod = validation.method;
-  return { validation, domainValidationOptions, validationMethod };
-}
-
-/**
- * No validation for certificates signed by a private CA.
- * See https://docs.aws.amazon.com/acm/latest/userguide/domain-ownership-validation.html.
- */
-function handleDomainValidationPrivate(props: CertificateProps) {
-  if (props.validation || props.validationMethod || props.validationDomains) {
-    throw new Error('When using Private Certificate Authority, properties \'validation\', \'validationMethod\' and \'validationDomains\' are not supported');
-  }
 }
 
 // eslint-disable-next-line max-len
