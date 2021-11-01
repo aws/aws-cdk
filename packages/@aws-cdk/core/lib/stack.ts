@@ -773,7 +773,6 @@ export class Stack extends CoreConstruct implements ITaggable {
     // However, some parts of synthesis currently use some private
     // methods on Stack, and I don't really see the value in refactoring
     // this right now, so some parts still happen here.
-
     const builder = session.assembly;
 
     const template = this._toCloudFormation();
