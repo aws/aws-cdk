@@ -71,6 +71,36 @@ test('can set physical name', () => {
   });
 });
 
+test('can set description', () => {
+  const stack = new cdk.Stack();
+
+  new iot.TopicRule(stack, 'MyTopicRule', {
+    description: 'test-description',
+    sql: iot.IotSql.fromStringAsVer20151008("SELECT topic(2) as device_id, temperature FROM 'device/+/data'"),
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::IoT::TopicRule', {
+    TopicRulePayload: {
+      Description: 'test-description',
+    },
+  });
+});
+
+test('can set ruleDisabled', () => {
+  const stack = new cdk.Stack();
+
+  new iot.TopicRule(stack, 'MyTopicRule', {
+    enabled: false,
+    sql: iot.IotSql.fromStringAsVer20151008("SELECT topic(2) as device_id, temperature FROM 'device/+/data'"),
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::IoT::TopicRule', {
+    TopicRulePayload: {
+      RuleDisabled: true,
+    },
+  });
+});
+
 test.each([
   ['fromStringAsVer20151008', iot.IotSql.fromStringAsVer20151008, '2015-10-08'],
   ['fromStringAsVer20160323', iot.IotSql.fromStringAsVer20160323, '2016-03-23'],

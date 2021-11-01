@@ -59,6 +59,8 @@ const func = new lambda.Function(this, 'MyFunction', {
 });
 
 new iot.TopicRule(this, 'TopicRule', {
+  topicRuleName: 'MyTopicRule', // optional
+  description: 'invokes the lambda finction', // optional
   sql: iot.IotSql.fromStringAsVer20160323("SELECT topic(2) as device_id, timestamp() as timestamp FROM 'device/+/data'"),
   actions: [new actions.LambdaFunctionAction(func)],
 });
@@ -71,4 +73,13 @@ const topicRule = new iot.TopicRule(this, 'TopicRule', {
   sql: iot.IotSql.fromStringAsVer20160323("SELECT topic(2) as device_id, timestamp() as timestamp FROM 'device/+/data'"),
 });
 topicRule.addAction(new actions.LambdaFunctionAction(func))
+```
+
+If you wanna make the topic rule disable, add property `enabled: false` as following:
+
+```ts
+new iot.TopicRule(this, 'TopicRule', {
+  sql: iot.IotSql.fromStringAsVer20160323("SELECT topic(2) as device_id, timestamp() as timestamp FROM 'device/+/data'"),
+  enabled: false,
+});
 ```
