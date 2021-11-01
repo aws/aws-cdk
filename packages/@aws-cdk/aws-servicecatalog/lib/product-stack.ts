@@ -51,9 +51,7 @@ export class ProductStack extends cdk.Stack {
    * @internal
    */
   public _synthesizeTemplate(session: cdk.ISynthesisSession): void {
-    const builder = session.assembly;
-    const outPath = path.join(builder.outdir, this.templateFile);
-    const cfn = JSON.stringify(this._toCloudFormation());
+    const cfn = JSON.stringify(this._toCloudFormation(), undefined, 2);
     const templateHash = crypto.createHash('sha256').update(cfn).digest('hex');
 
     this._templateUrl = this._parentStack.synthesizer.addFileAsset({
@@ -62,7 +60,7 @@ export class ProductStack extends cdk.Stack {
       fileName: this.templateFile,
     }).httpUrl;
 
-    fs.writeFileSync(outPath, JSON.stringify(this._toCloudFormation(), undefined, 2));
+    fs.writeFileSync(path.join(session.assembly.outdir, this.templateFile), cfn);
   }
 }
 
