@@ -150,6 +150,7 @@ describe('Product', () => {
 
     const assembly = app.synth();
 
+    expect(assembly.stacks[0].assets.length).toBe(2);
     expect(assembly.stacks[0].assets[0].path).toEqual('ProductStackV1.product.template.json');
     expect(assembly.stacks[0].assets[1].path).toEqual('ProductStackV2.product.template.json');
   }),

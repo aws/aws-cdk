@@ -50,7 +50,7 @@ describe('ProductStack', () => {
     expect(() => {
       new servicecatalog.ProductStack(parent, 'direct');
     }).not.toThrow();
-  }),
+  });
 
   test('product stack is not synthesized as a stack artifact into the assembly', () => {
     // GIVEN
@@ -65,7 +65,7 @@ describe('ProductStack', () => {
     expect(assembly.artifacts.length).toEqual(2);
   });
 
-  test('the template of the nested stack is synthesized into the cloud assembly', () => {
+  test('the template of the product stack is synthesized into the cloud assembly', () => {
     // GIVEN
     const app = new cdk.App();
     const parent = new cdk.Stack(app, 'ParentStack');
@@ -76,7 +76,7 @@ describe('ProductStack', () => {
     const assembly = app.synth();
 
     // THEN
-    const template = JSON.parse(fs.readFileSync(path.join(assembly.directory, `${cdk.Names.uniqueId(productStack)}.product.template.json`), 'utf-8'));
+    const template = JSON.parse(fs.readFileSync(path.join(assembly.directory, productStack.templateFile), 'utf-8'));
     expect(template).toEqual({
       Resources: {
         SNSTopicProduct20605D98: {

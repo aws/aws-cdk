@@ -30,8 +30,8 @@ export abstract class CloudFormationTemplate {
   /**
    * Creates a product with the resources defined in the given product stack.
    */
-  public static fromStack(stack: ProductStack): CloudFormationTemplate {
-    return new CloudFormationStackTemplate(stack);
+  public static fromStack(productStack: ProductStack): CloudFormationTemplate {
+    return new CloudFormationStackTemplate(productStack);
   }
 
   /**
@@ -104,13 +104,13 @@ class CloudFormationStackTemplate extends CloudFormationTemplate {
   /**
    * @param stack A service catalog product stack.
   */
-  constructor(public readonly stack: ProductStack) {
+  constructor(public readonly productStack: ProductStack) {
     super();
   }
 
   public bind(_scope: Construct): CloudFormationTemplateConfig {
     return {
-      httpUrl: this.stack._getTemplateUrl(),
+      httpUrl: this.productStack._getTemplateUrl(),
     };
   }
 }

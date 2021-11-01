@@ -1,10 +1,12 @@
 import * as crypto from 'crypto';
+import * as fs from 'fs';
+import * as path from 'path';
 import * as cdk from '@aws-cdk/core';
 import { ProductStackSynthesizer } from './private/product-stack-synthesizer';
 
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct } from '@aws-cdk/core';
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from 'constructs';
 
 /**
  * A Service Catalog product stack, which is similar in form to a Cloudformation nested stack.
@@ -15,7 +17,7 @@ import { Construct } from '@aws-cdk/core';
  * but rather only synthesized as a template and uploaded as an asset to S3.
  *
  */
-export class ProductStack extends cdk.Stack implements cdk.IChildStack {
+export class ProductStack extends cdk.Stack {
   public readonly templateFile: string;
   private _templateUrl?: string;
   private _parentStack: cdk.Stack;
@@ -41,37 +43,26 @@ export class ProductStack extends cdk.Stack implements cdk.IChildStack {
   }
 
   /**
+   * Synthesize the product stack template, overrides the `super` class method.
+   *
    * Defines an asset at the parent stack which represents the template of this
-   * nested stack.
-   *
-   * This private API is used by `App.prepare()` within a loop that rectifies
-   * references every time an asset is added. This is because (at the moment)
-   * assets are addressed using CloudFormation parameters.
-   *
-   * @returns `true` if a new asset was added or `false` if an asset was
-   * previously added. When this returns `true`, App will do another reference
-   * rectification cycle.
+   * product stack.
    *
    * @internal
    */
-  public _prepareTemplateAsset(): boolean {
-    if (this._templateUrl) {
-      return false;
-    }
-
+  public _synthesizeTemplate(session: cdk.ISynthesisSession): void {
+    const builder = session.assembly;
+    const outPath = path.join(builder.outdir, this.templateFile);
     const cfn = JSON.stringify(this._toCloudFormation());
     const templateHash = crypto.createHash('sha256').update(cfn).digest('hex');
 
-    const templateLocation = this._parentStack.synthesizer.addFileAsset({
+    this._templateUrl = this._parentStack.synthesizer.addFileAsset({
       packaging: cdk.FileAssetPackaging.FILE,
       sourceHash: templateHash,
       fileName: this.templateFile,
-    });
+    }).httpUrl;
 
-    // if bucketName/objectKey are cfn parameters from a stack other than the parent stack, they will
-    // be resolved as cross-stack references like any other (see "multi" tests).
-    this._templateUrl = `https://s3.${this._parentStack.region}.${this._parentStack.urlSuffix}/${templateLocation.bucketName}/${templateLocation.objectKey}`;
-    return true;
+    fs.writeFileSync(outPath, JSON.stringify(this._toCloudFormation(), undefined, 2));
   }
 }
 
