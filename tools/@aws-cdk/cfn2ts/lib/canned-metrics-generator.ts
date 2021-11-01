@@ -64,7 +64,7 @@ export class CannedMetricsGenerator {
         this.code.line('return {');
         this.code.line(`  namespace: '${metric.namespace}',`);
         this.code.line(`  metricName: '${metric.metricName}',`);
-        this.code.line('  dimensions,');
+        this.code.line('  dimensionsMap: dimensions,');
         this.code.line(`  statistic: '${metric.defaultStat}',`);
         this.code.line('};');
         this.code.closeBlock();
