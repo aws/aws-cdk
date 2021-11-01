@@ -21,6 +21,7 @@ your instances will be launched privately or publicly:
 const cluster = new DatabaseCluster(this, 'Database', {
     masterUser: {
         username: 'myuser' // NOTE: 'admin' is reserved by DocumentDB
+        excludeCharacters: '\"@/:', // optional, defaults to the set "\"@/"
     },
     instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.LARGE),
     vpcSubnets: {
