@@ -41,6 +41,23 @@ describe('api key', () => {
     });
   });
 
+  test('add description to apiKey', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const api = new apigateway.RestApi(stack, 'test-api');
+    api.root.addMethod('GET'); // api must have atleast one method.
+
+    // WHEN
+    api.addApiKey('my-api-key', {
+      description: 'The most secret api key',
+    });
+
+    // THEN
+    expect(stack).toHaveResource('AWS::ApiGateway::ApiKey', {
+      Description: 'The most secret api key',
+    });
+  });
+
   test('use an imported api key', () => {
     // GIVEN
     const stack = new cdk.Stack();

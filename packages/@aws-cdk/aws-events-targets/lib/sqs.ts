@@ -1,11 +1,12 @@
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as sqs from '@aws-cdk/aws-sqs';
+import { addToDeadLetterQueueResourcePolicy, TargetBaseProps, bindBaseTargetConfig } from './util';
 
 /**
  * Customize the SQS Queue Event Target
  */
-export interface SqsQueueProps {
+export interface SqsQueueProps extends TargetBaseProps {
 
   /**
    * Message Group ID for messages sent to this queue
@@ -24,7 +25,6 @@ export interface SqsQueueProps {
    * @default the entire EventBridge event
    */
   readonly message?: events.RuleTargetInput;
-
 }
 
 /**
@@ -62,7 +62,12 @@ export class SqsQueue implements events.IRuleTarget {
     // deduplicated automatically
     this.queue.grantSendMessages(new iam.ServicePrincipal('events.amazonaws.com', principalOpts));
 
+    if (this.props.deadLetterQueue) {
+      addToDeadLetterQueueResourcePolicy(rule, this.props.deadLetterQueue);
+    }
+
     return {
+      ...bindBaseTargetConfig(this.props),
       arn: this.queue.queueArn,
       input: this.props.message,
       targetResource: this.queue,
