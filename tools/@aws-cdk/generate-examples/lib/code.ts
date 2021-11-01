@@ -1,12 +1,50 @@
 import * as reflect from 'jsii-reflect';
 
+interface Declaration {
+  readonly type: reflect.Type;
+  readonly name: string;
+  equals: (rhs: Declaration) => boolean;
+  render: () => string;
+  sort: () => void;
+}
+
+export class Import implements Declaration {
+  public constructor(readonly type: reflect.Type, readonly name: string) {}
+
+  public render(): string {
+    const { importName, moduleName } = module(this.type);
+    return `import * as ${importName} from ${moduleName};`;
+  }
+
+  public equals(rhs: Declaration): boolean {
+    return this.render() === rhs.render();
+  }
+
+  // FIXME: add sort method
+  public sort(): void {
+    return;
+  }
+}
+
 /**
  * Information for a declaration that must exist at the top of the code sample
  * that is necessary for the code sample to compile.
  */
-export interface Assumption {
-  readonly type: reflect.Type;
-  readonly variableName: string;
+export class Assumption {
+  public constructor(readonly type: reflect.Type, readonly name: string) {}
+
+  public render(): string {
+    return `declare const ${this.name}: ${module(this.type).importName}.${this.type.name};`;
+  }
+
+  public equals(rhs: Declaration): boolean {
+    return this.render() === rhs.render();
+  }
+
+  // FIXME: add sort method
+  public sort(): void {
+    return;
+  }
 }
 
 interface ImportedModule {
@@ -29,7 +67,11 @@ export class Code {
     return new Code(x);
   }
 
-  constructor(public readonly code: string, public readonly declarations: Assumption[] = []) {
+  /**
+   * Construct a Code, consisting of a code fragment and a list of declarations that are meant
+   * to be rendered at the top of the code snippet.
+   */
+  constructor(public readonly code: string, public readonly declarations: Declaration[] = []) {
   }
 
   /**
@@ -41,10 +83,7 @@ export class Code {
       return new Code(this.code + rhs, this.declarations);
     }
 
-    const declarations = [...this.declarations, ...rhs.declarations].filter((elem, index, self) => {
-      return index === self.indexOf(elem);
-    });
-    return new Code(this.code + rhs.code, declarations);
+    return new Code(this.code + rhs.code, [...this.declarations, ...rhs.declarations]);
   }
 
   public toString() {
@@ -52,41 +91,33 @@ export class Code {
   }
 
   private render(separator = '\n\n') {
-    return (this.makeVariableDeclarations().join('\n') + separator + this.code).trimStart();
+    return (this.renderDeclarations().join('\n') + separator + this.code).trimStart();
   }
 
   // FIXME: what to do about IXxx interfaces?
-  private makeVariableDeclarations(): string[] {
-    return Array.from(new Set(this.declarations.map(a => a.variableName)))
-      .map(variableName =>
-        `declare const ${variableName}: ${this.module(this.findDeclarationByName(variableName).type).importName}.${this.findDeclarationByName(variableName).type.name};`,
-      );
-  }
-
   /**
-   * Returns the first assumption in the array that matches the variable name.
-   * Assumes that the variable name exists in the declarations array.
+   * Renders variable declarations. Assumes that there are no duplicates in the declarations.
    */
-  private findDeclarationByName(variableName: string): Assumption {
-    const res = this.declarations.find(a => a.variableName === variableName);
-    if (!res) {
-      throw new Error(`Variable Name: ${variableName} not in Declaration Array`);
-    }
-    return res;
+  private renderDeclarations(): string[] {
+    return deduplicate(this.declarations).map((d) => d.render());
   }
+}
 
-  /**
-   * Parses the given type for human-readable information on the module
-   * that the type is from.
-   */
-  private module(type: reflect.Type): ImportedModule {
-    // FIXME: Needs to be submodule-aware for v2
-    const parts = type.assembly.name.split('/');
+function deduplicate(declarations: Declaration[]): Declaration[] {
+  return declarations.filter((v, i, a) => a.findIndex(t => t.equals(v)) === i);
+}
 
-    const nonNamespacedPart = parts[1] ?? parts[0];
-    return {
-      importName: nonNamespacedPart.replace(/^aws-/g, '').replace(/[^a-z0-9_]/g, '_'),
-      moduleName: type.assembly.name,
-    };
-  }
+/**
+ * Parses the given type for human-readable information on the module
+ * that the type is from.
+ */
+function module(type: reflect.Type): ImportedModule {
+  // FIXME: Needs to be submodule-aware for v2
+  const parts = type.assembly.name.split('/');
+
+  const nonNamespacedPart = parts[1] ?? parts[0];
+  return {
+    importName: nonNamespacedPart.replace(/^aws-/g, '').replace(/[^a-z0-9_]/g, '_'),
+    moduleName: type.assembly.name,
+  };
 }

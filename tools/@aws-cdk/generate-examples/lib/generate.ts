@@ -2,7 +2,7 @@ import * as spec from '@jsii/spec';
 import * as reflect from 'jsii-reflect';
 import { TypeSystem } from 'jsii-reflect';
 
-import { Code } from './code';
+import { Assumption, Code } from './code';
 
 /**
  * Special types that have a standard way of coming up with an example value
@@ -84,7 +84,7 @@ function generateClassInstantiationExample(initializer: reflect.Initializer): Co
     `new ${initializer.parentType.name}`,
     '(',
     ...(initializer.parameters.map((p, i, params) => {
-      if (params.length -1 === i) {
+      if (params.length - 1 === i) {
         return exampleValueForParameter(exampleContext, p, i);
       } else {
         return exampleValueForParameter(exampleContext, p, i).append(', ');
@@ -113,12 +113,12 @@ function getStaticFactoryProperties(classType: reflect.ClassType): reflect.Prope
 }
 
 // FIXME: add this function
-function generateStaticFactoryMethodExample(_classType: reflect.ClassType, _staticFactoryMethods: reflect.Method) {
+function generateStaticFactoryMethodExample(_classType: reflect.ClassType, _staticFactoryMethod: reflect.Method) {
   return undefined;
 }
 
 // FIXME: add this function
-function generateStaticFactoryPropertyExample(_classType: reflect.ClassType, _staticFactoryProperties: reflect.Property) {
+function generateStaticFactoryPropertyExample(_classType: reflect.ClassType, _staticFactoryProperty: reflect.Property) {
   return undefined;
 }
 
@@ -193,7 +193,7 @@ function exampleValue(context: ExampleContext, typeReference: reflect.TypeRefere
     }
 
     if (type.isEnumType()) {
-      // FIXME: Imports?
+      // FIXME: Imports? Similar to generate Static factory method example
       return new Code(`${type.name}.${type.members[0].name}`);
     }
 
@@ -215,7 +215,7 @@ function exampleValue(context: ExampleContext, typeReference: reflect.TypeRefere
 function addAssumedVariableDeclaration(type: reflect.Type): Code {
   // FIXME: Potentially a counter here if we have the same name already
   const variableName = lowercaseFirstLetter(type.name);
-  return new Code(variableName, [{ type, variableName }]);
+  return new Code(variableName, [new Assumption(type, variableName)]);
 }
 
 /**
