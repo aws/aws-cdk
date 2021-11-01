@@ -293,6 +293,32 @@ describe('DatabaseCluster', () => {
     }));
   });
 
+  test('creates a secret with excludeCharacters', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      masterUser: {
+        username: 'admin',
+        excludeCharacters: '"@/()[]',
+      },
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+      vpc,
+    });
+
+    // THEN
+    expectCDK(stack).to(haveResource('AWS::SecretsManager::Secret', {
+      GenerateSecretString: {
+        ExcludeCharacters: '\"@/()[]',
+        GenerateStringKey: 'password',
+        PasswordLength: 41,
+        SecretStringTemplate: '{"username":"admin"}',
+      },
+    }));
+  });
+
   test('create an encrypted cluster with custom KMS key', () => {
     // GIVEN
     const stack = testStack();
