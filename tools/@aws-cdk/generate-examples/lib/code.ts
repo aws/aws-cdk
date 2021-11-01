@@ -5,45 +5,58 @@ interface Declaration {
   readonly name: string;
   equals: (rhs: Declaration) => boolean;
   render: () => string;
-  sort: () => void;
 }
 
+/**
+ * An Import statement that will get rendered at the top of the code snippet.
+ */
 export class Import implements Declaration {
+  public static sort(imports: Import[]) {
+    imports.sort(Import.compare);
+  }
+
+  /**
+   * Returns 0 if lhs === rhs, -1 if lhs < rhs, and 1 if lhs > rhs.
+   */
+  public static compare(lhs: Import, rhs: Import): number {
+    return module(lhs.type).moduleName.localeCompare(module(rhs.type).moduleName);
+  }
+
   public constructor(readonly type: reflect.Type, readonly name: string) {}
+
+  public equals(rhs: Declaration): boolean {
+    return this.render() === rhs.render();
+  }
 
   public render(): string {
     const { importName, moduleName } = module(this.type);
     return `import * as ${importName} from ${moduleName};`;
   }
-
-  public equals(rhs: Declaration): boolean {
-    return this.render() === rhs.render();
-  }
-
-  // FIXME: add sort method
-  public sort(): void {
-    return;
-  }
 }
 
 /**
- * Information for a declaration that must exist at the top of the code sample
- * that is necessary for the code sample to compile.
+ * A declared constant that will be rendered at the top of the code snippet after the imports.
  */
 export class Assumption {
-  public constructor(readonly type: reflect.Type, readonly name: string) {}
-
-  public render(): string {
-    return `declare const ${this.name}: ${module(this.type).importName}.${this.type.name};`;
+  public static sort(assumptions: Assumption[]) {
+    assumptions.sort(Assumption.compare);
   }
+
+  /**
+   * Returns 0 if lhs === rhs, -1 if lhs < rhs, and 1 if lhs > rhs.
+   */
+  public static compare(lhs: Assumption, rhs: Assumption): number {
+    return lhs.name.localeCompare(rhs.name);
+  }
+
+  public constructor(readonly type: reflect.Type, readonly name: string) {}
 
   public equals(rhs: Declaration): boolean {
     return this.render() === rhs.render();
   }
 
-  // FIXME: add sort method
-  public sort(): void {
-    return;
+  public render(): string {
+    return `declare const ${this.name}: ${module(this.type).importName}.${this.type.name};`;
   }
 }
 
@@ -99,10 +112,30 @@ export class Code {
    * Renders variable declarations. Assumes that there are no duplicates in the declarations.
    */
   private renderDeclarations(): string[] {
-    return deduplicate(this.declarations).map((d) => d.render());
+    const { imports, assumptions } = splitDeclarations(deduplicate(this.declarations));
+    Assumption.sort(assumptions);
+    Import.sort(imports);
+    return [...imports.map((d) => d.render()), ...assumptions.map((a) => a.render())];
   }
 }
 
+function splitDeclarations(declarations: Declaration[]): { imports: Import[], assumptions: Assumption[] } {
+  const imports: Import[] = [];
+  const assumptions: Assumption[] = [];
+  for (const declaration of declarations) {
+    if (declaration instanceof Import) {
+      imports.push(declaration);
+    } else {
+      assumptions.push(declaration);
+    }
+  }
+  return { imports, assumptions };
+}
+
+// O(n^2) time in the worst case, could be improved?
+/**
+ * Deduplicates an array of Declarations.
+ */
 function deduplicate(declarations: Declaration[]): Declaration[] {
   return declarations.filter((v, i, a) => a.findIndex(t => t.equals(v)) === i);
 }
