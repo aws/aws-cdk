@@ -811,13 +811,9 @@ new tasks.EmrContainersEksCreateVirtualCluster(this, 'Create a Virtual Cluster',
 The EKS cluster can also be passed in directly.
 
 ```ts
-import * as sfn from '@aws-cdk/aws-stepfunctions';
-import * as tasks from '@aws-cdk/aws-stepfunctions-tasks';
 import * as eks from '@aws-cdk/aws-eks';
 
-const eksCluster = new eks.Cluster(this, 'EKS cluster', {
-  version: eks.KubernetesVersion.V1_20,
-});
+declare const eksCluster: eks.Cluster;
 
 new tasks.EmrContainersEksCreateVirtualCluster(this, 'Create a Virtual Cluster', {
   eksCluster: tasks.EksClusterInput.fromCluster(eksCluster),
@@ -827,9 +823,6 @@ new tasks.EmrContainersEksCreateVirtualCluster(this, 'Create a Virtual Cluster',
 By default, the Kubernetes namespace that a virtual cluster maps to is "default", but a specific namespace within an EKS cluster can be selected.
 
 ```ts
-import * as sfn from '@aws-cdk/aws-stepfunctions';
-import * as tasks from '@aws-cdk/aws-stepfunctions-tasks';
-
 new tasks.EmrContainersEksCreateVirtualCluster(this, 'Create a Virtual Cluster', {
   eksCluster: tasks.EksClusterInput.fromTaskInput(sfn.TaskInput.fromText('clusterId')),
   eksNamespace: 'specified-namespace',
@@ -841,11 +834,9 @@ new tasks.EmrContainersEksCreateVirtualCluster(this, 'Create a Virtual Cluster',
 The [DeleteVirtualCluster](https://docs.aws.amazon.com/emr-on-eks/latest/APIReference/API_DeleteVirtualCluster.html) API deletes a virtual cluster.
 
 ```ts
-import * as sfn from '@aws-cdk/aws-stepfunctions';
-import * as tasks from '@aws-cdk/aws-stepfunctions-tasks';
 
 new tasks.EmrContainersDeleteVirtualCluster(this, 'Delete a Virtual Cluster', {
-  virtualClusterId: sfn.TaskInput.fromJsonPathAt('$.VirtualClusterId'),
+  virtualClusterId: sfn.TaskInput.fromJsonPathAt('$.virtualCluster'),
 });
 ```
 
@@ -867,12 +858,9 @@ The following actions must be performed if the virtual cluster ID is supplied fr
 The job can be configured with spark submit parameters:
 
 ```ts
-import * as iam from '@aws-cdk/aws-iam';
-import * as sfn from '@aws-cdk/aws-stepfunctions';
-import * as tasks from '@aws-cdk/aws-stepfunctions-tasks';
 
 new tasks.EmrContainersStartJobRun(this, 'EMR Containers Start Job Run', {
-  virtualClusterId: sfn.TaskInput.fromText('de92jdei2910fwedz'),
+  virtualCluster: tasks.VirtualClusterInput.fromVirtualClusterId('de92jdei2910fwedz'),
   releaseLabel: tasks.ReleaseLabel.EMR_6_2_0,
   jobDriver: {
     sparkSubmitJobDriver: {
@@ -886,17 +874,14 @@ new tasks.EmrContainersStartJobRun(this, 'EMR Containers Start Job Run', {
 Configuring the job can also be done via application configuration:
 
 ```ts
-import * as iam from '@aws-cdk/aws-iam';
-import * as sfn from '@aws-cdk/aws-stepfunctions';
-import * as tasks from '@aws-cdk/aws-stepfunctions-tasks';
-
 new tasks.EmrContainersStartJobRun(this, 'EMR Containers Start Job Run', {
-  virtualClusterId: sfn.TaskInput.fromText('de92jdei2910fwedz'),
+  virtualCluster: tasks.VirtualClusterInput.fromVirtualClusterId('de92jdei2910fwedz'),
   releaseLabel: tasks.ReleaseLabel.EMR_6_2_0,
   jobName: 'EMR-Containers-Job',
   jobDriver: {
     sparkSubmitJobDriver: {
       entryPoint: sfn.TaskInput.fromText('local:///usr/lib/spark/examples/src/main/python/pi.py'),
+    },
   },
   applicationConfig: [{
     classification: tasks.Classification.SPARK_DEFAULTS,
@@ -911,12 +896,8 @@ new tasks.EmrContainersStartJobRun(this, 'EMR Containers Start Job Run', {
 Job monitoring can be enabled if `monitoring.logging` is set true. This automatically generates an S3 bucket and CloudWatch logs.
 
 ```ts
-import * as iam from '@aws-cdk/aws-iam';
-import * as sfn from '@aws-cdk/aws-stepfunctions';
-import * as tasks from '@aws-cdk/aws-stepfunctions-tasks';
-
 new tasks.EmrContainersStartJobRun(this, 'EMR Containers Start Job Run', {
-  virtualClusterId: sfn.TaskInput.fromText('de92jdei2910fwedz'),
+  virtualCluster: tasks.VirtualClusterInput.fromVirtualClusterId('de92jdei2910fwedz'),
   releaseLabel: tasks.ReleaseLabel.EMR_6_2_0,
   jobDriver: {
     sparkSubmitJobDriver: {
@@ -933,17 +914,14 @@ new tasks.EmrContainersStartJobRun(this, 'EMR Containers Start Job Run', {
 Otherwise, providing monitoring for jobs with existing log groups and log buckets is also available.
 
 ```ts
-import * as iam from '@aws-cdk/aws-iam';
-import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as logs from '@aws-cdk/aws-logs';
-import * as s3 from '@aws-cdk/aws-s3';
-import * as tasks from '@aws-cdk/aws-stepfunctions-tasks';
+//import * as emrContainers from '@aws-cdk/emrContainers';
 
 const logGroup = new logs.LogGroup(this, 'Log Group');
 const logBucket = new s3.Bucket(this, 'S3 Bucket')
 
 new tasks.EmrContainersStartJobRun(this, 'EMR Containers Start Job Run', {
-  virtualClusterId: sfn.TaskInput.fromText('de92jdei2910fwedz'),
+  virtualCluster: tasks.VirtualClusterInput.fromVirtualClusterId('de92jdei2910fwedz'),
   releaseLabel: tasks.ReleaseLabel.EMR_6_2_0,
   jobDriver: {
     sparkSubmitJobDriver: {
@@ -952,8 +930,8 @@ new tasks.EmrContainersStartJobRun(this, 'EMR Containers Start Job Run', {
     },
   },
   monitoring: {
-    logGroup: this.logGroup,
-    logBucket: this.logBucket,
+    logGroup: logGroup,
+    logBucket: logBucket,
   },
 });
 ```
@@ -961,12 +939,8 @@ new tasks.EmrContainersStartJobRun(this, 'EMR Containers Start Job Run', {
 Users can provide their own existing Job Execution Role.
 
 ```ts
-import * as iam from '@aws-cdk/aws-iam';
-import * as sfn from '@aws-cdk/aws-stepfunctions';
-import * as tasks from '@aws-cdk/aws-stepfunctions-tasks';
-
 new tasks.EmrContainersStartJobRun(this, 'EMR Containers Start Job Run', {
-  virtualClusterId: sfn.TaskInput.fromJsonPathAt('$.VirtualClusterId'),
+  virtualCluster:tasks.VirtualClusterInput.fromTaskInput(sfn.TaskInput.fromJsonPathAt('$.VirtualClusterId')),
   releaseLabel: tasks.ReleaseLabel.EMR_6_2_0,
   jobName: 'EMR-Containers-Job',
   executionRole: iam.Role.fromRoleArn(this, 'Job-Execution-Role', 'arn:aws:iam::xxxxxxxxxxxx:role/JobExecutionRole'),

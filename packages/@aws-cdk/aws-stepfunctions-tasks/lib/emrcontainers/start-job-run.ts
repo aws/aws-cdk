@@ -478,7 +478,7 @@ export interface JobDriver {
 /**
  * The classification within a EMR Containers application configuration.
  * Class can be extended to add other classifications.
- * @example - new Classification('xxx-yyy');
+ * @example - new tasks.Classification('xxx-yyy');
  */
 export class Classification {
 
