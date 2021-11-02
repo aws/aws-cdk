@@ -233,11 +233,19 @@ function deduplicate(declarations: Declaration[]): Declaration[] {
  * for parsing the type for module information.
  */
 export function module(type: reflect.Type): ImportedModule {
-  // FIXME: Needs to be submodule-aware for v2
-  const parts = type.assembly.name.split('/');
-  const nonNamespacedPart = SPECIAL_IMPORT_NAMES[type.assembly.name] ?? parts[1] ?? parts[0];
-  return {
-    importName: nonNamespacedPart.replace(/^aws-/g, '').replace(/[^a-z0-9_]/g, '_'),
-    moduleName: type.assembly.name,
-  };
+  if (type.assembly.name === 'aws-cdk-lib' && type.namespace) {
+    const parts = type.namespace.split('_');
+    const nonNamespacedPart = SPECIAL_IMPORT_NAMES[type.namespace ?? ''] ?? parts[1] ?? parts[0];
+    return {
+      importName: nonNamespacedPart.replace(/^aws_/g, '').replace(/[^a-z0-9_]/g, '_'),
+      moduleName: `${type.assembly.name}/${nonNamespacedPart.replace('-', '_')}`,
+    };
+  } else {
+    const parts = type.assembly.name.split('/');
+    const nonNamespacedPart = SPECIAL_IMPORT_NAMES[type.assembly.name] ?? parts[1] ?? parts[0];
+    return {
+      importName: nonNamespacedPart.replace(/^aws-/g, '').replace(/[^a-z0-9_]/g, '_'),
+      moduleName: type.assembly.name,
+    };
+  }
 }
