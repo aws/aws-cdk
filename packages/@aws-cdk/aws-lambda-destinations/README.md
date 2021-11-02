@@ -117,11 +117,11 @@ In case of failure, the record contains the reason and error object:
 * For SNS/SQS (`SnsDestionation`/`SqsDestination`), the invocation record JSON is passed as the `Message` to the destination.
 * For Lambda (`LambdaDestination`), the invocation record JSON is passed as the payload to the function.
 * For EventBridge (`EventBridgeDestination`), the invocation record JSON is passed as the `detail` in the PutEvents call.
-  The value for the event field `source` is `lambda`, and the value for the event field `detail-type`
-  is either 'Lambda Function Invocation Result - Success' or 'Lambda Function Invocation Result – Failure',
-  depending on whether the lambda function invocation succeeded or failed. The event field `resource`
-  contains the function and destination ARNs. See [AWS Events](https://docs.aws.amazon.com/eventbridge/latest/userguide/aws-events.html)
-  for the different event fields.
+The value for the event field `source` is `lambda`, and the value for the event field `detail-type`
+is either 'Lambda Function Invocation Result - Success' or 'Lambda Function Invocation Result – Failure',
+depending on whether the lambda function invocation succeeded or failed. The event field `resource`
+contains the function and destination ARNs. See [AWS Events](https://docs.aws.amazon.com/eventbridge/latest/userguide/aws-events.html)
+for the different event fields.
 
 ### Auto-extract response payload with lambda destination
 
