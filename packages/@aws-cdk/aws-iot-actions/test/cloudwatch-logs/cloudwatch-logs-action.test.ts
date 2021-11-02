@@ -15,7 +15,7 @@ test('Default cloudwatch logs action', () => {
 
   // WHEN
   topicRule.addAction(
-    new actions.CloudwatchLogsAction(logGroup),
+    new actions.CloudWatchLogsAction(logGroup),
   );
 
   // THEN
@@ -82,13 +82,11 @@ test('can set role', () => {
     sql: iot.IotSql.fromStringAsVer20160323("SELECT topic(2) as device_id FROM 'device/+/data'"),
   });
   const logGroup = new logs.LogGroup(stack, 'MyLogGroup');
-  const role = new iam.Role(stack, 'MyRole', {
-    assumedBy: new iam.ServicePrincipal('iot.amazonaws.com'),
-  });
+  const role = iam.Role.fromRoleArn(stack, 'MyRole', 'arn:aws:iam::123456789012:role/ForTest');
 
   // WHEN
   topicRule.addAction(
-    new actions.CloudwatchLogsAction(logGroup, {
+    new actions.CloudWatchLogsAction(logGroup, {
       role,
     }),
   );
@@ -120,13 +118,11 @@ test('The specified role is added a policy needed for sending data to logs', () 
     sql: iot.IotSql.fromStringAsVer20160323("SELECT topic(2) as device_id FROM 'device/+/data'"),
   });
   const logGroup = new logs.LogGroup(stack, 'MyLogGroup');
-  const role = new iam.Role(stack, 'MyRole', {
-    assumedBy: new iam.ServicePrincipal('iot.amazonaws.com'),
-  });
+  const role = iam.Role.fromRoleArn(stack, 'MyRole', 'arn:aws:iam::123456789012:role/ForTest');
 
   // WHEN
   topicRule.addAction(
-    new actions.CloudwatchLogsAction(logGroup, {
+    new actions.CloudWatchLogsAction(logGroup, {
       role,
     }),
   );
@@ -167,8 +163,8 @@ test('When multiple actions are omitted role property, the actions use same one 
   const logGroup2 = new logs.LogGroup(stack, 'MyLogGroup2');
 
   // WHEN
-  topicRule.addAction(new actions.CloudwatchLogsAction(logGroup1));
-  topicRule.addAction(new actions.CloudwatchLogsAction(logGroup2));
+  topicRule.addAction(new actions.CloudWatchLogsAction(logGroup1));
+  topicRule.addAction(new actions.CloudWatchLogsAction(logGroup2));
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::IoT::TopicRule', {

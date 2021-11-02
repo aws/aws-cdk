@@ -63,6 +63,6 @@ const logGroup = new logs.LogGroup(this, 'MyLogGroup');
 
 new iot.TopicRule(this, 'TopicRule', {
   sql: iot.IotSql.fromStringAsVer20160323("SELECT topic(2) as device_id FROM 'device/+/data'"),
-  actions: [new actions.CloudwatchLogsAction(logGroup)],
+  actions: [new actions.CloudWatchLogsAction(logGroup)],
 });
 ```

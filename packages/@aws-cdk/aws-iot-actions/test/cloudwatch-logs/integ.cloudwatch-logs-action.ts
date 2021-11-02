@@ -17,7 +17,7 @@ class TestStack extends cdk.Stack {
     const logGroup = new logs.LogGroup(this, 'MyLogGroup', {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
-    topicRule.addAction(new actions.CloudwatchLogsAction(logGroup));
+    topicRule.addAction(new actions.CloudWatchLogsAction(logGroup));
   }
 }
 

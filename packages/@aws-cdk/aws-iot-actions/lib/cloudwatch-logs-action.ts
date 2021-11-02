@@ -6,7 +6,7 @@ import { singletonActionRole } from './private/role';
 /**
  * Configuration properties of an action for CloudWatch Logs.
  */
-export interface CloudwatchLogsActionProps {
+export interface CloudWatchLogsActionProps {
   /**
    * The IAM role that allows access to the CloudWatch log group.
    *
@@ -18,7 +18,7 @@ export interface CloudwatchLogsActionProps {
 /**
  * The action to send data to Amazon CloudWatch Logs
  */
-export class CloudwatchLogsAction implements iot.IAction {
+export class CloudWatchLogsAction implements iot.IAction {
   private readonly role?: iam.IRole;
 
   /**
@@ -27,14 +27,15 @@ export class CloudwatchLogsAction implements iot.IAction {
    */
   constructor(
     private readonly logGroup: logs.ILogGroup,
-    props: CloudwatchLogsActionProps = {},
+    props: CloudWatchLogsActionProps = {},
   ) {
     this.role = props.role;
   }
 
   bind(rule: iot.ITopicRule): iot.ActionConfig {
     const role = this.role ?? singletonActionRole(rule);
-    this.logGroup.grant(role, 'logs:CreateLogStream', 'logs:DescribeLogStreams', 'logs:PutLogEvents');
+    this.logGroup.grantWrite(role);
+    this.logGroup.grant(role, 'logs:DescribeLogStreams');
 
     return {
       configuration: {
