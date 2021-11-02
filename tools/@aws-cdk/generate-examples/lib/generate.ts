@@ -2,7 +2,7 @@ import * as spec from '@jsii/spec';
 import * as reflect from 'jsii-reflect';
 import { TypeSystem } from 'jsii-reflect';
 
-import { Assumption, Code, Import } from './code';
+import { Assumption, Code, Import, module } from './code';
 
 /**
  * Special types that have a standard way of coming up with an example value
@@ -19,7 +19,7 @@ const SPECIAL_TYPE_EXAMPLES: Record<string, string> = {
  * on the typesystem and which types have already been
  * rendered. This helps to prevent infinite recursion.
  */
-export class ExampleContext {
+class ExampleContext {
   private readonly _typeSystem: TypeSystem;
   private readonly _rendered: Set<string> = new Set();
 
@@ -79,7 +79,8 @@ function generateClassInstantiationExample(initializer: reflect.Initializer): Co
   const exampleContext = new ExampleContext(initializer.system);
 
   return Code.concatAll(
-    `new ${initializer.parentType.name}`,
+    new Code(`new ${module(initializer.parentType).importName}.`, [new Import(initializer.parentType)]),
+    initializer.parentType.name,
     '(',
     ...(initializer.parameters.map((p, i, params) => {
       if (params.length - 1 === i) {
@@ -112,12 +113,12 @@ function getStaticFactoryProperties(classType: reflect.ClassType): reflect.Prope
 
 // FIXME: add this function
 function generateStaticFactoryMethodExample(_classType: reflect.ClassType, _staticFactoryMethod: reflect.Method) {
-  return undefined;
+  return new Code('STATIC METHOD');
 }
 
 // FIXME: add this function
 function generateStaticFactoryPropertyExample(_classType: reflect.ClassType, _staticFactoryProperty: reflect.Property) {
-  return undefined;
+  return new Code('STATIC PROP');
 }
 
 /**
@@ -132,13 +133,13 @@ function exampleValueForParameter(context: ExampleContext, param: reflect.Parame
     return new Code(`'My${param.parentType.name}'`);
   }
 
-  return exampleValue(context, param.type, param.name, 0);
+  return exampleValue(context, param.type, param.name, param.optional, 0);
 }
 
 /**
  * Generate an example value of the given type.
  */
-function exampleValue(context: ExampleContext, typeReference: reflect.TypeReference, name: string, level: number): Code {
+function exampleValue(context: ExampleContext, typeReference: reflect.TypeReference, name: string, optional: boolean, level: number): Code {
   // Process primitive types, base case
   if (typeReference.primitive !== undefined) {
     switch (typeReference.primitive) {
@@ -167,43 +168,43 @@ function exampleValue(context: ExampleContext, typeReference: reflect.TypeRefere
       if (newType.fqn?.endsWith('.IResolvable')) {
         continue;
       }
-      return exampleValue(context, newType, name, level);
+      return exampleValue(context, newType, name, optional, level);
     }
     const newType = typeReference.unionOfTypes[0];
-    return exampleValue(context, newType, name, level);
+    return exampleValue(context, newType, name, optional, level);
   }
   // If its a collection create a collection of one element
   if (typeReference.arrayOfType !== undefined) {
-    return Code.concatAll('[', exampleValue(context, typeReference.arrayOfType, name, level), ']');
+    return Code.concatAll('[', exampleValue(context, typeReference.arrayOfType, name, optional, level), ']');
   }
 
   if (typeReference.mapOfType !== undefined) {
-    return exampleValueForMap(context, typeReference.mapOfType, name, level);
+    return exampleValueForMap(context, typeReference.mapOfType, name, optional, level);
   }
 
   if (typeReference.fqn) {
     const fqn = typeReference.fqn;
     // See if we have information on this type in the assembly
-    const type = context.typeSystem.findFqn(fqn);
+    const newType = context.typeSystem.findFqn(fqn);
 
     if (fqn in SPECIAL_TYPE_EXAMPLES) {
-      return new Code(SPECIAL_TYPE_EXAMPLES[fqn], [new Import(type)]);
+      return new Code(SPECIAL_TYPE_EXAMPLES[fqn], [new Import(newType)]);
     }
 
-    if (type.isEnumType()) {
-      return new Code(`${type.name}.${type.members[0].name}`, [new Import(type)]);
+    if (newType.isEnumType()) {
+      return new Code(`${newType.name}.${newType.members[0].name}`, [new Import(newType)]);
     }
 
     // If this is struct and we're not already rendering it (recursion breaker), expand
-    if (isStructType(type) && !context.rendered.has(type.fqn)) {
-      context.rendered.add(type.fqn);
-      const ret = exampleValueForStruct(context, type, level);
-      context.rendered.delete(type.fqn);
+    if (isStructType(newType) && !context.rendered.has(newType.fqn)) {
+      context.rendered.add(newType.fqn);
+      const ret = exampleValueForStruct(context, newType, optional, level);
+      context.rendered.delete(newType.fqn);
       return ret;
     }
 
     // For all other types  we will assume you already have a variable of the appropriate type.
-    return addAssumedVariableDeclaration(type);
+    return addAssumedVariableDeclaration(newType);
   }
 
   throw new Error('If this happens, then reflect.typeRefernce must have a new value');
@@ -218,10 +219,10 @@ function addAssumedVariableDeclaration(type: reflect.Type): Code {
 /**
  * Helper function to generate an example value for a map.
  */
-function exampleValueForMap(context: ExampleContext, map: reflect.TypeReference, name: string, level: number): Code {
+function exampleValueForMap(context: ExampleContext, map: reflect.TypeReference, name: string, optional: boolean, level: number): Code {
   return Code.concatAll(
     '{\n',
-    new Code(`${tab(level + 1)}${name}Key: `).append(exampleValue(context, map, name, level + 1)).append(',\n'),
+    new Code(`${tab(level + 1)}${name}Key: `).append(exampleValue(context, map, name, optional, level + 1)).append(`,${optionalComment(optional)}\n`),
     `${tab(level)}}`,
   );
 }
@@ -229,17 +230,21 @@ function exampleValueForMap(context: ExampleContext, map: reflect.TypeReference,
 /**
  * Helper function to generate an example value for a struct.
  */
-function exampleValueForStruct(context: ExampleContext, struct: reflect.InterfaceType, level: number): Code {
+function exampleValueForStruct(context: ExampleContext, struct: reflect.InterfaceType, _optional: boolean, level: number): Code {
   if (struct.allProperties.length === 0) {
     return new Code('{ }');
   }
   return Code.concatAll(
     '{\n',
     ...(struct.allProperties ?? []).map(p =>
-      new Code(`${tab(level + 1)}${p.name}: `).append(exampleValue(context, p.type, p.name, level + 1)).append(',\n'),
+      new Code(`${tab(level + 1)}${p.name}: `).append(exampleValue(context, p.type, p.name, p.optional, level + 1)).append(`,${optionalComment(p.optional)}\n`),
     ),
     `${tab(level)}}`,
   );
+}
+
+function optionalComment(optional: boolean): string {
+  return optional ? ' // optional' : '';
 }
 
 /**

@@ -33,8 +33,8 @@ export class Import implements Declaration {
   }
 
   readonly name: string;
-  public constructor(readonly type: reflect.Type, name?: string) {
-    this.name = name ?? type.name;
+  public constructor(readonly type: reflect.Type) {
+    this.name = type.name;
   }
 
   public equals(rhs: Declaration): boolean {
@@ -128,7 +128,11 @@ export class Code {
     const { imports, assumptions } = splitDeclarations(deduplicate(this.declarations));
     Assumption.sort(assumptions);
     Import.sort(imports);
-    return [...imports.map((d) => d.render()), '', ...assumptions.map((a) => a.render())];
+    // Add separator only if necessary
+    if (imports.length > 0 && assumptions.length > 0) {
+      return [...imports.map((d) => d.render()), '', ...assumptions.map((a) => a.render())];
+    }
+    return [...imports.map((d) => d.render()), ...assumptions.map((a) => a.render())];
   }
 }
 
@@ -145,7 +149,7 @@ function splitDeclarations(declarations: Declaration[]): { imports: Import[], as
   return { imports, assumptions };
 }
 
-// O(n^2) time in the worst case, could be improved?
+// FIXME: O(n^2) time in the worst case, could be improved?
 /**
  * Deduplicates an array of Declarations.
  */
@@ -155,9 +159,10 @@ function deduplicate(declarations: Declaration[]): Declaration[] {
 
 /**
  * Parses the given type for human-readable information on the module
- * that the type is from.
+ * that the type is from. Meant to serve as a single source of truth
+ * for parsing the type for module information.
  */
-function module(type: reflect.Type): ImportedModule {
+export function module(type: reflect.Type): ImportedModule {
   // FIXME: Needs to be submodule-aware for v2
   const parts = type.assembly.name.split('/');
   const nonNamespacedPart = SPECIAL_IMPORT_NAMES[type.assembly.name] ?? parts[1] ?? parts[0];
