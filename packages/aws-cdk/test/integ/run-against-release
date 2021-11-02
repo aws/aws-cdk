@@ -12,7 +12,7 @@ rm -rf $npmws
 mkdir -p $npmws
 
 # Install the CLI and put it on the PATH
-(cd $npmws && npm install aws-cdk)
+(cd $npmws && npm install aws-cdk${RELEASE_TAG:-""})
 export PATH=$npmws/node_modules/.bin:$PATH
 export TEST_RUNNER=release
 
