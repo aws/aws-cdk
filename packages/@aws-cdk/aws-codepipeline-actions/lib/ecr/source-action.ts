@@ -35,7 +35,8 @@ export interface EcrSourceVariables {
  */
 export interface EcrSourceActionProps extends codepipeline.CommonAwsActionProps {
   /**
-   * The image tag that will be checked for changes.
+   * The image tag that will be checked for changes. Provide an empty string to
+   * trigger on changes to any tag.
    *
    * @default 'latest'
    */
@@ -93,9 +94,14 @@ export class EcrSourceAction extends Action {
       resources: [this.props.repository.repositoryArn],
     }));
 
+    let imageTag: string | undefined;
+    if (this.props.imageTag !== '') {
+      imageTag = this.props.imageTag ?? 'latest';
+    }
+
     this.props.repository.onCloudTrailImagePushed(Names.nodeUniqueId(stage.pipeline.node) + 'SourceEventRule', {
       target: new targets.CodePipeline(stage.pipeline),
-      imageTag: this.props.imageTag ?? 'latest',
+      imageTag,
     });
 
     // the Action Role also needs to write to the Pipeline's bucket
@@ -104,7 +110,7 @@ export class EcrSourceAction extends Action {
     return {
       configuration: {
         RepositoryName: this.props.repository.repositoryName,
-        ImageTag: this.props.imageTag,
+        ImageTag: imageTag,
       },
     };
   }
