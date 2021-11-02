@@ -82,13 +82,13 @@ function getAccessibleConstructor(classType: reflect.ClassType): reflect.Initial
 
 function generateClassInstantiationExample(initializer: reflect.Initializer): Code {
   const exampleContext = new ExampleContext(initializer.system);
-
+  const length = initializer.parameters.length;
   return Code.concatAll(
     new Code(`new ${module(initializer.parentType).importName}.`, [new Import(initializer.parentType)]),
     initializer.parentType.name,
     '(',
-    ...(initializer.parameters.map((p, i, params) => {
-      if (params.length - 1 === i) {
+    ...(initializer.parameters.map((p, i) => {
+      if (length - 1 === i) {
         return exampleValueForParameter(exampleContext, p, i);
       } else {
         return exampleValueForParameter(exampleContext, p, i).append(', ');
@@ -138,13 +138,16 @@ function exampleValueForParameter(context: ExampleContext, param: reflect.Parame
     return new Code(`'My${param.parentType.name}'`);
   }
   // FIXME: render optionality here too
-  return exampleValue(context, param.type, param.name, param.optional, 0);
+  if (param.optional) {
+    return exampleValue(context, param.type, param.name, 0).inject(' // optional', { afterFirstInstanceOf: '{' });
+  }
+  return exampleValue(context, param.type, param.name, 0);
 }
 
 /**
  * Generate an example value of the given type.
  */
-function exampleValue(context: ExampleContext, typeReference: reflect.TypeReference, name: string, optional: boolean, level: number): Code {
+function exampleValue(context: ExampleContext, typeReference: reflect.TypeReference, name: string, level: number): Code {
   // Process primitive types, base case
   if (typeReference.primitive !== undefined) {
     switch (typeReference.primitive) {
@@ -159,7 +162,7 @@ function exampleValue(context: ExampleContext, typeReference: reflect.TypeRefere
       }
       case spec.PrimitiveType.Any: {
         // FIXME: add declaration with type any.
-        return new Code('{ any: \'value\' }');
+        return new Code('{\'any value\'}');
       }
       default: {
         return new Code('---');
@@ -170,22 +173,16 @@ function exampleValue(context: ExampleContext, typeReference: reflect.TypeRefere
   // Just pick the first type if it is a union type
   if (typeReference.unionOfTypes !== undefined) {
     // FIXME: which element should get picked?
-    for (const newType of typeReference.unionOfTypes) {
-      if (newType.fqn?.endsWith('.IResolvable')) {
-        continue;
-      }
-      return exampleValue(context, newType, name, optional, level);
-    }
-    const newType = typeReference.unionOfTypes[0];
-    return exampleValue(context, newType, name, optional, level);
+    const newType = getBaseUnionType(typeReference.unionOfTypes);
+    return exampleValue(context, newType, name, level);
   }
   // If its a collection create a collection of one element
   if (typeReference.arrayOfType !== undefined) {
-    return Code.concatAll('[', exampleValue(context, typeReference.arrayOfType, name, optional, level), ']');
+    return Code.concatAll('[', exampleValue(context, typeReference.arrayOfType, name, level), ']');
   }
 
   if (typeReference.mapOfType !== undefined) {
-    return exampleValueForMap(context, typeReference.mapOfType, name, optional, level);
+    return exampleValueForMap(context, typeReference.mapOfType, name, level);
   }
 
   if (typeReference.fqn) {
@@ -216,8 +213,17 @@ function exampleValue(context: ExampleContext, typeReference: reflect.TypeRefere
   throw new Error('If this happens, then reflect.typeRefernce must have a new value');
 }
 
+function getBaseUnionType(types: reflect.TypeReference[]): reflect.TypeReference {
+  for (const newType of types) {
+    if (newType.fqn?.endsWith('.IResolvable')) {
+      continue;
+    }
+    return newType;
+  }
+  return types[0];
+}
+
 function addAssumedVariableDeclaration(type: reflect.Type): Code {
-  // FIXME: Potentially a counter here if we have the same name already
   const variableName = lowercaseFirstLetter(type.name);
   return new Code(variableName, [new Assumption(type, variableName), new Import(type)]);
 }
@@ -225,10 +231,10 @@ function addAssumedVariableDeclaration(type: reflect.Type): Code {
 /**
  * Helper function to generate an example value for a map.
  */
-function exampleValueForMap(context: ExampleContext, map: reflect.TypeReference, name: string, optional: boolean, level: number): Code {
+function exampleValueForMap(context: ExampleContext, map: reflect.TypeReference, name: string, level: number): Code {
   return Code.concatAll(
     '{\n',
-    new Code(`${tab(level + 1)}${name}Key: `).append(exampleValue(context, map, name, optional, level + 1)).append(`,${optionalComment(optional)}\n`),
+    new Code(`${tab(level + 1)}${name}Key: `).append(exampleValue(context, map, name, level + 1)).append(',\n'),
     `${tab(level)}}`,
   );
 }
@@ -242,19 +248,54 @@ function exampleValueForStruct(context: ExampleContext, struct: reflect.Interfac
   }
   return Code.concatAll(
     '{\n',
-    ...(struct.allProperties ?? []).map(p =>
-      new Code(`${tab(level + 1)}${p.name}: `).append(exampleValue(context, p.type, p.name, p.optional, level + 1)).append(`,${optionalComment(p.optional)}\n`),
-    ),
+    ...(struct.allProperties ?? []).map((p) => {
+      return new Code(`${tab(level + 1)}${p.name}: `).append(removeOptional(addOptional(exampleValue(context, p.type, p.name, level + 1), p.optional).append(`,${optionalComment(p.optional)}\n`)));
+    }),
     `${tab(level)}}`,
   );
 }
 
-/**
- * Adds a comment if the given boolean is true, does nothing otherwise.
- */
-function optionalComment(optional: boolean): string {
+function addOptional(code: Code, optional: boolean ): Code {
+  if (optional && code.code.indexOf('{\n') !== -1) {
+    return code.inject(' // optional', { afterFirstInstanceOf: '{' });
+  }
+  return code;
+}
+
+function removeOptional(code: Code): Code {
+  const i = Math.max(code.code.lastIndexOf('}, // optional'), code.code.lastIndexOf('], // optional'));
+  const j = Math.max(code.code.lastIndexOf('},'), code.code.lastIndexOf('],'));
+  if (i !== -1 && i===j) {
+    return code.remove({ afterLastInstanceOf: ' //' }).append('\n');
+  }
+  return code;
+}
+
+function optionalComment(optional: boolean) {
   return optional ? ' // optional' : '';
 }
+
+// /**
+//  * Adds a comment if the given boolean is true, does nothing otherwise.
+//  */
+// function optionalComment(context: ExampleContext, property: reflect.Property): string {
+//   let typeRef = property.type;
+//   if (property.type.unionOfTypes !== undefined) {
+//     typeRef = getBaseUnionType(property.type.unionOfTypes);
+//   }
+//   if (property.type.arrayOfType !== undefined) {
+//     typeRef = property.type.arrayOfType;
+//   }
+//   if (typeRef.fqn) {
+//     const type = context.typeSystem.findFqn(typeRef.fqn);
+//     if (isStructType(type) || property.type.mapOfType !== undefined) {
+//       // eslint-disable-next-line no-console
+//       console.log('ISSTRUCTTYPE');
+//       return property.optional ? ' // zoinks' : '';
+//     }
+//   }
+//   return property.optional ? ' // optional' : '';
+// }
 
 /**
  * Returns whether the given type represents a struct

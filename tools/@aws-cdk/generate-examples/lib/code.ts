@@ -50,7 +50,7 @@ export class Import implements Declaration {
 /**
  * A declared constant that will be rendered at the top of the code snippet after the imports.
  */
-export class Assumption {
+export class Assumption implements Declaration {
   public static sort(assumptions: Assumption[]) {
     assumptions.sort(Assumption.compare);
   }
@@ -76,6 +76,13 @@ export class Assumption {
 interface ImportedModule {
   readonly importName: string;
   readonly moduleName: string;
+}
+
+interface MutateOptions {
+  afterFirstInstanceOf?: string,
+  afterLastInstanceOf?: string,
+  beforeFirstInstanceOf?: string,
+  beforeLastInstanceOf?: string,
 }
 
 /**
@@ -110,6 +117,69 @@ export class Code {
     }
 
     return new Code(this.code + rhs.code, [...this.declarations, ...rhs.declarations]);
+  }
+
+  public remove(options: MutateOptions): Code {
+    if (Object.keys(options).length !== 1) {
+      throw new Error('1 and only 1 property in options must be set');
+    }
+
+    let beforeInstance = true;
+    if (options.afterFirstInstanceOf || options.afterLastInstanceOf) {
+      beforeInstance = false;
+    }
+
+    let index = -1;
+    if (options.beforeFirstInstanceOf || options.afterFirstInstanceOf) {
+      index = this.code.indexOf(options.beforeFirstInstanceOf || options.afterFirstInstanceOf!);
+    } else {
+      index = this.code.lastIndexOf(options.beforeLastInstanceOf || options.afterLastInstanceOf!);
+    }
+    if (index === -1) {
+      return this;
+    }
+
+    const [before, after] = this.split(index, beforeInstance);
+    return beforeInstance ? after : before;
+  }
+
+  public inject(code: Code | string, options: MutateOptions): Code {
+    if (Object.keys(options).length !== 1) {
+      throw new Error('1 and only 1 property in options must be set');
+    }
+
+    let beforeInstance = true;
+    if (options.afterFirstInstanceOf || options.afterLastInstanceOf) {
+      beforeInstance = false;
+    }
+
+    const index = this.code.indexOf(options.afterFirstInstanceOf ??
+      options.afterLastInstanceOf ??
+      options.beforeFirstInstanceOf ??
+      options.beforeLastInstanceOf!);
+    if (index === -1) {
+      return this;
+    }
+
+    const [before, after] = this.split(index, beforeInstance);
+    return Code.concatAll(
+      before,
+      code,
+      after,
+    );
+  }
+
+  /**
+   * This function splits a Code into two Code fragments using the splitter.
+   * The first Code object will contain code up to and including the splitter.
+   * The second Code object will contain code after the splitter.
+   * The declarations of the Code are preserved in both returned Codes.
+   * Because of this, the user must be careful as the declarations may be wrong
+   * if handled incorrectly.
+   */
+  private split(index: number, before: boolean = false): [Code, Code] {
+    const i = before ? 0 : 1;
+    return [new Code(this.code.substr(0, index + i), this.declarations), new Code(this.code.substr(index + i), this.declarations)];
   }
 
   public toString() {
