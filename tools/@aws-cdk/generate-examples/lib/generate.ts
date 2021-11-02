@@ -51,23 +51,31 @@ export function generateClassAssignment(classType: reflect.ClassType): string | 
 
 function generateClassExample(classType: reflect.ClassType): Code | undefined {
   const staticFactoryMethods = getStaticFactoryMethods(classType);
-  // put all gets at top, then all if statments below
-  // if initializer exists and has at least 3 argument
-  // If there's at least 2 or 3 statics, take that.
-  // otherwise constructor, if not, check if there's 1 static.
-  // FIXME: if there's 1 static and no intializer / private initializer
-  if (staticFactoryMethods.length > 1) {
+  const staticFactoryProperties = getStaticFactoryProperties(classType);
+  const initializer = getAccessibleConstructor(classType);
+
+  if (initializer && initializer.parameters.length >= 3) {
+    return generateClassInstantiationExample(initializer);
+  }
+
+  if (staticFactoryMethods.length >= 3) {
     return generateStaticFactoryMethodExample(classType, staticFactoryMethods[0]);
   }
 
-  const staticFactoryProperties = getStaticFactoryProperties(classType);
-  if (staticFactoryProperties.length > 1) {
+  if (staticFactoryProperties.length >= 3) {
     return generateStaticFactoryPropertyExample(classType, staticFactoryProperties[0]);
   }
 
-  const initializer = getAccessibleConstructor(classType);
   if (initializer) {
     return generateClassInstantiationExample(initializer);
+  }
+
+  if (staticFactoryMethods.length >= 1) {
+    return generateStaticFactoryMethodExample(classType, staticFactoryMethods[0]);
+  }
+
+  if (staticFactoryProperties.length >= 1) {
+    return generateStaticFactoryPropertyExample(classType, staticFactoryProperties[0]);
   }
 
   return undefined;
@@ -78,24 +86,6 @@ function getAccessibleConstructor(classType: reflect.ClassType): reflect.Initial
     return undefined;
   }
   return classType.initializer;
-}
-
-function generateClassInstantiationExample(initializer: reflect.Initializer): Code {
-  const exampleContext = new ExampleContext(initializer.system);
-  const length = initializer.parameters.length;
-  return Code.concatAll(
-    new Code(`new ${module(initializer.parentType).importName}.`, [new Import(initializer.parentType)]),
-    initializer.parentType.name,
-    '(',
-    ...(initializer.parameters.map((p, i) => {
-      if (length - 1 === i) {
-        return exampleValueForParameter(exampleContext, p, i);
-      } else {
-        return exampleValueForParameter(exampleContext, p, i).append(', ');
-      }
-    })),
-    ')',
-  );
 }
 
 /**
@@ -116,14 +106,51 @@ function getStaticFactoryProperties(classType: reflect.ClassType): reflect.Prope
   );
 }
 
-// FIXME: add this function
-function generateStaticFactoryMethodExample(_classType: reflect.ClassType, _staticFactoryMethod: reflect.Method) {
-  return new Code('STATIC METHOD');
+function generateClassInstantiationExample(initializer: reflect.Initializer): Code {
+  const exampleContext = new ExampleContext(initializer.system);
+  const length = initializer.parameters.length;
+  return Code.concatAll(
+    new Code(`new ${module(initializer.parentType).importName}.`, [new Import(initializer.parentType)]),
+    initializer.parentType.name,
+    '(',
+    ...(initializer.parameters.map((p, i) => {
+      if (length - 1 === i) {
+        return exampleValueForParameter(exampleContext, p, i);
+      } else {
+        return exampleValueForParameter(exampleContext, p, i).append(', ');
+      }
+    })),
+    ')',
+  );
 }
 
-// FIXME: add this function
-function generateStaticFactoryPropertyExample(_classType: reflect.ClassType, _staticFactoryProperty: reflect.Property) {
-  return new Code('STATIC PROP');
+function generateStaticFactoryMethodExample(classType: reflect.ClassType, staticFactoryMethod: reflect.Method) {
+  const exampleContext = new ExampleContext(staticFactoryMethod.system);
+  const length = staticFactoryMethod.parameters.length;
+  return Code.concatAll(
+    new Code(`STATIC METHOD: ${module(classType).importName}.`),
+    staticFactoryMethod.parentType.name,
+    '.',
+    staticFactoryMethod.name,
+    '(',
+    ...(staticFactoryMethod.parameters.map((p, i) => {
+      if (length - 1 === i) {
+        return exampleValueForParameter(exampleContext, p, i);
+      } else {
+        return exampleValueForParameter(exampleContext, p, i).append(', ');
+      }
+    })),
+    ')',
+  );
+}
+
+function generateStaticFactoryPropertyExample(classType: reflect.ClassType, staticFactoryProperty: reflect.Property) {
+  return Code.concatAll(
+    new Code(`STATIC PROP: ${module(classType).importName}.`),
+    staticFactoryProperty.parentType.name,
+    '.',
+    staticFactoryProperty.name,
+  );
 }
 
 /**
@@ -249,7 +276,16 @@ function exampleValueForStruct(context: ExampleContext, struct: reflect.Interfac
   return Code.concatAll(
     '{\n',
     ...(struct.allProperties ?? []).map((p) => {
-      return new Code(`${tab(level + 1)}${p.name}: `).append(removeOptional(addOptional(exampleValue(context, p.type, p.name, level + 1), p.optional).append(`,${optionalComment(p.optional)}\n`)));
+      return new Code(`${tab(level + 1)}${p.name}: `).append(
+        removeOptional(
+          addOptional(
+            exampleValue(context, p.type, p.name, level + 1),
+            p.optional,
+          ).append(
+            `,${optionalComment(p.optional)}\n`,
+          ),
+        ),
+      );
     }),
     `${tab(level)}}`,
   );
