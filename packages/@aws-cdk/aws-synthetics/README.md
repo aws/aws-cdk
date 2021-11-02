@@ -97,13 +97,15 @@ object to the `schedule` property.
 Configure a run rate of up to 60 minutes with `Schedule.rate`:
 
 ```ts
-Schedule.rate(Duration.minutes(5)), // Runs every 5 minutes.
+Schedule.rate(Duration.minutes(5)) // Runs every 5 minutes.
 ```
 
-You can also specify a [cron expression](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_cron.html) via `Schedule.expression`:
+You can also specify a [cron expression](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_cron.html) with `Schedule.cron`:
 
 ```ts
-Schedule.expression('cron(0 0,8,16 * * ? *)'), // Run at 12am, 8am, 4pm UTC every day
+Schedule.cron({
+  hour: '0,8,16' // Run at 12am, 8am, 4pm UTC every day
+})
 ```
 
 If you want the canary to run just once upon deployment, you can use `Schedule.once()`.
