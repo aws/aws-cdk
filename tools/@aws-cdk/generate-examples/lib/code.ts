@@ -120,7 +120,7 @@ export class Code {
     return (this.renderDeclarations().join('\n') + separator + this.code).trimStart();
   }
 
-  // FIXME: what to do about IXxx interfaces?
+  // FIXME: what to do about IXxx interfaces? interface type that is not a datatype
   /**
    * Renders variable declarations. Assumes that there are no duplicates in the declarations.
    */

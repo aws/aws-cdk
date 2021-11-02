@@ -38,6 +38,7 @@
     "@types/jest": "^26.0.24",
     "@types/yargs": "^15.0.14",
     "jest": "^26.6.3",
+    "jsii": "^0.0.0",
     "typescript": "~3.9.10"
   },
   "nozem": {
@@ -46,6 +47,7 @@
   "dependencies": {
     "@jsii/spec": "^0.0.0",
     "jsii-reflect": "^0.0.0",
+    "fs-extra": "^9.1.0",
     "yargs": "^16.2.0"
   }
 }

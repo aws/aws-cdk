@@ -51,12 +51,17 @@ export function generateClassAssignment(classType: reflect.ClassType): string | 
 
 function generateClassExample(classType: reflect.ClassType): Code | undefined {
   const staticFactoryMethods = getStaticFactoryMethods(classType);
-  if (staticFactoryMethods.length > 0) {
+  // put all gets at top, then all if statments below
+  // if initializer exists and has at least 3 argument
+  // If there's at least 2 or 3 statics, take that.
+  // otherwise constructor, if not, check if there's 1 static.
+  // FIXME: if there's 1 static and no intializer / private initializer
+  if (staticFactoryMethods.length > 1) {
     return generateStaticFactoryMethodExample(classType, staticFactoryMethods[0]);
   }
 
   const staticFactoryProperties = getStaticFactoryProperties(classType);
-  if (staticFactoryProperties.length > 0) {
+  if (staticFactoryProperties.length > 1) {
     return generateStaticFactoryPropertyExample(classType, staticFactoryProperties[0]);
   }
 
@@ -132,7 +137,7 @@ function exampleValueForParameter(context: ExampleContext, param: reflect.Parame
   if (param.name === 'id' && position === 1) {
     return new Code(`'My${param.parentType.name}'`);
   }
-
+  // FIXME: render optionality here too
   return exampleValue(context, param.type, param.name, param.optional, 0);
 }
 
@@ -147,13 +152,14 @@ function exampleValue(context: ExampleContext, typeReference: reflect.TypeRefere
         return new Code(`'${name}'`);
       }
       case spec.PrimitiveType.Number: {
-        return new Code('0');
+        return new Code('123');
       }
       case spec.PrimitiveType.Boolean: {
         return new Code('false');
       }
       case spec.PrimitiveType.Any: {
-        return new Code('\'any-value\'');
+        // FIXME: add declaration with type any.
+        return new Code('{ any: \'value\' }');
       }
       default: {
         return new Code('---');
@@ -198,7 +204,7 @@ function exampleValue(context: ExampleContext, typeReference: reflect.TypeRefere
     // If this is struct and we're not already rendering it (recursion breaker), expand
     if (isStructType(newType) && !context.rendered.has(newType.fqn)) {
       context.rendered.add(newType.fqn);
-      const ret = exampleValueForStruct(context, newType, optional, level);
+      const ret = exampleValueForStruct(context, newType, level);
       context.rendered.delete(newType.fqn);
       return ret;
     }
@@ -230,7 +236,7 @@ function exampleValueForMap(context: ExampleContext, map: reflect.TypeReference,
 /**
  * Helper function to generate an example value for a struct.
  */
-function exampleValueForStruct(context: ExampleContext, struct: reflect.InterfaceType, _optional: boolean, level: number): Code {
+function exampleValueForStruct(context: ExampleContext, struct: reflect.InterfaceType, level: number): Code {
   if (struct.allProperties.length === 0) {
     return new Code('{ }');
   }
@@ -243,6 +249,9 @@ function exampleValueForStruct(context: ExampleContext, struct: reflect.Interfac
   );
 }
 
+/**
+ * Adds a comment if the given boolean is true, does nothing otherwise.
+ */
 function optionalComment(optional: boolean): string {
   return optional ? ' // optional' : '';
 }
