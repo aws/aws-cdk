@@ -56,13 +56,17 @@ test('Default cloudwatch logs action', () => {
     PolicyDocument: {
       Statement: [
         {
-          Action: ['logs:CreateLogStream', 'logs:DescribeLogStreams', 'logs:PutLogEvents'],
+          Action: ['logs:CreateLogStream', 'logs:PutLogEvents'],
           Effect: 'Allow',
           Resource: {
-            'Fn::GetAtt': [
-              'MyLogGroup5C0DAD85',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['MyLogGroup5C0DAD85', 'Arn'],
+          },
+        },
+        {
+          Action: 'logs:DescribeLogStreams',
+          Effect: 'Allow',
+          Resource: {
+            'Fn::GetAtt': ['MyLogGroup5C0DAD85', 'Arn'],
           },
         },
       ],
@@ -98,12 +102,7 @@ test('can set role', () => {
         {
           CloudwatchLogs: {
             LogGroupName: { Ref: 'MyLogGroup5C0DAD85' },
-            RoleArn: {
-              'Fn::GetAtt': [
-                'MyRoleF48FFE04',
-                'Arn',
-              ],
-            },
+            RoleArn: 'arn:aws:iam::123456789012:role/ForTest',
           },
         },
       ],
@@ -132,22 +131,24 @@ test('The specified role is added a policy needed for sending data to logs', () 
     PolicyDocument: {
       Statement: [
         {
-          Action: ['logs:CreateLogStream', 'logs:DescribeLogStreams', 'logs:PutLogEvents'],
+          Action: ['logs:CreateLogStream', 'logs:PutLogEvents'],
           Effect: 'Allow',
           Resource: {
-            'Fn::GetAtt': [
-              'MyLogGroup5C0DAD85',
-              'Arn',
-            ],
+            'Fn::GetAtt': ['MyLogGroup5C0DAD85', 'Arn'],
+          },
+        },
+        {
+          Action: 'logs:DescribeLogStreams',
+          Effect: 'Allow',
+          Resource: {
+            'Fn::GetAtt': ['MyLogGroup5C0DAD85', 'Arn'],
           },
         },
       ],
       Version: '2012-10-17',
     },
-    PolicyName: 'MyRoleDefaultPolicyA36BE1DD',
-    Roles: [
-      { Ref: 'MyRoleF48FFE04' },
-    ],
+    PolicyName: 'MyRolePolicy64AB00A5',
+    Roles: ['ForTest'],
   });
 });
 
