@@ -52,6 +52,8 @@ const myFn = new lambda.Function(this, "Fn", {
 });
 ```
 
+\*Only standard SQS queues are supported as a failure destination, FIFO queues are not supported.
+
 See also [Configuring Destinations for Asynchronous Invocation](https://docs.aws.amazon.com/lambda/latest/dg/invocation-async.html#invocation-async-destinations).
 
 ### Invocation record
