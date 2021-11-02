@@ -20,6 +20,23 @@ describe('tests', () => {
     }).toThrow(/'vpc' is required for a non-Lambda TargetGroup/);
   });
 
+  test('Lambda target should not have stickiness.enabled set', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack');
+    new elbv2.ApplicationTargetGroup(stack, 'TG', {
+      targetType: elbv2.TargetType.LAMBDA,
+    });
+
+    expect(stack).not.toHaveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
+      TargetGroupAttributes: [
+        {
+          Key: 'stickiness.enabled',
+          Value: 'false',
+        },
+      ],
+    });
+  });
+
   test('Can add self-registering target to imported TargetGroup', () => {
     // GIVEN
     const app = new cdk.App();
