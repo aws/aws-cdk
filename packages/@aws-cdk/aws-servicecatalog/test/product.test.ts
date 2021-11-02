@@ -102,7 +102,7 @@ describe('Product', () => {
     expect(synthesized.assets.length).toEqual(2);
   }),
 
-  test('product test from stack', () => {
+  test('product test from product stack', () => {
     const productStack = new servicecatalog.ProductStack(stack, 'ProductStack');
 
     new sns.Topic(productStack, 'SNSTopicProductStack');
@@ -113,17 +113,18 @@ describe('Product', () => {
       productVersions: [
         {
           productVersionName: 'v1',
-          cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromStack(productStack),
+          cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromProductStack(productStack),
         },
       ],
     });
 
     const assembly = app.synth();
     expect(assembly.artifacts.length).toEqual(2);
+    expect(assembly.stacks[0].assets.length).toBe(1);
     expect(assembly.stacks[0].assets[0].path).toEqual('ProductStack.product.template.json');
   }),
 
-  test('multiple product versions from stack', () => {
+  test('multiple product versions from product stack', () => {
     const productStackVersion1 = new servicecatalog.ProductStack(stack, 'ProductStackV1');
     const productStackVersion2 = new servicecatalog.ProductStack(stack, 'ProductStackV2');
 
@@ -139,11 +140,11 @@ describe('Product', () => {
       productVersions: [
         {
           productVersionName: 'v1',
-          cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromStack(productStackVersion1),
+          cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromProductStack(productStackVersion1),
         },
         {
           productVersionName: 'v2',
-          cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromStack(productStackVersion2),
+          cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromProductStack(productStackVersion2),
         },
       ],
     });
@@ -153,6 +154,39 @@ describe('Product', () => {
     expect(assembly.stacks[0].assets.length).toBe(2);
     expect(assembly.stacks[0].assets[0].path).toEqual('ProductStackV1.product.template.json');
     expect(assembly.stacks[0].assets[1].path).toEqual('ProductStackV2.product.template.json');
+  }),
+
+  test('identical product versions from product stack creates one asset', () => {
+    class TestProductStack extends servicecatalog.ProductStack {
+      constructor(scope: any, id: string) {
+        super(scope, id);
+
+        new sns.Topic(this, 'TopicProduct');
+      }
+    }
+
+    new servicecatalog.CloudFormationProduct(stack, 'MyProduct', {
+      productName: 'testProduct',
+      owner: 'testOwner',
+      productVersions: [
+        {
+          productVersionName: 'v1',
+          cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromProductStack(new TestProductStack(stack, 'v1')),
+        },
+        {
+          productVersionName: 'v2',
+          cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromProductStack(new TestProductStack(stack, 'v2')),
+        },
+        {
+          productVersionName: 'v3',
+          cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromProductStack(new TestProductStack(stack, 'v3')),
+        },
+      ],
+    });
+
+    const assembly = app.synth();
+
+    expect(assembly.stacks[0].assets.length).toBe(1);
   }),
 
   test('product test from multiple sources', () => {

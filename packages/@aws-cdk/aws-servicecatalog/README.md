@@ -157,8 +157,6 @@ const product = new servicecatalog.CloudFormationProduct(this, 'MyFirstProduct',
 });
 ```
 
-The product versions do not need to be of the same type, a Product can support product versions from url, assets, and stacks. 
-
 ### Creating a product from a stack
 
 You can define a service catalog `CloudFormationProduct` entirely within CDK using a service catalog `ProductStack`.
@@ -168,6 +166,7 @@ product.  This will not create a separate stack during deployment.
 
 ```ts
 import * as s3 from '@aws-cdk/aws-s3';
+import * as cdk from '@aws-cdk/core';
 
 class S3BucketProduct extends servicecatalog.ProductStack {
   constructor(scope: cdk.Construct, id: string) {
@@ -183,7 +182,7 @@ const product = new servicecatalog.CloudFormationProduct(this, 'MyFirstProduct',
   productVersions: [
     {
       productVersionName: "v1",
-      cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromStack(new S3BucketProduct(this, 'S3BucketProduct')),
+      cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromProductStack(new S3BucketProduct(this, 'S3BucketProduct')),
     },
   ],
 });

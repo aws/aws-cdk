@@ -30,8 +30,8 @@ export abstract class CloudFormationTemplate {
   /**
    * Creates a product with the resources defined in the given product stack.
    */
-  public static fromStack(productStack: ProductStack): CloudFormationTemplate {
-    return new CloudFormationStackTemplate(productStack);
+  public static fromProductStack(productStack: ProductStack): CloudFormationTemplate {
+    return new CloudFormationProductStackTemplate(productStack);
   }
 
   /**
@@ -100,7 +100,7 @@ class CloudFormationAssetTemplate extends CloudFormationTemplate {
 /**
  * Template from a CDK defined product stack.
  */
-class CloudFormationStackTemplate extends CloudFormationTemplate {
+class CloudFormationProductStackTemplate extends CloudFormationTemplate {
   /**
    * @param stack A service catalog product stack.
   */

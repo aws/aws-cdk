@@ -30,7 +30,10 @@ new servicecatalog.CloudFormationProduct(stack, 'TestProduct', {
       cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromAsset(path.join(__dirname, 'product2.template.json')),
     },
     {
-      cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromStack(new TestProductStack(stack, 'SNSTopicProduct')),
+      cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromProductStack(new TestProductStack(stack, 'SNSTopicProduct1')),
+    },
+    {
+      cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromProductStack(new TestProductStack(stack, 'SNSTopicProduct2')),
     },
   ],
 });
