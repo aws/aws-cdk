@@ -541,11 +541,12 @@ let sanityChecked: boolean | undefined;
  * by hand so let's just mass-automate it.
  */
 async function ensureBootstrapped(fixture: TestFixture) {
-  // Use the default name for the bootstrap stack
-  if (await fixture.aws.stackStatus('CDKToolkit') === undefined) {
-    // use whatever version of bootstrap is the default for this particular version of the CLI
-    await fixture.cdk(['bootstrap', `aws://${await fixture.aws.account()}/${fixture.aws.region}`]);
-  }
+  // use whatever version of bootstrap is the default for this particular version of the CLI
+  const envSpecifier = `aws://${await fixture.aws.account()}/${fixture.aws.region}`;
+  if (ALREADY_BOOTSTRAPPED_IN_THIS_RUN.has(envSpecifier)) { return; }
+
+  await fixture.cdk(['bootstrap', envSpecifier]);
+  ALREADY_BOOTSTRAPPED_IN_THIS_RUN.add(envSpecifier);
 }
 
 /**
@@ -689,3 +690,5 @@ const installNpm7 = memoize0(async (): Promise<string> => {
 
   return path.join(installDir, 'node_modules', '.bin', 'npm');
 });
+
+const ALREADY_BOOTSTRAPPED_IN_THIS_RUN = new Set();
