@@ -282,7 +282,7 @@ export class CdkToolkit {
       const long = [];
       for (const stack of stacks.stackArtifacts) {
         long.push({
-          id: stack.id,
+          id: stack.hierarchicalId,
           name: stack.stackName,
           environment: stack.environment,
         });
