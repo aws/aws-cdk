@@ -1,5 +1,6 @@
 import * as s3 from '@aws-cdk/aws-s3';
 import * as s3_assets from '@aws-cdk/aws-s3-assets';
+import { CfnResource } from '@aws-cdk/core';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
@@ -82,6 +83,15 @@ export abstract class ApiDefinition {
    * assume it's initialized. You may just use it as a construct scope.
    */
   public abstract bind(scope: Construct): ApiDefinitionConfig;
+
+  /**
+   * Called after the CFN RestApi resource has been created to allow the Api
+   * Definition to bind to it. Specifically it's required to allow assets to add
+   * metadata for tooling like SAM CLI to be able to find their origins.
+   */
+  public bindToResource(_resource: CfnResource) {
+    return;
+  }
 }
 
 /**
@@ -197,5 +207,13 @@ export class AssetApiDefinition extends ApiDefinition {
         key: this.asset.s3ObjectKey,
       },
     };
+  }
+
+  public bindToResource(resource: CfnResource) {
+    if (!this.asset) {
+      throw new Error('bindToResource() must be called after bind()');
+    }
+
+    this.asset.addResourceMetadata(resource, 'BodyS3Location');
   }
 }

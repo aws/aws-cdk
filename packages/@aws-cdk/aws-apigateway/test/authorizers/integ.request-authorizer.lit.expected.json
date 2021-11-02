@@ -72,18 +72,22 @@
             ]
           }
         },
-        "Handler": "index.handler",
         "Role": {
           "Fn::GetAtt": [
             "MyAuthorizerFunctionServiceRole8A34C19E",
             "Arn"
           ]
         },
-        "Runtime": "nodejs10.x"
+        "Handler": "index.handler",
+        "Runtime": "nodejs14.x"
       },
       "DependsOn": [
         "MyAuthorizerFunctionServiceRole8A34C19E"
-      ]
+      ],
+      "Metadata": {
+        "aws:asset:path": "asset.3dc8c5549b88fef617feef923524902b3650973ae1159c9489ee8405344dd5a0.handler",
+        "aws:asset:property": "Code"
+      }
     },
     "MyAuthorizerFunctionRequestAuthorizerIntegMyAuthorizer5D9D41C5PermissionsCB8B246E": {
       "Type": "AWS::Lambda::Permission",
