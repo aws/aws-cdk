@@ -34,6 +34,7 @@ Higher level constructs for Websocket APIs | ![Experimental](https://img.shields
   - [Cross Origin Resource Sharing (CORS)](#cross-origin-resource-sharing-cors)
   - [Publishing HTTP APIs](#publishing-http-apis)
   - [Custom Domain](#custom-domain)
+  - [Mutual TLS](#mutual-tls-mtls)
   - [Managing access](#managing-access)
   - [Metrics](#metrics)
   - [VPC Link](#vpc-link)
@@ -229,6 +230,27 @@ You can retrieve the full domain URL with mapping key using the `domainUrl` prop
 ```ts
 const demoDomainUrl = apiDemo.defaultStage.domainUrl; // returns "https://example.com/demo"
 ```
+
+## Mutual TLS (mTLS)
+
+Mutual TLS can be configured to limit access to your API based by using client certificates instead of (or as an extension of) using authorization headers.
+
+```ts
+const certArn = 'arn:aws:acm:us-east-1:111111111111:certificate';
+const domainName = 'example.com';
+
+new DomainName(stack, 'DomainName', {
+  domainName,
+  certificate: Certificate.fromCertificateArn(stack, 'cert', certArn),
+  mtls: {
+    bucket,
+    key: 'someca.pem',
+    version: 'version',
+    },
+})
+```
+
+Instructions for configuring your trust store can be found [here](https://aws.amazon.com/blogs/compute/introducing-mutual-tls-authentication-for-amazon-api-gateway/)
 
 ### Managing access
 
