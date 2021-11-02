@@ -583,7 +583,7 @@ export interface Monitoring {
    * If set to true, will automatically create a Cloudwatch Log Group and S3 bucket.
    * This will be set to `true` implicitly if values are provided for `logGroup` or `logBucket`.
    *
-   * @default false - logging is enabled by providing values for `logGroup` or `logBucket`
+   * @default true -  true if values are provided for `logGroup` or `logBucket`, false otherwise
    */
   readonly logging?: boolean
 
