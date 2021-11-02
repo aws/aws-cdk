@@ -56,7 +56,7 @@ when it is triggered.
 
 ```ts
 import * as iot from '@aws-cdk/aws-iot';
-import * as actions from '../../lib';
+import * as actions from '@aws-cdk/aws-iot-actions';
 import * as logs from '@aws-cdk/aws-logs';
 
 const logGroup = new logs.LogGroup(this, 'MyLogGroup');
