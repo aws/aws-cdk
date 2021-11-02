@@ -147,7 +147,7 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
 
       if (props.stickinessCookieDuration) {
         this.enableCookieStickiness(props.stickinessCookieDuration, props.stickinessCookieName);
-      } else {
+      } else if (this.targetType !== TargetType.LAMBDA) {
         this.setAttribute('stickiness.enabled', 'false');
       }
 
