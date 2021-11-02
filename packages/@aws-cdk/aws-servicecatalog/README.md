@@ -30,6 +30,8 @@ enables organizations to create and manage catalogs of products for their end us
   - [Granting access to a portfolio](#granting-access-to-a-portfolio)
   - [Sharing a portfolio with another AWS account](#sharing-a-portfolio-with-another-aws-account)
 - [Product](#product)
+  - [Creating a product from a local asset](#creating-a-product-from-local-asset)
+  - [Creating a product from a stack](#creating-a-product-from-a-stack)
   - [Adding a product to a portfolio](#adding-a-product-to-a-portfolio)
 - [TagOptions](#tag-options)
 - [Constraints](#constraints)
@@ -125,9 +127,11 @@ const product = new servicecatalog.CloudFormationProduct(this, 'MyFirstProduct',
       cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromUrl(
         'https://raw.githubusercontent.com/awslabs/aws-cloudformation-templates/master/aws/services/ServiceCatalog/Product.yaml'),
     },
-  ]
+  ],
 });
 ```
+
+### Creating a product from a local asset
 
 A `CloudFormationProduct` can also be created using a Cloudformation template from an Asset.
 Assets are files that are uploaded to an S3 Bucket before deployment.
@@ -149,7 +153,38 @@ const product = new servicecatalog.CloudFormationProduct(this, 'MyFirstProduct',
       productVersionName: "v2",
       cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromAsset(path.join(__dirname, 'development-environment.template.json')),
     },
-  ]
+  ],
+});
+```
+
+### Creating a product from a stack
+
+You can define a service catalog `CloudFormationProduct` entirely within CDK using a service catalog `ProductStack`.
+A separate child stack for your product is created and you can add resources like you would for any other CDK stack,
+such as an S3 Bucket, IAM roles, and EC2 instances. This stack is passed in as a product version to your
+product.  This will not create a separate stack during deployment. 
+
+```ts
+import * as s3 from '@aws-cdk/aws-s3';
+import * as cdk from '@aws-cdk/core';
+
+class S3BucketProduct extends servicecatalog.ProductStack {
+  constructor(scope: cdk.Construct, id: string) {
+    super(scope, id);
+
+    new s3.Bucket(this, 'BucketProduct');
+  }
+}
+
+const product = new servicecatalog.CloudFormationProduct(this, 'MyFirstProduct', {
+  productName: "My Product",
+  owner: "Product Owner",
+  productVersions: [
+    {
+      productVersionName: "v1",
+      cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromProductStack(new S3BucketProduct(this, 'S3BucketProduct')),
+    },
+  ],
 });
 ```
 
