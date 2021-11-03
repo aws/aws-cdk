@@ -20,7 +20,7 @@
 //         Template template = Template.fromStack(stack);
 
 //         template.hasResourceProperties("AWS::SQS::Queue", Map.of(
-//             "VisibilityTimeout", 300,
+//             "VisibilityTimeout", 300
 //         ));
 //     }
 // }
