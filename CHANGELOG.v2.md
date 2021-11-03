@@ -2,6 +2,41 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.0.0-rc.28](https://github.com/aws/aws-cdk/compare/v2.0.0-rc.27...v2.0.0-rc.28) (2021-11-03)
+
+
+### Features
+
+* **aws-route53-targets:** Support for Elastic Beanstalk environment URLs ([#16305](https://github.com/aws/aws-cdk/issues/16305)) ([bc07cb0](https://github.com/aws/aws-cdk/commit/bc07cb0e383aa64280a9c7f8ac4870d296830cf7))
+* **certificatemanager:** requesting private certificates issued by Private Certificate Authority  ([#16315](https://github.com/aws/aws-cdk/issues/16315)) ([e26f5be](https://github.com/aws/aws-cdk/commit/e26f5befc2adedeb524fd263424c7920989b2288)), closes [#10076](https://github.com/aws/aws-cdk/issues/10076)
+* **cli:** deployment progress shows stack name ([#16604](https://github.com/aws/aws-cdk/issues/16604)) ([322cf10](https://github.com/aws/aws-cdk/commit/322cf10ef3257b9d20d898882a14de91110a0033))
+* **codebuild:** add fromEcrRepository to LinuxGpuBuildImage ([#17170](https://github.com/aws/aws-cdk/issues/17170)) ([7585680](https://github.com/aws/aws-cdk/commit/758568007bf82a97ed6edba3ef4717735b224bf9)), closes [#16500](https://github.com/aws/aws-cdk/issues/16500)
+* **core:** Docker tags can be prefixed ([#17028](https://github.com/aws/aws-cdk/issues/17028)) ([d298696](https://github.com/aws/aws-cdk/commit/d298696a7d8978296a34294484cea80f91ebe880))
+* **core:** subtract Durations ([#16734](https://github.com/aws/aws-cdk/issues/16734)) ([7a333b0](https://github.com/aws/aws-cdk/commit/7a333b018c9bb2430165177d3e65614cf1d66519)), closes [#16535](https://github.com/aws/aws-cdk/issues/16535)
+* **docdb:** add the ability to exclude characters when generating passwords ([#17262](https://github.com/aws/aws-cdk/issues/17262)) ([135f7d3](https://github.com/aws/aws-cdk/commit/135f7d33db5e96c3af4a8691c13b419e7b14ceae)), closes [#15732](https://github.com/aws/aws-cdk/issues/15732)
+* **ec2:** add c5ad instances ([#16428](https://github.com/aws/aws-cdk/issues/16428)) ([0318253](https://github.com/aws/aws-cdk/commit/0318253b423bb65ca7e6bf65411df767f2734296))
+* **ec2:** add c6i instances ([#17237](https://github.com/aws/aws-cdk/issues/17237)) ([25cea18](https://github.com/aws/aws-cdk/commit/25cea1807539a8d45f3f4ff8b775b3417387d6fe)), closes [/docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-instance.html#cfn-ec2](https://github.com/aws//docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-instance.html/issues/cfn-ec2)
+* **ec2:** include p4d instance class ([#17147](https://github.com/aws/aws-cdk/issues/17147)) ([6e13adc](https://github.com/aws/aws-cdk/commit/6e13adc281722a491c0708954d7ed637ad45033b))
+* **ec2:** VPC endpoint for AWS Xray  ([#16788](https://github.com/aws/aws-cdk/issues/16788)) ([c24af54](https://github.com/aws/aws-cdk/commit/c24af54946d3668afa596dbf2a776b7cf21f8a99)), closes [#16306](https://github.com/aws/aws-cdk/issues/16306)
+* **events:** DLQ support for EventBus target  ([#16383](https://github.com/aws/aws-cdk/issues/16383)) ([dbb3f25](https://github.com/aws/aws-cdk/commit/dbb3f25904403bfc020a081e94270f5c16a7606f)), closes [#15954](https://github.com/aws/aws-cdk/issues/15954)
+* **lambda-nodejs:** esbuild charset option ([#16726](https://github.com/aws/aws-cdk/issues/16726)) ([56033a2](https://github.com/aws/aws-cdk/commit/56033a2a6d4be0444694d9f88260c574a4fa1a1d)), closes [#16668](https://github.com/aws/aws-cdk/issues/16668)
+* **lambda-nodejs:** typescript emitDecoratorMetadata support ([#16543](https://github.com/aws/aws-cdk/issues/16543)) ([55d3c50](https://github.com/aws/aws-cdk/commit/55d3c507707192d7aa5ea4a38ee0d1cb58f07e06)), closes [#13767](https://github.com/aws/aws-cdk/issues/13767)
+* **logs:** add support for cloudwatch logs resource policy  ([#17015](https://github.com/aws/aws-cdk/issues/17015)) ([e9a461d](https://github.com/aws/aws-cdk/commit/e9a461d6dcbad933fcb9d671a8c5b5ad8f5ece8d)), closes [#5343](https://github.com/aws/aws-cdk/issues/5343) [aws-cdk/aws-elasticsearch/lib/log-group-resource-policy.ts#L25](https://github.com/aws-cdk/aws-elasticsearch/lib/log-group-resource-policy.ts/issues/L25) [aws-cdk/aws-events-targets/lib/log-group-resource-policy.ts#L26](https://github.com/aws-cdk/aws-events-targets/lib/log-group-resource-policy.ts/issues/L26) [aws-cdk/aws-events-targets/lib/log-group-resource-policy.ts#L26](https://github.com/aws-cdk/aws-events-targets/lib/log-group-resource-policy.ts/issues/L26) [#5343](https://github.com/aws/aws-cdk/issues/5343)
+* **rds:** support backtrackWindow in DatabaseCluster ([#17160](https://github.com/aws/aws-cdk/issues/17160)) ([fcd17e9](https://github.com/aws/aws-cdk/commit/fcd17e9c9a9e1b83a29c140d558f696c0290bfd7)), closes [#9369](https://github.com/aws/aws-cdk/issues/9369) [#9369](https://github.com/aws/aws-cdk/issues/9369)
+* **sns:** addSubscription returns the created Subscription ([#16785](https://github.com/aws/aws-cdk/issues/16785)) ([62f389e](https://github.com/aws/aws-cdk/commit/62f389ea0522cbaefca5ca17080228031d401ce6))
+
+
+### Bug Fixes
+
+* **cli:** cdk ls --long outputs less-friendly stack IDs for nested assemblies ([#17263](https://github.com/aws/aws-cdk/issues/17263)) ([864c50e](https://github.com/aws/aws-cdk/commit/864c50ed2f3ae133af0cffd17ed77a6cf32ac6f4)), closes [#14379](https://github.com/aws/aws-cdk/issues/14379)
+* **cli:** downgrade bootstrap stack error message needs a hint for new-style synthesis ([#16237](https://github.com/aws/aws-cdk/issues/16237)) ([e55301b](https://github.com/aws/aws-cdk/commit/e55301b635374a87822f78870981a9e06e13d99e))
+* **core:** SecretValue.secretsManager fails for tokenized secret-id  ([#16230](https://github.com/aws/aws-cdk/issues/16230)) ([5831456](https://github.com/aws/aws-cdk/commit/5831456465fa44af96a268de56db0e3a8d3c2ea6)), closes [#16166](https://github.com/aws/aws-cdk/issues/16166)
+* **custom-resources:** invalid service name leads to unhelpful error message ([#16718](https://github.com/aws/aws-cdk/issues/16718)) ([354686b](https://github.com/aws/aws-cdk/commit/354686b189377dd1daae7ba616e8fb62488d9855)), closes [#7312](https://github.com/aws/aws-cdk/issues/7312)
+* **ec2:** functions addIngressRule and addEgressRule detect unresolved tokens as duplicates ([#17221](https://github.com/aws/aws-cdk/issues/17221)) ([d4952c3](https://github.com/aws/aws-cdk/commit/d4952c3cbe12e7c8c27e1bca7f9d8536d93fd3cb)), closes [#17201](https://github.com/aws/aws-cdk/issues/17201)
+* **elasticloadbalancingv2:** always set stickiness ([#17111](https://github.com/aws/aws-cdk/issues/17111)) ([0a23953](https://github.com/aws/aws-cdk/commit/0a23953d92df070736f7d036cc2b24e68de4bf64)), closes [#16620](https://github.com/aws/aws-cdk/issues/16620)
+* **lambda-event-sources:** dynamo batch size cannot be a CfnParameter ([#16540](https://github.com/aws/aws-cdk/issues/16540)) ([56974ac](https://github.com/aws/aws-cdk/commit/56974ac4152bc082470d56dd66e4ef7aad042815)), closes [#16221](https://github.com/aws/aws-cdk/issues/16221)
+* **logs:** Apply tags to log retention Lambda  ([#17029](https://github.com/aws/aws-cdk/issues/17029)) ([a6aaa64](https://github.com/aws/aws-cdk/commit/a6aaa64bf9779b984f20d18881b4f6e510ac091a)), closes [#15032](https://github.com/aws/aws-cdk/issues/15032)
+
 ## [2.0.0-rc.27](https://github.com/aws/aws-cdk/compare/v2.0.0-rc.26...v2.0.0-rc.27) (2021-10-27)
 
 
