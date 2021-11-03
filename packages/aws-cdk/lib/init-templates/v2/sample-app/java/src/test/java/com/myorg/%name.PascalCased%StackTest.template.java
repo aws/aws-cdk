@@ -18,10 +18,10 @@ public class %name.PascalCased%StackTest {
 
         Template template = Template.fromStack(stack);
 
-        Map<String, Object> expected = Map.of(
-         "VisibilityTimeout", 300);
+        template.hasResourceProperties("AWS::SQS::Queue", Map.of(
+            "VisibilityTimeout", 300,
+        ));
 
-        template.hasResourceProperties("AWS::SQS::Queue", expected);
         template.resourceCountIs("AWS::SNS::Topic", 1);
     }
 }

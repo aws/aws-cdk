@@ -2,7 +2,9 @@ package main
 
 import (
 	"github.com/aws/aws-cdk-go/awscdk"
+	// "github.com/aws/aws-cdk-go/awscdk/awssqs"
 	"github.com/aws/constructs-go/constructs/v3"
+	// "github.com/aws/jsii-runtime-go"
 )
 
 type %name.PascalCased%StackProps struct {
