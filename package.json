@@ -83,6 +83,8 @@
       "@aws-cdk/assertions-alpha/table/**",
       "@aws-cdk/aws-amplify-alpha/yaml",
       "@aws-cdk/aws-amplify-alpha/yaml/**",
+      "@aws-cdk/aws-iot-actions-alpha/case",
+      "@aws-cdk/aws-iot-actions-alpha/case/**",
       "@aws-cdk/assertions/colors",
       "@aws-cdk/assertions/colors/**",
       "@aws-cdk/assertions/diff",
