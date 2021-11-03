@@ -2,10 +2,10 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { expect as ourExpect, haveResource } from '@aws-cdk/assert-internal';
 import * as iam from '@aws-cdk/aws-iam';
+import { describeDeprecated, testDeprecated, testFutureBehavior } from '@aws-cdk/cdk-build-tools';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { App, DefaultStackSynthesizer, IgnoreMode, Lazy, LegacyStackSynthesizer, Stack, Stage } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import { testFutureBehavior } from '@aws-cdk/cdk-build-tools/lib/feature-flag';
 import { DockerImageAsset } from '../lib';
 
 /* eslint-disable quote-props */
@@ -50,7 +50,7 @@ describe('image asset', () => {
     });
 
     // THEN
-    const assetMetadata = stack.node.metadata.find(({ type }) => type === cxschema.ArtifactMetadataEntryType.ASSET);
+    const assetMetadata = stack.node.metadataEntry.find(({ type }) => type === cxschema.ArtifactMetadataEntryType.ASSET);
     expect(assetMetadata && (assetMetadata.data as cxschema.ContainerImageAssetMetadataEntry).buildArgs).toEqual({ a: 'b' });
 
   });
@@ -126,7 +126,7 @@ describe('image asset', () => {
     });
 
     // THEN
-    const assetMetadata = stack.node.metadata.find(({ type }) => type === cxschema.ArtifactMetadataEntryType.ASSET);
+    const assetMetadata = stack.node.metadataEntry.find(({ type }) => type === cxschema.ArtifactMetadataEntryType.ASSET);
     expect(assetMetadata && (assetMetadata.data as cxschema.ContainerImageAssetMetadataEntry).target).toEqual('a-target');
 
   });
@@ -142,7 +142,7 @@ describe('image asset', () => {
     });
 
     // THEN
-    const assetMetadata = stack.node.metadata.find(({ type }) => type === cxschema.ArtifactMetadataEntryType.ASSET);
+    const assetMetadata = stack.node.metadataEntry.find(({ type }) => type === cxschema.ArtifactMetadataEntryType.ASSET);
     expect(assetMetadata && (assetMetadata.data as cxschema.ContainerImageAssetMetadataEntry).file).toEqual('Dockerfile.Custom');
 
   });
@@ -256,12 +256,20 @@ describe('image asset', () => {
 
   });
 
-  testFutureBehavior('docker directory is staged without files specified in .dockerignore', flags, App, (app) => {
-    testDockerDirectoryIsStagedWithoutFilesSpecifiedInDockerignore(app);
-  });
+  describeDeprecated('TBD', () => {
+    // The 'ignoreMode' property is both deprecated and not deprecated in DockerImageAssetProps interface.
+    // The interface through a complex set of inheritance chain has a 'ignoreMode' prop that is deprecated
+    // and another 'ignoreMode' prop that is not deprecated.
+    // Using a 'describeDeprecated' block here since there's no way to work around this craziness.
+    // When the deprecated property is removed source code, this block can be dropped.
 
-  testFutureBehavior('docker directory is staged without files specified in .dockerignore with IgnoreMode.GLOB', flags, App, (app) => {
-    testDockerDirectoryIsStagedWithoutFilesSpecifiedInDockerignore(app, IgnoreMode.GLOB);
+    testFutureBehavior('docker directory is staged without files specified in .dockerignore', flags, App, (app) => {
+      testDockerDirectoryIsStagedWithoutFilesSpecifiedInDockerignore(app);
+    });
+
+    testFutureBehavior('docker directory is staged without files specified in .dockerignore with IgnoreMode.GLOB', flags, App, (app) => {
+      testDockerDirectoryIsStagedWithoutFilesSpecifiedInDockerignore(app, IgnoreMode.GLOB);
+    });
   });
 
   testFutureBehavior('docker directory is staged with allow-listed files specified in .dockerignore', flags, App, (app) => {
@@ -287,12 +295,21 @@ describe('image asset', () => {
 
   });
 
-  testFutureBehavior('docker directory is staged without files specified in exclude option', flags, App, (app) => {
-    testDockerDirectoryIsStagedWithoutFilesSpecifiedInExcludeOption(app);
-  });
+  // Explanation TBD
+  describeDeprecated('TBD', () => {
+    // The 'ignoreMode' and 'exclude' propertes are both deprecated and not deprecated in DockerImageAssetProps interface.
+    // The interface through a complex set of inheritance chain has a 'ignoreMode' prop that is deprecated
+    // and another 'ignoreMode' prop that is not deprecated. The same applies to the 'exclude' property.
+    // Using a 'describeDeprecated' block here since there's no way to work around this craziness.
+    // When the deprecated property is removed source code, this block can be dropped.
 
-  testFutureBehavior('docker directory is staged without files specified in exclude option with IgnoreMode.GLOB', flags, App, (app) => {
-    testDockerDirectoryIsStagedWithoutFilesSpecifiedInExcludeOption(app, IgnoreMode.GLOB);
+    testFutureBehavior('docker directory is staged without files specified in exclude option', flags, App, (app) => {
+      testDockerDirectoryIsStagedWithoutFilesSpecifiedInExcludeOption(app);
+    });
+
+    testFutureBehavior('docker directory is staged without files specified in exclude option with IgnoreMode.GLOB', flags, App, (app) => {
+      testDockerDirectoryIsStagedWithoutFilesSpecifiedInExcludeOption(app, IgnoreMode.GLOB);
+    });
   });
 
   test('fails if using tokens in build args keys or values', () => {
@@ -315,7 +332,7 @@ describe('image asset', () => {
 
   });
 
-  test('fails if using token as repositoryName', () => {
+  testDeprecated('fails if using token as repositoryName', () => {
     // GIVEN
     const stack = new Stack();
     const token = Lazy.string({ produce: () => 'foo' });
@@ -329,27 +346,35 @@ describe('image asset', () => {
 
   });
 
-  testFutureBehavior('docker build options are included in the asset id', flags, App, (app) => {
-    // GIVEN
-    const stack = new Stack(app);
-    const directory = path.join(__dirname, 'demo-image-custom-docker-file');
+  describeDeprecated('extraHash usage', () => {
+    // The 'extraHash' property is both deprecated and not deprecated in DockerImageAssetProps interface.
+    // The interface through a complex set of inheritance chain has a 'extraHash' prop that is deprecated
+    // and another 'extraHash' prop that is not deprecated.
+    // Using a 'describeDeprecated' block here since there's no way to work around this craziness.
+    // When the deprecated property is removed source code, this block can be dropped.
 
-    const asset1 = new DockerImageAsset(stack, 'Asset1', { directory });
-    const asset2 = new DockerImageAsset(stack, 'Asset2', { directory, file: 'Dockerfile.Custom' });
-    const asset3 = new DockerImageAsset(stack, 'Asset3', { directory, target: 'NonDefaultTarget' });
-    const asset4 = new DockerImageAsset(stack, 'Asset4', { directory, buildArgs: { opt1: '123', opt2: 'boom' } });
-    const asset5 = new DockerImageAsset(stack, 'Asset5', { directory, file: 'Dockerfile.Custom', target: 'NonDefaultTarget' });
-    const asset6 = new DockerImageAsset(stack, 'Asset6', { directory, extraHash: 'random-extra' });
-    const asset7 = new DockerImageAsset(stack, 'Asset7', { directory, repositoryName: 'foo' });
+    testFutureBehavior('docker build options are included in the asset id', flags, App, (app) => {
+      // GIVEN
+      const stack = new Stack(app);
+      const directory = path.join(__dirname, 'demo-image-custom-docker-file');
 
-    expect(asset1.assetHash).toEqual('365b5d951fc5f725f78093a07e3e1cc7819b4cbe582ca71a4c344752c23bf409');
-    expect(asset2.assetHash).toEqual('9560a36f786f317c5e1abb986b58269b2453ed1cab16c36fd9b76646c837078c');
-    expect(asset3.assetHash).toEqual('4f4e16f5b0cfab21be4298a04b20f62f63cd91a649ef4620d6d3c948d29f3cb4');
-    expect(asset4.assetHash).toEqual('72b961f96e358b8dad935719cfc2704c3d14a46434871825ac81e3b94caa4853');
-    expect(asset5.assetHash).toEqual('c23d34b3a1dac5a80c42e8fa6c88a0ac697eb709a6f36ebdb6e36ee8c75edc75');
-    expect(asset6.assetHash).toEqual('7e950a9b08c58d371c1658e04d377c0ec59d89a47fc245a86a50525b36a8949b');
-    expect(asset7.assetHash).toEqual('313dd1f45a939b77fa8a4eb7780190aa7a20a40c95f503eca9e099186643d717');
+      const asset1 = new DockerImageAsset(stack, 'Asset1', { directory });
+      const asset2 = new DockerImageAsset(stack, 'Asset2', { directory, file: 'Dockerfile.Custom' });
+      const asset3 = new DockerImageAsset(stack, 'Asset3', { directory, target: 'NonDefaultTarget' });
+      const asset4 = new DockerImageAsset(stack, 'Asset4', { directory, buildArgs: { opt1: '123', opt2: 'boom' } });
+      const asset5 = new DockerImageAsset(stack, 'Asset5', { directory, file: 'Dockerfile.Custom', target: 'NonDefaultTarget' });
+      const asset6 = new DockerImageAsset(stack, 'Asset6', { directory, extraHash: 'random-extra' });
+      const asset7 = new DockerImageAsset(stack, 'Asset7', { directory, repositoryName: 'foo' });
 
+      expect(asset1.assetHash).toEqual('365b5d951fc5f725f78093a07e3e1cc7819b4cbe582ca71a4c344752c23bf409');
+      expect(asset2.assetHash).toEqual('9560a36f786f317c5e1abb986b58269b2453ed1cab16c36fd9b76646c837078c');
+      expect(asset3.assetHash).toEqual('4f4e16f5b0cfab21be4298a04b20f62f63cd91a649ef4620d6d3c948d29f3cb4');
+      expect(asset4.assetHash).toEqual('72b961f96e358b8dad935719cfc2704c3d14a46434871825ac81e3b94caa4853');
+      expect(asset5.assetHash).toEqual('c23d34b3a1dac5a80c42e8fa6c88a0ac697eb709a6f36ebdb6e36ee8c75edc75');
+      expect(asset6.assetHash).toEqual('7e950a9b08c58d371c1658e04d377c0ec59d89a47fc245a86a50525b36a8949b');
+      expect(asset7.assetHash).toEqual('313dd1f45a939b77fa8a4eb7780190aa7a20a40c95f503eca9e099186643d717');
+
+    });
   });
 });
 
