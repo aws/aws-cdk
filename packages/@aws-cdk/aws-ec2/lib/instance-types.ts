@@ -209,9 +209,24 @@ export enum InstanceClass {
   C5 = 'c5',
 
   /**
+   * Compute optimized instances, 6th generation
+   */
+  COMPUTE6_INTEL = 'c6i',
+
+  /**
+   * Compute optimized instances, 6th generation
+   */
+  C6I = 'c6i',
+
+  /**
    * Compute optimized instances with local NVME drive, 5th generation
    */
   COMPUTE5_NVME_DRIVE = 'c5d',
+
+  /**
+   * Compute optimized instances with local NVME drive, 5th generation
+   */
+  C5D = 'c5d',
 
   /**
    * Compute optimized instances based on AMD EPYC, 5th generation.
@@ -224,9 +239,14 @@ export enum InstanceClass {
   C5A = 'c5a',
 
   /**
-   * Compute optimized instances with local NVME drive, 5th generation
+   * Compute optimized instances with local NVME drive based on AMD EPYC, 5th generation.
    */
-  C5D = 'c5d',
+  COMPUTE5_AMD_NVME_DRIVE = 'c5ad',
+
+  /**
+   * Compute optimized instances with local NVME drive based on AMD EPYC, 5th generation.
+   */
+  C5AD = 'c5ad',
 
   /**
    * Compute optimized instances for high performance computing, 5th generation
@@ -442,9 +462,19 @@ export enum InstanceClass {
   PARALLEL3 = 'p3',
 
   /**
-   * Parallel-processing optimized instances, 3nd generation
+   * Parallel-processing optimized instances, 3rd generation
    */
   P3 = 'p3',
+
+  /**
+   * Parallel-processing optimized instances, 4th generation
+   */
+  PARALLEL4 = 'p4d',
+
+  /**
+   * Parallel-processing optimized instances, 4th generation
+   */
+  P4D = 'p4d',
 
   /**
    * Arm processor based instances, 1st generation

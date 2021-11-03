@@ -140,9 +140,13 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
         }
         this.setAttribute('slow_start.duration_seconds', props.slowStart.toSeconds().toString());
       }
+
       if (props.stickinessCookieDuration) {
         this.enableCookieStickiness(props.stickinessCookieDuration, props.stickinessCookieName);
+      } else {
+        this.setAttribute('stickiness.enabled', 'false');
       }
+
       if (props.loadBalancingAlgorithmType) {
         this.setAttribute('load_balancing.algorithm.type', props.loadBalancingAlgorithmType);
       }

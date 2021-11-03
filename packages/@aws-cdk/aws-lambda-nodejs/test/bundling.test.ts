@@ -6,7 +6,7 @@ import { AssetHashType, DockerImage } from '@aws-cdk/core';
 import { version as delayVersion } from 'delay/package.json';
 import { Bundling } from '../lib/bundling';
 import { PackageInstallation } from '../lib/package-installation';
-import { LogLevel, SourceMapMode } from '../lib/types';
+import { Charset, LogLevel, SourceMapMode } from '../lib/types';
 import * as util from '../lib/util';
 
 
@@ -198,6 +198,7 @@ test('esbuild bundling with esbuild options', () => {
     metafile: true,
     banner: '/* comments */',
     footer: '/* comments */',
+    charset: Charset.UTF8,
     forceDockerBundling: true,
     define: {
       'process.env.KEY': JSON.stringify('VALUE'),
@@ -221,6 +222,7 @@ test('esbuild bundling with esbuild options', () => {
           defineInstructions,
           '--log-level=silent --keep-names --tsconfig=/asset-input/lib/custom-tsconfig.ts',
           '--metafile=/asset-output/index.meta.json --banner:js="/* comments */" --footer:js="/* comments */"',
+          '--charset=utf8',
         ].join(' '),
       ],
     }),

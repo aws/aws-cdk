@@ -208,6 +208,30 @@ describe('security group', () => {
 
   });
 
+  test('can add multiple rules using tokens on same security group', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'TestStack', { env: { account: '12345678', region: 'dummy' } });
+    const vpc = new Vpc(stack, 'VPC');
+    const sg = new SecurityGroup(stack, 'SG', { vpc });
+
+    const p1 = Lazy.string({ produce: () => 'dummyid1' });
+    const p2 = Lazy.string({ produce: () => 'dummyid2' });
+    const peer1 = Peer.prefixList(p1);
+    const peer2 = Peer.prefixList(p2);
+
+    // WHEN
+    sg.addIngressRule(peer1, Port.tcp(5432), 'Rule 1');
+    sg.addIngressRule(peer2, Port.tcp(5432), 'Rule 2');
+
+    // THEN -- no crash
+    expect(stack).toHaveResourceLike('AWS::EC2::SecurityGroupIngress', {
+      Description: 'Rule 1',
+    });
+    expect(stack).toHaveResourceLike('AWS::EC2::SecurityGroupIngress', {
+      Description: 'Rule 2',
+    });
+  });
+
   test('if tokens are used in ports, `canInlineRule` should be false to avoid cycles', () => {
     // GIVEN
     const p1 = Lazy.number({ produce: () => 80 });
