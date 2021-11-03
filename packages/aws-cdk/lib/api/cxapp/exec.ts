@@ -169,8 +169,8 @@ function appToArray(app: any) {
  * The first element of the returned string will be a space, ' '.
  */
 function arrayToString(arr: any[]) {
-  let result = '';
-  result += arr[0];
+  // add the first element outside the loop, to prevent adding whitespace in front of the first character of the command
+  let result = arr[0];
   arr.splice(0, 1);
 
   for (const member of arr) {
