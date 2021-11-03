@@ -79,7 +79,7 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
 
   debug('env:', env);
 
-  await exec(arrayToString(commandLine));
+  await exec(commandLine.join(' '));
 
   return createAssembly(outdir);
 
@@ -161,24 +161,6 @@ async function populateDefaultEnvironmentIfNeeded(aws: SdkProvider, env: { [key:
  */
 function appToArray(app: any) {
   return typeof app === 'string' ? app.split(' ') : app;
-}
-
-/**
- * Turn the given array into a space-delimited string
- *
- * The first element of the returned string will be a space, ' '.
- */
-function arrayToString(arr: any[]) {
-  // add the first element outside the loop, to prevent adding whitespace in front of the first character of the command
-  let result = arr[0];
-  // remove the first element, to not add it twice
-  arr.splice(0, 1);
-
-  for (const member of arr) {
-    result += (' ' + member);
-  }
-
-  return result;
 }
 
 type CommandGenerator = (file: string) => string[];
