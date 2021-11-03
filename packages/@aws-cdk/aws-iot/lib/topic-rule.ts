@@ -1,5 +1,6 @@
-import { ArnFormat, Resource, Stack, IResource } from '@aws-cdk/core';
+import { ArnFormat, Resource, Stack, IResource, Lazy } from '@aws-cdk/core';
 import { Construct } from 'constructs';
+import { IAction } from './action';
 import { IotSql } from './iot-sql';
 import { CfnTopicRule } from './iot.generated';
 
@@ -28,10 +29,31 @@ export interface ITopicRule extends IResource {
  */
 export interface TopicRuleProps {
   /**
-   * The name of the rule.
+   * The name of the topic rule.
    * @default None
    */
   readonly topicRuleName?: string;
+
+  /**
+   * The actions associated with the topic rule.
+   *
+   * @default No actions will be perform
+   */
+  readonly actions?: IAction[];
+
+  /**
+   * A textual description of the topic rule.
+   *
+   * @default None
+   */
+  readonly description?: string;
+
+  /**
+   * Specifies whether the rule is enabled.
+   *
+   * @default true
+   */
+  readonly enabled?: boolean
 
   /**
    * A simplified SQL syntax to filter messages received on an MQTT topic and push the data elsewhere.
@@ -69,16 +91,18 @@ export class TopicRule extends Resource implements ITopicRule {
   }
 
   /**
-   * Arn of this rule
+   * Arn of this topic rule
    * @attribute
    */
   public readonly topicRuleArn: string;
 
   /**
-   * Name of this rule
+   * Name of this topic rule
    * @attribute
    */
   public readonly topicRuleName: string;
+
+  private readonly actions: CfnTopicRule.ActionProperty[] = [];
 
   constructor(scope: Construct, id: string, props: TopicRuleProps) {
     super(scope, id, {
@@ -90,8 +114,10 @@ export class TopicRule extends Resource implements ITopicRule {
     const resource = new CfnTopicRule(this, 'Resource', {
       ruleName: this.physicalName,
       topicRulePayload: {
-        actions: [],
+        actions: Lazy.any({ produce: () => this.actions }),
         awsIotSqlVersion: sqlConfig.awsIotSqlVersion,
+        description: props.description,
+        ruleDisabled: props.enabled === undefined ? undefined : !props.enabled,
         sql: sqlConfig.sql,
       },
     });
@@ -102,5 +128,28 @@ export class TopicRule extends Resource implements ITopicRule {
       resourceName: this.physicalName,
     });
     this.topicRuleName = this.getResourceNameAttribute(resource.ref);
+
+    props.actions?.forEach(action => {
+      this.addAction(action);
+    });
+  }
+
+  /**
+   * Add a action to the topic rule.
+   *
+   * @param action the action to associate with the topic rule.
+   */
+  public addAction(action: IAction): void {
+    const { configuration } = action.bind(this);
+
+    const keys = Object.keys(configuration);
+    if (keys.length === 0) {
+      throw new Error('An action property cannot be an empty object.');
+    }
+    if (keys.length > 1) {
+      throw new Error(`An action property cannot have multiple keys, received: ${keys}`);
+    }
+
+    this.actions.push(configuration);
   }
 }

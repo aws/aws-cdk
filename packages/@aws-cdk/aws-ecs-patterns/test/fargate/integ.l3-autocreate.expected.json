@@ -95,6 +95,12 @@
       "Properties": {
         "Port": 80,
         "Protocol": "HTTP",
+        "TargetGroupAttributes": [
+          {
+            "Key": "stickiness.enabled",
+            "Value": "false"
+          }
+        ],
         "TargetType": "ip",
         "VpcId": {
           "Ref": "EcsDefaultClusterMnL3mNNYNVpc7788A521"

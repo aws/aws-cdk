@@ -11,6 +11,8 @@
 > announced in the release notes. This means that while you may use them, you may need to update
 > your source code when upgrading to a newer version of this package.
 
+If using monocdk, use [@monocdk-experiment/assert](https://www.npmjs.com/package/@monocdk-experiment/assert) instead.
+
 ---
 
 <!--END STABILITY BANNER-->
