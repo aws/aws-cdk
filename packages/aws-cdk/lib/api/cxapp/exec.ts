@@ -108,8 +108,6 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
       //   anyway, and if the subprocess is printing to it for debugging purposes the
       //   user gets to see it sooner. Plus, capturing doesn't interact nicely with some
       //   processes like Maven.
-      //const command = commandAndArgs[0];
-      //const args = commandAndArgs.slice(1);
       const proc = childProcess.spawn(commandAndArgs, [], {
         stdio: ['ignore', 'inherit', 'inherit'],
         detached: false,
