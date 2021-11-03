@@ -157,7 +157,7 @@ async function populateDefaultEnvironmentIfNeeded(aws: SdkProvider, env: { [key:
 }
 
 /**
- * Make sure the 'app' is an array
+ * Make sure the 'command' is an array
  *
  * If it's a string, split on spaces as a trivial way of tokenizing the command line.
  */
