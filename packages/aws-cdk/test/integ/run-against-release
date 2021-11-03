@@ -15,7 +15,7 @@ mkdir -p $npmws
 (cd $npmws && npm install aws-cdk@${RELEASE_TAG:-latest})
 
 # FRAMEWORK_VERSION is the version that will be 'npm install'ed by the tests
-if [[ "${FRAMEWORK_VERSION}" = "" ]]; then
+if [[ "${FRAMEWORK_VERSION:-}" = "" ]]; then
   cli_version=$(cd $npmws && node -p "require('aws-cdk/package.json').version")
   export FRAMEWORK_VERSION=${cli_version}
 fi
