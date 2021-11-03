@@ -171,6 +171,7 @@ function appToArray(app: any) {
 function arrayToString(arr: any[]) {
   // add the first element outside the loop, to prevent adding whitespace in front of the first character of the command
   let result = arr[0];
+  // remove the first element, to not add it twice
   arr.splice(0, 1);
 
   for (const member of arr) {
