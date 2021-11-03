@@ -43,7 +43,7 @@
     "conventional-changelog-config-spec": "^2.1.0",
     "conventional-changelog-preset-loader": "^2.3.4",
     "conventional-changelog-writer": "^4.1.0",
-    "conventional-commits-parser": "^3.2.2",
+    "conventional-commits-parser": "^3.2.3",
     "detect-indent": "^6.1.0",
     "detect-newline": "^3.1.0",
     "fs-extra": "^9.1.0",
