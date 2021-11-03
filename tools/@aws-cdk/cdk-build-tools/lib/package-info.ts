@@ -99,7 +99,7 @@ export function packageCompiler(compilers: CompilerOverrides, options?: CDKBuild
   if (isJsii()) {
     const args = ['--silence-warnings=reserved-word'];
     if (options?.stripDeprecated) {
-      args.push('--strip-deprecated');
+      args.push(`--strip-deprecated ${path.join(__dirname, '..', '..', '..', '..', 'deprecated_apis.txt')}`);
     }
     return [compilers.jsii || require.resolve('jsii/bin/jsii'), ...args];
   } else {
