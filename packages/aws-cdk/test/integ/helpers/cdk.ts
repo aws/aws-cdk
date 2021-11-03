@@ -541,11 +541,21 @@ let sanityChecked: boolean | undefined;
  * by hand so let's just mass-automate it.
  */
 async function ensureBootstrapped(fixture: TestFixture) {
-  // use whatever version of bootstrap is the default for this particular version of the CLI
+  // Always use the modern bootstrap stack, otherwise we may get the error
+  // "refusing to downgrade from version 7 to version 0" when bootstrapping with default
+  // settings using a v1 CLI.
+  //
+  // It doesn't matter for tests: when they want to test something about an actual legacy
+  // bootstrap stack, they'll create a bootstrap stack with a non-default name to test that exact property.
   const envSpecifier = `aws://${await fixture.aws.account()}/${fixture.aws.region}`;
   if (ALREADY_BOOTSTRAPPED_IN_THIS_RUN.has(envSpecifier)) { return; }
 
-  await fixture.cdk(['bootstrap', envSpecifier]);
+  await fixture.cdk(['bootstrap', envSpecifier], {
+    modEnv: {
+      // Even for v1, use new bootstrap
+      CDK_NEW_BOOTSTRAP: '1',
+    },
+  });
   ALREADY_BOOTSTRAPPED_IN_THIS_RUN.add(envSpecifier);
 }
 
