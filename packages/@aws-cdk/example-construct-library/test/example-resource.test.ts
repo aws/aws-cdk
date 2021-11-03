@@ -188,6 +188,10 @@ describe('Example Resource', () => {
         'my-example-resource-name');
     });
 
+    test('throws when accessing connections', () => {
+      expect(() => exampleResource.connections).toThrow();
+    });
+
     test('has the same name as it was imported with', () => {
       expect(exampleResource.exampleResourceName).toEqual('my-example-resource-name');
     });
