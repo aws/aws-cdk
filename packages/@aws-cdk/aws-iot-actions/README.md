@@ -49,6 +49,25 @@ new iot.TopicRule(this, 'TopicRule', {
 });
 ```
 
+## Put objects to a S3 bucket
+
+The code snippet below creates an AWS IoT Rule that put objects to a S3 bucket
+when it is triggered.
+
+```ts
+import * as iot from '@aws-cdk/aws-iot';
+import * as actions from '@aws-cdk/aws-iot-actions';
+import * as s3 from '@aws-cdk/aws-s3';
+
+const bucket = new s3.Bucket(this, 'MyBucket');
+
+new iot.TopicRule(this, 'TopicRule', {
+  sql: iot.IotSql.fromStringAsVer20160323("SELECT topic(2) as device_id FROM 'device/+/data'"),
+  actions: [new actions.S3Action(bucket)],
+});
+```
+
+
 ## Put logs to CloudWatch Logs
 
 The code snippet below creates an AWS IoT Rule that put logs to CloudWatch Logs

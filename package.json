@@ -107,6 +107,8 @@
       "@aws-cdk/aws-eks/yaml/**",
       "@aws-cdk/aws-events-targets/aws-sdk",
       "@aws-cdk/aws-events-targets/aws-sdk/**",
+      "@aws-cdk/aws-iot-actions/case",
+      "@aws-cdk/aws-iot-actions/case/**",
       "@aws-cdk/aws-s3-deployment/case",
       "@aws-cdk/aws-s3-deployment/case/**",
       "@aws-cdk/cloud-assembly-schema/jsonschema",
