@@ -44,7 +44,7 @@ Add an HTTPS Subscription to your topic:
 ```ts
 const myTopic = new sns.Topic(this, 'MyTopic');
 
-myTopic.addSubscription(new subs.UrlSubscription('https://foobar.com/'));
+myTopic.addSubscription(new subscriptions.UrlSubscription('https://foobar.com/'));
 ```
 
 Subscribe a queue to the topic:
@@ -53,7 +53,7 @@ Subscribe a queue to the topic:
 declare const queue: sqs.Queue;
 const myTopic = new sns.Topic(this, 'MyTopic');
 
-myTopic.addSubscription(new subs.SqsSubscription(queue));
+myTopic.addSubscription(new subscriptions.SqsSubscription(queue));
 ```
 
 Note that subscriptions of queues in different accounts need to be manually confirmed by
@@ -76,7 +76,7 @@ declare const fn: lambda.Function;
 // size: anything but 'small' or 'medium'
 // price: between 100 and 200 or greater than 300
 // store: attribute must be present
-myTopic.addSubscription(new subs.LambdaSubscription(fn, {
+myTopic.addSubscription(new subscriptions.LambdaSubscription(fn, {
   filterPolicy: {
     color: sns.SubscriptionFilter.stringFilter({
       allowlist: ['red', 'orange'],
