@@ -6,7 +6,7 @@ if (!(child_process as any).spawn.mockImplementationOnce) {
 }
 
 export interface Invocation {
-  commandLine: string[];
+  commandLine: string;
   cwd?: string;
   exitCode?: number;
   stdout?: string;
@@ -26,13 +26,11 @@ export function mockSpawn(...invocations: Invocation[]) {
   let mock = (child_process.spawn as any);
   for (const _invocation of invocations) {
     const invocation = _invocation; // Mirror into variable for closure
-    mock = mock.mockImplementationOnce((binary: string, args: string[], options: child_process.SpawnOptions) => {
+    mock = mock.mockImplementationOnce((binary: string, options: child_process.SpawnOptions) => {
       if (invocation.prefix) {
-        // Match command line prefix
-        expect([binary, ...args].slice(0, invocation.commandLine.length)).toEqual(invocation.commandLine);
+        expect([binary, []].slice(0, invocation.commandLine.length)).toEqual(invocation.commandLine);
       } else {
-        // Match full command line
-        expect([binary, ...args]).toEqual(invocation.commandLine);
+        expect(binary).toEqual(invocation.commandLine);
       }
 
       if (invocation.cwd != null) {
