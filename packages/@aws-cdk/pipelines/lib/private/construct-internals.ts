@@ -6,9 +6,6 @@ import { App, Stage } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct, IConstruct, Node } from 'constructs';
 
-// eslint-disable-next-line no-duplicate-imports,import/order
-import { Construct as CoreConstruct } from '@aws-cdk/core';
-
 export function appOf(construct: IConstruct): App {
   const root = Node.of(construct).root;
 
@@ -49,5 +46,5 @@ export function obtainScope(parent: Construct, id: string): Construct {
   if (existing) {
     return existing as Construct;
   }
-  return new CoreConstruct(parent, id);
+  return new Construct(parent, id);
 }

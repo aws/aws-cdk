@@ -1,7 +1,7 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
+import { Construct, IConstruct } from 'constructs';
 import { App } from '../lib';
 import { IAspect, Aspects } from '../lib/aspect';
-import { Construct, IConstruct } from '../lib/construct-compat';
 
 class MyConstruct extends Construct {
   public static IsMyConstruct(x: any): x is MyConstruct {

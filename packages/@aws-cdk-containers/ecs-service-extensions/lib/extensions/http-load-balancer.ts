@@ -1,12 +1,9 @@
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as alb from '@aws-cdk/aws-elasticloadbalancingv2';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import { Service } from '../service';
 import { ServiceExtension, ServiceBuild } from './extension-interfaces';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
 
 /**
  * This extension add a public facing load balancer for sending traffic
