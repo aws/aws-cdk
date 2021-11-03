@@ -1,6 +1,6 @@
 import * as reflect from 'jsii-reflect';
 
-import { module } from './code';
+import { module } from './module-utils';
 
 export abstract class Declaration {
   constructor(public readonly sortKey: Array<number | string>) {}

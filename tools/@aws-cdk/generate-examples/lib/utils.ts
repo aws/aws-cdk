@@ -1,5 +1,3 @@
-
-
 export function sortBy<A>(xs: A[], keyFn: (x: A) => Array<string | number>) {
   return xs.sort((a, b) => {
     const aKey = keyFn(a);

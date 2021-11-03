@@ -2,9 +2,10 @@ import * as spec from '@jsii/spec';
 import * as reflect from 'jsii-reflect';
 import { TypeSystem } from 'jsii-reflect';
 
-import { Code, module } from './code';
+import { Code } from './code';
 import { AnyAssumption, Assumption, Import } from './declaration';
-import { sortBy } from './util';
+import { module } from './module-utils';
+import { sortBy } from './utils';
 
 /**
  * Special types that have a standard way of coming up with an example value

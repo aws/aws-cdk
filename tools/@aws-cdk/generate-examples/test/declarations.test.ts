@@ -1,14 +1,13 @@
 /* eslint-disable no-console */
 import * as reflect from 'jsii-reflect';
 
-import { module } from '../lib/code';
-import { Import } from '../lib/declaration';
+import { Import, Assumption } from '../lib/declaration';
 import { AssemblyFixture, DUMMY_ASSEMBLY_TARGETS } from './testutil';
 
 let assembly1: AssemblyFixture;
 let assembly2: AssemblyFixture;
 let ts: reflect.TypeSystem;
-describe('Code', () => {
+describe('Declarations', () => {
   beforeAll(async () => {
     // Create an assembly in a temp directory
     assembly1 = await AssemblyFixture.fromSource(
@@ -74,23 +73,19 @@ describe('Code', () => {
       expect(imports[0].equals(imports[1])).toBeTruthy();
       expect(imports[0].equals(imports[2])).toBeFalsy();
     });
-
-    test('can sort imports', () => {
-      Import.sort(imports);
-      expect(imports.map((i) => module(i.type).moduleName)).toEqual(['assembly_two', 'assembly_two', 'first_assembly', 'first_assembly']);
-    });
   });
 
   describe('Assumption', () => {
-    const imports: Import[] = [];
+    const assumptions: Assumption[] = [];
     beforeAll(() => {
       for (const classType of ts.classes) {
-        imports.push(new Import(classType));
+        assumptions.push(new Assumption(classType, classType.name));
       }
     });
 
     test('equals works as expected', () => {
-
+      console.log(assumptions);
+      expect(assumptions.length).toEqual(0);
     });
   });
 
