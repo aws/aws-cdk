@@ -18,6 +18,11 @@ func New%name.PascalCased%Stack(scope constructs.Construct, id string, props *%n
 
 	// The code that defines your stack goes here
 
+	// example resource
+	// queue := awssqs.NewQueue(stack, jsii.String("%name.PascalCased%Queue"), &awssqs.QueueProps{
+	// 	VisibilityTimeout: awscdk.Duration_Seconds(jsii.Number(300)),
+	// })
+
 	return stack
 }
 

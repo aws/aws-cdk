@@ -1,21 +1,26 @@
 package main
 
-import (
-	"testing"
+// import (
+// 	"testing"
 
-	"github.com/aws/aws-cdk-go/awscdk"
-	"github.com/aws/aws-cdk-go/awscdk/assertions"
-)
+// 	"github.com/aws/aws-cdk-go/awscdk"
+// 	"github.com/aws/aws-cdk-go/awscdk/assertions"
+// 	"github.com/aws/jsii-runtime-go"
+// )
 
-func Test%name.PascalCased%Stack(t *testing.T) {
-	// GIVEN
-	app := awscdk.NewApp(nil)
+// example tests. To run these tests, uncomment this file along with the
+// example resource in %name%_test.go
+// func Test%name.PascalCased%Stack(t *testing.T) {
+// 	// GIVEN
+// 	app := awscdk.NewApp(nil)
 
-	// WHEN
-	stack := New%name.PascalCased%Stack(app, "MyStack", nil)
+// 	// WHEN
+// 	stack := New%name.PascalCased%Stack(app, "MyStack", nil)
 
-	// THEN
-	template := assertions.Template_FromStack(stack)
+// 	// THEN
+// 	template := assertions.Template_FromStack(stack)
 
-	template.TemplateMatches(map[string]interface{}{})
-}
+// 	template.HasResourceProperties(jsii.String("AWS::SQS::Queue"), map[string]interface{}{
+// 		"VisibilityTimeout": 300,
+// 	})
+// }
