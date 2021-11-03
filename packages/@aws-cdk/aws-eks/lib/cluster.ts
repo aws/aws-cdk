@@ -148,6 +148,14 @@ export interface ICluster extends IResource, ec2.IConnectable {
   readonly proxyAgentLayer?: lambda.ILayerVersion;
 
   /**
+   * Deprecated
+   *
+   * @default - a layer bundled with this module.
+   * @deprecated use `proxyAgentLayer` instead
+   */
+  readonly onEventLayer?: lambda.ILayerVersion;
+
+  /**
    * Indicates whether Kubernetes resources can be automatically pruned. When
    * this is enabled (default), prune labels will be allocated and injected to
    * each resource. These labels will then be used when issuing the `kubectl
@@ -338,6 +346,14 @@ export interface ClusterAttributes {
    * @default - a layer bundled with this module.
    */
   readonly proxyAgentLayer?: lambda.ILayerVersion;
+
+  /**
+   * Deprecated
+   *
+   * @default - a layer bundled with this module.
+   * @deprecated use `proxyAgentLayer` instead
+   */
+  readonly onEventLayer?: lambda.ILayerVersion;
 
   /**
    * Indicates whether Kubernetes resources added through `addManifest()` can be
@@ -1148,6 +1164,14 @@ export class Cluster extends ClusterBase {
     * If not defined, a default layer will be used.
     */
   public readonly proxyAgentLayer?: lambda.ILayerVersion;
+
+  /**
+   * Deprecated
+   *
+   * @default - a layer bundled with this module.
+   * @deprecated use `proxyAgentLayer` instead
+   */
+  readonly onEventLayer?: lambda.ILayerVersion;
 
   /**
    * Determines if Kubernetes resources can be pruned automatically.
