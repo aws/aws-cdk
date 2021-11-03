@@ -131,7 +131,7 @@ function generateStaticFactoryMethodExample(classType: reflect.ClassType, static
   const exampleContext = new ExampleContext(staticFactoryMethod.system);
   const length = staticFactoryMethod.parameters.length;
   return Code.concatAll(
-    new Code(`${module(classType).importName}.`),
+    new Code(`${module(classType).importName}.`, [new Import(classType)]),
     staticFactoryMethod.parentType.name,
     '.',
     staticFactoryMethod.name,
@@ -149,7 +149,7 @@ function generateStaticFactoryMethodExample(classType: reflect.ClassType, static
 
 function generateStaticFactoryPropertyExample(classType: reflect.ClassType, staticFactoryProperty: reflect.Property) {
   return Code.concatAll(
-    new Code(`${module(classType).importName}.`),
+    new Code(`${module(classType).importName}.`, [new Import(classType)]),
     staticFactoryProperty.parentType.name,
     '.',
     staticFactoryProperty.name,

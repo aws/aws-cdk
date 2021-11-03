@@ -30,8 +30,6 @@ interface ImportedModule {
 export function module(type: reflect.Type): ImportedModule {
   if (type.assembly.name === 'aws-cdk-lib') {
     let namespacedPart = type.assembly.name;
-    // eslint-disable-next-line no-console
-    console.log(type.namespace);
     if (type.namespace) {
       const parts = type.namespace.split('_');
       namespacedPart = SPECIAL_NAMESPACE_IMPORT_NAMES[type.namespace] ?? parts[1] ?? parts[0];
