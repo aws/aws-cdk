@@ -126,7 +126,7 @@ jobs:
            {"area":"@aws-cdk/aws-imagebuilder","keywords":["aws-imagebuilder","imagebuilder"],"labels":["@aws-cdk/aws-imagebuilder"],"assignees":["skinny85"]},
            {"area":"@aws-cdk/aws-inspector","keywords":["aws-inspector","inspector"],"labels":["@aws-cdk/aws-inspector"],"assignees":["skinny85"]},
            {"area":"@aws-cdk/aws-iot","keywords":["internet-of-things","aws-iot","iot"],"labels":["@aws-cdk/aws-iot"],"assignees":["skinny85"]},
-           {"area":"@aws-cdk/aws-iot-actions","keywords":["aws-iot-actions","iot-actions",],"labels":["@aws-cdk/aws-iot-actions"],"assignees":["skinny85"]},
+           {"area":"@aws-cdk/aws-iot-actions","keywords":["aws-iot-actions","iot-actions"],"labels":["@aws-cdk/aws-iot-actions"],"assignees":["skinny85"]},
            {"area":"@aws-cdk/aws-iot1click","keywords":["aws-iot1click","iot1click"],"labels":["@aws-cdk/aws-iot1click"],"assignees":["skinny85"]},
            {"area":"@aws-cdk/aws-iotanalytics","keywords":["aws-iotanalytics","iotanalytics"],"labels":["@aws-cdk/aws-iotanalytics"],"assignees":["skinny85"]},
            {"area":"@aws-cdk/aws-iotevents","keywords":["aws-iotevents","iotevents"],"labels":["@aws-cdk/aws-iotevents"],"assignees":["skinny85"]},
