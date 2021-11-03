@@ -102,8 +102,8 @@ The following is a qualitative diagram of the various possible components involv
 
 ```text
  +-----------------------------------------------+               +-----------------+
- |                 EKS Cluster                   |    kubectl    |                 |
- |-----------------------------------------------|<-------------+| Kubectl Handler |
+  | EKS Cluster | kubectl |  |
+  | ----------- |<-------------+| Kubectl Handler |
  |                                               |               |                 |
  |                                               |               +-----------------+
  | +--------------------+    +-----------------+ |
@@ -545,7 +545,7 @@ You can configure the environment of the Cluster Handler functions by specifying
 const cluster = new eks.Cluster(this, 'hello-eks', {
   version: eks.KubernetesVersion.V1_21,
   clusterHandlerEnvironment: {
-    http_proxy: 'http://proxy.myproxy.com'
+    https_proxy: 'http://proxy.myproxy.com'
   },
   /**
    * If proxy is not open to public you may pass a security group to the
