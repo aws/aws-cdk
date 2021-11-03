@@ -4,6 +4,7 @@ import { TypeSystem } from 'jsii-reflect';
 
 import { Code, module } from './code';
 import { AnyAssumption, Assumption, Import } from './declaration';
+import { sortBy } from './util';
 
 /**
  * Special types that have a standard way of coming up with an example value
@@ -129,7 +130,7 @@ function generateStaticFactoryMethodExample(classType: reflect.ClassType, static
   const exampleContext = new ExampleContext(staticFactoryMethod.system);
   const length = staticFactoryMethod.parameters.length;
   return Code.concatAll(
-    new Code(`STATIC METHOD: ${module(classType).importName}.`),
+    new Code(`${module(classType).importName}.`),
     staticFactoryMethod.parentType.name,
     '.',
     staticFactoryMethod.name,
@@ -147,7 +148,7 @@ function generateStaticFactoryMethodExample(classType: reflect.ClassType, static
 
 function generateStaticFactoryPropertyExample(classType: reflect.ClassType, staticFactoryProperty: reflect.Property) {
   return Code.concatAll(
-    new Code(`STATIC PROP: ${module(classType).importName}.`),
+    new Code(`${module(classType).importName}.`),
     staticFactoryProperty.parentType.name,
     '.',
     staticFactoryProperty.name,
@@ -165,9 +166,8 @@ function exampleValueForParameter(context: ExampleContext, param: reflect.Parame
   if (param.name === 'id' && position === 1) {
     return new Code(`'My${param.parentType.name}'`);
   }
-  // FIXME: render optionality here too
   if (param.optional) {
-    return exampleValue(context, param.type, param.name, 0).inject(' // optional', { afterFirstInstanceOf: '{' });
+    return new Code('/* optional */ ').append(exampleValue(context, param.type, param.name, 0));
   }
   return exampleValue(context, param.type, param.name, 0);
 }
@@ -189,8 +189,7 @@ function exampleValue(context: ExampleContext, typeReference: reflect.TypeRefere
         return new Code('false');
       }
       case spec.PrimitiveType.Any: {
-        // FIXME: add declaration with type any.
-        return new Code('anyValue', [new AnyAssumption('anyValue')]);
+        return new Code(name, [new AnyAssumption(name)]);
       }
       default: {
         return new Code('---');
@@ -253,28 +252,34 @@ function getBaseUnionType(types: reflect.TypeReference[]): reflect.TypeReference
 
 function addAssumedVariableDeclaration(type: reflect.Type): Code {
   let newType = type;
-  if (type.isInterfaceType()) {
-    // find corresponding non-interface type if possible
-    newType = findCorrespondingType(type);
+  if (type.isInterfaceType() && !type.datatype) {
+    // guess corresponding non-interface type if possible
+    newType = guessConcreteType(type);
   }
-  const variableName = lowercaseFirstLetter(newType.name);
+  const variableName = lowercaseFirstLetter(stripLeadingI(newType.name));
   return new Code(variableName, [new Assumption(newType, variableName), new Import(newType)]);
+}
+
+/**
+ * Remove a leading 'I' from a name, if it's being followed by another capital letter
+ */
+function stripLeadingI(name: string) {
+  return name.replace(/^I([A-Z])/, '$1');
 }
 
 /**
  * This function tries to guess the corresponding type to an IXxx Interface.
  * If it does not find that this type exists, it will return the original type.
  */
-function findCorrespondingType(type: reflect.Type): reflect.Type {
-  const [start, end] = type.fqn.split('.');
-  if (end.length > 2 && end[0] === 'I' && end[1] === end[1].toUpperCase()) {
-    const newFqn = start + '.' + end.substr(1);
-    // eslint-disable-next-line no-console
-    console.log('newFqn ', newFqn);
-    const newType = type.system.tryFindFqn(newFqn);
-    if (newType) { return newType; }
-  }
-  return type;
+function guessConcreteType(type: reflect.InterfaceType): reflect.Type {
+  const concreteClassName = type.name.substr(1); // Strip off the leading 'I'
+
+  const parts = type.fqn.split('.');
+  parts[parts.length - 1] = concreteClassName;
+  const newFqn = parts.join('.');
+
+  const newType = type.system.tryFindFqn(newFqn);
+  return newType && newType.extends(type) ? newType : type;
 }
 
 /**
@@ -295,65 +300,52 @@ function exampleValueForStruct(context: ExampleContext, struct: reflect.Interfac
   if (struct.allProperties.length === 0) {
     return new Code('{ }');
   }
+
+  const properties = [...struct.allProperties]; // Make a copy that we can sort
+  sortBy(properties, (p) => [p.optional ? 1 : 0, p.name]);
+
+  const renderedProperties = properties.map((p) =>
+    addOptionalNote(
+      new Code(`${tab(level + 1)}${p.name}: `).append(
+        exampleValue(context, p.type, p.name, level + 1)).append(','),
+      p.optional).append('\n'),
+  );
+
+  // Add an empty line between required and optional properties
+  for (let i = 0; i < properties.length - 1; i++) {
+    if (properties[i].optional !== properties[i + 1].optional) {
+      renderedProperties.splice(i + 1, 0, new Code('\n'));
+      break;
+    }
+  }
+
   return Code.concatAll(
     '{\n',
-    ...(struct.allProperties ?? []).map((p) => {
-      return new Code(`${tab(level + 1)}${p.name}: `).append(
-        removeOptional(
-          addOptional(
-            exampleValue(context, p.type, p.name, level + 1),
-            p.optional,
-          ).append(
-            `,${optionalComment(p.optional)}\n`,
-          ),
-        ),
-      );
-    }),
+    ...renderedProperties,
     `${tab(level)}}`,
   );
 }
 
-function addOptional(code: Code, optional: boolean ): Code {
-  if (optional && code.code.indexOf('{\n') !== -1) {
-    return code.inject(' // optional', { afterFirstInstanceOf: '{' });
+const OPTIONAL_OFFSET = 40;
+
+/**
+ * If `optional` is true, add a `// optional` note at the end of the first line of the code block
+ */
+function addOptionalNote(code: Code, optional: boolean): Code {
+  if (!optional) {
+    return code;
   }
-  return code;
+
+  const lines = code.code.split('\n');
+  return new Code([
+    padAppend(lines[0], OPTIONAL_OFFSET, '// optional'),
+    ...lines.slice(1),
+  ].join('\n'), code.declarations);
 }
 
-function removeOptional(code: Code): Code {
-  const i = Math.max(code.code.lastIndexOf('}, // optional'), code.code.lastIndexOf('], // optional'));
-  const j = Math.max(code.code.lastIndexOf('},'), code.code.lastIndexOf('],'));
-  if (i !== -1 && i===j) {
-    return code.remove({ afterLastInstanceOf: ' //' }).append('\n');
-  }
-  return code;
+function padAppend(a: string, offset: number, b: string) {
+  return a + ' '.repeat(Math.max(1, offset - a.length)) + b;
 }
-
-function optionalComment(optional: boolean) {
-  return optional ? ' // optional' : '';
-}
-
-// /**
-//  * Adds a comment if the given boolean is true, does nothing otherwise.
-//  */
-// function optionalComment(context: ExampleContext, property: reflect.Property): string {
-//   let typeRef = property.type;
-//   if (property.type.unionOfTypes !== undefined) {
-//     typeRef = getBaseUnionType(property.type.unionOfTypes);
-//   }
-//   if (property.type.arrayOfType !== undefined) {
-//     typeRef = property.type.arrayOfType;
-//   }
-//   if (typeRef.fqn) {
-//     const type = context.typeSystem.findFqn(typeRef.fqn);
-//     if (isStructType(type) || property.type.mapOfType !== undefined) {
-//       // eslint-disable-next-line no-console
-//       console.log('ISSTRUCTTYPE');
-//       return property.optional ? ' // zoinks' : '';
-//     }
-//   }
-//   return property.optional ? ' // optional' : '';
-// }
 
 /**
  * Returns whether the given type represents a struct

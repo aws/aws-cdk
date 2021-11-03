@@ -21,7 +21,7 @@ export abstract class Declaration {
     }
   }
 
-  constructor(private readonly sortKey: [number, string]) {}
+  constructor(public readonly sortKey: [number, string]) {}
 
   public abstract equals(rhs: Declaration): boolean;
   public abstract render(): string;

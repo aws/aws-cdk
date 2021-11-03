@@ -5,26 +5,23 @@ import { Declaration } from './declaration';
 /**
  * Customary module import names that differ from what would be automatically generated.
  */
-const SPECIAL_IMPORT_NAMES: Record<string, string> = {
+const SPECIAL_PACKAGE_ROOT_IMPORT_NAMES: Record<string, string> = {
+  'aws-cdk-lib': 'cdk',
   '@aws-cdk/core': 'cdk',
   '@aws-cdk/aws-applicationautoscaling': 'appscaling',
   '@aws-cdk/aws-elasticloadbalancing': 'elb',
   '@aws-cdk/aws-elasticloadbalancingv2': 'elbv2',
 };
 
+const SPECIAL_NAMESPACE_IMPORT_NAMES: Record<string, string> = {
+  aws_applicationautoscaling: 'appscaling',
+  aws_elasticloadbalancing: 'elb',
+  aws_elasticloadbalancingv2: 'elbv2',
+};
+
 interface ImportedModule {
   readonly importName: string;
   readonly moduleName: string;
-}
-
-/**
- * Options for mutating a code.
- */
-interface MutateOptions {
-  afterFirstInstanceOf?: string,
-  afterLastInstanceOf?: string,
-  beforeFirstInstanceOf?: string,
-  beforeLastInstanceOf?: string,
 }
 
 /**
@@ -61,69 +58,6 @@ export class Code {
     return new Code(this.code + rhs.code, [...this.declarations, ...rhs.declarations]);
   }
 
-  public remove(options: MutateOptions): Code {
-    if (Object.keys(options).length !== 1) {
-      throw new Error('1 and only 1 property in options must be set');
-    }
-
-    let beforeInstance = true;
-    if (options.afterFirstInstanceOf || options.afterLastInstanceOf) {
-      beforeInstance = false;
-    }
-
-    let index = -1;
-    if (options.beforeFirstInstanceOf || options.afterFirstInstanceOf) {
-      index = this.code.indexOf(options.beforeFirstInstanceOf || options.afterFirstInstanceOf!);
-    } else {
-      index = this.code.lastIndexOf(options.beforeLastInstanceOf || options.afterLastInstanceOf!);
-    }
-    if (index === -1) {
-      return this;
-    }
-
-    const [before, after] = this.split(index, beforeInstance);
-    return beforeInstance ? after : before;
-  }
-
-  public inject(code: Code | string, options: MutateOptions): Code {
-    if (Object.keys(options).length !== 1) {
-      throw new Error('1 and only 1 property in options must be set');
-    }
-
-    let beforeInstance = true;
-    if (options.afterFirstInstanceOf || options.afterLastInstanceOf) {
-      beforeInstance = false;
-    }
-
-    const index = this.code.indexOf(options.afterFirstInstanceOf ??
-      options.afterLastInstanceOf ??
-      options.beforeFirstInstanceOf ??
-      options.beforeLastInstanceOf!);
-    if (index === -1) {
-      return this;
-    }
-
-    const [before, after] = this.split(index, beforeInstance);
-    return Code.concatAll(
-      before,
-      code,
-      after,
-    );
-  }
-
-  /**
-   * This function splits a Code into two Code fragments using the splitter.
-   * The first Code object will contain code up to and including the splitter.
-   * The second Code object will contain code after the splitter.
-   * The declarations of the Code are preserved in both returned Codes.
-   * Because of this, the user must be careful as the declarations may be wrong
-   * if handled incorrectly.
-   */
-  private split(index: number, before: boolean = false): [Code, Code] {
-    const i = before ? 0 : 1;
-    return [new Code(this.code.substr(0, index + i), this.declarations), new Code(this.code.substr(index + i), this.declarations)];
-  }
-
   public toString() {
     return this.render();
   }
@@ -140,8 +74,13 @@ export class Code {
     const decs = deduplicate(this.declarations);
     // Add separator only if necessary
     const decStrings = [...decs.map((d) => d.render())];
-    const index = Declaration.numberOfImports(decs);
-    if (decStrings.length > index) { decStrings.splice(index, 0, ''); }
+    // only supports two groups and not more
+    for (let i = 0; i < decs.length-1; i++) {
+      if (decs[i].sortKey[0] !== decs[i+1].sortKey[0]) {
+        decStrings.splice(i+1, 0, '');
+        break;
+      }
+    }
     return decStrings;
   }
 }
@@ -168,16 +107,19 @@ function deduplicate(declarations: Declaration[]): Declaration[] {
  * for parsing the type for module information.
  */
 export function module(type: reflect.Type): ImportedModule {
-  if (type.assembly.name === 'aws-cdk-lib' && type.namespace) {
-    const parts = type.namespace.split('_');
-    const nonNamespacedPart = SPECIAL_IMPORT_NAMES[type.namespace ?? ''] ?? parts[1] ?? parts[0];
+  if (type.assembly.name === 'aws-cdk-lib') {
+    let namespacedPart = type.assembly.name;
+    if (type.namespace) {
+      const parts = type.namespace.split('_');
+      namespacedPart = SPECIAL_NAMESPACE_IMPORT_NAMES[type.namespace] ?? parts[1] ?? parts[0];
+    }
     return {
-      importName: nonNamespacedPart.replace(/^aws_/g, '').replace(/[^a-z0-9_]/g, '_'),
-      moduleName: `${type.assembly.name}/${nonNamespacedPart.replace('-', '_')}`,
+      importName: namespacedPart.replace(/^aws_/g, '').replace(/[^a-z0-9_]/g, '_'),
+      moduleName: `${type.assembly.name}/${namespacedPart.replace('-', '_')}`,
     };
   } else {
     const parts = type.assembly.name.split('/');
-    const nonNamespacedPart = SPECIAL_IMPORT_NAMES[type.assembly.name] ?? parts[1] ?? parts[0];
+    const nonNamespacedPart = SPECIAL_PACKAGE_ROOT_IMPORT_NAMES[type.assembly.name] ?? parts[1] ?? parts[0];
     return {
       importName: nonNamespacedPart.replace(/^aws-/g, '').replace(/[^a-z0-9_]/g, '_'),
       moduleName: type.assembly.name,

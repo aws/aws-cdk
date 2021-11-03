@@ -1,7 +1,8 @@
 /* eslint-disable no-console */
 import * as reflect from 'jsii-reflect';
 
-import { Import, module } from '../lib/code';
+import { module } from '../lib/code';
+import { Import } from '../lib/declaration';
 import { AssemblyFixture, DUMMY_ASSEMBLY_TARGETS } from './testutil';
 
 let assembly1: AssemblyFixture;
