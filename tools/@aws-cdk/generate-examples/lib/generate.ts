@@ -2,7 +2,8 @@ import * as spec from '@jsii/spec';
 import * as reflect from 'jsii-reflect';
 import { TypeSystem } from 'jsii-reflect';
 
-import { AnyAssumption, Assumption, Code, Import, module } from './code';
+import { Code, module } from './code';
+import { AnyAssumption, Assumption, Import } from './declaration';
 
 /**
  * Special types that have a standard way of coming up with an example value
