@@ -251,6 +251,11 @@ function getBaseUnionType(types: reflect.TypeReference[]): reflect.TypeReference
   return types[0];
 }
 
+/**
+ * Add an assumption and import for a variable that will be declared as a constant.
+ * If the variable is an IXxx Interface, guess a possible implementation of that interface
+ * by checking if stripping the I results in an Xxx type that extends IXxx.
+ */
 function addAssumedVariableDeclaration(type: reflect.Type): Code {
   let newType = type;
   if (type.isInterfaceType() && !type.datatype) {
@@ -315,7 +320,7 @@ function exampleValueForStruct(context: ExampleContext, struct: reflect.Interfac
   // Add an empty line between required and optional properties
   for (let i = 0; i < properties.length - 1; i++) {
     if (properties[i].optional !== properties[i + 1].optional) {
-      renderedProperties.splice(i + 1, 0, new Code('\n'));
+      renderedProperties.splice(i + 1, 0, new Code(`\n${tab(level+1)}// the properties below are optional\n`));
       break;
     }
   }
