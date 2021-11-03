@@ -954,6 +954,12 @@
       "Properties": {
         "Port": 80,
         "Protocol": "HTTP",
+        "TargetGroupAttributes": [
+          {
+            "Key": "stickiness.enabled",
+            "Value": "false"
+          }
+        ],
         "TargetType": "instance",
         "VpcId": {
           "Ref": "Vpc8378EB38"
@@ -965,6 +971,12 @@
       "Properties": {
         "Port": 80,
         "Protocol": "HTTP",
+        "TargetGroupAttributes": [
+          {
+            "Key": "stickiness.enabled",
+            "Value": "false"
+          }
+        ],
         "TargetType": "instance",
         "VpcId": {
           "Ref": "Vpc8378EB38"
