@@ -2246,3 +2246,42 @@ test('can add ASG capacity via Capacity Provider by not specifying machineImageT
   });
 
 });
+
+test('can get error when ASG Capacity Provider define capacityProviderName start with aws, ecs or faragte', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'test');
+  const vpc = new ec2.Vpc(stack, 'Vpc');
+  const cluster = new ecs.Cluster(stack, 'EcsCluster');
+
+  const autoScalingGroupAl2 = new autoscaling.AutoScalingGroup(stack, 'asgal2', {
+    vpc,
+    instanceType: new ec2.InstanceType('bogus'),
+    machineImage: ecs.EcsOptimizedImage.amazonLinux2(),
+  });
+
+  // THEN
+  expect(() => {
+    // WHEN Capacity Provider define capacityProviderName start with aws.
+    const capacityProviderAl2 = new ecs.AsgCapacityProvider(stack, 'provideral2', {
+      autoScalingGroup: autoScalingGroupAl2,
+      enableManagedTerminationProtection: false,
+      capacityProviderName: 'awscp',
+    });
+
+    // Ensure not added twice
+    cluster.addAsgCapacityProvider(capacityProviderAl2);
+  }).toThrow(/Invalid Capacity Provider Name: awscp, If a name is specified, it cannot start with aws, ecs, or fargate./);
+
+  expect(() => {
+    // WHEN Capacity Provider define capacityProviderName start with ecs.
+    const capacityProviderAl2 = new ecs.AsgCapacityProvider(stack, 'provideral2-2', {
+      autoScalingGroup: autoScalingGroupAl2,
+      enableManagedTerminationProtection: false,
+      capacityProviderName: 'ecscp',
+    });
+
+    // Ensure not added twice
+    cluster.addAsgCapacityProvider(capacityProviderAl2);
+  }).toThrow(/Invalid Capacity Provider Name: ecscp, If a name is specified, it cannot start with aws, ecs, or fargate./);
+});
