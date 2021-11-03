@@ -48,7 +48,7 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
 
   const build = config.settings.get(['build']);
   if (build) {
-    await exec(commandToArray(build));
+    await exec(build);
   }
 
   const app = config.settings.get(['app']);
@@ -62,7 +62,7 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
     return createAssembly(app);
   }
 
-  const commandLine = await guessExecutable(commandToArray(app));
+  const commandLine = await guessExecutable(appToArray(app));
 
   const outdir = config.settings.get(['output']);
   if (!outdir) {
@@ -79,7 +79,7 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
 
   debug('env:', env);
 
-  await exec(commandLine);
+  await exec(arrayToString(commandLine));
 
   return createAssembly(outdir);
 
@@ -96,7 +96,7 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
     }
   }
 
-  async function exec(commandAndArgs: string[]) {
+  async function exec(commandAndArgs: string) {
     return new Promise<void>((ok, fail) => {
       // We use a slightly lower-level interface to:
       //
@@ -108,9 +108,9 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
       //   anyway, and if the subprocess is printing to it for debugging purposes the
       //   user gets to see it sooner. Plus, capturing doesn't interact nicely with some
       //   processes like Maven.
-      const command = commandAndArgs[0];
-      const args = commandAndArgs.slice(1);
-      const proc = childProcess.spawn(command, args, {
+      //const command = commandAndArgs[0];
+      //const args = commandAndArgs.slice(1);
+      const proc = childProcess.spawn(commandAndArgs, [], {
         stdio: ['ignore', 'inherit', 'inherit'],
         detached: false,
         shell: true,
@@ -157,12 +157,29 @@ async function populateDefaultEnvironmentIfNeeded(aws: SdkProvider, env: { [key:
 }
 
 /**
- * Make sure the 'command' is an array
+ * Make sure the 'app' is an array
  *
  * If it's a string, split on spaces as a trivial way of tokenizing the command line.
  */
-function commandToArray(command: any) {
-  return typeof command === 'string' ? command.split(' ') : command;
+function appToArray(app: any) {
+  return typeof app === 'string' ? app.split(' ') : app;
+}
+
+/**
+ * Turn the given array into a space-delimited string
+ *
+ * The first element of the returned string will be a space, ' '.
+ */
+function arrayToString(arr: any[]) {
+  let result = '';
+  result += arr[0];
+  arr.splice(0, 1);
+
+  for (const member of arr) {
+    result += (' ' + member);
+  }
+
+  return result;
 }
 
 type CommandGenerator = (file: string) => string[];

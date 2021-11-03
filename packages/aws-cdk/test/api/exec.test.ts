@@ -161,7 +161,7 @@ test('the application set in --app is executed with arguments', async () => {
   // GIVEN
   config.settings.set(['app'], 'cloud-executable an-arg');
   mockSpawn({
-    commandLine: ['cloud-executable', 'an-arg'],
+    commandLine: ['cloud-executable an-arg'],
     sideEffect: () => writeOutputAssembly(),
   });
 
@@ -174,7 +174,7 @@ test('application set in --app as `*.js` always uses handler on windows', async 
   sinon.stub(process, 'platform').value('win32');
   config.settings.set(['app'], 'windows.js');
   mockSpawn({
-    commandLine: [process.execPath, 'windows.js'],
+    commandLine: [process.execPath + ' windows.js'],
     sideEffect: () => writeOutputAssembly(),
   });
 
@@ -211,7 +211,7 @@ test('cli does not throw when the `build` script succeeds', async () => {
   config.settings.set(['build'], 'real command');
   config.settings.set(['app'], 'executable-app.js');
   mockSpawn({
-    commandLine: ['real', 'command'], // `build` key is split on whitespace
+    commandLine: ['real command'], // `build` key is not split on whitespace
     exitCode: 0,
   },
   {
