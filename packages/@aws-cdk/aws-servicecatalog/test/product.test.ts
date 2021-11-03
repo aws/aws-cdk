@@ -123,7 +123,7 @@ describe('Product', () => {
     const assembly = app.synth();
     expect(assembly.artifacts.length).toEqual(2);
     expect(assembly.stacks[0].assets.length).toBe(1);
-    expect(assembly.stacks[0].assets[0].path).toEqual('ProductStack.product.template.json');
+    expect(assembly.stacks[0].assets[0].path).toEqual('StackProductStack190B56DE.product.template.json');
   }),
 
   test('multiple product versions from product stack', () => {
@@ -154,8 +154,8 @@ describe('Product', () => {
     const assembly = app.synth();
 
     expect(assembly.stacks[0].assets.length).toBe(2);
-    expect(assembly.stacks[0].assets[0].path).toEqual('ProductStackV1.product.template.json');
-    expect(assembly.stacks[0].assets[1].path).toEqual('ProductStackV2.product.template.json');
+    expect(assembly.stacks[0].assets[0].path).toEqual('StackProductStackV111F65963.product.template.json');
+    expect(assembly.stacks[0].assets[1].path).toEqual('StackProductStackV24832700A.product.template.json');
   }),
 
   test('identical product versions from product stack creates one asset', () => {
