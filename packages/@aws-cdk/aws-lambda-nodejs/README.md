@@ -174,7 +174,7 @@ new lambda.NodejsFunction(this, 'my-handler', {
     minify: true, // minify code, defaults to false
     sourceMap: true, // include source map, defaults to false
     sourceMapMode: SourceMapMode.INLINE, // defaults to SourceMapMode.DEFAULT
-    sourcesContent: false, // include original source into source map, defaults to true
+    sourcesContent: false, // do not include original source into source map, defaults to true
     target: 'es2020', // target environment for the generated JavaScript code
     loader: { // Use the 'dataurl' loader for '.png' files
       '.png': 'dataurl',
