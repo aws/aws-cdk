@@ -40,6 +40,8 @@ async function releaseNoteContents(currentVersion: Versions, opts: ReleaseNotesO
   return [
     stableChangelogContents,
     '---',
+    // DO NOT CHANGE THE FORMAT OF THE FOLLOWING LINE. This will cause the v2 publishing verification canary to skip verification of Alpha modules.
+    // See https://github.com/cdklabs/cdk-ops/pull/1769.
     `## Alpha modules (${currentVersion.alphaVersion})`,
     alphaChangelogContents,
   ].join('\n');
