@@ -39,10 +39,15 @@ function lerna_scopes() {
 # Compile examples with respect to "decdk" directory, as all packages will
 # be symlinked there so they can all be included.
 echo "Extracting code samples" >&2
-node --experimental-worker $(which $ROSETTA) \
+$ROSETTA extract \
   --compile \
   --output samples.tabl.json \
   --directory packages/decdk \
+  $(cat $TMPDIR/jsii.txt)
+
+echo "Infusing examples back into assemblies" >&2
+$ROSETTA infuse \
+  samples.tabl.json \
   $(cat $TMPDIR/jsii.txt)
 
 # Jsii packaging (all at once using jsii-pacmak)
@@ -94,7 +99,10 @@ HERE
 
 # copy CHANGELOG.md and RELEASE_NOTES.md to dist/ for github releases
 cp ${changelog_file} ${distdir}/CHANGELOG.md
-cp RELEASE_NOTES.md ${distdir}/RELEASE_NOTES.md
+# Release notes are not available for bump candidate builds.
+if ! ${BUMP_CANDIDATE:-false}; then
+  cp RELEASE_NOTES.md ${distdir}/RELEASE_NOTES.md
+fi
 
 # defensive: make sure our artifacts don't use the version marker (this means
 # that "pack" will always fails when building in a dev environment)
