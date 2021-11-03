@@ -1,6 +1,7 @@
 import * as reflect from 'jsii-reflect';
 
 import { Declaration } from './declaration';
+import { sortBy } from './util';
 
 /**
  * Customary module import names that differ from what would be automatically generated.
@@ -70,7 +71,7 @@ export class Code {
    * Renders variable declarations. Assumes that there are no duplicates in the declarations.
    */
   private renderDeclarations(): string[] {
-    Declaration.sort(this.declarations);
+    sortBy(this.declarations, (d) => d.sortKey);
     const decs = deduplicate(this.declarations);
     // Add separator only if necessary
     const decStrings = [...decs.map((d) => d.render())];
