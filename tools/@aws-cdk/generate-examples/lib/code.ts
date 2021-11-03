@@ -10,31 +10,37 @@ const SPECIAL_IMPORT_NAMES: Record<string, string> = {
   '@aws-cdk/aws-elasticloadbalancingv2': 'elbv2',
 };
 
-interface Declaration {
-  readonly type: reflect.Type;
-  readonly name: string;
-  equals: (rhs: Declaration) => boolean;
-  render: () => string;
+abstract class Declaration {
+  public static sort(declarations: Declaration[]) {
+    declarations.sort(Declaration.compare);
+  }
+
+  public static numberOfImports(declarations: Declaration[]): number {
+    return declarations.filter((d) => d instanceof Import).length;
+  }
+
+  private static compare(lhs: Declaration, rhs: Declaration): number {
+    if (lhs.sortKey[0] > rhs.sortKey[0]) {
+      return 1;
+    } else if (lhs.sortKey[0] < rhs.sortKey[0]) {
+      return -1;
+    } else {
+      return lhs.sortKey[1].localeCompare(rhs.sortKey[1]);
+    }
+  }
+
+  constructor(private readonly sortKey: [number, string]) {}
+
+  public abstract equals(rhs: Declaration): boolean;
+  public abstract render(): string;
 }
 
 /**
  * An Import statement that will get rendered at the top of the code snippet.
  */
-export class Import implements Declaration {
-  public static sort(imports: Import[]) {
-    imports.sort(Import.compare);
-  }
-
-  /**
-   * Returns 0 if lhs === rhs, -1 if lhs < rhs, and 1 if lhs > rhs.
-   */
-  public static compare(lhs: Import, rhs: Import): number {
-    return module(lhs.type).moduleName.localeCompare(module(rhs.type).moduleName);
-  }
-
-  readonly name: string;
-  public constructor(readonly type: reflect.Type) {
-    this.name = type.name;
+export class Import extends Declaration {
+  public constructor(public readonly type: reflect.Type) {
+    super([0, module(type).moduleName]);
   }
 
   public equals(rhs: Declaration): boolean {
@@ -50,19 +56,10 @@ export class Import implements Declaration {
 /**
  * A declared constant that will be rendered at the top of the code snippet after the imports.
  */
-export class Assumption implements Declaration {
-  public static sort(assumptions: Assumption[]) {
-    assumptions.sort(Assumption.compare);
+export class Assumption extends Declaration {
+  public constructor(private readonly type: reflect.Type, private readonly name: string) {
+    super([1, name]);
   }
-
-  /**
-   * Returns 0 if lhs === rhs, -1 if lhs < rhs, and 1 if lhs > rhs.
-   */
-  public static compare(lhs: Assumption, rhs: Assumption): number {
-    return lhs.name.localeCompare(rhs.name);
-  }
-
-  public constructor(readonly type: reflect.Type, readonly name: string) {}
 
   public equals(rhs: Declaration): boolean {
     return this.render() === rhs.render();
@@ -70,6 +67,20 @@ export class Assumption implements Declaration {
 
   public render(): string {
     return `declare const ${this.name}: ${module(this.type).importName}.${this.type.name};`;
+  }
+}
+
+export class AnyAssumption extends Declaration {
+  public constructor(private readonly name: string) {
+    super([1, name]);
+  }
+
+  public equals(rhs: Declaration): boolean {
+    return this.render() === rhs.render();
+  }
+
+  public render(): string {
+    return `declare const ${this.name}: any;`;
   }
 }
 
@@ -190,41 +201,34 @@ export class Code {
     return (this.renderDeclarations().join('\n') + separator + this.code).trimStart();
   }
 
-  // FIXME: what to do about IXxx interfaces? interface type that is not a datatype
   /**
    * Renders variable declarations. Assumes that there are no duplicates in the declarations.
    */
   private renderDeclarations(): string[] {
-    const { imports, assumptions } = splitDeclarations(deduplicate(this.declarations));
-    Assumption.sort(assumptions);
-    Import.sort(imports);
+    Declaration.sort(this.declarations);
+    const decs = deduplicate(this.declarations);
     // Add separator only if necessary
-    if (imports.length > 0 && assumptions.length > 0) {
-      return [...imports.map((d) => d.render()), '', ...assumptions.map((a) => a.render())];
-    }
-    return [...imports.map((d) => d.render()), ...assumptions.map((a) => a.render())];
+    const decStrings = [...decs.map((d) => d.render())];
+    const index = Declaration.numberOfImports(decs);
+    if (decStrings.length > index) { decStrings.splice(index, 0, ''); }
+    return decStrings;
   }
 }
 
-function splitDeclarations(declarations: Declaration[]): { imports: Import[], assumptions: Assumption[] } {
-  const imports: Import[] = [];
-  const assumptions: Assumption[] = [];
-  for (const declaration of declarations) {
-    if (declaration instanceof Import) {
-      imports.push(declaration);
-    } else {
-      assumptions.push(declaration);
-    }
-  }
-  return { imports, assumptions };
-}
-
-// FIXME: O(n^2) time in the worst case, could be improved?
 /**
- * Deduplicates an array of Declarations.
+ * Deduplicates a sorted array of Declarations.
  */
 function deduplicate(declarations: Declaration[]): Declaration[] {
-  return declarations.filter((v, i, a) => a.findIndex(t => t.equals(v)) === i);
+  if (declarations.length === 0) { return declarations; }
+
+  const newDeclarations: Declaration[] = [];
+  newDeclarations.push(declarations[0]);
+  for (let i = 1; i < declarations.length; i++) {
+    if (!declarations[i].equals(declarations[i-1])) {
+      newDeclarations.push(declarations[i]);
+    }
+  }
+  return newDeclarations;
 }
 
 /**

@@ -2,7 +2,7 @@ import * as spec from '@jsii/spec';
 import * as reflect from 'jsii-reflect';
 import { TypeSystem } from 'jsii-reflect';
 
-import { Assumption, Code, Import, module } from './code';
+import { AnyAssumption, Assumption, Code, Import, module } from './code';
 
 /**
  * Special types that have a standard way of coming up with an example value
@@ -189,7 +189,7 @@ function exampleValue(context: ExampleContext, typeReference: reflect.TypeRefere
       }
       case spec.PrimitiveType.Any: {
         // FIXME: add declaration with type any.
-        return new Code('{\'any value\'}');
+        return new Code('anyValue', [new AnyAssumption('anyValue')]);
       }
       default: {
         return new Code('---');
@@ -251,8 +251,29 @@ function getBaseUnionType(types: reflect.TypeReference[]): reflect.TypeReference
 }
 
 function addAssumedVariableDeclaration(type: reflect.Type): Code {
-  const variableName = lowercaseFirstLetter(type.name);
-  return new Code(variableName, [new Assumption(type, variableName), new Import(type)]);
+  let newType = type;
+  if (type.isInterfaceType()) {
+    // find corresponding non-interface type if possible
+    newType = findCorrespondingType(type);
+  }
+  const variableName = lowercaseFirstLetter(newType.name);
+  return new Code(variableName, [new Assumption(newType, variableName), new Import(newType)]);
+}
+
+/**
+ * This function tries to guess the corresponding type to an IXxx Interface.
+ * If it does not find that this type exists, it will return the original type.
+ */
+function findCorrespondingType(type: reflect.Type): reflect.Type {
+  const [start, end] = type.fqn.split('.');
+  if (end.length > 2 && end[0] === 'I' && end[1] === end[1].toUpperCase()) {
+    const newFqn = start + '.' + end.substr(1);
+    // eslint-disable-next-line no-console
+    console.log('newFqn ', newFqn);
+    const newType = type.system.tryFindFqn(newFqn);
+    if (newType) { return newType; }
+  }
+  return type;
 }
 
 /**
