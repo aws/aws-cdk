@@ -113,7 +113,7 @@ export interface BundlingOptions {
    * bundle buddy can consume esbuild's metadata format and generates a treemap visualization
    * of the modules in your bundle and how much space each one takes up.
    * @see https://esbuild.github.io/api/#metafile
-   * @default - false
+   * @default false
    */
   readonly metafile?: boolean
 
@@ -124,7 +124,7 @@ export interface BundlingOptions {
    *
    * This is commonly used to insert comments:
    *
-   * @default -  no comments are passed
+   * @default - no comments are passed
    */
   readonly banner? : string
 
@@ -135,9 +135,22 @@ export interface BundlingOptions {
    *
    * This is commonly used to insert comments
    *
-   * @default -  no comments are passed
+   * @default - no comments are passed
    */
   readonly footer? : string
+
+  /**
+   * The charset to use for esbuild's output.
+   *
+   * By default esbuild's output is ASCII-only. Any non-ASCII characters are escaped
+   * using backslash escape sequences. Using escape sequences makes the generated output
+   * slightly bigger, and also makes it harder to read. If you would like for esbuild to print
+   * the original characters without using escape sequences, use `Charset.UTF8`.
+   *
+   * @see https://esbuild.github.io/api/#charset
+   * @default Charset.ASCII
+   */
+  readonly charset?: Charset;
 
   /**
    * Environment variables defined when bundling runs.
@@ -196,6 +209,16 @@ export interface BundlingOptions {
    * @default false
    */
   readonly forceDockerBundling?: boolean;
+
+  /**
+  * Run compilation using tsc before running file through bundling step.
+  * This usually is not required unless you are using new experimental features that
+  * are only supported by typescript's `tsc` compiler.
+  * One example of such feature is `emitDecoratorMetadata`.
+  *
+  * @default false
+  */
+  readonly preCompilation?: boolean
 
   /**
    * A custom bundling Docker image.
@@ -299,4 +322,23 @@ export enum SourceMapMode {
    * Both sourceMap mode - If you want to have the effect of both inline and external simultaneously
    */
   BOTH = 'both'
+}
+
+/**
+ * Charset for esbuild's output
+ */
+export enum Charset {
+  /**
+   * ASCII
+   *
+   * Any non-ASCII characters are escaped using backslash escape sequences
+   */
+  ASCII = 'ascii',
+
+  /**
+   * UTF-8
+   *
+   * Keep original characters without using escape sequences
+   */
+  UTF8 = 'utf8'
 }
