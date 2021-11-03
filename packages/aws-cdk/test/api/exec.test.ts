@@ -211,7 +211,7 @@ test('cli does not throw when the `build` script succeeds', async () => {
   config.settings.set(['build'], 'real command');
   config.settings.set(['app'], 'executable-app.js');
   mockSpawn({
-    commandLine: ['real command'],
+    commandLine: ['real', 'command'], // `build` key is split on whitespace
     exitCode: 0,
   },
   {

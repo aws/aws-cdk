@@ -48,7 +48,7 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
 
   const build = config.settings.get(['build']);
   if (build) {
-    await exec([build]);
+    await exec(commandToArray(build));
   }
 
   const app = config.settings.get(['app']);
@@ -62,7 +62,7 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
     return createAssembly(app);
   }
 
-  const commandLine = await guessExecutable(appToArray(app));
+  const commandLine = await guessExecutable(commandToArray(app));
 
   const outdir = config.settings.get(['output']);
   if (!outdir) {
@@ -161,8 +161,8 @@ async function populateDefaultEnvironmentIfNeeded(aws: SdkProvider, env: { [key:
  *
  * If it's a string, split on spaces as a trivial way of tokenizing the command line.
  */
-function appToArray(app: any) {
-  return typeof app === 'string' ? app.split(' ') : app;
+function commandToArray(command: any) {
+  return typeof command === 'string' ? command.split(' ') : command;
 }
 
 type CommandGenerator = (file: string) => string[];
