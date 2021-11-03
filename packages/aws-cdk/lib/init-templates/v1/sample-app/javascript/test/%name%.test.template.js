@@ -21,5 +21,5 @@ test('SNS Topic Created', () => {
   // THEN
   const template = Template.fromStack(stack);
 
-  template.hasResource('AWS::SNS::Topic', Match.anyValue());
+  template.resourceCountIs('AWS::SNS::Topic', 1);
 });

@@ -21,4 +21,4 @@ def test_sns_topic_created():
     stack = %name.PascalCased%Stack(app, "%name.StackName%")
     template = assertions.Template.from_stack(stack)
 
-    template.has_resource("AWS::SNS::Topic", assertions.Match.any_value())
+    template.resource_count_is("AWS::SNS::Topic", 1)

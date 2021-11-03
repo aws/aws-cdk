@@ -22,6 +22,6 @@ public class %name.PascalCased%StackTest {
          "VisibilityTimeout", 300);
 
         template.hasResourceProperties("AWS::SQS::Queue", expected);
-        template.hasResourceProperties("AWS::SNS::Topic", Match.anyValue());
+        template.resourceCountIs("AWS::SNS::Topic", 1);
     }
 }

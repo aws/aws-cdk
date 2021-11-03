@@ -21,5 +21,5 @@ func Test%name.PascalCased%Stack(t *testing.T) {
 	template.HasResourceProperties(jsii.String("AWS::SQS::Queue"), map[string]interface{}{
 		"VisibilityTimeout": 300,
 	})
-	template.HasResourceProperties(jsii.String("AWS::SNS::Topic"), assertions.Match_AnyValue())
+	template.ResourceCountIs(jsii.String("AWS::SNS::Topic"), jsii.Number(1))
 }

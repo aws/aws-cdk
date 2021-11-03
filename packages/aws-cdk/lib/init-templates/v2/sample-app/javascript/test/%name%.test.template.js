@@ -12,5 +12,5 @@ test('SQS Queue and SNS Topic Created', () => {
     VisibilityTimeout: 300,
   });
 
-  template.hasResource('AWS::SNS::Topic', Match.anyValue());
+  template.resourceCountIs('AWS::SNS::Topic', 1);
 });
