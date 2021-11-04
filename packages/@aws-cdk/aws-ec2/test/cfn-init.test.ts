@@ -672,7 +672,7 @@ class SingletonLocationSythesizer extends DefaultStackSynthesizer {
   public addFileAsset(_asset: FileAssetSource): FileAssetLocation {
     const httpUrl = 'https://MyBucket.s3.amazonaws.com/MyAsset';
     return {
-      bucketName: 'MyAssetBucket',
+      bucketName: 'myassetbucket',
       objectKey: 'MyAssetFile',
       httpUrl,
       s3ObjectUrl: httpUrl,

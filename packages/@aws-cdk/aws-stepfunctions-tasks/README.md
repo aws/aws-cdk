@@ -348,7 +348,7 @@ action name does not match with the API service/action name:
 ```ts
 const listBuckets = new tasks.CallAwsService(this, 'ListBuckets', {
   service: 's3',
-  action: 'ListBuckets',
+  action: 'listBuckets',
   iamResources: ['*'],
   iamAction: 's3:ListAllMyBuckets',
 });

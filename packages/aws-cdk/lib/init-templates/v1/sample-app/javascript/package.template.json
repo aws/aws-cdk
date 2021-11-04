@@ -10,7 +10,7 @@
     "test": "jest"
   },
   "devDependencies": {
-    "@aws-cdk/assert": "%cdk-version%",
+    "@aws-cdk/assertions": "%cdk-version%",
     "aws-cdk": "%cdk-version%",
     "jest": "^26.4.2"
   },
