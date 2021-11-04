@@ -915,7 +915,6 @@ Otherwise, providing monitoring for jobs with existing log groups and log bucket
 
 ```ts
 import * as logs from '@aws-cdk/aws-logs';
-//import * as emrContainers from '@aws-cdk/emrContainers';
 
 const logGroup = new logs.LogGroup(this, 'Log Group');
 const logBucket = new s3.Bucket(this, 'S3 Bucket')
