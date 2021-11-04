@@ -75,6 +75,22 @@ const topicRule = new iot.TopicRule(this, 'TopicRule', {
 topicRule.addAction(new actions.LambdaFunctionAction(func))
 ```
 
+You can also supply `errorAction` as following,
+and the IoT Rule will trigger it if a rule's action is unable to perform:
+
+```ts
+import * as iot from '@aws-cdk/aws-iot';
+import * as actions from '@aws-cdk/aws-iot-actions';
+import * as logs from '@aws-cdk/aws-logs';
+
+const logGroup = new logs.LogGroup(this, 'MyLogGroup');
+
+new iot.TopicRule(this, 'TopicRule', {
+  sql: iot.IotSql.fromStringAsVer20160323("SELECT topic(2) as device_id, timestamp() as timestamp FROM 'device/+/data'"),
+  errorAction: new actions.CloudWatchLogsAction(logGroup),
+});
+```
+
 If you wanna make the topic rule disable, add property `enabled: false` as following:
 
 ```ts
@@ -83,3 +99,5 @@ new iot.TopicRule(this, 'TopicRule', {
   enabled: false,
 });
 ```
+
+See also [@aws-cdk/aws-iot-actions](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-iot-actions-readme.html) for other actions.
