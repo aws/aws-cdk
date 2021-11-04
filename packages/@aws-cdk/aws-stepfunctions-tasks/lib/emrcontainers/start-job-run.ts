@@ -238,7 +238,6 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
   }
 
   private validateSparkSubmitJobDriver = (driver:SparkSubmitJobDriver) => {
-
     this.validateEntryPoint(driver.entryPoint);
     if (driver.entryPointArguments) {
       this.validateEntryPointArguments(driver.entryPointArguments);
