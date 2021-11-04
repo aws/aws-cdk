@@ -664,7 +664,7 @@ describe('InitSource', () => {
 
   test('fromS3Object uses object URL', () => {
     // GIVEN
-    const bucket = s3.Bucket.fromBucketName(stack, 'bucket', 'MyBucket');
+    const bucket = s3.Bucket.fromBucketName(stack, 'bucket', 'mybucket');
     const source = ec2.InitSource.fromS3Object('/tmp/foo', bucket, 'myKey');
 
     // WHEN
@@ -672,7 +672,7 @@ describe('InitSource', () => {
 
     // THEN
     expect(rendered).toEqual({
-      '/tmp/foo': expect.stringContaining('/MyBucket/myKey'),
+      '/tmp/foo': expect.stringContaining('/mybucket/myKey'),
     });
   });
 
