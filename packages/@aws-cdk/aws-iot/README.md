@@ -100,4 +100,4 @@ new iot.TopicRule(this, 'TopicRule', {
 });
 ```
 
-See also [@aws-cdk/aws-iot-actions](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-iot-actions/README.md) for other actions.
+See also [@aws-cdk/aws-iot-actions](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-iot-actions-readme.html) for other actions.
