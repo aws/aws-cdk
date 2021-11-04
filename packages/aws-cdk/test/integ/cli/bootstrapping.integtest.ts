@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { MAJOR_VERSION, randomString, withDefaultFixture } from '../helpers/cdk';
+import { randomString, withDefaultFixture } from '../helpers/cdk';
 import { integTest } from '../helpers/test-helpers';
 
 const timeout = process.env.CODEBUILD_BUILD_ID ? // if the process is running in CodeBuild
