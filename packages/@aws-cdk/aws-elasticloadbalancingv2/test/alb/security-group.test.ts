@@ -34,7 +34,7 @@ describe('tests', () => {
 
     fixture.listener.addTargetGroups('Rule', {
       priority: 10,
-      hostHeader: 'example.com',
+      conditions: [elbv2.ListenerCondition.hostHeaders(['example.com'])],
       targetGroups: [new elbv2.ApplicationTargetGroup(fixture.stack, 'TargetGroup2', {
         vpc: fixture.vpc,
         port: 8008,
@@ -63,7 +63,7 @@ describe('tests', () => {
     });
     fixture.listener.addTargetGroups('WithPath', {
       priority: 10,
-      pathPattern: '/hello',
+      conditions: [elbv2.ListenerCondition.pathPatterns(['/hello'])],
       targetGroups: [group],
     });
 
@@ -173,7 +173,7 @@ describe('tests', () => {
     listener2.addTargetGroups('Default', {
       // Must be a non-default target
       priority: 10,
-      hostHeader: 'example.com',
+      conditions: [elbv2.ListenerCondition.hostHeaders(['example.com'])],
       targetGroups: [group],
     });
 

@@ -148,7 +148,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
     return new cloudwatch.Metric({
       namespace: 'AWS/ApplicationELB',
       metricName,
-      dimensions: { LoadBalancer: this.loadBalancerFullName },
+      dimensionsMap: { LoadBalancer: this.loadBalancerFullName },
       ...props,
     });
   }
