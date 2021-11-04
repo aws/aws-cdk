@@ -1,9 +1,12 @@
+import { DeprecatedSymbols } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import * as cloudfront from '../lib';
 import { TestOrigin } from './test-origin';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'integ-distribution-extensive');
+
+DeprecatedSymbols.quiet();
 
 new cloudfront.Distribution(stack, 'MyDist', {
   defaultBehavior: {
@@ -24,3 +27,5 @@ new cloudfront.Distribution(stack, 'MyDist', {
 });
 
 app.synth();
+
+DeprecatedSymbols.reset(undefined);
