@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { MAJOR_VERSION, randomString, withDefaultFixture } from '../helpers/cdk';
+import { randomString, withDefaultFixture } from '../helpers/cdk';
 import { integTest } from '../helpers/test-helpers';
 
 const timeout = process.env.CODEBUILD_BUILD_ID ? // if the process is running in CodeBuild
@@ -128,28 +128,6 @@ integTest('deploy old style synthesis to new style bootstrap', withDefaultFixtur
     ],
   });
 }));
-
-if (MAJOR_VERSION === '1') {
-  // For v2, the default bootstrap is the modern bootstrap, so this test is predicated on invalid
-  // assumptions.
-
-  integTest('deploying new style synthesis to old style bootstrap fails', withDefaultFixture(async (fixture) => {
-    const bootstrapStackName = fixture.bootstrapStackName;
-
-    await fixture.cdkBootstrapLegacy({
-      toolkitStackName: bootstrapStackName,
-    });
-
-    // Deploy stack that uses file assets, this fails because the bootstrap stack
-    // is version checked.
-    await expect(fixture.cdkDeploy('lambda', {
-      options: [
-        '--toolkit-stack-name', bootstrapStackName,
-        '--context', '@aws-cdk/core:newStyleStackSynthesis=1',
-      ],
-    })).rejects.toThrow('exited with error');
-  }));
-}
 
 integTest('can create a legacy bootstrap stack with --public-access-block-configuration=false', withDefaultFixture(async (fixture) => {
   const bootstrapStackName = fixture.bootstrapStackName;
