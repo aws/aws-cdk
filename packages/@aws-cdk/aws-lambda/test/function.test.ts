@@ -10,6 +10,7 @@ import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as signer from '@aws-cdk/aws-signer';
 import * as sqs from '@aws-cdk/aws-sqs';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import * as constructs from 'constructs';
 import * as _ from 'lodash';
@@ -2204,7 +2205,7 @@ describe('function', () => {
     });
   });
 
-  test('both architectures and architecture are not recognized', () => {
+  testDeprecated('both architectures and architecture are not recognized', () => {
     const stack = new cdk.Stack();
     expect(() => new lambda.Function(stack, 'MyFunction', {
       code: lambda.Code.fromInline('foo'),
@@ -2216,7 +2217,7 @@ describe('function', () => {
     })).toThrow(/architecture or architectures must be specified/);
   });
 
-  test('Only one architecture allowed', () => {
+  testDeprecated('Only one architecture allowed', () => {
     const stack = new cdk.Stack();
     expect(() => new lambda.Function(stack, 'MyFunction', {
       code: lambda.Code.fromInline('foo'),
