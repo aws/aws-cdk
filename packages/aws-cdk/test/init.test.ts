@@ -134,10 +134,10 @@ describe('constructs version', () => {
   cliTest('Python', async (workDir) => {
     await cliInit('app', 'python', false, true, workDir);
 
-    expect(await fs.pathExists(path.join(workDir, 'setup.py'))).toBeTruthy();
-    const setupPy = (await fs.readFile(path.join(workDir, 'setup.py'), 'utf8')).split(/\r?\n/);
+    expect(await fs.pathExists(path.join(workDir, 'requirements.txt'))).toBeTruthy();
+    const setupPy = (await fs.readFile(path.join(workDir, 'requirements.txt'), 'utf8')).split(/\r?\n/);
     // return RegExpMatchArray (result of line.match()) for every lines that match re.
-    const matches = setupPy.map(line => line.match(/^\s*"constructs(.*)",/))
+    const matches = setupPy.map(line => line.match(/^constructs(.*)/))
       .filter(l => l);
 
     expect(matches.length).toEqual(1);
