@@ -93,7 +93,7 @@ export class CannedMetricsGenerator {
   }
 
   private emitTypeDef() {
-    this.code.line('type MetricWithDims<D> = { namespace: string, metricName: string, statistic: string, dimensions: D };');
+    this.code.line('type MetricWithDims<D> = { namespace: string, metricName: string, statistic: string, dimensionsMap: D };');
   }
 }
 
