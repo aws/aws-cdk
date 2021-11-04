@@ -329,7 +329,7 @@ test('Can use Fargate taskdef as EventRule target', () => {
   rule.addTarget(target);
 
   // THEN
-  expect(target.securityGroup).toBeDefined(); // Generated security groups should be accessible.
+  expect(target.securityGroups?.length).toBeGreaterThan(0); // Generated security groups should be accessible.
   expect(stack).toHaveResourceLike('AWS::Events::Rule', {
     Targets: [
       {
