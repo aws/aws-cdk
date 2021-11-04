@@ -120,7 +120,7 @@ export class HelmChart extends CoreConstruct {
 
     if (props.chartAsset && (props.repository || props.version)) {
       throw new Error(
-        'Helm repository and version cannot be used with chartAsset',
+        `Neither 'repository' nor 'version' can be used when configuring 'chartAsset'`,
       );
     }
 
