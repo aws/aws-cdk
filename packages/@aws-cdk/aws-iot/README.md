@@ -83,7 +83,7 @@ import * as iot from '@aws-cdk/aws-iot';
 import * as actions from '@aws-cdk/aws-iot-actions';
 import * as logs from '@aws-cdk/aws-logs';
 
-const logGroup = new logs.LogGroup(this, 'MyLogGroup')
+const logGroup = new logs.LogGroup(this, 'MyLogGroup');
 
 new iot.TopicRule(this, 'TopicRule', {
   sql: iot.IotSql.fromStringAsVer20160323("SELECT topic(2) as device_id, timestamp() as timestamp FROM 'device/+/data'"),
