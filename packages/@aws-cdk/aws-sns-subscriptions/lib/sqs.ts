@@ -1,7 +1,7 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as sns from '@aws-cdk/aws-sns';
 import * as sqs from '@aws-cdk/aws-sqs';
-import { Names, Stack } from '@aws-cdk/core';
+import { ArnFormat, Names, Stack } from '@aws-cdk/core';
 import { SubscriptionProps } from './subscription';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
@@ -78,6 +78,6 @@ export class SqsSubscription implements sns.ITopicSubscription {
     if (topic instanceof sns.Topic) {
       return undefined;
     }
-    return Stack.of(topic).parseArn(topic.topicArn).region;
+    return Stack.of(topic).splitArn(topic.topicArn, ArnFormat.SLASH_RESOURCE_NAME).region;
   }
 }
