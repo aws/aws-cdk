@@ -15,7 +15,6 @@ import { integrationResourceArn, validatePatternSupported } from '../private/tas
  * The props for a EMR Containers StartJobRun Task.
  */
 export interface EmrContainersStartJobRunProps extends sfn.TaskStateBaseProps {
-
   /**
    * The ID of the virtual cluster where the job will be run
    */
@@ -431,7 +430,6 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
  * The information about job driver for Spark submit.
  */
 export interface SparkSubmitJobDriver {
-
   /**
    * The entry point of job application.
    *
@@ -464,7 +462,6 @@ export interface SparkSubmitJobDriver {
  * The job driver is used to provide an input for the job that will be run.
  */
 export interface JobDriver {
-
   /**
    * The job driver parameters specified for spark submit.
    *
@@ -480,7 +477,6 @@ export interface JobDriver {
  * For example, new Classification('xxx-yyy');
  */
 export class Classification {
-
   /**
    * Sets the maximizeResourceAllocation property to true or false.
    * When true, Amazon EMR automatically configures spark-defaults properties based on cluster hardware configuration.
@@ -575,7 +571,6 @@ export interface ApplicationConfiguration {
  * Configuration setting for monitoring.
  */
 export interface Monitoring {
-
   /**
    * Enable logging for this job.
    *
@@ -627,7 +622,6 @@ export interface Monitoring {
  * For example, `new ReleaseLabel('emr-x.xx.x-latest');`
  */
 export class ReleaseLabel {
-
   /**
    * EMR Release version 5.32.0
    */
@@ -660,7 +654,6 @@ export class ReleaseLabel {
  * Class that returns a virtual cluster's id depending on input type
  */
 export class VirtualClusterInput {
-
   /**
    * Input for a virtualClusterId from a Task Input
    */
