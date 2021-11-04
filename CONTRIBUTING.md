@@ -113,7 +113,7 @@ $ yarn build
 $ yarn test
 ```
 
-However, if you wish to build the the entire repository, the following command will achieve this.
+However, if you wish to build the entire repository, the following command will achieve this.
 
 ```console
 cd <root of the CDK repo>
