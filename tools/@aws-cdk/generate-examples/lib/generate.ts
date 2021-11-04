@@ -311,10 +311,11 @@ function exampleValueForStruct(context: ExampleContext, struct: reflect.Interfac
   sortBy(properties, (p) => [p.optional ? 1 : 0, p.name]);
 
   const renderedProperties = properties.map((p) =>
-    addOptionalNote(
-      new Code(`${tab(level + 1)}${p.name}: `).append(
-        exampleValue(context, p.type, p.name, level + 1)).append(','),
-      p.optional).append('\n'),
+    Code.concatAll(
+      `${tab(level + 1)}${p.name}: `,
+      exampleValue(context, p.type, p.name, level + 1),
+      ',\n',
+    ),
   );
 
   // Add an empty line between required and optional properties
@@ -330,27 +331,6 @@ function exampleValueForStruct(context: ExampleContext, struct: reflect.Interfac
     ...renderedProperties,
     `${tab(level)}}`,
   );
-}
-
-const OPTIONAL_OFFSET = 40;
-
-/**
- * If `optional` is true, add a `// optional` note at the end of the first line of the code block
- */
-function addOptionalNote(code: Code, optional: boolean): Code {
-  if (!optional) {
-    return code;
-  }
-
-  const lines = code.code.split('\n');
-  return new Code([
-    padAppend(lines[0], OPTIONAL_OFFSET, '// optional'),
-    ...lines.slice(1),
-  ].join('\n'), code.declarations);
-}
-
-function padAppend(a: string, offset: number, b: string) {
-  return a + ' '.repeat(Math.max(1, offset - a.length)) + b;
 }
 
 /**
