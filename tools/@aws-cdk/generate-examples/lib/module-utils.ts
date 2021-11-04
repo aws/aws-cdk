@@ -28,14 +28,13 @@ interface ImportedModule {
  * for parsing the type for module information.
  */
 export function module(type: reflect.Type): ImportedModule {
-  if (type.assembly.name === 'aws-cdk-lib') {
-    let namespacedPart = type.assembly.name;
+  if (type.assembly.name.startsWith('aws-cdk-lib')) {
     if (type.namespace) {
       const parts = type.namespace.split('_');
-      namespacedPart = SPECIAL_NAMESPACE_IMPORT_NAMES[type.namespace] ?? parts[1] ?? parts[0];
+      const namespacedPart = SPECIAL_NAMESPACE_IMPORT_NAMES[type.namespace] ?? parts[1] ?? parts[0];
       return {
         importName: namespacedPart.replace(/^aws_/g, '').replace(/[^a-z0-9_]/g, '_'),
-        moduleName: `${type.assembly.name}/${namespacedPart.replace('-', '_')}`,
+        moduleName: type.assembly.name,
       };
     }
     // if there is no namespace in v2, we are in the root module
