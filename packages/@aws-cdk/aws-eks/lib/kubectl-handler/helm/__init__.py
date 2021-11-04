@@ -72,7 +72,7 @@ def helm_handler(event, context):
             assert(chart==None)
             assert(repository==None)
             assert(version==None)
-            if not chart_asset_url.chart_asset_url.startswith('s3://'):
+            if not chart_asset_url.startswith('s3://'):
               raise RuntimeError(f'ChartAssetURL must point to as s3 location but is {chart_asset_url}')
             # future work: support versions from s3 assets
             chart = get_chart_asset_from_url(chart_asset_url)
