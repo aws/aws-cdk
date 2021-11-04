@@ -141,10 +141,9 @@ export interface ICluster extends IResource, ec2.IConnectable {
   readonly clusterHandlerSecurityGroup?: ec2.ISecurityGroup;
 
   /**
-   * An AWS Lambda Layer which includes the NPM dependency `proxy-agent`. This layer
-   * is used by the onEvent handler to route AWS SDK requests through a proxy.
+   * An AWS Lambda layer that includes the NPM dependency `proxy-agent`.
    *
-   * @default - a layer bundled with this module.
+   * If not defined, a default layer will be used.
    */
   readonly onEventLayer?: lambda.ILayerVersion;
 
@@ -332,6 +331,10 @@ export interface ClusterAttributes {
   /**
    * An AWS Lambda Layer which includes the NPM dependency `proxy-agent`. This layer
    * is used by the onEvent handler to route AWS SDK requests through a proxy.
+   *
+   * The handler expects the layer to include the following node_modules:
+   *
+   *    proxy-agent
    *
    * @default - a layer bundled with this module.
    */
@@ -1134,10 +1137,8 @@ export class Cluster extends ClusterBase {
   public readonly clusterHandlerSecurityGroup?: ec2.ISecurityGroup;
 
   /**
-   * An AWS Lambda Layer which includes the NPM dependency `proxy-agent`. This layer
-   * is used by the onEvent handler to route AWS SDK requests through a proxy.
-   *
-   * @default - a layer bundled with this module.
+   * The AWS Lambda layer that contains the NPM dependency `proxy-agent`. If
+   * undefined, a SAR app that contains this layer will be used.
    */
   readonly onEventLayer?: lambda.ILayerVersion;
 
