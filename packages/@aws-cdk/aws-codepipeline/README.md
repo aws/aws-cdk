@@ -109,6 +109,40 @@ or you can use the `IStage.addAction()` method to mutate an existing Stage:
 sourceStage.addAction(someAction);
 ```
 
+## Custom Action Registration
+
+To make your own custom CodePipeline Action requires registering the action provider. Look to the `JenkinsProvider` in `@aws-cdk/aws-codepipeline-actions` for an implementation example.
+
+```ts
+new codepipeline.CustomActionRegistration(this, 'GenericGitSourceProviderResource', {
+  category: codepipeline.ActionCategory.SOURCE,
+  artifactBounds: codepipeline.sourceArtifactBounds(),
+  provider: 'GenericGitSource',
+  version: '1',
+  entityUrl: 'https://docs.aws.amazon.com/codepipeline/latest/userguide/actions-create-custom-action.html',
+  executionUrl: 'https://docs.aws.amazon.com/codepipeline/latest/userguide/actions-create-custom-action.html',
+  actionProperties: [
+    {
+      name: 'Branch',
+      required: true,
+      key: false,
+      secret: false,
+      queryable: false,
+      description: 'Git branch to pull',
+      type: 'String',
+    },
+    {
+      name: 'GitUrl',
+      required: true,
+      key: false,
+      secret: false,
+      queryable: false,
+      description: 'SSH git clone URL',
+      type: 'String',
+    },
+  ]
+```
+
 ## Cross-account CodePipelines
 
 > Cross-account Pipeline actions require that the Pipeline has *not* been
