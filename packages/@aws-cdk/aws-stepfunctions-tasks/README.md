@@ -834,7 +834,6 @@ new tasks.EmrContainersEksCreateVirtualCluster(this, 'Create a Virtual Cluster',
 The [DeleteVirtualCluster](https://docs.aws.amazon.com/emr-on-eks/latest/APIReference/API_DeleteVirtualCluster.html) API deletes a virtual cluster.
 
 ```ts
-
 new tasks.EmrContainersDeleteVirtualCluster(this, 'Delete a Virtual Cluster', {
   virtualClusterId: sfn.TaskInput.fromJsonPathAt('$.virtualCluster'),
 });
