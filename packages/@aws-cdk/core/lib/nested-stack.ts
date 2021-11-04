@@ -239,8 +239,8 @@ export class NestedStack extends Stack {
       return; // not enabled
     }
 
-    // tell tools such as SAM CLI that the "Code" property of this resource
-    // points to a local path in order to enable local invocation of this function.
+    // tell tools such as SAM CLI that the "TemplateURL" property of this resource
+    // points to the nested stack template for local emulation
     resource.cfnOptions.metadata = resource.cfnOptions.metadata || { };
     resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_PATH_KEY] = this.templateFile;
     resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_PROPERTY_KEY] = resourceProperty;
