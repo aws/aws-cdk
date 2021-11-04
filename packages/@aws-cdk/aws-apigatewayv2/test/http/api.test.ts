@@ -379,7 +379,11 @@ describe('HttpApi', () => {
     const stack = new Stack();
     const dn = new DomainName(stack, 'DN', {
       domainName: 'example.com',
-      certificate: Certificate.fromCertificateArn(stack, 'cert', 'arn:aws:acm:us-east-1:111111111111:certificate'),
+      domainNameConfigurations: [
+        {
+          certificate: Certificate.fromCertificateArn(stack, 'cert', 'arn:aws:acm:us-east-1:111111111111:certificate'),
+        },
+      ],
     });
 
     const api = new HttpApi(stack, 'Api', {
