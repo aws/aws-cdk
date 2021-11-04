@@ -68,9 +68,13 @@ def helm_handler(event, context):
         # Ensure chart or chart_asset_url are set
         assert(chart != None or chart_asset_url != None)
 
-        if chart_asset_url != None and chart_asset_url.startswith('s3://') and repository == None:
-            # future work: support versions from s3 assets
+        if chart_asset_url != None:
+            assert(chart==None)
+            assert(repository==None)
             assert(version==None)
+            if not chart_asset_url.chart_asset_url.startswith('s3://'):
+              raise RuntimeError(f'ChartAssetURL must point to as s3 location but is {chart_asset_url}')
+            # future work: support versions from s3 assets
             chart = get_chart_asset_from_url(chart_asset_url)
 
         helm('upgrade', release, chart, repository, values_file, namespace, version, wait, timeout, create_namespace)
