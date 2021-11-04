@@ -601,7 +601,9 @@
           "PasswordLength": 41,
           "SecretStringTemplate": "{\"username\":\"docdb\"}"
         }
-      }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "DatabaseSecretAttachmentE5D1B020": {
       "Type": "AWS::SecretsManager::SecretTargetAttachment",
