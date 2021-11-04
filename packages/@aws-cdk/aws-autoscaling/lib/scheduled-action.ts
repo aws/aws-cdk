@@ -107,7 +107,7 @@ export class ScheduledAction extends Resource {
       maxSize: props.maxCapacity,
       desiredCapacity: props.desiredCapacity,
       recurrence: props.schedule.expressionString,
-      timezone: props.timeZone
+      timeZone: props.timeZone
     });
   }
 }
