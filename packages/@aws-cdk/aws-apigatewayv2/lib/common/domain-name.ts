@@ -21,6 +21,10 @@ export enum SecurityPolicy {
  */
 export enum EndpointType {
   /**
+   * For an edge-optimized API and its custom domain name.
+   */
+  EDGE = 'EDGE',
+  /**
    * For a regional API and its custom domain name.
    */
   REGIONAL = 'REGIONAL'
@@ -80,7 +84,12 @@ export interface DomainNameProps {
   readonly domainName: string;
 
   /**
-   * DomainNameConfigurations for a domain name.
+   * DomainNameConfigurations for a domain name, includes properties associated with a DomainName - certificate, endpoint type, security policy.
+   * Each configuration must have a unique Endpoint type. For general use, only a single DomainNameConfiguration is needed.
+   * When migrating domain names from one endpoint to another, more than one DomainNameConfiguration is added. This second configuration
+   * creates the set-up required to migrate the domain name to this endpoint. When you set up a DNS record to point the domain name to the
+   * new hostname, the traffic bound to the custom domain name gets routed to the new host. After this, the first DomainNameConfiguration
+   * can be removed to have the custom domain name associated only with the migrated endpoint.
    * @link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigatewayv2-domainname.html#cfn-apigatewayv2-domainname-domainnameconfigurations
    */
   readonly domainNameConfigurations: DomainNameConfiguration[];
@@ -97,14 +106,18 @@ export interface DomainNameProps {
  */
 export interface DomainNameConfiguration {
   /**
-   * The reference to an AWS-managed certificate for use by the edge-optimized
-   * endpoint for the domain name. For "EDGE" domain names, the certificate
-   * needs to be in the US East (N. Virginia) region.
+   * The reference to an AWS-managed certificate for use by the domain name.
+   * For "EDGE" domain names, the certificate needs to be in the US East (N. Virginia) region.
+   * For "REGIONAL" domains, certificate is in the same region as the domain.
+   * Certificate can be both ACM issued or imported.
    */
   readonly certificate: ICertificate;
 
   /**
    * The user-friendly name of the certificate that will be used by the endpoint for this domain name.
+   * This property is optional and is helpful if you have too many certificates and it is easier to remember
+   * certificates by some name rather that the domain they are valid for.
+   * Not specifying this property has no impact on the domain name functionality.
    * @default null
    */
   readonly certificateName?: string;
@@ -116,9 +129,11 @@ export interface DomainNameConfiguration {
   readonly endpointType?: EndpointType;
 
   /**
-    * The ARN of the public certificate issued by ACM to validate ownership of your
-    * custom domain. Only required when configuring mutual TLS and using an ACM
-    * imported or private CA certificate ARN as the RegionalCertificateArn.
+    * The public certificate issued by ACM to validate ownership of your custom domain.
+    * Optional property, only required when you configure mutual TLS while using an ACM imported or private CA
+    * certificate as 'certificate'. In such a situation, ownershipVerificationCertificate acts as the ACM issued
+    * certificate that verifies the ownership of the custom domain with which 'certificate' is associated.
+    * Since this property is not 'required', the default is null when this property is not set.
     * @default null
     */
   readonly ownershipVerificationCertificate?: ICertificate;

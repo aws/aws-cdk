@@ -164,9 +164,24 @@ Note that, `HttpApi` will always creates a `$default` stage, unless the `createD
 ### Custom Domain
 
 Custom domain names are simpler and more intuitive URLs that you can provide to your API users. Custom domain name are associated to API stages.
+Learn more at [Setting up custom domain name for an HTTP API](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-custom-domain-names.html)
+and [Setting up custom domain name for a Websocket API](https://docs.aws.amazon.com/apigateway/latest/developerguide/websocket-api-custom-domain-names.html)
 
 The code snippet below creates a custom domain and configures a default domain mapping for your API that maps the
 custom domain to the `$default` stage of the API.
+
+A domain name has two important properties - DomainNameConfigurations and MutualTLS.
+
+DomainNameConfigurations are the properties associated with a DomainName - certificate, domain endpoint, security policy. Each configuration must
+have a unique Endpoint type. For general use, only a single DomainNameConfiguration is needed. When migrating domain names from one endpoint to another,
+more than one DomainNameConfiguration is added. This second configuration creates the set-up required to migrate the domain name to this endpoint. When you
+set up a DNS record to point the domain name to the new hostname, the traffic bound to the custom domain name gets routed to the new host. After this, the first
+DomainNameConfiguration can be removed to have the custom domain name associated only with the migrated endpoint.
+Learn more at [Migrating a custom domain name](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-regional-api-custom-domain-migrate.html)
+
+MutualTLS configures the TLS authentication between client and server. Clients must present a trusted certificate to access the API associated with a domain.
+MutualTLS is used to limit access to your API based by using client certificates instead of (or as an extension of) using authorization headers.
+Learn more at [Configuring MutualTLS for an API](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-mutual-tls.html).
 
 ```ts
 const certArn = 'arn:aws:acm:us-east-1:111111111111:certificate';
@@ -175,6 +190,7 @@ const domainNameConfigurations = new Array<DomainNameConfiguration>();
 const dnConfig: DomainNameConfiguration = {
   certificate: Certificate.fromCertificateArn(stack, 'cert', certArn),
   endpointType: EndpointType.REGIONAL,
+  securityPolicy: 'TLS_1_2',
 };
 domainNameConfigurations.push(dnConfig);
 
@@ -191,6 +207,26 @@ const api = new HttpApi(stack, 'HttpProxyProdApi', {
     mappingKey: 'foo',
   },
 });
+```
+
+To set up Mutual TLS for a custom domain
+
+```ts
+const dn = new DomainName(stack, 'DomainName', {
+      domainName: 'example.com',
+      domainNameConfigurations: [
+        {
+          certificate: Certificate.fromCertificateArn(stack, 'cert', 'arn:aws:acm:us-east-1:111111111111:certificate'),
+          endpointType: EndpointType.REGIONAL,
+          securityPolicy: 'TLS_1_2',
+        },
+      ],
+      mtls: {
+        bucket: new Bucket(this, 'bucket'),
+        key: 'someca.pem',
+        version: 'version',
+      },
+    });
 ```
 
 To associate a specific `Stage` to a custom domain mapping -
