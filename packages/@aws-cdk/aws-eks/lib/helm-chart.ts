@@ -139,7 +139,7 @@ export class HelmChart extends CoreConstruct {
         RoleArn: provider.roleArn, // TODO: bake into the provider's environment
         Release: props.release ?? Names.uniqueId(this).slice(-53).toLowerCase(), // Helm has a 53 character limit for the name
         Chart: props.chart,
-        ChartAssetURL: props.chartAsset ? props.chartAsset.s3ObjectUrl : undefined,
+        ChartAssetURL: props.chartAsset?.s3ObjectUrl,
         Version: props.version,
         Wait: wait || undefined, // props are stringified so we encode “false” as undefined
         Timeout: timeout ? `${timeout.toString()}s` : undefined, // Helm v3 expects duration instead of integer
