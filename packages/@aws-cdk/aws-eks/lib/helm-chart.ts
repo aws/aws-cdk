@@ -40,8 +40,10 @@ export interface HelmChartOptions {
   readonly repository?: string;
 
   /**
-  * The name of a chart Asset.
-  * @default - No Asset will be used, which means the chart needs to be a repository or absolute URL. Either chart or chartAsset must specified
+  * The chart in the form of an asset.
+  * Either this or `chartAsset` must be specified.
+  *
+  * @default - No chart asset. Implies `chart` is used.
   */
   readonly chartAsset?: Asset;
 
