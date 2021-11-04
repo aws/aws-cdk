@@ -2,6 +2,7 @@ import '@aws-cdk/assert-internal/jest';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
 import * as eks from '../lib';
+import { NodegroupAmiType } from '../lib';
 import { testFixture } from './util';
 
 /* eslint-disable max-len */
@@ -99,7 +100,7 @@ describe('node group', () => {
 
   });
 
-  test('create nodegroup correctly', () => {
+  test('create a default nodegroup correctly', () => {
     // GIVEN
     const { stack, vpc } = testFixture();
 
@@ -136,6 +137,29 @@ describe('node group', () => {
         MaxSize: 2,
         MinSize: 1,
       },
+    });
+
+
+  });
+
+  test('create a bottlerocket nodegroup correctly', () => {
+    // GIVEN
+    const { stack, vpc } = testFixture();
+
+    // WHEN
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+    });
+    new eks.Nodegroup(stack, 'Nodegroup', { 
+      cluster,
+      amiType: NodegroupAmiType.BOTTLEROCKET_X86_64,
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::EKS::Nodegroup', {
+      foo: 'bar',
     });
 
 
