@@ -551,7 +551,7 @@ const cluster = new eks.Cluster(this, 'hello-eks', {
   },
   /**
    * If the proxy is not open publicly, you can pass a security group to the
-   * Cluster Handler Lambdas.
+   * Cluster Handler Lambdas so that it can reach the proxy.
    */
   clusterHandlerSecurityGroup: proxyInstanceSecurityGroup
 });
