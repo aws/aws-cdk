@@ -115,12 +115,12 @@ export class HelmChart extends CoreConstruct {
     }
 
     if (!props.chart && !props.chartAsset) {
-      throw new Error(`Either 'chart' or 'chartAsset' must be specified to install a helm chart`);
+      throw new Error("Either 'chart' or 'chartAsset' must be specified to install a helm chart");
     }
 
     if (props.chartAsset && (props.repository || props.version)) {
       throw new Error(
-        `Neither 'repository' nor 'version' can be used when configuring 'chartAsset'`,
+        "Neither 'repository' nor 'version' can be used when configuring 'chartAsset'",
       );
     }
 

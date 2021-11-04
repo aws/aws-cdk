@@ -41,7 +41,45 @@ describe('helm chart', () => {
       };
 
       // THEN
-      expect(t).toThrowError(new Error('Helm chart or chartAsset must be specified'));
+      expect(t).toThrowError();
+    });
+    test('should throw when chart and repository specified', () => {
+      // GIVEN
+      const { stack, cluster } = testFixtureCluster();
+
+      // WHEN
+      const t = () => {
+        const chartAsset = new Asset(stack, 'ChartAsset', {
+          path: path.join(__dirname, 'test-chart'),
+        });
+        new eks.HelmChart(stack, 'MyChart', {
+          cluster,
+          chartAsset,
+          repository: 'repository',
+        });
+      };
+
+      // THEN
+      expect(t).toThrowError();
+    });
+    test('should throw when chartAsset and version specified', () => {
+      // GIVEN
+      const { stack, cluster } = testFixtureCluster();
+
+      // WHEN
+      const t = () => {
+        const chartAsset = new Asset(stack, 'ChartAsset', {
+          path: path.join(__dirname, 'test-chart'),
+        });
+        new eks.HelmChart(stack, 'MyChart', {
+          cluster,
+          chartAsset,
+          version: 'version',
+        });
+      };
+
+      // THEN
+      expect(t).toThrowError();
     });
     test('should handle chart from S3 asset', () => {
       // GIVEN
