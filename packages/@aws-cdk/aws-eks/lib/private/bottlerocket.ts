@@ -1,6 +1,6 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ssm from '@aws-cdk/aws-ssm';
-import { Construct } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 
 /**
  * Properties for BottleRocketImage
