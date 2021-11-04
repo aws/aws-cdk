@@ -550,7 +550,7 @@ const cluster = new eks.Cluster(this, 'hello-eks', {
     https_proxy: 'http://proxy.myproxy.com'
   },
   /**
-   * If proxy is not open to public you may pass a security group to the
+   * If the proxy is not open publicly, you can pass a security group to the
    * Cluster Handler Lambdas.
    */
   clusterHandlerSecurityGroup: proxyInstanceSecurityGroup
