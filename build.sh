@@ -6,11 +6,10 @@ runtarget="build"
 run_tests="true"
 check_prereqs="true"
 check_compat="true"
-extract_snippets="false"
 while [[ "${1:-}" != "" ]]; do
     case $1 in
         -h|--help)
-            echo "Usage: build.sh [--no-bail] [--force|-f] [--skip-test] [--skip-prereqs] [--skip-compat] [--extract]"
+            echo "Usage: build.sh [--no-bail] [--force|-f] [--skip-test] [--skip-prereqs] [--skip-compat]"
             exit 1
             ;;
         --no-bail)
@@ -27,9 +26,6 @@ while [[ "${1:-}" != "" ]]; do
             ;;
         --skip-compat)
             check_compat="false"
-            ;;
-        --extract)
-            extract_snippets="true"
             ;;
         *)
             echo "Unrecognized parameter: $1"
@@ -85,12 +81,6 @@ fi
 echo "============================================================================================="
 echo "building..."
 time lerna run $bail --stream $runtarget || fail
-
-if $extract_snippets; then
-    # After compilation, run Rosetta (using the cache if available).
-    # This will print errors, and fail the build if there are compilation errors in any packages marked as 'strict'.
-    /bin/bash scripts/run-rosetta.sh
-fi
 
 if [ "$check_compat" == "true" ]; then
   /bin/bash scripts/check-api-compatibility.sh
