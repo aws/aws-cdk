@@ -657,7 +657,7 @@ describe('secretName', () => {
   });
 });
 
-test('import by secretArn', () => {
+testDeprecated('import by secretArn', () => {
   // GIVEN
   const secretArn = 'arn:aws:secretsmanager:eu-west-1:111111111111:secret:MySecret-f3gDy9';
 
