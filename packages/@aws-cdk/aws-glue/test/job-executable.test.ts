@@ -31,7 +31,7 @@ describe('JobExecutable', () => {
 
   beforeEach(() => {
     stack = new cdk.Stack();
-    bucket = s3.Bucket.fromBucketName(stack, 'Bucket', 'bucketName');
+    bucket = s3.Bucket.fromBucketName(stack, 'Bucket', 'bucketname');
     script = glue.Code.fromBucket(bucket, 'script.py');
   });
 

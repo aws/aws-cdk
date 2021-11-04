@@ -342,6 +342,8 @@ const cluster = new eks.FargateCluster(this, 'MyCluster', {
 });
 ```
 
+`FargateCluster` will create a default `FargateProfile` which can be accessed via the cluster's `defaultProfile` property. The created profile can also be customized by passing options as with `addFargateProfile`.
+
 **NOTE**: Classic Load Balancers and Network Load Balancers are not supported on
 pods running on Fargate. For ingress, we recommend that you use the [ALB Ingress
 Controller](https://docs.aws.amazon.com/eks/latest/userguide/alb-ingress.html)
