@@ -168,7 +168,7 @@ function exampleValueForParameter(context: ExampleContext, param: reflect.Parame
     return new Code(`'My${param.parentType.name}'`);
   }
   if (param.optional) {
-    return new Code('/* optional */ ').append(exampleValue(context, param.type, param.name, 0));
+    return new Code('/* all optional props */ ').append(exampleValue(context, param.type, param.name, 0));
   }
   return exampleValue(context, param.type, param.name, 0);
 }
@@ -200,7 +200,6 @@ function exampleValue(context: ExampleContext, typeReference: reflect.TypeRefere
 
   // Just pick the first type if it is a union type
   if (typeReference.unionOfTypes !== undefined) {
-    // FIXME: which element should get picked?
     const newType = getBaseUnionType(typeReference.unionOfTypes);
     return exampleValue(context, newType, name, level);
   }
