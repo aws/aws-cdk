@@ -1383,7 +1383,7 @@ describe('function', () => {
     });
   });
 
-  test('add a version with event invoke config', () => {
+  testDeprecated('add a version with event invoke config', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new lambda.Function(stack, 'fn', {
@@ -2175,7 +2175,7 @@ describe('function', () => {
     })).toThrow(/Layers are not supported for container image functions/);
   });
 
-  test('specified architectures is recognized', () => {
+  testDeprecated('specified architectures is recognized', () => {
     const stack = new cdk.Stack();
     new lambda.Function(stack, 'MyFunction', {
       code: lambda.Code.fromInline('foo'),

@@ -7,7 +7,7 @@ import { Lazy, Stack } from '@aws-cdk/core';
 import * as lambda from '../lib';
 
 describe('alias', () => {
-  test('version and aliases', () => {
+  testDeprecated('version and aliases', () => {
     const stack = new Stack();
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
@@ -260,7 +260,7 @@ describe('alias', () => {
       runtime: lambda.Runtime.NODEJS_10_X,
     });
 
-    const version = fn.addVersion('1');
+    const version = fn.currentVersion;
     const alias = new lambda.Alias(stack, 'Alias', { aliasName: 'prod', version });
 
     // THEN
@@ -277,7 +277,7 @@ describe('alias', () => {
       runtime: lambda.Runtime.NODEJS_10_X,
     });
 
-    const version = fn.addVersion('1');
+    const version = fn.currentVersion;
     const alias = new lambda.Alias(stack, 'Alias', { aliasName: 'prod', version });
 
     // WHEN
