@@ -141,17 +141,10 @@ export interface ICluster extends IResource, ec2.IConnectable {
   readonly clusterHandlerSecurityGroup?: ec2.ISecurityGroup;
 
   /**
-    * An AWS Lambda layer that includes the NPM dependency `proxy-agent`.
-    *
-    * @default - If not defined, a default layer will be used.
-    */
-  readonly proxyAgentLayer?: lambda.ILayerVersion;
-
-  /**
-   * Deprecated
+   * An AWS Lambda Layer which includes the NPM dependency `proxy-agent`. This layer
+   * is used by the onEvent handler to route AWS SDK requests through a proxy.
    *
    * @default - a layer bundled with this module.
-   * @deprecated use `proxyAgentLayer` instead
    */
   readonly onEventLayer?: lambda.ILayerVersion;
 
@@ -338,20 +331,9 @@ export interface ClusterAttributes {
 
   /**
    * An AWS Lambda Layer which includes the NPM dependency `proxy-agent`. This layer
-   * is used by the Cluster Handler to route AWS SDK requests through a proxy.
-   * The handler expects the layer to include the following node_modules:
-   *
-   *    proxy-agent
+   * is used by the onEvent handler to route AWS SDK requests through a proxy.
    *
    * @default - a layer bundled with this module.
-   */
-  readonly proxyAgentLayer?: lambda.ILayerVersion;
-
-  /**
-   * Deprecated
-   *
-   * @default - a layer bundled with this module.
-   * @deprecated use `proxyAgentLayer` instead
    */
   readonly onEventLayer?: lambda.ILayerVersion;
 
@@ -535,7 +517,8 @@ export interface ClusterOptions extends CommonClusterOptions {
   readonly clusterHandlerSecurityGroup?: ec2.ISecurityGroup;
 
   /**
-   * An AWS Lambda Layer which includes the NPM dependency `proxy-agent`.
+   * An AWS Lambda Layer which includes the NPM dependency `proxy-agent`. This layer
+   * is used by the onEvent handler to route AWS SDK requests through a proxy.
    *
    * By default, the provider will use the layer included in the
    * "aws-lambda-layer-node-proxy-agent" SAR application which is available in all
@@ -551,14 +534,6 @@ export interface ClusterOptions extends CommonClusterOptions {
    * ```
    *
    * @default - a layer bundled with this module.
-   */
-  readonly proxyAgentLayer?: lambda.ILayerVersion;
-
-  /**
-   * Deprecated
-   *
-   * @default - a layer bundled with this module.
-   * @deprecated use `proxyAgentLayer` instead
    */
   readonly onEventLayer?: lambda.ILayerVersion;
 
@@ -1159,17 +1134,10 @@ export class Cluster extends ClusterBase {
   public readonly clusterHandlerSecurityGroup?: ec2.ISecurityGroup;
 
   /**
-    * An AWS Lambda layer that includes the NPM dependency `proxy-agent`.
-    *
-    * If not defined, a default layer will be used.
-    */
-  public readonly proxyAgentLayer?: lambda.ILayerVersion;
-
-  /**
-   * Deprecated
+   * An AWS Lambda Layer which includes the NPM dependency `proxy-agent`. This layer
+   * is used by the onEvent handler to route AWS SDK requests through a proxy.
    *
    * @default - a layer bundled with this module.
-   * @deprecated use `proxyAgentLayer` instead
    */
   readonly onEventLayer?: lambda.ILayerVersion;
 
@@ -1258,7 +1226,7 @@ export class Cluster extends ClusterBase {
     this.kubectlLayer = props.kubectlLayer;
     this.kubectlMemory = props.kubectlMemory;
 
-    this.proxyAgentLayer = props.proxyAgentLayer;
+    this.onEventLayer = props.onEventLayer;
     this.clusterHandlerSecurityGroup = props.clusterHandlerSecurityGroup;
 
     const privateSubnets = this.selectPrivateSubnets().slice(0, 16);
@@ -1316,7 +1284,7 @@ export class Cluster extends ClusterBase {
       vpc: this.vpc,
       subnets: placeClusterHandlerInVpc ? privateSubnets : undefined,
       clusterHandlerSecurityGroup: this.clusterHandlerSecurityGroup,
-      proxyAgentLayer: this.proxyAgentLayer,
+      onEventLayer: this.onEventLayer,
     });
 
     if (this.endpointAccess._config.privateAccess && privateSubnets.length !== 0) {
@@ -1904,7 +1872,7 @@ class ImportedCluster extends ClusterBase {
   public readonly kubectlLayer?: lambda.ILayerVersion;
   public readonly kubectlMemory?: Size;
   public readonly clusterHandlerSecurityGroup?: ec2.ISecurityGroup | undefined;
-  public readonly proxyAgentLayer?: lambda.ILayerVersion;
+  public readonly onEventLayer?: lambda.ILayerVersion;
   public readonly prune: boolean;
 
   // so that `clusterSecurityGroup` on `ICluster` can be configured without optionality, avoiding users from having
@@ -1923,7 +1891,7 @@ class ImportedCluster extends ClusterBase {
     this.kubectlLayer = props.kubectlLayer;
     this.kubectlMemory = props.kubectlMemory;
     this.clusterHandlerSecurityGroup = props.clusterHandlerSecurityGroupId ? ec2.SecurityGroup.fromSecurityGroupId(this, 'ClusterHandlerSecurityGroup', props.clusterHandlerSecurityGroupId) : undefined;
-    this.proxyAgentLayer = props.proxyAgentLayer;
+    this.onEventLayer = props.onEventLayer;
     this.prune = props.prune ?? true;
 
     let i = 1;

@@ -26,7 +26,7 @@ export interface ClusterResourceProps {
   readonly environment?: { [key: string]: string };
   readonly subnets?: ec2.ISubnet[];
   readonly secretsEncryptionKey?: kms.IKey;
-  readonly proxyAgentLayer?: lambda.ILayerVersion;
+  readonly onEventLayer?: lambda.ILayerVersion;
   readonly clusterHandlerSecurityGroup?: ec2.ISecurityGroup;
 }
 
@@ -66,7 +66,7 @@ export class ClusterResource extends CoreConstruct {
       subnets: props.subnets,
       vpc: props.vpc,
       environment: props.environment,
-      proxyAgentLayer: props.proxyAgentLayer,
+      onEventLayer: props.onEventLayer,
       securityGroup: props.clusterHandlerSecurityGroup,
     });
 
