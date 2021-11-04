@@ -3,7 +3,7 @@ import { Lazy, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { BaseService, BaseServiceOptions, DeploymentControllerType, IBaseService, IService, LaunchType } from '../base/base-service';
 import { fromServiceAtrributes } from '../base/from-service-attributes';
-import { NetworkMode, TaskDefinition } from '../base/task-definition';
+import { NetworkMode, ITaskDefinition, TaskDefinition } from '../base/task-definition';
 import { ICluster } from '../cluster';
 import { CfnService } from '../ecs.generated';
 import { PlacementConstraint, PlacementStrategy } from '../placement';
@@ -17,7 +17,7 @@ export interface Ec2ServiceProps extends BaseServiceOptions {
    *
    * [disable-awslint:ref-via-interface]
    */
-  readonly taskDefinition: TaskDefinition;
+  readonly taskDefinition: ITaskDefinition;
 
   /**
    * Specifies whether the task's elastic network interface receives a public IP address.
@@ -213,9 +213,12 @@ export class Ec2Service extends BaseService implements IEc2Service {
     this.addPlacementConstraints(...props.placementConstraints || []);
     this.addPlacementStrategies(...props.placementStrategies || []);
 
-    this.node.addValidation({
-      validate: () => !this.taskDefinition.defaultContainer ? ['A TaskDefinition must have at least one essential container'] : [],
-    });
+    if (this.taskDefinition instanceof TaskDefinition) {
+      const taskDef = this.taskDefinition as TaskDefinition;
+      this.node.addValidation({
+        validate: () => !taskDef.defaultContainer ? ['A TaskDefinition must have at least one essential container'] : [],
+      });
+    }
   }
 
   /**

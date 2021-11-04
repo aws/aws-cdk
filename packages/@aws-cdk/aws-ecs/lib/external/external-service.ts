@@ -7,7 +7,7 @@ import { Construct } from 'constructs';
 import { AssociateCloudMapServiceOptions, BaseService, BaseServiceOptions, CloudMapOptions, DeploymentControllerType, EcsTarget, IBaseService, IEcsLoadBalancerTarget, IService, LaunchType, PropagatedTagSource } from '../base/base-service';
 import { fromServiceAtrributes } from '../base/from-service-attributes';
 import { ScalableTaskCount } from '../base/scalable-task-count';
-import { Compatibility, LoadBalancerTargetOptions, TaskDefinition } from '../base/task-definition';
+import { Compatibility, LoadBalancerTargetOptions, ITaskDefinition, TaskDefinition } from '../base/task-definition';
 import { ICluster } from '../cluster';
 /**
  * The properties for defining a service using the External launch type.
@@ -18,7 +18,7 @@ export interface ExternalServiceProps extends BaseServiceOptions {
    *
    * [disable-awslint:ref-via-interface]
    */
-  readonly taskDefinition: TaskDefinition;
+  readonly taskDefinition: ITaskDefinition;
 
   /**
    * The security groups to associate with the service. If you do not specify a security group, the default security group for the VPC is used.
@@ -98,19 +98,19 @@ export class ExternalService extends BaseService implements IExternalService {
     }
 
     if (props.cluster.defaultCloudMapNamespace !== undefined) {
-      throw new Error (`Cloud map integration is not supported for External service ${props.cluster.defaultCloudMapNamespace}`);
+      throw new Error(`Cloud map integration is not supported for External service ${props.cluster.defaultCloudMapNamespace}`);
     }
 
     if (props.cloudMapOptions !== undefined) {
-      throw new Error ('Cloud map options are not supported for External service');
+      throw new Error('Cloud map options are not supported for External service');
     }
 
     if (props.enableExecuteCommand !== undefined) {
-      throw new Error ('Enable Execute Command options are not supported for External service');
+      throw new Error('Enable Execute Command options are not supported for External service');
     }
 
     if (props.capacityProviderStrategies !== undefined) {
-      throw new Error ('Capacity Providers are not supported for External service');
+      throw new Error('Capacity Providers are not supported for External service');
     }
 
     const propagateTagsFromSource = props.propagateTags ?? PropagatedTagSource.NONE;
@@ -129,9 +129,12 @@ export class ExternalService extends BaseService implements IExternalService {
       taskDefinition: props.deploymentController?.type === DeploymentControllerType.EXTERNAL ? undefined : props.taskDefinition.taskDefinitionArn,
     }, props.taskDefinition);
 
-    this.node.addValidation({
-      validate: () => !this.taskDefinition.defaultContainer ? ['A TaskDefinition must have at least one essential container'] : [],
-    });
+    if (this.taskDefinition instanceof TaskDefinition) {
+      const taskDef = this.taskDefinition as TaskDefinition;
+      this.node.addValidation({
+        validate: () => !taskDef.defaultContainer ? ['A TaskDefinition must have at least one essential container'] : [],
+      });
+    }
 
     this.node.addValidation({
       validate: () => this.networkConfiguration !== undefined ? ['Network configurations not supported for an external service'] : [],
@@ -142,21 +145,21 @@ export class ExternalService extends BaseService implements IExternalService {
    * Overriden method to throw error as `attachToApplicationTargetGroup` is not supported for external service
    */
   public attachToApplicationTargetGroup(_targetGroup: elbv2.IApplicationTargetGroup): elbv2.LoadBalancerTargetProps {
-    throw new Error ('Application load balancer cannot be attached to an external service');
+    throw new Error('Application load balancer cannot be attached to an external service');
   }
 
   /**
    * Overriden method to throw error as `loadBalancerTarget` is not supported for external service
    */
   public loadBalancerTarget(_options: LoadBalancerTargetOptions): IEcsLoadBalancerTarget {
-    throw new Error ('External service cannot be attached as load balancer targets');
+    throw new Error('External service cannot be attached as load balancer targets');
   }
 
   /**
    * Overriden method to throw error as `registerLoadBalancerTargets` is not supported for external service
    */
   public registerLoadBalancerTargets(..._targets: EcsTarget[]) {
-    throw new Error ('External service cannot be registered as load balancer targets');
+    throw new Error('External service cannot be registered as load balancer targets');
   }
 
   /**
@@ -164,27 +167,27 @@ export class ExternalService extends BaseService implements IExternalService {
    */
   // eslint-disable-next-line max-len, no-unused-vars
   protected configureAwsVpcNetworkingWithSecurityGroups(_vpc: ec2.IVpc, _assignPublicIp?: boolean, _vpcSubnets?: ec2.SubnetSelection, _securityGroups?: ec2.ISecurityGroup[]) {
-    throw new Error ('Only Bridge network mode is supported for external service');
+    throw new Error('Only Bridge network mode is supported for external service');
   }
 
   /**
    * Overriden method to throw error as `autoScaleTaskCount` is not supported for external service
    */
   public autoScaleTaskCount(_props: appscaling.EnableScalingProps): ScalableTaskCount {
-    throw new Error ('Autoscaling not supported for external service');
+    throw new Error('Autoscaling not supported for external service');
   }
 
   /**
    * Overriden method to throw error as `enableCloudMap` is not supported for external service
    */
   public enableCloudMap(_options: CloudMapOptions): cloudmap.Service {
-    throw new Error ('Cloud map integration not supported for an external service');
+    throw new Error('Cloud map integration not supported for an external service');
   }
 
   /**
    * Overriden method to throw error as `associateCloudMapService` is not supported for external service
    */
   public associateCloudMapService(_options: AssociateCloudMapServiceOptions): void {
-    throw new Error ('Cloud map service association is not supported for an external service');
+    throw new Error('Cloud map service association is not supported for an external service');
   }
 }

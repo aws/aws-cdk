@@ -4,6 +4,7 @@ import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
+import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
@@ -2973,6 +2974,212 @@ describe('fargate service', () => {
         });
       }).toThrow(/You can only specify either propagateTags or propagateTaskTagsFrom. Alternatively, you can leave both blank/);
 
+    });
+  });
+
+  describe('When using an imported TaskDefinition with a Fargate Service', () => {
+    test('default setup', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      const taskDefinition = ecs.FargateTaskDefinition.fromFargateTaskDefinitionAttributes(stack, 'ImportedTaskDef', {
+        taskDefinitionArn: 'TD_ARN',
+        networkMode: ecs.NetworkMode.AWS_VPC,
+        taskRole: new iam.Role(stack, 'TaskRole', {
+          assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+        }),
+      });
+
+      new ecs.FargateService(stack, 'FargateService', {
+        cluster,
+        taskDefinition,
+      });
+
+      // THEN
+      expect(stack).toHaveResource('AWS::ECS::Service', {
+        TaskDefinition: 'TD_ARN',
+        Cluster: {
+          Ref: 'EcsCluster97242B84',
+        },
+        DeploymentConfiguration: {
+          MaximumPercent: 200,
+          MinimumHealthyPercent: 50,
+        },
+        LaunchType: LaunchType.FARGATE,
+        EnableECSManagedTags: false,
+        NetworkConfiguration: {
+          AwsvpcConfiguration: {
+            AssignPublicIp: 'DISABLED',
+            SecurityGroups: [
+              {
+                'Fn::GetAtt': [
+                  'FargateServiceSecurityGroup0A0E79CB',
+                  'GroupId',
+                ],
+              },
+            ],
+            Subnets: [
+              {
+                Ref: 'MyVpcPrivateSubnet1Subnet5057CF7E',
+              },
+              {
+                Ref: 'MyVpcPrivateSubnet2Subnet0040C983',
+              },
+            ],
+          },
+        },
+      });
+    });
+
+    test('addTargets should throw error when using an imported TaskDefinition', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      const taskDefinition = ecs.FargateTaskDefinition.fromFargateTaskDefinitionAttributes(stack, 'ImportedTaskDef', {
+        taskDefinitionArn: 'TD_ARN',
+        networkMode: ecs.NetworkMode.AWS_VPC,
+        taskRole: new iam.Role(stack, 'TaskRole', {
+          assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+        }),
+      });
+
+      const service = new ecs.FargateService(stack, 'FargateService', {
+        cluster,
+        taskDefinition,
+      });
+
+      const lb = new elbv2.ApplicationLoadBalancer(stack, 'lb', { vpc });
+      const listener = lb.addListener('listener', { port: 80 });
+      expect(() => listener.addTargets('target', {
+        port: 80,
+        targets: [service],
+      })).toThrow(/Cannot determine default loadBalancerTarget when using an imported ITaskDefinition/);
+
+    });
+
+    test('addTargets requires loadBalancerTarget when using an imported TaskDefinition', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      const taskDefinition = ecs.FargateTaskDefinition.fromFargateTaskDefinitionAttributes(stack, 'ImportedTaskDef', {
+        taskDefinitionArn: 'TD_ARN',
+        networkMode: ecs.NetworkMode.AWS_VPC,
+        taskRole: new iam.Role(stack, 'TaskRole', {
+          assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+        }),
+      });
+
+      const service = new ecs.FargateService(stack, 'FargateService', {
+        cluster,
+        taskDefinition,
+      });
+
+      const lb = new elbv2.ApplicationLoadBalancer(stack, 'lb', { vpc });
+      const listener = lb.addListener('listener', { port: 80 });
+      listener.addTargets('target', {
+        port: 80,
+        targets: [service.loadBalancerTarget({
+          containerName: 'MainContainer',
+          hostPort: 8000,
+          containerPort: 8000,
+        })],
+      });
+
+      // THEN
+      expect(stack).toHaveResource('AWS::ECS::Service', {
+        LoadBalancers: [
+          {
+            ContainerName: 'MainContainer',
+            ContainerPort: 8000,
+            TargetGroupArn: {
+              Ref: 'lblistenertargetGroupC7489D1E',
+            },
+          },
+        ],
+      });
+
+      expect(stack).toHaveResource('AWS::EC2::SecurityGroupIngress', {
+        Description: 'Load balancer to target',
+        FromPort: 8000,
+        ToPort: 8000,
+      });
+
+      expect(stack).toHaveResource('AWS::EC2::SecurityGroupEgress', {
+        Description: 'Load balancer to target',
+        FromPort: 8000,
+        ToPort: 8000,
+      });
+
+    });
+
+    test('cloudmap requires containerPort and containerName when using an imported TaskDefinition', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      cluster.addDefaultCloudMapNamespace({
+        name: 'foo.com',
+        type: cloudmap.NamespaceType.DNS_PRIVATE,
+      });
+      const taskDefinition = ecs.FargateTaskDefinition.fromFargateTaskDefinitionAttributes(stack, 'ImportedTaskDef', {
+        taskDefinitionArn: 'TD_ARN',
+        networkMode: ecs.NetworkMode.AWS_VPC,
+        taskRole: new iam.Role(stack, 'TaskRole', {
+          assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+        }),
+      });
+
+      new ecs.FargateService(stack, 'FargateService', {
+        cluster,
+        taskDefinition,
+        cloudMapOptions: {
+          dnsRecordType: cloudmap.DnsRecordType.SRV,
+          containerPort: 8000,
+          containerName: 'MainContainer',
+        },
+      });
+
+      // THEN
+      expect(stack).toHaveResourceLike('AWS::ECS::Service', {
+        ServiceRegistries: [
+          {
+            RegistryArn: { 'Fn::GetAtt': ['FargateServiceCloudmapService9544B753', 'Arn'] },
+            ContainerName: 'MainContainer',
+            ContainerPort: 8000,
+          },
+        ],
+      });
+
+    });
+
+    test('cloudmap throws if containerPort and containerName not provided when using an imported TaskDefinition', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      cluster.addDefaultCloudMapNamespace({
+        name: 'foo.com',
+        type: cloudmap.NamespaceType.DNS_PRIVATE,
+      });
+      const taskDefinition = ecs.FargateTaskDefinition.fromFargateTaskDefinitionAttributes(stack, 'ImportedTaskDef', {
+        taskDefinitionArn: 'TD_ARN',
+        networkMode: ecs.NetworkMode.AWS_VPC,
+        taskRole: new iam.Role(stack, 'TaskRole', {
+          assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+        }),
+      });
+
+      expect(() => new ecs.FargateService(stack, 'FargateService', {
+        cluster,
+        taskDefinition,
+        cloudMapOptions: {
+          dnsRecordType: cloudmap.DnsRecordType.SRV,
+          containerPort: 8000,
+        },
+      })).toThrow(/containerName is required when using an imported ITaskDefinition/);
     });
   });
 });

@@ -55,6 +55,25 @@ export interface ITaskDefinition extends IResource {
    * The name of the IAM role that grants containers in the task permission to call AWS APIs on your behalf.
    */
   readonly taskRole: iam.IRole;
+
+  /**
+   * Adds a policy statement to the task IAM role.
+   */
+  addToTaskRolePolicy(statement: iam.PolicyStatement): void;
+
+  /**
+   * Validate the existence of the input target and set default values.
+   *
+   * @internal
+   */
+  _validateTarget(options: LoadBalancerTargetOptions): LoadBalancerTarget;
+
+  /**
+   * Returns the port range to be opened that match the provided container name and container port.
+   *
+   * @internal
+   */
+  _portRangeFromPortMapping(portMapping: PortMapping): ec2.Port;
 }
 
 /**
@@ -253,6 +272,21 @@ abstract class TaskDefinitionBase extends Resource implements ITaskDefinition {
   public abstract readonly taskDefinitionArn: string;
   public abstract readonly taskRole: iam.IRole;
   public abstract readonly executionRole?: iam.IRole;
+
+  /**
+   * Validate the existence of the input target and set default values.
+   *
+   * @internal
+   */
+  public abstract _validateTarget(options: LoadBalancerTargetOptions): LoadBalancerTarget;
+
+  /**
+   * Returns the port range to be opened that match the provided container name and container port.
+   *
+   * @internal
+   */
+  public abstract _portRangeFromPortMapping(portMapping: PortMapping): ec2.Port;
+  public abstract addToTaskRolePolicy(statement: iam.PolicyStatement): void;
 
   /**
    * Return true if the task definition can be run on an EC2 cluster
@@ -494,7 +528,7 @@ export class TaskDefinition extends TaskDefinitionBase {
   private renderInferenceAccelerators(): CfnTaskDefinition.InferenceAcceleratorProperty[] {
     return this._inferenceAccelerators.map(renderInferenceAccelerator);
 
-    function renderInferenceAccelerator(inferenceAccelerator: InferenceAccelerator) : CfnTaskDefinition.InferenceAcceleratorProperty {
+    function renderInferenceAccelerator(inferenceAccelerator: InferenceAccelerator): CfnTaskDefinition.InferenceAcceleratorProperty {
       return {
         deviceName: inferenceAccelerator.deviceName,
         deviceType: inferenceAccelerator.deviceType,
@@ -702,7 +736,7 @@ export class TaskDefinition extends TaskDefinitionBase {
 /**
  * The port range to open up for dynamic port mapping
  */
-const EPHEMERAL_PORT_RANGE = ec2.Port.tcpRange(32768, 65535);
+export const EPHEMERAL_PORT_RANGE = ec2.Port.tcpRange(32768, 65535);
 
 /**
  * The networking mode to use for the containers in the task.
@@ -900,6 +934,16 @@ export interface LoadBalancerTargetOptions {
    * @default Protocol.TCP
    */
   readonly protocol?: Protocol;
+
+  /**
+   * The port number on the container instance to reserve for your container.
+   *
+   * This is only need if you are using an imported TaskDefinition (i.e. ITaskDefinition)
+   * otherwise it will be derived from the defaultContainer port mapping
+   *
+   * @default - Host port of the first added port mapping.
+   */
+  readonly hostPort?: number;
 }
 
 /**
@@ -922,7 +966,7 @@ export interface DockerVolumeConfiguration {
    *
    * @default No options
    */
-  readonly driverOpts?: {[key: string]: string};
+  readonly driverOpts?: { [key: string]: string };
   /**
    * Custom metadata to add to your Docker volume.
    *

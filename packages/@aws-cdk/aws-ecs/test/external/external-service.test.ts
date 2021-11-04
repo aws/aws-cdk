@@ -2,6 +2,7 @@ import '@aws-cdk/assert-internal/jest';
 import * as autoscaling from '@aws-cdk/aws-autoscaling';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
+import * as iam from '@aws-cdk/aws-iam';
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import * as cdk from '@aws-cdk/core';
 import * as ecs from '../../lib';
@@ -127,7 +128,7 @@ describe('external service', () => {
         vpc,
       })],
       serviceName: 'bonjour',
-    })).toThrow('Cloud map integration is not supported for External service' );
+    })).toThrow('Cloud map integration is not supported for External service');
 
 
   });
@@ -522,6 +523,43 @@ describe('external service', () => {
     })).toThrow('Cloud map service association is not supported for an external service');
 
     // THEN
+
+  });
+
+  describe('When using an imported TaskDefinition with an External Service', () => {
+    test('default setup', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+      const taskDefinition = ecs.ExternalTaskDefinition.fromExternalTaskDefinitionAttributes(stack, 'ImportedTaskDef', {
+        taskDefinitionArn: 'TD_ARN',
+        networkMode: ecs.NetworkMode.AWS_VPC,
+        taskRole: new iam.Role(stack, 'TaskRole', {
+          assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+        }),
+      });
+
+      new ecs.ExternalService(stack, 'ExternalService', {
+        cluster,
+        taskDefinition,
+      });
+
+      // THEN
+      expect(stack).toHaveResource('AWS::ECS::Service', {
+        TaskDefinition: 'TD_ARN',
+        Cluster: {
+          Ref: 'EcsCluster97242B84',
+        },
+        DeploymentConfiguration: {
+          MaximumPercent: 100,
+          MinimumHealthyPercent: 0,
+        },
+        EnableECSManagedTags: false,
+        LaunchType: LaunchType.EXTERNAL,
+      });
+    });
 
   });
 });

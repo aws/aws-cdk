@@ -3,7 +3,7 @@ import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { BaseService, BaseServiceOptions, DeploymentControllerType, IBaseService, IService, LaunchType } from '../base/base-service';
 import { fromServiceAtrributes } from '../base/from-service-attributes';
-import { TaskDefinition } from '../base/task-definition';
+import { ITaskDefinition, TaskDefinition } from '../base/task-definition';
 import { ICluster } from '../cluster';
 
 /**
@@ -15,7 +15,7 @@ export interface FargateServiceProps extends BaseServiceOptions {
    *
    * [disable-awslint:ref-via-interface]
    */
-  readonly taskDefinition: TaskDefinition;
+  readonly taskDefinition: ITaskDefinition;
 
   /**
    * Specifies whether the task's elastic network interface receives a public IP address.
@@ -128,10 +128,13 @@ export class FargateService extends BaseService implements IFargateService {
       throw new Error('Only one of SecurityGroup or SecurityGroups can be populated.');
     }
 
-    if (props.taskDefinition.referencesSecretJsonField
+
+    if (props.taskDefinition instanceof TaskDefinition) {
+      if (props.taskDefinition.referencesSecretJsonField
         && props.platformVersion
         && SECRET_JSON_FIELD_UNSUPPORTED_PLATFORM_VERSIONS.includes(props.platformVersion)) {
-      throw new Error(`The task definition of this service uses at least one container that references a secret JSON field. This feature requires platform version ${FargatePlatformVersion.VERSION1_4} or later.`);
+        throw new Error(`The task definition of this service uses at least one container that references a secret JSON field. This feature requires platform version ${FargatePlatformVersion.VERSION1_4} or later.`);
+      }
     }
     super(scope, id, {
       ...props,
@@ -154,9 +157,12 @@ export class FargateService extends BaseService implements IFargateService {
 
     this.configureAwsVpcNetworkingWithSecurityGroups(props.cluster.vpc, props.assignPublicIp, props.vpcSubnets, securityGroups);
 
-    this.node.addValidation({
-      validate: () => !this.taskDefinition.defaultContainer ? ['A TaskDefinition must have at least one essential container'] : [],
-    });
+    if (this.taskDefinition instanceof TaskDefinition) {
+      const taskDef = this.taskDefinition as TaskDefinition;
+      this.node.addValidation({
+        validate: () => !taskDef.defaultContainer ? ['A TaskDefinition must have at least one essential container'] : [],
+      });
+    }
   }
 }
 

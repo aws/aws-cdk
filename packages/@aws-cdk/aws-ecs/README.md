@@ -582,6 +582,49 @@ There are two higher-level constructs available which include a load balancer fo
 - `LoadBalancedFargateService`
 - `LoadBalancedEc2Service`
 
+### Using an Imported TaskDefinition
+
+There are some limitations when using an imported Task Definition so it is recommended
+to create a Task Definition as part of the same CDK app as the ECS service.
+
+If you are using an imported Task Definition there are some differences with how you
+interact with the ECS Service constructs.
+
+#### No default container
+
+When working with an imported Task Definition, the construct does not contain information on the container(s) added.
+The ECS Service constructs sometimes make use of that information to get information such as the `containerName` and
+`containerPort`. So it is now required to provide that information when it is needed. There are two main instances
+where this information is required when using an imported Task Definition.
+
+- Using the `addTargets` API.
+
+```ts
+listener.addTargets('target', {
+  port: 80,
+  targets: [service.loadBalancerTarget({
+    containerName: 'MyContainer',
+    hostPort: 8000,
+    containerPort: 8000,
+  })],
+});
+```
+
+- When specifying `cloudMapOptions`:
+
+```ts
+new FargateService(stack, 'FargateService', {
+  cluster,
+  taskDefinition,
+  cloudMapOptions: {
+    dnsRecordType: cloudmap.DnsRecordType.SRV,
+    containerPort: 8000,
+    containerName: 'MainContainer',
+  },
+});
+```
+
+
 ## Task Auto-Scaling
 
 You can configure the task count of a service to match demand. Task auto-scaling is

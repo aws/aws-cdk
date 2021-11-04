@@ -4,6 +4,7 @@ import * as autoscaling from '@aws-cdk/aws-autoscaling';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as elb from '@aws-cdk/aws-elasticloadbalancing';
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
+import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
@@ -3344,6 +3345,197 @@ describe('ec2 service', () => {
       }).toThrow(/only specify either serviceArn or serviceName/);
 
 
+    });
+  });
+
+  describe('When using an imported TaskDefinition with an EC2 Service', () => {
+    test('default setup', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+      const taskDefinition = ecs.Ec2TaskDefinition.fromEc2TaskDefinitionAttributes(stack, 'ImportedTaskDef', {
+        taskDefinitionArn: 'TD_ARN',
+        networkMode: ecs.NetworkMode.AWS_VPC,
+        taskRole: new iam.Role(stack, 'TaskRole', {
+          assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+        }),
+      });
+
+      new ecs.Ec2Service(stack, 'Ec2Service', {
+        cluster,
+        taskDefinition,
+      });
+
+      // THEN
+      expect(stack).toHaveResource('AWS::ECS::Service', {
+        TaskDefinition: 'TD_ARN',
+        Cluster: {
+          Ref: 'EcsCluster97242B84',
+        },
+        DeploymentConfiguration: {
+          MaximumPercent: 200,
+          MinimumHealthyPercent: 50,
+        },
+        LaunchType: LaunchType.EC2,
+        SchedulingStrategy: 'REPLICA',
+        EnableECSManagedTags: false,
+      });
+    });
+
+    test('addTargets should throw error when using an imported TaskDefinition', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+      const taskDefinition = ecs.Ec2TaskDefinition.fromEc2TaskDefinitionAttributes(stack, 'ImportedTaskDef', {
+        taskDefinitionArn: 'TD_ARN',
+        networkMode: ecs.NetworkMode.AWS_VPC,
+        taskRole: new iam.Role(stack, 'TaskRole', {
+          assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+        }),
+      });
+
+      const service = new ecs.Ec2Service(stack, 'Ec2Service', {
+        cluster,
+        taskDefinition,
+      });
+
+      const lb = new elbv2.ApplicationLoadBalancer(stack, 'lb', { vpc });
+      const listener = lb.addListener('listener', { port: 80 });
+      expect(() => listener.addTargets('target', {
+        port: 80,
+        targets: [service],
+      })).toThrow(/Cannot determine default loadBalancerTarget when using an imported ITaskDefinition/);
+
+    });
+
+    test('addTargets requires loadBalancerTarget when using an imported TaskDefinition', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+      const taskDefinition = ecs.Ec2TaskDefinition.fromEc2TaskDefinitionAttributes(stack, 'ImportedTaskDef', {
+        taskDefinitionArn: 'TD_ARN',
+        networkMode: ecs.NetworkMode.AWS_VPC,
+        taskRole: new iam.Role(stack, 'TaskRole', {
+          assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+        }),
+      });
+
+      const service = new ecs.Ec2Service(stack, 'Ec2Service', {
+        cluster,
+        taskDefinition,
+      });
+
+      const lb = new elbv2.ApplicationLoadBalancer(stack, 'lb', { vpc });
+      const listener = lb.addListener('listener', { port: 80 });
+      listener.addTargets('target', {
+        port: 80,
+        targets: [service.loadBalancerTarget({
+          containerName: 'MainContainer',
+          hostPort: 8000,
+          containerPort: 8000,
+        })],
+      });
+
+      // THEN
+      expect(stack).toHaveResource('AWS::ECS::Service', {
+        LoadBalancers: [
+          {
+            ContainerName: 'MainContainer',
+            ContainerPort: 8000,
+            TargetGroupArn: {
+              Ref: 'lblistenertargetGroupC7489D1E',
+            },
+          },
+        ],
+      });
+
+      expect(stack).toHaveResource('AWS::EC2::SecurityGroupIngress', {
+        Description: 'Load balancer to target',
+        FromPort: 8000,
+        ToPort: 8000,
+      });
+
+      expect(stack).toHaveResource('AWS::EC2::SecurityGroupEgress', {
+        Description: 'Load balancer to target',
+        FromPort: 8000,
+        ToPort: 8000,
+      });
+
+    });
+
+    test('cloudmap requires containerPort and containerName when using an imported TaskDefinition', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+      cluster.addDefaultCloudMapNamespace({
+        name: 'foo.com',
+        type: cloudmap.NamespaceType.DNS_PRIVATE,
+      });
+      const taskDefinition = ecs.Ec2TaskDefinition.fromEc2TaskDefinitionAttributes(stack, 'ImportedTaskDef', {
+        taskDefinitionArn: 'TD_ARN',
+        networkMode: ecs.NetworkMode.AWS_VPC,
+        taskRole: new iam.Role(stack, 'TaskRole', {
+          assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+        }),
+      });
+
+      new ecs.Ec2Service(stack, 'Ec2Service', {
+        cluster,
+        taskDefinition,
+        cloudMapOptions: {
+          dnsRecordType: cloudmap.DnsRecordType.SRV,
+          containerPort: 8000,
+          containerName: 'MainContainer',
+        },
+      });
+
+      // THEN
+      expect(stack).toHaveResourceLike('AWS::ECS::Service', {
+        ServiceRegistries: [
+          {
+            RegistryArn: { 'Fn::GetAtt': ['Ec2ServiceCloudmapService45B52C0F', 'Arn'] },
+            ContainerName: 'MainContainer',
+            ContainerPort: 8000,
+          },
+        ],
+      });
+
+    });
+
+    test('cloudmap throws if containerPort and containerName not provided when using an imported TaskDefinition', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+      cluster.addDefaultCloudMapNamespace({
+        name: 'foo.com',
+        type: cloudmap.NamespaceType.DNS_PRIVATE,
+      });
+      const taskDefinition = ecs.Ec2TaskDefinition.fromEc2TaskDefinitionAttributes(stack, 'ImportedTaskDef', {
+        taskDefinitionArn: 'TD_ARN',
+        networkMode: ecs.NetworkMode.AWS_VPC,
+        taskRole: new iam.Role(stack, 'TaskRole', {
+          assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+        }),
+      });
+
+      expect(() => new ecs.Ec2Service(stack, 'Ec2Service', {
+        cluster,
+        taskDefinition,
+        cloudMapOptions: {
+          dnsRecordType: cloudmap.DnsRecordType.SRV,
+          containerPort: 8000,
+        },
+      })).toThrow(/containerName is required when using an imported ITaskDefinition/);
     });
   });
 });

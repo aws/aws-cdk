@@ -7,7 +7,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import { Annotations, Duration, IResolvable, IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { LoadBalancerTargetOptions, NetworkMode, TaskDefinition } from '../base/task-definition';
+import { LoadBalancerTargetOptions, NetworkMode, ITaskDefinition, TaskDefinition } from '../base/task-definition';
 import { ICluster, CapacityProviderStrategy, ExecuteCommandLogging } from '../cluster';
 import { ContainerDefinition, Protocol } from '../container-definition';
 import { CfnService } from '../ecs.generated';
@@ -264,7 +264,7 @@ class ApplicationListenerConfig extends ListenerConfig {
     const protocol = props.protocol;
     const port = props.port ?? (protocol === elbv2.ApplicationProtocol.HTTPS ? 443 : 80);
     this.listener.addTargets(id, {
-      ... props,
+      ...props,
       targets: [
         service.loadBalancerTarget({
           ...target,
@@ -336,7 +336,7 @@ export abstract class BaseService extends Resource
   /**
    * The task definition to use for tasks in the service.
    */
-  public readonly taskDefinition: TaskDefinition;
+  public readonly taskDefinition: ITaskDefinition;
 
   /**
    * The cluster that hosts the service.
@@ -377,7 +377,7 @@ export abstract class BaseService extends Resource
     id: string,
     props: BaseServiceProps,
     additionalProps: any,
-    taskDefinition: TaskDefinition) {
+    taskDefinition: ITaskDefinition) {
     super(scope, id, {
       physicalName: props.serviceName,
     });
@@ -582,7 +582,12 @@ export abstract class BaseService extends Resource
    */
   public loadBalancerTarget(options: LoadBalancerTargetOptions): IEcsLoadBalancerTarget {
     const self = this;
-    const target = this.taskDefinition._validateTarget(options);
+
+    let target = this.taskDefinition._validateTarget(options);
+    if (this.taskDefinition instanceof TaskDefinition) {
+      target = this.taskDefinition._validateTarget(options);
+    }
+
     const connections = self.connections;
     return {
       attachToApplicationTargetGroup(targetGroup: elbv2.ApplicationTargetGroup): elbv2.LoadBalancerTargetProps {
@@ -698,6 +703,7 @@ export abstract class BaseService extends Resource
       dnsRecordType: dnsRecordType!,
       container: options.container,
       containerPort: options.containerPort,
+      containerName: options.containerName,
     });
 
     const cloudmapService = new cloudmap.Service(this, 'CloudmapService', {
@@ -733,6 +739,7 @@ export abstract class BaseService extends Resource
       dnsRecordType: service.dnsRecordType,
       container: options.container,
       containerPort: options.containerPort,
+      containerName: options.containerName,
     });
 
     // add Cloudmap service to the ECS Service's serviceRegistry
@@ -868,6 +875,9 @@ export abstract class BaseService extends Resource
   }
 
   private get defaultLoadBalancerTarget() {
+    if (!(this.taskDefinition instanceof TaskDefinition)) {
+      throw new Error('Cannot determine default loadBalancerTarget when using an imported ITaskDefinition');
+    }
     return this.loadBalancerTarget({
       containerName: this.taskDefinition.defaultContainer!.containerName,
     });
@@ -972,6 +982,12 @@ export interface CloudMapOptions {
    * @default - the default port of the task definition's default container
    */
   readonly containerPort?: number;
+
+  /**
+   * The name of the container to point to for a SRV record.
+   * @default - the default containerName of the task definition's default container
+   */
+  readonly containerName?: string;
 }
 
 /**
@@ -994,6 +1010,12 @@ export interface AssociateCloudMapServiceOptions {
    * @default - the default port of the task definition's default container
    */
   readonly containerPort?: number;
+
+  /**
+   * The container to point to for a SRV record.
+   * @default - the default container of the task definition's default container
+   */
+  readonly containerName?: string;
 }
 
 /**
@@ -1090,9 +1112,10 @@ export enum PropagatedTagSource {
  */
 interface DetermineContainerNameAndPortOptions {
   dnsRecordType: cloudmap.DnsRecordType;
-  taskDefinition: TaskDefinition;
+  taskDefinition: ITaskDefinition;
   container?: ContainerDefinition;
   containerPort?: number;
+  containerName?: string;
 }
 
 /**
@@ -1108,16 +1131,38 @@ function determineContainerNameAndPort(options: DetermineContainerNameAndPortOpt
       throw new Error('Cannot add discovery for a container from another task definition');
     }
 
-    const container = options.container ?? options.taskDefinition.defaultContainer!;
+    let containerName: string;
+    let container = options.container;
+    if (options.container) {
+      containerName = options.container.containerName;
+    } else if (options.taskDefinition instanceof TaskDefinition) {
+      containerName = options.taskDefinition.defaultContainer!.containerName;
+      container = options.taskDefinition.defaultContainer!;
+    } else if (options.containerName) {
+      containerName = options.containerName;
+    } else {
+      throw new Error('containerName is required when using an imported ITaskDefinition');
+    }
 
-    // Ensure that any port given by the user is mapped.
-    if (options.containerPort && !container.portMappings.some(mapping => mapping.containerPort === options.containerPort)) {
-      throw new Error('Cannot add discovery for a container port that has not been mapped');
+    let containerPort: number;
+    if (options.containerPort) {
+      containerPort = options.containerPort;
+    } else if (options.taskDefinition instanceof TaskDefinition) {
+      containerPort = options.taskDefinition.defaultContainer!.containerPort;
+    } else {
+      throw new Error('containerPort is required when using an imported ITaskDefinition');
+    }
+
+    if (container) {
+      // Ensure that any port given by the user is mapped.
+      if (options.containerPort && !container.portMappings.some(mapping => mapping.containerPort === options.containerPort)) {
+        throw new Error('Cannot add discovery for a container port that has not been mapped');
+      }
     }
 
     return {
-      containerName: container.containerName,
-      containerPort: options.containerPort ?? options.taskDefinition.defaultContainer!.containerPort,
+      containerName: containerName,
+      containerPort: containerPort,
     };
   }
 
