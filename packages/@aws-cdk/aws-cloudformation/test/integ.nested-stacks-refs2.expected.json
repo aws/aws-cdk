@@ -52,7 +52,11 @@
           }
         },
         "UpdateReplacePolicy": "Delete",
-        "DeletionPolicy": "Delete"
+        "DeletionPolicy": "Delete",
+        "Metadata": {
+          "aws:asset:path": "nestedstacksrefs2parentwithproducerNested1BBFBB3D5.nested.template.json",
+          "aws:asset:property": "TemplateURL"
+        }
       }
     },
     "Outputs": {

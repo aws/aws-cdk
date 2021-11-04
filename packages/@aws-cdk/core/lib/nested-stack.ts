@@ -1,4 +1,5 @@
 import * as crypto from 'crypto';
+import * as cxapi from '@aws-cdk/cx-api';
 import { Construct, Node } from 'constructs';
 import { FileAssetPackaging } from './assets';
 import { Fn } from './cfn-fn';
@@ -213,6 +214,8 @@ export class NestedStack extends Stack {
       fileName: this.templateFile,
     });
 
+    this.addResourceMetadata(this.resource, 'TemplateURL');
+
     // if bucketName/objectKey are cfn parameters from a stack other than the parent stack, they will
     // be resolved as cross-stack references like any other (see "multi" tests).
     this._templateUrl = `https://s3.${this._parentStack.region}.${this._parentStack.urlSuffix}/${templateLocation.bucketName}/${templateLocation.objectKey}`;
@@ -229,6 +232,18 @@ export class NestedStack extends Stack {
         }
       },
     });
+  }
+
+  private addResourceMetadata(resource: CfnResource, resourceProperty: string) {
+    if (!this.node.tryGetContext(cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT)) {
+      return; // not enabled
+    }
+
+    // tell tools such as SAM CLI that the "Code" property of this resource
+    // points to a local path in order to enable local invocation of this function.
+    resource.cfnOptions.metadata = resource.cfnOptions.metadata || { };
+    resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_PATH_KEY] = this.templateFile;
+    resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_PROPERTY_KEY] = resourceProperty;
   }
 }
 
