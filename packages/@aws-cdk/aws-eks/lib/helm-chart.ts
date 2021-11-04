@@ -14,9 +14,10 @@ import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 export interface HelmChartOptions {
   /**
-   * The name of the chart to install
-   * @default - If this is not specified, chartAsset will be used. Either
-   * chart or chartAsset must specified
+   * The name of the chart.
+   * Either this or `chartAsset` must be specified.
+   *
+   * @default - No chart name. Implies `chartAsset` is used.
    */
   readonly chart?: string;
 
