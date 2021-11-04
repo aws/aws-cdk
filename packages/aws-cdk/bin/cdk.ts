@@ -105,10 +105,13 @@ async function parseCommandLineArguments() {
       .option('outputs-file', { type: 'string', alias: 'O', desc: 'Path to file where stack outputs will be written as JSON', requiresArg: true })
       .option('previous-parameters', { type: 'boolean', default: true, desc: 'Use previous values for existing parameters (you must specify all parameters on every deployment if this is disabled)' })
       .option('progress', { type: 'string', choices: [StackActivityProgress.BAR, StackActivityProgress.EVENTS], desc: 'Display mode for stack activity events' })
-      .option('rollback', { type: 'boolean', desc: 'Rollback stack to stable state on failure (iterate more rapidly with --no-rollback or -R)' })
+      .option('rollback', {
+        type: 'boolean',
+        desc: "Rollback stack to stable state on failure. Defaults to 'true', iterate more rapidly with --no-rollback or -R. " +
+          'Note: do **not** disable this flag for deployments with resource replacements, as that will always fail',
+      })
       // Hack to get '-R' as an alias for '--no-rollback', suggested by: https://github.com/yargs/yargs/issues/1729
-      .option('R', { type: 'boolean', hidden: true })
-      .middleware(yargsNegativeAlias('R', 'rollback'), true)
+      .option('R', { type: 'boolean', hidden: true }).middleware(yargsNegativeAlias('R', 'rollback'), true)
       .option('hotswap', {
         type: 'boolean',
         desc: "Attempts to perform a 'hotswap' deployment, " +

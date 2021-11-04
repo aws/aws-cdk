@@ -650,6 +650,7 @@ export interface DeployOptions {
    * @default true
    */
   readonly rollback?: boolean;
+
   /*
    * Whether to perform a 'hotswap' deployment.
    * A 'hotswap' deployment will attempt to short-circuit CloudFormation
