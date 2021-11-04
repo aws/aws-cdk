@@ -21,11 +21,11 @@ export enum SecurityPolicy {
  */
 export enum EndpointType {
   /**
-   * For an edge-optimized API and its custom domain name.
+   * For an edge-optimized custom domain name.
    */
   EDGE = 'EDGE',
   /**
-   * For a regional API and its custom domain name.
+   * For a regional custom domain name.
    */
   REGIONAL = 'REGIONAL'
 }
@@ -98,7 +98,7 @@ export interface DomainNameProps {
     * The mutual TLS authentication configuration for a custom domain name.
     * @default - mTLS is not configured.
     */
-  readonly mtls?: MTLSConfig;
+  readonly mutualTlsConfiguration?: MTLSConfig;
 }
 
 /**
@@ -141,7 +141,7 @@ export interface DomainNameConfiguration {
   /**
     * The Transport Layer Security (TLS) version + cipher suite for this domain name.
     * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-domainname.html
-    * @default SecurityPolicy.TLS_1_0
+    * @default SecurityPolicy.TLS_1_2
     */
   readonly securityPolicy?: SecurityPolicy;
 }
@@ -204,7 +204,7 @@ export class DomainName extends Resource implements IDomainName {
       this.setDomainNameConfigurations(...props.domainNameConfigurations);
     }
 
-    const mtlsConfig = this.configureMTLS(props.mtls);
+    const mtlsConfig = this.configureMTLS(props.mutualTlsConfiguration);
 
     const domainNameProps: CfnDomainNameProps = {
       domainName: props.domainName,

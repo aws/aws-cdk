@@ -229,7 +229,7 @@ describe('DomainName', () => {
     new DomainName(stack, 'DomainName', {
       domainName,
       domainNameConfigurations,
-      mtls: {
+      mutualTlsConfiguration: {
         bucket,
         key: 'someca.pem',
       },
@@ -267,7 +267,7 @@ describe('DomainName', () => {
     new DomainName(stack, 'DomainName', {
       domainName,
       domainNameConfigurations,
-      mtls: {
+      mutualTlsConfiguration: {
         bucket,
         key: 'someca.pem',
         version: 'version',

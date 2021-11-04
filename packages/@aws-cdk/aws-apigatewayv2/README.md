@@ -170,17 +170,18 @@ and [Setting up custom domain name for a Websocket API](https://docs.aws.amazon.
 The code snippet below creates a custom domain and configures a default domain mapping for your API that maps the
 custom domain to the `$default` stage of the API.
 
-A domain name has two important properties - DomainNameConfigurations and MutualTLS.
+Domain Names in apigatewayv2 have multiple nested configurations.
 
-DomainNameConfigurations are the properties associated with a DomainName - certificate, domain endpoint, security policy. Each configuration must
-have a unique Endpoint type. For general use, only a single DomainNameConfiguration is needed. When migrating domain names from one endpoint to another,
-more than one DomainNameConfiguration is added. This second configuration creates the set-up required to migrate the domain name to this endpoint. When you
-set up a DNS record to point the domain name to the new hostname, the traffic bound to the custom domain name gets routed to the new host. After this, the first
-DomainNameConfiguration can be removed to have the custom domain name associated only with the migrated endpoint.
+A DomainNameConfiguration specifies the certificate, endpoint and security policy for a domain name. Each configuration must have a unique endpoint type.
+You need only one DomainNameConfiguration, unless you're migrating from one endpoint type to another. To migrate to a new endpoint type,
+you add a new domain name configuration and then configure DNS records to route traffic to the new endpoint. After that, you can remove the previous DomainNameConfiguration. 
 Learn more at [Migrating a custom domain name](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-regional-api-custom-domain-migrate.html)
 
 MutualTLS configures the TLS authentication between client and server. Clients must present a trusted certificate to access the API associated with a domain.
-MutualTLS is used to limit access to your API based by using client certificates instead of (or as an extension of) using authorization headers.
+MutualTLS configures two-way authentication between the client and the server. With mutual TLS, clients must present X.509 certificates to verify their identity
+to access your APIs.
+You can use mutual TLS along with other authorization and authentication operations that API Gateway supports. API Gateway forwards the certificates
+that clients provide to Lambda authorizers and to backend integrations.
 Learn more at [Configuring MutualTLS for an API](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-mutual-tls.html).
 
 ```ts
@@ -221,7 +222,7 @@ const dn = new DomainName(stack, 'DomainName', {
           securityPolicy: 'TLS_1_2',
         },
       ],
-      mtls: {
+      mutualTlsConfiguration: {
         bucket: new Bucket(this, 'bucket'),
         key: 'someca.pem',
         version: 'version',
