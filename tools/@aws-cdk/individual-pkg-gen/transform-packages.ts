@@ -6,6 +6,21 @@ const lerna_project = require('@lerna/project');
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const ver = require('../../../scripts/resolve-version');
 
+const CFN_STABILITY_BANNER = [
+  '![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)',
+  '',
+  '> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.',
+  '>',
+  '> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib',
+].join('\n');
+
+const FEATURE_CFN_STABILITY_BANNER = `> **CFN Resources:** All classes with the \`Cfn\` prefix in this module ([CFN Resources]) are always
+> stable and safe to use.
+>
+> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib`;
+
+const FEATURE_CFN_STABILITY_LINE = /CFN Resources\s+\| !\[Stable]\(https:\/\/img\.shields\.io\/badge\/stable-success\.svg\?style=for-the-badge\)\n/gm;
+
 /**
  * @aws-cdk/ scoped packages that may be present in devDependencies and need to
  * be retained (or else pkglint might declare the package unworthy).
@@ -109,6 +124,13 @@ function transformPackages(): void {
           packageUnscopedName: `${pkg.name.substring('@aws-cdk/'.length)}`,
         });
         fs.outputFileSync(destination, sourceCodeOutput);
+      } else if (sourceFileName === 'README.md') {
+        // Remove the stability banner for Cfn constructs, since they don't exist in the alpha modules
+        let sourceCode = fs.readFileSync(source).toString();
+        [CFN_STABILITY_BANNER, FEATURE_CFN_STABILITY_BANNER, FEATURE_CFN_STABILITY_LINE].forEach(pattern => {
+          sourceCode = sourceCode.replace(pattern, '');
+        });
+        fs.outputFileSync(destination, sourceCode);
       } else {
         const stat = fs.statSync(source);
         if (stat.isDirectory()) {

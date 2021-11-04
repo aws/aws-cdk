@@ -317,7 +317,7 @@ async function prepareAndExecuteChangeSet(
   if (execute) {
     debug('Initiating execution of changeset %s on stack %s', changeSet.Id, deployName);
 
-    const shouldDisableRollback = (options.rollback === undefined && options.hotswap === true) || options.rollback === false;
+    const shouldDisableRollback = options.rollback === false;
     // Do a bit of contortions to only pass the `DisableRollback` flag if it's true. That way,
     // CloudFormation won't balk at the unrecognized option in regions where the feature is not available yet.
     const disableRollback = shouldDisableRollback ? { DisableRollback: true } : undefined;
