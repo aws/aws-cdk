@@ -188,6 +188,7 @@ test('esbuild bundling with esbuild options', () => {
     architecture: Architecture.X86_64,
     minify: true,
     sourceMap: true,
+    sourcesContent: false,
     target: 'es2020',
     loader: {
       '.png': 'dataurl',
@@ -218,7 +219,7 @@ test('esbuild bundling with esbuild options', () => {
         [
           'esbuild --bundle "/asset-input/lib/handler.ts"',
           '--target=es2020 --platform=node --outfile="/asset-output/index.js"',
-          '--minify --sourcemap --external:aws-sdk --loader:.png=dataurl',
+          '--minify --sourcemap --sources-content=false --external:aws-sdk --loader:.png=dataurl',
           defineInstructions,
           '--log-level=silent --keep-names --tsconfig=/asset-input/lib/custom-tsconfig.ts',
           '--metafile=/asset-output/index.meta.json --banner:js="/* comments */" --footer:js="/* comments */"',
