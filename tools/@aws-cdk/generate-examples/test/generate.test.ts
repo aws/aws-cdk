@@ -26,6 +26,8 @@ describe('generateClassAssignment ', () => {
 
     const type = ts.findClass('my_assembly.ClassA');
     expect(generateClassAssignment(type)).toEqual('import * as my_assembly from \'my_assembly\';\n\nconst classA = my_assembly.ClassA.firstMethod();');
+
+    await assembly.cleanup();
   });
 
   test('generates example for class with static properties', async () => {
@@ -50,6 +52,8 @@ describe('generateClassAssignment ', () => {
 
     const type = ts.findClass('my_assembly.ClassA');
     expect(generateClassAssignment(type)).toEqual('import * as my_assembly from \'my_assembly\';\n\nconst classA = my_assembly.ClassA.FIRST_PROPERTY;');
+
+    await assembly.cleanup();
   });
 
   test('generates example for class instantiation', async () => {
@@ -71,6 +75,8 @@ describe('generateClassAssignment ', () => {
 
     const type = ts.findClass('my_assembly.ClassA');
     expect(generateClassAssignment(type)).toEqual('import * as my_assembly from \'my_assembly\';\n\nconst classA = new my_assembly.ClassA(\'a\', \'b\');');
+
+    await assembly.cleanup();
   });
 
   test('generates example for more complicated class instantiation', async () => {
@@ -121,13 +127,15 @@ describe('generateClassAssignment ', () => {
       '  prop4: \'prop4\',',
       '',
       '  // the properties below are optional',
-      '  prop5: prop5,                         // optional',
-      '  prop6: false,                         // optional',
-      '  prop7: {                              // optional',
+      '  prop5: prop5,',
+      '  prop6: false,',
+      '  prop7: {',
       '    prop7Key: \'prop7\',',
       '  },',
       '});',
     ]);
+
+    await assembly.cleanup();
   });
 
   test('returns undefined if class has no statics and private initializer', async () => {
@@ -149,9 +157,80 @@ describe('generateClassAssignment ', () => {
 
     const type = ts.findClass('my_assembly.ClassA');
     expect(generateClassAssignment(type)).toBeUndefined();
-  });
-});
 
-describe('optionals', () => {
-  // FIXME: do this when optional implementation set
+    await assembly.cleanup();
+  });
+
+  test('optional properties are added in the correct spot', async () => {
+    const assembly = await AssemblyFixture.fromSource(
+      {
+        'index.ts': `
+        export class ClassA {
+          public constructor(public readonly scope: string, public readonly id: string, public readonly props: ClassAProps) {}
+        }
+        export interface ClassAProps {
+          readonly prop1: number,
+          readonly prop2?: number,
+        }
+        `,
+      },
+      {
+        name: 'my_assembly',
+        jsii: DUMMY_ASSEMBLY_TARGETS,
+      },
+    );
+
+    const ts = new reflect.TypeSystem();
+    await ts.load(assembly.directory);
+
+    const type = ts.findClass('my_assembly.ClassA');
+    expect(generateClassAssignment(type)?.split('\n')).toEqual([
+      'import * as my_assembly from \'my_assembly\';',
+      '',
+      'const classA = new my_assembly.ClassA(this, \'MyClassA\', {',
+      '  prop1: 123,',
+      '',
+      '  // the properties below are optional',
+      '  prop2: 123,',
+      '});',
+    ]);
+
+    await assembly.cleanup();
+  });
+
+  test('comment added when all properties are optional', async () => {
+    const comment = 'all optional props';
+    const assembly = await AssemblyFixture.fromSource(
+      {
+        'index.ts': `
+        export class ClassA {
+          public constructor(public readonly scope: string, public readonly id: string, public readonly props: ClassAProps = {}) {}
+        }
+        export interface ClassAProps {
+          readonly prop1?: number,
+          readonly prop2?: number,
+        }
+        `,
+      },
+      {
+        name: 'my_assembly',
+        jsii: DUMMY_ASSEMBLY_TARGETS,
+      },
+    );
+
+    const ts = new reflect.TypeSystem();
+    await ts.load(assembly.directory);
+
+    const type = ts.findClass('my_assembly.ClassA');
+    expect(generateClassAssignment(type)?.split('\n')).toEqual([
+      'import * as my_assembly from \'my_assembly\';',
+      '',
+      `const classA = new my_assembly.ClassA(this, \'MyClassA\', /* ${comment} */ {`,
+      '  prop1: 123,',
+      '  prop2: 123,',
+      '});',
+    ]);
+
+    await assembly.cleanup();
+  });
 });
