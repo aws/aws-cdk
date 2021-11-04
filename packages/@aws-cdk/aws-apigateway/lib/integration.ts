@@ -82,7 +82,7 @@ export interface IntegrationOptions {
 
   /**
    * The maximum amount of time an integration will run before it returns without a response.
-   * Must be between 50 milliseconds and 29 seconds.
+   * Must be between 50 milliseconds and 300 seconds.
    *
    * @default Duration.seconds(29)
    */
@@ -202,8 +202,11 @@ export class Integration {
       throw new Error('cannot set \'vpcLink\' where \'connectionType\' is INTERNET');
     }
 
-    if (options.timeout && !options.timeout.isUnresolved() && (options.timeout.toMilliseconds() < 50 || options.timeout.toMilliseconds() > 29000)) {
-      throw new Error('Integration timeout must be between 50 milliseconds and 29 seconds.');
+    // API Gateway maintain the full set of validations that need to be performed on
+    // integration timeout. Defer performing them here, and only validate the
+    // timeout adheres to the maximum integration timeout possible
+    if (options.timeout && !options.timeout.isUnresolved() && (options.timeout.toMilliseconds() < 50 || options.timeout.toMilliseconds() > 300000)) {
+      throw new Error('Integration timeout must be between 50 milliseconds and 300 seconds.');
     }
   }
 
