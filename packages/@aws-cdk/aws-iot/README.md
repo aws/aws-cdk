@@ -75,8 +75,8 @@ const topicRule = new iot.TopicRule(this, 'TopicRule', {
 topicRule.addAction(new actions.LambdaFunctionAction(func))
 ```
 
-You can also supply `errorAction` as following, and the IoT Rule trigger it
-if a rule's action is unable to perform:
+You can also supply `errorAction` as following,
+and the IoT Rule will trigger it if a rule's action is unable to perform:
 
 ```ts
 import * as iot from '@aws-cdk/aws-iot';
