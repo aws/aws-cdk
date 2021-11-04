@@ -51,7 +51,7 @@ export interface TopicRuleProps {
   /**
    * The action AWS IoT performs when it is unable to perform a rule's action.
    *
-   * @default No action will be perform
+   * @default - no action will be performed
    */
   readonly errorAction?: IAction;
 
