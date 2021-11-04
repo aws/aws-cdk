@@ -16,6 +16,9 @@ phases:
       # Packing the mono-libraries (monocdk & aws-cdk-lib) can cause
       # memory errors. Increasing this value allows our build to more consistently succeed
       - (command -v sysctl || yum install -y procps-ng) && /sbin/sysctl -w vm.max_map_count=2251954
+  pre_build:
+    commands:
+      - /bin/bash ./scripts/cache-load.sh
   build:
     commands:
       - /bin/bash ./build.sh --extract

@@ -81,13 +81,16 @@ trap "rm -rf $MERKLE_BUILD_CACHE" EXIT
 if [ "$run_tests" == "true" ]; then
     runtarget="$runtarget+test"
 fi
-if [ "$extract_snippets" == "true" ]; then
-    runtarget="$runtarget+extract"
-fi
 
 echo "============================================================================================="
 echo "building..."
 time lerna run $bail --stream $runtarget || fail
+
+if $extract_snippets; then
+    # After compilation, run Rosetta (using the cache if available).
+    # This will print errors, and fail the build if there are compilation errors in any packages marked as 'strict'.
+    /bin/bash scripts/run-rosetta.sh
+fi
 
 if [ "$check_compat" == "true" ]; then
   /bin/bash scripts/check-api-compatibility.sh
