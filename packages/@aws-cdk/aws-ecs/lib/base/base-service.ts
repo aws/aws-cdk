@@ -335,8 +335,9 @@ export abstract class BaseService extends Resource
 
   /**
    * The task definition to use for tasks in the service.
+   *
    */
-  public readonly taskDefinition: ITaskDefinition;
+  public readonly importedTaskDefinition: ITaskDefinition;
 
   /**
    * The cluster that hosts the service.
@@ -386,7 +387,7 @@ export abstract class BaseService extends Resource
       throw new Error('You can only specify either propagateTags or propagateTaskTagsFrom. Alternatively, you can leave both blank');
     }
 
-    this.taskDefinition = taskDefinition;
+    this.importedTaskDefinition = taskDefinition;
 
     // launchType will set to undefined if using external DeploymentController or capacityProviderStrategies
     const launchType = props.deploymentController?.type === DeploymentControllerType.EXTERNAL ||
@@ -461,9 +462,20 @@ export abstract class BaseService extends Resource
     return this.cloudmapService;
   }
 
+  /**
+   * The task definition to use for tasks in the service.
+   */
+  public get taskDefinition(): TaskDefinition {
+    if (this.importedTaskDefinition instanceof TaskDefinition) {
+      return this.importedTaskDefinition as TaskDefinition;
+    } else {
+      throw new Error('Cannot access "taskDefinition" when an imported TaskDefinition is provided. Use "importedTaskDefinition" instead');
+    }
+  }
+
   private executeCommandLogConfiguration() {
     const logConfiguration = this.cluster.executeCommandConfiguration?.logConfiguration;
-    this.taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
+    this.importedTaskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
       actions: [
         'logs:DescribeLogGroups',
       ],
@@ -471,7 +483,7 @@ export abstract class BaseService extends Resource
     }));
 
     const logGroupArn = logConfiguration?.cloudWatchLogGroup ? `arn:aws:logs:${this.stack.region}:${this.stack.account}:log-group:${logConfiguration.cloudWatchLogGroup.logGroupName}:*` : '*';
-    this.taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
+    this.importedTaskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
       actions: [
         'logs:CreateLogStream',
         'logs:DescribeLogStreams',
@@ -481,20 +493,20 @@ export abstract class BaseService extends Resource
     }));
 
     if (logConfiguration?.s3Bucket?.bucketName) {
-      this.taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
+      this.importedTaskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
         actions: [
           's3:GetBucketLocation',
         ],
         resources: ['*'],
       }));
-      this.taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
+      this.importedTaskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
         actions: [
           's3:PutObject',
         ],
         resources: [`arn:aws:s3:::${logConfiguration.s3Bucket.bucketName}/*`],
       }));
       if (logConfiguration.s3EncryptionEnabled) {
-        this.taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
+        this.importedTaskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
           actions: [
             's3:GetEncryptionConfiguration',
           ],
@@ -505,7 +517,7 @@ export abstract class BaseService extends Resource
   }
 
   private enableExecuteCommandEncryption(logging: ExecuteCommandLogging) {
-    this.taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
+    this.importedTaskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
       actions: [
         'kms:Decrypt',
         'kms:GenerateDataKey',
@@ -583,15 +595,15 @@ export abstract class BaseService extends Resource
   public loadBalancerTarget(options: LoadBalancerTargetOptions): IEcsLoadBalancerTarget {
     const self = this;
 
-    let target = this.taskDefinition._validateTarget(options);
-    if (this.taskDefinition instanceof TaskDefinition) {
-      target = this.taskDefinition._validateTarget(options);
+    let target = this.importedTaskDefinition._validateTarget(options);
+    if (this.importedTaskDefinition instanceof TaskDefinition) {
+      target = this.importedTaskDefinition._validateTarget(options);
     }
 
     const connections = self.connections;
     return {
       attachToApplicationTargetGroup(targetGroup: elbv2.ApplicationTargetGroup): elbv2.LoadBalancerTargetProps {
-        targetGroup.registerConnectable(self, self.taskDefinition._portRangeFromPortMapping(target.portMapping));
+        targetGroup.registerConnectable(self, self.importedTaskDefinition._portRangeFromPortMapping(target.portMapping));
         return self.attachToELBv2(targetGroup, target.containerName, target.portMapping.containerPort);
       },
       attachToNetworkTargetGroup(targetGroup: elbv2.NetworkTargetGroup): elbv2.LoadBalancerTargetProps {
@@ -674,7 +686,7 @@ export abstract class BaseService extends Resource
     }
 
     // Determine DNS type based on network mode
-    const networkMode = this.taskDefinition.networkMode;
+    const networkMode = this.importedTaskDefinition.networkMode;
     if (networkMode === NetworkMode.NONE) {
       throw new Error('Cannot use a service discovery if NetworkMode is None. Use Bridge, Host or AwsVpc instead.');
     }
@@ -699,7 +711,7 @@ export abstract class BaseService extends Resource
     }
 
     const { containerName, containerPort } = determineContainerNameAndPort({
-      taskDefinition: this.taskDefinition,
+      taskDefinition: this.importedTaskDefinition,
       dnsRecordType: dnsRecordType!,
       container: options.container,
       containerPort: options.containerPort,
@@ -735,7 +747,7 @@ export abstract class BaseService extends Resource
     const service = options.service;
 
     const { containerName, containerPort } = determineContainerNameAndPort({
-      taskDefinition: this.taskDefinition,
+      taskDefinition: this.importedTaskDefinition,
       dnsRecordType: service.dnsRecordType,
       container: options.container,
       containerPort: options.containerPort,
@@ -838,10 +850,10 @@ export abstract class BaseService extends Resource
    * Shared logic for attaching to an ELB
    */
   private attachToELB(loadBalancer: elb.LoadBalancer, containerName: string, containerPort: number): void {
-    if (this.taskDefinition.networkMode === NetworkMode.AWS_VPC) {
+    if (this.importedTaskDefinition.networkMode === NetworkMode.AWS_VPC) {
       throw new Error('Cannot use a Classic Load Balancer if NetworkMode is AwsVpc. Use Host or Bridge instead.');
     }
-    if (this.taskDefinition.networkMode === NetworkMode.NONE) {
+    if (this.importedTaskDefinition.networkMode === NetworkMode.NONE) {
       throw new Error('Cannot use a Classic Load Balancer if NetworkMode is None. Use Host or Bridge instead.');
     }
 
@@ -856,7 +868,7 @@ export abstract class BaseService extends Resource
    * Shared logic for attaching to an ELBv2
    */
   private attachToELBv2(targetGroup: elbv2.ITargetGroup, containerName: string, containerPort: number): elbv2.LoadBalancerTargetProps {
-    if (this.taskDefinition.networkMode === NetworkMode.NONE) {
+    if (this.importedTaskDefinition.networkMode === NetworkMode.NONE) {
       throw new Error('Cannot use a load balancer if NetworkMode is None. Use Bridge, Host or AwsVpc instead.');
     }
 
@@ -870,16 +882,16 @@ export abstract class BaseService extends Resource
     // been associated with our target group(s), so add ordering dependency.
     this.resource.node.addDependency(targetGroup.loadBalancerAttached);
 
-    const targetType = this.taskDefinition.networkMode === NetworkMode.AWS_VPC ? elbv2.TargetType.IP : elbv2.TargetType.INSTANCE;
+    const targetType = this.importedTaskDefinition.networkMode === NetworkMode.AWS_VPC ? elbv2.TargetType.IP : elbv2.TargetType.INSTANCE;
     return { targetType };
   }
 
   private get defaultLoadBalancerTarget() {
-    if (!(this.taskDefinition instanceof TaskDefinition)) {
+    if (!(this.importedTaskDefinition instanceof TaskDefinition)) {
       throw new Error('Cannot determine default loadBalancerTarget when using an imported ITaskDefinition');
     }
     return this.loadBalancerTarget({
-      containerName: this.taskDefinition.defaultContainer!.containerName,
+      containerName: this.importedTaskDefinition.defaultContainer!.containerName,
     });
   }
 
@@ -919,7 +931,7 @@ export abstract class BaseService extends Resource
   }
 
   private enableExecuteCommand() {
-    this.taskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
+    this.importedTaskDefinition.addToTaskRolePolicy(new iam.PolicyStatement({
       actions: [
         'ssmmessages:CreateControlChannel',
         'ssmmessages:CreateDataChannel',

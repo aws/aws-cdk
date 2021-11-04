@@ -88,6 +88,26 @@ describe('fargate service', () => {
 
     });
 
+    test('can access taskDefinition', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+
+      taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      });
+
+      const service = new ecs.FargateService(stack, 'FargateService', {
+        cluster,
+        taskDefinition,
+      });
+
+      // THEN
+      expect(() => service.taskDefinition.findContainer('web')).not.toThrow();
+    });
+
     test('can create service with default settings if VPC only has public subnets', () => {
       // GIVEN
       const stack = new cdk.Stack();
@@ -2977,7 +2997,7 @@ describe('fargate service', () => {
     });
   });
 
-  describe('When using an imported TaskDefinition with a Fargate Service', () => {
+  describe('When using an imported TaskDefinition', () => {
     test('default setup', () => {
       // GIVEN
       const stack = new cdk.Stack();
@@ -3032,7 +3052,7 @@ describe('fargate service', () => {
       });
     });
 
-    test('addTargets should throw error when using an imported TaskDefinition', () => {
+    test('addTargets should throw error', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -3059,7 +3079,7 @@ describe('fargate service', () => {
 
     });
 
-    test('addTargets requires loadBalancerTarget when using an imported TaskDefinition', () => {
+    test('addTargets requires loadBalancerTarget', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -3115,7 +3135,7 @@ describe('fargate service', () => {
 
     });
 
-    test('cloudmap requires containerPort and containerName when using an imported TaskDefinition', () => {
+    test('cloudmap requires containerPort and containerName', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -3155,7 +3175,7 @@ describe('fargate service', () => {
 
     });
 
-    test('cloudmap throws if containerPort and containerName not provided when using an imported TaskDefinition', () => {
+    test('cloudmap throws if containerPort and containerName not provided', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -3180,6 +3200,25 @@ describe('fargate service', () => {
           containerPort: 8000,
         },
       })).toThrow(/containerName is required when using an imported ITaskDefinition/);
+    });
+
+    test('service throws if taskDefinition is accessed', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      const taskDefinition = ecs.FargateTaskDefinition.fromFargateTaskDefinitionAttributes(stack, 'ImportedTaskDef', {
+        taskDefinitionArn: 'TD_ARN',
+        networkMode: ecs.NetworkMode.AWS_VPC,
+        taskRole: new iam.Role(stack, 'TaskRole', {
+          assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+        }),
+      });
+      const service = new ecs.FargateService(stack, 'FargateService', {
+        cluster,
+        taskDefinition,
+      });
+      expect(() => service.taskDefinition).toThrow(/Cannot access "taskDefinition" when an imported TaskDefinition is provided/);
     });
   });
 });

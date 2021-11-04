@@ -3348,7 +3348,7 @@ describe('ec2 service', () => {
     });
   });
 
-  describe('When using an imported TaskDefinition with an EC2 Service', () => {
+  describe('When using an imported TaskDefinition', () => {
     test('default setup', () => {
       // GIVEN
       const stack = new cdk.Stack();
@@ -3384,7 +3384,7 @@ describe('ec2 service', () => {
       });
     });
 
-    test('addTargets should throw error when using an imported TaskDefinition', () => {
+    test('addTargets should throw error', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -3412,7 +3412,7 @@ describe('ec2 service', () => {
 
     });
 
-    test('addTargets requires loadBalancerTarget when using an imported TaskDefinition', () => {
+    test('addTargets requires loadBalancerTarget', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -3469,7 +3469,7 @@ describe('ec2 service', () => {
 
     });
 
-    test('cloudmap requires containerPort and containerName when using an imported TaskDefinition', () => {
+    test('cloudmap requires containerPort and containerName', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -3510,7 +3510,7 @@ describe('ec2 service', () => {
 
     });
 
-    test('cloudmap throws if containerPort and containerName not provided when using an imported TaskDefinition', () => {
+    test('cloudmap throws if containerPort and containerName not provided', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});

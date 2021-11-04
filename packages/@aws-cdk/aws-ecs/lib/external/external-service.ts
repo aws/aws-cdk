@@ -129,8 +129,8 @@ export class ExternalService extends BaseService implements IExternalService {
       taskDefinition: props.deploymentController?.type === DeploymentControllerType.EXTERNAL ? undefined : props.taskDefinition.taskDefinitionArn,
     }, props.taskDefinition);
 
-    if (this.taskDefinition instanceof TaskDefinition) {
-      const taskDef = this.taskDefinition as TaskDefinition;
+    if (this.importedTaskDefinition instanceof TaskDefinition) {
+      const taskDef = this.importedTaskDefinition as TaskDefinition;
       this.node.addValidation({
         validate: () => !taskDef.defaultContainer ? ['A TaskDefinition must have at least one essential container'] : [],
       });

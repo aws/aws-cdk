@@ -526,7 +526,7 @@ describe('external service', () => {
 
   });
 
-  describe('When using an imported TaskDefinition with an External Service', () => {
+  describe('When using an imported TaskDefinition', () => {
     test('default setup', () => {
       // GIVEN
       const stack = new cdk.Stack();
