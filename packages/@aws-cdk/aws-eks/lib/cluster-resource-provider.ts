@@ -73,7 +73,6 @@ export class ClusterResourceProvider extends NestedStack {
   private constructor(scope: Construct, id: string, props: ClusterResourceProviderProps) {
     super(scope as CoreConstruct, id);
 
-
     const onEvent = new lambda.Function(this, 'OnEventHandler', {
       code: lambda.Code.fromAsset(HANDLER_DIR),
       description: 'onEvent handler for EKS cluster resource provider',
@@ -85,7 +84,7 @@ export class ClusterResourceProvider extends NestedStack {
       vpcSubnets: props.subnets ? { subnets: props.subnets } : undefined,
       securityGroups: props.securityGroup ? [props.securityGroup] : undefined,
       // Allow user to override the layer. Layer must contain `proxy-agent` node_module which is required to proxy AWS SDK requests.
-      layers: props.onEventLayer ? [props.onEventLayer] : [new NodeProxyAgentLayer(this, 'NodeProxyAgentLayer')],
+      layers: props.onEventLayer ? [props.onEventLayer] : [new NodeProxyAgentLayer(this, 'OnEventNodeProxyAgentLayer')],
     });
 
     const isComplete = new lambda.Function(this, 'IsCompleteHandler', {
@@ -98,7 +97,7 @@ export class ClusterResourceProvider extends NestedStack {
       vpc: props.subnets ? props.vpc : undefined,
       vpcSubnets: props.subnets ? { subnets: props.subnets } : undefined,
       securityGroups: props.securityGroup ? [props.securityGroup] : undefined,
-      layers: [new NodeProxyAgentLayer(this, 'NodeProxyAgentLayer')],
+      layers: [new NodeProxyAgentLayer(this, 'IsCompleteNodeProxyAgentLayer')],
     });
 
     this.provider = new cr.Provider(this, 'Provider', {
