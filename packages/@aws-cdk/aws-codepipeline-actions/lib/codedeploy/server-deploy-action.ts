@@ -3,6 +3,7 @@ import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as iam from '@aws-cdk/aws-iam';
 
 import { Action } from '../action';
+import { deployArtifactBounds } from '../common';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
@@ -32,7 +33,7 @@ export class CodeDeployServerDeployAction extends Action {
       resource: props.deploymentGroup,
       category: codepipeline.ActionCategory.DEPLOY,
       provider: 'CodeDeploy',
-      artifactBounds: codepipeline.deployArtifactBounds(),
+      artifactBounds: deployArtifactBounds(),
       inputs: [props.input],
     });
 

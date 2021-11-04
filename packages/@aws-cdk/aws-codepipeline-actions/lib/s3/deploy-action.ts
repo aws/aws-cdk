@@ -3,6 +3,7 @@ import * as s3 from '@aws-cdk/aws-s3';
 import { Duration } from '@aws-cdk/core';
 import { kebab as toKebabCase } from 'case';
 import { Action } from '../action';
+import { deployArtifactBounds } from '../common';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
@@ -102,7 +103,7 @@ export class S3DeployAction extends Action {
       resource: props.bucket,
       category: codepipeline.ActionCategory.DEPLOY,
       provider: 'S3',
-      artifactBounds: codepipeline.deployArtifactBounds(),
+      artifactBounds: deployArtifactBounds(),
       inputs: [props.input],
     });
 

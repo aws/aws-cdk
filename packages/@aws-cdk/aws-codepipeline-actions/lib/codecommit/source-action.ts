@@ -4,6 +4,7 @@ import * as targets from '@aws-cdk/aws-events-targets';
 import * as iam from '@aws-cdk/aws-iam';
 import { Names, Stack, Token, TokenComparison } from '@aws-cdk/core';
 import { Action } from '../action';
+import { sourceArtifactBounds } from '../common';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
@@ -142,7 +143,7 @@ export class CodeCommitSourceAction extends Action {
       resource: props.repository,
       category: codepipeline.ActionCategory.SOURCE,
       provider: 'CodeCommit',
-      artifactBounds: codepipeline.sourceArtifactBounds(),
+      artifactBounds: sourceArtifactBounds(),
       outputs: [props.output],
     });
 

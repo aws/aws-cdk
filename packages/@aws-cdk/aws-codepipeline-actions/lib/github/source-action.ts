@@ -1,6 +1,7 @@
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import { SecretValue } from '@aws-cdk/core';
 import { Action } from '../action';
+import { sourceArtifactBounds } from '../common';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
@@ -105,7 +106,7 @@ export class GitHubSourceAction extends Action {
       category: codepipeline.ActionCategory.SOURCE,
       owner: 'ThirdParty',
       provider: 'GitHub',
-      artifactBounds: codepipeline.sourceArtifactBounds(),
+      artifactBounds: sourceArtifactBounds(),
       outputs: [props.output],
     });
 

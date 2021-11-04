@@ -3,6 +3,7 @@ import * as targets from '@aws-cdk/aws-events-targets';
 import * as s3 from '@aws-cdk/aws-s3';
 import { Names, Token } from '@aws-cdk/core';
 import { Action } from '../action';
+import { sourceArtifactBounds } from '../common';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
@@ -94,7 +95,7 @@ export class S3SourceAction extends Action {
       resource: props.bucket,
       category: codepipeline.ActionCategory.SOURCE,
       provider: 'S3',
-      artifactBounds: codepipeline.sourceArtifactBounds(),
+      artifactBounds: sourceArtifactBounds(),
       outputs: [props.output],
     });
 

@@ -1,10 +1,10 @@
-import { ActionArtifactBounds } from './action';
+import * as codepipeline from '@aws-cdk/aws-codepipeline';
 
 /**
  * The ArtifactBounds that make sense for source Actions -
  * they don't have any inputs, and have exactly one output.
  */
-export function sourceArtifactBounds(): ActionArtifactBounds {
+export function sourceArtifactBounds(): codepipeline.ActionArtifactBounds {
   return {
     minInputs: 0,
     maxInputs: 0,
@@ -17,7 +17,7 @@ export function sourceArtifactBounds(): ActionArtifactBounds {
  * The ArtifactBounds that make sense for deploy Actions -
  * they have exactly one input, and don't produce any outputs.
  */
-export function deployArtifactBounds(): ActionArtifactBounds {
+export function deployArtifactBounds(): codepipeline.ActionArtifactBounds {
   return {
     minInputs: 1,
     maxInputs: 1,

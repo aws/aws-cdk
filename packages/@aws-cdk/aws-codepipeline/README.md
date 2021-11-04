@@ -116,7 +116,7 @@ To make your own custom CodePipeline Action requires registering the action prov
 ```ts
 new codepipeline.CustomActionRegistration(this, 'GenericGitSourceProviderResource', {
   category: codepipeline.ActionCategory.SOURCE,
-  artifactBounds: codepipeline.sourceArtifactBounds(),
+  artifactBounds: { minInputs: 0, maxInputs: 0, minOutputs: 1, maxOutputs: 1 },
   provider: 'GenericGitSource',
   version: '1',
   entityUrl: 'https://docs.aws.amazon.com/codepipeline/latest/userguide/actions-create-custom-action.html',
