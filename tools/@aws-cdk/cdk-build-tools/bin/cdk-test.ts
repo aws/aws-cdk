@@ -27,6 +27,13 @@ async function main() {
     timers,
     env: {
       CDK_DISABLE_STACK_TRACE: '1',
+    },
+  };
+
+  const unitTestOptions = {
+    ...defaultShellOptions,
+    env: {
+      ...defaultShellOptions.env,
 
       // by default, fail when deprecated symbols are used in tests.
       // tests that verify behaviour of deprecated symbols must use the `testDeprecated()` API.
@@ -35,12 +42,12 @@ async function main() {
   };
 
   if (options.test) {
-    await shell(options.test, defaultShellOptions);
+    await shell(options.test, unitTestOptions);
   }
 
   const testFiles = await unitTestFiles();
   if (testFiles.length > 0) {
-    await shell([args.jest], defaultShellOptions);
+    await shell([args.jest], unitTestOptions);
   }
 
   // Run integration test if the package has integ test files
