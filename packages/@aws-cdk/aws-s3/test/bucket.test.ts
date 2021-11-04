@@ -3,9 +3,9 @@ import { EOL } from 'os';
 import { ResourcePart, SynthUtils, arrayWith, objectLike } from '@aws-cdk/assert-internal';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
+import { testFutureBehavior, testLegacyBehavior } from '@aws-cdk/cdk-build-tools/lib/feature-flag';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import { testFutureBehavior, testLegacyBehavior } from '@aws-cdk/cdk-build-tools/lib/feature-flag';
 import * as s3 from '../lib';
 
 // to make it easy to copy & paste from output:
@@ -103,8 +103,6 @@ describe('bucket', () => {
     expect(() => new s3.Bucket(stack, 'MyBucket2', {
       bucketName: '124.pp--33',
     })).not.toThrow();
-
-
   });
 
   test('bucket validation skips tokenized values', () => {
@@ -746,14 +744,24 @@ describe('bucket', () => {
       });
 
       const bucket = s3.Bucket.fromBucketAttributes(stack, 'ImportedBucket', {
-        bucketName: 'myBucket',
+        bucketName: 'mybucket',
         region: 'eu-west-1',
       });
 
-      expect(bucket.bucketRegionalDomainName).toEqual(`myBucket.s3.eu-west-1.${stack.urlSuffix}`);
-      expect(bucket.bucketWebsiteDomainName).toEqual(`myBucket.s3-website-eu-west-1.${stack.urlSuffix}`);
+      expect(bucket.bucketRegionalDomainName).toEqual(`mybucket.s3.eu-west-1.${stack.urlSuffix}`);
+      expect(bucket.bucketWebsiteDomainName).toEqual(`mybucket.s3-website-eu-west-1.${stack.urlSuffix}`);
 
 
+    });
+
+    test('import needs to specify a valid bucket name', () => {
+      const stack = new cdk.Stack(undefined, undefined, {
+        env: { region: 'us-east-1' },
+      });
+
+      expect(() => s3.Bucket.fromBucketAttributes(stack, 'MyBucket3', {
+        bucketName: 'arn:aws:s3:::example-com',
+      })).toThrow();
     });
   });
 
@@ -2129,11 +2137,11 @@ describe('bucket', () => {
     const stack = new cdk.Stack();
 
     // WHEN
-    const bucket = s3.Bucket.fromBucketArn(stack, 'my-bucket', 'arn:aws:s3:::my_corporate_bucket');
+    const bucket = s3.Bucket.fromBucketArn(stack, 'my-bucket', 'arn:aws:s3:::my-corporate-bucket');
 
     // THEN
-    expect(bucket.bucketName).toEqual('my_corporate_bucket');
-    expect(bucket.bucketArn).toEqual('arn:aws:s3:::my_corporate_bucket');
+    expect(bucket.bucketName).toEqual('my-corporate-bucket');
+    expect(bucket.bucketArn).toEqual('arn:aws:s3:::my-corporate-bucket');
 
   });
 
