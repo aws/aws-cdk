@@ -53,16 +53,16 @@ describe('scheduled action', () => {
 
     // WHEN
     asg.scaleOnSchedule('ScaleOutAtMiddaySeoul', {
-      schedule: autoscaling.Schedule.cron({ hour: '12' }),
+      schedule: autoscaling.Schedule.cron({ hour: '12', minute: '0' }),
       minCapacity: 12,
       timeZone: 'Asia/Seoul',
     });
 
     // THEN
     expect(stack).to(haveResource('AWS::AutoScaling::ScheduledAction', {
-      minSize: 12,
+      MinSize: 12,
       Recurrence: '0 12 * * *',
-      timeZone: 'Asia/Seoul',
+      TimeZone: 'Asia/Seoul',
     }));
 
   });
