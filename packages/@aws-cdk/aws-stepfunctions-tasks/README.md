@@ -858,7 +858,6 @@ The following actions must be performed if the virtual cluster ID is supplied fr
 The job can be configured with spark submit parameters:
 
 ```ts
-
 new tasks.EmrContainersStartJobRun(this, 'EMR Containers Start Job Run', {
   virtualCluster: tasks.VirtualClusterInput.fromVirtualClusterId('de92jdei2910fwedz'),
   releaseLabel: tasks.ReleaseLabel.EMR_6_2_0,
