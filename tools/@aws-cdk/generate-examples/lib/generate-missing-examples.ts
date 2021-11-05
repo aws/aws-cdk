@@ -1,5 +1,6 @@
 import { Assembly, TypeSystem } from 'jsii-reflect';
 
+// This import should come from @jsii/spec. Replace when that is possible.
 import { insertExample, replaceAssembly } from './assemblies';
 import { generateClassAssignment } from './generate';
 
