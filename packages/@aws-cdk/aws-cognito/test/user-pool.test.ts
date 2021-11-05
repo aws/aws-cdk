@@ -3,7 +3,7 @@ import { Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { CfnParameter, Duration, Stack, Tags } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { AccountRecovery, Mfa, NumberAttribute, StringAttribute, UserPool, UserPoolIdentityProvider, UserPoolOperation, VerificationEmailStyle, Email } from '../lib';
+import { AccountRecovery, Mfa, NumberAttribute, StringAttribute, UserPool, UserPoolIdentityProvider, UserPoolOperation, VerificationEmailStyle, UserPoolEmail } from '../lib';
 
 describe('User Pool', () => {
   test('default setup', () => {
@@ -1395,7 +1395,7 @@ describe('User Pool', () => {
 
     // WHEN
     new UserPool(stack, 'Pool', {
-      email: Email.withSES({
+      email: UserPoolEmail.withSES({
         sesRegion: 'us-east-1',
         fromEmail: 'user@домен.рф',
         replyTo: 'user@домен.рф',
@@ -1417,21 +1417,7 @@ describe('User Pool', () => {
 
     // WHEN
     expect(() => new UserPool(stack, 'Pool', {
-      email: Email.withSES({
-        sesRegion: 'us-east-1',
-        fromEmail: 'от@домен.рф',
-        replyTo: 'user@домен.рф',
-      }),
-    })).toThrow(/the local part of the email address must use ASCII characters only/);
-  });
-
-  test('email withCognito transmission with cyrillic characters in the local part throw error', () => {
-    // GIVEN
-    const stack = new Stack();
-
-    // WHEN
-    expect(() => new UserPool(stack, 'Pool', {
-      email: Email.withCognito({
+      email: UserPoolEmail.withSES({
         sesRegion: 'us-east-1',
         fromEmail: 'от@домен.рф',
         replyTo: 'user@домен.рф',
@@ -1445,7 +1431,7 @@ describe('User Pool', () => {
 
     // WHEN
     expect(() => new UserPool(stack, 'Pool', {
-      email: Email.withSES({
+      email: UserPoolEmail.withSES({
         sesRegion: 'us-east-1',
         fromEmail: 'user@домен.рф',
         replyTo: 'от@домен.рф',
@@ -1459,11 +1445,7 @@ describe('User Pool', () => {
 
     // WHEN
     expect(() => new UserPool(stack, 'Pool', {
-      email: Email.withCognito({
-        sesRegion: 'us-east-1',
-        fromEmail: 'user@домен.рф',
-        replyTo: 'от@домен.рф',
-      }),
+      email: UserPoolEmail.withCognito('от@домен.рф'),
     })).toThrow(/the local part of the email address must use ASCII characters only/);
   });
 
@@ -1473,7 +1455,7 @@ describe('User Pool', () => {
 
     // WHEN
     new UserPool(stack, 'Pool', {
-      email: Email.withCognito(),
+      email: UserPoolEmail.withCognito(),
     });
 
     // THEN
@@ -1484,21 +1466,13 @@ describe('User Pool', () => {
     });
   });
 
-  test('email withCognito with custom email', () => {
+  test('email withCognito and replyTo', () => {
     // GIVEN
-    const stack = new Stack(undefined, undefined, {
-      env: {
-        region: 'us-east-1',
-        account: '11111111111',
-      },
-    });
+    const stack = new Stack();
 
     // WHEN
     new UserPool(stack, 'Pool', {
-      email: Email.withCognito({
-        fromEmail: 'mycustomemail@example.com',
-        replyTo: 'reply@example.com',
-      }),
+      email: UserPoolEmail.withCognito('reply@example.com'),
     });
 
     // THEN
@@ -1506,35 +1480,8 @@ describe('User Pool', () => {
       EmailConfiguration: {
         EmailSendingAccount: 'COGNITO_DEFAULT',
         ReplyToEmailAddress: 'reply@example.com',
-        SourceArn: {
-          'Fn::Join': [
-            '',
-            [
-              'arn:',
-              {
-                Ref: 'AWS::Partition',
-              },
-              ':ses:us-east-1:11111111111:identity/mycustomemail@example.com',
-            ],
-          ],
-        },
       },
     });
-
-  });
-
-  test('email withCognito with custom email and no region', () => {
-    // GIVEN
-    const stack = new Stack();
-
-    // WHEN
-    expect(() => new UserPool(stack, 'Pool', {
-      email: Email.withCognito({
-        fromEmail: 'mycustomemail@example.com',
-        replyTo: 'reply@example.com',
-      }),
-    })).toThrow(/Your stack region cannot be determined/);
-
   });
 
   test('email withSES with custom email and no region', () => {
@@ -1543,7 +1490,7 @@ describe('User Pool', () => {
 
     // WHEN
     expect(() => new UserPool(stack, 'Pool', {
-      email: Email.withSES({
+      email: UserPoolEmail.withSES({
         fromEmail: 'mycustomemail@example.com',
         replyTo: 'reply@example.com',
       }),
@@ -1562,7 +1509,7 @@ describe('User Pool', () => {
 
     // WHEN
     new UserPool(stack, 'Pool', {
-      email: Email.withSES({
+      email: UserPoolEmail.withSES({
         fromEmail: 'mycustomemail@example.com',
         replyTo: 'reply@example.com',
         configurationSetName: 'default',
@@ -1604,7 +1551,7 @@ describe('User Pool', () => {
 
     // WHEN
     new UserPool(stack, 'Pool', {
-      email: Email.withSES({
+      email: UserPoolEmail.withSES({
         fromEmail: 'mycustomemail@example.com',
         fromName: 'My Custom Email',
         replyTo: 'reply@example.com',
@@ -1647,7 +1594,7 @@ describe('User Pool', () => {
 
     // WHEN
     new UserPool(stack, 'Pool', {
-      email: Email.withSES({
+      email: UserPoolEmail.withSES({
         fromEmail: 'mycustomemail@example.com',
         fromName: 'My Custom Email',
         sesRegion: 'us-east-1',
@@ -1690,7 +1637,7 @@ describe('User Pool', () => {
 
     // WHEN
     expect(() => new UserPool(stack, 'Pool', {
-      email: Email.withSES({
+      email: UserPoolEmail.withSES({
         fromEmail: 'mycustomemail@example.com',
         fromName: 'My Custom Email',
         replyTo: 'reply@example.com',
@@ -1700,24 +1647,6 @@ describe('User Pool', () => {
 
   });
 
-  test('email withCognito invalid region throws error', () => {
-    // GIVEN
-    const stack = new Stack(undefined, undefined, {
-      env: {
-        region: 'us-east-2',
-        account: '11111111111',
-      },
-    });
-
-    // WHEN
-    expect(() => new UserPool(stack, 'Pool', {
-      email: Email.withCognito({
-        fromEmail: 'mycustomemail@example.com',
-        replyTo: 'reply@example.com',
-      }),
-    })).toThrow(/Please provide a valid value/);
-
-  });
   test('email withSES invalid sesRegion throws error', () => {
     // GIVEN
     const stack = new Stack(undefined, undefined, {
@@ -1728,31 +1657,12 @@ describe('User Pool', () => {
 
     // WHEN
     expect(() => new UserPool(stack, 'Pool', {
-      email: Email.withSES({
+      email: UserPoolEmail.withSES({
         sesRegion: 'us-east-2',
         fromEmail: 'mycustomemail@example.com',
         fromName: 'My Custom Email',
         replyTo: 'reply@example.com',
         configurationSetName: 'default',
-      }),
-    })).toThrow(/sesRegion must be one of/);
-
-  });
-
-  test('email withCognito invalid region throws error', () => {
-    // GIVEN
-    const stack = new Stack(undefined, undefined, {
-      env: {
-        account: '11111111111',
-      },
-    });
-
-    // WHEN
-    expect(() => new UserPool(stack, 'Pool', {
-      email: Email.withCognito({
-        sesRegion: 'us-east-2',
-        fromEmail: 'mycustomemail@example.com',
-        replyTo: 'reply@example.com',
       }),
     })).toThrow(/sesRegion must be one of/);
 

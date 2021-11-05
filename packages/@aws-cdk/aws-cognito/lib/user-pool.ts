@@ -8,7 +8,7 @@ import { StandardAttributeNames } from './private/attr-names';
 import { ICustomAttribute, StandardAttribute, StandardAttributes } from './user-pool-attr';
 import { UserPoolClient, UserPoolClientOptions } from './user-pool-client';
 import { UserPoolDomain, UserPoolDomainOptions } from './user-pool-domain';
-import { Email } from './user-pool-email';
+import { UserPoolEmail } from './user-pool-email';
 import { IUserPoolIdentityProvider } from './user-pool-idp';
 import { UserPoolResourceServer, UserPoolResourceServerOptions } from './user-pool-resource-server';
 
@@ -581,7 +581,7 @@ export interface UserPoolProps {
    * Email settings for a user pool.
    * @default - cognito will use the default email configuration
    */
-  readonly email?: Email;
+  readonly email?: UserPoolEmail;
 
   /**
    * Lambda functions to use for supported Cognito triggers.

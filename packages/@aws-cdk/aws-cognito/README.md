@@ -321,22 +321,15 @@ Cognito sends emails to users in the user pool, when particular actions take pla
 emails, password resets, etc. The address from which these emails are sent can be configured on the user pool.
 Read more at [Email settings for User Pools](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-email.html).
 
-By default, user pools are configured to use Cognito's built in email capability, which by default will send emails
-from `no-reply@verificationemail.com`. To customize the from address, while still using the Cognito built-in
-email capability, specify a custom email address that has been configured in Amazon SES.
+By default, user pools are configured to use Cognito's built in email capability, which will send emails
+from `no-reply@verificationemail.com`. If you want to use a custom email address you can configure
+Cognito to send emails through Amazon SES, which is detailed below.
 
 ```ts
 new cognito.UserPool(this, 'myuserpool', {
-  email: Email.withCognito({
-    fromEmail: 'noreply@myawesomeapp.com',
-    replyTo: 'support@myawesomeapp.com',
-  }),
+  email: UserPoolEmail.withCognito('support@myawesomeapp.com'),
 });
 ```
-
-The custom email address specified must first be verified in Amazon SES, and associated with an authorization policy
-that allows Cognito to send emails. Read more at [Configuring Email for your User Pool](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-email.html#user-pool-email-configure).
-
 
 For production applications it is recommended to configure the UserPool to send emails through Amazon SES. To do
 so, follow the steps in the [Cognito Developer Guide](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-email.html#user-pool-email-developer)
@@ -347,7 +340,7 @@ Once the SES setup is complete, the UserPool can be configured to use the SES em
 
 ```ts
 new cognito.UserPool(this, 'myuserpool', {
-  email: Email.withSES({
+  email: UserPoolEmail.withSES({
     fromEmail: 'noreply@myawesomeapp.com',
     fromName: 'Awesome App',
     replyTo: 'support@myawesomeapp.com',
@@ -360,8 +353,8 @@ If the UserPool is being created in a different region, `sesRegion` must be used
 
 ```ts
 new cognito.UserPool(this, 'myuserpool', {
-  email: Email.withSES({
-    sesRegion: SESRegion.US_EAST_1,
+  email: UserPoolEmail.withSES({
+    sesRegion: 'us-east-1',
     fromEmail: 'noreply@myawesomeapp.com',
     fromName: 'Awesome App',
     replyTo: 'support@myawesomeapp.com',
