@@ -176,9 +176,19 @@ export interface IRepository extends IResource, notifications.INotificationRuleS
   ): notifications.INotificationRule;
 
   /**
+   * @deprecated
    * Defines a CodeStar Notification rule which triggers when a pull request is merged.
    */
   notifiyOnPullRequestMerged(
+    id: string,
+    target: notifications.INotificationRuleTarget,
+    options?: notifications.NotificationRuleOptions,
+  ): notifications.INotificationRule;
+
+  /**
+   * Defines a CodeStar Notification rule which triggers when a pull request is merged.
+   */
+   notifyOnPullRequestMerged(
     id: string,
     target: notifications.INotificationRuleTarget,
     options?: notifications.NotificationRuleOptions,
@@ -416,6 +426,17 @@ abstract class RepositoryBase extends Resource implements IRepository {
   }
 
   public notifiyOnPullRequestMerged(
+    id: string,
+    target: notifications.INotificationRuleTarget,
+    options?: notifications.NotificationRuleOptions,
+  ): notifications.INotificationRule {
+    return this.notifyOn(id, target, {
+      ...options,
+      events: [RepositoryNotificationEvents.PULL_REQUEST_MERGED],
+    });
+  }
+
+  public notifyOnPullRequestMerged(
     id: string,
     target: notifications.INotificationRuleTarget,
     options?: notifications.NotificationRuleOptions,
