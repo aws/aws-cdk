@@ -50,7 +50,7 @@
                 {
                   "Ref": "AWS::URLSuffix"
                 },
-                "/aws-cdk/assets:f0fe8a410cb4b860a25f6f3e09237abf69cd38ab59f9ef2441597c75f598c634"
+                "/aws-cdk/assets:ed8641107a512310a988ee5a2b13db4c5ccbba98b0a8bba4132464765d0061d2"
               ]
             ]
           }
@@ -65,7 +65,17 @@
       },
       "DependsOn": [
         "MyLambdaServiceRole4539ECB6"
-      ]
+      ],
+      "Metadata": {
+        "aws:asset:path": "asset.ed8641107a512310a988ee5a2b13db4c5ccbba98b0a8bba4132464765d0061d2",
+        "aws:asset:dockerfile-path": "Dockerfile",
+        "aws:asset:docker-build-args": {
+          "arg1": "val1",
+          "arg2": "val2"
+        },
+        "aws:asset:docker-build-target": "stage",
+        "aws:asset:property": "Code.ImageUri"
+      }
     }
   }
 }

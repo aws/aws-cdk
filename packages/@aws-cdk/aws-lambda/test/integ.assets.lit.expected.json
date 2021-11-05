@@ -72,18 +72,22 @@
             ]
           }
         },
-        "Handler": "index.main",
         "Role": {
           "Fn::GetAtt": [
             "MyLambdaServiceRole4539ECB6",
             "Arn"
           ]
         },
+        "Handler": "index.main",
         "Runtime": "python3.6"
       },
       "DependsOn": [
         "MyLambdaServiceRole4539ECB6"
-      ]
+      ],
+      "Metadata": {
+        "aws:asset:path": "asset.9678c34eca93259d11f2d714177347afd66c50116e1e08996eff893d3ca81232",
+        "aws:asset:property": "Code"
+      }
     }
   },
   "Parameters": {

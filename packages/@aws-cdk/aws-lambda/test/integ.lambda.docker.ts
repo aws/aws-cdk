@@ -7,7 +7,11 @@ class TestStack extends Stack {
     super(scope, id);
 
     new DockerImageFunction(this, 'MyLambda', {
-      code: DockerImageCode.fromImageAsset(path.join(__dirname, 'docker-lambda-handler')),
+      code: DockerImageCode.fromImageAsset(path.join(__dirname, 'docker-lambda-handler'), {
+        file: 'Dockerfile',
+        target: 'stage',
+        buildArgs: { arg1: 'val1', arg2: 'val2' },
+      }),
     });
   }
 }

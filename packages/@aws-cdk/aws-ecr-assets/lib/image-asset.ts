@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as ecr from '@aws-cdk/aws-ecr';
-import { Annotations, AssetStaging, FeatureFlags, FileFingerprintOptions, IgnoreMode, Stack, SymlinkFollowMode, Token, Stage } from '@aws-cdk/core';
+import { Annotations, AssetStaging, FeatureFlags, FileFingerprintOptions, IgnoreMode, Stack, SymlinkFollowMode, Token, Stage, CfnResource } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 
@@ -147,6 +147,29 @@ export class DockerImageAsset extends CoreConstruct implements IAsset {
    */
   public readonly assetHash: string;
 
+  /**
+   * The path to the asset, relative to the current Cloud Assembly
+   *
+   * If asset staging is disabled, this will just be the original path.
+   * If asset staging is enabled it will be the staged path.
+   */
+  public readonly assetPath: string;
+
+  /**
+   * The path to the Dockerfile, relative to the assetPath
+   */
+  public readonly dockerfilePath?: string;
+
+  /**
+   * Build args to pass to the `docker build` command.
+   */
+  public readonly dockerBuildArgs?: { [key: string]: string };
+
+  /**
+   * Docker target to build to
+   */
+  readonly dockerBuildTarget?: string;
+
   constructor(scope: Construct, id: string, props: DockerImageAssetProps) {
     super(scope, id);
 
@@ -223,17 +246,53 @@ export class DockerImageAsset extends CoreConstruct implements IAsset {
     this.assetHash = staging.assetHash;
 
     const stack = Stack.of(this);
+    this.assetPath = staging.relativeStagedPath(stack);
+    this.dockerfilePath = props.file;
+    this.dockerBuildArgs = props.buildArgs;
+    this.dockerBuildTarget = props.target;
+
     const location = stack.synthesizer.addDockerImageAsset({
-      directoryName: staging.relativeStagedPath(stack),
-      dockerBuildArgs: props.buildArgs,
-      dockerBuildTarget: props.target,
-      dockerFile: props.file,
+      directoryName: this.assetPath,
+      dockerBuildArgs: this.dockerBuildArgs,
+      dockerBuildTarget: this.dockerBuildTarget,
+      dockerFile: this.dockerfilePath,
       sourceHash: staging.assetHash,
     });
 
     this.repository = ecr.Repository.fromRepositoryName(this, 'Repository', location.repositoryName);
     this.imageUri = location.imageUri;
   }
+
+  /**
+   * Adds CloudFormation template metadata to the specified resource with
+   * information that indicates which resource property is mapped to this local
+   * asset. This can be used by tools such as SAM CLI to provide local
+   * experience such as local invocation and debugging of Lambda functions.
+   *
+   * Asset metadata will only be included if the stack is synthesized with the
+   * "aws:cdk:enable-asset-metadata" context key defined, which is the default
+   * behavior when synthesizing via the CDK Toolkit.
+   *
+   * @see https://github.com/aws/aws-cdk/issues/1432
+   *
+   * @param resource The CloudFormation resource which is using this asset [disable-awslint:ref-via-interface]
+   * @param resourceProperty The property name where this asset is referenced
+   */
+  public addResourceMetadata(resource: CfnResource, resourceProperty: string) {
+    if (!this.node.tryGetContext(cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT)) {
+      return; // not enabled
+    }
+
+    // tell tools such as SAM CLI that the resourceProperty of this resource
+    // points to a local path in order to enable local invocation of this function.
+    resource.cfnOptions.metadata = resource.cfnOptions.metadata || { };
+    resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_PATH_KEY] = this.assetPath;
+    resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_DOCKERFILE_PATH_KEY] = this.dockerfilePath;
+    resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_DOCKER_BUILD_ARGS_KEY] = this.dockerBuildArgs;
+    resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_DOCKER_BUILD_TARGET_KEY] = this.dockerBuildTarget;
+    resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_PROPERTY_KEY] = resourceProperty;
+  }
+
 }
 
 function validateProps(props: DockerImageAssetProps) {
