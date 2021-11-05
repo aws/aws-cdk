@@ -1,5 +1,6 @@
 import '@aws-cdk/assert-internal/jest';
 import * as ec2 from '@aws-cdk/aws-ec2';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import * as elbv2 from '../../lib';
 import { FakeSelfRegisteringTarget } from '../helpers';
@@ -117,7 +118,7 @@ describe('tests', () => {
       listener: fixture.listener,
       targetGroups: [childGroup],
       priority: 100,
-      hostHeader: 'www.foo.com',
+      conditions: [elbv2.ListenerCondition.hostHeaders(['www.foo.com'])],
     });
 
     // THEN
@@ -164,11 +165,13 @@ describe('tests', () => {
     fixture.listener.addTargets('default', { port: 80 });
 
     // WHEN
+    const securityGroup = ec2.SecurityGroup.fromSecurityGroupId(stack2, 'SecurityGroup',
+      fixture.listener.connections.securityGroups[0].securityGroupId,
+      { allowAllOutbound: false });
     const listener2 = elbv2.ApplicationListener.fromApplicationListenerAttributes(stack2, 'YetAnotherListener', {
       defaultPort: 8008,
-      securityGroupId: fixture.listener.connections.securityGroups[0].securityGroupId,
       listenerArn: fixture.listener.listenerArn,
-      securityGroupAllowsAllOutbound: false,
+      securityGroup,
     });
     listener2.addTargetGroups('Default', {
       // Must be a non-default target
@@ -181,7 +184,7 @@ describe('tests', () => {
     expectedImportedSGRules(stack2);
   });
 
-  test('default port peering works on constructed listener', () => {
+  testDeprecated('default port peering works on constructed listener', () => {
     // GIVEN
     const fixture = new TestFixture();
     fixture.listener.addTargets('Default', { port: 8080, targets: [new elbv2.InstanceTarget('i-12345')] });
@@ -206,11 +209,12 @@ describe('tests', () => {
   test('default port peering works on imported listener', () => {
     // GIVEN
     const stack2 = new cdk.Stack();
+    const securityGroup = ec2.SecurityGroup.fromSecurityGroupId(stack2, 'SecurityGroup', 'imported-security-group-id');
 
     // WHEN
     const listener2 = elbv2.ApplicationListener.fromApplicationListenerAttributes(stack2, 'YetAnotherListener', {
       listenerArn: 'listener-arn',
-      securityGroupId: 'imported-security-group-id',
+      securityGroup,
       defaultPort: 8080,
     });
     listener2.connections.allowDefaultPortFromAnyIpv4('Open to the world');
