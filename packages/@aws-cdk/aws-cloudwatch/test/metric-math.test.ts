@@ -65,7 +65,6 @@ describe('Metric Math', () => {
         usingMetrics: { a, b },
       });
     }).toThrow(/Invalid id: "1abc". id Must start with/);
-
   });
 
   test('MathExpression optimization: "with" with the same period returns the same object', () => {
@@ -105,8 +104,6 @@ describe('Metric Math', () => {
         ['Test', 'ACount', { visible: false, id: 'metric1' }],
         ['Test', 'BCount', { visible: false, id: 'metric2' }],
       ]);
-
-
     });
     test('MathExpressions can be added to a graph', () => {
       // GIVEN

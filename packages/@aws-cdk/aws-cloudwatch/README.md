@@ -123,8 +123,7 @@ new GraphWidget({
 });
 ```
 
-By default if you do not provide an `id` both `MathExpression` metrics will
-get assigned the `id` of `m1`.
+By default, if you do not provide an `id`, CloudWatch will assign `m1` to both `MathExpression` metrics.
 
 ### Search Expressions
 

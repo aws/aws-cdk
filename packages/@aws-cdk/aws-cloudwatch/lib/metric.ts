@@ -129,7 +129,7 @@ export interface MathExpressionOptions {
   /**
    * An alias for the math expression.
    *
-   * @default - CloudWatch will assign an id
+   * @default - CloudWatch will assign `m1` as the id
    */
   readonly id?: string;
 
