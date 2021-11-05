@@ -246,7 +246,7 @@ new DomainName(stack, 'DomainName', {
     bucket,
     key: 'someca.pem',
     version: 'version',
-    },
+  },
 })
 ```
 
