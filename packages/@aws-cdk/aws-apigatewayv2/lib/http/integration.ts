@@ -3,6 +3,7 @@ import { Resource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnIntegration } from '../apigatewayv2.generated';
 import { IIntegration } from '../common';
+import { ParameterMapping } from '../parameter-mapping';
 import { IHttpApi } from './api';
 import { HttpMethod, IHttpRoute } from './route';
 
@@ -128,6 +129,13 @@ export interface HttpIntegrationProps {
    * @default undefined private integration traffic will use HTTP protocol
    */
   readonly secureServerName?: string;
+
+  /**
+   * Specifies how to transform HTTP requests before sending them to the backend
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-parameter-mapping.html
+   * @default undefined requests are sent to the backend unmodified
+   */
+  readonly parameterMapping?: ParameterMapping;
 }
 
 /**
@@ -149,6 +157,7 @@ export class HttpIntegration extends Resource implements IHttpIntegration {
       connectionId: props.connectionId,
       connectionType: props.connectionType,
       payloadFormatVersion: props.payloadFormatVersion?.version,
+      requestParameters: props.parameterMapping?.mappings,
     });
 
     if (props.secureServerName) {
@@ -237,4 +246,11 @@ export interface HttpRouteIntegrationConfig {
    * @default undefined private integration traffic will use HTTP protocol
    */
   readonly secureServerName?: string;
+
+  /**
+  * Specifies how to transform HTTP requests before sending them to the backend
+  * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-parameter-mapping.html
+  * @default undefined requests are sent to the backend unmodified
+  */
+  readonly parameterMapping?: ParameterMapping;
 }

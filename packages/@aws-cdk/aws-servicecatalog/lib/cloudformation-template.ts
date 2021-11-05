@@ -1,4 +1,6 @@
 import * as s3_assets from '@aws-cdk/aws-s3-assets';
+import { hashValues } from './private/util';
+import { ProductStack } from './product-stack';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
@@ -23,6 +25,13 @@ export abstract class CloudFormationTemplate {
    */
   public static fromAsset(path: string, options?: s3_assets.AssetOptions): CloudFormationTemplate {
     return new CloudFormationAssetTemplate(path, options);
+  }
+
+  /**
+   * Creates a product with the resources defined in the given product stack.
+   */
+  public static fromProductStack(productStack: ProductStack): CloudFormationTemplate {
+    return new CloudFormationProductStackTemplate(productStack);
   }
 
   /**
@@ -76,7 +85,7 @@ class CloudFormationAssetTemplate extends CloudFormationTemplate {
   public bind(scope: Construct): CloudFormationTemplateConfig {
     // If the same AssetCode is used multiple times, retain only the first instantiation.
     if (!this.asset) {
-      this.asset = new s3_assets.Asset(scope, 'Template', {
+      this.asset = new s3_assets.Asset(scope, `Template${hashValues(this.path)}`, {
         path: this.path,
         ...this.options,
       });
@@ -84,6 +93,24 @@ class CloudFormationAssetTemplate extends CloudFormationTemplate {
 
     return {
       httpUrl: this.asset.httpUrl,
+    };
+  }
+}
+
+/**
+ * Template from a CDK defined product stack.
+ */
+class CloudFormationProductStackTemplate extends CloudFormationTemplate {
+  /**
+   * @param stack A service catalog product stack.
+  */
+  constructor(public readonly productStack: ProductStack) {
+    super();
+  }
+
+  public bind(_scope: Construct): CloudFormationTemplateConfig {
+    return {
+      httpUrl: this.productStack._getTemplateUrl(),
     };
   }
 }

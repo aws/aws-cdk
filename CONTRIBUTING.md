@@ -113,7 +113,7 @@ $ yarn build
 $ yarn test
 ```
 
-However, if you wish to build the the entire repository, the following command will achieve this.
+However, if you wish to build the entire repository, the following command will achieve this.
 
 ```console
 cd <root of the CDK repo>
@@ -319,7 +319,13 @@ $ yarn watch & # runs in the background
 
 ## Breaking Changes
 
-_NOTE: Breaking changes will not be allowed in the upcoming v2 release. These instructions apply to v1._
+**_NOTE_**: _Starting with version 2.0.0 of the AWS CDK, **all modules and members vended as part of the main CDK library**_
+_**(`aws-cdk-lib`) will always be stable**; we are committing to never introduce breaking changes in a non-major bump._
+_Breaking changes are only allowed on pre-released (experimental or dev preview) modules_
+_(those with a `stability` of `experimental` in their respective `package.json` files)._
+_For v1, each module is separately released. For v2, only `stable` modules are released as part of the_
+_main `aws-cdk-lib` release, and all `experimental` modules are released independently as `-alpha` versions,_
+_and not included in the main CDK library._
 
 Whenever you are making changes, there is a chance for those changes to be
 *breaking* existing users of the library. A change is breaking if there are
@@ -454,6 +460,47 @@ If the new behavior is going to be breaking, the user must opt in to it, either 
 
 Of these two, the first one is preferred if possible (as feature flags have
 non-local effects which can cause unintended effects).
+
+### Adding new experimental ("preview") APIs
+
+To make sure we can keep adding features fast, while keeping our commitment to
+not release breaking changes, we are introducing a new model - API Previews.
+APIs that we want to get in front of developers early, and are not yet
+finalized, will be added to the AWS CDK with a specific suffix: `BetaX`. APIs
+with the preview suffix will never be removed, instead they will be deprecated
+and replaced by either the stable version (without the suffix), or by a newer
+preview version. For example, assume we add the method
+`grantAwesomePowerBeta1`:
+
+```ts
+/**
+ * This methods grants awesome powers
+ */
+grantAwesomePowerBeta1();
+```
+
+Times goes by, we get feedback that this method will actually be much better
+if it accept a `Principal`. Since adding a required property is a breaking
+change, we will add `grantAwesomePowerBeta2()` and deprecate
+`grantAwesomePowerBeta1`:
+
+```ts
+/**
+* This methods grants awesome powers to the given principal
+*
+* @param grantee The principal to grant powers to
+*/
+grantAwesomePowerBeta2(grantee: iam.IGrantable)
+
+/**
+* This methods grants awesome powers
+* @deprecated use grantAwesomePowerBeta2
+*/
+grantAwesomePowerBeta1()
+```
+
+When we decide its time to graduate the API, the latest preview version will
+be deprecated and the final version - `grantAwesomePower` will be added.
 
 ## Documentation
 

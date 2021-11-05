@@ -309,7 +309,9 @@ export interface IBucket extends IResource {
    *
    * @example
    *
-   *    bucket.addEventNotification(EventType.OnObjectCreated, myLambda, 'home/myusername/*')
+   *    declare const myLambda: lambda.Function;
+   *    const bucket = new s3.Bucket(this, 'MyBucket');
+   *    bucket.addEventNotification(s3.EventType.OBJECT_CREATED, new s3n.LambdaDestination(myLambda), {prefix: 'home/myusername/*'})
    *
    * @see
    * https://docs.aws.amazon.com/AmazonS3/latest/dev/NotificationHowTo.html
@@ -319,7 +321,7 @@ export interface IBucket extends IResource {
   /**
    * Subscribes a destination to receive notifications when an object is
    * created in the bucket. This is identical to calling
-   * `onEvent(EventType.ObjectCreated)`.
+   * `onEvent(s3.EventType.OBJECT_CREATED)`.
    *
    * @param dest The notification destination (see onEvent)
    * @param filters Filters (see onEvent)
@@ -329,7 +331,7 @@ export interface IBucket extends IResource {
   /**
    * Subscribes a destination to receive notifications when an object is
    * removed from the bucket. This is identical to calling
-   * `onEvent(EventType.ObjectRemoved)`.
+   * `onEvent(EventType.OBJECT_REMOVED)`.
    *
    * @param dest The notification destination (see onEvent)
    * @param filters Filters (see onEvent)
@@ -785,7 +787,9 @@ export abstract class BucketBase extends Resource implements IBucket {
    *
    * @example
    *
-   *    bucket.addEventNotification(EventType.OnObjectCreated, myLambda, 'home/myusername/*')
+   *    declare const myLambda: lambda.Function;
+   *    const bucket = new s3.Bucket(this, 'MyBucket');
+   *    bucket.addEventNotification(s3.EventType.OBJECT_CREATED, new s3n.LambdaDestination(myLambda), {prefix: 'home/myusername/*'});
    *
    * @see
    * https://docs.aws.amazon.com/AmazonS3/latest/dev/NotificationHowTo.html
@@ -797,7 +801,7 @@ export abstract class BucketBase extends Resource implements IBucket {
   /**
    * Subscribes a destination to receive notifications when an object is
    * created in the bucket. This is identical to calling
-   * `onEvent(EventType.ObjectCreated)`.
+   * `onEvent(EventType.OBJECT_CREATED)`.
    *
    * @param dest The notification destination (see onEvent)
    * @param filters Filters (see onEvent)
@@ -809,7 +813,7 @@ export abstract class BucketBase extends Resource implements IBucket {
   /**
    * Subscribes a destination to receive notifications when an object is
    * removed from the bucket. This is identical to calling
-   * `onEvent(EventType.ObjectRemoved)`.
+   * `onEvent(EventType.OBJECT_REMOVED)`.
    *
    * @param dest The notification destination (see onEvent)
    * @param filters Filters (see onEvent)
@@ -1392,6 +1396,7 @@ export class Bucket extends BucketBase {
     if (!bucketName) {
       throw new Error('Bucket name is required');
     }
+    Bucket.validateBucketName(bucketName);
 
     const newUrlFormat = attrs.bucketWebsiteNewUrlFormat === undefined
       ? false
@@ -1430,6 +1435,52 @@ export class Bucket extends BucketBase {
     });
   }
 
+  /**
+   * Thrown an exception if the given bucket name is not valid.
+   *
+   * @param physicalName name of the bucket.
+   */
+  public static validateBucketName(physicalName: string): void {
+    const bucketName = physicalName;
+    if (!bucketName || Token.isUnresolved(bucketName)) {
+      // the name is a late-bound value, not a defined string,
+      // so skip validation
+      return;
+    }
+
+    const errors: string[] = [];
+
+    // Rules codified from https://docs.aws.amazon.com/AmazonS3/latest/dev/BucketRestrictions.html
+    if (bucketName.length < 3 || bucketName.length > 63) {
+      errors.push('Bucket name must be at least 3 and no more than 63 characters');
+    }
+    const charsetMatch = bucketName.match(/[^a-z0-9.-]/);
+    if (charsetMatch) {
+      errors.push('Bucket name must only contain lowercase characters and the symbols, period (.) and dash (-) '
+        + `(offset: ${charsetMatch.index})`);
+    }
+    if (!/[a-z0-9]/.test(bucketName.charAt(0))) {
+      errors.push('Bucket name must start and end with a lowercase character or number '
+        + '(offset: 0)');
+    }
+    if (!/[a-z0-9]/.test(bucketName.charAt(bucketName.length - 1))) {
+      errors.push('Bucket name must start and end with a lowercase character or number '
+        + `(offset: ${bucketName.length - 1})`);
+    }
+    const consecSymbolMatch = bucketName.match(/\.-|-\.|\.\./);
+    if (consecSymbolMatch) {
+      errors.push('Bucket name must not have dash next to period, or period next to dash, or consecutive periods '
+        + `(offset: ${consecSymbolMatch.index})`);
+    }
+    if (/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(bucketName)) {
+      errors.push('Bucket name must not resemble an IP address');
+    }
+
+    if (errors.length > 0) {
+      throw new Error(`Invalid S3 bucket name (value: ${bucketName})${EOL}${errors.join(EOL)}`);
+    }
+  }
+
   public readonly bucketArn: string;
   public readonly bucketName: string;
   public readonly bucketDomainName: string;
@@ -1458,7 +1509,7 @@ export class Bucket extends BucketBase {
 
     const { bucketEncryption, encryptionKey } = this.parseEncryption(props);
 
-    this.validateBucketName(this.physicalName);
+    Bucket.validateBucketName(this.physicalName);
 
     const websiteConfiguration = this.renderWebsiteConfiguration(props);
     this.isWebsite = (websiteConfiguration !== undefined);
@@ -1594,47 +1645,6 @@ export class Bucket extends BucketBase {
       principals: [new iam.AnyPrincipal()],
     });
     this.addToResourcePolicy(statement);
-  }
-
-  private validateBucketName(physicalName: string): void {
-    const bucketName = physicalName;
-    if (!bucketName || Token.isUnresolved(bucketName)) {
-      // the name is a late-bound value, not a defined string,
-      // so skip validation
-      return;
-    }
-
-    const errors: string[] = [];
-
-    // Rules codified from https://docs.aws.amazon.com/AmazonS3/latest/dev/BucketRestrictions.html
-    if (bucketName.length < 3 || bucketName.length > 63) {
-      errors.push('Bucket name must be at least 3 and no more than 63 characters');
-    }
-    const charsetMatch = bucketName.match(/[^a-z0-9.-]/);
-    if (charsetMatch) {
-      errors.push('Bucket name must only contain lowercase characters and the symbols, period (.) and dash (-) '
-        + `(offset: ${charsetMatch.index})`);
-    }
-    if (!/[a-z0-9]/.test(bucketName.charAt(0))) {
-      errors.push('Bucket name must start and end with a lowercase character or number '
-        + '(offset: 0)');
-    }
-    if (!/[a-z0-9]/.test(bucketName.charAt(bucketName.length - 1))) {
-      errors.push('Bucket name must start and end with a lowercase character or number '
-        + `(offset: ${bucketName.length - 1})`);
-    }
-    const consecSymbolMatch = bucketName.match(/\.-|-\.|\.\./);
-    if (consecSymbolMatch) {
-      errors.push('Bucket name must not have dash next to period, or period next to dash, or consecutive periods '
-        + `(offset: ${consecSymbolMatch.index})`);
-    }
-    if (/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(bucketName)) {
-      errors.push('Bucket name must not resemble an IP address');
-    }
-
-    if (errors.length > 0) {
-      throw new Error(`Invalid S3 bucket name (value: ${bucketName})${EOL}${errors.join(EOL)}`);
-    }
   }
 
   /**
