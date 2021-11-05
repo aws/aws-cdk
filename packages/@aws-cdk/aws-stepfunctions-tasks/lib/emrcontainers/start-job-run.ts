@@ -107,15 +107,15 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
     this.integrationPattern = props.integrationPattern ?? sfn.IntegrationPattern.RUN_JOB;
     validatePatternSupported(this.integrationPattern, EmrContainersStartJobRun.SUPPORTED_INTEGRATION_PATTERNS);
 
-    if (props.applicationConfig) {
+    if (this.props.applicationConfig) {
       this.validateAppConfig(this.props.applicationConfig);
     }
 
-    if (props.jobDriver.sparkSubmitJobDriver) {
+    if (this.props.jobDriver.sparkSubmitJobDriver) {
       this.validateSparkSubmitJobDriver(props.jobDriver.sparkSubmitJobDriver);
     }
 
-    if (props.executionRole === undefined
+    if (this.props.executionRole === undefined
       && sfn.JsonPath.isEncodedJsonPath(props.virtualCluster.id)) {
       throw new Error('Execution role cannot be undefined when the virtual cluster ID is not a concrete value. Provide an execution role with the correct trust policy');
     }
@@ -179,7 +179,7 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
     };
   }
 
-  private validateAppConfigPropertiesLength(appConfig?: ApplicationConfiguration) {
+  private validateAppConfigPropertiesLength(appConfig: ApplicationConfiguration) {
     if (appConfig?.properties === undefined) {
       return;
     } else if (Object.keys(appConfig.properties).length > 100) {
@@ -187,7 +187,7 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
     }
   }
 
-  private validatePropertiesNestedAppConfigBothNotUndefined(appConfig?: ApplicationConfiguration) {
+  private validatePropertiesNestedAppConfigBothNotUndefined(appConfig: ApplicationConfiguration) {
     if (appConfig?.properties === undefined && appConfig?.nestedConfig === undefined) {
       throw new Error('Application configuration must have either properties or nested app configurations defined.');
     }
@@ -209,8 +209,8 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
     return Array.isArray(value) && value.every(item => typeof item === 'string');
   }
 
-  private validateEntryPointArguments = (entryPointArguments:sfn.TaskInput) => {
-    if (typeof entryPointArguments.value === 'string'&& !sfn.JsonPath.isEncodedJsonPath(entryPointArguments.value)) {
+  private validateEntryPointArguments (entryPointArguments:sfn.TaskInput) {
+    if (typeof entryPointArguments.value === 'string' && !sfn.JsonPath.isEncodedJsonPath(entryPointArguments.value)) {
       throw new Error(`Entry point arguments must be a string array. Received ${typeof entryPointArguments.value}.`);
     }
     if (!this.isArrayOfStrings(entryPointArguments.value)) {
@@ -218,7 +218,7 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
     }
   }
 
-  private validateEntryPointArgumentsLength = (entryPointArguments:sfn.TaskInput) => {
+  private validateEntryPointArgumentsLength (entryPointArguments:sfn.TaskInput) {
     if (this.isArrayOfStrings(entryPointArguments.value)
         && (entryPointArguments.value.length > 10280 || entryPointArguments.value.length < 1)) {
       throw new Error(`Entry point arguments must be a string array between 1 and 10280 in length. Received ${entryPointArguments.value.length}.`);
@@ -231,12 +231,12 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
     }
   }
   private validateEntryPoint (entryPoint: TaskInput) {
-    if (!sfn.JsonPath.isEncodedJsonPath(entryPoint.value)&& (entryPoint.value.length > 256|| entryPoint.value.length < 1)) {
+    if (!sfn.JsonPath.isEncodedJsonPath(entryPoint.value) && (entryPoint.value.length > 256|| entryPoint.value.length < 1)) {
       throw new Error(`Entry point must be between 1 and 256 characters in length. Received ${entryPoint.value.length}.`);
     }
   }
 
-  private validateSparkSubmitJobDriver = (driver:SparkSubmitJobDriver) => {
+  private validateSparkSubmitJobDriver (driver:SparkSubmitJobDriver) {
     this.validateEntryPoint(driver.entryPoint);
     if (driver.entryPointArguments) {
       this.validateEntryPointArguments(driver.entryPointArguments);
@@ -246,7 +246,6 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
       this.validateSparkSubmitParametersLength(driver.sparkSubmitParameters);
     }
   }
-
 
   private assignLogGroup = () : any => {
     if (this.props.monitoring?.logGroup) {
@@ -292,7 +291,6 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
 
     return jobExecutionRole;
   }
-
   private grantMonitoringPolicies() {
 
     this.logBucket?.grantReadWrite(this.role);
@@ -577,7 +575,7 @@ export interface Monitoring {
    * If set to true, will automatically create a Cloudwatch Log Group and S3 bucket.
    * This will be set to `true` implicitly if values are provided for `logGroup` or `logBucket`.
    *
-   * @default true -  true if values are provided for `logGroup` or `logBucket`, false otherwise
+   * @default true - true if values are provided for `logGroup` or `logBucket`, false otherwise
    */
   readonly logging?: boolean
 
@@ -586,7 +584,7 @@ export interface Monitoring {
    *
    * You can configure your jobs to send log information to CloudWatch Logs.
    *
-   * @default - Automatically generated
+   * @default - if `logging` is manually set to `true` and a `logGroup` is not provided, a `logGroup` will be automatically generated`.
    */
   readonly logGroup?: logs.ILogGroup;
 
@@ -602,7 +600,7 @@ export interface Monitoring {
    *
    * You can configure your jobs to send log information to Amazon S3.
    *
-   * @default - Automatically generated
+   * @default - if `logging` is manually set to `true` and a `logBucket` is not provided, a `logBucket` will be automatically generated`.
    */
   readonly logBucket?: s3.IBucket;
 
