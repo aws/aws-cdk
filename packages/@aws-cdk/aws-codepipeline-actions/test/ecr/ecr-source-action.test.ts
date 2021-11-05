@@ -3,6 +3,7 @@ import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as ecr from '@aws-cdk/aws-ecr';
 import { Stack } from '@aws-cdk/core';
+import { ABSENT } from '../../../assert-internal/lib';
 import * as cpactions from '../../lib';
 
 /* eslint-disable quote-props */
@@ -60,6 +61,62 @@ describe('ecr source action', () => {
       });
 
 
+      expect(stack).toHaveResourceLike('AWS::Events::Rule', {
+        'EventPattern': {
+          'detail': {
+            'requestParameters': {
+              'imageTag': ['latest'],
+            },
+          },
+        },
+      });
+    });
+
+    test('watches all tags when imageTag provided as empty string', () => {
+      const stack = new Stack();
+
+      const sourceOutput = new codepipeline.Artifact();
+      const ecrSourceAction = new cpactions.EcrSourceAction({
+        actionName: 'Source',
+        output: sourceOutput,
+        repository: ecr.Repository.fromRepositoryName(stack, 'Repo', 'repo'),
+        imageTag: '',
+      });
+
+      new codepipeline.Pipeline(stack, 'Pipeline', {
+        stages: [
+          {
+            stageName: 'Source',
+            actions: [ecrSourceAction],
+          },
+          {
+            stageName: 'Build',
+            actions: [
+              new cpactions.CodeBuildAction({
+                actionName: 'Build',
+                project: new codebuild.PipelineProject(stack, 'MyProject'),
+                input: sourceOutput,
+                environmentVariables: {
+                  ImageDigest: { value: ecrSourceAction.variables.imageDigest },
+                },
+              }),
+            ],
+          },
+        ],
+      });
+
+      expect(stack).toHaveResourceLike('AWS::Events::Rule', {
+        'EventPattern': {
+          'source': [
+            'aws.ecr',
+          ],
+          'detail': {
+            'requestParameters': {
+              'imageTag': ABSENT,
+            },
+          },
+        },
+      });
     });
   });
 });
