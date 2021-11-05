@@ -2032,6 +2032,26 @@ describe('cluster', () => {
       CopyTagsToSnapshot: true,
     });
   });
+
+  test('cluster has BacktrackWindow in seconds', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA,
+      instanceProps: {
+        vpc,
+      },
+      backtrackWindow: cdk.Duration.days(1),
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::RDS::DBCluster', {
+      BacktrackWindow: 24 * 60 * 60,
+    });
+  });
 });
 
 test.each([
