@@ -1,5 +1,7 @@
 import { TagType } from './cfn-resource';
 import { CfnTag } from './cfn-tag';
+import { Lazy } from './lazy';
+import { IResolvable } from './resolvable';
 
 interface Tag {
   key: string;
@@ -172,7 +174,7 @@ class KeyValueFormatter implements ITagFormatter {
         Value: tag.value,
       });
     });
-    return tags;
+    return tags.length > 0 ? tags : undefined;
   }
 }
 
@@ -228,7 +230,32 @@ export interface TagManagerOptions {
 }
 
 /**
- * TagManager facilitates a common implementation of tagging for Constructs.
+ * TagManager facilitates a common implementation of tagging for Constructs
+ *
+ * Normally, you do not need to use this class, as the CloudFormation specification
+ * will indicate which resources are taggable. However, sometimes you will need this
+ * to make custom resources taggable. Used `tagManager.renderedTags` to obtain a
+ * value that will resolve to the tags at synthesis time.
+ *
+ * @example
+ * import * as cdk from '@aws-cdk/core';
+ *
+ * class MyConstruct extends cdk.Resource implements cdk.ITaggable {
+ *   public readonly tags = new cdk.TagManager(cdk.TagType.KEY_VALUE, 'Whatever::The::Type');
+ *
+ *   constructor(scope: cdk.Construct, id: string) {
+ *     super(scope, id);
+ *
+ *     new cdk.CfnResource(this, 'Resource', {
+ *       type: 'Whatever::The::Type',
+ *       properties: {
+ *         // ...
+ *         Tags: this.tags.renderedTags,
+ *       },
+ *     });
+ *   }
+ * }
+ *
  */
 export class TagManager {
 
@@ -247,6 +274,14 @@ export class TagManager {
    */
   public readonly tagPropertyName: string;
 
+  /**
+   * A lazy value that represents the rendered tags at synthesis time
+   *
+   * If you need to make a custom construct taggable, use the value of this
+   * property to pass to the `tags` property of the underlying construct.
+   */
+  public readonly renderedTags: IResolvable;
+
   private readonly tags = new Map<string, Tag>();
   private readonly priorities = new Map<string, number>();
   private readonly tagFormatter: ITagFormatter;
@@ -260,6 +295,8 @@ export class TagManager {
       this._setTag(...this.tagFormatter.parseTags(tagStructure, this.initialTagPriority));
     }
     this.tagPropertyName = options.tagPropertyName || 'tags';
+
+    this.renderedTags = Lazy.any({ produce: () => this.renderTags() });
   }
 
   /**
@@ -287,6 +324,11 @@ export class TagManager {
 
   /**
    * Renders tags into the proper format based on TagType
+   *
+   * This method will eagerly render the tags currently applied. In
+   * most cases, you should be using `tagManager.renderedTags` instead,
+   * which will return a `Lazy` value that will resolve to the correct
+   * tags at synthesis time.
    */
   public renderTags(): any {
     return this.tagFormatter.formatTags(this.sortedTags);
