@@ -1462,7 +1462,7 @@ export class Vpc extends VpcBase {
       // mapPublicIpOnLaunch true in Subnet.Public, false in Subnet.Private or Subnet.Isolated.
       let mapPublicIpOnLaunch = false;
       if (subnetConfig.subnetType !== SubnetType.PUBLIC && subnetConfig.mapPublicIpOnLaunch !== undefined) {
-        throw new Error(`${subnetConfig.subnetType} subnet cannot define mapPublicIpOnLaunch parameter`);
+        throw new Error(`${subnetConfig.subnetType} subnet cannot include mapPublicIpOnLaunch parameter`);
       }
       if (subnetConfig.subnetType === SubnetType.PUBLIC) {
         mapPublicIpOnLaunch = subnetConfig.mapPublicIpOnLaunch || (subnetConfig.subnetType === SubnetType.PUBLIC);
