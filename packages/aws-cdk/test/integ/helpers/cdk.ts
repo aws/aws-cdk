@@ -12,10 +12,23 @@ const REGIONS = process.env.AWS_REGIONS
   ? process.env.AWS_REGIONS.split(',')
   : [process.env.AWS_REGION ?? process.env.AWS_DEFAULT_REGION ?? 'us-east-1'];
 
-const FRAMEWORK_VERSION = process.env.FRAMEWORK_VERSION;
+const FRAMEWORK_VERSION = process.env.FRAMEWORK_VERSION ?? '*';
+
+export let MAJOR_VERSION = FRAMEWORK_VERSION.split('.')[0];
+if (MAJOR_VERSION === '*') {
+  if (process.env.REPO_ROOT) {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const releaseJson = require(path.resolve(process.env.REPO_ROOT, 'release.json'));
+    MAJOR_VERSION = `${releaseJson.majorVersion}`;
+  } else {
+    // eslint-disable-next-line no-console
+    console.error('[WARNING] Have to guess at major version. Guessing version 1 to not break anything, but this should not happen');
+    MAJOR_VERSION = '1';
+  }
+}
 
 process.stdout.write(`Using regions: ${REGIONS}\n`);
-process.stdout.write(`Using framework version: ${FRAMEWORK_VERSION}\n`);
+process.stdout.write(`Using framework version: ${FRAMEWORK_VERSION} (major version ${MAJOR_VERSION})\n`);
 
 const REGION_POOL = new ResourcePool(REGIONS);
 
@@ -63,17 +76,26 @@ export function withCdkApp<A extends TestContext & AwsContext>(block: (context: 
 
     let success = true;
     try {
-      const version = FRAMEWORK_VERSION ?? '*';
-      await installNpmPackages(fixture, {
-        '@aws-cdk/core': version,
-        '@aws-cdk/aws-sns': version,
-        '@aws-cdk/aws-iam': version,
-        '@aws-cdk/aws-lambda': version,
-        '@aws-cdk/aws-ssm': version,
-        '@aws-cdk/aws-ecr-assets': version,
-        '@aws-cdk/aws-cloudformation': version,
-        '@aws-cdk/aws-ec2': version,
-      });
+      const installationVersion = FRAMEWORK_VERSION;
+
+      if (MAJOR_VERSION === '1') {
+        await installNpmPackages(fixture, {
+          '@aws-cdk/core': installationVersion,
+          '@aws-cdk/aws-sns': installationVersion,
+          '@aws-cdk/aws-iam': installationVersion,
+          '@aws-cdk/aws-lambda': installationVersion,
+          '@aws-cdk/aws-ssm': installationVersion,
+          '@aws-cdk/aws-ecr-assets': installationVersion,
+          '@aws-cdk/aws-cloudformation': installationVersion,
+          '@aws-cdk/aws-ec2': installationVersion,
+          'constructs': '^3',
+        });
+      } else {
+        await installNpmPackages(fixture, {
+          'aws-cdk-lib': installationVersion,
+          'constructs': '^10',
+        });
+      }
 
       await ensureBootstrapped(fixture);
 
@@ -377,6 +399,7 @@ export class TestFixture {
         AWS_REGION: this.aws.region,
         AWS_DEFAULT_REGION: this.aws.region,
         STACK_NAME_PREFIX: this.stackNamePrefix,
+        PACKAGE_LAYOUT_VERSION: MAJOR_VERSION,
         ...options.modEnv,
       },
     });
@@ -518,11 +541,22 @@ let sanityChecked: boolean | undefined;
  * by hand so let's just mass-automate it.
  */
 async function ensureBootstrapped(fixture: TestFixture) {
-  // Use the default name for the bootstrap stack
-  if (await fixture.aws.stackStatus('CDKToolkit') === undefined) {
-    // use whatever version of bootstrap is the default for this particular version of the CLI
-    await fixture.cdk(['bootstrap', `aws://${await fixture.aws.account()}/${fixture.aws.region}`]);
-  }
+  // Always use the modern bootstrap stack, otherwise we may get the error
+  // "refusing to downgrade from version 7 to version 0" when bootstrapping with default
+  // settings using a v1 CLI.
+  //
+  // It doesn't matter for tests: when they want to test something about an actual legacy
+  // bootstrap stack, they'll create a bootstrap stack with a non-default name to test that exact property.
+  const envSpecifier = `aws://${await fixture.aws.account()}/${fixture.aws.region}`;
+  if (ALREADY_BOOTSTRAPPED_IN_THIS_RUN.has(envSpecifier)) { return; }
+
+  await fixture.cdk(['bootstrap', envSpecifier], {
+    modEnv: {
+      // Even for v1, use new bootstrap
+      CDK_NEW_BOOTSTRAP: '1',
+    },
+  });
+  ALREADY_BOOTSTRAPPED_IN_THIS_RUN.add(envSpecifier);
 }
 
 /**
@@ -666,3 +700,5 @@ const installNpm7 = memoize0(async (): Promise<string> => {
 
   return path.join(installDir, 'node_modules', '.bin', 'npm');
 });
+
+const ALREADY_BOOTSTRAPPED_IN_THIS_RUN = new Set();

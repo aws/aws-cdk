@@ -36,8 +36,7 @@ export async function tryHotswapDeployment(
     account: resolvedEnv.account,
     region: resolvedEnv.region,
     partition: (await sdk.currentAccount()).partition,
-    // ToDo make this better:
-    urlSuffix: 'amazonaws.com',
+    urlSuffix: sdk.getEndpointSuffix,
     listStackResources,
   });
 
