@@ -1465,7 +1465,9 @@ export class Vpc extends VpcBase {
         throw new Error(`${subnetConfig.subnetType} subnet cannot include mapPublicIpOnLaunch parameter`);
       }
       if (subnetConfig.subnetType === SubnetType.PUBLIC) {
-        mapPublicIpOnLaunch = subnetConfig.mapPublicIpOnLaunch || (subnetConfig.subnetType === SubnetType.PUBLIC);
+        mapPublicIpOnLaunch = (subnetConfig.mapPublicIpOnLaunch !== undefined)
+          ? subnetConfig.mapPublicIpOnLaunch
+          : true;
       }
 
       const name = subnetId(subnetConfig.name, index);
