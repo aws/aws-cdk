@@ -211,10 +211,11 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
 
   private validateEntryPointArguments (entryPointArguments:sfn.TaskInput) {
     if (typeof entryPointArguments.value === 'string' && !sfn.JsonPath.isEncodedJsonPath(entryPointArguments.value)) {
-      throw new Error(`Entry point arguments must be a string array. Received ${typeof entryPointArguments.value}.`);
+      throw new Error(`Entry point arguments must be a string array or encoded JSON path, but received a non JSON path string');
+      .`);
     }
     if (!this.isArrayOfStrings(entryPointArguments.value)) {
-      throw new Error(`Entry point arguments must be a string array. Received ${typeof entryPointArguments.value}.`);
+      throw new Error(`Entry point arguments must be a string array or encoded JSON path but received ${typeof entryPointArguments.value}.`);
     }
   }
 
@@ -439,7 +440,7 @@ export interface SparkSubmitJobDriver {
    * The arguments for a job application in a task input object containing an array of strings
    *
    * Length Constraints: Minimum length of 1. Maximum length of 10280.
-   * @type string[]
+   * @type sfn.TaskInput which expects payload as an array of strings
    *
    * @default - No arguments defined
    */
