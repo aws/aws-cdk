@@ -388,7 +388,7 @@ describe('domains', () => {
 
   test('accepts a mutual TLS configuration', () => {
     const stack = new Stack();
-    const bucket = Bucket.fromBucketName(stack, 'testBucket', 'exampleBucket');
+    const bucket = Bucket.fromBucketName(stack, 'testBucket', 'example-bucket');
     new apigw.DomainName(stack, 'another-domain', {
       domainName: 'example.com',
       mtls: {
@@ -402,14 +402,14 @@ describe('domains', () => {
       'DomainName': 'example.com',
       'EndpointConfiguration': { 'Types': ['REGIONAL'] },
       'RegionalCertificateArn': 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d',
-      'MutualTlsAuthentication': { 'TruststoreUri': 's3://exampleBucket/someca.pem' },
+      'MutualTlsAuthentication': { 'TruststoreUri': 's3://example-bucket/someca.pem' },
     });
 
   });
 
   test('mTLS should allow versions to be set on the s3 bucket', () => {
     const stack = new Stack();
-    const bucket = Bucket.fromBucketName(stack, 'testBucket', 'exampleBucket');
+    const bucket = Bucket.fromBucketName(stack, 'testBucket', 'example-bucket');
     new apigw.DomainName(stack, 'another-domain', {
       domainName: 'example.com',
       certificate: acm.Certificate.fromCertificateArn(stack, 'cert2', 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d'),
@@ -423,7 +423,7 @@ describe('domains', () => {
       'DomainName': 'example.com',
       'EndpointConfiguration': { 'Types': ['REGIONAL'] },
       'RegionalCertificateArn': 'arn:aws:acm:us-east-1:1111111:certificate/11-3336f1-44483d-adc7-9cd375c5169d',
-      'MutualTlsAuthentication': { 'TruststoreUri': 's3://exampleBucket/someca.pem', 'TruststoreVersion': 'version' },
+      'MutualTlsAuthentication': { 'TruststoreUri': 's3://example-bucket/someca.pem', 'TruststoreVersion': 'version' },
     });
   });
 
