@@ -284,7 +284,8 @@ export class DockerImageAsset extends CoreConstruct implements IAsset {
     }
 
     // tell tools such as SAM CLI that the resourceProperty of this resource
-    // points to a local path in order to enable local invocation of this function.
+    // points to a local path and include the path to de dockerfile, docker build args, and target,
+    // in order to enable local invocation of this function.
     resource.cfnOptions.metadata = resource.cfnOptions.metadata || { };
     resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_PATH_KEY] = this.assetPath;
     resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_DOCKERFILE_PATH_KEY] = this.dockerfilePath;
