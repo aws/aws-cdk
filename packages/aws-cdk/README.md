@@ -372,6 +372,69 @@ For this reason, only use it for development purposes.
 **⚠ Note #2**: This command is considered experimental,
 and might have breaking changes in the future.
 
+### `cdk watch`
+
+The `watch` command is similar to `deploy`,
+but instead of being a one-shot operation,
+the command continuously monitors the files of the project,
+and triggers a deployment whenever it detects any changes:
+
+```console
+$ cdk watch DevelopmentStack
+Detected change to 'lambda-code/index.js' (type: change). Triggering 'cdk deploy'
+DevelopmentStack: deploying...
+
+ ✅  DevelopmentStack
+
+^C
+```
+
+To end a `cdk watch` session, interrupt the process by pressing Ctrl+C.
+
+What files are observed is determined by the `"watch"` setting in your `cdk.json` file.
+It has two sub-keys, `"include"` and `"exclude"`, each of which can be either a single string, or an array of strings.
+Each entry is interpreted as a path relative to the location of the `cdk.json` file.
+Globs, both `*` and `**`, are allowed to be used.
+Example:
+
+```json
+{
+  "app": "mvn -e -q compile exec:java",
+  "watch": {
+    "include": "src/main/**",
+    "exclude": "target/*"
+  }
+}
+```
+
+The default for `"include"` is `"**/*"`
+(which means all files and directories in the root of the project),
+and `"exclude"` is optional
+(note that we always ignore files and directories starting with `.`,
+the CDK output directory, and the `node_modules` directory),
+so the minimal settings to enable `watch` are `"watch": {}`.
+
+If either your CDK code, or application code, needs a build step before being deployed,
+`watch` works with the `"build"` key in the `cdk.json` file,
+for example:
+
+```json
+{
+  "app": "mvn -e -q exec:java",
+  "build": "mvn package",
+  "watch": {
+    "include": "src/main/**",
+    "exclude": "target/*"
+  }
+}
+```
+
+Note that `watch` by default uses hotswap deployments (see above for details) --
+to turn them off, pass the `--no-hotswap` option when invoking it.
+
+**Note**: This command is considered experimental,
+and might have breaking changes in the future.
+
 ### `cdk destroy`
 
 Deletes a stack from it's environment. This will cause the resources in the stack to be destroyed (unless they were
