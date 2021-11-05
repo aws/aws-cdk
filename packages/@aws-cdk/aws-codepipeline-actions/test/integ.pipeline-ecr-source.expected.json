@@ -113,8 +113,7 @@
                 "Configuration": {
                   "RepositoryName": {
                     "Ref": "MyEcrRepo767466D0"
-                  },
-                  "ImageTag": "latest"
+                  }
                 },
                 "Name": "ECR_Source",
                 "OutputArtifacts": [
