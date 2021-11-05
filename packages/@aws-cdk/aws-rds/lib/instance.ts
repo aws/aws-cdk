@@ -623,7 +623,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
 
   protected abstract readonly instanceType: ec2.InstanceType;
 
-  protected readonly vpcPlacement?: ec2.SubnetSelection;
+  protected readonly vpcSubnets?: ec2.SubnetSelection;
   protected readonly newCfnProps: CfnDBInstanceProps;
 
   private readonly cloudwatchLogsExports?: string[];
@@ -650,7 +650,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
     if (props.vpcSubnets && props.vpcPlacement) {
       throw new Error('Only one of `vpcSubnets` or `vpcPlacement` can be specified');
     }
-    this.vpcPlacement = props.vpcSubnets ?? props.vpcPlacement;
+    this.vpcSubnets = props.vpcSubnets ?? props.vpcPlacement;
 
     if (props.multiAz === true && props.availabilityZone) {
       throw new Error('Requesting a specific availability zone is not valid for Multi-AZ instances');
@@ -659,7 +659,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
     const subnetGroup = props.subnetGroup ?? new SubnetGroup(this, 'SubnetGroup', {
       description: `Subnet group for ${this.node.id} database`,
       vpc: this.vpc,
-      vpcSubnets: this.vpcPlacement,
+      vpcSubnets: this.vpcSubnets,
       removalPolicy: renderUnless(helperRemovalPolicy(props.removalPolicy), RemovalPolicy.DESTROY),
     });
 
@@ -741,7 +741,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
       preferredBackupWindow: props.preferredBackupWindow,
       preferredMaintenanceWindow: props.preferredMaintenanceWindow,
       processorFeatures: props.processorFeatures && renderProcessorFeatures(props.processorFeatures),
-      publiclyAccessible: props.publiclyAccessible ?? (this.vpcPlacement && this.vpcPlacement.subnetType === ec2.SubnetType.PUBLIC),
+      publiclyAccessible: props.publiclyAccessible ?? (this.vpcSubnets && this.vpcSubnets.subnetType === ec2.SubnetType.PUBLIC),
       storageType,
       vpcSecurityGroups: securityGroups.map(s => s.securityGroupId),
       maxAllocatedStorage: props.maxAllocatedStorage,
@@ -912,10 +912,10 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
       secret: this.secret,
       application: this.singleUserRotationApplication,
       vpc: this.vpc,
-      vpcSubnets: this.vpcPlacement,
+      vpcSubnets: this.vpcSubnets,
       target: this,
+      excludeCharacters: DEFAULT_PASSWORD_EXCLUDE_CHARS,
       ...options,
-      excludeCharacters: options.excludeCharacters ?? DEFAULT_PASSWORD_EXCLUDE_CHARS,
     });
   }
 
@@ -927,13 +927,13 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
       throw new Error('Cannot add multi user rotation for an instance without secret.');
     }
     return new secretsmanager.SecretRotation(this, id, {
-      ...options,
-      excludeCharacters: options.excludeCharacters ?? DEFAULT_PASSWORD_EXCLUDE_CHARS,
       masterSecret: this.secret,
       application: this.multiUserRotationApplication,
       vpc: this.vpc,
-      vpcSubnets: this.vpcPlacement,
+      vpcSubnets: this.vpcSubnets,
       target: this,
+      excludeCharacters: DEFAULT_PASSWORD_EXCLUDE_CHARS,
+      ...options,
     });
   }
 }

@@ -577,8 +577,8 @@ export class DatabaseCluster extends DatabaseClusterNew {
       vpc: this.vpc,
       vpcSubnets: this.vpcSubnets,
       target: this,
+      excludeCharacters: DEFAULT_PASSWORD_EXCLUDE_CHARS,
       ...options,
-      excludeCharacters: options.excludeCharacters ?? DEFAULT_PASSWORD_EXCLUDE_CHARS,
     });
   }
 
@@ -590,13 +590,13 @@ export class DatabaseCluster extends DatabaseClusterNew {
       throw new Error('Cannot add multi user rotation for a cluster without secret.');
     }
     return new secretsmanager.SecretRotation(this, id, {
-      ...options,
-      excludeCharacters: options.excludeCharacters ?? DEFAULT_PASSWORD_EXCLUDE_CHARS,
       masterSecret: this.secret,
       application: this.multiUserRotationApplication,
       vpc: this.vpc,
       vpcSubnets: this.vpcSubnets,
       target: this,
+      excludeCharacters: DEFAULT_PASSWORD_EXCLUDE_CHARS,
+      ...options,
     });
   }
 }
