@@ -367,23 +367,14 @@ test('with interface vpc endpoint', () => {
   expect(stack).toHaveResourceLike('AWS::Serverless::Application', {
     Parameters: {
       endpoint: {
-        'Fn::Join': [
-          '',
-          [
-            'https://',
-            {
-              Ref: 'SecretsManagerEndpoint5E83C66B',
-            },
-            '.secretsmanager.',
-            {
-              Ref: 'AWS::Region',
-            },
-            '.',
-            {
-              Ref: 'AWS::URLSuffix',
-            },
-          ],
-        ],
+        'Fn::Join': ['', [
+          'https://',
+          { Ref: 'SecretsManagerEndpoint5E83C66B' },
+          '.secretsmanager.',
+          { Ref: 'AWS::Region' },
+          '.',
+          { Ref: 'AWS::URLSuffix' },
+        ]],
       },
     },
   });

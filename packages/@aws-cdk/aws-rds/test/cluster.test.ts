@@ -831,34 +831,20 @@ describe('cluster', () => {
     expect(stack).toHaveResource('AWS::Serverless::Application', {
       Parameters: {
         endpoint: {
-          'Fn::Join': [
-            '',
-            [
-              'https://secretsmanager.',
-              {
-                Ref: 'AWS::Region',
-              },
-              '.',
-              {
-                Ref: 'AWS::URLSuffix',
-              },
-            ],
-          ],
+          'Fn::Join': ['', [
+            'https://secretsmanager.',
+            { Ref: 'AWS::Region' },
+            '.',
+            { Ref: 'AWS::URLSuffix' },
+          ]],
         },
         functionName: 'DatabaseRotationSingleUser458A45BE',
         vpcSubnetIds: {
-          'Fn::Join': [
-            '',
-            [
-              {
-                Ref: 'VpcprivateSubnet1SubnetCEAD3716',
-              },
-              ',',
-              {
-                Ref: 'VpcprivateSubnet2Subnet2DE7549C',
-              },
-            ],
-          ],
+          'Fn::Join': ['', [
+            { Ref: 'VpcprivateSubnet1SubnetCEAD3716' },
+            ',',
+            { Ref: 'VpcprivateSubnet2Subnet2DE7549C' },
+          ]],
         },
         vpcSecurityGroupIds: {
           'Fn::GetAtt': [
@@ -899,38 +885,22 @@ describe('cluster', () => {
     expect(stack).toHaveResource('AWS::Serverless::Application', {
       Parameters: {
         endpoint: {
-          'Fn::Join': [
-            '',
-            [
-              'https://',
-              {
-                Ref: 'EndpointEEF1FD8F',
-              },
-              '.secretsmanager.',
-              {
-                Ref: 'AWS::Region',
-              },
-              '.',
-              {
-                Ref: 'AWS::URLSuffix',
-              },
-            ],
-          ],
+          'Fn::Join': ['', [
+            'https://',
+            { Ref: 'EndpointEEF1FD8F' },
+            '.secretsmanager.',
+            { Ref: 'AWS::Region' },
+            '.',
+            { Ref: 'AWS::URLSuffix' },
+          ]],
         },
         functionName: 'DatabaseRotationSingleUser458A45BE',
         vpcSubnetIds: {
-          'Fn::Join': [
-            '',
-            [
-              {
-                Ref: 'VpcIsolatedSubnet1SubnetE48C5737',
-              },
-              ',',
-              {
-                Ref: 'VpcIsolatedSubnet2Subnet16364B91',
-              },
-            ],
-          ],
+          'Fn::Join': ['', [
+            { Ref: 'VpcIsolatedSubnet1SubnetE48C5737' },
+            ',',
+            { Ref: 'VpcIsolatedSubnet2Subnet16364B91' },
+          ]],
         },
         vpcSecurityGroupIds: {
           'Fn::GetAtt': [
