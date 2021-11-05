@@ -209,6 +209,8 @@ describe('singleton lambda', () => {
   test('logGroup is correctly returned', () => {
     // GIVEN
     const stack = new cdk.Stack();
+
+    // WHEN
     const singleton = new lambda.SingletonFunction(stack, 'Singleton', {
       uuid: '84c0de93-353f-4217-9b0b-45b6c993251a',
       code: new lambda.InlineCode('def hello(): pass'),
@@ -217,12 +219,9 @@ describe('singleton lambda', () => {
       timeout: cdk.Duration.minutes(5),
     });
 
-    // WHEN
-    const logGroup = singleton.logGroup;
-
     // THEN
-    expect(logGroup.logGroupName).toBeDefined();
-    expect(logGroup.logGroupArn).toBeDefined();
+    expect(singleton.logGroup.logGroupName).toBeDefined();
+    expect(singleton.logGroup.logGroupArn).toBeDefined();
   });
 
   test('runtime is correctly returned', () => {
