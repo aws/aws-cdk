@@ -1,8 +1,10 @@
-import * as codepipeline from '@aws-cdk/aws-codepipeline';
+import { Construct } from 'constructs';
+import { ActionCategory, ActionArtifactBounds } from './action';
+import { CfnCustomActionType } from './codepipeline.generated';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * The creation attributes used for defining a configuration property
@@ -13,14 +15,14 @@ export interface CustomActionProperty {
    * The name of the property.
    * You use this name in the `configuration` attribute when defining your custom Action class.
    */
-  name: string;
+  readonly name: string;
 
   /**
    * The description of the property.
    *
    * @default the description will be empty
    */
-  description?: string;
+  readonly description?: string;
 
   /**
    * Whether this property is a key.
@@ -28,7 +30,7 @@ export interface CustomActionProperty {
    * @default false
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-codepipeline-customactiontype-configurationproperties.html#cfn-codepipeline-customactiontype-configurationproperties-key
    */
-  key?: boolean;
+  readonly key?: boolean;
 
   /**
    * Whether this property is queryable.
@@ -37,12 +39,12 @@ export interface CustomActionProperty {
    * @default false
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-codepipeline-customactiontype-configurationproperties.html#cfn-codepipeline-customactiontype-configurationproperties-queryable
    */
-  queryable?: boolean;
+  readonly queryable?: boolean;
 
   /**
    * Whether this property is required.
    */
-  required: boolean;
+  readonly required: boolean;
 
   /**
    * Whether this property is secret,
@@ -50,7 +52,7 @@ export interface CustomActionProperty {
    *
    * @default false
    */
-  secret?: boolean;
+  readonly secret?: boolean;
 
   /**
    * The type of the property,
@@ -58,7 +60,7 @@ export interface CustomActionProperty {
    *
    * @default 'String'
    */
-  type?: string;
+  readonly type?: string;
 }
 
 /**
@@ -68,41 +70,44 @@ export interface CustomActionRegistrationProps {
   /**
    * The category of the Action.
    */
-  category: codepipeline.ActionCategory;
+  readonly category: ActionCategory;
 
   /**
    * The artifact bounds of the Action.
    */
-  artifactBounds: codepipeline.ActionArtifactBounds;
+  readonly artifactBounds: ActionArtifactBounds;
 
   /**
    * The provider of the Action.
+   * @example 'MyCustomActionProvider'
    */
-  provider: string;
+  readonly provider: string;
 
   /**
    * The version of your Action.
    *
    * @default '1'
    */
-  version?: string;
+  readonly version?: string;
 
   /**
    * The URL shown for the entire Action in the Pipeline UI.
+   * @default none
    */
-  entityUrl?: string;
+  readonly entityUrl?: string;
 
   /**
    * The URL shown for a particular execution of an Action in the Pipeline UI.
+   * @default none
    */
-  executionUrl?: string;
+  readonly executionUrl?: string;
 
   /**
    * The properties used for customizing the instance of your Action.
    *
    * @default []
    */
-  actionProperties?: CustomActionProperty[];
+  readonly actionProperties?: CustomActionProperty[];
 }
 
 /**
@@ -112,11 +117,11 @@ export interface CustomActionRegistrationProps {
  * representing your custom Action, extending the Action class,
  * and taking the `actionProperties` as properly typed, construction properties.
  */
-export class CustomActionRegistration extends Construct {
-  constructor(parent: Construct, id: string, props: CustomActionRegistrationProps) {
-    super(parent, id);
+export class CustomActionRegistration extends CoreConstruct {
+  constructor(scope: Construct, id: string, props: CustomActionRegistrationProps) {
+    super(scope, id);
 
-    new codepipeline.CfnCustomActionType(this, 'Resource', {
+    new CfnCustomActionType(this, 'Resource', {
       category: props.category,
       inputArtifactDetails: {
         minimumCount: props.artifactBounds.minInputs,
