@@ -144,6 +144,7 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
         partialBuildSpec: step.partialBuildSpec,
         vpc: step.vpc,
         subnetSelection: step.subnetSelection,
+        timeout: step.timeout,
         ...additional?.projectOptions,
       },
       ...additional,
@@ -279,6 +280,7 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
       securityGroups: projectOptions.securityGroups,
       buildSpec: projectBuildSpec,
       role: this.props.role,
+      timeout: this.props.projectOptions?.timeout,
     });
 
     if (this.props.additionalDependable) {

@@ -1,3 +1,4 @@
+import { Duration } from '@aws-cdk/core';
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
@@ -82,6 +83,15 @@ export interface CodeBuildStepProps extends ShellStepProps {
    * @default - Security group will be automatically created.
    */
   readonly securityGroups?: ec2.ISecurityGroup[];
+
+  /**
+   * The number of minutes after which AWS CodeBuild stops the build if it's
+   * not complete. For valid values, see the timeoutInMinutes field in the AWS
+   * CodeBuild User Guide.
+   *
+   * @default Duration.hours(1)
+   */
+  readonly timeout?: Duration;
 }
 
 /**
@@ -144,6 +154,15 @@ export class CodeBuildStep extends ShellStep {
    */
   readonly securityGroups?: ec2.ISecurityGroup[];
 
+  /**
+   * The number of minutes after which AWS CodeBuild stops the build if it's
+   * not complete. For valid values, see the timeoutInMinutes field in the AWS
+   * CodeBuild User Guide.
+   *
+   * @default Duration.hours(1)
+   */
+  readonly timeout?: Duration;
+
   private _project?: codebuild.IProject;
 
   constructor(id: string, props: CodeBuildStepProps) {
@@ -157,6 +176,7 @@ export class CodeBuildStep extends ShellStep {
     this.role = props.role;
     this.rolePolicyStatements = props.rolePolicyStatements;
     this.securityGroups = props.securityGroups;
+    this.timeout = props.timeout;
   }
 
   /**

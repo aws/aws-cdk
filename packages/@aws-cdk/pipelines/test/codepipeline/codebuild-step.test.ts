@@ -1,5 +1,5 @@
 import { Template, Match } from '@aws-cdk/assertions';
-import { Stack } from '@aws-cdk/core';
+import { Duration, Stack } from '@aws-cdk/core';
 import * as cdkp from '../../lib';
 import { PIPELINE_ENV, TestApp } from '../testhelpers';
 
@@ -40,5 +40,24 @@ test('additionalinputs creates the right commands', () => {
         },
       })),
     },
+  });
+});
+
+test('long duration steps are supported', () => {
+  // WHEN
+  new cdkp.CodePipeline(pipelineStack, 'Pipeline', {
+    synth: new cdkp.CodeBuildStep('Synth', {
+      commands: ['/bin/true'],
+      input: cdkp.CodePipelineSource.gitHub('test/test', 'main'),
+      additionalInputs: {
+        'some/deep/directory': cdkp.CodePipelineSource.gitHub('test2/test2', 'main'),
+      },
+      timeout: Duration.minutes(180),
+    }),
+  });
+
+  // THEN
+  Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
+    TimeoutInMinutes: 180,
   });
 });
