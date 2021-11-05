@@ -170,8 +170,12 @@ describe('duration', () => {
     expect(Duration.minutes(1).plus(Duration.seconds(30)).toSeconds()).toEqual(Duration.seconds(90).toSeconds());
     expect(Duration.minutes(1).plus(Duration.seconds(30)).toMinutes({ integral: false }))
       .toEqual(Duration.seconds(90).toMinutes({ integral: false }));
+  });
 
-
+  test('subtract two durations', () => {
+    expect(Duration.minutes(1).minus(Duration.seconds(30)).toSeconds()).toEqual(Duration.seconds(30).toSeconds());
+    expect(Duration.minutes(1).minus(Duration.seconds(30)).toMinutes({ integral: false }))
+      .toEqual(Duration.seconds(30).toMinutes({ integral: false }));
   });
 
   test('get unit label from duration', () => {

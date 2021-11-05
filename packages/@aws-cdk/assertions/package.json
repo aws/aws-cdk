@@ -50,15 +50,10 @@
     "metadata": {
       "jsii": {
         "rosetta": {
-          "strict": true
+          "strict": false
         }
       }
     }
-  },
-  "cdk-build": {
-    "post": [
-      "yarn rosetta:extract"
-    ]
   },
   "author": {
     "name": "Amazon Web Services",
