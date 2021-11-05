@@ -120,6 +120,16 @@ export interface IPortfolio extends cdk.IResource {
   setLaunchRole(product: IProduct, launchRole: iam.IRole, options?: CommonConstraintOptions): void;
 
   /**
+   * Force users to assume a certain role when launching a product. The role will be referenced by name
+   * in the local account. This is useful when sharing the portfolio with multiple accounts.
+   *
+   * @param product A service catalog product.
+   * @param launchRoleName The name of the IAM role a user must assume when provisioning the product. A role with this name must exist in the account.
+   * @param options options for the constraint.
+   */
+  setLocalLaunchRoleName(product: IProduct, launchRoleName: string, options?: CommonConstraintOptions): void;
+
+  /**
    * Configure deployment options using AWS Cloudformaiton StackSets
    *
    * @param product A service catalog product.
@@ -177,6 +187,10 @@ abstract class PortfolioBase extends cdk.Resource implements IPortfolio {
 
   public setLaunchRole(product: IProduct, launchRole: iam.IRole, options: CommonConstraintOptions = {}): void {
     AssociationManager.setLaunchRole(this, product, launchRole, options);
+  }
+
+  public setLocalLaunchRoleName(product: IProduct, launchRoleName: string, options: CommonConstraintOptions = {}): void {
+    AssociationManager.setLocalLaunchRoleName(this, product, launchRoleName, options);
   }
 
   public deployWithStackSets(product: IProduct, options: StackSetsConstraintOptions) {
