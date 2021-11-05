@@ -206,8 +206,12 @@ export interface ResourceConfig {
   /**
    * ML compute instance type.
    *
-   * @example To provide an instance type from the task input, write
-   * `new ec2.InstanceType(sfn.JsonPath.stringAt('$.path.to.instanceType'))`, where the value in the task input is an EC2 instance type prepended with "ml.".
+   * To provide an instance type from the task input, supply an instance type in the following way
+   * where the value in the task input is an EC2 instance type prepended with "ml.":
+   *
+   * ```ts
+   * new ec2.InstanceType(sfn.JsonPath.stringAt('$.path.to.instanceType'));
+   * ```
    * @see https://docs.aws.amazon.com/sagemaker/latest/APIReference/API_ResourceConfig.html#sagemaker-Type-ResourceConfig-InstanceType
    *
    * @default ec2.InstanceType(ec2.InstanceClass.M4, ec2.InstanceType.XLARGE)

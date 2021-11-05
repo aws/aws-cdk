@@ -4,7 +4,7 @@ import { Default } from '../lib/default';
 import { AWS_REGIONS, AWS_SERVICES } from './aws-entities';
 import {
   APPMESH_ECR_ACCOUNTS, AWS_CDK_METADATA, AWS_OLDER_REGIONS, CLOUDWATCH_LAMBDA_INSIGHTS_ARNS, DLC_REPOSITORY_ACCOUNTS,
-  ELBV2_ACCOUNTS, FIREHOSE_CIDR_BLOCKS, PARTITION_MAP, ROUTE_53_BUCKET_WEBSITE_ZONE_IDS,
+  ELBV2_ACCOUNTS, FIREHOSE_CIDR_BLOCKS, PARTITION_MAP, ROUTE_53_BUCKET_WEBSITE_ZONE_IDS, EBS_ENV_ENDPOINT_HOSTED_ZONE_IDS,
 } from './fact-tables';
 
 async function main(): Promise<void> {
@@ -56,6 +56,9 @@ async function main(): Promise<void> {
       : `s3-website.${region}.${domainSuffix}`);
 
     registerFact(region, 'S3_STATIC_WEBSITE_ZONE_53_HOSTED_ZONE_ID', ROUTE_53_BUCKET_WEBSITE_ZONE_IDS[region] || '');
+
+    registerFact(region, 'EBS_ENV_ENDPOINT_HOSTED_ZONE_ID', EBS_ENV_ENDPOINT_HOSTED_ZONE_IDS[region] || '');
+
 
     registerFact(region, 'ELBV2_ACCOUNT', ELBV2_ACCOUNTS[region]);
 
