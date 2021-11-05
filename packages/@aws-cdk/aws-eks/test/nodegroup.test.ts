@@ -1,5 +1,6 @@
 import '@aws-cdk/assert-internal/jest';
 import * as ec2 from '@aws-cdk/aws-ec2';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import * as eks from '../lib';
 import { testFixture } from './util';
@@ -250,7 +251,7 @@ describe('node group', () => {
 
 
   });
-  test('create nodegroup with instanceType provided', () => {
+  test('create nodegroup with instanceTypes provided', () => {
     // GIVEN
     const { stack, vpc } = testFixture();
 
@@ -262,7 +263,7 @@ describe('node group', () => {
     });
     new eks.Nodegroup(stack, 'Nodegroup', {
       cluster,
-      instanceType: new ec2.InstanceType('m5.large'),
+      instanceTypes: [new ec2.InstanceType('m5.large')],
     });
 
     // THEN
@@ -286,7 +287,7 @@ describe('node group', () => {
     });
     new eks.Nodegroup(stack, 'Nodegroup', {
       cluster,
-      instanceType: new ec2.InstanceType('m5.large'),
+      instanceTypes: [new ec2.InstanceType('m5.large')],
       capacityType: eks.CapacityType.ON_DEMAND,
     });
 
@@ -362,7 +363,7 @@ describe('node group', () => {
 
 
   });
-  test('throws when both instanceTypes and instanceType defined', () => {
+  testDeprecated('throws when both instanceTypes and instanceType defined', () => {
     // GIVEN
     const { stack, vpc } = testFixture();
 

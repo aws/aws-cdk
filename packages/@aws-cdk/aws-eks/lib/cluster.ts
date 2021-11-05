@@ -1397,8 +1397,6 @@ export class Cluster extends ClusterBase {
           cpuArch: cpuArchForInstanceType(options.instanceType),
           kubernetesVersion: this.version.version,
         }),
-      updateType: options.updateType,
-      instanceType: options.instanceType,
     });
 
     this.connectAutoScalingGroupCapacity(asg, {
