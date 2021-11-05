@@ -38,7 +38,7 @@ with the same amount of code. The *CDK Pipelines* library takes care of the
 details.
 
 CDK Pipelines supports multiple *deployment engines* (see below), and comes with
-a deployment engine that deployes CDK apps using AWS CodePipeline. To use the
+a deployment engine that deploys CDK apps using AWS CodePipeline. To use the
 CodePipeline engine, define a `CodePipeline` construct.  The following
 example creates a CodePipeline that deploys an application from GitHub:
 
@@ -155,8 +155,8 @@ by adding the following to `cdk.json`:
 
 ## Provisioning the pipeline
 
-To provision the pipeline you have defined, making sure the target environment
-has been bootstrapped (see below), and then executing deploying the
+To provision the pipeline you have defined, make sure the target environment
+has been bootstrapped (see below), and then execute deploying the
 `PipelineStack` *once*. Afterwards, the pipeline will keep itself up-to-date.
 
 > **Important**: be sure to `git commit` and `git push` before deploying the
@@ -175,7 +175,7 @@ $ cdk deploy PipelineStack
 ```
 
 Administrative permissions to the account are only necessary up until
-this point. We recommend you shed access to these credentials after doing this.
+this point. We recommend you remove access to these credentials after doing this.
 
 ### Working on the pipeline
 
