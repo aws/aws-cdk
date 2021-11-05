@@ -19,8 +19,10 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
 import * as wafv2 from '@aws-cdk/aws-wafv2';
 ```
 
-### Examples
+## Examples
+
 Create a simple WebACL resource.
+
 ```csharp
 var WebACL = new CfnWebACL(this, "WebACL", new CfnWebACLProps{
    Name = "MyWebACL",
