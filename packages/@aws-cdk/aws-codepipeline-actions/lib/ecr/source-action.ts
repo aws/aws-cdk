@@ -101,7 +101,7 @@ export class EcrSourceAction extends Action {
 
     this.props.repository.onCloudTrailImagePushed(Names.nodeUniqueId(stage.pipeline.node) + 'SourceEventRule', {
       target: new targets.CodePipeline(stage.pipeline),
-      imageTag,
+      imageTag: this.props.imageTag === '' ? undefined : (this.props.imageTag ?? 'latest'),
     });
 
     // the Action Role also needs to write to the Pipeline's bucket
