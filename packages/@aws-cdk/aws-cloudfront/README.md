@@ -239,6 +239,58 @@ new cloudfront.Distribution(this, 'myDistCustomPolicy', {
 });
 ```
 
+### Customizing Response Headers with Response Headers Policies
+
+You can configure CloudFront to add one or more HTTP headers to the responses that it sends to viewers (web browsers or other clients), without making any changes to the origin or writing any code.
+To specify the headers that CloudFront adds to HTTP responses, you use a response headers policy. CloudFront adds the headers regardless of whether it serves the object from the cache or has to retrieve the object from the origin. If the origin response includes one or more of the headers that’s in a response headers policy, the policy can specify whether CloudFront uses the header it received from the origin or overwrites it with the one in the policy.
+See https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/adding-response-headers.html
+
+```ts
+// Using an existing managed response headers policy
+new cloudfront.Distribution(this, 'myDistManagedPolicy', {
+  defaultBehavior: {
+    origin: bucketOrigin,
+    responseHeadersPolicy: cloudfront.ResponseHeadersPolicy.CORS_ALLOW_ALL_ORIGINS,
+  },
+});
+
+// Creating a custom response headers policy -- all parameters optional
+const myResponseHeadersPolicy = new cloudfront.ResponseHeadersPolicy(this, 'ResponseHeadersPolicy', {
+  responseHeadersPolicyName: 'MyPolicy',
+  comment: 'A default policy',
+  corsBehaivor: {
+    accessControlAllowCredentials: true,
+    accessControlAllowHeaders: ['X-Amz-Date', 'X-Amz-Security-Token'],
+    accessControlAllowMethods: ['GET', 'POST'],
+    accessControlAllowOrigins: ['*'],
+    accessControlExposeHeaders: ['X-Amz-Date', 'X-Amz-Security-Token'],
+    accessControlMaxAge: Duration.seconds(600),
+    originOverride: true,
+  },
+  customHeadersBehavior: {
+    customHeaders: [
+      { header: 'X-Amz-Date', value: 'some-value', override: true },
+      { header: 'X-Amz-Security-Token', value: 'some-value', override: false },
+    ],
+  },
+  securityHeadersBehavior: {
+    contentSecurityPolicy: { contentSecurityPolicy: 'default-src https:;', override: true },
+    contentTypeOptions: { override: true },
+    frameOptions: { frameOption: 'DENY', override: true },
+    referrerPolicy: { referrerPolicy: 'no-referrer', override: true },
+    strictTransportSecurity: { accessControlMaxAge: Duration.seconds(600), includeSubdomains: true, override: true },
+    xssProtection: { protection: true, modeBlock: true, reportUri: 'https://example.com/csp-report', override: true },
+  },
+});
+new cloudfront.Distribution(this, 'myDistCustomPolicy', {
+  defaultBehavior: {
+    origin: bucketOrigin,
+    cachePolicy: myCachePolicy,
+    responseHeadersPolicy: myResponseHeadersPolicy,
+  },
+});
+```
+
 ### Validating signed URLs or signed cookies with Trusted Key Groups
 
 CloudFront Distribution now supports validating signed URLs or signed cookies using key groups. When a cache behavior contains trusted key groups, CloudFront requires signed URLs or signed cookies for all requests that match the cache behavior.
