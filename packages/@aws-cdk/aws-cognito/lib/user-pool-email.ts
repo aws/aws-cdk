@@ -78,7 +78,7 @@ export interface UserPoolEmailConfig {
    * Specifies whether to use Cognito's built in email functionality
    * or SES.
    *
-   * @default - Cognito build in email functionality
+   * @default - Cognito built in email functionality
    */
   readonly emailSendingAccount?: string;
 
