@@ -236,8 +236,10 @@ const demoDomainUrl = apiDemo.defaultStage.domainUrl; // returns "https://exampl
 Mutual TLS can be configured to limit access to your API based by using client certificates instead of (or as an extension of) using authorization headers.
 
 ```ts
+import * as s3 from '@aws-cdk/aws-s3';
 const certArn = 'arn:aws:acm:us-east-1:111111111111:certificate';
 const domainName = 'example.com';
+const bucket = new s3.Bucket.fromBucketName(stack, 'TrustStoreBucket', ...);
 
 new DomainName(stack, 'DomainName', {
   domainName,
