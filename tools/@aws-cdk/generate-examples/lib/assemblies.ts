@@ -11,7 +11,7 @@ const sortJson = require('sort-json');
  * Recalculates the fingerprint of the assembly to avoid tampering detection.
  */
 export async function replaceAssembly(assembly: spec.Assembly, directory: string): Promise<void> {
-  const fileName = path.join(directory, '.jsii');
+  const fileName = path.join(directory, '.jsiii');
   await fs.writeJson(fileName, _fingerprint(assembly), {
     encoding: 'utf8',
     spaces: 2,
