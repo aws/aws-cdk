@@ -1,9 +1,9 @@
 import '@aws-cdk/assert-internal/jest';
+import { ABSENT } from '@aws-cdk/assert-internal';
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as ecr from '@aws-cdk/aws-ecr';
 import { Stack } from '@aws-cdk/core';
-import { ABSENT } from '../../../assert-internal/lib';
 import * as cpactions from '../../lib';
 
 /* eslint-disable quote-props */
@@ -116,6 +116,22 @@ describe('ecr source action', () => {
             },
           },
         },
+      });
+
+      expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+        'Stages': [
+          {
+            'Name': 'Source',
+            'Actions': [
+              {
+                'Name': 'Source',
+                'Configuration': {
+                  'ImageTag': ABSENT,
+                },
+              },
+            ],
+          },
+        ],
       });
     });
   });
