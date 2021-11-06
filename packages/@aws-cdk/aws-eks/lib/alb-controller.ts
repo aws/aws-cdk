@@ -84,7 +84,15 @@ export class AlbControllerVersion {
     return new AlbControllerVersion(version, true);
   }
 
-  private constructor(public readonly version: string, public readonly custom: boolean) {}
+  private constructor(
+    /**
+     * The version string.
+     */
+    public readonly version: string,
+    /**
+     * Whether or not its a custom version.
+     */
+    public readonly custom: boolean) {}
 }
 
 export enum AlbScheme {
@@ -163,7 +171,7 @@ export interface AlbControllerProps extends AlbControllerOptions {
   /**
    * Cluster to install the controller onto.
    */
-  readonly cluster: Cluster;
+  readonly cluster: ICluster;
 }
 
 /**
@@ -174,33 +182,28 @@ export interface AlbControllerProps extends AlbControllerOptions {
 export class AlbController extends CoreConstruct {
 
   /**
-   * Retrieve the controller construct associated with this cluster.
+   * Retrieve the controller construct associated with this cluster and scope.
+   * Singleton per stack/cluster.
    */
-  public static get(cluster: ICluster): AlbController | undefined {
-
-    if (cluster instanceof Cluster) {
-      const uid = AlbController.uid(cluster);
-      return cluster.node.tryFindChild(uid) as AlbController;
-    } else {
-      // Imported clusters are still supported
-      return undefined;
-    }
-
+  public static get(scope: Construct, cluster: ICluster): AlbController | undefined {
+    const stack = Stack.of(scope);
+    const uid = AlbController.uid(cluster);
+    return stack.node.tryFindChild(uid) as AlbController;
   }
 
   /**
-   * Retrieve or create the controller construct associated with this cluster.
+   * Retrieve or create the controller construct associated with this cluster and scope.
    */
-  public static getOrCreate(props: AlbControllerProps) {
-    let controller = AlbController.get(props.cluster);
+  public static getOrCreate(scope: Construct, props: AlbControllerProps) {
+    let controller = AlbController.get(scope, props.cluster);
     if (!controller) {
-      controller = new AlbController(props.cluster, AlbController.uid(props.cluster), props);
+      controller = new AlbController(scope, AlbController.uid(props.cluster), props);
     }
 
     return controller;
   }
 
-  private static uid(cluster: Cluster) {
+  private static uid(cluster: ICluster) {
     return `${Names.nodeUniqueId(cluster.node)}-AlbController`;
   }
 

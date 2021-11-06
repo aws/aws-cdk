@@ -178,7 +178,7 @@ export class KubernetesManifest extends CoreConstruct {
    */
   private injectIngressAlbAnnotations(cluster: ICluster, manifest: Record<string, any>[]) {
 
-    const albController = AlbController.get(cluster);
+    const albController = AlbController.get(this, cluster);
 
     if (!albController || !albController.autoDiscoverIngress) {
       return;

@@ -37,6 +37,9 @@ class EksClusterStack extends TestStack {
       defaultCapacity: 2,
       version: eks.KubernetesVersion.V1_21,
       secretsEncryptionKey,
+      albController: {
+        version: eks.AlbControllerVersion.V2_3_0,
+      },
     });
 
     this.assertFargateProfile();
