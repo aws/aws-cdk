@@ -37,7 +37,7 @@ class CallDynamoDBStack extends cdk.Stack {
         Text: tasks.DynamoAttributeValue.fromString(sfn.JsonPath.stringAt('$.bar')),
         TotalCount: tasks.DynamoAttributeValue.fromNumber(firstNumber),
         Activated: tasks.DynamoAttributeValue.booleanFromJsonPath(sfn.JsonPath.stringAt('$.foo')),
-        List: tasks.DynamoAttributeValue.listFromJsonPath(sfn.JsonPath.stringAt("$.list"))
+        List: tasks.DynamoAttributeValue.listFromJsonPath(sfn.JsonPath.stringAt('$.list')),
       },
       table,
     });
