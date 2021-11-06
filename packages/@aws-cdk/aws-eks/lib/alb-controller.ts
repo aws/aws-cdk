@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as iam from '@aws-cdk/aws-iam';
+import { Construct } from 'constructs';
 import { Cluster, ICluster } from '.';
 
 // v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
@@ -193,7 +194,7 @@ export class AlbController extends CoreConstruct {
   public static getOrCreate(props: AlbControllerProps) {
     let controller = AlbController.get(props.cluster);
     if (!controller) {
-      controller = new AlbController(props);
+      controller = new AlbController(props.cluster, AlbController.uid(props.cluster), props);
     }
 
     return controller;
@@ -206,8 +207,8 @@ export class AlbController extends CoreConstruct {
   public readonly autoDiscoverIngress: boolean;
   public readonly autoDiscoverIngressScheme: AlbScheme;
 
-  private constructor(props: AlbControllerProps) {
-    super(props.cluster, AlbController.uid(props.cluster));
+  private constructor(scope: Construct, id: string, props: AlbControllerProps) {
+    super(scope, id);
 
     this.autoDiscoverIngress = props.autoDiscoverIngress ?? true;
     this.autoDiscoverIngressScheme = props.autoDiscoverIngressScheme ?? AlbScheme.INTERNAL;
