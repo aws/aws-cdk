@@ -1,2 +1,2 @@
-aws-cdk.core>=%cdk-version%,
-aws-cdk.assertions>=%cdk-version%,
+aws-cdk.core>=%cdk-version%
+aws-cdk.assertions>=%cdk-version%
