@@ -103,7 +103,7 @@ export enum AlbScheme {
 }
 
 /**
- * Options for the AlbController.
+ * Options for `AlbController`.
  */
 export interface AlbControllerOptions {
 
@@ -154,13 +154,27 @@ export interface AlbControllerOptions {
   readonly autoDiscoverIngressScheme?: AlbScheme;
 }
 
+/**
+ * Properties for `AlbController`.
+ */
 export interface AlbControllerProps extends AlbControllerOptions {
+
+  /**
+   * Cluster to install the controller onto.
+   */
   readonly cluster: Cluster;
 }
 
-
+/**
+ * Construct for installing the AWS ALB Contoller on EKS clusters.
+ *
+ * @see https://kubernetes-sigs.github.io/aws-load-balancer-controller.
+ */
 export class AlbController extends CoreConstruct {
 
+  /**
+   * Retrieve the controller construct associated with this cluster.
+   */
   public static get(cluster: ICluster): AlbController | undefined {
 
     if (cluster instanceof Cluster) {
@@ -173,6 +187,9 @@ export class AlbController extends CoreConstruct {
 
   }
 
+  /**
+   * Retrieve or create the controller construct associated with this cluster.
+   */
   public static getOrCreate(props: AlbControllerProps) {
     let controller = AlbController.get(props.cluster);
     if (!controller) {
