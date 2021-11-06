@@ -1,4 +1,4 @@
-import { transformAttributeValueMap, validateJsonPath } from './private/utils';
+import { transformAttributeValueMap, validateJsonPath } from "./private/utils";
 
 /**
  * Determines the level of detail about provisioned throughput consumption that is returned.
@@ -8,17 +8,17 @@ export enum DynamoConsumedCapacity {
    * The response includes the aggregate ConsumedCapacity for the operation,
    * together with ConsumedCapacity for each table and secondary index that was accessed
    */
-  INDEXES = 'INDEXES',
+  INDEXES = "INDEXES",
 
   /**
    * The response includes only the aggregate ConsumedCapacity for the operation.
    */
-  TOTAL = 'TOTAL',
+  TOTAL = "TOTAL",
 
   /**
    * No ConsumedCapacity details are included in the response.
    */
-  NONE = 'NONE',
+  NONE = "NONE",
 }
 
 /**
@@ -29,12 +29,12 @@ export enum DynamoItemCollectionMetrics {
    * If set to SIZE, the response includes statistics about item collections,
    * if any, that were modified during the operation.
    */
-  SIZE = 'SIZE',
+  SIZE = "SIZE",
 
   /**
    * If set to NONE, no statistics are returned.
    */
-  NONE = 'NONE',
+  NONE = "NONE",
 }
 
 /**
@@ -44,27 +44,27 @@ export enum DynamoReturnValues {
   /**
    * Nothing is returned
    */
-  NONE = 'NONE',
+  NONE = "NONE",
 
   /**
    * Returns all of the attributes of the item
    */
-  ALL_OLD = 'ALL_OLD',
+  ALL_OLD = "ALL_OLD",
 
   /**
    * Returns only the updated attributes
    */
-  UPDATED_OLD = 'UPDATED_OLD',
+  UPDATED_OLD = "UPDATED_OLD",
 
   /**
    * Returns all of the attributes of the item
    */
-  ALL_NEW = 'ALL_NEW',
+  ALL_NEW = "ALL_NEW",
 
   /**
    * Returns only the updated attributes
    */
-  UPDATED_NEW = 'UPDATED_NEW',
+  UPDATED_NEW = "UPDATED_NEW",
 }
 
 /**
@@ -94,7 +94,7 @@ export class DynamoProjectionExpression {
    */
   public atIndex(index: number): DynamoProjectionExpression {
     if (!this.expression.length) {
-      throw new Error('Expression must start with an attribute');
+      throw new Error("Expression must start with an attribute");
     }
 
     this.expression.push(`[${index}]`);
@@ -105,7 +105,7 @@ export class DynamoProjectionExpression {
    * converts and return the string expression
    */
   public toString(): string {
-    return this.expression.join('');
+    return this.expression.join("");
   }
 }
 
@@ -209,7 +209,7 @@ export class DynamoAttributeValue {
    */
   public static mapFromJsonPath(value: string) {
     validateJsonPath(value);
-    return new DynamoAttributeValue({ 'M.$': value });
+    return new DynamoAttributeValue({ "M.$": value });
   }
 
   /**
@@ -217,6 +217,16 @@ export class DynamoAttributeValue {
    */
   public static fromList(value: DynamoAttributeValue[]) {
     return new DynamoAttributeValue({ L: value.map((val) => val.toObject()) });
+  }
+
+  /**
+   * Sets an attribute of type List. For example:  "M": {"Name": {"S": "Joe"}, "Age": {"N": "35"}}
+   *
+   * @param value Json path that specifies state input to be used
+   */
+  public static listFromJsonPath(value: string) {
+    validateJsonPath(value);
+    return new DynamoAttributeValue({ L: value });
   }
 
   /**
