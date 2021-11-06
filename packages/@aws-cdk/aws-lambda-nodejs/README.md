@@ -174,6 +174,7 @@ new lambda.NodejsFunction(this, 'my-handler', {
     minify: true, // minify code, defaults to false
     sourceMap: true, // include source map, defaults to false
     sourceMapMode: SourceMapMode.INLINE, // defaults to SourceMapMode.DEFAULT
+    sourcesContent: false, // do not include original source into source map, defaults to true
     target: 'es2020', // target environment for the generated JavaScript code
     loader: { // Use the 'dataurl' loader for '.png' files
       '.png': 'dataurl',
@@ -187,8 +188,9 @@ new lambda.NodejsFunction(this, 'my-handler', {
     keepNames: true, // defaults to false
     tsconfig: 'custom-tsconfig.json', // use custom-tsconfig.json instead of default,
     metafile: true, // include meta file, defaults to false
-    banner : '/* comments */', // requires esbuild >= 0.9.0, defaults to none
-    footer : '/* comments */', // requires esbuild >= 0.9.0, defaults to none
+    banner: '/* comments */', // requires esbuild >= 0.9.0, defaults to none
+    footer: '/* comments */', // requires esbuild >= 0.9.0, defaults to none
+    charset: Charset.UTF8, // do not escape non-ASCII characters, defaults to Charset.ASCII
   },
 });
 ```
