@@ -3,7 +3,7 @@ const os = require('os');
 const path = require('path');
 const resolveVersion = require('../../resolve-version-lib');
 
-beforeAll(() => spyOn(console, 'error'));
+beforeAll(() => jest.spyOn(console, 'error'));
 
 happy({
   name: 'stable release',
