@@ -150,7 +150,7 @@ const userPoolClient = userPool.addClient('UserPoolClient');
 
 const authorizer = new HttpUserPoolAuthorizer({
   userPool,
-  userPoolClient,
+  userPoolClients: [userPoolClient],
 });
 
 const api = new HttpApi(stack, 'HttpApi');

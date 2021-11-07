@@ -72,4 +72,72 @@ describe('http load balancer', () => {
 
   });
 
+  test('allows scaling on request count for the HTTP load balancer', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const environment = new Environment(stack, 'production');
+    const serviceDescription = new ServiceDescription();
+
+    serviceDescription.add(new Container({
+      cpu: 256,
+      memoryMiB: 512,
+      trafficPort: 80,
+      image: ecs.ContainerImage.fromRegistry('nathanpeck/name'),
+    }));
+
+    serviceDescription.add(new HttpLoadBalancerExtension({ requestsPerTarget: 100 }));
+
+    new Service(stack, 'my-service', {
+      environment,
+      serviceDescription,
+      autoScaleTaskCount: {
+        maxTaskCount: 5,
+      },
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::ApplicationAutoScaling::ScalableTarget', {
+      MaxCapacity: 5,
+      MinCapacity: 1,
+    });
+
+    expect(stack).toHaveResourceLike('AWS::ApplicationAutoScaling::ScalingPolicy', {
+      PolicyType: 'TargetTrackingScaling',
+      TargetTrackingScalingPolicyConfiguration: {
+        PredefinedMetricSpecification: {
+          PredefinedMetricType: 'ALBRequestCountPerTarget',
+        },
+        TargetValue: 100,
+      },
+    });
+  });
+
+  test('should error when adding scaling policy if scaling target has not been configured', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const environment = new Environment(stack, 'production');
+    const serviceDescription = new ServiceDescription();
+
+    serviceDescription.add(new Container({
+      cpu: 256,
+      memoryMiB: 512,
+      trafficPort: 80,
+      image: ecs.ContainerImage.fromRegistry('nathanpeck/name'),
+    }));
+
+    serviceDescription.add(new HttpLoadBalancerExtension({ requestsPerTarget: 100 }));
+
+    // THEN
+    expect(() => {
+      new Service(stack, 'my-service', {
+        environment,
+        serviceDescription,
+      });
+    }).toThrow(/Auto scaling target for the service 'my-service' hasn't been configured. Please use Service construct to configure 'minTaskCount' and 'maxTaskCount'./);
+  });
+
 });

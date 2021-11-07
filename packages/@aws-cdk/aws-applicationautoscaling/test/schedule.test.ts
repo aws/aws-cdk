@@ -65,6 +65,6 @@ describe('expression', () => {
 
 describe('at', () => {
   test('test using at with a specific Date', () => {
-    expect(appscaling.Schedule.at(new Date(2021, 10, 26)).expressionString).toEqual('at(2021-11-26T00:00:00)');
+    expect(appscaling.Schedule.at(new Date(Date.UTC(2021, 10, 26))).expressionString).toEqual('at(2021-11-26T00:00:00)');
   });
 });

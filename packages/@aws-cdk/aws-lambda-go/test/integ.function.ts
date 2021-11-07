@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { App, DockerImage, Stack, StackProps } from '@aws-cdk/core';
+import { App, Stack, StackProps } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import * as lambda from '../lib';
 
@@ -15,11 +15,6 @@ class TestStack extends Stack {
     new lambda.GoFunction(this, 'go-handler-docker', {
       entry: path.join(__dirname, 'lambda-handler-vendor/cmd/api'),
       bundling: {
-        dockerImage: DockerImage.fromBuild(path.join(__dirname, '../lib'), {
-          buildArgs: {
-            IMAGE: 'public.ecr.aws/bitnami/golang:1.16.3-debian-10-r16',
-          },
-        }),
         forcedDockerBundling: true,
         goBuildFlags: ['-mod=readonly', '-ldflags "-s -w"'],
       },

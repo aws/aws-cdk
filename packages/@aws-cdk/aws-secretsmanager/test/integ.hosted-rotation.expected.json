@@ -5,7 +5,9 @@
       "Type": "AWS::SecretsManager::Secret",
       "Properties": {
         "GenerateSecretString": {}
-      }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "SecretSchedule18F2CB66": {
       "Type": "AWS::SecretsManager::RotationSchedule",

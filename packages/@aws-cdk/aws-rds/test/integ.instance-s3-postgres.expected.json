@@ -512,7 +512,9 @@
           "PasswordLength": 30,
           "SecretStringTemplate": "{\"username\":\"postgres\"}"
         }
-      }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "InstanceSecretAttachment83BEE581": {
       "Type": "AWS::SecretsManager::SecretTargetAttachment",
