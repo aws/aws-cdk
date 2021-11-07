@@ -83,8 +83,6 @@ test('fetch(k, resolver) can be used to "atomically" get + resolve + put', async
 });
 
 test(`cache is nuked if it exceeds ${AccountAccessKeyCache.MAX_ENTRIES} entries`, async () => {
-  // This makes a lot of promises, so it can queue for a while...
-  jest.setTimeout(30_000);
 
   const { cacheDir, cacheFile, cache } = await makeCache();
 
@@ -110,7 +108,9 @@ test(`cache is nuked if it exceeds ${AccountAccessKeyCache.MAX_ENTRIES} entries`
   } finally {
     await nukeCache(cacheDir);
   }
-});
+},
+// This makes a lot of promises, so it can queue for a while...
+30_000);
 
 test('cache pretends to be empty if cache file does not contain JSON', async() => {
   const { cacheDir, cacheFile, cache } = await makeCache();
