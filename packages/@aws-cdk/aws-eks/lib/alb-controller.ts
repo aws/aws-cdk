@@ -95,6 +95,11 @@ export class AlbControllerVersion {
     public readonly custom: boolean) {}
 }
 
+/**
+ * ALB Scheme.
+ *
+ * @see https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.3/guide/ingress/annotations/#scheme
+ */
 export enum AlbScheme {
 
   /**
@@ -177,7 +182,10 @@ export interface AlbControllerProps extends AlbControllerOptions {
 /**
  * Construct for installing the AWS ALB Contoller on EKS clusters.
  *
- * @see https://kubernetes-sigs.github.io/aws-load-balancer-controller.
+ * Use the factory functions `get` and `getOrCreate` to obtain/create instances of this controller.
+ *
+ * @see https://kubernetes-sigs.github.io/aws-load-balancer-controller
+ *
  */
 export class AlbController extends CoreConstruct {
 
@@ -207,10 +215,17 @@ export class AlbController extends CoreConstruct {
     return `${Names.nodeUniqueId(cluster.node)}-AlbController`;
   }
 
+  /**
+   * Whether or not automatic discovery of ingress resources is enabled.
+   */
   public readonly autoDiscoverIngress: boolean;
+
+  /**
+   * The default ALB scheme applied to ingress resources. Only applies if `autoDiscoverIngress` is true.
+   */
   public readonly autoDiscoverIngressScheme: AlbScheme;
 
-  private constructor(scope: Construct, id: string, props: AlbControllerProps) {
+  public constructor(scope: Construct, id: string, props: AlbControllerProps) {
     super(scope, id);
 
     this.autoDiscoverIngress = props.autoDiscoverIngress ?? true;
