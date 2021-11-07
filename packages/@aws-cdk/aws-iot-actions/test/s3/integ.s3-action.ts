@@ -11,13 +11,19 @@ class TestStack extends cdk.Stack {
     super(scope, id, props);
 
     const topicRule = new iot.TopicRule(this, 'TopicRule', {
-      sql: iot.IotSql.fromStringAsVer20160323("SELECT topic(2) as device_id FROM 'device/+/data'"),
+      sql: iot.IotSql.fromStringAsVer20160323(
+        "SELECT topic(2) as device_id, year, month, day FROM 'device/+/data'",
+      ),
     });
 
     const bucket = new s3.Bucket(this, 'MyBucket', {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
-    topicRule.addAction(new actions.S3Action(bucket));
+    topicRule.addAction(
+      new actions.S3PutObjectAction(bucket, {
+        key: '${year}/${month}/${day}/${topic(2)}',
+      }),
+    );
   }
 }
 

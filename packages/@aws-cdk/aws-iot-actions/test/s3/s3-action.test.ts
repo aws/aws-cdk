@@ -11,11 +11,11 @@ test('Default s3 action', () => {
   const topicRule = new iot.TopicRule(stack, 'MyTopicRule', {
     sql: iot.IotSql.fromStringAsVer20160323("SELECT topic(2) as device_id FROM 'device/+/data'"),
   });
-  const bucket = new s3.Bucket(stack, 'MyBucket');
+  const bucket = s3.Bucket.fromBucketArn(stack, 'MyBucket', 'arn:aws:s3::123456789012:test-bucket');
 
   // WHEN
   topicRule.addAction(
-    new actions.S3Action(bucket),
+    new actions.S3PutObjectAction(bucket),
   );
 
   // THEN
@@ -24,7 +24,7 @@ test('Default s3 action', () => {
       Actions: [
         {
           S3: {
-            BucketName: { Ref: 'MyBucketF68F3FF0' },
+            BucketName: 'test-bucket',
             Key: '${topic()}/${timestamp()}',
             RoleArn: {
               'Fn::GetAtt': ['MyTopicRuleTopicRuleActionRoleCE2D05DA', 'Arn'],
@@ -56,15 +56,7 @@ test('Default s3 action', () => {
         {
           Action: 's3:PutObject',
           Effect: 'Allow',
-          Resource: {
-            'Fn::Join': [
-              '',
-              [
-                { 'Fn::GetAtt': ['MyBucketF68F3FF0', 'Arn'] },
-                '/*',
-              ],
-            ],
-          },
+          Resource: 'arn:aws:s3::123456789012:test-bucket/*',
         },
       ],
       Version: '2012-10-17',
@@ -82,11 +74,11 @@ test('can set key of bucket', () => {
   const topicRule = new iot.TopicRule(stack, 'MyTopicRule', {
     sql: iot.IotSql.fromStringAsVer20160323("SELECT topic(2) as device_id FROM 'device/+/data'"),
   });
-  const bucket = new s3.Bucket(stack, 'MyBucket');
+  const bucket = s3.Bucket.fromBucketArn(stack, 'MyBucket', 'arn:aws:s3::123456789012:test-bucket');
 
   // WHEN
   topicRule.addAction(
-    new actions.S3Action(bucket, {
+    new actions.S3PutObjectAction(bucket, {
       key: 'test-key',
     }),
   );
@@ -97,7 +89,7 @@ test('can set key of bucket', () => {
       Actions: [
         {
           S3: {
-            BucketName: { Ref: 'MyBucketF68F3FF0' },
+            BucketName: 'test-bucket',
             Key: 'test-key',
             RoleArn: {
               'Fn::GetAtt': ['MyTopicRuleTopicRuleActionRoleCE2D05DA', 'Arn'],
@@ -115,11 +107,11 @@ test('can set canned ACL and it convert to kebab case', () => {
   const topicRule = new iot.TopicRule(stack, 'MyTopicRule', {
     sql: iot.IotSql.fromStringAsVer20160323("SELECT topic(2) as device_id FROM 'device/+/data'"),
   });
-  const bucket = new s3.Bucket(stack, 'MyBucket');
+  const bucket = s3.Bucket.fromBucketArn(stack, 'MyBucket', 'arn:aws:s3::123456789012:test-bucket');
 
   // WHEN
   topicRule.addAction(
-    new actions.S3Action(bucket, {
+    new actions.S3PutObjectAction(bucket, {
       cannedAcl: s3.BucketAccessControl.BUCKET_OWNER_FULL_CONTROL,
     }),
   );
@@ -130,7 +122,7 @@ test('can set canned ACL and it convert to kebab case', () => {
       Actions: [
         {
           S3: {
-            BucketName: { Ref: 'MyBucketF68F3FF0' },
+            BucketName: 'test-bucket',
             Key: '${topic()}/${timestamp()}',
             CannedAcl: 'bucket-owner-full-control',
             RoleArn: {
@@ -149,12 +141,12 @@ test('can set role', () => {
   const topicRule = new iot.TopicRule(stack, 'MyTopicRule', {
     sql: iot.IotSql.fromStringAsVer20160323("SELECT topic(2) as device_id FROM 'device/+/data'"),
   });
-  const bucket = new s3.Bucket(stack, 'MyBucket');
+  const bucket = s3.Bucket.fromBucketArn(stack, 'MyBucket', 'arn:aws:s3::123456789012:test-bucket');
   const role = iam.Role.fromRoleArn(stack, 'MyRole', 'arn:aws:iam::123456789012:role/ForTest');
 
   // WHEN
   topicRule.addAction(
-    new actions.S3Action(bucket, { role }),
+    new actions.S3PutObjectAction(bucket, { role }),
   );
 
   // THEN
@@ -163,7 +155,7 @@ test('can set role', () => {
       Actions: [
         {
           S3: {
-            BucketName: { Ref: 'MyBucketF68F3FF0' },
+            BucketName: 'test-bucket',
             Key: '${topic()}/${timestamp()}',
             RoleArn: 'arn:aws:iam::123456789012:role/ForTest',
           },
@@ -171,21 +163,6 @@ test('can set role', () => {
       ],
     },
   });
-});
-
-test('The specified role is added a policy needed for putting item to a bucket', () => {
-  // GIVEN
-  const stack = new cdk.Stack();
-  const topicRule = new iot.TopicRule(stack, 'MyTopicRule', {
-    sql: iot.IotSql.fromStringAsVer20160323("SELECT topic(2) as device_id FROM 'device/+/data'"),
-  });
-  const bucket = new s3.Bucket(stack, 'MyBucket');
-  const role = iam.Role.fromRoleArn(stack, 'MyRole', 'arn:aws:iam::123456789012:role/ForTest');
-
-  // WHEN
-  topicRule.addAction(
-    new actions.S3Action(bucket, { role }),
-  );
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
@@ -194,15 +171,7 @@ test('The specified role is added a policy needed for putting item to a bucket',
         {
           Action: 's3:PutObject',
           Effect: 'Allow',
-          Resource: {
-            'Fn::Join': [
-              '',
-              [
-                { 'Fn::GetAtt': ['MyBucketF68F3FF0', 'Arn'] },
-                '/*',
-              ],
-            ],
-          },
+          Resource: 'arn:aws:s3::123456789012:test-bucket/*',
         },
       ],
       Version: '2012-10-17',

@@ -7,7 +7,7 @@ import { singletonActionRole } from './private/role';
 /**
  * Configuration properties of an action for s3.
  */
-export interface S3ActionProps {
+export interface S3PutObjectActionProps {
   /**
    * The Amazon S3 canned ACL that controls access to the object identified by the object key.
    * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/acl-overview.html#canned-acl
@@ -37,7 +37,7 @@ export interface S3ActionProps {
 /**
  * The action to write the data from an MQTT message to an Amazon S3 bucket.
  */
-export class S3Action implements iot.IAction {
+export class S3PutObjectAction implements iot.IAction {
   private readonly cannedAcl?: string;
   private readonly key?: string;
   private readonly role?: iam.IRole;
@@ -46,7 +46,7 @@ export class S3Action implements iot.IAction {
    * @param bucket The Amazon S3 bucket to which to write data.
    * @param props Optional properties to not use default
    */
-  constructor(private readonly bucket: s3.IBucket, props: S3ActionProps = {}) {
+  constructor(private readonly bucket: s3.IBucket, props: S3PutObjectActionProps = {}) {
     this.cannedAcl = props.cannedAcl;
     this.key = props.key;
     this.role = props.role;

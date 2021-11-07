@@ -10,7 +10,7 @@
                 "BucketName": {
                   "Ref": "MyBucketF68F3FF0"
                 },
-                "Key": "${topic()}/${timestamp()}",
+                "Key": "${year}/${month}/${day}/${topic(2)}",
                 "RoleArn": {
                   "Fn::GetAtt": [
                     "TopicRuleTopicRuleActionRole246C4F77",
@@ -21,7 +21,7 @@
             }
           ],
           "AwsIotSqlVersion": "2016-03-23",
-          "Sql": "SELECT topic(2) as device_id FROM 'device/+/data'"
+          "Sql": "SELECT topic(2) as device_id, year, month, day FROM 'device/+/data'"
         }
       }
     },
