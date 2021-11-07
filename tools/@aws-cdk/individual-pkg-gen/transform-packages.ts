@@ -6,18 +6,18 @@ const lerna_project = require('@lerna/project');
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const ver = require('../../../scripts/resolve-version');
 
-const CFN_STABILITY_BANNER = [
+const CFN_STABILITY_BANNER = `${[
   '![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)',
   '',
   '> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.',
   '>',
   '> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib',
-].join('\n');
+].join('\n')}\n\n`;
 
 const FEATURE_CFN_STABILITY_BANNER = `> **CFN Resources:** All classes with the \`Cfn\` prefix in this module ([CFN Resources]) are always
 > stable and safe to use.
 >
-> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib`;
+> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib\n\n<!-- -->\n\n`;
 
 const FEATURE_CFN_STABILITY_LINE = /CFN Resources\s+\| !\[Stable]\(https:\/\/img\.shields\.io\/badge\/stable-success\.svg\?style=for-the-badge\)\n/gm;
 
@@ -167,6 +167,16 @@ function transformPackageJson(pkg: any, source: string, destination: string, alp
       packageJson.ubergen = { exclude: true };
     }
   }
+
+  // disable the 'cloudformation' directive since alpha modules don't contain L1 resources.
+  const cdkBuild = packageJson['cdk-build'];
+  if (cdkBuild) {
+    delete cdkBuild.cloudformation;
+    packageJson['cdk-build'] = cdkBuild;
+  }
+
+  // disable `cfn2ts` script since alpha modules don't contain L1 resources.
+  delete packageJson.scripts.cfn2ts;
 
   // disable awslint (some rules are hard-coded to @aws-cdk/core)
   packageJson.awslint = {
