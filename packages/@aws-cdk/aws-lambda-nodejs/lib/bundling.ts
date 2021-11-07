@@ -182,6 +182,7 @@ export class Bundling implements cdk.BundlingOptions {
     const sourceMapEnabled = this.props.sourceMapMode ?? this.props.sourceMap;
     const sourceMapMode = this.props.sourceMapMode ?? SourceMapMode.DEFAULT;
     const sourceMapValue = sourceMapMode === SourceMapMode.DEFAULT ? '' : `=${this.props.sourceMapMode}`;
+    const sourcesContent = this.props.sourcesContent ?? true;
 
     const esbuildCommand: string[] = [
       options.esbuildRunner,
@@ -191,6 +192,7 @@ export class Bundling implements cdk.BundlingOptions {
       `--outfile="${pathJoin(options.outputDir, 'index.js')}"`,
       ...this.props.minify ? ['--minify'] : [],
       ...sourceMapEnabled ? [`--sourcemap${sourceMapValue}`] : [],
+      ...sourcesContent ? [] : [`--sources-content=${sourcesContent}`],
       ...this.externals.map(external => `--external:${external}`),
       ...loaders.map(([ext, name]) => `--loader:${ext}=${name}`),
       ...defines.map(([key, value]) => `--define:${key}=${JSON.stringify(value)}`),
