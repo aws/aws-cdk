@@ -433,6 +433,66 @@ describe('vpc', () => {
 
     });
 
+    test('with public subnets and parameter of MapPublicIpOnLaunch is true, MapPublicIpOnLaunch is true', () => {
+      const stack = getTestStack();
+      new Vpc(stack, 'VPC', {
+        maxAzs: 1,
+        subnetConfiguration: [
+          {
+            cidrMask: 24,
+            name: 'ingress',
+            subnetType: SubnetType.PUBLIC,
+            mapPublicIpOnLaunch: true,
+          },
+        ],
+      });
+      expect(stack).toCountResources('AWS::EC2::Subnet', 1);
+      expect(stack).not.toHaveResource('AWS::EC2::NatGateway');
+      expect(stack).toHaveResource('AWS::EC2::Subnet', {
+        MapPublicIpOnLaunch: true,
+      });
+    });
+
+    test('with public subnets and parameter of MapPublicIpOnLaunch is false, MapPublicIpOnLaunch is false', () => {
+      const stack = getTestStack();
+      new Vpc(stack, 'VPC', {
+        maxAzs: 1,
+        subnetConfiguration: [
+          {
+            cidrMask: 24,
+            name: 'ingress',
+            subnetType: SubnetType.PUBLIC,
+            mapPublicIpOnLaunch: false,
+          },
+        ],
+      });
+      expect(stack).toCountResources('AWS::EC2::Subnet', 1);
+      expect(stack).not.toHaveResource('AWS::EC2::NatGateway');
+      expect(stack).toHaveResource('AWS::EC2::Subnet', {
+        MapPublicIpOnLaunch: false,
+      });
+    });
+
+    test('with private subnets and parameter of MapPublicIpOnLaunch is true, MapPublicIpOnLaunch is false', () => {
+      const stack = getTestStack();
+      new Vpc(stack, 'VPC', {
+        maxAzs: 1,
+        subnetConfiguration: [
+          {
+            cidrMask: 24,
+            name: 'ingress',
+            subnetType: SubnetType.PRIVATE_ISOLATED,
+            mapPublicIpOnLaunch: true,
+          },
+        ],
+      });
+      expect(stack).toCountResources('AWS::EC2::Subnet', 1);
+      expect(stack).not.toHaveResource('AWS::EC2::NatGateway');
+      expect(stack).toHaveResource('AWS::EC2::Subnet', {
+        MapPublicIpOnLaunch: false,
+      });
+    });
+
     test('maxAZs defaults to 3 if unset', () => {
       const stack = getTestStack();
       new Vpc(stack, 'VPC');

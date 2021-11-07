@@ -267,7 +267,11 @@ const vpc = new ec2.Vpc(this, 'TheVPC', {
       // 'reserved' can be used to reserve IP address space. No resources will
       // be created for this subnet, but the IP range will be kept available for
       // future creation of this subnet, or even for future subdivision.
-      reserved: true
+      reserved: true,
+
+      // 'mapPublicIpOnLaunch' can be used not to use auto-assign public IP for public subnets. 
+      // Default is true.
+      mapPublicIpOnLaunch: false
     }
   ],
 });

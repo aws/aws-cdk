@@ -1013,6 +1013,16 @@ export interface SubnetConfiguration {
    * @default false
    */
   readonly reserved?: boolean;
+
+  /**
+   * Controls whether public IPs are automatically assigned to public subnets.
+   *
+   * When true, turn on IP address auto-assignment for public subnets.
+   * Ignore the setting of this parameter even if true for private subnets.
+   *
+   * @default true
+   */
+  readonly mapPublicIpOnLaunch?: boolean;
 }
 
 /**
@@ -1250,6 +1260,11 @@ export class Vpc extends VpcBase {
   private readonly _internetConnectivityEstablished = new ConcreteDependable();
 
   /**
+   * Controls if a public IP is associated to an instance at launch
+   */
+  private mapPublicIpOnLaunch: boolean = true;
+
+  /**
    * Vpc creates a VPC that spans a whole region.
    * It will automatically divide the provided VPC CIDR range, and create public and private subnets per Availability Zone.
    * Network routing for the public subnets will be configured to allow outbound access directly via an Internet Gateway.
@@ -1452,12 +1467,18 @@ export class Vpc extends VpcBase {
         return;
       }
 
+      if (subnetConfig.mapPublicIpOnLaunch === undefined) {
+        this.mapPublicIpOnLaunch = true;
+      } else {
+        this.mapPublicIpOnLaunch = subnetConfig.mapPublicIpOnLaunch;
+      }
+
       const name = subnetId(subnetConfig.name, index);
       const subnetProps: SubnetProps = {
         availabilityZone: zone,
         vpcId: this.vpcId,
         cidrBlock: this.networkBuilder.addSubnet(cidrMask),
-        mapPublicIpOnLaunch: (subnetConfig.subnetType === SubnetType.PUBLIC),
+        mapPublicIpOnLaunch: (subnetConfig.subnetType === SubnetType.PUBLIC && this.mapPublicIpOnLaunch === true),
       };
 
       let subnet: Subnet;
