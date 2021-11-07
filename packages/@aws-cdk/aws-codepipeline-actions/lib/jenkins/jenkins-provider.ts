@@ -1,6 +1,5 @@
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import { Construct, IConstruct } from 'constructs';
-import { CustomActionRegistration } from '../custom-action-registration';
 
 /**
  * A Jenkins provider.
@@ -185,7 +184,7 @@ export class JenkinsProvider extends BaseJenkinsProvider {
   }
 
   private registerJenkinsCustomAction(id: string, category: codepipeline.ActionCategory) {
-    new CustomActionRegistration(this, id, {
+    new codepipeline.CustomActionRegistration(this, id, {
       category,
       artifactBounds: jenkinsArtifactsBounds,
       provider: this.providerName,
