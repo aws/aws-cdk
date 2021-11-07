@@ -21,7 +21,7 @@ export interface ExternalServiceProps extends BaseServiceOptions {
   readonly taskDefinition: TaskDefinition;
 
   /**
-   * The security groups to associate with the service. If you do not specify a security group, the default security group for the VPC is used.
+   * The security groups to associate with the service. If you do not specify a security group, a new security group is created.
    *
    *
    * @default - A new security group is created.
