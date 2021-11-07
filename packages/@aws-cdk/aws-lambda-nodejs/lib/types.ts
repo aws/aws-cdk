@@ -27,6 +27,15 @@ export interface BundlingOptions {
   readonly sourceMapMode?: SourceMapMode;
 
   /**
+   * Whether to include original source code in source maps when bundling.
+   *
+   * @see https://esbuild.github.io/api/#sources-content
+   *
+   * @default true
+   */
+  readonly sourcesContent?: boolean;
+
+  /**
    * Target environment for the generated JavaScript code.
    *
    * @see https://esbuild.github.io/api/#target

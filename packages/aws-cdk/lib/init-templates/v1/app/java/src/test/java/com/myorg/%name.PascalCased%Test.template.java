@@ -1,28 +1,26 @@
-package com.myorg;
+// package com.myorg;
 
-import software.amazon.awscdk.core.App;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
+// import software.amazon.awscdk.core.App;
+// import software.amazon.awscdk.assertions.Template;
+// import java.io.IOException;
 
-import java.io.IOException;
+// import java.util.HashMap;
 
-import org.junit.jupiter.api.Test;
-import static org.assertj.core.api.Assertions.assertThat;
+// import org.junit.jupiter.api.Test;
 
-public class %name.PascalCased%Test {
-    private final static ObjectMapper JSON =
-        new ObjectMapper().configure(SerializationFeature.INDENT_OUTPUT, true);
+// example test. To run these tests, uncomment this file, along with the
+// example resource in java/src/main/java/com/myorg/%name.PascalCased%Stack.java
+// public class %name.PascalCased%Test {
 
-    @Test
-    public void testStack() throws IOException {
-        App app = new App();
-        %name.PascalCased%Stack stack = new %name.PascalCased%Stack(app, "test");
+//     @Test
+//     public void testStack() throws IOException {
+//         App app = new App();
+//         %name.PascalCased%Stack stack = new %name.PascalCased%Stack(app, "test");
 
-        // synthesize the stack to a CloudFormation template
-        JsonNode actual = JSON.valueToTree(app.synth().getStackArtifact(stack.getArtifactId()).getTemplate());
+//         Template template = Template.fromStack(stack);
 
-        // Update once resources have been added to the stack
-        assertThat(actual.get("Resources")).isNull();
-    }
-}
+//         template.hasResourceProperties("AWS::SQS::Queue", new HashMap<String, Number>() {{
+//           put("VisibilityTimeout", 300);
+//         }});
+//     }
+// }

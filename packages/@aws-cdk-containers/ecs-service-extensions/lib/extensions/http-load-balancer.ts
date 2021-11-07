@@ -8,6 +8,12 @@ import { ServiceExtension, ServiceBuild } from './extension-interfaces';
 // eslint-disable-next-line no-duplicate-imports, import/order
 import { Construct } from '@aws-cdk/core';
 
+export interface HttpLoadBalancerProps {
+  /**
+   * The number of ALB requests per target.
+   */
+  readonly requestsPerTarget?: number;
+}
 /**
  * This extension add a public facing load balancer for sending traffic
  * to one or more replicas of the application container.
@@ -15,9 +21,11 @@ import { Construct } from '@aws-cdk/core';
 export class HttpLoadBalancerExtension extends ServiceExtension {
   private loadBalancer!: alb.IApplicationLoadBalancer;
   private listener!: alb.IApplicationListener;
+  private requestsPerTarget?: number;
 
-  constructor() {
+  constructor(props: HttpLoadBalancerProps = {}) {
     super('load-balancer');
+    this.requestsPerTarget = props.requestsPerTarget;
   }
 
   // Before the service is created, go ahead and create the load balancer itself.
@@ -55,10 +63,21 @@ export class HttpLoadBalancerExtension extends ServiceExtension {
 
   // After the service is created add the service to the load balancer's listener
   public useService(service: ecs.Ec2Service | ecs.FargateService) {
-    this.listener.addTargets(this.parentService.id, {
+    const targetGroup = this.listener.addTargets(this.parentService.id, {
       deregistrationDelay: cdk.Duration.seconds(10),
       port: 80,
       targets: [service],
     });
+
+    if (this.requestsPerTarget) {
+      if (!this.parentService.scalableTaskCount) {
+        throw Error(`Auto scaling target for the service '${this.parentService.id}' hasn't been configured. Please use Service construct to configure 'minTaskCount' and 'maxTaskCount'.`);
+      }
+      this.parentService.scalableTaskCount.scaleOnRequestCount(`${this.parentService.id}-target-request-count-${this.requestsPerTarget}`, {
+        requestsPerTarget: this.requestsPerTarget,
+        targetGroup,
+      });
+      this.parentService.enableAutoScalingPolicy();
+    }
   }
 }

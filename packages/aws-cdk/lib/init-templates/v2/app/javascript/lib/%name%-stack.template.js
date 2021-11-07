@@ -1,4 +1,5 @@
-const { Stack } = require('aws-cdk-lib');
+const { Stack, Duration } = require('aws-cdk-lib');
+// const sqs = require('aws-cdk-lib/aws-sqs');
 
 class %name.PascalCased%Stack extends Stack {
   /**
@@ -11,6 +12,11 @@ class %name.PascalCased%Stack extends Stack {
     super(scope, id, props);
 
     // The code that defines your stack goes here
+
+    // example resource
+    // const queue = new sqs.Queue(this, '%name.PascalCased%Queue', {
+    //   visibilityTimeout: Duration.seconds(300)
+    // });
   }
 }
 

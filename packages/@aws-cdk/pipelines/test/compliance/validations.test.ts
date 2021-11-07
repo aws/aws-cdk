@@ -463,7 +463,7 @@ behavior('can add policy statements to shell script action', (suite) => {
 behavior('can grant permissions to shell script action', (suite) => {
   let bucket: s3.IBucket;
   beforeEach(() => {
-    bucket = s3.Bucket.fromBucketArn(pipelineStack, 'Bucket', 'arn:aws:s3:::ThisParticularBucket');
+    bucket = s3.Bucket.fromBucketArn(pipelineStack, 'Bucket', 'arn:aws:s3:::this-particular-bucket');
   });
 
   suite.legacy(() => {
@@ -505,7 +505,7 @@ behavior('can grant permissions to shell script action', (suite) => {
       PolicyDocument: {
         Statement: Match.arrayWith([Match.objectLike({
           Action: ['s3:GetObject*', 's3:GetBucket*', 's3:List*'],
-          Resource: ['arn:aws:s3:::ThisParticularBucket', 'arn:aws:s3:::ThisParticularBucket/*'],
+          Resource: ['arn:aws:s3:::this-particular-bucket', 'arn:aws:s3:::this-particular-bucket/*'],
         })]),
       },
     });

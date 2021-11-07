@@ -39,7 +39,7 @@ export interface Ec2ServiceProps extends BaseServiceOptions {
   readonly vpcSubnets?: ec2.SubnetSelection;
 
   /**
-   * The security groups to associate with the service. If you do not specify a security group, the default security group for the VPC is used.
+   * The security groups to associate with the service. If you do not specify a security group, a new security group is created.
    *
    * This property is only used for tasks that use the awsvpc network mode.
    *
@@ -49,7 +49,7 @@ export interface Ec2ServiceProps extends BaseServiceOptions {
   readonly securityGroup?: ec2.ISecurityGroup;
 
   /**
-   * The security groups to associate with the service. If you do not specify a security group, the default security group for the VPC is used.
+   * The security groups to associate with the service. If you do not specify a security group, a new security group is created.
    *
    * This property is only used for tasks that use the awsvpc network mode.
    *

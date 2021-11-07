@@ -113,7 +113,7 @@ $ yarn build
 $ yarn test
 ```
 
-However, if you wish to build the the entire repository, the following command will achieve this.
+However, if you wish to build the entire repository, the following command will achieve this.
 
 ```console
 cd <root of the CDK repo>
@@ -978,3 +978,4 @@ $ node --inspect-brk /path/to/aws-cdk/node_modules/.bin/jest -i -t 'TESTNAME'
 * [Workshop](https://github.com/aws-samples/aws-cdk-intro-workshop): source for https://cdkworkshop.com
 * [Developer Guide](https://github.com/awsdocs/aws-cdk-guide): markdown source for developer guide
 * [jsii](https://github.com/aws/jsii): the technology we use for multi-language support. If you are looking to help us support new languages, start there.
+

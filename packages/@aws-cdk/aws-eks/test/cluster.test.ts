@@ -38,6 +38,25 @@ describe('cluster', () => {
     expect(template.Resources.OnEventHandler42BEBAE0.Properties.Environment).toEqual({ Variables: { foo: 'bar' } });
   });
 
+  test('can specify security group to cluster resource handler', () => {
+    const { stack, vpc } = testFixture();
+    const securityGroup = new ec2.SecurityGroup(stack, 'ProxyInstanceSG', {
+      vpc,
+      allowAllOutbound: false,
+    });
+
+    new eks.Cluster(stack, 'Cluster', {
+      version: CLUSTER_VERSION,
+      placeClusterHandlerInVpc: true,
+      clusterHandlerSecurityGroup: securityGroup,
+    });
+
+    const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.ClusterResourceProvider') as cdk.NestedStack;
+
+    const template = SynthUtils.toCloudFormation(nested);
+    expect(template.Resources.OnEventHandler42BEBAE0.Properties.VpcConfig.SecurityGroupIds).toEqual([{ Ref: 'referencetoStackProxyInstanceSG80B79D87GroupId' }]);
+  });
+
   test('throws when trying to place cluster handlers in a vpc with no private subnets', () => {
     const { stack } = testFixture();
 
@@ -53,6 +72,21 @@ describe('cluster', () => {
     }).toThrow(/Cannot place cluster handler in the VPC since no private subnets could be selected/);
 
 
+  });
+
+  test('throws when provided `clusterHandlerSecurityGroup` without `placeClusterHandlerInVpc: true`', () => {
+    const { stack, vpc } = testFixture();
+    const securityGroup = new ec2.SecurityGroup(stack, 'ProxyInstanceSG', {
+      vpc,
+      allowAllOutbound: false,
+    });
+
+    expect(() => {
+      new eks.Cluster(stack, 'Cluster', {
+        version: CLUSTER_VERSION,
+        clusterHandlerSecurityGroup: securityGroup,
+      });
+    }).toThrow(/Cannot specify clusterHandlerSecurityGroup without placeClusterHandlerInVpc set to true/);
   });
 
   describe('imported Vpc from unparseable list tokens', () => {

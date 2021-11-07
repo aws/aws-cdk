@@ -209,6 +209,16 @@ export enum InstanceClass {
   C5 = 'c5',
 
   /**
+   * Compute optimized instances, 6th generation
+   */
+  COMPUTE6_INTEL = 'c6i',
+
+  /**
+   * Compute optimized instances, 6th generation
+   */
+  C6I = 'c6i',
+
+  /**
    * Compute optimized instances with local NVME drive, 5th generation
    */
   COMPUTE5_NVME_DRIVE = 'c5d',
