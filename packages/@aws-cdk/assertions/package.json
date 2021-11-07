@@ -64,8 +64,8 @@
   "devDependencies": {
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/jest": "^27.0.2",
-    "constructs": "^3.3.69",
+    "@types/jest": "^26.0.24",
+    "constructs": "^10.0.0",
     "jest": "^27.3.1",
     "ts-jest": "^27.0.7"
   },
@@ -74,7 +74,7 @@
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
     "colors": "^1.4.0",
-    "constructs": "^3.3.69",
+    "constructs": "^10.0.0",
     "diff": "^5.0.0",
     "fast-deep-equal": "^3.1.3",
     "string-width": "^4.2.3",
@@ -84,7 +84,7 @@
     "@aws-cdk/cloud-assembly-schema": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
-    "constructs": "^3.3.69"
+    "constructs": "^10.0.0"
   },
   "bundledDependencies": [
     "colors",
@@ -105,14 +105,15 @@
   ],
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
-    "node": ">= 10.13.0 <13 || >=13.7.0"
+    "node": ">= 14.15.0"
   },
   "stability": "experimental",
   "maturity": "experimental",
   "publishConfig": {
-    "tag": "latest"
+    "tag": "next"
   },
   "awscdkio": {
     "announce": false
-  }
+  },
+  "private": true
 }
