@@ -34,7 +34,7 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
     });
 
     // THEN
-    expect(stack.resolve(task.toStateJson())).toEqual({
+    expect(stack.resolve(task.toStateJson())).toMatchObject({
       Type: 'Task',
       Resource: {
         'Fn::Join': [
@@ -48,28 +48,6 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
           ],
         ],
       },
-      End: true,
-      Parameters: {
-        VirtualClusterId: clusterId,
-        ReleaseLabel: ReleaseLabel.EMR_6_2_0.label,
-        JobDriver: {
-          SparkSubmitJobDriver: {
-            EntryPoint: 'local:///usr/lib/spark/examples/src/main/python/pi.py',
-            SparkSubmitParameters: '--conf spark.executor.instances=2',
-          },
-        },
-        ConfigurationOverrides: {
-          MonitoringConfiguration: {
-            PersistentAppUI: 'ENABLED',
-          },
-        },
-        ExecutionRoleArn: {
-          'Fn::GetAtt': [
-            'EMRContainersStartJobRunJobExecutionRole40B8DD81',
-            'Arn',
-          ],
-        },
-      },
     });
   });
 
@@ -77,7 +55,7 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
     // WHEN
     const task = new EmrContainersStartJobRun(stack, 'EMR Containers Start Job Run', defaultProps);
     // THEN
-    expect(stack.resolve(task.toStateJson())).toEqual({
+    expect(stack.resolve(task.toStateJson())).toMatchObject({
       Type: 'Task',
       Resource: {
         'Fn::Join': [
@@ -90,28 +68,6 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
             ':states:::emr-containers:startJobRun.sync',
           ],
         ],
-      },
-      End: true,
-      Parameters: {
-        VirtualClusterId: clusterId,
-        ReleaseLabel: ReleaseLabel.EMR_6_2_0.label,
-        JobDriver: {
-          SparkSubmitJobDriver: {
-            EntryPoint: 'local:///usr/lib/spark/examples/src/main/python/pi.py',
-            SparkSubmitParameters: '--conf spark.executor.instances=2',
-          },
-        },
-        ConfigurationOverrides: {
-          MonitoringConfiguration: {
-            PersistentAppUI: 'ENABLED',
-          },
-        },
-        ExecutionRoleArn: {
-          'Fn::GetAtt': [
-            'EMRContainersStartJobRunJobExecutionRole40B8DD81',
-            'Arn',
-          ],
-        },
       },
     });
   });
@@ -643,7 +599,7 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
             },
           },
         });
-      }).toThrow(`Entry point arguments must be a string array. Received ${typeof entryPointNumbers.value}.`);
+      }).toThrow('Entry point arguments must be a string array or encoded JSON path but received object');
 
       // THEN
       expect(() => {
@@ -656,7 +612,7 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
             },
           },
         });
-      }).toThrow(`Entry point arguments must be a string array. Received ${typeof entryPointJson.value}.`);
+      }).toThrow('Entry point arguments must be a string array or encoded JSON path, but received a non JSON path string');
 
       // THEN
       expect(() => {
