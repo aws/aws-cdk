@@ -46,7 +46,7 @@
         </dependency>
         <dependency>
             <groupId>software.amazon.awscdk</groupId>
-            <artifactId>assertions-alpha</artifactId>
+            <artifactId>assertions</artifactId>
             <version>${cdk.version}</version>
             <scope>test</scope>
         </dependency>
