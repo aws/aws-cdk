@@ -5,10 +5,7 @@ import * as redshift from '../lib';
 
 describe('cluster table', () => {
   const tableName = 'tableName';
-  const tableColumns = [
-    { name: 'col1', dataType: 'varchar(4)' },
-    { name: 'col2', dataType: 'float' },
-  ];
+  const tableColumns = [{ name: 'col1', dataType: 'varchar(4)' }, { name: 'col2', dataType: 'float' }];
 
   let stack: cdk.Stack;
   let vpc: ec2.Vpc;
@@ -40,16 +37,13 @@ describe('cluster table', () => {
       tableColumns,
     });
 
-    Template.fromStack(stack).hasResourceProperties(
-      'Custom::RedshiftDatabaseQuery',
-      {
-        tableName: {
-          prefix: 'Table',
-          generateSuffix: 'true',
-        },
-        tableColumns,
-      }
-    );
+    Template.fromStack(stack).hasResourceProperties('Custom::RedshiftDatabaseQuery', {
+      tableName: {
+        prefix: 'Table',
+        generateSuffix: 'true,
+      },
+      tableColumns,
+    });
   });
 
   it('tableName property is pulled from custom resource', () => {
@@ -70,15 +64,12 @@ describe('cluster table', () => {
       tableColumns,
     });
 
-    Template.fromStack(stack).hasResourceProperties(
-      'Custom::RedshiftDatabaseQuery',
-      {
-        tableName: {
-          prefix: tableName,
-          generateSuffix: 'false',
-        },
-      }
-    );
+    Template.fromStack(stack).hasResourceProperties('Custom::RedshiftDatabaseQuery', {
+      tableName: {
+        prefix: tableName,
+        generateSuffix: 'false',
+      },
+    });
   });
 
   it('can import from name and columns', () => {
@@ -110,12 +101,9 @@ describe('cluster table', () => {
 
     table.grant(user, redshift.TableAction.INSERT);
 
-    Template.fromStack(stack).hasResourceProperties(
-      'Custom::RedshiftDatabaseQuery',
-      {
-        handler: 'user-table-privileges',
-      }
-    );
+    Template.fromStack(stack).hasResourceProperties('Custom::RedshiftDatabaseQuery', {
+      handler: 'user-table-privileges',
+    });
   });
 
   it('retains table on deletion by default', () => {
