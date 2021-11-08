@@ -7,10 +7,9 @@ describe('resource policy', () => {
   test('simple instantiation', () => {
     // GIVEN
     const stack = new Stack();
-
-    // WHEN
     const logGroup = new LogGroup(stack, 'LogGroup');
 
+    // WHEN
     logGroup.addToResourcePolicy(new PolicyStatement({
       actions: ['logs:CreateLogStream'],
       resources: ['*'],
