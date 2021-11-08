@@ -625,6 +625,25 @@ describe('portfolio associations and product constraints', () => {
       });
     }),
 
+    test('set a launch role constraint using imported local role', () => {
+      portfolio.addProduct(product);
+
+      const importedLaunchRole = iam.Role.fromRoleArn(portfolio.stack, 'ImportedLaunchRole', 'arn:aws:iam::123456789012:role/ImportedLaunchRole');
+
+      portfolio.setLocalLaunchRole(product, importedLaunchRole, {
+        description: 'set launch role description',
+        messageLanguage: servicecatalog.MessageLanguage.EN,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::ServiceCatalog::LaunchRoleConstraint', {
+        PortfolioId: { Ref: 'MyPortfolio59CCA9C9' },
+        ProductId: { Ref: 'MyProduct49A3C587' },
+        Description: 'set launch role description',
+        AcceptLanguage: 'en',
+        LocalRoleName: 'ImportedLaunchRole',
+      });
+    }),
+
     test('set launch role constraint still adds without explicit association', () => {
       portfolio.setLaunchRole(product, launchRole);
 
