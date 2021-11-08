@@ -25,7 +25,7 @@ const userPoolClient = userPool.addClient('my-client');
 
 const authorizer = new HttpUserPoolAuthorizer({
   userPool,
-  userPoolClient,
+  userPoolClients: [userPoolClient],
 });
 
 const handler = new lambda.Function(stack, 'lambda', {
