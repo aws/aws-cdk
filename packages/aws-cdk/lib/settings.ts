@@ -113,6 +113,10 @@ export class Configuration {
 
     const readUserContext = this.props.readUserContext ?? true;
 
+    if (userConfig.get(['build'])) {
+      throw new Error('The `build` key cannot be specified in the user config (~/.cdk.json), specify it in the project config (cdk.json) instead');
+    }
+
     const contextSources = [
       this.commandLineContext,
       this.projectConfig.subSettings([CONTEXT_KEY]).makeReadOnly(),

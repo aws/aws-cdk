@@ -179,7 +179,7 @@ export interface DeployStackOptions {
    * A 'hotswap' deployment will attempt to short-circuit CloudFormation
    * and update the affected resources like Lambda functions directly.
    *
-   * @default - false (do not perform a 'hotswap' deployment)
+   * @default - false for regular deployments, true for 'watch' deployments
    */
   readonly hotswap?: boolean;
 }
@@ -317,7 +317,7 @@ async function prepareAndExecuteChangeSet(
   if (execute) {
     debug('Initiating execution of changeset %s on stack %s', changeSet.Id, deployName);
 
-    const shouldDisableRollback = (options.rollback === undefined && options.hotswap === true) || options.rollback === false;
+    const shouldDisableRollback = options.rollback === false;
     // Do a bit of contortions to only pass the `DisableRollback` flag if it's true. That way,
     // CloudFormation won't balk at the unrecognized option in regions where the feature is not available yet.
     const disableRollback = shouldDisableRollback ? { DisableRollback: true } : undefined;
