@@ -1,5 +1,13 @@
 /* eslint-disable jest/no-export */
 
+/**
+ * A proxy over the jest 'describe()' block.
+ * By default, unit tests in the CDK repo disallow the use of deprecated
+ * symbols (classes, interfaces, properties, methods, etc.) in the unit tests
+ * or within the "code under test".
+ * Use this block to override when the test is verifying the behaviour of
+ * deprecated APIs.
+ */
 export function describeDeprecated(name: string, fn: jest.EmptyFunction) {
   describe(name, () => {
     let deprecated: string | undefined;
@@ -13,6 +21,14 @@ export function describeDeprecated(name: string, fn: jest.EmptyFunction) {
   });
 }
 
+/**
+ * A proxy over the jest 'test()' block.
+ * By default, unit tests in the CDK repo disallow the use of deprecated
+ * symbols (classes, interfaces, properties, methods, etc.) in the unit tests
+ * or within the "code under test".
+ * Use this block to override when the test is verifying the behaviour of
+ * deprecated APIs.
+ */
 export function testDeprecated(name: string, fn: () => any, timeout?: number) {
   test(name, () => {
     const deprecated = DeprecatedSymbols.quiet();
@@ -21,7 +37,7 @@ export function testDeprecated(name: string, fn: () => any, timeout?: number) {
   }, timeout);
 }
 
-export namespace DeprecatedSymbols {
+namespace DeprecatedSymbols {
   export function quiet(): string | undefined {
     const deprecated = process.env.JSII_DEPRECATED;
     process.env.JSII_DEPRECATED = 'quiet';
