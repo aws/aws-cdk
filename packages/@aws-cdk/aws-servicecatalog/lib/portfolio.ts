@@ -120,8 +120,9 @@ export interface IPortfolio extends cdk.IResource {
   setLaunchRole(product: IProduct, launchRole: iam.IRole, options?: CommonConstraintOptions): void;
 
   /**
-   * Force users to assume a certain role when launching a product. The role will be referenced by name
-   * in the local account. This is useful when sharing the portfolio with multiple accounts.
+   * Force users to assume a certain role when launching a product.
+   * The role will be referenced by name in the local account.
+   * This is useful when sharing the portfolio with multiple accounts.
    *
    * @param product A service catalog product.
    * @param launchRoleName The name of the IAM role a user must assume when provisioning the product. A role with this name must exist in the account.
