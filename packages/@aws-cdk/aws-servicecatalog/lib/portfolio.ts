@@ -125,7 +125,7 @@ export interface IPortfolio extends cdk.IResource {
    * This is useful when sharing the portfolio with multiple accounts.
    *
    * @param product A service catalog product.
-   * @param launchRoleName The name of the IAM role a user must assume when provisioning the product. A role with this name must exist in the account.
+   * @param launchRoleName The name of the IAM role a user must assume when provisioning the product. A role with this name must exist in the account where the portolio is created and the accounts it is shared with.
    * @param options options for the constraint.
    */
   setLocalLaunchRoleName(product: IProduct, launchRoleName: string, options?: CommonConstraintOptions): void;
