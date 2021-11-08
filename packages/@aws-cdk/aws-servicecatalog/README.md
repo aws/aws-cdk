@@ -307,9 +307,10 @@ const launchRole = new iam.Role(this, 'LaunchRole', {
 portfolio.setLaunchRole(product, launchRole);
 ```
 
-You can also set the launch role to use a role of a given name that exists in the local account. This can be useful when sharing a portfolio with multiple accounts, as
-the launch role in the launch role constraint will be account-agnostic resulting in fewer resources needing to be created per shared account.
-A role with the given role name must exist in the account that created the launch constraint and the account of the user who launches a product with this launch constraint.
+You can also set the launch role using just the name of a role which is locally deployed in end user accounts.
+This is useful for when  roles and users are separately managed outside of the CDK.
+The given role must exist in both the account that creates the launch role constraint, 
+as well as in any end user accounts that wish to provision a product with the launch role. 
 
 ```ts fixture=portfolio-product
 import * as iam from '@aws-cdk/aws-iam';
