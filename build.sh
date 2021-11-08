@@ -6,11 +6,10 @@ runtarget="build"
 run_tests="true"
 check_prereqs="true"
 check_compat="true"
-extract_snippets="false"
 while [[ "${1:-}" != "" ]]; do
     case $1 in
         -h|--help)
-            echo "Usage: build.sh [--no-bail] [--force|-f] [--skip-test] [--skip-prereqs] [--skip-compat] [--extract]"
+            echo "Usage: build.sh [--no-bail] [--force|-f] [--skip-test] [--skip-prereqs] [--skip-compat]"
             exit 1
             ;;
         --no-bail)
@@ -27,9 +26,6 @@ while [[ "${1:-}" != "" ]]; do
             ;;
         --skip-compat)
             check_compat="false"
-            ;;
-        --extract)
-            extract_snippets="true"
             ;;
         *)
             echo "Unrecognized parameter: $1"
@@ -81,9 +77,6 @@ trap "rm -rf $MERKLE_BUILD_CACHE" EXIT
 if [ "$run_tests" == "true" ]; then
     runtarget="$runtarget+test"
 fi
-if [ "$extract_snippets" == "true" ]; then
-    runtarget="$runtarget+extract"
-fi
 
 echo "============================================================================================="
 echo "building..."
@@ -91,6 +84,13 @@ time lerna run $bail --stream $runtarget || fail
 
 if [ "$check_compat" == "true" ]; then
   /bin/bash scripts/check-api-compatibility.sh
+fi
+
+# Create the release notes for the current version. These are ephemeral and not saved in source.
+# Skip this step for a "bump candidate" build, where a new, fake version number has been created
+# without any corresponding changelog entries.
+if ! ${BUMP_CANDIDATE:-false}; then
+    node ./scripts/create-release-notes.js
 fi
 
 touch $BUILD_INDICATOR

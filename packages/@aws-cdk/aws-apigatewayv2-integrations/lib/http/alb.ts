@@ -44,6 +44,7 @@ export class HttpAlbIntegration extends HttpPrivateIntegration {
       connectionId: vpcLink.vpcLinkId,
       uri: this.props.listener.listenerArn,
       secureServerName: this.props.secureServerName,
+      parameterMapping: this.props.parameterMapping,
     };
   }
 }
