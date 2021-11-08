@@ -315,11 +315,13 @@ as well as in any end user accounts that wish to provision a product with the la
 ```ts fixture=portfolio-product
 import * as iam from '@aws-cdk/aws-iam';
 
+const roleName = 'MyRole';
 const launchRole = new iam.Role(this, 'LaunchRole', {
+  roleName: roleName,
   assumedBy: new iam.ServicePrincipal('servicecatalog.amazonaws.com'),
 });
 
-portfolio.setLocalLaunchRoleName(product, 'LaunchRole');
+portfolio.setLocalLaunchRoleName(product, roleName);
 ```
 
 See [Launch Constraint](https://docs.aws.amazon.com/servicecatalog/latest/adminguide/constraints-launch.html) documentation
