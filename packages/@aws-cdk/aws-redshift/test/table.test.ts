@@ -48,7 +48,7 @@ describe('cluster table', () => {
           generateSuffix: 'true',
         },
         tableColumns,
-      }
+      },
     );
   });
 
@@ -77,7 +77,7 @@ describe('cluster table', () => {
           prefix: tableName,
           generateSuffix: 'false',
         },
-      }
+      },
     );
   });
 
@@ -86,7 +86,7 @@ describe('cluster table', () => {
       tableName,
       tableColumns,
       cluster,
-      databaseName: 'databaseName',
+      databaseName: 'databaseName'
     });
 
     expect(table.tableName).toBe(tableName);
@@ -113,8 +113,8 @@ describe('cluster table', () => {
     Template.fromStack(stack).hasResourceProperties(
       'Custom::RedshiftDatabaseQuery',
       {
-        handler: 'user-table-privileges',
-      }
+        handler: 'user-table-privileges'
+      },
     );
   });
 
@@ -128,14 +128,14 @@ describe('cluster table', () => {
       Properties: {
         handler: 'table',
       },
-      DeletionPolicy: 'Retain',
+      DeletionPolicy: 'Retain'
     });
   });
 
   it('destroys table on deletion if requested', () => {
     const table = new redshift.Table(stack, 'Table', {
       ...databaseOptions,
-      tableColumns,
+      tableColumns
     });
 
     table.applyRemovalPolicy(cdk.RemovalPolicy.DESTROY);
@@ -144,7 +144,7 @@ describe('cluster table', () => {
       Properties: {
         handler: 'table',
       },
-      DeletionPolicy: 'Delete',
+      DeletionPolicy: 'Delete'
     });
   });
 });

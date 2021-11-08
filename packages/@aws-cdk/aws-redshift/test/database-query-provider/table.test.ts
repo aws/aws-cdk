@@ -41,7 +41,7 @@ jest.mock(
       describeStatement = () => ({
         promise: jest.fn(() => ({ Status: 'FINISHED' })),
       });
-    }
+    },
 );
 import { handler as manageTable } from '../../lib/private/database-query-provider/table';
 
@@ -64,7 +64,7 @@ describe('create', () => {
     expect(mockExecuteStatement).toHaveBeenCalledWith(
       expect.objectContaining({
         Sql: `CREATE TABLE ${tableNamePrefix}${requestIdTruncated} (col1 varchar(1))`,
-      })
+      }),
     );
   });
 
@@ -84,7 +84,7 @@ describe('create', () => {
     expect(mockExecuteStatement).toHaveBeenCalledWith(
       expect.objectContaining({
         Sql: `CREATE TABLE ${tableNamePrefix} (col1 varchar(1))`,
-      })
+      }),
     );
   });
 });
@@ -104,7 +104,7 @@ describe('delete', () => {
     expect(mockExecuteStatement).toHaveBeenCalledWith(
       expect.objectContaining({
         Sql: `DROP TABLE ${physicalResourceId}`,
-      })
+      }),
     );
   });
 });
@@ -125,7 +125,7 @@ describe('update', () => {
     };
 
     await expect(
-      manageTable(newResourceProperties, event)
+      manageTable(newResourceProperties, event),
     ).resolves.not.toMatchObject({
       PhysicalResourceId: physicalResourceId,
     });
@@ -133,9 +133,9 @@ describe('update', () => {
       expect.objectContaining({
         ClusterIdentifier: newClusterName,
         Sql: expect.stringMatching(
-          new RegExp(`CREATE TABLE ${tableNamePrefix}${requestIdTruncated}`)
+          new RegExp(`CREATE TABLE ${tableNamePrefix}${requestIdTruncated}`),
         ),
-      })
+      }),
     );
   });
 
@@ -147,7 +147,7 @@ describe('update', () => {
     };
 
     await expect(
-      manageTable(newResourceProperties, event)
+      manageTable(newResourceProperties, event),
     ).resolves.toMatchObject({
       PhysicalResourceId: physicalResourceId,
     });
@@ -162,7 +162,7 @@ describe('update', () => {
     };
 
     await expect(
-      manageTable(newResourceProperties, event)
+      manageTable(newResourceProperties, event),
     ).resolves.not.toMatchObject({
       PhysicalResourceId: physicalResourceId,
     });
@@ -170,7 +170,7 @@ describe('update', () => {
       expect.objectContaining({
         Database: newDatabaseName,
         Sql: expect.stringMatching(
-          new RegExp(`CREATE TABLE ${tableNamePrefix}${requestIdTruncated}`)
+          new RegExp(`CREATE TABLE ${tableNamePrefix}${requestIdTruncated}`),
         ),
       })
     );
@@ -187,16 +187,16 @@ describe('update', () => {
     };
 
     await expect(
-      manageTable(newResourceProperties, event)
+      manageTable(newResourceProperties, event),
     ).resolves.not.toMatchObject({
       PhysicalResourceId: physicalResourceId,
     });
     expect(mockExecuteStatement).toHaveBeenCalledWith(
       expect.objectContaining({
         Sql: expect.stringMatching(
-          new RegExp(`CREATE TABLE ${newTableNamePrefix}${requestIdTruncated}`)
+          new RegExp(`CREATE TABLE ${newTableNamePrefix}${requestIdTruncated}`),
         ),
-      })
+      }),
     );
   });
 
@@ -212,14 +212,14 @@ describe('update', () => {
     };
 
     await expect(
-      manageTable(newResourceProperties, event)
+      manageTable(newResourceProperties, event),
     ).resolves.not.toMatchObject({
       PhysicalResourceId: physicalResourceId,
     });
     expect(mockExecuteStatement).toHaveBeenCalledWith(
       expect.objectContaining({
         Sql: `CREATE TABLE ${tableNamePrefix}${requestIdTruncated} (${newTableColumnName} ${newTableColumnDataType})`,
-      })
+      }),
     );
   });
 
@@ -236,14 +236,14 @@ describe('update', () => {
     };
 
     await expect(
-      manageTable(newResourceProperties, event)
+      manageTable(newResourceProperties, event),
     ).resolves.toMatchObject({
       PhysicalResourceId: physicalResourceId,
     });
     expect(mockExecuteStatement).toHaveBeenCalledWith(
       expect.objectContaining({
         Sql: `ALTER TABLE ${physicalResourceId} ADD ${newTableColumnName} ${newTableColumnDataType}`,
-      })
+      }),
     );
   });
 });
