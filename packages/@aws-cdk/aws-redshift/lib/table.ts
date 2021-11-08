@@ -170,7 +170,7 @@ export class Table extends TableBase {
       readonly tableColumns = attrs.tableColumns;
       readonly cluster = attrs.cluster;
       readonly databaseName = attrs.databaseName;
-    })(scope, id);
+    }(scope, id);
   }
 
   readonly tableName: string;
