@@ -27,6 +27,15 @@ export interface BundlingOptions {
   readonly sourceMapMode?: SourceMapMode;
 
   /**
+   * Whether to include original source code in source maps when bundling.
+   *
+   * @see https://esbuild.github.io/api/#sources-content
+   *
+   * @default true
+   */
+  readonly sourcesContent?: boolean;
+
+  /**
    * Target environment for the generated JavaScript code.
    *
    * @see https://esbuild.github.io/api/#target
@@ -239,6 +248,21 @@ export interface BundlingOptions {
    * @default - do not run additional commands
    */
   readonly commandHooks?: ICommandHooks;
+
+  /**
+   * Specify a custom hash for this asset. For consistency, this custom hash will
+   * be SHA256 hashed and encoded as hex. The resulting hash will be the asset
+   * hash.
+   *
+   * NOTE: the hash is used in order to identify a specific revision of the asset, and
+   * used for optimizing and caching deployment activities related to this asset such as
+   * packaging, uploading to Amazon S3, etc. If you chose to customize the hash, you will
+   * need to make sure it is updated every time the asset changes, or otherwise it is
+   * possible that some deployments will not be invalidated.
+   *
+   * @default - asset hash is calculated based on the bundled output
+   */
+  readonly assetHash?: string;
 }
 
 /**
