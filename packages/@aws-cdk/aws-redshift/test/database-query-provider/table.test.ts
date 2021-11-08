@@ -1,61 +1,61 @@
 /* eslint-disable-next-line import/no-unresolved */
-import type * as AWSLambda from "aws-lambda";
+import type * as AWSLambda from 'aws-lambda';
 
-const tableNamePrefix = "tableNamePrefix";
-const tableColumns = [{ name: "col1", dataType: "varchar(1)" }];
-const clusterName = "clusterName";
-const adminUserArn = "adminUserArn";
-const databaseName = "databaseName";
-const physicalResourceId = "PhysicalResourceId";
+const tableNamePrefix = 'tableNamePrefix';
+const tableColumns = [{ name: 'col1', dataType: 'varchar(1)' }];
+const clusterName = 'clusterName';
+const adminUserArn = 'adminUserArn';
+const databaseName = 'databaseName';
+const physicalResourceId = 'PhysicalResourceId';
 const resourceProperties = {
   tableName: {
     prefix: tableNamePrefix,
-    generateSuffix: "true",
+    generateSuffix: 'true',
   },
   tableColumns,
   clusterName,
   adminUserArn,
   databaseName,
-  ServiceToken: "",
+  ServiceToken: '',
 };
-const requestId = "requestId";
-const requestIdTruncated = "requestI";
+const requestId = 'requestId';
+const requestIdTruncated = 'requestI';
 const genericEvent: AWSLambda.CloudFormationCustomResourceEventCommon = {
   ResourceProperties: resourceProperties,
-  ServiceToken: "",
-  ResponseURL: "",
-  StackId: "",
+  ServiceToken: '',
+  ResponseURL: '',
+  StackId: '',
   RequestId: requestId,
-  LogicalResourceId: "",
-  ResourceType: "",
+  LogicalResourceId: '',
+  ResourceType: '',
 };
 
 const mockExecuteStatement = jest.fn(() => ({
-  promise: jest.fn(() => ({ Id: "statementId" })),
+  promise: jest.fn(() => ({ Id: 'statementId' })),
 }));
 jest.mock(
-  "aws-sdk/clients/redshiftdata",
+  'aws-sdk/clients/redshiftdata',
   () =>
     class {
       executeStatement = mockExecuteStatement;
       describeStatement = () => ({
-        promise: jest.fn(() => ({ Status: "FINISHED" })),
+        promise: jest.fn(() => ({ Status: 'FINISHED' })),
       });
     }
 );
-import { handler as manageTable } from "../../lib/private/database-query-provider/table";
+import { handler as manageTable } from '../../lib/private/database-query-provider/table';
 
 beforeEach(() => {
   jest.clearAllMocks();
 });
 
-describe("create", () => {
+describe('create', () => {
   const baseEvent: AWSLambda.CloudFormationCustomResourceCreateEvent = {
-    RequestType: "Create",
+    RequestType: 'Create',
     ...genericEvent,
   };
 
-  test("serializes properties in statement and creates physical resource ID", async () => {
+  test('serializes properties in statement and creates physical resource ID', async () => {
     const event = baseEvent;
 
     await expect(manageTable(resourceProperties, event)).resolves.toEqual({
@@ -68,13 +68,13 @@ describe("create", () => {
     );
   });
 
-  test("does not modify table name if no suffix generation requested", async () => {
+  test('does not modify table name if no suffix generation requested', async () => {
     const event = baseEvent;
     const newResourceProperties = {
       ...resourceProperties,
       tableName: {
         ...resourceProperties.tableName,
-        generateSuffix: "false",
+        generateSuffix: 'false',
       },
     };
 
@@ -89,14 +89,14 @@ describe("create", () => {
   });
 });
 
-describe("delete", () => {
+describe('delete', () => {
   const baseEvent: AWSLambda.CloudFormationCustomResourceDeleteEvent = {
-    RequestType: "Delete",
+    RequestType: 'Delete',
     PhysicalResourceId: physicalResourceId,
     ...genericEvent,
   };
 
-  test("executes statement", async () => {
+  test('executes statement', async () => {
     const event = baseEvent;
 
     await manageTable(resourceProperties, event);
@@ -109,16 +109,16 @@ describe("delete", () => {
   });
 });
 
-describe("update", () => {
+describe('update', () => {
   const event: AWSLambda.CloudFormationCustomResourceUpdateEvent = {
-    RequestType: "Update",
+    RequestType: 'Update',
     OldResourceProperties: resourceProperties,
     PhysicalResourceId: physicalResourceId,
     ...genericEvent,
   };
 
-  test("replaces if cluster name changes", async () => {
-    const newClusterName = "newClusterName";
+  test('replaces if cluster name changes', async () => {
+    const newClusterName = 'newClusterName';
     const newResourceProperties = {
       ...resourceProperties,
       clusterName: newClusterName,
@@ -139,8 +139,8 @@ describe("update", () => {
     );
   });
 
-  test("does not replace if admin user ARN changes", async () => {
-    const newAdminUserArn = "newAdminUserArn";
+  test('does not replace if admin user ARN changes', async () => {
+    const newAdminUserArn = 'newAdminUserArn';
     const newResourceProperties = {
       ...resourceProperties,
       adminUserArn: newAdminUserArn,
@@ -154,8 +154,8 @@ describe("update", () => {
     expect(mockExecuteStatement).not.toHaveBeenCalled();
   });
 
-  test("replaces if database name changes", async () => {
-    const newDatabaseName = "newDatabaseName";
+  test('replaces if database name changes', async () => {
+    const newDatabaseName = 'newDatabaseName';
     const newResourceProperties = {
       ...resourceProperties,
       databaseName: newDatabaseName,
@@ -176,8 +176,8 @@ describe("update", () => {
     );
   });
 
-  test("replaces if table name changes", async () => {
-    const newTableNamePrefix = "newTableNamePrefix";
+  test('replaces if table name changes', async () => {
+    const newTableNamePrefix = 'newTableNamePrefix';
     const newResourceProperties = {
       ...resourceProperties,
       tableName: {
@@ -200,9 +200,9 @@ describe("update", () => {
     );
   });
 
-  test("replaces if table columns change", async () => {
-    const newTableColumnName = "col2";
-    const newTableColumnDataType = "varchar(1)";
+  test('replaces if table columns change', async () => {
+    const newTableColumnName = 'col2';
+    const newTableColumnDataType = 'varchar(1)';
     const newTableColumns = [
       { name: newTableColumnName, dataType: newTableColumnDataType },
     ];
@@ -223,11 +223,11 @@ describe("update", () => {
     );
   });
 
-  test("does not replace if table columns added", async () => {
-    const newTableColumnName = "col2";
-    const newTableColumnDataType = "varchar(1)";
+  test('does not replace if table columns added', async () => {
+    const newTableColumnName = 'col2';
+    const newTableColumnDataType = 'varchar(1)';
     const newTableColumns = [
-      { name: "col1", dataType: "varchar(1)" },
+      { name: 'col1', dataType: 'varchar(1)' },
       { name: newTableColumnName, dataType: newTableColumnDataType },
     ];
     const newResourceProperties = {

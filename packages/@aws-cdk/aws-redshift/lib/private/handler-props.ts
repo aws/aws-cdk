@@ -1,4 +1,4 @@
-import { Column } from "../table";
+import { Column } from '../table';
 
 export interface DatabaseQueryHandlerProps {
   readonly handler: string;
