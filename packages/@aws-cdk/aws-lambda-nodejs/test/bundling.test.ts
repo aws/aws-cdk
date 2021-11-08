@@ -6,7 +6,7 @@ import { AssetHashType, DockerImage } from '@aws-cdk/core';
 import { version as delayVersion } from 'delay/package.json';
 import { Bundling } from '../lib/bundling';
 import { PackageInstallation } from '../lib/package-installation';
-import { LogLevel, SourceMapMode } from '../lib/types';
+import { Charset, LogLevel, SourceMapMode } from '../lib/types';
 import * as util from '../lib/util';
 
 
@@ -188,6 +188,7 @@ test('esbuild bundling with esbuild options', () => {
     architecture: Architecture.X86_64,
     minify: true,
     sourceMap: true,
+    sourcesContent: false,
     target: 'es2020',
     loader: {
       '.png': 'dataurl',
@@ -198,6 +199,7 @@ test('esbuild bundling with esbuild options', () => {
     metafile: true,
     banner: '/* comments */',
     footer: '/* comments */',
+    charset: Charset.UTF8,
     forceDockerBundling: true,
     define: {
       'process.env.KEY': JSON.stringify('VALUE'),
@@ -217,10 +219,11 @@ test('esbuild bundling with esbuild options', () => {
         [
           'esbuild --bundle "/asset-input/lib/handler.ts"',
           '--target=es2020 --platform=node --outfile="/asset-output/index.js"',
-          '--minify --sourcemap --external:aws-sdk --loader:.png=dataurl',
+          '--minify --sourcemap --sources-content=false --external:aws-sdk --loader:.png=dataurl',
           defineInstructions,
           '--log-level=silent --keep-names --tsconfig=/asset-input/lib/custom-tsconfig.ts',
           '--metafile=/asset-output/index.meta.json --banner:js="/* comments */" --footer:js="/* comments */"',
+          '--charset=utf8',
         ].join(' '),
       ],
     }),
@@ -339,7 +342,7 @@ test('Detects yarn.lock', () => {
     assetHashType: AssetHashType.OUTPUT,
     bundling: expect.objectContaining({
       command: expect.arrayContaining([
-        expect.stringMatching(/yarn\.lock.+yarn install/),
+        expect.stringMatching(/yarn\.lock.+yarn install --no-immutable/),
       ]),
     }),
   });
