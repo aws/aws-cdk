@@ -172,7 +172,7 @@ const userPoolClient = userPool.addClient('UserPoolClient');
 
 const authorizer = new HttpUserPoolAuthorizer({
   userPool,
-  userPoolClient,
+  userPoolClients: [userPoolClient],
 });
 
 const api = new apigwv2.HttpApi(this, 'HttpApi');
