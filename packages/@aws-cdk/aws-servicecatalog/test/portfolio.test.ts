@@ -634,7 +634,7 @@ describe('portfolio associations and product constraints', () => {
       }).toThrowError(/Cannot set multiple launch roles for association/);
     }),
 
-    test('fails to add multiple set launch roles local launch role second', () => {
+    test('fails to add multiple set launch roles - local launch role second', () => {
       portfolio.setLaunchRole(product, launchRole);
       expect(() => {
         portfolio.setLocalLaunchRoleName(product, 'LaunchRole');
