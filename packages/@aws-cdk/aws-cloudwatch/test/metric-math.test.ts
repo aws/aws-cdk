@@ -502,7 +502,7 @@ describe('Metric Math', () => {
       alarmMetricsAre([
         {
           Expression: 'a + b',
-          Id: 'e1',
+          Id: 'expr_1',
         },
         {
           Id: 'a',
@@ -555,7 +555,7 @@ describe('Metric Math', () => {
       alarmMetricsAre([
         {
           Expression: 'a + e',
-          Id: 'e1',
+          Id: 'expr_1',
         },
         {
           Id: 'a',
@@ -626,7 +626,7 @@ describe('Metric Math', () => {
       alarmMetricsAre([
         {
           Expression: 'a + e',
-          Id: 'e1',
+          Id: 'expr_1',
         },
         {
           Id: 'a',
@@ -689,7 +689,7 @@ describe('Metric Math', () => {
       alarmMetricsAre([
         {
           Expression: 'INSIGHT_RULE_METRIC("SomeId", UniqueContributors)',
-          Id: 'e1',
+          Id: 'expr_1',
           Period: 300,
         },
       ]);
@@ -733,7 +733,7 @@ describe('Metric Math', () => {
       alarmMetricsAre([
         {
           Expression: 'a + b99',
-          Id: 'e1',
+          Id: 'expr_1',
         },
         {
           Id: 'a',

@@ -268,7 +268,7 @@ describe('cross environment', () => {
         Metrics: [
           {
             Expression: 'a + b',
-            Id: 'e1',
+            Id: 'expr_1',
           },
           {
             AccountId: '0000',
@@ -325,7 +325,7 @@ describe('cross environment', () => {
         Metrics: [
           {
             Expression: 'a + b',
-            Id: 'e1',
+            Id: 'expr_1',
           },
           {
             AccountId: Match.absent(),

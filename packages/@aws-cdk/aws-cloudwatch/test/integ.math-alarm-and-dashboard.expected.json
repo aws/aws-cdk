@@ -11,7 +11,7 @@
         "Metrics": [
           {
             "Expression": "m1+m2",
-            "Id": "e1",
+            "Id": "expr_1",
             "Label": "Total Messages"
           },
           {

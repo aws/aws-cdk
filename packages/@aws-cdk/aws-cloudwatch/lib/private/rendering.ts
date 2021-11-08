@@ -23,12 +23,17 @@ export function allMetricsGraphJson(left: IMetric[], right: IMetric[]): any[] {
   const mset = new MetricSet<string>();
   mset.addTopLevel('left', ...left);
   mset.addTopLevel('right', ...right);
-  //
+  let mathExpressionId = 1;
+  function getNewId(): string {
+    const newId = `e${mathExpressionId}`;
+    mathExpressionId++;
+    return newId;
+  }
   // Render all metrics from the set.
-  return mset.entries.map(entry => new DropEmptyObjectAtTheEndOfAnArray(metricGraphJson(entry.metric, entry.tag, entry.id)));
+  return mset.entries.map(entry => new DropEmptyObjectAtTheEndOfAnArray(metricGraphJson(entry.metric, getNewId, entry.tag, entry.id)));
 }
 
-function metricGraphJson(metric: IMetric, yAxis?: string, id?: string) {
+function metricGraphJson(metric: IMetric, newId: () => string, yAxis?: string, id?: string) {
   const config = metric.toMetricConfig();
 
   const ret: any[] = [];
@@ -54,6 +59,17 @@ function metricGraphJson(metric: IMetric, yAxis?: string, id?: string) {
     },
 
     withExpression(expr) {
+      // if we don't have an id and one has not been provided
+      // then we should generate one
+      if (!id && !options.id) {
+        options.id = newId();
+        // if we are provided an id, ensure that it doesn't match
+        // the format reserved for auto assigned ids
+      } else if (options.id) {
+        if (/^e[1-9]+/.test(options.id)) {
+          throw new Error('Ids with the format of /^e[1-9]+/ are reserved for automatically assigned ids');
+        }
+      }
       options.expression = expr.expression;
       if (expr.searchAccount) { options.accountId = accountIfDifferentFromStack(expr.searchAccount); }
       if (expr.searchRegion) { options.region = regionIfDifferentFromStack(expr.searchRegion); }
@@ -110,7 +126,6 @@ export class MetricSet<A> {
   private readonly metrics = new Array<MetricEntry<A>>();
   private readonly metricById = new Map<string, MetricEntry<A>>();
   private readonly metricByKey = new Map<string, MetricEntry<A>>();
-  private mathExpressionId: number = 1;
 
   /**
    * Add the given set of metrics to this set
@@ -176,31 +191,6 @@ export class MetricSet<A> {
     if (!entry.id && id) {
       entry.id = id;
       this.metricById.set(id, entry);
-      // if we don't have an id and this is a math expression
-      // then we should create one
-    } else if (!entry.id && !id && conf.mathExpression) {
-      // if we are not already setting an id
-      const options: any = { ...conf.renderingProperties };
-      let newId: string | undefined;
-      if (options.id !== undefined) {
-        if (/^e[1-9]+/.test(options.id)) {
-          throw new Error('Ids with the format of /^e[1-9]+/ are reserved for automatically assigned ids');
-        }
-        newId = options.id;
-      }
-
-      if (!newId) {
-        // do we somehow already have one with this id, maybe
-        // it was manually assigned, and if so increment our counter
-        while (this.metricById.get(`e${this.mathExpressionId}`)) {
-          this.mathExpressionId++;
-        }
-
-        newId = `e${this.mathExpressionId}`;
-        this.mathExpressionId++;
-      }
-      entry.id = newId;
-      this.metricById.set(newId, entry);
     }
 
     // If it didn't have a tag but now we do, add one
