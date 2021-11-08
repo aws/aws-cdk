@@ -91,7 +91,6 @@
     "node": ">= 10.13.0 <13 || >=13.7.0"
   },
   "stability": "experimental",
-  "maturity": "cfn-only",
   "awscdkio": {
     "announce": false
   },
