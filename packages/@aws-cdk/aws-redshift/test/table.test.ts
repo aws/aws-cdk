@@ -5,10 +5,7 @@ import * as redshift from '../lib';
 
 describe('cluster table', () => {
   const tableName = 'tableName';
-  const tableColumns = [
-    { name: 'col1', dataType: 'varchar(4)' },
-    { name: 'col2', dataType: 'float' },
-  ];
+  const tableColumns = [{ name: 'col1', dataType: 'varchar(4)' }, { name: 'col2', dataType: 'float' }];
 
   let stack: cdk.Stack;
   let vpc: ec2.Vpc;
