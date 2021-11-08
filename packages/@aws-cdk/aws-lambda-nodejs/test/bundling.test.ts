@@ -560,22 +560,11 @@ test('esbuild bundling with projectRoot and externals and dependencies', () => {
   });
 });
 
-test('with custom hash', () => {
 test('esbuild bundling with pre compilations', () => {
   Bundling.bundle({
     entry,
     projectRoot,
     depsLockFilePath,
-    runtime: Runtime.NODEJS_12_X,
-    forceDockerBundling: true,
-    assetHash: 'custom',
-  });
-
-  // Correctly passes asset hash options
-  expect(Code.fromAsset).toHaveBeenCalledWith(path.dirname(depsLockFilePath), expect.objectContaining({
-    assetHash: 'custom',
-    assetHashType: AssetHashType.CUSTOM,
-  }));
     runtime: Runtime.NODEJS_14_X,
     forceDockerBundling: true,
     tsconfig,
@@ -668,4 +657,22 @@ test('esbuild bundling with pre compilations and undefined tsconfig ( Should thr
     });
   }).toThrow('Cannot find a tsconfig.json, please specify the prop: tsconfig');
 
+});
+
+test('with custom hash', () => {
+  Bundling.bundle({
+    entry,
+    projectRoot,
+    depsLockFilePath,
+    runtime: Runtime.NODEJS_14_X,
+    forceDockerBundling: true,
+    assetHash: 'custom',
+    architecture: Architecture.X86_64,
+  });
+
+  // Correctly passes asset hash options
+  expect(Code.fromAsset).toHaveBeenCalledWith(path.dirname(depsLockFilePath), expect.objectContaining({
+    assetHash: 'custom',
+    assetHashType: AssetHashType.CUSTOM,
+  }));
 });
