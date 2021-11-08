@@ -403,7 +403,7 @@ describe('User Pool', () => {
 
     // WHEN
     userpool.addTrigger(UserPoolOperation.CREATE_AUTH_CHALLENGE, fn1);
-    expect(() => userpool.addTrigger(UserPoolOperation.CREATE_AUTH_CHALLENGE, fn2)).toThrow(/already exists/);
+    expect(() => userpool.addTrigger(UserPoolOperation.CREATE_AUTH_CHALLENGE, fn2)).toThrow(/createAuthChallenge already exists/);
   });
 
   test('no username aliases specified', () => {

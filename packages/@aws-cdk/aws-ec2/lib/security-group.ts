@@ -68,6 +68,8 @@ abstract class SecurityGroupBase extends Resource implements ISecurityGroup {
   public readonly connections: Connections = new Connections({ securityGroups: [this] });
   public readonly defaultPort?: Port;
 
+  private peerAsTokenCount: number = 0;
+
   constructor(scope: Construct, id: string, props?: ResourceProps) {
     super(scope, id, props);
 
@@ -83,7 +85,7 @@ abstract class SecurityGroupBase extends Resource implements ISecurityGroup {
       description = `from ${peer.uniqueId}:${connection}`;
     }
 
-    const [scope, id] = determineRuleScope(this, peer, connection, 'from', remoteRule);
+    const [scope, id] = this.determineRuleScope(peer, connection, 'from', remoteRule);
 
     // Skip duplicates
     if (scope.node.tryFindChild(id) === undefined) {
@@ -101,7 +103,7 @@ abstract class SecurityGroupBase extends Resource implements ISecurityGroup {
       description = `to ${peer.uniqueId}:${connection}`;
     }
 
-    const [scope, id] = determineRuleScope(this, peer, connection, 'to', remoteRule);
+    const [scope, id] = this.determineRuleScope(peer, connection, 'to', remoteRule);
 
     // Skip duplicates
     if (scope.node.tryFindChild(id) === undefined) {
@@ -121,75 +123,82 @@ abstract class SecurityGroupBase extends Resource implements ISecurityGroup {
   public toEgressRuleConfig(): any {
     return { destinationSecurityGroupId: this.securityGroupId };
   }
-}
 
-/**
- * Determine where to parent a new ingress/egress rule
- *
- * A SecurityGroup rule is parented under the group it's related to, UNLESS
- * we're in a cross-stack scenario with another Security Group. In that case,
- * we respect the 'remoteRule' flag and will parent under the other security
- * group.
- *
- * This is necessary to avoid cyclic dependencies between stacks, since both
- * ingress and egress rules will reference both security groups, and a naive
- * parenting will lead to the following situation:
- *
- *   ╔════════════════════╗         ╔════════════════════╗
- *   ║  ┌───────────┐     ║         ║    ┌───────────┐   ║
- *   ║  │  GroupA   │◀────╬─┐   ┌───╬───▶│  GroupB   │   ║
- *   ║  └───────────┘     ║ │   │   ║    └───────────┘   ║
- *   ║        ▲           ║ │   │   ║          ▲         ║
- *   ║        │           ║ │   │   ║          │         ║
- *   ║        │           ║ │   │   ║          │         ║
- *   ║  ┌───────────┐     ║ └───┼───╬────┌───────────┐   ║
- *   ║  │  EgressA  │─────╬─────┘   ║    │ IngressB  │   ║
- *   ║  └───────────┘     ║         ║    └───────────┘   ║
- *   ║                    ║         ║                    ║
- *   ╚════════════════════╝         ╚════════════════════╝
- *
- * By having the ability to switch the parent, we avoid the cyclic reference by
- * keeping all rules in a single stack.
- *
- * If this happens, we also have to change the construct ID, because
- * otherwise we might have two objects with the same ID if we have
- * multiple reversed security group relationships.
- *
- *   ╔═══════════════════════════════════╗
- *   ║┌───────────┐                      ║
- *   ║│  GroupB   │                      ║
- *   ║└───────────┘                      ║
- *   ║      ▲                            ║
- *   ║      │              ┌───────────┐ ║
- *   ║      ├────"from A"──│ IngressB  │ ║
- *   ║      │              └───────────┘ ║
- *   ║      │              ┌───────────┐ ║
- *   ║      ├─────"to B"───│  EgressA  │ ║
- *   ║      │              └───────────┘ ║
- *   ║      │              ┌───────────┐ ║
- *   ║      └─────"to B"───│  EgressC  │ ║  <-- oops
- *   ║                     └───────────┘ ║
- *   ╚═══════════════════════════════════╝
- */
-function determineRuleScope(
-  group: SecurityGroupBase,
-  peer: IPeer,
-  connection: Port,
-  fromTo: 'from' | 'to',
-  remoteRule?: boolean): [SecurityGroupBase, string] {
+  /**
+   * Determine where to parent a new ingress/egress rule
+   *
+   * A SecurityGroup rule is parented under the group it's related to, UNLESS
+   * we're in a cross-stack scenario with another Security Group. In that case,
+   * we respect the 'remoteRule' flag and will parent under the other security
+   * group.
+   *
+   * This is necessary to avoid cyclic dependencies between stacks, since both
+   * ingress and egress rules will reference both security groups, and a naive
+   * parenting will lead to the following situation:
+   *
+   *   ╔════════════════════╗         ╔════════════════════╗
+   *   ║  ┌───────────┐     ║         ║    ┌───────────┐   ║
+   *   ║  │  GroupA   │◀────╬─┐   ┌───╬───▶│  GroupB   │   ║
+   *   ║  └───────────┘     ║ │   │   ║    └───────────┘   ║
+   *   ║        ▲           ║ │   │   ║          ▲         ║
+   *   ║        │           ║ │   │   ║          │         ║
+   *   ║        │           ║ │   │   ║          │         ║
+   *   ║  ┌───────────┐     ║ └───┼───╬────┌───────────┐   ║
+   *   ║  │  EgressA  │─────╬─────┘   ║    │ IngressB  │   ║
+   *   ║  └───────────┘     ║         ║    └───────────┘   ║
+   *   ║                    ║         ║                    ║
+   *   ╚════════════════════╝         ╚════════════════════╝
+   *
+   * By having the ability to switch the parent, we avoid the cyclic reference by
+   * keeping all rules in a single stack.
+   *
+   * If this happens, we also have to change the construct ID, because
+   * otherwise we might have two objects with the same ID if we have
+   * multiple reversed security group relationships.
+   *
+   *   ╔═══════════════════════════════════╗
+   *   ║┌───────────┐                      ║
+   *   ║│  GroupB   │                      ║
+   *   ║└───────────┘                      ║
+   *   ║      ▲                            ║
+   *   ║      │              ┌───────────┐ ║
+   *   ║      ├────"from A"──│ IngressB  │ ║
+   *   ║      │              └───────────┘ ║
+   *   ║      │              ┌───────────┐ ║
+   *   ║      ├─────"to B"───│  EgressA  │ ║
+   *   ║      │              └───────────┘ ║
+   *   ║      │              ┌───────────┐ ║
+   *   ║      └─────"to B"───│  EgressC  │ ║  <-- oops
+   *   ║                     └───────────┘ ║
+   *   ╚═══════════════════════════════════╝
+   */
 
-  if (remoteRule && SecurityGroupBase.isSecurityGroup(peer) && differentStacks(group, peer)) {
-    // Reversed
-    const reversedFromTo = fromTo === 'from' ? 'to' : 'from';
-    return [peer, `${group.uniqueId}:${connection} ${reversedFromTo}`];
-  } else {
-    // Regular (do old ID escaping to in order to not disturb existing deployments)
-    return [group, `${fromTo} ${renderPeer(peer)}:${connection}`.replace('/', '_')];
+  protected determineRuleScope(
+    peer: IPeer,
+    connection: Port,
+    fromTo: 'from' | 'to',
+    remoteRule?: boolean): [SecurityGroupBase, string] {
+
+    if (remoteRule && SecurityGroupBase.isSecurityGroup(peer) && differentStacks(this, peer)) {
+      // Reversed
+      const reversedFromTo = fromTo === 'from' ? 'to' : 'from';
+      return [peer, `${this.uniqueId}:${connection} ${reversedFromTo}`];
+    } else {
+      // Regular (do old ID escaping to in order to not disturb existing deployments)
+      return [this, `${fromTo} ${this.renderPeer(peer)}:${connection}`.replace('/', '_')];
+    }
   }
-}
 
-function renderPeer(peer: IPeer) {
-  return Token.isUnresolved(peer.uniqueId) ? '{IndirectPeer}' : peer.uniqueId;
+  private renderPeer(peer: IPeer) {
+    if (Token.isUnresolved(peer.uniqueId)) {
+      // Need to return a unique value each time a peer
+      // is an unresolved token, else the duplicate skipper
+      // in `sg.addXxxRule` can detect unique rules as duplicates
+      return this.peerAsTokenCount++ ? `'{IndirectPeer${this.peerAsTokenCount}}'` : '{IndirectPeer}';
+    } else {
+      return peer.uniqueId;
+    }
+  }
 }
 
 function differentStacks(group1: SecurityGroupBase, group2: SecurityGroupBase) {
@@ -308,7 +317,7 @@ export interface SecurityGroupImportOptions {
  * you would import it like this:
  *
  * ```ts
- * const securityGroup = SecurityGroup.fromSecurityGroupId(this, 'SG', 'sg-12345', {
+ * const securityGroup = ec2.SecurityGroup.fromSecurityGroupId(this, 'SG', 'sg-12345', {
  *   mutable: false
  * });
  * ```
@@ -565,13 +574,12 @@ export class SecurityGroup extends SecurityGroupBase {
    */
   private removeNoTrafficRule() {
     if (this.disableInlineRules) {
-      const [scope, id] = determineRuleScope(
-        this,
+      const [scope, id] = this.determineRuleScope(
         NO_TRAFFIC_PEER,
         NO_TRAFFIC_PORT,
         'to',
-        false);
-
+        false,
+      );
       scope.node.tryRemoveChild(id);
     } else {
       const i = this.directEgressRules.findIndex(r => egressRulesEqual(r, MATCH_NO_TRAFFIC));

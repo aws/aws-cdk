@@ -129,23 +129,6 @@ integTest('deploy old style synthesis to new style bootstrap', withDefaultFixtur
   });
 }));
 
-integTest('deploying new style synthesis to old style bootstrap fails', withDefaultFixture(async (fixture) => {
-  const bootstrapStackName = fixture.bootstrapStackName;
-
-  await fixture.cdkBootstrapLegacy({
-    toolkitStackName: bootstrapStackName,
-  });
-
-  // Deploy stack that uses file assets, this fails because the bootstrap stack
-  // is version checked.
-  await expect(fixture.cdkDeploy('lambda', {
-    options: [
-      '--toolkit-stack-name', bootstrapStackName,
-      '--context', '@aws-cdk/core:newStyleStackSynthesis=1',
-    ],
-  })).rejects.toThrow('exited with error');
-}));
-
 integTest('can create a legacy bootstrap stack with --public-access-block-configuration=false', withDefaultFixture(async (fixture) => {
   const bootstrapStackName = fixture.bootstrapStackName;
 
