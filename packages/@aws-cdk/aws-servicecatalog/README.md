@@ -308,9 +308,11 @@ portfolio.setLaunchRole(product, launchRole);
 ```
 
 You can also set the launch role using just the name of a role which is locally deployed in end user accounts.
-This is useful for when  roles and users are separately managed outside of the CDK.
+This is useful for when roles and users are separately managed outside of the CDK.
 The given role must exist in both the account that creates the launch role constraint, 
 as well as in any end user accounts that wish to provision a product with the launch role. 
+
+You can do this by passing in the role with an explicitly set name:
 
 ```ts fixture=portfolio-product
 import * as iam from '@aws-cdk/aws-iam';
@@ -321,7 +323,17 @@ const launchRole = new iam.Role(this, 'LaunchRole', {
   assumedBy: new iam.ServicePrincipal('servicecatalog.amazonaws.com'),
 });
 
-portfolio.setLocalLaunchRoleName(product, roleName);
+portfolio.setLocalLaunchRole(product, launchRole);
+```
+
+Or you can simply pass in a role name and CDK will create a role with that name that trusts service catalog in the account:
+
+```ts fixture=portfolio-product
+import * as iam from '@aws-cdk/aws-iam';
+
+const roleName = 'MyRole';
+
+const launchRole: iam.IRole = portfolio.setLocalLaunchRoleName(product, roleName);
 ```
 
 See [Launch Constraint](https://docs.aws.amazon.com/servicecatalog/latest/adminguide/constraints-launch.html) documentation

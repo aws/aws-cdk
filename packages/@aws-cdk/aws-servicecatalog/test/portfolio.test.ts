@@ -594,7 +594,7 @@ describe('portfolio associations and product constraints', () => {
     test('set a launch role constraint using local role name', () => {
       portfolio.addProduct(product);
 
-      portfolio.setLocalLaunchRoleName(product, 'LaunchRole', {
+      portfolio.setLocalLaunchRoleName(product, 'LocalLaunchRole', {
         description: 'set launch role description',
         messageLanguage: servicecatalog.MessageLanguage.EN,
       });
@@ -604,7 +604,24 @@ describe('portfolio associations and product constraints', () => {
         ProductId: { Ref: 'MyProduct49A3C587' },
         Description: 'set launch role description',
         AcceptLanguage: 'en',
-        LocalRoleName: 'LaunchRole',
+        LocalRoleName: { Ref: 'LaunchRoleLocalLaunchRoleF14290D5' },
+      });
+    }),
+
+    test('set a launch role constraint using local role', () => {
+      portfolio.addProduct(product);
+
+      portfolio.setLocalLaunchRole(product, launchRole, {
+        description: 'set launch role description',
+        messageLanguage: servicecatalog.MessageLanguage.EN,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::ServiceCatalog::LaunchRoleConstraint', {
+        PortfolioId: { Ref: 'MyPortfolio59CCA9C9' },
+        ProductId: { Ref: 'MyProduct49A3C587' },
+        Description: 'set launch role description',
+        AcceptLanguage: 'en',
+        LocalRoleName: { Ref: 'LaunchRole2CFB2E44' },
       });
     }),
 
@@ -631,6 +648,30 @@ describe('portfolio associations and product constraints', () => {
 
       expect(() => {
         portfolio.setLaunchRole(product, launchRole);
+      }).toThrowError(/Cannot set multiple launch roles for association/);
+    });
+
+    test('fails to add multiple set local launch roles - local launch role first', () => {
+      portfolio.setLocalLaunchRoleName(product, 'LaunchRole');
+
+      expect(() => {
+        portfolio.setLocalLaunchRole(product, launchRole);
+      }).toThrowError(/Cannot set multiple launch roles for association/);
+    });
+
+    test('fails to add multiple set local launch roles - local launch role name first', () => {
+      portfolio.setLocalLaunchRole(product, launchRole);
+
+      expect(() => {
+        portfolio.setLocalLaunchRoleName(product, 'LaunchRole');
+      }).toThrowError(/Cannot set multiple launch roles for association/);
+    });
+
+    test('fails to add multiple set launch roles - local launch role second', () => {
+      portfolio.setLaunchRole(product, launchRole);
+
+      expect(() => {
+        portfolio.setLocalLaunchRole(product, launchRole);
       }).toThrowError(/Cannot set multiple launch roles for association/);
     });
 
