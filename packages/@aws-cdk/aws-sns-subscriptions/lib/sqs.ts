@@ -63,7 +63,7 @@ export class SqsSubscription implements sns.ITopicSubscription {
 
     // if the topic and queue are created in different stacks
     // then we need to make sure the topic is created first
-    if (topic.stack !== this.queue.stack) {
+    if (topic instanceof sns.Topic && topic.stack !== this.queue.stack) {
       this.queue.stack.addDependency(topic.stack);
     }
 
