@@ -639,7 +639,7 @@ describe('portfolio associations and product constraints', () => {
       expect(() => {
         portfolio.setLocalLaunchRoleName(product, 'LaunchRole');
       }).toThrowError(/Cannot set multiple launch roles for association/);
-    }),
+    });
 
     test('fails to set launch role if stackset rule is already defined', () => {
       portfolio.deployWithStackSets(product, {
