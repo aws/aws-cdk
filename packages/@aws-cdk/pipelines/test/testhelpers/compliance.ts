@@ -1,4 +1,4 @@
-import { testDeprecated } from '@aws-cdk/cdk-build-tools';
+import { describeDeprecated } from '@aws-cdk/cdk-build-tools';
 
 interface SkippedSuite {
   legacy(reason?: string): void;
@@ -14,14 +14,13 @@ interface Suite {
   modern(fn: () => void): void;
 
   additional(description: string, fn: () => void): void;
-
-  additionalDeprecated(description: string, fn: () => void): void;
 }
 
 // eslint-disable-next-line jest/no-export
 export function behavior(name: string, cb: (suite: Suite) => void) {
-  // 'describe()' adds a nice grouping in Jest
-  describe(name, () => {
+  // Since the goal of the compliance test suites is to compare modern and legacy (i.e. deprecated) APIs,
+  // use `describeDeprecated()` block here since usage of the legacy API is inevitable.
+  describeDeprecated(name, () => {
     const unwritten = new Set(['modern', 'legacy']);
 
     function scratchOff(flavor: string) {
@@ -35,14 +34,13 @@ export function behavior(name: string, cb: (suite: Suite) => void) {
     cb({
       legacy: (testFn) => {
         scratchOff('legacy');
-        testDeprecated('legacy', testFn);
+        test('legacy', testFn);
       },
       modern: (testFn) => {
         scratchOff('modern');
         test('modern', testFn);
       },
       additional: test,
-      additionalDeprecated: testDeprecated,
       doesNotApply: {
         modern: (reason?: string) => {
           scratchOff('modern');
