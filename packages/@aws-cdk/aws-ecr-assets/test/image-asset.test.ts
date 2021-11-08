@@ -256,7 +256,7 @@ describe('image asset', () => {
 
   });
 
-  describeDeprecated('TBD', () => {
+  describeDeprecated('docker ignore option', () => {
     // The 'ignoreMode' property is both deprecated and not deprecated in DockerImageAssetProps interface.
     // The interface through a complex set of inheritance chain has a 'ignoreMode' prop that is deprecated
     // and another 'ignoreMode' prop that is not deprecated.
@@ -295,8 +295,7 @@ describe('image asset', () => {
 
   });
 
-  // Explanation TBD
-  describeDeprecated('TBD', () => {
+  describeDeprecated('exclude option', () => {
     // The 'ignoreMode' and 'exclude' propertes are both deprecated and not deprecated in DockerImageAssetProps interface.
     // The interface through a complex set of inheritance chain has a 'ignoreMode' prop that is deprecated
     // and another 'ignoreMode' prop that is not deprecated. The same applies to the 'exclude' property.
