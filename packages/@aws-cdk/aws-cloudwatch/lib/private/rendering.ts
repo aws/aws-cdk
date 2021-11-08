@@ -23,7 +23,7 @@ export function allMetricsGraphJson(left: IMetric[], right: IMetric[]): any[] {
   const mset = new MetricSet<string>();
   mset.addTopLevel('left', ...left);
   mset.addTopLevel('right', ...right);
-
+  //
   // Render all metrics from the set.
   return mset.entries.map(entry => new DropEmptyObjectAtTheEndOfAnArray(metricGraphJson(entry.metric, entry.tag, entry.id)));
 }
@@ -110,6 +110,7 @@ export class MetricSet<A> {
   private readonly metrics = new Array<MetricEntry<A>>();
   private readonly metricById = new Map<string, MetricEntry<A>>();
   private readonly metricByKey = new Map<string, MetricEntry<A>>();
+  private mathExpressionId: number = 1;
 
   /**
    * Add the given set of metrics to this set
@@ -138,6 +139,8 @@ export class MetricSet<A> {
    */
   private addOne(metric: IMetric, tag?: A, id?: string) {
     const key = metricKey(metric);
+
+    const conf = metric.toMetricConfig();
 
     let existingEntry: MetricEntry<A> | undefined;
 
@@ -173,6 +176,31 @@ export class MetricSet<A> {
     if (!entry.id && id) {
       entry.id = id;
       this.metricById.set(id, entry);
+      // if we don't have an id and this is a math expression
+      // then we should create one
+    } else if (!entry.id && !id && conf.mathExpression) {
+      // if we are not already setting an id
+      const options: any = { ...conf.renderingProperties };
+      let newId: string | undefined;
+      if (options.id !== undefined) {
+        if (/^e[1-9]+/.test(options.id)) {
+          throw new Error('Ids with the format of /^e[1-9]+/ are reserved for automatically assigned ids');
+        }
+        newId = options.id;
+      }
+
+      if (!newId) {
+        // do we somehow already have one with this id, maybe
+        // it was manually assigned, and if so increment our counter
+        while (this.metricById.get(`e${this.mathExpressionId}`)) {
+          this.mathExpressionId++;
+        }
+
+        newId = `e${this.mathExpressionId}`;
+        this.mathExpressionId++;
+      }
+      entry.id = newId;
+      this.metricById.set(newId, entry);
     }
 
     // If it didn't have a tag but now we do, add one
@@ -181,7 +209,6 @@ export class MetricSet<A> {
     }
 
     // Recurse and add children
-    const conf = metric.toMetricConfig();
     if (conf.mathExpression) {
       for (const [subId, subMetric] of Object.entries(conf.mathExpression.usingMetrics)) {
         this.addOne(subMetric, undefined, subId);

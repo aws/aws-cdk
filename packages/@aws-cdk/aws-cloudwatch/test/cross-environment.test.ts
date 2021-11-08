@@ -106,6 +106,7 @@ describe('cross environment', () => {
           accountId: '5678',
           region: 'mars',
           label: 'Test label',
+          id: 'e1',
         }],
       ]);
     });
@@ -267,7 +268,7 @@ describe('cross environment', () => {
         Metrics: [
           {
             Expression: 'a + b',
-            Id: 'expr_1',
+            Id: 'e1',
           },
           {
             AccountId: '0000',
@@ -324,7 +325,7 @@ describe('cross environment', () => {
         Metrics: [
           {
             Expression: 'a + b',
-            Id: 'expr_1',
+            Id: 'e1',
           },
           {
             AccountId: Match.absent(),

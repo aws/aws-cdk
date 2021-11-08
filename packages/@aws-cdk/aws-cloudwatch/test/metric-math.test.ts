@@ -105,6 +105,115 @@ describe('Metric Math', () => {
         ['Test', 'BCount', { visible: false, id: 'metric2' }],
       ]);
     });
+    test('auto increment id for MathExpressions', () => {
+      // GIVEN
+      const expr1 = new MathExpression({
+        expression: 'metric1+metric2',
+        usingMetrics: {
+          ['metric1']: a,
+          ['metric2']: b,
+        },
+        label: 'Math expr label 1',
+      });
+      const expr2 = new MathExpression({
+        expression: 'metric3+metric4',
+        usingMetrics: {
+          ['metric3']: a,
+          ['metric4']: b,
+        },
+        label: 'Math expr label 2',
+      });
+
+      const graph = new GraphWidget({
+        left: [
+          expr1,
+          expr2,
+        ],
+      });
+
+      // THEN
+      graphMetricsAre(graph, [
+        [{ expression: 'metric1+metric2', label: 'Math expr label 1', id: 'e1' }],
+        ['Test', 'ACount', { visible: false, id: 'metric1' }],
+        ['Test', 'BCount', { visible: false, id: 'metric2' }],
+        [{ expression: 'metric3+metric4', label: 'Math expr label 2', id: 'e2' }],
+        ['Test', 'ACount', { visible: false, id: 'metric3' }],
+        ['Test', 'BCount', { visible: false, id: 'metric4' }],
+      ]);
+
+
+    });
+    test('auto increment id and manually assigned id for MathExpressions', () => {
+      // GIVEN
+      const expr1 = new MathExpression({
+        expression: 'metric1+metric2',
+        usingMetrics: {
+          ['metric1']: a,
+          ['metric2']: b,
+        },
+        label: 'Math expr label 1',
+      });
+      const expr2 = new MathExpression({
+        expression: 'metric3+metric4',
+        id: 'ex1',
+        usingMetrics: {
+          ['metric3']: a,
+          ['metric4']: b,
+        },
+        label: 'Math expr label 2',
+      });
+
+      const graph = new GraphWidget({
+        left: [
+          expr1,
+          expr2,
+        ],
+      });
+
+      // THEN
+      graphMetricsAre(graph, [
+        [{ expression: 'metric1+metric2', label: 'Math expr label 1', id: 'e1' }],
+        ['Test', 'ACount', { visible: false, id: 'metric1' }],
+        ['Test', 'BCount', { visible: false, id: 'metric2' }],
+        [{ expression: 'metric3+metric4', label: 'Math expr label 2', id: 'ex1' }],
+        ['Test', 'ACount', { visible: false, id: 'metric3' }],
+        ['Test', 'BCount', { visible: false, id: 'metric4' }],
+      ]);
+
+
+    });
+    test('MathExpressions throws if assigned id matches pattern', () => {
+      // GIVEN
+      const expr1 = new MathExpression({
+        expression: 'metric1+metric2',
+        usingMetrics: {
+          ['metric1']: a,
+          ['metric2']: b,
+        },
+        label: 'Math expr label 1',
+      });
+      const expr2 = new MathExpression({
+        expression: 'metric3+metric4',
+        id: 'e1',
+        usingMetrics: {
+          ['metric3']: a,
+          ['metric4']: b,
+        },
+        label: 'Math expr label 2',
+      });
+
+      const graph = new GraphWidget({
+        left: [
+          expr1,
+          expr2,
+        ],
+      });
+      // THEN
+      expect(() => {
+        graphMetricsAre(graph, []);
+      }).toThrow(/Ids with the format of/);
+
+    });
     test('MathExpressions can be added to a graph', () => {
       // GIVEN
       const graph = new GraphWidget({
@@ -118,7 +227,7 @@ describe('Metric Math', () => {
 
       // THEN
       graphMetricsAre(graph, [
-        [{ expression: 'a + b', label: 'a + b' }],
+        [{ expression: 'a + b', label: 'a + b', id: 'e1' }],
         ['Test', 'ACount', { visible: false, id: 'a' }],
         ['Test', 'BCount', { visible: false, id: 'b' }],
       ]);
@@ -145,7 +254,7 @@ describe('Metric Math', () => {
 
       // THEN
       graphMetricsAre(graph, [
-        [{ label: 'a + e', expression: 'a + e' }],
+        [{ label: 'a + e', expression: 'a + e', id: 'e1' }],
         ['Test', 'ACount', { visible: false, id: 'a' }],
         [{ expression: 'b + c', visible: false, id: 'e' }],
         ['Test', 'BCount', { visible: false, id: 'b' }],
@@ -172,7 +281,7 @@ describe('Metric Math', () => {
       });
 
       graphMetricsAre(graph, [
-        [{ label: 'a + e', expression: 'a + e' }],
+        [{ label: 'a + e', expression: 'a + e', id: 'e1' }],
         ['Test', 'ACount', { visible: false, id: 'a' }],
         [{ expression: 'b + c', visible: false, id: 'e' }],
         ['Test', 'ACount', { visible: false, id: 'b' }],
@@ -200,7 +309,7 @@ describe('Metric Math', () => {
 
       // THEN
       graphMetricsAre(graph, [
-        [{ label: 'a + e', expression: 'a + e' }],
+        [{ label: 'a + e', expression: 'a + e', id: 'e1' }],
         ['Test', 'ACount', { visible: false, id: 'a' }],
         [{ expression: 'a + c', visible: false, id: 'e' }],
         ['Test', 'CCount', { visible: false, id: 'c' }],
@@ -223,7 +332,7 @@ describe('Metric Math', () => {
       // THEN
       graphMetricsAre(graph, [
         ['Test', 'ACount', { id: 'a' }],
-        [{ label: 'a + b', expression: 'a + b' }],
+        [{ label: 'a + b', expression: 'a + b', id: 'e1' }],
         ['Test', 'BCount', { visible: false, id: 'b' }],
       ]);
 
@@ -245,7 +354,7 @@ describe('Metric Math', () => {
       // THEN
       graphMetricsAre(graph, [
         ['Test', 'ACount', { period: 10 }],
-        [{ label: 'a + b', expression: 'a + b' }],
+        [{ label: 'a + b', expression: 'a + b', id: 'e1' }],
         ['Test', 'ACount', { visible: false, id: 'a' }],
         ['Test', 'BCount', { visible: false, id: 'b' }],
       ]);
@@ -267,7 +376,7 @@ describe('Metric Math', () => {
       // THEN
       graphMetricsAre(graph, [
         ['Test', 'ACount'],
-        [{ label: 'a + b', expression: 'a + b', period: 60 }],
+        [{ label: 'a + b', expression: 'a + b', period: 60, id: 'e1' }],
         ['Test', 'ACount', { visible: false, id: 'a', period: 60 }],
         ['Test', 'BCount', { visible: false, id: 'b', period: 60 }],
       ]);
@@ -295,7 +404,7 @@ describe('Metric Math', () => {
 
       // THEN
       graphMetricsAre(graph, [
-        [{ expression: 'a + e', label: 'a + e' }],
+        [{ expression: 'a + e', label: 'a + e', id: 'e1' }],
         ['Test', 'ACount', { visible: false, id: 'a' }],
         [{ expression: 'a + b', visible: false, id: 'e' }],
         ['Test', 'BCount', { visible: false, id: 'b' }],
@@ -316,7 +425,7 @@ describe('Metric Math', () => {
 
       // THEN
       graphMetricsAre(graph, [
-        [{ expression: 'a + b99', label: 'a + b99' }],
+        [{ expression: 'a + b99', label: 'a + b99', id: 'e1' }],
         ['Test', 'ACount', { visible: false, id: 'a' }],
         ['Test', 'BCount', { visible: false, id: 'b99', stat: 'p99' }],
       ]);
@@ -343,9 +452,9 @@ describe('Metric Math', () => {
 
       // THEN
       graphMetricsAre(graph, [
-        [{ label: 'a + 1', expression: 'a + 1' }],
+        [{ label: 'a + 1', expression: 'a + 1', id: 'e1' }],
         ['Test', 'ACount', { visible: false, id: 'a' }],
-        [{ label: 'a + 2', expression: 'a + 2', yAxis: 'right' }],
+        [{ label: 'a + 2', expression: 'a + 2', yAxis: 'right', id: 'e2' }],
       ]);
 
 
@@ -393,7 +502,7 @@ describe('Metric Math', () => {
       alarmMetricsAre([
         {
           Expression: 'a + b',
-          Id: 'expr_1',
+          Id: 'e1',
         },
         {
           Id: 'a',
@@ -446,7 +555,7 @@ describe('Metric Math', () => {
       alarmMetricsAre([
         {
           Expression: 'a + e',
-          Id: 'expr_1',
+          Id: 'e1',
         },
         {
           Id: 'a',
@@ -517,7 +626,7 @@ describe('Metric Math', () => {
       alarmMetricsAre([
         {
           Expression: 'a + e',
-          Id: 'expr_1',
+          Id: 'e1',
         },
         {
           Id: 'a',
@@ -580,7 +689,7 @@ describe('Metric Math', () => {
       alarmMetricsAre([
         {
           Expression: 'INSIGHT_RULE_METRIC("SomeId", UniqueContributors)',
-          Id: 'expr_1',
+          Id: 'e1',
           Period: 300,
         },
       ]);
@@ -624,7 +733,7 @@ describe('Metric Math', () => {
       alarmMetricsAre([
         {
           Expression: 'a + b99',
-          Id: 'expr_1',
+          Id: 'e1',
         },
         {
           Id: 'a',
