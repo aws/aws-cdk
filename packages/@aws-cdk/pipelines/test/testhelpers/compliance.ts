@@ -1,3 +1,5 @@
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
+
 interface SkippedSuite {
   legacy(reason?: string): void;
 
@@ -12,6 +14,8 @@ interface Suite {
   modern(fn: () => void): void;
 
   additional(description: string, fn: () => void): void;
+
+  additionalDeprecated(description: string, fn: () => void): void;
 }
 
 // eslint-disable-next-line jest/no-export
@@ -31,13 +35,14 @@ export function behavior(name: string, cb: (suite: Suite) => void) {
     cb({
       legacy: (testFn) => {
         scratchOff('legacy');
-        test('legacy', testFn);
+        testDeprecated('legacy', testFn);
       },
       modern: (testFn) => {
         scratchOff('modern');
         test('modern', testFn);
       },
       additional: test,
+      additionalDeprecated: testDeprecated,
       doesNotApply: {
         modern: (reason?: string) => {
           scratchOff('modern');

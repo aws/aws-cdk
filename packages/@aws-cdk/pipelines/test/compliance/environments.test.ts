@@ -23,7 +23,7 @@ behavior('action has right settings for same-env deployment', (suite) => {
     THEN_codePipelineExpection(agnosticRole);
   });
 
-  suite.additional('legacy: even if env is specified but the same as the pipeline', () => {
+  suite.additionalDeprecated('legacy: even if env is specified but the same as the pipeline', () => {
     const pipeline = new LegacyTestGitHubNpmPipeline(pipelineStack, 'Cdk');
     pipeline.addApplicationStage(new OneStackApp(app, 'Same', {
       env: PIPELINE_ENV,
