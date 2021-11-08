@@ -495,7 +495,7 @@ new tasks.DynamoPutItem(this, 'PutItem', {
     MessageId: tasks.DynamoAttributeValue.fromString('message-007'),
     Text: tasks.DynamoAttributeValue.fromString(sfn.JsonPath.stringAt('$.bar')),
     TotalCount: tasks.DynamoAttributeValue.fromNumber(10),
-    List: tasks.DynamoAttributeValue.listFromJsonPath(sfn.JsonPath.stringAt('$.list')) // Sets a DynamoDB List from an array in the state input
+    List: tasks.DynamoAttributeValue.listFromJsonPath(sfn.JsonPath.stringAt('$.list')), // Sets a DynamoDB List from an array in the state input
   },
   table: myTable,
 });
