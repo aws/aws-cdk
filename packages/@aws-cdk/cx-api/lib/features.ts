@@ -161,10 +161,10 @@ export const LAMBDA_RECOGNIZE_VERSION_PROPS = '@aws-cdk/aws-lambda:recognizeVers
 export const CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021 = '@aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2_2021';
 
 /**
- * API Gateway's REST API construct always creates a CfnOutput with a blank exportName. That name can be overridden
+ * API Gateway's RestApi construct always creates a CfnOutput with a blank exportName. That name can be overridden
  * by the `endpointExportName` prop but there's no option to simply not have it produce an output in the first
  * place.
- * If this values is true, no CfnOutput will be created by the RestApi construct, unless `endpointExportName` is
+ * If this value is true, no CfnOutput will be created by the RestApi construct, unless `endpointExportName` is
  * provided. If false (default legacy behaviour), an output will be created but without an explicit `exportName`.
  */
 export const APIGATEWAY_REST_API_NO_CFN_OUTPUT = '@aws-cdk/aws-apigateway:noDefaultRestApiCfnOutput';
