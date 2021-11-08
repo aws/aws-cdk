@@ -325,7 +325,7 @@ portfolio.setLocalLaunchRoleName(product, roleName);
 ```
 
 See [Launch Constraint](https://docs.aws.amazon.com/servicecatalog/latest/adminguide/constraints-launch.html) documentation
-to understand permissions roles need.
+to understand the permissions roles need.
 
 ### Deploy with StackSets
 
