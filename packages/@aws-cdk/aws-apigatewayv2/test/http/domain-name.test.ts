@@ -173,7 +173,7 @@ describe('DomainName', () => {
   test('accepts a mutual TLS configuration', () => {
     // GIVEN
     const stack = new Stack();
-    const bucket = Bucket.fromBucketName(stack, 'testBucket', 'exampleBucket');
+    const bucket = Bucket.fromBucketName(stack, 'testBucket', 'example-bucket');
 
     // WHEN
     new DomainName(stack, 'DomainName', {
@@ -195,7 +195,7 @@ describe('DomainName', () => {
         },
       ],
       MutualTlsAuthentication: {
-        TruststoreUri: 's3://exampleBucket/someca.pem',
+        TruststoreUri: 's3://example-bucket/someca.pem',
       },
     });
   });
@@ -203,7 +203,7 @@ describe('DomainName', () => {
   test('mTLS should allow versions to be set on the s3 bucket', () => {
     // GIVEN
     const stack = new Stack();
-    const bucket = Bucket.fromBucketName(stack, 'testBucket', 'exampleBucket');
+    const bucket = Bucket.fromBucketName(stack, 'testBucket', 'example-bucket');
 
     // WHEN
     new DomainName(stack, 'DomainName', {
@@ -226,7 +226,7 @@ describe('DomainName', () => {
         },
       ],
       MutualTlsAuthentication: {
-        TruststoreUri: 's3://exampleBucket/someca.pem',
+        TruststoreUri: 's3://example-bucket/someca.pem',
         TruststoreVersion: 'version',
       },
     });
