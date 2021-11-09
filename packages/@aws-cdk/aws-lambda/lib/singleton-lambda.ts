@@ -52,11 +52,7 @@ export class SingletonFunction extends FunctionBase {
   public readonly permissionsNode: cdk.ConstructNode;
 
   /**
-   * The runtime environment for the Lambda function that you are uploading.
-   * For valid values, see the Runtime property in the AWS Lambda Developer
-   * Guide.
-   *
-   * Use `Runtime.FROM_IMAGE` when when defining a function from a Docker image.
+   * The runtime environment for the Lambda function.
    */
   public readonly runtime: Runtime;
 
