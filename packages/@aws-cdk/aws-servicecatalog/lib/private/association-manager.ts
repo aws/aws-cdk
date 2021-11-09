@@ -15,18 +15,6 @@ import { TagOptions } from '../tag-options';
 import { hashValues } from './util';
 import { InputValidator } from './validation';
 
-interface LaunchRoleProp {
-  readonly roleArn: string,
-  readonly localRoleName?: never,
-}
-
-interface LaunchRoleNameProp {
-  readonly localRoleName: string,
-  readonly roleArn?: never,
-}
-
-type LaunchRoleConstraintRoleProp = LaunchRoleProp | LaunchRoleNameProp;
-
 export class AssociationManager {
   public static associateProductWithPortfolio(
     portfolio: IPortfolio, product: IProduct, options: CommonConstraintOptions | undefined,
@@ -180,7 +168,7 @@ export class AssociationManager {
   }
 
   private static setLaunchRoleConstraint(portfolio: IPortfolio, product: IProduct, options: CommonConstraintOptions,
-    roleProp: LaunchRoleConstraintRoleProp): void {
+    roleOptions: LaunchRoleConstraintRoleOptions): void {
     const association = this.associateProductWithPortfolio(portfolio, product, options);
     // Check if a stackset deployment constraint has already been configured.
     if (portfolio.node.tryFindChild(this.stackSetConstraintLogicalId(association.associationKey))) {
@@ -194,7 +182,8 @@ export class AssociationManager {
         description: options.description,
         portfolioId: portfolio.portfolioId,
         productId: product.productId,
-        ...roleProp,
+        roleArn: roleOptions.roleArn,
+        localRoleName: roleOptions.localRoleName,
       });
 
       // Add dependsOn to force proper order in deployment.
@@ -238,3 +227,14 @@ export class AssociationManager {
   };
 }
 
+interface LaunchRoleArnOption {
+  readonly roleArn: string,
+  readonly localRoleName?: never,
+}
+
+interface LaunchRoleNameOption {
+  readonly localRoleName: string,
+  readonly roleArn?: never,
+}
+
+type LaunchRoleConstraintRoleOptions = LaunchRoleArnOption | LaunchRoleNameOption;
