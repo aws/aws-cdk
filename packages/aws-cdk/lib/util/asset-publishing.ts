@@ -69,23 +69,21 @@ class PublishingAws implements cdk_assets.IAws {
    * Get an SDK appropriate for the given client options
    */
   private async sdk(options: cdk_assets.ClientOptions): Promise<ISDK> {
-    // if this was `JSON.stringify(options)`, extra fields might
-    // accidentally be included in the cache key
+    const env = {
+      ...this.targetEnv,
+      region: options.region ?? this.targetEnv.region, // Default: same region as the stack
+    };
+
     const cacheKey = JSON.stringify({
-      region: options.region,
+      env, // region, name, account
       assumeRuleArn: options.assumeRoleArn,
       assumeRoleExternalId: options.assumeRoleExternalId,
     });
 
     const maybeSdk = this.sdkCache.get(cacheKey);
     if (maybeSdk) {
-      return Promise.resolve(maybeSdk);
+      return maybeSdk;
     }
-
-    const env = {
-      ...this.targetEnv,
-      region: options.region ?? this.targetEnv.region, // Default: same region as the stack
-    };
 
     const sdk = await this.aws.forEnvironment(env, Mode.ForWriting, {
       assumeRoleArn: options.assumeRoleArn,
