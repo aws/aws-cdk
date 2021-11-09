@@ -28,7 +28,7 @@ export class Activity extends Resource implements IActivity {
     class Imported extends Resource implements IActivity {
       public get activityArn() { return activityArn; }
       public get activityName() {
-        return Stack.of(this).parseArn(activityArn, ':').resourceName || '';
+        return Stack.of(this).splitArn(activityArn, ArnFormat.COLON_RESOURCE_NAME).resourceName || '';
       }
     }
 

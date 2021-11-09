@@ -65,7 +65,7 @@ export class VirtualService extends cdk.Resource implements IVirtualService {
   public static fromVirtualServiceArn(scope: Construct, id: string, virtualServiceArn: string): IVirtualService {
     return new class extends cdk.Resource implements IVirtualService {
       readonly virtualServiceArn = virtualServiceArn;
-      private readonly parsedArn = cdk.Fn.split('/', cdk.Stack.of(scope).parseArn(virtualServiceArn).resourceName!);
+      private readonly parsedArn = cdk.Fn.split('/', cdk.Stack.of(scope).splitArn(virtualServiceArn, cdk.ArnFormat.SLASH_RESOURCE_NAME).resourceName!);
       readonly virtualServiceName = cdk.Fn.select(2, this.parsedArn);
       readonly mesh = Mesh.fromMeshName(this, 'Mesh', cdk.Fn.select(0, this.parsedArn));
     }(scope, id);
