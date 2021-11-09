@@ -156,4 +156,23 @@ describe('log retention', () => {
     expect(logGroupArn.endsWith(':*')).toEqual(true);
 
   });
+
+  test('retention Lambda CfnResource receives propagated tags', () => {
+    const stack = new cdk.Stack();
+    cdk.Tags.of(stack).add('test-key', 'test-value');
+    new LogRetention(stack, 'MyLambda', {
+      logGroupName: 'group',
+      retention: RetentionDays.ONE_MONTH,
+    });
+
+    expect(stack).toHaveResourceLike('AWS::Lambda::Function', {
+      Tags: [
+        {
+          Key: 'test-key',
+          Value: 'test-value',
+        },
+      ],
+    });
+
+  });
 });

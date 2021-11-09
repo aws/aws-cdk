@@ -14,7 +14,7 @@ export interface BlockDevice {
   /**
    * The device name exposed to the EC2 instance
    *
-   * @example '/dev/sdh', 'xvdh'
+   * For example, a value like `/dev/sdh`, `xvdh`.
    *
    * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/device_naming.html
    */
@@ -23,8 +23,7 @@ export interface BlockDevice {
   /**
    * Defines the block device volume, to be either an Amazon EBS volume or an ephemeral instance store volume
    *
-   * @example BlockDeviceVolume.ebs(15), BlockDeviceVolume.ephemeral(0)
-   *
+   * For example, a value like `BlockDeviceVolume.ebs(15)`, `BlockDeviceVolume.ephemeral(0)`.
    */
   readonly volume: BlockDeviceVolume;
 

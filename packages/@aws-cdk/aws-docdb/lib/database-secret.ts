@@ -32,6 +32,13 @@ export interface DatabaseSecretProps {
    * @default - no master secret information will be included
    */
   readonly masterSecret?: ISecret;
+
+  /**
+   * Characters to not include in the generated password.
+   *
+   * @default "\"@/"
+   */
+  readonly excludeCharacters?: string;
 }
 
 /**
@@ -61,7 +68,7 @@ export class DatabaseSecret extends Secret {
           masterarn: props.masterSecret?.secretArn,
         }),
         generateStringKey: 'password',
-        excludeCharacters: '"@/',
+        excludeCharacters: props.excludeCharacters ?? '"@/',
       },
     });
   }

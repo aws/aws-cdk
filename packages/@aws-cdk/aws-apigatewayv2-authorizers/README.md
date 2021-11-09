@@ -46,11 +46,14 @@ When using default authorization, all routes of the api will inherit the configu
 In the example below, all routes will require the `manage:books` scope present in order to invoke the integration.
 
 ```ts
+import { HttpJwtAuthorizer } from '@aws-cdk/aws-apigatewayv2-authorizers';
+
 const authorizer = new HttpJwtAuthorizer({
-  ...
+  jwtAudience: ['3131231'],
+  jwtIssuer: 'https://test.us.auth0.com',
 });
 
-const api = new HttpApi(stack, 'HttpApi', {
+const api = new apigwv2.HttpApi(this, 'HttpApi', {
   defaultAuthorizer: authorizer,
   defaultAuthorizationScopes: ['manage:books'],
 });
@@ -67,39 +70,51 @@ The example below showcases default authorization, along with route authorizatio
 - `POST /login` removes the default authorizer (unauthenticated route)
 
 ```ts
+import { HttpJwtAuthorizer } from '@aws-cdk/aws-apigatewayv2-authorizers';
+import { HttpProxyIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
+
 const authorizer = new HttpJwtAuthorizer({
-  ...
+  jwtAudience: ['3131231'],
+  jwtIssuer: 'https://test.us.auth0.com',
 });
 
-const api = new HttpApi(stack, 'HttpApi', {
+const api = new apigwv2.HttpApi(this, 'HttpApi', {
   defaultAuthorizer: authorizer,
   defaultAuthorizationScopes: ['read:books'],
 });
 
 api.addRoutes({
-  ...
+  integration: new HttpProxyIntegration({
+    url: 'https://get-books-proxy.myproxy.internal',
+  }),
   path: '/books',
-  method: 'get',
+  methods: [apigwv2.HttpMethod.GET],
 });
 
 api.addRoutes({
-  ...
+  integration: new HttpProxyIntegration({
+    url: 'https://get-books-proxy.myproxy.internal',
+  }),
   path: '/books/{id}',
-  method: 'get',
+  methods: [apigwv2.HttpMethod.GET],
 });
 
 api.addRoutes({
-  ...
+  integration: new HttpProxyIntegration({
+    url: 'https://get-books-proxy.myproxy.internal',
+  }),
   path: '/books',
-  method: 'post',
+  methods: [apigwv2.HttpMethod.POST],
   authorizationScopes: ['write:books']
 });
 
 api.addRoutes({
-  ...
+  integration: new HttpProxyIntegration({
+    url: 'https://get-books-proxy.myproxy.internal',
+  }),
   path: '/login',
-  method: 'post',
-  authorizer: new NoneAuthorizer(),
+  methods: [apigwv2.HttpMethod.POST],
+  authorizer: new apigwv2.HttpNoneAuthorizer(),
 });
 ```
 
@@ -120,12 +135,15 @@ Clients that fail authorization are presented with either 2 responses:
 - `403 - Forbidden` - When the JWT validation is successful but the required scopes are not met
 
 ```ts
+import { HttpJwtAuthorizer } from '@aws-cdk/aws-apigatewayv2-authorizers';
+import { HttpProxyIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
+
 const authorizer = new HttpJwtAuthorizer({
   jwtAudience: ['3131231'],
   jwtIssuer: 'https://test.us.auth0.com',
 });
 
-const api = new HttpApi(stack, 'HttpApi');
+const api = new apigwv2.HttpApi(this, 'HttpApi');
 
 api.addRoutes({
   integration: new HttpProxyIntegration({
@@ -145,15 +163,19 @@ They must then use this token in the specified `identitySource` for the API call
 pools as authorizer](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-integrate-with-cognito.html).
 
 ```ts
-const userPool = new UserPool(stack, 'UserPool');
+import * as cognito from '@aws-cdk/aws-cognito';
+import { HttpUserPoolAuthorizer } from '@aws-cdk/aws-apigatewayv2-authorizers';
+import { HttpProxyIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
+
+const userPool = new cognito.UserPool(this, 'UserPool');
 const userPoolClient = userPool.addClient('UserPoolClient');
 
 const authorizer = new HttpUserPoolAuthorizer({
   userPool,
-  userPoolClient,
+  userPoolClients: [userPoolClient],
 });
 
-const api = new HttpApi(stack, 'HttpApi');
+const api = new apigwv2.HttpApi(this, 'HttpApi');
 
 api.addRoutes({
   integration: new HttpProxyIntegration({
@@ -172,17 +194,19 @@ Lambda authorizers depending on their response, fall into either two types - Sim
 
 
 ```ts
+import { HttpLambdaAuthorizer, HttpLambdaResponseType } from '@aws-cdk/aws-apigatewayv2-authorizers';
+import { HttpProxyIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
+
 // This function handles your auth logic
-const authHandler = new Function(this, 'auth-function', {
-  //...
-});
+declare const authHandler: lambda.Function;
 
 const authorizer = new HttpLambdaAuthorizer({
-  responseTypes: [HttpLambdaResponseType.SIMPLE] // Define if returns simple and/or iam response
+  authorizerName: 'lambda-authorizer',
+  responseTypes: [HttpLambdaResponseType.SIMPLE], // Define if returns simple and/or iam response
   handler: authHandler,
 });
 
-const api = new HttpApi(stack, 'HttpApi');
+const api = new apigwv2.HttpApi(this, 'HttpApi');
 
 api.addRoutes({
   integration: new HttpProxyIntegration({

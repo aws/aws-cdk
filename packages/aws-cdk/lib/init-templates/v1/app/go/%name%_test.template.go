@@ -1,28 +1,26 @@
 package main
 
-import (
-	"encoding/json"
-	"testing"
+// import (
+// 	"testing"
 
-	"github.com/aws/aws-cdk-go/awscdk"
-	"github.com/stretchr/testify/assert"
-	"github.com/tidwall/gjson"
-)
+// 	"github.com/aws/aws-cdk-go/awscdk"
+// 	"github.com/aws/aws-cdk-go/awscdk/assertions"
+// 	"github.com/aws/jsii-runtime-go"
+// )
 
-func Test%name.PascalCased%Stack(t *testing.T) {
-	// GIVEN
-	app := awscdk.NewApp(nil)
+// example tests. To run these tests, uncomment this file along with the
+// example resource in %name%_test.go
+// func Test%name.PascalCased%Stack(t *testing.T) {
+// 	// GIVEN
+// 	app := awscdk.NewApp(nil)
 
-	// WHEN
-	stack := New%name.PascalCased%Stack(app, "MyStack", nil)
+// 	// WHEN
+// 	stack := New%name.PascalCased%Stack(app, "MyStack", nil)
 
-	// THEN
-	bytes, err := json.Marshal(app.Synth(nil).GetStackArtifact(stack.ArtifactId()).Template())
-	if err != nil {
-		t.Error(err)
-	}
+// 	// THEN
+// 	template := assertions.Template_FromStack(stack)
 
-	template := gjson.ParseBytes(bytes)
-	displayName := template.Get("Resources.MyTopic86869434.Properties.DisplayName").String()
-	assert.Equal(t, "MyCoolTopic", displayName)
-}
+// 	template.HasResourceProperties(jsii.String("AWS::SQS::Queue"), map[string]interface{}{
+// 		"VisibilityTimeout": 300,
+// 	})
+// }

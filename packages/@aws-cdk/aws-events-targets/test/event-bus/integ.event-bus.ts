@@ -1,5 +1,6 @@
 /// !cdk-integ pragma:ignore-assets
 import * as events from '@aws-cdk/aws-events';
+import * as sqs from '@aws-cdk/aws-sqs';
 import * as cdk from '@aws-cdk/core';
 import * as targets from '../../lib';
 
@@ -12,12 +13,18 @@ class EventSourceStack extends cdk.Stack {
     const rule = new events.Rule(this, 'Rule', {
       schedule: events.Schedule.expression('rate(1 minute)'),
     });
+
+    const queue = new sqs.Queue(this, 'Queue');
+
     rule.addTarget(new targets.EventBus(
       events.EventBus.fromEventBusArn(
         this,
         'External',
         `arn:aws:events:${this.region}:999999999999:event-bus/test-bus`,
       ),
+      {
+        deadLetterQueue: queue,
+      },
     ));
   }
 }

@@ -336,7 +336,7 @@ describe('CloudWatch Events', () => {
   test('onCloudTrailPutObject contains the Bucket ARN itself when path is undefined', () => {
     const stack = new cdk.Stack();
     const bucket = s3.Bucket.fromBucketAttributes(stack, 'Bucket', {
-      bucketName: 'MyBucket',
+      bucketName: 'mybucket',
     });
     bucket.onCloudTrailPutObject('PutRule', {
       target: {
@@ -363,7 +363,7 @@ describe('CloudWatch Events', () => {
                     {
                       'Ref': 'AWS::Partition',
                     },
-                    ':s3:::MyBucket',
+                    ':s3:::mybucket',
                   ],
                 ],
               },
@@ -378,7 +378,7 @@ describe('CloudWatch Events', () => {
   test("onCloudTrailPutObject contains the path when it's provided", () => {
     const stack = new cdk.Stack();
     const bucket = s3.Bucket.fromBucketAttributes(stack, 'Bucket', {
-      bucketName: 'MyBucket',
+      bucketName: 'mybucket',
     });
     bucket.onCloudTrailPutObject('PutRule', {
       target: {
@@ -406,7 +406,7 @@ describe('CloudWatch Events', () => {
                     {
                       'Ref': 'AWS::Partition',
                     },
-                    ':s3:::MyBucket/my/path.zip',
+                    ':s3:::mybucket/my/path.zip',
                   ],
                 ],
               },
@@ -421,7 +421,7 @@ describe('CloudWatch Events', () => {
   test('onCloudTrailWriteObject matches on events CompleteMultipartUpload, CopyObject, and PutObject', () => {
     const stack = new cdk.Stack();
     const bucket = s3.Bucket.fromBucketAttributes(stack, 'Bucket', {
-      bucketName: 'MyBucket',
+      bucketName: 'mybucket',
     });
     bucket.onCloudTrailWriteObject('OnCloudTrailWriteObjectRule', {
       target: {
@@ -449,7 +449,7 @@ describe('CloudWatch Events', () => {
   test('onCloudTrailWriteObject matches on the requestParameter bucketName when the path is not provided', () => {
     const stack = new cdk.Stack();
     const bucket = s3.Bucket.fromBucketAttributes(stack, 'Bucket', {
-      bucketName: 'MyBucket',
+      bucketName: 'mybucket',
     });
     bucket.onCloudTrailWriteObject('OnCloudTrailWriteObjectRule', {
       target: {
@@ -476,7 +476,7 @@ describe('CloudWatch Events', () => {
   test('onCloudTrailWriteObject matches on the requestParameters bucketName and key when the path is provided', () => {
     const stack = new cdk.Stack();
     const bucket = s3.Bucket.fromBucketAttributes(stack, 'Bucket', {
-      bucketName: 'MyBucket',
+      bucketName: 'mybucket',
     });
     bucket.onCloudTrailWriteObject('OnCloudTrailWriteObjectRule', {
       target: {

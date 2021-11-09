@@ -292,6 +292,27 @@ test('Schedule can be set to 1 minute', () => {
   });
 });
 
+test('Schedule can be set with Cron', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  new synthetics.Canary(stack, 'Canary', {
+    schedule: synthetics.Schedule.cron({ minute: '30' }),
+    test: synthetics.Test.custom({
+      handler: 'index.handler',
+      code: synthetics.Code.fromInline('/* Synthetics handler code */'),
+    }),
+    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_3,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
+    Schedule: Match.objectLike({ Expression: 'cron(30 * * * ? *)' }),
+  });
+});
+
+
 test('Schedule can be set with Expression', () => {
   // GIVEN
   const stack = new Stack();

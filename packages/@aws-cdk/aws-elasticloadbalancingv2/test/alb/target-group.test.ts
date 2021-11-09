@@ -172,6 +172,10 @@ describe('tests', () => {
     expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
       TargetGroupAttributes: [
         {
+          Key: 'stickiness.enabled',
+          Value: 'false',
+        },
+        {
           Key: 'load_balancing.algorithm.type',
           Value: 'least_outstanding_requests',
         },

@@ -22,7 +22,7 @@ without losing messages or requiring other services to be available.
 
 Import to your project:
 
-```ts
+```ts nofixture
 import * as sqs from '@aws-cdk/aws-sqs';
 ```
 
@@ -44,15 +44,15 @@ can manage yourself.
 ```ts
 // Use managed key
 new sqs.Queue(this, 'Queue', {
-    encryption: QueueEncryption.KMS_MANAGED,
+  encryption: sqs.QueueEncryption.KMS_MANAGED,
 });
 
 // Use custom key
 const myKey = new kms.Key(this, 'Key');
 
 new sqs.Queue(this, 'Queue', {
-    encryption: QueueEncryption.KMS,
-    encryptionMasterKey: myKey
+  encryption: sqs.QueueEncryption.KMS,
+  encryptionMasterKey: myKey,
 });
 ```
 

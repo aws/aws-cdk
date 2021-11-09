@@ -1,15 +1,16 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { IResource, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
+import { RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { LogStream } from './log-stream';
 import { CfnLogGroup } from './logs.generated';
 import { MetricFilter } from './metric-filter';
 import { FilterPattern, IFilterPattern } from './pattern';
+import { ResourcePolicy } from './policy';
 import { ILogSubscriptionDestination, SubscriptionFilter } from './subscription-filter';
 
-export interface ILogGroup extends IResource {
+export interface ILogGroup extends iam.IResourceWithPolicy {
   /**
    * The ARN of this log group, with ':*' appended
    *
@@ -93,6 +94,9 @@ abstract class LogGroupBase extends Resource implements ILogGroup {
    */
   public abstract readonly logGroupName: string;
 
+
+  private policy?: ResourcePolicy;
+
   /**
    * Create a new Log Stream for this Log Group
    *
@@ -169,13 +173,13 @@ abstract class LogGroupBase extends Resource implements ILogGroup {
    * Give the indicated permissions on this log group and all streams
    */
   public grant(grantee: iam.IGrantable, ...actions: string[]) {
-    return iam.Grant.addToPrincipal({
+    return iam.Grant.addToPrincipalOrResource({
       grantee,
       actions,
       // A LogGroup ARN out of CloudFormation already includes a ':*' at the end to include the log streams under the group.
       // See https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-loggroup.html#w2ab1c21c10c63c43c11
       resourceArns: [this.logGroupArn],
-      scope: this,
+      resource: this,
     });
   }
 
@@ -185,6 +189,19 @@ abstract class LogGroupBase extends Resource implements ILogGroup {
    */
   public logGroupPhysicalName(): string {
     return this.physicalName;
+  }
+
+  /**
+   * Adds a statement to the resource policy associated with this log group.
+   * A resource policy will be automatically created upon the first call to `addToResourcePolicy`.
+   * @param statement The policy statement to add
+   */
+  public addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
+    if (!this.policy) {
+      this.policy = new ResourcePolicy(this, 'Policy');
+    }
+    this.policy.document.addStatements(statement);
+    return { statementAdded: true, policyDependable: this.policy };
   }
 }
 

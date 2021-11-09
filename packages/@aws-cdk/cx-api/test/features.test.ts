@@ -7,6 +7,10 @@ test('all future flags have defaults configured', () => {
   });
 });
 
+test('futureFlagDefault returns undefined if non existent flag was given', () => {
+  expect(feats.futureFlagDefault('non-existent-flag')).toEqual(undefined);
+});
+
 testLegacyBehavior('FUTURE_FLAGS_EXPIRED must be empty in CDKv1', Object, () => {
   expect(feats.FUTURE_FLAGS_EXPIRED.length).toEqual(0);
 });
