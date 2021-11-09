@@ -42,8 +42,7 @@ export class InputValidator {
   */
   public static validateRoleNameSetForLocalLaunchRole(role: iam.IRole): void {
     if (role.node.defaultChild) {
-      const roleName = (role.node.defaultChild as iam.CfnRole).roleName;
-      if (cdk.Token.isUnresolved(roleName)) {
+      if (cdk.Token.isUnresolved((role.node.defaultChild as iam.CfnRole).roleName)) {
         throw new Error(`Role ${role.node.id} used for Local Launch Role must have roleName explicitly set`);
       }
     }
