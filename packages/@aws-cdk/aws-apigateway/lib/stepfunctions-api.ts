@@ -19,8 +19,20 @@ export interface StepFunctionsRestApiProps extends RestApiProps {
   readonly stateMachine: sfn.IStateMachine;
 
   /**
-   * Check if requestContext is enabled
-   * If enabled, requestContext is passed into the input of the State Machine. This requestContext is same as  the lambda input (https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html#api-gateway-simple-proxy-for-lambda-input-format) requestContext parameter.
+   * You can add requestContext (similar to input requestContext from lambda input)
+   * to the input. The 'requestContext' parameter includes account ID, user identity, etc.
+   * that can be used by customers that want to know the identity of authorized users on
+   * the state machine side. The following code defines a REST API like above but also
+   * adds 'requestContext' to the input of the State Machine:
+   *
+   * @example
+   *
+   *    const stateMachine = new stepFunctions.StateMachine(this, 'StateMachine', ...);
+   *    new apigateway.StepFunctionsRestApi(this, 'StepFunctionsRestApi', {
+   *      stateMachine: stateMachine,
+   *      includeRequestContext: true,
+   *    });
+   *
    * @default false
    */
   readonly includeRequestContext?: boolean;

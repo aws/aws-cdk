@@ -111,24 +111,22 @@ item.addMethod('DELETE', new apigateway.HttpIntegration('http://amazon.com'));
 
 You can use Amazon API Gateway with AWS Step Functions as the backend integration, specifically Synchronous Express Workflows.
 
-The `StepFunctionsRestApi` construct makes this easy and also sets up input, output and error mapping. The `StepFunctionsRestApi` construct sets up the API Gateway REST API with an `ANY` HTTP method and sets up the api role with the required permission to invoke `StartSyncExecution` action on the AWS StepFunctions state machine. This will enable you to invoke any one of the API Gateway HTTP methods and get a response from the backend AWS StepFunctions state machine.
+The `StepFunctionsRestApi` construct makes this easy and also sets up input, output and error mapping. The `StepFunctionsRestApi` construct sets up the API Gateway REST API with an `ANY` HTTP method and sets up the api role with the required permission to invoke `StartSyncExecution` action on the AWS StepFunctions state machine. This will enable you to invoke any one of the API Gateway HTTP methods and get a response from the backend AWS StepFunctions state machine. Invoking any of the HTTP Method, using the example below, will return a "Hello!" message as the Response Body.
 
 The following code defines a REST API that routes all requests to the specified AWS StepFunctions state machine:
 
 ```ts
-const stateMachine = new stepFunctions.StateMachine(this, 'StateMachine', ...);
-new apigateway.StepFunctionsRestApi(this, 'StepFunctionsRestApi', { 
-  stateMachine: stateMachine,
+const machineDefinition = new sfn.Pass(this, 'PassState', {
+    result: {value:"Hello!"},
+})
+
+const stateMachine: sfn.IStateMachine = new sfn.StateMachine(this, 'StateMachine', {
+    definition: machineDefinition,
+    stateMachineType: sfn.StateMachineType.EXPRESS,
 });
-```
-
-You can add requestContext (similar to input requestContext from lambda input) to the input. The 'requestContext' parameter includes account ID, user identity, etc. that can be used by customers that want to know the identity of authorized users on the state machine side. The following code defines a REST API like above but also adds 'requestContext' to the input of the State Machine:
-
-```ts
-const stateMachine = new stepFunctions.StateMachine(this, 'StateMachine', ...);
+    
 new apigateway.StepFunctionsRestApi(this, 'StepFunctionsRestApi', { 
   stateMachine: stateMachine,
-  includeRequestContext: true,
 });
 ```
 

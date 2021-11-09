@@ -3,6 +3,13 @@ import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import * as apigw from '../lib';
 
+/**
+ * Stack verification steps:
+ * * `curl -X POST 'https://<api-id>.execute-api.<region>.amazonaws.com/prod' \
+ * * -d '{"key":"Hello"}' -H 'Content-Type: application/json'`
+ * The above should return a "Hello" response
+ */
+
 class StepFunctionsRestApiDeploymentStack extends cdk.Stack {
   constructor(scope: Construct) {
     super(scope, 'StepFunctionsRestApiDeploymentStack');
@@ -31,3 +38,4 @@ class StepFunctionsRestApiDeploymentStack extends cdk.Stack {
 
 const app = new cdk.App();
 new StepFunctionsRestApiDeploymentStack(app);
+app.synth();

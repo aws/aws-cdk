@@ -109,21 +109,23 @@ export class ExecutionInputBuilder {
 
   constructor(input: string) {
     this._bodyStr = '"body": ' + input + ',';
+    this._contextStr = '"requestContext": {';
+    this._endStr = '}';
   }
 
-  /**
-      * set contextStr
-      * @param _context
-      * @returns ExecutionInputBuilder
-      */
-  public withContext(_context: string | undefined): ExecutionInputBuilder {
-    if (_context == null) {
-      this._contextStr = '';
-      return this;
-    }
-    this._contextStr = _context;
-    return this;
-  }
+  // /**
+  //     * set contextStr
+  //     * @param _context
+  //     * @returns ExecutionInputBuilder
+  //     */
+  // public withContext(_context: string | undefined): ExecutionInputBuilder {
+  //   if (_context == null) {
+  //     this._contextStr = '';
+  //     return this;
+  //   }
+  //   this._contextStr = _context;
+  //   return this;
+  // }
 
   /**
       * set accountIdStr
@@ -378,19 +380,19 @@ export class ExecutionInputBuilder {
     return this;
   }
 
-  /**
-      * set _endStr
-      * @param _end
-      * @returns ExecutionInputBuilder
-      */
-  public withEnd(_end: string | undefined): ExecutionInputBuilder {
-    if ( _end == null) {
-      this._endStr = '';
-      return this;
-    }
-    this._endStr = _end;
-    return this;
-  }
+  // /**
+  //     * set _endStr
+  //     * @param _end
+  //     * @returns ExecutionInputBuilder
+  //     */
+  // public withEnd(_end: string | undefined): ExecutionInputBuilder {
+  //   if ( _end == null) {
+  //     this._endStr = '';
+  //     return this;
+  //   }
+  //   this._endStr = _end;
+  //   return this;
+  // }
 
   /**
       * returns _bodystr

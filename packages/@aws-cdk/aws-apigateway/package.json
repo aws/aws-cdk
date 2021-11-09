@@ -320,7 +320,6 @@
       "attribute-tag:@aws-cdk/aws-apigateway.RequestAuthorizer.authorizerArn",
       "attribute-tag:@aws-cdk/aws-apigateway.TokenAuthorizer.authorizerArn",
       "attribute-tag:@aws-cdk/aws-apigateway.RestApi.restApiName",
-      "attribute-tag:@aws-cdk/aws-apigateway.StepFunctionsRestApi.restApiName",
       "attribute-tag:@aws-cdk/aws-apigateway.SpecRestApi.restApiName",
       "attribute-tag:@aws-cdk/aws-apigateway.LambdaRestApi.restApiName",
       "from-method:@aws-cdk/aws-apigateway.Stage",

@@ -312,6 +312,7 @@ export abstract class RestApiBase extends Resource implements IRestApi {
 
   /**
    * A human friendly name for this Rest API. Note that this is different from `restApiId`.
+   * @attribute
    */
   public readonly restApiName: string;
 
