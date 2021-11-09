@@ -7,7 +7,7 @@ import { LogGroup, RetentionDays } from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as sns from '@aws-cdk/aws-sns';
 import { Stack } from '@aws-cdk/core';
-import { ReadWriteType, Trail } from '../lib';
+import { ManagementEventSources, ReadWriteType, Trail } from '../lib';
 
 const ExpectedBucketPolicyProperties = {
   PolicyDocument: {
@@ -131,13 +131,13 @@ describe('cloudtrail', () => {
     test('with imported s3 bucket', () => {
       // GIVEN
       const stack = getTestStack();
-      const bucket = s3.Bucket.fromBucketName(stack, 'S3', 'SomeBucket');
+      const bucket = s3.Bucket.fromBucketName(stack, 'S3', 'somebucket');
 
       // WHEN
       new Trail(stack, 'Trail', { bucket });
 
       expect(stack).toHaveResource('AWS::CloudTrail::Trail', {
-        S3BucketName: 'SomeBucket',
+        S3BucketName: 'somebucket',
       });
     });
 
@@ -441,6 +441,59 @@ describe('cloudtrail', () => {
             {
               IncludeManagementEvents: true,
               ReadWriteType: 'WriteOnly',
+            },
+          ],
+        });
+      });
+
+      test('exclude management events', () => {
+        const stack = getTestStack();
+        const bucket = new s3.Bucket(stack, 'testBucket', { bucketName: 'test-bucket' });
+        const cloudTrail = new Trail(stack, 'MyAmazingCloudTrail');
+        cloudTrail.addS3EventSelector([{ bucket }], {
+          excludeManagementEventSources: [
+            ManagementEventSources.KMS,
+            ManagementEventSources.RDS_DATA_API,
+          ],
+        });
+        cloudTrail.addS3EventSelector([{ bucket }], {
+          excludeManagementEventSources: [],
+        });
+
+        expect(stack).toHaveResourceLike('AWS::CloudTrail::Trail', {
+          EventSelectors: [
+            {
+              DataResources: [{
+                Type: 'AWS::S3::Object',
+                Values: [{
+                  'Fn::Join': [
+                    '',
+                    [
+                      { 'Fn::GetAtt': ['testBucketDF4D7D1A', 'Arn'] },
+                      '/',
+                    ],
+                  ],
+                }],
+              }],
+              ExcludeManagementEventSources: [
+                'kms.amazonaws.com',
+                'rdsdata.amazonaws.com',
+              ],
+            },
+            {
+              DataResources: [{
+                Type: 'AWS::S3::Object',
+                Values: [{
+                  'Fn::Join': [
+                    '',
+                    [
+                      { 'Fn::GetAtt': ['testBucketDF4D7D1A', 'Arn'] },
+                      '/',
+                    ],
+                  ],
+                }],
+              }],
+              ExcludeManagementEventSources: [],
             },
           ],
         });
