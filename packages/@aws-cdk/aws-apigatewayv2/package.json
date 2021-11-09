@@ -32,14 +32,7 @@
         ]
       }
     },
-    "projectReferences": true,
-    "metadata": {
-      "jsii": {
-        "rosetta": {
-          "strict": true
-        }
-      }
-    }
+    "projectReferences": true
   },
   "repository": {
     "type": "git",
