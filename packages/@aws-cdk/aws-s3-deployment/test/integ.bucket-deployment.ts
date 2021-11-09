@@ -72,4 +72,4 @@ new TestBucketDeployment(app, 'test-bucket-deployments-2');
 
 app.synth();
 
-console.warn(app.synth().tree());
+console.error(app.synth().tree());
