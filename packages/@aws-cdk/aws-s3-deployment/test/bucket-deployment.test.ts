@@ -276,7 +276,7 @@ test('deploy from a local .zip file when efs is enabled', () => {
     },
   });
 
-  expect(stack).toCountResources('AWS::Logs::LogGroup', 1);
+  expect(stack).toHaveResource('AWS::Logs::LogGroup', {});
 });
 
 test('honors passed asset options', () => {
@@ -881,7 +881,7 @@ test('deployment allows vpc to be implicitly supplied to lambda', () => {
     },
   });
 
-  expect(stack).toCountResources('AWS::Logs::LogGroup', 1);
+  expect(stack).toHaveResource('AWS::Logs::LogGroup', {});
 });
 
 test('deployment allows vpc and subnets to be implicitly supplied to lambda', () => {
@@ -925,5 +925,5 @@ test('deployment allows vpc and subnets to be implicitly supplied to lambda', ()
     },
   });
 
-  expect(stack).toCountResources('AWS::Logs::LogGroup', 1);
+  expect(stack).toHaveResource('AWS::Logs::LogGroup', {});
 });
