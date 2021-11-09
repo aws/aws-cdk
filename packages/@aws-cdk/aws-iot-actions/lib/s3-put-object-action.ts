@@ -2,12 +2,13 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as iot from '@aws-cdk/aws-iot';
 import * as s3 from '@aws-cdk/aws-s3';
 import { kebab as toKebabCase } from 'case';
+import { CommonActionProps } from './private/common-action-props';
 import { singletonActionRole } from './private/role';
 
 /**
  * Configuration properties of an action for s3.
  */
-export interface S3PutObjectActionProps {
+export interface S3PutObjectActionProps extends CommonActionProps {
   /**
    * The Amazon S3 canned ACL that controls access to the object identified by the object key.
    * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/acl-overview.html#canned-acl
@@ -25,13 +26,6 @@ export interface S3PutObjectActionProps {
    * @default '${topic()}/${timestamp()}'
    */
   readonly key?: string;
-
-  /**
-   * The IAM role that allows access to the S3.
-   *
-   * @default a new role will be created
-   */
-  readonly role?: iam.IRole;
 }
 
 /**
