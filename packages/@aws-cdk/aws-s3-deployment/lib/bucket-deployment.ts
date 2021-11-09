@@ -6,6 +6,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
+import * as logs from '@aws-cdk/aws-logs';
 import { AwsCliLayer } from '@aws-cdk/lambda-layer-awscli';
 import { kebab as toKebabCase } from 'case';
 import { Construct } from 'constructs';
@@ -216,9 +217,11 @@ export interface BucketDeploymentProps {
    * Where in the VPC to place the deployment lambda handler.
    * Only used if 'vpc' is supplied.
    *
-   * @default - the Vpc default strategy if not specified
+   * @default RetentionDays.TWO_YEARS
    */
   readonly vpcSubnets?: ec2.SubnetSelection;
+
+  readonly logGroupRetention?: logs.RetentionDays;
 }
 
 /**
@@ -297,6 +300,11 @@ export class BucketDeployment extends CoreConstruct {
 
     const handlerRole = handler.role;
     if (!handlerRole) { throw new Error('lambda.SingletonFunction should have created a Role'); }
+
+    new logs.LogGroup(this, 'CustomResourceHandlerLogGroup', {
+      logGroupName: `/aws/lambda/${handler.functionName}`,
+      retention: props.logGroupRetention ?? logs.RetentionDay.TWO_YEARS,
+    });
 
     const sources: SourceConfig[] = props.sources.map((source: ISource) => source.bind(this, { handlerRole }));
 
