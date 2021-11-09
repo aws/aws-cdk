@@ -297,12 +297,6 @@ export class QueueExtension extends ServiceExtension {
     }
     this.parentService.enableAutoScalingPolicy();
 
-    this.logGroup = new logs.LogGroup(this.scope, `${this.parentService.id}-BackLogPerTaskCalculatorLogs`, {
-      logGroupName: `${this.parentService.id}-queue-autoscaling-logs`,
-      removalPolicy: cdk.RemovalPolicy.DESTROY,
-      retention: logs.RetentionDays.THREE_DAYS,
-    });
-
     this.createLambdaFunction(service);
   }
 
@@ -371,6 +365,12 @@ export class QueueExtension extends ServiceExtension {
     new events.Rule(this.scope, 'BacklogPerTaskScheduledRule', {
       schedule: events.Schedule.rate(cdk.Duration.seconds(60)),
       targets: [new events_targets.LambdaFunction(backLogPerTaskCalculator)],
+    });
+
+    this.logGroup = new logs.LogGroup(this.scope, `${this.parentService.id}-BackLogPerTaskCalculatorLogs`, {
+      logGroupName: `/aws/lambda/${backLogPerTaskCalculator.functionName}`,
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      retention: logs.RetentionDays.THREE_DAYS,
     });
   }
 
