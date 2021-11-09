@@ -679,7 +679,7 @@ describe('portfolio associations and product constraints', () => {
       expect(() => {
         portfolio.setLaunchRole(product, launchRole);
       }).toThrowError(/Cannot set multiple launch roles for association/);
-    });
+    }),
 
     test('fails to add multiple set local launch roles - local launch role first', () => {
       portfolio.setLocalLaunchRoleName(product, 'LaunchRole');
@@ -687,7 +687,7 @@ describe('portfolio associations and product constraints', () => {
       expect(() => {
         portfolio.setLocalLaunchRole(product, launchRole);
       }).toThrowError(/Cannot set multiple launch roles for association/);
-    });
+    }),
 
     test('fails to add multiple set local launch roles - local launch role name first', () => {
       portfolio.setLocalLaunchRole(product, launchRole);
@@ -695,7 +695,7 @@ describe('portfolio associations and product constraints', () => {
       expect(() => {
         portfolio.setLocalLaunchRoleName(product, 'LaunchRole');
       }).toThrowError(/Cannot set multiple launch roles for association/);
-    });
+    }),
 
     test('fails to add multiple set launch roles - local launch role second', () => {
       portfolio.setLaunchRole(product, launchRole);
@@ -703,7 +703,7 @@ describe('portfolio associations and product constraints', () => {
       expect(() => {
         portfolio.setLocalLaunchRole(product, launchRole);
       }).toThrowError(/Cannot set multiple launch roles for association/);
-    });
+    }),
 
     test('fails to add multiple set launch roles - local launch role second', () => {
       portfolio.setLaunchRole(product, launchRole);
@@ -711,7 +711,7 @@ describe('portfolio associations and product constraints', () => {
       expect(() => {
         portfolio.setLocalLaunchRoleName(product, 'LaunchRole');
       }).toThrowError(/Cannot set multiple launch roles for association/);
-    });
+    }),
 
     test('fails to set launch role if stackset rule is already defined', () => {
       portfolio.deployWithStackSets(product, {
