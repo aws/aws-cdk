@@ -420,3 +420,36 @@ template.hasResourceProperties('Foo::Bar', expected);
 fredCapture.asArray(); // returns ["Flob", "Cat"]
 waldoCapture.asString(); // returns "Qux"
 ```
+
+When multiple resources match the given condition, each `Capture` defined in
+the condition will capture all matching values. They can be paged through using
+the `next()` API. The following example illustrates this -
+
+```ts
+// Given a template -
+// {
+//   "Resources": {
+//     "MyBar": {
+//       "Type": "Foo::Bar",
+//       "Properties": {
+//         "Fred": "Flob",
+//       }
+//     },
+//     "MyBaz": {
+//       "Type": "Foo::Bar",
+//       "Properties": {
+//         "Fred": "Quib",
+//       }
+//     }
+//   }
+// }
+
+const fredCapture = new Capture();
+template.hasResourceProperties('Foo::Bar', {
+  Fred: fredCapture,
+});
+
+fredCapture.asString(); // returns "Flob"
+fredCapture.next();     // returns true
+fredCapture.asString(); // returns "Quib"
+```
