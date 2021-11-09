@@ -27,6 +27,7 @@ import {
   Duration,
   Fn,
   IConstruct,
+  RemovalPolicy,
   SecretValue,
   Size,
   SizeRoundingBehavior,
@@ -55,6 +56,20 @@ declare const stack: Stack;
 
 declare class MyStack extends Stack {}
 declare class YourStack extends Stack {}
+
+class StackThatProvidesABucket extends Stack {
+  public readonly bucket!: s3.IBucket;
+}
+
+interface StackThatExpectsABucketProps extends StackProps {
+  readonly bucket: s3.IBucket;
+}
+
+class StackThatExpectsABucket extends Stack {
+  constructor(scope: Construct, id: string, props: StackThatExpectsABucketProps) {
+    super(scope, id, props);
+  }
+}
 
 class fixture$construct extends Construct {
   public constructor(scope: Construct, id: string) {

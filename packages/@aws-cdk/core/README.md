@@ -383,7 +383,11 @@ examples ensures that only a single SNS topic is defined:
 function getOrCreate(scope: Construct): sns.Topic {
   const stack = Stack.of(scope);
   const uniqueid = 'GloballyUniqueIdForSingleton'; // For example, a UUID from `uuidgen`
-  return stack.node.tryFindChild(uniqueid) as sns.Topic  ?? new sns.Topic(stack, uniqueid);
+  const existing = stack.node.tryFindChild(uniqueid);
+  if (existing) {
+    return existing as sns.Topic;
+  }
+  return new sns.Topic(stack, uniqueid);
 }
 ```
 
@@ -816,6 +820,8 @@ since the top-level key is an unresolved token. The call to `findInMap` will ret
 `{ "Fn::FindInMap": [ "RegionTable", { "Ref": "AWS::Region" }, "regionName" ] }`.
 
 ```ts
+declare const regionTable: CfnMapping;
+
 regionTable.findInMap(Aws.REGION, 'regionName');
 ```
 
