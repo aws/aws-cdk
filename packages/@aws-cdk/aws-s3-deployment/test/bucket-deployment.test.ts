@@ -4,9 +4,9 @@ import * as cloudfront from '@aws-cdk/aws-cloudfront';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
+import { testFutureBehavior } from '@aws-cdk/cdk-build-tools/lib/feature-flag';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import { testFutureBehavior } from '@aws-cdk/cdk-build-tools/lib/feature-flag';
 import * as s3deploy from '../lib';
 
 /* eslint-disable max-len */
