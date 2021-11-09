@@ -2234,16 +2234,7 @@ describe('function', () => {
       handler: 'index.handler',
       architecture: lambda.Architecture.ARM_64,
     });
-    expect(fn.architecture.name).toEqual('arm64');
-  });
-  test('Architecture returns amd64 when no architecture is set', () => {
-    const stack = new cdk.Stack();
-    const fn = new lambda.Function(stack, 'MyFunction', {
-      code: lambda.Code.fromInline('foo'),
-      runtime: lambda.Runtime.NODEJS_14_X,
-      handler: 'index.handler',
-    });
-    expect(fn.architecture.name).toEqual('amd64');
+    expect(fn.architecture?.name).toMatch('arm64');
   });
 });
 

@@ -576,7 +576,7 @@ export class Function extends FunctionBase {
   /**
    * The architecture of this Lambda Function (this is an optional attribute and defaults to X86_64).
    */
-  public readonly architecture: Architecture;
+  public readonly architecture?: Architecture;
   public readonly permissionsNode = this.node;
 
 
