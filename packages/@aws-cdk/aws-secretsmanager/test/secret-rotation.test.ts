@@ -345,3 +345,37 @@ test('rotation function name does not exceed 64 chars', () => {
     },
   });
 });
+
+
+test('with interface vpc endpoint', () => {
+  // GIVEN
+  const endpoint = new ec2.InterfaceVpcEndpoint(stack, 'SecretsManagerEndpoint', {
+    service: ec2.InterfaceVpcEndpointAwsService.SECRETS_MANAGER,
+    vpc,
+  });
+
+  // WHEN
+  new secretsmanager.SecretRotation(stack, 'SecretRotation', {
+    application: secretsmanager.SecretRotationApplication.MYSQL_ROTATION_SINGLE_USER,
+    secret,
+    target,
+    vpc,
+    endpoint,
+  });
+
+  // THEN
+  expect(stack).toHaveResourceLike('AWS::Serverless::Application', {
+    Parameters: {
+      endpoint: {
+        'Fn::Join': ['', [
+          'https://',
+          { Ref: 'SecretsManagerEndpoint5E83C66B' },
+          '.secretsmanager.',
+          { Ref: 'AWS::Region' },
+          '.',
+          { Ref: 'AWS::URLSuffix' },
+        ]],
+      },
+    },
+  });
+});

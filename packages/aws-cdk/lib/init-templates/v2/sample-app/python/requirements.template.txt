@@ -1,3 +1,2 @@
 aws-cdk-lib==%cdk-version%
-aws-cdk.assertions-alpha==%cdk-version%
-constructs>=%constructs-version%
+constructs%constructs-version%

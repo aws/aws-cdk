@@ -174,6 +174,7 @@ new lambda.NodejsFunction(this, 'my-handler', {
     minify: true, // minify code, defaults to false
     sourceMap: true, // include source map, defaults to false
     sourceMapMode: SourceMapMode.INLINE, // defaults to SourceMapMode.DEFAULT
+    sourcesContent: false, // do not include original source into source map, defaults to true
     target: 'es2020', // target environment for the generated JavaScript code
     loader: { // Use the 'dataurl' loader for '.png' files
       '.png': 'dataurl',
@@ -283,3 +284,20 @@ should also have `npm`, `yarn` or `pnpm` depending on the lock file you're using
 
 Use the [default image provided by `@aws-cdk/aws-lambda-nodejs`](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-lambda-nodejs/lib/Dockerfile)
 as a source of inspiration.
+
+## Asset hash
+
+By default the asset hash will be calculated based on the bundled output (`AssetHashType.OUTPUT`).
+
+Use the `assetHash` prop to pass a custom hash:
+
+```ts
+new lambda.NodejsFunction(this, 'my-handler', {
+  bundling: {
+    assetHash: 'my-custom-hash',
+  },
+});
+```
+
+If you chose to customize the hash, you will need to make sure it is updated every time the asset
+changes, or otherwise it is possible that some deployments will not be invalidated.
