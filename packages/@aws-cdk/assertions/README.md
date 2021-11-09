@@ -3,13 +3,7 @@
 
 ---
 
-![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
-
-> The APIs of higher level constructs in this module are experimental and under active development.
-> They are subject to non-backward compatible changes or removal in any future version. These are
-> not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be
-> announced in the release notes. This means that while you may use them, you may need to update
-> your source code when upgrading to a newer version of this package.
+![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
 
@@ -45,9 +39,11 @@ template.
 ```ts
 const expected = {
   Resources: {
-    Type: 'Foo::Bar',
-    Properties: {
-      Baz: 'Qux',
+    BarLogicalId: {
+      Type: 'Foo::Bar',
+      Properties: {
+        Baz: 'Qux',
+      },
     },
   },
 };
@@ -62,7 +58,7 @@ to change this.
 
 Snapshot testing is a common technique to store a snapshot of the output and
 compare it during future changes. Since CloudFormation templates are human readable,
-they are a good target for åßsnapshot testing.
+they are a good target for snapshot testing.
 
 The `toJSON()` method on the `Template` can be used to produce a well formatted JSON
 of the CloudFormation template that can be used as a snapshot.

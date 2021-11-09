@@ -168,10 +168,19 @@ export interface DefaultStackSynthesizerProps {
   /**
    * bucketPrefix to use while storing S3 Assets
    *
-   *
    * @default - DefaultStackSynthesizer.DEFAULT_FILE_ASSET_PREFIX
    */
   readonly bucketPrefix?: string;
+
+  /**
+   * A prefix to use while tagging and uploading Docker images to ECR.
+   *
+   * This does not add any separators - the source hash will be appended to
+   * this string directly.
+   *
+   * @default - DefaultStackSynthesizer.DEFAULT_DOCKER_ASSET_PREFIX
+   */
+  readonly dockerTagPrefix?: string;
 
   /**
    * Bootstrap stack version SSM parameter.
@@ -242,6 +251,10 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
    * Default file asset prefix
    */
   public static readonly DEFAULT_FILE_ASSET_PREFIX = '';
+  /**
+   * Default Docker asset prefix
+   */
+  public static readonly DEFAULT_DOCKER_ASSET_PREFIX = '';
 
   /**
    * Default bootstrap stack version SSM parameter.
@@ -258,6 +271,7 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
   private lookupRoleArn?: string;
   private qualifier?: string;
   private bucketPrefix?: string;
+  private dockerTagPrefix?: string;
   private bootstrapStackVersionSsmParameter?: string;
 
   private readonly files: NonNullable<cxschema.AssetManifest['files']> = {};
@@ -319,6 +333,7 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
     this.imageAssetPublishingRoleArn = specialize(this.props.imageAssetPublishingRoleArn ?? DefaultStackSynthesizer.DEFAULT_IMAGE_ASSET_PUBLISHING_ROLE_ARN);
     this.lookupRoleArn = specialize(this.props.lookupRoleArn ?? DefaultStackSynthesizer.DEFAULT_LOOKUP_ROLE_ARN);
     this.bucketPrefix = specialize(this.props.bucketPrefix ?? DefaultStackSynthesizer.DEFAULT_FILE_ASSET_PREFIX);
+    this.dockerTagPrefix = specialize(this.props.dockerTagPrefix ?? DefaultStackSynthesizer.DEFAULT_DOCKER_ASSET_PREFIX);
     this.bootstrapStackVersionSsmParameter = replaceAll(
       this.props.bootstrapStackVersionSsmParameter ?? DefaultStackSynthesizer.DEFAULT_BOOTSTRAP_STACK_VERSION_SSM_PARAMETER,
       '${Qualifier}',
@@ -372,7 +387,7 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
     assertBound(this.repositoryName);
     validateDockerImageAssetSource(asset);
 
-    const imageTag = asset.sourceHash;
+    const imageTag = this.dockerTagPrefix + asset.sourceHash;
 
     // Add to manifest
     this.dockerImages[asset.sourceHash] = {

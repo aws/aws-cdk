@@ -65,8 +65,6 @@ describe.each(['1', '2'])('v%s tests', (majorVersion) => {
   });
 
   test('verify "future flags" are added to cdk.json', async () => {
-    // This is a lot to test, and it can be slow-ish, especially when ran with other tests.
-    jest.setTimeout(30_000);
 
     for (const templ of await availableInitTemplates()) {
       for (const lang of templ.languages) {
@@ -95,7 +93,9 @@ describe.each(['1', '2'])('v%s tests', (majorVersion) => {
         });
       }
     }
-  });
+  },
+  // This is a lot to test, and it can be slow-ish, especially when ran with other tests.
+  30_000);
 });
 
 describe('constructs version', () => {
@@ -134,10 +134,10 @@ describe('constructs version', () => {
   cliTest('Python', async (workDir) => {
     await cliInit('app', 'python', false, true, workDir);
 
-    expect(await fs.pathExists(path.join(workDir, 'setup.py'))).toBeTruthy();
-    const setupPy = (await fs.readFile(path.join(workDir, 'setup.py'), 'utf8')).split(/\r?\n/);
+    expect(await fs.pathExists(path.join(workDir, 'requirements.txt'))).toBeTruthy();
+    const setupPy = (await fs.readFile(path.join(workDir, 'requirements.txt'), 'utf8')).split(/\r?\n/);
     // return RegExpMatchArray (result of line.match()) for every lines that match re.
-    const matches = setupPy.map(line => line.match(/^\s*"constructs(.*)",/))
+    const matches = setupPy.map(line => line.match(/^constructs(.*)/))
       .filter(l => l);
 
     expect(matches.length).toEqual(1);
