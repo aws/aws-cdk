@@ -309,7 +309,7 @@ export class BucketDeployment extends CoreConstruct {
 
     new logs.LogGroup(this, 'CustomResourceHandlerLogGroup', {
       logGroupName: `/aws/lambda/${handler.functionName}`,
-      retention: props.logGroupRetention ?? logs.RetentionDay.TWO_YEARS,
+      retention: props.logGroupRetention ?? logs.RetentionDays.TWO_YEARS,
     });
 
     const sources: SourceConfig[] = props.sources.map((source: ISource) => source.bind(this, { handlerRole }));
