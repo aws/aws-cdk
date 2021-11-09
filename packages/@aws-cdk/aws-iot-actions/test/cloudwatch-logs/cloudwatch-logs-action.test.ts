@@ -11,7 +11,7 @@ test('Default cloudwatch logs action', () => {
   const topicRule = new iot.TopicRule(stack, 'MyTopicRule', {
     sql: iot.IotSql.fromStringAsVer20160323("SELECT topic(2) as device_id FROM 'device/+/data'"),
   });
-  const logGroup = new logs.LogGroup(stack, 'MyLogGroup');
+  const logGroup = logs.LogGroup.fromLogGroupArn(stack, 'my-log-group', 'arn:aws:logs:us-east-1:123456789012:log-group:my-log-group');
 
   // WHEN
   topicRule.addAction(
@@ -24,7 +24,7 @@ test('Default cloudwatch logs action', () => {
       Actions: [
         {
           CloudwatchLogs: {
-            LogGroupName: { Ref: 'MyLogGroup5C0DAD85' },
+            LogGroupName: 'my-log-group',
             RoleArn: {
               'Fn::GetAtt': [
                 'MyTopicRuleTopicRuleActionRoleCE2D05DA',
@@ -58,16 +58,12 @@ test('Default cloudwatch logs action', () => {
         {
           Action: ['logs:CreateLogStream', 'logs:PutLogEvents'],
           Effect: 'Allow',
-          Resource: {
-            'Fn::GetAtt': ['MyLogGroup5C0DAD85', 'Arn'],
-          },
+          Resource: 'arn:aws:logs:us-east-1:123456789012:log-group:my-log-group:*',
         },
         {
           Action: 'logs:DescribeLogStreams',
           Effect: 'Allow',
-          Resource: {
-            'Fn::GetAtt': ['MyLogGroup5C0DAD85', 'Arn'],
-          },
+          Resource: 'arn:aws:logs:us-east-1:123456789012:log-group:my-log-group:*',
         },
       ],
       Version: '2012-10-17',
@@ -85,7 +81,7 @@ test('can set role', () => {
   const topicRule = new iot.TopicRule(stack, 'MyTopicRule', {
     sql: iot.IotSql.fromStringAsVer20160323("SELECT topic(2) as device_id FROM 'device/+/data'"),
   });
-  const logGroup = new logs.LogGroup(stack, 'MyLogGroup');
+  const logGroup = logs.LogGroup.fromLogGroupArn(stack, 'my-log-group', 'arn:aws:logs:us-east-1:123456789012:log-group:my-log-group');
   const role = iam.Role.fromRoleArn(stack, 'MyRole', 'arn:aws:iam::123456789012:role/ForTest');
 
   // WHEN
@@ -101,48 +97,26 @@ test('can set role', () => {
       Actions: [
         {
           CloudwatchLogs: {
-            LogGroupName: { Ref: 'MyLogGroup5C0DAD85' },
+            LogGroupName: 'my-log-group',
             RoleArn: 'arn:aws:iam::123456789012:role/ForTest',
           },
         },
       ],
     },
   });
-});
 
-test('The specified role is added a policy needed for sending data to logs', () => {
-  // GIVEN
-  const stack = new cdk.Stack();
-  const topicRule = new iot.TopicRule(stack, 'MyTopicRule', {
-    sql: iot.IotSql.fromStringAsVer20160323("SELECT topic(2) as device_id FROM 'device/+/data'"),
-  });
-  const logGroup = new logs.LogGroup(stack, 'MyLogGroup');
-  const role = iam.Role.fromRoleArn(stack, 'MyRole', 'arn:aws:iam::123456789012:role/ForTest');
-
-  // WHEN
-  topicRule.addAction(
-    new actions.CloudWatchLogsAction(logGroup, {
-      role,
-    }),
-  );
-
-  // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
       Statement: [
         {
           Action: ['logs:CreateLogStream', 'logs:PutLogEvents'],
           Effect: 'Allow',
-          Resource: {
-            'Fn::GetAtt': ['MyLogGroup5C0DAD85', 'Arn'],
-          },
+          Resource: 'arn:aws:logs:us-east-1:123456789012:log-group:my-log-group:*',
         },
         {
           Action: 'logs:DescribeLogStreams',
           Effect: 'Allow',
-          Resource: {
-            'Fn::GetAtt': ['MyLogGroup5C0DAD85', 'Arn'],
-          },
+          Resource: 'arn:aws:logs:us-east-1:123456789012:log-group:my-log-group:*',
         },
       ],
       Version: '2012-10-17',
@@ -152,16 +126,14 @@ test('The specified role is added a policy needed for sending data to logs', () 
   });
 });
 
-
 test('When multiple actions are omitted role property, the actions use same one role', () => {
-  // GIVEN
   // GIVEN
   const stack = new cdk.Stack();
   const topicRule = new iot.TopicRule(stack, 'MyTopicRule', {
     sql: iot.IotSql.fromStringAsVer20160323("SELECT topic(2) as device_id FROM 'device/+/data'"),
   });
-  const logGroup1 = new logs.LogGroup(stack, 'MyLogGroup1');
-  const logGroup2 = new logs.LogGroup(stack, 'MyLogGroup2');
+  const logGroup1 = logs.LogGroup.fromLogGroupArn(stack, 'my-log-group1', 'arn:aws:logs:us-east-1:123456789012:log-group:my-log-group1');
+  const logGroup2 = logs.LogGroup.fromLogGroupArn(stack, 'my-log-group2', 'arn:aws:logs:us-east-1:123456789012:log-group:my-log-group2');
 
   // WHEN
   topicRule.addAction(new actions.CloudWatchLogsAction(logGroup1));
@@ -173,7 +145,7 @@ test('When multiple actions are omitted role property, the actions use same one 
       Actions: [
         {
           CloudwatchLogs: {
-            LogGroupName: { Ref: 'MyLogGroup14A6E382A' },
+            LogGroupName: 'my-log-group1',
             RoleArn: {
               'Fn::GetAtt': [
                 'MyTopicRuleTopicRuleActionRoleCE2D05DA',
@@ -184,7 +156,7 @@ test('When multiple actions are omitted role property, the actions use same one 
         },
         {
           CloudwatchLogs: {
-            LogGroupName: { Ref: 'MyLogGroup279D6359D' },
+            LogGroupName: 'my-log-group2',
             RoleArn: {
               'Fn::GetAtt': [
                 'MyTopicRuleTopicRuleActionRoleCE2D05DA',
