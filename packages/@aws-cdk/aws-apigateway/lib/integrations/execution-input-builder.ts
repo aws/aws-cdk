@@ -113,20 +113,6 @@ export class ExecutionInputBuilder {
     this._endStr = '}';
   }
 
-  // /**
-  //     * set contextStr
-  //     * @param _context
-  //     * @returns ExecutionInputBuilder
-  //     */
-  // public withContext(_context: string | undefined): ExecutionInputBuilder {
-  //   if (_context == null) {
-  //     this._contextStr = '';
-  //     return this;
-  //   }
-  //   this._contextStr = _context;
-  //   return this;
-  // }
-
   /**
       * set accountIdStr
       * @param _accountId
@@ -379,20 +365,6 @@ export class ExecutionInputBuilder {
     this._resourcePathStr = '"resourcePath":' + _resourcePath;
     return this;
   }
-
-  // /**
-  //     * set _endStr
-  //     * @param _end
-  //     * @returns ExecutionInputBuilder
-  //     */
-  // public withEnd(_end: string | undefined): ExecutionInputBuilder {
-  //   if ( _end == null) {
-  //     this._endStr = '';
-  //     return this;
-  //   }
-  //   this._endStr = _end;
-  //   return this;
-  // }
 
   /**
       * returns _bodystr

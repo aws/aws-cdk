@@ -131,11 +131,11 @@ describe('Step Functions api', () => {
             'Fn::Join': [
               '',
               [
-                "\n        #set($inputRoot = $input.path('$')) {\n            \"input\": \"$util.escapeJavaScript($input.json('$'))\",\n            \"stateMachineArn\": \"",
+                "\n    #set($inputRoot = $input.path('$')) {\n        \"input\": \"$util.escapeJavaScript($input.json('$'))\",\n        \"stateMachineArn\": \"",
                 {
                   Ref: 'StateMachine2E01A3A5',
                 },
-                '"\n          }',
+                '"\n      }',
               ],
             ],
           },

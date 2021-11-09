@@ -72,7 +72,6 @@ describe('StepFunctions', () => {
 
     //THEN
     expect(stack).toHaveResource('AWS::ApiGateway::Method', {
-    //   HttpMethod: 'GET',
       ResourceId: {
         'Fn::GetAtt': [
           'myrestapiBAC2BF45',
@@ -109,11 +108,11 @@ describe('StepFunctions', () => {
             'Fn::Join': [
               '',
               [
-                "\n        #set($inputRoot = $input.path('$')) {\n            \"input\": \"$util.escapeJavaScript($input.json('$'))\",\n            \"stateMachineArn\": \"",
+                "\n    #set($inputRoot = $input.path('$')) {\n        \"input\": \"$util.escapeJavaScript($input.json('$'))\",\n        \"stateMachineArn\": \"",
                 {
                   Ref: 'StateMachine2E01A3A5',
                 },
-                '"\n          }',
+                '"\n      }',
               ],
             ],
           },
@@ -175,11 +174,11 @@ describe('StepFunctions', () => {
             'Fn::Join': [
               '',
               [
-                "\n        #set($inputRoot = $input.path('$')) {\n            \"input\": \"$util.escapeJavaScript($input.json('$'))\",\n            \"stateMachineArn\": \"",
+                "\n    #set($inputRoot = $input.path('$')) {\n        \"input\": \"$util.escapeJavaScript($input.json('$'))\",\n        \"stateMachineArn\": \"",
                 {
                   Ref: 'StateMachine2E01A3A5',
                 },
-                '"\n          }',
+                '"\n      }',
               ],
             ],
           },
