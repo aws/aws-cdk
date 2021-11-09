@@ -220,6 +220,16 @@ export class DynamoAttributeValue {
   }
 
   /**
+   * Sets an attribute of type List. For example:  "L": [ {"S": "Cookies"} , {"S": "Coffee"}, {"S", "Veggies"}]
+   *
+   * @param value Json path that specifies state input to be used
+   */
+  public static listFromJsonPath(value: string) {
+    validateJsonPath(value);
+    return new DynamoAttributeValue({ L: value });
+  }
+
+  /**
    * Sets an attribute of type Null. For example:  "NULL": true
    */
   public static fromNull(value: boolean) {
