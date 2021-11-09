@@ -14,7 +14,7 @@ describe('notification rule', () => {
 
     repository.notifyOnPullRequestCreated('NotifyOnPullRequestCreated', target);
 
-    repository.notifiyOnPullRequestMerged('NotifyOnPullRequestMerged', target);
+    repository.notifyOnPullRequestMerged('NotifyOnPullRequestMerged', target);
 
     expect(stack).toHaveResource('AWS::CodeStarNotifications::NotificationRule', {
       Name: 'MyCodecommitRepositoryNotifyOnPullRequestCreatedBB14EA32',
