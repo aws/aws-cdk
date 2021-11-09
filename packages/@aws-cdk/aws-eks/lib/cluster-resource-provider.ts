@@ -1,6 +1,7 @@
 import * as path from 'path';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
+import * as kms from '@aws-cdk/aws-kms';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { Duration, NestedStack, Stack } from '@aws-cdk/core';
 import * as cr from '@aws-cdk/custom-resources';
@@ -34,6 +35,11 @@ export interface ClusterResourceProviderProps {
    * Environment to add to the handler.
    */
   readonly environment?: { [key: string]: string };
+
+  /**
+   * AWS KMS CMK used to encrypt environment
+   */
+  readonly environmentEncryption?: kms.IKey;
 
   /**
    * An AWS Lambda layer that includes the NPM dependency `proxy-agent`.
@@ -81,6 +87,7 @@ export class ClusterResourceProvider extends NestedStack {
       description: 'onEvent handler for EKS cluster resource provider',
       runtime: HANDLER_RUNTIME,
       environment: props.environment,
+      environmentEncryption: props.environmentEncryption,
       handler: 'index.onEvent',
       timeout: Duration.minutes(1),
       vpc: props.subnets ? props.vpc : undefined,
@@ -95,6 +102,7 @@ export class ClusterResourceProvider extends NestedStack {
       description: 'isComplete handler for EKS cluster resource provider',
       runtime: HANDLER_RUNTIME,
       environment: props.environment,
+      environmentEncryption: props.environmentEncryption,
       handler: 'index.isComplete',
       timeout: Duration.minutes(1),
       vpc: props.subnets ? props.vpc : undefined,
