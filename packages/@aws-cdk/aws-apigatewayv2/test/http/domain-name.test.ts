@@ -213,23 +213,17 @@ describe('DomainName', () => {
 
   });
 
-  test('domain with mutual tls configuration', () => {
+
+  test('accepts a mutual TLS configuration', () => {
     // GIVEN
     const stack = new Stack();
-    const bucket = Bucket.fromBucketName(stack, 'testBucket', 'exampleBucket');
+    const bucket = Bucket.fromBucketName(stack, 'testBucket', 'example-bucket');
 
     // WHEN
-    const domainNameConfigurations = new Array<DomainNameConfiguration>();
-    const dnConfig: DomainNameConfiguration = {
-      certificate: Certificate.fromCertificateArn(stack, 'cert', certArn),
-      endpointType: EndpointType.REGIONAL,
-    };
-    domainNameConfigurations.push(dnConfig);
-
     new DomainName(stack, 'DomainName', {
       domainName,
-      domainNameConfigurations,
-      mutualTlsConfiguration: {
+      certificate: Certificate.fromCertificateArn(stack, 'cert', certArn),
+      mtls: {
         bucket,
         key: 'someca.pem',
       },
@@ -245,11 +239,45 @@ describe('DomainName', () => {
         },
       ],
       MutualTlsAuthentication: {
-        TruststoreUri: 's3://exampleBucket/someca.pem',
+        TruststoreUri: 's3://example-bucket/someca.pem',
       },
     });
   });
 
+  
+  test('mTLS should allow versions to be set on the s3 bucket', () => {
+    // GIVEN
+    const stack = new Stack();
+    const bucket = Bucket.fromBucketName(stack, 'testBucket', 'example-bucket');
+
+    // WHEN
+    new DomainName(stack, 'DomainName', {
+      domainName,
+      certificate: Certificate.fromCertificateArn(stack, 'cert', certArn),
+      mtls: {
+        bucket,
+        key: 'someca.pem',
+        version: 'version',
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::DomainName', {
+      DomainName: 'example.com',
+      DomainNameConfigurations: [
+        {
+          CertificateArn: 'arn:aws:acm:us-east-1:111111111111:certificate',
+          EndpointType: 'REGIONAL',
+        },
+      ],
+      MutualTlsAuthentication: {
+        TruststoreUri: 's3://example-bucket/someca.pem',
+        TruststoreVersion: 'version',
+      },
+    });
+  });
+  
+  
   test('domain with mutual tls configuration and ownership cert', () => {
     // GIVEN
     const stack = new Stack();

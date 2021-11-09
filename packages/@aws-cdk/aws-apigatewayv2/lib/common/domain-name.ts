@@ -112,38 +112,12 @@ export interface DomainNameConfiguration {
    * Certificate can be both ACM issued or imported.
    */
   readonly certificate: ICertificate;
-
+  
   /**
-   * The user-friendly name of the certificate that will be used by the endpoint for this domain name.
-   * This property is optional and is helpful if you have too many certificates and it is easier to remember
-   * certificates by some name rather that the domain they are valid for.
-   * Not specifying this property has no impact on the domain name functionality.
-   * @default null
+   * The mutual TLS authentication configuration for a custom domain name.
+   * @default - mTLS is not configured.
    */
-  readonly certificateName?: string;
-
-  /**
-    * The type of endpoint for this DomainName.
-    * @default REGIONAL
-    */
-  readonly endpointType?: EndpointType;
-
-  /**
-    * The public certificate issued by ACM to validate ownership of your custom domain.
-    * Optional property, only required when you configure mutual TLS while using an ACM imported or private CA
-    * certificate as 'certificate'. In such a situation, ownershipVerificationCertificate acts as the ACM issued
-    * certificate that verifies the ownership of the custom domain with which 'certificate' is associated.
-    * Since this property is not 'required', the default is null when this property is not set.
-    * @default null
-    */
-  readonly ownershipVerificationCertificate?: ICertificate;
-
-  /**
-    * The Transport Layer Security (TLS) version + cipher suite for this domain name.
-    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-domainname.html
-    * @default SecurityPolicy.TLS_1_2
-    */
-  readonly securityPolicy?: SecurityPolicy;
+  readonly mtls?: MTLSConfig
 }
 
 /**
@@ -156,7 +130,7 @@ export interface MTLSConfig {
   readonly bucket: IBucket;
 
   /**
-   * The key in S3 to look at for the trust store.
+   * The key in S3 to look at for the trust store
    */
   readonly key: string;
 
@@ -197,18 +171,15 @@ export class DomainName extends Resource implements IDomainName {
       throw new Error('empty string for domainName not allowed');
     }
 
-    // domain name configuration null check
-    if (!props.domainNameConfigurations) {
-      throw new Error('empty domain name configurations are not allowed');
-    } else {
-      this.setDomainNameConfigurations(...props.domainNameConfigurations);
-    }
-
-    const mtlsConfig = this.configureMTLS(props.mutualTlsConfiguration);
-
+    const mtlsConfig = this.configureMTLS(props.mtls);
     const domainNameProps: CfnDomainNameProps = {
       domainName: props.domainName,
-      domainNameConfigurations: this.domainNameConfigurations,
+      domainNameConfigurations: [
+        {
+          certificateArn: props.certificate.certificateArn,
+          endpointType: 'REGIONAL',
+        },
+      ],
       mutualTlsAuthentication: mtlsConfig,
     };
     const resource = new CfnDomainName(this, 'Resource', domainNameProps);
@@ -237,6 +208,4 @@ export class DomainName extends Resource implements IDomainName {
       truststoreUri: mtlsConfig.bucket.s3UrlForObject(mtlsConfig.key),
       truststoreVersion: mtlsConfig.version,
     };
-  }
-
 }
