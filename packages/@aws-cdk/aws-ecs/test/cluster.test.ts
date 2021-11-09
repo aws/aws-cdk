@@ -2247,7 +2247,7 @@ test('can add ASG capacity via Capacity Provider by not specifying machineImageT
 
 });
 
-test('can get error when ASG Capacity Provider define capacityProviderName start with aws, ecs or faragte', () => {
+test('throws when ASG Capacity Provider with capacityProviderName starting with aws, ecs or faragte', () => {
   // GIVEN
   const app = new cdk.App();
   const stack = new cdk.Stack(app, 'test');
@@ -2269,7 +2269,6 @@ test('can get error when ASG Capacity Provider define capacityProviderName start
       capacityProviderName: 'awscp',
     });
 
-    // Ensure not added twice
     cluster.addAsgCapacityProvider(capacityProviderAl2);
   }).toThrow(/Invalid Capacity Provider Name: awscp, If a name is specified, it cannot start with aws, ecs, or fargate./);
 
@@ -2281,7 +2280,6 @@ test('can get error when ASG Capacity Provider define capacityProviderName start
       capacityProviderName: 'ecscp',
     });
 
-    // Ensure not added twice
     cluster.addAsgCapacityProvider(capacityProviderAl2);
   }).toThrow(/Invalid Capacity Provider Name: ecscp, If a name is specified, it cannot start with aws, ecs, or fargate./);
 });
