@@ -40,6 +40,7 @@ Higher level constructs for Websocket APIs | ![Experimental](https://img.shields
   - [VPC Link](#vpc-link)
   - [Private Integration](#private-integration)
 - [WebSocket API](#websocket-api)
+  - [Manage Connections Permission](#manage-connections-permission)
 
 ## Introduction
 
@@ -402,4 +403,23 @@ webSocketApi.addRoute('sendmessage', {
     handler: messageHandler,
   }),
 });
+```
+
+### Manage Connections Permission
+
+Grant permission to use API Gateway Management API of a WebSocket API by calling the `grantManageConnections` API.
+You can use Management API to send a callback message to a connected client, get connection information, or disconnect the client. Learn more at [Use @connections commands in your backend service](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-how-to-call-websocket-api-connections.html).
+
+```ts
+const lambda = new lambda.Function(this, 'lambda', { /* ... */ });
+
+const webSocketApi = new WebSocketApi(stack, 'mywsapi');
+const stage = new WebSocketStage(stack, 'mystage', {
+  webSocketApi,
+  stageName: 'dev',
+});
+// per stage permission
+stage.grantManageConnections(lambda);
+// for all the stages permission
+webSocketApi.grantManageConnections(lambda);
 ```
