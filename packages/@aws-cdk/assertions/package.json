@@ -73,12 +73,7 @@
     "@aws-cdk/cloud-assembly-schema": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
-    "colors": "^1.4.0",
-    "constructs": "^3.3.69",
-    "diff": "^5.0.0",
-    "fast-deep-equal": "^3.1.3",
-    "string-width": "^4.2.3",
-    "table": "^6.7.3"
+    "constructs": "^3.3.69"
   },
   "peerDependencies": {
     "@aws-cdk/cloud-assembly-schema": "0.0.0",
@@ -86,13 +81,6 @@
     "@aws-cdk/cx-api": "0.0.0",
     "constructs": "^3.3.69"
   },
-  "bundledDependencies": [
-    "colors",
-    "diff",
-    "fast-deep-equal",
-    "string-width",
-    "table"
-  ],
   "repository": {
     "url": "https://github.com/aws/aws-cdk.git",
     "type": "git",
