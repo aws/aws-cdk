@@ -57,9 +57,9 @@ class QueueHandler:
     queue_url = self.sqs.get_queue_url(QueueName=queueName)
     runningCount = 1 if count == 0 else count
 
-    def getBacklogPerTask(queue_url, runningCount):
+    def getBacklogPerTask():
       queueAttributes = self.sqs.get_queue_attributes(
-        QueueUrl=queue_url,
+        QueueUrl=queue_url['QueueUrl'],
         AttributeNames=['ApproximateNumberOfMessages']
       )
       numberOfMessages = int(queueAttributes['Attributes']['ApproximateNumberOfMessages'])
@@ -67,5 +67,5 @@ class QueueHandler:
 
     return {
       'queueName': queueName,
-      'backlogPerTask': getBacklogPerTask(queue_url['QueueUrl'], runningCount)
+      'backlogPerTask': getBacklogPerTask()
     }
