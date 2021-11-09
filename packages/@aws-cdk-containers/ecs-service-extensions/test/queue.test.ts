@@ -327,7 +327,9 @@ describe('queue', () => {
 
     const topicSubscription1 = new TopicSubscription({
       topic: new sns.Topic(stack, 'topic1'),
-      queue: new sqs.Queue(stack, 'myQueue'),
+      topicSubscriptionQueue: {
+        queue: new sqs.Queue(stack, 'myQueue'),
+      },
     });
     const topicSubscription2 = new TopicSubscription({
       topic: new sns.Topic(stack, 'topic2'),
@@ -501,7 +503,183 @@ describe('queue', () => {
         },
       ],
     });
+  });
 
+  test('should be able to add target tracking scaling policy for the SQS Queues', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
 
+    // WHEN
+    const environment = new Environment(stack, 'production');
+    const serviceDescription = new ServiceDescription();
+
+    serviceDescription.add(new Container({
+      cpu: 256,
+      memoryMiB: 512,
+      trafficPort: 80,
+      image: ecs.ContainerImage.fromRegistry('nathanpeck/name'),
+    }));
+
+    const topicSubscription1 = new TopicSubscription({
+      topic: new sns.Topic(stack, 'topic1'),
+      topicSubscriptionQueue: {
+        queue: new sqs.Queue(stack, 'myQueue'),
+        queueDelay: {
+          acceptableLatency: cdk.Duration.minutes(10),
+          messageProcessingTime: cdk.Duration.seconds(20),
+        },
+      },
+    });
+    const topicSubscription2 = new TopicSubscription({
+      topic: new sns.Topic(stack, 'topic2'),
+    });
+    serviceDescription.add(new QueueExtension({
+      subscriptions: [topicSubscription1, topicSubscription2],
+      eventsQueue: new sqs.Queue(stack, 'defQueue'),
+      eventsQueueDelay: {
+        acceptableLatency: cdk.Duration.minutes(5),
+        messageProcessingTime: cdk.Duration.seconds(20),
+      },
+    }));
+
+    new Service(stack, 'my-service', {
+      environment,
+      serviceDescription,
+      autoScaleTaskCount: {
+        maxTaskCount: 10,
+      },
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::ApplicationAutoScaling::ScalableTarget', {
+      MaxCapacity: 10,
+      MinCapacity: 1,
+    });
+
+    expect(stack).toHaveResourceLike('AWS::ApplicationAutoScaling::ScalingPolicy', {
+      PolicyType: 'TargetTrackingScaling',
+      TargetTrackingScalingPolicyConfiguration: {
+        CustomizedMetricSpecification: {
+          Dimensions: [
+            {
+              Name: 'QueueName',
+              Value: {
+                'Fn::GetAtt': [
+                  'defQueue1F91A65B',
+                  'QueueName',
+                ],
+              },
+            },
+          ],
+          MetricName: 'BacklogPerTask',
+          Namespace: 'Test',
+          Statistic: 'Average',
+          Unit: 'Count',
+        },
+        TargetValue: 15,
+      },
+    });
+
+    expect(stack).toHaveResourceLike('AWS::ApplicationAutoScaling::ScalingPolicy', {
+      PolicyType: 'TargetTrackingScaling',
+      TargetTrackingScalingPolicyConfiguration: {
+        CustomizedMetricSpecification: {
+          Dimensions: [
+            {
+              Name: 'QueueName',
+              Value: {
+                'Fn::GetAtt': [
+                  'myQueue4FDFF71C',
+                  'QueueName',
+                ],
+              },
+            },
+          ],
+          MetricName: 'BacklogPerTask',
+          Namespace: 'Test',
+          Statistic: 'Average',
+          Unit: 'Count',
+        },
+        TargetValue: 30,
+      },
+    });
+  });
+
+  test('should error when adding scaling policy if scaling target has not been configured', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const environment = new Environment(stack, 'production');
+    const serviceDescription = new ServiceDescription();
+
+    serviceDescription.add(new Container({
+      cpu: 256,
+      memoryMiB: 512,
+      trafficPort: 80,
+      image: ecs.ContainerImage.fromRegistry('nathanpeck/name'),
+    }));
+
+    const topicSubscription1 = new TopicSubscription({
+      topic: new sns.Topic(stack, 'topic1'),
+    });
+
+    serviceDescription.add(new QueueExtension({
+      subscriptions: [topicSubscription1],
+      eventsQueueDelay: {
+        acceptableLatency: cdk.Duration.minutes(10),
+        messageProcessingTime: cdk.Duration.seconds(20),
+      },
+    }));
+
+    // THEN
+    expect(() => {
+      new Service(stack, 'my-service', {
+        environment,
+        serviceDescription,
+      });
+    }).toThrow(/Auto scaling target for the service 'my-service' hasn't been configured. Please use Service construct to configure 'minTaskCount' and 'maxTaskCount'./);
+  });
+
+  test('should error when configuring auto scaling only for topic-specific queue', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const environment = new Environment(stack, 'production');
+    const serviceDescription = new ServiceDescription();
+
+    serviceDescription.add(new Container({
+      cpu: 256,
+      memoryMiB: 512,
+      trafficPort: 80,
+      image: ecs.ContainerImage.fromRegistry('nathanpeck/name'),
+    }));
+
+    const topicSubscription1 = new TopicSubscription({
+      topic: new sns.Topic(stack, 'topic1'),
+      topicSubscriptionQueue: {
+        queue: new sqs.Queue(stack, 'sign-up-queue'),
+        queueDelay: {
+          acceptableLatency: cdk.Duration.minutes(10),
+          messageProcessingTime: cdk.Duration.seconds(20),
+        },
+      },
+    });
+
+    serviceDescription.add(new QueueExtension({
+      subscriptions: [topicSubscription1],
+    }));
+
+    // THEN
+    expect(() => {
+      new Service(stack, 'my-service', {
+        environment,
+        serviceDescription,
+        autoScaleTaskCount: {
+          maxTaskCount: 10,
+        },
+      });
+    }).toThrow(/Cannot configure auto scaling only for the subscription queue of service 'my-service'. Need to specify 'eventsQueueDelay'./);
   });
 });
