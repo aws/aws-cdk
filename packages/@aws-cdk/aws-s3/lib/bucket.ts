@@ -105,9 +105,10 @@ export interface IBucket extends IResource {
 
   /**
    * The https URL of an S3 object. For example:
-   * @example https://s3.us-west-1.amazonaws.com/onlybucket
-   * @example https://s3.us-west-1.amazonaws.com/bucket/key
-   * @example https://s3.cn-north-1.amazonaws.com.cn/china-bucket/mykey
+   *
+   * - `https://s3.us-west-1.amazonaws.com/onlybucket`
+   * - `https://s3.us-west-1.amazonaws.com/bucket/key`
+   * - `https://s3.cn-north-1.amazonaws.com.cn/china-bucket/mykey`
    * @param key The S3 key of the object. If not specified, the URL of the
    *      bucket is returned.
    * @returns an ObjectS3Url token
@@ -117,10 +118,11 @@ export interface IBucket extends IResource {
   /**
    * The virtual hosted-style URL of an S3 object. Specify `regional: false` at
    * the options for non-regional URL. For example:
-   * @example https://only-bucket.s3.us-west-1.amazonaws.com
-   * @example https://bucket.s3.us-west-1.amazonaws.com/key
-   * @example https://bucket.s3.amazonaws.com/key
-   * @example https://china-bucket.s3.cn-north-1.amazonaws.com.cn/mykey
+   *
+   * - `https://only-bucket.s3.us-west-1.amazonaws.com`
+   * - `https://bucket.s3.us-west-1.amazonaws.com/key`
+   * - `https://bucket.s3.amazonaws.com/key`
+   * - `https://china-bucket.s3.cn-north-1.amazonaws.com.cn/mykey`
    * @param key The S3 key of the object. If not specified, the URL of the
    *      bucket is returned.
    * @param options Options for generating URL.
@@ -130,8 +132,8 @@ export interface IBucket extends IResource {
 
   /**
    * The S3 URL of an S3 object. For example:
-   * @example s3://onlybucket
-   * @example s3://bucket/key
+   * - `s3://onlybucket`
+   * - `s3://bucket/key`
    * @param key The S3 key of the object. If not specified, the S3 URL of the
    *      bucket is returned.
    * @returns an ObjectS3Url token
@@ -603,9 +605,11 @@ export abstract class BucketBase extends Resource implements IBucket {
   /**
    * The https URL of an S3 object. Specify `regional: false` at the options
    * for non-regional URLs. For example:
-   * @example https://s3.us-west-1.amazonaws.com/onlybucket
-   * @example https://s3.us-west-1.amazonaws.com/bucket/key
-   * @example https://s3.cn-north-1.amazonaws.com.cn/china-bucket/mykey
+   *
+   * - `https://s3.us-west-1.amazonaws.com/onlybucket`
+   * - `https://s3.us-west-1.amazonaws.com/bucket/key`
+   * - `https://s3.cn-north-1.amazonaws.com.cn/china-bucket/mykey`
+   *
    * @param key The S3 key of the object. If not specified, the URL of the
    *      bucket is returned.
    * @returns an ObjectS3Url token
@@ -622,10 +626,12 @@ export abstract class BucketBase extends Resource implements IBucket {
   /**
    * The virtual hosted-style URL of an S3 object. Specify `regional: false` at
    * the options for non-regional URL. For example:
-   * @example https://only-bucket.s3.us-west-1.amazonaws.com
-   * @example https://bucket.s3.us-west-1.amazonaws.com/key
-   * @example https://bucket.s3.amazonaws.com/key
-   * @example https://china-bucket.s3.cn-north-1.amazonaws.com.cn/mykey
+   *
+   * - `https://only-bucket.s3.us-west-1.amazonaws.com`
+   * - `https://bucket.s3.us-west-1.amazonaws.com/key`
+   * - `https://bucket.s3.amazonaws.com/key`
+   * - `https://china-bucket.s3.cn-north-1.amazonaws.com.cn/mykey`
+   *
    * @param key The S3 key of the object. If not specified, the URL of the
    *      bucket is returned.
    * @param options Options for generating URL.
@@ -642,8 +648,10 @@ export abstract class BucketBase extends Resource implements IBucket {
 
   /**
    * The S3 URL of an S3 object. For example:
-   * @example s3://onlybucket
-   * @example s3://bucket/key
+   *
+   * - `s3://onlybucket`
+   * - `s3://bucket/key`
+   *
    * @param key The S3 key of the object. If not specified, the S3 URL of the
    *      bucket is returned.
    * @returns an ObjectS3Url token

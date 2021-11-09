@@ -40,7 +40,7 @@ export interface VirtualServiceProps {
    * It is recommended this follows the fully-qualified domain name format,
    * such as "my-service.default.svc.cluster.local".
    *
-   * @example service.domain.local
+   * Example value: `service.domain.local`
    * @default - A name is automatically generated
    */
   readonly virtualServiceName?: string;
