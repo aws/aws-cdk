@@ -4,9 +4,9 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as efs from '@aws-cdk/aws-efs';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
+import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
-import * as logs from '@aws-cdk/aws-logs';
 import { AwsCliLayer } from '@aws-cdk/lambda-layer-awscli';
 import { kebab as toKebabCase } from 'case';
 import { Construct } from 'constructs';
@@ -227,7 +227,7 @@ export interface BucketDeploymentProps {
    * @default RetentionDays.TWO_YEARS
    */
 
-   readonly logGroupRetention?: logs.RetentionDays;
+  readonly logGroupRetention?: logs.RetentionDays;
 }
 
 /**
