@@ -276,7 +276,7 @@ test('deploy from a local .zip file when efs is enabled', () => {
     },
   });
 
-  expect(stack).toHaveResource('AWS::Logs::LogGroup', {});
+  expect(stack).toCountResources('AWS::Logs::LogGroup', 1);
 });
 
 test('honors passed asset options', () => {
@@ -717,7 +717,7 @@ test('memoryLimit can be used to specify the memory limit for the deployment res
   expect(stack).toHaveResource('AWS::Lambda::Function', { MemorySize: 256 });
   expect(stack).toHaveResource('AWS::Lambda::Function', { MemorySize: 1024 });
 
-  expect(stack).toCountResources('AWS::Logs::LogGroup', 1);
+  expect(stack).toCountResources('AWS::Logs::LogGroup', 3);
 });
 
 test('deployment allows custom role to be supplied', () => {
@@ -881,7 +881,7 @@ test('deployment allows vpc to be implicitly supplied to lambda', () => {
     },
   });
 
-  expect(stack).toHaveResource('AWS::Logs::LogGroup', {});
+  expect(stack).toCountResources('AWS::Logs::LogGroup', 1);
 });
 
 test('deployment allows vpc and subnets to be implicitly supplied to lambda', () => {
@@ -925,5 +925,5 @@ test('deployment allows vpc and subnets to be implicitly supplied to lambda', ()
     },
   });
 
-  expect(stack).toHaveResource('AWS::Logs::LogGroup', {});
+  expect(stack).toCountResources('AWS::Logs::LogGroup', 1);
 });
