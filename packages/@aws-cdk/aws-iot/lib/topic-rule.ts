@@ -49,6 +49,13 @@ export interface TopicRuleProps {
   readonly description?: string;
 
   /**
+   * The action AWS IoT performs when it is unable to perform a rule's action.
+   *
+   * @default - no action will be performed
+   */
+  readonly errorAction?: IAction;
+
+  /**
    * Specifies whether the rule is enabled.
    *
    * @default true
@@ -117,6 +124,7 @@ export class TopicRule extends Resource implements ITopicRule {
         actions: Lazy.any({ produce: () => this.actions }),
         awsIotSqlVersion: sqlConfig.awsIotSqlVersion,
         description: props.description,
+        errorAction: props.errorAction?.bind(this).configuration,
         ruleDisabled: props.enabled === undefined ? undefined : !props.enabled,
         sql: sqlConfig.sql,
       },

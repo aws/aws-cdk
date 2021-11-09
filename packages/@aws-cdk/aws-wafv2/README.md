@@ -18,3 +18,23 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
 ```ts
 import * as wafv2 from '@aws-cdk/aws-wafv2';
 ```
+
+## Examples
+
+Create a simple WebACL resource.
+
+```csharp
+var WebACL = new CfnWebACL(this, "WebACL", new CfnWebACLProps{
+   Name = "MyWebACL",
+   Scope = "REGIONAL",
+   DefaultAction =  new CfnWebACL.DefaultActionProperty {
+       Allow = new CfnWebACL.AllowActionProperty{}
+   },
+   VisibilityConfig = new CfnWebACL.VisibilityConfigProperty {
+       SampledRequestsEnabled = true,
+       CloudWatchMetricsEnabled = true,
+       MetricName = "WebACL",
+   },
+   Rules = new CfnWebACL.RuleProperty[] {}
+  });
+```

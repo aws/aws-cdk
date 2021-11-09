@@ -78,12 +78,12 @@
     "@aws-cdk/cfn2ts": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/aws-lambda": "^8.10.85",
-    "@types/jest": "^26.0.24",
+    "@types/jest": "^27.0.2",
     "@types/sinon": "^9.0.11",
     "aws-sdk": "^2.848.0",
     "aws-sdk-mock": "^5.4.0",
-    "jest": "^26.6.3",
-    "nock": "^13.1.4",
+    "jest": "^27.3.1",
+    "nock": "^13.2.0",
     "sinon": "^9.2.4"
   },
   "dependencies": {
