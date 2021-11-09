@@ -48,6 +48,44 @@ By default, the log group will be created in the same region as the stack. The `
 log groups in other regions. This is typically useful when controlling retention for log groups auto-created by global services that
 publish their log group to a specific region, such as AWS Chatbot creating a log group in `us-east-1`.
 
+## Resource Policy
+
+CloudWatch Resource Policies allow other AWS services or IAM Principals to put log events into the log groups.
+A resource policy is automatically created when `addToResourcePolicy` is called on the LogGroup for the first time.
+
+`ResourcePolicy` can also be created manually.
+
+```ts
+const logGroup = new LogGroup(this, 'LogGroup');
+const resourcePolicy = new ResourcePolicy(this, 'ResourcePolicy');
+resourcePolicy.document.addStatements(new iam.PolicyStatement({
+    actions: ['logs:CreateLogStream', 'logs:PutLogEvents'],
+    principals: [new iam.ServicePrincipal('es.amazonaws.com')],
+    resources: [logGroup.logGroupArn],
+}));
+```
+
+Or more conveniently, write permissions to the log group can be granted as follows which gives same result as in the above example.
+
+```ts
+const logGroup = new LogGroup(this, 'LogGroup');
+logGroup.grantWrite(iam.ServicePrincipal('es.amazonaws.com'));
+```
+
+Optionally name and policy statements can also be passed on `ResourcePolicy` construction.
+
+```ts
+const policyStatement = new new iam.PolicyStatement({
+    resources: ["*"],
+    actions: ['logs:PutLogEvents'],
+    principals: [new iam.ArnPrincipal('arn:aws:iam::123456789012:user/user-name')],
+});
+const resourcePolicy = new ResourcePolicy(this, 'ResourcePolicy', {
+    policyName: 'myResourcePolicy',
+    policyStatements: [policyStatement],
+});
+```
+
 ## Encrypting Log Groups
 
 By default, log group data is always encrypted in CloudWatch Logs. You have the
@@ -61,7 +99,7 @@ Here's a simple example of creating an encrypted Log Group using a KMS CMK.
 ```ts
 import * as kms from '@aws-cdk/aws-kms';
 
-new LogGroup(this, 'LogGroup', {
+new logs.LogGroup(this, 'LogGroup', {
   encryptionKey: new kms.Key(this, 'Key'),
 });
 ```
@@ -83,13 +121,14 @@ Create a `SubscriptionFilter`, initialize it with an appropriate `Pattern` (see
 below) and supply the intended destination:
 
 ```ts
-const fn = new lambda.Function(this, 'Lambda', { ... });
-const logGroup = new LogGroup(this, 'LogGroup', { ... });
+import * as destinations from '@aws-cdk/aws-logs-destinations';
+declare const fn: lambda.Function;
+declare const logGroup: logs.LogGroup;
 
-new SubscriptionFilter(this, 'Subscription', {
-    logGroup,
-    destination: new LogsDestinations.LambdaDestination(fn),
-    filterPattern: FilterPattern.allTerms("ERROR", "MainThread")
+new logs.SubscriptionFilter(this, 'Subscription', {
+  logGroup,
+  destination: new destinations.LambdaDestination(fn),
+  filterPattern: logs.FilterPattern.allTerms("ERROR", "MainThread"),
 });
 ```
 
@@ -114,6 +153,7 @@ A very simple MetricFilter can be created by using the `logGroup.extractMetric()
 helper function:
 
 ```ts
+declare const logGroup: logs.LogGroup;
 logGroup.extractMetric('$.jsonField', 'Namespace', 'MetricName');
 ```
 
@@ -127,11 +167,12 @@ You can expose a metric on a metric filter by calling the `MetricFilter.metric()
 This has a default of `statistic = 'avg'` if the statistic is not set in the `props`.
 
 ```ts
-const mf = new MetricFilter(this, 'MetricFilter', {
+declare const logGroup: logs.LogGroup;
+const mf = new logs.MetricFilter(this, 'MetricFilter', {
   logGroup,
   metricNamespace: 'MyApp',
   metricName: 'Latency',
-  filterPattern: FilterPattern.exists('$.latency'),
+  filterPattern: logs.FilterPattern.exists('$.latency'),
   metricValue: '$.latency',
 });
 
@@ -139,7 +180,7 @@ const mf = new MetricFilter(this, 'MetricFilter', {
 const metric = mf.metric();
 
 //you can use the metric to create a new alarm
-new Alarm(this, 'alarm from metric filter', {
+new cloudwatch.Alarm(this, 'alarm from metric filter', {
   metric,
   threshold: 100,
   evaluationPeriods: 2,
@@ -175,23 +216,22 @@ line.
   (substrings) appear in the log event.
 * `FilterPattern.anyTerm(term, term, ...)`: matches if all of the given terms
   (substrings) appear in the log event.
-* `FilterPattern.anyGroup([term, term, ...], [term, term, ...], ...)`: matches if
+* `FilterPattern.anyTermGroup([term, term, ...], [term, term, ...], ...)`: matches if
   all of the terms in any of the groups (specified as arrays) matches. This is
   an OR match.
-
 
 Examples:
 
 ```ts
 // Search for lines that contain both "ERROR" and "MainThread"
-const pattern1 = FilterPattern.allTerms('ERROR', 'MainThread');
+const pattern1 = logs.FilterPattern.allTerms('ERROR', 'MainThread');
 
 // Search for lines that either contain both "ERROR" and "MainThread", or
 // both "WARN" and "Deadlock".
-const pattern2 = FilterPattern.anyGroup(
-    ['ERROR', 'MainThread'],
-    ['WARN', 'Deadlock'],
-    );
+const pattern2 = logs.FilterPattern.anyTermGroup(
+  ['ERROR', 'MainThread'],
+  ['WARN', 'Deadlock'],
+);
 ```
 
 ## JSON Patterns
@@ -228,19 +268,19 @@ and then descending into it, such as `$.field` or `$.list[0].field`.
   given JSON patterns match. This makes an OR combination of the given
   patterns.
 
-
 Example:
 
 ```ts
 // Search for all events where the component field is equal to
 // "HttpServer" and either error is true or the latency is higher
 // than 1000.
-const pattern = FilterPattern.all(
-    FilterPattern.stringValue('$.component', '=', 'HttpServer'),
-    FilterPattern.any(
-        FilterPattern.booleanValue('$.error', true),
-        FilterPattern.numberValue('$.latency', '>', 1000)
-    ));
+const pattern = logs.FilterPattern.all(
+  logs.FilterPattern.stringValue('$.component', '=', 'HttpServer'),
+  logs.FilterPattern.any(
+    logs.FilterPattern.booleanValue('$.error', true),
+    logs.FilterPattern.numberValue('$.latency', '>', 1000),
+  ),
+);
 ```
 
 ## Space-delimited table patterns
@@ -274,9 +314,9 @@ Example:
 ```ts
 // Search for all events where the component is "HttpServer" and the
 // result code is not equal to 200.
-const pattern = FilterPattern.spaceDelimited('time', 'component', '...', 'result_code', 'latency')
-    .whereString('component', '=', 'HttpServer')
-    .whereNumber('result_code', '!=', 200);
+const pattern = logs.FilterPattern.spaceDelimited('time', 'component', '...', 'result_code', 'latency')
+  .whereString('component', '=', 'HttpServer')
+  .whereNumber('result_code', '!=', 200);
 ```
 
 ## Notes
