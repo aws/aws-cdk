@@ -1,3 +1,7 @@
 {
-  "app": "node bin/%name%.js"
+  "app": "node bin/%name%.js",
+  "watch": {
+    "include": "**/*.js",
+    "exclude": "jest.config.js"
+  }
 }
