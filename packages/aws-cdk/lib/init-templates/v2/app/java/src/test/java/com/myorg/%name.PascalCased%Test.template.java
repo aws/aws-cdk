@@ -1,7 +1,7 @@
 // package com.myorg;
 
 // import software.amazon.awscdk.App;
-// import software.amazon.awscdk.assertions.alpha.Template;
+// import software.amazon.awscdk.assertions.Template;
 // import java.io.IOException;
 
 // import java.util.HashMap;

@@ -11,6 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
+      issues: write
     steps:
     - run: gh pr edit ${{ github.event.pull_request.number }} --add-label "pr/auto-approve" -R ${{ github.repository }}
       env:

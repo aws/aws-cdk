@@ -390,20 +390,6 @@ describe('synth', () => {
     await expect(toolkit.synth(['Test-Stack-A'], false, true)).resolves.toBeUndefined();
   });
 
-  describe('post-synth validation', () => {
-    beforeEach(() => {
-      cloudExecutable = new MockCloudExecutable({
-        stacks: [
-          MockStack.MOCK_STACK_A,
-          MockStack.MOCK_STACK_B,
-        ],
-        nestedAssemblies: [{
-          stacks: [MockStack.MOCK_STACK_WITH_ERROR],
-        }],
-      });
-    });
-  });
-
   afterEach(() => {
     process.env.STACKS_TO_VALIDATE = undefined;
   });

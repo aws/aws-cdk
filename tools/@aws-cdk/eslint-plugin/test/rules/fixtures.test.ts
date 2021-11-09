@@ -35,44 +35,37 @@ fs.readdirSync(fixturesRoot).filter(f => fs.lstatSync(path.join(fixturesRoot, f)
     const fixtureFiles = fs.readdirSync(fixturesDir).filter(f => f.endsWith('.ts') && !f.endsWith('.expected.ts'));
 
     fixtureFiles.forEach(f => {
-      test(f, async (done) => {
+      it(f, async () => {
         const originalFilePath = path.join(fixturesDir, f);
         const expectedFixedFilePath = path.join(fixturesDir, `${path.basename(f, '.ts')}.expected.ts`);
         const expectedErrorFilepath = path.join(fixturesDir, `${path.basename(f, '.ts')}.error.txt`);
         const fix = fs.existsSync(expectedFixedFilePath);
         const checkErrors = fs.existsSync(expectedErrorFilepath);
         if (fix && checkErrors) {
-          done.fail(`Expected only a fixed file or an expected error message file. Both ${expectedFixedFilePath} and ${expectedErrorFilepath} are present.`);
-          return;
+          fail(`Expected only a fixed file or an expected error message file. Both ${expectedFixedFilePath} and ${expectedErrorFilepath} are present.`);
         } else if (fix) {
           const actualFile = await lintAndFix(originalFilePath, outputDir);
           const actual = await fs.readFile(actualFile, { encoding: 'utf8' });
           const expected = await fs.readFile(expectedFixedFilePath, { encoding: 'utf8' });
           if (actual !== expected) {
-            done.fail(`Linted file did not match expectations. Expected: ${expectedFixedFilePath}. Actual: ${actualFile}`);
-            return;
+            fail(`Linted file did not match expectations. Expected: ${expectedFixedFilePath}. Actual: ${actualFile}`);
           }
-          done();
           return;
         } else if (checkErrors) {
           const actualErrorMessages = await lint(originalFilePath)
-          const expectedErrorMessages = await (await fs.readFile(expectedErrorFilepath, { encoding: 'utf8' })).split('\n');
+          const expectedErrorMessages = (await fs.readFile(expectedErrorFilepath, { encoding: 'utf8' })).split('\n');
           if (expectedErrorMessages.length !== actualErrorMessages?.length) {
-            done.fail(`Number of messages from linter did not match expectations. Linted file: ${originalFilePath}. Expected number of messages: ${expectedErrorMessages.length}. Actual number of messages: ${actualErrorMessages?.length}.`);
-            return;
+            fail(`Number of messages from linter did not match expectations. Linted file: ${originalFilePath}. Expected number of messages: ${expectedErrorMessages.length}. Actual number of messages: ${actualErrorMessages?.length}.`);
           }
           actualErrorMessages.forEach(actualMessage => {
             if(!(expectedErrorMessages.find(expectedMessage => expectedMessage === actualMessage.message))) {
-              done.fail(`Error message not found in .error.txt file. Linted file: ${originalFilePath}. Actual message: ${actualMessage.message}. Expected messages: ${expectedErrorMessages}`);
-              return;
+              fail(`Error message not found in .error.txt file. Linted file: ${originalFilePath}. Actual message: ${actualMessage.message}. Expected messages: ${expectedErrorMessages}`);
             }
           });
-          done();
           return;
         } else {
-          done.fail(`Expected fixed file or expected error file not found.`);
+          fail(`Expected fixed file or expected error file not found.`);
         }
-        done();
       });
     });
   });

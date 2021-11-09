@@ -19,7 +19,7 @@
     "conventional-changelog-cli": "^2.1.1",
     "fs-extra": "^9.1.0",
     "graceful-fs": "^4.2.8",
-    "jest-junit": "^12.3.0",
+    "jest-junit": "^13.0.0",
     "jsii-diff": "^1.42.0",
     "jsii-pacmak": "^1.42.0",
     "jsii-reflect": "^1.42.0",
