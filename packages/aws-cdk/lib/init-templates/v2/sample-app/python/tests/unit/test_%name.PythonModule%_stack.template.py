@@ -1,5 +1,5 @@
 import aws_cdk as core
-import aws_cdk.assertions_alpha as assertions
+import aws_cdk.assertions as assertions
 from %name.PythonModule%.%name.PythonModule%_stack import %name.PascalCased%Stack
 
 

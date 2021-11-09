@@ -29,6 +29,7 @@ fi
 
 $ROSETTA \
   --compile \
+  --verbose \
   --output samples.tabl.json \
   $rosetta_cache_opts \
   --directory packages/decdk \

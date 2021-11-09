@@ -74,25 +74,27 @@ As an early example, the following code snippet configures a route `GET /books` 
 configures all other HTTP method calls to `/books` to a lambda proxy.
 
 ```ts
+import { HttpProxyIntegration, LambdaProxyIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
+
 const getBooksIntegration = new HttpProxyIntegration({
   url: 'https://get-books-proxy.myproxy.internal',
 });
 
-const booksDefaultFn = new lambda.Function(stack, 'BooksDefaultFn', { ... });
+declare const booksDefaultFn: lambda.Function;
 const booksDefaultIntegration = new LambdaProxyIntegration({
   handler: booksDefaultFn,
 });
 
-const httpApi = new HttpApi(stack, 'HttpApi');
+const httpApi = new apigwv2.HttpApi(this, 'HttpApi');
 
 httpApi.addRoutes({
   path: '/books',
-  methods: [ HttpMethod.GET ],
+  methods: [ apigwv2.HttpMethod.GET ],
   integration: getBooksIntegration,
 });
 httpApi.addRoutes({
   path: '/books',
-  methods: [ HttpMethod.ANY ],
+  methods: [ apigwv2.HttpMethod.ANY ],
   integration: booksDefaultIntegration,
 });
 ```
@@ -100,7 +102,7 @@ httpApi.addRoutes({
 The URL to the endpoint can be retrieved via the `apiEndpoint` attribute. By default this URL is enabled for clients. Use `disableExecuteApiEndpoint` to disable it.
 
 ```ts
-const httpApi = new HttpApi(stack, 'HttpApi', {
+const httpApi = new apigwv2.HttpApi(this, 'HttpApi', {
   disableExecuteApiEndpoint: true,
 });
 ```
@@ -109,7 +111,9 @@ The `defaultIntegration` option while defining HTTP APIs lets you create a defau
 matched when a client reaches a route that is not explicitly defined.
 
 ```ts
-new HttpApi(stack, 'HttpProxyApi', {
+import { HttpProxyIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
+
+new apigwv2.HttpApi(this, 'HttpProxyApi', {
   defaultIntegration: new HttpProxyIntegration({
     url:'http://example.com',
   }),
@@ -130,10 +134,15 @@ API](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-cors.
 The `corsPreflight` option lets you specify a CORS configuration for an API.
 
 ```ts
-new HttpApi(stack, 'HttpProxyApi', {
+new apigwv2.HttpApi(this, 'HttpProxyApi', {
   corsPreflight: {
     allowHeaders: ['Authorization'],
-    allowMethods: [CorsHttpMethod.GET, CorsHttpMethod.HEAD, CorsHttpMethod.OPTIONS, CorsHttpMethod.POST],
+    allowMethods: [
+      apigwv2.CorsHttpMethod.GET,
+      apigwv2.CorsHttpMethod.HEAD,
+      apigwv2.CorsHttpMethod.OPTIONS,
+      apigwv2.CorsHttpMethod.POST,
+    ],
     allowOrigins: ['*'],
     maxAge: Duration.days(10),
   },
@@ -150,7 +159,9 @@ Use `HttpStage` to create a Stage resource for HTTP APIs. The following code set
 `https://{api_id}.execute-api.{region}.amazonaws.com/beta`.
 
 ```ts
-new HttpStage(stack, 'Stage', {
+declare const api: apigwv2.HttpApi;
+
+new apigwv2.HttpStage(this, 'Stage', {
   httpApi: api,
   stageName: 'beta',
 });
@@ -169,15 +180,19 @@ The code snippet below creates a custom domain and configures a default domain m
 custom domain to the `$default` stage of the API.
 
 ```ts
+import * as acm from '@aws-cdk/aws-certificatemanager';
+import { LambdaProxyIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
+
 const certArn = 'arn:aws:acm:us-east-1:111111111111:certificate';
 const domainName = 'example.com';
 
-const dn = new DomainName(stack, 'DN', {
+const dn = new apigwv2.DomainName(this, 'DN', {
   domainName,
-  certificate: acm.Certificate.fromCertificateArn(stack, 'cert', certArn),
+  certificate: acm.Certificate.fromCertificateArn(this, 'cert', certArn),
 });
 
-const api = new HttpApi(stack, 'HttpProxyProdApi', {
+declare const handler: lambda.Function;
+const api = new apigwv2.HttpApi(this, 'HttpProxyProdApi', {
   defaultIntegration: new LambdaProxyIntegration({ handler }),
   // https://${dn.domainName}/foo goes to prodApi $default stage
   defaultDomainMapping: {
@@ -190,6 +205,9 @@ const api = new HttpApi(stack, 'HttpProxyProdApi', {
 To associate a specific `Stage` to a custom domain mapping -
 
 ```ts
+declare const api: apigwv2.HttpApi;
+declare const dn: apigwv2.DomainName;
+
 api.addStage('beta', {
   stageName: 'beta',
   autoDeploy: true,
@@ -204,7 +222,12 @@ api.addStage('beta', {
 The same domain name can be associated with stages across different `HttpApi` as so -
 
 ```ts
-const apiDemo = new HttpApi(stack, 'DemoApi', {
+import { LambdaProxyIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
+
+declare const handler: lambda.Function;
+declare const dn: apigwv2.DomainName;
+
+const apiDemo = new apigwv2.HttpApi(this, 'DemoApi', {
   defaultIntegration: new LambdaProxyIntegration({ handler }),
   // https://${dn.domainName}/demo goes to apiDemo $default stage
   defaultDomainMapping: {
@@ -227,7 +250,8 @@ with 3 API mapping resources across different APIs and Stages.
 You can retrieve the full domain URL with mapping key using the `domainUrl` property as so -
 
 ```ts
-const demoDomainUrl = apiDemo.defaultStage.domainUrl; // returns "https://example.com/demo"
+declare const apiDemo: apigwv2.HttpApi;
+const demoDomainUrl = apiDemo.defaultStage?.domainUrl; // returns "https://example.com/demo"
 ```
 
 ### Managing access
@@ -245,7 +269,7 @@ The APIs with the `metric` prefix can be used to get reference to specific metri
 the method below refers to the client side errors metric for this API.
 
 ```ts
-const api = new apigw.HttpApi(stack, 'my-api');
+const api = new apigwv2.HttpApi(this, 'my-api');
 const clientErrorMetric = api.metricClientError();
 ```
 
@@ -253,9 +277,9 @@ Please note that this will return a metric for all the stages defined in the api
 the `metric` methods from the `Stage` construct.
 
 ```ts
-const api = new apigw.HttpApi(stack, 'my-api');
-const stage = new HttpStage(stack, 'Stage', {
-   httpApi: api,
+const api = new apigwv2.HttpApi(this, 'my-api');
+const stage = new apigwv2.HttpStage(this, 'Stage', {
+  httpApi: api,
 });
 const clientErrorMetric = stage.metricClientError();
 ```
@@ -267,14 +291,22 @@ Load Balancers, Network Load Balancers or a Cloud Map service. The `VpcLink` con
 The following code creates a `VpcLink` to a private VPC.
 
 ```ts
-const vpc = new ec2.Vpc(stack, 'VPC');
-const vpcLink = new VpcLink(stack, 'VpcLink', { vpc });
+import * as ec2 from '@aws-cdk/aws-ec2';
+
+const vpc = new ec2.Vpc(this, 'VPC');
+const vpcLink = new apigwv2.VpcLink(this, 'VpcLink', { vpc });
 ```
 
-Any existing `VpcLink` resource can be imported into the CDK app via the `VpcLink.fromVpcLinkId()`.
+Any existing `VpcLink` resource can be imported into the CDK app via the `VpcLink.fromVpcLinkAttributes()`.
 
 ```ts
-const awesomeLink = VpcLink.fromVpcLinkId(stack, 'awesome-vpc-link', 'us-east-1_oiuR12Abd');
+import * as ec2 from '@aws-cdk/aws-ec2';
+
+declare const vpc: ec2.Vpc;
+const awesomeLink = apigwv2.VpcLink.fromVpcLinkAttributes(this, 'awesome-vpc-link', {
+  vpcLinkId: 'us-east-1_oiuR12Abd',
+  vpc,
+});
 ```
 
 ### Private Integration
@@ -304,13 +336,19 @@ Integrations are available in the `aws-apigatewayv2-integrations` module and mor
 To add the default WebSocket routes supported by API Gateway (`$connect`, `$disconnect` and `$default`), configure them as part of api props:
 
 ```ts
-const webSocketApi = new WebSocketApi(stack, 'mywsapi', {
+import { LambdaWebSocketIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
+
+declare const connectHandler: lambda.Function;
+declare const disconnectHandler: lambda.Function;
+declare const defaultHandler: lambda.Function;
+
+const webSocketApi = new apigwv2.WebSocketApi(this, 'mywsapi', {
   connectRouteOptions: { integration: new LambdaWebSocketIntegration({ handler: connectHandler }) },
-  disconnectRouteOptions: { integration: new LambdaWebSocketIntegration({ handler: disconnetHandler }) },
+  disconnectRouteOptions: { integration: new LambdaWebSocketIntegration({ handler: disconnectHandler }) },
   defaultRouteOptions: { integration: new LambdaWebSocketIntegration({ handler: defaultHandler }) },
 });
 
-new WebSocketStage(stack, 'mystage', {
+new apigwv2.WebSocketStage(this, 'mystage', {
   webSocketApi,
   stageName: 'dev',
   autoDeploy: true,
@@ -320,6 +358,8 @@ new WebSocketStage(stack, 'mystage', {
 To retrieve a websocket URL and a callback URL:
 
 ```ts
+declare const webSocketStage: apigwv2.WebSocketStage;
+
 const webSocketURL = webSocketStage.url;
 // wss://${this.api.apiId}.execute-api.${s.region}.${s.urlSuffix}/${urlPath}
 const callbackURL = webSocketStage.callbackUrl;
@@ -329,7 +369,10 @@ const callbackURL = webSocketStage.callbackUrl;
 To add any other route:
 
 ```ts
-const webSocketApi = new WebSocketApi(stack, 'mywsapi');
+import { LambdaWebSocketIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
+
+declare const messageHandler: lambda.Function;
+const webSocketApi = new apigwv2.WebSocketApi(this, 'mywsapi');
 webSocketApi.addRoute('sendmessage', {
   integration: new LambdaWebSocketIntegration({
     handler: messageHandler,

@@ -1,5 +1,5 @@
 const cdk = require('aws-cdk-lib');
-const { Template, Match } = require('@aws-cdk/assertions-alpha');
+const { Match, Template } = require('aws-cdk-lib/assertions');
 const %name.PascalCased% = require('../lib/%name%-stack');
 
 test('SQS Queue and SNS Topic Created', () => {

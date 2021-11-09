@@ -54,7 +54,8 @@ export class Bundling implements cdk.BundlingOptions {
    */
   public static bundle(options: BundlingProps): AssetCode {
     return Code.fromAsset(options.projectRoot, {
-      assetHashType: cdk.AssetHashType.OUTPUT,
+      assetHash: options.assetHash,
+      assetHashType: options.assetHash ? cdk.AssetHashType.CUSTOM : cdk.AssetHashType.OUTPUT,
       bundling: new Bundling(options),
     });
   }
