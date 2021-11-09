@@ -401,7 +401,7 @@ export class TaskDefinition extends TaskDefinitionBase {
       throw new Error('Cannot use inference accelerators on tasks that run on Fargate');
     }
 
-    if (this.isExternalCompatible && this.networkMode !== NetworkMode.AWS_VPC) {
+    if (this.isExternalCompatible && this.networkMode == NetworkMode.AWS_VPC) {
       throw new Error(`External tasks only support Bridge, Host or None network mode, got: ${this.networkMode}`);
     }
 
