@@ -52,7 +52,6 @@ describe('singleton lambda', () => {
             },
             Handler: 'index.hello',
             Role: { 'Fn::GetAtt': ['SingletonLambda84c0de93353f42179b0b45b6c993251aServiceRole26D59235', 'Arn'] },
-            Architectures: ['x86_64'],
             Runtime: 'python2.7',
             Timeout: 300,
           },

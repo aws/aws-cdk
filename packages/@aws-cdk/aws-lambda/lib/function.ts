@@ -576,7 +576,7 @@ export class Function extends FunctionBase {
   /**
    * The architecture of this Lambda Function (this is an optional attribute and defaults to X86_64).
    */
-  public readonly architecture?: Architecture;
+  public readonly architecture: Architecture;
   public readonly permissionsNode = this.node;
 
 
@@ -677,7 +677,7 @@ export class Function extends FunctionBase {
     if (props.architectures && props.architectures.length > 1) {
       throw new Error('Only one architecture must be specified.');
     }
-    const architecture = props.architecture ?? (props.architectures && props.architectures[0]) ?? Architecture.X86_64;
+    const architecture = props.architecture ?? (props.architectures && props.architectures[0]);
 
     const resource: CfnFunction = new CfnFunction(this, 'Resource', {
       functionName: this.physicalName,
@@ -726,7 +726,7 @@ export class Function extends FunctionBase {
 
     this.runtime = props.runtime;
 
-    this.architecture = architecture;
+    this.architecture = props.architecture;
 
     if (props.layers) {
       if (props.runtime === Runtime.FROM_IMAGE) {
