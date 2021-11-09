@@ -71,3 +71,5 @@ const app = new cdk.App();
 new TestBucketDeployment(app, 'test-bucket-deployments-2');
 
 app.synth();
+
+console.warn(app.synth().tree());
