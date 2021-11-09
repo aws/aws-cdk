@@ -1,7 +1,9 @@
 import '@aws-cdk/assert-internal/jest';
+import * as autoscaling from '@aws-cdk/aws-autoscaling';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as route53 from '@aws-cdk/aws-route53';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import { AssignPublicIpExtension, Container, Environment, EnvironmentCapacityType, Service, ServiceDescription } from '../lib';
 import { TaskRecordManager } from '../lib/extensions/assign-public-ip/task-record-manager';
@@ -45,9 +47,13 @@ describe('assign public ip', () => {
 
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
-    cluster.addCapacity('DefaultAutoScalingGroup', {
-      instanceType: new ec2.InstanceType('t2.micro'),
-    });
+    cluster.addAsgCapacityProvider(new ecs.AsgCapacityProvider(stack, 'Provider', {
+      autoScalingGroup: new autoscaling.AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+        vpc,
+        machineImage: ec2.MachineImage.latestAmazonLinux(),
+        instanceType: new ec2.InstanceType('t2.micro'),
+      }),
+    }));
 
     const environment = new Environment(stack, 'production', {
       vpc,
@@ -102,7 +108,7 @@ describe('assign public ip', () => {
 
   });
 
-  test('should add a task record manager when dns is requested', () => {
+  testDeprecated('should add a task record manager when dns is requested', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const dnsZone = new route53.PublicHostedZone(stack, 'zone', {
@@ -137,7 +143,7 @@ describe('assign public ip', () => {
 
   });
 
-  test('task record manager listens for ecs events', () => {
+  testDeprecated('task record manager listens for ecs events', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const dnsZone = new route53.PublicHostedZone(stack, 'zone', {
