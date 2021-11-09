@@ -79,7 +79,7 @@ export class StepFunctionsIntegration extends AwsIntegration {
       stateMachineName = (this.stateMachine.node.defaultChild as sfn.CfnStateMachine).stateMachineName;
     } else {
       //imported state machine
-      stateMachineName = 'StateMachine-' + (String(this.stateMachine.stack.node.addr).substring(0, 8));
+      stateMachineName = 'StateMachine-' + (String(this.stateMachine.stack.node.addr));
     }
 
     let deploymentToken;

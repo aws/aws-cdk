@@ -241,6 +241,6 @@ describe('StepFunctions', () => {
 
     // the deployment token should be defined since the function name
     // should be a literal string.
-    expect(bindResult?.deploymentToken).toEqual('{"stateMachineName":"StateMachine-c8adc83b"}');
+    expect(bindResult?.deploymentToken).toEqual('{"stateMachineName":"StateMachine-c8adc83b19e793491b1c6ea0fd8b46cd9f32e592fc"}');
   });
 });
