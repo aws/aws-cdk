@@ -88,6 +88,22 @@ export class LinuxGpuBuildImage implements IBindableBuildImage {
     return new LinuxGpuBuildImage(repositoryName, tag, account);
   }
 
+
+  /**
+   * Returns a GPU image running Linux from an ECR repository.
+   *
+   * NOTE: if the repository is external (i.e. imported), then we won't be able to add
+   * a resource policy statement for it so CodeBuild can pull the image.
+   *
+   * @see https://docs.aws.amazon.com/codebuild/latest/userguide/sample-ecr.html
+   *
+   * @param repository The ECR repository
+   * @param tag Image tag (default "latest")
+   */
+  public static fromEcrRepository(repository: ecr.IRepository, tag: string = 'latest'): IBuildImage {
+    return new LinuxGpuBuildImage(repository.repositoryName, tag, repository.env.account);
+  }
+
   public readonly type = 'LINUX_GPU_CONTAINER';
   public readonly defaultComputeType = ComputeType.LARGE;
   public readonly imageId: string;
