@@ -2234,7 +2234,7 @@ describe('function', () => {
       handler: 'index.handler',
       architecture: lambda.Architecture.ARM_64,
     });
-    expect(fn.architecture?.name).toMatch('arm64');
+    expect(fn.architecture?.name).toEqual('arm64');
   });
 });
 
