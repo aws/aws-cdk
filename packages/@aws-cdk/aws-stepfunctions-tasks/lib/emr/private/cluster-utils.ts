@@ -4,8 +4,6 @@ import { EmrModifyInstanceGroupByName } from '../emr-modify-instance-group-by-na
 
 /**
  * Render the KerberosAttributesProperty as JSON
- *
- * @param property
  */
 export function KerberosAttributesPropertyToJson(property: EmrCreateCluster.KerberosAttributesProperty) {
   return {
@@ -19,8 +17,6 @@ export function KerberosAttributesPropertyToJson(property: EmrCreateCluster.Kerb
 
 /**
  * Render the InstancesConfigProperty to JSON
- *
- * @param property
  */
 export function InstancesConfigPropertyToJson(property: EmrCreateCluster.InstancesConfigProperty) {
   return {
@@ -46,8 +42,6 @@ export function InstancesConfigPropertyToJson(property: EmrCreateCluster.Instanc
 
 /**
  * Render the ApplicationConfigProperty as JSON
- *
- * @param property
  */
 export function ApplicationConfigPropertyToJson(property: EmrCreateCluster.ApplicationConfigProperty) {
   return {
@@ -59,9 +53,16 @@ export function ApplicationConfigPropertyToJson(property: EmrCreateCluster.Appli
 }
 
 /**
+ * Render the AutoTerminationPolicyProperty as JSON
+ */
+export function AutoTerminationPolicyPropertyToJson(property: EmrCreateCluster.AutoTerminationPolicyProperty) {
+  return {
+    IdleTimeout: cdk.numberToCloudFormation(property.idleTimeout.toSeconds()),
+  };
+}
+
+/**
  * Render the ConfigurationProperty as JSON
- *
- * @param property
  */
 export function ConfigurationPropertyToJson(property: EmrCreateCluster.ConfigurationProperty) {
   return {
@@ -73,8 +74,6 @@ export function ConfigurationPropertyToJson(property: EmrCreateCluster.Configura
 
 /**
  * Render the EbsBlockDeviceConfigProperty as JSON
- *
- * @param property
  */
 export function EbsBlockDeviceConfigPropertyToJson(property: EmrCreateCluster.EbsBlockDeviceConfigProperty) {
   return {
@@ -89,8 +88,6 @@ export function EbsBlockDeviceConfigPropertyToJson(property: EmrCreateCluster.Eb
 
 /**
  * Render the EbsConfigurationProperty to JSON
- *
- * @param property
  */
 export function EbsConfigurationPropertyToJson(property: EmrCreateCluster.EbsConfigurationProperty) {
   return {
@@ -117,8 +114,6 @@ export function InstanceTypeConfigPropertyToJson(property: EmrCreateCluster.Inst
 
 /**
  * Render the InstanceFleetProvisioningSpecificationsProperty to JSON
- *
- * @param property
  */
 export function InstanceFleetProvisioningSpecificationsPropertyToJson(property: EmrCreateCluster.InstanceFleetProvisioningSpecificationsProperty) {
   return {
@@ -133,8 +128,6 @@ export function InstanceFleetProvisioningSpecificationsPropertyToJson(property: 
 
 /**
  * Render the InstanceFleetConfigProperty as JSON
- *
- * @param property
  */
 export function InstanceFleetConfigPropertyToJson(property: EmrCreateCluster.InstanceFleetConfigProperty) {
   return {
@@ -152,8 +145,6 @@ export function InstanceFleetConfigPropertyToJson(property: EmrCreateCluster.Ins
 
 /**
  * Render the MetricDimensionProperty as JSON
- *
- * @param property
  */
 export function MetricDimensionPropertyToJson(property: EmrCreateCluster.MetricDimensionProperty) {
   return {
@@ -164,8 +155,6 @@ export function MetricDimensionPropertyToJson(property: EmrCreateCluster.MetricD
 
 /**
  * Render the ScalingTriggerProperty to JSON
- *
- * @param property
  */
 export function ScalingTriggerPropertyToJson(property: EmrCreateCluster.ScalingTriggerProperty) {
   return {
@@ -185,8 +174,6 @@ export function ScalingTriggerPropertyToJson(property: EmrCreateCluster.ScalingT
 
 /**
  * Render the ScalingActionProperty to JSON
- *
- * @param property
  */
 export function ScalingActionPropertyToJson(property: EmrCreateCluster.ScalingActionProperty) {
   return {
@@ -201,8 +188,6 @@ export function ScalingActionPropertyToJson(property: EmrCreateCluster.ScalingAc
 
 /**
  * Render the ScalingRuleProperty to JSON
- *
- * @param property
  */
 export function ScalingRulePropertyToJson(property: EmrCreateCluster.ScalingRuleProperty) {
   return {
@@ -215,8 +200,6 @@ export function ScalingRulePropertyToJson(property: EmrCreateCluster.ScalingRule
 
 /**
  * Render the AutoScalingPolicyProperty to JSON
- *
- * @param property
  */
 export function AutoScalingPolicyPropertyToJson(property: EmrCreateCluster.AutoScalingPolicyProperty) {
   return {
@@ -230,8 +213,6 @@ export function AutoScalingPolicyPropertyToJson(property: EmrCreateCluster.AutoS
 
 /**
  * Render the InstanceGroupConfigProperty to JSON
- *
- * @param property
  */
 export function InstanceGroupConfigPropertyToJson(property: EmrCreateCluster.InstanceGroupConfigProperty) {
   return {
@@ -250,8 +231,6 @@ export function InstanceGroupConfigPropertyToJson(property: EmrCreateCluster.Ins
 
 /**
  * Render the PlacementTypeProperty to JSON
- *
- * @param property
  */
 export function PlacementTypePropertyToJson(property: EmrCreateCluster.PlacementTypeProperty) {
   return {
@@ -262,8 +241,6 @@ export function PlacementTypePropertyToJson(property: EmrCreateCluster.Placement
 
 /**
  * Render the BootstrapActionProperty as JSON
- *
- * @param property
  */
 export function BootstrapActionConfigToJson(property: EmrCreateCluster.BootstrapActionConfigProperty) {
   return {
@@ -277,8 +254,6 @@ export function BootstrapActionConfigToJson(property: EmrCreateCluster.Bootstrap
 
 /**
  * Render the InstanceGroupModifyConfigProperty to JSON
- *
- * @param property
  */
 export function InstanceGroupModifyConfigPropertyToJson(property: EmrModifyInstanceGroupByName.InstanceGroupModifyConfigProperty) {
   return {
@@ -291,8 +266,6 @@ export function InstanceGroupModifyConfigPropertyToJson(property: EmrModifyInsta
 
 /**
  * Render the ShrinkPolicyProperty to JSON
- *
- * @param property
  */
 function ShrinkPolicyPropertyToJson(property: EmrModifyInstanceGroupByName.ShrinkPolicyProperty) {
   return {
@@ -303,8 +276,6 @@ function ShrinkPolicyPropertyToJson(property: EmrModifyInstanceGroupByName.Shrin
 
 /**
  * Render the InstanceResizePolicyProperty to JSON
- *
- * @param property
  */
 function InstanceResizePolicyPropertyToJson(property: EmrModifyInstanceGroupByName.InstanceResizePolicyProperty) {
   return {
