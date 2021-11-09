@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import { Stack } from '@aws-cdk/core';
 import { StepFunctionsInvokeActivity } from '../../lib/stepfunctions/invoke-activity';
@@ -15,7 +15,7 @@ test('Activity can be used in a Task', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::StepFunctions::StateMachine', {
+  Template.fromStack(stack).hasResourceProperties('AWS::StepFunctions::StateMachine', {
     DefinitionString: {
       'Fn::Join': ['', [
         '{"StartAt":"Task","States":{"Task":{"End":true,"Type":"Task","Resource":"',
