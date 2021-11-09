@@ -217,11 +217,17 @@ export interface BucketDeploymentProps {
    * Where in the VPC to place the deployment lambda handler.
    * Only used if 'vpc' is supplied.
    *
-   * @default RetentionDays.TWO_YEARS
+   * @default - the Vpc default strategy if not specified
    */
   readonly vpcSubnets?: ec2.SubnetSelection;
 
-  readonly logGroupRetention?: logs.RetentionDays;
+  /**
+   * Defines the log group retention period.
+   *
+   * @default RetentionDays.TWO_YEARS
+   */
+
+   readonly logGroupRetention?: logs.RetentionDays;
 }
 
 /**
