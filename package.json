@@ -71,6 +71,10 @@
     "nohoist": [
       "**/jszip",
       "**/jszip/**",
+      "@aws-cdk/assertions-alpha/fs-extra",
+      "@aws-cdk/assertions-alpha/fs-extra/**",
+      "@aws-cdk/assertions/fs-extra",
+      "@aws-cdk/assertions/fs-extra/**",
       "@aws-cdk/aws-amplify-alpha/yaml",
       "@aws-cdk/aws-amplify-alpha/yaml/**",
       "@aws-cdk/aws-amplify/yaml",
