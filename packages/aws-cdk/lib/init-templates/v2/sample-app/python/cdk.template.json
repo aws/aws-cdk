@@ -1,3 +1,7 @@
 {
-    "app": "%python-executable% app.py"
+    "app": "%python-executable% app.py",
+    "watch": {
+        "include": "**/*.py",
+        "exclude": "**/__init__.py"
+    }
 }
