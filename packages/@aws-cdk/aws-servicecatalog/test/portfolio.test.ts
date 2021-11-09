@@ -568,6 +568,7 @@ describe('portfolio associations and product constraints', () => {
         assumedBy: new iam.AccountRootPrincipal(),
       });
       launchRole = new iam.Role(stack, 'LaunchRole', {
+        roleName: 'LaunchRole',
         assumedBy: new iam.ServicePrincipal('servicecatalog.amazonaws.com'),
       });
     }),
@@ -660,6 +661,16 @@ describe('portfolio associations and product constraints', () => {
       expect(() => {
         portfolio.setLaunchRole(product, otherLaunchRole);
       }).toThrowError(/Cannot set multiple launch roles for association/);
+    }),
+
+    test('local launch role must have roleName explicitly set', () => {
+      const otherLaunchRole = new iam.Role(stack, 'otherLaunchRole', {
+        assumedBy: new iam.ServicePrincipal('servicecatalog.amazonaws.com'),
+      });
+
+      expect(() => {
+        portfolio.setLocalLaunchRole(product, otherLaunchRole);
+      }).toThrowError(/Role otherLaunchRole used for Local Launch Role must have roleName explicitly set/);
     }),
 
     test('fails to add multiple set launch roles - local launch role first', () => {
