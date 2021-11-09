@@ -48,7 +48,7 @@ export interface WebSocketRouteProps extends WebSocketRouteOptions {
 
   /**
    * Whether the route requires an API Key to be provided
-   * @default - false
+   * @default false
    */
   readonly apiKeyRequired?: boolean;
 }
