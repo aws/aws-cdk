@@ -881,7 +881,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
     return new Metric({
       namespace: 'AWS/ES',
       metricName,
-      dimensions: {
+      dimensionsMap: {
         DomainName: this.domainName,
         ClientId: this.stack.account,
       },
