@@ -79,7 +79,7 @@
     "@aws-cdk/cdk-integ-tools": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/aws-lambda": "^8.10.85",
-    "@types/jest": "^26.0.24"
+    "@types/jest": "^27.0.2"
   },
   "dependencies": {
     "@aws-cdk/aws-apigatewayv2": "0.0.0",
