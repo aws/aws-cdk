@@ -188,7 +188,7 @@ export interface IRepository extends IResource, notifications.INotificationRuleS
   /**
    * Defines a CodeStar Notification rule which triggers when a pull request is merged.
    */
-   notifyOnPullRequestMerged(
+  notifyOnPullRequestMerged(
     id: string,
     target: notifications.INotificationRuleTarget,
     options?: notifications.NotificationRuleOptions,
