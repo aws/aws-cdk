@@ -351,7 +351,7 @@ abstract class DatabaseProxyBase extends cdk.Resource implements IDatabaseProxy 
       service: 'rds-db',
       resource: 'dbuser',
       resourceName: `${proxyGeneratedId}/${dbUser}`,
-      sep: ':',
+      arnFormat: cdk.ArnFormat.COLON_RESOURCE_NAME,
     });
     return iam.Grant.addToPrincipal({
       grantee,

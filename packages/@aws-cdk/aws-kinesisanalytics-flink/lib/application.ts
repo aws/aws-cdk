@@ -296,7 +296,7 @@ export class Application extends ApplicationBase {
         core.Stack.of(this).formatArn({
           service: 'logs',
           resource: 'log-group',
-          sep: ':',
+          arnFormat: core.ArnFormat.COLON_RESOURCE_NAME,
           resourceName: '*',
         }),
       ],

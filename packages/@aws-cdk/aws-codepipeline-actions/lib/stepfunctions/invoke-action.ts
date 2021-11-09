@@ -140,7 +140,7 @@ export class StepFunctionInvokeAction extends Action {
         service: 'states',
         resource: 'execution',
         resourceName: `${cdk.Stack.of(this.props.stateMachine).splitArn(this.props.stateMachine.stateMachineArn, cdk.ArnFormat.COLON_RESOURCE_NAME).resourceName}:${this.props.executionNamePrefix ?? ''}*`,
-        sep: ':',
+        arnFormat: cdk.ArnFormat.COLON_RESOURCE_NAME,
       })],
     }));
 

@@ -168,7 +168,7 @@ export class BackupVault extends BackupVaultBase {
       service: 'backup',
       resource: 'backup-vault',
       resourceName: backupVaultName,
-      sep: ':',
+      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
     });
 
     return BackupVault.fromBackupVaultArn(scope, id, backupVaultArn);
