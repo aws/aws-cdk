@@ -1,10 +1,10 @@
-import { Template } from '@aws-cdk/assertions';
+import { Template, Match } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import { AuroraPostgresEngineVersion, ServerlessCluster, DatabaseClusterEngine, ParameterGroup, AuroraCapacityUnit, DatabaseSecret } from '../lib';
+import { AuroraPostgresEngineVersion, ServerlessCluster, DatabaseClusterEngine, ParameterGroup, AuroraCapacityUnit, DatabaseSecret, SubnetGroup } from '../lib';
 
 describe('serverless cluster', () => {
   test('can create a Serverless Cluster with Aurora Postgres database engine', () => {
@@ -321,7 +321,7 @@ describe('serverless cluster', () => {
     expect(cluster.clusterReadEndpoint.socketAddress).toEqual('reader-address:3306');
   });
 
-  test('throws when trying to add rotation to a serverless cluster without secret', () => {
+  test('throws when trying to add single-user rotation to a serverless cluster without secret', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'VPC');
@@ -355,6 +355,39 @@ describe('serverless cluster', () => {
 
     // THEN
     expect(() => cluster.addRotationSingleUser()).toThrow(/A single user rotation was already added to this cluster/);
+  });
+
+  test('throws when trying to add single-user rotation to a serverless cluster without VPC', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const cluster = new ServerlessCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
+    });
+
+    // THEN
+    expect(() => {
+      cluster.addRotationSingleUser();
+    }).toThrow(/Cannot add single user rotation for a cluster without VPC/);
+  });
+
+  test('throws when trying to add multi-user rotation to a serverless cluster without VPC', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const secret = new DatabaseSecret(stack, 'Secret', {
+      username: 'admin',
+    });
+
+    // WHEN
+    const cluster = new ServerlessCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
+    });
+
+    // THEN
+    expect(() => {
+      cluster.addRotationMultiUser('someId', { secret });
+    }).toThrow(/Cannot add multi user rotation for a cluster without VPC/);
   });
 
   test('can set deletion protection', () => {
@@ -769,6 +802,77 @@ describe('serverless cluster', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
       DBClusterIdentifier: clusterIdentifier,
     });
+  });
+
+  test('can create a Serverless cluster without VPC', () => {
+    // GIVEN
+    const stack = testStack();
+
+    // WHEN
+    new ServerlessCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
+      Engine: 'aurora-mysql',
+      EngineMode: 'serverless',
+      DbSubnetGroupName: Match.absent(),
+      VpcSecurityGroupIds: [],
+    });
+  });
+
+  test('can create a Serverless cluster without vpc but with imported security group', () => {
+    // GIVEN
+    const stack = testStack();
+    const sg = ec2.SecurityGroup.fromSecurityGroupId(stack, 'SG', 'SecurityGroupId12345');
+
+    // WHEN
+    new ServerlessCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
+      securityGroups: [sg],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
+      VpcSecurityGroupIds: ['SecurityGroupId12345'],
+      DbSubnetGroupName: ABSENT,
+    });
+  });
+
+  test('can create a Serverless cluster without VPC but with imported subnet group', () => {
+    // GIVEN
+    const stack = testStack();
+    const SubnetGroupName = 'SubnetGroupId12345';
+    const subnetGroup = SubnetGroup.fromSubnetGroupName(stack, 'SubnetGroup12345', SubnetGroupName);
+
+    // WHEN
+    new ServerlessCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
+      subnetGroup,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
+      DBSubnetGroupName: SubnetGroupName,
+      VpcSecurityGroupIds: ABSENT,
+    });
+  });
+
+  test('cannot create a Serverless cluster without VPC but specifying VPC subnets', () => {
+    // GIVEN
+    const stack = testStack();
+
+    // WHEN
+    const vpcSubnets = {
+      subnetName: 'AVpcSubnet',
+    };
+
+    // THEN
+    expect(() => new ServerlessCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
+      vpcSubnets,
+    })).toThrow(/A VPC is required to use vpcSubnets in ServerlessCluster. Please add a VPC or remove vpcSubnets/);
   });
 });
 
