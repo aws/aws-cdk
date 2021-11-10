@@ -59,11 +59,6 @@
       "AWSLINT_BASE_CONSTRUCT": true
     }
   },
-  "cdk-integ": {
-    "env": {
-      "ENABLE_ASSET_METADATA": true
-    }
-  },
   "keywords": [
     "aws",
     "cdk",

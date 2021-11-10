@@ -83,11 +83,7 @@
       },
       "DependsOn": [
         "MyAuthorizerFunctionServiceRole8A34C19E"
-      ],
-      "Metadata": {
-        "aws:asset:path": "asset.fec8e8354e12687c5a4b843b4e269741f53dec634946869b276f7fd1017845c3.handler",
-        "aws:asset:property": "Code"
-      }
+      ]
     },
     "authorizerRole06E70703": {
       "Type": "AWS::IAM::Role",

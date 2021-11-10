@@ -2,7 +2,7 @@
 // Verify that all integration tests still match their expected output
 import { canonicalizeTemplate } from '@aws-cdk/assert-internal';
 import { diffTemplate, formatDifferences } from '@aws-cdk/cloudformation-diff';
-import { cdkIntegSynthesizeOptions, IntegrationTests } from '../lib/integ-helpers';
+import { DEFAULT_SYNTH_OPTIONS, IntegrationTests } from '../lib/integ-helpers';
 
 /* eslint-disable no-console */
 
@@ -12,8 +12,6 @@ async function main() {
   const tests = await new IntegrationTests('test').fromCliArgs(); // always assert all tests
   const failures: string[] = [];
 
-  const synthOptions = cdkIntegSynthesizeOptions();
-
   for (const test of tests) {
     process.stdout.write(`Verifying ${test.name} against ${test.expectedFileName} ... `);
 
@@ -22,7 +20,7 @@ async function main() {
     }
 
     let expected = await test.readExpected();
-    let actual = await test.cdkSynthFast(synthOptions);
+    let actual = await test.cdkSynthFast(DEFAULT_SYNTH_OPTIONS);
 
     if ((await test.pragmas()).includes(IGNORE_ASSETS_PRAGMA)) {
       expected = canonicalizeTemplate(expected);

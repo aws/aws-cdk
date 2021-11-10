@@ -42,10 +42,6 @@
           }
         },
         "Name": "my-api"
-      },
-      "Metadata": {
-        "aws:asset:path": "asset.68497ac876de4e963fc8f7b5f1b28844c18ecc95e3f7c6e9e0bf250e03c037fb.yaml",
-        "aws:asset:property": "BodyS3Location"
       }
     },
     "myapibooks51D54548": {
@@ -93,7 +89,7 @@
         ]
       }
     },
-    "myapiDeployment92F2CB4932b2615b3572e7a12d1fded8f27d56a9": {
+    "myapiDeployment92F2CB49fe116fef7f552ff0fc433c9aa3930d2f": {
       "Type": "AWS::ApiGateway::Deployment",
       "Properties": {
         "RestApiId": {
@@ -113,7 +109,7 @@
           "Ref": "myapi4C7BF186"
         },
         "DeploymentId": {
-          "Ref": "myapiDeployment92F2CB4932b2615b3572e7a12d1fded8f27d56a9"
+          "Ref": "myapiDeployment92F2CB49fe116fef7f552ff0fc433c9aa3930d2f"
         },
         "StageName": "prod"
       }

@@ -73,14 +73,6 @@ export interface SynthOptions {
   readonly env?: Record<string, string>;
 }
 
-export interface CDKIntegAssertOptions {
-
-  /**
-   * Environment variables to be passed to 'cdk-integ' and all of its child processes.
-   */
-  env?: NodeJS.ProcessEnv;
-}
-
 export class IntegrationTest {
   public readonly expectedFileName: string;
   private readonly expectedFilePath: string;
@@ -367,38 +359,6 @@ export const DEFAULT_SYNTH_OPTIONS = {
     CDK_INTEG_REGION: 'test-region',
   },
 };
-
-/**
- * Return the package JSON for the current package
- */
-export function currentPackageJson(): any {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  return require(path.join(process.cwd(), 'package.json'));
-}
-
-/**
- * Return the CDK integ options
- */
-export function cdkIntegOptions(): CDKIntegAssertOptions {
-  return currentPackageJson()['cdk-integ'] || {};
-}
-
-/**
- * Return CDK Integration Synthesize options
- */
-export function cdkIntegSynthesizeOptions(): any {
-  const integAssertOptions = cdkIntegOptions();
-  const synthOptions = {
-    context: {
-      ...DEFAULT_SYNTH_OPTIONS.context,
-      ['aws:cdk:enable-asset-metadata']: !!integAssertOptions.env && !!integAssertOptions.env.ENABLE_ASSET_METADATA,
-    },
-    env: {
-      ...DEFAULT_SYNTH_OPTIONS.env,
-    },
-  };
-  return synthOptions;
-}
 
 /**
  * Our own execute function which doesn't use shells and strings.

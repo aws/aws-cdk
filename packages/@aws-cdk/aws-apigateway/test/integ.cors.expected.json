@@ -575,11 +575,7 @@
       },
       "DependsOn": [
         "handlerServiceRole187D5A5A"
-      ],
-      "Metadata": {
-        "aws:asset:path": "asset.c7bba0d9d477c86c6dc2adb0eb95842634a1c040dd3a66b42eec2bb604644d4f.handler",
-        "aws:asset:property": "Code"
-      }
+      ]
     }
   },
   "Outputs": {
