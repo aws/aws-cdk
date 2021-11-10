@@ -1,4 +1,4 @@
-import { Template } from '@aws-cdk/assertions';
+import { Template, Match } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as iot from '@aws-cdk/aws-iot';
 import * as logs from '@aws-cdk/aws-logs';
@@ -95,32 +95,12 @@ test('can set role', () => {
   Template.fromStack(stack).hasResourceProperties('AWS::IoT::TopicRule', {
     TopicRulePayload: {
       Actions: [
-        {
-          CloudwatchLogs: {
-            LogGroupName: 'my-log-group',
-            RoleArn: 'arn:aws:iam::123456789012:role/ForTest',
-          },
-        },
+        Match.objectLike({ CloudwatchLogs: { RoleArn: 'arn:aws:iam::123456789012:role/ForTest' } }),
       ],
     },
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-    PolicyDocument: {
-      Statement: [
-        {
-          Action: ['logs:CreateLogStream', 'logs:PutLogEvents'],
-          Effect: 'Allow',
-          Resource: 'arn:aws:logs:us-east-1:123456789012:log-group:my-log-group:*',
-        },
-        {
-          Action: 'logs:DescribeLogStreams',
-          Effect: 'Allow',
-          Resource: 'arn:aws:logs:us-east-1:123456789012:log-group:my-log-group:*',
-        },
-      ],
-      Version: '2012-10-17',
-    },
     PolicyName: 'MyRolePolicy64AB00A5',
     Roles: ['ForTest'],
   });
