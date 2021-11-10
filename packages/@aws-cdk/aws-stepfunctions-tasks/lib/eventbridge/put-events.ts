@@ -16,9 +16,10 @@ export interface EventBridgePutEventsEntry {
    *
    * Can either be provided as an object or as a JSON-serialized string
    * @example
-   * sfn.TaskInput.fromText('{"instance-id": "i-1234567890abcdef0", "state": "terminated"}')
-   * sfn.TaskInput.fromObject({ Message: 'Hello from Step Functions' })
-   * sfn.TaskInput.fromJsonPathAt('$.EventDetail')
+   *
+   * sfn.TaskInput.fromText('{"instance-id": "i-1234567890abcdef0", "state": "terminated"}');
+   * sfn.TaskInput.fromObject({ Message: 'Hello from Step Functions' });
+   * sfn.TaskInput.fromJsonPathAt('$.EventDetail');
    */
   readonly detail: sfn.TaskInput;
 
@@ -40,7 +41,8 @@ export interface EventBridgePutEventsEntry {
   /**
    * The service or application that caused this event to be generated
    *
-   * @example 'com.example.service'
+   * Example value: `com.example.service`
+   *
    * @see https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-events.html
    */
   readonly source: string;

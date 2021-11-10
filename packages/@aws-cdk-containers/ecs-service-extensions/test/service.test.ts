@@ -1,3 +1,4 @@
+import { ABSENT } from '@aws-cdk/assert-internal';
 import '@aws-cdk/assert-internal/jest';
 import * as autoscaling from '@aws-cdk/aws-autoscaling';
 import * as ec2 from '@aws-cdk/aws-ec2';
@@ -105,6 +106,119 @@ describe('service', () => {
     });
 
 
+  });
+
+  test('allows scaling on a target CPU utilization', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const environment = new Environment(stack, 'production');
+    const serviceDescription = new ServiceDescription();
+    serviceDescription.add(new Container({
+      cpu: 256,
+      memoryMiB: 512,
+      trafficPort: 80,
+      image: ecs.ContainerImage.fromRegistry('nathanpeck/name'),
+    }));
+
+    new Service(stack, 'my-service', {
+      environment,
+      serviceDescription,
+      desiredCount: 3,
+      autoScaleTaskCount: {
+        maxTaskCount: 5,
+        targetCpuUtilization: 70,
+      },
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::ECS::Service', {
+      DesiredCount: ABSENT,
+    });
+
+    expect(stack).toHaveResourceLike('AWS::ApplicationAutoScaling::ScalableTarget', {
+      MaxCapacity: 5,
+      MinCapacity: 1,
+    });
+
+    expect(stack).toHaveResource('AWS::ApplicationAutoScaling::ScalingPolicy', {
+      PolicyType: 'TargetTrackingScaling',
+      TargetTrackingScalingPolicyConfiguration: {
+        PredefinedMetricSpecification: { PredefinedMetricType: 'ECSServiceAverageCPUUtilization' },
+        TargetValue: 70,
+      },
+    });
+  });
+
+  test('allows scaling on a target memory utilization', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const environment = new Environment(stack, 'production');
+    const serviceDescription = new ServiceDescription();
+    serviceDescription.add(new Container({
+      cpu: 256,
+      memoryMiB: 512,
+      trafficPort: 80,
+      image: ecs.ContainerImage.fromRegistry('nathanpeck/name'),
+    }));
+
+    new Service(stack, 'my-service', {
+      environment,
+      serviceDescription,
+      desiredCount: 3,
+      autoScaleTaskCount: {
+        maxTaskCount: 5,
+        targetMemoryUtilization: 70,
+      },
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::ECS::Service', {
+      DesiredCount: ABSENT,
+    });
+
+    expect(stack).toHaveResourceLike('AWS::ApplicationAutoScaling::ScalableTarget', {
+      MaxCapacity: 5,
+      MinCapacity: 1,
+    });
+
+    expect(stack).toHaveResource('AWS::ApplicationAutoScaling::ScalingPolicy', {
+      PolicyType: 'TargetTrackingScaling',
+      TargetTrackingScalingPolicyConfiguration: {
+        PredefinedMetricSpecification: { PredefinedMetricType: 'ECSServiceAverageMemoryUtilization' },
+        TargetValue: 70,
+      },
+    });
+  });
+
+  test('should error when no auto scaling policies have been configured after creating the auto scaling target', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const environment = new Environment(stack, 'production');
+    const serviceDescription = new ServiceDescription();
+
+    serviceDescription.add(new Container({
+      cpu: 256,
+      memoryMiB: 512,
+      trafficPort: 80,
+      image: ecs.ContainerImage.fromRegistry('nathanpeck/name'),
+    }));
+
+    // THEN
+    expect(() => {
+      new Service(stack, 'my-service', {
+        environment,
+        serviceDescription,
+        autoScaleTaskCount: {
+          maxTaskCount: 5,
+        },
+      });
+    }).toThrow(/The auto scaling target for the service 'my-service' has been created but no auto scaling policies have been configured./);
   });
 
 });

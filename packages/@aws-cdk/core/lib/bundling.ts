@@ -17,7 +17,7 @@ export interface BundlingOptions {
   /**
    * The entrypoint to run in the Docker container.
    *
-   * @example ['/bin/sh', '-c']
+   * Example value: `['/bin/sh', '-c']`
    *
    * @see https://docs.docker.com/engine/reference/builder/#entrypoint
    *
@@ -28,7 +28,7 @@ export interface BundlingOptions {
   /**
    * The command to run in the Docker container.
    *
-   * @example ['npm', 'install']
+   * Example value: `['npm', 'install']`
    *
    * @see https://docs.docker.com/engine/reference/run/
    *
@@ -482,7 +482,7 @@ export interface DockerBuildOptions {
   /**
    * Set platform if server is multi-platform capable. _Requires Docker Engine API v1.38+_.
    *
-   * @example 'linux/amd64'
+   * Example value: `linux/amd64`
    *
    * @default - no platform specified
    */

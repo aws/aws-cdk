@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import { describeDeprecated } from '@aws-cdk/cdk-build-tools';
@@ -25,7 +25,7 @@ describeDeprecated('InvokeFunction', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::StepFunctions::StateMachine', {
+    Template.fromStack(stack).hasResourceProperties('AWS::StepFunctions::StateMachine', {
       DefinitionString: {
         'Fn::Join': ['', [
           '{"StartAt":"Task","States":{"Task":{"End":true,"Type":"Task","Resource":"',
@@ -47,7 +47,7 @@ describeDeprecated('InvokeFunction', () => {
       }),
     });
 
-    expect(stack).toHaveResource('AWS::StepFunctions::StateMachine', {
+    Template.fromStack(stack).hasResourceProperties('AWS::StepFunctions::StateMachine', {
       DefinitionString: {
         'Fn::Join': ['', [
           '{"StartAt":"Task","States":{"Task":{"End":true,"Parameters":{"foo.$":"$.bar"},"Type":"Task","Resource":"',

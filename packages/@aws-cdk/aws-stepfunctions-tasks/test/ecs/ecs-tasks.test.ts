@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as autoscaling from '@aws-cdk/aws-autoscaling';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
@@ -123,7 +123,7 @@ describeDeprecated('ecs-tasks', () => {
       Type: 'Task',
     });
 
-    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -230,7 +230,7 @@ describeDeprecated('ecs-tasks', () => {
       Type: 'Task',
     });
 
-    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {

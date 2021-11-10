@@ -132,13 +132,13 @@ describe('cloudtrail', () => {
     test('with imported s3 bucket', () => {
       // GIVEN
       const stack = getTestStack();
-      const bucket = s3.Bucket.fromBucketName(stack, 'S3', 'SomeBucket');
+      const bucket = s3.Bucket.fromBucketName(stack, 'S3', 'somebucket');
 
       // WHEN
       new Trail(stack, 'Trail', { bucket });
 
       expect(stack).toHaveResource('AWS::CloudTrail::Trail', {
-        S3BucketName: 'SomeBucket',
+        S3BucketName: 'somebucket',
       });
     });
 

@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import { describeDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Stack } from '@aws-cdk/core';
@@ -88,7 +88,7 @@ describeDeprecated('StartExecution', () => {
       },
     });
 
-    expect(stack).toHaveResource('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {

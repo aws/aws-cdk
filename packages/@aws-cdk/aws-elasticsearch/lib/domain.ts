@@ -1274,22 +1274,16 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
     const defaultInstanceType = 'r5.large.elasticsearch';
     const warmDefaultInstanceType = 'ultrawarm1.medium.elasticsearch';
 
-    const dedicatedMasterType =
-      props.capacity?.masterNodeInstanceType?.toLowerCase() ??
-      defaultInstanceType;
+    const dedicatedMasterType = initializeInstanceType(defaultInstanceType, props.capacity?.masterNodeInstanceType);
     const dedicatedMasterCount = props.capacity?.masterNodes ?? 0;
-    const dedicatedMasterEnabled = dedicatedMasterCount > 0;
+    const dedicatedMasterEnabled = cdk.Token.isUnresolved(dedicatedMasterCount) ? true : dedicatedMasterCount > 0;
 
-    const instanceType =
-      props.capacity?.dataNodeInstanceType?.toLowerCase() ??
-      defaultInstanceType;
+    const instanceType = initializeInstanceType(defaultInstanceType, props.capacity?.dataNodeInstanceType);
     const instanceCount = props.capacity?.dataNodes ?? 1;
 
-    const warmType =
-      props.capacity?.warmInstanceType?.toLowerCase() ??
-      warmDefaultInstanceType;
+    const warmType = initializeInstanceType(warmDefaultInstanceType, props.capacity?.warmInstanceType);
     const warmCount = props.capacity?.warmNodes ?? 0;
-    const warmEnabled = warmCount > 0;
+    const warmEnabled = cdk.Token.isUnresolved(warmCount) ? true : warmCount > 0;
 
     const availabilityZoneCount =
       props.zoneAwareness?.availabilityZoneCount ?? 2;
@@ -1320,11 +1314,11 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       throw new Error('When providing vpc options you need to provide a subnet for each AZ you are using');
     }
 
-    if ([dedicatedMasterType, instanceType, warmType].some(t => !t.endsWith('.elasticsearch'))) {
+    if ([dedicatedMasterType, instanceType, warmType].some(t => (!cdk.Token.isUnresolved(t) && !t.endsWith('.elasticsearch')))) {
       throw new Error('Master, data and UltraWarm node instance types must end with ".elasticsearch".');
     }
 
-    if (!warmType.startsWith('ultrawarm')) {
+    if (!cdk.Token.isUnresolved(warmType) && !warmType.startsWith('ultrawarm')) {
       throw new Error('UltraWarm node instance type must start with "ultrawarm".');
     }
 
@@ -1822,4 +1816,19 @@ function selectSubnets(vpc: ec2.IVpc, vpcSubnets: ec2.SubnetSelection[]): ec2.IS
     selected.push(...vpc.selectSubnets(selection).subnets);
   }
   return selected;
+}
+
+/**
+ * Initializes an instance type.
+ *
+ * @param defaultInstanceType Default instance type which is used if no instance type is provided
+ * @param instanceType Instance type
+ * @returns Instance type in lowercase (if provided) or default instance type
+ */
+function initializeInstanceType(defaultInstanceType: string, instanceType?: string): string {
+  if (instanceType) {
+    return cdk.Token.isUnresolved(instanceType) ? instanceType : instanceType.toLowerCase();
+  } else {
+    return defaultInstanceType;
+  }
 }

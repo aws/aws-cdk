@@ -1,5 +1,4 @@
-import { arrayWith, objectLike, ResourcePart } from '@aws-cdk/assert-internal';
-import '@aws-cdk/assert-internal/jest';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
@@ -29,7 +28,7 @@ describe('State Machine Resources', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Version: '2012-10-17',
         Statement: [
@@ -64,7 +63,7 @@ describe('State Machine Resources', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Version: '2012-10-17',
         Statement: [
@@ -183,15 +182,15 @@ describe('State Machine Resources', () => {
     stateMachine.grantStartExecution(role);
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
-        Statement: arrayWith(objectLike({
+        Statement: Match.arrayWith([Match.objectLike({
           Action: 'states:StartExecution',
           Effect: 'Allow',
           Resource: {
             Ref: 'StateMachine2E01A3A5',
           },
-        })),
+        })]),
       },
     });
 
@@ -212,7 +211,7 @@ describe('State Machine Resources', () => {
     stateMachine.grantRead(role);
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -298,7 +297,7 @@ describe('State Machine Resources', () => {
     stateMachine.grantTaskResponse(role);
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -332,7 +331,7 @@ describe('State Machine Resources', () => {
     stateMachine.grantExecution(role, 'states:GetExecutionHistory');
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -393,7 +392,7 @@ describe('State Machine Resources', () => {
     stateMachine.grant(role, 'states:ListExecution');
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -422,7 +421,7 @@ describe('State Machine Resources', () => {
     stateMachine.grantStartExecution(role);
 
     // THEN
-    expect(stack).toHaveResource('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -455,7 +454,7 @@ describe('State Machine Resources', () => {
     stateMachine.grantRead(role);
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -522,7 +521,7 @@ describe('State Machine Resources', () => {
     stateMachine.grantTaskResponse(role);
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -552,7 +551,7 @@ describe('State Machine Resources', () => {
     stateMachine.grant(role, 'states:ListExecution');
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -665,12 +664,12 @@ describe('State Machine Resources', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::StepFunctions::StateMachine', {
+    Template.fromStack(stack).hasResource('AWS::StepFunctions::StateMachine', {
       DependsOn: [
         'StateMachineRoleDefaultPolicyDF1E6607',
         'StateMachineRoleB840431D',
       ],
-    }, ResourcePart.CompleteDefinition);
+    });
   });
 
 });

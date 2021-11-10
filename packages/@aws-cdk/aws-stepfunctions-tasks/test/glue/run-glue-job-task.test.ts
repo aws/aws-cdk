@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import { describeDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Duration, Stack } from '@aws-cdk/core';
@@ -99,11 +99,11 @@ describeDeprecated('RunGlueJobTask', () => {
       definition: task,
     });
 
-    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
-        Statement: [{
+        Statement: [Match.objectLike({
           Action: 'glue:StartJobRun',
-        }],
+        })],
       },
     });
   });
@@ -118,16 +118,16 @@ describeDeprecated('RunGlueJobTask', () => {
       definition: task,
     });
 
-    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
-        Statement: [{
+        Statement: [Match.objectLike({
           Action: [
             'glue:StartJobRun',
             'glue:GetJobRun',
             'glue:GetJobRuns',
             'glue:BatchStopJobRun',
           ],
-        }],
+        })],
       },
     });
   });

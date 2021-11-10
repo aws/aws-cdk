@@ -1,4 +1,3 @@
-import '@aws-cdk/assert-internal/jest';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import * as constructs from 'constructs';
