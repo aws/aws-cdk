@@ -39,7 +39,7 @@ class EksClusterStack extends TestStack {
 
     this.cluster.addNodegroupCapacity('BottlerocketNG', {
       amiType: NodegroupAmiType.BOTTLEROCKET_X86_64,
-    })
+    });
   }
 }
 
