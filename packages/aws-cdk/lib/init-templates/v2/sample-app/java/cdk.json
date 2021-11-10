@@ -3,7 +3,7 @@
   "watch": {
     "exclude": [
       "target",
-      "src/test/**",
+      "src/test",
       "pom.xml",
       "README.md",
       "cdk.json"
