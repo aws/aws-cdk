@@ -254,8 +254,9 @@ async function combineRosettaFixtures(libraries: readonly LibraryReference[]) {
 
   for (const library of libraries) {
     const packageRosettaDir = path.join(library.root, 'rosetta');
+    const uberRosettaTargetDir = library.shortName === 'core' ? uberRosettaDir : path.join(uberRosettaDir, library.shortName.replace(/-/g, '_'));
     if (await fs.pathExists(packageRosettaDir)) {
-      await fs.copy(packageRosettaDir, uberRosettaDir, {
+      await fs.copy(packageRosettaDir, uberRosettaTargetDir, {
         overwrite: true,
         recursive: true,
       });
