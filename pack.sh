@@ -39,10 +39,11 @@ function lerna_scopes() {
 # Compile examples with respect to "decdk" directory, as all packages will
 # be symlinked there so they can all be included.
 echo "Extracting code samples" >&2
-node --experimental-worker $(which $ROSETTA) \
-  --compile \
-  --output samples.tabl.json \
-  --directory packages/decdk \
+scripts/run-rosetta.sh $TMPDIR/jsii.txt
+
+echo "Infusing examples back into assemblies" >&2
+$ROSETTA infuse \
+  samples.tabl.json \
   $(cat $TMPDIR/jsii.txt)
 
 # Jsii packaging (all at once using jsii-pacmak)
