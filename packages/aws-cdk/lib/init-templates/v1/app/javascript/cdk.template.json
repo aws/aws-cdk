@@ -7,7 +7,9 @@
       "package*.json",
       "README.md",
       "cdk.json",
-      "test"
+      "yarn.lock",
+      "test",
+      "node_modules"
     ]
   }
 }

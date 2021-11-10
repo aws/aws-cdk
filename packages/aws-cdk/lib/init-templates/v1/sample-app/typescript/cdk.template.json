@@ -8,7 +8,9 @@
       "README.md",
       "cdk.json",
       "test",
-      "*config*",
+      "jest.config.js",
+      "tsconfig.json",
+      "yarn.lock",
       "package*.json",
       "node_modules"
     ]

@@ -5,10 +5,10 @@
     "exclude": [
       "README.md",
       "cdk.json",
-      "src/Fsharp/obj",
-      "src/Fsharp/bin",
-      "src/Fsharp.sln",
-      "src/Fsharp/Fsharp.fsproj"
+      "src/%name.PascalCased%/obj",
+      "src/%name.PascalCased%/bin",
+      "src/%name.PascalCased%.sln",
+      "src/%name.PascalCased%/%name.PascalCased%.fsproj"
     ]
   }
 }
