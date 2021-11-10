@@ -56,11 +56,6 @@
   "cdk-build": {
     "cloudformation": "AWS::CloudFormation"
   },
-  "cdk-integ": {
-    "env": {
-      "ENABLE_ASSET_METADATA": true
-    }
-  },
   "keywords": [
     "aws",
     "cdk",

@@ -51,11 +51,7 @@
         }
       },
       "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete",
-      "Metadata": {
-        "aws:asset:path": "nestedstacksrefs3siblingsNested1C1211E86.nested.template.json",
-        "aws:asset:property": "TemplateURL"
-      }
+      "DeletionPolicy": "Delete"
     },
     "Nested2NestedStackNested2NestedStackResource877A1112": {
       "Type": "AWS::CloudFormation::Stack",
@@ -116,11 +112,7 @@
         }
       },
       "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete",
-      "Metadata": {
-        "aws:asset:path": "nestedstacksrefs3siblingsNested22C7C46E6.nested.template.json",
-        "aws:asset:property": "TemplateURL"
-      }
+      "DeletionPolicy": "Delete"
     }
   },
   "Parameters": {

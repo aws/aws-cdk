@@ -59,11 +59,7 @@
         }
       },
       "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete",
-      "Metadata": {
-        "aws:asset:path": "nestedstacksassetsNested51BEE8E8.nested.template.json",
-        "aws:asset:property": "TemplateURL"
-      }
+      "DeletionPolicy": "Delete"
     }
   },
   "Parameters": {
