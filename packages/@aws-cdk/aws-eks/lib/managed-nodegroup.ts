@@ -39,9 +39,9 @@ export enum NodegroupAmiType {
    *  Bottlerocket Linux(ARM-64)
    */
   BOTTLEROCKET_ARM_64 = 'BOTTLEROCKET_ARM_64',
-   /**
-    * Bottlerocket(x86-64)
-    */
+  /**
+   * Bottlerocket(x86-64)
+   */
   BOTTLEROCKET_X86_64 = 'BOTTLEROCKET_x86_64',
 }
 

@@ -152,7 +152,7 @@ describe('node group', () => {
       defaultCapacity: 0,
       version: CLUSTER_VERSION,
     });
-    new eks.Nodegroup(stack, 'Nodegroup', { 
+    new eks.Nodegroup(stack, 'Nodegroup', {
       cluster,
       amiType: NodegroupAmiType.BOTTLEROCKET_X86_64,
     });
