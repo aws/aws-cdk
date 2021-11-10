@@ -447,7 +447,7 @@ export class ServerlessCluster extends ServerlessClusterBase {
       engine: props.engine.engineType,
       engineVersion: props.engine.engineVersion?.fullVersion,
       engineMode: 'serverless',
-      enableHttpEndpoint: Lazy.anyValue({ produce: () => this.enableDataApi }),
+      enableHttpEndpoint: Lazy.any({ produce: () => this.enableDataApi }),
       kmsKeyId: props.storageEncryptionKey?.keyArn,
       masterUsername: credentials.username,
       masterUserPassword: credentials.password?.toString(),
