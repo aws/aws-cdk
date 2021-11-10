@@ -1,6 +1,7 @@
 {
     "app": "%python-executable% app.py",
     "watch": {
+        "include": ["**"],
         "exclude": [
           "**/__init__.py",
           "README.md",

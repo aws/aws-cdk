@@ -1,6 +1,7 @@
 {
   "app": "node bin/%name%.js",
   "watch": {
+    "include": ["**"],
     "exclude": [
       "jest.config.js",
       "package*.json",

@@ -1,6 +1,7 @@
 {
   "app": "dotnet run -p src/%name.PascalCased%/%name.PascalCased%.csproj",
   "watch": {
+    "include": ["**"],
     "exclude": [
       "README.md",
       "cdk.json",

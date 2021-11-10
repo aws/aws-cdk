@@ -1,6 +1,7 @@
 {
   "app": "go mod download && go run %name%.go",
   "watch": {
+    "include": ["**"],
     "exclude": [
       "**/*test.go",
       "README.md",
