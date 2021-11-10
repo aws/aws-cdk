@@ -8,7 +8,8 @@
       "cdk.json",
       "test",
       "*config*",
-      "package*.json"
+      "package*.json",
+      "node_modules"
     ]
   }
 }
