@@ -270,6 +270,8 @@ this purpose.
 use the region and account of the stack you're calling it on:
 
 ```ts
+declare const stack: Stack;
+
 // Builds "arn:<PARTITION>:lambda:<REGION>:<ACCOUNT>:function:MyFunction"
 stack.formatArn({
   service: 'lambda',
@@ -285,6 +287,8 @@ but in case of a deploy-time value be aware that the result will be another
 deploy-time value which cannot be inspected in the CDK application.
 
 ```ts
+declare const stack: Stack;
+
 // Extracts the function name out of an AWS Lambda Function ARN
 const arnComponents = stack.parseArn(arn, ':');
 const functionName = arnComponents.resourceName;
