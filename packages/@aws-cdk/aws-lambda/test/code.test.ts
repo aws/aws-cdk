@@ -392,6 +392,28 @@ describe('code', () => {
       }, ResourcePart.CompleteDefinition);
     });
 
+    test('adds code asset metadata with default dockerfile path', () => {
+      // given
+      const stack = new cdk.Stack();
+      stack.node.setContext(cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT, true);
+
+      // when
+      new lambda.Function(stack, 'Fn', {
+        code: lambda.Code.fromAssetImage(path.join(__dirname, 'docker-lambda-handler')),
+        handler: lambda.Handler.FROM_IMAGE,
+        runtime: lambda.Runtime.FROM_IMAGE,
+      });
+
+      // then
+      expect(stack).toHaveResource('AWS::Lambda::Function', {
+        Metadata: {
+          [cxapi.ASSET_RESOURCE_METADATA_PATH_KEY]: 'asset.318d72253965eded22556ab8551de8ba726e9394133ce0f2ec2d1de318d7fb79',
+          [cxapi.ASSET_RESOURCE_METADATA_DOCKERFILE_PATH_KEY]: 'Dockerfile',
+          [cxapi.ASSET_RESOURCE_METADATA_PROPERTY_KEY]: 'Code.ImageUri',
+        },
+      }, ResourcePart.CompleteDefinition);
+    });
+
     test('fails if asset is bound with a second stack', () => {
       // given
       const app = new cdk.App();

@@ -183,7 +183,8 @@ export class DockerImageAsset extends CoreConstruct implements IAsset {
     }
 
     // validate the docker file exists
-    const file = path.join(dir, props.file || 'Dockerfile');
+    this.dockerfilePath = props.file || 'Dockerfile';
+    const file = path.join(dir, this.dockerfilePath);
     if (!fs.existsSync(file)) {
       throw new Error(`Cannot find file at ${file}`);
     }
@@ -247,7 +248,6 @@ export class DockerImageAsset extends CoreConstruct implements IAsset {
 
     const stack = Stack.of(this);
     this.assetPath = staging.relativeStagedPath(stack);
-    this.dockerfilePath = props.file;
     this.dockerBuildArgs = props.buildArgs;
     this.dockerBuildTarget = props.target;
 
@@ -255,7 +255,7 @@ export class DockerImageAsset extends CoreConstruct implements IAsset {
       directoryName: this.assetPath,
       dockerBuildArgs: this.dockerBuildArgs,
       dockerBuildTarget: this.dockerBuildTarget,
-      dockerFile: this.dockerfilePath,
+      dockerFile: props.file,
       sourceHash: staging.assetHash,
     });
 
