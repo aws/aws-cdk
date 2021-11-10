@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.132.0](https://github.com/aws/aws-cdk/compare/v1.131.0...v1.132.0) (2021-11-09)
+
+
+### Features
+
+* **apigatewayv2:** http api - mTLS support  ([#17284](https://github.com/aws/aws-cdk/issues/17284)) ([54be156](https://github.com/aws/aws-cdk/commit/54be1567546ffd52e83fbe52531f901c0b6c29c9)), closes [#12559](https://github.com/aws/aws-cdk/issues/12559)
+* **stepfunctions-tasks:** add `AutoTerminationPolicy` to `EmrCreateCluster`  ([#16976](https://github.com/aws/aws-cdk/issues/16976)) ([27ad7d8](https://github.com/aws/aws-cdk/commit/27ad7d86824b6378d470cda7304e7ae89ebbebf4))
+* the assertions module is now stable! ([#17395](https://github.com/aws/aws-cdk/issues/17395)) ([ede5e22](https://github.com/aws/aws-cdk/commit/ede5e22da2e59218534c17c33a21cab98a3001a9))
+* **cfnspec:** cloudformation spec v47.0.0 ([#17392](https://github.com/aws/aws-cdk/issues/17392)) ([7100d43](https://github.com/aws/aws-cdk/commit/7100d43ba7b9e9ce74fb64b33403aa8eaee63255))
+* **lambda-nodejs:** custom asset hash ([#16412](https://github.com/aws/aws-cdk/issues/16412)) ([90da730](https://github.com/aws/aws-cdk/commit/90da730244513f9614604f6be3a77adbb6b17f79)), closes [#16157](https://github.com/aws/aws-cdk/issues/16157)
+
+
+### Bug Fixes
+
+* **codecommit:** notifyOnPullRequestMerged method has a typo in its name ([#17348](https://github.com/aws/aws-cdk/issues/17348)) ([cac5726](https://github.com/aws/aws-cdk/commit/cac572620210a435f679cf7d7d9f8b6e733b340c))
+* **opensearch:** domain doesn't handle tokens in capacity configuration ([#17131](https://github.com/aws/aws-cdk/issues/17131)) ([2627939](https://github.com/aws/aws-cdk/commit/2627939108a2e979e385bf2942da1c05d48c678c)), closes [#15014](https://github.com/aws/aws-cdk/issues/15014)
+
 ## [1.131.0](https://github.com/aws/aws-cdk/compare/v1.130.0...v1.131.0) (2021-11-07)
 
 

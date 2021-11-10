@@ -119,10 +119,10 @@ export class DynamoProjectionExpression {
 export class DynamoAttributeValue {
   /**
    * Sets an attribute of type String. For example:  "S": "Hello"
-   * Strings may be literal values or as JsonPath.
+   * Strings may be literal values or as JsonPath. Example values:
    *
-   * @example `DynamoAttributeValue.fromString('someValue')
-   * @example `DynamoAttributeValue.fromString(JsonPath.stringAt('$.bar'))
+   * - `DynamoAttributeValue.fromString('someValue')`
+   * - `DynamoAttributeValue.fromString(JsonPath.stringAt('$.bar'))`
    */
   public static fromString(value: string) {
     return new DynamoAttributeValue({ S: value });
@@ -217,6 +217,16 @@ export class DynamoAttributeValue {
    */
   public static fromList(value: DynamoAttributeValue[]) {
     return new DynamoAttributeValue({ L: value.map((val) => val.toObject()) });
+  }
+
+  /**
+   * Sets an attribute of type List. For example:  "L": [ {"S": "Cookies"} , {"S": "Coffee"}, {"S", "Veggies"}]
+   *
+   * @param value Json path that specifies state input to be used
+   */
+  public static listFromJsonPath(value: string) {
+    validateJsonPath(value);
+    return new DynamoAttributeValue({ L: value });
   }
 
   /**

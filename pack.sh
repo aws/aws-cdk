@@ -41,6 +41,11 @@ function lerna_scopes() {
 echo "Extracting code samples" >&2
 scripts/run-rosetta.sh $TMPDIR/jsii.txt
 
+echo "Infusing examples back into assemblies" >&2
+$ROSETTA infuse \
+  samples.tabl.json \
+  $(cat $TMPDIR/jsii.txt)
+
 # Jsii packaging (all at once using jsii-pacmak)
 echo "Packaging jsii modules" >&2
 $PACMAK \
