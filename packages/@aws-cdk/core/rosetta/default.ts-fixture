@@ -48,11 +48,9 @@ declare const functionProps: lambda.FunctionProps;
 declare const isCompleteHandler: lambda.Function;
 declare const myBucket: s3.IBucket;
 declare const myFunction: lambda.IFunction;
-declare const myProvider: CustomResourceProvider;
 declare const myTopic: sns.ITopic;
 declare const onEventHandler: lambda.Function;
 declare const resourceProps: CfnResourceProps;
-declare const stack: Stack;
 
 declare class MyStack extends Stack {}
 declare class YourStack extends Stack {}
