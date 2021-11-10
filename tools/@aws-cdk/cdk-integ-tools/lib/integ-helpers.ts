@@ -154,9 +154,9 @@ export class IntegrationTest {
         const names = Object.keys(stacks);
         if (names.length !== 1) {
           throw new Error('"cdk-integ" can only operate on apps with a single stack.\n\n' +
-              '  If your app has multiple stacks, specify which stack to select by adding this to your test source:\n\n' +
-              `      ${CDK_INTEG_STACK_PRAGMA} STACK ...\n\n` +
-              `  Available stacks: ${names.join(' ')} (wildcards are also supported)\n`);
+            '  If your app has multiple stacks, specify which stack to select by adding this to your test source:\n\n' +
+            `      ${CDK_INTEG_STACK_PRAGMA} STACK ...\n\n` +
+            `  Available stacks: ${names.join(' ')} (wildcards are also supported)\n`);
         }
         return stacks[names[0]];
       }
@@ -233,9 +233,9 @@ export class IntegrationTest {
     const stacks = (await this.invokeCli(['ls'], { ...DEFAULT_SYNTH_OPTIONS })).split('\n');
     if (stacks.length !== 1) {
       throw new Error('"cdk-integ" can only operate on apps with a single stack.\n\n' +
-          '  If your app has multiple stacks, specify which stack to select by adding this to your test source:\n\n' +
-          `      ${CDK_INTEG_STACK_PRAGMA} STACK ...\n\n` +
-          `  Available stacks: ${stacks.join(' ')} (wildcards are also supported)\n`);
+        '  If your app has multiple stacks, specify which stack to select by adding this to your test source:\n\n' +
+        `      ${CDK_INTEG_STACK_PRAGMA} STACK ...\n\n` +
+        `  Available stacks: ${stacks.join(' ')} (wildcards are also supported)\n`);
     }
 
     return stacks;
