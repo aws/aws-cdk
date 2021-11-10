@@ -51,7 +51,7 @@
     "eslint": "^7.32.0",
     "eslint-import-resolver-node": "^0.3.6",
     "eslint-import-resolver-typescript": "^2.5.0",
-    "eslint-plugin-import": "^2.25.2",
+    "eslint-plugin-import": "^2.25.3",
     "eslint-plugin-jest": "^24.7.0",
     "fs-extra": "^9.1.0",
     "jest": "^27.3.1",
