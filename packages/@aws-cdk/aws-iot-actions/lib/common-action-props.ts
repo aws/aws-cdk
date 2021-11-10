@@ -2,8 +2,6 @@ import * as iam from '@aws-cdk/aws-iam';
 
 /**
  * Common properties shared by Actions it access to AWS service.
- *
- * @internal
  */
 export interface CommonActionProps {
   /**

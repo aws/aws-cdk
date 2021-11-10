@@ -1,7 +1,7 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as iot from '@aws-cdk/aws-iot';
 import * as logs from '@aws-cdk/aws-logs';
-import { CommonActionProps } from './private/common-action-props';
+import { CommonActionProps } from './common-action-props';
 import { singletonActionRole } from './private/role';
 
 /**

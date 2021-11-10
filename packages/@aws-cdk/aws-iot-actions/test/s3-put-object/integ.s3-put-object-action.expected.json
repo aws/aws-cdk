@@ -10,6 +10,7 @@
                 "BucketName": {
                   "Ref": "MyBucketF68F3FF0"
                 },
+                "CannedAcl": "bucket-owner-full-control",
                 "Key": "${year}/${month}/${day}/${topic(2)}",
                 "RoleArn": {
                   "Fn::GetAtt": [

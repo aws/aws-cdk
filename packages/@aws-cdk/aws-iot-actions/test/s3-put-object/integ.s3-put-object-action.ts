@@ -22,6 +22,7 @@ class TestStack extends cdk.Stack {
     topicRule.addAction(
       new actions.S3PutObjectAction(bucket, {
         key: '${year}/${month}/${day}/${topic(2)}',
+        accessControl: s3.BucketAccessControl.BUCKET_OWNER_FULL_CONTROL,
       }),
     );
   }

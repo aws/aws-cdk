@@ -2,7 +2,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as iot from '@aws-cdk/aws-iot';
 import * as s3 from '@aws-cdk/aws-s3';
 import { kebab as toKebabCase } from 'case';
-import { CommonActionProps } from './private/common-action-props';
+import { CommonActionProps } from './common-action-props';
 import { singletonActionRole } from './private/role';
 
 /**
@@ -15,7 +15,7 @@ export interface S3PutObjectActionProps extends CommonActionProps {
    *
    * @default None
    */
-  readonly cannedAcl?: s3.BucketAccessControl;
+  readonly accessControl?: s3.BucketAccessControl;
 
   /**
    * The path to the file where the data is written.
@@ -32,7 +32,7 @@ export interface S3PutObjectActionProps extends CommonActionProps {
  * The action to write the data from an MQTT message to an Amazon S3 bucket.
  */
 export class S3PutObjectAction implements iot.IAction {
-  private readonly cannedAcl?: string;
+  private readonly accessControl?: string;
   private readonly key?: string;
   private readonly role?: iam.IRole;
 
@@ -41,31 +41,27 @@ export class S3PutObjectAction implements iot.IAction {
    * @param props Optional properties to not use default
    */
   constructor(private readonly bucket: s3.IBucket, props: S3PutObjectActionProps = {}) {
-    this.cannedAcl = props.cannedAcl;
+    this.accessControl = props.accessControl;
     this.key = props.key;
     this.role = props.role;
   }
 
   bind(rule: iot.ITopicRule): iot.ActionConfig {
     const role = this.role ?? singletonActionRole(rule);
-    role.addToPrincipalPolicy(this.putEventStatement(this.bucket));
+    role.addToPrincipalPolicy(new iam.PolicyStatement({
+      actions: ['s3:PutObject'],
+      resources: [this.bucket.arnForObjects('*')],
+    }));
 
     return {
       configuration: {
         s3: {
           bucketName: this.bucket.bucketName,
-          cannedAcl: this.cannedAcl && toKebabCase(this.cannedAcl.toString()),
+          cannedAcl: this.accessControl && toKebabCase(this.accessControl.toString()),
           key: this.key ?? '${topic()}/${timestamp()}',
           roleArn: role.roleArn,
         },
       },
     };
-  }
-
-  private putEventStatement(bucket: s3.IBucket) {
-    return new iam.PolicyStatement({
-      actions: ['s3:PutObject'],
-      resources: [bucket.arnForObjects('*')],
-    });
   }
 }

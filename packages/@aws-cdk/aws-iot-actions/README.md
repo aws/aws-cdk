@@ -91,6 +91,19 @@ new iot.TopicRule(this, 'TopicRule', {
 });
 ```
 
+If you wanna set access control to the S3 bucket object, you can specify `accessControl` as following:
+
+```ts
+new iot.TopicRule(this, 'TopicRule', {
+  sql: iot.IotSql.fromStringAsVer20160323("SELECT * FROM 'device/+/data'"),
+  actions: [
+    new actions.S3PutObjectAction(bucket, {
+      accessControl: s3.BucketAccessControl.PUBLIC_READ,
+    }),
+  ],
+});
+```
+
 ## Put logs to CloudWatch Logs
 
 The code snippet below creates an AWS IoT Rule that put logs to CloudWatch Logs
