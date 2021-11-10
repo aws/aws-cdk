@@ -41,40 +41,52 @@ export async function generateMissingExamples(assemblyLocations: string[], optio
 
     const assembly = await typesystem.load(assemblyLocation);
 
-    for (const classType of assembly.classes) {
-      if (classType.spec.docs?.example) {
+    const documentableClasses = assembly.classes.filter(c => !c.docs.example);
+
+    // eslint-disable-next-line no-console
+    console.log(`${assembly.name}: ${documentableClasses.length} classes to document`);
+
+    if (documentableClasses.length === 0) { continue; }
+
+    const failed = [];
+    for (const classType of documentableClasses) {
+      const example = generateClassAssignment(classType);
+      if (!example) {
+        failed.push(classType.name);
         continue;
       }
 
-      const example = generateClassAssignment(classType);
+      const source = [...COMMENT_WARNING, '\n', example].join('\n');
+      const apiLocation: ApiLocation = { api: 'type', fqn: classType.fqn };
 
-      if (example) {
-        const source = [...COMMENT_WARNING, '\n', example].join('\n');
-        const apiLocation: ApiLocation = { api: 'type', fqn: classType.fqn };
+      rosetta.translateExample(
+        apiLocation,
+        source,
+        TargetLanguage.PYTHON,
+        true,
+        assemblyLocation,
+      );
 
-        rosetta.translateExample(
-          apiLocation,
-          source,
-          TargetLanguage.PYTHON,
-          true,
-          assemblyLocation,
-        );
-
-        // The following is because the API is silly. `translateExample` will give us back
-        // one Translation, but `insertExample` needs a TranslatedSnippet (which it had, but
-        // didn't return). Create an equivalent one.
-        const snippet = TranslatedSnippet.fromTypeScript({
-          location: { api: apiLocation, field: { field: 'example' } },
-          visibleSource: source,
-        });
-        insertExample(snippet, classType.spec, cacheToTablet);
-      }
-
+      // The following is because the API is silly. `translateExample` will give us back
+      // one Translation, but `insertExample` needs a TranslatedSnippet (which it had, but
+      // didn't return). Create an equivalent one.
+      const snippet = TranslatedSnippet.fromTypeScript({
+        location: { api: apiLocation, field: { field: 'example' } },
+        visibleSource: source,
+      });
+      insertExample(snippet, classType.spec, cacheToTablet);
     }
+
+    // eslint-disable-next-line no-console
+    console.log([
+      `${assembly.name}: annotated ${documentableClasses.length - failed.length} classes`,
+      ...(failed.length > 0 ? [`failed: ${failed.join(', ')}`] : []),
+    ].join(', '));
+
+    await replaceAssembly(assembly.spec, assemblyLocation);
   }
   // update all assemblies
   for (let i = 0; i < assemblies.length; i++) {
-    await replaceAssembly(assemblies[i].spec, assemblyLocations[i]);
   }
 
   if (options.cacheToTablet) {

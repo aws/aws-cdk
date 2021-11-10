@@ -24,12 +24,7 @@ async function main() {
     .showHelpOnFail(false)
     .argv;
 
-  const tabletFile = args._[0] as string;
-  const assemblyDirs = args._.slice(1) as string[];
-
-  if (tabletFile === undefined) {
-    throw new Error('TABLET argument required');
-  }
+  const assemblyDirs = args._.map(x => `${x}`);
 
   await generateMissingExamples(assemblyDirs.length > 0 ? assemblyDirs : ['.'], {
     cacheFromTablet: args['cache-from'],
