@@ -343,7 +343,7 @@ export class ConstructNode {
    * will be excluded from the calculation. In those cases constructs in the
    * same tree may have the same addreess.
    *
-   * @example c83a2846e506bcc5f10682b564084bca2d275709ee
+   * Example value: `c83a2846e506bcc5f10682b564084bca2d275709ee`
    */
   public get addr(): string { return this._actualNode.addr; }
 
