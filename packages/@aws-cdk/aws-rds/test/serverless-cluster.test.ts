@@ -70,28 +70,18 @@ describe('serverless cluster', () => {
         },
         EngineMode: 'serverless',
         MasterUsername: {
-          'Fn::Join': [
-            '',
-            [
-              '{{resolve:secretsmanager:',
-              {
-                Ref: 'ServerlessDatabaseSecret1C9BF4F1',
-              },
-              ':SecretString:username::}}',
-            ],
-          ],
+          'Fn::Join': ['', [
+            '{{resolve:secretsmanager:',
+            { Ref: 'ServerlessDatabaseSecret1C9BF4F1' },
+            ':SecretString:username::}}',
+          ]],
         },
         MasterUserPassword: {
-          'Fn::Join': [
-            '',
-            [
-              '{{resolve:secretsmanager:',
-              {
-                Ref: 'ServerlessDatabaseSecret1C9BF4F1',
-              },
-              ':SecretString:password::}}',
-            ],
-          ],
+          'Fn::Join': ['', [
+            '{{resolve:secretsmanager:',
+            { Ref: 'ServerlessDatabaseSecret1C9BF4F1' },
+            ':SecretString:password::}}',
+          ]],
         },
         StorageEncrypted: true,
         VpcSecurityGroupIds: [
@@ -131,28 +121,18 @@ describe('serverless cluster', () => {
       EngineMode: 'serverless',
       DBSubnetGroupName: { Ref: 'DatabaseSubnets56F17B9A' },
       MasterUsername: {
-        'Fn::Join': [
-          '',
-          [
-            '{{resolve:secretsmanager:',
-            {
-              Ref: 'DatabaseSecret3B817195',
-            },
-            ':SecretString:username::}}',
-          ],
-        ],
+        'Fn::Join': ['', [
+          '{{resolve:secretsmanager:',
+          { Ref: 'DatabaseSecret3B817195' },
+          ':SecretString:username::}}',
+        ]],
       },
       MasterUserPassword: {
-        'Fn::Join': [
-          '',
-          [
-            '{{resolve:secretsmanager:',
-            {
-              Ref: 'DatabaseSecret3B817195',
-            },
-            ':SecretString:password::}}',
-          ],
-        ],
+        'Fn::Join': ['', [
+          '{{resolve:secretsmanager:',
+          { Ref: 'DatabaseSecret3B817195' },
+          ':SecretString:password::}}',
+        ]],
       },
       VpcSecurityGroupIds: ['SecurityGroupId12345'],
     });
@@ -192,28 +172,18 @@ describe('serverless cluster', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
       MasterUsername: {
-        'Fn::Join': [
-          '',
-          [
-            '{{resolve:secretsmanager:',
-            {
-              Ref: 'DatabaseSecret3B817195',
-            },
-            ':SecretString:username::}}',
-          ],
-        ],
+        'Fn::Join': ['', [
+          '{{resolve:secretsmanager:',
+          { Ref: 'DatabaseSecret3B817195' },
+          ':SecretString:username::}}',
+        ]],
       },
       MasterUserPassword: {
-        'Fn::Join': [
-          '',
-          [
-            '{{resolve:secretsmanager:',
-            {
-              Ref: 'DatabaseSecret3B817195',
-            },
-            ':SecretString:password::}}',
-          ],
-        ],
+        'Fn::Join': ['', [
+          '{{resolve:secretsmanager:',
+          { Ref: 'DatabaseSecret3B817195' },
+          ':SecretString:password::}}',
+        ]],
       },
     });
 
@@ -612,15 +582,12 @@ describe('serverless cluster', () => {
 
     // THEN
     expect(stack.resolve(cluster.clusterArn)).toEqual({
-      'Fn::Join': [
-        '',
-        [
-          'arn:',
-          { Ref: 'AWS::Partition' },
-          ':rds:us-test-1:12345:cluster:',
-          { Ref: 'DatabaseB269D8BB' },
-        ],
-      ],
+      'Fn::Join': ['', [
+        'arn:',
+        { Ref: 'AWS::Partition' },
+        ':rds:us-test-1:12345:cluster:',
+        { Ref: 'DatabaseB269D8BB' },
+      ]],
     });
   });
 
