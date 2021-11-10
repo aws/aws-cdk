@@ -24,7 +24,9 @@
           "GenerateStringKey": "password",
           "SecretStringTemplate": "{\"username\":\"aws\"}"
         }
-      }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "AppF1B96344": {
       "Type": "AWS::Amplify::App",
@@ -54,6 +56,7 @@
           },
           "Username": "aws"
         },
+        "CustomHeaders": "customHeaders:\n  - pattern: \"*.json\"\n    headers:\n      - key: custom-header-name-1\n        value: custom-header-value-1\n      - key: custom-header-name-2\n        value: custom-header-value-2\n  - pattern: /path/*\n    headers:\n      - key: custom-header-name-1\n        value: custom-header-value-2\n",
         "CustomRules": [
           {
             "Source": "/source",
