@@ -317,9 +317,8 @@ You can do this by passing in the role with an explicitly set name:
 ```ts fixture=portfolio-product
 import * as iam from '@aws-cdk/aws-iam';
 
-const roleName = 'MyRole';
 const launchRole = new iam.Role(this, 'LaunchRole', {
-  roleName: roleName,
+  roleName: 'MyRole',
   assumedBy: new iam.ServicePrincipal('servicecatalog.amazonaws.com'),
 });
 

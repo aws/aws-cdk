@@ -112,6 +112,9 @@ export interface IPortfolio extends cdk.IResource {
 
   /**
    * Force users to assume a certain role when launching a product.
+   * This sets the launch role using the role arn which is tied to the account this role exists in.
+   * This is useful if you will be provisioning products from the account where this role exists.
+   * If you intend to share the portfolio across accounts, use a local launch role.
    *
    * @param product A service catalog product.
    * @param launchRole The IAM role a user must assume when provisioning the product.
@@ -121,7 +124,7 @@ export interface IPortfolio extends cdk.IResource {
 
   /**
    * Force users to assume a certain role when launching a product.
-   * The role will be referenced by name in the local account.
+   * The role will be referenced by name in the local account instead of a static role arn.
    * A role with this name will automatically be created and assumable by Service Catalog in this account.
    * This is useful when sharing the portfolio with multiple accounts.
    *
@@ -133,7 +136,7 @@ export interface IPortfolio extends cdk.IResource {
 
   /**
    * Force users to assume a certain role when launching a product.
-   * The role name will be referenced by name in the local account and must be set explicitly.
+   * The role name will be referenced by in the local account and must be set explicitly.
    * This is useful when sharing the portfolio with multiple accounts.
    *
    * @param product A service catalog product.
@@ -203,7 +206,10 @@ abstract class PortfolioBase extends cdk.Resource implements IPortfolio {
   }
 
   public setLocalLaunchRoleName(product: IProduct, launchRoleName: string, options: CommonConstraintOptions = {}): iam.IRole {
-    const launchRole: iam.IRole = this.createBaseLaunchRole(launchRoleName);
+    const launchRole: iam.IRole = new iam.Role(this, `LaunchRole${launchRoleName}`, {
+      roleName: launchRoleName,
+      assumedBy: new iam.ServicePrincipal('servicecatalog.amazonaws.com'),
+    });
     AssociationManager.setLocalLaunchRoleName(this, product, launchRole.roleName, options);
     return launchRole;
   }
@@ -231,16 +237,6 @@ abstract class PortfolioBase extends cdk.Resource implements IPortfolio {
       });
       this.associatedPrincipals.add(principalArn);
     }
-  }
-
-  /**
-   * If setting a local launch role by name, this will create a launch role that trusts service catalog with that name.
-   */
-  private createBaseLaunchRole(roleName: string): iam.Role {
-    return new iam.Role(this.stack, `LaunchRole${roleName}`, {
-      roleName: roleName,
-      assumedBy: new iam.ServicePrincipal('servicecatalog.amazonaws.com'),
-    });
   }
 
   /**
