@@ -37,7 +37,7 @@
     "eslint-import-resolver-node": "^0.3.6",
     "eslint-import-resolver-typescript": "^2.5.0",
     "@aws-cdk/eslint-plugin": "0.0.0",
-    "eslint-plugin-import": "^2.25.2",
+    "eslint-plugin-import": "^2.25.3",
     "eslint-plugin-jest": "^24.7.0",
     "jest": "^27.3.1"
   },
