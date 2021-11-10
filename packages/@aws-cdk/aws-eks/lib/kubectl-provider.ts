@@ -1,5 +1,6 @@
 import * as path from 'path';
 import * as iam from '@aws-cdk/aws-iam';
+import * as kms from '@aws-cdk/aws-kms';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { Duration, Stack, NestedStack, Names } from '@aws-cdk/core';
 import * as cr from '@aws-cdk/custom-resources';
@@ -69,6 +70,8 @@ export class KubectlProvider extends NestedStack {
 
     const memorySize = cluster.kubectlMemory ? cluster.kubectlMemory.toMebibytes() : 1024;
 
+    const environmentEncryption = cluster.clusterEncryptionConfigKeyArn ? kms.Key.fromKeyArn(this, 'EnvironmentKey', cluster.clusterEncryptionConfigKeyArn) : undefined
+
     const handler = new lambda.Function(this, 'Handler', {
       code: lambda.Code.fromAsset(path.join(__dirname, 'kubectl-handler')),
       runtime: lambda.Runtime.PYTHON_3_7,
@@ -77,6 +80,7 @@ export class KubectlProvider extends NestedStack {
       description: 'onEvent handler for EKS kubectl resource provider',
       memorySize,
       environment: cluster.kubectlEnvironment,
+      environmentEncryption,
 
       // defined only when using private access
       vpc: cluster.kubectlPrivateSubnets ? cluster.vpc : undefined,
