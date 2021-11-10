@@ -167,8 +167,10 @@ export class AssociationManager {
     };
   }
 
-  private static setLaunchRoleConstraint(portfolio: IPortfolio, product: IProduct, options: CommonConstraintOptions,
-    roleOptions: LaunchRoleConstraintRoleOptions): void {
+  private static setLaunchRoleConstraint(
+    portfolio: IPortfolio, product: IProduct, options: CommonConstraintOptions,
+    roleOptions: LaunchRoleConstraintRoleOptions,
+  ): void {
     const association = this.associateProductWithPortfolio(portfolio, product, options);
     // Check if a stackset deployment constraint has already been configured.
     if (portfolio.node.tryFindChild(this.stackSetConstraintLogicalId(association.associationKey))) {
