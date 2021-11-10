@@ -1,7 +1,13 @@
 {
   "app": "dotnet run -p src/%name.PascalCased%/%name.PascalCased%.fsproj",
   "watch": {
-    "include": ["src/%name.PascalCased%/**/*.fs"],
-    "exclude": ["src/%name.PascalCased%/obj/*"]
+    "exclude": [
+      "README.md",
+      "cdk.json",
+      "src/Fsharp/obj",
+      "src/Fsharp/bin",
+      "src/Fsharp.sln",
+      "src/Fsharp/Fsharp.fsproj"
+    ]
   }
 }

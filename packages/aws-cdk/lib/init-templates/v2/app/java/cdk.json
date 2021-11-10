@@ -1,7 +1,12 @@
 {
   "app": "mvn -e -q compile exec:java",
   "watch": {
-    "include": ["**/*.java"],
-    "exclude": ["target"]
+    "exclude": [
+      "target",
+      "src/test/**",
+      "pom.xml",
+      "README.md",
+      "cdk.json"
+    ]
   }
 }

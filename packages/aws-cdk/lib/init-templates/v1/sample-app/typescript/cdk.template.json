@@ -1,7 +1,14 @@
 {
   "app": "npx ts-node --prefer-ts-exts bin/%name%.ts",
   "watch": {
-    "include": ["./**/*.ts"],
-    "exclude": ["./**/*.d.ts"]
+    "exclude": [
+      "**/*.d.ts",
+      "**/*.js",
+      "README.md",
+      "cdk.json",
+      "test",
+      "*config*",
+      "package*.json"
+    ]
   }
 }

@@ -1,7 +1,14 @@
 {
   "app": "dotnet run -p src/%name.PascalCased%/%name.PascalCased%.csproj",
   "watch": {
-    "include": ["src/%name.PascalCased%/**/*.cs"],
-    "exclude": ["src/%name.PascalCased%/obj/*"]
+    "exclude": [
+      "README.md",
+      "cdk.json",
+      "src/Csharp/obj",
+      "src/Csharp/bin",
+      "src/Csharp.sln",
+      "src/Csharp/GlobalSuppressions.cs",
+      "src/Csharp/Csharp.csproj"
+    ]
   }
 }

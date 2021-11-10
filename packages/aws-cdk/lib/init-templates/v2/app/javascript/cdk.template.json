@@ -1,7 +1,12 @@
 {
   "app": "node bin/%name%.js",
   "watch": {
-    "include": ["**/*.js"],
-    "exclude": ["jest.config.js"]
+    "exclude": [
+      "jest.config.js",
+      "package*.json",
+      "README.md",
+      "cdk.json",
+      "test"
+    ]
   }
 }

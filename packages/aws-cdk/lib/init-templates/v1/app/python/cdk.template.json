@@ -1,7 +1,14 @@
 {
     "app": "%python-executable% app.py",
     "watch": {
-        "include": ["**/*.py"],
-        "exclude": ["**/__init__.py"]
+        "exclude": [
+          "**/__init__.py",
+          "README.md",
+          "cdk.json",
+          "*.txt",
+          "source.bat",
+          "tests",
+          "python/__pycache__"
+        ]
     }
 }

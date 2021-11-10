@@ -1,6 +1,12 @@
 {
   "app": "go mod download && go run %name%.go",
   "watch": {
-    "include": ["**/*.go"]
+    "exclude": [
+      "**/*test.go",
+      "README.md",
+      "cdk.json",
+      "go.mod",
+      "go.sum"
+    ]
   }
 }
