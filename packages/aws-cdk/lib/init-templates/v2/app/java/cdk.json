@@ -1,6 +1,7 @@
 {
   "app": "mvn -e -q compile exec:java",
   "watch": {
-    "include": "**/*.java"
+    "include": ["**/*.java"],
+    "exclude": ["target"]
   }
 }

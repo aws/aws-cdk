@@ -1,6 +1,6 @@
 {
   "app": "go mod download && go run %name%.go",
   "watch": {
-    "include": "**/*.go"
+    "include": ["**/*.go"]
   }
 }
