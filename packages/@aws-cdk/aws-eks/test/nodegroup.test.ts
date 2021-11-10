@@ -159,7 +159,30 @@ describe('node group', () => {
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::EKS::Nodegroup', {
-      foo: 'bar',
+      ClusterName: {
+        Ref: 'Cluster9EE0221C',
+      },
+      NodeRole: {
+        'Fn::GetAtt': [
+          'NodegroupNodeGroupRole038A128B',
+          'Arn',
+        ],
+      },
+      Subnets: [
+        {
+          Ref: 'VPCPrivateSubnet1Subnet8BCA10E0',
+        },
+        {
+          Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A',
+        },
+      ],
+      AmiType: 'BOTTLEROCKET_x86_64',
+      ForceUpdateEnabled: true,
+      ScalingConfig: {
+        DesiredSize: 2,
+        MaxSize: 2,
+        MinSize: 1,
+      },
     });
 
 
