@@ -1,15 +1,9 @@
 /// !cdk-integ pragma:ignore-assets
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-// import * as kms from '@aws-cdk/aws-kms';
 import { App } from '@aws-cdk/core';
-// import * as cdk8s from 'cdk8s';
-// import * as kplus from 'cdk8s-plus';
-// import * as constructs from 'constructs';
 import * as eks from '../lib';
 import { NodegroupAmiType } from '../lib';
-// import * as hello from './hello-k8s';
-// import { Pinger } from './pinger/pinger';
 import { TestStack } from './util';
 
 
@@ -37,16 +31,17 @@ class EksClusterStack extends TestStack {
       version: eks.KubernetesVersion.V1_21,
     });
 
-    this.cluster.addNodegroupCapacity('BottlerocketNG', {
+    this.cluster.addNodegroupCapacity('BottlerocketNG1', {
       amiType: NodegroupAmiType.BOTTLEROCKET_X86_64,
+    });
+    this.cluster.addNodegroupCapacity('BottlerocketNG2', {
+      amiType: NodegroupAmiType.BOTTLEROCKET_ARM_64,
     });
   }
 }
 
 const app = new App();
 
-// since the EKS optimized AMI is hard-coded here based on the region,
-// we need to actually pass in a specific region.
 new EksClusterStack(app, 'aws-cdk-eks-cluster-test');
 
 app.synth();
