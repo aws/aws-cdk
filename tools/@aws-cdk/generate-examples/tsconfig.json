@@ -17,9 +17,5 @@
     "incremental": true,
     "experimentalDecorators": true
   },
-  "include": ["**/*.ts"],
-  "references": [
-    { "path": "../../../packages/@aws-cdk/cloudformation-diff" },
-    { "path": "../../../packages/@aws-cdk/cx-api" }
-  ]
+  "include": ["**/*.ts"]
 }
