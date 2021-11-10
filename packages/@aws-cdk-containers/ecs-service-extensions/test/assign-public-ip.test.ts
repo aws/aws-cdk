@@ -3,7 +3,6 @@ import * as autoscaling from '@aws-cdk/aws-autoscaling';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as route53 from '@aws-cdk/aws-route53';
-import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import { AssignPublicIpExtension, Container, Environment, EnvironmentCapacityType, Service, ServiceDescription } from '../lib';
 import { TaskRecordManager } from '../lib/extensions/assign-public-ip/task-record-manager';
@@ -108,7 +107,7 @@ describe('assign public ip', () => {
 
   });
 
-  testDeprecated('should add a task record manager when dns is requested', () => {
+  test('should add a task record manager when dns is requested', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const dnsZone = new route53.PublicHostedZone(stack, 'zone', {
@@ -143,7 +142,7 @@ describe('assign public ip', () => {
 
   });
 
-  testDeprecated('task record manager listens for ecs events', () => {
+  test('task record manager listens for ecs events', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const dnsZone = new route53.PublicHostedZone(stack, 'zone', {
