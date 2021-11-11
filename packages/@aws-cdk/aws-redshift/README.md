@@ -167,6 +167,34 @@ new Table(this, 'Table', {
 });
 ```
 
+The table can be configured to have distStyle attribute and a distKey column:
+
+```ts fixture=cluster
+new Table(this, 'Table', {
+  tableColumns: [
+    { name: 'col1', dataType: 'varchar(4)', distKey: true }, 
+    { name: 'col2', dataType: 'float' },
+  ],
+  cluster: cluster,
+  databaseName: 'databaseName',
+  distStyle: TableDistStyle.KEY,
+});
+```
+
+The table can also be configured to have sortStyle attribute and sortKey columns:
+
+```ts fixture=cluster
+new Table(this, 'Table', {
+  tableColumns: [
+    { name: 'col1', dataType: 'varchar(4)', sortKey: true }, 
+    { name: 'col2', dataType: 'float', sortKey: true },
+  ],
+  cluster: cluster,
+  databaseName: 'databaseName',
+  sortStyle: TableSortStyle.COMPOUND,
+});
+```
+
 ### Granting Privileges
 
 You can give a user privileges to perform certain actions on a table by using the

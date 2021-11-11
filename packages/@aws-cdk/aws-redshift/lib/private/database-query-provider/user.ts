@@ -3,7 +3,8 @@ import * as AWSLambda from 'aws-lambda';
 /* eslint-disable-next-line import/no-extraneous-dependencies */
 import * as SecretsManager from 'aws-sdk/clients/secretsmanager';
 import { UserHandlerProps } from '../handler-props';
-import { ClusterProps, executeStatement, makePhysicalId } from './util';
+import { ClusterProps } from './types';
+import { executeStatement, makePhysicalId } from './util';
 
 const secretsManager = new SecretsManager();
 

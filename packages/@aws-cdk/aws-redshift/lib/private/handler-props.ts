@@ -1,4 +1,4 @@
-import { Column } from '../table';
+import { Column, TableDistStyle, TableSortStyle } from '../table';
 
 export interface DatabaseQueryHandlerProps {
   readonly handler: string;
@@ -18,6 +18,8 @@ export interface TableHandlerProps {
     readonly generateSuffix: string;
   };
   readonly tableColumns: Column[];
+  readonly distStyle?: TableDistStyle;
+  readonly sortStyle: TableSortStyle;
 }
 
 export interface TablePrivilege {
