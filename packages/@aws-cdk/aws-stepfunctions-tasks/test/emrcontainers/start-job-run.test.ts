@@ -963,25 +963,6 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::Lambda::Function', {
-      Environment: {
-        Variables: {
-          eksNamespace: {
-            'Fn::GetAtt': [
-              'TaskGetEksClusterInfo2F156985',
-              'virtualCluster.containerProvider.info.eksInfo.namespace',
-            ],
-          },
-          eksClusterId: {
-            'Fn::GetAtt': [
-              'TaskGetEksClusterInfo2F156985',
-              'virtualCluster.containerProvider.id',
-            ],
-          },
-          roleName: {
-            Ref: 'TaskJobExecutionRole5D5BBA5A',
-          },
-        },
-      },
       Handler: 'index.handler',
       Layers: [
         {

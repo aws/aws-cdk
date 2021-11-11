@@ -72,6 +72,7 @@ const authMapping: AwsAuthMapping = { groups: [], username: 'emr-containers' };
 eksCluster.awsAuth.addRoleMapping(emrServiceRole, authMapping);
 
 virtualCluster.node.addDependency(emrRoleBind);
+virtualCluster.node.addDependency(eksCluster.awsAuth);
 
 const startJobRunJob = new EmrContainersStartJobRun(stack, 'Start a Job Run', {
   virtualCluster: VirtualClusterInput.fromVirtualClusterId(virtualCluster.getAtt('Id').toString()),
@@ -86,7 +87,11 @@ const startJobRunJob = new EmrContainersStartJobRun(stack, 'Start a Job Run', {
   },
 });
 
-const chain = sfn.Chain.start(startJobRunJob);;
+// const deleteVirtualCluster = new EmrContainersDeleteVirtualCluster(stack, 'Delete a Virtual Cluster', {
+//   virtualClusterId: sfn.TaskInput.fromText(virtualCluster.getAtt('Id').toString()),
+// });
+
+const chain = sfn.Chain.start(startJobRunJob);//.next(deleteVirtualCluster);
 
 const sm = new sfn.StateMachine(stack, 'StateMachine', {
   definition: chain,

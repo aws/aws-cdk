@@ -344,11 +344,11 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
       code: lambda.Code.fromAsset(path.join(__dirname, 'utils/role-policy')),
       timeout: cdk.Duration.seconds(30),
       memorySize: 256,
-      environment: {
-        eksNamespace: eksClusterInfo.getResponseField('virtualCluster.containerProvider.info.eksInfo.namespace'),
-        eksClusterId: eksClusterInfo.getResponseField('virtualCluster.containerProvider.id'),
-        roleName: role.roleName,
-      },
+      // environment: {
+      //   eksNamespace: eksClusterInfo.getResponseField('virtualCluster.containerProvider.info.eksInfo.namespace'),
+      //   eksClusterId: eksClusterInfo.getResponseField('virtualCluster.containerProvider.id'),
+      //   roleName: role.roleName,
+      // },
       layers: [cliLayer],
     });
     shellCliLambda.addToRolePolicy(
@@ -378,6 +378,11 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
       onEventHandler: shellCliLambda,
     });
     new cdk.CustomResource(this, 'Custom Resource', {
+      properties: {
+        eksNamespace: eksClusterInfo.getResponseField('virtualCluster.containerProvider.info.eksInfo.namespace'),
+        eksClusterId: eksClusterInfo.getResponseField('virtualCluster.containerProvider.id'),
+        roleName: role.roleName,
+      },
       serviceToken: provider.serviceToken,
     });
   }
