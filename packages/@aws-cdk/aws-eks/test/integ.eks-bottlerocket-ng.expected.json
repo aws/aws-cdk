@@ -884,7 +884,14 @@
               "\\\",\\\"groups\\\":[\\\"system:masters\\\"]},{\\\"rolearn\\\":\\\"",
               {
                 "Fn::GetAtt": [
-                  "ClusterNodegroupBottlerocketNGNodeGroupRole5791A222",
+                  "ClusterNodegroupBottlerocketNG1NodeGroupRoleF0E6A2C6",
+                  "Arn"
+                ]
+              },
+              "\\\",\\\"username\\\":\\\"system:node:{{EC2PrivateDNSName}}\\\",\\\"groups\\\":[\\\"system:bootstrappers\\\",\\\"system:nodes\\\"]},{\\\"rolearn\\\":\\\"",
+              {
+                "Fn::GetAtt": [
+                  "ClusterNodegroupBottlerocketNG2NodeGroupRole8BD62EDB",
                   "Arn"
                 ]
               },
@@ -910,7 +917,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
     },
-    "ClusterNodegroupBottlerocketNGNodeGroupRole5791A222": {
+    "ClusterNodegroupBottlerocketNG1NodeGroupRoleF0E6A2C6": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -975,7 +982,7 @@
         ]
       }
     },
-    "ClusterNodegroupBottlerocketNG8F590A8F": {
+    "ClusterNodegroupBottlerocketNG1B78D1784": {
       "Type": "AWS::EKS::Nodegroup",
       "Properties": {
         "ClusterName": {
@@ -983,7 +990,7 @@
         },
         "NodeRole": {
           "Fn::GetAtt": [
-            "ClusterNodegroupBottlerocketNGNodeGroupRole5791A222",
+            "ClusterNodegroupBottlerocketNG1NodeGroupRoleF0E6A2C6",
             "Arn"
           ]
         },
@@ -999,6 +1006,103 @@
           }
         ],
         "AmiType": "BOTTLEROCKET_x86_64",
+        "ForceUpdateEnabled": true,
+        "ScalingConfig": {
+          "DesiredSize": 2,
+          "MaxSize": 2,
+          "MinSize": 1
+        }
+      }
+    },
+    "ClusterNodegroupBottlerocketNG2NodeGroupRole8BD62EDB": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "ec2.",
+                      {
+                        "Ref": "AWS::URLSuffix"
+                      }
+                    ]
+                  ]
+                }
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/AmazonEKSWorkerNodePolicy"
+              ]
+            ]
+          },
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/AmazonEKS_CNI_Policy"
+              ]
+            ]
+          },
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "ClusterNodegroupBottlerocketNG299226DAB": {
+      "Type": "AWS::EKS::Nodegroup",
+      "Properties": {
+        "ClusterName": {
+          "Ref": "Cluster9EE0221C"
+        },
+        "NodeRole": {
+          "Fn::GetAtt": [
+            "ClusterNodegroupBottlerocketNG2NodeGroupRole8BD62EDB",
+            "Arn"
+          ]
+        },
+        "Subnets": [
+          {
+            "Ref": "VpcPrivateSubnet1Subnet536B997A"
+          },
+          {
+            "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
+          },
+          {
+            "Ref": "VpcPrivateSubnet3SubnetF258B56E"
+          }
+        ],
+        "AmiType": "BOTTLEROCKET_ARM_64",
         "ForceUpdateEnabled": true,
         "ScalingConfig": {
           "DesiredSize": 2,
