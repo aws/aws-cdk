@@ -352,7 +352,7 @@ which represents a single variable.
 Example:
 
 ```ts fixture=action
-// MyAction is some action type that produces variables
+// MyAction is some action type that produces variables, like EcrSourceAction
 const myAction = new MyAction({
   // ...
   actionName: 'myAction',
