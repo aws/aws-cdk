@@ -16,14 +16,14 @@
 To construct an empty Pipeline:
 
 ```ts
-// construct an empty Pipeline:
+// Construct an empty Pipeline
 const pipeline = new codepipeline.Pipeline(this, 'MyFirstPipeline');
 ```
 
 To give the Pipeline a nice, human-readable name:
 
 ```ts
-// give the Pipeline a nice, human-readable name:
+// Give the Pipeline a nice, human-readable name
 const pipeline = new codepipeline.Pipeline(this, 'MyFirstPipeline', {
   pipelineName: 'MyPipeline',
 });
@@ -40,7 +40,7 @@ the creation of the Customer Master Keys by passing `crossAccountKeys: false`
 when defining the Pipeline:
 
 ```ts
-// disable the creation of the Customer Master Keys
+// Don't create Customer Master Keys
 const pipeline = new codepipeline.Pipeline(this, 'MyFirstPipeline', {
   crossAccountKeys: false,
 });
@@ -51,7 +51,7 @@ you can configure it by passing `enableKeyRotation: true` when creating the pipe
 Note that key rotation will incur an additional cost of **$1/month**.
 
 ```ts
-// enable key rotation for the generated KMS key
+// Enable key rotation for the generated KMS key
 const pipeline = new codepipeline.Pipeline(this, 'MyFirstPipeline', {
   // ...
   enableKeyRotation: true,
