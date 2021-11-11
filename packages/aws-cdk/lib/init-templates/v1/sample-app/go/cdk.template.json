@@ -3,11 +3,11 @@
   "watch": {
     "include": ["**"],
     "exclude": [
-      "**/*test.go",
       "README.md",
-      "cdk.json",
+      "cdk*.json",
       "go.mod",
-      "go.sum"
+      "go.sum",
+      "**/*test.go"
     ]
   }
 }

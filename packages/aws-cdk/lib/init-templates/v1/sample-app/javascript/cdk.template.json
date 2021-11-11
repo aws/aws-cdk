@@ -3,13 +3,13 @@
   "watch": {
     "include": ["**"],
     "exclude": [
+      "README.md",
+      "cdk*.json",
       "jest.config.js",
       "package*.json",
-      "README.md",
-      "cdk.json",
       "yarn.lock",
-      "test",
-      "node_modules"
+      "node_modules",
+      "test"
     ]
   }
 }

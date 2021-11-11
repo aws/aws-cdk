@@ -3,11 +3,11 @@
   "watch": {
     "include": ["**"],
     "exclude": [
-      "target",
-      "src/test",
-      "pom.xml",
       "README.md",
-      "cdk.json"
+      "cdk*.json",
+      "target",
+      "pom.xml",
+      "src/test"
     ]
   }
 }

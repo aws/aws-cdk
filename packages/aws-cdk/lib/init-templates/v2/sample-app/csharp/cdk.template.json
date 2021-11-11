@@ -4,12 +4,12 @@
     "include": ["**"],
     "exclude": [
       "README.md",
-      "cdk.json",
-      "src/%name.PascalCased%/obj",
-      "src/%name.PascalCased%/bin",
-      "src/%name.PascalCased%.sln",
-      "src/%name.PascalCased%/GlobalSuppressions.cs",
-      "src/%name.PascalCased%/%name.PascalCased%.csproj"
+      "cdk*.json",
+      "src/*/obj",
+      "src/*/bin",
+      "src/*.sln",
+      "src/*/GlobalSuppressions.cs",
+      "src/*/%name.PascalCased%.csproj"
     ]
   }
 }
