@@ -12,14 +12,17 @@ export enum FirehoseStreamRecordSeparator {
    * Separate by a new line
    */
   NEWLINE = '\n',
+
   /**
    * Separate by a tab
    */
   TAB = '\t',
+
   /**
    * Separate by a windows new line
    */
   WINDOWS_NEWLINE = '\r\n',
+
   /**
    * Separate by a commma
    */
