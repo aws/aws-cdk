@@ -92,8 +92,6 @@ test('create a plan and add rules - add BackupPlan.AdvancedBackupSettings.Backup
       }),
     ],
   });
-  plan.addRule(BackupPlanRule.monthly5Year(otherVault));
-
   // THEN
   expect(stack).toHaveResource('AWS::Backup::BackupPlan', {
     BackupPlan: {
