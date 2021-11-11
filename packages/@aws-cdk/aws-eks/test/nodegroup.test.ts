@@ -142,7 +142,7 @@ describe('node group', () => {
 
   });
 
-  test('create a bottlerocket nodegroup correctly', () => {
+  test('create a x86_64 bottlerocket nodegroup correctly', () => {
     // GIVEN
     const { stack, vpc } = testFixture();
 
@@ -177,6 +177,51 @@ describe('node group', () => {
         },
       ],
       AmiType: 'BOTTLEROCKET_x86_64',
+      ForceUpdateEnabled: true,
+      ScalingConfig: {
+        DesiredSize: 2,
+        MaxSize: 2,
+        MinSize: 1,
+      },
+    });
+
+
+  });
+  test('create a ARM_64 bottlerocket nodegroup correctly', () => {
+    // GIVEN
+    const { stack, vpc } = testFixture();
+
+    // WHEN
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+    });
+    new eks.Nodegroup(stack, 'Nodegroup', {
+      cluster,
+      amiType: NodegroupAmiType.BOTTLEROCKET_ARM_64,
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::EKS::Nodegroup', {
+      ClusterName: {
+        Ref: 'Cluster9EE0221C',
+      },
+      NodeRole: {
+        'Fn::GetAtt': [
+          'NodegroupNodeGroupRole038A128B',
+          'Arn',
+        ],
+      },
+      Subnets: [
+        {
+          Ref: 'VPCPrivateSubnet1Subnet8BCA10E0',
+        },
+        {
+          Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A',
+        },
+      ],
+      AmiType: 'BOTTLEROCKET_ARM_64',
       ForceUpdateEnabled: true,
       ScalingConfig: {
         DesiredSize: 2,
