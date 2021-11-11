@@ -172,7 +172,7 @@ The following example creates a new header - `header2` - as a copy of `header1` 
 ```ts
 import { HttpAlbIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
 
-declare const lb: elbv2.NetworkLoadBalancer;
+declare const lb: elbv2.ApplicationLoadBalancer;
 const listener = lb.addListener('listener', { port: 80 });
 listener.addTargets('target', {
   port: 80,
@@ -182,9 +182,8 @@ const httpEndpoint = new apigwv2.HttpApi(this, 'HttpProxyPrivateApi', {
   defaultIntegration: new HttpAlbIntegration({
     listener,
     parameterMapping: new apigwv2.ParameterMapping()
-      .appendHeader('header2', apigwv2.MappingValue.header('header1'))
+      .appendHeader('header2', apigwv2.MappingValue.requestHeader('header1'))
       .removeHeader('header1'),
-    }),
   }),
 });
 ```
@@ -194,7 +193,7 @@ To add mapping keys and values not yet supported by the CDK, use the `custom()` 
 ```ts
 import { HttpAlbIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
 
-declare const lb: elbv2.NetworkLoadBalancer;
+declare const lb: elbv2.ApplicationLoadBalancer;
 const listener = lb.addListener('listener', { port: 80 });
 listener.addTargets('target', {
   port: 80,
@@ -203,9 +202,7 @@ listener.addTargets('target', {
 const httpEndpoint = new apigwv2.HttpApi(this, 'HttpProxyPrivateApi', {
   defaultIntegration: new HttpAlbIntegration({
     listener,
-    parameterMapping: new apigwv2.ParameterMapping()
-      .custom('myKey', 'myValue'),
-    }),
+    parameterMapping: new apigwv2.ParameterMapping().custom('myKey', 'myValue'),
   }),
 });
 ```
@@ -217,7 +214,7 @@ WebSocket integrations connect a route to backend resources. The following integ
 
 ### Lambda WebSocket Integration
 
-Lambda integrations enable integrating a WebSocket API route with a Lambda function. When a client connects/disconnects 
+Lambda integrations enable integrating a WebSocket API route with a Lambda function. When a client connects/disconnects
 or sends message specific to a route, the API Gateway service forwards the request to the Lambda function
 
 The API Gateway service will invoke the lambda function with an event payload of a specific format.
