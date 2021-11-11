@@ -517,9 +517,7 @@ new eks.Cluster(this, 'HelloEKS', {
 If you do not specify a VPC, one will be created on your behalf, which you can then access via `cluster.vpc`. The cluster VPC will be associated to any EKS managed capacity (i.e Managed Node Groups and Fargate Profiles).
 
 Please note that the `vpcSubnets` property defines the subnets where EKS will place the _control plane_ ENIs. To choose
-the subnets where EKS will place the worker nodes, you should use [addNodegroupCapacity](https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_aws-eks.Cluster.html#addwbrnodegroupwbrcapacityid-options)
-and provide a list of subnets in the `subnets` property. For more information, see the **Provisioning clusters** section
-above.
+the subnets where EKS will place the worker nodes, please refer to the **Provisioning clusters** section above.
 
 If you allocate self managed capacity, you can specify which subnets should the auto-scaling group use:
 
