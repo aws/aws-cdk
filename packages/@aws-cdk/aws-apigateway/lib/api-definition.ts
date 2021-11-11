@@ -1,9 +1,12 @@
 import * as s3 from '@aws-cdk/aws-s3';
 import * as s3_assets from '@aws-cdk/aws-s3-assets';
-import { CfnResource } from '@aws-cdk/core';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
+import * as cxapi from '@aws-cdk/cx-api';
+import { Node } from 'constructs';
+import { CfnRestApi } from './apigateway.generated';
+import { IRestApi } from './restapi';
 import { Construct } from '@aws-cdk/core';
 
 /**
@@ -89,7 +92,7 @@ export abstract class ApiDefinition {
    * Definition to bind to it. Specifically it's required to allow assets to add
    * metadata for tooling like SAM CLI to be able to find their origins.
    */
-  public bindToResource(_resource: CfnResource) {
+  public bindAfterCreate(_scope: Construct, _restApi: IRestApi) {
     return;
   }
 }
@@ -209,11 +212,17 @@ export class AssetApiDefinition extends ApiDefinition {
     };
   }
 
-  public bindToResource(resource: CfnResource) {
+  public bindAfterCreate(scope: Construct, restApi: IRestApi) {
+    if (!scope.node.tryGetContext(cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT)) {
+      return; // not enabled
+    }
+
     if (!this.asset) {
       throw new Error('bindToResource() must be called after bind()');
     }
 
-    this.asset.addResourceMetadata(resource, 'BodyS3Location');
+    const child = Node.of(restApi).defaultChild as CfnRestApi;
+    child.addMetadata(cxapi.ASSET_RESOURCE_METADATA_PATH_KEY, this.asset.assetPath);
+    child.addMetadata(cxapi.ASSET_RESOURCE_METADATA_PROPERTY_KEY, 'BodyS3Location');
   }
 }
