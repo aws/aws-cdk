@@ -96,38 +96,6 @@ test('create a plan and add rules - add BackupPlan.AdvancedBackupSettings.Backup
   expect(stack).toHaveResource('AWS::Backup::BackupPlan', {
     BackupPlan: {
       AdvancedBackupSettings: [{ BackupOptions: { WindowsVSS: 'enabled' }, ResourceType: 'EC2' }],
-      BackupPlanName: 'Plan',
-      BackupPlanRule: [
-        {
-          CompletionWindowMinutes: 120,
-          Lifecycle: {
-            MoveToColdStorageAfterDays: 30,
-          },
-          RuleName: 'PlanRule0',
-          ScheduleExpression: 'cron(30 3 15 * ? *)',
-          StartWindowMinutes: 60,
-          TargetBackupVault: {
-            'Fn::GetAtt': [
-              'Vault23237E5B',
-              'BackupVaultName',
-            ],
-          },
-        },
-        {
-          Lifecycle: {
-            DeleteAfterDays: 1825,
-            MoveToColdStorageAfterDays: 90,
-          },
-          RuleName: 'Monthly5Year',
-          ScheduleExpression: 'cron(0 5 1 * ? *)',
-          TargetBackupVault: {
-            'Fn::GetAtt': [
-              'OtherVault3C99BCE2',
-              'BackupVaultName',
-            ],
-          },
-        },
-      ],
     },
   });
 });
