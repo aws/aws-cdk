@@ -170,7 +170,26 @@ describe('Step Functions api', () => {
     const api = new apigw.StepFunctionsRestApi(stack,
       'StepFunctionsRestApi', {
         stateMachine: stateMachine,
-        includeRequestContext: true,
+        requestContext: {
+          accountId: true,
+          apiId: true,
+          apiKey: true,
+          authorizerPrincipalId: true,
+          caller: true,
+          cognitoAuthenticationProvider: true,
+          cognitoAuthenticationType: true,
+          cognitoIdentityId: true,
+          cognitoIdentityPoolId: true,
+          httpMethod: true,
+          stage: true,
+          sourceIp: true,
+          user: true,
+          userAgent: true,
+          userArn: true,
+          requestId: true,
+          resourceId: true,
+          resourcePath: true,
+        },
       });
 
     expect(() => {

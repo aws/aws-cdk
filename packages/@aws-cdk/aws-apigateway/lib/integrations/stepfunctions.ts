@@ -1,7 +1,7 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import { Token } from '@aws-cdk/core';
-import { ExecutionInput, ExecutionInputBuilder } from '.';
+import { RequestContextBuilder, RequestContext } from '.';
 import { IntegrationConfig, IntegrationOptions, PassthroughBehavior } from '../integration';
 import { Method } from '../method';
 import { AwsIntegration } from './aws';
@@ -10,6 +10,13 @@ import { AwsIntegration } from './aws';
  * Options when configuring Step Functions integration with Rest API
  */
 export interface StepFunctionsIntegrationOptions extends IntegrationOptions {
+  /**
+    * Action for the Step Functions integration. The list of supported API actions can be found
+    * on https://docs.aws.amazon.com/step-functions/latest/apireference/API_Operations.html
+    * @default 'StartSyncExecution'
+    */
+  readonly action: string;
+
   /**
    * Check if cors is enabled
    * @default false
@@ -20,20 +27,41 @@ export interface StepFunctionsIntegrationOptions extends IntegrationOptions {
    * You can add requestContext (similar to input requestContext from lambda input)
    * to the input. The 'requestContext' parameter includes account ID, user identity, etc.
    * that can be used by customers that want to know the identity of authorized users on
-   * the state machine side. The following code defines a REST API like above but also
-   * adds 'requestContext' to the input of the State Machine:
+   * the state machine side. You can individually select the keys you want by setting them to true.
+   * The following code defines a REST API like above but also adds 'requestContext' to the input
+   * of the State Machine:
    *
    * @example
    *
    *    const stateMachine = new stepFunctions.StateMachine(this, 'StateMachine', ...);
    *    new apigateway.StepFunctionsRestApi(this, 'StepFunctionsRestApi', {
    *      stateMachine: stateMachine,
-   *      includeRequestContext: true,
+   *      requestContext: {
+   *         accountId: true,
+   *         apiId: true,
+   *         apiKey: true,
+   *         authorizerPrincipalId: true,
+   *         caller: true,
+   *         cognitoAuthenticationProvider: true,
+   *         cognitoAuthenticationType: true,
+   *         cognitoIdentityId: true,
+   *         cognitoIdentityPoolId: true,
+   *         httpMethod: true,
+   *         stage: true,
+   *         sourceIp: true,
+   *         user: true,
+   *         userAgent: true,
+   *         userArn: true,
+   *         requestId: true,
+   *         resourceId: true,
+   *         resourcePath: true,
+   *       },
    *    });
    *
-   * @default false
+   * @default - all parameters within request context will be set as false
    */
-  readonly includeRequestContext?: boolean;
+  readonly requestContext?: RequestContext;
+
 
 }
 /**
@@ -46,14 +74,15 @@ export interface StepFunctionsIntegrationOptions extends IntegrationOptions {
  */
 export class StepFunctionsIntegration extends AwsIntegration {
   private readonly stateMachine: sfn.IStateMachine;
-
-  constructor(stateMachine: sfn.IStateMachine, options: StepFunctionsIntegrationOptions = { }) {
+  private readonly action: string;
+  constructor(stateMachine: sfn.IStateMachine, options: StepFunctionsIntegrationOptions = { action: 'StartSyncExecution' }) {
+    let requestContextRequested: boolean = (options.requestContext) ? true: false;
 
     const integResponse = integrationResponse();
-    const requestTemplate = requestTemplates(stateMachine, options.includeRequestContext);
+    const requestTemplate = requestTemplates(stateMachine, requestContextRequested, options.requestContext);
     super({
       service: 'states',
-      action: 'StartSyncExecution',
+      action: options.action,
       options: {
         credentialsRole: options.credentialsRole,
         integrationResponses: integResponse,
@@ -63,13 +92,14 @@ export class StepFunctionsIntegration extends AwsIntegration {
     });
 
     this.stateMachine = stateMachine;
+    this.action = options.action;
   }
 
   public bind(method: Method): IntegrationConfig {
     const bindResult = super.bind(method);
     const principal = new iam.ServicePrincipal('apigateway.amazonaws.com');
 
-    this.stateMachine.grantExecution(principal, 'states:StartSyncExecution');
+    this.stateMachine.grantExecution(principal, `states:${this.action}`);
 
     let stateMachineName;
 
@@ -145,8 +175,8 @@ function integrationResponse() {
   return integResponse;
 }
 
-function requestTemplates(stateMachine: sfn.IStateMachine, includeRequestContext: boolean | undefined) {
-  const templateStr = templateString(stateMachine, includeRequestContext);
+function requestTemplates(stateMachine: sfn.IStateMachine, includeRequestContext: boolean, requestContextObj: RequestContext | undefined) {
+  const templateStr = templateString(stateMachine, includeRequestContext, requestContextObj);
 
   const requestTemplate: { [contentType:string] : string } =
     {
@@ -156,14 +186,15 @@ function requestTemplates(stateMachine: sfn.IStateMachine, includeRequestContext
   return requestTemplate;
 }
 
-function templateString(stateMachine: sfn.IStateMachine, includeRequestContext: boolean | undefined): string {
+function templateString(stateMachine: sfn.IStateMachine, includeRequestContext: boolean, requestContextObj: RequestContext | undefined): string {
   let templateStr: string;
-  const requestContextStr = requestContext();
 
-  const search = '"';
-  const replaceWith = '\\"';
-  const requestContextStrModified = requestContextStr.split(search).join(replaceWith);
   if (includeRequestContext) {
+    const requestContextStr = requestContext(requestContextObj);
+
+    const search = '"';
+    const replaceWith = '\\"';
+    const requestContextStrModified = requestContextStr.split(search).join(replaceWith);
     templateStr = `
     #set($allParams = $input.params())
     {
@@ -180,27 +211,27 @@ function templateString(stateMachine: sfn.IStateMachine, includeRequestContext: 
   return templateStr;
 }
 
-function requestContext(): string {
-  const executionInput: ExecutionInput = new ExecutionInputBuilder('$util.escapeJavaScript($input.json(\'$\'))')
-    .withAccountId('"$context.identity.accountId"')
-    .withApiId('"$context.apiId"')
-    .withApiKey('"$context.identity.apiKey"')
-    .withAuthorizerPrincipalId('"$context.authorizer.principalId"')
-    .withCaller('"$context.identity.caller"')
-    .withCognitoAuthenticationProvider('"$context.identity.cognitoAuthenticationProvider"')
-    .withCognitoAuthenticationType('"$context.identity.cognitoAuthenticationType"')
-    .withCognitoIdentityId('"$context.identity.cognitoIdentityId"')
-    .withCognitoIdentityPoolId('"$context.identity.cognitoIdentityPoolId"')
-    .withHttpMethod('"$context.httpMethod"')
-    .withStage('"$context.stage"')
-    .withSourceIp('"$context.identity.sourceIp"')
-    .withUser('"$context.identity.user"')
-    .withUserAgent('"$context.identity.userAgent"')
-    .withUserArn('"$context.identity.userArn"')
-    .withRequestId('"$context.requestId"')
-    .withResourceId('"$context.resourceId"')
-    .withResourcePath('"$context.resourcePath"')
-    .create();
+function requestContext(requestContextObj: RequestContext | undefined): string {
+  const requestContextStr: string = new RequestContextBuilder().with({
+    accountId: (requestContextObj) ? requestContextObj?.accountId : false,
+    apiId: (requestContextObj) ? requestContextObj?.apiId : false,
+    apiKey: (requestContextObj) ? requestContextObj?.apiKey : false,
+    authorizerPrincipalId: (requestContextObj) ? requestContextObj?.authorizerPrincipalId : false,
+    caller: (requestContextObj) ? requestContextObj?.caller : false,
+    cognitoAuthenticationProvider: (requestContextObj) ? requestContextObj?.cognitoAuthenticationProvider : false,
+    cognitoAuthenticationType: (requestContextObj) ? requestContextObj?.cognitoAuthenticationType : false,
+    cognitoIdentityId: (requestContextObj) ? requestContextObj?.cognitoIdentityId : false,
+    cognitoIdentityPoolId: (requestContextObj) ? requestContextObj?.cognitoIdentityPoolId : false,
+    httpMethod: (requestContextObj) ? requestContextObj?.httpMethod : false,
+    stage: (requestContextObj) ? requestContextObj?.stage : false,
+    sourceIp: (requestContextObj) ? requestContextObj?.sourceIp : false,
+    user: (requestContextObj) ? requestContextObj?.user : false,
+    userAgent: (requestContextObj) ? requestContextObj?.userAgent : false,
+    userArn: (requestContextObj) ? requestContextObj?.userArn : false,
+    requestId: (requestContextObj) ? requestContextObj?.requestId : false,
+    resourceId: (requestContextObj) ? requestContextObj?.resourceId : false,
+    resourcePath: (requestContextObj) ? requestContextObj?.resourcePath : false,
+  });
 
-  return executionInput.retrieveAllAsString();
+  return requestContextStr;
 }
