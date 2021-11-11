@@ -8,7 +8,7 @@
       "src/*/obj",
       "src/*/bin",
       "src/*.sln",
-      "src/*/%name.PascalCased%.fsproj"
+      "src/*/*.fsproj"
     ]
   }
 }

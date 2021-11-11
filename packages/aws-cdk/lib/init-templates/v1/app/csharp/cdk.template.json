@@ -9,7 +9,7 @@
       "src/*/bin",
       "src/*.sln",
       "src/*/GlobalSuppressions.cs",
-      "src/*/%name.PascalCased%.csproj"
+      "src/*/*.csproj"
     ]
   }
 }
