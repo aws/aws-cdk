@@ -63,9 +63,9 @@ export async function generateMissingExamples(assemblyLocations: string[], optio
       }
 
       // To successfully compile, we need to generate the right 'Construct' import
-      const constructImport = ['monocdk', 'aws-cdk-lib'].includes(assembly.name)
-        ? 'import { Construct } from "constructs";'
-        : 'import { Construct } from "@aws-cdk/core"';
+      const constructImport = assembly.dependencies.some(d => d.assembly.name === '@aws-cdk/core')
+        ? 'import { Construct } from "@aws-cdk/core";'
+        : 'import { Construct } from "constructs";';
 
       const source = [
         ...example.renderDeclarations(),
