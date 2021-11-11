@@ -28,7 +28,14 @@
         ]
       }
     },
-    "projectReferences": true
+    "projectReferences": true,
+    "metadata": {
+      "jsii": {
+        "rosetta": {
+          "strict": true
+        }
+      }
+    }
   },
   "repository": {
     "type": "git",
@@ -182,7 +189,7 @@
     "jest": "^27.3.1",
     "lodash": "^4.17.21",
     "sinon": "^9.2.4",
-    "ts-mock-imports": "^1.3.7"
+    "ts-mock-imports": "^1.3.8"
   },
   "dependencies": {
     "@aws-cdk/cloud-assembly-schema": "0.0.0",
