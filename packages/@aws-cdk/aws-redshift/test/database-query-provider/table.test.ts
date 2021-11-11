@@ -7,8 +7,8 @@ jest.mock('aws-sdk/clients/redshiftdata', () => class {
   describeStatement = () => ({ promise: jest.fn(() => ({ Status: 'FINISHED' })) });
 });
 import { Column, TableDistStyle, TableSortStyle } from '../../lib';
-import { TableAndClusterProps } from '../../lib/private/database-query-provider';
 import { handler as manageTable } from '../../lib/private/database-query-provider/table';
+import { TableAndClusterProps } from '../../lib/private/database-query-provider/types';
 
 type ResourcePropertiesType = TableAndClusterProps & { ServiceToken: string };
 

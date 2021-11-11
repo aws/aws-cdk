@@ -122,6 +122,8 @@ async function updateTable(
     || (oldSortStyle !== newSortStyle)) {
     switch (newSortStyle) {
       case TableSortStyle.INTERLEAVED:
+        // INTERLEAVED sort key addition requires replacement.
+        // https://docs.aws.amazon.com/redshift/latest/dg/r_ALTER_TABLE.html
         return createTable(tableNamePrefix, tableNameSuffix, tableColumns, tableAndClusterProps);
 
       case TableSortStyle.COMPOUND: {
