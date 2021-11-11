@@ -6,7 +6,7 @@ import { areColumnsEqual, executeStatement, getDistKeyColumn, getSortKeyColumns 
 
 export async function handler(props: TableAndClusterProps, event: AWSLambda.CloudFormationCustomResourceEvent) {
   const tableNamePrefix = props.tableName.prefix;
-  const tableNameSuffix = props.tableName.generateSuffix ? `${event.RequestId.substring(0, 8)}` : '';
+  const tableNameSuffix = props.tableName.generateSuffix === 'true' ? `${event.RequestId.substring(0, 8)}` : '';
   const tableColumns = props.tableColumns;
   const tableAndClusterProps = props;
 

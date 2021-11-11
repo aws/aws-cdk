@@ -43,7 +43,7 @@ describe('cluster table', () => {
     Template.fromStack(stack).hasResourceProperties('Custom::RedshiftDatabaseQuery', {
       tableName: {
         prefix: 'Table',
-        generateSuffix: true,
+        generateSuffix: 'true',
       },
       tableColumns,
     });
@@ -70,7 +70,7 @@ describe('cluster table', () => {
     Template.fromStack(stack).hasResourceProperties('Custom::RedshiftDatabaseQuery', {
       tableName: {
         prefix: tableName,
-        generateSuffix: false,
+        generateSuffix: 'false',
       },
     });
   });

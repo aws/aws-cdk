@@ -21,7 +21,7 @@ const physicalResourceId = 'PhysicalResourceId';
 const resourceProperties: ResourcePropertiesType = {
   tableName: {
     prefix: tableNamePrefix,
-    generateSuffix: true,
+    generateSuffix: 'true',
   },
   tableColumns,
   sortStyle: TableSortStyle.AUTO,
@@ -69,7 +69,7 @@ describe('create', () => {
       ...resourceProperties,
       tableName: {
         ...resourceProperties.tableName,
-        generateSuffix: false,
+        generateSuffix: 'false',
       },
     };
 
