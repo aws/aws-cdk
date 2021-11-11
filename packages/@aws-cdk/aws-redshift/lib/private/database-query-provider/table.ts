@@ -99,8 +99,8 @@ async function updateTable(
   }
 
   const oldDistStyle = oldResourceProperties.distStyle;
-  if (!oldDistStyle && tableAndClusterProps.distStyle ||
-    oldDistStyle && !tableAndClusterProps.distStyle) {
+  if ((!oldDistStyle && tableAndClusterProps.distStyle) ||
+    (oldDistStyle && !tableAndClusterProps.distStyle)) {
     return createTable(tableNamePrefix, tableNameSuffix, tableColumns, tableAndClusterProps);
   } else if (oldDistStyle !== tableAndClusterProps.distStyle) {
     alterationStatements.push(`ALTER TABLE ${tableName} ALTER DISTSTYLE ${tableAndClusterProps.distStyle}`);
@@ -108,9 +108,7 @@ async function updateTable(
 
   const oldDistKey = getDistKeyColumn(oldTableColumns)?.name;
   const newDistKey = getDistKeyColumn(tableColumns)?.name;
-  if (!oldDistKey && newDistKey ||
-    oldDistKey && !newDistKey
-  ) {
+  if ((!oldDistKey && newDistKey ) || (oldDistKey && !newDistKey)) {
     return createTable(tableNamePrefix, tableNameSuffix, tableColumns, tableAndClusterProps);
   } else if (oldDistKey !== newDistKey) {
     alterationStatements.push(`ALTER TABLE ${tableName} ALTER DISTKEY ${newDistKey}`);

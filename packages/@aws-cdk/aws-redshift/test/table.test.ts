@@ -152,7 +152,7 @@ describe('cluster table', () => {
           ...databaseOptions,
           tableColumns: updatedTableColumns,
         }),
-      ).toThrow(/Only one column can be configured as DISTKEY. Found 2/);
+      ).toThrow(/Only one column can be configured as distKey./);
     });
 
     it('throws if distStyle other than KEY is configured with configured distKey column', () => {
@@ -167,7 +167,7 @@ describe('cluster table', () => {
           tableColumns: updatedTableColumns,
           distStyle: redshift.TableDistStyle.EVEN,
         }),
-      ).toThrow(`Only DISTSTYLE of '${redshift.TableDistStyle.KEY}' can be configured when DISTKEY is also configured. Found ${redshift.TableDistStyle.EVEN}`);
+      ).toThrow(`Only 'TableDistStyle.KEY' can be configured when distKey is also configured. Found ${redshift.TableDistStyle.EVEN}`);
     });
 
     it('throws if KEY distStyle is configired with no distKey column', () => {
@@ -177,7 +177,7 @@ describe('cluster table', () => {
           tableColumns,
           distStyle: redshift.TableDistStyle.KEY,
         }),
-      ).toThrow(`DISTSTYLE of '${redshift.TableDistStyle.KEY}' can only be configured when DISTKEY is also configured.`);
+      ).toThrow('distStyle of "TableDistStyle.KEY" can only be configured when distKey is also configured.');
     });
   });
 
@@ -224,7 +224,7 @@ describe('cluster table', () => {
           tableColumns,
           sortStyle: redshift.TableSortStyle.COMPOUND,
         }),
-      ).toThrow(`SORTSTYLE of '${redshift.TableSortStyle.COMPOUND}' can only be configured when SORTKEY is also configured.`);
+      ).toThrow(`sortStyle of '${redshift.TableSortStyle.COMPOUND}' can only be configured when sortKey is also configured.`);
     });
 
     it('throws if sortStlye of AUTO is passed with some configured sortKeys', () => {
@@ -241,7 +241,7 @@ describe('cluster table', () => {
           tableColumns: tableColumnsWithSortKey,
           sortStyle: redshift.TableSortStyle.AUTO,
         }),
-      ).toThrow(`SORTSTYLE of '${redshift.TableSortStyle.AUTO}' cannot be configured when SORTKEY is also configured.`);
+      ).toThrow(`sortStyle of '${redshift.TableSortStyle.AUTO}' cannot be configured when sortKey is also configured.`);
     });
   });
 });

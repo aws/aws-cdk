@@ -38,18 +38,16 @@ export function makePhysicalId(resourceName: string, clusterProps: ClusterProps,
   return `${clusterProps.clusterName}:${clusterProps.databaseName}:${resourceName}:${requestId}`;
 }
 
-export function getDistKeyColumns(columns: Column[]): Column[] {
-  // string comparison is required for custom resource since everything is passed as string
-  return columns.filter(column => column.distKey === true || (column.distKey as unknown as string) === 'true');
-}
-
 export function getDistKeyColumn(columns: Column[]): Column | undefined {
-  const distKeyColumns = getDistKeyColumns(columns);
+  // string comparison is required for custom resource since everything is passed as string
+  const distKeyColumns = columns.filter(column => column.distKey === true || (column.distKey as unknown as string) === 'true');
+
   if (distKeyColumns.length === 0) {
     return undefined;
   } else if (distKeyColumns.length > 1) {
     throw new Error('Multiple dist key columns found');
   }
+
   return distKeyColumns[0];
 }
 
@@ -63,10 +61,6 @@ export function areColumnsEqual(columnsA: Column[], columnsB: Column[]): boolean
     return false;
   }
   return columnsA.every(columnA => {
-    const columnB = columnsB.find(column => column.name === columnA.name);
-    if (!columnB) {
-      return false;
-    }
-    return columnA.dataType === columnB.dataType;
+    return columnsB.find(column => column.name === columnA.name && column.dataType === columnA.dataType);
   });
 }

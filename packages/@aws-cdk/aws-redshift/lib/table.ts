@@ -3,9 +3,8 @@ import { Construct } from 'constructs';
 import { ICluster } from './cluster';
 import { DatabaseOptions } from './database-options';
 import { DatabaseQuery } from './private/database-query';
-import { TableDistStyle, TableSortStyle } from './private/database-query-provider';
 import { HandlerName } from './private/database-query-provider/handler-name';
-import { getDistKeyColumn, getDistKeyColumns, getSortKeyColumns } from './private/database-query-provider/util';
+import { getDistKeyColumn, getSortKeyColumns } from './private/database-query-provider/util';
 import { TableHandlerProps } from './private/handler-props';
 import { IUser } from './user';
 
@@ -261,37 +260,81 @@ export class Table extends TableBase {
   }
 
   private validateDistKeyColumns(columns: Column[]): void {
-    const distKeyColumns = getDistKeyColumns(columns);
-    if (distKeyColumns.length > 1) {
-      throw new Error(`Only one column can be configured as DISTKEY. Found ${distKeyColumns.length}`);
+    try {
+      getDistKeyColumn(columns);
+    } catch (err) {
+      throw new Error('Only one column can be configured as distKey.');
     }
   }
 
   private validateDistStyle(distStyle: TableDistStyle, columns: Column[]): void {
     const distKeyColumn = getDistKeyColumn(columns);
     if (distKeyColumn && distStyle !== TableDistStyle.KEY) {
-      throw new Error(`Only DISTSTYLE of '${TableDistStyle.KEY}' can be configured when DISTKEY is also configured. Found ${distStyle}`);
+      throw new Error(`Only 'TableDistStyle.KEY' can be configured when distKey is also configured. Found ${distStyle}`);
     }
     if (!distKeyColumn && distStyle === TableDistStyle.KEY) {
-      throw new Error(`DISTSTYLE of '${TableDistStyle.KEY}' can only be configured when DISTKEY is also configured.`);
+      throw new Error('distStyle of "TableDistStyle.KEY" can only be configured when distKey is also configured.');
     }
   }
 
   private validateSortStyle(sortStyle: TableSortStyle, columns: Column[]): void {
     const sortKeyColumns = getSortKeyColumns(columns);
     if (sortKeyColumns.length === 0 && sortStyle !== TableSortStyle.AUTO) {
-      throw new Error(`SORTSTYLE of '${sortStyle}' can only be configured when SORTKEY is also configured.`);
+      throw new Error(`sortStyle of '${sortStyle}' can only be configured when sortKey is also configured.`);
     }
     if (sortKeyColumns.length > 0 && sortStyle === TableSortStyle.AUTO) {
-      throw new Error(`SORTSTYLE of '${TableSortStyle.AUTO}' cannot be configured when SORTKEY is also configured.`);
+      throw new Error(`sortStyle of '${TableSortStyle.AUTO}' cannot be configured when sortKey is also configured.`);
     }
   }
 
   private getDefaultSortStyle(columns: Column[]): TableSortStyle {
     const sortKeyColumns = getSortKeyColumns(columns);
-    if (sortKeyColumns.length === 0) {
-      return TableSortStyle.AUTO;
-    }
-    return TableSortStyle.COMPOUND;
+    return (sortKeyColumns.length === 0) ? TableSortStyle.AUTO : TableSortStyle.COMPOUND;
   }
+}
+
+/**
+ * The data distribution style of a table.
+ */
+export enum TableDistStyle {
+  /**
+   *  Amazon Redshift assigns an optimal distribution style based on the table data
+   */
+  AUTO = 'AUTO',
+
+  /**
+   * The data in the table is spread evenly across the nodes in a cluster in a round-robin distribution.
+   */
+  EVEN = 'EVEN',
+
+  /**
+   * The data is distributed by the values in the DISTKEY column.
+   */
+  KEY = 'KEY',
+
+  /**
+   * A copy of the entire table is distributed to every node.
+   */
+  ALL = 'ALL',
+}
+
+/**
+ * The sort style of a table.
+ */
+export enum TableSortStyle {
+  /**
+   * Amazon Redshift assigns an optimal sort key based on the table data.
+   */
+  AUTO = 'AUTO',
+
+  /**
+   * Specifies that the data is sorted using a compound key made up of all of the listed columns,
+   * in the order they are listed.
+   */
+  COMPOUND = 'COMPOUND',
+
+  /**
+   * Specifies that the data is sorted using an interleaved sort key.
+   */
+  INTERLEAVED = 'INTERLEAVED',
 }

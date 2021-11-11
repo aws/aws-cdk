@@ -1,32 +1,11 @@
 import { DatabaseQueryHandlerProps, TableHandlerProps } from '../handler-props';
 
-/**
- * The data distribution style of a table.
- */
-export enum TableDistStyle {
-  /**
-   *  Amazon Redshift assigns an optimal distribution style based on the table data
-   */
-  AUTO = 'AUTO',
-
-  /**
-   * The data in the table is spread evenly across the nodes in a cluster in a round-robin distribution.
-   */
-  EVEN = 'EVEN',
-
-  /**
-   * The data is distributed by the values in the DISTKEY column.
-   */
-  KEY = 'KEY',
-
-  /**
-   * A copy of the entire table is distributed to every node.
-   */
-  ALL = 'ALL',
-}
+export type ClusterProps = Omit<DatabaseQueryHandlerProps, 'handler'>;
+export type TableAndClusterProps = TableHandlerProps & ClusterProps;
 
 /**
  * The sort style of a table.
+ * This has been duplicated here to exporting private types.
  */
 export enum TableSortStyle {
   /**
@@ -45,6 +24,3 @@ export enum TableSortStyle {
    */
   INTERLEAVED = 'INTERLEAVED',
 }
-
-export type ClusterProps = Omit<DatabaseQueryHandlerProps, 'handler'>;
-export type TableAndClusterProps = TableHandlerProps & ClusterProps;
