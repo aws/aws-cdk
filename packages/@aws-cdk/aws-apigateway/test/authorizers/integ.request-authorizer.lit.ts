@@ -15,7 +15,7 @@ const app = new App();
 const stack = new Stack(app, 'RequestAuthorizerInteg');
 
 const authorizerFn = new lambda.Function(stack, 'MyAuthorizerFunction', {
-  runtime: lambda.Runtime.NODEJS_10_X,
+  runtime: lambda.Runtime.NODEJS_14_X,
   handler: 'index.handler',
   code: lambda.AssetCode.fromAsset(path.join(__dirname, 'integ.request-authorizer.handler')),
 });
