@@ -194,7 +194,7 @@ export class Table extends TableBase {
       properties: {
         tableName: {
           prefix: props.tableName ?? cdk.Names.uniqueId(this),
-          generateSuffix: !props.tableName,
+          generateSuffix: !props.tableName ? 'true' : 'false',
         },
         tableColumns: this.tableColumns,
       },

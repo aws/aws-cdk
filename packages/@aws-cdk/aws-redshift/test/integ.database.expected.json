@@ -1369,7 +1369,7 @@
         "databaseName": "my_db",
         "tableName": {
           "prefix": "awscdkredshiftclusterdatabaseTable24923533",
-          "generateSuffix": true
+          "generateSuffix": "true"
         },
         "tableColumns": [
           {
