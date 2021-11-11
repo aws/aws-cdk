@@ -44,9 +44,6 @@ created for the selection. The `BackupSelection` implements `IGrantable`.
 
 To add rules to a plan, use `addRule()`:
 
-And use the Volume Shadow Copy Service via the windowsVss parameter, default value is false. 
-To use this, you can provide windowsVss as a parameter to new backup.BackupPlanRule.
-
 ```ts fixture=with-plan
 plan.addRule(new backup.BackupPlanRule({
   completionWindow: Duration.hours(2),
@@ -79,6 +76,15 @@ const plan = backup.BackupPlan.daily35DayRetention(this, 'Plan', myVault); // Us
 plan.addRule(backup.BackupPlanRule.monthly1Year(otherVault)); // Use `otherVault` for this specific rule
 ```
 
+you can backup VSS(Volume Shadow Copy Service)-enabled Windows applications running on Amazon EC2 instances. If the application has VSS writer registered with Windows VSS, then AWS Backup creates a snapshot that will be consistent for that application.
+
+This can be used by the windowsVss parameter, and the default value of this parameter is false.
+
+```ts
+const plan = new BackupPlan(stack, 'Plan', {
+  windowsVss: true
+})
+```
 ## Backup vault
 
 In AWS Backup, a *backup vault* is a container that you organize your backups in. You can use backup vaults to set the AWS Key Management Service (AWS KMS) encryption key that is used to encrypt backups in the backup vault and to control access to the backups in the backup vault. If you require different encryption keys or access policies for different groups of backups, you can optionally create multiple backup vaults.
