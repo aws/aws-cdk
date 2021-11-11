@@ -25,7 +25,7 @@ describe('generateClassAssignment ', () => {
     await ts.load(assembly.directory);
 
     const type = ts.findClass('my_assembly.ClassA');
-    expect(generateClassAssignment(type)).toEqual('import * as my_assembly from \'my_assembly\';\n\nconst classA = my_assembly.ClassA.firstMethod();');
+    expect(generateClassAssignment(type)?.toString()).toEqual('import * as my_assembly from \'my_assembly\';\n\nconst classA = my_assembly.ClassA.firstMethod();');
 
     await assembly.cleanup();
   });
@@ -51,7 +51,7 @@ describe('generateClassAssignment ', () => {
     await ts.load(assembly.directory);
 
     const type = ts.findClass('my_assembly.ClassA');
-    expect(generateClassAssignment(type)).toEqual('import * as my_assembly from \'my_assembly\';\n\nconst classA = my_assembly.ClassA.FIRST_PROPERTY;');
+    expect(generateClassAssignment(type)?.toString()).toEqual('import * as my_assembly from \'my_assembly\';\n\nconst classA = my_assembly.ClassA.FIRST_PROPERTY;');
 
     await assembly.cleanup();
   });
@@ -74,7 +74,7 @@ describe('generateClassAssignment ', () => {
     await ts.load(assembly.directory);
 
     const type = ts.findClass('my_assembly.ClassA');
-    expect(generateClassAssignment(type)).toEqual('import * as my_assembly from \'my_assembly\';\n\nconst classA = new my_assembly.ClassA(\'a\', \'b\');');
+    expect(generateClassAssignment(type)?.toString()).toEqual('import * as my_assembly from \'my_assembly\';\n\nconst classA = new my_assembly.ClassA(\'a\', \'b\');');
 
     await assembly.cleanup();
   });

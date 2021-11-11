@@ -1,5 +1,5 @@
 import { promises as fs } from 'fs';
-import { Assembly, TypeSystem } from 'jsii-reflect';
+import { TypeSystem } from 'jsii-reflect';
 
 // This import should come from @jsii/spec. Replace when that is possible.
 import { LanguageTablet, TranslatedSnippet, Rosetta, UnknownSnippetMode, TargetLanguage, ApiLocation } from 'jsii-rosetta';
