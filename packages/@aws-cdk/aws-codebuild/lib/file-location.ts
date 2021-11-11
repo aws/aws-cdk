@@ -71,7 +71,8 @@ export interface EfsFileSystemLocationProps {
 
   /**
    * A string that specifies the location of the file system, like Amazon EFS.
-   * @example 'fs-abcd1234.efs.us-west-2.amazonaws.com:/my-efs-mount-directory'.
+   *
+   * This value looks like `fs-abcd1234.efs.us-west-2.amazonaws.com:/my-efs-mount-directory`.
    */
   readonly location: string;
 

@@ -8,22 +8,19 @@ const state: {
   tempDir?: string;
 } = {};
 
-beforeAll(async done => {
+beforeAll(async () => {
   state.previousWorkingDir = process.cwd();
   state.tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'aws-cdk-test'));
   // eslint-disable-next-line no-console
   console.log('Temporary working directory:', state.tempDir);
   process.chdir(state.tempDir);
-  done();
 });
 
-afterAll(async done => {
+afterAll(async () => {
   // eslint-disable-next-line no-console
   console.log('Switching back to', state.previousWorkingDir, 'cleaning up', state.tempDir);
   process.chdir(state.previousWorkingDir!);
   await fs.remove(state.tempDir!);
-
-  done();
 });
 
 test('load context from both files if available', async () => {
