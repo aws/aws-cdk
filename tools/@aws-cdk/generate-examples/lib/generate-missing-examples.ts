@@ -2,7 +2,7 @@ import { promises as fs } from 'fs';
 import { TypeSystem } from 'jsii-reflect';
 
 // This import should come from @jsii/spec. Replace when that is possible.
-import { LanguageTablet, TranslatedSnippet, Rosetta, UnknownSnippetMode, TargetLanguage, ApiLocation } from 'jsii-rosetta';
+import { LanguageTablet, TranslatedSnippet, Rosetta, UnknownSnippetMode, TargetLanguage, typeScriptSnippetFromSource, SnippetLocation, SnippetParameters, TypeScriptSnippet } from 'jsii-rosetta';
 import { insertExample, replaceAssembly } from './assemblies';
 import { generateClassAssignment } from './generate';
 
@@ -67,42 +67,49 @@ export async function generateMissingExamples(assemblyLocations: string[], optio
         ? 'import { Construct } from "@aws-cdk/core";'
         : 'import { Construct } from "constructs";';
 
-      const source = [
+      const visibleSource = [
+        ...COMMENT_WARNING,
         ...example.renderDeclarations(),
+        '',
+        example.renderCode(),
+      ].join('\n').trimLeft();
+
+      const completeSource = [
+        ...COMMENT_WARNING,
+        ...example.renderDeclarations(),
+        '',
         '/// !hide',
         constructImport,
         'class MyConstruct extends Construct {',
         'constructor(scope: Construct, id: string) {',
         'super(scope, id);',
         '/// !show',
-        ...COMMENT_WARNING,
-        '',
         example.renderCode(),
         '/// !hide',
         '} }',
-      ].join('\n');
-      const apiLocation: ApiLocation = { api: 'type', fqn: classType.fqn };
+      ].join('\n').trimLeft();
+      const location: SnippetLocation = { api: { api: 'type', fqn: classType.fqn }, field: { field: 'example' } };
 
-      rosetta.translateExample(
-        apiLocation,
-        source,
-        TargetLanguage.PYTHON,
-        true,
-        options.directory ?? process.cwd());
+      // FIXME: unfortunately no good way to build this on the spot
+      const tsSnippet: TypeScriptSnippet = {
+        ...typeScriptSnippetFromSource(visibleSource, location, true, {
+          [SnippetParameters.$COMPILATION_DIRECTORY]: options.directory ?? process.cwd(),
+        }),
+        completeSource,
+      };
+
+      const oneTranslation = rosetta.translateSnippet(tsSnippet, TargetLanguage.PYTHON);
 
       if (rosetta.diagnostics.length > 0 && options.bail) {
         // eslint-disable-next-line no-console
-        console.log(source);
+        console.log(completeSource);
         break;
       }
 
       // The following is because the API is silly. `translateExample` will give us back
       // one Translation, but `insertExample` needs a TranslatedSnippet (which it had, but
       // didn't return). Create an equivalent one.
-      const snippet = TranslatedSnippet.fromTypeScript({
-        location: { api: apiLocation, field: { field: 'example' } },
-        visibleSource: source,
-      });
+      const snippet = TranslatedSnippet.fromTypeScript(tsSnippet, oneTranslation?.didCompile);
       insertExample(snippet, classType.spec);
       documentedClasses += 1;
     }
