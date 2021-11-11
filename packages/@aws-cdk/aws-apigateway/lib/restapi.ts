@@ -626,6 +626,9 @@ export class SpecRestApi extends RestApiBase {
       endpointConfiguration: this._configureEndpoints(props),
       parameters: props.parameters,
     });
+
+    props.apiDefinition.bindAfterCreate(this, this);
+
     this.node.defaultChild = resource;
     this.restApiId = resource.ref;
     this.restApiRootResourceId = resource.attrRootResourceId;
