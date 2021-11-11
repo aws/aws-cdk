@@ -70,7 +70,7 @@ export class KubectlProvider extends NestedStack {
 
     const memorySize = cluster.kubectlMemory ? cluster.kubectlMemory.toMebibytes() : 1024;
 
-    const environmentEncryption = cluster.clusterEncryptionConfigKeyArn ? kms.Key.fromKeyArn(this, 'EnvironmentKey', cluster.clusterEncryptionConfigKeyArn) : undefined
+    const environmentEncryption = cluster.clusterEncryptionConfigKeyArn ? kms.Key.fromKeyArn(this, 'EnvironmentKey', cluster.clusterEncryptionConfigKeyArn) : undefined;
 
     const handler = new lambda.Function(this, 'Handler', {
       code: lambda.Code.fromAsset(path.join(__dirname, 'kubectl-handler')),
