@@ -16,8 +16,6 @@
 To construct an empty Pipeline:
 
 ```ts
-import * as codepipeline from '@aws-cdk/aws-codepipeline';
-
 const pipeline = new codepipeline.Pipeline(this, 'MyFirstPipeline');
 ```
 
@@ -76,6 +74,7 @@ const pipeline = new codepipeline.Pipeline(this, 'MyFirstPipeline', {
 Or append a Stage to an existing Pipeline:
 
 ```ts
+declare const pipeline: codepipeline.Pipeline;
 const sourceStage = pipeline.addStage({
   stageName: 'Source',
   actions: [ // optional property
@@ -87,12 +86,16 @@ const sourceStage = pipeline.addStage({
 You can insert the new Stage at an arbitrary point in the Pipeline:
 
 ```ts
+declare const pipeline: codepipeline.Pipeline;
+declare const anotherStage: codepipeline.IStage;
+declare const yetAnotherStage: codepipeline.IStage;
+
 const someStage = pipeline.addStage({
   stageName: 'SomeStage',
   placement: {
     // note: you can only specify one of the below properties
     rightBefore: anotherStage,
-    justAfter: anotherStage
+    justAfter: yetAnotherStage,
   }
 });
 ```
@@ -106,6 +109,8 @@ in the `actions` property,
 or you can use the `IStage.addAction()` method to mutate an existing Stage:
 
 ```ts
+declare const sourceStage: codepipeline.IStage;
+declare const someAction: codepipeline.Action;
 sourceStage.addAction(someAction);
 ```
 
@@ -140,7 +145,8 @@ new codepipeline.CustomActionRegistration(this, 'GenericGitSourceProviderResourc
       description: 'SSH git clone URL',
       type: 'String',
     },
-  ]
+  ],
+});
 ```
 
 ## Cross-account CodePipelines
@@ -163,11 +169,15 @@ example, the following action deploys to an imported S3 bucket from a
 different account:
 
 ```ts
+declare const stage: codepipeline.IStage;
+declare const input: codepipeline.Artifact;
 stage.addAction(new codepipeline_actions.S3DeployAction({
   bucket: s3.Bucket.fromBucketAttributes(this, 'Bucket', {
     account: '123456789012',
     // ...
   }),
+  input: input,
+  actionName: 's3-deploy-action',
   // ...
 }));
 ```
@@ -175,8 +185,14 @@ stage.addAction(new codepipeline_actions.S3DeployAction({
 Actions that don't accept a resource object accept an explicit `account` parameter:
 
 ```ts
+declare const stage: codepipeline.IStage;
+declare const templatePath: codepipeline.ArtifactPath;
 stage.addAction(new codepipeline_actions.CloudFormationCreateUpdateStackAction({
   account: '123456789012',
+  templatePath,
+  adminPermissions: false,
+  stackName: Stack.of(this).stackName,
+  actionName: 'cloudformation-create-update',
   // ...
 }));
 ```
@@ -192,7 +208,13 @@ If you do not want to use the generated role, you can also explicitly pass a
 account the role belongs to:
 
 ```ts
+declare const stage: codepipeline.IStage;
+declare const templatePath: codepipeline.ArtifactPath;
 stage.addAction(new codepipeline_actions.CloudFormationCreateUpdateStackAction({
+  templatePath,
+  adminPermissions: false,
+  stackName: Stack.of(this).stackName,
+  actionName: 'cloudformation-create-update',
   // ...
   role: iam.Role.fromRoleArn(this, 'ActionRole', '...'),
 }));
@@ -205,11 +227,15 @@ pass to actions can also be in different *Regions*. For example, the
 following Action deploys to an imported S3 bucket from a different Region:
 
 ```ts
+declare const stage: codepipeline.IStage;
+declare const input: codepipeline.Artifact;
 stage.addAction(new codepipeline_actions.S3DeployAction({
   bucket: s3.Bucket.fromBucketAttributes(this, 'Bucket', {
     region: 'us-west-1',
     // ...
   }),
+  input: input,
+  actionName: 's3-deploy-action',
   // ...
 }));
 ```
@@ -218,7 +244,13 @@ Actions that don't take an AWS resource will accept an explicit `region`
 parameter:
 
 ```ts
+declare const stage: codepipeline.IStage;
+declare const templatePath: codepipeline.ArtifactPath;
 stage.addAction(new codepipeline_actions.CloudFormationCreateUpdateStackAction({
+  templatePath,
+  adminPermissions: false,
+  stackName: Stack.of(this).stackName,
+  actionName: 'cloudformation-create-update',
   // ...
   region: 'us-west-1',
 }));
@@ -260,6 +292,7 @@ If you're passing a replication bucket created in a different stack,
 like this:
 
 ```ts
+const app = new App();
 const replicationStack = new Stack(app, 'ReplicationStack', {
   env: {
     region: 'us-west-1',
@@ -273,7 +306,7 @@ const replicationBucket = new s3.Bucket(replicationStack, 'ReplicationBucket', {
 });
 
 // later...
-new codepipeline.Pipeline(pipelineStack, 'Pipeline', {
+new codepipeline.Pipeline(replicationStack, 'Pipeline', {
   crossRegionReplicationBuckets: {
     'us-west-1': replicationBucket,
   },
@@ -289,6 +322,12 @@ and so you can't reference them across environments.
 In this case, you need to use an alias in place of the key when creating the bucket:
 
 ```ts
+const app = new App();
+const replicationStack = new Stack(app, 'ReplicationStack', {
+  env: {
+    region: 'us-west-1',
+  },
+});
 const key = new kms.Key(replicationStack, 'ReplicationKey');
 const alias = new kms.Alias(replicationStack, 'ReplicationAlias', {
   // aliasName is required
@@ -312,14 +351,16 @@ you access the appropriate property of the interface returned from `variables`,
 which represents a single variable.
 Example:
 
-```ts
+```ts fixture=action
 // MyAction is some action type that produces variables
 const myAction = new MyAction({
   // ...
+  actionName: 'myAction',
 });
 new OtherAction({
   // ...
   config: myAction.variables.myVariable,
+  actionName: 'otherAction',
 });
 ```
 
@@ -327,10 +368,11 @@ The namespace name that will be used will be automatically generated by the pipe
 based on the stage and action name;
 you can pass a custom name when creating the action instance:
 
-```ts
+```ts fixture=action
 const myAction = new MyAction({
   // ...
   variablesNamespace: 'MyNamespace',
+  actionName: 'myAction',
 });
 ```
 
@@ -338,10 +380,11 @@ There are also global variables available,
 not tied to any action;
 these are accessed through static properties of the `GlobalVariables` class:
 
-```ts
+```ts fixture=action
 new OtherAction({
   // ...
   config: codepipeline.GlobalVariables.executionId,
+  actionName: 'otherAction',
 });
 ```
 
@@ -366,6 +409,7 @@ const rule = new events.Rule(this, 'Daily', {
   schedule: events.Schedule.rate(Duration.days(1)),
 });
 
+declare const pipeline: codepipeline.Pipeline;
 rule.addTarget(new targets.CodePipeline(pipeline));
 ```
 
@@ -380,7 +424,13 @@ the pipeline, stages or action, use the `onXxx` methods on the respective
 construct:
 
 ```ts
-myPipeline.onStateChange('MyPipelineStateChange', target);
+import * as events from '@aws-cdk/aws-events';
+
+declare const myPipeline: codepipeline.Pipeline;
+declare const myStage: codepipeline.IStage;
+declare const myAction: codepipeline.Action;
+declare const target: events.IRuleTarget;
+myPipeline.onStateChange('MyPipelineStateChange', { target: target } );
 myStage.onStateChange('MyStageStateChange', target);
 myAction.onStateChange('MyActionStateChange', target);
 ```
@@ -391,11 +441,13 @@ To define CodeStar Notification rules for Pipelines, use one of the `notifyOnXxx
 They are very similar to `onXxx()` methods for CloudWatch events:
 
 ```ts
-const target = new chatbot.SlackChannelConfiguration(stack, 'MySlackChannel', {
+import * as chatbot from '@aws-cdk/aws-chatbot';
+const target = new chatbot.SlackChannelConfiguration(this, 'MySlackChannel', {
   slackChannelConfigurationName: 'YOUR_CHANNEL_NAME',
   slackWorkspaceId: 'YOUR_SLACK_WORKSPACE_ID',
   slackChannelId: 'YOUR_SLACK_CHANNEL_ID',
 });
 
+declare const pipeline: codepipeline.Pipeline;
 const rule = pipeline.notifyOnExecutionStateChange('NotifyOnExecutionStateChange', target);
 ```
