@@ -10,7 +10,7 @@ const physicalResourceId = 'PhysicalResourceId';
 const resourceProperties = {
   tableName: {
     prefix: tableNamePrefix,
-    generateSuffix: true,
+    generateSuffix: 'true',
   },
   tableColumns,
   clusterName,
@@ -64,7 +64,7 @@ describe('create', () => {
       ...resourceProperties,
       tableName: {
         ...resourceProperties.tableName,
-        generateSuffix: false,
+        generateSuffix: 'false',
       },
     };
 
