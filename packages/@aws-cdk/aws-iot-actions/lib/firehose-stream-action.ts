@@ -46,7 +46,7 @@ export interface FirehoseStreamProps extends CommonActionProps {
   /**
    * A character separator that will be used to separate records written to the Kinesis Data Firehose stream.
    *
-   * @default None -- the stream uses no separator
+   * @default - none -- the stream does not use a separator
    */
   readonly recordSeparator?: FirehoseStreamRecordSeparator;
 }
