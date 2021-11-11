@@ -37,16 +37,13 @@ describe('cluster table', () => {
       tableColumns,
     });
 
-    Template.fromStack(stack).hasResourceProperties(
-      'Custom::RedshiftDatabaseQuery',
-      {
-        tableName: {
-          prefix: 'Table',
-          generateSuffix: 'true',
-        },
-        tableColumns,
+    Template.fromStack(stack).hasResourceProperties('Custom::RedshiftDatabaseQuery', {
+      tableName: {
+        prefix: 'Table',
+        generateSuffix: 'true',
       },
-    );
+      tableColumns,
+    });
   });
 
   it('tableName property is pulled from custom resource', () => {
@@ -67,15 +64,12 @@ describe('cluster table', () => {
       tableColumns,
     });
 
-    Template.fromStack(stack).hasResourceProperties(
-      'Custom::RedshiftDatabaseQuery',
-      {
-        tableName: {
-          prefix: tableName,
-          generateSuffix: 'false',
-        },
+    Template.fromStack(stack).hasResourceProperties('Custom::RedshiftDatabaseQuery', {
+      tableName: {
+        prefix: tableName,
+        generateSuffix: 'false',
       },
-    );
+    });
   });
 
   it('can import from name and columns', () => {
@@ -83,7 +77,7 @@ describe('cluster table', () => {
       tableName,
       tableColumns,
       cluster,
-      databaseName: 'databaseName'
+      databaseName: 'databaseName',
     });
 
     expect(table.tableName).toBe(tableName);
@@ -107,12 +101,9 @@ describe('cluster table', () => {
 
     table.grant(user, redshift.TableAction.INSERT);
 
-    Template.fromStack(stack).hasResourceProperties(
-      'Custom::RedshiftDatabaseQuery',
-      {
-        handler: 'user-table-privileges'
-      },
-    );
+    Template.fromStack(stack).hasResourceProperties('Custom::RedshiftDatabaseQuery', {
+      handler: 'user-table-privileges',
+    });
   });
 
   it('retains table on deletion by default', () => {
@@ -125,14 +116,14 @@ describe('cluster table', () => {
       Properties: {
         handler: 'table',
       },
-      DeletionPolicy: 'Retain'
+      DeletionPolicy: 'Retain',
     });
   });
 
   it('destroys table on deletion if requested', () => {
     const table = new redshift.Table(stack, 'Table', {
       ...databaseOptions,
-      tableColumns
+      tableColumns,
     });
 
     table.applyRemovalPolicy(cdk.RemovalPolicy.DESTROY);
@@ -141,7 +132,7 @@ describe('cluster table', () => {
       Properties: {
         handler: 'table',
       },
-      DeletionPolicy: 'Delete'
+      DeletionPolicy: 'Delete',
     });
   });
 });

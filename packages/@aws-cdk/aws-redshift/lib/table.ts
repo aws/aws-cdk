@@ -164,7 +164,7 @@ export class Table extends TableBase {
   /**
    * Specify a Redshift table using a table name and schema that already exists.
    */
-   static fromTableAttributes(scope: Construct, id: string, attrs: TableAttributes): ITable {
+  static fromTableAttributes(scope: Construct, id: string, attrs: TableAttributes): ITable {
     return new class extends TableBase {
       readonly tableName = attrs.tableName;
       readonly tableColumns = attrs.tableColumns;
