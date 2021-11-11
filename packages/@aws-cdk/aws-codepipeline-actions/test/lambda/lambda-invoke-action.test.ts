@@ -3,9 +3,9 @@ import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as sns from '@aws-cdk/aws-sns';
+import { testFutureBehavior } from '@aws-cdk/cdk-build-tools/lib/feature-flag';
 import { App, Aws, Lazy, SecretValue, Stack, Token } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import { testFutureBehavior } from 'cdk-build-tools/lib/feature-flag';
 import * as cpactions from '../../lib';
 
 /* eslint-disable quote-props */
@@ -98,6 +98,36 @@ describe('', () => {
       });
 
 
+    });
+
+    test('properly assings userParametersString to UserParameters', () => {
+      const stack = stackIncludingLambdaInvokeCodePipeline({
+        userParamsString: '**/*.template.json',
+      });
+
+      expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+        'Stages': [
+          {},
+          {
+            'Actions': [
+              {
+                'Configuration': {
+                  'UserParameters': '**/*.template.json',
+                },
+              },
+            ],
+          },
+        ],
+      });
+    });
+
+    test('throws if both userParameters and userParametersString are supplied', () => {
+      expect(() => stackIncludingLambdaInvokeCodePipeline({
+        userParams: {
+          key: Token.asString(null),
+        },
+        userParamsString: '**/*.template.json',
+      })).toThrow(/Only one of userParameters or userParametersString can be specified/);
     });
 
     test("assigns the Action's Role with read permissions to the Bucket if it has only inputs", () => {
@@ -302,6 +332,7 @@ describe('', () => {
 
 interface HelperProps {
   readonly userParams?: { [key: string]: any };
+  readonly userParamsString?: string;
   readonly lambdaInput?: codepipeline.Artifact;
   readonly lambdaOutput?: codepipeline.Artifact;
 }
@@ -334,6 +365,7 @@ function stackIncludingLambdaInvokeCodePipeline(props: HelperProps, app?: App) {
               runtime: lambda.Runtime.NODEJS_10_X,
             }),
             userParameters: props.userParams,
+            userParametersString: props.userParamsString,
             inputs: props.lambdaInput ? [props.lambdaInput] : undefined,
             outputs: props.lambdaOutput ? [props.lambdaOutput] : undefined,
           }),

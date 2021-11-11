@@ -162,19 +162,19 @@ export class SubscriptionFilter {
       conditions.push(...allowlist.map(v => ({ numeric: ['=', v] })));
     }
 
-    if (numericConditions.greaterThan) {
+    if (numericConditions.greaterThan !== undefined) {
       conditions.push({ numeric: ['>', numericConditions.greaterThan] });
     }
 
-    if (numericConditions.greaterThanOrEqualTo) {
+    if (numericConditions.greaterThanOrEqualTo !== undefined) {
       conditions.push({ numeric: ['>=', numericConditions.greaterThanOrEqualTo] });
     }
 
-    if (numericConditions.lessThan) {
+    if (numericConditions.lessThan !== undefined) {
       conditions.push({ numeric: ['<', numericConditions.lessThan] });
     }
 
-    if (numericConditions.lessThanOrEqualTo) {
+    if (numericConditions.lessThanOrEqualTo !== undefined) {
       conditions.push({ numeric: ['<=', numericConditions.lessThanOrEqualTo] });
     }
 

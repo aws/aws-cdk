@@ -147,6 +147,13 @@ export interface CredentialsBaseOptions {
    * @default - the DatabaseSecret default exclude character set (" %+~`#$&*()|[]{}:;<>?!'/@\"\\")
    */
   readonly excludeCharacters?: string;
+
+  /**
+   * A list of regions where to replicate this secret.
+   *
+   * @default - Secret is not replicated
+   */
+  readonly replicaRegions?: secretsmanager.ReplicaRegion[];
 }
 
 /**
@@ -285,6 +292,13 @@ export abstract class Credentials {
    * @default - the DatabaseSecret default exclude character set (" %+~`#$&*()|[]{}:;<>?!'/@\"\\")
    */
   public abstract readonly excludeCharacters?: string;
+
+  /**
+   * A list of regions where to replicate the generated secret.
+   *
+   * @default - Secret is not replicated
+   */
+  public abstract readonly replicaRegions?: secretsmanager.ReplicaRegion[];
 }
 
 /**
@@ -304,6 +318,13 @@ export interface SnapshotCredentialsFromGeneratedPasswordOptions {
    * @default - the DatabaseSecret default exclude character set (" %+~`#$&*()|[]{}:;<>?!'/@\"\\")
    */
   readonly excludeCharacters?: string;
+
+  /**
+   * A list of regions where to replicate this secret.
+   *
+   * @default - Secret is not replicated
+   */
+  readonly replicaRegions?: secretsmanager.ReplicaRegion[];
 }
 
 /**
@@ -420,6 +441,13 @@ export abstract class SnapshotCredentials {
    * @default - the DatabaseSecret default exclude character set (" %+~`#$&*()|[]{}:;<>?!'/@\"\\")
    */
   public abstract readonly excludeCharacters?: string;
+
+  /**
+   * A list of regions where to replicate the generated secret.
+   *
+   * @default - Secret is not replicated
+   */
+  public abstract readonly replicaRegions?: secretsmanager.ReplicaRegion[];
 }
 
 /**
@@ -440,6 +468,25 @@ interface CommonRotationUserOptions {
    * @default " %+~`#$&*()|[]{}:;<>?!'/@\"\\"
    */
   readonly excludeCharacters?: string;
+
+  /**
+   * Where to place the rotation Lambda function
+   *
+   * @default - same placement as instance or cluster
+   */
+  readonly vpcSubnets?: ec2.SubnetSelection;
+
+  /**
+   * The VPC interface endpoint to use for the Secrets Manager API
+   *
+   * If you enable private DNS hostnames for your VPC private endpoint (the default), you don't
+   * need to specify an endpoint. The standard Secrets Manager DNS hostname the Secrets Manager
+   * CLI and SDKs use by default (https://secretsmanager.<region>.amazonaws.com) automatically
+   * resolves to your VPC endpoint.
+   *
+   * @default https://secretsmanager.<region>.amazonaws.com
+   */
+  readonly endpoint?: ec2.IInterfaceVpcEndpoint;
 }
 
 /**

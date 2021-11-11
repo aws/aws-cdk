@@ -102,8 +102,8 @@ The following is a qualitative diagram of the various possible components involv
 
 ```text
  +-----------------------------------------------+               +-----------------+
- |                 EKS Cluster                   |    kubectl    |                 |
- |-----------------------------------------------|<-------------+| Kubectl Handler |
+  | EKS Cluster | kubectl |  |
+  | ----------- |<-------------+| Kubectl Handler |
  |                                               |               |                 |
  |                                               |               +-----------------+
  | +--------------------+    +-----------------+ |
@@ -342,6 +342,8 @@ const cluster = new eks.FargateCluster(this, 'MyCluster', {
 });
 ```
 
+`FargateCluster` will create a default `FargateProfile` which can be accessed via the cluster's `defaultProfile` property. The created profile can also be customized by passing options as with `addFargateProfile`.
+
 **NOTE**: Classic Load Balancers and Network Load Balancers are not supported on
 pods running on Fargate. For ingress, we recommend that you use the [ALB Ingress
 Controller](https://docs.aws.amazon.com/eks/latest/userguide/alb-ingress.html)
@@ -370,6 +372,18 @@ To connect an already initialized auto-scaling group, use the `cluster.connectAu
 ```ts
 const asg = new ec2.AutoScalingGroup(...);
 cluster.connectAutoScalingGroupCapacity(asg);
+```
+
+To connect a self-managed node group to an imported cluster, use the `cluster.connectAutoScalingGroupCapacity()` method:
+
+```ts
+const importedCluster = eks.Cluster.fromClusterAttributes(stack, 'ImportedCluster', {
+  clusterName: cluster.clusterName,
+  clusterSecurityGroupId: cluster.clusterSecurityGroupId,
+});
+
+const asg = new ec2.AutoScalingGroup(...);
+importedCluster.connectAutoScalingGroupCapacity(asg);
 ```
 
 In both cases, the [cluster security group](https://docs.aws.amazon.com/eks/latest/userguide/sec-group-reqs.html#cluster-sg) will be automatically attached to
@@ -523,18 +537,25 @@ Breaking this down, it means that if the endpoint exposes private access (via `E
 
 If the endpoint does not expose private access (via `EndpointAccess.PUBLIC`) **or** the VPC does not contain private subnets, the function will not be provisioned within the VPC.
 
+If your use-case requires control over the IAM role that the KubeCtl Handler assumes, a custom role can be passed through the ClusterProps (as `kubectlLambdaRole`) of the EKS Cluster construct. 
+
 #### Cluster Handler
 
-The `ClusterHandler` is a Lambda function responsible to interact with the EKS API in order to control the cluster lifecycle. To provision this function inside the VPC, set the `placeClusterHandlerInVpc` property to `true`. This will place the function inside the private subnets of the VPC based on the selection strategy specified in the [`vpcSubnets`](https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_aws-eks.Cluster.html#vpcsubnetsspan-classapi-icon-api-icon-experimental-titlethis-api-element-is-experimental-it-may-change-without-noticespan) property.
+The `ClusterHandler` is a set of Lambda functions (`onEventHandler`, `isCompleteHandler`) responsible for interacting with the EKS API in order to control the cluster lifecycle. To provision these functions inside the VPC, set the `placeClusterHandlerInVpc` property to `true`. This will place the functions inside the private subnets of the VPC based on the selection strategy specified in the [`vpcSubnets`](https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_aws-eks.Cluster.html#vpcsubnetsspan-classapi-icon-api-icon-experimental-titlethis-api-element-is-experimental-it-may-change-without-noticespan) property.
 
-You can configure the environment of this function by specifying it at cluster instantiation. For example, this can be useful in order to configure an http proxy:
+You can configure the environment of the Cluster Handler functions by specifying it at cluster instantiation. For example, this can be useful in order to configure an http proxy:
 
 ```ts
 const cluster = new eks.Cluster(this, 'hello-eks', {
   version: eks.KubernetesVersion.V1_21,
   clusterHandlerEnvironment: {
-    'http_proxy': 'http://proxy.myproxy.com'
-  }
+    https_proxy: 'http://proxy.myproxy.com'
+  },
+  /**
+   * If the proxy is not open publicly, you can pass a security group to the
+   * Cluster Handler Lambdas so that it can reach the proxy.
+   */
+  clusterHandlerSecurityGroup: proxyInstanceSecurityGroup
 });
 ```
 

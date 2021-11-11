@@ -43,6 +43,16 @@ export class TestApp extends App {
   }
 }
 
+export class AppWithExposedStacks extends Stage {
+  public readonly stacks: Stack[];
+  constructor(scope: Construct, id: string, props?: StageProps) {
+    super(scope, id, props);
+    this.stacks = new Array<Stack>();
+    this.stacks.push(new BucketStack(this, 'Stack1'));
+    this.stacks.push(new BucketStack(this, 'Stack2'));
+    this.stacks.push(new BucketStack(this, 'Stack3'));
+  }
+}
 
 export class OneStackApp extends Stage {
   constructor(scope: Construct, id: string, props?: StageProps) {

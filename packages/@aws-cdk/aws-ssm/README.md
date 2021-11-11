@@ -23,7 +23,7 @@ $ npm i @aws-cdk/aws-ssm
 
 Import it into your code:
 
-```ts
+```ts nofixture
 import * as ssm from '@aws-cdk/aws-ssm';
 ```
 
@@ -38,12 +38,12 @@ your CDK app by using `ssm.ParameterStoreString`:
 
 You can create either `ssm.StringParameter` or `ssm.StringListParameter`s in
 a CDK app. These are public (not secret) values. Parameters of type
-*SecretString* cannot be created directly from a CDK application; if you want
+*SecureString* cannot be created directly from a CDK application; if you want
 to provision secrets automatically, use Secrets Manager Secrets (see the
 `@aws-cdk/aws-secretsmanager` package).
 
 ```ts
-new ssm.StringParameter(stack, 'Parameter', {
+new ssm.StringParameter(this, 'Parameter', {
   allowedPattern: '.*',
   description: 'The value Foo',
   parameterName: 'FooParameter',

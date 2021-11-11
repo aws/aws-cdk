@@ -1,5 +1,5 @@
 import * as cxapi from '@aws-cdk/cx-api';
-import { testFutureBehavior, testLegacyBehavior } from 'cdk-build-tools/lib/feature-flag';
+import { testFutureBehavior, testLegacyBehavior } from '@aws-cdk/cdk-build-tools/lib/feature-flag';
 import {
   App, CfnCondition, CfnInclude, CfnOutput, CfnParameter,
   CfnResource, Construct, Lazy, ScopedAws, Stack, validateString,
@@ -659,6 +659,29 @@ describe('stack', () => {
         }),
       },
     }));
+  });
+
+  test('asset metadata added to NestedStack resource that contains asset path and property', () => {
+    const app = new App();
+
+    // WHEN
+    const parentStack = new Stack(app, 'parent');
+    parentStack.node.setContext(cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT, true);
+    const childStack = new NestedStack(parentStack, 'child');
+    new CfnResource(childStack, 'ChildResource', { type: 'Resource::Child' });
+
+    const assembly = app.synth();
+    expect(assembly.getStackByName(parentStack.stackName).template).toEqual(expect.objectContaining({
+      Resources: {
+        childNestedStackchildNestedStackResource7408D03F: expect.objectContaining({
+          Metadata: {
+            'aws:asset:path': 'parentchild13F9359B.nested.template.json',
+            'aws:asset:property': 'TemplateURL',
+          },
+        }),
+      },
+    }));
+
   });
 
   test('cross-stack reference (substack references parent stack)', () => {
