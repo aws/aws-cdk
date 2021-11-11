@@ -335,7 +335,12 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
         resources: cr.AwsCustomResourcePolicy.ANY_RESOURCE,
       }),
     });
-
+    /* We make use of custom resources to call update-roll-trust-policy as this command is only available through
+     * aws cli because this is only used during the initial and is not available through the sdk.
+     * https://awscli.amazonaws.com/v2/documentation/api/latest/reference/emr-containers/update-role-trust-policy.html
+     * Commands available through SDK: https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EMRcontainers.html
+     * Commands available through CLI: https://awscli.amazonaws.com/v2/documentation/api/latest/reference/emr-containers/index.html
+    */
     const cliLayer = new awscli.AwsCliLayer(this, 'awsclilayer');
     const shellCliLambda = new lambda.SingletonFunction(this, 'Call Update-Role-Trust-Policy', {
       uuid: '8693BB64-9689-44B6-9AAF-B0CC9EB8757C',
@@ -344,11 +349,6 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
       code: lambda.Code.fromAsset(path.join(__dirname, 'utils/role-policy')),
       timeout: cdk.Duration.seconds(30),
       memorySize: 256,
-      // environment: {
-      //   eksNamespace: eksClusterInfo.getResponseField('virtualCluster.containerProvider.info.eksInfo.namespace'),
-      //   eksClusterId: eksClusterInfo.getResponseField('virtualCluster.containerProvider.id'),
-      //   roleName: role.roleName,
-      // },
       layers: [cliLayer],
     });
     shellCliLambda.addToRolePolicy(
