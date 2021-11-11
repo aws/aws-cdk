@@ -9,22 +9,22 @@ class QueueHandler:
     self.cluster_name = environ['CLUSTER_NAME']
     self.service_name = environ['SERVICE_NAME']
     self.namespace = environ['NAMESPACE']
-    self.queue_names = str(environ['QUEUE_NAMES']).split(',')
+    self.queue_names = environ['QUEUE_NAMES'].split(',')
 
-  def handler(self, event, context):
+  def emit(self):
     try:
-      runningCount = self.getRunningTaskCount()
-      backlogs = [self.getQueueBacklog(queueName, runningCount) for queueName in self.queue_names]
+      running_count = self.get_running_task_count()
+      backlogs = [self.get_queue_backlog(queue_name, running_count) for queue_name in self.queue_names]
       self.timestamp = int(time() * 1000)
       for backlog in backlogs:
-        self.emitBacklogPerTaskMetric(backlog['queueName'], backlog['backlogPerTask'])
+        self.emit_backlog_per_task_metric(backlog['queueName'], backlog['backlogPerTask'])
     except Exception as e:
       Exception('Exception: {}'.format(e))
 
   """
   This method writes the backlogPerTask metric to the stdout according to the Cloudwatch embedded metric format.
   """
-  def emitBacklogPerTaskMetric(self, queueName, backlogPerTask):
+  def emit_backlog_per_task_metric(self, queue_name, backlog_per_task):
     print(json.dumps({
       "_aws": {
         "Timestamp": self.timestamp,
@@ -34,38 +34,38 @@ class QueueHandler:
           "Metrics": [{"Name":"BacklogPerTask", "Unit": "Count"}]
         }],
       },
-      "QueueName": queueName,
-      "BacklogPerTask": backlogPerTask,
+      "QueueName": queue_name,
+      "BacklogPerTask": backlog_per_task,
     }))
 
   """
   This method is used to get the number of tasks in the 'RUNNING' state for the service 'serviceName'.
   """
-  def getRunningTaskCount(self):
-    serviceDesc = self.ecs.describe_services(
+  def get_running_task_count(self):
+    service_desc = self.ecs.describe_services(
       cluster=self.cluster_name,
       services=[self.service_name],
     )
-    if len(serviceDesc['services']) == 0:
+    if len(service_desc['services']) == 0:
       raise Exception('There are no services with name {} in cluster: {}'.format(self.service_name, self.cluster_name))
-    return serviceDesc['services'][0]['runningCount']
+    return service_desc['services'][0].get('runningCount', 0)
 
   """
   This method calculates and returns the backlogPerTask metric for the given queue.
   """
-  def getQueueBacklog(self, queueName, count):
-    queue_url = self.sqs.get_queue_url(QueueName=queueName)
-    runningCount = 1 if count == 0 else count
+  def get_queue_backlog(self, queue_name, count):
+    queue_url = self.sqs.get_queue_url(QueueName=queue_name)
+    running_count = 1 if count == 0 else count
 
-    def getBacklogPerTask():
-      queueAttributes = self.sqs.get_queue_attributes(
+    def get_backlog_per_task():
+      queue_attributes = self.sqs.get_queue_attributes(
         QueueUrl=queue_url['QueueUrl'],
         AttributeNames=['ApproximateNumberOfMessages']
       )
-      numberOfMessages = int(queueAttributes['Attributes']['ApproximateNumberOfMessages'])
-      return ceil(numberOfMessages/runningCount)
+      num_of_msgs = int(queue_attributes['Attributes'].get('ApproximateNumberOfMessages', 0))
+      return ceil(num_of_msgs/running_count)
 
     return {
-      'queueName': queueName,
-      'backlogPerTask': getBacklogPerTask()
+      'queueName': queue_name,
+      'backlogPerTask': get_backlog_per_task()
     }

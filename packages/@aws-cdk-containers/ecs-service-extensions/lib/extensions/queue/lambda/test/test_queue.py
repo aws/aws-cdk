@@ -24,7 +24,7 @@ class TestQueueAutoscaling(unittest.TestCase):
     }
 
     queue_handler = QueueHandler(ecs_client, sqs_client, environ)
-    queue_handler.handler({},{})
+    queue_handler.emit()
 
     self.assertRaisesRegex(Exception, r'UnexpectedError')
 
@@ -45,7 +45,7 @@ class TestQueueAutoscaling(unittest.TestCase):
     }
 
     queue_handler = QueueHandler(ecs_client, sqs_client, environ)
-    queue_handler.handler({},{})
+    queue_handler.emit()
 
     self.assertRaisesRegex(Exception, r'There are no services with name {} in cluster: {}'.format(environ['SERVICE_NAME'], environ['CLUSTER_NAME']))
 
@@ -69,7 +69,7 @@ class TestQueueAutoscaling(unittest.TestCase):
     }
 
     queue_handler = QueueHandler(ecs_client, sqs_client, environ)
-    queue_handler.handler({},{})
+    queue_handler.emit()
 
     metric = json.dumps({
       "_aws": {
@@ -114,7 +114,7 @@ class TestQueueAutoscaling(unittest.TestCase):
     }
     
     queue_handler = QueueHandler(ecs_client, sqs_client, environ)
-    queue_handler.handler({},{})
+    queue_handler.emit()
     
     metric1 = json.dumps({
       "_aws": {
