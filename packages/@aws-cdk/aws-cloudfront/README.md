@@ -39,7 +39,7 @@ An S3 bucket can be added as an origin. If the bucket is configured as a website
 documents.
 
 ```ts
-// Creates a distribution for a S3 bucket.
+// Creates a distribution from an S3 bucket.
 const myBucket = new s3.Bucket(this, 'myBucket');
 new cloudfront.Distribution(this, 'myDist', {
   defaultBehavior: { origin: new origins.S3Origin(myBucket) },
@@ -58,6 +58,7 @@ An Elastic Load Balancing (ELB) v2 load balancer may be used as an origin. In or
 accessible (`internetFacing` is true). Both Application and Network load balancers are supported.
 
 ```ts
+// Creates a distribution from an ELBv2 load balancer
 declare const vpc: ec2.Vpc;
 // Create an application load balancer in a VPC. 'internetFacing' must be 'true'
 // for CloudFront to access the load balancer and use it as an origin.
@@ -75,6 +76,7 @@ new cloudfront.Distribution(this, 'myDist', {
 Origins can also be created from any other HTTP endpoint, given the domain name, and optionally, other origin properties.
 
 ```ts
+// Creates a distribution from an HTTP endpoint
 new cloudfront.Distribution(this, 'myDist', {
   defaultBehavior: { origin: new origins.HttpOrigin('www.example.com') },
 });
@@ -92,6 +94,7 @@ may either be created by ACM, or created elsewhere and imported into ACM. When a
 from SNI only and a minimum protocol version of TLSv1.2_2021 if the '@aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2_2021' feature flag is set, and TLSv1.2_2019 otherwise. 
 
 ```ts
+// To use your own domain name in a Distribution, you must associate a certificate
 import * as acm from '@aws-cdk/aws-certificatemanager';
 import * as route53 from '@aws-cdk/aws-route53';
 
@@ -112,6 +115,7 @@ new cloudfront.Distribution(this, 'myDist', {
 However, you can customize the minimum protocol version for the certificate while creating the distribution using `minimumProtocolVersion` property.
 
 ```ts
+// Create a Distribution with a custom domain name and a minimum protocol version.
 declare const myBucket: s3.Bucket;
 new cloudfront.Distribution(this, 'myDist', {
   defaultBehavior: { origin: new origins.S3Origin(myBucket) },
@@ -130,6 +134,7 @@ The properties of the default behavior can be adjusted as part of the distributi
 methods and viewer protocol policy of the cache.
 
 ```ts
+// Create a Distribution with configured HTTP methods and viewer protocol policy of the cache.
 declare const myBucket: s3.Bucket;
 const myWebDistribution = new cloudfront.Distribution(this, 'myDist', {
   defaultBehavior: {
@@ -145,6 +150,7 @@ and enable customization for a specific set of resources based on a URL path pat
 override the default viewer protocol policy for all of the images.
 
 ```ts
+// Add a behavior to a Distribution after initial creation.
 declare const myBucket: s3.Bucket;
 declare const myWebDistribution: cloudfront.Distribution;
 myWebDistribution.addBehavior('/images/*.jpg', new origins.S3Origin(myBucket), {
@@ -155,6 +161,7 @@ myWebDistribution.addBehavior('/images/*.jpg', new origins.S3Origin(myBucket), {
 These behaviors can also be specified at distribution creation time.
 
 ```ts
+// Create a Distribution with additional behaviors at creation time.
 declare const myBucket: s3.Bucket;
 const bucketOrigin = new origins.S3Origin(myBucket);
 new cloudfront.Distribution(this, 'myDist', {
@@ -181,16 +188,19 @@ or you can create your own cache policy that’s specific to your needs.
 See https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/controlling-the-cache-key.html for more details.
 
 ```ts
+// Using an existing cache policy for a Distribution
 declare const bucketOrigin: origins.S3Origin;
-// Using an existing cache policy
 new cloudfront.Distribution(this, 'myDistManagedPolicy', {
   defaultBehavior: {
     origin: bucketOrigin,
     cachePolicy: cloudfront.CachePolicy.CACHING_OPTIMIZED,
   },
 });
+```
 
-// Creating a custom cache policy  -- all parameters optional
+```ts
+// Creating a custom cache policy for a Distribution -- all parameters optional
+declare const bucketOrigin: origins.S3Origin;
 const myCachePolicy = new cloudfront.CachePolicy(this, 'myCachePolicy', {
   cachePolicyName: 'MyPolicy',
   comment: 'A default policy',
@@ -221,15 +231,19 @@ or you can create your own origin request policy that’s specific to your needs
 See https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/controlling-origin-requests.html for more details.
 
 ```ts
+// Using an existing origin request policy for a Distribution
 declare const bucketOrigin: origins.S3Origin;
-// Using an existing origin request policy
 new cloudfront.Distribution(this, 'myDistManagedPolicy', {
   defaultBehavior: {
     origin: bucketOrigin,
     originRequestPolicy: cloudfront.OriginRequestPolicy.CORS_S3_ORIGIN,
   },
 });
-// Creating a custom origin request policy -- all parameters optional
+```
+
+```ts
+// Creating a custom origin request policy for a Distribution -- all parameters optional
+declare const bucketOrigin: origins.S3Origin;
 const myOriginRequestPolicy = new cloudfront.OriginRequestPolicy(this, 'OriginRequestPolicy', {
   originRequestPolicyName: 'MyPolicy',
   comment: 'A default policy',
@@ -248,11 +262,13 @@ new cloudfront.Distribution(this, 'myDistCustomPolicy', {
 
 ### Validating signed URLs or signed cookies with Trusted Key Groups
 
-CloudFront Distribution now supports validating signed URLs or signed cookies using key groups. When a cache behavior contains trusted key groups, CloudFront requires signed URLs or signed cookies for all requests that match the cache behavior.
-
-Example:
+CloudFront Distribution supports validating signed URLs or signed cookies using key groups.
+When a cache behavior contains trusted key groups, CloudFront requires signed URLs or signed
+cookies for all requests that match the cache behavior.
 
 ```ts
+// Validating signed URLs or signed cookies with Trusted Key Groups
+
 // public key in PEM format
 declare const publicKey: string;
 const pubKey = new cloudfront.PublicKey(this, 'MyPubKey', {
@@ -277,18 +293,20 @@ new cloudfront.Distribution(this, 'Dist', {
 
 ### Lambda@Edge
 
-Lambda@Edge is an extension of AWS Lambda, a compute service that lets you execute functions that customize the content that CloudFront delivers.
-You can author Node.js or Python functions in the US East (N. Virginia) region,
-and then execute them in AWS locations globally that are closer to the viewer,
-without provisioning or managing servers.
-Lambda@Edge functions are associated with a specific behavior and event type.
-Lambda@Edge can be used to rewrite URLs,
-alter responses based on headers or cookies,
-or authorize requests based on headers or authorization tokens.
+Lambda@Edge is an extension of AWS Lambda, a compute service that lets you execute
+functions that customize the content that CloudFront delivers. You can author Node.js
+or Python functions in the US East (N. Virginia) region, and then execute them in AWS
+locations globally that are closer to the viewer, without provisioning or managing servers.
+Lambda@Edge functions are associated with a specific behavior and event type. Lambda@Edge
+can be used to rewrite URLs, alter responses based on headers or cookies, or authorize
+requests based on headers or authorization tokens.
 
-The following shows a Lambda@Edge function added to the default behavior and triggered on every request:
+The following shows a Lambda@Edge function added to the default behavior and triggered
+on every request:
 
 ```ts
+// A Lambda@Edge function added to default behavior of a Distribution
+// and triggered on every request
 const myFunc = new cloudfront.experimental.EdgeFunction(this, 'MyFunction', {
   runtime: lambda.Runtime.NODEJS_12_X,
   handler: 'index.handler',
@@ -319,6 +337,7 @@ new cloudfront.Distribution(this, 'myDist', {
 If the stack is in `us-east-1`, a "normal" `lambda.Function` can be used instead of an `EdgeFunction`.
 
 ```ts
+// Using a lambda Function instead of an EdgeFunction for stacks in `us-east-`.
 const myFunc = new lambda.Function(this, 'MyFunction', {
   runtime: lambda.Runtime.NODEJS_12_X,
   handler: 'index.handler',
@@ -330,6 +349,8 @@ If the stack is not in `us-east-1`, and you need references from different appli
 you can also set a specific stack ID for each Lambda@Edge.
 
 ```ts
+// Setting stackIds for EdgeFunctions that can be referenced from different applications
+// on the same account.
 const myFunc1 = new cloudfront.experimental.EdgeFunction(this, 'MyFunction1', {
   runtime: lambda.Runtime.NODEJS_12_X,
   handler: 'index.handler',
@@ -349,6 +370,8 @@ Lambda@Edge functions can also be associated with additional behaviors,
 either at or after Distribution creation time.
 
 ```ts
+// Associating a Lambda@Edge function with additional behaviors.
+
 declare const myFunc: cloudfront.experimental.EdgeFunction;
 // assigning at Distribution creation
 declare const myBucket: s3.Bucket;
@@ -383,6 +406,8 @@ myDistribution.addBehavior('images/*', myOrigin, {
 Adding an existing Lambda@Edge function created in a different stack to a CloudFront distribution.
 
 ```ts
+// Adding an existing Lambda@Edge function created in a different stack
+// to a CloudFront distribution.
 declare const s3Bucket: s3.Bucket;
 const functionVersion = lambda.Version.fromVersionArn(this, 'Version', 'arn:aws:lambda:us-east-1:123456789012:function:functionName:1');
 
@@ -390,10 +415,10 @@ new cloudfront.Distribution(this, 'distro', {
   defaultBehavior: {
     origin: new origins.S3Origin(s3Bucket),
     edgeLambdas: [
-        {
-          functionVersion,
-          eventType: cloudfront.LambdaEdgeEventType.VIEWER_REQUEST,
-        },
+      {
+        functionVersion,
+        eventType: cloudfront.LambdaEdgeEventType.VIEWER_REQUEST,
+      },
     ],
   },
 });
@@ -404,6 +429,7 @@ new cloudfront.Distribution(this, 'distro', {
 You can also deploy CloudFront functions and add them to a CloudFront distribution.
 
 ```ts
+// Add a cloudfront Function to a Distribution
 const cfFunction = new cloudfront.Function(this, 'Function', {
   code: cloudfront.FunctionCode.fromInline('function handler(event) { return event.request }'),
 });
@@ -430,6 +456,8 @@ You can configure CloudFront to create log files that contain detailed informati
 The logs can go to either an existing bucket, or a bucket will be created for you.
 
 ```ts
+// Configure logging for Distributions
+
 // Simplest form - creates a new bucket and logs to it.
 new cloudfront.Distribution(this, 'myDist', {
   defaultBehavior: { origin: new origins.HttpOrigin('www.example.com') },
@@ -452,6 +480,7 @@ Existing distributions can be imported as well; note that like most imported con
 However, it can be used as a reference for other higher-level constructs.
 
 ```ts
+// Using a reference to an imported Distribution
 const distribution = cloudfront.Distribution.fromDistributionAttributes(this, 'ImportedDist', {
   domainName: 'd111111abcdef8.cloudfront.net',
   distributionId: '012345ABCDEF',
@@ -466,8 +495,9 @@ const distribution = cloudfront.Distribution.fromDistributionAttributes(this, 'I
 Example usage:
 
 ```ts
-declare const sourceBucket: s3.Bucket;
+// Using a CloudFrontWebDistribution construct.
 
+declare const sourceBucket: s3.Bucket;
 const distribution = new cloudfront.CloudFrontWebDistribution(this, 'MyDistribution', {
   originConfigs: [
     {
@@ -482,7 +512,8 @@ const distribution = new cloudfront.CloudFrontWebDistribution(this, 'MyDistribut
 
 ### Viewer certificate
 
-By default, CloudFront Web Distributions will answer HTTPS requests with CloudFront's default certificate, only containing the distribution `domainName` (e.g. d111111abcdef8.cloudfront.net).
+By default, CloudFront Web Distributions will answer HTTPS requests with CloudFront's default certificate,
+only containing the distribution `domainName` (e.g. d111111abcdef8.cloudfront.net).
 You can customize the viewer certificate property to provide a custom certificate and/or list of domain name aliases to fit your needs.
 
 See [Using Alternate Domain Names and HTTPS](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/using-https-alternate-domain-names.html) in the CloudFront User Guide.
@@ -500,7 +531,10 @@ Example:
 You can change the default certificate by one stored AWS Certificate Manager, or ACM.
 Those certificate can either be generated by AWS, or purchased by another CA imported into ACM.
 
-For more information, see [the aws-certificatemanager module documentation](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-certificatemanager-readme.html) or [Importing Certificates into AWS Certificate Manager](https://docs.aws.amazon.com/acm/latest/userguide/import-certificate.html) in the AWS Certificate Manager User Guide.
+For more information, see
+[the aws-certificatemanager module documentation](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-certificatemanager-readme.html)
+or [Importing Certificates into AWS Certificate Manager](https://docs.aws.amazon.com/acm/latest/userguide/import-certificate.html)
+in the AWS Certificate Manager User Guide.
 
 Example:
 
@@ -518,13 +552,14 @@ Example:
 
 ### Trusted Key Groups
 
-CloudFront Web Distributions supports validating signed URLs or signed cookies using key groups. When a cache behavior contains trusted key groups, CloudFront requires signed URLs or signed cookies for all requests that match the cache behavior.
+CloudFront Web Distributions supports validating signed URLs or signed cookies using key groups.
+When a cache behavior contains trusted key groups, CloudFront requires signed URLs or signed cookies for all requests that match the cache behavior.
 
 Example:
 
 ```ts
+// Using trusted key groups for Cloudfront Web Distributions.
 declare const sourceBucket: s3.Bucket;
-
 declare const publicKey: string;
 const pubKey = new cloudfront.PublicKey(this, 'MyPubKey', {
   encodedKey: publicKey,
@@ -564,6 +599,7 @@ See [Restricting the Geographic Distribution of Your Content](https://docs.aws.a
 Example:
 
 ```ts
+// Adding restrictions to a Cloudfront Web Distribution.
 declare const sourceBucket: s3.Bucket;
 new cloudfront.CloudFrontWebDistribution(this, 'MyDistribution', {
   originConfigs: [
@@ -580,7 +616,8 @@ new cloudfront.CloudFrontWebDistribution(this, 'MyDistribution', {
 
 ### Connection behaviors between CloudFront and your origin
 
-CloudFront provides you even more control over the connection behaviors between CloudFront and your origin. You can now configure the number of connection attempts CloudFront will make to your origin and the origin connection timeout for each attempt.
+CloudFront provides you even more control over the connection behaviors between CloudFront and your origin.
+You can now configure the number of connection attempts CloudFront will make to your origin and the origin connection timeout for each attempt.
 
 See [Origin Connection Attempts](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/distribution-web-values-specify.html#origin-connection-attempts)
 
@@ -589,6 +626,7 @@ See [Origin Connection Timeout](https://docs.aws.amazon.com/AmazonCloudFront/lat
 Example usage:
 
 ```ts
+// Configuring connection behaviors between Cloudfront and your origin
 const distribution = new cloudfront.CloudFrontWebDistribution(this, 'MyDistribution', {
   originConfigs: [
     {
@@ -607,9 +645,10 @@ const distribution = new cloudfront.CloudFrontWebDistribution(this, 'MyDistribut
 #### Origin Fallback
 
 In case the origin source is not available and answers with one of the
-specified status code the failover origin source will be used.
+specified status codes the failover origin source will be used.
 
 ```ts
+// Configuring origin fallback options for the CloudFrontWebDistribution
 new cloudfront.CloudFrontWebDistribution(this, 'ADistribution', {
   originConfigs: [
     {
@@ -642,7 +681,8 @@ new cloudfront.CloudFrontWebDistribution(this, 'ADistribution', {
 
 ## KeyGroup & PublicKey API
 
-Now you can create a key group to use with CloudFront signed URLs and signed cookies. You can add public keys to use with CloudFront features such as signed URLs, signed cookies, and field-level encryption.
+You can create a key group to use with CloudFront signed URLs and signed cookies
+You can add public keys to use with CloudFront features such as signed URLs, signed cookies, and field-level encryption.
 
 The following example command uses OpenSSL to generate an RSA key pair with a length of 2048 bits and save to the file named `private_key.pem`.
 
@@ -661,6 +701,7 @@ Note: Don't forget to copy/paste the contents of `public_key.pem` file including
 Example:
 
 ```ts
+// Create a key group to use with CloudFront signed URLs and signed cookies.
 new cloudfront.KeyGroup(this, 'MyKeyGroup', {
   items: [
     new cloudfront.PublicKey(this, 'MyPublicKey', {
