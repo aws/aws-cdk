@@ -83,11 +83,7 @@
       },
       "DependsOn": [
         "FunctionServiceRole675BB04A"
-      ],
-      "Metadata": {
-        "aws:asset:path": "asset.4096fd7ad39dc95026cb4c6254d2421d276c3170018ff7abdb41197d50ebd47b",
-        "aws:asset:property": "Code"
-      }
+      ]
     }
   },
   "Parameters": {

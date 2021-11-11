@@ -42,14 +42,10 @@
           }
         },
         "CompatibleRuntimes": [
-          "nodejs14.x"
+          "nodejs10.x"
         ],
         "Description": "A layer to test the L2 construct",
         "LicenseInfo": "Apache-2.0"
-      },
-      "Metadata": {
-        "aws:asset:path": "asset.8811a2632ac5564a08fd269e159298f7e497f259578b0dc5e927a1f48ab24d34",
-        "aws:asset:property": "Content"
       }
     },
     "MyLayerremoteaccountgrant715E5D21": {
@@ -113,7 +109,7 @@
             "Ref": "MyLayer38944FA5"
           }
         ],
-        "Runtime": "nodejs14.x"
+        "Runtime": "nodejs10.x"
       },
       "DependsOn": [
         "MyLayeredLambdaServiceRole1A7DC118"

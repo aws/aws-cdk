@@ -300,7 +300,7 @@ describe('code', () => {
               { Ref: 'AWS::Region' },
               '.',
               { Ref: 'AWS::URLSuffix' },
-              '/aws-cdk/assets:c109ff3b2d7348ec14af49d023bb0d573d293ca70bc79707e5a55e356f5437ec',
+              '/aws-cdk/assets:f0fe8a410cb4b860a25f6f3e09237abf69cd38ab59f9ef2441597c75f598c634',
             ]],
           },
         },
@@ -383,7 +383,7 @@ describe('code', () => {
       // then
       expect(stack).toHaveResource('AWS::Lambda::Function', {
         Metadata: {
-          [cxapi.ASSET_RESOURCE_METADATA_PATH_KEY]: 'asset.4a41925a93d1c6360a95a29cc900c4c41c8624d6d198c56c0d79872fb7c70847',
+          [cxapi.ASSET_RESOURCE_METADATA_PATH_KEY]: 'asset.650a009a909c30e767a843a84ff7812616447251d245e0ab65d9bfb37f413e32',
           [cxapi.ASSET_RESOURCE_METADATA_DOCKERFILE_PATH_KEY]: dockerfilePath,
           [cxapi.ASSET_RESOURCE_METADATA_DOCKER_BUILD_ARGS_KEY]: dockerBuildArgs,
           [cxapi.ASSET_RESOURCE_METADATA_DOCKER_BUILD_TARGET_KEY]: dockerBuildTarget,
@@ -407,7 +407,7 @@ describe('code', () => {
       // then
       expect(stack).toHaveResource('AWS::Lambda::Function', {
         Metadata: {
-          [cxapi.ASSET_RESOURCE_METADATA_PATH_KEY]: 'asset.318d72253965eded22556ab8551de8ba726e9394133ce0f2ec2d1de318d7fb79',
+          [cxapi.ASSET_RESOURCE_METADATA_PATH_KEY]: 'asset.a3cc4528c34874616814d9b3436ff0e5d01514c1d563ed8899657ca00982f308',
           [cxapi.ASSET_RESOURCE_METADATA_DOCKERFILE_PATH_KEY]: 'Dockerfile',
           [cxapi.ASSET_RESOURCE_METADATA_PROPERTY_KEY]: 'Code.ImageUri',
         },

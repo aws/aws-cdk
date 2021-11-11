@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Exercise all integ stacks and if they deploy, update the expected synth files
 import * as yargs from 'yargs';
-import { cdkIntegSynthesizeOptions, IntegrationTests } from '../lib/integ-helpers';
+import { DEFAULT_SYNTH_OPTIONS, IntegrationTests } from '../lib/integ-helpers';
 
 /* eslint-disable no-console */
 
@@ -15,7 +15,6 @@ async function main() {
     .argv;
 
   const tests = await new IntegrationTests('test').fromCliArgs(argv._.map(x => x.toString()));
-  const synthOptions = cdkIntegSynthesizeOptions();
 
   if (argv.list) {
     process.stdout.write(tests.map(t => t.name).join(' ') + '\n');
@@ -51,7 +50,7 @@ async function main() {
       }
 
       // If this all worked, write the new expectation file
-      const actual = await test.cdkSynthFast(synthOptions);
+      const actual = await test.cdkSynthFast(DEFAULT_SYNTH_OPTIONS);
 
       await test.writeExpected(actual);
     } finally {
