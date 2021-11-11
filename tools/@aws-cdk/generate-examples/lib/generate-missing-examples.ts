@@ -14,6 +14,8 @@ const COMMENT_WARNING = [
 export interface GenerateExamplesOptions {
   readonly cacheFromTablet?: string;
   readonly cacheToTablet?: string;
+  readonly directory?: string;
+  readonly bail?: boolean;
 }
 
 export async function generateMissingExamples(assemblyLocations: string[], options: GenerateExamplesOptions) {
@@ -31,7 +33,6 @@ export async function generateMissingExamples(assemblyLocations: string[], optio
   }
 
   const typesystem = new TypeSystem();
-  const assemblies: Assembly[] = [];
 
   // load all assemblies into typesystem
   for (const assemblyLocation of assemblyLocations) {
@@ -42,6 +43,7 @@ export async function generateMissingExamples(assemblyLocations: string[], optio
     const assembly = await typesystem.load(assemblyLocation);
 
     const documentableClasses = assembly.classes.filter(c => !c.docs.example);
+    let documentedClasses = 0;
 
     // eslint-disable-next-line no-console
     console.log(`${assembly.name}: ${documentableClasses.length} classes to document`);
@@ -50,13 +52,35 @@ export async function generateMissingExamples(assemblyLocations: string[], optio
 
     const failed = [];
     for (const classType of documentableClasses) {
+      if (rosetta.diagnostics.length > 0 && options.bail) {
+        break;
+      }
+
       const example = generateClassAssignment(classType);
       if (!example) {
         failed.push(classType.name);
         continue;
       }
 
-      const source = [...COMMENT_WARNING, '\n', example].join('\n');
+      // To successfully compile, we need to generate the right 'Construct' import
+      const constructImport = ['monocdk', 'aws-cdk-lib'].includes(assembly.name)
+        ? 'import { Construct } from "constructs";'
+        : 'import { Construct } from "@aws-cdk/core"';
+
+      const source = [
+        ...example.renderDeclarations(),
+        '/// !hide',
+        constructImport,
+        'class MyConstruct extends Construct {',
+        'constructor(scope: Construct, id: string) {',
+        'super(scope, id);',
+        '/// !show',
+        ...COMMENT_WARNING,
+        '',
+        example.renderCode(),
+        '/// !hide',
+        '} }',
+      ].join('\n');
       const apiLocation: ApiLocation = { api: 'type', fqn: classType.fqn };
 
       rosetta.translateExample(
@@ -64,8 +88,13 @@ export async function generateMissingExamples(assemblyLocations: string[], optio
         source,
         TargetLanguage.PYTHON,
         true,
-        assemblyLocation,
-      );
+        options.directory ?? process.cwd());
+
+      if (rosetta.diagnostics.length > 0 && options.bail) {
+        // eslint-disable-next-line no-console
+        console.log(source);
+        break;
+      }
 
       // The following is because the API is silly. `translateExample` will give us back
       // one Translation, but `insertExample` needs a TranslatedSnippet (which it had, but
@@ -74,31 +103,35 @@ export async function generateMissingExamples(assemblyLocations: string[], optio
         location: { api: apiLocation, field: { field: 'example' } },
         visibleSource: source,
       });
-      insertExample(snippet, classType.spec, cacheToTablet);
+      insertExample(snippet, classType.spec);
+      documentedClasses += 1;
     }
 
     // eslint-disable-next-line no-console
     console.log([
-      `${assembly.name}: annotated ${documentableClasses.length - failed.length} classes`,
+      `${assembly.name}: annotated ${documentedClasses} classes`,
       ...(failed.length > 0 ? [`failed: ${failed.join(', ')}`] : []),
     ].join(', '));
 
     await replaceAssembly(assembly.spec, assemblyLocation);
   }
-  // update all assemblies
-  for (let i = 0; i < assemblies.length; i++) {
-  }
-
   if (options.cacheToTablet) {
     // Copy the translations we just did from the 'rosetta' object to the
     // tablet file we're saving.
-    for (const addedKey in rosetta.liveTablet.snippetKeys) {
+    // eslint-disable-next-line no-console
+    for (const addedKey of rosetta.liveTablet.snippetKeys) {
       const snip = rosetta.liveTablet.tryGetSnippet(addedKey);
-      if (snip) {
-        cacheToTablet?.addSnippet(snip);
-      }
+      if (!snip) { throw new Error(`Does not exist: ${addedKey}`); }
+      cacheToTablet?.addSnippet(snip);
     }
     await cacheToTablet.save(options.cacheToTablet);
+  }
+
+  if (rosetta.diagnostics.length > 0) {
+    for (const d of rosetta.diagnostics) {
+      // eslint-disable-next-line no-console
+      console.error(d.formattedMessage);
+    }
   }
 }
 

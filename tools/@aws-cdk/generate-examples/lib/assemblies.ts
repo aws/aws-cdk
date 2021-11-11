@@ -1,7 +1,7 @@
 import * as path from 'path';
 import * as spec from '@jsii/spec';
 import * as fs from 'fs-extra';
-import { LanguageTablet, TranslatedSnippet } from 'jsii-rosetta';
+import { TranslatedSnippet } from 'jsii-rosetta';
 
 /**
  * Replaces the file where the original assembly file *should* be found with a new assembly file.
@@ -29,22 +29,12 @@ function _fingerprint(assembly: spec.Assembly): spec.Assembly {
 }
 
 /**
- * Insert an example into the docs of a type, and insert it back into the tablet under a new key
- *
- * This definition has been copied from 'jsii-rosetta', and should be replaced with an
- * import once https://github.com/aws/jsii/pull/3146 is merged.
+ * Insert an example into the docs of a type
  */
-export function insertExample(example: TranslatedSnippet, type: spec.Type, tablet: LanguageTablet): void {
+export function insertExample(example: TranslatedSnippet, type: spec.Type): void {
   if (type.docs) {
     type.docs.example = example.originalSource.source;
   } else {
     type.docs = { example: example.originalSource.source };
   }
-
-  tablet?.addSnippet(
-    example.withLocation({
-      api: { api: 'type', fqn: type.fqn },
-      field: { field: 'example' },
-    }),
-  );
 }

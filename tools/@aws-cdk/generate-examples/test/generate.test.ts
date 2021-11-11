@@ -114,7 +114,7 @@ describe('generateClassAssignment ', () => {
     await ts.load(assembly.directory);
 
     const type = ts.findClass('my_assembly.ClassA');
-    expect(generateClassAssignment(type)?.split('\n')).toEqual([
+    expect(generateClassAssignment(type)?.toString()?.split('\n')).toEqual([
       'import * as my_assembly from \'my_assembly\';',
       '',
       'declare const prop5: any;',
@@ -184,7 +184,7 @@ describe('generateClassAssignment ', () => {
     await ts.load(assembly.directory);
 
     const type = ts.findClass('my_assembly.ClassA');
-    expect(generateClassAssignment(type)?.split('\n')).toEqual([
+    expect(generateClassAssignment(type)?.toString()?.split('\n')).toEqual([
       'import * as my_assembly from \'my_assembly\';',
       '',
       'const classA = new my_assembly.ClassA(this, \'MyClassA\', {',
@@ -222,7 +222,7 @@ describe('generateClassAssignment ', () => {
     await ts.load(assembly.directory);
 
     const type = ts.findClass('my_assembly.ClassA');
-    expect(generateClassAssignment(type)?.split('\n')).toEqual([
+    expect(generateClassAssignment(type)?.toString()?.split('\n')).toEqual([
       'import * as my_assembly from \'my_assembly\';',
       '',
       `const classA = new my_assembly.ClassA(this, \'MyClassA\', /* ${comment} */ {`,

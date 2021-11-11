@@ -46,7 +46,7 @@ export class Code {
   /**
    * Renders variable declarations. Assumes that there are no duplicates in the declarations.
    */
-  private renderDeclarations(): string[] {
+  public renderDeclarations(): string[] {
     sortBy(this.declarations, (d) => d.sortKey);
     const decs = deduplicate(this.declarations);
     // Add separator only if necessary
@@ -59,6 +59,10 @@ export class Code {
       }
     }
     return decStrings;
+  }
+
+  public renderCode(): string {
+    return this.code;
   }
 }
 

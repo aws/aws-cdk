@@ -39,7 +39,7 @@ class ExampleContext {
   }
 }
 
-export function generateClassAssignment(classType: reflect.ClassType): string | undefined {
+export function generateClassAssignment(classType: reflect.ClassType): Code | undefined {
   const expression = generateClassExample(classType);
   if (!expression) {
     return undefined;
@@ -49,7 +49,7 @@ export function generateClassAssignment(classType: reflect.ClassType): string | 
     expression,
     ';',
   );
-  return code.toString();
+  return code;
 }
 
 function generateClassExample(classType: reflect.ClassType): Code | undefined {
@@ -222,7 +222,8 @@ function exampleValue(context: ExampleContext, typeReference: reflect.TypeRefere
     }
 
     if (newType.isEnumType()) {
-      return new Code(`${newType.name}.${newType.members[0].name}`, [new Import(newType)]);
+      const imp = new Import(newType);
+      return new Code(`${imp.importName}.${newType.name}.${newType.members[0].name}`, [imp]);
     }
 
     // If this is struct and we're not already rendering it (recursion breaker), expand

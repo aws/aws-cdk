@@ -13,8 +13,18 @@ export abstract class Declaration {
  * An Import statement that will get rendered at the top of the code snippet.
  */
 export class Import extends Declaration {
-  public constructor(public readonly type: reflect.Type) {
-    super([0, module(type).moduleName]);
+  public readonly importName: string;
+  public readonly moduleName: string;
+  public readonly type: reflect.Type;
+
+  public constructor(type: reflect.Type) {
+    const { importName, moduleName } = module(type);
+
+    super([0, moduleName]);
+
+    this.importName = importName;
+    this.moduleName = moduleName;
+    this.type = type;
   }
 
   public equals(rhs: Declaration): boolean {
@@ -22,8 +32,7 @@ export class Import extends Declaration {
   }
 
   public render(): string {
-    const { importName, moduleName } = module(this.type);
-    return `import * as ${importName} from '${moduleName}';`;
+    return `import * as ${this.importName} from '${this.moduleName}';`;
   }
 }
 

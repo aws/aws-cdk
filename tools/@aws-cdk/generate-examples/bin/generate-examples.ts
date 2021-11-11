@@ -19,6 +19,19 @@ async function main() {
       requiresArg: true,
       default: undefined,
     })
+    .option('directory', {
+      alias: 'd',
+      type: 'string',
+      describe: 'Directory to run the compilation in (with dependencies set up)',
+      requiresArg: true,
+      default: undefined,
+    })
+    .option('bail', {
+      alias: 'b',
+      type: 'boolean',
+      describe: 'Whether to bail on the first error',
+      default: false,
+    })
     .help()
     .strict()
     .showHelpOnFail(false)
@@ -29,6 +42,8 @@ async function main() {
   await generateMissingExamples(assemblyDirs.length > 0 ? assemblyDirs : ['.'], {
     cacheFromTablet: args['cache-from'],
     cacheToTablet: args['cache-to'],
+    directory: args.directory,
+    bail: args.bail,
   });
 }
 
