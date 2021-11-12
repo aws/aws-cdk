@@ -419,11 +419,14 @@ async function copyOrTransformFiles(from: string, to: string, libraries: readonl
 }
 
 /**
- * Rewrites the imports in README.md from v1 ('@aws-cdk/...') to v2 ('aws-cdk-lib').
+ * Rewrites the imports in README.md from v1 ('@aws-cdk/...') to v2 ('aws-cdk-lib') or monocdk ('monocdk').
  * Uses the module imports (import { aws_foo as foo } from 'aws-cdk-lib') for module imports,
  * and "barrel" imports for types (import { Bucket } from 'aws-cdk-lib/aws-s3').
  */
 async function rewriteReadmeImports(fromFile: string): Promise<string> {
+  const paths = process.cwd().split(path.sep);
+  // either monocdk or aws-cdk-lib
+  const libName = paths[paths.length-1];
   const readmeOriginal = await fs.readFile(fromFile, { encoding: 'utf8' });
   return readmeOriginal
     // import * as s3 from '@aws-cdk/aws-s3'
@@ -435,16 +438,16 @@ async function rewriteReadmeImports(fromFile: string): Promise<string> {
 
   function rewriteCdkImports(_match: string, prefix: string, alias: string, module: string, suffix: string): string {
     if (module === 'core') {
-      return `${prefix}import * as ${alias} from 'aws-cdk-lib';${suffix}`;
+      return `${prefix}import * as ${alias} from '${libName}';${suffix}`;
     } else {
-      return `${prefix}import { ${module.replace(/-/g, '_')} as ${alias} } from 'aws-cdk-lib';${suffix}`;
+      return `${prefix}import { ${module.replace(/-/g, '_')} as ${alias} } from '${libName}';${suffix}`;
     }
   }
   function rewriteCdkTypeImports(_match: string, prefix: string, types: string, module: string, suffix: string): string {
     if (module === 'core') {
-      return `${prefix}import ${types} from 'aws-cdk-lib';${suffix}`;
+      return `${prefix}import ${types} from '${libName}';${suffix}`;
     } else {
-      return `${prefix}import ${types} from 'aws-cdk-lib/${module}';${suffix}`;
+      return `${prefix}import ${types} from '${libName}/${module}';${suffix}`;
     }
   }
 }
