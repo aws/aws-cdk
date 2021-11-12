@@ -153,22 +153,22 @@ export class DockerImageAsset extends CoreConstruct implements IAsset {
    * If asset staging is disabled, this will just be the original path.
    * If asset staging is enabled it will be the staged path.
    */
-  public readonly assetPath: string;
+  private readonly assetPath: string;
 
   /**
    * The path to the Dockerfile, relative to the assetPath
    */
-  public readonly dockerfilePath?: string;
+  private readonly dockerfilePath?: string;
 
   /**
    * Build args to pass to the `docker build` command.
    */
-  public readonly dockerBuildArgs?: { [key: string]: string };
+  private readonly dockerBuildArgs?: { [key: string]: string };
 
   /**
    * Docker target to build to
    */
-  readonly dockerBuildTarget?: string;
+  private readonly dockerBuildTarget?: string;
 
   constructor(scope: Construct, id: string, props: DockerImageAssetProps) {
     super(scope, id);
