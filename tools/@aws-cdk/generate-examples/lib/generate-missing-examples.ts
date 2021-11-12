@@ -28,7 +28,7 @@ export async function generateMissingExamples(assemblyLocations: string[], optio
       throw new Error(`Assembly location not a directory: ${assemblyLocation}`);
     }
 
-    return { assemblyLocation, assembly: await typesystem.load(assemblyLocation) };
+    return { assemblyLocation, assembly: await typesystem.load(assemblyLocation, { validate: false }) };
   }));
 
   const snippets = loadedAssemblies.flatMap(({ assembly }) => {
