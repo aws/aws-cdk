@@ -51,14 +51,11 @@ publish their log group to a specific region, such as AWS Chatbot creating a log
 ## Resource Policy
 
 CloudWatch Resource Policies allow other AWS services or IAM Principals to put log events into the log groups.
-A resource policy is automatically created when `addToResourcePolicy` is called on the LogGroup for the first time.
-
-`ResourcePolicy` can also be created manually.
+A resource policy is automatically created when `addToResourcePolicy` is called on the LogGroup for the first time:
 
 ```ts
-const logGroup = new LogGroup(this, 'LogGroup');
-const resourcePolicy = new ResourcePolicy(this, 'ResourcePolicy');
-resourcePolicy.document.addStatements(new iam.PolicyStatement({
+const logGroup = new logs.LogGroup(this, 'LogGroup');
+logGroup.addToResourcePolicy(new iam.PolicyStatement({
     actions: ['logs:CreateLogStream', 'logs:PutLogEvents'],
     principals: [new iam.ServicePrincipal('es.amazonaws.com')],
     resources: [logGroup.logGroupArn],
@@ -68,22 +65,8 @@ resourcePolicy.document.addStatements(new iam.PolicyStatement({
 Or more conveniently, write permissions to the log group can be granted as follows which gives same result as in the above example.
 
 ```ts
-const logGroup = new LogGroup(this, 'LogGroup');
-logGroup.grantWrite(iam.ServicePrincipal('es.amazonaws.com'));
-```
-
-Optionally name and policy statements can also be passed on `ResourcePolicy` construction.
-
-```ts
-const policyStatement = new new iam.PolicyStatement({
-    resources: ["*"],
-    actions: ['logs:PutLogEvents'],
-    principals: [new iam.ArnPrincipal('arn:aws:iam::123456789012:user/user-name')],
-});
-const resourcePolicy = new ResourcePolicy(this, 'ResourcePolicy', {
-    policyName: 'myResourcePolicy',
-    policyStatements: [policyStatement],
-});
+const logGroup = new logs.LogGroup(this, 'LogGroup');
+logGroup.grantWrite(new iam.ServicePrincipal('es.amazonaws.com'));
 ```
 
 ## Encrypting Log Groups

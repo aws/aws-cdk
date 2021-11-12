@@ -102,8 +102,8 @@ The following is a qualitative diagram of the various possible components involv
 
 ```text
  +-----------------------------------------------+               +-----------------+
-  | EKS Cluster | kubectl |  |
-  | ----------- |<-------------+| Kubectl Handler |
+ |                 EKS Cluster                   |    kubectl    |                 |
+ |-----------------------------------------------|<-------------+| Kubectl Handler |
  |                                               |               |                 |
  |                                               |               +-----------------+
  | +--------------------+    +-----------------+ |
@@ -516,6 +516,9 @@ new eks.Cluster(this, 'HelloEKS', {
 
 If you do not specify a VPC, one will be created on your behalf, which you can then access via `cluster.vpc`. The cluster VPC will be associated to any EKS managed capacity (i.e Managed Node Groups and Fargate Profiles).
 
+Please note that the `vpcSubnets` property defines the subnets where EKS will place the _control plane_ ENIs. To choose
+the subnets where EKS will place the worker nodes, please refer to the **Provisioning clusters** section above.
+
 If you allocate self managed capacity, you can specify which subnets should the auto-scaling group use:
 
 ```ts
@@ -536,6 +539,8 @@ The handler association to the VPC is derived from the `endpointAccess` configur
 Breaking this down, it means that if the endpoint exposes private access (via `EndpointAccess.PRIVATE` or `EndpointAccess.PUBLIC_AND_PRIVATE`), and the VPC contains **private** subnets, the Lambda function will be provisioned inside the VPC and use the private subnets to interact with the cluster. This is the common use-case.
 
 If the endpoint does not expose private access (via `EndpointAccess.PUBLIC`) **or** the VPC does not contain private subnets, the function will not be provisioned within the VPC.
+
+If your use-case requires control over the IAM role that the KubeCtl Handler assumes, a custom role can be passed through the ClusterProps (as `kubectlLambdaRole`) of the EKS Cluster construct. 
 
 #### Cluster Handler
 
