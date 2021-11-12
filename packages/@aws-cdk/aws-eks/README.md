@@ -461,7 +461,7 @@ To disable the installation of the termination handler, set the `spotInterruptHa
 
 `Bottlerocket` is supported when using managed nodegroups or self-managed auto-scaling groups.
 
-> **NOTICE**: Bottlerocket is supported in all AWS commercial regions. For more details, see [Bottlerocket FAQs](https://aws.amazon.com/bottlerocket/faqs/) and [Bottlerocket Open Source Blog](https://aws.amazon.com/blogs/opensource/announcing-the-general-availability-of-bottlerocket-an-open-source-linux-distribution-purpose-built-to-run-containers/).
+For more details, see [Bottlerocket FAQs](https://aws.amazon.com/bottlerocket/faqs/) and [Bottlerocket Open Source Blog](https://aws.amazon.com/blogs/opensource/announcing-the-general-availability-of-bottlerocket-an-open-source-linux-distribution-purpose-built-to-run-containers/).
 
 To create a Bottlerocket managed ndoegroup:
 
