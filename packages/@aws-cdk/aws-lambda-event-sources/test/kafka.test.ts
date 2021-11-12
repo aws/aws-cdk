@@ -488,5 +488,25 @@ describe('KafkaEventSource', () => {
         ]),
       });
     });
+
+    test('ManagedKafkaEventSource name conforms to construct id rules', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const fn = new TestFunction(stack, 'Fn');
+      const clusterArn = 'some-arn';
+      const kafkaTopic = 'some-topic';
+
+      const mskEventMapping = new sources.ManagedKafkaEventSource(
+        {
+          clusterArn,
+          topic: kafkaTopic,
+          startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+        });
+
+      let expectedId = `KafkaEventSource:${cdk.Names.nodeUniqueId(fn.node)}-${kafkaTopic}`;
+      // WHEN
+      fn.addEventSource(mskEventMapping);
+      expect(expectedId).toEqual(mskEventMapping.bind.name);
+    });
   });
 });
