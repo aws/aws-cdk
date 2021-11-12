@@ -12,10 +12,10 @@ async function main() {
       requiresArg: true,
       default: undefined,
     })
-    .option('cache-to', {
-      alias: 'c',
+    .option('append-to', {
+      alias: 'a',
       type: 'string',
-      describe: 'Write fresh translations to the given tablet file',
+      describe: 'Append translations to the given tablet file',
       requiresArg: true,
       default: undefined,
     })
@@ -41,9 +41,8 @@ async function main() {
 
   await generateMissingExamples(assemblyDirs.length > 0 ? assemblyDirs : ['.'], {
     cacheFromTablet: args['cache-from'],
-    cacheToTablet: args['cache-to'],
+    appendToTablet: args['append-to'],
     directory: args.directory,
-    bail: args.bail,
   });
 }
 

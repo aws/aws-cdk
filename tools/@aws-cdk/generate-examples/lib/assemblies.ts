@@ -1,7 +1,7 @@
 import * as path from 'path';
 import * as spec from '@jsii/spec';
 import * as fs from 'fs-extra';
-import { TranslatedSnippet } from 'jsii-rosetta';
+import { TypeScriptSnippet } from 'jsii-rosetta';
 
 /**
  * Replaces the file where the original assembly file *should* be found with a new assembly file.
@@ -31,10 +31,10 @@ function _fingerprint(assembly: spec.Assembly): spec.Assembly {
 /**
  * Insert an example into the docs of a type
  */
-export function insertExample(example: TranslatedSnippet, type: spec.Type): void {
+export function insertExample(example: TypeScriptSnippet, type: spec.Type): void {
   if (type.docs) {
-    type.docs.example = example.originalSource.source;
+    type.docs.example = example.visibleSource;
   } else {
-    type.docs = { example: example.originalSource.source };
+    type.docs = { example: example.visibleSource };
   }
 }

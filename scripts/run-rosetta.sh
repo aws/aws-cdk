@@ -86,7 +86,7 @@ if $infuse; then
     echo "💎 Generating synthetic examples for the remainder" >&2
     time $scriptdir/../tools/@aws-cdk/generate-examples/bin/generate-examples \
         $genexample_cache_opts \
-        --cache-to samples.tabl.json \
+        --append-to samples.tabl.json \
         $(cat $jsii_pkgs_file)
 
 fi
