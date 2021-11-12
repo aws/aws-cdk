@@ -461,8 +461,6 @@ To disable the installation of the termination handler, set the `spotInterruptHa
 
 `Bottlerocket` is supported when using managed nodegroups or self-managed auto-scaling groups.
 
-For more details, see [Bottlerocket FAQs](https://aws.amazon.com/bottlerocket/faqs/) and [Bottlerocket Open Source Blog](https://aws.amazon.com/blogs/opensource/announcing-the-general-availability-of-bottlerocket-an-open-source-linux-distribution-purpose-built-to-run-containers/).
-
 To create a Bottlerocket managed ndoegroup:
 
 ```ts
@@ -488,6 +486,8 @@ For example, if the Amazon EKS cluster version is `1.17`, the Bottlerocket AMI v
 > See [Variants](https://github.com/bottlerocket-os/bottlerocket/blob/develop/README.md#variants) for more details.
 
 Please note Bottlerocket does not allow to customize bootstrap options and `bootstrapOptions` properties is not supported when you create the `Bottlerocket` capacity.
+
+For more details about Bottlerocket, see [Bottlerocket FAQs](https://aws.amazon.com/bottlerocket/faqs/) and [Bottlerocket Open Source Blog](https://aws.amazon.com/blogs/opensource/announcing-the-general-availability-of-bottlerocket-an-open-source-linux-distribution-purpose-built-to-run-containers/).
 
 ### Endpoint Access
 
