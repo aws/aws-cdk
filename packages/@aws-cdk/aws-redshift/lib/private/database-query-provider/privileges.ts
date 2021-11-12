@@ -1,8 +1,9 @@
 /* eslint-disable-next-line import/no-unresolved */
 import * as AWSLambda from 'aws-lambda';
 import { TablePrivilege, UserTablePrivilegesHandlerProps } from '../handler-props';
+import { executeStatement } from './redshift-data';
 import { ClusterProps } from './types';
-import { executeStatement, makePhysicalId } from './util';
+import { makePhysicalId } from './util';
 
 export async function handler(props: UserTablePrivilegesHandlerProps & ClusterProps, event: AWSLambda.CloudFormationCustomResourceEvent) {
   const username = props.username;
