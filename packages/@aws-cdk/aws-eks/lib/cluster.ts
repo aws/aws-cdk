@@ -136,7 +136,7 @@ export interface ICluster extends IResource, ec2.IConnectable {
   /**
    * Kubectl Provider for issuing kubectl commands against it
    *
-   * If not defined, the cdk will create one
+   * If not defined, a default provider will be used
    */
   readonly kubectlProvider?: IKubectlProvider;
 
@@ -344,7 +344,7 @@ export interface ClusterAttributes {
   /**
    * KubectlProvider for issuing kubectl commands.
    *
-   * @default - undefined. if undefined - create new
+   * @default - Default CDK provider
    */
   readonly kubectlProvider?: IKubectlProvider;
 

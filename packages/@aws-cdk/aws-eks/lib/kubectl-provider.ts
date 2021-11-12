@@ -43,7 +43,7 @@ export interface KubectlProviderAttributes {
 }
 
 /**
- * Kubectl Provider lambda
+ * Imported KubectlProvider that can be used in place of the default one created by CDK
  */
 export interface IKubectlProvider extends IConstruct {
   /**
