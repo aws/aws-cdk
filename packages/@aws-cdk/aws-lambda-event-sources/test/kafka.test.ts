@@ -503,10 +503,9 @@ describe('KafkaEventSource', () => {
           startingPosition: lambda.StartingPosition.TRIM_HORIZON,
         });
 
-      let expectedId = `KafkaEventSource:${cdk.Names.nodeUniqueId(fn.node)}-${kafkaTopic}`;
       // WHEN
       fn.addEventSource(mskEventMapping);
-      expect(expectedId).toEqual(mskEventMapping.bind.name);
+      expect(mskEventMapping.eventSourceMappingId).toBeDefined();
     });
   });
 });
