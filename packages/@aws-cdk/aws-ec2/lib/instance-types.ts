@@ -87,7 +87,7 @@ export enum InstanceClass {
    * Standard instances with local NVME drive for high performance computing, 5th generation
    */
   M5DN = 'm5dn',
-  
+
   /**
    * Memory optimized instances, 3rd generation
    */
