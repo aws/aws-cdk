@@ -458,9 +458,16 @@ To disable the installation of the termination handler, set the `spotInterruptHa
 #### Bottlerocket
 
 [Bottlerocket](https://aws.amazon.com/bottlerocket/) is a Linux-based open-source operating system that is purpose-built by Amazon Web Services for running containers on virtual machines or bare metal hosts.
-At this moment, `Bottlerocket` is only supported when using self-managed auto-scaling groups.
 
-> **NOTICE**: Bottlerocket is only available in [some supported AWS regions](https://github.com/bottlerocket-os/bottlerocket/blob/develop/QUICKSTART-EKS.md#finding-an-ami).
+`Bottlerocket` is supported when using managed nodegroups or self-managed auto-scaling groups.
+
+To create a Bottlerocket managed nodegroup:
+
+```ts
+cluster.addNodegroupCapacity('BottlerocketNG', {
+  amiType: NodegroupAmiType.BOTTLEROCKET_X86_64,
+});
+```
 
 The following example will create an auto-scaling group of 2 `t3.small` Linux instances running with the `Bottlerocket` AMI.
 
@@ -479,6 +486,8 @@ For example, if the Amazon EKS cluster version is `1.17`, the Bottlerocket AMI v
 > See [Variants](https://github.com/bottlerocket-os/bottlerocket/blob/develop/README.md#variants) for more details.
 
 Please note Bottlerocket does not allow to customize bootstrap options and `bootstrapOptions` properties is not supported when you create the `Bottlerocket` capacity.
+
+For more details about Bottlerocket, see [Bottlerocket FAQs](https://aws.amazon.com/bottlerocket/faqs/) and [Bottlerocket Open Source Blog](https://aws.amazon.com/blogs/opensource/announcing-the-general-availability-of-bottlerocket-an-open-source-linux-distribution-purpose-built-to-run-containers/).
 
 ### Endpoint Access
 
