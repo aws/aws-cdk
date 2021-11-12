@@ -69,6 +69,26 @@ export enum InstanceClass {
   M5AD = 'm5ad',
 
   /**
+   * Standard instances for high performance computing, 5th generation
+   */
+  STANDARD5_HIGH_PERFORMANCE = 'm5n',
+
+  /**
+   * Standard instances for high performance computing, 5th generation
+   */
+  M5N = 'm5n',
+
+  /**
+   * Standard instances with local NVME drive for high performance computing, 5th generation
+   */
+  STANDARD5_NVME_DRIVE_HIGH_PERFORMANCE = 'm5dn',
+
+  /**
+   * Standard instances with local NVME drive for high performance computing, 5th generation
+   */
+  M5DN = 'm5dn',
+  
+  /**
    * Memory optimized instances, 3rd generation
    */
   MEMORY3 = 'r3',
