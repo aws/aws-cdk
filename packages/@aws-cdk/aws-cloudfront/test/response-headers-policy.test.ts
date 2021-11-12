@@ -52,8 +52,8 @@ describe('ResponseHeadersPolicy', () => {
       },
       customHeadersBehavior: {
         customHeaders: [
-          { header: 'content-type', value: 'application/json', override: true },
-          { header: 'content-length', value: '0', override: false },
+          { header: 'X-Custom-Header-1', value: 'application/json', override: true },
+          { header: 'X-Custom-Header-2', value: '0', override: false },
         ],
       },
       securityHeadersBehavior: {
