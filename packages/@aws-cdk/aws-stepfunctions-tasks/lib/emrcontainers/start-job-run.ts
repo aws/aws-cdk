@@ -336,7 +336,7 @@ export class EmrContainersStartJobRun extends sfn.TaskStateBase implements iam.I
       }),
     });
     /* We make use of custom resources to call update-roll-trust-policy as this command is only available through
-     * aws cli because this is only used during the initial and is not available through the sdk.
+     * aws cli because this is only used during the initial setup and is not available through the sdk.
      * https://awscli.amazonaws.com/v2/documentation/api/latest/reference/emr-containers/update-role-trust-policy.html
      * Commands available through SDK: https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/EMRcontainers.html
      * Commands available through CLI: https://awscli.amazonaws.com/v2/documentation/api/latest/reference/emr-containers/index.html

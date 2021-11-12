@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import { Stack } from '@aws-cdk/core';
 import { EmrContainersDeleteVirtualCluster } from '../../lib/emrcontainers/delete-virtual-cluster';
@@ -96,10 +96,11 @@ describe('Valid policy statements and resources are passed ', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [{
           Action: 'emr-containers:DeleteVirtualCluster',
+          Effect: 'Allow',
           Resource: {
             'Fn::Join': [
               '',
@@ -137,13 +138,14 @@ describe('Valid policy statements and resources are passed ', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [{
           Action: [
             'emr-containers:DeleteVirtualCluster',
             'emr-containers:DescribeVirtualCluster',
           ],
+          Effect: 'Allow',
           Resource: {
             'Fn::Join': [
               '',
@@ -181,13 +183,14 @@ describe('Valid policy statements and resources are passed ', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [{
           Action: [
             'emr-containers:DeleteVirtualCluster',
             'emr-containers:DescribeVirtualCluster',
           ],
+          Effect: 'Allow',
           Resource: {
             'Fn::Join': [
               '',

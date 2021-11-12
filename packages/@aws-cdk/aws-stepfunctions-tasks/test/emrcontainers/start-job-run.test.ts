@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
@@ -186,7 +186,7 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
     });
 
     // THEN
-    expect(stack).not.toHaveResource('AWS::CloudFormation::CustomResource');
+    Template.fromStack(stack).resourceCountIs('AWS::CloudFormation::CustomResource', 0);
   });
 
   test('Virtual Cluster Input from virtualClusterId', () => {
@@ -215,7 +215,7 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
       });
 
       // THEN
-      expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         PolicyDocument: {
           Statement: [
             {
@@ -337,7 +337,7 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
       });
 
       // THEN
-      expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         PolicyDocument: {
           Statement: [
             {
@@ -682,7 +682,7 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [{
           Action: 'emr-containers:StartJobRun',
@@ -696,6 +696,7 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
               },
             },
           },
+          Effect: 'Allow',
           Resource: {
             'Fn::Join': [
               '',
@@ -761,7 +762,7 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [{
           Action: 'emr-containers:StartJobRun',
@@ -770,6 +771,7 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
               'emr-containers:ExecutionRoleArn': 'arn:aws:iam::xxxxxxxxxxxx:role/JobExecutionRole',
             },
           },
+          Effect: 'Allow',
           Resource: {
             'Fn::Join': [
               '',
@@ -834,7 +836,7 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [{
           Action: 'emr-containers:StartJobRun',
@@ -848,6 +850,7 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
               },
             },
           },
+          Effect: 'Allow',
           Resource: {
             'Fn::Join': [
               '',
@@ -882,7 +885,7 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('Custom::AWS', {
+    Template.fromStack(stack).hasResourceProperties('Custom::AWS', {
       ServiceToken: {
         'Fn::GetAtt': [
           'AWS679f53fac002430cb0da5b7982bd22872D164C4C',
@@ -894,10 +897,11 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [{
           Action: 'emr-containers:DescribeVirtualCluster',
+          Effect: 'Allow',
           Resource: '*',
         }],
       },
@@ -913,11 +917,12 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
             Action: 'eks:DescribeCluster',
+            Effect: 'Allow',
             Resource: {
               'Fn::Join': [
                 '',
@@ -950,6 +955,7 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
               'iam:GetRole',
               'iam:UpdateAssumeRolePolicy',
             ],
+            Effect: 'Allow',
             Resource: {
               'Fn::GetAtt': [
                 'TaskJobExecutionRole5D5BBA5A',
@@ -962,7 +968,7 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::Lambda::Function', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
       Handler: 'index.handler',
       Layers: [
         {

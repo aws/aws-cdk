@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as eks from '@aws-cdk/aws-eks';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import { Stack } from '@aws-cdk/core';
@@ -158,10 +158,12 @@ test('Permitted role actions included for CreateVirtualCluster if service integr
   });
 
   // THEN
-  expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
       Statement: [{
         Action: 'emr-containers:CreateVirtualCluster',
+        Effect: 'Allow',
+        Resource: '*',
       },
       {
         Action: 'iam:CreateServiceLinkedRole',
@@ -170,6 +172,7 @@ test('Permitted role actions included for CreateVirtualCluster if service integr
             'iam:AWSServiceName': 'emr-containers.amazonaws.com',
           },
         },
+        Effect: 'Allow',
         Resource: {
           'Fn::Join': [
             '',
