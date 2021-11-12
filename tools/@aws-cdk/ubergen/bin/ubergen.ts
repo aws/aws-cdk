@@ -2,6 +2,7 @@ import * as console from 'console';
 import * as path from 'path';
 import * as process from 'process';
 import cfn2ts from '@aws-cdk/cfn2ts';
+import * as cfnspec from '@aws-cdk/cfnspec';
 import * as fs from 'fs-extra';
 import * as ts from 'typescript';
 
@@ -253,8 +254,9 @@ async function combineRosettaFixtures(libraries: readonly LibraryReference[]) {
 
   for (const library of libraries) {
     const packageRosettaDir = path.join(library.root, 'rosetta');
+    const uberRosettaTargetDir = library.shortName === 'core' ? uberRosettaDir : path.join(uberRosettaDir, library.shortName.replace(/-/g, '_'));
     if (await fs.pathExists(packageRosettaDir)) {
-      await fs.copy(packageRosettaDir, uberRosettaDir, {
+      await fs.copy(packageRosettaDir, uberRosettaTargetDir, {
         overwrite: true,
         recursive: true,
       });
@@ -284,12 +286,15 @@ async function transformPackage(
     const destinationLib = path.join(destination, 'lib');
     await fs.mkdirp(destinationLib);
     await cfn2ts(cfnScopes, destinationLib);
+
     // create a lib/index.ts which only exports the generated files
     fs.writeFileSync(path.join(destinationLib, 'index.ts'),
       /// logic copied from `create-missing-libraries.ts`
       cfnScopes.map(s => (s === 'AWS::Serverless' ? 'AWS::SAM' : s).split('::')[1].toLocaleLowerCase())
         .map(s => `export * from './${s}.generated';`)
         .join('\n'));
+    await cfnspec.createLibraryReadme(cfnScopes[0], path.join(destination, 'README.md'));
+
     await copyOrTransformFiles(destination, destination, allLibraries, uberPackageJson);
   } else {
     await copyOrTransformFiles(library.root, destination, allLibraries, uberPackageJson);
@@ -395,9 +400,14 @@ async function copyOrTransformFiles(from: string, to: string, libraries: readonl
       }
       await fs.writeJson(destination, cfnTypes2Classes, { spaces: 2 });
     } else if (name === 'README.md') {
+      // Rewrite the README to both adjust imports and remove the redundant stability banner.
+      // (All modules included in ubergen-ed packages must be stable, so the banner is unnecessary.)
+      const newReadme = (await rewriteReadmeImports(source))
+        .replace(/<!--BEGIN STABILITY BANNER-->[\s\S]+<!--END STABILITY BANNER-->/gm, '');
+
       return fs.writeFile(
         destination,
-        await rewriteReadmeImports(source),
+        newReadme,
         { encoding: 'utf8' },
       );
     } else {

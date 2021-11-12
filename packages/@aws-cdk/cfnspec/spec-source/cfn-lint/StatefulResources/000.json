@@ -25,6 +25,7 @@
     "AWS::SQS::Queue" : {},
     "AWS::S3::Bucket" : {
       "DeleteRequiresEmptyResource": true
-    }
+    },
+    "AWS::SecretsManager::Secret" : {}
   }
 }

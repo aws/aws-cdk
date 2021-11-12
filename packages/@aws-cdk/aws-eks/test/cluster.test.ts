@@ -39,6 +39,25 @@ describe('cluster', () => {
     expect(template.Resources.OnEventHandler42BEBAE0.Properties.Environment).toEqual({ Variables: { foo: 'bar' } });
   });
 
+  test('can specify security group to cluster resource handler', () => {
+    const { stack, vpc } = testFixture();
+    const securityGroup = new ec2.SecurityGroup(stack, 'ProxyInstanceSG', {
+      vpc,
+      allowAllOutbound: false,
+    });
+
+    new eks.Cluster(stack, 'Cluster', {
+      version: CLUSTER_VERSION,
+      placeClusterHandlerInVpc: true,
+      clusterHandlerSecurityGroup: securityGroup,
+    });
+
+    const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.ClusterResourceProvider') as cdk.NestedStack;
+
+    const template = SynthUtils.toCloudFormation(nested);
+    expect(template.Resources.OnEventHandler42BEBAE0.Properties.VpcConfig.SecurityGroupIds).toEqual([{ Ref: 'referencetoStackProxyInstanceSG80B79D87GroupId' }]);
+  });
+
   test('throws when trying to place cluster handlers in a vpc with no private subnets', () => {
     const { stack } = testFixture();
 
@@ -54,6 +73,21 @@ describe('cluster', () => {
     }).toThrow(/Cannot place cluster handler in the VPC since no private subnets could be selected/);
 
 
+  });
+
+  test('throws when provided `clusterHandlerSecurityGroup` without `placeClusterHandlerInVpc: true`', () => {
+    const { stack, vpc } = testFixture();
+    const securityGroup = new ec2.SecurityGroup(stack, 'ProxyInstanceSG', {
+      vpc,
+      allowAllOutbound: false,
+    });
+
+    expect(() => {
+      new eks.Cluster(stack, 'Cluster', {
+        version: CLUSTER_VERSION,
+        clusterHandlerSecurityGroup: securityGroup,
+      });
+    }).toThrow(/Cannot specify clusterHandlerSecurityGroup without placeClusterHandlerInVpc set to true/);
   });
 
   describe('imported Vpc from unparseable list tokens', () => {
@@ -2190,6 +2224,42 @@ describe('cluster', () => {
       },
     });
 
+  });
+
+  test('kubectl provider passes iam role environment to kube ctl lambda', () => {
+
+    const { stack } = testFixture();
+
+    const kubectlRole = new iam.Role(stack, 'KubectlIamRole', {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+    });
+
+    // using _ syntax to silence warning about _cluster not being used, when it is
+    const cluster = new eks.Cluster(stack, 'Cluster1', {
+      version: CLUSTER_VERSION,
+      prune: false,
+      endpointAccess: eks.EndpointAccess.PRIVATE,
+      kubectlLambdaRole: kubectlRole,
+    });
+
+    cluster.addManifest('resource', {
+      kind: 'ConfigMap',
+      apiVersion: 'v1',
+      data: {
+        hello: 'world',
+      },
+      metadata: {
+        name: 'config-map',
+      },
+    });
+
+    // the kubectl provider is inside a nested stack.
+    const nested = stack.node.tryFindChild('@aws-cdk/aws-eks.KubectlProvider') as cdk.NestedStack;
+    expect(nested).toHaveResourceLike('AWS::Lambda::Function', {
+      Role: {
+        Ref: 'referencetoStackKubectlIamRole02F8947EArn',
+      },
+    });
 
   });
 
@@ -2908,6 +2978,28 @@ describe('cluster', () => {
     const casm = app.synth();
     const providerNestedStackTemplate = JSON.parse(fs.readFileSync(path.join(casm.directory, 'StackStackImported1CBA9C50KubectlProviderAA00BA49.nested.template.json'), 'utf-8'));
     expect(providerNestedStackTemplate?.Resources?.Handler886CB40B?.Properties?.MemorySize).toEqual(4096);
+
+  });
+
+  test('create a cluster using custom kubernetes network config', () => {
+    // GIVEN
+    const { stack } = testFixture();
+    const customCidr = '172.16.0.0/12';
+
+    // WHEN
+    new eks.Cluster(stack, 'Cluster', {
+      version: CLUSTER_VERSION,
+      serviceIpv4Cidr: customCidr,
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('Custom::AWSCDK-EKS-Cluster', {
+      Config: {
+        kubernetesNetworkConfig: {
+          serviceIpv4Cidr: customCidr,
+        },
+      },
+    });
 
   });
 });
