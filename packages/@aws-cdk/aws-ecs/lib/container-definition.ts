@@ -307,6 +307,15 @@ export interface ContainerDefinitionOptions {
    * @default - No inference accelerators assigned.
    */
   readonly inferenceAcceleratorResources?: string[];
+
+  /**
+   * A list of namespaced kernel parameters to set in the container.
+   *
+   * @default - No system controls are set.
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecs-taskdefinition-systemcontrol.html
+   * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_definition_parameters.html#container_definition_systemcontrols
+   */
+  readonly systemControls?: SystemControl[];
 }
 
 /**
@@ -669,6 +678,7 @@ export class ContainerDefinition extends CoreConstruct {
       linuxParameters: this.linuxParameters && this.linuxParameters.renderLinuxParameters(),
       resourceRequirements: (!this.props.gpuCount && this.inferenceAcceleratorResources.length == 0 ) ? undefined :
         renderResourceRequirements(this.props.gpuCount, this.inferenceAcceleratorResources),
+      systemControls: this.props.systemControls && renderSystemControls(this.props.systemControls),
     };
   }
 }
@@ -1039,4 +1049,26 @@ function renderVolumeFrom(vf: VolumeFrom): CfnTaskDefinition.VolumeFromProperty 
     sourceContainer: vf.sourceContainer,
     readOnly: vf.readOnly,
   };
+}
+
+/**
+ * Kernel parameters to set in the container
+ */
+export interface SystemControl {
+  /**
+   * The namespaced kernel parameter for which to set a value.
+   */
+  readonly namespace: string;
+
+  /**
+   * The value for the namespaced kernel parameter specified in namespace.
+   */
+  readonly value: string;
+}
+
+function renderSystemControls(systemControls: SystemControl[]): CfnTaskDefinition.SystemControlProperty[] {
+  return systemControls.map(sc => ({
+    namespace: sc.namespace,
+    value: sc.value,
+  }));
 }
