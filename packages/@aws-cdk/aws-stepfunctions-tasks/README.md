@@ -817,7 +817,7 @@ The [CreateVirtualCluster](https://docs.aws.amazon.com/emr-on-eks/latest/APIRefe
 The EKS cluster containing the Kubernetes namespace where the virtual cluster will be mapped can be passed in from the task input.
 
 ```ts
-new tasks.EmrContainersEksCreateVirtualCluster(this, 'Create a Virtual Cluster', {
+new tasks.EmrContainersCreateVirtualCluster(this, 'Create a Virtual Cluster', {
   eksCluster: tasks.EksClusterInput.fromTaskInput(sfn.TaskInput.fromText('clusterId')),
 });
 ```
@@ -829,7 +829,7 @@ import * as eks from '@aws-cdk/aws-eks';
 
 declare const eksCluster: eks.Cluster;
 
-new tasks.EmrContainersEksCreateVirtualCluster(this, 'Create a Virtual Cluster', {
+new tasks.EmrContainersCreateVirtualCluster(this, 'Create a Virtual Cluster', {
   eksCluster: tasks.EksClusterInput.fromCluster(eksCluster),
 });
 ```
@@ -837,7 +837,7 @@ new tasks.EmrContainersEksCreateVirtualCluster(this, 'Create a Virtual Cluster',
 By default, the Kubernetes namespace that a virtual cluster maps to is "default", but a specific namespace within an EKS cluster can be selected.
 
 ```ts
-new tasks.EmrContainersEksCreateVirtualCluster(this, 'Create a Virtual Cluster', {
+new tasks.EmrContainersCreateVirtualCluster(this, 'Create a Virtual Cluster', {
   eksCluster: tasks.EksClusterInput.fromTaskInput(sfn.TaskInput.fromText('clusterId')),
   eksNamespace: 'specified-namespace',
 });
