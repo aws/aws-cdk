@@ -461,7 +461,7 @@ To disable the installation of the termination handler, set the `spotInterruptHa
 
 `Bottlerocket` is supported when using managed nodegroups or self-managed auto-scaling groups.
 
-To create a Bottlerocket managed ndoegroup:
+To create a Bottlerocket managed nodegroup:
 
 ```ts
 cluster.addNodegroupCapacity('BottlerocketNG', {
