@@ -16,5 +16,5 @@
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
 ```ts
-import ssmincidents = require('@aws-cdk/aws-ssmincidents');
+import * as ssmincidents from '@aws-cdk/aws-ssmincidents';
 ```
