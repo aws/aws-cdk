@@ -42,18 +42,18 @@ describe('ResponseHeadersPolicy', () => {
       responseHeadersPolicyName: 'MyPolicy',
       comment: 'A default policy',
       corsBehaivor: {
-        accessControlAllowCredentials: true,
-        accessControlAllowHeaders: ['X-Amz-Date', 'X-Amz-Security-Token'],
+        accessControlAllowCredentials: false,
+        accessControlAllowHeaders: ['X-Custom-Header-1', 'X-Custom-Header-2'],
         accessControlAllowMethods: ['GET', 'POST'],
         accessControlAllowOrigins: ['*'],
-        accessControlExposeHeaders: ['X-Amz-Date', 'X-Amz-Security-Token'],
+        accessControlExposeHeaders: ['X-Custom-Header-1', 'X-Custom-Header-2'],
         accessControlMaxAge: Duration.seconds(600),
         originOverride: true,
       },
       customHeadersBehavior: {
         customHeaders: [
-          { header: 'X-Amz-Date', value: 'some-value', override: true },
-          { header: 'X-Amz-Security-Token', value: 'some-value', override: false },
+          { header: 'content-type', value: 'application/json', override: true },
+          { header: 'content-length', value: '0', override: false },
         ],
       },
       securityHeadersBehavior: {
@@ -70,11 +70,11 @@ describe('ResponseHeadersPolicy', () => {
       ResponseHeadersPolicyConfig: {
         Comment: 'A default policy',
         CorsConfig: {
-          AccessControlAllowCredentials: true,
+          AccessControlAllowCredentials: false,
           AccessControlAllowHeaders: {
             Items: [
-              'X-Amz-Date',
-              'X-Amz-Security-Token',
+              'X-Custom-Header-1',
+              'X-Custom-Header-2',
             ],
           },
           AccessControlAllowMethods: {
@@ -90,8 +90,8 @@ describe('ResponseHeadersPolicy', () => {
           },
           AccessControlExposeHeaders: {
             Items: [
-              'X-Amz-Date',
-              'X-Amz-Security-Token',
+              'X-Custom-Header-1',
+              'X-Custom-Header-2',
             ],
           },
           AccessControlMaxAgeSec: 600,
@@ -100,14 +100,14 @@ describe('ResponseHeadersPolicy', () => {
         CustomHeadersConfig: {
           Items: [
             {
-              Header: 'X-Amz-Date',
+              Header: 'X-Custom-Header-1',
               Override: true,
-              Value: 'some-value',
+              Value: 'application/json',
             },
             {
-              Header: 'X-Amz-Security-Token',
+              Header: 'X-Custom-Header-2',
               Override: false,
-              Value: 'some-value',
+              Value: '0',
             },
           ],
         },

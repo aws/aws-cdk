@@ -14,25 +14,25 @@ const originRequestPolicy = new cloudfront.OriginRequestPolicy(stack, 'OriginReq
   headerBehavior: cloudfront.OriginRequestHeaderBehavior.all('CloudFront-Forwarded-Proto'),
 });
 
-// const responseHeadersPolicy = new cloudfront.ResponseHeadersPolicy(stack, 'ResponseHeadersPolicy', {
-//   responseHeadersPolicyName: 'ACustomResponseHeadersPolicy',
-//   corsBehaivor: {
-//     accessControlAllowCredentials: true,
-//     accessControlAllowHeaders: ['X-Amz-Date', 'X-Amz-Security-Token'],
-//     accessControlAllowMethods: ['GET', 'POST'],
-//     accessControlAllowOrigins: ['*'],
-//     accessControlExposeHeaders: ['X-Amz-Date', 'X-Amz-Security-Token'],
-//     accessControlMaxAge: cdk.Duration.seconds(600),
-//     originOverride: true,
-//   },
-// });
+const responseHeadersPolicy = new cloudfront.ResponseHeadersPolicy(stack, 'ResponseHeadersPolicy', {
+  responseHeadersPolicyName: 'ACustomResponseHeadersPolicy',
+  corsBehaivor: {
+    accessControlAllowCredentials: false,
+    accessControlAllowHeaders: ['X-Custom-Header-1', 'X-Custom-Header-2'],
+    accessControlAllowMethods: ['GET', 'POST'],
+    accessControlAllowOrigins: ['*'],
+    accessControlExposeHeaders: ['X-Custom-Header-1', 'X-Custom-Header-2'],
+    accessControlMaxAge: cdk.Duration.seconds(600),
+    originOverride: true,
+  },
+});
 
 new cloudfront.Distribution(stack, 'Dist', {
   defaultBehavior: {
     origin: new TestOrigin('www.example.com'),
     cachePolicy,
     originRequestPolicy,
-    // responseHeadersPolicy,
+    responseHeadersPolicy,
   },
 });
 
