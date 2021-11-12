@@ -26,10 +26,10 @@ async function main() {
       requiresArg: true,
       default: undefined,
     })
-    .option('bail', {
-      alias: 'b',
+    .option('strict', {
+      alias: 's',
       type: 'boolean',
-      describe: 'Whether to bail on the first error',
+      describe: 'Whether to exit with an error if there are diagnostics',
       default: false,
     })
     .help()
@@ -43,6 +43,7 @@ async function main() {
     cacheFromTablet: args['cache-from'],
     appendToTablet: args['append-to'],
     directory: args.directory,
+    strict: args.strict,
   });
 }
 

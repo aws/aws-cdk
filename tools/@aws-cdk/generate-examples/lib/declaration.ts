@@ -1,6 +1,6 @@
 import * as reflect from 'jsii-reflect';
 
-import { module } from './module-utils';
+import { module, typeNamespacedName } from './module-utils';
 
 export abstract class Declaration {
   constructor(public readonly sortKey: Array<number | string>) {}
@@ -49,7 +49,7 @@ export class Assumption extends Declaration {
   }
 
   public render(): string {
-    return `declare const ${this.name}: ${module(this.type).importName}.${this.type.name};`;
+    return `declare const ${this.name}: ${module(this.type).importName}.${typeNamespacedName(this.type)};`;
   }
 }
 

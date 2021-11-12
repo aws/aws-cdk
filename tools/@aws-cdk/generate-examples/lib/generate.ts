@@ -4,7 +4,7 @@ import { TypeSystem } from 'jsii-reflect';
 
 import { Code } from './code';
 import { AnyAssumption, Assumption, Import } from './declaration';
-import { module } from './module-utils';
+import { escapeIdentifier, typeReference } from './module-utils';
 import { sortBy } from './utils';
 
 /**
@@ -42,22 +42,30 @@ class ExampleContext {
 export function generateAssignmentStatement(type: reflect.ClassType | reflect.InterfaceType): Code | undefined {
   const context = new ExampleContext(type.system);
 
-  let expression: Code | undefined;
   if (type.isClassType()) {
-    expression = exampleValueForClass(context, type, 0);
-  } else if (type.isInterfaceType()) {
-    expression = exampleValueForStruct(context, type, 0);
+    const expression = exampleValueForClass(context, type, 0);
+    if (!expression) { return undefined; }
+    return Code.concatAll(
+      `const ${lowercaseFirstLetter(type.name)} = `,
+      expression,
+      ';',
+    );
   }
 
-  if (!expression) {
-    return undefined;
+  if (type.isInterfaceType()) {
+    const expression = exampleValueForStruct(context, type, 0);
+    if (!expression) { return undefined; }
+
+    return Code.concatAll(
+      `const ${lowercaseFirstLetter(type.name)}: `,
+      typeReference(type),
+      ' = ',
+      expression,
+      ';',
+    );
   }
-  const code = Code.concatAll(
-    `const ${lowercaseFirstLetter(type.name)} = `,
-    expression,
-    ';',
-  );
-  return code;
+
+  return undefined;
 }
 
 function exampleValueForClass(context: ExampleContext, classType: reflect.ClassType, level: number): Code | undefined {
@@ -70,11 +78,11 @@ function exampleValueForClass(context: ExampleContext, classType: reflect.ClassT
   }
 
   if (staticFactoryMethods.length >= 3) {
-    return generateStaticFactoryMethodExample(context, classType, staticFactoryMethods[0], level);
+    return generateStaticFactoryMethodExample(context, staticFactoryMethods[0], level);
   }
 
   if (staticFactoryProperties.length >= 3) {
-    return generateStaticFactoryPropertyExample(classType, staticFactoryProperties[0]);
+    return generateStaticFactoryPropertyExample(staticFactoryProperties[0]);
   }
 
   if (initializer) {
@@ -82,11 +90,11 @@ function exampleValueForClass(context: ExampleContext, classType: reflect.ClassT
   }
 
   if (staticFactoryMethods.length >= 1) {
-    return generateStaticFactoryMethodExample(context, classType, staticFactoryMethods[0], level);
+    return generateStaticFactoryMethodExample(context, staticFactoryMethods[0], level);
   }
 
   if (staticFactoryProperties.length >= 1) {
-    return generateStaticFactoryPropertyExample(classType, staticFactoryProperties[0]);
+    return generateStaticFactoryPropertyExample(staticFactoryProperties[0]);
   }
 
   return undefined;
@@ -119,8 +127,8 @@ function getStaticFactoryProperties(classType: reflect.ClassType): reflect.Prope
 
 function generateClassInstantiationExample(context: ExampleContext, initializer: reflect.Initializer, level: number): Code {
   return Code.concatAll(
-    new Code(`new ${module(initializer.parentType).importName}.`, [new Import(initializer.parentType)]),
-    initializer.parentType.name,
+    'new ',
+    typeReference(initializer.parentType),
     '(',
     parameterList(context, initializer.parameters, level),
     ')',
@@ -142,13 +150,11 @@ function parameterList(context: ExampleContext, parameters: reflect.Parameter[],
 
 function generateStaticFactoryMethodExample(
   context: ExampleContext,
-  classType: reflect.ClassType,
   staticFactoryMethod: reflect.Method,
   level: number,
 ) {
   return Code.concatAll(
-    new Code(`${module(classType).importName}.`, [new Import(classType)]),
-    staticFactoryMethod.parentType.name,
+    typeReference(staticFactoryMethod.parentType),
     '.',
     staticFactoryMethod.name,
     '(',
@@ -157,10 +163,9 @@ function generateStaticFactoryMethodExample(
   );
 }
 
-function generateStaticFactoryPropertyExample(classType: reflect.ClassType, staticFactoryProperty: reflect.Property) {
+function generateStaticFactoryPropertyExample(staticFactoryProperty: reflect.Property) {
   return Code.concatAll(
-    new Code(`${module(classType).importName}.`, [new Import(classType)]),
-    staticFactoryProperty.parentType.name,
+    typeReference(staticFactoryProperty.parentType),
     '.',
     staticFactoryProperty.name,
   );
@@ -186,10 +191,10 @@ function exampleValueForParameter(context: ExampleContext, param: reflect.Parame
 /**
  * Generate an example value of the given type.
  */
-function exampleValue(context: ExampleContext, typeReference: reflect.TypeReference, name: string, level: number): Code {
+function exampleValue(context: ExampleContext, typeRef: reflect.TypeReference, name: string, level: number): Code {
   // Process primitive types, base case
-  if (typeReference.primitive !== undefined) {
-    switch (typeReference.primitive) {
+  if (typeRef.primitive !== undefined) {
+    switch (typeRef.primitive) {
       case spec.PrimitiveType.String: {
         return new Code(`'${name}'`);
       }
@@ -209,21 +214,21 @@ function exampleValue(context: ExampleContext, typeReference: reflect.TypeRefere
   }
 
   // Just pick the first type if it is a union type
-  if (typeReference.unionOfTypes !== undefined) {
-    const newType = getBaseUnionType(typeReference.unionOfTypes);
+  if (typeRef.unionOfTypes !== undefined) {
+    const newType = getBaseUnionType(typeRef.unionOfTypes);
     return exampleValue(context, newType, name, level);
   }
   // If its a collection create a collection of one element
-  if (typeReference.arrayOfType !== undefined) {
-    return Code.concatAll('[', exampleValue(context, typeReference.arrayOfType, name, level), ']');
+  if (typeRef.arrayOfType !== undefined) {
+    return Code.concatAll('[', exampleValue(context, typeRef.arrayOfType, name, level), ']');
   }
 
-  if (typeReference.mapOfType !== undefined) {
-    return exampleValueForMap(context, typeReference.mapOfType, name, level);
+  if (typeRef.mapOfType !== undefined) {
+    return exampleValueForMap(context, typeRef.mapOfType, name, level);
   }
 
-  if (typeReference.fqn) {
-    const fqn = typeReference.fqn;
+  if (typeRef.fqn) {
+    const fqn = typeRef.fqn;
     // See if we have information on this type in the assembly
     const newType = context.typeSystem.findFqn(fqn);
 
@@ -232,12 +237,30 @@ function exampleValue(context: ExampleContext, typeReference: reflect.TypeRefere
     }
 
     if (newType.isEnumType()) {
-      const imp = new Import(newType);
-      return new Code(`${imp.importName}.${newType.name}.${newType.members[0].name}`, [imp]);
+      return Code.concatAll(
+        typeReference(newType),
+        '.',
+        newType.members[0].name);
     }
 
     // If this is struct and we're not already rendering it (recursion breaker), expand
-    if (isStructType(newType) && !context.rendered.has(newType.fqn)) {
+    if (isStructType(newType)) {
+      if (context.rendered.has(newType.fqn)) {
+        // Recursion breaker -- if we go by the default behavior end up saying something like:
+        //
+        //   const myProperty = {
+        //      stringProp: 'stringProp',
+        //      deepProp: myProperty,   // <-- value recursion!
+        //   };
+        //
+        // Which TypeScript's type analyzer can't automatically derive a type for. We need to
+        // annotate SOMETHING. A simple fix is to use a different variable name so the value
+        // isn't self-recursive.
+
+        return addAssumedVariableDeclaration(newType, '_');
+      }
+
+
       context.rendered.add(newType.fqn);
       const ret = exampleValueForStruct(context, newType, level);
       context.rendered.delete(newType.fqn);
@@ -266,13 +289,13 @@ function getBaseUnionType(types: reflect.TypeReference[]): reflect.TypeReference
  * If the variable is an IXxx Interface, guess a possible implementation of that interface
  * by checking if stripping the I results in an Xxx type that extends IXxx.
  */
-function addAssumedVariableDeclaration(type: reflect.Type): Code {
+function addAssumedVariableDeclaration(type: reflect.Type, suffix = ''): Code {
   let newType = type;
   if (type.isInterfaceType() && !type.datatype) {
     // guess corresponding non-interface type if possible
     newType = guessConcreteType(type);
   }
-  const variableName = lowercaseFirstLetter(stripLeadingI(newType.name));
+  const variableName = escapeIdentifier(lowercaseFirstLetter(stripLeadingI(newType.name))) + suffix;
   return new Code(variableName, [new Assumption(newType, variableName), new Import(newType)]);
 }
 

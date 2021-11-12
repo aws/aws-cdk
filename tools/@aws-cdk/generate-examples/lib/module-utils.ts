@@ -1,4 +1,6 @@
 import * as reflect from 'jsii-reflect';
+import { Code } from './code';
+import { Import } from './declaration';
 
 /**
  * Customary module import names that differ from what would be automatically generated.
@@ -33,7 +35,7 @@ export function module(type: reflect.Type): ImportedModule {
       const parts = type.namespace.split('_');
       const namespacedPart = SPECIAL_NAMESPACE_IMPORT_NAMES[type.namespace] ?? parts[1] ?? parts[0];
       return {
-        importName: namespacedPart.replace(/^aws_/g, '').replace(/[^a-z0-9_]/g, '_'),
+        importName: escapeIdentifier(namespacedPart.replace(/^aws_/g, '').replace(/[^a-z0-9_]/g, '_')),
         moduleName: type.assembly.name,
       };
     }
@@ -46,8 +48,36 @@ export function module(type: reflect.Type): ImportedModule {
     const parts = type.assembly.name.split('/');
     const nonNamespacedPart = SPECIAL_PACKAGE_ROOT_IMPORT_NAMES[type.assembly.name] ?? parts[1] ?? parts[0];
     return {
-      importName: nonNamespacedPart.replace(/^aws-/g, '').replace(/[^a-z0-9_]/g, '_'),
+      importName: escapeIdentifier(nonNamespacedPart.replace(/^aws-/g, '').replace(/[^a-z0-9_]/g, '_')),
       moduleName: type.assembly.name,
     };
   }
+}
+
+/**
+ * Namespaced name inside a module
+ */
+export function typeNamespacedName(type: reflect.Type): string {
+  return [
+    type.namespace,
+    type.name,
+  ].filter((x) => x).join('.');
+}
+
+const KEYWORDS = ['function'];
+
+export function escapeIdentifier(ident: string): string {
+  return KEYWORDS.includes(ident) ? `${ident}_` : ident;
+}
+
+export function moduleReference(type: reflect.Type) {
+  const imp = new Import(type);
+  return new Code(imp.importName, [imp]);
+}
+
+export function typeReference(type: reflect.Type) {
+  return Code.concatAll(
+    moduleReference(type),
+    '.',
+    typeNamespacedName(type));
 }

@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { promises as fs } from 'fs';
 import { TypeSystem } from 'jsii-reflect';
 
@@ -15,6 +16,7 @@ export interface GenerateExamplesOptions {
   readonly cacheFromTablet?: string;
   readonly appendToTablet?: string;
   readonly directory?: string;
+  readonly strict?: boolean;
 }
 
 export async function generateMissingExamples(assemblyLocations: string[], options: GenerateExamplesOptions) {
@@ -36,12 +38,11 @@ export async function generateMissingExamples(assemblyLocations: string[], optio
       ...assembly.interfaces.filter(i => !i.docs.example && i.datatype),
     ];
 
-    // eslint-disable-next-line no-console
     console.log(`${assembly.name}: ${documentableTypes.length} classes to document`);
     if (documentableTypes.length === 0) { return []; }
 
     const failed = new Array<string>();
-    const snippets = documentableTypes.flatMap((classType) => {
+    const generatedSnippets = documentableTypes.flatMap((classType) => {
       const example = generateAssignmentStatement(classType);
       if (!example) {
         failed.push(classType.name);
@@ -69,7 +70,6 @@ export async function generateMissingExamples(assemblyLocations: string[], optio
       ].join('\n').trimLeft();
       const location: SnippetLocation = { api: { api: 'type', fqn: classType.fqn }, field: { field: 'example' } };
 
-      // FIXME: unfortunately no good way to build this on the spot
       const tsSnippet: TypeScriptSnippet = typeScriptSnippetFromCompleteSource(
         completeSource,
         location,
@@ -83,11 +83,11 @@ export async function generateMissingExamples(assemblyLocations: string[], optio
     });
 
     console.log([
-      `${assembly.name}: annotated ${snippets.length} classes`,
+      `${assembly.name}: annotated ${generatedSnippets.length} classes`,
       ...(failed.length > 0 ? [`failed: ${failed.join(', ')}`] : []),
     ].join(', '));
 
-    return snippets;
+    return generatedSnippets;
   });
 
   const rosetta = new RosettaTranslator({
@@ -100,14 +100,18 @@ export async function generateMissingExamples(assemblyLocations: string[], optio
   }
 
   // Will mutate the 'snippets' array
-  rosetta.readFromCache(snippets);
+  const { remaining } = rosetta.readFromCache(snippets);
 
-  const results = await rosetta.translateAll(snippets);
+  console.log(`Translating ${remaining.length} snippets`);
+  const results = await rosetta.translateAll(remaining);
   if (results.diagnostics.length > 0) {
     for (const diag of results.diagnostics) {
       console.log(diag.formattedMessage);
     }
-    process.exitCode = 1;
+
+    if (options.strict) {
+      process.exitCode = 1;
+    }
   }
 
   // Copy everything from the rosetta tablet into our output tablet
