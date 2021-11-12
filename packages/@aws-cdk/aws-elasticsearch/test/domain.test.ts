@@ -8,7 +8,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
 import * as route53 from '@aws-cdk/aws-route53';
-import { App, Stack, Duration, SecretValue, CfnParameter } from '@aws-cdk/core';
+import { App, Stack, Duration, SecretValue, CfnParameter, Token } from '@aws-cdk/core';
 import { Domain, ElasticsearchVersion } from '../lib';
 
 let app: App;
@@ -244,6 +244,45 @@ describe('UltraWarm instances', () => {
     });
   });
 
+});
+
+test('can use tokens in capacity configuration', () => {
+  new Domain(stack, 'Domain', {
+    version: ElasticsearchVersion.V7_10,
+    capacity: {
+      dataNodeInstanceType: Token.asString({ Ref: 'dataNodeInstanceType' }),
+      dataNodes: Token.asNumber({ Ref: 'dataNodes' }),
+      masterNodeInstanceType: Token.asString({ Ref: 'masterNodeInstanceType' }),
+      masterNodes: Token.asNumber({ Ref: 'masterNodes' }),
+      warmInstanceType: Token.asString({ Ref: 'warmInstanceType' }),
+      warmNodes: Token.asNumber({ Ref: 'warmNodes' }),
+    },
+  });
+
+  expect(stack).toHaveResourceLike('AWS::Elasticsearch::Domain', {
+    ElasticsearchClusterConfig: {
+      InstanceCount: {
+        Ref: 'dataNodes',
+      },
+      InstanceType: {
+        Ref: 'dataNodeInstanceType',
+      },
+      DedicatedMasterEnabled: true,
+      DedicatedMasterCount: {
+        Ref: 'masterNodes',
+      },
+      DedicatedMasterType: {
+        Ref: 'masterNodeInstanceType',
+      },
+      WarmEnabled: true,
+      WarmCount: {
+        Ref: 'warmNodes',
+      },
+      WarmType: {
+        Ref: 'warmInstanceType',
+      },
+    },
+  });
 });
 
 describe('log groups', () => {

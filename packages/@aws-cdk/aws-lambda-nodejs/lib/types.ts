@@ -52,7 +52,7 @@ export interface BundlingOptions {
    *
    * @see https://esbuild.github.io/api/#loader
    *
-   * @example { '.png': 'dataurl' }
+   * For example, `{ '.png': 'dataurl' }`.
    *
    * @default - use esbuild default loaders
    */
@@ -92,7 +92,7 @@ export interface BundlingOptions {
    *
    * This can be useful if you need to do multiple builds of the same code with different settings.
    *
-   * @example { 'tsconfig': 'path/custom.tsconfig.json' }
+   * For example, `{ 'tsconfig': 'path/custom.tsconfig.json' }`.
    *
    * @default - automatically discovered by `esbuild`
    */
@@ -103,19 +103,18 @@ export interface BundlingOptions {
    *
    * The metadata in this JSON file follows this schema (specified using TypeScript syntax):
    *
-   * ```typescript
-   *  {
-   *     outputs: {
-   *          [path: string]: {
-   *            bytes: number
-   *            inputs: {
-   *              [path: string]: { bytesInOutput: number }
-   *            }
-   *            imports: { path: string }[]
-   *            exports: string[]
-   *          }
-   *        }
+   * ```text
+   * {
+   *   outputs: {
+   *     [path: string]: {
+   *       bytes: number
+   *       inputs: {
+   *         [path: string]: { bytesInOutput: number }
+   *       }
+   *       imports: { path: string }[]
+   *       exports: string[]
    *     }
+   *   }
    * }
    * ```
    * This data can then be analyzed by other tools. For example,
@@ -171,8 +170,9 @@ export interface BundlingOptions {
   /**
    * Replace global identifiers with constant expressions.
    *
-   * @example { 'process.env.DEBUG': 'true' }
-   * @example { 'process.env.API_KEY': JSON.stringify('xxx-xxxx-xxx') }
+   * For example, `{ 'process.env.DEBUG': 'true' }`.
+   *
+   * Another example, `{ 'process.env.API_KEY': JSON.stringify('xxx-xxxx-xxx') }`.
    *
    * @default - no replacements are made
    */
@@ -248,6 +248,21 @@ export interface BundlingOptions {
    * @default - do not run additional commands
    */
   readonly commandHooks?: ICommandHooks;
+
+  /**
+   * Specify a custom hash for this asset. For consistency, this custom hash will
+   * be SHA256 hashed and encoded as hex. The resulting hash will be the asset
+   * hash.
+   *
+   * NOTE: the hash is used in order to identify a specific revision of the asset, and
+   * used for optimizing and caching deployment activities related to this asset such as
+   * packaging, uploading to Amazon S3, etc. If you chose to customize the hash, you will
+   * need to make sure it is updated every time the asset changes, or otherwise it is
+   * possible that some deployments will not be invalidated.
+   *
+   * @default - asset hash is calculated based on the bundled output
+   */
+  readonly assetHash?: string;
 }
 
 /**
@@ -258,15 +273,14 @@ export interface BundlingOptions {
  *
  * Commands are chained with `&&`.
  *
- * @example
- * {
- *   // Copy a file from the input directory to the output directory
- *   // to include it in the bundled asset
- *   afterBundling(inputDir: string, outputDir: string): string[] {
- *     return [`cp ${inputDir}/my-binary.node ${outputDir}`];
- *   }
- *   // ...
+ * The following example (specified in TypeScript) copies a file from the input
+ * directory to the output directory to include it in the bundled asset:
+ *
+ * ```text
+ * afterBundling(inputDir: string, outputDir: string): string[]{
+ *   return [`cp ${inputDir}/my-binary.node ${outputDir}`];
  * }
+ * ```
  */
 export interface ICommandHooks {
   /**
