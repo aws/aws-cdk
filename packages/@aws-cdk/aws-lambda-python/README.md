@@ -25,14 +25,11 @@ To use this module, you will need to have Docker installed.
 Define a `PythonFunction`:
 
 ```ts
-import * as lambda from "@aws-cdk/aws-lambda";
-import { PythonFunction } from "@aws-cdk/aws-lambda-python";
-
-new PythonFunction(this, 'MyFunction', {
+new lambda.PythonFunction(this, 'MyFunction', {
   entry: '/path/to/my/function', // required
   index: 'my_index.py', // optional, defaults to 'index.py'
   handler: 'my_exported_func', // optional, defaults to 'handler'
-  runtime: lambda.Runtime.PYTHON_3_6, // optional, defaults to lambda.Runtime.PYTHON_3_7
+  runtime: Runtime.PYTHON_3_6, // optional, defaults to lambda.Runtime.PYTHON_3_7
 });
 ```
 
