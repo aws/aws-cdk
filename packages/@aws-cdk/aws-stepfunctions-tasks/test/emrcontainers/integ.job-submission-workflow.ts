@@ -5,7 +5,7 @@ import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
 import {
   Classification, VirtualClusterInput, EksClusterInput, EmrContainersDeleteVirtualCluster,
-  EmrContainersEksCreateVirtualCluster, EmrContainersStartJobRun, ReleaseLabel,
+  EmrContainersCreateVirtualCluster, EmrContainersStartJobRun, ReleaseLabel,
 } from '../../lib';
 
 /**
@@ -35,7 +35,7 @@ const jobExecutionRole = new iam.Role(stack, 'JobExecutionRole', {
   ),
 });
 
-const createVirtualCluster = new EmrContainersEksCreateVirtualCluster(stack, 'Create a virtual Cluster', {
+const createVirtualCluster = new EmrContainersCreateVirtualCluster(stack, 'Create a virtual Cluster', {
   virtualClusterName: 'Virtual-Cluster-Name',
   eksCluster: EksClusterInput.fromCluster(eksCluster),
   resultPath: '$.cluster',

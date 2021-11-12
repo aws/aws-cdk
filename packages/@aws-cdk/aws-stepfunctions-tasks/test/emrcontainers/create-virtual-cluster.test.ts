@@ -2,7 +2,7 @@ import { Template } from '@aws-cdk/assertions';
 import * as eks from '@aws-cdk/aws-eks';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import { Stack } from '@aws-cdk/core';
-import { EmrContainersEksCreateVirtualCluster, EksClusterInput } from '../../lib/emrcontainers/create-virtual-cluster';
+import { EmrContainersCreateVirtualCluster, EksClusterInput } from '../../lib/emrcontainers/create-virtual-cluster';
 
 const emrContainersVirtualClusterName = 'EMR Containers Virtual Cluster';
 let stack: Stack;
@@ -16,7 +16,7 @@ beforeEach(() => {
 describe('Invoke emr-containers CreateVirtualCluster with ', () => {
   test('only required properties', () => {
     // WHEN
-    const task = new EmrContainersEksCreateVirtualCluster(stack, 'Task', {
+    const task = new EmrContainersCreateVirtualCluster(stack, 'Task', {
       eksCluster: EksClusterInput.fromTaskInput(sfn.TaskInput.fromText(clusterId)),
     });
 
@@ -57,7 +57,7 @@ describe('Invoke emr-containers CreateVirtualCluster with ', () => {
 
   test('all required/non-required properties', () => {
     // WHEN
-    const task = new EmrContainersEksCreateVirtualCluster(stack, 'Task', {
+    const task = new EmrContainersCreateVirtualCluster(stack, 'Task', {
       virtualClusterName: emrContainersVirtualClusterName,
       eksCluster: EksClusterInput.fromTaskInput(sfn.TaskInput.fromText(clusterId)),
       eksNamespace: 'namespace',
@@ -86,7 +86,7 @@ describe('Invoke emr-containers CreateVirtualCluster with ', () => {
 
   test('clusterId from payload', () => {
     // WHEN
-    const task = new EmrContainersEksCreateVirtualCluster(stack, 'Task', {
+    const task = new EmrContainersCreateVirtualCluster(stack, 'Task', {
       eksCluster: EksClusterInput.fromTaskInput(sfn.TaskInput.fromJsonPathAt('$.ClusterId')),
     });
 
@@ -106,7 +106,7 @@ describe('Invoke emr-containers CreateVirtualCluster with ', () => {
       version: eks.KubernetesVersion.V1_20,
     });
 
-    const task = new EmrContainersEksCreateVirtualCluster(stack, 'Task', {
+    const task = new EmrContainersCreateVirtualCluster(stack, 'Task', {
       eksCluster: EksClusterInput.fromCluster(eksCluster),
     });
 
@@ -124,7 +124,7 @@ describe('Invoke emr-containers CreateVirtualCluster with ', () => {
 
   test('Tags', () => {
     // WHEN
-    const task = new EmrContainersEksCreateVirtualCluster(stack, 'Task', {
+    const task = new EmrContainersCreateVirtualCluster(stack, 'Task', {
       eksCluster: EksClusterInput.fromTaskInput(sfn.TaskInput.fromText(clusterId)),
       tags: {
         key: 'value',
@@ -148,7 +148,7 @@ describe('Invoke emr-containers CreateVirtualCluster with ', () => {
 
 test('Permitted role actions included for CreateVirtualCluster if service integration pattern is REQUEST_RESPONSE', () => {
   // WHEN
-  const task = new EmrContainersEksCreateVirtualCluster(stack, 'Task', {
+  const task = new EmrContainersCreateVirtualCluster(stack, 'Task', {
     virtualClusterName: emrContainersVirtualClusterName,
     eksCluster: EksClusterInput.fromTaskInput(sfn.TaskInput.fromText(clusterId)),
   });
@@ -196,7 +196,7 @@ test('Permitted role actions included for CreateVirtualCluster if service integr
 
 test('Task throws if WAIT_FOR_TASK_TOKEN is supplied as service integration pattern', () => {
   expect(() => {
-    new EmrContainersEksCreateVirtualCluster(stack, 'EMR Containers CreateVirtualCluster Job', {
+    new EmrContainersCreateVirtualCluster(stack, 'EMR Containers CreateVirtualCluster Job', {
       virtualClusterName: emrContainersVirtualClusterName,
       eksCluster: EksClusterInput.fromTaskInput(sfn.TaskInput.fromText(clusterId)),
       integrationPattern: sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
@@ -206,7 +206,7 @@ test('Task throws if WAIT_FOR_TASK_TOKEN is supplied as service integration patt
 
 test('Task throws if RUN_JOB is supplied as service integration pattern', () => {
   expect(() => {
-    new EmrContainersEksCreateVirtualCluster(stack, 'EMR Containers CreateVirtualCluster Job', {
+    new EmrContainersCreateVirtualCluster(stack, 'EMR Containers CreateVirtualCluster Job', {
       virtualClusterName: emrContainersVirtualClusterName,
       eksCluster: EksClusterInput.fromTaskInput(sfn.TaskInput.fromText(clusterId)),
       integrationPattern: sfn.IntegrationPattern.RUN_JOB,

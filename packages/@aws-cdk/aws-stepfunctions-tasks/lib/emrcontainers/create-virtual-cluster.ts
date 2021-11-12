@@ -46,7 +46,7 @@ export class EksClusterInput {
 /**
  * Properties to define a EMR Containers CreateVirtualCluster Task on an EKS cluster
  */
-export interface EmrContainersEksCreateVirtualClusterProps extends sfn.TaskStateBaseProps {
+export interface EmrContainersCreateVirtualClusterProps extends sfn.TaskStateBaseProps {
 
   /**
    * EKS Cluster or task input that contains the name of the cluster
@@ -80,7 +80,7 @@ export interface EmrContainersEksCreateVirtualClusterProps extends sfn.TaskState
  *
  * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-emr-eks.html
  */
-export class EmrContainersEksCreateVirtualCluster extends sfn.TaskStateBase {
+export class EmrContainersCreateVirtualCluster extends sfn.TaskStateBase {
 
   private static readonly SUPPORTED_INTEGRATION_PATTERNS: sfn.IntegrationPattern[] = [
     sfn.IntegrationPattern.REQUEST_RESPONSE,
@@ -91,10 +91,10 @@ export class EmrContainersEksCreateVirtualCluster extends sfn.TaskStateBase {
 
   private readonly integrationPattern: sfn.IntegrationPattern;
 
-  constructor(scope: Construct, id: string, private readonly props: EmrContainersEksCreateVirtualClusterProps) {
+  constructor(scope: Construct, id: string, private readonly props: EmrContainersCreateVirtualClusterProps) {
     super(scope, id, props);
     this.integrationPattern = props.integrationPattern ?? sfn.IntegrationPattern.REQUEST_RESPONSE;
-    validatePatternSupported(this.integrationPattern, EmrContainersEksCreateVirtualCluster.SUPPORTED_INTEGRATION_PATTERNS);
+    validatePatternSupported(this.integrationPattern, EmrContainersCreateVirtualCluster.SUPPORTED_INTEGRATION_PATTERNS);
 
     this.taskPolicies = this.createPolicyStatements();
   }
