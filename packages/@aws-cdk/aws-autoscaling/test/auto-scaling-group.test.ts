@@ -1377,6 +1377,27 @@ describe('auto scaling group', () => {
     // THEN
     expect(asg.role).toEqual(importedRole);
   });
+
+  test('requires imdsv2', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = mockVpc(stack);
+
+    // WHEN
+    new autoscaling.AutoScalingGroup(stack, 'MyASG', {
+      vpc,
+      instanceType: new ec2.InstanceType('t2.micro'),
+      machineImage: ec2.MachineImage.latestAmazonLinux(),
+      requireImdsv2: true,
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::AutoScaling::LaunchConfiguration', {
+      MetadataOptions: {
+        HttpTokens: 'required',
+      },
+    });
+  });
 });
 
 function mockVpc(stack: cdk.Stack) {

@@ -342,6 +342,8 @@ const cluster = new eks.FargateCluster(this, 'MyCluster', {
 });
 ```
 
+`FargateCluster` will create a default `FargateProfile` which can be accessed via the cluster's `defaultProfile` property. The created profile can also be customized by passing options as with `addFargateProfile`.
+
 **NOTE**: Classic Load Balancers and Network Load Balancers are not supported on
 pods running on Fargate. For ingress, we recommend that you use the [ALB Ingress
 Controller](https://docs.aws.amazon.com/eks/latest/userguide/alb-ingress.html)
@@ -456,9 +458,16 @@ To disable the installation of the termination handler, set the `spotInterruptHa
 #### Bottlerocket
 
 [Bottlerocket](https://aws.amazon.com/bottlerocket/) is a Linux-based open-source operating system that is purpose-built by Amazon Web Services for running containers on virtual machines or bare metal hosts.
-At this moment, `Bottlerocket` is only supported when using self-managed auto-scaling groups.
 
-> **NOTICE**: Bottlerocket is only available in [some supported AWS regions](https://github.com/bottlerocket-os/bottlerocket/blob/develop/QUICKSTART-EKS.md#finding-an-ami).
+`Bottlerocket` is supported when using managed nodegroups or self-managed auto-scaling groups.
+
+To create a Bottlerocket managed nodegroup:
+
+```ts
+cluster.addNodegroupCapacity('BottlerocketNG', {
+  amiType: NodegroupAmiType.BOTTLEROCKET_X86_64,
+});
+```
 
 The following example will create an auto-scaling group of 2 `t3.small` Linux instances running with the `Bottlerocket` AMI.
 
@@ -477,6 +486,8 @@ For example, if the Amazon EKS cluster version is `1.17`, the Bottlerocket AMI v
 > See [Variants](https://github.com/bottlerocket-os/bottlerocket/blob/develop/README.md#variants) for more details.
 
 Please note Bottlerocket does not allow to customize bootstrap options and `bootstrapOptions` properties is not supported when you create the `Bottlerocket` capacity.
+
+For more details about Bottlerocket, see [Bottlerocket FAQs](https://aws.amazon.com/bottlerocket/faqs/) and [Bottlerocket Open Source Blog](https://aws.amazon.com/blogs/opensource/announcing-the-general-availability-of-bottlerocket-an-open-source-linux-distribution-purpose-built-to-run-containers/).
 
 ### Endpoint Access
 
@@ -514,6 +525,9 @@ new eks.Cluster(this, 'HelloEKS', {
 
 If you do not specify a VPC, one will be created on your behalf, which you can then access via `cluster.vpc`. The cluster VPC will be associated to any EKS managed capacity (i.e Managed Node Groups and Fargate Profiles).
 
+Please note that the `vpcSubnets` property defines the subnets where EKS will place the _control plane_ ENIs. To choose
+the subnets where EKS will place the worker nodes, please refer to the **Provisioning clusters** section above.
+
 If you allocate self managed capacity, you can specify which subnets should the auto-scaling group use:
 
 ```ts
@@ -535,18 +549,25 @@ Breaking this down, it means that if the endpoint exposes private access (via `E
 
 If the endpoint does not expose private access (via `EndpointAccess.PUBLIC`) **or** the VPC does not contain private subnets, the function will not be provisioned within the VPC.
 
+If your use-case requires control over the IAM role that the KubeCtl Handler assumes, a custom role can be passed through the ClusterProps (as `kubectlLambdaRole`) of the EKS Cluster construct. 
+
 #### Cluster Handler
 
-The `ClusterHandler` is a Lambda function responsible to interact with the EKS API in order to control the cluster lifecycle. To provision this function inside the VPC, set the `placeClusterHandlerInVpc` property to `true`. This will place the function inside the private subnets of the VPC based on the selection strategy specified in the [`vpcSubnets`](https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_aws-eks.Cluster.html#vpcsubnetsspan-classapi-icon-api-icon-experimental-titlethis-api-element-is-experimental-it-may-change-without-noticespan) property.
+The `ClusterHandler` is a set of Lambda functions (`onEventHandler`, `isCompleteHandler`) responsible for interacting with the EKS API in order to control the cluster lifecycle. To provision these functions inside the VPC, set the `placeClusterHandlerInVpc` property to `true`. This will place the functions inside the private subnets of the VPC based on the selection strategy specified in the [`vpcSubnets`](https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_aws-eks.Cluster.html#vpcsubnetsspan-classapi-icon-api-icon-experimental-titlethis-api-element-is-experimental-it-may-change-without-noticespan) property.
 
-You can configure the environment of this function by specifying it at cluster instantiation. For example, this can be useful in order to configure an http proxy:
+You can configure the environment of the Cluster Handler functions by specifying it at cluster instantiation. For example, this can be useful in order to configure an http proxy:
 
 ```ts
 const cluster = new eks.Cluster(this, 'hello-eks', {
   version: eks.KubernetesVersion.V1_21,
   clusterHandlerEnvironment: {
-    'http_proxy': 'http://proxy.myproxy.com'
-  }
+    https_proxy: 'http://proxy.myproxy.com'
+  },
+  /**
+   * If the proxy is not open publicly, you can pass a security group to the
+   * Cluster Handler Lambdas so that it can reach the proxy.
+   */
+  clusterHandlerSecurityGroup: proxyInstanceSecurityGroup
 });
 ```
 

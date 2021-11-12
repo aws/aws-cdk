@@ -2,12 +2,6 @@ version: 0.2
 
 # This buildspec is intended to be run by CodePipeline builds.
 
-env:
-  variables:
-    # Globally allow node to use a lot of memory
-    NODE_OPTIONS: --max-old-space-size=4096
-    JSII_ROSETTA_MAX_WORKER_COUNT: 8
-
 phases:
   install:
     commands:
@@ -18,6 +12,13 @@ phases:
 
       # Install yarn if it wasn't already present in the image
       - yarn --version || npm -g install yarn
+
+      # Packing the mono-libraries (monocdk & aws-cdk-lib) can cause
+      # memory errors. Increasing this value allows our build to more consistently succeed
+      - /sbin/sysctl -w vm.max_map_count=2251954
+  pre_build:
+    commands:
+      - /bin/bash ./scripts/cache-load.sh
   build:
     commands:
       - 'if ${BUMP_CANDIDATE:-false}; then /bin/bash ./scripts/bump-candidate.sh; fi'
@@ -27,6 +28,7 @@ phases:
   post_build:
     commands:
       - "[ -f .BUILD_COMPLETED ] && /bin/bash ./pack.sh"
+      - /bin/bash ./scripts/cache-store.sh
 artifacts:
   files:
     - "**/*"

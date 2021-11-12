@@ -3,6 +3,10 @@ import * as s3_assets from '@aws-cdk/aws-s3-assets';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
+import * as cxapi from '@aws-cdk/cx-api';
+import { Node } from 'constructs';
+import { CfnRestApi } from './apigateway.generated';
+import { IRestApi } from './restapi';
 import { Construct } from '@aws-cdk/core';
 
 /**
@@ -21,7 +25,8 @@ export abstract class ApiDefinition {
    * schema of OpenAPI 2.0 or OpenAPI 3.0
    *
    * @example
-   *   ApiDefinition.fromInline({
+   *
+   *   apigateway.ApiDefinition.fromInline({
    *     openapi: '3.0.2',
    *     paths: {
    *       '/pets': {
@@ -81,6 +86,15 @@ export abstract class ApiDefinition {
    * assume it's initialized. You may just use it as a construct scope.
    */
   public abstract bind(scope: Construct): ApiDefinitionConfig;
+
+  /**
+   * Called after the CFN RestApi resource has been created to allow the Api
+   * Definition to bind to it. Specifically it's required to allow assets to add
+   * metadata for tooling like SAM CLI to be able to find their origins.
+   */
+  public bindAfterCreate(_scope: Construct, _restApi: IRestApi) {
+    return;
+  }
 }
 
 /**
@@ -196,5 +210,19 @@ export class AssetApiDefinition extends ApiDefinition {
         key: this.asset.s3ObjectKey,
       },
     };
+  }
+
+  public bindAfterCreate(scope: Construct, restApi: IRestApi) {
+    if (!scope.node.tryGetContext(cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT)) {
+      return; // not enabled
+    }
+
+    if (!this.asset) {
+      throw new Error('bindToResource() must be called after bind()');
+    }
+
+    const child = Node.of(restApi).defaultChild as CfnRestApi;
+    child.addMetadata(cxapi.ASSET_RESOURCE_METADATA_PATH_KEY, this.asset.assetPath);
+    child.addMetadata(cxapi.ASSET_RESOURCE_METADATA_PROPERTY_KEY, 'BodyS3Location');
   }
 }

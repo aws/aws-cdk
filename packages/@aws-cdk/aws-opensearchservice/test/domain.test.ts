@@ -8,7 +8,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
 import * as route53 from '@aws-cdk/aws-route53';
-import { App, Stack, Duration, SecretValue, CfnParameter } from '@aws-cdk/core';
+import { App, Stack, Duration, SecretValue, CfnParameter, Token } from '@aws-cdk/core';
 import { Domain, EngineVersion } from '../lib';
 
 let app: App;
@@ -246,6 +246,45 @@ describe('UltraWarm instances', () => {
     });
   });
 
+});
+
+test('can use tokens in capacity configuration', () => {
+  new Domain(stack, 'Domain', {
+    version: defaultVersion,
+    capacity: {
+      dataNodeInstanceType: Token.asString({ Ref: 'dataNodeInstanceType' }),
+      dataNodes: Token.asNumber({ Ref: 'dataNodes' }),
+      masterNodeInstanceType: Token.asString({ Ref: 'masterNodeInstanceType' }),
+      masterNodes: Token.asNumber({ Ref: 'masterNodes' }),
+      warmInstanceType: Token.asString({ Ref: 'warmInstanceType' }),
+      warmNodes: Token.asNumber({ Ref: 'warmNodes' }),
+    },
+  });
+
+  expect(stack).toHaveResourceLike('AWS::OpenSearchService::Domain', {
+    ClusterConfig: {
+      InstanceCount: {
+        Ref: 'dataNodes',
+      },
+      InstanceType: {
+        Ref: 'dataNodeInstanceType',
+      },
+      DedicatedMasterEnabled: true,
+      DedicatedMasterCount: {
+        Ref: 'masterNodes',
+      },
+      DedicatedMasterType: {
+        Ref: 'masterNodeInstanceType',
+      },
+      WarmEnabled: true,
+      WarmCount: {
+        Ref: 'warmNodes',
+      },
+      WarmType: {
+        Ref: 'warmInstanceType',
+      },
+    },
+  });
 });
 
 describe('log groups', () => {
@@ -1317,6 +1356,21 @@ describe('custom error responses', () => {
     expect(() => new Domain(stack, 'Domain1', {
       version: EngineVersion.elasticsearch('5.4'),
     })).toThrow('Unknown Elasticsearch version: 5.4');
+  });
+
+  test('error when invalid domain name is given', () => {
+    expect(() => new Domain(stack, 'Domain1', {
+      version: EngineVersion.OPENSEARCH_1_0,
+      domainName: 'InvalidName',
+    })).toThrow(/Valid characters are a-z/);
+    expect(() => new Domain(stack, 'Domain2', {
+      version: EngineVersion.OPENSEARCH_1_0,
+      domainName: 'a'.repeat(29),
+    })).toThrow(/It must be between 3 and 28 characters/);
+    expect(() => new Domain(stack, 'Domain3', {
+      version: EngineVersion.OPENSEARCH_1_0,
+      domainName: '123domain',
+    })).toThrow(/It must start with a lowercase letter/);
   });
 
   test('error when error log publishing is enabled for Elasticsearch version < 5.1', () => {
