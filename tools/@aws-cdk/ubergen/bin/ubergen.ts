@@ -251,15 +251,24 @@ async function combineRosettaFixtures(libraries: readonly LibraryReference[]) {
 
   const uberRosettaDir = path.resolve(LIB_ROOT, '..', 'rosetta');
   await fs.remove(uberRosettaDir);
+  await fs.mkdir(uberRosettaDir);
 
   for (const library of libraries) {
     const packageRosettaDir = path.join(library.root, 'rosetta');
     const uberRosettaTargetDir = library.shortName === 'core' ? uberRosettaDir : path.join(uberRosettaDir, library.shortName.replace(/-/g, '_'));
     if (await fs.pathExists(packageRosettaDir)) {
-      await fs.copy(packageRosettaDir, uberRosettaTargetDir, {
-        overwrite: true,
-        recursive: true,
-      });
+      if (!fs.existsSync(uberRosettaTargetDir)) {
+        await fs.mkdir(uberRosettaTargetDir);
+      }
+      const files = await fs.readdir(packageRosettaDir);
+      for (const file of files) {
+        const newRosetta = await rewriteReadmeImports(path.join(packageRosettaDir, file));
+        await fs.writeFile(
+          path.join(uberRosettaTargetDir, file),
+          newRosetta,
+          { encoding: 'utf8' },
+        );
+      }
     }
   }
 
