@@ -49,7 +49,7 @@ export interface QueueExtensionProps {
   /**
    * The user-provided queue delay fields to configure auto scaling for the default queue.
    */
-  readonly eventsQueueDelay?: QueueAutoScalingOptions;
+  readonly scaleOnLatency?: QueueAutoScalingOptions;
 }
 
 /**
@@ -85,7 +85,7 @@ interface SubscriptionQueue {
    *
    * @default none
    */
-  readonly queueDelay?: QueueAutoScalingOptions;
+  readonly scaleOnLatency?: QueueAutoScalingOptions;
 }
 
 /**
@@ -226,7 +226,7 @@ export class QueueExtension extends ServiceExtension {
       });
     }
     this._eventsQueue = eventsQueue;
-    this._eventsQueueDelay = this.props?.eventsQueueDelay;
+    this._eventsQueueDelay = this.props?.scaleOnLatency;
 
     this.environment[`${this.parentService.id.toUpperCase()}_QUEUE_URI`] = this._eventsQueue.queueUrl;
 
@@ -234,7 +234,7 @@ export class QueueExtension extends ServiceExtension {
       for (const subs of this.props.subscriptions) {
         const subsQueue = subs.subscribe(this);
         if (subsQueue.queue !== this._eventsQueue) {
-          if (subsQueue.queueDelay && !this._eventsQueueDelay) {
+          if (subsQueue.scaleOnLatency && !this._eventsQueueDelay) {
             throw Error(`Cannot configure auto scaling only for the subscription queue of service '${this.parentService.id}'. Need to specify 'eventsQueueDelay'.`);
           }
           this.subscriptionQueues.add(subsQueue);
@@ -289,8 +289,8 @@ export class QueueExtension extends ServiceExtension {
 
     this.addQueueScalingPolicy(this._eventsQueue, this._eventsQueueDelay);
     for (const subsQueue of this.subscriptionQueues) {
-      if (subsQueue.queueDelay) {
-        this.addQueueScalingPolicy(subsQueue.queue, subsQueue.queueDelay);
+      if (subsQueue.scaleOnLatency) {
+        this.addQueueScalingPolicy(subsQueue.queue, subsQueue.scaleOnLatency);
       } else {
         this.addQueueScalingPolicy(subsQueue.queue, this._eventsQueueDelay);
       }
@@ -308,7 +308,12 @@ export class QueueExtension extends ServiceExtension {
    * @param queueDelay The auto scaling options for the queue
    */
   private addQueueScalingPolicy(queue: sqs.IQueue, queueDelay: QueueAutoScalingOptions) {
-    const acceptableBacklog = (queueDelay.acceptableLatency.toSeconds())/(queueDelay.messageProcessingTime.toSeconds());
+    const messageProcessingTime = queueDelay.messageProcessingTime.toSeconds();
+    const acceptableLatency = queueDelay.acceptableLatency.toSeconds();
+    if (messageProcessingTime > acceptableLatency) {
+      throw Error('Message processing time for the queue cannot be greater acceptable queue latency.');
+    }
+    const acceptableBacklog = acceptableLatency/messageProcessingTime;
 
     this.parentService.scalableTaskCount?.scaleToTrackCustomMetric(`${queue.node.id}-autoscaling-policy`, {
       metric: new cloudwatch.Metric({

@@ -55,7 +55,7 @@ const topicSubscription1 = new TopicSubscription({
   topic: topic1.topic,
   topicSubscriptionQueue: {
     queue: new sqs.Queue(stack, 'sign-up-queue'),
-    queueDelay: {
+    scaleOnLatency: {
       acceptableLatency: cdk.Duration.minutes(10),
       messageProcessingTime: cdk.Duration.seconds(20),
     },
@@ -67,7 +67,7 @@ const topicSubscription2 = new TopicSubscription({
 
 subServiceDescription.add(new QueueExtension({
   subscriptions: [topicSubscription1, topicSubscription2],
-  eventsQueueDelay: {
+  scaleOnLatency: {
     acceptableLatency: cdk.Duration.minutes(5),
     messageProcessingTime: cdk.Duration.seconds(20),
   },

@@ -413,7 +413,7 @@ You can configure auto scaling based on SQS Queue for your service as follows:
 nameDescription.add(new QueueExtension({
   eventsQueue: myEventsQueue,
   // Need to specify `eventsQueueDelay` to configure auto scaling based on SQS Queue
-  eventsQueueDelay: {
+  scaleOnLatency: {
     acceptableLatency: cdk.Duration.minutes(10),
     messageProcessingTime: cdk.Duration.millis(250),
   },
@@ -423,7 +423,7 @@ nameDescription.add(new QueueExtension({
     topicSubscriptionQueue: {
       queue: myTopicQueue,
       // Optionally provide `queueDelay` for configuring different value of acceptable backlog for `myTopicQueue`
-      queueDelay: {
+      scaleOnLatency: {
         acceptableLatency: cdk.Duration.minutes(10),
         messageProcessingTime: cdk.Duration.millis(250),
       }

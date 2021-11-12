@@ -1094,25 +1094,6 @@
         }
       }
     },
-    "WorkerBackLogPerTaskCalculatorLogsA4B5AF42": {
-      "Type": "AWS::Logs::LogGroup",
-      "Properties": {
-        "LogGroupName": {
-          "Fn::Join": [
-            "",
-            [
-              "/aws/lambda/",
-              {
-                "Ref": "BackLogPerTaskCalculatorFunction95AA21D5"
-              }
-            ]
-          ]
-        },
-        "RetentionInDays": 3
-      },
-      "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete"
-    },
     "BackLogPerTaskCalculatorFunctionServiceRoleEFA723A4": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -1201,7 +1182,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParametersf7d14be23e457da1a2dfb3f611751cc43edadee946143972a5f16ba71922991eS3Bucket37634043"
+            "Ref": "AssetParameters6d71fbe0ccf1c4b0d253fb9fc8c0c91034928b1f4dfb1b935888a520d95047a6S3Bucket62CBE246"
           },
           "S3Key": {
             "Fn::Join": [
@@ -1214,7 +1195,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersf7d14be23e457da1a2dfb3f611751cc43edadee946143972a5f16ba71922991eS3VersionKey0E6A2492"
+                          "Ref": "AssetParameters6d71fbe0ccf1c4b0d253fb9fc8c0c91034928b1f4dfb1b935888a520d95047a6S3VersionKeyAD950ECB"
                         }
                       ]
                     }
@@ -1227,7 +1208,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersf7d14be23e457da1a2dfb3f611751cc43edadee946143972a5f16ba71922991eS3VersionKey0E6A2492"
+                          "Ref": "AssetParameters6d71fbe0ccf1c4b0d253fb9fc8c0c91034928b1f4dfb1b935888a520d95047a6S3VersionKeyAD950ECB"
                         }
                       ]
                     }
@@ -1321,20 +1302,39 @@
           ]
         }
       }
+    },
+    "WorkerBackLogPerTaskCalculatorLogsA4B5AF42": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": {
+          "Fn::Join": [
+            "",
+            [
+              "/aws/lambda/",
+              {
+                "Ref": "BackLogPerTaskCalculatorFunction95AA21D5"
+              }
+            ]
+          ]
+        },
+        "RetentionInDays": 3
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     }
   },
   "Parameters": {
-    "AssetParametersf7d14be23e457da1a2dfb3f611751cc43edadee946143972a5f16ba71922991eS3Bucket37634043": {
+    "AssetParameters6d71fbe0ccf1c4b0d253fb9fc8c0c91034928b1f4dfb1b935888a520d95047a6S3Bucket62CBE246": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"f7d14be23e457da1a2dfb3f611751cc43edadee946143972a5f16ba71922991e\""
+      "Description": "S3 bucket for asset \"6d71fbe0ccf1c4b0d253fb9fc8c0c91034928b1f4dfb1b935888a520d95047a6\""
     },
-    "AssetParametersf7d14be23e457da1a2dfb3f611751cc43edadee946143972a5f16ba71922991eS3VersionKey0E6A2492": {
+    "AssetParameters6d71fbe0ccf1c4b0d253fb9fc8c0c91034928b1f4dfb1b935888a520d95047a6S3VersionKeyAD950ECB": {
       "Type": "String",
-      "Description": "S3 key for asset version \"f7d14be23e457da1a2dfb3f611751cc43edadee946143972a5f16ba71922991e\""
+      "Description": "S3 key for asset version \"6d71fbe0ccf1c4b0d253fb9fc8c0c91034928b1f4dfb1b935888a520d95047a6\""
     },
-    "AssetParametersf7d14be23e457da1a2dfb3f611751cc43edadee946143972a5f16ba71922991eArtifactHash2EA4B7CE": {
+    "AssetParameters6d71fbe0ccf1c4b0d253fb9fc8c0c91034928b1f4dfb1b935888a520d95047a6ArtifactHash578D0422": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"f7d14be23e457da1a2dfb3f611751cc43edadee946143972a5f16ba71922991e\""
+      "Description": "Artifact hash for asset \"6d71fbe0ccf1c4b0d253fb9fc8c0c91034928b1f4dfb1b935888a520d95047a6\""
     }
   }
 }
