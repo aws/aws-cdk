@@ -12,7 +12,7 @@ const UBER_PACKAGE_JSON_PATH = path.resolve(process.cwd(), 'package.json');
 
 async function main() {
   console.log(`🌴  workspace root path is: ${ROOT_PATH}`);
-
+  console.log(LIB_ROOT);
   const uberPackageJson = await fs.readJson(UBER_PACKAGE_JSON_PATH);
 
   const libraries = await findLibrariesToPackage(uberPackageJson);
@@ -262,10 +262,13 @@ async function combineRosettaFixtures(libraries: readonly LibraryReference[]) {
       }
       const files = await fs.readdir(packageRosettaDir);
       for (const file of files) {
-        const newRosetta = await rewriteReadmeImports(path.join(packageRosettaDir, file));
         await fs.writeFile(
           path.join(uberRosettaTargetDir, file),
-          newRosetta,
+          await rewriteImports(
+            path.join(packageRosettaDir, file),
+            uberRosettaTargetDir,
+            libraries,
+          ),
           { encoding: 'utf8' },
         );
       }
