@@ -1,0 +1,47 @@
+/// !cdk-integ pragma:ignore-assets
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as iam from '@aws-cdk/aws-iam';
+import { App } from '@aws-cdk/core';
+import * as eks from '../lib';
+import { NodegroupAmiType } from '../lib';
+import { TestStack } from './util';
+
+
+class EksClusterStack extends TestStack {
+
+  private cluster: eks.Cluster;
+  private vpc: ec2.IVpc;
+
+  constructor(scope: App, id: string) {
+    super(scope, id);
+
+    // allow all account users to assume this role in order to admin the cluster
+    const mastersRole = new iam.Role(this, 'AdminRole', {
+      assumedBy: new iam.AccountRootPrincipal(),
+    });
+
+    // just need one nat gateway to simplify the test
+    this.vpc = new ec2.Vpc(this, 'Vpc', { maxAzs: 3, natGateways: 1 });
+
+    // create the cluster with a default nodegroup capacity
+    this.cluster = new eks.Cluster(this, 'Cluster', {
+      vpc: this.vpc,
+      mastersRole,
+      defaultCapacity: 0,
+      version: eks.KubernetesVersion.V1_21,
+    });
+
+    this.cluster.addNodegroupCapacity('BottlerocketNG1', {
+      amiType: NodegroupAmiType.BOTTLEROCKET_X86_64,
+    });
+    this.cluster.addNodegroupCapacity('BottlerocketNG2', {
+      amiType: NodegroupAmiType.BOTTLEROCKET_ARM_64,
+    });
+  }
+}
+
+const app = new App();
+
+new EksClusterStack(app, 'aws-cdk-eks-cluster-test');
+
+app.synth();
