@@ -39,30 +39,38 @@ class ExampleContext {
   }
 }
 
-export function generateClassAssignment(classType: reflect.ClassType): Code | undefined {
-  const expression = generateClassExample(classType);
+export function generateAssignmentStatement(type: reflect.ClassType | reflect.InterfaceType): Code | undefined {
+  const context = new ExampleContext(type.system);
+
+  let expression: Code | undefined;
+  if (type.isClassType()) {
+    expression = exampleValueForClass(context, type, 0);
+  } else if (type.isInterfaceType()) {
+    expression = exampleValueForStruct(context, type, 0);
+  }
+
   if (!expression) {
     return undefined;
   }
   const code = Code.concatAll(
-    `const ${lowercaseFirstLetter(classType.name)} = `,
+    `const ${lowercaseFirstLetter(type.name)} = `,
     expression,
     ';',
   );
   return code;
 }
 
-function generateClassExample(classType: reflect.ClassType): Code | undefined {
+function exampleValueForClass(context: ExampleContext, classType: reflect.ClassType, level: number): Code | undefined {
   const staticFactoryMethods = getStaticFactoryMethods(classType);
   const staticFactoryProperties = getStaticFactoryProperties(classType);
   const initializer = getAccessibleConstructor(classType);
 
   if (initializer && initializer.parameters.length >= 3) {
-    return generateClassInstantiationExample(initializer);
+    return generateClassInstantiationExample(context, initializer, level);
   }
 
   if (staticFactoryMethods.length >= 3) {
-    return generateStaticFactoryMethodExample(classType, staticFactoryMethods[0]);
+    return generateStaticFactoryMethodExample(context, classType, staticFactoryMethods[0], level);
   }
 
   if (staticFactoryProperties.length >= 3) {
@@ -70,11 +78,11 @@ function generateClassExample(classType: reflect.ClassType): Code | undefined {
   }
 
   if (initializer) {
-    return generateClassInstantiationExample(initializer);
+    return generateClassInstantiationExample(context, initializer, level);
   }
 
   if (staticFactoryMethods.length >= 1) {
-    return generateStaticFactoryMethodExample(classType, staticFactoryMethods[0]);
+    return generateStaticFactoryMethodExample(context, classType, staticFactoryMethods[0], level);
   }
 
   if (staticFactoryProperties.length >= 1) {
@@ -109,40 +117,42 @@ function getStaticFactoryProperties(classType: reflect.ClassType): reflect.Prope
   );
 }
 
-function generateClassInstantiationExample(initializer: reflect.Initializer): Code {
-  const exampleContext = new ExampleContext(initializer.system);
-  const length = initializer.parameters.length;
+function generateClassInstantiationExample(context: ExampleContext, initializer: reflect.Initializer, level: number): Code {
   return Code.concatAll(
     new Code(`new ${module(initializer.parentType).importName}.`, [new Import(initializer.parentType)]),
     initializer.parentType.name,
     '(',
-    ...(initializer.parameters.map((p, i) => {
-      if (length - 1 === i) {
-        return exampleValueForParameter(exampleContext, p, i);
-      } else {
-        return exampleValueForParameter(exampleContext, p, i).append(', ');
-      }
-    })),
+    parameterList(context, initializer.parameters, level),
     ')',
   );
 }
 
-function generateStaticFactoryMethodExample(classType: reflect.ClassType, staticFactoryMethod: reflect.Method) {
-  const exampleContext = new ExampleContext(staticFactoryMethod.system);
-  const length = staticFactoryMethod.parameters.length;
+function parameterList(context: ExampleContext, parameters: reflect.Parameter[], level: number) {
+  const length = parameters.length;
+  return Code.concatAll(
+    ...parameters.map((p, i) => {
+      if (length - 1 === i) {
+        return exampleValueForParameter(context, p, i, level);
+      } else {
+        return exampleValueForParameter(context, p, i, level).append(', ');
+      }
+    }),
+  );
+}
+
+function generateStaticFactoryMethodExample(
+  context: ExampleContext,
+  classType: reflect.ClassType,
+  staticFactoryMethod: reflect.Method,
+  level: number,
+) {
   return Code.concatAll(
     new Code(`${module(classType).importName}.`, [new Import(classType)]),
     staticFactoryMethod.parentType.name,
     '.',
     staticFactoryMethod.name,
     '(',
-    ...(staticFactoryMethod.parameters.map((p, i) => {
-      if (length - 1 === i) {
-        return exampleValueForParameter(exampleContext, p, i);
-      } else {
-        return exampleValueForParameter(exampleContext, p, i).append(', ');
-      }
-    })),
+    parameterList(context, staticFactoryMethod.parameters, level),
     ')',
   );
 }
@@ -159,7 +169,7 @@ function generateStaticFactoryPropertyExample(classType: reflect.ClassType, stat
 /**
  * Generate an example value of the given parameter.
  */
-function exampleValueForParameter(context: ExampleContext, param: reflect.Parameter, position: number): Code {
+function exampleValueForParameter(context: ExampleContext, param: reflect.Parameter, position: number, level: number): Code {
   if (param.name === 'scope' && position === 0) {
     return new Code('this');
   }
@@ -168,9 +178,9 @@ function exampleValueForParameter(context: ExampleContext, param: reflect.Parame
     return new Code(`'My${param.parentType.name}'`);
   }
   if (param.optional) {
-    return new Code('/* all optional props */ ').append(exampleValue(context, param.type, param.name, 0));
+    return new Code('/* all optional props */ ').append(exampleValue(context, param.type, param.name, level));
   }
-  return exampleValue(context, param.type, param.name, 0);
+  return exampleValue(context, param.type, param.name, level);
 }
 
 /**

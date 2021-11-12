@@ -4,7 +4,7 @@ import { TypeSystem } from 'jsii-reflect';
 // This import should come from @jsii/spec. Replace when that is possible.
 import { LanguageTablet, TranslatedSnippet, Rosetta, UnknownSnippetMode, TargetLanguage, typeScriptSnippetFromSource, SnippetLocation, SnippetParameters, TypeScriptSnippet } from 'jsii-rosetta';
 import { insertExample, replaceAssembly } from './assemblies';
-import { generateClassAssignment } from './generate';
+import { generateAssignmentStatement } from './generate';
 
 const COMMENT_WARNING = [
   '// The code below shows an example of how to instantiate this type.',
@@ -42,21 +42,25 @@ export async function generateMissingExamples(assemblyLocations: string[], optio
 
     const assembly = await typesystem.load(assemblyLocation);
 
-    const documentableClasses = assembly.classes.filter(c => !c.docs.example);
+    // Classes and structs
+    const documentableTypes = [
+      ...assembly.classes.filter(c => !c.docs.example),
+      ...assembly.interfaces.filter(i => !i.docs.example && i.datatype),
+    ];
     let documentedClasses = 0;
 
     // eslint-disable-next-line no-console
-    console.log(`${assembly.name}: ${documentableClasses.length} classes to document`);
+    console.log(`${assembly.name}: ${documentableTypes.length} classes to document`);
 
-    if (documentableClasses.length === 0) { continue; }
+    if (documentableTypes.length === 0) { continue; }
 
     const failed = [];
-    for (const classType of documentableClasses) {
+    for (const classType of documentableTypes) {
       if (rosetta.diagnostics.length > 0 && options.bail) {
         break;
       }
 
-      const example = generateClassAssignment(classType);
+      const example = generateAssignmentStatement(classType);
       if (!example) {
         failed.push(classType.name);
         continue;
