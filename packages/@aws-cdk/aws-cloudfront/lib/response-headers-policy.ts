@@ -306,9 +306,8 @@ export interface ResponseHeadersContentTypeOptions {
 export interface ResponseHeadersFrameOptions {
   /**
    * The value of the X-Frame-Options HTTP response header.
-   * Valid values are 'DENY' and 'SAMEORIGIN'.
    */
-  readonly frameOption: string;
+  readonly frameOption: HeadersFrameOption;
 
   /**
    * A Boolean that determines whether CloudFront overrides the X-Frame-Options HTTP response header
@@ -323,9 +322,8 @@ export interface ResponseHeadersFrameOptions {
 export interface ResponseHeadersReferrerPolicy {
   /**
    * The value of the Referrer-Policy HTTP response header.
-   * Valid values are: no-referrer | no-referrer-when-downgrade | origin | origin-when-cross-origin | same-origin | strict-origin | strict-origin-when-cross-origin | unsafe-url
    */
-  readonly referrerPolicy: string;
+  readonly referrerPolicy: HeadersReferrerPolicy;
 
   /**
    * A Boolean that determines whether CloudFront overrides the Referrer-Policy HTTP response header
@@ -395,4 +393,64 @@ export interface ResponseHeadersXSSProtection {
    * @default - no report uri
    */
   readonly reportUri?: string;
+}
+
+/**
+ * Enum representing possible values of the X-Frame-Options HTTP response header.
+ */
+export enum HeadersFrameOption {
+  /**
+   * The page can only be displayed in a frame on the same origin as the page itself.
+   */
+  DENY = 'DENY',
+
+  /**
+   * The page can only be displayed in a frame on the specified origin.
+   */
+  SAMEORIGIN = 'SAMEORIGIN',
+}
+
+/**
+ * Enum representing possible values of the Referrer-Policy HTTP response header.
+ */
+export enum HeadersReferrerPolicy {
+  /**
+   * The referrer policy is not set.
+   */
+  NO_REFERRER = 'no-referrer',
+
+  /**
+   * The referrer policy is no-referrer-when-downgrade.
+   */
+  NO_REFERRER_WHEN_DOWNGRADE = 'no-referrer-when-downgrade',
+
+  /**
+   * The referrer policy is origin.
+   */
+  ORIGIN = 'origin',
+
+  /**
+   * The referrer policy is origin-when-cross-origin.
+   */
+  ORIGIN_WHEN_CROSS_ORIGIN = 'origin-when-cross-origin',
+
+  /**
+   * The referrer policy is same-origin.
+   */
+  SAME_ORIGIN = 'same-origin',
+
+  /**
+   * The referrer policy is strict-origin.
+   */
+  STRICT_ORIGIN = 'strict-origin',
+
+  /**
+   * The referrer policy is strict-origin-when-cross-origin.
+   */
+  STRICT_ORIGIN_WHEN_CROSS_ORIGIN = 'strict-origin-when-cross-origin',
+
+  /**
+   * The referrer policy is unsafe-url.
+   */
+  UNSAFE_URL = 'unsafe-url',
 }
