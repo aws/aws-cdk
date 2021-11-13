@@ -57,7 +57,7 @@ export class VpcNetworkContextProviderPlugin implements ContextProviderPlugin {
     // We have the following attributes to go on:
     // - Type tag, we tag subnets with their type. In absence of this tag, we
     //   fall back to MapPublicIpOnLaunch => must be a Public subnet, anything
-    //   else is considered Priate.
+    //   else is considered Private.
     // - Name tag, we tag subnets with their subnet group name. In absence of this tag,
     //   we use the type as the name.
 
@@ -161,7 +161,7 @@ class RouteTables {
   public hasRouteToNatGateway(subnetId: string | undefined): boolean {
     const table = this.tableForSubnet(subnetId);
 
-    return !!table && !!table.Routes && table.Routes.some(route => !!route.NatGatewayId);
+    return !!table && !!table.Routes && table.Routes.some(route => !!route.NatGatewayId && route.DestinationCidrBlock === '0.0.0.0/0');
   }
 
   /**
