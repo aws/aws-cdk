@@ -11,14 +11,18 @@
 
 This module exports a single class called `KubectlLayer` which is a `lambda.Layer` that bundles the [`kubectl`](https://kubernetes.io/docs/reference/kubectl/kubectl/) and the [`helm`](https://helm.sh/) command line.
 
-> - Helm Version: 1.20.0
-> - Kubectl Version: 3.4.2
+> - Helm Version: 3.5.4
+> - Kubectl Version: 1.20.0
+> 
 
 Usage:
 
 ```ts
-const fn = new lambda.Function(...);
-fn.addLayers(new KubectlLayer(stack, 'KubectlLayer'));
+// KubectlLayer bundles the 'kubectl' and 'helm' command lines
+import { KubectlLayer } from '@aws-cdk/lambda-layer-kubectl';
+
+declare const fn: lambda.Function;
+fn.addLayers(new KubectlLayer(this, 'KubectlLayer'));
 ```
 
 `kubectl` will be installed under `/opt/kubectl/kubectl`, and `helm` will be installed under `/opt/helm/helm`.

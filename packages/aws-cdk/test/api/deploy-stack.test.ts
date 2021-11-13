@@ -29,6 +29,7 @@ const FAKE_STACK_TERMINATION_PROTECTION = testStack({
 let sdk: MockSdk;
 let sdkProvider: MockSdkProvider;
 let cfnMocks: MockedObject<SyncHandlerSubsetOf<AWS.CloudFormation>>;
+
 beforeEach(() => {
   jest.resetAllMocks();
 
@@ -62,7 +63,7 @@ beforeEach(() => {
     updateTerminationProtection: jest.fn((_o) => ({ StackId: 'stack-id' })),
   };
   sdk.stubCloudFormation(cfnMocks as any);
-
+  sdk.stubGetEndpointSuffix(() => 'amazonaws.com');
 });
 
 function standardDeployStackArguments(): DeployStackOptions {
@@ -97,7 +98,7 @@ test("does not call tryHotswapDeployment() if 'hotswap' is false", async () => {
   expect(tryHotswapDeployment).not.toHaveBeenCalled();
 });
 
-test("rollback defaults to disabled if 'hotswap' is true", async () => {
+test("rollback still defaults to enabled even if 'hotswap' is enabled", async () => {
   // WHEN
   await deployStack({
     ...standardDeployStackArguments(),
@@ -106,7 +107,7 @@ test("rollback defaults to disabled if 'hotswap' is true", async () => {
   });
 
   // THEN
-  expect(cfnMocks.executeChangeSet).toHaveBeenCalledWith(expect.objectContaining({
+  expect(cfnMocks.executeChangeSet).not.toHaveBeenCalledWith(expect.objectContaining({
     DisableRollback: true,
   }));
 });
