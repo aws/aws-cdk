@@ -1,7 +1,8 @@
+import * as assertions from '@aws-cdk/assertions';
 import * as apigatewayv2 from '@aws-cdk/aws-apigatewayv2';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
-import { HttpMethod, CallApiGatewayHttpApiEndpoint } from '../../lib';
+import { HttpMethod, CallApiGatewayHttpApiEndpoint, AuthType } from '../../lib';
 
 describe('CallApiGatewayHttpApiEndpoint', () => {
   test('default', () => {
@@ -55,6 +56,101 @@ describe('CallApiGatewayHttpApiEndpoint', () => {
         ],
       },
     });
+  });
+
+  test('iam auth', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const httpApi = new apigatewayv2.HttpApi(stack, 'HttpApi');
+
+    // WHEN
+    const task = new CallApiGatewayHttpApiEndpoint(stack, 'Call', {
+      apiId: httpApi.apiId,
+      apiStack: cdk.Stack.of(httpApi),
+      method: HttpMethod.GET,
+      authType: AuthType.IAM_ROLE,
+    });
+
+    new sfn.StateMachine(stack, 'StateMachine', {
+      definition: task,
+    });
+
+    // THEN
+    const assertStack = assertions.Template.fromStack(stack);
+    assertStack.hasResourceProperties('AWS::IAM::Policy', assertions.Match.objectLike({
+      PolicyDocument: assertions.Match.objectLike({
+        Statement: [
+          {
+            Action: 'execute-api:Invoke',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':execute-api:',
+                  { Ref: 'AWS::Region' },
+                  ':',
+                  { Ref: 'AWS::AccountId' },
+                  ':',
+                  { Ref: 'HttpApiF5A9A8A7' },
+                  '/$default/GET/',
+                ],
+              ],
+            },
+          },
+        ],
+      }),
+    }));
+  });
+
+  test('iam auth with dynamic api path', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const httpApi = new apigatewayv2.HttpApi(stack, 'HttpApi');
+
+    // WHEN
+    const task = new CallApiGatewayHttpApiEndpoint(stack, 'Call', {
+      apiId: httpApi.apiId,
+      apiStack: cdk.Stack.of(httpApi),
+      method: HttpMethod.GET,
+      apiPath: sfn.JsonPath.stringAt('States.Format(\'foo/{}\', $.foo)'),
+      authType: AuthType.IAM_ROLE,
+    });
+
+    new sfn.StateMachine(stack, 'StateMachine', {
+      definition: task,
+    });
+
+    // THEN
+    const assertStack = assertions.Template.fromStack(stack);
+    assertStack.hasResourceProperties('AWS::IAM::Policy', assertions.Match.objectLike({
+      PolicyDocument: assertions.Match.objectLike({
+        Statement: [
+          {
+            Action: 'execute-api:Invoke',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':execute-api:',
+                  { Ref: 'AWS::Region' },
+                  ':',
+                  { Ref: 'AWS::AccountId' },
+                  ':',
+                  { Ref: 'HttpApiF5A9A8A7' },
+                  '/$default/GET/*',
+                ],
+              ],
+            },
+          },
+        ],
+      }),
+    }));
   });
 
   test('wait for task token', () => {

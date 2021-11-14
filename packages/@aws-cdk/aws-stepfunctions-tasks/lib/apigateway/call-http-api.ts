@@ -55,13 +55,18 @@ export class CallApiGatewayHttpApiEndpoint extends CallApiGatewayEndpointBase {
   }
 
   private getArnForExecuteApi(): string {
-    const { apiId, stageName, method, apiPath } = this.props;
+    const { apiId, method } = this.props;
+
+    const stageName = this.props.stageName ?? '$default';
+    const apiPath = this.props.apiPath && sfn.JsonPath.isEncodedJsonPath(this.props.apiPath)
+      ? '*'
+      : (this.props.apiPath ?? '');
 
     return this.props.apiStack.formatArn({
       service: 'execute-api',
       resource: apiId,
       sep: '/',
-      resourceName: `${stageName}/${method}${apiPath}`,
+      resourceName: `${stageName}/${method}/${apiPath}`,
     });
   }
 }

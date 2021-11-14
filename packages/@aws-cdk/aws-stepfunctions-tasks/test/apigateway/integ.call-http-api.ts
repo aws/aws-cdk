@@ -18,16 +18,22 @@ const stack = new cdk.Stack(app, 'CallHttpApiInteg');
 const httpApi = new apigatewayv2.HttpApi(stack, 'MyHttpApi');
 
 const handler = new lambda.Function(stack, 'HelloHandler', {
-  runtime: lambda.Runtime.NODEJS_10_X,
+  runtime: lambda.Runtime.NODEJS_14_X,
   handler: 'index.handler',
   code: new lambda.InlineCode('exports.handler = async function(event, context) { return { statusCode: 200, body: "hello, world!" }; };'),
 });
-httpApi.addRoutes({
-  path: '/',
+
+const route = new apigatewayv2.HttpRoute(stack, 'Route', {
+  httpApi,
+  routeKey: apigatewayv2.HttpRouteKey.with('/'),
   integration: new integrations.LambdaProxyIntegration({
     handler,
   }),
 });
+
+// Enable IAM auth on the route by using an escape hatch so that the IAM
+//policy becomes relevant.
+(route.node.defaultChild as apigatewayv2.CfnRoute).authorizationType = 'AWS_IAM';
 
 const callEndpointJob = new CallApiGatewayHttpApiEndpoint(stack, 'Call APIGW', {
   apiId: httpApi.apiId,

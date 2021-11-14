@@ -17,80 +17,6 @@
         "AutoDeploy": true
       }
     },
-    "MyHttpApiANYCallHttpApiIntegMyHttpApiANY7E6F12A3Permission59116CA6": {
-      "Type": "AWS::Lambda::Permission",
-      "Properties": {
-        "Action": "lambda:InvokeFunction",
-        "FunctionName": {
-          "Fn::GetAtt": [
-            "HelloHandler2E4FBA4D",
-            "Arn"
-          ]
-        },
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": {
-          "Fn::Join": [
-            "",
-            [
-              "arn:",
-              {
-                "Ref": "AWS::Partition"
-              },
-              ":execute-api:",
-              {
-                "Ref": "AWS::Region"
-              },
-              ":",
-              {
-                "Ref": "AWS::AccountId"
-              },
-              ":",
-              {
-                "Ref": "MyHttpApi8AEAAC21"
-              },
-              "/*/*/"
-            ]
-          ]
-        }
-      }
-    },
-    "MyHttpApiANYHttpIntegration71abbf75d6f8e5ea93ec2120c0d78b754BBCECF5": {
-      "Type": "AWS::ApiGatewayV2::Integration",
-      "Properties": {
-        "ApiId": {
-          "Ref": "MyHttpApi8AEAAC21"
-        },
-        "IntegrationType": "AWS_PROXY",
-        "IntegrationUri": {
-          "Fn::GetAtt": [
-            "HelloHandler2E4FBA4D",
-            "Arn"
-          ]
-        },
-        "PayloadFormatVersion": "2.0"
-      }
-    },
-    "MyHttpApiANYC3543576": {
-      "Type": "AWS::ApiGatewayV2::Route",
-      "Properties": {
-        "ApiId": {
-          "Ref": "MyHttpApi8AEAAC21"
-        },
-        "RouteKey": "ANY /",
-        "AuthorizationType": "NONE",
-        "Target": {
-          "Fn::Join": [
-            "",
-            [
-              "integrations/",
-              {
-                "Ref": "MyHttpApiANYHttpIntegration71abbf75d6f8e5ea93ec2120c0d78b754BBCECF5"
-              }
-            ]
-          ]
-        }
-      }
-    },
     "HelloHandlerServiceRole11EF7C63": {
       "Type": "AWS::IAM::Role",
       "Properties": {
@@ -135,11 +61,85 @@
           ]
         },
         "Handler": "index.handler",
-        "Runtime": "nodejs10.x"
+        "Runtime": "nodejs14.x"
       },
       "DependsOn": [
         "HelloHandlerServiceRole11EF7C63"
       ]
+    },
+    "RouteCallHttpApiIntegRoute4B01CEBFPermissionA94413B3": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "HelloHandler2E4FBA4D",
+            "Arn"
+          ]
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "MyHttpApi8AEAAC21"
+              },
+              "/*/*/"
+            ]
+          ]
+        }
+      }
+    },
+    "RouteHttpIntegration71abbf75d6f8e5ea93ec2120c0d78b755F285A5B": {
+      "Type": "AWS::ApiGatewayV2::Integration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "MyHttpApi8AEAAC21"
+        },
+        "IntegrationType": "AWS_PROXY",
+        "IntegrationUri": {
+          "Fn::GetAtt": [
+            "HelloHandler2E4FBA4D",
+            "Arn"
+          ]
+        },
+        "PayloadFormatVersion": "2.0"
+      }
+    },
+    "RouteA67450D2": {
+      "Type": "AWS::ApiGatewayV2::Route",
+      "Properties": {
+        "ApiId": {
+          "Ref": "MyHttpApi8AEAAC21"
+        },
+        "RouteKey": "ANY /",
+        "AuthorizationType": "AWS_IAM",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "RouteHttpIntegration71abbf75d6f8e5ea93ec2120c0d78b755F285A5B"
+              }
+            ]
+          ]
+        }
+      }
     },
     "StateMachineRoleB840431D": {
       "Type": "AWS::IAM::Role",
@@ -197,7 +197,7 @@
                     {
                       "Ref": "MyHttpApi8AEAAC21"
                     },
-                    "/undefined/GETundefined"
+                    "/$default/GET/"
                   ]
                 ]
               }
