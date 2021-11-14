@@ -476,8 +476,9 @@ To disable the installation of the termination handler, set the `spotInterruptHa
 To create a Bottlerocket managed nodegroup:
 
 ```ts
+declare const cluster: eks.Cluster;
 cluster.addNodegroupCapacity('BottlerocketNG', {
-  amiType: NodegroupAmiType.BOTTLEROCKET_X86_64,
+  amiType: eks.NodegroupAmiType.BOTTLEROCKET_X86_64,
 });
 ```
 
