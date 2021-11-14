@@ -195,21 +195,16 @@ function exampleValue(context: ExampleContext, typeRef: reflect.TypeReference, n
   // Process primitive types, base case
   if (typeRef.primitive !== undefined) {
     switch (typeRef.primitive) {
-      case spec.PrimitiveType.String: {
+      case spec.PrimitiveType.String:
         return new Code(`'${name}'`);
-      }
-      case spec.PrimitiveType.Number: {
+      case spec.PrimitiveType.Number:
         return new Code('123');
-      }
-      case spec.PrimitiveType.Boolean: {
+      case spec.PrimitiveType.Boolean:
         return new Code('false');
-      }
-      case spec.PrimitiveType.Any: {
+      case spec.PrimitiveType.Date:
+        return new Code('new Date()');
+      default:
         return new Code(name, [new AnyAssumption(name)]);
-      }
-      default: {
-        return new Code('---');
-      }
     }
   }
 

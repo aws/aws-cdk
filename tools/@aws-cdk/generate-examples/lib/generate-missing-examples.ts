@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import { promises as fs } from 'fs';
-import { TypeSystem } from 'jsii-reflect';
+import { Assembly, TypeSystem } from 'jsii-reflect';
 
 // This import should come from @jsii/spec. Replace when that is possible.
 import { LanguageTablet, RosettaTranslator, SnippetLocation, SnippetParameters, TypeScriptSnippet, typeScriptSnippetFromCompleteSource } from 'jsii-rosetta';
@@ -50,16 +50,12 @@ export async function generateMissingExamples(assemblyLocations: string[], optio
       }
 
       // To successfully compile, we need to generate the right 'Construct' import
-      const constructImport = assembly.dependencies.some(d => d.assembly.name === '@aws-cdk/core')
-        ? 'import { Construct } from "@aws-cdk/core";'
-        : 'import { Construct } from "constructs";';
-
       const completeSource = [
         ...COMMENT_WARNING,
         ...example.renderDeclarations(),
         '',
         '/// !hide',
-        constructImport,
+        correctConstructImport(assembly),
         'class MyConstruct extends Construct {',
         'constructor(scope: Construct, id: string) {',
         'super(scope, id);',
@@ -144,4 +140,16 @@ async function statFile(fileName: string) {
     if (e.code === 'ENOENT') { return undefined; }
     throw e;
   }
+}
+
+function correctConstructImport(assembly: Assembly) {
+  if (assembly.name === 'monocdk') {
+    return 'import { Construct } from "monocdk";';
+  }
+
+  if (assembly.dependencies.some(d => d.assembly.name === '@aws-cdk/core')) {
+    return 'import { Construct } from "@aws-cdk/core";';
+  }
+
+  return 'import { Construct } from "constructs";';
 }
