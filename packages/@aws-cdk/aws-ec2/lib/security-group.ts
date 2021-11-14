@@ -317,44 +317,25 @@ export interface SecurityGroupImportOptions {
 export class SecurityGroup extends SecurityGroupBase {
   /**
    * Look up a security group by id.
+   *
+   * @deprecated Use `fromLookupById()` instead
    */
   public static fromLookup(scope: Construct, id: string, securityGroupId: string) {
     return this.fromLookupAttributes(scope, id, { securityGroupId });
   }
 
   /**
-   * Look up a security group.
+   * Look up a security group by id.
    */
-  public static fromLookupAttributes(scope: Construct, id: string, options: SecurityGroupLookupOptions) {
-    if (Token.isUnresolved(options.securityGroupId) || Token.isUnresolved(options.securityGroupName) || Token.isUnresolved(options.vpc?.vpcId)) {
-      throw new Error('All arguments to look up a security group must be concrete (no Tokens)');
-    }
+  public static fromLookupById(scope: Construct, id: string, securityGroupId: string) {
+    return this.fromLookupAttributes(scope, id, { securityGroupId });
+  }
 
-    if (options.securityGroupId && options.securityGroupName) {
-      throw new Error('\'securityGroupId\' and \'securityGroupName\' can not be specified both when looking up a security group');
-    }
-
-    if (!options.securityGroupId && !options.securityGroupName) {
-      throw new Error('\'securityGroupId\' or \'securityGroupName\' must be specified to look up a security group');
-    }
-
-    const attributes: cxapi.SecurityGroupContextResponse = ContextProvider.getValue(scope, {
-      provider: cxschema.ContextProvider.SECURITY_GROUP_PROVIDER,
-      props: {
-        securityGroupId: options.securityGroupId,
-        securityGroupName: options.securityGroupName,
-        vpcId: options.vpc?.vpcId,
-      },
-      dummyValue: {
-        securityGroupId: 'sg-12345',
-        allowAllOutbound: true,
-      } as cxapi.SecurityGroupContextResponse,
-    }).value;
-
-    return SecurityGroup.fromSecurityGroupId(scope, id, attributes.securityGroupId, {
-      allowAllOutbound: attributes.allowAllOutbound,
-      mutable: true,
-    });
+  /**
+   * Look up a security group by name.
+   */
+  public static fromLookupByName(scope: Construct, id: string, securityGroupName: string, vpc: IVpc) {
+    return this.fromLookupAttributes(scope, id, { securityGroupName, vpc });
   }
 
   /**
@@ -396,6 +377,33 @@ export class SecurityGroup extends SecurityGroupBase {
     return options.mutable !== false
       ? new MutableImport(scope, id)
       : new ImmutableImport(scope, id);
+  }
+
+  /**
+   * Look up a security group.
+   */
+  private static fromLookupAttributes(scope: Construct, id: string, options: SecurityGroupLookupOptions) {
+    if (Token.isUnresolved(options.securityGroupId) || Token.isUnresolved(options.securityGroupName) || Token.isUnresolved(options.vpc?.vpcId)) {
+      throw new Error('All arguments to look up a security group must be concrete (no Tokens)');
+    }
+
+    const attributes: cxapi.SecurityGroupContextResponse = ContextProvider.getValue(scope, {
+      provider: cxschema.ContextProvider.SECURITY_GROUP_PROVIDER,
+      props: {
+        securityGroupId: options.securityGroupId,
+        securityGroupName: options.securityGroupName,
+        vpcId: options.vpc?.vpcId,
+      },
+      dummyValue: {
+        securityGroupId: 'sg-12345',
+        allowAllOutbound: true,
+      } as cxapi.SecurityGroupContextResponse,
+    }).value;
+
+    return SecurityGroup.fromSecurityGroupId(scope, id, attributes.securityGroupId, {
+      allowAllOutbound: attributes.allowAllOutbound,
+      mutable: true,
+    });
   }
 
   /**

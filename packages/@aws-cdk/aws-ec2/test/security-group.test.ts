@@ -339,30 +339,7 @@ describe('security group', () => {
     });
 
     // WHEN
-    const securityGroup = SecurityGroup.fromLookupAttributes(stack, 'stack', {
-      securityGroupId: 'sg-12345',
-    });
-
-    // THEN
-    expect(securityGroup.securityGroupId).toEqual('sg-12345');
-    expect(securityGroup.allowAllOutbound).toEqual(true);
-
-  });
-
-  test('can look up a security group by name', () => {
-    // GIVEN
-    const app = new App();
-    const stack = new Stack(app, 'stack', {
-      env: {
-        account: '1234',
-        region: 'us-east-1',
-      },
-    });
-
-    // WHEN
-    const securityGroup = SecurityGroup.fromLookupAttributes(stack, 'stack', {
-      securityGroupName: 'my-security-group',
-    });
+    const securityGroup = SecurityGroup.fromLookupById(stack, 'SG1', 'sg-12345');
 
     // THEN
     expect(securityGroup.securityGroupId).toEqual('sg-12345');
@@ -386,10 +363,7 @@ describe('security group', () => {
     });
 
     // WHEN
-    const securityGroup = SecurityGroup.fromLookupAttributes(stack, 'stack', {
-      securityGroupName: 'my-security-group',
-      vpc,
-    });
+    const securityGroup = SecurityGroup.fromLookupByName(stack, 'SG1', 'sg-12345', vpc);
 
     // THEN
     expect(securityGroup.securityGroupId).toEqual('sg-12345');
@@ -397,7 +371,7 @@ describe('security group', () => {
 
   });
 
-  test('throws when securityGroupId and securityGroupName are specified both', () => {
+  test('can look up a security group by id and vpc', () => {
     // GIVEN
     const app = new App();
     const stack = new Stack(app, 'stack', {
@@ -407,30 +381,17 @@ describe('security group', () => {
       },
     });
 
-    // WHEN
-    expect(() => {
-      SecurityGroup.fromLookupAttributes(stack, 'stack', {
-        securityGroupId: 'sg-12345',
-        securityGroupName: 'my-security-group',
-      });
-    }).toThrow(/\'securityGroupId\' and \'securityGroupName\' can not be specified both when looking up a security group/);
-
-  });
-
-  test('throws when neither securityGroupId nor securityGroupName are specified', () => {
-    // GIVEN
-    const app = new App();
-    const stack = new Stack(app, 'stack', {
-      env: {
-        account: '1234',
-        region: 'us-east-1',
-      },
+    const vpc = Vpc.fromVpcAttributes(stack, 'VPC', {
+      vpcId: 'vpc-1234',
+      availabilityZones: ['dummy1a', 'dummy1b', 'dummy1c'],
     });
 
     // WHEN
-    expect(() => {
-      SecurityGroup.fromLookupAttributes(stack, 'stack', {});
-    }).toThrow(/\'securityGroupId\' or \'securityGroupName\' must be specified to look up a security group/);
+    const securityGroup = SecurityGroup.fromLookupByName(stack, 'SG1', 'my-security-group', vpc);
+
+    // THEN
+    expect(securityGroup.securityGroupId).toEqual('sg-12345');
+    expect(securityGroup.allowAllOutbound).toEqual(true);
 
   });
 
@@ -446,9 +407,7 @@ describe('security group', () => {
 
     // WHEN
     expect(() => {
-      SecurityGroup.fromLookupAttributes(stack, 'stack', {
-        securityGroupId: Lazy.string({ produce: () => 'sg-12345' }),
-      });
+      SecurityGroup.fromLookupById(stack, 'stack', Lazy.string({ produce: () => 'sg-12345' }));
     }).toThrow('All arguments to look up a security group must be concrete (no Tokens)');
 
   });
@@ -465,9 +424,7 @@ describe('security group', () => {
 
     // WHEN
     expect(() => {
-      SecurityGroup.fromLookupAttributes(stack, 'stack', {
-        securityGroupName: Lazy.string({ produce: () => 'my-security-group' }),
-      });
+      SecurityGroup.fromLookupById(stack, 'stack', Lazy.string({ produce: () => 'my-security-group' }));
     }).toThrow('All arguments to look up a security group must be concrete (no Tokens)');
 
   });
@@ -489,10 +446,7 @@ describe('security group', () => {
 
     // WHEN
     expect(() => {
-      SecurityGroup.fromLookupAttributes(stack, 'stack', {
-        securityGroupName: 'my-security-group',
-        vpc,
-      });
+      SecurityGroup.fromLookupByName(stack, 'stack', 'my-security-group', vpc);
     }).toThrow('All arguments to look up a security group must be concrete (no Tokens)');
 
   });

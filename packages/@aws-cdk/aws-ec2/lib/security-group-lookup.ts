@@ -1,9 +1,9 @@
-import { IVpc } from '.';
+import { IVpc } from './vpc';
 
 /**
  * Properties for looking up an existing SecurityGroup.
  *
- * Either `securityGroupName` or `securityGroupId` hast to be specified, otherwise an error is raised.
+ * Either `securityGroupName` or `securityGroupId` has to be specified.
  */
 export interface SecurityGroupLookupOptions {
   /**
