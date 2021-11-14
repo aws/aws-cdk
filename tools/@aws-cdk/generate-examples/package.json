@@ -44,7 +44,7 @@
   "dependencies": {
     "@jsii/spec": "^1.43.0",
     "jsii-reflect": "1.43.0",
-    "jsii-rosetta": "file:../../../vendor/jsii-rosetta-v1.44.0-rc.2.tgz",
+    "jsii-rosetta": "file:../../../vendor/jsii-rosetta-v1.44.0-rc.3.tgz",
     "fs-extra": "^9.1.0",
     "yargs": "^16.2.0"
   }
