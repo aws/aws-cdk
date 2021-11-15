@@ -844,7 +844,7 @@ export class UserPool extends UserPoolBase {
    */
   public addTrigger(operation: UserPoolOperation, fn: lambda.IFunction): void {
     if (operation.operationName in this.triggers) {
-      throw new Error(`A trigger for the operation ${operation} already exists.`);
+      throw new Error(`A trigger for the operation ${operation.operationName} already exists.`);
     }
 
     this.addLambdaPermission(fn, operation.operationName);

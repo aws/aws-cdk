@@ -27,6 +27,15 @@ export interface BundlingOptions {
   readonly sourceMapMode?: SourceMapMode;
 
   /**
+   * Whether to include original source code in source maps when bundling.
+   *
+   * @see https://esbuild.github.io/api/#sources-content
+   *
+   * @default true
+   */
+  readonly sourcesContent?: boolean;
+
+  /**
    * Target environment for the generated JavaScript code.
    *
    * @see https://esbuild.github.io/api/#target
@@ -43,7 +52,7 @@ export interface BundlingOptions {
    *
    * @see https://esbuild.github.io/api/#loader
    *
-   * @example { '.png': 'dataurl' }
+   * For example, `{ '.png': 'dataurl' }`.
    *
    * @default - use esbuild default loaders
    */
@@ -83,7 +92,7 @@ export interface BundlingOptions {
    *
    * This can be useful if you need to do multiple builds of the same code with different settings.
    *
-   * @example { 'tsconfig': 'path/custom.tsconfig.json' }
+   * For example, `{ 'tsconfig': 'path/custom.tsconfig.json' }`.
    *
    * @default - automatically discovered by `esbuild`
    */
@@ -94,26 +103,25 @@ export interface BundlingOptions {
    *
    * The metadata in this JSON file follows this schema (specified using TypeScript syntax):
    *
-   * ```typescript
-   *  {
-   *     outputs: {
-   *          [path: string]: {
-   *            bytes: number
-   *            inputs: {
-   *              [path: string]: { bytesInOutput: number }
-   *            }
-   *            imports: { path: string }[]
-   *            exports: string[]
-   *          }
-   *        }
+   * ```text
+   * {
+   *   outputs: {
+   *     [path: string]: {
+   *       bytes: number
+   *       inputs: {
+   *         [path: string]: { bytesInOutput: number }
+   *       }
+   *       imports: { path: string }[]
+   *       exports: string[]
    *     }
+   *   }
    * }
    * ```
    * This data can then be analyzed by other tools. For example,
    * bundle buddy can consume esbuild's metadata format and generates a treemap visualization
    * of the modules in your bundle and how much space each one takes up.
    * @see https://esbuild.github.io/api/#metafile
-   * @default - false
+   * @default false
    */
   readonly metafile?: boolean
 
@@ -124,7 +132,7 @@ export interface BundlingOptions {
    *
    * This is commonly used to insert comments:
    *
-   * @default -  no comments are passed
+   * @default - no comments are passed
    */
   readonly banner? : string
 
@@ -135,9 +143,22 @@ export interface BundlingOptions {
    *
    * This is commonly used to insert comments
    *
-   * @default -  no comments are passed
+   * @default - no comments are passed
    */
   readonly footer? : string
+
+  /**
+   * The charset to use for esbuild's output.
+   *
+   * By default esbuild's output is ASCII-only. Any non-ASCII characters are escaped
+   * using backslash escape sequences. Using escape sequences makes the generated output
+   * slightly bigger, and also makes it harder to read. If you would like for esbuild to print
+   * the original characters without using escape sequences, use `Charset.UTF8`.
+   *
+   * @see https://esbuild.github.io/api/#charset
+   * @default Charset.ASCII
+   */
+  readonly charset?: Charset;
 
   /**
    * Environment variables defined when bundling runs.
@@ -149,8 +170,9 @@ export interface BundlingOptions {
   /**
    * Replace global identifiers with constant expressions.
    *
-   * @example { 'process.env.DEBUG': 'true' }
-   * @example { 'process.env.API_KEY': JSON.stringify('xxx-xxxx-xxx') }
+   * For example, `{ 'process.env.DEBUG': 'true' }`.
+   *
+   * Another example, `{ 'process.env.API_KEY': JSON.stringify('xxx-xxxx-xxx') }`.
    *
    * @default - no replacements are made
    */
@@ -198,6 +220,16 @@ export interface BundlingOptions {
   readonly forceDockerBundling?: boolean;
 
   /**
+  * Run compilation using tsc before running file through bundling step.
+  * This usually is not required unless you are using new experimental features that
+  * are only supported by typescript's `tsc` compiler.
+  * One example of such feature is `emitDecoratorMetadata`.
+  *
+  * @default false
+  */
+  readonly preCompilation?: boolean
+
+  /**
    * A custom bundling Docker image.
    *
    * This image should have esbuild installed globally. If you plan to use `nodeModules`
@@ -216,6 +248,21 @@ export interface BundlingOptions {
    * @default - do not run additional commands
    */
   readonly commandHooks?: ICommandHooks;
+
+  /**
+   * Specify a custom hash for this asset. For consistency, this custom hash will
+   * be SHA256 hashed and encoded as hex. The resulting hash will be the asset
+   * hash.
+   *
+   * NOTE: the hash is used in order to identify a specific revision of the asset, and
+   * used for optimizing and caching deployment activities related to this asset such as
+   * packaging, uploading to Amazon S3, etc. If you chose to customize the hash, you will
+   * need to make sure it is updated every time the asset changes, or otherwise it is
+   * possible that some deployments will not be invalidated.
+   *
+   * @default - asset hash is calculated based on the bundled output
+   */
+  readonly assetHash?: string;
 }
 
 /**
@@ -226,15 +273,14 @@ export interface BundlingOptions {
  *
  * Commands are chained with `&&`.
  *
- * @example
- * {
- *   // Copy a file from the input directory to the output directory
- *   // to include it in the bundled asset
- *   afterBundling(inputDir: string, outputDir: string): string[] {
- *     return [`cp ${inputDir}/my-binary.node ${outputDir}`];
- *   }
- *   // ...
+ * The following example (specified in TypeScript) copies a file from the input
+ * directory to the output directory to include it in the bundled asset:
+ *
+ * ```text
+ * afterBundling(inputDir: string, outputDir: string): string[]{
+ *   return [`cp ${inputDir}/my-binary.node ${outputDir}`];
  * }
+ * ```
  */
 export interface ICommandHooks {
   /**
@@ -299,4 +345,23 @@ export enum SourceMapMode {
    * Both sourceMap mode - If you want to have the effect of both inline and external simultaneously
    */
   BOTH = 'both'
+}
+
+/**
+ * Charset for esbuild's output
+ */
+export enum Charset {
+  /**
+   * ASCII
+   *
+   * Any non-ASCII characters are escaped using backslash escape sequences
+   */
+  ASCII = 'ascii',
+
+  /**
+   * UTF-8
+   *
+   * Keep original characters without using escape sequences
+   */
+  UTF8 = 'utf8'
 }
