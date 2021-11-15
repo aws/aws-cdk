@@ -11,6 +11,17 @@ import { ServiceDescription } from './service-description';
 import { Construct } from '@aws-cdk/core';
 
 /**
+ * connectToProps will have all the extra parameters which are required for connecting services.
+ */
+export interface connectToProps {
+  /**
+   * local_bind_port is the local port that this application should
+   * use when calling the upstream service in ECS Consul Mesh Extension
+   */
+  readonly local_bind_port?: number;
+}
+
+/**
  * The settings for an ECS Service.
  */
 export interface ServiceProps {
@@ -313,10 +324,10 @@ export class Service extends Construct {
    *
    * @param service
    */
-  public connectTo(service: Service) {
+  public connectTo(service: Service, connectToProps: connectToProps = {}) {
     for (const extensions in this.serviceDescription.extensions) {
       if (this.serviceDescription.extensions[extensions]) {
-        this.serviceDescription.extensions[extensions].connectToService(service);
+        this.serviceDescription.extensions[extensions].connectToService(service, connectToProps);
       }
     }
   }
