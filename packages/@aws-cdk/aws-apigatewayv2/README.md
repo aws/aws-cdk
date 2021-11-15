@@ -191,6 +191,8 @@ const domainName = 'example.com';
 const dn = new apigwv2.DomainName(this, 'DN', {
   domainName,
   certificate: acm.Certificate.fromCertificateArn(this, 'cert', certArn),
+  endpointType: EndpointType.REGIONAL,
+  securityPolicy: SecurityPolicy.TLS_1_2,
 });
 
 declare const handler: lambda.Function;
@@ -203,6 +205,14 @@ const api = new apigwv2.HttpApi(this, 'HttpProxyProdApi', {
   },
 });
 ```
+
+The properties certificate, endpointType, securityPolicy, certificateName, and ownershipVerificationCertificate are mapped in CFN to a DomainNameConfiguration.
+See [DomainNameConfiguration](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apigatewayv2-domainname-domainnameconfiguration.html)
+for more details.
+You need only one DomainNameConfiguration, unless you're migrating from one endpoint type to another. To migrate to a new endpoint type,
+you add a new domain name configuration via `addDomainNameConfiguration` and then configure DNS records to route traffic to the new endpoint.
+After that, you can remove the previous DomainNameConfiguration. 
+Learn more at [Migrating a custom domain name](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-regional-api-custom-domain-migrate.html)
 
 To associate a specific `Stage` to a custom domain mapping -
 

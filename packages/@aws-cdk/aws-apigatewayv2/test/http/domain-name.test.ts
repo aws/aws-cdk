@@ -2,10 +2,12 @@ import { Template } from '@aws-cdk/assertions';
 import { Certificate } from '@aws-cdk/aws-certificatemanager';
 import { Bucket } from '@aws-cdk/aws-s3';
 import { Stack } from '@aws-cdk/core';
-import { DomainName, HttpApi } from '../../lib';
+import { DomainName, EndpointType, HttpApi, SecurityPolicy } from '../../lib';
 
 const domainName = 'example.com';
 const certArn = 'arn:aws:acm:us-east-1:111111111111:certificate';
+const certArn2 = 'arn:aws:acm:us-east-1:111111111111:certificate2';
+const ownershipCertArn = 'arn:aws:acm:us-east-1:111111111111:ownershipcertificate';
 
 describe('DomainName', () => {
   test('create domain name correctly', () => {
@@ -16,6 +18,7 @@ describe('DomainName', () => {
     new DomainName(stack, 'DomainName', {
       domainName,
       certificate: Certificate.fromCertificateArn(stack, 'cert', certArn),
+      endpointType: EndpointType.REGIONAL,
     });
 
     // THEN
@@ -53,6 +56,7 @@ describe('DomainName', () => {
     const dn = new DomainName(stack, 'DomainName', {
       domainName,
       certificate: Certificate.fromCertificateArn(stack, 'cert', certArn),
+      endpointType: EndpointType.REGIONAL,
     });
 
     // WHEN
@@ -79,6 +83,7 @@ describe('DomainName', () => {
     const dn = new DomainName(stack, 'DN', {
       domainName,
       certificate: Certificate.fromCertificateArn(stack, 'cert', certArn),
+      endpointType: EndpointType.REGIONAL,
     });
 
     api.addStage('beta', {
@@ -117,6 +122,7 @@ describe('DomainName', () => {
     const dn = new DomainName(stack, 'DN', {
       domainName,
       certificate: Certificate.fromCertificateArn(stack, 'cert', certArn),
+      endpointType: EndpointType.REGIONAL,
     });
 
     // WHEN
@@ -155,6 +161,7 @@ describe('DomainName', () => {
     const dn = new DomainName(stack, 'DN', {
       domainName,
       certificate: Certificate.fromCertificateArn(stack, 'cert', certArn),
+      endpointType: EndpointType.REGIONAL,
     });
     const t = () => {
       new HttpApi(stack, 'Api', {
@@ -179,6 +186,7 @@ describe('DomainName', () => {
     new DomainName(stack, 'DomainName', {
       domainName,
       certificate: Certificate.fromCertificateArn(stack, 'cert', certArn),
+      endpointType: EndpointType.REGIONAL,
       mtls: {
         bucket,
         key: 'someca.pem',
@@ -209,6 +217,7 @@ describe('DomainName', () => {
     new DomainName(stack, 'DomainName', {
       domainName,
       certificate: Certificate.fromCertificateArn(stack, 'cert', certArn),
+      endpointType: EndpointType.REGIONAL,
       mtls: {
         bucket,
         key: 'someca.pem',
@@ -229,6 +238,75 @@ describe('DomainName', () => {
         TruststoreUri: 's3://example-bucket/someca.pem',
         TruststoreVersion: 'version',
       },
+    });
+  });
+
+  test('domain with mutual tls configuration and ownership cert', () => {
+    // GIVEN
+    const stack = new Stack();
+    const bucket = Bucket.fromBucketName(stack, 'testBucket', 'example-bucket');
+
+    // WHEN
+    new DomainName(stack, 'DomainName', {
+      domainName,
+      certificate: Certificate.fromCertificateArn(stack, 'cert2', certArn2),
+      ownershipVerificationCertificate: Certificate.fromCertificateArn(stack, 'ownershipCert', ownershipCertArn),
+      endpointType: EndpointType.REGIONAL,
+      securityPolicy: SecurityPolicy.TLS_1_2,
+      mtls: {
+        bucket,
+        key: 'someca.pem',
+        version: 'version',
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::DomainName', {
+      DomainName: 'example.com',
+      DomainNameConfigurations: [
+        {
+          CertificateArn: 'arn:aws:acm:us-east-1:111111111111:certificate2',
+          EndpointType: 'REGIONAL',
+          SecurityPolicy: 'TLS_1_2',
+          OwnershipVerificationCertificateArn: 'arn:aws:acm:us-east-1:111111111111:ownershipcertificate',
+        },
+      ],
+      MutualTlsAuthentication: {
+        TruststoreUri: 's3://example-bucket/someca.pem',
+        TruststoreVersion: 'version',
+      },
+    });
+  });
+
+  test('add new configuration to a domain name for migration', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const dn = new DomainName(stack, 'DomainName', {
+      domainName,
+      certificate: Certificate.fromCertificateArn(stack, 'cert', certArn),
+      endpointType: EndpointType.REGIONAL,
+    });
+    dn.addDomainNameConfiguration({
+      domainName,
+      certificate: Certificate.fromCertificateArn(stack, 'cert2', certArn2),
+      endpointType: EndpointType.EDGE,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::DomainName', {
+      DomainName: 'example.com',
+      DomainNameConfigurations: [
+        {
+          CertificateArn: 'arn:aws:acm:us-east-1:111111111111:certificate',
+          EndpointType: 'REGIONAL',
+        },
+        {
+          CertificateArn: 'arn:aws:acm:us-east-1:111111111111:certificate2',
+          EndpointType: 'EDGE',
+        },
+      ],
     });
   });
 });
