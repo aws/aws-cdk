@@ -17,6 +17,8 @@ export interface connectToProps {
   /**
    * local_bind_port is the local port that this application should
    * use when calling the upstream service in ECS Consul Mesh Extension
+   * Currently, this parameter will only be used in the ECSConsulMeshExtension
+   * https://github.com/aws-ia/ecs-consul-mesh-extension
    */
   readonly local_bind_port?: number;
 }
