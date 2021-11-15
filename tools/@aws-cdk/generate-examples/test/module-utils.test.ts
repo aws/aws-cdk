@@ -77,9 +77,13 @@ describe('v2 names are correct: ', () => {
     const { ts, assembly } = await v2BuildAssemblyHelper(mod);
 
     // THEN
-    const { importName, moduleName } = module(ts.findClass(`${mod}.aws_elasticloadbalancingv2.ClassB`));
-    expect(importName).toEqual('elbv2');
-    expect(moduleName).toEqual(mod);
+    expect(module(
+      ts.findClass('aws-cdk-lib.aws_elasticloadbalancingv2.ClassB'),
+    )).toEqual({
+      moduleName: 'aws-cdk-lib',
+      submoduleName: 'aws_elasticloadbalancingv2',
+      importName: 'elbv2',
+    });
 
     await assembly.cleanup();
   });
@@ -90,9 +94,11 @@ describe('v2 names are correct: ', () => {
     const { ts, assembly } = await v2BuildAssemblyHelper(mod);
 
     // THEN
-    const { importName, moduleName } = module(ts.findClass(`${mod}.aws_s3.ClassB`));
-    expect(importName).toEqual('s3');
-    expect(moduleName).toEqual(mod);
+    expect(module(ts.findClass('aws-cdk-lib.aws_s3.ClassB'))).toEqual({
+      moduleName: 'aws-cdk-lib',
+      submoduleName: 'aws_s3',
+      importName: 's3',
+    });
 
     await assembly.cleanup();
   });
@@ -103,9 +109,11 @@ describe('v2 names are correct: ', () => {
     const { ts, assembly } = await v2BuildAssemblyHelper(mod);
 
     // THEN
-    const { importName, moduleName } = module(ts.findClass(`${mod}.pipelines.ClassB`));
-    expect(importName).toEqual('pipelines');
-    expect(moduleName).toEqual(mod);
+    expect(module(ts.findClass('aws-cdk-lib.pipelines.ClassB'))).toEqual({
+      moduleName: 'aws-cdk-lib',
+      submoduleName: 'pipelines',
+      importName: 'pipelines',
+    });
 
     await assembly.cleanup();
   });
@@ -130,11 +138,11 @@ async function v1BuildAssemblyHelper(name: string) {
 }
 
 async function v2BuildAssemblyHelper(name: string) {
-  const submodule = name.split('/')[1] ?? 'submodule';
+  const [assemblyName, submoduleName] = name.split('/');
   const assembly = await AssemblyFixture.fromSource(
     {
       'index.ts': `
-      export * as ${submodule} from "./submod";
+      export * as ${submoduleName ?? 'dummy'} from "./submod";
       export class ClassA { }
       `,
       'submod.ts': `
@@ -142,7 +150,7 @@ async function v2BuildAssemblyHelper(name: string) {
       `,
     },
     {
-      name,
+      name: assemblyName,
       jsii: DUMMY_ASSEMBLY_TARGETS,
     },
   );

@@ -239,7 +239,16 @@ test(
 
 test('rendering types in namespaces', expectedDocTest({
   sources: {
-    'index.ts': `export namespace spacename {
+    // This merges a class and a namespace (making the struct appear
+    // namespaced inside the class -- we do this for L1 structs)
+    'index.ts': `
+      export class SomeClass {
+        constructor(props: SomeClass.SomeStruct) {
+          Array.isArray(props);
+        }
+      }
+
+      export namespace SomeClass {
         export interface SomeStruct {
           readonly someEnum: MyEnum;
         }
@@ -250,12 +259,35 @@ test('rendering types in namespaces', expectedDocTest({
       }
     `,
   },
-  typeName: 'spacename.SomeStruct',
+  typeName: 'SomeClass.SomeStruct',
   expected: [
     'import * as my_assembly from \'my_assembly\';',
     '',
-    'const someStruct: my_assembly.spacename.SomeStruct = {',
-    '  someEnum: my_assembly.spacename.MyEnum.VALUE1,',
+    'const someStruct: my_assembly.SomeClass.SomeStruct = {',
+    '  someEnum: my_assembly.SomeClass.MyEnum.VALUE1,',
+    '};',
+  ],
+}));
+
+test('rendering types in submodules', expectedDocTest({
+  sources: {
+    'index.ts': 'export * as sub from \'./other\';',
+    'other.ts': `
+      export interface SomeStruct {
+        readonly someEnum: MyEnum;
+      }
+      export enum MyEnum {
+        VALUE1 = 1,
+        VALUE2 = 2,
+      }
+    `,
+  },
+  typeName: 'sub.SomeStruct',
+  expected: [
+    'import { sub } from \'my_assembly\';',
+    '',
+    'const someStruct: sub.SomeStruct = {',
+    '  someEnum: sub.MyEnum.VALUE1,',
     '};',
   ],
 }));
@@ -280,8 +312,6 @@ function expectedDocTest(testParams: DocTest) {
       await ts.load(assembly.directory);
 
       const type = ts.findFqn(`my_assembly.${testParams.typeName}`);
-      // eslint-disable-next-line no-console
-      console.log(type.spec);
       if (!type.isClassType() && !type.isInterfaceType()) {
         throw new Error('Expecting class or interface');
       }

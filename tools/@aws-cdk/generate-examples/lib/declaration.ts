@@ -15,15 +15,17 @@ export abstract class Declaration {
 export class Import extends Declaration {
   public readonly importName: string;
   public readonly moduleName: string;
+  public readonly submoduleName?: string;
   public readonly type: reflect.Type;
 
   public constructor(type: reflect.Type) {
-    const { importName, moduleName } = module(type);
+    const { importName, moduleName, submoduleName } = module(type);
 
     super([0, moduleName]);
 
     this.importName = importName;
     this.moduleName = moduleName;
+    this.submoduleName = submoduleName;
     this.type = type;
   }
 
@@ -32,7 +34,15 @@ export class Import extends Declaration {
   }
 
   public render(): string {
-    return `import * as ${this.importName} from '${this.moduleName}';`;
+    let what;
+    if (!this.submoduleName) {
+      what = `* as ${this.importName}`;
+    } else if (this.submoduleName === this.importName) {
+      what = `{ ${this.importName} }`;
+    } else {
+      what = `{ ${this.submoduleName} as ${this.importName} }`;
+    }
+    return `import ${what} from '${this.moduleName}';`;
   }
 }
 

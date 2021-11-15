@@ -14,14 +14,15 @@ const SPECIAL_PACKAGE_ROOT_IMPORT_NAMES: Record<string, string> = {
 };
 
 const SPECIAL_NAMESPACE_IMPORT_NAMES: Record<string, string> = {
-  aws_applicationautoscaling: 'appscaling',
-  aws_elasticloadbalancing: 'elb',
-  aws_elasticloadbalancingv2: 'elbv2',
+  'aws-cdk-lib.aws_applicationautoscaling': 'appscaling',
+  'aws-cdk-lib.aws_elasticloadbalancing': 'elb',
+  'aws-cdk-lib.aws_elasticloadbalancingv2': 'elbv2',
 };
 
 interface ImportedModule {
   readonly importName: string;
   readonly moduleName: string;
+  readonly submoduleName?: string;
 }
 
 /**
@@ -30,38 +31,38 @@ interface ImportedModule {
  * for parsing the type for module information.
  */
 export function module(type: reflect.Type): ImportedModule {
-  if (type.assembly.name.startsWith('aws-cdk-lib')) {
-    if (type.namespace) {
-      const parts = type.namespace.split('_');
-      const namespacedPart = SPECIAL_NAMESPACE_IMPORT_NAMES[type.namespace] ?? parts[1] ?? parts[0];
-      return {
-        importName: escapeIdentifier(namespacedPart.replace(/^aws_/g, '').replace(/[^a-z0-9_]/g, '_')),
-        moduleName: type.assembly.name,
-      };
-    }
-    // if there is no namespace in v2, we are in the root module
+  const parts = analyzeTypeName(type);
+
+  if (parts.submoduleNameParts.length > 0) {
+    const specialNameKey = [parts.assemblyName, ...parts.submoduleNameParts].join('.');
+
+    const importName = SPECIAL_NAMESPACE_IMPORT_NAMES[specialNameKey] ?? parts.submoduleNameParts.join('.');
     return {
-      importName: 'cdk',
-      moduleName: 'aws-cdk-lib',
-    };
-  } else {
-    const parts = type.assembly.name.split('/');
-    const nonNamespacedPart = SPECIAL_PACKAGE_ROOT_IMPORT_NAMES[type.assembly.name] ?? parts[1] ?? parts[0];
-    return {
-      importName: escapeIdentifier(nonNamespacedPart.replace(/^aws-/g, '').replace(/[^a-z0-9_]/g, '_')),
-      moduleName: type.assembly.name,
+      importName: escapeIdentifier(importName.replace(/^aws_/g, '').replace(/[^a-z0-9_]/g, '_')),
+      moduleName: parts.assemblyName,
+      submoduleName: parts.submoduleNameParts.join('.'),
     };
   }
+
+  // Split '@aws-cdk/aws-s3' into ['@aws-cdk', 'aws-s3']
+  const slashParts = type.assembly.name.split('/');
+  const nonNamespacedPart = SPECIAL_PACKAGE_ROOT_IMPORT_NAMES[parts.assemblyName] ?? slashParts[1] ?? slashParts[0];
+  return {
+    importName: escapeIdentifier(nonNamespacedPart.replace(/^aws-/g, '').replace(/[^a-z0-9_]/g, '_')),
+    moduleName: type.assembly.name,
+  };
 }
 
 /**
  * Namespaced name inside a module
  */
 export function typeNamespacedName(type: reflect.Type): string {
+  const parts = analyzeTypeName(type);
+
   return [
-    type.namespace,
-    type.name,
-  ].filter((x) => x).join('.');
+    ...parts.namespaceNameParts,
+    parts.simpleName,
+  ].join('.');
 }
 
 const KEYWORDS = ['function', 'default'];
@@ -80,4 +81,35 @@ export function typeReference(type: reflect.Type) {
     moduleReference(type),
     '.',
     typeNamespacedName(type));
+}
+
+/**
+ * A type name consists of 4 parts which are all treated differently
+ */
+interface TypeNameParts {
+  readonly assemblyName: string;
+  readonly submoduleNameParts: string[];
+  readonly namespaceNameParts: string[];
+  readonly simpleName: string;
+}
+
+function analyzeTypeName(type: reflect.Type): TypeNameParts {
+  // Need to divide the namespace into submodule and non-submodule
+
+  // For type 'asm.b.c.d.Type' contains ['asm', 'b', 'c', 'd']
+  const nsParts = type.fqn.split('.').slice(0, -1);
+
+  const moduleFqns = new Set(type.assembly.allSubmodules.map((s) => s.fqn));
+
+  let split = nsParts.length;
+  while (split > 1 && !moduleFqns.has(nsParts.slice(0, split).join('.'))) {
+    split--;
+  }
+
+  return {
+    assemblyName: type.assembly.name,
+    submoduleNameParts: nsParts.slice(1, split),
+    namespaceNameParts: nsParts.slice(split, nsParts.length),
+    simpleName: type.name,
+  };
 }
