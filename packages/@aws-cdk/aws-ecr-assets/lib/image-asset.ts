@@ -151,6 +151,7 @@ export class DockerImageAsset extends CoreConstruct implements IAsset {
    * The path to the asset, relative to the current Cloud Assembly
    *
    * If asset staging is disabled, this will just be the original path.
+   *
    * If asset staging is enabled it will be the staged path.
    */
   private readonly assetPath: string;
