@@ -331,7 +331,8 @@ new cognito.UserPool(this, 'myuserpool', {
 });
 ```
 
-For production applications it is recommended to configure the UserPool to send emails through Amazon SES. To do
+For typical production environments, the default email limit is below the required delivery volume.
+To enable a higher delivery volume, you can configure the UserPool to send emails through Amazon SES. To do
 so, follow the steps in the [Cognito Developer Guide](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-email.html#user-pool-email-developer)
 to verify an email address, move the account out of the SES sandbox, and grant Cognito email permissions via an
 authorization policy.
@@ -348,7 +349,7 @@ new cognito.UserPool(this, 'myuserpool', {
 });
 ```
 
-Sending emails through SES requires that SES be configured in either `us-east-1`, `us-west-1`, or `eu-west-1`.
+Sending emails through SES requires that SES be configured (as described above) in one of the regions - `us-east-1`, `us-west-1`, or `eu-west-1`.
 If the UserPool is being created in a different region, `sesRegion` must be used to specify the correct SES region.
 
 ```ts

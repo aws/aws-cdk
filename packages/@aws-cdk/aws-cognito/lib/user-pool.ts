@@ -800,7 +800,7 @@ export class UserPool extends UserPoolBase {
     if (props.email && props.emailSettings) {
       throw new Error('you must either provide "email" or "emailSettings", but not both');
     }
-    const emailConfiguration = props.email ? props.email.bind(this) : undefinedIfNoKeys({
+    const emailConfiguration = props.email ? props.email._bind(this) : undefinedIfNoKeys({
       from: encodePuny(props.emailSettings?.from),
       replyToEmailAddress: encodePuny(props.emailSettings?.replyTo),
     });

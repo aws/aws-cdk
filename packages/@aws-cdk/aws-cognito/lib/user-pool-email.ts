@@ -64,9 +64,9 @@ export interface UserPoolSESOptions {
 }
 
 /**
- * Configuration for Cognito email settings
+ * Result of binding email settings with a user pool
  */
-export interface UserPoolEmailConfig {
+interface UserPoolEmailConfig {
   /**
    * The name of the configuration set in SES.
    *
@@ -132,8 +132,9 @@ export abstract class UserPoolEmail {
   /**
    * Returns the email configuration for a Cognito UserPool
    * that controls how Cognito will send emails
+   * @internal
    */
-  public abstract bind(scope: Construct): UserPoolEmailConfig;
+  public abstract _bind(scope: Construct): UserPoolEmailConfig;
 
 }
 
@@ -142,7 +143,7 @@ class CognitoEmail extends UserPoolEmail {
     super();
   }
 
-  public bind(_scope: Construct): UserPoolEmailConfig {
+  public _bind(_scope: Construct): UserPoolEmailConfig {
     return {
       replyToEmailAddress: encodeAndTest(this.replyTo),
       emailSendingAccount: 'COGNITO_DEFAULT',
@@ -156,7 +157,7 @@ class SESEmail extends UserPoolEmail {
     super();
   }
 
-  public bind(scope: Construct): UserPoolEmailConfig {
+  public _bind(scope: Construct): UserPoolEmailConfig {
     const region = Stack.of(scope).region;
 
     if (Token.isUnresolved(region) && !this.options.sesRegion) {
