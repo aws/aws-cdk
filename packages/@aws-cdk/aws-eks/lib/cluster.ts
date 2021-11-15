@@ -404,11 +404,7 @@ export interface CommonClusterOptions {
    *
    * For example, to only select private subnets, supply the following:
    *
-   * ```ts
-   * vpcSubnets: [
-   *   { subnetType: ec2.SubnetType.Private }
-   * ]
-   * ```
+   * `vpcSubnets: [{ subnetType: ec2.SubnetType.PRIVATE }]`
    *
    * @default - All public and private subnets
    */
@@ -520,9 +516,9 @@ export interface ClusterOptions extends CommonClusterOptions {
    *
    * ```ts
    * const layer = new lambda.LayerVersion(this, 'kubectl-layer', {
-   *   code: lambda.Code.fromAsset(`${__dirname}/layer.zip`)),
-   *   compatibleRuntimes: [lambda.Runtime.PROVIDED]
-   * })
+   *   code: lambda.Code.fromAsset(`${__dirname}/layer.zip`),
+   *   compatibleRuntimes: [lambda.Runtime.PROVIDED],
+   * });
    * ```
    *
    * @default - the layer provided by the `aws-lambda-layer-kubectl` SAR app.
@@ -566,9 +562,9 @@ export interface ClusterOptions extends CommonClusterOptions {
    *
    * ```ts
    * const layer = new lambda.LayerVersion(this, 'proxy-agent-layer', {
-   *   code: lambda.Code.fromAsset(`${__dirname}/layer.zip`)),
-   *   compatibleRuntimes: [lambda.Runtime.NODEJS_12_X]
-   * })
+   *   code: lambda.Code.fromAsset(`${__dirname}/layer.zip`),
+   *   compatibleRuntimes: [lambda.Runtime.NODEJS_12_X],
+   * });
    * ```
    *
    * @default - a layer bundled with this module.
@@ -1054,7 +1050,7 @@ export class Cluster extends ClusterBase {
   /**
    * The AWS generated ARN for the Cluster resource
    *
-   * @example arn:aws:eks:us-west-2:666666666666:cluster/prod
+   * For example, `arn:aws:eks:us-west-2:666666666666:cluster/prod`
    */
   public readonly clusterArn: string;
 
@@ -1063,7 +1059,7 @@ export class Cluster extends ClusterBase {
    *
    * This is the URL inside the kubeconfig file to use with kubectl
    *
-   * @example https://5E1D0CEXAMPLEA591B746AFC5AB30262.yl4.us-west-2.eks.amazonaws.com
+   * For example, `https://5E1D0CEXAMPLEA591B746AFC5AB30262.yl4.us-west-2.eks.amazonaws.com`
    */
   public readonly clusterEndpoint: string;
 
@@ -1853,7 +1849,8 @@ export interface BootstrapOptions {
   /**
    * Extra arguments to add to the kubelet. Useful for adding labels or taints.
    *
-   * @example --node-labels foo=bar,goo=far
+   * For example, `--node-labels foo=bar,goo=far`.
+   *
    * @default - none
    */
   readonly kubeletExtraArgs?: string;
