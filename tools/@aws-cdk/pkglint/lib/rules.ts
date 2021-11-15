@@ -1131,7 +1131,11 @@ export class MustHaveNodeEnginesDeclaration extends ValidationRule {
   public readonly name = 'package-info/engines';
 
   public validate(pkg: PackageJson): void {
-    expectJSON(this.name, pkg, 'engines.node', '>= 10.13.0 <13 || >=13.7.0');
+    if (cdkMajorVersion() === 2) {
+      expectJSON(this.name, pkg, 'engines.node', '>= 14.15.0');
+    } else {
+      expectJSON(this.name, pkg, 'engines.node', '>= 10.13.0 <13 || >=13.7.0');
+    }
   }
 }
 
@@ -1651,6 +1655,7 @@ export class NoExperimentalDependents extends ValidationRule {
     ['@aws-cdk/aws-apigatewayv2-authorizers', ['@aws-cdk/aws-apigatewayv2']],
     ['@aws-cdk/aws-events-targets', ['@aws-cdk/aws-kinesisfirehose']],
     ['@aws-cdk/aws-kinesisfirehose-destinations', ['@aws-cdk/aws-kinesisfirehose']],
+    ['@aws-cdk/aws-iot-actions', ['@aws-cdk/aws-iot', '@aws-cdk/aws-kinesisfirehose']],
   ]);
 
   private readonly excludedModules = ['@aws-cdk/cloudformation-include'];

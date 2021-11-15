@@ -467,9 +467,9 @@ export class Secret extends SecretBase {
       replicaRegions: Lazy.any({ produce: () => this.replicaRegions }, { omitEmptyArray: true }),
     });
 
-    if (props.removalPolicy) {
-      resource.applyRemovalPolicy(props.removalPolicy);
-    }
+    resource.applyRemovalPolicy(props.removalPolicy, {
+      default: RemovalPolicy.DESTROY,
+    });
 
     this.secretArn = this.getResourceArnAttribute(resource.ref, {
       service: 'secretsmanager',

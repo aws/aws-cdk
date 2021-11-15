@@ -580,6 +580,41 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
     },
+    "customkmskey377C6F9A": {
+      "Type": "AWS::KMS::Key",
+      "Properties": {
+        "KeyPolicy": {
+          "Statement": [
+            {
+              "Action": "kms:*",
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":iam::",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":root"
+                    ]
+                  ]
+                }
+              },
+              "Resource": "*"
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
     "ClusterSubnetsDCFA5CB7": {
       "Type": "AWS::Redshift::ClusterSubnetGroup",
       "Properties": {
@@ -680,6 +715,9 @@
           "Ref": "ClusterSubnetsDCFA5CB7"
         },
         "Encrypted": true,
+        "KmsKeyId": {
+          "Ref": "customkmskey377C6F9A"
+        },
         "NumberOfNodes": 2,
         "PubliclyAccessible": true,
         "VpcSecurityGroupIds": [
@@ -1129,7 +1167,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParameters7eb6a250bd5ce32c07f08f536377d71e59ad43e16e25b9aa6e50f6fc20fdfc4fS3Bucket3B967306"
+            "Ref": "AssetParameters85597bcd6a07abd4673fe02c7e92e21df5859eee0d831e9db67f4d2e74d4d066S3Bucket0B347C2E"
           },
           "S3Key": {
             "Fn::Join": [
@@ -1142,7 +1180,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameters7eb6a250bd5ce32c07f08f536377d71e59ad43e16e25b9aa6e50f6fc20fdfc4fS3VersionKeyC171429B"
+                          "Ref": "AssetParameters85597bcd6a07abd4673fe02c7e92e21df5859eee0d831e9db67f4d2e74d4d066S3VersionKey932D0479"
                         }
                       ]
                     }
@@ -1155,7 +1193,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameters7eb6a250bd5ce32c07f08f536377d71e59ad43e16e25b9aa6e50f6fc20fdfc4fS3VersionKeyC171429B"
+                          "Ref": "AssetParameters85597bcd6a07abd4673fe02c7e92e21df5859eee0d831e9db67f4d2e74d4d066S3VersionKey932D0479"
                         }
                       ]
                     }
@@ -1331,35 +1369,44 @@
         "databaseName": "my_db",
         "tableName": {
           "prefix": "awscdkredshiftclusterdatabaseTable24923533",
-          "generateSuffix": true
+          "generateSuffix": "true"
         },
         "tableColumns": [
           {
             "name": "col1",
-            "dataType": "varchar(4)"
+            "dataType": "varchar(4)",
+            "distKey": true
           },
           {
             "name": "col2",
-            "dataType": "float"
+            "dataType": "float",
+            "sortKey": true
+          },
+          {
+            "name": "col3",
+            "dataType": "float",
+            "sortKey": true
           }
-        ]
+        ],
+        "distStyle": "KEY",
+        "sortStyle": "INTERLEAVED"
       },
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
     }
   },
   "Parameters": {
-    "AssetParameters7eb6a250bd5ce32c07f08f536377d71e59ad43e16e25b9aa6e50f6fc20fdfc4fS3Bucket3B967306": {
+    "AssetParameters85597bcd6a07abd4673fe02c7e92e21df5859eee0d831e9db67f4d2e74d4d066S3Bucket0B347C2E": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"7eb6a250bd5ce32c07f08f536377d71e59ad43e16e25b9aa6e50f6fc20fdfc4f\""
+      "Description": "S3 bucket for asset \"85597bcd6a07abd4673fe02c7e92e21df5859eee0d831e9db67f4d2e74d4d066\""
     },
-    "AssetParameters7eb6a250bd5ce32c07f08f536377d71e59ad43e16e25b9aa6e50f6fc20fdfc4fS3VersionKeyC171429B": {
+    "AssetParameters85597bcd6a07abd4673fe02c7e92e21df5859eee0d831e9db67f4d2e74d4d066S3VersionKey932D0479": {
       "Type": "String",
-      "Description": "S3 key for asset version \"7eb6a250bd5ce32c07f08f536377d71e59ad43e16e25b9aa6e50f6fc20fdfc4f\""
+      "Description": "S3 key for asset version \"85597bcd6a07abd4673fe02c7e92e21df5859eee0d831e9db67f4d2e74d4d066\""
     },
-    "AssetParameters7eb6a250bd5ce32c07f08f536377d71e59ad43e16e25b9aa6e50f6fc20fdfc4fArtifactHash0EE8CD3D": {
+    "AssetParameters85597bcd6a07abd4673fe02c7e92e21df5859eee0d831e9db67f4d2e74d4d066ArtifactHash78689978": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"7eb6a250bd5ce32c07f08f536377d71e59ad43e16e25b9aa6e50f6fc20fdfc4f\""
+      "Description": "Artifact hash for asset \"85597bcd6a07abd4673fe02c7e92e21df5859eee0d831e9db67f4d2e74d4d066\""
     },
     "AssetParametersdaeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1S3BucketDC4B98B1": {
       "Type": "String",

@@ -36,7 +36,12 @@ describe('vpc', () => {
         const stack = getTestStack();
         const vpc = new Vpc(stack, 'TheVPC');
         expect(stack.resolve(vpc.vpcId)).toEqual({ Ref: 'TheVPC92636AB0' });
+      });
 
+      test('vpc.vpcArn returns a token to the VPC ID', () => {
+        const stack = getTestStack();
+        const vpc = new Vpc(stack, 'TheVPC');
+        expect(stack.resolve(vpc.vpcArn)).toEqual({ 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':ec2:us-east-1:123456789012:vpc/', { Ref: 'TheVPC92636AB0' }]] });
       });
 
       test('it uses the correct network range', () => {
@@ -361,7 +366,7 @@ describe('vpc', () => {
       }
 
     });
-    test('with custom subents and natGateways = 2 there should be only two NATGW', () => {
+    test('with custom subnets and natGateways = 2 there should be only two NATGW', () => {
       const stack = getTestStack();
       new Vpc(stack, 'TheVPC', {
         cidr: '10.0.0.0/21',
@@ -578,6 +583,31 @@ describe('vpc', () => {
         Value: 'ingress',
       }]));
 
+    });
+
+    test('EIP passed with NAT gateway does not create duplicate EIP', () => {
+      const stack = getTestStack();
+      new Vpc(stack, 'VPC', {
+        cidr: '10.0.0.0/16',
+        subnetConfiguration: [
+          {
+            cidrMask: 24,
+            name: 'ingress',
+            subnetType: SubnetType.PUBLIC,
+          },
+          {
+            cidrMask: 24,
+            name: 'application',
+            subnetType: SubnetType.PRIVATE_WITH_NAT,
+          },
+        ],
+        natGatewayProvider: NatProvider.gateway({ eipAllocationIds: ['b'] }),
+        natGateways: 1,
+      });
+      expect(stack).toCountResources('AWS::EC2::EIP', 0);
+      expect(stack).toHaveResource('AWS::EC2::NatGateway', {
+        AllocationId: 'b',
+      });
     });
 
     test('with mis-matched nat and subnet configs it throws', () => {
