@@ -467,6 +467,16 @@ export enum InstanceClass {
   G4DN = 'g4dn',
 
   /**
+   * Graphics-optimized instances, 5th generation
+   */
+  GRAPHICS5 = 'g5',
+
+  /**
+   * Graphics-optimized instances, 5th generation
+   */
+  G5 = 'g5',
+
+  /**
    * Parallel-processing optimized instances, 2nd generation
    */
   PARALLEL2 = 'p2',
@@ -665,6 +675,11 @@ export enum InstanceSize {
    * Instance size XLARGE32 (32xlarge)
    */
   XLARGE32 = '32xlarge',
+
+  /**
+   * Instance size XLARGE48 (48xlarge)
+   */
+  XLARGE48 = '48xlarge',
 
   /**
    * Instance size METAL (metal)
