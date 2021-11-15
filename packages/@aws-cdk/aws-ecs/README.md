@@ -427,6 +427,25 @@ The task execution role is automatically granted read permissions on the secrets
 files is restricted to the EC2 launch type for files hosted on S3. Further details provided in the AWS documentation
 about [specifying environment variables](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/taskdef-envfiles.html).
 
+### System controls
+
+To set system controls (kernel parameters) on the container, use the `systemControls` prop:
+
+```ts
+declare const taskDefinition: ecs.TaskDefinition;
+
+taskDefinition.addContainer('container', {
+  image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+  memoryLimitMiB: 1024,
+  systemControls: [
+    {
+      namespace: 'net',
+      value: 'ipv4.tcp_tw_recycle',
+    },
+  ],
+});
+```
+
 ## Service
 
 A `Service` instantiates a `TaskDefinition` on a `Cluster` a given number of

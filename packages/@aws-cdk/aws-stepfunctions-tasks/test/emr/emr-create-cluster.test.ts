@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
@@ -605,7 +605,7 @@ test('Create Cluster without Roles', () => {
     },
   });
 
-  expect(stack).toHaveResourceLike('AWS::IAM::Role', {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
     AssumeRolePolicyDocument: {
       Version: '2012-10-17',
       Statement: [
@@ -620,7 +620,7 @@ test('Create Cluster without Roles', () => {
 
   // The stack renders the ec2.amazonaws.com Service principal id with a
   // Join to the URLSuffix
-  expect(stack).toHaveResourceLike('AWS::IAM::Role', {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
     AssumeRolePolicyDocument: {
       Version: '2012-10-17',
       Statement: [
@@ -646,7 +646,7 @@ test('Create Cluster without Roles', () => {
     },
   });
 
-  expect(stack).toHaveResourceLike('AWS::IAM::Role', {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
     AssumeRolePolicyDocument: {
       Version: '2012-10-17',
       Statement: [
@@ -859,58 +859,6 @@ test('Create Cluster with InstanceFleet with allocation strategy=capacity-optimi
       },
       ServiceRole: {
         Ref: 'ServiceRole4288B192',
-      },
-    },
-  });
-});
-
-test('Create Cluster with AutoTerminationPolicy', () => {
-  // WHEN
-  const task = new EmrCreateCluster(stack, 'Task', {
-    instances: {},
-    clusterRole,
-    name: 'Cluster',
-    serviceRole,
-    autoScalingRole,
-    autoTerminationPolicy: {
-      idleTimeout: cdk.Duration.seconds(120),
-    },
-    integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
-  });
-
-  // THEN
-  expect(stack.resolve(task.toStateJson())).toEqual({
-    Type: 'Task',
-    Resource: {
-      'Fn::Join': [
-        '',
-        [
-          'arn:',
-          {
-            Ref: 'AWS::Partition',
-          },
-          ':states:::elasticmapreduce:createCluster',
-        ],
-      ],
-    },
-    End: true,
-    Parameters: {
-      Name: 'Cluster',
-      Instances: {
-        KeepJobFlowAliveWhenNoSteps: true,
-      },
-      VisibleToAllUsers: true,
-      JobFlowRole: {
-        Ref: 'ClusterRoleD9CA7471',
-      },
-      ServiceRole: {
-        Ref: 'ServiceRole4288B192',
-      },
-      AutoScalingRole: {
-        Ref: 'AutoScalingRole015ADA0A',
-      },
-      AutoTerminationPolicy: {
-        IdleTimeout: 120,
       },
     },
   });
