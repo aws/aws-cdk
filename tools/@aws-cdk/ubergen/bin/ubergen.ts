@@ -14,11 +14,10 @@ async function main() {
   console.log(`🌴  workspace root path is: ${ROOT_PATH}`);
   console.log(LIB_ROOT);
   const uberPackageJson = await fs.readJson(UBER_PACKAGE_JSON_PATH);
-
   const libraries = await findLibrariesToPackage(uberPackageJson);
   await verifyDependencies(uberPackageJson, libraries);
   await prepareSourceFiles(libraries, uberPackageJson);
-  await combineRosettaFixtures(libraries);
+  await combineRosettaFixtures(libraries, uberPackageJson);
 }
 
 main().then(
@@ -246,7 +245,7 @@ async function prepareSourceFiles(libraries: readonly LibraryReference[], packag
   console.log('\t🍺 Success!');
 }
 
-async function combineRosettaFixtures(libraries: readonly LibraryReference[]) {
+async function combineRosettaFixtures(libraries: readonly LibraryReference[], uberPackageJson: PackageJson) {
   console.log('📝 Combining Rosetta fixtures...');
 
   const uberRosettaDir = path.resolve(LIB_ROOT, '..', 'rosetta');
@@ -268,6 +267,7 @@ async function combineRosettaFixtures(libraries: readonly LibraryReference[]) {
             path.join(packageRosettaDir, file),
             uberRosettaTargetDir,
             libraries,
+            uberPackageJson,
           ),
           { encoding: 'utf8' },
         );
@@ -461,7 +461,8 @@ async function rewriteReadmeImports(fromFile: string): Promise<string> {
   }
 }
 
-async function rewriteImports(fromFile: string, targetDir: string, libraries: readonly LibraryReference[]): Promise<string> {
+// eslint-disable-next-line max-len
+async function rewriteImports(fromFile: string, targetDir: string, libraries: readonly LibraryReference[], uberPackageJson?: PackageJson): Promise<string> {
   const sourceFile = ts.createSourceFile(
     fromFile,
     await fs.readFile(fromFile, { encoding: 'utf8' }),
@@ -526,10 +527,17 @@ async function rewriteImports(fromFile: string, targetDir: string, libraries: re
     const importedFile = moduleSpecifier === sourceLibrary.packageJson.name
       ? path.join(LIB_ROOT, sourceLibrary.shortName)
       : path.join(LIB_ROOT, sourceLibrary.shortName, moduleSpecifier.substr(sourceLibrary.packageJson.name.length + 1));
+
+    const importFilePath = uberPackageJson ? calculateModulePath(uberPackageJson.name, importedFile) : path.relative(targetDir, importedFile);
     return ts.createStringLiteral(
-      path.relative(targetDir, importedFile),
+      importFilePath,
     );
   }
+}
+
+function calculateModulePath(modName: string, filePath: string) {
+  const paths = filePath.split(path.sep);
+  return path.join(modName, paths[paths.length-1]);
 }
 
 const IGNORED_FILE_NAMES = new Set([
