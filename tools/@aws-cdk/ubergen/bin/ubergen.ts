@@ -459,27 +459,29 @@ async function rewriteReadmeImports(fromFile: string): Promise<string> {
   }
 }
 
+/**
+ * Rewrites imports in libaries, using the relative path (i.e. '../../assertions').
+ */
 async function rewriteImportsInLibs(fromFile: string, targetDir: string, libraries: readonly LibraryReference[]): Promise<string> {
   return rewriteImports(fromFile, libraries, (importedFile) => path.relative(targetDir, importedFile));
 }
 
+/**
+ * Rewrites imports in rosetta fixtures, using the external path (i.e. 'aws-cdk-lib/assertions').
+ */
 // eslint-disable-next-line max-len
 async function rewriteImportsInRosettaFixtures(fromFile: string, libraries: readonly LibraryReference[], libName: string): Promise<string> {
   return rewriteImports(fromFile, libraries, (importedFile) => externalPath(libName, importedFile));
 }
 
-function externalPath(modName: string, filePath: string) {
+function externalPath(libName: string, filePath: string) {
   const paths = filePath.split(path.sep);
-  return path.join(modName, paths[paths.length-1]);
+  return path.join(libName, paths[paths.length-1]);
 }
 
 /**
  * Rewrites imports from a file, to target the target directory, using the given libraries.
- * Default is to return a relative path to the file (i.e. '../../assertions'). If you send
- * a 'libName', like 'aws-cdk-lib', then the external path to the file will be returned
- * (i.e. 'aws-cdk-lib/assertions').
- *
- * @param libName Include a library name if you want an external path to the file (i.e. 'libName/assertions')
+ * The function `newImport` determines the rewritten file path from the given file.
  */
 // eslint-disable-next-line max-len
 async function rewriteImports(fromFile: string, libraries: readonly LibraryReference[], newImport: (file: string) => string): Promise<string> {
