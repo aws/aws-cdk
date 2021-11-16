@@ -32,7 +32,7 @@ export interface IHttpRoute extends IRoute {
  */
 export interface GrantInvokeOptions {
   /**
-   * The HTTP method to allow.
+   * The HTTP methods to allow.
    * @default `[HttpMethod.ANY]`
    */
   readonly httpMethod?: HttpMethod[];
