@@ -1,4 +1,3 @@
-/// !cdk-integ pragma:ignore-assets
 import * as iot from '@aws-cdk/aws-iot';
 import * as firehose from '@aws-cdk/aws-kinesisfirehose';
 import * as destinations from '@aws-cdk/aws-kinesisfirehose-destinations';

@@ -1,4 +1,3 @@
-/// !cdk-integ pragma:ignore-assets
 import * as iot from '@aws-cdk/aws-iot';
 import * as cdk from '@aws-cdk/core';
 import * as actions from '../../lib';
@@ -13,7 +12,7 @@ class TestStack extends cdk.Stack {
       sql: iot.IotSql.fromStringAsVer20160323("SELECT topic(2) as device_id, namespace, unit, value, timestamp FROM 'device/+/data'"),
     });
 
-    topicRule.addAction(new actions.CloudWatchMetricAction({
+    topicRule.addAction(new actions.CloudWatchPutMetricAction({
       metricName: '${topic(2)}',
       metricNamespace: '${namespace}',
       metricUnit: '${unit}',

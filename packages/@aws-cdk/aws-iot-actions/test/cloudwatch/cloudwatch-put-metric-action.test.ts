@@ -13,7 +13,7 @@ test('Default cloudwatch metric action', () => {
 
   // WHEN
   topicRule.addAction(
-    new actions.CloudWatchMetricAction({
+    new actions.CloudWatchPutMetricAction({
       metricName: '${topic(2)}',
       metricNamespace: '${namespace}',
       metricUnit: '${unit}',
@@ -80,7 +80,7 @@ test('can set timestamp', () => {
 
   // WHEN
   topicRule.addAction(
-    new actions.CloudWatchMetricAction({
+    new actions.CloudWatchPutMetricAction({
       metricName: '${topic(2)}',
       metricNamespace: '${namespace}',
       metricUnit: '${unit}',
@@ -109,7 +109,7 @@ test('can set role', () => {
 
   // WHEN
   topicRule.addAction(
-    new actions.CloudWatchMetricAction({
+    new actions.CloudWatchPutMetricAction({
       metricName: '${topic(2)}',
       metricNamespace: '${namespace}',
       metricUnit: '${unit}',

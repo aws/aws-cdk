@@ -1,4 +1,4 @@
-import * as iam from '@aws-cdk/aws-iam';
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as iot from '@aws-cdk/aws-iot';
 import { CommonActionProps } from './common-action-props';
 import { singletonActionRole } from './private/role';
@@ -6,14 +6,14 @@ import { singletonActionRole } from './private/role';
 /**
  * Configuration properties of an action for CloudWatch metric.
  */
-export interface CloudWatchMetricActionProps extends CommonActionProps {
+export interface CloudWatchPutMetricActionProps extends CommonActionProps {
   /**
    * The CloudWatch metric name.
    *
    * Supports substitution templates.
    * @see https://docs.aws.amazon.com/iot/latest/developerguide/iot-substitution-templates.html
    */
-  readonly metricName: string,
+  readonly metricName: string;
 
   /**
    * The CloudWatch metric namespace name.
@@ -21,7 +21,7 @@ export interface CloudWatchMetricActionProps extends CommonActionProps {
    * Supports substitution templates.
    * @see https://docs.aws.amazon.com/iot/latest/developerguide/iot-substitution-templates.html
    */
-  readonly metricNamespace: string,
+  readonly metricNamespace: string;
 
   /**
    * A string that contains the timestamp, expressed in seconds in Unix epoch time.
@@ -31,7 +31,7 @@ export interface CloudWatchMetricActionProps extends CommonActionProps {
    *
    * @default - none -- Defaults to the current Unix epoch time.
    */
-  readonly metricTimestamp?: string,
+  readonly metricTimestamp?: string;
 
   /**
    * The metric unit supported by CloudWatch.
@@ -39,7 +39,7 @@ export interface CloudWatchMetricActionProps extends CommonActionProps {
    * Supports substitution templates.
    * @see https://docs.aws.amazon.com/iot/latest/developerguide/iot-substitution-templates.html
    */
-  readonly metricUnit: string,
+  readonly metricUnit: string;
 
   /**
    * A string that contains the CloudWatch metric value.
@@ -47,22 +47,19 @@ export interface CloudWatchMetricActionProps extends CommonActionProps {
    * Supports substitution templates.
    * @see https://docs.aws.amazon.com/iot/latest/developerguide/iot-substitution-templates.html
    */
-  readonly metricValue: string,
+  readonly metricValue: string;
 }
 
 /**
  * The action to capture an Amazon CloudWatch metric.
  */
-export class CloudWatchMetricAction implements iot.IAction {
-  constructor(private readonly props: CloudWatchMetricActionProps) {
+export class CloudWatchPutMetricAction implements iot.IAction {
+  constructor(private readonly props: CloudWatchPutMetricActionProps) {
   }
 
   bind(rule: iot.ITopicRule): iot.ActionConfig {
     const role = this.props.role ?? singletonActionRole(rule);
-    role.addToPrincipalPolicy(new iam.PolicyStatement({
-      actions: ['cloudwatch:PutMetricData'],
-      resources: ['*'],
-    }));
+    cloudwatch.Metric.grantPutMetricData(role);
 
     return {
       configuration: {

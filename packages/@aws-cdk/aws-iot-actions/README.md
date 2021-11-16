@@ -138,13 +138,13 @@ const topicRule = new iot.TopicRule(this, 'TopicRule', {
     "SELECT topic(2) as device_id, namespace, unit, value, timestamp FROM 'device/+/data'",
   ),
   actions: [
-    new actions.CloudWatchMetricAction({
+    new actions.CloudWatchPutMetricAction({
       metricName: '${topic(2)}',
       metricNamespace: '${namespace}',
       metricUnit: '${unit}',
       metricValue: '${value}',
       metricTimestamp: '${timestamp}',
-    })
+    }),
   ],
 });
 ```
