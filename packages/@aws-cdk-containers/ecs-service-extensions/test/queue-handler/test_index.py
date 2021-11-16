@@ -1,11 +1,11 @@
+import queue
 import json
 import io
+import sys
 import unittest
 import unittest.mock as mock
 from time import time
 from botocore.exceptions import ClientError
-from lib.queue import QueueHandler
-
 
 class TestQueueAutoscaling(unittest.TestCase):
   '''
@@ -13,7 +13,7 @@ class TestQueueAutoscaling(unittest.TestCase):
   '''
   def test_unexpected_error(self):
     ecs_client = mock.Mock()
-    ecs_client.describe_services = mock.Mock(side_effect=ClientError({'Error': {'Code': 'UnexpectedError'}}, 'DescribeServices'))
+    ecs_client.describe_services.side_effect = ClientError({'Error': {'Code': 'UnexpectedError'}}, 'DescribeServices')
 
     sqs_client = mock.Mock()
     environ = {
@@ -23,7 +23,7 @@ class TestQueueAutoscaling(unittest.TestCase):
       'QUEUE_NAMES': 'queue1'
     }
 
-    queue_handler = QueueHandler(ecs_client, sqs_client, environ)
+    queue_handler = queue.QueueHandler(ecs_client, sqs_client, environ)
     queue_handler.emit()
 
     self.assertRaisesRegex(Exception, r'UnexpectedError')
@@ -34,7 +34,7 @@ class TestQueueAutoscaling(unittest.TestCase):
   @mock.patch('sys.stdout', new_callable=io.StringIO)
   def test_no_services_in_cluster(self, mock_stdout):
     ecs_client = mock.Mock()
-    ecs_client.describe_services = mock.Mock(return_value={'services': []})
+    ecs_client.describe_services.return_value = {'services': []}
 
     sqs_client = mock.Mock()
     environ = {
@@ -44,7 +44,7 @@ class TestQueueAutoscaling(unittest.TestCase):
       'QUEUE_NAMES': 'queue1'
     }
 
-    queue_handler = QueueHandler(ecs_client, sqs_client, environ)
+    queue_handler = queue.QueueHandler(ecs_client, sqs_client, environ)
     queue_handler.emit()
 
     self.assertRaisesRegex(Exception, r'There are no services with name {} in cluster: {}'.format(environ['SERVICE_NAME'], environ['CLUSTER_NAME']))
@@ -56,11 +56,11 @@ class TestQueueAutoscaling(unittest.TestCase):
   @mock.patch('sys.stdout', new_callable=io.StringIO)
   def test_backlog_with_no_running_tasks(self, mock_stdout, mock_time):
     ecs_client = mock.Mock()
-    ecs_client.describe_services = mock.Mock(return_value={'services': [{'runningCount': 0}]})
+    ecs_client.describe_services.return_value = {'services': [{'runningCount': 0}]}
 
     sqs_client = mock.Mock()
-    sqs_client.get_queue_url = mock.Mock('queue1', return_value= {'QueueUrl': 'queue1_url'})
-    sqs_client.get_queue_attributes = mock.Mock('queue1_url', return_value={'Attributes': {'ApproximateNumberOfMessages':100}})
+    sqs_client.get_queue_url.return_value = {'QueueUrl': 'queue1_url'}
+    sqs_client.get_queue_attributes.return_value = {'Attributes': {'ApproximateNumberOfMessages':100}}
     environ = {
       'CLUSTER_NAME': 'TEST_CLUSTER',
       'SERVICE_NAME': 'TEST_SERVICE',
@@ -68,7 +68,7 @@ class TestQueueAutoscaling(unittest.TestCase):
       'QUEUE_NAMES': 'queue1'
     }
 
-    queue_handler = QueueHandler(ecs_client, sqs_client, environ)
+    queue_handler = queue.QueueHandler(ecs_client, sqs_client, environ)
     queue_handler.emit()
 
     metric = json.dumps({
@@ -92,7 +92,7 @@ class TestQueueAutoscaling(unittest.TestCase):
   @mock.patch('sys.stdout', new_callable=io.StringIO)
   def test_metric_generation_per_queue(self, mock_stdout, mock_time):
     ecs_client = mock.Mock()
-    ecs_client.describe_services = mock.Mock(return_value={'services': [{'runningCount': 2}]})
+    ecs_client.describe_services.return_value = {'services': [{'runningCount': 2}]}
 
     val1 = {
       'queue1': {'QueueUrl': 'queue1_url'},
@@ -113,7 +113,7 @@ class TestQueueAutoscaling(unittest.TestCase):
       'QUEUE_NAMES': 'queue1,queue2'
     }
     
-    queue_handler = QueueHandler(ecs_client, sqs_client, environ)
+    queue_handler = queue.QueueHandler(ecs_client, sqs_client, environ)
     queue_handler.emit()
     
     metric1 = json.dumps({
@@ -143,5 +143,5 @@ class TestQueueAutoscaling(unittest.TestCase):
     
     self.assertEqual(mock_stdout.getvalue(), metric1+'\n'+metric2+'\n')
 
-
-    
+if __name__ == "__main__":
+  unittest.main()

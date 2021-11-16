@@ -1,6 +1,6 @@
 import os
 import boto3
-from lib.queue import QueueHandler
+from queue import QueueHandler
 
 
 def queue_handler(event, context):

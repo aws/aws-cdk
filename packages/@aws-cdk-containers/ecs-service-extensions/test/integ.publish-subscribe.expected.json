@@ -1182,7 +1182,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParameterscea6b227b3e7a0ea09f0de0b8b30ff32b5c6a0af56c80bc437626ceeb3216690S3Bucket7EFB11A0"
+            "Ref": "AssetParameterse84e309dfc7fce0d303de5295f967c4486e66aa1214b9cc5adfa3f4333933eaaS3Bucket117EF990"
           },
           "S3Key": {
             "Fn::Join": [
@@ -1195,7 +1195,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameterscea6b227b3e7a0ea09f0de0b8b30ff32b5c6a0af56c80bc437626ceeb3216690S3VersionKey113D6697"
+                          "Ref": "AssetParameterse84e309dfc7fce0d303de5295f967c4486e66aa1214b9cc5adfa3f4333933eaaS3VersionKey7FDC473F"
                         }
                       ]
                     }
@@ -1208,7 +1208,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameterscea6b227b3e7a0ea09f0de0b8b30ff32b5c6a0af56c80bc437626ceeb3216690S3VersionKey113D6697"
+                          "Ref": "AssetParameterse84e309dfc7fce0d303de5295f967c4486e66aa1214b9cc5adfa3f4333933eaaS3VersionKey7FDC473F"
                         }
                       ]
                     }
@@ -1259,7 +1259,7 @@
           }
         },
         "Handler": "index.queue_handler",
-        "Runtime": "python3.8"
+        "Runtime": "python3.9"
       },
       "DependsOn": [
         "BackLogPerTaskCalculatorFunctionServiceRoleDefaultPolicyB6B10266",
@@ -1324,17 +1324,17 @@
     }
   },
   "Parameters": {
-    "AssetParameterscea6b227b3e7a0ea09f0de0b8b30ff32b5c6a0af56c80bc437626ceeb3216690S3Bucket7EFB11A0": {
+    "AssetParameterse84e309dfc7fce0d303de5295f967c4486e66aa1214b9cc5adfa3f4333933eaaS3Bucket117EF990": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"cea6b227b3e7a0ea09f0de0b8b30ff32b5c6a0af56c80bc437626ceeb3216690\""
+      "Description": "S3 bucket for asset \"e84e309dfc7fce0d303de5295f967c4486e66aa1214b9cc5adfa3f4333933eaa\""
     },
-    "AssetParameterscea6b227b3e7a0ea09f0de0b8b30ff32b5c6a0af56c80bc437626ceeb3216690S3VersionKey113D6697": {
+    "AssetParameterse84e309dfc7fce0d303de5295f967c4486e66aa1214b9cc5adfa3f4333933eaaS3VersionKey7FDC473F": {
       "Type": "String",
-      "Description": "S3 key for asset version \"cea6b227b3e7a0ea09f0de0b8b30ff32b5c6a0af56c80bc437626ceeb3216690\""
+      "Description": "S3 key for asset version \"e84e309dfc7fce0d303de5295f967c4486e66aa1214b9cc5adfa3f4333933eaa\""
     },
-    "AssetParameterscea6b227b3e7a0ea09f0de0b8b30ff32b5c6a0af56c80bc437626ceeb3216690ArtifactHash0546B00D": {
+    "AssetParameterse84e309dfc7fce0d303de5295f967c4486e66aa1214b9cc5adfa3f4333933eaaArtifactHash2FECEEED": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"cea6b227b3e7a0ea09f0de0b8b30ff32b5c6a0af56c80bc437626ceeb3216690\""
+      "Description": "Artifact hash for asset \"e84e309dfc7fce0d303de5295f967c4486e66aa1214b9cc5adfa3f4333933eaa\""
     }
   }
 }

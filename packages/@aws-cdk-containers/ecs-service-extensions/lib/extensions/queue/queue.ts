@@ -337,7 +337,7 @@ export class QueueExtension extends ServiceExtension {
     this.subscriptionQueues.forEach(subs => queueNames.push(subs.queue.queueName));
 
     const backLogPerTaskCalculator = new lambda.Function(this.scope, 'BackLogPerTaskCalculatorFunction', {
-      runtime: lambda.Runtime.PYTHON_3_8,
+      runtime: lambda.Runtime.PYTHON_3_9,
       code: lambda.Code.fromAsset(path.join(__dirname, 'lambda')),
       handler: 'index.queue_handler',
       environment: {
