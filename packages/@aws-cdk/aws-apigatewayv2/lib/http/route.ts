@@ -24,7 +24,7 @@ export interface IHttpRoute extends IRoute {
   /**
    * Grant access to invoke the route.
    */
-  grantInvoke(grantee: iam.IGrantable, options: GrantInvokeOptions | undefined): iam.Grant;
+  grantInvoke(grantee: iam.IGrantable, options?: GrantInvokeOptions): iam.Grant;
 }
 
 /**
@@ -161,7 +161,7 @@ export class HttpRoute extends Resource implements IHttpRoute {
   public readonly path?: string;
 
   private iamEnabled: boolean = false;
-  private authorizer: IHttpRouteAuthorizer | undefined;
+  private authorizer?: IHttpRouteAuthorizer;
 
   constructor(scope: Construct, id: string, props: HttpRouteProps) {
     super(scope, id);
