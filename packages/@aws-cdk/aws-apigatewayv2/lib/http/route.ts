@@ -33,9 +33,9 @@ export interface IHttpRoute extends IRoute {
 export interface GrantInvokeOptions {
   /**
    * The HTTP method to allow.
-   * @default `HttpMethod.ANY`
+   * @default `[HttpMethod.ANY]`
    */
-  readonly httpMethod?: HttpMethod;
+  readonly httpMethod?: HttpMethod[];
 }
 
 /**
@@ -234,23 +234,23 @@ export class HttpRoute extends Resource implements IHttpRoute {
   public grantInvoke(grantee: iam.IGrantable, options: GrantInvokeOptions = {}): iam.Grant {
     this.enableIamAuthorization();
 
-    const httpMethod = options.httpMethod ?? HttpMethod.ANY;
-    const stage = '*';
-    const method = httpMethod === HttpMethod.ANY ? '*' : httpMethod;
-
     const path = this.path ?? '/';
-
     // When the user has provided a path with path variables, we replace the
     // path variable and the rest of the path with a wildcard.
     const pathSansVariables = path.replace(/\{.*?\}.*/, '');
     const iamPath = pathSansVariables !== path ? `${pathSansVariables}*` : path;
+    const stage = '*';
 
-    const resourceArn = `arn:aws:execute-api:${this.stack.region}:${this.stack.account}:${this.httpApi.apiId}/${stage}/${method}${iamPath}`;
+    const resourceArns = (options.httpMethod ?? [HttpMethod.ANY]).map(httpMethod => {
+      const iamHttpMethod = httpMethod === HttpMethod.ANY ? '*' : httpMethod;
+      const resourceArn = `arn:aws:execute-api:${this.stack.region}:${this.stack.account}:${this.httpApi.apiId}/${stage}/${iamHttpMethod}${iamPath}`;
+      return resourceArn;
+    });
 
     return iam.Grant.addToPrincipal({
       grantee,
       actions: ['execute-api:Invoke'],
-      resourceArns: [resourceArn],
+      resourceArns: resourceArns,
     });
   }
 }

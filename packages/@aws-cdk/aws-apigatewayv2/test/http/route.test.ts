@@ -367,12 +367,12 @@ describe('HttpRoute', () => {
     const route = new HttpRoute(stack, 'HttpRoute', {
       httpApi,
       integration: new DummyIntegration(),
-      routeKey: HttpRouteKey.with('/books', HttpMethod.GET),
+      routeKey: HttpRouteKey.with('/books', HttpMethod.ANY),
     });
 
     // WHEN
     route.grantInvoke(role, {
-      httpMethod: HttpMethod.GET,
+      httpMethod: [HttpMethod.GET, HttpMethod.PUT],
     });
 
     // THEN
@@ -385,20 +385,36 @@ describe('HttpRoute', () => {
           {
             Action: 'execute-api:Invoke',
             Effect: 'Allow',
-            Resource: {
-              'Fn::Join': [
-                '',
-                [
-                  'arn:aws:execute-api:',
-                  { Ref: 'AWS::Region' },
-                  ':',
-                  { Ref: 'AWS::AccountId' },
-                  ':',
-                  { Ref: 'HttpApiF5A9A8A7' },
-                  '/*/GET/books',
+            Resource: [
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:aws:execute-api:',
+                    { Ref: 'AWS::Region' },
+                    ':',
+                    { Ref: 'AWS::AccountId' },
+                    ':',
+                    { Ref: 'HttpApiF5A9A8A7' },
+                    '/*/GET/books',
+                  ],
                 ],
-              ],
-            },
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:aws:execute-api:',
+                    { Ref: 'AWS::Region' },
+                    ':',
+                    { Ref: 'AWS::AccountId' },
+                    ':',
+                    { Ref: 'HttpApiF5A9A8A7' },
+                    '/*/PUT/books',
+                  ],
+                ],
+              },
+            ],
           },
         ],
         Version: '2012-10-17',
