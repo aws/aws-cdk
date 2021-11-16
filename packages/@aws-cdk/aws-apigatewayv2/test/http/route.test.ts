@@ -1,4 +1,5 @@
 import { Template } from '@aws-cdk/assertions';
+import { AccountPrincipal, Role } from '@aws-cdk/aws-iam';
 import { Stack, App } from '@aws-cdk/core';
 import {
   HttpApi, HttpAuthorizer, HttpAuthorizerType, HttpConnectionType, HttpIntegrationType, HttpMethod, HttpRoute,
@@ -307,6 +308,149 @@ describe('HttpRoute', () => {
       routeKey: HttpRouteKey.with('/books', HttpMethod.GET),
       authorizer,
     })).toThrowError('authorizationType should either be JWT, CUSTOM, or NONE');
+  });
+
+  test('granting invoke', () => {
+    const stack = new Stack();
+    const httpApi = new HttpApi(stack, 'HttpApi');
+    const role = new Role(stack, 'Role', {
+      assumedBy: new AccountPrincipal('111111111111'),
+    });
+
+    const route = new HttpRoute(stack, 'HttpRoute', {
+      httpApi,
+      integration: new DummyIntegration(),
+      routeKey: HttpRouteKey.with('/books', HttpMethod.GET),
+    });
+
+    // WHEN
+    route.grantInvoke(role);
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Route', {
+      AuthorizationType: 'AWS_IAM',
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'execute-api:Invoke',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:aws:execute-api:',
+                  { Ref: 'AWS::Region' },
+                  ':',
+                  { Ref: 'AWS::AccountId' },
+                  ':',
+                  { Ref: 'HttpApiF5A9A8A7' },
+                  '/*/*/books',
+                ],
+              ],
+            },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+  });
+
+  test('granting invoke with httpMethod GET', () => {
+    const stack = new Stack();
+    const httpApi = new HttpApi(stack, 'HttpApi');
+    const role = new Role(stack, 'Role', {
+      assumedBy: new AccountPrincipal('111111111111'),
+    });
+
+    const route = new HttpRoute(stack, 'HttpRoute', {
+      httpApi,
+      integration: new DummyIntegration(),
+      routeKey: HttpRouteKey.with('/books', HttpMethod.GET),
+    });
+
+    // WHEN
+    route.grantInvoke(role, {
+      httpMethod: HttpMethod.GET,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Route', {
+      AuthorizationType: 'AWS_IAM',
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'execute-api:Invoke',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:aws:execute-api:',
+                  { Ref: 'AWS::Region' },
+                  ':',
+                  { Ref: 'AWS::AccountId' },
+                  ':',
+                  { Ref: 'HttpApiF5A9A8A7' },
+                  '/*/GET/books',
+                ],
+              ],
+            },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+  });
+
+  test('granting invoke with path variables', () => {
+    const stack = new Stack();
+    const httpApi = new HttpApi(stack, 'HttpApi');
+    const role = new Role(stack, 'Role', {
+      assumedBy: new AccountPrincipal('111111111111'),
+    });
+
+    const route = new HttpRoute(stack, 'HttpRoute', {
+      httpApi,
+      integration: new DummyIntegration(),
+      routeKey: HttpRouteKey.with('/books/{book}/something'),
+    });
+
+    // WHEN
+    route.grantInvoke(role);
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Route', {
+      AuthorizationType: 'AWS_IAM',
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'execute-api:Invoke',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:aws:execute-api:',
+                  { Ref: 'AWS::Region' },
+                  ':',
+                  { Ref: 'AWS::AccountId' },
+                  ':',
+                  { Ref: 'HttpApiF5A9A8A7' },
+                  '/*/*/books/*',
+                ],
+              ],
+            },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
   });
 });
 

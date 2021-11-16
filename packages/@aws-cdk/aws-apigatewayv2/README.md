@@ -286,6 +286,19 @@ API](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-acces
 
 These authorizers can be found in the [APIGatewayV2-Authorizers](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-apigatewayv2-authorizers-readme.html) constructs library.
 
+In addition to these authorizers, API Gateway supports IAM via grant syntax:
+
+```ts
+const booksRoute = new apigatewayv2.HttpRoute(stack, 'BooksRoute', {
+  httpApi,
+  integration,
+  routeKey: apigatewayv2.HttpRouteKey.with('/books/{book}'),
+});
+
+// Grant principal access to invoke the /books/* api.
+booksRoute.grantInvoke(principal);
+```
+
 ### Metrics
 
 The API Gateway v2 service sends metrics around the performance of HTTP APIs to Amazon CloudWatch.

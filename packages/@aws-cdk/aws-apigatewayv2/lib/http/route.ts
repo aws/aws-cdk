@@ -1,4 +1,5 @@
-import { Resource } from '@aws-cdk/core';
+import * as iam from '@aws-cdk/aws-iam';
+import { Resource, Lazy } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnRoute, CfnRouteProps } from '../apigatewayv2.generated';
 import { IRoute } from '../common';
@@ -19,6 +20,22 @@ export interface IHttpRoute extends IRoute {
    * Returns the path component of this HTTP route, `undefined` if the path is the catch-all route.
    */
   readonly path?: string;
+
+  /**
+   * Grant access to invoke the route.
+   */
+  grantInvoke(grantee: iam.IGrantable, options: GrantInvokeOptions | undefined): iam.Grant;
+}
+
+/**
+ * Options for granting invoke access.
+ */
+export interface GrantInvokeOptions {
+  /**
+   * The HTTP method to allow.
+   * @default `HttpMethod.ANY`
+   */
+  readonly httpMethod?: HttpMethod;
 }
 
 /**
@@ -143,6 +160,9 @@ export class HttpRoute extends Resource implements IHttpRoute {
   public readonly httpApi: IHttpApi;
   public readonly path?: string;
 
+  private iamEnabled: boolean = false;
+  private authorizer: IHttpRouteAuthorizer | undefined;
+
   constructor(scope: Construct, id: string, props: HttpRouteProps) {
     super(scope, id);
 
@@ -156,6 +176,7 @@ export class HttpRoute extends Resource implements IHttpRoute {
 
     const integration = props.httpApi._addIntegration(this, config);
 
+    this.authorizer = props.authorizer;
     const authBindResult = props.authorizer ? props.authorizer.bind({
       route: this,
       scope: this.httpApi instanceof Construct ? this.httpApi : this, // scope under the API if it's not imported
@@ -183,11 +204,53 @@ export class HttpRoute extends Resource implements IHttpRoute {
       routeKey: props.routeKey.key,
       target: `integrations/${integration.integrationId}`,
       authorizerId: authBindResult?.authorizerId,
-      authorizationType: authBindResult?.authorizationType ?? 'NONE', // must be explicitly NONE (not undefined) for stack updates to work correctly
+      authorizationType: Lazy.string({
+        produce: () => {
+          if (this.iamEnabled) {
+            return 'AWS_IAM';
+          } else {
+            return authBindResult?.authorizationType ?? 'NONE'; // must be explicitly NONE (not undefined) for stack updates to work correctly
+          }
+        },
+      }),
       authorizationScopes,
     };
 
     const route = new CfnRoute(this, 'Resource', routeProps);
     this.routeId = route.ref;
+  }
+
+  /**
+   * Enable IAM authorization on the route.
+   */
+  public enableIamAuthorization(): void {
+    if (this.authorizer) {
+      throw new Error('authorizationType has been set, so we cannot enable AWS_IAM authorization');
+    }
+
+    this.iamEnabled = true;
+  }
+
+  public grantInvoke(grantee: iam.IGrantable, options: GrantInvokeOptions = {}): iam.Grant {
+    this.enableIamAuthorization();
+
+    const httpMethod = options.httpMethod ?? HttpMethod.ANY;
+    const stage = '*';
+    const method = httpMethod === HttpMethod.ANY ? '*' : httpMethod;
+
+    const path = this.path ?? '/';
+
+    // When the user has provided a path with path variables, we replace the
+    // path variable and the rest of the path with a wildcard.
+    const pathSansVariables = path.replace(/\{.*?\}.*/, '');
+    const iamPath = pathSansVariables !== path ? `${pathSansVariables}*` : path;
+
+    const resourceArn = `arn:aws:execute-api:${this.stack.region}:${this.stack.account}:${this.httpApi.apiId}/${stage}/${method}${iamPath}`;
+
+    return iam.Grant.addToPrincipal({
+      grantee,
+      actions: ['execute-api:Invoke'],
+      resourceArns: [resourceArn],
+    });
   }
 }
