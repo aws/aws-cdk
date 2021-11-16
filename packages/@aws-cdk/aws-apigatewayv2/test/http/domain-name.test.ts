@@ -181,7 +181,6 @@ describe('DomainName', () => {
     new DomainName(stack, 'DomainName', {
       domainName,
       certificate: Certificate.fromCertificateArn(stack, 'cert', certArn),
-      endpointType: EndpointType.REGIONAL,
       mtls: {
         bucket,
         key: 'someca.pem',
