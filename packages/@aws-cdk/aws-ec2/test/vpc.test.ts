@@ -508,6 +508,7 @@ describe('vpc', () => {
           ],
         });
       }).toThrow(/subnet cannot include mapPublicIpOnLaunch parameter/);
+    });
     test('maxAZs defaults to 3 if unset', () => {
       const stack = getTestStack();
       new Vpc(stack, 'VPC');
