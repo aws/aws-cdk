@@ -219,7 +219,7 @@ api.addRoutes({
 
 ### IAM Authorizers
 
-IAM Authorizers use IAM policies to control access to your HTTP API. When a client calls your API, API Gateway will check whether the caller has been granted access through IAM to access your API.
+IAM Authorizers use IAM policies to control access to your HTTP API. When a client calls your API, API Gateway will check whether the caller has been granted access through IAM to use your API.
 
 ```ts
 const authorizer = new HttpIamAuthorizer();
