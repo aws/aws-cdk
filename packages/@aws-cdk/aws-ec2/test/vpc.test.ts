@@ -490,6 +490,24 @@ describe('vpc', () => {
         });
       }).toThrow(/subnet cannot include mapPublicIpOnLaunch parameter/);
     });
+    test('with private subnets throw exception if parameter mapPublicIpOnLaunch is defined', () => {
+      const stack = getTestStack();
+      expect(() => {
+        new Vpc(stack, 'VPC', {
+          maxAzs: 1,
+          subnetConfiguration: [
+            {
+              name: 'public',
+              subnetType: SubnetType.PUBLIC,
+            },
+            {
+              name: 'private',
+              subnetType: SubnetType.PRIVATE_ISOLATED,
+              mapPublicIpOnLaunch: true,
+            },
+          ],
+        });
+      }).toThrow(/subnet cannot include mapPublicIpOnLaunch parameter/);
     test('maxAZs defaults to 3 if unset', () => {
       const stack = getTestStack();
       new Vpc(stack, 'VPC');
