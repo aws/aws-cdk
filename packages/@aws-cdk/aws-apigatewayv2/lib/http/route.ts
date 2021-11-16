@@ -207,6 +207,10 @@ export class HttpRoute extends Resource implements IHttpRoute {
       authorizationType: Lazy.string({
         produce: () => {
           if (this.iamEnabled) {
+            if (this.authorizer) {
+              throw new Error('IAM is enabled on this route and an authorizer is set - please choose either grantInvoke or and authorizer, but not both');
+            }
+
             return 'AWS_IAM';
           }
 
