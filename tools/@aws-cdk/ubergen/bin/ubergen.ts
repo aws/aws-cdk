@@ -476,7 +476,12 @@ async function rewriteImportsInRosettaFixtures(fromFile: string, libraries: read
 
 function externalPath(libName: string, filePath: string) {
   const paths = filePath.split(path.sep);
-  return path.join(libName, paths[paths.length-1]);
+  const module = paths[paths.length-1];
+  if (module === 'core') {
+    return libName;
+  } else {
+    return path.join(libName, module);
+  }
 }
 
 /**
