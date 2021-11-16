@@ -267,7 +267,7 @@ async function combineRosettaFixtures(libraries: readonly LibraryReference[], ub
             path.join(packageRosettaDir, file),
             uberRosettaTargetDir,
             libraries,
-            uberPackageJson,
+            uberPackageJson.name,
           ),
           { encoding: 'utf8' },
         );
@@ -461,8 +461,15 @@ async function rewriteReadmeImports(fromFile: string): Promise<string> {
   }
 }
 
-// eslint-disable-next-line max-len
-async function rewriteImports(fromFile: string, targetDir: string, libraries: readonly LibraryReference[], uberPackageJson?: PackageJson): Promise<string> {
+/**
+ * Rewrites imports from a file, to target the target directory, using the given libraries.
+ * Default is to return a relative path to the file (i.e. '../../assertions'). If you send
+ * a 'libName', like 'aws-cdk-lib', then the external path to the file will be returned
+ * (i.e. 'aws-cdk-lib/assertions').
+ *
+ * @param libName Include a library name if you want an external path to the file (i.e. 'libName/assertions')
+ */
+async function rewriteImports(fromFile: string, targetDir: string, libraries: readonly LibraryReference[], libName?: string): Promise<string> {
   const sourceFile = ts.createSourceFile(
     fromFile,
     await fs.readFile(fromFile, { encoding: 'utf8' }),
@@ -528,14 +535,12 @@ async function rewriteImports(fromFile: string, targetDir: string, libraries: re
       ? path.join(LIB_ROOT, sourceLibrary.shortName)
       : path.join(LIB_ROOT, sourceLibrary.shortName, moduleSpecifier.substr(sourceLibrary.packageJson.name.length + 1));
 
-    const importFilePath = uberPackageJson ? calculateModulePath(uberPackageJson.name, importedFile) : path.relative(targetDir, importedFile);
-    return ts.createStringLiteral(
-      importFilePath,
-    );
+    const importFilePath = libName ? calculateExternalPath(libName, importedFile) : path.relative(targetDir, importedFile);
+    return ts.createStringLiteral(importFilePath);
   }
 }
 
-function calculateModulePath(modName: string, filePath: string) {
+function calculateExternalPath(modName: string, filePath: string) {
   const paths = filePath.split(path.sep);
   return path.join(modName, paths[paths.length-1]);
 }
