@@ -12,7 +12,6 @@ const UBER_PACKAGE_JSON_PATH = path.resolve(process.cwd(), 'package.json');
 
 async function main() {
   console.log(`🌴  workspace root path is: ${ROOT_PATH}`);
-  console.log(LIB_ROOT);
   const uberPackageJson = await fs.readJson(UBER_PACKAGE_JSON_PATH);
   const libraries = await findLibrariesToPackage(uberPackageJson);
   await verifyDependencies(uberPackageJson, libraries);
@@ -263,9 +262,8 @@ async function combineRosettaFixtures(libraries: readonly LibraryReference[], ub
       for (const file of files) {
         await fs.writeFile(
           path.join(uberRosettaTargetDir, file),
-          await rewriteImports(
+          await rewriteImportsInRosettaFixtures(
             path.join(packageRosettaDir, file),
-            uberRosettaTargetDir,
             libraries,
             uberPackageJson.name,
           ),
@@ -394,7 +392,7 @@ async function copyOrTransformFiles(from: string, to: string, libraries: readonl
     if (name.endsWith('.ts')) {
       return fs.writeFile(
         destination,
-        await rewriteImports(source, to, libraries),
+        await rewriteImportsInLibs(source, to, libraries),
         { encoding: 'utf8' },
       );
     } else if (name === 'cfn-types-2-classes.json') {
@@ -461,6 +459,20 @@ async function rewriteReadmeImports(fromFile: string): Promise<string> {
   }
 }
 
+async function rewriteImportsInLibs(fromFile: string, targetDir: string, libraries: readonly LibraryReference[]): Promise<string> {
+  return rewriteImports(fromFile, libraries, (importedFile) => path.relative(targetDir, importedFile));
+}
+
+// eslint-disable-next-line max-len
+async function rewriteImportsInRosettaFixtures(fromFile: string, libraries: readonly LibraryReference[], libName: string): Promise<string> {
+  return rewriteImports(fromFile, libraries, (importedFile) => externalPath(libName, importedFile));
+}
+
+function externalPath(modName: string, filePath: string) {
+  const paths = filePath.split(path.sep);
+  return path.join(modName, paths[paths.length-1]);
+}
+
 /**
  * Rewrites imports from a file, to target the target directory, using the given libraries.
  * Default is to return a relative path to the file (i.e. '../../assertions'). If you send
@@ -469,7 +481,8 @@ async function rewriteReadmeImports(fromFile: string): Promise<string> {
  *
  * @param libName Include a library name if you want an external path to the file (i.e. 'libName/assertions')
  */
-async function rewriteImports(fromFile: string, targetDir: string, libraries: readonly LibraryReference[], libName?: string): Promise<string> {
+// eslint-disable-next-line max-len
+async function rewriteImports(fromFile: string, libraries: readonly LibraryReference[], newImport: (file: string) => string): Promise<string> {
   const sourceFile = ts.createSourceFile(
     fromFile,
     await fs.readFile(fromFile, { encoding: 'utf8' }),
@@ -535,14 +548,9 @@ async function rewriteImports(fromFile: string, targetDir: string, libraries: re
       ? path.join(LIB_ROOT, sourceLibrary.shortName)
       : path.join(LIB_ROOT, sourceLibrary.shortName, moduleSpecifier.substr(sourceLibrary.packageJson.name.length + 1));
 
-    const importFilePath = libName ? calculateExternalPath(libName, importedFile) : path.relative(targetDir, importedFile);
+    const importFilePath = newImport(importedFile);
     return ts.createStringLiteral(importFilePath);
   }
-}
-
-function calculateExternalPath(modName: string, filePath: string) {
-  const paths = filePath.split(path.sep);
-  return path.join(modName, paths[paths.length-1]);
 }
 
 const IGNORED_FILE_NAMES = new Set([
