@@ -337,7 +337,10 @@ export class BucketDeployment extends CoreConstruct {
     prefix += `:${cr.node.uniqueId.substr(-8)}`;
 
     /*
-     * This will add a tag to the deployment bucket like:
+     * This will add a tag to the deployment bucket in the format of
+     * `aws-cdk:cr-owned:{keyPrefix}:{uniqueHash}`
+     *
+     * For example:
      * {
      *   Key: 'aws-cdk:cr-owned:deploy/here/:240D17B3',
      *   Value: 'true',
