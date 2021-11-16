@@ -93,8 +93,6 @@ export interface DomainNameProps {
   readonly mtls?: MTLSConfig;
   /**
    * The user-friendly name of the certificate that will be used by the endpoint for this domain name.
-   * This property is optional and is helpful if you have too many certificates and it is easier to remember
-   * certificates by some name rather that the domain they are valid for.
    * @default - No friendly certificate name
    */
   readonly certificateName?: string;
@@ -114,10 +112,10 @@ export interface DomainNameProps {
   /**
    * A public certificate issued by ACM to validate that you own a custom domain. This parameter is required
    * only when you configure mutual TLS authentication and you specify an ACM imported or private CA certificate
-   * for `certificate`. The ownership verification certificate validates that you have permissions to use the domain name.
+   * for `certificate`. The ownership certificate validates that you have permissions to use the domain name.
    * @default - only required when configuring mTLS
    */
-  readonly ownershipVerificationCertificate?: ICertificate;
+  readonly ownershipCertificate?: ICertificate;
 }
 
 /**
@@ -202,8 +200,8 @@ export class DomainName extends Resource implements IDomainName {
     const domainNameConfig: CfnDomainName.DomainNameConfigurationProperty = {
       certificateArn: props.certificate.certificateArn,
       certificateName: props.certificateName,
-      endpointType: props.endpointType?.toString(),
-      ownershipVerificationCertificateArn: props.ownershipVerificationCertificate?.certificateArn,
+      endpointType: props.endpointType ? props.endpointType?.toString() : 'REGIONAL',
+      ownershipVerificationCertificateArn: props.ownershipCertificate?.certificateArn,
       securityPolicy: props.securityPolicy?.toString(),
     };
 

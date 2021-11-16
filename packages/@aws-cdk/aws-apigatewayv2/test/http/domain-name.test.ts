@@ -18,7 +18,6 @@ describe('DomainName', () => {
     new DomainName(stack, 'DomainName', {
       domainName,
       certificate: Certificate.fromCertificateArn(stack, 'cert', certArn),
-      endpointType: EndpointType.REGIONAL,
     });
 
     // THEN
@@ -56,7 +55,6 @@ describe('DomainName', () => {
     const dn = new DomainName(stack, 'DomainName', {
       domainName,
       certificate: Certificate.fromCertificateArn(stack, 'cert', certArn),
-      endpointType: EndpointType.REGIONAL,
     });
 
     // WHEN
@@ -83,7 +81,6 @@ describe('DomainName', () => {
     const dn = new DomainName(stack, 'DN', {
       domainName,
       certificate: Certificate.fromCertificateArn(stack, 'cert', certArn),
-      endpointType: EndpointType.REGIONAL,
     });
 
     api.addStage('beta', {
@@ -122,7 +119,6 @@ describe('DomainName', () => {
     const dn = new DomainName(stack, 'DN', {
       domainName,
       certificate: Certificate.fromCertificateArn(stack, 'cert', certArn),
-      endpointType: EndpointType.REGIONAL,
     });
 
     // WHEN
@@ -161,7 +157,6 @@ describe('DomainName', () => {
     const dn = new DomainName(stack, 'DN', {
       domainName,
       certificate: Certificate.fromCertificateArn(stack, 'cert', certArn),
-      endpointType: EndpointType.REGIONAL,
     });
     const t = () => {
       new HttpApi(stack, 'Api', {
@@ -217,7 +212,6 @@ describe('DomainName', () => {
     new DomainName(stack, 'DomainName', {
       domainName,
       certificate: Certificate.fromCertificateArn(stack, 'cert', certArn),
-      endpointType: EndpointType.REGIONAL,
       mtls: {
         bucket,
         key: 'someca.pem',
@@ -250,7 +244,7 @@ describe('DomainName', () => {
     new DomainName(stack, 'DomainName', {
       domainName,
       certificate: Certificate.fromCertificateArn(stack, 'cert2', certArn2),
-      ownershipVerificationCertificate: Certificate.fromCertificateArn(stack, 'ownershipCert', ownershipCertArn),
+      ownershipCertificate: Certificate.fromCertificateArn(stack, 'ownershipCert', ownershipCertArn),
       endpointType: EndpointType.REGIONAL,
       securityPolicy: SecurityPolicy.TLS_1_2,
       mtls: {
