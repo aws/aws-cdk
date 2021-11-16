@@ -28,7 +28,14 @@
         ]
       }
     },
-    "projectReferences": true
+    "projectReferences": true,
+    "metadata": {
+      "jsii": {
+        "rosetta": {
+          "strict": true
+        }
+      }
+    }
   },
   "repository": {
     "type": "git",
@@ -173,16 +180,16 @@
     "@aws-cdk/pkglint": "0.0.0",
     "@types/aws-lambda": "^8.10.85",
     "@types/fs-extra": "^8.1.2",
-    "@types/jest": "^26.0.24",
-    "@types/lodash": "^4.14.176",
+    "@types/jest": "^27.0.2",
+    "@types/lodash": "^4.14.177",
     "@types/minimatch": "^3.0.5",
     "@types/node": "^10.17.60",
     "@types/sinon": "^9.0.11",
     "fast-check": "^2.19.0",
-    "jest": "^26.6.3",
+    "jest": "^27.3.1",
     "lodash": "^4.17.21",
     "sinon": "^9.2.4",
-    "ts-mock-imports": "^1.3.7"
+    "ts-mock-imports": "^1.3.8"
   },
   "dependencies": {
     "@aws-cdk/cloud-assembly-schema": "0.0.0",
@@ -191,7 +198,7 @@
     "@balena/dockerignore": "^1.0.2",
     "constructs": "^3.3.69",
     "fs-extra": "^9.1.0",
-    "ignore": "^5.1.8",
+    "ignore": "^5.1.9",
     "minimatch": "^3.0.4"
   },
   "bundledDependencies": [

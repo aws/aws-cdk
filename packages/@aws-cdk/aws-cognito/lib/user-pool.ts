@@ -8,6 +8,7 @@ import { StandardAttributeNames } from './private/attr-names';
 import { ICustomAttribute, StandardAttribute, StandardAttributes } from './user-pool-attr';
 import { UserPoolClient, UserPoolClientOptions } from './user-pool-client';
 import { UserPoolDomain, UserPoolDomainOptions } from './user-pool-domain';
+import { UserPoolEmail } from './user-pool-email';
 import { IUserPoolIdentityProvider } from './user-pool-idp';
 import { UserPoolResourceServer, UserPoolResourceServerOptions } from './user-pool-resource-server';
 
@@ -570,9 +571,17 @@ export interface UserPoolProps {
 
   /**
    * Email settings for a user pool.
+   *
    * @default - see defaults on each property of EmailSettings.
+   * @deprecated Use 'email' instead.
    */
   readonly emailSettings?: EmailSettings;
+
+  /**
+   * Email settings for a user pool.
+   * @default - cognito will use the default email configuration
+   */
+  readonly email?: UserPoolEmail;
 
   /**
    * Lambda functions to use for supported Cognito triggers.
@@ -788,6 +797,14 @@ export class UserPool extends UserPoolBase {
 
     const passwordPolicy = this.configurePasswordPolicy(props);
 
+    if (props.email && props.emailSettings) {
+      throw new Error('you must either provide "email" or "emailSettings", but not both');
+    }
+    const emailConfiguration = props.email ? props.email._bind(this) : undefinedIfNoKeys({
+      from: encodePuny(props.emailSettings?.from),
+      replyToEmailAddress: encodePuny(props.emailSettings?.replyTo),
+    });
+
     const userPool = new CfnUserPool(this, 'Resource', {
       userPoolName: props.userPoolName,
       usernameAttributes: signIn.usernameAttrs,
@@ -805,10 +822,7 @@ export class UserPool extends UserPoolBase {
       mfaConfiguration: props.mfa,
       enabledMfas: this.mfaConfiguration(props),
       policies: passwordPolicy !== undefined ? { passwordPolicy } : undefined,
-      emailConfiguration: undefinedIfNoKeys({
-        from: encodePuny(props.emailSettings?.from),
-        replyToEmailAddress: encodePuny(props.emailSettings?.replyTo),
-      }),
+      emailConfiguration,
       usernameConfiguration: undefinedIfNoKeys({
         caseSensitive: props.signInCaseSensitive,
       }),
@@ -830,7 +844,7 @@ export class UserPool extends UserPoolBase {
    */
   public addTrigger(operation: UserPoolOperation, fn: lambda.IFunction): void {
     if (operation.operationName in this.triggers) {
-      throw new Error(`A trigger for the operation ${operation} already exists.`);
+      throw new Error(`A trigger for the operation ${operation.operationName} already exists.`);
     }
 
     this.addLambdaPermission(fn, operation.operationName);

@@ -358,13 +358,6 @@ export class DeliveryStream extends DeliveryStreamBase {
       roleArn: role.roleArn,
     } : undefined;
     const readStreamGrant = props.sourceStream?.grantRead(role);
-    /*
-     * Firehose still uses the deprecated DescribeStream API instead of the modern DescribeStreamSummary API.
-     * kinesis.IStream.grantRead does not provide DescribeStream permissions so we add it manually here.
-     */
-    if (readStreamGrant && readStreamGrant.principalStatement) {
-      readStreamGrant.principalStatement.addActions('kinesis:DescribeStream');
-    }
 
     const destinationConfig = props.destinations[0].bind(this, {});
 
