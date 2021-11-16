@@ -673,7 +673,7 @@ class LookedUpApplicationListener extends ExternalApplicationListener {
     });
 
     for (const securityGroupId of props.securityGroupIds) {
-      const securityGroup = ec2.SecurityGroup.fromLookup(this, `SecurityGroup-${securityGroupId}`, securityGroupId);
+      const securityGroup = ec2.SecurityGroup.fromLookupById(this, `SecurityGroup-${securityGroupId}`, securityGroupId);
       this.connections.addSecurityGroup(securityGroup);
     }
   }
