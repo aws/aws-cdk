@@ -23,7 +23,7 @@ describe('custom resource provider', () => {
     // The asset hash constantly changes, so in order to not have to chase it, just look
     // it up from the output.
     const staging = stack.node.tryFindChild('Custom:MyResourceTypeCustomResourceProvider')?.node.tryFindChild('Staging') as AssetStaging;
-    const assetHash = staging.sourceHash;
+    const assetHash = staging.assetHash;
     const paramNames = Object.keys(cfn.Parameters);
     const bucketParam = paramNames[0];
     const keyParam = paramNames[1];
