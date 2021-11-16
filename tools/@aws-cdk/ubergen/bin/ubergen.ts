@@ -12,13 +12,11 @@ const UBER_PACKAGE_JSON_PATH = path.resolve(process.cwd(), 'package.json');
 
 async function main() {
   console.log(`🌴  workspace root path is: ${ROOT_PATH}`);
-
   const uberPackageJson = await fs.readJson(UBER_PACKAGE_JSON_PATH);
-
   const libraries = await findLibrariesToPackage(uberPackageJson);
   await verifyDependencies(uberPackageJson, libraries);
   await prepareSourceFiles(libraries, uberPackageJson);
-  await combineRosettaFixtures(libraries);
+  await combineRosettaFixtures(libraries, uberPackageJson);
 }
 
 main().then(
@@ -246,20 +244,32 @@ async function prepareSourceFiles(libraries: readonly LibraryReference[], packag
   console.log('\t🍺 Success!');
 }
 
-async function combineRosettaFixtures(libraries: readonly LibraryReference[]) {
+async function combineRosettaFixtures(libraries: readonly LibraryReference[], uberPackageJson: PackageJson) {
   console.log('📝 Combining Rosetta fixtures...');
 
   const uberRosettaDir = path.resolve(LIB_ROOT, '..', 'rosetta');
   await fs.remove(uberRosettaDir);
+  await fs.mkdir(uberRosettaDir);
 
   for (const library of libraries) {
     const packageRosettaDir = path.join(library.root, 'rosetta');
     const uberRosettaTargetDir = library.shortName === 'core' ? uberRosettaDir : path.join(uberRosettaDir, library.shortName.replace(/-/g, '_'));
     if (await fs.pathExists(packageRosettaDir)) {
-      await fs.copy(packageRosettaDir, uberRosettaTargetDir, {
-        overwrite: true,
-        recursive: true,
-      });
+      if (!fs.existsSync(uberRosettaTargetDir)) {
+        await fs.mkdir(uberRosettaTargetDir);
+      }
+      const files = await fs.readdir(packageRosettaDir);
+      for (const file of files) {
+        await fs.writeFile(
+          path.join(uberRosettaTargetDir, file),
+          await rewriteImportsInRosettaFixtures(
+            path.join(packageRosettaDir, file),
+            libraries,
+            uberPackageJson.name,
+          ),
+          { encoding: 'utf8' },
+        );
+      }
     }
   }
 
@@ -382,7 +392,7 @@ async function copyOrTransformFiles(from: string, to: string, libraries: readonl
     if (name.endsWith('.ts')) {
       return fs.writeFile(
         destination,
-        await rewriteImports(source, to, libraries),
+        await rewriteImportsInLibs(source, to, libraries),
         { encoding: 'utf8' },
       );
     } else if (name === 'cfn-types-2-classes.json') {
@@ -449,7 +459,37 @@ async function rewriteReadmeImports(fromFile: string, libName: string): Promise<
   }
 }
 
-async function rewriteImports(fromFile: string, targetDir: string, libraries: readonly LibraryReference[]): Promise<string> {
+/**
+ * Rewrites imports in libaries, using the relative path (i.e. '../../assertions').
+ */
+async function rewriteImportsInLibs(fromFile: string, targetDir: string, libraries: readonly LibraryReference[]): Promise<string> {
+  return rewriteImports(fromFile, libraries, (importedFile) => path.relative(targetDir, importedFile));
+}
+
+/**
+ * Rewrites imports in rosetta fixtures, using the external path (i.e. 'aws-cdk-lib/assertions').
+ */
+// eslint-disable-next-line max-len
+async function rewriteImportsInRosettaFixtures(fromFile: string, libraries: readonly LibraryReference[], libName: string): Promise<string> {
+  return rewriteImports(fromFile, libraries, (importedFile) => externalPath(libName, importedFile));
+}
+
+function externalPath(libName: string, filePath: string) {
+  const paths = filePath.split(path.sep);
+  const module = paths[paths.length-1];
+  if (module === 'core') {
+    return libName;
+  } else {
+    return path.join(libName, module);
+  }
+}
+
+/**
+ * Rewrites imports from a file, to target the target directory, using the given libraries.
+ * The function `newImport` determines the rewritten file path from the given file.
+ */
+// eslint-disable-next-line max-len
+async function rewriteImports(fromFile: string, libraries: readonly LibraryReference[], newImport: (file: string) => string): Promise<string> {
   const sourceFile = ts.createSourceFile(
     fromFile,
     await fs.readFile(fromFile, { encoding: 'utf8' }),
@@ -514,9 +554,9 @@ async function rewriteImports(fromFile: string, targetDir: string, libraries: re
     const importedFile = moduleSpecifier === sourceLibrary.packageJson.name
       ? path.join(LIB_ROOT, sourceLibrary.shortName)
       : path.join(LIB_ROOT, sourceLibrary.shortName, moduleSpecifier.substr(sourceLibrary.packageJson.name.length + 1));
-    return ts.createStringLiteral(
-      path.relative(targetDir, importedFile),
-    );
+
+    const importFilePath = newImport(importedFile);
+    return ts.createStringLiteral(importFilePath);
   }
 }
 

@@ -7,6 +7,10 @@ import { ILogSubscriptionDestination, LogSubscriptionDestinationConfig } from '.
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
+import { ArnFormat } from '@aws-cdk/core';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
 import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
@@ -88,7 +92,7 @@ export class CrossAccountDestination extends cdk.Resource implements ILogSubscri
       service: 'logs',
       resource: 'destination',
       resourceName: this.physicalName,
-      sep: ':',
+      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
     });
     this.destinationName = this.getResourceNameAttribute(this.resource.ref);
   }

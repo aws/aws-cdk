@@ -96,7 +96,7 @@ export class ContextProvider {
     // if context is missing or an error occurred during context retrieval,
     // report and return a dummy value.
     if (value === undefined || providerError !== undefined) {
-      stack.reportMissingContext({
+      stack.reportMissingContextKey({
         key,
         provider: options.provider as cxschema.ContextProvider,
         props: props as cxschema.ContextQueryProperties,
