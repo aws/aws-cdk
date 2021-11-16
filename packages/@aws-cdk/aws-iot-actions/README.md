@@ -161,9 +161,7 @@ import * as s3 from '@aws-cdk/aws-s3';
 import * as firehose from '@aws-cdk/aws-kinesisfirehose';
 import * as destinations from '@aws-cdk/aws-kinesisfirehose-destinations';
 
-const bucket = new s3.Bucket(this, 'MyBucket', {
-  removalPolicy: cdk.RemovalPolicy.DESTROY,
-});
+const bucket = new s3.Bucket(this, 'MyBucket');
 const stream = new firehose.DeliveryStream(this, 'MyStream', {
   destinations: [new destinations.S3Bucket(bucket)],
 });
@@ -174,7 +172,7 @@ const topicRule = new iot.TopicRule(this, 'TopicRule', {
     new actions.FirehoseStreamAction(stream, {
       batchMode: true,
       recordSeparator: actions.FirehoseStreamRecordSeparator.NEWLINE,
-    })
+    }),
   ],
 });
 ```
