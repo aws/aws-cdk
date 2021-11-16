@@ -210,7 +210,10 @@ export class HttpRoute extends Resource implements IHttpRoute {
             return 'AWS_IAM';
           }
 
-          return authBindResult?.authorizationType ?? 'NONE'; // must be explicitly NONE (not undefined) for stack updates to work correctly
+          // Provide the authorization type or explicitly 'NONE'. We must use
+          // 'NONE' and not undefined or CloudFormation doesn't remove an
+          // authorizer. @see https://github.com/aws/aws-cdk/pull/14424
+          return authBindResult?.authorizationType ?? 'NONE';
         },
       }),
       authorizationScopes,
