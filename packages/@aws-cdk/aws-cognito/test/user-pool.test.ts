@@ -1,6 +1,7 @@
 import { Match, Template } from '@aws-cdk/assertions';
 import { Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { CfnParameter, Duration, Stack, Tags } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { AccountRecovery, Mfa, NumberAttribute, StringAttribute, UserPool, UserPoolIdentityProvider, UserPoolOperation, VerificationEmailStyle, UserPoolEmail } from '../lib';
@@ -903,7 +904,7 @@ describe('User Pool', () => {
     })).toThrow(/minLength for password must be between/);
   });
 
-  test('email transmission settings are recognized correctly', () => {
+  testDeprecated('email transmission settings are recognized correctly', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -1368,7 +1369,7 @@ describe('User Pool', () => {
     });
   });
 
-  test('email transmission with cyrillic characters are encoded', () => {
+  testDeprecated('email transmission with cyrillic characters are encoded', () => {
     // GIVEN
     const stack = new Stack();
 
