@@ -573,7 +573,12 @@ export class Function extends FunctionBase {
    */
   public readonly deadLetterQueue?: sqs.IQueue;
 
+  /**
+   * The architecture of this Lambda Function (this is an optional attribute and defaults to X86_64).
+   */
+  public readonly architecture?: Architecture;
   public readonly permissionsNode = this.node;
+
 
   protected readonly canCreatePermissions = true;
 
@@ -720,6 +725,8 @@ export class Function extends FunctionBase {
     });
 
     this.runtime = props.runtime;
+
+    this.architecture = props.architecture;
 
     if (props.layers) {
       if (props.runtime === Runtime.FROM_IMAGE) {
