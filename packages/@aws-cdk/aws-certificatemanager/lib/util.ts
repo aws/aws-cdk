@@ -1,4 +1,4 @@
-import { Arn, Stack, Token } from '@aws-cdk/core';
+import { Arn, ArnFormat, Stack, Token } from '@aws-cdk/core';
 import { ICertificate } from './certificate';
 import { DnsValidatedCertificate } from './dns-validated-certificate';
 import { publicSuffixes } from './public-suffixes';
@@ -40,7 +40,7 @@ export function getCertificateRegion(cert: ICertificate): string | undefined {
   }
 
   {
-    const { region } = Arn.parse(certificateArn);
+    const { region } = Arn.split(certificateArn, ArnFormat.SLASH_RESOURCE_NAME);
 
     if (region && !Token.isUnresolved(region)) {
       return region;
