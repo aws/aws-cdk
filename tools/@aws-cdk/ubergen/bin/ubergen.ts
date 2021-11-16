@@ -412,7 +412,7 @@ async function copyOrTransformFiles(from: string, to: string, libraries: readonl
     } else if (name === 'README.md') {
       // Rewrite the README to both adjust imports and remove the redundant stability banner.
       // (All modules included in ubergen-ed packages must be stable, so the banner is unnecessary.)
-      const newReadme = (await rewriteReadmeImports(source))
+      const newReadme = (await rewriteReadmeImports(source, uberPackageJson.name))
         .replace(/<!--BEGIN STABILITY BANNER-->[\s\S]+<!--END STABILITY BANNER-->/gm, '');
 
       return fs.writeFile(
@@ -429,11 +429,11 @@ async function copyOrTransformFiles(from: string, to: string, libraries: readonl
 }
 
 /**
- * Rewrites the imports in README.md from v1 ('@aws-cdk/...') to v2 ('aws-cdk-lib').
+ * Rewrites the imports in README.md from v1 ('@aws-cdk/...') to v2 ('aws-cdk-lib') or monocdk ('monocdk').
  * Uses the module imports (import { aws_foo as foo } from 'aws-cdk-lib') for module imports,
  * and "barrel" imports for types (import { Bucket } from 'aws-cdk-lib/aws-s3').
  */
-async function rewriteReadmeImports(fromFile: string): Promise<string> {
+async function rewriteReadmeImports(fromFile: string, libName: string): Promise<string> {
   const readmeOriginal = await fs.readFile(fromFile, { encoding: 'utf8' });
   return readmeOriginal
     // import * as s3 from '@aws-cdk/aws-s3'
@@ -445,16 +445,16 @@ async function rewriteReadmeImports(fromFile: string): Promise<string> {
 
   function rewriteCdkImports(_match: string, prefix: string, alias: string, module: string, suffix: string): string {
     if (module === 'core') {
-      return `${prefix}import * as ${alias} from 'aws-cdk-lib';${suffix}`;
+      return `${prefix}import * as ${alias} from '${libName}';${suffix}`;
     } else {
-      return `${prefix}import { ${module.replace(/-/g, '_')} as ${alias} } from 'aws-cdk-lib';${suffix}`;
+      return `${prefix}import { ${module.replace(/-/g, '_')} as ${alias} } from '${libName}';${suffix}`;
     }
   }
   function rewriteCdkTypeImports(_match: string, prefix: string, types: string, module: string, suffix: string): string {
     if (module === 'core') {
-      return `${prefix}import ${types} from 'aws-cdk-lib';${suffix}`;
+      return `${prefix}import ${types} from '${libName}';${suffix}`;
     } else {
-      return `${prefix}import ${types} from 'aws-cdk-lib/${module}';${suffix}`;
+      return `${prefix}import ${types} from '${libName}/${module}';${suffix}`;
     }
   }
 }
