@@ -475,7 +475,7 @@ describe('vpc', () => {
       const stack = getTestStack();
       expect(() => {
         new Vpc(stack, 'VPC', {
-          natGateways: 0,
+          maxAzs: 1,
           subnetConfiguration: [
             {
               name: 'public',
