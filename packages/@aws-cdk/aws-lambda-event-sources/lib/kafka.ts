@@ -3,7 +3,7 @@ import { ISecurityGroup, IVpc, SubnetSelection } from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
-import { Stack } from '@aws-cdk/core';
+import { Stack, Names } from '@aws-cdk/core';
 import { StreamEventSource, StreamEventSourceProps } from './stream';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
@@ -101,6 +101,7 @@ export interface SelfManagedKafkaEventSourceProps extends KafkaEventSourceProps 
 export class ManagedKafkaEventSource extends StreamEventSource {
   // This is to work around JSII inheritance problems
   private innerProps: ManagedKafkaEventSourceProps;
+  private _eventSourceMappingId?: string = undefined;
 
   constructor(props: ManagedKafkaEventSourceProps) {
     super(props);
@@ -108,8 +109,8 @@ export class ManagedKafkaEventSource extends StreamEventSource {
   }
 
   public bind(target: lambda.IFunction) {
-    target.addEventSourceMapping(
-      `KafkaEventSource:${this.innerProps.clusterArn}${this.innerProps.topic}`,
+    const eventSourceMapping = target.addEventSourceMapping(
+      `KafkaEventSource:${Names.nodeUniqueId(target.node)}${this.innerProps.topic}`,
       this.enrichMappingOptions({
         eventSourceArn: this.innerProps.clusterArn,
         startingPosition: this.innerProps.startingPosition,
@@ -117,6 +118,8 @@ export class ManagedKafkaEventSource extends StreamEventSource {
         kafkaTopic: this.innerProps.topic,
       }),
     );
+
+    this._eventSourceMappingId = eventSourceMapping.eventSourceMappingId;
 
     if (this.innerProps.secret !== undefined) {
       this.innerProps.secret.grantRead(target);
@@ -145,6 +148,16 @@ export class ManagedKafkaEventSource extends StreamEventSource {
     return sourceAccessConfigurations.length === 0
       ? undefined
       : sourceAccessConfigurations;
+  }
+
+  /**
+  * The identifier for this EventSourceMapping
+  */
+  public get eventSourceMappingId(): string {
+    if (!this._eventSourceMappingId) {
+      throw new Error('KafkaEventSource is not yet bound to an event source mapping');
+    }
+    return this._eventSourceMappingId;
   }
 }
 
