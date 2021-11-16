@@ -2226,7 +2226,16 @@ describe('function', () => {
       architectures: [lambda.Architecture.X86_64, lambda.Architecture.ARM_64],
     })).toThrow(/one architecture must be specified/);
   });
-
+  test('Architecture is properly readable from the function', () => {
+    const stack = new cdk.Stack();
+    const fn = new lambda.Function(stack, 'MyFunction', {
+      code: lambda.Code.fromInline('foo'),
+      runtime: lambda.Runtime.NODEJS_14_X,
+      handler: 'index.handler',
+      architecture: lambda.Architecture.ARM_64,
+    });
+    expect(fn.architecture?.name).toEqual('arm64');
+  });
 });
 
 function newTestLambda(scope: constructs.Construct) {
