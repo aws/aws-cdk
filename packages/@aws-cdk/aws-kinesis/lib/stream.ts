@@ -12,6 +12,8 @@ const READ_OPERATIONS = [
   'kinesis:GetShardIterator',
   'kinesis:ListShards',
   'kinesis:SubscribeToShard',
+  'kinesis:DescribeStream',
+  'kinesis:ListStreams',
 ];
 
 const WRITE_OPERATIONS = [

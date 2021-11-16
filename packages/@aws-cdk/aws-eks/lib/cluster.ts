@@ -118,6 +118,15 @@ export interface ICluster extends IResource, ec2.IConnectable {
   readonly kubectlPrivateSubnets?: ec2.ISubnet[];
 
   /**
+   * An IAM role that can perform kubectl operations against this cluster.
+   *
+   * The role should be mapped to the `system:masters` Kubernetes RBAC role.
+   *
+   * This role is directly passed to the lambda handler that sends Kube Ctl commands to the cluster.
+   */
+  readonly kubectlLambdaRole?: iam.IRole;
+
+  /**
    * An AWS Lambda layer that includes `kubectl`, `helm` and the `aws` CLI.
    *
    * If not defined, a default layer will be used.
@@ -272,6 +281,18 @@ export interface ClusterAttributes {
   readonly kubectlRoleArn?: string;
 
   /**
+   * An IAM role that can perform kubectl operations against this cluster.
+   *
+   * The role should be mapped to the `system:masters` Kubernetes RBAC role.
+   *
+   * This role is directly passed to the lambda handler that sends Kube Ctl commands
+   * to the cluster.
+   * @default - if not specified, the default role created by a lambda function will
+   * be used.
+   */
+  readonly kubectlLambdaRole?: iam.IRole;
+
+  /**
    * Environment variables to use when running `kubectl` against this cluster.
    * @default - no additional variables
    */
@@ -369,11 +390,7 @@ export interface CommonClusterOptions {
    *
    * For example, to only select private subnets, supply the following:
    *
-   * ```ts
-   * vpcSubnets: [
-   *   { subnetType: ec2.SubnetType.Private }
-   * ]
-   * ```
+   * `vpcSubnets: [{ subnetType: ec2.SubnetType.PRIVATE }]`
    *
    * @default - All public and private subnets
    */
@@ -485,9 +502,9 @@ export interface ClusterOptions extends CommonClusterOptions {
    *
    * ```ts
    * const layer = new lambda.LayerVersion(this, 'kubectl-layer', {
-   *   code: lambda.Code.fromAsset(`${__dirname}/layer.zip`)),
-   *   compatibleRuntimes: [lambda.Runtime.PROVIDED]
-   * })
+   *   code: lambda.Code.fromAsset(`${__dirname}/layer.zip`),
+   *   compatibleRuntimes: [lambda.Runtime.PROVIDED],
+   * });
    * ```
    *
    * @default - the layer provided by the `aws-lambda-layer-kubectl` SAR app.
@@ -531,9 +548,9 @@ export interface ClusterOptions extends CommonClusterOptions {
    *
    * ```ts
    * const layer = new lambda.LayerVersion(this, 'proxy-agent-layer', {
-   *   code: lambda.Code.fromAsset(`${__dirname}/layer.zip`)),
-   *   compatibleRuntimes: [lambda.Runtime.NODEJS_12_X]
-   * })
+   *   code: lambda.Code.fromAsset(`${__dirname}/layer.zip`),
+   *   compatibleRuntimes: [lambda.Runtime.NODEJS_12_X],
+   * });
    * ```
    *
    * @default - a layer bundled with this module.
@@ -702,6 +719,14 @@ export interface ClusterProps extends ClusterOptions {
    * @default NODEGROUP
    */
   readonly defaultCapacityType?: DefaultCapacityType;
+
+
+  /**
+   * The IAM role to pass to the Kubectl Lambda Handler.
+   *
+   * @default - Default Lambda IAM Execution Role
+   */
+  readonly kubectlLambdaRole?: iam.IRole;
 }
 
 /**
@@ -771,6 +796,7 @@ abstract class ClusterBase extends Resource implements ICluster {
   public abstract readonly clusterSecurityGroup: ec2.ISecurityGroup;
   public abstract readonly clusterEncryptionConfigKeyArn: string;
   public abstract readonly kubectlRole?: iam.IRole;
+  public abstract readonly kubectlLambdaRole?: iam.IRole;
   public abstract readonly kubectlEnvironment?: { [key: string]: string };
   public abstract readonly kubectlSecurityGroup?: ec2.ISecurityGroup;
   public abstract readonly kubectlPrivateSubnets?: ec2.ISubnet[];
@@ -1010,7 +1036,7 @@ export class Cluster extends ClusterBase {
   /**
    * The AWS generated ARN for the Cluster resource
    *
-   * @example arn:aws:eks:us-west-2:666666666666:cluster/prod
+   * For example, `arn:aws:eks:us-west-2:666666666666:cluster/prod`
    */
   public readonly clusterArn: string;
 
@@ -1019,7 +1045,7 @@ export class Cluster extends ClusterBase {
    *
    * This is the URL inside the kubeconfig file to use with kubectl
    *
-   * @example https://5E1D0CEXAMPLEA591B746AFC5AB30262.yl4.us-west-2.eks.amazonaws.com
+   * For example, `https://5E1D0CEXAMPLEA591B746AFC5AB30262.yl4.us-west-2.eks.amazonaws.com`
    */
   public readonly clusterEndpoint: string;
 
@@ -1076,6 +1102,18 @@ export class Cluster extends ClusterBase {
    * The role should be mapped to the `system:masters` Kubernetes RBAC role.
    */
   public readonly kubectlRole?: iam.IRole;
+
+  /**
+   * An IAM role that can perform kubectl operations against this cluster.
+   *
+   * The role should be mapped to the `system:masters` Kubernetes RBAC role.
+   *
+   * This role is directly passed to the lambda handler that sends Kube Ctl commands to the cluster.
+   * @default - if not specified, the default role created by a lambda function will
+   * be used.
+   */
+
+  public readonly kubectlLambdaRole?: iam.IRole;
 
   /**
    * Custom environment variables when running `kubectl` against this cluster.
@@ -1195,6 +1233,7 @@ export class Cluster extends ClusterBase {
     this.prune = props.prune ?? true;
     this.vpc = props.vpc || new ec2.Vpc(this, 'DefaultVpc');
     this.version = props.version;
+    this.kubectlLambdaRole = props.kubectlLambdaRole ? props.kubectlLambdaRole : undefined;
 
     this.tagSubnets();
 
@@ -1794,7 +1833,8 @@ export interface BootstrapOptions {
   /**
    * Extra arguments to add to the kubelet. Useful for adding labels or taints.
    *
-   * @example --node-labels foo=bar,goo=far
+   * For example, `--node-labels foo=bar,goo=far`.
+   *
    * @default - none
    */
   readonly kubeletExtraArgs?: string;
@@ -1865,6 +1905,7 @@ class ImportedCluster extends ClusterBase {
   public readonly clusterArn: string;
   public readonly connections = new ec2.Connections();
   public readonly kubectlRole?: iam.IRole;
+  public readonly kubectlLambdaRole?: iam.IRole;
   public readonly kubectlEnvironment?: { [key: string]: string; } | undefined;
   public readonly kubectlSecurityGroup?: ec2.ISecurityGroup | undefined;
   public readonly kubectlPrivateSubnets?: ec2.ISubnet[] | undefined;

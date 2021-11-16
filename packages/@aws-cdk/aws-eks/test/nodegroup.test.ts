@@ -3,6 +3,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import * as eks from '../lib';
+import { NodegroupAmiType } from '../lib';
 import { testFixture } from './util';
 
 /* eslint-disable max-len */
@@ -100,7 +101,7 @@ describe('node group', () => {
 
   });
 
-  test('create nodegroup correctly', () => {
+  test('create a default nodegroup correctly', () => {
     // GIVEN
     const { stack, vpc } = testFixture();
 
@@ -131,6 +132,97 @@ describe('node group', () => {
           Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A',
         },
       ],
+      ForceUpdateEnabled: true,
+      ScalingConfig: {
+        DesiredSize: 2,
+        MaxSize: 2,
+        MinSize: 1,
+      },
+    });
+
+
+  });
+
+  test('create a x86_64 bottlerocket nodegroup correctly', () => {
+    // GIVEN
+    const { stack, vpc } = testFixture();
+
+    // WHEN
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+    });
+    new eks.Nodegroup(stack, 'Nodegroup', {
+      cluster,
+      amiType: NodegroupAmiType.BOTTLEROCKET_X86_64,
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::EKS::Nodegroup', {
+      ClusterName: {
+        Ref: 'Cluster9EE0221C',
+      },
+      NodeRole: {
+        'Fn::GetAtt': [
+          'NodegroupNodeGroupRole038A128B',
+          'Arn',
+        ],
+      },
+      Subnets: [
+        {
+          Ref: 'VPCPrivateSubnet1Subnet8BCA10E0',
+        },
+        {
+          Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A',
+        },
+      ],
+      AmiType: 'BOTTLEROCKET_x86_64',
+      ForceUpdateEnabled: true,
+      ScalingConfig: {
+        DesiredSize: 2,
+        MaxSize: 2,
+        MinSize: 1,
+      },
+    });
+
+
+  });
+  test('create a ARM_64 bottlerocket nodegroup correctly', () => {
+    // GIVEN
+    const { stack, vpc } = testFixture();
+
+    // WHEN
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+    });
+    new eks.Nodegroup(stack, 'Nodegroup', {
+      cluster,
+      amiType: NodegroupAmiType.BOTTLEROCKET_ARM_64,
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::EKS::Nodegroup', {
+      ClusterName: {
+        Ref: 'Cluster9EE0221C',
+      },
+      NodeRole: {
+        'Fn::GetAtt': [
+          'NodegroupNodeGroupRole038A128B',
+          'Arn',
+        ],
+      },
+      Subnets: [
+        {
+          Ref: 'VPCPrivateSubnet1Subnet8BCA10E0',
+        },
+        {
+          Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A',
+        },
+      ],
+      AmiType: 'BOTTLEROCKET_ARM_64',
       ForceUpdateEnabled: true,
       ScalingConfig: {
         DesiredSize: 2,

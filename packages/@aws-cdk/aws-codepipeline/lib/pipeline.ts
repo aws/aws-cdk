@@ -263,15 +263,19 @@ abstract class PipelineBase extends Resource implements IPipeline {
  *
  * @example
  * // create a pipeline
- * const pipeline = new Pipeline(this, 'Pipeline');
+ * import * as codecommit from '@aws-cdk/aws-codecommit';
+ *
+ * const pipeline = new codepipeline.Pipeline(this, 'Pipeline');
  *
  * // add a stage
  * const sourceStage = pipeline.addStage({ stageName: 'Source' });
  *
  * // add a source action to the stage
+ * declare const repo: codecommit.Repository;
+ * declare const sourceArtifact: codepipeline.Artifact;
  * sourceStage.addAction(new codepipeline_actions.CodeCommitSourceAction({
  *   actionName: 'Source',
- *   outputArtifactName: 'SourceArtifact',
+ *   output: sourceArtifact,
  *   repository: repo,
  * }));
  *

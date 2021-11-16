@@ -586,6 +586,31 @@ describe('vpc', () => {
 
     });
 
+    test('EIP passed with NAT gateway does not create duplicate EIP', () => {
+      const stack = getTestStack();
+      new Vpc(stack, 'VPC', {
+        cidr: '10.0.0.0/16',
+        subnetConfiguration: [
+          {
+            cidrMask: 24,
+            name: 'ingress',
+            subnetType: SubnetType.PUBLIC,
+          },
+          {
+            cidrMask: 24,
+            name: 'application',
+            subnetType: SubnetType.PRIVATE_WITH_NAT,
+          },
+        ],
+        natGatewayProvider: NatProvider.gateway({ eipAllocationIds: ['b'] }),
+        natGateways: 1,
+      });
+      expect(stack).toCountResources('AWS::EC2::EIP', 0);
+      expect(stack).toHaveResource('AWS::EC2::NatGateway', {
+        AllocationId: 'b',
+      });
+    });
+
     test('with mis-matched nat and subnet configs it throws', () => {
       const stack = getTestStack();
       expect(() => new Vpc(stack, 'VPC', {
