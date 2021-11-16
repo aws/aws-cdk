@@ -230,19 +230,12 @@ export class HttpRoute extends Resource implements IHttpRoute {
     this.routeId = route.ref;
   }
 
-  /**
-   * Enable IAM authorization on the route.
-   */
-  public enableIamAuthorization(): void {
+  public grantInvoke(grantee: iam.IGrantable, options: GrantInvokeOptions = {}): iam.Grant {
     if (this.authorizer) {
       throw new Error('authorizationType has been set, so we cannot enable AWS_IAM authorization');
     }
 
     this.iamEnabled = true;
-  }
-
-  public grantInvoke(grantee: iam.IGrantable, options: GrantInvokeOptions = {}): iam.Grant {
-    this.enableIamAuthorization();
 
     const path = this.path ?? '/';
     // When the user has provided a path with path variables, we replace the
