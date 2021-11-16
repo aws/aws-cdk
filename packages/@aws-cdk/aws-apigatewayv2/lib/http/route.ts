@@ -141,6 +141,9 @@ export interface HttpRouteProps extends BatchHttpRouteOptions {
  * Supported Route Authorizer types
  */
 enum HttpRouteAuthorizationType {
+  /** AWS IAM */
+  AWS_IAM = 'AWS_IAM',
+
   /** JSON Web Tokens */
   JWT = 'JWT',
 
@@ -183,7 +186,7 @@ export class HttpRoute extends Resource implements IHttpRoute {
     }) : undefined;
 
     if (authBindResult && !(authBindResult.authorizationType in HttpRouteAuthorizationType)) {
-      throw new Error('authorizationType should either be JWT, CUSTOM, or NONE');
+      throw new Error('authorizationType should either be AWS_IAM, JWT, CUSTOM, or NONE');
     }
 
     let authorizationScopes = authBindResult?.authorizationScopes;

@@ -216,3 +216,22 @@ api.addRoutes({
   authorizer,
 });
 ```
+
+### IAM Authorizers
+
+IAM Authorizers use IAM policies to control access to your HTTP API. When a client calls your API, API Gateway will check whether the caller has been granted access through IAM to access your API.
+
+```ts
+const authorizer = new HttpIamAuthorizer();
+
+const api = new HttpApi(stack, 'MyHttpApi');
+
+api.addRoutes({
+  path: '/',
+  methods: [HttpMethod.GET],
+  integration: new HttpProxyIntegration({
+    url: 'https://get-books-proxy.myproxy.internal',
+  }),
+  authorizer,
+});
+```

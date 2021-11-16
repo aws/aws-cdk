@@ -307,7 +307,7 @@ describe('HttpRoute', () => {
       integration: new DummyIntegration(),
       routeKey: HttpRouteKey.with('/books', HttpMethod.GET),
       authorizer,
-    })).toThrowError('authorizationType should either be JWT, CUSTOM, or NONE');
+    })).toThrowError('authorizationType should either be AWS_IAM, JWT, CUSTOM, or NONE');
   });
 
   test('granting invoke', () => {
