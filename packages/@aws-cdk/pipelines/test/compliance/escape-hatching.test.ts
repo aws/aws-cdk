@@ -1,6 +1,7 @@
 import { Match, Template } from '@aws-cdk/assertions';
 import * as cp from '@aws-cdk/aws-codepipeline';
 import * as cpa from '@aws-cdk/aws-codepipeline-actions';
+import { describeDeprecated } from '@aws-cdk/cdk-build-tools';
 import { SecretValue, Stack } from '@aws-cdk/core';
 import * as cdkp from '../../lib';
 import { CodePipelineFileSet } from '../../lib';
@@ -128,7 +129,7 @@ describe('with custom Source stage in existing Pipeline', () => {
   });
 });
 
-describe('with Source and Build stages in existing Pipeline', () => {
+describeDeprecated('with Source and Build stages in existing Pipeline', () => {
   beforeEach(() => {
     codePipeline = new cp.Pipeline(pipelineStack, 'CodePipeline', {
       stages: [
