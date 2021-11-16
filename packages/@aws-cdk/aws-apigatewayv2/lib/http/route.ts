@@ -208,9 +208,9 @@ export class HttpRoute extends Resource implements IHttpRoute {
         produce: () => {
           if (this.iamEnabled) {
             return 'AWS_IAM';
-          } else {
-            return authBindResult?.authorizationType ?? 'NONE'; // must be explicitly NONE (not undefined) for stack updates to work correctly
           }
+
+          return authBindResult?.authorizationType ?? 'NONE'; // must be explicitly NONE (not undefined) for stack updates to work correctly
         },
       }),
       authorizationScopes,
