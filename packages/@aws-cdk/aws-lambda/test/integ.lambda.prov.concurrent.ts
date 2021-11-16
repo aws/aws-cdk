@@ -23,7 +23,7 @@ fn.addToRolePolicy(new iam.PolicyStatement({
   actions: ['*'],
 }));
 
-const version = fn.addVersion('1');
+const version = fn.currentVersion;
 
 const alias = new lambda.Alias(stack, 'Alias', {
   aliasName: 'prod',
@@ -40,6 +40,9 @@ const fnVersionPCE = new lambda.Function(stack, 'MyLambdaVersionPCE', {
   code: new lambda.InlineCode(lambdaCode.replace('#type#', 'Version')),
   handler: 'index.handler',
   runtime: lambda.Runtime.NODEJS_10_X,
+  currentVersionOptions: {
+    provisionedConcurrentExecutions: pce,
+  },
 });
 
 fnVersionPCE.addToRolePolicy(new iam.PolicyStatement({
@@ -47,7 +50,7 @@ fnVersionPCE.addToRolePolicy(new iam.PolicyStatement({
   actions: ['*'],
 }));
 
-const version2 = fnVersionPCE.addVersion('2', undefined, undefined, pce);
+const version2 = fnVersionPCE.currentVersion;
 
 const alias2 = new lambda.Alias(stack, 'Alias2', {
   aliasName: 'prod',

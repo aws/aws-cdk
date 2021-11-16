@@ -1571,7 +1571,7 @@ describe('cluster', () => {
         prune: false,
         defaultCapacityInstance: new ec2.InstanceType('m6g.medium'),
       }).addNodegroupCapacity('ng', {
-        instanceType: new ec2.InstanceType('m6g.medium'),
+        instanceTypes: [new ec2.InstanceType('m6g.medium')],
       });
 
       // THEN
@@ -1592,7 +1592,7 @@ describe('cluster', () => {
         prune: false,
         defaultCapacityInstance: new ec2.InstanceType('t4g.medium'),
       }).addNodegroupCapacity('ng', {
-        instanceType: new ec2.InstanceType('t4g.medium'),
+        instanceTypes: [new ec2.InstanceType('t4g.medium')],
       });
 
       // THEN

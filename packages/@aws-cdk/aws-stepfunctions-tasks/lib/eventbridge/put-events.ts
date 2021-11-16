@@ -110,7 +110,7 @@ export class EventBridgePutEvents extends sfn.TaskStateBase {
           return cdk.Stack.of(this).formatArn({
             resource: 'event-bus',
             resourceName: 'default',
-            sep: '/',
+            arnFormat: cdk.ArnFormat.SLASH_RESOURCE_NAME,
             service: 'events',
           });
         }

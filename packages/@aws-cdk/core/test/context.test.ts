@@ -161,7 +161,7 @@ describe('context', () => {
     });
 
     // THEN
-    const error = construct.node.metadata.find(m => m.type === 'aws:cdk:error');
+    const error = construct.node.metadataEntry.find(m => m.type === 'aws:cdk:error');
     expect(error && error.data).toEqual('I had a boo-boo');
 
 

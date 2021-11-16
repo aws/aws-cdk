@@ -25,7 +25,7 @@ test('simple use case', () => {
 
   // verify that metadata contains an "aws:cdk:asset" entry with
   // the correct information
-  const entry = stack.node.metadata.find(m => m.type === 'aws:cdk:asset');
+  const entry = stack.node.metadataEntry.find(m => m.type === 'aws:cdk:asset');
   expect(entry).toBeTruthy();
 
   // verify that now the template contains parameters for this asset
@@ -75,7 +75,7 @@ test('"file" assets', () => {
   const stack = new cdk.Stack();
   const filePath = path.join(__dirname, 'file-asset.txt');
   new Asset(stack, 'MyAsset', { path: filePath });
-  const entry = stack.node.metadata.find(m => m.type === 'aws:cdk:asset');
+  const entry = stack.node.metadataEntry.find(m => m.type === 'aws:cdk:asset');
   expect(entry).toBeTruthy();
 
   // synthesize first so "prepare" is called

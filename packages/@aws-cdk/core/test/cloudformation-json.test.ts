@@ -79,11 +79,11 @@ describe('tokens that return literals', () => {
 
   test('String-encoded lazies do not have quotes applied if they return objects', () => {
     // This is unfortunately crazy behavior, but we have some clients already taking a
-    // dependency on the fact that `Lazy.stringValue({ produce: () => [...some list...] })`
+    // dependency on the fact that `Lazy.string({ produce: () => [...some list...] })`
     // does not apply quotes but just renders the list.
 
     // GIVEN
-    const someList = Lazy.stringValue({ produce: () => [1, 2, 3] as any });
+    const someList = Lazy.string({ produce: () => [1, 2, 3] as any });
 
     // WHEN
     expect(evaluateCFN(stack.resolve(stack.toJsonString({ someList })))).toEqual('{"someList":[1,2,3]}');
@@ -137,7 +137,7 @@ describe('tokens that return literals', () => {
 
   test('Doubly nested strings evaluate correctly in JSON context', () => {
     // WHEN
-    const fidoSays = Lazy.stringValue({ produce: () => 'woof' });
+    const fidoSays = Lazy.string({ produce: () => 'woof' });
 
     // WHEN
     const resolved = stack.resolve(stack.toJsonString({
@@ -150,7 +150,7 @@ describe('tokens that return literals', () => {
 
   test('Quoted strings in embedded JSON context are escaped', () => {
     // GIVEN
-    const fidoSays = Lazy.stringValue({ produce: () => '"woof"' });
+    const fidoSays = Lazy.string({ produce: () => '"woof"' });
 
     // WHEN
     const resolved = stack.resolve(stack.toJsonString({

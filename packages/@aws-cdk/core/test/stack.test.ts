@@ -1,5 +1,5 @@
+import { testDeprecated, testFutureBehavior, testLegacyBehavior } from '@aws-cdk/cdk-build-tools';
 import * as cxapi from '@aws-cdk/cx-api';
-import { testFutureBehavior, testLegacyBehavior } from '@aws-cdk/cdk-build-tools/lib/feature-flag';
 import {
   App, CfnCondition, CfnInclude, CfnOutput, CfnParameter,
   CfnResource, Construct, Lazy, ScopedAws, Stack, validateString,
@@ -241,7 +241,7 @@ describe('stack', () => {
 
   });
 
-  test('Include should support non-hash top-level template elements like "Description"', () => {
+  testDeprecated('Include should support non-hash top-level template elements like "Description"', () => {
     const stack = new Stack();
 
     const template = {

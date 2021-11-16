@@ -10,7 +10,7 @@ test('can use instance reboot as alarm action', () => {
     metric: new cloudwatch.Metric({
       namespace: 'AWS/EC2',
       metricName: 'StatusCheckFailed',
-      dimensions: {
+      dimensionsMap: {
         InstanceId: 'i-03cb889aaaafffeee',
       },
     }),

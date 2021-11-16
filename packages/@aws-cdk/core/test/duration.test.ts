@@ -1,3 +1,4 @@
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Duration, Lazy, Stack, Token } from '../lib';
 
 describe('duration', () => {
@@ -76,7 +77,7 @@ describe('duration', () => {
 
   });
 
-  test('toISOString', () => {
+  testDeprecated('toISOString', () => {
     expect(Duration.millis(0).toISOString()).toEqual('PT0S');
     expect(Duration.seconds(0).toISOString()).toEqual('PT0S');
     expect(Duration.minutes(0).toISOString()).toEqual('PT0S');

@@ -124,7 +124,7 @@ abstract class DeliveryStreamBase extends cdk.Resource implements IDeliveryStrea
     return new cloudwatch.Metric({
       namespace: 'AWS/Firehose',
       metricName: metricName,
-      dimensions: {
+      dimensionsMap: {
         DeliveryStreamName: this.deliveryStreamName,
       },
       ...props,

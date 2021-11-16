@@ -227,7 +227,7 @@ export class Application extends ApplicationBase {
    * applicationArn.
    */
   public static fromApplicationArn(scope: Construct, id: string, applicationArn: string): IApplication {
-    const applicationName = core.Stack.of(scope).parseArn(applicationArn).resourceName;
+    const applicationName = core.Stack.of(scope).splitArn(applicationArn, core.ArnFormat.SLASH_RESOURCE_NAME).resourceName;
     if (!applicationName) {
       throw new Error(`applicationArn for fromApplicationArn (${applicationArn}) must include resource name`);
     }
@@ -296,7 +296,7 @@ export class Application extends ApplicationBase {
         core.Stack.of(this).formatArn({
           service: 'logs',
           resource: 'log-group',
-          sep: ':',
+          arnFormat: core.ArnFormat.COLON_RESOURCE_NAME,
           resourceName: '*',
         }),
       ],

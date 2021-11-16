@@ -22,7 +22,9 @@ describe('proxy', () => {
   test('create a DB proxy from an instance', () => {
     // GIVEN
     const instance = new rds.DatabaseInstance(stack, 'Instance', {
-      engine: rds.DatabaseInstanceEngine.MYSQL,
+      engine: rds.DatabaseInstanceEngine.mysql({
+        version: rds.MysqlEngineVersion.VER_5_7,
+      }),
       vpc,
     });
 

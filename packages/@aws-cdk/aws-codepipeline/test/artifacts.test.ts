@@ -17,7 +17,7 @@ describe('artifacts', () => {
     test('without a name, when used as an input without being used as an output first - should fail validation', () => {
       const stack = new cdk.Stack();
       const sourceOutput = new codepipeline.Artifact();
-      const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
+      new codepipeline.Pipeline(stack, 'Pipeline', {
         stages: [
           {
             stageName: 'Source',
@@ -44,8 +44,7 @@ describe('artifacts', () => {
 
       expect(errors.length).toEqual(1);
       const error = errors[0];
-      expect(error.source).toEqual(pipeline);
-      expect(error.message).toEqual("Action 'Build' is using an unnamed input Artifact, which is not being produced in this pipeline");
+      expect(error).toMatch(/Action 'Build' is using an unnamed input Artifact, which is not being produced in this pipeline/);
 
 
     });
@@ -53,7 +52,7 @@ describe('artifacts', () => {
     test('with a name, when used as an input without being used as an output first - should fail validation', () => {
       const stack = new cdk.Stack();
       const sourceOutput = new codepipeline.Artifact();
-      const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
+      new codepipeline.Pipeline(stack, 'Pipeline', {
         stages: [
           {
             stageName: 'Source',
@@ -80,8 +79,7 @@ describe('artifacts', () => {
 
       expect(errors.length).toEqual(1);
       const error = errors[0];
-      expect(error.source).toEqual(pipeline);
-      expect(error.message).toEqual("Action 'Build' is using input Artifact 'named', which is not being produced in this pipeline");
+      expect(error).toMatch(/Action 'Build' is using input Artifact 'named', which is not being produced in this pipeline/);
 
 
     });
@@ -89,7 +87,7 @@ describe('artifacts', () => {
     test('without a name, when used as an output multiple times - should fail validation', () => {
       const stack = new cdk.Stack();
       const sourceOutput = new codepipeline.Artifact();
-      const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
+      new codepipeline.Pipeline(stack, 'Pipeline', {
         stages: [
           {
             stageName: 'Source',
@@ -117,8 +115,7 @@ describe('artifacts', () => {
 
       expect(errors.length).toEqual(1);
       const error = errors[0];
-      expect(error.source).toEqual(pipeline);
-      expect(error.message).toEqual("Both Actions 'Source' and 'Build' are producting Artifact 'Artifact_Source_Source'. Every artifact can only be produced once.");
+      expect(error).toMatch(/Both Actions 'Source' and 'Build' are producting Artifact 'Artifact_Source_Source'. Every artifact can only be produced once./);
 
 
     });
@@ -177,7 +174,7 @@ describe('artifacts', () => {
       const buildOutput1 = new codepipeline.Artifact('buildOutput1');
       const sourceOutput2 = new codepipeline.Artifact('sourceOutput2');
 
-      const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
+      new codepipeline.Pipeline(stack, 'Pipeline', {
         stages: [
           {
             stageName: 'Source',
@@ -217,8 +214,7 @@ describe('artifacts', () => {
 
       expect(errors.length).toEqual(1);
       const error = errors[0];
-      expect(error.source).toEqual(pipeline);
-      expect(error.message).toEqual("Stage 2 Action 2 ('Build'/'build2') is consuming input Artifact 'buildOutput1' before it is being produced at Stage 2 Action 3 ('Build'/'build1')");
+      expect(error).toMatch(/Stage 2 Action 2 \('Build'\/'build2'\) is consuming input Artifact 'buildOutput1' before it is being produced at Stage 2 Action 3 \('Build'\/'build1'\)/);
 
 
     });
@@ -283,8 +279,16 @@ describe('artifacts', () => {
 });
 
 /* eslint-disable @aws-cdk/no-core-construct */
-function validate(construct: cdk.IConstruct): cdk.ValidationError[] {
-  cdk.ConstructNode.prepare(construct.node);
-  return cdk.ConstructNode.validate(construct.node);
+function validate(construct: cdk.IConstruct): string[] {
+  try {
+    (construct.node.root as cdk.App).synth();
+    return [];
+  } catch (e) {
+    const err = e as any; // coerce unknown to any
+    if (!('message' in err) || !err.message.startsWith('Validation failed')) {
+      throw e;
+    }
+    return err.message.split('\n').slice(1);
+  }
 }
 /* eslint-enable @aws-cdk/no-core-construct */

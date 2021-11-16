@@ -134,7 +134,7 @@ export class CfnOutput extends CfnElement {
    */
   public get importValue() {
     // We made _exportName mutable so this will have to be lazy.
-    return Fn.importValue(Lazy.stringValue({
+    return Fn.importValue(Lazy.uncachedString({
       produce: (ctx) => {
         if (Stack.of(ctx.scope) === this.stack) {
           throw new Error(`'importValue' property of '${this.node.path}' should only be used in a different Stack`);

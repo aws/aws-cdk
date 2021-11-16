@@ -2,6 +2,7 @@ import { spawnSync, SpawnSyncOptions } from 'child_process';
 import * as crypto from 'crypto';
 import { isAbsolute, join } from 'path';
 import { FileSystem } from './fs';
+import { quiet, reset } from './private/jsii-deprecated';
 
 /**
  * Bundling options
@@ -295,9 +296,19 @@ export class DockerImage extends BundlingDockerImage {
     return new DockerImage(image);
   }
 
-  /** @param image The Docker image */
-  constructor(public readonly image: string, _imageHash?: string) {
+  /** The Docker image */
+  public readonly image: string;
+
+  constructor(image: string, _imageHash?: string) {
+    // It is preferrable for the deprecated class to inherit a non-deprecated class.
+    // However, in this case, the opposite has occurred which is incompatible with
+    // a deprecation feature. See https://github.com/aws/jsii/issues/3102.
+    const deprecated = quiet();
+
     super(image, _imageHash);
+
+    reset(deprecated);
+    this.image = image;
   }
 
   /**
@@ -306,14 +317,30 @@ export class DockerImage extends BundlingDockerImage {
    * @return The overridden image name if set or image hash name in that order
    */
   public toJSON() {
-    return super.toJSON();
+    // It is preferrable for the deprecated class to inherit a non-deprecated class.
+    // However, in this case, the opposite has occurred which is incompatible with
+    // a deprecation feature. See https://github.com/aws/jsii/issues/3102.
+    const deprecated = quiet();
+
+    const json = super.toJSON();
+
+    reset(deprecated);
+    return json;
   }
 
   /**
    * Runs a Docker image
    */
   public run(options: DockerRunOptions = {}) {
-    return super.run(options);
+    // It is preferrable for the deprecated class to inherit a non-deprecated class.
+    // However, in this case, the opposite has occurred which is incompatible with
+    // a deprecation feature. See https://github.com/aws/jsii/issues/3102.
+    const deprecated = quiet();
+
+    const result = super.run(options);
+
+    reset(deprecated);
+    return result;
   }
 
   /**
@@ -326,7 +353,15 @@ export class DockerImage extends BundlingDockerImage {
    * @returns the destination path
    */
   public cp(imagePath: string, outputPath?: string): string {
-    return super.cp(imagePath, outputPath);
+    // It is preferrable for the deprecated class to inherit a non-deprecated class.
+    // However, in this case, the opposite has occurred which is incompatible with
+    // a deprecation feature. See https://github.com/aws/jsii/issues/3102.
+    const deprecated = quiet();
+
+    const result = super.cp(imagePath, outputPath);
+
+    reset(deprecated);
+    return result;
   }
 }
 
