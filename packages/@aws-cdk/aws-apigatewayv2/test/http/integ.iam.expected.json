@@ -148,12 +148,12 @@
     }
   },
   "Outputs": {
-    "TestScript": {
+    "API": {
       "Value": {
         "Fn::Join": [
           "",
           [
-            "\necho Expect 403: $(docker run --rm curlimages/curl -s -o/dev/null -w\"%{http_code}\" \"https://",
+            "https://",
             {
               "Ref": "HttpApiF5A9A8A7"
             },
@@ -165,75 +165,27 @@
             {
               "Ref": "AWS::URLSuffix"
             },
-            "/foo\")\necho Expect 200: $(docker run --rm curlimages/curl -s -o/dev/null -w\"%{http_code}\" \"https://",
-            {
-              "Ref": "HttpApiF5A9A8A7"
-            },
-            ".execute-api.",
-            {
-              "Ref": "AWS::Region"
-            },
-            ".",
-            {
-              "Ref": "AWS::URLSuffix"
-            },
-            "/foo\" --user \"",
-            {
-              "Ref": "UserAccess"
-            },
-            ":",
-            {
-              "Fn::GetAtt": [
-                "UserAccess",
-                "SecretAccessKey"
-              ]
-            },
-            "\" --aws-sigv4 \"aws:amz:",
-            {
-              "Ref": "AWS::Region"
-            },
-            ":execute-api\")\necho Expect 403: $(docker run --rm curlimages/curl -s -o/dev/null -w\"%{http_code}\" \"https://",
-            {
-              "Ref": "HttpApiF5A9A8A7"
-            },
-            ".execute-api.",
-            {
-              "Ref": "AWS::Region"
-            },
-            ".",
-            {
-              "Ref": "AWS::URLSuffix"
-            },
-            "/books/something\")\necho Expect 200: $(docker run --rm curlimages/curl -s -o/dev/null -w\"%{http_code}\" \"https://",
-            {
-              "Ref": "HttpApiF5A9A8A7"
-            },
-            ".execute-api.",
-            {
-              "Ref": "AWS::Region"
-            },
-            ".",
-            {
-              "Ref": "AWS::URLSuffix"
-            },
-            "/books/something\" --user \"",
-            {
-              "Ref": "UserAccess"
-            },
-            ":",
-            {
-              "Fn::GetAtt": [
-                "UserAccess",
-                "SecretAccessKey"
-              ]
-            },
-            "\" --aws-sigv4 \"aws:amz:",
-            {
-              "Ref": "AWS::Region"
-            },
-            ":execute-api\")"
+            "/"
           ]
         ]
+      }
+    },
+    "TESTACCESSKEYID": {
+      "Value": {
+        "Ref": "UserAccess"
+      }
+    },
+    "TESTSECRETACCESSKEY": {
+      "Value": {
+        "Fn::GetAtt": [
+          "UserAccess",
+          "SecretAccessKey"
+        ]
+      }
+    },
+    "TESTREGION": {
+      "Value": {
+        "Ref": "AWS::Region"
       }
     }
   }

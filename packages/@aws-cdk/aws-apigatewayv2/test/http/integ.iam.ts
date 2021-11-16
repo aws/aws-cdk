@@ -38,20 +38,31 @@ const booksRoute = new apigatewayv2.HttpRoute(stack, 'BooksRoute', {
 
 booksRoute.grantInvoke(user);
 
-
-const curlCmd = 'docker run --rm curlimages/curl -s -o/dev/null -w"%{http_code}"';
-const authString = `--user "${userAccessKey.ref}:${userAccessKey.attrSecretAccessKey}" --aws-sigv4 "aws:amz:${stack.region}:execute-api"`;
-
-new cdk.CfnOutput(stack, 'TestScript', {
-  value: `
-echo Expect 403: $(${curlCmd} "${httpApi.url!}foo")
-echo Expect 200: $(${curlCmd} "${httpApi.url!}foo" ${authString})
-echo Expect 403: $(${curlCmd} "${httpApi.url!}books/something")
-echo Expect 200: $(${curlCmd} "${httpApi.url!}books/something" ${authString})`,
+new cdk.CfnOutput(stack, 'API', {
+  value: httpApi.url!,
 });
 
-// To verify, run the script emitted from TestScript and check that it outputs this:
-// Expect 403: 403
-// Expect 200: 200
-// Expect 403: 403
-// Expect 200: 200
+new cdk.CfnOutput(stack, 'TESTACCESSKEYID', {
+  value: userAccessKey.ref,
+});
+
+new cdk.CfnOutput(stack, 'TESTSECRETACCESSKEY', {
+  value: userAccessKey.attrSecretAccessKey,
+});
+
+new cdk.CfnOutput(stack, 'TESTREGION', {
+  value: stack.region,
+});
+
+/*
+ * Stack verification steps:
+ * * Get cURL version 7.75.0 or later so you can use the --aws-sigv4 option
+ * * Curl <url>/foo without sigv4 and expect a 403
+ * * Curl <url>/books/something without sigv4 and expect a 403
+ * * Curl <url>/foo with sigv4 from the authorized user and expect 200
+ * * Curl <url>/books/something with sigv4 from the authorized user and expect 200
+ *
+ * Reference:
+ * * Using cURL 7.75.0 or later via the official docker image: docker run --rm curlimages/curl -s -o/dev/null -w"%{http_code}" <url>
+ * * Args to enable sigv4 with authorized credentials: --user "$TESTACCESSKEYID:$TESTSECRETACCESSKEY" --aws-sigv4 "aws:amz:$TESTREGION:execute-api"
+ */
