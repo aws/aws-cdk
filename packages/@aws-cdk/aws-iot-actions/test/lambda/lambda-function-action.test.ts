@@ -55,3 +55,26 @@ test('create a topic rule with lambda action and a lambda permission to be invok
     },
   });
 });
+
+test('When two topic rules have the same action, it should not throw a error', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const func = new lambda.Function(stack, 'MyFunction', {
+    runtime: lambda.Runtime.NODEJS_14_X,
+    handler: 'index.handler',
+    code: lambda.Code.fromInline('console.log("foo")'),
+  });
+  const action = new actions.LambdaFunctionAction(func);
+
+  // WHEN
+  new iot.TopicRule(stack, 'MyTopicRule1', {
+    sql: iot.IotSql.fromStringAsVer20160323("SELECT topic(2) as device_id FROM 'device/+/data'"),
+    actions: [action],
+  });
+
+  // THEN
+  expect(() => new iot.TopicRule(stack, 'MyTopicRule2', {
+    sql: iot.IotSql.fromStringAsVer20160323("SELECT topic(2) as device_id FROM 'device/+/data'"),
+    actions: [action],
+  })).not.toThrow();
+});
