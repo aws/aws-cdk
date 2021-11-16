@@ -238,11 +238,10 @@ export class HttpRoute extends Resource implements IHttpRoute {
     this.iamEnabled = true;
 
     const path = this.path ?? '/';
+    const stage = '*';
     // When the user has provided a path with path variables, we replace the
     // path variable and the rest of the path with a wildcard.
-    const pathSansVariables = path.replace(/\{.*?\}.*/, '');
-    const iamPath = pathSansVariables !== path ? `${pathSansVariables}*` : path;
-    const stage = '*';
+    const iamPath = path.replace(/\{.*?\}.*/, '*');
 
     const resourceArns = (options.httpMethod ?? [HttpMethod.ANY]).map(httpMethod => {
       const iamHttpMethod = httpMethod === HttpMethod.ANY ? '*' : httpMethod;
