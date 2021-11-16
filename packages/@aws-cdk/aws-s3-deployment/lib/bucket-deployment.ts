@@ -15,6 +15,8 @@ import { ISource, SourceConfig } from './source';
 // eslint-disable-next-line no-duplicate-imports, import/order
 import { Construct as CoreConstruct } from '@aws-cdk/core';
 
+// tag value has a limit of 256 characters
+const CUSTOM_RESOURCE_OWNER_TAG = 'aws-cdk:cr-owned';
 /**
  * Properties for `BucketDeployment`.
  */
@@ -292,7 +294,7 @@ export class BucketDeployment extends CoreConstruct {
       filesystem: accessPoint ? lambda.FileSystem.fromEfsAccessPoint(
         accessPoint,
         mountPath,
-      ): undefined,
+      ) : undefined,
     });
 
     const handlerRole = handler.role;
@@ -309,7 +311,8 @@ export class BucketDeployment extends CoreConstruct {
       }));
     }
 
-    new cdk.CustomResource(this, 'CustomResource', {
+    const crUniqueId = `CustomResource${this.renderUniqueId(props.memoryLimit, props.vpc)}`;
+    const cr = new cdk.CustomResource(this, crUniqueId, {
       serviceToken: handler.functionArn,
       resourceType: 'Custom::CDKBucketDeployment',
       properties: {
@@ -328,10 +331,53 @@ export class BucketDeployment extends CoreConstruct {
       },
     });
 
+    let prefix: string = props.destinationKeyPrefix ?
+      `:${props.destinationKeyPrefix}` :
+      '';
+    prefix += `:${cr.node.uniqueId.substr(-8)}`;
+
+    /*
+     * This will add a tag to the deployment bucket like:
+     * {
+     *   Key: 'aws-cdk:cr-owned:deploy/here/:240D17B3',
+     *   Value: 'true',
+     * }
+     *
+     * This will allow for scenarios where there is a single S3 Bucket that has multiple
+     * BucketDeployment resources deploying to it. Each bucket + keyPrefix can be "owned" by
+     * 1 or more BucketDeployment resources. Since there are some scenarios where multiple BucketDeployment
+     * resources can deploy to the same bucket and key prefix (e.g. using include/exclude) we
+     * also append part of the id to make the key unique.
+     *
+     * As long as a bucket + keyPrefix is "owned" by a BucketDeployment resource, another CR
+     * cannot delete data. There are a couple of scenarios where this comes into play.
+     *
+     * 1. If the LogicalResourceId of the CustomResource changes (e.g. the crUniqueId changes)
+     * CloudFormation will first issue a 'Create' to create the new CustomResource and will
+     * update the Tag on the bucket. CloudFormation will then issue a 'Delete' on the old CustomResource
+     * and since the new CR "owns" the Bucket+keyPrefix it will not delete the contents of the bucket
+     *
+     * 2. If the BucketDeployment resource is deleted _and_ it is the only CR for that bucket+keyPrefix
+     * then CloudFormation will first remove the tag from the bucket and then issue a "Delete" to the
+     * CR. Since there are no tags indicating that this bucket+keyPrefix is "owned" then it will delete
+     * the contents.
+     *
+     * 3. If the BucketDeployment resource is deleted _and_ it is *not* the only CR for that bucket:keyPrefix
+     * then CloudFormation will first remove the tag from the bucket and then issue a "Delete" to the CR.
+     * Since there are other CRs that also "own" that bucket+keyPrefix there will still be a tag on the bucket
+     * and the contents will not be removed.
+     *
+     * 4. If the BucketDeployment resource _and_ the S3 Bucket are both removed, then CloudFormation will first
+     * issue a "Delete" to the CR and since there is a tag on the bucket the contents will not be removed. If you
+     * want the contents of the bucket to be removed on bucket deletion, then `autoDeleteObjects` property should
+     * be set to true on the Bucket.
+     */
+    cdk.Tags.of(props.destinationBucket).add(CUSTOM_RESOURCE_OWNER_TAG + prefix, 'true');
+
   }
 
-  private renderSingletonUuid(memoryLimit?: number, vpc?: ec2.IVpc) {
-    let uuid = '8693BB64-9689-44B6-9AAF-B0CC9EB8756C';
+  private renderUniqueId(memoryLimit?: number, vpc?: ec2.IVpc) {
+    let uuid = '';
 
     // if user specify a custom memory limit, define another singleton handler
     // with this configuration. otherwise, it won't be possible to use multiple
@@ -351,6 +397,14 @@ export class BucketDeployment extends CoreConstruct {
     if (vpc) {
       uuid += `-${vpc.node.addr}`;
     }
+
+    return uuid;
+  }
+
+  private renderSingletonUuid(memoryLimit?: number, vpc?: ec2.IVpc) {
+    let uuid = '8693BB64-9689-44B6-9AAF-B0CC9EB8756C';
+
+    uuid += this.renderUniqueId(memoryLimit, vpc);
 
     return uuid;
   }
@@ -453,7 +507,7 @@ export class CacheControl {
      * The raw cache control setting.
      */
     public readonly value: any,
-  ) {}
+  ) { }
 }
 
 /**
@@ -551,7 +605,7 @@ export class Expires {
      * The raw expiration date expression.
      */
     public readonly value: any,
-  ) {}
+  ) { }
 }
 
 /**

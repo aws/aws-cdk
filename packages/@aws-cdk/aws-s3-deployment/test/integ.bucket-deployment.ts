@@ -12,6 +12,7 @@ class TestBucketDeployment extends cdk.Stack {
       websiteIndexDocument: 'index.html',
       publicReadAccess: false,
       removalPolicy: cdk.RemovalPolicy.DESTROY,
+      autoDeleteObjects: true, // needed for integration test cleanup
     });
 
     new s3deploy.BucketDeployment(this, 'DeployMe', {
@@ -29,7 +30,10 @@ class TestBucketDeployment extends cdk.Stack {
       retainOnDelete: false, // default is true, which will block the integration test cleanup
     });
 
-    const bucket2 = new s3.Bucket(this, 'Destination2');
+    const bucket2 = new s3.Bucket(this, 'Destination2', {
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      autoDeleteObjects: true, // needed for integration test cleanup
+    });
 
     new s3deploy.BucketDeployment(this, 'DeployWithPrefix', {
       sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
@@ -38,7 +42,10 @@ class TestBucketDeployment extends cdk.Stack {
       retainOnDelete: false, // default is true, which will block the integration test cleanup
     });
 
-    const bucket3 = new s3.Bucket(this, 'Destination3');
+    const bucket3 = new s3.Bucket(this, 'Destination3', {
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      autoDeleteObjects: true, // needed for integration test cleanup
+    });
 
     new s3deploy.BucketDeployment(this, 'DeployWithMetadata', {
       sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],

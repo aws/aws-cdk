@@ -1,5 +1,7 @@
 import '@aws-cdk/assert-internal/jest';
 import * as path from 'path';
+// import { MatchStyle } from '@aws-cdk/assert-internal';
+import { MatchStyle, objectLike } from '@aws-cdk/assert-internal';
 import * as cloudfront from '@aws-cdk/aws-cloudfront';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
@@ -920,5 +922,106 @@ test('deployment allows vpc and subnets to be implicitly supplied to lambda', ()
         },
       ],
     },
+  });
+});
+
+test('resource id includes memory and vpc', () => {
+
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest');
+  const vpc: ec2.IVpc = new ec2.Vpc(stack, 'SomeVpc2', {});
+
+  // WHEN
+  new s3deploy.BucketDeployment(stack, 'DeployWithVpc2', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+    destinationBucket: bucket,
+    vpc,
+    memoryLimit: 256,
+  });
+
+  // THEN
+  expect(stack).toMatchTemplate({
+    Resources: objectLike({
+      DeployWithVpc2CustomResource256MiBc8a39596cb8641929fcf6a288bc9db5ab7b0f656ad3C5F6E78: objectLike({
+        Type: 'Custom::CDKBucketDeployment',
+      }),
+    }),
+  }, MatchStyle.SUPERSET);
+});
+
+test('bucket includes custom resource owner tag', () => {
+
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest');
+  const vpc: ec2.IVpc = new ec2.Vpc(stack, 'SomeVpc2', {});
+
+  // WHEN
+  new s3deploy.BucketDeployment(stack, 'DeployWithVpc2', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+    destinationBucket: bucket,
+    destinationKeyPrefix: '/a/b/c',
+    vpc,
+    memoryLimit: 256,
+  });
+
+  // THEN
+  expect(stack).toHaveResource('AWS::S3::Bucket', {
+    Tags: [{
+      Key: 'aws-cdk:cr-owned:/a/b/c:3C5F6E78',
+      Value: 'true',
+    }],
+  });
+});
+
+test('bucket has multiple deployments', () => {
+
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest');
+  const vpc: ec2.IVpc = new ec2.Vpc(stack, 'SomeVpc2', {});
+
+  // WHEN
+  new s3deploy.BucketDeployment(stack, 'DeployWithVpc2', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+    destinationBucket: bucket,
+    destinationKeyPrefix: '/a/b/c',
+    vpc,
+    memoryLimit: 256,
+  });
+
+  new s3deploy.BucketDeployment(stack, 'DeployWithVpc2Exclude', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'), {
+      exclude: ['index.html'],
+    })],
+    destinationBucket: bucket,
+    destinationKeyPrefix: '/a/b/c',
+    vpc,
+    memoryLimit: 256,
+  });
+
+  new s3deploy.BucketDeployment(stack, 'DeployWithVpc3', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+    destinationBucket: bucket,
+    destinationKeyPrefix: '/x/z',
+  });
+
+  // THEN
+  expect(stack).toHaveResource('AWS::S3::Bucket', {
+    Tags: [
+      {
+        Key: 'aws-cdk:cr-owned:/a/b/c:3C5F6E78',
+        Value: 'true',
+      },
+      {
+        Key: 'aws-cdk:cr-owned:/a/b/c:9A81AC85',
+        Value: 'true',
+      },
+      {
+        Key: 'aws-cdk:cr-owned:/x/z:DE9E32F1',
+        Value: 'true',
+      },
+    ],
   });
 });
