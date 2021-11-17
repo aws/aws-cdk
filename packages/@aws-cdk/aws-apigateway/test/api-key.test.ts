@@ -66,9 +66,8 @@ describe('api key', () => {
 
     // WHEN
     const importedKey = apigateway.ApiKey.fromApiKeyId(stack, 'imported', 'KeyIdabc');
-    api.addUsagePlan('plan', {
-      apiKey: importedKey,
-    });
+    const usagePlan = api.addUsagePlan('plan');
+    usagePlan.addApiKey(importedKey);
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::ApiGateway::UsagePlanKey', {

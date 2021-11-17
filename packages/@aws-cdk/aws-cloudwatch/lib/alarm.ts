@@ -1,4 +1,4 @@
-import { Lazy, Stack, Token } from '@aws-cdk/core';
+import { ArnFormat, Lazy, Stack, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { IAlarmAction } from './alarm-action';
 import { AlarmBase, IAlarm } from './alarm-base';
@@ -114,7 +114,7 @@ export class Alarm extends AlarmBase {
   public static fromAlarmArn(scope: Construct, id: string, alarmArn: string): IAlarm {
     class Import extends AlarmBase implements IAlarm {
       public readonly alarmArn = alarmArn;
-      public readonly alarmName = Stack.of(scope).parseArn(alarmArn, ':').resourceName!;
+      public readonly alarmName = Stack.of(scope).splitArn(alarmArn, ArnFormat.COLON_RESOURCE_NAME).resourceName!;
     }
     return new Import(scope, id);
   }
@@ -192,7 +192,7 @@ export class Alarm extends AlarmBase {
       service: 'cloudwatch',
       resource: 'alarm',
       resourceName: this.physicalName,
-      sep: ':',
+      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
     });
     this.alarmName = this.getResourceNameAttribute(alarm.ref);
 
