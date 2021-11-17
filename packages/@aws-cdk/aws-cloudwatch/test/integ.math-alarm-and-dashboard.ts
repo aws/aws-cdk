@@ -16,7 +16,7 @@ const queue = new cdk.CfnResource(stack, 'queue', { type: 'AWS::SQS::Queue' });
 const metricA = new cloudwatch.Metric({
   namespace: 'AWS/SQS',
   metricName: 'ApproximateNumberOfMessagesVisible',
-  dimensions: { QueueName: queue.getAtt('QueueName') },
+  dimensionsMap: { QueueName: queue.getAtt('QueueName').toString() },
   period: cdk.Duration.seconds(10),
   label: 'Visible Messages',
 });
@@ -24,7 +24,7 @@ const metricA = new cloudwatch.Metric({
 const metricB = new cloudwatch.Metric({
   namespace: 'AWS/SQS',
   metricName: 'ApproximateNumberOfMessagesNotVisible',
-  dimensions: { QueueName: queue.getAtt('QueueName') },
+  dimensionsMap: { QueueName: queue.getAtt('QueueName').toString() },
   period: cdk.Duration.seconds(30),
   label: 'NotVisible Messages',
 });

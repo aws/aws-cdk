@@ -761,14 +761,21 @@
                     "type": "string"
                 },
                 "securityGroupId": {
-                    "description": "Security group id",
+                    "description": "Security group id (Default - None)",
+                    "type": "string"
+                },
+                "securityGroupName": {
+                    "description": "Security group name (Default - None)",
+                    "type": "string"
+                },
+                "vpcId": {
+                    "description": "VPC ID (Default - None)",
                     "type": "string"
                 }
             },
             "required": [
                 "account",
-                "region",
-                "securityGroupId"
+                "region"
             ]
         },
         "KeyContextQuery": {

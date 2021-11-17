@@ -185,7 +185,7 @@ describe('scaling', () => {
         metric: new cloudwatch.Metric({
           metricName: 'Henk',
           namespace: 'Test',
-          dimensions: {
+          dimensionsMap: {
             Mustache: 'Bushy',
           },
         }),
@@ -220,7 +220,7 @@ describe('scaling', () => {
       metric: new cloudwatch.Metric({
         metricName: 'Legs',
         namespace: 'Henk',
-        dimensions: { Mustache: 'Bushy' },
+        dimensionsMap: { Mustache: 'Bushy' },
       }),
       // Adjust the number of legs to be closer to 2
       scalingSteps: [
