@@ -99,7 +99,7 @@ describe('Code', () => {
         }),
       });
 
-      expect(stack.node.metadata.find(m => m.type === 'aws:cdk:asset')).toBeDefined();
+      expect(stack.node.metadataEntry.find(m => m.type === 'aws:cdk:asset')).toBeDefined();
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         Command: {
           ScriptLocation: {
@@ -256,7 +256,7 @@ describe('Code', () => {
         ],
       };
 
-      expect(stack.node.metadata.find(m => m.type === 'aws:cdk:asset')).toBeDefined();
+      expect(stack.node.metadataEntry.find(m => m.type === 'aws:cdk:asset')).toBeDefined();
       // Job1 and Job2 use reuse the asset
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         Command: {
