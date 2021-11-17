@@ -1,7 +1,8 @@
 import '@aws-cdk/assert-internal/jest';
-import { ABSENT } from '@aws-cdk/assert-internal';
+import { ABSENT, ResourcePart } from '@aws-cdk/assert-internal';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import { LogRetention, RetentionDays } from '../lib';
 
 /* eslint-disable quote-props */
@@ -173,6 +174,27 @@ describe('log retention', () => {
         },
       ],
     });
+
+  });
+
+  test('asset metadata added to log retention construct lambda function', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    stack.node.setContext(cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT, true);
+
+    // WHEN
+    new LogRetention(stack, 'MyLambda', {
+      logGroupName: 'group',
+      retention: RetentionDays.ONE_MONTH,
+    });
+
+    // Then
+    expect(stack).toHaveResource('AWS::Lambda::Function', {
+      Metadata: {
+        'aws:asset:path': 'asset.dd4b26cf376ea5894e31041be239fc518713becdafb8f2894b069a53984fafe9',
+        'aws:asset:property': 'Code',
+      },
+    }, ResourcePart.CompleteDefinition);
 
   });
 });
