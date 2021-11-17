@@ -21,8 +21,42 @@ test('looks up the requested (symmetric) VPC', async () => {
       { SubnetId: 'sub-789012', AvailabilityZone: 'bermuda-triangle-1337', MapPublicIpOnLaunch: false, CidrBlock: '1.1.2.1/24' },
     ],
     routeTables: [
-      { Associations: [{ SubnetId: 'sub-123456' }], RouteTableId: 'rtb-123456' },
-      { Associations: [{ SubnetId: 'sub-789012' }], RouteTableId: 'rtb-789012' },
+      {
+        Associations: [{ SubnetId: 'sub-123456' }],
+        RouteTableId: 'rtb-123456',
+        Routes: [
+          {
+            DestinationCidrBlock: '1.1.1.1/24',
+            GatewayId: 'local',
+            Origin: 'CreateRouteTable',
+            State: 'active',
+          },
+          {
+            DestinationCidrBlock: '0.0.0.0/0',
+            NatGatewayId: 'igw-xxxxxx',
+            Origin: 'CreateRoute',
+            State: 'active',
+          },
+        ],
+      },
+      {
+        Associations: [{ SubnetId: 'sub-789012' }],
+        RouteTableId: 'rtb-789012',
+        Routes: [
+          {
+            DestinationCidrBlock: '1.1.2.1/24',
+            GatewayId: 'local',
+            Origin: 'CreateRouteTable',
+            State: 'active',
+          },
+          {
+            DestinationCidrBlock: '0.0.0.0/0',
+            NatGatewayId: 'nat-xxxxxx',
+            Origin: 'CreateRoute',
+            State: 'active',
+          },
+        ],
+      },
     ],
     vpnGateways: [{ VpnGatewayId: 'gw-abcdef' }],
 
@@ -41,12 +75,12 @@ test('looks up the requested (symmetric) VPC', async () => {
     isolatedSubnetIds: undefined,
     isolatedSubnetNames: undefined,
     isolatedSubnetRouteTableIds: undefined,
-    privateSubnetIds: undefined,
+    privateSubnetIds: ['sub-789012'],
     privateSubnetNames: undefined,
-    privateSubnetRouteTableIds: undefined,
-    publicSubnetIds: undefined,
+    privateSubnetRouteTableIds: ['rtb-789012'],
+    publicSubnetIds: ['sub-123456'],
     publicSubnetNames: undefined,
-    publicSubnetRouteTableIds: undefined,
+    publicSubnetRouteTableIds: ['rtb-123456'],
     subnetGroups: [
       {
         name: 'Public',
@@ -115,8 +149,42 @@ test('uses the VPC main route table when a subnet has no specific association', 
       { SubnetId: 'sub-789012', AvailabilityZone: 'bermuda-triangle-1337', MapPublicIpOnLaunch: false, CidrBlock: '1.1.2.1/24' },
     ],
     routeTables: [
-      { Associations: [{ SubnetId: 'sub-123456' }], RouteTableId: 'rtb-123456' },
-      { Associations: [{ Main: true }], RouteTableId: 'rtb-789012' },
+      {
+        Associations: [{ SubnetId: 'sub-123456' }],
+        RouteTableId: 'rtb-123456',
+        Routes: [
+          {
+            DestinationCidrBlock: '1.1.1.1/24',
+            GatewayId: 'local',
+            Origin: 'CreateRouteTable',
+            State: 'active',
+          },
+          {
+            DestinationCidrBlock: '0.0.0.0/0',
+            NatGatewayId: 'igw-xxxxxx',
+            Origin: 'CreateRoute',
+            State: 'active',
+          },
+        ],
+      },
+      {
+        Associations: [{ Main: true }],
+        RouteTableId: 'rtb-789012',
+        Routes: [
+          {
+            DestinationCidrBlock: '1.1.2.1/24',
+            GatewayId: 'local',
+            Origin: 'CreateRouteTable',
+            State: 'active',
+          },
+          {
+            DestinationCidrBlock: '0.0.0.0/0',
+            NatGatewayId: 'nat-xxxxxx',
+            Origin: 'CreateRoute',
+            State: 'active',
+          },
+        ],
+      },
     ],
     vpnGateways: [{ VpnGatewayId: 'gw-abcdef' }],
   });
@@ -134,12 +202,12 @@ test('uses the VPC main route table when a subnet has no specific association', 
     isolatedSubnetIds: undefined,
     isolatedSubnetNames: undefined,
     isolatedSubnetRouteTableIds: undefined,
-    privateSubnetIds: undefined,
+    privateSubnetIds: ['sub-789012'],
     privateSubnetNames: undefined,
-    privateSubnetRouteTableIds: undefined,
-    publicSubnetIds: undefined,
+    privateSubnetRouteTableIds: ['rtb-789012'],
+    publicSubnetIds: ['sub-123456'],
     publicSubnetNames: undefined,
-    publicSubnetRouteTableIds: undefined,
+    publicSubnetRouteTableIds: ['rtb-123456'],
     subnetGroups: [
       {
         name: 'Public',
@@ -189,7 +257,7 @@ test('Recognize public subnet by route table', async () => {
             VpcPeeringConnectionId: 'pcx-xxxxxx',
           },
           {
-            DestinationCidrBlock: '10.0.1.0/24',
+            DestinationCidrBlock: '1.1.1.1/24',
             GatewayId: 'local',
             Origin: 'CreateRouteTable',
             State: 'active',
@@ -223,13 +291,87 @@ test('Recognize public subnet by route table', async () => {
     privateSubnetIds: undefined,
     privateSubnetNames: undefined,
     privateSubnetRouteTableIds: undefined,
+    publicSubnetIds: ['sub-123456'],
+    publicSubnetNames: undefined,
+    publicSubnetRouteTableIds: ['rtb-123456'],
+    subnetGroups: [
+      {
+        name: 'Public',
+        type: 'Public',
+        subnets: [
+          {
+            subnetId: 'sub-123456',
+            availabilityZone: 'bermuda-triangle-1337',
+            routeTableId: 'rtb-123456',
+            cidr: undefined,
+          },
+        ],
+      },
+    ],
+    vpcId: 'vpc-1234567',
+    vpnGatewayId: undefined,
+  });
+});
+
+test('Recognize private subnet by route table', async () => {
+  // GIVEN
+  mockVpcLookup({
+    subnets: [
+      { SubnetId: 'sub-123456', AvailabilityZone: 'bermuda-triangle-1337', MapPublicIpOnLaunch: false },
+    ],
+    routeTables: [
+      {
+        Associations: [{ SubnetId: 'sub-123456' }],
+        RouteTableId: 'rtb-123456',
+        Routes: [
+          {
+            DestinationCidrBlock: '10.0.2.0/26',
+            Origin: 'CreateRoute',
+            State: 'active',
+            VpcPeeringConnectionId: 'pcx-xxxxxx',
+          },
+          {
+            DestinationCidrBlock: '1.1.2.1/24',
+            GatewayId: 'local',
+            Origin: 'CreateRouteTable',
+            State: 'active',
+          },
+          {
+            DestinationCidrBlock: '0.0.0.0/0',
+            GatewayId: 'nat-xxxxxx',
+            Origin: 'CreateRoute',
+            State: 'active',
+          },
+        ],
+      },
+    ],
+  });
+
+  // WHEN
+  const result = await new VpcNetworkContextProviderPlugin(mockSDK).getValue({
+    account: '1234',
+    region: 'us-east-1',
+    filter: { foo: 'bar' },
+    returnAsymmetricSubnets: true,
+  });
+
+  // THEN
+  expect(result).toEqual({
+    availabilityZones: [],
+    vpcCidrBlock: '1.1.1.1/16',
+    isolatedSubnetIds: undefined,
+    isolatedSubnetNames: undefined,
+    isolatedSubnetRouteTableIds: undefined,
+    privateSubnetIds: ['sub-123456'],
+    privateSubnetNames: undefined,
+    privateSubnetRouteTableIds: ['rtb-123456'],
     publicSubnetIds: undefined,
     publicSubnetNames: undefined,
     publicSubnetRouteTableIds: undefined,
     subnetGroups: [
       {
-        name: 'Public',
-        type: 'Public',
+        name: 'Private',
+        type: 'Private',
         subnets: [
           {
             subnetId: 'sub-123456',
@@ -255,7 +397,30 @@ test('works for asymmetric subnets (not spanning the same Availability Zones)', 
       { SubnetId: 'pub-sub-in-1a', AvailabilityZone: 'us-west-1a', MapPublicIpOnLaunch: true, CidrBlock: '1.1.4.1/24' },
     ],
     routeTables: [
-      { Associations: [{ Main: true }], RouteTableId: 'rtb-123' },
+      {
+        Associations: [{ SubnetId: 'pri-sub-in-1b' }],
+        RouteTableId: 'rtb-123456',
+        Routes: [
+          {
+            DestinationCidrBlock: '0.0.0.0/0',
+            NatGatewayId: 'nat-xxxxxx',
+            Origin: 'CreateRoute',
+            State: 'active',
+          },
+        ],
+      },
+      {
+        Associations: [{ Main: true }],
+        RouteTableId: 'rtb-789012',
+        Routes: [
+          {
+            DestinationCidrBlock: '0.0.0.0/0',
+            NatGatewayId: 'igw-xxxxxx',
+            Origin: 'CreateRoute',
+            State: 'active',
+          },
+        ],
+      },
     ],
   });
 
@@ -274,12 +439,12 @@ test('works for asymmetric subnets (not spanning the same Availability Zones)', 
     isolatedSubnetIds: undefined,
     isolatedSubnetNames: undefined,
     isolatedSubnetRouteTableIds: undefined,
-    privateSubnetIds: undefined,
+    privateSubnetIds: ['pri-sub-in-1b'],
     privateSubnetNames: undefined,
-    privateSubnetRouteTableIds: undefined,
-    publicSubnetIds: undefined,
+    privateSubnetRouteTableIds: ['rtb-123456'],
+    publicSubnetIds: ['pub-sub-in-1a', 'pub-sub-in-1b', 'pub-sub-in-1c'],
     publicSubnetNames: undefined,
-    publicSubnetRouteTableIds: undefined,
+    publicSubnetRouteTableIds: ['rtb-789012'],
     subnetGroups: [
       {
         name: 'Private',
@@ -288,7 +453,7 @@ test('works for asymmetric subnets (not spanning the same Availability Zones)', 
           {
             subnetId: 'pri-sub-in-1b',
             availabilityZone: 'us-west-1b',
-            routeTableId: 'rtb-123',
+            routeTableId: 'rtb-123456',
             cidr: '1.1.1.1/24',
           },
         ],
@@ -300,19 +465,19 @@ test('works for asymmetric subnets (not spanning the same Availability Zones)', 
           {
             subnetId: 'pub-sub-in-1a',
             availabilityZone: 'us-west-1a',
-            routeTableId: 'rtb-123',
+            routeTableId: 'rtb-789012',
             cidr: '1.1.4.1/24',
           },
           {
             subnetId: 'pub-sub-in-1b',
             availabilityZone: 'us-west-1b',
-            routeTableId: 'rtb-123',
+            routeTableId: 'rtb-789012',
             cidr: '1.1.3.1/24',
           },
           {
             subnetId: 'pub-sub-in-1c',
             availabilityZone: 'us-west-1c',
-            routeTableId: 'rtb-123',
+            routeTableId: 'rtb-789012',
             cidr: '1.1.2.1/24',
           },
         ],
@@ -361,7 +526,30 @@ test('allows specifying the subnet group name tag', async () => {
       },
     ],
     routeTables: [
-      { Associations: [{ Main: true }], RouteTableId: 'rtb-123' },
+      {
+        Associations: [{ SubnetId: 'pri-sub-in-1b' }],
+        RouteTableId: 'rtb-123456',
+        Routes: [
+          {
+            DestinationCidrBlock: '0.0.0.0/0',
+            NatGatewayId: 'nat-xxxxxx',
+            Origin: 'CreateRoute',
+            State: 'active',
+          },
+        ],
+      },
+      {
+        Associations: [{ Main: true }],
+        RouteTableId: 'rtb-789012',
+        Routes: [
+          {
+            DestinationCidrBlock: '0.0.0.0/0',
+            NatGatewayId: 'igw-xxxxxx',
+            Origin: 'CreateRoute',
+            State: 'active',
+          },
+        ],
+      },
     ],
   });
 
@@ -379,12 +567,12 @@ test('allows specifying the subnet group name tag', async () => {
     isolatedSubnetIds: undefined,
     isolatedSubnetNames: undefined,
     isolatedSubnetRouteTableIds: undefined,
-    privateSubnetIds: undefined,
+    privateSubnetIds: ['pri-sub-in-1b'],
     privateSubnetNames: undefined,
-    privateSubnetRouteTableIds: undefined,
-    publicSubnetIds: undefined,
+    privateSubnetRouteTableIds: ['rtb-123456'],
+    publicSubnetIds: ['pub-sub-in-1a', 'pub-sub-in-1b', 'pub-sub-in-1c'],
     publicSubnetNames: undefined,
-    publicSubnetRouteTableIds: undefined,
+    publicSubnetRouteTableIds: ['rtb-789012'],
     subnetGroups: [
       {
         name: 'restricted',
