@@ -73,8 +73,10 @@ test('When two topic rules have the same action, it should not throw a error', (
   });
 
   // THEN
-  expect(() => new iot.TopicRule(stack, 'MyTopicRule2', {
-    sql: iot.IotSql.fromStringAsVer20160323("SELECT topic(2) as device_id FROM 'device/+/data'"),
-    actions: [action],
-  })).not.toThrow();
+  expect(() => {
+    new iot.TopicRule(stack, 'MyTopicRule2', {
+      sql: iot.IotSql.fromStringAsVer20160323("SELECT topic(2) as device_id FROM 'device/+/data'"),
+      actions: [action],
+    });
+  }).not.toThrow();
 });
