@@ -1,11 +1,13 @@
 import { Match, Template } from '@aws-cdk/assertions';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import * as stepfunctions from '../lib';
 
 describe('State Machine Resources', () => {
-  test('Tasks can add permissions to the execution role', () => {
+  testDeprecated('Tasks can add permissions to the execution role', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const task = new stepfunctions.Task(stack, 'Task', {
@@ -43,18 +45,13 @@ describe('State Machine Resources', () => {
   test('Tasks hidden inside a Parallel state are also included', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    const task = new stepfunctions.Task(stack, 'Task', {
-      task: {
-        bind: () => ({
-          resourceArn: 'resource',
-          policyStatements: [
-            new iam.PolicyStatement({
-              actions: ['resource:Everything'],
-              resources: ['resource'],
-            }),
-          ],
+    const task = new FakeTask(stack, 'Task', {
+      policies: [
+        new iam.PolicyStatement({
+          actions: ['resource:Everything'],
+          resources: ['resource'],
         }),
-      },
+      ],
     });
 
     const para = new stepfunctions.Parallel(stack, 'Para');
@@ -80,7 +77,7 @@ describe('State Machine Resources', () => {
     });
   }),
 
-  test('Task should render InputPath / Parameters / OutputPath correctly', () => {
+  testDeprecated('Task should render InputPath / Parameters / OutputPath correctly', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const task = new stepfunctions.Task(stack, 'Task', {
@@ -127,7 +124,7 @@ describe('State Machine Resources', () => {
     });
   }),
 
-  test('Task combines taskobject parameters with direct parameters', () => {
+  testDeprecated('Task combines taskobject parameters with direct parameters', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const task = new stepfunctions.Task(stack, 'Task', {
@@ -173,11 +170,7 @@ describe('State Machine Resources', () => {
   test('Created state machine can grant start execution to a role', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    const task = new stepfunctions.Task(stack, 'Task', {
-      task: {
-        bind: () => ({ resourceArn: 'resource' }),
-      },
-    });
+    const task = new FakeTask(stack, 'Task');
     const stateMachine = new stepfunctions.StateMachine(stack, 'StateMachine', {
       definition: task,
     });
@@ -206,11 +199,7 @@ describe('State Machine Resources', () => {
   test('Created state machine can grant read access to a role', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    const task = new stepfunctions.Task(stack, 'Task', {
-      task: {
-        bind: () => ({ resourceArn: 'resource' }),
-      },
-    });
+    const task = new FakeTask(stack, 'Task');
     const stateMachine = new stepfunctions.StateMachine(stack, 'StateMachine', {
       definition: task,
     });
@@ -296,11 +285,7 @@ describe('State Machine Resources', () => {
   test('Created state machine can grant task response actions to the state machine', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    const task = new stepfunctions.Task(stack, 'Task', {
-      task: {
-        bind: () => ({ resourceArn: 'resource' }),
-      },
-    });
+    const task = new FakeTask(stack, 'Task');
     const stateMachine = new stepfunctions.StateMachine(stack, 'StateMachine', {
       definition: task,
     });
@@ -334,11 +319,7 @@ describe('State Machine Resources', () => {
   test('Created state machine can grant actions to the executions', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    const task = new stepfunctions.Task(stack, 'Task', {
-      task: {
-        bind: () => ({ resourceArn: 'resource' }),
-      },
-    });
+    const task = new FakeTask(stack, 'Task');
     const stateMachine = new stepfunctions.StateMachine(stack, 'StateMachine', {
       definition: task,
     });
@@ -399,11 +380,7 @@ describe('State Machine Resources', () => {
   test('Created state machine can grant actions to a role', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    const task = new stepfunctions.Task(stack, 'Task', {
-      task: {
-        bind: () => ({ resourceArn: 'resource' }),
-      },
-    });
+    const task = new FakeTask(stack, 'Task');
     const stateMachine = new stepfunctions.StateMachine(stack, 'StateMachine', {
       definition: task,
     });
@@ -674,18 +651,13 @@ describe('State Machine Resources', () => {
   test('State machines must depend on their roles', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    const task = new stepfunctions.Task(stack, 'Task', {
-      task: {
-        bind: () => ({
-          resourceArn: 'resource',
-          policyStatements: [
-            new iam.PolicyStatement({
-              resources: ['resource'],
-              actions: ['lambda:InvokeFunction'],
-            }),
-          ],
+    const task = new FakeTask(stack, 'Task', {
+      policies: [
+        new iam.PolicyStatement({
+          resources: ['resource'],
+          actions: ['lambda:InvokeFunction'],
         }),
-      },
+      ],
     });
     new stepfunctions.StateMachine(stack, 'StateMachine', {
       definition: task,
@@ -701,3 +673,26 @@ describe('State Machine Resources', () => {
   });
 
 });
+
+interface FakeTaskProps extends stepfunctions.TaskStateBaseProps {
+  readonly policies?: iam.PolicyStatement[];
+}
+
+class FakeTask extends stepfunctions.TaskStateBase {
+  protected readonly taskMetrics?: stepfunctions.TaskMetricsConfig;
+  protected readonly taskPolicies?: iam.PolicyStatement[];
+
+  constructor(scope: Construct, id: string, props: FakeTaskProps = {}) {
+    super(scope, id, props);
+    this.taskPolicies = props.policies;
+  }
+
+  protected _renderTask(): any {
+    return {
+      Resource: 'my-resource',
+      Parameters: stepfunctions.FieldUtils.renderObject({
+        MyParameter: 'myParameter',
+      }),
+    };
+  }
+}

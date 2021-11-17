@@ -192,9 +192,9 @@ export class CustomResourceProvider extends CoreConstruct {
 
     const assetFileName = staging.relativeStagedPath(stack);
 
-    const asset = stack.addFileAsset({
+    const asset = stack.synthesizer.addFileAsset({
       fileName: assetFileName,
-      sourceHash: staging.sourceHash,
+      sourceHash: staging.assetHash,
       packaging: FileAssetPackaging.ZIP_DIRECTORY,
     });
 

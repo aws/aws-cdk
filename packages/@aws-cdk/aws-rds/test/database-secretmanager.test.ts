@@ -10,7 +10,7 @@ describe('database secret manager', () => {
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
-    const existingSecret = secretsmanager.Secret.fromSecretName(stack, 'DBSecret', 'myDBLoginInfo');
+    const existingSecret = secretsmanager.Secret.fromSecretNameV2(stack, 'DBSecret', 'myDBLoginInfo');
 
     // WHEN
     new ServerlessCluster(stack, 'ServerlessDatabase', {
@@ -29,8 +29,30 @@ describe('database secret manager', () => {
           Ref: 'ServerlessDatabaseSubnets5643CD76',
         },
         EngineMode: 'serverless',
-        MasterUsername: '{{resolve:secretsmanager:myDBLoginInfo:SecretString:username::}}',
-        MasterUserPassword: '{{resolve:secretsmanager:myDBLoginInfo:SecretString:password::}}',
+        MasterUsername: {
+          'Fn::Join': [
+            '',
+            [
+              '{{resolve:secretsmanager:arn:',
+              {
+                Ref: 'AWS::Partition',
+              },
+              ':secretsmanager:us-test-1:12345:secret:myDBLoginInfo:SecretString:username::}}',
+            ],
+          ],
+        },
+        MasterUserPassword: {
+          'Fn::Join': [
+            '',
+            [
+              '{{resolve:secretsmanager:arn:',
+              {
+                Ref: 'AWS::Partition',
+              },
+              ':secretsmanager:us-test-1:12345:secret:myDBLoginInfo:SecretString:password::}}',
+            ],
+          ],
+        },
         StorageEncrypted: true,
         VpcSecurityGroupIds: [
           {

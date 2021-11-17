@@ -1840,11 +1840,11 @@ export class PublicSubnet extends Subnet implements IPublicSubnet {
    * Also adds the EIP for the managed NAT.
    * @returns A ref to the the NAT Gateway ID
    */
-  public addNatGateway() {
+  public addNatGateway(eipAllocationId?: string) {
     // Create a NAT Gateway in this public subnet
     const ngw = new CfnNatGateway(this, 'NATGateway', {
       subnetId: this.subnetId,
-      allocationId: new CfnEIP(this, 'EIP', {
+      allocationId: eipAllocationId ?? new CfnEIP(this, 'EIP', {
         domain: 'vpc',
       }).attrAllocationId,
     });

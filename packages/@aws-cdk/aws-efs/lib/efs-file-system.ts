@@ -1,7 +1,7 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { ConcreteDependable, IDependable, IResource, RemovalPolicy, Resource, Size, Stack, Tags } from '@aws-cdk/core';
+import { ArnFormat, ConcreteDependable, IDependable, IResource, RemovalPolicy, Resource, Size, Stack, Tags } from '@aws-cdk/core';
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports
 import { FeatureFlags } from '@aws-cdk/core';
@@ -409,7 +409,7 @@ class ImportedFileSystem extends FileSystemBase {
       resourceName: attrs.fileSystemId,
     });
 
-    const parsedArn = Stack.of(scope).parseArn(this.fileSystemArn);
+    const parsedArn = Stack.of(scope).splitArn(this.fileSystemArn, ArnFormat.SLASH_RESOURCE_NAME);
 
     if (!parsedArn.resourceName) {
       throw new Error(`Invalid FileSystem Arn ${this.fileSystemArn}`);
