@@ -49,17 +49,13 @@ export class SingletonFunction extends FunctionBase {
   public readonly functionName: string;
   public readonly functionArn: string;
   public readonly role?: iam.IRole;
-<<<<<<< HEAD
-  public readonly permissionsNode: cdk.ConstructNode;
+  public readonly permissionsNode: Node;
 
   /**
    * The runtime environment for the Lambda function.
    */
   public readonly runtime: Runtime;
 
-=======
-  public readonly permissionsNode: Node;
->>>>>>> origin/v2-main
   protected readonly canCreatePermissions: boolean;
   private lambdaFunction: LambdaFunction;
 
