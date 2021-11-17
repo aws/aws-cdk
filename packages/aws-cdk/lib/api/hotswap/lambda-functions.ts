@@ -28,6 +28,9 @@ export async function isHotswappableLambdaFunctionChange(
       return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
     }
 
+    /*eslint-disable*/
+    console.log(functionName)
+
     return new LambdaFunctionHotswapOperation({
       physicalName: functionName,
       code: lambdaCodeChange,

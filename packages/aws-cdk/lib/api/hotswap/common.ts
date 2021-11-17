@@ -30,6 +30,15 @@ export enum ChangeHotswapImpact {
    * (for example, it's a change to the CDKMetadata resource).
    */
   IRRELEVANT = 'irrelevant',
+
+  /**
+   * This result means that the given change should not be acted on during a
+   * hotswap deployment.
+   * (for example, it's a change to an AWS::IAM::Policy made when a Custom::CDKBucketDeployment
+   * is being hotswapped).
+   */
+
+  NONE = 'none',
 }
 
 export type ChangeHotswapResult = HotswapOperation | ChangeHotswapImpact;

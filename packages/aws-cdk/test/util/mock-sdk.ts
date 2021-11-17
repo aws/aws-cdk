@@ -110,6 +110,10 @@ export class MockSdkProvider extends SdkProvider {
     (this.sdk as any).stepFunctions = jest.fn().mockReturnValue(partialAwsService<AWS.StepFunctions>(stubs));
   }
 
+  public stubIAM(stubs: SyncHandlerSubsetOf<AWS.IAM>) {
+    (this.sdk as any).iam = jest.fn().mockReturnValue(partialAwsService<AWS.IAM>(stubs));
+  }
+
   public stubGetEndpointSuffix(stub: () => string) {
     this.sdk.getEndpointSuffix = stub;
   }
@@ -129,6 +133,7 @@ export class MockSdk implements ISDK {
   public readonly secretsManager = jest.fn();
   public readonly kms = jest.fn();
   public readonly stepFunctions = jest.fn();
+  public readonly iam = jest.fn();
   public readonly getEndpointSuffix = jest.fn();
 
   public currentAccount(): Promise<Account> {

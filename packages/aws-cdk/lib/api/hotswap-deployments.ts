@@ -8,6 +8,7 @@ import { isHotswappableEcsServiceChange } from './hotswap/ecs-services';
 import { EvaluateCloudFormationTemplate } from './hotswap/evaluate-cloudformation-template';
 import { isHotswappableLambdaFunctionChange } from './hotswap/lambda-functions';
 import { isHotswappableStateMachineChange } from './hotswap/stepfunctions-state-machines';
+import { isHotswappableS3BucketDeploymentChange } from './hotswap/s3-bucket-deployments';
 import { CloudFormationStack } from './util/cloudformation';
 
 /**
@@ -66,13 +67,16 @@ async function findAllHotswappableChanges(
 
     if (resourceHotswapEvaluation === ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT) {
       foundNonHotswappableChange = true;
-    } else if (resourceHotswapEvaluation === ChangeHotswapImpact.IRRELEVANT) {
+    } else if (resourceHotswapEvaluation === ChangeHotswapImpact.IRRELEVANT || resourceHotswapEvaluation === ChangeHotswapImpact.NONE) {
       // empty 'if' just for flow-aware typing to kick in...
     } else {
+      /*eslint-disable*/
+      console.log('pushing')
       promises.push([
         isHotswappableLambdaFunctionChange(logicalId, resourceHotswapEvaluation, evaluateCfnTemplate),
         isHotswappableStateMachineChange(logicalId, resourceHotswapEvaluation, evaluateCfnTemplate),
         isHotswappableEcsServiceChange(logicalId, resourceHotswapEvaluation, evaluateCfnTemplate),
+        isHotswappableS3BucketDeploymentChange(logicalId, resourceHotswapEvaluation, evaluateCfnTemplate),
       ]);
     }
   });
@@ -98,6 +102,20 @@ async function findAllHotswappableChanges(
     // if we found any hotswappable changes, return now
     if (perChangeHotswappableResources.length > 0) {
       hotswappableResources.push(...perChangeHotswappableResources);
+      continue;
+    }
+
+    // this is a roundabout way to continue out of this above for loop
+    let foundNone = false;
+
+    // NONE means that this change is a false change made with another change
+    for (const result of hotswapDetectionResults) {
+      if (result === ChangeHotswapImpact.NONE) {
+        foundNone = true;
+      }
+    }
+
+    if (foundNone) {
       continue;
     }
 
@@ -138,6 +156,8 @@ async function applyAllHotswappableChanges(
   sdk: ISDK, hotswappableChanges: HotswapOperation[],
 ): Promise<void[]> {
   return Promise.all(hotswappableChanges.map(hotswapOperation => {
+    /*eslint-disable*/
+    console.log('applying out')
     return hotswapOperation.apply(sdk);
   }));
 }
