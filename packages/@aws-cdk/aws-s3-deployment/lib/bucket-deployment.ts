@@ -15,7 +15,7 @@ import { ISource, SourceConfig } from './source';
 // eslint-disable-next-line no-duplicate-imports, import/order
 import { Construct as CoreConstruct } from '@aws-cdk/core';
 
-// tag value has a limit of 256 characters
+// tag key has a limit of 128 characters
 const CUSTOM_RESOURCE_OWNER_TAG = 'aws-cdk:cr-owned';
 /**
  * Properties for `BucketDeployment`.
@@ -33,6 +33,8 @@ export interface BucketDeploymentProps {
 
   /**
    * Key prefix in the destination bucket.
+   *
+   * Must be <=104 characters
    *
    * @default "/" (unzip to root of the destination bucket)
    */
@@ -335,6 +337,15 @@ export class BucketDeployment extends CoreConstruct {
       `:${props.destinationKeyPrefix}` :
       '';
     prefix += `:${cr.node.uniqueId.substr(-8)}`;
+    const tagKey = CUSTOM_RESOURCE_OWNER_TAG + prefix;
+
+    // destinationKeyPrefix can be 104 characters before we hit
+    // the tag key limit of 128
+    // '/this/is/a/random/key/prefix/that/is/a/lot/of/characters/do/we/think/that/it/will/ever/be/this/long?????'
+    // better to throw an error here than wait for CloudFormation to fail
+    if (tagKey.length > 128) {
+      throw new Error('The BucketDeployment construct requires that the "destinationKeyPrefix" be <=104 characters');
+    }
 
     /*
      * This will add a tag to the deployment bucket in the format of
@@ -375,7 +386,7 @@ export class BucketDeployment extends CoreConstruct {
      * want the contents of the bucket to be removed on bucket deletion, then `autoDeleteObjects` property should
      * be set to true on the Bucket.
      */
-    cdk.Tags.of(props.destinationBucket).add(CUSTOM_RESOURCE_OWNER_TAG + prefix, 'true');
+    cdk.Tags.of(props.destinationBucket).add(tagKey, 'true');
 
   }
 

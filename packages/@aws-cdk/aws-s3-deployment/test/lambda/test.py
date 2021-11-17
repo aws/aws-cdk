@@ -566,6 +566,26 @@ class TestHandler(unittest.TestCase):
 
         self.assertEqual(update_resp['Reason'], "invalid request: request type is 'Delete' but 'PhysicalResourceId' is not defined")
 
+    # no bucket tags removes content
+    def test_no_tags_on_bucket(self):
+        def mock_make_api_call(self, operation_name, kwarg):
+            if operation_name == 'GetBucketTagging':
+                raise ClientError({'Error': {'Code': 'NoSuchTagSet', 'Message': 'The TagSet does not exist'}}, operation_name)
+            raise ClientError({'Error': {'Code': '500', 'Message': 'Unsupported operation'}}, operation_name)
+
+        with patch('botocore.client.BaseClient._make_api_call', new=mock_make_api_call):
+            invoke_handler("Delete", {
+                "SourceBucketNames": ["<source-bucket>"],
+                "SourceObjectKeys": ["<source-object-key>"],
+                "DestinationBucketName": "<dest-bucket-name>",
+                "RetainOnDelete": "false"
+            }, physical_id="<physicalid>")
+
+        self.assertAwsCommands(
+            ["s3", "rm", "s3://<dest-bucket-name>/", "--recursive"]
+        )
+
+
 
     # asserts that a given list of "aws xxx" commands have been invoked (in order)
     def assertAwsCommands(self, *expected):

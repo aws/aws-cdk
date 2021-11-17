@@ -251,5 +251,7 @@ def bucket_owned(bucketName, keyPrefix):
             Bucket=bucketName,
         )
         return any((x["Key"].startswith(tag)) for x in request["TagSet"])
-    except Exception:
+    except Exception as e:
+        logger.info("| error getting tags from bucket")
+        logger.exception(e)
         return False

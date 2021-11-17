@@ -1,6 +1,5 @@
 import '@aws-cdk/assert-internal/jest';
 import * as path from 'path';
-// import { MatchStyle } from '@aws-cdk/assert-internal';
 import { MatchStyle, objectLike } from '@aws-cdk/assert-internal';
 import * as cloudfront from '@aws-cdk/aws-cloudfront';
 import * as ec2 from '@aws-cdk/aws-ec2';
@@ -973,6 +972,22 @@ test('bucket includes custom resource owner tag', () => {
       Value: 'true',
     }],
   });
+});
+
+test('throws if destinationKeyPrefix is too long', () => {
+
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest');
+
+  // WHEN
+  expect(() => new s3deploy.BucketDeployment(stack, 'DeployWithVpc2', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+    destinationBucket: bucket,
+    destinationKeyPrefix: '/this/is/a/random/key/prefix/that/is/a/lot/of/characters/do/we/think/that/it/will/ever/be/this/long??????',
+    memoryLimit: 256,
+  })).toThrow(/The BucketDeployment construct requires that/);
+
 });
 
 test('bucket has multiple deployments', () => {
