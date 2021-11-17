@@ -2,7 +2,7 @@ import '@aws-cdk/assert-internal/jest';
 import * as path from 'path';
 import { ABSENT, ResourcePart } from '@aws-cdk/assert-internal';
 import * as ecr from '@aws-cdk/aws-ecr';
-import { testFutureBehavior, testLegacyBehavior } from '@aws-cdk/cdk-build-tools';
+import { testLegacyBehavior } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as lambda from '../lib';
@@ -336,33 +336,6 @@ describe('code', () => {
       });
     });
 
-    test('only one Asset object gets created even if multiple functions use the same AssetImageCode', () => {
-      // given
-      const app = new cdk.App();
-      const stack = new cdk.Stack(app, 'MyStack');
-      const directoryAsset = lambda.Code.fromAssetImage(path.join(__dirname, 'docker-lambda-handler'));
-
-      // when
-      new lambda.Function(stack, 'Fn1', {
-        code: directoryAsset,
-        handler: lambda.Handler.FROM_IMAGE,
-        runtime: lambda.Runtime.FROM_IMAGE,
-      });
-
-      new lambda.Function(stack, 'Fn2', {
-        code: directoryAsset,
-        handler: lambda.Handler.FROM_IMAGE,
-        runtime: lambda.Runtime.FROM_IMAGE,
-      });
-
-      // then
-      const assembly = app.synth();
-      const synthesized = assembly.stacks[0];
-
-      // Func1 has an asset, Func2 does not
-      expect(synthesized.assets.length).toEqual(1);
-    });
-
     test('adds code asset metadata', () => {
       // given
       const stack = new cdk.Stack();
@@ -386,7 +359,7 @@ describe('code', () => {
       // then
       expect(stack).toHaveResource('AWS::Lambda::Function', {
         Metadata: {
-          [cxapi.ASSET_RESOURCE_METADATA_PATH_KEY]: 'asset.5a6c1c61bba06af5a86b69c75eaeb9cb1a0dd5d8089ef5b0a4591d17e19960cb',
+          [cxapi.ASSET_RESOURCE_METADATA_PATH_KEY]: 'asset.a9c9d6d081ba0d54102aaf16ab41685f1b2be011e8a60cf48427851946861359',
           [cxapi.ASSET_RESOURCE_METADATA_DOCKERFILE_PATH_KEY]: dockerfilePath,
           [cxapi.ASSET_RESOURCE_METADATA_DOCKER_BUILD_ARGS_KEY]: dockerBuildArgs,
           [cxapi.ASSET_RESOURCE_METADATA_DOCKER_BUILD_TARGET_KEY]: dockerBuildTarget,
@@ -410,7 +383,7 @@ describe('code', () => {
       // then
       expect(stack).toHaveResource('AWS::Lambda::Function', {
         Metadata: {
-          [cxapi.ASSET_RESOURCE_METADATA_PATH_KEY]: 'asset.7ea503e14740780eadd69ea2bacef1de3386f5ac53ea146ea36e28cef5da8b51',
+          [cxapi.ASSET_RESOURCE_METADATA_PATH_KEY]: 'asset.cea95822039f89359d77f8faf5d6da116d1da130ce61a5972190455528ce30d5',
           [cxapi.ASSET_RESOURCE_METADATA_DOCKERFILE_PATH_KEY]: 'Dockerfile',
           [cxapi.ASSET_RESOURCE_METADATA_PROPERTY_KEY]: 'Code.ImageUri',
         },

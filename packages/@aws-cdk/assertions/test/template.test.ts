@@ -1,4 +1,4 @@
-import { App, CfnMapping, CfnOutput, CfnResource, LegacyStackSynthesizer, Stack } from '@aws-cdk/core';
+import { App, CfnMapping, CfnOutput, CfnResource, LegacyStackSynthesizer, NestedStack, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { Match, Template } from '../lib';
 
