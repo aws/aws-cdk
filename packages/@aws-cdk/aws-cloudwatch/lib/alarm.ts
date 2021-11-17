@@ -381,16 +381,16 @@ export class Alarm extends AlarmBase {
       return false;
     }
 
-    // if this is a region-agnostic stack, we can't assume anything about stat.account
-    // and therefore we assume its a cross-account call
-    if (Token.isUnresolved(stackAccount)) {
-      return true;
-    }
-
     // ok, we can compare the two concrete values directly - if they are the same we
     // can omit the account ID from the metric.
     if (stackAccount === stat.account) {
       return false;
+    }
+
+    // if this is a region-agnostic stack, we can't assume anything about stat.account
+    // and therefore we assume its a cross-account call
+    if (Token.isUnresolved(stackAccount)) {
+      return true;
     }
 
     return true;

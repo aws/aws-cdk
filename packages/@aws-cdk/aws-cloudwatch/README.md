@@ -206,6 +206,26 @@ const topic = new sns.Topic(this, 'Topic');
 alarm.addAlarmAction(new cw_actions.SnsAction(topic));
 ```
 
+#### Notification formats
+
+Alarms can be created in one of two "formats":
+
+- With "top-level parameters" (these are the classic style of CloudWatch Alarms).
+- With a list of metrics specifications (these are the modern style of CloudWatch Alarms).
+
+For backwards compatibility, CDK will try to create classic, top-level CloudWatch alarms
+as much as possible, unless you are using features that cannot be expressed in that format.
+Features that require the new-style alarm format are:
+
+- Metric math
+- Account IDs
+- Labels
+
+The difference between these two does not impact the functionality of the alarm in any way,
+*except* that the SNS notification format the Alarm sends out will change. If you
+are writing code to consume the CloudWatch notifications, be sure to handle both
+formats.
+
 ### Composite Alarms
 
 [Composite Alarms](https://aws.amazon.com/about-aws/whats-new/2020/03/amazon-cloudwatch-now-allows-you-to-combine-multiple-alarms/)
