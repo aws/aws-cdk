@@ -1,4 +1,3 @@
-//import * as iam from '@aws-cdk/aws-iam';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as eks from '@aws-cdk/aws-eks';
 import { AwsAuthMapping } from '@aws-cdk/aws-eks';
@@ -87,11 +86,7 @@ const startJobRunJob = new EmrContainersStartJobRun(stack, 'Start a Job Run', {
   },
 });
 
-// const deleteVirtualCluster = new EmrContainersDeleteVirtualCluster(stack, 'Delete a Virtual Cluster', {
-//   virtualClusterId: sfn.TaskInput.fromText(virtualCluster.getAtt('Id').toString()),
-// });
-
-const chain = sfn.Chain.start(startJobRunJob);//.next(deleteVirtualCluster);
+const chain = sfn.Chain.start(startJobRunJob);
 
 const sm = new sfn.StateMachine(stack, 'StateMachine', {
   definition: chain,
