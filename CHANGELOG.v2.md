@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.0.0-rc.30](https://github.com/aws/aws-cdk/compare/v2.0.0-rc.29...v2.0.0-rc.30) (2021-11-17)
+
 ## [2.0.0-rc.29](https://github.com/aws/aws-cdk/compare/v2.0.0-rc.28...v2.0.0-rc.29) (2021-11-10)
 
 ## [2.0.0-rc.28](https://github.com/aws/aws-cdk/compare/v2.0.0-rc.27...v2.0.0-rc.28) (2021-11-09)
