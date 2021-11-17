@@ -1,6 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
-import * as constructs from 'constructs';
+import { Construct } from 'constructs';
 import * as stepfunctions from '../lib';
 
 describe('States Language', () => {
@@ -710,7 +710,7 @@ class SimpleChain extends stepfunctions.StateMachineFragment {
   public readonly endStates: stepfunctions.INextable[];
 
   private readonly task2: stepfunctions.TaskStateBase;
-  constructor(scope: constructs.Construct, id: string) {
+  constructor(scope: Construct, id: string) {
     super(scope, id);
 
     const task1 = new FakeTask(this, 'Task1');
