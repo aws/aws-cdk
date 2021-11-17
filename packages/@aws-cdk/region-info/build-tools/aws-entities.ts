@@ -28,6 +28,7 @@ export const AWS_REGIONS = [
   'us-gov-east-1', // AWS GovCloud (US-East)
   'us-gov-west-1', // AWS GovCloud (US-West)
   'us-iso-east-1', // AWS ISO
+  'us-iso-west-1', // AWS ISO (West)
   'us-isob-east-1', // AWS ISO-B
   'us-west-1', // US West (N. California)
   'us-west-2', // US West (Oregon)
