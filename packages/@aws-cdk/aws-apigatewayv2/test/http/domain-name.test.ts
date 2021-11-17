@@ -271,6 +271,23 @@ describe('DomainName', () => {
     });
   });
 
+  test('throws when ownerhsip cert is used for non-mtls domain', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const t = () => {
+      new DomainName(stack, 'DomainName', {
+        domainName,
+        certificate: Certificate.fromCertificateArn(stack, 'cert2', certArn2),
+        ownershipCertificate: Certificate.fromCertificateArn(stack, 'ownershipCert', ownershipCertArn),
+      });
+    };
+
+    // THEN
+    expect(t).toThrow(/ownership certificate can only be used with mtls domains/);
+  });
+
   test('add new configuration to a domain name for migration', () => {
     // GIVEN
     const stack = new Stack();
@@ -281,7 +298,7 @@ describe('DomainName', () => {
       certificate: Certificate.fromCertificateArn(stack, 'cert', certArn),
       endpointType: EndpointType.REGIONAL,
     });
-    dn.addDomainNameConfiguration({
+    dn.addEndpoint({
       domainName,
       certificate: Certificate.fromCertificateArn(stack, 'cert2', certArn2),
       endpointType: EndpointType.EDGE,
@@ -301,5 +318,26 @@ describe('DomainName', () => {
         },
       ],
     });
+  });
+
+  test('throws when endpoint types for two domain name configurations are the same', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const t = () => {
+      const dn = new DomainName(stack, 'DomainName', {
+        domainName,
+        certificate: Certificate.fromCertificateArn(stack, 'cert', certArn),
+        endpointType: EndpointType.REGIONAL,
+      });
+      dn.addEndpoint({
+        domainName,
+        certificate: Certificate.fromCertificateArn(stack, 'cert2', certArn2),
+      });
+    };
+
+    // THEN
+    expect(t).toThrow(/no two domain name configurations should have the same endpointType/);
   });
 });

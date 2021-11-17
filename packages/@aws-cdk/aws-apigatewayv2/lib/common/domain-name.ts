@@ -167,6 +167,11 @@ export class DomainName extends Resource implements IDomainName {
       throw new Error('empty string for domainName not allowed');
     }
 
+    // validation for ownership certificate
+    if (props.ownershipCertificate && !props.mtls) {
+      throw new Error('ownership certificate can only be used with mtls domains');
+    }
+
     const mtlsConfig = this.configureMTLS(props.mtls);
     const domainNameProps: CfnDomainNameProps = {
       domainName: props.domainName,
@@ -179,7 +184,7 @@ export class DomainName extends Resource implements IDomainName {
     this.regionalHostedZoneId = Token.asString(resource.getAtt('RegionalHostedZoneId'));
 
     if (props.certificate) {
-      this.addDomainNameConfiguration(props);
+      this.addEndpoint(props);
     }
   }
 
@@ -194,9 +199,9 @@ export class DomainName extends Resource implements IDomainName {
   /**
    * Adds a configuration to a domain name. Properties like certificate, endpoint type and security policy can be set using this method.
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apigatewayv2-domainname-domainnameconfiguration.html
-   * @param props - domain name properties to be set
+   * @param props domain name properties to be set
    */
-  public addDomainNameConfiguration(props: DomainNameProps) : void {
+  public addEndpoint(props: DomainNameProps) : void {
     const domainNameConfig: CfnDomainName.DomainNameConfigurationProperty = {
       certificateArn: props.certificate.certificateArn,
       certificateName: props.certificateName,
@@ -205,6 +210,20 @@ export class DomainName extends Resource implements IDomainName {
       securityPolicy: props.securityPolicy?.toString(),
     };
 
+    if (this.isDuplicateEndpointType(domainNameConfig.endpointType)) {
+      throw new Error('no two domain name configurations should have the same endpointType');
+    }
+
     this.domainNameConfigurations.push(domainNameConfig);
+  }
+
+  // validates whether the new domain name configuration has a unique endpoint or not
+  private isDuplicateEndpointType(endpointType: string | undefined) : boolean {
+    for (let config of this.domainNameConfigurations) {
+      if (endpointType && endpointType == config.endpointType) {
+        return true;
+      }
+    }
+    return false;
   }
 }
