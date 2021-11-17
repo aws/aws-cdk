@@ -17,7 +17,7 @@ fn.addToRolePolicy(new iam.PolicyStatement({
   actions: ['*'],
 }));
 
-const version = fn.addVersion('1');
+const version = fn.currentVersion;
 
 const alias = new lambda.Alias(stack, 'Alias', {
   aliasName: 'prod',
