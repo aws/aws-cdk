@@ -56,7 +56,7 @@ test('create a topic rule with lambda action and a lambda permission to be invok
   });
 });
 
-test('When two topic rules have the same action, it should not throw a error', () => {
+test('create two different permissions, when two topic rules have the same action', () => {
   // GIVEN
   const stack = new cdk.Stack();
   const func = new lambda.Function(stack, 'MyFunction', {
@@ -71,12 +71,11 @@ test('When two topic rules have the same action, it should not throw a error', (
     sql: iot.IotSql.fromStringAsVer20160323("SELECT topic(2) as device_id FROM 'device/+/data'"),
     actions: [action],
   });
+  new iot.TopicRule(stack, 'MyTopicRule2', {
+    sql: iot.IotSql.fromStringAsVer20160323("SELECT topic(2) as device_id FROM 'device/+/data'"),
+    actions: [action],
+  });
 
   // THEN
-  expect(() => {
-    new iot.TopicRule(stack, 'MyTopicRule2', {
-      sql: iot.IotSql.fromStringAsVer20160323("SELECT topic(2) as device_id FROM 'device/+/data'"),
-      actions: [action],
-    });
-  }).not.toThrow();
+  Template.fromStack(stack).resourceCountIs('AWS::Lambda::Permission', 2);
 });
