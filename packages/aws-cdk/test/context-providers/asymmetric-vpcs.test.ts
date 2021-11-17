@@ -33,7 +33,7 @@ test('looks up the requested (symmetric) VPC', async () => {
           },
           {
             DestinationCidrBlock: '0.0.0.0/0',
-            NatGatewayId: 'igw-xxxxxx',
+            GatewayId: 'igw-xxxxxx',
             Origin: 'CreateRoute',
             State: 'active',
           },
@@ -161,7 +161,7 @@ test('uses the VPC main route table when a subnet has no specific association', 
           },
           {
             DestinationCidrBlock: '0.0.0.0/0',
-            NatGatewayId: 'igw-xxxxxx',
+            GatewayId: 'igw-xxxxxx',
             Origin: 'CreateRoute',
             State: 'active',
           },
@@ -338,7 +338,7 @@ test('Recognize private subnet by route table', async () => {
           },
           {
             DestinationCidrBlock: '0.0.0.0/0',
-            GatewayId: 'nat-xxxxxx',
+            NatGatewayId: 'nat-xxxxxx',
             Origin: 'CreateRoute',
             State: 'active',
           },
@@ -415,7 +415,7 @@ test('works for asymmetric subnets (not spanning the same Availability Zones)', 
         Routes: [
           {
             DestinationCidrBlock: '0.0.0.0/0',
-            NatGatewayId: 'igw-xxxxxx',
+            GatewayId: 'igw-xxxxxx',
             Origin: 'CreateRoute',
             State: 'active',
           },
@@ -544,7 +544,7 @@ test('allows specifying the subnet group name tag', async () => {
         Routes: [
           {
             DestinationCidrBlock: '0.0.0.0/0',
-            NatGatewayId: 'igw-xxxxxx',
+            GatewayId: 'igw-xxxxxx',
             Origin: 'CreateRoute',
             State: 'active',
           },

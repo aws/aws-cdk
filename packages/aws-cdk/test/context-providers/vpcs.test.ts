@@ -25,8 +25,42 @@ test('looks up the requested VPC', async () => {
       { SubnetId: 'sub-789012', AvailabilityZone: 'bermuda-triangle-1337', MapPublicIpOnLaunch: false },
     ],
     routeTables: [
-      { Associations: [{ SubnetId: 'sub-123456' }], RouteTableId: 'rtb-123456' },
-      { Associations: [{ SubnetId: 'sub-789012' }], RouteTableId: 'rtb-789012' },
+      {
+        Associations: [{ SubnetId: 'sub-123456' }],
+        RouteTableId: 'rtb-123456',
+        Routes: [
+          {
+            DestinationCidrBlock: '1.1.1.1/24',
+            GatewayId: 'local',
+            Origin: 'CreateRouteTable',
+            State: 'active',
+          },
+          {
+            DestinationCidrBlock: '0.0.0.0/0',
+            GatewayId: 'igw-xxxxxx',
+            Origin: 'CreateRoute',
+            State: 'active',
+          },
+        ],
+      },
+      {
+        Associations: [{ SubnetId: 'sub-789012' }],
+        RouteTableId: 'rtb-789012',
+        Routes: [
+          {
+            DestinationCidrBlock: '1.1.2.1/24',
+            GatewayId: 'local',
+            Origin: 'CreateRouteTable',
+            State: 'active',
+          },
+          {
+            DestinationCidrBlock: '0.0.0.0/0',
+            NatGatewayId: 'nat-xxxxxx',
+            Origin: 'CreateRoute',
+            State: 'active',
+          },
+        ],
+      },
     ],
     vpnGateways: [{ VpnGatewayId: 'gw-abcdef' }],
 
@@ -105,8 +139,42 @@ test('uses the VPC main route table when a subnet has no specific association', 
       { SubnetId: 'sub-789012', AvailabilityZone: 'bermuda-triangle-1337', MapPublicIpOnLaunch: false },
     ],
     routeTables: [
-      { Associations: [{ SubnetId: 'sub-123456' }], RouteTableId: 'rtb-123456' },
-      { Associations: [{ Main: true }], RouteTableId: 'rtb-789012' },
+      {
+        Associations: [{ SubnetId: 'sub-123456' }],
+        RouteTableId: 'rtb-123456',
+        Routes: [
+          {
+            DestinationCidrBlock: '1.1.1.1/24',
+            GatewayId: 'local',
+            Origin: 'CreateRouteTable',
+            State: 'active',
+          },
+          {
+            DestinationCidrBlock: '0.0.0.0/0',
+            GatewayId: 'igw-xxxxxx',
+            Origin: 'CreateRoute',
+            State: 'active',
+          },
+        ],
+      },
+      {
+        Associations: [{ Main: true }],
+        RouteTableId: 'rtb-789012',
+        Routes: [
+          {
+            DestinationCidrBlock: '1.1.2.1/24',
+            GatewayId: 'local',
+            Origin: 'CreateRouteTable',
+            State: 'active',
+          },
+          {
+            DestinationCidrBlock: '0.0.0.0/0',
+            NatGatewayId: 'nat-xxxxxx',
+            Origin: 'CreateRoute',
+            State: 'active',
+          },
+        ],
+      },
     ],
     vpnGateways: [{ VpnGatewayId: 'gw-abcdef' }],
   });
