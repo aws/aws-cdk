@@ -21,7 +21,7 @@ describe('assets', () => {
     });
 
     // THEN
-    const assetMetadata = stack.node.metadataEntry.find(({ type }) => type === cxschema.ArtifactMetadataEntryType.ASSET);
+    const assetMetadata = stack.node.metadata.find(({ type }) => type === cxschema.ArtifactMetadataEntryType.ASSET);
 
     expect(assetMetadata && assetMetadata.data).toBeDefined();
 
@@ -81,7 +81,7 @@ describe('assets', () => {
     });
 
     // THEN
-    const assetMetadata = stack.node.metadataEntry.find(({ type }) => type === cxschema.ArtifactMetadataEntryType.ASSET);
+    const assetMetadata = stack.node.metadata.find(({ type }) => type === cxschema.ArtifactMetadataEntryType.ASSET);
 
     expect(assetMetadata && assetMetadata.data).toBeDefined();
 
@@ -105,7 +105,7 @@ describe('assets', () => {
     });
 
     // THEN
-    const assetMetadata = stack.node.metadataEntry.find(({ type }) => type === cxschema.ArtifactMetadataEntryType.ASSET);
+    const assetMetadata = stack.node.metadata.find(({ type }) => type === cxschema.ArtifactMetadataEntryType.ASSET);
 
     expect(assetMetadata && assetMetadata.data).toBeDefined();
 
@@ -131,7 +131,7 @@ describe('assets', () => {
     });
 
     // THEN
-    const assetMetadata = stack.node.metadataEntry.find(({ type }) => type === cxschema.ArtifactMetadataEntryType.ASSET);
+    const assetMetadata = stack.node.metadata.find(({ type }) => type === cxschema.ArtifactMetadataEntryType.ASSET);
 
     expect(assetMetadata && assetMetadata.data).toBeDefined();
 
