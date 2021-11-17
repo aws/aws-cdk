@@ -159,7 +159,7 @@ class RouteTables {
    * Whether the given subnet has a route to a NAT Gateway
    */
   public hasRouteToNatGateway(subnetId: string | undefined): boolean {
-    const table = this.tableForSubnet(subnetId);
+    const table = this.tableForSubnet(subnetId) || this.mainRouteTable;
 
     return !!table && !!table.Routes && table.Routes.some(route => !!route.NatGatewayId && route.DestinationCidrBlock === '0.0.0.0/0');
   }
@@ -168,7 +168,7 @@ class RouteTables {
    * Whether the given subnet has a route to an IGW
    */
   public hasRouteToIgw(subnetId: string | undefined): boolean {
-    const table = this.tableForSubnet(subnetId);
+    const table = this.tableForSubnet(subnetId) || this.mainRouteTable;
 
     return !!table && !!table.Routes && table.Routes.some(route => !!route.GatewayId && route.GatewayId.startsWith('igw-'));
   }
