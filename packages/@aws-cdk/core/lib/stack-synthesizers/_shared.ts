@@ -80,9 +80,9 @@ function collectStackMetadata(stack: Stack) {
       return;
     }
 
-    if (node.node.metadataEntry.length > 0) {
+    if (node.node.metadata.length > 0) {
       // Make the path absolute
-      output[Node.PATH_SEP + node.node.path] = node.node.metadataEntry.map(md => stack.resolve(md) as cxschema.MetadataEntry);
+      output[Node.PATH_SEP + node.node.path] = node.node.metadata.map(md => stack.resolve(md) as cxschema.MetadataEntry);
     }
 
     for (const child of node.node.children) {

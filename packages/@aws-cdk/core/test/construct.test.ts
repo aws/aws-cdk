@@ -65,16 +65,6 @@ describe('construct', () => {
 
   });
 
-  test('dont allow unresolved tokens to be used in construct IDs', () => {
-    // GIVEN
-    const root = new Root();
-    const token = Lazy.string({ produce: () => 'lazy' });
-
-    // WHEN + THEN
-    expect(() => new Construct(root, `MyID: ${token}`)).toThrow(/Cannot use tokens in construct ID: MyID: \${Token/);
-
-  });
-
   testDeprecated('construct.uniqueId returns a tree-unique alphanumeric id of this construct', () => {
     const root = new Root();
 
@@ -245,18 +235,18 @@ describe('construct', () => {
     const previousValue = reEnableStackTraceCollection();
     const root = new Root();
     const con = new Construct(root, 'MyConstruct');
-    expect(con.node.metadataEntry).toEqual([]);
+    expect(con.node.metadata).toEqual([]);
 
     con.node.addMetadata('key', 'value', { stackTrace: true });
     con.node.addMetadata('number', 103);
     con.node.addMetadata('array', [123, 456]);
     restoreStackTraceColection(previousValue);
 
-    expect(con.node.metadataEntry[0].type).toEqual('key');
-    expect(con.node.metadataEntry[0].data).toEqual('value');
-    expect(con.node.metadataEntry[1].data).toEqual(103);
-    expect(con.node.metadataEntry[2].data).toEqual([123, 456]);
-    expect(con.node.metadataEntry[0].trace && con.node.metadataEntry[0].trace[1].indexOf('FIND_ME')).toEqual(-1);
+    expect(con.node.metadata[0].type).toEqual('key');
+    expect(con.node.metadata[0].data).toEqual('value');
+    expect(con.node.metadata[1].data).toEqual(103);
+    expect(con.node.metadata[2].data).toEqual([123, 456]);
+    expect(con.node.metadata[0].trace && con.node.metadata[0].trace[1].indexOf('FIND_ME')).toEqual(-1);
 
   });
 
@@ -269,7 +259,7 @@ describe('construct', () => {
     con.node.addMetadata('False', false);
     con.node.addMetadata('Empty', '');
 
-    const exists = (key: string) => con.node.metadataEntry.find(x => x.type === key);
+    const exists = (key: string) => con.node.metadata.find(x => x.type === key);
 
     expect(exists('Null')).toBeUndefined();
     expect(exists('Undefined')).toBeUndefined();
@@ -286,9 +276,9 @@ describe('construct', () => {
     Annotations.of(con).addWarning('This construct is deprecated, use the other one instead');
     restoreStackTraceColection(previousValue);
 
-    expect(con.node.metadataEntry[0].type).toEqual(cxschema.ArtifactMetadataEntryType.WARN);
-    expect(con.node.metadataEntry[0].data).toEqual('This construct is deprecated, use the other one instead');
-    expect(con.node.metadataEntry[0].trace && con.node.metadataEntry[0].trace.length > 0).toEqual(true);
+    expect(con.node.metadata[0].type).toEqual(cxschema.ArtifactMetadataEntryType.WARN);
+    expect(con.node.metadata[0].data).toEqual('This construct is deprecated, use the other one instead');
+    expect(con.node.metadata[0].trace && con.node.metadata[0].trace.length > 0).toEqual(true);
 
   });
 
@@ -299,9 +289,9 @@ describe('construct', () => {
     Annotations.of(con).addError('Stop!');
     restoreStackTraceColection(previousValue);
 
-    expect(con.node.metadataEntry[0].type).toEqual(cxschema.ArtifactMetadataEntryType.ERROR);
-    expect(con.node.metadataEntry[0].data).toEqual('Stop!');
-    expect(con.node.metadataEntry[0].trace && con.node.metadataEntry[0].trace.length > 0).toEqual(true);
+    expect(con.node.metadata[0].type).toEqual(cxschema.ArtifactMetadataEntryType.ERROR);
+    expect(con.node.metadata[0].data).toEqual('Stop!');
+    expect(con.node.metadata[0].trace && con.node.metadata[0].trace.length > 0).toEqual(true);
 
   });
 
@@ -312,9 +302,9 @@ describe('construct', () => {
     Annotations.of(con).addInfo('Hey there, how do you do?');
     restoreStackTraceColection(previousValue);
 
-    expect(con.node.metadataEntry[0].type).toEqual(cxschema.ArtifactMetadataEntryType.INFO);
-    expect(con.node.metadataEntry[0].data).toEqual('Hey there, how do you do?');
-    expect(con.node.metadataEntry[0].trace && con.node.metadataEntry[0].trace.length > 0).toEqual(true);
+    expect(con.node.metadata[0].type).toEqual(cxschema.ArtifactMetadataEntryType.INFO);
+    expect(con.node.metadata[0].data).toEqual('Hey there, how do you do?');
+    expect(con.node.metadata[0].trace && con.node.metadata[0].trace.length > 0).toEqual(true);
 
   });
 
