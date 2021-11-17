@@ -218,7 +218,7 @@ as much as possible, unless you are using features that cannot be expressed in t
 Features that require the new-style alarm format are:
 
 - Metric math
-- Account IDs
+- Cross-account metrics
 - Labels
 
 The difference between these two does not impact the functionality of the alarm
