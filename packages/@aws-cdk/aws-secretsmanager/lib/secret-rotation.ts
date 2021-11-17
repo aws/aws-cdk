@@ -245,6 +245,18 @@ export interface SecretRotationProps {
    * @default - no additional characters are explicitly excluded
    */
   readonly excludeCharacters?: string;
+
+  /**
+   * The VPC interface endpoint to use for the Secrets Manager API
+   *
+   * If you enable private DNS hostnames for your VPC private endpoint (the default), you don't
+   * need to specify an endpoint. The standard Secrets Manager DNS hostname the Secrets Manager
+   * CLI and SDKs use by default (https://secretsmanager.<region>.amazonaws.com) automatically
+   * resolves to your VPC endpoint.
+   *
+   * @default https://secretsmanager.<region>.amazonaws.com
+   */
+  readonly endpoint?: ec2.IInterfaceVpcEndpoint;
 }
 
 /**
@@ -272,7 +284,7 @@ export class SecretRotation extends CoreConstruct {
     props.target.connections.allowDefaultPortFrom(securityGroup);
 
     const parameters: { [key: string]: string } = {
-      endpoint: `https://secretsmanager.${Stack.of(this).region}.${Stack.of(this).urlSuffix}`,
+      endpoint: `https://${props.endpoint ? `${props.endpoint.vpcEndpointId}.` : ''}secretsmanager.${Stack.of(this).region}.${Stack.of(this).urlSuffix}`,
       functionName: rotationFunctionName,
       vpcSubnetIds: props.vpc.selectSubnets(props.vpcSubnets).subnetIds.join(','),
       vpcSecurityGroupIds: securityGroup.securityGroupId,
