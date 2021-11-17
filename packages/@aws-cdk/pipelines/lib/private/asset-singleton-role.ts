@@ -1,6 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
 import { PolicyStatement } from '@aws-cdk/aws-iam';
-import { ConcreteDependable, Stack } from '@aws-cdk/core';
+import { ArnFormat, ConcreteDependable, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 
 /**
@@ -20,7 +20,7 @@ export class AssetSingletonRole extends iam.Role {
       resources: [Stack.of(this).formatArn({
         service: 'logs',
         resource: 'log-group',
-        sep: ':',
+        arnFormat: ArnFormat.COLON_RESOURCE_NAME,
         resourceName: '/aws/codebuild/*',
       })],
       actions: ['logs:CreateLogGroup', 'logs:CreateLogStream', 'logs:PutLogEvents'],
