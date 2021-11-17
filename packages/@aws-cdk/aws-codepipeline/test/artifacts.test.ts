@@ -1,4 +1,5 @@
 import '@aws-cdk/assert-internal/jest';
+import { SynthUtils } from '@aws-cdk/assert-internal';
 import * as cdk from '@aws-cdk/core';
 import * as codepipeline from '../lib';
 import { FakeBuildAction } from './fake-build-action';
@@ -40,7 +41,10 @@ describe('artifacts', () => {
         ],
       });
 
-      const errors = validate(stack);
+      // synthesize - this is where names for artifact without names are allocated
+      SynthUtils.synthesize(stack, { skipValidation: true });
+
+      const errors = pipeline.node.validate();
 
       expect(errors.length).toEqual(1);
       const error = errors[0];
@@ -75,7 +79,7 @@ describe('artifacts', () => {
         ],
       });
 
-      const errors = validate(stack);
+      const errors = pipeline.node.validate();
 
       expect(errors.length).toEqual(1);
       const error = errors[0];
@@ -111,8 +115,9 @@ describe('artifacts', () => {
         ],
       });
 
-      const errors = validate(stack);
+      SynthUtils.synthesize(stack, { skipValidation: true });
 
+      const errors = pipeline.node.validate();
       expect(errors.length).toEqual(1);
       const error = errors[0];
       expect(error).toMatch(/Both Actions 'Source' and 'Build' are producting Artifact 'Artifact_Source_Source'. Every artifact can only be produced once./);
@@ -210,7 +215,7 @@ describe('artifacts', () => {
         ],
       });
 
-      const errors = validate(stack);
+      const errors = pipeline.node.validate();
 
       expect(errors.length).toEqual(1);
       const error = errors[0];

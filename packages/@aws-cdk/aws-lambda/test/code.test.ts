@@ -2,7 +2,7 @@ import '@aws-cdk/assert-internal/jest';
 import * as path from 'path';
 import { ABSENT, ResourcePart } from '@aws-cdk/assert-internal';
 import * as ecr from '@aws-cdk/aws-ecr';
-import { testFutureBehavior } from '@aws-cdk/cdk-build-tools';
+import { testFutureBehavior, testLegacyBehavior } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as lambda from '../lib';
@@ -31,7 +31,11 @@ describe('code', () => {
 
     test('only one Asset object gets created even if multiple functions use the same AssetCode', () => {
       // GIVEN
-      const app = new cdk.App();
+      const app = new cdk.App({
+        context: {
+          [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
+        },
+      });
       const stack = new cdk.Stack(app, 'MyStack');
       const directoryAsset = lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler'));
 
@@ -278,8 +282,7 @@ describe('code', () => {
   });
 
   describe('lambda.Code.fromImageAsset', () => {
-    const flags = { [cxapi.DOCKER_IGNORE_SUPPORT]: true };
-    testFutureBehavior('repository uri is correctly identified', flags, cdk.App, (app) => {
+    testLegacyBehavior('repository uri is correctly identified', cdk.App, (app) => {
       // given
       const stack = new cdk.Stack(app);
 

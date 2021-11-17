@@ -446,23 +446,7 @@ describe('ec2 service', () => {
         KeyPolicy: {
           Statement: [
             {
-              Action: [
-                'kms:Create*',
-                'kms:Describe*',
-                'kms:Enable*',
-                'kms:List*',
-                'kms:Put*',
-                'kms:Update*',
-                'kms:Revoke*',
-                'kms:Disable*',
-                'kms:Get*',
-                'kms:Delete*',
-                'kms:ScheduleKeyDeletion',
-                'kms:CancelKeyDeletion',
-                'kms:GenerateDataKey',
-                'kms:TagResource',
-                'kms:UntagResource',
-              ],
+              Action: 'kms:*',
               Effect: 'Allow',
               Principal: {
                 AWS: {
@@ -667,23 +651,7 @@ describe('ec2 service', () => {
         KeyPolicy: {
           Statement: [
             {
-              Action: [
-                'kms:Create*',
-                'kms:Describe*',
-                'kms:Enable*',
-                'kms:List*',
-                'kms:Put*',
-                'kms:Update*',
-                'kms:Revoke*',
-                'kms:Disable*',
-                'kms:Get*',
-                'kms:Delete*',
-                'kms:ScheduleKeyDeletion',
-                'kms:CancelKeyDeletion',
-                'kms:GenerateDataKey',
-                'kms:TagResource',
-                'kms:UntagResource',
-              ],
+              Action: 'kms:*',
               Effect: 'Allow',
               Principal: {
                 AWS: {
