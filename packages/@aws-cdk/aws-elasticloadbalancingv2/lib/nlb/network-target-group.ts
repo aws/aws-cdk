@@ -213,7 +213,7 @@ export class NetworkTargetGroup extends TargetGroupBase implements INetworkTarge
     return new cloudwatch.Metric({
       namespace: 'AWS/NetworkELB',
       metricName,
-      dimensions: { LoadBalancer: this.firstLoadBalancerFullName, TargetGroup: this.targetGroupFullName },
+      dimensionsMap: { LoadBalancer: this.firstLoadBalancerFullName, TargetGroup: this.targetGroupFullName },
       ...props,
     }).attachTo(this);
   }
