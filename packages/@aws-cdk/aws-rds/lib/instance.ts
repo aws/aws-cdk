@@ -380,7 +380,7 @@ export interface DatabaseInstanceNewProps {
    * When creating a read replica, you must enable automatic backups on the source
    * database instance by setting the backup retention to a value other than zero.
    *
-   * @default Duration.days(1)
+   * @default - Duration.days(1) for source instances, disabled for read replicas
    */
   readonly backupRetention?: Duration;
 
@@ -1142,6 +1142,12 @@ export class DatabaseInstanceReadReplica extends DatabaseInstanceNew implements 
 
   constructor(scope: Construct, id: string, props: DatabaseInstanceReadReplicaProps) {
     super(scope, id, props);
+
+    if (props.sourceDatabaseInstance.engine
+        && !props.sourceDatabaseInstance.engine.supportsReadReplicaBackups
+        && props.backupRetention) {
+      throw new Error(`Cannot set \`backupRetention\` for a ${props.sourceDatabaseInstance.engine.engineType} read replica. Automatic backups are not supported.`);
+    }
 
     const instance = new CfnDBInstance(this, 'Resource', {
       ...this.newCfnProps,
