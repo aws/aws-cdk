@@ -551,7 +551,7 @@ export class Cluster extends Resource implements ICluster {
     return new cloudwatch.Metric({
       namespace: 'AWS/ECS',
       metricName,
-      dimensions: { ClusterName: this.clusterName },
+      dimensionsMap: { ClusterName: this.clusterName },
       ...props,
     }).attachTo(this);
   }

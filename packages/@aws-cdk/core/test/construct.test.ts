@@ -1,3 +1,4 @@
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { Construct, ConstructOrder, IConstruct } from 'constructs';
 import { Names } from '../lib';
@@ -64,7 +65,7 @@ describe('construct', () => {
 
   });
 
-  test('construct.uniqueId returns a tree-unique alphanumeric id of this construct', () => {
+  testDeprecated('construct.uniqueId returns a tree-unique alphanumeric id of this construct', () => {
     const root = new Root();
 
     const child1 = new Construct(root, 'This is the first child');
@@ -79,7 +80,7 @@ describe('construct', () => {
 
   });
 
-  test('cannot calculate uniqueId if the construct path is ["Default"]', () => {
+  testDeprecated('cannot calculate uniqueId if the construct path is ["Default"]', () => {
     const root = new Root();
     const c = new Construct(root, 'Default');
     expect(() => Names.uniqueId(c)).toThrow(/Unable to calculate a unique id for an empty set of components/);

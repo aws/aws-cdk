@@ -2,6 +2,7 @@ import '@aws-cdk/assert-internal/jest';
 import { ResourcePart } from '@aws-cdk/assert-internal';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
+import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import * as lambda from '../lib';
 
@@ -109,6 +110,57 @@ describe('singleton lambda', () => {
     }, ResourcePart.CompleteDefinition);
   });
 
+  test('Environment is added to Lambda, when .addEnvironment() is provided one key pair', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const singleton = new lambda.SingletonFunction(stack, 'Singleton', {
+      uuid: '84c0de93-353f-4217-9b0b-45b6c993251a',
+      code: new lambda.InlineCode('def hello(): pass'),
+      runtime: lambda.Runtime.PYTHON_2_7,
+      handler: 'index.hello',
+      timeout: cdk.Duration.minutes(5),
+    });
+
+    // WHEN
+    singleton.addEnvironment('KEY', 'value');
+
+    // THEN
+    expect(stack).toHaveResource('AWS::Lambda::Function', {
+      Environment: {
+        Variables: {
+          KEY: 'value',
+        },
+      },
+    });
+  });
+
+  test('Layer is added to Lambda, when .addLayers() is provided a valid layer', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const singleton = new lambda.SingletonFunction(stack, 'Singleton', {
+      uuid: '84c0de93-353f-4217-9b0b-45b6c993251a',
+      code: new lambda.InlineCode('def hello(): pass'),
+      runtime: lambda.Runtime.PYTHON_2_7,
+      handler: 'index.hello',
+      timeout: cdk.Duration.minutes(5),
+    });
+    const bucket = new s3.Bucket(stack, 'Bucket');
+    const layer = new lambda.LayerVersion(stack, 'myLayer', {
+      code: new lambda.S3Code(bucket, 'ObjectKey'),
+      compatibleRuntimes: [lambda.Runtime.PYTHON_2_7],
+    });
+
+    // WHEN
+    singleton.addLayers(layer);
+
+    // THEN
+    expect(stack).toHaveResource('AWS::Lambda::Function', {
+      Layers: [{
+        Ref: 'myLayerBA1B098A',
+      }],
+    });
+  });
+
   test('grantInvoke works correctly', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -152,6 +204,41 @@ describe('singleton lambda', () => {
     // THEN
     expect(() => singleton._checkEdgeCompatibility())
       .toThrow(/contains environment variables .* and is not compatible with Lambda@Edge/);
+  });
+
+  test('logGroup is correctly returned', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const singleton = new lambda.SingletonFunction(stack, 'Singleton', {
+      uuid: '84c0de93-353f-4217-9b0b-45b6c993251a',
+      code: new lambda.InlineCode('def hello(): pass'),
+      runtime: lambda.Runtime.PYTHON_2_7,
+      handler: 'index.hello',
+      timeout: cdk.Duration.minutes(5),
+    });
+
+    // THEN
+    expect(singleton.logGroup.logGroupName).toBeDefined();
+    expect(singleton.logGroup.logGroupArn).toBeDefined();
+  });
+
+  test('runtime is correctly returned', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const singleton = new lambda.SingletonFunction(stack, 'Singleton', {
+      uuid: '84c0de93-353f-4217-9b0b-45b6c993251a',
+      code: new lambda.InlineCode('def hello(): pass'),
+      runtime: lambda.Runtime.PYTHON_2_7,
+      handler: 'index.hello',
+      timeout: cdk.Duration.minutes(5),
+    });
+
+    // THEN
+    expect(singleton.runtime).toStrictEqual(lambda.Runtime.PYTHON_2_7);
   });
 
   test('current version of a singleton function', () => {

@@ -4,6 +4,7 @@ import { Construct } from 'constructs';
 import { ILogGroup } from './log-group';
 import { CfnDestination } from './logs.generated';
 import { ILogSubscriptionDestination, LogSubscriptionDestinationConfig } from './subscription-filter';
+import { ArnFormat } from '@aws-cdk/core';
 
 /**
  * Properties for a CrossAccountDestination
@@ -84,7 +85,7 @@ export class CrossAccountDestination extends cdk.Resource implements ILogSubscri
       service: 'logs',
       resource: 'destination',
       resourceName: this.physicalName,
-      sep: ':',
+      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
     });
     this.destinationName = this.getResourceNameAttribute(this.resource.ref);
   }

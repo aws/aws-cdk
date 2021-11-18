@@ -1,7 +1,7 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { FeatureFlags, IResource, RemovalPolicy, Resource, Size, Stack, Tags } from '@aws-cdk/core';
+import { ArnFormat, FeatureFlags, IResource, RemovalPolicy, Resource, Size, Stack, Tags } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct, DependencyGroup, IDependable } from 'constructs';
 import { AccessPoint, AccessPointOptions } from './access-point';
@@ -406,7 +406,7 @@ class ImportedFileSystem extends FileSystemBase {
       resourceName: attrs.fileSystemId,
     });
 
-    const parsedArn = Stack.of(scope).parseArn(this.fileSystemArn);
+    const parsedArn = Stack.of(scope).splitArn(this.fileSystemArn, ArnFormat.SLASH_RESOURCE_NAME);
 
     if (!parsedArn.resourceName) {
       throw new Error(`Invalid FileSystem Arn ${this.fileSystemArn}`);

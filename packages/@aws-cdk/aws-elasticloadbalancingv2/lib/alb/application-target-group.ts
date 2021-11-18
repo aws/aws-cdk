@@ -250,7 +250,7 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
     return new cloudwatch.Metric({
       namespace: 'AWS/ApplicationELB',
       metricName,
-      dimensions: {
+      dimensionsMap: {
         TargetGroup: this.targetGroupFullName,
         LoadBalancer: this.firstLoadBalancerFullName,
       },

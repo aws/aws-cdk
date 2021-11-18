@@ -1,7 +1,7 @@
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as cdk from '@aws-cdk/core';
+import { Service, ConnectToProps } from '../service';
 import { Construct } from 'constructs';
-import { Service } from '../service';
 
 /**
  * The types of capacity that are supported. These capacity types may change the
@@ -222,8 +222,9 @@ export abstract class ServiceExtension {
    *
    * @param service - The other service to connect to.
    */
-  public connectToService(service: Service) {
+  public connectToService(service: Service, connectToProps: ConnectToProps) {
     service = service;
+    connectToProps = connectToProps;
   }
 }
 
