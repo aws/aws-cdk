@@ -7,9 +7,9 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
+import { testFutureBehavior } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import { testFutureBehavior } from '@aws-cdk/cdk-build-tools/lib/feature-flag';
 import * as rds from '../lib';
 
 let stack: cdk.Stack;
@@ -258,8 +258,8 @@ describe('instance', () => {
       }),
       credentials: rds.Credentials.fromUsername('syscdk'),
       vpc,
-      vpcPlacement: {
-        subnetType: ec2.SubnetType.PRIVATE,
+      vpcSubnets: {
+        subnetType: ec2.SubnetType.PRIVATE_WITH_NAT,
       },
     });
 
@@ -305,7 +305,7 @@ describe('instance', () => {
         snapshotIdentifier: 'my-snapshot',
         engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
         vpc,
-        credentials: rds.SnapshotCredentials.fromGeneratedPassword('admin', {
+        credentials: rds.SnapshotCredentials.fromGeneratedSecret('admin', {
           excludeCharacters: '"@/\\',
         }),
       });
@@ -313,7 +313,11 @@ describe('instance', () => {
       expect(stack).toHaveResourceLike('AWS::RDS::DBInstance', {
         MasterUsername: ABSENT,
         MasterUserPassword: {
-          'Fn::Join': ['', ['{{resolve:secretsmanager:', { Ref: 'InstanceSecret478E0A47' }, ':SecretString:password::}}']],
+          'Fn::Join': ['', [
+            '{{resolve:secretsmanager:',
+            { Ref: 'InstanceSecretB6DFA6BE8ee0a797cad8a68dbeb85f8698cdb5bb' },
+            ':SecretString:password::}}',
+          ]],
         },
       });
       expect(stack).toHaveResource('AWS::SecretsManager::Secret', {

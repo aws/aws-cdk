@@ -1,6 +1,6 @@
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as cdk from '@aws-cdk/core';
-import { Service, connectToProps } from '../service';
+import { Service, ConnectToProps } from '../service';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
@@ -225,9 +225,9 @@ export abstract class ServiceExtension {
    *
    * @param service - The other service to connect to.
    */
-  public connectToService(service: Service, connectToProp: connectToProps) {
+  public connectToService(service: Service, connectToProps: ConnectToProps) {
     service = service;
-    connectToProp = connectToProp;
+    connectToProps = connectToProps;
   }
 }
 

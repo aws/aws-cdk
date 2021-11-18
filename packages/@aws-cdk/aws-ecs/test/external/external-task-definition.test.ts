@@ -602,7 +602,7 @@ describe('external task definition', () => {
     });
 
     // THEN
-    expect(container.node.metadata[0].data).toEqual("Proper policies need to be attached before pulling from ECR repository, or use 'fromEcrRepository'.");
+    expect(container.node.metadataEntry[0].data).toEqual("Proper policies need to be attached before pulling from ECR repository, or use 'fromEcrRepository'.");
 
 
   });
