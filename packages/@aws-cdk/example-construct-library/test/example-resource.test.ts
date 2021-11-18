@@ -6,9 +6,11 @@
 
 import { Match, Template } from '@aws-cdk/assertions';
 
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as core from '@aws-cdk/core';
+
 // Always import the module you're testing qualified -
 // don't import individual classes from it!
 // Importing it qualified tests whether everything that needs to be exported
@@ -17,6 +19,12 @@ import * as er from '../lib';
 
 /* We allow quotes in the object keys used for CloudFormation template assertions */
 /* eslint-disable quote-props */
+
+const EXAMPLE_RESOURCE_NAME = {
+  'Fn::Select': [1, {
+    'Fn::Split': ['/', { 'Ref': 'ExampleResourceAC53F4AE' }],
+  }],
+};
 
 describe('Example Resource', () => {
   let stack: core.Stack;
@@ -56,7 +64,7 @@ describe('Example Resource', () => {
             'Ref': 'ExampleResourceWaitConditionHandle9C53A8D3',
           },
           // this is how you can check a given property is _not_ set
-          'RandomProperty': Match.absentProperty(),
+          'RandomProperty': Match.absent(),
         });
       });
 
@@ -111,6 +119,40 @@ describe('Example Resource', () => {
         },
       });
     });
+
+    test('onEvent adds an Event Rule', () => {
+      exampleResource.onEvent('MyEvent');
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+        EventPattern: {
+          detail: {
+            'example-resource-name': [EXAMPLE_RESOURCE_NAME],
+          },
+        },
+      });
+    });
+
+    test('metricCount returns a metric with correct dimensions', () => {
+      const countMetric = exampleResource.metricCount();
+
+      new cloudwatch.Alarm(stack, 'Alarm', {
+        metric: countMetric,
+        threshold: 10,
+        evaluationPeriods: 2,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
+        EvaluationPeriods: 2,
+        Dimensions: [
+          {
+            Name: 'ExampleResource',
+            Value: EXAMPLE_RESOURCE_NAME,
+          },
+        ],
+        MetricName: 'Count',
+        Namespace: 'AWS/ExampleResource',
+      });
+    });
   });
 
   describe('created with a VPC', () => {
@@ -144,6 +186,10 @@ describe('Example Resource', () => {
     beforeEach(() => {
       exampleResource = er.ExampleResource.fromExampleResourceName(stack, 'ExampleResource',
         'my-example-resource-name');
+    });
+
+    test('throws when accessing connections', () => {
+      expect(() => exampleResource.connections).toThrow();
     });
 
     test('has the same name as it was imported with', () => {

@@ -1,8 +1,8 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as sns from '@aws-cdk/aws-sns';
-import { Stack } from '@aws-cdk/core';
+import { ArnFormat, Stack } from '@aws-cdk/core';
 import { BackupVault, BackupVaultEvents } from '../lib';
 
 let stack: Stack;
@@ -15,7 +15,7 @@ test('create a vault', () => {
   new BackupVault(stack, 'Vault');
 
   // THEN
-  expect(stack).toHaveResource('AWS::Backup::BackupVault', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Backup::BackupVault', {
     BackupVaultName: 'Vault',
   });
 });
@@ -46,7 +46,7 @@ test('with access policy', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::Backup::BackupVault', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Backup::BackupVault', {
     AccessPolicy: {
       Version: '2012-10-17',
       Statement: [
@@ -68,6 +68,132 @@ test('with access policy', () => {
   });
 });
 
+test('with blockRecoveryPointDeletion', () => {
+  // WHEN
+  new BackupVault(stack, 'Vault', {
+    blockRecoveryPointDeletion: true,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Backup::BackupVault', {
+    AccessPolicy: {
+      Version: '2012-10-17',
+      Statement: [
+        {
+          Effect: 'Deny',
+          Principal: {
+            AWS: '*',
+          },
+          Action: [
+            'backup:DeleteRecoveryPoint',
+            'backup:UpdateRecoveryPointLifecycle',
+          ],
+          Resource: '*',
+        },
+      ],
+    },
+  });
+});
+
+test('merges statements from accessPolicy and blockRecoveryPointDeletion', () => {
+  // WHEN
+  new BackupVault(stack, 'Vault', {
+    accessPolicy: new iam.PolicyDocument({
+      statements: [
+        new iam.PolicyStatement({
+          effect: iam.Effect.DENY,
+          principals: [new iam.ArnPrincipal('arn:aws:iam::123456789012:role/MyRole')],
+          actions: ['backup:StartRestoreJob'],
+        }),
+      ],
+    }),
+    blockRecoveryPointDeletion: true,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Backup::BackupVault', {
+    AccessPolicy: {
+      Version: '2012-10-17',
+      Statement: [
+        {
+          Action: 'backup:StartRestoreJob',
+          Effect: 'Deny',
+          Principal: {
+            AWS: 'arn:aws:iam::123456789012:role/MyRole',
+          },
+        },
+        {
+          Effect: 'Deny',
+          Principal: {
+            AWS: '*',
+          },
+          Action: [
+            'backup:DeleteRecoveryPoint',
+            'backup:UpdateRecoveryPointLifecycle',
+          ],
+          Resource: '*',
+        },
+      ],
+    },
+  });
+});
+
+test('addToAccessPolicy()', () => {
+  // GIVEN
+  const vault = new BackupVault(stack, 'Vault');
+
+  // WHEN
+  vault.addToAccessPolicy(new iam.PolicyStatement({
+    effect: iam.Effect.DENY,
+    principals: [new iam.ArnPrincipal('arn:aws:iam::123456789012:role/MyRole')],
+    actions: ['backup:StartRestoreJob'],
+  }));
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Backup::BackupVault', {
+    AccessPolicy: {
+      Version: '2012-10-17',
+      Statement: [
+        {
+          Action: 'backup:StartRestoreJob',
+          Effect: 'Deny',
+          Principal: {
+            AWS: 'arn:aws:iam::123456789012:role/MyRole',
+          },
+        },
+      ],
+    },
+  });
+});
+
+test('blockRecoveryPointDeletion()', () => {
+  // GIVEN
+  const vault = new BackupVault(stack, 'Vault');
+
+  // WHEN
+  vault.blockRecoveryPointDeletion();
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Backup::BackupVault', {
+    AccessPolicy: {
+      Version: '2012-10-17',
+      Statement: [
+        {
+          Effect: 'Deny',
+          Principal: {
+            AWS: '*',
+          },
+          Action: [
+            'backup:DeleteRecoveryPoint',
+            'backup:UpdateRecoveryPointLifecycle',
+          ],
+          Resource: '*',
+        },
+      ],
+    },
+  });
+});
+
 test('with encryption key', () => {
   // GIVEN
   const encryptionKey = new kms.Key(stack, 'Key');
@@ -78,7 +204,7 @@ test('with encryption key', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::Backup::BackupVault', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Backup::BackupVault', {
     EncryptionKeyArn: {
       'Fn::GetAtt': [
         'Key961B73FD',
@@ -102,7 +228,7 @@ test('with notifications', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::Backup::BackupVault', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Backup::BackupVault', {
     Notifications: {
       BackupVaultEvents: [
         'BACKUP_JOB_COMPLETED',
@@ -125,7 +251,7 @@ test('defaults to all notifications', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::Backup::BackupVault', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Backup::BackupVault', {
     Notifications: {
       BackupVaultEvents: Object.values(BackupVaultEvents),
       SNSTopicArn: {
@@ -141,7 +267,7 @@ test('import from arn', () => {
     service: 'backup',
     resource: 'backup-vault',
     resourceName: 'myVaultName',
-    sep: ':',
+    arnFormat: ArnFormat.COLON_RESOURCE_NAME,
   });
   const vault = BackupVault.fromBackupVaultArn(stack, 'Vault', vaultArn);
 
@@ -161,7 +287,7 @@ test('import from name', () => {
     service: 'backup',
     resource: 'backup-vault',
     resourceName: 'myVaultName',
-    sep: ':',
+    arnFormat: ArnFormat.COLON_RESOURCE_NAME,
   }));
 });
 
@@ -175,7 +301,7 @@ test('grant action', () => {
   vault.grant(role, 'backup:StartBackupJob');
 
   // THEN
-  expect(stack).toHaveResource('AWS::IAM::Policy', {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
       Statement: [
         {

@@ -1,6 +1,9 @@
-import { deployStack, ToolkitInfo } from '../../lib/api';
+import { deployStack, DeployStackOptions, ToolkitInfo } from '../../lib/api';
+import { tryHotswapDeployment } from '../../lib/api/hotswap-deployments';
 import { DEFAULT_FAKE_TEMPLATE, testStack } from '../util';
 import { MockedObject, mockResolvedEnvironment, MockSdk, MockSdkProvider, SyncHandlerSubsetOf } from '../util/mock-sdk';
+
+jest.mock('../../lib/api/hotswap-deployments');
 
 const FAKE_STACK = testStack({
   stackName: 'withouterrors',
@@ -26,7 +29,10 @@ const FAKE_STACK_TERMINATION_PROTECTION = testStack({
 let sdk: MockSdk;
 let sdkProvider: MockSdkProvider;
 let cfnMocks: MockedObject<SyncHandlerSubsetOf<AWS.CloudFormation>>;
+
 beforeEach(() => {
+  jest.resetAllMocks();
+
   sdkProvider = new MockSdkProvider();
   sdk = new MockSdk();
 
@@ -57,10 +63,10 @@ beforeEach(() => {
     updateTerminationProtection: jest.fn((_o) => ({ StackId: 'stack-id' })),
   };
   sdk.stubCloudFormation(cfnMocks as any);
-
+  sdk.stubGetEndpointSuffix(() => 'amazonaws.com');
 });
 
-function standardDeployStackArguments() {
+function standardDeployStackArguments(): DeployStackOptions {
   return {
     stack: FAKE_STACK,
     sdk,
@@ -69,6 +75,57 @@ function standardDeployStackArguments() {
     toolkitInfo: ToolkitInfo.bootstraplessDeploymentsOnly(sdk),
   };
 }
+
+test("calls tryHotswapDeployment() if 'hotswap' is true", async () => {
+  // WHEN
+  await deployStack({
+    ...standardDeployStackArguments(),
+    hotswap: true,
+  });
+
+  // THEN
+  expect(tryHotswapDeployment).toHaveBeenCalled();
+});
+
+test("does not call tryHotswapDeployment() if 'hotswap' is false", async () => {
+  // WHEN
+  await deployStack({
+    ...standardDeployStackArguments(),
+    hotswap: false,
+  });
+
+  // THEN
+  expect(tryHotswapDeployment).not.toHaveBeenCalled();
+});
+
+test("rollback still defaults to enabled even if 'hotswap' is enabled", async () => {
+  // WHEN
+  await deployStack({
+    ...standardDeployStackArguments(),
+    hotswap: true,
+    rollback: undefined,
+  });
+
+  // THEN
+  expect(cfnMocks.executeChangeSet).not.toHaveBeenCalledWith(expect.objectContaining({
+    DisableRollback: true,
+  }));
+});
+
+test("rollback defaults to enabled if 'hotswap' is false", async () => {
+  // WHEN
+  await deployStack({
+    ...standardDeployStackArguments(),
+    hotswap: false,
+    rollback: undefined,
+  });
+
+  // THEN
+  expect(cfnMocks.executeChangeSet).toHaveBeenCalledTimes(1);
+  expect(cfnMocks.executeChangeSet).not.toHaveBeenCalledWith(expect.objectContaining({
+    DisableRollback: expect.anything(),
+  }));
+});
 
 test('do deploy executable change set with 0 changes', async () => {
   // WHEN

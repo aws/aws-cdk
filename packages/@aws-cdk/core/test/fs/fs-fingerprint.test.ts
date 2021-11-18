@@ -1,13 +1,12 @@
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
-import { nodeunitShim, Test } from 'nodeunit-shim';
 import { FileSystem, SymlinkFollowMode } from '../../lib/fs';
 import { contentFingerprint } from '../../lib/fs/fingerprint';
 
-nodeunitShim({
-  files: {
-    'does not change with the file name'(test: Test) {
+describe('fs fingerprint', () => {
+  describe('files', () => {
+    test('does not change with the file name', () => {
       // GIVEN
       const workdir = fs.mkdtempSync(path.join(os.tmpdir(), 'hash-tests'));
       const content = 'Hello, world!';
@@ -24,12 +23,12 @@ nodeunitShim({
       const hash3 = FileSystem.fingerprint(input3);
 
       // THEN
-      test.deepEqual(hash1, hash2);
-      test.notDeepEqual(hash3, hash1);
-      test.done();
-    },
+      expect(hash1).toEqual(hash2);
+      expect(hash3).not.toEqual(hash1);
 
-    'works on empty files'(test: Test) {
+    });
+
+    test('works on empty files', () => {
       // GIVEN
       const workdir = fs.mkdtempSync(path.join(os.tmpdir(), 'hash-tests'));
       const input1 = path.join(workdir, 'empty');
@@ -42,13 +41,13 @@ nodeunitShim({
       const hash2 = FileSystem.fingerprint(input2);
 
       // THEN
-      test.deepEqual(hash1, hash2);
-      test.done();
-    },
-  },
+      expect(hash1).toEqual(hash2);
 
-  directories: {
-    'works on directories'(test: Test) {
+    });
+  });
+
+  describe('directories', () => {
+    test('works on directories', () => {
       // GIVEN
       const srcdir = path.join(__dirname, 'fixtures', 'symlinks');
       const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'copy-tests'));
@@ -59,11 +58,11 @@ nodeunitShim({
       const hashCopy = FileSystem.fingerprint(outdir);
 
       // THEN
-      test.deepEqual(hashSrc, hashCopy);
-      test.done();
-    },
+      expect(hashSrc).toEqual(hashCopy);
 
-    'ignores requested files'(test: Test) {
+    });
+
+    test('ignores requested files', () => {
       // GIVEN
       const srcdir = path.join(__dirname, 'fixtures', 'symlinks');
       const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'copy-tests'));
@@ -76,11 +75,11 @@ nodeunitShim({
       const hashCopy = FileSystem.fingerprint(outdir, { exclude: ['*.ignoreme'] });
 
       // THEN
-      test.deepEqual(hashSrc, hashCopy);
-      test.done();
-    },
+      expect(hashSrc).toEqual(hashCopy);
 
-    'changes with file names'(test: Test) {
+    });
+
+    test('changes with file names', () => {
       // GIVEN
       const srcdir = path.join(__dirname, 'fixtures', 'symlinks');
       const cpydir = fs.mkdtempSync(path.join(os.tmpdir(), 'fingerprint-tests'));
@@ -94,13 +93,13 @@ nodeunitShim({
       const hashCopy = FileSystem.fingerprint(cpydir);
 
       // THEN
-      test.notDeepEqual(hashSrc, hashCopy);
-      test.done();
-    },
-  },
+      expect(hashSrc).not.toEqual(hashCopy);
 
-  symlinks: {
-    'changes with the contents of followed symlink referent'(test: Test) {
+    });
+  });
+
+  describe('symlinks', () => {
+    test('changes with the contents of followed symlink referent', () => {
       // GIVEN
       const dir1 = fs.mkdtempSync(path.join(os.tmpdir(), 'fingerprint-tests'));
       const dir2 = fs.mkdtempSync(path.join(os.tmpdir(), 'fingerprint-tests'));
@@ -123,12 +122,12 @@ nodeunitShim({
       const afterRevert = FileSystem.fingerprint(dir2);
 
       // THEN
-      test.notDeepEqual(original, afterChange);
-      test.deepEqual(afterRevert, original);
-      test.done();
-    },
+      expect(original).not.toEqual(afterChange);
+      expect(afterRevert).toEqual(original);
 
-    'does not change with the contents of un-followed symlink referent'(test: Test) {
+    });
+
+    test('does not change with the contents of un-followed symlink referent', () => {
       // GIVEN
       const dir1 = fs.mkdtempSync(path.join(os.tmpdir(), 'fingerprint-tests'));
       const dir2 = fs.mkdtempSync(path.join(os.tmpdir(), 'fingerprint-tests'));
@@ -151,14 +150,14 @@ nodeunitShim({
       const afterRevert = FileSystem.fingerprint(dir2, { follow: SymlinkFollowMode.NEVER });
 
       // THEN
-      test.deepEqual(original, afterChange);
-      test.deepEqual(afterRevert, original);
-      test.done();
-    },
-  },
+      expect(original).toEqual(afterChange);
+      expect(afterRevert).toEqual(original);
 
-  eol: {
-    'normalizes line endings'(test: Test) {
+    });
+  });
+
+  describe('eol', () => {
+    test('normalizes line endings', () => {
       // GIVEN
       const lf = path.join(__dirname, 'eol', 'lf.txt');
       const crlf = path.join(__dirname, 'eol', 'crlf.txt');
@@ -172,11 +171,29 @@ nodeunitShim({
       const lfHash = contentFingerprint(lf);
 
       // THEN
-      test.notEqual(crlfStat.size, lfStat.size); // Difference in size due to different line endings
-      test.deepEqual(crlfHash, lfHash); // Same hash
+      expect(crlfStat.size).not.toEqual(lfStat.size); // Difference in size due to different line endings
+      expect(crlfHash).toEqual(lfHash); // Same hash
 
       fs.unlinkSync(crlf);
-      test.done();
-    },
-  },
+
+    });
+  });
+
+  test('normalizes relative path', () => {
+    // Simulate a Windows path.relative()
+    const originalPathRelative = path.relative;
+    const pathRelativeSpy = jest.spyOn(path, 'relative').mockImplementation((from: string, to: string): string => {
+      return originalPathRelative(from, to).replace(/\//g, '\\');
+    });
+
+    const hash1 = FileSystem.fingerprint(path.join(__dirname, 'fixtures', 'test1'));
+
+    // Restore Linux behavior
+    pathRelativeSpy.mockRestore();
+
+    const hash2 = FileSystem.fingerprint(path.join(__dirname, 'fixtures', 'test1'));
+
+    // Relative paths are normalized
+    expect(hash1).toEqual(hash2);
+  });
 });
