@@ -147,7 +147,7 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
 
       if (props.stickinessCookieDuration) {
         this.enableCookieStickiness(props.stickinessCookieDuration, props.stickinessCookieName);
-      } else if (this.targetType !== TargetType.LAMBDA) {
+      } else {
         this.setAttribute('stickiness.enabled', 'false');
       }
 
@@ -165,6 +165,10 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
     for (const target of targets) {
       const result = target.attachToApplicationTargetGroup(this);
       this.addLoadBalancerTarget(result);
+    }
+
+    if (this.targetType === TargetType.LAMBDA) {
+      this.setAttribute('stickiness.enabled', undefined);
     }
   }
 
