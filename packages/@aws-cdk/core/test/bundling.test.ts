@@ -2,7 +2,7 @@ import * as child_process from 'child_process';
 import * as crypto from 'crypto';
 import * as path from 'path';
 import * as sinon from 'sinon';
-import { BundlingDockerImage, DockerImage, FileSystem } from '../lib';
+import { DockerImage, FileSystem } from '../lib';
 
 describe('bundling', () => {
   afterEach(() => {
@@ -21,7 +21,7 @@ describe('bundling', () => {
       signal: null,
     });
 
-    const image = BundlingDockerImage.fromRegistry('alpine');
+    const image = DockerImage.fromRegistry('alpine');
     image.run({
       command: ['cool', 'command'],
       environment: {
@@ -136,7 +136,7 @@ describe('bundling', () => {
       error: new Error('UnknownError'),
     });
 
-    const image = BundlingDockerImage.fromRegistry('alpine');
+    const image = DockerImage.fromRegistry('alpine');
     expect(() => image.run()).toThrow(/UnknownError/);
 
   });
@@ -151,13 +151,13 @@ describe('bundling', () => {
       signal: null,
     });
 
-    const image = BundlingDockerImage.fromRegistry('alpine');
+    const image = DockerImage.fromRegistry('alpine');
     expect(() => image.run()).toThrow(/\[Status -1\]/);
 
   });
 
   test('BundlerDockerImage json is the bundler image name by default', () => {
-    const image = BundlingDockerImage.fromRegistry('alpine');
+    const image = DockerImage.fromRegistry('alpine');
 
     expect(image.toJSON()).toEqual('alpine');
 
@@ -199,7 +199,7 @@ describe('bundling', () => {
     });
 
     const imagePath = path.join(__dirname, 'fs/fixtures/test1');
-    BundlingDockerImage.fromAsset(imagePath, {
+    DockerImage.fromAsset(imagePath, {
       file: 'my-dockerfile',
     });
 
@@ -221,7 +221,7 @@ describe('bundling', () => {
     });
 
     const imagePath = path.join(__dirname, 'fs/fixtures/test1');
-    const image = BundlingDockerImage.fromAsset(imagePath, {
+    const image = DockerImage.fromAsset(imagePath, {
       file: 'my-dockerfile',
     });
     expect(image).toBeDefined();
@@ -240,7 +240,7 @@ describe('bundling', () => {
       signal: null,
     });
 
-    const image = BundlingDockerImage.fromRegistry('alpine');
+    const image = DockerImage.fromRegistry('alpine');
     image.run({
       entrypoint: ['/cool/entrypoint', '--cool-entrypoint-arg'],
       command: ['cool', 'command'],
@@ -281,7 +281,7 @@ describe('bundling', () => {
     });
 
     // WHEN
-    BundlingDockerImage.fromRegistry('alpine').cp('/foo/bar', '/baz');
+    DockerImage.fromRegistry('alpine').cp('/foo/bar', '/baz');
 
     // THEN
     expect(spawnSyncStub.calledWith(sinon.match.any, ['create', 'alpine'], sinon.match.any)).toEqual(true);
@@ -315,7 +315,7 @@ describe('bundling', () => {
 
     // WHEN
     expect(() => {
-      BundlingDockerImage.fromRegistry('alpine').cp('/foo/bar', '/baz');
+      DockerImage.fromRegistry('alpine').cp('/foo/bar', '/baz');
     }).toThrow(/Failed.*copy/i);
 
     // THEN

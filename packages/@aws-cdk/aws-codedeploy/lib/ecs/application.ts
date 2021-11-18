@@ -1,4 +1,4 @@
-import { IResource, Resource } from '@aws-cdk/core';
+import { ArnFormat, IResource, Resource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnApplication } from '../codedeploy.generated';
 import { arnForApplication } from '../utils';
@@ -74,7 +74,7 @@ export class EcsApplication extends Resource implements IEcsApplication {
       service: 'codedeploy',
       resource: 'application',
       resourceName: this.physicalName,
-      sep: ':',
+      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
     });
   }
 }

@@ -5,7 +5,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
 import * as sqs from '@aws-cdk/aws-sqs';
-import { Annotations, CfnResource, Duration, Fn, Lazy, Names, Stack } from '@aws-cdk/core';
+import { Annotations, ArnFormat, CfnResource, Duration, Fn, Lazy, Names, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { Architecture } from './architecture';
 import { Code, CodeConfig } from './code';
@@ -721,7 +721,7 @@ export class Function extends FunctionBase {
       service: 'lambda',
       resource: 'function',
       resourceName: this.physicalName,
-      sep: ':',
+      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
     });
 
     this.runtime = props.runtime;
