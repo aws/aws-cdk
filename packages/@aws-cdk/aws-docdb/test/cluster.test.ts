@@ -567,6 +567,76 @@ describe('DatabaseCluster', () => {
     }));
   });
 
+  test('can configure CloudWatchLogs for audit', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      masterUser: {
+        username: 'admin',
+      },
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+      vpc,
+      cloudwatchLogsExports: {
+        audit: true,
+      },
+    });
+
+    // THEN
+    expectCDK(stack).to(haveResource('AWS::DocDB::DBCluster', {
+      EnableCloudwatchLogsExports: ['audit'],
+    }));
+  });
+
+  test('can configure CloudWatchLogs for profiler', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      masterUser: {
+        username: 'admin',
+      },
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+      vpc,
+      cloudwatchLogsExports: {
+        profiler: true,
+      },
+    });
+
+    // THEN
+    expectCDK(stack).to(haveResource('AWS::DocDB::DBCluster', {
+      EnableCloudwatchLogsExports: ['profiler'],
+    }));
+  });
+
+  test('can configure CloudWatchLogs for all logs', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      masterUser: {
+        username: 'admin',
+      },
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+      vpc,
+      cloudwatchLogsExports: {
+        audit: true,
+        profiler: true,
+      },
+    });
+
+    // THEN
+    expectCDK(stack).to(haveResource('AWS::DocDB::DBCluster', {
+      EnableCloudwatchLogsExports: ['audit', 'profiler'],
+    }));
+  });
+
   test('single user rotation', () => {
     // GIVEN
     const stack = testStack();

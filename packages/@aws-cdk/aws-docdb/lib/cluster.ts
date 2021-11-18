@@ -8,7 +8,8 @@ import { DatabaseSecret } from './database-secret';
 import { CfnDBCluster, CfnDBInstance, CfnDBSubnetGroup } from './docdb.generated';
 import { Endpoint } from './endpoint';
 import { IClusterParameterGroup } from './parameter-group';
-import { BackupProps, Login, RotationMultiUserOptions } from './props';
+import { BackupProps, CloudwatchLogsExportsProps, Login, RotationMultiUserOptions } from './props';
+
 
 /**
  * Properties for a new database cluster
@@ -146,6 +147,14 @@ export interface DatabaseClusterProps {
    * @default - false
    */
   readonly deletionProtection?: boolean;
+
+  /**
+   * The configuration of log types that can be enabled for exporting to Amazon CloudWatch Logs.
+   * You can enable audit logs or profiler logs.
+   *
+   * @default {}
+   */
+  readonly cloudwatchLogsExports?: CloudwatchLogsExportsProps;
 }
 
 /**
@@ -346,6 +355,11 @@ export class DatabaseCluster extends DatabaseClusterBase {
     }
     this.securityGroupId = securityGroup.securityGroupId;
 
+    // Create the CloudwatchLogsConfiguratoin
+    const enableCloudwatchLogsExports:string[] = [];
+    if (props.cloudwatchLogsExports && props.cloudwatchLogsExports.audit) enableCloudwatchLogsExports.push('audit');
+    if (props.cloudwatchLogsExports && props.cloudwatchLogsExports.profiler) enableCloudwatchLogsExports.push('profiler');
+
     // Create the secret manager secret if no password is specified
     let secret: DatabaseSecret | undefined;
     if (!props.masterUser.password) {
@@ -386,6 +400,11 @@ export class DatabaseCluster extends DatabaseClusterBase {
       kmsKeyId: props.kmsKey?.keyArn,
       storageEncrypted,
     });
+
+    // EnableCloudwatchLogsExports
+    if ( enableCloudwatchLogsExports.length > 0 ) {
+      this.cluster.addPropertyOverride('EnableCloudwatchLogsExports', enableCloudwatchLogsExports);
+    }
 
     this.cluster.applyRemovalPolicy(props.removalPolicy, {
       applyToUpdateReplacePolicy: true,

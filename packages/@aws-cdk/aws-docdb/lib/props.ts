@@ -92,3 +92,23 @@ export interface RotationMultiUserOptions {
    */
   readonly automaticallyAfter?: Duration;
 }
+
+/**
+ * Properties for the CloudwatchLogsExports
+ */
+
+export interface CloudwatchLogsExportsProps {
+  /**
+   * Should sending profiler logs to CloudWatch Logs should be enabled?
+   * You have to configure the profiler additionally
+   * @see https://docs.aws.amazon.com/documentdb/latest/developerguide/profiling.html#profiling.enable-profiling
+   * @default false
+   */
+  readonly profiler?: boolean;
+  /**
+   * Should sending audit logs to CloudWatch Logs should be enabled?
+   * @see https://docs.aws.amazon.com/documentdb/latest/developerguide/event-auditing.html#event-auditing-enabling-auditing
+   * @default false
+   */
+  readonly audit?: boolean;
+}
