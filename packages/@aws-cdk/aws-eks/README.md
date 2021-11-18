@@ -62,10 +62,10 @@ cluster.addManifest('mypod', {
       {
         name: 'hello',
         image: 'paulbouwer/hello-kubernetes:1.5',
-        ports: [ { containerPort: 8080 } ]
-      }
-    ]
-  }
+        ports: [ { containerPort: 8080 } ],
+      },
+    ],
+  },
 });
 ```
 
@@ -195,23 +195,22 @@ cluster.addNodegroupCapacity('custom-node-group', {
   minSize: 4,
   diskSize: 100,
   amiType: eks.NodegroupAmiType.AL2_X86_64_GPU,
-  ...
 });
 ```
 
 To set node taints, you can set `taints` option.
 
 ```ts
+declare const cluster: eks.Cluster;
 cluster.addNodegroupCapacity('custom-node-group', {
   instanceTypes: [new ec2.InstanceType('m5.large')],
   taints: [
     {
-      effect: TaintEffect.NO_SCHEDULE,
+      effect: eks.TaintEffect.NO_SCHEDULE,
       key: 'foo',
       value: 'bar',
-    }
-  ]
-  ...
+    },
+  ],
 });
 ```
 
@@ -224,6 +223,7 @@ Spot Instances, we recommend that you configure a Spot managed node group to use
 
 
 ```ts
+declare const cluster: eks.Cluster;
 cluster.addNodegroupCapacity('extra-ng-spot', {
   instanceTypes: [
     new ec2.InstanceType('c5.large'),
@@ -245,6 +245,8 @@ When supplying a custom user data script, it must be encoded in the MIME multi-p
 for mode details.
 
 ```ts
+declare const cluster: eks.Cluster;
+
 const userData = `MIME-Version: 1.0
 Content-Type: multipart/mixed; boundary="==MYBOUNDARY=="
 
@@ -262,6 +264,7 @@ const lt = new ec2.CfnLaunchTemplate(this, 'LaunchTemplate', {
     userData: Fn.base64(userData),
   },
 });
+
 cluster.addNodegroupCapacity('extra-ng', {
   launchTemplateSpec: {
     id: lt.ref,
@@ -275,6 +278,7 @@ Note that when using a custom AMI, Amazon EKS doesn't merge any user data. Which
 In the following example, `/ect/eks/bootstrap.sh` from the AMI will be used to bootstrap the node.
 
 ```ts
+declare const cluster: eks.Cluster;
 const userData = ec2.UserData.forLinux();
 userData.addCommands(
   'set -o xtrace',
@@ -319,17 +323,19 @@ through the `addFargateProfile()` method. The following example adds a profile
 that will match all pods from the "default" namespace:
 
 ```ts
+declare const cluster: eks.Cluster;
 cluster.addFargateProfile('MyProfile', {
-  selectors: [ { namespace: 'default' } ]
+  selectors: [ { namespace: 'default' } ],
 });
 ```
 
 You can also directly use the `FargateProfile` construct to create profiles under different scopes:
 
 ```ts
-new eks.FargateProfile(scope, 'MyProfile', {
+declare const cluster: eks.Cluster;
+new eks.FargateProfile(this, 'MyProfile', {
   cluster,
-  ...
+  selectors: [ { namespace: 'default' } ],
 });
 ```
 
@@ -360,30 +366,33 @@ For a detailed overview please visit [Self Managed Nodes](https://docs.aws.amazo
 Creating an auto-scaling group and connecting it to the cluster is done using the `cluster.addAutoScalingGroupCapacity` method:
 
 ```ts
+declare const cluster: eks.Cluster;
 cluster.addAutoScalingGroupCapacity('frontend-nodes', {
   instanceType: new ec2.InstanceType('t2.medium'),
   minCapacity: 3,
-  vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC }
+  vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
 });
 ```
 
 To connect an already initialized auto-scaling group, use the `cluster.connectAutoScalingGroupCapacity()` method:
 
 ```ts
-const asg = new ec2.AutoScalingGroup(...);
-cluster.connectAutoScalingGroupCapacity(asg);
+declare const cluster: eks.Cluster;
+declare const asg: autoscaling.AutoScalingGroup;
+cluster.connectAutoScalingGroupCapacity(asg, {});
 ```
 
 To connect a self-managed node group to an imported cluster, use the `cluster.connectAutoScalingGroupCapacity()` method:
 
 ```ts
-const importedCluster = eks.Cluster.fromClusterAttributes(stack, 'ImportedCluster', {
+declare const cluster: eks.Cluster;
+declare const asg: autoscaling.AutoScalingGroup;
+const importedCluster = eks.Cluster.fromClusterAttributes(this, 'ImportedCluster', {
   clusterName: cluster.clusterName,
   clusterSecurityGroupId: cluster.clusterSecurityGroupId,
 });
 
-const asg = new ec2.AutoScalingGroup(...);
-importedCluster.connectAutoScalingGroupCapacity(asg);
+importedCluster.connectAutoScalingGroupCapacity(asg, {});
 ```
 
 In both cases, the [cluster security group](https://docs.aws.amazon.com/eks/latest/userguide/sec-group-reqs.html#cluster-sg) will be automatically attached to
@@ -396,13 +405,14 @@ You can customize the [/etc/eks/boostrap.sh](https://github.com/awslabs/amazon-e
 for bootstrapping the node to the EKS cluster. For example, you can use `kubeletExtraArgs` to add custom node labels or taints.
 
 ```ts
+declare const cluster: eks.Cluster;
 cluster.addAutoScalingGroupCapacity('spot', {
   instanceType: new ec2.InstanceType('t3.large'),
   minCapacity: 2,
   bootstrapOptions: {
     kubeletExtraArgs: '--node-labels foo=bar,goo=far',
-    awsApiRetryAttempts: 5
-  }
+    awsApiRetryAttempts: 5,
+  },
 });
 ```
 
@@ -410,7 +420,7 @@ To disable bootstrapping altogether (i.e. to fully customize user-data), set `bo
 You can also configure the cluster to use an auto-scaling group as the default capacity:
 
 ```ts
-cluster = new eks.Cluster(this, 'HelloEKS', {
+const cluster = new eks.Cluster(this, 'HelloEKS', {
   version: eks.KubernetesVersion.V1_21,
   defaultCapacityType: eks.DefaultCapacityType.EC2,
 });
@@ -421,8 +431,9 @@ To access the `AutoScalingGroup` that was created on your behalf, you can use `c
 You can also independently create an `AutoScalingGroup` and connect it to the cluster using the `cluster.connectAutoScalingGroupCapacity` method:
 
 ```ts
-const asg = new ec2.AutoScalingGroup(...)
-cluster.connectAutoScalingGroupCapacity(asg);
+declare const cluster: eks.Cluster;
+declare const asg: autoscaling.AutoScalingGroup;
+cluster.connectAutoScalingGroupCapacity(asg, {});
 ```
 
 This will add the necessary user-data to access the apiserver and configure all connections, roles, and tags needed for the instances in the auto-scaling group to properly join the cluster.
@@ -433,10 +444,11 @@ When using self-managed nodes, you can configure the capacity to use spot instan
 To enable spot capacity, use the `spotPrice` property:
 
 ```ts
+declare const cluster: eks.Cluster;
 cluster.addAutoScalingGroupCapacity('spot', {
   spotPrice: '0.1094',
   instanceType: new ec2.InstanceType('t3.large'),
-  maxCapacity: 10
+  maxCapacity: 10,
 });
 ```
 
@@ -458,17 +470,26 @@ To disable the installation of the termination handler, set the `spotInterruptHa
 #### Bottlerocket
 
 [Bottlerocket](https://aws.amazon.com/bottlerocket/) is a Linux-based open-source operating system that is purpose-built by Amazon Web Services for running containers on virtual machines or bare metal hosts.
-At this moment, `Bottlerocket` is only supported when using self-managed auto-scaling groups.
 
-> **NOTICE**: Bottlerocket is only available in [some supported AWS regions](https://github.com/bottlerocket-os/bottlerocket/blob/develop/QUICKSTART-EKS.md#finding-an-ami).
+`Bottlerocket` is supported when using managed nodegroups or self-managed auto-scaling groups.
+
+To create a Bottlerocket managed nodegroup:
+
+```ts
+declare const cluster: eks.Cluster;
+cluster.addNodegroupCapacity('BottlerocketNG', {
+  amiType: eks.NodegroupAmiType.BOTTLEROCKET_X86_64,
+});
+```
 
 The following example will create an auto-scaling group of 2 `t3.small` Linux instances running with the `Bottlerocket` AMI.
 
 ```ts
+declare const cluster: eks.Cluster;
 cluster.addAutoScalingGroupCapacity('BottlerocketNodes', {
   instanceType: new ec2.InstanceType('t3.small'),
   minCapacity:  2,
-  machineImageType: eks.MachineImageType.BOTTLEROCKET
+  machineImageType: eks.MachineImageType.BOTTLEROCKET,
 });
 ```
 
@@ -479,6 +500,8 @@ For example, if the Amazon EKS cluster version is `1.17`, the Bottlerocket AMI v
 > See [Variants](https://github.com/bottlerocket-os/bottlerocket/blob/develop/README.md#variants) for more details.
 
 Please note Bottlerocket does not allow to customize bootstrap options and `bootstrapOptions` properties is not supported when you create the `Bottlerocket` capacity.
+
+For more details about Bottlerocket, see [Bottlerocket FAQs](https://aws.amazon.com/bottlerocket/faqs/) and [Bottlerocket Open Source Blog](https://aws.amazon.com/blogs/opensource/announcing-the-general-availability-of-bottlerocket-an-open-source-linux-distribution-purpose-built-to-run-containers/).
 
 ### Endpoint Access
 
@@ -492,7 +515,7 @@ You can configure the [cluster endpoint access](https://docs.aws.amazon.com/eks/
 ```ts
 const cluster = new eks.Cluster(this, 'hello-eks', {
   version: eks.KubernetesVersion.V1_21,
-  endpointAccess: eks.EndpointAccess.PRIVATE // No access outside of your VPC.
+  endpointAccess: eks.EndpointAccess.PRIVATE, // No access outside of your VPC.
 });
 ```
 
@@ -503,12 +526,12 @@ The default value is `eks.EndpointAccess.PUBLIC_AND_PRIVATE`. Which means the cl
 You can specify the VPC of the cluster using the `vpc` and `vpcSubnets` properties:
 
 ```ts
-const vpc = new ec2.Vpc(this, 'Vpc');
+declare const vpc: ec2.Vpc;
 
 new eks.Cluster(this, 'HelloEKS', {
   version: eks.KubernetesVersion.V1_21,
   vpc,
-  vpcSubnets: [{ subnetType: ec2.SubnetType.PRIVATE }]
+  vpcSubnets: [{ subnetType: ec2.SubnetType.PRIVATE }],
 });
 ```
 
@@ -522,9 +545,11 @@ the subnets where EKS will place the worker nodes, please refer to the **Provisi
 If you allocate self managed capacity, you can specify which subnets should the auto-scaling group use:
 
 ```ts
-const vpc = new ec2.Vpc(this, 'Vpc');
+declare const vpc: ec2.Vpc;
+declare const cluster: eks.Cluster;
 cluster.addAutoScalingGroupCapacity('nodes', {
-  vpcSubnets: { subnets: vpc.privateSubnets }
+  vpcSubnets: { subnets: vpc.privateSubnets },
+  instanceType: new ec2.InstanceType('t2.medium'),
 });
 ```
 
@@ -549,16 +574,17 @@ The `ClusterHandler` is a set of Lambda functions (`onEventHandler`, `isComplete
 You can configure the environment of the Cluster Handler functions by specifying it at cluster instantiation. For example, this can be useful in order to configure an http proxy:
 
 ```ts
+declare const proxyInstanceSecurityGroup: ec2.SecurityGroup;
 const cluster = new eks.Cluster(this, 'hello-eks', {
   version: eks.KubernetesVersion.V1_21,
   clusterHandlerEnvironment: {
-    https_proxy: 'http://proxy.myproxy.com'
+    https_proxy: 'http://proxy.myproxy.com',
   },
   /**
    * If the proxy is not open publicly, you can pass a security group to the
    * Cluster Handler Lambdas so that it can reach the proxy.
    */
-  clusterHandlerSecurityGroup: proxyInstanceSecurityGroup
+  clusterHandlerSecurityGroup: proxyInstanceSecurityGroup,
 });
 ```
 
@@ -574,8 +600,8 @@ You can configure the environment of this function by specifying it at cluster i
 const cluster = new eks.Cluster(this, 'hello-eks', {
   version: eks.KubernetesVersion.V1_21,
   kubectlEnvironment: {
-    'http_proxy': 'http://proxy.myproxy.com'
-  }
+    'http_proxy': 'http://proxy.myproxy.com',
+  },
 });
 ```
 
@@ -609,13 +635,21 @@ const layer = new lambda.LayerVersion(this, 'KubectlLayer', {
 Now specify when the cluster is defined:
 
 ```ts
-const cluster = new eks.Cluster(this, 'MyCluster', {
+declare const layer: lambda.LayerVersion;
+declare const vpc: ec2.Vpc;
+
+const cluster1 = new eks.Cluster(this, 'MyCluster', {
   kubectlLayer: layer,
+  vpc,
+  clusterName: 'cluster-name',
+  version: eks.KubernetesVersion.V1_21,
 });
 
 // or
-const cluster = eks.Cluster.fromClusterAttributes(this, 'MyCluster', {
+const cluster2 = eks.Cluster.fromClusterAttributes(this, 'MyCluster', {
   kubectlLayer: layer,
+  vpc,
+  clusterName: 'cluster-name',
 });
 ```
 
@@ -624,15 +658,17 @@ const cluster = eks.Cluster.fromClusterAttributes(this, 'MyCluster', {
 By default, the kubectl provider is configured with 1024MiB of memory. You can use the `kubectlMemory` option to specify the memory size for the AWS Lambda function:
 
 ```ts
-import { Size } from '@aws-cdk/core';
-
 new eks.Cluster(this, 'MyCluster', {
-  kubectlMemory: Size.gibibytes(4)
+  kubectlMemory: Size.gibibytes(4),
+  version: eks.KubernetesVersion.V1_21, 
 });
 
 // or
+declare const vpc: ec2.Vpc;
 eks.Cluster.fromClusterAttributes(this, 'MyCluster', {
-  kubectlMemory: Size.gibibytes(4)
+  kubectlMemory: Size.gibibytes(4),
+  vpc,
+  clusterName: 'cluster-name',
 });
 ```
 
@@ -642,6 +678,7 @@ Instance types with `ARM64` architecture are supported in both managed nodegroup
 Amazon Linux 2 AMI for ARM64 will be automatically selected.
 
 ```ts
+declare const cluster: eks.Cluster;
 // add a managed ARM64 nodegroup
 cluster.addNodegroupCapacity('extra-ng-arm', {
   instanceTypes: [new ec2.InstanceType('m6g.medium')],
@@ -660,7 +697,7 @@ cluster.addAutoScalingGroupCapacity('self-ng-arm', {
 When you create a cluster, you can specify a `mastersRole`. The `Cluster` construct will associate this role with the `system:masters` [RBAC](https://kubernetes.io/docs/reference/access-authn-authz/rbac/) group, giving it super-user access to the cluster.
 
 ```ts
-const role = new iam.Role(...);
+declare const role: iam.Role;
 new eks.Cluster(this, 'HelloEKS', {
   version: eks.KubernetesVersion.V1_21,
   mastersRole: role,
@@ -690,7 +727,7 @@ You can use the `secretsEncryptionKey` to configure which key the cluster will u
 const secretsKey = new kms.Key(this, 'SecretsKey');
 const cluster = new eks.Cluster(this, 'MyCluster', {
   secretsEncryptionKey: secretsKey,
-  // ...
+  version: eks.KubernetesVersion.V1_21,
 });
 ```
 
@@ -699,13 +736,15 @@ You can also use a similar configuration for running a cluster built using the F
 ```ts
 const secretsKey = new kms.Key(this, 'SecretsKey');
 const cluster = new eks.FargateCluster(this, 'MyFargateCluster', {
-  secretsEncryptionKey: secretsKey
+  secretsEncryptionKey: secretsKey,
+  version: eks.KubernetesVersion.V1_21,
 });
 ```
 
 The Amazon Resource Name (ARN) for that CMK can be retrieved.
 
 ```ts
+declare const cluster: eks.Cluster;
 const clusterEncryptionConfigKeyArn = cluster.clusterEncryptionConfigKeyArn;
 ```
 
@@ -725,6 +764,7 @@ Furthermore, when auto-scaling group capacity is added to the cluster, the IAM i
 For example, let's say you want to grant an IAM user administrative privileges on your cluster:
 
 ```ts
+declare const cluster: eks.Cluster;
 const adminUser = new iam.User(this, 'Admin');
 cluster.awsAuth.addUserMapping(adminUser, { groups: [ 'system:masters' ]});
 ```
@@ -732,7 +772,9 @@ cluster.awsAuth.addUserMapping(adminUser, { groups: [ 'system:masters' ]});
 A convenience method for mapping a role to the `system:masters` group is also available:
 
 ```ts
-cluster.awsAuth.addMastersRole(role)
+declare const cluster: eks.Cluster;
+declare const role: iam.Role;
+cluster.awsAuth.addMastersRole(role);
 ```
 
 ### Cluster Security Group
@@ -744,6 +786,7 @@ between each other.
 The ID for that security group can be retrieved after creating the cluster.
 
 ```ts
+declare const cluster: eks.Cluster;
 const clusterSecurityGroupId = cluster.clusterSecurityGroupId;
 ```
 
@@ -763,10 +806,11 @@ unfortunately beyond the scope of this documentation.
 With services account you can provide Kubernetes Pods access to AWS resources.
 
 ```ts
+declare const cluster: eks.Cluster;
 // add service account
 const serviceAccount = cluster.addServiceAccount('MyServiceAccount');
 
-const bucket = new Bucket(this, 'Bucket');
+const bucket = new s3.Bucket(this, 'Bucket');
 bucket.grantReadWrite(serviceAccount);
 
 const mypod = cluster.addManifest('mypod', {
@@ -774,23 +818,22 @@ const mypod = cluster.addManifest('mypod', {
   kind: 'Pod',
   metadata: { name: 'mypod' },
   spec: {
-    serviceAccountName: serviceAccount.serviceAccountName
+    serviceAccountName: serviceAccount.serviceAccountName,
     containers: [
       {
         name: 'hello',
         image: 'paulbouwer/hello-kubernetes:1.5',
         ports: [ { containerPort: 8080 } ],
-
-      }
-    ]
-  }
+      },
+    ],
+  },
 });
 
 // create the resource after the service account.
 mypod.node.addDependency(serviceAccount);
 
 // print the IAM role arn for this service account
-new cdk.CfnOutput(this, 'ServiceAccountIamRole', { value: serviceAccount.role.roleArn })
+new CfnOutput(this, 'ServiceAccountIamRole', { value: serviceAccount.role.roleArn });
 ```
 
 Note that using `serviceAccount.serviceAccountName` above **does not** translate into a resource dependency.
@@ -804,9 +847,12 @@ To do so, pass the `openIdConnectProvider` property when you import the cluster 
 const provider = eks.OpenIdConnectProvider.fromOpenIdConnectProviderArn(this, 'Provider', 'arn:aws:iam::123456:oidc-provider/oidc.eks.eu-west-1.amazonaws.com/id/AB123456ABC');
 
 // or create a new one using an existing issuer url
-const provider = new eks.OpenIdConnectProvider(this, 'Provider', issuerUrl);
+declare const issuerUrl: string;
+const provider2 = new eks.OpenIdConnectProvider(this, 'Provider', {
+  url: issuerUrl,
+});
 
-const cluster = eks.Cluster.fromClusterAttributes({
+const cluster = eks.Cluster.fromClusterAttributes(this, 'MyCluster', {
   clusterName: 'Cluster',
   openIdConnectProvider: provider,
   kubectlRoleArn: 'arn:aws:iam::123456:role/service-role/k8sservicerole',
@@ -814,10 +860,8 @@ const cluster = eks.Cluster.fromClusterAttributes({
 
 const serviceAccount = cluster.addServiceAccount('MyServiceAccount');
 
-const bucket = new Bucket(this, 'Bucket');
+const bucket = new s3.Bucket(this, 'Bucket');
 bucket.grantReadWrite(serviceAccount);
-
-// ...
 ```
 
 Note that adding service accounts requires running `kubectl` commands against the cluster.
@@ -841,6 +885,7 @@ The following examples will deploy the [paulbouwer/hello-kubernetes](https://git
 service on the cluster:
 
 ```ts
+declare const cluster: eks.Cluster;
 const appLabel = { app: "hello-kubernetes" };
 
 const deployment = {
@@ -857,12 +902,12 @@ const deployment = {
           {
             name: "hello-kubernetes",
             image: "paulbouwer/hello-kubernetes:1.5",
-            ports: [ { containerPort: 8080 } ]
-          }
-        ]
-      }
-    }
-  }
+            ports: [ { containerPort: 8080 } ],
+          },
+        ],
+      },
+    },
+  },
 };
 
 const service = {
@@ -872,14 +917,14 @@ const service = {
   spec: {
     type: "LoadBalancer",
     ports: [ { port: 80, targetPort: 8080 } ],
-    selector: appLabel
+    selector: appLabel,
   }
 };
 
 // option 1: use a construct
-new KubernetesManifest(this, 'hello-kub', {
+new eks.KubernetesManifest(this, 'hello-kub', {
   cluster,
-  manifest: [ deployment, service ]
+  manifest: [ deployment, service ],
 });
 
 // or, option2: use `addManifest`
@@ -890,13 +935,16 @@ cluster.addManifest('hello-kub', service, deployment);
 
 The following example will deploy the resource manifest hosting on remote server:
 
-```ts
+```text
+// This example is only available in TypeScript
+
 import * as yaml from 'js-yaml';
 import * as request from 'sync-request';
 
+declare const cluster: eks.Cluster;
 const manifestUrl = 'https://url/of/manifest.yaml';
 const manifest = yaml.safeLoadAll(request('GET', manifestUrl).getBody());
-cluster.addManifest('my-resource', ...manifest);
+cluster.addManifest('my-resource', manifest);
 ```
 
 #### Dependencies
@@ -909,18 +957,19 @@ You can represent dependencies between `KubernetesManifest`s using
 `resource.node.addDependency()`:
 
 ```ts
+declare const cluster: eks.Cluster;
 const namespace = cluster.addManifest('my-namespace', {
   apiVersion: 'v1',
   kind: 'Namespace',
-  metadata: { name: 'my-app' }
+  metadata: { name: 'my-app' },
 });
 
 const service = cluster.addManifest('my-service', {
   metadata: {
     name: 'myservice',
-    namespace: 'my-app'
+    namespace: 'my-app',
   },
-  spec: // ...
+  spec: { }, // ...
 });
 
 service.node.addDependency(namespace); // will apply `my-namespace` before `my-service`.
@@ -950,8 +999,9 @@ Pruning is enabled by default but can be disabled through the `prune` option
 when a cluster is defined:
 
 ```ts
-new Cluster(this, 'MyCluster', {
-  prune: false
+new eks.Cluster(this, 'MyCluster', {
+  version: eks.KubernetesVersion.V1_21,
+  prune: false,
 });
 ```
 
@@ -961,9 +1011,10 @@ The `kubectl` CLI supports applying a manifest by skipping the validation.
 This can be accomplished by setting the `skipValidation` flag to `true` in the `KubernetesManifest` props.
 
 ```ts
+declare const cluster: eks.Cluster;
 new eks.KubernetesManifest(this, 'HelloAppWithoutValidation', {
-  cluster: this.cluster,
-  manifest: [ deployment, service ],
+  cluster,
+  manifest: [{ foo: 'bar' }],
   skipValidation: true,
 });
 ```
@@ -980,19 +1031,20 @@ to add Kubernetes resources to this cluster using Helm.
 The following example will install the [NGINX Ingress Controller](https://kubernetes.github.io/ingress-nginx/) to your cluster using Helm.
 
 ```ts
+declare const cluster: eks.Cluster;
 // option 1: use a construct
-new HelmChart(this, 'NginxIngress', {
+new eks.HelmChart(this, 'NginxIngress', {
   cluster,
   chart: 'nginx-ingress',
   repository: 'https://helm.nginx.com/stable',
-  namespace: 'kube-system'
+  namespace: 'kube-system',
 });
 
 // or, option2: use `addHelmChart`
 cluster.addHelmChart('NginxIngress', {
   chart: 'nginx-ingress',
   repository: 'https://helm.nginx.com/stable',
-  namespace: 'kube-system'
+  namespace: 'kube-system',
 });
 ```
 
@@ -1016,8 +1068,13 @@ resource or if Helm charts depend on each other. You can use
 charts:
 
 ```ts
-const chart1 = cluster.addHelmChart(...);
-const chart2 = cluster.addHelmChart(...);
+declare const cluster: eks.Cluster;
+const chart1 = cluster.addHelmChart('MyChart', {
+  chart: 'foo',
+});
+const chart2 = cluster.addHelmChart('MyChart', {
+  chart: 'bar',
+});
 
 chart2.node.addDependency(chart1);
 ```
@@ -1055,7 +1112,7 @@ For this reason, to avoid possible confusion, we will create the chart in a sepa
 
 `+ my-chart.ts`
 
-```ts
+```ts nofixture
 import * as s3 from '@aws-cdk/aws-s3';
 import * as constructs from 'constructs';
 import * as cdk8s from 'cdk8s';
@@ -1070,16 +1127,14 @@ export class MyChart extends cdk8s.Chart {
     super(scope, id);
 
     new kplus.Pod(this, 'Pod', {
-      spec: {
-        containers: [
-          new kplus.Container({
-            image: 'my-image',
-            env: {
-              BUCKET_NAME: kplus.EnvValue.fromValue(props.bucket.bucketName),
-            },
-          }),
-        ],
-      },
+      containers: [
+        new kplus.Container({
+          image: 'my-image',
+          env: {
+            BUCKET_NAME: kplus.EnvValue.fromValue(props.bucket.bucketName),
+          },
+        }),
+      ],
     });
   }
 }
@@ -1087,10 +1142,8 @@ export class MyChart extends cdk8s.Chart {
 
 Then, in your AWS CDK app:
 
-```ts
-import * as s3 from '@aws-cdk/aws-s3';
-import * as cdk8s from 'cdk8s';
-import { MyChart } from './my-chart';
+```ts fixture=cdk8schart
+declare const cluster: eks.Cluster;
 
 // some bucket..
 const bucket = new s3.Bucket(this, 'Bucket');
@@ -1108,7 +1161,7 @@ You can also compose a few stock `cdk8s+` constructs into your own custom constr
 you'll need to use is the one from the [`constructs`](https://github.com/aws/constructs) module, and not from `@aws-cdk/core` like you normally would.
 This is why we used `new cdk8s.App()` as the scope of the chart above.
 
-```ts
+```ts nofixture
 import * as constructs from 'constructs';
 import * as cdk8s from 'cdk8s';
 import * as kplus from 'cdk8s-plus';
@@ -1119,21 +1172,21 @@ export interface LoadBalancedWebService {
   readonly replicas: number;
 }
 
+const app = new cdk8s.App();
+const chart = new cdk8s.Chart(app, 'my-chart');
+
 export class LoadBalancedWebService extends constructs.Construct {
   constructor(scope: constructs.Construct, id: string, props: LoadBalancedWebService) {
     super(scope, id);
 
     const deployment = new kplus.Deployment(chart, 'Deployment', {
-      spec: {
-        replicas: props.replicas,
-        podSpecTemplate: {
-          containers: [ new kplus.Container({ image: props.image }) ]
-        }
-      },
+      replicas: props.replicas,
+      containers: [ new kplus.Container({ image: props.image }) ],
     });
 
-    deployment.expose({port: props.port, serviceType: kplus.ServiceType.LOAD_BALANCER})
-
+    deployment.expose(props.port, {
+      serviceType: kplus.ServiceType.LOAD_BALANCER,
+    });
   }
 }
 ```
@@ -1151,11 +1204,12 @@ resources. The following example can be used to patch the `hello-kubernetes`
 deployment from the example above with 5 replicas.
 
 ```ts
-new KubernetesPatch(this, 'hello-kub-deployment-label', {
+declare const cluster: eks.Cluster;
+new eks.KubernetesPatch(this, 'hello-kub-deployment-label', {
   cluster,
   resourceName: "deployment/hello-kubernetes",
   applyPatch: { spec: { replicas: 5 } },
-  restorePatch: { spec: { replicas: 3 } }
+  restorePatch: { spec: { replicas: 3 } },
 })
 ```
 
@@ -1167,8 +1221,9 @@ and use that as part of your CDK application.
 For example, you can fetch the address of a [`LoadBalancer`](https://kubernetes.io/docs/concepts/services-networking/service/#loadbalancer) type service:
 
 ```ts
+declare const cluster: eks.Cluster;
 // query the load balancer address
-const myServiceAddress = new KubernetesObjectValue(this, 'LoadBalancerAttribute', {
+const myServiceAddress = new eks.KubernetesObjectValue(this, 'LoadBalancerAttribute', {
   cluster: cluster,
   objectType: 'service',
   objectName: 'my-service',
@@ -1177,9 +1232,11 @@ const myServiceAddress = new KubernetesObjectValue(this, 'LoadBalancerAttribute'
 
 // pass the address to a lambda function
 const proxyFunction = new lambda.Function(this, 'ProxyFunction', {
-  ...
+  handler: 'index.handler',
+  code: lambda.Code.fromInline('my-code'),
+  runtime: lambda.Runtime.NODEJS_14_X,
   environment: {
-    myServiceAddress: myServiceAddress.value
+    myServiceAddress: myServiceAddress.value,
   },
 })
 ```
@@ -1187,6 +1244,7 @@ const proxyFunction = new lambda.Function(this, 'ProxyFunction', {
 Specifically, since the above use-case is quite common, there is an easier way to access that information:
 
 ```ts
+declare const cluster: eks.Cluster;
 const loadBalancerAddress = cluster.getServiceLoadBalancerAddress('my-service');
 ```
 
@@ -1210,6 +1268,7 @@ Then, you can use `addManifest` or `addHelmChart` to define resources inside
 your Kubernetes cluster. For example:
 
 ```ts
+declare const cluster: eks.Cluster;
 cluster.addManifest('Test', {
   apiVersion: 'v1',
   kind: 'ConfigMap',

@@ -3,6 +3,7 @@ import { ABSENT } from '@aws-cdk/assert-internal';
 import * as certificatemanager from '@aws-cdk/aws-certificatemanager';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import {
   CfnDistribution,
@@ -1008,7 +1009,7 @@ added the ellipsis so a user would know there was more to ...`,
 
   });
 
-  test('allows multiple aliasConfiguration CloudFrontWebDistribution per stack', () => {
+  testDeprecated('allows multiple aliasConfiguration CloudFrontWebDistribution per stack', () => {
     const stack = new cdk.Stack();
     const s3BucketSource = new s3.Bucket(stack, 'Bucket');
 
@@ -1248,7 +1249,7 @@ added the ellipsis so a user would know there was more to ...`,
       });
     });
     describe('errors', () => {
-      test('throws if both deprecated aliasConfiguration and viewerCertificate', () => {
+      testDeprecated('throws if both deprecated aliasConfiguration and viewerCertificate', () => {
         const stack = new cdk.Stack();
         const sourceBucket = new s3.Bucket(stack, 'Bucket');
 

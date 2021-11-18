@@ -128,19 +128,19 @@ export class StepFunctionInvokeAction extends Action {
   protected bound(_scope: Construct, _stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
   codepipeline.ActionConfig {
     // allow pipeline to invoke this step function
-    options.role.addToPolicy(new iam.PolicyStatement({
+    options.role.addToPrincipalPolicy(new iam.PolicyStatement({
       actions: ['states:StartExecution', 'states:DescribeStateMachine'],
       resources: [this.props.stateMachine.stateMachineArn],
     }));
 
     // allow state machine executions to be inspected
-    options.role.addToPolicy(new iam.PolicyStatement({
+    options.role.addToPrincipalPolicy(new iam.PolicyStatement({
       actions: ['states:DescribeExecution'],
       resources: [cdk.Stack.of(this.props.stateMachine).formatArn({
         service: 'states',
         resource: 'execution',
-        resourceName: `${cdk.Stack.of(this.props.stateMachine).parseArn(this.props.stateMachine.stateMachineArn, ':').resourceName}:${this.props.executionNamePrefix ?? ''}*`,
-        sep: ':',
+        resourceName: `${cdk.Stack.of(this.props.stateMachine).splitArn(this.props.stateMachine.stateMachineArn, cdk.ArnFormat.COLON_RESOURCE_NAME).resourceName}:${this.props.executionNamePrefix ?? ''}*`,
+        arnFormat: cdk.ArnFormat.COLON_RESOURCE_NAME,
       })],
     }));
 

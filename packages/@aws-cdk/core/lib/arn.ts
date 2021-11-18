@@ -312,7 +312,7 @@ export class Arn {
 
     // Apparently we could just parse this right away. Validate that we got the right
     // resource type (to notify authors of incorrect assumptions right away).
-    const parsed = Arn.parse(arn, '/', true);
+    const parsed = Arn.split(arn, ArnFormat.SLASH_RESOURCE_NAME);
     if (!Token.isUnresolved(parsed.resource) && parsed.resource !== resourceType) {
       throw new Error(`Expected resource type '${resourceType}' in ARN, got '${parsed.resource}' in '${arn}'`);
     }

@@ -4,9 +4,9 @@ import * as cloudfront from '@aws-cdk/aws-cloudfront';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
+import { testDeprecated, testFutureBehavior } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import { testFutureBehavior } from '@aws-cdk/cdk-build-tools/lib/feature-flag';
 import * as s3deploy from '../lib';
 
 /* eslint-disable max-len */
@@ -277,7 +277,13 @@ test('deploy from a local .zip file when efs is enabled', () => {
   });
 });
 
-test('honors passed asset options', () => {
+testDeprecated('honors passed asset options', () => {
+  // The 'exclude' property is deprecated and not deprecated in AssetOptions interface.
+  // The interface through a complex set of inheritance chain has a 'exclude' prop that is deprecated
+  // and another 'exclude' prop that is not deprecated.
+  // Using 'testDeprecated' block here since there's no way to work around this craziness.
+  // When the deprecated property is removed from source, this block can be dropped.
+
   // GIVEN
   const stack = new cdk.Stack();
   const bucket = new s3.Bucket(stack, 'Dest');
@@ -764,7 +770,6 @@ test('deploy without deleting missing files from destination', () => {
 });
 
 test('deploy with excluded files from destination', () => {
-
   // GIVEN
   const stack = new cdk.Stack();
   const bucket = new s3.Bucket(stack, 'Dest');
