@@ -16,5 +16,5 @@
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
 ```ts
-import timestream = require('@aws-cdk/aws-timestream');
+import * as timestream from '@aws-cdk/aws-timestream';
 ```

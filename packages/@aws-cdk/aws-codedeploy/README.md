@@ -22,10 +22,8 @@ The CDK currently supports Amazon EC2, on-premise and AWS Lambda applications.
 To create a new CodeDeploy Application that deploys to EC2/on-premise instances:
 
 ```ts
-import * as codedeploy from '@aws-cdk/aws-codedeploy';
-
 const application = new codedeploy.ServerApplication(this, 'CodeDeployApplication', {
-    applicationName: 'MyApplication', // optional property
+  applicationName: 'MyApplication', // optional property
 });
 ```
 
@@ -33,7 +31,9 @@ To import an already existing Application:
 
 ```ts
 const application = codedeploy.ServerApplication.fromServerApplicationName(
-  this, 'ExistingCodeDeployApplication', 'MyExistingApplication'
+  this,
+  'ExistingCodeDeployApplication',
+  'MyExistingApplication',
 );
 ```
 
@@ -42,47 +42,51 @@ const application = codedeploy.ServerApplication.fromServerApplicationName(
 To create a new CodeDeploy Deployment Group that deploys to EC2/on-premise instances:
 
 ```ts
+import * as autoscaling from '@aws-cdk/aws-autoscaling';
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
+
+declare const application: codedeploy.ServerApplication;
+declare const asg: autoscaling.AutoScalingGroup;
+declare const alarm: cloudwatch.Alarm;
 const deploymentGroup = new codedeploy.ServerDeploymentGroup(this, 'CodeDeployDeploymentGroup', {
-    application,
-    deploymentGroupName: 'MyDeploymentGroup',
-    autoScalingGroups: [asg1, asg2],
-    // adds User Data that installs the CodeDeploy agent on your auto-scaling groups hosts
-    // default: true
-    installAgent: true,
-    // adds EC2 instances matching tags
-    ec2InstanceTags: new codedeploy.InstanceTagSet(
-        {
-            // any instance with tags satisfying
-            // key1=v1 or key1=v2 or key2 (any value) or value v3 (any key)
-            // will match this group
-            'key1': ['v1', 'v2'],
-            'key2': [],
-            '': ['v3'],
-        },
-    ),
-    // adds on-premise instances matching tags
-    onPremiseInstanceTags: new codedeploy.InstanceTagSet(
-        // only instances with tags (key1=v1 or key1=v2) AND key2=v3 will match this set
-        {
-            'key1': ['v1', 'v2'],
-        },
-        {
-            'key2': ['v3'],
-        },
-    ),
-    // CloudWatch alarms
-    alarms: [
-        new cloudwatch.Alarm(/* ... */),
-    ],
-    // whether to ignore failure to fetch the status of alarms from CloudWatch
-    // default: false
-    ignorePollAlarmsFailure: false,
-    // auto-rollback configuration
-    autoRollback: {
-        failedDeployment: true, // default: true
-        stoppedDeployment: true, // default: false
-        deploymentInAlarm: true, // default: true if you provided any alarms, false otherwise
+  application,
+  deploymentGroupName: 'MyDeploymentGroup',
+  autoScalingGroups: [asg],
+  // adds User Data that installs the CodeDeploy agent on your auto-scaling groups hosts
+  // default: true
+  installAgent: true,
+  // adds EC2 instances matching tags
+  ec2InstanceTags: new codedeploy.InstanceTagSet(
+    {
+      // any instance with tags satisfying
+      // key1=v1 or key1=v2 or key2 (any value) or value v3 (any key)
+      // will match this group
+      'key1': ['v1', 'v2'],
+      'key2': [],
+      '': ['v3'],
     },
+  ),
+  // adds on-premise instances matching tags
+  onPremiseInstanceTags: new codedeploy.InstanceTagSet(
+    // only instances with tags (key1=v1 or key1=v2) AND key2=v3 will match this set
+    {
+      'key1': ['v1', 'v2'],
+    },
+    {
+      'key2': ['v3'],
+    },
+  ),
+  // CloudWatch alarms
+  alarms: [alarm],
+  // whether to ignore failure to fetch the status of alarms from CloudWatch
+  // default: false
+  ignorePollAlarmsFailure: false,
+  // auto-rollback configuration
+  autoRollback: {
+    failedDeployment: true, // default: true
+    stoppedDeployment: true, // default: false
+    deploymentInAlarm: true, // default: true if you provided any alarms, false otherwise
+  },
 });
 ```
 
@@ -92,10 +96,14 @@ one will be automatically created.
 To import an already existing Deployment Group:
 
 ```ts
-const deploymentGroup = codedeploy.ServerDeploymentGroup.fromLambdaDeploymentGroupAttributes(this, 'ExistingCodeDeployDeploymentGroup', {
+declare const application: codedeploy.ServerApplication;
+const deploymentGroup = codedeploy.ServerDeploymentGroup.fromServerDeploymentGroupAttributes(
+  this, 
+  'ExistingCodeDeployDeploymentGroup', {
     application,
     deploymentGroupName: 'MyExistingDeploymentGroup',
-});
+  },
+);
 ```
 
 ### Load balancers
@@ -108,18 +116,15 @@ with the `loadBalancer` property when creating a Deployment Group.
 With Classic Elastic Load Balancer, you provide it directly:
 
 ```ts
-import * as lb from '@aws-cdk/aws-elasticloadbalancing';
+import * as elb from '@aws-cdk/aws-elasticloadbalancing';
 
-const elb = new lb.LoadBalancer(this, 'ELB', {
-  // ...
-});
-elb.addTarget(/* ... */);
-elb.addListener({
-  // ...
+declare const lb: elb.LoadBalancer;
+lb.addListener({
+  externalPort: 80,
 });
 
 const deploymentGroup = new codedeploy.ServerDeploymentGroup(this, 'DeploymentGroup', {
-  loadBalancer: codedeploy.LoadBalancer.classic(elb),
+  loadBalancer: codedeploy.LoadBalancer.classic(lb),
 });
 ```
 
@@ -127,17 +132,11 @@ With Application Load Balancer or Network Load Balancer,
 you provide a Target Group as the load balancer:
 
 ```ts
-import * as lbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
+import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
 
-const alb = new lbv2.ApplicationLoadBalancer(this, 'ALB', {
-  // ...
-});
-const listener = alb.addListener('Listener', {
-  // ...
-});
-const targetGroup = listener.addTargets('Fleet', {
-  // ...
-});
+declare const alb: elbv2.ApplicationLoadBalancer;
+const listener = alb.addListener('Listener', { port: 80 });
+const targetGroup = listener.addTargets('Fleet', { port: 80 });
 
 const deploymentGroup = new codedeploy.ServerDeploymentGroup(this, 'DeploymentGroup', {
   loadBalancer: codedeploy.LoadBalancer.application(targetGroup),
@@ -150,7 +149,7 @@ You can also pass a Deployment Configuration when creating the Deployment Group:
 
 ```ts
 const deploymentGroup = new codedeploy.ServerDeploymentGroup(this, 'CodeDeployDeploymentGroup', {
-    deploymentConfig: codedeploy.ServerDeploymentConfig.ALL_AT_ONCE,
+  deploymentConfig: codedeploy.ServerDeploymentConfig.ALL_AT_ONCE,
 });
 ```
 
@@ -160,10 +159,10 @@ You can also create a custom Deployment Configuration:
 
 ```ts
 const deploymentConfig = new codedeploy.ServerDeploymentConfig(this, 'DeploymentConfiguration', {
-    deploymentConfigName: 'MyDeploymentConfiguration', // optional property
-    // one of these is required, but both cannot be specified at the same time
-    minHealthyHostCount: 2,
-    minHealthyHostPercentage: 75,
+  deploymentConfigName: 'MyDeploymentConfiguration', // optional property
+  // one of these is required, but both cannot be specified at the same time
+  minimumHealthyHosts: codedeploy.MinimumHealthyHosts.count(2),
+  // minimumHealthyHosts: codedeploy.MinimumHealthyHosts.percentage(75),
 });
 ```
 
@@ -171,7 +170,9 @@ Or import an existing one:
 
 ```ts
 const deploymentConfig = codedeploy.ServerDeploymentConfig.fromServerDeploymentConfigName(
-  this, 'ExistingDeploymentConfiguration', 'MyExistingDeploymentConfiguration'
+  this,
+  'ExistingDeploymentConfiguration',
+  'MyExistingDeploymentConfiguration',
 );
 ```
 
@@ -180,10 +181,8 @@ const deploymentConfig = codedeploy.ServerDeploymentConfig.fromServerDeploymentC
 To create a new CodeDeploy Application that deploys to a Lambda function:
 
 ```ts
-import * as codedeploy from '@aws-cdk/aws-codedeploy';
-
 const application = new codedeploy.LambdaApplication(this, 'CodeDeployApplication', {
-    applicationName: 'MyApplication', // optional property
+  applicationName: 'MyApplication', // optional property
 });
 ```
 
@@ -191,7 +190,9 @@ To import an already existing Application:
 
 ```ts
 const application = codedeploy.LambdaApplication.fromLambdaApplicationName(
-  this, 'ExistingCodeDeployApplication', 'MyExistingApplication'
+  this,
+  'ExistingCodeDeployApplication',
+  'MyExistingApplication',
 );
 ```
 
@@ -204,18 +205,15 @@ When you publish a new version of the function to your stack, CodeDeploy will se
 To create a new CodeDeploy Deployment Group that deploys to a Lambda function:
 
 ```ts
-import * as codedeploy from '@aws-cdk/aws-codedeploy';
-import * as lambda from '@aws-cdk/aws-lambda';
-
-const myApplication = new codedeploy.LambdaApplication(..);
-const func = new lambda.Function(..);
+declare const myApplication: codedeploy.LambdaApplication;
+declare const func: lambda.Function;
 const version = func.addVersion('1');
 const version1Alias = new lambda.Alias(this, 'alias', {
   aliasName: 'prod',
-  version
+  version,
 });
 
-const deploymentGroup = new codedeploy.LambdaDeploymentGroup(stack, 'BlueGreenDeployment', {
+const deploymentGroup = new codedeploy.LambdaDeploymentGroup(this, 'BlueGreenDeployment', {
   application: myApplication, // optional property: one will be created for you if not provided
   alias: version1Alias,
   deploymentConfig: codedeploy.LambdaDeploymentConfig.LINEAR_10PERCENT_EVERY_1MINUTE,
@@ -237,12 +235,15 @@ you can do so with the CustomLambdaDeploymentConfig construct,
 letting you specify precisely how fast a new function version is deployed.
 
 ```ts
-const config = new codedeploy.CustomLambdaDeploymentConfig(stack, 'CustomConfig', {
+const config = new codedeploy.CustomLambdaDeploymentConfig(this, 'CustomConfig', {
   type: codedeploy.CustomLambdaDeploymentConfigType.CANARY,
   interval: Duration.minutes(1),
   percentage: 5,
 });
-const deploymentGroup = new codedeploy.LambdaDeploymentGroup(stack, 'BlueGreenDeployment', {
+
+declare const application: codedeploy.LambdaApplication;
+declare const alias: lambda.Alias;
+const deploymentGroup = new codedeploy.LambdaDeploymentGroup(this, 'BlueGreenDeployment', {
   application,
   alias,
   deploymentConfig: config,
@@ -252,7 +253,7 @@ const deploymentGroup = new codedeploy.LambdaDeploymentGroup(stack, 'BlueGreenDe
 You can specify a custom name for your deployment config, but if you do you will not be able to update the interval/percentage through CDK.
 
 ```ts
-const config = new codedeploy.CustomLambdaDeploymentConfig(stack, 'CustomConfig', {
+const config = new codedeploy.CustomLambdaDeploymentConfig(this, 'CustomConfig', {
   type: codedeploy.CustomLambdaDeploymentConfigType.CANARY,
   interval: Duration.minutes(1),
   percentage: 5,
@@ -265,26 +266,31 @@ const config = new codedeploy.CustomLambdaDeploymentConfig(stack, 'CustomConfig'
 CodeDeploy will roll back if the deployment fails. You can optionally trigger a rollback when one or more alarms are in a failed state:
 
 ```ts
-const deploymentGroup = new codedeploy.LambdaDeploymentGroup(stack, 'BlueGreenDeployment', {
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
+
+declare const alias: lambda.Alias;
+const alarm = new cloudwatch.Alarm(this, 'Errors', {
+  comparisonOperator: cloudwatch.ComparisonOperator.GREATER_THAN_THRESHOLD,
+  threshold: 1,
+  evaluationPeriods: 1,
+  metric: alias.metricErrors(),
+});
+const deploymentGroup = new codedeploy.LambdaDeploymentGroup(this, 'BlueGreenDeployment', {
   alias,
   deploymentConfig: codedeploy.LambdaDeploymentConfig.LINEAR_10PERCENT_EVERY_1MINUTE,
   alarms: [
     // pass some alarms when constructing the deployment group
-    new cloudwatch.Alarm(stack, 'Errors', {
-      comparisonOperator: cloudwatch.ComparisonOperator.GREATER_THAN_THRESHOLD,
-      threshold: 1,
-      evaluationPeriods: 1,
-      metric: alias.metricErrors()
-    })
-  ]
+    alarm,
+  ],
 });
 
 // or add alarms to an existing group
-deploymentGroup.addAlarm(new cloudwatch.Alarm(stack, 'BlueGreenErrors', {
+declare const blueGreenAlias: lambda.Alias;
+deploymentGroup.addAlarm(new cloudwatch.Alarm(this, 'BlueGreenErrors', {
   comparisonOperator: cloudwatch.ComparisonOperator.GREATER_THAN_THRESHOLD,
   threshold: 1,
   evaluationPeriods: 1,
-  metric: blueGreenAlias.metricErrors()
+  metric: blueGreenAlias.metricErrors(),
 }));
 ```
 
@@ -295,18 +301,19 @@ With either hook, you have the opportunity to run logic that determines whether 
 For example, with PreTraffic hook you could run integration tests against the newly created Lambda version (but not serving traffic). With PostTraffic hook, you could run end-to-end validation checks.
 
 ```ts
-const warmUpUserCache = new lambda.Function(..);
-const endToEndValidation = new lambda.Function(..);
+declare const warmUpUserCache: lambda.Function;
+declare const endToEndValidation: lambda.Function;
+declare const alias: lambda.Alias;
 
 // pass a hook whe creating the deployment group
-const deploymentGroup = new codedeploy.LambdaDeploymentGroup(stack, 'BlueGreenDeployment', {
+const deploymentGroup = new codedeploy.LambdaDeploymentGroup(this, 'BlueGreenDeployment', {
   alias: alias,
   deploymentConfig: codedeploy.LambdaDeploymentConfig.LINEAR_10PERCENT_EVERY_1MINUTE,
   preHook: warmUpUserCache,
 });
 
 // or configure one on an existing deployment group
-deploymentGroup.onPostHook(endToEndValidation);
+deploymentGroup.addPostHook(endToEndValidation);
 ```
 
 ### Import an existing Deployment Group
@@ -314,8 +321,9 @@ deploymentGroup.onPostHook(endToEndValidation);
 To import an already existing Deployment Group:
 
 ```ts
-const deploymentGroup = codedeploy.LambdaDeploymentGroup.import(this, 'ExistingCodeDeployDeploymentGroup', {
-    application,
-    deploymentGroupName: 'MyExistingDeploymentGroup',
+declare const application: codedeploy.LambdaApplication;
+const deploymentGroup = codedeploy.LambdaDeploymentGroup.fromLambdaDeploymentGroupAttributes(this, 'ExistingCodeDeployDeploymentGroup', {
+  application,
+  deploymentGroupName: 'MyExistingDeploymentGroup',
 });
 ```

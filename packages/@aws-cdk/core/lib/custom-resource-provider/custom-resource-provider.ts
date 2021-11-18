@@ -36,12 +36,23 @@ export interface CustomResourceProviderProps {
    * A set of IAM policy statements to include in the inline policy of the
    * provider's lambda function.
    *
+   * **Please note**: these are direct IAM JSON policy blobs, *not* `iam.PolicyStatement`
+   * objects like you will see in the rest of the CDK.
+   *
    * @default - no additional inline policy
    *
    * @example
-   *
-   *   [{ Effect: 'Allow', Action: 's3:PutObject*', Resource: '*' }]
-   *
+   * const provider = CustomResourceProvider.getOrCreateProvider(this, 'Custom::MyCustomResourceType', {
+   *   codeDirectory: `${__dirname}/my-handler`,
+   *   runtime: CustomResourceProviderRuntime.NODEJS_12_X,
+   *   policyStatements: [
+   *     {
+   *       Effect: 'Allow',
+   *       Action: 's3:PutObject*',
+   *       Resource: '*',
+   *     }
+   *   ],
+   * });
    */
   readonly policyStatements?: any[];
 
@@ -144,11 +155,15 @@ export class CustomResourceProvider extends CoreConstruct {
    * `serviceToken` when defining a custom resource.
    *
    * @example
-   *   new CustomResource(this, 'MyCustomResource', {
-   *     // ...
-   *     serviceToken: myProvider.serviceToken, // <--- here
-   *   })
+   * declare const myProvider: CustomResourceProvider;
    *
+   * new CustomResource(this, 'MyCustomResource', {
+   *   serviceToken: myProvider.serviceToken,
+   *   properties: {
+   *     myPropertyOne: 'one',
+   *     myPropertyTwo: 'two',
+   *   },
+   * });
    */
   public readonly serviceToken: string;
 
@@ -174,9 +189,9 @@ export class CustomResourceProvider extends CoreConstruct {
       sourcePath: props.codeDirectory,
     });
 
-    const asset = stack.addFileAsset({
+    const asset = stack.synthesizer.addFileAsset({
       fileName: staging.relativeStagedPath(stack),
-      sourceHash: staging.sourceHash,
+      sourceHash: staging.assetHash,
       packaging: FileAssetPackaging.ZIP_DIRECTORY,
     });
 
