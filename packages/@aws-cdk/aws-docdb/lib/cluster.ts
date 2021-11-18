@@ -10,6 +10,27 @@ import { Endpoint } from './endpoint';
 import { IClusterParameterGroup } from './parameter-group';
 import { BackupProps, Login, RotationMultiUserOptions } from './props';
 
+
+/**
+ * Properties for the CloudwatchLogsExports
+ */
+
+export interface CloudwatchLogsExportsProps {
+  /**
+   * Should sending profiler logs to CloudWatch Logs should be enabled?
+   * You have to configure the profiler additionally
+   * @see https://docs.aws.amazon.com/documentdb/latest/developerguide/profiling.html#profiling.enable-profiling
+   * @default false
+   */
+  profiler?: boolean;
+  /**
+   * Should sending audit logs to CloudWatch Logs should be enabled?
+   * @see https://docs.aws.amazon.com/documentdb/latest/developerguide/event-auditing.html#event-auditing-enabling-auditing
+   * @default false
+   */
+  audit?: boolean;
+}
+
 /**
  * Properties for a new database cluster
  */
@@ -146,6 +167,11 @@ export interface DatabaseClusterProps {
    * @default - false
    */
   readonly deletionProtection?: boolean;
+
+  /**
+   * The configuration that need to be enabled for exporting to Amazon CloudWatch Logs.
+   */
+  readonly cloudwatchLogsExports?: CloudwatchLogsExportsProps;
 }
 
 /**
@@ -346,6 +372,11 @@ export class DatabaseCluster extends DatabaseClusterBase {
     }
     this.securityGroupId = securityGroup.securityGroupId;
 
+    // Create the CloudwatchLogsConfiguratoin
+    const enableCloudwatchLogsExports:string[] = []
+    if (props.cloudwatchLogsExports.audit) enableCloudwatchLogsExports.push('audit');
+    if (props.cloudwatchLogsExports.profiler) enableCloudwatchLogsExports.push('profiler');
+
     // Create the secret manager secret if no password is specified
     let secret: DatabaseSecret | undefined;
     if (!props.masterUser.password) {
@@ -382,6 +413,8 @@ export class DatabaseCluster extends DatabaseClusterBase {
       backupRetentionPeriod: props.backup?.retention?.toDays(),
       preferredBackupWindow: props.backup?.preferredWindow,
       preferredMaintenanceWindow: props.preferredMaintenanceWindow,
+      // CloudWatchLogsExports
+      enableCloudwatchLogsExports: enableCloudwatchLogsExports,
       // Encryption
       kmsKeyId: props.kmsKey?.keyArn,
       storageEncrypted,
