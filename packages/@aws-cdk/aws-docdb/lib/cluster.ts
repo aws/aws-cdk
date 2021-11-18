@@ -396,15 +396,12 @@ export class DatabaseCluster extends DatabaseClusterBase {
       backupRetentionPeriod: props.backup?.retention?.toDays(),
       preferredBackupWindow: props.backup?.preferredWindow,
       preferredMaintenanceWindow: props.preferredMaintenanceWindow,
+      // EnableCloudwatchLogsExports
+      enableCloudwatchLogsExports: enableCloudwatchLogsExports.length > 0 ? enableCloudwatchLogsExports : undefined,
       // Encryption
       kmsKeyId: props.kmsKey?.keyArn,
       storageEncrypted,
     });
-
-    // EnableCloudwatchLogsExports
-    if ( enableCloudwatchLogsExports.length > 0 ) {
-      this.cluster.addPropertyOverride('EnableCloudwatchLogsExports', enableCloudwatchLogsExports);
-    }
 
     this.cluster.applyRemovalPolicy(props.removalPolicy, {
       applyToUpdateReplacePolicy: true,
