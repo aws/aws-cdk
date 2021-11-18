@@ -8,28 +8,9 @@ import { DatabaseSecret } from './database-secret';
 import { CfnDBCluster, CfnDBInstance, CfnDBSubnetGroup } from './docdb.generated';
 import { Endpoint } from './endpoint';
 import { IClusterParameterGroup } from './parameter-group';
-import { BackupProps, Login, RotationMultiUserOptions } from './props';
+import { BackupProps, CloudwatchLogsExportsProps, Login, RotationMultiUserOptions } from './props';
 
 
-/**
- * Properties for the CloudwatchLogsExports
- */
-
-export interface CloudwatchLogsExportsProps {
-  /**
-   * Should sending profiler logs to CloudWatch Logs should be enabled?
-   * You have to configure the profiler additionally
-   * @see https://docs.aws.amazon.com/documentdb/latest/developerguide/profiling.html#profiling.enable-profiling
-   * @default false
-   */
-  profiler?: boolean;
-  /**
-   * Should sending audit logs to CloudWatch Logs should be enabled?
-   * @see https://docs.aws.amazon.com/documentdb/latest/developerguide/event-auditing.html#event-auditing-enabling-auditing
-   * @default false
-   */
-  audit?: boolean;
-}
 
 /**
  * Properties for a new database cluster
