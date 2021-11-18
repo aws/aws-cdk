@@ -193,15 +193,15 @@ describe('integration', () => {
       options: {
         timeout: cdk.Duration.millis(2),
       },
-    })).toThrow(/Integration timeout must be between 50 milliseconds and 29 seconds/);
+    })).toThrow(/Integration timeout must be between 50 milliseconds and 300 seconds/);
 
     expect(() => new apigw.Integration({
       type: apigw.IntegrationType.HTTP_PROXY,
       integrationHttpMethod: 'ANY',
       options: {
-        timeout: cdk.Duration.seconds(50),
+        timeout: cdk.Duration.seconds(500),
       },
-    })).toThrow(/Integration timeout must be between 50 milliseconds and 29 seconds/);
+    })).toThrow(/Integration timeout must be between 50 milliseconds and 300 seconds/);
   });
 
   test('sets timeout', () => {
