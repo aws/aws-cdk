@@ -11,7 +11,7 @@ export interface ResourcePolicyProps {
    * Name of the log group resource policy
    * @default - Uses a unique id based on the construct path
    */
-  readonly policyName?: string;
+  readonly resourcePolicyName?: string;
 
   /**
    * Initial statements to add to the resource policy
@@ -31,15 +31,19 @@ export class ResourcePolicy extends Resource {
   public readonly document = new PolicyDocument();
 
   constructor(scope: Construct, id: string, props?: ResourcePolicyProps) {
-    super(scope, id);
-    new CfnResourcePolicy(this, 'Resource', {
+    super(scope, id, {
+      physicalName: props?.resourcePolicyName,
+    });
+
+    new CfnResourcePolicy(this, 'ResourcePolicy', {
       policyName: Lazy.string({
-        produce: () => props?.policyName ?? Names.uniqueId(this),
+        produce: () => props?.resourcePolicyName ?? Names.uniqueId(this),
       }),
       policyDocument: Lazy.string({
         produce: () => JSON.stringify(this.document),
       }),
     });
+
     if (props?.policyStatements) {
       this.document.addStatements(...props.policyStatements);
     }

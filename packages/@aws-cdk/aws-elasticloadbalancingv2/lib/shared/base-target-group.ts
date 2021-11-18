@@ -182,7 +182,7 @@ export abstract class TargetGroupBase extends Construct implements ITargetGroup 
    * This identifier is emitted as a dimensions of the metrics of this target
    * group.
    *
-   * @example app/my-load-balancer/123456789
+   * Example value: `app/my-load-balancer/123456789`
    */
   public abstract readonly firstLoadBalancerFullName: string;
 
