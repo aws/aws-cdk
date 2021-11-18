@@ -1,7 +1,6 @@
 import os
 import boto3
-from queue import QueueHandler
-
+from queue_backlog_calculator import QueueHandler
 
 def queue_handler(event, context):
     """

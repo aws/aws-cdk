@@ -22,7 +22,7 @@ class QueueHandler:
       Exception('Exception: {}'.format(e))
 
   """
-  This method writes the backlogPerTask metric to the stdout according to the Cloudwatch embedded metric format.
+  Write the backlogPerTask metric to the stdout according to the Cloudwatch embedded metric format.
   """
   def emit_backlog_per_task_metric(self, queue_name, backlog_per_task):
     print(json.dumps({
@@ -39,7 +39,7 @@ class QueueHandler:
     }))
 
   """
-  This method is used to get the number of tasks in the 'RUNNING' state for the service 'serviceName'.
+  Get the number of tasks in the 'RUNNING' state for the service 'service_name'.
   """
   def get_running_task_count(self):
     service_desc = self.ecs.describe_services(
