@@ -12,7 +12,7 @@ mkdir -p ${staging}
 cd ${staging}
 
 # copy src and overlay with test
-cp ${script_dir}/../../lib/extensions/queue/lambda/queue.py $PWD
+cp ${script_dir}/../../lib/extensions/queue/lambda/queue_backlog_calculator.py $PWD
 cp ${script_dir}/test_index.py $PWD
 cp ${script_dir}/Dockerfile $PWD
 

@@ -1,11 +1,10 @@
-import queue
 import json
 import io
-import sys
 import unittest
 import unittest.mock as mock
 from time import time
 from botocore.exceptions import ClientError
+from queue_backlog_calculator import QueueHandler
 
 class TestQueueAutoscaling(unittest.TestCase):
   '''
@@ -23,7 +22,7 @@ class TestQueueAutoscaling(unittest.TestCase):
       'QUEUE_NAMES': 'queue1'
     }
 
-    queue_handler = queue.QueueHandler(ecs_client, sqs_client, environ)
+    queue_handler = QueueHandler(ecs_client, sqs_client, environ)
     queue_handler.emit()
 
     self.assertRaisesRegex(Exception, r'UnexpectedError')
@@ -44,7 +43,7 @@ class TestQueueAutoscaling(unittest.TestCase):
       'QUEUE_NAMES': 'queue1'
     }
 
-    queue_handler = queue.QueueHandler(ecs_client, sqs_client, environ)
+    queue_handler = QueueHandler(ecs_client, sqs_client, environ)
     queue_handler.emit()
 
     self.assertRaisesRegex(Exception, r'There are no services with name {} in cluster: {}'.format(environ['SERVICE_NAME'], environ['CLUSTER_NAME']))
@@ -68,7 +67,7 @@ class TestQueueAutoscaling(unittest.TestCase):
       'QUEUE_NAMES': 'queue1'
     }
 
-    queue_handler = queue.QueueHandler(ecs_client, sqs_client, environ)
+    queue_handler = QueueHandler(ecs_client, sqs_client, environ)
     queue_handler.emit()
 
     metric = json.dumps({
@@ -113,7 +112,7 @@ class TestQueueAutoscaling(unittest.TestCase):
       'QUEUE_NAMES': 'queue1,queue2'
     }
     
-    queue_handler = queue.QueueHandler(ecs_client, sqs_client, environ)
+    queue_handler = QueueHandler(ecs_client, sqs_client, environ)
     queue_handler.emit()
     
     metric1 = json.dumps({
