@@ -1,16 +1,18 @@
 import * as crypto from 'crypto';
 import * as iam from '@aws-cdk/aws-iam';
 
-import { Annotations, Duration, Fn, IResource, Lazy, Resource, Stack, Tags } from '@aws-cdk/core';
+import { Annotations, Aspects, Duration, Fn, IResource, Lazy, Resource, Stack, Tags } from '@aws-cdk/core';
 import { Construct } from 'constructs';
+import { InstanceRequireImdsv2Aspect } from './aspects';
 import { CloudFormationInit } from './cfn-init';
 import { Connections, IConnectable } from './connections';
 import { CfnInstance } from './ec2.generated';
 import { InstanceType } from './instance-types';
 import { IMachineImage, OperatingSystemType } from './machine-image';
+import { instanceBlockDeviceMappings } from './private/ebs-util';
 import { ISecurityGroup, SecurityGroup } from './security-group';
 import { UserData } from './user-data';
-import { BlockDevice, synthesizeBlockDeviceMappings } from './volume';
+import { BlockDevice } from './volume';
 import { IVpc, Subnet, SubnetSelection } from './vpc';
 
 /**
@@ -229,6 +231,13 @@ export interface InstanceProps {
    * @default - default options
    */
   readonly initOptions?: ApplyCloudFormationInitOptions;
+
+  /**
+   * Whether IMDSv2 should be required on this instance.
+   *
+   * @default - false
+   */
+  readonly requireImdsv2?: boolean;
 }
 
 /**
@@ -362,7 +371,7 @@ export class Instance extends Resource implements IInstance {
       subnetId: subnet.subnetId,
       availabilityZone: subnet.availabilityZone,
       sourceDestCheck: props.sourceDestCheck,
-      blockDeviceMappings: props.blockDevices !== undefined ? synthesizeBlockDeviceMappings(this, props.blockDevices) : undefined,
+      blockDeviceMappings: props.blockDevices !== undefined ? instanceBlockDeviceMappings(this, props.blockDevices) : undefined,
       privateIpAddress: props.privateIpAddress,
     });
     this.instance.node.addDependency(this.role);
@@ -384,18 +393,33 @@ export class Instance extends Resource implements IInstance {
     this.applyUpdatePolicies(props);
 
     // Trigger replacement (via new logical ID) on user data change, if specified or cfn-init is being used.
+    //
+    // This is slightly tricky -- we need to resolve the UserData string (in order to get at actual Asset hashes,
+    // instead of the Token stringifications of them ('${Token[1234]}'). However, in the case of CFN Init usage,
+    // a UserData is going to contain the logicalID of the resource itself, which means infinite recursion if we
+    // try to naively resolve. We need a recursion breaker in this.
     const originalLogicalId = Stack.of(this).getLogicalId(this.instance);
+    let recursing = false;
     this.instance.overrideLogicalId(Lazy.uncachedString({
-      produce: () => {
-        let logicalId = originalLogicalId;
-        if (props.userDataCausesReplacement ?? props.initOptions) {
-          const md5 = crypto.createHash('md5');
-          md5.update(this.userData.render());
-          logicalId += md5.digest('hex').substr(0, 16);
+      produce: (context) => {
+        if (recursing) { return originalLogicalId; }
+        if (!(props.userDataCausesReplacement ?? props.initOptions)) { return originalLogicalId; }
+
+        const md5 = crypto.createHash('md5');
+        recursing = true;
+        try {
+          md5.update(JSON.stringify(context.resolve(this.userData.render())));
+        } finally {
+          recursing = false;
         }
-        return logicalId;
+        const digest = md5.digest('hex').substr(0, 16);
+        return `${originalLogicalId}${digest}`;
       },
     }));
+
+    if (props.requireImdsv2) {
+      Aspects.of(this).add(new InstanceRequireImdsv2Aspect());
+    }
   }
 
   /**
@@ -419,7 +443,7 @@ export class Instance extends Resource implements IInstance {
    * Adds a statement to the IAM role assumed by the instance.
    */
   public addToRolePolicy(statement: iam.PolicyStatement) {
-    this.role.addToPolicy(statement);
+    this.role.addToPrincipalPolicy(statement);
   }
 
   /**
@@ -440,6 +464,8 @@ export class Instance extends Resource implements IInstance {
       embedFingerprint: options.embedFingerprint,
       printLog: options.printLog,
       ignoreFailures: options.ignoreFailures,
+      includeRole: options.includeRole,
+      includeUrl: options.includeUrl,
     });
     this.waitForResourceSignal(options.timeout ?? Duration.minutes(5));
   }
@@ -473,7 +499,7 @@ export class Instance extends Resource implements IInstance {
       this.instance.cfnOptions.creationPolicy = {
         ...this.instance.cfnOptions.creationPolicy,
         resourceSignal: {
-          timeout: props.resourceSignalTimeout && props.resourceSignalTimeout.toISOString(),
+          timeout: props.resourceSignalTimeout && props.resourceSignalTimeout.toIsoString(),
         },
       };
     }
@@ -545,4 +571,23 @@ export interface ApplyCloudFormationInitOptions {
    * @default false
    */
   readonly ignoreFailures?: boolean;
+
+  /**
+   * Include --url argument when running cfn-init and cfn-signal commands
+   *
+   * This will be the cloudformation endpoint in the deployed region
+   * e.g. https://cloudformation.us-east-1.amazonaws.com
+   *
+   * @default false
+   */
+  readonly includeUrl?: boolean;
+
+  /**
+   * Include --role argument when running cfn-init and cfn-signal commands
+   *
+   * This will be the IAM instance profile attached to the EC2 instance
+   *
+   * @default false
+   */
+  readonly includeRole?: boolean;
 }

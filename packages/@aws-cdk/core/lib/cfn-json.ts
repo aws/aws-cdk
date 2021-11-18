@@ -43,7 +43,7 @@ export class CfnJson extends CoreConstruct implements IResolvable {
    * Normally there is no need to use this property since `CfnJson` is an
    * IResolvable, so it can be simply used as a value.
    */
-  private readonly value: Reference;
+  public readonly value: Reference;
 
   private readonly jsonString: string;
 

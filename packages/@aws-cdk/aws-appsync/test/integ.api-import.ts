@@ -62,6 +62,29 @@ const api2 = appsync.GraphqlApi.fromGraphqlApiAttributes(stack, 'api2', {
   graphqlApiArn: baseApi.arn,
 });
 
-api2.addNoneDataSource('none');
+const none = api2.addNoneDataSource('none');
+
+const func = none.createFunction({
+  name: 'pipeline_function',
+  requestMappingTemplate: appsync.MappingTemplate.fromString(JSON.stringify({
+    version: '2017-02-28',
+  })),
+  responseMappingTemplate: appsync.MappingTemplate.fromString(JSON.stringify({
+    version: 'v1',
+  })),
+});
+
+new appsync.Resolver(stack, 'pipeline_resolver', {
+  api: api2,
+  typeName: 'test',
+  fieldName: 'version',
+  pipelineConfig: [func],
+  requestMappingTemplate: appsync.MappingTemplate.fromString(JSON.stringify({
+    version: '2017-02-28',
+  })),
+  responseMappingTemplate: appsync.MappingTemplate.fromString(JSON.stringify({
+    version: 'v1',
+  })),
+});
 
 app.synth();

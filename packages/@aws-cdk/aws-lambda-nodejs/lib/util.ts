@@ -1,6 +1,5 @@
 import { spawnSync, SpawnSyncOptions } from 'child_process';
 import * as fs from 'fs';
-import * as os from 'os';
 import * as path from 'path';
 
 export interface CallSite {
@@ -30,13 +29,6 @@ export function callsites(): CallSite[] {
   const stack = new Error().stack?.slice(1);
   Error.prepareStackTrace = _prepareStackTrace;
   return stack as unknown as CallSite[];
-}
-
-/**
- * Returns the major version of node installation
- */
-export function nodeMajorVersion(): number {
-  return parseInt(process.versions.node.split('.')[0], 10);
 }
 
 /**
@@ -72,10 +64,22 @@ export function exec(cmd: string, args: string[], options?: SpawnSyncOptions) {
     if (proc.stdout || proc.stderr) {
       throw new Error(`[Status ${proc.status}] stdout: ${proc.stdout?.toString().trim()}\n\n\nstderr: ${proc.stderr?.toString().trim()}`);
     }
-    throw new Error(`${cmd} exited with status ${proc.status}`);
+    throw new Error(`${cmd} ${args.join(' ')} ${options?.cwd ? `run in directory ${options.cwd}` : ''} exited with status ${proc.status}`);
   }
 
   return proc;
+}
+
+/**
+ * Returns a module version by requiring its package.json file
+ */
+export function tryGetModuleVersion(mod: string): string | undefined {
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    return require(`${mod}/package.json`).version;
+  } catch (err) {
+    return undefined;
+  }
 }
 
 /**
@@ -97,39 +101,12 @@ export function extractDependencies(pkgPath: string, modules: string[]): { [key:
   };
 
   for (const mod of modules) {
-    try {
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
-      const version = pkgDependencies[mod] ?? require(`${mod}/package.json`).version;
-      dependencies[mod] = version;
-    } catch (err) {
+    const version = pkgDependencies[mod] ?? tryGetModuleVersion(mod);
+    if (!version) {
       throw new Error(`Cannot extract version for module '${mod}'. Check that it's referenced in your package.json or installed.`);
     }
+    dependencies[mod] = version;
   }
 
   return dependencies;
-}
-
-/**
- * Returns the installed esbuild version
- */
-export function getEsBuildVersion(): string | undefined {
-  try {
-    // --no-install ensures that we are checking for an installed version
-    // (either locally or globally)
-    const npx = os.platform() === 'win32' ? 'npx.cmd' : 'npx';
-    const esbuild = spawnSync(npx, ['--no-install', 'esbuild', '--version']);
-
-    if (esbuild.status !== 0 || esbuild.error) {
-      return undefined;
-    }
-
-    return esbuild.stdout.toString().trim();
-  } catch (err) {
-    return undefined;
-  }
-}
-
-export enum LockFile {
-  NPM = 'package-lock.json',
-  YARN = 'yarn.lock'
 }

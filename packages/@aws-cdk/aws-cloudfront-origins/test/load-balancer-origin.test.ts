@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import '@aws-cdk/assert-internal/jest';
 import * as cloudfront from '@aws-cdk/aws-cloudfront';
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
 import { App, Duration, Stack } from '@aws-cdk/core';
@@ -28,6 +28,9 @@ test('Renders minimal example with just a load balancer', () => {
     domainName: loadBalancer.loadBalancerDnsName,
     customOriginConfig: {
       originProtocolPolicy: 'https-only',
+      originSslProtocols: [
+        'TLSv1.2',
+      ],
     },
   });
 });
@@ -52,6 +55,9 @@ test('Can customize properties of the origin', () => {
     connectionTimeout: 5,
     customOriginConfig: {
       originProtocolPolicy: 'match-viewer',
+      originSslProtocols: [
+        'TLSv1.2',
+      ],
     },
   });
 });

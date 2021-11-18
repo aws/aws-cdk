@@ -4,6 +4,7 @@ import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { Duration, Lazy, Names, Resource } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
+import { ApplicationELBMetrics } from '../elasticloadbalancingv2-canned-metrics.generated';
 import { BaseLoadBalancer, BaseLoadBalancerLookupOptions, BaseLoadBalancerProps, ILoadBalancerV2 } from '../shared/base-load-balancer';
 import { IpAddressType, ApplicationProtocol } from '../shared/enums';
 import { ApplicationListener, BaseApplicationListenerProps } from './application-listener';
@@ -79,6 +80,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
 
   public readonly connections: ec2.Connections;
   public readonly ipAddressType?: IpAddressType;
+  public readonly listeners: ApplicationListener[];
 
   constructor(scope: Construct, id: string, props: ApplicationLoadBalancerProps) {
     super(scope, id, props, {
@@ -94,6 +96,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
       allowAllOutbound: false,
     })];
     this.connections = new ec2.Connections({ securityGroups });
+    this.listeners = [];
 
     if (props.http2Enabled === false) { this.setAttribute('routing.http2.enabled', 'false'); }
     if (props.idleTimeout !== undefined) { this.setAttribute('idle_timeout.timeout_seconds', props.idleTimeout.toSeconds().toString()); }
@@ -103,10 +106,12 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    * Add a new listener to this load balancer
    */
   public addListener(id: string, props: BaseApplicationListenerProps): ApplicationListener {
-    return new ApplicationListener(this, id, {
+    const listener = new ApplicationListener(this, id, {
       loadBalancer: this,
       ...props,
     });
+    this.listeners.push(listener);
+    return listener;
   }
 
   /**
@@ -118,7 +123,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
     return this.addListener(`Redirect${sourcePort}To${targetPort}`, {
       protocol: props.sourceProtocol ?? ApplicationProtocol.HTTP,
       port: sourcePort,
-      open: true,
+      open: props.open ?? true,
       defaultAction: ListenerAction.redirect({
         port: targetPort,
         protocol: props.targetProtocol ?? ApplicationProtocol.HTTPS,
@@ -143,7 +148,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
     return new cloudwatch.Metric({
       namespace: 'AWS/ApplicationELB',
       metricName,
-      dimensions: { LoadBalancer: this.loadBalancerFullName },
+      dimensionsMap: { LoadBalancer: this.loadBalancerFullName },
       ...props,
     });
   }
@@ -155,10 +160,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    * @default Sum over 5 minutes
    */
   public metricActiveConnectionCount(props?: cloudwatch.MetricOptions) {
-    return this.metric('ActiveConnectionCount', {
-      statistic: 'sum',
-      ...props,
-    });
+    return this.cannedMetric(ApplicationELBMetrics.activeConnectionCountSum, props);
   }
 
   /**
@@ -169,10 +171,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    * @default Sum over 5 minutes
    */
   public metricClientTlsNegotiationErrorCount(props?: cloudwatch.MetricOptions) {
-    return this.metric('ClientTLSNegotiationErrorCount', {
-      statistic: 'sum',
-      ...props,
-    });
+    return this.cannedMetric(ApplicationELBMetrics.clientTlsNegotiationErrorCountSum, props);
   }
 
   /**
@@ -181,7 +180,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    * @default Sum over 5 minutes
    */
   public metricConsumedLCUs(props?: cloudwatch.MetricOptions) {
-    return this.metric('ConsumedLCUs', {
+    return this.cannedMetric(ApplicationELBMetrics.consumedLcUsAverage, {
       statistic: 'sum',
       ...props,
     });
@@ -193,10 +192,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    * @default Sum over 5 minutes
    */
   public metricHttpFixedResponseCount(props?: cloudwatch.MetricOptions) {
-    return this.metric('HTTP_Fixed_Response_Count', {
-      statistic: 'Sum',
-      ...props,
-    });
+    return this.cannedMetric(ApplicationELBMetrics.httpFixedResponseCountSum, props);
   }
 
   /**
@@ -205,10 +201,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    * @default Sum over 5 minutes
    */
   public metricHttpRedirectCount(props?: cloudwatch.MetricOptions) {
-    return this.metric('HTTP_Redirect_Count', {
-      statistic: 'Sum',
-      ...props,
-    });
+    return this.cannedMetric(ApplicationELBMetrics.httpRedirectCountSum, props);
   }
 
   /**
@@ -218,10 +211,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    * @default Sum over 5 minutes
    */
   public metricHttpRedirectUrlLimitExceededCount(props?: cloudwatch.MetricOptions) {
-    return this.metric('HTTP_Redirect_Url_Limit_Exceeded_Count', {
-      statistic: 'Sum',
-      ...props,
-    });
+    return this.cannedMetric(ApplicationELBMetrics.httpRedirectUrlLimitExceededCountSum, props);
   }
 
   /**
@@ -259,10 +249,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    * @default Sum over 5 minutes
    */
   public metricIpv6ProcessedBytes(props?: cloudwatch.MetricOptions) {
-    return this.metric('IPv6ProcessedBytes', {
-      statistic: 'Sum',
-      ...props,
-    });
+    return this.cannedMetric(ApplicationELBMetrics.iPv6ProcessedBytesSum, props);
   }
 
   /**
@@ -271,10 +258,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    * @default Sum over 5 minutes
    */
   public metricIpv6RequestCount(props?: cloudwatch.MetricOptions) {
-    return this.metric('IPv6RequestCount', {
-      statistic: 'Sum',
-      ...props,
-    });
+    return this.cannedMetric(ApplicationELBMetrics.iPv6RequestCountSum, props);
   }
 
   /**
@@ -284,10 +268,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    * @default Sum over 5 minutes
    */
   public metricNewConnectionCount(props?: cloudwatch.MetricOptions) {
-    return this.metric('NewConnectionCount', {
-      statistic: 'Sum',
-      ...props,
-    });
+    return this.cannedMetric(ApplicationELBMetrics.newConnectionCountSum, props);
   }
 
   /**
@@ -296,10 +277,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    * @default Sum over 5 minutes
    */
   public metricProcessedBytes(props?: cloudwatch.MetricOptions) {
-    return this.metric('ProcessedBytes', {
-      statistic: 'Sum',
-      ...props,
-    });
+    return this.cannedMetric(ApplicationELBMetrics.processedBytesSum, props);
   }
 
   /**
@@ -309,10 +287,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    * @default Sum over 5 minutes
    */
   public metricRejectedConnectionCount(props?: cloudwatch.MetricOptions) {
-    return this.metric('RejectedConnectionCount', {
-      statistic: 'Sum',
-      ...props,
-    });
+    return this.cannedMetric(ApplicationELBMetrics.rejectedConnectionCountSum, props);
   }
 
   /**
@@ -323,10 +298,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    * @default Sum over 5 minutes
    */
   public metricRequestCount(props?: cloudwatch.MetricOptions) {
-    return this.metric('RequestCount', {
-      statistic: 'Sum',
-      ...props,
-    });
+    return this.cannedMetric(ApplicationELBMetrics.requestCountSum, props);
   }
 
   /**
@@ -335,10 +307,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
    * @default Sum over 5 minutes
    */
   public metricRuleEvaluations(props?: cloudwatch.MetricOptions) {
-    return this.metric('RuleEvaluations', {
-      statistic: 'Sum',
-      ...props,
-    });
+    return this.cannedMetric(ApplicationELBMetrics.ruleEvaluationsSum, props);
   }
 
   /**
@@ -437,6 +406,15 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
       ...props,
     });
   }
+
+  private cannedMetric(
+    fn: (dims: { LoadBalancer: string }) => cloudwatch.MetricProps,
+    props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return new cloudwatch.Metric({
+      ...fn({ LoadBalancer: this.loadBalancerFullName }),
+      ...props,
+    }).attachTo(this);
+  }
 }
 
 /**
@@ -514,6 +492,12 @@ export interface IApplicationLoadBalancer extends ILoadBalancerV2, ec2.IConnecta
   readonly ipAddressType?: IpAddressType;
 
   /**
+   * A list of listeners that have been added to the load balancer.
+   * This list is only valid for owned constructs.
+   */
+  readonly listeners: ApplicationListener[];
+
+  /**
    * Add a new listener to this load balancer
    */
   addListener(id: string, props: BaseApplicationListenerProps): ApplicationListener;
@@ -580,6 +564,10 @@ class ImportedApplicationLoadBalancer extends Resource implements IApplicationLo
    */
   public readonly loadBalancerArn: string;
 
+  public get listeners(): ApplicationListener[] {
+    throw Error('.listeners can only be accessed if the class was constructed as an owned, not imported, load balancer');
+  }
+
   /**
    * VPC of the load balancer
    *
@@ -588,7 +576,10 @@ class ImportedApplicationLoadBalancer extends Resource implements IApplicationLo
   public readonly vpc?: ec2.IVpc;
 
   constructor(scope: Construct, id: string, private readonly props: ApplicationLoadBalancerAttributes) {
-    super(scope, id);
+    super(scope, id, {
+      environmentFromArn: props.loadBalancerArn,
+    });
+
     this.vpc = props.vpc;
     this.loadBalancerArn = props.loadBalancerArn;
     this.connections = new ec2.Connections({
@@ -626,8 +617,14 @@ class LookedUpApplicationLoadBalancer extends Resource implements IApplicationLo
   public readonly connections: ec2.Connections;
   public readonly vpc?: ec2.IVpc;
 
+  public get listeners(): ApplicationListener[] {
+    throw Error('.listeners can only be accessed if the class was constructed as an owned, not looked up, load balancer');
+  }
+
   constructor(scope: Construct, id: string, props: cxapi.LoadBalancerContextResponse) {
-    super(scope, id);
+    super(scope, id, {
+      environmentFromArn: props.loadBalancerArn,
+    });
 
     this.loadBalancerArn = props.loadBalancerArn;
     this.loadBalancerCanonicalHostedZoneId = props.loadBalancerCanonicalHostedZoneId;
@@ -645,7 +642,7 @@ class LookedUpApplicationLoadBalancer extends Resource implements IApplicationLo
 
     this.connections = new ec2.Connections();
     for (const securityGroupId of props.securityGroupIds) {
-      const securityGroup = ec2.SecurityGroup.fromLookup(this, `SecurityGroup-${securityGroupId}`, securityGroupId);
+      const securityGroup = ec2.SecurityGroup.fromLookupById(this, `SecurityGroup-${securityGroupId}`, securityGroupId);
       this.connections.addSecurityGroup(securityGroup);
     }
   }
@@ -690,5 +687,20 @@ export interface ApplicationLoadBalancerRedirectConfig {
    * @default 443
    */
   readonly targetPort?: number;
+
+  /**
+   * Allow anyone to connect to this listener
+   *
+   * If this is specified, the listener will be opened up to anyone who can reach it.
+   * For internal load balancers this is anyone in the same VPC. For public load
+   * balancers, this is anyone on the internet.
+   *
+   * If you want to be more selective about who can access this load
+   * balancer, set this to `false` and use the listener's `connections`
+   * object to selectively grant access to the listener.
+   *
+   * @default true
+   */
+  readonly open?: boolean;
 
 }

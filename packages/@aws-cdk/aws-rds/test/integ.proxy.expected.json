@@ -95,14 +95,14 @@
     "vpcPublicSubnet1NATGateway9C16659E": {
       "Type": "AWS::EC2::NatGateway",
       "Properties": {
+        "SubnetId": {
+          "Ref": "vpcPublicSubnet1Subnet2E65531E"
+        },
         "AllocationId": {
           "Fn::GetAtt": [
             "vpcPublicSubnet1EIPDA49DCBE",
             "AllocationId"
           ]
-        },
-        "SubnetId": {
-          "Ref": "vpcPublicSubnet1Subnet2E65531E"
         },
         "Tags": [
           {
@@ -192,14 +192,14 @@
     "vpcPublicSubnet2NATGateway9B8AE11A": {
       "Type": "AWS::EC2::NatGateway",
       "Properties": {
+        "SubnetId": {
+          "Ref": "vpcPublicSubnet2Subnet009B674F"
+        },
         "AllocationId": {
           "Fn::GetAtt": [
             "vpcPublicSubnet2EIP9B3743B1",
             "AllocationId"
           ]
-        },
-        "SubnetId": {
-          "Ref": "vpcPublicSubnet2Subnet009B674F"
         },
         "Tags": [
           {
@@ -385,6 +385,37 @@
         }
       }
     },
+    "dbInstanceSecurityGroupfromawscdkrdsproxydbProxyProxySecurityGroupA345AFE5IndirectPortE3621D4F": {
+      "Type": "AWS::EC2::SecurityGroupIngress",
+      "Properties": {
+        "IpProtocol": "tcp",
+        "Description": "Allow connections to the database Instance from the Proxy",
+        "FromPort": {
+          "Fn::GetAtt": [
+            "dbInstance4076B1EC",
+            "Endpoint.Port"
+          ]
+        },
+        "GroupId": {
+          "Fn::GetAtt": [
+            "dbInstanceSecurityGroupA58A00A3",
+            "GroupId"
+          ]
+        },
+        "SourceSecurityGroupId": {
+          "Fn::GetAtt": [
+            "dbProxyProxySecurityGroup16E727A7",
+            "GroupId"
+          ]
+        },
+        "ToPort": {
+          "Fn::GetAtt": [
+            "dbInstance4076B1EC",
+            "Endpoint.Port"
+          ]
+        }
+      }
+    },
     "dbInstanceSecret032D3661": {
       "Type": "AWS::SecretsManager::Secret",
       "Properties": {
@@ -405,7 +436,9 @@
           "PasswordLength": 30,
           "SecretStringTemplate": "{\"username\":\"master\"}"
         }
-      }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "dbInstanceSecretAttachment88CFBDAE": {
       "Type": "AWS::SecretsManager::SecretTargetAttachment",
@@ -429,6 +462,7 @@
           "Ref": "dbInstanceSubnetGroupD062EC9E"
         },
         "Engine": "postgres",
+        "EngineVersion": "11.5",
         "MasterUsername": {
           "Fn::Join": [
             "",
@@ -463,7 +497,8 @@
           }
         ]
       },
-      "UpdateReplacePolicy": "Snapshot"
+      "UpdateReplacePolicy": "Snapshot",
+      "DeletionPolicy": "Snapshot"
     },
     "dbProxyIAMRole662F3AB8": {
       "Type": "AWS::IAM::Role",
@@ -508,6 +543,22 @@
         ]
       }
     },
+    "dbProxyProxySecurityGroup16E727A7": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "SecurityGroup for Database Proxy",
+        "SecurityGroupEgress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow all outbound traffic by default",
+            "IpProtocol": "-1"
+          }
+        ],
+        "VpcId": {
+          "Ref": "vpcA2121C38"
+        }
+      }
+    },
     "dbProxy3B89EAF2": {
       "Type": "AWS::RDS::DBProxy",
       "Properties": {
@@ -522,7 +573,6 @@
         ],
         "DBProxyName": "dbProxy",
         "EngineFamily": "POSTGRESQL",
-        "RequireTLS": true,
         "RoleArn": {
           "Fn::GetAtt": [
             "dbProxyIAMRole662F3AB8",
@@ -536,6 +586,15 @@
           {
             "Ref": "vpcPrivateSubnet2Subnet7031C2BA"
           }
+        ],
+        "RequireTLS": true,
+        "VpcSecurityGroupIds": [
+          {
+            "Fn::GetAtt": [
+              "dbProxyProxySecurityGroup16E727A7",
+              "GroupId"
+            ]
+          }
         ]
       }
     },
@@ -545,6 +604,7 @@
         "DBProxyName": {
           "Ref": "dbProxy3B89EAF2"
         },
+        "TargetGroupName": "default",
         "ConnectionPoolConfigurationInfo": {
           "ConnectionBorrowTimeout": 30,
           "MaxConnectionsPercent": 50
@@ -553,8 +613,7 @@
           {
             "Ref": "dbInstance4076B1EC"
           }
-        ],
-        "TargetGroupName": "default"
+        ]
       }
     }
   }

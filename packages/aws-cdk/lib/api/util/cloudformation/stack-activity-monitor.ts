@@ -153,7 +153,6 @@ export class StackActivityMonitor {
 
   public async stop() {
     this.active = false;
-    this.printer.stop();
     if (this.tickTimer) {
       clearTimeout(this.tickTimer);
     }
@@ -162,6 +161,8 @@ export class StackActivityMonitor {
     // already returned an error, but the monitor hasn't seen all the events yet and we'd end
     // up not printing the failure reason to users.
     await this.finalPollToEnd();
+
+    this.printer.stop();
   }
 
   private scheduleNextTick() {
@@ -281,9 +282,6 @@ export class StackActivityMonitor {
     }
 
     await this.readNewEvents();
-
-    // Final print
-    this.printer.print();
   }
 
   private simplifyConstructPath(path: string) {
@@ -422,6 +420,10 @@ abstract class ActivityPrinterBase implements IActivityPrinter {
       delete this.resourcesInProgress[activity.event.LogicalResourceId];
     }
 
+    if (status.endsWith('_COMPLETE_CLEANUP_IN_PROGRESS')) {
+      this.resourcesDone++;
+    }
+
     if (status.endsWith('_COMPLETE')) {
       const prevState = this.resourcesPrevCompleteState[activity.event.LogicalResourceId];
       if (!prevState) {
@@ -477,6 +479,7 @@ export class HistoryActivityPrinter extends ActivityPrinterBase {
   public addActivity(activity: StackActivity) {
     super.addActivity(activity);
     this.printable.push(activity);
+    this.print();
   }
 
   public print() {
@@ -487,7 +490,22 @@ export class HistoryActivityPrinter extends ActivityPrinterBase {
     this.printInProgress();
   }
 
-  private printOne(activity: StackActivity) {
+  public stop() {
+    // Print failures at the end
+    if (this.failures.length > 0) {
+      this.stream.write('\nFailed resources:\n');
+      for (const failure of this.failures) {
+        // Root stack failures are not interesting
+        if (failure.event.StackName === failure.event.LogicalResourceId) {
+          continue;
+        }
+
+        this.printOne(failure, false);
+      }
+    }
+  }
+
+  private printOne(activity: StackActivity, progress?: boolean) {
     const e = activity.event;
     const color = colorFromStatusResult(e.ResourceStatus);
     let reasonColor = colors.cyan;
@@ -503,15 +521,20 @@ export class HistoryActivityPrinter extends ActivityPrinterBase {
 
     const logicalId = resourceName !== e.LogicalResourceId ? `(${e.LogicalResourceId}) ` : '';
 
-    this.stream.write(util.format(' %s | %s | %s | %s | %s %s%s%s\n',
-      this.progress(),
-      new Date(e.Timestamp).toLocaleTimeString(),
-      color(padRight(STATUS_WIDTH, (e.ResourceStatus || '').substr(0, STATUS_WIDTH))), // pad left and trim
-      padRight(this.props.resourceTypeColumnWidth, e.ResourceType || ''),
-      color(colors.bold(resourceName)),
-      logicalId,
-      reasonColor(colors.bold(e.ResourceStatusReason ? e.ResourceStatusReason : '')),
-      reasonColor(stackTrace)));
+    this.stream.write(
+      util.format(
+        '%s | %s%s | %s | %s | %s %s%s%s\n',
+        e.StackName,
+        (progress !== false ? `${this.progress()} | ` : ''),
+        new Date(e.Timestamp).toLocaleTimeString(),
+        color(padRight(STATUS_WIDTH, (e.ResourceStatus || '').substr(0, STATUS_WIDTH))), // pad left and trim
+        padRight(this.props.resourceTypeColumnWidth, e.ResourceType || ''),
+        color(colors.bold(resourceName)),
+        logicalId,
+        reasonColor(colors.bold(e.ResourceStatusReason ? e.ResourceStatusReason : '')),
+        reasonColor(stackTrace),
+      ),
+    );
 
     this.lastPrintTime = Date.now();
   }
@@ -622,6 +645,11 @@ export class CurrentActivityPrinter extends ActivityPrinterBase {
     // Print failures at the end
     const lines = new Array<string>();
     for (const failure of this.failures) {
+      // Root stack failures are not interesting
+      if (failure.event.StackName === failure.event.LogicalResourceId) {
+        continue;
+      }
+
       lines.push(util.format(colors.red('%s | %s | %s | %s%s') + '\n',
         padLeft(TIMESTAMP_WIDTH, new Date(failure.event.Timestamp).toLocaleTimeString()),
         padRight(STATUS_WIDTH, (failure.event.ResourceStatus || '').substr(0, STATUS_WIDTH)),

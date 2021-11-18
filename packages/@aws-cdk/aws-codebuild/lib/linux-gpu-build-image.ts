@@ -8,6 +8,10 @@ import {
   ImagePullPrincipalType, IProject,
 } from './project';
 
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
+
 const mappingName = 'AwsDeepLearningContainersRepositoriesAccounts';
 
 /**
@@ -87,6 +91,22 @@ export class LinuxGpuBuildImage implements IBindableBuildImage {
     return new LinuxGpuBuildImage(repositoryName, tag, account);
   }
 
+
+  /**
+   * Returns a GPU image running Linux from an ECR repository.
+   *
+   * NOTE: if the repository is external (i.e. imported), then we won't be able to add
+   * a resource policy statement for it so CodeBuild can pull the image.
+   *
+   * @see https://docs.aws.amazon.com/codebuild/latest/userguide/sample-ecr.html
+   *
+   * @param repository The ECR repository
+   * @param tag Image tag (default "latest")
+   */
+  public static fromEcrRepository(repository: ecr.IRepository, tag: string = 'latest'): IBuildImage {
+    return new LinuxGpuBuildImage(repository.repositoryName, tag, repository.env.account);
+  }
+
   public readonly type = 'LINUX_GPU_CONTAINER';
   public readonly defaultComputeType = ComputeType.LARGE;
   public readonly imageId: string;
@@ -99,7 +119,7 @@ export class LinuxGpuBuildImage implements IBindableBuildImage {
     this.imageId = `${this.accountExpression}.dkr.ecr.${core.Aws.REGION}.${core.Aws.URL_SUFFIX}/${repositoryName}:${tag}`;
   }
 
-  public bind(scope: core.Construct, project: IProject, _options: BuildImageBindOptions): BuildImageConfig {
+  public bind(scope: Construct, project: IProject, _options: BuildImageBindOptions): BuildImageConfig {
     if (!this.account) {
       const scopeStack = core.Stack.of(scope);
       // Unfortunately, the account IDs of the DLC repositories are not the same in all regions.

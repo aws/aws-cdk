@@ -16,3 +16,5 @@ nyc.config.js
 !.eslintrc.js
 
 junit.xml
+!test/lambda/*/*.js
+!jest.config.js

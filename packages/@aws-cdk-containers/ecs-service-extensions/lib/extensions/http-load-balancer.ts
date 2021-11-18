@@ -4,20 +4,32 @@ import * as cdk from '@aws-cdk/core';
 import { Service } from '../service';
 import { ServiceExtension, ServiceBuild } from './extension-interfaces';
 
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
+
+export interface HttpLoadBalancerProps {
+  /**
+   * The number of ALB requests per target.
+   */
+  readonly requestsPerTarget?: number;
+}
 /**
  * This extension add a public facing load balancer for sending traffic
- * to one or more replicas of the application container
+ * to one or more replicas of the application container.
  */
 export class HttpLoadBalancerExtension extends ServiceExtension {
   private loadBalancer!: alb.IApplicationLoadBalancer;
   private listener!: alb.IApplicationListener;
+  private requestsPerTarget?: number;
 
-  constructor() {
+  constructor(props: HttpLoadBalancerProps = {}) {
     super('load-balancer');
+    this.requestsPerTarget = props.requestsPerTarget;
   }
 
-  // Before the service is created go ahead and create the load balancer itself.
-  public prehook(service: Service, scope: cdk.Construct) {
+  // Before the service is created, go ahead and create the load balancer itself.
+  public prehook(service: Service, scope: Construct) {
     this.parentService = service;
 
     this.loadBalancer = new alb.ApplicationLoadBalancer(scope, `${this.parentService.id}-load-balancer`, {
@@ -37,7 +49,7 @@ export class HttpLoadBalancerExtension extends ServiceExtension {
   }
 
   // Minor service configuration tweaks to work better with a load balancer
-  public modifyServiceProps(props: ServiceBuild) {
+  public modifyServiceProps(props: ServiceBuild): ServiceBuild {
     return {
       ...props,
 
@@ -51,10 +63,21 @@ export class HttpLoadBalancerExtension extends ServiceExtension {
 
   // After the service is created add the service to the load balancer's listener
   public useService(service: ecs.Ec2Service | ecs.FargateService) {
-    this.listener.addTargets(this.parentService.id, {
+    const targetGroup = this.listener.addTargets(this.parentService.id, {
       deregistrationDelay: cdk.Duration.seconds(10),
       port: 80,
       targets: [service],
     });
+
+    if (this.requestsPerTarget) {
+      if (!this.parentService.scalableTaskCount) {
+        throw Error(`Auto scaling target for the service '${this.parentService.id}' hasn't been configured. Please use Service construct to configure 'minTaskCount' and 'maxTaskCount'.`);
+      }
+      this.parentService.scalableTaskCount.scaleOnRequestCount(`${this.parentService.id}-target-request-count-${this.requestsPerTarget}`, {
+        requestsPerTarget: this.requestsPerTarget,
+        targetGroup,
+      });
+      this.parentService.enableAutoScalingPolicy();
+    }
   }
 }

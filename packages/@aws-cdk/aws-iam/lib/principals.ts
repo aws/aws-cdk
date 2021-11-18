@@ -2,7 +2,8 @@ import * as cdk from '@aws-cdk/core';
 import { Default, RegionInfo } from '@aws-cdk/region-info';
 import { IOpenIdConnectProvider } from './oidc-provider';
 import { Condition, Conditions, PolicyStatement } from './policy-statement';
-import { mergePrincipal } from './util';
+import { ISamlProvider } from './saml-provider';
+import { LITERAL_STRING_KEY, mergePrincipal } from './util';
 
 /**
  * Any object that has an associated principal that a permission can be granted to
@@ -74,7 +75,6 @@ export interface AddToPrincipalPolicyResult {
   /**
    * Whether the statement was added to the identity's policies.
    *
-   * @experimental
    */
   readonly statementAdded: boolean;
 
@@ -82,7 +82,6 @@ export interface AddToPrincipalPolicyResult {
    * Dependable which allows depending on the policy change being applied
    *
    * @default - Required if `statementAdded` is true.
-   * @experimental
    */
   readonly policyDependable?: cdk.IDependable;
 }
@@ -166,8 +165,8 @@ export class PrincipalWithConditions implements IPrincipal {
    * Add a condition to the principal
    */
   public addCondition(key: string, value: Condition) {
-    const existingValue = this.conditions[key];
-    this.conditions[key] = existingValue ? { ...existingValue, ...value } : value;
+    const existingValue = this.additionalConditions[key];
+    this.additionalConditions[key] = existingValue ? { ...existingValue, ...value } : value;
   }
 
   /**
@@ -192,6 +191,10 @@ export class PrincipalWithConditions implements IPrincipal {
 
   public get policyFragment(): PrincipalPolicyFragment {
     return new PrincipalPolicyFragment(this.principal.policyFragment.principalJson, this.conditions);
+  }
+
+  public get principalAccount(): string | undefined {
+    return this.principal.principalAccount;
   }
 
   public addToPolicy(statement: PolicyStatement): boolean {
@@ -249,6 +252,15 @@ export class PrincipalWithConditions implements IPrincipal {
  *
  * This consists of the JSON used in the "Principal" field, and optionally a
  * set of "Condition"s that need to be applied to the policy.
+ *
+ * Generally, a principal looks like:
+ *
+ *     { '<TYPE>': ['ID', 'ID', ...] }
+ *
+ * And this is also the type of the field `principalJson`.  However, there is a
+ * special type of principal that is just the string '*', which is treated
+ * differently by some services. To represent that principal, `principalJson`
+ * should contain `{ 'LiteralString': ['*'] }`.
  */
 export class PrincipalPolicyFragment {
   /**
@@ -295,12 +307,15 @@ export class ArnPrincipal extends PrincipalBase {
  * Specify AWS account ID as the principal entity in a policy to delegate authority to the account.
  */
 export class AccountPrincipal extends ArnPrincipal {
+  public readonly principalAccount: string | undefined;
+
   /**
    *
    * @param accountId AWS account ID (i.e. 123456789012)
    */
   constructor(public readonly accountId: any) {
     super(new StackDependentToken(stack => `arn:${stack.partition}:iam::${accountId}:root`).toString());
+    this.principalAccount = accountId;
   }
 
   public toString() {
@@ -494,6 +509,38 @@ export class OpenIdConnectPrincipal extends WebIdentityPrincipal {
 }
 
 /**
+ * Principal entity that represents a SAML federated identity provider
+ */
+export class SamlPrincipal extends FederatedPrincipal {
+  constructor(samlProvider: ISamlProvider, conditions: Conditions) {
+    super(samlProvider.samlProviderArn, conditions, 'sts:AssumeRoleWithSAML');
+  }
+
+  public toString() {
+    return `SamlPrincipal(${this.federated})`;
+  }
+}
+
+/**
+ * Principal entity that represents a SAML federated identity provider for
+ * programmatic and AWS Management Console access.
+ */
+export class SamlConsolePrincipal extends SamlPrincipal {
+  constructor(samlProvider: ISamlProvider, conditions: Conditions = {}) {
+    super(samlProvider, {
+      ...conditions,
+      StringEquals: {
+        'SAML:aud': 'https://signin.aws.amazon.com/saml',
+      },
+    });
+  }
+
+  public toString() {
+    return `SamlConsolePrincipal(${this.federated})`;
+  }
+}
+
+/**
  * Use the AWS account into which a stack is deployed as the principal entity in a policy
  */
 export class AccountRootPrincipal extends AccountPrincipal {
@@ -507,7 +554,14 @@ export class AccountRootPrincipal extends AccountPrincipal {
 }
 
 /**
- * A principal representing all identities in all accounts
+ * A principal representing all AWS identities in all accounts
+ *
+ * Some services behave differently when you specify `Principal: '*'`
+ * or `Principal: { AWS: "*" }` in their resource policy.
+ *
+ * `AnyPrincipal` renders to `Principal: { AWS: "*" }`. This is correct
+ * most of the time, but in cases where you need the other principal,
+ * use `StarPrincipal` instead.
  */
 export class AnyPrincipal extends ArnPrincipal {
   constructor() {
@@ -524,6 +578,26 @@ export class AnyPrincipal extends ArnPrincipal {
  * @deprecated use `AnyPrincipal`
  */
 export class Anyone extends AnyPrincipal { }
+
+/**
+ * A principal that uses a literal '*' in the IAM JSON language
+ *
+ * Some services behave differently when you specify `Principal: "*"`
+ * or `Principal: { AWS: "*" }` in their resource policy.
+ *
+ * `StarPrincipal` renders to `Principal: *`. Most of the time, you
+ * should use `AnyPrincipal` instead.
+ */
+export class StarPrincipal extends PrincipalBase {
+  public readonly policyFragment: PrincipalPolicyFragment = {
+    principalJson: { [LITERAL_STRING_KEY]: ['*'] },
+    conditions: {},
+  };
+
+  public toString() {
+    return 'StarPrincipal()';
+  }
+}
 
 /**
  * Represents a principal that has multiple types of principals. A composite principal cannot

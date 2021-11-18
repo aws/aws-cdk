@@ -2,12 +2,14 @@ import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
 import * as cdk from '@aws-cdk/core';
+import { ArnFormat } from '@aws-cdk/core';
 import { LogGroupResourcePolicy } from './log-group-resource-policy';
+import { TargetBaseProps, bindBaseTargetConfig } from './util';
 
 /**
  * Customize the CloudWatch LogGroup Event Target
  */
-export interface LogGroupProps {
+export interface LogGroupProps extends TargetBaseProps {
   /**
    * The event to send to the CloudWatch LogGroup
    *
@@ -29,7 +31,7 @@ export class CloudWatchLogGroup implements events.IRuleTarget {
    */
   public bind(_rule: events.IRule, _id?: string): events.RuleTargetConfig {
     // Use a custom resource to set the log group resource policy since it is not supported by CDK and cfn.
-    const resourcePolicyId = `EventsLogGroupPolicy${_rule.node.uniqueId}`;
+    const resourcePolicyId = `EventsLogGroupPolicy${cdk.Names.nodeUniqueId(_rule.node)}`;
 
     const logGroupStack = cdk.Stack.of(this.logGroup);
 
@@ -45,11 +47,11 @@ export class CloudWatchLogGroup implements events.IRuleTarget {
     }
 
     return {
-      id: '',
+      ...bindBaseTargetConfig(this.props),
       arn: logGroupStack.formatArn({
         service: 'logs',
         resource: 'log-group',
-        sep: ':',
+        arnFormat: ArnFormat.COLON_RESOURCE_NAME,
         resourceName: this.logGroup.logGroupName,
       }),
       input: this.props.event,

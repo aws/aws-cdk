@@ -4,7 +4,9 @@
       "Type": "AWS::SNS::Topic"
     },
     "Queue4A7E3555": {
-      "Type": "AWS::SQS::Queue"
+      "Type": "AWS::SQS::Queue",
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "SnsSqsServiceRole869866F7": {
       "Type": "AWS::IAM::Role",
@@ -80,13 +82,13 @@
         "Code": {
           "ZipFile": "exports.handler = async (event) => {\n        if (event === 'OK') return 'success';\n        throw new Error('failure');\n      };"
         },
-        "Handler": "index.handler",
         "Role": {
           "Fn::GetAtt": [
             "SnsSqsServiceRole869866F7",
             "Arn"
           ]
         },
+        "Handler": "index.handler",
         "Runtime": "nodejs10.x"
       },
       "DependsOn": [
@@ -165,13 +167,13 @@
         "Code": {
           "ZipFile": "exports.handler = async (event) => {\n        console.log(event);\n      };"
         },
-        "Handler": "index.handler",
         "Role": {
           "Fn::GetAtt": [
             "OnSuccesServiceRole75E399CF",
             "Arn"
           ]
         },
+        "Handler": "index.handler",
         "Runtime": "nodejs10.x"
       },
       "DependsOn": [
@@ -217,7 +219,26 @@
             {
               "Action": "events:PutEvents",
               "Effect": "Allow",
-              "Resource": "*"
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":events:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":event-bus/default"
+                  ]
+                ]
+              }
             },
             {
               "Action": "lambda:InvokeFunction",
@@ -246,13 +267,13 @@
         "Code": {
           "ZipFile": "exports.handler = async (event) => {\n        if (event === 'OK') return 'success';\n        throw new Error('failure');\n      };"
         },
-        "Handler": "index.handler",
         "Role": {
           "Fn::GetAtt": [
             "EventBusLambdaServiceRole9BC8901F",
             "Arn"
           ]
         },
+        "Handler": "index.handler",
         "Runtime": "nodejs10.x"
       },
       "DependsOn": [

@@ -1,0 +1,17 @@
+
+dist
+.LAST_PACKAGE
+*.tsbuildinfo
+tsconfig.json
+.LAST_BUILD
+*.snk
+
+*.ts
+!*.d.ts
+.eslintrc.js
+jest.config.js
+
+# exclude cdk artifacts
+**/cdk.out
+junit.xml
+test/

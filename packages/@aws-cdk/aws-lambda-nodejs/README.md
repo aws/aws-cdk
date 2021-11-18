@@ -1,121 +1,132 @@
-## Amazon Lambda Node.js Library
+# Amazon Lambda Node.js Library
 <!--BEGIN STABILITY BANNER-->
----
-
-![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
-
-> The APIs of higher level constructs in this module are experimental and under active development. They are subject to non-backward compatible changes or removal in any future version. These are not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be announced in the release notes. This means that while you may use them, you may need to update your source code when upgrading to a newer version of this package.
 
 ---
+
+![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
+
+---
+
 <!--END STABILITY BANNER-->
 
 This library provides constructs for Node.js Lambda functions.
 
-To use this module, you will need to have Docker installed.
+## Node.js Function
 
-### Node.js Function
-Define a `NodejsFunction`:
+The `NodejsFunction` construct creates a Lambda function with automatic transpiling and bundling
+of TypeScript or Javascript code. This results in smaller Lambda packages that contain only the
+code and dependencies needed to run the function.
+
+It uses [esbuild](https://esbuild.github.io/) under the hood.
+
+## Reference project architecture
+
+The `NodejsFunction` allows you to define your CDK and runtime dependencies in a single
+package.json and to collocate your runtime code with your infrastructure code:
+
+```plaintext
+.
+├── lib
+│   ├── my-construct.api.ts # Lambda handler for API
+│   ├── my-construct.auth.ts # Lambda handler for Auth
+│   └── my-construct.ts # CDK construct with two Lambda functions
+├── package-lock.json # single lock file
+├── package.json # CDK and runtime dependencies defined in a single package.json
+└── tsconfig.json
+```
+
+By default, the construct will use the name of the defining file and the construct's
+id to look up the entry file. In `my-construct.ts` above we have:
 
 ```ts
-new lambda.NodejsFunction(this, 'my-handler');
+// automatic entry look up
+const apiHandler = new lambda.NodejsFunction(this, 'api');
+const authHandler = new lambda.NodejsFunction(this, 'auth');
 ```
-
-By default, the construct will use the name of the defining file and the construct's id to look
-up the entry file:
-```
-.
-├── stack.ts # defines a 'NodejsFunction' with 'my-handler' as id
-├── stack.my-handler.ts # exports a function named 'handler'
-```
-
-This file is used as "entry" for [esbuild](https://esbuild.github.io/). This means that your code is automatically transpiled and bundled whether it's written in JavaScript or TypeScript.
 
 Alternatively, an entry file and handler can be specified:
 
 ```ts
 new lambda.NodejsFunction(this, 'MyFunction', {
   entry: '/path/to/my/file.ts', // accepts .js, .jsx, .ts and .tsx files
-  handler: 'myExportedFunc'
+  handler: 'myExportedFunc', // defaults to 'handler'
 });
 ```
 
-All other properties of `lambda.Function` are supported, see also the [AWS Lambda construct library](https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk/aws-lambda).
+For monorepos, the reference architecture becomes:
+
+```plaintext
+.
+├── packages
+│   ├── cool-package
+│   │   ├── lib
+│   │   │   ├── cool-construct.api.ts
+│   │   │   ├── cool-construct.auth.ts
+│   │   │   └── cool-construct.ts
+│   │   ├── package.json # CDK and runtime dependencies for cool-package
+│   │   └── tsconfig.json
+│   └── super-package
+│       ├── lib
+│       │   ├── super-construct.handler.ts
+│       │   └── super-construct.ts
+│       ├── package.json # CDK and runtime dependencies for super-package
+│       └── tsconfig.json
+├── package-lock.json # single lock file
+├── package.json # root dependencies
+└── tsconfig.json
+```
+
+## Customizing the underlying Lambda function
+
+All properties of `lambda.Function` can be used to customize the underlying `lambda.Function`.
+
+See also the [AWS Lambda construct library](https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk/aws-lambda).
 
 The `NodejsFunction` construct automatically [reuses existing connections](https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/node-reusing-connections.html)
 when working with the AWS SDK for JavaScript. Set the `awsSdkConnectionReuse` prop to `false` to disable it.
 
-Use the `environment` prop under `bundling` to define environments variables when esbuild runs:
+## Lock file
 
-```ts
-new lambda.NodejsFunction(this, 'my-handler', {
-  bundling: {
-    environment: {
-      NODE_ENV: 'production',
-    },
-  },
-});
-```
+The `NodejsFunction` requires a dependencies lock file (`yarn.lock`, `pnpm-lock.yaml` or
+`package-lock.json`). When bundling in a Docker container, the path containing this lock file is
+used as the source (`/asset-input`) for the volume mounted in the container.
 
-Use the `buildArgs` under `bundling` prop to pass build arguments when building the bundling image:
-
-```ts
-new lambda.NodejsFunction(this, 'my-handler', {
-  bundling: {
-      buildArgs: {
-        HTTPS_PROXY: 'https://127.0.0.1:3001',
-      },
-  }
-});
-```
-
-Use the `dockerImage` prop under `bundling` to use a custom bundling image:
-
-```ts
-new lambda.NodejsFunction(this, 'my-handler', {
-  bundling: {
-    dockerImage: cdk.BundlingDockerImage.fromAsset('/path/to/Dockerfile'),
-  },
-});
-```
-
-This image should have esbuild installed globally. If you plan to use `nodeModules` it
-should also have `npm` or `yarn` depending on the lock file you're using.
-
-Use the [default image provided by `@aws-cdk/aws-lambda-nodejs`](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-lambda-nodejs/lib/Dockerfile)
-as a source of inspiration.
-
-### Lock file
-The `NodejsFunction` requires a dependencies lock file (`yarn.lock` or
-`package-lock.json`). When bundling in a Docker container, the path containing this
-lock file is used as the source (`/asset-input`) for the volume mounted in the
-container.
-
-By default, it will try to automatically determine your project lock file.
+By default, the construct will try to automatically determine your project lock file.
 Alternatively, you can specify the `depsLockFilePath` prop manually. In this
 case you need to ensure that this path includes `entry` and any module/dependencies
 used by your function. Otherwise bundling will fail.
 
-### Configuring esbuild
-The `NodejsFunction` construct exposes some [esbuild](https://esbuild.github.io/) options via properties under `bundling`: `minify`, `sourceMap`, `target` and `loader`.
+## Local bundling
 
-```ts
-new lambda.NodejsFunction(this, 'my-handler', {
-  bundling: {
-    minify: true, // minify code, defaults to false
-    sourceMap: true, // include source map, defaults to false
-    target: 'es2020', // target environment for the generated JavaScript code
-    loader: { // Use the 'dataurl' loader for '.png' files
-      '.png': 'dataurl',
-    },
-  },
-});
+If `esbuild` is available it will be used to bundle your code in your environment. Otherwise,
+bundling will happen in a [Lambda compatible Docker container](https://gallery.ecr.aws/sam/build-nodejs12.x)
+with the Docker platform based on the target architecture of the Lambda function.
+
+For macOS the recommendend approach is to install `esbuild` as Docker volume performance is really poor.
+
+`esbuild` can be installed with:
+
+```console
+$ npm install --save-dev esbuild@0
 ```
 
-### Working with modules
+OR
 
-#### Externals
+```console
+$ yarn add --dev esbuild@0
+```
+
+To force bundling in a Docker container even if `esbuild` is available in your environment,
+set `bundling.forceDockerBundling` to `true`. This is useful if your function relies on node
+modules that should be installed (`nodeModules` prop, see [below](#install-modules)) in a Lambda
+compatible environment. This is usually the case with modules using native dependencies.
+
+## Working with modules
+
+### Externals
+
 By default, all node modules are bundled except for `aws-sdk`. This can be configured by specifying
-the `externalModules` prop under `bundling`.
+`bundling.externalModules`:
 
 ```ts
 new lambda.NodejsFunction(this, 'my-handler', {
@@ -128,11 +139,12 @@ new lambda.NodejsFunction(this, 'my-handler', {
 });
 ```
 
-#### Install modules
-By default, all node modules referenced in your Lambda code will be bundled by esbuild.
+### Install modules
+
+By default, all node modules referenced in your Lambda code will be bundled by `esbuild`.
 Use the `nodeModules` prop under `bundling` to specify a list of modules that should not be
 bundled but instead included in the `node_modules` folder of the Lambda package. This is useful
-when working with native dependencies or when esbuild fails to bundle a module.
+when working with native dependencies or when `esbuild` fails to bundle a module.
 
 ```ts
 new lambda.NodejsFunction(this, 'my-handler', {
@@ -142,48 +154,78 @@ new lambda.NodejsFunction(this, 'my-handler', {
 });
 ```
 
-The modules listed in `nodeModules` must be present in the `package.json`'s dependencies. The
-same version will be used for installation. The lock file (`yarn.lock` or `package-lock.json`)
-will be used along with the right installer (`yarn` or `npm`).
+The modules listed in `nodeModules` must be present in the `package.json`'s dependencies or
+installed. The same version will be used for installation. The lock file (`yarn.lock`,
+`pnpm-lock.yaml` or `package-lock.json`) will be used along with the right installer (`yarn`,
+`pnpm` or `npm`).
 
-### Local bundling
-If esbuild is available it will be used to bundle your code in your environment. Otherwise,
-bundling will happen in a [Lambda compatible Docker container](https://hub.docker.com/r/amazon/aws-sam-cli-build-image-nodejs12.x).
+When working with `nodeModules` using native dependencies, you might want to force bundling in a
+Docker container even if `esbuild` is available in your environment. This can be done by setting
+`bundling.forceDockerBundling` to `true`.
 
-For macOS the recommendend approach is to install esbuild as Docker volume performance is really poor.
+## Configuring `esbuild`
 
-esbuild can be installed with:
-
-```bash
-$ npm install --save-dev esbuild@0
-```
-
-OR
-
-```bash
-$ yarn add --dev esbuild@0
-```
-
-To force bundling in a Docker container, set the `forceDockerBundling` prop to `true`. This
-is useful if your function relies on node modules that should be installed (`nodeModules` prop, see [above](#install-modules)) in a Lambda compatible environment. This is usually the
-case with modules using native dependencies.
-
-### Command hooks
-It is possible to run additional commands by specifying the `commandHooks` prop:
+The `NodejsFunction` construct exposes some [esbuild options](https://esbuild.github.io/api/#build-api)
+via properties under `bundling`:
 
 ```ts
+new lambda.NodejsFunction(this, 'my-handler', {
+  bundling: {
+    minify: true, // minify code, defaults to false
+    sourceMap: true, // include source map, defaults to false
+    sourceMapMode: lambda.SourceMapMode.INLINE, // defaults to SourceMapMode.DEFAULT
+    sourcesContent: false, // do not include original source into source map, defaults to true
+    target: 'es2020', // target environment for the generated JavaScript code
+    loader: { // Use the 'dataurl' loader for '.png' files
+      '.png': 'dataurl',
+    },
+    define: { // Replace strings during build time
+      'process.env.API_KEY': JSON.stringify('xxx-xxxx-xxx'),
+      'process.env.PRODUCTION': JSON.stringify(true),
+      'process.env.NUMBER': JSON.stringify(123),
+    },
+    logLevel: lambda.LogLevel.SILENT, // defaults to LogLevel.WARNING
+    keepNames: true, // defaults to false
+    tsconfig: 'custom-tsconfig.json', // use custom-tsconfig.json instead of default,
+    metafile: true, // include meta file, defaults to false
+    banner: '/* comments */', // requires esbuild >= 0.9.0, defaults to none
+    footer: '/* comments */', // requires esbuild >= 0.9.0, defaults to none
+    charset: lambda.Charset.UTF8, // do not escape non-ASCII characters, defaults to Charset.ASCII
+  },
+});
+```
+
+## Command hooks
+
+It is possible to run additional commands by specifying the `commandHooks` prop:
+
+```text
+// This example only available in TypeScript
+// Run additional props via `commandHooks`
 new lambda.NodejsFunction(this, 'my-handler-with-commands', {
-  commandHooks: {
-    // Copy a file so that it will be included in the bundled asset
-    afterBundling(inputDir: string, outputDir: string): string[] {
-      return [`cp ${inputDir}/my-binary.node ${outputDir}`];
-    }
+  bundling: {
+    commandHooks: {
+      beforeBundling(inputDir: string, outputDir: string): string[] {
+        return [
+          `echo hello > ${inputDir}/a.txt`,
+          `cp ${inputDir}/a.txt ${outputDir}`,
+        ];
+      },
+      afterBundling(inputDir: string, outputDir: string): string[] {
+        return [`cp ${inputDir}/b.txt ${outputDir}/txt`];
+      },
+      beforeInstall() {
+        return [];
+      },
+      // ...
+    },
     // ...
-  }
+  },
 });
 ```
 
 The following hooks are available:
+
 - `beforeBundling`: runs before all bundling commands
 - `beforeInstall`: runs before node modules installation
 - `afterBundling`: runs after all bundling commands
@@ -194,3 +236,78 @@ an array of commands to run. Commands are chained with `&&`.
 
 The commands will run in the environment in which bundling occurs: inside the
 container for Docker bundling or on the host OS for local bundling.
+
+## Pre Compilation with TSC
+
+In some cases, `esbuild` may not yet support some newer features of the typescript language, such as,
+[`emitDecoratorMetadata`](https://www.typescriptlang.org/tsconfig#emitDecoratorMetadata).
+In such cases, it is possible to run pre-compilation using `tsc` by setting the `preCompilation` flag.
+
+```ts
+new lambda.NodejsFunction(this, 'my-handler', {
+  bundling: {
+    preCompilation: true,
+  },
+});
+```
+
+Note: A [`tsconfig.json` file](https://www.typescriptlang.org/docs/handbook/tsconfig-json.html) is required 
+
+## Customizing Docker bundling
+
+Use `bundling.environment` to define environments variables when `esbuild` runs:
+
+```ts
+new lambda.NodejsFunction(this, 'my-handler', {
+  bundling: {
+    environment: {
+      NODE_ENV: 'production',
+    },
+  },
+});
+```
+
+Use `bundling.buildArgs` to pass build arguments when building the Docker bundling image:
+
+```ts
+new lambda.NodejsFunction(this, 'my-handler', {
+  bundling: {
+    buildArgs: {
+      HTTPS_PROXY: 'https://127.0.0.1:3001',
+    },
+  }
+});
+```
+
+Use `bundling.dockerImage` to use a custom Docker bundling image:
+
+```ts
+new lambda.NodejsFunction(this, 'my-handler', {
+  bundling: {
+    dockerImage: DockerImage.fromBuild('/path/to/Dockerfile'),
+  },
+});
+```
+
+This image should have `esbuild` installed **globally**. If you plan to use `nodeModules` it
+should also have `npm`, `yarn` or `pnpm` depending on the lock file you're using.
+
+Use the [default image provided by `@aws-cdk/aws-lambda-nodejs`](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-lambda-nodejs/lib/Dockerfile)
+as a source of inspiration.
+
+## Asset hash
+
+By default the asset hash will be calculated based on the bundled output (`AssetHashType.OUTPUT`).
+
+Use the `assetHash` prop to pass a custom hash:
+
+```ts
+new lambda.NodejsFunction(this, 'my-handler', {
+  bundling: {
+    assetHash: 'my-custom-hash',
+  },
+});
+```
+
+If you chose to customize the hash, you will need to make sure it is updated every time the asset
+changes, or otherwise it is possible that some deployments will not be invalidated.

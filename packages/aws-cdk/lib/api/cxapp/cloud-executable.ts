@@ -46,10 +46,14 @@ export class CloudExecutable {
   }
 
   /**
-   * Synthesize a set of stacks
+   * Synthesize a set of stacks.
+   *
+   * @param cacheCloudAssembly whether to cache the Cloud Assembly after it has been first synthesized.
+   *   This is 'true' by default, and only set to 'false' for 'cdk watch',
+   *   which needs to re-synthesize the Assembly each time it detects a change to the project files
    */
-  public async synthesize(): Promise<CloudAssembly> {
-    if (!this._cloudAssembly) {
+  public async synthesize(cacheCloudAssembly: boolean = true): Promise<CloudAssembly> {
+    if (!this._cloudAssembly || !cacheCloudAssembly) {
       this._cloudAssembly = await this.doSynthesize();
     }
     return this._cloudAssembly;
@@ -87,7 +91,10 @@ export class CloudExecutable {
         if (tryLookup) {
           debug('Some context information is missing. Fetching...');
 
-          await contextproviders.provideContextValues(assembly.manifest.missing, this.props.configuration.context, this.props.sdkProvider);
+          await contextproviders.provideContextValues(
+            assembly.manifest.missing,
+            this.props.configuration.context,
+            this.props.sdkProvider);
 
           // Cache the new context to disk
           await this.props.configuration.saveContext();

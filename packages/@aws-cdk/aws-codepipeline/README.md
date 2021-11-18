@@ -1,5 +1,6 @@
-## AWS CodePipeline Construct Library
+# AWS CodePipeline Construct Library
 <!--BEGIN STABILITY BANNER-->
+
 ---
 
 ![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
@@ -7,21 +8,22 @@
 ![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
+
 <!--END STABILITY BANNER-->
 
-### Pipeline
+## Pipeline
 
 To construct an empty Pipeline:
 
 ```ts
-import * as codepipeline from '@aws-cdk/aws-codepipeline';
-
+// Construct an empty Pipeline
 const pipeline = new codepipeline.Pipeline(this, 'MyFirstPipeline');
 ```
 
 To give the Pipeline a nice, human-readable name:
 
 ```ts
+// Give the Pipeline a nice, human-readable name
 const pipeline = new codepipeline.Pipeline(this, 'MyFirstPipeline', {
   pipelineName: 'MyPipeline',
 });
@@ -38,16 +40,30 @@ the creation of the Customer Master Keys by passing `crossAccountKeys: false`
 when defining the Pipeline:
 
 ```ts
+// Don't create Customer Master Keys
 const pipeline = new codepipeline.Pipeline(this, 'MyFirstPipeline', {
   crossAccountKeys: false,
 });
 ```
 
-### Stages
+If you want to enable key rotation for the generated KMS keys,
+you can configure it by passing `enableKeyRotation: true` when creating the pipeline.
+Note that key rotation will incur an additional cost of **$1/month**.
+
+```ts
+// Enable key rotation for the generated KMS key
+const pipeline = new codepipeline.Pipeline(this, 'MyFirstPipeline', {
+  // ...
+  enableKeyRotation: true,
+});
+```
+
+## Stages
 
 You can provide Stages when creating the Pipeline:
 
-```typescript
+```ts
+// Provide a Stage when creating a pipeline
 const pipeline = new codepipeline.Pipeline(this, 'MyFirstPipeline', {
   stages: [
     {
@@ -63,6 +79,8 @@ const pipeline = new codepipeline.Pipeline(this, 'MyFirstPipeline', {
 Or append a Stage to an existing Pipeline:
 
 ```ts
+// Append a Stage to an existing Pipeline
+declare const pipeline: codepipeline.Pipeline;
 const sourceStage = pipeline.addStage({
   stageName: 'Source',
   actions: [ // optional property
@@ -74,17 +92,22 @@ const sourceStage = pipeline.addStage({
 You can insert the new Stage at an arbitrary point in the Pipeline:
 
 ```ts
+// Insert a new Stage at an arbitrary point
+declare const pipeline: codepipeline.Pipeline;
+declare const anotherStage: codepipeline.IStage;
+declare const yetAnotherStage: codepipeline.IStage;
+
 const someStage = pipeline.addStage({
   stageName: 'SomeStage',
   placement: {
     // note: you can only specify one of the below properties
     rightBefore: anotherStage,
-    justAfter: anotherStage
+    justAfter: yetAnotherStage,
   }
 });
 ```
 
-### Actions
+## Actions
 
 Actions live in a separate package, `@aws-cdk/aws-codepipeline-actions`.
 
@@ -93,10 +116,49 @@ in the `actions` property,
 or you can use the `IStage.addAction()` method to mutate an existing Stage:
 
 ```ts
+// Use the `IStage.addAction()` method to mutate an existing Stage.
+declare const sourceStage: codepipeline.IStage;
+declare const someAction: codepipeline.Action;
 sourceStage.addAction(someAction);
 ```
 
-### Cross-account CodePipelines
+## Custom Action Registration
+
+To make your own custom CodePipeline Action requires registering the action provider. Look to the `JenkinsProvider` in `@aws-cdk/aws-codepipeline-actions` for an implementation example.
+
+```ts
+// Make a custom CodePipeline Action
+new codepipeline.CustomActionRegistration(this, 'GenericGitSourceProviderResource', {
+  category: codepipeline.ActionCategory.SOURCE,
+  artifactBounds: { minInputs: 0, maxInputs: 0, minOutputs: 1, maxOutputs: 1 },
+  provider: 'GenericGitSource',
+  version: '1',
+  entityUrl: 'https://docs.aws.amazon.com/codepipeline/latest/userguide/actions-create-custom-action.html',
+  executionUrl: 'https://docs.aws.amazon.com/codepipeline/latest/userguide/actions-create-custom-action.html',
+  actionProperties: [
+    {
+      name: 'Branch',
+      required: true,
+      key: false,
+      secret: false,
+      queryable: false,
+      description: 'Git branch to pull',
+      type: 'String',
+    },
+    {
+      name: 'GitUrl',
+      required: true,
+      key: false,
+      secret: false,
+      queryable: false,
+      description: 'SSH git clone URL',
+      type: 'String',
+    },
+  ],
+});
+```
+
+## Cross-account CodePipelines
 
 > Cross-account Pipeline actions require that the Pipeline has *not* been
 > created with `crossAccountKeys: false`.
@@ -115,21 +177,33 @@ These resources can be in different accounts than the pipeline itself. For
 example, the following action deploys to an imported S3 bucket from a
 different account:
 
-```typescript
+```ts
+// Deploy an imported S3 bucket from a different account
+declare const stage: codepipeline.IStage;
+declare const input: codepipeline.Artifact;
 stage.addAction(new codepipeline_actions.S3DeployAction({
   bucket: s3.Bucket.fromBucketAttributes(this, 'Bucket', {
     account: '123456789012',
     // ...
   }),
+  input: input,
+  actionName: 's3-deploy-action',
   // ...
 }));
 ```
 
 Actions that don't accept a resource object accept an explicit `account` parameter:
 
-```typescript
+```ts
+// Actions that don't accept a resource objet accept an explicit `account` parameter
+declare const stage: codepipeline.IStage;
+declare const templatePath: codepipeline.ArtifactPath;
 stage.addAction(new codepipeline_actions.CloudFormationCreateUpdateStackAction({
   account: '123456789012',
+  templatePath,
+  adminPermissions: false,
+  stackName: Stack.of(this).stackName,
+  actionName: 'cloudformation-create-update',
   // ...
 }));
 ```
@@ -145,24 +219,36 @@ If you do not want to use the generated role, you can also explicitly pass a
 account the role belongs to:
 
 ```ts
+// Explicitly pass in a `role` when creating an action.
+declare const stage: codepipeline.IStage;
+declare const templatePath: codepipeline.ArtifactPath;
 stage.addAction(new codepipeline_actions.CloudFormationCreateUpdateStackAction({
+  templatePath,
+  adminPermissions: false,
+  stackName: Stack.of(this).stackName,
+  actionName: 'cloudformation-create-update',
   // ...
   role: iam.Role.fromRoleArn(this, 'ActionRole', '...'),
 }));
 ```
 
-### Cross-region CodePipelines
+## Cross-region CodePipelines
 
 Similar to how you set up a cross-account Action, the AWS resource object you
 pass to actions can also be in different *Regions*. For example, the
 following Action deploys to an imported S3 bucket from a different Region:
 
-```typescript
+```ts
+// Deploy to an imported S3 bucket from a different Region.
+declare const stage: codepipeline.IStage;
+declare const input: codepipeline.Artifact;
 stage.addAction(new codepipeline_actions.S3DeployAction({
   bucket: s3.Bucket.fromBucketAttributes(this, 'Bucket', {
     region: 'us-west-1',
     // ...
   }),
+  input: input,
+  actionName: 's3-deploy-action',
   // ...
 }));
 ```
@@ -170,8 +256,15 @@ stage.addAction(new codepipeline_actions.S3DeployAction({
 Actions that don't take an AWS resource will accept an explicit `region`
 parameter:
 
-```typescript
+```ts
+// Actions that don't take an AWS resource will accept an explicit `region` parameter.
+declare const stage: codepipeline.IStage;
+declare const templatePath: codepipeline.ArtifactPath;
 stage.addAction(new codepipeline_actions.CloudFormationCreateUpdateStackAction({
+  templatePath,
+  adminPermissions: false,
+  stackName: Stack.of(this).stackName,
+  actionName: 'cloudformation-create-update',
   // ...
   region: 'us-west-1',
 }));
@@ -188,7 +281,8 @@ place to serve as replication buckets, you can supply these at Pipeline definiti
 time using the `crossRegionReplicationBuckets` parameter. Example:
 
 ```ts
-const pipeline = new codepipeline.Pipeline(this, 'MyFirstPipeline', { /* ... */ });
+// Supply replication buckets for the Pipeline instead of using the generated support stack
+const pipeline = new codepipeline.Pipeline(this, 'MyFirstPipeline', {
   // ...
 
   crossRegionReplicationBuckets: {
@@ -207,12 +301,14 @@ const pipeline = new codepipeline.Pipeline(this, 'MyFirstPipeline', { /* ... */ 
 See [the AWS docs here](https://docs.aws.amazon.com/codepipeline/latest/userguide/actions-create-cross-region.html)
 for more information on cross-region CodePipelines.
 
-#### Creating an encrypted replication bucket
+### Creating an encrypted replication bucket
 
 If you're passing a replication bucket created in a different stack,
 like this:
 
-```typescript
+```ts
+// Passing a replication bucket created in a different stack.
+const app = new App();
 const replicationStack = new Stack(app, 'ReplicationStack', {
   env: {
     region: 'us-west-1',
@@ -226,7 +322,7 @@ const replicationBucket = new s3.Bucket(replicationStack, 'ReplicationBucket', {
 });
 
 // later...
-new codepipeline.Pipeline(pipelineStack, 'Pipeline', {
+new codepipeline.Pipeline(replicationStack, 'Pipeline', {
   crossRegionReplicationBuckets: {
     'us-west-1': replicationBucket,
   },
@@ -241,7 +337,14 @@ and so you can't reference them across environments.
 
 In this case, you need to use an alias in place of the key when creating the bucket:
 
-```typescript
+```ts
+// Passing an encrypted replication bucket created in a different stack.
+const app = new App();
+const replicationStack = new Stack(app, 'ReplicationStack', {
+  env: {
+    region: 'us-west-1',
+  },
+});
 const key = new kms.Key(replicationStack, 'ReplicationKey');
 const alias = new kms.Alias(replicationStack, 'ReplicationAlias', {
   // aliasName is required
@@ -254,7 +357,7 @@ const replicationBucket = new s3.Bucket(replicationStack, 'ReplicationBucket', {
 });
 ```
 
-### Variables
+## Variables
 
 The library supports the CodePipeline Variables feature.
 Each action class that emits variables has a separate variables interface,
@@ -265,14 +368,16 @@ you access the appropriate property of the interface returned from `variables`,
 which represents a single variable.
 Example:
 
-```typescript
-// MyAction is some action type that produces variables
+```ts fixture=action
+// MyAction is some action type that produces variables, like EcrSourceAction
 const myAction = new MyAction({
   // ...
+  actionName: 'myAction',
 });
 new OtherAction({
   // ...
   config: myAction.variables.myVariable,
+  actionName: 'otherAction',
 });
 ```
 
@@ -280,10 +385,12 @@ The namespace name that will be used will be automatically generated by the pipe
 based on the stage and action name;
 you can pass a custom name when creating the action instance:
 
-```typescript
+```ts fixture=action
+// MyAction is some action type that produces variables, like EcrSourceAction
 const myAction = new MyAction({
   // ...
   variablesNamespace: 'MyNamespace',
+  actionName: 'myAction',
 });
 ```
 
@@ -291,10 +398,12 @@ There are also global variables available,
 not tied to any action;
 these are accessed through static properties of the `GlobalVariables` class:
 
-```typescript
+```ts fixture=action
+// OtherAction is some action type that produces variables, like EcrSourceAction
 new OtherAction({
   // ...
   config: codepipeline.GlobalVariables.executionId,
+  actionName: 'otherAction',
 });
 ```
 
@@ -304,13 +413,14 @@ for details on how to use the variables for each action class.
 See the [CodePipeline documentation](https://docs.aws.amazon.com/codepipeline/latest/userguide/reference-variables.html)
 for more details on how to use the variables feature.
 
-### Events
+## Events
 
-#### Using a pipeline as an event target
+### Using a pipeline as an event target
 
 A pipeline can be used as a target for a CloudWatch event rule:
 
 ```ts
+// A pipeline being used as a target for a CloudWatch event rule.
 import * as targets from '@aws-cdk/aws-events-targets';
 import * as events from '@aws-cdk/aws-events';
 
@@ -319,6 +429,7 @@ const rule = new events.Rule(this, 'Daily', {
   schedule: events.Schedule.rate(Duration.days(1)),
 });
 
+declare const pipeline: codepipeline.Pipeline;
 rule.addTarget(new targets.CodePipeline(pipeline));
 ```
 
@@ -326,14 +437,39 @@ When a pipeline is used as an event target, the
 "codepipeline:StartPipelineExecution" permission is granted to the AWS
 CloudWatch Events service.
 
-#### Event sources
+### Event sources
 
 Pipelines emit CloudWatch events. To define event rules for events emitted by
 the pipeline, stages or action, use the `onXxx` methods on the respective
 construct:
 
 ```ts
-myPipeline.onStateChange('MyPipelineStateChange', target);
+// Define event rules for events emitted by the pipeline
+import * as events from '@aws-cdk/aws-events';
+
+declare const myPipeline: codepipeline.Pipeline;
+declare const myStage: codepipeline.IStage;
+declare const myAction: codepipeline.Action;
+declare const target: events.IRuleTarget;
+myPipeline.onStateChange('MyPipelineStateChange', { target: target } );
 myStage.onStateChange('MyStageStateChange', target);
 myAction.onStateChange('MyActionStateChange', target);
+```
+
+## CodeStar Notifications
+
+To define CodeStar Notification rules for Pipelines, use one of the `notifyOnXxx()` methods.
+They are very similar to `onXxx()` methods for CloudWatch events:
+
+```ts
+// Define CodeStar Notification rules for Pipelines
+import * as chatbot from '@aws-cdk/aws-chatbot';
+const target = new chatbot.SlackChannelConfiguration(this, 'MySlackChannel', {
+  slackChannelConfigurationName: 'YOUR_CHANNEL_NAME',
+  slackWorkspaceId: 'YOUR_SLACK_WORKSPACE_ID',
+  slackChannelId: 'YOUR_SLACK_CHANNEL_ID',
+});
+
+declare const pipeline: codepipeline.Pipeline;
+const rule = pipeline.notifyOnExecutionStateChange('NotifyOnExecutionStateChange', target);
 ```

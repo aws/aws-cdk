@@ -1,4 +1,3 @@
-import '@aws-cdk/assert/jest';
 import * as cdk from '@aws-cdk/core';
 import * as stepfunctions from '../lib';
 

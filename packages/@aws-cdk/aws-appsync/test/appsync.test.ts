@@ -1,5 +1,5 @@
 import * as path from 'path';
-import '@aws-cdk/assert/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import * as appsync from '../lib';
@@ -18,45 +18,77 @@ beforeEach(() => {
 
 test('appsync should configure pipeline when pipelineConfig has contents', () => {
   // WHEN
-  new appsync.Resolver(stack, 'resolver', {
-    api: api,
+  const ds = api.addNoneDataSource('none');
+  const test1 = ds.createFunction({
+    name: 'test1',
+  });
+  const test2 = ds.createFunction({
+    name: 'test2',
+  });
+  api.createResolver({
     typeName: 'test',
     fieldName: 'test2',
-    pipelineConfig: ['test', 'test'],
+    pipelineConfig: [test1, test2],
   });
 
   // THEN
-  expect(stack).toHaveResourceLike('AWS::AppSync::Resolver', {
+  Template.fromStack(stack).hasResourceProperties('AWS::AppSync::Resolver', {
     Kind: 'PIPELINE',
-    PipelineConfig: { Functions: ['test', 'test'] },
+    PipelineConfig: {
+      Functions: [
+        { 'Fn::GetAtt': ['apinonetest1FunctionEF63046F', 'FunctionId'] },
+        { 'Fn::GetAtt': ['apinonetest2Function615111D0', 'FunctionId'] },
+      ],
+    },
   });
+});
+
+test('appsync should error when creating pipeline resolver with data source', () => {
+  // WHEN
+  const ds = api.addNoneDataSource('none');
+  const test1 = ds.createFunction({
+    name: 'test1',
+  });
+  const test2 = ds.createFunction({
+    name: 'test2',
+  });
+
+  // THEN
+  expect(() => {
+    ds.createResolver({
+      typeName: 'test',
+      fieldName: 'test2',
+      pipelineConfig: [test1, test2],
+    });
+  }).toThrowError('Pipeline Resolver cannot have data source. Received: none');
 });
 
 test('appsync should configure resolver as unit when pipelineConfig is empty', () => {
   // WHEN
+  const ds = api.addNoneDataSource('none');
   new appsync.Resolver(stack, 'resolver', {
     api: api,
+    dataSource: ds,
     typeName: 'test',
     fieldName: 'test2',
   });
 
   // THEN
-  expect(stack).toHaveResourceLike('AWS::AppSync::Resolver', {
+  Template.fromStack(stack).hasResourceProperties('AWS::AppSync::Resolver', {
     Kind: 'UNIT',
   });
 });
 
 test('appsync should configure resolver as unit when pipelineConfig is empty array', () => {
   // WHEN
-  new appsync.Resolver(stack, 'resolver', {
-    api: api,
+  api.createResolver({
     typeName: 'test',
     fieldName: 'test2',
     pipelineConfig: [],
   });
 
   // THEN
-  expect(stack).toHaveResourceLike('AWS::AppSync::Resolver', {
+  Template.fromStack(stack).hasResourceProperties('AWS::AppSync::Resolver', {
     Kind: 'UNIT',
   });
 });
@@ -71,7 +103,7 @@ test('when xray is enabled should not throw an Error', () => {
   });
 
   // THEN
-  expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLApi', {
+  Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLApi', {
     XrayEnabled: true,
   });
 });
@@ -96,7 +128,7 @@ test('appsync GraphqlApi should be configured with custom CloudWatch Logs role w
   });
 
   // THEN
-  expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLApi', {
+  Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLApi', {
     Name: 'apiWithCustomRole',
     LogConfig: {
       CloudWatchLogsRoleArn: {
@@ -111,7 +143,7 @@ test('appsync GraphqlApi should be configured with custom CloudWatch Logs role w
 
 test('appsync GraphqlApi should not use custom role for CW Logs when not specified', () => {
   // EXPECT
-  expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLApi', {
+  Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLApi', {
     Name: 'api',
     LogConfig: {
       CloudWatchLogsRoleArn: {

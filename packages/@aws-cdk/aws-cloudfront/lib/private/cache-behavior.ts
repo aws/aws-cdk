@@ -50,13 +50,16 @@ export class CacheBehavior {
       originRequestPolicyId: this.props.originRequestPolicy?.originRequestPolicyId,
       smoothStreaming: this.props.smoothStreaming,
       viewerProtocolPolicy: this.props.viewerProtocolPolicy ?? ViewerProtocolPolicy.ALLOW_ALL,
-      lambdaFunctionAssociations: this.props.edgeLambdas
-        ? this.props.edgeLambdas.map(edgeLambda => ({
-          lambdaFunctionArn: edgeLambda.functionVersion.edgeArn,
-          eventType: edgeLambda.eventType.toString(),
-          includeBody: edgeLambda.includeBody,
-        }))
-        : undefined,
+      functionAssociations: this.props.functionAssociations?.map(association => ({
+        functionArn: association.function.functionArn,
+        eventType: association.eventType.toString(),
+      })),
+      lambdaFunctionAssociations: this.props.edgeLambdas?.map(edgeLambda => ({
+        lambdaFunctionArn: edgeLambda.functionVersion.edgeArn,
+        eventType: edgeLambda.eventType.toString(),
+        includeBody: edgeLambda.includeBody,
+      })),
+      trustedKeyGroups: this.props.trustedKeyGroups?.map(keyGroup => keyGroup.keyGroupId),
     };
   }
 

@@ -27,15 +27,15 @@ function lineBetween(rowA: string[], rowB: string[]) {
   return rowA[1] !== rowB[1];
 }
 
-function buildColumnConfig(widths: number[] | undefined): { [index: number]: table.TableColumns } | undefined {
+function buildColumnConfig(widths: number[] | undefined): { [index: number]: table.ColumnUserConfig } | undefined {
   if (widths === undefined) { return undefined; }
 
-  const ret: { [index: number]: table.TableColumns } = {};
+  const ret: { [index: number]: table.ColumnUserConfig } = {};
   widths.forEach((width, i) => {
-    ret[i] = { width, useWordWrap: true } as any; // 'useWordWrap' is not in @types/table
     if (width === undefined) {
-      delete ret[i].width;
+      return;
     }
+    ret[i] = { width };
   });
 
   return ret;

@@ -1,5 +1,6 @@
-## AWS Auto Scaling Construct Library
+# AWS Auto Scaling Construct Library
 <!--BEGIN STABILITY BANNER-->
+
 ---
 
 ![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
@@ -7,6 +8,7 @@
 ![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
+
 <!--END STABILITY BANNER-->
 
 **Application AutoScaling** is used to configure autoscaling for all
@@ -20,7 +22,7 @@ offer AutoScaling features for their own constructs.
 This document will describe the general autoscaling features and concepts;
 your particular service may offer only a subset of these.
 
-### AutoScaling basics
+## AutoScaling basics
 
 Resources can offer one or more **attributes** to autoscale, typically
 representing some capacity dimension of the underlying service. For example,
@@ -49,24 +51,28 @@ There are three ways to scale your capacity:
 The general pattern of autoscaling will look like this:
 
 ```ts
+declare const resource: SomeScalableResource;
+
 const capacity = resource.autoScaleCapacity({
   minCapacity: 5,
   maxCapacity: 100
 });
 
-// Enable a type of metric scaling and/or schedule scaling
-capacity.scaleOnMetric(...);
-capacity.scaleToTrackMetric(...);
-capacity.scaleOnSchedule(...);
+// Then call a method to enable metric scaling and/or schedule scaling
+// (explained below):
+//
+// capacity.scaleOnMetric(...);
+// capacity.scaleToTrackMetric(...);
+// capacity.scaleOnSchedule(...);
 ```
 
-### Step Scaling
+## Step Scaling
 
 This type of scaling scales in and out in deterministic steps that you
 configure, in response to metric values. For example, your scaling strategy
 to scale in response to CPU usage might look like this:
 
-```
+```plaintext
  Scaling        -1          (no change)          +1       +3
             │        │                       │        │        │
             ├────────┼───────────────────────┼────────┼────────┤
@@ -80,8 +86,11 @@ a possible one. You will have to determine what thresholds are right for you).
 You would configure it like this:
 
 ```ts
+declare const capacity: ScalableAttribute;
+declare const cpuUtilization: cloudwatch.Metric;
+
 capacity.scaleOnMetric('ScaleToCPU', {
-  metric: service.metricCpuUtilization(),
+  metric: cpuUtilization,
   scalingSteps: [
     { upper: 10, change: -1 },
     { lower: 50, change: +1 },
@@ -90,14 +99,14 @@ capacity.scaleOnMetric('ScaleToCPU', {
 
   // Change this to AdjustmentType.PercentChangeInCapacity to interpret the
   // 'change' numbers before as percentages instead of capacity counts.
-  adjustmentType: autoscaling.AdjustmentType.CHANGE_IN_CAPACITY,
+  adjustmentType: appscaling.AdjustmentType.CHANGE_IN_CAPACITY,
 });
 ```
 
 The AutoScaling construct library will create the required CloudWatch alarms and
 AutoScaling policies for you.
 
-### Target Tracking Scaling
+## Target Tracking Scaling
 
 This type of scaling scales in and out in order to keep a metric (typically
 representing utilization) around a value you prefer. This type of scaling is
@@ -109,6 +118,10 @@ The following example configures the read capacity of a DynamoDB table
 to be around 60% utilization:
 
 ```ts
+import * as dynamodb from '@aws-cdk/aws-dynamodb';
+
+declare const table: dynamodb.Table;
+
 const readCapacity = table.autoScaleReadCapacity({
   minCapacity: 10,
   maxCapacity: 1000
@@ -118,7 +131,7 @@ readCapacity.scaleOnUtilization({
 });
 ```
 
-### Scheduled Scaling
+## Scheduled Scaling
 
 This type of scaling is used to change capacities based on time. It works
 by changing the `minCapacity` and `maxCapacity` of the attribute, and so
@@ -143,18 +156,20 @@ The following example scales the fleet out in the morning, and lets natural
 scaling take over at night:
 
 ```ts
+declare const resource: SomeScalableResource;
+
 const capacity = resource.autoScaleCapacity({
   minCapacity: 1,
   maxCapacity: 50,
 });
 
 capacity.scaleOnSchedule('PrescaleInTheMorning', {
-  schedule: autoscaling.Schedule.cron({ hour: '8', minute: '0' }),
+  schedule: appscaling.Schedule.cron({ hour: '8', minute: '0' }),
   minCapacity: 20,
 });
 
 capacity.scaleOnSchedule('AllowDownscalingAtNight', {
-  schedule: autoscaling.Schedule.cron({ hour: '20', minute: '0' }),
+  schedule: appscaling.Schedule.cron({ hour: '20', minute: '0' }),
   minCapacity: 1
 });
 ```
@@ -164,35 +179,30 @@ capacity.scaleOnSchedule('AllowDownscalingAtNight', {
 ### Lambda Provisioned Concurrency Auto Scaling
 
 ```ts
-   const handler = new lambda.Function(this, 'MyFunction', {
-      runtime: lambda.Runtime.PYTHON_3_7,
-      handler: 'index.handler',
-      code: new lambda.InlineCode(`
-import json, time
-def handler(event, context):
-    time.sleep(1)
-    return {
-        'statusCode': 200,
-        'body': json.dumps('Hello CDK from Lambda!')
-    }`),
-      reservedConcurrentExecutions: 2,
-    });
-    
-    const fnVer = handler.addVersion('CDKLambdaVersion', undefined, 'demo alias', 10);
+import * as lambda from '@aws-cdk/aws-lambda';
 
-    new apigateway.LambdaRestApi(this, 'API', { handler: fnVer })
+declare const code: lambda.Code;
 
-    const target = new applicationautoscaling.ScalableTarget(this, 'ScalableTarget', {
-      serviceNamespace: applicationautoscaling.ServiceNamespace.LAMBDA,
-      maxCapacity: 100,
-      minCapacity: 10,
-      resourceId: `function:${handler.functionName}:${fnVer.version}`,
-      scalableDimension: 'lambda:function:ProvisionedConcurrency',
-    })
-s
-    target.scaleToTrackMetric('PceTracking', {
-      targetValue: 0.9,
-      predefinedMetric: applicationautoscaling.PredefinedMetric.LAMBDA_PROVISIONED_CONCURRENCY_UTILIZATION,
-    })
-  }
-  ```
+const handler = new lambda.Function(this, 'MyFunction', {
+  runtime: lambda.Runtime.PYTHON_3_7,
+  handler: 'index.handler',
+  code,
+
+  reservedConcurrentExecutions: 2,
+});
+
+const fnVer = handler.addVersion('CDKLambdaVersion', undefined, 'demo alias', 10);
+
+const target = new appscaling.ScalableTarget(this, 'ScalableTarget', {
+  serviceNamespace: appscaling.ServiceNamespace.LAMBDA,
+  maxCapacity: 100,
+  minCapacity: 10,
+  resourceId: `function:${handler.functionName}:${fnVer.version}`,
+  scalableDimension: 'lambda:function:ProvisionedConcurrency',
+})
+
+target.scaleToTrackMetric('PceTracking', {
+  targetValue: 0.9,
+  predefinedMetric: appscaling.PredefinedMetric.LAMBDA_PROVISIONED_CONCURRENCY_UTILIZATION,
+})
+```

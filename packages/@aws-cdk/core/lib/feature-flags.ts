@@ -24,6 +24,14 @@ export class FeatureFlags {
    * module.
    */
   public isEnabled(featureFlag: string): boolean | undefined {
-    return this.construct.node.tryGetContext(featureFlag) ?? cxapi.futureFlagDefault(featureFlag);
+    const context = this.construct.node.tryGetContext(featureFlag);
+    if (cxapi.FUTURE_FLAGS_EXPIRED.includes(featureFlag)) {
+      if (context !== undefined) {
+        throw new Error(`Unsupported feature flag '${featureFlag}'. This flag existed on CDKv1 but has been removed in CDKv2.`
+          + ' CDK will now behave as the same as when the flag is enabled.');
+      }
+      return true;
+    }
+    return context ?? cxapi.futureFlagDefault(featureFlag);
   }
 }

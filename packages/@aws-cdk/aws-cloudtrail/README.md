@@ -1,5 +1,6 @@
-## AWS CloudTrail Construct Library
+# AWS CloudTrail Construct Library
 <!--BEGIN STABILITY BANNER-->
+
 ---
 
 ![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
@@ -7,6 +8,7 @@
 ![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
+
 <!--END STABILITY BANNER-->
 
 ## Trail
@@ -173,7 +175,7 @@ configures logging of Lambda data events for a specific Function.
 ```ts
 const trail = new cloudtrail.Trail(this, 'MyAmazingCloudTrail');
 const amazingFunction = new lambda.Function(stack, 'AnAmazingFunction', {
-  runtime: lambda.Runtime.NODEJS_10_X,
+  runtime: lambda.Runtime.NODEJS_12_X,
   handler: "hello.handler",
   code: lambda.Code.fromAsset("lambda"),
 });

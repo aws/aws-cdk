@@ -3,8 +3,6 @@ import * as cdk from '@aws-cdk/core';
 
 /**
  * Properties for an Origin backed by an S3 website-configured bucket, load balancer, or custom HTTP server.
- *
- * @experimental
  */
 export interface HttpOriginProps extends cloudfront.OriginProps {
   /**
@@ -13,6 +11,13 @@ export interface HttpOriginProps extends cloudfront.OriginProps {
    * @default OriginProtocolPolicy.HTTPS_ONLY
    */
   readonly protocolPolicy?: cloudfront.OriginProtocolPolicy;
+
+  /**
+   * The SSL versions to use when interacting with the origin.
+   *
+   * @default OriginSslPolicy.TLS_V1_2
+   */
+  readonly originSslProtocols?: cloudfront.OriginSslPolicy[];
 
   /**
    * The HTTP port that CloudFront uses to connect to the origin.
@@ -47,8 +52,6 @@ export interface HttpOriginProps extends cloudfront.OriginProps {
 
 /**
  * An Origin for an HTTP server or S3 bucket configured for website hosting.
- *
- * @experimental
  */
 export class HttpOrigin extends cloudfront.OriginBase {
 
@@ -61,6 +64,7 @@ export class HttpOrigin extends cloudfront.OriginBase {
 
   protected renderCustomOriginConfig(): cloudfront.CfnDistribution.CustomOriginConfigProperty | undefined {
     return {
+      originSslProtocols: this.props.originSslProtocols ?? [cloudfront.OriginSslPolicy.TLS_V1_2],
       originProtocolPolicy: this.props.protocolPolicy ?? cloudfront.OriginProtocolPolicy.HTTPS_ONLY,
       httpPort: this.props.httpPort,
       httpsPort: this.props.httpsPort,

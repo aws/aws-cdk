@@ -1,13 +1,12 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
-import { Aws, Stack } from '@aws-cdk/core';
+import { Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
 /**
  * Properties for EmrTerminateCluster
  *
- * @experimental
  */
 export interface EmrTerminateClusterProps extends sfn.TaskStateBaseProps {
   /**
@@ -19,7 +18,6 @@ export interface EmrTerminateClusterProps extends sfn.TaskStateBaseProps {
 /**
  * A Step Functions Task to terminate an EMR Cluster.
  *
- * @experimental
  */
 export class EmrTerminateCluster extends sfn.TaskStateBase {
   private static readonly SUPPORTED_INTEGRATION_PATTERNS: sfn.IntegrationPattern[] = [
@@ -64,7 +62,13 @@ export class EmrTerminateCluster extends sfn.TaskStateBase {
           'elasticmapreduce:DescribeCluster',
           'elasticmapreduce:TerminateJobFlows',
         ],
-        resources: [`arn:aws:elasticmapreduce:${Aws.REGION}:${Aws.ACCOUNT_ID}:cluster/*`],
+        resources: [
+          Stack.of(this).formatArn({
+            service: 'elasticmapreduce',
+            resource: 'cluster',
+            resourceName: '*',
+          }),
+        ],
       }),
     ];
 

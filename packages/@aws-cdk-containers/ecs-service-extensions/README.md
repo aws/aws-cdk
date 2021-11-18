@@ -1,10 +1,12 @@
 # CDK Construct library for building ECS services
 <!--BEGIN STABILITY BANNER-->
+
 ---
 
 ![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
+
 <!--END STABILITY BANNER-->
 
 This library provides a high level, extensible pattern for constructing services
@@ -17,6 +19,8 @@ The `Service` construct provided by this module can be extended with optional `S
 - [AWS AppMesh](https://aws.amazon.com/app-mesh/) for adding your application to a service mesh
 - [Application Load Balancer](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html), for exposing your service to the public
 - [AWS FireLens](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/using_firelens.html), for filtering and routing application logs
+- [Injecter Extension](#injecter-extension), for allowing your service connect to other AWS services by granting permission and injecting environment variables
+- [Queue Extension](#queue-extension), for allowing your service to consume messages from an SQS Queue which can be populated by one or more SNS Topics that it is subscribed to
 - [Community Extensions](#community-extensions), providing support for advanced use cases
 
 The `ServiceExtension` class is an abstract class which you can also implement in
@@ -59,19 +63,19 @@ const nameService = new Service(stack, 'name', {
 ## Creating an `Environment`
 
 An `Environment` is a place to deploy your services. You can have multiple environments
-on a single AWS account. For example you could create a `test` environment as well
-as a `production` environment so you have a place to verify that you application
+on a single AWS account. For example, you could create a `test` environment as well
+as a `production` environment so you have a place to verify that your application
 works as intended before you deploy it to a live environment.
 
-Each environment is isolated from other environments. In specific
-by default when you create an environment the construct supplies its own VPC,
+Each environment is isolated from other environments. In other words,
+when you create an environment, by default the construct supplies its own VPC,
 ECS Cluster, and any other required resources for the environment:
 
 ```ts
 const environment = new Environment(stack, 'production');
 ```
 
-However, you can also choose to build an environment out of a pre-existing VPC,
+However, you can also choose to build an environment out of a pre-existing VPC
 or ECS Cluster:
 
 ```ts
@@ -87,7 +91,7 @@ const environment = new Environment(stack, 'production', {
 ## Defining your `ServiceDescription`
 
 The `ServiceDescription` defines what application you want the service to run and
-what optional extensions you want to add to the service. The most basic form of a `ServiceExtension` looks like this:
+what optional extensions you want to add to the service. The most basic form of a `ServiceDescription` looks like this:
 
 ```ts
 const nameDescription = new ServiceDescription();
@@ -103,9 +107,9 @@ nameDescription.add(new Container({
 ```
 
 Every `ServiceDescription` requires at minimum that you add a `Container` extension
-which defines the main application container to run for the service.
+which defines the main application (essential) container to run for the service.
 
-After that you can optionally enable additional features for the service using the `ServiceDescription.add()` method:
+After that, you can optionally enable additional features for the service using the `ServiceDescription.add()` method:
 
 ```ts
 nameDescription.add(new AppMeshExtension({ mesh }));
@@ -131,43 +135,87 @@ At this point, all the service resources will be created. This includes the ECS 
 Definition, Service, as well as any other attached resources, such as App Mesh Virtual
 Node or an Application Load Balancer.
 
+## Creating your own taskRole
+
+Sometimes the taskRole should be defined outside of the service so that you can create strict resource policies (ie. S3 bucket policies) that are restricted to a given taskRole:
+
+```ts
+const taskRole = new iam.Role(stack, 'CustomTaskRole', {
+      assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+});
+
+// Use taskRole in any CDK resource policies
+// new s3.BucketPolicy(this, 'BucketPolicy, {});
+
+const nameService = new Service(stack, 'name', {
+  environment: environment,
+  serviceDescription: nameDescription,
+  taskRole,
+});
+```
+
+## Task Auto-Scaling
+
+You can configure the task count of a service to match demand. The recommended way of achieving this is to configure target tracking policies for your service which scales in and out in order to keep metrics around target values.
+
+You need to configure an auto scaling target for the service by setting the `minTaskCount` (defaults to 1) and `maxTaskCount` in the `Service` construct. Then you can specify target values for "CPU Utilization" or "Memory Utilization" across all tasks in your service. Note that the `desiredCount` value will be set to `undefined` if the auto scaling target is configured.
+
+If you want to configure auto-scaling policies based on resources like Application Load Balancer or SQS Queues, you can set the corresponding resource-specific fields in the extension. For example, you can enable target tracking scaling based on Application Load Balancer request count as follows:
+
+```ts
+const stack = new cdk.Stack();
+const environment = new Environment(stack, 'production');
+const serviceDescription = new ServiceDescription();
+
+serviceDescription.add(new Container({
+  cpu: 256,
+  memoryMiB: 512,
+  trafficPort: 80,
+  image: ecs.ContainerImage.fromRegistry('my-alb'),
+}));
+
+// Add the extension with target `requestsPerTarget` value set
+serviceDescription.add(new HttpLoadBalancerExtension({ requestsPerTarget: 10 }));
+
+// Configure the auto scaling target
+new Service(stack, 'my-service', {
+  environment,
+  serviceDescription,
+  desiredCount: 5,
+  // Task auto-scaling constuct for the service
+  autoScaleTaskCount: {
+    maxTaskCount: 10,
+    targetCpuUtilization: 70,
+    targetMemoryUtilization: 50,
+  },
+});
+```
+
+You can also define your own service extensions for [other auto-scaling policies](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/service-auto-scaling.html) for your service by making use of the `scalableTaskCount` attribute of the `Service` class.
+
 ## Creating your own custom `ServiceExtension`
 
 In addition to using the default service extensions that come with this module, you
 can choose to implement your own custom service extensions. The `ServiceExtension`
 class is an abstract class you can implement yourself. The following example
 implements a custom service extension that could be added to a service in order to
-autoscale it based on CPU:
+autoscale it based on scaling intervals of SQS Queue size:
 
 ```ts
 export class MyCustomAutoscaling extends ServiceExtension {
   constructor() {
     super('my-custom-autoscaling');
-  }
-
-  // This function modifies properties of the service prior
-  // to construct creation.
-  public modifyServiceProps(props: ServiceBuild) {
-    return {
-      ...props,
-
-      // Initially launch 10 copies of the service
-      desiredCount: 10
-    } as ServiceBuild;
+    // Scaling intervals for the step scaling policy
+    this.scalingSteps = [{ upper: 0, change: -1 }, { lower: 100, change: +1 }, { lower: 500, change: +5 }];
+    this.sqsQueue = new sqs.Queue(this.scope, 'my-queue');
   }
 
   // This hook utilizes the resulting service construct
   // once it is created
   public useService(service: ecs.Ec2Service | ecs.FargateService) {
-    const scalingTarget = service.autoScaleTaskCount({
-      minCapacity: 5, // Min 5 tasks
-      maxCapacity: 20 // Max 20 tasks
-    });
-
-    scalingTarget.scaleOnCpuUtilization('TargetCpuUtilization50', {
-      targetUtilizationPercent: 50,
-      scaleInCooldown: cdk.Duration.seconds(60),
-      scaleOutCooldown: cdk.Duration.seconds(60),
+    this.parentService.scalableTaskCount.scaleOnMetric('QueueMessagesVisibleScaling', {
+      metric: this.sqsQueue.metricApproximateNumberOfMessagesVisible(),
+      scalingSteps: this.scalingSteps,
     });
   }
 }
@@ -182,34 +230,34 @@ requiring decentralized updates to many different services.
 Every `ServiceExtension` can implement the following hooks to modify the properties
 of constructs, or make use of the resulting constructs:
 
-* `addHooks()` - This hook is called after all the extensions are added to a
+- `addHooks()` - This hook is called after all the extensions are added to a
   ServiceDescription, but before any of the other extension hooks have been run.
   It gives each extension a chance to do some inspection of the overall ServiceDescription
   and see what other extensions have been added. Some extensions may want to register
   hooks on the other extensions to modify them. For example, the Firelens extension
   wants to be able to modify the settings of the application container to route logs
   through Firelens.
-* `modifyTaskDefinitionProps()` - This is hook is passed the proposed
+- `modifyTaskDefinitionProps()` - This is hook is passed the proposed
   ecs.TaskDefinitionProps for a TaskDefinition that is about to be created.
   This allows the extension to make modifications to the task definition props
   before the TaskDefinition is created. For example, the App Mesh extension modifies
   the proxy settings for the task.
-* `useTaskDefinition()` - After the TaskDefinition is created, this hook is
+- `useTaskDefinition()` - After the TaskDefinition is created, this hook is
   passed the actual TaskDefinition construct that was created. This allows the
   extension to add containers to the task, modify the task definition's IAM role,
   etc.
-* `resolveContainerDependencies()` - Once all extensions have added their containers,
+- `resolveContainerDependencies()` - Once all extensions have added their containers,
   each extension is given a chance to modify its container's `dependsOn` settings.
   Extensions need to check and see what other extensions were enabled and decide
   whether their container needs to wait on another container to start first.
-* `modifyServiceProps()` - Before an Ec2Service or FargateService is created, this
+- `modifyServiceProps()` - Before an Ec2Service or FargateService is created, this
   hook is passed a draft version of the service props to change. Each extension adds
   its own modifications to the service properties. For example, the App Mesh extension
   needs to modify the service settings to enable CloudMap service discovery.
-* `useService()` - After the service is created, this hook is given a chance to
+- `useService()` - After the service is created, this hook is given a chance to
   utilize that service. This is used by extensions like the load balancer or App Mesh
   extension, which create and link other AWS resources to the ECS extension.
-* `connectToService()` - This hook is called when a user wants to connect one service
+- `connectToService()` - This hook is called when a user wants to connect one service
   to another service. It allows an extension to implement logic about how to allow
   connections from one service to another. For example, the App Mesh extension implements
   this method in order to easily connect one service mesh service to another, which
@@ -236,7 +284,7 @@ frontend.connectTo(backend);
 
 The address that a service will use to talk to another service depends on the
 type of ingress that has been created by the extension that did the connecting.
-For example if an App Mesh extension has been used then the service is accessible
+For example, if an App Mesh extension has been used, then the service is accessible
 at a DNS address of `<service name>.<environment name>`. For example:
 
 ```ts
@@ -278,7 +326,7 @@ const backend = new Service(stack, 'backend', {
 frontend.connectTo(backend);
 ```
 
-The above code uses the well known service discovery name for each
+The above code uses the well-known service discovery name for each
 service, and passes it as an environment variable to the container so
 that the container knows what address to use when communicating to
 the other service.
@@ -300,12 +348,119 @@ const environment = Environment.fromEnvironmentAttributes(stack, 'Environment', 
 
 ```
 
+## Injecter Extension
+
+This service extension accepts a list of `Injectable` resources. It grants access to these resources and adds the necessary environment variables to the tasks that are part of the service. 
+
+For example, an `InjectableTopic` is an SNS Topic that grants permission to the task role and adds the topic ARN as an environment variable to the task definition.
+
+### Publishing to SNS Topics
+
+You can use this extension to set up publishing permissions for SNS Topics.
+
+```ts
+nameDescription.add(new InjecterExtension({
+  injectables: [new InjectableTopic({
+    // SNS Topic the service will publish to
+    topic: new sns.Topic(stack, 'my-topic'),
+  })],
+}));
+```
+
+## Queue Extension
+
+This service extension creates a default SQS Queue `eventsQueue` for the service (if not provided) and optionally also accepts list of `ISubscribable` objects that the `eventsQueue` can subscribe to. The service extension creates the subscriptions and sets up permissions for the service to consume messages from the SQS Queue.
+
+### Setting up SNS Topic Subscriptions for SQS Queues
+
+You can use this extension to set up SNS Topic subscriptions for the `eventsQueue`. To do this, create a new object of type `TopicSubscription` for every SNS Topic you want the `eventsQueue` to subscribe to and provide it as input to the service extension.
+
+```ts
+const myServiceDescription = nameDescription.add(new QueueExtension({
+  // Provide list of topic subscriptions that you want the `eventsQueue` to subscribe to
+  subscriptions: [new TopicSubscription({
+    topic: new sns.Topic(stack, 'my-topic'),
+  }],
+}));
+
+// To access the `eventsQueue` for the service, use the `eventsQueue` getter for the extension
+const myQueueExtension = myServiceDescription.extensions.queue as QueueExtension;
+const myEventsQueue = myQueueExtension.eventsQueue;
+```
+
+For setting up a topic-specific queue subscription, you can provide a custom queue in the `TopicSubscription` object along with the SNS Topic. The extension will set up a topic subscription for the provided queue instead of the default `eventsQueue` of the service.
+
+```ts
+nameDescription.add(new QueueExtension({
+  queue: myEventsQueue,
+  subscriptions: [new TopicSubscription({
+    topic: new sns.Topic(stack, 'my-topic'),
+    // `myTopicQueue` will subscribe to the `my-topic` instead of `eventsQueue`
+    queue: myTopicQueue,
+  }],
+}));
+```
+
+## Publish/Subscribe Service Pattern
+
+The [Publish/Subscribe Service Pattern](https://aws.amazon.com/pub-sub-messaging/) is used for implementing asynchronous communication between services. It involves 'publisher' services emitting events to SNS Topics, which are passed to subscribed SQS queues and then consumed by 'worker' services. 
+
+The following example adds the `InjecterExtension` to a `Publisher` Service which can publish events to an SNS Topic and adds the `QueueExtension` to a `Worker` Service which can poll its `eventsQueue` to consume messages populated by the topic.
+
+```ts
+const environment = new Environment(stack, 'production');
+
+const pubServiceDescription = new ServiceDescription();
+pubServiceDescription.add(new Container({
+  cpu: 256,
+  memoryMiB: 512,
+  trafficPort: 80,
+  image: ecs.ContainerImage.fromRegistry('sns-publish'),
+}));
+
+const myTopic = new sns.Topic(stack, 'myTopic');
+
+// Add the `InjecterExtension` to the service description to allow publishing events to `myTopic`
+pubServiceDescription.add(new InjecterExtension({
+  injectables: [new InjectableTopic({
+    topic: myTopic,
+  }],
+}));
+
+// Create the `Publisher` Service
+new Service(stack, 'Publisher', {
+  environment: environment,
+  serviceDescription: pubServiceDescription,
+});
+
+const subServiceDescription = new ServiceDescription();
+subServiceDescription.add(new Container({
+  cpu: 256,
+  memoryMiB: 512,
+  trafficPort: 80,
+  image: ecs.ContainerImage.fromRegistry('sqs-reader'),
+}));
+
+// Add the `QueueExtension` to the service description to subscribe to `myTopic`
+subServiceDescription.add(new QueueExtension({
+  subscriptions: [new TopicSubscription({
+    topic: myTopic,
+  }],
+}));
+
+// Create the `Worker` Service
+new Service(stack, 'Worker', {
+  environment: environment,
+  serviceDescription: subServiceDescription,
+});
+```
+
 ## Community Extensions
 
 We encourage the development of Community Service Extensions that support
 advanced features. Here are some useful extensions that we have reviewed:
 
-* [ListenerRulesExtension](https://www.npmjs.com/package/@wheatstalk/ecs-service-extension-listener-rules) for more precise control over Application Load Balancer rules
+- [ListenerRulesExtension](https://www.npmjs.com/package/@wheatstalk/ecs-service-extension-listener-rules) for more precise control over Application Load Balancer rules
 
 > Please submit a pull request so that we can review your service extension and
 > list it here.

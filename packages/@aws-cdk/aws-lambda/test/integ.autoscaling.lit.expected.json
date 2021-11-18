@@ -35,7 +35,7 @@
       "Type": "AWS::Lambda::Function",
       "Properties": {
         "Code": {
-          "ZipFile": "exports.handler = async () => {\nconsole.log('hello world');\n};"
+          "ZipFile": "exports.handler = async () => { console.log('hello world'); };"
         },
         "Handler": "index.handler",
         "Role": {
@@ -50,13 +50,12 @@
         "MyLambdaServiceRole4539ECB6"
       ]
     },
-    "MyLambdaVersion16CDE3C40": {
+    "MyLambdaCurrentVersionE7A382CC03fc10af301b823dc69dee9357b5caa0": {
       "Type": "AWS::Lambda::Version",
       "Properties": {
         "FunctionName": {
           "Ref": "MyLambdaCCE802FB"
-        },
-        "Description": "integ-test"
+        }
       }
     },
     "Alias325C5727": {
@@ -67,7 +66,7 @@
         },
         "FunctionVersion": {
           "Fn::GetAtt": [
-            "MyLambdaVersion16CDE3C40",
+            "MyLambdaCurrentVersionE7A382CC03fc10af301b823dc69dee9357b5caa0",
             "Version"
           ]
         },

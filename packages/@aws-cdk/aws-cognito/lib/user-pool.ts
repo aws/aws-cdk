@@ -1,6 +1,6 @@
 import { IRole, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { Duration, IResource, Lazy, Names, Resource, Stack, Token } from '@aws-cdk/core';
+import { ArnFormat, Duration, IResource, Lazy, Names, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { toASCII as punycodeEncode } from 'punycode/';
 import { CfnUserPool } from './cognito.generated';
@@ -8,6 +8,7 @@ import { StandardAttributeNames } from './private/attr-names';
 import { ICustomAttribute, StandardAttribute, StandardAttributes } from './user-pool-attr';
 import { UserPoolClient, UserPoolClientOptions } from './user-pool-client';
 import { UserPoolDomain, UserPoolDomainOptions } from './user-pool-domain';
+import { UserPoolEmail } from './user-pool-email';
 import { IUserPoolIdentityProvider } from './user-pool-idp';
 import { UserPoolResourceServer, UserPoolResourceServerOptions } from './user-pool-resource-server';
 
@@ -430,6 +431,26 @@ export enum AccountRecovery {
 }
 
 /**
+ * Device tracking settings
+ * @see https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-device-tracking.html
+ */
+export interface DeviceTracking {
+  /**
+   * Indicates whether a challenge is required on a new device. Only applicable to a new device.
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-device-tracking.html
+   * @default false
+   */
+  readonly challengeRequiredOnNewDevice: boolean;
+
+  /**
+   * If true, a device is only remembered on user prompt.
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/amazon-cognito-user-pools-device-tracking.html
+   * @default false
+   */
+  readonly deviceOnlyRememberedOnUserPrompt: boolean;
+}
+
+/**
  * Props for the UserPool construct
  */
 export interface UserPoolProps {
@@ -528,6 +549,13 @@ export interface UserPoolProps {
   readonly mfa?: Mfa;
 
   /**
+   * The SMS message template sent during MFA verification.
+   * Use '{####}' in the template where Cognito should insert the verification code.
+   * @default 'Your authentication code is {####}.'
+   */
+  readonly mfaMessage?: string;
+
+  /**
    * Configure the MFA types that users can use in this user pool. Ignored if `mfa` is set to `OFF`.
    *
    * @default - { sms: true, oneTimePassword: false }, if `mfa` is set to `OPTIONAL` or `REQUIRED`.
@@ -543,9 +571,17 @@ export interface UserPoolProps {
 
   /**
    * Email settings for a user pool.
+   *
    * @default - see defaults on each property of EmailSettings.
+   * @deprecated Use 'email' instead.
    */
   readonly emailSettings?: EmailSettings;
+
+  /**
+   * Email settings for a user pool.
+   * @default - cognito will use the default email configuration
+   */
+  readonly email?: UserPoolEmail;
 
   /**
    * Lambda functions to use for supported Cognito triggers.
@@ -567,6 +603,19 @@ export interface UserPoolProps {
    * @default AccountRecovery.PHONE_WITHOUT_MFA_AND_EMAIL
    */
   readonly accountRecovery?: AccountRecovery;
+
+  /**
+   * Policy to apply when the user pool is removed from the stack
+   *
+   * @default RemovalPolicy.RETAIN
+   */
+  readonly removalPolicy?: RemovalPolicy;
+
+  /**
+   * Device tracking settings
+   * @default - see defaults on each property of DeviceTracking.
+   */
+  readonly deviceTracking?: DeviceTracking;
 }
 
 /**
@@ -653,22 +702,39 @@ export class UserPool extends UserPoolBase {
    * Import an existing user pool based on its id.
    */
   public static fromUserPoolId(scope: Construct, id: string, userPoolId: string): IUserPool {
-    class Import extends UserPoolBase {
-      public readonly userPoolId = userPoolId;
-      public readonly userPoolArn = Stack.of(this).formatArn({
-        service: 'cognito-idp',
-        resource: 'userpool',
-        resourceName: userPoolId,
-      });
-    }
-    return new Import(scope, id);
+    let userPoolArn = Stack.of(scope).formatArn({
+      service: 'cognito-idp',
+      resource: 'userpool',
+      resourceName: userPoolId,
+    });
+
+    return UserPool.fromUserPoolArn(scope, id, userPoolArn);
   }
 
   /**
    * Import an existing user pool based on its ARN.
    */
   public static fromUserPoolArn(scope: Construct, id: string, userPoolArn: string): IUserPool {
-    return UserPool.fromUserPoolId(scope, id, Stack.of(scope).parseArn(userPoolArn).resourceName!);
+    const arnParts = Stack.of(scope).splitArn(userPoolArn, ArnFormat.SLASH_RESOURCE_NAME);
+
+    if (!arnParts.resourceName) {
+      throw new Error('invalid user pool ARN');
+    }
+
+    const userPoolId = arnParts.resourceName;
+
+    class ImportedUserPool extends UserPoolBase {
+      public readonly userPoolArn = userPoolArn;
+      public readonly userPoolId = userPoolId;
+      constructor() {
+        super(scope, id, {
+          account: arnParts.account,
+          region: arnParts.region,
+        });
+      }
+    }
+
+    return new ImportedUserPool();
   }
 
   /**
@@ -723,7 +789,7 @@ export class UserPool extends UserPoolBase {
       emailSubject: props.userInvitation?.emailSubject,
       smsMessage: props.userInvitation?.smsMessage,
     };
-    const selfSignUpEnabled = props.selfSignUpEnabled !== undefined ? props.selfSignUpEnabled : false;
+    const selfSignUpEnabled = props.selfSignUpEnabled ?? false;
     const adminCreateUserConfig: CfnUserPool.AdminCreateUserConfigProperty = {
       allowAdminCreateUserOnly: !selfSignUpEnabled,
       inviteMessageTemplate: props.userInvitation !== undefined ? inviteMessageTemplate : undefined,
@@ -731,12 +797,21 @@ export class UserPool extends UserPoolBase {
 
     const passwordPolicy = this.configurePasswordPolicy(props);
 
+    if (props.email && props.emailSettings) {
+      throw new Error('you must either provide "email" or "emailSettings", but not both');
+    }
+    const emailConfiguration = props.email ? props.email._bind(this) : undefinedIfNoKeys({
+      from: encodePuny(props.emailSettings?.from),
+      replyToEmailAddress: encodePuny(props.emailSettings?.replyTo),
+    });
+
     const userPool = new CfnUserPool(this, 'Resource', {
       userPoolName: props.userPoolName,
       usernameAttributes: signIn.usernameAttrs,
       aliasAttributes: signIn.aliasAttrs,
       autoVerifiedAttributes: signIn.autoVerifyAttrs,
       lambdaConfig: Lazy.any({ produce: () => undefinedIfNoKeys(this.triggers) }),
+      smsAuthenticationMessage: this.mfaMessage(props),
       smsConfiguration: this.smsConfiguration(props),
       adminCreateUserConfig,
       emailVerificationMessage,
@@ -747,15 +822,14 @@ export class UserPool extends UserPoolBase {
       mfaConfiguration: props.mfa,
       enabledMfas: this.mfaConfiguration(props),
       policies: passwordPolicy !== undefined ? { passwordPolicy } : undefined,
-      emailConfiguration: undefinedIfNoKeys({
-        from: encodePuny(props.emailSettings?.from),
-        replyToEmailAddress: encodePuny(props.emailSettings?.replyTo),
-      }),
+      emailConfiguration,
       usernameConfiguration: undefinedIfNoKeys({
         caseSensitive: props.signInCaseSensitive,
       }),
       accountRecoverySetting: this.accountRecovery(props),
+      deviceConfiguration: props.deviceTracking,
     });
+    userPool.applyRemovalPolicy(props.removalPolicy);
 
     this.userPoolId = userPool.ref;
     this.userPoolArn = userPool.attrArn;
@@ -770,7 +844,7 @@ export class UserPool extends UserPoolBase {
    */
   public addTrigger(operation: UserPoolOperation, fn: lambda.IFunction): void {
     if (operation.operationName in this.triggers) {
-      throw new Error(`A trigger for the operation ${operation} already exists.`);
+      throw new Error(`A trigger for the operation ${operation.operationName} already exists.`);
     }
 
     this.addLambdaPermission(fn, operation.operationName);
@@ -783,6 +857,24 @@ export class UserPool extends UserPoolBase {
       principal: new ServicePrincipal('cognito-idp.amazonaws.com'),
       sourceArn: this.userPoolArn,
     });
+  }
+
+  private mfaMessage(props: UserPoolProps): string | undefined {
+    const CODE_TEMPLATE = '{####}';
+    const MAX_LENGTH = 140;
+    const message = props.mfaMessage;
+
+    if (message && !Token.isUnresolved(message)) {
+      if (!message.includes(CODE_TEMPLATE)) {
+        throw new Error(`MFA message must contain the template string '${CODE_TEMPLATE}'`);
+      }
+
+      if (message.length > MAX_LENGTH) {
+        throw new Error(`MFA message must be between ${CODE_TEMPLATE.length} and ${MAX_LENGTH} characters`);
+      }
+    }
+
+    return message;
   }
 
   private verificationMessageConfiguration(props: UserPoolProps): CfnUserPool.VerificationMessageTemplateProperty {

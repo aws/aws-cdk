@@ -50,7 +50,9 @@
               ]
             ]
           }
-        }
+        },
+        "UpdateReplacePolicy": "Delete",
+        "DeletionPolicy": "Delete"
       }
     },
     "Outputs": {

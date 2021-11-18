@@ -1,6 +1,7 @@
 import { CfnDynamicReference, CfnDynamicReferenceService } from './cfn-dynamic-reference';
 import { CfnParameter } from './cfn-parameter';
 import { Intrinsic } from './private/intrinsic';
+import { Token } from './token';
 
 /**
  * Work with secret values in the CDK
@@ -34,13 +35,17 @@ export class SecretValue extends Intrinsic {
    * @param secretId The ID or ARN of the secret
    * @param options Options
    */
-  public static secretsManager(secretId: string, options: SecretsManagerSecretOptions = { }): SecretValue {
+  public static secretsManager(secretId: string, options: SecretsManagerSecretOptions = {}): SecretValue {
     if (!secretId) {
       throw new Error('secretId cannot be empty');
     }
 
-    if (!secretId.startsWith('arn:') && secretId.includes(':')) {
+    if (!Token.isUnresolved(secretId) && !secretId.startsWith('arn:') && secretId.includes(':')) {
       throw new Error(`secret id "${secretId}" is not an ARN but contains ":"`);
+    }
+
+    if (options.versionStage && options.versionId) {
+      throw new Error(`verionStage: '${options.versionStage}' and versionId: '${options.versionId}' were both provided but only one is allowed`);
     }
 
     const parts = [
@@ -103,7 +108,7 @@ export class SecretValue extends Intrinsic {
  */
 export interface SecretsManagerSecretOptions {
   /**
-   * Specified the secret version that you want to retrieve by the staging label attached to the version.
+   * Specifies the secret version that you want to retrieve by the staging label attached to the version.
    *
    * Can specify at most one of `versionId` and `versionStage`.
    *

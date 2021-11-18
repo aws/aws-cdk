@@ -6,7 +6,6 @@ import { Stack } from './stack';
 import { Token } from './token';
 
 /**
- * @experimental
  */
 export interface GetContextKeyOptions {
   /**
@@ -21,7 +20,6 @@ export interface GetContextKeyOptions {
 }
 
 /**
- * @experimental
  */
 export interface GetContextValueOptions extends GetContextKeyOptions {
   /**
@@ -33,7 +31,6 @@ export interface GetContextValueOptions extends GetContextKeyOptions {
 }
 
 /**
- * @experimental
  */
 export interface GetContextKeyResult {
   readonly key: string;
@@ -41,7 +38,6 @@ export interface GetContextKeyResult {
 }
 
 /**
- * @experimental
  */
 export interface GetContextValueResult {
   readonly value?: any;
@@ -56,7 +52,6 @@ export interface GetContextValueResult {
  *
  * ContextProvider needs access to a Construct to hook into the context mechanism.
  *
- * @experimental
  */
 export class ContextProvider {
   /**
@@ -89,9 +84,9 @@ export class ContextProvider {
 
     if (Token.isUnresolved(stack.account) || Token.isUnresolved(stack.region)) {
       throw new Error(`Cannot retrieve value from context provider ${options.provider} since account/region ` +
-                      'are not specified at the stack level. Either configure "env" with explicit account and region when ' +
-                      'you define your stack, or use the environment variables "CDK_DEFAULT_ACCOUNT" and "CDK_DEFAULT_REGION" ' +
-                      'to inherit environment information from the CLI (not recommended for production stacks)');
+                      'are not specified at the stack level. Configure "env" with an account and region when ' +
+                      'you define your stack.' +
+                      'See https://docs.aws.amazon.com/cdk/latest/guide/environments.html for more details.');
     }
 
     const { key, props } = this.getKey(scope, options);
@@ -101,7 +96,7 @@ export class ContextProvider {
     // if context is missing or an error occurred during context retrieval,
     // report and return a dummy value.
     if (value === undefined || providerError !== undefined) {
-      stack.reportMissingContext({
+      stack.reportMissingContextKey({
         key,
         provider: options.provider as cxschema.ContextProvider,
         props: props as cxschema.ContextQueryProperties,

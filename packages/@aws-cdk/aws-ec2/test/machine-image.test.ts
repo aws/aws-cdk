@@ -1,3 +1,4 @@
+import { expect as cdkExpect, matchTemplate, MatchStyle } from '@aws-cdk/assert-internal';
 import { App, Stack } from '@aws-cdk/core';
 import * as ec2 from '../lib';
 
@@ -11,6 +12,43 @@ beforeEach(() => {
   });
 });
 
+test('can make and use a Linux image', () => {
+  // WHEN
+  const image = new ec2.GenericLinuxImage({
+    testregion: 'ami-1234',
+  });
+
+  // THEN
+  const details = image.getImage(stack);
+  expect(details.imageId).toEqual('ami-1234');
+  expect(details.osType).toEqual(ec2.OperatingSystemType.LINUX);
+});
+
+test('can make and use a Linux image in agnostic stack', () => {
+  // WHEN
+  app = new App();
+  stack = new Stack(app, 'Stack');
+  const image = new ec2.GenericLinuxImage({
+    testregion: 'ami-1234',
+  });
+
+  // THEN
+  const details = image.getImage(stack);
+  const expected = {
+    Mappings: {
+      AmiMap: {
+        testregion: {
+          ami: 'ami-1234',
+        },
+      },
+    },
+  };
+
+  cdkExpect(stack).to(matchTemplate(expected, MatchStyle.EXACT));
+  expect(stack.resolve(details.imageId)).toEqual({ 'Fn::FindInMap': ['AmiMap', { Ref: 'AWS::Region' }, 'ami'] });
+  expect(details.osType).toEqual(ec2.OperatingSystemType.LINUX);
+});
+
 test('can make and use a Windows image', () => {
   // WHEN
   const image = new ec2.GenericWindowsImage({
@@ -20,6 +58,31 @@ test('can make and use a Windows image', () => {
   // THEN
   const details = image.getImage(stack);
   expect(details.imageId).toEqual('ami-1234');
+  expect(details.osType).toEqual(ec2.OperatingSystemType.WINDOWS);
+});
+
+test('can make and use a Windows image in agnostic stack', () => {
+  // WHEN
+  app = new App();
+  stack = new Stack(app, 'Stack');
+  const image = new ec2.GenericWindowsImage({
+    testregion: 'ami-1234',
+  });
+
+  // THEN
+  const details = image.getImage(stack);
+  const expected = {
+    Mappings: {
+      AmiMap: {
+        testregion: {
+          ami: 'ami-1234',
+        },
+      },
+    },
+  };
+
+  cdkExpect(stack).to(matchTemplate(expected, MatchStyle.EXACT));
+  expect(stack.resolve(details.imageId)).toEqual({ 'Fn::FindInMap': ['AmiMap', { Ref: 'AWS::Region' }, 'ami'] });
   expect(details.osType).toEqual(ec2.OperatingSystemType.WINDOWS);
 });
 
@@ -93,6 +156,25 @@ test('LookupMachineImage creates correct type of UserData', () => {
   // THEN
   expect(isWindowsUserData(windowsDetails.userData)).toBeTruthy();
   expect(isLinuxUserData(linuxDetails.userData)).toBeTruthy();
+});
+
+test('cached lookups of Amazon Linux', () => {
+  // WHEN
+  const ami = ec2.MachineImage.latestAmazonLinux({ cachedInContext: true }).getImage(stack).imageId;
+
+  // THEN
+  expect(ami).toEqual('dummy-value-for-/aws/service/ami-amazon-linux-latest/amzn-ami-hvm-x86_64-gp2');
+  expect(app.synth().manifest.missing).toEqual([
+    {
+      key: 'ssm:account=1234:parameterName=/aws/service/ami-amazon-linux-latest/amzn-ami-hvm-x86_64-gp2:region=testregion',
+      props: {
+        account: '1234',
+        region: 'testregion',
+        parameterName: '/aws/service/ami-amazon-linux-latest/amzn-ami-hvm-x86_64-gp2',
+      },
+      provider: 'ssm',
+    },
+  ]);
 });
 
 function isWindowsUserData(ud: ec2.UserData) {

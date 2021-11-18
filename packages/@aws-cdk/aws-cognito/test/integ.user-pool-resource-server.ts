@@ -1,4 +1,4 @@
-import { App, CfnOutput, Stack } from '@aws-cdk/core';
+import { App, CfnOutput, RemovalPolicy, Stack } from '@aws-cdk/core';
 import { OAuthScope, ResourceServerScope, UserPool } from '../lib';
 
 const app = new App();
@@ -14,6 +14,7 @@ const stack = new Stack(app, 'integ-user-pool-resource-server');
  */
 const userPool = new UserPool(stack, 'myuserpool', {
   userPoolName: 'MyUserPool',
+  removalPolicy: RemovalPolicy.DESTROY,
 });
 
 const readScope = new ResourceServerScope({ scopeName: 'read', scopeDescription: 'read only' });

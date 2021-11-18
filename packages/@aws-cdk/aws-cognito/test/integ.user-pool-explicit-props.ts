@@ -1,11 +1,12 @@
 import { Code, Function, IFunction, Runtime } from '@aws-cdk/aws-lambda';
-import { App, CfnOutput, Duration, Stack } from '@aws-cdk/core';
+import { App, CfnOutput, Duration, RemovalPolicy, Stack } from '@aws-cdk/core';
 import { BooleanAttribute, DateTimeAttribute, Mfa, NumberAttribute, StringAttribute, UserPool } from '../lib';
 
 const app = new App();
 const stack = new Stack(app, 'integ-user-pool');
 
 const userpool = new UserPool(stack, 'myuserpool', {
+  removalPolicy: RemovalPolicy.DESTROY,
   userPoolName: 'MyUserPool',
   userInvitation: {
     emailSubject: 'invitation email subject from the integ test',

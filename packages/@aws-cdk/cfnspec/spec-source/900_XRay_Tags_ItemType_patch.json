@@ -1,0 +1,27 @@
+{
+  "ResourceTypes": {
+    "patch": {
+      "description": "Rename ItemType to PrimitiveItemType for Tags property of AWS::XRay Group and SamplingRule resources",
+      "operations": [
+        {
+          "op": "remove",
+          "path": "/AWS::XRay::Group/Properties/Tags/ItemType"
+        },
+        {
+          "op": "add",
+          "path": "/AWS::XRay::Group/Properties/Tags/PrimitiveItemType",
+          "value": "Json"
+        },
+        {
+          "op": "remove",
+          "path": "/AWS::XRay::SamplingRule/Properties/Tags/ItemType"
+        },
+        {
+          "op": "add",
+          "path": "/AWS::XRay::SamplingRule/Properties/Tags/PrimitiveItemType",
+          "value": "Json"
+        }
+      ]
+    }
+  }
+}

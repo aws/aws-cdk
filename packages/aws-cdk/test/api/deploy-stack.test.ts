@@ -1,6 +1,9 @@
-import { deployStack } from '../../lib';
+import { deployStack, DeployStackOptions, ToolkitInfo } from '../../lib/api';
+import { tryHotswapDeployment } from '../../lib/api/hotswap-deployments';
 import { DEFAULT_FAKE_TEMPLATE, testStack } from '../util';
 import { MockedObject, mockResolvedEnvironment, MockSdk, MockSdkProvider, SyncHandlerSubsetOf } from '../util/mock-sdk';
+
+jest.mock('../../lib/api/hotswap-deployments');
 
 const FAKE_STACK = testStack({
   stackName: 'withouterrors',
@@ -26,7 +29,10 @@ const FAKE_STACK_TERMINATION_PROTECTION = testStack({
 let sdk: MockSdk;
 let sdkProvider: MockSdkProvider;
 let cfnMocks: MockedObject<SyncHandlerSubsetOf<AWS.CloudFormation>>;
+
 beforeEach(() => {
+  jest.resetAllMocks();
+
   sdkProvider = new MockSdkProvider();
   sdk = new MockSdk();
 
@@ -57,15 +63,74 @@ beforeEach(() => {
     updateTerminationProtection: jest.fn((_o) => ({ StackId: 'stack-id' })),
   };
   sdk.stubCloudFormation(cfnMocks as any);
+  sdk.stubGetEndpointSuffix(() => 'amazonaws.com');
+});
+
+function standardDeployStackArguments(): DeployStackOptions {
+  return {
+    stack: FAKE_STACK,
+    sdk,
+    sdkProvider,
+    resolvedEnvironment: mockResolvedEnvironment(),
+    toolkitInfo: ToolkitInfo.bootstraplessDeploymentsOnly(sdk),
+  };
+}
+
+test("calls tryHotswapDeployment() if 'hotswap' is true", async () => {
+  // WHEN
+  await deployStack({
+    ...standardDeployStackArguments(),
+    hotswap: true,
+  });
+
+  // THEN
+  expect(tryHotswapDeployment).toHaveBeenCalled();
+});
+
+test("does not call tryHotswapDeployment() if 'hotswap' is false", async () => {
+  // WHEN
+  await deployStack({
+    ...standardDeployStackArguments(),
+    hotswap: false,
+  });
+
+  // THEN
+  expect(tryHotswapDeployment).not.toHaveBeenCalled();
+});
+
+test("rollback still defaults to enabled even if 'hotswap' is enabled", async () => {
+  // WHEN
+  await deployStack({
+    ...standardDeployStackArguments(),
+    hotswap: true,
+    rollback: undefined,
+  });
+
+  // THEN
+  expect(cfnMocks.executeChangeSet).not.toHaveBeenCalledWith(expect.objectContaining({
+    DisableRollback: true,
+  }));
+});
+
+test("rollback defaults to enabled if 'hotswap' is false", async () => {
+  // WHEN
+  await deployStack({
+    ...standardDeployStackArguments(),
+    hotswap: false,
+    rollback: undefined,
+  });
+
+  // THEN
+  expect(cfnMocks.executeChangeSet).toHaveBeenCalledTimes(1);
+  expect(cfnMocks.executeChangeSet).not.toHaveBeenCalledWith(expect.objectContaining({
+    DisableRollback: expect.anything(),
+  }));
 });
 
 test('do deploy executable change set with 0 changes', async () => {
   // WHEN
   const ret = await deployStack({
-    stack: FAKE_STACK,
-    resolvedEnvironment: mockResolvedEnvironment(),
-    sdk,
-    sdkProvider,
+    ...standardDeployStackArguments(),
   });
 
   // THEN
@@ -76,10 +141,7 @@ test('do deploy executable change set with 0 changes', async () => {
 test('correctly passes CFN parameters, ignoring ones with empty values', async () => {
   // WHEN
   await deployStack({
-    stack: FAKE_STACK,
-    sdk,
-    sdkProvider,
-    resolvedEnvironment: mockResolvedEnvironment(),
+    ...standardDeployStackArguments(),
     parameters: {
       A: 'A-value',
       B: 'B=value',
@@ -108,10 +170,8 @@ test('reuse previous parameters if requested', async () => {
 
   // WHEN
   await deployStack({
+    ...standardDeployStackArguments(),
     stack: FAKE_STACK_WITH_PARAMETERS,
-    sdk,
-    sdkProvider,
-    resolvedEnvironment: mockResolvedEnvironment(),
     parameters: {
       OtherParameter: 'SomeValue',
     },
@@ -139,10 +199,8 @@ test('do not reuse previous parameters if not requested', async () => {
 
   // WHEN
   await deployStack({
+    ...standardDeployStackArguments(),
     stack: FAKE_STACK_WITH_PARAMETERS,
-    sdk,
-    sdkProvider,
-    resolvedEnvironment: mockResolvedEnvironment(),
     parameters: {
       HasValue: 'SomeValue',
       OtherParameter: 'SomeValue',
@@ -169,10 +227,8 @@ test('throw exception if not enough parameters supplied', async () => {
 
   // WHEN
   await expect(deployStack({
+    ...standardDeployStackArguments(),
     stack: FAKE_STACK_WITH_PARAMETERS,
-    sdk,
-    sdkProvider,
-    resolvedEnvironment: mockResolvedEnvironment(),
     parameters: {
       OtherParameter: 'SomeValue',
     },
@@ -185,10 +241,7 @@ test('deploy is skipped if template did not change', async () => {
 
   // WHEN
   await deployStack({
-    stack: FAKE_STACK,
-    sdk,
-    sdkProvider,
-    resolvedEnvironment: mockResolvedEnvironment(),
+    ...standardDeployStackArguments(),
   });
 
   // THEN
@@ -208,10 +261,8 @@ test('deploy is skipped if parameters are the same', async () => {
 
   // WHEN
   await deployStack({
+    ...standardDeployStackArguments(),
     stack: FAKE_STACK_WITH_PARAMETERS,
-    sdk,
-    sdkProvider,
-    resolvedEnvironment: mockResolvedEnvironment(),
     parameters: {},
     usePreviousParameters: true,
   });
@@ -233,10 +284,8 @@ test('deploy is not skipped if parameters are different', async () => {
 
   // WHEN
   await deployStack({
+    ...standardDeployStackArguments(),
     stack: FAKE_STACK_WITH_PARAMETERS,
-    sdk,
-    sdkProvider,
-    resolvedEnvironment: mockResolvedEnvironment(),
     parameters: {
       HasValue: 'NewValue',
     },
@@ -266,10 +315,7 @@ test('if existing stack failed to create, it is deleted and recreated', async ()
 
   // WHEN
   await deployStack({
-    stack: FAKE_STACK,
-    sdk,
-    sdkProvider,
-    resolvedEnvironment: mockResolvedEnvironment(),
+    ...standardDeployStackArguments(),
   });
 
   // THEN
@@ -289,10 +335,7 @@ test('if existing stack failed to create, it is deleted and recreated even if th
 
   // WHEN
   await deployStack({
-    stack: FAKE_STACK,
-    sdk,
-    sdkProvider,
-    resolvedEnvironment: mockResolvedEnvironment(),
+    ...standardDeployStackArguments(),
   });
 
   // THEN
@@ -308,10 +351,7 @@ test('deploy not skipped if template did not change and --force is applied', asy
 
   // WHEN
   await deployStack({
-    stack: FAKE_STACK,
-    sdk,
-    sdkProvider,
-    resolvedEnvironment: mockResolvedEnvironment(),
+    ...standardDeployStackArguments(),
     force: true,
   });
 
@@ -330,14 +370,11 @@ test('deploy is skipped if template and tags did not change', async () => {
 
   // WHEN
   await deployStack({
-    stack: FAKE_STACK,
+    ...standardDeployStackArguments(),
     tags: [
       { Key: 'Key1', Value: 'Value1' },
       { Key: 'Key2', Value: 'Value2' },
     ],
-    sdk,
-    sdkProvider,
-    resolvedEnvironment: mockResolvedEnvironment(),
   });
 
   // THEN
@@ -367,6 +404,7 @@ test('deploy not skipped if template did not change but tags changed', async () 
         Value: 'NewValue',
       },
     ],
+    toolkitInfo: ToolkitInfo.bootstraplessDeploymentsOnly(sdk),
   });
 
   // THEN
@@ -385,10 +423,7 @@ test('deployStack reports no change if describeChangeSet returns specific error'
 
   // WHEN
   const deployResult = await deployStack({
-    stack: FAKE_STACK,
-    sdk,
-    sdkProvider,
-    resolvedEnvironment: mockResolvedEnvironment(),
+    ...standardDeployStackArguments(),
   });
 
   // THEN
@@ -406,10 +441,7 @@ test('deploy not skipped if template did not change but one tag removed', async 
 
   // WHEN
   await deployStack({
-    stack: FAKE_STACK,
-    sdk,
-    sdkProvider,
-    resolvedEnvironment: mockResolvedEnvironment(),
+    ...standardDeployStackArguments(),
     tags: [
       { Key: 'Key1', Value: 'Value1' },
     ],
@@ -431,10 +463,7 @@ test('deploy is not skipped if stack is in a _FAILED state', async () => {
 
   // WHEN
   await deployStack({
-    stack: FAKE_STACK,
-    sdk,
-    sdkProvider,
-    resolvedEnvironment: mockResolvedEnvironment(),
+    ...standardDeployStackArguments(),
     usePreviousParameters: true,
   }).catch(() => {});
 
@@ -452,10 +481,7 @@ test('existing stack in UPDATE_ROLLBACK_COMPLETE state can be updated', async ()
 
   // WHEN
   await deployStack({
-    stack: FAKE_STACK,
-    sdk,
-    sdkProvider,
-    resolvedEnvironment: mockResolvedEnvironment(),
+    ...standardDeployStackArguments(),
   });
 
   // THEN
@@ -472,10 +498,7 @@ test('deploy not skipped if template changed', async () => {
 
   // WHEN
   await deployStack({
-    stack: FAKE_STACK,
-    sdk,
-    sdkProvider,
-    resolvedEnvironment: mockResolvedEnvironment(),
+    ...standardDeployStackArguments(),
   });
 
   // THEN
@@ -485,29 +508,71 @@ test('deploy not skipped if template changed', async () => {
 test('not executed and no error if --no-execute is given', async () => {
   // WHEN
   await deployStack({
-    stack: FAKE_STACK,
-    sdk,
-    sdkProvider,
+    ...standardDeployStackArguments(),
     execute: false,
-    resolvedEnvironment: mockResolvedEnvironment(),
   });
 
   // THEN
   expect(cfnMocks.executeChangeSet).not.toHaveBeenCalled();
 });
 
+test('empty change set is deleted if --execute is given', async () => {
+  cfnMocks.describeChangeSet?.mockImplementation(() => ({
+    Status: 'FAILED',
+    StatusReason: 'No updates are to be performed.',
+  }));
+
+  // GIVEN
+  givenStackExists();
+
+  // WHEN
+  await deployStack({
+    ...standardDeployStackArguments(),
+    execute: true,
+    force: true, // Necessary to bypass "skip deploy"
+  });
+
+  // THEN
+  expect(cfnMocks.createChangeSet).toHaveBeenCalled();
+  expect(cfnMocks.executeChangeSet).not.toHaveBeenCalled();
+
+  //the first deletion is for any existing cdk change sets, the second is for the deleting the new empty change set
+  expect(cfnMocks.deleteChangeSet).toHaveBeenCalledTimes(2);
+});
+
+test('empty change set is not deleted if --no-execute is given', async () => {
+  cfnMocks.describeChangeSet?.mockImplementation(() => ({
+    Status: 'FAILED',
+    StatusReason: 'No updates are to be performed.',
+  }));
+
+  // GIVEN
+  givenStackExists();
+
+  // WHEN
+  await deployStack({
+    ...standardDeployStackArguments(),
+    execute: false,
+  });
+
+  // THEN
+  expect(cfnMocks.createChangeSet).toHaveBeenCalled();
+  expect(cfnMocks.executeChangeSet).not.toHaveBeenCalled();
+
+  //the first deletion is for any existing cdk change sets
+  expect(cfnMocks.deleteChangeSet).toHaveBeenCalledTimes(1);
+});
+
 test('use S3 url for stack deployment if present in Stack Artifact', async () => {
   // WHEN
   await deployStack({
+    ...standardDeployStackArguments(),
     stack: testStack({
       stackName: 'withouterrors',
       properties: {
         stackTemplateAssetObjectUrl: 'https://use-me-use-me/',
       },
     }),
-    sdk,
-    sdkProvider,
-    resolvedEnvironment: mockResolvedEnvironment(),
   });
 
   // THEN
@@ -520,15 +585,13 @@ test('use S3 url for stack deployment if present in Stack Artifact', async () =>
 test('use REST API S3 url with substituted placeholders if manifest url starts with s3://', async () => {
   // WHEN
   await deployStack({
+    ...standardDeployStackArguments(),
     stack: testStack({
       stackName: 'withouterrors',
       properties: {
         stackTemplateAssetObjectUrl: 's3://use-me-use-me-${AWS::AccountId}/object',
       },
     }),
-    sdk,
-    sdkProvider,
-    resolvedEnvironment: mockResolvedEnvironment(),
   });
 
   // THEN
@@ -550,11 +613,8 @@ test('changeset is created when stack exists in REVIEW_IN_PROGRESS status', asyn
 
   // WHEN
   await deployStack({
-    stack: FAKE_STACK,
-    sdk,
-    sdkProvider,
+    ...standardDeployStackArguments(),
     execute: false,
-    resolvedEnvironment: mockResolvedEnvironment(),
   });
 
   // THEN
@@ -578,11 +638,8 @@ test('changeset is updated when stack exists in CREATE_COMPLETE status', async (
 
   // WHEN
   await deployStack({
-    stack: FAKE_STACK,
-    sdk,
-    sdkProvider,
+    ...standardDeployStackArguments(),
     execute: false,
-    resolvedEnvironment: mockResolvedEnvironment(),
   });
 
   // THEN
@@ -598,10 +655,8 @@ test('changeset is updated when stack exists in CREATE_COMPLETE status', async (
 test('deploy with termination protection enabled', async () => {
   // WHEN
   await deployStack({
+    ...standardDeployStackArguments(),
     stack: FAKE_STACK_TERMINATION_PROTECTION,
-    sdk,
-    sdkProvider,
-    resolvedEnvironment: mockResolvedEnvironment(),
   });
 
   // THEN
@@ -613,10 +668,7 @@ test('deploy with termination protection enabled', async () => {
 test('updateTerminationProtection not called when termination protection is undefined', async () => {
   // WHEN
   await deployStack({
-    stack: FAKE_STACK,
-    sdk,
-    sdkProvider,
-    resolvedEnvironment: mockResolvedEnvironment(),
+    ...standardDeployStackArguments(),
   });
 
   // THEN
@@ -631,16 +683,42 @@ test('updateTerminationProtection called when termination protection is undefine
 
   // WHEN
   await deployStack({
-    stack: FAKE_STACK,
-    sdk,
-    sdkProvider,
-    resolvedEnvironment: mockResolvedEnvironment(),
+    ...standardDeployStackArguments(),
   });
 
   // THEN
   expect(cfnMocks.updateTerminationProtection).toHaveBeenCalledWith(expect.objectContaining({
     EnableTerminationProtection: false,
   }));
+});
+
+describe('disable rollback', () => {
+  test('by default, we do not disable rollback (and also do not pass the flag)', async () => {
+    // WHEN
+    await deployStack({
+      ...standardDeployStackArguments(),
+    });
+
+    // THEN
+    expect(cfnMocks.executeChangeSet).toHaveBeenCalledTimes(1);
+    expect(cfnMocks.executeChangeSet).not.toHaveBeenCalledWith(expect.objectContaining({
+      DisableRollback: expect.anything(),
+    }));
+  });
+
+  test('rollback can be disabled by setting rollback: false', async () => {
+    // WHEN
+    await deployStack({
+      ...standardDeployStackArguments(),
+      rollback: false,
+    });
+
+    // THEN
+    expect(cfnMocks.executeChangeSet).toHaveBeenCalledWith(expect.objectContaining({
+      DisableRollback: true,
+    }));
+  });
+
 });
 
 /**

@@ -1,4 +1,4 @@
-import { ICfnConditionExpression } from './cfn-condition';
+import { ICfnConditionExpression, ICfnRuleConditionExpression } from './cfn-condition';
 import { minimalCloudFormationJoin } from './private/cloudformation-lang';
 import { Intrinsic } from './private/intrinsic';
 import { Reference } from './reference';
@@ -55,22 +55,69 @@ export class Fn {
   }
 
   /**
-   * To split a string into a list of string values so that you can select an element from the
-   * resulting string list, use the ``Fn::Split`` intrinsic function. Specify the location of splits
-   * with a delimiter, such as , (a comma). After you split a string, use the ``Fn::Select`` function
-   * to pick a specific element.
+   * Split a string token into a token list of string values.
+   *
+   * Specify the location of splits with a delimiter such as ',' (a comma).
+   * Renders to the `Fn::Split` intrinsic function.
+   *
+   * Lists with unknown lengths (default)
+   * -------------------------------------
+   *
+   * Since this function is used to work with deploy-time values, if `assumedLength`
+   * is not given the CDK cannot know the length of the resulting list at synthesis time.
+   * This brings the following restrictions:
+   *
+   * - You must use `Fn.select(i, list)` to pick elements out of the list (you must not use
+   *   `list[i]`).
+   * - You cannot add elements to the list, remove elements from the list,
+   *   combine two such lists together, or take a slice of the list.
+   * - You cannot pass the list to constructs that do any of the above.
+   *
+   * The only valid operation with such a tokenized list is to pass it unmodified to a
+   * CloudFormation Resource construct.
+   *
+   * Lists with assumed lengths
+   * --------------------------
+   *
+   * Pass `assumedLength` if you know the length of the list that will be
+   * produced by splitting. The actual list length at deploy time may be
+   * *longer* than the number you pass, but not *shorter*.
+   *
+   * The returned list will look like:
+   *
+   * ```
+   * [Fn.select(0, split), Fn.select(1, split), Fn.select(2, split), ...]
+   * ```
+   *
+   * The restrictions from the section "Lists with unknown lengths" will now be lifted,
+   * at the expense of having to know and fix the length of the list.
+   *
    * @param delimiter A string value that determines where the source string is divided.
    * @param source The string value that you want to split.
+   * @param assumedLength The length of the list that will be produced by splitting
    * @returns a token represented as a string array
    */
-  public static split(delimiter: string, source: string): string[] {
-
+  public static split(delimiter: string, source: string, assumedLength?: number): string[] {
     // short-circut if source is not a token
     if (!Token.isUnresolved(source)) {
       return source.split(delimiter);
     }
 
-    return Token.asList(new FnSplit(delimiter, source));
+    if (Token.isUnresolved(delimiter)) {
+      // Limitation of CloudFormation
+      throw new Error('Fn.split: \'delimiter\' may not be a token value');
+    }
+
+    const split = Token.asList(new FnSplit(delimiter, source));
+    if (assumedLength === undefined) {
+      return split;
+    }
+
+    if (Token.isUnresolved(assumedLength)) {
+      throw new Error('Fn.split: \'assumedLength\' may not be a token value');
+    }
+
+    return range(assumedLength).map(i => Fn.select(i, split));
   }
 
   /**
@@ -168,6 +215,21 @@ export class Fn {
   }
 
   /**
+   * Like `Fn.importValue`, but import a list with a known length
+   *
+   * If you explicitly want a list with an unknown length, call `Fn.split(',',
+   * Fn.importValue(exportName))`. See the documentation of `Fn.split` to read
+   * more about the limitations of using lists of unknown length.
+   *
+   * `Fn.importListValue(exportName, assumedLength)` is the same as
+   * `Fn.split(',', Fn.importValue(exportName), assumedLength)`,
+   * but easier to read and impossible to forget to pass `assumedLength`.
+   */
+  public static importListValue(sharedValueToImport: string, assumedLength: number, delimiter = ','): string[] {
+    return Fn.split(delimiter, Fn.importValue(sharedValueToImport), assumedLength);
+  }
+
+  /**
    * The intrinsic function ``Fn::FindInMap`` returns the value corresponding to
    * keys in a two-level map that is declared in the Mappings section.
    * @returns a token represented as a string
@@ -205,12 +267,12 @@ export class Fn {
    * @param conditions conditions to AND
    * @returns an FnCondition token
    */
-  public static conditionAnd(...conditions: ICfnConditionExpression[]): ICfnConditionExpression {
+  public static conditionAnd(...conditions: ICfnConditionExpression[]): ICfnRuleConditionExpression {
     if (conditions.length === 0) {
       throw new Error('Fn.conditionAnd() needs at least one argument');
     }
     if (conditions.length === 1) {
-      return conditions[0];
+      return conditions[0] as ICfnRuleConditionExpression;
     }
     return Fn.conditionAnd(..._inGroupsOf(conditions, 10).map(group => new FnAnd(...group)));
   }
@@ -222,7 +284,7 @@ export class Fn {
    * @param rhs A value of any type that you want to compare.
    * @returns an FnCondition token
    */
-  public static conditionEquals(lhs: any, rhs: any): ICfnConditionExpression {
+  public static conditionEquals(lhs: any, rhs: any): ICfnRuleConditionExpression {
     return new FnEquals(lhs, rhs);
   }
 
@@ -241,7 +303,7 @@ export class Fn {
    * evaluates to false.
    * @returns an FnCondition token
    */
-  public static conditionIf(conditionId: string, valueIfTrue: any, valueIfFalse: any): ICfnConditionExpression {
+  public static conditionIf(conditionId: string, valueIfTrue: any, valueIfFalse: any): ICfnRuleConditionExpression {
     return new FnIf(conditionId, valueIfTrue, valueIfFalse);
   }
 
@@ -252,7 +314,7 @@ export class Fn {
    * or false.
    * @returns an FnCondition token
    */
-  public static conditionNot(condition: ICfnConditionExpression): ICfnConditionExpression {
+  public static conditionNot(condition: ICfnConditionExpression): ICfnRuleConditionExpression {
     return new FnNot(condition);
   }
 
@@ -264,12 +326,12 @@ export class Fn {
    * @param conditions conditions that evaluates to true or false.
    * @returns an FnCondition token
    */
-  public static conditionOr(...conditions: ICfnConditionExpression[]): ICfnConditionExpression {
+  public static conditionOr(...conditions: ICfnConditionExpression[]): ICfnRuleConditionExpression {
     if (conditions.length === 0) {
       throw new Error('Fn.conditionOr() needs at least one argument');
     }
     if (conditions.length === 1) {
-      return conditions[0];
+      return conditions[0] as ICfnRuleConditionExpression;
     }
     return Fn.conditionOr(..._inGroupsOf(conditions, 10).map(group => new FnOr(...group)));
   }
@@ -281,7 +343,7 @@ export class Fn {
    * @param value A string, such as "A", that you want to compare against a list of strings.
    * @returns an FnCondition token
    */
-  public static conditionContains(listOfStrings: string[], value: string): ICfnConditionExpression {
+  public static conditionContains(listOfStrings: string[], value: string): ICfnRuleConditionExpression {
     return new FnContains(listOfStrings, value);
   }
 
@@ -292,7 +354,7 @@ export class Fn {
    * of strings.
    * @returns an FnCondition token
    */
-  public static conditionEachMemberEquals(listOfStrings: string[], value: string): ICfnConditionExpression {
+  public static conditionEachMemberEquals(listOfStrings: string[], value: string): ICfnRuleConditionExpression {
     return new FnEachMemberEquals(listOfStrings, value);
   }
 
@@ -307,7 +369,7 @@ export class Fn {
    * strings_to_check parameter.
    * @returns an FnCondition token
    */
-  public static conditionEachMemberIn(stringsToCheck: string[], stringsToMatch: string[]): ICfnConditionExpression {
+  public static conditionEachMemberIn(stringsToCheck: string[], stringsToMatch: string[]): ICfnRuleConditionExpression {
     return new FnEachMemberIn(stringsToCheck, stringsToMatch);
   }
 
@@ -542,7 +604,8 @@ class FnCidr extends FnBase {
   }
 }
 
-class FnConditionBase extends Intrinsic implements ICfnConditionExpression {
+class FnConditionBase extends Intrinsic implements ICfnRuleConditionExpression {
+  readonly disambiguator = true;
   constructor(type: string, value: any) {
     super({ [type]: value });
   }
@@ -772,4 +835,12 @@ function _inGroupsOf<T>(array: T[], maxGroup: number): T[][] {
     result.push(array.slice(i, i + maxGroup));
   }
   return result;
+}
+
+function range(n: number): number[] {
+  const ret = [];
+  for (let i = 0; i < n; i++) {
+    ret.push(i);
+  }
+  return ret;
 }

@@ -1,9 +1,11 @@
 import { ITable } from '@aws-cdk/aws-dynamodb';
+import { IDomain } from '@aws-cdk/aws-elasticsearch';
 import { IFunction } from '@aws-cdk/aws-lambda';
-import { IDatabaseCluster } from '@aws-cdk/aws-rds';
+import { IServerlessCluster } from '@aws-cdk/aws-rds';
 import { ISecret } from '@aws-cdk/aws-secretsmanager';
 import { CfnResource, IResource, Resource } from '@aws-cdk/core';
-import { DynamoDbDataSource, HttpDataSource, LambdaDataSource, NoneDataSource, RdsDataSource, AwsIamConfig } from './data-source';
+import { DynamoDbDataSource, HttpDataSource, LambdaDataSource, NoneDataSource, RdsDataSource, AwsIamConfig, ElasticsearchDataSource } from './data-source';
+import { Resolver, ExtendedResolverProps } from './resolver';
 
 /**
  * Optional configuration for data sources
@@ -96,16 +98,32 @@ export interface IGraphqlApi extends IResource {
    * add a new Rds data source to this API
    *
    * @param id The data source's id
-   * @param databaseCluster The database cluster to interact with this data source
-   * @param secretStore The secret store that contains the username and password for the database cluster
+   * @param serverlessCluster The serverless cluster to interact with this data source
+   * @param secretStore The secret store that contains the username and password for the serverless cluster
+   * @param databaseName The optional name of the database to use within the cluster
    * @param options The optional configuration for this data source
    */
   addRdsDataSource(
     id: string,
-    databaseCluster: IDatabaseCluster,
+    serverlessCluster: IServerlessCluster,
     secretStore: ISecret,
+    databaseName?: string,
     options?: DataSourceOptions
   ): RdsDataSource;
+
+  /**
+   * add a new elasticsearch data source to this API
+   *
+   * @param id The data source's id
+   * @param domain The elasticsearch domain for this data source
+   * @param options The optional configuration for this data source
+   */
+  addElasticsearchDataSource(id: string, domain: IDomain, options?: DataSourceOptions): ElasticsearchDataSource;
+
+  /**
+   * creates a new resolver for this datasource and API using the given properties
+   */
+  createResolver(props: ExtendedResolverProps): Resolver;
 
   /**
    * Add schema dependency if not imported
@@ -198,22 +216,51 @@ export abstract class GraphqlApiBase extends Resource implements IGraphqlApi {
   /**
    * add a new Rds data source to this API
    * @param id The data source's id
-   * @param databaseCluster The database cluster to interact with this data source
-   * @param secretStore The secret store that contains the username and password for the database cluster
+   * @param serverlessCluster The serverless cluster to interact with this data source
+   * @param secretStore The secret store that contains the username and password for the serverless cluster
+   * @param databaseName The optional name of the database to use within the cluster
    * @param options The optional configuration for this data source
    */
   public addRdsDataSource(
     id: string,
-    databaseCluster: IDatabaseCluster,
+    serverlessCluster: IServerlessCluster,
     secretStore: ISecret,
+    databaseName?: string,
     options?: DataSourceOptions,
   ): RdsDataSource {
     return new RdsDataSource(this, id, {
       api: this,
       name: options?.name,
       description: options?.description,
-      databaseCluster,
+      serverlessCluster,
       secretStore,
+      databaseName,
+    });
+  }
+
+  /**
+   * add a new elasticsearch data source to this API
+   *
+   * @param id The data source's id
+   * @param domain The elasticsearch domain for this data source
+   * @param options The optional configuration for this data source
+   */
+  public addElasticsearchDataSource(id: string, domain: IDomain, options?: DataSourceOptions): ElasticsearchDataSource {
+    return new ElasticsearchDataSource(this, id, {
+      api: this,
+      name: options?.name,
+      description: options?.description,
+      domain,
+    });
+  }
+
+  /**
+   * creates a new resolver for this datasource and API using the given properties
+   */
+  public createResolver(props: ExtendedResolverProps): Resolver {
+    return new Resolver(this, `${props.typeName}${props.fieldName}Resolver`, {
+      api: this,
+      ...props,
     });
   }
 

@@ -1,9 +1,13 @@
 import { findAlarmThresholds, normalizeIntervals } from '@aws-cdk/aws-autoscaling-common';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
-import { Construct as CoreConstruct, Duration } from '@aws-cdk/core';
+import { Duration } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { IAutoScalingGroup } from './auto-scaling-group';
 import { AdjustmentType, MetricAggregationType, StepScalingAction } from './step-scaling-action';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 export interface BasicStepScalingPolicyProps {
   /**
@@ -48,6 +52,25 @@ export interface BasicStepScalingPolicyProps {
    * @default No minimum scaling effect
    */
   readonly minAdjustmentMagnitude?: number;
+
+  /**
+   * How many evaluation periods of the metric to wait before triggering a scaling action
+   *
+   * Raising this value can be used to smooth out the metric, at the expense
+   * of slower response times.
+   *
+   * @default 1
+   */
+  readonly evaluationPeriods?: number;
+
+  /**
+   * Aggregation to apply to all data points over the evaluation periods
+   *
+   * Only has meaning if `evaluationPeriods != 1`.
+   *
+   * @default - The statistic from the metric if applicable (MIN, MAX, AVERAGE), otherwise AVERAGE.
+   */
+  readonly metricAggregationType?: MetricAggregationType;
 }
 
 export interface StepScalingPolicyProps extends BasicStepScalingPolicyProps {
@@ -89,7 +112,7 @@ export class StepScalingPolicy extends CoreConstruct {
       this.lowerAction = new StepScalingAction(this, 'LowerPolicy', {
         adjustmentType: props.adjustmentType,
         cooldown: props.cooldown,
-        metricAggregationType: aggregationTypeFromMetric(props.metric),
+        metricAggregationType: props.metricAggregationType ?? aggregationTypeFromMetric(props.metric),
         minAdjustmentMagnitude: props.minAdjustmentMagnitude,
         autoScalingGroup: props.autoScalingGroup,
       });
@@ -107,7 +130,7 @@ export class StepScalingPolicy extends CoreConstruct {
         metric: props.metric,
         alarmDescription: 'Lower threshold scaling alarm',
         comparisonOperator: cloudwatch.ComparisonOperator.LESS_THAN_OR_EQUAL_TO_THRESHOLD,
-        evaluationPeriods: 1,
+        evaluationPeriods: props.evaluationPeriods ?? 1,
         threshold,
       });
       this.lowerAlarm.addAlarmAction(new StepScalingAlarmAction(this.lowerAction));
@@ -119,7 +142,7 @@ export class StepScalingPolicy extends CoreConstruct {
       this.upperAction = new StepScalingAction(this, 'UpperPolicy', {
         adjustmentType: props.adjustmentType,
         cooldown: props.cooldown,
-        metricAggregationType: aggregationTypeFromMetric(props.metric),
+        metricAggregationType: props.metricAggregationType ?? aggregationTypeFromMetric(props.metric),
         minAdjustmentMagnitude: props.minAdjustmentMagnitude,
         autoScalingGroup: props.autoScalingGroup,
       });
@@ -137,7 +160,7 @@ export class StepScalingPolicy extends CoreConstruct {
         metric: props.metric,
         alarmDescription: 'Upper threshold scaling alarm',
         comparisonOperator: cloudwatch.ComparisonOperator.GREATER_THAN_OR_EQUAL_TO_THRESHOLD,
-        evaluationPeriods: 1,
+        evaluationPeriods: props.evaluationPeriods ?? 1,
         threshold,
       });
       this.upperAlarm.addAlarmAction(new StepScalingAlarmAction(this.upperAction));
@@ -157,7 +180,7 @@ function aggregationTypeFromMetric(metric: cloudwatch.IMetric): MetricAggregatio
     case 'Maximum':
       return MetricAggregationType.MAXIMUM;
     default:
-      throw new Error(`Cannot only scale on 'Minimum', 'Maximum', 'Average' metrics, got ${statistic}`);
+      return MetricAggregationType.AVERAGE;
   }
 }
 

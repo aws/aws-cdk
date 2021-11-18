@@ -1,0 +1,14 @@
+import { Construct } from 'constructs';
+import { CustomResource, Stack } from '@aws-cdk/core';
+import * as codepipeline from '@aws-cdk/aws-codepipeline';
+import * as dynamodb from '@aws-cdk/aws-dynamodb';
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as iam from '@aws-cdk/aws-iam';
+
+class Fixture extends Stack {
+  constructor(scope: Construct, id: string) {
+    super(scope, id);
+
+    /// here
+  }
+}

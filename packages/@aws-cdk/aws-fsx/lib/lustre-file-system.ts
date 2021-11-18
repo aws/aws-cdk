@@ -73,8 +73,8 @@ export interface LustreConfiguration {
   readonly perUnitStorageThroughput?: number;
 
   /**
-   * The preferred day and time to perform weekly maintenance. The first digit is the day of the week, starting at 0
-   * for Sunday, then the following are hours and minutes in the UTC time zone, 24 hour clock. For example: '2:20:30'
+   * The preferred day and time to perform weekly maintenance. The first digit is the day of the week, starting at 1
+   * for Monday, then the following are hours and minutes in the UTC time zone, 24 hour clock. For example: '2:20:30'
    * is Tuesdays at 20:30.
    *
    * @default - no preference
@@ -198,6 +198,7 @@ export class LustreFileSystem extends FileSystemBase {
       securityGroupIds: [securityGroup.securityGroupId],
       storageCapacity: props.storageCapacityGiB,
     });
+    this.fileSystem.applyRemovalPolicy(props.removalPolicy);
 
     this.fileSystemId = this.fileSystem.ref;
     this.dnsName = `${this.fileSystemId}.fsx.${this.stack.region}.${Aws.URL_SUFFIX}`;

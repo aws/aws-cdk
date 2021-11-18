@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import { Stack } from '@aws-cdk/core';
 import { VpcLink } from '../../lib';
@@ -16,7 +16,7 @@ describe('VpcLink', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGatewayV2::VpcLink', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::VpcLink', {
       Name: 'MyLink',
       SubnetIds: [
         {
@@ -51,20 +51,14 @@ describe('VpcLink', () => {
     // WHEN
     new VpcLink(stack, 'VpcLink', {
       vpc,
-      subnets: [subnet1, subnet2],
+      subnets: { subnets: [subnet1, subnet2] },
       securityGroups: [sg1, sg2, sg3],
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGatewayV2::VpcLink', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::VpcLink', {
       Name: 'VpcLink',
       SubnetIds: [
-        {
-          Ref: 'VPCPrivateSubnet1Subnet8BCA10E0',
-        },
-        {
-          Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A',
-        },
         {
           Ref: 'subnet1Subnet16A4B3BD',
         },
@@ -110,7 +104,7 @@ describe('VpcLink', () => {
     vpcLink.addSubnets(subnet);
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGatewayV2::VpcLink', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::VpcLink', {
       Name: 'VpcLink',
       SubnetIds: [
         {
@@ -142,7 +136,7 @@ describe('VpcLink', () => {
     vpcLink.addSecurityGroups(sg1, sg2, sg3);
 
     // THEN
-    expect(stack).toHaveResource('AWS::ApiGatewayV2::VpcLink', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::VpcLink', {
       Name: 'VpcLink',
       SubnetIds: [
         {
@@ -180,9 +174,15 @@ describe('VpcLink', () => {
     const stack = new Stack();
 
     // WHEN
-    VpcLink.fromVpcLinkId(stack, 'ImportedVpcLink', 'vpclink-id');
+    VpcLink.fromVpcLinkAttributes(stack, 'ImportedVpcLink', {
+      vpcLinkId: 'vpclink-id',
+      vpc: ec2.Vpc.fromVpcAttributes(stack, 'ImportedVpc', {
+        vpcId: 'vpc-12345',
+        availabilityZones: ['us-east-1'],
+      }),
+    });
 
     // THEN
-    expect(stack).not.toHaveResource('AWS::ApiGatewayV2::VpcLink');
+    Template.fromStack(stack).resourceCountIs('AWS::ApiGatewayV2::VpcLink', 0);
   });
 });

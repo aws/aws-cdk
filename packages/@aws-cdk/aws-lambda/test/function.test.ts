@@ -1,13 +1,16 @@
-import '@aws-cdk/assert/jest';
+import '@aws-cdk/assert-internal/jest';
 import * as path from 'path';
-import { ABSENT, ResourcePart, SynthUtils } from '@aws-cdk/assert';
+import { ABSENT, ResourcePart, SynthUtils } from '@aws-cdk/assert-internal';
 import { ProfilingGroup } from '@aws-cdk/aws-codeguruprofiler';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as efs from '@aws-cdk/aws-efs';
 import * as iam from '@aws-cdk/aws-iam';
+import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
+import * as signer from '@aws-cdk/aws-signer';
 import * as sqs from '@aws-cdk/aws-sqs';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import * as constructs from 'constructs';
 import * as _ from 'lodash';
@@ -187,6 +190,64 @@ describe('function', () => {
       fn.addPermission('S1', { principal: new iam.ServicePrincipal('my-service') });
       fn.addPermission('S2', { principal: new iam.AccountPrincipal('account') });
       fn.addPermission('S3', { principal: new iam.ArnPrincipal('my:arn') });
+    });
+
+    test('applies source account/ARN conditions if the principal has conditions', () => {
+      const stack = new cdk.Stack();
+      const fn = newTestLambda(stack);
+      const sourceAccount = 'some-account';
+      const sourceArn = 'some-arn';
+      const service = 'my-service';
+      const principal = new iam.PrincipalWithConditions(new iam.ServicePrincipal(service), {
+        ArnLike: {
+          'aws:SourceArn': sourceArn,
+        },
+        StringEquals: {
+          'aws:SourceAccount': sourceAccount,
+        },
+      });
+
+      fn.addPermission('S1', { principal: principal });
+
+      expect(stack).toHaveResource('AWS::Lambda::Permission', {
+        Action: 'lambda:InvokeFunction',
+        FunctionName: {
+          'Fn::GetAtt': [
+            'MyLambdaCCE802FB',
+            'Arn',
+          ],
+        },
+        Principal: service,
+        SourceAccount: sourceAccount,
+        SourceArn: sourceArn,
+      });
+    });
+
+    test('fails if the principal has conditions that are not supported', () => {
+      const stack = new cdk.Stack();
+      const fn = newTestLambda(stack);
+
+      expect(() => fn.addPermission('F1', {
+        principal: new iam.PrincipalWithConditions(new iam.ServicePrincipal('my-service'), {
+          ArnEquals: {
+            'aws:SourceArn': 'source-arn',
+          },
+        }),
+      })).toThrow(/PrincipalWithConditions had unsupported conditions for Lambda permission statement/);
+      expect(() => fn.addPermission('F2', {
+        principal: new iam.PrincipalWithConditions(new iam.ServicePrincipal('my-service'), {
+          StringLike: {
+            'aws:SourceAccount': 'source-account',
+          },
+        }),
+      })).toThrow(/PrincipalWithConditions had unsupported conditions for Lambda permission statement/);
+      expect(() => fn.addPermission('F3', {
+        principal: new iam.PrincipalWithConditions(new iam.ServicePrincipal('my-service'), {
+          ArnLike: {
+            's3:DataAccessPointArn': 'data-access-point-arn',
+          },
+        }),
+      })).toThrow(/PrincipalWithConditions had unsupported conditions for Lambda permission statement/);
     });
 
     test('BYORole', () => {
@@ -759,6 +820,22 @@ describe('function', () => {
     }, ResourcePart.CompleteDefinition);
   });
 
+  test('runtime and handler set to FROM_IMAGE are set to undefined in CloudFormation', () => {
+    const stack = new cdk.Stack();
+
+    new lambda.Function(stack, 'MyLambda', {
+      code: lambda.Code.fromAssetImage(path.join(__dirname, 'docker-lambda-handler')),
+      handler: lambda.Handler.FROM_IMAGE,
+      runtime: lambda.Runtime.FROM_IMAGE,
+    });
+
+    expect(stack).toHaveResource('AWS::Lambda::Function', {
+      Runtime: ABSENT,
+      Handler: ABSENT,
+      PackageType: 'Image',
+    });
+  });
+
   describe('grantInvoke', () => {
 
     test('adds iam:InvokeFunction', () => {
@@ -1306,7 +1383,7 @@ describe('function', () => {
     });
   });
 
-  test('add a version with event invoke config', () => {
+  testDeprecated('add a version with event invoke config', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new lambda.Function(stack, 'fn', {
@@ -1553,6 +1630,40 @@ describe('function', () => {
     expect(stack.resolve(version2.functionArn)).toEqual(expectedArn);
   });
 
+  test('default function with kmsKeyArn, environmentEncryption passed as props', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const key: kms.IKey = new kms.Key(stack, 'EnvVarEncryptKey', {
+      description: 'sample key',
+    });
+
+    // WHEN
+    new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_10_X,
+      environment: {
+        SOME: 'Variable',
+      },
+      environmentEncryption: key,
+    });
+
+    // THEN
+    expect(stack).toHaveResource('AWS::Lambda::Function', {
+      Environment: {
+        Variables: {
+          SOME: 'Variable',
+        },
+      },
+      KmsKeyArn: {
+        'Fn::GetAtt': [
+          'EnvVarEncryptKey1A7CABDB',
+          'Arn',
+        ],
+      },
+    });
+  });
+
   describe('profiling group', () => {
     test('default function with CDK created Profiling Group', () => {
       const stack = new cdk.Stack();
@@ -1560,7 +1671,7 @@ describe('function', () => {
       new lambda.Function(stack, 'MyLambda', {
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
-        runtime: lambda.Runtime.NODEJS_10_X,
+        runtime: lambda.Runtime.PYTHON_3_6,
         profiling: true,
       });
 
@@ -1609,7 +1720,7 @@ describe('function', () => {
       new lambda.Function(stack, 'MyLambda', {
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
-        runtime: lambda.Runtime.NODEJS_10_X,
+        runtime: lambda.Runtime.PYTHON_3_6,
         profilingGroup: new ProfilingGroup(stack, 'ProfilingGroup'),
       });
 
@@ -1661,7 +1772,7 @@ describe('function', () => {
       new lambda.Function(stack, 'MyLambda', {
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
-        runtime: lambda.Runtime.NODEJS_10_X,
+        runtime: lambda.Runtime.PYTHON_3_6,
         profiling: false,
         profilingGroup: new ProfilingGroup(stack, 'ProfilingGroup'),
       });
@@ -1692,7 +1803,7 @@ describe('function', () => {
       expect(() => new lambda.Function(stack, 'MyLambda', {
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
-        runtime: lambda.Runtime.NODEJS_10_X,
+        runtime: lambda.Runtime.PYTHON_3_6,
         profiling: true,
         environment: {
           AWS_CODEGURU_PROFILER_GROUP_ARN: 'profiler_group_arn',
@@ -1707,13 +1818,27 @@ describe('function', () => {
       expect(() => new lambda.Function(stack, 'MyLambda', {
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
-        runtime: lambda.Runtime.NODEJS_10_X,
+        runtime: lambda.Runtime.PYTHON_3_6,
         profilingGroup: new ProfilingGroup(stack, 'ProfilingGroup'),
         environment: {
           AWS_CODEGURU_PROFILER_GROUP_ARN: 'profiler_group_arn',
           AWS_CODEGURU_PROFILER_ENABLED: 'yes',
         },
       })).toThrow(/AWS_CODEGURU_PROFILER_GROUP_ARN and AWS_CODEGURU_PROFILER_ENABLED must not be set when profiling options enabled/);
+    });
+
+    test('throws an error when used with an unsupported runtime', () => {
+      const stack = new cdk.Stack();
+      expect(() => new lambda.Function(stack, 'MyLambda', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_10_X,
+        profilingGroup: new ProfilingGroup(stack, 'ProfilingGroup'),
+        environment: {
+          AWS_CODEGURU_PROFILER_GROUP_ARN: 'profiler_group_arn',
+          AWS_CODEGURU_PROFILER_ENABLED: 'yes',
+        },
+      })).toThrow(/not supported by runtime/);
     });
   });
 
@@ -1775,6 +1900,7 @@ describe('function', () => {
       const accessPoint = fs.addAccessPoint('AccessPoint');
       // WHEN
       new lambda.Function(stack, 'MyFunction', {
+        vpc,
         handler: 'foo',
         runtime: lambda.Runtime.NODEJS_12_X,
         code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
@@ -1813,6 +1939,303 @@ describe('function', () => {
         ],
       });
     });
+
+    test('throw error mounting efs with no vpc', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Vpc', {
+        maxAzs: 3,
+        natGateways: 1,
+      });
+
+      const fs = new efs.FileSystem(stack, 'Efs', {
+        vpc,
+      });
+      const accessPoint = fs.addAccessPoint('AccessPoint');
+
+      // THEN
+      expect(() => {
+        new lambda.Function(stack, 'MyFunction', {
+          handler: 'foo',
+          runtime: lambda.Runtime.NODEJS_12_X,
+          code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
+          filesystem: lambda.FileSystem.fromEfsAccessPoint(accessPoint, '/mnt/msg'),
+        });
+      }).toThrow();
+    });
+
+    test('verify deps when mounting efs', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Vpc', {
+        maxAzs: 3,
+        natGateways: 1,
+      });
+      const securityGroup = new ec2.SecurityGroup(stack, 'LambdaSG', {
+        vpc,
+        allowAllOutbound: false,
+      });
+
+      const fs = new efs.FileSystem(stack, 'Efs', {
+        vpc,
+      });
+      const accessPoint = fs.addAccessPoint('AccessPoint');
+      // WHEN
+      new lambda.Function(stack, 'MyFunction', {
+        vpc,
+        handler: 'foo',
+        securityGroups: [securityGroup],
+        runtime: lambda.Runtime.NODEJS_12_X,
+        code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
+        filesystem: lambda.FileSystem.fromEfsAccessPoint(accessPoint, '/mnt/msg'),
+      });
+
+      // THEN
+      expect(stack).toHaveResource('AWS::Lambda::Function', {
+        DependsOn: [
+          'EfsEfsMountTarget195B2DD2E',
+          'EfsEfsMountTarget2315C927F',
+          'EfsEfsSecurityGroupfromLambdaSG20491B2F751D',
+          'LambdaSGtoEfsEfsSecurityGroupFCE2954020499719694A',
+          'MyFunctionServiceRoleDefaultPolicyB705ABD4',
+          'MyFunctionServiceRole3C357FF2',
+        ],
+      }, ResourcePart.CompleteDefinition);
+    });
+  });
+
+  describe('code config', () => {
+    class MyCode extends lambda.Code {
+      public readonly isInline: boolean;
+      constructor(private readonly config: lambda.CodeConfig) {
+        super();
+        this.isInline = 'inlineCode' in config;
+      }
+
+      public bind(_scope: constructs.Construct): lambda.CodeConfig {
+        return this.config;
+      }
+    }
+
+    test('only one of inline, s3 or imageConfig are allowed', () => {
+      const stack = new cdk.Stack();
+
+      expect(() => new lambda.Function(stack, 'Fn1', {
+        code: new MyCode({}),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.GO_1_X,
+      })).toThrow(/lambda.Code must specify exactly one of/);
+
+      expect(() => new lambda.Function(stack, 'Fn2', {
+        code: new MyCode({
+          inlineCode: 'foo',
+          image: { imageUri: 'bar' },
+        }),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.GO_1_X,
+      })).toThrow(/lambda.Code must specify exactly one of/);
+
+      expect(() => new lambda.Function(stack, 'Fn3', {
+        code: new MyCode({
+          image: { imageUri: 'baz' },
+          s3Location: { bucketName: 's3foo', objectKey: 's3bar' },
+        }),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.GO_1_X,
+      })).toThrow(/lambda.Code must specify exactly one of/);
+
+      expect(() => new lambda.Function(stack, 'Fn4', {
+        code: new MyCode({ inlineCode: 'baz', s3Location: { bucketName: 's3foo', objectKey: 's3bar' } }),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.GO_1_X,
+      })).toThrow(/lambda.Code must specify exactly one of/);
+    });
+
+    test('handler must be FROM_IMAGE when image asset is specified', () => {
+      const stack = new cdk.Stack();
+
+      expect(() => new lambda.Function(stack, 'Fn1', {
+        code: lambda.Code.fromAssetImage('test/docker-lambda-handler'),
+        handler: lambda.Handler.FROM_IMAGE,
+        runtime: lambda.Runtime.FROM_IMAGE,
+      })).not.toThrow();
+
+      expect(() => new lambda.Function(stack, 'Fn2', {
+        code: lambda.Code.fromAssetImage('test/docker-lambda-handler'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.FROM_IMAGE,
+      })).toThrow(/handler must be.*FROM_IMAGE/);
+    });
+
+    test('runtime must be FROM_IMAGE when image asset is specified', () => {
+      const stack = new cdk.Stack();
+
+      expect(() => new lambda.Function(stack, 'Fn1', {
+        code: lambda.Code.fromAssetImage('test/docker-lambda-handler'),
+        handler: lambda.Handler.FROM_IMAGE,
+        runtime: lambda.Runtime.FROM_IMAGE,
+      })).not.toThrow();
+
+      expect(() => new lambda.Function(stack, 'Fn2', {
+        code: lambda.Code.fromAssetImage('test/docker-lambda-handler'),
+        handler: lambda.Handler.FROM_IMAGE,
+        runtime: lambda.Runtime.GO_1_X,
+      })).toThrow(/runtime must be.*FROM_IMAGE/);
+    });
+
+    test('imageUri is correctly configured', () => {
+      const stack = new cdk.Stack();
+
+      new lambda.Function(stack, 'Fn1', {
+        code: new MyCode({
+          image: {
+            imageUri: 'ecr image uri',
+          },
+        }),
+        handler: lambda.Handler.FROM_IMAGE,
+        runtime: lambda.Runtime.FROM_IMAGE,
+      });
+
+      expect(stack).toHaveResource('AWS::Lambda::Function', {
+        Code: {
+          ImageUri: 'ecr image uri',
+        },
+        ImageConfig: ABSENT,
+      });
+    });
+
+    test('imageConfig is correctly configured', () => {
+      const stack = new cdk.Stack();
+
+      new lambda.Function(stack, 'Fn1', {
+        code: new MyCode({
+          image: {
+            imageUri: 'ecr image uri',
+            cmd: ['cmd', 'param1'],
+            entrypoint: ['entrypoint', 'param2'],
+            workingDirectory: '/some/path',
+          },
+        }),
+        handler: lambda.Handler.FROM_IMAGE,
+        runtime: lambda.Runtime.FROM_IMAGE,
+      });
+
+      expect(stack).toHaveResource('AWS::Lambda::Function', {
+        ImageConfig: {
+          Command: ['cmd', 'param1'],
+          EntryPoint: ['entrypoint', 'param2'],
+          WorkingDirectory: '/some/path',
+        },
+      });
+    });
+  });
+
+  describe('code signing config', () => {
+    test('default', () => {
+      const stack = new cdk.Stack();
+
+      const signingProfile = new signer.SigningProfile(stack, 'SigningProfile', {
+        platform: signer.Platform.AWS_LAMBDA_SHA384_ECDSA,
+      });
+
+      const codeSigningConfig = new lambda.CodeSigningConfig(stack, 'CodeSigningConfig', {
+        signingProfiles: [signingProfile],
+      });
+
+      new lambda.Function(stack, 'MyLambda', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_10_X,
+        codeSigningConfig,
+      });
+
+      expect(stack).toHaveResource('AWS::Lambda::Function', {
+        CodeSigningConfigArn: {
+          'Fn::GetAtt': [
+            'CodeSigningConfigD8D41C10',
+            'CodeSigningConfigArn',
+          ],
+        },
+      });
+    });
+  });
+
+  test('error when layers set in a container function', () => {
+    const stack = new cdk.Stack();
+    const bucket = new s3.Bucket(stack, 'Bucket');
+    const code = new lambda.S3Code(bucket, 'ObjectKey');
+
+    const layer = new lambda.LayerVersion(stack, 'Layer', {
+      code,
+    });
+
+    expect(() => new lambda.DockerImageFunction(stack, 'MyLambda', {
+      code: lambda.DockerImageCode.fromImageAsset(path.join(__dirname, 'docker-lambda-handler')),
+      layers: [layer],
+    })).toThrow(/Layers are not supported for container image functions/);
+  });
+
+  testDeprecated('specified architectures is recognized', () => {
+    const stack = new cdk.Stack();
+    new lambda.Function(stack, 'MyFunction', {
+      code: lambda.Code.fromInline('foo'),
+      runtime: lambda.Runtime.NODEJS_12_X,
+      handler: 'index.handler',
+
+      architectures: [lambda.Architecture.ARM_64],
+    });
+
+    expect(stack).toHaveResource('AWS::Lambda::Function', {
+      Architectures: ['arm64'],
+    });
+  });
+
+  test('specified architecture is recognized', () => {
+    const stack = new cdk.Stack();
+    new lambda.Function(stack, 'MyFunction', {
+      code: lambda.Code.fromInline('foo'),
+      runtime: lambda.Runtime.NODEJS_12_X,
+      handler: 'index.handler',
+
+      architecture: lambda.Architecture.ARM_64,
+    });
+
+    expect(stack).toHaveResource('AWS::Lambda::Function', {
+      Architectures: ['arm64'],
+    });
+  });
+
+  testDeprecated('both architectures and architecture are not recognized', () => {
+    const stack = new cdk.Stack();
+    expect(() => new lambda.Function(stack, 'MyFunction', {
+      code: lambda.Code.fromInline('foo'),
+      runtime: lambda.Runtime.NODEJS_12_X,
+      handler: 'index.handler',
+
+      architecture: lambda.Architecture.ARM_64,
+      architectures: [lambda.Architecture.X86_64],
+    })).toThrow(/architecture or architectures must be specified/);
+  });
+
+  testDeprecated('Only one architecture allowed', () => {
+    const stack = new cdk.Stack();
+    expect(() => new lambda.Function(stack, 'MyFunction', {
+      code: lambda.Code.fromInline('foo'),
+      runtime: lambda.Runtime.NODEJS_12_X,
+      handler: 'index.handler',
+
+      architectures: [lambda.Architecture.X86_64, lambda.Architecture.ARM_64],
+    })).toThrow(/one architecture must be specified/);
+  });
+  test('Architecture is properly readable from the function', () => {
+    const stack = new cdk.Stack();
+    const fn = new lambda.Function(stack, 'MyFunction', {
+      code: lambda.Code.fromInline('foo'),
+      runtime: lambda.Runtime.NODEJS_14_X,
+      handler: 'index.handler',
+      architecture: lambda.Architecture.ARM_64,
+    });
+    expect(fn.architecture?.name).toEqual('arm64');
   });
 });
 

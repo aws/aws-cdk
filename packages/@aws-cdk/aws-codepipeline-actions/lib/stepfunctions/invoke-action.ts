@@ -4,6 +4,10 @@ import * as stepfunction from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
 import { Action } from '../action';
 
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
+
 /**
  * Represents the input for the StateMachine.
  */
@@ -121,22 +125,22 @@ export class StepFunctionInvokeAction extends Action {
     this.props = props;
   }
 
-  protected bound(_scope: cdk.Construct, _stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
+  protected bound(_scope: Construct, _stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
   codepipeline.ActionConfig {
     // allow pipeline to invoke this step function
-    options.role.addToPolicy(new iam.PolicyStatement({
+    options.role.addToPrincipalPolicy(new iam.PolicyStatement({
       actions: ['states:StartExecution', 'states:DescribeStateMachine'],
       resources: [this.props.stateMachine.stateMachineArn],
     }));
 
     // allow state machine executions to be inspected
-    options.role.addToPolicy(new iam.PolicyStatement({
+    options.role.addToPrincipalPolicy(new iam.PolicyStatement({
       actions: ['states:DescribeExecution'],
       resources: [cdk.Stack.of(this.props.stateMachine).formatArn({
         service: 'states',
         resource: 'execution',
-        resourceName: `${this.props.stateMachine.stateMachineArn}:${this.props.executionNamePrefix ?? ''}*`,
-        sep: ':',
+        resourceName: `${cdk.Stack.of(this.props.stateMachine).splitArn(this.props.stateMachine.stateMachineArn, cdk.ArnFormat.COLON_RESOURCE_NAME).resourceName}:${this.props.executionNamePrefix ?? ''}*`,
+        arnFormat: cdk.ArnFormat.COLON_RESOURCE_NAME,
       })],
     }));
 

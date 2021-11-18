@@ -1,6 +1,9 @@
-import * as cfn from '@aws-cdk/aws-cloudformation';
-import { Construct, Stack } from '@aws-cdk/core';
+import { CustomResource, Stack } from '@aws-cdk/core';
 import { Cluster } from './cluster';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
 
 export interface KubernetesResourceProps {
   /**
@@ -19,9 +22,8 @@ export interface KubernetesResourceProps {
    * cluster through `kubectl apply` and when the resource or the stack is
    * deleted, the manifest will be deleted through `kubectl delete`.
    *
-   * @example
-   *
-   * {
+   * ```
+   * const manifest = {
    *   apiVersion: 'v1',
    *   kind: 'Pod',
    *   metadata: { name: 'mypod' },
@@ -29,7 +31,7 @@ export interface KubernetesResourceProps {
    *     containers: [ { name: 'hello', image: 'paulbouwer/hello-kubernetes:1.5', ports: [ { containerPort: 8080 } ] } ]
    *   }
    * }
-   *
+   * ```
    */
   readonly manifest: any[];
 }
@@ -59,8 +61,8 @@ export class KubernetesResource extends Construct {
       throw new Error('Cannot define a KubernetesManifest resource on a cluster with kubectl disabled');
     }
 
-    new cfn.CustomResource(this, 'Resource', {
-      provider: cfn.CustomResourceProvider.lambda(handler),
+    new CustomResource(this, 'Resource', {
+      serviceToken: handler.functionArn,
       resourceType: KubernetesResource.RESOURCE_TYPE,
       properties: {
         // `toJsonString` enables embedding CDK tokens in the manifest and will

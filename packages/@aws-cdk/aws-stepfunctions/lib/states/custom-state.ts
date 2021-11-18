@@ -18,7 +18,6 @@ export interface CustomStateProps {
 /**
  * State defined by supplying Amazon States Language (ASL) in the state machine.
  *
- * @experimental
  */
 export class CustomState extends State implements IChainable, INextable {
   public readonly endStates: INextable[];

@@ -10,6 +10,10 @@ import { EnvironmentFile, EnvironmentFileConfig } from './environment-file';
 import { LinuxParameters } from './linux-parameters';
 import { LogDriver, LogDriverConfig } from './log-drivers/log-driver';
 
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct as CoreConstruct } from '@aws-cdk/core';
+
 /**
  * A secret environment variable.
  */
@@ -72,6 +76,13 @@ export interface ContainerDefinitionOptions {
    * TODO: Update these to specify using classes of IContainerImage
    */
   readonly image: ContainerImage;
+
+  /**
+   * The name of the container.
+   *
+   * @default - id of node associated with ContainerDefinition.
+   */
+  readonly containerName?: string;
 
   /**
    * The command that is passed to the container.
@@ -284,6 +295,27 @@ export interface ContainerDefinitionOptions {
    * @default - No GPUs assigned.
    */
   readonly gpuCount?: number;
+
+  /**
+   * The port mappings to add to the container definition.
+   * @default - No ports are mapped.
+   */
+  readonly portMappings?: PortMapping[];
+
+  /**
+   * The inference accelerators referenced by the container.
+   * @default - No inference accelerators assigned.
+   */
+  readonly inferenceAcceleratorResources?: string[];
+
+  /**
+   * A list of namespaced kernel parameters to set in the container.
+   *
+   * @default - No system controls are set.
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecs-taskdefinition-systemcontrol.html
+   * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_definition_parameters.html#container_definition_systemcontrols
+   */
+  readonly systemControls?: SystemControl[];
 }
 
 /**
@@ -301,7 +333,7 @@ export interface ContainerDefinitionProps extends ContainerDefinitionOptions {
 /**
  * A container definition is used in a task definition to describe the containers that are launched as part of a task.
  */
-export class ContainerDefinition extends cdk.Construct {
+export class ContainerDefinition extends CoreConstruct {
   /**
    * The Linux-specific modifications that are applied to the container, such as Linux kernel capabilities.
    */
@@ -341,7 +373,7 @@ export class ContainerDefinition extends cdk.Construct {
    * stopped. If the essential parameter of a container is marked as false, then its
    * failure does not affect the rest of the containers in a task.
    *
-   * If this parameter isomitted, a container is assumed to be essential.
+   * If this parameter is omitted, a container is assumed to be essential.
    */
   public readonly essential: boolean;
 
@@ -377,6 +409,11 @@ export class ContainerDefinition extends cdk.Construct {
   public readonly referencesSecretJsonField?: boolean;
 
   /**
+   * The inference accelerators referenced by this container.
+   */
+  private readonly inferenceAcceleratorResources: string[] = [];
+
+  /**
    * The configured container links
    */
   private readonly links = new Array<string>();
@@ -395,11 +432,11 @@ export class ContainerDefinition extends cdk.Construct {
         throw new Error('MemoryLimitMiB should not be less than MemoryReservationMiB.');
       }
     }
-    this.essential = props.essential !== undefined ? props.essential : true;
+    this.essential = props.essential ?? true;
     this.taskDefinition = props.taskDefinition;
     this.memoryLimitSpecified = props.memoryLimitMiB !== undefined || props.memoryReservationMiB !== undefined;
     this.linuxParameters = props.linuxParameters;
-    this.containerName = this.node.id;
+    this.containerName = props.containerName ?? this.node.id;
 
     this.imageConfig = props.image.bind(this, this);
     if (props.logging) {
@@ -420,10 +457,6 @@ export class ContainerDefinition extends cdk.Construct {
       }
     }
 
-    if (this.taskDefinition.isFargateCompatible && props.environmentFiles) {
-      throw new Error(`Cannot specify environment files for a task using the FARGATE launch type in container '${this.node.id}'.`);
-    }
-
     if (props.environmentFiles) {
       this.environmentFiles = [];
 
@@ -433,6 +466,14 @@ export class ContainerDefinition extends cdk.Construct {
     }
 
     props.taskDefinition._linkContainer(this);
+
+    if (props.portMappings) {
+      this.addPortMappings(...props.portMappings);
+    }
+
+    if (props.inferenceAcceleratorResources) {
+      this.addInferenceAcceleratorResource(...props.inferenceAcceleratorResources);
+    }
   }
 
   /**
@@ -503,6 +544,20 @@ export class ContainerDefinition extends cdk.Construct {
       }
 
       return pm;
+    }));
+  }
+
+  /**
+   * This method adds one or more resources to the container.
+   */
+  public addInferenceAcceleratorResource(...inferenceAcceleratorResources: string[]) {
+    this.inferenceAcceleratorResources.push(...inferenceAcceleratorResources.map(resource => {
+      for (const inferenceAccelerator of this.taskDefinition.inferenceAccelerators) {
+        if (resource === inferenceAccelerator.deviceName) {
+          return resource;
+        }
+      }
+      throw new Error(`Resource value ${resource} in container definition doesn't match any inference accelerator device name in the task definition.`);
     }));
   }
 
@@ -621,7 +676,9 @@ export class ContainerDefinition extends cdk.Construct {
       healthCheck: this.props.healthCheck && renderHealthCheck(this.props.healthCheck),
       links: cdk.Lazy.list({ produce: () => this.links }, { omitEmpty: true }),
       linuxParameters: this.linuxParameters && this.linuxParameters.renderLinuxParameters(),
-      resourceRequirements: (this.props.gpuCount !== undefined) ? renderResourceRequirements(this.props.gpuCount) : undefined,
+      resourceRequirements: (!this.props.gpuCount && this.inferenceAcceleratorResources.length == 0 ) ? undefined :
+        renderResourceRequirements(this.props.gpuCount, this.inferenceAcceleratorResources),
+      systemControls: this.props.systemControls && renderSystemControls(this.props.systemControls),
     };
   }
 }
@@ -705,10 +762,10 @@ function renderEnvironmentFiles(environmentFiles: EnvironmentFileConfig[]): any[
 function renderHealthCheck(hc: HealthCheck): CfnTaskDefinition.HealthCheckProperty {
   return {
     command: getHealthCheckCommand(hc),
-    interval: hc.interval != null ? hc.interval.toSeconds() : 30,
-    retries: hc.retries !== undefined ? hc.retries : 3,
-    startPeriod: hc.startPeriod && hc.startPeriod.toSeconds(),
-    timeout: hc.timeout !== undefined ? hc.timeout.toSeconds() : 5,
+    interval: hc.interval?.toSeconds() ?? 30,
+    retries: hc.retries ?? 3,
+    startPeriod: hc.startPeriod?.toSeconds(),
+    timeout: hc.timeout?.toSeconds() ?? 5,
   };
 }
 
@@ -732,12 +789,22 @@ function getHealthCheckCommand(hc: HealthCheck): string[] {
   return hcCommand.concat(cmd);
 }
 
-function renderResourceRequirements(gpuCount: number): CfnTaskDefinition.ResourceRequirementProperty[] | undefined {
-  if (gpuCount === 0) { return undefined; }
-  return [{
-    type: 'GPU',
-    value: gpuCount.toString(),
-  }];
+function renderResourceRequirements(gpuCount: number = 0, inferenceAcceleratorResources: string[] = []):
+CfnTaskDefinition.ResourceRequirementProperty[] | undefined {
+  const ret = [];
+  for (const resource of inferenceAcceleratorResources) {
+    ret.push({
+      type: 'InferenceAccelerator',
+      value: resource,
+    });
+  }
+  if (gpuCount > 0) {
+    ret.push({
+      type: 'GPU',
+      value: gpuCount.toString(),
+    });
+  }
+  return ret;
 }
 
 /**
@@ -982,4 +1049,26 @@ function renderVolumeFrom(vf: VolumeFrom): CfnTaskDefinition.VolumeFromProperty 
     sourceContainer: vf.sourceContainer,
     readOnly: vf.readOnly,
   };
+}
+
+/**
+ * Kernel parameters to set in the container
+ */
+export interface SystemControl {
+  /**
+   * The namespaced kernel parameter for which to set a value.
+   */
+  readonly namespace: string;
+
+  /**
+   * The value for the namespaced kernel parameter specified in namespace.
+   */
+  readonly value: string;
+}
+
+function renderSystemControls(systemControls: SystemControl[]): CfnTaskDefinition.SystemControlProperty[] {
+  return systemControls.map(sc => ({
+    namespace: sc.namespace,
+    value: sc.value,
+  }));
 }

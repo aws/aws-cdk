@@ -14,7 +14,7 @@ import { AssetManifestBuilder } from './util/asset-manifest-builder';
  * pass Asset coordinates.
  */
 // eslint-disable-next-line max-len
-export async function addMetadataAssetsToManifest(stack: cxapi.CloudFormationStackArtifact, assetManifest: AssetManifestBuilder, toolkitInfo?: ToolkitInfo, reuse?: string[]): Promise<Record<string, string>> {
+export async function addMetadataAssetsToManifest(stack: cxapi.CloudFormationStackArtifact, assetManifest: AssetManifestBuilder, toolkitInfo: ToolkitInfo, reuse?: string[]): Promise<Record<string, string>> {
   reuse = reuse || [];
   const assets = stack.assets;
 
@@ -22,7 +22,7 @@ export async function addMetadataAssetsToManifest(stack: cxapi.CloudFormationSta
     return {};
   }
 
-  if (!toolkitInfo) {
+  if (!toolkitInfo.found) {
     // eslint-disable-next-line max-len
     throw new Error(`This stack uses assets, so the toolkit stack must be deployed to the environment (Run "${colors.blue('cdk bootstrap ' + stack.environment!.name)}")`);
   }

@@ -78,7 +78,7 @@ export interface PolicyProps {
    * creating invalid--and hence undeployable--CloudFormation templates.
    *
    * In cases where you know the policy must be created and it is actually
-   * an error if no statements have been added to it, you can se this to `true`.
+   * an error if no statements have been added to it, you can set this to `true`.
    *
    * @default false
    */
@@ -160,7 +160,7 @@ export class Policy extends Resource implements IPolicy {
     });
 
     this._policyName = this.physicalName!;
-    this.force = props.force !== undefined ? props.force : false;
+    this.force = props.force ?? false;
 
     if (props.users) {
       props.users.forEach(u => this.attachToUser(u));

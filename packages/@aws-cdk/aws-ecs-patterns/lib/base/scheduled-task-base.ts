@@ -1,5 +1,5 @@
 import { Schedule } from '@aws-cdk/aws-applicationautoscaling';
-import { IVpc, SubnetSelection, SubnetType } from '@aws-cdk/aws-ec2';
+import { ISecurityGroup, IVpc, SubnetSelection, SubnetType } from '@aws-cdk/aws-ec2';
 import { AwsLogDriver, Cluster, ContainerImage, ICluster, LogDriver, Secret, TaskDefinition } from '@aws-cdk/aws-ecs';
 import { Rule } from '@aws-cdk/aws-events';
 import { EcsTask } from '@aws-cdk/aws-events-targets';
@@ -39,6 +39,21 @@ export interface ScheduledTaskBaseProps {
   readonly schedule: Schedule;
 
   /**
+   * Indicates whether the rule is enabled.
+   *
+   * @default true
+   */
+  readonly enabled?: boolean;
+
+  /**
+   * A name for the rule.
+   *
+   * @default - AWS CloudFormation generates a unique physical ID and uses that ID
+   * for the rule name. For more information, see [Name Type](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-name.html).
+   */
+  readonly ruleName?: string;
+
+  /**
    * The desired number of instantiations of the task definition to keep running on the service.
    *
    * @default 1
@@ -53,6 +68,13 @@ export interface ScheduledTaskBaseProps {
    * @default Private subnets
    */
   readonly subnetSelection?: SubnetSelection;
+
+  /**
+   * Existing security groups to use for your service.
+   *
+   * @default - a new security group will be created.
+   */
+  readonly securityGroups?: ISecurityGroup[]
 }
 
 export interface ScheduledTaskImageProps {
@@ -124,6 +146,11 @@ export abstract class ScheduledTaskBase extends CoreConstruct {
   public readonly eventRule: Rule;
 
   /**
+   * The security group to use for the ECS Task.
+   */
+  private readonly _securityGroups?: ISecurityGroup[];
+
+  /**
    * Constructs a new instance of the ScheduledTaskBase class.
    */
   constructor(scope: Construct, id: string, props: ScheduledTaskBaseProps) {
@@ -135,10 +162,13 @@ export abstract class ScheduledTaskBase extends CoreConstruct {
     }
     this.desiredTaskCount = props.desiredTaskCount || 1;
     this.subnetSelection = props.subnetSelection || { subnetType: SubnetType.PRIVATE };
+    this._securityGroups = props.securityGroups;
 
     // An EventRule that describes the event trigger (in this case a scheduled run)
     this.eventRule = new Rule(this, 'ScheduledEventRule', {
       schedule: props.schedule,
+      ruleName: props.ruleName,
+      enabled: props.enabled,
     });
   }
 
@@ -154,11 +184,21 @@ export abstract class ScheduledTaskBase extends CoreConstruct {
       taskDefinition,
       taskCount: this.desiredTaskCount,
       subnetSelection: this.subnetSelection,
+      securityGroups: this._securityGroups,
     });
 
-    this.eventRule.addTarget(eventRuleTarget);
+    this.addTaskAsTarget(eventRuleTarget);
 
     return eventRuleTarget;
+  }
+
+  /**
+   * Adds task as a target of the scheduled event rule.
+   *
+   * @param ecsTaskTarget the EcsTask to add to the event rule
+   */
+  protected addTaskAsTarget(ecsTaskTarget: EcsTask) {
+    this.eventRule.addTarget(ecsTaskTarget);
   }
 
   /**

@@ -1,4 +1,4 @@
-import { Resource, Stack } from '@aws-cdk/core';
+import { ArnFormat, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnMethod, CfnMethodProps } from './apigateway.generated';
 import { Authorizer, IAuthorizer } from './authorizer';
@@ -74,15 +74,18 @@ export interface MethodOptions {
    *
    * @example
    *
+   *     declare const api: apigateway.RestApi;
+   *     declare const userLambda: lambda.Function;
+   *
    *     const userModel: apigateway.Model = api.addModel('UserModel', {
    *         schema: {
-   *             type: apigateway.JsonSchemaType.OBJECT
+   *             type: apigateway.JsonSchemaType.OBJECT,
    *             properties: {
    *                 userId: {
-   *                     type: apigateway.JsonSchema.STRING
+   *                     type: apigateway.JsonSchemaType.STRING
    *                 },
    *                 name: {
-   *                     type: apigateway.JsonSchema.STRING
+   *                     type: apigateway.JsonSchemaType.STRING
    *                 }
    *             },
    *             required: ['userId']
@@ -272,7 +275,7 @@ export class Method extends Resource {
     } else if (options.credentialsPassthrough) {
       // arn:aws:iam::*:user/*
       // eslint-disable-next-line max-len
-      credentials = Stack.of(this).formatArn({ service: 'iam', region: '', account: '*', resource: 'user', sep: '/', resourceName: '*' });
+      credentials = Stack.of(this).formatArn({ service: 'iam', region: '', account: '*', resource: 'user', arnFormat: ArnFormat.SLASH_RESOURCE_NAME, resourceName: '*' });
     }
 
     return {
@@ -289,6 +292,7 @@ export class Method extends Resource {
       connectionType: options.connectionType,
       connectionId: options.vpcLink ? options.vpcLink.vpcLinkId : undefined,
       credentials,
+      timeoutInMillis: options.timeout?.toMilliseconds(),
     };
   }
 
@@ -342,7 +346,7 @@ export class Method extends Resource {
     }
 
     if (options.requestValidatorOptions) {
-      const validator = this.restApi.addRequestValidator('validator', options.requestValidatorOptions);
+      const validator = (this.api as RestApi).addRequestValidator('validator', options.requestValidatorOptions);
       return validator.requestValidatorId;
     }
 

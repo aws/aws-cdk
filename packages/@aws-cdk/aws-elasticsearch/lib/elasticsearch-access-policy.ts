@@ -1,6 +1,9 @@
 import * as iam from '@aws-cdk/aws-iam';
-import * as cdk from '@aws-cdk/core';
 import * as cr from '@aws-cdk/custom-resources';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
 
 /**
  * Construction properties for ElasticsearchAccessPolicy
@@ -26,7 +29,7 @@ export interface ElasticsearchAccessPolicyProps {
  * Creates LogGroup resource policies.
  */
 export class ElasticsearchAccessPolicy extends cr.AwsCustomResource {
-  constructor(scope: cdk.Construct, id: string, props: ElasticsearchAccessPolicyProps) {
+  constructor(scope: Construct, id: string, props: ElasticsearchAccessPolicyProps) {
     const policyDocument = new iam.PolicyDocument({
       statements: props.accessPolicies,
     });
@@ -41,7 +44,7 @@ export class ElasticsearchAccessPolicy extends cr.AwsCustomResource {
           AccessPolicies: JSON.stringify(policyDocument.toJSON()),
         },
         // this is needed to limit the response body, otherwise it exceeds the CFN 4k limit
-        outputPath: 'DomainConfig.ElasticsearchClusterConfig.AccessPolicies',
+        outputPaths: ['DomainConfig.ElasticsearchClusterConfig.AccessPolicies'],
         physicalResourceId: cr.PhysicalResourceId.of(`${props.domainName}AccessPolicy`),
       },
       policy: cr.AwsCustomResourcePolicy.fromSdkCalls({ resources: [props.domainArn] }),

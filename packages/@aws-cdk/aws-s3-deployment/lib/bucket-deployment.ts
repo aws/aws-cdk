@@ -1,17 +1,23 @@
-import * as crypto from 'crypto';
-import * as fs from 'fs';
 import * as path from 'path';
 import * as cloudfront from '@aws-cdk/aws-cloudfront';
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as efs from '@aws-cdk/aws-efs';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
+import { AwsCliLayer } from '@aws-cdk/lambda-layer-awscli';
+import { kebab as toKebabCase } from 'case';
 import { Construct } from 'constructs';
 import { ISource, SourceConfig } from './source';
 
-const handlerCodeBundle = path.join(__dirname, '..', 'lambda', 'bundle.zip');
-const handlerSourceDirectory = path.join(__dirname, '..', 'lambda', 'src');
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
+/**
+ * Properties for `BucketDeployment`.
+ */
 export interface BucketDeploymentProps {
   /**
    * The sources from which to deploy the contents of this bucket.
@@ -31,6 +37,29 @@ export interface BucketDeploymentProps {
   readonly destinationKeyPrefix?: string;
 
   /**
+   * If this is set, matching files or objects will be excluded from the deployment's sync
+   * command. This can be used to exclude a file from being pruned in the destination bucket.
+   *
+   * If you want to just exclude files from the deployment package (which excludes these files
+   * evaluated when invalidating the asset), you should leverage the `exclude` property of
+   * `AssetOptions` when defining your source.
+   *
+   * @default - No exclude filters are used
+   * @see https://docs.aws.amazon.com/cli/latest/reference/s3/index.html#use-of-exclude-and-include-filters
+   */
+  readonly exclude?: string[]
+
+  /**
+   * If this is set, matching files or objects will be included with the deployment's sync
+   * command. Since all files from the deployment package are included by default, this property
+   * is usually leveraged alongside an `exclude` filter.
+   *
+   * @default - No include filters are used and all files are included with the sync command
+   * @see https://docs.aws.amazon.com/cli/latest/reference/s3/index.html#use-of-exclude-and-include-filters
+   */
+  readonly include?: string[]
+
+  /**
    * If this is set to false, files in the destination bucket that
    * do not exist in the asset, will NOT be deleted during deployment (create/update).
    *
@@ -44,11 +73,10 @@ export interface BucketDeploymentProps {
    * If this is set to "false", the destination files will be deleted when the
    * resource is deleted or the destination is updated.
    *
-   * NOTICE: if this is set to "false" and destination bucket/prefix is updated,
-   * all files in the previous destination will first be deleted and then
-   * uploaded to the new destination location. This could have availablity
-   * implications on your users.
+   * NOTICE: Configuring this to "false" might have operational implications. Please
+   * visit to the package documentation referred below to make sure you fully understand those implications.
    *
+   * @see https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk/aws-s3-deployment#retain-on-delete
    * @default true - when resource is deleted/updated, files are retained
    */
   readonly retainOnDelete?: boolean;
@@ -79,6 +107,14 @@ export interface BucketDeploymentProps {
    * @default 128
    */
   readonly memoryLimit?: number;
+
+  /**
+   *  Mount an EFS file system. Enable this if your assets are large and you encounter disk space errors.
+   *  Enabling this option will require a VPC to be specified.
+   *
+   * @default - No EFS. Lambda has access only to 512MB of disk space.
+   */
+  readonly useEfs?: boolean
 
   /**
    * Execution role associated with this function
@@ -161,27 +197,102 @@ export interface BucketDeploymentProps {
    * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/ServerSideEncryptionCustomerKeys.html#sse-c-how-to-programmatically-intro
    */
   readonly serverSideEncryptionCustomerAlgorithm?: string;
+  /**
+   * System-defined x-amz-acl metadata to be set on all objects in the deployment.
+   * @default - Not set.
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/acl-overview.html#canned-acl
+   */
+  readonly accessControl?: s3.BucketAccessControl;
+
+  /**
+   * The VPC network to place the deployment lambda handler in.
+   * This is required if `useEfs` is set.
+   *
+   * @default None
+   */
+  readonly vpc?: ec2.IVpc;
+
+  /**
+   * Where in the VPC to place the deployment lambda handler.
+   * Only used if 'vpc' is supplied.
+   *
+   * @default - the Vpc default strategy if not specified
+   */
+  readonly vpcSubnets?: ec2.SubnetSelection;
 }
 
-export class BucketDeployment extends cdk.Construct {
+/**
+ * `BucketDeployment` populates an S3 bucket with the contents of .zip files from
+ * other S3 buckets or from local disk
+ */
+export class BucketDeployment extends CoreConstruct {
   constructor(scope: Construct, id: string, props: BucketDeploymentProps) {
     super(scope, id);
 
-    if (props.distributionPaths && !props.distribution) {
-      throw new Error('Distribution must be specified if distribution paths are specified');
+    if (props.distributionPaths) {
+      if (!props.distribution) {
+        throw new Error('Distribution must be specified if distribution paths are specified');
+      }
+      if (!cdk.Token.isUnresolved(props.distributionPaths)) {
+        if (!props.distributionPaths.every(distributionPath => cdk.Token.isUnresolved(distributionPath) || distributionPath.startsWith('/'))) {
+          throw new Error('Distribution paths must start with "/"');
+        }
+      }
     }
 
-    const assetHash = calcSourceHash(handlerSourceDirectory);
+    if (props.useEfs && !props.vpc) {
+      throw new Error('Vpc must be specified if useEfs is set');
+    }
 
+    const accessPointPath = '/lambda';
+    let accessPoint;
+    if (props.useEfs && props.vpc) {
+      const accessMode = '0777';
+      const fileSystem = this.getOrCreateEfsFileSystem(scope, {
+        vpc: props.vpc,
+        removalPolicy: cdk.RemovalPolicy.DESTROY,
+      });
+      accessPoint = fileSystem.addAccessPoint('AccessPoint', {
+        path: accessPointPath,
+        createAcl: {
+          ownerUid: '1001',
+          ownerGid: '1001',
+          permissions: accessMode,
+        },
+        posixUser: {
+          uid: '1001',
+          gid: '1001',
+        },
+      });
+      accessPoint.node.addDependency(fileSystem.mountTargetsAvailable);
+    }
+
+    // Making VPC dependent on BucketDeployment so that CFN stack deletion is smooth.
+    // Refer comments on https://github.com/aws/aws-cdk/pull/15220 for more details.
+    if (props.vpc) {
+      this.node.addDependency(props.vpc);
+    }
+
+    const mountPath = `/mnt${accessPointPath}`;
     const handler = new lambda.SingletonFunction(this, 'CustomResourceHandler', {
-      uuid: this.renderSingletonUuid(props.memoryLimit),
-      code: lambda.Code.fromAsset(handlerCodeBundle, { assetHash }),
-      runtime: lambda.Runtime.PYTHON_3_6,
+      uuid: this.renderSingletonUuid(props.memoryLimit, props.vpc),
+      code: lambda.Code.fromAsset(path.join(__dirname, 'lambda')),
+      layers: [new AwsCliLayer(this, 'AwsCliLayer')],
+      runtime: lambda.Runtime.PYTHON_3_7,
+      environment: props.useEfs ? {
+        MOUNT_PATH: mountPath,
+      } : undefined,
       handler: 'index.handler',
       lambdaPurpose: 'Custom::CDKBucketDeployment',
       timeout: cdk.Duration.minutes(15),
       role: props.role,
       memorySize: props.memoryLimit,
+      vpc: props.vpc,
+      vpcSubnets: props.vpcSubnets,
+      filesystem: accessPoint ? lambda.FileSystem.fromEfsAccessPoint(
+        accessPoint,
+        mountPath,
+      ): undefined,
     });
 
     const handlerRole = handler.role;
@@ -208,16 +319,18 @@ export class BucketDeployment extends cdk.Construct {
         DestinationBucketKeyPrefix: props.destinationKeyPrefix,
         RetainOnDelete: props.retainOnDelete,
         Prune: props.prune ?? true,
+        Exclude: props.exclude,
+        Include: props.include,
         UserMetadata: props.metadata ? mapUserMetadata(props.metadata) : undefined,
         SystemMetadata: mapSystemMetadata(props),
-        DistributionId: props.distribution ? props.distribution.distributionId : undefined,
+        DistributionId: props.distribution?.distributionId,
         DistributionPaths: props.distributionPaths,
       },
     });
 
   }
 
-  private renderSingletonUuid(memoryLimit?: number) {
+  private renderSingletonUuid(memoryLimit?: number, vpc?: ec2.IVpc) {
     let uuid = '8693BB64-9689-44B6-9AAF-B0CC9EB8756C';
 
     // if user specify a custom memory limit, define another singleton handler
@@ -231,27 +344,28 @@ export class BucketDeployment extends cdk.Construct {
       uuid += `-${memoryLimit.toString()}MiB`;
     }
 
+    // if user specify to use VPC, define another singleton handler
+    // with this configuration. otherwise, it won't be possible to use multiple
+    // configurations since we have a singleton.
+    // A VPC is a must if EFS storage is used and that's why we are only using VPC in uuid.
+    if (vpc) {
+      uuid += `-${vpc.node.addr}`;
+    }
+
     return uuid;
   }
-}
 
-/**
- * We need a custom source hash calculation since the bundle.zip file
- * contains python dependencies installed during build and results in a
- * non-deterministic behavior.
- *
- * So we just take the `src/` directory of our custom resoruce code.
- */
-function calcSourceHash(srcDir: string): string {
-  const sha = crypto.createHash('sha256');
-  for (const file of fs.readdirSync(srcDir)) {
-    const data = fs.readFileSync(path.join(srcDir, file));
-    sha.update(`<file name=${file}>`);
-    sha.update(data);
-    sha.update('</file>');
+  /**
+   * Function to get/create a stack singleton instance of EFS FileSystem per vpc.
+   *
+   * @param scope Construct
+   * @param fileSystemProps EFS FileSystemProps
+   */
+  private getOrCreateEfsFileSystem(scope: Construct, fileSystemProps: efs.FileSystemProps): efs.FileSystem {
+    const stack = cdk.Stack.of(scope);
+    const uuid = `BucketDeploymentEFS-VPC-${fileSystemProps.vpc.node.addr}`;
+    return stack.node.tryFindChild(uuid) as efs.FileSystem ?? new efs.FileSystem(scope, uuid, fileSystemProps);
   }
-
-  return sha.digest('hex');
 }
 
 /**
@@ -259,10 +373,7 @@ function calcSourceHash(srcDir: string): string {
  */
 
 function mapUserMetadata(metadata: UserDefinedObjectMetadata) {
-  const mapKey = (key: string) =>
-    key.toLowerCase().startsWith('x-amzn-meta-')
-      ? key.toLowerCase()
-      : `x-amzn-meta-${key.toLowerCase()}`;
+  const mapKey = (key: string) => key.toLowerCase();
 
   return Object.keys(metadata).reduce((o, key) => ({ ...o, [mapKey(key)]: metadata[key] }), {});
 }
@@ -281,6 +392,7 @@ function mapSystemMetadata(metadata: BucketDeploymentProps) {
   if (metadata.websiteRedirectLocation) { res['website-redirect'] = metadata.websiteRedirectLocation; }
   if (metadata.serverSideEncryptionAwsKmsKeyId) { res['sse-kms-key-id'] = metadata.serverSideEncryptionAwsKmsKeyId; }
   if (metadata.serverSideEncryptionCustomerAlgorithm) { res['sse-c-copy-source'] = metadata.serverSideEncryptionCustomerAlgorithm; }
+  if (metadata.accessControl) { res.acl = toKebabCase(metadata.accessControl.toString()); }
 
   return Object.keys(res).length === 0 ? undefined : res;
 }
@@ -290,17 +402,58 @@ function mapSystemMetadata(metadata: BucketDeploymentProps) {
  * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#SysMetadata
  */
 export class CacheControl {
+
+  /**
+   * Sets 'must-revalidate'.
+   */
   public static mustRevalidate() { return new CacheControl('must-revalidate'); }
+
+  /**
+   * Sets 'no-cache'.
+   */
   public static noCache() { return new CacheControl('no-cache'); }
+
+  /**
+   * Sets 'no-transform'.
+   */
   public static noTransform() { return new CacheControl('no-transform'); }
+
+  /**
+   * Sets 'public'.
+   */
   public static setPublic() { return new CacheControl('public'); }
+
+  /**
+   * Sets 'private'.
+   */
   public static setPrivate() { return new CacheControl('private'); }
+
+  /**
+   * Sets 'proxy-revalidate'.
+   */
   public static proxyRevalidate() { return new CacheControl('proxy-revalidate'); }
+
+  /**
+   * Sets 'max-age=<duration-in-seconds>'.
+   */
   public static maxAge(t: cdk.Duration) { return new CacheControl(`max-age=${t.toSeconds()}`); }
+
+  /**
+   * Sets 's-maxage=<duration-in-seconds>'.
+   */
   public static sMaxAge(t: cdk.Duration) { return new CacheControl(`s-maxage=${t.toSeconds()}`); }
+
+  /**
+   * Constructs a custom cache control key from the literal value.
+   */
   public static fromString(s: string) { return new CacheControl(s); }
 
-  private constructor(public readonly value: any) {}
+  private constructor(
+    /**
+     * The raw cache control setting.
+     */
+    public readonly value: any,
+  ) {}
 }
 
 /**
@@ -309,7 +462,15 @@ export class CacheControl {
  * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#SysMetadata
  */
 export enum ServerSideEncryption {
+
+  /**
+   * 'AES256'
+   */
   AES_256 = 'AES256',
+
+  /**
+   * 'aws:kms'
+   */
   AWS_KMS = 'aws:kms'
 }
 
@@ -318,12 +479,40 @@ export enum ServerSideEncryption {
  * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#SysMetadata
  */
 export enum StorageClass {
+
+  /**
+   * 'STANDARD'
+   */
   STANDARD = 'STANDARD',
+
+  /**
+   * 'REDUCED_REDUNDANCY'
+   */
   REDUCED_REDUNDANCY = 'REDUCED_REDUNDANCY',
+
+  /**
+   * 'STANDARD_IA'
+   */
   STANDARD_IA = 'STANDARD_IA',
+
+  /**
+   * 'ONEZONE_IA'
+   */
   ONEZONE_IA = 'ONEZONE_IA',
+
+  /**
+   * 'INTELLIGENT_TIERING'
+   */
   INTELLIGENT_TIERING = 'INTELLIGENT_TIERING',
+
+  /**
+   * 'GLACIER'
+   */
   GLACIER = 'GLACIER',
+
+  /**
+   * 'DEEP_ARCHIVE'
+   */
   DEEP_ARCHIVE = 'DEEP_ARCHIVE'
 }
 
@@ -352,15 +541,26 @@ export class Expires {
    */
   public static after(t: cdk.Duration) { return Expires.atDate(new Date(Date.now() + t.toMilliseconds())); }
 
+  /**
+   * Create an expiration date from a raw date string.
+   */
   public static fromString(s: string) { return new Expires(s); }
 
-  private constructor(public readonly value: any) {}
+  private constructor(
+    /**
+     * The raw expiration date expression.
+     */
+    public readonly value: any,
+  ) {}
 }
 
+/**
+ * Custom user defined metadata.
+ */
 export interface UserDefinedObjectMetadata {
   /**
    * Arbitrary metadata key-values
-   * Keys must begin with `x-amzn-meta-` (will be added automatically if not provided)
+   * The `x-amz-meta-` prefix will automatically be added to keys.
    * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#UserMetadata
    */
   readonly [key: string]: string;
