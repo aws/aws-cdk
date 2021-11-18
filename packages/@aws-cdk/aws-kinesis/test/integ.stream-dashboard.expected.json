@@ -142,7 +142,7 @@
               {
                 "Ref": "AWS::Region"
               },
-              "\",\"metrics\":[[{\"label\":\"( count / total ) * 100\",\"expression\":\"( count / total ) * 100\"}],[\"AWS/Kinesis\",\"PutRecords.SuccessfulRecords\",\"StreamName\",\"",
+              "\",\"metrics\":[[{\"id\":\"e1\",\"label\":\"( count / total ) * 100\",\"expression\":\"( count / total ) * 100\"}],[\"AWS/Kinesis\",\"PutRecords.SuccessfulRecords\",\"StreamName\",\"",
               {
                 "Ref": "myStream547FAD7F"
               },
@@ -154,7 +154,7 @@
               {
                 "Ref": "AWS::Region"
               },
-              "\",\"metrics\":[[{\"label\":\"( count / total ) * 100\",\"expression\":\"( count / total ) * 100\"}],[\"AWS/Kinesis\",\"PutRecords.FailedRecords\",\"StreamName\",\"",
+              "\",\"metrics\":[[{\"id\":\"e1\",\"label\":\"( count / total ) * 100\",\"expression\":\"( count / total ) * 100\"}],[\"AWS/Kinesis\",\"PutRecords.FailedRecords\",\"StreamName\",\"",
               {
                 "Ref": "myStream547FAD7F"
               },
@@ -166,7 +166,7 @@
               {
                 "Ref": "AWS::Region"
               },
-              "\",\"metrics\":[[{\"label\":\"( count / total ) * 100\",\"expression\":\"( count / total ) * 100\"}],[\"AWS/Kinesis\",\"PutRecords.ThrottledRecords\",\"StreamName\",\"",
+              "\",\"metrics\":[[{\"id\":\"e1\",\"label\":\"( count / total ) * 100\",\"expression\":\"( count / total ) * 100\"}],[\"AWS/Kinesis\",\"PutRecords.ThrottledRecords\",\"StreamName\",\"",
               {
                 "Ref": "myStream547FAD7F"
               },
