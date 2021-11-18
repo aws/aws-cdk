@@ -557,7 +557,7 @@ describe('queue', () => {
             },
           ],
           MetricName: 'BacklogPerTask',
-          Namespace: 'Test',
+          Namespace: 'production-my-service',
           Statistic: 'Average',
           Unit: 'Count',
         },
@@ -633,7 +633,7 @@ describe('queue', () => {
             },
           ],
           MetricName: 'BacklogPerTask',
-          Namespace: 'Test',
+          Namespace: 'production-my-service',
           Statistic: 'Average',
           Unit: 'Count',
         },
@@ -657,7 +657,7 @@ describe('queue', () => {
             },
           ],
           MetricName: 'BacklogPerTask',
-          Namespace: 'Test',
+          Namespace: 'production-my-service',
           Statistic: 'Average',
           Unit: 'Count',
         },
@@ -741,7 +741,7 @@ describe('queue', () => {
           maxTaskCount: 10,
         },
       });
-    }).toThrow(/Message processing time for the queue cannot be greater acceptable queue latency./);
+    }).toThrow('Message processing time (20s) for the queue cannot be greater acceptable queue latency (10s).');
   });
 
   test('should error when configuring auto scaling only for topic-specific queue', () => {
@@ -783,6 +783,6 @@ describe('queue', () => {
           maxTaskCount: 10,
         },
       });
-    }).toThrow(/Cannot configure auto scaling only for the subscription queue of service 'my-service'. Need to specify 'eventsQueueDelay'./);
+    }).toThrow(/Autoscaling for a topic-specific queue cannot be configured as autoscaling based on SQS Queues hasn’t been set up for the service 'my-service'. If you want to enable autoscaling for this service, please also specify 'scaleOnLatency' in the 'QueueExtension'/);
   });
 });

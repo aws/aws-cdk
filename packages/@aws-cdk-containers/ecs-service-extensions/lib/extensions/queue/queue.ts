@@ -129,7 +129,7 @@ export class TopicSubscription implements ISubscribable {
   public subscribe(extension: QueueExtension) : SubscriptionQueue {
     let ret = {
       queue: extension.eventsQueue,
-      queueDelay: extension.eventsQueueDelay,
+      queueDelay: extension.autoscalingOptions,
     } as SubscriptionQueue;
 
     if (this.subscriptionQueue) {
@@ -185,7 +185,7 @@ class QueueExtensionMutatingHook extends ContainerMutatingHook {
 export class QueueExtension extends ServiceExtension {
   private _eventsQueue!: sqs.IQueue;
 
-  private _eventsQueueDelay?: QueueAutoScalingOptions;
+  private _autoscalingOptions?: QueueAutoScalingOptions;
 
   private subscriptionQueues = new Set<SubscriptionQueue>();
 
@@ -226,7 +226,7 @@ export class QueueExtension extends ServiceExtension {
       });
     }
     this._eventsQueue = eventsQueue;
-    this._eventsQueueDelay = this.props?.scaleOnLatency;
+    this._autoscalingOptions = this.props?.scaleOnLatency;
 
     this.environment[`${this.parentService.id.toUpperCase()}_QUEUE_URI`] = this._eventsQueue.queueUrl;
 
@@ -234,8 +234,8 @@ export class QueueExtension extends ServiceExtension {
       for (const subs of this.props.subscriptions) {
         const subsQueue = subs.subscribe(this);
         if (subsQueue.queue !== this._eventsQueue) {
-          if (subsQueue.scaleOnLatency && !this._eventsQueueDelay) {
-            throw Error(`Cannot configure auto scaling only for the subscription queue of service '${this.parentService.id}'. Need to specify 'eventsQueueDelay'.`);
+          if (subsQueue.scaleOnLatency && !this._autoscalingOptions) {
+            throw Error(`Autoscaling for a topic-specific queue cannot be configured as autoscaling based on SQS Queues hasn’t been set up for the service '${this.parentService.id}'. If you want to enable autoscaling for this service, please also specify 'scaleOnLatency' in the 'QueueExtension'.`);
           }
           this.subscriptionQueues.add(subsQueue);
         }
@@ -280,20 +280,20 @@ export class QueueExtension extends ServiceExtension {
    * @param service - The generated service.
    */
   public useService(service: ecs.Ec2Service | ecs.FargateService) {
-    if (!this._eventsQueueDelay) {
+    if (!this._autoscalingOptions) {
       return;
     }
     if (!this.parentService.scalableTaskCount) {
       throw Error(`Auto scaling target for the service '${this.parentService.id}' hasn't been configured. Please use Service construct to configure 'minTaskCount' and 'maxTaskCount'.`);
     }
 
-    this.addQueueScalingPolicy(this._eventsQueue, this._eventsQueueDelay);
+    this.addQueueScalingPolicy(this._eventsQueue, this._autoscalingOptions);
     for (const subsQueue of this.subscriptionQueues) {
+      let autoscalingOpts = this.autoscalingOptions;
       if (subsQueue.scaleOnLatency) {
-        this.addQueueScalingPolicy(subsQueue.queue, subsQueue.scaleOnLatency);
-      } else {
-        this.addQueueScalingPolicy(subsQueue.queue, this._eventsQueueDelay);
+        autoscalingOpts = subsQueue.scaleOnLatency;
       }
+      this.addQueueScalingPolicy(subsQueue.queue, autoscalingOpts!);
     }
     this.parentService.enableAutoScalingPolicy();
 
@@ -311,13 +311,13 @@ export class QueueExtension extends ServiceExtension {
     const messageProcessingTime = queueDelay.messageProcessingTime.toSeconds();
     const acceptableLatency = queueDelay.acceptableLatency.toSeconds();
     if (messageProcessingTime > acceptableLatency) {
-      throw Error('Message processing time for the queue cannot be greater acceptable queue latency.');
+      throw Error(`Message processing time (${messageProcessingTime}s) for the queue cannot be greater acceptable queue latency (${acceptableLatency}s).`);
     }
     const acceptableBacklog = acceptableLatency/messageProcessingTime;
 
     this.parentService.scalableTaskCount?.scaleToTrackCustomMetric(`${queue.node.id}-autoscaling-policy`, {
       metric: new cloudwatch.Metric({
-        namespace: 'Test',
+        namespace: `${this.parentService.environment.id}-${this.parentService.id}`,
         metricName: 'BacklogPerTask',
         dimensionsMap: { QueueName: queue.queueName },
         unit: cloudwatch.Unit.COUNT,
@@ -348,7 +348,7 @@ export class QueueExtension extends ServiceExtension {
       },
       initialPolicy: [new iam.PolicyStatement({
         actions: ['ecs:DescribeServices'],
-        resources: ['*'],
+        resources: [`${service.serviceArn}`],
         conditions: {
           ArnEquals: {
             'ecs:cluster': this.parentService.cluster.clusterArn,
@@ -383,7 +383,7 @@ export class QueueExtension extends ServiceExtension {
     return this._eventsQueue;
   }
 
-  public get eventsQueueDelay() : QueueAutoScalingOptions | undefined {
-    return this._eventsQueueDelay;
+  public get autoscalingOptions() : QueueAutoScalingOptions | undefined {
+    return this._autoscalingOptions;
   }
 }
