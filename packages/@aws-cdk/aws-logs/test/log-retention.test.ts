@@ -1,3 +1,4 @@
+import * as path from 'path';
 import '@aws-cdk/assert-internal/jest';
 import { ABSENT, ResourcePart } from '@aws-cdk/assert-internal';
 import * as iam from '@aws-cdk/aws-iam';
@@ -181,6 +182,9 @@ describe('log retention', () => {
     // GIVEN
     const stack = new cdk.Stack();
     stack.node.setContext(cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT, true);
+    stack.node.setContext(cxapi.DISABLE_ASSET_STAGING_CONTEXT, true);
+
+    const assetLocation = path.join(__dirname, '../', '/lib', '/log-retention-provider');
 
     // WHEN
     new LogRetention(stack, 'MyLambda', {
@@ -191,7 +195,7 @@ describe('log retention', () => {
     // Then
     expect(stack).toHaveResource('AWS::Lambda::Function', {
       Metadata: {
-        'aws:asset:path': 'asset.dd4b26cf376ea5894e31041be239fc518713becdafb8f2894b069a53984fafe9',
+        'aws:asset:path': assetLocation,
         'aws:asset:property': 'Code',
       },
     }, ResourcePart.CompleteDefinition);
