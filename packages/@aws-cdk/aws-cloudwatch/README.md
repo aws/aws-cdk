@@ -102,6 +102,7 @@ differentiate them in the console. For example:
 
 ```ts
 declare const fn: lambda.Function;
+declare const allProblems: cloudwatch.MathExpression;
 
 new cloudwatch.GraphWidget({
   left: [
@@ -110,7 +111,7 @@ new cloudwatch.GraphWidget({
       expression: "errors+faults",
       usingMetrics: {
         errors: fn.metricErrors(),
-        faults: fn.metricFaults(),
+        faults: fn.metricThrottles(),
       },
     }),
     new cloudwatch.MathExpression({
