@@ -2,6 +2,8 @@ import { ISDK } from '../aws-auth';
 import { /*assetMetadataChanged,*/ ChangeHotswapImpact, ChangeHotswapResult, HotswapOperation, HotswappableChangeCandidate, establishResourcePhysicalName } from './common';
 import { EvaluateCloudFormationTemplate } from './evaluate-cloudformation-template';
 
+export const REQUIRED_BY_CFN = 'required-to-be-present-by-cfn';
+
 /**
  * Returns `false` if the change cannot be short-circuited,
  * `true` if the change is irrelevant from a short-circuit perspective
@@ -17,29 +19,43 @@ export async function isHotswappableS3BucketDeploymentChange(
   //if (typeof s3BucketDeployment === 'string') {
   //  return s3BucketDeployment;
   //}
+
   if (change.newValue.Type === 'AWS::IAM::Policy') {
     return ChangeHotswapImpact.NONE;
   }
 
+  if (change.newValue.Type !== 'Custom::CDKBucketDeployment') {
+    return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
+  }
+
+
   logicalId;
 
-  const deployment = {
-    SourceBucketNames: '',
-    SourceObjectKeys: '',
-    DestinationBucketName: '',
-  };
-
-  console.log(change.newValue.Type)
-  console.log(change.newValue.Properties)
+  //console.log(change.newValue.Type)
+  //console.log(change.newValue.Properties)
 
   // note that this gives the ARN of the lambda, not the name. This is fine though, because thankfully the invoke sdk call will take either
   const functionName = await establishResourcePhysicalName(logicalId, change.newValue.Properties?.ServiceToken, evaluateCfnTemplate);
   if (!functionName) {
+    console.log('wherence')
     return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
   }
 
-  console.log('function name')
-  console.log(functionName)
+  const sourceBucketNames = await evaluateCfnTemplate.evaluateCfnExpression(change.newValue.Properties?.SourceBucketNames)
+  const sourceObjectKeys = await evaluateCfnTemplate.evaluateCfnExpression(change.newValue.Properties?.SourceObjectKeys);
+  const destinationBucketName = await evaluateCfnTemplate.evaluateCfnExpression(change.newValue.Properties?.DestinationBucketName);
+
+  ////console.log('function name')
+  //console.log(functionName)
+
+  const deployment = {
+    SourceBucketNames: sourceBucketNames,
+    SourceObjectKeys: sourceObjectKeys,
+    DestinationBucketName: destinationBucketName,
+  };
+
+  //console.log('deployment')
+  //console.log(deployment)
 
   return new S3BucketDeploymentHotswapOperation({
     FunctionName: functionName,
@@ -60,9 +76,10 @@ async function isS3BucketDeploymentOnlyChange(
   change: HotswappableChangeCandidate, evaluateCfnTemplate: EvaluateCloudFormationTemplate,
 ): Promise<S3BucketDeployment | ChangeHotswapImpact> {
   const newResourceType = change.newValue.Type;
+  newResourceType;
   evaluateCfnTemplate;
   /*eslint-disable*/
-  console.log(newResourceType)
+  //console.log(newResourceType)
 
   //if (newResourceType !== 'Custom::CDKBucketDeployment') {
   //  return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
@@ -119,14 +136,27 @@ class S3BucketDeploymentHotswapOperation implements HotswapOperation {
   }
 
   public async apply(sdk: ISDK): Promise<any> {
-    console.log('applying invoke')
+    //console.log('applying invoke')
+    //console.log(this.s3BucketDeploymentResource.s3BucketDeployment)
+    ////console.log(this.s3BucketDeploymentResource.s3BucketDeployment.SourceObjectKeys)
     return sdk.lambda().invoke({
       FunctionName: this.s3BucketDeploymentResource.FunctionName,
-      Payload: {
-        SourceBucketNames: this.s3BucketDeploymentResource.s3BucketDeployment.SourceBucketNames,
-        SourceObjectKeys: this.s3BucketDeploymentResource.s3BucketDeployment.SourceObjectKeys,
-        DestinationBucketName: this.s3BucketDeploymentResource.s3BucketDeployment.DestinationBucketName,
-      },
+      // Lambda refuses to take a direct JSON object and requires it to be stringify()'d
+      Payload: JSON.stringify({
+        RequestType: 'Update', // Required by CloudFormation to invoke this Lambda
+        ResponseURL: REQUIRED_BY_CFN,
+        PhysicalResourceId: REQUIRED_BY_CFN,
+        StackId: REQUIRED_BY_CFN,
+        RequestId: REQUIRED_BY_CFN,
+        LogicalResourceId: REQUIRED_BY_CFN,
+        // Required by CloudFormation; this contains the props for the lambda
+        ResourceProperties: {
+          SourceBucketNames: this.s3BucketDeploymentResource.s3BucketDeployment.SourceBucketNames,
+          SourceObjectKeys: this.s3BucketDeploymentResource.s3BucketDeployment.SourceObjectKeys,
+          DestinationBucketName: this.s3BucketDeploymentResource.s3BucketDeployment.DestinationBucketName,
+          // TODO: DestinationBucketKeyPrefix: 'web/static'; we should get 'web/static' from the diff
+        },
+      }),
     }).promise();
   }
 }
