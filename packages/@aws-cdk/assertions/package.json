@@ -50,7 +50,7 @@
     "metadata": {
       "jsii": {
         "rosetta": {
-          "strict": false
+          "strict": true
         }
       }
     }
@@ -64,7 +64,8 @@
   "devDependencies": {
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/jest": "^26.0.24",
+    "@types/fs-extra": "^9.0.13",
+    "@types/jest": "^27.0.2",
     "constructs": "^10.0.0",
     "jest": "^27.3.1",
     "ts-jest": "^27.0.7"
@@ -73,12 +74,8 @@
     "@aws-cdk/cloud-assembly-schema": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
-    "colors": "^1.4.0",
     "constructs": "^10.0.0",
-    "diff": "^5.0.0",
-    "fast-deep-equal": "^3.1.3",
-    "string-width": "^4.2.3",
-    "table": "^6.7.2"
+    "fs-extra": "^9.1.0"
   },
   "peerDependencies": {
     "@aws-cdk/cloud-assembly-schema": "0.0.0",
@@ -87,11 +84,7 @@
     "constructs": "^10.0.0"
   },
   "bundledDependencies": [
-    "colors",
-    "diff",
-    "fast-deep-equal",
-    "string-width",
-    "table"
+    "fs-extra"
   ],
   "repository": {
     "url": "https://github.com/aws/aws-cdk.git",

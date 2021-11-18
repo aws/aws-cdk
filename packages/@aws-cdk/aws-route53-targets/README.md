@@ -58,7 +58,7 @@ This library contains Route53 Alias Record targets for:
 
   ```ts
   import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
-  
+
   declare const zone: route53.HostedZone;
   declare const lb: elbv2.ApplicationLoadBalancer;
 
@@ -73,7 +73,7 @@ This library contains Route53 Alias Record targets for:
 
   ```ts
   import * as elb from '@aws-cdk/aws-elasticloadbalancing';
-  
+
   declare const zone: route53.HostedZone;
   declare const lb: elb.LoadBalancer;
 
@@ -129,7 +129,7 @@ See [the Developer Guide](https://docs.aws.amazon.com/Route53/latest/DeveloperGu
 
   ```ts
   import * as s3 from '@aws-cdk/aws-s3';
-  
+
   const recordName = 'www';
   const domainName = 'example.com';
 
@@ -176,11 +176,14 @@ See [the Developer Guide](https://docs.aws.amazon.com/Route53/latest/DeveloperGu
 
 **Important:** Only supports Elastic Beanstalk environments created after 2016 that have a regional endpoint.
 
-  ```ts
-  new route53.ARecord(this, 'AliasRecord', {
-    zone,
-    target: route53.RecordTarget.fromAlias(new alias.ElasticBeanstalkEnvironmentEndpointTarget(ebsEnvironmentUrl)),
-  });
-  ```
+```ts
+declare const zone: route53.HostedZone;
+declare const ebsEnvironmentUrl: string;
+
+new route53.ARecord(this, 'AliasRecord', {
+  zone,
+  target: route53.RecordTarget.fromAlias(new targets.ElasticBeanstalkEnvironmentEndpointTarget(ebsEnvironmentUrl)),
+});
+```
 
 See the documentation of `@aws-cdk/aws-route53` for more information.

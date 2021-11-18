@@ -34,11 +34,13 @@ Higher level constructs for Websocket APIs | ![Experimental](https://img.shields
   - [Cross Origin Resource Sharing (CORS)](#cross-origin-resource-sharing-cors)
   - [Publishing HTTP APIs](#publishing-http-apis)
   - [Custom Domain](#custom-domain)
+  - [Mutual TLS](#mutual-tls-mtls)
   - [Managing access](#managing-access)
   - [Metrics](#metrics)
   - [VPC Link](#vpc-link)
   - [Private Integration](#private-integration)
 - [WebSocket API](#websocket-api)
+  - [Manage Connections Permission](#manage-connections-permission)
 
 ## Introduction
 
@@ -254,6 +256,29 @@ declare const apiDemo: apigwv2.HttpApi;
 const demoDomainUrl = apiDemo.defaultStage?.domainUrl; // returns "https://example.com/demo"
 ```
 
+## Mutual TLS (mTLS)
+
+Mutual TLS can be configured to limit access to your API based by using client certificates instead of (or as an extension of) using authorization headers.
+
+```ts
+import * as s3 from '@aws-cdk/aws-s3';
+const certArn = 'arn:aws:acm:us-east-1:111111111111:certificate';
+const domainName = 'example.com';
+const bucket = new s3.Bucket.fromBucketName(stack, 'TrustStoreBucket', ...);
+
+new DomainName(stack, 'DomainName', {
+  domainName,
+  certificate: Certificate.fromCertificateArn(stack, 'cert', certArn),
+  mtls: {
+    bucket,
+    key: 'someca.pem',
+    version: 'version',
+  },
+})
+```
+
+Instructions for configuring your trust store can be found [here](https://aws.amazon.com/blogs/compute/introducing-mutual-tls-authentication-for-amazon-api-gateway/)
+
 ### Managing access
 
 API Gateway supports multiple mechanisms for [controlling and managing access to your HTTP
@@ -378,4 +403,23 @@ webSocketApi.addRoute('sendmessage', {
     handler: messageHandler,
   }),
 });
+```
+
+### Manage Connections Permission
+
+Grant permission to use API Gateway Management API of a WebSocket API by calling the `grantManageConnections` API.
+You can use Management API to send a callback message to a connected client, get connection information, or disconnect the client. Learn more at [Use @connections commands in your backend service](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-how-to-call-websocket-api-connections.html).
+
+```ts
+const lambda = new lambda.Function(this, 'lambda', { /* ... */ });
+
+const webSocketApi = new WebSocketApi(stack, 'mywsapi');
+const stage = new WebSocketStage(stack, 'mystage', {
+  webSocketApi,
+  stageName: 'dev',
+});
+// per stage permission
+stage.grantManageConnections(lambda);
+// for all the stages permission
+webSocketApi.grantManageConnections(lambda);
 ```

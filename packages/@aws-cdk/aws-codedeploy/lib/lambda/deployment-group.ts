@@ -179,7 +179,7 @@ export class LambdaDeploymentGroup extends cdk.Resource implements ILambdaDeploy
       service: 'codedeploy',
       resource: 'deploymentgroup',
       resourceName: `${this.application.applicationName}/${this.physicalName}`,
-      sep: ':',
+      arnFormat: cdk.ArnFormat.COLON_RESOURCE_NAME,
     });
 
     if (props.preHook) {

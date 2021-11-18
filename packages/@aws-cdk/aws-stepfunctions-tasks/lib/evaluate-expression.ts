@@ -12,7 +12,7 @@ export interface EvaluateExpressionProps extends sfn.TaskStateBaseProps {
   /**
    * The expression to evaluate. The expression may contain state paths.
    *
-   * @example '$.a + $.b'
+   * Example value: `'$.a + $.b'`
    */
   readonly expression: string;
 

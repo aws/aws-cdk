@@ -1,10 +1,11 @@
 import '@aws-cdk/assert-internal/jest';
+import { describeDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as eks from '../lib';
 import { testFixtureCluster } from './util';
 
 /* eslint-disable max-len */
 
-describe('helm chart', () => {
+describeDeprecated('helm chart', () => {
   describe('add Helm chart', () => {
     test('should have default namespace', () => {
       // GIVEN

@@ -1,7 +1,7 @@
 import * as notifications from '@aws-cdk/aws-codestarnotifications';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
-import { IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
+import { ArnFormat, IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnRepository } from './codecommit.generated';
 
@@ -501,7 +501,7 @@ export class Repository extends RepositoryBase {
    */
   public static fromRepositoryArn(scope: Construct, id: string, repositoryArn: string): IRepository {
     const stack = Stack.of(scope);
-    const arn = stack.parseArn(repositoryArn);
+    const arn = stack.splitArn(repositoryArn, ArnFormat.NO_RESOURCE_NAME);
     const repositoryName = arn.resource;
     const region = arn.region;
 

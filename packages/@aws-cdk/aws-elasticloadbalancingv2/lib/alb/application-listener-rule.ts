@@ -254,7 +254,9 @@ export class ApplicationListenerRule extends Construct {
       this.configureAction(props.action);
     }
 
-    (props.targetGroups || []).forEach(this.addTargetGroup.bind(this));
+    (props.targetGroups || []).forEach((group) => {
+      this.configureAction(ListenerAction.forward([group]));
+    });
 
     if (props.fixedResponse) {
       this.addFixedResponse(props.fixedResponse);

@@ -416,8 +416,24 @@ export interface SecurityGroupContextQuery {
 
   /**
    * Security group id
+   *
+   * @default - None
    */
-  readonly securityGroupId: string;
+  readonly securityGroupId?: string;
+
+  /**
+   * Security group name
+   *
+   * @default - None
+   */
+  readonly securityGroupName?: string;
+
+  /**
+   * VPC ID
+   *
+   * @default - None
+   */
+  readonly vpcId?: string;
 }
 
 /**

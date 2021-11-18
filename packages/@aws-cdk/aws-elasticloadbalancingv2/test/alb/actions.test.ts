@@ -155,7 +155,7 @@ describe('tests', () => {
     });
 
     listener.addAction('Action2', {
-      hostHeader: 'example.com',
+      conditions: [elbv2.ListenerCondition.hostHeaders(['example.com'])],
       priority: 10,
       action: elbv2.ListenerAction.forward([group2]),
     });

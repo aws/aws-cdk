@@ -1,7 +1,7 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as sns from '@aws-cdk/aws-sns';
-import { IResource, Lazy, Names, RemovalPolicy, Resource, Stack } from '@aws-cdk/core';
+import { ArnFormat, IResource, Lazy, Names, RemovalPolicy, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnBackupVault } from './backup.generated';
 
@@ -168,7 +168,7 @@ export class BackupVault extends BackupVaultBase {
       service: 'backup',
       resource: 'backup-vault',
       resourceName: backupVaultName,
-      sep: ':',
+      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
     });
 
     return BackupVault.fromBackupVaultArn(scope, id, backupVaultArn);
@@ -178,7 +178,7 @@ export class BackupVault extends BackupVaultBase {
    * Import an existing backup vault by arn
    */
   public static fromBackupVaultArn(scope: Construct, id: string, backupVaultArn: string): IBackupVault {
-    const parsedArn = Stack.of(scope).parseArn(backupVaultArn);
+    const parsedArn = Stack.of(scope).splitArn(backupVaultArn, ArnFormat.SLASH_RESOURCE_NAME);
 
     if (!parsedArn.resourceName) {
       throw new Error(`Backup Vault Arn ${backupVaultArn} does not have a resource name.`);

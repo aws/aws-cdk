@@ -4,7 +4,14 @@ import {
   AwsLogDriver, BaseService, CloudMapOptions, Cluster, ContainerDefinition, ContainerImage, ICluster, LogDriver, PropagatedTagSource,
   Protocol, Secret,
 } from '@aws-cdk/aws-ecs';
-import { ApplicationListener, ApplicationLoadBalancer, ApplicationProtocol, ApplicationTargetGroup, SslPolicy } from '@aws-cdk/aws-elasticloadbalancingv2';
+import {
+  ApplicationListener,
+  ApplicationLoadBalancer,
+  ApplicationProtocol,
+  ApplicationTargetGroup, ListenerCertificate,
+  ListenerCondition,
+  SslPolicy,
+} from '@aws-cdk/aws-elasticloadbalancingv2';
 import { IRole } from '@aws-cdk/aws-iam';
 import { ARecord, IHostedZone, RecordTarget } from '@aws-cdk/aws-route53';
 import { LoadBalancerTarget } from '@aws-cdk/aws-route53-targets';
@@ -466,6 +473,14 @@ export abstract class ApplicationMultipleTargetGroupsServiceBase extends Constru
 
   protected registerECSTargets(service: BaseService, container: ContainerDefinition, targets: ApplicationTargetProps[]): ApplicationTargetGroup {
     for (const targetProps of targets) {
+      const conditions: Array<ListenerCondition> = [];
+      if (targetProps.hostHeader) {
+        conditions.push(ListenerCondition.hostHeaders([targetProps.hostHeader]));
+      }
+      if (targetProps.pathPattern) {
+        conditions.push(ListenerCondition.pathPatterns([targetProps.pathPattern]));
+      }
+
       const targetGroup = this.findListener(targetProps.listener).addTargets(`ECSTargetGroup${container.containerName}${targetProps.containerPort}`, {
         port: 80,
         targets: [
@@ -475,8 +490,7 @@ export abstract class ApplicationMultipleTargetGroupsServiceBase extends Constru
             protocol: targetProps.protocol,
           }),
         ],
-        hostHeader: targetProps.hostHeader,
-        pathPattern: targetProps.pathPattern,
+        conditions,
         priority: targetProps.priority,
       });
       this.targetGroups.push(targetGroup);
@@ -516,7 +530,7 @@ export abstract class ApplicationMultipleTargetGroupsServiceBase extends Constru
       certificate = undefined;
     }
     if (certificate !== undefined) {
-      listener.addCertificateArns(`Arns${props.listenerName}`, [certificate.certificateArn]);
+      listener.addCertificates(`Arns${props.listenerName}`, [ListenerCertificate.fromArn(certificate.certificateArn)]);
     }
 
     return listener;

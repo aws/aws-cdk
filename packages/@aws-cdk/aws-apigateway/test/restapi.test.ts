@@ -1,6 +1,7 @@
 import '@aws-cdk/assert-internal/jest';
 import { ResourcePart, SynthUtils } from '@aws-cdk/assert-internal';
 import { GatewayVpcEndpoint } from '@aws-cdk/aws-ec2';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { App, CfnElement, CfnResource, Stack } from '@aws-cdk/core';
 import * as apigw from '../lib';
 
@@ -807,7 +808,7 @@ describe('restapi', () => {
     });
   });
 
-  test('"restApi" and "api" properties return the RestApi correctly', () => {
+  testDeprecated('"restApi" and "api" properties return the RestApi correctly', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -821,7 +822,7 @@ describe('restapi', () => {
     expect(stack.resolve(method.api.restApiId)).toEqual(stack.resolve(method.restApi.restApiId));
   });
 
-  test('"restApi" throws an error on imported while "api" returns correctly', () => {
+  testDeprecated('"restApi" throws an error on imported while "api" returns correctly', () => {
     // GIVEN
     const stack = new Stack();
 

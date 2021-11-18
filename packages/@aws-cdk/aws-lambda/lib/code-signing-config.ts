@@ -1,5 +1,5 @@
 import { ISigningProfile } from '@aws-cdk/aws-signer';
-import { IResource, Resource, Stack } from '@aws-cdk/core';
+import { ArnFormat, IResource, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnCodeSigningConfig } from './lambda.generated';
 
@@ -79,7 +79,7 @@ export class CodeSigningConfig extends Resource implements ICodeSigningConfig {
    * @param codeSigningConfigArn The ARN of code signing config.
    */
   public static fromCodeSigningConfigArn( scope: Construct, id: string, codeSigningConfigArn: string): ICodeSigningConfig {
-    const codeSigningProfileId = Stack.of(scope).parseArn(codeSigningConfigArn).resourceName;
+    const codeSigningProfileId = Stack.of(scope).splitArn(codeSigningConfigArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName;
     if (!codeSigningProfileId) {
       throw new Error(`Code signing config ARN must be in the format 'arn:aws:lambda:<region>:<account>:code-signing-config:<codeSigningConfigArn>', got: '${codeSigningConfigArn}'`);
     }

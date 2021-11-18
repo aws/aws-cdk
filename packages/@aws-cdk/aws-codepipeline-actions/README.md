@@ -987,7 +987,7 @@ The Lambda Action supports custom user parameters that pipeline
 will pass to the Lambda function:
 
 ```ts
-import * as lambda from '@aws-cdk/aws-lambda';
+declare const fn: lambda.Function;
 
 const pipeline = new codepipeline.Pipeline(this, 'MyPipeline');
 const lambdaAction = new codepipeline_actions.LambdaInvokeAction({

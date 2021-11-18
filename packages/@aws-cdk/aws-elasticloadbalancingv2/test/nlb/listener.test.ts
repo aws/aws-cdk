@@ -2,6 +2,7 @@ import { MatchStyle } from '@aws-cdk/assert-internal';
 import '@aws-cdk/assert-internal/jest';
 import * as acm from '@aws-cdk/aws-certificatemanager';
 import * as ec2 from '@aws-cdk/aws-ec2';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import * as constructs from 'constructs';
 import * as elbv2 from '../../lib';
@@ -49,7 +50,7 @@ describe('tests', () => {
     });
   });
 
-  test('Can implicitly create target groups', () => {
+  testDeprecated('Can implicitly create target groups', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'Stack');
@@ -81,7 +82,7 @@ describe('tests', () => {
     });
   });
 
-  test('implicitly created target group inherits protocol', () => {
+  testDeprecated('implicitly created target group inherits protocol', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'Stack');
@@ -113,7 +114,7 @@ describe('tests', () => {
     });
   });
 
-  test('implicitly created target group but overrides inherited protocol', () => {
+  testDeprecated('implicitly created target group but overrides inherited protocol', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'Stack');

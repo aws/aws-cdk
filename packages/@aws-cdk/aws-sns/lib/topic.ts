@@ -1,5 +1,5 @@
 import { IKey } from '@aws-cdk/aws-kms';
-import { Stack } from '@aws-cdk/core';
+import { ArnFormat, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnTopic } from './sns.generated';
 import { ITopic, TopicBase } from './topic-base';
@@ -63,7 +63,7 @@ export class Topic extends TopicBase {
   public static fromTopicArn(scope: Construct, id: string, topicArn: string): ITopic {
     class Import extends TopicBase {
       public readonly topicArn = topicArn;
-      public readonly topicName = Stack.of(scope).parseArn(topicArn).resource;
+      public readonly topicName = Stack.of(scope).splitArn(topicArn, ArnFormat.NO_RESOURCE_NAME).resource;
       protected autoCreatePolicy: boolean = false;
     }
 

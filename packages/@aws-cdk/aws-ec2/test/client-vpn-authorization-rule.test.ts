@@ -1,4 +1,5 @@
 import '@aws-cdk/assert-internal/jest';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { App, Stack } from '@aws-cdk/core';
 import { Connections, IClientVpnEndpoint } from '../lib';
 import { ClientVpnAuthorizationRule } from '../lib/client-vpn-authorization-rule';
@@ -41,7 +42,7 @@ describe('ClientVpnAuthorizationRule constructor', () => {
       ),
     );
   });
-  test('specifying both clientVpnEndoint (deprecated, typo) and clientVpnEndpoint is not allowed', () => {
+  testDeprecated('specifying both clientVpnEndoint (deprecated, typo) and clientVpnEndpoint is not allowed', () => {
     const clientVpnEndoint: IClientVpnEndpoint = {
       endpointId: 'typoTypo',
       targetNetworksAssociated: [],
@@ -79,7 +80,7 @@ describe('ClientVpnAuthorizationRule constructor', () => {
     }).toThrow();
     expect(stack.node.children.length).toBe(0);
   });
-  test('supplying clientVpnEndoint (deprecated due to typo) should still work', () => {
+  testDeprecated('supplying clientVpnEndoint (deprecated due to typo) should still work', () => {
     const clientVpnEndoint: IClientVpnEndpoint = {
       endpointId: 'myClientVpnEndpoint',
       targetNetworksAssociated: [],

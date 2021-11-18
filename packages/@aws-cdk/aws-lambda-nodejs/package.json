@@ -29,7 +29,14 @@
         ]
       }
     },
-    "projectReferences": true
+    "projectReferences": true,
+    "metadata": {
+      "jsii": {
+        "rosetta": {
+          "strict": true
+        }
+      }
+    }
   },
   "repository": {
     "type": "git",
@@ -72,7 +79,7 @@
     "@aws-cdk/pkglint": "0.0.0",
     "@types/jest": "^27.0.2",
     "delay": "5.0.0",
-    "esbuild": "^0.13.12"
+    "esbuild": "^0.13.14"
   },
   "dependencies": {
     "@aws-cdk/aws-lambda": "0.0.0",

@@ -1,4 +1,4 @@
-import { IResource, Resource, Stack } from '@aws-cdk/core';
+import { ArnFormat, IResource, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { IFileSystem } from './efs-file-system';
 import { CfnAccessPoint } from './efs.generated';
@@ -242,7 +242,7 @@ class ImportedAccessPoint extends AccessPointBase {
       }
 
       this.accessPointArn = attrs.accessPointArn;
-      let maybeApId = Stack.of(scope).parseArn(attrs.accessPointArn).resourceName;
+      let maybeApId = Stack.of(scope).splitArn(attrs.accessPointArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName;
 
       if (!maybeApId) {
         throw new Error('ARN for AccessPoint must provide the resource name.');
