@@ -121,6 +121,44 @@ export function rewriteImports(sourceText: string, fileName: string = 'index.ts'
   }
 }
 
+/**
+ * Re-writes READMEs of "hyper-modular" CDK imports (most packages in `@aws-cdk/*`)
+ * to the relevant "mono" CDK import path. The re-writing will only modify the imported
+ * library path, presrving the existing quote style, etc...
+ *
+ * Syntax errors in the README snippets being processed may cause some import
+ * statements to not be re-written.
+ *
+ * Supported import statement forms are:
+ * - `import * as lib from '@aws-cdk/lib';`
+ * - `import { Type } from '@aws-cdk/lib';`
+ * - `import '@aws-cdk/lib';`
+ * - `import lib = require('@aws-cdk/lib');`
+ * - `import { Type } = require('@aws-cdk/lib');
+ * - `require('@aws-cdk/lib');
+ *
+ * @param sourceText the README where snippet imports should be re-written.
+ * @param fileName   a customized file name to provide the TypeScript processor.
+ *
+ * @returns the updated source code.
+ */
+export function rewriteReadmeImports(sourceText: string, fileName: string = 'index.ts', options: RewriteOptions = {}): string {
+  let updatedSourceText = sourceText;
+  // Search for readme code snippets
+  // we sometimes use 'text' for typescript only snippets, so their imports should be translated as well.
+  let snippets = sourceText.match(/```(ts|typescript|text)([\S\s]*?)```/g);
+  for (const snip of snippets ?? []) {
+    const lines = snip.split('\n');
+    // remove '```ts' and '```'
+    const snipCode = lines.splice(1, lines.length-2).join('\n');
+    const rewrittenSnipCode = rewriteImports(snipCode, fileName, options);
+    if (snipCode !== rewrittenSnipCode) {
+      updatedSourceText = updatedSourceText.replace(snipCode, rewrittenSnipCode);
+    }
+  }
+  return updatedSourceText;
+}
+
 const EXEMPTIONS = new Set([
   '@aws-cdk/cloudformation-diff',
   // The dev-tools
