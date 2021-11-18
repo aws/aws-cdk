@@ -4,7 +4,8 @@ import { Construct } from 'constructs';
 import { CfnRoute, CfnRouteProps } from '../apigatewayv2.generated';
 import { IRoute } from '../common';
 import { IHttpApi } from './api';
-import { IHttpRouteAuthorizer } from './authorizer';
+import { HttpRouteAuthorizerConfig, IHttpRouteAuthorizer } from './authorizer';
+import { HttpIamAuthorizer } from './iam';
 import { IHttpRouteIntegration } from './integration';
 
 /**
@@ -163,8 +164,8 @@ export class HttpRoute extends Resource implements IHttpRoute {
   public readonly httpApi: IHttpApi;
   public readonly path?: string;
 
-  private iamEnabled: boolean = false;
   private authorizer?: IHttpRouteAuthorizer;
+  private authBindResult?: HttpRouteAuthorizerConfig;
 
   constructor(scope: Construct, id: string, props: HttpRouteProps) {
     super(scope, id);
@@ -180,62 +181,73 @@ export class HttpRoute extends Resource implements IHttpRoute {
     const integration = props.httpApi._addIntegration(this, config);
 
     this.authorizer = props.authorizer;
-    const authBindResult = props.authorizer ? props.authorizer.bind({
-      route: this,
-      scope: this.httpApi instanceof Construct ? this.httpApi : this, // scope under the API if it's not imported
-    }) : undefined;
 
-    if (authBindResult && !(authBindResult.authorizationType in HttpRouteAuthorizationType)) {
-      throw new Error('authorizationType should either be AWS_IAM, JWT, CUSTOM, or NONE');
-    }
-
-    let authorizationScopes = authBindResult?.authorizationScopes;
-
-    if (authBindResult && props.authorizationScopes) {
-      authorizationScopes = Array.from(new Set([
-        ...authorizationScopes ?? [],
-        ...props.authorizationScopes,
-      ]));
-    }
-
-    if (authorizationScopes?.length === 0) {
-      authorizationScopes = undefined;
-    }
+    // Bind early to emit any exceptions as early as possible.
+    this.tryAuthorizerBinding();
 
     const routeProps: CfnRouteProps = {
       apiId: props.httpApi.apiId,
       routeKey: props.routeKey.key,
       target: `integrations/${integration.integrationId}`,
-      authorizerId: authBindResult?.authorizerId,
+      authorizerId: Lazy.string({ produce: () => this.authBindResult?.authorizerId }),
       authorizationType: Lazy.string({
         produce: () => {
-          if (this.iamEnabled) {
-            if (this.authorizer) {
-              throw new Error('IAM is enabled on this route and an authorizer is set - please choose either grantInvoke or and authorizer, but not both');
-            }
-
-            return 'AWS_IAM';
-          }
-
           // Provide the authorization type or explicitly 'NONE'. We must use
           // 'NONE' and not undefined or CloudFormation doesn't remove an
           // authorizer. @see https://github.com/aws/aws-cdk/pull/14424
-          return authBindResult?.authorizationType ?? 'NONE';
+          return this.authBindResult?.authorizationType ?? 'NONE';
         },
       }),
-      authorizationScopes,
+      authorizationScopes: Lazy.list({
+        produce: () => {
+          let authorizationScopes = this.authBindResult?.authorizationScopes;
+
+          if (this.authBindResult && props.authorizationScopes) {
+            authorizationScopes = Array.from(new Set([
+              ...authorizationScopes ?? [],
+              ...props.authorizationScopes,
+            ]));
+          }
+
+          if (authorizationScopes?.length === 0) {
+            authorizationScopes = undefined;
+          }
+
+          return authorizationScopes;
+        },
+      }),
     };
 
     const route = new CfnRoute(this, 'Resource', routeProps);
     this.routeId = route.ref;
   }
 
+  protected onPrepare() {
+    super.onPrepare();
+    this.tryAuthorizerBinding();
+  }
+
+  private tryAuthorizerBinding() {
+    if (this.authorizer && !this.authBindResult) {
+      this.authBindResult = this.authorizer.bind({
+        route: this,
+        scope: this.httpApi instanceof Construct ? this.httpApi : this, // scope under the API if it's not imported
+      });
+
+      if (!(this.authBindResult.authorizationType in HttpRouteAuthorizationType)) {
+        throw new Error('authorizationType should either be AWS_IAM, JWT, CUSTOM, or NONE');
+      }
+    }
+  }
+
   public grantInvoke(grantee: iam.IGrantable, options: GrantInvokeOptions = {}): iam.Grant {
-    if (this.authorizer) {
-      throw new Error('authorizationType has been set, so we cannot enable AWS_IAM authorization');
+    if (this.authorizer && !(this.authorizer instanceof HttpIamAuthorizer)) {
+      throw new Error('The authorizer has been set, so we cannot enable IAM authorization');
     }
 
-    this.iamEnabled = true;
+    if (!this.authorizer) {
+      this.authorizer = new HttpIamAuthorizer();
+    }
 
     const path = this.path ?? '/';
     const stage = '*';

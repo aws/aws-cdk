@@ -216,26 +216,3 @@ api.addRoutes({
   authorizer,
 });
 ```
-
-### IAM Authorizers
-
-IAM Authorizers use IAM policies to control access to your HTTP API. When a client calls your API, API Gateway will check whether the caller has been granted access through IAM to use your API.
-
-
-```ts
-import { HttpIamAuthorizer } from '@aws-cdk/aws-apigatewayv2-authorizers';
-import { HttpProxyIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
-
-const authorizer = new HttpIamAuthorizer();
-
-const api = new apigwv2.HttpApi(this, 'HttpApi');
-
-api.addRoutes({
-  path: '/',
-  methods: [apigwv2.HttpMethod.GET],
-  integration: new HttpProxyIntegration({
-    url: 'https://get-books-proxy.myproxy.internal',
-  }),
-  authorizer,
-});
-```
