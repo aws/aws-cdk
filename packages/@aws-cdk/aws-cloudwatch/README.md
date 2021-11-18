@@ -101,29 +101,32 @@ it may be useful to specify an `id` for the `MathExpression` so that you can
 differentiate them in the console. For example:
 
 ```ts
-new GraphWidget({
+declare const fn: lambda.Function;
+
+new cloudwatch.GraphWidget({
   left: [
-    new MathExpression({
+    new cloudwatch.MathExpression({
       id: 'errors_faults',
       expression: "errors+faults",
       usingMetrics: {
-        errors: myConstruct.metricErrors(),
-        faults: myConstruct.metricFaults(),
+        errors: fn.metricErrors(),
+        faults: fn.metricFaults(),
       },
     }),
-    new MathExpression({
+    new cloudwatch.MathExpression({
       id: 'problems_invocations',
       expression: "(problems / invocations) * 100",
       usingMetrics: {
         problems: allProblems,
-        invocations: myConstruct.metricInvocations(),
+        invocations: fn.metricInvocations(),
       },
     }),
   ],
 });
 ```
 
-By default, if you do not provide an `id`, CloudWatch will assign `m1` to both `MathExpression` metrics.
+By default, if you do not provide an `id` for the `MathExpression` the CDK will auto assign an id starting
+with `e1`. This construct is reserving the namespace `e*` for auto generating ids.
 
 ### Search Expressions
 
