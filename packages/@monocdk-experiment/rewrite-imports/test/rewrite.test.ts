@@ -1,4 +1,4 @@
-import { rewriteImports } from '../lib/rewrite';
+import { rewriteImports, rewriteReadmeImports } from '../lib/rewrite';
 
 describe(rewriteImports, () => {
   test('correctly rewrites naked "import"', () => {
@@ -71,5 +71,99 @@ describe(rewriteImports, () => {
   // something after
 
   console.log('Look! I did something!');`);
+  });
+});
+
+describe(rewriteReadmeImports, () => {
+  test('parses ts code snippet', () => {
+    const output = rewriteReadmeImports(`
+    Some README text.
+    \`\`\`ts
+    import * as s3 from '@aws-cdk/aws-s3';
+    import { Construct } from "@aws-cdk/core";
+    \`\`\`
+    Some more README text.`, 'subject.ts');
+
+    expect(output).toBe(`
+    Some README text.
+    \`\`\`ts
+    import * as s3 from 'monocdk/aws-s3';
+    import { Construct } from "monocdk";
+    \`\`\`
+    Some more README text.`);
+  });
+
+  test('parses typescript code snippet', () => {
+    const output = rewriteReadmeImports(`
+    Some README text.
+    \`\`\`typescript
+    import * as s3 from '@aws-cdk/aws-s3';
+    import { Construct } from "@aws-cdk/core";
+    \`\`\`
+    Some more README text.`, 'subject.ts');
+
+    expect(output).toBe(`
+    Some README text.
+    \`\`\`typescript
+    import * as s3 from 'monocdk/aws-s3';
+    import { Construct } from "monocdk";
+    \`\`\`
+    Some more README text.`);
+  });
+
+  test('parses text code snippet', () => {
+    const output = rewriteReadmeImports(`
+    Some README text.
+    \`\`\`text
+    import * as s3 from '@aws-cdk/aws-s3';
+    import { Construct } from "@aws-cdk/core";
+    \`\`\`
+    Some more README text.`, 'subject.ts');
+
+    expect(output).toBe(`
+    Some README text.
+    \`\`\`text
+    import * as s3 from 'monocdk/aws-s3';
+    import { Construct } from "monocdk";
+    \`\`\`
+    Some more README text.`);
+  });
+
+  test('ignores non ts|typescript|text code snippet', () => {
+    const output = rewriteReadmeImports(`
+    Some README text.
+    \`\`\`java
+    import * as s3 from '@aws-cdk/aws-s3';
+    \`\`\`
+    Some more README text.`, 'subject.ts');
+
+    expect(output).toBe(`
+    Some README text.
+    \`\`\`java
+    import * as s3 from '@aws-cdk/aws-s3';
+    \`\`\`
+    Some more README text.`);
+  });
+
+  test('parses multiple snippets', () => {
+    const output = rewriteReadmeImports(`
+    Some README text.
+    \`\`\`ts
+    import * as s3 from '@aws-cdk/aws-s3';
+    \`\`\`
+    Some more README text.
+    \`\`\`ts
+    import { CfnDeliveryStream } from '@aws-cdk/aws-kinesisfirehose';
+    \`\`\``, 'subject.ts');
+
+    expect(output).toBe(`
+    Some README text.
+    \`\`\`ts
+    import * as s3 from 'monocdk/aws-s3';
+    \`\`\`
+    Some more README text.
+    \`\`\`ts
+    import { CfnDeliveryStream } from 'monocdk/aws-kinesisfirehose';
+    \`\`\``);
   });
 });
