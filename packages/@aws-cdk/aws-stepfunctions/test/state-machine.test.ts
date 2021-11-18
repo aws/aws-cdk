@@ -42,6 +42,27 @@ describe('State Machine', () => {
 
   }),
 
+  test('Instantiate State Machine with definitionString', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new stepfunctions.StateMachine(stack, 'MyStateMachine', {
+      stateMachineName: 'MyStateMachine',
+      definition: stepfunctions.Chain.start(new stepfunctions.Pass(stack, 'Pass')),
+      definitionString: JSON.parse('{"StartAt":"Fail","States":{"Fail":{"Type":"Fail","End":true}}}'),
+      stateMachineType: stepfunctions.StateMachineType.STANDARD,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::StepFunctions::StateMachine', {
+      StateMachineName: 'MyStateMachine',
+      StateMachineType: 'STANDARD',
+      DefinitionString: '{"StartAt":"Fail","States":{"Fail":{"Type":"Fail","End":true}}}',
+    });
+
+  }),
+
   test('Instantiate Express State Machine', () => {
     // GIVEN
     const stack = new cdk.Stack();

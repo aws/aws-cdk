@@ -127,6 +127,13 @@ export interface StateMachineProps {
    * @default false
    */
   readonly tracingEnabled?: boolean;
+
+  /**
+   * The state machine definition graph as json.
+   *
+   * @default false
+   */
+  readonly definitionString?: object;
 }
 
 /**
@@ -374,6 +381,12 @@ export class StateMachine extends StateMachineBase {
    */
   public readonly stateMachineType: StateMachineType;
 
+  /**
+   * state machines graph definition object.
+   * @attribute
+   */
+  public readonly definitionString: object;
+
   constructor(scope: Construct, id: string, props: StateMachineProps) {
     super(scope, id, {
       physicalName: props.stateMachineName,
@@ -390,13 +403,14 @@ export class StateMachine extends StateMachineBase {
     const graph = new StateGraph(props.definition.startState, `State Machine ${id} definition`);
     graph.timeout = props.timeout;
 
-    this.stateMachineType = props.stateMachineType ?? StateMachineType.STANDARD;
+    this.definitionString = props.definitionString || graph.toGraphJson();
 
+    this.stateMachineType = props.stateMachineType ?? StateMachineType.STANDARD;
     const resource = new CfnStateMachine(this, 'Resource', {
       stateMachineName: this.physicalName,
       stateMachineType: props.stateMachineType ?? undefined,
       roleArn: this.role.roleArn,
-      definitionString: Stack.of(this).toJsonString(graph.toGraphJson()),
+      definitionString: Stack.of(this).toJsonString(this.definitionString),
       loggingConfiguration: props.logs ? this.buildLoggingConfiguration(props.logs) : undefined,
       tracingConfiguration: props.tracingEnabled ? this.buildTracingConfiguration() : undefined,
     });
