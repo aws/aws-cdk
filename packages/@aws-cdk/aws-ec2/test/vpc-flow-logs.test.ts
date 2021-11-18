@@ -189,7 +189,7 @@ describe('vpc flow logs', () => {
       LogGroupName: {
         Ref: 'FlowLogsLogGroup9853A85F',
       },
-    })
+    });
 
     expect(stack).toCountResources('AWS::Logs::LogGroup', 1);
     expect(stack).toCountResources('AWS::IAM::Role', 1);
