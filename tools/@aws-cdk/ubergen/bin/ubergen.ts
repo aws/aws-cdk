@@ -3,8 +3,11 @@ import * as path from 'path';
 import * as process from 'process';
 import cfn2ts from '@aws-cdk/cfn2ts';
 import * as cfnspec from '@aws-cdk/cfnspec';
+import * as monocdk from '@monocdk-experiment/rewrite-imports';
+import * as awscdklib from 'aws-cdk-migration';
 import * as fs from 'fs-extra';
 import * as ts from 'typescript';
+
 
 const LIB_ROOT = path.resolve(process.cwd(), 'lib');
 const ROOT_PATH = findWorkspacePath();
@@ -429,33 +432,14 @@ async function copyOrTransformFiles(from: string, to: string, libraries: readonl
 }
 
 /**
- * Rewrites the imports in README.md from v1 ('@aws-cdk/...') to v2 ('aws-cdk-lib') or monocdk ('monocdk').
- * Uses the module imports (import { aws_foo as foo } from 'aws-cdk-lib') for module imports,
- * and "barrel" imports for types (import { Bucket } from 'aws-cdk-lib/aws-s3').
+ * Rewrites the imports in README.md from v1 ('@aws-cdk') to v2 ('aws-cdk-lib') or monocdk ('monocdk').
  */
 async function rewriteReadmeImports(fromFile: string, libName: string): Promise<string> {
-  const readmeOriginal = await fs.readFile(fromFile, { encoding: 'utf8' });
-  return readmeOriginal
-    // import * as s3 from '@aws-cdk/aws-s3'
-    .replace(/^(\s*)import \* as (.*) from (?:'|")@aws-cdk\/(.*)(?:'|");(\s*)$/gm, rewriteCdkImports)
-    // import s3 = require('@aws-cdk/aws-s3')
-    .replace(/^(\s*)import (.*) = require\((?:'|")@aws-cdk\/(.*)(?:'|")\);(\s*)$/gm, rewriteCdkImports)
-    // import { Bucket } from '@aws-cdk/aws-s3'
-    .replace(/^(\s*)import ({.*}) from (?:'|")@aws-cdk\/(.*)(?:'|");(\s*)$/gm, rewriteCdkTypeImports);
-
-  function rewriteCdkImports(_match: string, prefix: string, alias: string, module: string, suffix: string): string {
-    if (module === 'core') {
-      return `${prefix}import * as ${alias} from '${libName}';${suffix}`;
-    } else {
-      return `${prefix}import { ${module.replace(/-/g, '_')} as ${alias} } from '${libName}';${suffix}`;
-    }
-  }
-  function rewriteCdkTypeImports(_match: string, prefix: string, types: string, module: string, suffix: string): string {
-    if (module === 'core') {
-      return `${prefix}import ${types} from '${libName}';${suffix}`;
-    } else {
-      return `${prefix}import ${types} from '${libName}/${module}';${suffix}`;
-    }
+  const sourceCode = await fs.readFile(fromFile, { encoding: 'utf8' });
+  if (libName === 'aws-cdk-lib') {
+    return awscdklib.rewriteReadmeImports(sourceCode);
+  } else {
+    return monocdk.rewriteReadmeImports(sourceCode);
   }
 }
 
