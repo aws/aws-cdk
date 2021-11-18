@@ -23,15 +23,25 @@ describe('tests', () => {
   test('Lambda target should not have stickiness.enabled set', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'Stack');
+
     new elbv2.ApplicationTargetGroup(stack, 'TG', {
       targetType: elbv2.TargetType.LAMBDA,
     });
 
-    expect(stack).not.toHaveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
+    const tg = new elbv2.ApplicationTargetGroup(stack, 'TG2');
+    tg.addTarget({
+      attachToApplicationTargetGroup(_targetGroup: elbv2.IApplicationTargetGroup): elbv2.LoadBalancerTargetProps {
+        return {
+          targetType: elbv2.TargetType.LAMBDA,
+          targetJson: { id: 'arn:aws:lambda:eu-west-1:123456789012:function:myFn' },
+        };
+      },
+    });
+
+    expect(stack).not.toHaveResourceLike('AWS::ElasticLoadBalancingV2::TargetGroup', {
       TargetGroupAttributes: [
         {
           Key: 'stickiness.enabled',
-          Value: 'false',
         },
       ],
     });
