@@ -179,17 +179,17 @@ describe('vpc flow logs', () => {
     });
 
     expect(stack).toHaveResource('AWS::EC2::FlowLog', {
-        ResourceType: 'NetworkInterface',
-        TrafficType: 'ALL',
-        ResourceId: 'eni-123455',
-        DeliverLogsPermissionArn: {
-          'Fn::GetAtt': ['FlowLogsIAMRoleF18F4209', 'Arn'],
-        },
-        LogFormat: '${srcport} ${dstport}',
-        LogGroupName: {
-          Ref: 'FlowLogsLogGroup9853A85F',
-        },
-      })
+      ResourceType: 'NetworkInterface',
+      TrafficType: 'ALL',
+      ResourceId: 'eni-123455',
+      DeliverLogsPermissionArn: {
+        'Fn::GetAtt': ['FlowLogsIAMRoleF18F4209', 'Arn'],
+      },
+      LogFormat: '${srcport} ${dstport}',
+      LogGroupName: {
+        Ref: 'FlowLogsLogGroup9853A85F',
+      },
+    })
 
     expect(stack).toCountResources('AWS::Logs::LogGroup', 1);
     expect(stack).toCountResources('AWS::IAM::Role', 1);
