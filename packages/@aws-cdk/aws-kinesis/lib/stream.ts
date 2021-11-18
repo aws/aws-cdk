@@ -1,7 +1,7 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { Aws, CfnCondition, Duration, Fn, IResolvable, IResource, Resource, Stack, Token } from '@aws-cdk/core';
+import { ArnFormat, Aws, CfnCondition, Duration, Fn, IResolvable, IResource, Resource, Stack, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { KinesisMetrics } from './kinesis-fixed-canned-metrics';
 import { CfnStream } from './kinesis.generated';
@@ -394,7 +394,7 @@ abstract class StreamBase extends Resource implements IStream {
     return new cloudwatch.Metric({
       namespace: 'AWS/Kinesis',
       metricName,
-      dimensions: {
+      dimensionsMap: {
         StreamName: this.streamName,
       },
       ...props,
@@ -727,7 +727,7 @@ export class Stream extends StreamBase {
   public static fromStreamAttributes(scope: Construct, id: string, attrs: StreamAttributes): IStream {
     class Import extends StreamBase {
       public readonly streamArn = attrs.streamArn;
-      public readonly streamName = Stack.of(scope).parseArn(attrs.streamArn).resourceName!;
+      public readonly streamName = Stack.of(scope).splitArn(attrs.streamArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
       public readonly encryptionKey = attrs.encryptionKey;
     }
 

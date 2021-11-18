@@ -1,7 +1,6 @@
 /// !cdk-integ pragma:ignore-assets
 import * as sns from '@aws-cdk/aws-sns';
-import { App, Fn, Stack } from '@aws-cdk/core';
-import { NestedStack } from '../lib';
+import { App, Fn, NestedStack, Stack } from '@aws-cdk/core';
 
 const app = new App();
 const top = new Stack(app, 'nested-stacks-multi-refs');

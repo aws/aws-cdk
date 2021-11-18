@@ -1,6 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
-import { Stack } from '@aws-cdk/core';
+import { ArnFormat, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
@@ -133,8 +133,8 @@ export class StepFunctionsStartExecution extends sfn.TaskStateBase {
             stack.formatArn({
               service: 'states',
               resource: 'execution',
-              sep: ':',
-              resourceName: `${stack.parseArn(this.props.stateMachine.stateMachineArn, ':').resourceName}*`,
+              arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+              resourceName: `${stack.splitArn(this.props.stateMachine.stateMachineArn, ArnFormat.COLON_RESOURCE_NAME).resourceName}*`,
             }),
           ],
         }),
