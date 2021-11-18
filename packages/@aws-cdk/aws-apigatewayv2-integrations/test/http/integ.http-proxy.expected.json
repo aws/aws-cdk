@@ -37,13 +37,13 @@
         "Code": {
           "ZipFile": "exports.handler = async function(event, context) { return { statusCode: 200, body: \"success\" }; };"
         },
-        "Handler": "index.handler",
         "Role": {
           "Fn::GetAtt": [
             "AlwaysSuccessServiceRole6DB8C2F6",
             "Arn"
           ]
         },
+        "Handler": "index.handler",
         "Runtime": "nodejs12.x"
       },
       "DependsOn": [
@@ -94,7 +94,7 @@
         }
       }
     },
-    "LambdaProxyApiDefaultRouteDefaultRouteIntegration97D5250B": {
+    "LambdaProxyApiDefaultRouteHttpIntegration70df0ec52c3e3b6bbc96e64ce3a05f24EE575CBA": {
       "Type": "AWS::ApiGatewayV2::Integration",
       "Properties": {
         "ApiId": {
@@ -117,13 +117,14 @@
           "Ref": "LambdaProxyApi67594471"
         },
         "RouteKey": "$default",
+        "AuthorizationType": "NONE",
         "Target": {
           "Fn::Join": [
             "",
             [
               "integrations/",
               {
-                "Ref": "LambdaProxyApiDefaultRouteDefaultRouteIntegration97D5250B"
+                "Ref": "LambdaProxyApiDefaultRouteHttpIntegration70df0ec52c3e3b6bbc96e64ce3a05f24EE575CBA"
               }
             ]
           ]
@@ -147,7 +148,7 @@
         "ProtocolType": "HTTP"
       }
     },
-    "HttpProxyApiDefaultRouteDefaultRouteIntegrationF2E17850": {
+    "HttpProxyApiDefaultRouteHttpIntegration8eeecf9ecdb91f31bebf6bd54fb711a41921AB82": {
       "Type": "AWS::ApiGatewayV2::Integration",
       "Properties": {
         "ApiId": {
@@ -185,13 +186,14 @@
           "Ref": "HttpProxyApiD0217C67"
         },
         "RouteKey": "$default",
+        "AuthorizationType": "NONE",
         "Target": {
           "Fn::Join": [
             "",
             [
               "integrations/",
               {
-                "Ref": "HttpProxyApiDefaultRouteDefaultRouteIntegrationF2E17850"
+                "Ref": "HttpProxyApiDefaultRouteHttpIntegration8eeecf9ecdb91f31bebf6bd54fb711a41921AB82"
               }
             ]
           ]

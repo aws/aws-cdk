@@ -1,3 +1,4 @@
+import { SSMPARAM_NO_INVALIDATE } from '@aws-cdk/cx-api';
 import { CloudFormation } from 'aws-sdk';
 import { debug } from '../../logging';
 import { deserializeStructure } from '../../serialize';
@@ -11,6 +12,7 @@ export type Template = {
 interface TemplateParameter {
   Type: string;
   Default?: any;
+  Description?: string;
   [key: string]: any;
 }
 
@@ -424,11 +426,12 @@ export class ParameterValues {
   /**
    * Whether this set of parameter updates will change the actual stack values
    */
-  public hasChanges(currentValues: Record<string, string>): boolean {
+  public hasChanges(currentValues: Record<string, string>): ParameterChanges {
     // If any of the parameters are SSM parameters, deploying must always happen
-    // because we can't predict what the values will be.
-    if (Object.values(this.formalParams).some(p => p.Type.startsWith('AWS::SSM::Parameter::'))) {
-      return true;
+    // because we can't predict what the values will be. We will allow some
+    // parameters to opt out of this check by having a magic string in their description.
+    if (Object.values(this.formalParams).some(p => p.Type.startsWith('AWS::SSM::Parameter::') && !p.Description?.includes(SSMPARAM_NO_INVALIDATE))) {
+      return 'ssm';
     }
 
     // Otherwise we're dirty if:
@@ -445,3 +448,5 @@ export class ParameterValues {
     return false;
   }
 }
+
+export type ParameterChanges = boolean | 'ssm';

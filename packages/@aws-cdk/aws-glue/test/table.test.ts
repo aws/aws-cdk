@@ -1,11 +1,14 @@
-import { deepEqual, doesNotThrow, equal, notEqual, ok } from 'assert';
-import { expect as cdkExpect, haveResource, ResourcePart } from '@aws-cdk/assert';
-import '@aws-cdk/assert/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
+import { testFutureBehavior } from '@aws-cdk/cdk-build-tools/lib/feature-flag';
 import * as glue from '../lib';
+import { CfnTable } from '../lib/glue.generated';
+
+const s3GrantWriteCtx = { [cxapi.S3_GRANT_WRITE_WITHOUT_ACL]: true };
 
 test('unpartitioned JSON table', () => {
   const app = new cdk.App();
@@ -24,15 +27,15 @@ test('unpartitioned JSON table', () => {
     }],
     dataFormat: glue.DataFormat.JSON,
   });
-  equal(table.encryption, glue.TableEncryption.UNENCRYPTED);
+  expect(table.encryption).toEqual(glue.TableEncryption.UNENCRYPTED);
 
-  cdkExpect(tableStack).to(haveResource('AWS::S3::Bucket', {
+  Template.fromStack(tableStack).hasResource('AWS::S3::Bucket', {
     Type: 'AWS::S3::Bucket',
     DeletionPolicy: 'Retain',
     UpdateReplacePolicy: 'Retain',
-  }, ResourcePart.CompleteDefinition));
+  });
 
-  cdkExpect(tableStack).to(haveResource('AWS::Glue::Table', {
+  Template.fromStack(tableStack).hasResourceProperties('AWS::Glue::Table', {
     CatalogId: {
       Ref: 'AWS::AccountId',
     },
@@ -75,7 +78,7 @@ test('unpartitioned JSON table', () => {
       },
       TableType: 'EXTERNAL_TABLE',
     },
-  }));
+  });
 
 });
 
@@ -100,11 +103,11 @@ test('partitioned JSON table', () => {
     }],
     dataFormat: glue.DataFormat.JSON,
   });
-  equal(table.encryption, glue.TableEncryption.UNENCRYPTED);
-  equal(table.encryptionKey, undefined);
-  equal(table.bucket.encryptionKey, undefined);
+  expect(table.encryption).toEqual(glue.TableEncryption.UNENCRYPTED);
+  expect(table.encryptionKey).toEqual(undefined);
+  expect(table.bucket.encryptionKey).toEqual(undefined);
 
-  cdkExpect(tableStack).to(haveResource('AWS::Glue::Table', {
+  Template.fromStack(tableStack).hasResourceProperties('AWS::Glue::Table', {
     CatalogId: {
       Ref: 'AWS::AccountId',
     },
@@ -153,7 +156,7 @@ test('partitioned JSON table', () => {
       },
       TableType: 'EXTERNAL_TABLE',
     },
-  }));
+  });
 
 });
 
@@ -173,10 +176,10 @@ test('compressed table', () => {
     compressed: true,
     dataFormat: glue.DataFormat.JSON,
   });
-  equal(table.encryptionKey, undefined);
-  equal(table.bucket.encryptionKey, undefined);
+  expect(table.encryptionKey).toEqual(undefined);
+  expect(table.bucket.encryptionKey).toEqual(undefined);
 
-  cdkExpect(stack).to(haveResource('AWS::Glue::Table', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Glue::Table', {
     CatalogId: {
       Ref: 'AWS::AccountId',
     },
@@ -219,7 +222,7 @@ test('compressed table', () => {
       },
       TableType: 'EXTERNAL_TABLE',
     },
-  }));
+  });
 
 });
 
@@ -243,7 +246,7 @@ test('table.node.defaultChild', () => {
   });
 
   // THEN
-  ok(table.node.defaultChild instanceof glue.CfnTable);
+  expect(table.node.defaultChild instanceof CfnTable).toEqual(true);
 });
 
 test('encrypted table: SSE-S3', () => {
@@ -262,11 +265,11 @@ test('encrypted table: SSE-S3', () => {
     encryption: glue.TableEncryption.S3_MANAGED,
     dataFormat: glue.DataFormat.JSON,
   });
-  equal(table.encryption, glue.TableEncryption.S3_MANAGED);
-  equal(table.encryptionKey, undefined);
-  equal(table.bucket.encryptionKey, undefined);
+  expect(table.encryption).toEqual(glue.TableEncryption.S3_MANAGED);
+  expect(table.encryptionKey).toEqual(undefined);
+  expect(table.bucket.encryptionKey).toEqual(undefined);
 
-  cdkExpect(stack).to(haveResource('AWS::Glue::Table', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Glue::Table', {
     CatalogId: {
       Ref: 'AWS::AccountId',
     },
@@ -309,9 +312,9 @@ test('encrypted table: SSE-S3', () => {
       },
       TableType: 'EXTERNAL_TABLE',
     },
-  }));
+  });
 
-  cdkExpect(stack).to(haveResource('AWS::S3::Bucket', {
+  Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
     BucketEncryption: {
       ServerSideEncryptionConfiguration: [
         {
@@ -321,7 +324,7 @@ test('encrypted table: SSE-S3', () => {
         },
       ],
     },
-  }));
+  });
 
 });
 
@@ -341,58 +344,14 @@ test('encrypted table: SSE-KMS (implicitly created key)', () => {
     encryption: glue.TableEncryption.KMS,
     dataFormat: glue.DataFormat.JSON,
   });
-  equal(table.encryption, glue.TableEncryption.KMS);
-  equal(table.encryptionKey, table.bucket.encryptionKey);
+  expect(table.encryption).toEqual(glue.TableEncryption.KMS);
+  expect(table.encryptionKey).toEqual(table.bucket.encryptionKey);
 
-  cdkExpect(stack).to(haveResource('AWS::KMS::Key', {
-    KeyPolicy: {
-      Statement: [
-        {
-          Action: [
-            'kms:Create*',
-            'kms:Describe*',
-            'kms:Enable*',
-            'kms:List*',
-            'kms:Put*',
-            'kms:Update*',
-            'kms:Revoke*',
-            'kms:Disable*',
-            'kms:Get*',
-            'kms:Delete*',
-            'kms:ScheduleKeyDeletion',
-            'kms:CancelKeyDeletion',
-            'kms:GenerateDataKey',
-            'kms:TagResource',
-            'kms:UntagResource',
-          ],
-          Effect: 'Allow',
-          Principal: {
-            AWS: {
-              'Fn::Join': [
-                '',
-                [
-                  'arn:',
-                  {
-                    Ref: 'AWS::Partition',
-                  },
-                  ':iam::',
-                  {
-                    Ref: 'AWS::AccountId',
-                  },
-                  ':root',
-                ],
-              ],
-            },
-          },
-          Resource: '*',
-        },
-      ],
-      Version: '2012-10-17',
-    },
+  Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
     Description: 'Created by Default/Table/Bucket',
-  }));
+  });
 
-  cdkExpect(stack).to(haveResource('AWS::S3::Bucket', {
+  Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
     BucketEncryption: {
       ServerSideEncryptionConfiguration: [
         {
@@ -408,9 +367,9 @@ test('encrypted table: SSE-KMS (implicitly created key)', () => {
         },
       ],
     },
-  }));
+  });
 
-  cdkExpect(stack).to(haveResource('AWS::Glue::Table', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Glue::Table', {
     CatalogId: {
       Ref: 'AWS::AccountId',
     },
@@ -453,7 +412,7 @@ test('encrypted table: SSE-KMS (implicitly created key)', () => {
       },
       TableType: 'EXTERNAL_TABLE',
     },
-  }));
+  });
 
 });
 
@@ -462,7 +421,9 @@ test('encrypted table: SSE-KMS (explicitly created key)', () => {
   const database = new glue.Database(stack, 'Database', {
     databaseName: 'database',
   });
-  const encryptionKey = new kms.Key(stack, 'MyKey');
+  const encryptionKey = new kms.Key(stack, 'MyKey', {
+    description: 'OurKey',
+  });
 
   const table = new glue.Table(stack, 'Table', {
     database,
@@ -475,58 +436,15 @@ test('encrypted table: SSE-KMS (explicitly created key)', () => {
     encryptionKey,
     dataFormat: glue.DataFormat.JSON,
   });
-  equal(table.encryption, glue.TableEncryption.KMS);
-  equal(table.encryptionKey, table.bucket.encryptionKey);
-  notEqual(table.encryptionKey, undefined);
+  expect(table.encryption).toEqual(glue.TableEncryption.KMS);
+  expect(table.encryptionKey).toEqual(table.bucket.encryptionKey);
+  expect(table.encryptionKey).not.toEqual(undefined);
 
-  cdkExpect(stack).to(haveResource('AWS::KMS::Key', {
-    KeyPolicy: {
-      Statement: [
-        {
-          Action: [
-            'kms:Create*',
-            'kms:Describe*',
-            'kms:Enable*',
-            'kms:List*',
-            'kms:Put*',
-            'kms:Update*',
-            'kms:Revoke*',
-            'kms:Disable*',
-            'kms:Get*',
-            'kms:Delete*',
-            'kms:ScheduleKeyDeletion',
-            'kms:CancelKeyDeletion',
-            'kms:GenerateDataKey',
-            'kms:TagResource',
-            'kms:UntagResource',
-          ],
-          Effect: 'Allow',
-          Principal: {
-            AWS: {
-              'Fn::Join': [
-                '',
-                [
-                  'arn:',
-                  {
-                    Ref: 'AWS::Partition',
-                  },
-                  ':iam::',
-                  {
-                    Ref: 'AWS::AccountId',
-                  },
-                  ':root',
-                ],
-              ],
-            },
-          },
-          Resource: '*',
-        },
-      ],
-      Version: '2012-10-17',
-    },
-  }));
+  Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
+    Description: 'OurKey',
+  });
 
-  cdkExpect(stack).to(haveResource('AWS::S3::Bucket', {
+  Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
     BucketEncryption: {
       ServerSideEncryptionConfiguration: [
         {
@@ -542,9 +460,9 @@ test('encrypted table: SSE-KMS (explicitly created key)', () => {
         },
       ],
     },
-  }));
+  });
 
-  cdkExpect(stack).to(haveResource('AWS::Glue::Table', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Glue::Table', {
     CatalogId: {
       Ref: 'AWS::AccountId',
     },
@@ -587,7 +505,7 @@ test('encrypted table: SSE-KMS (explicitly created key)', () => {
       },
       TableType: 'EXTERNAL_TABLE',
     },
-  }));
+  });
 
 });
 
@@ -607,11 +525,11 @@ test('encrypted table: SSE-KMS_MANAGED', () => {
     encryption: glue.TableEncryption.KMS_MANAGED,
     dataFormat: glue.DataFormat.JSON,
   });
-  equal(table.encryption, glue.TableEncryption.KMS_MANAGED);
-  equal(table.encryptionKey, undefined);
-  equal(table.bucket.encryptionKey, undefined);
+  expect(table.encryption).toEqual(glue.TableEncryption.KMS_MANAGED);
+  expect(table.encryptionKey).toEqual(undefined);
+  expect(table.bucket.encryptionKey).toEqual(undefined);
 
-  cdkExpect(stack).to(haveResource('AWS::S3::Bucket', {
+  Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
     BucketEncryption: {
       ServerSideEncryptionConfiguration: [
         {
@@ -621,9 +539,9 @@ test('encrypted table: SSE-KMS_MANAGED', () => {
         },
       ],
     },
-  }));
+  });
 
-  cdkExpect(stack).to(haveResource('AWS::Glue::Table', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Glue::Table', {
     CatalogId: {
       Ref: 'AWS::AccountId',
     },
@@ -666,7 +584,7 @@ test('encrypted table: SSE-KMS_MANAGED', () => {
       },
       TableType: 'EXTERNAL_TABLE',
     },
-  }));
+  });
 
 });
 
@@ -686,58 +604,13 @@ test('encrypted table: CSE-KMS (implicitly created key)', () => {
     encryption: glue.TableEncryption.CLIENT_SIDE_KMS,
     dataFormat: glue.DataFormat.JSON,
   });
-  equal(table.encryption, glue.TableEncryption.CLIENT_SIDE_KMS);
-  notEqual(table.encryptionKey, undefined);
-  equal(table.bucket.encryptionKey, undefined);
+  expect(table.encryption).toEqual(glue.TableEncryption.CLIENT_SIDE_KMS);
+  expect(table.encryptionKey).not.toEqual(undefined);
+  expect(table.bucket.encryptionKey).toEqual(undefined);
 
-  cdkExpect(stack).to(haveResource('AWS::KMS::Key', {
-    KeyPolicy: {
-      Statement: [
-        {
-          Action: [
-            'kms:Create*',
-            'kms:Describe*',
-            'kms:Enable*',
-            'kms:List*',
-            'kms:Put*',
-            'kms:Update*',
-            'kms:Revoke*',
-            'kms:Disable*',
-            'kms:Get*',
-            'kms:Delete*',
-            'kms:ScheduleKeyDeletion',
-            'kms:CancelKeyDeletion',
-            'kms:GenerateDataKey',
-            'kms:TagResource',
-            'kms:UntagResource',
-          ],
-          Effect: 'Allow',
-          Principal: {
-            AWS: {
-              'Fn::Join': [
-                '',
-                [
-                  'arn:',
-                  {
-                    Ref: 'AWS::Partition',
-                  },
-                  ':iam::',
-                  {
-                    Ref: 'AWS::AccountId',
-                  },
-                  ':root',
-                ],
-              ],
-            },
-          },
-          Resource: '*',
-        },
-      ],
-      Version: '2012-10-17',
-    },
-  }));
+  Template.fromStack(stack).resourceCountIs('AWS::KMS::Key', 1);
 
-  cdkExpect(stack).to(haveResource('AWS::Glue::Table', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Glue::Table', {
     CatalogId: {
       Ref: 'AWS::AccountId',
     },
@@ -780,7 +653,7 @@ test('encrypted table: CSE-KMS (implicitly created key)', () => {
       },
       TableType: 'EXTERNAL_TABLE',
     },
-  }));
+  });
 
 });
 
@@ -789,7 +662,9 @@ test('encrypted table: CSE-KMS (explicitly created key)', () => {
   const database = new glue.Database(stack, 'Database', {
     databaseName: 'database',
   });
-  const encryptionKey = new kms.Key(stack, 'MyKey');
+  const encryptionKey = new kms.Key(stack, 'MyKey', {
+    description: 'MyKey',
+  });
 
   const table = new glue.Table(stack, 'Table', {
     database,
@@ -802,58 +677,15 @@ test('encrypted table: CSE-KMS (explicitly created key)', () => {
     encryptionKey,
     dataFormat: glue.DataFormat.JSON,
   });
-  equal(table.encryption, glue.TableEncryption.CLIENT_SIDE_KMS);
-  notEqual(table.encryptionKey, undefined);
-  equal(table.bucket.encryptionKey, undefined);
+  expect(table.encryption).toEqual(glue.TableEncryption.CLIENT_SIDE_KMS);
+  expect(table.encryptionKey).not.toEqual(undefined);
+  expect(table.bucket.encryptionKey).toEqual(undefined);
 
-  cdkExpect(stack).to(haveResource('AWS::KMS::Key', {
-    KeyPolicy: {
-      Statement: [
-        {
-          Action: [
-            'kms:Create*',
-            'kms:Describe*',
-            'kms:Enable*',
-            'kms:List*',
-            'kms:Put*',
-            'kms:Update*',
-            'kms:Revoke*',
-            'kms:Disable*',
-            'kms:Get*',
-            'kms:Delete*',
-            'kms:ScheduleKeyDeletion',
-            'kms:CancelKeyDeletion',
-            'kms:GenerateDataKey',
-            'kms:TagResource',
-            'kms:UntagResource',
-          ],
-          Effect: 'Allow',
-          Principal: {
-            AWS: {
-              'Fn::Join': [
-                '',
-                [
-                  'arn:',
-                  {
-                    Ref: 'AWS::Partition',
-                  },
-                  ':iam::',
-                  {
-                    Ref: 'AWS::AccountId',
-                  },
-                  ':root',
-                ],
-              ],
-            },
-          },
-          Resource: '*',
-        },
-      ],
-      Version: '2012-10-17',
-    },
-  }));
+  Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
+    Description: 'MyKey',
+  });
 
-  cdkExpect(stack).to(haveResource('AWS::Glue::Table', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Glue::Table', {
     CatalogId: {
       Ref: 'AWS::AccountId',
     },
@@ -896,7 +728,7 @@ test('encrypted table: CSE-KMS (explicitly created key)', () => {
       },
       TableType: 'EXTERNAL_TABLE',
     },
-  }));
+  });
 
 });
 
@@ -906,7 +738,9 @@ test('encrypted table: CSE-KMS (explicitly passed bucket and key)', () => {
     databaseName: 'database',
   });
   const bucket = new s3.Bucket(stack, 'Bucket');
-  const encryptionKey = new kms.Key(stack, 'MyKey');
+  const encryptionKey = new kms.Key(stack, 'MyKey', {
+    description: 'MyKey',
+  });
 
   const table = new glue.Table(stack, 'Table', {
     database,
@@ -920,58 +754,15 @@ test('encrypted table: CSE-KMS (explicitly passed bucket and key)', () => {
     encryptionKey,
     dataFormat: glue.DataFormat.JSON,
   });
-  equal(table.encryption, glue.TableEncryption.CLIENT_SIDE_KMS);
-  notEqual(table.encryptionKey, undefined);
-  equal(table.bucket.encryptionKey, undefined);
+  expect(table.encryption).toEqual(glue.TableEncryption.CLIENT_SIDE_KMS);
+  expect(table.encryptionKey).not.toEqual(undefined);
+  expect(table.bucket.encryptionKey).toEqual(undefined);
 
-  cdkExpect(stack).to(haveResource('AWS::KMS::Key', {
-    KeyPolicy: {
-      Statement: [
-        {
-          Action: [
-            'kms:Create*',
-            'kms:Describe*',
-            'kms:Enable*',
-            'kms:List*',
-            'kms:Put*',
-            'kms:Update*',
-            'kms:Revoke*',
-            'kms:Disable*',
-            'kms:Get*',
-            'kms:Delete*',
-            'kms:ScheduleKeyDeletion',
-            'kms:CancelKeyDeletion',
-            'kms:GenerateDataKey',
-            'kms:TagResource',
-            'kms:UntagResource',
-          ],
-          Effect: 'Allow',
-          Principal: {
-            AWS: {
-              'Fn::Join': [
-                '',
-                [
-                  'arn:',
-                  {
-                    Ref: 'AWS::Partition',
-                  },
-                  ':iam::',
-                  {
-                    Ref: 'AWS::AccountId',
-                  },
-                  ':root',
-                ],
-              ],
-            },
-          },
-          Resource: '*',
-        },
-      ],
-      Version: '2012-10-17',
-    },
-  }));
+  Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
+    Description: 'MyKey',
+  });
 
-  cdkExpect(stack).to(haveResource('AWS::Glue::Table', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Glue::Table', {
     CatalogId: {
       Ref: 'AWS::AccountId',
     },
@@ -1014,7 +805,7 @@ test('encrypted table: CSE-KMS (explicitly passed bucket and key)', () => {
       },
       TableType: 'EXTERNAL_TABLE',
     },
-  }));
+  });
 
 });
 
@@ -1039,7 +830,7 @@ test('explicit s3 bucket and prefix', () => {
     dataFormat: glue.DataFormat.JSON,
   });
 
-  cdkExpect(stack).to(haveResource('AWS::Glue::Table', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Glue::Table', {
     CatalogId: {
       Ref: 'AWS::AccountId',
     },
@@ -1082,7 +873,7 @@ test('explicit s3 bucket and prefix', () => {
       },
       TableType: 'EXTERNAL_TABLE',
     },
-  }));
+  });
 
 });
 
@@ -1107,7 +898,7 @@ test('explicit s3 bucket and with empty prefix', () => {
     dataFormat: glue.DataFormat.JSON,
   });
 
-  cdkExpect(stack).to(haveResource('AWS::Glue::Table', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Glue::Table', {
     CatalogId: {
       Ref: 'AWS::AccountId',
     },
@@ -1150,7 +941,7 @@ test('explicit s3 bucket and with empty prefix', () => {
       },
       TableType: 'EXTERNAL_TABLE',
     },
-  }));
+  });
 
 });
 
@@ -1174,7 +965,7 @@ test('grants: read only', () => {
 
   table.grantRead(user);
 
-  cdkExpect(stack).to(haveResource('AWS::IAM::Policy', {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
       Statement: [
         {
@@ -1256,12 +1047,12 @@ test('grants: read only', () => {
         Ref: 'User00B015A1',
       },
     ],
-  }));
+  });
 
 });
 
-test('grants: write only', () => {
-  const stack = new cdk.Stack();
+testFutureBehavior('grants: write only', s3GrantWriteCtx, cdk.App, (app) => {
+  const stack = new cdk.Stack(app);
   const user = new iam.User(stack, 'User');
   const database = new glue.Database(stack, 'Database', {
     databaseName: 'database',
@@ -1280,7 +1071,7 @@ test('grants: write only', () => {
 
   table.grantWrite(user);
 
-  cdkExpect(stack).to(haveResource('AWS::IAM::Policy', {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
       Statement: [
         {
@@ -1323,7 +1114,7 @@ test('grants: write only', () => {
         {
           Action: [
             's3:DeleteObject*',
-            's3:PutObject*',
+            's3:PutObject',
             's3:Abort*',
           ],
           Effect: 'Allow',
@@ -1359,12 +1150,12 @@ test('grants: write only', () => {
         Ref: 'User00B015A1',
       },
     ],
-  }));
+  });
 
 });
 
-test('grants: read and write', () => {
-  const stack = new cdk.Stack();
+testFutureBehavior('grants: read and write', s3GrantWriteCtx, cdk.App, (app) => {
+  const stack = new cdk.Stack(app);
   const user = new iam.User(stack, 'User');
   const database = new glue.Database(stack, 'Database', {
     databaseName: 'database',
@@ -1383,7 +1174,7 @@ test('grants: read and write', () => {
 
   table.grantReadWrite(user);
 
-  cdkExpect(stack).to(haveResource('AWS::IAM::Policy', {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
       Statement: [
         {
@@ -1397,7 +1188,6 @@ test('grants: read and write', () => {
             'glue:GetTableVersion',
             'glue:GetTableVersions',
             'glue:BatchCreatePartition',
-            'glue:BatchDeletePartition',
             'glue:CreatePartition',
             'glue:DeletePartition',
             'glue:UpdatePartition',
@@ -1437,7 +1227,7 @@ test('grants: read and write', () => {
             's3:GetBucket*',
             's3:List*',
             's3:DeleteObject*',
-            's3:PutObject*',
+            's3:PutObject',
             's3:Abort*',
           ],
           Effect: 'Allow',
@@ -1473,7 +1263,7 @@ test('grants: read and write', () => {
         Ref: 'User00B015A1',
       },
     ],
-  }));
+  });
 
 });
 
@@ -1555,7 +1345,7 @@ test('validate: can not specify an explicit bucket and encryption', () => {
 });
 
 test('validate: can explicitly pass bucket if Encryption undefined', () => {
-  doesNotThrow(() => createTable({
+  expect(() => createTable({
     tableName: 'name',
     columns: [{
       name: 'col1',
@@ -1563,11 +1353,11 @@ test('validate: can explicitly pass bucket if Encryption undefined', () => {
     }],
     bucket: new s3.Bucket(new cdk.Stack(), 'Bucket'),
     encryption: undefined,
-  }));
+  })).not.toThrow();
 });
 
 test('validate: can explicitly pass bucket if Unencrypted', () => {
-  doesNotThrow(() => createTable({
+  expect(() => createTable({
     tableName: 'name',
     columns: [{
       name: 'col1',
@@ -1575,11 +1365,11 @@ test('validate: can explicitly pass bucket if Unencrypted', () => {
     }],
     bucket: new s3.Bucket(new cdk.Stack(), 'Bucket'),
     encryption: undefined,
-  }));
+  })).not.toThrow();
 });
 
 test('validate: can explicitly pass bucket if ClientSideKms', () => {
-  doesNotThrow(() => createTable({
+  expect(() => createTable({
     tableName: 'name',
     columns: [{
       name: 'col1',
@@ -1587,7 +1377,7 @@ test('validate: can explicitly pass bucket if ClientSideKms', () => {
     }],
     bucket: new s3.Bucket(new cdk.Stack(), 'Bucket'),
     encryption: glue.TableEncryption.CLIENT_SIDE_KMS,
-  }));
+  })).not.toThrow();
 });
 
 test('Table.fromTableArn', () => {
@@ -1598,8 +1388,8 @@ test('Table.fromTableArn', () => {
   const table = glue.Table.fromTableArn(stack, 'boom', 'arn:aws:glue:us-east-1:123456789012:table/db1/tbl1');
 
   // THEN
-  deepEqual(table.tableArn, 'arn:aws:glue:us-east-1:123456789012:table/db1/tbl1');
-  deepEqual(table.tableName, 'tbl1');
+  expect(table.tableArn).toEqual('arn:aws:glue:us-east-1:123456789012:table/db1/tbl1');
+  expect(table.tableName).toEqual('tbl1');
 });
 
 function createTable(props: Pick<glue.TableProps, Exclude<keyof glue.TableProps, 'database' | 'dataFormat'>>): void {

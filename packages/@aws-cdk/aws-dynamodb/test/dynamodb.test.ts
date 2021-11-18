@@ -1,9 +1,14 @@
-import { ABSENT, ResourcePart, SynthUtils } from '@aws-cdk/assert';
-import '@aws-cdk/assert/jest';
+import { arrayWith, ABSENT, ResourcePart, SynthUtils } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
 import * as iam from '@aws-cdk/aws-iam';
+import * as kinesis from '@aws-cdk/aws-kinesis';
 import * as kms from '@aws-cdk/aws-kms';
-import { App, CfnDeletionPolicy, ConstructNode, Duration, PhysicalName, RemovalPolicy, Stack, Tags } from '@aws-cdk/core';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
+import { testLegacyBehavior } from '@aws-cdk/cdk-build-tools/lib/feature-flag';
+import { App, Aws, CfnDeletionPolicy, ConstructNode, Duration, PhysicalName, RemovalPolicy, Resource, Stack, Tags } from '@aws-cdk/core';
+import * as cr from '@aws-cdk/custom-resources';
+import { Construct } from 'constructs';
 import {
   Attribute,
   AttributeType,
@@ -15,7 +20,10 @@ import {
   Table,
   TableEncryption,
   Operation,
+  CfnTable,
 } from '../lib';
+
+jest.mock('@aws-cdk/custom-resources');
 
 /* eslint-disable quote-props */
 
@@ -32,7 +40,7 @@ const GSI_NAME = 'MyGSI';
 const GSI_PARTITION_KEY: Attribute = { name: 'gsiHashKey', type: AttributeType.STRING };
 const GSI_SORT_KEY: Attribute = { name: 'gsiSortKey', type: AttributeType.BINARY };
 const GSI_NON_KEY = 'gsiNonKey';
-function* GSI_GENERATOR(): Generator<GlobalSecondaryIndexProps, never> {
+function * GSI_GENERATOR(): Generator<GlobalSecondaryIndexProps, never> {
   let n = 0;
   while (true) {
     const globalSecondaryIndexProps: GlobalSecondaryIndexProps = {
@@ -43,7 +51,7 @@ function* GSI_GENERATOR(): Generator<GlobalSecondaryIndexProps, never> {
     n++;
   }
 }
-function* NON_KEY_ATTRIBUTE_GENERATOR(nonKeyPrefix: string): Generator<string, never> {
+function * NON_KEY_ATTRIBUTE_GENERATOR(nonKeyPrefix: string): Generator<string, never> {
   let n = 0;
   while (true) {
     yield `${nonKeyPrefix}${n}`;
@@ -55,7 +63,7 @@ function* NON_KEY_ATTRIBUTE_GENERATOR(nonKeyPrefix: string): Generator<string, n
 const LSI_NAME = 'MyLSI';
 const LSI_SORT_KEY: Attribute = { name: 'lsiSortKey', type: AttributeType.NUMBER };
 const LSI_NON_KEY = 'lsiNonKey';
-function* LSI_GENERATOR(): Generator<LocalSecondaryIndexProps, never> {
+function * LSI_GENERATOR(): Generator<LocalSecondaryIndexProps, never> {
   let n = 0;
   while (true) {
     const localSecondaryIndexProps: LocalSecondaryIndexProps = {
@@ -311,8 +319,9 @@ describe('default properties', () => {
   });
 });
 
-test('when specifying every property', () => {
+testDeprecated('when specifying every property', () => {
   const stack = new Stack();
+  const stream = new kinesis.Stream(stack, 'MyStream');
   const table = new Table(stack, CONSTRUCT_NAME, {
     tableName: TABLE_NAME,
     readCapacity: 42,
@@ -324,6 +333,8 @@ test('when specifying every property', () => {
     timeToLiveAttribute: 'timeToLive',
     partitionKey: TABLE_PARTITION_KEY,
     sortKey: TABLE_SORT_KEY,
+    contributorInsightsEnabled: true,
+    kinesisStream: stream,
   });
   Tags.of(table).add('Environment', 'Production');
 
@@ -347,6 +358,12 @@ test('when specifying every property', () => {
       TableName: 'MyTable',
       Tags: [{ Key: 'Environment', Value: 'Production' }],
       TimeToLiveSpecification: { AttributeName: 'timeToLive', Enabled: true },
+      ContributorInsightsSpecification: { Enabled: true },
+      KinesisStreamSpecification: {
+        StreamArn: {
+          'Fn::GetAtt': ['MyStream5C050E93', 'Arn'],
+        },
+      },
     },
   );
 });
@@ -453,7 +470,7 @@ test('fails if encryption key is used with default encryption', () => {
   })).toThrow('`encryptionKey cannot be specified unless encryption is set to TableEncryption.CUSTOMER_MANAGED (it was set to ${encryptionType})`');
 });
 
-test('fails if encryption key is used with serverSideEncryption', () => {
+testDeprecated('fails if encryption key is used with serverSideEncryption', () => {
   const stack = new Stack();
   const encryptionKey = new kms.Key(stack, 'Key', {
     enableKeyRotation: true,
@@ -466,7 +483,7 @@ test('fails if encryption key is used with serverSideEncryption', () => {
   })).toThrow(/encryptionKey cannot be specified when serverSideEncryption is specified. Use encryption instead/);
 });
 
-test('fails if both encryption and serverSideEncryption is specified', () => {
+testDeprecated('fails if both encryption and serverSideEncryption is specified', () => {
   const stack = new Stack();
   expect(() => new Table(stack, 'Table A', {
     tableName: TABLE_NAME,
@@ -486,154 +503,10 @@ test('fails if both replication regions used with customer managed CMK', () => {
   })).toThrow('TableEncryption.CUSTOMER_MANAGED is not supported by DynamoDB Global Tables (where replicationRegions was set)');
 });
 
-test('if an encryption key is included, decrypt permissions are also added for grantStream', () => {
-  const stack = new Stack();
-  const encryptionKey = new kms.Key(stack, 'Key', {
-    enableKeyRotation: true,
-  });
-  const table = new Table(stack, 'Table A', {
-    tableName: TABLE_NAME,
-    partitionKey: TABLE_PARTITION_KEY,
-    encryptionKey,
-    stream: StreamViewType.NEW_IMAGE,
-  });
-  const user = new iam.User(stack, 'MyUser');
-  table.grantStreamRead(user);
-  expect(stack).toMatchTemplate({
-    'Resources': {
-      'Key961B73FD': {
-        'Type': 'AWS::KMS::Key',
-        'Properties': {
-          'KeyPolicy': {
-            'Statement': [
-              {
-                'Action': [
-                  'kms:Create*',
-                  'kms:Describe*',
-                  'kms:Enable*',
-                  'kms:List*',
-                  'kms:Put*',
-                  'kms:Update*',
-                  'kms:Revoke*',
-                  'kms:Disable*',
-                  'kms:Get*',
-                  'kms:Delete*',
-                  'kms:ScheduleKeyDeletion',
-                  'kms:CancelKeyDeletion',
-                  'kms:GenerateDataKey',
-                  'kms:TagResource',
-                  'kms:UntagResource',
-                ],
-                'Effect': 'Allow',
-                'Principal': {
-                  'AWS': {
-                    'Fn::Join': [
-                      '',
-                      [
-                        'arn:',
-                        {
-                          'Ref': 'AWS::Partition',
-                        },
-                        ':iam::',
-                        {
-                          'Ref': 'AWS::AccountId',
-                        },
-                        ':root',
-                      ],
-                    ],
-                  },
-                },
-                'Resource': '*',
-              },
-            ],
-            'Version': '2012-10-17',
-          },
-          'EnableKeyRotation': true,
-        },
-        'UpdateReplacePolicy': 'Retain',
-        'DeletionPolicy': 'Retain',
-      },
-      'TableA3D7B5AFA': {
-        'Type': 'AWS::DynamoDB::Table',
-        'Properties': {
-          'KeySchema': [
-            {
-              'AttributeName': 'hashKey',
-              'KeyType': 'HASH',
-            },
-          ],
-          'AttributeDefinitions': [
-            {
-              'AttributeName': 'hashKey',
-              'AttributeType': 'S',
-            },
-          ],
-          'ProvisionedThroughput': {
-            'ReadCapacityUnits': 5,
-            'WriteCapacityUnits': 5,
-          },
-          'SSESpecification': {
-            'KMSMasterKeyId': {
-              'Fn::GetAtt': [
-                'Key961B73FD',
-                'Arn',
-              ],
-            },
-            'SSEEnabled': true,
-            'SSEType': 'KMS',
-          },
-          'StreamSpecification': {
-            'StreamViewType': 'NEW_IMAGE',
-          },
-          'TableName': 'MyTable',
-        },
-        'UpdateReplacePolicy': 'Retain',
-        'DeletionPolicy': 'Retain',
-      },
-      'MyUserDC45028B': {
-        'Type': 'AWS::IAM::User',
-      },
-      'MyUserDefaultPolicy7B897426': {
-        'Type': 'AWS::IAM::Policy',
-        'Properties': {
-          'PolicyDocument': {
-            'Statement': [
-              {
-                'Action': 'dynamodb:ListStreams',
-                'Effect': 'Allow',
-                'Resource': '*',
-              },
-              {
-                'Action': [
-                  'dynamodb:DescribeStream',
-                  'dynamodb:GetRecords',
-                  'dynamodb:GetShardIterator',
-                ],
-                'Effect': 'Allow',
-                'Resource': {
-                  'Fn::GetAtt': [
-                    'TableA3D7B5AFA',
-                    'StreamArn',
-                  ],
-                },
-              },
-            ],
-            'Version': '2012-10-17',
-          },
-          'PolicyName': 'MyUserDefaultPolicy7B897426',
-          'Users': [
-            {
-              'Ref': 'MyUserDC45028B',
-            },
-          ],
-        },
-      },
-    },
-  });
-});
-
-test('if an encryption key is included, encrypt/decrypt permissions are also added both ways', () => {
-  const stack = new Stack();
+// this behaviour is only applicable without the future flag 'aws-kms:defaultKeyPolicies'
+// see subsequent test for the updated behaviour
+testLegacyBehavior('if an encryption key is included, encrypt/decrypt permissions are also added both ways', App, (app) => {
+  const stack = new Stack(app);
   const table = new Table(stack, 'Table A', {
     tableName: TABLE_NAME,
     partitionKey: TABLE_PARTITION_KEY,
@@ -765,6 +638,7 @@ test('if an encryption key is included, encrypt/decrypt permissions are also add
                   'dynamodb:Query',
                   'dynamodb:GetItem',
                   'dynamodb:Scan',
+                  'dynamodb:ConditionCheckItem',
                   'dynamodb:BatchWriteItem',
                   'dynamodb:PutItem',
                   'dynamodb:UpdateItem',
@@ -814,6 +688,38 @@ test('if an encryption key is included, encrypt/decrypt permissions are also add
   });
 });
 
+test('if an encryption key is included, encrypt/decrypt permissions are added to the principal', () => {
+  const stack = new Stack();
+  const table = new Table(stack, 'Table A', {
+    tableName: TABLE_NAME,
+    partitionKey: TABLE_PARTITION_KEY,
+    encryption: TableEncryption.CUSTOMER_MANAGED,
+  });
+  const user = new iam.User(stack, 'MyUser');
+  table.grantReadWriteData(user);
+
+  expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    'PolicyDocument': {
+      'Statement': arrayWith({
+        'Action': [
+          'kms:Decrypt',
+          'kms:DescribeKey',
+          'kms:Encrypt',
+          'kms:ReEncrypt*',
+          'kms:GenerateDataKey*',
+        ],
+        'Effect': 'Allow',
+        'Resource': {
+          'Fn::GetAtt': [
+            'TableAKey07CC09EC',
+            'Arn',
+          ],
+        },
+      }),
+    },
+  });
+});
+
 test('when specifying PAY_PER_REQUEST billing mode', () => {
   const stack = new Stack();
   new Table(stack, CONSTRUCT_NAME, {
@@ -836,27 +742,138 @@ test('when specifying PAY_PER_REQUEST billing mode', () => {
   );
 });
 
-test('error when specifying read or write capacity with a PAY_PER_REQUEST billing mode', () => {
-  const stack = new Stack();
-  expect(() => new Table(stack, 'Table A', {
-    tableName: TABLE_NAME,
-    billingMode: BillingMode.PAY_PER_REQUEST,
-    partitionKey: TABLE_PARTITION_KEY,
-    readCapacity: 1,
-  })).toThrow(/PAY_PER_REQUEST/);
-  expect(() => new Table(stack, 'Table B', {
-    tableName: TABLE_NAME,
-    billingMode: BillingMode.PAY_PER_REQUEST,
-    partitionKey: TABLE_PARTITION_KEY,
-    writeCapacity: 1,
-  })).toThrow(/PAY_PER_REQUEST/);
-  expect(() => new Table(stack, 'Table C', {
-    tableName: TABLE_NAME,
-    billingMode: BillingMode.PAY_PER_REQUEST,
-    partitionKey: TABLE_PARTITION_KEY,
-    readCapacity: 1,
-    writeCapacity: 1,
-  })).toThrow(/PAY_PER_REQUEST/);
+describe('when billing mode is PAY_PER_REQUEST', () => {
+  let stack: Stack;
+
+  beforeEach(() => {
+    stack = new Stack();
+  });
+
+  test('creating the Table fails when readCapacity is specified', () => {
+    expect(() => new Table(stack, 'Table A', {
+      tableName: TABLE_NAME,
+      partitionKey: TABLE_PARTITION_KEY,
+      billingMode: BillingMode.PAY_PER_REQUEST,
+      readCapacity: 1,
+    })).toThrow(/PAY_PER_REQUEST/);
+  });
+
+  test('creating the Table fails when writeCapacity is specified', () => {
+    expect(() => new Table(stack, 'Table B', {
+      tableName: TABLE_NAME,
+      partitionKey: TABLE_PARTITION_KEY,
+      billingMode: BillingMode.PAY_PER_REQUEST,
+      writeCapacity: 1,
+    })).toThrow(/PAY_PER_REQUEST/);
+  });
+
+  test('creating the Table fails when both readCapacity and writeCapacity are specified', () => {
+    expect(() => new Table(stack, 'Table C', {
+      tableName: TABLE_NAME,
+      partitionKey: TABLE_PARTITION_KEY,
+      billingMode: BillingMode.PAY_PER_REQUEST,
+      readCapacity: 1,
+      writeCapacity: 1,
+    })).toThrow(/PAY_PER_REQUEST/);
+  });
+});
+
+describe('schema details', () => {
+  let stack: Stack;
+  let table: Table;
+
+  beforeEach(() => {
+    stack = new Stack();
+    table = new Table(stack, 'Table A', {
+      tableName: TABLE_NAME,
+      partitionKey: TABLE_PARTITION_KEY,
+    });
+  });
+
+  test('get scheama for table with hash key only', () => {
+    expect(table.schema()).toEqual({
+      partitionKey: TABLE_PARTITION_KEY,
+      sortKey: undefined,
+    });
+  });
+
+  test('get scheama for table with hash key + range key', () => {
+    table = new Table(stack, 'TableB', {
+      tableName: TABLE_NAME,
+      partitionKey: TABLE_PARTITION_KEY,
+      sortKey: TABLE_SORT_KEY,
+    });
+
+    expect(table.schema()).toEqual({
+      partitionKey: TABLE_PARTITION_KEY,
+      sortKey: TABLE_SORT_KEY,
+    });
+  });
+
+  test('get scheama for GSI with hash key', () => {
+    table.addGlobalSecondaryIndex({
+      indexName: GSI_NAME,
+      partitionKey: GSI_PARTITION_KEY,
+    });
+
+    expect(table.schema(GSI_NAME)).toEqual({
+      partitionKey: GSI_PARTITION_KEY,
+      sortKey: undefined,
+    });
+  });
+
+  test('get scheama for GSI with hash key + range key', () => {
+    table.addGlobalSecondaryIndex({
+      indexName: GSI_NAME,
+      partitionKey: GSI_PARTITION_KEY,
+      sortKey: GSI_SORT_KEY,
+    });
+
+    expect(table.schema(GSI_NAME)).toEqual({
+      partitionKey: GSI_PARTITION_KEY,
+      sortKey: GSI_SORT_KEY,
+    });
+  });
+
+  test('get scheama for LSI', () => {
+    table.addLocalSecondaryIndex({
+      indexName: LSI_NAME,
+      sortKey: LSI_SORT_KEY,
+    });
+
+    expect(table.schema(LSI_NAME)).toEqual({
+      partitionKey: TABLE_PARTITION_KEY,
+      sortKey: LSI_SORT_KEY,
+    });
+  });
+
+  test('get scheama for multiple secondary indexes', () => {
+    table.addLocalSecondaryIndex({
+      indexName: LSI_NAME,
+      sortKey: LSI_SORT_KEY,
+    });
+
+    table.addGlobalSecondaryIndex({
+      indexName: GSI_NAME,
+      partitionKey: GSI_PARTITION_KEY,
+      sortKey: GSI_SORT_KEY,
+    });
+
+    expect(table.schema(LSI_NAME)).toEqual({
+      partitionKey: TABLE_PARTITION_KEY,
+      sortKey: LSI_SORT_KEY,
+    });
+
+    expect(table.schema(GSI_NAME)).toEqual({
+      partitionKey: GSI_PARTITION_KEY,
+      sortKey: GSI_SORT_KEY,
+    });
+  });
+
+  test('get scheama for unknown secondary index', () => {
+    expect(() => table.schema(GSI_NAME))
+      .toThrow(/Cannot find schema for index: MyGSI. Use 'addGlobalSecondaryIndex' or 'addLocalSecondaryIndex' to add index/);
+  });
 });
 
 test('when adding a global secondary index with hash key only', () => {
@@ -1587,7 +1604,7 @@ describe('metrics', () => {
 
   });
 
-  test('Can use metricSystemErrors without the TableName dimension', () => {
+  testDeprecated('Can use metricSystemErrors without the TableName dimension', () => {
 
     const stack = new Stack();
     const table = new Table(stack, 'Table', {
@@ -1601,7 +1618,7 @@ describe('metrics', () => {
 
   });
 
-  test('Using metricSystemErrors without the Operation dimension will fail', () => {
+  testDeprecated('Using metricSystemErrors without the Operation dimension will fail', () => {
 
     const stack = new Stack();
     const table = new Table(stack, 'Table', {
@@ -1656,7 +1673,7 @@ describe('metrics', () => {
 
   });
 
-  test('Can use metricSystemErrors on a Dynamodb Table', () => {
+  testDeprecated('Can use metricSystemErrors on a Dynamodb Table', () => {
     // GIVEN
     const stack = new Stack();
     const table = new Table(stack, 'Table', {
@@ -1664,7 +1681,7 @@ describe('metrics', () => {
     });
 
     // THEN
-    expect(stack.resolve(table.metricSystemErrors({ dimensions: { TableName: table.tableName, Operation: 'GetItem' } }))).toEqual({
+    expect(stack.resolve(table.metricSystemErrors({ dimensionsMap: { TableName: table.tableName, Operation: 'GetItem' } }))).toEqual({
       period: Duration.minutes(5),
       dimensions: { TableName: { Ref: 'TableCD117FA1' }, Operation: 'GetItem' },
       namespace: 'AWS/DynamoDB',
@@ -1725,7 +1742,7 @@ describe('metrics', () => {
       partitionKey: { name: 'id', type: AttributeType.STRING },
     });
 
-    expect(table.metricSuccessfulRequestLatency({ dimensions: { Operation: 'GetItem' } }).dimensions).toEqual({
+    expect(table.metricSuccessfulRequestLatency({ dimensionsMap: { Operation: 'GetItem' } }).dimensions).toEqual({
       TableName: table.tableName,
       Operation: 'GetItem',
     });
@@ -1739,7 +1756,7 @@ describe('metrics', () => {
       partitionKey: { name: 'id', type: AttributeType.STRING },
     });
 
-    expect(() => table.metricSuccessfulRequestLatency({ dimensions: { TableName: table.tableName } }))
+    expect(() => table.metricSuccessfulRequestLatency({ dimensionsMap: { TableName: table.tableName } }))
       .toThrow(/'Operation' dimension must be passed for the 'SuccessfulRequestLatency' metric./);
 
   });
@@ -1753,7 +1770,7 @@ describe('metrics', () => {
 
     // THEN
     expect(stack.resolve(table.metricSuccessfulRequestLatency({
-      dimensions: {
+      dimensionsMap: {
         TableName: table.tableName,
         Operation: 'GetItem',
       },
@@ -1817,14 +1834,14 @@ describe('grants', () => {
     });
   });
 
-  test('"grant" allows adding arbitrary actions associated with this table resource', () => {
+  test('"grant" allows adding arbitrary actions associated with this table resource (via testGrant)', () => {
     testGrant(
       ['action1', 'action2'], (p, t) => t.grant(p, 'dynamodb:action1', 'dynamodb:action2'));
   });
 
   test('"grantReadData" allows the principal to read data from the table', () => {
     testGrant(
-      ['BatchGetItem', 'GetRecords', 'GetShardIterator', 'Query', 'GetItem', 'Scan'], (p, t) => t.grantReadData(p));
+      ['BatchGetItem', 'GetRecords', 'GetShardIterator', 'Query', 'GetItem', 'Scan', 'ConditionCheckItem'], (p, t) => t.grantReadData(p));
   });
 
   test('"grantWriteData" allows the principal to write data to the table', () => {
@@ -1835,7 +1852,7 @@ describe('grants', () => {
   test('"grantReadWriteData" allows the principal to read/write data', () => {
     testGrant([
       'BatchGetItem', 'GetRecords', 'GetShardIterator', 'Query', 'GetItem', 'Scan',
-      'BatchWriteItem', 'PutItem', 'UpdateItem', 'DeleteItem',
+      'ConditionCheckItem', 'BatchWriteItem', 'PutItem', 'UpdateItem', 'DeleteItem',
     ], (p, t) => t.grantReadWriteData(p));
   });
 
@@ -1843,7 +1860,7 @@ describe('grants', () => {
     testGrant(['*'], (p, t) => t.grantFullAccess(p));
   });
 
-  test('"Table.grantListStreams" allows principal to list all streams', () => {
+  testDeprecated('"Table.grantListStreams" allows principal to list all streams', () => {
     // GIVEN
     const stack = new Stack();
     const user = new iam.User(stack, 'user');
@@ -1996,6 +2013,7 @@ describe('grants', () => {
               'dynamodb:Query',
               'dynamodb:GetItem',
               'dynamodb:Scan',
+              'dynamodb:ConditionCheckItem',
             ],
             'Effect': 'Allow',
             'Resource': [
@@ -2147,6 +2165,7 @@ describe('import', () => {
               'dynamodb:Query',
               'dynamodb:GetItem',
               'dynamodb:Scan',
+              'dynamodb:ConditionCheckItem',
             ],
             'Effect': 'Allow',
             'Resource': [
@@ -2188,6 +2207,7 @@ describe('import', () => {
               'dynamodb:Query',
               'dynamodb:GetItem',
               'dynamodb:Scan',
+              'dynamodb:ConditionCheckItem',
               'dynamodb:BatchWriteItem',
               'dynamodb:PutItem',
               'dynamodb:UpdateItem',
@@ -2227,7 +2247,7 @@ describe('import', () => {
       'Roles': [{ 'Ref': 'NewRole99763075' }],
     });
 
-    expect(table.tableArn).toBe('arn:${Token[AWS.Partition.3]}:dynamodb:${Token[AWS.Region.4]}:${Token[AWS.AccountId.0]}:table/MyTable');
+    expect(table.tableArn).toBe(`arn:${Aws.PARTITION}:dynamodb:${Aws.REGION}:${Aws.ACCOUNT_ID}:table/MyTable`);
     expect(stack.resolve(table.tableName)).toBe(tableName);
   });
 
@@ -2333,6 +2353,7 @@ describe('import', () => {
                 'dynamodb:Query',
                 'dynamodb:GetItem',
                 'dynamodb:Scan',
+                'dynamodb:ConditionCheckItem',
               ],
               Resource: [
                 {
@@ -2386,12 +2407,6 @@ describe('global', () => {
     // THEN
     expect(stack).toHaveResource('Custom::DynamoDBReplica', {
       Properties: {
-        ServiceToken: {
-          'Fn::GetAtt': [
-            'awscdkawsdynamodbReplicaProviderNestedStackawscdkawsdynamodbReplicaProviderNestedStackResource18E3F12D',
-            'Outputs.awscdkawsdynamodbReplicaProviderframeworkonEventF9504691Arn',
-          ],
-        },
         TableName: {
           Ref: 'TableCD117FA1',
         },
@@ -2402,16 +2417,64 @@ describe('global', () => {
 
     expect(stack).toHaveResource('Custom::DynamoDBReplica', {
       Properties: {
-        ServiceToken: {
-          'Fn::GetAtt': [
-            'awscdkawsdynamodbReplicaProviderNestedStackawscdkawsdynamodbReplicaProviderNestedStackResource18E3F12D',
-            'Outputs.awscdkawsdynamodbReplicaProviderframeworkonEventF9504691Arn',
-          ],
-        },
         TableName: {
           Ref: 'TableCD117FA1',
         },
         Region: 'eu-central-1',
+      },
+      Condition: 'TableStackRegionNotEqualseucentral199D46FC0',
+    }, ResourcePart.CompleteDefinition);
+
+    expect(SynthUtils.toCloudFormation(stack).Conditions).toEqual({
+      TableStackRegionNotEqualseuwest2A03859E7: {
+        'Fn::Not': [
+          { 'Fn::Equals': ['eu-west-2', { Ref: 'AWS::Region' }] },
+        ],
+      },
+      TableStackRegionNotEqualseucentral199D46FC0: {
+        'Fn::Not': [
+          { 'Fn::Equals': ['eu-central-1', { Ref: 'AWS::Region' }] },
+        ],
+      },
+    });
+  });
+
+  test('create replicas without waiting to finish replication', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new Table(stack, 'Table', {
+      partitionKey: {
+        name: 'id',
+        type: AttributeType.STRING,
+      },
+      replicationRegions: [
+        'eu-west-2',
+        'eu-central-1',
+      ],
+      waitForReplicationToFinish: false,
+    });
+
+    // THEN
+    expect(stack).toHaveResource('Custom::DynamoDBReplica', {
+      Properties: {
+        TableName: {
+          Ref: 'TableCD117FA1',
+        },
+        Region: 'eu-west-2',
+        SkipReplicationCompletedWait: true,
+      },
+      Condition: 'TableStackRegionNotEqualseuwest2A03859E7',
+    }, ResourcePart.CompleteDefinition);
+
+    expect(stack).toHaveResource('Custom::DynamoDBReplica', {
+      Properties: {
+        TableName: {
+          Ref: 'TableCD117FA1',
+        },
+        Region: 'eu-central-1',
+        SkipReplicationCompletedWait: true,
       },
       Condition: 'TableStackRegionNotEqualseucentral199D46FC0',
     }, ResourcePart.CompleteDefinition);
@@ -2466,6 +2529,7 @@ describe('global', () => {
               'dynamodb:Query',
               'dynamodb:GetItem',
               'dynamodb:Scan',
+              'dynamodb:ConditionCheckItem',
             ],
             Effect: 'Allow',
             Resource: [
@@ -2619,6 +2683,7 @@ describe('global', () => {
               'dynamodb:Query',
               'dynamodb:GetItem',
               'dynamodb:Scan',
+              'dynamodb:ConditionCheckItem',
             ],
             Effect: 'Allow',
             Resource: [
@@ -2766,12 +2831,12 @@ describe('global', () => {
     });
   });
 
-  test('throws with PROVISIONED billing mode', () => {
+  test('throws when PROVISIONED billing mode is used without auto-scaled writes', () => {
     // GIVEN
     const stack = new Stack();
 
-    // THEN
-    expect(() => new Table(stack, 'Table', {
+    // WHEN
+    new Table(stack, 'Table', {
       partitionKey: {
         name: 'id',
         type: AttributeType.STRING,
@@ -2781,7 +2846,65 @@ describe('global', () => {
         'eu-central-1',
       ],
       billingMode: BillingMode.PROVISIONED,
-    })).toThrow(/`PAY_PER_REQUEST`/);
+    });
+
+    // THEN
+    expect(() => {
+      SynthUtils.synthesize(stack);
+    }).toThrow(/A global Table that uses PROVISIONED as the billing mode needs auto-scaled write capacity/);
+  });
+
+  test('throws when PROVISIONED billing mode is used with auto-scaled writes, but without a policy', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const table = new Table(stack, 'Table', {
+      partitionKey: {
+        name: 'id',
+        type: AttributeType.STRING,
+      },
+      replicationRegions: [
+        'eu-west-2',
+        'eu-central-1',
+      ],
+      billingMode: BillingMode.PROVISIONED,
+    });
+    table.autoScaleWriteCapacity({
+      minCapacity: 1,
+      maxCapacity: 10,
+    });
+
+    // THEN
+    expect(() => {
+      SynthUtils.synthesize(stack);
+    }).toThrow(/A global Table that uses PROVISIONED as the billing mode needs auto-scaled write capacity with a policy/);
+  });
+
+  test('allows PROVISIONED billing mode when auto-scaled writes with a policy are specified', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const table = new Table(stack, 'Table', {
+      partitionKey: {
+        name: 'id',
+        type: AttributeType.STRING,
+      },
+      replicationRegions: [
+        'eu-west-2',
+        'eu-central-1',
+      ],
+      billingMode: BillingMode.PROVISIONED,
+    });
+    table.autoScaleWriteCapacity({
+      minCapacity: 1,
+      maxCapacity: 10,
+    }).scaleOnUtilization({ targetUtilizationPercent: 75 });
+
+    expect(stack).toHaveResourceLike('AWS::DynamoDB::Table', {
+      BillingMode: ABSENT, // PROVISIONED is the default
+    });
   });
 
   test('throws when stream is set and not set to NEW_AND_OLD_IMAGES', () => {
@@ -2845,6 +2968,49 @@ describe('global', () => {
     // THEN
     expect(SynthUtils.toCloudFormation(stack).Conditions).toBeUndefined();
   });
+
+  test('can configure timeout', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new Table(stack, 'Table', {
+      partitionKey: {
+        name: 'id',
+        type: AttributeType.STRING,
+      },
+      replicationRegions: ['eu-central-1'],
+      replicationTimeout: Duration.hours(1),
+    });
+
+    // THEN
+    expect(cr.Provider).toHaveBeenCalledWith(expect.anything(), expect.any(String), expect.objectContaining({
+      totalTimeout: Duration.hours(1),
+    }));
+  });
+});
+
+test('L1 inside L2 expects removalpolicy to have been set', () => {
+  // Check that the "stateful L1 validation generation" works. Do it here
+  // because we know DDB tables are stateful.
+  const app = new App();
+  const stack = new Stack(app, 'Stack');
+
+  class FakeTableL2 extends Resource {
+    constructor(scope: Construct, id: string) {
+      super(scope, id);
+
+      new CfnTable(this, 'Resource', {
+        keySchema: [{ attributeName: 'hash', keyType: 'S' }],
+      });
+    }
+  }
+
+  new FakeTableL2(stack, 'Table');
+
+  expect(() => {
+    SynthUtils.toCloudFormation(stack);
+  }).toThrow(/is a stateful resource type/);
 });
 
 function testGrant(expectedActions: string[], invocation: (user: iam.IPrincipal, table: Table) => void) {

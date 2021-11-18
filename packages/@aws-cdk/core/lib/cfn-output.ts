@@ -134,7 +134,7 @@ export class CfnOutput extends CfnElement {
    */
   public get importValue() {
     // We made _exportName mutable so this will have to be lazy.
-    return Fn.importValue(Lazy.stringValue({
+    return Fn.importValue(Lazy.uncachedString({
       produce: (ctx) => {
         if (Stack.of(ctx.scope) === this.stack) {
           throw new Error(`'importValue' property of '${this.node.path}' should only be used in a different Stack`);
@@ -163,10 +163,18 @@ export class CfnOutput extends CfnElement {
       },
     };
   }
+
+  protected validate(): string[] {
+    if (this._exportName && !Token.isUnresolved(this._exportName) && this._exportName.length > 255) {
+      return [`Export name cannot exceed 255 characters (got ${this._exportName.length} characters)`];
+    }
+    return [];
+  }
 }
 
 import { CfnCondition } from './cfn-condition';
 import { Fn } from './cfn-fn';
 import { Lazy } from './lazy';
 import { Stack } from './stack';
+import { Token } from './token';
 

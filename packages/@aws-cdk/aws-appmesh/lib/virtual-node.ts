@@ -1,11 +1,12 @@
-import * as cloudmap from '@aws-cdk/aws-servicediscovery';
+import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnVirtualNode } from './appmesh.generated';
 import { IMesh, Mesh } from './mesh';
-import { AccessLog } from './shared-interfaces';
+import { renderMeshOwner, renderTlsClientPolicy } from './private/utils';
+import { ServiceDiscovery, ServiceDiscoveryConfig } from './service-discovery';
+import { AccessLog, BackendDefaults, Backend } from './shared-interfaces';
 import { VirtualNodeListener, VirtualNodeListenerConfig } from './virtual-node-listener';
-import { IVirtualService } from './virtual-service';
 
 /**
  * Interface which all VirtualNode based classes must implement
@@ -34,6 +35,10 @@ export interface IVirtualNode extends cdk.IResource {
    */
   readonly mesh: IMesh;
 
+  /**
+   * Grants the given entity `appmesh:StreamAggregatedResources`.
+   */
+  grantStreamAggregatedResources(identity: iam.IGrantable): iam.Grant;
 }
 
 /**
@@ -47,39 +52,20 @@ export interface VirtualNodeBaseProps {
    */
   readonly virtualNodeName?: string;
 
-  /**
-   * Host name of DNS record used to discover Virtual Node members
-   *
-   * The IP addresses returned by querying this DNS record will be considered
-   * part of the Virtual Node.
-   *
-   * @default - Don't use DNS-based service discovery
-   */
-  readonly dnsHostName?: string;
 
   /**
-   * CloudMap service where Virtual Node members register themselves
+   * Defines how upstream clients will discover this VirtualNode
    *
-   * Instances registering themselves into this CloudMap will
-   * be considered part of the Virtual Node.
-   *
-   * @default - Don't use CloudMap-based service discovery
+   * @default - No Service Discovery
    */
-  readonly cloudMapService?: cloudmap.IService;
-
-  /**
-   * Filter down the list of CloudMap service instance
-   *
-   * @default - No CloudMap instance filter
-   */
-  readonly cloudMapServiceInstanceAttributes?: {[key: string]: string};
+  readonly serviceDiscovery?: ServiceDiscovery;
 
   /**
    * Virtual Services that this is node expected to send outbound traffic to
    *
    * @default - No backends
    */
-  readonly backends?: IVirtualService[];
+  readonly backends?: Backend[];
 
   /**
    * Initial listener for the virtual node
@@ -94,6 +80,13 @@ export interface VirtualNodeBaseProps {
    * @default - No access logging
    */
   readonly accessLog?: AccessLog;
+
+  /**
+   * Default Configuration Virtual Node uses to communicate with Virtual Service
+   *
+   * @default - No Config
+   */
+  readonly backendDefaults?: BackendDefaults;
 }
 
 /**
@@ -121,6 +114,14 @@ abstract class VirtualNodeBase extends cdk.Resource implements IVirtualNode {
    * The Mesh which the VirtualNode belongs to
    */
   public abstract readonly mesh: IMesh;
+
+  public grantStreamAggregatedResources(identity: iam.IGrantable): iam.Grant {
+    return iam.Grant.addToPrincipal({
+      grantee: identity,
+      actions: ['appmesh:StreamAggregatedResources'],
+      resourceArns: [this.virtualNodeArn],
+    });
+  }
 }
 
 /**
@@ -139,7 +140,7 @@ export class VirtualNode extends VirtualNodeBase {
   public static fromVirtualNodeArn(scope: Construct, id: string, virtualNodeArn: string): IVirtualNode {
     return new class extends VirtualNodeBase {
       readonly virtualNodeArn = virtualNodeArn;
-      private readonly parsedArn = cdk.Fn.split('/', cdk.Stack.of(scope).parseArn(virtualNodeArn).resourceName!);
+      private readonly parsedArn = cdk.Fn.split('/', cdk.Stack.of(scope).splitArn(virtualNodeArn, cdk.ArnFormat.SLASH_RESOURCE_NAME).resourceName!);
       readonly mesh = Mesh.fromMeshName(this, 'Mesh', cdk.Fn.select(0, this.parsedArn));
       readonly virtualNodeName = cdk.Fn.select(2, this.parsedArn);
     }(scope, id);
@@ -175,6 +176,8 @@ export class VirtualNode extends VirtualNodeBase {
    */
   public readonly mesh: IMesh;
 
+  private readonly serviceDiscoveryConfig?: ServiceDiscoveryConfig;
+
   private readonly backends = new Array<CfnVirtualNode.BackendProperty>();
   private readonly listeners = new Array<VirtualNodeListenerConfig>();
 
@@ -184,6 +187,7 @@ export class VirtualNode extends VirtualNodeBase {
     });
 
     this.mesh = props.mesh;
+    this.serviceDiscoveryConfig = props.serviceDiscovery?.bind(this);
 
     props.backends?.forEach(backend => this.addBackend(backend));
     props.listeners?.forEach(listener => this.addListener(listener));
@@ -192,17 +196,18 @@ export class VirtualNode extends VirtualNodeBase {
     const node = new CfnVirtualNode(this, 'Resource', {
       virtualNodeName: this.physicalName,
       meshName: this.mesh.meshName,
+      meshOwner: renderMeshOwner(this.env.account, this.mesh.env.account),
       spec: {
         backends: cdk.Lazy.any({ produce: () => this.backends }, { omitEmptyArray: true }),
         listeners: cdk.Lazy.any({ produce: () => this.listeners.map(listener => listener.listener) }, { omitEmptyArray: true }),
-        serviceDiscovery: {
-          dns: props.dnsHostName !== undefined ? { hostname: props.dnsHostName } : undefined,
-          awsCloudMap: props.cloudMapService !== undefined ? {
-            serviceName: props.cloudMapService.serviceName,
-            namespaceName: props.cloudMapService.namespace.namespaceName,
-            attributes: renderAttributes(props.cloudMapServiceInstanceAttributes),
-          } : undefined,
-        },
+        backendDefaults: props.backendDefaults !== undefined
+          ? {
+            clientPolicy: {
+              tls: renderTlsClientPolicy(this, props.backendDefaults?.tlsClientPolicy),
+            },
+          }
+          : undefined,
+        serviceDiscovery: renderServiceDiscovery(this.serviceDiscoveryConfig),
         logging: accessLogging !== undefined ? {
           accessLog: accessLogging.virtualNodeAccessLog,
         } : undefined,
@@ -219,26 +224,27 @@ export class VirtualNode extends VirtualNodeBase {
 
   /**
    * Utility method to add an inbound listener for this VirtualNode
+   *
+   * Note: At this time, Virtual Nodes support at most one listener. Adding
+   * more than one will result in a failure to deploy the CloudFormation stack.
+   * However, the App Mesh team has plans to add support for multiple listeners
+   * on Virtual Nodes and Virtual Routers.
+   *
+   * @see https://github.com/aws/aws-app-mesh-roadmap/issues/120
    */
   public addListener(listener: VirtualNodeListener) {
+    if (!this.serviceDiscoveryConfig) {
+      throw new Error('Service discovery information is required for a VirtualNode with a listener.');
+    }
     this.listeners.push(listener.bind(this));
   }
 
   /**
    * Add a Virtual Services that this node is expected to send outbound traffic to
    */
-  public addBackend(virtualService: IVirtualService) {
-    this.backends.push({
-      virtualService: {
-        virtualServiceName: virtualService.virtualServiceName,
-      },
-    });
+  public addBackend(backend: Backend) {
+    this.backends.push(backend.bind(this).virtualServiceBackend);
   }
-}
-
-function renderAttributes(attrs?: {[key: string]: string}) {
-  if (attrs === undefined) { return undefined; }
-  return Object.entries(attrs).map(([key, value]) => ({ key, value }));
 }
 
 /**
@@ -254,4 +260,13 @@ export interface VirtualNodeAttributes {
    * The Mesh that the VirtualNode belongs to
    */
   readonly mesh: IMesh;
+}
+
+function renderServiceDiscovery(config?: ServiceDiscoveryConfig): CfnVirtualNode.ServiceDiscoveryProperty | undefined {
+  return config
+    ? {
+      dns: config?.dns,
+      awsCloudMap: config?.cloudmap,
+    }
+    : undefined;
 }

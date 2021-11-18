@@ -1,6 +1,8 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import * as AWS from 'aws-sdk';
-import { Account, ISDK, SDK, SdkProvider, ToolkitInfo } from '../../lib';
+import { Account, ISDK, SDK, SdkProvider } from '../../lib/api/aws-auth';
+import { Mode } from '../../lib/api/aws-auth/credentials';
+import { ToolkitInfo } from '../../lib/api/toolkit-info';
 import { CloudFormationStack } from '../../lib/api/util/cloudformation';
 
 const FAKE_CREDENTIALS = new AWS.Credentials({ accessKeyId: 'ACCESS', secretAccessKey: 'SECRET', sessionToken: 'TOKEN ' });
@@ -28,7 +30,7 @@ export interface MockSdkProviderOptions {
  * actually will be called.
  */
 export class MockSdkProvider extends SdkProvider {
-  private readonly sdk: ISDK;
+  public readonly sdk: ISDK;
 
   constructor(options: MockSdkProviderOptions = {}) {
     super(FAKE_CREDENTIAL_CHAIN, 'bermuda-triangle-1337', { customUserAgent: 'aws-cdk/jest' });
@@ -40,6 +42,10 @@ export class MockSdkProvider extends SdkProvider {
     } else {
       this.sdk = new MockSdk();
     }
+  }
+
+  async baseCredentialsPartition(_environment: cxapi.Environment, _mode: Mode): Promise<string | undefined> {
+    return undefined;
   }
 
   public defaultAccount(): Promise<Account | undefined> {
@@ -64,6 +70,10 @@ export class MockSdkProvider extends SdkProvider {
     (this.sdk as any).ecr = jest.fn().mockReturnValue(partialAwsService<AWS.ECR>(stubs));
   }
 
+  public stubEcs(stubs: SyncHandlerSubsetOf<AWS.ECS>, additionalProperties: { [key: string]: any } = {}) {
+    (this.sdk as any).ecs = jest.fn().mockReturnValue(partialAwsService<AWS.ECS>(stubs, additionalProperties));
+  }
+
   /**
    * Replace the S3 client with the given object
    */
@@ -84,17 +94,42 @@ export class MockSdkProvider extends SdkProvider {
   public stubELBv2(stubs: SyncHandlerSubsetOf<AWS.ELBv2>) {
     (this.sdk as any).elbv2 = jest.fn().mockReturnValue(partialAwsService<AWS.ELBv2>(stubs));
   }
+
+  /**
+   * Replace the SSM client with the given object
+   */
+  public stubSSM(stubs: SyncHandlerSubsetOf<AWS.SSM>) {
+    (this.sdk as any).ssm = jest.fn().mockReturnValue(partialAwsService<AWS.SSM>(stubs));
+  }
+
+  public stubLambda(stubs: SyncHandlerSubsetOf<AWS.Lambda>) {
+    (this.sdk as any).lambda = jest.fn().mockReturnValue(partialAwsService<AWS.Lambda>(stubs));
+  }
+
+  public stubStepFunctions(stubs: SyncHandlerSubsetOf<AWS.StepFunctions>) {
+    (this.sdk as any).stepFunctions = jest.fn().mockReturnValue(partialAwsService<AWS.StepFunctions>(stubs));
+  }
+
+  public stubGetEndpointSuffix(stub: () => string) {
+    this.sdk.getEndpointSuffix = stub;
+  }
 }
 
 export class MockSdk implements ISDK {
   public readonly currentRegion: string = 'bermuda-triangle-1337';
+  public readonly lambda = jest.fn();
   public readonly cloudFormation = jest.fn();
   public readonly ec2 = jest.fn();
   public readonly ssm = jest.fn();
   public readonly s3 = jest.fn();
   public readonly route53 = jest.fn();
   public readonly ecr = jest.fn();
+  public readonly ecs = jest.fn();
   public readonly elbv2 = jest.fn();
+  public readonly secretsManager = jest.fn();
+  public readonly kms = jest.fn();
+  public readonly stepFunctions = jest.fn();
+  public readonly getEndpointSuffix = jest.fn();
 
   public currentAccount(): Promise<Account> {
     return Promise.resolve({ accountId: '123456789012', partition: 'aws' });
@@ -112,6 +147,20 @@ export class MockSdk implements ISDK {
    */
   public stubEcr(stubs: SyncHandlerSubsetOf<AWS.ECR>) {
     this.ecr.mockReturnValue(partialAwsService<AWS.ECR>(stubs));
+  }
+
+  /**
+   * Replace the SSM client with the given object
+   */
+  public stubSsm(stubs: SyncHandlerSubsetOf<AWS.SSM>) {
+    this.ssm.mockReturnValue(partialAwsService<AWS.SSM>(stubs));
+  }
+
+  /**
+   * Replace the getEndpointSuffix client with the given object
+   */
+  public stubGetEndpointSuffix(stub: () => string) {
+    this.getEndpointSuffix.mockReturnValue(stub());
   }
 }
 
@@ -143,13 +192,16 @@ export class MockSdk implements ISDK {
  * types of the handlers on the input object from the ACTUAL AWS Service class,
  * so that you don't have to declare them.
  */
-function partialAwsService<S>(fns: SyncHandlerSubsetOf<S>): S {
+function partialAwsService<S>(fns: SyncHandlerSubsetOf<S>, additionalProperties: { [key: string]: any } = {}): S {
   // Super unsafe in here because I don't know how to make TypeScript happy,
   // but at least the outer types make sure everything that happens in here works out.
   const ret: any = {};
 
   for (const [key, handler] of Object.entries(fns)) {
     ret[key] = (args: any) => new FakeAWSResponse((handler as any)(args));
+  }
+  for (const [key, value] of Object.entries(additionalProperties)) {
+    ret[key] = value;
   }
 
   return ret;
@@ -197,18 +249,19 @@ export function mockBootstrapStack(sdk: ISDK | undefined, stack?: Partial<AWS.Cl
     CreationTime: new Date(),
     StackName: 'CDKToolkit',
     StackStatus: 'CREATE_COMPLETE',
+    ...stack,
     Outputs: [
       { OutputKey: 'BucketName', OutputValue: 'BUCKET_NAME' },
       { OutputKey: 'BucketDomainName', OutputValue: 'BUCKET_ENDPOINT' },
       { OutputKey: 'BootstrapVersion', OutputValue: '1' },
+      ...stack?.Outputs ?? [],
     ],
-    ...stack,
   });
 }
 
 export function mockToolkitInfo(stack?: Partial<AWS.CloudFormation.Stack>) {
   const sdk = new MockSdk();
-  return new ToolkitInfo(mockBootstrapStack(sdk, stack), sdk);
+  return ToolkitInfo.fromStack(mockBootstrapStack(sdk, stack), sdk);
 }
 
 export function mockResolvedEnvironment(): cxapi.Environment {

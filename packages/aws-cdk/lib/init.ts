@@ -159,10 +159,13 @@ export class InitTemplate {
     const MATCH_VER_BUILD = /\+[a-f0-9]+$/; // Matches "+BUILD" in "x.y.z-beta+BUILD"
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const cdkVersion = require('../package.json').version.replace(MATCH_VER_BUILD, '');
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const constructsVersion = require('../package.json').devDependencies.constructs.replace(MATCH_VER_BUILD, '');
     return template.replace(/%name%/g, project.name)
       .replace(/%name\.camelCased%/g, camelCase(project.name))
       .replace(/%name\.PascalCased%/g, camelCase(project.name, { pascalCase: true }))
       .replace(/%cdk-version%/g, cdkVersion)
+      .replace(/%constructs-version%/g, constructsVersion)
       .replace(/%cdk-home%/g, cdkHomeDir())
       .replace(/%name\.PythonModule%/g, project.name.replace(/-/g, '_'))
       .replace(/%python-executable%/g, pythonExecutable())
@@ -179,10 +182,15 @@ export class InitTemplate {
       return;
     }
 
+    const futureFlags: {[key: string]: any} = {};
+    Object.entries(cxapi.FUTURE_FLAGS)
+      .filter(([k, _]) => !cxapi.FUTURE_FLAGS_EXPIRED.includes(k))
+      .forEach(([k, v]) => futureFlags[k] = v);
+
     const config = await fs.readJson(cdkJson);
     config.context = {
       ...config.context,
-      ...cxapi.FUTURE_FLAGS,
+      ...futureFlags,
     };
 
     await fs.writeJson(cdkJson, config, { spaces: 2 });

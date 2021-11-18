@@ -9,30 +9,20 @@ import { AssetManifestBuilder } from '../util/asset-manifest-builder';
 import { publishAssets } from '../util/asset-publishing';
 import { contentHash } from '../util/content-hash';
 import { ISDK, SdkProvider } from './aws-auth';
+import { tryHotswapDeployment } from './hotswap-deployments';
+import { CfnEvaluationException } from './hotswap/evaluate-cloudformation-template';
 import { ToolkitInfo } from './toolkit-info';
-import { changeSetHasNoChanges, CloudFormationStack, TemplateParameters, waitForChangeSet, waitForStackDeploy, waitForStackDelete } from './util/cloudformation';
+import {
+  changeSetHasNoChanges, CloudFormationStack, TemplateParameters, waitForChangeSet,
+  waitForStackDeploy, waitForStackDelete, ParameterValues, ParameterChanges,
+} from './util/cloudformation';
 import { StackActivityMonitor, StackActivityProgress } from './util/cloudformation/stack-activity-monitor';
-
-// We need to map regions to domain suffixes, and the SDK already has a function to do this.
-// It's not part of the public API, but it's also unlikely to go away.
-//
-// Reuse that function, and add a safety check so we don't accidentally break if they ever
-// refactor that away.
-
-/* eslint-disable @typescript-eslint/no-require-imports */
-const regionUtil = require('aws-sdk/lib/region_config');
-/* eslint-enable @typescript-eslint/no-require-imports */
-
-if (!regionUtil.getEndpointSuffix) {
-  throw new Error('This version of AWS SDK for JS does not have the \'getEndpointSuffix\' function!');
-}
 
 type TemplateBodyParameter = {
   TemplateBody?: string
   TemplateURL?: string
 };
 
-/** @experimental */
 export interface DeployStackResult {
   readonly noOp: boolean;
   readonly outputs: { [name: string]: string };
@@ -40,7 +30,6 @@ export interface DeployStackResult {
   readonly stackArtifact: cxapi.CloudFormationStackArtifact;
 }
 
-/** @experimental */
 export interface DeployStackOptions {
   /**
    * The stack to be deployed
@@ -79,10 +68,8 @@ export interface DeployStackOptions {
 
   /**
    * Information about the bootstrap stack found in the target environment
-   *
-   * @default - Assume there is no bootstrap stack
    */
-  toolkitInfo?: ToolkitInfo;
+  toolkitInfo: ToolkitInfo;
 
   /**
    * Role to pass to CloudFormation to execute the change set
@@ -134,6 +121,12 @@ export interface DeployStackOptions {
   execute?: boolean;
 
   /**
+   * Optional name to use for the CloudFormation change set.
+   * If not provided, a name will be generated automatically.
+   */
+  changeSetName?: string;
+
+  /**
    * The collection of extra parameters
    * (in addition to those used for assets)
    * to pass to the deployed template.
@@ -173,11 +166,26 @@ export interface DeployStackOptions {
    * @default false
    */
   readonly ci?: boolean;
+
+  /**
+   * Rollback failed deployments
+   *
+   * @default true
+   */
+  readonly rollback?: boolean;
+
+  /*
+   * Whether to perform a 'hotswap' deployment.
+   * A 'hotswap' deployment will attempt to short-circuit CloudFormation
+   * and update the affected resources like Lambda functions directly.
+   *
+   * @default - false for regular deployments, true for 'watch' deployments
+   */
+  readonly hotswap?: boolean;
 }
 
 const LARGE_TEMPLATE_SIZE_KB = 50;
 
-/** @experimental */
 export async function deployStack(options: DeployStackOptions): Promise<DeployStackResult> {
   const stackArtifact = options.stack;
 
@@ -225,16 +233,50 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
     debug(`${deployName}: deploying...`);
   }
 
-  const executionId = uuid.v4();
-  const bodyParameter = await makeBodyParameter(stackArtifact, options.resolvedEnvironment, legacyAssets, options.toolkitInfo);
-
+  const bodyParameter = await makeBodyParameter(stackArtifact, options.resolvedEnvironment, legacyAssets, options.toolkitInfo, options.sdk);
   await publishAssets(legacyAssets.toManifest(stackArtifact.assembly.directory), options.sdkProvider, stackEnv);
 
-  const changeSetName = `CDK-${executionId}`;
+  if (options.hotswap) {
+    // attempt to short-circuit the deployment if possible
+    try {
+      const hotswapDeploymentResult = await tryHotswapDeployment(options.sdkProvider, assetParams, cloudFormationStack, stackArtifact);
+      if (hotswapDeploymentResult) {
+        return hotswapDeploymentResult;
+      }
+      print('Could not perform a hotswap deployment, as the stack %s contains non-Asset changes', stackArtifact.displayName);
+    } catch (e) {
+      if (!(e instanceof CfnEvaluationException)) {
+        throw e;
+      }
+      print('Could not perform a hotswap deployment, because the CloudFormation template could not be resolved: %s', e.message);
+    }
+    print('Falling back to doing a full deployment');
+  }
+
+  // could not short-circuit the deployment, perform a full CFN deploy instead
+  return prepareAndExecuteChangeSet(options, cloudFormationStack, stackArtifact, stackParams, bodyParameter);
+}
+
+async function prepareAndExecuteChangeSet(
+  options: DeployStackOptions, cloudFormationStack: CloudFormationStack,
+  stackArtifact: cxapi.CloudFormationStackArtifact, stackParams: ParameterValues, bodyParameter: TemplateBodyParameter,
+): Promise<DeployStackResult> {
+  const cfn = options.sdk.cloudFormation();
+  const deployName = options.deployName ?? stackArtifact.stackName;
+
+  const changeSetName = options.changeSetName ?? 'cdk-deploy-change-set';
+  if (cloudFormationStack.exists) {
+    //Delete any existing change sets generated by CDK since change set names must be unique.
+    //The delete request is successful as long as the stack exists (even if the change set does not exist).
+    debug(`Removing existing change set with name ${changeSetName} if it exists`);
+    await cfn.deleteChangeSet({ StackName: deployName, ChangeSetName: changeSetName }).promise();
+  }
+
   const update = cloudFormationStack.exists && cloudFormationStack.stackStatus.name !== 'REVIEW_IN_PROGRESS';
 
-  debug(`Attempting to create ChangeSet ${changeSetName} to ${update ? 'update' : 'create'} stack ${deployName}`);
+  debug(`Attempting to create ChangeSet with name ${changeSetName} to ${update ? 'update' : 'create'} stack ${deployName}`);
   print('%s: creating CloudFormation changeset...', colors.bold(deployName));
+  const executionId = uuid.v4();
   const changeSet = await cfn.createChangeSet({
     StackName: deployName,
     ChangeSetName: changeSetName,
@@ -264,21 +306,33 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
 
   if (changeSetHasNoChanges(changeSetDescription)) {
     debug('No changes are to be performed on %s.', deployName);
-    await cfn.deleteChangeSet({ StackName: deployName, ChangeSetName: changeSetName }).promise();
+    if (options.execute) {
+      debug('Deleting empty change set %s', changeSet.Id);
+      await cfn.deleteChangeSet({ StackName: deployName, ChangeSetName: changeSetName }).promise();
+    }
     return { noOp: true, outputs: cloudFormationStack.outputs, stackArn: changeSet.StackId!, stackArtifact };
   }
 
   const execute = options.execute === undefined ? true : options.execute;
   if (execute) {
-    debug('Initiating execution of changeset %s on stack %s', changeSetName, deployName);
-    await cfn.executeChangeSet({ StackName: deployName, ChangeSetName: changeSetName }).promise();
+    debug('Initiating execution of changeset %s on stack %s', changeSet.Id, deployName);
+
+    const shouldDisableRollback = options.rollback === false;
+    // Do a bit of contortions to only pass the `DisableRollback` flag if it's true. That way,
+    // CloudFormation won't balk at the unrecognized option in regions where the feature is not available yet.
+    const disableRollback = shouldDisableRollback ? { DisableRollback: true } : undefined;
+
+    await cfn.executeChangeSet({ StackName: deployName, ChangeSetName: changeSetName, ...disableRollback }).promise();
+
     // eslint-disable-next-line max-len
+    const changeSetLength: number = (changeSetDescription.Changes ?? []).length;
     const monitor = options.quiet ? undefined : StackActivityMonitor.withDefaultPrinter(cfn, deployName, stackArtifact, {
-      resourcesTotal: (changeSetDescription.Changes ?? []).length,
+      // +1 for the extra event emitted from updates.
+      resourcesTotal: cloudFormationStack.exists ? changeSetLength + 1 : changeSetLength,
       progress: options.progress,
       changeSetCreationTime: changeSetDescription.CreationTime,
     }).start();
-    debug('Execution of changeset %s on stack %s has started; waiting for the update to complete...', changeSetName, deployName);
+    debug('Execution of changeset %s on stack %s has started; waiting for the update to complete...', changeSet.Id, deployName);
     try {
       const finalStack = await waitForStackDeploy(cfn, deployName);
 
@@ -290,7 +344,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
     }
     debug('Stack %s has completed updating', deployName);
   } else {
-    print('Changeset %s created and waiting in review for manual execution (--no-execute)', changeSetName);
+    print('Changeset %s created and waiting in review for manual execution (--no-execute)', changeSet.Id);
   }
 
   return { noOp: false, outputs: cloudFormationStack.outputs, stackArn: changeSet.StackId!, stackArtifact };
@@ -313,11 +367,12 @@ async function makeBodyParameter(
   stack: cxapi.CloudFormationStackArtifact,
   resolvedEnvironment: cxapi.Environment,
   assetManifest: AssetManifestBuilder,
-  toolkitInfo?: ToolkitInfo): Promise<TemplateBodyParameter> {
+  toolkitInfo: ToolkitInfo,
+  sdk: ISDK): Promise<TemplateBodyParameter> {
 
   // If the template has already been uploaded to S3, just use it from there.
   if (stack.stackTemplateAssetObjectUrl) {
-    return { TemplateURL: restUrlFromManifest(stack.stackTemplateAssetObjectUrl, resolvedEnvironment) };
+    return { TemplateURL: restUrlFromManifest(stack.stackTemplateAssetObjectUrl, resolvedEnvironment, sdk) };
   }
 
   // Otherwise, pass via API call (if small) or upload here (if large)
@@ -327,7 +382,7 @@ async function makeBodyParameter(
     return { TemplateBody: templateJson };
   }
 
-  if (!toolkitInfo) {
+  if (!toolkitInfo.found) {
     error(
       `The template for stack "${stack.displayName}" is ${Math.round(templateJson.length / 1024)}KiB. ` +
       `Templates larger than ${LARGE_TEMPLATE_SIZE_KB}KiB must be uploaded to S3.\n` +
@@ -352,7 +407,6 @@ async function makeBodyParameter(
   return { TemplateURL: templateURL };
 }
 
-/** @experimental */
 export interface DestroyStackOptions {
   /**
    * The stack to be destroyed
@@ -365,7 +419,6 @@ export interface DestroyStackOptions {
   quiet?: boolean;
 }
 
-/** @experimental */
 export async function destroyStack(options: DestroyStackOptions) {
   const deployName = options.deployName || options.stack.stackName;
   const cfn = options.sdk.cloudFormation();
@@ -399,7 +452,7 @@ export async function destroyStack(options: DestroyStackOptions) {
 async function canSkipDeploy(
   deployStackOptions: DeployStackOptions,
   cloudFormationStack: CloudFormationStack,
-  parameterChanges: boolean): Promise<boolean> {
+  parameterChanges: ParameterChanges): Promise<boolean> {
 
   const deployName = deployStackOptions.deployName || deployStackOptions.stack.stackName;
   debug(`${deployName}: checking if we can skip deploy`);
@@ -407,6 +460,12 @@ async function canSkipDeploy(
   // Forced deploy
   if (deployStackOptions.force) {
     debug(`${deployName}: forced deployment`);
+    return false;
+  }
+
+  // Creating changeset only (default true), never skip
+  if (deployStackOptions.execute === false) {
+    debug(`${deployName}: --no-execute, always creating change set`);
     return false;
   }
 
@@ -436,7 +495,11 @@ async function canSkipDeploy(
 
   // Parameters have changed
   if (parameterChanges) {
-    debug(`${deployName}: parameters have changed`);
+    if (parameterChanges === 'ssm') {
+      debug(`${deployName}: some parameters come from SSM so we have to assume they may have changed`);
+    } else {
+      debug(`${deployName}: parameters have changed`);
+    }
     return false;
   }
 
@@ -476,7 +539,7 @@ function compareTags(a: Tag[], b: Tag[]): boolean {
  * and reformats s3://.../... urls into S3 REST URLs (which CloudFormation
  * expects)
  */
-function restUrlFromManifest(url: string, environment: cxapi.Environment): string {
+function restUrlFromManifest(url: string, environment: cxapi.Environment, sdk: ISDK): string {
   const doNotUseMarker = '**DONOTUSE**';
   // This URL may contain placeholders, so still substitute those.
   url = cxapi.EnvironmentPlaceholders.replace(url, {
@@ -499,6 +562,6 @@ function restUrlFromManifest(url: string, environment: cxapi.Environment): strin
   const bucketName = s3Url[1];
   const objectKey = s3Url[2];
 
-  const urlSuffix: string = regionUtil.getEndpointSuffix(environment.region);
+  const urlSuffix: string = sdk.getEndpointSuffix(environment.region);
   return `https://s3.${environment.region}.${urlSuffix}/${bucketName}/${objectKey}`;
 }

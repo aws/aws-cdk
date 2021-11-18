@@ -87,6 +87,13 @@ export interface SynthesizeStackArtifactOptions {
   readonly assumeRoleArn?: string;
 
   /**
+   * The externalID to use with the assumeRoleArn
+   *
+   * @default - No externalID is used
+   */
+  readonly assumeRoleExternalId?: string;
+
+  /**
    * The role that is passed to CloudFormation to execute the change set
    *
    * @default - No role is passed (currently assumed role/credentials are used)
@@ -106,4 +113,19 @@ export interface SynthesizeStackArtifactOptions {
    * @default - No bootstrap stack required
    */
   readonly requiresBootstrapStackVersion?: number;
+
+  /**
+   * SSM parameter where the bootstrap stack version number can be found
+   *
+   * Only used if `requiresBootstrapStackVersion` is set.
+   *
+   * - If this value is not set, the bootstrap stack name must be known at
+   *   deployment time so the stack version can be looked up from the stack
+   *   outputs.
+   * - If this value is set, the bootstrap stack can have any name because
+   *   we won't need to look it up.
+   *
+   * @default - Bootstrap stack version number looked up
+   */
+  readonly bootstrapStackVersionSsmParameter?: string;
 }

@@ -1,7 +1,7 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
-import { Fn, IResource, Resource, Stack } from '@aws-cdk/core';
+import { ArnFormat, Fn, IResource, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { DataFormat } from './data-format';
 import { IDatabase } from './database';
@@ -151,7 +151,7 @@ export interface TableProps {
 export class Table extends Resource implements ITable {
 
   public static fromTableArn(scope: Construct, id: string, tableArn: string): ITable {
-    const tableName = Fn.select(1, Fn.split('/', Stack.of(scope).parseArn(tableArn).resourceName!));
+    const tableName = Fn.select(1, Fn.split('/', Stack.of(scope).splitArn(tableArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!));
 
     return Table.fromTableAttributes(scope, id, {
       tableArn,
@@ -243,7 +243,7 @@ export class Table extends Resource implements ITable {
     this.columns = props.columns;
     this.partitionKeys = props.partitionKeys;
 
-    this.compressed = props.compressed === undefined ? false : props.compressed;
+    this.compressed = props.compressed ?? false;
     const { bucket, encryption, encryptionKey } = createBucket(this, props);
     this.bucket = bucket;
     this.encryption = encryption;
@@ -267,7 +267,7 @@ export class Table extends Resource implements ITable {
         storageDescriptor: {
           location: `s3://${this.bucket.bucketName}/${this.s3Prefix}`,
           compressed: this.compressed,
-          storedAsSubDirectories: props.storedAsSubDirectories === undefined ? false : props.storedAsSubDirectories,
+          storedAsSubDirectories: props.storedAsSubDirectories ?? false,
           columns: renderColumns(props.columns),
           inputFormat: props.dataFormat.inputFormat.className,
           outputFormat: props.dataFormat.outputFormat.className,

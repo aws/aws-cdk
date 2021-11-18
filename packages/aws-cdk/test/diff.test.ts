@@ -96,6 +96,16 @@ test('exits with 1 with diffs and fail set to true', async () => {
   expect(exitCode).toBe(1);
 });
 
+test('throws an error if no valid stack names given', async () => {
+  const buffer = new StringWritable();
+
+  // WHEN
+  await expect(() => toolkit.diff({
+    stackNames: ['X', 'Y', 'Z'],
+    stream: buffer,
+  })).rejects.toThrow('No stacks match the name(s) X,Y,Z');
+});
+
 test('exits with 1 with diff in first stack, but not in second stack and fail set to true', async () => {
   // GIVEN
   const buffer = new StringWritable();
@@ -115,17 +125,10 @@ test('throws an error during diffs on stack with error metadata', async () => {
   const buffer = new StringWritable();
 
   // WHEN
-  try {
-    const exitCode = await toolkit.diff({
-      stackNames: ['C'],
-      stream: buffer,
-    });
-
-    // THEN
-    expect(exitCode).toBe(1);
-  } catch (e) {
-    expect(e.toString()).toContain('Found errors');
-  }
+  await expect(() => toolkit.diff({
+    stackNames: ['C'],
+    stream: buffer,
+  })).rejects.toThrow(/Found errors/);
 });
 
 class StringWritable extends Writable {

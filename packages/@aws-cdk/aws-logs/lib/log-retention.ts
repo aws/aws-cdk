@@ -5,6 +5,14 @@ import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { RetentionDays } from './log-group';
 
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { ArnFormat } from '@aws-cdk/core';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct as CoreConstruct } from '@aws-cdk/core';
+
 /**
  * Construction properties for a LogRetention.
  */
@@ -65,7 +73,7 @@ export interface LogRetentionRetryOptions {
  * Log group can be created in the region that is different from stack region by
  * specifying `logGroupRegion`
  */
-export class LogRetention extends cdk.Construct {
+export class LogRetention extends CoreConstruct {
 
   /**
    * The ARN of the LogGroup.
@@ -103,7 +111,7 @@ export class LogRetention extends cdk.Construct {
       service: 'logs',
       resource: 'log-group',
       resourceName: `${logGroupName}:*`,
-      sep: ':',
+      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
     });
   }
 
@@ -124,8 +132,10 @@ export class LogRetention extends cdk.Construct {
 /**
  * Private provider Lambda function to support the log retention custom resource.
  */
-class LogRetentionFunction extends cdk.Construct {
+class LogRetentionFunction extends CoreConstruct implements cdk.ITaggable {
   public readonly functionArn: cdk.Reference;
+
+  public readonly tags: cdk.TagManager = new cdk.TagManager(cdk.TagType.KEY_VALUE, 'AWS::Lambda::Function');
 
   constructor(scope: Construct, id: string, props: LogRetentionProps) {
     super(scope, id);
@@ -154,12 +164,13 @@ class LogRetentionFunction extends cdk.Construct {
       type: 'AWS::Lambda::Function',
       properties: {
         Handler: 'index.handler',
-        Runtime: 'nodejs10.x',
+        Runtime: 'nodejs14.x', // Equivalent to Runtime.NODEJS_14_X
         Code: {
           S3Bucket: asset.s3BucketName,
           S3Key: asset.s3ObjectKey,
         },
         Role: role.roleArn,
+        Tags: this.tags.renderedTags,
       },
     });
     this.functionArn = resource.getAtt('Arn');

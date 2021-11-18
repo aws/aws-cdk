@@ -1,5 +1,5 @@
-import '@aws-cdk/assert/jest';
-import { HttpApi, HttpRoute, HttpRouteKey, PayloadFormatVersion } from '@aws-cdk/aws-apigatewayv2';
+import { Template } from '@aws-cdk/assertions';
+import { HttpApi, HttpRoute, HttpRouteKey, MappingValue, ParameterMapping, PayloadFormatVersion } from '@aws-cdk/aws-apigatewayv2';
 import { Code, Function, Runtime } from '@aws-cdk/aws-lambda';
 import { App, Stack } from '@aws-cdk/core';
 import { LambdaProxyIntegration } from '../../lib';
@@ -17,7 +17,7 @@ describe('LambdaProxyIntegration', () => {
       routeKey: HttpRouteKey.with('/pets'),
     });
 
-    expect(stack).toHaveResource('AWS::ApiGatewayV2::Integration', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Integration', {
       IntegrationType: 'AWS_PROXY',
       IntegrationUri: stack.resolve(fooFn.functionArn),
       PayloadFormatVersion: '2.0',
@@ -36,8 +36,30 @@ describe('LambdaProxyIntegration', () => {
       routeKey: HttpRouteKey.with('/pets'),
     });
 
-    expect(stack).toHaveResource('AWS::ApiGatewayV2::Integration', {
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Integration', {
       PayloadFormatVersion: '1.0',
+    });
+  });
+
+  test('parameterMapping selection', () => {
+    const stack = new Stack();
+    const api = new HttpApi(stack, 'HttpApi');
+    new HttpRoute(stack, 'LambdaProxyRoute', {
+      httpApi: api,
+      integration: new LambdaProxyIntegration({
+        handler: fooFunction(stack, 'Fn'),
+        parameterMapping: new ParameterMapping()
+          .appendHeader('header2', MappingValue.requestHeader('header1'))
+          .removeHeader('header1'),
+      }),
+      routeKey: HttpRouteKey.with('/pets'),
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Integration', {
+      RequestParameters: {
+        'append:header.header2': '$request.header.header1',
+        'remove:header.header1': '',
+      },
     });
   });
 

@@ -1,6 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
-import { Stack } from '@aws-cdk/core';
+import { ArnFormat, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
@@ -30,12 +30,24 @@ export interface StepFunctionsStartExecutionProps extends sfn.TaskStateBaseProps
    * @default - None
    */
   readonly name?: string;
+
+  /**
+   * Pass the execution ID from the context object to the execution input.
+   * This allows the Step Functions UI to link child executions from parent executions, making it easier to trace execution flow across state machines.
+   *
+   * If you set this property to `true`, the `input` property must be an object (provided by `sfn.TaskInput.fromObject`) or omitted entirely.
+   *
+   * @see https://docs.aws.amazon.com/step-functions/latest/dg/concepts-nested-workflows.html#nested-execution-startid
+   *
+   * @default - false
+   */
+  readonly associateWithParent?: boolean;
 }
 
 /**
  * A Step Functions Task to call StartExecution on another state machine.
  *
- * It supports three service integration patterns: FIRE_AND_FORGET, SYNC and WAIT_FOR_TASK_TOKEN.
+ * It supports three service integration patterns: REQUEST_RESPONSE, RUN_JOB, and WAIT_FOR_TASK_TOKEN.
  */
 export class StepFunctionsStartExecution extends sfn.TaskStateBase {
   private static readonly SUPPORTED_INTEGRATION_PATTERNS = [
@@ -59,6 +71,10 @@ export class StepFunctionsStartExecution extends sfn.TaskStateBase {
       throw new Error('Task Token is required in `input` for callback. Use JsonPath.taskToken to set the token.');
     }
 
+    if (this.props.associateWithParent && props.input && props.input.type !== sfn.InputType.OBJECT) {
+      throw new Error('Could not enable `associateWithParent` because `input` is taken directly from a JSON path. Use `sfn.TaskInput.fromObject` instead.');
+    }
+
     this.taskPolicies = this.createScopedAccessPolicy();
   }
 
@@ -70,10 +86,20 @@ export class StepFunctionsStartExecution extends sfn.TaskStateBase {
     // suffix is only applicable when waiting for a nested state machine to complete (RUN_JOB)
     // https://docs.aws.amazon.com/step-functions/latest/dg/connect-stepfunctions.html
     const suffix = this.integrationPattern === sfn.IntegrationPattern.RUN_JOB ? ':2' : '';
+    let input: any;
+    if (this.props.associateWithParent) {
+      const associateWithParentEntry = {
+        AWS_STEP_FUNCTIONS_STARTED_BY_EXECUTION_ID: sfn.JsonPath.stringAt('$$.Execution.Id'),
+      };
+      input = this.props.input ? { ...this.props.input.value, ...associateWithParentEntry } : associateWithParentEntry;
+    } else {
+      input = this.props.input ? this.props.input.value: sfn.TaskInput.fromJsonPathAt('$').value;
+    }
+
     return {
       Resource: `${integrationResourceArn('states', 'startExecution', this.integrationPattern)}${suffix}`,
       Parameters: sfn.FieldUtils.renderObject({
-        Input: this.props.input ? this.props.input.value : sfn.TaskInput.fromDataAt('$').value,
+        Input: input,
         StateMachineArn: this.props.stateMachine.stateMachineArn,
         Name: this.props.name,
       }),
@@ -107,8 +133,8 @@ export class StepFunctionsStartExecution extends sfn.TaskStateBase {
             stack.formatArn({
               service: 'states',
               resource: 'execution',
-              sep: ':',
-              resourceName: `${stack.parseArn(this.props.stateMachine.stateMachineArn, ':').resourceName}*`,
+              arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+              resourceName: `${stack.splitArn(this.props.stateMachine.stateMachineArn, ArnFormat.COLON_RESOURCE_NAME).resourceName}*`,
             }),
           ],
         }),

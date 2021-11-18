@@ -107,8 +107,11 @@ export class ServiceAccount extends CoreConstruct implements IPrincipal {
 
   }
 
+  /**
+   * @deprecated use `addToPrincipalPolicy()`
+   */
   public addToPolicy(statement: PolicyStatement): boolean {
-    return this.role.addToPolicy(statement);
+    return this.addToPrincipalPolicy(statement).statementAdded;
   }
 
   public addToPrincipalPolicy(statement: PolicyStatement): AddToPrincipalPolicyResult {

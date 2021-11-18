@@ -1,8 +1,13 @@
 import { EOL } from 'os';
+import * as path from 'path';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { Fn, IResource, Lazy, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
+import {
+  Fn, IResource, Lazy, RemovalPolicy, Resource, ResourceProps, Stack, Token,
+  CustomResource, CustomResourceProvider, CustomResourceProviderRuntime, FeatureFlags, Tags,
+} from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { BucketPolicy } from './bucket-policy';
 import { IBucketNotificationDestination } from './destination';
@@ -11,6 +16,9 @@ import * as perms from './perms';
 import { LifecycleRule } from './rule';
 import { CfnBucket } from './s3.generated';
 import { parseBucketArn, parseBucketName } from './util';
+
+const AUTO_DELETE_OBJECTS_RESOURCE_TYPE = 'Custom::S3AutoDeleteObjects';
+const AUTO_DELETE_OBJECTS_TAG = 'aws-cdk:auto-delete-objects';
 
 export interface IBucket extends IResource {
   /**
@@ -75,17 +83,32 @@ export interface IBucket extends IResource {
 
   /**
    * Adds a statement to the resource policy for a principal (i.e.
-   * account/role/service) to perform actions on this bucket and/or it's
+   * account/role/service) to perform actions on this bucket and/or its
    * contents. Use `bucketArn` and `arnForObjects(keys)` to obtain ARNs for
    * this bucket or objects.
+   *
+   * Note that the policy statement may or may not be added to the policy.
+   * For example, when an `IBucket` is created from an existing bucket,
+   * it's not possible to tell whether the bucket already has a policy
+   * attached, let alone to re-use that policy to add more statements to it.
+   * So it's safest to do nothing in these cases.
+   *
+   * @param permission the policy statement to be added to the bucket's
+   * policy.
+   * @returns metadata about the execution of this method. If the policy
+   * was not added, the value of `statementAdded` will be `false`. You
+   * should always check this value to make sure that the operation was
+   * actually carried out. Otherwise, synthesis and deploy will terminate
+   * silently, which may be confusing.
    */
   addToResourcePolicy(permission: iam.PolicyStatement): iam.AddToResourcePolicyResult;
 
   /**
    * The https URL of an S3 object. For example:
-   * @example https://s3.us-west-1.amazonaws.com/onlybucket
-   * @example https://s3.us-west-1.amazonaws.com/bucket/key
-   * @example https://s3.cn-north-1.amazonaws.com.cn/china-bucket/mykey
+   *
+   * - `https://s3.us-west-1.amazonaws.com/onlybucket`
+   * - `https://s3.us-west-1.amazonaws.com/bucket/key`
+   * - `https://s3.cn-north-1.amazonaws.com.cn/china-bucket/mykey`
    * @param key The S3 key of the object. If not specified, the URL of the
    *      bucket is returned.
    * @returns an ObjectS3Url token
@@ -95,10 +118,11 @@ export interface IBucket extends IResource {
   /**
    * The virtual hosted-style URL of an S3 object. Specify `regional: false` at
    * the options for non-regional URL. For example:
-   * @example https://only-bucket.s3.us-west-1.amazonaws.com
-   * @example https://bucket.s3.us-west-1.amazonaws.com/key
-   * @example https://bucket.s3.amazonaws.com/key
-   * @example https://china-bucket.s3.cn-north-1.amazonaws.com.cn/mykey
+   *
+   * - `https://only-bucket.s3.us-west-1.amazonaws.com`
+   * - `https://bucket.s3.us-west-1.amazonaws.com/key`
+   * - `https://bucket.s3.amazonaws.com/key`
+   * - `https://china-bucket.s3.cn-north-1.amazonaws.com.cn/mykey`
    * @param key The S3 key of the object. If not specified, the URL of the
    *      bucket is returned.
    * @param options Options for generating URL.
@@ -108,8 +132,8 @@ export interface IBucket extends IResource {
 
   /**
    * The S3 URL of an S3 object. For example:
-   * @example s3://onlybucket
-   * @example s3://bucket/key
+   * - `s3://onlybucket`
+   * - `s3://bucket/key`
    * @param key The S3 key of the object. If not specified, the S3 URL of the
    *      bucket is returned.
    * @returns an ObjectS3Url token
@@ -140,6 +164,14 @@ export interface IBucket extends IResource {
    * If encryption is used, permission to use the key to encrypt the contents
    * of written files will also be granted to the same principal.
    *
+   * Before CDK version 1.85.0, this method granted the `s3:PutObject*` permission that included `s3:PutObjectAcl`,
+   * which could be used to grant read/write object access to IAM principals in other accounts.
+   * If you want to get rid of that behavior, update your CDK version to 1.85.0 or later,
+   * and make sure the `@aws-cdk/aws-s3:grantWriteWithoutAcl` feature flag is set to `true`
+   * in the `context` key of your cdk.json file.
+   * If you've already updated, but still need the principal to have permissions to modify the ACLs,
+   * use the {@link grantPutAcl} method.
+   *
    * @param identity The principal
    * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
    */
@@ -156,7 +188,19 @@ export interface IBucket extends IResource {
   grantPut(identity: iam.IGrantable, objectsKeyPattern?: any): iam.Grant;
 
   /**
-   * Grants s3:DeleteObject* permission to an IAM pricipal for objects
+   * Grant the given IAM identity permissions to modify the ACLs of objects in the given Bucket.
+   *
+   * If your application has the '@aws-cdk/aws-s3:grantWriteWithoutAcl' feature flag set,
+   * calling {@link grantWrite} or {@link grantReadWrite} no longer grants permissions to modify the ACLs of the objects;
+   * in this case, if you need to modify object ACLs, call this method explicitly.
+   *
+   * @param identity The principal
+   * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
+   */
+  grantPutAcl(identity: iam.IGrantable, objectsKeyPattern?: string): iam.Grant;
+
+  /**
+   * Grants s3:DeleteObject* permission to an IAM principal for objects
    * in this bucket.
    *
    * @param identity The principal
@@ -170,6 +214,14 @@ export interface IBucket extends IResource {
    *
    * If an encryption key is used, permission to use the key for
    * encrypt/decrypt will also be granted.
+   *
+   * Before CDK version 1.85.0, this method granted the `s3:PutObject*` permission that included `s3:PutObjectAcl`,
+   * which could be used to grant read/write object access to IAM principals in other accounts.
+   * If you want to get rid of that behavior, update your CDK version to 1.85.0 or later,
+   * and make sure the `@aws-cdk/aws-s3:grantWriteWithoutAcl` feature flag is set to `true`
+   * in the `context` key of your cdk.json file.
+   * If you've already updated, but still need the principal to have permissions to modify the ACLs,
+   * use the {@link grantPutAcl} method.
    *
    * @param identity The principal
    * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
@@ -244,6 +296,49 @@ export interface IBucket extends IResource {
    * @param options Options for adding the rule
    */
   onCloudTrailWriteObject(id: string, options?: OnCloudTrailBucketEventOptions): events.Rule;
+
+  /**
+   * Adds a bucket notification event destination.
+   * @param event The event to trigger the notification
+   * @param dest The notification destination (Lambda, SNS Topic or SQS Queue)
+   *
+   * @param filters S3 object key filter rules to determine which objects
+   * trigger this event. Each filter must include a `prefix` and/or `suffix`
+   * that will be matched against the s3 object key. Refer to the S3 Developer Guide
+   * for details about allowed filter rules.
+   *
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/NotificationHowTo.html#notification-how-to-filtering
+   *
+   * @example
+   *
+   *    declare const myLambda: lambda.Function;
+   *    const bucket = new s3.Bucket(this, 'MyBucket');
+   *    bucket.addEventNotification(s3.EventType.OBJECT_CREATED, new s3n.LambdaDestination(myLambda), {prefix: 'home/myusername/*'})
+   *
+   * @see
+   * https://docs.aws.amazon.com/AmazonS3/latest/dev/NotificationHowTo.html
+   */
+  addEventNotification(event: EventType, dest: IBucketNotificationDestination, ...filters: NotificationKeyFilter[]): void;
+
+  /**
+   * Subscribes a destination to receive notifications when an object is
+   * created in the bucket. This is identical to calling
+   * `onEvent(s3.EventType.OBJECT_CREATED)`.
+   *
+   * @param dest The notification destination (see onEvent)
+   * @param filters Filters (see onEvent)
+   */
+  addObjectCreatedNotification(dest: IBucketNotificationDestination, ...filters: NotificationKeyFilter[]): void
+
+  /**
+   * Subscribes a destination to receive notifications when an object is
+   * removed from the bucket. This is identical to calling
+   * `onEvent(EventType.OBJECT_REMOVED)`.
+   *
+   * @param dest The notification destination (see onEvent)
+   * @param filters Filters (see onEvent)
+   */
+  addObjectRemovedNotification(dest: IBucketNotificationDestination, ...filters: NotificationKeyFilter[]): void;
 }
 
 /**
@@ -339,7 +434,7 @@ export interface BucketAttributes {
  *   Bucket.import(this, 'MyImportedBucket', ref);
  *
  */
-abstract class BucketBase extends Resource implements IBucket {
+export abstract class BucketBase extends Resource implements IBucket {
   public abstract readonly bucketArn: string;
   public abstract readonly bucketName: string;
   public abstract readonly bucketDomainName: string;
@@ -370,12 +465,22 @@ abstract class BucketBase extends Resource implements IBucket {
    * Indicates if a bucket resource policy should automatically created upon
    * the first call to `addToResourcePolicy`.
    */
-  protected abstract autoCreatePolicy = false;
+  protected abstract autoCreatePolicy: boolean;
 
   /**
    * Whether to disallow public access
    */
   protected abstract disallowPublicAccess?: boolean;
+
+  private readonly notifications: BucketNotifications;
+
+  constructor(scope: Construct, id: string, props: ResourceProps = {}) {
+    super(scope, id, props);
+
+    // defines a BucketNotifications construct. Notice that an actual resource will only
+    // be added if there are notifications added, so we don't need to condition this.
+    this.notifications = new BucketNotifications(this, 'Notifications', { bucket: this });
+  }
 
   /**
    * Define a CloudWatch event that triggers when something happens to this repository
@@ -394,7 +499,7 @@ abstract class BucketBase extends Resource implements IBucket {
       detailType: ['AWS API Call via CloudTrail'],
       detail: {
         resources: {
-          ARN: options.paths ? options.paths.map(p => this.arnForObjects(p)) : [this.bucketArn],
+          ARN: options.paths?.map(p => this.arnForObjects(p)) ?? [this.bucketArn],
         },
       },
     });
@@ -460,9 +565,23 @@ abstract class BucketBase extends Resource implements IBucket {
 
   /**
    * Adds a statement to the resource policy for a principal (i.e.
-   * account/role/service) to perform actions on this bucket and/or it's
+   * account/role/service) to perform actions on this bucket and/or its
    * contents. Use `bucketArn` and `arnForObjects(keys)` to obtain ARNs for
    * this bucket or objects.
+   *
+   * Note that the policy statement may or may not be added to the policy.
+   * For example, when an `IBucket` is created from an existing bucket,
+   * it's not possible to tell whether the bucket already has a policy
+   * attached, let alone to re-use that policy to add more statements to it.
+   * So it's safest to do nothing in these cases.
+   *
+   * @param permission the policy statement to be added to the bucket's
+   * policy.
+   * @returns metadata about the execution of this method. If the policy
+   * was not added, the value of `statementAdded` will be `false`. You
+   * should always check this value to make sure that the operation was
+   * actually carried out. Otherwise, synthesis and deploy will terminate
+   * silently, which may be confusing.
    */
   public addToResourcePolicy(permission: iam.PolicyStatement): iam.AddToResourcePolicyResult {
     if (!this.policy && this.autoCreatePolicy) {
@@ -486,16 +605,18 @@ abstract class BucketBase extends Resource implements IBucket {
   /**
    * The https URL of an S3 object. Specify `regional: false` at the options
    * for non-regional URLs. For example:
-   * @example https://s3.us-west-1.amazonaws.com/onlybucket
-   * @example https://s3.us-west-1.amazonaws.com/bucket/key
-   * @example https://s3.cn-north-1.amazonaws.com.cn/china-bucket/mykey
+   *
+   * - `https://s3.us-west-1.amazonaws.com/onlybucket`
+   * - `https://s3.us-west-1.amazonaws.com/bucket/key`
+   * - `https://s3.cn-north-1.amazonaws.com.cn/china-bucket/mykey`
+   *
    * @param key The S3 key of the object. If not specified, the URL of the
    *      bucket is returned.
    * @returns an ObjectS3Url token
    */
   public urlForObject(key?: string): string {
     const stack = Stack.of(this);
-    const prefix = `https://s3.${stack.region}.${stack.urlSuffix}/`;
+    const prefix = `https://s3.${this.env.region}.${stack.urlSuffix}/`;
     if (typeof key !== 'string') {
       return this.urlJoin(prefix, this.bucketName);
     }
@@ -505,10 +626,12 @@ abstract class BucketBase extends Resource implements IBucket {
   /**
    * The virtual hosted-style URL of an S3 object. Specify `regional: false` at
    * the options for non-regional URL. For example:
-   * @example https://only-bucket.s3.us-west-1.amazonaws.com
-   * @example https://bucket.s3.us-west-1.amazonaws.com/key
-   * @example https://bucket.s3.amazonaws.com/key
-   * @example https://china-bucket.s3.cn-north-1.amazonaws.com.cn/mykey
+   *
+   * - `https://only-bucket.s3.us-west-1.amazonaws.com`
+   * - `https://bucket.s3.us-west-1.amazonaws.com/key`
+   * - `https://bucket.s3.amazonaws.com/key`
+   * - `https://china-bucket.s3.cn-north-1.amazonaws.com.cn/mykey`
+   *
    * @param key The S3 key of the object. If not specified, the URL of the
    *      bucket is returned.
    * @param options Options for generating URL.
@@ -525,8 +648,10 @@ abstract class BucketBase extends Resource implements IBucket {
 
   /**
    * The S3 URL of an S3 object. For example:
-   * @example s3://onlybucket
-   * @example s3://bucket/key
+   *
+   * - `s3://onlybucket`
+   * - `s3://bucket/key`
+   *
    * @param key The S3 key of the object. If not specified, the S3 URL of the
    *      bucket is returned.
    * @returns an ObjectS3Url token
@@ -568,17 +693,8 @@ abstract class BucketBase extends Resource implements IBucket {
       this.arnForObjects(objectsKeyPattern));
   }
 
-  /**
-   * Grant write permissions to this bucket to an IAM principal.
-   *
-   * If encryption is used, permission to use the key to encrypt the contents
-   * of written files will also be granted to the same principal.
-   *
-   * @param identity The principal
-   * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
-   */
   public grantWrite(identity: iam.IGrantable, objectsKeyPattern: any = '*') {
-    return this.grant(identity, perms.BUCKET_WRITE_ACTIONS, perms.KEY_WRITE_ACTIONS,
+    return this.grant(identity, this.writeActions, perms.KEY_WRITE_ACTIONS,
       this.bucketArn,
       this.arnForObjects(objectsKeyPattern));
   }
@@ -592,12 +708,17 @@ abstract class BucketBase extends Resource implements IBucket {
    * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
    */
   public grantPut(identity: iam.IGrantable, objectsKeyPattern: any = '*') {
-    return this.grant(identity, perms.BUCKET_PUT_ACTIONS, perms.KEY_WRITE_ACTIONS,
+    return this.grant(identity, this.putActions, perms.KEY_WRITE_ACTIONS,
+      this.arnForObjects(objectsKeyPattern));
+  }
+
+  public grantPutAcl(identity: iam.IGrantable, objectsKeyPattern: string = '*') {
+    return this.grant(identity, perms.BUCKET_PUT_ACL_ACTIONS, [],
       this.arnForObjects(objectsKeyPattern));
   }
 
   /**
-   * Grants s3:DeleteObject* permission to an IAM pricipal for objects
+   * Grants s3:DeleteObject* permission to an IAM principal for objects
    * in this bucket.
    *
    * @param identity The principal
@@ -608,18 +729,8 @@ abstract class BucketBase extends Resource implements IBucket {
       this.arnForObjects(objectsKeyPattern));
   }
 
-  /**
-   * Grants read/write permissions for this bucket and it's contents to an IAM
-   * principal (Role/Group/User).
-   *
-   * If an encryption key is used, permission to use the key for
-   * encrypt/decrypt will also be granted.
-   *
-   * @param identity The principal
-   * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
-   */
   public grantReadWrite(identity: iam.IGrantable, objectsKeyPattern: any = '*') {
-    const bucketActions = perms.BUCKET_READ_ACTIONS.concat(perms.BUCKET_WRITE_ACTIONS);
+    const bucketActions = perms.BUCKET_READ_ACTIONS.concat(this.writeActions);
     // we need unique permissions because some permissions are common between read and write key actions
     const keyActions = [...new Set([...perms.KEY_READ_ACTIONS, ...perms.KEY_WRITE_ACTIONS])];
 
@@ -648,6 +759,9 @@ abstract class BucketBase extends Resource implements IBucket {
    *     const grant = bucket.grantPublicAccess();
    *     grant.resourceStatement!.addCondition(‘IpAddress’, { “aws:SourceIp”: “54.240.143.0/24” });
    *
+   * Note that if this `IBucket` refers to an existing bucket, possibly not
+   * managed by CloudFormation, this method will have no effect, since it's
+   * impossible to modify the policy of an existing bucket.
    *
    * @param keyPrefix the prefix of S3 object keys (e.g. `home/*`). Default is "*".
    * @param allowedActions the set of S3 actions to allow. Default is "s3:GetObject".
@@ -662,9 +776,71 @@ abstract class BucketBase extends Resource implements IBucket {
     return iam.Grant.addToPrincipalOrResource({
       actions: allowedActions,
       resourceArns: [this.arnForObjects(keyPrefix)],
-      grantee: new iam.Anyone(),
+      grantee: new iam.AnyPrincipal(),
       resource: this,
     });
+  }
+
+  /**
+   * Adds a bucket notification event destination.
+   * @param event The event to trigger the notification
+   * @param dest The notification destination (Lambda, SNS Topic or SQS Queue)
+   *
+   * @param filters S3 object key filter rules to determine which objects
+   * trigger this event. Each filter must include a `prefix` and/or `suffix`
+   * that will be matched against the s3 object key. Refer to the S3 Developer Guide
+   * for details about allowed filter rules.
+   *
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/NotificationHowTo.html#notification-how-to-filtering
+   *
+   * @example
+   *
+   *    declare const myLambda: lambda.Function;
+   *    const bucket = new s3.Bucket(this, 'MyBucket');
+   *    bucket.addEventNotification(s3.EventType.OBJECT_CREATED, new s3n.LambdaDestination(myLambda), {prefix: 'home/myusername/*'});
+   *
+   * @see
+   * https://docs.aws.amazon.com/AmazonS3/latest/dev/NotificationHowTo.html
+   */
+  public addEventNotification(event: EventType, dest: IBucketNotificationDestination, ...filters: NotificationKeyFilter[]) {
+    this.notifications.addNotification(event, dest, ...filters);
+  }
+
+  /**
+   * Subscribes a destination to receive notifications when an object is
+   * created in the bucket. This is identical to calling
+   * `onEvent(EventType.OBJECT_CREATED)`.
+   *
+   * @param dest The notification destination (see onEvent)
+   * @param filters Filters (see onEvent)
+   */
+  public addObjectCreatedNotification(dest: IBucketNotificationDestination, ...filters: NotificationKeyFilter[]) {
+    return this.addEventNotification(EventType.OBJECT_CREATED, dest, ...filters);
+  }
+
+  /**
+   * Subscribes a destination to receive notifications when an object is
+   * removed from the bucket. This is identical to calling
+   * `onEvent(EventType.OBJECT_REMOVED)`.
+   *
+   * @param dest The notification destination (see onEvent)
+   * @param filters Filters (see onEvent)
+   */
+  public addObjectRemovedNotification(dest: IBucketNotificationDestination, ...filters: NotificationKeyFilter[]) {
+    return this.addEventNotification(EventType.OBJECT_REMOVED, dest, ...filters);
+  }
+
+  private get writeActions(): string[] {
+    return [
+      ...perms.BUCKET_DELETE_ACTIONS,
+      ...this.putActions,
+    ];
+  }
+
+  private get putActions(): string[] {
+    return FeatureFlags.of(this).isEnabled(cxapi.S3_GRANT_WRITE_WITHOUT_ACL)
+      ? perms.BUCKET_PUT_ACTIONS
+      : perms.LEGACY_BUCKET_PUT_ACTIONS;
   }
 
   private urlJoin(...components: string[]): string {
@@ -773,7 +949,7 @@ export interface BucketMetrics {
    * Specifies a list of tag filters to use as a metrics configuration filter.
    * The metrics configuration includes only objects that meet the filter's criteria.
    */
-  readonly tagFilters?: {[tag: string]: any};
+  readonly tagFilters?: { [tag: string]: any };
 }
 
 /**
@@ -988,7 +1164,22 @@ export interface Inventory {
    */
   readonly optionalFields?: string[];
 }
-
+/**
+   * The ObjectOwnership of the bucket.
+   *
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/about-object-ownership.html
+   *
+   */
+export enum ObjectOwnership {
+  /**
+   * Objects uploaded to the bucket change ownership to the bucket owner .
+   */
+  BUCKET_OWNER_PREFERRED = 'BucketOwnerPreferred',
+  /**
+   * The uploading account will own the object.
+   */
+  OBJECT_WRITER = 'ObjectWriter',
+}
 export interface BucketProps {
   /**
    * The kind of server-side encryption to apply to this bucket.
@@ -1013,6 +1204,24 @@ export interface BucketProps {
   readonly encryptionKey?: kms.IKey;
 
   /**
+  * Enforces SSL for requests. S3.5 of the AWS Foundational Security Best Practices Regarding S3.
+  * @see https://docs.aws.amazon.com/config/latest/developerguide/s3-bucket-ssl-requests-only.html
+  *
+  * @default false
+  */
+  readonly enforceSSL?: boolean;
+
+  /**
+   * Specifies whether Amazon S3 should use an S3 Bucket Key with server-side
+   * encryption using KMS (SSE-KMS) for new objects in the bucket.
+   *
+   * Only relevant, when Encryption is set to {@link BucketEncryption.KMS}
+   *
+   * @default - false
+   */
+  readonly bucketKeyEnabled?: boolean;
+
+  /**
    * Physical name of this bucket.
    *
    * @default - Assigned by CloudFormation (recommended).
@@ -1025,6 +1234,21 @@ export interface BucketProps {
    * @default - The bucket will be orphaned.
    */
   readonly removalPolicy?: RemovalPolicy;
+
+  /**
+   * Whether all objects should be automatically deleted when the bucket is
+   * removed from the stack or when the stack is deleted.
+   *
+   * Requires the `removalPolicy` to be set to `RemovalPolicy.DESTROY`.
+   *
+   * **Warning** if you have deployed a bucket with `autoDeleteObjects: true`,
+   * switching this to `false` in a CDK version *before* `1.126.0` will lead to
+   * all objects in the bucket being deleted. Be sure to update your bucket resources
+   * by deploying with CDK version `1.126.0` or later **before** switching this value to `false`.
+   *
+   * @default false
+   */
+  readonly autoDeleteObjects?: boolean;
 
   /**
    * Whether this bucket should have versioning turned on or not.
@@ -1092,8 +1316,8 @@ export interface BucketProps {
    *
    * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/access-control-block-public-access.html
    *
-   * @default false New buckets and objects don't allow public access, but users can modify bucket
-   * policies or object permissions to allow public access.
+   *
+   * @default - CloudFormation defaults will apply. New buckets and objects don't allow public access, but users can modify bucket policies or object permissions to allow public access
    */
   readonly blockPublicAccess?: BlockPublicAccess;
 
@@ -1136,6 +1360,15 @@ export interface BucketProps {
    * @default - No inventory configuration
    */
   readonly inventories?: Inventory[];
+  /**
+   * The objectOwnership of the bucket.
+   *
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/about-object-ownership.html
+   *
+   * @default - No ObjectOwnership configuration, uploading account will own the object.
+   *
+   */
+  readonly objectOwnership?: ObjectOwnership;
 }
 
 /**
@@ -1171,6 +1404,7 @@ export class Bucket extends BucketBase {
     if (!bucketName) {
       throw new Error('Bucket name is required');
     }
+    Bucket.validateBucketName(bucketName);
 
     const newUrlFormat = attrs.bucketWebsiteNewUrlFormat === undefined
       ? false
@@ -1209,190 +1443,12 @@ export class Bucket extends BucketBase {
     });
   }
 
-  public readonly bucketArn: string;
-  public readonly bucketName: string;
-  public readonly bucketDomainName: string;
-  public readonly bucketWebsiteUrl: string;
-  public readonly bucketWebsiteDomainName: string;
-  public readonly bucketDualStackDomainName: string;
-  public readonly bucketRegionalDomainName: string;
-
-  public readonly encryptionKey?: kms.IKey;
-  public readonly isWebsite?: boolean;
-  public policy?: BucketPolicy;
-  protected autoCreatePolicy = true;
-  protected disallowPublicAccess?: boolean;
-  private accessControl?: BucketAccessControl;
-  private readonly lifecycleRules: LifecycleRule[] = [];
-  private readonly versioned?: boolean;
-  private readonly notifications: BucketNotifications;
-  private readonly metrics: BucketMetrics[] = [];
-  private readonly cors: CorsRule[] = [];
-  private readonly inventories: Inventory[] = [];
-
-  constructor(scope: Construct, id: string, props: BucketProps = {}) {
-    super(scope, id, {
-      physicalName: props.bucketName,
-    });
-
-    const { bucketEncryption, encryptionKey } = this.parseEncryption(props);
-
-    this.validateBucketName(this.physicalName);
-
-    const websiteConfiguration = this.renderWebsiteConfiguration(props);
-    this.isWebsite = (websiteConfiguration !== undefined);
-
-    const resource = new CfnBucket(this, 'Resource', {
-      bucketName: this.physicalName,
-      bucketEncryption,
-      versioningConfiguration: props.versioned ? { status: 'Enabled' } : undefined,
-      lifecycleConfiguration: Lazy.any({ produce: () => this.parseLifecycleConfiguration() }),
-      websiteConfiguration,
-      publicAccessBlockConfiguration: props.blockPublicAccess,
-      metricsConfigurations: Lazy.any({ produce: () => this.parseMetricConfiguration() }),
-      corsConfiguration: Lazy.any({ produce: () => this.parseCorsConfiguration() }),
-      accessControl: Lazy.string({ produce: () => this.accessControl }),
-      loggingConfiguration: this.parseServerAccessLogs(props),
-      inventoryConfigurations: Lazy.any({ produce: () => this.parseInventoryConfiguration() }),
-    });
-
-    resource.applyRemovalPolicy(props.removalPolicy);
-
-    this.versioned = props.versioned;
-    this.encryptionKey = encryptionKey;
-
-    this.bucketName = this.getResourceNameAttribute(resource.ref);
-    this.bucketArn = this.getResourceArnAttribute(resource.attrArn, {
-      region: '',
-      account: '',
-      service: 's3',
-      resource: this.physicalName,
-    });
-
-    this.bucketDomainName = resource.attrDomainName;
-    this.bucketWebsiteUrl = resource.attrWebsiteUrl;
-    this.bucketWebsiteDomainName = Fn.select(2, Fn.split('/', this.bucketWebsiteUrl));
-    this.bucketDualStackDomainName = resource.attrDualStackDomainName;
-    this.bucketRegionalDomainName = resource.attrRegionalDomainName;
-
-    this.disallowPublicAccess = props.blockPublicAccess && props.blockPublicAccess.blockPublicPolicy;
-    this.accessControl = props.accessControl;
-
-    if (props.serverAccessLogsBucket instanceof Bucket) {
-      props.serverAccessLogsBucket.allowLogDelivery();
-    }
-
-    for (const inventory of props.inventories ?? []) {
-      this.addInventory(inventory);
-    }
-
-    // Add all bucket metric configurations rules
-    (props.metrics || []).forEach(this.addMetric.bind(this));
-    // Add all cors configuration rules
-    (props.cors || []).forEach(this.addCorsRule.bind(this));
-
-    // Add all lifecycle rules
-    (props.lifecycleRules || []).forEach(this.addLifecycleRule.bind(this));
-
-    // defines a BucketNotifications construct. Notice that an actual resource will only
-    // be added if there are notifications added, so we don't need to condition this.
-    this.notifications = new BucketNotifications(this, 'Notifications', { bucket: this });
-
-    if (props.publicReadAccess) {
-      this.grantPublicAccess();
-    }
-  }
-
   /**
-   * Add a lifecycle rule to the bucket
+   * Thrown an exception if the given bucket name is not valid.
    *
-   * @param rule The rule to add
+   * @param physicalName name of the bucket.
    */
-  public addLifecycleRule(rule: LifecycleRule) {
-    if ((rule.noncurrentVersionExpiration !== undefined
-      || (rule.noncurrentVersionTransitions && rule.noncurrentVersionTransitions.length > 0))
-      && !this.versioned) {
-      throw new Error("Cannot use 'noncurrent' rules on a nonversioned bucket");
-    }
-
-    this.lifecycleRules.push(rule);
-  }
-
-  /**
-   * Adds a metrics configuration for the CloudWatch request metrics from the bucket.
-   *
-   * @param metric The metric configuration to add
-   */
-  public addMetric(metric: BucketMetrics) {
-    this.metrics.push(metric);
-  }
-
-  /**
-   * Adds a cross-origin access configuration for objects in an Amazon S3 bucket
-   *
-   * @param rule The CORS configuration rule to add
-   */
-  public addCorsRule(rule: CorsRule) {
-    this.cors.push(rule);
-  }
-
-  /**
-   * Adds a bucket notification event destination.
-   * @param event The event to trigger the notification
-   * @param dest The notification destination (Lambda, SNS Topic or SQS Queue)
-   *
-   * @param filters S3 object key filter rules to determine which objects
-   * trigger this event. Each filter must include a `prefix` and/or `suffix`
-   * that will be matched against the s3 object key. Refer to the S3 Developer Guide
-   * for details about allowed filter rules.
-   *
-   * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/NotificationHowTo.html#notification-how-to-filtering
-   *
-   * @example
-   *
-   *    bucket.addEventNotification(EventType.OnObjectCreated, myLambda, 'home/myusername/*')
-   *
-   * @see
-   * https://docs.aws.amazon.com/AmazonS3/latest/dev/NotificationHowTo.html
-   */
-  public addEventNotification(event: EventType, dest: IBucketNotificationDestination, ...filters: NotificationKeyFilter[]) {
-    this.notifications.addNotification(event, dest, ...filters);
-  }
-
-  /**
-   * Subscribes a destination to receive notifications when an object is
-   * created in the bucket. This is identical to calling
-   * `onEvent(EventType.ObjectCreated)`.
-   *
-   * @param dest The notification destination (see onEvent)
-   * @param filters Filters (see onEvent)
-   */
-  public addObjectCreatedNotification(dest: IBucketNotificationDestination, ...filters: NotificationKeyFilter[]) {
-    return this.addEventNotification(EventType.OBJECT_CREATED, dest, ...filters);
-  }
-
-  /**
-   * Subscribes a destination to receive notifications when an object is
-   * removed from the bucket. This is identical to calling
-   * `onEvent(EventType.ObjectRemoved)`.
-   *
-   * @param dest The notification destination (see onEvent)
-   * @param filters Filters (see onEvent)
-   */
-  public addObjectRemovedNotification(dest: IBucketNotificationDestination, ...filters: NotificationKeyFilter[]) {
-    return this.addEventNotification(EventType.OBJECT_REMOVED, dest, ...filters);
-  }
-
-  /**
-   * Add an inventory configuration.
-   *
-   * @param inventory configuration to add
-   */
-  public addInventory(inventory: Inventory): void {
-    this.inventories.push(inventory);
-  }
-
-  private validateBucketName(physicalName: string): void {
+  public static validateBucketName(physicalName: string): void {
     const bucketName = physicalName;
     if (!bucketName || Token.isUnresolved(bucketName)) {
       // the name is a late-bound value, not a defined string,
@@ -1433,6 +1489,172 @@ export class Bucket extends BucketBase {
     }
   }
 
+  public readonly bucketArn: string;
+  public readonly bucketName: string;
+  public readonly bucketDomainName: string;
+  public readonly bucketWebsiteUrl: string;
+  public readonly bucketWebsiteDomainName: string;
+  public readonly bucketDualStackDomainName: string;
+  public readonly bucketRegionalDomainName: string;
+
+  public readonly encryptionKey?: kms.IKey;
+  public readonly isWebsite?: boolean;
+  public policy?: BucketPolicy;
+  protected autoCreatePolicy = true;
+  protected disallowPublicAccess?: boolean;
+  private accessControl?: BucketAccessControl;
+  private readonly lifecycleRules: LifecycleRule[] = [];
+  private readonly versioned?: boolean;
+  private readonly metrics: BucketMetrics[] = [];
+  private readonly cors: CorsRule[] = [];
+  private readonly inventories: Inventory[] = [];
+  private readonly _resource: CfnBucket;
+
+  constructor(scope: Construct, id: string, props: BucketProps = {}) {
+    super(scope, id, {
+      physicalName: props.bucketName,
+    });
+
+    const { bucketEncryption, encryptionKey } = this.parseEncryption(props);
+
+    Bucket.validateBucketName(this.physicalName);
+
+    const websiteConfiguration = this.renderWebsiteConfiguration(props);
+    this.isWebsite = (websiteConfiguration !== undefined);
+
+    const resource = new CfnBucket(this, 'Resource', {
+      bucketName: this.physicalName,
+      bucketEncryption,
+      versioningConfiguration: props.versioned ? { status: 'Enabled' } : undefined,
+      lifecycleConfiguration: Lazy.any({ produce: () => this.parseLifecycleConfiguration() }),
+      websiteConfiguration,
+      publicAccessBlockConfiguration: props.blockPublicAccess,
+      metricsConfigurations: Lazy.any({ produce: () => this.parseMetricConfiguration() }),
+      corsConfiguration: Lazy.any({ produce: () => this.parseCorsConfiguration() }),
+      accessControl: Lazy.string({ produce: () => this.accessControl }),
+      loggingConfiguration: this.parseServerAccessLogs(props),
+      inventoryConfigurations: Lazy.any({ produce: () => this.parseInventoryConfiguration() }),
+      ownershipControls: this.parseOwnershipControls(props),
+    });
+    this._resource = resource;
+
+    resource.applyRemovalPolicy(props.removalPolicy);
+
+    this.versioned = props.versioned;
+    this.encryptionKey = encryptionKey;
+
+    this.bucketName = this.getResourceNameAttribute(resource.ref);
+    this.bucketArn = this.getResourceArnAttribute(resource.attrArn, {
+      region: '',
+      account: '',
+      service: 's3',
+      resource: this.physicalName,
+    });
+
+    this.bucketDomainName = resource.attrDomainName;
+    this.bucketWebsiteUrl = resource.attrWebsiteUrl;
+    this.bucketWebsiteDomainName = Fn.select(2, Fn.split('/', this.bucketWebsiteUrl));
+    this.bucketDualStackDomainName = resource.attrDualStackDomainName;
+    this.bucketRegionalDomainName = resource.attrRegionalDomainName;
+
+    this.disallowPublicAccess = props.blockPublicAccess && props.blockPublicAccess.blockPublicPolicy;
+    this.accessControl = props.accessControl;
+
+    // Enforce AWS Foundational Security Best Practice
+    if (props.enforceSSL) {
+      this.enforceSSLStatement();
+    }
+
+    if (props.serverAccessLogsBucket instanceof Bucket) {
+      props.serverAccessLogsBucket.allowLogDelivery();
+    }
+
+    for (const inventory of props.inventories ?? []) {
+      this.addInventory(inventory);
+    }
+
+    // Add all bucket metric configurations rules
+    (props.metrics || []).forEach(this.addMetric.bind(this));
+    // Add all cors configuration rules
+    (props.cors || []).forEach(this.addCorsRule.bind(this));
+
+    // Add all lifecycle rules
+    (props.lifecycleRules || []).forEach(this.addLifecycleRule.bind(this));
+
+    if (props.publicReadAccess) {
+      this.grantPublicAccess();
+    }
+
+    if (props.autoDeleteObjects) {
+      if (props.removalPolicy !== RemovalPolicy.DESTROY) {
+        throw new Error('Cannot use \'autoDeleteObjects\' property on a bucket without setting removal policy to \'DESTROY\'.');
+      }
+
+      this.enableAutoDeleteObjects();
+    }
+  }
+
+  /**
+   * Add a lifecycle rule to the bucket
+   *
+   * @param rule The rule to add
+   */
+  public addLifecycleRule(rule: LifecycleRule) {
+    if ((rule.noncurrentVersionExpiration !== undefined
+      || (rule.noncurrentVersionTransitions && rule.noncurrentVersionTransitions.length > 0))
+      && !this.versioned) {
+      throw new Error("Cannot use 'noncurrent' rules on a nonversioned bucket");
+    }
+
+    this.lifecycleRules.push(rule);
+  }
+
+  /**
+   * Adds a metrics configuration for the CloudWatch request metrics from the bucket.
+   *
+   * @param metric The metric configuration to add
+   */
+  public addMetric(metric: BucketMetrics) {
+    this.metrics.push(metric);
+  }
+
+  /**
+   * Adds a cross-origin access configuration for objects in an Amazon S3 bucket
+   *
+   * @param rule The CORS configuration rule to add
+   */
+  public addCorsRule(rule: CorsRule) {
+    this.cors.push(rule);
+  }
+
+  /**
+   * Add an inventory configuration.
+   *
+   * @param inventory configuration to add
+   */
+  public addInventory(inventory: Inventory): void {
+    this.inventories.push(inventory);
+  }
+
+  /**
+   * Adds an iam statement to enforce SSL requests only.
+   */
+  private enforceSSLStatement() {
+    const statement = new iam.PolicyStatement({
+      actions: ['s3:*'],
+      conditions: {
+        Bool: { 'aws:SecureTransport': 'false' },
+      },
+      effect: iam.Effect.DENY,
+      resources: [
+        this.bucketArn,
+        this.arnForObjects('*'),
+      ],
+      principals: [new iam.AnyPrincipal()],
+    });
+    this.addToResourcePolicy(statement);
+  }
+
   /**
    * Set up key properties and return the Bucket encryption property from the
    * user's configuration.
@@ -1453,6 +1675,11 @@ export class Bucket extends BucketBase {
       throw new Error(`encryptionKey is specified, so 'encryption' must be set to KMS (value: ${encryptionType})`);
     }
 
+    // if bucketKeyEnabled is set, encryption must be set to KMS.
+    if (props.bucketKeyEnabled && encryptionType !== BucketEncryption.KMS) {
+      throw new Error(`bucketKeyEnabled is specified, so 'encryption' must be set to KMS (value: ${encryptionType})`);
+    }
+
     if (encryptionType === BucketEncryption.UNENCRYPTED) {
       return { bucketEncryption: undefined, encryptionKey: undefined };
     }
@@ -1465,6 +1692,7 @@ export class Bucket extends BucketBase {
       const bucketEncryption = {
         serverSideEncryptionConfiguration: [
           {
+            bucketKeyEnabled: props.bucketKeyEnabled,
             serverSideEncryptionByDefault: {
               sseAlgorithm: 'aws:kms',
               kmsMasterKeyId: encryptionKey.keyArn,
@@ -1498,7 +1726,7 @@ export class Bucket extends BucketBase {
   }
 
   /**
-   * Parse the lifecycle configuration out of the uucket props
+   * Parse the lifecycle configuration out of the bucket props
    * @param props Par
    */
   private parseLifecycleConfiguration(): CfnBucket.LifecycleConfigurationProperty | undefined {
@@ -1511,13 +1739,13 @@ export class Bucket extends BucketBase {
     return { rules: this.lifecycleRules.map(parseLifecycleRule) };
 
     function parseLifecycleRule(rule: LifecycleRule): CfnBucket.RuleProperty {
-      const enabled = rule.enabled !== undefined ? rule.enabled : true;
+      const enabled = rule.enabled ?? true;
 
       const x: CfnBucket.RuleProperty = {
         // eslint-disable-next-line max-len
         abortIncompleteMultipartUpload: rule.abortIncompleteMultipartUploadAfter !== undefined ? { daysAfterInitiation: rule.abortIncompleteMultipartUploadAfter.toDays() } : undefined,
         expirationDate: rule.expirationDate,
-        expirationInDays: rule.expiration && rule.expiration.toDays(),
+        expirationInDays: rule.expiration?.toDays(),
         id: rule.id,
         noncurrentVersionExpirationInDays: rule.noncurrentVersionExpiration && rule.noncurrentVersionExpiration.toDays(),
         noncurrentVersionTransitions: mapOrUndefined(rule.noncurrentVersionTransitions, t => ({
@@ -1531,6 +1759,7 @@ export class Bucket extends BucketBase {
           transitionDate: t.transitionDate,
           transitionInDays: t.transitionAfter && t.transitionAfter.toDays(),
         })),
+        expiredObjectDeleteMarker: rule.expiredObjectDeleteMarker,
         tagFilters: self.parseTagFilters(rule.tagFilters),
       };
 
@@ -1586,7 +1815,7 @@ export class Bucket extends BucketBase {
     }
   }
 
-  private parseTagFilters(tagFilters?: {[tag: string]: any}) {
+  private parseTagFilters(tagFilters?: { [tag: string]: any }) {
     if (!tagFilters || tagFilters.length === 0) {
       return undefined;
     }
@@ -1595,6 +1824,17 @@ export class Bucket extends BucketBase {
       key: tag,
       value: tagFilters[tag],
     }));
+  }
+
+  private parseOwnershipControls({ objectOwnership }: BucketProps): CfnBucket.OwnershipControlsProperty | undefined {
+    if (!objectOwnership) {
+      return undefined;
+    }
+    return {
+      rules: [{
+        objectOwnership,
+      }],
+    };
   }
 
   private renderWebsiteConfiguration(props: BucketProps): CfnBucket.WebsiteConfigurationProperty | undefined {
@@ -1691,6 +1931,51 @@ export class Bucket extends BucketBase {
         prefix: inventory.objectsPrefix,
       };
     });
+  }
+
+  private enableAutoDeleteObjects() {
+    const provider = CustomResourceProvider.getOrCreateProvider(this, AUTO_DELETE_OBJECTS_RESOURCE_TYPE, {
+      codeDirectory: path.join(__dirname, 'auto-delete-objects-handler'),
+      runtime: CustomResourceProviderRuntime.NODEJS_12_X,
+      description: `Lambda function for auto-deleting objects in ${this.bucketName} S3 bucket.`,
+    });
+
+    // Use a bucket policy to allow the custom resource to delete
+    // objects in the bucket
+    this.addToResourcePolicy(new iam.PolicyStatement({
+      actions: [
+        // list objects
+        ...perms.BUCKET_READ_METADATA_ACTIONS,
+        ...perms.BUCKET_DELETE_ACTIONS, // and then delete them
+      ],
+      resources: [
+        this.bucketArn,
+        this.arnForObjects('*'),
+      ],
+      principals: [new iam.ArnPrincipal(provider.roleArn)],
+    }));
+
+    const customResource = new CustomResource(this, 'AutoDeleteObjectsCustomResource', {
+      resourceType: AUTO_DELETE_OBJECTS_RESOURCE_TYPE,
+      serviceToken: provider.serviceToken,
+      properties: {
+        BucketName: this.bucketName,
+      },
+    });
+
+    // Ensure bucket policy is deleted AFTER the custom resource otherwise
+    // we don't have permissions to list and delete in the bucket.
+    // (add a `if` to make TS happy)
+    if (this.policy) {
+      customResource.node.addDependency(this.policy);
+    }
+
+    // We also tag the bucket to record the fact that we want it autodeleted.
+    // The custom resource will check this tag before actually doing the delete.
+    // Because tagging and untagging will ALWAYS happen before the CR is deleted,
+    // we can set `autoDeleteObjects: false` without the removal of the CR emptying
+    // the bucket as a side effect.
+    Tags.of(this._resource).add(AUTO_DELETE_OBJECTS_TAG, 'true');
   }
 }
 

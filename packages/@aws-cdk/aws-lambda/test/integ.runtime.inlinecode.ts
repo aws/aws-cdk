@@ -50,4 +50,25 @@ const python37 = new Function(stack, 'PYTHON_3_7', {
 });
 new CfnOutput(stack, 'PYTHON_3_7-functionName', { value: python37.functionName });
 
+const python38 = new Function(stack, 'PYTHON_3_8', {
+  code: new InlineCode('def handler(event, context):\n  return "success"'),
+  handler: 'index.handler',
+  runtime: Runtime.PYTHON_3_8,
+});
+new CfnOutput(stack, 'PYTHON_3_8-functionName', { value: python38.functionName });
+
+const python39 = new Function(stack, 'PYTHON_3_9', {
+  code: new InlineCode('def handler(event, context):\n  return "success"'),
+  handler: 'index.handler',
+  runtime: Runtime.PYTHON_3_9,
+});
+new CfnOutput(stack, 'PYTHON_3_9-functionName', { value: python39.functionName });
+
+const node14xfn = new Function(stack, 'NODEJS_14_X', {
+  code: new InlineCode('exports.handler = async function(event) { return "success" }'),
+  handler: 'index.handler',
+  runtime: Runtime.NODEJS_14_X,
+});
+new CfnOutput(stack, 'NODEJS_14_X-functionName', { value: node14xfn.functionName });
+
 app.synth();

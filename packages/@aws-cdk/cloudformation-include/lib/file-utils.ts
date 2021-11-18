@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-import * as yaml_cfn from '@aws-cdk/yaml-cfn';
+import * as yaml_cfn from './private/yaml-cfn';
 
 export function readJsonSync(filePath: string): any {
   const fileContents = fs.readFileSync(filePath);

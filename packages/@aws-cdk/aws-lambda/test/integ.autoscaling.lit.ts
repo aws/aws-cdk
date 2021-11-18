@@ -12,12 +12,12 @@ class TestStack extends cdk.Stack {
     super(scope, id);
 
     const fn = new lambda.Function(this, 'MyLambda', {
-      code: new lambda.InlineCode('exports.handler = async () => {\nconsole.log(\'hello world\');\n};'),
+      code: new lambda.InlineCode('exports.handler = async () => { console.log(\'hello world\'); };'),
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_10_X,
     });
 
-    const version = fn.addVersion('1', undefined, 'integ-test');
+    const version = fn.currentVersion;
 
     const alias = new lambda.Alias(this, 'Alias', {
       aliasName: 'prod',

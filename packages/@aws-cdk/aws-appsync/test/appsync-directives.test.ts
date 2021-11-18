@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as cognito from '@aws-cdk/aws-cognito';
 import * as cdk from '@aws-cdk/core';
 import * as appsync from '../lib';
@@ -85,7 +85,7 @@ const testObjectType = (IApi: appsync.GraphqlApi, directives: appsync.Directive[
     directives: directives,
   }));
   // THEN
-  expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+  Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLSchema', {
     Definition: `type Test ${tag} {\n  field: String\n  ${tag}\n  rfield: String\n  ${tag}\n}\n`,
   });
 };
@@ -100,7 +100,7 @@ const testInterfaceType = (IApi: appsync.GraphqlApi, directives: appsync.Directi
     directives: directives,
   }));
   // THEN
-  expect(stack).toHaveResourceLike('AWS::AppSync::GraphQLSchema', {
+  Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLSchema', {
     Definition: `interface Test ${tag} {\n  field: String\n  ${tag}\n  rfield: String\n  ${tag}\n}\n`,
   });
 };

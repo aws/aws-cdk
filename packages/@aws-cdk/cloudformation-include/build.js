@@ -29,6 +29,8 @@ async function main() {
 
   for (const constructLibraryDir of constructLibrariesDirs) {
     const absConstructLibraryDir = path.resolve(constructLibrariesRoot, constructLibraryDir);
+    if (!fs.statSync(absConstructLibraryDir).isDirectory()) { continue; } // .DS_Store
+
     const libraryPackageJson = require(path.join(absConstructLibraryDir, 'package.json'));
 
     const libraryDependencyVersion = dependencies[libraryPackageJson.name];

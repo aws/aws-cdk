@@ -23,7 +23,8 @@ export function deepEqual(lvalue: any, rvalue: any): boolean {
   }
   // allows a numeric 10 and a literal "10" to be equivalent;
   // this is consistent with CloudFormation.
-  if (((typeof lvalue === 'string') || (typeof rvalue === 'string')) && (parseFloat(lvalue) === parseFloat(rvalue))) {
+  if ((typeof lvalue === 'string' || typeof rvalue === 'string') &&
+      safeParseFloat(lvalue) === safeParseFloat(rvalue)) {
     return true;
   }
   if (typeof lvalue !== typeof rvalue) { return false; }
@@ -131,4 +132,16 @@ export function unionOf(lv: string[] | Set<string>, rv: string[] | Set<string>):
     result.add(v);
   }
   return new Array(...result);
+}
+
+/**
+ * A parseFloat implementation that does the right thing for
+ * strings like '0.0.0'
+ * (for which JavaScript's parseFloat() returns 0).
+ * We return NaN for all of these strings that do not represent numbers,
+ * and so comparing them fails,
+ * and doesn't short-circuit the diff logic.
+ */
+function safeParseFloat(str: string): number {
+  return Number(str);
 }

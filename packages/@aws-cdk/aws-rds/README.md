@@ -1,6 +1,6 @@
-## Amazon Relational Database Service Construct Library
-
+# Amazon Relational Database Service Construct Library
 <!--BEGIN STABILITY BANNER-->
+
 ---
 
 ![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
@@ -8,19 +8,22 @@
 ![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
+
 <!--END STABILITY BANNER-->
 
-```typescript
+
+```ts nofixture
 import * as rds from '@aws-cdk/aws-rds';
 ```
 
-### Starting a clustered database
+## Starting a clustered database
 
 To set up a clustered database (like Aurora), define a `DatabaseCluster`. You must
 always launch a database in a VPC. Use the `vpcSubnets` attribute to control whether
 your instances will be launched privately or publicly:
 
 ```ts
+declare const vpc: ec2.Vpc;
 const cluster = new rds.DatabaseCluster(this, 'Database', {
   engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_2_08_1 }),
   credentials: rds.Credentials.fromGeneratedSecret('clusteradmin'), // Optional - will default to 'admin' username and generated password
@@ -50,7 +53,8 @@ Your cluster will be empty by default. To add a default database upon constructi
 Use `DatabaseClusterFromSnapshot` to create a cluster from a snapshot:
 
 ```ts
-new rds.DatabaseClusterFromSnapshot(stack, 'Database', {
+declare const vpc: ec2.Vpc;
+new rds.DatabaseClusterFromSnapshot(this, 'Database', {
   engine: rds.DatabaseClusterEngine.aurora({ version: rds.AuroraEngineVersion.VER_1_22_2 }),
   instanceProps: {
     vpc,
@@ -59,13 +63,14 @@ new rds.DatabaseClusterFromSnapshot(stack, 'Database', {
 });
 ```
 
-### Starting an instance database
+## Starting an instance database
 
 To set up a instance database, define a `DatabaseInstance`. You must
 always launch a database in a VPC. Use the `vpcSubnets` attribute to control whether
 your instances will be launched privately or publicly:
 
 ```ts
+declare const vpc: ec2.Vpc;
 const instance = new rds.DatabaseInstance(this, 'Instance', {
   engine: rds.DatabaseInstanceEngine.oracleSe2({ version: rds.OracleEngineVersion.VER_19_0_0_0_2020_04_R1 }),
   // optional, defaults to m5.large
@@ -73,7 +78,7 @@ const instance = new rds.DatabaseInstance(this, 'Instance', {
   credentials: rds.Credentials.fromGeneratedSecret('syscdk'), // Optional - will default to 'admin' username and generated password
   vpc,
   vpcSubnets: {
-    subnetType: ec2.SubnetType.PRIVATE
+    subnetType: ec2.SubnetType.PRIVATE,
   }
 });
 ```
@@ -93,6 +98,7 @@ This is the upper limit to which RDS can automatically scale the storage. More i
 Example for max storage configuration:
 
 ```ts
+declare const vpc: ec2.Vpc;
 const instance = new rds.DatabaseInstance(this, 'Instance', {
   engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_12_3 }),
   // optional, defaults to m5.large
@@ -106,7 +112,8 @@ Use `DatabaseInstanceFromSnapshot` and `DatabaseInstanceReadReplica` to create a
 a source database respectively:
 
 ```ts
-new rds.DatabaseInstanceFromSnapshot(stack, 'Instance', {
+declare const vpc: ec2.Vpc;
+new rds.DatabaseInstanceFromSnapshot(this, 'Instance', {
   snapshotIdentifier: 'my-snapshot',
   engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_12_3 }),
   // optional, defaults to m5.large
@@ -114,7 +121,8 @@ new rds.DatabaseInstanceFromSnapshot(stack, 'Instance', {
   vpc,
 });
 
-new rds.DatabaseInstanceReadReplica(stack, 'ReadReplica', {
+declare const sourceInstance: rds.DatabaseInstance;
+new rds.DatabaseInstanceReadReplica(this, 'ReadReplica', {
   sourceDatabaseInstance: sourceInstance,
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.LARGE),
   vpc,
@@ -125,16 +133,53 @@ Creating a "production" Oracle database instance with option and parameter group
 
 [example of setting up a production oracle instance](test/integ.instance.lit.ts)
 
-### Instance events
+## Setting Public Accessibility
+
+You can set public accessibility for the database instance or cluster using the `publiclyAccessible` property.
+If you specify `true`, it creates an instance with a publicly resolvable DNS name, which resolves to a public IP address.
+If you specify `false`, it creates an internal instance with a DNS name that resolves to a private IP address.
+The default value depends on `vpcSubnets`.
+It will be `true` if `vpcSubnets` is `subnetType: SubnetType.PUBLIC`, `false` otherwise.
+
+```ts
+declare const vpc: ec2.Vpc;
+// Setting public accessibility for DB instance
+new rds.DatabaseInstance(this, 'Instance', {
+  engine: rds.DatabaseInstanceEngine.mysql({
+    version: rds.MysqlEngineVersion.VER_8_0_19,
+  }),
+  vpc,
+  vpcSubnets: {
+    subnetType: ec2.SubnetType.PRIVATE,
+  },
+  publiclyAccessible: true,
+});
+
+// Setting public accessibility for DB cluster
+new rds.DatabaseCluster(this, 'DatabaseCluster', {
+  engine: rds.DatabaseClusterEngine.AURORA,
+  instanceProps: {
+    vpc,
+    vpcSubnets: {
+      subnetType: ec2.SubnetType.PRIVATE,
+    },
+    publiclyAccessible: true,
+  },
+});
+```
+
+## Instance events
 
 To define Amazon CloudWatch event rules for database instances, use the `onEvent`
 method:
 
 ```ts
+declare const instance: rds.DatabaseInstance;
+declare const fn: lambda.Function;
 const rule = instance.onEvent('InstanceEvent', { target: new targets.LambdaFunction(fn) });
 ```
 
-### Login credentials
+## Login credentials
 
 By default, database instances and clusters will have `admin` user with an auto-generated password.
 An alternative username (and password) may be specified for the admin user instead of the default.
@@ -142,6 +187,7 @@ An alternative username (and password) may be specified for the admin user inste
 The following examples use a `DatabaseInstance`, but the same usage is applicable to `DatabaseCluster`.
 
 ```ts
+declare const vpc: ec2.Vpc;
 const engine = rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_12_3 });
 new rds.DatabaseInstance(this, 'InstanceWithUsername', {
   engine,
@@ -163,33 +209,58 @@ new rds.DatabaseInstance(this, 'InstanceWithSecretLogin', {
 });
 ```
 
-### Connecting
+Secrets generated by `fromGeneratedSecret()` can be customized:
+
+```ts
+declare const vpc: ec2.Vpc;
+const engine = rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_12_3 });
+const myKey = new kms.Key(this, 'MyKey');
+
+new rds.DatabaseInstance(this, 'InstanceWithCustomizedSecret', {
+  engine,
+  vpc,
+  credentials: rds.Credentials.fromGeneratedSecret('postgres', {
+    secretName: 'my-cool-name',
+    encryptionKey: myKey,
+    excludeCharacters: '!&*^#@()',
+    replicaRegions: [{ region: 'eu-west-1' }, { region: 'eu-west-2' }],
+  }),
+});
+```
+
+## Connecting
 
 To control who can access the cluster or instance, use the `.connections` attribute. RDS databases have
 a default port, so you don't need to specify the port:
 
 ```ts
-cluster.connections.allowFromAnyIpv4('Open to the world');
+declare const cluster: rds.DatabaseCluster;
+cluster.connections.allowFromAnyIpv4(ec2.Port.allTraffic(), 'Open to the world');
 ```
 
 The endpoints to access your database cluster will be available as the `.clusterEndpoint` and `.readerEndpoint`
 attributes:
 
 ```ts
+declare const cluster: rds.DatabaseCluster;
 const writeAddress = cluster.clusterEndpoint.socketAddress;   // "HOSTNAME:PORT"
 ```
 
 For an instance database:
 
 ```ts
+declare const instance: rds.DatabaseInstance;
 const address = instance.instanceEndpoint.socketAddress;   // "HOSTNAME:PORT"
 ```
 
-### Rotating credentials
+## Rotating credentials
 
 When the master password is generated and stored in AWS Secrets Manager, it can be rotated automatically:
 
 ```ts
+import * as cdk from '@aws-cdk/core';
+
+declare const instance: rds.DatabaseInstance;
 instance.addRotationSingleUser({
   automaticallyAfter: cdk.Duration.days(7), // defaults to 30 days
   excludeCharacters: '!@#$%^&*', // defaults to the set " %+~`#$&*()|[]{}:;<>?!'/@\"\\"
@@ -201,6 +272,8 @@ instance.addRotationSingleUser({
 The multi user rotation scheme is also available:
 
 ```ts
+declare const instance: rds.DatabaseInstance;
+declare const myImportedSecret: rds.DatabaseSecret;
 instance.addRotationMultiUser('MyUser', {
   secret: myImportedSecret, // This secret must have the `masterarn` key
 });
@@ -209,8 +282,10 @@ instance.addRotationMultiUser('MyUser', {
 It's also possible to create user credentials together with the instance/cluster and add rotation:
 
 ```ts
+declare const instance: rds.DatabaseInstance;
 const myUserSecret = new rds.DatabaseSecret(this, 'MyUserSecret', {
   username: 'myuser',
+  secretName: 'my-user-secret', // optional, defaults to a CloudFormation-generated name
   masterSecret: instance.secret,
   excludeCharacters: '{}[]()\'"/\\', // defaults to the set " %+~`#$&*()|[]{}:;<>?!'/@\"\\"
 });
@@ -224,9 +299,24 @@ instance.addRotationMultiUser('MyUser', { // Add rotation using the multi user s
 **Note**: This user must be created manually in the database using the master credentials.
 The rotation will start as soon as this user exists.
 
+Access to the Secrets Manager API is required for the secret rotation. This can be achieved either with
+internet connectivity (through NAT) or with a VPC interface endpoint. By default, the rotation Lambda function
+is deployed in the same subnets as the instance/cluster. If access to the Secrets Manager API is not possible from
+those subnets or using the default API endpoint, use the `vpcSubnets` and/or `endpoint` options:
+
+```ts
+declare const instance: rds.DatabaseInstance;
+declare const myEndpoint: ec2.InterfaceVpcEndpoint;
+
+instance.addRotationSingleUser({
+  vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_NAT }, // Place rotation Lambda in private subnets
+  endpoint: myEndpoint, // Use VPC interface endpoint
+});
+```
+
 See also [@aws-cdk/aws-secretsmanager](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-secretsmanager/README.md) for credentials rotation of existing clusters/instances.
 
-### IAM Authentication
+## IAM Authentication
 
 You can also authenticate to a database instance using AWS Identity and Access Management (IAM) database authentication;
 See <https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.IAMDBAuth.html> for more information
@@ -235,19 +325,39 @@ and a list of supported versions and limitations.
 The following example shows enabling IAM authentication for a database instance and granting connection access to an IAM role.
 
 ```ts
-const instance = new rds.DatabaseInstance(stack, 'Instance', {
+declare const vpc: ec2.Vpc;
+const instance = new rds.DatabaseInstance(this, 'Instance', {
   engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
   vpc,
   iamAuthentication: true, // Optional - will be automatically set if you call grantConnect().
 });
-const role = new Role(stack, 'DBRole', { assumedBy: new AccountPrincipal(stack.account) });
+const role = new iam.Role(this, 'DBRole', { assumedBy: new iam.AccountPrincipal(this.account) });
 instance.grantConnect(role); // Grant the role connection access to the DB.
+```
+
+The following example shows granting connection access for RDS Proxy to an IAM role.
+
+```ts
+declare const vpc: ec2.Vpc;
+const cluster = new rds.DatabaseCluster(this, 'Database', {
+  engine: rds.DatabaseClusterEngine.AURORA,
+  instanceProps: { vpc },
+});
+
+const proxy = new rds.DatabaseProxy(this, 'Proxy', {
+  proxyTarget: rds.ProxyTarget.fromCluster(cluster),
+  secrets: [cluster.secret!],
+  vpc,
+});
+
+const role = new iam.Role(this, 'DBProxyRole', { assumedBy: new iam.AccountPrincipal(this.account) });
+proxy.grantConnect(role, 'admin'); // Grant the role connection access to the DB Proxy for database user 'admin'.
 ```
 
 **Note**: In addition to the setup above, a database user will need to be created to support IAM auth.
 See <https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.IAMDBAuth.DBAccounts.html> for setup instructions.
 
-### Kerberos Authentication
+## Kerberos Authentication
 
 You can also authenticate using Kerberos to a database instance using AWS Managed Microsoft AD for authentication;
 See <https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/kerberos-authentication.html> for more information
@@ -257,13 +367,14 @@ The following example shows enabling domain support for a database instance and 
 Directory Services.
 
 ```ts
-const role = new iam.Role(stack, 'RDSDirectoryServicesRole', {
+declare const vpc: ec2.Vpc;
+const role = new iam.Role(this, 'RDSDirectoryServicesRole', {
   assumedBy: new iam.ServicePrincipal('rds.amazonaws.com'),
   managedPolicies: [
     iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonRDSDirectoryServiceAccess'),
   ],
 });
-const instance = new rds.DatabaseInstance(stack, 'Instance', {
+const instance = new rds.DatabaseInstance(this, 'Instance', {
   engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
   vpc,
   domain: 'd-????????', // The ID of the domain for the instance to join.
@@ -277,22 +388,24 @@ appropriate security groups/network ACL to allow traffic between the database in
 Once configured, see <https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/kerberos-authentication.html> for details
 on configuring users for each available database engine.
 
-### Metrics
+## Metrics
 
 Database instances and clusters both expose metrics (`cloudwatch.Metric`):
 
 ```ts
 // The number of database connections in use (average over 5 minutes)
+declare const instance: rds.DatabaseInstance;
 const dbConnections = instance.metricDatabaseConnections();
 
 // Average CPU utilization over 5 minutes
+declare const cluster: rds.DatabaseCluster;
 const cpuUtilization = cluster.metricCPUUtilization();
 
 // The average amount of time taken per disk I/O operation (average over 1 minute)
-const readLatency = instance.metric('ReadLatency', { statistic: 'Average', periodSec: 60 });
+const readLatency = instance.metric('ReadLatency', { statistic: 'Average', period: Duration.seconds(60) });
 ```
 
-### Enabling S3 integration
+## Enabling S3 integration
 
 Data in S3 buckets can be imported to and exported from certain database engines using SQL queries. To enable this
 functionality, set the `s3ImportBuckets` and `s3ExportBuckets` properties for import and export respectively. When
@@ -303,27 +416,32 @@ You can read more about loading data to (or from) S3 here:
 
 * Aurora MySQL - [import](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraMySQL.Integrating.LoadFromS3.html)
   and [export](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraMySQL.Integrating.SaveIntoS3.html).
-* Aurora PostgreSQL - [import](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraPostgreSQL.Migrating.html)
+* Aurora PostgreSQL - [import](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraPostgreSQL.Migrating.html#USER_PostgreSQL.S3Import)
   and [export](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/postgresql-s3-export.html).
-* Microsoft SQL Server - [import & export](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/SQLServer.Procedural.Importing.html)
+* Microsoft SQL Server - [import and export](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/SQLServer.Procedural.Importing.html)
 * PostgreSQL - [import](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/PostgreSQL.Procedural.Importing.html)
-* Oracle - [import & export](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/oracle-s3-integration.html)
+  and [export](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/postgresql-s3-export.html)
+* Oracle - [import and export](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/oracle-s3-integration.html)
 
 The following snippet sets up a database cluster with different S3 buckets where the data is imported and exported -
 
 ```ts
 import * as s3 from '@aws-cdk/aws-s3';
 
+declare const vpc: ec2.Vpc;
 const importBucket = new s3.Bucket(this, 'importbucket');
 const exportBucket = new s3.Bucket(this, 'exportbucket');
 new rds.DatabaseCluster(this, 'dbcluster', {
-  // ...
+  engine: rds.DatabaseClusterEngine.AURORA,
+  instanceProps: {
+    vpc,
+  },
   s3ImportBuckets: [importBucket],
   s3ExportBuckets: [exportBucket],
 });
 ```
 
-### Creating a Database Proxy
+## Creating a Database Proxy
 
 Amazon RDS Proxy sits between your application and your relational database to efficiently manage
 connections to the database and improve scalability of the application. Learn more about at [Amazon RDS Proxy](https://aws.amazon.com/rds/proxy/)
@@ -331,37 +449,38 @@ connections to the database and improve scalability of the application. Learn mo
 The following code configures an RDS Proxy for a `DatabaseInstance`.
 
 ```ts
-import * as cdk from '@aws-cdk/core';
-import * as ec2 from '@aws-cdk/aws-ec2';
-import * as rds from '@aws-cdk/aws-rds';
-import * as secrets from '@aws-cdk/aws-secretsmanager';
-
-const vpc: ec2.IVpc = ...;
-const securityGroup: ec2.ISecurityGroup = ...;
-const secrets: secrets.ISecret[] = [...];
-const dbInstance: rds.IDatabaseInstance = ...;
+declare const vpc: ec2.Vpc;
+declare const securityGroup: ec2.SecurityGroup;
+declare const secrets: secretsmanager.Secret[];
+declare const dbInstance: rds.DatabaseInstance;
 
 const proxy = dbInstance.addProxy('proxy', {
-    connectionBorrowTimeout: cdk.Duration.seconds(30),
+    borrowTimeout: Duration.seconds(30),
     maxConnectionsPercent: 50,
     secrets,
     vpc,
 });
 ```
 
-### Exporting Logs
+## Exporting Logs
 
 You can publish database logs to Amazon CloudWatch Logs. With CloudWatch Logs, you can perform real-time analysis of the log data,
 store the data in highly durable storage, and manage the data with the CloudWatch Logs Agent. This is available for both database
 instances and clusters; the types of logs available depend on the database type and engine being used.
 
 ```ts
+import * as logs from '@aws-cdk/aws-logs';
+declare const myLogsPublishingRole: iam.Role;
+declare const vpc: ec2.Vpc;
+
 // Exporting logs from a cluster
 const cluster = new rds.DatabaseCluster(this, 'Database', {
   engine: rds.DatabaseClusterEngine.aurora({
     version: rds.AuroraEngineVersion.VER_1_17_9, // different version class for each engine type
+  }),
+  instanceProps: {
+    vpc,
   },
-  // ...
   cloudwatchLogsExports: ['error', 'general', 'slowquery', 'audit'], // Export all available MySQL-based logs
   cloudwatchLogsRetention: logs.RetentionDays.THREE_MONTHS, // Optional - default is to never expire logs
   cloudwatchLogsRetentionRole: myLogsPublishingRole, // Optional - a role will be created if not provided
@@ -373,22 +492,23 @@ const instance = new rds.DatabaseInstance(this, 'Instance', {
   engine: rds.DatabaseInstanceEngine.postgres({
     version: rds.PostgresEngineVersion.VER_12_3,
   }),
-  // ...
+  vpc,
   cloudwatchLogsExports: ['postgresql'], // Export the PostgreSQL logs
   // ...
 });
 ```
 
-### Option Groups
+## Option Groups
 
 Some DB engines offer additional features that make it easier to manage data and databases, and to provide additional security for your database.
 Amazon RDS uses option groups to enable and configure these features. An option group can specify features, called options,
 that are available for a particular Amazon RDS DB instance.
 
 ```ts
-const vpc: ec2.IVpc = ...;
-const securityGroup: ec2.ISecurityGroup = ...;
-new rds.OptionGroup(stack, 'Options', {
+declare const vpc: ec2.Vpc;
+declare const securityGroup: ec2.SecurityGroup;
+
+new rds.OptionGroup(this, 'Options', {
   engine: rds.DatabaseInstanceEngine.oracleSe2({
     version: rds.OracleEngineVersion.VER_19,
   }),
@@ -403,9 +523,9 @@ new rds.OptionGroup(stack, 'Options', {
 });
 ```
 
-### Serverless
+## Serverless
 
-[Amazon Aurora Serverless]((https://aws.amazon.com/rds/aurora/serverless/)) is an on-demand, auto-scaling configuration for Amazon
+[Amazon Aurora Serverless](https://aws.amazon.com/rds/aurora/serverless/) is an on-demand, auto-scaling configuration for Amazon
 Aurora. The database will automatically start up, shut down, and scale capacity
 up or down based on your application's needs. It enables you to run your database
 in the cloud without managing any database instances.
@@ -415,10 +535,7 @@ Aurora Serverless clusters can specify scaling properties which will be used to
 automatically scale the database cluster seamlessly based on the workload.
 
 ```ts
-import * as ec2 from '@aws-cdk/aws-ec2';
-import * as rds from '@aws-cdk/aws-rds';
-
-const vpc = new ec2.Vpc(this, 'myrdsvpc');
+declare const vpc: ec2.Vpc;
 
 const cluster = new rds.ServerlessCluster(this, 'AnotherCluster', {
   engine: rds.DatabaseClusterEngine.AURORA_POSTGRESQL,
@@ -451,18 +568,14 @@ Read more about the [limitations of Aurora Serverless](https://docs.aws.amazon.c
 
 Learn more about using Amazon Aurora Serverless by reading the [documentation](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless.html)
 
-#### Data API
+### Data API
 
 You can access your Aurora Serverless DB cluster using the built-in Data API. The Data API doesn't require a persistent connection to the DB cluster. Instead, it provides a secure HTTP endpoint and integration with AWS SDKs.
 
 The following example shows granting Data API access to a Lamba function.
 
 ```ts
-import * as ec2 from '@aws-cdk/aws-ec2';
-import * as lambda from '@aws-cdk/aws-lambda';
-import * as rds from '@aws-cdk/aws-rds';
-
-const vpc = new ec2.Vpc(this, 'MyVPC');
+declare const vpc: ec2.Vpc;
 
 const cluster = new rds.ServerlessCluster(this, 'AnotherCluster', {
   engine: rds.DatabaseClusterEngine.AURORA_MYSQL,
@@ -470,16 +583,17 @@ const cluster = new rds.ServerlessCluster(this, 'AnotherCluster', {
   enableDataApi: true, // Optional - will be automatically set if you call grantDataApiAccess()
 });
 
+declare const code: lambda.Code;
 const fn = new lambda.Function(this, 'MyFunction', {
-  runtime: lambda.Runtime.NODEJS_10_X,
+  runtime: lambda.Runtime.NODEJS_12_X,
   handler: 'index.handler',
-  code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
+  code,
   environment: {
     CLUSTER_ARN: cluster.clusterArn,
-    SECRET_ARN: cluster.secret.secretArn,
+    SECRET_ARN: cluster.secret!.secretArn,
   },
 });
-cluster.grantDataApiAccess(fn)
+cluster.grantDataApiAccess(fn);
 ```
 
 **Note**: To invoke the Data API, the resource will need to read the secret associated with the cluster.

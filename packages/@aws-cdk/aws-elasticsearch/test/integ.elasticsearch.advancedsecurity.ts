@@ -1,5 +1,5 @@
 import { User } from '@aws-cdk/aws-iam';
-import { App, Stack, StackProps } from '@aws-cdk/core';
+import { App, RemovalPolicy, Stack, StackProps } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import * as es from '../lib';
 
@@ -10,6 +10,7 @@ class TestStack extends Stack {
     const user = new User(this, 'User');
 
     new es.Domain(this, 'Domain', {
+      removalPolicy: RemovalPolicy.DESTROY,
       version: es.ElasticsearchVersion.V7_1,
       fineGrainedAccessControl: {
         masterUserArn: user.userArn,

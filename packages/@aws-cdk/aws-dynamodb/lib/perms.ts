@@ -5,6 +5,7 @@ export const READ_DATA_ACTIONS = [
   'dynamodb:Query',
   'dynamodb:GetItem',
   'dynamodb:Scan',
+  'dynamodb:ConditionCheckItem',
 ];
 export const KEY_READ_ACTIONS = [
   'kms:Decrypt',

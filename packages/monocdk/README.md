@@ -11,12 +11,14 @@ An __experiment__ to bundle all of the CDK into a single module.
 ## Usage
 
 ### Installation
+
 To try out `monocdk` replace all references to CDK Construct
 Libraries (most `@aws-cdk/*` packages) in your `package.json` file with a single
 entrey referring to `monocdk`.
 
 You also need to add a reference to the `constructs` library, according to the
 kind of project you are developing:
+
 - For libraries, model the dependency under `devDependencies` **and** `peerDependencies`
 - For apps, model the dependency under `dependencies` only
 

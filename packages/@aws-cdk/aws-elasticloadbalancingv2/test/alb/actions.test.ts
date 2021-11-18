@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import '@aws-cdk/assert-internal/jest';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
 import * as elbv2 from '../../lib';
@@ -155,7 +155,7 @@ describe('tests', () => {
     });
 
     listener.addAction('Action2', {
-      hostHeader: 'example.com',
+      conditions: [elbv2.ListenerCondition.hostHeaders(['example.com'])],
       priority: 10,
       action: elbv2.ListenerAction.forward([group2]),
     });

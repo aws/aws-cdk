@@ -1,4 +1,5 @@
-import '@aws-cdk/assert/jest';
+import '@aws-cdk/assert-internal/jest';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Duration, Stack, App } from '@aws-cdk/core';
 import { AnyPrincipal, ArnPrincipal, CompositePrincipal, FederatedPrincipal, ManagedPolicy, PolicyStatement, Role, ServicePrincipal, User, Policy, PolicyDocument } from '../lib';
 
@@ -58,7 +59,7 @@ describe('IAM role', () => {
     });
   });
 
-  test('can supply externalId', () => {
+  testDeprecated('can supply externalId', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -533,5 +534,33 @@ describe('IAM role', () => {
     role.assumeRolePolicy?.addStatements(new PolicyStatement({ actions: ['*'] }));
 
     expect(() => app.synth()).toThrow(/A PolicyStatement used in a resource-based policy must specify at least one IAM principal/);
+  });
+});
+
+test('managed policy ARNs are deduplicated', () => {
+  const app = new App();
+  const stack = new Stack(app, 'my-stack');
+  const role = new Role(stack, 'MyRole', {
+    assumedBy: new ServicePrincipal('sns.amazonaws.com'),
+    managedPolicies: [
+      ManagedPolicy.fromAwsManagedPolicyName('SuperDeveloper'),
+      ManagedPolicy.fromAwsManagedPolicyName('SuperDeveloper'),
+    ],
+  });
+  role.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('SuperDeveloper'));
+
+  expect(stack).toHaveResource('AWS::IAM::Role', {
+    ManagedPolicyArns: [
+      {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            { Ref: 'AWS::Partition' },
+            ':iam::aws:policy/SuperDeveloper',
+          ],
+        ],
+      },
+    ],
   });
 });

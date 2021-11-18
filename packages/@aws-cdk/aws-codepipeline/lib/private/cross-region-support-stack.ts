@@ -2,6 +2,10 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
+
 const REQUIRED_ALIAS_PREFIX = 'alias/';
 
 /**
@@ -40,12 +44,19 @@ export interface CrossRegionSupportConstructProps {
    * @default true
    */
   readonly createKmsKey?: boolean;
+
+  /**
+   * Enables KMS key rotation for cross-account keys.
+   *
+   * @default - false (key rotation is disabled)
+   */
+  readonly enableKeyRotation?: boolean;
 }
 
-export class CrossRegionSupportConstruct extends cdk.Construct {
+export class CrossRegionSupportConstruct extends Construct {
   public readonly replicationBucket: s3.IBucket;
 
-  constructor(scope: cdk.Construct, id: string, props: CrossRegionSupportConstructProps = {}) {
+  constructor(scope: Construct, id: string, props: CrossRegionSupportConstructProps = {}) {
     super(scope, id);
 
     const createKmsKey = props.createKmsKey ?? true;
@@ -54,6 +65,7 @@ export class CrossRegionSupportConstruct extends cdk.Construct {
     if (createKmsKey) {
       const encryptionKey = new kms.Key(this, 'CrossRegionCodePipelineReplicationBucketEncryptionKey', {
         removalPolicy: cdk.RemovalPolicy.DESTROY,
+        enableKeyRotation: props.enableKeyRotation,
       });
       encryptionAlias = new AliasWithShorterGeneratedName(this, 'CrossRegionCodePipelineReplicationBucketEncryptionAlias', {
         targetKey: encryptionKey,
@@ -102,6 +114,13 @@ export interface CrossRegionSupportStackProps {
    * @default true
    */
   readonly createKmsKey?: boolean;
+
+  /**
+   * Enables KMS key rotation for cross-account keys.
+   *
+   * @default - false (key rotation is disabled)
+   */
+  readonly enableKeyRotation?: boolean;
 }
 
 /**
@@ -114,7 +133,7 @@ export class CrossRegionSupportStack extends cdk.Stack {
    */
   public readonly replicationBucket: s3.IBucket;
 
-  constructor(scope: cdk.Construct, id: string, props: CrossRegionSupportStackProps) {
+  constructor(scope: Construct, id: string, props: CrossRegionSupportStackProps) {
     super(scope, id, {
       stackName: generateStackName(props),
       env: {
@@ -126,6 +145,7 @@ export class CrossRegionSupportStack extends cdk.Stack {
 
     const crossRegionSupportConstruct = new CrossRegionSupportConstruct(this, 'Default', {
       createKmsKey: props.createKmsKey,
+      enableKeyRotation: props.enableKeyRotation,
     });
     this.replicationBucket = crossRegionSupportConstruct.replicationBucket;
   }

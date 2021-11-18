@@ -44,7 +44,8 @@ export interface AssetOptions {
   readonly assetHashType?: AssetHashType;
 
   /**
-   * Bundle the asset by executing a command in a Docker container.
+   * Bundle the asset by executing a command in a Docker container or a custom bundling provider.
+   *
    * The asset path will be mounted at `/asset-input`. The Docker
    * container is responsible for putting content at `/asset-output`.
    * The content at `/asset-output` will be zipped and used as the
@@ -53,7 +54,7 @@ export interface AssetOptions {
    * @default - uploaded as-is to S3 if the asset is a regular file or a .zip file,
    * archived into a .zip file and uploaded to S3 otherwise
    *
-   * @experimental
+   *
    */
   readonly bundling?: BundlingOptions;
 }
@@ -107,16 +108,29 @@ export interface FileAssetSource {
   readonly sourceHash: string;
 
   /**
-   * The path, relative to the root of the cloud assembly, in which this asset
-   * source resides. This can be a path to a file or a directory, dependning on the
-   * packaging type.
+   * An external command that will produce the packaged asset.
+   *
+   * The command should produce the location of a ZIP file on `stdout`.
+   *
+   * @default - Exactly one of `directory` and `executable` is required
    */
-  readonly fileName: string;
+  readonly executable?: string[];
+
+  /**
+   * The path, relative to the root of the cloud assembly, in which this asset
+   * source resides. This can be a path to a file or a directory, depending on the
+   * packaging type.
+   *
+   * @default - Exactly one of `directory` and `executable` is required
+   */
+  readonly fileName?: string;
 
   /**
    * Which type of packaging to perform.
+   *
+   * @default - Required if `fileName` is specified.
    */
-  readonly packaging: FileAssetPackaging;
+  readonly packaging?: FileAssetPackaging;
 }
 
 export interface DockerImageAssetSource {
@@ -131,10 +145,21 @@ export interface DockerImageAssetSource {
   readonly sourceHash: string;
 
   /**
+   * An external command that will produce the packaged asset.
+   *
+   * The command should produce the name of a local Docker image on `stdout`.
+   *
+   * @default - Exactly one of `directoryName` and `executable` is required
+   */
+  readonly executable?: string[];
+
+  /**
    * The directory where the Dockerfile is stored, must be relative
    * to the cloud assembly root.
+   *
+   * @default - Exactly one of `directoryName` and `executable` is required
    */
-  readonly directoryName: string;
+  readonly directoryName?: string;
 
   /**
    * Build args to pass to the `docker build` command.
@@ -143,6 +168,8 @@ export interface DockerImageAssetSource {
    * values cannot refer to unresolved tokens (such as `lambda.functionArn` or
    * `queue.queueUrl`).
    *
+   * Only allowed when `directoryName` is specified.
+   *
    * @default - no build args are passed
    */
   readonly dockerBuildArgs?: { [key: string]: string };
@@ -150,12 +177,16 @@ export interface DockerImageAssetSource {
   /**
    * Docker target to build to
    *
+   * Only allowed when `directoryName` is specified.
+   *
    * @default - no target
    */
   readonly dockerBuildTarget?: string;
 
   /**
    * Path to the Dockerfile (relative to the directory).
+   *
+   * Only allowed when `directoryName` is specified.
    *
    * @default - no file
    */
@@ -208,21 +239,22 @@ export interface FileAssetLocation {
 
   /**
    * The HTTP URL of this asset on Amazon S3.
+   * @default - value specified in `httpUrl` is used.
    * @deprecated use `httpUrl`
    */
-  readonly s3Url: string;
+  readonly s3Url?: string;
 
   /**
    * The HTTP URL of this asset on Amazon S3.
    *
-   * @example https://s3-us-east-1.amazonaws.com/mybucket/myobject
+   * Example value: `https://s3-us-east-1.amazonaws.com/mybucket/myobject`
    */
   readonly httpUrl: string;
 
   /**
    * The S3 URL of this asset on Amazon S3.
    *
-   * @example s3://mybucket/myobject
+   * Example value: `s3://mybucket/myobject`
    */
   readonly s3ObjectUrl: string;
 

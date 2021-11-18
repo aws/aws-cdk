@@ -1,12 +1,12 @@
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
-import { singletonEventRole } from './util';
+import { addToDeadLetterQueueResourcePolicy, bindBaseTargetConfig, singletonEventRole, TargetBaseProps } from './util';
 
 /**
  * Customize the CodeBuild Event Target
  */
-export interface CodeBuildProjectProps {
+export interface CodeBuildProjectProps extends TargetBaseProps {
 
   /**
    * The role to assume before invoking the target
@@ -39,8 +39,13 @@ export class CodeBuildProject implements events.IRuleTarget {
    * Allows using build projects as event rule targets.
    */
   public bind(_rule: events.IRule, _id?: string): events.RuleTargetConfig {
+
+    if (this.props.deadLetterQueue) {
+      addToDeadLetterQueueResourcePolicy(_rule, this.props.deadLetterQueue);
+    }
+
     return {
-      id: '',
+      ...bindBaseTargetConfig(this.props),
       arn: this.project.projectArn,
       role: this.props.eventRole || singletonEventRole(this.project, [
         new iam.PolicyStatement({

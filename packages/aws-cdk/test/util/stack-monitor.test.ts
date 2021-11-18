@@ -1,5 +1,5 @@
 import { StackActivityMonitor, IActivityPrinter, StackActivity } from '../../lib/api/util/cloudformation/stack-activity-monitor';
-import { sleep } from '../integ/cli/aws-helpers';
+import { sleep } from '../integ/helpers/aws';
 import { MockSdk } from './mock-sdk';
 
 let sdk: MockSdk;

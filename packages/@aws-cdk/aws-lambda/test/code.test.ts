@@ -1,6 +1,8 @@
-import '@aws-cdk/assert/jest';
+import '@aws-cdk/assert-internal/jest';
 import * as path from 'path';
-import { ResourcePart } from '@aws-cdk/assert';
+import { ABSENT, ResourcePart } from '@aws-cdk/assert-internal';
+import * as ecr from '@aws-cdk/aws-ecr';
+import { testFutureBehavior } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as lambda from '../lib';
@@ -75,6 +77,26 @@ describe('code', () => {
           [cxapi.ASSET_RESOURCE_METADATA_PROPERTY_KEY]: 'Code',
         },
       }, ResourcePart.CompleteDefinition);
+    });
+
+    test('fails if asset is bound with a second stack', () => {
+      // GIVEN
+      const asset = lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler'));
+
+      const app = new cdk.App();
+      const stack1 = new cdk.Stack(app, 'Stack1');
+      new lambda.Function(stack1, 'Func', {
+        code: asset,
+        runtime: lambda.Runtime.NODEJS_10_X,
+        handler: 'foom',
+      });
+
+      const stack2 = new cdk.Stack(app, 'Stack2');
+      expect(() => new lambda.Function(stack2, 'Func', {
+        code: asset,
+        runtime: lambda.Runtime.NODEJS_10_X,
+        handler: 'foom',
+      })).toThrow(/already associated/);
     });
   });
 
@@ -167,6 +189,329 @@ describe('code', () => {
       // then
       expect(overrides['BucketNameParam']).toEqual('SomeBucketName');
       expect(overrides['ObjectKeyParam']).toEqual('SomeObjectKey');
+    });
+  });
+
+  describe('lambda.Code.fromEcr', () => {
+    test('repository uri is correctly identified', () => {
+      // given
+      const stack = new cdk.Stack();
+      const repo = new ecr.Repository(stack, 'Repo');
+
+      // when
+      new lambda.Function(stack, 'Fn', {
+        code: lambda.Code.fromEcrImage(repo),
+        handler: lambda.Handler.FROM_IMAGE,
+        runtime: lambda.Runtime.FROM_IMAGE,
+      });
+
+      // then
+      expect(stack).toHaveResource('AWS::Lambda::Function', {
+        Code: {
+          ImageUri: stack.resolve(repo.repositoryUriForTag('latest')),
+        },
+        ImageConfig: ABSENT,
+      });
+    });
+
+    test('props are correctly resolved', () => {
+      // given
+      const stack = new cdk.Stack();
+      const repo = new ecr.Repository(stack, 'Repo');
+
+      // when
+      new lambda.Function(stack, 'Fn', {
+        code: lambda.Code.fromEcrImage(repo, {
+          cmd: ['cmd', 'param1'],
+          entrypoint: ['entrypoint', 'param2'],
+          tag: 'mytag',
+          workingDirectory: '/some/path',
+        }),
+        handler: lambda.Handler.FROM_IMAGE,
+        runtime: lambda.Runtime.FROM_IMAGE,
+      });
+
+      // then
+      expect(stack).toHaveResource('AWS::Lambda::Function', {
+        Code: {
+          ImageUri: stack.resolve(repo.repositoryUriForTag('mytag')),
+        },
+        ImageConfig: {
+          Command: ['cmd', 'param1'],
+          EntryPoint: ['entrypoint', 'param2'],
+          WorkingDirectory: '/some/path',
+        },
+      });
+    });
+
+    test('permission grants', () => {
+      // given
+      const stack = new cdk.Stack();
+      const repo = new ecr.Repository(stack, 'Repo');
+
+      // when
+      new lambda.Function(stack, 'Fn', {
+        code: lambda.Code.fromEcrImage(repo),
+        handler: lambda.Handler.FROM_IMAGE,
+        runtime: lambda.Runtime.FROM_IMAGE,
+      });
+
+      // then
+      expect(stack).toHaveResourceLike('AWS::ECR::Repository', {
+        RepositoryPolicyText: {
+          Statement: [
+            {
+              Action: [
+                'ecr:BatchCheckLayerAvailability',
+                'ecr:GetDownloadUrlForLayer',
+                'ecr:BatchGetImage',
+              ],
+              Effect: 'Allow',
+              Principal: {
+                Service: 'lambda.amazonaws.com',
+              },
+            },
+          ],
+        },
+      });
+    });
+  });
+
+  describe('lambda.Code.fromImageAsset', () => {
+    const flags = { [cxapi.DOCKER_IGNORE_SUPPORT]: true };
+    testFutureBehavior('repository uri is correctly identified', flags, cdk.App, (app) => {
+      // given
+      const stack = new cdk.Stack(app);
+
+      // when
+      new lambda.Function(stack, 'Fn', {
+        code: lambda.Code.fromAssetImage(path.join(__dirname, 'docker-lambda-handler')),
+        handler: lambda.Handler.FROM_IMAGE,
+        runtime: lambda.Runtime.FROM_IMAGE,
+      });
+
+      // then
+      expect(stack).toHaveResource('AWS::Lambda::Function', {
+        Code: {
+          ImageUri: {
+            'Fn::Join': ['', [
+              { Ref: 'AWS::AccountId' },
+              '.dkr.ecr.',
+              { Ref: 'AWS::Region' },
+              '.',
+              { Ref: 'AWS::URLSuffix' },
+              '/aws-cdk/assets:cea95822039f89359d77f8faf5d6da116d1da130ce61a5972190455528ce30d5',
+            ]],
+          },
+        },
+        ImageConfig: ABSENT,
+      });
+    });
+
+    test('props are correctly resolved', () => {
+      // given
+      const stack = new cdk.Stack();
+
+      // when
+      new lambda.Function(stack, 'Fn', {
+        code: lambda.Code.fromAssetImage(path.join(__dirname, 'docker-lambda-handler'), {
+          cmd: ['cmd', 'param1'],
+          entrypoint: ['entrypoint', 'param2'],
+          workingDirectory: '/some/path',
+        }),
+        handler: lambda.Handler.FROM_IMAGE,
+        runtime: lambda.Runtime.FROM_IMAGE,
+      });
+
+      // then
+      expect(stack).toHaveResource('AWS::Lambda::Function', {
+        ImageConfig: {
+          Command: ['cmd', 'param1'],
+          EntryPoint: ['entrypoint', 'param2'],
+          WorkingDirectory: '/some/path',
+        },
+      });
+    });
+
+    test('only one Asset object gets created even if multiple functions use the same AssetImageCode', () => {
+      // given
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'MyStack');
+      const directoryAsset = lambda.Code.fromAssetImage(path.join(__dirname, 'docker-lambda-handler'));
+
+      // when
+      new lambda.Function(stack, 'Fn1', {
+        code: directoryAsset,
+        handler: lambda.Handler.FROM_IMAGE,
+        runtime: lambda.Runtime.FROM_IMAGE,
+      });
+
+      new lambda.Function(stack, 'Fn2', {
+        code: directoryAsset,
+        handler: lambda.Handler.FROM_IMAGE,
+        runtime: lambda.Runtime.FROM_IMAGE,
+      });
+
+      // then
+      const assembly = app.synth();
+      const synthesized = assembly.stacks[0];
+
+      // Func1 has an asset, Func2 does not
+      expect(synthesized.assets.length).toEqual(1);
+    });
+
+    test('adds code asset metadata', () => {
+      // given
+      const stack = new cdk.Stack();
+      stack.node.setContext(cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT, true);
+
+      const dockerfilePath = 'Dockerfile';
+      const dockerBuildTarget = 'stage';
+      const dockerBuildArgs = { arg1: 'val1', arg2: 'val2' };
+
+      // when
+      new lambda.Function(stack, 'Fn', {
+        code: lambda.Code.fromAssetImage(path.join(__dirname, 'docker-lambda-handler'), {
+          file: dockerfilePath,
+          target: dockerBuildTarget,
+          buildArgs: dockerBuildArgs,
+        }),
+        handler: lambda.Handler.FROM_IMAGE,
+        runtime: lambda.Runtime.FROM_IMAGE,
+      });
+
+      // then
+      expect(stack).toHaveResource('AWS::Lambda::Function', {
+        Metadata: {
+          [cxapi.ASSET_RESOURCE_METADATA_PATH_KEY]: 'asset.5a6c1c61bba06af5a86b69c75eaeb9cb1a0dd5d8089ef5b0a4591d17e19960cb',
+          [cxapi.ASSET_RESOURCE_METADATA_DOCKERFILE_PATH_KEY]: dockerfilePath,
+          [cxapi.ASSET_RESOURCE_METADATA_DOCKER_BUILD_ARGS_KEY]: dockerBuildArgs,
+          [cxapi.ASSET_RESOURCE_METADATA_DOCKER_BUILD_TARGET_KEY]: dockerBuildTarget,
+          [cxapi.ASSET_RESOURCE_METADATA_PROPERTY_KEY]: 'Code.ImageUri',
+        },
+      }, ResourcePart.CompleteDefinition);
+    });
+
+    test('adds code asset metadata with default dockerfile path', () => {
+      // given
+      const stack = new cdk.Stack();
+      stack.node.setContext(cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT, true);
+
+      // when
+      new lambda.Function(stack, 'Fn', {
+        code: lambda.Code.fromAssetImage(path.join(__dirname, 'docker-lambda-handler')),
+        handler: lambda.Handler.FROM_IMAGE,
+        runtime: lambda.Runtime.FROM_IMAGE,
+      });
+
+      // then
+      expect(stack).toHaveResource('AWS::Lambda::Function', {
+        Metadata: {
+          [cxapi.ASSET_RESOURCE_METADATA_PATH_KEY]: 'asset.7ea503e14740780eadd69ea2bacef1de3386f5ac53ea146ea36e28cef5da8b51',
+          [cxapi.ASSET_RESOURCE_METADATA_DOCKERFILE_PATH_KEY]: 'Dockerfile',
+          [cxapi.ASSET_RESOURCE_METADATA_PROPERTY_KEY]: 'Code.ImageUri',
+        },
+      }, ResourcePart.CompleteDefinition);
+    });
+
+    test('fails if asset is bound with a second stack', () => {
+      // given
+      const app = new cdk.App();
+      const asset = lambda.Code.fromAssetImage(path.join(__dirname, 'docker-lambda-handler'));
+
+      // when
+      const stack1 = new cdk.Stack(app, 'Stack1');
+      new lambda.Function(stack1, 'Fn', {
+        code: asset,
+        handler: lambda.Handler.FROM_IMAGE,
+        runtime: lambda.Runtime.FROM_IMAGE,
+      });
+
+      const stack2 = new cdk.Stack(app, 'Stack2');
+
+      // then
+      expect(() => new lambda.Function(stack2, 'Fn', {
+        code: asset,
+        handler: lambda.Handler.FROM_IMAGE,
+        runtime: lambda.Runtime.FROM_IMAGE,
+      })).toThrow(/already associated/);
+    });
+  });
+
+  describe('lambda.Code.fromDockerBuild', () => {
+    let fromBuildMock: jest.SpyInstance<cdk.DockerImage>;
+    let cpMock: jest.Mock<any, any>;
+
+    beforeEach(() => {
+      cpMock = jest.fn().mockReturnValue(path.join(__dirname, 'docker-build-lambda'));
+      fromBuildMock = jest.spyOn(cdk.DockerImage, 'fromBuild').mockImplementation(() => ({
+        cp: cpMock,
+        image: 'tag',
+        run: jest.fn(),
+        toJSON: jest.fn(),
+      }));
+    });
+
+    afterEach(() => {
+      fromBuildMock.mockRestore();
+    });
+
+    test('can use the result of a Docker build as an asset', () => {
+      // given
+      const stack = new cdk.Stack();
+      stack.node.setContext(cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT, true);
+
+      // when
+      new lambda.Function(stack, 'Fn', {
+        code: lambda.Code.fromDockerBuild(path.join(__dirname, 'docker-build-lambda')),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_12_X,
+      });
+
+      // then
+      expect(stack).toHaveResource('AWS::Lambda::Function', {
+        Metadata: {
+          [cxapi.ASSET_RESOURCE_METADATA_PATH_KEY]: 'asset.b401831f7a9d2f7f299ff312037585cd1760c0c9e148260be2fd8ea8a40066bb',
+          [cxapi.ASSET_RESOURCE_METADATA_PROPERTY_KEY]: 'Code',
+        },
+      }, ResourcePart.CompleteDefinition);
+
+      expect(fromBuildMock).toHaveBeenCalledWith(path.join(__dirname, 'docker-build-lambda'), {});
+      expect(cpMock).toHaveBeenCalledWith('/asset/.', undefined);
+    });
+
+    test('fromDockerBuild appends /. to an image path not ending with a /', () => {
+      // given
+      const stack = new cdk.Stack();
+
+      // when
+      new lambda.Function(stack, 'Fn', {
+        code: lambda.Code.fromDockerBuild(path.join(__dirname, 'docker-build-lambda'), {
+          imagePath: '/my/image/path',
+        }),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_12_X,
+      });
+
+      // then
+      expect(cpMock).toHaveBeenCalledWith('/my/image/path/.', undefined);
+    });
+
+    test('fromDockerBuild appends . to an image path ending with a /', () => {
+      // given
+      const stack = new cdk.Stack();
+
+      // when
+      new lambda.Function(stack, 'Fn', {
+        code: lambda.Code.fromDockerBuild(path.join(__dirname, 'docker-build-lambda'), {
+          imagePath: '/my/image/path/',
+        }),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_12_X,
+      });
+
+      // then
+      expect(cpMock).toHaveBeenCalledWith('/my/image/path/.', undefined);
     });
   });
 });

@@ -1,11 +1,13 @@
 import * as crypto from 'crypto';
-import { Metric, MetricOptions } from '@aws-cdk/aws-cloudwatch';
+import { Metric, MetricOptions, MetricProps } from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { Code } from './code';
+import { Runtime } from './runtime';
 import { Schedule } from './schedule';
+import { CloudWatchSyntheticsMetrics } from './synthetics-canned-metrics.generated';
 import { CfnCanary } from './synthetics.generated';
 
 /**
@@ -61,40 +63,6 @@ export interface CustomTestOptions {
    * The handler for the code. Must end with `.handler`.
    */
   readonly handler: string,
-}
-
-/**
- * Runtime options for a canary
- */
-export class Runtime {
-  /**
-   * `syn-1.0` includes the following:
-   *
-   * - Synthetics library 1.0
-   * - Synthetics handler code 1.0
-   * - Lambda runtime Node.js 10.x
-   * - Puppeteer-core version 1.14.0
-   * - The Chromium version that matches Puppeteer-core 1.14.0
-   *
-   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_Library.html#CloudWatch_Synthetics_runtimeversion-1.0
-   */
-  public static readonly SYNTHETICS_1_0 = new Runtime('syn-1.0');
-
-  /**
-   * `syn-nodejs-2.0` includes the following:
-   * - Lambda runtime Node.js 10.x
-   * - Puppeteer-core version 3.3.0
-   * - Chromium version 81.0.4044.0
-   *
-   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_Library.html#CloudWatch_Synthetics_runtimeversion-2.0
-   */
-  public static readonly SYNTHETICS_NODEJS_2_0 = new Runtime('syn-nodejs-2.0');
-
-  /**
-   * @param name The name of the runtime version
-   */
-  public constructor(public readonly name: string) {
-  }
 }
 
 /**
@@ -203,6 +171,14 @@ export interface CanaryProps {
    */
   readonly test: Test;
 
+  /**
+   * Key-value pairs that the Synthetics caches and makes available for your canary scripts. Use environment variables
+   * to apply configuration changes, such as test and production environment configurations, without changing your
+   * Canary script source code.
+   *
+   * @default - No environment variables.
+   */
+  readonly environmentVariables?: { [key: string]: string };
 }
 
 /**
@@ -264,6 +240,7 @@ export class Canary extends cdk.Resource {
       failureRetentionPeriod: props.failureRetentionPeriod?.toDays(),
       successRetentionPeriod: props.successRetentionPeriod?.toDays(),
       code: this.createCode(props),
+      runConfig: this.createRunConfig(props),
     });
 
     this.canaryId = resource.attrId;
@@ -279,7 +256,7 @@ export class Canary extends cdk.Resource {
    * @default avg over 5 minutes
    */
   public metricDuration(options?: MetricOptions): Metric {
-    return this.metric('Duration', options);
+    return this.cannedMetric(CloudWatchSyntheticsMetrics.durationAverage, options);
   }
 
   /**
@@ -290,41 +267,25 @@ export class Canary extends cdk.Resource {
    * @default avg over 5 minutes
    */
   public metricSuccessPercent(options?: MetricOptions): Metric {
-    return this.metric('SuccessPercent', options);
+    return this.cannedMetric(CloudWatchSyntheticsMetrics.successPercentAverage, options);
   }
 
   /**
    * Measure the number of failed canary runs over a given time period.
    *
-   * @param options - configuration options for the metric
+   * Default: sum over 5 minutes
    *
-   * @default avg over 5 minutes
+   * @param options - configuration options for the metric
    */
   public metricFailed(options?: MetricOptions): Metric {
-    return this.metric('Failed', options);
-  }
-
-  /**
-   * @param metricName - the name of the metric
-   * @param options - configuration options for the metric
-   *
-   * @returns a CloudWatch metric associated with the canary.
-   * @default avg over 5 minutes
-   */
-  private metric(metricName: string, options?: MetricOptions): Metric {
-    return new Metric({
-      metricName,
-      namespace: 'CloudWatchSynthetics',
-      dimensions: { CanaryName: this.canaryName },
-      statistic: 'avg',
-      ...options,
-    }).attachTo(this);
+    return this.cannedMetric(CloudWatchSyntheticsMetrics.failedSum, options);
   }
 
   /**
    * Returns a default role for the canary
    */
   private createDefaultRole(prefix?: string): iam.IRole {
+    const { partition } = cdk.Stack.of(this);
     // Created role will need these policies to run the Canary.
     // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-synthetics-canary.html#cfn-synthetics-canary-executionrolearn
     const policy = new iam.PolicyDocument({
@@ -343,7 +304,7 @@ export class Canary extends cdk.Resource {
           conditions: { StringEquals: { 'cloudwatch:namespace': 'CloudWatchSynthetics' } },
         }),
         new iam.PolicyStatement({
-          resources: ['arn:aws:logs:::*'],
+          resources: [`arn:${partition}:logs:::*`],
           actions: ['logs:CreateLogStream', 'logs:CreateLogGroup', 'logs:PutLogEvents'],
         }),
       ],
@@ -363,7 +324,7 @@ export class Canary extends cdk.Resource {
   private createCode(props: CanaryProps): CfnCanary.CodeProperty {
     const codeConfig = {
       handler: props.test.handler,
-      ...props.test.code.bind(this, props.test.handler),
+      ...props.test.code.bind(this, props.test.handler, props.runtime.family),
     };
     return {
       handler: codeConfig.handler,
@@ -384,6 +345,15 @@ export class Canary extends cdk.Resource {
     };
   }
 
+  private createRunConfig(props: CanaryProps): CfnCanary.RunConfigProperty | undefined {
+    if (!props.environmentVariables) {
+      return undefined;
+    }
+    return {
+      environmentVariables: props.environmentVariables,
+    };
+  }
+
   /**
    * Creates a unique name for the canary. The generated name is the physical ID of the canary.
    */
@@ -394,6 +364,15 @@ export class Canary extends cdk.Resource {
     } else {
       return name.substring(0, 15) + nameHash(name);
     }
+  }
+
+  private cannedMetric(
+    fn: (dims: { CanaryName: string }) => MetricProps,
+    props?: MetricOptions): Metric {
+    return new Metric({
+      ...fn({ CanaryName: this.canaryName }),
+      ...props,
+    }).attachTo(this);
   }
 }
 

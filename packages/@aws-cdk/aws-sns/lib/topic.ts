@@ -1,5 +1,5 @@
 import { IKey } from '@aws-cdk/aws-kms';
-import { Stack } from '@aws-cdk/core';
+import { ArnFormat, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnTopic } from './sns.generated';
 import { ITopic, TopicBase } from './topic-base';
@@ -32,6 +32,20 @@ export interface TopicProps {
    * @default None
    */
   readonly masterKey?: IKey;
+
+  /**
+   * Enables content-based deduplication for FIFO topics.
+   *
+   * @default None
+   */
+  readonly contentBasedDeduplication?: boolean;
+
+  /**
+   * Set to true to create a FIFO topic.
+   *
+   * @default None
+   */
+  readonly fifo?: boolean;
 }
 
 /**
@@ -49,7 +63,7 @@ export class Topic extends TopicBase {
   public static fromTopicArn(scope: Construct, id: string, topicArn: string): ITopic {
     class Import extends TopicBase {
       public readonly topicArn = topicArn;
-      public readonly topicName = Stack.of(scope).parseArn(topicArn).resource;
+      public readonly topicName = Stack.of(scope).splitArn(topicArn, ArnFormat.NO_RESOURCE_NAME).resource;
       protected autoCreatePolicy: boolean = false;
     }
 
@@ -66,10 +80,29 @@ export class Topic extends TopicBase {
       physicalName: props.topicName,
     });
 
+    if (props.fifo && !props.topicName) {
+      // NOTE: Workaround for CloudFormation problem reported in CDK issue 12386
+      // see https://github.com/aws/aws-cdk/issues/12386
+      throw new Error('FIFO SNS topics must be given a topic name.');
+    }
+
+    if (props.contentBasedDeduplication && !props.fifo) {
+      throw new Error('Content based deduplication can only be enabled for FIFO SNS topics.');
+    }
+
+    let cfnTopicName: string;
+    if (props.fifo && props.topicName && !props.topicName.endsWith('.fifo')) {
+      cfnTopicName = this.physicalName + '.fifo';
+    } else {
+      cfnTopicName = this.physicalName;
+    }
+
     const resource = new CfnTopic(this, 'Resource', {
       displayName: props.displayName,
-      topicName: this.physicalName,
+      topicName: cfnTopicName,
       kmsMasterKeyId: props.masterKey && props.masterKey.keyArn,
+      contentBasedDeduplication: props.contentBasedDeduplication,
+      fifoTopic: props.fifo,
     });
 
     this.topicArn = this.getResourceArnAttribute(resource.ref, {

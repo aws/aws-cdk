@@ -1,4 +1,4 @@
-import '@aws-cdk/assert/jest';
+import '@aws-cdk/assert-internal/jest';
 import { App, CfnOutput, Stack } from '@aws-cdk/core';
 import * as iam from '../lib';
 
@@ -127,4 +127,120 @@ test('use OpenID Connect principal from provider', () => {
 
   // THEN
   expect(stack.resolve(principal.federated)).toStrictEqual({ Ref: 'MyProvider730BA1C8' });
+});
+
+test('SAML principal', () => {
+  // GIVEN
+  const stack = new Stack();
+  const provider = new iam.SamlProvider(stack, 'MyProvider', {
+    metadataDocument: iam.SamlMetadataDocument.fromXml('document'),
+  });
+
+  // WHEN
+  const principal = new iam.SamlConsolePrincipal(provider);
+  new iam.Role(stack, 'Role', {
+    assumedBy: principal,
+  });
+
+  // THEN
+  expect(stack.resolve(principal.federated)).toStrictEqual({ Ref: 'MyProvider730BA1C8' });
+  expect(stack).toHaveResource('AWS::IAM::Role', {
+    AssumeRolePolicyDocument: {
+      Statement: [
+        {
+          Action: 'sts:AssumeRoleWithSAML',
+          Condition: {
+            StringEquals: {
+              'SAML:aud': 'https://signin.aws.amazon.com/saml',
+            },
+          },
+          Effect: 'Allow',
+          Principal: {
+            Federated: {
+              Ref: 'MyProvider730BA1C8',
+            },
+          },
+        },
+      ],
+      Version: '2012-10-17',
+    },
+  });
+});
+
+test('StarPrincipal', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  const pol = new iam.PolicyDocument({
+    statements: [
+      new iam.PolicyStatement({
+        actions: ['service:action'],
+        resources: ['*'],
+        principals: [new iam.StarPrincipal()],
+      }),
+    ],
+  });
+
+  // THEN
+  expect(stack.resolve(pol)).toEqual({
+    Statement: [
+      {
+        Action: 'service:action',
+        Effect: 'Allow',
+        Principal: '*',
+        Resource: '*',
+      },
+    ],
+    Version: '2012-10-17',
+  });
+});
+
+test('PrincipalWithConditions.addCondition should work', () => {
+  // GIVEN
+  const stack = new Stack();
+  const basePrincipal = new iam.ServicePrincipal('service.amazonaws.com');
+  const principalWithConditions = new iam.PrincipalWithConditions(basePrincipal, {
+    StringEquals: {
+      'aws:PrincipalOrgID': ['o-xxxxxxxxxxx'],
+    },
+  });
+
+  // WHEN
+  principalWithConditions.addCondition('StringEquals', { 'aws:PrincipalTag/critical': 'true' });
+  new iam.Role(stack, 'Role', {
+    assumedBy: principalWithConditions,
+  });
+
+  // THEN
+  expect(stack).toHaveResource('AWS::IAM::Role', {
+    AssumeRolePolicyDocument: {
+      Statement: [
+        {
+          Action: 'sts:AssumeRole',
+          Condition: {
+            StringEquals: {
+              'aws:PrincipalOrgID': ['o-xxxxxxxxxxx'],
+              'aws:PrincipalTag/critical': 'true',
+            },
+          },
+          Effect: 'Allow',
+          Principal: {
+            Service: 'service.amazonaws.com',
+          },
+        },
+      ],
+      Version: '2012-10-17',
+    },
+  });
+});
+
+test('PrincipalWithConditions inherits principalAccount from AccountPrincipal ', () => {
+  // GIVEN
+  const accountPrincipal = new iam.AccountPrincipal('123456789012');
+  const principalWithConditions = accountPrincipal.withConditions({ StringEquals: { hairColor: 'blond' } });
+
+  // THEN
+  expect(accountPrincipal.principalAccount).toStrictEqual('123456789012');
+  expect(principalWithConditions.principalAccount).toStrictEqual('123456789012');
 });

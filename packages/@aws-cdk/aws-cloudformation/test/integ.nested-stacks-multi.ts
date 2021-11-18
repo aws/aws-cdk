@@ -1,11 +1,14 @@
 /// !cdk-integ pragma:ignore-assets
 import * as sns from '@aws-cdk/aws-sns';
-import { App, Construct, Stack } from '@aws-cdk/core';
-import * as cfn from '../lib';
+import { App, NestedStack, Stack } from '@aws-cdk/core';
 
-/* eslint-disable cdk/no-core-construct */
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from '@aws-cdk/core';
 
-class YourNestedStack extends cfn.NestedStack {
+/* eslint-disable @aws-cdk/no-core-construct */
+
+class YourNestedStack extends NestedStack {
   constructor(scope: Construct, id: string) {
     super(scope, id);
 
@@ -13,7 +16,7 @@ class YourNestedStack extends cfn.NestedStack {
   }
 }
 
-class MyNestedStack extends cfn.NestedStack {
+class MyNestedStack extends NestedStack {
   constructor(scope: Construct, id: string) {
     super(scope, id);
 

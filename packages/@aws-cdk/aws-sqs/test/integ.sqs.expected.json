@@ -1,7 +1,9 @@
 {
   "Resources": {
     "DeadLetterQueue9F481546": {
-      "Type": "AWS::SQS::Queue"
+      "Type": "AWS::SQS::Queue",
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "Queue4A7E3555": {
       "Type": "AWS::SQS::Queue",
@@ -16,7 +18,9 @@
           },
           "maxReceiveCount": 5
         }
-      }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "EncryptionKey1B843E66": {
       "Type": "AWS::KMS::Key",
@@ -24,23 +28,7 @@
         "KeyPolicy": {
           "Statement": [
             {
-              "Action": [
-                "kms:Create*",
-                "kms:Describe*",
-                "kms:Enable*",
-                "kms:List*",
-                "kms:Put*",
-                "kms:Update*",
-                "kms:Revoke*",
-                "kms:Disable*",
-                "kms:Get*",
-                "kms:Delete*",
-                "kms:ScheduleKeyDeletion",
-                "kms:CancelKeyDeletion",
-                "kms:GenerateDataKey",
-                "kms:TagResource",
-                "kms:UntagResource"
-              ],
+              "Action": "kms:*",
               "Effect": "Allow",
               "Principal": {
                 "AWS": {
@@ -57,19 +45,6 @@
                       },
                       ":root"
                     ]
-                  ]
-                }
-              },
-              "Resource": "*"
-            },
-            {
-              "Action": "kms:Decrypt",
-              "Effect": "Allow",
-              "Principal": {
-                "AWS": {
-                  "Fn::GetAtt": [
-                    "Role1ABCC5F0",
-                    "Arn"
                   ]
                 }
               },
@@ -92,7 +67,19 @@
             "Arn"
           ]
         }
-      }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "HighThroughputFifoQueue40A0EEE4": {
+      "Type": "AWS::SQS::Queue",
+      "Properties": {
+        "DeduplicationScope": "messageGroup",
+        "FifoQueue": true,
+        "FifoThroughputLimit": "perMessageGroupId"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "Role1ABCC5F0": {
       "Type": "AWS::IAM::Role",
@@ -185,6 +172,22 @@
               "Resource": {
                 "Fn::GetAtt": [
                   "EncryptionKey1B843E66",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": [
+                "sqs:ReceiveMessage",
+                "sqs:ChangeMessageVisibility",
+                "sqs:GetQueueUrl",
+                "sqs:DeleteMessage",
+                "sqs:GetQueueAttributes"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "HighThroughputFifoQueue40A0EEE4",
                   "Arn"
                 ]
               }

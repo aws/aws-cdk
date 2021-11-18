@@ -6,6 +6,7 @@ import { Annotations } from '../annotations';
 import { Construct, IConstruct, ISynthesisSession } from '../construct-compat';
 import { Stack } from '../stack';
 import { IInspectable, TreeInspector } from '../tree';
+import { ConstructInfo, constructInfoFromConstruct } from './runtime-info';
 
 const FILE_PATH = 'tree.json';
 
@@ -14,7 +15,6 @@ const FILE_PATH = 'tree.json';
  * This generates, as part of synthesis, a file containing the construct tree and the metadata for each node in the tree.
  * The output is in a tree format so as to preserve the construct hierarchy.
  *
- * @experimental
  */
 export class TreeMetadata extends Construct {
   constructor(scope: Construct) {
@@ -46,6 +46,7 @@ export class TreeMetadata extends Construct {
         path: construct.node.path,
         children: Object.keys(childrenMap).length === 0 ? undefined : childrenMap,
         attributes: this.synthAttributes(construct),
+        constructInfo: constructInfoFromConstruct(construct),
       };
 
       lookup[node.path] = node;
@@ -87,8 +88,13 @@ export class TreeMetadata extends Construct {
 }
 
 interface Node {
-  id: string;
-  path: string;
-  children?: { [key: string]: Node };
-  attributes?: { [key: string]: any };
+  readonly id: string;
+  readonly path: string;
+  readonly children?: { [key: string]: Node };
+  readonly attributes?: { [key: string]: any };
+
+  /**
+   * Information on the construct class that led to this node, if available
+   */
+  readonly constructInfo?: ConstructInfo;
 }

@@ -1,7 +1,6 @@
-import { ABSENT } from '@aws-cdk/assert';
-import '@aws-cdk/assert/jest';
-import { Stack } from '@aws-cdk/core';
-import { OAuthScope, ResourceServerScope, UserPool, UserPoolClient, UserPoolClientIdentityProvider, UserPoolIdentityProvider } from '../lib';
+import { Match, Template } from '@aws-cdk/assertions';
+import { Stack, Duration } from '@aws-cdk/core';
+import { OAuthScope, ResourceServerScope, UserPool, UserPoolClient, UserPoolClientIdentityProvider, UserPoolIdentityProvider, ClientAttributes } from '../lib';
 
 describe('User Pool Client', () => {
   test('default setup', () => {
@@ -15,7 +14,7 @@ describe('User Pool Client', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Cognito::UserPoolClient', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
       UserPoolId: stack.resolve(pool.userPoolId),
       AllowedOAuthFlows: ['implicit', 'code'],
       AllowedOAuthScopes: ['profile', 'phone', 'email', 'openid', 'aws.cognito.signin.user.admin'],
@@ -63,8 +62,8 @@ describe('User Pool Client', () => {
     pool.addClient('Client');
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::Cognito::UserPoolClient', {
-      ExplicitAuthFlows: ABSENT,
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+      ExplicitAuthFlows: Match.absent(),
     });
   });
 
@@ -83,7 +82,7 @@ describe('User Pool Client', () => {
       },
     });
 
-    expect(stack).toHaveResourceLike('AWS::Cognito::UserPoolClient', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
       ExplicitAuthFlows: [
         'ALLOW_USER_PASSWORD_AUTH',
         'ALLOW_ADMIN_USER_PASSWORD_AUTH',
@@ -106,7 +105,7 @@ describe('User Pool Client', () => {
       },
     });
 
-    expect(stack).toHaveResourceLike('AWS::Cognito::UserPoolClient', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
       ExplicitAuthFlows: [
         'ALLOW_USER_SRP_AUTH',
         'ALLOW_REFRESH_TOKEN_AUTH',
@@ -139,12 +138,12 @@ describe('User Pool Client', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::Cognito::UserPoolClient', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
       AllowedOAuthFlows: ['implicit', 'code'],
       AllowedOAuthFlowsUserPoolClient: true,
     });
 
-    expect(stack).toHaveResourceLike('AWS::Cognito::UserPoolClient', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
       AllowedOAuthFlows: ['client_credentials'],
       AllowedOAuthFlowsUserPoolClient: true,
     });
@@ -178,17 +177,17 @@ describe('User Pool Client', () => {
       },
     });
 
-    expect(stack).toHaveResourceLike('AWS::Cognito::UserPoolClient', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
       AllowedOAuthFlows: ['client_credentials'],
-      CallbackURLs: ABSENT,
+      CallbackURLs: Match.absent(),
     });
 
-    expect(stack).toHaveResourceLike('AWS::Cognito::UserPoolClient', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
       AllowedOAuthFlows: ['implicit'],
       CallbackURLs: ['https://example.com'],
     });
 
-    expect(stack).toHaveResourceLike('AWS::Cognito::UserPoolClient', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
       AllowedOAuthFlows: ['code'],
       CallbackURLs: ['https://example.com'],
     });
@@ -206,8 +205,8 @@ describe('User Pool Client', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::Cognito::UserPoolClient', {
-      CallbackURLs: ABSENT,
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+      CallbackURLs: Match.absent(),
     });
   });
 
@@ -247,7 +246,7 @@ describe('User Pool Client', () => {
       },
     });
 
-    expect(stack).toHaveResourceLike('AWS::Cognito::UserPoolClient', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
       LogoutURLs: ['https://example.com'],
     });
   });
@@ -298,7 +297,7 @@ describe('User Pool Client', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::Cognito::UserPoolClient', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
       AllowedOAuthScopes: [
         'phone',
         'email',
@@ -331,7 +330,7 @@ describe('User Pool Client', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Cognito::UserPoolClient', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
       AllowedOAuthScopes: [
         {
           'Fn::Join': [
@@ -381,19 +380,19 @@ describe('User Pool Client', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::Cognito::UserPoolClient', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
       ClientName: 'Client1',
       AllowedOAuthScopes: ['phone', 'openid'],
     });
-    expect(stack).toHaveResourceLike('AWS::Cognito::UserPoolClient', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
       ClientName: 'Client2',
       AllowedOAuthScopes: ['email', 'openid'],
     });
-    expect(stack).toHaveResourceLike('AWS::Cognito::UserPoolClient', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
       ClientName: 'Client3',
       AllowedOAuthScopes: ['profile', 'openid'],
     });
-    expect(stack).toHaveResourceLike('AWS::Cognito::UserPoolClient', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
       ClientName: 'Client4',
       AllowedOAuthScopes: ['aws.cognito.signin.user.admin'],
     });
@@ -411,7 +410,7 @@ describe('User Pool Client', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Cognito::UserPoolClient', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
       UserPoolId: stack.resolve(pool.userPoolId),
       PreventUserExistenceErrors: 'ENABLED',
     });
@@ -429,7 +428,7 @@ describe('User Pool Client', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Cognito::UserPoolClient', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
       UserPoolId: stack.resolve(pool.userPoolId),
       PreventUserExistenceErrors: 'LEGACY',
     });
@@ -446,9 +445,9 @@ describe('User Pool Client', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Cognito::UserPoolClient', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
       UserPoolId: stack.resolve(pool.userPoolId),
-      PreventUserExistenceErrors: ABSENT,
+      PreventUserExistenceErrors: Match.absent(),
     });
   });
 
@@ -466,7 +465,7 @@ describe('User Pool Client', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Cognito::UserPoolClient', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
       SupportedIdentityProviders: [
         'userpool-idp',
         'COGNITO',
@@ -487,13 +486,14 @@ describe('User Pool Client', () => {
         UserPoolClientIdentityProvider.FACEBOOK,
         UserPoolClientIdentityProvider.AMAZON,
         UserPoolClientIdentityProvider.GOOGLE,
+        UserPoolClientIdentityProvider.APPLE,
       ],
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Cognito::UserPoolClient', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
       ClientName: 'AllEnabled',
-      SupportedIdentityProviders: ['COGNITO', 'Facebook', 'LoginWithAmazon', 'Google'],
+      SupportedIdentityProviders: ['COGNITO', 'Facebook', 'LoginWithAmazon', 'Google', 'SignInWithApple'],
     });
   });
 
@@ -513,13 +513,13 @@ describe('User Pool Client', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::Cognito::UserPoolClient', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
       ClientName: 'OAuthDisabled',
-      AllowedOAuthFlows: ABSENT,
-      AllowedOAuthScopes: ABSENT,
+      AllowedOAuthFlows: Match.absent(),
+      AllowedOAuthScopes: Match.absent(),
       AllowedOAuthFlowsUserPoolClient: false,
     });
-    expect(stack).toHaveResource('AWS::Cognito::UserPoolClient', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
       ClientName: 'OAuthEnabled',
       AllowedOAuthFlows: ['implicit', 'code'],
       AllowedOAuthScopes: ['profile', 'phone', 'email', 'openid', 'aws.cognito.signin.user.admin'],
@@ -539,5 +539,398 @@ describe('User Pool Client', () => {
         },
       },
     })).toThrow(/disableOAuth is set/);
+  });
+
+  test('EnableTokenRevocation is absent by default', () => {
+    // GIVEN
+    const stack = new Stack();
+    const pool = new UserPool(stack, 'Pool');
+
+    // WHEN
+    pool.addClient('Client');
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+      EnableTokenRevocation: Match.absent(),
+    });
+  });
+
+  test('enableTokenRevocation in addClient', () => {
+    // GIVEN
+    const stack = new Stack();
+    const pool = new UserPool(stack, 'Pool');
+
+    // WHEN
+    pool.addClient('Client', {
+      enableTokenRevocation: true,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+      EnableTokenRevocation: true,
+    });
+  });
+
+  test('enableTokenRevocation in UserPoolClient', () => {
+    // GIVEN
+    const stack = new Stack();
+    const pool = new UserPool(stack, 'Pool');
+
+    // WHEN
+    new UserPoolClient(stack, 'Client1', {
+      userPool: pool,
+      enableTokenRevocation: true,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+      EnableTokenRevocation: true,
+    });
+  });
+
+  describe('token validity', () => {
+    test('default', () => {
+      // GIVEN
+      const stack = new Stack();
+      const pool = new UserPool(stack, 'Pool');
+
+      // WHEN
+      pool.addClient('Client1', {
+        userPoolClientName: 'Client1',
+        accessTokenValidity: Duration.minutes(60),
+        idTokenValidity: Duration.minutes(60),
+        refreshTokenValidity: Duration.days(30),
+      });
+      pool.addClient('Client2', {
+        userPoolClientName: 'Client2',
+        accessTokenValidity: Duration.minutes(60),
+      });
+      pool.addClient('Client3', {
+        userPoolClientName: 'Client3',
+        idTokenValidity: Duration.minutes(60),
+      });
+      pool.addClient('Client4', {
+        userPoolClientName: 'Client4',
+        refreshTokenValidity: Duration.days(30),
+      });
+      pool.addClient('Client5', {
+        userPoolClientName: 'Client5',
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+        ClientName: 'Client1',
+        AccessTokenValidity: 60,
+        IdTokenValidity: 60,
+        RefreshTokenValidity: 43200,
+        TokenValidityUnits: {
+          AccessToken: 'minutes',
+          IdToken: 'minutes',
+          RefreshToken: 'minutes',
+        },
+      });
+      Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+        ClientName: 'Client2',
+        AccessTokenValidity: 60,
+        IdTokenValidity: Match.absent(),
+        RefreshTokenValidity: Match.absent(),
+        TokenValidityUnits: {
+          AccessToken: 'minutes',
+          IdToken: Match.absent(),
+          RefreshToken: Match.absent(),
+        },
+      });
+      Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+        ClientName: 'Client3',
+        AccessTokenValidity: Match.absent(),
+        IdTokenValidity: 60,
+        RefreshTokenValidity: Match.absent(),
+        TokenValidityUnits: {
+          AccessToken: Match.absent(),
+          IdToken: 'minutes',
+          RefreshToken: Match.absent(),
+        },
+      });
+      Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+        ClientName: 'Client4',
+        AccessTokenValidity: Match.absent(),
+        IdTokenValidity: Match.absent(),
+        RefreshTokenValidity: 43200,
+        TokenValidityUnits: {
+          AccessToken: Match.absent(),
+          IdToken: Match.absent(),
+          RefreshToken: 'minutes',
+        },
+      });
+      Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+        ClientName: 'Client5',
+        TokenValidityUnits: Match.absent(),
+        IdTokenValidity: Match.absent(),
+        RefreshTokenValidity: Match.absent(),
+        AccessTokenValidity: Match.absent(),
+      });
+    });
+
+    test.each([
+      Duration.minutes(0),
+      Duration.minutes(4),
+      Duration.days(1).plus(Duration.minutes(1)),
+      Duration.days(2),
+    ])('validates accessTokenValidity is a duration between 5 minutes and 1 day', (validity) => {
+      const stack = new Stack();
+      const pool = new UserPool(stack, 'Pool');
+      expect(() => {
+        pool.addClient('Client1', {
+          userPoolClientName: 'Client1',
+          accessTokenValidity: validity,
+        });
+      }).toThrow(`accessTokenValidity: Must be a duration between 5 minutes and 1 day (inclusive); received ${validity.toHumanString()}.`);
+    });
+
+    test.each([
+      Duration.minutes(0),
+      Duration.minutes(4),
+      Duration.days(1).plus(Duration.minutes(1)),
+      Duration.days(2),
+    ])('validates idTokenValidity is a duration between 5 minutes and 1 day', (validity) => {
+      const stack = new Stack();
+      const pool = new UserPool(stack, 'Pool');
+      expect(() => {
+        pool.addClient('Client1', {
+          userPoolClientName: 'Client1',
+          idTokenValidity: validity,
+        });
+      }).toThrow(`idTokenValidity: Must be a duration between 5 minutes and 1 day (inclusive); received ${validity.toHumanString()}.`);
+    });
+
+    test.each([
+      Duration.hours(1).plus(Duration.minutes(1)),
+      Duration.hours(12),
+      Duration.days(1),
+    ])('validates accessTokenValidity is not greater than refresh token expiration', (validity) => {
+      const stack = new Stack();
+      const pool = new UserPool(stack, 'Pool');
+      expect(() => {
+        pool.addClient('Client1', {
+          userPoolClientName: 'Client1',
+          accessTokenValidity: validity,
+          refreshTokenValidity: Duration.hours(1),
+        });
+      }).toThrow(`accessTokenValidity: Must be a duration between 5 minutes and 1 hour (inclusive); received ${validity.toHumanString()}.`);
+    });
+
+    test.each([
+      Duration.hours(1).plus(Duration.minutes(1)),
+      Duration.hours(12),
+      Duration.days(1),
+    ])('validates idTokenValidity is not greater than refresh token expiration', (validity) => {
+      const stack = new Stack();
+      const pool = new UserPool(stack, 'Pool');
+      expect(() => {
+        pool.addClient('Client1', {
+          userPoolClientName: 'Client1',
+          idTokenValidity: validity,
+          refreshTokenValidity: Duration.hours(1),
+        });
+      }).toThrow(`idTokenValidity: Must be a duration between 5 minutes and 1 hour (inclusive); received ${validity.toHumanString()}.`);
+    });
+
+    test.each([
+      Duration.minutes(0),
+      Duration.minutes(59),
+      Duration.days(10 * 365).plus(Duration.minutes(1)),
+      Duration.days(10 * 365 + 1),
+    ])('validates refreshTokenValidity is a duration between 1 hour and 10 years', (validity) => {
+      const stack = new Stack();
+      const pool = new UserPool(stack, 'Pool');
+      expect(() => {
+        pool.addClient('Client1', {
+          userPoolClientName: 'Client1',
+          refreshTokenValidity: validity,
+        });
+      }).toThrow(`refreshTokenValidity: Must be a duration between 1 hour and 3650 days (inclusive); received ${validity.toHumanString()}.`);
+    });
+
+    test.each([
+      Duration.minutes(5),
+      Duration.minutes(60),
+      Duration.days(1),
+    ])('validates accessTokenValidity is a duration between 5 minutes and 1 day (valid)', (validity) => {
+      const stack = new Stack();
+      const pool = new UserPool(stack, 'Pool');
+
+      // WHEN
+      pool.addClient('Client1', {
+        userPoolClientName: 'Client1',
+        accessTokenValidity: validity,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+        ClientName: 'Client1',
+        AccessTokenValidity: validity.toMinutes(),
+        TokenValidityUnits: {
+          AccessToken: 'minutes',
+        },
+      });
+    });
+
+    test.each([
+      Duration.minutes(5),
+      Duration.minutes(60),
+      Duration.days(1),
+    ])('validates idTokenValidity is a duration between 5 minutes and 1 day (valid)', (validity) => {
+      const stack = new Stack();
+      const pool = new UserPool(stack, 'Pool');
+
+      // WHEN
+      pool.addClient('Client1', {
+        userPoolClientName: 'Client1',
+        idTokenValidity: validity,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+        ClientName: 'Client1',
+        IdTokenValidity: validity.toMinutes(),
+        TokenValidityUnits: {
+          IdToken: 'minutes',
+        },
+      });
+    });
+
+    test.each([
+      Duration.minutes(60),
+      Duration.minutes(120),
+      Duration.days(365),
+      Duration.days(10 * 365),
+    ])('validates refreshTokenValidity is a duration between 1 hour and 10 years (valid)', (validity) => {
+      const stack = new Stack();
+      const pool = new UserPool(stack, 'Pool');
+
+      // WHEN
+      pool.addClient('Client1', {
+        userPoolClientName: 'Client1',
+        refreshTokenValidity: validity,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+        ClientName: 'Client1',
+        RefreshTokenValidity: validity.toMinutes(),
+        TokenValidityUnits: {
+          RefreshToken: 'minutes',
+        },
+      });
+    });
+
+    test.each([
+      Duration.minutes(5),
+      Duration.minutes(60),
+      Duration.hours(1),
+    ])('validates accessTokenValidity is not greater than refresh token expiration (valid)', (validity) => {
+      const stack = new Stack();
+      const pool = new UserPool(stack, 'Pool');
+
+      // WHEN
+      pool.addClient('Client1', {
+        userPoolClientName: 'Client1',
+        accessTokenValidity: validity,
+        refreshTokenValidity: Duration.hours(1),
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+        ClientName: 'Client1',
+        AccessTokenValidity: validity.toMinutes(),
+        TokenValidityUnits: {
+          AccessToken: 'minutes',
+        },
+      });
+    });
+
+    test.each([
+      Duration.minutes(5),
+      Duration.minutes(60),
+      Duration.hours(1),
+    ])('validates idTokenValidity is not greater than refresh token expiration (valid)', (validity) => {
+      const stack = new Stack();
+      const pool = new UserPool(stack, 'Pool');
+
+      // WHEN
+      pool.addClient('Client1', {
+        userPoolClientName: 'Client1',
+        idTokenValidity: validity,
+        refreshTokenValidity: Duration.hours(1),
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+        ClientName: 'Client1',
+        IdTokenValidity: validity.toMinutes(),
+        TokenValidityUnits: {
+          IdToken: 'minutes',
+        },
+      });
+    });
+  });
+
+  describe('read and write attributes', () => {
+    test('undefined by default', () => {
+      // GIVEN
+      const stack = new Stack();
+      const pool = new UserPool(stack, 'Pool');
+
+      // WHEN
+      pool.addClient('Client', {});
+
+      // EXPECT
+      Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+        ReadAttributes: Match.absent(),
+        WriteAttributes: Match.absent(),
+      });
+    });
+
+    test('set attributes', () => {
+      // GIVEN
+      const stack = new Stack();
+      const pool = new UserPool(stack, 'Pool');
+      const writeAttributes = (new ClientAttributes()).withCustomAttributes('my_first').withStandardAttributes({ givenName: true, familyName: true });
+      const readAttributes = (new ClientAttributes()).withStandardAttributes({
+        address: true,
+        birthdate: true,
+        email: true,
+        emailVerified: true,
+        familyName: true,
+        fullname: true,
+        gender: true,
+        givenName: true,
+        lastUpdateTime: true,
+        locale: true,
+        middleName: true,
+        nickname: true,
+        phoneNumber: true,
+        phoneNumberVerified: true,
+        preferredUsername: true,
+        profilePage: true,
+        profilePicture: true,
+        timezone: true,
+        website: true,
+      });
+
+      // WHEN
+      pool.addClient('Client', {
+        readAttributes,
+        writeAttributes,
+      });
+
+      // EXPECT
+      Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+        ReadAttributes: Match.arrayWith(['address', 'birthdate', 'email', 'email_verified', 'family_name', 'gender',
+          'given_name', 'locale', 'middle_name', 'name', 'nickname', 'phone_number', 'phone_number_verified', 'picture',
+          'preferred_username', 'profile', 'updated_at', 'website', 'zoneinfo']),
+        WriteAttributes: Match.arrayWith(['custom:my_first', 'family_name', 'given_name']),
+      });
+    });
   });
 });

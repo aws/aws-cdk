@@ -18,7 +18,7 @@ ruleSet.addRule('FirstRule', {
 
 ruleSet.addRule('SecondRule');
 
-new ses.WhiteListReceiptFilter(stack, 'WhiteList', {
+new ses.AllowListReceiptFilter(stack, 'Allowlist', {
   ips: [
     '10.0.0.0/16',
   ],

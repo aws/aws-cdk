@@ -5,13 +5,12 @@ import { integrationResourceArn, validatePatternSupported } from '../private/tas
 
 /**
  * Properties for getting a Query Execution
- * @experimental
  */
 export interface AthenaGetQueryExecutionProps extends sfn.TaskStateBaseProps {
   /**
    * Query that will be retrieved
    *
-   * @example 'adfsaf-23trf23-f23rt23'
+   * Example value: `adfsaf-23trf23-f23rt23`
    */
   readonly queryExecutionId: string;
 }
@@ -20,7 +19,6 @@ export interface AthenaGetQueryExecutionProps extends sfn.TaskStateBaseProps {
  * Get an Athena Query Execution as a Task
  *
  * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-athena.html
- * @experimental
  */
 export class AthenaGetQueryExecution extends sfn.TaskStateBase {
 
