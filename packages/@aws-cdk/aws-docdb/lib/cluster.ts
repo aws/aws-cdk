@@ -8,7 +8,7 @@ import { DatabaseSecret } from './database-secret';
 import { CfnDBCluster, CfnDBInstance, CfnDBSubnetGroup } from './docdb.generated';
 import { Endpoint } from './endpoint';
 import { IClusterParameterGroup } from './parameter-group';
-import { BackupProps, CloudwatchLogsExportsProps, Login, RotationMultiUserOptions } from './props';
+import { BackupProps, Login, RotationMultiUserOptions } from './props';
 
 
 /**
@@ -149,12 +149,20 @@ export interface DatabaseClusterProps {
   readonly deletionProtection?: boolean;
 
   /**
-   * The configuration of log types that can be enabled for exporting to Amazon CloudWatch Logs.
-   * You can enable audit logs or profiler logs.
-   *
-   * @default - no logs will be exported
+   * Should sending profiler logs to CloudWatch Logs should be enabled?
+   * You have to configure the profiler additionally in the parameter group.
+   * @see https://docs.aws.amazon.com/documentdb/latest/developerguide/profiling.html#profiling.enable-profiling
+   * @default false
    */
-  readonly cloudwatchLogsExports?: CloudwatchLogsExportsProps;
+  readonly exportProfilerLogsToCloudWatch?: boolean;
+
+  /**
+   * Should sending audit logs to CloudWatch Logs should be enabled?
+   * You have to configure the audit additionally in the parameter group.
+   * @see https://docs.aws.amazon.com/documentdb/latest/developerguide/event-auditing.html#event-auditing-enabling-auditing
+   * @default false
+   */
+  readonly exportAuditLogsToCloudWatch?: boolean;
 }
 
 /**
@@ -357,11 +365,10 @@ export class DatabaseCluster extends DatabaseClusterBase {
 
     // Create the CloudwatchLogsConfiguratoin
     const enableCloudwatchLogsExports:string[] = [];
-    if (props.cloudwatchLogsExports && props.cloudwatchLogsExports.audit) enableCloudwatchLogsExports.push('audit');
-    if (props.cloudwatchLogsExports && props.cloudwatchLogsExports.audit) {
+    if (props.exportAuditLogsToCloudWatch) {
       enableCloudwatchLogsExports.push('audit');
     }
-    if (props.cloudwatchLogsExports && props.cloudwatchLogsExports.profiler) {
+    if (props.exportProfilerLogsToCloudWatch) {
       enableCloudwatchLogsExports.push('profiler');
     }
 

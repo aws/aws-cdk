@@ -579,9 +579,7 @@ describe('DatabaseCluster', () => {
       },
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
       vpc,
-      cloudwatchLogsExports: {
-        audit: true,
-      },
+      exportAuditLogsToCloudWatch: true,
     });
 
     // THEN
@@ -602,9 +600,7 @@ describe('DatabaseCluster', () => {
       },
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
       vpc,
-      cloudwatchLogsExports: {
-        profiler: true,
-      },
+      exportProfilerLogsToCloudWatch: true,
     });
 
     // THEN
@@ -625,10 +621,8 @@ describe('DatabaseCluster', () => {
       },
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
       vpc,
-      cloudwatchLogsExports: {
-        audit: true,
-        profiler: true,
-      },
+      exportAuditLogsToCloudWatch: true,
+      exportProfilerLogsToCloudWatch: true,
     });
 
     // THEN
