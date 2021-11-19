@@ -1489,6 +1489,7 @@ describe('custom error responses', () => {
         dataNodeInstanceType: 'r6gd.large.elasticsearch',
       },
     });
+    // both configurations pass synth-time validation
     expect(stack).toCountResources('AWS::Elasticsearch::Domain', 2);
   });
 
