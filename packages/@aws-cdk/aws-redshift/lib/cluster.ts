@@ -454,6 +454,11 @@ export class Cluster extends ClusterBase {
 
     let loggingProperties;
     if (props.loggingBucket) {
+
+      if (!props.loggingKeyPrefix) {
+        throw new Error('Define logging key prefix used for logging bucket')
+      }
+
       loggingProperties = {
         bucketName: props.loggingBucket.bucketName,
         s3KeyPrefix: props.loggingKeyPrefix,
