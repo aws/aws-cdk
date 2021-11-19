@@ -10,7 +10,6 @@ import { Endpoint } from './endpoint';
 import { IClusterParameterGroup } from './parameter-group';
 import { BackupProps, Login, RotationMultiUserOptions } from './props';
 
-
 /**
  * Properties for a new database cluster
  */
