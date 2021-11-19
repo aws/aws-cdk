@@ -358,7 +358,12 @@ export class DatabaseCluster extends DatabaseClusterBase {
     // Create the CloudwatchLogsConfiguratoin
     const enableCloudwatchLogsExports:string[] = [];
     if (props.cloudwatchLogsExports && props.cloudwatchLogsExports.audit) enableCloudwatchLogsExports.push('audit');
-    if (props.cloudwatchLogsExports && props.cloudwatchLogsExports.profiler) enableCloudwatchLogsExports.push('profiler');
+    if (props.cloudwatchLogsExports && props.cloudwatchLogsExports.audit) {
+      enableCloudwatchLogsExports.push('audit');
+    }
+    if (props.cloudwatchLogsExports && props.cloudwatchLogsExports.profiler) {
+      enableCloudwatchLogsExports.push('profiler');
+    }
 
     // Create the secret manager secret if no password is specified
     let secret: DatabaseSecret | undefined;
