@@ -175,6 +175,8 @@ class LogRetentionFunction extends CoreConstruct implements cdk.ITaggable {
     });
     this.functionArn = resource.getAtt('Arn');
 
+    asset.addResourceMetadata(resource, 'Code');
+
     // Function dependencies
     role.node.children.forEach((child) => {
       if (cdk.CfnResource.isCfnResource(child)) {
