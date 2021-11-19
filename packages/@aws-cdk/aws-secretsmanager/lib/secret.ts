@@ -1,6 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { FeatureFlags, Fn, IResource, Lazy, RemovalPolicy, Resource, SecretValue, Stack, Token } from '@aws-cdk/core';
+import { ArnFormat, FeatureFlags, Fn, IResource, Lazy, RemovalPolicy, Resource, SecretValue, Stack, Token } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { IConstruct, Construct } from 'constructs';
 import { ResourcePolicy } from './policy';
@@ -373,7 +373,7 @@ export class Secret extends SecretBase {
           service: 'secretsmanager',
           resource: 'secret',
           resourceName: this.secretName + '*',
-          sep: ':',
+          arnFormat: ArnFormat.COLON_RESOURCE_NAME,
         });
       }
     }(scope, id);
@@ -397,7 +397,7 @@ export class Secret extends SecretBase {
           service: 'secretsmanager',
           resource: 'secret',
           resourceName: secretName,
-          sep: ':',
+          arnFormat: ArnFormat.COLON_RESOURCE_NAME,
         });
       }
     }(scope, id);
@@ -475,7 +475,7 @@ export class Secret extends SecretBase {
       service: 'secretsmanager',
       resource: 'secret',
       resourceName: this.physicalName,
-      sep: ':',
+      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
     });
 
     this.encryptionKey = props.encryptionKey;
@@ -604,8 +604,6 @@ export interface SecretAttachmentTargetProps {
 
 /**
  * Options to add a secret attachment to a secret.
- *
- * @deprecated use `secret.attach()` instead
  */
 export interface AttachedSecretOptions {
   /**
@@ -758,7 +756,7 @@ export interface SecretStringGenerator {
 
 /** Parses the secret name from the ARN. */
 function parseSecretName(construct: IConstruct, secretArn: string) {
-  const resourceName = Stack.of(construct).parseArn(secretArn, ':').resourceName;
+  const resourceName = Stack.of(construct).splitArn(secretArn, ArnFormat.COLON_RESOURCE_NAME).resourceName;
   if (resourceName) {
     // Can't operate on the token to remove the SecretsManager suffix, so just return the full secret name
     if (Token.isUnresolved(resourceName)) {
@@ -784,7 +782,7 @@ function parseSecretName(construct: IConstruct, secretArn: string) {
  * explicit between the Secret and wherever the secretName might be used (i.e., using Tokens).
  */
 function parseSecretNameForOwnedSecret(construct: Construct, secretArn: string, secretName?: string) {
-  const resourceName = Stack.of(construct).parseArn(secretArn, ':').resourceName;
+  const resourceName = Stack.of(construct).splitArn(secretArn, ArnFormat.COLON_RESOURCE_NAME).resourceName;
   if (!resourceName) {
     throw new Error('invalid ARN format; no secret name provided');
   }

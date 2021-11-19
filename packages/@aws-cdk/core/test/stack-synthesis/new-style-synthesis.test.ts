@@ -287,7 +287,7 @@ describe('new style synthesis', () => {
     // THEN
     const asm = myapp.synth();
 
-    const stackArtifact = asm.getStack(mystack.stackName);
+    const stackArtifact = asm.getStackByName(mystack.stackName);
     expect(stackArtifact.assumeRoleExternalId).toEqual('deploy-external-id');
 
 
