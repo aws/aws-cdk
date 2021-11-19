@@ -1491,6 +1491,7 @@ describe('custom error responses', () => {
         dataNodeInstanceType: 'r6gd.large.search',
       },
     });
+    // both configurations pass synth-time validation
     expect(stack).toCountResources('AWS::OpenSearchService::Domain', 2);
   });
 
