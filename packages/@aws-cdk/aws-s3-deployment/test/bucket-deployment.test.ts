@@ -968,7 +968,7 @@ test('bucket includes custom resource owner tag', () => {
   // THEN
   expect(stack).toHaveResource('AWS::S3::Bucket', {
     Tags: [{
-      Key: 'aws-cdk:cr-owned:/a/b/c:3C5F6E78',
+      Key: 'aws-cdk:cr-owned:/a/b/c:971e1fa8',
       Value: 'true',
     }],
   });
@@ -1026,15 +1026,15 @@ test('bucket has multiple deployments', () => {
   expect(stack).toHaveResource('AWS::S3::Bucket', {
     Tags: [
       {
-        Key: 'aws-cdk:cr-owned:/a/b/c:3C5F6E78',
+        Key: 'aws-cdk:cr-owned:/a/b/c:6da0a4ab',
         Value: 'true',
       },
       {
-        Key: 'aws-cdk:cr-owned:/a/b/c:9A81AC85',
+        Key: 'aws-cdk:cr-owned:/a/b/c:971e1fa8',
         Value: 'true',
       },
       {
-        Key: 'aws-cdk:cr-owned:/x/z:DE9E32F1',
+        Key: 'aws-cdk:cr-owned:/x/z:2db04622',
         Value: 'true',
       },
     ],
