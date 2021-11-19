@@ -76,21 +76,29 @@ export interface DomainNameAttributes {
 /**
  * properties used for creating the DomainName
  */
-export interface DomainNameProps {
+export interface DomainNameProps extends EndpointOptions {
   /**
    * The custom domain name
    */
   readonly domainName: string;
-  /**
-   * The ACM certificate for this domain name.
-   * Certificate can be both ACM issued or imported.
-   */
-  readonly certificate: ICertificate;
+
   /**
    * The mutual TLS authentication configuration for a custom domain name.
    * @default - mTLS is not configured.
    */
   readonly mtls?: MTLSConfig;
+}
+
+/**
+ * properties for creating a domain name endpoint
+ */
+export interface EndpointOptions {
+  /**
+   * The ACM certificate for this domain name.
+   * Certificate can be both ACM issued or imported.
+   */
+  readonly certificate: ICertificate;
+
   /**
    * The user-friendly name of the certificate that will be used by the endpoint for this domain name.
    * @default - No friendly certificate name
@@ -197,33 +205,28 @@ export class DomainName extends Resource implements IDomainName {
   }
 
   /**
-   * Adds a configuration to a domain name. Properties like certificate, endpoint type and security policy can be set using this method.
-   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apigatewayv2-domainname-domainnameconfiguration.html
-   * @param props domain name properties to be set
+   * Adds an endpoint to a domain name.
+   * @param options domain name endpoint properties to be set
    */
-  public addEndpoint(props: DomainNameProps) : void {
+  public addEndpoint(options: EndpointOptions) : void {
     const domainNameConfig: CfnDomainName.DomainNameConfigurationProperty = {
-      certificateArn: props.certificate.certificateArn,
-      certificateName: props.certificateName,
-      endpointType: props.endpointType ? props.endpointType?.toString() : 'REGIONAL',
-      ownershipVerificationCertificateArn: props.ownershipCertificate?.certificateArn,
-      securityPolicy: props.securityPolicy?.toString(),
+      certificateArn: options.certificate.certificateArn,
+      certificateName: options.certificateName,
+      endpointType: options.endpointType ? options.endpointType?.toString() : 'REGIONAL',
+      ownershipVerificationCertificateArn: options.ownershipCertificate?.certificateArn,
+      securityPolicy: options.securityPolicy?.toString(),
     };
 
-    if (this.isDuplicateEndpointType(domainNameConfig.endpointType)) {
-      throw new Error('no two domain name configurations should have the same endpointType');
-    }
-
+    this.validateDuplicateEndpointType(domainNameConfig.endpointType);
     this.domainNameConfigurations.push(domainNameConfig);
   }
 
-  // validates whether the new domain name configuration has a unique endpoint or not
-  private isDuplicateEndpointType(endpointType: string | undefined) : boolean {
+  // validates that the new domain name configuration has a unique endpoint
+  private validateDuplicateEndpointType(endpointType: string | undefined) : void {
     for (let config of this.domainNameConfigurations) {
       if (endpointType && endpointType == config.endpointType) {
-        return true;
+        throw new Error(`an endpoint with type ${endpointType} already exists`);
       }
     }
-    return false;
   }
 }

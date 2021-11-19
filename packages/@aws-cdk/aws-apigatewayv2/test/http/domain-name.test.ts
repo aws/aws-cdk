@@ -299,7 +299,6 @@ describe('DomainName', () => {
       endpointType: EndpointType.REGIONAL,
     });
     dn.addEndpoint({
-      domainName,
       certificate: Certificate.fromCertificateArn(stack, 'cert2', certArn2),
       endpointType: EndpointType.EDGE,
     });
@@ -332,12 +331,11 @@ describe('DomainName', () => {
         endpointType: EndpointType.REGIONAL,
       });
       dn.addEndpoint({
-        domainName,
         certificate: Certificate.fromCertificateArn(stack, 'cert2', certArn2),
       });
     };
 
     // THEN
-    expect(t).toThrow(/no two domain name configurations should have the same endpointType/);
+    expect(t).toThrow(/an endpoint with type REGIONAL already exists/);
   });
 });
