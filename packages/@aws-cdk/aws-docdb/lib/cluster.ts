@@ -150,6 +150,7 @@ export interface DatabaseClusterProps {
   /**
    * Should sending profiler logs to CloudWatch Logs should be enabled?
    * You have to configure the profiler additionally in the parameter group.
+   * 
    * @see https://docs.aws.amazon.com/documentdb/latest/developerguide/profiling.html#profiling.enable-profiling
    * @default false
    */
