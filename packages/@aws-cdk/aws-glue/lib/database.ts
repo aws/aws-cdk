@@ -1,4 +1,4 @@
-import { IResource, Resource, Stack } from '@aws-cdk/core';
+import { ArnFormat, IResource, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnDatabase } from './glue.generated';
 
@@ -53,7 +53,7 @@ export class Database extends Resource implements IDatabase {
 
     class Import extends Resource implements IDatabase {
       public databaseArn = databaseArn;
-      public databaseName = stack.parseArn(databaseArn).resourceName!;
+      public databaseName = stack.splitArn(databaseArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
       public catalogArn = stack.formatArn({ service: 'glue', resource: 'catalog' });
       public catalogId = stack.account;
     }

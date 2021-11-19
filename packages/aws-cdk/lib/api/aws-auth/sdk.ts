@@ -5,6 +5,20 @@ import { cached } from '../../util/functions';
 import { AccountAccessKeyCache } from './account-cache';
 import { Account } from './sdk-provider';
 
+// We need to map regions to domain suffixes, and the SDK already has a function to do this.
+// It's not part of the public API, but it's also unlikely to go away.
+//
+// Reuse that function, and add a safety check so we don't accidentally break if they ever
+// refactor that away.
+
+/* eslint-disable @typescript-eslint/no-require-imports */
+const regionUtil = require('aws-sdk/lib/region_config');
+/* eslint-enable @typescript-eslint/no-require-imports */
+
+if (!regionUtil.getEndpointSuffix) {
+  throw new Error('This version of AWS SDK for JS does not have the \'getEndpointSuffix\' function!');
+}
+
 export interface ISDK {
   /**
    * The region this SDK has been instantiated for
@@ -22,6 +36,19 @@ export interface ISDK {
    */
   currentAccount(): Promise<Account>;
 
+  getEndpointSuffix(region: string): string;
+
+  /**
+   * Appends the given string as the extra information to put into the User-Agent header for any requests invoked by this SDK.
+   * If the string is 'undefined', this method has no effect.
+   */
+  appendCustomUserAgent(userAgentData?: string): void;
+
+  /**
+   * Removes the given string from the extra User-Agent header data used for requests invoked by this SDK.
+   */
+  removeCustomUserAgent(userAgentData: string): void;
+
   lambda(): AWS.Lambda;
   cloudFormation(): AWS.CloudFormation;
   ec2(): AWS.EC2;
@@ -29,9 +56,11 @@ export interface ISDK {
   s3(): AWS.S3;
   route53(): AWS.Route53;
   ecr(): AWS.ECR;
+  ecs(): AWS.ECS;
   elbv2(): AWS.ELBv2;
   secretsManager(): AWS.SecretsManager;
   kms(): AWS.KMS;
+  stepFunctions(): AWS.StepFunctions;
 }
 
 /**
@@ -85,6 +114,21 @@ export class SDK implements ISDK {
     this.currentRegion = region;
   }
 
+  public appendCustomUserAgent(userAgentData?: string): void {
+    if (!userAgentData) {
+      return;
+    }
+
+    const currentCustomUserAgent = this.config.customUserAgent;
+    this.config.customUserAgent = currentCustomUserAgent
+      ? `${currentCustomUserAgent} ${userAgentData}`
+      : userAgentData;
+  }
+
+  public removeCustomUserAgent(userAgentData: string): void {
+    this.config.customUserAgent = this.config.customUserAgent?.replace(userAgentData, '');
+  }
+
   public lambda(): AWS.Lambda {
     return this.wrapServiceErrorHandling(new AWS.Lambda(this.config));
   }
@@ -116,6 +160,10 @@ export class SDK implements ISDK {
     return this.wrapServiceErrorHandling(new AWS.ECR(this.config));
   }
 
+  public ecs(): AWS.ECS {
+    return this.wrapServiceErrorHandling(new AWS.ECS(this.config));
+  }
+
   public elbv2(): AWS.ELBv2 {
     return this.wrapServiceErrorHandling(new AWS.ELBv2(this.config));
   }
@@ -126,6 +174,10 @@ export class SDK implements ISDK {
 
   public kms(): AWS.KMS {
     return this.wrapServiceErrorHandling(new AWS.KMS(this.config));
+  }
+
+  public stepFunctions(): AWS.StepFunctions {
+    return this.wrapServiceErrorHandling(new AWS.StepFunctions(this.config));
   }
 
   public async currentAccount(): Promise<Account> {
@@ -178,6 +230,10 @@ export class SDK implements ISDK {
         'with the right \'--trust\', using the latest version of the CDK CLI.',
       ].join(' '));
     }
+  }
+
+  public getEndpointSuffix(region: string): string {
+    return regionUtil.getEndpointSuffix(region);
   }
 
   /**
