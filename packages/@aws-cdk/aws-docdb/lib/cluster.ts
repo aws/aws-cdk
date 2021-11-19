@@ -152,7 +152,7 @@ export interface DatabaseClusterProps {
    * The configuration of log types that can be enabled for exporting to Amazon CloudWatch Logs.
    * You can enable audit logs or profiler logs.
    *
-   * @default {}
+   * @default - no logs will be exported
    */
   readonly cloudwatchLogsExports?: CloudwatchLogsExportsProps;
 }
