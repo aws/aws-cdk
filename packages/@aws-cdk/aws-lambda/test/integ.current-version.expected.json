@@ -36,7 +36,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParameters2c3d4ba820450268bfd466c8523551b82edf1f6b13b095f7982e49bea95748d7S3Bucket37F776CF"
+            "Ref": "AssetParameters8811a2632ac5564a08fd269e159298f7e497f259578b0dc5e927a1f48ab24d34S3BucketB47CCF1E"
           },
           "S3Key": {
             "Fn::Join": [
@@ -49,7 +49,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameters2c3d4ba820450268bfd466c8523551b82edf1f6b13b095f7982e49bea95748d7S3VersionKeyD363CF1A"
+                          "Ref": "AssetParameters8811a2632ac5564a08fd269e159298f7e497f259578b0dc5e927a1f48ab24d34S3VersionKey80D7B84B"
                         }
                       ]
                     }
@@ -62,7 +62,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameters2c3d4ba820450268bfd466c8523551b82edf1f6b13b095f7982e49bea95748d7S3VersionKeyD363CF1A"
+                          "Ref": "AssetParameters8811a2632ac5564a08fd269e159298f7e497f259578b0dc5e927a1f48ab24d34S3VersionKey80D7B84B"
                         }
                       ]
                     }
@@ -72,20 +72,20 @@
             ]
           }
         },
-        "Handler": "index.main",
         "Role": {
           "Fn::GetAtt": [
             "MyLambdaServiceRole4539ECB6",
             "Arn"
           ]
         },
+        "Handler": "index.main",
         "Runtime": "python3.8"
       },
       "DependsOn": [
         "MyLambdaServiceRole4539ECB6"
       ]
     },
-    "MyLambdaCurrentVersionE7A382CC448bacfa5fd3f35c88c0313cba35c2d5": {
+    "MyLambdaCurrentVersionE7A382CC132baf6493c3210af4c8c0e36b416660": {
       "Type": "AWS::Lambda::Version",
       "Properties": {
         "FunctionName": {
@@ -103,7 +103,7 @@
         },
         "Qualifier": {
           "Fn::GetAtt": [
-            "MyLambdaCurrentVersionE7A382CC448bacfa5fd3f35c88c0313cba35c2d5",
+            "MyLambdaCurrentVersionE7A382CC132baf6493c3210af4c8c0e36b416660",
             "Version"
           ]
         },
@@ -118,7 +118,7 @@
         },
         "FunctionVersion": {
           "Fn::GetAtt": [
-            "MyLambdaCurrentVersionE7A382CC448bacfa5fd3f35c88c0313cba35c2d5",
+            "MyLambdaCurrentVersionE7A382CC132baf6493c3210af4c8c0e36b416660",
             "Version"
           ]
         },
@@ -127,17 +127,17 @@
     }
   },
   "Parameters": {
-    "AssetParameters2c3d4ba820450268bfd466c8523551b82edf1f6b13b095f7982e49bea95748d7S3Bucket37F776CF": {
+    "AssetParameters8811a2632ac5564a08fd269e159298f7e497f259578b0dc5e927a1f48ab24d34S3BucketB47CCF1E": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"2c3d4ba820450268bfd466c8523551b82edf1f6b13b095f7982e49bea95748d7\""
+      "Description": "S3 bucket for asset \"8811a2632ac5564a08fd269e159298f7e497f259578b0dc5e927a1f48ab24d34\""
     },
-    "AssetParameters2c3d4ba820450268bfd466c8523551b82edf1f6b13b095f7982e49bea95748d7S3VersionKeyD363CF1A": {
+    "AssetParameters8811a2632ac5564a08fd269e159298f7e497f259578b0dc5e927a1f48ab24d34S3VersionKey80D7B84B": {
       "Type": "String",
-      "Description": "S3 key for asset version \"2c3d4ba820450268bfd466c8523551b82edf1f6b13b095f7982e49bea95748d7\""
+      "Description": "S3 key for asset version \"8811a2632ac5564a08fd269e159298f7e497f259578b0dc5e927a1f48ab24d34\""
     },
-    "AssetParameters2c3d4ba820450268bfd466c8523551b82edf1f6b13b095f7982e49bea95748d7ArtifactHashEB01AC40": {
+    "AssetParameters8811a2632ac5564a08fd269e159298f7e497f259578b0dc5e927a1f48ab24d34ArtifactHash70E274C4": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"2c3d4ba820450268bfd466c8523551b82edf1f6b13b095f7982e49bea95748d7\""
+      "Description": "Artifact hash for asset \"8811a2632ac5564a08fd269e159298f7e497f259578b0dc5e927a1f48ab24d34\""
     }
   }
 }
