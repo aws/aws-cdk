@@ -1,11 +1,10 @@
-import { App, CfnMapping, CfnOutput, CfnResource, Stack } from '@aws-cdk/core';
+import { App, CfnMapping, CfnOutput, CfnResource, NestedStack, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { Match, Template } from '../lib';
 
 describe('Template', () => {
-  describe('asObject', () => {
-    test('fromString', () => {
-      const template = Template.fromString(`{
+  test('fromString', () => {
+    const template = Template.fromString(`{
         "Resources": { 
           "Foo": { 
             "Type": "Baz::Qux",
@@ -14,17 +13,18 @@ describe('Template', () => {
         }
       }`);
 
-      expect(template.toJSON()).toEqual({
-        Resources: {
-          Foo: {
-            Type: 'Baz::Qux',
-            Properties: { Fred: 'Waldo' },
-          },
+    expect(template.toJSON()).toEqual({
+      Resources: {
+        Foo: {
+          Type: 'Baz::Qux',
+          Properties: { Fred: 'Waldo' },
         },
-      });
+      },
     });
+  });
 
-    test('fromStack', () => {
+  describe('fromStack', () => {
+    test('default', () => {
       const app = new App({
         context: {
           '@aws-cdk/core:newStyleStackSynthesis': false,
@@ -38,6 +38,32 @@ describe('Template', () => {
         },
       });
       const template = Template.fromStack(stack);
+
+      expect(template.toJSON()).toEqual({
+        Resources: {
+          Foo: {
+            Type: 'Foo::Bar',
+            Properties: { Baz: 'Qux' },
+          },
+        },
+      });
+    });
+
+    test('nested', () => {
+      const app = new App({
+        context: {
+          '@aws-cdk/core:newStyleStackSynthesis': false,
+        },
+      });
+      const stack = new Stack(app);
+      const nested = new NestedStack(stack, 'MyNestedStack');
+      new CfnResource(nested, 'Foo', {
+        type: 'Foo::Bar',
+        properties: {
+          Baz: 'Qux',
+        },
+      });
+      const template = Template.fromStack(nested);
 
       expect(template.toJSON()).toEqual({
         Resources: {

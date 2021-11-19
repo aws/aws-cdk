@@ -1,4 +1,5 @@
 import '@aws-cdk/assert-internal/jest';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Duration, Stack, App } from '@aws-cdk/core';
 import { AnyPrincipal, ArnPrincipal, CompositePrincipal, FederatedPrincipal, ManagedPolicy, PolicyStatement, Role, ServicePrincipal, User, Policy, PolicyDocument } from '../lib';
 
@@ -58,7 +59,7 @@ describe('IAM role', () => {
     });
   });
 
-  test('can supply externalId', () => {
+  testDeprecated('can supply externalId', () => {
     // GIVEN
     const stack = new Stack();
 

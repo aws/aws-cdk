@@ -671,7 +671,7 @@ describe('tokens', () => {
 
   test('creation stack is omitted without CDK_DEBUG=true', () => {
     function showMeInTheStackTrace() {
-      return Lazy.stringValue({ produce: () => { throw new Error('fooError'); } });
+      return Lazy.string({ produce: () => { throw new Error('fooError'); } });
     }
 
     const previousValue = process.env.CDK_DEBUG;

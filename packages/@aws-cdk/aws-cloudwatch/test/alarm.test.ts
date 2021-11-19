@@ -78,8 +78,7 @@ describe('Alarm', () => {
 
     // WHEN
     new Alarm(stack, 'Alarm', {
-      metric: testMetric,
-      period: Duration.minutes(10),
+      metric: testMetric.with({ period: Duration.minutes(10) }),
       threshold: 1000,
       evaluationPeriods: 3,
     });
@@ -102,8 +101,7 @@ describe('Alarm', () => {
 
     // WHEN
     new Alarm(stack, 'Alarm', {
-      metric: testMetric,
-      statistic: 'max',
+      metric: testMetric.with({ statistic: 'max' }),
       threshold: 1000,
       evaluationPeriods: 3,
     });
@@ -127,8 +125,7 @@ describe('Alarm', () => {
 
     // WHEN
     new Alarm(stack, 'Alarm', {
-      metric: testMetric,
-      statistic: 'P99',
+      metric: testMetric.with({ statistic: 'P99' }),
       threshold: 1000,
       evaluationPeriods: 3,
     });
@@ -199,11 +196,12 @@ describe('Alarm', () => {
     const stack = new Stack();
 
     // WHEN
-    testMetric.createAlarm(stack, 'Alarm', {
-      threshold: 1000,
-      evaluationPeriods: 2,
+    testMetric.with({
       statistic: 'min',
       period: Duration.seconds(10),
+    }).createAlarm(stack, 'Alarm', {
+      threshold: 1000,
+      evaluationPeriods: 2,
     });
 
     // THEN
@@ -223,10 +221,11 @@ describe('Alarm', () => {
     const stack = new Stack();
 
     // WHEN
-    testMetric.createAlarm(stack, 'Alarm', {
+    testMetric.with({
+      statistic: 'p99.9',
+    }).createAlarm(stack, 'Alarm', {
       threshold: 1000,
       evaluationPeriods: 2,
-      statistic: 'p99.9',
     });
 
     // THEN
@@ -240,10 +239,11 @@ describe('Alarm', () => {
     const stack = new Stack();
 
     // WHEN
-    testMetric.createAlarm(stack, 'Alarm', {
+    testMetric.with({
+      statistic: 'tm99.9999999999',
+    }).createAlarm(stack, 'Alarm', {
       threshold: 1000,
       evaluationPeriods: 2,
-      statistic: 'tm99.9999999999',
     });
 
     // THEN

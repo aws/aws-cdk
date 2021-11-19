@@ -158,7 +158,6 @@ export interface CredentialsBaseOptions {
 
 /**
  * Options for creating Credentials from a username.
- * @deprecated supporting API `fromUsername()` has been deprecated. See deprecation notice of the API.
  */
 export interface CredentialsFromUsernameOptions extends CredentialsBaseOptions {
   /**
@@ -202,10 +201,6 @@ export abstract class Credentials {
   /**
    * Creates Credentials for the given username, and optional password and key.
    * If no password is provided, one will be generated and stored in Secrets Manager.
-   *
-   * @deprecated use `fromGeneratedSecret()` or `fromPassword()` for new Clusters and Instances.
-   *   Note that switching from `fromUsername()` to `fromGeneratedSecret()` or `fromPassword()` for already deployed
-   *   Clusters or Instances will result in their replacement!
    */
   public static fromUsername(username: string, options: CredentialsFromUsernameOptions = {}): Credentials {
     return {

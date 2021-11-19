@@ -54,12 +54,13 @@ function run_regression_against_framework_version() {
 
   echo "Downloading aws-cdk ${PREVIOUS_VERSION} tarball from npm"
   npm pack aws-cdk@${PREVIOUS_VERSION}
-  tar -zxvf aws-cdk-${PREVIOUS_VERSION}.tgz
+  tar -zxf aws-cdk-${PREVIOUS_VERSION}.tgz
 
   rm -rf ${integ_under_test}
 
   echo "Copying integration tests of version ${PREVIOUS_VERSION} to ${integ_under_test} (dont worry, its gitignored)"
   cp -r ${temp_dir}/package/test/integ/cli "${integ_under_test}"
+  cp -r ${temp_dir}/package/test/integ/helpers "${integ_under_test}"
 
   patch_dir="${integdir}/cli-regression-patches/v${PREVIOUS_VERSION}"
   # delete possibly stale junit.xml file
@@ -73,5 +74,10 @@ function run_regression_against_framework_version() {
 
   # the framework version to use is determined by the caller as the first argument.
   # its a variable name indirection.
-  FRAMEWORK_VERSION=${!FRAMEWORK_VERSION_IDENTIFIER} ${integ_under_test}/test.sh
+  export FRAMEWORK_VERSION=${!FRAMEWORK_VERSION_IDENTIFIER}
+
+  # Show the versions we settled on
+  echo "♈️ Regression testing [cli $(cdk --version)] against [framework ${FRAMEWORK_VERSION}] using [tests ${PREVIOUS_VERSION}}]"
+
+  ${integ_under_test}/test.sh
 }

@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import { Stack } from '@aws-cdk/core';
 import * as tasks from '../lib';
@@ -18,7 +18,7 @@ test('Eval with Node.js', () => {
   });
 
   // THEN
-  expect(stack).toHaveResource('AWS::StepFunctions::StateMachine', {
+  Template.fromStack(stack).hasResourceProperties('AWS::StepFunctions::StateMachine', {
     DefinitionString: {
       'Fn::Join': [
         '',
@@ -33,7 +33,7 @@ test('Eval with Node.js', () => {
     },
   });
 
-  expect(stack).toHaveResource('AWS::Lambda::Function', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
     Runtime: 'nodejs14.x',
   });
 });
@@ -47,7 +47,7 @@ test('expression does not contain paths', () => {
     definition: task,
   });
 
-  expect(stack).toHaveResource('AWS::StepFunctions::StateMachine', {
+  Template.fromStack(stack).hasResourceProperties('AWS::StepFunctions::StateMachine', {
     DefinitionString: {
       'Fn::Join': [
         '',
@@ -72,7 +72,7 @@ test('with dash and underscore in path', () => {
     definition: task,
   });
 
-  expect(stack).toHaveResource('AWS::StepFunctions::StateMachine', {
+  Template.fromStack(stack).hasResourceProperties('AWS::StepFunctions::StateMachine', {
     DefinitionString: {
       'Fn::Join': [
         '',

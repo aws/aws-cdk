@@ -1,7 +1,7 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as iam from '@aws-cdk/aws-iam';
-import { Duration, IResource, Resource, Stack } from '@aws-cdk/core';
+import { ArnFormat, Duration, IResource, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnJobDefinition } from './batch.generated';
 import { ExposedSecret } from './exposed-secret';
@@ -382,7 +382,7 @@ export class JobDefinition extends Resource implements IJobDefinition {
    */
   public static fromJobDefinitionArn(scope: Construct, id: string, jobDefinitionArn: string): IJobDefinition {
     const stack = Stack.of(scope);
-    const jobDefName = stack.parseArn(jobDefinitionArn).resourceName!;
+    const jobDefName = stack.splitArn(jobDefinitionArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
 
     class Import extends Resource implements IJobDefinition {
       public readonly jobDefinitionArn = jobDefinitionArn;
@@ -405,7 +405,7 @@ export class JobDefinition extends Resource implements IJobDefinition {
     const jobDefArn = stack.formatArn({
       service: 'batch',
       resource: 'job-definition',
-      sep: '/',
+      arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
       resourceName: jobDefinitionName,
     });
 

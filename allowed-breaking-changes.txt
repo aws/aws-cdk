@@ -78,3 +78,11 @@ strengthened:@aws-cdk/aws-lambda-event-sources.ManagedKafkaEventSourceProps
 # Remove IO2 from autoscaling EbsDeviceVolumeType. This value is not supported 
 # at the moment and was not supported in the past.
 removed:@aws-cdk/aws-autoscaling.EbsDeviceVolumeType.IO2
+
+# Remove autoTerminationPolicy from stepfunctions-tasks EmrCreateClusterProps. This value is not supported by stepfunctions at the moment and was not supported in the past.
+removed:@aws-cdk/aws-stepfunctions-tasks.EmrCreateCluster.AutoTerminationPolicyProperty
+removed:@aws-cdk/aws-stepfunctions-tasks.EmrCreateClusterProps.autoTerminationPolicy
+
+# Changed property securityGroupId to optional because either securityGroupId or 
+# securityGroupName is required. Therefore securityGroupId is no longer mandatory.
+weakened:@aws-cdk/cloud-assembly-schema.SecurityGroupContextQuery

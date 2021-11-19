@@ -77,6 +77,7 @@ export class KubectlProvider extends NestedStack {
       description: 'onEvent handler for EKS kubectl resource provider',
       memorySize,
       environment: cluster.kubectlEnvironment,
+      role: cluster.kubectlLambdaRole ? cluster.kubectlLambdaRole : undefined,
 
       // defined only when using private access
       vpc: cluster.kubectlPrivateSubnets ? cluster.vpc : undefined,

@@ -1,4 +1,4 @@
-import { IResource, Resource, Stack } from '@aws-cdk/core';
+import { ArnFormat, IResource, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnJobQueue } from './batch.generated';
 import { IComputeEnvironment } from './compute-environment';
@@ -93,7 +93,7 @@ export class JobQueue extends Resource implements IJobQueue {
    */
   public static fromJobQueueArn(scope: Construct, id: string, jobQueueArn: string): IJobQueue {
     const stack = Stack.of(scope);
-    const jobQueueName = stack.parseArn(jobQueueArn).resourceName!;
+    const jobQueueName = stack.splitArn(jobQueueArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
 
     class Import extends Resource implements IJobQueue {
       public readonly jobQueueArn = jobQueueArn;

@@ -1,7 +1,7 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
-import { Fn, IResource, Resource, Stack } from '@aws-cdk/core';
+import { ArnFormat, Fn, IResource, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { DataFormat } from './data-format';
 import { IDatabase } from './database';
@@ -151,7 +151,7 @@ export interface TableProps {
 export class Table extends Resource implements ITable {
 
   public static fromTableArn(scope: Construct, id: string, tableArn: string): ITable {
-    const tableName = Fn.select(1, Fn.split('/', Stack.of(scope).parseArn(tableArn).resourceName!));
+    const tableName = Fn.select(1, Fn.split('/', Stack.of(scope).splitArn(tableArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!));
 
     return Table.fromTableAttributes(scope, id, {
       tableArn,

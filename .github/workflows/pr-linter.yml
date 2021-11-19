@@ -24,7 +24,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Install & Build prlint
-        run: cd tools/@aws-cdk/prlint && yarn install --frozen-lockfile && yarn build+test
+        run: yarn install --frozen-lockfile && cd tools/@aws-cdk/prlint && yarn build+test
 
       - name: Validate
         uses: ./tools/@aws-cdk/prlint

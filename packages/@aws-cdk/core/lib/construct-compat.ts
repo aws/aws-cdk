@@ -326,7 +326,9 @@ export class ConstructNode {
    * all components of the tree.
    *
    * @deprecated use `node.addr` to obtain a consistent 42 character address for
-   * this node (see https://github.com/aws/constructs/pull/314)
+   * this node (see https://github.com/aws/constructs/pull/314).
+   * Alternatively, to get a CloudFormation-compatible unique identifier, use
+   * `Names.uniqueId()`.
    */
   public get uniqueId(): string { return this._actualNode.uniqueId; }
 
@@ -343,7 +345,7 @@ export class ConstructNode {
    * will be excluded from the calculation. In those cases constructs in the
    * same tree may have the same addreess.
    *
-   * @example c83a2846e506bcc5f10682b564084bca2d275709ee
+   * Example value: `c83a2846e506bcc5f10682b564084bca2d275709ee`
    */
   public get addr(): string { return this._actualNode.addr; }
 

@@ -1,4 +1,3 @@
-import '@aws-cdk/assert-internal/jest';
 import { FieldUtils, JsonPath, TaskInput } from '../lib';
 
 describe('Fields', () => {

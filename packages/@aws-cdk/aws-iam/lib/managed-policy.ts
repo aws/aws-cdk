@@ -1,4 +1,4 @@
-import { IResolveContext, Lazy, Resource, Stack } from '@aws-cdk/core';
+import { ArnFormat, IResolveContext, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { IGroup } from './group';
 import { CfnManagedPolicy } from './iam.generated';
@@ -247,7 +247,7 @@ export class ManagedPolicy extends Resource implements IManagedPolicy {
     }
 
     // arn:aws:iam::123456789012:policy/teststack-CreateTestDBPolicy-16M23YE3CS700
-    this.managedPolicyName = this.getResourceNameAttribute(Stack.of(this).parseArn(resource.ref, '/').resourceName!);
+    this.managedPolicyName = this.getResourceNameAttribute(Stack.of(this).splitArn(resource.ref, ArnFormat.SLASH_RESOURCE_NAME).resourceName!);
     this.managedPolicyArn = this.getResourceArnAttribute(resource.ref, {
       region: '', // IAM is global in each partition
       service: 'iam',

@@ -50,7 +50,7 @@
         "MyFunctionServiceRole3C357FF2"
       ]
     },
-    "MyFunctioninvokedByAwsIotRule5581F304": {
+    "MyFunctionteststackTopicRule1CB8242FIotLambdaFunctionAction37A1A89F": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",

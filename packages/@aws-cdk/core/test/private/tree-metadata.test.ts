@@ -337,7 +337,7 @@ describe('tree metadata', () => {
 
     const treenode = app.node.findChild('Tree');
 
-    const warn = treenode.node.metadata.find((md) => {
+    const warn = treenode.node.metadataEntry.find((md) => {
       return md.type === cxschema.ArtifactMetadataEntryType.WARN
         && /Forcing an inspect error/.test(md.data as string)
         && /mycfnresource/.test(md.data as string);

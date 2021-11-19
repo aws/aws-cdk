@@ -1,5 +1,6 @@
 import '@aws-cdk/assert-internal/jest';
 import { Attribute, AttributeType, StreamViewType, Table } from '@aws-cdk/aws-dynamodb';
+import { describeDeprecated, testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { App, CfnOutput, Stack } from '@aws-cdk/core';
 import { GlobalTable, GlobalTableProps } from '../lib';
 
@@ -18,7 +19,7 @@ const STACK_PROPS: GlobalTableProps = {
   regions: ['us-east-1', 'us-east-2', 'us-west-2'],
 };
 
-describe('Default Global DynamoDB stack', () => {
+describeDeprecated('Default Global DynamoDB stack', () => {
   test('global dynamo', () => {
     const stack = new Stack();
     new GlobalTable(stack, CONSTRUCT_NAME, STACK_PROPS);
@@ -58,7 +59,7 @@ describe('Default Global DynamoDB stack', () => {
   });
 });
 
-test('GlobalTable generated stacks inherit their account from the parent stack', () => {
+testDeprecated('GlobalTable generated stacks inherit their account from the parent stack', () => {
   const app = new App({ context: { '@aws-cdk/core:stackRelativeExports': true } });
   const stack = new Stack(app, 'GlobalTableStack', { env: { account: '123456789012', region: 'us-east-1' } });
 
@@ -85,7 +86,7 @@ test('GlobalTable generated stacks inherit their account from the parent stack',
   });
 });
 
-describe('Enforce StreamSpecification', () => {
+describeDeprecated('Enforce StreamSpecification', () => {
   test('global dynamo should only allow NEW_AND_OLD_IMAGES', () => {
     const stack = new Stack();
 
@@ -100,7 +101,7 @@ describe('Enforce StreamSpecification', () => {
   });
 });
 
-describe('Check getting tables', () => {
+describeDeprecated('Check getting tables', () => {
   test('global dynamo should only allow NEW_AND_OLD_IMAGES', () => {
     const stack = new Stack();
     const regTables = new GlobalTable(stack, CONSTRUCT_NAME, {
