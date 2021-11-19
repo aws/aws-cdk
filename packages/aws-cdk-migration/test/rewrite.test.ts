@@ -1,13 +1,13 @@
-import { rewriteImports, rewriteReadmeImports } from '../lib/rewrite';
+import { rewriteMonoPackageImports, rewriteReadmeImports } from '../lib/rewrite';
 
-describe(rewriteImports, () => {
+describe(rewriteMonoPackageImports, () => {
   test('correctly rewrites naked "import"', () => {
-    const output = rewriteImports(`
+    const output = rewriteMonoPackageImports(`
     // something before
     import '@aws-cdk/aws-s3/hello';
     // something after
 
-    console.log('Look! I did something!');`, 'subhect.ts');
+    console.log('Look! I did something!');`, 'aws-cdk-lib', 'subject.ts');
 
     expect(output).toBe(`
     // something before
@@ -18,12 +18,12 @@ describe(rewriteImports, () => {
   });
 
   test('correctly rewrites naked "require"', () => {
-    const output = rewriteImports(`
+    const output = rewriteMonoPackageImports(`
     // something before
     require('@aws-cdk/aws-s3/hello');
     // something after
 
-    console.log('Look! I did something!');`, 'subhect.ts');
+    console.log('Look! I did something!');`, 'aws-cdk-lib', 'subject.ts');
 
     expect(output).toBe(`
     // something before
@@ -34,14 +34,14 @@ describe(rewriteImports, () => {
   });
 
   test('correctly rewrites "import from"', () => {
-    const output = rewriteImports(`
+    const output = rewriteMonoPackageImports(`
     // something before
     import * as s3 from '@aws-cdk/aws-s3';
     import * as cfndiff from '@aws-cdk/cloudformation-diff';
     import { Construct } from "@aws-cdk/core";
     // something after
 
-    console.log('Look! I did something!');`, 'subject.ts');
+    console.log('Look! I did something!');`, 'aws-cdk-lib', 'subject.ts');
 
     expect(output).toBe(`
     // something before
@@ -54,14 +54,14 @@ describe(rewriteImports, () => {
   });
 
   test('correctly rewrites "import = require"', () => {
-    const output = rewriteImports(`
+    const output = rewriteMonoPackageImports(`
     // something before
     import s3 = require('@aws-cdk/aws-s3');
     import cfndiff = require('@aws-cdk/cloudformation-diff');
     import { Construct } = require("@aws-cdk/core");
     // something after
 
-    console.log('Look! I did something!');`, 'subject.ts');
+    console.log('Look! I did something!');`, 'aws-cdk-lib', 'subject.ts');
 
     expect(output).toBe(`
     // something before
@@ -74,12 +74,12 @@ describe(rewriteImports, () => {
   });
 
   test('does not rewrite @aws-cdk/assert', () => {
-    const output = rewriteImports(`
+    const output = rewriteMonoPackageImports(`
     // something before
     import '@aws-cdk/assert/jest';
     // something after
 
-    console.log('Look! I did something!');`, 'subhect.ts');
+    console.log('Look! I did something!');`, 'aws-cdk-lib', 'subject.ts');
 
     expect(output).toBe(`
     // something before
@@ -91,14 +91,14 @@ describe(rewriteImports, () => {
 
   test('correctly rewrites Cfn imports', () => {
     // Codestar example
-    const codestar = rewriteImports(`
+    const codestar = rewriteMonoPackageImports(`
     // something before
     import * as codestar from './codestar.generated';
     import { CfnY } from '../codestar.generated';
     import { CfnX } from '../lib/codestar.generated';
     // something after
 
-    console.log('Look! I did something!');`, 'subject.ts', {
+    console.log('Look! I did something!');`, 'aws-cdk-lib', 'subject.ts', {
       rewriteCfnImports: true,
       packageUnscopedName: 'aws-codestar',
     });
@@ -117,13 +117,13 @@ describe(rewriteImports, () => {
     const customModules = {
       '@aws-cdk/aws-kinesisfirehose': 'aws-kinesisfirehose-alpha',
     };
-    const output = rewriteImports(`
+    const output = rewriteMonoPackageImports(`
     // something before
     import * as firehose from '@aws-cdk/aws-kinesisfirehose';
     import { CfnDeliveryStream } from '@aws-cdk/aws-kinesisfirehose';
     // something after
 
-    console.log('Look! I did something!');`, 'subject.ts', {
+    console.log('Look! I did something!');`, 'aws-cdk-lib', 'subject.ts', {
       rewriteCfnImports: true,
       customModules: customModules,
     });
@@ -146,7 +146,7 @@ describe(rewriteReadmeImports, () => {
     import * as s3 from '@aws-cdk/aws-s3';
     import { Construct } from "@aws-cdk/core";
     \`\`\`
-    Some more README text.`, 'subject.ts');
+    Some more README text.`, 'aws-cdk-lib', 'subject.ts');
 
     expect(output).toBe(`
     Some README text.
@@ -164,7 +164,7 @@ describe(rewriteReadmeImports, () => {
     import * as s3 from '@aws-cdk/aws-s3';
     import { Construct } from "@aws-cdk/core";
     \`\`\`
-    Some more README text.`, 'subject.ts');
+    Some more README text.`, 'aws-cdk-lib', 'subject.ts');
 
     expect(output).toBe(`
     Some README text.
@@ -182,7 +182,7 @@ describe(rewriteReadmeImports, () => {
     import * as s3 from '@aws-cdk/aws-s3';
     import { Construct } from "@aws-cdk/core";
     \`\`\`
-    Some more README text.`, 'subject.ts');
+    Some more README text.`, 'aws-cdk-lib', 'subject.ts');
 
     expect(output).toBe(`
     Some README text.
@@ -199,7 +199,7 @@ describe(rewriteReadmeImports, () => {
     \`\`\`java
     import * as s3 from '@aws-cdk/aws-s3';
     \`\`\`
-    Some more README text.`, 'subject.ts');
+    Some more README text.`, 'aws-cdk-lib', 'subject.ts');
 
     expect(output).toBe(`
     Some README text.
@@ -218,7 +218,7 @@ describe(rewriteReadmeImports, () => {
     Some more README text.
     \`\`\`ts
     import { CfnDeliveryStream } from '@aws-cdk/aws-kinesisfirehose';
-    \`\`\``, 'subject.ts');
+    \`\`\``, 'aws-cdk-lib', 'subject.ts');
 
     expect(output).toBe(`
     Some README text.
