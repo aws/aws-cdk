@@ -3,7 +3,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import { CloudFormation } from 'aws-sdk';
 import { ISDK, Mode, SdkProvider } from './aws-auth';
 import { DeployStackResult } from './deploy-stack';
-import { ChangeHotswapImpact, ChangeHotswapResult, HotswapOperation, ListStackResources, HotswappableChangeCandidate } from './hotswap/common';
+import { ChangeHotswapImpact, ChangeHotswapResult, HotswapOperation, HotswappableChangeCandidate, ListStackResources } from './hotswap/common';
 import { isHotswappableEcsServiceChange } from './hotswap/ecs-services';
 import { EvaluateCloudFormationTemplate } from './hotswap/evaluate-cloudformation-template';
 import { isHotswappableLambdaFunctionChange } from './hotswap/lambda-functions';
@@ -138,8 +138,20 @@ async function applyAllHotswappableChanges(
   sdk: ISDK, hotswappableChanges: HotswapOperation[],
 ): Promise<void[]> {
   return Promise.all(hotswappableChanges.map(hotswapOperation => {
-    return hotswapOperation.apply(sdk);
+    return applyHotswappableChange(sdk, hotswapOperation);
   }));
+}
+
+async function applyHotswappableChange(sdk: ISDK, hotswapOperation: HotswapOperation): Promise<any> {
+  // note the type of service that was successfully hotswapped in the User-Agent
+  const customUserAgent = `cdk-hotswap/success-${hotswapOperation.service}`;
+  sdk.appendCustomUserAgent(customUserAgent);
+
+  try {
+    return await hotswapOperation.apply(sdk);
+  } finally {
+    sdk.removeCustomUserAgent(customUserAgent);
+  }
 }
 
 class LazyListStackResources implements ListStackResources {

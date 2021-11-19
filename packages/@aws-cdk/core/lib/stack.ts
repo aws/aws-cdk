@@ -280,7 +280,7 @@ export class Stack extends CoreConstruct implements ITaggable {
    * The name of the CloudFormation template file emitted to the output
    * directory during synthesis.
    *
-   * @example 'MyStack.template.json'
+   * Example value: `MyStack.template.json`
    */
   public readonly templateFile: string;
 
@@ -711,11 +711,13 @@ export class Stack extends CoreConstruct implements ITaggable {
    *
    * Duplicate values are removed when stack is synthesized.
    *
-   * @example stack.addTransform('AWS::Serverless-2016-10-31')
-   *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/transform-section-structure.html
-   *
    * @param transform The transform to add
+   *
+   * @example
+   * declare const stack: Stack;
+   *
+   * stack.addTransform('AWS::Serverless-2016-10-31')
    */
   public addTransform(transform: string) {
     if (!this.templateOptions.transforms) {

@@ -13,7 +13,7 @@ import { FakeCloudformationStack } from '../fake-cloudformation-stack';
 const STACK_NAME = 'withouterrors';
 export const STACK_ID = 'stackId';
 
-let cfnMockProvider: CfnMockProvider;
+let hotswapMockSdkProvider: HotswapMockSdkProvider;
 let currentCfnStack: FakeCloudformationStack;
 const currentCfnStackResources: CloudFormation.StackResourceSummary[] = [];
 
@@ -21,13 +21,13 @@ export function setupHotswapTests() {
   jest.resetAllMocks();
   // clear the array
   currentCfnStackResources.splice(0);
-  cfnMockProvider = new CfnMockProvider();
+  hotswapMockSdkProvider = new HotswapMockSdkProvider();
   currentCfnStack = new FakeCloudformationStack({
     stackName: STACK_NAME,
     stackId: STACK_ID,
   });
 
-  return cfnMockProvider;
+  return hotswapMockSdkProvider;
 }
 
 export function cdkStackArtifactOf(testStackArtifact: Partial<TestStackArtifact> = {}): cxapi.CloudFormationStackArtifact {
@@ -55,8 +55,8 @@ export function stackSummaryOf(logicalId: string, resourceType: string, physical
   };
 }
 
-export class CfnMockProvider {
-  private mockSdkProvider: MockSdkProvider;
+export class HotswapMockSdkProvider {
+  public readonly mockSdkProvider: MockSdkProvider;
 
   constructor() {
     this.mockSdkProvider = new MockSdkProvider({ realSdk: false });
@@ -91,14 +91,14 @@ export class CfnMockProvider {
     this.mockSdkProvider.stubEcs(stubs, additionalProperties);
   }
 
+  public stubGetEndpointSuffix(stub: () => string) {
+    this.mockSdkProvider.stubGetEndpointSuffix(stub);
+  }
+
   public tryHotswapDeployment(
     stackArtifact: cxapi.CloudFormationStackArtifact,
     assetParams: { [key: string]: string } = {},
   ): Promise<DeployStackResult | undefined> {
     return deployments.tryHotswapDeployment(this.mockSdkProvider, assetParams, currentCfnStack, stackArtifact);
-  }
-
-  public stubGetEndpointSuffix(stub: () => string) {
-    this.mockSdkProvider.stubGetEndpointSuffix(stub);
   }
 }
