@@ -114,6 +114,11 @@ export interface CloudwatchLogsExportsProps {
    * Should sending audit logs to CloudWatch Logs should be enabled?
    * @see https://docs.aws.amazon.com/documentdb/latest/developerguide/event-auditing.html#event-auditing-enabling-auditing
    * @default false
+  /**
+   * Whether the audit logs should be exported to CloudWatch.
+   *
+   * @see https://docs.aws.amazon.com/documentdb/latest/developerguide/event-auditing.html#event-auditing-enabling-auditing
+   * @default false
    */
   readonly audit?: boolean;
 }
