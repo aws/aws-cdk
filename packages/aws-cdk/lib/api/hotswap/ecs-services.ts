@@ -76,6 +76,8 @@ interface EcsService {
 }
 
 class EcsServiceHotswapOperation implements HotswapOperation {
+  public readonly service = 'ecs-service';
+
   constructor(
     private readonly taskDefinitionResource: any,
     private readonly servicesReferencingTaskDef: EcsService[],
