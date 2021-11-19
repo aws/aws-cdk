@@ -1,5 +1,6 @@
 import '@aws-cdk/assert-internal/jest';
 import * as ec2 from '@aws-cdk/aws-ec2';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import * as elbv2 from '../../lib';
 import { FakeSelfRegisteringTarget } from '../helpers';
@@ -32,7 +33,7 @@ describe('tests', () => {
     tg.addTarget(new FakeSelfRegisteringTarget(stack, 'Target', vpc));
   });
 
-  test('Cannot add direct target to imported TargetGroup', () => {
+  testDeprecated('Cannot add direct target to imported TargetGroup', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'Stack');
@@ -46,7 +47,7 @@ describe('tests', () => {
     }).toThrow(/Cannot add a non-self registering target to an imported TargetGroup/);
   });
 
-  test('HealthCheck fields set if provided', () => {
+  testDeprecated('HealthCheck fields set if provided', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'Stack');
@@ -171,6 +172,10 @@ describe('tests', () => {
     // THEN
     expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::TargetGroup', {
       TargetGroupAttributes: [
+        {
+          Key: 'stickiness.enabled',
+          Value: 'false',
+        },
         {
           Key: 'load_balancing.algorithm.type',
           Value: 'least_outstanding_requests',

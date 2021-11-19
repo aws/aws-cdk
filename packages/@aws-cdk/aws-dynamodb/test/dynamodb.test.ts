@@ -4,9 +4,10 @@ import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kinesis from '@aws-cdk/aws-kinesis';
 import * as kms from '@aws-cdk/aws-kms';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
+import { testLegacyBehavior } from '@aws-cdk/cdk-build-tools/lib/feature-flag';
 import { App, Aws, CfnDeletionPolicy, ConstructNode, Duration, PhysicalName, RemovalPolicy, Resource, Stack, Tags } from '@aws-cdk/core';
 import * as cr from '@aws-cdk/custom-resources';
-import { testLegacyBehavior } from '@aws-cdk/cdk-build-tools/lib/feature-flag';
 import { Construct } from 'constructs';
 import {
   Attribute,
@@ -39,7 +40,7 @@ const GSI_NAME = 'MyGSI';
 const GSI_PARTITION_KEY: Attribute = { name: 'gsiHashKey', type: AttributeType.STRING };
 const GSI_SORT_KEY: Attribute = { name: 'gsiSortKey', type: AttributeType.BINARY };
 const GSI_NON_KEY = 'gsiNonKey';
-function* GSI_GENERATOR(): Generator<GlobalSecondaryIndexProps, never> {
+function * GSI_GENERATOR(): Generator<GlobalSecondaryIndexProps, never> {
   let n = 0;
   while (true) {
     const globalSecondaryIndexProps: GlobalSecondaryIndexProps = {
@@ -50,7 +51,7 @@ function* GSI_GENERATOR(): Generator<GlobalSecondaryIndexProps, never> {
     n++;
   }
 }
-function* NON_KEY_ATTRIBUTE_GENERATOR(nonKeyPrefix: string): Generator<string, never> {
+function * NON_KEY_ATTRIBUTE_GENERATOR(nonKeyPrefix: string): Generator<string, never> {
   let n = 0;
   while (true) {
     yield `${nonKeyPrefix}${n}`;
@@ -62,7 +63,7 @@ function* NON_KEY_ATTRIBUTE_GENERATOR(nonKeyPrefix: string): Generator<string, n
 const LSI_NAME = 'MyLSI';
 const LSI_SORT_KEY: Attribute = { name: 'lsiSortKey', type: AttributeType.NUMBER };
 const LSI_NON_KEY = 'lsiNonKey';
-function* LSI_GENERATOR(): Generator<LocalSecondaryIndexProps, never> {
+function * LSI_GENERATOR(): Generator<LocalSecondaryIndexProps, never> {
   let n = 0;
   while (true) {
     const localSecondaryIndexProps: LocalSecondaryIndexProps = {
@@ -318,7 +319,7 @@ describe('default properties', () => {
   });
 });
 
-test('when specifying every property', () => {
+testDeprecated('when specifying every property', () => {
   const stack = new Stack();
   const stream = new kinesis.Stream(stack, 'MyStream');
   const table = new Table(stack, CONSTRUCT_NAME, {
@@ -469,7 +470,7 @@ test('fails if encryption key is used with default encryption', () => {
   })).toThrow('`encryptionKey cannot be specified unless encryption is set to TableEncryption.CUSTOMER_MANAGED (it was set to ${encryptionType})`');
 });
 
-test('fails if encryption key is used with serverSideEncryption', () => {
+testDeprecated('fails if encryption key is used with serverSideEncryption', () => {
   const stack = new Stack();
   const encryptionKey = new kms.Key(stack, 'Key', {
     enableKeyRotation: true,
@@ -482,7 +483,7 @@ test('fails if encryption key is used with serverSideEncryption', () => {
   })).toThrow(/encryptionKey cannot be specified when serverSideEncryption is specified. Use encryption instead/);
 });
 
-test('fails if both encryption and serverSideEncryption is specified', () => {
+testDeprecated('fails if both encryption and serverSideEncryption is specified', () => {
   const stack = new Stack();
   expect(() => new Table(stack, 'Table A', {
     tableName: TABLE_NAME,
@@ -1603,7 +1604,7 @@ describe('metrics', () => {
 
   });
 
-  test('Can use metricSystemErrors without the TableName dimension', () => {
+  testDeprecated('Can use metricSystemErrors without the TableName dimension', () => {
 
     const stack = new Stack();
     const table = new Table(stack, 'Table', {
@@ -1617,7 +1618,7 @@ describe('metrics', () => {
 
   });
 
-  test('Using metricSystemErrors without the Operation dimension will fail', () => {
+  testDeprecated('Using metricSystemErrors without the Operation dimension will fail', () => {
 
     const stack = new Stack();
     const table = new Table(stack, 'Table', {
@@ -1672,7 +1673,7 @@ describe('metrics', () => {
 
   });
 
-  test('Can use metricSystemErrors on a Dynamodb Table', () => {
+  testDeprecated('Can use metricSystemErrors on a Dynamodb Table', () => {
     // GIVEN
     const stack = new Stack();
     const table = new Table(stack, 'Table', {
@@ -1680,7 +1681,7 @@ describe('metrics', () => {
     });
 
     // THEN
-    expect(stack.resolve(table.metricSystemErrors({ dimensions: { TableName: table.tableName, Operation: 'GetItem' } }))).toEqual({
+    expect(stack.resolve(table.metricSystemErrors({ dimensionsMap: { TableName: table.tableName, Operation: 'GetItem' } }))).toEqual({
       period: Duration.minutes(5),
       dimensions: { TableName: { Ref: 'TableCD117FA1' }, Operation: 'GetItem' },
       namespace: 'AWS/DynamoDB',
@@ -1741,7 +1742,7 @@ describe('metrics', () => {
       partitionKey: { name: 'id', type: AttributeType.STRING },
     });
 
-    expect(table.metricSuccessfulRequestLatency({ dimensions: { Operation: 'GetItem' } }).dimensions).toEqual({
+    expect(table.metricSuccessfulRequestLatency({ dimensionsMap: { Operation: 'GetItem' } }).dimensions).toEqual({
       TableName: table.tableName,
       Operation: 'GetItem',
     });
@@ -1755,7 +1756,7 @@ describe('metrics', () => {
       partitionKey: { name: 'id', type: AttributeType.STRING },
     });
 
-    expect(() => table.metricSuccessfulRequestLatency({ dimensions: { TableName: table.tableName } }))
+    expect(() => table.metricSuccessfulRequestLatency({ dimensionsMap: { TableName: table.tableName } }))
       .toThrow(/'Operation' dimension must be passed for the 'SuccessfulRequestLatency' metric./);
 
   });
@@ -1769,7 +1770,7 @@ describe('metrics', () => {
 
     // THEN
     expect(stack.resolve(table.metricSuccessfulRequestLatency({
-      dimensions: {
+      dimensionsMap: {
         TableName: table.tableName,
         Operation: 'GetItem',
       },
@@ -1859,7 +1860,7 @@ describe('grants', () => {
     testGrant(['*'], (p, t) => t.grantFullAccess(p));
   });
 
-  test('"Table.grantListStreams" allows principal to list all streams', () => {
+  testDeprecated('"Table.grantListStreams" allows principal to list all streams', () => {
     // GIVEN
     const stack = new Stack();
     const user = new iam.User(stack, 'user');
@@ -2420,6 +2421,60 @@ describe('global', () => {
           Ref: 'TableCD117FA1',
         },
         Region: 'eu-central-1',
+      },
+      Condition: 'TableStackRegionNotEqualseucentral199D46FC0',
+    }, ResourcePart.CompleteDefinition);
+
+    expect(SynthUtils.toCloudFormation(stack).Conditions).toEqual({
+      TableStackRegionNotEqualseuwest2A03859E7: {
+        'Fn::Not': [
+          { 'Fn::Equals': ['eu-west-2', { Ref: 'AWS::Region' }] },
+        ],
+      },
+      TableStackRegionNotEqualseucentral199D46FC0: {
+        'Fn::Not': [
+          { 'Fn::Equals': ['eu-central-1', { Ref: 'AWS::Region' }] },
+        ],
+      },
+    });
+  });
+
+  test('create replicas without waiting to finish replication', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new Table(stack, 'Table', {
+      partitionKey: {
+        name: 'id',
+        type: AttributeType.STRING,
+      },
+      replicationRegions: [
+        'eu-west-2',
+        'eu-central-1',
+      ],
+      waitForReplicationToFinish: false,
+    });
+
+    // THEN
+    expect(stack).toHaveResource('Custom::DynamoDBReplica', {
+      Properties: {
+        TableName: {
+          Ref: 'TableCD117FA1',
+        },
+        Region: 'eu-west-2',
+        SkipReplicationCompletedWait: true,
+      },
+      Condition: 'TableStackRegionNotEqualseuwest2A03859E7',
+    }, ResourcePart.CompleteDefinition);
+
+    expect(stack).toHaveResource('Custom::DynamoDBReplica', {
+      Properties: {
+        TableName: {
+          Ref: 'TableCD117FA1',
+        },
+        Region: 'eu-central-1',
+        SkipReplicationCompletedWait: true,
       },
       Condition: 'TableStackRegionNotEqualseucentral199D46FC0',
     }, ResourcePart.CompleteDefinition);

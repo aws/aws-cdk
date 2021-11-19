@@ -7,11 +7,7 @@ on:
 
 jobs:
   auto-approve:
-    if: >
-       contains(github.event.pull_request.labels.*.name, 'pr/auto-approve') &&
-       (github.event.pull_request.user.login == 'aws-cdk-automation'
-        || github.event.pull_request.user.login == 'dependabot[bot]'
-        || github.event.pull_request.user.login == 'dependabot-preview[bot]')
+    if: contains(github.event.pull_request.labels.*.name, 'pr/auto-approve')
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
