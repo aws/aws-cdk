@@ -241,7 +241,15 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
       // Write to disk and replace with a reference
       const relativeSpecFile = `buildspec-${Node.of(scope).addr}-${this.constructId}.yaml`;
       const absSpecFile = path.join(cloudAssemblyBuildSpecDir(scope), relativeSpecFile);
-      fs.writeFileSync(absSpecFile, Stack.of(scope).resolve(actualBuildSpec.toBuildSpec()), { encoding: 'utf-8' });
+
+      // This should resolve to a pure JSON string. If it resolves to an object, it's a CFN
+      // expression, and we can't support that yet. Maybe someday if we think really hard about it.
+      const fileContents = Stack.of(scope).resolve(actualBuildSpec.toBuildSpec());
+
+      if (typeof fileContents !== 'string') {
+        throw new Error(`This BuildSpec contains CloudFormation references and is supported by publishInParallel=false: ${JSON.stringify(fileContents, undefined, 2)}`);
+      }
+      fs.writeFileSync(absSpecFile, fileContents, { encoding: 'utf-8' });
       projectBuildSpec = codebuild.BuildSpec.fromSourceFilename(relativeSpecFile);
     } else {
       projectBuildSpec = actualBuildSpec;
@@ -325,13 +333,16 @@ function generateInputArtifactLinkCommands(artifacts: ArtifactMap, inputs: FileS
   return inputs.map(input => {
     const fragments = [];
 
-    if (!['.', '..'].includes(path.dirname(input.directory))) {
-      fragments.push(`mkdir -p "${input.directory}"`);
+    fragments.push(`[ ! -d "${input.directory}" ] || { echo 'additionalInputs: "${input.directory}" must not exist yet. If you want to merge multiple artifacts, use a "cp" command.'; exit 1; }`);
+
+    const parentDirectory = path.dirname(input.directory);
+    if (!['.', '..'].includes(parentDirectory)) {
+      fragments.push(`mkdir -p -- "${parentDirectory}"`);
     }
 
     const artifact = artifacts.toCodePipeline(input.fileSet);
 
-    fragments.push(`ln -s "$CODEBUILD_SRC_DIR_${artifact.artifactName}" "${input.directory}"`);
+    fragments.push(`ln -s -- "$CODEBUILD_SRC_DIR_${artifact.artifactName}" "${input.directory}"`);
 
     return fragments.join(' && ');
   });

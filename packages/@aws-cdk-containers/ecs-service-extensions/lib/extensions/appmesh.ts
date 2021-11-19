@@ -138,6 +138,7 @@ export class AppMeshExtension extends ServiceExtension {
 
   public useTaskDefinition(taskDefinition: ecs.TaskDefinition) {
     var region = cdk.Stack.of(this.scope).region;
+    var partition = cdk.Stack.of(this.scope).partition;
     var appMeshRepo;
 
     // This is currently necessary because App Mesh has different images in each region,
@@ -151,6 +152,8 @@ export class AppMeshExtension extends ServiceExtension {
         'ap-southeast-1': this.accountIdForRegion('ap-southeast-1'),
         'ap-southeast-2': this.accountIdForRegion('ap-southeast-1'),
         'ca-central-1': this.accountIdForRegion('ca-central-1'),
+        'cn-north-1': this.accountIdForRegion('cn-north-1'),
+        'cn-northwest-1': this.accountIdForRegion('cn-northwest-1'),
         'eu-central-1': this.accountIdForRegion('eu-central-1'),
         'eu-north-1': this.accountIdForRegion('eu-north-1'),
         'eu-south-1': this.accountIdForRegion('eu-south-1'),
@@ -177,7 +180,7 @@ export class AppMeshExtension extends ServiceExtension {
       `${this.parentService.id}-envoy-repo`,
       {
         repositoryName: 'aws-appmesh-envoy',
-        repositoryArn: `arn:aws:ecr:${region}:${ownerAccount}:repository/aws-appmesh-envoy`,
+        repositoryArn: `arn:${partition}:ecr:${region}:${ownerAccount}:repository/aws-appmesh-envoy`,
       },
     );
 

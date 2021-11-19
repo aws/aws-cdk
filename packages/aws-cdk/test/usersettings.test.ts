@@ -70,3 +70,23 @@ test('load context from all 3 files if available', async () => {
   expect(config.context.get('foo')).toBe('bar');
   expect(config.context.get('test')).toBe('bar');
 });
+
+test('throws an error if the `build` key is specified in the user config', async () => {
+  // GIVEN
+  const GIVEN_CONFIG: Map<string, any> = new Map([
+    [USER_CONFIG, {
+      build: 'foobar',
+    }],
+  ]);
+
+  // WHEN
+  mockedFs.pathExists.mockImplementation(path => {
+    return GIVEN_CONFIG.has(path);
+  });
+  mockedFs.readJSON.mockImplementation(path => {
+    return GIVEN_CONFIG.get(path);
+  });
+
+  // THEN
+  await expect(new Configuration().load()).rejects.toEqual(new Error('The `build` key cannot be specified in the user config (~/.cdk.json), specify it in the project config (cdk.json) instead'));
+});

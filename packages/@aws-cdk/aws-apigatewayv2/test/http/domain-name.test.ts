@@ -1,5 +1,6 @@
 import { Template } from '@aws-cdk/assertions';
 import { Certificate } from '@aws-cdk/aws-certificatemanager';
+import { Bucket } from '@aws-cdk/aws-s3';
 import { Stack } from '@aws-cdk/core';
 import { DomainName, HttpApi } from '../../lib';
 
@@ -27,6 +28,22 @@ describe('DomainName', () => {
         },
       ],
     });
+  });
+
+  test('throws when domainName is empty string', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const t = () => {
+      new DomainName(stack, 'DomainName', {
+        domainName: '',
+        certificate: Certificate.fromCertificateArn(stack, 'cert', certArn),
+      });
+    };
+
+    // THEN
+    expect(t).toThrow(/empty string for domainName not allowed/);
   });
 
   test('import domain name correctly', () => {
@@ -86,7 +103,9 @@ describe('DomainName', () => {
       ApiId: {
         Ref: 'ApiF70053CD',
       },
-      DomainName: 'example.com',
+      DomainName: {
+        Ref: 'DNFDC76583',
+      },
       Stage: 'beta',
       ApiMappingKey: 'beta',
     });
@@ -123,7 +142,9 @@ describe('DomainName', () => {
       ApiId: {
         Ref: 'ApiF70053CD',
       },
-      DomainName: 'example.com',
+      DomainName: {
+        Ref: 'DNFDC76583',
+      },
       Stage: '$default',
     });
   });
@@ -147,5 +168,67 @@ describe('DomainName', () => {
     // WHEN/THEN
     expect(t).toThrow('defaultDomainMapping not supported with createDefaultStage disabled');
 
+  });
+
+  test('accepts a mutual TLS configuration', () => {
+    // GIVEN
+    const stack = new Stack();
+    const bucket = Bucket.fromBucketName(stack, 'testBucket', 'example-bucket');
+
+    // WHEN
+    new DomainName(stack, 'DomainName', {
+      domainName,
+      certificate: Certificate.fromCertificateArn(stack, 'cert', certArn),
+      mtls: {
+        bucket,
+        key: 'someca.pem',
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::DomainName', {
+      DomainName: 'example.com',
+      DomainNameConfigurations: [
+        {
+          CertificateArn: 'arn:aws:acm:us-east-1:111111111111:certificate',
+          EndpointType: 'REGIONAL',
+        },
+      ],
+      MutualTlsAuthentication: {
+        TruststoreUri: 's3://example-bucket/someca.pem',
+      },
+    });
+  });
+
+  test('mTLS should allow versions to be set on the s3 bucket', () => {
+    // GIVEN
+    const stack = new Stack();
+    const bucket = Bucket.fromBucketName(stack, 'testBucket', 'example-bucket');
+
+    // WHEN
+    new DomainName(stack, 'DomainName', {
+      domainName,
+      certificate: Certificate.fromCertificateArn(stack, 'cert', certArn),
+      mtls: {
+        bucket,
+        key: 'someca.pem',
+        version: 'version',
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::DomainName', {
+      DomainName: 'example.com',
+      DomainNameConfigurations: [
+        {
+          CertificateArn: 'arn:aws:acm:us-east-1:111111111111:certificate',
+          EndpointType: 'REGIONAL',
+        },
+      ],
+      MutualTlsAuthentication: {
+        TruststoreUri: 's3://example-bucket/someca.pem',
+        TruststoreVersion: 'version',
+      },
+    });
   });
 });

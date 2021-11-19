@@ -1,4 +1,4 @@
-import { expect as expectCDK, haveResource, ResourcePart, arrayWith } from '@aws-cdk/assert-internal';
+import { expect as expectCDK, haveResource, ResourcePart, arrayWith, haveResourceLike, objectLike } from '@aws-cdk/assert-internal';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as kms from '@aws-cdk/aws-kms';
 import * as cdk from '@aws-cdk/core';
@@ -167,6 +167,27 @@ describe('DatabaseCluster', () => {
     }));
   });
 
+  test('can configure cluster deletion protection', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      masterUser: {
+        username: 'admin',
+      },
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+      vpc,
+      deletionProtection: true,
+    });
+
+    // THEN
+    expectCDK(stack).to(haveResource('AWS::DocDB::DBCluster', {
+      DeletionProtection: true,
+    }));
+  });
+
   test('cluster with parameter group', () => {
     // GIVEN
     const stack = testStack();
@@ -269,6 +290,29 @@ describe('DatabaseCluster', () => {
         PasswordLength: 41,
         SecretStringTemplate: '{"username":"admin"}',
       },
+    }));
+  });
+
+  test('creates a secret with excludeCharacters', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      masterUser: {
+        username: 'admin',
+        excludeCharacters: '"@/()[]',
+      },
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+      vpc,
+    });
+
+    // THEN
+    expectCDK(stack).to(haveResourceLike('AWS::SecretsManager::Secret', {
+      GenerateSecretString: objectLike({
+        ExcludeCharacters: '\"@/()[]',
+      }),
     }));
   });
 

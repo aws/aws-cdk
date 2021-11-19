@@ -1,4 +1,4 @@
-import { Lazy, Stack, Token } from '@aws-cdk/core';
+import { ArnFormat, Lazy, Stack, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { IAlarmAction } from './alarm-action';
 import { AlarmBase, IAlarm } from './alarm-base';
@@ -114,7 +114,7 @@ export class Alarm extends AlarmBase {
   public static fromAlarmArn(scope: Construct, id: string, alarmArn: string): IAlarm {
     class Import extends AlarmBase implements IAlarm {
       public readonly alarmArn = alarmArn;
-      public readonly alarmName = Stack.of(scope).parseArn(alarmArn, ':').resourceName!;
+      public readonly alarmName = Stack.of(scope).splitArn(alarmArn, ArnFormat.COLON_RESOURCE_NAME).resourceName!;
     }
     return new Import(scope, id);
   }
@@ -192,7 +192,7 @@ export class Alarm extends AlarmBase {
       service: 'cloudwatch',
       resource: 'alarm',
       resourceName: this.physicalName,
-      sep: ':',
+      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
     });
     this.alarmName = this.getResourceNameAttribute(alarm.ref);
 
@@ -257,7 +257,9 @@ export class Alarm extends AlarmBase {
     return dispatchMetric(metric, {
       withStat(stat, conf) {
         self.validateMetricStat(stat, metric);
-        if (conf.renderingProperties?.label == undefined) {
+        const canRenderAsLegacyMetric = conf.renderingProperties?.label == undefined && !self.requiresAccountId(stat);
+        // Do this to disturb existing templates as little as possible
+        if (canRenderAsLegacyMetric) {
           return dropUndefined({
             dimensions: stat.dimensions,
             namespace: stat.namespace,
@@ -283,6 +285,7 @@ export class Alarm extends AlarmBase {
                 unit: stat.unitFilter,
               },
               id: 'm1',
+              accountId: self.requiresAccountId(stat) ? stat.account : undefined,
               label: conf.renderingProperties?.label,
               returnData: true,
             } as CfnAlarm.MetricDataQueryProperty,
@@ -317,8 +320,9 @@ export class Alarm extends AlarmBase {
                   unit: stat.unitFilter,
                 },
                 id: entry.id || uniqueMetricId(),
+                accountId: self.requiresAccountId(stat) ? stat.account : undefined,
                 label: conf.renderingProperties?.label,
-                returnData: entry.tag ? undefined : false, // Tag stores "primary" attribute, default is "true"
+                returnData: entry.tag ? undefined : false, // entry.tag evaluates to true if the metric is the math expression the alarm is based on.
               };
             },
             withExpression(expr, conf) {
@@ -329,12 +333,14 @@ export class Alarm extends AlarmBase {
                 assertSubmetricsCount(expr);
               }
 
+              self.validateMetricExpression(expr);
+
               return {
                 expression: expr.expression,
                 id: entry.id || uniqueMetricId(),
                 label: conf.renderingProperties?.label,
                 period: hasSubmetrics ? undefined : expr.period,
-                returnData: entry.tag ? undefined : false, // Tag stores "primary" attribute, default is "true"
+                returnData: entry.tag ? undefined : false, // entry.tag evaluates to true if the metric is the math expression the alarm is based on.
               };
             },
           }) as CfnAlarm.MetricDataQueryProperty),
@@ -344,7 +350,7 @@ export class Alarm extends AlarmBase {
   }
 
   /**
-   * Validate that if a region and account are in the given stat config, they match the Alarm
+   * Validate that if a region is in the given stat config, they match the Alarm
    */
   private validateMetricStat(stat: MetricStatConfig, metric: IMetric) {
     const stack = Stack.of(this);
@@ -352,9 +358,33 @@ export class Alarm extends AlarmBase {
     if (definitelyDifferent(stat.region, stack.region)) {
       throw new Error(`Cannot create an Alarm in region '${stack.region}' based on metric '${metric}' in '${stat.region}'`);
     }
-    if (definitelyDifferent(stat.account, stack.account)) {
-      throw new Error(`Cannot create an Alarm in account '${stack.account}' based on metric '${metric}' in '${stat.account}'`);
+  }
+
+  /**
+   * Validates that the expression config does not specify searchAccount or searchRegion props
+   * as search expressions are not supported by Alarms.
+   */
+  private validateMetricExpression(expr: MetricExpressionConfig) {
+    if (expr.searchAccount !== undefined || expr.searchRegion !== undefined) {
+      throw new Error('Cannot create an Alarm based on a MathExpression which specifies a searchAccount or searchRegion');
     }
+  }
+
+  /**
+   * Determine if the accountId property should be included in the metric.
+   */
+  private requiresAccountId(stat: MetricStatConfig): boolean {
+    const stackAccount = Stack.of(this).account;
+
+    // if stat.account is undefined, it's by definition in the same account
+    if (stat.account === undefined) {
+      return false;
+    }
+
+    // Return true if they're different. The ACCOUNT_ID token is interned
+    // so will always have the same string value (and even if we guess wrong
+    // it will still work).
+    return stackAccount !== stat.account;
   }
 }
 

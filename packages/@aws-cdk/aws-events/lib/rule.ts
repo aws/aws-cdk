@@ -1,5 +1,5 @@
 import { IRole, PolicyStatement, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
-import { App, IConstruct, IResource, Lazy, Names, Resource, Stack, Token, PhysicalName } from '@aws-cdk/core';
+import { App, IResource, Lazy, Names, Resource, Stack, Token, PhysicalName, ArnFormat } from '@aws-cdk/core';
 import { Node, Construct } from 'constructs';
 import { IEventBus } from './event-bus';
 import { EventPattern } from './event-pattern';
@@ -8,10 +8,6 @@ import { IRule } from './rule-ref';
 import { Schedule } from './schedule';
 import { IRuleTarget } from './target';
 import { mergeEventPattern, renderEventPattern, sameEnvDimension } from './util';
-
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * Properties for defining an EventBridge Rule
@@ -102,7 +98,7 @@ export class Rule extends Resource implements IRule {
    * @param eventRuleArn Event Rule ARN (i.e. arn:aws:events:<region>:<account-id>:rule/MyScheduledRule).
    */
   public static fromEventRuleArn(scope: Construct, id: string, eventRuleArn: string): IRule {
-    const parts = Stack.of(scope).parseArn(eventRuleArn);
+    const parts = Stack.of(scope).splitArn(eventRuleArn, ArnFormat.SLASH_RESOURCE_NAME);
 
     class Import extends Resource implements IRule {
       public ruleArn = eventRuleArn;
@@ -118,7 +114,9 @@ export class Rule extends Resource implements IRule {
   private readonly eventPattern: EventPattern = { };
   private readonly scheduleExpression?: string;
   private readonly description?: string;
-  private readonly targetAccounts: {[key: string]: Set<string>} = {};
+
+  /** Set to keep track of what target accounts and regions we've already created event buses for */
+  private readonly _xEnvTargetsAdded = new Set<string>();
 
   constructor(scope: Construct, id: string, props: RuleProps = { }) {
     super(scope, id, {
@@ -194,63 +192,19 @@ export class Rule extends Resource implements IRule {
         // based on:
         // https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-cross-account.html
 
-        // for cross-account or cross-region events, we cannot create new components for an imported resource
-        // because we don't have the target stack
-        const isImportedResource = !sameEnvDimension(targetStack.account, targetAccount) || !sameEnvDimension(targetStack.region, targetRegion); //(targetAccount !== targetStack.account) || (targetRegion !== targetStack.region);
-        if (isImportedResource) {
-          throw new Error('Cannot create a cross-account or cross-region rule with an imported resource');
-        }
-
-        // for cross-account or cross-region events, we require concrete accounts
+        // for cross-account or cross-region events, we require a concrete target account and region
         if (!targetAccount || Token.isUnresolved(targetAccount)) {
           throw new Error('You need to provide a concrete account for the target stack when using cross-account or cross-region events');
+        }
+        if (!targetRegion || Token.isUnresolved(targetRegion)) {
+          throw new Error('You need to provide a concrete region for the target stack when using cross-account or cross-region events');
         }
         if (Token.isUnresolved(sourceAccount)) {
           throw new Error('You need to provide a concrete account for the source stack when using cross-account or cross-region events');
         }
-        // and the target region has to be concrete as well
-        if (!targetRegion || Token.isUnresolved(targetRegion)) {
-          throw new Error('You need to provide a concrete region for the target stack when using cross-account or cross-region events');
-        }
 
-        // the _actual_ target is just the event bus of the target's account
-        // make sure we only add it once per account per region
-        let targetAccountExists = false;
-        const accountKey = Object.keys(this.targetAccounts).find(account => account === targetAccount);
-        if (accountKey) {
-          targetAccountExists = this.targetAccounts[accountKey].has(targetRegion);
-        }
-
-        if (!targetAccountExists) {
-          // add the current account-region pair to tracking structure
-          const regionsSet = this.targetAccounts[targetAccount];
-          if (!regionsSet) {
-            this.targetAccounts[targetAccount] = new Set<string>();
-          }
-          this.targetAccounts[targetAccount].add(targetRegion);
-
-          const eventBusArn = targetStack.formatArn({
-            service: 'events',
-            resource: 'event-bus',
-            resourceName: 'default',
-            region: targetRegion,
-            account: targetAccount,
-          });
-
-          this.targets.push({
-            id,
-            arn: eventBusArn,
-            // for cross-region we now require a role with PutEvents permissions
-            roleArn: roleArn ?? this.singletonEventRole(this, [this.putEventStatement(eventBusArn)]).roleArn,
-          });
-        }
-
-        // Grant the source account in the source region permissions to publish events to the event bus of the target account in the target region.
-        // Do it in a separate stack instead of the target stack (which seems like the obvious place to put it),
-        // because it needs to be deployed before the rule containing the above event-bus target in the source stack
-        // (EventBridge verifies whether you have permissions to the targets on rule creation),
-        // but it's common for the target stack to depend on the source stack
-        // (that's the case with CodePipeline, for example)
+        // Don't exactly understand why this code was here (seems unlikely this rule would be violated), but
+        // let's leave it in nonetheless.
         const sourceApp = this.node.root;
         if (!sourceApp || !App.isApp(sourceApp)) {
           throw new Error('Event stack which uses cross-account or cross-region targets must be part of a CDK app');
@@ -263,60 +217,28 @@ export class Rule extends Resource implements IRule {
           throw new Error('Event stack and target stack must belong to the same CDK app');
         }
 
-        // if different accounts, we need to add the permissions to the target eventbus
-        if (!sameEnvDimension(sourceAccount, targetAccount)) {
-          const stackId = `EventBusPolicy-${sourceAccount}-${targetRegion}-${targetAccount}`;
-          let eventBusPolicyStack: Stack = sourceApp.node.tryFindChild(stackId) as Stack;
-          if (!eventBusPolicyStack) {
-            eventBusPolicyStack = new Stack(sourceApp, stackId, {
-              env: {
-                account: targetAccount,
-                region: targetRegion,
-              },
-              stackName: `${targetStack.stackName}-EventBusPolicy-support-${targetRegion}-${sourceAccount}`,
-            });
-            new CfnEventBusPolicy(eventBusPolicyStack, 'GivePermToOtherAccount', {
-              action: 'events:PutEvents',
-              statementId: `Allow-account-${sourceAccount}`,
-              principal: sourceAccount,
-            });
-          }
-          // deploy the event bus permissions before the source stack
-          sourceStack.addDependency(eventBusPolicyStack);
-        }
+        // The target of this Rule will be the default event bus of the target environment
+        this.ensureXEnvTargetEventBus(targetStack, targetAccount, targetRegion, id);
 
-        // The actual rule lives in the target stack.
-        // Other than the account, it's identical to this one
-
-        // eventPattern is mutable through addEventPattern(), so we need to lazy evaluate it
-        // but only Tokens can be lazy in the framework, so make a subclass instead
-        const self = this;
-
-        class CopyRule extends Rule {
-          public _renderEventPattern(): any {
-            return self._renderEventPattern();
-          }
-
-          // we need to override validate(), as it uses the
-          // value of the eventPattern field,
-          // which might be empty in the case of the copied rule
-          // (as the patterns in the original might be added through addEventPattern(),
-          // not passed through the constructor).
-          // Anyway, even if the original rule is invalid,
-          // we would get duplicate errors if we didn't override this,
-          // which is probably a bad idea in and of itself
-          protected validate(): string[] {
-            return [];
-          }
-
-        }
-
-        new CopyRule(targetStack, `${Names.uniqueId(this)}-${id}`, {
+        // The actual rule lives in the target stack. Other than the account, it's identical to this one,
+        // but only evaluated at render time (via a special subclass).
+        //
+        // FIXME: the MirrorRule is a bit silly, forwarding the exact same event to another event bus
+        // and trigger on it there (there will be issues with construct references, for example). Especially
+        // in the case of scheduled events, we will just trigger both rules in parallel in both environments.
+        //
+        // A better solution would be to have the source rule add a unique token to the the event,
+        // and have the mirror rule trigger on that token only (thereby properly separating triggering, which
+        // happens in the source env; and activating, which happens in the target env).
+        //
+        // Don't have time to do that right now.
+        const mirrorRuleScope = this.obtainMirrorRuleScope(targetStack, targetAccount, targetRegion);
+        new MirrorRule(mirrorRuleScope, `${Names.uniqueId(this)}-${id}`, {
           targets: [target],
           eventPattern: this.eventPattern,
           schedule: this.scheduleExpression ? Schedule.expression(this.scheduleExpression) : undefined,
           description: this.description,
-        });
+        }, this);
 
         return;
       }
@@ -413,32 +335,140 @@ export class Rule extends Resource implements IRule {
   }
 
   /**
- * Obtain the Role for the EventBridge event
- *
- * If a role already exists, it will be returned. This ensures that if multiple
- * events have the same target, they will share a role.
- * @internal
- */
-  private singletonEventRole(scope: IConstruct, policyStatements: PolicyStatement[]): IRole {
-    const id = 'EventsRole';
-    const existing = scope.node.tryFindChild(id) as IRole;
-    if (existing) { return existing; }
+   * Make sure we add the target environments event bus as a target, and the target has permissions set up to receive our events
+   *
+   * For cross-account rules, uses a support stack to set up a policy on the target event bus.
+   */
+  private ensureXEnvTargetEventBus(targetStack: Stack, targetAccount: string, targetRegion: string, id: string) {
+    // the _actual_ target is just the event bus of the target's account
+    // make sure we only add it once per account per region
+    const key = `${targetAccount}:${targetRegion}`;
+    if (this._xEnvTargetsAdded.has(key)) { return; }
+    this._xEnvTargetsAdded.add(key);
 
-    const role = new Role(scope as CoreConstruct, id, {
-      roleName: PhysicalName.GENERATE_IF_NEEDED,
-      assumedBy: new ServicePrincipal('events.amazonaws.com'),
+    const eventBusArn = targetStack.formatArn({
+      service: 'events',
+      resource: 'event-bus',
+      resourceName: 'default',
+      region: targetRegion,
+      account: targetAccount,
     });
 
-    policyStatements.forEach(role.addToPolicy.bind(role));
+    // For some reason, cross-region requires a Role (with `PutEvents` on the
+    // target event bus) while cross-account doesn't
+    const roleArn = !sameEnvDimension(targetRegion, Stack.of(this).region)
+      ? this.crossRegionPutEventsRole(eventBusArn).roleArn
+      : undefined;
+
+    this.targets.push({
+      id,
+      arn: eventBusArn,
+      roleArn,
+    });
+
+    // Add a policy to the target Event Bus to allow the source account/region to publish into it.
+    //
+    // Since this Event Bus permission needs to be deployed before the stack containing the Rule is deployed
+    // (as EventBridge verifies whether you have permissions to the targets on rule creation), this needs
+    // to be in a support stack.
+
+    const sourceApp = this.node.root as App;
+    const sourceAccount = Stack.of(this).account;
+
+    // If different accounts, we need to add the permissions to the target eventbus
+    //
+    // For different region, no need for a policy on the target event bus (but a need
+    // for a role).
+    if (!sameEnvDimension(sourceAccount, targetAccount)) {
+      const stackId = `EventBusPolicy-${sourceAccount}-${targetRegion}-${targetAccount}`;
+      let eventBusPolicyStack: Stack = sourceApp.node.tryFindChild(stackId) as Stack;
+      if (!eventBusPolicyStack) {
+        eventBusPolicyStack = new Stack(sourceApp, stackId, {
+          env: {
+            account: targetAccount,
+            region: targetRegion,
+          },
+          // The region in the stack name is rather redundant (it will always be the target region)
+          // Leaving it in for backwards compatibility.
+          stackName: `${targetStack.stackName}-EventBusPolicy-support-${targetRegion}-${sourceAccount}`,
+        });
+        new CfnEventBusPolicy(eventBusPolicyStack, 'GivePermToOtherAccount', {
+          action: 'events:PutEvents',
+          statementId: `Allow-account-${sourceAccount}`,
+          principal: sourceAccount,
+        });
+      }
+      // deploy the event bus permissions before the source stack
+      Stack.of(this).addDependency(eventBusPolicyStack);
+    }
+  }
+
+  /**
+   * Return the scope where the mirror rule should be created for x-env event targets
+   *
+   * This is the target resource's containing stack if it shares the same region (owned
+   * resources), or should be a fresh support stack for imported resources.
+   *
+   * We don't implement the second yet, as I have to think long and hard on whether we
+   * can reuse the existing support stack or not, and I don't have time for that right now.
+   */
+  private obtainMirrorRuleScope(targetStack: Stack, targetAccount: string, targetRegion: string): Construct {
+    // for cross-account or cross-region events, we cannot create new components for an imported resource
+    // because we don't have the target stack
+    if (sameEnvDimension(targetStack.account, targetAccount) && sameEnvDimension(targetStack.region, targetRegion)) {
+      return targetStack;
+    }
+
+    // For now, we don't do the work for the support stack yet
+    throw new Error('Cannot create a cross-account or cross-region rule for an imported resource (create a stack with the right environment for the imported resource)');
+  }
+
+  /**
+   * Obtain the Role for the EventBridge event
+   *
+   * If a role already exists, it will be returned. This ensures that if multiple
+   * events have the same target, they will share a role.
+   * @internal
+   */
+  private crossRegionPutEventsRole(eventBusArn: string): IRole {
+    const id = 'EventsRole';
+    let role = this.node.tryFindChild(id) as IRole;
+    if (!role) {
+      role = new Role(this, id, {
+        roleName: PhysicalName.GENERATE_IF_NEEDED,
+        assumedBy: new ServicePrincipal('events.amazonaws.com'),
+      });
+    }
+
+    role.addToPrincipalPolicy(new PolicyStatement({
+      actions: ['events:PutEvents'],
+      resources: [eventBusArn],
+    }));
 
     return role;
   }
-
-  private putEventStatement(eventBusArn: string) {
-    return new PolicyStatement({
-      actions: ['events:PutEvents'],
-      resources: [eventBusArn],
-    });
-  }
 }
 
+/**
+ * A rule that mirrors another rule
+ */
+class MirrorRule extends Rule {
+  constructor(scope: Construct, id: string, props: RuleProps, private readonly source: Rule) {
+    super(scope, id, props);
+  }
+
+  public _renderEventPattern(): any {
+    return this.source._renderEventPattern();
+  }
+
+  /**
+   * Override validate to be a no-op
+   *
+   * The rules are never stored on this object so there's nothing to validate.
+   *
+   * Instead, we mirror the other rule at render time.
+   */
+  protected validate(): string[] {
+    return [];
+  }
+}

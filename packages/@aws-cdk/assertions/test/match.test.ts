@@ -77,7 +77,7 @@ describe('Matchers', () => {
     });
 
     test('absent', () => {
-      expect(() => Match.exact(Match.absentProperty()).test('foo')).toThrow(/absentProperty/);
+      expect(() => Match.exact(Match.absent())).toThrow(/cannot directly contain another matcher/);
     });
   });
 
@@ -125,8 +125,14 @@ describe('Matchers', () => {
       expectFailure(matcher, [{ foo: 'baz', fred: 'waldo' }], [/Missing element at pattern index 0/]);
     });
 
-    test('absent', () => {
-      expect(() => Match.arrayWith([Match.absentProperty()]).test(['foo'])).toThrow(/absentProperty/);
+    test('incompatible with absent', () => {
+      matcher = Match.arrayWith(['foo', Match.absent()]);
+      expect(() => matcher.test(['foo', 'bar'])).toThrow(/absent\(\) cannot be nested within arrayWith\(\)/);
+    });
+
+    test('incompatible with anyValue', () => {
+      matcher = Match.arrayWith(['foo', Match.anyValue()]);
+      expect(() => matcher.test(['foo', 'bar'])).toThrow(/anyValue\(\) cannot be nested within arrayWith\(\)/);
     });
   });
 
@@ -179,9 +185,9 @@ describe('Matchers', () => {
     });
 
     test('absent', () => {
-      matcher = Match.objectLike({ foo: Match.absentProperty() });
+      matcher = Match.objectLike({ foo: Match.absent() });
       expectPass(matcher, { bar: 'baz' });
-      expectFailure(matcher, { foo: 'baz' }, [/Key should be absent at \/foo/]);
+      expectFailure(matcher, { foo: 'baz' }, [/key should be absent at \/foo/]);
     });
   });
 
@@ -194,17 +200,210 @@ describe('Matchers', () => {
       expectFailure(matcher, { foo: 'bar', baz: 'qux' }, [/Unexpected key at \/baz/]);
     });
   });
+
+  describe('not()', () => {
+    let matcher: Matcher;
+
+    test('literal', () => {
+      matcher = Match.not('foo');
+      expectPass(matcher, 'bar');
+      expectPass(matcher, 3);
+
+      expectFailure(matcher, 'foo', ['Found unexpected match: "foo"']);
+    });
+
+    test('object', () => {
+      matcher = Match.not({ foo: 'bar' });
+      expectPass(matcher, 'bar');
+      expectPass(matcher, 3);
+      expectPass(matcher, { foo: 'baz' });
+      expectPass(matcher, { bar: 'foo' });
+
+      const msg = [
+        'Found unexpected match: {',
+        '  "foo": "bar"',
+        '}',
+      ].join('\n');
+      expectFailure(matcher, { foo: 'bar' }, [msg]);
+    });
+
+    test('array', () => {
+      matcher = Match.not(['foo', 'bar']);
+      expectPass(matcher, 'foo');
+      expectPass(matcher, []);
+      expectPass(matcher, ['bar']);
+      expectPass(matcher, ['foo', 3]);
+
+      const msg = [
+        'Found unexpected match: [',
+        '  "foo",',
+        '  "bar"',
+        ']',
+      ].join('\n');
+      expectFailure(matcher, ['foo', 'bar'], [msg]);
+    });
+
+    test('as a nested matcher', () => {
+      matcher = Match.exact({
+        foo: { bar: Match.not([1, 2]) },
+      });
+
+      expectPass(matcher, {
+        foo: { bar: [1] },
+      });
+      expectPass(matcher, {
+        foo: { bar: ['baz'] },
+      });
+
+      const msg = [
+        'Found unexpected match: [',
+        '  1,',
+        '  2',
+        '] at /foo/bar',
+      ].join('\n');
+      expectFailure(matcher, {
+        foo: { bar: [1, 2] },
+      }, [msg]);
+    });
+
+    test('with nested matcher', () => {
+      matcher = Match.not({
+        foo: { bar: Match.arrayWith([1]) },
+      });
+
+      expectPass(matcher, {
+        foo: { bar: [2] },
+      });
+      expectPass(matcher, 'foo');
+
+      const msg = [
+        'Found unexpected match: {',
+        '  "foo": {',
+        '    "bar": [',
+        '      1,',
+        '      2',
+        '    ]',
+        '  }',
+        '}',
+      ].join('\n');
+      expectFailure(matcher, {
+        foo: { bar: [1, 2] },
+      }, [msg]);
+    });
+  });
+
+  describe('anyValue()', () => {
+    let matcher: Matcher;
+
+    test('simple', () => {
+      matcher = Match.anyValue();
+      expectPass(matcher, 'foo');
+      expectPass(matcher, 5);
+      expectPass(matcher, false);
+      expectPass(matcher, []);
+      expectPass(matcher, {});
+
+      expectFailure(matcher, null, ['Expected a value but found none']);
+      expectFailure(matcher, undefined, ['Expected a value but found none']);
+    });
+
+    test('nested in array', () => {
+      matcher = Match.arrayEquals(['foo', Match.anyValue(), 'bar']);
+      expectPass(matcher, ['foo', 'baz', 'bar']);
+      expectPass(matcher, ['foo', 3, 'bar']);
+
+      expectFailure(matcher, ['foo', null, 'bar'], ['Expected a value but found none at [1]']);
+    });
+
+    test('nested in object', () => {
+      matcher = Match.objectLike({ foo: Match.anyValue() });
+      expectPass(matcher, { foo: 'bar' });
+      expectPass(matcher, { foo: [1, 2] });
+
+      expectFailure(matcher, { foo: null }, ['Expected a value but found none at /foo']);
+      expectFailure(matcher, {}, ['Missing key at /foo']);
+    });
+  });
+
+  describe('serializedJson()', () => {
+    let matcher: Matcher;
+
+    test('all types', () => {
+      matcher = Match.serializedJson({ Foo: 'Bar', Baz: 3, Boo: true, Fred: [1, 2] });
+      expectPass(matcher, '{ "Foo": "Bar", "Baz": 3, "Boo": true, "Fred": [1, 2] }');
+    });
+
+    test('simple match', () => {
+      matcher = Match.serializedJson({ Foo: 'Bar' });
+      expectPass(matcher, '{ "Foo": "Bar" }');
+
+      expectFailure(matcher, '{ "Foo": "Baz" }', ['Expected Bar but received Baz at (serializedJson)/Foo']);
+      expectFailure(matcher, '{ "Foo": 4 }', ['Expected type string but received number at (serializedJson)/Foo']);
+      expectFailure(matcher, '{ "Bar": "Baz" }', [
+        'Unexpected key at (serializedJson)/Bar',
+        'Missing key at (serializedJson)/Foo',
+      ]);
+    });
+
+    test('nested matcher', () => {
+      matcher = Match.serializedJson(Match.objectLike({
+        Foo: Match.arrayWith(['Bar']),
+      }));
+
+      expectPass(matcher, '{ "Foo": ["Bar"] }');
+      expectPass(matcher, '{ "Foo": ["Bar", "Baz"] }');
+      expectPass(matcher, '{ "Foo": ["Bar", "Baz"], "Fred": "Waldo" }');
+
+      expectFailure(matcher, '{ "Foo": ["Baz"] }', ['Missing element [Bar] at pattern index 0 at (serializedJson)/Foo']);
+      expectFailure(matcher, '{ "Bar": ["Baz"] }', ['Missing key at (serializedJson)/Foo']);
+    });
+
+    test('invalid json string', () => {
+      matcher = Match.serializedJson({ Foo: 'Bar' });
+
+      expectFailure(matcher, '{ "Foo"', [/invalid JSON string/i]);
+    });
+  });
+
+  describe('absent', () => {
+    let matcher: Matcher;
+
+    test('simple', () => {
+      matcher = Match.absent();
+      expectFailure(matcher, 'foo', ['Received foo, but key should be absent']);
+      expectPass(matcher, undefined);
+    });
+
+    test('nested in object', () => {
+      matcher = Match.objectLike({ foo: Match.absent() });
+      expectFailure(matcher, { foo: 'bar' }, [/key should be absent at \/foo/]);
+      expectFailure(matcher, { foo: [1, 2] }, [/key should be absent at \/foo/]);
+      expectFailure(matcher, { foo: null }, [/key should be absent at \/foo/]);
+
+      expectPass(matcher, { foo: undefined });
+      expectPass(matcher, {});
+    });
+  });
 });
 
 function expectPass(matcher: Matcher, target: any): void {
-  expect(matcher.test(target).hasFailed()).toEqual(false);
+  const result = matcher.test(target);
+  if (result.hasFailed()) {
+    fail(result.toHumanStrings()); // eslint-disable-line jest/no-jasmine-globals
+  }
 }
 
-function expectFailure(matcher: Matcher, target: any, expected: (string | RegExp)[]): void {
-  const actual = matcher.test(target).toHumanStrings();
+function expectFailure(matcher: Matcher, target: any, expected: (string | RegExp)[] = []): void {
+  const result = matcher.test(target);
+  expect(result.failCount).toBeGreaterThan(0);
+  const actual = result.toHumanStrings();
+  if (expected.length > 0 && actual.length !== expected.length) {
+    // only do this if the lengths are different, so as to display a nice failure message.
+    // otherwise need to use `toMatch()` to support RegExp
+    expect(actual).toEqual(expected);
+  }
   for (let i = 0; i < expected.length; i++) {
     const e = expected[i];
     expect(actual[i]).toMatch(e);
   }
-  expect(expected.length).toEqual(actual.length);
 }

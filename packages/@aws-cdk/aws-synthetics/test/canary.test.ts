@@ -169,6 +169,25 @@ test('Runtime can be specified', () => {
   });
 });
 
+test('Python runtime can be specified', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  new synthetics.Canary(stack, 'Canary', {
+    runtime: synthetics.Runtime.SYNTHETICS_PYTHON_SELENIUM_1_0,
+    test: synthetics.Test.custom({
+      handler: 'index.handler',
+      code: synthetics.Code.fromInline('# Synthetics handler code'),
+    }),
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
+    RuntimeVersion: 'syn-python-selenium-1.0',
+  });
+});
+
 test('environment variables can be specified', () => {
   // GIVEN
   const stack = new Stack();
@@ -210,7 +229,7 @@ test('environment variables are skipped if not provided', () => {
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
-    RunConfig: Match.absentProperty(),
+    RunConfig: Match.absent(),
   });
 });
 
@@ -220,7 +239,7 @@ test('Runtime can be customized', () => {
 
   // WHEN
   new synthetics.Canary(stack, 'Canary', {
-    runtime: new synthetics.Runtime('fancy-future-runtime-1337.42'),
+    runtime: new synthetics.Runtime('fancy-future-runtime-1337.42', synthetics.RuntimeFamily.OTHER),
     test: synthetics.Test.custom({
       handler: 'index.handler',
       code: synthetics.Code.fromInline('/* Synthetics handler code */'),
@@ -272,6 +291,27 @@ test('Schedule can be set to 1 minute', () => {
     Schedule: Match.objectLike({ Expression: 'rate(1 minute)' }),
   });
 });
+
+test('Schedule can be set with Cron', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  new synthetics.Canary(stack, 'Canary', {
+    schedule: synthetics.Schedule.cron({ minute: '30' }),
+    test: synthetics.Test.custom({
+      handler: 'index.handler',
+      code: synthetics.Code.fromInline('/* Synthetics handler code */'),
+    }),
+    runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_3,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
+    Schedule: Match.objectLike({ Expression: 'cron(30 * * * ? *)' }),
+  });
+});
+
 
 test('Schedule can be set with Expression', () => {
   // GIVEN

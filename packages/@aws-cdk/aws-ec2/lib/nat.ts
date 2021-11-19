@@ -222,13 +222,19 @@ class NatGatewayProvider extends NatProvider {
   }
 
   public configureNat(options: ConfigureNatOptions) {
+    if (
+      this.props.eipAllocationIds != null
+      && !Token.isUnresolved(this.props.eipAllocationIds)
+      && this.props.eipAllocationIds.length < options.natSubnets.length
+    ) {
+      throw new Error(`Not enough NAT gateway EIP allocation IDs (${this.props.eipAllocationIds.length} provided) for the requested subnet count (${options.natSubnets.length} needed).`);
+    }
+
     // Create the NAT gateways
     let i = 0;
     for (const sub of options.natSubnets) {
-      const gateway = sub.addNatGateway();
-      if (this.props.eipAllocationIds) {
-        gateway.allocationId = pickN(i, this.props.eipAllocationIds);
-      }
+      const eipAllocationId = this.props.eipAllocationIds ? pickN(i, this.props.eipAllocationIds) : undefined;
+      const gateway = sub.addNatGateway(eipAllocationId);
       this.gateways.add(sub.availabilityZone, gateway.ref);
       i++;
     }

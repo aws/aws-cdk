@@ -21,7 +21,7 @@ export abstract class ApiBase extends Resource implements IApi {
     return new cloudwatch.Metric({
       namespace: 'AWS/ApiGateway',
       metricName,
-      dimensions: { ApiId: this.apiId },
+      dimensionsMap: { ApiId: this.apiId },
       ...props,
     }).attachTo(this);
   }
@@ -37,6 +37,12 @@ export abstract class StageBase extends Resource implements IStage {
   protected abstract readonly baseApi: IApi;
 
   /**
+   * The created ApiMapping if domain mapping has been added
+   * @internal
+   */
+  protected _apiMapping?: ApiMapping
+
+  /**
    * The URL to this stage.
    */
   abstract get url(): string;
@@ -45,7 +51,10 @@ export abstract class StageBase extends Resource implements IStage {
    * @internal
    */
   protected _addDomainMapping(domainMapping: DomainMappingOptions) {
-    new ApiMapping(this, `${domainMapping.domainName}${domainMapping.mappingKey}`, {
+    if (this._apiMapping) {
+      throw new Error('Only one ApiMapping allowed per Stage');
+    }
+    this._apiMapping = new ApiMapping(this, `${domainMapping.domainName}${domainMapping.mappingKey}`, {
       api: this.baseApi,
       domainName: domainMapping.domainName,
       stage: this,
@@ -57,7 +66,7 @@ export abstract class StageBase extends Resource implements IStage {
 
   public metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.baseApi.metric(metricName, props).with({
-      dimensions: { ApiId: this.baseApi.apiId, Stage: this.stageName },
+      dimensionsMap: { ApiId: this.baseApi.apiId, Stage: this.stageName },
     }).attachTo(this);
   }
 }

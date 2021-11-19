@@ -69,6 +69,26 @@ export enum InstanceClass {
   M5AD = 'm5ad',
 
   /**
+   * Standard instances for high performance computing, 5th generation
+   */
+  STANDARD5_HIGH_PERFORMANCE = 'm5n',
+
+  /**
+   * Standard instances for high performance computing, 5th generation
+   */
+  M5N = 'm5n',
+
+  /**
+   * Standard instances with local NVME drive for high performance computing, 5th generation
+   */
+  STANDARD5_NVME_DRIVE_HIGH_PERFORMANCE = 'm5dn',
+
+  /**
+   * Standard instances with local NVME drive for high performance computing, 5th generation
+   */
+  M5DN = 'm5dn',
+
+  /**
    * Memory optimized instances, 3rd generation
    */
   MEMORY3 = 'r3',
@@ -209,9 +229,24 @@ export enum InstanceClass {
   C5 = 'c5',
 
   /**
+   * Compute optimized instances, 6th generation
+   */
+  COMPUTE6_INTEL = 'c6i',
+
+  /**
+   * Compute optimized instances, 6th generation
+   */
+  C6I = 'c6i',
+
+  /**
    * Compute optimized instances with local NVME drive, 5th generation
    */
   COMPUTE5_NVME_DRIVE = 'c5d',
+
+  /**
+   * Compute optimized instances with local NVME drive, 5th generation
+   */
+  C5D = 'c5d',
 
   /**
    * Compute optimized instances based on AMD EPYC, 5th generation.
@@ -224,9 +259,14 @@ export enum InstanceClass {
   C5A = 'c5a',
 
   /**
-   * Compute optimized instances with local NVME drive, 5th generation
+   * Compute optimized instances with local NVME drive based on AMD EPYC, 5th generation.
    */
-  C5D = 'c5d',
+  COMPUTE5_AMD_NVME_DRIVE = 'c5ad',
+
+  /**
+   * Compute optimized instances with local NVME drive based on AMD EPYC, 5th generation.
+   */
+  C5AD = 'c5ad',
 
   /**
    * Compute optimized instances for high performance computing, 5th generation
@@ -373,6 +413,30 @@ export enum InstanceClass {
   X1E = 'x1e',
 
   /**
+   * Memory-intensive instances, 2nd generation with Graviton2 processors
+   *
+   * This instance type can be used only in RDS. It is not supported in EC2.
+   */
+  MEMORY_INTENSIVE_2_GRAVITON2 = 'x2g',
+
+  /**
+   * Memory-intensive instances, 2nd generation with Graviton2 processors
+   *
+   * This instance type can be used only in RDS. It is not supported in EC2.
+   */
+  X2G = 'x2g',
+
+  /**
+   * Memory-intensive instances, 2nd generation with Graviton2 processors and local NVME drive
+   */
+  MEMORY_INTENSIVE_2_GRAVITON2_NVME_DRIVE = 'x2gd',
+
+  /**
+   * Memory-intensive instances, 2nd generation with Graviton2 processors and local NVME drive
+   */
+  X2GD = 'x2gd',
+
+  /**
    * Instances with customizable hardware acceleration, 1st generation
    */
   FPGA1 = 'f1',
@@ -403,6 +467,16 @@ export enum InstanceClass {
   G4DN = 'g4dn',
 
   /**
+   * Graphics-optimized instances, 5th generation
+   */
+  GRAPHICS5 = 'g5',
+
+  /**
+   * Graphics-optimized instances, 5th generation
+   */
+  G5 = 'g5',
+
+  /**
    * Parallel-processing optimized instances, 2nd generation
    */
   PARALLEL2 = 'p2',
@@ -418,9 +492,19 @@ export enum InstanceClass {
   PARALLEL3 = 'p3',
 
   /**
-   * Parallel-processing optimized instances, 3nd generation
+   * Parallel-processing optimized instances, 3rd generation
    */
   P3 = 'p3',
+
+  /**
+   * Parallel-processing optimized instances, 4th generation
+   */
+  PARALLEL4 = 'p4d',
+
+  /**
+   * Parallel-processing optimized instances, 4th generation
+   */
+  P4D = 'p4d',
 
   /**
    * Arm processor based instances, 1st generation
@@ -441,6 +525,16 @@ export enum InstanceClass {
    * Arm processor based instances, 2nd generation
    */
   M6G = 'm6g',
+
+  /**
+   * Standard instances based on Intel (Ice Lake), 6th generation.
+   */
+  STANDARD6_INTEL = 'm6i',
+
+  /**
+   * Standard instances based on Intel (Ice Lake), 6th generation.
+   */
+  M6I = 'm6i',
 
   /**
    * Standard instances, 6th generation with Graviton2 processors and local NVME drive
@@ -581,6 +675,11 @@ export enum InstanceSize {
    * Instance size XLARGE32 (32xlarge)
    */
   XLARGE32 = '32xlarge',
+
+  /**
+   * Instance size XLARGE48 (48xlarge)
+   */
+  XLARGE48 = '48xlarge',
 
   /**
    * Instance size METAL (metal)

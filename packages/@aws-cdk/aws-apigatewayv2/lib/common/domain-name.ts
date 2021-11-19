@@ -1,4 +1,5 @@
 import { ICertificate } from '@aws-cdk/aws-certificatemanager';
+import { IBucket } from '@aws-cdk/aws-s3';
 import { IResource, Resource, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnDomainName, CfnDomainNameProps } from '../apigatewayv2.generated';
@@ -59,6 +60,32 @@ export interface DomainNameProps {
    * The ACM certificate for this domain name
    */
   readonly certificate: ICertificate;
+  /**
+   * The mutual TLS authentication configuration for a custom domain name.
+   * @default - mTLS is not configured.
+   */
+  readonly mtls?: MTLSConfig
+}
+
+/**
+ * The mTLS authentication configuration for a custom domain name.
+ */
+export interface MTLSConfig {
+  /**
+   * The bucket that the trust store is hosted in.
+   */
+  readonly bucket: IBucket;
+  /**
+   * The key in S3 to look at for the trust store
+   */
+  readonly key: string;
+
+  /**
+   *  The version of the S3 object that contains your truststore.
+   *  To specify a version, you must have versioning enabled for the S3 bucket.
+   *  @default - latest version
+   */
+  readonly version?: string;
 }
 
 /**
@@ -84,6 +111,11 @@ export class DomainName extends Resource implements IDomainName {
   constructor(scope: Construct, id: string, props: DomainNameProps) {
     super(scope, id);
 
+    if (props.domainName === '') {
+      throw new Error('empty string for domainName not allowed');
+    }
+
+    const mtlsConfig = this.configureMTLS(props.mtls);
     const domainNameProps: CfnDomainNameProps = {
       domainName: props.domainName,
       domainNameConfigurations: [
@@ -92,10 +124,19 @@ export class DomainName extends Resource implements IDomainName {
           endpointType: 'REGIONAL',
         },
       ],
+      mutualTlsAuthentication: mtlsConfig,
     };
     const resource = new CfnDomainName(this, 'Resource', domainNameProps);
-    this.name = props.domainName ?? resource.ref;
+    this.name = resource.ref;
     this.regionalDomainName = Token.asString(resource.getAtt('RegionalDomainName'));
     this.regionalHostedZoneId = Token.asString(resource.getAtt('RegionalHostedZoneId'));
+  }
+
+  private configureMTLS(mtlsConfig?: MTLSConfig): CfnDomainName.MutualTlsAuthenticationProperty | undefined {
+    if (!mtlsConfig) return undefined;
+    return {
+      truststoreUri: mtlsConfig.bucket.s3UrlForObject(mtlsConfig.key),
+      truststoreVersion: mtlsConfig.version,
+    };
   }
 }

@@ -4,6 +4,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kinesis from '@aws-cdk/aws-kinesis';
 import * as kms from '@aws-cdk/aws-kms';
 import {
+  ArnFormat,
   Aws, CfnCondition, CfnCustomResource, CfnResource, CustomResource, Duration,
   Fn, IResource, Lazy, Names, RemovalPolicy, Resource, Stack, Token,
 } from '@aws-cdk/core';
@@ -230,6 +231,22 @@ export interface TableOptions extends SchemaOptions {
    * @default Duration.minutes(30)
    */
   readonly replicationTimeout?: Duration;
+
+  /**
+   * Indicates whether CloudFormation stack waits for replication to finish.
+   * If set to false, the CloudFormation resource will mark the resource as
+   * created and replication will be completed asynchronously. This property is
+   * ignored if replicationRegions property is not set.
+   *
+   * DO NOT UNSET this property if adding/removing multiple replicationRegions
+   * in one deployment, as CloudFormation only supports one region replication
+   * at a time. CDK overcomes this limitation by waiting for replication to
+   * finish before starting new replicationRegion.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dynamodb-globaltable.html#cfn-dynamodb-globaltable-replicas
+   * @default true
+   */
+  readonly waitForReplicationToFinish?: boolean;
 
   /**
    * Whether CloudWatch contributor insights is enabled.
@@ -723,7 +740,7 @@ abstract class TableBase extends Resource implements ITable {
     return new cloudwatch.Metric({
       namespace: 'AWS/DynamoDB',
       metricName,
-      dimensions: {
+      dimensionsMap: {
         TableName: this.tableName,
       },
       ...props,
@@ -756,17 +773,18 @@ abstract class TableBase extends Resource implements ITable {
    * @deprecated use `metricSystemErrorsForOperations`.
    */
   public metricSystemErrors(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    if (!props?.dimensions?.Operation) {
+    if (!props?.dimensions?.Operation && !props?.dimensionsMap?.Operation) {
       // 'Operation' must be passed because its an operational metric.
       throw new Error("'Operation' dimension must be passed for the 'SystemErrors' metric.");
     }
 
-    const dimensions = {
+    const dimensionsMap = {
       TableName: this.tableName,
       ...props?.dimensions ?? {},
+      ...props?.dimensionsMap ?? {},
     };
 
-    return this.metric('SystemErrors', { statistic: 'sum', ...props, dimensions });
+    return this.metric('SystemErrors', { statistic: 'sum', ...props, dimensionsMap });
   }
 
   /**
@@ -783,7 +801,7 @@ abstract class TableBase extends Resource implements ITable {
 
     // overriding 'dimensions' here because this metric is an account metric.
     // see 'UserErrors' in https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/metrics-dimensions.html
-    return this.metric('UserErrors', { statistic: 'sum', ...props, dimensions: {} });
+    return this.metric('UserErrors', { statistic: 'sum', ...props, dimensionsMap: {} });
   }
 
   /**
@@ -812,19 +830,19 @@ abstract class TableBase extends Resource implements ITable {
    * You can customize this by using the `statistic` and `period` properties.
    */
   public metricSuccessfulRequestLatency(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    if (!props?.dimensions?.Operation) {
+    if (!props?.dimensions?.Operation && !props?.dimensionsMap?.Operation) {
       throw new Error("'Operation' dimension must be passed for the 'SuccessfulRequestLatency' metric.");
     }
 
-    const dimensions = {
+    const dimensionsMap = {
       TableName: this.tableName,
-      Operation: props.dimensions.Operation,
+      Operation: props.dimensionsMap?.Operation ?? props.dimensions?.Operation,
     };
 
     return new cloudwatch.Metric({
-      ...DynamoDBMetrics.successfulRequestLatencyAverage(dimensions),
+      ...DynamoDBMetrics.successfulRequestLatencyAverage(dimensionsMap),
       ...props,
-      dimensions,
+      dimensionsMap,
     }).attachTo(this);
   }
 
@@ -882,7 +900,7 @@ abstract class TableBase extends Resource implements ITable {
 
       const metric = this.metric(metricName, {
         ...props,
-        dimensions: {
+        dimensionsMap: {
           TableName: this.tableName,
           Operation: operation,
           ...props?.dimensions,
@@ -1032,7 +1050,7 @@ export class Table extends TableBase {
       if (!attrs.tableArn) { throw new Error('One of tableName or tableArn is required!'); }
 
       arn = attrs.tableArn;
-      const maybeTableName = stack.parseArn(attrs.tableArn).resourceName;
+      const maybeTableName = stack.splitArn(attrs.tableArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName;
       if (!maybeTableName) { throw new Error('ARN for DynamoDB table must be in the form: ...'); }
       name = maybeTableName;
     } else {
@@ -1152,7 +1170,7 @@ export class Table extends TableBase {
     }
 
     if (props.replicationRegions && props.replicationRegions.length > 0) {
-      this.createReplicaTables(props.replicationRegions, props.replicationTimeout);
+      this.createReplicaTables(props.replicationRegions, props.replicationTimeout, props.waitForReplicationToFinish);
     }
   }
 
@@ -1494,7 +1512,7 @@ export class Table extends TableBase {
    *
    * @param regions regions where to create tables
    */
-  private createReplicaTables(regions: string[], timeout?: Duration) {
+  private createReplicaTables(regions: string[], timeout?: Duration, waitForReplicationToFinish?: boolean) {
     const stack = Stack.of(this);
 
     if (!Token.isUnresolved(stack.region) && regions.includes(stack.region)) {
@@ -1524,6 +1542,7 @@ export class Table extends TableBase {
         properties: {
           TableName: this.tableName,
           Region: region,
+          SkipReplicationCompletedWait: waitForReplicationToFinish === undefined ? undefined : !waitForReplicationToFinish,
         },
       });
       currentRegion.node.addDependency(

@@ -280,7 +280,7 @@ export class Stack extends CoreConstruct implements ITaggable {
    * The name of the CloudFormation template file emitted to the output
    * directory during synthesis.
    *
-   * @example 'MyStack.template.json'
+   * Example value: `MyStack.template.json`
    */
   public readonly templateFile: string;
 
@@ -711,11 +711,13 @@ export class Stack extends CoreConstruct implements ITaggable {
    *
    * Duplicate values are removed when stack is synthesized.
    *
-   * @example stack.addTransform('AWS::Serverless-2016-10-31')
-   *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/transform-section-structure.html
-   *
    * @param transform The transform to add
+   *
+   * @example
+   * declare const stack: Stack;
+   *
+   * stack.addTransform('AWS::Serverless-2016-10-31')
    */
   public addTransform(transform: string) {
     if (!this.templateOptions.transforms) {
@@ -785,7 +787,7 @@ export class Stack extends CoreConstruct implements ITaggable {
       const numberOfResources = Object.keys(resources).length;
 
       if (numberOfResources > this.maxResources) {
-        throw new Error(`Number of resources: ${numberOfResources} is greater than allowed maximum of ${this.maxResources}`);
+        throw new Error(`Number of resources in stack '${this.node.path}': ${numberOfResources} is greater than allowed maximum of ${this.maxResources}`);
       } else if (numberOfResources >= (this.maxResources * 0.8)) {
         Annotations.of(this).addInfo(`Number of resources: ${numberOfResources} is approaching allowed maximum of ${this.maxResources}`);
       }

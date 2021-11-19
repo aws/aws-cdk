@@ -4,9 +4,9 @@ import * as cloudfront from '@aws-cdk/aws-cloudfront';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
+import { testDeprecated, testFutureBehavior } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import { testFutureBehavior } from 'cdk-build-tools/lib/feature-flag';
 import * as s3deploy from '../lib';
 
 /* eslint-disable max-len */
@@ -203,7 +203,87 @@ test('deploy from a local .zip file', () => {
 
 });
 
-test('honors passed asset options', () => {
+test('deploy from a local .zip file when efs is enabled', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest');
+
+  // WHEN
+  new s3deploy.BucketDeployment(stack, 'Deploy', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website.zip'))],
+    destinationBucket: bucket,
+    useEfs: true,
+    vpc: new ec2.Vpc(stack, 'Vpc'),
+  });
+
+  //THEN
+  expect(stack).toHaveResource('AWS::Lambda::Function', {
+    Environment: {
+      Variables: {
+        MOUNT_PATH: '/mnt/lambda',
+      },
+    },
+    FileSystemConfigs: [
+      {
+        Arn: {
+          'Fn::Join': [
+            '',
+            [
+              'arn:',
+              {
+                Ref: 'AWS::Partition',
+              },
+              ':elasticfilesystem:',
+              {
+                Ref: 'AWS::Region',
+              },
+              ':',
+              {
+                Ref: 'AWS::AccountId',
+              },
+              ':access-point/',
+              {
+                Ref: 'BucketDeploymentEFSVPCc8fd940acb9a3f95ad0e87fb4c3a2482b1900ba175AccessPoint557A73A5',
+              },
+            ],
+          ],
+        },
+        LocalMountPath: '/mnt/lambda',
+      },
+    ],
+    Layers: [
+      {
+        Ref: 'DeployAwsCliLayer8445CB38',
+      },
+    ],
+    VpcConfig: {
+      SecurityGroupIds: [
+        {
+          'Fn::GetAtt': [
+            'CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc8fd940acb9a3f95ad0e87fb4c3a2482b1900ba175SecurityGroup3E7AAF58',
+            'GroupId',
+          ],
+        },
+      ],
+      SubnetIds: [
+        {
+          Ref: 'VpcPrivateSubnet1Subnet536B997A',
+        },
+        {
+          Ref: 'VpcPrivateSubnet2Subnet3788AAA1',
+        },
+      ],
+    },
+  });
+});
+
+testDeprecated('honors passed asset options', () => {
+  // The 'exclude' property is deprecated and not deprecated in AssetOptions interface.
+  // The interface through a complex set of inheritance chain has a 'exclude' prop that is deprecated
+  // and another 'exclude' prop that is not deprecated.
+  // Using 'testDeprecated' block here since there's no way to work around this craziness.
+  // When the deprecated property is removed from source, this block can be dropped.
+
   // GIVEN
   const stack = new cdk.Stack();
   const bucket = new s3.Bucket(stack, 'Dest');
@@ -225,7 +305,7 @@ test('honors passed asset options', () => {
       ],
     },
     SourceBucketNames: [{
-      Ref: 'AssetParameters86f8bca4f28a0bcafef0a98fe4cea25c0071aca27401e35cfaecd06313373bcaS3BucketB41AE64D',
+      Ref: 'AssetParametersa4d0f1d9c73aa029fd432ca3e640d46745f490023a241d0127f3351773a8938eS3Bucket02009982',
     }],
     SourceObjectKeys: [{
       'Fn::Join': [
@@ -238,7 +318,7 @@ test('honors passed asset options', () => {
                 'Fn::Split': [
                   '||',
                   {
-                    Ref: 'AssetParameters86f8bca4f28a0bcafef0a98fe4cea25c0071aca27401e35cfaecd06313373bcaS3VersionKeyF3CBA38F',
+                    Ref: 'AssetParametersa4d0f1d9c73aa029fd432ca3e640d46745f490023a241d0127f3351773a8938eS3VersionKey07726F25',
                   },
                 ],
               },
@@ -251,7 +331,7 @@ test('honors passed asset options', () => {
                 'Fn::Split': [
                   '||',
                   {
-                    Ref: 'AssetParameters86f8bca4f28a0bcafef0a98fe4cea25c0071aca27401e35cfaecd06313373bcaS3VersionKeyF3CBA38F',
+                    Ref: 'AssetParametersa4d0f1d9c73aa029fd432ca3e640d46745f490023a241d0127f3351773a8938eS3VersionKey07726F25',
                   },
                 ],
               },
@@ -491,6 +571,30 @@ test('fails if distribution paths provided but not distribution ID', () => {
 
 });
 
+test('fails if distribution paths don\'t start with "/"', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest');
+  const distribution = new cloudfront.CloudFrontWebDistribution(stack, 'Distribution', {
+    originConfigs: [
+      {
+        s3OriginSource: {
+          s3BucketSource: bucket,
+        },
+        behaviors: [{ isDefaultBehavior: true }],
+      },
+    ],
+  });
+
+  // THEN
+  expect(() => new s3deploy.BucketDeployment(stack, 'Deploy', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website.zip'))],
+    destinationBucket: bucket,
+    distribution,
+    distributionPaths: ['images/*'],
+  })).toThrow(/Distribution paths must start with "\/"/);
+});
+
 testFutureBehavior('lambda execution role gets permissions to read from the source bucket and read/write in destination', s3GrantWriteCtx, cdk.App, (app) => {
   // GIVEN
   const stack = new cdk.Stack(app);
@@ -665,6 +769,81 @@ test('deploy without deleting missing files from destination', () => {
   });
 });
 
+test('deploy with excluded files from destination', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest');
+
+  // WHEN
+  new s3deploy.BucketDeployment(stack, 'Deploy', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+    destinationBucket: bucket,
+    exclude: ['sample.js'],
+  });
+
+  expect(stack).toHaveResourceLike('Custom::CDKBucketDeployment', {
+    Exclude: ['sample.js'],
+  });
+});
+
+test('deploy with included files from destination', () => {
+
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest');
+
+  // WHEN
+  new s3deploy.BucketDeployment(stack, 'Deploy', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+    destinationBucket: bucket,
+    include: ['sample.js'],
+  });
+
+  expect(stack).toHaveResourceLike('Custom::CDKBucketDeployment', {
+    Include: ['sample.js'],
+  });
+});
+
+test('deploy with excluded and included files from destination', () => {
+
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest');
+
+  // WHEN
+  new s3deploy.BucketDeployment(stack, 'Deploy', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+    destinationBucket: bucket,
+    exclude: ['sample/*'],
+    include: ['sample/include.json'],
+  });
+
+  expect(stack).toHaveResourceLike('Custom::CDKBucketDeployment', {
+    Exclude: ['sample/*'],
+    Include: ['sample/include.json'],
+  });
+});
+
+test('deploy with multiple exclude and include filters', () => {
+
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest');
+
+  // WHEN
+  new s3deploy.BucketDeployment(stack, 'Deploy', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+    destinationBucket: bucket,
+    exclude: ['sample/*', 'another/*'],
+    include: ['sample/include.json', 'another/include.json'],
+  });
+
+  expect(stack).toHaveResourceLike('Custom::CDKBucketDeployment', {
+    Exclude: ['sample/*', 'another/*'],
+    Include: ['sample/include.json', 'another/include.json'],
+  });
+});
+
 test('deployment allows vpc to be implicitly supplied to lambda', () => {
 
   // GIVEN
@@ -685,7 +864,7 @@ test('deployment allows vpc to be implicitly supplied to lambda', () => {
       SecurityGroupIds: [
         {
           'Fn::GetAtt': [
-            'CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CSecurityGroup4B1A9777',
+            'CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc81cec990a9a5d64a5922e5708ad8067eeb95c53d1SecurityGroup881B9147',
             'GroupId',
           ],
         },
@@ -693,7 +872,8 @@ test('deployment allows vpc to be implicitly supplied to lambda', () => {
       SubnetIds: [
         {
           Ref: 'SomeVpc1PrivateSubnet1SubnetCBA5DD76',
-        }, {
+        },
+        {
           Ref: 'SomeVpc1PrivateSubnet2SubnetD4B3A566',
         },
       ],
@@ -729,7 +909,7 @@ test('deployment allows vpc and subnets to be implicitly supplied to lambda', ()
       SecurityGroupIds: [
         {
           'Fn::GetAtt': [
-            'CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CSecurityGroup4B1A9777',
+            'CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc8a39596cb8641929fcf6a288bc9db5ab7b0f656adSecurityGroup11274779',
             'GroupId',
           ],
         },

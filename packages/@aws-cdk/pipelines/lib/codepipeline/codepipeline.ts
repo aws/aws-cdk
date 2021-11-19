@@ -63,7 +63,18 @@ export interface CodePipelineProps {
    * If you want to lock the CDK CLI version used in the pipeline, by steps
    * that are automatically generated for you, specify the version here.
    *
-   * You should not typically need to specify this value.
+   * We recommend you do not specify this value, as not specifying it always
+   * uses the latest CLI version which is backwards compatible with old versions.
+   *
+   * If you do specify it, be aware that this version should always be equal to or higher than the
+   * version of the CDK framework used by the CDK app, when the CDK commands are
+   * run during your pipeline execution. When you change this version, the *next
+   * time* the `SelfMutate` step runs it will still be using the CLI of the the
+   * *previous* version that was in this property: it will only start using the
+   * new version after `SelfMutate` completes successfully. That means that if
+   * you want to update both framework and CLI version, you should update the
+   * CLI version first, commit, push and deploy, and only then update the
+   * framework version.
    *
    * @default - Latest version
    */
@@ -133,16 +144,23 @@ export interface CodePipelineProps {
   readonly codeBuildDefaults?: CodeBuildOptions;
 
   /**
+   * Additional customizations to apply to the synthesize CodeBuild projects
+   *
+   * @default - Only `codeBuildDefaults` are applied
+   */
+  readonly synthCodeBuildDefaults?: CodeBuildOptions;
+
+  /**
    * Additional customizations to apply to the asset publishing CodeBuild projects
    *
-   * @default - Only `codeBuildProjectDefaults` are applied
+   * @default - Only `codeBuildDefaults` are applied
    */
   readonly assetPublishingCodeBuildDefaults?: CodeBuildOptions;
 
   /**
    * Additional customizations to apply to the self mutation CodeBuild projects
    *
-   * @default - Only `codeBuildProjectDefaults` are applied
+   * @default - Only `codeBuildDefaults` are applied
    */
   readonly selfMutationCodeBuildDefaults?: CodeBuildOptions;
 
@@ -681,8 +699,8 @@ export class CodePipeline extends PipelineBase {
 
     const typeBasedCustomizations = {
       [CodeBuildProjectType.SYNTH]: this.props.dockerEnabledForSynth
-        ? { buildEnvironment: { privileged: true } }
-        : {},
+        ? mergeCodeBuildOptions(this.props.synthCodeBuildDefaults, { buildEnvironment: { privileged: true } })
+        : this.props.synthCodeBuildDefaults,
 
       [CodeBuildProjectType.ASSETS]: this.props.assetPublishingCodeBuildDefaults,
 
@@ -823,7 +841,7 @@ enum CodeBuildProjectType {
 
 function actionName<A>(node: GraphNode<A>, parent: GraphNode<A>) {
   const names = node.ancestorPath(parent).map(n => n.id);
-  return names.map(sanitizeName).join('.');
+  return names.map(sanitizeName).join('.').substr(0, 100); // Cannot exceed 100 chars
 }
 
 function sanitizeName(x: string): string {

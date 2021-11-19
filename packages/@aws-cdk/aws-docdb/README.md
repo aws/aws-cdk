@@ -21,6 +21,7 @@ your instances will be launched privately or publicly:
 const cluster = new DatabaseCluster(this, 'Database', {
     masterUser: {
         username: 'myuser' // NOTE: 'admin' is reserved by DocumentDB
+        excludeCharacters: '\"@/:', // optional, defaults to the set "\"@/"
     },
     instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.LARGE),
     vpcSubnets: {
@@ -58,6 +59,24 @@ const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', {
   vpc,
 });
 cluster.addSecurityGroups(securityGroup);
+```
+
+## Deletion protection
+
+Deletion protection can be enabled on an Amazon DocumentDB cluster to prevent accidental deletion of the cluster:
+
+```ts
+const cluster = new DatabaseCluster(this, 'Database', {
+    masterUser: {
+        username: 'myuser'
+    },
+    instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.LARGE),
+    vpcSubnets: {
+        subnetType: ec2.SubnetType.PUBLIC,
+    },
+    vpc,
+    deletionProtection: true  // Enable deletion protection.
+});
 ```
 
 ## Rotating credentials

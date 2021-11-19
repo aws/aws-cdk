@@ -136,6 +136,16 @@ export interface DatabaseClusterProps {
    * @default - Retain cluster.
    */
   readonly removalPolicy?: RemovalPolicy
+
+  /**
+   * Specifies whether this cluster can be deleted. If deletionProtection is
+   * enabled, the cluster cannot be deleted unless it is modified and
+   * deletionProtection is disabled. deletionProtection protects clusters from
+   * being accidentally deleted.
+   *
+   * @default - false
+   */
+  readonly deletionProtection?: boolean;
 }
 
 /**
@@ -342,6 +352,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
       secret = new DatabaseSecret(this, 'Secret', {
         username: props.masterUser.username,
         encryptionKey: props.masterUser.kmsKey,
+        excludeCharacters: props.masterUser.excludeCharacters,
       });
     }
 
@@ -361,6 +372,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
       port: props.port,
       vpcSecurityGroupIds: [this.securityGroupId],
       dbClusterParameterGroupName: props.parameterGroup?.parameterGroupName,
+      deletionProtection: props.deletionProtection,
       // Admin
       masterUsername: secret ? secret.secretValueFromJson('username').toString() : props.masterUser.username,
       masterUserPassword: secret

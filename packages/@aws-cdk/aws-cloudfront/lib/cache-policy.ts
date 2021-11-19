@@ -85,9 +85,13 @@ export interface CachePolicyProps {
  * A Cache Policy configuration.
  *
  * @resource AWS::CloudFront::CachePolicy
+ * @link https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/using-managed-cache-policies.html
  */
 export class CachePolicy extends Resource implements ICachePolicy {
-
+  /**
+   * This policy is designed for use with an origin that is an AWS Amplify web app.
+   */
+  public static readonly AMPLIFY = CachePolicy.fromManagedCachePolicy('2e54312d-136d-493c-8eb9-b001f22f67d2');
   /**
    * Optimize cache efficiency by minimizing the values that CloudFront includes in the cache key.
    * Query strings and cookies are not included in the cache key, and only the normalized 'Accept-Encoding' header is included.
@@ -234,7 +238,7 @@ export class CacheHeaderBehavior {
     return new CacheHeaderBehavior('whitelist', headers);
   }
 
-  /** If the no headers will be passed, or an allow list of headers. */
+  /** If no headers will be passed, or an allow list of headers. */
   public readonly behavior: string;
   /** The headers for the allow/deny list, if applicable. */
   public readonly headers?: string[];
