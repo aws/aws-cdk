@@ -6,9 +6,16 @@ import * as cfnspec from '@aws-cdk/cfnspec';
 import * as fs from 'fs-extra';
 import * as ts from 'typescript';
 
-const LIB_ROOT = path.resolve(process.cwd(), 'lib');
+// The directory where our 'package.json' lives
+const MONOPACKAGE_ROOT = process.cwd();
+
+// The directory where we're going to collect all the libraries. Currently
+// purposely the same as the monopackage root so that our two import styles
+// resolve to the same files.
+const LIB_ROOT = MONOPACKAGE_ROOT;
+
 const ROOT_PATH = findWorkspacePath();
-const UBER_PACKAGE_JSON_PATH = path.resolve(process.cwd(), 'package.json');
+const UBER_PACKAGE_JSON_PATH = path.join(MONOPACKAGE_ROOT, 'package.json');
 
 async function main() {
   console.log(`🌴  workspace root path is: ${ROOT_PATH}`);
@@ -222,7 +229,10 @@ async function prepareSourceFiles(libraries: readonly LibraryReference[], packag
     console.log('\t 👩🏻‍🔬 \'excludeExperimentalModules\' enabled. Regenerating all experimental modules as L1s using cfn2ts...');
   }
 
-  await fs.remove(LIB_ROOT);
+  // Should not remove collection directory if we're currently in it. The OS would be unhappy.
+  if (LIB_ROOT !== process.cwd()) {
+    await fs.remove(LIB_ROOT);
+  }
 
   const indexStatements = new Array<string>();
   for (const library of libraries) {
@@ -247,7 +257,7 @@ async function prepareSourceFiles(libraries: readonly LibraryReference[], packag
 async function combineRosettaFixtures(libraries: readonly LibraryReference[], uberPackageJson: PackageJson) {
   console.log('📝 Combining Rosetta fixtures...');
 
-  const uberRosettaDir = path.resolve(LIB_ROOT, '..', 'rosetta');
+  const uberRosettaDir = path.resolve(MONOPACKAGE_ROOT, 'rosetta');
   await fs.remove(uberRosettaDir);
   await fs.mkdir(uberRosettaDir);
 
@@ -325,12 +335,6 @@ async function transformPackage(
       },
       { spaces: 2 },
     );
-
-    await fs.writeFile(
-      path.resolve(LIB_ROOT, '..', `${library.shortName}.ts`),
-      `export * from './lib/${library.shortName}';\n`,
-      { encoding: 'utf8' },
-    );
   }
   return true;
 }
@@ -389,6 +393,7 @@ async function copyOrTransformFiles(from: string, to: string, libraries: readonl
       await fs.mkdirp(destination);
       return copyOrTransformFiles(source, destination, libraries, uberPackageJson);
     }
+
     if (name.endsWith('.ts')) {
       return fs.writeFile(
         destination,
