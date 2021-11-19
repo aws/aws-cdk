@@ -148,7 +148,7 @@ export interface DatabaseClusterProps {
   readonly deletionProtection?: boolean;
 
   /**
-   * Should sending profiler logs to CloudWatch Logs should be enabled?
+   * Should sending profiler logs to CloudWatch Logs be enabled?
    * You have to configure the profiler additionally in the parameter group.
    * 
    * @see https://docs.aws.amazon.com/documentdb/latest/developerguide/profiling.html#profiling.enable-profiling
@@ -157,8 +157,9 @@ export interface DatabaseClusterProps {
   readonly exportProfilerLogsToCloudWatch?: boolean;
 
   /**
-   * Should sending audit logs to CloudWatch Logs should be enabled?
+   * Should sending audit logs to CloudWatch Logs be enabled?
    * You have to configure the audit additionally in the parameter group.
+   * 
    * @see https://docs.aws.amazon.com/documentdb/latest/developerguide/event-auditing.html#event-auditing-enabling-auditing
    * @default false
    */
