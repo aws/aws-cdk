@@ -58,6 +58,13 @@ export interface BackupPlanRuleProps {
    * common vault for the plan will be created
    */
   readonly backupVault?: IBackupVault;
+
+  /**
+   * Enables continuous backup and point-in-time restores (PITR).
+   *
+   * @default - not enabled
+   */
+  readonly enableContinuousBackup?: boolean;
 }
 
 /**
@@ -155,6 +162,20 @@ export class BackupPlanRule {
 
     if (props.scheduleExpression && !/^cron/.test(props.scheduleExpression.expressionString)) {
       throw new Error('`scheduleExpression` must be of type `cron`');
+    }
+
+    if (props.enableContinuousBackup && !props.deleteAfter) {
+      throw new Error('`deleteAfter` must be specified if `enableContinuousBackup` is enabled');
+    }
+
+    if (props.enableContinuousBackup && props.moveToColdStorageAfter) {
+      throw new Error('`moveToColdStorageAfter` must not be specified if `enableContinuousBackup` is enabled');
+    }
+
+    if (props.enableContinuousBackup && props.deleteAfter &&
+      ((props.deleteAfter?.toSeconds() < Duration.days(1).toSeconds() ||
+      (props.deleteAfter?.toSeconds() > Duration.days(35).toSeconds())))) {
+      throw new Error('`deleteAfter` must be between 1 and 35 if `enableContinuousBackup` is enabled`');
     }
   }
 }

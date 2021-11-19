@@ -63,6 +63,15 @@ plan.addRule(new backup.BackupPlanRule({
 }));
 ```
 
+Continuous backup and point-in-time restores (PITR) can be configured:
+
+```ts fixture=with-plan
+plan.addRule(new backup.BackupPlanRule({
+  enableContinuousBackup: true,
+  deleteAfter: cdk.Duration.days(14),
+}));
+```
+
 Ready-made rules are also available:
 
 ```ts fixture=with-plan
