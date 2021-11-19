@@ -217,12 +217,12 @@ export class DomainName extends Resource implements IDomainName {
       securityPolicy: options.securityPolicy?.toString(),
     };
 
-    this.validateDuplicateEndpointType(domainNameConfig.endpointType);
+    this.validateEndpointType(domainNameConfig.endpointType);
     this.domainNameConfigurations.push(domainNameConfig);
   }
 
   // validates that the new domain name configuration has a unique endpoint
-  private validateDuplicateEndpointType(endpointType: string | undefined) : void {
+  private validateEndpointType(endpointType: string | undefined) : void {
     for (let config of this.domainNameConfigurations) {
       if (endpointType && endpointType == config.endpointType) {
         throw new Error(`an endpoint with type ${endpointType} already exists`);
