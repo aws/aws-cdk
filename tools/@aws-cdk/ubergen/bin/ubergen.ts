@@ -3,10 +3,8 @@ import * as path from 'path';
 import * as process from 'process';
 import cfn2ts from '@aws-cdk/cfn2ts';
 import * as cfnspec from '@aws-cdk/cfnspec';
-import * as monocdk from '@monocdk-experiment/rewrite-imports';
-import * as awscdklib from 'aws-cdk-migration';
+import * as awsCdkMigration from 'aws-cdk-migration';
 import * as fs from 'fs-extra';
-import * as ts from 'typescript';
 
 
 const LIB_ROOT = path.resolve(process.cwd(), 'lib');
@@ -265,9 +263,8 @@ async function combineRosettaFixtures(libraries: readonly LibraryReference[], ub
       for (const file of files) {
         await fs.writeFile(
           path.join(uberRosettaTargetDir, file),
-          await rewriteImportsInRosettaFixtures(
+          await rewriteRosettaFixtureImports(
             path.join(packageRosettaDir, file),
-            libraries,
             uberPackageJson.name,
           ),
           { encoding: 'utf8' },
@@ -395,7 +392,7 @@ async function copyOrTransformFiles(from: string, to: string, libraries: readonl
     if (name.endsWith('.ts')) {
       return fs.writeFile(
         destination,
-        await rewriteImportsInLibs(source, to, libraries),
+        await rewriteLibraryImports(source, to, libraries),
         { encoding: 'utf8' },
       );
     } else if (name === 'cfn-types-2-classes.json') {
@@ -436,112 +433,38 @@ async function copyOrTransformFiles(from: string, to: string, libraries: readonl
  */
 async function rewriteReadmeImports(fromFile: string, libName: string): Promise<string> {
   const sourceCode = await fs.readFile(fromFile, { encoding: 'utf8' });
-  if (libName === 'aws-cdk-lib') {
-    return awscdklib.rewriteReadmeImports(sourceCode);
-  } else {
-    return monocdk.rewriteReadmeImports(sourceCode);
-  }
+  return awsCdkMigration.rewriteReadmeImports(sourceCode, libName);
 }
 
 /**
  * Rewrites imports in libaries, using the relative path (i.e. '../../assertions').
  */
-async function rewriteImportsInLibs(fromFile: string, targetDir: string, libraries: readonly LibraryReference[]): Promise<string> {
-  return rewriteImports(fromFile, libraries, (importedFile) => path.relative(targetDir, importedFile));
+async function rewriteLibraryImports(fromFile: string, targetDir: string, libraries: readonly LibraryReference[]): Promise<string> {
+  const source = await fs.readFile(fromFile, { encoding: 'utf8' });
+  return awsCdkMigration.rewriteImports(source, relativeImport);
+
+  function relativeImport(modulePath: string): string | undefined {
+    const sourceLibrary = libraries.find(
+      lib =>
+        modulePath === lib.packageJson.name ||
+        modulePath.startsWith(`${lib.packageJson.name}/`),
+    );
+    if (sourceLibrary == null) { return undefined; }
+
+    const importedFile = modulePath === sourceLibrary.packageJson.name
+      ? path.join(LIB_ROOT, sourceLibrary.shortName)
+      : path.join(LIB_ROOT, sourceLibrary.shortName, modulePath.substr(sourceLibrary.packageJson.name.length + 1));
+
+    return path.relative(targetDir, importedFile);
+  }
 }
 
 /**
  * Rewrites imports in rosetta fixtures, using the external path (i.e. 'aws-cdk-lib/assertions').
  */
-// eslint-disable-next-line max-len
-async function rewriteImportsInRosettaFixtures(fromFile: string, libraries: readonly LibraryReference[], libName: string): Promise<string> {
-  return rewriteImports(fromFile, libraries, (importedFile) => externalPath(libName, importedFile));
-}
-
-function externalPath(libName: string, filePath: string) {
-  const paths = filePath.split(path.sep);
-  const module = paths[paths.length-1];
-  if (module === 'core') {
-    return libName;
-  } else {
-    return path.join(libName, module);
-  }
-}
-
-/**
- * Rewrites imports from a file, to target the target directory, using the given libraries.
- * The function `newImport` determines the rewritten file path from the given file.
- */
-// eslint-disable-next-line max-len
-async function rewriteImports(fromFile: string, libraries: readonly LibraryReference[], newImport: (file: string) => string): Promise<string> {
-  const sourceFile = ts.createSourceFile(
-    fromFile,
-    await fs.readFile(fromFile, { encoding: 'utf8' }),
-    ts.ScriptTarget.ES2018,
-    true,
-    ts.ScriptKind.TS,
-  );
-
-  const transformResult = ts.transform(sourceFile, [importRewriter]);
-  const transformedSource = transformResult.transformed[0] as ts.SourceFile;
-
-  const printer = ts.createPrinter();
-  return printer.printFile(transformedSource);
-
-  function importRewriter(ctx: ts.TransformationContext) {
-    function visitor(node: ts.Node): ts.Node {
-      if (ts.isExternalModuleReference(node) && ts.isStringLiteral(node.expression)) {
-        const newTarget = rewrittenImport(node.expression.text);
-        if (newTarget != null) {
-          return addRewrittenNote(
-            ts.updateExternalModuleReference(node, newTarget),
-            node.expression,
-          );
-        }
-      } else if (ts.isImportDeclaration(node) && ts.isStringLiteral(node.moduleSpecifier)) {
-        const newTarget = rewrittenImport(node.moduleSpecifier.text);
-        if (newTarget != null) {
-          return addRewrittenNote(
-            ts.updateImportDeclaration(
-              node,
-              node.decorators,
-              node.modifiers,
-              node.importClause,
-              newTarget,
-            ),
-            node.moduleSpecifier,
-          );
-        }
-      }
-      return ts.visitEachChild(node, visitor, ctx);
-    }
-    return visitor;
-  }
-
-  function addRewrittenNote(node: ts.Node, original: ts.StringLiteral): ts.Node {
-    return ts.addSyntheticTrailingComment(
-      node,
-      ts.SyntaxKind.SingleLineCommentTrivia,
-      ` Automatically re-written from ${original.getText()}`,
-      false, // hasTrailingNewline
-    );
-  }
-
-  function rewrittenImport(moduleSpecifier: string): ts.StringLiteral | undefined {
-    const sourceLibrary = libraries.find(
-      lib =>
-        moduleSpecifier === lib.packageJson.name ||
-        moduleSpecifier.startsWith(`${lib.packageJson.name}/`),
-    );
-    if (sourceLibrary == null) { return undefined; }
-
-    const importedFile = moduleSpecifier === sourceLibrary.packageJson.name
-      ? path.join(LIB_ROOT, sourceLibrary.shortName)
-      : path.join(LIB_ROOT, sourceLibrary.shortName, moduleSpecifier.substr(sourceLibrary.packageJson.name.length + 1));
-
-    const importFilePath = newImport(importedFile);
-    return ts.createStringLiteral(importFilePath);
-  }
+async function rewriteRosettaFixtureImports(fromFile: string, libName: string): Promise<string> {
+  const source = await fs.readFile(fromFile, { encoding: 'utf8' });
+  return awsCdkMigration.rewriteMonoPackageImports(source, libName);
 }
 
 const IGNORED_FILE_NAMES = new Set([
