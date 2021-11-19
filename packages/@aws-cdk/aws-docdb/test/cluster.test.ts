@@ -333,7 +333,7 @@ describe('DatabaseCluster', () => {
 
     // THEN
     expectCDK(stack).to(haveResourceLike('AWS::SecretsManager::Secret', {
-      Namr: '/myapp/mydocdb/masteruser'
+      Name: '/myapp/mydocdb/masteruser',
     }));
   });
 
