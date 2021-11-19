@@ -38,7 +38,8 @@
     },
     "stripDeprecated": true,
     "post": [
-      "node ./scripts/verify-readme-import-rewrites.js"
+      "node ./scripts/verify-readme-import-rewrites.js",
+      "node ./scripts/verify-import-resolve-same.js"
     ]
   },
   "cdk-package": {
