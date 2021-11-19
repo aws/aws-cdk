@@ -74,6 +74,8 @@ describe('code', () => {
       expect(stack).toHaveResource('AWS::Lambda::Function', {
         Metadata: {
           [cxapi.ASSET_RESOURCE_METADATA_PATH_KEY]: 'asset.9678c34eca93259d11f2d714177347afd66c50116e1e08996eff893d3ca81232',
+          [cxapi.ASSET_RESOURCE_METADATA_ORIGINAL_PATH_KEY]: location,
+          [cxapi.ASSET_RESOURCE_METADATA_IS_BUNDLED_KEY]: false,
           [cxapi.ASSET_RESOURCE_METADATA_PROPERTY_KEY]: 'Code',
         },
       }, ResourcePart.CompleteDefinition);
@@ -462,8 +464,9 @@ describe('code', () => {
       stack.node.setContext(cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT, true);
 
       // when
+      const FunctionCodepath = path.join(__dirname, 'docker-build-lambda');
       new lambda.Function(stack, 'Fn', {
-        code: lambda.Code.fromDockerBuild(path.join(__dirname, 'docker-build-lambda')),
+        code: lambda.Code.fromDockerBuild(FunctionCodepath),
         handler: 'index.handler',
         runtime: lambda.Runtime.NODEJS_12_X,
       });
@@ -472,6 +475,8 @@ describe('code', () => {
       expect(stack).toHaveResource('AWS::Lambda::Function', {
         Metadata: {
           [cxapi.ASSET_RESOURCE_METADATA_PATH_KEY]: 'asset.fbafdbb9ae8d1bae0def415b791a93c486d18ebc63270c748abecc3ac0ab9533',
+          [cxapi.ASSET_RESOURCE_METADATA_ORIGINAL_PATH_KEY]: FunctionCodepath,
+          [cxapi.ASSET_RESOURCE_METADATA_IS_BUNDLED_KEY]: false,
           [cxapi.ASSET_RESOURCE_METADATA_PROPERTY_KEY]: 'Code',
         },
       }, ResourcePart.CompleteDefinition);
