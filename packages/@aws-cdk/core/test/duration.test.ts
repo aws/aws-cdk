@@ -1,3 +1,4 @@
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Duration, Lazy, Stack, Token } from '../lib';
 
 describe('duration', () => {
@@ -76,7 +77,7 @@ describe('duration', () => {
 
   });
 
-  test('toISOString', () => {
+  testDeprecated('toISOString', () => {
     expect(Duration.millis(0).toISOString()).toEqual('PT0S');
     expect(Duration.seconds(0).toISOString()).toEqual('PT0S');
     expect(Duration.minutes(0).toISOString()).toEqual('PT0S');
@@ -170,8 +171,12 @@ describe('duration', () => {
     expect(Duration.minutes(1).plus(Duration.seconds(30)).toSeconds()).toEqual(Duration.seconds(90).toSeconds());
     expect(Duration.minutes(1).plus(Duration.seconds(30)).toMinutes({ integral: false }))
       .toEqual(Duration.seconds(90).toMinutes({ integral: false }));
+  });
 
-
+  test('subtract two durations', () => {
+    expect(Duration.minutes(1).minus(Duration.seconds(30)).toSeconds()).toEqual(Duration.seconds(30).toSeconds());
+    expect(Duration.minutes(1).minus(Duration.seconds(30)).toMinutes({ integral: false }))
+      .toEqual(Duration.seconds(30).toMinutes({ integral: false }));
   });
 
   test('get unit label from duration', () => {

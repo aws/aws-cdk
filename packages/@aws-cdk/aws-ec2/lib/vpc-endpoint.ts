@@ -121,6 +121,8 @@ export interface GatewayVpcEndpointOptions {
    * @default - All subnets in the VPC
    * @example
    *
+   * declare const vpc: ec2.Vpc;
+   *
    * vpc.addGatewayEndpoint('DynamoDbEndpoint', {
    *   service: ec2.GatewayVpcEndpointAwsService.DYNAMODB,
    *   // Add only to ISOLATED subnets
@@ -264,6 +266,8 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly CODEBUILD_FIPS = new InterfaceVpcEndpointAwsService('codebuild-fips');
   public static readonly CODECOMMIT = new InterfaceVpcEndpointAwsService('codecommit');
   public static readonly CODECOMMIT_FIPS = new InterfaceVpcEndpointAwsService('codecommit-fips');
+  public static readonly CODEGURU_PROFILER = new InterfaceVpcEndpointAwsService('codeguru-profiler');
+  public static readonly CODEGURU_REVIEWER = new InterfaceVpcEndpointAwsService('codeguru-reviewer');
   public static readonly CODEPIPELINE = new InterfaceVpcEndpointAwsService('codepipeline');
   public static readonly CONFIG = new InterfaceVpcEndpointAwsService('config');
   public static readonly EC2 = new InterfaceVpcEndpointAwsService('ec2');
@@ -307,6 +311,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly STEP_FUNCTIONS = new InterfaceVpcEndpointAwsService('states');
   public static readonly LAMBDA = new InterfaceVpcEndpointAwsService('lambda');
   public static readonly TRANSCRIBE = new InterfaceVpcEndpointAwsService('transcribe');
+  public static readonly XRAY = new InterfaceVpcEndpointAwsService('xray');
 
   /**
    * The name of the service.
