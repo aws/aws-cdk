@@ -1146,7 +1146,7 @@ export class DatabaseInstanceReadReplica extends DatabaseInstanceNew implements 
     if (props.sourceDatabaseInstance.engine
         && !props.sourceDatabaseInstance.engine.supportsReadReplicaBackups
         && props.backupRetention) {
-      throw new Error(`Cannot set \`backupRetention\` for a ${props.sourceDatabaseInstance.engine.engineType} read replica. Automatic backups are not supported.`);
+      throw new Error(`Cannot set 'backupRetention', as engine '${engineDescription(props.sourceDatabaseInstance.engine)}' does not support automatic backups for read replicas`);
     }
 
     const instance = new CfnDBInstance(this, 'Resource', {

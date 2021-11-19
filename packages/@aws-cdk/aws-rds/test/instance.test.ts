@@ -1594,12 +1594,14 @@ describe('instance', () => {
       vpc,
     });
 
-    expect(() => new rds.DatabaseInstanceReadReplica(stack, 'Replica', {
-      sourceDatabaseInstance: source,
-      backupRetention,
-      instanceType,
-      vpc,
-    })).toThrow(/Cannot set `backupRetention` for a postgres read replica/);
+    expect(() => {
+      new rds.DatabaseInstanceReadReplica(stack, 'Replica', {
+        sourceDatabaseInstance: source,
+        backupRetention,
+        instanceType,
+        vpc,
+      });
+    }).toThrow(/Cannot set 'backupRetention', as engine 'postgres-13' does not support automatic backups for read replicas/);
   });
 });
 
