@@ -8,13 +8,28 @@ import { EvaluateCloudFormationTemplate } from './evaluate-cloudformation-templa
  */
 export const REQUIRED_BY_CFN = 'required-to-be-present-by-cfn';
 
+let resourceList:any[] = [];
+
 export async function isHotswappableS3BucketDeploymentChange(
   logicalId: string, change: HotswappableChangeCandidate, evaluateCfnTemplate: EvaluateCloudFormationTemplate,
 ): Promise<ChangeHotswapResult> {
   // In old-style synthesis, the policy used by the lambda to copy assets Ref's the assets directly,
   // meaning that the changes made to the Policy are artificial
   if (change.newValue.Type === 'AWS::IAM::Policy') {
-    return ChangeHotswapImpact.NONE;
+    /*eslint-disable*/
+    const statements = change.newValue.Properties?.PolicyDocument.Statement;
+    for (const statement of statements) {
+      if (resourceList.length === 0) {
+        resourceList.push(statement.Resource);
+        return ChangeHotswapImpact.NONE;
+      } else if (evaluateCfnTemplate.evaluateCfnExpression(statement.Resource) === resourceList[0]) {
+        return ChangeHotswapImpact.NONE;
+      }
+    }
+
+    if (resourceList.length > 0) {
+      return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
+    }
   }
 
   if (change.newValue.Type !== 'Custom::CDKBucketDeployment') {
@@ -32,13 +47,19 @@ export async function isHotswappableS3BucketDeploymentChange(
   const destinationBucketName = await evaluateCfnTemplate.evaluateCfnExpression(change.newValue.Properties?.DestinationBucketName);
   const destinationBucketKeyPrefix = await evaluateCfnTemplate.evaluateCfnExpression(change.newValue.Properties?.DestinationBucketKeyPrefix);
 
+  if (resourceList === []) {
+    resourceList = [destinationBucketName];
+  } else if (destinationBucketName !in resourceList) {
+    return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
+  }
+
   return new S3BucketDeploymentHotswapOperation({
-    FunctionName: functionName,
-    SourceBucketNames: sourceBucketNames,
-    SourceObjectKeys: sourceObjectKeys,
-    DestinationBucketName: destinationBucketName,
-    DestinationBucketKeyPrefix: destinationBucketKeyPrefix,
-  });
+     FunctionName: functionName,
+     SourceBucketNames: sourceBucketNames,
+     SourceObjectKeys: sourceObjectKeys,
+     DestinationBucketName: destinationBucketName,
+     DestinationBucketKeyPrefix: destinationBucketKeyPrefix,
+   });
 }
 
 interface S3BucketDeployment {

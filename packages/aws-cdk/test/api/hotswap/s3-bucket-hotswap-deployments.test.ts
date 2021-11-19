@@ -179,70 +179,6 @@ test('correctly evaluates the service token when it references a lambda found in
   });
 });
 
-
-/*
-// TODO
-test("correctly falls back to taking the service token from the current stack if it can't evaluate it in the template", async () => {
-  // GIVEN
-  setup.setCurrentCfnStackTemplate({
-    Parameters: {
-      Param1: { Type: 'String' },
-      AssetBucketParam: { Type: 'String' },
-    },
-    Resources: {
-      Func: {
-        Type: 'AWS::Lambda::Function',
-        Properties: {
-          Code: {
-            S3Bucket: { Ref: 'AssetBucketParam' },
-            S3Key: 'current-key',
-          },
-          FunctionName: { Ref: 'Param1' },
-        },
-        Metadata: {
-          'aws:asset:path': 'old-path',
-        },
-      },
-    },
-  });
-  setup.pushStackResourceSummaries(setup.stackSummaryOf('Func', 'AWS::Lambda::Function', 'my-function'));
-  const cdkStackArtifact = setup.cdkStackArtifactOf({
-    template: {
-      Parameters: {
-        Param1: { Type: 'String' },
-        AssetBucketParam: { Type: 'String' },
-      },
-      Resources: {
-        Func: {
-          Type: 'AWS::Lambda::Function',
-          Properties: {
-            Code: {
-              S3Bucket: { Ref: 'AssetBucketParam' },
-              S3Key: 'new-key',
-            },
-            FunctionName: { Ref: 'Param1' },
-          },
-          Metadata: {
-            'aws:asset:path': 'new-path',
-          },
-        },
-      },
-    },
-  });
-
-  // WHEN
-  const deployStackResult = await cfnMockProvider.tryHotswapDeployment(cdkStackArtifact, { AssetBucketParam: 'asset-bucket' });
-
-  // THEN
-  expect(deployStackResult).not.toBeUndefined();
-  expect(mockLambdaInvoke).toHaveBeenCalledWith({
-    FunctionName: 'my-function',
-    S3Bucket: 'asset-bucket',
-    S3Key: 'new-key',
-  });
-});
-*/
-
 test("will not perform a hotswap deployment if it cannot find a Ref target (outside the function's name)", async () => {
   // GIVEN
   setup.setCurrentCfnStackTemplate({
@@ -406,24 +342,16 @@ test('calls the lambdaInvoke() API when it receives an asset difference in an s3
           PolicyDocument: {
             Statement: [
               {
-                Effect: 'Allow',
-                Resource: [
-                  {
-                    'Fn::Join': [
-                      '',
-                      [
-                        'arn:',
-                        {
-                          Ref: 'AWS::Partition',
-                        },
-                        ':s3:::',
-                        {
-                          Ref: 'bucket-name',
-                        },
-                      ],
-                    ],
-                  },
+                Action: [
+                  's3:GetObject*',
                 ],
+                Effect: 'Allow',
+                Resource: {
+                  'Fn::GetAtt': [
+                    'WebsiteBucketOld',
+                    'Arn',
+                  ],
+                },
               },
             ],
           },
@@ -439,7 +367,7 @@ test('calls the lambdaInvoke() API when it receives an asset difference in an s3
           SourceObjectKeys: [
             'src-key-old',
           ],
-          DestinationBucketName: 'dest-bucket',
+          DestinationBucketName: 'WebsiteBucketOld',
         },
       },
     },
@@ -453,24 +381,16 @@ test('calls the lambdaInvoke() API when it receives an asset difference in an s3
             PolicyDocument: {
               Statement: [
                 {
-                  Effect: 'Allow',
-                  Resource: [
-                    {
-                      'Fn::Join': [
-                        '',
-                        [
-                          'arn:',
-                          {
-                            Ref: 'AWS::Partition',
-                          },
-                          ':s3:::',
-                          {
-                            Ref: 'new-bucket-name',
-                          },
-                        ],
-                      ],
-                    },
+                  Action: [
+                    's3:GetObject*',
                   ],
+                  Effect: 'Allow',
+                  Resource: {
+                    'Fn::GetAtt': [
+                      'WebsiteBucketNew',
+                      'Arn',
+                    ],
+                  },
                 },
               ],
             },
@@ -486,7 +406,7 @@ test('calls the lambdaInvoke() API when it receives an asset difference in an s3
             SourceObjectKeys: [
               'src-key-new',
             ],
-            DestinationBucketName: 'dest-bucket',
+            DestinationBucketName: 'WebsiteBucketNew',
           },
         },
       },
@@ -505,7 +425,7 @@ test('calls the lambdaInvoke() API when it receives an asset difference in an s3
     SourceObjectKeys: [
       'src-key-new',
     ],
-    DestinationBucketName: 'dest-bucket',
+    DestinationBucketName: 'WebsiteBucketNew',
   };
 
   expect(mockLambdaInvoke).toHaveBeenCalledWith({
@@ -577,7 +497,7 @@ test('can use the DestinationBucketKeyPrefix property', async () => {
   });
 });
 
-// TODO
+
 test('does not call the lambdaInvoke() API when the difference in the s3 deployment is not referred to in the IAM policy change', async () => {
   // GIVEN
   setup.setCurrentCfnStackTemplate({
@@ -588,24 +508,16 @@ test('does not call the lambdaInvoke() API when the difference in the s3 deploym
           PolicyDocument: {
             Statement: [
               {
-                Effect: 'Allow',
-                Resource: [
-                  {
-                    'Fn::Join': [
-                      '',
-                      [
-                        'arn:',
-                        {
-                          Ref: 'AWS::Partition',
-                        },
-                        ':s3:::',
-                        {
-                          Ref: 'bucket-name',
-                        },
-                      ],
-                    ],
-                  },
+                Action: [
+                  's3:GetObject*',
                 ],
+                Effect: 'Allow',
+                Resource: {
+                  'Fn::GetAtt': [
+                    'WebsiteBucketOld',
+                    'Arn',
+                  ],
+                },
               },
             ],
           },
@@ -621,7 +533,7 @@ test('does not call the lambdaInvoke() API when the difference in the s3 deploym
           SourceObjectKeys: [
             'src-key-old',
           ],
-          DestinationBucketName: 'dest-bucket',
+          DestinationBucketName: 'DifferentBucketOld',
         },
       },
     },
@@ -635,24 +547,16 @@ test('does not call the lambdaInvoke() API when the difference in the s3 deploym
             PolicyDocument: {
               Statement: [
                 {
-                  Effect: 'Allow',
-                  Resource: [
-                    {
-                      'Fn::Join': [
-                        '',
-                        [
-                          'arn:',
-                          {
-                            Ref: 'AWS::Partition',
-                          },
-                          ':s3:::',
-                          {
-                            Ref: 'new-bucket-name',
-                          },
-                        ],
-                      ],
-                    },
+                  Action: [
+                    's3:GetObject*',
                   ],
+                  Effect: 'Allow',
+                  Resource: {
+                    'Fn::GetAtt': [
+                      'WebsiteBucketNew',
+                      'Arn',
+                    ],
+                  },
                 },
               ],
             },
@@ -668,7 +572,7 @@ test('does not call the lambdaInvoke() API when the difference in the s3 deploym
             SourceObjectKeys: [
               'src-key-new',
             ],
-            DestinationBucketName: 'dest-bucket',
+            DestinationBucketName: 'DifferentBucketNew',
           },
         },
       },
@@ -679,19 +583,6 @@ test('does not call the lambdaInvoke() API when the difference in the s3 deploym
   const deployStackResult = await cfnMockProvider.tryHotswapDeployment(cdkStackArtifact);
 
   // THEN
-  expect(deployStackResult).not.toBeUndefined();
-  payload.ResourceProperties = {
-    SourceBucketNames: [
-      'src-bucket-new',
-    ],
-    SourceObjectKeys: [
-      'src-key-new',
-    ],
-    DestinationBucketName: 'dest-bucket',
-  };
-
-  expect(mockLambdaInvoke).toHaveBeenCalledWith({
-    FunctionName: 'a-lambda-arn',
-    Payload: JSON.stringify(payload),
-  });
+  expect(deployStackResult).toBeUndefined();
+  expect(mockLambdaInvoke).not.toHaveBeenCalled();
 });
