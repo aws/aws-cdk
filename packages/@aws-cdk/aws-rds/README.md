@@ -129,7 +129,7 @@ new rds.DatabaseInstanceReadReplica(this, 'ReadReplica', {
 });
 ```
 
-Automatic backups of read replica instances is only supported for MySQL and MariaDB. By default,
+Automatic backups of read replica instances are only supported for MySQL and MariaDB. By default,
 automatic backups are disabled for read replicas and can only be enabled (using `backupRetention`)
 if also enabled on the source instance.
 
