@@ -143,20 +143,9 @@ export function rewriteImports(sourceText: string, fileName: string = 'index.ts'
  * @returns the updated source code.
  */
 export function rewriteReadmeImports(sourceText: string, fileName: string = 'index.ts', options: RewriteOptions = {}): string {
-  let updatedSourceText = sourceText;
-  // Search for readme code snippets
-  // we sometimes use 'text' for typescript only snippets, so their imports should be translated as well.
-  let snippets = sourceText.match(/```(ts|typescript|text)([\S\s]*?)```/g);
-  for (const snip of snippets ?? []) {
-    const lines = snip.split('\n');
-    // remove '```ts' and '```'
-    const snipCode = lines.splice(1, lines.length-2).join('\n');
-    const rewrittenSnipCode = rewriteImports(snipCode, fileName, options);
-    if (snipCode !== rewrittenSnipCode) {
-      updatedSourceText = updatedSourceText.replace(snipCode, rewrittenSnipCode);
-    }
-  }
-  return updatedSourceText;
+  return sourceText.replace(/(```(?:ts|typescript|text)[^\n]*\n)(.*?)(\n\s*```)/gs, (_m, prefix, body, suffix) => {
+    return prefix + rewriteImports(body, fileName, options) + suffix;
+  });
 }
 
 const EXEMPTIONS = new Set([
