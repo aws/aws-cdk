@@ -363,7 +363,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
     this.securityGroupId = securityGroup.securityGroupId;
 
     // Create the CloudwatchLogsConfiguratoin
-    const enableCloudwatchLogsExports:string[] = [];
+    const enableCloudwatchLogsExports: string[] = [];
     if (props.exportAuditLogsToCloudWatch) {
       enableCloudwatchLogsExports.push('audit');
     }
