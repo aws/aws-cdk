@@ -37,7 +37,6 @@ export enum ChangeHotswapImpact {
    * (for example, it's a change to an AWS::IAM::Policy made when a Custom::CDKBucketDeployment
    * is being hotswapped).
    */
-
   NONE = 'none',
 }
 

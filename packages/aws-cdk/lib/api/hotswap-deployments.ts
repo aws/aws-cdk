@@ -7,8 +7,8 @@ import { ChangeHotswapImpact, ChangeHotswapResult, HotswapOperation, ListStackRe
 import { isHotswappableEcsServiceChange } from './hotswap/ecs-services';
 import { EvaluateCloudFormationTemplate } from './hotswap/evaluate-cloudformation-template';
 import { isHotswappableLambdaFunctionChange } from './hotswap/lambda-functions';
-import { isHotswappableStateMachineChange } from './hotswap/stepfunctions-state-machines';
 import { isHotswappableS3BucketDeploymentChange } from './hotswap/s3-bucket-deployments';
+import { isHotswappableStateMachineChange } from './hotswap/stepfunctions-state-machines';
 import { CloudFormationStack } from './util/cloudformation';
 
 /**
@@ -70,8 +70,6 @@ async function findAllHotswappableChanges(
     } else if (resourceHotswapEvaluation === ChangeHotswapImpact.IRRELEVANT || resourceHotswapEvaluation === ChangeHotswapImpact.NONE) {
       // empty 'if' just for flow-aware typing to kick in...
     } else {
-      /*eslint-disable*/
-      //console.log('pushing')
       promises.push([
         isHotswappableLambdaFunctionChange(logicalId, resourceHotswapEvaluation, evaluateCfnTemplate),
         isHotswappableStateMachineChange(logicalId, resourceHotswapEvaluation, evaluateCfnTemplate),
@@ -105,19 +103,13 @@ async function findAllHotswappableChanges(
       continue;
     }
 
-    // this is a roundabout way to continue out of this above for loop
+    // NONE means that this change is an artifact of old-style synthesis and should be ignored
     let foundNone = false;
-
-    // NONE means that this change is a false change made with another change
     for (const result of hotswapDetectionResults) {
       if (result === ChangeHotswapImpact.NONE) {
-        console.log('-------------------------')
-        console.log('-------------------------')
-        console.log('-------------------------')
         foundNone = true;
       }
     }
-
     if (foundNone) {
       continue;
     }
@@ -125,7 +117,6 @@ async function findAllHotswappableChanges(
     // no hotswappable changes found, so any REQUIRES_FULL_DEPLOYMENTs imply a non-hotswappable change
     for (const result of hotswapDetectionResults) {
       if (result === ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT) {
-    console.log('there')
         foundNonHotswappableChange = true;
       }
     }
@@ -142,7 +133,6 @@ async function findAllHotswappableChanges(
 export function isCandidateForHotswapping(change: cfn_diff.ResourceDifference): HotswappableChangeCandidate | ChangeHotswapImpact {
   // a resource has been removed OR a resource has been added; we can't short-circuit that change
   if (!change.newValue || !change.oldValue) {
-    console.log('here')
     return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
   }
 
@@ -161,8 +151,6 @@ async function applyAllHotswappableChanges(
   sdk: ISDK, hotswappableChanges: HotswapOperation[],
 ): Promise<void[]> {
   return Promise.all(hotswappableChanges.map(hotswapOperation => {
-    /*eslint-disable*/
-    //console.log('applying out')
     return hotswapOperation.apply(sdk);
   }));
 }

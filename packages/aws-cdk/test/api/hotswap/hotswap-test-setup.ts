@@ -2,7 +2,6 @@ import * as cxapi from '@aws-cdk/cx-api';
 import { CloudFormation } from 'aws-sdk';
 import * as AWS from 'aws-sdk';
 import * as lambda from 'aws-sdk/clients/lambda';
-import * as iam from 'aws-sdk/clients/iam';
 import * as stepfunctions from 'aws-sdk/clients/stepfunctions';
 import { DeployStackResult } from '../../../lib/api';
 import * as deployments from '../../../lib/api/hotswap-deployments';
@@ -91,12 +90,6 @@ export class CfnMockProvider {
   public setLambdaInvocationMock(mockInvoke: (input: lambda.InvocationRequest) => lambda.InvocationResponse) {
     this.mockSdkProvider.stubLambda({
       invoke: mockInvoke,
-    });
-  }
-
-  public setIAMCreatePolicyVersionMock(mockCreatePolicyVersion: (input: iam.CreatePolicyVersionRequest) => iam.CreatePolicyVersionResponse) {
-    this.mockSdkProvider.stubIAM({
-      createPolicyVersion: mockCreatePolicyVersion,
     });
   }
 
