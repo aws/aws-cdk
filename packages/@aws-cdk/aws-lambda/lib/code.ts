@@ -517,27 +517,44 @@ export interface AssetImageCodeProps extends ecr_assets.DockerImageAssetOptions 
  */
 export class AssetImageCode extends Code {
   public readonly isInline: boolean = false;
+  private asset?: ecr_assets.DockerImageAsset;
 
   constructor(private readonly directory: string, private readonly props: AssetImageCodeProps) {
     super();
   }
 
   public bind(scope: Construct): CodeConfig {
-    const asset = new ecr_assets.DockerImageAsset(scope, 'AssetImage', {
-      directory: this.directory,
-      ...this.props,
-    });
-
-    asset.repository.grantPull(new iam.ServicePrincipal('lambda.amazonaws.com'));
+    // If the same AssetImageCode is used multiple times, retain only the first instantiation.
+    if (!this.asset) {
+      this.asset = new ecr_assets.DockerImageAsset(scope, 'AssetImage', {
+        directory: this.directory,
+        ...this.props,
+      });
+      this.asset.repository.grantPull(new iam.ServicePrincipal('lambda.amazonaws.com'));
+    } else if (cdk.Stack.of(this.asset) !== cdk.Stack.of(scope)) {
+      throw new Error(`Asset is already associated with another stack '${cdk.Stack.of(this.asset).stackName}'. ` +
+        'Create a new Code instance for every stack.');
+    }
 
     return {
       image: {
-        imageUri: asset.imageUri,
+        imageUri: this.asset.imageUri,
         entrypoint: this.props.entrypoint,
         cmd: this.props.cmd,
         workingDirectory: this.props.workingDirectory,
       },
     };
+  }
+
+  public bindToResource(resource: cdk.CfnResource, options: ResourceBindOptions = { }) {
+    if (!this.asset) {
+      throw new Error('bindToResource() must be called after bind()');
+    }
+
+    const resourceProperty = options.resourceProperty || 'Code.ImageUri';
+
+    // https://github.com/aws/aws-cdk/issues/14593
+    this.asset.addResourceMetadata(resource, resourceProperty);
   }
 }
 

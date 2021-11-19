@@ -217,7 +217,7 @@ abstract class ExampleResourceBase extends core.Resource implements IExampleReso
       // of course, you would put your resource-specific values here
       namespace: 'AWS/ExampleResource',
       metricName: 'Count',
-      dimensions: { ExampleResource: this.exampleResourceName },
+      dimensionsMap: { ExampleResource: this.exampleResourceName },
       ...props,
     }).attachTo(this);
   }
