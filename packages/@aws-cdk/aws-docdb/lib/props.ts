@@ -103,6 +103,11 @@ export interface CloudwatchLogsExportsProps {
    * You have to configure the profiler additionally
    * @see https://docs.aws.amazon.com/documentdb/latest/developerguide/profiling.html#profiling.enable-profiling
    * @default false
+  /**
+   * Whether the profiler logs should be exported to CloudWatch.
+   *
+   * @see https://docs.aws.amazon.com/documentdb/latest/developerguide/profiling.html#profiling.enable-profiling
+   * @default false
    */
   readonly profiler?: boolean;
   /**
