@@ -1583,6 +1583,26 @@ describe('instance', () => {
     });
   });
 
+  test('throws with backupRetention on a read replica if engine does not support it', () => {
+    // GIVEN
+    const instanceType = ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.SMALL);
+    const backupRetention = cdk.Duration.days(5);
+    const source = new rds.DatabaseInstance(stack, 'Source', {
+      engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_13 }),
+      backupRetention,
+      instanceType,
+      vpc,
+    });
+
+    expect(() => {
+      new rds.DatabaseInstanceReadReplica(stack, 'Replica', {
+        sourceDatabaseInstance: source,
+        backupRetention,
+        instanceType,
+        vpc,
+      });
+    }).toThrow(/Cannot set 'backupRetention', as engine 'postgres-13' does not support automatic backups for read replicas/);
+  });
 });
 
 test.each([
