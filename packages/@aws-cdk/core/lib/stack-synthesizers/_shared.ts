@@ -1,7 +1,8 @@
 import * as crypto from 'crypto';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
-import { ConstructNode, IConstruct, ISynthesisSession } from '../construct-compat';
+import { Node, IConstruct } from 'constructs';
 import { Stack } from '../stack';
+import { ISynthesisSession } from './types';
 
 /**
  * Shared logic of writing stack artifact to the Cloud Assembly
@@ -79,9 +80,9 @@ function collectStackMetadata(stack: Stack) {
       return;
     }
 
-    if (node.node.metadataEntry.length > 0) {
+    if (node.node.metadata.length > 0) {
       // Make the path absolute
-      output[ConstructNode.PATH_SEP + node.node.path] = node.node.metadataEntry.map(md => stack.resolve(md) as cxschema.MetadataEntry);
+      output[Node.PATH_SEP + node.node.path] = node.node.metadata.map(md => stack.resolve(md) as cxschema.MetadataEntry);
     }
 
     for (const child of node.node.children) {

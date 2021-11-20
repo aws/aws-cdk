@@ -2,7 +2,7 @@ import '@aws-cdk/assert-internal/jest';
 import * as path from 'path';
 import { ABSENT, ResourcePart } from '@aws-cdk/assert-internal';
 import * as ecr from '@aws-cdk/aws-ecr';
-import { testFutureBehavior } from '@aws-cdk/cdk-build-tools';
+import { testLegacyBehavior } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as lambda from '../lib';
@@ -31,7 +31,11 @@ describe('code', () => {
 
     test('only one Asset object gets created even if multiple functions use the same AssetCode', () => {
       // GIVEN
-      const app = new cdk.App();
+      const app = new cdk.App({
+        context: {
+          [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false,
+        },
+      });
       const stack = new cdk.Stack(app, 'MyStack');
       const directoryAsset = lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler'));
 
@@ -280,8 +284,7 @@ describe('code', () => {
   });
 
   describe('lambda.Code.fromImageAsset', () => {
-    const flags = { [cxapi.DOCKER_IGNORE_SUPPORT]: true };
-    testFutureBehavior('repository uri is correctly identified', flags, cdk.App, (app) => {
+    testLegacyBehavior('repository uri is correctly identified', cdk.App, (app) => {
       // given
       const stack = new cdk.Stack(app);
 
@@ -333,33 +336,6 @@ describe('code', () => {
           WorkingDirectory: '/some/path',
         },
       });
-    });
-
-    test('only one Asset object gets created even if multiple functions use the same AssetImageCode', () => {
-      // given
-      const app = new cdk.App();
-      const stack = new cdk.Stack(app, 'MyStack');
-      const directoryAsset = lambda.Code.fromAssetImage(path.join(__dirname, 'docker-lambda-handler'));
-
-      // when
-      new lambda.Function(stack, 'Fn1', {
-        code: directoryAsset,
-        handler: lambda.Handler.FROM_IMAGE,
-        runtime: lambda.Runtime.FROM_IMAGE,
-      });
-
-      new lambda.Function(stack, 'Fn2', {
-        code: directoryAsset,
-        handler: lambda.Handler.FROM_IMAGE,
-        runtime: lambda.Runtime.FROM_IMAGE,
-      });
-
-      // then
-      const assembly = app.synth();
-      const synthesized = assembly.stacks[0];
-
-      // Func1 has an asset, Func2 does not
-      expect(synthesized.assets.length).toEqual(1);
     });
 
     test('adds code asset metadata', () => {
