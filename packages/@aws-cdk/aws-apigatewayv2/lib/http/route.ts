@@ -36,7 +36,7 @@ export interface GrantInvokeOptions {
    * The HTTP methods to allow.
    * @default `[HttpMethod.ANY]`
    */
-  readonly httpMethod?: HttpMethod[];
+  readonly httpMethods?: HttpMethod[];
 }
 
 /**
@@ -255,7 +255,7 @@ export class HttpRoute extends Resource implements IHttpRoute {
     // path variable and the rest of the path with a wildcard.
     const iamPath = path.replace(/\{.*?\}.*/, '*');
 
-    const resourceArns = (options.httpMethod ?? [HttpMethod.ANY]).map(httpMethod => {
+    const resourceArns = (options.httpMethods ?? [HttpMethod.ANY]).map(httpMethod => {
       const iamHttpMethod = httpMethod === HttpMethod.ANY ? '*' : httpMethod;
       const resourceArn = `arn:aws:execute-api:${this.stack.region}:${this.stack.account}:${this.httpApi.apiId}/${stage}/${iamHttpMethod}${iamPath}`;
       return resourceArn;

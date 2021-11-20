@@ -372,7 +372,7 @@ describe('HttpRoute', () => {
 
     // WHEN
     route.grantInvoke(role, {
-      httpMethod: [HttpMethod.GET, HttpMethod.PUT],
+      httpMethods: [HttpMethod.GET, HttpMethod.PUT],
     });
 
     // THEN
