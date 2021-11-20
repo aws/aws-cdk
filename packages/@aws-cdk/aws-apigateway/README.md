@@ -111,13 +111,17 @@ item.addMethod('DELETE', new apigateway.HttpIntegration('http://amazon.com'));
 
 You can use Amazon API Gateway with AWS Step Functions as the backend integration, specifically Synchronous Express Workflows.
 
-The `StepFunctionsRestApi` construct makes this easy and also sets up input, output and error mapping. The `StepFunctionsRestApi` construct sets up the API Gateway REST API with an `ANY` HTTP method and sets up the api role with the required permission to invoke `StartSyncExecution` action on the AWS StepFunctions state machine. This will enable you to invoke any one of the API Gateway HTTP methods and get a response from the backend AWS StepFunctions state machine. Invoking any of the HTTP Method, using the example below, will return a "Hello!" message as the Response Body.
+The `StepFunctionsRestApi` only supports integration with Synchronous Express state machine. The `StepFunctionsRestApi` construct makes this easy and also sets up input, output and error mapping. The `StepFunctionsRestApi` construct sets up the API Gateway REST API with an `ANY` HTTP method and sets up the api role with the required permission to invoke `StartSyncExecution` action on the AWS StepFunctions state machine. It sets up up a `prod` stage by default. This will enable you to invoke any of the API Gateway HTTP methods for that `prod` and get a response from the backend AWS Step Functions execution. Invoking either GET or POST in the example below will send the request to the state machine as a new execution. On success, an HTTP code '200' is returned with ONLY the execution output as the Response Body. If the state machine execution fails, an HTTP '500' error response is returned with the error and cause of the execution as the Response Body. If the request is invalid (ex. bad execution input) an HTTP '400' error is returned.
+
+As part of the API Gateway integration with Step Functions, it is possible to opt-in to include requestContext, headers, path, and querystring to the execution input. By default, these paramaters are not included in order to reduce payload size sent to Step Functions. 
+
+More details about AWS Step Functions payload limit can be found at https://docs.aws.amazon.com/step-functions/latest/dg/limits-overview.html#service-limits-task-executions.
 
 The following code defines a REST API that routes all requests to the specified AWS StepFunctions state machine:
 
 ```ts
 const machineDefinition = new sfn.Pass(this, 'PassState', {
-    result: {value:"Hello!"},
+
 })
 
 const stateMachine: sfn.IStateMachine = new sfn.StateMachine(this, 'StateMachine', {
@@ -128,6 +132,59 @@ const stateMachine: sfn.IStateMachine = new sfn.StateMachine(this, 'StateMachine
 new apigateway.StepFunctionsRestApi(this, 'StepFunctionsRestApi', { 
   stateMachine: stateMachine,
 });
+```
+
+Here are a few examples:
+
+Example 1: POST with default configuration
+
+```json
+POST /
+{
+     "customerId": 1 
+}
+```
+
+Step Functions will wrap the request body inside a `body` key as it is possible to have other keys within the request (ex. requestContext, header, path, and/or querystring):
+
+```json
+{
+  "body": {
+    "customerId": 1 
+  }
+}
+```
+
+Example2: GET with API-Gateway path enabled. Set up API Gateway with resources `/user/{userId}`. Invoking 'https://\<api-id\>.execute-api.\<region\>.amazonaws.com/prod/users/1'.
+
+Request:
+
+```json
+{
+  "body": {},
+  "path": "/users/{userid}",
+}
+```
+
+Example 3: GET with API-Gateway requestContext, header, and querystring enabled. Invoking 'https://\<api-id\>.execute-api.\<region\>.amazonaws.com/prod?customerId=1'.
+
+Request:
+
+```json
+{
+  "body": {},
+  "requestContext": {
+     "accountId": "...",
+     "apiKey": "...",
+  },
+  "header": {
+    "Accept": "...",
+    "CloudFront-Forwarded-Proto": "...",
+  },
+  "querystring": {
+    "customerId": 1 
+  }
+}
 ```
 
 ### Breaking up Methods and Resources across Stacks

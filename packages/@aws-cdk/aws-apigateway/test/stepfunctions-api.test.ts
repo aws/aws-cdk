@@ -120,7 +120,7 @@ describe('Step Functions api', () => {
       Integration: {
         Credentials: {
           'Fn::GetAtt': [
-            'DefaultStateMachineapiRole1F29ACEB',
+            'DefaultStateMachineapiRoleNewB2BFA951',
             'Arn',
           ],
         },
@@ -131,11 +131,11 @@ describe('Step Functions api', () => {
             'Fn::Join': [
               '',
               [
-                "\n    #set($inputRoot = $input.path('$')) {\n        \"input\": \"$util.escapeJavaScript($input.json('$'))\",\n        \"stateMachineArn\": \"",
+                "## Velocity Template used for API Gateway request mapping template\n##\n## This template forwards the request body, header, path, and querystring\n## to the execution input of the state machine.\n##\n## \"@@\" is used here as a placeholder for '\"' to avoid using escape characters.\n\n#set($inputString = '')\n#set($includeHeaders = false)\n#set($includeQueryString = false)\n#set($includePath = false)\n#set($allParams = $input.params())\n{\n    \"stateMachineArn\": \"",
                 {
                   Ref: 'StateMachine2E01A3A5',
                 },
-                '"\n      }',
+                "\",\n\n    #set($inputString = \"$inputString,@@body@@: $input.body\")\n\n    #if ($includeHeaders)\n        #set($inputString = \"$inputString, @@header@@:{\")\n        #foreach($paramName in $allParams.header.keySet())\n            #set($inputString = \"$inputString @@$paramName@@: @@$util.escapeJavaScript($allParams.header.get($paramName))@@\")\n            #if($foreach.hasNext)\n                #set($inputString = \"$inputString,\")\n            #end\n        #end\n        #set($inputString = \"$inputString }\")\n        \n    #end\n\n    #if ($includeQueryString)\n        \n        #set($inputString = \"$inputString, @@querystring@@:{\")\n        #foreach($paramName in $allParams.querystring.keySet())\n            #set($inputString = \"$inputString @@$paramName@@: @@$util.escapeJavaScript($allParams.querystring.get($paramName))@@\")\n            #if($foreach.hasNext)\n                #set($inputString = \"$inputString,\")\n            #end\n        #end\n        #set($inputString = \"$inputString }\")\n    #end\n\n    #if ($includePath)\n        #set($inputString = \"$inputString, @@path@@: @@$context.resourcePath@@\")\n    #end\n    \n    #set($requestContext = \"\")\n    ## Check if the request context should be included as part of the execution input\n    #if($requestContext && !$requestContext.empty)\n        #set($inputString = \"$inputString,\")\n        #set($inputString = \"$inputString $requestContext\")\n    #end\n\n    #set($inputString = \"$inputString}\")\n    #set($inputString = $inputString.replaceAll(\"@@\",'\"'))\n    #set($len = $inputString.length() - 1)\n    \"input\": \"{$util.escapeJavaScript($inputString.substring(1,$len))}\"\n}\n",
               ],
             ],
           },
@@ -213,7 +213,7 @@ describe('Step Functions api', () => {
       Integration: {
         Credentials: {
           'Fn::GetAtt': [
-            'DefaultStateMachineapiRole1F29ACEB',
+            'DefaultStateMachineapiRoleNewB2BFA951',
             'Arn',
           ],
         },
@@ -224,11 +224,11 @@ describe('Step Functions api', () => {
             'Fn::Join': [
               '',
               [
-                "\n    #set($allParams = $input.params())\n    {\n      \"input\": \"{\\\"body\\\": $util.escapeJavaScript($input.json('$')),\\\"requestContext\\\": {\\\"accountId\\\":\\\"$context.identity.accountId\\\",\\\"apiId\\\":\\\"$context.apiId\\\",\\\"apiKey\\\":\\\"$context.identity.apiKey\\\",\\\"authorizerPrincipalId\\\":\\\"$context.authorizer.principalId\\\",\\\"caller\\\":\\\"$context.identity.caller\\\",\\\"cognitoAuthenticationProvider\\\":\\\"$context.identity.cognitoAuthenticationProvider\\\",\\\"cognitoAuthenticationType\\\":\\\"$context.identity.cognitoAuthenticationType\\\",\\\"cognitoIdentityId\\\":\\\"$context.identity.cognitoIdentityId\\\",\\\"cognitoIdentityPoolId\\\":\\\"$context.identity.cognitoIdentityPoolId\\\",\\\"httpMethod\\\":\\\"$context.httpMethod\\\",\\\"stage\\\":\\\"$context.stage\\\",\\\"sourceIp\\\":\\\"$context.identity.sourceIp\\\",\\\"user\\\":\\\"$context.identity.user\\\",\\\"userAgent\\\":\\\"$context.identity.userAgent\\\",\\\"userArn\\\":\\\"$context.identity.userArn\\\",\\\"requestId\\\":\\\"$context.requestId\\\",\\\"resourceId\\\":\\\"$context.resourceId\\\",\\\"resourcePath\\\":\\\"$context.resourcePath\\\"}}\",\n      \"stateMachineArn\": \"",
+                "## Velocity Template used for API Gateway request mapping template\n##\n## This template forwards the request body, header, path, and querystring\n## to the execution input of the state machine.\n##\n## \"@@\" is used here as a placeholder for '\"' to avoid using escape characters.\n\n#set($inputString = '')\n#set($includeHeaders = false)\n#set($includeQueryString = false)\n#set($includePath = false)\n#set($allParams = $input.params())\n{\n    \"stateMachineArn\": \"",
                 {
                   Ref: 'StateMachine2E01A3A5',
                 },
-                '"\n    }',
+                "\",\n\n    #set($inputString = \"$inputString,@@body@@: $input.body\")\n\n    #if ($includeHeaders)\n        #set($inputString = \"$inputString, @@header@@:{\")\n        #foreach($paramName in $allParams.header.keySet())\n            #set($inputString = \"$inputString @@$paramName@@: @@$util.escapeJavaScript($allParams.header.get($paramName))@@\")\n            #if($foreach.hasNext)\n                #set($inputString = \"$inputString,\")\n            #end\n        #end\n        #set($inputString = \"$inputString }\")\n        \n    #end\n\n    #if ($includeQueryString)\n        \n        #set($inputString = \"$inputString, @@querystring@@:{\")\n        #foreach($paramName in $allParams.querystring.keySet())\n            #set($inputString = \"$inputString @@$paramName@@: @@$util.escapeJavaScript($allParams.querystring.get($paramName))@@\")\n            #if($foreach.hasNext)\n                #set($inputString = \"$inputString,\")\n            #end\n        #end\n        #set($inputString = \"$inputString }\")\n    #end\n\n    #if ($includePath)\n        #set($inputString = \"$inputString, @@path@@: @@$context.resourcePath@@\")\n    #end\n    \n    #set($requestContext = \"@@requestContext@@: {@@accountId@@:@@$context.identity.accountId@@,@@apiId@@:@@$context.apiId@@,@@apiKey@@:@@$context.identity.apiKey@@,@@authorizerPrincipalId@@:@@$context.authorizer.principalId@@,@@caller@@:@@$context.identity.caller@@,@@cognitoAuthenticationProvider@@:@@$context.identity.cognitoAuthenticationProvider@@,@@cognitoAuthenticationType@@:@@$context.identity.cognitoAuthenticationType@@,@@cognitoIdentityId@@:@@$context.identity.cognitoIdentityId@@,@@cognitoIdentityPoolId@@:@@$context.identity.cognitoIdentityPoolId@@,@@httpMethod@@:@@$context.httpMethod@@,@@stage@@:@@$context.stage@@,@@sourceIp@@:@@$context.identity.sourceIp@@,@@user@@:@@$context.identity.user@@,@@userAgent@@:@@$context.identity.userAgent@@,@@userArn@@:@@$context.identity.userArn@@,@@requestId@@:@@$context.requestId@@,@@resourceId@@:@@$context.resourceId@@,@@resourcePath@@:@@$context.resourcePath@@}\")\n    ## Check if the request context should be included as part of the execution input\n    #if($requestContext && !$requestContext.empty)\n        #set($inputString = \"$inputString,\")\n        #set($inputString = \"$inputString $requestContext\")\n    #end\n\n    #set($inputString = \"$inputString}\")\n    #set($inputString = $inputString.replaceAll(\"@@\",'\"'))\n    #set($len = $inputString.length() - 1)\n    \"input\": \"{$util.escapeJavaScript($inputString.substring(1,$len))}\"\n}\n",
               ],
             ],
           },
@@ -255,6 +255,78 @@ describe('Step Functions api', () => {
     });
   });
 
+  test('StepFunctionsRestApi defines correct REST API resouces with includeRequestContext set to empty', () => { //GIVEN
+    const { stack, stateMachine } = givenSetup();
+
+    //WHEN
+    const api = new apigw.StepFunctionsRestApi(stack,
+      'StepFunctionsRestApi', {
+        stateMachine: stateMachine,
+        requestContext: {},
+      });
+
+    expect(() => {
+      api.root.addResource('not allowed');
+    }).toThrow();
+
+    //THEN
+    expect(stack).toHaveResource('AWS::ApiGateway::Method', {
+      HttpMethod: 'ANY',
+      MethodResponses: getMethodResponse(),
+      AuthorizationType: 'NONE',
+      RestApiId: {
+        Ref: 'StepFunctionsRestApiC6E3E883',
+      },
+      ResourceId: {
+        'Fn::GetAtt': [
+          'StepFunctionsRestApiC6E3E883',
+          'RootResourceId',
+        ],
+      },
+      Integration: {
+        Credentials: {
+          'Fn::GetAtt': [
+            'DefaultStateMachineapiRoleNewB2BFA951',
+            'Arn',
+          ],
+        },
+        IntegrationHttpMethod: 'POST',
+        IntegrationResponses: getIntegrationResponse(),
+        RequestTemplates: {
+          'application/json': {
+            'Fn::Join': [
+              '',
+              [
+                "## Velocity Template used for API Gateway request mapping template\n##\n## This template forwards the request body, header, path, and querystring\n## to the execution input of the state machine.\n##\n## \"@@\" is used here as a placeholder for '\"' to avoid using escape characters.\n\n#set($inputString = '')\n#set($includeHeaders = false)\n#set($includeQueryString = false)\n#set($includePath = false)\n#set($allParams = $input.params())\n{\n    \"stateMachineArn\": \"",
+                {
+                  Ref: 'StateMachine2E01A3A5',
+                },
+                "\",\n\n    #set($inputString = \"$inputString,@@body@@: $input.body\")\n\n    #if ($includeHeaders)\n        #set($inputString = \"$inputString, @@header@@:{\")\n        #foreach($paramName in $allParams.header.keySet())\n            #set($inputString = \"$inputString @@$paramName@@: @@$util.escapeJavaScript($allParams.header.get($paramName))@@\")\n            #if($foreach.hasNext)\n                #set($inputString = \"$inputString,\")\n            #end\n        #end\n        #set($inputString = \"$inputString }\")\n        \n    #end\n\n    #if ($includeQueryString)\n        \n        #set($inputString = \"$inputString, @@querystring@@:{\")\n        #foreach($paramName in $allParams.querystring.keySet())\n            #set($inputString = \"$inputString @@$paramName@@: @@$util.escapeJavaScript($allParams.querystring.get($paramName))@@\")\n            #if($foreach.hasNext)\n                #set($inputString = \"$inputString,\")\n            #end\n        #end\n        #set($inputString = \"$inputString }\")\n    #end\n\n    #if ($includePath)\n        #set($inputString = \"$inputString, @@path@@: @@$context.resourcePath@@\")\n    #end\n    \n    #set($requestContext = \"\")\n    ## Check if the request context should be included as part of the execution input\n    #if($requestContext && !$requestContext.empty)\n        #set($inputString = \"$inputString,\")\n        #set($inputString = \"$inputString $requestContext\")\n    #end\n\n    #set($inputString = \"$inputString}\")\n    #set($inputString = $inputString.replaceAll(\"@@\",'\"'))\n    #set($len = $inputString.length() - 1)\n    \"input\": \"{$util.escapeJavaScript($inputString.substring(1,$len))}\"\n}\n",
+              ],
+            ],
+          },
+        },
+        Type: 'AWS',
+        Uri: {
+          'Fn::Join': [
+            '',
+            [
+              'arn:',
+              {
+                Ref: 'AWS::Partition',
+              },
+              ':apigateway:',
+              {
+                Ref: 'AWS::Region',
+              },
+              ':states:action/StartSyncExecution',
+            ],
+          ],
+        },
+        PassthroughBehavior: 'NEVER',
+      },
+    });
+  });
 
   test('fails if options.defaultIntegration is set', () => {
     //GIVEN

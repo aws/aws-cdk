@@ -27,36 +27,27 @@ export interface StepFunctionsRestApiProps extends RestApiProps {
    * The following code defines a REST API like above but also adds 'requestContext' to the input
    * of the State Machine:
    *
-   * @example
-   *
-   *    const stateMachine = new stepFunctions.StateMachine(this, 'StateMachine', ...);
-   *    new apigateway.StepFunctionsRestApi(this, 'StepFunctionsRestApi', {
-   *      stateMachine: stateMachine,
-   *      requestContext: {
-   *         accountId: true,
-   *         apiId: true,
-   *         apiKey: true,
-   *         authorizerPrincipalId: true,
-   *         caller: true,
-   *         cognitoAuthenticationProvider: true,
-   *         cognitoAuthenticationType: true,
-   *         cognitoIdentityId: true,
-   *         cognitoIdentityPoolId: true,
-   *         httpMethod: true,
-   *         stage: true,
-   *         sourceIp: true,
-   *         user: true,
-   *         userAgent: true,
-   *         userArn: true,
-   *         requestId: true,
-   *         resourceId: true,
-   *         resourcePath: true,
-   *       },
-   *    });
-   *
    * @default - all parameters within request context will be set as false
    */
   readonly requestContext?: RequestContext;
+
+  /**
+   * Check if querystring is to be included inside the execution input
+   * @default false
+   */
+  readonly queryString?: boolean;
+
+  /**
+   * Check if path is to be included inside the execution input
+   * @default false
+   */
+  readonly path?: boolean;
+
+  /**
+   * Check if header is to be included inside the execution input
+   * @default false
+   */
+  readonly headers?: boolean;
 }
 
 /**
@@ -98,6 +89,9 @@ export class StepFunctionsRestApi extends RestApi {
         credentialsRole: apiRole,
         requestContext: props.requestContext,
         action: 'StartSyncExecution',
+        queryString: props.queryString,
+        path: props.path,
+        headers: props.headers,
       }), {
         methodResponses: [
           ...methodResp,
@@ -106,28 +100,29 @@ export class StepFunctionsRestApi extends RestApi {
     }
   }
 }
-
+/**
+ * Defines the IAM Role for API Gateway with required permisisons
+ * to perform action on the state machine.
+ *
+ * @param scope
+ * @param props
+ * @returns Role - IAM Role
+ */
 function role(scope: Construct, props: StepFunctionsRestApiProps): iam.Role {
-  const apiName: string = props.stateMachine + '-apiRole';
+  const apiName: string = props.stateMachine + '-apiRoleNew';
   const apiRole = new iam.Role(scope, apiName, {
     assumedBy: new iam.ServicePrincipal('apigateway.amazonaws.com'),
   });
 
-  apiRole.attachInlinePolicy(
-    new iam.Policy(scope, 'AllowStartSyncExecution', {
-      statements: [
-        new iam.PolicyStatement({
-          actions: ['states:StartSyncExecution'],
-          effect: iam.Effect.ALLOW,
-          resources: [props.stateMachine.stateMachineArn],
-        }),
-      ],
-    }),
-  );
+  props.stateMachine.grantStartSyncExecution(apiRole);
 
   return apiRole;
 }
 
+/**
+ * Defines the method response modelfor each HTTP code response
+ * @returns methodResponse
+ */
 function methodResponse() {
   const methodResp = [
     {
