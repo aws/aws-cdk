@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as iam from '@aws-cdk/aws-iam';
 import { Construct } from 'constructs';
-import { Cluster, ICluster } from '.';
+import { ICluster } from '.';
 
 // v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
 // eslint-disable-next-line
@@ -191,6 +191,7 @@ export class AlbController extends CoreConstruct {
 
   /**
    * Retrieve the controller construct associated with this cluster and scope.
+   *
    * Singleton per stack/cluster.
    */
   public static get(scope: Construct, cluster: ICluster): AlbController | undefined {
@@ -200,15 +201,14 @@ export class AlbController extends CoreConstruct {
   }
 
   /**
-   * Retrieve or create the controller construct associated with this cluster and scope.
+   * Create the controller construct associated with this cluster and scope.
+   *
+   * Singleton per stack/cluster.
    */
-  public static getOrCreate(scope: Construct, props: AlbControllerProps) {
-    let controller = AlbController.get(scope, props.cluster);
-    if (!controller) {
-      controller = new AlbController(scope, AlbController.uid(props.cluster), props);
-    }
-
-    return controller;
+  public static create(scope: Construct, props: AlbControllerProps) {
+    const stack = Stack.of(scope);
+    const uid = AlbController.uid(props.cluster);
+    return new AlbController(stack, uid, props);
   }
 
   private static uid(cluster: ICluster) {
@@ -274,12 +274,6 @@ export class AlbController extends CoreConstruct {
     });
 
     chart.node.addDependency(serviceAccount);
-
-    if (props.cluster instanceof Cluster) {
-      chart.node.addDependency(props.cluster.openIdConnectProvider);
-      chart.node.addDependency(props.cluster.awsAuth);
-    }
-
   }
 
 }

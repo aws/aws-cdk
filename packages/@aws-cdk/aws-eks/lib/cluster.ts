@@ -1438,7 +1438,7 @@ export class Cluster extends ClusterBase {
     this.defineCoreDnsComputeType(props.coreDnsComputeType ?? CoreDnsComputeType.EC2);
 
     if (props.albController) {
-      AlbController.getOrCreate(this, { ...props.albController, cluster: this });
+      AlbController.create(this, { ...props.albController, cluster: this });
     }
   }
 

@@ -4,7 +4,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import { App, CfnOutput, Duration, Token, Fn } from '@aws-cdk/core';
 import * as cdk8s from 'cdk8s';
-import * as kplus from 'cdk8s-plus';
+import * as kplus from 'cdk8s-plus-21';
 import * as constructs from 'constructs';
 import * as eks from '../lib';
 import * as hello from './hello-k8s';
