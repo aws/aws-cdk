@@ -14,7 +14,6 @@ export interface MockWebSocketIntegrationProps {
    * Prop description
    */
   //readonly prop: IFunction
-  readonly prop: string;
 }
 
 /**
