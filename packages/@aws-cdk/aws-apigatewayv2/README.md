@@ -286,19 +286,24 @@ API](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-acces
 
 These authorizers can be found in the [APIGatewayV2-Authorizers](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-apigatewayv2-authorizers-readme.html) constructs library.
 
-In addition to these authorizers, API Gateway supports IAM via grant syntax:
+In addition to these authorizers, API Gateway supports IAM via the included `HttpIamAuthorizer` and grant syntax:
 
 ```ts
 declare const principal: iam.IGrantee;
 
-const booksRoute = new apigwv2.HttpRoute(stack, 'BooksRoute', {
+const authorizer = new apigwv2.HttpIamAuthorizer();
+
+const httpApi = new apigwv2.HttpApi(stack, 'HttpApi', {
   httpApi,
-  integration,
-  routeKey: apigwv2.HttpRouteKey.with('/books/{book}'),
+  defaultAuthorizer: authorizer,
 });
 
-// Grant principal access to invoke the /books/* api.
-booksRoute.grantInvoke(principal);
+const [route] = httpApi.addRoute({
+  integration,
+  path: '/books/{book}',
+});
+
+route.grantInvoke(principal);
 ```
 
 ### Metrics

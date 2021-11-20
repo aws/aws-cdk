@@ -92,7 +92,7 @@
         "AutoDeploy": true
       }
     },
-    "FooRouteHttpIntegrationa1c61b1feee2fb313274d3d2ee8b6d4bF59A130B": {
+    "HttpApiANYfooHttpIntegrationa1c61b1feee2fb313274d3d2ee8b6d4b0CAF277C": {
       "Type": "AWS::ApiGatewayV2::Integration",
       "Properties": {
         "ApiId": {
@@ -104,7 +104,7 @@
         "PayloadFormatVersion": "1.0"
       }
     },
-    "FooRoute507F6BE5": {
+    "HttpApiANYfooD178456F": {
       "Type": "AWS::ApiGatewayV2::Route",
       "Properties": {
         "ApiId": {
@@ -118,14 +118,14 @@
             [
               "integrations/",
               {
-                "Ref": "FooRouteHttpIntegrationa1c61b1feee2fb313274d3d2ee8b6d4bF59A130B"
+                "Ref": "HttpApiANYfooHttpIntegrationa1c61b1feee2fb313274d3d2ee8b6d4b0CAF277C"
               }
             ]
           ]
         }
       }
     },
-    "BooksRoute0E0D7E1E": {
+    "HttpApiANYbooksbook2F78361C": {
       "Type": "AWS::ApiGatewayV2::Route",
       "Properties": {
         "ApiId": {
@@ -139,7 +139,7 @@
             [
               "integrations/",
               {
-                "Ref": "FooRouteHttpIntegrationa1c61b1feee2fb313274d3d2ee8b6d4bF59A130B"
+                "Ref": "HttpApiANYfooHttpIntegrationa1c61b1feee2fb313274d3d2ee8b6d4b0CAF277C"
               }
             ]
           ]

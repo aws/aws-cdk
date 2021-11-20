@@ -20,20 +20,20 @@ const userAccessKey = new iam.CfnAccessKey(stack, 'UserAccess', {
   userName: user.userName,
 });
 
-const httpApi = new apigatewayv2.HttpApi(stack, 'HttpApi');
+const httpApi = new apigatewayv2.HttpApi(stack, 'HttpApi', {
+  defaultAuthorizer: new apigatewayv2.HttpIamAuthorizer(),
+});
 
-const fooRoute = new apigatewayv2.HttpRoute(stack, 'FooRoute', {
-  httpApi,
+const [fooRoute] = httpApi.addRoutes({
   integration: new ExampleComIntegration(),
-  routeKey: apigatewayv2.HttpRouteKey.with('/foo'),
+  path: '/foo',
 });
 
 fooRoute.grantInvoke(user);
 
-const booksRoute = new apigatewayv2.HttpRoute(stack, 'BooksRoute', {
-  httpApi,
+const [booksRoute] = httpApi.addRoutes({
   integration: new ExampleComIntegration(),
-  routeKey: apigatewayv2.HttpRouteKey.with('/books/{book}'),
+  path: '/books/{book}',
 });
 
 booksRoute.grantInvoke(user);
