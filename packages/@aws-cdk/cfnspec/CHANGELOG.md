@@ -1,3 +1,73 @@
+# CloudFormation Resource Specification v49.0.0
+
+## New Resource Types
+
+* AWS::AppStream::AppBlock
+* AWS::AppStream::Application
+* AWS::AppStream::ApplicationFleetAssociation
+* AWS::DataBrew::Ruleset
+
+## Attribute Changes
+
+* AWS::EC2::VPCDHCPOptionsAssociation Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpc-dhcp-options-assoc.html
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpcdhcpoptionsassociation.html
+* AWS::EC2::VPCDHCPOptionsAssociation Id (__added__)
+
+## Property Changes
+
+* AWS::APS::RuleGroupsNamespace Name.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::AppStream::Fleet MaxConcurrentSessions (__added__)
+* AWS::AppStream::Fleet Platform (__added__)
+* AWS::AppStream::Fleet UsbDeviceFilterStrings (__added__)
+* AWS::AppStream::Fleet ComputeCapacity.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Chatbot::SlackChannelConfiguration GuardrailPolicies (__added__)
+* AWS::Chatbot::SlackChannelConfiguration UserRoleRequired (__added__)
+* AWS::CloudFormation::StackSet ManagedExecution (__added__)
+* AWS::CloudWatch::AnomalyDetector MetricMathAnomalyDetector (__added__)
+* AWS::CloudWatch::AnomalyDetector SingleMetricAnomalyDetector (__added__)
+* AWS::DataBrew::Job ValidationConfigurations (__added__)
+* AWS::DataBrew::Job Recipe.PrimitiveType (__deleted__)
+* AWS::EC2::VPCDHCPOptionsAssociation DhcpOptionsId.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpc-dhcp-options-assoc.html#cfn-ec2-vpcdhcpoptionsassociation-dhcpoptionsid
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpcdhcpoptionsassociation.html#cfn-ec2-vpcdhcpoptionsassociation-dhcpoptionsid
+* AWS::EC2::VPCDHCPOptionsAssociation DhcpOptionsId.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::VPCDHCPOptionsAssociation VpcId.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpc-dhcp-options-assoc.html#cfn-ec2-vpcdhcpoptionsassociation-vpcid
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpcdhcpoptionsassociation.html#cfn-ec2-vpcdhcpoptionsassociation-vpcid
+* AWS::EC2::VPCEndpointService PayerResponsibility (__deleted__)
+* AWS::Lambda::EventSourceMapping FilterCriteria (__added__)
+* AWS::Logs::LogGroup Tags (__added__)
+* AWS::Route53::HostedZone Name.Required (__changed__)
+  * Old: true
+  * New: false
+
+## Property Type Changes
+
+* AWS::CloudWatch::AnomalyDetector.MetricMathAnomalyDetector (__added__)
+* AWS::CloudWatch::AnomalyDetector.SingleMetricAnomalyDetector (__added__)
+* AWS::DataBrew::Dataset.Metadata (__added__)
+* AWS::DataBrew::Job.AllowedStatistics (__added__)
+* AWS::DataBrew::Job.EntityDetectorConfiguration (__added__)
+* AWS::DataBrew::Job.ValidationConfiguration (__added__)
+* AWS::MSK::Cluster.ConnectivityInfo (__added__)
+* AWS::MSK::Cluster.PublicAccess (__added__)
+* AWS::DataBrew::Dataset.DatabaseInputDefinition QueryString (__added__)
+* AWS::DataBrew::Dataset.DatabaseInputDefinition GlueConnectionName.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::DataBrew::Dataset.Input Metadata (__added__)
+* AWS::DataBrew::Job.ProfileConfiguration EntityDetectorConfiguration (__added__)
+* AWS::MSK::Cluster.BrokerNodeGroupInfo ConnectivityInfo (__added__)
+* AWS::Transfer::Server.IdentityProviderDetails Function (__added__)
+
+
 # CloudFormation Resource Specification v48.0.0
 
 ## New Resource Types
