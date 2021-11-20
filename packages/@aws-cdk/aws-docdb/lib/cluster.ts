@@ -312,6 +312,11 @@ export class DatabaseCluster extends DatabaseClusterBase {
   public readonly secret?: secretsmanager.ISecret;
 
   /**
+   * The secret attached to this cluster
+   */
+  public readonly databaseSecret?: DatabaseSecret | undefined;
+
+  /**
    * The underlying CloudFormation resource for a database cluster.
    */
   private readonly cluster: CfnDBCluster;
@@ -374,9 +379,8 @@ export class DatabaseCluster extends DatabaseClusterBase {
     }
 
     // Create the secret manager secret if no password is specified
-    let secret: DatabaseSecret | undefined;
     if (!props.masterUser.password) {
-      secret = new DatabaseSecret(this, 'Secret', {
+      this.databaseSecret = new DatabaseSecret(this, 'Secret', {
         username: props.masterUser.username,
         encryptionKey: props.masterUser.kmsKey,
         excludeCharacters: props.masterUser.excludeCharacters,
@@ -401,9 +405,9 @@ export class DatabaseCluster extends DatabaseClusterBase {
       dbClusterParameterGroupName: props.parameterGroup?.parameterGroupName,
       deletionProtection: props.deletionProtection,
       // Admin
-      masterUsername: secret ? secret.secretValueFromJson('username').toString() : props.masterUser.username,
-      masterUserPassword: secret
-        ? secret.secretValueFromJson('password').toString()
+      masterUsername: this.secret ? this.secret.secretValueFromJson('username').toString() : props.masterUser.username,
+      masterUserPassword: this.secret
+        ? this.secret.secretValueFromJson('password').toString()
         : props.masterUser.password!.toString(),
       // Backup
       backupRetentionPeriod: props.backup?.retention?.toDays(),
@@ -427,8 +431,8 @@ export class DatabaseCluster extends DatabaseClusterBase {
     this.clusterEndpoint = new Endpoint(this.cluster.attrEndpoint, port);
     this.clusterReadEndpoint = new Endpoint(this.cluster.attrReadEndpoint, port);
 
-    if (secret) {
-      this.secret = secret.attach(this);
+    if (this.databaseSecret) {
+      this.secret = this.databaseSecret.attach(this);
     }
 
     // Create the instances
@@ -476,7 +480,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
    * before Secrets Manager triggers the next automatic rotation.
    */
   public addRotationSingleUser(automaticallyAfter?: Duration): secretsmanager.SecretRotation {
-    if (!this.secret) {
+    if (!this.secret || !this.databaseSecret) {
       throw new Error('Cannot add single user rotation for a cluster without secret.');
     }
 
@@ -490,6 +494,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
       secret: this.secret,
       automaticallyAfter,
       application: DatabaseCluster.SINGLE_USER_ROTATION_APPLICATION,
+      excludeCharacters: this.databaseSecret.excludedCharacters,
       vpc: this.vpc,
       vpcSubnets: this.vpcSubnets,
       target: this,
@@ -500,13 +505,14 @@ export class DatabaseCluster extends DatabaseClusterBase {
    * Adds the multi user rotation to this cluster.
    */
   public addRotationMultiUser(id: string, options: RotationMultiUserOptions): secretsmanager.SecretRotation {
-    if (!this.secret) {
+    if (!this.secret || !this.databaseSecret) {
       throw new Error('Cannot add multi user rotation for a cluster without secret.');
     }
     return new secretsmanager.SecretRotation(this, id, {
       secret: options.secret,
       masterSecret: this.secret,
       automaticallyAfter: options.automaticallyAfter,
+      excludeCharacters: this.databaseSecret.excludedCharacters,
       application: DatabaseCluster.MULTI_USER_ROTATION_APPLICATION,
       vpc: this.vpc,
       vpcSubnets: this.vpcSubnets,
