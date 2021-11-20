@@ -4,7 +4,7 @@ import { App, NestedStack, Stack } from '@aws-cdk/core';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 
 /* eslint-disable @aws-cdk/no-core-construct */
 

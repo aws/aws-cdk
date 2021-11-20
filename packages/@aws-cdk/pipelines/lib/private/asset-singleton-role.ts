@@ -1,7 +1,7 @@
 import * as iam from '@aws-cdk/aws-iam';
 import { PolicyStatement } from '@aws-cdk/aws-iam';
-import { ArnFormat, ConcreteDependable, Stack } from '@aws-cdk/core';
-import { Construct } from 'constructs';
+import { ArnFormat, Stack } from '@aws-cdk/core';
+import { Construct, IDependable } from 'constructs';
 
 /**
  * Role which will be reused across asset jobs
@@ -68,7 +68,7 @@ export class AssetSingletonRole extends iam.Role {
 
     if (this._rejectDuplicates && alreadyAdded.includes(acts)) {
       // Pretend we did it
-      return { statementAdded: true, policyDependable: new ConcreteDependable() };
+      return { statementAdded: true, policyDependable: new class implements IDependable { } };
     }
 
     // These are added in duplicate (specifically these come from
@@ -77,7 +77,7 @@ export class AssetSingletonRole extends iam.Role {
     // unnecessary diffs, recognize and drop them there as well.
     if (acts === '["kms:Decrypt","kms:Encrypt","kms:ReEncrypt*","kms:GenerateDataKey*"]') {
       // Pretend we did it
-      return { statementAdded: true, policyDependable: new ConcreteDependable() };
+      return { statementAdded: true, policyDependable: new class implements IDependable { } };
     }
 
     return super.addToPrincipalPolicy(statement);

@@ -1,10 +1,11 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
-import { App, CfnParameter, CfnResource, Construct as CfnConstruct, Lazy, Stack, TreeInspector } from '../../lib/index';
+import { Construct } from 'constructs';
+import { App, CfnParameter, CfnResource, Lazy, Stack, TreeInspector } from '../../lib/index';
 
 abstract class AbstractCfnResource extends CfnResource {
-  constructor(scope: CfnConstruct, id: string) {
+  constructor(scope: Construct, id: string) {
     super(scope, id, {
       type: 'CDK::UnitTest::MyCfnResource',
     });
@@ -23,7 +24,7 @@ describe('tree metadata', () => {
     const app = new App();
 
     const stack = new Stack(app, 'mystack');
-    new CfnConstruct(stack, 'myconstruct');
+    new Construct(stack, 'myconstruct');
 
     const assembly = app.synth();
     const treeArtifact = assembly.tree();
@@ -232,7 +233,7 @@ describe('tree metadata', () => {
     class MyFirstResource extends AbstractCfnResource {
       public readonly lazykey: string;
 
-      constructor(scope: CfnConstruct, id: string) {
+      constructor(scope: Construct, id: string) {
         super(scope, id);
         this.lazykey = Lazy.string({ produce: () => 'LazyResolved!' });
       }
@@ -247,7 +248,7 @@ describe('tree metadata', () => {
     class MySecondResource extends AbstractCfnResource {
       public readonly myprop: string;
 
-      constructor(scope: CfnConstruct, id: string, myprop: string) {
+      constructor(scope: Construct, id: string, myprop: string) {
         super(scope, id);
         this.myprop = myprop;
       }
@@ -337,7 +338,7 @@ describe('tree metadata', () => {
 
     const treenode = app.node.findChild('Tree');
 
-    const warn = treenode.node.metadataEntry.find((md) => {
+    const warn = treenode.node.metadata.find((md) => {
       return md.type === cxschema.ArtifactMetadataEntryType.WARN
         && /Forcing an inspect error/.test(md.data as string)
         && /mycfnresource/.test(md.data as string);
