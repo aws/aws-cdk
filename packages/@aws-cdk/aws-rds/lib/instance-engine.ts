@@ -98,6 +98,13 @@ export interface IInstanceEngine extends IEngine {
   readonly multiUserRotationApplication: secretsmanager.SecretRotationApplication;
 
   /**
+   * Whether this engine supports automatic backups of a read replica instance.
+   *
+   * @default false
+   */
+  readonly supportsReadReplicaBackups?: boolean;
+
+  /**
    * Method called when the engine is used to create a new instance.
    */
   bindToInstance(scope: Construct, options: InstanceEngineBindOptions): InstanceEngineConfig;
@@ -120,6 +127,7 @@ abstract class InstanceEngineBase implements IInstanceEngine {
   public readonly singleUserRotationApplication: secretsmanager.SecretRotationApplication;
   public readonly multiUserRotationApplication: secretsmanager.SecretRotationApplication;
   public readonly engineFamily?: string;
+  public readonly supportsReadReplicaBackups?: boolean;
 
   private readonly features?: InstanceEngineFeatures;
 
@@ -317,6 +325,8 @@ export interface MariaDbInstanceEngineProps {
 }
 
 class MariaDbInstanceEngine extends InstanceEngineBase {
+  public readonly supportsReadReplicaBackups = true;
+
   constructor(version?: MariaDbEngineVersion) {
     super({
       engineType: 'mariadb',
@@ -530,6 +540,8 @@ export interface MySqlInstanceEngineProps {
 }
 
 class MySqlInstanceEngine extends InstanceEngineBase {
+  public readonly supportsReadReplicaBackups = true;
+
   constructor(version?: MysqlEngineVersion) {
     super({
       engineType: 'mysql',
