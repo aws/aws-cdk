@@ -1,5 +1,5 @@
 import { Match, Template } from '@aws-cdk/assertions';
-import { Duration, Stack } from '@aws-cdk/core';
+import { Duration, Stack, Token, Aws } from '@aws-cdk/core';
 import { Alarm, GraphWidget, IWidget, MathExpression, Metric } from '../lib';
 
 const a = new Metric({ namespace: 'Test', metricName: 'ACount' });
@@ -468,11 +468,30 @@ describe('cross environment', () => {
         });
       });
 
-      test('metric account === stack account, but both are tokens', () => {
+      test('metric account === stack account, both are the AccountID token', () => {
         const metric = new Metric({
           namespace: 'Test',
           metricName: 'ACount',
-          account: stack4.account,
+          account: Aws.ACCOUNT_ID,
+        });
+
+        new Alarm(stack4, 'Alarm', {
+          threshold: 1,
+          evaluationPeriods: 1,
+          metric,
+        });
+
+        // Alarm will be defined as legacy alarm
+        Template.fromStack(stack4).hasResourceProperties('AWS::CloudWatch::Alarm', {
+          MetricName: 'ACount',
+        });
+      });
+
+      test('metric account and stack account are different tokens', () => {
+        const metric = new Metric({
+          namespace: 'Test',
+          metricName: 'ACount',
+          account: Token.asString('asdf'),
         });
 
         new Alarm(stack4, 'Alarm', {

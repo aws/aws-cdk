@@ -1,5 +1,6 @@
 import '@aws-cdk/assert-internal/jest';
 import { Connections, Peer, SubnetType, Vpc } from '@aws-cdk/aws-ec2';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Duration, Stack } from '@aws-cdk/core';
 import { ILoadBalancerTarget, LoadBalancer, LoadBalancingProtocol } from '../lib';
 
@@ -177,7 +178,7 @@ describe('tests', () => {
     });
   });
 
-  test('does not fail when deprecated property sslCertificateId is used', () => {
+  testDeprecated('does not fail when deprecated property sslCertificateId is used', () => {
     // GIVEN
     const sslCertificateArn = 'arn:aws:acm:us-east-1:12345:test/12345';
     const stack = new Stack();
@@ -231,7 +232,7 @@ describe('tests', () => {
     });
   });
 
-  test('throws error when both sslCertificateId and sslCertificateArn are used', () => {
+  testDeprecated('throws error when both sslCertificateId and sslCertificateArn are used', () => {
     // GIVEN
     const sslCertificateArn = 'arn:aws:acm:us-east-1:12345:test/12345';
     const stack = new Stack();
