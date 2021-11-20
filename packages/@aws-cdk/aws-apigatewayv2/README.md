@@ -298,12 +298,12 @@ const httpApi = new apigwv2.HttpApi(stack, 'HttpApi', {
   defaultAuthorizer: authorizer,
 });
 
-const [route] = httpApi.addRoute({
+const routes = httpApi.addRoute({
   integration,
   path: '/books/{book}',
 });
 
-route.grantInvoke(principal);
+routes[0].grantInvoke(principal);
 ```
 
 ### Metrics
