@@ -599,6 +599,7 @@ describe('DatabaseCluster', () => {
           ],
         },
         functionName: 'DatabaseRotationSingleUser458A45BE',
+        excludeCharacters: "\"@/",
         vpcSubnetIds: {
           'Fn::Join': [
             '',
@@ -711,6 +712,7 @@ describe('DatabaseCluster', () => {
           ],
         },
         functionName: 'DatabaseRotation0D47EBD2',
+        excludeCharacters: "\"@/",
         vpcSubnetIds: {
           'Fn::Join': [
             '',
