@@ -2,7 +2,9 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as iam from '@aws-cdk/aws-iam';
 import { Construct } from 'constructs';
-import { ICluster } from '.';
+import { Cluster } from './cluster';
+import { HelmChart } from './helm-chart';
+import { ServiceAccount } from './service-account';
 
 // v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
 // eslint-disable-next-line
@@ -149,23 +151,6 @@ export interface AlbControllerOptions {
    */
   readonly policy?: any;
 
-  /**
-   * Automatically discover Ingress resources added via `addManifest` to the cluster and
-   * annotate them so they are picked up by the controller.
-   *
-   * @default true
-   */
-  readonly autoDiscoverIngress?: boolean;
-
-  /**
-   * The scheme to apply to Ingress resources when auto discover is turned on.
-   * This corresponds to the 'alb.ingress.kubernetes.io/scheme' annotation.
-   *
-   * @see https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.2/guide/ingress/annotations/#scheme
-   *
-   * @default AlbScheme.INTERNAL
-   */
-  readonly autoDiscoverIngressScheme?: AlbScheme;
 }
 
 /**
@@ -174,9 +159,10 @@ export interface AlbControllerOptions {
 export interface AlbControllerProps extends AlbControllerOptions {
 
   /**
+   * [disable-awslint:ref-via-interface]
    * Cluster to install the controller onto.
    */
-  readonly cluster: ICluster;
+  readonly cluster: Cluster;
 }
 
 /**
@@ -190,17 +176,6 @@ export interface AlbControllerProps extends AlbControllerOptions {
 export class AlbController extends CoreConstruct {
 
   /**
-   * Retrieve the controller construct associated with this cluster and scope.
-   *
-   * Singleton per stack/cluster.
-   */
-  public static get(scope: Construct, cluster: ICluster): AlbController | undefined {
-    const stack = Stack.of(scope);
-    const uid = AlbController.uid(cluster);
-    return stack.node.tryFindChild(uid) as AlbController;
-  }
-
-  /**
    * Create the controller construct associated with this cluster and scope.
    *
    * Singleton per stack/cluster.
@@ -211,28 +186,15 @@ export class AlbController extends CoreConstruct {
     return new AlbController(stack, uid, props);
   }
 
-  private static uid(cluster: ICluster) {
+  private static uid(cluster: Cluster) {
     return `${Names.nodeUniqueId(cluster.node)}-AlbController`;
   }
-
-  /**
-   * Whether or not automatic discovery of ingress resources is enabled.
-   */
-  public readonly autoDiscoverIngress: boolean;
-
-  /**
-   * The default ALB scheme applied to ingress resources. Only applies if `autoDiscoverIngress` is true.
-   */
-  public readonly autoDiscoverIngressScheme: AlbScheme;
 
   public constructor(scope: Construct, id: string, props: AlbControllerProps) {
     super(scope, id);
 
-    this.autoDiscoverIngress = props.autoDiscoverIngress ?? true;
-    this.autoDiscoverIngressScheme = props.autoDiscoverIngressScheme ?? AlbScheme.INTERNAL;
-
     const namespace = 'kube-system';
-    const serviceAccount = props.cluster.addServiceAccount('alb-sa', { namespace, name: 'aws-load-balancer-controller' });
+    const serviceAccount = new ServiceAccount(this, 'alb-sa', { namespace, name: 'aws-load-balancer-controller', cluster: props.cluster });
 
     if (props.version.custom && !props.policy) {
       throw new Error("'albControllerOptions.policy' is required when using a custom controller version");
@@ -246,7 +208,8 @@ export class AlbController extends CoreConstruct {
     }
 
     // https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.2/deploy/installation/#add-controller-to-cluster
-    const chart = props.cluster.addHelmChart('ALBChart', {
+    const chart = new HelmChart(this, 'Resource', {
+      cluster: props.cluster,
       chart: 'aws-load-balancer-controller',
       repository: 'https://aws.github.io/eks-charts',
       namespace,
@@ -273,7 +236,10 @@ export class AlbController extends CoreConstruct {
       },
     });
 
+    // the controller relies on permissions deployed using these resources.
     chart.node.addDependency(serviceAccount);
+    chart.node.addDependency(props.cluster.openIdConnectProvider);
+    chart.node.addDependency(props.cluster.awsAuth);
   }
 
 }

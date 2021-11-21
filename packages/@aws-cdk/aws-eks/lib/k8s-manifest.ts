@@ -1,6 +1,6 @@
 import { CustomResource, Stack } from '@aws-cdk/core';
 import { Construct, Node } from 'constructs';
-import { AlbController } from './alb-controller';
+import { AlbScheme } from '.';
 import { ICluster } from './cluster';
 import { KubectlProvider } from './kubectl-provider';
 
@@ -45,6 +45,23 @@ export interface KubernetesManifestOptions {
    * @default false
    */
   readonly skipValidation?: boolean;
+
+  /**
+   * Automatically detect `Ingress` resources in the manifest and annotate them so they
+   * are picked up by an ALB Ingress Controller.
+   *
+   * @default false
+   */
+  readonly ingressAlb?: boolean;
+
+  /**
+   * Specify the ALB scheme that should be applied to `Ingress` resources.
+   * Only applicable if `ingressAlb` is set to `true`.
+   *
+   * @default AlbScheme.INTERNAL
+   */
+  readonly ingressAlbScheme?: AlbScheme;
+
 }
 
 /**
@@ -118,7 +135,9 @@ export class KubernetesManifest extends CoreConstruct {
       ? this.injectPruneLabel(props.manifest)
       : undefined;
 
-    this.injectIngressAlbAnnotations(props.cluster, props.manifest);
+    if (props.ingressAlb ?? false) {
+      this.injectIngressAlbAnnotations(props.manifest, props.ingressAlbScheme ?? AlbScheme.INTERNAL);
+    }
 
     new CustomResource(this, 'Resource', {
       serviceToken: provider.serviceToken,
@@ -176,13 +195,7 @@ export class KubernetesManifest extends CoreConstruct {
    *
    * @see https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.2/guide/ingress/annotations/
    */
-  private injectIngressAlbAnnotations(cluster: ICluster, manifest: Record<string, any>[]) {
-
-    const albController = AlbController.get(this, cluster);
-
-    if (!albController || !albController.autoDiscoverIngress) {
-      return;
-    }
+  private injectIngressAlbAnnotations(manifest: Record<string, any>[], scheme: AlbScheme) {
 
     for (const resource of manifest) {
 
@@ -194,7 +207,7 @@ export class KubernetesManifest extends CoreConstruct {
       if (resource.kind === 'Ingress') {
         resource.metadata.annotations = {
           'kubernetes.io/ingress.class': 'alb',
-          'alb.ingress.kubernetes.io/scheme': albController.autoDiscoverIngressScheme,
+          'alb.ingress.kubernetes.io/scheme': scheme,
           ...resource.metadata.annotations,
         };
       }

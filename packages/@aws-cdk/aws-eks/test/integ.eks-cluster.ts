@@ -74,7 +74,7 @@ class EksClusterStack extends TestStack {
 
     this.assertServiceAccount();
 
-    this.assertServiceLoadBalancerAddress();
+    this.assertIngressLoadBalancerAddress();
 
     new CfnOutput(this, 'ClusterEndpoint', { value: this.cluster.clusterEndpoint });
     new CfnOutput(this, 'ClusterArn', { value: this.cluster.clusterArn });
@@ -270,67 +270,41 @@ class EksClusterStack extends TestStack {
 
   }
 
-  private assertServiceLoadBalancerAddress() {
+  private assertIngressLoadBalancerAddress() {
 
-    const serviceName = 'webservice';
-    const labels = { app: 'simple-web' };
-    const containerPort = 80;
-    const servicePort = 9000;
+    const chart = new cdk8s.Chart(new cdk8s.App(), 'hello-server');
 
-    const pingerSecurityGroup = new ec2.SecurityGroup(this, 'WebServiceSecurityGroup', {
-      vpc: this.vpc,
-    });
+    const ingress = new kplus.Deployment(chart, 'Deployment', {
+      containers: [{ image: 'hashicorp/http-echo', args: ['-text', 'hello'], port: 5678 }],
+    })
+      .exposeViaService({ serviceType: kplus.ServiceType.NODE_PORT })
+      .exposeViaIngress('/');
 
-    pingerSecurityGroup.addIngressRule(pingerSecurityGroup, ec2.Port.tcp(servicePort), `allow http ${servicePort} access from myself`);
+    // allow vpc to access the ELB so our pinger can hit it.
+    ingress.metadata.addAnnotation('alb.ingress.kubernetes.io/inbound-cidrs', this.cluster.vpc.vpcCidrBlock);
 
-    this.cluster.addManifest('simple-web-pod', {
-      kind: 'Pod',
-      apiVersion: 'v1',
-      metadata: { name: 'webpod', labels: labels },
-      spec: {
-        containers: [{
-          name: 'simplewebcontainer',
-          image: 'nginx',
-          ports: [{ containerPort: containerPort }],
-        }],
-      },
-    });
+    const echoServer = this.cluster.addCdk8sChart('echo-server', chart, { ingressAlb: true, ingressAlbScheme: eks.AlbScheme.INTERNAL });
 
-    this.cluster.addManifest('simple-web-service', {
-      kind: 'Service',
-      apiVersion: 'v1',
-      metadata: {
-        name: serviceName,
-        annotations: {
-          // this is furtile soil for cdk8s-plus! :)
-          'service.beta.kubernetes.io/aws-load-balancer-internal': 'true',
-          'service.beta.kubernetes.io/aws-load-balancer-extra-security-groups': pingerSecurityGroup.securityGroupId,
-        },
-      },
-      spec: {
-        type: 'LoadBalancer',
-        ports: [{ port: servicePort, targetPort: containerPort }],
-        selector: labels,
-      },
-    });
+    // the deletion of `echoServer` is what instructs the controller to delete the ELB.
+    // so we need to make sure this happens before the controller is deleted.
+    echoServer.node.addDependency(this.cluster.albController ?? []);
 
-    const loadBalancerAddress = this.cluster.getServiceLoadBalancerAddress(serviceName);
+    const loadBalancerAddress = this.cluster.getIngressLoadBalancerAddress(ingress.name);
 
     // create a resource that hits the load balancer to make sure
     // everything is wired properly.
-    const pinger = new Pinger(this, 'ServicePinger', {
-      url: `http://${loadBalancerAddress}:${servicePort}`,
-      securityGroup: pingerSecurityGroup,
-      vpc: this.vpc,
+    const pinger = new Pinger(this, 'IngressPinger', {
+      url: `http://${loadBalancerAddress}`,
+      vpc: this.cluster.vpc,
     });
 
-    // this should display a proper nginx response
-    // <title>Welcome to nginx!</title>...
-    new CfnOutput(this, 'Response', {
+    // this should display the 'hello' text we gave to the server
+    new CfnOutput(this, 'IngressPingerResponse', {
       value: pinger.response,
     });
 
   }
+
 }
 
 // this test uses both the bottlerocket image and the inf1 instance, which are only supported in these
