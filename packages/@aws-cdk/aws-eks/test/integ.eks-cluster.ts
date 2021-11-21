@@ -8,7 +8,6 @@ import * as kplus from 'cdk8s-plus-21';
 import * as constructs from 'constructs';
 import * as eks from '../lib';
 import * as hello from './hello-k8s';
-import { Pinger } from './pinger/pinger';
 import { TestStack } from './util';
 
 
@@ -37,9 +36,6 @@ class EksClusterStack extends TestStack {
       defaultCapacity: 2,
       version: eks.KubernetesVersion.V1_21,
       secretsEncryptionKey,
-      albController: {
-        version: eks.AlbControllerVersion.V2_3_0,
-      },
     });
 
     this.assertFargateProfile();
@@ -51,8 +47,6 @@ class EksClusterStack extends TestStack {
     this.assertBottlerocket();
 
     this.assertSpotCapacity();
-
-    this.assertInferenceInstances();
 
     this.assertNodeGroupX86();
 
@@ -73,8 +67,6 @@ class EksClusterStack extends TestStack {
     this.assertCreateNamespace();
 
     this.assertServiceAccount();
-
-    this.assertIngressLoadBalancerAddress();
 
     new CfnOutput(this, 'ClusterEndpoint', { value: this.cluster.clusterEndpoint });
     new CfnOutput(this, 'ClusterArn', { value: this.cluster.clusterArn });
@@ -216,13 +208,6 @@ class EksClusterStack extends TestStack {
       nodeRole: this.cluster.defaultCapacity ? this.cluster.defaultCapacity.role : undefined,
     });
   }
-  private assertInferenceInstances() {
-    // inference instances
-    this.cluster.addAutoScalingGroupCapacity('InferenceInstances', {
-      instanceType: new ec2.InstanceType('inf1.2xlarge'),
-      minCapacity: 1,
-    });
-  }
   private assertSpotCapacity() {
     // spot instances (up to 10)
     this.cluster.addAutoScalingGroupCapacity('spot', {
@@ -266,41 +251,6 @@ class EksClusterStack extends TestStack {
     // fargate profile for resources in the "default" namespace
     this.cluster.addFargateProfile('default', {
       selectors: [{ namespace: 'default' }],
-    });
-
-  }
-
-  private assertIngressLoadBalancerAddress() {
-
-    const chart = new cdk8s.Chart(new cdk8s.App(), 'hello-server');
-
-    const ingress = new kplus.Deployment(chart, 'Deployment', {
-      containers: [{ image: 'hashicorp/http-echo', args: ['-text', 'hello'], port: 5678 }],
-    })
-      .exposeViaService({ serviceType: kplus.ServiceType.NODE_PORT })
-      .exposeViaIngress('/');
-
-    // allow vpc to access the ELB so our pinger can hit it.
-    ingress.metadata.addAnnotation('alb.ingress.kubernetes.io/inbound-cidrs', this.cluster.vpc.vpcCidrBlock);
-
-    const echoServer = this.cluster.addCdk8sChart('echo-server', chart, { ingressAlb: true, ingressAlbScheme: eks.AlbScheme.INTERNAL });
-
-    // the deletion of `echoServer` is what instructs the controller to delete the ELB.
-    // so we need to make sure this happens before the controller is deleted.
-    echoServer.node.addDependency(this.cluster.albController ?? []);
-
-    const loadBalancerAddress = this.cluster.getIngressLoadBalancerAddress(ingress.name);
-
-    // create a resource that hits the load balancer to make sure
-    // everything is wired properly.
-    const pinger = new Pinger(this, 'IngressPinger', {
-      url: `http://${loadBalancerAddress}`,
-      vpc: this.cluster.vpc,
-    });
-
-    // this should display the 'hello' text we gave to the server
-    new CfnOutput(this, 'IngressPingerResponse', {
-      value: pinger.response,
     });
 
   }

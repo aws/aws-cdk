@@ -12,7 +12,6 @@ import * as cdk8s from 'cdk8s';
 import * as constructs from 'constructs';
 import * as YAML from 'yaml';
 import * as eks from '../lib';
-import { AlbControllerVersion } from '../lib';
 import { BottleRocketImage } from '../lib/private/bottlerocket';
 import { testFixture, testFixtureNoVpc } from './util';
 
@@ -28,7 +27,7 @@ describe('cluster', () => {
     const cluster = new eks.Cluster(stack, 'Cluster', {
       version: CLUSTER_VERSION,
       albController: {
-        version: AlbControllerVersion.V2_3_0,
+        version: eks.AlbControllerVersion.V2_3_0,
       },
     });
 
