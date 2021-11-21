@@ -33,18 +33,10 @@ export async function generateMissingExamples(assemblyLocations: string[], optio
 
   const snippets = loadedAssemblies.flatMap(({ assembly }) => {
     // Classes and structs
-    const classFilter = (c: ClassType) => !c.docs.example;
-    const interfaceFilter = (c: InterfaceType) => !c.docs.example && c.datatype;
-
-    const documentableTypes = [
-      ...assembly.classes.filter(classFilter),
-      ...assembly.interfaces.filter(interfaceFilter),
-    ];
-
-    // add submodule types
-    for (const submodule of assembly.allSubmodules) {
-      documentableTypes.push(...submodule.classes.filter(classFilter));
-      documentableTypes.push(...submodule.interfaces.filter(interfaceFilter));
+    const documentableTypes: Array<ClassType | InterfaceType> = [];
+    for (const m of [assembly, ...assembly.allSubmodules]) {
+      documentableTypes.push(...m.classes.filter(c => !c.docs.example));
+      documentableTypes.push(...m.interfaces.filter(c => !c.docs.example && c.datatype));
     }
 
     console.log(`${assembly.name}: ${documentableTypes.length} classes to document`);
