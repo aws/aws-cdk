@@ -1,6 +1,6 @@
 import { CustomResource, Stack } from '@aws-cdk/core';
 import { Construct, Node } from 'constructs';
-import { AlbScheme } from '.';
+import { AlbScheme } from './alb-controller';
 import { ICluster } from './cluster';
 import { KubectlProvider } from './kubectl-provider';
 
