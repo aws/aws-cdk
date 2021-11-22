@@ -129,7 +129,7 @@ export class TopicSubscription implements ISubscribable {
   public subscribe(extension: QueueExtension) : SubscriptionQueue {
     let ret = {
       queue: extension.eventsQueue,
-      queueDelay: extension.autoscalingOptions,
+      scaleOnLatency: extension.autoscalingOptions,
     } as SubscriptionQueue;
 
     if (this.subscriptionQueue) {
