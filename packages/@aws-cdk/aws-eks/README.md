@@ -555,11 +555,9 @@ aws-load-balancer-controller-76bd6c7586-fqxph   1/1     Running   0          109
 ...
 ```
 
-#### ALB Dependencies
-
 Every Kubernetes manifest that utilizes the ALB Controller is effectively dependant on the controller.
 If the controller is deleted before the manifest, it might result in dangling ELB/ALB resources.
-Currently, the EKS construct library does not detect such dependencies, and they are should be done explicitly.
+Currently, the EKS construct library does not detect such dependencies, and they should be done explicitly.
 
 For example:
 
@@ -568,60 +566,6 @@ declare const cluster: eks.Cluster;
 const manifest = cluster.addManifest('manifest', {/* ... */});
 manifest.node.addDependency(cluster.albController ?? [])
 ```
-
-In addition, because the controller runs on the worker nodes, the cluster capacity should not be removed before the controller is deleted.
-For the most part, the `Cluster` construct will take care of wiring those dependencies.
-
-The only exception is when external capacity is being attached to the cluster using the `connectAutoScalingGroupCapacity` method.
-In this case, you should explicitly add a dependency like so:
-
-```ts
-declare const cluster: eks.Cluster;
-declare const asg: autoscaling.AutoScalingGroup;
-cluster.albController?.node.addDependency(asg);
-```
-
-#### Custom Versions
-
-The EKS construct library comes with built-in support for many versions of the controller,
-and we try to continuously add official support for versions as they are released.
-
-However, if the version you need is still not available, you can pass a custom version using the `eks.AlbControllerVersion.of` function.
-Note that, every version of the controller is accompanied with its own [specific IAM policies](https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.3/deploy/installation/#setup-iam-role-for-service-accounts) that need to be added to the service account.
-
-You can pass the IAM policy for a custom version like so:
-
-```ts
-new eks.Cluster(this, 'HelloEKS', {
-  version: eks.KubernetesVersion.V1_21,
-  albController: {
-    version: eks.AlbControllerVersion.V2_3_0,
-    policy: { /*<policy-inlined>*/ }
-  },
-});
-```
-
-> For example: https://github.com/kubernetes-sigs/aws-load-balancer-controller/blob/v2.3.0/docs/install/iam_policy.json
-
-#### Custom Repositories
-
-The controller uses an ECR repository to pull the container image of the controller from.
-By default, the repository being pulled is `602401143452.dkr.ecr.us-west-2.amazonaws.com/amazon/aws-load-balancer-controller`.
-
-This repository will work for most regions, but not all. If you require a custom repository, use the `repository` property:
-
-```ts
-new eks.Cluster(this, 'HelloEKS', {
-  version: eks.KubernetesVersion.V1_21,
-  albController: {
-    version: eks.AlbControllerVersion.V2_3_0,
-    repository: "some-custom-repo",
-  },
-});
-```
-
-> See [Alb Controller Repositories](https://github.com/kubernetes-sigs/aws-load-balancer-controller/releases).
-
 
 ### VPC Support
 
