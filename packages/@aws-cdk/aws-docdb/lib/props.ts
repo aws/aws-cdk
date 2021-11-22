@@ -60,6 +60,13 @@ export interface Login {
    * @default "\"@/"
    */
   readonly excludeCharacters?: string;
+
+  /**
+   * The physical name of the secret, that will be generated.
+   *
+   * @default Secretsmanager will generate a physical name for the secret
+   */
+  readonly secretName?: string;
 }
 
 /**
