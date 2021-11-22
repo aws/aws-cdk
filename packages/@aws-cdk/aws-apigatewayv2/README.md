@@ -204,6 +204,10 @@ const api = new apigwv2.HttpApi(this, 'HttpProxyProdApi', {
 });
 ```
 
+To migrate a domain endpoint from one type to another, you can add a new endpoint configuration via `addEndpoint()`
+and then configure DNS records to route traffic to the new endpoint. After that, you can remove the previous endpoint configuration. 
+Learn more at [Migrating a custom domain name](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-regional-api-custom-domain-migrate.html)
+
 To associate a specific `Stage` to a custom domain mapping -
 
 ```ts
