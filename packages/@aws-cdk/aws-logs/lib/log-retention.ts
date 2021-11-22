@@ -7,6 +7,10 @@ import { RetentionDays } from './log-group';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
+import { ArnFormat } from '@aws-cdk/core';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
 import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
@@ -107,7 +111,7 @@ export class LogRetention extends CoreConstruct {
       service: 'logs',
       resource: 'log-group',
       resourceName: `${logGroupName}:*`,
-      sep: ':',
+      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
     });
   }
 
@@ -170,6 +174,8 @@ class LogRetentionFunction extends CoreConstruct implements cdk.ITaggable {
       },
     });
     this.functionArn = resource.getAtt('Arn');
+
+    asset.addResourceMetadata(resource, 'Code');
 
     // Function dependencies
     role.node.children.forEach((child) => {

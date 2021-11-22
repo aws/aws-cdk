@@ -233,6 +233,8 @@
       "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.CODECOMMIT_FIPS",
       "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.CODECOMMIT_GIT",
       "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.CODECOMMIT_GIT_FIPS",
+      "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.CODEGURU_PROFILER",
+      "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.CODEGURU_REVIEWER",
       "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.CODEPIPELINE",
       "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.CONFIG",
       "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.EC2",
