@@ -357,7 +357,7 @@ describe('HttpRoute', () => {
     });
   });
 
-  test('granting invoke with httpMethod GET and POST', () => {
+  test('granting invoke with httpMethod GET and PUT', () => {
     const stack = new Stack();
     const httpApi = new HttpApi(stack, 'HttpApi');
     const role = new Role(stack, 'Role', {
@@ -367,7 +367,7 @@ describe('HttpRoute', () => {
     const route = new HttpRoute(stack, 'HttpRoute', {
       httpApi,
       integration: new DummyIntegration(),
-      routeKey: HttpRouteKey.with('/books', HttpMethod.ANY),
+      routeKey: HttpRouteKey.with('/books'),
     });
 
     // WHEN
