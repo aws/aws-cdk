@@ -1,5 +1,6 @@
 import '@aws-cdk/assert-internal/jest';
 import * as ec2 from '@aws-cdk/aws-ec2';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import * as lambda from '../lib';
 
@@ -41,7 +42,7 @@ describe('lambda + vpc', () => {
       });
     });
 
-    test('has securitygroup that is passed in props', () => {
+    testDeprecated('has securitygroup that is passed in props', () => {
       // WHEN
       new lambda.Function(stack, 'LambdaWithCustomSG', {
         code: new lambda.InlineCode('foo'),
@@ -91,7 +92,7 @@ describe('lambda + vpc', () => {
       });
     });
 
-    test('fails if both of securityGroup and securityGroups are passed in props at once', () => {
+    testDeprecated('fails if both of securityGroup and securityGroups are passed in props at once', () => {
       // THEN
       expect(() => {
         new lambda.Function(stack, 'LambdaWithWrongProps', {
