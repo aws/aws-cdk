@@ -1077,3 +1077,17 @@ const cluster = new ecs.Cluster(this, 'Cluster', {
   },
 });
 ```
+
+### Windows Container on Fargate
+more details please see this [blog post](https://aws.amazon.com/tw/blogs/containers/running-windows-containers-with-amazon-ecs-on-aws-fargate/)
+```ts
+// Create a Task Definition for the Windows container to start
+const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef', {
+  runtimePlatform: {
+    operatingSystemFamily: ecs.OperatingSystemFamily.WINDOWS_SERVER_2019_CORE,
+    cpuArchitecture: ecs.CpuArchitecture.X86_64,
+  },
+  cpu: 1024,
+  memoryLimitMiB: 2048,
+});
+```
