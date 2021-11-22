@@ -1021,6 +1021,11 @@ describe('cluster', () => {
       chart: 'chart',
     });
 
+    expect(stack).toHaveResourceLike('Custom::AWSCDK-EKS-HelmChart', {
+      ServiceToken: kubectlProvider.serviceToken,
+      RoleArn: kubectlProvider.roleArn,
+    });
+
     new eks.KubernetesPatch(stack, 'Patch', {
       cluster: cluster,
       applyPatch: {},
@@ -1028,9 +1033,19 @@ describe('cluster', () => {
       resourceName: 'PatchResource',
     });
 
+    expect(stack).toHaveResourceLike('Custom::AWSCDK-EKS-KubernetesPatch', {
+      ServiceToken: kubectlProvider.serviceToken,
+      RoleArn: kubectlProvider.roleArn,
+    });
+
     new eks.KubernetesManifest(stack, 'Manifest', {
       cluster: cluster,
       manifest: [],
+    });
+
+    expect(stack).toHaveResourceLike('Custom::AWSCDK-EKS-KubernetesResource', {
+      ServiceToken: kubectlProvider.serviceToken,
+      RoleArn: kubectlProvider.roleArn,
     });
 
     new eks.KubernetesObjectValue(stack, 'ObjectValue', {
@@ -1040,17 +1055,9 @@ describe('cluster', () => {
       objectType: 'type',
     });
 
-    expect(stack).toHaveResourceLike('Custom::AWSCDK-EKS-HelmChart', {
-      ServiceToken: kubectlProvider.serviceToken,
-    });
-    expect(stack).toHaveResourceLike('Custom::AWSCDK-EKS-KubernetesPatch', {
-      ServiceToken: kubectlProvider.serviceToken,
-    });
-    expect(stack).toHaveResourceLike('Custom::AWSCDK-EKS-KubernetesResource', {
-      ServiceToken: kubectlProvider.serviceToken,
-    });
     expect(stack).toHaveResourceLike('Custom::AWSCDK-EKS-KubernetesObjectValue', {
       ServiceToken: kubectlProvider.serviceToken,
+      RoleArn: kubectlProvider.roleArn,
     });
   });
 
