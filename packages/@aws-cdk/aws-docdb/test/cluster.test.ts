@@ -627,6 +627,31 @@ describe('DatabaseCluster', () => {
     }));
   });
 
+  test('single user rotation with excluded characters', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new DatabaseCluster(stack, 'Database', {
+      masterUser: {
+        username: 'admin',
+      },
+      vpc,
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.SMALL),
+    });
+
+    // WHEN
+    cluster.addRotationSingleUser(cdk.Duration.days(5), {
+      excludeCharacters: '/@" ',
+    });
+
+    // THEN
+    expectCDK(stack).to(haveResourceLike('AWS::Serverless::Application', {
+      Parameters: {
+        excludeCharacters: '/@" ',
+      },
+    }));
+  });
+
   test('single user rotation requires secret', () => {
     // GIVEN
     const stack = testStack();
@@ -736,6 +761,38 @@ describe('DatabaseCluster', () => {
       },
       RotationRules: {
         AutomaticallyAfterDays: 5,
+      },
+    }));
+  });
+
+  test('multi user rotation with excluded characters', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new DatabaseCluster(stack, 'Database', {
+      masterUser: {
+        username: 'admin',
+      },
+      vpc,
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.SMALL),
+    });
+    const userSecret = new DatabaseSecret(stack, 'UserSecret', {
+      username: 'seconduser',
+      masterSecret: cluster.secret,
+    });
+    userSecret.attach(cluster);
+
+    // WHEN
+    cluster.addRotationMultiUser('Rotation', {
+      secret: userSecret,
+      automaticallyAfter: cdk.Duration.days(5),
+      excludeCharacters: '/@" ',
+    });
+
+    // THEN
+    expectCDK(stack).to(haveResourceLike('AWS::Serverless::Application', {
+      Parameters: {
+        excludeCharacters: '/@" ',
       },
     }));
   });

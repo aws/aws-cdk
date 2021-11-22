@@ -84,7 +84,9 @@ const cluster = new DatabaseCluster(this, 'Database', {
 When the master password is generated and stored in AWS Secrets Manager, it can be rotated automatically:
 
 ```ts
-cluster.addRotationSingleUser(); // Will rotate automatically after 30 days
+cluster.addRotationSingleUser(cdk.Duration.days(5), {  // optional, will rotate automatically after 5 days
+  excludeCharacters: '/@" ' // optional, defaults to the set ""
+});
 ```
 
 [example of setting up master password rotation for a cluster](test/integ.cluster-rotation.lit.ts)
@@ -94,6 +96,7 @@ The multi user rotation scheme is also available:
 ```ts
 cluster.addRotationMultiUser('MyUser', {
   secret: myImportedSecret // This secret must have the `masterarn` key
+  excludeCharacters: '/@" ' // optional, defaults to the set ""
 });
 ```
 

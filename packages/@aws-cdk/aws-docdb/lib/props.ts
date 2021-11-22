@@ -63,9 +63,27 @@ export interface Login {
 }
 
 /**
+ * Properties common to single-user and multi-user rotation options.
+ */
+interface CommonRotationUserOptions {
+  /**
+   * Specifies characters to not include in generated passwords.
+   *
+   * @default ""
+   */
+  readonly excludeCharacters?: string;
+}
+
+/**
+ * Options to add the single user rotation
+ */
+export interface RotationSingleUserOptions extends CommonRotationUserOptions {
+}
+
+/**
  * Options to add the multi user rotation
  */
-export interface RotationMultiUserOptions {
+export interface RotationMultiUserOptions extends CommonRotationUserOptions {
   /**
    * The secret to rotate. It must be a JSON string with the following format:
    * ```

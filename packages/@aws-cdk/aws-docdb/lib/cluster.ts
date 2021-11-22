@@ -3,6 +3,7 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import { CfnResource, Duration, RemovalPolicy, Resource, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
+import { RotationSingleUserOptions } from '.';
 import { DatabaseClusterAttributes, IDatabaseCluster } from './cluster-ref';
 import { DatabaseSecret } from './database-secret';
 import { CfnDBCluster, CfnDBInstance, CfnDBSubnetGroup } from './docdb.generated';
@@ -446,7 +447,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
    * @param [automaticallyAfter=Duration.days(30)] Specifies the number of days after the previous rotation
    * before Secrets Manager triggers the next automatic rotation.
    */
-  public addRotationSingleUser(automaticallyAfter?: Duration): secretsmanager.SecretRotation {
+  public addRotationSingleUser(automaticallyAfter?: Duration, options?: RotationSingleUserOptions): secretsmanager.SecretRotation {
     if (!this.secret) {
       throw new Error('Cannot add single user rotation for a cluster without secret.');
     }
@@ -464,6 +465,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
       vpc: this.vpc,
       vpcSubnets: this.vpcSubnets,
       target: this,
+      excludeCharacters: options?.excludeCharacters,
     });
   }
 
@@ -482,6 +484,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
       vpc: this.vpc,
       vpcSubnets: this.vpcSubnets,
       target: this,
+      excludeCharacters: options?.excludeCharacters,
     });
   }
 
