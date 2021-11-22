@@ -84,7 +84,7 @@ export class KubectlProvider extends NestedStack implements IKubectlProvider {
       return cluster.kubectlProvider;
     }
 
-    // if this is an imported cluster, we need to provision a custom resource provider in this stack
+    // if this is an imported cluster and there is no kubectl provider defined, we need to provision a custom resource provider in this stack
     // we will define one per stack for each cluster based on the cluster uniqueid
     const uid = `${Names.nodeUniqueId(cluster.node)}-KubectlProvider`;
     const stack = Stack.of(scope);
