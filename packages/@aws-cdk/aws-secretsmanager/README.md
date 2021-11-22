@@ -12,7 +12,7 @@
 <!--END STABILITY BANNER-->
 
 
-```ts
+```ts nofixture
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 ```
 
@@ -33,7 +33,8 @@ provision the secret in *AWS SecretsManager* and use the `Secret.fromSecretArn`
 or `Secret.fromSecretAttributes` method to make it available in your CDK Application:
 
 ```ts
-const secret = secretsmanager.Secret.fromSecretAttributes(scope, 'ImportedSecret', {
+declare const encryptionKey: kms.Key;
+const secret = secretsmanager.Secret.fromSecretAttributes(this, 'ImportedSecret', {
   secretArn: 'arn:aws:secretsmanager:<region>:<account-id-number>:secret:<secret-name>-<random-6-characters>',
   // If the secret is encrypted using a KMS-hosted CMK, either import or reference that key:
   encryptionKey,
@@ -52,8 +53,8 @@ use a secret. This can be achieved with the `Secret.grantRead` and/or `Secret.gr
  method, depending on your need:
 
 ```ts
-const role = new iam.Role(stack, 'SomeRole', { assumedBy: new iam.AccountRootPrincipal() });
-const secret = new secretsmanager.Secret(stack, 'Secret');
+const role = new iam.Role(this, 'SomeRole', { assumedBy: new iam.AccountRootPrincipal() });
+const secret = new secretsmanager.Secret(this, 'Secret');
 secret.grantRead(role);
 secret.grantWrite(role);
 ```
@@ -61,8 +62,9 @@ secret.grantWrite(role);
 If, as in the following example, your secret was created with a KMS key:
 
 ```ts
-const key = new kms.Key(stack, 'KMS');
-const secret = new secretsmanager.Secret(stack, 'Secret', { encryptionKey: key });
+declare const role: iam.Role;
+const key = new kms.Key(this, 'KMS');
+const secret = new secretsmanager.Secret(this, 'Secret', { encryptionKey: key });
 secret.grantRead(role);
 secret.grantWrite(role);
 ```
@@ -75,8 +77,8 @@ The principal is automatically added to Secret resource policy and KMS Key polic
 
 ```ts
 const otherAccount = new iam.AccountPrincipal('1234');
-const key = new kms.Key(stack, 'KMS');
-const secret = new secretsmanager.Secret(stack, 'Secret', { encryptionKey: key });
+const key = new kms.Key(this, 'KMS');
+const secret = new secretsmanager.Secret(this, 'Secret', { encryptionKey: key });
 secret.grantRead(otherAccount);
 ```
 
@@ -87,12 +89,14 @@ secret.grantRead(otherAccount);
 A rotation schedule can be added to a Secret using a custom Lambda function:
 
 ```ts
-const fn = new lambda.Function(...);
+import * as lambda from '@aws-cdk/aws-lambda';
+
+declare const fn: lambda.Function;
 const secret = new secretsmanager.Secret(this, 'Secret');
 
 secret.addRotationSchedule('RotationSchedule', {
   rotationLambda: fn,
-  automaticallyAfter: Duration.days(15)
+  automaticallyAfter: Duration.days(15),
 });
 ```
 
@@ -118,9 +122,13 @@ MariaDB, SQLServer, Redshift and MongoDB (both for the single and multi user sch
 When deployed in a VPC, the hosted rotation implements `ec2.IConnectable`:
 
 ```ts
+declare const myVpc: ec2.Vpc;
+declare const dbConnections: ec2.Connections;
+declare const secret: secretsmanager.Secret;
+
 const myHostedRotation = secretsmanager.HostedRotation.mysqlSingleUser({ vpc: myVpc });
 secret.addRotationSchedule('RotationSchedule', { hostedRotation: myHostedRotation });
-dbConnections.allowDefaultPortFrom(hostedRotation);
+dbConnections.allowDefaultPortFrom(myHostedRotation);
 ```
 
 See also [Automating secret creation in AWS CloudFormation](https://docs.aws.amazon.com/secretsmanager/latest/userguide/integrating_cloudformation.html).
@@ -130,6 +138,10 @@ See also [Automating secret creation in AWS CloudFormation](https://docs.aws.ama
 Define a `SecretRotation` to rotate database credentials:
 
 ```ts
+declare const mySecret: secretsmanager.Secret;
+declare const myDatabase: ec2.IConnectable;
+declare const myVpc: ec2.Vpc;
+
 new secretsmanager.SecretRotation(this, 'SecretRotation', {
   application: secretsmanager.SecretRotationApplication.MYSQL_ROTATION_SINGLE_USER, // MySQL single user scheme
   secret: mySecret,
@@ -158,7 +170,12 @@ The secret must be a JSON string with the following format:
 For the multi user scheme, a `masterSecret` must be specified:
 
 ```ts
-new secretsmanager.SecretRotation(stack, 'SecretRotation', {
+declare const myUserSecret: secretsmanager.Secret;
+declare const myMasterSecret: secretsmanager.Secret;
+declare const myDatabase: ec2.IConnectable;
+declare const myVpc: ec2.Vpc;
+
+new secretsmanager.SecretRotation(this, 'SecretRotation', {
   application: secretsmanager.SecretRotationApplication.MYSQL_ROTATION_MULTI_USER,
   secret: myUserSecret, // The secret that will be rotated
   masterSecret: myMasterSecret, // The secret used for the rotation
@@ -178,15 +195,13 @@ the secret name must exist in the same account and region as the stack.
 Importing by name makes it easier to reference secrets created in different regions, each with their own suffix and ARN.
 
 ```ts
-import * as kms from '@aws-cdk/aws-kms';
-
 const secretCompleteArn = 'arn:aws:secretsmanager:eu-west-1:111111111111:secret:MySecret-f3gDy9';
 const secretPartialArn = 'arn:aws:secretsmanager:eu-west-1:111111111111:secret:MySecret'; // No Secrets Manager suffix
-const encryptionKey = kms.Key.fromKeyArn(stack, 'MyEncKey', 'arn:aws:kms:eu-west-1:111111111111:key/21c4b39b-fde2-4273-9ac0-d9bb5c0d0030');
-const mySecretFromCompleteArn = secretsmanager.Secret.fromSecretCompleteArn(stack, 'SecretFromCompleteArn', secretCompleteArn);
-const mySecretFromPartialArn = secretsmanager.Secret.fromSecretPartialArn(stack, 'SecretFromPartialArn', secretPartialArn);
-const mySecretFromName = secretsmanager.Secret.fromSecretNameV2(stack, 'SecretFromName', 'MySecret')
-const mySecretFromAttrs = secretsmanager.Secret.fromSecretAttributes(stack, 'SecretFromAttributes', {
+const encryptionKey = kms.Key.fromKeyArn(this, 'MyEncKey', 'arn:aws:kms:eu-west-1:111111111111:key/21c4b39b-fde2-4273-9ac0-d9bb5c0d0030');
+const mySecretFromCompleteArn = secretsmanager.Secret.fromSecretCompleteArn(this, 'SecretFromCompleteArn', secretCompleteArn);
+const mySecretFromPartialArn = secretsmanager.Secret.fromSecretPartialArn(this, 'SecretFromPartialArn', secretPartialArn);
+const mySecretFromName = secretsmanager.Secret.fromSecretNameV2(this, 'SecretFromName', 'MySecret')
+const mySecretFromAttrs = secretsmanager.Secret.fromSecretAttributes(this, 'SecretFromAttributes', {
   secretCompleteArn,
   encryptionKey,
 });
@@ -197,6 +212,7 @@ const mySecretFromAttrs = secretsmanager.Secret.fromSecretAttributes(stack, 'Sec
 Secrets can be replicated to multiple regions by specifying `replicaRegions`:
 
 ```ts
+declare const myKey: kms.Key;
 new secretsmanager.Secret(this, 'Secret', {
   replicaRegions: [
     {
