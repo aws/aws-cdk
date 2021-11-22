@@ -76,7 +76,7 @@ export async function createLibraryReadme(namespace: string, readmePath: string)
     'This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.',
     '',
     '```ts nofixture',
-    `import ${module.moduleName.toLocaleLowerCase()} = require('${module.packageName}');`,
+    `import * as ${module.moduleName.toLocaleLowerCase().replace(/[^a-z0-9_]/g, '_')} from '${module.packageName}';`,
     '```',
     '',
   ].join('\n'), 'utf8');
