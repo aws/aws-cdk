@@ -4,7 +4,7 @@ import { CfnResource, Resource, Stack, Token } from '@aws-cdk/core';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 
 const KUBECTL_APP_ARN = 'arn:aws:serverlessrepo:us-east-1:903779448426:applications/lambda-layer-kubectl';
 const KUBECTL_APP_VERSION = '1.13.7';
