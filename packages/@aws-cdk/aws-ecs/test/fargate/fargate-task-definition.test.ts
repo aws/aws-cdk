@@ -44,7 +44,7 @@ describe('fargate task definition', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef', {
-        cpu: 128,
+        cpu: 1024,
         executionRole: new iam.Role(stack, 'ExecutionRole', {
           path: '/',
           assumedBy: new iam.CompositePrincipal(
@@ -53,11 +53,15 @@ describe('fargate task definition', () => {
           ),
         }),
         family: 'myApp',
-        memoryLimitMiB: 1024,
+        memoryLimitMiB: 2048,
         taskRole: new iam.Role(stack, 'TaskRole', {
           assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
         }),
         ephemeralStorageGiB: 21,
+        runtimePlatform: {
+          cpuArchitecture: ecs.CpuArchitecture.X86_64,
+          operatingSystemFamily: ecs.OperatingSystemFamily.WINDOWS_SERVER_2019_CORE,
+        },
       });
 
       taskDefinition.addVolume({
@@ -69,7 +73,7 @@ describe('fargate task definition', () => {
 
       // THEN
       expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
-        Cpu: '128',
+        Cpu: '1024',
         ExecutionRoleArn: {
           'Fn::GetAtt': [
             'ExecutionRole605A040B',
@@ -80,7 +84,7 @@ describe('fargate task definition', () => {
           SizeInGiB: 21,
         },
         Family: 'myApp',
-        Memory: '1024',
+        Memory: '2048',
         NetworkMode: 'awsvpc',
         RequiresCompatibilities: [
           ecs.LaunchType.FARGATE,
@@ -90,6 +94,10 @@ describe('fargate task definition', () => {
             'TaskRole30FC0FBB',
             'Arn',
           ],
+        },
+        RuntimePlatform: {
+          CpuArchitecture: 'X86_64',
+          OperatingSystemFamily: 'WINDOWS_SERVER_2019_CORE',
         },
         Volumes: [
           {
@@ -241,8 +249,25 @@ describe('fargate task definition', () => {
         taskDefinition.taskRole;
       }).toThrow('This operation requires the taskRole in ImportedTaskDefinition to be defined. ' +
         'Add the \'taskRole\' in ImportedTaskDefinitionProps to instantiate ImportedTaskDefinition');
+    });
 
+
+    test('returns a Fargate TaskDefinition that will throw an error when incorrect cpu was given at operatingSystem use WINDOWS_SERVER_X Family', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      expect(() => {
+        new ecs.FargateTaskDefinition(stack, 'FargateTaskDef', {
+          cpu: 128,
+          memoryLimitMiB: 1024,
+          runtimePlatform: {
+            cpuArchitecture: ecs.CpuArchitecture.X86_64,
+            operatingSystemFamily: ecs.OperatingSystemFamily.WINDOWS_SERVER_2019_CORE,
+          },
+        });
+      }).toThrowError('If define Operating System Family is WINDOWS_SERVER_X, CPU need in 1 vCPU, 2 vCPU or 4 vCPU');
 
     });
+
   });
 });

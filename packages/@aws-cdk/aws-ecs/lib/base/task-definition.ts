@@ -8,6 +8,7 @@ import { FirelensLogRouter, FirelensLogRouterDefinitionOptions, FirelensLogRoute
 import { AwsLogDriver } from '../log-drivers/aws-log-driver';
 import { PlacementConstraint } from '../placement';
 import { ProxyConfiguration } from '../proxy-configuration/proxy-configuration';
+import { RuntimePlatform } from '../runtime-platform';
 import { ImportedTaskDefinition } from './_imported-task-definition';
 
 /**
@@ -208,6 +209,16 @@ export interface TaskDefinitionProps extends CommonTaskDefinitionProps {
    * @default - Undefined, in which case, the task will receive 20GiB ephemeral storage.
    */
   readonly ephemeralStorageGiB?: number;
+
+  /**
+   * The operating system that your task definitions are running on.
+   * A platform family is specified only for tasks using the Fargate launch type.
+   *
+   * When you specify a task in a service, this value must match the runtimePlatform value of the service.
+   *
+   * @default - Undefined.
+   */
+  readonly runtimePlatform?: RuntimePlatform;
 }
 
 /**
@@ -369,6 +380,8 @@ export class TaskDefinition extends TaskDefinitionBase {
 
   private _referencesSecretJsonField?: boolean;
 
+  private runtimePlatform?: RuntimePlatform;
+
   /**
    * Constructs a new instance of the TaskDefinition class.
    */
@@ -417,6 +430,8 @@ export class TaskDefinition extends TaskDefinitionBase {
 
     this.ephemeralStorageGiB = props.ephemeralStorageGiB;
 
+    this.runtimePlatform = props.runtimePlatform;
+
     const taskDef = new CfnTaskDefinition(this, 'Resource', {
       containerDefinitions: Lazy.any({ produce: () => this.renderContainers() }, { omitEmptyArray: true }),
       volumes: Lazy.any({ produce: () => this.renderVolumes() }, { omitEmptyArray: true }),
@@ -444,6 +459,10 @@ export class TaskDefinition extends TaskDefinitionBase {
       }, { omitEmptyArray: true }),
       ephemeralStorage: this.ephemeralStorageGiB ? {
         sizeInGiB: this.ephemeralStorageGiB,
+      } : undefined,
+      runtimePlatform: this.runtimePlatform ? {
+        cpuArchitecture: this.runtimePlatform?.cpuArchitecture?._cpuArchitecture,
+        operatingSystemFamily: this.runtimePlatform?.operatingSystemFamily?._operatingSystemFamily,
       } : undefined,
     });
 
