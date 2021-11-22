@@ -1084,7 +1084,7 @@ more details please see this [blog post](https://aws.amazon.com/tw/blogs/contain
 
 ```ts
 // Create a Task Definition for the Windows container to start
-const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef', {
+const taskDefinition = new ecs.FargateTaskDefinition(this, 'TaskDef', {
   runtimePlatform: {
     operatingSystemFamily: ecs.OperatingSystemFamily.WINDOWS_SERVER_2019_CORE,
     cpuArchitecture: ecs.CpuArchitecture.X86_64,
