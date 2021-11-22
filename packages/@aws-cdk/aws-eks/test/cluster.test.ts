@@ -997,9 +997,61 @@ describe('cluster', () => {
       kubectlProvider: kubectlProvider,
     });
 
-    expect(cluster.kubectlProvider?.handlerRole.roleArn).toEqual('arn:aws:iam::123456789012:role/lambda-role');
+    expect(cluster.kubectlProvider).toEqual(kubectlProvider);
+  });
 
-    expect(cluster.kubectlProvider?.roleArn).toEqual('arn:aws:iam::123456789012:role/kubectl-role');
+  test('import cluster with existing kubectl provider function should work as expected with resources relying on kubectl getOrCreate', () => {
+
+    const { stack } = testFixture();
+
+    const handlerRole = iam.Role.fromRoleArn(stack, 'HandlerRole', 'arn:aws:iam::123456789012:role/lambda-role');
+    const kubectlProvider = KubectlProvider.fromKubectlProviderAttributes(stack, 'KubectlProvider', {
+      functionArn: 'arn:aws:lambda:us-east-2:123456789012:function:my-function:1',
+      kubectlRoleArn: 'arn:aws:iam::123456789012:role/kubectl-role',
+      handlerRole: handlerRole,
+    });
+
+    const cluster = eks.Cluster.fromClusterAttributes(stack, 'Cluster', {
+      clusterName: 'cluster',
+      kubectlProvider: kubectlProvider,
+    });
+
+    new eks.HelmChart(stack, 'Chart', {
+      cluster: cluster,
+      chart: 'chart',
+    });
+
+    new eks.KubernetesPatch(stack, 'Patch', {
+      cluster: cluster,
+      applyPatch: {},
+      restorePatch: {},
+      resourceName: 'PatchResource',
+    });
+
+    new eks.KubernetesManifest(stack, 'Manifest', {
+      cluster: cluster,
+      manifest: [],
+    });
+
+    new eks.KubernetesObjectValue(stack, 'ObjectValue', {
+      cluster: cluster,
+      jsonPath: '',
+      objectName: 'name',
+      objectType: 'type',
+    });
+
+    expect(stack).toHaveResourceLike('Custom::AWSCDK-EKS-HelmChart', {
+      ServiceToken: kubectlProvider.serviceToken,
+    });
+    expect(stack).toHaveResourceLike('Custom::AWSCDK-EKS-KubernetesPatch', {
+      ServiceToken: kubectlProvider.serviceToken,
+    });
+    expect(stack).toHaveResourceLike('Custom::AWSCDK-EKS-KubernetesResource', {
+      ServiceToken: kubectlProvider.serviceToken,
+    });
+    expect(stack).toHaveResourceLike('Custom::AWSCDK-EKS-KubernetesObjectValue', {
+      ServiceToken: kubectlProvider.serviceToken,
+    });
   });
 
   test('import cluster with new kubectl private subnets', () => {

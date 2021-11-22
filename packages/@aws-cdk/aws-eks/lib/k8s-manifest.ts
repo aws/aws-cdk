@@ -128,7 +128,7 @@ export class KubernetesManifest extends CoreConstruct {
     super(scope, id);
 
     const stack = Stack.of(this);
-    const provider = props.cluster.kubectlProvider ?? KubectlProvider.getOrCreate(this, props.cluster);
+    const provider = KubectlProvider.getOrCreate(this, props.cluster);
 
     const prune = props.prune ?? props.cluster.prune;
     const pruneLabel = prune
