@@ -48,7 +48,7 @@ export interface RewriteOptions {
  * @returns the updated source code.
  */
 export function rewriteMonoPackageImports(sourceText: string, libName: string, fileName: string = 'index.ts', options: RewriteOptions = {}): string {
-  return rewriteImports(sourceText, (modPath, importedElements) => updatedLocationOf(modPath, libName, options, importedElements), fileName);
+  return rewriteImports(sourceText, (modPath, importedElements) => updatedExternalLocation(modPath, libName, options, importedElements), fileName);
 }
 
 /**
@@ -76,7 +76,7 @@ export function rewriteMonoPackageImports(sourceText: string, libName: string, f
 export function rewriteReadmeImports(sourceText: string, libName: string, fileName: string = 'index.ts', options: RewriteOptions = {}): string {
   return sourceText.replace(/(```(?:ts|typescript|text)[^\n]*\n)(.*?)(\n\s*```)/gs, (_m, prefix, body, suffix) => {
     return prefix +
-      rewriteImports(body, (modPath, importedElements) => updatedLocationOf(modPath, libName, options, importedElements), fileName) +
+      rewriteImports(body, (modPath, importedElements) => updatedExternalLocation(modPath, libName, options, importedElements), fileName) +
       suffix;
   });
 }
@@ -98,14 +98,14 @@ export function rewriteReadmeImports(sourceText: string, libName: string, fileNa
  * - `require('@aws-cdk/lib');
  *
  * @param sourceText         the source code where imports should be re-written.
- * @param _updatedLocationOf a function that returns the updated location of the import.
+ * @param updatedLocation    a function that returns the updated location of the import.
  * @param fileName           a customized file name to provide the TypeScript processor.
  *
  * @returns the updated source code.
  */
 export function rewriteImports(
   sourceText: string,
-  _updatedLocationOf: (modulePath: string, importedElements?: ts.NodeArray<ts.ImportSpecifier>) => string | undefined,
+  updatedLocation: (modulePath: string, importedElements?: ts.NodeArray<ts.ImportSpecifier>) => string | undefined,
   fileName: string = 'index.ts',
 ): string {
   const sourceFile = ts.createSourceFile(fileName, sourceText, ts.ScriptTarget.ES2018);
@@ -114,7 +114,7 @@ export function rewriteImports(
 
   const visitor = <T extends ts.Node>(node: T): ts.VisitResult<T> => {
     const moduleSpecifier = getModuleSpecifier(node);
-    const newTarget = moduleSpecifier && _updatedLocationOf(moduleSpecifier.text, getImportedElements(node));
+    const newTarget = moduleSpecifier && updatedLocation(moduleSpecifier.text, getImportedElements(node));
 
     if (moduleSpecifier != null && newTarget != null) {
       replacements.push({ original: moduleSpecifier, updatedLocation: newTarget });
@@ -192,7 +192,7 @@ const EXEMPTIONS = new Set([
   '@aws-cdk/pkglint',
 ]);
 
-function updatedLocationOf(
+function updatedExternalLocation(
   modulePath: string,
   libName: string,
   options: RewriteOptions,

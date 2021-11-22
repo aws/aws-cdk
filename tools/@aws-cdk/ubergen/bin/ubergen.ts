@@ -481,6 +481,7 @@ const IGNORED_FILE_NAMES = new Set([
   'LICENSE',
   'NOTICE',
 ]);
+
 function shouldIgnoreFile(name: string): boolean {
   return IGNORED_FILE_NAMES.has(name);
 }
