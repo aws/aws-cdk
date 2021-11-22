@@ -23,6 +23,11 @@ export interface IHttpRoute extends IRoute {
   readonly path?: string;
 
   /**
+   * Returns the arn of the route.
+   */
+  readonly routeArn: string;
+
+  /**
    * Grant access to invoke the route.
    */
   grantInvoke(grantee: iam.IGrantable, options?: GrantInvokeOptions): iam.Grant;
@@ -69,7 +74,7 @@ export class HttpRouteKey {
   /**
    * The catch-all route of the API, i.e., when no other routes match
    */
-  public static readonly DEFAULT = new HttpRouteKey('$default');
+  public static readonly DEFAULT = new HttpRouteKey(HttpMethod.ANY, '$default');
 
   /**
    * Create a route key with the combination of the path and the method.
@@ -79,9 +84,14 @@ export class HttpRouteKey {
     if (path !== '/' && (!path.startsWith('/') || path.endsWith('/'))) {
       throw new Error('A route path must always start with a "/" and not end with a "/"');
     }
-    return new HttpRouteKey(`${method ?? HttpMethod.ANY} ${path}`, path);
+    const keyMethod = method ?? HttpMethod.ANY;
+    return new HttpRouteKey(keyMethod, `${keyMethod} ${path}`, path);
   }
 
+  /**
+   * The method of the route
+   */
+  public readonly method: HttpMethod;
   /**
    * The key to the RouteKey as recognized by APIGateway
    */
@@ -92,7 +102,8 @@ export class HttpRouteKey {
    */
   public readonly path?: string;
 
-  private constructor(key: string, path?: string) {
+  private constructor(method: HttpMethod, key: string, path?: string) {
+    this.method = method;
     this.key = key;
     this.path = path;
   }
@@ -163,6 +174,7 @@ export class HttpRoute extends Resource implements IHttpRoute {
   public readonly routeId: string;
   public readonly httpApi: IHttpApi;
   public readonly path?: string;
+  public readonly routeArn: string;
 
   private authorizer?: IHttpRouteAuthorizer;
   private authBindResult?: HttpRouteAuthorizerConfig;
@@ -172,6 +184,7 @@ export class HttpRoute extends Resource implements IHttpRoute {
 
     this.httpApi = props.httpApi;
     this.path = props.routeKey.path;
+    this.routeArn = this.produceRouteArn(props.routeKey.method);
 
     const config = props.integration.bind({
       route: this,
@@ -240,6 +253,17 @@ export class HttpRoute extends Resource implements IHttpRoute {
     }
   }
 
+  private produceRouteArn(httpMethod: HttpMethod = HttpMethod.ANY): string {
+    const stage = '*';
+    const iamHttpMethod = httpMethod === HttpMethod.ANY ? '*' : httpMethod;
+    const path = this.path ?? '/';
+    // When the user has provided a path with path variables, we replace the
+    // path variable and all that follows with a wildcard.
+    const iamPath = path.replace(/\{.*?\}.*/, '*');
+
+    return `arn:aws:execute-api:${this.stack.region}:${this.stack.account}:${this.httpApi.apiId}/${stage}/${iamHttpMethod}${iamPath}`;
+  }
+
   public grantInvoke(grantee: iam.IGrantable, options: GrantInvokeOptions = {}): iam.Grant {
     if (this.authorizer && !(this.authorizer instanceof HttpIamAuthorizer)) {
       throw new Error('The authorizer has been set, so we cannot enable IAM authorization');
@@ -249,16 +273,8 @@ export class HttpRoute extends Resource implements IHttpRoute {
       this.authorizer = new HttpIamAuthorizer();
     }
 
-    const path = this.path ?? '/';
-    const stage = '*';
-    // When the user has provided a path with path variables, we replace the
-    // path variable and the rest of the path with a wildcard.
-    const iamPath = path.replace(/\{.*?\}.*/, '*');
-
     const resourceArns = (options.httpMethods ?? [HttpMethod.ANY]).map(httpMethod => {
-      const iamHttpMethod = httpMethod === HttpMethod.ANY ? '*' : httpMethod;
-      const resourceArn = `arn:aws:execute-api:${this.stack.region}:${this.stack.account}:${this.httpApi.apiId}/${stage}/${iamHttpMethod}${iamPath}`;
-      return resourceArn;
+      return this.produceRouteArn(httpMethod);
     });
 
     return iam.Grant.addToPrincipal({

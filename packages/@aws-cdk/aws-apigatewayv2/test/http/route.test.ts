@@ -468,6 +468,56 @@ describe('HttpRoute', () => {
       },
     });
   });
+
+  test('accessing an ANY route arn', () => {
+    const stack = new Stack();
+    const httpApi = new HttpApi(stack, 'HttpApi');
+
+    // WHEN
+    const route = new HttpRoute(stack, 'HttpRoute', {
+      httpApi,
+      integration: new DummyIntegration(),
+      routeKey: HttpRouteKey.with('/books/{book}/something'),
+    });
+
+    // THEN
+    expect(stack.resolve(route.routeArn)).toEqual({
+      'Fn::Join': ['', [
+        'arn:aws:execute-api:',
+        { Ref: 'AWS::Region' },
+        ':',
+        { Ref: 'AWS::AccountId' },
+        ':',
+        { Ref: 'HttpApiF5A9A8A7' },
+        '/*/*/books/*',
+      ]],
+    });
+  });
+
+  test('accessing a GET route arn', () => {
+    const stack = new Stack();
+    const httpApi = new HttpApi(stack, 'HttpApi');
+
+    // WHEN
+    const route = new HttpRoute(stack, 'HttpRoute', {
+      httpApi,
+      integration: new DummyIntegration(),
+      routeKey: HttpRouteKey.with('/books/{book}/something', HttpMethod.GET),
+    });
+
+    // THEN
+    expect(stack.resolve(route.routeArn)).toEqual({
+      'Fn::Join': ['', [
+        'arn:aws:execute-api:',
+        { Ref: 'AWS::Region' },
+        ':',
+        { Ref: 'AWS::AccountId' },
+        ':',
+        { Ref: 'HttpApiF5A9A8A7' },
+        '/*/GET/books/*',
+      ]],
+    });
+  });
 });
 
 class DummyIntegration implements IHttpRouteIntegration {
