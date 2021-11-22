@@ -1,5 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import * as cxapi from '@aws-cdk/cx-api';
 import { App, AssetStaging, CustomResourceProvider, CustomResourceProviderRuntime, DockerImageAssetLocation, DockerImageAssetSource, Duration, FileAssetLocation, FileAssetSource, ISynthesisSession, Size, Stack } from '../../lib';
 import { toCloudFormation } from '../util';
 
@@ -23,7 +24,7 @@ describe('custom resource provider', () => {
     // The asset hash constantly changes, so in order to not have to chase it, just look
     // it up from the output.
     const staging = stack.node.tryFindChild('Custom:MyResourceTypeCustomResourceProvider')?.node.tryFindChild('Staging') as AssetStaging;
-    const assetHash = staging.sourceHash;
+    const assetHash = staging.assetHash;
     const paramNames = Object.keys(cfn.Parameters);
     const bucketParam = paramNames[0];
     const keyParam = paramNames[1];
@@ -118,6 +119,28 @@ describe('custom resource provider', () => {
           Description: `Artifact hash for asset "${assetHash}"`,
         },
       },
+    });
+
+  });
+
+  test('asset metadata added to custom resource that contains code definition', () => {
+    // GIVEN
+    const stack = new Stack();
+    stack.node.setContext(cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT, true);
+    stack.node.setContext(cxapi.DISABLE_ASSET_STAGING_CONTEXT, true);
+
+    // WHEN
+    CustomResourceProvider.getOrCreate(stack, 'Custom:MyResourceType', {
+      codeDirectory: TEST_HANDLER,
+      runtime: CustomResourceProviderRuntime.NODEJS_12_X,
+    });
+
+    // Then
+    const lambda = toCloudFormation(stack).Resources.CustomMyResourceTypeCustomResourceProviderHandler29FBDD2A;
+    expect(lambda).toHaveProperty('Metadata');
+    expect(lambda.Metadata).toEqual({
+      'aws:asset:path': `${__dirname}/mock-provider`,
+      'aws:asset:property': 'Code',
     });
 
   });

@@ -82,6 +82,7 @@ export class Default {
 
       // Services with a regional principal
       case 'states':
+      case 'ssm':
         return `${service}.${region}.amazonaws.com`;
 
       // Services with a partitional principal

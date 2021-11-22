@@ -12,13 +12,13 @@ const stack = new cdk.Stack(app, 'integ-distribution-lambda-cross-region', { env
 const lambdaFunction = new cloudfront.experimental.EdgeFunction(stack, 'Lambda', {
   code: lambda.Code.fromInline('foo'),
   handler: 'index.handler',
-  runtime: lambda.Runtime.NODEJS_10_X,
+  runtime: lambda.Runtime.NODEJS_14_X,
 });
 
 const lambdaFunction2 = new cloudfront.experimental.EdgeFunction(stack, 'Lambda2', {
   code: lambda.Code.fromInline('foo'),
   handler: 'index.handler',
-  runtime: lambda.Runtime.NODEJS_10_X,
+  runtime: lambda.Runtime.NODEJS_14_X,
   stackId: `edge-lambda-stack-${region}-2`,
 });
 

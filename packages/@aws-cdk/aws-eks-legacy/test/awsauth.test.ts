@@ -1,4 +1,5 @@
 import '@aws-cdk/assert-internal/jest';
+import { describeDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as iam from '@aws-cdk/aws-iam';
 import { Cluster, KubernetesResource } from '../lib';
 import { AwsAuth } from '../lib/aws-auth';
@@ -6,7 +7,7 @@ import { testFixtureNoVpc } from './util';
 
 /* eslint-disable max-len */
 
-describe('awsauth', () => {
+describeDeprecated('awsauth', () => {
   test('empty aws-auth', () => {
     // GIVEN
     const { stack } = testFixtureNoVpc();
