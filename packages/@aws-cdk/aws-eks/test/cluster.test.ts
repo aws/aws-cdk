@@ -1059,6 +1059,8 @@ describe('cluster', () => {
       ServiceToken: kubectlProvider.serviceToken,
       RoleArn: kubectlProvider.roleArn,
     });
+
+    expect(cluster.kubectlProvider).not.toBeInstanceOf(eks.KubectlProvider);
   });
 
   test('import cluster with new kubectl private subnets', () => {
