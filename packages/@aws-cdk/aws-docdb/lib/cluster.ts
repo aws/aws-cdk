@@ -380,6 +380,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
         username: props.masterUser.username,
         encryptionKey: props.masterUser.kmsKey,
         excludeCharacters: props.masterUser.excludeCharacters,
+        secretName: props.masterUser.secretName,
       });
     }
 
