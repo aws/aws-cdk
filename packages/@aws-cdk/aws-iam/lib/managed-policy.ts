@@ -1,4 +1,4 @@
-import { ArnFormat, IResolveContext, Lazy, Resource, Stack } from '@aws-cdk/core';
+import { ArnFormat, Resource, Stack, Arn, Aws } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { IGroup } from './group';
 import { CfnManagedPolicy } from './iam.generated';
@@ -156,16 +156,13 @@ export class ManagedPolicy extends Resource implements IManagedPolicy {
    */
   public static fromAwsManagedPolicyName(managedPolicyName: string): IManagedPolicy {
     class AwsManagedPolicy implements IManagedPolicy {
-      public readonly managedPolicyArn = Lazy.uncachedString({
-        produce(ctx: IResolveContext) {
-          return Stack.of(ctx.scope).formatArn({
-            service: 'iam',
-            region: '', // no region for managed policy
-            account: 'aws', // the account for a managed policy is 'aws'
-            resource: 'policy',
-            resourceName: managedPolicyName,
-          });
-        },
+      public readonly managedPolicyArn = Arn.format({
+        partition: Aws.PARTITION,
+        service: 'iam',
+        region: '', // no region for managed policy
+        account: 'aws', // the account for a managed policy is 'aws'
+        resource: 'policy',
+        resourceName: managedPolicyName,
       });
     }
     return new AwsManagedPolicy();
