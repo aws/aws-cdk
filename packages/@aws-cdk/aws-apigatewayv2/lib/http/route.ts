@@ -24,6 +24,7 @@ export interface IHttpRoute extends IRoute {
 
   /**
    * Returns the arn of the route.
+   * @attribute
    */
   readonly routeArn: string;
 
