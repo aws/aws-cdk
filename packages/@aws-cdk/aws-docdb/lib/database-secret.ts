@@ -36,7 +36,7 @@ export interface DatabaseSecretProps {
   /**
    * Characters to not include in the generated password.
    *
-   * @default '\"@/'
+   * @default "\"@/"
    */
   readonly excludeCharacters?: string;
 }
@@ -52,10 +52,9 @@ export class DatabaseSecret extends Secret {
   /**
    * the excluded characters for this Secret
    */
-  readonly excludedCharacters: string;
+  public readonly excludedCharacters: string;
 
   constructor(scope: Construct, id: string, props: DatabaseSecretProps) {
-
     const excludedCharacters = props.excludeCharacters ?? '"@/';
 
     super(scope, id, {

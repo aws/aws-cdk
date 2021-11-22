@@ -296,7 +296,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
   /**
    * The secret attached to this cluster
    */
-  public readonly databaseSecret?: DatabaseSecret | undefined;
+  private readonly databaseSecret?: DatabaseSecret | undefined;
 
   /**
    * The underlying CloudFormation resource for a database cluster.
