@@ -124,6 +124,28 @@ describe('custom resource provider', () => {
 
   });
 
+  test('asset metadata added to custom resource that contains code definition', () => {
+    // GIVEN
+    const stack = new Stack();
+    stack.node.setContext(cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT, true);
+    stack.node.setContext(cxapi.DISABLE_ASSET_STAGING_CONTEXT, true);
+
+    // WHEN
+    CustomResourceProvider.getOrCreate(stack, 'Custom:MyResourceType', {
+      codeDirectory: TEST_HANDLER,
+      runtime: CustomResourceProviderRuntime.NODEJS_12_X,
+    });
+
+    // Then
+    const lambda = toCloudFormation(stack).Resources.CustomMyResourceTypeCustomResourceProviderHandler29FBDD2A;
+    expect(lambda).toHaveProperty('Metadata');
+    expect(lambda.Metadata).toEqual({
+      'aws:asset:path': `${__dirname}/mock-provider`,
+      'aws:asset:property': 'Code',
+    });
+
+  });
+
   test('custom resource provided creates asset in new-style synthesis with relative path', () => {
     // GIVEN
 
