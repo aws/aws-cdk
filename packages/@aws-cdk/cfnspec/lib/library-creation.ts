@@ -75,13 +75,8 @@ export async function createLibraryReadme(namespace: string, readmePath: string)
     '',
     'This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.',
     '',
-<<<<<<< HEAD
     '```ts nofixture',
-    `import ${module.moduleName.toLocaleLowerCase()} = require('${module.packageName}');`,
-=======
-    '```ts',
     `import * as ${module.moduleName.toLocaleLowerCase().replace(/[^a-z0-9_]/g, '_')} from '${module.packageName}';`,
->>>>>>> 66e37cc20 (chore: rewrite readmes correctly in aws-cdk-lib and monocdk (#17573))
     '```',
     '',
   ].join('\n'), 'utf8');
