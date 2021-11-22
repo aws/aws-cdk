@@ -79,6 +79,8 @@ export class AlbControllerVersion {
 
   /**
    * Specify a custom version.
+   * Use this if the version you need is not available in one of the predefined versions.
+   * Note that in this case, you will also need to provide an IAM policy in the controller options.
    *
    * @param version The version number.
    */
