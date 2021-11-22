@@ -1,7 +1,8 @@
-import { createModuleDefinitionFromCfnNamespace } from '../lib';
+import * as path from 'path';
+import * as fs from 'fs-extra';
+import { createModuleDefinitionFromCfnNamespace, createLibraryReadme } from '../lib';
 
 describe('createModuleDefinitionFromCfnNamespace', () => {
-
   test('base case', () => {
     const module = createModuleDefinitionFromCfnNamespace('AWS::EC2');
 
@@ -55,5 +56,15 @@ describe('createModuleDefinitionFromCfnNamespace', () => {
       pythonModuleName: 'aws_cdk.alexa_ask',
     });
   });
+});
 
+describe('createLibraryReadme', () => {
+  test('library name is valid', async () => {
+    const tempDir = fs.mkdtempSync(path.join(__dirname, 'temp'));
+    const readmePath = path.join(tempDir, 'README.md');
+    await createLibraryReadme('Alexa::ASK', readmePath);
+
+    const readme = fs.readFileSync(readmePath, { encoding: 'utf8' });
+    expect(readme).toContain("import * as alexa_ask from '@aws-cdk/alexa-ask';");
+  });
 });

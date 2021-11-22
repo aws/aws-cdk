@@ -54,7 +54,8 @@ async function main() {
   await lintCurrentPackage(options, { ...overrides, fix: args.fix });
 
   if (options.post) {
-    await shell(options.post, { timers, env });
+    const commands = options.post.join(' && ');
+    await shell([commands], { timers, env });
   }
 }
 
