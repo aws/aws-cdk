@@ -1553,10 +1553,6 @@ export class Cluster extends ClusterBase {
       this.addNeuronDevicePlugin();
     }
 
-    // the controller runs on the worker nodes so they cannot
-    // be deleted before the controller.
-    this.albController?.node.addDependency(asg);
-
     return asg;
   }
 
