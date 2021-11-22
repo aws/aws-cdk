@@ -6,7 +6,7 @@ import { DEFAULT_SYNTH_OPTIONS, IntegrationTests } from '../lib/integ-helpers';
 
 /* eslint-disable no-console */
 
-const IGNORE_ASSETS_PRAGMA = 'pragma:ignore-assets';
+const VERIFY_ASSET_HASHES = 'pragma:include-assets-hashes';
 
 async function main() {
   const tests = await new IntegrationTests('test').fromCliArgs(); // always assert all tests
@@ -22,7 +22,8 @@ async function main() {
     let expected = await test.readExpected();
     let actual = await test.cdkSynthFast(DEFAULT_SYNTH_OPTIONS);
 
-    if ((await test.pragmas()).includes(IGNORE_ASSETS_PRAGMA)) {
+    // We will always ignore asset hashes, unless specifically requested not to
+    if (!(await test.pragmas()).includes(VERIFY_ASSET_HASHES)) {
       expected = canonicalizeTemplate(expected);
       actual = canonicalizeTemplate(actual);
     }
