@@ -256,7 +256,7 @@ export class HttpRoute extends Resource implements IHttpRoute {
     }
   }
 
-  private produceRouteArn(httpMethod: HttpMethod = HttpMethod.ANY): string {
+  private produceRouteArn(httpMethod: HttpMethod): string {
     const stage = '*';
     const iamHttpMethod = httpMethod === HttpMethod.ANY ? '*' : httpMethod;
     const path = this.path ?? '/';
