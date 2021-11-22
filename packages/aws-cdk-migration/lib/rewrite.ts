@@ -227,7 +227,7 @@ function updatedExternalLocation(
   }
 
   if (modulePath.startsWith('@aws-cdk/core/lib')) {
-    return `${libName}/lib/core/lib/${modulePath.substring('@aws-cdk/core/lib/'.length)}`;
+    return `${libName}/core/lib/${modulePath.substring('@aws-cdk/core/lib/'.length)}`;
   }
 
   if (modulePath === '@aws-cdk/core') {
