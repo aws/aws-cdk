@@ -427,6 +427,11 @@ export class Nodegroup extends Resource implements INodegroup {
           'system:nodes',
         ],
       });
+
+      // the controller runs on the worker nodes so they cannot
+      // be deleted before the controller.
+      this.cluster.albController?.node.addDependency(this);
+
     }
 
     this.nodegroupArn = this.getResourceArnAttribute(resource.attrArn, {
