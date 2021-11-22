@@ -346,7 +346,7 @@ describe('HttpRoute', () => {
                   { Ref: 'AWS::AccountId' },
                   ':',
                   { Ref: 'HttpApiF5A9A8A7' },
-                  '/*/*/books',
+                  '/*/GET/books',
                 ],
               ],
             },
@@ -357,7 +357,7 @@ describe('HttpRoute', () => {
     });
   });
 
-  test('granting invoke with httpMethod GET', () => {
+  test('granting invoke with httpMethod GET and POST', () => {
     const stack = new Stack();
     const httpApi = new HttpApi(stack, 'HttpApi');
     const role = new Role(stack, 'Role', {
@@ -467,6 +467,26 @@ describe('HttpRoute', () => {
         Version: '2012-10-17',
       },
     });
+  });
+
+  test('throws when granting invoke with httpMethods not supported by the route', () => {
+    const stack = new Stack();
+    const httpApi = new HttpApi(stack, 'HttpApi');
+    const role = new Role(stack, 'Role', {
+      assumedBy: new AccountPrincipal('111111111111'),
+    });
+
+    const route = new HttpRoute(stack, 'HttpRoute', {
+      httpApi,
+      integration: new DummyIntegration(),
+      routeKey: HttpRouteKey.with('/books/{book}/something', HttpMethod.GET),
+    });
+
+    expect(() =>
+      route.grantInvoke(role, {
+        httpMethods: [HttpMethod.DELETE],
+      }),
+    ).toThrowError(/This route does not support granting invoke for all requested http methods/i);
   });
 
   test('accessing an ANY route arn', () => {

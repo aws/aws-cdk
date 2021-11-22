@@ -40,7 +40,7 @@ export interface IHttpRoute extends IRoute {
 export interface GrantInvokeOptions {
   /**
    * The HTTP methods to allow.
-   * @default `[HttpMethod.ANY]`
+   * @default - the HttpMethod of the route
    */
   readonly httpMethods?: HttpMethod[];
 }
@@ -177,6 +177,7 @@ export class HttpRoute extends Resource implements IHttpRoute {
   public readonly path?: string;
   public readonly routeArn: string;
 
+  private readonly method: HttpMethod;
   private authorizer?: IHttpRouteAuthorizer;
   private authBindResult?: HttpRouteAuthorizerConfig;
 
@@ -185,6 +186,7 @@ export class HttpRoute extends Resource implements IHttpRoute {
 
     this.httpApi = props.httpApi;
     this.path = props.routeKey.path;
+    this.method = props.routeKey.method;
     this.routeArn = this.produceRouteArn(props.routeKey.method);
 
     const config = props.integration.bind({
@@ -274,7 +276,12 @@ export class HttpRoute extends Resource implements IHttpRoute {
       this.authorizer = new HttpIamAuthorizer();
     }
 
-    const resourceArns = (options.httpMethods ?? [HttpMethod.ANY]).map(httpMethod => {
+    const httpMethods = Array.from(new Set(options.httpMethods ?? [this.method]));
+    if (this.method !== HttpMethod.ANY && httpMethods.some(method => method !== this.method)) {
+      throw new Error('This route does not support granting invoke for all requested http methods');
+    }
+
+    const resourceArns = httpMethods.map(httpMethod => {
       return this.produceRouteArn(httpMethod);
     });
 
