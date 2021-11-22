@@ -4,11 +4,10 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import { App, CfnOutput, Duration, Token, Fn } from '@aws-cdk/core';
 import * as cdk8s from 'cdk8s';
-import * as kplus from 'cdk8s-plus';
+import * as kplus from 'cdk8s-plus-21';
 import * as constructs from 'constructs';
 import * as eks from '../lib';
 import * as hello from './hello-k8s';
-import { Pinger } from './pinger/pinger';
 import { TestStack } from './util';
 
 
@@ -49,8 +48,6 @@ class EksClusterStack extends TestStack {
 
     this.assertSpotCapacity();
 
-    this.assertInferenceInstances();
-
     this.assertNodeGroupX86();
 
     this.assertNodeGroupSpot();
@@ -70,8 +67,6 @@ class EksClusterStack extends TestStack {
     this.assertCreateNamespace();
 
     this.assertServiceAccount();
-
-    this.assertServiceLoadBalancerAddress();
 
     new CfnOutput(this, 'ClusterEndpoint', { value: this.cluster.clusterEndpoint });
     new CfnOutput(this, 'ClusterArn', { value: this.cluster.clusterArn });
@@ -213,13 +208,6 @@ class EksClusterStack extends TestStack {
       nodeRole: this.cluster.defaultCapacity ? this.cluster.defaultCapacity.role : undefined,
     });
   }
-  private assertInferenceInstances() {
-    // inference instances
-    this.cluster.addAutoScalingGroupCapacity('InferenceInstances', {
-      instanceType: new ec2.InstanceType('inf1.2xlarge'),
-      minCapacity: 1,
-    });
-  }
   private assertSpotCapacity() {
     // spot instances (up to 10)
     this.cluster.addAutoScalingGroupCapacity('spot', {
@@ -267,67 +255,6 @@ class EksClusterStack extends TestStack {
 
   }
 
-  private assertServiceLoadBalancerAddress() {
-
-    const serviceName = 'webservice';
-    const labels = { app: 'simple-web' };
-    const containerPort = 80;
-    const servicePort = 9000;
-
-    const pingerSecurityGroup = new ec2.SecurityGroup(this, 'WebServiceSecurityGroup', {
-      vpc: this.vpc,
-    });
-
-    pingerSecurityGroup.addIngressRule(pingerSecurityGroup, ec2.Port.tcp(servicePort), `allow http ${servicePort} access from myself`);
-
-    this.cluster.addManifest('simple-web-pod', {
-      kind: 'Pod',
-      apiVersion: 'v1',
-      metadata: { name: 'webpod', labels: labels },
-      spec: {
-        containers: [{
-          name: 'simplewebcontainer',
-          image: 'nginx',
-          ports: [{ containerPort: containerPort }],
-        }],
-      },
-    });
-
-    this.cluster.addManifest('simple-web-service', {
-      kind: 'Service',
-      apiVersion: 'v1',
-      metadata: {
-        name: serviceName,
-        annotations: {
-          // this is furtile soil for cdk8s-plus! :)
-          'service.beta.kubernetes.io/aws-load-balancer-internal': 'true',
-          'service.beta.kubernetes.io/aws-load-balancer-extra-security-groups': pingerSecurityGroup.securityGroupId,
-        },
-      },
-      spec: {
-        type: 'LoadBalancer',
-        ports: [{ port: servicePort, targetPort: containerPort }],
-        selector: labels,
-      },
-    });
-
-    const loadBalancerAddress = this.cluster.getServiceLoadBalancerAddress(serviceName);
-
-    // create a resource that hits the load balancer to make sure
-    // everything is wired properly.
-    const pinger = new Pinger(this, 'ServicePinger', {
-      url: `http://${loadBalancerAddress}:${servicePort}`,
-      securityGroup: pingerSecurityGroup,
-      vpc: this.vpc,
-    });
-
-    // this should display a proper nginx response
-    // <title>Welcome to nginx!</title>...
-    new CfnOutput(this, 'Response', {
-      value: pinger.response,
-    });
-
-  }
 }
 
 // this test uses both the bottlerocket image and the inf1 instance, which are only supported in these
