@@ -127,7 +127,7 @@ export class TopicSubscription implements ISubscribable {
   constructor(props: TopicSubscriptionProps) {
     this.topic = props.topic;
     this.subscriptionQueue = props.topicSubscriptionQueue;
-    this.queue = props.topicSubscriptionQueue?.queue ?? props.queue;
+    this.queue = props.queue ?? props.topicSubscriptionQueue?.queue;
   }
 
   /**
