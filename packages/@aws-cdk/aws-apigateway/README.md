@@ -130,11 +130,11 @@ More details about AWS Step Functions payload limit can be found at https://docs
 The following code defines a REST API that routes all requests to the specified AWS StepFunctions state machine:
 
 ```ts
-const stateMachineDefinition = new sfn.Pass(this, 'PassState');
+const stateMachineDefinition = new stepfunctions.Pass(this, 'PassState');
 
-const stateMachine: sfn.IStateMachine = new sfn.StateMachine(this, 'StateMachine', {
+const stateMachine: stepfunctions.IStateMachine = new stepfunctions.StateMachine(this, 'StateMachine', {
     definition: stateMachineDefinition,
-    stateMachineType: sfn.StateMachineType.EXPRESS,
+    stateMachineType: stepfunctions.StateMachineType.EXPRESS,
 });
     
 new apigateway.StepFunctionsRestApi(this, 'StepFunctionsRestApi', {

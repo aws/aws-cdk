@@ -623,8 +623,8 @@ import * as logs from '@aws-cdk/aws-logs';
 
 const logGroup = new logs.LogGroup(this, 'MyLogGroup');
 
-new sfn.StateMachine(this, 'MyStateMachine', {
-  definition: sfn.Chain.start(new sfn.Pass(this, 'Pass')),
+new stepfunctions.StateMachine(this, 'MyStateMachine', {
+  definition: stepfunctions.Chain.start(new sfn.Pass(this, 'Pass')),
   logs: {
     destination: logGroup,
     level: sfn.LogLevel.ALL,
@@ -637,8 +637,8 @@ new sfn.StateMachine(this, 'MyStateMachine', {
 Enable X-Ray tracing for StateMachine:
 
 ```ts
-new sfn.StateMachine(this, 'MyStateMachine', {
-  definition: sfn.Chain.start(new sfn.Pass(this, 'Pass')),
+new stepfunctions.StateMachine(this, 'MyStateMachine', {
+  definition: stepfunctions.Chain.start(new stepfunctions.Pass(this, 'Pass')),
   tracingEnabled: true,
 });
 ```

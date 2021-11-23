@@ -72,8 +72,14 @@ export interface StepFunctionsSynchronousIntegrationOptions extends IntegrationO
  *
  * @example
  *
- *    const stateMachine = new sfn.StateMachine(this, 'MyStateMachine', ...);
- *    api.addMethod('GET', new StepFunctionsSynchronousIntegration(stateMachine));
+ *    const stateMachine = new stepfunctions.StateMachine(this, 'MyStateMachine', {
+ *       definition: stepfunctions.Chain.start(new stepfunctions.Pass(this, 'Pass')),
+ *    });
+ *
+ *    const api = new apigateway.RestApi(this, 'Api', {
+ *       restApiName: 'MyApi',
+ *    });
+ *    api.root.addMethod('GET', new apigateway.StepFunctionsSynchronousIntegration(stateMachine));
  */
 export class StepFunctionsSynchronousIntegration extends AwsIntegration {
   private readonly stateMachine: sfn.IStateMachine;
