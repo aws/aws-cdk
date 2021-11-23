@@ -144,13 +144,13 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
 
   /** Create a support stack and function in us-east-1, and a SSM reader in-region */
   private createCrossRegionFunction(id: string, props: EdgeFunctionProps): FunctionConfig {
-    const parameterNamePrefix = '/cdk/EdgeFunctionArn';
+    const parameterNamePrefix = 'cdk/EdgeFunctionArn';
     if (Token.isUnresolved(this.env.region)) {
       throw new Error('stacks which use EdgeFunctions must have an explicitly set region');
     }
     // SSM parameter names must only contain letters, numbers, ., _, -, or /.
     const sanitizedPath = this.node.path.replace(/[^\/\w.-]/g, '_');
-    const parameterName = `${parameterNamePrefix}/${this.env.region}/${sanitizedPath}`;
+    const parameterName = `/${parameterNamePrefix}/${this.env.region}/${sanitizedPath}`;
     const functionStack = this.edgeStack(props.stackId);
 
     const edgeFunction = new lambda.Function(functionStack, id, props);
@@ -177,7 +177,6 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
       region: EdgeFunction.EDGE_REGION,
       resource: 'parameter',
       resourceName: parameterNamePrefix + '/*',
-      sep: '',
     });
 
     const resourceType = 'Custom::CrossRegionStringParameterReader';

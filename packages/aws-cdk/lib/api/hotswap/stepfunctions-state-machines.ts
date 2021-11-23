@@ -48,6 +48,8 @@ interface StateMachineResource {
 }
 
 class StateMachineHotswapOperation implements HotswapOperation {
+  public readonly service = 'stepfunctions-state-machine';
+
   constructor(private readonly stepFunctionResource: StateMachineResource) {
   }
 

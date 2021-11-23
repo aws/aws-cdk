@@ -352,6 +352,8 @@ export class DatabaseCluster extends DatabaseClusterBase {
       secret = new DatabaseSecret(this, 'Secret', {
         username: props.masterUser.username,
         encryptionKey: props.masterUser.kmsKey,
+        excludeCharacters: props.masterUser.excludeCharacters,
+        secretName: props.masterUser.secretName,
       });
     }
 

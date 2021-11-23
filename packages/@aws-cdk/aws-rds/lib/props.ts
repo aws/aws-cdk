@@ -158,7 +158,6 @@ export interface CredentialsBaseOptions {
 
 /**
  * Options for creating Credentials from a username.
- * @deprecated supporting API `fromUsername()` has been deprecated. See deprecation notice of the API.
  */
 export interface CredentialsFromUsernameOptions extends CredentialsBaseOptions {
   /**
@@ -202,10 +201,6 @@ export abstract class Credentials {
   /**
    * Creates Credentials for the given username, and optional password and key.
    * If no password is provided, one will be generated and stored in Secrets Manager.
-   *
-   * @deprecated use `fromGeneratedSecret()` or `fromPassword()` for new Clusters and Instances.
-   *   Note that switching from `fromUsername()` to `fromGeneratedSecret()` or `fromPassword()` for already deployed
-   *   Clusters or Instances will result in their replacement!
    */
   public static fromUsername(username: string, options: CredentialsFromUsernameOptions = {}): Credentials {
     return {
@@ -468,6 +463,25 @@ interface CommonRotationUserOptions {
    * @default " %+~`#$&*()|[]{}:;<>?!'/@\"\\"
    */
   readonly excludeCharacters?: string;
+
+  /**
+   * Where to place the rotation Lambda function
+   *
+   * @default - same placement as instance or cluster
+   */
+  readonly vpcSubnets?: ec2.SubnetSelection;
+
+  /**
+   * The VPC interface endpoint to use for the Secrets Manager API
+   *
+   * If you enable private DNS hostnames for your VPC private endpoint (the default), you don't
+   * need to specify an endpoint. The standard Secrets Manager DNS hostname the Secrets Manager
+   * CLI and SDKs use by default (https://secretsmanager.<region>.amazonaws.com) automatically
+   * resolves to your VPC endpoint.
+   *
+   * @default https://secretsmanager.<region>.amazonaws.com
+   */
+  readonly endpoint?: ec2.IInterfaceVpcEndpoint;
 }
 
 /**

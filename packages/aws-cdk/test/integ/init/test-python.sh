@@ -26,6 +26,8 @@ for template in $templates; do
     source .venv/bin/activate
     type -p pip
     pip install -r requirements.txt
+    ./.venv/bin/pip install -r requirements-dev.txt
+    pytest
 
     cdk synth
 done
