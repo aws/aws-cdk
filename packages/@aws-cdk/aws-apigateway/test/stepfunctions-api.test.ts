@@ -54,7 +54,7 @@ function getIntegrationResponse() {
       StatusCode: '400',
       ResponseTemplates: {
         'application/json': `{
-            "error": "Bad input!"
+            "error": "Bad request!"
           }`,
       },
     },
@@ -71,16 +71,18 @@ function getIntegrationResponse() {
     {
       StatusCode: '200',
       ResponseTemplates: {
-        'application/json': `#set($inputRoot = $input.path('$'))
-                #if($input.path('$.status').toString().equals("FAILED"))
-                    #set($context.responseOverride.status = 500)
-                    { 
-                      "error": "$input.path('$.error')",
-                      "cause": "$input.path('$.cause')"
-                    }
-                #else
-                    $input.path('$.output')
-                #end`,
+        'application/json': [
+          '#set($inputRoot = $input.path(\'$\'))',
+          '#if($input.path(\'$.status\').toString().equals("FAILED"))',
+          '#set($context.responseOverride.status = 500)',
+          '{',
+          '"error": "$input.path(\'$.error\')"',
+          '"cause": "$input.path(\'$.cause\')"',
+          '}',
+          '#else',
+          '$input.path(\'$.output\')',
+          '#end',
+        ].join('\n'),
       },
     },
     ...errorResponse,
@@ -118,7 +120,7 @@ describe('Step Functions api', () => {
       Integration: {
         Credentials: {
           'Fn::GetAtt': [
-            'DefaultStateMachineapiRoleNewB2BFA951',
+            'StartSyncExecutionRoleDE73CB90',
             'Arn',
           ],
         },
@@ -129,7 +131,7 @@ describe('Step Functions api', () => {
             'Fn::Join': [
               '',
               [
-                "## Velocity Template used for API Gateway request mapping template\n##\n## This template forwards the request body, header, path, and querystring\n## to the execution input of the state machine.\n##\n## \"@@\" is used here as a placeholder for '\"' to avoid using escape characters.\n\n#set($inputString = '')\n#set($includeHeaders = false)\n#set($includeQueryString = false)\n#set($includePath = false)\n#set($allParams = $input.params())\n{\n    \"stateMachineArn\": \"",
+                "## Velocity Template used for API Gateway request mapping template\n##\n## This template forwards the request body, header, path, and querystring\n## to the execution input of the state machine.\n##\n## \"@@\" is used here as a placeholder for '\"' to avoid using escape characters.\n\n#set($inputString = '')\n#set($includeHeaders = false)\n#set($includeQueryString = true)\n#set($includePath = true)\n#set($allParams = $input.params())\n{\n    \"stateMachineArn\": \"",
                 {
                   Ref: 'StateMachine2E01A3A5',
                 },
@@ -211,7 +213,7 @@ describe('Step Functions api', () => {
       Integration: {
         Credentials: {
           'Fn::GetAtt': [
-            'DefaultStateMachineapiRoleNewB2BFA951',
+            'StartSyncExecutionRoleDE73CB90',
             'Arn',
           ],
         },
@@ -222,7 +224,7 @@ describe('Step Functions api', () => {
             'Fn::Join': [
               '',
               [
-                "## Velocity Template used for API Gateway request mapping template\n##\n## This template forwards the request body, header, path, and querystring\n## to the execution input of the state machine.\n##\n## \"@@\" is used here as a placeholder for '\"' to avoid using escape characters.\n\n#set($inputString = '')\n#set($includeHeaders = false)\n#set($includeQueryString = false)\n#set($includePath = false)\n#set($allParams = $input.params())\n{\n    \"stateMachineArn\": \"",
+                "## Velocity Template used for API Gateway request mapping template\n##\n## This template forwards the request body, header, path, and querystring\n## to the execution input of the state machine.\n##\n## \"@@\" is used here as a placeholder for '\"' to avoid using escape characters.\n\n#set($inputString = '')\n#set($includeHeaders = false)\n#set($includeQueryString = true)\n#set($includePath = true)\n#set($allParams = $input.params())\n{\n    \"stateMachineArn\": \"",
                 {
                   Ref: 'StateMachine2E01A3A5',
                 },
@@ -284,7 +286,7 @@ describe('Step Functions api', () => {
       Integration: {
         Credentials: {
           'Fn::GetAtt': [
-            'DefaultStateMachineapiRoleNewB2BFA951',
+            'StartSyncExecutionRoleDE73CB90',
             'Arn',
           ],
         },
@@ -295,7 +297,7 @@ describe('Step Functions api', () => {
             'Fn::Join': [
               '',
               [
-                "## Velocity Template used for API Gateway request mapping template\n##\n## This template forwards the request body, header, path, and querystring\n## to the execution input of the state machine.\n##\n## \"@@\" is used here as a placeholder for '\"' to avoid using escape characters.\n\n#set($inputString = '')\n#set($includeHeaders = false)\n#set($includeQueryString = false)\n#set($includePath = false)\n#set($allParams = $input.params())\n{\n    \"stateMachineArn\": \"",
+                "## Velocity Template used for API Gateway request mapping template\n##\n## This template forwards the request body, header, path, and querystring\n## to the execution input of the state machine.\n##\n## \"@@\" is used here as a placeholder for '\"' to avoid using escape characters.\n\n#set($inputString = '')\n#set($includeHeaders = false)\n#set($includeQueryString = true)\n#set($includePath = true)\n#set($allParams = $input.params())\n{\n    \"stateMachineArn\": \"",
                 {
                   Ref: 'StateMachine2E01A3A5',
                 },
@@ -357,7 +359,6 @@ describe('Step Functions api', () => {
     expect(() => new apigw.StepFunctionsRestApi(stack, 'StepFunctionsRestApi', {
       stateMachine: stateMachine,
     })).toThrow(/State Machine must be of type "EXPRESS". Please use StateMachineType.EXPRESS as the stateMachineType/);
-
   });
 
   test('StepFunctionsRestApi defines a REST API with CORS enabled', () => {

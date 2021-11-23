@@ -77,7 +77,7 @@ export interface StepFunctionsSynchronousIntegrationOptions extends IntegrationO
  */
 export class StepFunctionsSynchronousIntegration extends AwsIntegration {
   private readonly stateMachine: sfn.IStateMachine;
-  constructor(stateMachine: sfn.IStateMachine, options: StepFunctionsSynchronousIntegrationOptions) {
+  constructor(stateMachine: sfn.IStateMachine, options: StepFunctionsSynchronousIntegrationOptions = {}) {
     super({
       service: 'states',
       action: 'StartSyncExecution',
@@ -241,9 +241,9 @@ function templateString(
 
   let requestContextStr = '';
 
-  const includeHeader: string = (options.headers) ? 'true': 'false';
-  const includeQueryString: string = (options.querystring) ? 'true': 'false';
-  const includePath: string = (options.path) ? 'true': 'false';
+  const includeHeader = options.headers?? false;
+  const includeQueryString = options.querystring?? true;
+  const includePath = options.path?? true;
 
   if (includeRequestContext) {
     requestContextStr = requestContext(options.requestContext);
@@ -251,9 +251,9 @@ function templateString(
 
   templateStr = fs.readFileSync(path.join(__dirname, 'stepfunctions.vtl'), { encoding: 'utf-8' });
   templateStr = templateStr.replace('%STATEMACHINE%', stateMachine.stateMachineArn);
-  templateStr = templateStr.replace('%INCLUDE_HEADERS%', includeHeader);
-  templateStr = templateStr.replace('%INCLUDE_QUERYSTRING%', includeQueryString);
-  templateStr = templateStr.replace('%INCLUDE_PATH%', includePath);
+  templateStr = templateStr.replace('%INCLUDE_HEADERS%', String(includeHeader));
+  templateStr = templateStr.replace('%INCLUDE_QUERYSTRING%', String(includeQueryString));
+  templateStr = templateStr.replace('%INCLUDE_PATH%', String(includePath));
   templateStr = templateStr.replace('%REQUESTCONTEXT%', requestContextStr);
 
   return templateStr;

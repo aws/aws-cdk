@@ -26,7 +26,7 @@ function getIntegrationResponse() {
       StatusCode: '400',
       ResponseTemplates: {
         'application/json': `{
-            "error": "Bad input!"
+            "error": "Bad request!"
           }`,
       },
     },
@@ -43,16 +43,18 @@ function getIntegrationResponse() {
     {
       StatusCode: '200',
       ResponseTemplates: {
-        'application/json': `#set($inputRoot = $input.path('$'))
-                #if($input.path('$.status').toString().equals("FAILED"))
-                    #set($context.responseOverride.status = 500)
-                    { 
-                      "error": "$input.path('$.error')",
-                      "cause": "$input.path('$.cause')"
-                    }
-                #else
-                    $input.path('$.output')
-                #end`,
+        'application/json': [
+          '#set($inputRoot = $input.path(\'$\'))',
+          '#if($input.path(\'$.status\').toString().equals("FAILED"))',
+          '#set($context.responseOverride.status = 500)',
+          '{',
+          '"error": "$input.path(\'$.error\')"',
+          '"cause": "$input.path(\'$.cause\')"',
+          '}',
+          '#else',
+          '$input.path(\'$.output\')',
+          '#end',
+        ].join('\n'),
       },
     },
     ...errorResponse,
@@ -67,7 +69,7 @@ describe('StepFunctions', () => {
     const { stack, api, stateMachine } = givenSetup();
 
     //WHEN
-    const integ = new apigw.StepFunctionsSynchronousIntegration(stateMachine, {});
+    const integ = new apigw.StepFunctionsSynchronousIntegration(stateMachine);
     api.root.addMethod('GET', integ);
 
     //THEN
@@ -108,7 +110,7 @@ describe('StepFunctions', () => {
             'Fn::Join': [
               '',
               [
-                "## Velocity Template used for API Gateway request mapping template\n##\n## This template forwards the request body, header, path, and querystring\n## to the execution input of the state machine.\n##\n## \"@@\" is used here as a placeholder for '\"' to avoid using escape characters.\n\n#set($inputString = '')\n#set($includeHeaders = false)\n#set($includeQueryString = false)\n#set($includePath = false)\n#set($allParams = $input.params())\n{\n    \"stateMachineArn\": \"",
+                "## Velocity Template used for API Gateway request mapping template\n##\n## This template forwards the request body, header, path, and querystring\n## to the execution input of the state machine.\n##\n## \"@@\" is used here as a placeholder for '\"' to avoid using escape characters.\n\n#set($inputString = '')\n#set($includeHeaders = false)\n#set($includeQueryString = true)\n#set($includePath = true)\n#set($allParams = $input.params())\n{\n    \"stateMachineArn\": \"",
                 {
                   Ref: 'StateMachine2E01A3A5',
                 },
@@ -137,7 +139,7 @@ describe('StepFunctions', () => {
       stateMachineType: sfn.StateMachineType.EXPRESS,
     });
 
-    api.root.addMethod('ANY', new apigw.StepFunctionsSynchronousIntegration(stateMachine, {}));
+    api.root.addMethod('ANY', new apigw.StepFunctionsSynchronousIntegration(stateMachine));
 
     expect(stack).toHaveResource('AWS::ApiGateway::Method', {
       HttpMethod: 'ANY',
@@ -149,13 +151,24 @@ describe('StepFunctions', () => {
         IntegrationResponses: [
           {
             ResponseTemplates: {
-              'application/json': "#set($inputRoot = $input.path('$'))\n                #if($input.path('$.status').toString().equals(\"FAILED\"))\n                    #set($context.responseOverride.status = 500)\n                    { \n                      \"error\": \"$input.path('$.error')\",\n                      \"cause\": \"$input.path('$.cause')\"\n                    }\n                #else\n                    $input.path('$.output')\n                #end",
+              'application/json': [
+                '#set($inputRoot = $input.path(\'$\'))',
+                '#if($input.path(\'$.status\').toString().equals("FAILED"))',
+                '#set($context.responseOverride.status = 500)',
+                '{',
+                '"error": "$input.path(\'$.error\')"',
+                '"cause": "$input.path(\'$.cause\')"',
+                '}',
+                '#else',
+                '$input.path(\'$.output\')',
+                '#end',
+              ].join('\n'),
             },
             StatusCode: '200',
           },
           {
             ResponseTemplates: {
-              'application/json': '{\n            "error": "Bad input!"\n          }',
+              'application/json': '{\n            "error": "Bad request!"\n          }',
             },
             SelectionPattern: '4\\d{2}',
             StatusCode: '400',
@@ -174,7 +187,7 @@ describe('StepFunctions', () => {
             'Fn::Join': [
               '',
               [
-                "## Velocity Template used for API Gateway request mapping template\n##\n## This template forwards the request body, header, path, and querystring\n## to the execution input of the state machine.\n##\n## \"@@\" is used here as a placeholder for '\"' to avoid using escape characters.\n\n#set($inputString = '')\n#set($includeHeaders = false)\n#set($includeQueryString = false)\n#set($includePath = false)\n#set($allParams = $input.params())\n{\n    \"stateMachineArn\": \"",
+                "## Velocity Template used for API Gateway request mapping template\n##\n## This template forwards the request body, header, path, and querystring\n## to the execution input of the state machine.\n##\n## \"@@\" is used here as a placeholder for '\"' to avoid using escape characters.\n\n#set($inputString = '')\n#set($includeHeaders = false)\n#set($includeQueryString = true)\n#set($includePath = true)\n#set($allParams = $input.params())\n{\n    \"stateMachineArn\": \"",
                 {
                   Ref: 'StateMachine2E01A3A5',
                 },
