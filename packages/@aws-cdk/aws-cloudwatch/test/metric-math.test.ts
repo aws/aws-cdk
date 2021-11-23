@@ -260,7 +260,7 @@ describe('Metric Math', () => {
 
       // THEN
       graphMetricsAre(graph, [
-        [{ expression: 'a + e'}],
+        [{ expression: 'a + e' }],
         ['Test', 'ACount', { visible: false, id: 'a' }],
         [{ expression: 'a + b', visible: false, id: 'e' }],
         ['Test', 'BCount', { visible: false, id: 'b' }],
@@ -281,7 +281,7 @@ describe('Metric Math', () => {
 
       // THEN
       graphMetricsAre(graph, [
-        [{ expression: 'a + b99'}],
+        [{ expression: 'a + b99' }],
         ['Test', 'ACount', { visible: false, id: 'a' }],
         ['Test', 'BCount', { visible: false, id: 'b99', stat: 'p99' }],
       ]);
