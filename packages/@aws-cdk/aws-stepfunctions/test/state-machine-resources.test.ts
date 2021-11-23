@@ -216,15 +216,15 @@ describe('State Machine Resources', () => {
     stateMachine.grantStartSyncExecution(role);
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
-        Statement: arrayWith(objectLike({
+        Statement: Match.arrayWith([Match.objectLike({
           Action: 'states:StartSyncExecution',
           Effect: 'Allow',
           Resource: {
             Ref: 'StateMachine2E01A3A5',
           },
-        })),
+        })]),
       },
     });
 
