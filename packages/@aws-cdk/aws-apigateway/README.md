@@ -149,7 +149,7 @@ When the REST API endpoint configuration above is invoked using POST, as follows
 curl -X POST -d '{ "customerId": 1 }' https://example.com/
 ```
 
-AWS Step Functions will receive the request body inside a `body` key as it is possible to have other keys within the request (ex. requestContext, header, path, and/or querystring):
+AWS Step Functions will receive the request body in its input as follows:
 
 ```json
 {
