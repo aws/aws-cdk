@@ -41,7 +41,8 @@ export function pushStackResourceSummaries(...items: CloudFormation.StackResourc
   currentCfnStackResources.push(...items);
 }
 
-export function setCurrentCfnStackTemplate(template: Template) {
+export function setCurrentCfnStackTemplate(_template: Template) {
+  let template = JSON.parse(JSON.stringify(_template));
   currentCfnStack.setTemplate(template);
 }
 
