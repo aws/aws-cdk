@@ -1,27 +1,9 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { SynthUtils } from '@aws-cdk/assert-internal';
 import * as iam from '@aws-cdk/aws-iam';
 import '@aws-cdk/assert-internal/jest';
-import { Cluster, KubernetesVersion, AlbController, AlbControllerVersion } from '../lib';
+import { Cluster, KubernetesVersion, AlbController, AlbControllerVersion, HelmChart } from '../lib';
 import { testFixture } from './util';
-
-test('minimal snapshot', () => {
-
-  const { stack } = testFixture();
-
-  const cluster = new Cluster(stack, 'Cluster', {
-    version: KubernetesVersion.V1_21,
-  });
-
-  AlbController.create(stack, {
-    cluster,
-    version: AlbControllerVersion.V2_3_0,
-  });
-
-  expect(SynthUtils.synthesize(stack).template).toMatchSnapshot();
-
-});
 
 test('all vended policies are valid', () => {
 
@@ -58,7 +40,24 @@ test('can configure a custom repository', () => {
     repository: 'custom',
   });
 
-  expect(SynthUtils.synthesize(stack).template).toMatchSnapshot();
+  expect(stack).toHaveResource(HelmChart.RESOURCE_TYPE, {
+    Values: {
+      'Fn::Join': [
+        '',
+        [
+          '{"clusterName":"',
+          {
+            Ref: 'Cluster9EE0221C',
+          },
+          '","serviceAccount":{"create":false,"name":"aws-load-balancer-controller"},"region":"us-east-1","vpcId":"',
+          {
+            Ref: 'ClusterDefaultVpcFA9F2722',
+          },
+          '","repository":"custom","tag":"v2.3.0"}',
+        ],
+      ],
+    },
+  });
 
 });
 
