@@ -15,6 +15,6 @@
 
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
-```ts
+```ts nofixture
 import * as securityhub from '@aws-cdk/aws-securityhub';
 ```

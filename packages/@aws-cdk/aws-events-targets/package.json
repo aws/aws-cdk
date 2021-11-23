@@ -28,7 +28,14 @@
         ]
       }
     },
-    "projectReferences": true
+    "projectReferences": true,
+    "metadata": {
+      "jsii": {
+        "rosetta": {
+          "strict": true
+        }
+      }
+    }
   },
   "repository": {
     "type": "git",
@@ -86,6 +93,7 @@
   },
   "dependencies": {
     "@aws-cdk/aws-apigateway": "0.0.0",
+    "@aws-cdk/aws-autoscaling": "0.0.0",
     "@aws-cdk/aws-codebuild": "0.0.0",
     "@aws-cdk/aws-codepipeline": "0.0.0",
     "@aws-cdk/aws-ec2": "0.0.0",
@@ -108,6 +116,7 @@
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
     "@aws-cdk/aws-apigateway": "0.0.0",
+    "@aws-cdk/aws-autoscaling": "0.0.0",
     "@aws-cdk/aws-codebuild": "0.0.0",
     "@aws-cdk/aws-codepipeline": "0.0.0",
     "@aws-cdk/aws-ec2": "0.0.0",

@@ -322,7 +322,7 @@ test('must display a warning when using a Dead Letter Queue from another account
   expect(stack1).not.toHaveResource('AWS::SQS::QueuePolicy');
 
   let rule = stack1.node.children.find(child => child instanceof events.Rule);
-  expect(rule?.node.metadata[0].data).toMatch(/Cannot add a resource policy to your dead letter queue associated with rule .* because the queue is in a different account\. You must add the resource policy manually to the dead letter queue in account 222222222222\./);
+  expect(rule?.node.metadataEntry[0].data).toMatch(/Cannot add a resource policy to your dead letter queue associated with rule .* because the queue is in a different account\. You must add the resource policy manually to the dead letter queue in account 222222222222\./);
 });
 
 

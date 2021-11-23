@@ -1,9 +1,9 @@
 import { arrayWith, countResources, expect as expectCdk, haveResource, haveResourceLike, ResourcePart } from '@aws-cdk/assert-internal';
 import '@aws-cdk/assert-internal/jest';
 import * as iam from '@aws-cdk/aws-iam';
+import { describeDeprecated, testFutureBehavior, testLegacyBehavior } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import { testFutureBehavior, testLegacyBehavior } from '@aws-cdk/cdk-build-tools/lib/feature-flag';
 import * as kms from '../lib';
 
 const ADMIN_ACTIONS: string[] = [
@@ -450,10 +450,31 @@ testFutureBehavior('setting pendingWindow value to not in allowed range will thr
     .toThrow('\'pendingWindow\' value must between 7 and 30 days. Received: 6');
 });
 
-testFutureBehavior('setting trustAccountIdentities to false will throw (when the defaultKeyPolicies feature flag is enabled)', flags, cdk.App, (app) => {
-  const stack = new cdk.Stack(app);
-  expect(() => new kms.Key(stack, 'MyKey', { trustAccountIdentities: false }))
-    .toThrow('`trustAccountIdentities` cannot be false if the @aws-cdk/aws-kms:defaultKeyPolicies feature flag is set');
+describeDeprecated('trustAccountIdentities is deprecated', () => {
+  testFutureBehavior('setting trustAccountIdentities to false will throw (when the defaultKeyPolicies feature flag is enabled)', flags, cdk.App, (app) => {
+    const stack = new cdk.Stack(app);
+    expect(() => new kms.Key(stack, 'MyKey', { trustAccountIdentities: false }))
+      .toThrow('`trustAccountIdentities` cannot be false if the @aws-cdk/aws-kms:defaultKeyPolicies feature flag is set');
+  });
+
+  testLegacyBehavior('trustAccountIdentities changes key policy to allow IAM control', cdk.App, (app) => {
+    const stack = new cdk.Stack(app);
+    new kms.Key(stack, 'MyKey', { trustAccountIdentities: true });
+    expect(stack).toHaveResourceLike('AWS::KMS::Key', {
+      KeyPolicy: {
+        Statement: [
+          {
+            Action: 'kms:*',
+            Effect: 'Allow',
+            Principal: {
+              AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root']] },
+            },
+            Resource: '*',
+          },
+        ],
+      },
+    });
+  });
 });
 
 testFutureBehavior('addAlias creates an alias', flags, cdk.App, (app) => {
@@ -985,25 +1006,6 @@ describe('when the defaultKeyPolicies feature flag is disabled', () => {
           DeletionPolicy: 'Retain',
           UpdateReplacePolicy: 'Retain',
         },
-      },
-    });
-  });
-
-  testLegacyBehavior('trustAccountIdentities changes key policy to allow IAM control', cdk.App, (app) => {
-    const stack = new cdk.Stack(app);
-    new kms.Key(stack, 'MyKey', { trustAccountIdentities: true });
-    expect(stack).toHaveResourceLike('AWS::KMS::Key', {
-      KeyPolicy: {
-        Statement: [
-          {
-            Action: 'kms:*',
-            Effect: 'Allow',
-            Principal: {
-              AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root']] },
-            },
-            Resource: '*',
-          },
-        ],
       },
     });
   });
