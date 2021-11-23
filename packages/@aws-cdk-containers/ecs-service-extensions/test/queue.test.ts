@@ -593,6 +593,7 @@ describe('queue', () => {
     });
     const topicSubscription2 = new TopicSubscription({
       topic: new sns.Topic(stack, 'topic2'),
+      queue: new sqs.Queue(stack, 'tempQueue'),
     });
     serviceDescription.add(new QueueExtension({
       subscriptions: [topicSubscription1, topicSubscription2],
@@ -662,6 +663,30 @@ describe('queue', () => {
           Unit: 'Count',
         },
         TargetValue: 30,
+      },
+    });
+
+    expect(stack).toHaveResourceLike('AWS::ApplicationAutoScaling::ScalingPolicy', {
+      PolicyType: 'TargetTrackingScaling',
+      TargetTrackingScalingPolicyConfiguration: {
+        CustomizedMetricSpecification: {
+          Dimensions: [
+            {
+              Name: 'QueueName',
+              Value: {
+                'Fn::GetAtt': [
+                  'tempQueueEF946882',
+                  'QueueName',
+                ],
+              },
+            },
+          ],
+          MetricName: 'BacklogPerTask',
+          Namespace: 'production-my-service',
+          Statistic: 'Average',
+          Unit: 'Count',
+        },
+        TargetValue: 15,
       },
     });
   });

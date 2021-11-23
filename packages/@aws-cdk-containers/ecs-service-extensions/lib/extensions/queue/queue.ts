@@ -138,7 +138,7 @@ export class TopicSubscription implements ISubscribable {
    * @returns the queue subscribed to the given topic
    */
   public subscribe(extension: QueueExtension) : sqs.IQueue {
-    const queue = this.subscriptionQueue?.queue ?? extension.eventsQueue;
+    const queue = this.subscriptionQueue?.queue ?? this.queue ?? extension.eventsQueue;
     this.topic.addSubscription(new subscription.SqsSubscription(queue));
     return queue;
   }
@@ -241,7 +241,10 @@ export class QueueExtension extends ServiceExtension {
           if (subs.subscriptionQueue?.scaleOnLatency && !this._autoscalingOptions) {
             throw Error(`Autoscaling for a topic-specific queue cannot be configured as autoscaling based on SQS Queues hasn’t been set up for the service '${this.parentService.id}'. If you want to enable autoscaling for this service, please also specify 'scaleOnLatency' in the 'QueueExtension'.`);
           }
-          this.subscriptionQueues.add(subs.subscriptionQueue!);
+          const subscriptionQueue = subs.subscriptionQueue ?? {
+            queue: subsQueue,
+          } as SubscriptionQueue;
+          this.subscriptionQueues.add(subscriptionQueue);
         }
       }
     }
@@ -293,10 +296,7 @@ export class QueueExtension extends ServiceExtension {
 
     this.addQueueScalingPolicy(this._eventsQueue, this._autoscalingOptions);
     for (const subsQueue of this.subscriptionQueues) {
-      let autoscalingOpts = this.autoscalingOptions;
-      if (subsQueue.scaleOnLatency) {
-        autoscalingOpts = subsQueue.scaleOnLatency;
-      }
+      const autoscalingOpts = subsQueue.scaleOnLatency ?? this._autoscalingOptions;
       this.addQueueScalingPolicy(subsQueue.queue, autoscalingOpts!);
     }
     this.parentService.enableAutoScalingPolicy();
