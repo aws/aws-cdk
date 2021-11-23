@@ -3,7 +3,7 @@ import * as sfn from '@aws-cdk/aws-stepfunctions';
 import { Construct } from 'constructs';
 import { RestApi, RestApiProps } from '.';
 import { RequestContext } from './integrations';
-import { StepFunctionsIntegration } from './integrations/stepfunctions';
+import { StepFunctionsSynchronousIntegration } from './integrations/stepfunctions';
 import { Model } from './model';
 
 /**
@@ -33,13 +33,13 @@ export interface StepFunctionsRestApiProps extends RestApiProps {
 
   /**
    * Check if querystring is to be included inside the execution input
-   * @default false
+   * @default true
    */
-  readonly queryString?: boolean;
+  readonly querystring?: boolean;
 
   /**
    * Check if path is to be included inside the execution input
-   * @default false
+   * @default true
    */
   readonly path?: boolean;
 
@@ -63,54 +63,35 @@ export class StepFunctionsRestApi extends RestApi {
       throw new Error('State Machine must be of type "EXPRESS". Please use StateMachineType.EXPRESS as the stateMachineType');
     }
 
-    const apiRole = role(scope, props);
-    const methodResp = methodResponse();
-
-    let corsEnabled;
-
-    if (props.defaultCorsPreflightOptions !== undefined) {
-      corsEnabled = true;
-    } else {
-      corsEnabled = false;
-    }
-
-    super(scope, id, {
-      defaultIntegration: new StepFunctionsIntegration(props.stateMachine, {
-        credentialsRole: apiRole,
-        corsEnabled: corsEnabled,
-        requestContext: props.requestContext,
-        action: 'StartSyncExecution',
-      }),
-      ...props,
+    const stepfunctionsIntegration = new StepFunctionsSynchronousIntegration(props.stateMachine, {
+      credentialsRole: role(scope, props),
+      requestContext: props.requestContext,
+      path: props.path?? true,
+      querystring: props.querystring?? true,
+      headers: props.headers,
     });
 
-    if (!corsEnabled) {
-      this.root.addMethod('ANY', new StepFunctionsIntegration(props.stateMachine, {
-        credentialsRole: apiRole,
-        requestContext: props.requestContext,
-        action: 'StartSyncExecution',
-        queryString: props.queryString,
-        path: props.path,
-        headers: props.headers,
-      }), {
-        methodResponses: [
-          ...methodResp,
-        ],
-      });
-    }
+    super(scope, id, props);
+
+    this.root.addMethod('ANY', stepfunctionsIntegration, {
+      methodResponses: [
+        ...methodResponse(),
+      ],
+    });
   }
 }
+
 /**
- * Defines the IAM Role for API Gateway with required permisisons
- * to perform action on the state machine.
+ * Defines the IAM Role for API Gateway with required permissions
+ * to invoke a synchronous execution for the provided state machine
  *
  * @param scope
  * @param props
  * @returns Role - IAM Role
  */
 function role(scope: Construct, props: StepFunctionsRestApiProps): iam.Role {
-  const apiName: string = props.stateMachine + '-apiRoleNew';
-  const apiRole = new iam.Role(scope, apiName, {
+  const roleName: string = 'StartSyncExecutionRole';
+  const apiRole = new iam.Role(scope, roleName, {
     assumedBy: new iam.ServicePrincipal('apigateway.amazonaws.com'),
   });
 
@@ -124,7 +105,7 @@ function role(scope: Construct, props: StepFunctionsRestApiProps): iam.Role {
  * @returns methodResponse
  */
 function methodResponse() {
-  const methodResp = [
+  return [
     {
       statusCode: '200',
       responseModels: {
@@ -144,6 +125,4 @@ function methodResponse() {
       },
     },
   ];
-
-  return methodResp;
 }

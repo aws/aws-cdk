@@ -27,7 +27,7 @@ class StepFunctionsRestApiDeploymentStack extends cdk.Stack {
       deploy: false,
       stateMachine: stateMachine,
       headers: true,
-      queryString: true,
+      querystring: true,
       path: true,
       requestContext: {
         accountId: true,

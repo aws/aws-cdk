@@ -25,7 +25,7 @@ function whenCondition(stack:cdk.Stack, stateMachine: sfn.IStateMachine) {
 }
 
 function getMethodResponse() {
-  const methodResp = [
+  return [
     {
       StatusCode: '200',
       ResponseModels: {
@@ -45,8 +45,6 @@ function getMethodResponse() {
       },
     },
   ];
-
-  return methodResp;
 }
 
 function getIntegrationResponse() {

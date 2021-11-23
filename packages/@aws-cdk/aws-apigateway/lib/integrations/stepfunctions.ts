@@ -8,44 +8,61 @@ import { IntegrationConfig, IntegrationOptions, PassthroughBehavior } from '../i
 import { Method } from '../method';
 import { AwsIntegration } from './aws';
 /**
- * Options when configuring Step Functions integration with Rest API
+ * Options when configuring Step Functions synchronous integration with Rest API
  */
-export interface StepFunctionsIntegrationOptions extends IntegrationOptions {
-  /**
-    * Action for the Step Functions integration. The list of supported API actions can be found
-    * on https://docs.aws.amazon.com/step-functions/latest/apireference/API_Operations.html
-    * @default 'StartSyncExecution'
-    */
-  readonly action: string;
-
-  /**
-   * Check if cors is enabled
-   * @default false
-   */
-  readonly corsEnabled?: boolean;
+export interface StepFunctionsSynchronousIntegrationOptions extends IntegrationOptions {
 
   /**
    * Which details of the incoming request must be passed onto the underlying state machine,
-   * such as, account id, user identity, request id, etc.
+   * such as, account id, user identity, request id, etc. The execution input will include a new key `requestContext`:
+   *
+   * {
+   *   "body": {},
+   *   "requestContext": {
+   *       "key": "value"
+   *   }
+   * }
    *
    * @default - all parameters within request context will be set as false
    */
   readonly requestContext?: RequestContext;
 
   /**
-   * Check if querystring is to be included inside the execution input
-   * @default false
+   * Check if querystring is to be included inside the execution input. The execution input will include a new key `queryString`:
+   *
+   * {
+   *   "body": {},
+   *   "querystring": {
+   *     "key": "value"
+   *   }
+   * }
+   *
+   * @default true
    */
-  readonly queryString?: boolean;
+  readonly querystring?: boolean;
 
   /**
-   * Check if path is to be included inside the execution input
-   * @default false
+   * Check if path is to be included inside the execution input. The execution input will include a new key `path`:
+   *
+   * {
+   *   "body": {},
+   *   "path": "/"
+   * }
+   *
+   * @default true
    */
   readonly path?: boolean;
 
   /**
-   * Check if header is to be included inside the execution input
+   * Check if header is to be included inside the execution input. The execution input will include a new key `headers`:
+   *
+   * {
+   *   "body": {},
+   *   "headers": {
+   *      "header1": "value",
+   *      "header2": "value"
+   *   }
+   * }
    * @default false
    */
   readonly headers?: boolean;
@@ -56,36 +73,31 @@ export interface StepFunctionsIntegrationOptions extends IntegrationOptions {
  * @example
  *
  *    const stateMachine = new sfn.StateMachine(this, 'MyStateMachine', ...);
- *    api.addMethod('GET', new StepFunctionsIntegration(stateMachine));
+ *    api.addMethod('GET', new StepFunctionsSynchronousIntegration(stateMachine));
  */
-export class StepFunctionsIntegration extends AwsIntegration {
+export class StepFunctionsSynchronousIntegration extends AwsIntegration {
   private readonly stateMachine: sfn.IStateMachine;
-  private readonly action: string;
-  constructor(stateMachine: sfn.IStateMachine, options: StepFunctionsIntegrationOptions = { action: 'StartSyncExecution' }) {
-
-    const integResponse = integrationResponse();
-    const requestTemplate = requestTemplates(stateMachine, options);
+  constructor(stateMachine: sfn.IStateMachine, options: StepFunctionsSynchronousIntegrationOptions) {
     super({
       service: 'states',
-      action: options.action,
+      action: 'StartSyncExecution',
       options: {
         credentialsRole: options.credentialsRole,
-        integrationResponses: integResponse,
+        integrationResponses: integrationResponse(),
         passthroughBehavior: PassthroughBehavior.NEVER,
-        requestTemplates: requestTemplate,
+        requestTemplates: requestTemplates(stateMachine, options),
         ...options,
       },
     });
 
     this.stateMachine = stateMachine;
-    this.action = options.action;
   }
 
   public bind(method: Method): IntegrationConfig {
     const bindResult = super.bind(method);
     const principal = new iam.ServicePrincipal('apigateway.amazonaws.com');
 
-    this.stateMachine.grantExecution(principal, `states:${this.action}`);
+    this.stateMachine.grantExecution(principal, 'states:StartSyncExecution');
 
     let stateMachineName;
 
@@ -95,7 +107,7 @@ export class StepFunctionsIntegration extends AwsIntegration {
       stateMachineName = (this.stateMachine.node.defaultChild as sfn.CfnStateMachine).stateMachineName;
     } else {
       //imported state machine
-      stateMachineName = 'StateMachine-' + (String(this.stateMachine.stack.node.addr));
+      stateMachineName = `StateMachine-${this.stateMachine.stack.node.addr}`;
     }
 
     let deploymentToken;
@@ -107,15 +119,14 @@ export class StepFunctionsIntegration extends AwsIntegration {
       ...bindResult,
       deploymentToken,
     };
-
   }
 }
 
 /**
- * Defines the integration response that passes the result, on success,
- * or the error, on failure, from the backend the client.
+ * Defines the integration response that passes the result on success,
+ * or the error on failure, from the synchronous execution to the caller.
  *
- * @returns integrationResponse
+ * @returns integrationResponse mapping
  */
 function integrationResponse() {
   const errorResponse = [
@@ -129,7 +140,7 @@ function integrationResponse() {
       statusCode: '400',
       responseTemplates: {
         'application/json': `{
-            "error": "Bad input!"
+            "error": "Bad request!"
           }`,
       },
     },
@@ -149,16 +160,18 @@ function integrationResponse() {
     {
       statusCode: '200',
       responseTemplates: {
-        'application/json': `#set($inputRoot = $input.path('$'))
-                #if($input.path('$.status').toString().equals("FAILED"))
-                    #set($context.responseOverride.status = 500)
-                    { 
-                      "error": "$input.path('$.error')",
-                      "cause": "$input.path('$.cause')"
-                    }
-                #else
-                    $input.path('$.output')
-                #end`,
+        'application/json': [
+          '#set($inputRoot = $input.path(\'$\'))',
+          '#if($input.path(\'$.status\').toString().equals("FAILED"))',
+          '#set($context.responseOverride.status = 500)',
+          '{',
+          '"error": "$input.path(\'$.error\')"',
+          '"cause": "$input.path(\'$.cause\')"',
+          '}',
+          '#else',
+          '$input.path(\'$.output\')',
+          '#end',
+        ].join('\n'),
       },
     },
     ...errorResponse,
@@ -168,7 +181,7 @@ function integrationResponse() {
 }
 
 /**
- * Checks each property of the RequestContext Object to see if request context has
+ * Checks each property of the RequestContext to see if request context has
  * a property specified and then return true or false.
  * @param requestContextObj
  * @returns boolean
@@ -199,7 +212,7 @@ function checkIncludeRequestContext(requestContextObj: RequestContext | undefine
  * @param options
  * @returns requestTemplate
  */
-function requestTemplates(stateMachine: sfn.IStateMachine, options: StepFunctionsIntegrationOptions) {
+function requestTemplates(stateMachine: sfn.IStateMachine, options: StepFunctionsSynchronousIntegrationOptions) {
   let includeRequestContext: boolean = checkIncludeRequestContext(options.requestContext);
   const templateStr = templateString(stateMachine, includeRequestContext, options);
 
@@ -220,26 +233,28 @@ function requestTemplates(stateMachine: sfn.IStateMachine, options: StepFunction
  * @param options
  * @reutrns templateString
  */
-function templateString(_stateMachine: sfn.IStateMachine, _includeRequestContext: boolean, _options: StepFunctionsIntegrationOptions): string {
+function templateString(
+  stateMachine: sfn.IStateMachine,
+  includeRequestContext: boolean,
+  options: StepFunctionsSynchronousIntegrationOptions): string {
   let templateStr: string;
 
   let requestContextStr = '';
 
-  const includeHeader: string = (_options.headers) ? 'true': 'false';
-  const includeQueryString: string = (_options.queryString) ? 'true': 'false';
-  const includePath: string = (_options.path) ? 'true': 'false';
+  const includeHeader: string = (options.headers) ? 'true': 'false';
+  const includeQueryString: string = (options.querystring) ? 'true': 'false';
+  const includePath: string = (options.path) ? 'true': 'false';
 
-  if (_includeRequestContext) {
-    requestContextStr = requestContext(_options.requestContext);
+  if (includeRequestContext) {
+    requestContextStr = requestContext(options.requestContext);
   }
 
   templateStr = fs.readFileSync(path.join(__dirname, 'stepfunctions.vtl'), { encoding: 'utf-8' });
-  templateStr = templateStr.replace('%STATEMACHINE%', _stateMachine.stateMachineArn);
+  templateStr = templateStr.replace('%STATEMACHINE%', stateMachine.stateMachineArn);
   templateStr = templateStr.replace('%INCLUDE_HEADERS%', includeHeader);
   templateStr = templateStr.replace('%INCLUDE_QUERYSTRING%', includeQueryString);
   templateStr = templateStr.replace('%INCLUDE_PATH%', includePath);
   templateStr = templateStr.replace('%REQUESTCONTEXT%', requestContextStr);
-
 
   return templateStr;
 }
@@ -309,6 +324,5 @@ function requestContext(requestContextObj: RequestContext | undefined): string {
 
   const search = '"';
   const replaceWith = '@@';
-  const requestContextStrModified = requestContextStr.split(search).join(replaceWith);
-  return requestContextStrModified;
+  return requestContextStr.split(search).join(replaceWith);
 }

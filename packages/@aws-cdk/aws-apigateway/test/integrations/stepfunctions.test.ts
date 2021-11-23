@@ -67,7 +67,7 @@ describe('StepFunctions', () => {
     const { stack, api, stateMachine } = givenSetup();
 
     //WHEN
-    const integ = new apigw.StepFunctionsIntegration(stateMachine);
+    const integ = new apigw.StepFunctionsSynchronousIntegration(stateMachine, {});
     api.root.addMethod('GET', integ);
 
     //THEN
@@ -137,7 +137,7 @@ describe('StepFunctions', () => {
       stateMachineType: sfn.StateMachineType.EXPRESS,
     });
 
-    api.root.addMethod('ANY', new apigw.StepFunctionsIntegration(stateMachine));
+    api.root.addMethod('ANY', new apigw.StepFunctionsSynchronousIntegration(stateMachine, {}));
 
     expect(stack).toHaveResource('AWS::ApiGateway::Method', {
       HttpMethod: 'ANY',
@@ -219,7 +219,7 @@ describe('StepFunctions', () => {
       stateMachineType: sfn.StateMachineType.EXPRESS,
     });
 
-    const integ = new apigw.StepFunctionsIntegration(stateMachine);
+    const integ = new apigw.StepFunctionsSynchronousIntegration(stateMachine, {});
 
     // WHEN
     const bindResult = integ.bind(method);
@@ -234,7 +234,7 @@ describe('StepFunctions', () => {
     const restapi = new apigw.RestApi(stack, 'RestApi');
     const method = restapi.root.addMethod('ANY');
     const stateMachine: sfn.IStateMachine = StateMachine.fromStateMachineArn(stack, 'MyStateMachine', 'arn:aws:states:region:account:stateMachine:MyStateMachine');
-    const integration = new apigw.StepFunctionsIntegration(stateMachine);
+    const integration = new apigw.StepFunctionsSynchronousIntegration(stateMachine, {});
 
     // WHEN
     const bindResult = integration.bind(method);

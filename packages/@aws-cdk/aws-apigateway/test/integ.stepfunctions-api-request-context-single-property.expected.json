@@ -44,7 +44,7 @@
         "StateMachineRoleB840431D"
       ]
     },
-    "StepFunctionsRestApiDeploymentStackStateMachineapiRoleNewD8D444E0": {
+    "StartSyncExecutionRoleDE73CB90": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -61,7 +61,7 @@
         }
       }
     },
-    "StepFunctionsRestApiDeploymentStackStateMachineapiRoleNewDefaultPolicy6DEF984E": {
+    "StartSyncExecutionRoleDefaultPolicy5A5803F8": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -76,10 +76,10 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "StepFunctionsRestApiDeploymentStackStateMachineapiRoleNewDefaultPolicy6DEF984E",
+        "PolicyName": "StartSyncExecutionRoleDefaultPolicy5A5803F8",
         "Roles": [
           {
-            "Ref": "StepFunctionsRestApiDeploymentStackStateMachineapiRoleNewD8D444E0"
+            "Ref": "StartSyncExecutionRoleDE73CB90"
           }
         ]
       }
@@ -152,7 +152,7 @@
         "Integration": {
           "Credentials": {
             "Fn::GetAtt": [
-              "StepFunctionsRestApiDeploymentStackStateMachineapiRoleNewD8D444E0",
+              "StartSyncExecutionRoleDE73CB90",
               "Arn"
             ]
           },
@@ -160,13 +160,13 @@
           "IntegrationResponses": [
             {
               "ResponseTemplates": {
-                "application/json": "#set($inputRoot = $input.path('$'))\n                #if($input.path('$.status').toString().equals(\"FAILED\"))\n                    #set($context.responseOverride.status = 500)\n                    { \n                      \"error\": \"$input.path('$.error')\",\n                      \"cause\": \"$input.path('$.cause')\"\n                    }\n                #else\n                    $input.path('$.output')\n                #end"
+                "application/json": "#set($inputRoot = $input.path('$'))\n#if($input.path('$.status').toString().equals(\"FAILED\"))\n#set($context.responseOverride.status = 500)\n{\n\"error\": \"$input.path('$.error')\"\n\"cause\": \"$input.path('$.cause')\"\n}\n#else\n$input.path('$.output')\n#end"
               },
               "StatusCode": "200"
             },
             {
               "ResponseTemplates": {
-                "application/json": "{\n            \"error\": \"Bad input!\"\n          }"
+                "application/json": "{\n            \"error\": \"Bad request!\"\n          }"
               },
               "SelectionPattern": "4\\d{2}",
               "StatusCode": "400"
@@ -185,7 +185,7 @@
               "Fn::Join": [
                 "",
                 [
-                  "## Velocity Template used for API Gateway request mapping template\n##\n## This template forwards the request body, header, path, and querystring\n## to the execution input of the state machine.\n##\n## \"@@\" is used here as a placeholder for '\"' to avoid using escape characters.\n\n#set($inputString = '')\n#set($includeHeaders = false)\n#set($includeQueryString = false)\n#set($includePath = false)\n#set($allParams = $input.params())\n{\n    \"stateMachineArn\": \"",
+                  "## Velocity Template used for API Gateway request mapping template\n##\n## This template forwards the request body, header, path, and querystring\n## to the execution input of the state machine.\n##\n## \"@@\" is used here as a placeholder for '\"' to avoid using escape characters.\n\n#set($inputString = '')\n#set($includeHeaders = false)\n#set($includeQueryString = true)\n#set($includePath = true)\n#set($allParams = $input.params())\n{\n    \"stateMachineArn\": \"",
                   {
                     "Ref": "StateMachine2E01A3A5"
                   },
