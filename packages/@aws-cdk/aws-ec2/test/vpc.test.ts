@@ -1,5 +1,6 @@
 import '@aws-cdk/assert-internal/jest';
 import { isSuperObject, MatchStyle, SynthUtils } from '@aws-cdk/assert-internal';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { CfnOutput, CfnResource, Fn, Lazy, Stack, Tags } from '@aws-cdk/core';
 import {
   AclCidr,
@@ -585,6 +586,31 @@ describe('vpc', () => {
 
     });
 
+    test('EIP passed with NAT gateway does not create duplicate EIP', () => {
+      const stack = getTestStack();
+      new Vpc(stack, 'VPC', {
+        cidr: '10.0.0.0/16',
+        subnetConfiguration: [
+          {
+            cidrMask: 24,
+            name: 'ingress',
+            subnetType: SubnetType.PUBLIC,
+          },
+          {
+            cidrMask: 24,
+            name: 'application',
+            subnetType: SubnetType.PRIVATE_WITH_NAT,
+          },
+        ],
+        natGatewayProvider: NatProvider.gateway({ eipAllocationIds: ['b'] }),
+        natGateways: 1,
+      });
+      expect(stack).toCountResources('AWS::EC2::EIP', 0);
+      expect(stack).toHaveResource('AWS::EC2::NatGateway', {
+        AllocationId: 'b',
+      });
+    });
+
     test('with mis-matched nat and subnet configs it throws', () => {
       const stack = getTestStack();
       expect(() => new Vpc(stack, 'VPC', {
@@ -997,7 +1023,7 @@ describe('vpc', () => {
 
     });
 
-    test('can configure Security Groups of NAT instances with allowAllTraffic false', () => {
+    testDeprecated('can configure Security Groups of NAT instances with allowAllTraffic false', () => {
       // GIVEN
       const stack = getTestStack();
 

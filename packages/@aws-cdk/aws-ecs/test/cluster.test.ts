@@ -6,13 +6,14 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as ecs from '../lib';
 
 describe('cluster', () => {
   describe('When creating an ECS Cluster', () => {
-    test('with no properties set, it correctly sets default properties', () => {
+    testDeprecated('with no properties set, it correctly sets default properties', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const cluster = new ecs.Cluster(stack, 'EcsCluster');
@@ -180,7 +181,7 @@ describe('cluster', () => {
 
     });
 
-    test('with only vpc set, it correctly sets default properties', () => {
+    testDeprecated('with only vpc set, it correctly sets default properties', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -351,7 +352,7 @@ describe('cluster', () => {
 
     });
 
-    test('multiple clusters with default capacity', () => {
+    testDeprecated('multiple clusters with default capacity', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -367,7 +368,7 @@ describe('cluster', () => {
 
     });
 
-    test('lifecycle hook is automatically added', () => {
+    testDeprecated('lifecycle hook is automatically added', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -506,7 +507,7 @@ describe('cluster', () => {
 
     });
 
-    test('lifecycle hook with encrypted SNS is added correctly', () => {
+    testDeprecated('lifecycle hook with encrypted SNS is added correctly', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -534,7 +535,7 @@ describe('cluster', () => {
 
     });
 
-    test('with capacity and cloudmap namespace properties set', () => {
+    testDeprecated('with capacity and cloudmap namespace properties set', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -716,7 +717,7 @@ describe('cluster', () => {
     });
   });
 
-  test('allows specifying instance type', () => {
+  testDeprecated('allows specifying instance type', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -734,7 +735,7 @@ describe('cluster', () => {
 
   });
 
-  test('allows specifying cluster size', () => {
+  testDeprecated('allows specifying cluster size', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -753,7 +754,7 @@ describe('cluster', () => {
 
   });
 
-  test('configures userdata with powershell if windows machine image is specified', () => {
+  testDeprecated('configures userdata with powershell if windows machine image is specified', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -809,7 +810,7 @@ describe('cluster', () => {
   /*
    * TODO:v2.0.0 BEGINNING OF OBSOLETE BLOCK
    */
-  test('allows specifying special HW AMI Type', () => {
+  testDeprecated('allows specifying special HW AMI Type', () => {
     // GIVEN
     const app = new cdk.App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack = new cdk.Stack(app, 'test');
@@ -842,7 +843,7 @@ describe('cluster', () => {
 
   });
 
-  test('errors if amazon linux given with special HW type', () => {
+  testDeprecated('errors if amazon linux given with special HW type', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -863,7 +864,7 @@ describe('cluster', () => {
 
   });
 
-  test('allows specifying windows image', () => {
+  testDeprecated('allows specifying windows image', () => {
     // GIVEN
     const app = new cdk.App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack = new cdk.Stack(app, 'test');
@@ -890,7 +891,7 @@ describe('cluster', () => {
 
   });
 
-  test('errors if windows given with special HW type', () => {
+  testDeprecated('errors if windows given with special HW type', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -911,7 +912,7 @@ describe('cluster', () => {
 
   });
 
-  test('errors if windowsVersion and linux generation are set', () => {
+  testDeprecated('errors if windowsVersion and linux generation are set', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -932,7 +933,7 @@ describe('cluster', () => {
 
   });
 
-  test('allows returning the correct image for windows for EcsOptimizedAmi', () => {
+  testDeprecated('allows returning the correct image for windows for EcsOptimizedAmi', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const ami = new ecs.EcsOptimizedAmi({
@@ -944,7 +945,7 @@ describe('cluster', () => {
 
   });
 
-  test('allows returning the correct image for linux for EcsOptimizedAmi', () => {
+  testDeprecated('allows returning the correct image for linux for EcsOptimizedAmi', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const ami = new ecs.EcsOptimizedAmi({
@@ -956,7 +957,7 @@ describe('cluster', () => {
 
   });
 
-  test('allows returning the correct image for linux 2 for EcsOptimizedAmi', () => {
+  testDeprecated('allows returning the correct image for linux 2 for EcsOptimizedAmi', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const ami = new ecs.EcsOptimizedAmi({
@@ -1013,7 +1014,7 @@ describe('cluster', () => {
    * TODO:v2.0.0 END OF OBSOLETE BLOCK
    */
 
-  test('allows specifying special HW AMI Type v2', () => {
+  testDeprecated('allows specifying special HW AMI Type v2', () => {
     // GIVEN
     const app = new cdk.App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack = new cdk.Stack(app, 'test');
@@ -1044,7 +1045,7 @@ describe('cluster', () => {
 
   });
 
-  test('allows specifying Amazon Linux v1 AMI', () => {
+  testDeprecated('allows specifying Amazon Linux v1 AMI', () => {
     // GIVEN
     const app = new cdk.App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack = new cdk.Stack(app, 'test');
@@ -1075,7 +1076,7 @@ describe('cluster', () => {
 
   });
 
-  test('allows specifying windows image v2', () => {
+  testDeprecated('allows specifying windows image v2', () => {
     // GIVEN
     const app = new cdk.App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack = new cdk.Stack(app, 'test');
@@ -1100,7 +1101,7 @@ describe('cluster', () => {
 
   });
 
-  test('allows specifying spot fleet', () => {
+  testDeprecated('allows specifying spot fleet', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -1119,7 +1120,7 @@ describe('cluster', () => {
 
   });
 
-  test('allows specifying drain time', () => {
+  testDeprecated('allows specifying drain time', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -1138,7 +1139,7 @@ describe('cluster', () => {
 
   });
 
-  test('allows specifying automated spot draining', () => {
+  testDeprecated('allows specifying automated spot draining', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -1171,7 +1172,7 @@ describe('cluster', () => {
 
   });
 
-  test('allows containers access to instance metadata service', () => {
+  testDeprecated('allows containers access to instance metadata service', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -1203,7 +1204,7 @@ describe('cluster', () => {
 
   });
 
-  test('allows adding default service discovery namespace', () => {
+  testDeprecated('allows adding default service discovery namespace', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -1229,7 +1230,7 @@ describe('cluster', () => {
 
   });
 
-  test('allows adding public service discovery namespace', () => {
+  testDeprecated('allows adding public service discovery namespace', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -1255,7 +1256,7 @@ describe('cluster', () => {
 
   });
 
-  test('throws if default service discovery namespace added more than once', () => {
+  testDeprecated('throws if default service discovery namespace added more than once', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -1381,7 +1382,7 @@ describe('cluster', () => {
 
   });
 
-  test('ASG with a public VPC without NAT Gateways', () => {
+  testDeprecated('ASG with a public VPC without NAT Gateways', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'MyPublicVpc', {
@@ -1581,7 +1582,7 @@ describe('cluster', () => {
 
   });
 
-  test('cluster capacity with bottlerocket AMI, by setting machineImageType', () => {
+  testDeprecated('cluster capacity with bottlerocket AMI, by setting machineImageType', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
@@ -1673,7 +1674,7 @@ describe('cluster', () => {
 
   });
 
-  test('correct bottlerocket AMI for ARM64 architecture', () => {
+  testDeprecated('correct bottlerocket AMI for ARM64 architecture', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
@@ -1702,7 +1703,7 @@ describe('cluster', () => {
 
   });
 
-  test('throws when machineImage and machineImageType both specified', () => {
+  testDeprecated('throws when machineImage and machineImageType both specified', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
@@ -1733,7 +1734,7 @@ describe('cluster', () => {
 
   });
 
-  test('allows specifying capacityProviders (deprecated)', () => {
+  testDeprecated('allows specifying capacityProviders (deprecated)', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
@@ -1796,7 +1797,7 @@ describe('cluster', () => {
 
   });
 
-  test('allows adding capacityProviders post-construction (deprecated)', () => {
+  testDeprecated('allows adding capacityProviders post-construction (deprecated)', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
@@ -1818,7 +1819,7 @@ describe('cluster', () => {
 
   });
 
-  test('allows adding capacityProviders post-construction', () => {
+  testDeprecated('allows adding capacityProviders post-construction', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
@@ -1840,7 +1841,7 @@ describe('cluster', () => {
 
   });
 
-  test('throws for unsupported capacity providers', () => {
+  testDeprecated('throws for unsupported capacity providers', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'test');
@@ -2246,4 +2247,41 @@ test('can add ASG capacity via Capacity Provider by not specifying machineImageT
     DefaultCapacityProviderStrategy: [],
   });
 
+});
+
+test('throws when ASG Capacity Provider with capacityProviderName starting with aws, ecs or faragte', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'test');
+  const vpc = new ec2.Vpc(stack, 'Vpc');
+  const cluster = new ecs.Cluster(stack, 'EcsCluster');
+
+  const autoScalingGroupAl2 = new autoscaling.AutoScalingGroup(stack, 'asgal2', {
+    vpc,
+    instanceType: new ec2.InstanceType('bogus'),
+    machineImage: ecs.EcsOptimizedImage.amazonLinux2(),
+  });
+
+  // THEN
+  expect(() => {
+    // WHEN Capacity Provider define capacityProviderName start with aws.
+    const capacityProviderAl2 = new ecs.AsgCapacityProvider(stack, 'provideral2', {
+      autoScalingGroup: autoScalingGroupAl2,
+      enableManagedTerminationProtection: false,
+      capacityProviderName: 'awscp',
+    });
+
+    cluster.addAsgCapacityProvider(capacityProviderAl2);
+  }).toThrow(/Invalid Capacity Provider Name: awscp, If a name is specified, it cannot start with aws, ecs, or fargate./);
+
+  expect(() => {
+    // WHEN Capacity Provider define capacityProviderName start with ecs.
+    const capacityProviderAl2 = new ecs.AsgCapacityProvider(stack, 'provideral2-2', {
+      autoScalingGroup: autoScalingGroupAl2,
+      enableManagedTerminationProtection: false,
+      capacityProviderName: 'ecscp',
+    });
+
+    cluster.addAsgCapacityProvider(capacityProviderAl2);
+  }).toThrow(/Invalid Capacity Provider Name: ecscp, If a name is specified, it cannot start with aws, ecs, or fargate./);
 });

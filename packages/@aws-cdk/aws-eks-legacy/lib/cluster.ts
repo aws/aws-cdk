@@ -109,8 +109,8 @@ export interface ClusterProps {
    * For example, to only select private subnets, supply the following:
    *
    * ```ts
-   * vpcSubnets: [
-   *   { subnetType: ec2.SubnetType.Private }
+   * const vpcSubnets = [
+   *   { subnetType: ec2.SubnetType.PRIVATE }
    * ]
    * ```
    *
@@ -261,7 +261,7 @@ export class Cluster extends Resource implements ICluster {
   /**
    * The AWS generated ARN for the Cluster resource
    *
-   * @example arn:aws:eks:us-west-2:666666666666:cluster/prod
+   * For example, `arn:aws:eks:us-west-2:666666666666:cluster/prod`
    */
   public readonly clusterArn: string;
 
@@ -270,7 +270,7 @@ export class Cluster extends Resource implements ICluster {
    *
    * This is the URL inside the kubeconfig file to use with kubectl
    *
-   * @example https://5E1D0CEXAMPLEA591B746AFC5AB30262.yl4.us-west-2.eks.amazonaws.com
+   * For example, `https://5E1D0CEXAMPLEA591B746AFC5AB30262.yl4.us-west-2.eks.amazonaws.com`
    */
   public readonly clusterEndpoint: string;
 
@@ -726,7 +726,7 @@ export interface BootstrapOptions {
   /**
    * Extra arguments to add to the kubelet. Useful for adding labels or taints.
    *
-   * @example --node-labels foo=bar,goo=far
+   * For example, `--node-labels foo=bar,goo=far`
    * @default - none
    */
   readonly kubeletExtraArgs?: string;

@@ -8,6 +8,7 @@ export interface PingerProps {
   readonly url: string;
   readonly securityGroup?: ec2.SecurityGroup;
   readonly vpc?: ec2.IVpc;
+  readonly subnets?: ec2.ISubnet[];
 }
 export class Pinger extends Construct {
 
@@ -21,6 +22,7 @@ export class Pinger extends Construct {
       handler: 'index.handler',
       runtime: lambda.Runtime.PYTHON_3_6,
       vpc: props.vpc,
+      vpcSubnets: props.subnets ? { subnets: props.subnets } : undefined,
       securityGroups: props.securityGroup ? [props.securityGroup] : undefined,
       timeout: Duration.minutes(10),
     });

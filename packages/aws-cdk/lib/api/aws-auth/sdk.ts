@@ -38,6 +38,17 @@ export interface ISDK {
 
   getEndpointSuffix(region: string): string;
 
+  /**
+   * Appends the given string as the extra information to put into the User-Agent header for any requests invoked by this SDK.
+   * If the string is 'undefined', this method has no effect.
+   */
+  appendCustomUserAgent(userAgentData?: string): void;
+
+  /**
+   * Removes the given string from the extra User-Agent header data used for requests invoked by this SDK.
+   */
+  removeCustomUserAgent(userAgentData: string): void;
+
   lambda(): AWS.Lambda;
   cloudFormation(): AWS.CloudFormation;
   ec2(): AWS.EC2;
@@ -101,6 +112,21 @@ export class SDK implements ISDK {
       logger: { log: (...messages) => messages.forEach(m => trace('%s', m)) },
     };
     this.currentRegion = region;
+  }
+
+  public appendCustomUserAgent(userAgentData?: string): void {
+    if (!userAgentData) {
+      return;
+    }
+
+    const currentCustomUserAgent = this.config.customUserAgent;
+    this.config.customUserAgent = currentCustomUserAgent
+      ? `${currentCustomUserAgent} ${userAgentData}`
+      : userAgentData;
+  }
+
+  public removeCustomUserAgent(userAgentData: string): void {
+    this.config.customUserAgent = this.config.customUserAgent?.replace(userAgentData, '');
   }
 
   public lambda(): AWS.Lambda {

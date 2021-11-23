@@ -1,7 +1,7 @@
 import { InstanceType, ISecurityGroup, SubnetSelection } from '@aws-cdk/aws-ec2';
 import { IRole, ManagedPolicy, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import { IResource, Resource, Annotations, withResolved } from '@aws-cdk/core';
-import { Construct } from 'constructs';
+import { Construct, Node } from 'constructs';
 import { Cluster, ICluster } from './cluster';
 import { CfnNodegroup } from './eks.generated';
 import { INSTANCE_TYPES } from './instance-types';
@@ -34,7 +34,15 @@ export enum NodegroupAmiType {
   /**
    * Amazon Linux 2 (ARM-64)
    */
-  AL2_ARM_64 = 'AL2_ARM_64'
+  AL2_ARM_64 = 'AL2_ARM_64',
+  /**
+   *  Bottlerocket Linux(ARM-64)
+   */
+  BOTTLEROCKET_ARM_64 = 'BOTTLEROCKET_ARM_64',
+  /**
+   * Bottlerocket(x86-64)
+   */
+  BOTTLEROCKET_X86_64 = 'BOTTLEROCKET_x86_64',
 }
 
 /**
@@ -419,6 +427,12 @@ export class Nodegroup extends Resource implements INodegroup {
           'system:nodes',
         ],
       });
+
+      // the controller runs on the worker nodes so they cannot
+      // be deleted before the controller.
+      if (this.cluster.albController) {
+        Node.of(this.cluster.albController).addDependency(this);
+      }
     }
 
     this.nodegroupArn = this.getResourceArnAttribute(resource.attrArn, {
