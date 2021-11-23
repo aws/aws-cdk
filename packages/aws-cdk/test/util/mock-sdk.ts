@@ -129,7 +129,6 @@ export class MockSdk implements ISDK {
   public readonly secretsManager = jest.fn();
   public readonly kms = jest.fn();
   public readonly stepFunctions = jest.fn();
-  public readonly iam = jest.fn();
   public readonly getEndpointSuffix = jest.fn();
 
   public currentAccount(): Promise<Account> {
