@@ -6,7 +6,7 @@ import { publishAssets } from '../util/asset-publishing';
 import { Mode, SdkProvider } from './aws-auth';
 import { deployStack, DeployStackResult, destroyStack } from './deploy-stack';
 import { ToolkitInfo } from './toolkit-info';
-import { CloudFormationStack, Template } from './util/cloudformation';
+import { CloudFormationStack, Template, ResourcesToImport } from './util/cloudformation';
 import { StackActivityProgress } from './util/cloudformation/stack-activity-monitor';
 
 /**
@@ -152,6 +152,11 @@ export interface DeployStackOptions {
    * @default - nothing extra is appended to the User-Agent header
    */
   readonly extraUserAgent?: string;
+
+  /**
+   * List of existing resources to be IMPORTED into the stack, instead of being CREATED
+   */
+  readonly resourcesToImport?: ResourcesToImport;
 }
 
 export interface DestroyStackOptions {
@@ -230,6 +235,7 @@ export class CloudFormationDeployments {
       rollback: options.rollback,
       hotswap: options.hotswap,
       extraUserAgent: options.extraUserAgent,
+      resourcesToImport: options.resourcesToImport,
     });
   }
 

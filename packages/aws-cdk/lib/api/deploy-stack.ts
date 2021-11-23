@@ -14,7 +14,7 @@ import { CfnEvaluationException } from './hotswap/evaluate-cloudformation-templa
 import { ToolkitInfo } from './toolkit-info';
 import {
   changeSetHasNoChanges, CloudFormationStack, TemplateParameters, waitForChangeSet,
-  waitForStackDeploy, waitForStackDelete, ParameterValues, ParameterChanges,
+  waitForStackDeploy, waitForStackDelete, ParameterValues, ParameterChanges, ResourcesToImport,
 } from './util/cloudformation';
 import { StackActivityMonitor, StackActivityProgress } from './util/cloudformation/stack-activity-monitor';
 
@@ -189,6 +189,12 @@ export interface DeployStackOptions {
    * @default - nothing extra is appended to the User-Agent header
    */
   readonly extraUserAgent?: string;
+
+  /**
+   * If set, change set of type IMPORT will be created, and resourcesToImport
+   * passed to it.
+   */
+  readonly resourcesToImport?: ResourcesToImport;
 }
 
 const LARGE_TEMPLATE_SIZE_KB = 50;
@@ -294,7 +300,8 @@ async function prepareAndExecuteChangeSet(
   const changeSet = await cfn.createChangeSet({
     StackName: deployName,
     ChangeSetName: changeSetName,
-    ChangeSetType: update ? 'UPDATE' : 'CREATE',
+    ChangeSetType: options.resourcesToImport ? 'IMPORT' : update ? 'UPDATE' : 'CREATE',
+    ResourcesToImport: options.resourcesToImport,
     Description: `CDK Changeset for execution ${executionId}`,
     TemplateBody: bodyParameter.TemplateBody,
     TemplateURL: bodyParameter.TemplateURL,

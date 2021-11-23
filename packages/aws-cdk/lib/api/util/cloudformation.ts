@@ -16,6 +16,8 @@ interface TemplateParameter {
   [key: string]: any;
 }
 
+export type ResourcesToImport = CloudFormation.ResourcesToImport;
+
 /**
  * Represents an (existing) Stack in CloudFormation
  *

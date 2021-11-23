@@ -436,6 +436,33 @@ to turn them off, pass the `--no-hotswap` option when invoking it.
 **Note**: This command is considered experimental,
 and might have breaking changes in the future.
 
+#### Import existing resources
+
+**Important:** This is a work in progress, only S3 buckets are currently supported
+
+Sometimes, it is beneficial to import (enroll/adopt/...) AWS resources, that were
+created manually (or by different means), into a CDK stack. Some resources can simply be
+deleted and recreated by CDK, but for others, this is not convenient: Typically stateful
+resources like S3 Buckets, DynamoDB tables, etc., cannot be easily deleted without an
+impact on the service.
+
+To import an existing resource to a CDK stack:
+
+- run a `cdk diff` to ensure there are no pending changes to the CDK stack you want to
+  import resources into - if there are, apply/discard them first
+- add corresponding constructs for the resources to be added in your stack - for example,
+  for an S3 bucket, add something like `new s3.Bucket(this, 'ImportedS3Bucket', {});` -
+  **no other changes must be done to the stack before the import is completed**
+- run `cdk deploy` with `--import-resources` argument to instruct CDK to start the import
+  operation
+- if resource definition contains all information needed for the import, this happens
+  automatically (e.g. an `s3.Bucket` construct has an explicit `bucketName` set),
+  otherwise, CDK will prompt user to provide neccessary identification information (e.g.
+  the bucket name)
+- after cdk deploy reports success, the resource is managed by CDK. Any subsequent
+  changes in the construct configuration will be reflected on the resource
+
+
 ### `cdk destroy`
 
 Deletes a stack from it's environment. This will cause the resources in the stack to be destroyed (unless they were

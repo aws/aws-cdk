@@ -11,8 +11,10 @@ import { Bootstrapper, BootstrapEnvironmentOptions } from './api/bootstrap';
 import { CloudFormationDeployments } from './api/cloudformation-deployments';
 import { CloudAssembly, DefaultSelection, ExtendedStackSelection, StackCollection, StackSelector } from './api/cxapp/cloud-assembly';
 import { CloudExecutable } from './api/cxapp/cloud-executable';
+import { ResourcesToImport } from './api/util/cloudformation';
 import { StackActivityProgress } from './api/util/cloudformation/stack-activity-monitor';
 import { printSecurityDiff, printStackDiff, RequireApproval } from './diff';
+import { prepareResourcesToImport } from './import';
 import { data, debug, error, highlight, print, success, warning } from './logging';
 import { deserializeStructure } from './serialize';
 import { Configuration, PROJECT_CONFIG } from './settings';
@@ -117,6 +119,11 @@ export class CdkToolkit {
       return this.watch(options);
     }
 
+    // TODO - print more intelligent message
+    if (options.importResources) {
+      warning('Import resources flag was set');
+    }
+
     const stacks = await this.selectStacksForDeploy(options.selector, options.exclusively, options.cacheCloudAssembly);
 
     const requireApproval = options.requireApproval ?? RequireApproval.Broadening;
@@ -167,6 +174,17 @@ export class CdkToolkit {
         continue;
       }
 
+      let resourcesToImport: ResourcesToImport | undefined = undefined;
+      if (options.importResources) {
+        const currentTemplate = await this.props.cloudFormation.readCurrentTemplate(stack);
+        resourcesToImport = await prepareResourcesToImport(currentTemplate, stack);
+
+        // There's a CloudFormation limitation that on import operation, no other changes are allowed:
+        // As CDK always changes the CDKMetadata resource with a new value, as a workaround, we override
+        // the template's metadata with currently deployed version
+        stack.template.Resources.CDKMetadata = currentTemplate.Resources.CDKMetadata;
+      }
+
       if (requireApproval !== RequireApproval.Never) {
         const currentTemplate = await this.props.cloudFormation.readCurrentTemplate(stack);
         if (printSecurityDiff(currentTemplate, stack, requireApproval)) {
@@ -209,6 +227,7 @@ export class CdkToolkit {
           rollback: options.rollback,
           hotswap: options.hotswap,
           extraUserAgent: options.extraUserAgent,
+          resourcesToImport,
         });
 
         const message = result.noOp
@@ -799,6 +818,14 @@ export interface DeployOptions extends WatchOptions {
    * @default true
    */
   readonly cacheCloudAssembly?: boolean;
+
+  /**
+   * Whether to import matching existing resources for newly defined constructs in the stack,
+   * rather than creating new ones
+   *
+   * @default false
+   */
+  readonly importResources?: boolean;
 }
 
 export interface DestroyOptions {

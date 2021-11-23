@@ -124,7 +124,8 @@ async function parseCommandLineArguments() {
         desc: 'Continuously observe the project files, ' +
           'and deploy the given stack(s) automatically when changes are detected. ' +
           'Implies --hotswap by default',
-      }),
+      })
+      .option('import-resources', { type: 'boolean', alias: 'i', desc: 'Import existing resources in the stack' }),
     )
     .command('watch [STACKS..]', "Shortcut for 'deploy --watch'", yargs => yargs
       // I'm fairly certain none of these options, present for 'deploy', make sense for 'watch':
@@ -375,6 +376,7 @@ async function initCommandLine() {
           rollback: configuration.settings.get(['rollback']),
           hotswap: args.hotswap,
           watch: args.watch,
+          importResources: args['import-resources'],
         });
 
       case 'watch':
