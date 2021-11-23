@@ -39,6 +39,26 @@ export class FileAssetHandler implements IAssetHandler {
         throw new Error(`Bucket named '${destination.bucketName}' exists, but not in account ${await account()}. Wrong account?`);
     }
 
+    // identify the the encryption type to set the header
+    // when uploading assets to bucket (required for SCP rules denying uploads without encryption header)
+
+    let paramsEncryption = {};
+    switch (await bucketEncryption(s3, destination.bucketName)) {
+      case BucketEncryption.NO_ENCRYPTION:
+        break;
+      case BucketEncryption.SSEAlgorithm_AES256:
+        paramsEncryption = { ServerSideEncryption: 'AES256' };
+        break;
+      case BucketEncryption.SSEAlgorithm_aws_kms:
+        paramsEncryption = { ServerSideEncryption: 'aws:kms' };
+        break;
+      case BucketEncryption.DOES_NOT_EXIST:
+        throw new Error(`No bucket named '${destination.bucketName}'. Is account ${await account()} bootstrapped?`);
+      case BucketEncryption.ACCES_DENIED:
+
+        throw new Error(`ACCES_DENIED for getting encryption of bucket '${destination.bucketName}'. Either wrong account ${await account()} or s3:GetEncryptionConfiguration not set for bucket. Try boostrapping again.`);
+    }
+
     if (await objectExists(s3, destination.bucketName, destination.objectKey)) {
       this.host.emitMessage(EventType.FOUND, `Found ${s3Url}`);
       return;
@@ -49,12 +69,16 @@ export class FileAssetHandler implements IAssetHandler {
       await this.externalPackageFile(this.asset.source.executable) : await this.packageFile(this.asset.source);
 
     this.host.emitMessage(EventType.UPLOAD, `Upload ${s3Url}`);
-    await s3.upload({
+
+    const params = Object.assign({}, {
       Bucket: destination.bucketName,
       Key: destination.objectKey,
       Body: createReadStream(publishFile.packagedPath),
       ContentType: publishFile.contentType,
-    }).promise();
+    },
+    paramsEncryption);
+
+    await s3.upload(params).promise();
   }
 
   private async packageFile(source: FileSource): Promise<PackagedFileAsset> {
@@ -107,6 +131,35 @@ async function bucketOwnership(s3: AWS.S3, bucket: string): Promise<BucketOwners
   } catch (e) {
     if (e.code === 'NoSuchBucket') { return BucketOwnership.DOES_NOT_EXIST; }
     if (['AccessDenied', 'AllAccessDisabled'].includes(e.code)) { return BucketOwnership.SOMEONE_ELSES_OR_NO_ACCESS; }
+    throw e;
+  }
+}
+
+enum BucketEncryption {
+  NO_ENCRYPTION,
+  SSEAlgorithm_AES256,
+  SSEAlgorithm_aws_kms,
+  ACCES_DENIED,
+  DOES_NOT_EXIST
+}
+
+async function bucketEncryption(s3: AWS.S3, bucket: string) {
+  try {
+    let encryption = await s3.getBucketEncryption({ Bucket: bucket }).promise();
+    const l = encryption?.ServerSideEncryptionConfiguration?.Rules?.length ?? 0;
+    if (l > 0) {
+      let ssealgo = encryption?.ServerSideEncryptionConfiguration?.Rules[0]?.ApplyServerSideEncryptionByDefault?.SSEAlgorithm;
+      if (ssealgo === 'AES256') return BucketEncryption.SSEAlgorithm_AES256;
+      if (ssealgo === 'aws:kms') return BucketEncryption.SSEAlgorithm_aws_kms;
+    }
+    return BucketEncryption.NO_ENCRYPTION;
+  } catch (e) {
+    if (e.code === 'NoSuchBucket') {
+      return BucketEncryption.DOES_NOT_EXIST;
+    }
+    if (['AccessDenied', 'AllAccessDisabled'].includes(e.code)) {
+      return BucketEncryption.ACCES_DENIED;
+    }
     throw e;
   }
 }
