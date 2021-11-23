@@ -2,7 +2,7 @@
   "name": "aws-cdk-lib",
   "private": "true",
   "version": "0.0.0",
-  "description": "The AWS Cloud Development Kit library",
+  "description": "Version 2 of the AWS Cloud Development Kit library",
   "main": "index.js",
   "types": "index.d.ts",
   "repository": {
@@ -351,7 +351,8 @@
   },
   "keywords": [
     "aws",
-    "cdk"
+    "cdk",
+    "aws cdk v2"
   ],
   "nozem": false,
   "awscdkio": {
