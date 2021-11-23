@@ -994,10 +994,10 @@ abstract class ClusterBase extends Resource implements ICluster {
       this.addSpotInterruptHandler();
     }
 
-    if (this instanceof Cluster) {
+    if (this instanceof Cluster && this.albController) {
       // the controller runs on the worker nodes so they cannot
       // be deleted before the controller.
-      this.albController?.node.addDependency(autoScalingGroup);
+      Node.of(this.albController).addDependency(autoScalingGroup);
     }
   }
 }
