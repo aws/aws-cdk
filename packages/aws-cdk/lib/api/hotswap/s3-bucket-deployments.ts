@@ -54,23 +54,18 @@ export async function isHotswappableS3BucketDeploymentChange(
     return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
   }
 
-  const props = change.newValue.Properties;
+  const props = await evaluateCfnTemplate.evaluateCfnExpression(change.newValue.Properties);
+  delete props.ServiceToken;
 
   return new S3BucketDeploymentHotswapOperation({
     functionName: functionName,
-    sourceBucketNames: await evaluateCfnTemplate.evaluateCfnExpression(props?.SourceBucketNames),
-    sourceObjectKeys: await evaluateCfnTemplate.evaluateCfnExpression(props?.SourceObjectKeys),
-    destinationBucketName: await evaluateCfnTemplate.evaluateCfnExpression(props?.DestinationBucketName),
-    destinationBucketKeyPrefix: await evaluateCfnTemplate.evaluateCfnExpression(props?.DestinationBucketKeyPrefix),
+    properties: props,
   });
 }
 
 interface S3BucketDeploymentHotswapOperationOptions {
   functionName: string;
-  sourceBucketNames: string[];
-  sourceObjectKeys: string[];
-  destinationBucketName: string;
-  destinationBucketKeyPrefix: string;
+  properties: any;
 }
 
 class S3BucketDeploymentHotswapOperation implements HotswapOperation {
@@ -90,21 +85,13 @@ class S3BucketDeploymentHotswapOperation implements HotswapOperation {
         StackId: REQUIRED_BY_CFN,
         RequestId: REQUIRED_BY_CFN,
         LogicalResourceId: REQUIRED_BY_CFN,
-        ResourceProperties: {
-          SourceBucketNames: deployment.sourceBucketNames,
-          SourceObjectKeys: deployment.sourceObjectKeys,
-          DestinationBucketName: deployment.destinationBucketName,
-          DestinationBucketKeyPrefix: deployment.destinationBucketKeyPrefix,
-        },
+        ResourceProperties: deployment.properties,
       }),
     }).promise();
   }
 }
 
 class EmptyHotswapOperation implements HotswapOperation {
-  constructor() {
-  }
-
   public async apply(sdk: ISDK): Promise<any> {
     return Promise.resolve(sdk);
   }
