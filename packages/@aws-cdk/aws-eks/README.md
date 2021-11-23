@@ -564,7 +564,9 @@ For example:
 ```ts
 declare const cluster: eks.Cluster;
 const manifest = cluster.addManifest('manifest', {/* ... */});
-manifest.node.addDependency(cluster.albController ?? [])
+if (cluster.albController) {
+  manifest.node.addDependency(cluster.albController);
+}
 ```
 
 ### VPC Support
@@ -1225,7 +1227,7 @@ This is why we used `new cdk8s.App()` as the scope of the chart above.
 ```ts nofixture
 import * as constructs from 'constructs';
 import * as cdk8s from 'cdk8s';
-import * as kplus from 'cdk8s-plus';
+import * as kplus from 'cdk8s-plus-21';
 
 export interface LoadBalancedWebService {
   readonly port: number;
@@ -1245,7 +1247,8 @@ export class LoadBalancedWebService extends constructs.Construct {
       containers: [ new kplus.Container({ image: props.image }) ],
     });
 
-    deployment.expose(props.port, {
+    deployment.exposeViaService({
+      port: props.port,
       serviceType: kplus.ServiceType.LOAD_BALANCER,
     });
   }
