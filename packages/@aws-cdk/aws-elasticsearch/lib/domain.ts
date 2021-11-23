@@ -952,7 +952,7 @@ abstract class DomainBase extends cdk.Resource implements IDomain {
     return new Metric({
       namespace: 'AWS/ES',
       metricName,
-      dimensions: {
+      dimensionsMap: {
         DomainName: this.domainName,
         ClientId: this.stack.account,
       },
@@ -1212,7 +1212,8 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
    */
   public static fromDomainAttributes(scope: Construct, id: string, attrs: DomainAttributes): IDomain {
     const { domainArn, domainEndpoint } = attrs;
-    const domainName = cdk.Stack.of(scope).parseArn(domainArn).resourceName ?? extractNameFromEndpoint(domainEndpoint);
+    const domainName = cdk.Stack.of(scope).splitArn(domainArn, cdk.ArnFormat.SLASH_RESOURCE_NAME).resourceName
+      ?? extractNameFromEndpoint(domainEndpoint);
 
     return new class extends DomainBase {
       public readonly domainArn = domainArn;
@@ -1402,9 +1403,8 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       return instanceTypes.some(isInstanceType);
     };
 
-    function isEveryInstanceType(...instanceTypes: string[]): Boolean {
-      return instanceTypes.some(t => dedicatedMasterType.startsWith(t))
-        && instanceTypes.some(t => instanceType.startsWith(t));
+    function isEveryDatanodeInstanceType(...instanceTypes: string[]): Boolean {
+      return instanceTypes.some(t => instanceType.startsWith(t));
     };
 
     // Validate feature support for the given Elasticsearch version, per
@@ -1463,7 +1463,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
 
     // Only R3, I3 and r6gd support instance storage, per
     // https://aws.amazon.com/elasticsearch-service/pricing/
-    if (!ebsEnabled && !isEveryInstanceType('r3', 'i3', 'r6gd')) {
+    if (!ebsEnabled && !isEveryDatanodeInstanceType('r3', 'i3', 'r6gd')) {
       throw new Error('EBS volumes are required when using instance types other than r3, i3 or r6gd.');
     }
 

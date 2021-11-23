@@ -138,7 +138,7 @@ export class AugmentationGenerator {
       dimStrings.push(`${key}: ${field}`);
     }
 
-    this.code.line(`    dimensions: { ${dimStrings.join(', ') } },`);
+    this.code.line(`    dimensionsMap: { ${dimStrings.join(', ') } },`);
     this.code.line('    ...props');
     this.code.line('  }).attachTo(this);');
     this.code.line('};');

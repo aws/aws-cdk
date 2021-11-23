@@ -243,7 +243,7 @@ new codebuild.Project(this, 'Project', {
   }),
 
   // Enable Docker AND custom caching
-  cache: codebuild.Cache.local(codebuild.LocalCacheMode.DOCKER_LAYER, codebuild.LocalCacheMode.CUSTOM)
+  cache: codebuild.Cache.local(codebuild.LocalCacheMode.DOCKER_LAYER, codebuild.LocalCacheMode.CUSTOM),
 
   // BuildSpec with a 'cache' section necessary for 'CUSTOM' caching. This can
   // also come from 'buildspec.yml' in your source.

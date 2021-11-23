@@ -1,5 +1,5 @@
 import * as iam from '@aws-cdk/aws-iam';
-import { IResource, Lazy, Names, Resource, Stack, Token } from '@aws-cdk/core';
+import { ArnFormat, IResource, Lazy, Names, Resource, Stack, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { Archive, BaseArchiveProps } from './archive';
 import { CfnEventBus } from './events.generated';
@@ -169,7 +169,7 @@ export class EventBus extends EventBusBase {
    * @param eventBusArn ARN of imported event bus
    */
   public static fromEventBusArn(scope: Construct, id: string, eventBusArn: string): IEventBus {
-    const parts = Stack.of(scope).parseArn(eventBusArn);
+    const parts = Stack.of(scope).splitArn(eventBusArn, ArnFormat.SLASH_RESOURCE_NAME);
 
     return new ImportedEventBus(scope, id, {
       eventBusArn: eventBusArn,
@@ -335,7 +335,7 @@ class ImportedEventBus extends EventBusBase {
   public readonly eventBusPolicy: string;
   public readonly eventSourceName?: string;
   constructor(scope: Construct, id: string, attrs: EventBusAttributes) {
-    const arnParts = Stack.of(scope).parseArn(attrs.eventBusArn);
+    const arnParts = Stack.of(scope).splitArn(attrs.eventBusArn, ArnFormat.SLASH_RESOURCE_NAME);
     super(scope, id, {
       account: arnParts.account,
       region: arnParts.region,

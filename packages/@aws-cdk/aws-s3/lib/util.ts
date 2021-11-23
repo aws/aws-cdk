@@ -32,7 +32,7 @@ export function parseBucketName(construct: IConstruct, props: BucketAttributes):
 
   // extract bucket name from bucket arn
   if (props.bucketArn) {
-    return cdk.Stack.of(construct).parseArn(props.bucketArn).resource;
+    return cdk.Stack.of(construct).splitArn(props.bucketArn, cdk.ArnFormat.SLASH_RESOURCE_NAME).resource;
   }
 
   // no bucket name is okay since it's optional.

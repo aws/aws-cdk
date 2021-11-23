@@ -76,7 +76,7 @@ export interface CustomActionRegistrationProps {
 
   /**
    * The provider of the Action.
-   * @example 'MyCustomActionProvider'
+   * For example, `'MyCustomActionProvider'`
    */
   readonly provider: string;
 

@@ -106,7 +106,7 @@ export interface BundlingOptions {
  *
  * Commands are chained with `&&`.
  *
- * @example
+ * ```text
  * {
  *   // Run tests prior to bundling
  *   beforeBundling(inputDir: string, outputDir: string): string[] {
@@ -114,6 +114,7 @@ export interface BundlingOptions {
  *   }
  *   // ...
  * }
+ * ```
  */
 export interface ICommandHooks {
   /**

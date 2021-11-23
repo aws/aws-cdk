@@ -1,0 +1,35 @@
+import { Construct } from 'constructs';
+import { CfnOutput, Fn, Size, Stack } from '@aws-cdk/core';
+import * as eks from '@aws-cdk/aws-eks';
+import * as s3 from '@aws-cdk/aws-s3';
+import * as cdk8s from 'cdk8s';
+import * as kplus from 'cdk8s-plus-21';
+
+interface MyChartProps {
+  readonly bucket: s3.Bucket;
+}
+
+class MyChart extends cdk8s.Chart {
+  constructor(scope: Construct, id: string, props: MyChartProps) {
+    super(scope, id);
+
+    new kplus.Pod(this, 'Pod', {
+      containers: [
+        new kplus.Container({
+          image: 'my-image',
+          env: {
+            BUCKET_NAME: kplus.EnvValue.fromValue(props.bucket.bucketName),
+          },
+        }),
+      ],
+    });
+  }
+}
+
+class Context extends Stack {
+  constructor(scope: Construct, id: string) {
+    super(scope, id);
+
+    /// here
+  }
+}

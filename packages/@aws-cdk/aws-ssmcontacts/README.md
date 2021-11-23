@@ -16,5 +16,5 @@
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
 ```ts
-import ssmcontacts = require('@aws-cdk/aws-ssmcontacts');
+import * as ssmcontacts from '@aws-cdk/aws-ssmcontacts';
 ```

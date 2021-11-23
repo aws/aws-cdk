@@ -14,7 +14,7 @@ describe('assets', () => {
 
   test('addFileAsset correctly sets metadata and creates S3 parameters', () => {
     // WHEN
-    stack.addFileAsset({
+    stack.synthesizer.addFileAsset({
       fileName: 'file-name',
       packaging: FileAssetPackaging.ZIP_DIRECTORY,
       sourceHash: 'source-hash',
@@ -55,7 +55,7 @@ describe('assets', () => {
 
   test('addFileAsset correctly sets object urls', () => {
     // WHEN
-    const assetLocation = stack.addFileAsset({
+    const assetLocation = stack.synthesizer.addFileAsset({
       fileName: 'file-name',
       packaging: FileAssetPackaging.ZIP_DIRECTORY,
       sourceHash: 'source-hash',
@@ -75,10 +75,9 @@ describe('assets', () => {
 
   test('addDockerImageAsset correctly sets metadata', () => {
     // WHEN
-    stack.addDockerImageAsset({
+    stack.synthesizer.addDockerImageAsset({
       sourceHash: 'source-hash',
       directoryName: 'directory-name',
-      repositoryName: 'repository-name',
     });
 
     // THEN
@@ -91,7 +90,6 @@ describe('assets', () => {
       expect(data.packaging).toEqual('container-image');
       expect(data.path).toEqual('directory-name');
       expect(data.sourceHash).toEqual('source-hash');
-      expect(data.repositoryName).toEqual('repository-name');
       expect(data.imageTag).toEqual('source-hash');
     }
 
@@ -101,7 +99,7 @@ describe('assets', () => {
 
   test('addDockerImageAsset uses the default repository name', () => {
     // WHEN
-    stack.addDockerImageAsset({
+    stack.synthesizer.addDockerImageAsset({
       sourceHash: 'source-hash',
       directoryName: 'directory-name',
     });
@@ -116,7 +114,6 @@ describe('assets', () => {
       expect(data.packaging).toEqual('container-image');
       expect(data.path).toEqual('directory-name');
       expect(data.sourceHash).toEqual('source-hash');
-      expect(data.repositoryName).toEqual('aws-cdk/assets');
       expect(data.imageTag).toEqual('source-hash');
     }
 
@@ -128,7 +125,7 @@ describe('assets', () => {
     stack.node.setContext('assets-ecr-repository-name', 'my-custom-repo-name');
 
     // WHEN
-    stack.addDockerImageAsset({
+    stack.synthesizer.addDockerImageAsset({
       sourceHash: 'source-hash',
       directoryName: 'directory-name',
     });

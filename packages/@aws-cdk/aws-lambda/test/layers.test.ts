@@ -79,14 +79,17 @@ describe('layers', () => {
     stack.node.setContext(cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT, true);
 
     // WHEN
+    let layerCodePath = path.join(__dirname, 'layer-code');
     new lambda.LayerVersion(stack, 'layer', {
-      code: lambda.Code.fromAsset(path.join(__dirname, 'layer-code')),
+      code: lambda.Code.fromAsset(layerCodePath),
     });
 
     // THEN
     expect(canonicalizeTemplate(SynthUtils.toCloudFormation(stack))).toHaveResource('AWS::Lambda::LayerVersion', {
       Metadata: {
         'aws:asset:path': 'asset.Asset1Hash',
+        'aws:asset:original-path': layerCodePath,
+        'aws:asset:is-bundled': false,
         'aws:asset:property': 'Content',
       },
     }, ResourcePart.CompleteDefinition);

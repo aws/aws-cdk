@@ -1,4 +1,4 @@
-import { Duration, Resource, Stack, Token, TokenComparison } from '@aws-cdk/core';
+import { ArnFormat, Duration, Resource, Stack, Token, TokenComparison } from '@aws-cdk/core';
 import { Construct, Node } from 'constructs';
 import { Grant } from './grant';
 import { CfnRole } from './iam.generated';
@@ -185,7 +185,7 @@ export class Role extends Resource implements IRole {
    */
   public static fromRoleArn(scope: Construct, id: string, roleArn: string, options: FromRoleArnOptions = {}): IRole {
     const scopeStack = Stack.of(scope);
-    const parsedArn = scopeStack.parseArn(roleArn);
+    const parsedArn = scopeStack.splitArn(roleArn, ArnFormat.SLASH_RESOURCE_NAME);
     const resourceName = parsedArn.resourceName!;
     const roleAccount = parsedArn.account;
     // service roles have an ARN like 'arn:aws:iam::<account>:role/service-role/<roleName>'

@@ -1,6 +1,6 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
-import { IResource, Lazy, Names, Resource, Stack } from '@aws-cdk/core';
+import { ArnFormat, IResource, Lazy, Names, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { StatesMetrics } from './stepfunctions-canned-metrics.generated';
 import { CfnActivity } from './stepfunctions.generated';
@@ -28,7 +28,7 @@ export class Activity extends Resource implements IActivity {
     class Imported extends Resource implements IActivity {
       public get activityArn() { return activityArn; }
       public get activityName() {
-        return Stack.of(this).parseArn(activityArn, ':').resourceName || '';
+        return Stack.of(this).splitArn(activityArn, ArnFormat.COLON_RESOURCE_NAME).resourceName || '';
       }
     }
 
@@ -43,7 +43,7 @@ export class Activity extends Resource implements IActivity {
       service: 'states',
       resource: 'activity',
       resourceName: activityName,
-      sep: ':',
+      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
     }));
   }
 
@@ -71,7 +71,7 @@ export class Activity extends Resource implements IActivity {
       service: 'states',
       resource: 'activity',
       resourceName: this.physicalName,
-      sep: ':',
+      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
     });
     this.activityName = this.getResourceNameAttribute(resource.attrName);
   }

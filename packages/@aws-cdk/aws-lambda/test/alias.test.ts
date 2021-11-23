@@ -2,11 +2,12 @@ import '@aws-cdk/assert-internal/jest';
 import { arrayWith, objectLike } from '@aws-cdk/assert-internal';
 import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Lazy, Stack } from '@aws-cdk/core';
 import * as lambda from '../lib';
 
 describe('alias', () => {
-  test('version and aliases', () => {
+  testDeprecated('version and aliases', () => {
     const stack = new Stack();
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
@@ -53,7 +54,7 @@ describe('alias', () => {
     expect(stack).not.toHaveResource('AWS::Lambda::Version');
   });
 
-  test('can use newVersion to create a new Version', () => {
+  testDeprecated('can use newVersion to create a new Version', () => {
     const stack = new Stack();
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
@@ -78,7 +79,7 @@ describe('alias', () => {
     });
   });
 
-  test('can add additional versions to alias', () => {
+  testDeprecated('can add additional versions to alias', () => {
     const stack = new Stack();
 
     const fn = new lambda.Function(stack, 'MyLambda', {
@@ -109,7 +110,7 @@ describe('alias', () => {
     });
   });
 
-  test('version and aliases with provisioned execution', () => {
+  testDeprecated('version and aliases with provisioned execution', () => {
     const stack = new Stack();
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
@@ -150,7 +151,7 @@ describe('alias', () => {
       runtime: lambda.Runtime.NODEJS_10_X,
     });
 
-    const version = fn.addVersion('1');
+    const version = fn.currentVersion;
 
     // WHEN: Individual weight too high
     expect(() => {
@@ -181,7 +182,7 @@ describe('alias', () => {
       runtime: lambda.Runtime.NODEJS_10_X,
     });
 
-    const version = fn.addVersion('1');
+    const version = fn.currentVersion;
     const alias = new lambda.Alias(stack, 'Alias', { aliasName: 'prod', version });
 
     // WHEN
@@ -214,7 +215,7 @@ describe('alias', () => {
     });
   });
 
-  test('sanity checks provisionedConcurrentExecutions', () => {
+  testDeprecated('sanity checks provisionedConcurrentExecutions', () => {
     const stack = new Stack();
     const pce = -1;
 
@@ -228,7 +229,7 @@ describe('alias', () => {
     expect(() => {
       new lambda.Alias(stack, 'Alias1', {
         aliasName: 'prod',
-        version: fn.addVersion('1'),
+        version: fn.currentVersion,
         provisionedConcurrentExecutions: pce,
       });
     }).toThrow();
@@ -259,7 +260,7 @@ describe('alias', () => {
       runtime: lambda.Runtime.NODEJS_10_X,
     });
 
-    const version = fn.addVersion('1');
+    const version = fn.currentVersion;
     const alias = new lambda.Alias(stack, 'Alias', { aliasName: 'prod', version });
 
     // THEN
@@ -276,7 +277,7 @@ describe('alias', () => {
       runtime: lambda.Runtime.NODEJS_10_X,
     });
 
-    const version = fn.addVersion('1');
+    const version = fn.currentVersion;
     const alias = new lambda.Alias(stack, 'Alias', { aliasName: 'prod', version });
 
     // WHEN
@@ -311,12 +312,11 @@ describe('alias', () => {
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_10_X,
     });
-    const version = fn.addVersion('1');
 
     // WHEN
     new lambda.Alias(stack, 'Alias', {
       aliasName: 'prod',
-      version,
+      version: fn.currentVersion,
       onSuccess: {
         bind: () => ({
           destination: 'on-success-arn',
@@ -358,10 +358,9 @@ describe('alias', () => {
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_10_X,
     });
-    const version = fn.addVersion('1');
     const alias = new lambda.Alias(stack, 'Alias', {
       aliasName: 'prod',
-      version,
+      version: fn.currentVersion,
       onSuccess: {
         bind: () => ({
           destination: 'on-success-arn',
@@ -392,7 +391,7 @@ describe('alias', () => {
     });
   });
 
-  test('can enable AutoScaling on aliases', () => {
+  testDeprecated('can enable AutoScaling on aliases', () => {
     // GIVEN
     const stack = new Stack();
     const fn = new lambda.Function(stack, 'MyLambda', {
@@ -401,11 +400,9 @@ describe('alias', () => {
       runtime: lambda.Runtime.NODEJS_10_X,
     });
 
-    const version = fn.addVersion('1', undefined, 'testing');
-
     const alias = new lambda.Alias(stack, 'Alias', {
       aliasName: 'prod',
-      version,
+      version: fn.currentVersion,
     });
 
     // WHEN
@@ -441,11 +438,9 @@ describe('alias', () => {
       runtime: lambda.Runtime.NODEJS_10_X,
     });
 
-    const version = fn.addVersion('1', undefined, 'testing');
-
     const alias = new lambda.Alias(stack, 'Alias', {
       aliasName: 'prod',
-      version,
+      version: fn.currentVersion,
       provisionedConcurrentExecutions: 10,
     });
 
@@ -488,11 +483,9 @@ describe('alias', () => {
       runtime: lambda.Runtime.NODEJS_10_X,
     });
 
-    const version = fn.addVersion('1', undefined, 'testing');
-
     const alias = new lambda.Alias(stack, 'Alias', {
       aliasName: 'prod',
-      version,
+      version: fn.currentVersion,
       provisionedConcurrentExecutions: 10,
     });
 
@@ -520,11 +513,9 @@ describe('alias', () => {
       runtime: lambda.Runtime.NODEJS_10_X,
     });
 
-    const version = fn.addVersion('1', undefined, 'testing');
-
     const alias = new lambda.Alias(stack, 'Alias', {
       aliasName: 'prod',
-      version,
+      version: fn.currentVersion,
     });
 
     // WHEN
@@ -543,11 +534,9 @@ describe('alias', () => {
       runtime: lambda.Runtime.NODEJS_10_X,
     });
 
-    const version = fn.addVersion('1', undefined, 'testing');
-
     const alias = new lambda.Alias(stack, 'Alias', {
       aliasName: 'prod',
-      version,
+      version: fn.currentVersion,
     });
 
     // WHEN
@@ -566,11 +555,9 @@ describe('alias', () => {
       runtime: lambda.Runtime.NODEJS_10_X,
     });
 
-    const version = fn.addVersion('1', undefined, 'testing');
-
     const alias = new lambda.Alias(stack, 'Alias', {
       aliasName: 'prod',
-      version,
+      version: fn.currentVersion,
     });
 
     // WHEN

@@ -1,10 +1,11 @@
 import '@aws-cdk/assert-internal/jest';
+import { describeDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Cluster, KubernetesResource } from '../lib';
 import { testFixtureNoVpc } from './util';
 
 /* eslint-disable max-len */
 
-describe('manifest', () => {
+describeDeprecated('manifest', () => {
   test('basic usage', () => {
     // GIVEN
     const { stack } = testFixtureNoVpc();

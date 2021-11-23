@@ -59,5 +59,6 @@ cd "$individual_packages_folder"
 createSymlinks "$individual_packages_folder"
 
 if [ "$skip_build" != "true" ]; then
-  PHASE=transform yarn lerna run --stream $runtarget
+  TRANSFORM_CONCURRENCY=${TRANSFORM_CONCURRENCY:-8}
+  PHASE=transform yarn lerna run --stream --concurrency ${TRANSFORM_CONCURRENCY} $runtarget
 fi

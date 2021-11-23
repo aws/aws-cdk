@@ -2,7 +2,7 @@ import '@aws-cdk/assert-internal/jest';
 import * as path from 'path';
 import { ABSENT, ResourcePart } from '@aws-cdk/assert-internal';
 import * as ecr from '@aws-cdk/aws-ecr';
-import { testLegacyBehavior } from '@aws-cdk/cdk-build-tools/lib/feature-flag';
+import { testLegacyBehavior } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as lambda from '../lib';
@@ -78,6 +78,8 @@ describe('code', () => {
       expect(stack).toHaveResource('AWS::Lambda::Function', {
         Metadata: {
           [cxapi.ASSET_RESOURCE_METADATA_PATH_KEY]: 'asset.9678c34eca93259d11f2d714177347afd66c50116e1e08996eff893d3ca81232',
+          [cxapi.ASSET_RESOURCE_METADATA_ORIGINAL_PATH_KEY]: location,
+          [cxapi.ASSET_RESOURCE_METADATA_IS_BUNDLED_KEY]: false,
           [cxapi.ASSET_RESOURCE_METADATA_PROPERTY_KEY]: 'Code',
         },
       }, ResourcePart.CompleteDefinition);
@@ -335,6 +337,83 @@ describe('code', () => {
         },
       });
     });
+
+    test('adds code asset metadata', () => {
+      // given
+      const stack = new cdk.Stack();
+      stack.node.setContext(cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT, true);
+
+      const dockerfilePath = 'Dockerfile';
+      const dockerBuildTarget = 'stage';
+      const dockerBuildArgs = { arg1: 'val1', arg2: 'val2' };
+
+      // when
+      new lambda.Function(stack, 'Fn', {
+        code: lambda.Code.fromAssetImage(path.join(__dirname, 'docker-lambda-handler'), {
+          file: dockerfilePath,
+          target: dockerBuildTarget,
+          buildArgs: dockerBuildArgs,
+        }),
+        handler: lambda.Handler.FROM_IMAGE,
+        runtime: lambda.Runtime.FROM_IMAGE,
+      });
+
+      // then
+      expect(stack).toHaveResource('AWS::Lambda::Function', {
+        Metadata: {
+          [cxapi.ASSET_RESOURCE_METADATA_PATH_KEY]: 'asset.7e6b1766b8ee0794b08669dc7eecd82d06dc7138c99bffded86c5693e335ac37',
+          [cxapi.ASSET_RESOURCE_METADATA_DOCKERFILE_PATH_KEY]: dockerfilePath,
+          [cxapi.ASSET_RESOURCE_METADATA_DOCKER_BUILD_ARGS_KEY]: dockerBuildArgs,
+          [cxapi.ASSET_RESOURCE_METADATA_DOCKER_BUILD_TARGET_KEY]: dockerBuildTarget,
+          [cxapi.ASSET_RESOURCE_METADATA_PROPERTY_KEY]: 'Code.ImageUri',
+        },
+      }, ResourcePart.CompleteDefinition);
+    });
+
+    test('adds code asset metadata with default dockerfile path', () => {
+      // given
+      const stack = new cdk.Stack();
+      stack.node.setContext(cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT, true);
+
+      // when
+      new lambda.Function(stack, 'Fn', {
+        code: lambda.Code.fromAssetImage(path.join(__dirname, 'docker-lambda-handler')),
+        handler: lambda.Handler.FROM_IMAGE,
+        runtime: lambda.Runtime.FROM_IMAGE,
+      });
+
+      // then
+      expect(stack).toHaveResource('AWS::Lambda::Function', {
+        Metadata: {
+          [cxapi.ASSET_RESOURCE_METADATA_PATH_KEY]: 'asset.f0fe8a410cb4b860a25f6f3e09237abf69cd38ab59f9ef2441597c75f598c634',
+          [cxapi.ASSET_RESOURCE_METADATA_DOCKERFILE_PATH_KEY]: 'Dockerfile',
+          [cxapi.ASSET_RESOURCE_METADATA_PROPERTY_KEY]: 'Code.ImageUri',
+        },
+      }, ResourcePart.CompleteDefinition);
+    });
+
+    test('fails if asset is bound with a second stack', () => {
+      // given
+      const app = new cdk.App();
+      const asset = lambda.Code.fromAssetImage(path.join(__dirname, 'docker-lambda-handler'));
+
+      // when
+      const stack1 = new cdk.Stack(app, 'Stack1');
+      new lambda.Function(stack1, 'Fn', {
+        code: asset,
+        handler: lambda.Handler.FROM_IMAGE,
+        runtime: lambda.Runtime.FROM_IMAGE,
+      });
+
+      const stack2 = new cdk.Stack(app, 'Stack2');
+
+      // then
+      expect(() => new lambda.Function(stack2, 'Fn', {
+        code: asset,
+        handler: lambda.Handler.FROM_IMAGE,
+        runtime: lambda.Runtime.FROM_IMAGE,
+      })).toThrow(/already associated/);
+    });
   });
 
   describe('lambda.Code.fromDockerBuild', () => {
@@ -361,8 +440,9 @@ describe('code', () => {
       stack.node.setContext(cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT, true);
 
       // when
+      const FunctionCodepath = path.join(__dirname, 'docker-build-lambda');
       new lambda.Function(stack, 'Fn', {
-        code: lambda.Code.fromDockerBuild(path.join(__dirname, 'docker-build-lambda')),
+        code: lambda.Code.fromDockerBuild(FunctionCodepath),
         handler: 'index.handler',
         runtime: lambda.Runtime.NODEJS_12_X,
       });
@@ -371,6 +451,8 @@ describe('code', () => {
       expect(stack).toHaveResource('AWS::Lambda::Function', {
         Metadata: {
           [cxapi.ASSET_RESOURCE_METADATA_PATH_KEY]: 'asset.fbafdbb9ae8d1bae0def415b791a93c486d18ebc63270c748abecc3ac0ab9533',
+          [cxapi.ASSET_RESOURCE_METADATA_ORIGINAL_PATH_KEY]: FunctionCodepath,
+          [cxapi.ASSET_RESOURCE_METADATA_IS_BUNDLED_KEY]: false,
           [cxapi.ASSET_RESOURCE_METADATA_PROPERTY_KEY]: 'Code',
         },
       }, ResourcePart.CompleteDefinition);

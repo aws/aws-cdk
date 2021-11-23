@@ -72,7 +72,7 @@
         "MyLambdaAliasPCEServiceRoleF7C9F212"
       ]
     },
-    "MyLambdaAliasPCEVersion15F479C08": {
+    "MyLambdaAliasPCECurrentVersion072335D3974767ca5ab9a8786a5779ede8cb8cc5": {
       "Type": "AWS::Lambda::Version",
       "Properties": {
         "FunctionName": {
@@ -88,7 +88,7 @@
         },
         "FunctionVersion": {
           "Fn::GetAtt": [
-            "MyLambdaAliasPCEVersion15F479C08",
+            "MyLambdaAliasPCECurrentVersion072335D3974767ca5ab9a8786a5779ede8cb8cc5",
             "Version"
           ]
         },
@@ -180,7 +180,7 @@
         "MyLambdaVersionPCEServiceRole2ACFB73E"
       ]
     },
-    "MyLambdaVersionPCEVersion2C704112A": {
+    "MyLambdaVersionPCECurrentVersion27FC3932a1bc5d5d20600bf4225d17df43a36ea5": {
       "Type": "AWS::Lambda::Version",
       "Properties": {
         "FunctionName": {
@@ -199,7 +199,7 @@
         },
         "FunctionVersion": {
           "Fn::GetAtt": [
-            "MyLambdaVersionPCEVersion2C704112A",
+            "MyLambdaVersionPCECurrentVersion27FC3932a1bc5d5d20600bf4225d17df43a36ea5",
             "Version"
           ]
         },

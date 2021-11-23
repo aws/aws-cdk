@@ -29,7 +29,14 @@
         ]
       }
     },
-    "projectReferences": true
+    "projectReferences": true,
+    "metadata": {
+      "jsii": {
+        "rosetta": {
+          "strict": true
+        }
+      }
+    }
   },
   "repository": {
     "type": "git",
@@ -89,6 +96,7 @@
     "jest": "^27.3.1"
   },
   "dependencies": {
+    "@aws-cdk/assets": "0.0.0",
     "@aws-cdk/aws-cloudwatch": "0.0.0",
     "@aws-cdk/aws-codecommit": "0.0.0",
     "@aws-cdk/aws-codestarnotifications": "0.0.0",

@@ -1,4 +1,4 @@
-import { Lazy, Resource, Stack } from '@aws-cdk/core';
+import { ArnFormat, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnGroup } from './iam.generated';
 import { IIdentity } from './identity-base';
@@ -145,7 +145,7 @@ export class Group extends GroupBase {
    * @param groupArn the ARN of the group to import (e.g. `arn:aws:iam::account-id:group/group-name`)
    */
   public static fromGroupArn(scope: Construct, id: string, groupArn: string): IGroup {
-    const arnComponents = Stack.of(scope).parseArn(groupArn);
+    const arnComponents = Stack.of(scope).splitArn(groupArn, ArnFormat.SLASH_RESOURCE_NAME);
     const groupName = arnComponents.resourceName!;
     class Import extends GroupBase {
       public groupName = groupName;
