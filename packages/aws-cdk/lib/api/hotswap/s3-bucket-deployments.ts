@@ -7,7 +7,6 @@ import { EvaluateCloudFormationTemplate } from './evaluate-cloudformation-templa
  * but the actual value specified is irrelevant
  */
 export const REQUIRED_BY_CFN = 'required-to-be-present-by-cfn';
-/*eslint-disable*/
 
 export async function isHotswappableS3BucketDeploymentChange(
   logicalId: string, change: HotswappableChangeCandidate, evaluateCfnTemplate: EvaluateCloudFormationTemplate,
