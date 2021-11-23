@@ -67,7 +67,7 @@ async function findAllHotswappableChanges(
 
     if (resourceHotswapEvaluation === ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT) {
       foundNonHotswappableChange = true;
-    } else if (resourceHotswapEvaluation === ChangeHotswapImpact.IRRELEVANT || resourceHotswapEvaluation === ChangeHotswapImpact.NONE) {
+    } else if (resourceHotswapEvaluation === ChangeHotswapImpact.IRRELEVANT) {
       // empty 'if' just for flow-aware typing to kick in...
     } else {
       promises.push([
@@ -100,17 +100,6 @@ async function findAllHotswappableChanges(
     // if we found any hotswappable changes, return now
     if (perChangeHotswappableResources.length > 0) {
       hotswappableResources.push(...perChangeHotswappableResources);
-      continue;
-    }
-
-    // NONE means that this change is an artifact of old-style synthesis and should be ignored
-    let foundNone = false;
-    for (const result of hotswapDetectionResults) {
-      if (result === ChangeHotswapImpact.NONE) {
-        foundNone = true;
-      }
-    }
-    if (foundNone) {
       continue;
     }
 

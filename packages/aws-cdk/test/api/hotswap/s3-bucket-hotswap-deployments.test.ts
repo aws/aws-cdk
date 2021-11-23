@@ -395,292 +395,6 @@ test('can use the DestinationBucketKeyPrefix property', async () => {
   });
 });
 
-/*
-test('does not call the lambdaInvoke() API when the difference in the s3 deployment is not referred to in the IAM policy change', async () => {
-  // GIVEN
-  setup.setCurrentCfnStackTemplate({
-    Resources: {
-      Policy: {
-        Type: 'AWS::IAM::Policy',
-        Properties: {
-          PolicyDocument: {
-            Statement: [
-              {
-                Action: [
-                  's3:GetObject*',
-                ],
-                Effect: 'Allow',
-                Resource: {
-                  'Fn::GetAtt': [
-                    'WebsiteBucketOld',
-                    'Arn',
-                  ],
-                },
-              },
-            ],
-          },
-        },
-      },
-      S3Deployment: {
-        Type: 'Custom::CDKBucketDeployment',
-        Properties: {
-          ServiceToken: 'a-lambda-arn',
-          SourceBucketNames: [
-            'src-bucket-old',
-          ],
-          SourceObjectKeys: [
-            'src-key-old',
-          ],
-          DestinationBucketName: 'DifferentBucketOld',
-        },
-      },
-    },
-  });
-  const cdkStackArtifact = setup.cdkStackArtifactOf({
-    template: {
-      Resources: {
-        Policy: {
-          Type: 'AWS::IAM::Policy',
-          Properties: {
-            PolicyDocument: {
-              Statement: [
-                {
-                  Action: [
-                    's3:GetObject*',
-                  ],
-                  Effect: 'Allow',
-                  Resource: {
-                    'Fn::GetAtt': [
-                      'WebsiteBucketNew',
-                      'Arn',
-                    ],
-                  },
-                },
-              ],
-            },
-          },
-        },
-        S3Deployment: {
-          Type: 'Custom::CDKBucketDeployment',
-          Properties: {
-            ServiceToken: 'a-lambda-arn',
-            SourceBucketNames: [
-              'src-bucket-new',
-            ],
-            SourceObjectKeys: [
-              'src-key-new',
-            ],
-            DestinationBucketName: 'DifferentBucketNew',
-          },
-        },
-      },
-    },
-  });
-
-  // WHEN
-  const deployStackResult = await cfnMockProvider.tryHotswapDeployment(cdkStackArtifact);
-
-  // THEN
-  expect(deployStackResult).toBeUndefined();
-  expect(mockLambdaInvoke).not.toHaveBeenCalled();
-});
-
-// todo: it's not the website bucket they share, it's the sourcebucket
-test('calls the lambdaInvoke() API when it receives an asset difference in two different s3 bucket deployments and IAM Policy differences using old-style synthesis', async () => {
-  // GIVEN
-  setup.setCurrentCfnStackTemplate({
-    Resources: {
-      PolicyA: {
-        Type: 'AWS::IAM::Policy',
-        Properties: {
-          Roles: [
-            {
-              Ref: 'ServiceRole',
-            },
-          ],
-          PolicyDocument: {
-            Statement: [
-              {
-                Action: [
-                  's3:GetObject*',
-                ],
-                Effect: 'Allow',
-                Resource: {
-                  'Fn::GetAtt': [
-                    'WebsiteBucketOldA',
-                    'Arn',
-                  ],
-                },
-              },
-            ],
-          },
-        },
-      },
-      S3DeploymentA: {
-        Type: 'Custom::CDKBucketDeployment',
-        Properties: {
-          ServiceToken: 'a-lambda-arn',
-          SourceBucketNames: [
-            'src-bucket-old',
-          ],
-          SourceObjectKeys: [
-            'src-key-old',
-          ],
-          DestinationBucketName: 'WebsiteBucketOldA',
-        },
-      },
-      PolicyB: {
-        Type: 'AWS::IAM::Policy',
-        Properties: {
-          PolicyDocument: {
-            Statement: [
-              {
-                Action: [
-                  's3:GetObject*',
-                ],
-                Effect: 'Allow',
-                Resource: {
-                  'Fn::GetAtt': [
-                    'WebsiteBucketOldB',
-                    'Arn',
-                  ],
-                },
-              },
-            ],
-          },
-        },
-      },
-      S3DeploymentB: {
-        Type: 'Custom::CDKBucketDeployment',
-        Properties: {
-          ServiceToken: 'a-lambda-arn',
-          SourceBucketNames: [
-            'src-bucket-old',
-          ],
-          SourceObjectKeys: [
-            'src-key-old',
-          ],
-          DestinationBucketName: 'WebsiteBucketOldB',
-        },
-      },
-    },
-  });
-  setup.pushStackResourceSummaries(
-    setup.stackSummaryOf('WebsiteBucketNewA', 'AWS::S3::Bucket', 'bucket-A'),
-    setup.stackSummaryOf('WebsiteBucketNewB', 'AWS::S3::Bucket', 'bucket-B'),
-  );
-  const cdkStackArtifact = setup.cdkStackArtifactOf({
-    template: {
-      Resources: {
-        PolicyA: {
-          Type: 'AWS::IAM::Policy',
-          Properties: {
-            PolicyDocument: {
-              Statement: [
-                {
-                  Action: [
-                    's3:GetObject*',
-                  ],
-                  Effect: 'Allow',
-                  Resource: {
-                    'Fn::GetAtt': [
-                      'WebsiteBucketNewA',
-                      'Arn',
-                    ],
-                  },
-                },
-              ],
-            },
-          },
-        },
-        S3DeploymentA: {
-          Type: 'Custom::CDKBucketDeployment',
-          Properties: {
-            ServiceToken: 'a-lambda-arn',
-            SourceBucketNames: [
-              'src-bucket-new',
-            ],
-            SourceObjectKeys: [
-              'src-key-new',
-            ],
-            DestinationBucketName: 'WebsiteBucketNewA',
-          },
-        },
-        PolicyB: {
-          Type: 'AWS::IAM::Policy',
-          Properties: {
-            PolicyDocument: {
-              Statement: [
-                {
-                  Action: [
-                    's3:GetObject*',
-                  ],
-                  Effect: 'Allow',
-                  Resource: {
-                    'Fn::GetAtt': [
-                      'WebsiteBucketNewB',
-                      'Arn',
-                    ],
-                  },
-                },
-              ],
-            },
-          },
-        },
-        S3DeploymentB: {
-          Type: 'Custom::CDKBucketDeployment',
-          Properties: {
-            ServiceToken: 'a-lambda-arn',
-            SourceBucketNames: [
-              'src-bucket-new',
-            ],
-            SourceObjectKeys: [
-              'src-key-new',
-            ],
-            DestinationBucketName: 'WebsiteBucketNewB',
-          },
-        },
-      },
-    },
-  });
-
-  // WHEN
-  const deployStackResult = await cfnMockProvider.tryHotswapDeployment(cdkStackArtifact);
-
-  // THEN
-  expect(deployStackResult).not.toBeUndefined();
-  payload.ResourceProperties = {
-    SourceBucketNames: [
-      'src-bucket-new',
-    ],
-    SourceObjectKeys: [
-      'src-key-new',
-    ],
-    DestinationBucketName: 'WebsiteBucketNewA',
-  };
-
-  expect(mockLambdaInvoke).toHaveBeenCalledWith({
-    FunctionName: 'a-lambda-arn',
-    Payload: JSON.stringify(payload),
-  });
-
-  payload.ResourceProperties = {
-    SourceBucketNames: [
-      'src-bucket-new',
-    ],
-    SourceObjectKeys: [
-      'src-key-new',
-    ],
-    DestinationBucketName: 'WebsiteBucketNewB',
-  };
-
-  expect(mockLambdaInvoke).toHaveBeenCalledWith({
-    FunctionName: 'a-lambda-arn',
-    Payload: JSON.stringify(payload),
-  });
-});
-*/
-
 describe('old-style synthesis', () => {
   let serviceRole: any;
   let policy: any;
@@ -806,17 +520,13 @@ describe('old-style synthesis', () => {
     s3Deployment.Properties.SourceObjectKeys = ['src-key-new'];
     s3Deployment.Properties.DestinationBucketName = 'WebsiteBucketNew';
 
-    /*eslint-disable*/
-
     policy.Properties.PolicyDocument.Statement.Resource = {
       'Fn::GetAtt': [
         'WebsiteBucketOld',
         'Arn',
       ],
     };
-    /*eslint-disable*/
 
-    console.log(s3Deployment);
     const cdkStackArtifact = setup.cdkStackArtifactOf({
       template: {
         Resources: {
@@ -880,7 +590,7 @@ describe('old-style synthesis', () => {
     };
     policy2.Properties.Roles = [
       'different-role',
-    ]
+    ];
 
     const cdkStackArtifact = setup.cdkStackArtifactOf({
       template: {
@@ -937,24 +647,20 @@ describe('old-style synthesis', () => {
       setup.stackSummaryOf('S3DeploymentLambda', 'AWS::Lambda::Function', 'my-deployment-lambda'),
       setup.stackSummaryOf('ServiceRole', 'AWS::IAM::Role', 'my-service-role'),
     );
-  
+
     policy.Properties.PolicyDocument.Statement.Resource = {
       'Fn::GetAtt': [
         'WebsiteBucketNew',
         'Arn',
       ],
     };
-  
+
     policy2.Properties.PolicyDocument.Statement.Resource = {
       'Fn::GetAtt': [
         'DifferentBucketNew',
         'Arn',
       ],
     };
-    //policy2.Properties.Roles = [
-     // 'different-role',
-    //]
-
 
     s3Deployment.Properties.SourceBucketNames = ['src-bucket-new'];
     s3Deployment.Properties.SourceObjectKeys = ['src-key-new'];
@@ -963,7 +669,7 @@ describe('old-style synthesis', () => {
     s3Deployment2.Properties.SourceBucketNames = ['src-bucket-new'];
     s3Deployment2.Properties.SourceObjectKeys = ['src-key-new'];
     s3Deployment2.Properties.DestinationBucketName = 'DifferentBucketNew';
-  
+
     const cdkStackArtifact = setup.cdkStackArtifactOf({
       template: {
         Resources: {
@@ -976,10 +682,10 @@ describe('old-style synthesis', () => {
         },
       },
     });
-  
+
     // WHEN
     const deployStackResult = await cfnMockProvider.tryHotswapDeployment(cdkStackArtifact);
-  
+
     // THEN
     expect(deployStackResult).not.toBeUndefined();
 
@@ -993,17 +699,16 @@ describe('old-style synthesis', () => {
       DestinationBucketName: 'WebsiteBucketNew',
     };
 
-    let payload2 = JSON.parse(JSON.stringify(payload));
-    payload2.ResourceProperties.DestinationBucketName = 'DifferentBucketNew';;
-
     expect(mockLambdaInvoke).toHaveBeenCalledWith({
       FunctionName: 'arn:aws:lambda:here:123456789012:function:my-deployment-lambda',
       Payload: JSON.stringify(payload),
     });
 
+    payload.ResourceProperties.DestinationBucketName = 'DifferentBucketNew';;
+
     expect(mockLambdaInvoke).toHaveBeenCalledWith({
       FunctionName: 'arn:aws:lambda:here:123456789012:function:my-deployment-lambda',
-      Payload: JSON.stringify(payload2),
+      Payload: JSON.stringify(payload),
     });
   });
 });
