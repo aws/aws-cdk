@@ -2,7 +2,7 @@
   "name": "aws-cdk-lib",
   "private": "true",
   "version": "0.0.0",
-  "description": "The AWS CDK library v2",
+  "description": "Version 2 of the AWS Cloud Development Kit library",
   "main": "index.js",
   "types": "index.d.ts",
   "repository": {
