@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cdk from '../lib';
 import { synthesize } from '../lib/private/synthesis';
@@ -121,7 +122,7 @@ describe('synthesis', () => {
 
   });
 
-  test('it should be possible to synthesize without an app', () => {
+  testDeprecated('it should be possible to synthesize without an app', () => {
     const calls = new Array<string>();
 
     class SynthesizeMe extends cdk.Stack {

@@ -173,7 +173,7 @@ new lambda.NodejsFunction(this, 'my-handler', {
   bundling: {
     minify: true, // minify code, defaults to false
     sourceMap: true, // include source map, defaults to false
-    sourceMapMode: SourceMapMode.INLINE, // defaults to SourceMapMode.DEFAULT
+    sourceMapMode: lambda.SourceMapMode.INLINE, // defaults to SourceMapMode.DEFAULT
     sourcesContent: false, // do not include original source into source map, defaults to true
     target: 'es2020', // target environment for the generated JavaScript code
     loader: { // Use the 'dataurl' loader for '.png' files
@@ -184,13 +184,13 @@ new lambda.NodejsFunction(this, 'my-handler', {
       'process.env.PRODUCTION': JSON.stringify(true),
       'process.env.NUMBER': JSON.stringify(123),
     },
-    logLevel: LogLevel.SILENT, // defaults to LogLevel.WARNING
+    logLevel: lambda.LogLevel.SILENT, // defaults to LogLevel.WARNING
     keepNames: true, // defaults to false
     tsconfig: 'custom-tsconfig.json', // use custom-tsconfig.json instead of default,
     metafile: true, // include meta file, defaults to false
     banner: '/* comments */', // requires esbuild >= 0.9.0, defaults to none
     footer: '/* comments */', // requires esbuild >= 0.9.0, defaults to none
-    charset: Charset.UTF8, // do not escape non-ASCII characters, defaults to Charset.ASCII
+    charset: lambda.Charset.UTF8, // do not escape non-ASCII characters, defaults to Charset.ASCII
   },
 });
 ```
@@ -199,18 +199,28 @@ new lambda.NodejsFunction(this, 'my-handler', {
 
 It is possible to run additional commands by specifying the `commandHooks` prop:
 
-```ts
+```text
+// This example only available in TypeScript
+// Run additional props via `commandHooks`
 new lambda.NodejsFunction(this, 'my-handler-with-commands', {
   bundling: {
     commandHooks: {
-      // Copy a file so that it will be included in the bundled asset
+      beforeBundling(inputDir: string, outputDir: string): string[] {
+        return [
+          `echo hello > ${inputDir}/a.txt`,
+          `cp ${inputDir}/a.txt ${outputDir}`,
+        ];
+      },
       afterBundling(inputDir: string, outputDir: string): string[] {
-        return [`cp ${inputDir}/my-binary.node ${outputDir}`];
-      }
+        return [`cp ${inputDir}/b.txt ${outputDir}/txt`];
+      },
+      beforeInstall() {
+        return [];
+      },
       // ...
-    }
+    },
     // ...
-  }
+  },
 });
 ```
 
@@ -262,9 +272,9 @@ Use `bundling.buildArgs` to pass build arguments when building the Docker bundli
 ```ts
 new lambda.NodejsFunction(this, 'my-handler', {
   bundling: {
-      buildArgs: {
-        HTTPS_PROXY: 'https://127.0.0.1:3001',
-      },
+    buildArgs: {
+      HTTPS_PROXY: 'https://127.0.0.1:3001',
+    },
   }
 });
 ```
@@ -274,7 +284,7 @@ Use `bundling.dockerImage` to use a custom Docker bundling image:
 ```ts
 new lambda.NodejsFunction(this, 'my-handler', {
   bundling: {
-    dockerImage: cdk.DockerImage.fromBuild('/path/to/Dockerfile'),
+    dockerImage: DockerImage.fromBuild('/path/to/Dockerfile'),
   },
 });
 ```

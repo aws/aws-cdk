@@ -1,7 +1,7 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
+import { ArnFormat, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { LogStream } from './log-stream';
 import { CfnLogGroup } from './logs.generated';
@@ -352,7 +352,7 @@ export class LogGroup extends LogGroupBase {
 
     class Import extends LogGroupBase {
       public readonly logGroupArn = `${baseLogGroupArn}:*`;
-      public readonly logGroupName = Stack.of(scope).parseArn(baseLogGroupArn, ':').resourceName!;
+      public readonly logGroupName = Stack.of(scope).splitArn(baseLogGroupArn, ArnFormat.COLON_RESOURCE_NAME).resourceName!;
     }
 
     return new Import(scope, id);
@@ -369,7 +369,7 @@ export class LogGroup extends LogGroupBase {
       public readonly logGroupArn = Stack.of(scope).formatArn({
         service: 'logs',
         resource: 'log-group',
-        sep: ':',
+        arnFormat: ArnFormat.COLON_RESOURCE_NAME,
         resourceName: baseLogGroupName + ':*',
       });
     }
@@ -412,7 +412,7 @@ export class LogGroup extends LogGroupBase {
       service: 'logs',
       resource: 'log-group',
       resourceName: this.physicalName,
-      sep: ':',
+      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
     });
     this.logGroupName = this.getResourceNameAttribute(resource.ref);
   }

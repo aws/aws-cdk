@@ -136,7 +136,7 @@ export class Mesh extends MeshBase {
    * Import an existing mesh by arn
    */
   public static fromMeshArn(scope: Construct, id: string, meshArn: string): IMesh {
-    const parts = cdk.Stack.of(scope).parseArn(meshArn);
+    const parts = cdk.Stack.of(scope).splitArn(meshArn, cdk.ArnFormat.SLASH_RESOURCE_NAME);
 
     class Import extends MeshBase {
       public meshName = parts.resourceName || '';

@@ -1,18 +1,13 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as iot from '@aws-cdk/aws-iot';
 import * as logs from '@aws-cdk/aws-logs';
+import { CommonActionProps } from './common-action-props';
 import { singletonActionRole } from './private/role';
 
 /**
  * Configuration properties of an action for CloudWatch Logs.
  */
-export interface CloudWatchLogsActionProps {
-  /**
-   * The IAM role that allows access to the CloudWatch log group.
-   *
-   * @default a new role will be created
-   */
-  readonly role?: iam.IRole;
+export interface CloudWatchLogsActionProps extends CommonActionProps {
 }
 
 /**

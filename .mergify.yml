@@ -37,10 +37,9 @@ pull_request_rules:
     actions:
       comment:
         message: Thank you for contributing! Your pull request will be automatically updated and merged (do not update manually, and be sure to [allow changes to be pushed to your fork](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/allowing-changes-to-a-pull-request-branch-created-from-a-fork)).
-      merge:
-        strict: smart
+      queue:
+        name: default
         method: squash
-        strict_method: merge
         commit_message: title+body
     conditions:
       - base!=release
@@ -60,11 +59,9 @@ pull_request_rules:
     actions:
       comment:
         message: Thank you for contributing! Your pull request will be automatically updated and merged without squashing (do not update manually, and be sure to [allow changes to be pushed to your fork](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/allowing-changes-to-a-pull-request-branch-created-from-a-fork)).
-      merge:
-        strict: smart
-        # Merge instead of squash
+      queue:
+        name: default
         method: merge
-        strict_method: merge
         commit_message: title+body
     conditions:
       - -title~=(WIP|wip)
@@ -106,12 +103,10 @@ pull_request_rules:
     actions:
       comment:
         message: Thanks Dependabot!
-      merge:
-        # 'strict: false' disables Mergify keeping the branch up-to-date from master.
-        # It's not necessary: Dependabot will do that itself.
-        # It's not dangerous: GitHub branch protection settings prevent merging stale branches.
-        strict: false
+      queue:
+        name: default
         method: squash
+        commit_message: title+body
     conditions:
       - -title~=(WIP|wip)
       - -label~=(blocked|do-not-merge)

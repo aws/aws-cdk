@@ -997,9 +997,11 @@
         "Conditions": [
           {
             "Field": "path-pattern",
-            "Values": [
-              "a/b/c"
-            ]
+            "PathPatternConfig": {
+              "Values": [
+                "a/b/c"
+              ]
+            }
           }
         ],
         "ListenerArn": {
