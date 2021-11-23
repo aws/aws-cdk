@@ -8,6 +8,7 @@ import * as s3 from '@aws-cdk/aws-s3';
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import * as ecs from '../lib';
 
 describe('cluster', () => {
@@ -811,7 +812,7 @@ describe('cluster', () => {
    */
   testDeprecated('allows specifying special HW AMI Type', () => {
     // GIVEN
-    const app = new cdk.App();
+    const app = new cdk.App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack = new cdk.Stack(app, 'test');
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
 
@@ -865,7 +866,7 @@ describe('cluster', () => {
 
   testDeprecated('allows specifying windows image', () => {
     // GIVEN
-    const app = new cdk.App();
+    const app = new cdk.App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack = new cdk.Stack(app, 'test');
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
 
@@ -1015,7 +1016,7 @@ describe('cluster', () => {
 
   testDeprecated('allows specifying special HW AMI Type v2', () => {
     // GIVEN
-    const app = new cdk.App();
+    const app = new cdk.App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack = new cdk.Stack(app, 'test');
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
 
@@ -1046,7 +1047,7 @@ describe('cluster', () => {
 
   testDeprecated('allows specifying Amazon Linux v1 AMI', () => {
     // GIVEN
-    const app = new cdk.App();
+    const app = new cdk.App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack = new cdk.Stack(app, 'test');
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
 
@@ -1077,7 +1078,7 @@ describe('cluster', () => {
 
   testDeprecated('allows specifying windows image v2', () => {
     // GIVEN
-    const app = new cdk.App();
+    const app = new cdk.App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
     const stack = new cdk.Stack(app, 'test');
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
 
