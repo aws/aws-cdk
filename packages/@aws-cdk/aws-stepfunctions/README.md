@@ -637,8 +637,8 @@ new sfn.StateMachine(this, 'MyStateMachine', {
 Enable X-Ray tracing for StateMachine:
 
 ```ts
-new stepfunctions.StateMachine(this, 'MyStateMachine', {
-  definition: stepfunctions.Chain.start(new stepfunctions.Pass(this, 'Pass')),
+new sfn.StateMachine(this, 'MyStateMachine', {
+  definition: sfn.Chain.start(new sfn.Pass(this, 'Pass')),
   tracingEnabled: true,
 });
 ```
