@@ -594,6 +594,8 @@ export class Function extends FunctionBase {
   private readonly currentVersionOptions?: VersionOptions;
   private _currentVersion?: Version;
 
+  private _architecture?: Architecture;
+
   constructor(scope: Construct, id: string, props: FunctionProps) {
     super(scope, id, {
       physicalName: props.functionName,
@@ -677,7 +679,7 @@ export class Function extends FunctionBase {
     if (props.architectures && props.architectures.length > 1) {
       throw new Error('Only one architecture must be specified.');
     }
-    const architecture = props.architecture ?? (props.architectures && props.architectures[0]);
+    this._architecture = props.architecture ?? (props.architectures && props.architectures[0]);
 
     const resource: CfnFunction = new CfnFunction(this, 'Resource', {
       functionName: this.physicalName,
@@ -711,7 +713,7 @@ export class Function extends FunctionBase {
       kmsKeyArn: props.environmentEncryption?.keyArn,
       fileSystemConfigs,
       codeSigningConfigArn: props.codeSigningConfig?.codeSigningConfigArn,
-      architectures: architecture ? [architecture.name] : undefined,
+      architectures: this._architecture ? [this._architecture.name] : undefined,
     });
 
     resource.node.addDependency(this.role);
@@ -928,7 +930,7 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
     if (props.runtime !== Runtime.FROM_IMAGE) {
       // Layers cannot be added to Lambda container images. The image should have the insights agent installed.
       // See https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Lambda-Insights-Getting-Started-docker.html
-      this.addLayers(LayerVersion.fromLayerVersionArn(this, 'LambdaInsightsLayer', props.insightsVersion.layerVersionArn));
+      this.addLayers(LayerVersion.fromLayerVersionArn(this, 'LambdaInsightsLayer', props.insightsVersion._bind(this._architecture)));
     }
     this.role?.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('CloudWatchLambdaInsightsExecutionRolePolicy'));
   }
