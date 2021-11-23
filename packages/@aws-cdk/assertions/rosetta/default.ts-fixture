@@ -1,4 +1,6 @@
-import { Construct, Stack } from '@aws-cdk/core';
+// Fixture with packages imported, but nothing else
+import { Construct } from 'constructs';
+import { Stack } from '@aws-cdk/core';
 import { Capture, Match, Template } from '@aws-cdk/assertions';
 
 class Fixture extends Stack {
