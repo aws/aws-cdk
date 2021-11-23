@@ -112,6 +112,13 @@ async function main() {
             module: module.pythonModuleName,
           },
         },
+        metadata: {
+          jsii: {
+            rosetta: {
+              strict: true,
+            },
+          },
+        },
       },
       repository: {
         type: 'git',
@@ -262,6 +269,17 @@ async function main() {
     await write('jest.config.js', [
       "const baseConfig = require('@aws-cdk/cdk-build-tools/config/jest.config');",
       'module.exports = baseConfig;',
+    ]);
+
+    await write('rosetta/default.ts-fixture', [
+      "import { Construct } from 'constructs';",
+      "import { Stack } from '@aws-cdk/core';",
+      '',
+      'class MyStack extends Stack {',
+      '  constructor(scope: Construct, id: string) {',
+      '    /// here',
+      '  }',
+      '}',
     ]);
 
     const templateDir = path.join(__dirname, 'template');
