@@ -196,14 +196,10 @@ describe('State Machine Resources', () => {
 
   }),
 
-  test('Created state machine can grant start execution to a role', () => {
+  test('Created state machine can grant start sync execution to a role', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    const task = new stepfunctions.Task(stack, 'Task', {
-      task: {
-        bind: () => ({ resourceArn: 'resource' }),
-      },
-    });
+    const task = new FakeTask(stack, 'Task');
     const stateMachine = new stepfunctions.StateMachine(stack, 'StateMachine', {
       definition: task,
       stateMachineType: stepfunctions.StateMachineType.EXPRESS,
