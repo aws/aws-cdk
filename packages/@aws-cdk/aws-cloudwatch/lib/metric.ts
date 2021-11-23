@@ -129,7 +129,7 @@ export interface MathExpressionOptions {
   /**
    * Label for this metric when added to a Graph in a Dashboard
    *
-   * @default - Expression value is used as label
+   * @default - The legend will show only the original metric labels
    */
   readonly label?: string;
 
