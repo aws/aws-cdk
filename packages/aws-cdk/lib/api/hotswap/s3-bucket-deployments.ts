@@ -54,29 +54,22 @@ export async function isHotswappableS3BucketDeploymentChange(
     return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
   }
 
-  const props = await evaluateCfnTemplate.evaluateCfnExpression(change.newValue.Properties);
-  delete props.ServiceToken;
-
-  return new S3BucketDeploymentHotswapOperation({
-    functionName: functionName,
-    properties: props,
+  const customResourceProperties = await evaluateCfnTemplate.evaluateCfnExpression({
+    ...change.newValue.Properties,
+    ServiceToken: undefined,
   });
-}
 
-interface S3BucketDeploymentHotswapOperationOptions {
-  functionName: string;
-  properties: any;
+  return new S3BucketDeploymentHotswapOperation(functionName, customResourceProperties);
 }
 
 class S3BucketDeploymentHotswapOperation implements HotswapOperation {
-  constructor(private readonly s3BucketDeployment: S3BucketDeploymentHotswapOperationOptions) {
+  constructor(private readonly functionName: string, private readonly customResourceProperties: any) {
   }
 
   public async apply(sdk: ISDK): Promise<any> {
-    const deployment = this.s3BucketDeployment;
-
+    const resourceProperties = stringifyObject(this.customResourceProperties);
     return sdk.lambda().invoke({
-      FunctionName: deployment.functionName,
+      FunctionName: this.functionName,
       // Lambda refuses to take a direct JSON object and requires it to be stringify()'d
       Payload: JSON.stringify({
         RequestType: 'Update',
@@ -85,10 +78,28 @@ class S3BucketDeploymentHotswapOperation implements HotswapOperation {
         StackId: REQUIRED_BY_CFN,
         RequestId: REQUIRED_BY_CFN,
         LogicalResourceId: REQUIRED_BY_CFN,
-        ResourceProperties: deployment.properties,
+        ResourceProperties: resourceProperties,
       }),
     }).promise();
   }
+}
+
+function stringifyObject(obj: any): any {
+  if (obj == null) {
+    return obj;
+  }
+  if (Array.isArray(obj)) {
+    return obj.map(stringifyObject);
+  }
+  if (typeof obj !== 'object') {
+    return obj.toString();
+  }
+
+  const ret: { [k: string]: any } = {};
+  for (const [k, v] of Object.entries(obj)) {
+    ret[k] = stringifyObject(v);
+  }
+  return ret;
 }
 
 class EmptyHotswapOperation implements HotswapOperation {
