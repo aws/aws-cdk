@@ -22,10 +22,11 @@ import { Construct } from '@aws-cdk/core';
  * An interface that will be implemented by all the resources that can be subscribed to.
  */
 export interface ISubscribable {
+  readonly subscriptionQueue?: SubscriptionQueue;
   /**
    * All classes implementing this interface must also implement the `subscribe()` method
    */
-  subscribe(extension: QueueExtension): SubscriptionQueue;
+  subscribe(extension: QueueExtension): sqs.IQueue;
 }
 
 /**
@@ -63,7 +64,7 @@ export interface TopicSubscriptionProps {
 
   /**
    * The user-provided queue to subscribe to the given topic.
-   * 
+   *
    * @deprecated use `topicSubscriptionQueue`
    */
   readonly queue?: sqs.IQueue;
@@ -71,7 +72,7 @@ export interface TopicSubscriptionProps {
   /**
    * The object representing topic-specific queue and corresponding queue delay fields to configure auto scaling.
    * If not provided, the default `eventsQueue` will subscribe to the given topic.
-   * 
+   *
    * @default none
    */
   readonly topicSubscriptionQueue?: SubscriptionQueue;
@@ -116,14 +117,17 @@ interface QueueAutoScalingOptions {
 export class TopicSubscription implements ISubscribable {
   public readonly topic: sns.ITopic;
 
+  /**
+   * @deprecated use `subscriptionQueue`
+   */
   public readonly queue?: sqs.IQueue;
 
-  private readonly subscriptionQueue?: SubscriptionQueue;
+  public readonly subscriptionQueue?: SubscriptionQueue;
 
   constructor(props: TopicSubscriptionProps) {
     this.topic = props.topic;
     this.subscriptionQueue = props.topicSubscriptionQueue;
-    this.queue = props.topicSubscriptionQueue?.queue;
+    this.queue = props.topicSubscriptionQueue?.queue ?? props.queue;
   }
 
   /**
@@ -133,17 +137,10 @@ export class TopicSubscription implements ISubscribable {
    * @param extension `QueueExtension` added to the service
    * @returns the queue subscribed to the given topic
    */
-  public subscribe(extension: QueueExtension) : SubscriptionQueue {
-    let ret = {
-      queue: extension.eventsQueue,
-      scaleOnLatency: extension.autoscalingOptions,
-    } as SubscriptionQueue;
-
-    if (this.subscriptionQueue) {
-      ret = this.subscriptionQueue;
-    }
-    this.topic.addSubscription(new subscription.SqsSubscription(ret.queue));
-    return ret;
+  public subscribe(extension: QueueExtension) : sqs.IQueue {
+    const queue = this.subscriptionQueue?.queue ?? extension.eventsQueue;
+    this.topic.addSubscription(new subscription.SqsSubscription(queue));
+    return queue;
   }
 }
 
@@ -184,8 +181,8 @@ class QueueExtensionMutatingHook extends ContainerMutatingHook {
  * type `ISubscribable` that the `eventsQueue` subscribes to. It creates the subscriptions and sets up permissions
  * for the service to consume messages from the SQS Queues.
  *
- * It also configures auto scaling for the service by scaling up or down to maintain an acceptable queue latency by
- * tracking the acceptable backlog per task.
+ * It also configures a target tracking scaling policy for the service to maintain an acceptable queue latency by tracking
+ * the backlog per task. For more information, please refer: https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-using-sqs-queue.html .
  *
  * The default queue for this service can be accessed using the getter `<extension>.eventsQueue`.
  */
@@ -240,11 +237,11 @@ export class QueueExtension extends ServiceExtension {
     if (this.props?.subscriptions) {
       for (const subs of this.props.subscriptions) {
         const subsQueue = subs.subscribe(this);
-        if (subsQueue.queue !== this._eventsQueue) {
-          if (subsQueue.scaleOnLatency && !this._autoscalingOptions) {
+        if (subsQueue !== this._eventsQueue) {
+          if (subs.subscriptionQueue?.scaleOnLatency && !this._autoscalingOptions) {
             throw Error(`Autoscaling for a topic-specific queue cannot be configured as autoscaling based on SQS Queues hasn’t been set up for the service '${this.parentService.id}'. If you want to enable autoscaling for this service, please also specify 'scaleOnLatency' in the 'QueueExtension'.`);
           }
-          this.subscriptionQueues.add(subsQueue);
+          this.subscriptionQueues.add(subs.subscriptionQueue!);
         }
       }
     }
