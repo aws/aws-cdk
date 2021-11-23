@@ -22,6 +22,7 @@ const cluster = new DatabaseCluster(this, 'Database', {
     masterUser: {
         username: 'myuser' // NOTE: 'admin' is reserved by DocumentDB
         excludeCharacters: '\"@/:', // optional, defaults to the set "\"@/"
+        secretName: '/myapp/mydocdb/masteruser', // optional, if you prefer to specify the secret name
     },
     instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.LARGE),
     vpcSubnets: {
