@@ -1791,7 +1791,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-12345678-test-region",
-          "S3Key": "f16ba8fb894eb2fc0b18f8ec0a6c19eb15d8a800343796b09c87e97dd48e69b3.zip"
+          "S3Key": "6c6c8f170c2cc5c6e35d90fe172fbc17cae75777b84707d58332dee79f444404.zip"
         },
         "Role": {
           "Fn::GetAtt": [
@@ -2102,7 +2102,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": "cdk-hnb659fds-assets-12345678-test-region",
-          "S3Key": "f16ba8fb894eb2fc0b18f8ec0a6c19eb15d8a800343796b09c87e97dd48e69b3.zip"
+          "S3Key": "6c6c8f170c2cc5c6e35d90fe172fbc17cae75777b84707d58332dee79f444404.zip"
         },
         "Role": {
           "Fn::GetAtt": [
