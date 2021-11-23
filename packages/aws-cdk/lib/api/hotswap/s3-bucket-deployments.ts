@@ -12,7 +12,7 @@ export async function isHotswappableS3BucketDeploymentChange(
   logicalId: string, change: HotswappableChangeCandidate, evaluateCfnTemplate: EvaluateCloudFormationTemplate,
 ): Promise<ChangeHotswapResult> {
   // In old-style synthesis, the policy used by the lambda to copy assets Ref's the assets directly,
-  // meaning that the changes made to the Policy are artificial
+  // meaning that the changes made to the Policy are artifacts that can be safely ignored
   if (change.newValue.Type === 'AWS::IAM::Policy') {
     const roles = change.newValue.Properties?.Roles;
     for (const role of roles) {
