@@ -21,7 +21,7 @@ export class Import extends Declaration {
   public constructor(type: reflect.Type) {
     const { importName, moduleName, submoduleName } = module(type);
 
-    super([0, moduleName]);
+    super([0, moduleName, submoduleName ?? '']);
 
     this.importName = importName;
     this.moduleName = moduleName;

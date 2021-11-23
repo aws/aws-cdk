@@ -1,5 +1,6 @@
 import { CustomResource, Stack } from '@aws-cdk/core';
 import { Construct, Node } from 'constructs';
+import { AlbScheme } from './alb-controller';
 import { ICluster } from './cluster';
 import { KubectlProvider } from './kubectl-provider';
 
@@ -44,6 +45,23 @@ export interface KubernetesManifestOptions {
    * @default false
    */
   readonly skipValidation?: boolean;
+
+  /**
+   * Automatically detect `Ingress` resources in the manifest and annotate them so they
+   * are picked up by an ALB Ingress Controller.
+   *
+   * @default false
+   */
+  readonly ingressAlb?: boolean;
+
+  /**
+   * Specify the ALB scheme that should be applied to `Ingress` resources.
+   * Only applicable if `ingressAlb` is set to `true`.
+   *
+   * @default AlbScheme.INTERNAL
+   */
+  readonly ingressAlbScheme?: AlbScheme;
+
 }
 
 /**
@@ -117,6 +135,10 @@ export class KubernetesManifest extends CoreConstruct {
       ? this.injectPruneLabel(props.manifest)
       : undefined;
 
+    if (props.ingressAlb ?? false) {
+      this.injectIngressAlbAnnotations(props.manifest, props.ingressAlbScheme ?? AlbScheme.INTERNAL);
+    }
+
     new CustomResource(this, 'Resource', {
       serviceToken: provider.serviceToken,
       resourceType: KubernetesManifest.RESOURCE_TYPE,
@@ -166,5 +188,30 @@ export class KubernetesManifest extends CoreConstruct {
     }
 
     return pruneLabel;
+  }
+
+  /**
+   * Inject the necessary ingress annontations if possible (and requested).
+   *
+   * @see https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.2/guide/ingress/annotations/
+   */
+  private injectIngressAlbAnnotations(manifest: Record<string, any>[], scheme: AlbScheme) {
+
+    for (const resource of manifest) {
+
+      // skip resource if it's not an object or if it does not have a "kind"
+      if (typeof(resource) !== 'object' || !resource.kind) {
+        continue;
+      }
+
+      if (resource.kind === 'Ingress') {
+        resource.metadata.annotations = {
+          'kubernetes.io/ingress.class': 'alb',
+          'alb.ingress.kubernetes.io/scheme': scheme,
+          ...resource.metadata.annotations,
+        };
+      }
+    }
+
   }
 }
