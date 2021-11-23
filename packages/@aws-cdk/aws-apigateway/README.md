@@ -143,9 +143,7 @@ new apigateway.StepFunctionsRestApi(this, 'StepFunctionsRestApi', {
 });
 ```
 
-Here are a few examples:
-
-Example 1: POST with default configuration
+When the REST API endpoint configuration above is invoked using POST, as follows -
 
 ```bash
 curl -X POST -d '{ "customerId": 1 }' https://example.com/
