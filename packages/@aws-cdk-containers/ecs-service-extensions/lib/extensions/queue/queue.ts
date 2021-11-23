@@ -62,7 +62,17 @@ export interface TopicSubscriptionProps {
   readonly topic: sns.ITopic;
 
   /**
+   * The user-provided queue to subscribe to the given topic.
+   * 
+   * @deprecated use `topicSubscriptionQueue`
+   */
+  readonly queue?: sqs.IQueue;
+
+  /**
    * The object representing topic-specific queue and corresponding queue delay fields to configure auto scaling.
+   * If not provided, the default `eventsQueue` will subscribe to the given topic.
+   * 
+   * @default none
    */
   readonly topicSubscriptionQueue?: SubscriptionQueue;
 }
@@ -74,9 +84,6 @@ export interface TopicSubscriptionProps {
 interface SubscriptionQueue {
   /**
    * The user-provided queue to subscribe to the given topic.
-   * If the `queue` is not provided, the default `eventsQueue` will subscribe to the given topic.
-   *
-   * @default none
    */
   readonly queue: sqs.IQueue;
 
@@ -93,12 +100,12 @@ interface SubscriptionQueue {
  */
 interface QueueAutoScalingOptions {
   /**
-   * Acceptable amount of time taken to process one message in the queue.
+   * Average amount of time for processing a single message in the queue.
    */
   readonly messageProcessingTime: cdk.Duration;
 
   /**
-   * Acceptable amount of time for processing a single message in the queue.
+   * Acceptable amount of time a message can sit in the queue.
    */
   readonly acceptableLatency: cdk.Duration;
 }
@@ -178,7 +185,7 @@ class QueueExtensionMutatingHook extends ContainerMutatingHook {
  * for the service to consume messages from the SQS Queues.
  *
  * It also configures auto scaling for the service by scaling up or down to maintain an acceptable queue latency by
- * tracking the accpetable backlog per task.
+ * tracking the acceptable backlog per task.
  *
  * The default queue for this service can be accessed using the getter `<extension>.eventsQueue`.
  */
