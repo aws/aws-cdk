@@ -23,7 +23,6 @@ export class FileAssetHandler implements IAssetHandler {
   public async publish(): Promise<void> {
     const destination = await replaceAwsPlaceholders(this.asset.destination, this.host.aws);
     const s3Url = `s3://${destination.bucketName}/${destination.objectKey}`;
-
     const s3 = await this.host.aws.s3Client(destination);
     this.host.emitMessage(EventType.CHECK, `Check ${s3Url}`);
 
@@ -39,11 +38,16 @@ export class FileAssetHandler implements IAssetHandler {
         throw new Error(`Bucket named '${destination.bucketName}' exists, but not in account ${await account()}. Wrong account?`);
     }
 
-    // identify the the encryption type to set the header
-    // when uploading assets to bucket (required for SCP rules denying uploads without encryption header)
+    if (await objectExists(s3, destination.bucketName, destination.objectKey)) {
+      this.host.emitMessage(EventType.FOUND, `Found ${s3Url}`);
+      return;
+    }
 
-    let paramsEncryption = {};
-    switch (await bucketEncryption(s3, destination.bucketName)) {
+    // Identify the the bucket encryption type to set the header on upload
+    // required for SCP rules denying uploads without encryption header
+    let paramsEncryption: {[index: string]:any}= {};
+    const encryption2 = await bucketEncryption(s3, destination.bucketName);
+    switch (encryption2) {
       case BucketEncryption.NO_ENCRYPTION:
         break;
       case BucketEncryption.SSEAlgorithm_AES256:
@@ -53,15 +57,11 @@ export class FileAssetHandler implements IAssetHandler {
         paramsEncryption = { ServerSideEncryption: 'aws:kms' };
         break;
       case BucketEncryption.DOES_NOT_EXIST:
-        throw new Error(`No bucket named '${destination.bucketName}'. Is account ${await account()} bootstrapped?`);
+        this.host.emitMessage(EventType.UPLOAD, `No bucket named '${destination.bucketName}'. Is account ${await account()} bootstrapped?`);
+        break;
       case BucketEncryption.ACCES_DENIED:
-
-        throw new Error(`ACCES_DENIED for getting encryption of bucket '${destination.bucketName}'. Either wrong account ${await account()} or s3:GetEncryptionConfiguration not set for bucket. Try boostrapping again.`);
-    }
-
-    if (await objectExists(s3, destination.bucketName, destination.objectKey)) {
-      this.host.emitMessage(EventType.FOUND, `Found ${s3Url}`);
-      return;
+        this.host.emitMessage(EventType.UPLOAD, `ACCES_DENIED for getting encryption of bucket '${destination.bucketName}'. Either wrong account ${await account()} or s3:GetEncryptionConfiguration not set for bucket. Try boostrapping again.`);
+        break;
     }
 
     if (this.host.aborted) { return; }
@@ -145,7 +145,7 @@ enum BucketEncryption {
 
 async function bucketEncryption(s3: AWS.S3, bucket: string) {
   try {
-    let encryption = await s3.getBucketEncryption({ Bucket: bucket }).promise();
+    const encryption = await s3.getBucketEncryption({ Bucket: bucket }).promise();
     const l = encryption?.ServerSideEncryptionConfiguration?.Rules?.length ?? 0;
     if (l > 0) {
       let ssealgo = encryption?.ServerSideEncryptionConfiguration?.Rules[0]?.ApplyServerSideEncryptionByDefault?.SSEAlgorithm;
@@ -157,10 +157,14 @@ async function bucketEncryption(s3: AWS.S3, bucket: string) {
     if (e.code === 'NoSuchBucket') {
       return BucketEncryption.DOES_NOT_EXIST;
     }
+    if (e.code === 'ServerSideEncryptionConfigurationNotFoundError') {
+      return BucketEncryption.NO_ENCRYPTION;
+    }
+
     if (['AccessDenied', 'AllAccessDisabled'].includes(e.code)) {
       return BucketEncryption.ACCES_DENIED;
     }
-    throw e;
+    return BucketEncryption.NO_ENCRYPTION;
   }
 }
 

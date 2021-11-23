@@ -126,7 +126,6 @@ test('Do nothing if file already exists', async () => {
   const pub = new AssetPublishing(AssetManifest.fromPath('/simple/cdk.out'), { aws });
 
   aws.mockS3.listObjectsV2 = mockedApiResult({ Contents: [{ Key: 'some_key' }] });
-
   await pub.publish();
 
   expect(aws.mockS3.listObjectsV2).toHaveBeenCalledWith(expect.objectContaining({
@@ -148,6 +147,67 @@ test('upload file if new (list returns other key)', async () => {
     Bucket: 'some_bucket',
     Key: 'some_key',
     ContentType: 'application/octet-stream',
+  }));
+
+  // We'll just have to assume the contents are correct
+});
+
+test('upload with server side encryption AES256 header', async () => {
+  const pub = new AssetPublishing(AssetManifest.fromPath('/simple/cdk.out'), { aws });
+
+  aws.mockS3.getBucketEncryption = mockedApiResult({
+    ServerSideEncryptionConfiguration: {
+      Rules: [
+        {
+          ApplyServerSideEncryptionByDefault: {
+            SSEAlgorithm: 'AES256',
+          },
+          BucketKeyEnabled: false,
+        },
+      ],
+    },
+  });
+  aws.mockS3.listObjectsV2 = mockedApiResult({ Contents: [{ Key: 'some_key.but_not_the_one' }] });
+  aws.mockS3.upload = mockUpload('FILE_CONTENTS');
+
+  await pub.publish();
+
+  expect(aws.mockS3.upload).toHaveBeenCalledWith(expect.objectContaining({
+    Bucket: 'some_bucket',
+    Key: 'some_key',
+    ContentType: 'application/octet-stream',
+    ServerSideEncryption: 'AES256',
+  }));
+
+  // We'll just have to assume the contents are correct
+});
+
+test('upload with server side encryption aws:kms header', async () => {
+  const pub = new AssetPublishing(AssetManifest.fromPath('/simple/cdk.out'), { aws });
+
+  aws.mockS3.getBucketEncryption = mockedApiResult({
+    ServerSideEncryptionConfiguration: {
+      Rules: [
+        {
+          ApplyServerSideEncryptionByDefault: {
+            SSEAlgorithm: 'aws:kms',
+          },
+          BucketKeyEnabled: false,
+        },
+      ],
+    },
+  });
+
+  aws.mockS3.listObjectsV2 = mockedApiResult({ Contents: [{ Key: 'some_key.but_not_the_one' }] });
+  aws.mockS3.upload = mockUpload('FILE_CONTENTS');
+
+  await pub.publish();
+
+  expect(aws.mockS3.upload).toHaveBeenCalledWith(expect.objectContaining({
+    Bucket: 'some_bucket',
+    Key: 'some_key',
+    ContentType: 'application/octet-stream',
+    ServerSideEncryption: 'aws:kms',
   }));
 
   // We'll just have to assume the contents are correct
