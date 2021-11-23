@@ -110,10 +110,6 @@ export class MockSdkProvider extends SdkProvider {
     (this.sdk as any).stepFunctions = jest.fn().mockReturnValue(partialAwsService<AWS.StepFunctions>(stubs));
   }
 
-  public stubIAM(stubs: SyncHandlerSubsetOf<AWS.IAM>) {
-    (this.sdk as any).iam = jest.fn().mockReturnValue(partialAwsService<AWS.IAM>(stubs));
-  }
-
   public stubGetEndpointSuffix(stub: () => string) {
     this.sdk.getEndpointSuffix = stub;
   }
