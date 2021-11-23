@@ -9,7 +9,7 @@ let payload: { [key: string]: any};
 beforeEach(() => {
   cfnMockProvider = setup.setupHotswapTests();
   mockLambdaInvoke = jest.fn();
-  cfnMockProvider.setLambdaInvocationMock(mockLambdaInvoke);
+  cfnMockProvider.setInvokeLambdaMock(mockLambdaInvoke);
 
   payload = {
     RequestType: 'Update',
@@ -520,9 +520,9 @@ describe('old-style synthesis', () => {
     s3Deployment.Properties.SourceObjectKeys = ['src-key-new'];
     s3Deployment.Properties.DestinationBucketName = 'WebsiteBucketNew';
 
-    policy.Properties.PolicyDocument.Statement.Resource = {
+    policy.Properties.PolicyDocument.Statement[0].Resource = {
       'Fn::GetAtt': [
-        'WebsiteBucketOld',
+        'WebsiteBucketNewasdf',
         'Arn',
       ],
     };
@@ -557,6 +557,7 @@ describe('old-style synthesis', () => {
       FunctionName: 'arn:aws:lambda:here:123456789012:function:my-deployment-lambda',
       Payload: JSON.stringify(payload),
     });
+    policy2;
   });
 
   test('does not call the lambdaInvoke() API when the difference in the s3 deployment is referred to in one IAM policy change but not another', async () => {
@@ -575,14 +576,14 @@ describe('old-style synthesis', () => {
       setup.stackSummaryOf('ServiceRole', 'AWS::IAM::Role', 'my-service-role'),
     );
 
-    policy.Properties.PolicyDocument.Statement.Resource = {
+    policy.Properties.PolicyDocument.Statement[0].Resource = {
       'Fn::GetAtt': [
         'WebsiteBucketNew',
         'Arn',
       ],
     };
 
-    policy2.Properties.PolicyDocument.Statement.Resource = {
+    policy2.Properties.PolicyDocument.Statement[0].Resource = {
       'Fn::GetAtt': [
         'DifferentBucketNew',
         'Arn',
@@ -648,14 +649,14 @@ describe('old-style synthesis', () => {
       setup.stackSummaryOf('ServiceRole', 'AWS::IAM::Role', 'my-service-role'),
     );
 
-    policy.Properties.PolicyDocument.Statement.Resource = {
+    policy.Properties.PolicyDocument.Statement[0].Resource = {
       'Fn::GetAtt': [
         'WebsiteBucketNew',
         'Arn',
       ],
     };
 
-    policy2.Properties.PolicyDocument.Statement.Resource = {
+    policy2.Properties.PolicyDocument.Statement[0].Resource = {
       'Fn::GetAtt': [
         'DifferentBucketNew',
         'Arn',

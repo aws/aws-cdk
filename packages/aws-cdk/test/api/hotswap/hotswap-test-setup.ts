@@ -88,9 +88,9 @@ export class CfnMockProvider {
     });
   }
 
-  public setLambdaInvocationMock(mockInvoke: (input: lambda.InvocationRequest) => lambda.InvocationResponse) {
+  public setInvokeLambdaMock(mockInvokeLambda: (input: lambda.InvocationRequest) => lambda.InvocationResponse) {
     this.mockSdkProvider.stubLambda({
-      invoke: mockInvoke,
+      invoke: mockInvokeLambda,
     });
   }
 
