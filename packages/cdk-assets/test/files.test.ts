@@ -3,7 +3,7 @@ jest.mock('child_process');
 import { Manifest } from '@aws-cdk/cloud-assembly-schema';
 import * as mockfs from 'mock-fs';
 import { AssetManifest, AssetPublishing } from '../lib';
-import { mockAws, mockedApiResult, mockUpload } from './mock-aws';
+import { mockAws, mockedApiFailure, mockedApiResult, mockUpload } from './mock-aws';
 import { mockSpawn } from './mock-child_process';
 
 const ABS_PATH = '/simple/cdk.out/some_external_file';
@@ -208,6 +208,27 @@ test('upload with server side encryption aws:kms header', async () => {
     Key: 'some_key',
     ContentType: 'application/octet-stream',
     ServerSideEncryption: 'aws:kms',
+  }));
+
+  // We'll just have to assume the contents are correct
+});
+
+test('no server side encryption header if access denied for bucket encryption', async () => {
+  const pub = new AssetPublishing(AssetManifest.fromPath('/simple/cdk.out'), { aws });
+
+  aws.mockS3.getBucketEncryption = mockedApiFailure('AccessDenied', 'Access Denied');
+
+  aws.mockS3.listObjectsV2 = mockedApiResult({ Contents: [{ Key: 'some_key.but_not_the_one' }] });
+  aws.mockS3.upload = mockUpload('FILE_CONTENTS');
+
+  await pub.publish();
+
+  expect(aws.mockS3.upload).toHaveBeenCalledWith(expect.not.objectContaining({
+    ServerSideEncryption: 'aws:kms',
+  }));
+
+  expect(aws.mockS3.upload).toHaveBeenCalledWith(expect.not.objectContaining({
+    ServerSideEncryption: 'AES256',
   }));
 
   // We'll just have to assume the contents are correct
