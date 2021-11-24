@@ -22,7 +22,13 @@ import { Construct } from '@aws-cdk/core';
  * An interface that will be implemented by all the resources that can be subscribed to.
  */
 export interface ISubscribable {
+  /**
+   * The `SubscriptionQueue` object for the `ISubscribable` object.
+   *
+   * @default none
+   */
   readonly subscriptionQueue?: SubscriptionQueue;
+
   /**
    * All classes implementing this interface must also implement the `subscribe()` method
    */
@@ -42,13 +48,16 @@ export interface QueueExtensionProps {
 
   /**
    * The user-provided default queue for this service.
+   * If the `eventsQueue` is not provided, a default SQS Queue is created for the service.
    *
-   * @default If the `eventsQueue` is not provided, a default SQS Queue is created for the service.
+   * @default none
    */
   readonly eventsQueue?: sqs.IQueue;
 
   /**
    * The user-provided queue delay fields to configure auto scaling for the default queue.
+   *
+   * @default none
    */
   readonly scaleOnLatency?: QueueAutoScalingOptions;
 }
@@ -65,6 +74,7 @@ export interface TopicSubscriptionProps {
   /**
    * The user-provided queue to subscribe to the given topic.
    *
+   * @default none
    * @deprecated use `topicSubscriptionQueue`
    */
   readonly queue?: sqs.IQueue;
@@ -106,7 +116,7 @@ interface QueueAutoScalingOptions {
   readonly messageProcessingTime: cdk.Duration;
 
   /**
-   * Acceptable amount of time a message can sit in the queue.
+   * Acceptable amount of time a message can sit in the queue (including the time required to process it).
    */
   readonly acceptableLatency: cdk.Duration;
 }
@@ -118,14 +128,26 @@ export class TopicSubscription implements ISubscribable {
   public readonly topic: sns.ITopic;
 
   /**
+   * The queue that subscribes to the given topic.
+   *
+   * @default none
    * @deprecated use `subscriptionQueue`
    */
   public readonly queue?: sqs.IQueue;
 
+  /**
+   * The subscription queue object for this subscription.
+   *
+   * @default none
+   */
   public readonly subscriptionQueue?: SubscriptionQueue;
 
   constructor(props: TopicSubscriptionProps) {
     this.topic = props.topic;
+
+    if (props.topicSubscriptionQueue && props.queue) {
+      throw Error('Either provide the `subscriptionQueue` or the `queue` (deprecated) for the topic subscription, but not both.');
+    }
     this.subscriptionQueue = props.topicSubscriptionQueue;
     this.queue = props.queue ?? props.topicSubscriptionQueue?.queue;
   }
@@ -197,6 +219,9 @@ export class QueueExtension extends ServiceExtension {
 
   private props?: QueueExtensionProps;
 
+  /**
+   * The log group created by the extension where the AWS Lambda function logs are stored.
+   */
   public logGroup?: logs.ILogGroup;
 
   constructor(props?: QueueExtensionProps) {

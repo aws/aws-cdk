@@ -505,6 +505,32 @@ describe('queue', () => {
     });
   });
 
+  test('should error when providing both the subscriptionQueue and queue (deprecated) props for a topic subscription', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const serviceDescription = new ServiceDescription();
+
+    serviceDescription.add(new Container({
+      cpu: 256,
+      memoryMiB: 512,
+      trafficPort: 80,
+      image: ecs.ContainerImage.fromRegistry('nathanpeck/name'),
+    }));
+
+    // THEN
+    expect(() => {
+      new TopicSubscription({
+        topic: new sns.Topic(stack, 'topic1'),
+        queue: new sqs.Queue(stack, 'delete-queue'),
+        topicSubscriptionQueue: {
+          queue: new sqs.Queue(stack, 'sign-up-queue'),
+        },
+      });
+    }).toThrow('Either provide the `subscriptionQueue` or the `queue` (deprecated) for the topic subscription, but not both.');
+  });
+
   test('should be able to add target tracking scaling policy for the Events Queue with no subscriptions', () => {
     // GIVEN
     const stack = new cdk.Stack();
