@@ -10,7 +10,7 @@ import { AwsIntegration } from './aws';
 /**
  * Options when configuring Step Functions synchronous integration with Rest API
  */
-export interface StepFunctionsExecutionIntegrationOptions extends IntegrationOptions {
+export interface StepFunctionsStartExecutionOptions extends IntegrationOptions {
 
   /**
    * Which details of the incoming request must be passed onto the underlying state machine,
@@ -86,14 +86,14 @@ export class StepFunctionsIntegration {
    *    });
    *    api.root.addMethod('GET', new apigateway.StepFunctionsIntegration.startExecution(stateMachine));
    */
-  public static startExecution(stateMachine: sfn.IStateMachine, options?: StepFunctionsExecutionIntegrationOptions): AwsIntegration {
+  public static startExecution(stateMachine: sfn.IStateMachine, options?: StepFunctionsStartExecutionOptions): AwsIntegration {
     return new StepFunctionsExecutionIntegration(stateMachine, options);
   }
 }
 
 class StepFunctionsExecutionIntegration extends AwsIntegration {
   private readonly stateMachine: sfn.IStateMachine;
-  constructor(stateMachine: sfn.IStateMachine, options: StepFunctionsExecutionIntegrationOptions = {}) {
+  constructor(stateMachine: sfn.IStateMachine, options: StepFunctionsStartExecutionOptions = {}) {
     super({
       service: 'states',
       action: 'StartSyncExecution',
@@ -209,7 +209,7 @@ function integrationResponse() {
  * @param options
  * @returns requestTemplate
  */
-function requestTemplates(stateMachine: sfn.IStateMachine, options: StepFunctionsExecutionIntegrationOptions) {
+function requestTemplates(stateMachine: sfn.IStateMachine, options: StepFunctionsStartExecutionOptions) {
   const templateStr = templateString(stateMachine, options);
 
   const requestTemplate: { [contentType:string] : string } =
@@ -231,7 +231,7 @@ function requestTemplates(stateMachine: sfn.IStateMachine, options: StepFunction
  */
 function templateString(
   stateMachine: sfn.IStateMachine,
-  options: StepFunctionsExecutionIntegrationOptions): string {
+  options: StepFunctionsStartExecutionOptions): string {
   let templateStr: string;
 
   let requestContextStr = '';
