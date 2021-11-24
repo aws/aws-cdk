@@ -54,7 +54,7 @@ export enum OpsItemCategory {
 }
 
 /**
- * Use an SSM action as an Alarm action
+ * Use an SSM OpsItem action as an Alarm action
  */
 export class SsmAction implements cloudwatch.IAlarmAction {
   private severity: OpsItemSeverity;
@@ -66,7 +66,7 @@ export class SsmAction implements cloudwatch.IAlarmAction {
   }
 
   /**
-   * Returns an alarm action configuration to use an SSM action as an alarm action
+   * Returns an alarm action configuration to use an SSM OpsItem action as an alarm action
    */
   bind(_scope: Construct, _alarm: cloudwatch.IAlarm): cloudwatch.AlarmActionConfig {
     if (this.category === undefined) {
