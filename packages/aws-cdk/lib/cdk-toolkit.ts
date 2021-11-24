@@ -208,6 +208,7 @@ export class CdkToolkit {
           ci: options.ci,
           rollback: options.rollback,
           hotswap: options.hotswap,
+          extraUserAgent: options.extraUserAgent,
         });
 
         const message = result.noOp
@@ -579,6 +580,7 @@ export class CdkToolkit {
 
   private async invokeDeployFromWatch(options: WatchOptions): Promise<void> {
     // 'watch' has different defaults than regular 'deploy'
+    const hotswap = options.hotswap === undefined ? true : options.hotswap;
     const deployOptions: DeployOptions = {
       ...options,
       requireApproval: RequireApproval.Never,
@@ -587,7 +589,8 @@ export class CdkToolkit {
       // as that would lead to a cycle
       watch: false,
       cacheCloudAssembly: false,
-      hotswap: options.hotswap === undefined ? true : options.hotswap,
+      hotswap: hotswap,
+      extraUserAgent: `cdk-watch/hotswap-${hotswap ? 'on' : 'off'}`,
     };
 
     try {
@@ -719,6 +722,13 @@ interface WatchOptions {
    * @default - false for regular deployments, true for 'watch' deployments
    */
   readonly hotswap?: boolean;
+
+  /**
+   * The extra string to append to the User-Agent header when performing AWS SDK calls.
+   *
+   * @default - nothing extra is appended to the User-Agent header
+   */
+  readonly extraUserAgent?: string;
 }
 
 export interface DeployOptions extends WatchOptions {
