@@ -132,5 +132,3 @@ const cluster = new DatabaseCluster(this, 'Database', {
   exportAuditLogsToCloudWatch: true, // Enable sending audit logs
 });
 ```
-
-**Note** You have to do both steps, to activate logging.
