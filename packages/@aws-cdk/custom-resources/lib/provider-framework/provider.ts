@@ -115,6 +115,15 @@ export interface ProviderProps {
    * @default - A default role will be created.
    */
   readonly role?: iam.IRole;
+
+  /**
+   * Provider Lambda name.
+   *
+   * The provider lambda function name.
+   *
+   * @default -  CloudFormation default name from unique physical ID
+   */
+  readonly providerFunctionName?: string;
 }
 
 /**
@@ -165,7 +174,7 @@ export class Provider extends CoreConstruct implements ICustomResourceProvider {
 
     this.role = props.role;
 
-    const onEventFunction = this.createFunction(consts.FRAMEWORK_ON_EVENT_HANDLER_NAME);
+    const onEventFunction = this.createFunction(consts.FRAMEWORK_ON_EVENT_HANDLER_NAME, props.providerFunctionName);
 
     if (this.isCompleteHandler) {
       const isCompleteFunction = this.createFunction(consts.FRAMEWORK_IS_COMPLETE_HANDLER_NAME);
@@ -198,7 +207,7 @@ export class Provider extends CoreConstruct implements ICustomResourceProvider {
     };
   }
 
-  private createFunction(entrypoint: string) {
+  private createFunction(entrypoint: string, name?: string) {
     const fn = new lambda.Function(this, `framework-${entrypoint}`, {
       code: lambda.Code.fromAsset(RUNTIME_HANDLER_PATH),
       description: `AWS CDK resource provider framework - ${entrypoint} (${this.node.path})`.slice(0, 256),
@@ -210,6 +219,7 @@ export class Provider extends CoreConstruct implements ICustomResourceProvider {
       vpcSubnets: this.vpcSubnets,
       securityGroups: this.securityGroups,
       role: this.role,
+      functionName: name,
     });
 
     fn.addEnvironment(consts.USER_ON_EVENT_FUNCTION_ARN_ENV, this.onEventHandler.functionArn);
