@@ -11,3 +11,4 @@ export * from './fargate-cluster';
 export * from './service-account';
 export * from './managed-nodegroup';
 export * from './oidc-provider';
+export * from './alb-controller';

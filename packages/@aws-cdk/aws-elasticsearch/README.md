@@ -29,21 +29,17 @@ Higher level constructs for Domain | ![Stable](https://img.shields.io/badge/stab
 Create a development cluster by simply specifying the version:
 
 ```ts
-import * as es from '@aws-cdk/aws-elasticsearch';
-
 const devDomain = new es.Domain(this, 'Domain', {
-    version: es.ElasticsearchVersion.V7_1,
+  version: es.ElasticsearchVersion.V7_1,
 });
 ```
 
 To perform version upgrades without replacing the entire domain, specify the `enableVersionUpgrade` property.
 
 ```ts
-import * as es from '@aws-cdk/aws-elasticsearch';
-
 const devDomain = new es.Domain(this, 'Domain', {
-    version: es.ElasticsearchVersion.V7_10,
-    enableVersionUpgrade: true // defaults to false
+  version: es.ElasticsearchVersion.V7_10,
+  enableVersionUpgrade: true, // defaults to false
 });
 ```
 
@@ -51,22 +47,22 @@ Create a production grade cluster by also specifying things like capacity and az
 
 ```ts
 const prodDomain = new es.Domain(this, 'Domain', {
-    version: es.ElasticsearchVersion.V7_1,
-    capacity: {
-        masterNodes: 5,
-        dataNodes: 20
-    },
-    ebs: {
-        volumeSize: 20
-    },
-    zoneAwareness: {
-        availabilityZoneCount: 3
-    },
-    logging: {
-        slowSearchLogEnabled: true,
-        appLogEnabled: true,
-        slowIndexLogEnabled: true,
-    },
+  version: es.ElasticsearchVersion.V7_1,
+  capacity: {
+    masterNodes: 5,
+    dataNodes: 20,
+  },
+  ebs: {
+    volumeSize: 20,
+  },
+  zoneAwareness: {
+    availabilityZoneCount: 3,
+  },
+  logging: {
+    slowSearchLogEnabled: true,
+    appLogEnabled: true,
+    slowIndexLogEnabled: true,
+  },
 });
 ```
 
@@ -93,7 +89,7 @@ You can also create it using the CDK, **but note that only the first application
 
 ```ts
 const slr = new iam.CfnServiceLinkedRole(this, 'ElasticSLR', {
-  awsServiceName: 'es.amazonaws.com'
+  awsServiceName: 'es.amazonaws.com',
 });
 ```
 
@@ -104,7 +100,7 @@ This method accepts a domain endpoint of an already existing domain:
 
 ```ts
 const domainEndpoint = 'https://my-domain-jcjotrt6f7otem4sqcwbch3c4u.us-east-1.es.amazonaws.com';
-const domain = Domain.fromDomainEndpoint(this, 'ImportedDomain', domainEndpoint);
+const domain = es.Domain.fromDomainEndpoint(this, 'ImportedDomain', domainEndpoint);
 ```
 
 ## Permissions
@@ -114,13 +110,14 @@ const domain = Domain.fromDomainEndpoint(this, 'ImportedDomain', domainEndpoint)
 Helper methods also exist for managing access to the domain.
 
 ```ts
-const lambda = new lambda.Function(this, 'Lambda', { /* ... */ });
+declare const fn: lambda.Function;
+declare const domain: es.Domain;
 
 // Grant write access to the app-search index
-domain.grantIndexWrite('app-search', lambda);
+domain.grantIndexWrite('app-search', fn);
 
 // Grant read access to the 'app-search/_search' path
-domain.grantPathRead('app-search/_search', lambda);
+domain.grantPathRead('app-search/_search', fn);
 ```
 
 ## Encryption
@@ -129,15 +126,15 @@ The domain can also be created with encryption enabled:
 
 ```ts
 const domain = new es.Domain(this, 'Domain', {
-    version: es.ElasticsearchVersion.V7_4,
-    ebs: {
-        volumeSize: 100,
-        volumeType: EbsDeviceVolumeType.GENERAL_PURPOSE_SSD,
-    },
-    nodeToNodeEncryption: true,
-    encryptionAtRest: {
-        enabled: true,
-    },
+  version: es.ElasticsearchVersion.V7_4,
+  ebs: {
+    volumeSize: 100,
+    volumeType: ec2.EbsDeviceVolumeType.GENERAL_PURPOSE_SSD,
+  },
+  nodeToNodeEncryption: true,
+  encryptionAtRest: {
+    enabled: true,
+  },
 });
 ```
 
@@ -177,6 +174,7 @@ which security groups will be attached to the domain. By default, CDK will selec
 Helper methods exist to access common domain metrics for example:
 
 ```ts
+declare const domain: es.Domain;
 const freeStorageSpace = domain.metricFreeStorageSpace();
 const masterSysMemoryUtilization = domain.metric('MasterSysMemoryUtilization');
 ```
@@ -190,15 +188,15 @@ be supplied or dynamically created if not supplied.
 
 ```ts
 const domain = new es.Domain(this, 'Domain', {
-    version: es.ElasticsearchVersion.V7_1,
-    enforceHttps: true,
-    nodeToNodeEncryption: true,
-    encryptionAtRest: {
-        enabled: true,
-    },
-    fineGrainedAccessControl: {
-        masterUserName: 'master-user',
-    },
+  version: es.ElasticsearchVersion.V7_1,
+  enforceHttps: true,
+  nodeToNodeEncryption: true,
+  encryptionAtRest: {
+    enabled: true,
+  },
+  fineGrainedAccessControl: {
+    masterUserName: 'master-user',
+  },
 });
 
 const masterUserPassword = domain.masterUserPassword;
@@ -228,8 +226,8 @@ stored in the AWS Secrets Manager as secret. The secret has the prefix
 
 ```ts
 const domain = new es.Domain(this, 'Domain', {
-    version: es.ElasticsearchVersion.V7_1,
-    useUnsignedBasicAuth: true,
+  version: es.ElasticsearchVersion.V7_1,
+  useUnsignedBasicAuth: true,
 });
 
 const masterUserPassword = domain.masterUserPassword;
@@ -243,21 +241,21 @@ Audit logs can be enabled for a domain, but only when fine grained access contro
 
 ```ts
 const domain = new es.Domain(this, 'Domain', {
-    version: es.ElasticsearchVersion.V7_1,
-    enforceHttps: true,
-    nodeToNodeEncryption: true,
-    encryptionAtRest: {
-        enabled: true,
-    },
-    fineGrainedAccessControl: {
-        masterUserName: 'master-user',
-    },
-    logging: {
-        auditLogEnabled: true,
-        slowSearchLogEnabled: true,
-        appLogEnabled: true,
-        slowIndexLogEnabled: true,
-    },
+  version: es.ElasticsearchVersion.V7_1,
+  enforceHttps: true,
+  nodeToNodeEncryption: true,
+  encryptionAtRest: {
+    enabled: true,
+  },
+  fineGrainedAccessControl: {
+    masterUserName: 'master-user',
+  },
+  logging: {
+    auditLogEnabled: true,
+    slowSearchLogEnabled: true,
+    appLogEnabled: true,
+    slowIndexLogEnabled: true,
+  },
 });
 ```
 
@@ -267,12 +265,12 @@ UltraWarm nodes can be enabled to provide a cost-effective way to store large am
 
 ```ts
 const domain = new es.Domain(this, 'Domain', {
-    version: es.ElasticsearchVersion.V7_10,
-    capacity: {
-        masterNodes: 2,
-        warmNodes: 2,
-        warmInstanceType: 'ultrawarm1.medium.elasticsearch',
-    },
+  version: es.ElasticsearchVersion.V7_10,
+  capacity: {
+    masterNodes: 2,
+    warmNodes: 2,
+    warmInstanceType: 'ultrawarm1.medium.elasticsearch',
+  },
 });
 ```
 
@@ -281,11 +279,11 @@ const domain = new es.Domain(this, 'Domain', {
 Custom endpoints can be configured to reach the ES domain under a custom domain name.
 
 ```ts
-new Domain(stack, 'Domain', {
-    version: ElasticsearchVersion.V7_7,
-    customEndpoint: {
-        domainName: 'search.example.com',
-    },
+new es.Domain(this, 'Domain', {
+  version: es.ElasticsearchVersion.V7_7,
+  customEndpoint: {
+    domainName: 'search.example.com',
+  },
 });
 ```
 
@@ -298,13 +296,13 @@ Additionally, an automatic CNAME-Record is created if a hosted zone is provided 
 [Advanced options](https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/es-createupdatedomains.html#es-createdomain-configure-advanced-options) can used to configure additional options.
 
 ```ts
-new Domain(stack, 'Domain', {
-    version: ElasticsearchVersion.V7_7,
-    advancedOptions: {
-        'rest.action.multi.allow_explicit_index': 'false',
-        'indices.fielddata.cache.size': '25',
-        'indices.query.bool.max_clause_count': '2048',
-    },
+new es.Domain(this, 'Domain', {
+  version: es.ElasticsearchVersion.V7_7,
+  advancedOptions: {
+    'rest.action.multi.allow_explicit_index': 'false',
+    'indices.fielddata.cache.size': '25',
+    'indices.query.bool.max_clause_count': '2048',
+  },
 });
 ```
 

@@ -1,20 +1,12 @@
 package main
 
-import (
-	"context"
-	"fmt"
-
-	"github.com/aws/aws-lambda-go/lambda"
-)
-
-type MyEvent struct {
-	Name string `json:"name"`
-}
-
-func HandleRequest(ctx context.Context, name MyEvent) (string, error) {
-	return fmt.Sprintf("Hello %s!", name.Name), nil
-}
+// Intentionally empty. There were issues with 'gopkg.in', so:
+// - we cannot depend on 'github.com/aws/aws-lambda-go'
+//    - since: it has a dependency on 'gopkg.in/yaml.v3'
+// - therefore: we cannot type the handler properly here
+//
+// It doesn't matter that this isn't an actual Lambda handler, we
+// just need the test build to succeed.
 
 func main() {
-	lambda.Start(HandleRequest)
 }

@@ -16,5 +16,5 @@
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
 ```ts
-import xray = require('@aws-cdk/aws-xray');
+import * as xray from '@aws-cdk/aws-xray';
 ```

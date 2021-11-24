@@ -316,6 +316,27 @@ describe('DatabaseCluster', () => {
     }));
   });
 
+  test('creates a secret with secretName set', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      masterUser: {
+        username: 'admin',
+        secretName: '/myapp/mydocdb/masteruser',
+      },
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+      vpc,
+    });
+
+    // THEN
+    expectCDK(stack).to(haveResourceLike('AWS::SecretsManager::Secret', {
+      Name: '/myapp/mydocdb/masteruser',
+    }));
+  });
+
   test('create an encrypted cluster with custom KMS key', () => {
     // GIVEN
     const stack = testStack();
