@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.134.0](https://github.com/aws/aws-cdk/compare/v1.133.0...v1.134.0) (2021-11-23)
+
+
+### Features
+
+* **apigatewayv2:** domain endpoint type, security policy and endpoint migration ([#17518](https://github.com/aws/aws-cdk/issues/17518)) ([261b331](https://github.com/aws/aws-cdk/commit/261b331e89be01dc996d153c91b4018e7ddfda29))
+* **cfnspec:** cloudformation spec v49.0.0 ([#17621](https://github.com/aws/aws-cdk/issues/17621)) ([ce638b4](https://github.com/aws/aws-cdk/commit/ce638b407ac9efc6a3ee4d5ecd22c68ab68b8e58))
+* **docdb:** add option to set the name of the generated Secret ([#17574](https://github.com/aws/aws-cdk/issues/17574)) ([18c9ef7](https://github.com/aws/aws-cdk/commit/18c9ef713717fcb2f84e687c1e34c887a50264bd)), closes [#17572](https://github.com/aws/aws-cdk/issues/17572)
+* **eks:** ALB Controller ([#17618](https://github.com/aws/aws-cdk/issues/17618)) ([1faf31d](https://github.com/aws/aws-cdk/commit/1faf31d1ec7ffec4c6323a050126b0b054094c63))
+* **msk:** add Kafka version 2.6.2 ([#17497](https://github.com/aws/aws-cdk/issues/17497)) ([5f1f476](https://github.com/aws/aws-cdk/commit/5f1f4762e964345741426fa1242320a5fc117338))
+
+
+### Bug Fixes
+
+* **assets:** add missing SAM asset metadata information ([#17591](https://github.com/aws/aws-cdk/issues/17591)) ([55df760](https://github.com/aws/aws-cdk/commit/55df760fdd9514384de019e5ce338d5250c7df97)), closes [#14593](https://github.com/aws/aws-cdk/issues/14593)
+* **aws-ecs:** check for invalid capacityProviderName ([#17291](https://github.com/aws/aws-cdk/issues/17291)) ([6e2fde4](https://github.com/aws/aws-cdk/commit/6e2fde452de73c51011ddb14ede40ca0471d3663)), closes [#17321](https://github.com/aws/aws-cdk/issues/17321)
+* **opensearch:** correctly validate ebs configuration against instance types  ([#16911](https://github.com/aws/aws-cdk/issues/16911)) ([34af598](https://github.com/aws/aws-cdk/commit/34af5988b7c1ff003d10612150191803f762a79f)), closes [#11898](https://github.com/aws/aws-cdk/issues/11898)
+
 ## [1.133.0](https://github.com/aws/aws-cdk/compare/v1.132.0...v1.133.0) (2021-11-19)
 
 
