@@ -34,12 +34,12 @@ export async function isHotswappableS3BucketDeploymentChange(
           for (const lambdaRef of lambdaRefs) {
             // If S3Deployment -> Lambda -> Role and IAM::Policy -> Role, then this IAM::Policy change is an
             // artifact of old-style synthesis
-            if (lambdaRef.Type === 'Custom::CDKBucketDeployment') {
-              return new EmptyHotswapOperation();
+            if (lambdaRef.Type !== 'Custom::CDKBucketDeployment') {
+              return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
             }
-
-            return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
           }
+
+          return new EmptyHotswapOperation();
         }
       }
     }

@@ -660,10 +660,6 @@ describe('old-style synthesis', () => {
         S3Deployment: s3Deployment,
       },
     });
-    setup.pushStackResourceSummaries(
-      setup.stackSummaryOf('S3DeploymentLambda', 'AWS::Lambda::Function', 'my-deployment-lambda'),
-      setup.stackSummaryOf('ServiceRole', 'AWS::IAM::Role', 'my-service-role'),
-    );
 
     policy.Properties.PolicyDocument.Statement[0].Resource = {
       'Fn::GetAtt': [
@@ -690,6 +686,73 @@ describe('old-style synthesis', () => {
           Policy2: policy2,
           S3DeploymentLambda: deploymentLambda,
           S3Deployment: s3Deployment,
+        },
+      },
+    });
+
+    // WHEN
+    const deployStackResult = await cfnMockProvider.tryHotswapDeployment(cdkStackArtifact);
+
+    // THEN
+    expect(deployStackResult).toBeUndefined();
+    expect(mockLambdaInvoke).not.toHaveBeenCalled();
+  });
+
+  test('does not call the lambdaInvoke() API when the lambda that references the role is referred to by something other than an s3 deployment', async () => {
+    // GIVEN
+    setup.setCurrentCfnStackTemplate({
+      Resources: {
+        ServiceRole: serviceRole,
+        Policy: policy,
+        S3DeploymentLambda: deploymentLambda,
+        S3Deployment: s3Deployment,
+        Endpoint: {
+          Type: 'AWS::Lambda::Permission',
+          Properties: {
+            Action: 'lambda:InvokeFunction',
+            FunctionName: {
+              'Fn::GetAtt': [
+                'S3DeploymentLambda',
+                'Arn',
+              ],
+            },
+            Principal: 'apigateway.amazonaws.com',
+          },
+        },
+      },
+    });
+
+    policy.Properties.PolicyDocument.Statement[0].Resource = {
+      'Fn::GetAtt': [
+        'WebsiteBucketNew',
+        'Arn',
+      ],
+    };
+
+    s3Deployment.Properties.SourceBucketNames = ['src-bucket-new'];
+    s3Deployment.Properties.SourceObjectKeys = ['src-key-new'];
+    s3Deployment.Properties.DestinationBucketName = 'WebsiteBucketNew';
+
+    const cdkStackArtifact = setup.cdkStackArtifactOf({
+      template: {
+        Resources: {
+          ServiceRole: serviceRole,
+          Policy: policy,
+          S3DeploymentLambda: deploymentLambda,
+          S3Deployment: s3Deployment,
+          Endpoint: {
+            Type: 'AWS::Lambda::Permission',
+            Properties: {
+              Action: 'lambda:InvokeFunction',
+              FunctionName: {
+                'Fn::GetAtt': [
+                  'S3DeploymentLambda',
+                  'Arn',
+                ],
+              },
+              Principal: 'apigateway.amazonaws.com',
+            },
+          },
         },
       },
     });
@@ -733,10 +796,6 @@ describe('old-style synthesis', () => {
         S3Deployment2: s3Deployment2,
       },
     });
-    setup.pushStackResourceSummaries(
-      setup.stackSummaryOf('S3DeploymentLambda', 'AWS::Lambda::Function', 'my-deployment-lambda'),
-      setup.stackSummaryOf('ServiceRole', 'AWS::IAM::Role', 'my-service-role'),
-    );
 
     policy.Properties.PolicyDocument.Statement[0].Resource = {
       'Fn::GetAtt': [
