@@ -90,14 +90,22 @@ export class OperatingSystemFamily {
   private constructor(public readonly _operatingSystemFamily: string) { }
 }
 
+
+/**
+ * The interface for Runtime Platform.
+ */
 export interface RuntimePlatform {
   /**
    * The CpuArchitecture for Fargate Runtime Platform.
+   *
+   * @default - Undefined.
    */
   readonly cpuArchitecture?: CpuArchitecture,
 
   /**
    * The operating system for Fargate Runtime Platform.
+   *
+   * @default - Undefined.
    */
   readonly operatingSystemFamily?: OperatingSystemFamily,
 }

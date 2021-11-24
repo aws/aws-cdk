@@ -275,10 +275,7 @@
       "docs-public-apis:@aws-cdk/aws-ecs.UlimitName.RSS",
       "docs-public-apis:@aws-cdk/aws-ecs.UlimitName.RTPRIO",
       "docs-public-apis:@aws-cdk/aws-ecs.UlimitName.RTTIME",
-      "docs-public-apis:@aws-cdk/aws-ecs.UlimitName.SIGPENDING",
-      "docs-public-apis:@aws-cdk/aws-ecs.RuntimePlatform",
-      "props-default-doc:@aws-cdk/aws-ecs.RuntimePlatform.cpuArchitecture",
-      "props-default-doc:@aws-cdk/aws-ecs.RuntimePlatform.operatingSystemFamily"
+      "docs-public-apis:@aws-cdk/aws-ecs.UlimitName.SIGPENDING"
     ]
   },
   "stability": "stable",

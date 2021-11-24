@@ -45,7 +45,7 @@ describe('fargate task definition', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef', {
-        cpu: 1024,
+        cpu: 128,
         executionRole: new iam.Role(stack, 'ExecutionRole', {
           path: '/',
           assumedBy: new iam.CompositePrincipal(
@@ -54,7 +54,7 @@ describe('fargate task definition', () => {
           ),
         }),
         family: 'myApp',
-        memoryLimitMiB: 2048,
+        memoryLimitMiB: 1024,
         taskRole: new iam.Role(stack, 'TaskRole', {
           assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
         }),
@@ -70,7 +70,7 @@ describe('fargate task definition', () => {
 
       // THEN
       expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
-        Cpu: '1024',
+        Cpu: '128',
         ExecutionRoleArn: {
           'Fn::GetAtt': [
             'ExecutionRole605A040B',
@@ -81,7 +81,7 @@ describe('fargate task definition', () => {
           SizeInGiB: 21,
         },
         Family: 'myApp',
-        Memory: '2048',
+        Memory: '1024',
         NetworkMode: 'awsvpc',
         RequiresCompatibilities: [
           ecs.LaunchType.FARGATE,
@@ -245,10 +245,10 @@ describe('fargate task definition', () => {
     });
 
 
-    test('runtime testing', () => {
+    test('runtime testing for windows container', () => {
       // GIVEN
       const stack = new cdk.Stack();
-      new ecs.FargateTaskDefinition(stack, 'FargateTaskDefWindows', {
+      new ecs.FargateTaskDefinition(stack, 'FargateTaskDef', {
         cpu: 1024,
         memoryLimitMiB: 2048,
         runtimePlatform: {
@@ -257,20 +257,10 @@ describe('fargate task definition', () => {
         },
       });
 
-      new ecs.FargateTaskDefinition(stack, 'FargateTaskDefGraviton2', {
-        cpu: 1024,
-        memoryLimitMiB: 2048,
-        runtimePlatform: {
-          operatingSystemFamily: OperatingSystemFamily.LINUX,
-          cpuArchitecture: CpuArchitecture.ARM64,
-        },
-      });
-
       // THEN
-      // Get Fargate Definition for Windows.
       expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
         Cpu: '1024',
-        Family: 'FargateTaskDefWindows',
+        Family: 'FargateTaskDef',
         Memory: '2048',
         NetworkMode: 'awsvpc',
         RequiresCompatibilities: [
@@ -282,16 +272,29 @@ describe('fargate task definition', () => {
         },
         TaskRoleArn: {
           'Fn::GetAtt': [
-            'FargateTaskDefWindowsTaskRole012170E1',
+            'FargateTaskDefTaskRole0B257552',
             'Arn',
           ],
         },
       });
+    });
 
-      // Get Fargate Definition for Graviton2.
+    test('runtime testing for windows container', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      new ecs.FargateTaskDefinition(stack, 'FargateTaskDef', {
+        cpu: 1024,
+        memoryLimitMiB: 2048,
+        runtimePlatform: {
+          operatingSystemFamily: OperatingSystemFamily.LINUX,
+          cpuArchitecture: CpuArchitecture.ARM64,
+        },
+      });
+
+      // THEN
       expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
         Cpu: '1024',
-        Family: 'FargateTaskDefGraviton2',
+        Family: 'FargateTaskDef',
         Memory: '2048',
         NetworkMode: 'awsvpc',
         RequiresCompatibilities: [
@@ -303,16 +306,14 @@ describe('fargate task definition', () => {
         },
         TaskRoleArn: {
           'Fn::GetAtt': [
-            'FargateTaskDefGraviton2TaskRole4C44BB77',
+            'FargateTaskDefTaskRole0B257552',
             'Arn',
           ],
         },
       });
-
-
     });
 
-    test('returns a Fargate TaskDefinition that will throw an error when incorrect cpu was given at operatingSystem use WINDOWS_SERVER_X Family', () => {
+    test('creating a Fargate TaskDefinition with WINDOWS_SERVER_X operatingSystemFamily and incorrect cpu throws an error', () => {
       // GIVEN
       const stack = new cdk.Stack();
 
@@ -325,7 +326,7 @@ describe('fargate task definition', () => {
             operatingSystemFamily: ecs.OperatingSystemFamily.WINDOWS_SERVER_2019_CORE,
           },
         });
-      }).toThrowError('If define Operating System Family is WINDOWS_SERVER_X, CPU need in 1 vCPU, 2 vCPU or 4 vCPU');
+      }).toThrowError(`If operatingSystemFamily is ${ecs.OperatingSystemFamily.WINDOWS_SERVER_2019_CORE._operatingSystemFamily}, then cpu must be in 1024 (1 vCPU), 2048 (2 vCPU), or 4096 (4 vCPU).`);
 
     });
 

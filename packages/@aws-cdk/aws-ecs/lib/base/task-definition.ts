@@ -212,7 +212,7 @@ export interface TaskDefinitionProps extends CommonTaskDefinitionProps {
 
   /**
    * The operating system that your task definitions are running on.
-   * A platform family is specified only for tasks using the Fargate launch type.
+   * A runtimePlatform is supported only for tasks using the Fargate launch type.
    *
    * When you specify a task in a service, this value must match the runtimePlatform value of the service.
    *
@@ -418,6 +418,10 @@ export class TaskDefinition extends TaskDefinitionBase {
       throw new Error(`External tasks can only have Bridge network mode, got: ${this.networkMode}`);
     }
 
+    if (!this.isFargateCompatible && props.runtimePlatform) {
+      throw new Error('Cannot specify runtimePlatform in non-Fargate compatible tasks');
+    }
+
     this._executionRole = props.executionRole;
 
     this.taskRole = props.taskRole || new iam.Role(this, 'TaskRole', {
@@ -429,6 +433,10 @@ export class TaskDefinition extends TaskDefinitionBase {
     }
 
     this.ephemeralStorageGiB = props.ephemeralStorageGiB;
+
+    if (props.runtimePlatform?.operatingSystemFamily?._operatingSystemFamily.includes('WINDOWS')) {
+      this.checkFargateWindowsBasedTasksSize(props.cpu!, props.memoryMiB!, props.runtimePlatform!);
+    }
 
     this.runtimePlatform = props.runtimePlatform;
 
@@ -460,7 +468,7 @@ export class TaskDefinition extends TaskDefinitionBase {
       ephemeralStorage: this.ephemeralStorageGiB ? {
         sizeInGiB: this.ephemeralStorageGiB,
       } : undefined,
-      runtimePlatform: this.runtimePlatform ? {
+      runtimePlatform: this.isFargateCompatible && this.runtimePlatform ? {
         cpuArchitecture: this.runtimePlatform?.cpuArchitecture?._cpuArchitecture,
         operatingSystemFamily: this.runtimePlatform?.operatingSystemFamily?._operatingSystemFamily,
       } : undefined,
@@ -716,6 +724,24 @@ export class TaskDefinition extends TaskDefinitionBase {
 
     return this.containers.map(x => x.renderContainerDefinition());
   }
+
+  private checkFargateWindowsBasedTasksSize(cpu: string, memory: string, runtimePlatform: RuntimePlatform) {
+    if (Number(cpu) === 1024) {
+      if (Number(memory) < 1024 || Number(memory) > 8192) {
+        throw new Error(`If define vCPU equal ${cpu}, Memory need in Min. 2GB and Max. 8GB, in 1GB increments, cannot define ${Number(memory)}.`);
+      }
+    } else if (Number(cpu) === 2048) {
+      if (Number(memory) < 4096 || Number(memory) > 16384) {
+        throw new Error(`If define vCPU equal ${cpu}, Memory need in Min. 4GB and Max. 16GB, in 1GB increments, cannot define ${Number(memory)}.`);
+      }
+    } else if (Number(cpu) === 4096) {
+      if (Number(memory) < 8192 || Number(memory) > 30720) {
+        throw new Error(`If define vCPU equal ${cpu}, Memory need in Min. 8GB and Max. 30GB, in 1GB increments, cannot define ${Number(memory)}.`);
+      }
+    } else {
+      throw new Error(`If operatingSystemFamily is ${runtimePlatform.operatingSystemFamily!._operatingSystemFamily}, then cpu must be in 1024 (1 vCPU), 2048 (2 vCPU), or 4096 (4 vCPU). Provided value was: ${cpu}`);
+    }
+  };
 }
 
 /**
