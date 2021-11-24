@@ -181,7 +181,7 @@
     "@types/aws-lambda": "^8.10.85",
     "@types/fs-extra": "^8.1.2",
     "@types/jest": "^27.0.2",
-    "@types/lodash": "^4.14.176",
+    "@types/lodash": "^4.14.177",
     "@types/minimatch": "^3.0.5",
     "@types/node": "^10.17.60",
     "@types/sinon": "^9.0.11",
