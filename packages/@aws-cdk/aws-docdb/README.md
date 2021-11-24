@@ -128,8 +128,8 @@ Sending audit or profiler needs to be configured in two places:
 ```ts
 const cluster = new DatabaseCluster(this, 'Database', {
   ...,
-  exportProfilerLogsToCloudWatch: true // enable sending profiler logs
-  exportAuditLogsToCloudWatch: true // enable sending audit logs
+  exportProfilerLogsToCloudWatch: true, // Enable sending profiler logs
+  exportAuditLogsToCloudWatch: true, // Enable sending audit logs
 });
 ```
 
