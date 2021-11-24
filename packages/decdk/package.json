@@ -183,6 +183,7 @@
     "@aws-cdk/aws-opensearchservice": "0.0.0",
     "@aws-cdk/aws-opsworks": "0.0.0",
     "@aws-cdk/aws-opsworkscm": "0.0.0",
+    "@aws-cdk/aws-panorama": "0.0.0",
     "@aws-cdk/aws-pinpoint": "0.0.0",
     "@aws-cdk/aws-pinpointemail": "0.0.0",
     "@aws-cdk/aws-qldb": "0.0.0",
@@ -190,6 +191,7 @@
     "@aws-cdk/aws-ram": "0.0.0",
     "@aws-cdk/aws-rds": "0.0.0",
     "@aws-cdk/aws-redshift": "0.0.0",
+    "@aws-cdk/aws-rekognition": "0.0.0",
     "@aws-cdk/aws-resourcegroups": "0.0.0",
     "@aws-cdk/aws-robomaker": "0.0.0",
     "@aws-cdk/aws-route53": "0.0.0",
@@ -230,6 +232,7 @@
     "@aws-cdk/aws-waf": "0.0.0",
     "@aws-cdk/aws-wafregional": "0.0.0",
     "@aws-cdk/aws-wafv2": "0.0.0",
+    "@aws-cdk/aws-wisdom": "0.0.0",
     "@aws-cdk/aws-workspaces": "0.0.0",
     "@aws-cdk/aws-xray": "0.0.0",
     "@aws-cdk/cfnspec": "0.0.0",
@@ -244,18 +247,18 @@
     "@aws-cdk/region-info": "0.0.0",
     "constructs": "^3.3.69",
     "fs-extra": "^9.1.0",
-    "jsii-reflect": "^1.41.0",
+    "jsii-reflect": "^1.46.0",
     "jsonschema": "^1.4.0",
     "yaml": "1.10.2",
     "yargs": "^16.2.0"
   },
   "devDependencies": {
     "@types/fs-extra": "^8.1.2",
-    "@types/jest": "^26.0.24",
+    "@types/jest": "^27.0.3",
     "@types/yaml": "1.9.7",
     "@types/yargs": "^15.0.14",
-    "jest": "^26.6.3",
-    "jsii": "^1.41.0"
+    "jest": "^27.3.1",
+    "jsii": "^1.46.0"
   },
   "keywords": [
     "aws",

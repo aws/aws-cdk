@@ -21,7 +21,7 @@ export abstract class ApiBase extends Resource implements IApi {
     return new cloudwatch.Metric({
       namespace: 'AWS/ApiGateway',
       metricName,
-      dimensions: { ApiId: this.apiId },
+      dimensionsMap: { ApiId: this.apiId },
       ...props,
     }).attachTo(this);
   }
@@ -66,7 +66,7 @@ export abstract class StageBase extends Resource implements IStage {
 
   public metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return this.baseApi.metric(metricName, props).with({
-      dimensions: { ApiId: this.baseApi.apiId, Stage: this.stageName },
+      dimensionsMap: { ApiId: this.baseApi.apiId, Stage: this.stageName },
     }).attachTo(this);
   }
 }

@@ -7,9 +7,9 @@ import { Stack, Token } from '@aws-cdk/core';
  */
 export interface UserPoolAuthorizerProps {
   /**
-   * The user pool client that should be used to authorize requests with the user pool.
+   * The user pool clients that should be used to authorize requests with the user pool.
    */
-  readonly userPoolClient: IUserPoolClient;
+  readonly userPoolClients: IUserPoolClient[];
 
   /**
    * The associated user pool
@@ -33,7 +33,7 @@ export interface UserPoolAuthorizerProps {
    *
    * @default ['$request.header.Authorization']
    */
-  readonly identitySource?: string[],
+  readonly identitySource?: string[];
 }
 
 /**
@@ -56,7 +56,7 @@ export class HttpUserPoolAuthorizer implements IHttpRouteAuthorizer {
         identitySource: this.props.identitySource ?? ['$request.header.Authorization'],
         type: HttpAuthorizerType.JWT,
         authorizerName: this.props.authorizerName,
-        jwtAudience: [this.props.userPoolClient.userPoolClientId],
+        jwtAudience: this.props.userPoolClients.map((c) => c.userPoolClientId),
         jwtIssuer: `https://cognito-idp.${region}.amazonaws.com/${this.props.userPool.userPoolId}`,
       });
     }
