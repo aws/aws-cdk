@@ -14,35 +14,7 @@ export async function isHotswappableS3BucketDeploymentChange(
   // In old-style synthesis, the policy used by the lambda to copy assets Ref's the assets directly,
   // meaning that the changes made to the Policy are artifacts that can be safely ignored
   if (change.newValue.Type === 'AWS::IAM::Policy') {
-    const roles = change.newValue.Properties?.Roles;
-    if (!roles) {
-      return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
-    }
-
-    for (const role of roles) {
-      const roleLogicalId = await evaluateCfnTemplate.findLogicalIdForPhysicalName(await evaluateCfnTemplate.evaluateCfnExpression(role));
-      if (!roleLogicalId) {
-        return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
-      }
-
-      const roleRefs = evaluateCfnTemplate.findReferencesTo(roleLogicalId);
-      for (const roleRef of roleRefs) {
-        if (roleRef.Type !== 'AWS::Lambda::Function' && roleRef.Type !== 'AWS::IAM::Policy') {
-          return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
-        } else if (roleRef.Type === 'AWS::Lambda::Function') {
-          const lambdaRefs = evaluateCfnTemplate.findReferencesTo(roleRef.LogicalId);
-          for (const lambdaRef of lambdaRefs) {
-            // If S3Deployment -> Lambda -> Role and IAM::Policy -> Role, then this IAM::Policy change is an
-            // artifact of old-style synthesis
-            if (lambdaRef.Type !== 'Custom::CDKBucketDeployment') {
-              return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
-            }
-          }
-
-          return new EmptyHotswapOperation();
-        }
-      }
-    }
+    return isOldStyleSynthesisArtifact(change, evaluateCfnTemplate);
   }
 
   if (change.newValue.Type !== 'Custom::CDKBucketDeployment') {
@@ -85,6 +57,40 @@ class S3BucketDeploymentHotswapOperation implements HotswapOperation {
       }),
     }).promise();
   }
+}
+
+async function isOldStyleSynthesisArtifact(
+  change: HotswappableChangeCandidate, evaluateCfnTemplate: EvaluateCloudFormationTemplate,
+): Promise<ChangeHotswapImpact | EmptyHotswapOperation> {
+  const roles = change.newValue.Properties?.Roles;
+  if (!roles) {
+    return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
+  }
+
+  for (const role of roles) {
+    const roleLogicalId = await evaluateCfnTemplate.findLogicalIdForPhysicalName(await evaluateCfnTemplate.evaluateCfnExpression(role));
+    if (!roleLogicalId) {
+      return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
+    }
+
+    const roleRefs = evaluateCfnTemplate.findReferencesTo(roleLogicalId);
+    for (const roleRef of roleRefs) {
+      if (roleRef.Type !== 'AWS::Lambda::Function' && roleRef.Type !== 'AWS::IAM::Policy') {
+        return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
+      } else if (roleRef.Type === 'AWS::Lambda::Function') {
+        const lambdaRefs = evaluateCfnTemplate.findReferencesTo(roleRef.LogicalId);
+        for (const lambdaRef of lambdaRefs) {
+          // If S3Deployment -> Lambda -> Role and IAM::Policy -> Role, then this IAM::Policy change is an
+          // artifact of old-style synthesis
+          if (lambdaRef.Type !== 'Custom::CDKBucketDeployment') {
+            return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
+          }
+        }
+      }
+    }
+  }
+
+  return new EmptyHotswapOperation();
 }
 
 function stringifyObject(obj: any): any {
