@@ -12,7 +12,7 @@ rm -rf $npmws
 mkdir -p $npmws
 
 # Install the CLI and put it on the PATH
-(cd $npmws && npm install aws-cdk)
+(cd $npmws && npm install aws-cdk@${RELEASE_TAG:-latest})
 
 # FRAMEWORK_VERSION is the version that will be 'npm install'ed by the tests
 if [[ "${FRAMEWORK_VERSION:-}" = "" ]]; then

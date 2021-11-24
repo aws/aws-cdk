@@ -1,6 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
-import { FeatureFlags, IResource, Lazy, RemovalPolicy, Resource, Stack, Duration, Token, ContextProvider, Arn } from '@aws-cdk/core';
+import { FeatureFlags, IResource, Lazy, RemovalPolicy, Resource, Stack, Duration, Token, ContextProvider, Arn, ArnFormat } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { IConstruct, Construct } from 'constructs';
 import { Alias } from './alias';
@@ -479,7 +479,7 @@ export class Key extends KeyBase {
       }
     }
 
-    const keyResourceName = Stack.of(scope).parseArn(keyArn).resourceName;
+    const keyResourceName = Stack.of(scope).splitArn(keyArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName;
     if (!keyResourceName) {
       throw new Error(`KMS key ARN must be in the format 'arn:aws:kms:<region>:<account>:key/<keyId>', got: '${keyArn}'`);
     }

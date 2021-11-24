@@ -188,6 +188,7 @@ test('esbuild bundling with esbuild options', () => {
     architecture: Architecture.X86_64,
     minify: true,
     sourceMap: true,
+    sourcesContent: false,
     target: 'es2020',
     loader: {
       '.png': 'dataurl',
@@ -218,7 +219,7 @@ test('esbuild bundling with esbuild options', () => {
         [
           'esbuild --bundle "/asset-input/lib/handler.ts"',
           '--target=es2020 --platform=node --outfile="/asset-output/index.js"',
-          '--minify --sourcemap --external:aws-sdk --loader:.png=dataurl',
+          '--minify --sourcemap --sources-content=false --external:aws-sdk --loader:.png=dataurl',
           defineInstructions,
           '--log-level=silent --keep-names --tsconfig=/asset-input/lib/custom-tsconfig.ts',
           '--metafile=/asset-output/index.meta.json --banner:js="/* comments */" --footer:js="/* comments */"',
@@ -341,7 +342,7 @@ test('Detects yarn.lock', () => {
     assetHashType: AssetHashType.OUTPUT,
     bundling: expect.objectContaining({
       command: expect.arrayContaining([
-        expect.stringMatching(/yarn\.lock.+yarn install/),
+        expect.stringMatching(/yarn\.lock.+yarn install --no-immutable/),
       ]),
     }),
   });
@@ -656,4 +657,22 @@ test('esbuild bundling with pre compilations and undefined tsconfig ( Should thr
     });
   }).toThrow('Cannot find a tsconfig.json, please specify the prop: tsconfig');
 
+});
+
+test('with custom hash', () => {
+  Bundling.bundle({
+    entry,
+    projectRoot,
+    depsLockFilePath,
+    runtime: Runtime.NODEJS_14_X,
+    forceDockerBundling: true,
+    assetHash: 'custom',
+    architecture: Architecture.X86_64,
+  });
+
+  // Correctly passes asset hash options
+  expect(Code.fromAsset).toHaveBeenCalledWith(path.dirname(depsLockFilePath), expect.objectContaining({
+    assetHash: 'custom',
+    assetHashType: AssetHashType.CUSTOM,
+  }));
 });
