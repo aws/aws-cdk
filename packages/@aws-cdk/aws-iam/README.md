@@ -155,7 +155,7 @@ To add a principal to a policy statement you can either use the abstract
 * `addServicePrincipal` or `new ServicePrincipal(service)` for `{ "Service": service }`
 * `addAccountRootPrincipal` or `new AccountRootPrincipal()` for `{ "AWS": { "Ref: "AWS::AccountId" } }`
 * `addCanonicalUserPrincipal` or `new CanonicalUserPrincipal(id)` for `{ "CanonicalUser": id }`
-* `addFederatedPrincipal` or `new FederatedPrincipal(federated, conditions, [assumeAction], [sessionTags])` for
+* `addFederatedPrincipal` or `new FederatedPrincipal(federated, conditions, assumeAction)` for
   `{ "Federated": arn }` and a set of optional conditions and the assume role action to use.
 * `addAnyPrincipal` or `new AnyPrincipal` for `{ "AWS": "*" }`
 
