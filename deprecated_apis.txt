@@ -737,7 +737,6 @@ constructs.Node#uniqueId
 @aws-cdk/aws-ecs.BaseService#configureAwsVpcNetworking
 @aws-cdk/aws-ecs.BaseServiceOptions#propagateTaskTagsFrom
 @aws-cdk/aws-ecs.Cluster#addAutoScalingGroup
-@aws-cdk/aws-ecs.Cluster#addCapacity
 @aws-cdk/aws-ecs.Cluster#addCapacityProvider
 @aws-cdk/aws-ecs.ClusterProps#capacityProviders
 @aws-cdk/aws-ecs.Ec2ServiceProps#securityGroup

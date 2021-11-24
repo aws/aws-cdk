@@ -741,7 +741,6 @@
 | @aws-cdk/aws-ecs | BaseService.​configureAwsVpcNetworking() | use configureAwsVpcNetworkingWithSecurityGroups instead. |
 | @aws-cdk/aws-ecs | BaseServiceOptions.​propagateTaskTagsFrom | Use `propagateTags` instead. |
 | @aws-cdk/aws-ecs | Cluster.​addAutoScalingGroup() | Use {@link Cluster.addAsgCapacityProvider} instead. |
-| @aws-cdk/aws-ecs | Cluster.​addCapacity() | Use {@link Cluster.addAsgCapacityProvider} instead. |
 | @aws-cdk/aws-ecs | Cluster.​addCapacityProvider() | Use {@link enableFargateCapacityProviders} instead. |
 | @aws-cdk/aws-ecs | ClusterProps.​capacityProviders | Use {@link ClusterProps.enableFargateCapacityProviders} instead. |
 | @aws-cdk/aws-ecs | Ec2ServiceProps.​securityGroup | use securityGroups instead. |
