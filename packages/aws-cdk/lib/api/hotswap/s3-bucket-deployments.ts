@@ -18,6 +18,7 @@ export async function isHotswappableS3BucketDeploymentChange(
     if (!roles) {
       return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
     }
+
     for (const role of roles) {
       const roleLogicalId = await evaluateCfnTemplate.findLogicalIdForPhysicalName(await evaluateCfnTemplate.evaluateCfnExpression(role));
       if (!roleLogicalId) {

@@ -395,6 +395,95 @@ test('can use the DestinationBucketKeyPrefix property', async () => {
   });
 });
 
+test('does not call the invokeLambda() api if the updated Policy has no Roles', async () => {
+  // GIVEN
+  setup.setCurrentCfnStackTemplate({
+    Resources: {
+      S3Deployment: {
+        Type: 'Custom::CDKBucketDeployment',
+        Properties: {
+          ServiceToken: 'a-lambda-arn',
+          SourceBucketNames: [
+            'src-bucket',
+          ],
+          SourceObjectKeys: [
+            'src-key-old',
+          ],
+          DestinationBucketName: 'dest-bucket',
+        },
+      },
+      Policy: {
+        Type: 'AWS::IAM::Policy',
+        Properties: {
+          PolicyDocument: {
+            Statement: [
+              {
+                Action: [
+                  's3:GetObject*',
+                ],
+                Effect: 'Allow',
+                Resource: {
+                  'Fn::GetAtt': [
+                    'WebsiteBucketOld',
+                    'Arn',
+                  ],
+                },
+              },
+            ],
+          },
+        },
+      },
+    },
+  });
+  const cdkStackArtifact = setup.cdkStackArtifactOf({
+    template: {
+      Resources: {
+        Policy: {
+          Type: 'AWS::IAM::Policy',
+          Properties: {
+            S3Deployment: {
+              Type: 'Custom::CDKBucketDeployment',
+              Properties: {
+                ServiceToken: 'a-lambda-arn',
+                SourceBucketNames: [
+                  'src-bucket',
+                ],
+                SourceObjectKeys: [
+                  'src-key-new',
+                ],
+                DestinationBucketName: 'dest-bucket',
+              },
+            },
+            PolicyDocument: {
+              Statement: [
+                {
+                  Action: [
+                    's3:GetObject*',
+                  ],
+                  Effect: 'Allow',
+                  Resource: {
+                    'Fn::GetAtt': [
+                      'WebsiteBucketOld',
+                      'Arn',
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        },
+      },
+    },
+  });
+
+  // WHEN
+  const deployStackResult = await cfnMockProvider.tryHotswapDeployment(cdkStackArtifact);
+
+  // THEN
+  expect(deployStackResult).toBeUndefined();
+  expect(mockLambdaInvoke).not.toHaveBeenCalled();
+});
+
 describe('old-style synthesis', () => {
   let serviceRole: any;
   let policy: any;
