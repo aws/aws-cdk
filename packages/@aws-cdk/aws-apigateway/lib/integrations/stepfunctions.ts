@@ -67,21 +67,31 @@ export interface StepFunctionsExecutionIntegrationOptions extends IntegrationOpt
    */
   readonly headers?: boolean;
 }
+
 /**
- * Integrates a Synchronous Express State Machine from AWS Step Functions to an API Gateway method.
- *
- * @example
- *
- *    const stateMachine = new stepfunctions.StateMachine(this, 'MyStateMachine', {
- *       definition: stepfunctions.Chain.start(new stepfunctions.Pass(this, 'Pass')),
- *    });
- *
- *    const api = new apigateway.RestApi(this, 'Api', {
- *       restApiName: 'MyApi',
- *    });
- *    api.root.addMethod('GET', new apigateway.StepFunctionsExecutionIntegration(stateMachine));
+ * Options to integrate with various StepFunction API
  */
-export class StepFunctionsExecutionIntegration extends AwsIntegration {
+export class StepFunctionsIntegration {
+  /**
+   * Integrates a Synchronous Express State Machine from AWS Step Functions to an API Gateway method.
+   *
+   * @example
+   *
+   *    const stateMachine = new stepfunctions.StateMachine(this, 'MyStateMachine', {
+   *       definition: stepfunctions.Chain.start(new stepfunctions.Pass(this, 'Pass')),
+   *    });
+   *
+   *    const api = new apigateway.RestApi(this, 'Api', {
+   *       restApiName: 'MyApi',
+   *    });
+   *    api.root.addMethod('GET', new apigateway.StepFunctionsIntegration.startExecution(stateMachine));
+   */
+  public static startExecution(stateMachine: sfn.IStateMachine, options?: StepFunctionsExecutionIntegrationOptions): AwsIntegration {
+    return new StepFunctionsExecutionIntegration(stateMachine, options);
+  }
+}
+
+class StepFunctionsExecutionIntegration extends AwsIntegration {
   private readonly stateMachine: sfn.IStateMachine;
   constructor(stateMachine: sfn.IStateMachine, options: StepFunctionsExecutionIntegrationOptions = {}) {
     super({
