@@ -207,7 +207,7 @@ new apigateway.StepFunctionsRestApi(this, 'StepFunctionsRestApi', {
 });
 ```
 
-When the endpoint is invoked at path '/' using the HTTP GET method as below:
+In such a case, when the endpoint is invoked as below:
 
 ```bash
 curl -X GET https://example.com/
