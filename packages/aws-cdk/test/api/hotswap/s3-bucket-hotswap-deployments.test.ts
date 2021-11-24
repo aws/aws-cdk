@@ -646,7 +646,6 @@ describe('old-style synthesis', () => {
       FunctionName: 'arn:aws:lambda:here:123456789012:function:my-deployment-lambda',
       Payload: JSON.stringify(payload),
     });
-    policy2;
   });
 
   test('does not call the lambdaInvoke() API when the difference in the s3 deployment is referred to in one IAM policy change but not another', async () => {
@@ -675,6 +674,7 @@ describe('old-style synthesis', () => {
       ],
     };
     policy2.Properties.Roles = [
+      { Ref: 'ServiceRole' },
       'different-role',
     ];
 
