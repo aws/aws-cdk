@@ -84,7 +84,7 @@ export class StepFunctionsIntegration {
    *    const api = new apigateway.RestApi(this, 'Api', {
    *       restApiName: 'MyApi',
    *    });
-   *    api.root.addMethod('GET', new apigateway.StepFunctionsIntegration.startExecution(stateMachine));
+   *    api.root.addMethod('GET', apigateway.StepFunctionsIntegration.startExecution(stateMachine));
    */
   public static startExecution(stateMachine: sfn.IStateMachine, options?: StepFunctionsStartExecutionOptions): AwsIntegration {
     return new StepFunctionsExecutionIntegration(stateMachine, options);
