@@ -1093,3 +1093,19 @@ const taskDefinition = new ecs.FargateTaskDefinition(this, 'TaskDef', {
   memoryLimitMiB: 2048,
 });
 ```
+
+### Fargate use Graviton2 Runtime 
+
+more details please see this [blog post](https://aws.amazon.com/blogs/aws/announcing-aws-graviton2-support-for-aws-fargate-get-up-to-40-better-price-performance-for-your-serverless-containers/)
+
+```ts
+// Create a Task Definition for runing container on Graviton Runtime.
+const taskDefinition = new ecs.FargateTaskDefinition(this, 'TaskDef', {
+  runtimePlatform: {
+    operatingSystemFamily: ecs.OperatingSystemFamily.LINUX,
+    cpuArchitecture: ecs.CpuArchitecture.ARM64,
+  },
+  cpu: 1024,
+  memoryLimitMiB: 2048,
+});
+```

@@ -358,7 +358,7 @@
     "FargateCluster7CCD5F93": {
       "Type": "AWS::ECS::Cluster"
     },
-    "TaskDefTaskRole1EDB4A67": {
+    "TaskDefWindowsTaskRole87844D4F": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -375,7 +375,7 @@
         }
       }
     },
-    "TaskDef54694570": {
+    "TaskDefWindows46D24ABF": {
       "Type": "AWS::ECS::TaskDefinition",
       "Properties": {
         "ContainerDefinitions": [
@@ -386,7 +386,7 @@
               "LogDriver": "awslogs",
               "Options": {
                 "awslogs-group": {
-                  "Ref": "TaskDefwindowsservercoreLogGroupC10486AE"
+                  "Ref": "TaskDefWindowswindowsservercoreLogGroupCF570877"
                 },
                 "awslogs-stream-prefix": "win-iis-on-fargate",
                 "awslogs-region": {
@@ -406,11 +406,11 @@
         "Cpu": "1024",
         "ExecutionRoleArn": {
           "Fn::GetAtt": [
-            "TaskDefExecutionRoleB4775C97",
+            "TaskDefWindowsExecutionRole7DDEBC2E",
             "Arn"
           ]
         },
-        "Family": "awsecsintegruntimeTaskDefEE00A434",
+        "Family": "awsecsintegruntimeTaskDefWindows19C23F8C",
         "Memory": "2048",
         "NetworkMode": "awsvpc",
         "RequiresCompatibilities": [
@@ -422,18 +422,18 @@
         },
         "TaskRoleArn": {
           "Fn::GetAtt": [
-            "TaskDefTaskRole1EDB4A67",
+            "TaskDefWindowsTaskRole87844D4F",
             "Arn"
           ]
         }
       }
     },
-    "TaskDefwindowsservercoreLogGroupC10486AE": {
+    "TaskDefWindowswindowsservercoreLogGroupCF570877": {
       "Type": "AWS::Logs::LogGroup",
       "UpdateReplacePolicy": "Retain",
       "DeletionPolicy": "Retain"
     },
-    "TaskDefExecutionRoleB4775C97": {
+    "TaskDefWindowsExecutionRole7DDEBC2E": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -450,7 +450,7 @@
         }
       }
     },
-    "TaskDefExecutionRoleDefaultPolicy0DBB737A": {
+    "TaskDefWindowsExecutionRoleDefaultPolicyF0E0215E": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -463,7 +463,7 @@
               "Effect": "Allow",
               "Resource": {
                 "Fn::GetAtt": [
-                  "TaskDefwindowsservercoreLogGroupC10486AE",
+                  "TaskDefWindowswindowsservercoreLogGroupCF570877",
                   "Arn"
                 ]
               }
@@ -471,15 +471,136 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "TaskDefExecutionRoleDefaultPolicy0DBB737A",
+        "PolicyName": "TaskDefWindowsExecutionRoleDefaultPolicyF0E0215E",
         "Roles": [
           {
-            "Ref": "TaskDefExecutionRoleB4775C97"
+            "Ref": "TaskDefWindowsExecutionRole7DDEBC2E"
           }
         ]
       }
     },
-    "FargateServiceAC2B3B85": {
+    "TaskDefGraviton2TaskRole32C7B421": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "ecs-tasks.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
+    "TaskDefGraviton21BE43931": {
+      "Type": "AWS::ECS::TaskDefinition",
+      "Properties": {
+        "ContainerDefinitions": [
+          {
+            "Essential": true,
+            "Image": "public.ecr.aws/nginx/nginx:latest-arm64v8",
+            "LogConfiguration": {
+              "LogDriver": "awslogs",
+              "Options": {
+                "awslogs-group": {
+                  "Ref": "TaskDefGraviton2webarm64LogGroup7D0FFEB3"
+                },
+                "awslogs-stream-prefix": "graviton2-on-fargate",
+                "awslogs-region": {
+                  "Ref": "AWS::Region"
+                }
+              }
+            },
+            "Name": "webarm64",
+            "PortMappings": [
+              {
+                "ContainerPort": 80,
+                "Protocol": "tcp"
+              }
+            ]
+          }
+        ],
+        "Cpu": "256",
+        "ExecutionRoleArn": {
+          "Fn::GetAtt": [
+            "TaskDefGraviton2ExecutionRoleFB11C2FF",
+            "Arn"
+          ]
+        },
+        "Family": "awsecsintegruntimeTaskDefGraviton28E28B263",
+        "Memory": "1024",
+        "NetworkMode": "awsvpc",
+        "RequiresCompatibilities": [
+          "FARGATE"
+        ],
+        "RuntimePlatform": {
+          "CpuArchitecture": "ARM64",
+          "OperatingSystemFamily": "LINUX"
+        },
+        "TaskRoleArn": {
+          "Fn::GetAtt": [
+            "TaskDefGraviton2TaskRole32C7B421",
+            "Arn"
+          ]
+        }
+      }
+    },
+    "TaskDefGraviton2webarm64LogGroup7D0FFEB3": {
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Retain",
+      "DeletionPolicy": "Retain"
+    },
+    "TaskDefGraviton2ExecutionRoleFB11C2FF": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "ecs-tasks.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
+    "TaskDefGraviton2ExecutionRoleDefaultPolicyB09F36E7": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "TaskDefGraviton2webarm64LogGroup7D0FFEB3",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "TaskDefGraviton2ExecutionRoleDefaultPolicyB09F36E7",
+        "Roles": [
+          {
+            "Ref": "TaskDefGraviton2ExecutionRoleFB11C2FF"
+          }
+        ]
+      }
+    },
+    "FargateServiceWindowsRuntimeServiceBBDEC2BF": {
       "Type": "AWS::ECS::Service",
       "Properties": {
         "Cluster": {
@@ -497,7 +618,7 @@
             "SecurityGroups": [
               {
                 "Fn::GetAtt": [
-                  "FargateServiceSecurityGroup0A0E79CB",
+                  "FargateServiceWindowsRuntimeSecurityGroupABEA7E23",
                   "GroupId"
                 ]
               }
@@ -513,14 +634,68 @@
           }
         },
         "TaskDefinition": {
-          "Ref": "TaskDef54694570"
+          "Ref": "TaskDefWindows46D24ABF"
         }
       }
     },
-    "FargateServiceSecurityGroup0A0E79CB": {
+    "FargateServiceWindowsRuntimeSecurityGroupABEA7E23": {
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
-        "GroupDescription": "aws-ecs-integ-runtime/FargateService/SecurityGroup",
+        "GroupDescription": "aws-ecs-integ-runtime/FargateServiceWindowsRuntime/SecurityGroup",
+        "SecurityGroupEgress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow all outbound traffic by default",
+            "IpProtocol": "-1"
+          }
+        ],
+        "VpcId": {
+          "Ref": "Vpc8378EB38"
+        }
+      }
+    },
+    "FargateServiceGraviton2RuntimeService2BDDD2C2": {
+      "Type": "AWS::ECS::Service",
+      "Properties": {
+        "Cluster": {
+          "Ref": "FargateCluster7CCD5F93"
+        },
+        "DeploymentConfiguration": {
+          "MaximumPercent": 200,
+          "MinimumHealthyPercent": 50
+        },
+        "EnableECSManagedTags": false,
+        "LaunchType": "FARGATE",
+        "NetworkConfiguration": {
+          "AwsvpcConfiguration": {
+            "AssignPublicIp": "DISABLED",
+            "SecurityGroups": [
+              {
+                "Fn::GetAtt": [
+                  "FargateServiceGraviton2RuntimeSecurityGroup9D707C93",
+                  "GroupId"
+                ]
+              }
+            ],
+            "Subnets": [
+              {
+                "Ref": "VpcPrivateSubnet1Subnet536B997A"
+              },
+              {
+                "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
+              }
+            ]
+          }
+        },
+        "TaskDefinition": {
+          "Ref": "TaskDefGraviton21BE43931"
+        }
+      }
+    },
+    "FargateServiceGraviton2RuntimeSecurityGroup9D707C93": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "aws-ecs-integ-runtime/FargateServiceGraviton2Runtime/SecurityGroup",
         "SecurityGroupEgress": [
           {
             "CidrIp": "0.0.0.0/0",

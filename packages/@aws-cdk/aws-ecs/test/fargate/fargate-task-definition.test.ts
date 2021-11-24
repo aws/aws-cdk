@@ -2,6 +2,7 @@ import '@aws-cdk/assert-internal/jest';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import * as ecs from '../../lib';
+import { CpuArchitecture, OperatingSystemFamily } from '../../lib';
 
 describe('fargate task definition', () => {
   describe('When creating a Fargate TaskDefinition', () => {
@@ -58,10 +59,6 @@ describe('fargate task definition', () => {
           assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
         }),
         ephemeralStorageGiB: 21,
-        runtimePlatform: {
-          cpuArchitecture: ecs.CpuArchitecture.X86_64,
-          operatingSystemFamily: ecs.OperatingSystemFamily.WINDOWS_SERVER_2019_CORE,
-        },
       });
 
       taskDefinition.addVolume({
@@ -94,10 +91,6 @@ describe('fargate task definition', () => {
             'TaskRole30FC0FBB',
             'Arn',
           ],
-        },
-        RuntimePlatform: {
-          CpuArchitecture: 'X86_64',
-          OperatingSystemFamily: 'WINDOWS_SERVER_2019_CORE',
         },
         Volumes: [
           {
@@ -251,6 +244,73 @@ describe('fargate task definition', () => {
         'Add the \'taskRole\' in ImportedTaskDefinitionProps to instantiate ImportedTaskDefinition');
     });
 
+
+    test('runtime testing', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      new ecs.FargateTaskDefinition(stack, 'FargateTaskDefWindows', {
+        cpu: 1024,
+        memoryLimitMiB: 2048,
+        runtimePlatform: {
+          operatingSystemFamily: OperatingSystemFamily.WINDOWS_SERVER_2019_CORE,
+          cpuArchitecture: CpuArchitecture.X86_64,
+        },
+      });
+
+      new ecs.FargateTaskDefinition(stack, 'FargateTaskDefGraviton2', {
+        cpu: 1024,
+        memoryLimitMiB: 2048,
+        runtimePlatform: {
+          operatingSystemFamily: OperatingSystemFamily.LINUX,
+          cpuArchitecture: CpuArchitecture.ARM64,
+        },
+      });
+
+      // THEN
+      // Get Fargate Definition for Windows.
+      expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+        Cpu: '1024',
+        Family: 'FargateTaskDefWindows',
+        Memory: '2048',
+        NetworkMode: 'awsvpc',
+        RequiresCompatibilities: [
+          ecs.LaunchType.FARGATE,
+        ],
+        RuntimePlatform: {
+          CpuArchitecture: 'X86_64',
+          OperatingSystemFamily: 'WINDOWS_SERVER_2019_CORE',
+        },
+        TaskRoleArn: {
+          'Fn::GetAtt': [
+            'FargateTaskDefWindowsTaskRole012170E1',
+            'Arn',
+          ],
+        },
+      });
+
+      // Get Fargate Definition for Graviton2.
+      expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+        Cpu: '1024',
+        Family: 'FargateTaskDefGraviton2',
+        Memory: '2048',
+        NetworkMode: 'awsvpc',
+        RequiresCompatibilities: [
+          ecs.LaunchType.FARGATE,
+        ],
+        RuntimePlatform: {
+          CpuArchitecture: 'ARM64',
+          OperatingSystemFamily: 'LINUX',
+        },
+        TaskRoleArn: {
+          'Fn::GetAtt': [
+            'FargateTaskDefGraviton2TaskRole4C44BB77',
+            'Arn',
+          ],
+        },
+      });
+
+
+    });
 
     test('returns a Fargate TaskDefinition that will throw an error when incorrect cpu was given at operatingSystem use WINDOWS_SERVER_X Family', () => {
       // GIVEN
