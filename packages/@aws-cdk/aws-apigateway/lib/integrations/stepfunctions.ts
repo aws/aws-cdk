@@ -10,7 +10,7 @@ import { AwsIntegration } from './aws';
 /**
  * Options when configuring Step Functions synchronous integration with Rest API
  */
-export interface StepFunctionsSynchronousIntegrationOptions extends IntegrationOptions {
+export interface StepFunctionsExecutionIntegrationOptions extends IntegrationOptions {
 
   /**
    * Which details of the incoming request must be passed onto the underlying state machine,
@@ -79,11 +79,11 @@ export interface StepFunctionsSynchronousIntegrationOptions extends IntegrationO
  *    const api = new apigateway.RestApi(this, 'Api', {
  *       restApiName: 'MyApi',
  *    });
- *    api.root.addMethod('GET', new apigateway.StepFunctionsSynchronousIntegration(stateMachine));
+ *    api.root.addMethod('GET', new apigateway.StepFunctionsExecutionIntegration(stateMachine));
  */
-export class StepFunctionsSynchronousIntegration extends AwsIntegration {
+export class StepFunctionsExecutionIntegration extends AwsIntegration {
   private readonly stateMachine: sfn.IStateMachine;
-  constructor(stateMachine: sfn.IStateMachine, options: StepFunctionsSynchronousIntegrationOptions = {}) {
+  constructor(stateMachine: sfn.IStateMachine, options: StepFunctionsExecutionIntegrationOptions = {}) {
     super({
       service: 'states',
       action: 'StartSyncExecution',
@@ -108,6 +108,11 @@ export class StepFunctionsSynchronousIntegration extends AwsIntegration {
     let stateMachineName;
 
     if (this.stateMachine instanceof sfn.StateMachine) {
+      const stateMachineType = (this.stateMachine as sfn.StateMachine).stateMachineType;
+      if (stateMachineType !== sfn.StateMachineType.EXPRESS) {
+        throw new Error('State Machine must be of type "EXPRESS". Please use StateMachineType.EXPRESS as the stateMachineType');
+      }
+
       //if not imported, extract the name from the CFN layer to reach the
       //literal value if it is given (rather than a token)
       stateMachineName = (this.stateMachine.node.defaultChild as sfn.CfnStateMachine).stateMachineName;
@@ -166,17 +171,19 @@ function integrationResponse() {
     {
       statusCode: '200',
       responseTemplates: {
+        /* eslint-disable */
         'application/json': [
           '#set($inputRoot = $input.path(\'$\'))',
-          '#if($input.path(\'$.status\').toString().equals("FAILED"))',
-          '#set($context.responseOverride.status = 500)',
-          '{',
-          '"error": "$input.path(\'$.error\')"',
-          '"cause": "$input.path(\'$.cause\')"',
-          '}',
+          '#if($input.path(\'$.status\').toString().equals("FAILED"))', 
+            '#set($context.responseOverride.status = 500)', 
+            '{',
+              '"error": "$input.path(\'$.error\')"',
+              '"cause": "$input.path(\'$.cause\')"',
+            '}',
           '#else',
-          '$input.path(\'$.output\')',
+            '$input.path(\'$.output\')',
           '#end',
+        /* eslint-enable */
         ].join('\n'),
       },
     },
@@ -187,40 +194,13 @@ function integrationResponse() {
 }
 
 /**
- * Checks each property of the RequestContext to see if request context has
- * a property specified and then return true or false.
- * @param requestContextObj
- * @returns boolean
- */
-function checkIncludeRequestContext(requestContextObj: RequestContext | undefined) {
-
-  if (requestContextObj) {
-    if (!requestContextObj.accountId && !requestContextObj.apiId && !requestContextObj.apiKey &&
-      !requestContextObj.authorizerPrincipalId && !requestContextObj.caller &&
-      !requestContextObj.cognitoAuthenticationProvider && !requestContextObj.cognitoAuthenticationType &&
-      !requestContextObj.cognitoIdentityId && !requestContextObj.cognitoIdentityPoolId &&
-      !requestContextObj.httpMethod && !requestContextObj.stage && !requestContextObj.sourceIp &&
-      !requestContextObj.user && !requestContextObj.userAgent &&
-      !requestContextObj.userArn && !requestContextObj.requestId &&
-      !requestContextObj.resourceId && !requestContextObj.resourcePath) {
-      return false;
-    } else {
-      return true;
-    }
-  } else {
-    return false;
-  }
-}
-
-/**
  * Defines the request template that will be used for the integration
  * @param stateMachine
  * @param options
  * @returns requestTemplate
  */
-function requestTemplates(stateMachine: sfn.IStateMachine, options: StepFunctionsSynchronousIntegrationOptions) {
-  let includeRequestContext: boolean = checkIncludeRequestContext(options.requestContext);
-  const templateStr = templateString(stateMachine, includeRequestContext, options);
+function requestTemplates(stateMachine: sfn.IStateMachine, options: StepFunctionsExecutionIntegrationOptions) {
+  const templateStr = templateString(stateMachine, options);
 
   const requestTemplate: { [contentType:string] : string } =
     {
@@ -241,8 +221,7 @@ function requestTemplates(stateMachine: sfn.IStateMachine, options: StepFunction
  */
 function templateString(
   stateMachine: sfn.IStateMachine,
-  includeRequestContext: boolean,
-  options: StepFunctionsSynchronousIntegrationOptions): string {
+  options: StepFunctionsExecutionIntegrationOptions): string {
   let templateStr: string;
 
   let requestContextStr = '';
@@ -251,7 +230,7 @@ function templateString(
   const includeQueryString = options.querystring?? true;
   const includePath = options.path?? true;
 
-  if (includeRequestContext) {
+  if (options.requestContext && Object.keys(options.requestContext).length > 0) {
     requestContextStr = requestContext(options.requestContext);
   }
 
@@ -265,70 +244,33 @@ function templateString(
   return templateStr;
 }
 
-/**
- * Builder function that builds the request context string
- * for when request context is asked for the execution input.
- *
- * @param requestContextInterface
- * @returns reqeustContextStr
- */
-function requestContextBuilder(requestContextInterface:RequestContext): string {
-  const contextStr: string = '"requestContext": {';
-  const accountIdStr: string = (requestContextInterface.accountId) ? '"accountId":"$context.identity.accountId",' : '';
-  const apiIdStr: string = (requestContextInterface.apiId) ? '"apiId":"$context.apiId",' : '';
-  const apiKeyStr: string = (requestContextInterface.apiKey) ? '"apiKey":"$context.identity.apiKey",' : '';
-  const authorizerPrincipalIdStr: string = (requestContextInterface.authorizerPrincipalId) ? '"authorizerPrincipalId":"$context.authorizer.principalId",' : '';
-  const callerStr: string = (requestContextInterface.caller) ? '"caller":"$context.identity.caller",' : '';
-  const cognitoAuthenticationProviderStr: string = (requestContextInterface.cognitoAuthenticationProvider) ? '"cognitoAuthenticationProvider":"$context.identity.cognitoAuthenticationProvider",' : '';
-  const cognitoAuthenticationTypeStr: string = (requestContextInterface.cognitoAuthenticationType) ? '"cognitoAuthenticationType":"$context.identity.cognitoAuthenticationType",' : '';
-  const cognitoIdentityIdStr: string = (requestContextInterface.cognitoIdentityId) ? '"cognitoIdentityId":"$context.identity.cognitoIdentityId",' : '';
-  const cognitoIdentityPoolIdStr: string = (requestContextInterface.cognitoIdentityPoolId) ? '"cognitoIdentityPoolId":"$context.identity.cognitoIdentityPoolId",' : '';
-  const httpMethodStr: string = (requestContextInterface.httpMethod) ? '"httpMethod":"$context.httpMethod",' : '';
-  const stageStr: string = (requestContextInterface.stage) ? '"stage":"$context.stage",' : '';
-  const sourceIpStr: string = (requestContextInterface.sourceIp) ? '"sourceIp":"$context.identity.sourceIp",' : '';
-  const userStr: string = (requestContextInterface.user) ? '"user":"$context.identity.user",' : '';
-  const userAgentStr: string = (requestContextInterface.userAgent) ? '"userAgent":"$context.identity.userAgent",' : '';
-  const userArnStr: string = (requestContextInterface.userArn) ? '"userArn":"$context.identity.userArn",' : '';
-  const requestIdStr: string = (requestContextInterface.requestId) ? '"requestId":"$context.requestId",' : '';
-  const resourceIdStr: string = (requestContextInterface.resourceId) ? '"resourceId":"$context.resourceId",' : '';
-  const resourcePathStr: string = (requestContextInterface.resourcePath) ? '"resourcePath":"$context.resourcePath",' : '';
-  const endStr = '}';
-
-  let requestContextString :string = contextStr + accountIdStr + apiIdStr + apiKeyStr +
-        authorizerPrincipalIdStr + callerStr + cognitoAuthenticationProviderStr + cognitoAuthenticationTypeStr +
-        cognitoIdentityIdStr + cognitoIdentityPoolIdStr + httpMethodStr + stageStr + sourceIpStr + userStr +
-        userAgentStr + userArnStr + requestIdStr + resourceIdStr + resourcePathStr + endStr;
-
-  if (requestContextString !== (contextStr + endStr)) {
-    //Removing the last comma froom the string only if it has a value inside
-    requestContextString = requestContextString.substring(0, requestContextString.length-2) + '}';
-  }
-  return requestContextString;
-}
-
 function requestContext(requestContextObj: RequestContext | undefined): string {
-  const requestContextStr: string = requestContextBuilder({
-    accountId: (requestContextObj) ? requestContextObj?.accountId : false,
-    apiId: (requestContextObj) ? requestContextObj?.apiId : false,
-    apiKey: (requestContextObj) ? requestContextObj?.apiKey : false,
-    authorizerPrincipalId: (requestContextObj) ? requestContextObj?.authorizerPrincipalId : false,
-    caller: (requestContextObj) ? requestContextObj?.caller : false,
-    cognitoAuthenticationProvider: (requestContextObj) ? requestContextObj?.cognitoAuthenticationProvider : false,
-    cognitoAuthenticationType: (requestContextObj) ? requestContextObj?.cognitoAuthenticationType : false,
-    cognitoIdentityId: (requestContextObj) ? requestContextObj?.cognitoIdentityId : false,
-    cognitoIdentityPoolId: (requestContextObj) ? requestContextObj?.cognitoIdentityPoolId : false,
-    httpMethod: (requestContextObj) ? requestContextObj?.httpMethod : false,
-    stage: (requestContextObj) ? requestContextObj?.stage : false,
-    sourceIp: (requestContextObj) ? requestContextObj?.sourceIp : false,
-    user: (requestContextObj) ? requestContextObj?.user : false,
-    userAgent: (requestContextObj) ? requestContextObj?.userAgent : false,
-    userArn: (requestContextObj) ? requestContextObj?.userArn : false,
-    requestId: (requestContextObj) ? requestContextObj?.requestId : false,
-    resourceId: (requestContextObj) ? requestContextObj?.resourceId : false,
-    resourcePath: (requestContextObj) ? requestContextObj?.resourcePath : false,
-  });
+  const context = {
+    accountId: requestContextObj?.accountId? '$context.identity.accountId': undefined,
+    apiId: requestContextObj?.apiId? '$context.apiId': undefined,
+    apiKey: requestContextObj?.apiKey? '$context.identity.apiKey': undefined,
+    authorizerPrincipalId: requestContextObj?.authorizerPrincipalId? '$context.authorizer.principalId': undefined,
+    caller: requestContextObj?.caller? '$context.identity.caller': undefined,
+    cognitoAuthenticationProvider: requestContextObj?.cognitoAuthenticationProvider? '$context.identity.cognitoAuthenticationProvider': undefined,
+    cognitoAuthenticationType: requestContextObj?.cognitoAuthenticationType? '$context.identity.cognitoAuthenticationType': undefined,
+    cognitoIdentityId: requestContextObj?.cognitoIdentityId? '$context.identity.cognitoIdentityId': undefined,
+    cognitoIdentityPoolId: requestContextObj?.cognitoIdentityPoolId? '$context.identity.cognitoIdentityPoolId': undefined,
+    httpMethod: requestContextObj?.httpMethod? '$context.httpMethod': undefined,
+    stage: requestContextObj?.stage? '$context.stage': undefined,
+    sourceIp: requestContextObj?.sourceIp? '$context.identity.sourceIp': undefined,
+    user: requestContextObj?.user? '$context.identity.user': undefined,
+    userAgent: requestContextObj?.userAgent? '$context.identity.userAgent': undefined,
+    userArn: requestContextObj?.userArn? '$context.identity.userArn': undefined,
+    requestId: requestContextObj?.requestId? '$context.requestId': undefined,
+    resourceId: requestContextObj?.resourceId? '$context.resourceId': undefined,
+    resourcePath: requestContextObj?.resourcePath? '$context.resourcePath': undefined,
+  };
 
-  const search = '"';
+  const contextAsString = JSON.stringify(context);
+
+  // The VTL Template conflicts with double-quotes (") for strings.
+  // Before sending to the template, we replace double-quotes (") with @@ and replace it back inside the .vtl file
+  const doublequotes = '"';
   const replaceWith = '@@';
-  return requestContextStr.split(search).join(replaceWith);
+  return contextAsString.split(doublequotes).join(replaceWith);
 }

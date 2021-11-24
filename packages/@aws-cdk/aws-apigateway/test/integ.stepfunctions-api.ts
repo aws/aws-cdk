@@ -26,6 +26,13 @@ class StepFunctionsRestApiDeploymentStack extends cdk.Stack {
     const api = new apigw.StepFunctionsRestApi(this, 'StepFunctionsRestApi', {
       deploy: false,
       stateMachine: stateMachine,
+      headers: true,
+      path: false,
+      querystring: false,
+      requestContext: {
+        accountId: true,
+        userArn: true,
+      },
     });
 
     api.deploymentStage = new apigw.Stage(this, 'stage', {

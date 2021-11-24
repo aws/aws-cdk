@@ -28,7 +28,6 @@
     #end
 
     #if ($includeQueryString)
-        
         #set($inputString = "$inputString, @@querystring@@:{")
         #foreach($paramName in $allParams.querystring.keySet())
             #set($inputString = "$inputString @@$paramName@@: @@$util.escapeJavaScript($allParams.querystring.get($paramName))@@")
@@ -40,14 +39,21 @@
     #end
 
     #if ($includePath)
-        #set($inputString = "$inputString, @@path@@: @@$context.resourcePath@@")
+        #set($inputString = "$inputString, @@path@@:{")
+        #foreach($paramName in $allParams.path.keySet())
+            #set($inputString = "$inputString @@$paramName@@: @@$util.escapeJavaScript($allParams.path.get($paramName))@@")
+            #if($foreach.hasNext)
+                #set($inputString = "$inputString,")
+            #end
+        #end
+        #set($inputString = "$inputString }")
     #end
     
     #set($requestContext = "%REQUESTCONTEXT%")
     ## Check if the request context should be included as part of the execution input
     #if($requestContext && !$requestContext.empty)
         #set($inputString = "$inputString,")
-        #set($inputString = "$inputString $requestContext")
+        #set($inputString = "$inputString @@requestContext@@: $requestContext")
     #end
 
     #set($inputString = "$inputString}")

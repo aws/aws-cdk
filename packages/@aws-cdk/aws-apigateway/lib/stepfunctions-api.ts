@@ -3,11 +3,11 @@ import * as sfn from '@aws-cdk/aws-stepfunctions';
 import { Construct } from 'constructs';
 import { RestApi, RestApiProps } from '.';
 import { RequestContext } from './integrations';
-import { StepFunctionsSynchronousIntegration } from './integrations/stepfunctions';
+import { StepFunctionsExecutionIntegration } from './integrations/stepfunctions';
 import { Model } from './model';
 
 /**
- * Propeties for StepFunctionsRestApi
+ * Properties for StepFunctionsRestApi
  *
  */
 export interface StepFunctionsRestApiProps extends RestApiProps {
@@ -63,7 +63,7 @@ export class StepFunctionsRestApi extends RestApi {
       throw new Error('State Machine must be of type "EXPRESS". Please use StateMachineType.EXPRESS as the stateMachineType');
     }
 
-    const stepfunctionsIntegration = new StepFunctionsSynchronousIntegration(props.stateMachine, {
+    const stepfunctionsIntegration = new StepFunctionsExecutionIntegration(props.stateMachine, {
       credentialsRole: role(scope, props),
       requestContext: props.requestContext,
       path: props.path?? true,

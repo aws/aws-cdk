@@ -115,7 +115,7 @@ The `StepFunctionsRestApi` only supports integration with Synchronous Express st
 
 The construct sets up an API endpoint and maps the `ANY` HTTP method and any calls to the API endpoint starts an express workflow execution for the underlying state machine. 
 
-Invoking either `GET` or `POST` in the example below will send the request to the state machine as a new execution. On success, an HTTP code `200` is returned with the execution output as the Response Body.
+Invoking the endpoint with any HTTP method (`GET`, `POST`, `PUT`, `DELETE`, ...) in the example below will send the request to the state machine as a new execution. On success, an HTTP code `200` is returned with the execution output as the Response Body.
 
 If the execution fails, an HTTP `500` response is returned with the `error` and `cause` from the execution output as the Response Body. If the request is invalid (ex. bad execution input) HTTP code `400` is returned.
 
@@ -161,10 +161,10 @@ AWS Step Functions will receive the request body in its input as follows:
 }
 ```
 
-Example 2: GET with path `/users/{userId}`.
+When the endpoint is invoked at path '/users/5' using the HTTP GET method as below:
 
 ```bash
-curl -X GET https://example.com/users/{userId}
+curl -X GET https://example.com/users/5?foo=bar
 ```
 
 AWS Step Functions will receive the following execution input:
@@ -172,35 +172,56 @@ AWS Step Functions will receive the following execution input:
 ```json
 {
   "body": {},
-  "path": "/users/{userId}",
-  "querystring": {}
+  "path": {
+     "users": "5"
+  },
+  "querystring": {
+    "foo": "bar"
+  }
 }
 ```
 
-Example 3: GET with `headers`, `querystring` and `requestContext` enabled.
+It is possible to combine included/excluded fields. For example, `headers` and the `requestContext` can be included while `path` and `querystring` are excluded through the following configuration:
+
+```ts
+const stateMachineDefinition = new stepfunctions.Pass(this, 'PassState');
+
+const stateMachine: stepfunctions.IStateMachine = new stepfunctions.StateMachine(this, 'StateMachine', {
+    definition: stateMachineDefinition,
+    stateMachineType: stepfunctions.StateMachineType.EXPRESS,
+});
+    
+new apigateway.StepFunctionsRestApi(this, 'StepFunctionsRestApi', {
+  stateMachine: stateMachine,
+  headers: true,
+  path: false,
+  querystring: false,
+  requestContext: {
+      caller: true,
+      user: true,
+  },
+});
+```
+
+When the endpoint is invoked at path '/' using the HTTP GET method as below:
 
 ```bash
-curl https://example.com/?customerId=1
+curl -X GET https://example.com/
 ```
 
 AWS Step Functions will receive the following execution input:
 
-Request:
-
 ```json
 {
-  "body": {},
+  "headers": {
+    "Accept": "...",
+    "CloudFront-Forwarded-Proto": "...",
+  },
   "requestContext": {
      "accountId": "...",
      "apiKey": "...",
   },
-  "header": {
-    "Accept": "...",
-    "CloudFront-Forwarded-Proto": "...",
-  },
-  "querystring": {
-    "customerId": "1"
-  }
+  "body": {}
 }
 ```
 
