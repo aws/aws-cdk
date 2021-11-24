@@ -1,5 +1,5 @@
 from math import ceil
-from time import time
+import time
 import json
 
 class QueueHandler:
@@ -15,7 +15,7 @@ class QueueHandler:
     try:
       running_count = self.get_running_task_count()
       backlogs = [self.get_queue_backlog(queue_name, running_count) for queue_name in self.queue_names]
-      self.timestamp = int(time() * 1000)
+      self.timestamp = int(time.time() * 1000)
       for backlog in backlogs:
         self.emit_backlog_per_task_metric(backlog['queueName'], backlog['backlogPerTask'])
     except Exception as e:

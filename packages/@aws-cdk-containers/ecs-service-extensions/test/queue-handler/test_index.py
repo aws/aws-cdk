@@ -2,11 +2,11 @@ import json
 import io
 import unittest
 import unittest.mock as mock
-from time import time
+import time
 from botocore.exceptions import ClientError
 from queue_backlog_calculator import QueueHandler
 
-time_mock = time()
+mock_time = time.time()
 
 class TestQueueAutoscaling(unittest.TestCase):
   maxDiff = None
@@ -54,7 +54,7 @@ class TestQueueAutoscaling(unittest.TestCase):
   '''
   Test 'backPerTask' value is equal to 'ApproximateNumberOfMessages' in the queue when no tasks are running.
   '''
-  @mock.patch('time.time', mock.MagicMock(return_value=time_mock))
+  @mock.patch('time.time', mock.MagicMock(return_value=mock_time))
   @mock.patch('sys.stdout', new_callable=io.StringIO)
   def test_backlog_with_no_running_tasks(self, mock_stdout):
     ecs_client = mock.Mock()
@@ -71,7 +71,6 @@ class TestQueueAutoscaling(unittest.TestCase):
     }
 
     queue_handler = QueueHandler(ecs_client, sqs_client, environ)
-    mock_time = time()
     queue_handler.emit()
 
     metric = json.dumps({
@@ -91,7 +90,7 @@ class TestQueueAutoscaling(unittest.TestCase):
   '''
   Test 'backPerTask' metric is generated correctly for each queue.
   '''
-  @mock.patch('time.time', mock.MagicMock(return_value=time_mock))
+  @mock.patch('time.time', mock.MagicMock(return_value=mock_time))
   @mock.patch('sys.stdout', new_callable=io.StringIO)
   def test_metric_generation_per_queue(self, mock_stdout):
     ecs_client = mock.Mock()
@@ -117,7 +116,6 @@ class TestQueueAutoscaling(unittest.TestCase):
     }
     
     queue_handler = QueueHandler(ecs_client, sqs_client, environ)
-    mock_time = time()
     queue_handler.emit()
     
     metric1 = json.dumps({
