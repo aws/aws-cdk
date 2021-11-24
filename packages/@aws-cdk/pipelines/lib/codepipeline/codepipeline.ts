@@ -704,7 +704,6 @@ export class CodePipeline extends PipelineBase {
         buildImage: cb.LinuxBuildImage.STANDARD_5_0,
         computeType: cb.ComputeType.SMALL,
       },
-      timeout: undefined,
     };
 
     const typeBasedCustomizations = {

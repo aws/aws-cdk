@@ -137,7 +137,8 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
     const factory = CodeBuildFactory.fromShellStep(constructId, step, {
       projectName: step.projectName,
       role: step.role,
-      projectOptions: {
+      ...additional,
+      projectOptions: mergeCodeBuildOptions(additional?.projectOptions, {
         buildEnvironment: step.buildEnvironment,
         rolePolicy: step.rolePolicyStatements,
         securityGroups: step.securityGroups,
@@ -145,9 +146,7 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
         vpc: step.vpc,
         subnetSelection: step.subnetSelection,
         timeout: step.timeout,
-        ...additional?.projectOptions,
-      },
-      ...additional,
+      }),
     });
 
     return {
@@ -280,7 +279,7 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
       securityGroups: projectOptions.securityGroups,
       buildSpec: projectBuildSpec,
       role: this.props.role,
-      timeout: this.props.projectOptions?.timeout,
+      timeout: projectOptions.timeout,
     });
 
     if (this.props.additionalDependable) {
@@ -395,6 +394,7 @@ export function mergeCodeBuildOptions(...opts: Array<CodeBuildOptions | undefine
       partialBuildSpec: mergeBuildSpecs(a.partialBuildSpec, b.partialBuildSpec),
       vpc: b.vpc ?? a.vpc,
       subnetSelection: b.subnetSelection ?? a.subnetSelection,
+      timeout: b.timeout ?? a.timeout,
     };
   }
 }
