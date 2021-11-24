@@ -190,13 +190,12 @@ export class CloudFormationProduct extends Product {
       supportUrl: props.supportUrl,
     });
 
+    this.productId = product.ref;
     this.productArn = Stack.of(this).formatArn({
       service: 'catalog',
       resource: 'product',
       resourceName: product.ref,
     });
-
-    this.productId = product.ref;
 
     if (props.tagOptions !== undefined) {
       this.associateTagOptions(props.tagOptions);

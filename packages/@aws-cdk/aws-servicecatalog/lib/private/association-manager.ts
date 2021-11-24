@@ -1,7 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as sns from '@aws-cdk/aws-sns';
 import * as cdk from '@aws-cdk/core';
-import { IResource } from '@aws-cdk/core';
 import {
   CloudFormationRuleConstraintOptions, CommonConstraintOptions, StackSetsConstraintOptions,
   TagUpdateConstraintOptions, TemplateRule, TemplateRuleAssertion,
@@ -153,7 +152,7 @@ export class AssociationManager {
   }
 
 
-  public static associateTagOptions(resource: IResource, resourceId: string, tagOptions: TagOptions): void {
+  public static associateTagOptions(resource: cdk.IResource, resourceId: string, tagOptions: TagOptions): void {
     const resourceStack = cdk.Stack.of(resource);
     for (const [key, tagOptionsList] of Object.entries(tagOptions.tagOptionsMap)) {
       InputValidator.validateLength(resource.node.addr, 'TagOption key', 1, 128, key);
