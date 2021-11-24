@@ -268,6 +268,7 @@ See https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/adding-re
 
 ```ts
 // Using an existing managed response headers policy
+declare const bucketOrigin: origins.S3Origin;
 new cloudfront.Distribution(this, 'myDistManagedPolicy', {
   defaultBehavior: {
     origin: bucketOrigin,
@@ -297,8 +298,8 @@ const myResponseHeadersPolicy = new cloudfront.ResponseHeadersPolicy(this, 'Resp
   securityHeadersBehavior: {
     contentSecurityPolicy: { contentSecurityPolicy: 'default-src https:;', override: true },
     contentTypeOptions: { override: true },
-    frameOptions: { frameOption: HeadersFrameOption.DENY, override: true },
-    referrerPolicy: { referrerPolicy: HeadersReferrerPolicy.NO_REFERRER, override: true },
+    frameOptions: { frameOption: cloudfront.HeadersFrameOption.DENY, override: true },
+    referrerPolicy: { referrerPolicy: cloudfront.HeadersReferrerPolicy.NO_REFERRER, override: true },
     strictTransportSecurity: { accessControlMaxAge: Duration.seconds(600), includeSubdomains: true, override: true },
     xssProtection: { protection: true, modeBlock: true, reportUri: 'https://example.com/csp-report', override: true },
   },
@@ -306,7 +307,6 @@ const myResponseHeadersPolicy = new cloudfront.ResponseHeadersPolicy(this, 'Resp
 new cloudfront.Distribution(this, 'myDistCustomPolicy', {
   defaultBehavior: {
     origin: bucketOrigin,
-    cachePolicy: myCachePolicy,
     responseHeadersPolicy: myResponseHeadersPolicy,
   },
 });
