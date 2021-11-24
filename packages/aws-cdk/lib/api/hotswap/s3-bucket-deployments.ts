@@ -67,7 +67,9 @@ class S3BucketDeploymentHotswapOperation implements HotswapOperation {
   }
 
   public async apply(sdk: ISDK): Promise<any> {
+    // JSON.stringify() doesn't turn the actual objects to strings, but the lambda expects strings
     const resourceProperties = stringifyObject(this.customResourceProperties);
+
     return sdk.lambda().invoke({
       FunctionName: this.functionName,
       // Lambda refuses to take a direct JSON object and requires it to be stringify()'d
