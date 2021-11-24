@@ -69,6 +69,26 @@ export enum InstanceClass {
   M5AD = 'm5ad',
 
   /**
+   * Standard instances for high performance computing, 5th generation
+   */
+  STANDARD5_HIGH_PERFORMANCE = 'm5n',
+
+  /**
+   * Standard instances for high performance computing, 5th generation
+   */
+  M5N = 'm5n',
+
+  /**
+   * Standard instances with local NVME drive for high performance computing, 5th generation
+   */
+  STANDARD5_NVME_DRIVE_HIGH_PERFORMANCE = 'm5dn',
+
+  /**
+   * Standard instances with local NVME drive for high performance computing, 5th generation
+   */
+  M5DN = 'm5dn',
+
+  /**
    * Memory optimized instances, 3rd generation
    */
   MEMORY3 = 'r3',
@@ -97,6 +117,16 @@ export enum InstanceClass {
    * Memory optimized instances, 5th generation
    */
   R5 = 'r5',
+
+  /**
+   * Memory optimized instances, 6th generation with Intel Xeon Scalable processors (3rd generation processors code named Ice Lake)
+   */
+  MEMORY6_INTEL = 'r6i',
+
+  /**
+   * Memory optimized instances, 6th generation with Intel Xeon Scalable processors (3rd generation processors code named Ice Lake)
+   */
+  R6I = 'r6i',
 
   /**
    * Memory optimized instances for high performance computing, 5th generation
@@ -447,6 +477,16 @@ export enum InstanceClass {
   G4DN = 'g4dn',
 
   /**
+   * Graphics-optimized instances, 5th generation
+   */
+  GRAPHICS5 = 'g5',
+
+  /**
+   * Graphics-optimized instances, 5th generation
+   */
+  G5 = 'g5',
+
+  /**
    * Parallel-processing optimized instances, 2nd generation
    */
   PARALLEL2 = 'p2',
@@ -645,6 +685,11 @@ export enum InstanceSize {
    * Instance size XLARGE32 (32xlarge)
    */
   XLARGE32 = '32xlarge',
+
+  /**
+   * Instance size XLARGE48 (48xlarge)
+   */
+  XLARGE48 = '48xlarge',
 
   /**
    * Instance size METAL (metal)

@@ -27,6 +27,7 @@ import {
   Duration,
   Fn,
   IConstruct,
+  RemovalPolicy,
   SecretValue,
   Size,
   SizeRoundingBehavior,
@@ -47,14 +48,26 @@ declare const functionProps: lambda.FunctionProps;
 declare const isCompleteHandler: lambda.Function;
 declare const myBucket: s3.IBucket;
 declare const myFunction: lambda.IFunction;
-declare const myProvider: CustomResourceProvider;
 declare const myTopic: sns.ITopic;
 declare const onEventHandler: lambda.Function;
 declare const resourceProps: CfnResourceProps;
-declare const stack: Stack;
 
 declare class MyStack extends Stack {}
 declare class YourStack extends Stack {}
+
+class StackThatProvidesABucket extends Stack {
+  public readonly bucket!: s3.IBucket;
+}
+
+interface StackThatExpectsABucketProps extends StackProps {
+  readonly bucket: s3.IBucket;
+}
+
+class StackThatExpectsABucket extends Stack {
+  constructor(scope: Construct, id: string, props: StackThatExpectsABucketProps) {
+    super(scope, id, props);
+  }
+}
 
 class fixture$construct extends Construct {
   public constructor(scope: Construct, id: string) {

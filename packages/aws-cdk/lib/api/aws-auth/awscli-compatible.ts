@@ -177,12 +177,18 @@ async function isEc2Instance() {
     let instance = false;
     if (process.platform === 'win32') {
       // https://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/identify_ec2_instances.html
-      const result = await util.promisify(child_process.exec)('wmic path win32_computersystemproduct get uuid', { encoding: 'utf-8' });
-      // output looks like
-      //  UUID
-      //  EC2AE145-D1DC-13B2-94ED-01234ABCDEF
-      const lines = result.stdout.toString().split('\n');
-      instance = lines.some(x => matchesRegex(/^ec2/i, x));
+      try {
+        const result = await util.promisify(child_process.exec)('wmic path win32_computersystemproduct get uuid', { encoding: 'utf-8' });
+        // output looks like
+        //  UUID
+        //  EC2AE145-D1DC-13B2-94ED-01234ABCDEF
+        const lines = result.stdout.toString().split('\n');
+        instance = lines.some(x => matchesRegex(/^ec2/i, x));
+      } catch (e) {
+        // Modern machines may not have wmic.exe installed. No reason to fail, just assume it's not an EC2 instance.
+        debug(`Checking using WMIC failed, assuming NOT an EC2 instance: ${e.message} (pass --ec2creds to force)`);
+        instance = false;
+      }
     } else {
       // https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/identify_ec2_instances.html
       const files: Array<[string, RegExp]> = [

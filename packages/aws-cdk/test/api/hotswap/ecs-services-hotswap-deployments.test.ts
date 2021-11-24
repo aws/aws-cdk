@@ -1,16 +1,16 @@
 import * as AWS from 'aws-sdk';
 import * as setup from './hotswap-test-setup';
 
-let mockSdkProvider: setup.CfnMockProvider;
+let hotswapMockSdkProvider: setup.HotswapMockSdkProvider;
 let mockRegisterTaskDef: jest.Mock<AWS.ECS.RegisterTaskDefinitionResponse, AWS.ECS.RegisterTaskDefinitionRequest[]>;
 let mockUpdateService: (params: AWS.ECS.UpdateServiceRequest) => AWS.ECS.UpdateServiceResponse;
 
 beforeEach(() => {
-  mockSdkProvider = setup.setupHotswapTests();
+  hotswapMockSdkProvider = setup.setupHotswapTests();
 
   mockRegisterTaskDef = jest.fn();
   mockUpdateService = jest.fn();
-  mockSdkProvider.stubEcs({
+  hotswapMockSdkProvider.stubEcs({
     registerTaskDefinition: mockRegisterTaskDef,
     updateService: mockUpdateService,
   }, {
@@ -81,7 +81,7 @@ test('should call registerTaskDefinition and updateService for a difference only
   });
 
   // WHEN
-  const deployStackResult = await mockSdkProvider.tryHotswapDeployment(cdkStackArtifact);
+  const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(cdkStackArtifact);
 
   // THEN
   expect(deployStackResult).not.toBeUndefined();
@@ -157,7 +157,7 @@ test('any other TaskDefinition property change besides ContainerDefinition canno
   });
 
   // WHEN
-  const deployStackResult = await mockSdkProvider.tryHotswapDeployment(cdkStackArtifact);
+  const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(cdkStackArtifact);
 
   // THEN
   expect(deployStackResult).toBeUndefined();
@@ -216,7 +216,7 @@ test('should call registerTaskDefinition and updateService for a difference only
   });
 
   // WHEN
-  const deployStackResult = await mockSdkProvider.tryHotswapDeployment(cdkStackArtifact);
+  const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(cdkStackArtifact);
 
   // THEN
   expect(deployStackResult).not.toBeUndefined();
@@ -276,7 +276,7 @@ test('a difference just in a TaskDefinition, without any services using it, is n
   });
 
   // WHEN
-  const deployStackResult = await mockSdkProvider.tryHotswapDeployment(cdkStackArtifact);
+  const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(cdkStackArtifact);
 
   // THEN
   expect(deployStackResult).toBeUndefined();
@@ -356,7 +356,7 @@ test('if anything besides an ECS Service references the changed TaskDefinition, 
   });
 
   // WHEN
-  const deployStackResult = await mockSdkProvider.tryHotswapDeployment(cdkStackArtifact);
+  const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(cdkStackArtifact);
 
   // THEN
   expect(deployStackResult).toBeUndefined();

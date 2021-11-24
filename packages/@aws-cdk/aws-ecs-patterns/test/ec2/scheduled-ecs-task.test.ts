@@ -1,6 +1,9 @@
 import '@aws-cdk/assert-internal/jest';
+import { AutoScalingGroup } from '@aws-cdk/aws-autoscaling';
 import * as ec2 from '@aws-cdk/aws-ec2';
+import { MachineImage } from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
+import { AsgCapacityProvider } from '@aws-cdk/aws-ecs';
 import * as events from '@aws-cdk/aws-events';
 import * as cdk from '@aws-cdk/core';
 import { ScheduledEc2Task } from '../../lib';
@@ -10,9 +13,14 @@ test('Can create a scheduled Ec2 Task - with only required props', () => {
   const stack = new cdk.Stack();
   const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
   const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-  cluster.addCapacity('DefaultAutoScalingGroup', {
-    instanceType: new ec2.InstanceType('t2.micro'),
-  });
+
+  cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+    autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+      vpc,
+      instanceType: new ec2.InstanceType('t2.micro'),
+      machineImage: MachineImage.latestAmazonLinux(),
+    }),
+  }));
 
   new ScheduledEc2Task(stack, 'ScheduledEc2Task', {
     cluster,
@@ -70,9 +78,13 @@ test('Can create a scheduled Ec2 Task - with optional props', () => {
   const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
   const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
 
-  cluster.addCapacity('DefaultAutoScalingGroup', {
-    instanceType: new ec2.InstanceType('t2.micro'),
-  });
+  cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+    autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+      vpc,
+      instanceType: new ec2.InstanceType('t2.micro'),
+      machineImage: MachineImage.latestAmazonLinux(),
+    }),
+  }));
 
   new ScheduledEc2Task(stack, 'ScheduledEc2Task', {
     cluster,
@@ -195,9 +207,13 @@ test('Scheduled Ec2 Task - with MemoryReservation defined', () => {
   const stack = new cdk.Stack();
   const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
   const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-  cluster.addCapacity('DefaultAutoScalingGroup', {
-    instanceType: new ec2.InstanceType('t2.micro'),
-  });
+  cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+    autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+      vpc,
+      instanceType: new ec2.InstanceType('t2.micro'),
+      machineImage: MachineImage.latestAmazonLinux(),
+    }),
+  }));
 
   new ScheduledEc2Task(stack, 'ScheduledEc2Task', {
     cluster,
@@ -238,9 +254,13 @@ test('Scheduled Ec2 Task - with Command defined', () => {
   const stack = new cdk.Stack();
   const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
   const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-  cluster.addCapacity('DefaultAutoScalingGroup', {
-    instanceType: new ec2.InstanceType('t2.micro'),
-  });
+  cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+    autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+      vpc,
+      instanceType: new ec2.InstanceType('t2.micro'),
+      machineImage: MachineImage.latestAmazonLinux(),
+    }),
+  }));
 
   new ScheduledEc2Task(stack, 'ScheduledEc2Task', {
     cluster,
@@ -287,9 +307,13 @@ test('throws if desiredTaskCount is 0', () => {
   const stack = new cdk.Stack();
   const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
   const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-  cluster.addCapacity('DefaultAutoScalingGroup', {
-    instanceType: new ec2.InstanceType('t2.micro'),
-  });
+  cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+    autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+      vpc,
+      instanceType: new ec2.InstanceType('t2.micro'),
+      machineImage: MachineImage.latestAmazonLinux(),
+    }),
+  }));
 
   // THEN
   expect(() =>

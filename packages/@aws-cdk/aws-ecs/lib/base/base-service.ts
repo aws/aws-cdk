@@ -750,7 +750,7 @@ export abstract class BaseService extends Resource
     return new cloudwatch.Metric({
       namespace: 'AWS/ECS',
       metricName,
-      dimensions: { ClusterName: this.cluster.clusterName, ServiceName: this.serviceName },
+      dimensionsMap: { ClusterName: this.cluster.clusterName, ServiceName: this.serviceName },
       ...props,
     }).attachTo(this);
   }

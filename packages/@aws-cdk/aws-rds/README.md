@@ -129,6 +129,10 @@ new rds.DatabaseInstanceReadReplica(this, 'ReadReplica', {
 });
 ```
 
+Automatic backups of read replica instances are only supported for MySQL and MariaDB. By default,
+automatic backups are disabled for read replicas and can only be enabled (using `backupRetention`)
+if also enabled on the source instance.
+
 Creating a "production" Oracle database instance with option and parameter groups:
 
 [example of setting up a production oracle instance](test/integ.instance.lit.ts)
@@ -298,6 +302,21 @@ instance.addRotationMultiUser('MyUser', { // Add rotation using the multi user s
 
 **Note**: This user must be created manually in the database using the master credentials.
 The rotation will start as soon as this user exists.
+
+Access to the Secrets Manager API is required for the secret rotation. This can be achieved either with
+internet connectivity (through NAT) or with a VPC interface endpoint. By default, the rotation Lambda function
+is deployed in the same subnets as the instance/cluster. If access to the Secrets Manager API is not possible from
+those subnets or using the default API endpoint, use the `vpcSubnets` and/or `endpoint` options:
+
+```ts
+declare const instance: rds.DatabaseInstance;
+declare const myEndpoint: ec2.InterfaceVpcEndpoint;
+
+instance.addRotationSingleUser({
+  vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_NAT }, // Place rotation Lambda in private subnets
+  endpoint: myEndpoint, // Use VPC interface endpoint
+});
+```
 
 See also [@aws-cdk/aws-secretsmanager](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-secretsmanager/README.md) for credentials rotation of existing clusters/instances.
 

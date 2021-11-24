@@ -117,7 +117,7 @@ export class Channel extends ChannelBase {
    */
   public static fromChannelArn(scope: Construct, id: string, channelArn: string): IChannel {
     // This will throw an error if the arn cannot be parsed
-    let arnComponents = core.Arn.parse(channelArn);
+    let arnComponents = core.Arn.split(channelArn, core.ArnFormat.SLASH_RESOURCE_NAME);
 
     if (!core.Token.isUnresolved(arnComponents.service) && arnComponents.service !== 'ivs') {
       throw new Error(`Invalid service, expected 'ivs', got '${arnComponents.service}'`);

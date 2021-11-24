@@ -100,27 +100,15 @@ export class AssociationManager {
   }
 
   public static setLaunchRole(portfolio: IPortfolio, product: IProduct, launchRole: iam.IRole, options: CommonConstraintOptions): void {
-    const association = this.associateProductWithPortfolio(portfolio, product, options);
-    // Check if a stackset deployment constraint has already been configured.
-    if (portfolio.node.tryFindChild(this.stackSetConstraintLogicalId(association.associationKey))) {
-      throw new Error(`Cannot set launch role when a StackSet rule is already defined for association ${this.prettyPrintAssociation(portfolio, product)}`);
-    }
+    this.setLaunchRoleConstraint(portfolio, product, options, {
+      roleArn: launchRole.roleArn,
+    });
+  }
 
-    const constructId = this.launchRoleConstraintLogicalId(association.associationKey);
-    if (!portfolio.node.tryFindChild(constructId)) {
-      const constraint = new CfnLaunchRoleConstraint(portfolio as unknown as cdk.Resource, constructId, {
-        acceptLanguage: options.messageLanguage,
-        description: options.description,
-        portfolioId: portfolio.portfolioId,
-        productId: product.productId,
-        roleArn: launchRole.roleArn,
-      });
-
-      // Add dependsOn to force proper order in deployment.
-      constraint.addDependsOn(association.cfnPortfolioProductAssociation);
-    } else {
-      throw new Error(`Cannot set multiple launch roles for association ${this.prettyPrintAssociation(portfolio, product)}`);
-    }
+  public static setLocalLaunchRoleName(portfolio: IPortfolio, product: IProduct, launchRoleName: string, options: CommonConstraintOptions): void {
+    this.setLaunchRoleConstraint(portfolio, product, options, {
+      localRoleName: launchRoleName,
+    });
   }
 
   public static deployWithStackSets(portfolio: IPortfolio, product: IProduct, options: StackSetsConstraintOptions) {
@@ -179,6 +167,34 @@ export class AssociationManager {
     };
   }
 
+  private static setLaunchRoleConstraint(
+    portfolio: IPortfolio, product: IProduct, options: CommonConstraintOptions,
+    roleOptions: LaunchRoleConstraintRoleOptions,
+  ): void {
+    const association = this.associateProductWithPortfolio(portfolio, product, options);
+    // Check if a stackset deployment constraint has already been configured.
+    if (portfolio.node.tryFindChild(this.stackSetConstraintLogicalId(association.associationKey))) {
+      throw new Error(`Cannot set launch role when a StackSet rule is already defined for association ${this.prettyPrintAssociation(portfolio, product)}`);
+    }
+
+    const constructId = this.launchRoleConstraintLogicalId(association.associationKey);
+    if (!portfolio.node.tryFindChild(constructId)) {
+      const constraint = new CfnLaunchRoleConstraint(portfolio as unknown as cdk.Resource, constructId, {
+        acceptLanguage: options.messageLanguage,
+        description: options.description,
+        portfolioId: portfolio.portfolioId,
+        productId: product.productId,
+        roleArn: roleOptions.roleArn,
+        localRoleName: roleOptions.localRoleName,
+      });
+
+      // Add dependsOn to force proper order in deployment.
+      constraint.addDependsOn(association.cfnPortfolioProductAssociation);
+    } else {
+      throw new Error(`Cannot set multiple launch roles for association ${this.prettyPrintAssociation(portfolio, product)}`);
+    }
+  }
+
   private static stackSetConstraintLogicalId(associationKey: string): string {
     return `StackSetConstraint${associationKey}`;
   }
@@ -213,3 +229,14 @@ export class AssociationManager {
   };
 }
 
+interface LaunchRoleArnOption {
+  readonly roleArn: string,
+  readonly localRoleName?: never,
+}
+
+interface LaunchRoleNameOption {
+  readonly localRoleName: string,
+  readonly roleArn?: never,
+}
+
+type LaunchRoleConstraintRoleOptions = LaunchRoleArnOption | LaunchRoleNameOption;
