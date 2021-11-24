@@ -347,6 +347,25 @@ This sample demonstrates the following concepts:
 * Non-intrinsic physical IDs
 * Implemented in Python
 
+
+### Customizing Provider Function name
+
+In multi-account environments or when the custom resource may be re-utilized across several 
+stacks it may be useful to manually set a name for the Provider Function Lambda and therefore
+have a predefined service token ARN.
+
+```ts
+
+const myProvider = new cr.Provider(this, 'MyProvider', {
+  onEventHandler: onEvent,
+  isCompleteHandler: isComplete,
+  logRetention: logs.RetentionDays.ONE_DAY,
+  role: myRole,
+  providerFunctionName: 'the-lambda-name',   // Optional
+});
+
+```
+
 ## Custom Resources for AWS APIs
 
 Sometimes a single API call can fill the gap in the CloudFormation coverage. In
