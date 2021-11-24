@@ -4,93 +4,6 @@ import { StateMachine } from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
 import * as apigw from '../lib';
 
-function givenSetup() {
-  const stack = new cdk.Stack();
-
-  const passTask = new sfn.Pass(stack, 'passTask', {
-    inputPath: '$.somekey',
-  });
-
-  const stateMachine: sfn.IStateMachine = new StateMachine(stack, 'StateMachine', {
-    definition: passTask,
-    stateMachineType: sfn.StateMachineType.EXPRESS,
-  });
-
-  return { stack, stateMachine };
-}
-
-function whenCondition(stack:cdk.Stack, stateMachine: sfn.IStateMachine) {
-  const api = new apigw.StepFunctionsRestApi(stack, 'StepFunctionsRestApi', { stateMachine: stateMachine });
-  return api;
-}
-
-function getMethodResponse() {
-  return [
-    {
-      StatusCode: '200',
-      ResponseModels: {
-        'application/json': 'Empty',
-      },
-    },
-    {
-      StatusCode: '400',
-      ResponseModels: {
-        'application/json': 'Error',
-      },
-    },
-    {
-      StatusCode: '500',
-      ResponseModels: {
-        'application/json': 'Error',
-      },
-    },
-  ];
-}
-
-function getIntegrationResponse() {
-  const errorResponse = [
-    {
-      SelectionPattern: '4\\d{2}',
-      StatusCode: '400',
-      ResponseTemplates: {
-        'application/json': `{
-            "error": "Bad request!"
-          }`,
-      },
-    },
-    {
-      SelectionPattern: '5\\d{2}',
-      StatusCode: '500',
-      ResponseTemplates: {
-        'application/json': '"error": $input.path(\'$.error\')',
-      },
-    },
-  ];
-
-  const integResponse = [
-    {
-      StatusCode: '200',
-      ResponseTemplates: {
-        'application/json': [
-          '#set($inputRoot = $input.path(\'$\'))',
-          '#if($input.path(\'$.status\').toString().equals("FAILED"))',
-          '#set($context.responseOverride.status = 500)',
-          '{',
-          '"error": "$input.path(\'$.error\')"',
-          '"cause": "$input.path(\'$.cause\')"',
-          '}',
-          '#else',
-          '$input.path(\'$.output\')',
-          '#end',
-        ].join('\n'),
-      },
-    },
-    ...errorResponse,
-  ];
-
-  return integResponse;
-}
-
 describe('Step Functions api', () => {
   test('StepFunctionsRestApi defines correct REST API resources', () => {
     //GIVEN
@@ -417,3 +330,90 @@ describe('Step Functions api', () => {
     });
   });
 });
+
+function givenSetup() {
+  const stack = new cdk.Stack();
+
+  const passTask = new sfn.Pass(stack, 'passTask', {
+    inputPath: '$.somekey',
+  });
+
+  const stateMachine: sfn.IStateMachine = new StateMachine(stack, 'StateMachine', {
+    definition: passTask,
+    stateMachineType: sfn.StateMachineType.EXPRESS,
+  });
+
+  return { stack, stateMachine };
+}
+
+function whenCondition(stack:cdk.Stack, stateMachine: sfn.IStateMachine) {
+  const api = new apigw.StepFunctionsRestApi(stack, 'StepFunctionsRestApi', { stateMachine: stateMachine });
+  return api;
+}
+
+function getMethodResponse() {
+  return [
+    {
+      StatusCode: '200',
+      ResponseModels: {
+        'application/json': 'Empty',
+      },
+    },
+    {
+      StatusCode: '400',
+      ResponseModels: {
+        'application/json': 'Error',
+      },
+    },
+    {
+      StatusCode: '500',
+      ResponseModels: {
+        'application/json': 'Error',
+      },
+    },
+  ];
+}
+
+function getIntegrationResponse() {
+  const errorResponse = [
+    {
+      SelectionPattern: '4\\d{2}',
+      StatusCode: '400',
+      ResponseTemplates: {
+        'application/json': `{
+            "error": "Bad request!"
+          }`,
+      },
+    },
+    {
+      SelectionPattern: '5\\d{2}',
+      StatusCode: '500',
+      ResponseTemplates: {
+        'application/json': '"error": $input.path(\'$.error\')',
+      },
+    },
+  ];
+
+  const integResponse = [
+    {
+      StatusCode: '200',
+      ResponseTemplates: {
+        'application/json': [
+          '#set($inputRoot = $input.path(\'$\'))',
+          '#if($input.path(\'$.status\').toString().equals("FAILED"))',
+          '#set($context.responseOverride.status = 500)',
+          '{',
+          '"error": "$input.path(\'$.error\')"',
+          '"cause": "$input.path(\'$.cause\')"',
+          '}',
+          '#else',
+          '$input.path(\'$.output\')',
+          '#end',
+        ].join('\n'),
+      },
+    },
+    ...errorResponse,
+  ];
+
+  return integResponse;
+}
