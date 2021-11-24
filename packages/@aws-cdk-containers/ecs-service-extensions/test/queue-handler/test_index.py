@@ -6,7 +6,10 @@ from time import time
 from botocore.exceptions import ClientError
 from queue_backlog_calculator import QueueHandler
 
+time_mock = time()
+
 class TestQueueAutoscaling(unittest.TestCase):
+  maxDiff = None
   '''
   Test for unexpected error.
   '''
@@ -31,7 +34,7 @@ class TestQueueAutoscaling(unittest.TestCase):
   Test for Exception when the service doesn't exist in cluster.
   '''
   @mock.patch('sys.stdout', new_callable=io.StringIO)
-  def test_no_services_in_cluster(self, mock_stdout):
+  def test_no_services_in_cluster(self, _):
     ecs_client = mock.Mock()
     ecs_client.describe_services.return_value = {'services': []}
 
@@ -51,9 +54,9 @@ class TestQueueAutoscaling(unittest.TestCase):
   '''
   Test 'backPerTask' value is equal to 'ApproximateNumberOfMessages' in the queue when no tasks are running.
   '''
-  @mock.patch('time.time', side_effect=mock.Mock(return_value=time()))
+  @mock.patch('time.time', mock.MagicMock(return_value=time_mock))
   @mock.patch('sys.stdout', new_callable=io.StringIO)
-  def test_backlog_with_no_running_tasks(self, mock_stdout, mock_time):
+  def test_backlog_with_no_running_tasks(self, mock_stdout):
     ecs_client = mock.Mock()
     ecs_client.describe_services.return_value = {'services': [{'runningCount': 0}]}
 
@@ -68,11 +71,12 @@ class TestQueueAutoscaling(unittest.TestCase):
     }
 
     queue_handler = QueueHandler(ecs_client, sqs_client, environ)
+    mock_time = time()
     queue_handler.emit()
 
     metric = json.dumps({
       "_aws": {
-        "Timestamp": int(time()*1000),
+        "Timestamp": int(mock_time*1000),
         "CloudWatchMetrics": [{
           "Namespace": "TEST",
           "Dimensions": [["QueueName"]],
@@ -87,9 +91,9 @@ class TestQueueAutoscaling(unittest.TestCase):
   '''
   Test 'backPerTask' metric is generated correctly for each queue.
   '''
-  @mock.patch('time.time', side_effect=mock.Mock(return_value=time()))
+  @mock.patch('time.time', mock.MagicMock(return_value=time_mock))
   @mock.patch('sys.stdout', new_callable=io.StringIO)
-  def test_metric_generation_per_queue(self, mock_stdout, mock_time):
+  def test_metric_generation_per_queue(self, mock_stdout):
     ecs_client = mock.Mock()
     ecs_client.describe_services.return_value = {'services': [{'runningCount': 2}]}
 
@@ -113,11 +117,12 @@ class TestQueueAutoscaling(unittest.TestCase):
     }
     
     queue_handler = QueueHandler(ecs_client, sqs_client, environ)
+    mock_time = time()
     queue_handler.emit()
     
     metric1 = json.dumps({
       "_aws": {
-        "Timestamp": int(time()*1000),
+        "Timestamp": int(mock_time*1000),
         "CloudWatchMetrics": [{
           "Namespace": "TEST",
           "Dimensions": [["QueueName"]],
@@ -129,7 +134,7 @@ class TestQueueAutoscaling(unittest.TestCase):
     })
     metric2 = json.dumps({
       "_aws": {
-        "Timestamp": int(time()*1000),
+        "Timestamp": int(mock_time*1000),
         "CloudWatchMetrics": [{
           "Namespace": "TEST",
           "Dimensions": [["QueueName"]],
