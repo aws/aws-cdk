@@ -3,7 +3,7 @@ import * as fs from 'fs';
 import { promisify } from 'util';
 import * as _glob from 'glob';
 
-import { rewriteImports } from '../lib/rewrite';
+import { rewriteMonoPackageImports } from '../lib/rewrite';
 
 const glob = promisify(_glob);
 
@@ -23,7 +23,7 @@ async function main() {
     const files = await glob(arg, { ignore, matchBase: true });
     for (const file of files) {
       const input = await fs.promises.readFile(file, { encoding: 'utf8' });
-      const output = rewriteImports(input, file);
+      const output = rewriteMonoPackageImports(input, 'aws-cdk-lib', file);
       if (output.trim() !== input.trim()) {
         await fs.promises.writeFile(file, output);
       }
