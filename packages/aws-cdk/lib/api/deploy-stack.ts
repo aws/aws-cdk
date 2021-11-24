@@ -182,6 +182,13 @@ export interface DeployStackOptions {
    * @default - false for regular deployments, true for 'watch' deployments
    */
   readonly hotswap?: boolean;
+
+  /**
+   * The extra string to append to the User-Agent header when performing AWS SDK calls.
+   *
+   * @default - nothing extra is appended to the User-Agent header
+   */
+  readonly extraUserAgent?: string;
 }
 
 const LARGE_TEMPLATE_SIZE_KB = 50;
@@ -191,6 +198,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
 
   const stackEnv = options.resolvedEnvironment;
 
+  options.sdk.appendCustomUserAgent(options.extraUserAgent);
   const cfn = options.sdk.cloudFormation();
   const deployName = options.deployName || stackArtifact.stackName;
   let cloudFormationStack = await CloudFormationStack.lookup(cfn, deployName);
@@ -261,6 +269,12 @@ async function prepareAndExecuteChangeSet(
   options: DeployStackOptions, cloudFormationStack: CloudFormationStack,
   stackArtifact: cxapi.CloudFormationStackArtifact, stackParams: ParameterValues, bodyParameter: TemplateBodyParameter,
 ): Promise<DeployStackResult> {
+  // if we got here, and hotswap is enabled, that means changes couldn't be hotswapped,
+  // and we had to fall back on a full deployment. Note that fact in our User-Agent
+  if (options.hotswap) {
+    options.sdk.appendCustomUserAgent('cdk-hotswap/fallback');
+  }
+
   const cfn = options.sdk.cloudFormation();
   const deployName = options.deployName ?? stackArtifact.stackName;
 

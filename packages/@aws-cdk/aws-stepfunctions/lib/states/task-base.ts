@@ -168,7 +168,7 @@ export abstract class TaskStateBase extends State implements INextable {
     return new cloudwatch.Metric({
       namespace: 'AWS/States',
       metricName,
-      dimensions: this.taskMetrics?.metricDimensions,
+      dimensionsMap: this.taskMetrics?.metricDimensions,
       statistic: 'sum',
       ...props,
     }).attachTo(this);

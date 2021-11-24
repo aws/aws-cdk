@@ -21,6 +21,22 @@ const CLUSTER_VERSION = eks.KubernetesVersion.V1_21;
 
 describe('cluster', () => {
 
+  test('can configure and access ALB controller', () => {
+    const { stack } = testFixture();
+
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      version: CLUSTER_VERSION,
+      albController: {
+        version: eks.AlbControllerVersion.V2_3_0,
+      },
+    });
+
+    expect(stack).toHaveResource('Custom::AWSCDK-EKS-HelmChart', {
+      Chart: 'aws-load-balancer-controller',
+    });
+    expect(cluster.albController).toBeDefined();
+  });
+
   test('can specify custom environment to cluster resource handler', () => {
 
     const { stack } = testFixture();
@@ -1571,7 +1587,7 @@ describe('cluster', () => {
         prune: false,
         defaultCapacityInstance: new ec2.InstanceType('m6g.medium'),
       }).addNodegroupCapacity('ng', {
-        instanceType: new ec2.InstanceType('m6g.medium'),
+        instanceTypes: [new ec2.InstanceType('m6g.medium')],
       });
 
       // THEN
@@ -1592,7 +1608,7 @@ describe('cluster', () => {
         prune: false,
         defaultCapacityInstance: new ec2.InstanceType('t4g.medium'),
       }).addNodegroupCapacity('ng', {
-        instanceType: new ec2.InstanceType('t4g.medium'),
+        instanceTypes: [new ec2.InstanceType('t4g.medium')],
       });
 
       // THEN

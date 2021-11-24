@@ -4,7 +4,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import {
-  App, BootstraplessSynthesizer, DefaultStackSynthesizer,
+  App, ArnFormat, BootstraplessSynthesizer, DefaultStackSynthesizer,
   IStackSynthesizer, Lazy, Names, PhysicalName, RemovalPolicy, Resource, Stack, Token,
 } from '@aws-cdk/core';
 import { Construct } from 'constructs';
@@ -291,7 +291,7 @@ export class Pipeline extends PipelineBase {
    */
   public static fromPipelineArn(scope: Construct, id: string, pipelineArn: string): IPipeline {
     class Import extends PipelineBase {
-      public readonly pipelineName = Stack.of(scope).parseArn(pipelineArn).resource;
+      public readonly pipelineName = Stack.of(scope).splitArn(pipelineArn, ArnFormat.SLASH_RESOURCE_NAME).resource;
       public readonly pipelineArn = pipelineArn;
     }
 

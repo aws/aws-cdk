@@ -2,7 +2,7 @@ import { Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as sns from '@aws-cdk/aws-sns';
-import { Stack } from '@aws-cdk/core';
+import { ArnFormat, Stack } from '@aws-cdk/core';
 import { BackupVault, BackupVaultEvents } from '../lib';
 
 let stack: Stack;
@@ -267,7 +267,7 @@ test('import from arn', () => {
     service: 'backup',
     resource: 'backup-vault',
     resourceName: 'myVaultName',
-    sep: ':',
+    arnFormat: ArnFormat.COLON_RESOURCE_NAME,
   });
   const vault = BackupVault.fromBackupVaultArn(stack, 'Vault', vaultArn);
 
@@ -287,7 +287,7 @@ test('import from name', () => {
     service: 'backup',
     resource: 'backup-vault',
     resourceName: 'myVaultName',
-    sep: ':',
+    arnFormat: ArnFormat.COLON_RESOURCE_NAME,
   }));
 });
 
