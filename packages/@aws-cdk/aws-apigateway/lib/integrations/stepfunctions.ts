@@ -10,7 +10,7 @@ import { AwsIntegration } from './aws';
 /**
  * Options when configuring Step Functions synchronous integration with Rest API
  */
-export interface StepFunctionsStartExecutionOptions extends IntegrationOptions {
+export interface StepFunctionsExecutionIntegrationOptions extends IntegrationOptions {
 
   /**
    * Which details of the incoming request must be passed onto the underlying state machine,
@@ -86,14 +86,14 @@ export class StepFunctionsIntegration {
    *    });
    *    api.root.addMethod('GET', apigateway.StepFunctionsIntegration.startExecution(stateMachine));
    */
-  public static startExecution(stateMachine: sfn.IStateMachine, options?: StepFunctionsStartExecutionOptions): AwsIntegration {
+  public static startExecution(stateMachine: sfn.IStateMachine, options?: StepFunctionsExecutionIntegrationOptions): AwsIntegration {
     return new StepFunctionsExecutionIntegration(stateMachine, options);
   }
 }
 
 class StepFunctionsExecutionIntegration extends AwsIntegration {
   private readonly stateMachine: sfn.IStateMachine;
-  constructor(stateMachine: sfn.IStateMachine, options: StepFunctionsStartExecutionOptions = {}) {
+  constructor(stateMachine: sfn.IStateMachine, options: StepFunctionsExecutionIntegrationOptions = {}) {
     super({
       service: 'states',
       action: 'StartSyncExecution',
@@ -209,7 +209,7 @@ function integrationResponse() {
  * @param options
  * @returns requestTemplate
  */
-function requestTemplates(stateMachine: sfn.IStateMachine, options: StepFunctionsStartExecutionOptions) {
+function requestTemplates(stateMachine: sfn.IStateMachine, options: StepFunctionsExecutionIntegrationOptions) {
   const templateStr = templateString(stateMachine, options);
 
   const requestTemplate: { [contentType:string] : string } =
@@ -231,7 +231,7 @@ function requestTemplates(stateMachine: sfn.IStateMachine, options: StepFunction
  */
 function templateString(
   stateMachine: sfn.IStateMachine,
-  options: StepFunctionsStartExecutionOptions): string {
+  options: StepFunctionsExecutionIntegrationOptions): string {
   let templateStr: string;
 
   let requestContextStr = '';
