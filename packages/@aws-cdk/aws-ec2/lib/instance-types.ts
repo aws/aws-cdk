@@ -567,12 +567,12 @@ export enum InstanceClass {
   INF1 = 'inf1'
 
   /**
-   * Macintosh instances built on Apple Mac mini computers, 1st generation
+   * Macintosh instances built on Apple Mac mini computers (Intel), 1st generation
    */
   MACINTOSH1_INTEL = 'mac1',
 
   /**
-   * Macintosh instances built on Apple Mac mini computers, 1st generation
+   * Macintosh instances built on Apple Mac mini computers (Intel), 1st generation
    */
   MAC1 = 'mac1',
 }
