@@ -12,6 +12,7 @@ import { IKeyGroup } from './key-group';
 import { IOrigin, OriginBindConfig, OriginBindOptions } from './origin';
 import { IOriginRequestPolicy } from './origin-request-policy';
 import { CacheBehavior } from './private/cache-behavior';
+import { IResponseHeadersPolicy } from './response-headers-policy';
 
 // v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
 // eslint-disable-next-line
@@ -699,6 +700,13 @@ export interface AddBehaviorOptions {
    * @default - none
    */
   readonly originRequestPolicy?: IOriginRequestPolicy;
+
+  /**
+   * The response headers policy for this behavior. The response headers policy determines which headers are included in responses
+   *
+   * @default - none
+   */
+  readonly responseHeadersPolicy?: IResponseHeadersPolicy;
 
   /**
    * Set this to true to indicate you want to distribute media files in the Microsoft Smooth Streaming format using this behavior.
