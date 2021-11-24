@@ -51,8 +51,9 @@ export class DatabaseSecret extends Secret {
 
   /**
    * the excluded characters for this Secret
+   * @internal
    */
-  public readonly excludedCharacters: string;
+  public readonly _excludedCharacters: string;
 
   constructor(scope: Construct, id: string, props: DatabaseSecretProps) {
     const excludedCharacters = props.excludeCharacters ?? '"@/';
@@ -80,6 +81,6 @@ export class DatabaseSecret extends Secret {
       },
     });
 
-    this.excludedCharacters = excludedCharacters;
+    this._excludedCharacters = excludedCharacters;
   }
 }
