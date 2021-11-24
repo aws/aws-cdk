@@ -63,7 +63,7 @@ function getIntegrationResponse() {
   return integResponse;
 }
 
-describe('StepFunctions', () => {
+describe('StepFunctionsExecutionIntegration', () => {
   describe('startExecution', () => {
     test('minimal setup', () => {
       //GIVEN
