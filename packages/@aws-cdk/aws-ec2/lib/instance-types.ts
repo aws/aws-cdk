@@ -565,6 +565,16 @@ export enum InstanceClass {
    * Inferentia Chips based instances for machine learning inference applications, 1st generation
    */
   INF1 = 'inf1'
+
+  /**
+   * Macintosh instances built on Apple Mac mini computers, 1st generation
+   */
+  MACINTOSH1 = 'mac1',
+
+  /**
+   * Macintosh instances built on Apple Mac mini computers, 1st generation
+   */
+  MAC1 = 'mac1',
 }
 
 /**
@@ -685,7 +695,6 @@ export enum InstanceSize {
    * Instance size METAL (metal)
    */
   METAL = 'metal',
-
 }
 
 /**
