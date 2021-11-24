@@ -135,7 +135,8 @@ export class Arn {
     const region = components.region ?? stack?.region;
     const account = components.account ?? stack?.account;
 
-    if (partition === undefined || region === undefined || account === undefined) {
+    // Catch both 'null' and 'undefined'
+    if (partition == null || region == null || account == null) {
       throw new Error(`Arn.format: partition (${partition}), region (${region}), and account (${account}) must all be passed if stack is not passed.`);
     }
 
