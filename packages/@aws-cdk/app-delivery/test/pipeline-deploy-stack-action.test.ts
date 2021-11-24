@@ -7,6 +7,7 @@ import * as cpactions from '@aws-cdk/aws-codepipeline-actions';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
+import { describeDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cdk from '@aws-cdk/core';
 import * as constructs from 'constructs';
@@ -19,7 +20,7 @@ interface SelfUpdatingPipeline {
 }
 const accountId = fc.array(fc.integer(0, 9), 12, 12).map(arr => arr.join());
 
-describe('pipeline deploy stack action', () => {
+describeDeprecated('pipeline deploy stack action', () => {
   test('rejects cross-environment deployment', () => {
     fc.assert(
       fc.property(

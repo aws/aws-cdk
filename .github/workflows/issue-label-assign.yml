@@ -14,7 +14,7 @@ jobs:
       pull-requests: write
     runs-on: ubuntu-latest
     steps:
-      - uses: peterwoodworth/issue-action@main
+      - uses: aws-github-ops/aws-issue-triage-manager@main
         with:
           github-token: "${{ secrets.GITHUB_TOKEN }}"
           excluded-expressions: "[CDK CLI Version|TypeScript|Java|Python]"
@@ -126,6 +126,7 @@ jobs:
            {"area":"@aws-cdk/aws-imagebuilder","keywords":["aws-imagebuilder","imagebuilder"],"labels":["@aws-cdk/aws-imagebuilder"],"assignees":["skinny85"]},
            {"area":"@aws-cdk/aws-inspector","keywords":["aws-inspector","inspector"],"labels":["@aws-cdk/aws-inspector"],"assignees":["skinny85"]},
            {"area":"@aws-cdk/aws-iot","keywords":["internet-of-things","aws-iot","iot"],"labels":["@aws-cdk/aws-iot"],"assignees":["skinny85"]},
+           {"area":"@aws-cdk/aws-iot-actions","keywords":["aws-iot-actions","iot-actions"],"labels":["@aws-cdk/aws-iot-actions"],"assignees":["skinny85"]},
            {"area":"@aws-cdk/aws-iot1click","keywords":["aws-iot1click","iot1click"],"labels":["@aws-cdk/aws-iot1click"],"assignees":["skinny85"]},
            {"area":"@aws-cdk/aws-iotanalytics","keywords":["aws-iotanalytics","iotanalytics"],"labels":["@aws-cdk/aws-iotanalytics"],"assignees":["skinny85"]},
            {"area":"@aws-cdk/aws-iotevents","keywords":["aws-iotevents","iotevents"],"labels":["@aws-cdk/aws-iotevents"],"assignees":["skinny85"]},
@@ -227,5 +228,8 @@ jobs:
            {"area":"@aws-cdk/region-info","keywords":["region-info","fact"],"labels":["@aws-cdk/region-info"],"assignees":["skinny85"]},
            {"area":"aws-cdk-lib","keywords":["aws-cdk-lib","cdk-v2","v2","ubergen"],"labels":["aws-cdk-lib"],"assignees":["nija-at"]},
            {"area":"monocdk","keywords":["monocdk","monocdk-experiment"],"labels":["monocdk"],"assignees":["nija-at"]},
-           {"area":"@aws-cdk/yaml-cfn","keywords":["(aws-yaml-cfn)","(yaml-cfn)"],"labels":["@aws-cdk/aws-yaml-cfn"],"assignees":["skinny85"]}
+           {"area":"@aws-cdk/yaml-cfn","keywords":["(aws-yaml-cfn)","(yaml-cfn)"],"labels":["@aws-cdk/aws-yaml-cfn"],"assignees":["skinny85"]},
+           {"area":"@aws-cdk/aws-apprunner","keywords":["apprunner","aws-apprunner"],"labels":["@aws-cdk/aws-apprunner"],"assignees":["corymhall"]},
+           {"area":"@aws-cdk/aws-lightsail","keywords":["lightsail","aws-lightsail"],"labels":["@aws-cdk/aws-lightsail"],"assignees":["corymhall"]},
+           {"area":"@aws-cdk/aws-aps","keywords":["aps","aws-aps","prometheus"],"labels":["@aws-cdk/aws-aps"],"assignees":["corymhall"]}
            ]

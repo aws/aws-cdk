@@ -6,6 +6,7 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import { LogGroup, RetentionDays } from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as sns from '@aws-cdk/aws-sns';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Stack } from '@aws-cdk/core';
 import { ManagementEventSources, ReadWriteType, Trail } from '../lib';
 
@@ -131,13 +132,13 @@ describe('cloudtrail', () => {
     test('with imported s3 bucket', () => {
       // GIVEN
       const stack = getTestStack();
-      const bucket = s3.Bucket.fromBucketName(stack, 'S3', 'SomeBucket');
+      const bucket = s3.Bucket.fromBucketName(stack, 'S3', 'somebucket');
 
       // WHEN
       new Trail(stack, 'Trail', { bucket });
 
       expect(stack).toHaveResource('AWS::CloudTrail::Trail', {
-        S3BucketName: 'SomeBucket',
+        S3BucketName: 'somebucket',
       });
     });
 
@@ -192,16 +193,11 @@ describe('cloudtrail', () => {
       });
       new Trail(stack, 'KmsKeyTrail', {
         trailName: 'KmsKeyTrail',
-        kmsKey: key,
+        encryptionKey: key,
       });
       new Trail(stack, 'UnencryptedTrail', {
         trailName: 'UnencryptedTrail',
       });
-      expect(() => new Trail(stack, 'ErrorTrail', {
-        trailName: 'ErrorTrail',
-        encryptionKey: key,
-        kmsKey: key,
-      })).toThrow(/Both kmsKey and encryptionKey must not be specified/);
 
       expect(stack).toHaveResource('AWS::CloudTrail::Trail', {
         TrailName: 'EncryptionKeyTrail',
@@ -219,6 +215,17 @@ describe('cloudtrail', () => {
         TrailName: 'UnencryptedTrail',
         KMSKeyId: ABSENT,
       });
+    });
+
+    testDeprecated('Both kmsKey and encryptionKey must not be specified', () => {
+      const stack = new Stack();
+      const key = new kms.Key(stack, 'key');
+
+      expect(() => new Trail(stack, 'ErrorTrail', {
+        trailName: 'ErrorTrail',
+        encryptionKey: key,
+        kmsKey: key,
+      })).toThrow(/Both kmsKey and encryptionKey must not be specified/);
     });
 
     describe('with cloud watch logs', () => {

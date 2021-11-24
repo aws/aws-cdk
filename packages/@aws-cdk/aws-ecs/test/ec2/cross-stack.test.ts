@@ -3,6 +3,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
 import { App, Stack } from '@aws-cdk/core';
 import * as ecs from '../../lib';
+import { addDefaultCapacityProvider } from '../util';
 
 // Test various cross-stack Cluster/Service/ALB scenario's
 
@@ -20,8 +21,8 @@ describe('cross stack', () => {
     const vpc = new ec2.Vpc(stack1, 'Vpc');
     cluster = new ecs.Cluster(stack1, 'Cluster', {
       vpc,
-      capacity: { instanceType: new ec2.InstanceType('t2.micro') },
     });
+    addDefaultCapacityProvider(cluster, stack1, vpc);
 
     stack2 = new Stack(app, 'Stack2');
     const taskDefinition = new ecs.Ec2TaskDefinition(stack2, 'TD');
@@ -94,6 +95,6 @@ function expectIngress(stack: Stack) {
   expect(stack).toHaveResource('AWS::EC2::SecurityGroupIngress', {
     FromPort: 32768,
     ToPort: 65535,
-    GroupId: { 'Fn::ImportValue': 'Stack1:ExportsOutputFnGetAttClusterDefaultAutoScalingGroupInstanceSecurityGroup1D15236AGroupIdEAB9C5E1' },
+    GroupId: { 'Fn::ImportValue': 'Stack1:ExportsOutputFnGetAttDefaultAutoScalingGroupInstanceSecurityGroupFBA881D0GroupId2F7C804A' },
   });
 }

@@ -1,5 +1,6 @@
 import '@aws-cdk/assert-internal/jest';
 import * as iam from '@aws-cdk/aws-iam';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Aws, CfnResource, Stack, Arn, App, PhysicalName, CfnOutput } from '@aws-cdk/core';
 import { EventBus } from '../lib';
 
@@ -287,7 +288,7 @@ describe('event bus', () => {
 
   });
 
-  test('can grant PutEvents', () => {
+  testDeprecated('can grant PutEvents', () => {
     // GIVEN
     const stack = new Stack();
     const role = new iam.Role(stack, 'Role', {

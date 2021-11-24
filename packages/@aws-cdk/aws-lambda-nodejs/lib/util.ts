@@ -64,7 +64,7 @@ export function exec(cmd: string, args: string[], options?: SpawnSyncOptions) {
     if (proc.stdout || proc.stderr) {
       throw new Error(`[Status ${proc.status}] stdout: ${proc.stdout?.toString().trim()}\n\n\nstderr: ${proc.stderr?.toString().trim()}`);
     }
-    throw new Error(`${cmd} exited with status ${proc.status}`);
+    throw new Error(`${cmd} ${args.join(' ')} ${options?.cwd ? `run in directory ${options.cwd}` : ''} exited with status ${proc.status}`);
   }
 
   return proc;
