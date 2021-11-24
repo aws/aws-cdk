@@ -569,7 +569,7 @@ export enum InstanceClass {
   /**
    * Macintosh instances built on Apple Mac mini computers, 1st generation
    */
-  MACINTOSH1 = 'mac1',
+  MACINTOSH1_INTEL = 'mac1',
 
   /**
    * Macintosh instances built on Apple Mac mini computers, 1st generation
