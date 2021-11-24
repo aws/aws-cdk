@@ -20,31 +20,58 @@ export interface StepFunctionsRestApiProps extends RestApiProps {
   readonly stateMachine: sfn.IStateMachine;
 
   /**
-   * You can add requestContext (similar to input requestContext from lambda input)
-   * to the input. The 'requestContext' parameter includes account ID, user identity, etc.
-   * that can be used by customers that want to know the identity of authorized users on
-   * the state machine side. You can individually select the keys you want by setting them to true.
-   * The following code defines a REST API like above but also adds 'requestContext' to the input
-   * of the State Machine:
+   * Which details of the incoming request must be passed onto the underlying state machine,
+   * such as, account id, user identity, request id, etc. The execution input will include a new key `requestContext`:
+   *
+   * {
+   *   "body": {},
+   *   "requestContext": {
+   *       "key": "value"
+   *   }
+   * }
    *
    * @default - all parameters within request context will be set as false
    */
   readonly requestContext?: RequestContext;
 
   /**
-   * Check if querystring is to be included inside the execution input
+   * Check if querystring is to be included inside the execution input. The execution input will include a new key `queryString`:
+   *
+   * {
+   *   "body": {},
+   *   "querystring": {
+   *     "key": "value"
+   *   }
+   * }
+   *
    * @default true
    */
   readonly querystring?: boolean;
 
   /**
-   * Check if path is to be included inside the execution input
+   * Check if path is to be included inside the execution input. The execution input will include a new key `path`:
+   *
+   * {
+   *   "body": {},
+   *   "path": {
+   *     "resourceName": "resourceValue"
+   *   }
+   * }
+   *
    * @default true
    */
   readonly path?: boolean;
 
   /**
-   * Check if header is to be included inside the execution input
+   * Check if header is to be included inside the execution input. The execution input will include a new key `headers`:
+   *
+   * {
+   *   "body": {},
+   *   "headers": {
+   *      "header1": "value",
+   *      "header2": "value"
+   *   }
+   * }
    * @default false
    */
   readonly headers?: boolean;
