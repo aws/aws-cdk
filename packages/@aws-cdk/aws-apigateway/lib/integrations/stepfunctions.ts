@@ -46,7 +46,9 @@ export interface StepFunctionsExecutionIntegrationOptions extends IntegrationOpt
    *
    * {
    *   "body": {},
-   *   "path": "/"
+   *   "path": {
+   *     "resourceName": "resourceValue"
+   *   }
    * }
    *
    * @default true
