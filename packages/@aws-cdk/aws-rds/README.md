@@ -129,6 +129,10 @@ new rds.DatabaseInstanceReadReplica(this, 'ReadReplica', {
 });
 ```
 
+Automatic backups of read replica instances are only supported for MySQL and MariaDB. By default,
+automatic backups are disabled for read replicas and can only be enabled (using `backupRetention`)
+if also enabled on the source instance.
+
 Creating a "production" Oracle database instance with option and parameter groups:
 
 [example of setting up a production oracle instance](test/integ.instance.lit.ts)
