@@ -184,7 +184,8 @@ AWS Step Functions will receive the following execution input:
 }
 ```
 
-It is possible to combine included/excluded fields. For example, `headers` and the `requestContext` can be included while `path` and `querystring` are excluded through the following configuration:
+Additional information around the request such as the request context and headers can be included as part of the input
+forwarded to the state machine. The following example enables headers to be included in the input but not query string.
 
 ```ts
 const stateMachineDefinition = new stepfunctions.Pass(this, 'PassState');
