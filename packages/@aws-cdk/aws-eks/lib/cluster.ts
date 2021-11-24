@@ -9,12 +9,13 @@ import * as ssm from '@aws-cdk/aws-ssm';
 import { Annotations, CfnOutput, CfnResource, IResource, Resource, Stack, Tags, Token, Duration, Size } from '@aws-cdk/core';
 import { Construct, Node } from 'constructs';
 import * as YAML from 'yaml';
+import { AlbController, AlbControllerOptions } from './alb-controller';
 import { AwsAuth } from './aws-auth';
 import { ClusterResource, clusterArnComponents } from './cluster-resource';
 import { FargateProfile, FargateProfileOptions } from './fargate-profile';
 import { HelmChart, HelmChartOptions } from './helm-chart';
 import { INSTANCE_TYPES } from './instance-types';
-import { KubernetesManifest } from './k8s-manifest';
+import { KubernetesManifest, KubernetesManifestOptions } from './k8s-manifest';
 import { KubernetesObjectValue } from './k8s-object-value';
 import { KubernetesPatch } from './k8s-patch';
 import { KubectlProvider } from './kubectl-provider';
@@ -199,7 +200,7 @@ export interface ICluster extends IResource, ec2.IConnectable {
    * @param chart the cdk8s chart.
    * @returns a `KubernetesManifest` construct representing the chart.
    */
-  addCdk8sChart(id: string, chart: Construct): KubernetesManifest;
+  addCdk8sChart(id: string, chart: Construct, options?: KubernetesManifestOptions): KubernetesManifest;
 
   /**
    * Connect capacity in the form of an existing AutoScalingGroup to the EKS cluster.
@@ -592,6 +593,15 @@ export interface ClusterOptions extends CommonClusterOptions {
    * @see https://docs.aws.amazon.com/eks/latest/APIReference/API_KubernetesNetworkConfigRequest.html#AmazonEKS-Type-KubernetesNetworkConfigRequest-serviceIpv4Cidr
    */
   readonly serviceIpv4Cidr?: string;
+
+  /**
+   * Install the AWS Load Balancer Controller onto the cluster.
+   *
+   * @see https://kubernetes-sigs.github.io/aws-load-balancer-controller
+   *
+   * @default - The controller is not installed.
+   */
+  readonly albController?: AlbControllerOptions;
 }
 
 /**
@@ -846,7 +856,7 @@ abstract class ClusterBase extends Resource implements ICluster {
    * @param chart the cdk8s chart.
    * @returns a `KubernetesManifest` construct representing the chart.
    */
-  public addCdk8sChart(id: string, chart: Construct): KubernetesManifest {
+  public addCdk8sChart(id: string, chart: Construct, options: KubernetesManifestOptions = {}): KubernetesManifest {
 
     const cdk8sChart = chart as any;
 
@@ -855,7 +865,13 @@ abstract class ClusterBase extends Resource implements ICluster {
       throw new Error(`Invalid cdk8s chart. Must contain a 'toJson' method, but found ${typeof cdk8sChart.toJson}`);
     }
 
-    return this.addManifest(id, ...cdk8sChart.toJson());
+    const manifest = new KubernetesManifest(this, id, {
+      cluster: this,
+      manifest: cdk8sChart.toJson(),
+      ...options,
+    });
+
+    return manifest;
   }
 
   public addServiceAccount(id: string, options: ServiceAccountOptions = {}): ServiceAccount {
@@ -981,6 +997,12 @@ abstract class ClusterBase extends Resource implements ICluster {
     if (autoScalingGroup.spotPrice && addSpotInterruptHandler) {
       this.addSpotInterruptHandler();
     }
+
+    if (this instanceof Cluster) {
+      // the controller runs on the worker nodes so they cannot
+      // be deleted before the controller.
+      this.albController?.node.addDependency(autoScalingGroup);
+    }
   }
 }
 
@@ -1004,6 +1026,11 @@ export interface ServiceLoadBalancerAddressOptions {
   readonly namespace?: string;
 
 }
+
+/**
+ * Options for fetching an IngressLoadBalancerAddress.
+ */
+export interface IngressLoadBalancerAddressOptions extends ServiceLoadBalancerAddressOptions {};
 
 /**
  * A Cluster represents a managed Kubernetes Service (EKS)
@@ -1184,6 +1211,12 @@ export class Cluster extends ClusterBase {
    * Determines if Kubernetes resources can be pruned automatically.
    */
   public readonly prune: boolean;
+
+  /**
+   * The ALB Controller construct defined for this cluster.
+   * Will be undefined if `albController` wasn't configured.
+   */
+  public readonly albController?: AlbController;
 
   /**
    * If this cluster is kubectl-enabled, returns the `ClusterResource` object
@@ -1407,6 +1440,10 @@ export class Cluster extends ClusterBase {
 
     commonCommandOptions.push(`--role-arn ${mastersRole.roleArn}`);
 
+    if (props.albController) {
+      this.albController = AlbController.create(this, { ...props.albController, cluster: this });
+    }
+
     // allocate default capacity if non-zero (or default).
     const minCapacity = props.defaultCapacity ?? DEFAULT_CAPACITY_COUNT;
     if (minCapacity > 0) {
@@ -1426,6 +1463,7 @@ export class Cluster extends ClusterBase {
     }
 
     this.defineCoreDnsComputeType(props.coreDnsComputeType ?? CoreDnsComputeType.EC2);
+
   }
 
   /**
@@ -1440,6 +1478,27 @@ export class Cluster extends ClusterBase {
       cluster: this,
       objectType: 'service',
       objectName: serviceName,
+      objectNamespace: options.namespace,
+      jsonPath: '.status.loadBalancer.ingress[0].hostname',
+      timeout: options.timeout,
+    });
+
+    return loadBalancerAddress.value;
+
+  }
+
+  /**
+   * Fetch the load balancer address of an ingress backed by a load balancer.
+   *
+   * @param ingressName The name of the ingress.
+   * @param options Additional operation options.
+   */
+  public getIngressLoadBalancerAddress(ingressName: string, options: IngressLoadBalancerAddressOptions = {}): string {
+
+    const loadBalancerAddress = new KubernetesObjectValue(this, `${ingressName}LoadBalancerAddress`, {
+      cluster: this,
+      objectType: 'ingress',
+      objectName: ingressName,
       objectNamespace: options.namespace,
       jsonPath: '.status.loadBalancer.ingress[0].hostname',
       timeout: options.timeout,
