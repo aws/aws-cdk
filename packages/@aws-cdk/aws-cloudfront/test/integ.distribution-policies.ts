@@ -16,7 +16,7 @@ const originRequestPolicy = new cloudfront.OriginRequestPolicy(stack, 'OriginReq
 
 const responseHeadersPolicy = new cloudfront.ResponseHeadersPolicy(stack, 'ResponseHeadersPolicy', {
   responseHeadersPolicyName: 'ACustomResponseHeadersPolicy',
-  corsBehaivor: {
+  corsBehavior: {
     accessControlAllowCredentials: false,
     accessControlAllowHeaders: ['X-Custom-Header-1', 'X-Custom-Header-2'],
     accessControlAllowMethods: ['GET', 'POST'],

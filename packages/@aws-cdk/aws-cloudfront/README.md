@@ -258,7 +258,7 @@ new cloudfront.Distribution(this, 'myDistManagedPolicy', {
 const myResponseHeadersPolicy = new cloudfront.ResponseHeadersPolicy(this, 'ResponseHeadersPolicy', {
   responseHeadersPolicyName: 'MyPolicy',
   comment: 'A default policy',
-  corsBehaivor: {
+  corsBehavior: {
     accessControlAllowCredentials: false,
     accessControlAllowHeaders: ['X-Custom-Header-1', 'X-Custom-Header-2'],
     accessControlAllowMethods: ['GET', 'POST'],

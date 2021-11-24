@@ -36,7 +36,7 @@ export interface ResponseHeadersPolicyProps {
    *
    * @default - no cors behavior
    */
-  readonly corsBehaivor?: ResponseHeadersCorsBehavior;
+  readonly corsBehavior?: ResponseHeadersCorsBehavior;
 
   /**
    * A configuration for a set of custom HTTP response headers.
@@ -100,7 +100,7 @@ export class ResponseHeadersPolicy extends Resource implements IResponseHeadersP
       responseHeadersPolicyConfig: {
         name: responseHeadersPolicyName,
         comment: props.comment,
-        corsConfig: props.corsBehaivor ? this._renderCorsConfig(props.corsBehaivor) : undefined,
+        corsConfig: props.corsBehavior ? this._renderCorsConfig(props.corsBehavior) : undefined,
         customHeadersConfig: props.customHeadersBehavior ? this._renderCustomHeadersConfig(props.customHeadersBehavior) : undefined,
         securityHeadersConfig: props.securityHeadersBehavior ? this._renderSecurityHeadersConfig(props.securityHeadersBehavior) : undefined,
       },
