@@ -156,6 +156,24 @@ export class Group extends GroupBase {
     return new Import(scope, id);
   }
 
+  /**
+   * Import an existing group by given name (with path).
+   * This method has same caveats of `fromGroupArn`
+   *
+   * @param scope construct scope
+   * @param id construct id
+   * @param groupName the groupName (path included) of the existing group to import
+   */
+  static fromGroupName(scope: Construct, id: string, groupName: string) {
+    const groupArn = Stack.of(scope).formatArn({
+      service: 'iam',
+      region: '',
+      resource: 'group',
+      resourceName: groupName,
+    });
+    return Group.fromGroupArn(scope, id, groupArn);
+  }
+
   public readonly groupName: string;
   public readonly groupArn: string;
 
