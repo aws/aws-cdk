@@ -1,9 +1,8 @@
 /**
- * This interface exposes what properties should be included in the `requestContext`
+ * Configure what must be included in the `requestContext`
  *
- * More details can be found at mapping templates documentation
- *
- * https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-mapping-template-reference.html
+ * More details can be found at mapping templates documentation.
+ * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-mapping-template-reference.html
  */
 export interface RequestContext {
   /**
