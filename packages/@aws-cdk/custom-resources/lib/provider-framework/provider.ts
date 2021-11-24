@@ -121,9 +121,9 @@ export interface ProviderProps {
    *
    * The provider lambda function name.
    *
-   * @default -  CloudFormation default name from unique physical ID 
+   * @default -  CloudFormation default name from unique physical ID
    */
-   readonly providerFunctionName?: string;
+  readonly providerFunctionName?: string;
 }
 
 /**
