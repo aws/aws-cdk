@@ -116,3 +116,19 @@ cluster.addRotationMultiUser('MyUser', { // Add rotation using the multi user sc
 The rotation will start as soon as this user exists.
 
 See also [@aws-cdk/aws-secretsmanager](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/aws-secretsmanager/README.md) for credentials rotation of existing clusters.
+
+## Audit and profiler Logs
+
+Sending audit or profiler needs to be configured in two places:
+
+1. Check / create the needed options in your ParameterGroup for [audit](https://docs.aws.amazon.com/documentdb/latest/developerguide/event-auditing.html#event-auditing-enabling-auditing) and
+[profiler](https://docs.aws.amazon.com/documentdb/latest/developerguide/profiling.html#profiling.enable-profiling) logs.
+2. Enable the corresponding option(s) when creating the `DatabaseCluster`:
+
+```ts
+const cluster = new DatabaseCluster(this, 'Database', {
+  ...,
+  exportProfilerLogsToCloudWatch: true, // Enable sending profiler logs
+  exportAuditLogsToCloudWatch: true, // Enable sending audit logs
+});
+```
