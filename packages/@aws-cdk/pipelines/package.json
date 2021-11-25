@@ -30,6 +30,7 @@
     ".": "./lib/index.js",
     "./package.json": "./package.json",
     "./.jsii": "./.jsii",
+    "./.warnings.jsii.js": "./.warnings.jsii.js",
     "./lib/helpers-internal": "./lib/helpers-internal/index.js"
   },
   "author": {
