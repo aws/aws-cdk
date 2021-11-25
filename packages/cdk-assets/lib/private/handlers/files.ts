@@ -57,10 +57,10 @@ export class FileAssetHandler implements IAssetHandler {
         paramsEncryption = { ServerSideEncryption: 'aws:kms' };
         break;
       case BucketEncryption.DOES_NOT_EXIST:
-        this.host.emitMessage(EventType.UPLOAD, `No bucket named '${destination.bucketName}'. Is account ${await account()} bootstrapped?`);
+        this.host.emitMessage(EventType.DEBUG, `No bucket named '${destination.bucketName}'. Is account ${await account()} bootstrapped?`);
         break;
       case BucketEncryption.ACCES_DENIED:
-        this.host.emitMessage(EventType.UPLOAD, `ACCES_DENIED for getting encryption of bucket '${destination.bucketName}'. Either wrong account ${await account()} or s3:GetEncryptionConfiguration not set for bucket. Try boostrapping again.`);
+        this.host.emitMessage(EventType.DEBUG, `ACCES_DENIED for getting encryption of bucket '${destination.bucketName}'. Either wrong account ${await account()} or s3:GetEncryptionConfiguration not set for cdk role. Try "cdk bootstrap" again.`);
         break;
     }
 
