@@ -391,7 +391,7 @@ export class ApplicationListenerRule extends Construct {
  * @internal
  * @deprecated
  */
-export function validateFixedResponse(fixedResponse: FixedResponse) {
+function validateFixedResponse(fixedResponse: FixedResponse) {
   if (fixedResponse.statusCode && !/^(2|4|5)\d\d$/.test(fixedResponse.statusCode)) {
     throw new Error('`statusCode` must be 2XX, 4XX or 5XX.');
   }
@@ -406,7 +406,7 @@ export function validateFixedResponse(fixedResponse: FixedResponse) {
  * @internal
  * @deprecated
  */
-export function validateRedirectResponse(redirectResponse: RedirectResponse) {
+function validateRedirectResponse(redirectResponse: RedirectResponse) {
   if (redirectResponse.protocol && !/^(HTTPS?|#\{protocol\})$/i.test(redirectResponse.protocol)) {
     throw new Error('`protocol` must be HTTP, HTTPS, or #{protocol}.');
   }
