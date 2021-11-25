@@ -239,7 +239,7 @@ function isCallable(x: any): x is ((...args: any[]) => any) {
 }
 
 /**
- * Do a glob-like pattern match (which only supports *s)
+ * Do a glob-like pattern match (which only supports *s). Supports multiline strings.
  */
 export function stringLike(pattern: string): PropertyMatcher {
   // Replace * with .* in the string, escape the rest and brace with ^...$
