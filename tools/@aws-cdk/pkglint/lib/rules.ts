@@ -243,7 +243,7 @@ export class ReadmeFile extends ValidationRule {
     // If this is a 'cfn-only' package, we fix the README to specific file contents, and
     // don't do any other checks.
     if (pkg.json.maturity === 'cfn-only') {
-      fileShouldBe(this.name, pkg, readmeFile, cfnOnlyReadmeContents({
+      fileShouldBe(this.name, pkg, 'README.md', cfnOnlyReadmeContents({
         cfnNamespace: scope,
         packageName: pkg.packageName,
       }));
