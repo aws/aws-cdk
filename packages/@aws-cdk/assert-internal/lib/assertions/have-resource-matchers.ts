@@ -243,8 +243,6 @@ function isCallable(x: any): x is ((...args: any[]) => any) {
  */
 export function stringLike(pattern: string): PropertyMatcher {
   // Replace * with .* in the string, escape the rest and brace with ^...$
-
-  // needs rebase from https://github.com/aws/aws-cdk/pull/17692/files
   const regex = new RegExp(`^${pattern.split('*').map(escapeRegex).join('.*')}$`, 'm');
 
   return annotateMatcher({ $stringContaining: pattern }, (value: any, failure: InspectionFailure) => {
