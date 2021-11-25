@@ -1,4 +1,4 @@
-# AWS::IoTWireless Construct Library
+# The CDK Construct Library for AWS::IoTWireless
 <!--BEGIN STABILITY BANNER-->
 
 ---

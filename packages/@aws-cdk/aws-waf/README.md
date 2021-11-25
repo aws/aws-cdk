@@ -1,4 +1,4 @@
-# AWS::WAF Construct Library
+# The CDK Construct Library for AWS::WAF
 <!--BEGIN STABILITY BANNER-->
 
 ---

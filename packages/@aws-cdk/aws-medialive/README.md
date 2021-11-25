@@ -1,4 +1,4 @@
-# AWS::MediaLive Construct Library
+# The CDK Construct Library for AWS::MediaLive
 <!--BEGIN STABILITY BANNER-->
 
 ---

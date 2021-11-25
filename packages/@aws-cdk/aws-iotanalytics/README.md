@@ -1,4 +1,4 @@
-# AWS::IoTAnalytics Construct Library
+# The CDK Construct Library for AWS::IoTAnalytics
 <!--BEGIN STABILITY BANNER-->
 
 ---

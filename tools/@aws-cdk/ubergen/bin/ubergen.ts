@@ -42,6 +42,7 @@ interface LibraryReference {
 }
 
 interface PackageJson {
+  readonly description?: string;
   readonly bundleDependencies?: readonly string[];
   readonly bundledDependencies?: readonly string[];
   readonly dependencies?: { readonly [name: string]: string };
@@ -313,7 +314,7 @@ async function transformPackage(
       cfnScopes.map(s => (s === 'AWS::Serverless' ? 'AWS::SAM' : s).split('::')[1].toLocaleLowerCase())
         .map(s => `export * from './${s}.generated';`)
         .join('\n'));
-    await cfnspec.createLibraryReadme(cfnScopes[0], path.join(destination, 'README.md'));
+    await cfnspec.createLibraryReadme(cfnScopes[0], path.join(destination, 'README.md'), library.packageJson.description);
 
     await copyOrTransformFiles(destination, destination, allLibraries, uberPackageJson);
   } else {

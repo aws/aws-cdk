@@ -1,4 +1,4 @@
-# AWS::IoTFleetHub Construct Library
+# The CDK Construct Library for AWS::IoTFleetHub
 <!--BEGIN STABILITY BANNER-->
 
 ---

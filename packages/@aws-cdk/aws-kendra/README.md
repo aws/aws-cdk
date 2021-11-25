@@ -1,4 +1,4 @@
-# AWS::Kendra Construct Library
+# The CDK Construct Library for AWS::Kendra
 <!--BEGIN STABILITY BANNER-->
 
 ---

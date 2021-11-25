@@ -1,4 +1,4 @@
-# AWS::Route53RecoveryControl Construct Library
+# The CDK Construct Library for AWS::Route53RecoveryControl
 <!--BEGIN STABILITY BANNER-->
 
 ---

@@ -1,4 +1,4 @@
-# AWS::AutoScalingPlans Construct Library
+# The CDK Construct Library for AWS::AutoScalingPlans
 <!--BEGIN STABILITY BANNER-->
 
 ---

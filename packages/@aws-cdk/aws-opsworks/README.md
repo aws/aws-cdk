@@ -1,4 +1,4 @@
-# AWS::OpsWorks Construct Library
+# The CDK Construct Library for AWS::OpsWorks
 <!--BEGIN STABILITY BANNER-->
 
 ---

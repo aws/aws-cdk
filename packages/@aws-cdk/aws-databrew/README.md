@@ -1,4 +1,4 @@
-# AWS::DataBrew Construct Library
+# The CDK Construct Library for AWS::DataBrew
 <!--BEGIN STABILITY BANNER-->
 
 ---

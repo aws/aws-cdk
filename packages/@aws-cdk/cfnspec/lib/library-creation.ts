@@ -54,13 +54,15 @@ export function createModuleDefinitionFromCfnNamespace(namespace: string): Modul
   };
 }
 
-export async function createLibraryReadme(namespace: string, readmePath: string) {
+export async function createLibraryReadme(namespace: string, readmePath: string, packageDescription?: string) {
   const module = createModuleDefinitionFromCfnNamespace(namespace);
+
+  const title = packageDescription ?? `${namespace} Construct Library`;
 
   const cfnLink = `https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/${module.namespace.replace('::', '_')}.html`;
 
   await fs.writeFile(readmePath, [
-    `# ${namespace} Construct Library`,
+    `# ${title}`,
     '<!--BEGIN STABILITY BANNER-->',
     '',
     '---',

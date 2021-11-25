@@ -1,4 +1,4 @@
-# AWS::QLDB Construct Library
+# The CDK Construct Library for AWS::QLDB
 <!--BEGIN STABILITY BANNER-->
 
 ---

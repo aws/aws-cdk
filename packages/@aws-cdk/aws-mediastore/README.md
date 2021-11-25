@@ -1,4 +1,4 @@
-# AWS::MediaStore Construct Library
+# The CDK Construct Library for AWS::MediaStore
 <!--BEGIN STABILITY BANNER-->
 
 ---

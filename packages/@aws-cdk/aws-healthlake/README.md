@@ -1,4 +1,4 @@
-# AWS::HealthLake Construct Library
+# The CDK Construct Library for AWS::HealthLake
 <!--BEGIN STABILITY BANNER-->
 
 ---

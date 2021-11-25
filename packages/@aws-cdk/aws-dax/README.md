@@ -1,4 +1,4 @@
-# AWS::DAX Construct Library
+# The CDK Construct Library for AWS::DAX
 <!--BEGIN STABILITY BANNER-->
 
 ---

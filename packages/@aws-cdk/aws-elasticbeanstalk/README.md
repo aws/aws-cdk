@@ -1,4 +1,4 @@
-# AWS::ElasticBeanstalk Construct Library
+# The CDK Construct Library for AWS::ElasticBeanstalk
 <!--BEGIN STABILITY BANNER-->
 
 ---

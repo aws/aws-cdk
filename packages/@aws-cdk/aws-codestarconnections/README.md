@@ -1,4 +1,4 @@
-# AWS::CodeStarConnections Construct Library
+# The CDK Construct Library for AWS::CodeStarConnections
 <!--BEGIN STABILITY BANNER-->
 
 ---

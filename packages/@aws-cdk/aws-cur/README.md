@@ -1,4 +1,4 @@
-# AWS::CUR Construct Library
+# The CDK Construct Library for AWS::CUR
 <!--BEGIN STABILITY BANNER-->
 
 ---

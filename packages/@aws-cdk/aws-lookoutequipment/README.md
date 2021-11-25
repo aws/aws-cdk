@@ -1,4 +1,4 @@
-# AWS::LookoutEquipment Construct Library
+# The CDK Construct Library for AWS::LookoutEquipment
 <!--BEGIN STABILITY BANNER-->
 
 ---

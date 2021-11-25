@@ -1,4 +1,4 @@
-# AWS::DevOpsGuru Construct Library
+# The CDK Construct Library for AWS::DevOpsGuru
 <!--BEGIN STABILITY BANNER-->
 
 ---

@@ -18,7 +18,7 @@ async function main() {
       const namespace = packageJson['cdk-build']?.cloudformation;
       const namespaces = Array.isArray(namespace) ? namespace : [namespace];
 
-      await createLibraryReadme(namespaces[0], path.join(packageDir, 'README.md'));
+      await createLibraryReadme(namespaces[0], path.join(packageDir, 'README.md'), packageJson.description);
     }
   }
 }

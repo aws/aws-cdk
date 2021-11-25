@@ -1,4 +1,4 @@
-# AWS::RAM Construct Library
+# The CDK Construct Library for AWS::RAM
 <!--BEGIN STABILITY BANNER-->
 
 ---

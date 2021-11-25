@@ -1,4 +1,4 @@
-# AWS::NetworkManager Construct Library
+# The CDK Construct Library for AWS::NetworkManager
 <!--BEGIN STABILITY BANNER-->
 
 ---

@@ -1,4 +1,4 @@
-# AWS::PinpointEmail Construct Library
+# The CDK Construct Library for AWS::PinpointEmail
 <!--BEGIN STABILITY BANNER-->
 
 ---

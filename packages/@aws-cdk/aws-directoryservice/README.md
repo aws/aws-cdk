@@ -1,4 +1,4 @@
-# AWS::DirectoryService Construct Library
+# The CDK Construct Library for AWS::DirectoryService
 <!--BEGIN STABILITY BANNER-->
 
 ---

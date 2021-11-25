@@ -1,4 +1,4 @@
-# AWS::IoTCoreDeviceAdvisor Construct Library
+# The CDK Construct Library for AWS::IoTCoreDeviceAdvisor
 <!--BEGIN STABILITY BANNER-->
 
 ---

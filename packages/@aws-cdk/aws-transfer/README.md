@@ -1,4 +1,4 @@
-# AWS::Transfer Construct Library
+# The CDK Construct Library for AWS::Transfer
 <!--BEGIN STABILITY BANNER-->
 
 ---

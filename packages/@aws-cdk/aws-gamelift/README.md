@@ -1,4 +1,4 @@
-# AWS::GameLift Construct Library
+# The CDK Construct Library for AWS::GameLift
 <!--BEGIN STABILITY BANNER-->
 
 ---

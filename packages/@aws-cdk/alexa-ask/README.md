@@ -1,4 +1,4 @@
-# Alexa::ASK Construct Library
+# The CDK Construct Library for Alexa::ASK
 <!--BEGIN STABILITY BANNER-->
 
 ---

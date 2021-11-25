@@ -1,4 +1,4 @@
-# AWS::Detective Construct Library
+# The CDK Construct Library for AWS::Detective
 <!--BEGIN STABILITY BANNER-->
 
 ---

@@ -1,4 +1,4 @@
-# AWS::DLM Construct Library
+# The CDK Construct Library for AWS::DLM
 <!--BEGIN STABILITY BANNER-->
 
 ---

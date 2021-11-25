@@ -1,4 +1,4 @@
-# AWS::MediaConvert Construct Library
+# The CDK Construct Library for AWS::MediaConvert
 <!--BEGIN STABILITY BANNER-->
 
 ---

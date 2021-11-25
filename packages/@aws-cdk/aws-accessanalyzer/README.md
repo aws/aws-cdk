@@ -1,4 +1,4 @@
-# AWS::AccessAnalyzer Construct Library
+# The CDK Construct Library for AWS::AccessAnalyzer
 <!--BEGIN STABILITY BANNER-->
 
 ---

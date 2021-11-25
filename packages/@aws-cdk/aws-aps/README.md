@@ -1,4 +1,4 @@
-# AWS::APS Construct Library
+# The CDK Construct Library for AWS::APS
 <!--BEGIN STABILITY BANNER-->
 
 ---

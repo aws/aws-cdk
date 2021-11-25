@@ -1,4 +1,4 @@
-# AWS::LakeFormation Construct Library
+# The CDK Construct Library for AWS::LakeFormation
 <!--BEGIN STABILITY BANNER-->
 
 ---

@@ -1,4 +1,4 @@
-# AWS::DMS Construct Library
+# The CDK Construct Library for AWS::DMS
 <!--BEGIN STABILITY BANNER-->
 
 ---

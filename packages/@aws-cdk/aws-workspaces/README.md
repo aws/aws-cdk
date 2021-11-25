@@ -1,4 +1,4 @@
-# AWS::WorkSpaces Construct Library
+# The CDK Construct Library for AWS::WorkSpaces
 <!--BEGIN STABILITY BANNER-->
 
 ---

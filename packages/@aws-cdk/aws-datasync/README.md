@@ -1,4 +1,4 @@
-# AWS::DataSync Construct Library
+# The CDK Construct Library for AWS::DataSync
 <!--BEGIN STABILITY BANNER-->
 
 ---

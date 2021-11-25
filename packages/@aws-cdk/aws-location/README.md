@@ -1,4 +1,4 @@
-# AWS::Location Construct Library
+# The CDK Construct Library for AWS::Location
 <!--BEGIN STABILITY BANNER-->
 
 ---

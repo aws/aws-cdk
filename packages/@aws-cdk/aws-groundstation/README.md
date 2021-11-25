@@ -1,4 +1,4 @@
-# AWS::GroundStation Construct Library
+# The CDK Construct Library for AWS::GroundStation
 <!--BEGIN STABILITY BANNER-->
 
 ---

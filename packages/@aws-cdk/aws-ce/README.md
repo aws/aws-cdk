@@ -1,4 +1,4 @@
-# AWS::CE Construct Library
+# The CDK Construct Library for AWS::CE
 <!--BEGIN STABILITY BANNER-->
 
 ---

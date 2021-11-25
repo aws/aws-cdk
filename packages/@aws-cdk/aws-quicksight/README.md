@@ -1,4 +1,4 @@
-# AWS::QuickSight Construct Library
+# The CDK Construct Library for AWS::QuickSight
 <!--BEGIN STABILITY BANNER-->
 
 ---

@@ -1,4 +1,4 @@
-# AWS::FMS Construct Library
+# The CDK Construct Library for AWS::FMS
 <!--BEGIN STABILITY BANNER-->
 
 ---

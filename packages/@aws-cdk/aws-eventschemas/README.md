@@ -1,4 +1,4 @@
-# AWS::EventSchemas Construct Library
+# The CDK Construct Library for AWS::EventSchemas
 <!--BEGIN STABILITY BANNER-->
 
 ---

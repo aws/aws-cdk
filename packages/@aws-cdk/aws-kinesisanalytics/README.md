@@ -1,4 +1,4 @@
-# AWS::KinesisAnalytics Construct Library
+# The CDK Construct Library for AWS::KinesisAnalytics
 <!--BEGIN STABILITY BANNER-->
 
 ---

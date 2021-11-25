@@ -1,4 +1,4 @@
-# AWS::CodeGuruReviewer Construct Library
+# The CDK Construct Library for AWS::CodeGuruReviewer
 <!--BEGIN STABILITY BANNER-->
 
 ---

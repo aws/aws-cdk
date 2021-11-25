@@ -1,4 +1,4 @@
-# AWS::FraudDetector Construct Library
+# The CDK Construct Library for AWS::FraudDetector
 <!--BEGIN STABILITY BANNER-->
 
 ---

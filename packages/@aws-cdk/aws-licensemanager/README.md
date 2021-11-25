@@ -1,4 +1,4 @@
-# AWS::LicenseManager Construct Library
+# The CDK Construct Library for AWS::LicenseManager
 <!--BEGIN STABILITY BANNER-->
 
 ---
