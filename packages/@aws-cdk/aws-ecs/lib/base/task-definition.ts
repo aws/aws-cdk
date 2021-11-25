@@ -727,15 +727,15 @@ export class TaskDefinition extends TaskDefinitionBase {
 
   private checkFargateWindowsBasedTasksSize(cpu: string, memory: string, runtimePlatform: RuntimePlatform) {
     if (Number(cpu) === 1024) {
-      if (Number(memory) < 1024 || Number(memory) > 8192) {
+      if (Number(memory) < 1024 || Number(memory) > 8192 || (Number(memory)% 1024 !== 0)) {
         throw new Error(`If define vCPU equal ${cpu}, Memory need in Min. 2GB and Max. 8GB, in 1GB increments, cannot define ${Number(memory)}.`);
       }
     } else if (Number(cpu) === 2048) {
-      if (Number(memory) < 4096 || Number(memory) > 16384) {
+      if (Number(memory) < 4096 || Number(memory) > 16384 || (Number(memory) % 1024 !== 0)) {
         throw new Error(`If define vCPU equal ${cpu}, Memory need in Min. 4GB and Max. 16GB, in 1GB increments, cannot define ${Number(memory)}.`);
       }
     } else if (Number(cpu) === 4096) {
-      if (Number(memory) < 8192 || Number(memory) > 30720) {
+      if (Number(memory) < 8192 || Number(memory) > 30720 || (Number(memory) % 1024 !== 0)) {
         throw new Error(`If define vCPU equal ${cpu}, Memory need in Min. 8GB and Max. 30GB, in 1GB increments, cannot define ${Number(memory)}.`);
       }
     } else {

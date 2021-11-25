@@ -317,8 +317,9 @@ describe('fargate task definition', () => {
       // GIVEN
       const stack = new cdk.Stack();
 
+      // Not in CPU Ranage.
       expect(() => {
-        new ecs.FargateTaskDefinition(stack, 'FargateTaskDef', {
+        new ecs.FargateTaskDefinition(stack, 'FargateTaskDefCPU', {
           cpu: 128,
           memoryLimitMiB: 1024,
           runtimePlatform: {
@@ -327,6 +328,18 @@ describe('fargate task definition', () => {
           },
         });
       }).toThrowError(`If operatingSystemFamily is ${ecs.OperatingSystemFamily.WINDOWS_SERVER_2019_CORE._operatingSystemFamily}, then cpu must be in 1024 (1 vCPU), 2048 (2 vCPU), or 4096 (4 vCPU).`);
+
+      // Memory is not in 1 GB increments.
+      expect(() => {
+        new ecs.FargateTaskDefinition(stack, 'FargateTaskDefMemory', {
+          cpu: 1024,
+          memoryLimitMiB: 1025,
+          runtimePlatform: {
+            cpuArchitecture: ecs.CpuArchitecture.X86_64,
+            operatingSystemFamily: ecs.OperatingSystemFamily.WINDOWS_SERVER_2019_CORE,
+          },
+        });
+      }).toThrowError('If define vCPU equal 1024, Memory need in Min. 2GB and Max. 8GB, in 1GB increments, cannot define 1025.');
 
     });
 

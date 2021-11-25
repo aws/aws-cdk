@@ -63,9 +63,8 @@ export interface FargateTaskDefinitionProps extends CommonTaskDefinitionProps {
 
   /**
    * The operating system that your task definitions are running on.
-   * A platform family is specified only for tasks using the Fargate launch type.
    *
-   * When you specify a task in a service, this value must match the runtimePlatform value of the service.
+   * NOTE: A platform family is specified only for tasks using the Fargate launch type.
    *
    * @default - Undefined.
    */
