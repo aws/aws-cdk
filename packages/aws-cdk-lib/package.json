@@ -572,7 +572,6 @@
     "./lambda-layer-kubectl": "./lambda-layer-kubectl/index.js",
     "./lambda-layer-node-proxy-agent": "./lambda-layer-node-proxy-agent/index.js",
     "./pipelines": "./pipelines/index.js",
-    "./pipelines/package.json": "./pipelines/package.json",
     "./pipelines/lib/helpers-internal": "./pipelines/lib/helpers-internal/index.js",
     "./region-info": "./region-info/index.js"
   }

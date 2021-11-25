@@ -17,11 +17,15 @@ export async function loadTypeSystem(validate = true) {
   const packageJson = require('../package.json');
 
   for (const depName of Object.keys(packageJson.dependencies || {})) {
-    const jsiiModuleDir = path.dirname(require.resolve(`${depName}/package.json`));
-    if (!fs.existsSync(path.resolve(jsiiModuleDir, '.jsii'))) {
-      continue;
+    try {
+      const jsiiModuleDir = path.dirname(require.resolve(`${depName}/.jsii`));
+      await typeSystem.load(jsiiModuleDir, { validate });
+
+    } catch (e) {
+      if (!['MODULE_NOT_FOUND', 'ERR_PACKAGE_PATH_NOT_EXPORTED'].includes((e as any).code)) {
+        throw e;
+      }
     }
-    await typeSystem.load(jsiiModuleDir, { validate });
   }
 
   return typeSystem;

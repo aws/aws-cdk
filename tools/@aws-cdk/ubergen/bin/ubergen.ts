@@ -242,7 +242,14 @@ async function prepareSourceFiles(libraries: readonly LibraryReference[], packag
 
   // Control 'exports' field of the 'package.json'. This will control what kind of 'import' statements are
   // allowed for this package: we only want to allow the exact import statements that we want to support.
-  packageJson.exports = { '.': './index.js' };
+  //
+  // We need to expose 'package.json' because 'jsii-reflect' needs it (-_-),
+  // which we're going to replace with '.jsii' in due time.
+  packageJson.exports = {
+    '.': './index.js',
+    './package.json': './package.json',
+    './.jsii': './.jsii',
+  };
 
   const indexStatements = new Array<string>();
   for (const library of libraries) {
