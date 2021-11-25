@@ -21,6 +21,7 @@ export * from './authorizers';
 export * from './access-log';
 export * from './api-definition';
 export * from './gateway-response';
+export * from './stepfunctions-api';
 
 // AWS::ApiGateway CloudFormation Resources:
 export * from './apigateway.generated';

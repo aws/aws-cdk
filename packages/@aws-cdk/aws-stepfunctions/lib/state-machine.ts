@@ -165,6 +165,18 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
   }
 
   /**
+   * Grant the given identity permissions to start a synchronous execution of
+   * this state machine.
+   */
+  public grantStartSyncExecution(identity: iam.IGrantable): iam.Grant {
+    return iam.Grant.addToPrincipal({
+      grantee: identity,
+      actions: ['states:StartSyncExecution'],
+      resourceArns: [this.stateMachineArn],
+    });
+  }
+
+  /**
    * Grant the given identity permissions to read results from state
    * machine.
    */
@@ -504,6 +516,14 @@ export interface IStateMachine extends IResource, iam.IGrantable {
    * @param identity The principal
    */
   grantStartExecution(identity: iam.IGrantable): iam.Grant;
+
+  /**
+   * Grant the given identity permissions to start a synchronous execution of
+   * this state machine.
+   *
+   * @param identity The principal
+   */
+  grantStartSyncExecution(identity: iam.IGrantable): iam.Grant;
 
   /**
    * Grant the given identity read permissions for this state machine
