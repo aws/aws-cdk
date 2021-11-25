@@ -433,6 +433,7 @@ export class TaskDefinition extends TaskDefinitionBase {
 
     this.ephemeralStorageGiB = props.ephemeralStorageGiB;
 
+    // validate the cpu and memory size for the Windows operation system family.
     if (props.runtimePlatform?.operatingSystemFamily?._operatingSystemFamily.includes('WINDOWS')) {
       this.checkFargateWindowsBasedTasksSize(props.cpu!, props.memoryMiB!, props.runtimePlatform!);
     }
