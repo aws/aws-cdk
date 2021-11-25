@@ -136,8 +136,8 @@ The following code defines a REST API that routes all requests to the specified 
 const stateMachineDefinition = new stepfunctions.Pass(this, 'PassState');
 
 const stateMachine: stepfunctions.IStateMachine = new stepfunctions.StateMachine(this, 'StateMachine', {
-    definition: stateMachineDefinition,
-    stateMachineType: stepfunctions.StateMachineType.EXPRESS,
+  definition: stateMachineDefinition,
+  stateMachineType: stepfunctions.StateMachineType.EXPRESS,
 });
     
 new apigateway.StepFunctionsRestApi(this, 'StepFunctionsRestApi', {
@@ -187,22 +187,15 @@ AWS Step Functions will receive the following execution input:
 Additional information around the request such as the request context and headers can be included as part of the input
 forwarded to the state machine. The following example enables headers to be included in the input but not query string.
 
-```ts
-const stateMachineDefinition = new stepfunctions.Pass(this, 'PassState');
-
-const stateMachine: stepfunctions.IStateMachine = new stepfunctions.StateMachine(this, 'StateMachine', {
-    definition: stateMachineDefinition,
-    stateMachineType: stepfunctions.StateMachineType.EXPRESS,
-});
-    
+```ts fixture=stepfunctions
 new apigateway.StepFunctionsRestApi(this, 'StepFunctionsRestApi', {
-  stateMachine: stateMachine,
+  stateMachine: machine,
   headers: true,
   path: false,
   querystring: false,
   requestContext: {
-      caller: true,
-      user: true,
+    caller: true,
+    user: true,
   },
 });
 ```
