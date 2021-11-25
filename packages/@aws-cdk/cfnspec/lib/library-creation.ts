@@ -87,5 +87,5 @@ export async function createLibraryReadme(namespace: string, readmePath: string)
     `For more information on the resources and properties available for this service, see the [CloudFormation documentation for ${module.namespace}](${cfnLink}).`,
     '',
     '(Read the [CDK Contributing Guide](https://github.com/aws/aws-cdk/blob/master/CONTRIBUTING.md) if you are interested in contributing to this construct library.)',
-  ].join('\n'), 'utf8');
+  ].join('\n') + '\n', 'utf8'); // File must end in newline otherwise linter will complain
 }
