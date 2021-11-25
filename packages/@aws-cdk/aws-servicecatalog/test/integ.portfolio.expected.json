@@ -256,6 +256,39 @@
         ]
       }
     },
+    "TestProductTagOptionAssociation667d45e6d8a1F30303D6": {
+      "Type": "AWS::ServiceCatalog::TagOptionAssociation",
+      "Properties": {
+        "ResourceId": {
+          "Ref": "TestProduct7606930B"
+        },
+        "TagOptionId": {
+          "Ref": "TagOptionc0d88a3c4b8b"
+        }
+      }
+    },
+    "TestProductTagOptionAssociationec68fcd0154fF6DAD979": {
+      "Type": "AWS::ServiceCatalog::TagOptionAssociation",
+      "Properties": {
+        "ResourceId": {
+          "Ref": "TestProduct7606930B"
+        },
+        "TagOptionId": {
+          "Ref": "TagOption9b16df08f83d"
+        }
+      }
+    },
+    "TestProductTagOptionAssociation259ba31b62cc63D068F9": {
+      "Type": "AWS::ServiceCatalog::TagOptionAssociation",
+      "Properties": {
+        "ResourceId": {
+          "Ref": "TestProduct7606930B"
+        },
+        "TagOptionId": {
+          "Ref": "TagOptiondf34c1c83580"
+        }
+      }
+    },
     "Topic198E71B3E": {
       "Type": "AWS::SNS::Topic"
     },

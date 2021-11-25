@@ -42,6 +42,7 @@ interface LibraryReference {
 }
 
 interface PackageJson {
+  readonly description?: string;
   readonly bundleDependencies?: readonly string[];
   readonly bundledDependencies?: readonly string[];
   readonly dependencies?: { readonly [name: string]: string };
