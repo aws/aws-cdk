@@ -16,7 +16,7 @@
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
 ```ts nofixture
-import * as aws_aps from '@aws-cdk/aws-aps';
+import * as aps from '@aws-cdk/aws-aps';
 ```
 
 There are no hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet. 

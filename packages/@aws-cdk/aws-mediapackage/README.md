@@ -16,7 +16,7 @@
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
 ```ts nofixture
-import * as aws_mediapackage from '@aws-cdk/aws-mediapackage';
+import * as mediapackage from '@aws-cdk/aws-mediapackage';
 ```
 
 There are no hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet. 

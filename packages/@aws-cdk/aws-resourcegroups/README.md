@@ -16,7 +16,7 @@
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
 ```ts nofixture
-import * as aws_resourcegroups from '@aws-cdk/aws-resourcegroups';
+import * as resourcegroups from '@aws-cdk/aws-resourcegroups';
 ```
 
 There are no hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet. 

@@ -16,7 +16,7 @@
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
 ```ts nofixture
-import * as aws_iotcoredeviceadvisor from '@aws-cdk/aws-iotcoredeviceadvisor';
+import * as iotcoredeviceadvisor from '@aws-cdk/aws-iotcoredeviceadvisor';
 ```
 
 There are no hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet. 

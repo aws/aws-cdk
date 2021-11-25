@@ -65,6 +65,8 @@ export async function createLibraryReadme(namespace: string, readmePath: string)
 
   const cfnLink = `https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/${module.namespace.replace('::', '_')}.html`;
 
+  const importName = module.moduleName.toLocaleLowerCase().replace(/[^a-z0-9_]/g, '_').replace(/^aws_/, '');
+
   await fs.writeFile(readmePath, [
     `# ${title}`,
     '<!--BEGIN STABILITY BANNER-->',
@@ -84,7 +86,7 @@ export async function createLibraryReadme(namespace: string, readmePath: string)
     'This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.',
     '',
     '```ts nofixture',
-    `import * as ${module.moduleName.toLocaleLowerCase().replace(/[^a-z0-9_]/g, '_')} from '${module.packageName}';`,
+    `import * as ${importName} from '${module.packageName}';`,
     '```',
     '',
     'There are no hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet. ',
