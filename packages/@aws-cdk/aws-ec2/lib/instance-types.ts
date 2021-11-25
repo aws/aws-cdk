@@ -119,6 +119,16 @@ export enum InstanceClass {
   R5 = 'r5',
 
   /**
+   * Memory optimized instances, 6th generation with Intel Xeon Scalable processors (3rd generation processors code named Ice Lake)
+   */
+  MEMORY6_INTEL = 'r6i',
+
+  /**
+   * Memory optimized instances, 6th generation with Intel Xeon Scalable processors (3rd generation processors code named Ice Lake)
+   */
+  R6I = 'r6i',
+
+  /**
    * Memory optimized instances for high performance computing, 5th generation
    */
   MEMORY5_HIGH_PERFORMANCE = 'r5n',
