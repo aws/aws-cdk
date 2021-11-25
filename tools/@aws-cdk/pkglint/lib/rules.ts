@@ -5,6 +5,7 @@ import * as glob from 'glob';
 import * as semver from 'semver';
 import { LICENSE, NOTICE } from './licensing';
 import { PackageJson, ValidationRule } from './packagejson';
+import { cfnOnlyReadmeContents } from './readme-contents';
 import {
   deepGet, deepSet,
   expectDevDependency, expectJSON,
@@ -13,7 +14,6 @@ import {
   findInnerPackages,
   monoRepoRoot,
 } from './util';
-import { cfnOnlyReadmeContents } from './readme-contents';
 
 const PKGLINT_VERSION = require('../package.json').version; // eslint-disable-line @typescript-eslint/no-require-imports
 const AWS_SERVICE_NAMES = require('./aws-service-official-names.json'); // eslint-disable-line @typescript-eslint/no-require-imports
@@ -1871,5 +1871,5 @@ function beginEndRegex(label: string) {
 }
 
 function readIfExists(filename: string): string | undefined {
-  return  fs.existsSync(filename) ? fs.readFileSync(filename, { encoding: 'utf8' }) : undefined;
+  return fs.existsSync(filename) ? fs.readFileSync(filename, { encoding: 'utf8' }) : undefined;
 }

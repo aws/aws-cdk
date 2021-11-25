@@ -31,7 +31,7 @@ export function cfnOnlyReadmeContents(options: LibraryReadmeOptions) {
 
   const cfnLink = `https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/${options.cfnNamespace.replace('::', '_')}.html`;
 
-  const moduleName = options.cfnNamespace.replace('::', '-').replace(/V\d+$/, '').toLocaleLowerCase()
+  const moduleName = options.cfnNamespace.replace('::', '-').replace(/V\d+$/, '').toLocaleLowerCase();
   const importName = moduleName.replace(/[^a-z0-9_]/g, '_').replace(/^aws_/, '');
 
   return [
