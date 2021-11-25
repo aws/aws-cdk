@@ -1,4 +1,4 @@
-# The CDK Construct Library for AWS::Lightsail
+# AWS::Lightsail Construct Library
 <!--BEGIN STABILITY BANNER-->
 
 ---

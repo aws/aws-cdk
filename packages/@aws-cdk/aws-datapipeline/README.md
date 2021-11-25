@@ -1,4 +1,4 @@
-# The CDK Construct Library for AWS::DataPipeline
+# AWS Data Pipeline Construct Library
 <!--BEGIN STABILITY BANNER-->
 
 ---

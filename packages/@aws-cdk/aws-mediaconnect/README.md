@@ -1,4 +1,4 @@
-# The CDK Construct Library for AWS::MediaConnect
+# AWS::MediaConnect Construct Library
 <!--BEGIN STABILITY BANNER-->
 
 ---

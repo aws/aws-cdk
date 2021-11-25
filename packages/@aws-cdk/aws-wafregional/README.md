@@ -1,4 +1,4 @@
-# The CDK Construct Library for AWS::WAFRegional
+# AWS WAF Regional Construct Library
 <!--BEGIN STABILITY BANNER-->
 
 ---

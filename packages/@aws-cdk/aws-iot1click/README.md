@@ -1,4 +1,4 @@
-# The CDK Construct Library for AWS::IoT1Click
+# AWS IoT 1-Click Construct Library
 <!--BEGIN STABILITY BANNER-->
 
 ---

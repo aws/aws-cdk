@@ -1,4 +1,4 @@
-# The CDK Construct Library for the AWS Serverless Application Model (SAM) resources
+# AWS Serverless Application Model Construct Library
 <!--BEGIN STABILITY BANNER-->
 
 ---

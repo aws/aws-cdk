@@ -1,4 +1,4 @@
-# The CDK Construct Library for AWS::S3ObjectLambda
+# AWS::S3ObjectLambda Construct Library
 <!--BEGIN STABILITY BANNER-->
 
 ---

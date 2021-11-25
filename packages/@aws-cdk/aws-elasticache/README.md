@@ -1,4 +1,4 @@
-# The CDK Construct Library for AWS::ElastiCache
+# Amazon ElastiCache Construct Library
 <!--BEGIN STABILITY BANNER-->
 
 ---

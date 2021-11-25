@@ -1,4 +1,4 @@
-# The CDK Construct Library for AWS::Greengrass
+# AWS IoT Greengrass Construct Library
 <!--BEGIN STABILITY BANNER-->
 
 ---

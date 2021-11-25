@@ -1,4 +1,4 @@
-# The CDK Construct Library for AWS::WAF
+# AWS Web Application Firewall Construct Library
 <!--BEGIN STABILITY BANNER-->
 
 ---

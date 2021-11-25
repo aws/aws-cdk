@@ -1,4 +1,4 @@
-# The CDK Construct Library for AWS::DLM
+# Amazon Data Lifecycle Manager Construct Library
 <!--BEGIN STABILITY BANNER-->
 
 ---

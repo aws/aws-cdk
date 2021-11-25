@@ -1,4 +1,4 @@
-# The CDK Construct Library for AWS::SecurityHub
+# AWS Security Hub Construct Library
 <!--BEGIN STABILITY BANNER-->
 
 ---

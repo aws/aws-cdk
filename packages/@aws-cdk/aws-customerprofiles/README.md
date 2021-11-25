@@ -1,4 +1,4 @@
-# The CDK Construct Library for AWS::CustomerProfiles
+# AWS::CustomerProfiles Construct Library
 <!--BEGIN STABILITY BANNER-->
 
 ---

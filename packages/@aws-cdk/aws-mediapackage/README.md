@@ -1,4 +1,4 @@
-# The CDK Construct Library for AWS::MediaPackage
+# AWS::MediaPackage Construct Library
 <!--BEGIN STABILITY BANNER-->
 
 ---

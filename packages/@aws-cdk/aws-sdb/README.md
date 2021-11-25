@@ -1,4 +1,4 @@
-# The CDK Construct Library for AWS::SDB
+# Amazon SimpleDB Construct Library
 <!--BEGIN STABILITY BANNER-->
 
 ---

@@ -1,4 +1,4 @@
-# The CDK Construct Library for AWS::ApplicationInsights
+# AWS::ApplicationInsights Construct Library
 <!--BEGIN STABILITY BANNER-->
 
 ---

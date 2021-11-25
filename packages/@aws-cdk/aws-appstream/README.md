@@ -1,4 +1,4 @@
-# The CDK Construct Library for AWS::AppStream
+# Amazon AppStream 2.0 Construct Library
 <!--BEGIN STABILITY BANNER-->
 
 ---

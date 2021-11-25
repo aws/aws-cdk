@@ -1,4 +1,4 @@
-# The CDK Construct Library for AWS::AmazonMQ
+# Amazon MQ Construct Library
 <!--BEGIN STABILITY BANNER-->
 
 ---

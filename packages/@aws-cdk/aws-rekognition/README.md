@@ -1,4 +1,4 @@
-# The CDK Construct Library for AWS::Rekognition
+# AWS::Rekognition Construct Library
 <!--BEGIN STABILITY BANNER-->
 
 ---

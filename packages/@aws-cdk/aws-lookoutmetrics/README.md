@@ -1,4 +1,4 @@
-# The CDK Construct Library for AWS::LookoutMetrics
+# AWS::LookoutMetrics Construct Library
 <!--BEGIN STABILITY BANNER-->
 
 ---

@@ -1,4 +1,4 @@
-# The CDK Construct Library for AWS::SSMContacts
+# AWS::SSMContacts Construct Library
 <!--BEGIN STABILITY BANNER-->
 
 ---

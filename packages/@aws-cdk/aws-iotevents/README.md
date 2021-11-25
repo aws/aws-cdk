@@ -1,4 +1,4 @@
-# The CDK Construct Library for AWS::IoTEvents
+# AWS::IoTEvents Construct Library
 <!--BEGIN STABILITY BANNER-->
 
 ---

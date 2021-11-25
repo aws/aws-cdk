@@ -314,7 +314,7 @@ async function transformPackage(
       cfnScopes.map(s => (s === 'AWS::Serverless' ? 'AWS::SAM' : s).split('::')[1].toLocaleLowerCase())
         .map(s => `export * from './${s}.generated';`)
         .join('\n'));
-    await cfnspec.createLibraryReadme(cfnScopes[0], path.join(destination, 'README.md'), library.packageJson.description);
+    await cfnspec.createLibraryReadme(cfnScopes[0], path.join(destination, 'README.md'));
 
     await copyOrTransformFiles(destination, destination, allLibraries, uberPackageJson);
   } else {

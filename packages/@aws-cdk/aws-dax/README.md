@@ -1,4 +1,4 @@
-# The CDK Construct Library for AWS::DAX
+# Amazon DynamoDB Accelerator Construct Library
 <!--BEGIN STABILITY BANNER-->
 
 ---

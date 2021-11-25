@@ -1,4 +1,4 @@
-# The CDK Construct Library for AWS::ResourceGroups
+# AWS::ResourceGroups Construct Library
 <!--BEGIN STABILITY BANNER-->
 
 ---

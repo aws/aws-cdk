@@ -1,4 +1,4 @@
-# The CDK Construct Library for AWS::Pinpoint
+# Amazon Pinpoint Construct Library
 <!--BEGIN STABILITY BANNER-->
 
 ---

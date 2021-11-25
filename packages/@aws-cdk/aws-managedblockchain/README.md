@@ -1,4 +1,4 @@
-# The CDK Construct Library for AWS::ManagedBlockchain
+# AWS::ManagedBlockchain Construct Library
 <!--BEGIN STABILITY BANNER-->
 
 ---

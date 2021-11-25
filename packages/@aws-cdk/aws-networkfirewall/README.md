@@ -1,4 +1,4 @@
-# The CDK Construct Library for AWS::NetworkFirewall
+# AWS::NetworkFirewall Construct Library
 <!--BEGIN STABILITY BANNER-->
 
 ---

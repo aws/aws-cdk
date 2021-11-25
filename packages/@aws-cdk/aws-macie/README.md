@@ -1,4 +1,4 @@
-# The CDK Construct Library for AWS::Macie
+# AWS::Macie Construct Library
 <!--BEGIN STABILITY BANNER-->
 
 ---

@@ -1,4 +1,4 @@
-# The CDK Construct Library for AWS::EMRContainers
+# AWS::EMRContainers Construct Library
 <!--BEGIN STABILITY BANNER-->
 
 ---

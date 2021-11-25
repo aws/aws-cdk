@@ -1,4 +1,4 @@
-# The CDK Construct Library for AWS::Wisdom
+# AWS::Wisdom Construct Library
 <!--BEGIN STABILITY BANNER-->
 
 ---

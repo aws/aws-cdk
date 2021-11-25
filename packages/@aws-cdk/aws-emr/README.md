@@ -1,4 +1,4 @@
-# The CDK Construct Library for AWS::EMR
+# Amazon EMR Construct Library
 <!--BEGIN STABILITY BANNER-->
 
 ---

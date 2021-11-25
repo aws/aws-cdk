@@ -1,4 +1,4 @@
-# The CDK Construct Library for AWS::LookoutVision
+# AWS::LookoutVision Construct Library
 <!--BEGIN STABILITY BANNER-->
 
 ---

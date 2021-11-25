@@ -1,4 +1,4 @@
-# The CDK Construct Library for AWS::MWAA
+# AWS::MWAA Construct Library
 <!--BEGIN STABILITY BANNER-->
 
 ---

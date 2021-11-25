@@ -1,4 +1,4 @@
-# The CDK Construct Library for AWS::AppFlow
+# AWS::AppFlow Construct Library
 <!--BEGIN STABILITY BANNER-->
 
 ---

@@ -1,4 +1,4 @@
-# The CDK Construct Library for AWS::Timestream
+# AWS::Timestream Construct Library
 <!--BEGIN STABILITY BANNER-->
 
 ---

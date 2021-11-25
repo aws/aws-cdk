@@ -1,4 +1,4 @@
-# The CDK Construct Library for AWS::Athena
+# Amazon Athena Construct Library
 <!--BEGIN STABILITY BANNER-->
 
 ---

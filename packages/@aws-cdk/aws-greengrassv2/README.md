@@ -1,4 +1,4 @@
-# The CDK Construct Library for AWS::GreengrassV2
+# AWS::GreengrassV2 Construct Library
 <!--BEGIN STABILITY BANNER-->
 
 ---

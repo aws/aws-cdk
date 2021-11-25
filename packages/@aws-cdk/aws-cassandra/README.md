@@ -1,4 +1,4 @@
-# The CDK Construct Library for AWS::Cassandra
+# AWS::Cassandra Construct Library
 <!--BEGIN STABILITY BANNER-->
 
 ---

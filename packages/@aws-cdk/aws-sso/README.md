@@ -1,4 +1,4 @@
-# The CDK Construct Library for AWS::SSO
+# AWS::SSO Construct Library
 <!--BEGIN STABILITY BANNER-->
 
 ---

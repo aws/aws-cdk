@@ -1,4 +1,4 @@
-# The CDK Construct Library for AWS::Transfer
+# AWS Transfer for SFTP Construct Library
 <!--BEGIN STABILITY BANNER-->
 
 ---

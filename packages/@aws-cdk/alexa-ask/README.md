@@ -1,4 +1,4 @@
-# The CDK Construct Library for Alexa::ASK
+# Alexa Skills Kit Construct Library
 <!--BEGIN STABILITY BANNER-->
 
 ---

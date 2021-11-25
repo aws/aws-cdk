@@ -1,4 +1,4 @@
-# The CDK Construct Library for AWS::GuardDuty
+# Amazon GuardDuty Construct Library
 <!--BEGIN STABILITY BANNER-->
 
 ---

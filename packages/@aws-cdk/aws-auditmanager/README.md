@@ -1,4 +1,4 @@
-# The CDK Construct Library for AWS::AuditManager
+# AWS::AuditManager Construct Library
 <!--BEGIN STABILITY BANNER-->
 
 ---

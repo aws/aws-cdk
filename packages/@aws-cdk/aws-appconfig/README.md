@@ -1,4 +1,4 @@
-# The CDK Construct Library for AWS::AppConfig
+# AWS::AppConfig Construct Library
 <!--BEGIN STABILITY BANNER-->
 
 ---

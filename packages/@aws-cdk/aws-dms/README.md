@@ -1,4 +1,4 @@
-# The CDK Construct Library for AWS::DMS
+# AWS Database Migration Service Construct Library
 <!--BEGIN STABILITY BANNER-->
 
 ---

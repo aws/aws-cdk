@@ -1,4 +1,4 @@
-# The CDK Construct Library for AWS::IoTSiteWise
+# AWS::IoTSiteWise Construct Library
 <!--BEGIN STABILITY BANNER-->
 
 ---

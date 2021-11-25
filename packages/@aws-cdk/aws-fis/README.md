@@ -1,4 +1,4 @@
-# The CDK Construct Library for AWS::FIS
+# AWS::FIS Construct Library
 <!--BEGIN STABILITY BANNER-->
 
 ---

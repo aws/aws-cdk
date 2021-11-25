@@ -1,4 +1,4 @@
-# The CDK Construct Library for AWS::Connect
+# AWS::Connect Construct Library
 <!--BEGIN STABILITY BANNER-->
 
 ---

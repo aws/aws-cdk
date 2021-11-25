@@ -1,4 +1,4 @@
-# The CDK Construct Library for AWS::S3Outposts
+# AWS::S3Outposts Construct Library
 <!--BEGIN STABILITY BANNER-->
 
 ---

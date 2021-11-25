@@ -1,4 +1,4 @@
-# The CDK Construct Library for AWS::AppIntegrations
+# AWS::AppIntegrations Construct Library
 <!--BEGIN STABILITY BANNER-->
 
 ---

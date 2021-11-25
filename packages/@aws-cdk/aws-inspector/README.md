@@ -1,4 +1,4 @@
-# The CDK Construct Library for AWS::Inspector
+# Amazon Inspector Construct Library
 <!--BEGIN STABILITY BANNER-->
 
 ---

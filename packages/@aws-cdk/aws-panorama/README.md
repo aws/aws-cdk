@@ -1,4 +1,4 @@
-# The CDK Construct Library for AWS::Panorama
+# AWS::Panorama Construct Library
 <!--BEGIN STABILITY BANNER-->
 
 ---

@@ -1,4 +1,4 @@
-# The CDK Construct Library for AWS::Budgets
+# AWS Budgets Construct Library
 <!--BEGIN STABILITY BANNER-->
 
 ---

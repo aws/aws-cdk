@@ -260,7 +260,7 @@ async function main() {
       '});',
     ]);
 
-    await cfnspec.createLibraryReadme(namespace, path.join(packagePath, 'README.md'), description);
+    await cfnspec.createLibraryReadme(namespace, path.join(packagePath, 'README.md'));
 
     await write('.eslintrc.js', [
       "const baseConfig = require('@aws-cdk/cdk-build-tools/config/eslintrc');",

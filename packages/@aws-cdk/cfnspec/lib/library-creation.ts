@@ -1,5 +1,8 @@
 import * as fs from 'fs-extra';
 
+// eslint-disable-next-line import/no-extraneous-dependencies
+const AWS_SERVICE_NAMES = require('@aws-cdk/pkglint/lib/aws-service-official-names.json'); // eslint-disable-line @typescript-eslint/no-require-imports
+
 export interface ModuleDefinition {
   readonly namespace: string;
   readonly moduleName: string;
@@ -54,10 +57,11 @@ export function createModuleDefinitionFromCfnNamespace(namespace: string): Modul
   };
 }
 
-export async function createLibraryReadme(namespace: string, readmePath: string, packageDescription?: string) {
+
+export async function createLibraryReadme(namespace: string, readmePath: string) {
   const module = createModuleDefinitionFromCfnNamespace(namespace);
 
-  const title = packageDescription ?? `${namespace} Construct Library`;
+  const title = `${AWS_SERVICE_NAMES[namespace] ?? namespace} Construct Library`;
 
   const cfnLink = `https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/${module.namespace.replace('::', '_')}.html`;
 

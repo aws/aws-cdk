@@ -1,4 +1,4 @@
-# The CDK Construct Library for AWS::SageMaker
+# Amazon SageMaker Construct Library
 <!--BEGIN STABILITY BANNER-->
 
 ---

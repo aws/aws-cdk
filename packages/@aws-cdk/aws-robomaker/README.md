@@ -1,4 +1,4 @@
-# The CDK Construct Library for AWS::RoboMaker
+# AWS RoboMaker Construct Library
 <!--BEGIN STABILITY BANNER-->
 
 ---

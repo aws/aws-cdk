@@ -1,4 +1,4 @@
-# The CDK Construct Library for AWS::NimbleStudio
+# AWS::NimbleStudio Construct Library
 <!--BEGIN STABILITY BANNER-->
 
 ---

@@ -1,4 +1,4 @@
-# The CDK Construct Library for AWS::MemoryDB
+# AWS::MemoryDB Construct Library
 <!--BEGIN STABILITY BANNER-->
 
 ---

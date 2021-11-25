@@ -1,4 +1,4 @@
-# The CDK Construct Library for AWS::SSMIncidents
+# AWS::SSMIncidents Construct Library
 <!--BEGIN STABILITY BANNER-->
 
 ---

@@ -1,4 +1,4 @@
-# The CDK Construct Library for AWS::FinSpace
+# AWS::FinSpace Construct Library
 <!--BEGIN STABILITY BANNER-->
 
 ---

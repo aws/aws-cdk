@@ -1,4 +1,4 @@
-# The CDK Construct Library for AWS::XRay
+# AWS::XRay Construct Library
 <!--BEGIN STABILITY BANNER-->
 
 ---

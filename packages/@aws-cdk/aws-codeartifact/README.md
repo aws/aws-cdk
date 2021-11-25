@@ -1,4 +1,4 @@
-# The CDK Construct Library for AWS::CodeArtifact
+# AWS::CodeArtifact Construct Library
 <!--BEGIN STABILITY BANNER-->
 
 ---

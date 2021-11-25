@@ -1,4 +1,4 @@
-# The CDK Construct Library for AWS::IoTThingsGraph
+# AWS IoT Things Graph Construct Library
 <!--BEGIN STABILITY BANNER-->
 
 ---
