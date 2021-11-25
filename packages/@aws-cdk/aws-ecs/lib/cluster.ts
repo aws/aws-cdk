@@ -287,11 +287,11 @@ export class Cluster extends Resource implements ICluster {
   }
 
   /**
+   * It is highly recommended to use {@link Cluster.addAsgCapacityProvider} instead of this method.
+   *
    * This method adds compute capacity to a cluster by creating an AutoScalingGroup with the specified options.
    *
    * Returns the AutoScalingGroup so you can add autoscaling settings to it.
-   *
-   * @deprecated Use {@link Cluster.addAsgCapacityProvider} instead.
    */
   public addCapacity(id: string, options: AddCapacityOptions): autoscaling.AutoScalingGroup {
     // Do 2-way defaulting here: if the machineImageType is BOTTLEROCKET, pick the right AMI.
