@@ -1,3 +1,4 @@
+import * as pkglint from '@aws-cdk/pkglint';
 import * as fs from 'fs-extra';
 
 export interface ModuleDefinition {
@@ -54,30 +55,12 @@ export function createModuleDefinitionFromCfnNamespace(namespace: string): Modul
   };
 }
 
+
 export async function createLibraryReadme(namespace: string, readmePath: string) {
   const module = createModuleDefinitionFromCfnNamespace(namespace);
 
-  await fs.writeFile(readmePath, [
-    `# ${namespace} Construct Library`,
-    '<!--BEGIN STABILITY BANNER-->',
-    '',
-    '---',
-    '',
-    '![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)',
-    '',
-    '> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.',
-    '>',
-    '> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib',
-    '',
-    '---',
-    '',
-    '<!--END STABILITY BANNER-->',
-    '',
-    'This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.',
-    '',
-    '```ts nofixture',
-    `import * as ${module.moduleName.toLocaleLowerCase().replace(/[^a-z0-9_]/g, '_')} from '${module.packageName}';`,
-    '```',
-    '',
-  ].join('\n'), 'utf8');
+  await fs.writeFile(readmePath, pkglint.cfnOnlyReadmeContents({
+    cfnNamespace: namespace,
+    packageName: module.packageName,
+  }));
 }
