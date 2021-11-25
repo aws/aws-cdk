@@ -1,10 +1,10 @@
 // package com.myorg;
 
 // import software.amazon.awscdk.App;
-// import software.amazon.awscdk.assertions.alpha.Template;
+// import software.amazon.awscdk.assertions.Template;
 // import java.io.IOException;
 
-// import java.util.Map;
+// import java.util.HashMap;
 
 // import org.junit.jupiter.api.Test;
 
@@ -19,8 +19,8 @@
 
 //         Template template = Template.fromStack(stack);
 
-//         template.hasResourceProperties("AWS::SQS::Queue", Map.of(
-//             "VisibilityTimeout", 300
-//         ));
+//         template.hasResourceProperties("AWS::SQS::Queue", new HashMap<String, Number>() {{
+//           put("VisibilityTimeout", 300);
+//         }});
 //     }
 // }

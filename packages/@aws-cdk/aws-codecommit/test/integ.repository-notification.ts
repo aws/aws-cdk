@@ -14,6 +14,6 @@ const repository = new codecommit.Repository(stack, 'MyCodecommitRepository', {
 const target = new sns.Topic(stack, 'MyTopic');
 
 repository.notifyOnPullRequestCreated('NotifyOnPullRequestCreated', target);
-repository.notifiyOnPullRequestMerged('NotifyOnPullRequestMerged', target);
+repository.notifyOnPullRequestMerged('NotifyOnPullRequestMerged', target);
 
 app.synth();
