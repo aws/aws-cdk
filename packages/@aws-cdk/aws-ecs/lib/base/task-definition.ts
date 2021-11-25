@@ -214,7 +214,6 @@ export interface TaskDefinitionProps extends CommonTaskDefinitionProps {
    * The operating system that your task definitions are running on.
    * A runtimePlatform is supported only for tasks using the Fargate launch type.
    *
-   * When you specify a task in a service, this value must match the runtimePlatform value of the service.
    *
    * @default - Undefined.
    */
