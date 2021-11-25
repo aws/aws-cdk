@@ -785,6 +785,7 @@
             ]
           },
           "functionName": "awscdkdocdbclusterrotationDatabaseRotationSingleUser7DAE65BE",
+          "excludeCharacters": "\"@/",
           "vpcSubnetIds": {
             "Fn::Join": [
               "",
