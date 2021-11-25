@@ -5,7 +5,7 @@ import { StateMachine, StateMachineType } from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
 import * as apigw from '../../lib';
 
-describe('StepFunctionsExecutionIntegration', () => {
+describe('StepFunctionsIntegration', () => {
   describe('startExecution', () => {
     test('minimal setup', () => {
       //GIVEN

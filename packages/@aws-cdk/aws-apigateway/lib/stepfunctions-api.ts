@@ -101,9 +101,7 @@ export class StepFunctionsRestApi extends RestApi {
     super(scope, id, props);
 
     this.root.addMethod('ANY', stepfunctionsIntegration, {
-      methodResponses: [
-        ...methodResponse(),
-      ],
+      methodResponses: methodResponse(),
     });
   }
 }
