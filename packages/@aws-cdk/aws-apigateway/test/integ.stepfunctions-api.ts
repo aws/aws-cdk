@@ -40,6 +40,10 @@ class StepFunctionsRestApiDeploymentStack extends cdk.Stack {
         api,
       }),
     });
+
+    new cdk.CfnOutput(this, 'ApiEndpoint', {
+      value: api.url,
+    });
   }
 }
 
