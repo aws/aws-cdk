@@ -257,5 +257,33 @@
         "StageName": "prod"
       }
     }
+  },
+  "Outputs": {
+    "ApiEndpoint": {
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "https://",
+            {
+              "Ref": "StepFunctionsRestApiC6E3E883"
+            },
+            ".execute-api.",
+            {
+              "Ref": "AWS::Region"
+            },
+            ".",
+            {
+              "Ref": "AWS::URLSuffix"
+            },
+            "/",
+            {
+              "Ref": "stage0661E4AC"
+            },
+            "/"
+          ]
+        ]
+      }
+    }
   }
 }
