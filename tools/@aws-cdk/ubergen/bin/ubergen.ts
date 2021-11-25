@@ -25,6 +25,9 @@ async function main() {
   await verifyDependencies(uberPackageJson, libraries);
   await prepareSourceFiles(libraries, uberPackageJson);
   await combineRosettaFixtures(libraries, uberPackageJson);
+
+  // Rewrite package.json (exports will have changed)
+  await fs.writeJson(UBER_PACKAGE_JSON_PATH, uberPackageJson, { spaces: 2 });
 }
 
 main().then(
@@ -42,6 +45,7 @@ interface LibraryReference {
 }
 
 interface PackageJson {
+  readonly main?: string;
   readonly description?: string;
   readonly bundleDependencies?: readonly string[];
   readonly bundledDependencies?: readonly string[];
@@ -76,6 +80,7 @@ interface PackageJson {
     readonly deprecatedPackages?: readonly string[];
     readonly excludeExperimentalModules?: boolean;
   };
+  exports?: Record<string, string>;
 }
 
 /**
@@ -236,6 +241,20 @@ async function prepareSourceFiles(libraries: readonly LibraryReference[], packag
     await fs.remove(LIB_ROOT);
   }
 
+  // Control 'exports' field of the 'package.json'. This will control what kind of 'import' statements are
+  // allowed for this package: we only want to allow the exact import statements that we want to support.
+  packageJson.exports = {
+    '.': './index.js',
+
+    // We need to expose 'package.json' and '.jsii' because 'jsii' and 'jsii-reflect' load them using
+    // require(). (-_-). Can be removed after https://github.com/aws/jsii/pull/3205 gets merged.
+    './package.json': './package.json',
+    './.jsii': './.jsii',
+
+    // This is necessary to support jsii cross-module warnings
+    './.warnings.jsii.js': './.warnings.jsii.js',
+  };
+
   const indexStatements = new Array<string>();
   for (const library of libraries) {
     const libDir = path.join(LIB_ROOT, library.shortName);
@@ -248,12 +267,31 @@ async function prepareSourceFiles(libraries: readonly LibraryReference[], packag
       indexStatements.push(`export * from './${library.shortName}';`);
     } else {
       indexStatements.push(`export * as ${library.shortName.replace(/-/g, '_')} from './${library.shortName}';`);
+      copySubmoduleExports(packageJson.exports, library, library.shortName);
     }
   }
 
   await fs.writeFile(path.join(LIB_ROOT, 'index.ts'), indexStatements.join('\n'), { encoding: 'utf8' });
 
   console.log('\t🍺 Success!');
+}
+
+/**
+ * Copy the sublibrary's exports into the 'exports' of the main library.
+ *
+ * Replace the original 'main' export with an export of the new '<submodule>/index.ts` file we've written
+ * in 'transformPackage'.
+ */
+function copySubmoduleExports(targetExports: Record<string, string>, library: LibraryReference, subdirectory: string) {
+  const visibleName = library.shortName;
+
+  for (const [relPath, relSource] of Object.entries(library.packageJson.exports ?? {})) {
+    targetExports[`./${unixPath(path.join(visibleName, relPath))}`] = `./${unixPath(path.join(subdirectory, relSource))}`;
+  }
+
+  // If there was an export for '.' in the original submodule, this assignment will overwrite it,
+  // which is exactly what we want.
+  targetExports[`./${unixPath(visibleName)}`] = `./${unixPath(subdirectory)}/index.js`;
 }
 
 async function combineRosettaFixtures(libraries: readonly LibraryReference[], uberPackageJson: PackageJson) {
@@ -500,4 +538,11 @@ function sortObject<T>(obj: Record<string, T>): Record<string, T> {
   }
 
   return result;
+}
+
+/**
+ * Turn potential backslashes into forward slashes
+ */
+function unixPath(x: string) {
+  return x.replace(/\\/g, '/');
 }
