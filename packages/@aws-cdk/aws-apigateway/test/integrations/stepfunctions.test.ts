@@ -74,28 +74,8 @@ describe('StepFunctionsExecutionIntegration', () => {
       const integ = apigw.StepFunctionsIntegration.startExecution(stateMachine);
       api.root.addMethod('GET', integ);
 
-      expect(stack).toHaveResource('AWS::ApiGateway::Method', {
+      expect(stack).toHaveResourceLike('AWS::ApiGateway::Method', {
         Integration: {
-          IntegrationHttpMethod: 'POST',
-          IntegrationResponses: getIntegrationResponse(),
-          Type: 'AWS',
-          Uri: {
-            'Fn::Join': [
-              '',
-              [
-                'arn:',
-                {
-                  Ref: 'AWS::Partition',
-                },
-                ':apigateway:',
-                {
-                  Ref: 'AWS::Region',
-                },
-                ':states:action/StartSyncExecution',
-              ],
-            ],
-          },
-          PassthroughBehavior: 'NEVER',
           RequestTemplates: {
             'application/json': {
               'Fn::Join': [
@@ -122,28 +102,8 @@ describe('StepFunctionsExecutionIntegration', () => {
       });
       api.root.addMethod('GET', integ);
 
-      expect(stack).toHaveResource('AWS::ApiGateway::Method', {
+      expect(stack).toHaveResourceLike('AWS::ApiGateway::Method', {
         Integration: {
-          IntegrationHttpMethod: 'POST',
-          IntegrationResponses: getIntegrationResponse(),
-          Type: 'AWS',
-          Uri: {
-            'Fn::Join': [
-              '',
-              [
-                'arn:',
-                {
-                  Ref: 'AWS::Partition',
-                },
-                ':apigateway:',
-                {
-                  Ref: 'AWS::Region',
-                },
-                ':states:action/StartSyncExecution',
-              ],
-            ],
-          },
-          PassthroughBehavior: 'NEVER',
           RequestTemplates: {
             'application/json': {
               'Fn::Join': [
@@ -168,28 +128,8 @@ describe('StepFunctionsExecutionIntegration', () => {
       const integ = apigw.StepFunctionsIntegration.startExecution(stateMachine);
       api.root.addMethod('GET', integ);
 
-      expect(stack).toHaveResource('AWS::ApiGateway::Method', {
+      expect(stack).toHaveResourceLike('AWS::ApiGateway::Method', {
         Integration: {
-          IntegrationHttpMethod: 'POST',
-          IntegrationResponses: getIntegrationResponse(),
-          Type: 'AWS',
-          Uri: {
-            'Fn::Join': [
-              '',
-              [
-                'arn:',
-                {
-                  Ref: 'AWS::Partition',
-                },
-                ':apigateway:',
-                {
-                  Ref: 'AWS::Region',
-                },
-                ':states:action/StartSyncExecution',
-              ],
-            ],
-          },
-          PassthroughBehavior: 'NEVER',
           RequestTemplates: {
             'application/json': {
               'Fn::Join': [
@@ -205,28 +145,8 @@ describe('StepFunctionsExecutionIntegration', () => {
         },
       });
 
-      expect(stack).toHaveResource('AWS::ApiGateway::Method', {
+      expect(stack).toHaveResourceLike('AWS::ApiGateway::Method', {
         Integration: {
-          IntegrationHttpMethod: 'POST',
-          IntegrationResponses: getIntegrationResponse(),
-          Type: 'AWS',
-          Uri: {
-            'Fn::Join': [
-              '',
-              [
-                'arn:',
-                {
-                  Ref: 'AWS::Partition',
-                },
-                ':apigateway:',
-                {
-                  Ref: 'AWS::Region',
-                },
-                ':states:action/StartSyncExecution',
-              ],
-            ],
-          },
-          PassthroughBehavior: 'NEVER',
           RequestTemplates: {
             'application/json': {
               'Fn::Join': [
@@ -254,28 +174,8 @@ describe('StepFunctionsExecutionIntegration', () => {
       });
       api.root.addMethod('GET', integ);
 
-      expect(stack).toHaveResource('AWS::ApiGateway::Method', {
+      expect(stack).toHaveResourceLike('AWS::ApiGateway::Method', {
         Integration: {
-          IntegrationHttpMethod: 'POST',
-          IntegrationResponses: getIntegrationResponse(),
-          Type: 'AWS',
-          Uri: {
-            'Fn::Join': [
-              '',
-              [
-                'arn:',
-                {
-                  Ref: 'AWS::Partition',
-                },
-                ':apigateway:',
-                {
-                  Ref: 'AWS::Region',
-                },
-                ':states:action/StartSyncExecution',
-              ],
-            ],
-          },
-          PassthroughBehavior: 'NEVER',
           RequestTemplates: {
             'application/json': {
               'Fn::Join': [
@@ -291,28 +191,8 @@ describe('StepFunctionsExecutionIntegration', () => {
         },
       });
 
-      expect(stack).toHaveResource('AWS::ApiGateway::Method', {
+      expect(stack).toHaveResourceLike('AWS::ApiGateway::Method', {
         Integration: {
-          IntegrationHttpMethod: 'POST',
-          IntegrationResponses: getIntegrationResponse(),
-          Type: 'AWS',
-          Uri: {
-            'Fn::Join': [
-              '',
-              [
-                'arn:',
-                {
-                  Ref: 'AWS::Partition',
-                },
-                ':apigateway:',
-                {
-                  Ref: 'AWS::Region',
-                },
-                ':states:action/StartSyncExecution',
-              ],
-            ],
-          },
-          PassthroughBehavior: 'NEVER',
           RequestTemplates: {
             'application/json': {
               'Fn::Join': [
@@ -337,28 +217,8 @@ describe('StepFunctionsExecutionIntegration', () => {
       const integ = apigw.StepFunctionsIntegration.startExecution(stateMachine, {});
       api.root.addMethod('GET', integ);
 
-      expect(stack).toHaveResource('AWS::ApiGateway::Method', {
+      expect(stack).toHaveResourceLike('AWS::ApiGateway::Method', {
         Integration: {
-          IntegrationHttpMethod: 'POST',
-          IntegrationResponses: getIntegrationResponse(),
-          Type: 'AWS',
-          Uri: {
-            'Fn::Join': [
-              '',
-              [
-                'arn:',
-                {
-                  Ref: 'AWS::Partition',
-                },
-                ':apigateway:',
-                {
-                  Ref: 'AWS::Region',
-                },
-                ':states:action/StartSyncExecution',
-              ],
-            ],
-          },
-          PassthroughBehavior: 'NEVER',
           RequestTemplates: {
             'application/json': {
               'Fn::Join': [
@@ -387,28 +247,8 @@ describe('StepFunctionsExecutionIntegration', () => {
       });
       api.root.addMethod('GET', integ);
 
-      expect(stack).toHaveResource('AWS::ApiGateway::Method', {
+      expect(stack).toHaveResourceLike('AWS::ApiGateway::Method', {
         Integration: {
-          IntegrationHttpMethod: 'POST',
-          IntegrationResponses: getIntegrationResponse(),
-          Type: 'AWS',
-          Uri: {
-            'Fn::Join': [
-              '',
-              [
-                'arn:',
-                {
-                  Ref: 'AWS::Partition',
-                },
-                ':apigateway:',
-                {
-                  Ref: 'AWS::Region',
-                },
-                ':states:action/StartSyncExecution',
-              ],
-            ],
-          },
-          PassthroughBehavior: 'NEVER',
           RequestTemplates: {
             'application/json': {
               'Fn::Join': [
