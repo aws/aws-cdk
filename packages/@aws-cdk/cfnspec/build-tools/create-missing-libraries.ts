@@ -79,10 +79,12 @@ async function main() {
 
     console.log(`generating module for ${module.packageName}...`);
 
+    const description = `${namespace} Construct Library`;
+
     await write('package.json', {
       name: module.packageName,
       version,
-      description: `The CDK Construct Library for ${namespace}`,
+      description,
       main: 'lib/index.js',
       types: 'lib/index.d.ts',
       jsii: {
