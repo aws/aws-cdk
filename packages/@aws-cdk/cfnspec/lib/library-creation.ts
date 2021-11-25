@@ -1,7 +1,5 @@
+import * as pkglint from '@aws-cdk/pkglint';
 import * as fs from 'fs-extra';
-
-// eslint-disable-next-line import/no-extraneous-dependencies
-const AWS_SERVICE_NAMES = require('@aws-cdk/pkglint/lib/aws-service-official-names.json'); // eslint-disable-line @typescript-eslint/no-require-imports
 
 export interface ModuleDefinition {
   readonly namespace: string;
@@ -61,39 +59,8 @@ export function createModuleDefinitionFromCfnNamespace(namespace: string): Modul
 export async function createLibraryReadme(namespace: string, readmePath: string) {
   const module = createModuleDefinitionFromCfnNamespace(namespace);
 
-  const title = `${AWS_SERVICE_NAMES[namespace] ?? namespace} Construct Library`;
-
-  const cfnLink = `https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/${module.namespace.replace('::', '_')}.html`;
-
-  const importName = module.moduleName.toLocaleLowerCase().replace(/[^a-z0-9_]/g, '_').replace(/^aws_/, '');
-
-  await fs.writeFile(readmePath, [
-    `# ${title}`,
-    '<!--BEGIN STABILITY BANNER-->',
-    '',
-    '---',
-    '',
-    '![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)',
-    '',
-    '> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.',
-    '>',
-    '> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib',
-    '',
-    '---',
-    '',
-    '<!--END STABILITY BANNER-->',
-    '',
-    'This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.',
-    '',
-    '```ts nofixture',
-    `import * as ${importName} from '${module.packageName}';`,
-    '```',
-    '',
-    'There are no hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet. ',
-    'However, you can still use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, and use this service exactly as you would using CloudFormation directly.',
-    '',
-    `For more information on the resources and properties available for this service, see the [CloudFormation documentation for ${module.namespace}](${cfnLink}).`,
-    '',
-    '(Read the [CDK Contributing Guide](https://github.com/aws/aws-cdk/blob/master/CONTRIBUTING.md) if you are interested in contributing to this construct library.)',
-  ].join('\n') + '\n', 'utf8'); // File must end in newline otherwise linter will complain
+  await fs.writeFile(readmePath, pkglint.cfnOnlyReadmeContents({
+    cfnNamespace: namespace,
+    packageName: module.packageName,
+  }));
 }
