@@ -149,9 +149,22 @@ export interface GrpcGatewayRouteMatch {
 }
 
 /**
+ * Base options for all gateway route specs.
+ */
+export interface GatewayRouteSpecOptionsBase {
+  /**
+   * The priority for the gateway route. Gateway routes are matched based on the specified
+   * value, where 0 is the highest priority.
+   *
+   * @default - no particular priority
+   */
+  readonly priority?: number;
+}
+
+/**
  * Properties specific for HTTP Based GatewayRoutes
  */
-export interface HttpGatewayRouteSpecOptions {
+export interface HttpGatewayRouteSpecOptions extends GatewayRouteSpecOptionsBase {
   /**
    * The criterion for determining a request match for this GatewayRoute.
    * When path match is defined, this may optionally determine the path rewrite configuration.
@@ -169,7 +182,7 @@ export interface HttpGatewayRouteSpecOptions {
 /**
  * Properties specific for a gRPC GatewayRoute
  */
-export interface GrpcGatewayRouteSpecOptions {
+export interface GrpcGatewayRouteSpecOptions extends GatewayRouteSpecOptionsBase {
   /**
    * The criterion for determining a request match for this GatewayRoute
    */
@@ -205,6 +218,14 @@ export interface GatewayRouteSpecConfig {
    * @default - no grpc spec
    */
   readonly grpcSpecConfig?: CfnGatewayRoute.GrpcGatewayRouteProperty;
+
+  /**
+   * The priority for the gateway route. Gateway routes are matched based on the specified
+   * value, where 0 is the highest priority.
+   *
+   * @default - no particular priority
+   */
+  readonly priority?: number;
 }
 
 /**
@@ -257,12 +278,14 @@ class HttpGatewayRouteSpec extends GatewayRouteSpec {
    * Type of route you are creating
    */
   readonly routeType: Protocol;
+  readonly priority?: number;
 
   constructor(options: HttpGatewayRouteSpecOptions, protocol: Protocol.HTTP | Protocol.HTTP2) {
     super();
     this.routeTarget = options.routeTarget;
     this.routeType = protocol;
     this.match = options.match;
+    this.priority = options.priority;
   }
 
   public bind(scope: Construct): GatewayRouteSpecConfig {
@@ -301,6 +324,7 @@ class HttpGatewayRouteSpec extends GatewayRouteSpec {
       },
     };
     return {
+      priority: this.priority,
       httpSpecConfig: this.routeType === Protocol.HTTP ? httpConfig : undefined,
       http2SpecConfig: this.routeType === Protocol.HTTP2 ? httpConfig : undefined,
     };
@@ -314,11 +338,13 @@ class GrpcGatewayRouteSpec extends GatewayRouteSpec {
    * The VirtualService this GatewayRoute directs traffic to
    */
   readonly routeTarget: IVirtualService;
+  readonly priority?: number;
 
   constructor(options: GrpcGatewayRouteSpecOptions) {
     super();
     this.match = options.match;
     this.routeTarget = options.routeTarget;
+    this.priority = options.priority;
   }
 
   public bind(scope: Construct): GatewayRouteSpecConfig {
@@ -349,6 +375,7 @@ class GrpcGatewayRouteSpec extends GatewayRouteSpec {
             },
         },
       },
+      priority: this.priority,
     };
   }
 }
