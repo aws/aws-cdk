@@ -26,6 +26,13 @@
     "build+extract": "yarn build && yarn rosetta:extract",
     "build+test+extract": "yarn build+test && yarn rosetta:extract"
   },
+  "exports": {
+    ".": "./lib/index.js",
+    "./package.json": "./package.json",
+    "./.jsii": "./.jsii",
+    "./.warnings.jsii.js": "./.warnings.jsii.js",
+    "./lib/helpers-internal": "./lib/helpers-internal/index.js"
+  },
   "author": {
     "name": "Amazon Web Services",
     "url": "https://aws.amazon.com",
