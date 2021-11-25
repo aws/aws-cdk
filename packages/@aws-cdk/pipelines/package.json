@@ -28,7 +28,6 @@
   },
   "exports": {
     ".": "./lib/index.js",
-    "./.jsii": "./.jsii",
     "./package.json": "./package.json",
     "./lib/helpers-internal": "./lib/helpers-internal/index.js"
   },
