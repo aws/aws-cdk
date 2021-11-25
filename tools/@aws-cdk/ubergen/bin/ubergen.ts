@@ -242,7 +242,7 @@ async function prepareSourceFiles(libraries: readonly LibraryReference[], packag
 
   // Control 'exports' field of the 'package.json'. This will control what kind of 'import' statements are
   // allowed for this package: we only want to allow the exact import statements that we want to support.
-  packageJson.exports = { '.': './main.js' };
+  packageJson.exports = { '.': './index.js' };
 
   const indexStatements = new Array<string>();
   for (const library of libraries) {

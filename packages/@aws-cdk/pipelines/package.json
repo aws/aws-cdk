@@ -28,7 +28,7 @@
   },
   "exports": {
     ".": "./lib/index.js",
-    "./lib/helpers-internal": "./lib/helpers-internal"
+    "./lib/helpers-internal": "./lib/helpers-internal/index.js"
   },
   "author": {
     "name": "Amazon Web Services",
