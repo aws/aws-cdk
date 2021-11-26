@@ -6,7 +6,7 @@ import { IRoute } from '../common';
 import { IHttpApi } from './api';
 import { HttpRouteAuthorizerConfig, IHttpRouteAuthorizer } from './authorizer';
 import { HttpIamAuthorizer } from './iam';
-import { IHttpRouteIntegration } from './integration';
+import { HttpRouteIntegration } from './integration';
 
 /**
  * Represents a Route for an HTTP API.
@@ -118,7 +118,7 @@ export interface BatchHttpRouteOptions {
   /**
    * The integration to be configured on this route.
    */
-  readonly integration: IHttpRouteIntegration;
+  readonly integration: HttpRouteIntegration;
 }
 
 /**
@@ -188,15 +188,12 @@ export class HttpRoute extends Resource implements IHttpRoute {
     this.path = props.routeKey.path;
     this.method = props.routeKey.method;
     this.routeArn = this.produceRouteArn(props.routeKey.method);
+    this.authorizer = props.authorizer;
 
-    const config = props.integration.bind({
+    const config = props.integration._bindToRoute({
       route: this,
       scope: this,
     });
-
-    const integration = props.httpApi._addIntegration(this, config);
-
-    this.authorizer = props.authorizer;
 
     // Bind early to emit any exceptions as early as possible.
     this.tryAuthorizerBinding();
@@ -204,7 +201,7 @@ export class HttpRoute extends Resource implements IHttpRoute {
     const routeProps: CfnRouteProps = {
       apiId: props.httpApi.apiId,
       routeKey: props.routeKey.key,
-      target: `integrations/${integration.integrationId}`,
+      target: `integrations/${config.integrationId}`,
       authorizerId: Lazy.string({ produce: () => this.authBindResult?.authorizerId }),
       authorizationType: Lazy.string({
         produce: () => {

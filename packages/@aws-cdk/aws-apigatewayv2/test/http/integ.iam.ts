@@ -2,7 +2,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import * as apigatewayv2 from '../../lib';
 
-class ExampleComIntegration implements apigatewayv2.IHttpRouteIntegration {
+class ExampleComIntegration extends apigatewayv2.HttpRouteIntegration {
   public bind(): apigatewayv2.HttpRouteIntegrationConfig {
     return {
       type: apigatewayv2.HttpIntegrationType.HTTP_PROXY,
