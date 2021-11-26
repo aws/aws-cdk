@@ -125,6 +125,18 @@
         }
       }
     },
+    "HttpApiANYbooksbookHttpIntegrationa1c61b1feee2fb313274d3d2ee8b6d4bD14C77F2": {
+      "Type": "AWS::ApiGatewayV2::Integration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "HttpApiF5A9A8A7"
+        },
+        "IntegrationType": "HTTP_PROXY",
+        "IntegrationMethod": "GET",
+        "IntegrationUri": "https://www.example.com/",
+        "PayloadFormatVersion": "1.0"
+      }
+    },
     "HttpApiANYbooksbook2F78361C": {
       "Type": "AWS::ApiGatewayV2::Route",
       "Properties": {
@@ -139,7 +151,7 @@
             [
               "integrations/",
               {
-                "Ref": "HttpApiANYfooHttpIntegrationa1c61b1feee2fb313274d3d2ee8b6d4b0CAF277C"
+                "Ref": "HttpApiANYbooksbookHttpIntegrationa1c61b1feee2fb313274d3d2ee8b6d4bD14C77F2"
               }
             ]
           ]
