@@ -2,7 +2,7 @@ import {
   HttpIntegrationType,
   HttpRouteIntegrationBindOptions,
   HttpRouteIntegrationConfig,
-  IHttpRouteIntegration,
+  HttpRouteIntegration,
   PayloadFormatVersion,
   ParameterMapping,
 } from '@aws-cdk/aws-apigatewayv2';
@@ -37,9 +37,10 @@ export interface LambdaProxyIntegrationProps {
 /**
  * The Lambda Proxy integration resource for HTTP API
  */
-export class LambdaProxyIntegration implements IHttpRouteIntegration {
+export class LambdaProxyIntegration extends HttpRouteIntegration {
 
   constructor(private readonly props: LambdaProxyIntegrationProps) {
+    super();
   }
 
   public bind(options: HttpRouteIntegrationBindOptions): HttpRouteIntegrationConfig {

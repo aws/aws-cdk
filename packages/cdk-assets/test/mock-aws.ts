@@ -8,6 +8,7 @@ export function mockAws() {
 
   // Sane defaults which can be overridden
   mockS3.getBucketLocation = mockedApiResult({});
+  mockS3.getBucketEncryption = mockedApiResult({});
   mockEcr.describeRepositories = mockedApiResult({
     repositories: [
       {
