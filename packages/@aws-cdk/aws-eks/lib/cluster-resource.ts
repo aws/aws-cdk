@@ -16,6 +16,7 @@ export interface ClusterResourceProps {
   readonly resourcesVpcConfig: CfnCluster.ResourcesVpcConfigProperty;
   readonly roleArn: string;
   readonly encryptionConfig?: Array<CfnCluster.EncryptionConfigProperty>;
+  readonly kubernetesNetworkConfig?: CfnCluster.KubernetesNetworkConfigProperty;
   readonly name: string;
   readonly version?: string;
   readonly endpointPrivateAccess: boolean;
@@ -26,6 +27,7 @@ export interface ClusterResourceProps {
   readonly subnets?: ec2.ISubnet[];
   readonly secretsEncryptionKey?: kms.IKey;
   readonly onEventLayer?: lambda.ILayerVersion;
+  readonly clusterHandlerSecurityGroup?: ec2.ISecurityGroup;
 }
 
 /**
@@ -65,6 +67,7 @@ export class ClusterResource extends CoreConstruct {
       vpc: props.vpc,
       environment: props.environment,
       onEventLayer: props.onEventLayer,
+      securityGroup: props.clusterHandlerSecurityGroup,
     });
 
     const resource = new CustomResource(this, 'Resource', {
@@ -78,6 +81,7 @@ export class ClusterResource extends CoreConstruct {
           version: props.version,
           roleArn: props.roleArn,
           encryptionConfig: props.encryptionConfig,
+          kubernetesNetworkConfig: props.kubernetesNetworkConfig,
           resourcesVpcConfig: {
             subnetIds: (props.resourcesVpcConfig as CfnCluster.ResourcesVpcConfigProperty).subnetIds,
             securityGroupIds: (props.resourcesVpcConfig as CfnCluster.ResourcesVpcConfigProperty).securityGroupIds,

@@ -3,13 +3,7 @@
 
 ---
 
-![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
-
-> The APIs of higher level constructs in this module are experimental and under active development.
-> They are subject to non-backward compatible changes or removal in any future version. These are
-> not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be
-> announced in the release notes. This means that while you may use them, you may need to update
-> your source code when upgrading to a newer version of this package.
+![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
 
@@ -43,16 +37,16 @@ The simplest assertion would be to assert that the template matches a given
 template.
 
 ```ts
-const expected = {
+template.templateMatches({
   Resources: {
-    Type: 'Foo::Bar',
-    Properties: {
-      Baz: 'Qux',
+    BarLogicalId: {
+      Type: 'Foo::Bar',
+      Properties: {
+        Baz: 'Qux',
+      },
     },
   },
-};
-
-template.templateMatches(expected);
+});
 ```
 
 By default, the `templateMatches()` API will use the an 'object-like' comparison,
@@ -62,7 +56,7 @@ to change this.
 
 Snapshot testing is a common technique to store a snapshot of the output and
 compare it during future changes. Since CloudFormation templates are human readable,
-they are a good target for åßsnapshot testing.
+they are a good target for snapshot testing.
 
 The `toJSON()` method on the `Template` can be used to produce a well formatted JSON
 of the CloudFormation template that can be used as a snapshot.
@@ -88,23 +82,21 @@ The following code asserts that the `Properties` section of a resource of type
 `Foo::Bar` contains the specified properties -
 
 ```ts
-const expected = {
+template.hasResourceProperties('Foo::Bar', {
   Foo: 'Bar',
   Baz: 5,
   Qux: [ 'Waldo', 'Fred' ],
-};
-template.hasResourceProperties('Foo::Bar', expected);
+});
 ```
 
 Alternatively, if you would like to assert the entire resource definition, you
 can use the `hasResource()` API.
 
 ```ts
-const expected = {
+template.hasResource('Foo::Bar', {
   Properties: { Foo: 'Bar' },
   DependsOn: [ 'Waldo', 'Fred' ],
-};
-template.hasResource('Foo::Bar', expected);
+});
 ```
 
 Beyond assertions, the module provides APIs to retrieve matching resources.
@@ -132,21 +124,17 @@ template.hasOutput('Foo', expected);
 If you want to match against all Outputs in the template, use `*` as the `logicalId`.
 
 ```ts
-const expected = {
+template.hasOutput('*', {
   Value: 'Bar',
   Export: { Name: 'ExportBaz' },
-};
-template.hasOutput('*', expected);
+});
 ```
 
 `findOutputs()` will return a set of outputs that match the `logicalId` and `props`,
 and you can use the `'*'` special case as well.
 
 ```ts
-const expected = {
-  Value: 'Fred',
-};
-const result = template.findOutputs('*', expected);
+const result = template.findOutputs('*', { Value: 'Fred' });
 expect(result.Foo).toEqual({ Value: 'Fred', Description: 'FooFred' });
 expect(result.Bar).toEqual({ Value: 'Fred', Description: 'BarFred' });
 ```
@@ -186,20 +174,18 @@ level, the list of keys in the target is a subset of the provided pattern.
 // }
 
 // The following will NOT throw an assertion error
-const expected = {
+template.hasResourceProperties('Foo::Bar', {
   Fred: Match.objectLike({
     Wobble: 'Flob',
   }),
-};
-template.hasResourceProperties('Foo::Bar', expected);
+});
 
 // The following will throw an assertion error
-const unexpected = {
+template.hasResourceProperties('Foo::Bar', {
   Fred: Match.objectLike({
     Brew: 'Coffee',
   }),
-}
-template.hasResourceProperties('Foo::Bar', unexpected);
+});
 ```
 
 The `Match.objectEquals()` API can be used to assert a target as a deep exact
@@ -227,20 +213,18 @@ or outside of any matchers.
 // }
 
 // The following will NOT throw an assertion error
-const expected = {
+template.hasResourceProperties('Foo::Bar', {
   Fred: Match.objectLike({
     Bob: Match.absent(),
   }),
-};
-template.hasResourceProperties('Foo::Bar', expected);
+});
 
 // The following will throw an assertion error
-const unexpected = {
+template.hasResourceProperties('Foo::Bar', {
   Fred: Match.objectLike({
     Wobble: Match.absent(),
   }),
-};
-template.hasResourceProperties('Foo::Bar', unexpected);
+});
 ```
 
 The `Match.anyValue()` matcher can be used to specify that a specific value should be found
@@ -265,20 +249,18 @@ This matcher can be combined with any of the other matchers.
 // }
 
 // The following will NOT throw an assertion error
-const expected = {
+template.hasResourceProperties('Foo::Bar', {
   Fred: {
-    Wobble: [Match.anyValue(), "Flip"],
+    Wobble: [ Match.anyValue(), "Flip" ],
   },
-};
-template.hasResourceProperties('Foo::Bar', expected);
+});
 
 // The following will throw an assertion error
-const unexpected = {
+template.hasResourceProperties('Foo::Bar', {
   Fred: {
     Wimble: Match.anyValue(),
   },
-};
-template.hasResourceProperties('Foo::Bar', unexpected);
+});
 ```
 
 ### Array Matchers
@@ -301,16 +283,14 @@ This API will perform subset match on the target.
 // }
 
 // The following will NOT throw an assertion error
-const expected = {
+template.hasResourceProperties('Foo::Bar', {
   Fred: Match.arrayWith(['Flob']),
-};
-template.hasResourceProperties('Foo::Bar', expected);
+});
 
 // The following will throw an assertion error
-const unexpected = Match.objectLike({
+template.hasResourceProperties('Foo::Bar', Match.objectLike({
   Fred: Match.arrayWith(['Wobble']),
-});
-template.hasResourceProperties('Foo::Bar', unexpected);
+}));
 ```
 
 *Note:* The list of items in the pattern array should be in order as they appear in the
@@ -338,16 +318,14 @@ not match the pattern specified.
 // }
 
 // The following will NOT throw an assertion error
-const expected = {
+template.hasResourceProperties('Foo::Bar', {
   Fred: Match.not(['Flob']),
-};
-template.hasResourceProperties('Foo::Bar', expected);
+});
 
 // The following will throw an assertion error
-const unexpected = Match.objectLike({
+template.hasResourceProperties('Foo::Bar', Match.objectLike({
   Fred: Match.not(['Flob', 'Cat']),
-});
-template.hasResourceProperties('Foo::Bar', unexpected);
+}));
 ```
 
 ### Serialized JSON
@@ -374,20 +352,18 @@ The `Match.serializedJson()` matcher allows deep matching within a stringified J
 // }
 
 // The following will NOT throw an assertion error
-const expected = {
+template.hasResourceProperties('Foo::Bar', {
   Baz: Match.serializedJson({
     Fred: Match.arrayWith(["Waldo"]),
   }),
-};
-template.hasResourceProperties('Foo::Bar', expected);
+});
 
 // The following will throw an assertion error
-const unexpected = {
+template.hasResourceProperties('Foo::Bar', {
   Baz: Match.serializedJson({
     Fred: ["Waldo", "Johnny"],
   }),
-};
-template.hasResourceProperties('Foo::Bar', unexpected);
+});
 ```
 
 [Pipeline BuildSpec]: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codebuild-project-source.html#cfn-codebuild-project-source-buildspec
@@ -415,11 +391,10 @@ matching resource.
 
 const fredCapture = new Capture();
 const waldoCapture = new Capture();
-const expected = {
+template.hasResourceProperties('Foo::Bar', {
   Fred: fredCapture,
   Waldo: ["Qix", waldoCapture],
-}
-template.hasResourceProperties('Foo::Bar', expected);
+});
 
 fredCapture.asArray(); // returns ["Flob", "Cat"]
 waldoCapture.asString(); // returns "Qux"

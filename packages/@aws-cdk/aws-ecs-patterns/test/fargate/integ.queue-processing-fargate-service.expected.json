@@ -642,7 +642,7 @@
       "Type": "AWS::ApplicationAutoScaling::ScalableTarget",
       "Properties": {
         "MaxCapacity": 2,
-        "MinCapacity": 1,
+        "MinCapacity": 0,
         "ResourceId": {
           "Fn::Join": [
             "",

@@ -1,7 +1,7 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import {
   Annotations, ConcreteDependable, ContextProvider, DependableTrait, IConstruct,
-  IDependable, IResource, Lazy, Resource, Stack, Token, Tags, Names,
+  IDependable, IResource, Lazy, Resource, Stack, Token, Tags, Names, Arn,
 } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct, Node } from 'constructs';
@@ -77,6 +77,12 @@ export interface IVpc extends IResource {
    * @attribute
    */
   readonly vpcId: string;
+
+  /**
+   * ARN for this VPC
+   * @attribute
+   */
+  readonly vpcArn: string;
 
   /**
    * CIDR range for this VPC
@@ -356,6 +362,11 @@ abstract class VpcBase extends Resource implements IVpc {
    * Identifier for this VPC
    */
   public abstract readonly vpcId: string;
+
+  /**
+   * Arn of this VPC
+   */
+  public abstract readonly vpcArn: string;
 
   /**
    * CIDR range for this VPC
@@ -1118,9 +1129,15 @@ export class Vpc extends VpcBase {
       filter.isDefault = options.isDefault ? 'true' : 'false';
     }
 
+    const overrides: {[key: string]: string} = {};
+    if (options.region) {
+      overrides.region = options.region;
+    }
+
     const attributes: cxapi.VpcContextResponse = ContextProvider.getValue(scope, {
       provider: cxschema.ContextProvider.VPC_PROVIDER,
       props: {
+        ...overrides,
         filter,
         returnAsymmetricSubnets: true,
         subnetGroupNameTag: options.subnetGroupNameTag,
@@ -1146,6 +1163,11 @@ export class Vpc extends VpcBase {
    * Identifier for this VPC
    */
   public readonly vpcId: string;
+
+  /**
+   * @attribute
+   */
+  public readonly vpcArn: string;
 
   /**
    * @attribute
@@ -1277,6 +1299,11 @@ export class Vpc extends VpcBase {
     this.availabilityZones = this.availabilityZones.slice(0, maxAZs);
 
     this.vpcId = this.resource.ref;
+    this.vpcArn = Arn.format({
+      service: 'ec2',
+      resource: 'vpc',
+      resourceName: this.vpcId,
+    }, stack);
 
     const defaultSubnet = props.natGateways === 0 ? Vpc.DEFAULT_SUBNETS_NO_NAT : Vpc.DEFAULT_SUBNETS;
     this.subnetConfiguration = ifUndefined(props.subnetConfiguration, defaultSubnet);
@@ -1813,11 +1840,11 @@ export class PublicSubnet extends Subnet implements IPublicSubnet {
    * Also adds the EIP for the managed NAT.
    * @returns A ref to the the NAT Gateway ID
    */
-  public addNatGateway() {
+  public addNatGateway(eipAllocationId?: string) {
     // Create a NAT Gateway in this public subnet
     const ngw = new CfnNatGateway(this, 'NATGateway', {
       subnetId: this.subnetId,
-      allocationId: new CfnEIP(this, 'EIP', {
+      allocationId: eipAllocationId ?? new CfnEIP(this, 'EIP', {
         domain: 'vpc',
       }).attrAllocationId,
     });
@@ -1853,6 +1880,7 @@ function ifUndefined<T>(value: T | undefined, defaultValue: T): T {
 
 class ImportedVpc extends VpcBase {
   public readonly vpcId: string;
+  public readonly vpcArn: string;
   public readonly publicSubnets: ISubnet[];
   public readonly privateSubnets: ISubnet[];
   public readonly isolatedSubnets: ISubnet[];
@@ -1864,6 +1892,11 @@ class ImportedVpc extends VpcBase {
     super(scope, id);
 
     this.vpcId = props.vpcId;
+    this.vpcArn = Arn.format({
+      service: 'ec2',
+      resource: 'vpc',
+      resourceName: this.vpcId,
+    }, Stack.of(this));
     this.cidr = props.vpcCidrBlock;
     this.availabilityZones = props.availabilityZones;
     this._vpnGatewayId = props.vpnGatewayId;
@@ -1897,6 +1930,7 @@ class ImportedVpc extends VpcBase {
 
 class LookedUpVpc extends VpcBase {
   public readonly vpcId: string;
+  public readonly vpcArn: string;
   public readonly internetConnectivityEstablished: IDependable = new ConcreteDependable();
   public readonly availabilityZones: string[];
   public readonly publicSubnets: ISubnet[];
@@ -1908,6 +1942,11 @@ class LookedUpVpc extends VpcBase {
     super(scope, id);
 
     this.vpcId = props.vpcId;
+    this.vpcArn = Arn.format({
+      service: 'ec2',
+      resource: 'vpc',
+      resourceName: this.vpcId,
+    }, Stack.of(this));
     this.cidr = props.vpcCidrBlock;
     this._vpnGatewayId = props.vpnGatewayId;
     this.incompleteSubnetDefinition = isIncomplete;

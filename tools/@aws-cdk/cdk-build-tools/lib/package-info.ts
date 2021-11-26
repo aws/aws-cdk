@@ -97,9 +97,9 @@ export interface CompilerOverrides {
  */
 export function packageCompiler(compilers: CompilerOverrides, options?: CDKBuildOptions): string[] {
   if (isJsii()) {
-    const args = ['--silence-warnings=reserved-word'];
+    const args = ['--silence-warnings=reserved-word', '--add-deprecation-warnings'];
     if (options?.stripDeprecated) {
-      args.push('--strip-deprecated');
+      args.push(`--strip-deprecated ${path.join(__dirname, '..', '..', '..', '..', 'deprecated_apis.txt')}`);
     }
     return [compilers.jsii || require.resolve('jsii/bin/jsii'), ...args];
   } else {

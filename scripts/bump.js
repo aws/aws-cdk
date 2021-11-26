@@ -74,7 +74,7 @@ async function main() {
     console.error("🎉 Calling our 'cdk-release' package to make the bump");
     console.error("ℹ️ Set the LEGACY_BUMP env variable to use the old 'standard-version' bump instead");
     const cdkRelease = require('@aws-cdk/cdk-release');
-    cdkRelease(opts);
+    cdkRelease.createRelease(opts);
   }
 }
 

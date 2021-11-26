@@ -4,6 +4,7 @@ import {
   HttpRouteIntegrationConfig,
   IHttpRouteIntegration,
   PayloadFormatVersion,
+  ParameterMapping,
 } from '@aws-cdk/aws-apigatewayv2';
 import { ServicePrincipal } from '@aws-cdk/aws-iam';
 import { IFunction } from '@aws-cdk/aws-lambda';
@@ -24,6 +25,13 @@ export interface LambdaProxyIntegrationProps {
    * @default PayloadFormatVersion.VERSION_2_0
    */
   readonly payloadFormatVersion?: PayloadFormatVersion;
+
+  /**
+   * Specifies how to transform HTTP requests before sending them to the backend
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-parameter-mapping.html
+   * @default undefined requests are sent to the backend unmodified
+   */
+  readonly parameterMapping?: ParameterMapping;
 }
 
 /**
@@ -50,6 +58,7 @@ export class LambdaProxyIntegration implements IHttpRouteIntegration {
       type: HttpIntegrationType.LAMBDA_PROXY,
       uri: this.props.handler.functionArn,
       payloadFormatVersion: this.props.payloadFormatVersion ?? PayloadFormatVersion.VERSION_2_0,
+      parameterMapping: this.props.parameterMapping,
     };
   }
 }

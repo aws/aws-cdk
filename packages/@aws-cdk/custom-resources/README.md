@@ -301,8 +301,8 @@ This module includes a few examples for custom resource implementations:
 
 Provisions an object in an S3 bucket with textual contents. See the source code
 for the
-[construct](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.ts) and
-[handler](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert-handler/index.py).
+[construct](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.ts) and
+[handler](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-file-handler/index.ts).
 
 The following example will create the file `folder/file1.txt` inside `myBucket`
 with the contents `hello!`.
@@ -346,6 +346,25 @@ This sample demonstrates the following concepts:
 * Asynchronous implementation
 * Non-intrinsic physical IDs
 * Implemented in Python
+
+
+### Customizing Provider Function name
+
+In multi-account environments or when the custom resource may be re-utilized across several 
+stacks it may be useful to manually set a name for the Provider Function Lambda and therefore
+have a predefined service token ARN.
+
+```ts
+
+const myProvider = new cr.Provider(this, 'MyProvider', {
+  onEventHandler: onEvent,
+  isCompleteHandler: isComplete,
+  logRetention: logs.RetentionDays.ONE_DAY,
+  role: myRole,
+  providerFunctionName: 'the-lambda-name',   // Optional
+});
+
+```
 
 ## Custom Resources for AWS APIs
 

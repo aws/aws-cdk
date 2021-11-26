@@ -9,12 +9,13 @@ import * as ssm from '@aws-cdk/aws-ssm';
 import { Annotations, CfnOutput, CfnResource, IResource, Resource, Stack, Tags, Token, Duration, Size } from '@aws-cdk/core';
 import { Construct, Node } from 'constructs';
 import * as YAML from 'yaml';
+import { AlbController, AlbControllerOptions } from './alb-controller';
 import { AwsAuth } from './aws-auth';
 import { ClusterResource, clusterArnComponents } from './cluster-resource';
 import { FargateProfile, FargateProfileOptions } from './fargate-profile';
 import { HelmChart, HelmChartOptions } from './helm-chart';
 import { INSTANCE_TYPES } from './instance-types';
-import { KubernetesManifest } from './k8s-manifest';
+import { KubernetesManifest, KubernetesManifestOptions } from './k8s-manifest';
 import { KubernetesObjectValue } from './k8s-object-value';
 import { KubernetesPatch } from './k8s-patch';
 import { KubectlProvider } from './kubectl-provider';
@@ -118,6 +119,15 @@ export interface ICluster extends IResource, ec2.IConnectable {
   readonly kubectlPrivateSubnets?: ec2.ISubnet[];
 
   /**
+   * An IAM role that can perform kubectl operations against this cluster.
+   *
+   * The role should be mapped to the `system:masters` Kubernetes RBAC role.
+   *
+   * This role is directly passed to the lambda handler that sends Kube Ctl commands to the cluster.
+   */
+  readonly kubectlLambdaRole?: iam.IRole;
+
+  /**
    * An AWS Lambda layer that includes `kubectl`, `helm` and the `aws` CLI.
    *
    * If not defined, a default layer will be used.
@@ -130,10 +140,21 @@ export interface ICluster extends IResource, ec2.IConnectable {
   readonly kubectlMemory?: Size;
 
   /**
-    * An AWS Lambda layer that includes the NPM dependency `proxy-agent`.
-    *
-    * If not defined, a default layer will be used.
-    */
+   * A security group to associate with the Cluster Handler's Lambdas.
+   * The Cluster Handler's Lambdas are responsible for calling AWS's EKS API.
+   *
+   * Requires `placeClusterHandlerInVpc` to be set to true.
+   *
+   * @default - No security group.
+   * @attribute
+   */
+  readonly clusterHandlerSecurityGroup?: ec2.ISecurityGroup;
+
+  /**
+   * An AWS Lambda layer that includes the NPM dependency `proxy-agent`.
+   *
+   * If not defined, a default layer will be used.
+   */
   readonly onEventLayer?: lambda.ILayerVersion;
 
   /**
@@ -179,7 +200,7 @@ export interface ICluster extends IResource, ec2.IConnectable {
    * @param chart the cdk8s chart.
    * @returns a `KubernetesManifest` construct representing the chart.
    */
-  addCdk8sChart(id: string, chart: Construct): KubernetesManifest;
+  addCdk8sChart(id: string, chart: Construct, options?: KubernetesManifestOptions): KubernetesManifest;
 
   /**
    * Connect capacity in the form of an existing AutoScalingGroup to the EKS cluster.
@@ -261,6 +282,18 @@ export interface ClusterAttributes {
   readonly kubectlRoleArn?: string;
 
   /**
+   * An IAM role that can perform kubectl operations against this cluster.
+   *
+   * The role should be mapped to the `system:masters` Kubernetes RBAC role.
+   *
+   * This role is directly passed to the lambda handler that sends Kube Ctl commands
+   * to the cluster.
+   * @default - if not specified, the default role created by a lambda function will
+   * be used.
+   */
+  readonly kubectlLambdaRole?: iam.IRole;
+
+  /**
    * Environment variables to use when running `kubectl` against this cluster.
    * @default - no additional variables
    */
@@ -310,6 +343,14 @@ export interface ClusterAttributes {
   readonly kubectlMemory?: Size;
 
   /**
+   * A security group id to associate with the Cluster Handler's Lambdas.
+   * The Cluster Handler's Lambdas are responsible for calling AWS's EKS API.
+   *
+   * @default - No security group.
+   */
+  readonly clusterHandlerSecurityGroupId?: string;
+
+  /**
    * An AWS Lambda Layer which includes the NPM dependency `proxy-agent`. This layer
    * is used by the onEvent handler to route AWS SDK requests through a proxy.
    *
@@ -350,11 +391,7 @@ export interface CommonClusterOptions {
    *
    * For example, to only select private subnets, supply the following:
    *
-   * ```ts
-   * vpcSubnets: [
-   *   { subnetType: ec2.SubnetType.Private }
-   * ]
-   * ```
+   * `vpcSubnets: [{ subnetType: ec2.SubnetType.PRIVATE }]`
    *
    * @default - All public and private subnets
    */
@@ -453,13 +490,6 @@ export interface ClusterOptions extends CommonClusterOptions {
   readonly kubectlEnvironment?: { [key: string]: string };
 
   /**
-   * Custom environment variables when interacting with the EKS endpoint to manage the cluster lifecycle.
-   *
-   * @default - No environment variables.
-   */
-  readonly clusterHandlerEnvironment?: { [key: string]: string };
-
-  /**
    * An AWS Lambda Layer which includes `kubectl`, Helm and the AWS CLI.
    *
    * By default, the provider will use the layer included in the
@@ -473,9 +503,9 @@ export interface ClusterOptions extends CommonClusterOptions {
    *
    * ```ts
    * const layer = new lambda.LayerVersion(this, 'kubectl-layer', {
-   *   code: lambda.Code.fromAsset(`${__dirname}/layer.zip`)),
-   *   compatibleRuntimes: [lambda.Runtime.PROVIDED]
-   * })
+   *   code: lambda.Code.fromAsset(`${__dirname}/layer.zip`),
+   *   compatibleRuntimes: [lambda.Runtime.PROVIDED],
+   * });
    * ```
    *
    * @default - the layer provided by the `aws-lambda-layer-kubectl` SAR app.
@@ -491,26 +521,40 @@ export interface ClusterOptions extends CommonClusterOptions {
   readonly kubectlMemory?: Size;
 
   /**
-   * An AWS Lambda Layer which includes the NPM dependency `proxy-agent`.
+   * Custom environment variables when interacting with the EKS endpoint to manage the cluster lifecycle.
+   *
+   * @default - No environment variables.
+   */
+  readonly clusterHandlerEnvironment?: { [key: string]: string };
+
+  /**
+   * A security group to associate with the Cluster Handler's Lambdas.
+   * The Cluster Handler's Lambdas are responsible for calling AWS's EKS API.
+   *
+   * Requires `placeClusterHandlerInVpc` to be set to true.
+   *
+   * @default - No security group.
+   */
+  readonly clusterHandlerSecurityGroup?: ec2.ISecurityGroup;
+
+  /**
+   * An AWS Lambda Layer which includes the NPM dependency `proxy-agent`. This layer
+   * is used by the onEvent handler to route AWS SDK requests through a proxy.
    *
    * By default, the provider will use the layer included in the
    * "aws-lambda-layer-node-proxy-agent" SAR application which is available in all
    * commercial regions.
    *
-   * To deploy the layer locally, visit
-   * https://github.com/aws-samples/aws-lambda-layer-node-proxy-agent/blob/master/cdk/README.md
-   * for instructions on how to prepare the .zip file and then define it in your
-   * app as follows:
+   * To deploy the layer locally define it in your app as follows:
    *
    * ```ts
-   * const layer = new lambda.LayerVersion(this, 'node-proxy-agent-layer', {
-   *   code: lambda.Code.fromAsset(`${__dirname}/layer.zip`)),
-   *   compatibleRuntimes: [lambda.Runtime.NODEJS_14_X]
-   * })
+   * const layer = new lambda.LayerVersion(this, 'proxy-agent-layer', {
+   *   code: lambda.Code.fromAsset(`${__dirname}/layer.zip`),
+   *   compatibleRuntimes: [lambda.Runtime.NODEJS_12_X],
+   * });
    * ```
    *
-   * @default - the layer provided by the `aws-lambda-layer-node-proxy-agent` SAR app.
-   * @see https://github.com/aws-samples/aws-lambda-layer-node-proxy-agent
+   * @default - a layer bundled with this module.
    */
   readonly onEventLayer?: lambda.ILayerVersion;
 
@@ -540,6 +584,24 @@ export interface ClusterOptions extends CommonClusterOptions {
    *            using AWS-Managed encryption keys.
    */
   readonly secretsEncryptionKey?: kms.IKey;
+
+  /**
+   * The CIDR block to assign Kubernetes service IP addresses from.
+   *
+   * @default - Kubernetes assigns addresses from either the
+   *            10.100.0.0/16 or 172.20.0.0/16 CIDR blocks
+   * @see https://docs.aws.amazon.com/eks/latest/APIReference/API_KubernetesNetworkConfigRequest.html#AmazonEKS-Type-KubernetesNetworkConfigRequest-serviceIpv4Cidr
+   */
+  readonly serviceIpv4Cidr?: string;
+
+  /**
+   * Install the AWS Load Balancer Controller onto the cluster.
+   *
+   * @see https://kubernetes-sigs.github.io/aws-load-balancer-controller
+   *
+   * @default - The controller is not installed.
+   */
+  readonly albController?: AlbControllerOptions;
 }
 
 /**
@@ -667,6 +729,14 @@ export interface ClusterProps extends ClusterOptions {
    * @default NODEGROUP
    */
   readonly defaultCapacityType?: DefaultCapacityType;
+
+
+  /**
+   * The IAM role to pass to the Kubectl Lambda Handler.
+   *
+   * @default - Default Lambda IAM Execution Role
+   */
+  readonly kubectlLambdaRole?: iam.IRole;
 }
 
 /**
@@ -736,10 +806,12 @@ abstract class ClusterBase extends Resource implements ICluster {
   public abstract readonly clusterSecurityGroup: ec2.ISecurityGroup;
   public abstract readonly clusterEncryptionConfigKeyArn: string;
   public abstract readonly kubectlRole?: iam.IRole;
+  public abstract readonly kubectlLambdaRole?: iam.IRole;
   public abstract readonly kubectlEnvironment?: { [key: string]: string };
   public abstract readonly kubectlSecurityGroup?: ec2.ISecurityGroup;
   public abstract readonly kubectlPrivateSubnets?: ec2.ISubnet[];
   public abstract readonly kubectlMemory?: Size;
+  public abstract readonly clusterHandlerSecurityGroup?: ec2.ISecurityGroup;
   public abstract readonly prune: boolean;
   public abstract readonly openIdConnectProvider: iam.IOpenIdConnectProvider;
   public abstract readonly awsAuth: AwsAuth;
@@ -784,7 +856,7 @@ abstract class ClusterBase extends Resource implements ICluster {
    * @param chart the cdk8s chart.
    * @returns a `KubernetesManifest` construct representing the chart.
    */
-  public addCdk8sChart(id: string, chart: Construct): KubernetesManifest {
+  public addCdk8sChart(id: string, chart: Construct, options: KubernetesManifestOptions = {}): KubernetesManifest {
 
     const cdk8sChart = chart as any;
 
@@ -793,7 +865,13 @@ abstract class ClusterBase extends Resource implements ICluster {
       throw new Error(`Invalid cdk8s chart. Must contain a 'toJson' method, but found ${typeof cdk8sChart.toJson}`);
     }
 
-    return this.addManifest(id, ...cdk8sChart.toJson());
+    const manifest = new KubernetesManifest(this, id, {
+      cluster: this,
+      manifest: cdk8sChart.toJson(),
+      ...options,
+    });
+
+    return manifest;
   }
 
   public addServiceAccount(id: string, options: ServiceAccountOptions = {}): ServiceAccount {
@@ -893,7 +971,7 @@ abstract class ClusterBase extends Resource implements ICluster {
     // cluster or if `mapRole` is set to false. By default this should happen.
     let mapRole = options.mapRole ?? true;
     if (mapRole && !(this instanceof Cluster)) {
-    // do the mapping...
+      // do the mapping...
       Annotations.of(autoScalingGroup).addWarning('Auto-mapping aws-auth role for imported cluster is not supported, please map role manually');
       mapRole = false;
     }
@@ -919,6 +997,12 @@ abstract class ClusterBase extends Resource implements ICluster {
     if (autoScalingGroup.spotPrice && addSpotInterruptHandler) {
       this.addSpotInterruptHandler();
     }
+
+    if (this instanceof Cluster) {
+      // the controller runs on the worker nodes so they cannot
+      // be deleted before the controller.
+      this.albController?.node.addDependency(autoScalingGroup);
+    }
   }
 }
 
@@ -942,6 +1026,11 @@ export interface ServiceLoadBalancerAddressOptions {
   readonly namespace?: string;
 
 }
+
+/**
+ * Options for fetching an IngressLoadBalancerAddress.
+ */
+export interface IngressLoadBalancerAddressOptions extends ServiceLoadBalancerAddressOptions {};
 
 /**
  * A Cluster represents a managed Kubernetes Service (EKS)
@@ -974,7 +1063,7 @@ export class Cluster extends ClusterBase {
   /**
    * The AWS generated ARN for the Cluster resource
    *
-   * @example arn:aws:eks:us-west-2:666666666666:cluster/prod
+   * For example, `arn:aws:eks:us-west-2:666666666666:cluster/prod`
    */
   public readonly clusterArn: string;
 
@@ -983,7 +1072,7 @@ export class Cluster extends ClusterBase {
    *
    * This is the URL inside the kubeconfig file to use with kubectl
    *
-   * @example https://5E1D0CEXAMPLEA591B746AFC5AB30262.yl4.us-west-2.eks.amazonaws.com
+   * For example, `https://5E1D0CEXAMPLEA591B746AFC5AB30262.yl4.us-west-2.eks.amazonaws.com`
    */
   public readonly clusterEndpoint: string;
 
@@ -1042,6 +1131,18 @@ export class Cluster extends ClusterBase {
   public readonly kubectlRole?: iam.IRole;
 
   /**
+   * An IAM role that can perform kubectl operations against this cluster.
+   *
+   * The role should be mapped to the `system:masters` Kubernetes RBAC role.
+   *
+   * This role is directly passed to the lambda handler that sends Kube Ctl commands to the cluster.
+   * @default - if not specified, the default role created by a lambda function will
+   * be used.
+   */
+
+  public readonly kubectlLambdaRole?: iam.IRole;
+
+  /**
    * Custom environment variables when running `kubectl` against this cluster.
    */
   public readonly kubectlEnvironment?: { [key: string]: string };
@@ -1091,15 +1192,31 @@ export class Cluster extends ClusterBase {
   public readonly kubectlMemory?: Size;
 
   /**
+   * A security group to associate with the Cluster Handler's Lambdas.
+   * The Cluster Handler's Lambdas are responsible for calling AWS's EKS API.
+   *
+   * Requires `placeClusterHandlerInVpc` to be set to true.
+   *
+   * @default - No security group.
+   */
+  public readonly clusterHandlerSecurityGroup?: ec2.ISecurityGroup;
+
+  /**
    * The AWS Lambda layer that contains the NPM dependency `proxy-agent`. If
    * undefined, a SAR app that contains this layer will be used.
    */
-  public readonly onEventLayer?: lambda.ILayerVersion;
+  readonly onEventLayer?: lambda.ILayerVersion;
 
   /**
    * Determines if Kubernetes resources can be pruned automatically.
    */
   public readonly prune: boolean;
+
+  /**
+   * The ALB Controller construct defined for this cluster.
+   * Will be undefined if `albController` wasn't configured.
+   */
+  public readonly albController?: AlbController;
 
   /**
    * If this cluster is kubectl-enabled, returns the `ClusterResource` object
@@ -1149,6 +1266,7 @@ export class Cluster extends ClusterBase {
     this.prune = props.prune ?? true;
     this.vpc = props.vpc || new ec2.Vpc(this, 'DefaultVpc');
     this.version = props.version;
+    this.kubectlLambdaRole = props.kubectlLambdaRole ? props.kubectlLambdaRole : undefined;
 
     this.tagSubnets();
 
@@ -1179,10 +1297,12 @@ export class Cluster extends ClusterBase {
     this.endpointAccess = props.endpointAccess ?? EndpointAccess.PUBLIC_AND_PRIVATE;
     this.kubectlEnvironment = props.kubectlEnvironment;
     this.kubectlLayer = props.kubectlLayer;
-    this.onEventLayer = props.onEventLayer;
     this.kubectlMemory = props.kubectlMemory;
 
-    const privateSubents = this.selectPrivateSubnets().slice(0, 16);
+    this.onEventLayer = props.onEventLayer;
+    this.clusterHandlerSecurityGroup = props.clusterHandlerSecurityGroup;
+
+    const privateSubnets = this.selectPrivateSubnets().slice(0, 16);
     const publicAccessDisabled = !this.endpointAccess._config.publicAccess;
     const publicAccessRestricted = !publicAccessDisabled
       && this.endpointAccess._config.publicCidrs
@@ -1190,20 +1310,24 @@ export class Cluster extends ClusterBase {
 
     // validate endpoint access configuration
 
-    if (privateSubents.length === 0 && publicAccessDisabled) {
+    if (privateSubnets.length === 0 && publicAccessDisabled) {
       // no private subnets and no public access at all, no good.
       throw new Error('Vpc must contain private subnets when public endpoint access is disabled');
     }
 
-    if (privateSubents.length === 0 && publicAccessRestricted) {
-      // no private subents and public access is restricted, no good.
+    if (privateSubnets.length === 0 && publicAccessRestricted) {
+      // no private subnets and public access is restricted, no good.
       throw new Error('Vpc must contain private subnets when public endpoint access is restricted');
     }
 
     const placeClusterHandlerInVpc = props.placeClusterHandlerInVpc ?? false;
 
-    if (placeClusterHandlerInVpc && privateSubents.length === 0) {
+    if (placeClusterHandlerInVpc && privateSubnets.length === 0) {
       throw new Error('Cannot place cluster handler in the VPC since no private subnets could be selected');
+    }
+
+    if (props.clusterHandlerSecurityGroup && !placeClusterHandlerInVpc) {
+      throw new Error('Cannot specify clusterHandlerSecurityGroup without placeClusterHandlerInVpc set to true');
     }
 
     const resource = this._clusterResource = new ClusterResource(this, 'Resource', {
@@ -1223,16 +1347,20 @@ export class Cluster extends ClusterBase {
           resources: ['secrets'],
         }],
       } : {}),
+      kubernetesNetworkConfig: props.serviceIpv4Cidr ? {
+        serviceIpv4Cidr: props.serviceIpv4Cidr,
+      } : undefined,
       endpointPrivateAccess: this.endpointAccess._config.privateAccess,
       endpointPublicAccess: this.endpointAccess._config.publicAccess,
       publicAccessCidrs: this.endpointAccess._config.publicCidrs,
       secretsEncryptionKey: props.secretsEncryptionKey,
       vpc: this.vpc,
-      subnets: placeClusterHandlerInVpc ? privateSubents : undefined,
+      subnets: placeClusterHandlerInVpc ? privateSubnets : undefined,
+      clusterHandlerSecurityGroup: this.clusterHandlerSecurityGroup,
       onEventLayer: this.onEventLayer,
     });
 
-    if (this.endpointAccess._config.privateAccess && privateSubents.length !== 0) {
+    if (this.endpointAccess._config.privateAccess && privateSubnets.length !== 0) {
 
       // when private access is enabled and the vpc has private subnets, lets connect
       // the provider to the vpc so that it will work even when restricting public access.
@@ -1242,7 +1370,7 @@ export class Cluster extends ClusterBase {
         throw new Error('Private endpoint access requires the VPC to have DNS support and DNS hostnames enabled. Use `enableDnsHostnames: true` and `enableDnsSupport: true` when creating the VPC.');
       }
 
-      this.kubectlPrivateSubnets = privateSubents;
+      this.kubectlPrivateSubnets = privateSubnets;
 
       // the vpc must exist in order to properly delete the cluster (since we run `kubectl delete`).
       // this ensures that.
@@ -1312,6 +1440,10 @@ export class Cluster extends ClusterBase {
 
     commonCommandOptions.push(`--role-arn ${mastersRole.roleArn}`);
 
+    if (props.albController) {
+      this.albController = AlbController.create(this, { ...props.albController, cluster: this });
+    }
+
     // allocate default capacity if non-zero (or default).
     const minCapacity = props.defaultCapacity ?? DEFAULT_CAPACITY_COUNT;
     if (minCapacity > 0) {
@@ -1331,6 +1463,7 @@ export class Cluster extends ClusterBase {
     }
 
     this.defineCoreDnsComputeType(props.coreDnsComputeType ?? CoreDnsComputeType.EC2);
+
   }
 
   /**
@@ -1345,6 +1478,27 @@ export class Cluster extends ClusterBase {
       cluster: this,
       objectType: 'service',
       objectName: serviceName,
+      objectNamespace: options.namespace,
+      jsonPath: '.status.loadBalancer.ingress[0].hostname',
+      timeout: options.timeout,
+    });
+
+    return loadBalancerAddress.value;
+
+  }
+
+  /**
+   * Fetch the load balancer address of an ingress backed by a load balancer.
+   *
+   * @param ingressName The name of the ingress.
+   * @param options Additional operation options.
+   */
+  public getIngressLoadBalancerAddress(ingressName: string, options: IngressLoadBalancerAddressOptions = {}): string {
+
+    const loadBalancerAddress = new KubernetesObjectValue(this, `${ingressName}LoadBalancerAddress`, {
+      cluster: this,
+      objectType: 'ingress',
+      objectName: ingressName,
       objectNamespace: options.namespace,
       jsonPath: '.status.loadBalancer.ingress[0].hostname',
       timeout: options.timeout,
@@ -1385,8 +1539,6 @@ export class Cluster extends ClusterBase {
           cpuArch: cpuArchForInstanceType(options.instanceType),
           kubernetesVersion: this.version.version,
         }),
-      updateType: options.updateType,
-      instanceType: options.instanceType,
     });
 
     this.connectAutoScalingGroupCapacity(asg, {
@@ -1740,7 +1892,8 @@ export interface BootstrapOptions {
   /**
    * Extra arguments to add to the kubelet. Useful for adding labels or taints.
    *
-   * @example --node-labels foo=bar,goo=far
+   * For example, `--node-labels foo=bar,goo=far`.
+   *
    * @default - none
    */
   readonly kubeletExtraArgs?: string;
@@ -1811,12 +1964,14 @@ class ImportedCluster extends ClusterBase {
   public readonly clusterArn: string;
   public readonly connections = new ec2.Connections();
   public readonly kubectlRole?: iam.IRole;
+  public readonly kubectlLambdaRole?: iam.IRole;
   public readonly kubectlEnvironment?: { [key: string]: string; } | undefined;
   public readonly kubectlSecurityGroup?: ec2.ISecurityGroup | undefined;
   public readonly kubectlPrivateSubnets?: ec2.ISubnet[] | undefined;
   public readonly kubectlLayer?: lambda.ILayerVersion;
-  public readonly onEventLayer?: lambda.ILayerVersion;
   public readonly kubectlMemory?: Size;
+  public readonly clusterHandlerSecurityGroup?: ec2.ISecurityGroup | undefined;
+  public readonly onEventLayer?: lambda.ILayerVersion;
   public readonly prune: boolean;
 
   // so that `clusterSecurityGroup` on `ICluster` can be configured without optionality, avoiding users from having
@@ -1833,8 +1988,9 @@ class ImportedCluster extends ClusterBase {
     this.kubectlEnvironment = props.kubectlEnvironment;
     this.kubectlPrivateSubnets = props.kubectlPrivateSubnetIds ? props.kubectlPrivateSubnetIds.map((subnetid, index) => ec2.Subnet.fromSubnetId(this, `KubectlSubnet${index}`, subnetid)) : undefined;
     this.kubectlLayer = props.kubectlLayer;
-    this.onEventLayer = props.onEventLayer;
     this.kubectlMemory = props.kubectlMemory;
+    this.clusterHandlerSecurityGroup = props.clusterHandlerSecurityGroupId ? ec2.SecurityGroup.fromSecurityGroupId(this, 'ClusterHandlerSecurityGroup', props.clusterHandlerSecurityGroupId) : undefined;
+    this.onEventLayer = props.onEventLayer;
     this.prune = props.prune ?? true;
 
     let i = 1;

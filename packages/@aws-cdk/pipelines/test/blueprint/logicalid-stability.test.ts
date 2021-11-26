@@ -1,3 +1,4 @@
+import { describeDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Stack } from '@aws-cdk/core';
 import { mkdict } from '../../lib/private/javascript';
 import { PIPELINE_ENV, TestApp, LegacyTestGitHubNpmPipeline, ModernTestGitHubNpmPipeline, MegaAssetsApp, stackTemplate } from '../testhelpers';
@@ -8,73 +9,78 @@ let modernApp: TestApp;
 let legacyPipelineStack: Stack;
 let modernPipelineStack: Stack;
 
-beforeEach(() => {
-  legacyApp = new TestApp({
-    context: {
-      '@aws-cdk/core:newStyleStackSynthesis': '1',
-      'aws:cdk:enable-path-metadata': true,
-    },
+describeDeprecated('logical id stability', () => {
+  // this test suite verifies logical id between the new and old (deprecated) APIs.
+  // so it must be in a 'describeDeprecated' block
+
+  beforeEach(() => {
+    legacyApp = new TestApp({
+      context: {
+        '@aws-cdk/core:newStyleStackSynthesis': '1',
+        'aws:cdk:enable-path-metadata': true,
+      },
+    });
+    modernApp = new TestApp({
+      context: {
+        '@aws-cdk/core:newStyleStackSynthesis': '1',
+        'aws:cdk:enable-path-metadata': true,
+      },
+    });
+    legacyPipelineStack = new Stack(legacyApp, 'PipelineStack', { env: PIPELINE_ENV });
+    modernPipelineStack = new Stack(modernApp, 'PipelineStack', { env: PIPELINE_ENV });
   });
-  modernApp = new TestApp({
-    context: {
-      '@aws-cdk/core:newStyleStackSynthesis': '1',
-      'aws:cdk:enable-path-metadata': true,
-    },
+
+  afterEach(() => {
+    legacyApp.cleanup();
+    modernApp.cleanup();
   });
-  legacyPipelineStack = new Stack(legacyApp, 'PipelineStack', { env: PIPELINE_ENV });
-  modernPipelineStack = new Stack(modernApp, 'PipelineStack', { env: PIPELINE_ENV });
-});
 
-afterEach(() => {
-  legacyApp.cleanup();
-  modernApp.cleanup();
-});
+  test('stateful or nameable resources have the same logicalID between old and new API', () => {
+    const legacyPipe = new LegacyTestGitHubNpmPipeline(legacyPipelineStack, 'Cdk');
+    legacyPipe.addApplicationStage(new MegaAssetsApp(legacyPipelineStack, 'MyApp', {
+      numAssets: 2,
+    }));
 
-test('stateful or nameable resources have the same logicalID between old and new API', () => {
-  const legacyPipe = new LegacyTestGitHubNpmPipeline(legacyPipelineStack, 'Cdk');
-  legacyPipe.addApplicationStage(new MegaAssetsApp(legacyPipelineStack, 'MyApp', {
-    numAssets: 2,
-  }));
+    const modernPipe = new ModernTestGitHubNpmPipeline(modernPipelineStack, 'Cdk', {
+      crossAccountKeys: true,
+    });
+    modernPipe.addStage(new MegaAssetsApp(modernPipelineStack, 'MyApp', {
+      numAssets: 2,
+    }));
 
-  const modernPipe = new ModernTestGitHubNpmPipeline(modernPipelineStack, 'Cdk', {
-    crossAccountKeys: true,
+    const legacyTemplate = stackTemplate(legacyPipelineStack).template;
+    const modernTemplate = stackTemplate(modernPipelineStack).template;
+
+    const legacyStateful = filterR(legacyTemplate.Resources, isStateful);
+    const modernStateful = filterR(modernTemplate.Resources, isStateful);
+
+    expect(mapR(modernStateful, typeOfRes)).toEqual(mapR(legacyStateful, typeOfRes));
   });
-  modernPipe.addStage(new MegaAssetsApp(modernPipelineStack, 'MyApp', {
-    numAssets: 2,
-  }));
 
-  const legacyTemplate = stackTemplate(legacyPipelineStack).template;
-  const modernTemplate = stackTemplate(modernPipelineStack).template;
+  test('nameable resources have the same names between old and new API', () => {
+    const legacyPipe = new LegacyTestGitHubNpmPipeline(legacyPipelineStack, 'Cdk', {
+      pipelineName: 'asdf',
+    });
+    legacyPipe.addApplicationStage(new MegaAssetsApp(legacyPipelineStack, 'MyApp', {
+      numAssets: 2,
+    }));
 
-  const legacyStateful = filterR(legacyTemplate.Resources, isStateful);
-  const modernStateful = filterR(modernTemplate.Resources, isStateful);
+    const modernPipe = new ModernTestGitHubNpmPipeline(modernPipelineStack, 'Cdk', {
+      pipelineName: 'asdf',
+      crossAccountKeys: true,
+    });
+    modernPipe.addStage(new MegaAssetsApp(modernPipelineStack, 'MyApp', {
+      numAssets: 2,
+    }));
 
-  expect(mapR(modernStateful, typeOfRes)).toEqual(mapR(legacyStateful, typeOfRes));
-});
+    const legacyTemplate = stackTemplate(legacyPipelineStack).template;
+    const modernTemplate = stackTemplate(modernPipelineStack).template;
 
-test('nameable resources have the same names between old and new API', () => {
-  const legacyPipe = new LegacyTestGitHubNpmPipeline(legacyPipelineStack, 'Cdk', {
-    pipelineName: 'asdf',
+    const legacyNamed = filterR(legacyTemplate.Resources, hasName);
+    const modernNamed = filterR(modernTemplate.Resources, hasName);
+
+    expect(mapR(modernNamed, nameProps)).toEqual(mapR(legacyNamed, nameProps));
   });
-  legacyPipe.addApplicationStage(new MegaAssetsApp(legacyPipelineStack, 'MyApp', {
-    numAssets: 2,
-  }));
-
-  const modernPipe = new ModernTestGitHubNpmPipeline(modernPipelineStack, 'Cdk', {
-    pipelineName: 'asdf',
-    crossAccountKeys: true,
-  });
-  modernPipe.addStage(new MegaAssetsApp(modernPipelineStack, 'MyApp', {
-    numAssets: 2,
-  }));
-
-  const legacyTemplate = stackTemplate(legacyPipelineStack).template;
-  const modernTemplate = stackTemplate(modernPipelineStack).template;
-
-  const legacyNamed = filterR(legacyTemplate.Resources, hasName);
-  const modernNamed = filterR(modernTemplate.Resources, hasName);
-
-  expect(mapR(modernNamed, nameProps)).toEqual(mapR(legacyNamed, nameProps));
 });
 
 
