@@ -543,6 +543,11 @@ export interface ISecretAttachmentTarget {
  */
 export enum AttachmentTargetType {
   /**
+   * AWS::RDS::DBInstance
+   */
+  RDS_DB_INSTANCE = 'AWS::RDS::DBInstance',
+
+  /**
    * A database instance
    *
    * @deprecated use RDS_DB_INSTANCE instead
@@ -550,21 +555,16 @@ export enum AttachmentTargetType {
   INSTANCE = 'AWS::RDS::DBInstance',
 
   /**
+   * AWS::RDS::DBCluster
+   */
+  RDS_DB_CLUSTER = 'AWS::RDS::DBCluster',
+
+  /**
    * A database cluster
    *
    * @deprecated use RDS_DB_CLUSTER instead
    */
   CLUSTER = 'AWS::RDS::DBCluster',
-
-  /**
-   * AWS::RDS::DBInstance
-   */
-  RDS_DB_INSTANCE = 'AWS::RDS::DBInstance',
-
-  /**
-   * AWS::RDS::DBCluster
-   */
-  RDS_DB_CLUSTER = 'AWS::RDS::DBCluster',
 
   /**
    * AWS::RDS::DBProxy
