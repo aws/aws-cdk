@@ -392,11 +392,42 @@ For setting up a topic-specific queue subscription, you can provide a custom que
 
 ```ts
 nameDescription.add(new QueueExtension({
-  queue: myEventsQueue,
+  eventsQueue: myEventsQueue,
   subscriptions: [new TopicSubscription({
     topic: new sns.Topic(stack, 'my-topic'),
     // `myTopicQueue` will subscribe to the `my-topic` instead of `eventsQueue`
-    queue: myTopicQueue,
+    topicSubscriptionQueue: {
+      queue: myTopicQueue,
+    },
+  }],
+}));
+```
+
+### Configuring auto scaling based on SQS Queues
+
+You can scale your service up or down to maintain an acceptable queue latency by tracking the backlog per task. It configures a target tracking scaling policy with target value (acceptable backlog per task) calculated by dividing the `acceptableLatency` by `messageProcessingTime`. For example, if the maximum acceptable latency for a message to be processed after its arrival in the SQS Queue is 10 mins and the average processing time for a task is 250 milliseconds per message, then `acceptableBacklogPerTask = 10 *  60 / 0.25 = 2400`. Therefore, each queue can hold up to 2400 messages before the service starts to scale up. For this, a target tracking policy will be attached to the scaling target for your service with target value `2400`. For more information, please refer: https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-using-sqs-queue.html .
+
+You can configure auto scaling based on SQS Queue for your service as follows:
+
+```ts
+nameDescription.add(new QueueExtension({
+  eventsQueue: myEventsQueue,
+  // Need to specify `scaleOnLatency` to configure auto scaling based on SQS Queue
+  scaleOnLatency: {
+    acceptableLatency: cdk.Duration.minutes(10),
+    messageProcessingTime: cdk.Duration.millis(250),
+  },
+  subscriptions: [new TopicSubscription({
+    topic: new sns.Topic(stack, 'my-topic'),
+    // `myTopicQueue` will subscribe to the `my-topic` instead of `eventsQueue`
+    topicSubscriptionQueue: {
+      queue: myTopicQueue,
+      // Optionally provide `scaleOnLatency` for configuring separate autoscaling for `myTopicQueue`
+      scaleOnLatency: {
+        acceptableLatency: cdk.Duration.minutes(10),
+        messageProcessingTime: cdk.Duration.millis(250),
+      }
+    },
   }],
 }));
 ```
