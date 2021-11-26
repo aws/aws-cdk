@@ -32,7 +32,7 @@ export interface BackupPlanProps {
    * Option used to set Windows VSS options
    *
    * @default false
-   * @see {@link https://docs.aws.amazon.com/aws-backup/latest/devguide/windows-backups.html}
+   * @see https://docs.aws.amazon.com/aws-backup/latest/devguide/windows-backups.html}
    */
   readonly windowsVss? : boolean;
 
