@@ -1,4 +1,5 @@
 import * as path from 'path';
+import '@aws-cdk/assert-internal/jest';
 import { Template } from '@aws-cdk/assertions';
 import * as ecr from '@aws-cdk/aws-ecr';
 import * as ecr_assets from '@aws-cdk/aws-ecr-assets';
@@ -562,4 +563,24 @@ test('custom cpu and memory units are allowed', () => {
       Memory: 'Some GB',
     },
   });
+});
+
+test('environment variable with a prefix of AWSAPPRUNNER should throw an error', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'demo-stack');
+  // WHEN
+  // we should have the service
+  expect(() => {
+    new Service(stack, 'DemoService', {
+      source: Source.fromEcrPublic({
+        imageConfiguration: {
+          environment: {
+            AWSAPPRUNNER_FOO: 'bar',
+          },
+        },
+        imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+      }),
+    });
+  }).toThrow('Environment variable key AWSAPPRUNNER_FOO with a prefix of AWSAPPRUNNER is not allowed');
 });

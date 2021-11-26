@@ -834,6 +834,9 @@ export class Service extends cdk.Resource {
     if (this.environment) {
       let env: EnvironmentVariable[] = [];
       for (const [key, value] of Object.entries(this.environment)) {
+        if (key.startsWith('AWSAPPRUNNER')) {
+          throw new Error(`Environment variable key ${key} with a prefix of AWSAPPRUNNER is not allowed`);
+        }
         env.push({ name: key, value: value });
       }
       return env;
