@@ -216,6 +216,13 @@ export abstract class Backend {
   }
 
   /**
+   * Construct a Virtual Service backend via a Virtual Service name
+   */
+  public static virtualServiceName(virtualServiceName: string, props: VirtualServiceBackendOptions = {}): Backend {
+    return new VirtualServiceNameBackend(virtualServiceName, props.tlsClientPolicy);
+  }
+
+  /**
    * Return backend config
    */
   public abstract bind(_scope: Construct): BackendConfig;
@@ -239,6 +246,35 @@ class VirtualServiceBackend extends Backend {
       virtualServiceBackend: {
         virtualService: {
           virtualServiceName: this.virtualService.virtualServiceName,
+          clientPolicy: this.tlsClientPolicy
+            ? {
+              tls: renderTlsClientPolicy(scope, this.tlsClientPolicy),
+            }
+            : undefined,
+        },
+      },
+    };
+  }
+}
+
+/**
+ * Represents the properties needed to define a Virtual Service backend via a Virtual Service name
+ */
+class VirtualServiceNameBackend extends Backend {
+
+  constructor (private readonly virtualServiceName: string,
+    private readonly tlsClientPolicy: TlsClientPolicy | undefined) {
+    super();
+  }
+
+  /**
+   * Return config for a Virtual Service backend
+   */
+  public bind(scope: Construct): BackendConfig {
+    return {
+      virtualServiceBackend: {
+        virtualService: {
+          virtualServiceName: this.virtualServiceName,
           clientPolicy: this.tlsClientPolicy
             ? {
               tls: renderTlsClientPolicy(scope, this.tlsClientPolicy),

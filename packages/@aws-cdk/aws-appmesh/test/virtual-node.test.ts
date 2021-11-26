@@ -57,8 +57,53 @@ describe('virtual node', () => {
           },
           MeshOwner: ABSENT,
         });
+      });
 
+      test('should add resource with service backends via virtual service names', () => {
+        // GIVEN
+        const stack = new cdk.Stack();
 
+        // WHEN
+        const mesh = new appmesh.Mesh(stack, 'mesh', {
+          meshName: 'test-mesh',
+        });
+
+        const service1Name = 'service1.domain.local';
+        new appmesh.VirtualService(stack, 'service-1', {
+          virtualServiceName: service1Name,
+          virtualServiceProvider: appmesh.VirtualServiceProvider.none(mesh),
+        });
+        const service2Name = 'service2.domain.local';
+        new appmesh.VirtualService(stack, 'service-2', {
+          virtualServiceName: service2Name,
+          virtualServiceProvider: appmesh.VirtualServiceProvider.none(mesh),
+        });
+
+        const node = new appmesh.VirtualNode(stack, 'test-node', {
+          mesh,
+          serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
+          backends: [appmesh.Backend.virtualServiceName(service1Name)],
+        });
+
+        node.addBackend(appmesh.Backend.virtualServiceName(service2Name));
+
+        // THEN
+        expect(stack).toHaveResourceLike('AWS::AppMesh::VirtualNode', {
+          Spec: {
+            Backends: [
+              {
+                VirtualService: {
+                  VirtualServiceName: service1Name,
+                },
+              },
+              {
+                VirtualService: {
+                  VirtualServiceName: service2Name,
+                },
+              },
+            ],
+          },
+        });
       });
     });
 

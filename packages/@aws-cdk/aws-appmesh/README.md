@@ -196,16 +196,19 @@ const node = new appmesh.VirtualNode(this, 'node', {
 cdk.Tags.of(node).add('Environment', 'Dev');
 ```
 
-Create a `VirtualNode` with the constructor and add backend virtual service.
+Create a `VirtualNode` with the constructor, specifying a backend, and adding another backend virtual service later.
 
 ```ts
 declare const mesh: appmesh.Mesh;
 declare const router: appmesh.VirtualRouter;
 declare const service: cloudmap.Service;
 
+const virtualServiceName1 = 'service1.domain.local';
+const virtualServiceName2 = 'service2.domain.local';
 const node = new appmesh.VirtualNode(this, 'node', {
   mesh,
   serviceDiscovery: appmesh.ServiceDiscovery.cloudMap(service),
+  backends: [appmesh.Backend.virtualServiceName(virtualServiceName1)],
   listeners: [appmesh.VirtualNodeListener.http({
     port: 8080,
     healthCheck: appmesh.HealthCheck.http({
@@ -222,17 +225,21 @@ const node = new appmesh.VirtualNode(this, 'node', {
   accessLog: appmesh.AccessLog.fromFilePath('/dev/stdout'),
 });
 
-const virtualService = new appmesh.VirtualService(this, 'service-1', {
+const virtualService1 = new appmesh.VirtualService(this, 'service-1', {
   virtualServiceProvider: appmesh.VirtualServiceProvider.virtualRouter(router),
-  virtualServiceName: 'service1.domain.local',
+  virtualServiceName: virtualServiceName1,
+});
+const virtualService2 = new appmesh.VirtualService(this, 'service-2', {
+  virtualServiceProvider: appmesh.VirtualServiceProvider.virtualRouter(router),
+  virtualServiceName: virtualServiceName2,
 });
 
-node.addBackend(appmesh.Backend.virtualService(virtualService));
+node.addBackend(appmesh.Backend.virtualServiceName(virtualServiceName2));
 ```
 
 The `listeners` property can be left blank and added later with the `node.addListener()` method. The `serviceDiscovery` property must be specified when specifying a listener.
 
-The `backends` property can be added with `node.addBackend()`. In the example, we define a virtual service and add it to the virtual node to allow egress traffic to other nodes.
+The `backends` property can be added in the constructor or with `node.addBackend()`. In the example, we define two virtual services and add one to the virtual node in the constructor and one via `addBackend` to allow egress traffic to other nodes.
 
 The `backendDefaults` property is added to the node while creating the virtual node. These are the virtual node's default settings for all backends.
 
