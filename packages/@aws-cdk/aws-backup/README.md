@@ -87,9 +87,9 @@ you can backup VSS(Volume Shadow Copy Service)-enabled Windows applications runn
 This can be used by the windowsVss parameter, and the default value of this parameter is false.
 
 ```ts
-const plan = new BackupPlan(stack, 'Plan', {
-  windowsVss: true
-})
+const plan = new backup.BackupPlan(this, 'Plan', {
+  windowsVss: true,
+});
 ```
 ## Backup vault
 
