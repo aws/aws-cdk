@@ -138,7 +138,7 @@ describe('instance', () => {
   });
   test('instance architecture is correctly discerned for x86-64 instance', () => {
     // GIVEN
-    const sampleInstanceClasses = ['c5', 'm5ad', 'r5n', 'm6', 't3a']; // A sample of x86-64 instance classes
+    const sampleInstanceClasses = ['c5', 'm5ad', 'r5n', 'm6', 't3a', 'r6i']; // A sample of x86-64 instance classes
 
     for (const instanceClass of sampleInstanceClasses) {
       // WHEN
@@ -314,8 +314,8 @@ describe('instance', () => {
       });
 
       // THEN
-      expect(instance.node.metadata[0].type).toEqual(cxschema.ArtifactMetadataEntryType.WARN);
-      expect(instance.node.metadata[0].data).toEqual('iops will be ignored without volumeType: EbsDeviceVolumeType.IO1');
+      expect(instance.node.metadataEntry[0].type).toEqual(cxschema.ArtifactMetadataEntryType.WARN);
+      expect(instance.node.metadataEntry[0].data).toEqual('iops will be ignored without volumeType: EbsDeviceVolumeType.IO1');
 
 
     });
@@ -337,8 +337,8 @@ describe('instance', () => {
       });
 
       // THEN
-      expect(instance.node.metadata[0].type).toEqual(cxschema.ArtifactMetadataEntryType.WARN);
-      expect(instance.node.metadata[0].data).toEqual('iops will be ignored without volumeType: EbsDeviceVolumeType.IO1');
+      expect(instance.node.metadataEntry[0].type).toEqual(cxschema.ArtifactMetadataEntryType.WARN);
+      expect(instance.node.metadataEntry[0].data).toEqual('iops will be ignored without volumeType: EbsDeviceVolumeType.IO1');
 
 
     });
