@@ -577,6 +577,12 @@ export class Function extends FunctionBase {
    * The architecture of this Lambda Function (this is an optional attribute and defaults to X86_64).
    */
   public readonly architecture?: Architecture;
+
+  /**
+   * The timeout configured for this lambda.
+   */
+  public readonly timeout?: Duration;
+
   public readonly permissionsNode = this.node;
 
 
@@ -725,6 +731,7 @@ export class Function extends FunctionBase {
     });
 
     this.runtime = props.runtime;
+    this.timeout = props.timeout;
 
     this.architecture = props.architecture;
 
