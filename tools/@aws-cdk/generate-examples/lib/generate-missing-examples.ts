@@ -12,6 +12,8 @@ const COMMENT_WARNING = [
   '// The values are placeholders you should change.',
 ];
 
+export const FIXTURE_NAME = '_generated';
+
 export interface GenerateExamplesOptions {
   readonly cacheFromTablet?: string;
   readonly appendToTablet?: string;
@@ -43,7 +45,7 @@ export async function generateMissingExamples(assemblyLocations: string[], optio
     const fixture = generateFixture(assembly);
     addFixtureToRosetta(
       assemblyLocation,
-      '_generated.ts-fixture',
+      `${FIXTURE_NAME}.ts-fixture`,
       fixture,
     );
 

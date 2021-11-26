@@ -2,6 +2,7 @@ import * as path from 'path';
 import * as spec from '@jsii/spec';
 import * as fs from 'fs-extra';
 import { TypeScriptSnippet } from 'jsii-rosetta';
+import { FIXTURE_NAME } from './generate-missing-examples';
 
 /**
  * Replaces the file where the original assembly file *should* be found with a new assembly file.
@@ -52,10 +53,10 @@ export function insertExample(example: TypeScriptSnippet, type: spec.Type): void
     };
   }
   if (type.docs.custom) {
-    type.docs.custom.exampleMetadata = 'fixture=_generated';
+    type.docs.custom.exampleMetadata = `fixture=${FIXTURE_NAME}`;
   } else {
     type.docs.custom = {
-      exampleMetadata: 'fixture=_generated',
+      exampleMetadata: `fixture=${FIXTURE_NAME}`,
     };
   }
 }
