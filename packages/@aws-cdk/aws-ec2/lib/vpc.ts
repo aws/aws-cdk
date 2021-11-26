@@ -170,10 +170,8 @@ export enum SubnetType {
    *
    * This can be good for subnets with RDS or Elasticache instances,
    * or which route Internet traffic through a peer VPC.
-   *
-   * @deprecated use `SubnetType.PRIVATE_ISOLATED`
    */
-  ISOLATED = 'Isolated',
+  PRIVATE_ISOLATED = 'Isolated',
 
   /**
    * Isolated Subnets do not route traffic to the Internet (in this VPC),
@@ -185,8 +183,27 @@ export enum SubnetType {
    *
    * This can be good for subnets with RDS or Elasticache instances,
    * or which route Internet traffic through a peer VPC.
+   *
+   * @deprecated use `SubnetType.PRIVATE_ISOLATED`
    */
-  PRIVATE_ISOLATED = 'Isolated',
+  ISOLATED = 'Isolated',
+
+  /**
+   * Subnet that routes to the internet (via a NAT gateway), but not vice versa.
+   *
+   * Instances in a private subnet can connect to the Internet, but will not
+   * allow connections to be initiated from the Internet. NAT Gateway(s) are
+   * required with this subnet type to route the Internet traffic through.
+   * If a NAT Gateway is not required or desired, use `SubnetType.PRIVATE_ISOLATED` instead.
+   *
+   * By default, a NAT gateway is created in every public subnet for maximum availability.
+   * Be aware that you will be charged for NAT gateways.
+   *
+   * Normally a Private subnet will use a NAT gateway in the same AZ, but
+   * if `natGateways` is used to reduce the number of NAT gateways, a NAT
+   * gateway from another AZ will be used instead.
+   */
+  PRIVATE_WITH_NAT = 'Private',
 
   /**
    * Subnet that routes to the internet, but not vice versa.
@@ -206,23 +223,6 @@ export enum SubnetType {
    * @deprecated use `PRIVATE_WITH_NAT`
    */
   PRIVATE = 'Private',
-
-  /**
-   * Subnet that routes to the internet (via a NAT gateway), but not vice versa.
-   *
-   * Instances in a private subnet can connect to the Internet, but will not
-   * allow connections to be initiated from the Internet. NAT Gateway(s) are
-   * required with this subnet type to route the Internet traffic through.
-   * If a NAT Gateway is not required or desired, use `SubnetType.PRIVATE_ISOLATED` instead.
-   *
-   * By default, a NAT gateway is created in every public subnet for maximum availability.
-   * Be aware that you will be charged for NAT gateways.
-   *
-   * Normally a Private subnet will use a NAT gateway in the same AZ, but
-   * if `natGateways` is used to reduce the number of NAT gateways, a NAT
-   * gateway from another AZ will be used instead.
-   */
-  PRIVATE_WITH_NAT = 'Private',
 
   /**
    * Subnet connected to the Internet
