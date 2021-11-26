@@ -93,7 +93,7 @@ test('create a plan and add rules - add BackupPlan.AdvancedBackupSettings.Backup
     ],
   });
   // THEN
-  expect(stack).toHaveResource('AWS::Backup::BackupPlan', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Backup::BackupPlan', {
     BackupPlan: {
       AdvancedBackupSettings: [{ BackupOptions: { WindowsVSS: 'enabled' }, ResourceType: 'EC2' }],
     },
