@@ -90,15 +90,15 @@ export interface CustomResourceProviderProps {
 export enum CustomResourceProviderRuntime {
   /**
    * Node.js 12.x
+   */
+  NODEJS_12_X = 'nodejs12.x',
+
+  /**
+   * Node.js 12.x
    *
    * @deprecated Use {@link NODEJS_12_X}
    */
   NODEJS_12 = 'nodejs12.x',
-
-  /**
-   * Node.js 12.x
-   */
-  NODEJS_12_X = 'nodejs12.x',
 
   /**
    * Node.js 14.x
