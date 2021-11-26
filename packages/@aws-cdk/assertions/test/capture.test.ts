@@ -17,10 +17,11 @@ describe('Capture', () => {
 
   test('multiple captures', () => {
     const capture = new Capture();
-    const matcher = Match.objectEquals({ foo: capture });
+    const matcher = Match.objectEquals({ foo: capture, real: true });
 
-    matcher.test({ foo: 3 });
-    matcher.test({ foo: 5 });
+    matcher.test({ foo: 3, real: true });
+    matcher.test({ foo: 5, real: true });
+    matcher.test({ foo: 7, real: false });
 
     expect(capture.asNumber()).toEqual(3);
     expect(capture.next()).toEqual(true);

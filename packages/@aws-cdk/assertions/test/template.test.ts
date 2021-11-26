@@ -298,22 +298,27 @@ describe('Template', () => {
       const stack = new Stack();
       new CfnResource(stack, 'Bar1', {
         type: 'Foo::Bar',
-        properties: { baz: 'qux' },
+        properties: { baz: 'qux', real: true },
       });
       new CfnResource(stack, 'Bar2', {
         type: 'Foo::Bar',
-        properties: { baz: 'waldo' },
+        properties: { baz: 'waldo', real: true },
+      });
+      new CfnResource(stack, 'Bar3', {
+        type: 'Foo::Bar',
+        properties: { baz: 'fred', real: false },
       });
 
       const capture = new Capture();
       const inspect = Template.fromStack(stack);
       inspect.hasResource('Foo::Bar', {
-        Properties: Match.objectLike({ baz: capture }),
+        Properties: Match.objectLike({ baz: capture, real: true }),
       });
 
       expect(capture.asString()).toEqual('qux');
       expect(capture.next()).toEqual(true);
       expect(capture.asString()).toEqual('waldo');
+      expect(capture.next()).toEqual(false);
     });
   });
 
