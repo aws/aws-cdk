@@ -360,6 +360,9 @@
   },
   "exports": {
     ".": "./index.js",
+    "./package.json": "./package.json",
+    "./.jsii": "./.jsii",
+    "./.warnings.jsii.js": "./.warnings.jsii.js",
     "./alexa-ask": "./alexa-ask/index.js",
     "./app-delivery": "./app-delivery/index.js",
     "./assertions": "./assertions/index.js",
@@ -576,6 +579,9 @@
     "./lambda-layer-kubectl": "./lambda-layer-kubectl/index.js",
     "./lambda-layer-node-proxy-agent": "./lambda-layer-node-proxy-agent/index.js",
     "./pipelines": "./pipelines/index.js",
+    "./pipelines/package.json": "./pipelines/package.json",
+    "./pipelines/.jsii": "./pipelines/.jsii",
+    "./pipelines/.warnings.jsii.js": "./pipelines/.warnings.jsii.js",
     "./pipelines/lib/helpers-internal": "./pipelines/lib/helpers-internal/index.js",
     "./region-info": "./region-info/index.js",
     "./yaml-cfn": "./yaml-cfn/index.js"
