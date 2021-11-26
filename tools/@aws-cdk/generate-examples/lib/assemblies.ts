@@ -52,10 +52,10 @@ export function insertExample(example: TypeScriptSnippet, type: spec.Type): void
     };
   }
   if (type.docs.custom) {
-    type.docs.custom.exampleMetadata = 'fixture=generated';
+    type.docs.custom.exampleMetadata = 'fixture=_generated';
   } else {
     type.docs.custom = {
-      exampleMetadata: 'fixture=generated',
+      exampleMetadata: 'fixture=_generated',
     };
   }
 }

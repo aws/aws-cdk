@@ -40,10 +40,11 @@ export async function generateMissingExamples(assemblyLocations: string[], optio
     }
 
     // add fixture to assembly's rosetta folder if it doesn't exist yet
+    const fixture = generateFixture(assembly);
     addFixtureToRosetta(
       assemblyLocation,
-      'generated.ts-fixture',
-      generateFixture(assembly),
+      '_generated.ts-fixture',
+      fixture,
     );
 
     console.log(`${assembly.name}: ${documentableTypes.length} classes to document`);
@@ -80,6 +81,7 @@ export async function generateMissingExamples(assemblyLocations: string[], optio
         true,
         {
           [SnippetParameters.$COMPILATION_DIRECTORY]: options.directory ?? process.cwd(),
+          [SnippetParameters.$PROJECT_DIRECTORY]: assemblyLocation,
         });
 
       insertExample(tsSnippet, classType.spec);
