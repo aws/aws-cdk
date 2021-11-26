@@ -23,14 +23,15 @@ export class FileAssetHandler implements IAssetHandler {
   public async publish(): Promise<void> {
     const destination = await replaceAwsPlaceholders(this.asset.destination, this.host.aws);
     const s3Url = `s3://${destination.bucketName}/${destination.objectKey}`;
-
     const s3 = await this.host.aws.s3Client(destination);
     this.host.emitMessage(EventType.CHECK, `Check ${s3Url}`);
+
+    const bucketInfo = BucketInformation.for(this.host);
 
     // A thunk for describing the current account. Used when we need to format an error
     // message, not in the success case.
     const account = async () => (await this.host.aws.discoverCurrentAccount())?.accountId;
-    switch (await bucketOwnership(s3, destination.bucketName)) {
+    switch (await bucketInfo.bucketOwnership(s3, destination.bucketName)) {
       case BucketOwnership.MINE:
         break;
       case BucketOwnership.DOES_NOT_EXIST:
@@ -44,17 +45,42 @@ export class FileAssetHandler implements IAssetHandler {
       return;
     }
 
+    // Identify the the bucket encryption type to set the header on upload
+    // required for SCP rules denying uploads without encryption header
+    let paramsEncryption: {[index: string]:any}= {};
+    const encryption2 = await bucketInfo.bucketEncryption(s3, destination.bucketName);
+    switch (encryption2) {
+      case BucketEncryption.NO_ENCRYPTION:
+        break;
+      case BucketEncryption.SSEAlgorithm_AES256:
+        paramsEncryption = { ServerSideEncryption: 'AES256' };
+        break;
+      case BucketEncryption.SSEAlgorithm_aws_kms:
+        paramsEncryption = { ServerSideEncryption: 'aws:kms' };
+        break;
+      case BucketEncryption.DOES_NOT_EXIST:
+        this.host.emitMessage(EventType.DEBUG, `No bucket named '${destination.bucketName}'. Is account ${await account()} bootstrapped?`);
+        break;
+      case BucketEncryption.ACCES_DENIED:
+        this.host.emitMessage(EventType.DEBUG, `ACCES_DENIED for getting encryption of bucket '${destination.bucketName}'. Either wrong account ${await account()} or s3:GetEncryptionConfiguration not set for cdk role. Try "cdk bootstrap" again.`);
+        break;
+    }
+
     if (this.host.aborted) { return; }
     const publishFile = this.asset.source.executable ?
       await this.externalPackageFile(this.asset.source.executable) : await this.packageFile(this.asset.source);
 
     this.host.emitMessage(EventType.UPLOAD, `Upload ${s3Url}`);
-    await s3.upload({
+
+    const params = Object.assign({}, {
       Bucket: destination.bucketName,
       Key: destination.objectKey,
       Body: createReadStream(publishFile.packagedPath),
       ContentType: publishFile.contentType,
-    }).promise();
+    },
+    paramsEncryption);
+
+    await s3.upload(params).promise();
   }
 
   private async packageFile(source: FileSource): Promise<PackagedFileAsset> {
@@ -100,15 +126,12 @@ enum BucketOwnership {
   SOMEONE_ELSES_OR_NO_ACCESS
 }
 
-async function bucketOwnership(s3: AWS.S3, bucket: string): Promise<BucketOwnership> {
-  try {
-    await s3.getBucketLocation({ Bucket: bucket }).promise();
-    return BucketOwnership.MINE;
-  } catch (e) {
-    if (e.code === 'NoSuchBucket') { return BucketOwnership.DOES_NOT_EXIST; }
-    if (['AccessDenied', 'AllAccessDisabled'].includes(e.code)) { return BucketOwnership.SOMEONE_ELSES_OR_NO_ACCESS; }
-    throw e;
-  }
+enum BucketEncryption {
+  NO_ENCRYPTION,
+  SSEAlgorithm_AES256,
+  SSEAlgorithm_aws_kms,
+  ACCES_DENIED,
+  DOES_NOT_EXIST
 }
 
 async function objectExists(s3: AWS.S3, bucket: string, key: string) {
@@ -143,4 +166,85 @@ interface PackagedFileAsset {
    * @default - No content type
    */
   readonly contentType?: string;
+}
+
+
+/**
+ * Cache for bucket information, so we don't have to keep doing the same calls again and again
+ *
+ * We scope the lifetime of the cache to the lifetime of the host, so that we don't have to do
+ * anything special for tests and yet the cache will live for the entire lifetime of the asset
+ * upload session when used by the CLI.
+ */
+class BucketInformation {
+  public static for(host: IHandlerHost) {
+    const existing = BucketInformation.caches.get(host);
+    if (existing) { return existing; }
+
+    const fresh = new BucketInformation();
+    BucketInformation.caches.set(host, fresh);
+    return fresh;
+  }
+
+  private static readonly caches = new WeakMap<IHandlerHost, BucketInformation>();
+
+  private readonly ownerships = new Map<string, BucketOwnership>();
+  private readonly encryptions = new Map<string, BucketEncryption>();
+
+  private constructor() {
+  }
+
+  public async bucketOwnership(s3: AWS.S3, bucket: string): Promise<BucketOwnership> {
+    return cached(this.ownerships, bucket, () => this._bucketOwnership(s3, bucket));
+  }
+
+  public async bucketEncryption(s3: AWS.S3, bucket: string): Promise<BucketEncryption> {
+    return cached(this.encryptions, bucket, () => this._bucketEncryption(s3, bucket));
+  }
+
+  private async _bucketOwnership(s3: AWS.S3, bucket: string): Promise<BucketOwnership> {
+    try {
+      await s3.getBucketLocation({ Bucket: bucket }).promise();
+      return BucketOwnership.MINE;
+    } catch (e) {
+      if (e.code === 'NoSuchBucket') { return BucketOwnership.DOES_NOT_EXIST; }
+      if (['AccessDenied', 'AllAccessDisabled'].includes(e.code)) { return BucketOwnership.SOMEONE_ELSES_OR_NO_ACCESS; }
+      throw e;
+    }
+  }
+
+  private async _bucketEncryption(s3: AWS.S3, bucket: string): Promise<BucketEncryption> {
+    try {
+      const encryption = await s3.getBucketEncryption({ Bucket: bucket }).promise();
+      const l = encryption?.ServerSideEncryptionConfiguration?.Rules?.length ?? 0;
+      if (l > 0) {
+        let ssealgo = encryption?.ServerSideEncryptionConfiguration?.Rules[0]?.ApplyServerSideEncryptionByDefault?.SSEAlgorithm;
+        if (ssealgo === 'AES256') return BucketEncryption.SSEAlgorithm_AES256;
+        if (ssealgo === 'aws:kms') return BucketEncryption.SSEAlgorithm_aws_kms;
+      }
+      return BucketEncryption.NO_ENCRYPTION;
+    } catch (e) {
+      if (e.code === 'NoSuchBucket') {
+        return BucketEncryption.DOES_NOT_EXIST;
+      }
+      if (e.code === 'ServerSideEncryptionConfigurationNotFoundError') {
+        return BucketEncryption.NO_ENCRYPTION;
+      }
+
+      if (['AccessDenied', 'AllAccessDisabled'].includes(e.code)) {
+        return BucketEncryption.ACCES_DENIED;
+      }
+      return BucketEncryption.NO_ENCRYPTION;
+    }
+  }
+}
+
+async function cached<A, B>(cache: Map<A, B>, key: A, factory: (x: A) => Promise<B>): Promise<B> {
+  if (cache.has(key)) {
+    return cache.get(key)!;
+  }
+
+  const fresh = await factory(key);
+  cache.set(key, fresh);
+  return fresh;
 }
