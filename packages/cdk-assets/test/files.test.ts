@@ -213,6 +213,18 @@ test('upload with server side encryption aws:kms header', async () => {
   // We'll just have to assume the contents are correct
 });
 
+test('will only read bucketEncryption once even for multiple assets', async () => {
+  const pub = new AssetPublishing(AssetManifest.fromPath('/types/cdk.out'), { aws });
+
+  aws.mockS3.listObjectsV2 = mockedApiResult({ Contents: [{ Key: 'some_key.but_not_the_one' }] });
+  aws.mockS3.upload = mockUpload('FILE_CONTENTS');
+
+  await pub.publish();
+
+  expect(aws.mockS3.upload).toHaveBeenCalledTimes(2);
+  expect(aws.mockS3.getBucketEncryption).toHaveBeenCalledTimes(1);
+});
+
 test('no server side encryption header if access denied for bucket encryption', async () => {
   const pub = new AssetPublishing(AssetManifest.fromPath('/simple/cdk.out'), { aws });
 
