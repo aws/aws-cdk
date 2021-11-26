@@ -821,18 +821,13 @@ export class Service extends cdk.Resource {
   private renderImageRepository(): any {
     const repo = this.source.imageRepository!;
     this.environment = repo.imageConfiguration?.environment;
-    if (repo.imageConfiguration?.port) {
-      // convert port from type number to string
-      return Object.assign(repo, {
-        imageConfiguration: {
-          port: repo.imageConfiguration.port.toString(),
-          startCommand: repo.imageConfiguration.startCommand,
-          runtimeEnvironmentVariables: this.renderEnvironmentVariables(),
-        },
-      });
-    } else {
-      return repo;
-    }
+    return Object.assign(repo, {
+      imageConfiguration: {
+        port: repo.imageConfiguration?.port?.toString(),
+        startCommand: repo.imageConfiguration?.startCommand,
+        runtimeEnvironmentVariables: this.renderEnvironmentVariables(),
+      },
+    });
   }
 
   private renderEnvironmentVariables(): EnvironmentVariable[] | undefined {
