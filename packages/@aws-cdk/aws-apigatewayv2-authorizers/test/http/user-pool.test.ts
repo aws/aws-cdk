@@ -1,5 +1,5 @@
 import { Template } from '@aws-cdk/assertions';
-import { HttpApi, HttpIntegrationType, HttpRouteIntegrationBindOptions, IHttpRouteIntegration, PayloadFormatVersion } from '@aws-cdk/aws-apigatewayv2';
+import { HttpApi, HttpIntegrationType, HttpRouteIntegrationBindOptions, HttpRouteIntegration, PayloadFormatVersion } from '@aws-cdk/aws-apigatewayv2';
 import { UserPool } from '@aws-cdk/aws-cognito';
 import { Stack } from '@aws-cdk/core';
 import { HttpUserPoolAuthorizer } from '../../lib';
@@ -112,7 +112,7 @@ describe('HttpUserPoolAuthorizer', () => {
   });
 });
 
-class DummyRouteIntegration implements IHttpRouteIntegration {
+class DummyRouteIntegration extends HttpRouteIntegration {
   public bind(_: HttpRouteIntegrationBindOptions) {
     return {
       payloadFormatVersion: PayloadFormatVersion.VERSION_2_0,

@@ -1,7 +1,7 @@
 import { Template } from '@aws-cdk/assertions';
 import { Stack } from '@aws-cdk/core';
 import {
-  IWebSocketRouteIntegration, WebSocketApi, WebSocketIntegrationType,
+  WebSocketRouteIntegration, WebSocketApi, WebSocketIntegrationType,
   WebSocketRoute, WebSocketRouteIntegrationBindOptions, WebSocketRouteIntegrationConfig,
 } from '../../lib';
 
@@ -41,10 +41,50 @@ describe('WebSocketRoute', () => {
       IntegrationUri: 'some-uri',
     });
   });
+
+  test('integration cannot be used across WebSocketApis', () => {
+    // GIVEN
+    const integration = new DummyIntegration();
+
+    // WHEN
+    const stack = new Stack();
+    const webSocketApi1 = new WebSocketApi(stack, 'WebSocketApi1');
+    const webSocketApi2 = new WebSocketApi(stack, 'WebSocketApi2');
+
+    new WebSocketRoute(stack, 'WebSocketRoute1', {
+      webSocketApi: webSocketApi1,
+      integration,
+      routeKey: 'route',
+    });
+
+    expect(() => new WebSocketRoute(stack, 'WebSocketRoute2', {
+      webSocketApi: webSocketApi2,
+      integration,
+      routeKey: 'route',
+    })).toThrow(/cannot be associated with multiple APIs/);
+  });
+
+  test('associating integrations in different APIs creates separate AWS::ApiGatewayV2::Integration', () => {
+    const stack = new Stack();
+
+    const api = new WebSocketApi(stack, 'WebSocketApi');
+    new WebSocketRoute(stack, 'WebSocketRoute1', {
+      webSocketApi: api,
+      integration: new DummyIntegration(),
+      routeKey: '/books',
+    });
+    new WebSocketRoute(stack, 'WebSocketRoute2', {
+      webSocketApi: api,
+      integration: new DummyIntegration(),
+      routeKey: '/magazines',
+    });
+
+    Template.fromStack(stack).hasResource('AWS::ApiGatewayV2::Integration', 2);
+  });
 });
 
 
-class DummyIntegration implements IWebSocketRouteIntegration {
+class DummyIntegration extends WebSocketRouteIntegration {
   bind(_options: WebSocketRouteIntegrationBindOptions): WebSocketRouteIntegrationConfig {
     return {
       type: WebSocketIntegrationType.AWS_PROXY,

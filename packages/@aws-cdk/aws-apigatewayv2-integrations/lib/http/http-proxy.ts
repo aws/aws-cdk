@@ -3,7 +3,7 @@ import {
   HttpRouteIntegrationBindOptions,
   HttpRouteIntegrationConfig,
   HttpMethod,
-  IHttpRouteIntegration,
+  HttpRouteIntegration,
   ParameterMapping,
   PayloadFormatVersion,
 } from '@aws-cdk/aws-apigatewayv2';
@@ -34,8 +34,9 @@ export interface HttpProxyIntegrationProps {
 /**
  * The HTTP Proxy integration resource for HTTP API
  */
-export class HttpProxyIntegration implements IHttpRouteIntegration {
+export class HttpProxyIntegration extends HttpRouteIntegration {
   constructor(private readonly props: HttpProxyIntegrationProps) {
+    super();
   }
 
   public bind(_: HttpRouteIntegrationBindOptions): HttpRouteIntegrationConfig {
