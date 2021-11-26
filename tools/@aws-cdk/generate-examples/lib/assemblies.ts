@@ -15,6 +15,18 @@ export async function replaceAssembly(assembly: spec.Assembly, directory: string
   });
 }
 
+export function addFixtureToRosetta(directory: string, fileName: string, fixture: string) {
+  const rosettaPath = path.join(directory, 'rosetta');
+  if (!fs.existsSync(rosettaPath)) {
+    fs.mkdirSync(rosettaPath);
+  }
+  const filePath = path.join(rosettaPath, fileName);
+  if (fs.existsSync(filePath)) {
+    return;
+  }
+  fs.writeFileSync(filePath, fixture);
+}
+
 /**
  * Replaces the old fingerprint with '***********'.
  *
@@ -35,6 +47,15 @@ export function insertExample(example: TypeScriptSnippet, type: spec.Type): void
   if (type.docs) {
     type.docs.example = example.visibleSource;
   } else {
-    type.docs = { example: example.visibleSource };
+    type.docs = {
+      example: example.visibleSource,
+    };
+  }
+  if (type.docs.custom) {
+    type.docs.custom.exampleMetadata = 'nofixture';
+  } else {
+    type.docs.custom = {
+      exampleMetadata: 'nofixture',
+    };
   }
 }

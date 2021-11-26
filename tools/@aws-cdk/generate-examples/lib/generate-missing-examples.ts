@@ -4,7 +4,7 @@ import { Assembly, ClassType, InterfaceType, TypeSystem } from 'jsii-reflect';
 
 // This import should come from @jsii/spec. Replace when that is possible.
 import { LanguageTablet, RosettaTranslator, SnippetLocation, SnippetParameters, TypeScriptSnippet, typeScriptSnippetFromCompleteSource } from 'jsii-rosetta';
-import { insertExample, replaceAssembly } from './assemblies';
+import { insertExample, replaceAssembly, addFixtureToRosetta } from './assemblies';
 import { generateAssignmentStatement } from './generate';
 
 const COMMENT_WARNING = [
@@ -31,13 +31,20 @@ export async function generateMissingExamples(assemblyLocations: string[], optio
     return { assemblyLocation, assembly: await typesystem.load(assemblyLocation, { validate: false }) };
   }));
 
-  const snippets = loadedAssemblies.flatMap(({ assembly }) => {
+  const snippets = loadedAssemblies.flatMap(({ assembly, assemblyLocation }) => {
     // Classes and structs
     const documentableTypes: Array<ClassType | InterfaceType> = [];
     for (const m of [assembly, ...assembly.allSubmodules]) {
       documentableTypes.push(...m.classes.filter(c => !c.docs.example));
       documentableTypes.push(...m.interfaces.filter(c => !c.docs.example && c.datatype));
     }
+
+    // add fixture to assembly's rosetta folder if it doesn't exist yet
+    addFixtureToRosetta(
+      assemblyLocation,
+      'generated.ts-fixture',
+      generateFixture(assembly),
+    );
 
     console.log(`${assembly.name}: ${documentableTypes.length} classes to document`);
     if (documentableTypes.length === 0) { return []; }
@@ -153,4 +160,15 @@ function correctConstructImport(assembly: Assembly) {
   }
 
   return 'import { Construct } from "constructs";';
+}
+
+function generateFixture(assembly: Assembly): string {
+  return [
+    correctConstructImport(assembly),
+    'class MyConstruct extends Construct {',
+    'constructor(scope: Construct, id: string) {',
+    'super(scope, id);',
+    '/// here',
+    '} }',
+  ].join('\n').trimLeft();
 }
