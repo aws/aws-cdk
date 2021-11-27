@@ -155,10 +155,6 @@ describe('Metric Math', () => {
             label: '',
             usingMetrics: {
               a,
-              e: new MathExpression({
-                expression: 'b + c',
-                usingMetrics: { b: a, c },
-              }),
             },
           }),
         ],
@@ -167,9 +163,6 @@ describe('Metric Math', () => {
       graphMetricsAre(graph, [
         [{ expression: 'a + e' }],
         ['Test', 'ACount', { visible: false, id: 'a' }],
-        [{ expression: 'b + c', visible: false, id: 'e' }],
-        ['Test', 'ACount', { visible: false, id: 'b' }],
-        ['Test', 'CCount', { visible: false, id: 'c' }],
       ]);
 
 
