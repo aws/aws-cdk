@@ -83,7 +83,7 @@ describe('Metric Math', () => {
 
       // THEN
       graphMetricsAre(graph, [
-        [{ expression: 'a + b' }],
+        [{ expression: 'a + b', label: 'a + b' }],
         ['Test', 'ACount', { visible: false, id: 'a' }],
         ['Test', 'BCount', { visible: false, id: 'b' }],
       ]);
@@ -110,7 +110,7 @@ describe('Metric Math', () => {
 
       // THEN
       graphMetricsAre(graph, [
-        [{ expression: 'a + e' }],
+        [{ label: 'a + e', expression: 'a + e' }],
         ['Test', 'ACount', { visible: false, id: 'a' }],
         [{ expression: 'b + c', visible: false, id: 'e' }],
         ['Test', 'BCount', { visible: false, id: 'b' }],
@@ -137,7 +137,7 @@ describe('Metric Math', () => {
       });
 
       graphMetricsAre(graph, [
-        [{ expression: 'a + e' }],
+        [{ label: 'a + e', expression: 'a + e' }],
         ['Test', 'ACount', { visible: false, id: 'a' }],
         [{ expression: 'b + c', visible: false, id: 'e' }],
         ['Test', 'ACount', { visible: false, id: 'b' }],
@@ -193,7 +193,7 @@ describe('Metric Math', () => {
 
       // THEN
       graphMetricsAre(graph, [
-        [{ expression: 'a + e' }],
+        [{ label: 'a + e', expression: 'a + e' }],
         ['Test', 'ACount', { visible: false, id: 'a' }],
         [{ expression: 'a + c', visible: false, id: 'e' }],
         ['Test', 'CCount', { visible: false, id: 'c' }],
@@ -216,7 +216,7 @@ describe('Metric Math', () => {
       // THEN
       graphMetricsAre(graph, [
         ['Test', 'ACount', { id: 'a' }],
-        [{ expression: 'a + b' }],
+        [{ label: 'a + b', expression: 'a + b' }],
         ['Test', 'BCount', { visible: false, id: 'b' }],
       ]);
 
@@ -238,7 +238,7 @@ describe('Metric Math', () => {
       // THEN
       graphMetricsAre(graph, [
         ['Test', 'ACount', { period: 10 }],
-        [{ expression: 'a + b' }],
+        [{ label: 'a + b', expression: 'a + b' }],
         ['Test', 'ACount', { visible: false, id: 'a' }],
         ['Test', 'BCount', { visible: false, id: 'b' }],
       ]);
@@ -260,7 +260,7 @@ describe('Metric Math', () => {
       // THEN
       graphMetricsAre(graph, [
         ['Test', 'ACount'],
-        [{ expression: 'a + b', period: 60 }],
+        [{ label: 'a + b', expression: 'a + b', period: 60 }],
         ['Test', 'ACount', { visible: false, id: 'a', period: 60 }],
         ['Test', 'BCount', { visible: false, id: 'b', period: 60 }],
       ]);
@@ -288,7 +288,7 @@ describe('Metric Math', () => {
 
       // THEN
       graphMetricsAre(graph, [
-        [{ expression: 'a + e' }],
+        [{ expression: 'a + e', label: 'a + e' }],
         ['Test', 'ACount', { visible: false, id: 'a' }],
         [{ expression: 'a + b', visible: false, id: 'e' }],
         ['Test', 'BCount', { visible: false, id: 'b' }],
@@ -309,7 +309,7 @@ describe('Metric Math', () => {
 
       // THEN
       graphMetricsAre(graph, [
-        [{ expression: 'a + b99' }],
+        [{ expression: 'a + b99', label: 'a + b99' }],
         ['Test', 'ACount', { visible: false, id: 'a' }],
         ['Test', 'BCount', { visible: false, id: 'b99', stat: 'p99' }],
       ]);
@@ -336,8 +336,9 @@ describe('Metric Math', () => {
 
       // THEN
       graphMetricsAre(graph, [
+        [{ label: 'a + 1', expression: 'a + 1' }],
         ['Test', 'ACount', { visible: false, id: 'a' }],
-        [{ expression: 'a + 2', yAxis: 'right' }],
+        [{ label: 'a + 2', expression: 'a + 2', yAxis: 'right' }],
       ]);
 
 
