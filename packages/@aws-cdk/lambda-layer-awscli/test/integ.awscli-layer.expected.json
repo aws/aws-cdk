@@ -1,0 +1,1353 @@
+{
+  "Resources": {
+    "AwsCliLayerF44AAF94": {
+      "Type": "AWS::Lambda::LayerVersion",
+      "Properties": {
+        "Content": {
+          "S3Bucket": {
+            "Ref": "AssetParametersa8cc7fcce41ea7a3974207d7d785e4422bf5254311d407d029bba331b6d58fbbS3BucketCC565F9B"
+          },
+          "S3Key": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Fn::Select": [
+                    0,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParametersa8cc7fcce41ea7a3974207d7d785e4422bf5254311d407d029bba331b6d58fbbS3VersionKeyD10A94BA"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Fn::Select": [
+                    1,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParametersa8cc7fcce41ea7a3974207d7d785e4422bf5254311d407d029bba331b6d58fbbS3VersionKeyD10A94BA"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            ]
+          }
+        },
+        "CompatibleArchitectures": [
+          "x86_64"
+        ],
+        "CompatibleRuntimes": [
+          "go1.x",
+          "java8",
+          "python3.6",
+          "python3.7"
+        ],
+        "Description": "/opt/awscli/aws"
+      }
+    },
+    "Lambdax8664go1xServiceRole0222D47D": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "Lambdax8664go1x8E49495A": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "AssetParameters60cf0144d7eac84ad9a869e5a33be8fe370440afde80507e13328ae962470b30S3BucketD93F26C9"
+          },
+          "S3Key": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Fn::Select": [
+                    0,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParameters60cf0144d7eac84ad9a869e5a33be8fe370440afde80507e13328ae962470b30S3VersionKeyD955E728"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Fn::Select": [
+                    1,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParameters60cf0144d7eac84ad9a869e5a33be8fe370440afde80507e13328ae962470b30S3VersionKeyD955E728"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            ]
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "Lambdax8664go1xServiceRole0222D47D",
+            "Arn"
+          ]
+        },
+        "Architectures": [
+          "x86_64"
+        ],
+        "Handler": "main",
+        "Layers": [
+          {
+            "Ref": "AwsCliLayerF44AAF94"
+          }
+        ],
+        "MemorySize": 512,
+        "Runtime": "go1.x",
+        "Timeout": 30
+      },
+      "DependsOn": [
+        "Lambdax8664go1xServiceRole0222D47D"
+      ]
+    },
+    "Lambdax8664go1xLogRetention3C711000": {
+      "Type": "Custom::LogRetention",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
+            "Arn"
+          ]
+        },
+        "LogGroupName": {
+          "Fn::Join": [
+            "",
+            [
+              "/aws/lambda/",
+              {
+                "Ref": "Lambdax8664go1x8E49495A"
+              }
+            ]
+          ]
+        },
+        "RetentionInDays": 1
+      }
+    },
+    "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "logs:PutRetentionPolicy",
+                "logs:DeleteRetentionPolicy"
+              ],
+              "Effect": "Allow",
+              "Resource": "*"
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB",
+        "Roles": [
+          {
+            "Ref": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB"
+          }
+        ]
+      }
+    },
+    "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Handler": "index.handler",
+        "Runtime": "nodejs14.x",
+        "Code": {
+          "S3Bucket": {
+            "Ref": "AssetParametersdd4b26cf376ea5894e31041be239fc518713becdafb8f2894b069a53984fafe9S3BucketE7DA8D4B"
+          },
+          "S3Key": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Fn::Select": [
+                    0,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParametersdd4b26cf376ea5894e31041be239fc518713becdafb8f2894b069a53984fafe9S3VersionKey534293E7"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Fn::Select": [
+                    1,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParametersdd4b26cf376ea5894e31041be239fc518713becdafb8f2894b069a53984fafe9S3VersionKey534293E7"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            ]
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB",
+            "Arn"
+          ]
+        }
+      },
+      "DependsOn": [
+        "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB",
+        "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB"
+      ]
+    },
+    "Providerx8664go1xframeworkonEventServiceRoleE2E6B3F7": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "Providerx8664go1xframeworkonEventServiceRoleDefaultPolicyC1E9B3BD": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "lambda:InvokeFunction",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "Lambdax8664go1x8E49495A",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "Providerx8664go1xframeworkonEventServiceRoleDefaultPolicyC1E9B3BD",
+        "Roles": [
+          {
+            "Ref": "Providerx8664go1xframeworkonEventServiceRoleE2E6B3F7"
+          }
+        ]
+      }
+    },
+    "Providerx8664go1xframeworkonEventD684463A": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "AssetParametersdaeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1S3BucketDC4B98B1"
+          },
+          "S3Key": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Fn::Select": [
+                    0,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParametersdaeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1S3VersionKeyA495226F"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Fn::Select": [
+                    1,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParametersdaeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1S3VersionKeyA495226F"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            ]
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "Providerx8664go1xframeworkonEventServiceRoleE2E6B3F7",
+            "Arn"
+          ]
+        },
+        "Description": "AWS CDK resource provider framework - onEvent (lambda-layer-awscli-integ-stack/Providerx86_64go1.x)",
+        "Environment": {
+          "Variables": {
+            "USER_ON_EVENT_FUNCTION_ARN": {
+              "Fn::GetAtt": [
+                "Lambdax8664go1x8E49495A",
+                "Arn"
+              ]
+            }
+          }
+        },
+        "Handler": "framework.onEvent",
+        "Runtime": "nodejs12.x",
+        "Timeout": 900
+      },
+      "DependsOn": [
+        "Providerx8664go1xframeworkonEventServiceRoleDefaultPolicyC1E9B3BD",
+        "Providerx8664go1xframeworkonEventServiceRoleE2E6B3F7"
+      ]
+    },
+    "Providerx8664go1xframeworkonEventLogRetention1A775ECB": {
+      "Type": "Custom::LogRetention",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
+            "Arn"
+          ]
+        },
+        "LogGroupName": {
+          "Fn::Join": [
+            "",
+            [
+              "/aws/lambda/",
+              {
+                "Ref": "Providerx8664go1xframeworkonEventD684463A"
+              }
+            ]
+          ]
+        },
+        "RetentionInDays": 1
+      }
+    },
+    "CustomResourcex8664go1x": {
+      "Type": "AWS::CloudFormation::CustomResource",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "Providerx8664go1xframeworkonEventD684463A",
+            "Arn"
+          ]
+        }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "Lambdax8664java8ServiceRoleB1F53B7A": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "Lambdax8664java81EEA4FDB": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "AssetParameterseb01a1740b788d68abf7bf2bda4f2097e74e6b54d7361cdd5317591ff1331115S3BucketD2BA9D1E"
+          },
+          "S3Key": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Fn::Select": [
+                    0,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParameterseb01a1740b788d68abf7bf2bda4f2097e74e6b54d7361cdd5317591ff1331115S3VersionKey44697159"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Fn::Select": [
+                    1,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParameterseb01a1740b788d68abf7bf2bda4f2097e74e6b54d7361cdd5317591ff1331115S3VersionKey44697159"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            ]
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "Lambdax8664java8ServiceRoleB1F53B7A",
+            "Arn"
+          ]
+        },
+        "Architectures": [
+          "x86_64"
+        ],
+        "Handler": "software.amazon.awscdk.lambdalayerawsclitest.Handler",
+        "Layers": [
+          {
+            "Ref": "AwsCliLayerF44AAF94"
+          }
+        ],
+        "MemorySize": 512,
+        "Runtime": "java8",
+        "Timeout": 30
+      },
+      "DependsOn": [
+        "Lambdax8664java8ServiceRoleB1F53B7A"
+      ]
+    },
+    "Lambdax8664java8LogRetentionD4F4460C": {
+      "Type": "Custom::LogRetention",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
+            "Arn"
+          ]
+        },
+        "LogGroupName": {
+          "Fn::Join": [
+            "",
+            [
+              "/aws/lambda/",
+              {
+                "Ref": "Lambdax8664java81EEA4FDB"
+              }
+            ]
+          ]
+        },
+        "RetentionInDays": 1
+      }
+    },
+    "Providerx8664java8frameworkonEventServiceRole58E2D225": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "Providerx8664java8frameworkonEventServiceRoleDefaultPolicy814D2C9F": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "lambda:InvokeFunction",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "Lambdax8664java81EEA4FDB",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "Providerx8664java8frameworkonEventServiceRoleDefaultPolicy814D2C9F",
+        "Roles": [
+          {
+            "Ref": "Providerx8664java8frameworkonEventServiceRole58E2D225"
+          }
+        ]
+      }
+    },
+    "Providerx8664java8frameworkonEventEA3177FF": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "AssetParametersdaeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1S3BucketDC4B98B1"
+          },
+          "S3Key": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Fn::Select": [
+                    0,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParametersdaeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1S3VersionKeyA495226F"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Fn::Select": [
+                    1,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParametersdaeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1S3VersionKeyA495226F"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            ]
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "Providerx8664java8frameworkonEventServiceRole58E2D225",
+            "Arn"
+          ]
+        },
+        "Description": "AWS CDK resource provider framework - onEvent (lambda-layer-awscli-integ-stack/Providerx86_64java8)",
+        "Environment": {
+          "Variables": {
+            "USER_ON_EVENT_FUNCTION_ARN": {
+              "Fn::GetAtt": [
+                "Lambdax8664java81EEA4FDB",
+                "Arn"
+              ]
+            }
+          }
+        },
+        "Handler": "framework.onEvent",
+        "Runtime": "nodejs12.x",
+        "Timeout": 900
+      },
+      "DependsOn": [
+        "Providerx8664java8frameworkonEventServiceRoleDefaultPolicy814D2C9F",
+        "Providerx8664java8frameworkonEventServiceRole58E2D225"
+      ]
+    },
+    "Providerx8664java8frameworkonEventLogRetention35700F47": {
+      "Type": "Custom::LogRetention",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
+            "Arn"
+          ]
+        },
+        "LogGroupName": {
+          "Fn::Join": [
+            "",
+            [
+              "/aws/lambda/",
+              {
+                "Ref": "Providerx8664java8frameworkonEventEA3177FF"
+              }
+            ]
+          ]
+        },
+        "RetentionInDays": 1
+      }
+    },
+    "CustomResourcex8664java8": {
+      "Type": "AWS::CloudFormation::CustomResource",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "Providerx8664java8frameworkonEventEA3177FF",
+            "Arn"
+          ]
+        }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "Lambdax8664python36ServiceRole051BD59D": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "Lambdax8664python365D858D27": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "AssetParameters5dff6208ccd5fb196bb0354fd6e47faa8431a789e6125d20386586fef761ed48S3Bucket1DD21439"
+          },
+          "S3Key": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Fn::Select": [
+                    0,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParameters5dff6208ccd5fb196bb0354fd6e47faa8431a789e6125d20386586fef761ed48S3VersionKey77F71A63"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Fn::Select": [
+                    1,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParameters5dff6208ccd5fb196bb0354fd6e47faa8431a789e6125d20386586fef761ed48S3VersionKey77F71A63"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            ]
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "Lambdax8664python36ServiceRole051BD59D",
+            "Arn"
+          ]
+        },
+        "Architectures": [
+          "x86_64"
+        ],
+        "Handler": "index.handler",
+        "Layers": [
+          {
+            "Ref": "AwsCliLayerF44AAF94"
+          }
+        ],
+        "MemorySize": 512,
+        "Runtime": "python3.6",
+        "Timeout": 30
+      },
+      "DependsOn": [
+        "Lambdax8664python36ServiceRole051BD59D"
+      ]
+    },
+    "Lambdax8664python36LogRetention62A2A45E": {
+      "Type": "Custom::LogRetention",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
+            "Arn"
+          ]
+        },
+        "LogGroupName": {
+          "Fn::Join": [
+            "",
+            [
+              "/aws/lambda/",
+              {
+                "Ref": "Lambdax8664python365D858D27"
+              }
+            ]
+          ]
+        },
+        "RetentionInDays": 1
+      }
+    },
+    "Providerx8664python36frameworkonEventServiceRole42E12A1D": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "Providerx8664python36frameworkonEventServiceRoleDefaultPolicy08615768": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "lambda:InvokeFunction",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "Lambdax8664python365D858D27",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "Providerx8664python36frameworkonEventServiceRoleDefaultPolicy08615768",
+        "Roles": [
+          {
+            "Ref": "Providerx8664python36frameworkonEventServiceRole42E12A1D"
+          }
+        ]
+      }
+    },
+    "Providerx8664python36frameworkonEventD65A6A0F": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "AssetParametersdaeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1S3BucketDC4B98B1"
+          },
+          "S3Key": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Fn::Select": [
+                    0,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParametersdaeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1S3VersionKeyA495226F"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Fn::Select": [
+                    1,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParametersdaeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1S3VersionKeyA495226F"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            ]
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "Providerx8664python36frameworkonEventServiceRole42E12A1D",
+            "Arn"
+          ]
+        },
+        "Description": "AWS CDK resource provider framework - onEvent (lambda-layer-awscli-integ-stack/Providerx86_64python3.6)",
+        "Environment": {
+          "Variables": {
+            "USER_ON_EVENT_FUNCTION_ARN": {
+              "Fn::GetAtt": [
+                "Lambdax8664python365D858D27",
+                "Arn"
+              ]
+            }
+          }
+        },
+        "Handler": "framework.onEvent",
+        "Runtime": "nodejs12.x",
+        "Timeout": 900
+      },
+      "DependsOn": [
+        "Providerx8664python36frameworkonEventServiceRoleDefaultPolicy08615768",
+        "Providerx8664python36frameworkonEventServiceRole42E12A1D"
+      ]
+    },
+    "Providerx8664python36frameworkonEventLogRetention370697E8": {
+      "Type": "Custom::LogRetention",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
+            "Arn"
+          ]
+        },
+        "LogGroupName": {
+          "Fn::Join": [
+            "",
+            [
+              "/aws/lambda/",
+              {
+                "Ref": "Providerx8664python36frameworkonEventD65A6A0F"
+              }
+            ]
+          ]
+        },
+        "RetentionInDays": 1
+      }
+    },
+    "CustomResourcex8664python36": {
+      "Type": "AWS::CloudFormation::CustomResource",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "Providerx8664python36frameworkonEventD65A6A0F",
+            "Arn"
+          ]
+        }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "Lambdax8664python37ServiceRole2C9BC9A4": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "Lambdax8664python37854CB97E": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "AssetParameters5dff6208ccd5fb196bb0354fd6e47faa8431a789e6125d20386586fef761ed48S3Bucket1DD21439"
+          },
+          "S3Key": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Fn::Select": [
+                    0,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParameters5dff6208ccd5fb196bb0354fd6e47faa8431a789e6125d20386586fef761ed48S3VersionKey77F71A63"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Fn::Select": [
+                    1,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParameters5dff6208ccd5fb196bb0354fd6e47faa8431a789e6125d20386586fef761ed48S3VersionKey77F71A63"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            ]
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "Lambdax8664python37ServiceRole2C9BC9A4",
+            "Arn"
+          ]
+        },
+        "Architectures": [
+          "x86_64"
+        ],
+        "Handler": "index.handler",
+        "Layers": [
+          {
+            "Ref": "AwsCliLayerF44AAF94"
+          }
+        ],
+        "MemorySize": 512,
+        "Runtime": "python3.7",
+        "Timeout": 30
+      },
+      "DependsOn": [
+        "Lambdax8664python37ServiceRole2C9BC9A4"
+      ]
+    },
+    "Lambdax8664python37LogRetentionC3AD5588": {
+      "Type": "Custom::LogRetention",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
+            "Arn"
+          ]
+        },
+        "LogGroupName": {
+          "Fn::Join": [
+            "",
+            [
+              "/aws/lambda/",
+              {
+                "Ref": "Lambdax8664python37854CB97E"
+              }
+            ]
+          ]
+        },
+        "RetentionInDays": 1
+      }
+    },
+    "Providerx8664python37frameworkonEventServiceRoleB6EB6EAD": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "Providerx8664python37frameworkonEventServiceRoleDefaultPolicy98AC5A51": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "lambda:InvokeFunction",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "Lambdax8664python37854CB97E",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "Providerx8664python37frameworkonEventServiceRoleDefaultPolicy98AC5A51",
+        "Roles": [
+          {
+            "Ref": "Providerx8664python37frameworkonEventServiceRoleB6EB6EAD"
+          }
+        ]
+      }
+    },
+    "Providerx8664python37frameworkonEvent08FAFD4A": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "AssetParametersdaeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1S3BucketDC4B98B1"
+          },
+          "S3Key": {
+            "Fn::Join": [
+              "",
+              [
+                {
+                  "Fn::Select": [
+                    0,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParametersdaeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1S3VersionKeyA495226F"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "Fn::Select": [
+                    1,
+                    {
+                      "Fn::Split": [
+                        "||",
+                        {
+                          "Ref": "AssetParametersdaeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1S3VersionKeyA495226F"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            ]
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "Providerx8664python37frameworkonEventServiceRoleB6EB6EAD",
+            "Arn"
+          ]
+        },
+        "Description": "AWS CDK resource provider framework - onEvent (lambda-layer-awscli-integ-stack/Providerx86_64python3.7)",
+        "Environment": {
+          "Variables": {
+            "USER_ON_EVENT_FUNCTION_ARN": {
+              "Fn::GetAtt": [
+                "Lambdax8664python37854CB97E",
+                "Arn"
+              ]
+            }
+          }
+        },
+        "Handler": "framework.onEvent",
+        "Runtime": "nodejs12.x",
+        "Timeout": 900
+      },
+      "DependsOn": [
+        "Providerx8664python37frameworkonEventServiceRoleDefaultPolicy98AC5A51",
+        "Providerx8664python37frameworkonEventServiceRoleB6EB6EAD"
+      ]
+    },
+    "Providerx8664python37frameworkonEventLogRetention74F7A82C": {
+      "Type": "Custom::LogRetention",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
+            "Arn"
+          ]
+        },
+        "LogGroupName": {
+          "Fn::Join": [
+            "",
+            [
+              "/aws/lambda/",
+              {
+                "Ref": "Providerx8664python37frameworkonEvent08FAFD4A"
+              }
+            ]
+          ]
+        },
+        "RetentionInDays": 1
+      }
+    },
+    "CustomResourcex8664python37": {
+      "Type": "AWS::CloudFormation::CustomResource",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "Providerx8664python37frameworkonEvent08FAFD4A",
+            "Arn"
+          ]
+        }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    }
+  },
+  "Parameters": {
+    "AssetParametersa8cc7fcce41ea7a3974207d7d785e4422bf5254311d407d029bba331b6d58fbbS3BucketCC565F9B": {
+      "Type": "String",
+      "Description": "S3 bucket for asset \"a8cc7fcce41ea7a3974207d7d785e4422bf5254311d407d029bba331b6d58fbb\""
+    },
+    "AssetParametersa8cc7fcce41ea7a3974207d7d785e4422bf5254311d407d029bba331b6d58fbbS3VersionKeyD10A94BA": {
+      "Type": "String",
+      "Description": "S3 key for asset version \"a8cc7fcce41ea7a3974207d7d785e4422bf5254311d407d029bba331b6d58fbb\""
+    },
+    "AssetParametersa8cc7fcce41ea7a3974207d7d785e4422bf5254311d407d029bba331b6d58fbbArtifactHashDA835F97": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"a8cc7fcce41ea7a3974207d7d785e4422bf5254311d407d029bba331b6d58fbb\""
+    },
+    "AssetParameters60cf0144d7eac84ad9a869e5a33be8fe370440afde80507e13328ae962470b30S3BucketD93F26C9": {
+      "Type": "String",
+      "Description": "S3 bucket for asset \"60cf0144d7eac84ad9a869e5a33be8fe370440afde80507e13328ae962470b30\""
+    },
+    "AssetParameters60cf0144d7eac84ad9a869e5a33be8fe370440afde80507e13328ae962470b30S3VersionKeyD955E728": {
+      "Type": "String",
+      "Description": "S3 key for asset version \"60cf0144d7eac84ad9a869e5a33be8fe370440afde80507e13328ae962470b30\""
+    },
+    "AssetParameters60cf0144d7eac84ad9a869e5a33be8fe370440afde80507e13328ae962470b30ArtifactHash78B931DE": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"60cf0144d7eac84ad9a869e5a33be8fe370440afde80507e13328ae962470b30\""
+    },
+    "AssetParametersdd4b26cf376ea5894e31041be239fc518713becdafb8f2894b069a53984fafe9S3BucketE7DA8D4B": {
+      "Type": "String",
+      "Description": "S3 bucket for asset \"dd4b26cf376ea5894e31041be239fc518713becdafb8f2894b069a53984fafe9\""
+    },
+    "AssetParametersdd4b26cf376ea5894e31041be239fc518713becdafb8f2894b069a53984fafe9S3VersionKey534293E7": {
+      "Type": "String",
+      "Description": "S3 key for asset version \"dd4b26cf376ea5894e31041be239fc518713becdafb8f2894b069a53984fafe9\""
+    },
+    "AssetParametersdd4b26cf376ea5894e31041be239fc518713becdafb8f2894b069a53984fafe9ArtifactHash3CB520C3": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"dd4b26cf376ea5894e31041be239fc518713becdafb8f2894b069a53984fafe9\""
+    },
+    "AssetParametersdaeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1S3BucketDC4B98B1": {
+      "Type": "String",
+      "Description": "S3 bucket for asset \"daeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1\""
+    },
+    "AssetParametersdaeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1S3VersionKeyA495226F": {
+      "Type": "String",
+      "Description": "S3 key for asset version \"daeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1\""
+    },
+    "AssetParametersdaeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1ArtifactHashA521A16F": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"daeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1\""
+    },
+    "AssetParameterseb01a1740b788d68abf7bf2bda4f2097e74e6b54d7361cdd5317591ff1331115S3BucketD2BA9D1E": {
+      "Type": "String",
+      "Description": "S3 bucket for asset \"eb01a1740b788d68abf7bf2bda4f2097e74e6b54d7361cdd5317591ff1331115\""
+    },
+    "AssetParameterseb01a1740b788d68abf7bf2bda4f2097e74e6b54d7361cdd5317591ff1331115S3VersionKey44697159": {
+      "Type": "String",
+      "Description": "S3 key for asset version \"eb01a1740b788d68abf7bf2bda4f2097e74e6b54d7361cdd5317591ff1331115\""
+    },
+    "AssetParameterseb01a1740b788d68abf7bf2bda4f2097e74e6b54d7361cdd5317591ff1331115ArtifactHash74CCA2FF": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"eb01a1740b788d68abf7bf2bda4f2097e74e6b54d7361cdd5317591ff1331115\""
+    },
+    "AssetParameters5dff6208ccd5fb196bb0354fd6e47faa8431a789e6125d20386586fef761ed48S3Bucket1DD21439": {
+      "Type": "String",
+      "Description": "S3 bucket for asset \"5dff6208ccd5fb196bb0354fd6e47faa8431a789e6125d20386586fef761ed48\""
+    },
+    "AssetParameters5dff6208ccd5fb196bb0354fd6e47faa8431a789e6125d20386586fef761ed48S3VersionKey77F71A63": {
+      "Type": "String",
+      "Description": "S3 key for asset version \"5dff6208ccd5fb196bb0354fd6e47faa8431a789e6125d20386586fef761ed48\""
+    },
+    "AssetParameters5dff6208ccd5fb196bb0354fd6e47faa8431a789e6125d20386586fef761ed48ArtifactHashA6792482": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"5dff6208ccd5fb196bb0354fd6e47faa8431a789e6125d20386586fef761ed48\""
+    }
+  }
+}
