@@ -66,6 +66,15 @@ function metricGraphJson(metric: IMetric, yAxis?: string, id?: string) {
   if (yAxis !== 'left') { options.yAxis = yAxis; }
   if (id) { options.id = id; }
 
+  if (options.visible !== false && options.expression && !options.label) {
+    if (options.label === undefined) {
+      options.label = metric.toString();
+    } else {
+      // if an empty string was passed explicitly, set the label to undefined so CloudWatch will use the original metric legend
+      options.label = undefined;
+    }
+  }
+
   const renderedOpts = dropUndefined(options);
 
   if (Object.keys(renderedOpts).length !== 0) {

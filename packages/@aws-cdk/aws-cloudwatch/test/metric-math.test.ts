@@ -147,6 +147,34 @@ describe('Metric Math', () => {
 
     });
 
+    test('passing an empty string as the label of a MathExpressions does not emit a label', () => {
+      const graph = new GraphWidget({
+        left: [
+          new MathExpression({
+            expression: 'a + e',
+            label: '',
+            usingMetrics: {
+              a,
+              e: new MathExpression({
+                expression: 'b + c',
+                usingMetrics: { b: a, c },
+              }),
+            },
+          }),
+        ],
+      });
+
+      graphMetricsAre(graph, [
+        [{ expression: 'a + e' }],
+        ['Test', 'ACount', { visible: false, id: 'a' }],
+        [{ expression: 'b + c', visible: false, id: 'e' }],
+        ['Test', 'ACount', { visible: false, id: 'b' }],
+        ['Test', 'CCount', { visible: false, id: 'c' }],
+      ]);
+
+
+    });
+
     test('can reuse identifiers in MathExpressions if metrics are the same', () => {
       const graph = new GraphWidget({
         left: [

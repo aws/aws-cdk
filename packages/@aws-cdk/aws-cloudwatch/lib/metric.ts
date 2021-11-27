@@ -128,8 +128,9 @@ export interface MetricOptions extends CommonMetricOptions {
 export interface MathExpressionOptions {
   /**
    * Label for this metric when added to a Graph in a Dashboard
+   * To have the legend show the original metric labels only, pass an empty string, i.e. label: ''.
    *
-   * @default - The legend will only show the original metric labels
+   * @default - Expression value is used as label
    */
   readonly label?: string;
 
