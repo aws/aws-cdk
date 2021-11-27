@@ -438,7 +438,7 @@ and might have breaking changes in the future.
 
 #### Import existing resources
 
-**Important:** This is a work in progress, only S3 buckets are currently supported
+**Important:** This is a work in progress
 
 Sometimes, it is beneficial to import (enroll/adopt/...) AWS resources, that were
 created manually (or by different means), into a CDK stack. Some resources can simply be
@@ -453,13 +453,13 @@ To import an existing resource to a CDK stack:
 - add corresponding constructs for the resources to be added in your stack - for example,
   for an S3 bucket, add something like `new s3.Bucket(this, 'ImportedS3Bucket', {});` -
   **no other changes must be done to the stack before the import is completed**
-- run `cdk deploy` with `--import-resources` argument to instruct CDK to start the import
-  operation
-- if resource definition contains all information needed for the import, this happens
+- run `cdk import` command - if there are multiple stacks in the CDK app, pass a specific
+  stack name as an argument
+- if the resource definition contains all information needed for the import, this happens
   automatically (e.g. an `s3.Bucket` construct has an explicit `bucketName` set),
   otherwise, CDK will prompt user to provide neccessary identification information (e.g.
   the bucket name)
-- after cdk deploy reports success, the resource is managed by CDK. Any subsequent
+- after cdk import reports success, the resource is managed by CDK. Any subsequent
   changes in the construct configuration will be reflected on the resource
 
 

@@ -124,8 +124,16 @@ async function parseCommandLineArguments() {
         desc: 'Continuously observe the project files, ' +
           'and deploy the given stack(s) automatically when changes are detected. ' +
           'Implies --hotswap by default',
-      })
-      .option('import-resources', { type: 'boolean', alias: 'i', desc: 'Import existing resources in the stack' }),
+      }),
+    )
+    .command('import [STACK]', 'Import existing resource(s) into the given STACK', yargs => yargs
+      .option('execute', { type: 'boolean', desc: 'Whether to execute ChangeSet (--no-execute will NOT execute the ChangeSet)', default: true })
+      .option('change-set-name', { type: 'string', desc: 'Name of the CloudFormation change set to create' })
+      .option('rollback', {
+        type: 'boolean',
+        desc: "Rollback stack to stable state on failure. Defaults to 'true', iterate more rapidly with --no-rollback or -R. " +
+          'Note: do **not** disable this flag for deployments with resource replacements, as that will always fail',
+      }),
     )
     .command('watch [STACKS..]', "Shortcut for 'deploy --watch'", yargs => yargs
       // I'm fairly certain none of these options, present for 'deploy', make sense for 'watch':
@@ -376,7 +384,17 @@ async function initCommandLine() {
           rollback: configuration.settings.get(['rollback']),
           hotswap: args.hotswap,
           watch: args.watch,
-          importResources: args['import-resources'],
+        });
+
+      case 'import':
+        return cli.import({
+          selector,
+          toolkitStackName,
+          roleArn: args.roleArn,
+          execute: args.execute,
+          changeSetName: args.changeSetName,
+          progress: configuration.settings.get(['progress']),
+          rollback: configuration.settings.get(['rollback']),
         });
 
       case 'watch':

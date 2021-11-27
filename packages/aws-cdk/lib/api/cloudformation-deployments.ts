@@ -6,7 +6,7 @@ import { publishAssets } from '../util/asset-publishing';
 import { Mode, SdkProvider } from './aws-auth';
 import { deployStack, DeployStackResult, destroyStack } from './deploy-stack';
 import { ToolkitInfo } from './toolkit-info';
-import { CloudFormationStack, Template, ResourcesToImport } from './util/cloudformation';
+import { CloudFormationStack, Template, ResourcesToImport, ResourceIdentifierSummaries } from './util/cloudformation';
 import { StackActivityProgress } from './util/cloudformation/stack-activity-monitor';
 
 /**
@@ -198,13 +198,23 @@ export class CloudFormationDeployments {
     return stack.template();
   }
 
+  public async getTemplateSummary(stackArtifact: cxapi.CloudFormationStackArtifact): Promise<ResourceIdentifierSummaries> {
+    debug(`Retrieving template summary for stack ${stackArtifact.displayName}.`);
+    const { stackSdk } = await this.prepareSdkFor(stackArtifact, undefined, Mode.ForReading);
+    const cfn = stackSdk.cloudFormation();
+
+    return CloudFormationStack.templateSummary(cfn, stackArtifact.template);
+  }
+
   public async deployStack(options: DeployStackOptions): Promise<DeployStackResult> {
     const { stackSdk, resolvedEnvironment, cloudFormationRoleArn } = await this.prepareSdkFor(options.stack, options.roleArn);
 
     const toolkitInfo = await ToolkitInfo.lookup(resolvedEnvironment, stackSdk, options.toolkitStackName);
 
-    // Publish any assets before doing the actual deploy
-    await this.publishStackAssets(options.stack, toolkitInfo);
+    // Publish any assets before doing the actual deploy (do not publish any assets on import operation)
+    if (options.resourcesToImport === undefined) {
+      await this.publishStackAssets(options.stack, toolkitInfo);
+    }
 
     // Do a verification of the bootstrap stack version
     await this.validateBootstrapStackVersion(

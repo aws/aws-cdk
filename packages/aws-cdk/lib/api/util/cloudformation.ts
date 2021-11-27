@@ -17,6 +17,7 @@ interface TemplateParameter {
 }
 
 export type ResourcesToImport = CloudFormation.ResourcesToImport;
+export type ResourceIdentifierSummaries = CloudFormation.ResourceIdentifierSummaries;
 
 /**
  * Represents an (existing) Stack in CloudFormation
@@ -35,6 +36,17 @@ export class CloudFormationStack {
       }
       throw e;
     }
+  }
+
+  /**
+   * Retrieve the stack template's summary with the information about resource import identifiers
+   */
+  public static async templateSummary(cfn: CloudFormation, template: any): Promise<ResourceIdentifierSummaries> {
+    const response = await cfn.getTemplateSummary({ TemplateBody: JSON.stringify(template) }).promise();
+    if (!response.ResourceIdentifierSummaries) {
+      debug('GetTemplateSummary API call did not return "ReousrceIdentifierSummaries"');
+    }
+    return response.ResourceIdentifierSummaries ?? [];
   }
 
   /**
