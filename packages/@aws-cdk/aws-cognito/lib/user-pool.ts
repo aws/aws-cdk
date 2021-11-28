@@ -139,9 +139,30 @@ export interface UserPoolTriggers {
   readonly verifyAuthChallengeResponse?: lambda.IFunction;
 
   /**
+   * Amazon Cognito invokes this trigger to send email notifications to users.
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-custom-email-sender.html
+   * @default - no trigger configured
+   */
+  readonly customEmailSender?: lambda.IFunction
+
+  /**
+   * Amazon Cognito invokes this trigger to send SMS notifications to users.
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-custom-sms-sender.html
+   * @default - no trigger configured
+   */
+  readonly customSmsSender?: lambda.IFunction
+
+  /**
+   * This key will be used to encrypt temporary passwords and authorization codes that Amazon Cognito generates.
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-custom-sender-triggers.html
+   * @default - no key ID configured
+   */
+  readonly kmsKeyId?: string
+
+  /**
    * Index signature
    */
-  [trigger: string]: lambda.IFunction | undefined;
+  [trigger: string]: lambda.IFunction | string | undefined;
 }
 
 /**
@@ -207,6 +228,18 @@ export class UserPoolOperation {
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-verify-auth-challenge-response.html
    */
   public static readonly VERIFY_AUTH_CHALLENGE_RESPONSE = new UserPoolOperation('verifyAuthChallengeResponse');
+
+  /**
+   * Amazon Cognito invokes this trigger to send email notifications to users.
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-custom-email-sender.html
+   */
+  public static readonly CUSTOM_EMAIL_SENDER = new UserPoolOperation('customEmailSender');
+
+  /**
+   * Amazon Cognito invokes this trigger to send email notifications to users.
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-custom-sms-sender.html
+   */
+  public static readonly CUSTOM_SMS_SENDER = new UserPoolOperation('customSmsSender');
 
   /** A custom user pool operation */
   public static of(name: string): UserPoolOperation {
@@ -768,10 +801,30 @@ export class UserPool extends UserPoolBase {
 
     if (props.lambdaTriggers) {
       for (const t of Object.keys(props.lambdaTriggers)) {
-        const trigger = props.lambdaTriggers[t];
-        if (trigger !== undefined) {
-          this.addLambdaPermission(trigger as lambda.IFunction, t);
-          (this.triggers as any)[t] = (trigger as lambda.IFunction).functionArn;
+        let trigger: lambda.IFunction | undefined;
+        switch (t) {
+          case 'kmsKeyId':
+            (this.triggers as any)[t] = props.lambdaTriggers[t];
+            break;
+          case 'customSmsSender':
+          case 'customEmailSender':
+            trigger = props.lambdaTriggers[t];
+            const version = 'V1_0';
+            if (trigger !== undefined) {
+              this.addLambdaPermission(trigger as lambda.IFunction, t);
+              (this.triggers as any)[t] = {
+                lambdaArn: trigger.functionArn,
+                lambdaVersion: version,
+              };
+            }
+            break;
+          default:
+            trigger = props.lambdaTriggers[t] as lambda.IFunction | undefined;
+            if (trigger !== undefined) {
+              this.addLambdaPermission(trigger as lambda.IFunction, t);
+              (this.triggers as any)[t] = (trigger as lambda.IFunction).functionArn;
+            }
+            break;
         }
       }
     }
@@ -848,7 +901,18 @@ export class UserPool extends UserPoolBase {
     }
 
     this.addLambdaPermission(fn, operation.operationName);
-    (this.triggers as any)[operation.operationName] = fn.functionArn;
+    switch (operation.operationName) {
+      case 'customEmailSender':
+      case 'customSmsSender':
+        (this.triggers as any)[operation.operationName] = {
+          lambdaArn: fn.functionArn,
+          lambdaVersion: 'V1_0',
+        };
+        break;
+      default:
+        (this.triggers as any)[operation.operationName] = fn.functionArn;
+    }
+
   }
 
   private addLambdaPermission(fn: lambda.IFunction, name: string): void {

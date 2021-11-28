@@ -331,6 +331,65 @@ describe('User Pool', () => {
     });
   });
 
+  test('custom sender lambda triggers via properties are correctly configured', () => {
+    // GIVEN
+    const stack = new Stack();
+    const emailFn = fooFunction(stack, 'customEmailSender');
+    const smsFn = fooFunction(stack, 'customSmsSender');
+
+    // WHEN
+    new UserPool(stack, 'Pool', {
+      lambdaTriggers: {
+        customEmailSender: emailFn,
+        customSmsSender: smsFn,
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
+      LambdaConfig: {
+        CustomEmailSender: {
+          LambdaArn: stack.resolve(emailFn.functionArn),
+          LambdaVersion: 'V1_0',
+        },
+        CustomSMSSender: {
+          LambdaArn: stack.resolve(smsFn.functionArn),
+          LambdaVersion: 'V1_0',
+        },
+      },
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
+      Action: 'lambda:InvokeFunction',
+      FunctionName: stack.resolve(emailFn.functionArn),
+      Principal: 'cognito-idp.amazonaws.com',
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
+      Action: 'lambda:InvokeFunction',
+      FunctionName: stack.resolve(smsFn.functionArn),
+      Principal: 'cognito-idp.amazonaws.com',
+    });
+  });
+
+  test('lambda trigger KMS Key ID via properties is correctly configured', () => {
+    // GIVEN
+    const stack = new Stack();
+    const kmsKeyId = 'test-key-id';
+
+    // WHEN
+    new UserPool(stack, 'Pool', {
+      lambdaTriggers: {
+        kmsKeyId,
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
+      LambdaConfig: {
+        KMSKeyID: kmsKeyId,
+      },
+    });
+  });
+
   test('add* API correctly appends triggers', () => {
     // GIVEN
     const stack = new Stack();
@@ -345,6 +404,8 @@ describe('User Pool', () => {
     const preTokenGeneration = fooFunction(stack, 'preTokenGeneration');
     const userMigration = fooFunction(stack, 'userMigration');
     const verifyAuthChallengeResponse = fooFunction(stack, 'verifyAuthChallengeResponse');
+    const customEmailSender = fooFunction(stack, 'customEmailSender');
+    const customSmsSender = fooFunction(stack, 'customSmsSender');
 
     // WHEN
     const pool = new UserPool(stack, 'Pool');
@@ -358,6 +419,8 @@ describe('User Pool', () => {
     pool.addTrigger(UserPoolOperation.PRE_TOKEN_GENERATION, preTokenGeneration);
     pool.addTrigger(UserPoolOperation.USER_MIGRATION, userMigration);
     pool.addTrigger(UserPoolOperation.VERIFY_AUTH_CHALLENGE_RESPONSE, verifyAuthChallengeResponse);
+    pool.addTrigger(UserPoolOperation.CUSTOM_EMAIL_SENDER, customEmailSender);
+    pool.addTrigger(UserPoolOperation.CUSTOM_SMS_SENDER, customSmsSender);
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
@@ -372,12 +435,20 @@ describe('User Pool', () => {
         PreTokenGeneration: stack.resolve(preTokenGeneration.functionArn),
         UserMigration: stack.resolve(userMigration.functionArn),
         VerifyAuthChallengeResponse: stack.resolve(verifyAuthChallengeResponse.functionArn),
+        CustomEmailSender: {
+          LambdaArn: stack.resolve(customEmailSender.functionArn),
+          LambdaVersion: 'V1_0',
+        },
+        CustomSMSSender: {
+          LambdaArn: stack.resolve(customSmsSender.functionArn),
+          LambdaVersion: 'V1_0',
+        },
       },
     });
 
     [createAuthChallenge, customMessage, defineAuthChallenge, postAuthentication,
       postConfirmation, preAuthentication, preSignUp, preTokenGeneration, userMigration,
-      verifyAuthChallengeResponse].forEach((fn) => {
+      verifyAuthChallengeResponse, customEmailSender, customSmsSender].forEach((fn) => {
       Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
         Action: 'lambda:InvokeFunction',
         FunctionName: stack.resolve(fn.functionArn),
