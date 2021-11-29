@@ -567,12 +567,12 @@ export enum InstanceClass {
   Z1D = 'z1d',
 
   /**
-   * High memory and compute capacity instances based on Intel® Xeon® Scalable (Cascade Lake) processors, 2nd generation
+   * High memory and compute capacity instances based on Intel Xeon Scalable (Cascade Lake) processors, 2nd generation
    */
   HIGH_COMPUTE_MEMORY2 = 'm5zn',
 
   /**
-  * High memory and compute capacity instances based on Intel® Xeon® Scalable (Cascade Lake) processors, 2nd generation
+  * High memory and compute capacity instances based on Intel Xeon Scalable (Cascade Lake) processors, 2nd generation
    */
   M5ZN = 'm5zn',
 
