@@ -2927,7 +2927,7 @@ cdk8s-plus-21@^1.0.0-beta.38:
   dependencies:
     minimatch "^3.0.4"
 
-cdk8s@^1.00.0:
+cdk8s@^1.0.0:
   version "1.1.36"
   resolved "https://registry.npmjs.org/cdk8s/-/cdk8s-1.1.36.tgz#18f4650bf1302f8db533d1380913db4187a965fb"
   integrity sha512-LpjVRmypar0PCBxhbTOZ/nnWiI4L7pxSsQJ8k06uSjnVkcGVZLcPxF9kxoKCClp0/6+9MsEYdB6+GZ3h24JKZw==
