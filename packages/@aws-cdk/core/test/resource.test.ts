@@ -318,7 +318,7 @@ describe('resource', () => {
 
   });
 
-  test('applyRemovalPolicy available for child resources', () => {
+  test('applyRemovalPolicy available for interface resources', () => {
     class Child extends Resource {
       constructor(scope: Construct, id: string) {
         super(scope, id);
@@ -329,24 +329,14 @@ describe('resource', () => {
       }
     }
 
-    class Parent extends Construct {
-      public readonly child: IResource
-
-      constructor(scope: Construct, id: string) {
-        super(scope, id);
-
-        this.child = new Child(this, 'Child');
-      }
-    }
-
     const stack = new Stack();
-    const parent = new Parent(stack, 'Parent');
+    const child: IResource = new Child(stack, 'Child');
 
-    parent.child.applyRemovalPolicy(RemovalPolicy.RETAIN);
+    child.applyRemovalPolicy(RemovalPolicy.RETAIN);
 
     expect(toCloudFormation(stack)).toEqual({
       Resources: {
-        ParentChild4D311881: {
+        ChildDAB30558: {
           DeletionPolicy: 'Retain',
           Type: 'ChildResourceType',
           UpdateReplacePolicy: 'Retain',
