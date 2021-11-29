@@ -193,6 +193,10 @@ export interface HttpRouteIntegrationBindOptions {
 export abstract class HttpRouteIntegration {
   private integration?: HttpIntegration;
 
+  /**
+   * Initialize an integration for a route on http api.
+   * @param id id of the underlying `HttpIntegration` construct.
+   */
   constructor(private readonly id: string) {}
 
   /**

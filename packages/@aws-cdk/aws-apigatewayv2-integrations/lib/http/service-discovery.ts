@@ -13,6 +13,11 @@ export interface HttpServiceDiscoveryIntegrationProps extends HttpPrivateIntegra
  * The Service Discovery integration resource for HTTP API
  */
 export class HttpServiceDiscoveryIntegration extends HttpPrivateIntegration {
+  /**
+   * @param id id of the underlying integration construct
+   * @param listener the service discovery resource to integrate with
+   * @param props properties to configure the integration
+   */
   constructor(
     id: string,
     private readonly service: servicediscovery.IService,

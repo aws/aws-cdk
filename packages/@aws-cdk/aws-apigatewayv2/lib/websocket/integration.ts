@@ -90,6 +90,10 @@ export interface WebSocketRouteIntegrationBindOptions {
 export abstract class WebSocketRouteIntegration {
   private integration?: WebSocketIntegration;
 
+  /**
+   * Initialize an integration for a route on websocket api.
+   * @param id id of the underlying `WebSocketIntegration` construct.
+   */
   constructor(private readonly id: string) {}
 
   /**

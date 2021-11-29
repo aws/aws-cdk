@@ -14,6 +14,11 @@ export interface HttpNlbIntegrationProps extends HttpPrivateIntegrationOptions {
  * The Network Load Balancer integration resource for HTTP API
  */
 export class HttpNlbIntegration extends HttpPrivateIntegration {
+  /**
+   * @param id id of the underlying integration construct
+   * @param listener the ELB network listener
+   * @param props properties to configure the integration
+   */
   constructor(
     id: string,
     private readonly listener: elbv2.INetworkListener,

@@ -36,6 +36,11 @@ export class HttpLambdaIntegration extends HttpRouteIntegration {
 
   private readonly _id: string;
 
+  /**
+   * @param id id of the underlying integration construct
+   * @param handler the Lambda handler to integrate with
+   * @param props properties to configure the integration
+   */
   constructor(
     id: string,
     private readonly handler: IFunction,

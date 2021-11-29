@@ -84,34 +84,26 @@ const api = new apigwv2.HttpApi(this, 'HttpApi', {
 });
 
 api.addRoutes({
-  integration: new HttpUrlIntegration({
-    url: 'https://get-books-proxy.myproxy.internal',
-  }),
+  integration: new HttpUrlIntegration('BooksIntegration', 'https://get-books-proxy.myproxy.internal'),
   path: '/books',
   methods: [apigwv2.HttpMethod.GET],
 });
 
 api.addRoutes({
-  integration: new HttpUrlIntegration({
-    url: 'https://get-books-proxy.myproxy.internal',
-  }),
+  integration: new HttpUrlIntegration('BooksIdIntegration', 'https://get-books-proxy.myproxy.internal'),
   path: '/books/{id}',
   methods: [apigwv2.HttpMethod.GET],
 });
 
 api.addRoutes({
-  integration: new HttpUrlIntegration({
-    url: 'https://get-books-proxy.myproxy.internal',
-  }),
+  integration: new HttpUrlIntegration('BooksIntegration', 'https://get-books-proxy.myproxy.internal'),
   path: '/books',
   methods: [apigwv2.HttpMethod.POST],
   authorizationScopes: ['write:books']
 });
 
 api.addRoutes({
-  integration: new HttpUrlIntegration({
-    url: 'https://get-books-proxy.myproxy.internal',
-  }),
+  integration: new HttpUrlIntegration('LoginIntegration', 'https://get-books-proxy.myproxy.internal'),
   path: '/login',
   methods: [apigwv2.HttpMethod.POST],
   authorizer: new apigwv2.HttpNoneAuthorizer(),
@@ -146,9 +138,7 @@ const authorizer = new HttpJwtAuthorizer({
 const api = new apigwv2.HttpApi(this, 'HttpApi');
 
 api.addRoutes({
-  integration: new HttpUrlIntegration({
-    url: 'https://get-books-proxy.myproxy.internal',
-  }),
+  integration: new HttpUrlIntegration('BooksIntegration', 'https://get-books-proxy.myproxy.internal'),
   path: '/books',
   authorizer,
 });
@@ -178,9 +168,7 @@ const authorizer = new HttpUserPoolAuthorizer({
 const api = new apigwv2.HttpApi(this, 'HttpApi');
 
 api.addRoutes({
-  integration: new HttpUrlIntegration({
-    url: 'https://get-books-proxy.myproxy.internal',
-  }),
+  integration: new HttpUrlIntegration('BooksIntegration', 'https://get-books-proxy.myproxy.internal'),
   path: '/books',
   authorizer,
 });
@@ -209,9 +197,7 @@ const authorizer = new HttpLambdaAuthorizer({
 const api = new apigwv2.HttpApi(this, 'HttpApi');
 
 api.addRoutes({
-  integration: new HttpUrlIntegration({
-    url: 'https://get-books-proxy.myproxy.internal',
-  }),
+  integration: new HttpUrlIntegration('BooksIntegration', 'https://get-books-proxy.myproxy.internal'),
   path: '/books',
   authorizer,
 });

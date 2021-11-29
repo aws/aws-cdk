@@ -14,6 +14,11 @@ export interface HttpAlbIntegrationProps extends HttpPrivateIntegrationOptions {
  * The Application Load Balancer integration resource for HTTP API
  */
 export class HttpAlbIntegration extends HttpPrivateIntegration {
+  /**
+   * @param id id of the underlying integration construct
+   * @param listener the ELB application listener
+   * @param props properties to configure the integration
+   */
   constructor(
     id: string,
     private readonly listener: elbv2.IApplicationListener,
