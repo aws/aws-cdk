@@ -32,7 +32,7 @@ export interface HttpUrlIntegrationProps {
 export class HttpUrlIntegration extends HttpRouteIntegration {
   /**
    * @param id id of the underlying integration construct
-   * @param listener the URL to proxy to
+   * @param url the URL to proxy to
    * @param props properties to configure the integration
    */
   constructor(id: string, private readonly url: string, private readonly props: HttpUrlIntegrationProps = {}) {

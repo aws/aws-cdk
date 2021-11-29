@@ -17,7 +17,7 @@ export class WebSocketLambdaIntegration extends WebSocketRouteIntegration {
 
   /**
    * @param id id of the underlying integration construct
-   * @param listener the Lambda function handler
+   * @param handler the Lambda function handler
    * @param props properties to configure the integration
    */
   constructor(id: string, private readonly handler: IFunction) {
