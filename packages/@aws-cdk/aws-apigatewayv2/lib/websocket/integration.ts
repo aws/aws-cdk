@@ -1,5 +1,4 @@
-import * as crypto from 'crypto';
-import { Resource, Stack } from '@aws-cdk/core';
+import { Resource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnIntegration } from '../apigatewayv2.generated';
 import { IIntegration } from '../common';
@@ -92,6 +91,12 @@ export abstract class WebSocketRouteIntegration {
   private integration?: WebSocketIntegration;
 
   /**
+   * Initialize an integration for a route on websocket api.
+   * @param id id of the underlying `WebSocketIntegration` construct.
+   */
+  constructor(private readonly id: string) {}
+
+  /**
    * Internal method called when binding this integration to the route.
    * @internal
    */
@@ -103,17 +108,11 @@ export abstract class WebSocketRouteIntegration {
     if (!this.integration) {
       const config = this.bind(options);
 
-      this.integration = new WebSocketIntegration(options.scope, `WebSocketIntegration-${hash(config)}`, {
+      this.integration = new WebSocketIntegration(options.scope, this.id, {
         webSocketApi: options.route.webSocketApi,
         integrationType: config.type,
         integrationUri: config.uri,
       });
-
-      function hash(x: any) {
-        const stringifiedConfig = JSON.stringify(Stack.of(options.scope).resolve(x));
-        const configHash = crypto.createHash('md5').update(stringifiedConfig).digest('hex');
-        return configHash;
-      }
     }
 
     return { integrationId: this.integration.integrationId };
