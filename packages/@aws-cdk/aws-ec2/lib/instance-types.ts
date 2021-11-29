@@ -119,6 +119,16 @@ export enum InstanceClass {
   R5 = 'r5',
 
   /**
+   * Memory optimized instances, 6th generation with Intel Xeon Scalable processors (3rd generation processors code named Ice Lake)
+   */
+  MEMORY6_INTEL = 'r6i',
+
+  /**
+   * Memory optimized instances, 6th generation with Intel Xeon Scalable processors (3rd generation processors code named Ice Lake)
+   */
+  R6I = 'r6i',
+
+  /**
    * Memory optimized instances for high performance computing, 5th generation
    */
   MEMORY5_HIGH_PERFORMANCE = 'r5n',
@@ -564,7 +574,17 @@ export enum InstanceClass {
   /**
    * Inferentia Chips based instances for machine learning inference applications, 1st generation
    */
-  INF1 = 'inf1'
+  INF1 = 'inf1',
+
+  /**
+   * Macintosh instances built on Apple Mac mini computers, 1st generation with Intel procesors
+   */
+  MACINTOSH1_INTEL = 'mac1',
+
+  /**
+   * Macintosh instances built on Apple Mac mini computers, 1st generation with Intel procesors
+   */
+  MAC1 = 'mac1',
 }
 
 /**
@@ -685,7 +705,6 @@ export enum InstanceSize {
    * Instance size METAL (metal)
    */
   METAL = 'metal',
-
 }
 
 /**
