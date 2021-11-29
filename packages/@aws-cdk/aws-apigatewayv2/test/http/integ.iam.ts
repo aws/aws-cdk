@@ -25,14 +25,14 @@ const httpApi = new apigatewayv2.HttpApi(stack, 'HttpApi', {
 });
 
 const [fooRoute] = httpApi.addRoutes({
-  integration: new ExampleComIntegration(),
+  integration: new ExampleComIntegration('examplecom'),
   path: '/foo',
 });
 
 fooRoute.grantInvoke(user);
 
 const [booksRoute] = httpApi.addRoutes({
-  integration: new ExampleComIntegration(),
+  integration: new ExampleComIntegration('examplecom'),
   path: '/books/{book}',
 });
 
