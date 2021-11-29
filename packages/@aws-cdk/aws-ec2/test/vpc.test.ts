@@ -491,7 +491,7 @@ describe('vpc', () => {
         });
       }).toThrow(/subnet cannot include mapPublicIpOnLaunch parameter/);
     });
-    test('with private subnets throw exception if parameter mapPublicIpOnLaunch is defined', () => {
+    test('with isolated subnets throw exception if parameter mapPublicIpOnLaunch is defined', () => {
       const stack = getTestStack();
       expect(() => {
         new Vpc(stack, 'VPC', {
