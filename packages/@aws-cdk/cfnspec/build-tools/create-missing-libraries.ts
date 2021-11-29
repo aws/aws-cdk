@@ -6,7 +6,7 @@
  */
 
 import * as path from 'path';
-import { createLibraryReadme, createModuleDefinitionFromCfnNamespace } from '@aws-cdk/pkglint';
+import * as pkglint from '@aws-cdk/pkglint';
 import * as fs from 'fs-extra';
 import * as cfnspec from '../lib';
 
@@ -25,7 +25,7 @@ async function main() {
 
   // iterate over all cloudformation namespaces
   for (const namespace of cfnspec.namespaces()) {
-    const module = createModuleDefinitionFromCfnNamespace(namespace);
+    const module = pkglint.createModuleDefinitionFromCfnNamespace(namespace);
     const lowcaseModuleName = module.moduleName.toLocaleLowerCase();
     const packagePath = path.join(root, module.moduleName);
 
@@ -261,7 +261,7 @@ async function main() {
       '});',
     ]);
 
-    await createLibraryReadme(namespace, path.join(packagePath, 'README.md'));
+    await pkglint.createLibraryReadme(namespace, path.join(packagePath, 'README.md'));
 
     await write('.eslintrc.js', [
       "const baseConfig = require('@aws-cdk/cdk-build-tools/config/eslintrc');",
