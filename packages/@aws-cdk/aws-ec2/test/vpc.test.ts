@@ -1,5 +1,6 @@
 import '@aws-cdk/assert-internal/jest';
 import { isSuperObject, MatchStyle, SynthUtils } from '@aws-cdk/assert-internal';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { CfnOutput, CfnResource, Fn, Lazy, Stack, Tags } from '@aws-cdk/core';
 import {
   AclCidr,
@@ -1022,7 +1023,7 @@ describe('vpc', () => {
 
     });
 
-    test('can configure Security Groups of NAT instances with allowAllTraffic false', () => {
+    testDeprecated('can configure Security Groups of NAT instances with allowAllTraffic false', () => {
       // GIVEN
       const stack = getTestStack();
 

@@ -1,4 +1,5 @@
 import '@aws-cdk/assert-internal/jest';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { App, Intrinsic, Lazy, Stack, Token } from '@aws-cdk/core';
 import { Peer, Port, SecurityGroup, SecurityGroupProps, Vpc } from '../lib';
 
@@ -336,7 +337,7 @@ describe('security group', () => {
     });
   });
 
-  test('can look up a security group', () => {
+  testDeprecated('can look up a security group', () => {
     const app = new App();
     const stack = new Stack(app, 'stack', {
       env: {

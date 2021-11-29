@@ -208,7 +208,7 @@ export class NestedStack extends Stack {
     const cfn = JSON.stringify(this._toCloudFormation());
     const templateHash = crypto.createHash('sha256').update(cfn).digest('hex');
 
-    const templateLocation = this._parentStack.addFileAsset({
+    const templateLocation = this._parentStack.synthesizer.addFileAsset({
       packaging: FileAssetPackaging.FILE,
       sourceHash: templateHash,
       fileName: this.templateFile,

@@ -7,6 +7,13 @@
   "jsii": {
     "outdir": "dist",
     "projectReferences": true,
+    "metadata": {
+      "jsii": {
+        "rosetta": {
+          "strict": true
+        }
+      }
+    },
     "targets": {
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.OpenSearchService",
@@ -82,7 +89,7 @@
     "@aws-cdk/cdk-integ-tools": "0.0.0",
     "@aws-cdk/cfn2ts": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/jest": "^27.0.2"
+    "@types/jest": "^27.0.3"
   },
   "dependencies": {
     "@aws-cdk/aws-certificatemanager": "0.0.0",

@@ -1,21 +1,17 @@
-*.js
-*.d.ts
-!deps.js
-!gen.js
-lib/
-tsconfig.json
-.jsii
-*.tsbuildinfo
+# Ignore everything (because we're going to be generating into this
+# directory) except certain source files.
+
+*
+!LICENSE
+!CONTRIBUTING.md
+!NOTICE
+!README.md
+!scripts/
+
 
 dist
 .LAST_PACKAGE
 .LAST_BUILD
 *.snk
-!.eslintrc.js
-
-# Ignore barrel import entry points
-/*.ts
-
 junit.xml
-
-rosetta
+!.eslintrc.js
