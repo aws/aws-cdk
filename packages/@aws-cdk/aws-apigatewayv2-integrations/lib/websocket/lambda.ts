@@ -1,5 +1,5 @@
 import {
-  IWebSocketRouteIntegration,
+  WebSocketRouteIntegration,
   WebSocketIntegrationType,
   WebSocketRouteIntegrationBindOptions,
   WebSocketRouteIntegrationConfig,
@@ -21,8 +21,10 @@ export interface LambdaWebSocketIntegrationProps {
 /**
  * Lambda WebSocket Integration
  */
-export class LambdaWebSocketIntegration implements IWebSocketRouteIntegration {
-  constructor(private props: LambdaWebSocketIntegrationProps) {}
+export class LambdaWebSocketIntegration extends WebSocketRouteIntegration {
+  constructor(private props: LambdaWebSocketIntegrationProps) {
+    super();
+  }
 
   bind(options: WebSocketRouteIntegrationBindOptions): WebSocketRouteIntegrationConfig {
     const route = options.route;
