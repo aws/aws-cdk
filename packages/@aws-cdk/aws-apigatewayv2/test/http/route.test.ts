@@ -29,7 +29,7 @@ describe('HttpRoute', () => {
           [
             'integrations/',
             {
-              Ref: 'HttpRouteHttpIntegrationcff2618c192d3bd8581dd2a4093464f6FB1097D0',
+              Ref: 'HttpRouteDummyIntegration10F77519',
             },
           ],
         ],
@@ -188,7 +188,7 @@ describe('HttpRoute', () => {
     // WHEN
     new HttpRoute(stack, 'HttpRoute', {
       httpApi,
-      integration: new PrivateIntegration(),
+      integration: new PrivateIntegration('PrivateIntegration'),
       routeKey: HttpRouteKey.with('/books', HttpMethod.GET),
     });
 
@@ -230,7 +230,7 @@ describe('HttpRoute', () => {
     // WHEN
     new HttpRoute(stack, 'HttpRoute', {
       httpApi,
-      integration: new PrivateIntegration(),
+      integration: new PrivateIntegration('PrivateIntegration'),
       routeKey: HttpRouteKey.with('/books', HttpMethod.GET),
     });
 
@@ -541,6 +541,10 @@ describe('HttpRoute', () => {
 });
 
 class DummyIntegration extends HttpRouteIntegration {
+  constructor(name?: string) {
+    super(name ?? 'DummyIntegration');
+  }
+
   public bind(): HttpRouteIntegrationConfig {
     return {
       type: HttpIntegrationType.HTTP_PROXY,
