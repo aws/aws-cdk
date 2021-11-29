@@ -5,7 +5,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import { AuroraPostgresEngineVersion, ServerlessCluster, DatabaseClusterEngine, ParameterGroup, AuroraCapacityUnit, DatabaseSecret } from '../lib';
+import { AuroraPostgresEngineVersion, ServerlessCluster, DatabaseClusterEngine, ParameterGroup, AuroraCapacityUnit, DatabaseSecret, ServerlessClusterFromSnapshot } from '../lib';
 
 describe('serverless cluster', () => {
   test('can create a Serverless Cluster with Aurora Postgres database engine', () => {
@@ -860,6 +860,48 @@ describe('serverless cluster', () => {
     expect(stack).toHaveResourceLike('AWS::RDS::DBCluster', {
       DBClusterIdentifier: clusterIdentifier,
     });
+
+
+  });
+
+  test('create a serverless cluster from a snapshot', () => {
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    const secret = new DatabaseSecret(stack, 'Secret', {
+      username: 'admin',
+    });
+    new ServerlessClusterFromSnapshot(stack, 'ServerlessDatabase', {
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
+      vpc,
+      snapshotIdentifier: 'mySnapshot',
+      secret,
+    });
+
+    // THEN
+    expect(stack).toHaveResource('AWS::RDS::DBCluster', {
+      Properties: {
+        Engine: 'aurora-mysql',
+        DBClusterParameterGroupName: 'default.aurora-mysql5.7',
+        DBSubnetGroupName: {
+          Ref: 'ServerlessDatabaseSubnets5643CD76',
+        },
+        EngineMode: 'serverless',
+        SnapshotIdentifier: 'mySnapshot',
+        StorageEncrypted: true,
+        VpcSecurityGroupIds: [
+          {
+            'Fn::GetAtt': [
+              'ServerlessDatabaseSecurityGroupB00D8C0F',
+              'GroupId',
+            ],
+          },
+        ],
+      },
+      DeletionPolicy: 'Snapshot',
+      UpdateReplacePolicy: 'Snapshot',
+    }, ResourcePart.CompleteDefinition);
 
 
   });
