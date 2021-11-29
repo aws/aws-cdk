@@ -590,7 +590,7 @@ export enum InstanceClass {
    * Multi-stream video transcoding instances for resolutions up to 4K UHD, 1st generation
    */
   VIDEO_TRANSCODING1 = 'vt1',
-  
+
   /**
    * Multi-stream video transcoding instances for resolutions up to 4K UHD, 1st generation
    */
