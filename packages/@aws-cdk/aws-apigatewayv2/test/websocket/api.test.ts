@@ -127,6 +127,10 @@ describe('WebSocketApi', () => {
 });
 
 class DummyIntegration extends WebSocketRouteIntegration {
+  constructor() {
+    super('DummyIntegration');
+  }
+
   bind(_options: WebSocketRouteIntegrationBindOptions): WebSocketRouteIntegrationConfig {
     return {
       type: WebSocketIntegrationType.AWS_PROXY,

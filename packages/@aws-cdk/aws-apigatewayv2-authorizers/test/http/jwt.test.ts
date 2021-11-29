@@ -1,7 +1,8 @@
 import { Template } from '@aws-cdk/assertions';
-import { HttpApi, HttpIntegrationType, HttpRouteIntegrationBindOptions, HttpRouteIntegration, PayloadFormatVersion } from '@aws-cdk/aws-apigatewayv2';
+import { HttpApi } from '@aws-cdk/aws-apigatewayv2';
 import { Stack } from '@aws-cdk/core';
 import { HttpJwtAuthorizer } from '../../lib';
+import { DummyRouteIntegration } from './integration';
 
 describe('HttpJwtAuthorizer', () => {
   test('default', () => {
@@ -58,13 +59,3 @@ describe('HttpJwtAuthorizer', () => {
     Template.fromStack(stack).resourceCountIs('AWS::ApiGatewayV2::Authorizer', 1);
   });
 });
-
-class DummyRouteIntegration extends HttpRouteIntegration {
-  public bind(_: HttpRouteIntegrationBindOptions) {
-    return {
-      payloadFormatVersion: PayloadFormatVersion.VERSION_2_0,
-      type: HttpIntegrationType.HTTP_PROXY,
-      uri: 'some-uri',
-    };
-  }
-}

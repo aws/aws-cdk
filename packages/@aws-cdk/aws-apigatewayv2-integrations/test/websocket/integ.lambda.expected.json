@@ -208,7 +208,7 @@
         "RouteSelectionExpression": "$request.body.action"
       }
     },
-    "mywsapiconnectRouteWebSocketApiIntegmywsapiconnectRoute456CB290Permission2D0BC294": {
+    "mywsapiconnectRouteConnectIntegrationPermission719B6E63": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -245,7 +245,7 @@
         }
       }
     },
-    "mywsapiconnectRouteWebSocketIntegration3025fc0297cc8d73dae555b46106edcd38569D62": {
+    "mywsapiconnectRouteConnectIntegrationE101DB9B": {
       "Type": "AWS::ApiGatewayV2::Integration",
       "Properties": {
         "ApiId": {
@@ -290,14 +290,14 @@
             [
               "integrations/",
               {
-                "Ref": "mywsapiconnectRouteWebSocketIntegration3025fc0297cc8d73dae555b46106edcd38569D62"
+                "Ref": "mywsapiconnectRouteConnectIntegrationE101DB9B"
               }
             ]
           ]
         }
       }
     },
-    "mywsapidisconnectRouteWebSocketApiIntegmywsapidisconnectRoute26B84CF3PermissionB3F6D0A8": {
+    "mywsapidisconnectRouteDisconnectIntegrationPermissionA8197C41": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -334,7 +334,7 @@
         }
       }
     },
-    "mywsapidisconnectRouteWebSocketIntegrationfc84ffd6c52488b90783abae35d28ebdAE5C6063": {
+    "mywsapidisconnectRouteDisconnectIntegrationF927D904": {
       "Type": "AWS::ApiGatewayV2::Integration",
       "Properties": {
         "ApiId": {
@@ -379,14 +379,14 @@
             [
               "integrations/",
               {
-                "Ref": "mywsapidisconnectRouteWebSocketIntegrationfc84ffd6c52488b90783abae35d28ebdAE5C6063"
+                "Ref": "mywsapidisconnectRouteDisconnectIntegrationF927D904"
               }
             ]
           ]
         }
       }
     },
-    "mywsapidefaultRouteWebSocketApiIntegmywsapidefaultRouteA13D926BPermission58B64FCE": {
+    "mywsapidefaultRouteDefaultIntegrationPermission3B7F9CA1": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -423,7 +423,7 @@
         }
       }
     },
-    "mywsapidefaultRouteWebSocketIntegrationa07b7cec9837e31a8c70446e1e1f1fd5055B3083": {
+    "mywsapidefaultRouteDefaultIntegrationFFCB3BA9": {
       "Type": "AWS::ApiGatewayV2::Integration",
       "Properties": {
         "ApiId": {
@@ -468,14 +468,14 @@
             [
               "integrations/",
               {
-                "Ref": "mywsapidefaultRouteWebSocketIntegrationa07b7cec9837e31a8c70446e1e1f1fd5055B3083"
+                "Ref": "mywsapidefaultRouteDefaultIntegrationFFCB3BA9"
               }
             ]
           ]
         }
       }
     },
-    "mywsapisendmessageRouteWebSocketApiIntegmywsapisendmessageRoute8A775F3CPermission660FB575": {
+    "mywsapisendmessageRouteSendMessageIntegrationPermission92C9841E": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -512,7 +512,7 @@
         }
       }
     },
-    "mywsapisendmessageRouteWebSocketIntegrationeb46e3593c10ed57eb0ca9ef3247823d74153661": {
+    "mywsapisendmessageRouteSendMessageIntegrationD29E12F9": {
       "Type": "AWS::ApiGatewayV2::Integration",
       "Properties": {
         "ApiId": {
@@ -557,7 +557,7 @@
             [
               "integrations/",
               {
-                "Ref": "mywsapisendmessageRouteWebSocketIntegrationeb46e3593c10ed57eb0ca9ef3247823d74153661"
+                "Ref": "mywsapisendmessageRouteSendMessageIntegrationD29E12F9"
               }
             ]
           ]

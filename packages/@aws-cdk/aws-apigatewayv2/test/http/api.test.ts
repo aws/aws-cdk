@@ -532,6 +532,10 @@ describe('HttpApi', () => {
 });
 
 class DummyRouteIntegration extends HttpRouteIntegration {
+  constructor() {
+    super('DummyRouteIntegration');
+  }
+
   public bind(_: HttpRouteIntegrationBindOptions): HttpRouteIntegrationConfig {
     return {
       payloadFormatVersion: PayloadFormatVersion.VERSION_2_0,

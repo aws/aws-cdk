@@ -1,6 +1,4 @@
-/* eslint-disable quotes */
-import * as crypto from 'crypto';
-import { Resource, Stack } from '@aws-cdk/core';
+import { Resource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnIntegration } from '../apigatewayv2.generated';
 import { IIntegration } from '../common';
@@ -196,6 +194,12 @@ export abstract class HttpRouteIntegration {
   private integration?: HttpIntegration;
 
   /**
+   * Initialize an integration for a route on http api.
+   * @param id id of the underlying `HttpIntegration` construct.
+   */
+  constructor(private readonly id: string) {}
+
+  /**
    * Internal method called when binding this integration to the route.
    * @internal
    */
@@ -207,7 +211,7 @@ export abstract class HttpRouteIntegration {
     if (!this.integration) {
       const config = this.bind(options);
 
-      this.integration = new HttpIntegration(options.scope, `HttpIntegration-${hash(config)}`, {
+      this.integration = new HttpIntegration(options.scope, this.id, {
         httpApi: options.route.httpApi,
         integrationType: config.type,
         integrationUri: config.uri,
@@ -218,12 +222,6 @@ export abstract class HttpRouteIntegration {
         secureServerName: config.secureServerName,
         parameterMapping: config.parameterMapping,
       });
-
-      function hash(x: any) {
-        const stringifiedConfig = JSON.stringify(Stack.of(options.scope).resolve(x));
-        const configHash = crypto.createHash('md5').update(stringifiedConfig).digest('hex');
-        return configHash;
-      }
     }
     return { integrationId: this.integration.integrationId };
   }
