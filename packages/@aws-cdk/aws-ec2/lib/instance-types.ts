@@ -585,6 +585,11 @@ export enum InstanceClass {
    * Macintosh instances built on Apple Mac mini computers, 1st generation with Intel procesors
    */
   MAC1 = 'mac1',
+
+  /**
+   * Multi-stream video transcoding instances for resolutions up to 4K UHD, 1st generation
+   */
+  VT1 = 'vt1',
 }
 
 /**
