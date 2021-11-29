@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import { promises as fs } from 'fs';
-import { Assembly, TypeSystem } from 'jsii-reflect';
+import { Assembly, ClassType, InterfaceType, TypeSystem } from 'jsii-reflect';
 
 // This import should come from @jsii/spec. Replace when that is possible.
 import { LanguageTablet, RosettaTranslator, SnippetLocation, SnippetParameters, TypeScriptSnippet, typeScriptSnippetFromCompleteSource } from 'jsii-rosetta';
@@ -33,10 +33,11 @@ export async function generateMissingExamples(assemblyLocations: string[], optio
 
   const snippets = loadedAssemblies.flatMap(({ assembly }) => {
     // Classes and structs
-    const documentableTypes = [
-      ...assembly.classes.filter(c => !c.docs.example),
-      ...assembly.interfaces.filter(i => !i.docs.example && i.datatype),
-    ];
+    const documentableTypes: Array<ClassType | InterfaceType> = [];
+    for (const m of [assembly, ...assembly.allSubmodules]) {
+      documentableTypes.push(...m.classes.filter(c => !c.docs.example));
+      documentableTypes.push(...m.interfaces.filter(c => !c.docs.example && c.datatype));
+    }
 
     console.log(`${assembly.name}: ${documentableTypes.length} classes to document`);
     if (documentableTypes.length === 0) { return []; }

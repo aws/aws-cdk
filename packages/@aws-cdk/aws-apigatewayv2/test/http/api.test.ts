@@ -6,7 +6,7 @@ import { Duration, Stack } from '@aws-cdk/core';
 import {
   CorsHttpMethod, DomainName,
   HttpApi, HttpAuthorizer, HttpIntegrationType, HttpMethod, HttpRouteAuthorizerBindOptions, HttpRouteAuthorizerConfig,
-  HttpRouteIntegrationBindOptions, HttpRouteIntegrationConfig, IHttpRouteAuthorizer, IHttpRouteIntegration, HttpNoneAuthorizer, PayloadFormatVersion,
+  HttpRouteIntegrationBindOptions, HttpRouteIntegrationConfig, IHttpRouteAuthorizer, HttpRouteIntegration, HttpNoneAuthorizer, PayloadFormatVersion,
 } from '../../lib';
 
 describe('HttpApi', () => {
@@ -531,7 +531,7 @@ describe('HttpApi', () => {
   });
 });
 
-class DummyRouteIntegration implements IHttpRouteIntegration {
+class DummyRouteIntegration extends HttpRouteIntegration {
   public bind(_: HttpRouteIntegrationBindOptions): HttpRouteIntegrationConfig {
     return {
       payloadFormatVersion: PayloadFormatVersion.VERSION_2_0,
