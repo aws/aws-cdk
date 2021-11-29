@@ -1,6 +1,6 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import { createModuleDefinitionFromCfnNamespace, createLibraryReadme } from '../build-tools/library-creation';
+import { createModuleDefinitionFromCfnNamespace, createLibraryReadme } from '../lib';
 
 describe('createModuleDefinitionFromCfnNamespace', () => {
   test('base case', () => {

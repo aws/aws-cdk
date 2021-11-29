@@ -6,9 +6,9 @@
  */
 
 import * as path from 'path';
+import { createLibraryReadme, createModuleDefinitionFromCfnNamespace } from '@aws-cdk/pkglint';
 import * as fs from 'fs-extra';
 import * as cfnspec from '../lib';
-import { createLibraryReadme, createModuleDefinitionFromCfnNamespace } from './library-creation';
 
 // don't be a prude:
 /* eslint-disable no-console */
