@@ -40,6 +40,7 @@ const product = new servicecatalog.CloudFormationProduct(stack, 'TestProduct', {
         'https://awsdocs.s3.amazonaws.com/servicecatalog/development-environment.template'),
     },
   ],
+  tagOptions: tagOptions,
 });
 
 portfolio.addProduct(product);
