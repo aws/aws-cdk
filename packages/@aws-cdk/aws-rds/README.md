@@ -577,7 +577,7 @@ Use `DatabaseClusterFromSnapshot` to create a cluster from a snapshot:
 ```ts
 declare const vpc: ec2.Vpc;
 new rds.ServerlessClusterFromSnapshot(this, 'Cluster', {
-  engine: DatabaseClusterEngine.AURORA_MYSQL,
+  engine: rds.DatabaseClusterEngine.AURORA_MYSQL,
   vpc,
   snapshotIdentifier: 'mySnapshot',
 });
