@@ -161,21 +161,6 @@ describe('Dashboard', () => {
 
   });
 
-  test('DashboardName is exposed correctly when provided', () => {
-    // GIVEN
-    const app = new App();
-    const stack = new Stack(app, 'MyStack');
-
-    // WHEN
-    const dash = new Dashboard(stack, 'MyDashboard', {
-      dashboardName: 'MyCustomDashboardName',
-    });
-
-    // THEN
-    expect(dash.dashboardName).toEqual('MyCustomDashboardName');
-
-  });
-
   test('throws if DashboardName is not valid', () => {
     // GIVEN
     const app = new App();

@@ -76,10 +76,10 @@ export interface DashboardProps {
  */
 export class Dashboard extends Resource {
   /**
-   * The name of this queue
+   * The name of this dashboard
    * @attribute
   */
-  public readonly dashboardName?: string | undefined;
+  public readonly dashboardName: string;
   private readonly rows: IWidget[] = [];
 
   constructor(scope: Construct, id: string, props: DashboardProps = {}) {
@@ -113,7 +113,8 @@ export class Dashboard extends Resource {
       }),
     });
 
-    this.dashboardName = dashboard.dashboardName;
+    this.dashboardName = this.getResourceNameAttribute(dashboard.ref);
+    // dashboard.dashboardName;
 
     (props.widgets || []).forEach(row => {
       this.addWidgets(...row);
