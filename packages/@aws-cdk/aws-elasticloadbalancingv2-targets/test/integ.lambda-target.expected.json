@@ -404,12 +404,6 @@
     "LBListenerTargetsGroup76EF81E8": {
       "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
       "Properties": {
-        "TargetGroupAttributes": [
-          {
-            "Key": "stickiness.enabled",
-            "Value": "false"
-          }
-        ],
         "Targets": [
           {
             "Id": {
