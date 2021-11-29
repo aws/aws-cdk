@@ -21,10 +21,7 @@
     "lines": 50
   },
   "cdk-build": {
-    "jest": true,
-    "pre": [
-      "lib/from_pkglint/update.sh"
-    ]
+    "jest": true
   },
   "pkglint": {
     "ignore": true
