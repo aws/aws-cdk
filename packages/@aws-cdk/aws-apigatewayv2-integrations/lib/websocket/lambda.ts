@@ -6,29 +6,28 @@ import {
 } from '@aws-cdk/aws-apigatewayv2';
 import { ServicePrincipal } from '@aws-cdk/aws-iam';
 import { IFunction } from '@aws-cdk/aws-lambda';
-import { Names, Stack } from '@aws-cdk/core';
-
-/**
- * Lambda WebSocket Integration props
- */
-export interface LambdaWebSocketIntegrationProps {
-  /**
-   * The handler for this integration.
-   */
-  readonly handler: IFunction
-}
+import { Stack } from '@aws-cdk/core';
 
 /**
  * Lambda WebSocket Integration
  */
-export class LambdaWebSocketIntegration extends WebSocketRouteIntegration {
-  constructor(private props: LambdaWebSocketIntegrationProps) {
-    super();
+export class WebSocketLambdaIntegration extends WebSocketRouteIntegration {
+
+  private readonly _id: string;
+
+  /**
+   * @param id id of the underlying integration construct
+   * @param handler the Lambda function handler
+   * @param props properties to configure the integration
+   */
+  constructor(id: string, private readonly handler: IFunction) {
+    super(id);
+    this._id = id;
   }
 
   bind(options: WebSocketRouteIntegrationBindOptions): WebSocketRouteIntegrationConfig {
     const route = options.route;
-    this.props.handler.addPermission(`${Names.nodeUniqueId(route.node)}-Permission`, {
+    this.handler.addPermission(`${this._id}-Permission`, {
       scope: options.scope,
       principal: new ServicePrincipal('apigateway.amazonaws.com'),
       sourceArn: Stack.of(route).formatArn({
@@ -42,7 +41,7 @@ export class LambdaWebSocketIntegration extends WebSocketRouteIntegration {
       service: 'apigateway',
       account: 'lambda',
       resource: 'path/2015-03-31/functions',
-      resourceName: `${this.props.handler.functionArn}/invocations`,
+      resourceName: `${this.handler.functionArn}/invocations`,
     });
 
     return {
