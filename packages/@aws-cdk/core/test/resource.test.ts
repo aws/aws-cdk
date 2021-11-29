@@ -323,11 +323,9 @@ describe('resource', () => {
       constructor(scope: Construct, id: string) {
         super(scope, id);
 
-        this.node.defaultChild = new CfnResource(
-          this,
-          'Resource',
-          { type: 'ChildResourceType' },
-        );
+        new CfnResource(this, 'Resource', {
+          type: 'ChildResourceType',
+        });
       }
     }
 
