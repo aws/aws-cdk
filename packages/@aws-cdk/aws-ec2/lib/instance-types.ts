@@ -557,6 +557,16 @@ export enum InstanceClass {
   M6I = 'm6i',
 
   /**
+   * Standard instances based on 3rd Gen AMD EPYC processors, 6th generation.
+   */
+  STANDARD6_AMD = 'm6a',
+
+  /**
+  * Standard instances based on 3rd Gen AMD EPYC processors, 6th generation.
+  */
+  M6A = 'm6a',
+
+  /**
    * Standard instances, 6th generation with Graviton2 processors and local NVME drive
    */
   STANDARD6_GRAVITON2_NVME_DRIVE = 'm6gd',
@@ -595,6 +605,16 @@ export enum InstanceClass {
    * Macintosh instances built on Apple Mac mini computers, 1st generation with Intel procesors
    */
   MAC1 = 'mac1',
+
+  /**
+   * Multi-stream video transcoding instances for resolutions up to 4K UHD, 1st generation
+   */
+  VIDEO_TRANSCODING1 = 'vt1',
+
+  /**
+   * Multi-stream video transcoding instances for resolutions up to 4K UHD, 1st generation
+   */
+  VT1 = 'vt1',
 }
 
 /**
