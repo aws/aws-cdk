@@ -135,6 +135,35 @@ describe('RequireImdsv2Aspect', () => {
         trace: undefined,
       });
     });
+
+    test('launch template name is unique', () => {
+      // GIVEN
+      const otherStack = new cdk.Stack(app, 'OtherStack');
+      const otherVpc = new Vpc(otherStack, 'OtherVpc');
+      const otherInstance = new Instance(otherStack, 'OtherInstance', {
+        vpc: otherVpc,
+        instanceType: new InstanceType('t2.micro'),
+        machineImage: MachineImage.latestAmazonLinux(),
+      });
+      const instance = new Instance(stack, 'Instance', {
+        vpc,
+        instanceType: new InstanceType('t2.micro'),
+        machineImage: MachineImage.latestAmazonLinux(),
+      });
+      const aspect = new InstanceRequireImdsv2Aspect();
+
+      // WHEN
+      cdk.Aspects.of(stack).add(aspect);
+      cdk.Aspects.of(otherStack).add(aspect);
+      app.synth();
+
+      // THEN
+      const launchTemplate = instance.node.tryFindChild('LaunchTemplate') as LaunchTemplate;
+      const otherLaunchTemplate = otherInstance.node.tryFindChild('LaunchTemplate') as LaunchTemplate;
+      expect(launchTemplate).toBeDefined();
+      expect(otherLaunchTemplate).toBeDefined();
+      expect(launchTemplate.launchTemplateName !== otherLaunchTemplate.launchTemplateName);
+    });
   });
 
   describe('LaunchTemplateRequireImdsv2Aspect', () => {

@@ -83,17 +83,16 @@ export class InstanceRequireImdsv2Aspect extends RequireImdsv2Aspect {
       return;
     }
 
-    const name = `${node.node.id}LaunchTemplate`;
     const launchTemplate = new CfnLaunchTemplate(node, 'LaunchTemplate', {
       launchTemplateData: {
         metadataOptions: {
           httpTokens: 'required',
         },
       },
-      launchTemplateName: name,
     });
+    launchTemplate.launchTemplateName = cdk.Names.uniqueId(launchTemplate);
     node.instance.launchTemplate = {
-      launchTemplateName: name,
+      launchTemplateName: launchTemplate.launchTemplateName,
       version: launchTemplate.getAtt('LatestVersionNumber').toString(),
     };
   }
