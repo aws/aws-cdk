@@ -1,5 +1,5 @@
-import * as pkglint from '@aws-cdk/pkglint';
 import * as fs from 'fs-extra';
+import { cfnOnlyReadmeContents } from './readme-contents';
 
 export interface ModuleDefinition {
   readonly namespace: string;
@@ -59,7 +59,7 @@ export function createModuleDefinitionFromCfnNamespace(namespace: string): Modul
 export async function createLibraryReadme(namespace: string, readmePath: string) {
   const module = createModuleDefinitionFromCfnNamespace(namespace);
 
-  await fs.writeFile(readmePath, pkglint.cfnOnlyReadmeContents({
+  await fs.writeFile(readmePath, cfnOnlyReadmeContents({
     cfnNamespace: namespace,
     packageName: module.packageName,
   }));
