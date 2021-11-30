@@ -28,7 +28,14 @@
         ]
       }
     },
-    "projectReferences": true
+    "projectReferences": true,
+    "metadata": {
+      "jsii": {
+        "rosetta": {
+          "strict": true
+        }
+      }
+    }
   },
   "repository": {
     "type": "git",
@@ -78,12 +85,12 @@
     "@aws-cdk/cfn2ts": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/aws-lambda": "^8.10.85",
-    "@types/jest": "^27.0.2",
+    "@types/jest": "^27.0.3",
     "@types/sinon": "^9.0.11",
     "@types/yaml": "1.9.6",
     "aws-sdk": "^2.848.0",
-    "cdk8s": "^0.33.0",
-    "cdk8s-plus": "^0.33.0",
+    "cdk8s": "^1.1.42",
+    "cdk8s-plus-21": "^1.0.0-beta.44",
     "jest": "^27.3.1",
     "sinon": "^9.2.4"
   },

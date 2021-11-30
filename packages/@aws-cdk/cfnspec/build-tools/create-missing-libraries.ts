@@ -79,10 +79,12 @@ async function main() {
 
     console.log(`generating module for ${module.packageName}...`);
 
+    const description = `${namespace} Construct Library`;
+
     await write('package.json', {
       name: module.packageName,
       version,
-      description: `The CDK Construct Library for ${namespace}`,
+      description,
       main: 'lib/index.js',
       types: 'lib/index.d.ts',
       jsii: {
@@ -110,6 +112,13 @@ async function main() {
             ],
             distName: module.pythonDistName,
             module: module.pythonModuleName,
+          },
+        },
+        metadata: {
+          jsii: {
+            rosetta: {
+              strict: true,
+            },
           },
         },
       },
@@ -262,6 +271,17 @@ async function main() {
     await write('jest.config.js', [
       "const baseConfig = require('@aws-cdk/cdk-build-tools/config/jest.config');",
       'module.exports = baseConfig;',
+    ]);
+
+    await write('rosetta/default.ts-fixture', [
+      "import { Construct } from 'constructs';",
+      "import { Stack } from '@aws-cdk/core';",
+      '',
+      'class MyStack extends Stack {',
+      '  constructor(scope: Construct, id: string) {',
+      '    /// here',
+      '  }',
+      '}',
     ]);
 
     const templateDir = path.join(__dirname, 'template');

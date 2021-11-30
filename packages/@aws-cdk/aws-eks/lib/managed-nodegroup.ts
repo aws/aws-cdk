@@ -34,7 +34,15 @@ export enum NodegroupAmiType {
   /**
    * Amazon Linux 2 (ARM-64)
    */
-  AL2_ARM_64 = 'AL2_ARM_64'
+  AL2_ARM_64 = 'AL2_ARM_64',
+  /**
+   *  Bottlerocket Linux(ARM-64)
+   */
+  BOTTLEROCKET_ARM_64 = 'BOTTLEROCKET_ARM_64',
+  /**
+   * Bottlerocket(x86-64)
+   */
+  BOTTLEROCKET_X86_64 = 'BOTTLEROCKET_x86_64',
 }
 
 /**
@@ -419,6 +427,11 @@ export class Nodegroup extends Resource implements INodegroup {
           'system:nodes',
         ],
       });
+
+      // the controller runs on the worker nodes so they cannot
+      // be deleted before the controller.
+      this.cluster.albController?.node.addDependency(this);
+
     }
 
     this.nodegroupArn = this.getResourceArnAttribute(resource.attrArn, {

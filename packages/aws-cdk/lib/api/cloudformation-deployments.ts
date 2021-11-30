@@ -145,6 +145,13 @@ export interface DeployStackOptions {
    * @default - false for regular deployments, true for 'watch' deployments
    */
   readonly hotswap?: boolean;
+
+  /**
+   * The extra string to append to the User-Agent header when performing AWS SDK calls.
+   *
+   * @default - nothing extra is appended to the User-Agent header
+   */
+  readonly extraUserAgent?: string;
 }
 
 export interface DestroyStackOptions {
@@ -222,6 +229,7 @@ export class CloudFormationDeployments {
       ci: options.ci,
       rollback: options.rollback,
       hotswap: options.hotswap,
+      extraUserAgent: options.extraUserAgent,
     });
   }
 

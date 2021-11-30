@@ -1,7 +1,7 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import { IVpcEndpoint } from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { CfnOutput, IResource as IResourceBase, Resource, Stack } from '@aws-cdk/core';
+import { ArnFormat, CfnOutput, IResource as IResourceBase, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { ApiDefinition } from './api-definition';
 import { ApiKey, ApiKeyOptions, IApiKey } from './api-key';
@@ -312,6 +312,7 @@ export abstract class RestApiBase extends Resource implements IRestApi {
 
   /**
    * A human friendly name for this Rest API. Note that this is different from `restApiId`.
+   * @attribute
    */
   public readonly restApiName: string;
 
@@ -373,7 +374,7 @@ export abstract class RestApiBase extends Resource implements IRestApi {
     return Stack.of(this).formatArn({
       service: 'execute-api',
       resource: this.restApiId,
-      sep: '/',
+      arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
       resourceName: `${stage}/${method}${path}`,
     });
   }
@@ -405,7 +406,7 @@ export abstract class RestApiBase extends Resource implements IRestApi {
     return new cloudwatch.Metric({
       namespace: 'AWS/ApiGateway',
       metricName,
-      dimensions: { ApiName: this.restApiName },
+      dimensionsMap: { ApiName: this.restApiName },
       ...props,
     }).attachTo(this);
   }

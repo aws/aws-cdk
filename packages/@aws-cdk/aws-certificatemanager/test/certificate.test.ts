@@ -1,7 +1,7 @@
 import '@aws-cdk/assert-internal/jest';
 import * as route53 from '@aws-cdk/aws-route53';
 import { Duration, Lazy, Stack } from '@aws-cdk/core';
-import { Certificate, CertificateValidation, ValidationMethod } from '../lib';
+import { Certificate, CertificateValidation } from '../lib';
 
 test('apex domain selection by default', () => {
   const stack = new Stack();
@@ -43,9 +43,9 @@ test('validation domain can be overridden', () => {
 
   new Certificate(stack, 'Certificate', {
     domainName: 'test.example.com',
-    validationDomains: {
+    validation: CertificateValidation.fromEmail({
       'test.example.com': 'test.example.com',
-    },
+    }),
   });
 
   expect(stack).toHaveResource('AWS::CertificateManager::Certificate', {
@@ -72,7 +72,7 @@ test('can configure validation method', () => {
 
   new Certificate(stack, 'Certificate', {
     domainName: 'test.example.com',
-    validationMethod: ValidationMethod.DNS,
+    validation: CertificateValidation.fromDns(),
   });
 
   expect(stack).toHaveResource('AWS::CertificateManager::Certificate', {
@@ -98,9 +98,9 @@ test('validationdomains can be given for a Token', () => {
   const domainName = Lazy.string({ produce: () => 'my.example.com' });
   new Certificate(stack, 'Certificate', {
     domainName,
-    validationDomains: {
+    validation: CertificateValidation.fromEmail({
       [domainName]: 'example.com',
-    },
+    }),
   });
 
   expect(stack).toHaveResource('AWS::CertificateManager::Certificate', {
