@@ -120,6 +120,6 @@
   "stability": "stable",
   "maturity": "stable",
   "publishConfig": {
-    "tag": "next"
+    "tag": "latest"
   }
 }
