@@ -89,6 +89,16 @@ export enum InstanceClass {
   M5DN = 'm5dn',
 
   /**
+   * Standard instances with high memory and compute capacity based on Intel Xeon Scalable (Cascade Lake) processors, 5nd generation
+   */
+  STANDARD5_HIGH_COMPUTE = 'm5zn',
+
+  /**
+   * Standard instances with high memory and compute capacity based on Intel Xeon Scalable (Cascade Lake) processors, 5nd generation
+   */
+  M5ZN = 'm5zn',
+
+  /**
    * Memory optimized instances, 3rd generation
    */
   MEMORY3 = 'r3',
