@@ -127,18 +127,28 @@ export class BackupPlan extends Resource implements IBackupPlan {
 
   private readonly rules: CfnBackupPlan.BackupRuleResourceTypeProperty[] = [];
   private _backupVault?: IBackupVault;
-
+  private advancedBackupSettings(props: BackupPlanProps) {
+    if (!props.windowsVss) {
+      return undefined;
+    }
+    return [{
+      backupOptions: {
+        WindowsVSS: 'enabled',
+      },
+      resourceType: 'EC2',
+    }];
+  }
   constructor(scope: Construct, id: string, props: BackupPlanProps = {}) {
     super(scope, id);
 
     const plan = new CfnBackupPlan(this, 'Resource', {
       backupPlan: {
-        ...(props.windowsVss ? { advancedBackupSettings: [{ backupOptions: { WindowsVSS: 'enabled' }, resourceType: 'EC2' }] } : {}),
+        advancedBackupSettings: this.advancedBackupSettings(props),
         backupPlanName: props.backupPlanName || id,
         backupPlanRule: Lazy.any({ produce: () => this.rules }, { omitEmptyArray: true }),
-      },
-    });
-
+    },
+  })
+    
     this.backupPlanId = plan.attrBackupPlanId;
     this.backupPlanArn = plan.attrBackupPlanArn;
     this.versionId = plan.attrVersionId;
