@@ -157,9 +157,10 @@ export interface NodegroupOptions {
    */
   readonly subnets?: SubnetSelection;
   /**
-   * The AMI type for your node group.
+   * The AMI type for your node group. If you explicitly specify the launchTemplate with custom AMI, do not specify this property, or
+   * the node group deployment will fail. In other cases, you will need to specify correct amiType for the nodegroup.
    *
-   * @default - auto-determined from the instanceTypes property.
+   * @default - undefined.
    */
   readonly amiType?: NodegroupAmiType;
   /**
@@ -357,15 +358,21 @@ export class Nodegroup extends Resource implements INodegroup {
       Annotations.of(this).addWarning('"instanceType" is deprecated and will be removed in the next major version. please use "instanceTypes" instead');
     }
     const instanceTypes = props.instanceTypes ?? (props.instanceType ? [props.instanceType] : undefined);
-    let expectedAmiType = undefined;
+    let possibleAmiTypes: NodegroupAmiType[] = [];
 
     if (instanceTypes && instanceTypes.length > 0) {
-      // if the user explicitly configured instance types, we can calculate the expected ami type.
-      expectedAmiType = getAmiType(instanceTypes);
+      /**
+       * if the user explicitly configured instance types, we can't caculate the expected ami type as we support
+       * Amazon Linux 2 and Bottlerocket now. However we can check:
+       *
+       * 1. instance types of different CPU architectures are not mixed(e.g. X86 with ARM)
+       * 2. user-specified amiType should be included in `possibleAmiTypes`
+       */
+      possibleAmiTypes = getAmiType(instanceTypes);
 
-      // if the user explicitly configured an ami type, make sure its the same as the expected one.
-      if (props.amiType && props.amiType !== expectedAmiType) {
-        throw new Error(`The specified AMI does not match the instance types architecture, either specify ${expectedAmiType} or dont specify any`);
+      // if the user explicitly configured an ami type, make sure it's included in the possibleAmiTypes
+      if (props.amiType && !possibleAmiTypes.includes(props.amiType)) {
+        throw new Error(`The specified AMI does not match the instance types architecture, either specify one of ${possibleAmiTypes} or dont specify any`);
       }
     }
 
@@ -387,11 +394,17 @@ export class Nodegroup extends Resource implements INodegroup {
       nodegroupName: props.nodegroupName,
       nodeRole: this.role.roleArn,
       subnets: this.cluster.vpc.selectSubnets(props.subnets).subnetIds,
-
-      // if a launch template is configured, we cannot apply a default since it
-      // might exist in the launch template as well, causing a deployment failure.
-      amiType: props.launchTemplateSpec !== undefined ? props.amiType : (props.amiType ?? expectedAmiType),
-
+      /**
+       * Case 1: If launchTemplate is explicitly specified with custom AMI, we cannot specify amiType, or the node group deployment will fail.
+       * As we don't know if the custom AMI is specified in the lauchTemplate, we just use props.amiType.
+       *
+       * Case 2: If launchTemplate is not specified, we try to determine amiType from the instanceTypes. However, we are not able to do that
+       * as nodegroup now supports both Amazon Linux 2 and Bottlerocket for both x86_64 and arm_64. We can just check if user mixes instance types
+       * of different CPU archietctures. We can't determine the correct amiType from instance types now. Hence, we leave props.amiType as-is.
+       *
+       * That being said, users now either have to explicitly specify correct amiType or just leave it undefined.
+       */
+      amiType: props.amiType,
       capacityType: props.capacityType ? props.capacityType.valueOf() : undefined,
       diskSize: props.diskSize,
       forceUpdateEnabled: props.forceUpdate ?? true,
@@ -443,24 +456,40 @@ export class Nodegroup extends Resource implements INodegroup {
   }
 }
 
+const arm64AmiTypes: NodegroupAmiType[] = [NodegroupAmiType.AL2_ARM_64, NodegroupAmiType.BOTTLEROCKET_ARM_64];
+const x8664AmiTypes: NodegroupAmiType[] = [NodegroupAmiType.AL2_X86_64, NodegroupAmiType.BOTTLEROCKET_X86_64];
+const gpuAmiTypes: NodegroupAmiType[] = [NodegroupAmiType.AL2_X86_64_GPU];
+
 function getAmiTypeForInstanceType(instanceType: InstanceType) {
-  return INSTANCE_TYPES.graviton2.includes(instanceType.toString().substring(0, 3)) ? NodegroupAmiType.AL2_ARM_64 :
-    INSTANCE_TYPES.graviton.includes(instanceType.toString().substring(0, 2)) ? NodegroupAmiType.AL2_ARM_64 :
-      INSTANCE_TYPES.gpu.includes(instanceType.toString().substring(0, 2)) ? NodegroupAmiType.AL2_X86_64_GPU :
-        INSTANCE_TYPES.inferentia.includes(instanceType.toString().substring(0, 4)) ? NodegroupAmiType.AL2_X86_64_GPU :
-          NodegroupAmiType.AL2_X86_64;
+  return INSTANCE_TYPES.graviton2.includes(instanceType.toString().substring(0, 3)) ? arm64AmiTypes :
+    INSTANCE_TYPES.graviton.includes(instanceType.toString().substring(0, 2)) ? arm64AmiTypes :
+      INSTANCE_TYPES.gpu.includes(instanceType.toString().substring(0, 2)) ? gpuAmiTypes :
+        INSTANCE_TYPES.inferentia.includes(instanceType.toString().substring(0, 4)) ? gpuAmiTypes :
+          x8664AmiTypes;
 }
 
 // this function examines the CPU architecture of every instance type and determines
-// what ami type is compatible for all of them. it either throws or produces a single value because
+// what ami type is compatible for all of them. it either throws or produces an array of possible instance types because
 // instance types of different CPU architectures are not supported.
 function getAmiType(instanceTypes: InstanceType[]) {
-  const amiTypes = new Set(instanceTypes.map(i => getAmiTypeForInstanceType(i)));
-  if (amiTypes.size == 0) { // protective code, the current implementation will never result in this.
+  // const amiTypes = new Set(instanceTypes.map(i => getAmiTypeForInstanceType(i)));
+  const amiTypes = new Set<NodegroupAmiType>();
+  for (let t of instanceTypes) {
+    getAmiTypeForInstanceType(t).forEach(x => amiTypes.add(x));
+  }
+  if (new Set(amiTypes).size == 0) { // protective code, the current implementation will never result in this.
     throw new Error(`Cannot determine any ami type comptaible with instance types: ${instanceTypes.map(i => i.toString).join(',')}`);
   }
-  if (amiTypes.size > 1) {
+  let cpuArchTypes: number = 0;
+  // if any detected amiType is ARM_64
+  if (Array.from(amiTypes).some(x => arm64AmiTypes.includes(x))) { cpuArchTypes = cpuArchTypes + 1; }
+  // if any detected amiType is X86_64
+  if (Array.from(amiTypes).some(x => x8664AmiTypes.includes(x))) { cpuArchTypes = cpuArchTypes + 1; }
+  // if any detected amiType is GPU
+  if (Array.from(amiTypes).some(x => gpuAmiTypes.includes(x))) { cpuArchTypes = cpuArchTypes + 1; }
+
+  if (cpuArchTypes > 1) {
     throw new Error('instanceTypes of different CPU architectures is not allowed');
   }
-  return amiTypes.values().next().value;
+  return Array.from(amiTypes);
 }
