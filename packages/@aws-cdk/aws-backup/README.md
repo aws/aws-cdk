@@ -82,8 +82,6 @@ const plan = backup.BackupPlan.daily35DayRetention(this, 'Plan', myVault); // Us
 plan.addRule(backup.BackupPlanRule.monthly1Year(otherVault)); // Use `otherVault` for this specific rule
 ```
 
-you can backup VSS(Volume Shadow Copy Service)-enabled Windows applications running on Amazon EC2 instances. If the application has VSS writer registered with Windows VSS, then AWS Backup creates a snapshot that will be consistent for that application.
-
 This can be used by the windowsVss parameter, and the default value of this parameter is false.
 
 ```ts
