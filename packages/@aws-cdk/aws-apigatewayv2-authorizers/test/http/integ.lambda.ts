@@ -1,6 +1,6 @@
 import * as path from 'path';
 import { HttpApi, HttpMethod } from '@aws-cdk/aws-apigatewayv2';
-import { LambdaProxyIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
+import { HttpLambdaIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { App, Stack, CfnOutput } from '@aws-cdk/core';
 import { HttpLambdaAuthorizer, HttpLambdaResponseType } from '../../lib';
@@ -40,7 +40,7 @@ const handler = new lambda.Function(stack, 'lambda', {
 httpApi.addRoutes({
   path: '/',
   methods: [HttpMethod.GET],
-  integration: new LambdaProxyIntegration({ handler }),
+  integration: new HttpLambdaIntegration('RootIntegration', handler),
   authorizer,
 });
 

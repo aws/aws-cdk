@@ -1,8 +1,9 @@
 import { Match, Template } from '@aws-cdk/assertions';
-import { HttpApi, HttpIntegrationType, HttpRouteIntegrationBindOptions, HttpRouteIntegration, PayloadFormatVersion } from '@aws-cdk/aws-apigatewayv2';
+import { HttpApi } from '@aws-cdk/aws-apigatewayv2';
 import { Code, Function, Runtime } from '@aws-cdk/aws-lambda';
 import { Duration, Stack } from '@aws-cdk/core';
 import { HttpLambdaAuthorizer, HttpLambdaResponseType } from '../../lib';
+import { DummyRouteIntegration } from './integration';
 
 describe('HttpLambdaAuthorizer', () => {
 
@@ -169,13 +170,3 @@ describe('HttpLambdaAuthorizer', () => {
     });
   });
 });
-
-class DummyRouteIntegration extends HttpRouteIntegration {
-  public bind(_: HttpRouteIntegrationBindOptions) {
-    return {
-      payloadFormatVersion: PayloadFormatVersion.VERSION_2_0,
-      type: HttpIntegrationType.HTTP_PROXY,
-      uri: 'some-uri',
-    };
-  }
-}
