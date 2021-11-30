@@ -487,6 +487,16 @@ export enum InstanceClass {
   G5 = 'g5',
 
   /**
+   * Graphics-optimized instances powered by AWS Graviton2 Processors and NVIDIA T4G Tensor Core GPUs, 5th generation
+   */
+  GRAPHICS5_GRAVITON2 = 'g5g',
+
+  /**
+  * Graphics-optimized instances powered by AWS Graviton2 Processors and NVIDIA T4G Tensor Core GPUs, 5th generation
+  */
+  G5G = 'g5g',
+
+  /**
    * Parallel-processing optimized instances, 2nd generation
    */
   PARALLEL2 = 'p2',
