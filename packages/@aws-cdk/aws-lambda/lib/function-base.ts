@@ -3,6 +3,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import { ArnFormat, ConstructNode, IResource, Resource, Token } from '@aws-cdk/core';
 import { AliasOptions } from './alias';
+import { Architecture } from './architecture';
 import { EventInvokeConfig, EventInvokeConfigOptions } from './event-invoke-config';
 import { IEventSource } from './event-source';
 import { EventSourceMapping, EventSourceMappingOptions } from './event-source-mapping';
@@ -55,6 +56,11 @@ export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable {
    * The construct node where permissions are attached.
    */
   readonly permissionsNode: ConstructNode;
+
+  /**
+   * The system architectures compatible with this lambda function.
+   */
+  readonly architecture?: Architecture;
 
   /**
    * Adds an event source that maps to this AWS Lambda function.

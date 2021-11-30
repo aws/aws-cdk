@@ -930,7 +930,7 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
     if (props.runtime !== Runtime.FROM_IMAGE) {
       // Layers cannot be added to Lambda container images. The image should have the insights agent installed.
       // See https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Lambda-Insights-Getting-Started-docker.html
-      this.addLayers(LayerVersion.fromLayerVersionArn(this, 'LambdaInsightsLayer', props.insightsVersion._bind(this._architecture)));
+      this.addLayers(LayerVersion.fromLayerVersionArn(this, 'LambdaInsightsLayer', props.insightsVersion._bind(this, this).arn));
     }
     this.role?.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('CloudWatchLambdaInsightsExecutionRolePolicy'));
   }

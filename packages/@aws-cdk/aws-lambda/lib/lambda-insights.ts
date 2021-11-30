@@ -1,9 +1,17 @@
 import { Aws, CfnMapping, Fn, IResolveContext, Lazy, Stack, Token } from '@aws-cdk/core';
 import { FactName, RegionInfo } from '@aws-cdk/region-info';
+import { Construct } from 'constructs';
 import { Architecture } from './architecture';
+import { IFunction } from './function-base';
+
 
 // This is the name of the mapping that will be added to the CloudFormation template, if a stack is region agnostic
 const DEFAULT_MAPPING_PREFIX = 'LambdaInsightsVersions';
+
+interface InsightsBindConfig {
+  readonly arn: string;
+
+}
 
 // To add new versions, update fact-tables.ts `CLOUDWATCH_LAMBDA_INSIGHTS_ARNS` and create a new `public static readonly VERSION_A_B_C_D`
 
@@ -46,8 +54,8 @@ export abstract class LambdaInsightsVersion {
   public static fromInsightVersionArn(arn: string): LambdaInsightsVersion {
     class InsightsArn extends LambdaInsightsVersion {
       public readonly layerVersionArn = arn;
-      public _bind(): string {
-        return arn;
+      public _bind(_scope: Construct, _function: IFunction): InsightsBindConfig {
+        return { arn };
       }
     }
     return new InsightsArn();
@@ -61,17 +69,19 @@ export abstract class LambdaInsightsVersion {
         produce: (context) => getVersionArn(context, insightsVersion),
       });
 
-      public _bind(architecture?: Architecture): string {
-        const arch = architecture?.name ?? Architecture.X86_64.name;
+      public _bind(_scope: Construct, _function: IFunction): InsightsBindConfig {
+        const arch = _function.architecture?.name ?? Architecture.X86_64.name;
         // Check if insights version is valid. This should only happen if one of the public static readonly versions are set incorrectly
         // or if the version is not available for the Lambda Architecture
         const versionExists = RegionInfo.regions.some(regionInfo => regionInfo.cloudwatchLambdaInsightsArn(insightsVersion, arch));
         if (!versionExists) {
           throw new Error(`Insights version ${insightsVersion} does not exist.`);
         }
-        return Lazy.uncachedString({
-          produce: (context) => getVersionArn(context, insightsVersion, arch),
-        });
+        return {
+          arn: Lazy.uncachedString({
+            produce: (context) => getVersionArn(context, insightsVersion, arch),
+          }),
+        };
       }
     }
     return new InsightsVersion();
@@ -87,7 +97,7 @@ export abstract class LambdaInsightsVersion {
    * Lambda architecture
    * @internal
    */
-  public abstract _bind(architecture?: Architecture): string;
+  public abstract _bind(_scope: Construct, _function: IFunction): InsightsBindConfig;
 }
 
 /**
@@ -162,7 +172,10 @@ function getVersionArn(context: IResolveContext, insightsVersion: string, archit
 
   // Only create a given mapping once. If another version of insights is used elsewhere, that mapping will also exist
   if (!scopeStack.node.tryFindChild(mapName)) {
-    new CfnMapping(scopeStack, mapName, { mapping });
+    // need to call findInMap here if we are going to set lazy=true, otherwise
+    // we get the informLazyUse info message
+    const map = new CfnMapping(scopeStack, mapName, { mapping, lazy: true });
+    return map.findInMap(Aws.REGION, 'arn');
   }
   // The ARN will be looked up at deployment time from the mapping we created
   return Fn.findInMap(mapName, Aws.REGION, 'arn');
