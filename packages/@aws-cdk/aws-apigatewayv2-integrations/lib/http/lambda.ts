@@ -8,17 +8,12 @@ import {
 } from '@aws-cdk/aws-apigatewayv2';
 import { ServicePrincipal } from '@aws-cdk/aws-iam';
 import { IFunction } from '@aws-cdk/aws-lambda';
-import { Names, Stack } from '@aws-cdk/core';
+import { Stack } from '@aws-cdk/core';
 
 /**
  * Lambda Proxy integration properties
  */
-export interface LambdaProxyIntegrationProps {
-  /**
-   * The handler for this integration.
-   */
-  readonly handler: IFunction
-
+export interface HttpLambdaIntegrationProps {
   /**
    * Version of the payload sent to the lambda handler.
    * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-lambda.html
@@ -37,15 +32,27 @@ export interface LambdaProxyIntegrationProps {
 /**
  * The Lambda Proxy integration resource for HTTP API
  */
-export class LambdaProxyIntegration extends HttpRouteIntegration {
+export class HttpLambdaIntegration extends HttpRouteIntegration {
 
-  constructor(private readonly props: LambdaProxyIntegrationProps) {
-    super();
+  private readonly _id: string;
+
+  /**
+   * @param id id of the underlying integration construct
+   * @param handler the Lambda handler to integrate with
+   * @param props properties to configure the integration
+   */
+  constructor(
+    id: string,
+    private readonly handler: IFunction,
+    private readonly props: HttpLambdaIntegrationProps = {}) {
+
+    super(id);
+    this._id = id;
   }
 
   public bind(options: HttpRouteIntegrationBindOptions): HttpRouteIntegrationConfig {
     const route = options.route;
-    this.props.handler.addPermission(`${Names.nodeUniqueId(route.node)}-Permission`, {
+    this.handler.addPermission(`${this._id}-Permission`, {
       scope: options.scope,
       principal: new ServicePrincipal('apigateway.amazonaws.com'),
       sourceArn: Stack.of(route).formatArn({
@@ -57,7 +64,7 @@ export class LambdaProxyIntegration extends HttpRouteIntegration {
 
     return {
       type: HttpIntegrationType.LAMBDA_PROXY,
-      uri: this.props.handler.functionArn,
+      uri: this.handler.functionArn,
       payloadFormatVersion: this.props.payloadFormatVersion ?? PayloadFormatVersion.VERSION_2_0,
       parameterMapping: this.props.parameterMapping,
     };
