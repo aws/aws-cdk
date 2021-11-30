@@ -547,6 +547,16 @@ export enum InstanceClass {
   M6I = 'm6i',
 
   /**
+   * Standard instances based on 3rd Gen AMD EPYC processors, 6th generation.
+   */
+  STANDARD6_AMD = 'm6a',
+
+  /**
+  * Standard instances based on 3rd Gen AMD EPYC processors, 6th generation.
+  */
+  M6A = 'm6a',
+
+  /**
    * Standard instances, 6th generation with Graviton2 processors and local NVME drive
    */
   STANDARD6_GRAVITON2_NVME_DRIVE = 'm6gd',
