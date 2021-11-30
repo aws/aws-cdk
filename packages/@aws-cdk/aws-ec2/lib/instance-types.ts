@@ -89,6 +89,16 @@ export enum InstanceClass {
   M5DN = 'm5dn',
 
   /**
+   * Standard instances with high memory and compute capacity based on Intel Xeon Scalable (Cascade Lake) processors, 5nd generation
+   */
+  STANDARD5_HIGH_COMPUTE = 'm5zn',
+
+  /**
+   * Standard instances with high memory and compute capacity based on Intel Xeon Scalable (Cascade Lake) processors, 5nd generation
+   */
+  M5ZN = 'm5zn',
+
+  /**
    * Memory optimized instances, 3rd generation
    */
   MEMORY3 = 'r3',
@@ -565,16 +575,6 @@ export enum InstanceClass {
    * High memory and compute capacity instances, 1st generation
    */
   Z1D = 'z1d',
-
-  /**
-   * High memory and compute capacity instances based on Intel Xeon Scalable (Cascade Lake) processors, 2nd generation
-   */
-  HIGH_COMPUTE_MEMORY2 = 'm5zn',
-
-  /**
-  * High memory and compute capacity instances based on Intel Xeon Scalable (Cascade Lake) processors, 2nd generation
-   */
-  M5ZN = 'm5zn',
 
   /**
    * Inferentia Chips based instances for machine learning inference applications, 1st generation
