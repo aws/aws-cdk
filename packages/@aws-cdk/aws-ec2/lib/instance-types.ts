@@ -363,6 +363,16 @@ export enum InstanceClass {
   I3EN = 'i3en',
 
   /**
+   * Storage optimized instances powered by Graviton2 processor, 4th generation
+   */
+  IM4GN = 'im4gn',
+
+  /**
+   * Storage optimized instances powered by Graviton2 processor, 4th generation
+   */
+  IS4GEN = 'is4gen',
+
+  /**
    * Burstable instances, 2nd generation
    */
   BURSTABLE2 = 't2',
