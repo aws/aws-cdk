@@ -4,18 +4,12 @@ import { Construct } from 'constructs';
 import { CfnApi } from '../apigatewayv2.generated';
 import { IApi } from '../common/api';
 import { ApiBase } from '../common/base';
-import { WebSocketRouteIntegrationConfig, WebSocketIntegration } from './integration';
 import { WebSocketRoute, WebSocketRouteOptions } from './route';
 
 /**
  * Represents a WebSocket API
  */
 export interface IWebSocketApi extends IApi {
-  /**
-   * Add a websocket integration
-   * @internal
-   */
-  _addIntegration(scope: Construct, config: WebSocketRouteIntegrationConfig): WebSocketIntegration
 }
 
 /**
@@ -98,25 +92,6 @@ export class WebSocketApi extends ApiBase implements IWebSocketApi {
     if (props?.defaultRouteOptions) {
       this.addRoute('$default', props.defaultRouteOptions);
     }
-  }
-
-  /**
-   * @internal
-   */
-  public _addIntegration(scope: Construct, config: WebSocketRouteIntegrationConfig): WebSocketIntegration {
-    const { configHash, integration: existingIntegration } = this._integrationCache.getIntegration(scope, config);
-    if (existingIntegration) {
-      return existingIntegration as WebSocketIntegration;
-    }
-
-    const integration = new WebSocketIntegration(scope, `WebSocketIntegration-${configHash}`, {
-      webSocketApi: this,
-      integrationType: config.type,
-      integrationUri: config.uri,
-    });
-    this._integrationCache.saveIntegration(scope, config, integration);
-
-    return integration;
   }
 
   /**
