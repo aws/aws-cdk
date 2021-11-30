@@ -3,9 +3,9 @@ import { IUserPool, IUserPoolClient } from '@aws-cdk/aws-cognito';
 import { Stack, Token } from '@aws-cdk/core';
 
 /**
- * Properties to initialize UserPoolAuthorizer.
+ * Properties to initialize HttpUserPoolAuthorizer.
  */
-export interface UserPoolAuthorizerProps {
+export interface HttpUserPoolAuthorizerProps {
   /**
    * The user pool clients that should be used to authorize requests with the user pool.
    */
@@ -43,7 +43,7 @@ export interface UserPoolAuthorizerProps {
 export class HttpUserPoolAuthorizer implements IHttpRouteAuthorizer {
   private authorizer?: HttpAuthorizer;
 
-  constructor(private readonly props: UserPoolAuthorizerProps) {
+  constructor(private readonly props: HttpUserPoolAuthorizerProps) {
   }
 
   public bind(options: HttpRouteAuthorizerBindOptions): HttpRouteAuthorizerConfig {
