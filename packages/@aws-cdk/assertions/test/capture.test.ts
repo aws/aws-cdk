@@ -15,26 +15,20 @@ describe('Capture', () => {
     expect(result.toHumanStrings()[0]).toMatch(/Can only capture non-nullish values/);
   });
 
-  test('multiple captures', () => {
+  test('no captures if not finalized', () => {
     const capture = new Capture();
-    const matcher = Match.objectEquals({ foo: capture, real: true });
+    const matcher = Match.objectEquals({ foo: capture });
 
-    matcher.test({ foo: 3, real: true });
-    matcher.test({ foo: 5, real: true });
-    matcher.test({ foo: 7, real: false });
-
-    expect(capture.asNumber()).toEqual(3);
-    expect(capture.next()).toEqual(true);
-    expect(capture.asNumber()).toEqual(5);
-    expect(capture.next()).toEqual(false);
+    matcher.test({ foo: 'bar' }); // Not calling finalize()
+    expect(() => capture.asString()).toThrow(/No value captured/);
   });
 
   test('asString()', () => {
     const capture = new Capture();
     const matcher = Match.objectEquals({ foo: capture });
 
-    matcher.test({ foo: 'bar' });
-    matcher.test({ foo: 3 });
+    matcher.test({ foo: 'bar' }).finalize();
+    matcher.test({ foo: 3 }).finalize();
 
     expect(capture.asString()).toEqual('bar');
     expect(capture.next()).toEqual(true);
@@ -45,8 +39,8 @@ describe('Capture', () => {
     const capture = new Capture();
     const matcher = Match.objectEquals({ foo: capture });
 
-    matcher.test({ foo: 3 });
-    matcher.test({ foo: 'bar' });
+    matcher.test({ foo: 3 }).finalize();
+    matcher.test({ foo: 'bar' }).finalize();
 
     expect(capture.asNumber()).toEqual(3);
     expect(capture.next()).toEqual(true);
@@ -57,8 +51,8 @@ describe('Capture', () => {
     const capture = new Capture();
     const matcher = Match.objectEquals({ foo: capture });
 
-    matcher.test({ foo: ['bar'] });
-    matcher.test({ foo: 'bar' });
+    matcher.test({ foo: ['bar'] }).finalize();
+    matcher.test({ foo: 'bar' }).finalize();
 
     expect(capture.asArray()).toEqual(['bar']);
     expect(capture.next()).toEqual(true);
@@ -69,8 +63,8 @@ describe('Capture', () => {
     const capture = new Capture();
     const matcher = Match.objectEquals({ foo: capture });
 
-    matcher.test({ foo: { fred: 'waldo' } });
-    matcher.test({ foo: 'bar' });
+    matcher.test({ foo: { fred: 'waldo' } }).finalize();
+    matcher.test({ foo: 'bar' }).finalize();
 
     expect(capture.asObject()).toEqual({ fred: 'waldo' });
     expect(capture.next()).toEqual(true);
@@ -81,7 +75,21 @@ describe('Capture', () => {
     const capture = new Capture();
     const matcher = Match.objectEquals({ foo: ['bar', capture] });
 
-    matcher.test({ foo: ['bar', 'baz'] });
+    matcher.test({ foo: ['bar', 'baz'] }).finalize();
     expect(capture.asString()).toEqual('baz');
+  });
+
+  test('multiple captures', () => {
+    const capture = new Capture();
+    const matcher = Match.objectEquals({ foo: capture, real: true });
+
+    matcher.test({ foo: 3, real: true }).finalize();
+    matcher.test({ foo: 5, real: true }).finalize();
+    matcher.test({ foo: 7, real: false }).finalize();
+
+    expect(capture.asNumber()).toEqual(3);
+    expect(capture.next()).toEqual(true);
+    expect(capture.asNumber()).toEqual(5);
+    expect(capture.next()).toEqual(false);
   });
 });

@@ -1,3 +1,5 @@
+import { Capture } from './capture';
+
 /**
  * Represents a matcher that can perform special data matching
  * capabilities between a given pattern and a target.
@@ -34,6 +36,8 @@ export class MatchResult {
    */
   public readonly target: any;
   private readonly failures: MatchFailure[] = [];
+  private readonly captures: Map<Capture, any[]> = new Map();
+  private finalized: boolean = false;
 
   constructor(target: any) {
     this.target = target;
@@ -71,7 +75,25 @@ export class MatchResult {
     this.failures.push(...innerF.map(f => {
       return { path: [id, ...f.path], message: f.message, matcher: f.matcher };
     }));
+    inner.captures.forEach((vals, cap) => {
+      vals.forEach(val => this._registerCapture(cap, val));
+    });
     return this;
+  }
+
+  /**
+   * Prepare the result to be analyzed.
+   * Analyzing results before the finalize() API is called may be inaccurate in some cases.
+   */
+  public finalize(): void {
+    if (this.finalized) {
+      return;
+    }
+
+    if (this.failCount === 0) {
+      this.captures.forEach((vals, cap) => cap._captured.push(...vals));
+    }
+    this.finalized = true;
   }
 
   /**
@@ -82,6 +104,16 @@ export class MatchResult {
       const loc = r.path.length === 0 ? '' : ` at ${r.path.join('')}`;
       return '' + r.message + loc + ` (using ${r.matcher.name} matcher)`;
     });
+  }
+
+  /** @internal */
+  public _registerCapture(capture: Capture, val: any): void {
+    let values = this.captures.get(capture);
+    if (values === undefined) {
+      values = [];
+    }
+    values.push(val);
+    this.captures.set(capture, values);
   }
 }
 

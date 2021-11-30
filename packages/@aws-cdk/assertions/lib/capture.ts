@@ -8,7 +8,8 @@ import { Type, getType } from './private/type';
  */
 export class Capture extends Matcher {
   public readonly name: string;
-  private captured: any[] = [];
+  /** @internal */
+  public _captured: any[] = [];
   private idx = 0;
 
   constructor() {
@@ -21,7 +22,7 @@ export class Capture extends Matcher {
     if (actual == null) {
       result.push(this, [], `Can only capture non-nullish values. Found ${actual}`);
     } else {
-      this.captured.push(actual);
+      result._registerCapture(this, actual);
     }
     return result;
   }
@@ -31,7 +32,7 @@ export class Capture extends Matcher {
    * @returns true if another capture is present, false otherwise
    */
   public next(): boolean {
-    if (this.idx < this.captured.length - 1) {
+    if (this.idx < this._captured.length - 1) {
       this.idx++;
       return true;
     }
@@ -44,7 +45,7 @@ export class Capture extends Matcher {
    */
   public asString(): string {
     this.validate();
-    const val = this.captured[this.idx];
+    const val = this._captured[this.idx];
     if (getType(val) === 'string') {
       return val;
     }
@@ -57,7 +58,7 @@ export class Capture extends Matcher {
    */
   public asNumber(): number {
     this.validate();
-    const val = this.captured[this.idx];
+    const val = this._captured[this.idx];
     if (getType(val) === 'number') {
       return val;
     }
@@ -70,7 +71,7 @@ export class Capture extends Matcher {
    */
   public asBoolean(): boolean {
     this.validate();
-    const val = this.captured[this.idx];
+    const val = this._captured[this.idx];
     if (getType(val) === 'boolean') {
       return val;
     }
@@ -83,7 +84,7 @@ export class Capture extends Matcher {
    */
   public asArray(): any[] {
     this.validate();
-    const val = this.captured[this.idx];
+    const val = this._captured[this.idx];
     if (getType(val) === 'array') {
       return val;
     }
@@ -96,7 +97,7 @@ export class Capture extends Matcher {
    */
   public asObject(): { [key: string]: any } {
     this.validate();
-    const val = this.captured[this.idx];
+    const val = this._captured[this.idx];
     if (getType(val) === 'object') {
       return val;
     }
@@ -104,13 +105,13 @@ export class Capture extends Matcher {
   }
 
   private validate(): void {
-    if (this.captured.length === 0) {
+    if (this._captured.length === 0) {
       throw new Error('No value captured');
     }
   }
 
   private reportIncorrectType(expected: Type): never {
-    throw new Error(`Captured value is expected to be ${expected} but found ${getType(this.captured[this.idx])}. ` +
-      `Value is ${JSON.stringify(this.captured[this.idx], undefined, 2)}`);
+    throw new Error(`Captured value is expected to be ${expected} but found ${getType(this._captured[this.idx])}. ` +
+      `Value is ${JSON.stringify(this._captured[this.idx], undefined, 2)}`);
   }
 }
