@@ -10,9 +10,8 @@ describe('HttpJwtAuthorizer', () => {
     const stack = new Stack();
     const api = new HttpApi(stack, 'HttpApi');
 
-    const authorizer = new HttpJwtAuthorizer({
+    const authorizer = new HttpJwtAuthorizer('BooksAuthorizer', 'https://test.us.auth0.com', {
       jwtAudience: ['3131231'],
-      jwtIssuer: 'https://test.us.auth0.com',
     });
 
     // WHEN
@@ -30,6 +29,7 @@ describe('HttpJwtAuthorizer', () => {
         Audience: ['3131231'],
         Issuer: 'https://test.us.auth0.com',
       },
+      Name: 'BooksAuthorizer',
     });
   });
 
@@ -38,9 +38,8 @@ describe('HttpJwtAuthorizer', () => {
     const stack = new Stack();
     const api = new HttpApi(stack, 'HttpApi');
 
-    const authorizer = new HttpJwtAuthorizer({
+    const authorizer = new HttpJwtAuthorizer('BooksAuthorizer', 'https://test.us.auth0.com', {
       jwtAudience: ['3131231'],
-      jwtIssuer: 'https://test.us.auth0.com',
     });
 
     // WHEN

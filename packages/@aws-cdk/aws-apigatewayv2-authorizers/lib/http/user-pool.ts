@@ -1,6 +1,6 @@
 import { HttpAuthorizer, HttpAuthorizerType, HttpRouteAuthorizerBindOptions, HttpRouteAuthorizerConfig, IHttpRouteAuthorizer } from '@aws-cdk/aws-apigatewayv2';
 import { IUserPool, IUserPoolClient } from '@aws-cdk/aws-cognito';
-import { Stack, Token } from '@aws-cdk/core';
+import { Stack } from '@aws-cdk/core';
 
 /**
  * Properties to initialize HttpUserPoolAuthorizer.
@@ -8,13 +8,9 @@ import { Stack, Token } from '@aws-cdk/core';
 export interface HttpUserPoolAuthorizerProps {
   /**
    * The user pool clients that should be used to authorize requests with the user pool.
+   * @default - a new client will be created for the given user pool
    */
-  readonly userPoolClients: IUserPoolClient[];
-
-  /**
-   * The associated user pool
-   */
-  readonly userPool: IUserPool;
+  readonly userPoolClients?: IUserPoolClient[];
 
   /**
    * The AWS region in which the user pool is present
@@ -23,8 +19,8 @@ export interface HttpUserPoolAuthorizerProps {
   readonly userPoolRegion?: string;
 
   /**
-   * The name of the authorizer
-   * @default 'UserPoolAuthorizer'
+   * Friendly name of the authorizer
+   * @default - same value as `id` passed in the constructor
    */
   readonly authorizerName?: string;
 
@@ -43,21 +39,30 @@ export interface HttpUserPoolAuthorizerProps {
 export class HttpUserPoolAuthorizer implements IHttpRouteAuthorizer {
   private authorizer?: HttpAuthorizer;
 
-  constructor(private readonly props: HttpUserPoolAuthorizerProps) {
+  /**
+   * Initialize a Cognito user pool authorizer to be bound with HTTP route.
+   * @param id The id of the underlying construct
+   * @param pool The user pool to use for authorization
+   * @param props Properties to configure the authorizer
+   */
+  constructor(
+    private readonly id: string,
+    private readonly pool: IUserPool,
+    private readonly props: HttpUserPoolAuthorizerProps = {}) {
   }
 
   public bind(options: HttpRouteAuthorizerBindOptions): HttpRouteAuthorizerConfig {
     if (!this.authorizer) {
-      const id = this.props.authorizerName && !Token.isUnresolved(this.props.authorizerName) ?
-        this.props.authorizerName : 'UserPoolAuthorizer';
       const region = this.props.userPoolRegion ?? Stack.of(options.scope).region;
-      this.authorizer = new HttpAuthorizer(options.scope, id, {
+      const clients = this.props.userPoolClients ?? [this.pool.addClient('UserPoolAuthorizerClient')];
+
+      this.authorizer = new HttpAuthorizer(options.scope, this.id, {
         httpApi: options.route.httpApi,
         identitySource: this.props.identitySource ?? ['$request.header.Authorization'],
         type: HttpAuthorizerType.JWT,
-        authorizerName: this.props.authorizerName,
-        jwtAudience: this.props.userPoolClients.map((c) => c.userPoolClientId),
-        jwtIssuer: `https://cognito-idp.${region}.amazonaws.com/${this.props.userPool.userPoolId}`,
+        authorizerName: this.props.authorizerName ?? this.id,
+        jwtAudience: clients.map((c) => c.userPoolClientId),
+        jwtIssuer: `https://cognito-idp.${region}.amazonaws.com/${this.pool.userPoolId}`,
       });
     }
 

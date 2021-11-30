@@ -48,9 +48,9 @@ In the example below, all routes will require the `manage:books` scope present i
 ```ts
 import { HttpJwtAuthorizer } from '@aws-cdk/aws-apigatewayv2-authorizers';
 
-const authorizer = new HttpJwtAuthorizer({
+const issuer = 'https://test.us.auth0.com';
+const authorizer = new HttpJwtAuthorizer('DefaultAuthorizer', issuer, {
   jwtAudience: ['3131231'],
-  jwtIssuer: 'https://test.us.auth0.com',
 });
 
 const api = new apigwv2.HttpApi(this, 'HttpApi', {
@@ -73,9 +73,9 @@ The example below showcases default authorization, along with route authorizatio
 import { HttpJwtAuthorizer } from '@aws-cdk/aws-apigatewayv2-authorizers';
 import { HttpUrlIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
 
-const authorizer = new HttpJwtAuthorizer({
+const issuer = 'https://test.us.auth0.com';
+const authorizer = new HttpJwtAuthorizer('DefaultAuthorizer', issuer, {
   jwtAudience: ['3131231'],
-  jwtIssuer: 'https://test.us.auth0.com',
 });
 
 const api = new apigwv2.HttpApi(this, 'HttpApi', {
@@ -130,9 +130,9 @@ Clients that fail authorization are presented with either 2 responses:
 import { HttpJwtAuthorizer } from '@aws-cdk/aws-apigatewayv2-authorizers';
 import { HttpUrlIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
 
-const authorizer = new HttpJwtAuthorizer({
+const issuer = 'https://test.us.auth0.com';
+const authorizer = new HttpJwtAuthorizer('BooksAuthorizer', issuer, {
   jwtAudience: ['3131231'],
-  jwtIssuer: 'https://test.us.auth0.com',
 });
 
 const api = new apigwv2.HttpApi(this, 'HttpApi');
@@ -158,12 +158,8 @@ import { HttpUserPoolAuthorizer } from '@aws-cdk/aws-apigatewayv2-authorizers';
 import { HttpUrlIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
 
 const userPool = new cognito.UserPool(this, 'UserPool');
-const userPoolClient = userPool.addClient('UserPoolClient');
 
-const authorizer = new HttpUserPoolAuthorizer({
-  userPool,
-  userPoolClients: [userPoolClient],
-});
+const authorizer = new HttpUserPoolAuthorizer('BooksAuthorizer', userPool);
 
 const api = new apigwv2.HttpApi(this, 'HttpApi');
 
@@ -188,10 +184,8 @@ import { HttpUrlIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
 // This function handles your auth logic
 declare const authHandler: lambda.Function;
 
-const authorizer = new HttpLambdaAuthorizer({
-  authorizerName: 'lambda-authorizer',
+const authorizer = new HttpLambdaAuthorizer('BooksAuthorizer', authHandler, {
   responseTypes: [HttpLambdaResponseType.SIMPLE], // Define if returns simple and/or iam response
-  handler: authHandler,
 });
 
 const api = new apigwv2.HttpApi(this, 'HttpApi');

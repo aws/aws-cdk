@@ -79,7 +79,7 @@
         "RouteKey": "GET /",
         "AuthorizationType": "CUSTOM",
         "AuthorizerId": {
-          "Ref": "MyHttpApimysimpleauthorizer98398C16"
+          "Ref": "MyHttpApiLambdaAuthorizerB8A0E2A4"
         },
         "Target": {
           "Fn::Join": [
@@ -94,7 +94,7 @@
         }
       }
     },
-    "MyHttpApimysimpleauthorizer98398C16": {
+    "MyHttpApiLambdaAuthorizerB8A0E2A4": {
       "Type": "AWS::ApiGatewayV2::Authorizer",
       "Properties": {
         "ApiId": {
@@ -133,7 +133,7 @@
         ]
       }
     },
-    "MyHttpApiAuthorizerIntegMyHttpApimysimpleauthorizer0F14A472PermissionF37EF5C8": {
+    "MyHttpApiAuthorizerIntegMyHttpApiLambdaAuthorizerB89228D7Permission82260331": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -166,7 +166,7 @@
               },
               "/authorizers/",
               {
-                "Ref": "MyHttpApimysimpleauthorizer98398C16"
+                "Ref": "MyHttpApiLambdaAuthorizerB8A0E2A4"
               }
             ]
           ]
