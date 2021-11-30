@@ -24,10 +24,9 @@ const authHandler = new lambda.Function(stack, 'auth-function', {
 });
 
 
-const authorizer = new HttpLambdaAuthorizer({
+const authorizer = new HttpLambdaAuthorizer('LambdaAuthorizer', authHandler, {
   authorizerName: 'my-simple-authorizer',
   identitySource: ['$request.header.X-API-Key'],
-  handler: authHandler,
   responseTypes: [HttpLambdaResponseType.SIMPLE],
 });
 
