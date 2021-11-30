@@ -30,6 +30,7 @@
   "types": "lib/index.d.ts",
   "devDependencies": {
     "@aws-cdk/cdk-build-tools": "0.0.0",
+    "@aws-cdk/pkglint": "0.0.0",
     "@types/fs-extra": "^8.1.2",
     "@types/jest": "^27.0.3",
     "@types/md5": "^2.3.1",
@@ -39,7 +40,6 @@
     "sort-json": "^2.0.0"
   },
   "dependencies": {
-    "@aws-cdk/pkglint": "0.0.0",
     "fs-extra": "^9.1.0",
     "md5": "^2.3.0"
   },
