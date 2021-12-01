@@ -165,7 +165,7 @@ Docker container even if `esbuild` is available in your environment. This can be
 
 ## Configuring `esbuild`
 
-The `NodejsFunction` construct exposes some [esbuild options](https://esbuild.github.io/api/#build-api)
+The `NodejsFunction` construct exposes [esbuild options](https://esbuild.github.io/api/#build-api)
 via properties under `bundling`:
 
 ```ts
@@ -191,6 +191,9 @@ new lambda.NodejsFunction(this, 'my-handler', {
     banner: '/* comments */', // requires esbuild >= 0.9.0, defaults to none
     footer: '/* comments */', // requires esbuild >= 0.9.0, defaults to none
     charset: lambda.Charset.UTF8, // do not escape non-ASCII characters, defaults to Charset.ASCII
+    esbuildArgs: { // pass additional arguments to esbuild
+      "--main-fields": "module,main"
+    },
   },
 });
 ```
@@ -251,7 +254,7 @@ new lambda.NodejsFunction(this, 'my-handler', {
 });
 ```
 
-Note: A [`tsconfig.json` file](https://www.typescriptlang.org/docs/handbook/tsconfig-json.html) is required 
+Note: A [`tsconfig.json` file](https://www.typescriptlang.org/docs/handbook/tsconfig-json.html) is required
 
 ## Customizing Docker bundling
 
