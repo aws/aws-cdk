@@ -262,4 +262,101 @@ describe('lambda api', () => {
       Name: Match.absent(),
     });
   });
+
+  test('LambdaRestApi defines a REST API with integration options specified', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    const handler = new lambda.Function(stack, 'handler', {
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('boom'),
+      runtime: lambda.Runtime.NODEJS_10_X,
+    });
+
+    // WHEN
+    new apigw.LambdaRestApi(stack, 'lamda-rest-api', {
+      handler,
+      integrationOptions: {
+        timeout: cdk.Duration.seconds(1),
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
+      Integration: {
+        TimeoutInMillis: 1000,
+      },
+    });
+  });
+
+  test('fails when integrationOptions.proxy is set differently than proxy', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    const handler = new lambda.Function(stack, 'handler', {
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('boom'),
+      runtime: lambda.Runtime.NODEJS_10_X,
+    });
+
+    // THEN
+    expect(() => new apigw.LambdaRestApi(stack, 'lambda-rest-api', {
+      handler,
+      integrationOptions: {
+        proxy: false,
+      },
+    })).toThrow(
+      'Cannot specify "props.integrationOptions.proxy". Instead use "props.proxy".',
+    );
+
+    expect(() => new apigw.LambdaRestApi(stack, 'lambda-rest-api', {
+      handler,
+      proxy: false,
+      integrationOptions: {
+        proxy: true,
+      },
+    })).toThrow(
+      'Cannot specify "props.integrationOptions.proxy". Instead use "props.proxy".',
+    );
+
+    expect(() => new apigw.LambdaRestApi(stack, 'lambda-rest-api', {
+      handler,
+      proxy: true,
+      integrationOptions: {
+        proxy: false,
+      },
+    })).toThrow(
+      'Cannot specify "props.integrationOptions.proxy". Instead use "props.proxy".',
+    );
+
+    expect(() => new apigw.LambdaRestApi(stack, 'lambda-rest-api1', {
+      handler,
+      integrationOptions: {
+        proxy: true,
+      },
+    })).not.toThrow();
+
+    expect(() => new apigw.LambdaRestApi(stack, 'lambda-rest-api2', {
+      handler,
+      proxy: false,
+      integrationOptions: {
+        proxy: false,
+      },
+    })).not.toThrow();
+
+    expect(() => new apigw.LambdaRestApi(stack, 'lambda-rest-api3', {
+      handler,
+      proxy: true,
+      integrationOptions: {
+        proxy: true,
+      },
+    })).not.toThrow();
+
+    expect(() => new apigw.LambdaRestApi(stack, 'lambda-rest-api4', {
+      handler,
+      proxy: false,
+      integrationOptions: {},
+    })).not.toThrow();
+
+  });
 });

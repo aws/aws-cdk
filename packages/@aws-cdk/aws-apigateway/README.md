@@ -107,6 +107,24 @@ item.addMethod('GET');   // GET /items/{item}
 item.addMethod('DELETE', new apigateway.HttpIntegration('http://amazon.com'));
 ```
 
+Additionally, `integrationOptions` can be supplied to explicitly define
+options of the Lambda integration:
+
+```ts
+declare const backend: lambda.Function;
+
+const api = new apigateway.LambdaRestApi(this, 'myapi', {
+  handler: backend,
+  integrationOptions: {
+    allowTestInvoke: false,
+    timeout: Duration.seconds(1),
+  }
+})
+```
+
+Note that `proxy: false` may not be specified in the `integrationOptions`
+and must be specified directly in `props`.
+
 ## AWS StepFunctions backed APIs
 
 You can use Amazon API Gateway with AWS Step Functions as the backend integration, specifically Synchronous Express Workflows.
