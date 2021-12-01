@@ -56,8 +56,12 @@ export class VpcNetworkContextProviderPlugin implements ContextProviderPlugin {
     // Now comes our job to separate these subnets out into AZs and subnet groups (Public, Private, Isolated)
     // We have the following attributes to go on:
     // - Type tag, we tag subnets with their type. In absence of this tag, we
-    //   fall back to MapPublicIpOnLaunch => must be a Public subnet, anything
-    //   else is considered Private.
+    //   determine the subnet must be Public if either:
+    //   a) it has the property MapPublicIpOnLaunch
+    //   b) it has a route to an Internet Gateway
+    //   If both of the above is false but the subnet has a route to a NAT Gateway
+    //   and the destination CIDR block is "0.0.0.0/0", we assume it to be a Private subnet.
+    //   Anything else is considered Isolated.
     // - Name tag, we tag subnets with their subnet group name. In absence of this tag,
     //   we use the type as the name.
 
