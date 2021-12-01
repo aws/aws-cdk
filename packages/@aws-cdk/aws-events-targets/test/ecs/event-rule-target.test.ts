@@ -1,20 +1,31 @@
 import '@aws-cdk/assert-internal/jest';
+import * as autoscaling from '@aws-cdk/aws-autoscaling';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import * as targets from '../../lib';
 
-test('Can use EC2 taskdef as EventRule target', () => {
-  // GIVEN
-  const stack = new cdk.Stack();
-  const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
-  const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-  cluster.addCapacity('DefaultAutoScalingGroup', {
+let stack: cdk.Stack;
+let vpc: ec2.Vpc;
+let cluster: ecs.Cluster;
+
+beforeEach(() => {
+  stack = new cdk.Stack();
+  vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
+  cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+  const autoScalingGroup = new autoscaling.AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+    vpc,
+    machineImage: ecs.EcsOptimizedImage.amazonLinux2(),
     instanceType: new ec2.InstanceType('t2.micro'),
   });
+  const provider = new ecs.AsgCapacityProvider(stack, 'AsgCapacityProvider', { autoScalingGroup });
+  cluster.addAsgCapacityProvider(provider);
+});
 
+test('Can use EC2 taskdef as EventRule target', () => {
   const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
   taskDefinition.addContainer('TheContainer', {
     image: ecs.ContainerImage.fromRegistry('henk'),
@@ -61,13 +72,6 @@ test('Can use EC2 taskdef as EventRule target', () => {
 test('Throws error for lacking of taskRole ' +
     'when importing from an EC2 task definition just from a task definition arn as EventRule target', () => {
   // GIVEN
-  const stack = new cdk.Stack();
-  const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
-  const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-  cluster.addCapacity('DefaultAutoScalingGroup', {
-    instanceType: new ec2.InstanceType('t2.micro'),
-  });
-
   const taskDefinition = ecs.Ec2TaskDefinition.fromEc2TaskDefinitionArn(stack, 'TaskDef', 'importedTaskDefArn');
 
   const rule = new events.Rule(stack, 'Rule', {
@@ -91,13 +95,6 @@ test('Throws error for lacking of taskRole ' +
 
 test('Can import an EC2 task definition from task definition attributes as EventRule target', () => {
   // GIVEN
-  const stack = new cdk.Stack();
-  const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
-  const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-  cluster.addCapacity('DefaultAutoScalingGroup', {
-    instanceType: new ec2.InstanceType('t2.micro'),
-  });
-
   const taskDefinition = ecs.Ec2TaskDefinition.fromEc2TaskDefinitionAttributes(stack, 'TaskDef', {
     taskDefinitionArn: 'importedTaskDefArn',
     networkMode: ecs.NetworkMode.BRIDGE,
@@ -146,10 +143,6 @@ test('Can import an EC2 task definition from task definition attributes as Event
 test('Throws error for lacking of taskRole ' +
   'when importing from a Fargate task definition just from a task definition arn as EventRule target', () => {
   // GIVEN
-  const stack = new cdk.Stack();
-  const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
-  const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-
   const taskDefinition = ecs.FargateTaskDefinition.fromFargateTaskDefinitionArn(stack, 'TaskDef', 'ImportedTaskDefArn');
 
   const rule = new events.Rule(stack, 'Rule', {
@@ -173,10 +166,6 @@ test('Throws error for lacking of taskRole ' +
 
 test('Can import a Fargate task definition from task definition attributes as EventRule target', () => {
   // GIVEN
-  const stack = new cdk.Stack();
-  const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
-  const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-
   const taskDefinition = ecs.FargateTaskDefinition.fromFargateTaskDefinitionAttributes(stack, 'TaskDef', {
     taskDefinitionArn: 'importedTaskDefArn',
     networkMode: ecs.NetworkMode.AWS_VPC,
@@ -225,10 +214,6 @@ test('Can import a Fargate task definition from task definition attributes as Ev
 test('Throws error for lacking of taskRole ' +
   'when importing from a task definition just from a task definition arn as EventRule target', () => {
   // GIVEN
-  const stack = new cdk.Stack();
-  const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
-  const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-
   const taskDefinition = ecs.TaskDefinition.fromTaskDefinitionArn(stack, 'TaskDef', 'ImportedTaskDefArn');
 
   const rule = new events.Rule(stack, 'Rule', {
@@ -252,10 +237,6 @@ test('Throws error for lacking of taskRole ' +
 
 test('Can import a Task definition from task definition attributes as EventRule target', () => {
   // GIVEN
-  const stack = new cdk.Stack();
-  const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
-  const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-
   const taskDefinition = ecs.FargateTaskDefinition.fromFargateTaskDefinitionAttributes(stack, 'TaskDef', {
     taskDefinitionArn: 'importedTaskDefArn',
     networkMode: ecs.NetworkMode.AWS_VPC,
@@ -303,10 +284,6 @@ test('Can import a Task definition from task definition attributes as EventRule 
 
 test('Can use Fargate taskdef as EventRule target', () => {
   // GIVEN
-  const stack = new cdk.Stack();
-  const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
-  const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-
   const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
   taskDefinition.addContainer('TheContainer', {
     image: ecs.ContainerImage.fromRegistry('henk'),
@@ -329,7 +306,7 @@ test('Can use Fargate taskdef as EventRule target', () => {
   rule.addTarget(target);
 
   // THEN
-  expect(target.securityGroup).toBeDefined(); // Generated security groups should be accessible.
+  expect(target.securityGroups?.length).toBeGreaterThan(0); // Generated security groups should be accessible.
   expect(stack).toHaveResourceLike('AWS::Events::Rule', {
     Targets: [
       {
@@ -372,10 +349,6 @@ test('Can use Fargate taskdef as EventRule target', () => {
 
 test('Can use same fargate taskdef with multiple rules', () => {
   // GIVEN
-  const stack = new cdk.Stack();
-  const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
-  const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-
   const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
   taskDefinition.addContainer('TheContainer', {
     image: ecs.ContainerImage.fromRegistry('henk'),
@@ -404,10 +377,6 @@ test('Can use same fargate taskdef with multiple rules', () => {
 
 test('Can use same fargate taskdef multiple times in a rule', () => {
   // GIVEN
-  const stack = new cdk.Stack();
-  const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
-  const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-
   const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
   taskDefinition.addContainer('TheContainer', {
     image: ecs.ContainerImage.fromRegistry('henk'),
@@ -438,15 +407,14 @@ test('Can use same fargate taskdef multiple times in a rule', () => {
 
 test('Isolated subnet does not have AssignPublicIp=true', () => {
   // GIVEN
-  const stack = new cdk.Stack();
-  const vpc = new ec2.Vpc(stack, 'Vpc', {
+  vpc = new ec2.Vpc(stack, 'Vpc2', {
     maxAzs: 1,
     subnetConfiguration: [{
       subnetType: ec2.SubnetType.ISOLATED,
       name: 'Isolated',
     }],
   });
-  const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+  cluster = new ecs.Cluster(stack, 'EcsCluster2', { vpc });
 
   const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
   taskDefinition.addContainer('TheContainer', {
@@ -473,7 +441,7 @@ test('Isolated subnet does not have AssignPublicIp=true', () => {
   expect(stack).toHaveResourceLike('AWS::Events::Rule', {
     Targets: [
       {
-        Arn: { 'Fn::GetAtt': ['EcsCluster97242B84', 'Arn'] },
+        Arn: { 'Fn::GetAtt': ['EcsCluster2F191ADEC', 'Arn'] },
         EcsParameters: {
           TaskCount: 1,
           TaskDefinitionArn: { Ref: 'TaskDef54694570' },
@@ -482,7 +450,7 @@ test('Isolated subnet does not have AssignPublicIp=true', () => {
             AwsVpcConfiguration: {
               Subnets: [
                 {
-                  Ref: 'VpcIsolatedSubnet1SubnetE48C5737',
+                  Ref: 'Vpc2IsolatedSubnet1SubnetB1A200D6',
                 },
               ],
               AssignPublicIp: 'DISABLED',
@@ -505,12 +473,8 @@ test('Isolated subnet does not have AssignPublicIp=true', () => {
   });
 });
 
-test('throws an error if both securityGroup and securityGroups is specified', () => {
+testDeprecated('throws an error if both securityGroup and securityGroups is specified', () => {
   // GIVEN
-  const stack = new cdk.Stack();
-  const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
-  const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-
   const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
   taskDefinition.addContainer('TheContainer', {
     image: ecs.ContainerImage.fromRegistry('henk'),
@@ -539,10 +503,6 @@ test('throws an error if both securityGroup and securityGroups is specified', ()
 
 test('uses multiple security groups', () => {
   // GIVEN
-  const stack = new cdk.Stack();
-  const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
-  const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-
   const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
   taskDefinition.addContainer('TheContainer', {
     image: ecs.ContainerImage.fromRegistry('henk'),
@@ -600,9 +560,6 @@ test('uses multiple security groups', () => {
 
 test('uses existing IAM role', () => {
   // GIVEN
-  const stack = new cdk.Stack();
-  const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
-  const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
   const role = new iam.Role(stack, 'CustomIamRole', {
     assumedBy: new iam.ServicePrincipal('events.amazonaws.com'),
   });
@@ -649,9 +606,6 @@ test('uses existing IAM role', () => {
 
 test('uses the specific fargate platform version', () => {
   // GIVEN
-  const stack = new cdk.Stack();
-  const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
-  const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
   const platformVersion = ecs.FargatePlatformVersion.VERSION1_4;
 
   const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');

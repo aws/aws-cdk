@@ -1,5 +1,6 @@
 import '@aws-cdk/assert-internal/jest';
 import * as ec2 from '@aws-cdk/aws-ec2';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import * as elbv2 from '../../lib';
 import { FakeSelfRegisteringTarget } from '../helpers';
@@ -19,6 +20,33 @@ describe('tests', () => {
     }).toThrow(/'vpc' is required for a non-Lambda TargetGroup/);
   });
 
+  test('Lambda target should not have stickiness.enabled set', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack');
+
+    new elbv2.ApplicationTargetGroup(stack, 'TG', {
+      targetType: elbv2.TargetType.LAMBDA,
+    });
+
+    const tg = new elbv2.ApplicationTargetGroup(stack, 'TG2');
+    tg.addTarget({
+      attachToApplicationTargetGroup(_targetGroup: elbv2.IApplicationTargetGroup): elbv2.LoadBalancerTargetProps {
+        return {
+          targetType: elbv2.TargetType.LAMBDA,
+          targetJson: { id: 'arn:aws:lambda:eu-west-1:123456789012:function:myFn' },
+        };
+      },
+    });
+
+    expect(stack).not.toHaveResourceLike('AWS::ElasticLoadBalancingV2::TargetGroup', {
+      TargetGroupAttributes: [
+        {
+          Key: 'stickiness.enabled',
+        },
+      ],
+    });
+  });
+
   test('Can add self-registering target to imported TargetGroup', () => {
     // GIVEN
     const app = new cdk.App();
@@ -32,7 +60,7 @@ describe('tests', () => {
     tg.addTarget(new FakeSelfRegisteringTarget(stack, 'Target', vpc));
   });
 
-  test('Cannot add direct target to imported TargetGroup', () => {
+  testDeprecated('Cannot add direct target to imported TargetGroup', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'Stack');
@@ -46,7 +74,7 @@ describe('tests', () => {
     }).toThrow(/Cannot add a non-self registering target to an imported TargetGroup/);
   });
 
-  test('HealthCheck fields set if provided', () => {
+  testDeprecated('HealthCheck fields set if provided', () => {
     // GIVEN
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'Stack');

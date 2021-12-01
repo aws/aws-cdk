@@ -1,3 +1,345 @@
+# CloudFormation Resource Specification v49.0.0
+
+## New Resource Types
+
+* AWS::AppStream::AppBlock
+* AWS::AppStream::Application
+* AWS::AppStream::ApplicationFleetAssociation
+* AWS::DataBrew::Ruleset
+
+## Attribute Changes
+
+* AWS::EC2::VPCDHCPOptionsAssociation Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpc-dhcp-options-assoc.html
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpcdhcpoptionsassociation.html
+* AWS::EC2::VPCDHCPOptionsAssociation Id (__added__)
+
+## Property Changes
+
+* AWS::APS::RuleGroupsNamespace Name.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::AppStream::Fleet MaxConcurrentSessions (__added__)
+* AWS::AppStream::Fleet Platform (__added__)
+* AWS::AppStream::Fleet UsbDeviceFilterStrings (__added__)
+* AWS::AppStream::Fleet ComputeCapacity.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Chatbot::SlackChannelConfiguration GuardrailPolicies (__added__)
+* AWS::Chatbot::SlackChannelConfiguration UserRoleRequired (__added__)
+* AWS::CloudFormation::StackSet ManagedExecution (__added__)
+* AWS::CloudWatch::AnomalyDetector MetricMathAnomalyDetector (__added__)
+* AWS::CloudWatch::AnomalyDetector SingleMetricAnomalyDetector (__added__)
+* AWS::DataBrew::Job ValidationConfigurations (__added__)
+* AWS::DataBrew::Job Recipe.PrimitiveType (__deleted__)
+* AWS::EC2::VPCDHCPOptionsAssociation DhcpOptionsId.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpc-dhcp-options-assoc.html#cfn-ec2-vpcdhcpoptionsassociation-dhcpoptionsid
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpcdhcpoptionsassociation.html#cfn-ec2-vpcdhcpoptionsassociation-dhcpoptionsid
+* AWS::EC2::VPCDHCPOptionsAssociation DhcpOptionsId.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::VPCDHCPOptionsAssociation VpcId.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpc-dhcp-options-assoc.html#cfn-ec2-vpcdhcpoptionsassociation-vpcid
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpcdhcpoptionsassociation.html#cfn-ec2-vpcdhcpoptionsassociation-vpcid
+* AWS::EC2::VPCEndpointService PayerResponsibility (__deleted__)
+* AWS::Lambda::EventSourceMapping FilterCriteria (__added__)
+* AWS::Logs::LogGroup Tags (__added__)
+* AWS::Route53::HostedZone Name.Required (__changed__)
+  * Old: true
+  * New: false
+
+## Property Type Changes
+
+* AWS::CloudWatch::AnomalyDetector.MetricMathAnomalyDetector (__added__)
+* AWS::CloudWatch::AnomalyDetector.SingleMetricAnomalyDetector (__added__)
+* AWS::DataBrew::Dataset.Metadata (__added__)
+* AWS::DataBrew::Job.AllowedStatistics (__added__)
+* AWS::DataBrew::Job.EntityDetectorConfiguration (__added__)
+* AWS::DataBrew::Job.ValidationConfiguration (__added__)
+* AWS::MSK::Cluster.ConnectivityInfo (__added__)
+* AWS::MSK::Cluster.PublicAccess (__added__)
+* AWS::DataBrew::Dataset.DatabaseInputDefinition QueryString (__added__)
+* AWS::DataBrew::Dataset.DatabaseInputDefinition GlueConnectionName.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::DataBrew::Dataset.Input Metadata (__added__)
+* AWS::DataBrew::Job.ProfileConfiguration EntityDetectorConfiguration (__added__)
+* AWS::MSK::Cluster.BrokerNodeGroupInfo ConnectivityInfo (__added__)
+* AWS::Transfer::Server.IdentityProviderDetails Function (__added__)
+
+
+# CloudFormation Resource Specification v48.0.0
+
+## New Resource Types
+
+* AWS::Batch::SchedulingPolicy
+* AWS::IoTWireless::FuotaTask
+* AWS::IoTWireless::MulticastGroup
+
+## Attribute Changes
+
+* AWS::EC2::NetworkInterface Id (__deleted__)
+* AWS::EC2::NetworkInterface SecondaryPrivateIpAddresses.DuplicatesAllowed (__deleted__)
+* AWS::EC2::NetworkInterface Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-networkinterface.html
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-network-interface.html
+* AWS::IoTAnalytics::Channel Id (__deleted__)
+* AWS::IoTAnalytics::Dataset Id (__deleted__)
+* AWS::IoTAnalytics::Datastore Id (__deleted__)
+* AWS::IoTAnalytics::Pipeline Id (__deleted__)
+
+## Property Changes
+
+* AWS::ApiGateway::Stage Variables.DuplicatesAllowed (__deleted__)
+* AWS::AppConfig::ConfigurationProfile Type (__added__)
+* AWS::CloudFront::Function FunctionMetadata (__deleted__)
+* AWS::CloudWatch::AnomalyDetector MetricName.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::CloudWatch::AnomalyDetector Namespace.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::CloudWatch::AnomalyDetector Stat.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::EC2::CapacityReservation OutPostArn (__added__)
+* AWS::EC2::CapacityReservation PlacementGroupArn (__added__)
+* AWS::EC2::NetworkInterface Description.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-networkinterface.html#cfn-ec2-networkinterface-description
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-network-interface.html#cfn-awsec2networkinterface-description
+* AWS::EC2::NetworkInterface GroupSet.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-networkinterface.html#cfn-ec2-networkinterface-groupset
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-network-interface.html#cfn-awsec2networkinterface-groupset
+* AWS::EC2::NetworkInterface GroupSet.DuplicatesAllowed (__changed__)
+  * Old: true
+  * New: false
+* AWS::EC2::NetworkInterface InterfaceType.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-networkinterface.html#cfn-ec2-networkinterface-interfacetype
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-network-interface.html#cfn-ec2-networkinterface-interfacetype
+* AWS::EC2::NetworkInterface Ipv6AddressCount.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-networkinterface.html#cfn-ec2-networkinterface-ipv6addresscount
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-network-interface.html#cfn-ec2-networkinterface-ipv6addresscount
+* AWS::EC2::NetworkInterface Ipv6Addresses.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-networkinterface.html#cfn-ec2-networkinterface-ipv6addresses
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-network-interface.html#cfn-ec2-networkinterface-ipv6addresses
+* AWS::EC2::NetworkInterface PrivateIpAddress.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-networkinterface.html#cfn-ec2-networkinterface-privateipaddress
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-network-interface.html#cfn-awsec2networkinterface-privateipaddress
+* AWS::EC2::NetworkInterface PrivateIpAddresses.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-networkinterface.html#cfn-ec2-networkinterface-privateipaddresses
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-network-interface.html#cfn-awsec2networkinterface-privateipaddresses
+* AWS::EC2::NetworkInterface PrivateIpAddresses.DuplicatesAllowed (__changed__)
+  * Old: true
+  * New: false
+* AWS::EC2::NetworkInterface PrivateIpAddresses.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Conditional
+* AWS::EC2::NetworkInterface SecondaryPrivateIpAddressCount.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-networkinterface.html#cfn-ec2-networkinterface-secondaryprivateipaddresscount
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-network-interface.html#cfn-awsec2networkinterface-secondaryprivateipcount
+* AWS::EC2::NetworkInterface SourceDestCheck.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-networkinterface.html#cfn-ec2-networkinterface-sourcedestcheck
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-network-interface.html#cfn-awsec2networkinterface-sourcedestcheck
+* AWS::EC2::NetworkInterface SubnetId.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-networkinterface.html#cfn-ec2-networkinterface-subnetid
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-network-interface.html#cfn-awsec2networkinterface-subnetid
+* AWS::EC2::NetworkInterface Tags.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-networkinterface.html#cfn-ec2-networkinterface-tags
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-network-interface.html#cfn-awsec2networkinterface-tags
+* AWS::FSx::FileSystem FileSystemTypeVersion (__added__)
+* AWS::FSx::FileSystem OntapConfiguration (__added__)
+* AWS::FinSpace::Environment DataBundles (__added__)
+* AWS::FinSpace::Environment SuperuserParameters (__added__)
+* AWS::IoTAnalytics::Channel ChannelName.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::IoTAnalytics::Channel Tags.DuplicatesAllowed (__deleted__)
+* AWS::IoTAnalytics::Dataset Actions.DuplicatesAllowed (__deleted__)
+* AWS::IoTAnalytics::Dataset ContentDeliveryRules.DuplicatesAllowed (__deleted__)
+* AWS::IoTAnalytics::Dataset DatasetName.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::IoTAnalytics::Dataset LateDataRules.DuplicatesAllowed (__deleted__)
+* AWS::IoTAnalytics::Dataset Tags.DuplicatesAllowed (__deleted__)
+* AWS::IoTAnalytics::Dataset Triggers.DuplicatesAllowed (__deleted__)
+* AWS::IoTAnalytics::Datastore Tags.DuplicatesAllowed (__deleted__)
+* AWS::IoTAnalytics::Pipeline PipelineActivities.DuplicatesAllowed (__deleted__)
+* AWS::IoTAnalytics::Pipeline PipelineName.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::IoTAnalytics::Pipeline Tags.DuplicatesAllowed (__deleted__)
+* AWS::Lightsail::Instance Location (__deleted__)
+* AWS::Lightsail::Instance State (__deleted__)
+* AWS::MemoryDB::Cluster ClusterEndpoint (__deleted__)
+* AWS::Redshift::Cluster Endpoint (__deleted__)
+* AWS::S3ObjectLambda::AccessPoint ObjectLambdaConfiguration.Required (__changed__)
+  * Old: false
+  * New: true
+
+## Property Type Changes
+
+* AWS::CloudWatch::AnomalyDetector.Metric (__added__)
+* AWS::CloudWatch::AnomalyDetector.MetricDataQueries (__added__)
+* AWS::CloudWatch::AnomalyDetector.MetricDataQuery (__added__)
+* AWS::CloudWatch::AnomalyDetector.MetricStat (__added__)
+* AWS::FSx::FileSystem.DiskIopsConfiguration (__added__)
+* AWS::FSx::FileSystem.OntapConfiguration (__added__)
+* AWS::FinSpace::Environment.SuperuserParameters (__added__)
+* AWS::ApiGateway::Stage.CanarySetting StageVariableOverrides.DuplicatesAllowed (__deleted__)
+* AWS::ApiGateway::Stage.MethodSetting CacheDataEncrypted.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apitgateway-stage-methodsetting.html#cfn-apigateway-stage-methodsetting-cachedataencrypted
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apigateway-stage-methodsetting.html#cfn-apigateway-stage-methodsetting-cachedataencrypted
+* AWS::ApiGateway::Stage.MethodSetting CacheTtlInSeconds.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apitgateway-stage-methodsetting.html#cfn-apigateway-stage-methodsetting-cachettlinseconds
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apigateway-stage-methodsetting.html#cfn-apigateway-stage-methodsetting-cachettlinseconds
+* AWS::ApiGateway::Stage.MethodSetting CachingEnabled.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apitgateway-stage-methodsetting.html#cfn-apigateway-stage-methodsetting-cachingenabled
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apigateway-stage-methodsetting.html#cfn-apigateway-stage-methodsetting-cachingenabled
+* AWS::ApiGateway::Stage.MethodSetting DataTraceEnabled.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apitgateway-stage-methodsetting.html#cfn-apigateway-stage-methodsetting-datatraceenabled
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apigateway-stage-methodsetting.html#cfn-apigateway-stage-methodsetting-datatraceenabled
+* AWS::ApiGateway::Stage.MethodSetting HttpMethod.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apitgateway-stage-methodsetting.html#cfn-apigateway-stage-methodsetting-httpmethod
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apigateway-stage-methodsetting.html#cfn-apigateway-stage-methodsetting-httpmethod
+* AWS::ApiGateway::Stage.MethodSetting LoggingLevel.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apitgateway-stage-methodsetting.html#cfn-apigateway-stage-methodsetting-logginglevel
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apigateway-stage-methodsetting.html#cfn-apigateway-stage-methodsetting-logginglevel
+* AWS::ApiGateway::Stage.MethodSetting MetricsEnabled.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apitgateway-stage-methodsetting.html#cfn-apigateway-stage-methodsetting-metricsenabled
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apigateway-stage-methodsetting.html#cfn-apigateway-stage-methodsetting-metricsenabled
+* AWS::ApiGateway::Stage.MethodSetting ResourcePath.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apitgateway-stage-methodsetting.html#cfn-apigateway-stage-methodsetting-resourcepath
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apigateway-stage-methodsetting.html#cfn-apigateway-stage-methodsetting-resourcepath
+* AWS::ApiGateway::Stage.MethodSetting ThrottlingBurstLimit.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apitgateway-stage-methodsetting.html#cfn-apigateway-stage-methodsetting-throttlingburstlimit
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apigateway-stage-methodsetting.html#cfn-apigateway-stage-methodsetting-throttlingburstlimit
+* AWS::ApiGateway::Stage.MethodSetting ThrottlingRateLimit.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apitgateway-stage-methodsetting.html#cfn-apigateway-stage-methodsetting-throttlingratelimit
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apigateway-stage-methodsetting.html#cfn-apigateway-stage-methodsetting-throttlingratelimit
+* AWS::AppMesh::GatewayRoute.GatewayRouteSpec Priority (__added__)
+* AWS::CloudFront::Distribution.CacheBehavior ResponseHeadersPolicyId (__added__)
+* AWS::CloudFront::Distribution.DefaultCacheBehavior ResponseHeadersPolicyId (__added__)
+* AWS::EC2::NetworkInterface.PrivateIpAddressSpecification Primary.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-networkinterface-privateipaddressspecification.html#cfn-ec2-networkinterface-privateipaddressspecification-primary
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-network-interface-privateipspec.html#cfn-ec2-networkinterface-privateipspecification-primary
+* AWS::EC2::NetworkInterface.PrivateIpAddressSpecification PrivateIpAddress.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-networkinterface-privateipaddressspecification.html#cfn-ec2-networkinterface-privateipaddressspecification-privateipaddress
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-network-interface-privateipspec.html#cfn-ec2-networkinterface-privateipspecification-privateipaddress
+* AWS::IoTAnalytics::Dataset.ContainerAction Variables.DuplicatesAllowed (__deleted__)
+* AWS::IoTAnalytics::Dataset.DatasetContentVersionValue DatasetName.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotanalytics-dataset-datasetcontentversionvalue.html#cfn-iotanalytics-dataset-datasetcontentversionvalue-datasetname
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotanalytics-dataset-variable-datasetcontentversionvalue.html#cfn-iotanalytics-dataset-variable-datasetcontentversionvalue-datasetname
+* AWS::IoTAnalytics::Dataset.DatasetContentVersionValue DatasetName.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::IoTAnalytics::Dataset.OutputFileUriValue FileName.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotanalytics-dataset-outputfileurivalue.html#cfn-iotanalytics-dataset-outputfileurivalue-filename
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotanalytics-dataset-variable-outputfileurivalue.html#cfn-iotanalytics-dataset-variable-outputfileurivalue-filename
+* AWS::IoTAnalytics::Dataset.OutputFileUriValue FileName.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::IoTAnalytics::Dataset.QueryAction Filters.DuplicatesAllowed (__deleted__)
+* AWS::IoTAnalytics::Dataset.Schedule ScheduleExpression.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotanalytics-dataset-schedule.html#cfn-iotanalytics-dataset-schedule-scheduleexpression
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotanalytics-dataset-trigger-schedule.html#cfn-iotanalytics-dataset-trigger-schedule-scheduleexpression
+* AWS::IoTAnalytics::Datastore.DatastorePartitions Partitions.DuplicatesAllowed (__deleted__)
+* AWS::IoTAnalytics::Datastore.IotSiteWiseMultiLayerStorage CustomerManagedS3Storage.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::IoTAnalytics::Datastore.SchemaDefinition Columns.DuplicatesAllowed (__deleted__)
+* AWS::IoTAnalytics::Pipeline.AddAttributes Attributes.PrimitiveItemType (__deleted__)
+* AWS::IoTAnalytics::Pipeline.AddAttributes Attributes.Type (__deleted__)
+* AWS::IoTAnalytics::Pipeline.AddAttributes Attributes.PrimitiveType (__added__)
+* AWS::IoTAnalytics::Pipeline.AddAttributes Attributes.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::IoTAnalytics::Pipeline.AddAttributes Name.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::IoTAnalytics::Pipeline.Channel ChannelName.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::IoTAnalytics::Pipeline.Channel Name.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::IoTAnalytics::Pipeline.Datastore DatastoreName.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::IoTAnalytics::Pipeline.Datastore Name.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::IoTAnalytics::Pipeline.DeviceRegistryEnrich Attribute.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::IoTAnalytics::Pipeline.DeviceRegistryEnrich Name.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::IoTAnalytics::Pipeline.DeviceRegistryEnrich RoleArn.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::IoTAnalytics::Pipeline.DeviceRegistryEnrich ThingName.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::IoTAnalytics::Pipeline.DeviceShadowEnrich Attribute.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::IoTAnalytics::Pipeline.DeviceShadowEnrich Name.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::IoTAnalytics::Pipeline.DeviceShadowEnrich RoleArn.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::IoTAnalytics::Pipeline.DeviceShadowEnrich ThingName.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::IoTAnalytics::Pipeline.Filter Filter.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::IoTAnalytics::Pipeline.Filter Name.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::IoTAnalytics::Pipeline.Lambda BatchSize.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::IoTAnalytics::Pipeline.Lambda LambdaName.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::IoTAnalytics::Pipeline.Lambda Name.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::IoTAnalytics::Pipeline.Math Attribute.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::IoTAnalytics::Pipeline.Math Math.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::IoTAnalytics::Pipeline.Math Name.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::IoTAnalytics::Pipeline.RemoveAttributes Attributes.DuplicatesAllowed (__deleted__)
+* AWS::IoTAnalytics::Pipeline.RemoveAttributes Attributes.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::IoTAnalytics::Pipeline.RemoveAttributes Name.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::IoTAnalytics::Pipeline.SelectAttributes Attributes.DuplicatesAllowed (__deleted__)
+* AWS::IoTAnalytics::Pipeline.SelectAttributes Attributes.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::IoTAnalytics::Pipeline.SelectAttributes Name.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::S3ObjectLambda::AccessPoint.TransformationConfiguration Actions.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::S3ObjectLambda::AccessPoint.TransformationConfiguration ContentTransformation.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::SecretsManager::RotationSchedule.HostedRotationLambda SuperuserSecretArn (__added__)
+* AWS::SecretsManager::RotationSchedule.HostedRotationLambda SuperuserSecretKmsKeyArn (__added__)
+
+
 # CloudFormation Resource Specification v47.0.0
 
 ## New Resource Types
