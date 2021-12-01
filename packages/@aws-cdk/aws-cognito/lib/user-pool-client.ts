@@ -243,7 +243,7 @@ export interface UserPoolClientOptions {
    * user does not exist in the user pool (false), or whether it returns
    * another type of error that doesn't reveal the user's absence.
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pool-managing-errors.html
-   * @default true for new stacks
+   * @default false
    */
   readonly preventUserExistenceErrors?: boolean;
 
