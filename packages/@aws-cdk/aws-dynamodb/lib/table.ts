@@ -72,6 +72,21 @@ export enum Operation {
   /** BatchWriteItem */
   BATCH_WRITE_ITEM = 'BatchWriteItem',
 
+  /** TransactWriteItems */
+  TRANSACT_WRITE_ITEMS = 'TransactWriteItems',
+
+  /** TransactGetItems */
+  TRANSACT_GET_ITEMS = 'TransactGetItems',
+
+  /** ExecuteTransaction */
+  EXECUTE_TRANSACTION = 'ExecuteTransaction',
+
+  /** BatchExecuteStatement */
+  BATCH_EXECUTE_STATEMENT = 'BatchExecuteStatement',
+
+  /** ExecuteStatement */
+  EXECUTE_STATEMENT = 'ExecuteStatement',
+
 }
 
 /**

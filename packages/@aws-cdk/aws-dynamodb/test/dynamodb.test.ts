@@ -1600,6 +1600,11 @@ describe('metrics', () => {
       'deleteitem',
       'updateitem',
       'batchwriteitem',
+      'transactwriteitems',
+      'transactgetitems',
+      'executetransaction',
+      'batchexecutestatement',
+      'executestatement',
     ]);
 
   });
