@@ -1116,10 +1116,9 @@
           "Ref": "productionenvironmentclusterC6599D2D"
         },
         "DeploymentConfiguration": {
-          "MaximumPercent": 150,
+          "MaximumPercent": 125,
           "MinimumHealthyPercent": 100
         },
-        "DesiredCount": 2,
         "EnableECSManagedTags": false,
         "LaunchType": "FARGATE",
         "NetworkConfiguration": {
@@ -1989,10 +1988,9 @@
           "Ref": "productionenvironmentclusterC6599D2D"
         },
         "DeploymentConfiguration": {
-          "MaximumPercent": 150,
+          "MaximumPercent": 125,
           "MinimumHealthyPercent": 100
         },
-        "DesiredCount": 2,
         "EnableECSManagedTags": false,
         "LaunchType": "FARGATE",
         "NetworkConfiguration": {
@@ -2985,10 +2983,9 @@
           "Ref": "productionenvironmentclusterC6599D2D"
         },
         "DeploymentConfiguration": {
-          "MaximumPercent": 150,
+          "MaximumPercent": 125,
           "MinimumHealthyPercent": 100
         },
-        "DesiredCount": 2,
         "EnableECSManagedTags": false,
         "HealthCheckGracePeriodSeconds": 60,
         "LaunchType": "FARGATE",
