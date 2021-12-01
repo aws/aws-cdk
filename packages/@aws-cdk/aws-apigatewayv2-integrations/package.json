@@ -108,6 +108,16 @@
   },
   "stability": "experimental",
   "maturity": "experimental",
+  "features": [
+    {
+      "name": "Integration classes for HTTP APIs",
+      "stability": "Stable"
+    },
+    {
+      "name": "Integration classes for Websocket APIs",
+      "stability": "Experimental"
+    }
+  ],
   "awscdkio": {
     "announce": false
   },
