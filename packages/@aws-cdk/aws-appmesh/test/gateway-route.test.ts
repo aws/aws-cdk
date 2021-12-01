@@ -1126,7 +1126,7 @@ describe('gateway route', () => {
   });
 
   describe('with priority', () => {
-    test('setting priority using the method', () => {
+    test('should set the priority for http gateway route', () => {
       // GIVEN
       const stack = new cdk.Stack();
 
@@ -1158,19 +1158,13 @@ describe('gateway route', () => {
 
       // THEN
       expect(stack).toHaveResourceLike('AWS::AppMesh::GatewayRoute', {
-        GatewayRouteName: 'gateway-http-route',
         Spec: {
-          HttpRoute: {
-            Match: {
-              Prefix: '/',
-            },
-          },
           Priority: 100,
         },
       });
     });
 
-    test('setting priority using the constructor', () => {
+    test('should set the priority for grpc gateway route', () => {
       // GIVEN
       const stack = new cdk.Stack();
 
@@ -1180,7 +1174,7 @@ describe('gateway route', () => {
       });
 
       const virtualGateway = new appmesh.VirtualGateway(stack, 'gateway-1', {
-        listeners: [appmesh.VirtualGatewayListener.http()],
+        listeners: [appmesh.VirtualGatewayListener.grpc()],
         mesh: mesh,
       });
 
@@ -1189,9 +1183,12 @@ describe('gateway route', () => {
         virtualServiceName: 'target.local',
       });
 
-      // Add an HTTP Route
+      // Add an Grpc Route
       new appmesh.GatewayRoute(stack, 'test-node', {
-        routeSpec: appmesh.GatewayRouteSpec.http({
+        routeSpec: appmesh.GatewayRouteSpec.grpc({
+          match: {
+            serviceName: virtualService.virtualServiceName,
+          },
           routeTarget: virtualService,
           priority: 500,
         }),
@@ -1201,13 +1198,7 @@ describe('gateway route', () => {
 
       // THEN
       expect(stack).toHaveResourceLike('AWS::AppMesh::GatewayRoute', {
-        GatewayRouteName: 'routeWithPriority',
         Spec: {
-          HttpRoute: {
-            Match: {
-              Prefix: '/',
-            },
-          },
           Priority: 500,
         },
       });

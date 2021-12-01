@@ -151,7 +151,7 @@ export interface GrpcGatewayRouteMatch {
 /**
  * Base options for all gateway route specs.
  */
-export interface GatewayRouteSpecOptionsBase {
+export interface CommonGatewayRouteSpecOptions {
   /**
    * The priority for the gateway route. Gateway routes are matched based on the specified
    * value, where 0 is the highest priority.
@@ -164,7 +164,7 @@ export interface GatewayRouteSpecOptionsBase {
 /**
  * Properties specific for HTTP Based GatewayRoutes
  */
-export interface HttpGatewayRouteSpecOptions extends GatewayRouteSpecOptionsBase {
+export interface HttpGatewayRouteSpecOptions extends CommonGatewayRouteSpecOptions {
   /**
    * The criterion for determining a request match for this GatewayRoute.
    * When path match is defined, this may optionally determine the path rewrite configuration.
@@ -182,7 +182,7 @@ export interface HttpGatewayRouteSpecOptions extends GatewayRouteSpecOptionsBase
 /**
  * Properties specific for a gRPC GatewayRoute
  */
-export interface GrpcGatewayRouteSpecOptions extends GatewayRouteSpecOptionsBase {
+export interface GrpcGatewayRouteSpecOptions extends CommonGatewayRouteSpecOptions {
   /**
    * The criterion for determining a request match for this GatewayRoute
    */
