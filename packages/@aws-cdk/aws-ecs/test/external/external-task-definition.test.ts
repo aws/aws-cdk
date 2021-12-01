@@ -7,7 +7,6 @@ import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as ssm from '@aws-cdk/aws-ssm';
 import * as cdk from '@aws-cdk/core';
 import * as ecs from '../../lib';
-import { NetworkMode } from '../../lib';
 
 describe('external task definition', () => {
   describe('When creating an External TaskDefinition', () => {
@@ -38,7 +37,7 @@ describe('external task definition', () => {
           ),
         }),
         family: 'ecs-tasks',
-        networkMode: NetworkMode.HOST,
+        networkMode: ecs.NetworkMode.HOST,
         taskRole: new iam.Role(stack, 'TaskRole', {
           assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
         }),
@@ -75,7 +74,7 @@ describe('external task definition', () => {
       // THEN
       expect(() => {
         new ecs.ExternalTaskDefinition(stack, 'ExternalTaskDef', {
-          networkMode: NetworkMode.AWS_VPC,
+          networkMode: ecs.NetworkMode.AWS_VPC,
         });
       }).toThrow('External tasks can only have Bridge, Host or None network mode, got: awsvpc');
     });
