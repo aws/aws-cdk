@@ -207,6 +207,11 @@ test('esbuild bundling with esbuild options', () => {
       'process.env.NUMBER': '7777',
       'process.env.STRING': JSON.stringify('this is a "test"'),
     },
+    esbuildArgs: {
+      '--main-fields': 'module,main',
+      '--log-limit': '0',
+      '--resolve-extensions': '.ts,.js',
+    },
   });
 
   // Correctly bundles with esbuild
@@ -224,6 +229,7 @@ test('esbuild bundling with esbuild options', () => {
           '--log-level=silent --keep-names --tsconfig=/asset-input/lib/custom-tsconfig.ts',
           '--metafile=/asset-output/index.meta.json --banner:js="/* comments */" --footer:js="/* comments */"',
           '--charset=utf8',
+          '--main-fields=module,main --log-limit=0 --resolve-extensions=.ts,.js',
         ].join(' '),
       ],
     }),

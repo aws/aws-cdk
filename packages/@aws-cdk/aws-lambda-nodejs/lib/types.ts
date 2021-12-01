@@ -203,11 +203,18 @@ export interface BundlingOptions {
   readonly esbuildVersion?: string;
 
   /**
+   * Build arguments to pass into esbuild.
+   *
+   * @default - no additional build arguments are passed
+   */
+  readonly esbuildArgs?: { [key: string]: string };
+
+  /**
    * Build arguments to pass when building the bundling image.
    *
    * @default - no build arguments are passed
    */
-  readonly buildArgs?: { [key:string] : string };
+  readonly buildArgs?: { [key: string]: string };
 
   /**
    * Force bundling in a Docker container even if local bundling is
