@@ -32,7 +32,6 @@ describe('scale on cpu utilization', () => {
         MaximumPercent: 200,
         MinimumHealthyPercent: 100,
       },
-      DesiredCount: 2,
     });
 
     expect(stack).toHaveResource('AWS::ApplicationAutoScaling::ScalableTarget', {
@@ -130,7 +129,6 @@ describe('scale on cpu utilization', () => {
         MaximumPercent: 200,
         MinimumHealthyPercent: 100,
       },
-      DesiredCount: 25,
     });
 
     expect(stack).toHaveResourceLike('AWS::ApplicationAutoScaling::ScalableTarget', {
@@ -147,6 +145,34 @@ describe('scale on cpu utilization', () => {
     });
 
 
+  });
+
+  test('should error if connfiguring autoscaling target both in the extension and the Service', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const environment = new Environment(stack, 'production');
+    const serviceDescription = new ServiceDescription();
+
+    serviceDescription.add(new Container({
+      cpu: 256,
+      memoryMiB: 512,
+      trafficPort: 80,
+      image: ecs.ContainerImage.fromRegistry('nathanpeck/name'),
+    }));
+
+    serviceDescription.add(new ScaleOnCpuUtilization());
+    // THEN
+    expect(() => {
+      new Service(stack, 'my-service', {
+        environment,
+        serviceDescription,
+        autoScaleTaskCount: {
+          maxTaskCount: 5,
+        },
+      });
+    }).toThrow('Cannot specify \'minTaskCount\' and \'maxTaskCount\' both in the Service construct and the \'ScaleOnCpuUtilization\' extension (deprecated). Please only provide the values in either one.');
   });
 
 });

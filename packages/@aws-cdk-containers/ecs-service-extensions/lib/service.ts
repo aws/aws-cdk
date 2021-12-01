@@ -4,6 +4,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { IEnvironment } from './environment';
 import { EnvironmentCapacityType, ServiceBuild } from './extensions/extension-interfaces';
+import { ScaleOnCpuUtilization } from './extensions/scale-on-cpu-utilization';
 import { ServiceDescription } from './service-description';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
@@ -221,9 +222,6 @@ export class Service extends Construct {
       }
     }
 
-    // Set desiredCount to `undefined` if auto scaling is configured for the service
-    const desiredCount = props.autoScaleTaskCount ? undefined : (props.desiredCount || 1);
-
     // Give each extension a chance to mutate the service props before
     // service creation
     let serviceProps = {
@@ -231,13 +229,21 @@ export class Service extends Construct {
       taskDefinition: this.taskDefinition,
       minHealthyPercent: 100,
       maxHealthyPercent: 200,
-      desiredCount,
+      desiredCount: props.desiredCount ?? 1,
     } as ServiceBuild;
 
     for (const extensions in this.serviceDescription.extensions) {
       if (this.serviceDescription.extensions[extensions]) {
         serviceProps = this.serviceDescription.extensions[extensions].modifyServiceProps(serviceProps);
       }
+    }
+
+    // Set desiredCount to `undefined` if auto scaling is configured for the service
+    if (props.autoScaleTaskCount || this.autoScalingPoliciesEnabled) {
+      serviceProps = {
+        ...serviceProps,
+        desiredCount: undefined,
+      };
     }
 
     // If a maxHealthyPercent and desired count has been set while minHealthyPercent == 100% then we
@@ -283,28 +289,39 @@ export class Service extends Construct {
       throw new Error(`Unknown capacity type for service ${this.id}`);
     }
 
+    const scaleOnCpuExtension = this.serviceDescription.get('scale-on-cpu-utilization') as ScaleOnCpuUtilization;
+
+    if (props.autoScaleTaskCount && scaleOnCpuExtension) {
+      throw Error('Cannot specify \'minTaskCount\' and \'maxTaskCount\' both in the Service construct and the \'ScaleOnCpuUtilization\' extension (deprecated). Please only provide the values in either one.');
+    }
+
     // Create the auto scaling target and configure target tracking policies after the service is created
-    if (props.autoScaleTaskCount) {
+    const maxCapacity = props.autoScaleTaskCount?.maxTaskCount ?? scaleOnCpuExtension?.maxTaskCount;
+    if (maxCapacity) {
       this.scalableTaskCount = this.ecsService.autoScaleTaskCount({
-        maxCapacity: props.autoScaleTaskCount.maxTaskCount,
-        minCapacity: props.autoScaleTaskCount.minTaskCount,
+        maxCapacity: props.autoScaleTaskCount?.maxTaskCount ?? scaleOnCpuExtension?.maxTaskCount,
+        minCapacity: props.autoScaleTaskCount?.minTaskCount ?? scaleOnCpuExtension?.minTaskCount,
       });
+    }
 
-      if (props.autoScaleTaskCount.targetCpuUtilization) {
-        const targetUtilizationPercent = props.autoScaleTaskCount.targetCpuUtilization;
-        this.scalableTaskCount.scaleOnCpuUtilization(`${this.id}-target-cpu-utilization-${targetUtilizationPercent}`, {
-          targetUtilizationPercent,
-        });
-        this.enableAutoScalingPolicy();
-      }
+    const targetCpuUtilizationPercent = props.autoScaleTaskCount?.targetCpuUtilization ?? scaleOnCpuExtension?.targetCpuUtilization;
+    if (targetCpuUtilizationPercent) {
+      const scaleInCooldown = scaleOnCpuExtension?.scaleInCooldown;
+      const scaleOutCooldown = scaleOnCpuExtension?.scaleOutCooldown;
+      this.scalableTaskCount!.scaleOnCpuUtilization(`${this.id}-target-cpu-utilization-${targetCpuUtilizationPercent}`, {
+        targetUtilizationPercent: targetCpuUtilizationPercent,
+        scaleInCooldown,
+        scaleOutCooldown,
+      });
+      this.enableAutoScalingPolicy();
+    }
 
-      if (props.autoScaleTaskCount.targetMemoryUtilization) {
-        const targetUtilizationPercent = props.autoScaleTaskCount.targetMemoryUtilization;
-        this.scalableTaskCount.scaleOnMemoryUtilization(`${this.id}-target-memory-utilization-${targetUtilizationPercent}`, {
-          targetUtilizationPercent,
-        });
-        this.enableAutoScalingPolicy();
-      }
+    if (props.autoScaleTaskCount?.targetMemoryUtilization) {
+      const targetMemoryUtilizationPercent = props.autoScaleTaskCount.targetMemoryUtilization;
+      this.scalableTaskCount!.scaleOnMemoryUtilization(`${this.id}-target-memory-utilization-${targetMemoryUtilizationPercent}`, {
+        targetUtilizationPercent: targetMemoryUtilizationPercent,
+      });
+      this.enableAutoScalingPolicy();
     }
 
     // Now give all extensions a chance to use the service

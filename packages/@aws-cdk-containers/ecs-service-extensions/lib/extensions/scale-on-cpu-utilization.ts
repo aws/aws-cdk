@@ -1,9 +1,13 @@
-import * as ecs from '@aws-cdk/aws-ecs';
 import * as cdk from '@aws-cdk/core';
 import { ServiceExtension, ServiceBuild } from './extension-interfaces';
 
+
 /**
  * The autoscaling settings.
+ *
+ * @deprecated use the `minTaskCount` and `maxTaskCount` properties of `autoScaleTaskCount` in the `Service` construct
+ * to configure the auto scaling target for the service. For more information, please refer
+ * https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk-containers/ecs-service-extensions/README.md#task-auto-scaling .
  */
 export interface CpuScalingProps {
   /**
@@ -61,6 +65,9 @@ const cpuScalingPropsDefault = {
 
 /**
  * This extension helps you scale your service according to CPU utilization.
+ *
+ * @deprecated To enable target tracking based on CPU utilization, use the `targetCpuUtilization` property of `autoScaleTaskCount` in the `Service` construct.
+ * For more information, please refer https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk-containers/ecs-service-extensions/README.md#task-auto-scaling .
  */
 export class ScaleOnCpuUtilization extends ServiceExtension {
   /**
@@ -112,6 +119,7 @@ export class ScaleOnCpuUtilization extends ServiceExtension {
   // This service modifies properties of the service prior
   // to construct creation.
   public modifyServiceProps(props: ServiceBuild): ServiceBuild {
+    this.parentService.enableAutoScalingPolicy();
     return {
       ...props,
 
@@ -121,20 +129,5 @@ export class ScaleOnCpuUtilization extends ServiceExtension {
       // count doesn't rollback to the initial level on each deploy.
       desiredCount: this.initialTaskCount,
     } as ServiceBuild;
-  }
-
-  // This hook utilizes the resulting service construct
-  // once it is created.
-  public useService(service: ecs.Ec2Service | ecs.FargateService) {
-    const scalingTarget = service.autoScaleTaskCount({
-      minCapacity: this.minTaskCount,
-      maxCapacity: this.maxTaskCount,
-    });
-
-    scalingTarget.scaleOnCpuUtilization(`${this.parentService.id}-target-cpu-utilization-${this.targetCpuUtilization}`, {
-      targetUtilizationPercent: this.targetCpuUtilization,
-      scaleInCooldown: this.scaleInCooldown,
-      scaleOutCooldown: this.scaleOutCooldown,
-    });
   }
 }
