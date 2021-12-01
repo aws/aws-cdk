@@ -109,6 +109,16 @@
   },
   "stability": "experimental",
   "maturity": "experimental",
+  "features": [
+    {
+      "name": "Authorizer classes for HTTP APIs",
+      "stability": "Stable"
+    },
+    {
+      "name": "Authorizer classes for Websocket APIs",
+      "stability": "Experimental"
+    }
+  ],
   "awscdkio": {
     "announce": false
   },
