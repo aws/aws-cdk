@@ -79,6 +79,11 @@ export class Parallel extends State implements INextable {
     this.endStates = [this];
   }
 
+  /**
+   * Returns the branches of the state that have not yet been created.
+   * The creation of parallel branches happens when Parallel.bindToGraph
+   * is called.
+   */
   public get branchableBranches() {
     return this._branches;
   }
@@ -117,6 +122,7 @@ export class Parallel extends State implements INextable {
    * Define one or more branches to run in parallel
    */
   public branch(...branches: IChainable[]): Parallel {
+    // Store branches for late-bound stategraph creation when we call bindToGraph.
     this._branches.push(...branches);
     return this;
   }
