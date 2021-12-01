@@ -577,5 +577,5 @@ function unixPath(x: string) {
  * @returns The directory where we should collect all the libraries.
  */
 function resolveLibRoot(uberPackageJson: PackageJson): string {
-  return uberPackageJson.ubergen?.libRoot ?? MONOPACKAGE_ROOT;
+  return path.resolve(uberPackageJson.ubergen?.libRoot ?? MONOPACKAGE_ROOT);
 }
