@@ -82,13 +82,26 @@ export abstract class State extends CoreConstruct implements IChainable {
    * Add a prefix to the stateId of all States found in a construct tree
    */
   public static prefixStates(root: IConstruct, prefix: string) {
+    const visited = new Set();
     const queue = [root];
     while (queue.length > 0) {
       const el = queue.splice(0, 1)[0]!;
       if (isPrefixable(el)) {
         el.addPrefix(prefix);
       }
-      queue.push(...Node.of(el).children);
+      if (isBranchable(el)) {
+        addToQueue(el.branchableBranches);
+      }
+      addToQueue(Node.of(el).children);
+    }
+
+    function addToQueue(els: IConstruct[]) {
+      for (const el of els) {
+        if (!visited.has(el)) {
+          queue.push(el);
+          visited.add(el);
+        }
+      }
     }
   }
 
@@ -599,4 +612,20 @@ function isPrefixable(x: any): x is Prefixable {
  */
 function isNextable(x: any): x is INextable {
   return typeof(x) === 'object' && x.next;
+}
+
+/**
+ * Interface for states that have late-bound children
+ * that are stored as branches until bindToGraph on
+ * the parent is called.
+ */
+interface Branchable {
+  branchableBranches: IChainable[];
+}
+
+/**
+ * Whether an object is Branchable
+ */
+function isBranchable(x: any): x is Branchable {
+  return typeof(x) === 'object' && x.branchableBranches;
 }
