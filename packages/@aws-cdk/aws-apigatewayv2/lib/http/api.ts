@@ -6,7 +6,7 @@ import { IApi } from '../common/api';
 import { ApiBase } from '../common/base';
 import { DomainMappingOptions } from '../common/stage';
 import { IHttpRouteAuthorizer } from './authorizer';
-import { IHttpRouteIntegration, HttpIntegration, HttpRouteIntegrationConfig } from './integration';
+import { HttpRouteIntegration } from './integration';
 import { BatchHttpRouteOptions, HttpMethod, HttpRoute, HttpRouteKey } from './route';
 import { IHttpStage, HttpStage, HttpStageOptions } from './stage';
 import { VpcLink, VpcLinkProps } from './vpc-link';
@@ -71,12 +71,6 @@ export interface IHttpApi extends IApi {
    * Add a new VpcLink
    */
   addVpcLink(options: VpcLinkProps): VpcLink
-
-  /**
-   * Add a http integration
-   * @internal
-   */
-  _addIntegration(scope: Construct, config: HttpRouteIntegrationConfig): HttpIntegration;
 }
 
 /**
@@ -99,7 +93,7 @@ export interface HttpApiProps {
    * An integration that will be configured on the catch-all route ($default).
    * @default - none
    */
-  readonly defaultIntegration?: IHttpRouteIntegration;
+  readonly defaultIntegration?: HttpRouteIntegration;
 
   /**
    * Whether a default stage and deployment should be automatically created.
@@ -285,31 +279,6 @@ abstract class HttpApiBase extends ApiBase implements IHttpApi { // note that th
     this.vpcLinks[vpcId] = vpcLink;
 
     return vpcLink;
-  }
-
-  /**
-   * @internal
-   */
-  public _addIntegration(scope: Construct, config: HttpRouteIntegrationConfig): HttpIntegration {
-    const { configHash, integration: existingIntegration } = this._integrationCache.getIntegration(scope, config);
-    if (existingIntegration) {
-      return existingIntegration as HttpIntegration;
-    }
-
-    const integration = new HttpIntegration(scope, `HttpIntegration-${configHash}`, {
-      httpApi: this,
-      integrationType: config.type,
-      integrationUri: config.uri,
-      method: config.method,
-      connectionId: config.connectionId,
-      connectionType: config.connectionType,
-      payloadFormatVersion: config.payloadFormatVersion,
-      secureServerName: config.secureServerName,
-      parameterMapping: config.parameterMapping,
-    });
-    this._integrationCache.saveIntegration(scope, config, integration);
-
-    return integration;
   }
 }
 
