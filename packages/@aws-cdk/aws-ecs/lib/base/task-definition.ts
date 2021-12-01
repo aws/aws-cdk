@@ -70,7 +70,7 @@ export interface CommonTaskDefinitionProps {
   readonly family?: string;
 
   /**
-   * The name of the IAM task execution role that grants the ECS agent to call AWS APIs on your behalf.
+   * The name of the IAM task execution role that grants the ECS agent permission to call AWS APIs on your behalf.
    *
    * The role will be used to retrieve container images from ECR and create CloudWatch log groups.
    *
@@ -199,6 +199,15 @@ export interface TaskDefinitionProps extends CommonTaskDefinitionProps {
    * @default - No inference accelerators.
    */
   readonly inferenceAccelerators?: InferenceAccelerator[];
+
+  /**
+   * The amount (in GiB) of ephemeral storage to be allocated to the task.
+   *
+   * Only supported in Fargate platform version 1.4.0 or later.
+   *
+   * @default - Undefined, in which case, the task will receive 20GiB ephemeral storage.
+   */
+  readonly ephemeralStorageGiB?: number;
 }
 
 /**
@@ -330,6 +339,13 @@ export class TaskDefinition extends TaskDefinitionBase {
   public readonly compatibility: Compatibility;
 
   /**
+   * The amount (in GiB) of ephemeral storage to be allocated to the task.
+   *
+   * Only supported in Fargate platform version 1.4.0 or later.
+   */
+  public readonly ephemeralStorageGiB?: number;
+
+  /**
    * The container definitions.
    */
   protected readonly containers = new Array<ContainerDefinition>();
@@ -399,6 +415,8 @@ export class TaskDefinition extends TaskDefinitionBase {
       props.inferenceAccelerators.forEach(ia => this.addInferenceAccelerator(ia));
     }
 
+    this.ephemeralStorageGiB = props.ephemeralStorageGiB;
+
     const taskDef = new CfnTaskDefinition(this, 'Resource', {
       containerDefinitions: Lazy.any({ produce: () => this.renderContainers() }, { omitEmptyArray: true }),
       volumes: Lazy.any({ produce: () => this.renderVolumes() }, { omitEmptyArray: true }),
@@ -424,6 +442,9 @@ export class TaskDefinition extends TaskDefinitionBase {
         produce: () =>
           !isFargateCompatible(this.compatibility) ? this.renderInferenceAccelerators() : undefined,
       }, { omitEmptyArray: true }),
+      ephemeralStorage: this.ephemeralStorageGiB ? {
+        sizeInGiB: this.ephemeralStorageGiB,
+      } : undefined,
     });
 
     if (props.placementConstraints) {
@@ -647,7 +668,7 @@ export class TaskDefinition extends TaskDefinitionBase {
   /**
    * Returns the container that match the provided containerName.
    */
-  private findContainer(containerName: string): ContainerDefinition | undefined {
+  public findContainer(containerName: string): ContainerDefinition | undefined {
     return this.containers.find(c => c.containerName === containerName);
   }
 

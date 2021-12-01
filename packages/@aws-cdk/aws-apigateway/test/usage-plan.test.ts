@@ -2,7 +2,7 @@ import '@aws-cdk/assert-internal/jest';
 import { ResourcePart } from '@aws-cdk/assert-internal';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import { testFutureBehavior } from 'cdk-build-tools/lib/feature-flag';
+import { testFutureBehavior } from '@aws-cdk/cdk-build-tools/lib/feature-flag';
 import * as apigateway from '../lib';
 
 const RESOURCE_TYPE = 'AWS::ApiGateway::UsagePlan';
@@ -173,6 +173,26 @@ describe('usage plan', () => {
         UsagePlanId: {
           Ref: 'myusageplan23AA1E32',
         },
+      }, ResourcePart.Properties);
+    });
+
+
+    test('imported', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const usagePlan: apigateway.IUsagePlan = apigateway.UsagePlan.fromUsagePlanId(stack, 'my-usage-plan', 'imported-id');
+      const apiKey: apigateway.ApiKey = new apigateway.ApiKey(stack, 'my-api-key');
+
+      // WHEN
+      usagePlan.addApiKey(apiKey);
+
+      // THEN
+      expect(stack).toHaveResource('AWS::ApiGateway::UsagePlanKey', {
+        KeyId: {
+          Ref: 'myapikey1B052F70',
+        },
+        KeyType: 'API_KEY',
+        UsagePlanId: 'imported-id',
       }, ResourcePart.Properties);
     });
 

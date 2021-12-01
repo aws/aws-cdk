@@ -1,10 +1,9 @@
-import { expect, haveResource } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import { Duration, Stack } from '@aws-cdk/core';
-import { nodeunitShim, Test } from 'nodeunit-shim';
 import { Bucket, StorageClass } from '../lib';
 
-nodeunitShim({
-  'Bucket with expiration days'(test: Test) {
+describe('rules', () => {
+  test('Bucket with expiration days', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -16,19 +15,19 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::S3::Bucket', {
+    expect(stack).toHaveResource('AWS::S3::Bucket', {
       LifecycleConfiguration: {
         Rules: [{
           ExpirationInDays: 30,
           Status: 'Enabled',
         }],
       },
-    }));
+    });
 
-    test.done();
-  },
 
-  'Can use addLifecycleRule() to add a lifecycle rule'(test: Test) {
+  });
+
+  test('Can use addLifecycleRule() to add a lifecycle rule', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -39,19 +38,19 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::S3::Bucket', {
+    expect(stack).toHaveResource('AWS::S3::Bucket', {
       LifecycleConfiguration: {
         Rules: [{
           ExpirationInDays: 30,
           Status: 'Enabled',
         }],
       },
-    }));
+    });
 
-    test.done();
-  },
 
-  'Bucket with expiration date'(test: Test) {
+  });
+
+  test('Bucket with expiration date', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -63,19 +62,19 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::S3::Bucket', {
+    expect(stack).toHaveResource('AWS::S3::Bucket', {
       LifecycleConfiguration: {
         Rules: [{
           ExpirationDate: '2018-01-01T00:00:00',
           Status: 'Enabled',
         }],
       },
-    }));
+    });
 
-    test.done();
-  },
 
-  'Bucket with transition rule'(test: Test) {
+  });
+
+  test('Bucket with transition rule', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -90,7 +89,7 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::S3::Bucket', {
+    expect(stack).toHaveResource('AWS::S3::Bucket', {
       LifecycleConfiguration: {
         Rules: [{
           Transitions: [{
@@ -100,23 +99,23 @@ nodeunitShim({
           Status: 'Enabled',
         }],
       },
-    }));
+    });
 
-    test.done();
-  },
 
-  'Noncurrent rule on nonversioned bucket fails'(test: Test) {
+  });
+
+  test('Noncurrent rule on nonversioned bucket fails', () => {
     // GIVEN
     const stack = new Stack();
 
     // WHEN: Fail because of lack of versioning
-    test.throws(() => {
+    expect(() => {
       new Bucket(stack, 'Bucket1', {
         lifecycleRules: [{
           noncurrentVersionExpiration: Duration.days(10),
         }],
       });
-    });
+    }).toThrow();
 
     // WHEN: Succeeds because versioning is enabled
     new Bucket(stack, 'Bucket2', {
@@ -126,10 +125,10 @@ nodeunitShim({
       }],
     });
 
-    test.done();
-  },
 
-  'Bucket with expiredObjectDeleteMarker'(test: Test) {
+  });
+
+  test('Bucket with expiredObjectDeleteMarker', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -141,15 +140,15 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::S3::Bucket', {
+    expect(stack).toHaveResource('AWS::S3::Bucket', {
       LifecycleConfiguration: {
         Rules: [{
           ExpiredObjectDeleteMarker: true,
           Status: 'Enabled',
         }],
       },
-    }));
+    });
 
-    test.done();
-  },
+
+  });
 });

@@ -1,5 +1,7 @@
 /* eslint-disable no-console */
 import { execSync } from 'child_process';
+import * as fs from 'fs';
+import { join } from 'path';
 // import the AWSLambda package explicitly,
 // which is globally available in the Lambda runtime,
 // as otherwise linking this repository with link-all.sh
@@ -77,6 +79,38 @@ function installLatestSdk(): void {
   latestSdkInstalled = true;
 }
 
+const patchedServices: { serviceName: string; apiVersions: string[] }[] = [
+  { serviceName: 'OpenSearch', apiVersions: ['2021-01-01'] },
+];
+/**
+ * Patches the AWS SDK by loading service models in the same manner as the actual SDK
+ */
+function patchSdk(awsSdk: any): any {
+  const apiLoader = awsSdk.apiLoader;
+  patchedServices.forEach(({ serviceName, apiVersions }) => {
+    const lowerServiceName = serviceName.toLowerCase();
+    if (!awsSdk.Service.hasService(lowerServiceName)) {
+      apiLoader.services[lowerServiceName] = {};
+      awsSdk[serviceName] = awsSdk.Service.defineService(lowerServiceName, apiVersions);
+    } else {
+      awsSdk.Service.addVersions(awsSdk[serviceName], apiVersions);
+    }
+    apiVersions.forEach(apiVersion => {
+      Object.defineProperty(apiLoader.services[lowerServiceName], apiVersion, {
+        get: function get() {
+          const modelFilePrefix = `aws-sdk-patch/${lowerServiceName}-${apiVersion}`;
+          const model = JSON.parse(fs.readFileSync(join(__dirname, `${modelFilePrefix}.service.json`), 'utf-8'));
+          model.paginators = JSON.parse(fs.readFileSync(join(__dirname, `${modelFilePrefix}.paginators.json`), 'utf-8')).pagination;
+          return model;
+        },
+        enumerable: true,
+        configurable: true,
+      });
+    });
+  });
+  return awsSdk;
+}
+
 /* eslint-disable @typescript-eslint/no-require-imports, import/no-extraneous-dependencies */
 export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent, context: AWSLambda.Context) {
   try {
@@ -93,6 +127,11 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
       AWS = require('/tmp/node_modules/aws-sdk');
     } else {
       AWS = require('aws-sdk');
+    }
+    try {
+      AWS = patchSdk(AWS);
+    } catch (e) {
+      console.log(`Failed to patch AWS SDK: ${e}. Proceeding with the installed copy.`);
     }
 
     console.log(JSON.stringify(event));
@@ -128,7 +167,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
 
         const params = {
           RoleArn: call.assumedRoleArn,
-          RoleSessionName: `${physicalResourceId}-${timestamp}`,
+          RoleSessionName: `${timestamp}-${physicalResourceId}`.substring(0, 64),
         };
 
         AWS.config.credentials = new AWS.ChainableTemporaryCredentials({
@@ -137,6 +176,9 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
 
       }
 
+      if (!Object.prototype.hasOwnProperty.call(AWS, call.service)) {
+        throw Error(`Service ${call.service} does not exist in AWS SDK version ${AWS.VERSION}.`);
+      }
       const awsService = new (AWS as any)[call.service]({
         apiVersion: call.apiVersion,
         region: call.region,

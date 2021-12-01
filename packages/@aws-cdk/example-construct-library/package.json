@@ -66,12 +66,12 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/jest": "^26.0.23",
-    "cdk-build-tools": "0.0.0",
-    "cdk-integ-tools": "0.0.0",
-    "jest": "^26.6.3",
-    "pkglint": "0.0.0",
-    "@aws-cdk/assert-internal": "0.0.0"
+    "@aws-cdk/assertions": "0.0.0",
+    "@aws-cdk/cdk-build-tools": "0.0.0",
+    "@aws-cdk/cdk-integ-tools": "0.0.0",
+    "@aws-cdk/pkglint": "0.0.0",
+    "@types/jest": "^27.0.3",
+    "jest": "^27.3.1"
   },
   "dependencies": {
     "@aws-cdk/aws-cloudwatch": "0.0.0",
@@ -101,7 +101,6 @@
     "announce": false
   },
   "cdk-build": {
-    "jest": true,
     "env": {
       "AWSLINT_BASE_CONSTRUCT": true
     }

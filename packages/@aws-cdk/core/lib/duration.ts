@@ -105,8 +105,17 @@ export class Duration {
    */
   public plus(rhs: Duration): Duration {
     const targetUnit = finestUnit(this.unit, rhs.unit);
-    const total = convert(this.amount, this.unit, targetUnit, {}) + convert(rhs.amount, rhs.unit, targetUnit, {});
-    return new Duration(total, targetUnit);
+    const res = convert(this.amount, this.unit, targetUnit, {}) + convert(rhs.amount, rhs.unit, targetUnit, {});
+    return new Duration(res, targetUnit);
+  }
+
+  /**
+   * Substract two Durations together
+   */
+  public minus(rhs: Duration): Duration {
+    const targetUnit = finestUnit(this.unit, rhs.unit);
+    const res = convert(this.amount, this.unit, targetUnit, {}) - convert(rhs.amount, rhs.unit, targetUnit, {});
+    return new Duration(res, targetUnit);
   }
 
   /**
@@ -309,12 +318,11 @@ class TimeUnit {
 
 function convert(amount: number, fromUnit: TimeUnit, toUnit: TimeUnit, { integral = true }: TimeConversionOptions) {
   if (fromUnit.inMillis === toUnit.inMillis) { return amount; }
-  const multiplier = fromUnit.inMillis / toUnit.inMillis;
 
   if (Token.isUnresolved(amount)) {
     throw new Error(`Unable to perform time unit conversion on un-resolved token ${amount}.`);
   }
-  const value = amount * multiplier;
+  const value = (amount * fromUnit.inMillis) / toUnit.inMillis;
   if (!Number.isInteger(value) && integral) {
     throw new Error(`'${amount} ${fromUnit}' cannot be converted into a whole number of ${toUnit}.`);
   }

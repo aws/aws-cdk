@@ -3,9 +3,9 @@ import { EOL } from 'os';
 import { ResourcePart, SynthUtils, arrayWith, objectLike } from '@aws-cdk/assert-internal';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
+import { testFutureBehavior, testLegacyBehavior } from '@aws-cdk/cdk-build-tools/lib/feature-flag';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import { testFutureBehavior, testLegacyBehavior } from 'cdk-build-tools/lib/feature-flag';
 import * as s3 from '../lib';
 
 // to make it easy to copy & paste from output:
@@ -103,8 +103,6 @@ describe('bucket', () => {
     expect(() => new s3.Bucket(stack, 'MyBucket2', {
       bucketName: '124.pp--33',
     })).not.toThrow();
-
-
   });
 
   test('bucket validation skips tokenized values', () => {
@@ -306,7 +304,7 @@ describe('bucket', () => {
                     },
                   },
                   'Effect': 'Deny',
-                  'Principal': '*',
+                  'Principal': { AWS: '*' },
                   'Resource': [
                     {
                       'Fn::GetAtt': [
@@ -525,7 +523,7 @@ describe('bucket', () => {
                   {
                     'Action': 'bar:baz',
                     'Effect': 'Allow',
-                    'Principal': '*',
+                    'Principal': { AWS: '*' },
                     'Resource': 'foo',
                   },
                 ],
@@ -553,7 +551,7 @@ describe('bucket', () => {
       expect(stack.resolve(x.toStatementJson())).toEqual({
         Action: 's3:ListBucket',
         Effect: 'Allow',
-        Principal: '*',
+        Principal: { AWS: '*' },
         Resource: { 'Fn::GetAtt': ['MyBucketF68F3FF0', 'Arn'] },
       });
 
@@ -574,7 +572,7 @@ describe('bucket', () => {
       expect(stack.resolve(p.toStatementJson())).toEqual({
         Action: 's3:GetObject',
         Effect: 'Allow',
-        Principal: '*',
+        Principal: { AWS: '*' },
         Resource: {
           'Fn::Join': [
             '',
@@ -605,7 +603,7 @@ describe('bucket', () => {
       expect(stack.resolve(p.toStatementJson())).toEqual({
         Action: 's3:GetObject',
         Effect: 'Allow',
-        Principal: '*',
+        Principal: { AWS: '*' },
         Resource: {
           'Fn::Join': [
             '',
@@ -670,7 +668,7 @@ describe('bucket', () => {
       expect(p.toStatementJson()).toEqual({
         Action: 's3:ListBucket',
         Effect: 'Allow',
-        Principal: '*',
+        Principal: { AWS: '*' },
         Resource: 'arn:aws:s3:::my-bucket',
       });
 
@@ -746,14 +744,24 @@ describe('bucket', () => {
       });
 
       const bucket = s3.Bucket.fromBucketAttributes(stack, 'ImportedBucket', {
-        bucketName: 'myBucket',
+        bucketName: 'mybucket',
         region: 'eu-west-1',
       });
 
-      expect(bucket.bucketRegionalDomainName).toEqual(`myBucket.s3.eu-west-1.${stack.urlSuffix}`);
-      expect(bucket.bucketWebsiteDomainName).toEqual(`myBucket.s3-website-eu-west-1.${stack.urlSuffix}`);
+      expect(bucket.bucketRegionalDomainName).toEqual(`mybucket.s3.eu-west-1.${stack.urlSuffix}`);
+      expect(bucket.bucketWebsiteDomainName).toEqual(`mybucket.s3-website-eu-west-1.${stack.urlSuffix}`);
 
 
+    });
+
+    test('import needs to specify a valid bucket name', () => {
+      const stack = new cdk.Stack(undefined, undefined, {
+        env: { region: 'us-east-1' },
+      });
+
+      expect(() => s3.Bucket.fromBucketAttributes(stack, 'MyBucket3', {
+        bucketName: 'arn:aws:s3:::example-com',
+      })).toThrow();
     });
   });
 
@@ -912,7 +920,7 @@ describe('bucket', () => {
               'Action': ['s3:GetObject*', 's3:GetBucket*', 's3:List*'],
               'Condition': { 'StringEquals': { 'aws:PrincipalOrgID': 'o-1234' } },
               'Effect': 'Allow',
-              'Principal': '*',
+              'Principal': { AWS: '*' },
               'Resource': [
                 { 'Fn::GetAtt': ['MyBucketF68F3FF0', 'Arn'] },
                 { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['MyBucketF68F3FF0', 'Arn'] }, '/*']] },
@@ -929,7 +937,7 @@ describe('bucket', () => {
               'Action': ['kms:Decrypt', 'kms:DescribeKey'],
               'Effect': 'Allow',
               'Resource': '*',
-              'Principal': '*',
+              'Principal': { AWS: '*' },
               'Condition': { 'StringEquals': { 'aws:PrincipalOrgID': 'o-1234' } },
             },
           ),
@@ -1783,7 +1791,7 @@ describe('bucket', () => {
             {
               'Action': 's3:GetObject',
               'Effect': 'Allow',
-              'Principal': '*',
+              'Principal': { AWS: '*' },
               'Resource': { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['bC3BBCC65', 'Arn'] }, '/*']] },
             },
           ],
@@ -1808,7 +1816,7 @@ describe('bucket', () => {
             {
               'Action': 's3:GetObject',
               'Effect': 'Allow',
-              'Principal': '*',
+              'Principal': { AWS: '*' },
               'Resource': { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['bC3BBCC65', 'Arn'] }, '/only/access/these/*']] },
             },
           ],
@@ -1833,7 +1841,7 @@ describe('bucket', () => {
             {
               'Action': ['s3:GetObject', 's3:PutObject'],
               'Effect': 'Allow',
-              'Principal': '*',
+              'Principal': { AWS: '*' },
               'Resource': { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['bC3BBCC65', 'Arn'] }, '/*']] },
             },
           ],
@@ -1859,7 +1867,7 @@ describe('bucket', () => {
             {
               'Action': 's3:GetObject',
               'Effect': 'Allow',
-              'Principal': '*',
+              'Principal': { AWS: '*' },
               'Resource': { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['bC3BBCC65', 'Arn'] }, '/*']] },
               'Condition': {
                 'IpAddress': { 'aws:SourceIp': '54.240.143.0/24' },
@@ -2129,11 +2137,11 @@ describe('bucket', () => {
     const stack = new cdk.Stack();
 
     // WHEN
-    const bucket = s3.Bucket.fromBucketArn(stack, 'my-bucket', 'arn:aws:s3:::my_corporate_bucket');
+    const bucket = s3.Bucket.fromBucketArn(stack, 'my-bucket', 'arn:aws:s3:::my-corporate-bucket');
 
     // THEN
-    expect(bucket.bucketName).toEqual('my_corporate_bucket');
-    expect(bucket.bucketArn).toEqual('arn:aws:s3:::my_corporate_bucket');
+    expect(bucket.bucketName).toEqual('my-corporate-bucket');
+    expect(bucket.bucketArn).toEqual('arn:aws:s3:::my-corporate-bucket');
 
   });
 
@@ -2470,5 +2478,174 @@ describe('bucket', () => {
     expect(() => new s3.Bucket(stack, 'MyBucket', {
       autoDeleteObjects: true,
     })).toThrow(/Cannot use \'autoDeleteObjects\' property on a bucket without setting removal policy to \'DESTROY\'/);
+  });
+
+  test('bucket with transfer acceleration turned on', () => {
+    const stack = new cdk.Stack();
+    new s3.Bucket(stack, 'MyBucket', {
+      transferAcceleration: true,
+    });
+
+    expect(stack).toMatchTemplate({
+      'Resources': {
+        'MyBucketF68F3FF0': {
+          'Type': 'AWS::S3::Bucket',
+          'Properties': {
+            'AccelerateConfiguration': {
+              'AccelerationStatus': 'Enabled',
+            },
+          },
+          'DeletionPolicy': 'Retain',
+          'UpdateReplacePolicy': 'Retain',
+        },
+      },
+    });
+
+  });
+
+  test('transferAccelerationUrlForObject returns a token with the S3 URL of the token', () => {
+    const stack = new cdk.Stack();
+    const bucket = new s3.Bucket(stack, 'MyBucket');
+    const bucketWithRegion = s3.Bucket.fromBucketAttributes(stack, 'RegionalBucket', {
+      bucketArn: 'arn:aws:s3:::explicit-region-bucket',
+      region: 'us-west-2',
+    });
+
+    new cdk.CfnOutput(stack, 'BucketURL', { value: bucket.transferAccelerationUrlForObject() });
+    new cdk.CfnOutput(stack, 'MyFileURL', { value: bucket.transferAccelerationUrlForObject('my/file.txt') });
+    new cdk.CfnOutput(stack, 'YourFileURL', { value: bucket.transferAccelerationUrlForObject('/your/file.txt') }); // "/" is optional
+    new cdk.CfnOutput(stack, 'RegionBucketURL', { value: bucketWithRegion.transferAccelerationUrlForObject() });
+
+    expect(stack).toMatchTemplate({
+      'Resources': {
+        'MyBucketF68F3FF0': {
+          'Type': 'AWS::S3::Bucket',
+          'DeletionPolicy': 'Retain',
+          'UpdateReplacePolicy': 'Retain',
+        },
+      },
+      'Outputs': {
+        'BucketURL': {
+          'Value': {
+            'Fn::Join': [
+              '',
+              [
+                'https://',
+                {
+                  'Ref': 'MyBucketF68F3FF0',
+                },
+                '.s3-accelerate.amazonaws.com/',
+              ],
+            ],
+          },
+        },
+        'MyFileURL': {
+          'Value': {
+            'Fn::Join': [
+              '',
+              [
+                'https://',
+                {
+                  'Ref': 'MyBucketF68F3FF0',
+                },
+                '.s3-accelerate.amazonaws.com/my/file.txt',
+              ],
+            ],
+          },
+        },
+        'YourFileURL': {
+          'Value': {
+            'Fn::Join': [
+              '',
+              [
+                'https://',
+                {
+                  'Ref': 'MyBucketF68F3FF0',
+                },
+                '.s3-accelerate.amazonaws.com/your/file.txt',
+              ],
+            ],
+          },
+        },
+        'RegionBucketURL': {
+          'Value': 'https://explicit-region-bucket.s3-accelerate.amazonaws.com/',
+        },
+      },
+    });
+
+
+  });
+
+  test('transferAccelerationUrlForObject with dual stack option returns a token with the S3 URL of the token', () => {
+    const stack = new cdk.Stack();
+    const bucket = new s3.Bucket(stack, 'MyBucket');
+    const bucketWithRegion = s3.Bucket.fromBucketAttributes(stack, 'RegionalBucket', {
+      bucketArn: 'arn:aws:s3:::explicit-region-bucket',
+      region: 'us-west-2',
+    });
+
+    new cdk.CfnOutput(stack, 'BucketURL', { value: bucket.transferAccelerationUrlForObject(undefined, { dualStack: true }) });
+    new cdk.CfnOutput(stack, 'MyFileURL', { value: bucket.transferAccelerationUrlForObject('my/file.txt', { dualStack: true }) });
+    new cdk.CfnOutput(stack, 'YourFileURL', { value: bucket.transferAccelerationUrlForObject('/your/file.txt', { dualStack: true }) }); // "/" is optional
+    new cdk.CfnOutput(stack, 'RegionBucketURL', { value: bucketWithRegion.transferAccelerationUrlForObject(undefined, { dualStack: true }) });
+
+    expect(stack).toMatchTemplate({
+      'Resources': {
+        'MyBucketF68F3FF0': {
+          'Type': 'AWS::S3::Bucket',
+          'DeletionPolicy': 'Retain',
+          'UpdateReplacePolicy': 'Retain',
+        },
+      },
+      'Outputs': {
+        'BucketURL': {
+          'Value': {
+            'Fn::Join': [
+              '',
+              [
+                'https://',
+                {
+                  'Ref': 'MyBucketF68F3FF0',
+                },
+                '.s3-accelerate.dualstack.amazonaws.com/',
+              ],
+            ],
+          },
+        },
+        'MyFileURL': {
+          'Value': {
+            'Fn::Join': [
+              '',
+              [
+                'https://',
+                {
+                  'Ref': 'MyBucketF68F3FF0',
+                },
+                '.s3-accelerate.dualstack.amazonaws.com/my/file.txt',
+              ],
+            ],
+          },
+        },
+        'YourFileURL': {
+          'Value': {
+            'Fn::Join': [
+              '',
+              [
+                'https://',
+                {
+                  'Ref': 'MyBucketF68F3FF0',
+                },
+                '.s3-accelerate.dualstack.amazonaws.com/your/file.txt',
+              ],
+            ],
+          },
+        },
+        'RegionBucketURL': {
+          'Value': 'https://explicit-region-bucket.s3-accelerate.dualstack.amazonaws.com/',
+        },
+      },
+    });
+
+
   });
 });

@@ -56,7 +56,6 @@
   },
   "cdk-build": {
     "cloudformation": "AWS::Serverless",
-    "jest": true,
     "env": {
       "AWSLINT_BASE_CONSTRUCT": true
     }
@@ -74,13 +73,13 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/jest": "^26.0.23",
-    "cdk-build-tools": "0.0.0",
-    "cfn2ts": "0.0.0",
-    "jest": "^26.6.3",
-    "pkglint": "0.0.0",
-    "ts-jest": "^26.5.6",
-    "@aws-cdk/assert-internal": "0.0.0"
+    "@aws-cdk/assertions": "0.0.0",
+    "@aws-cdk/cdk-build-tools": "0.0.0",
+    "@aws-cdk/cfn2ts": "0.0.0",
+    "@aws-cdk/pkglint": "0.0.0",
+    "@types/jest": "^27.0.3",
+    "jest": "^27.3.1",
+    "ts-jest": "^27.0.7"
   },
   "dependencies": {
     "@aws-cdk/core": "0.0.0",

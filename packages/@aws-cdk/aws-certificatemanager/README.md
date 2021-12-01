@@ -113,6 +113,21 @@ new acm.DnsValidatedCertificate(this, 'CrossRegionCertificate', {
 });
 ```
 
+## Requesting private certificates
+
+AWS Certificate Manager can create [private certificates](https://docs.aws.amazon.com/acm/latest/userguide/gs-acm-request-private.html) issued by [Private Certificate Authority (PCA)](https://docs.aws.amazon.com/acm-pca/latest/userguide/PcaWelcome.html). Validation of private certificates is not necessary.
+
+```ts
+import * as acmpca from '@aws-cdk/aws-acmpca';
+
+new acm.PrivateCertificate(stack, 'PrivateCertificate', {
+  domainName: 'test.example.com',
+  subjectAlternativeNames: ['cool.example.com', 'test.example.net'], // optional
+  certificateAuthority: acmpca.CertificateAuthority.fromCertificateAuthorityArn(stack, 'CA',
+    'arn:aws:acm-pca:us-east-1:123456789012:certificate-authority/023077d8-2bfa-4eb0-8f22-05c96deade77'),
+});
+```
+
 ## Importing
 
 If you want to import an existing certificate, you can do so from its ARN:
@@ -126,3 +141,21 @@ const certificate = Certificate.fromCertificateArn(this, 'Certificate', arn);
 
 To share the certificate between stacks in the same CDK application, simply
 pass the `Certificate` object between the stacks.
+
+## Metrics
+
+The `DaysToExpiry` metric is available via the `metricDaysToExpiry` method for
+all certificates. This metric is emitted by AWS Certificates Manager once per
+day until the certificate has effectively expired.
+
+An alarm can be created to determine whether a certificate is soon due for
+renewal ussing the following code:
+
+```ts
+const certificate = new Certificate(this, 'Certificate', { /* ... */ });
+certificate.metricDaysToExpiry().createAlarm({
+  comparisonOperator: cloudwatch.ComparisonOperator.LESS_THAN_THRESHOLD,
+  evaluationPeriods: 1,
+  threshold: 45, // Automatic rotation happens between 60 and 45 days before expiry
+});
+```

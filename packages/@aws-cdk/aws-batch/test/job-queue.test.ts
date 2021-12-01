@@ -1,5 +1,4 @@
-import { ResourcePart } from '@aws-cdk/assert-internal';
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as cdk from '@aws-cdk/core';
 import * as batch from '../lib';
 
@@ -48,7 +47,7 @@ describe('Batch Job Queue', () => {
     new batch.JobQueue(stack, 'test-job-queue', props);
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::Batch::JobQueue', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobQueue', {
       JobQueueName: props.jobQueueName,
       State: props.enabled ? 'ENABLED' : 'DISABLED',
       Priority: props.priority,
@@ -60,7 +59,7 @@ describe('Batch Job Queue', () => {
           Order: 1,
         },
       ],
-    }, ResourcePart.Properties);
+    });
   });
 
   it('should have a default queue priority of 1', () => {
@@ -76,8 +75,8 @@ describe('Batch Job Queue', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::Batch::JobQueue', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobQueue', {
       Priority: 1,
-    }, ResourcePart.Properties);
+    });
   });
 });

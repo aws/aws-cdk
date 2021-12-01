@@ -1,20 +1,28 @@
 # AWS APIGatewayv2 Authorizers
-
 <!--BEGIN STABILITY BANNER-->
 
 ---
 
-![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
+Features                              | Stability
+--------------------------------------|-------------------------------------------------------------
+Authorizer classes for HTTP APIs      | ![Stable](https://img.shields.io/badge/stable-success.svg?style=for-the-badge)
+Authorizer classes for Websocket APIs | ![Experimental](https://img.shields.io/badge/experimental-important.svg?style=for-the-badge)
 
-> The APIs of higher level constructs in this module are experimental and under active development.
-> They are subject to non-backward compatible changes or removal in any future version. These are
-> not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be
-> announced in the release notes. This means that while you may use them, you may need to update
-> your source code when upgrading to a newer version of this package.
+> **Experimental:** Higher level constructs in this module that are marked as experimental are
+> under active development. They are subject to non-backward compatible changes or removal in any
+> future version. These are not subject to the [Semantic Versioning](https://semver.org/) model and
+> breaking changes will be announced in the release notes. This means that while you may use them,
+> you may need to update your source code when upgrading to a newer version of this package.
+
+<!-- -->
+
+> **Stable:** Higher level constructs in this module that are marked stable will not undergo any
+> breaking changes. They will strictly follow the [Semantic Versioning](https://semver.org/) model.
 
 ---
 
 <!--END STABILITY BANNER-->
+
 
 ## Table of Contents
 
@@ -46,11 +54,14 @@ When using default authorization, all routes of the api will inherit the configu
 In the example below, all routes will require the `manage:books` scope present in order to invoke the integration.
 
 ```ts
-const authorizer = new HttpJwtAuthorizer({
-  ...
+import { HttpJwtAuthorizer } from '@aws-cdk/aws-apigatewayv2-authorizers';
+
+const issuer = 'https://test.us.auth0.com';
+const authorizer = new HttpJwtAuthorizer('DefaultAuthorizer', issuer, {
+  jwtAudience: ['3131231'],
 });
 
-const api = new HttpApi(stack, 'HttpApi', {
+const api = new apigwv2.HttpApi(this, 'HttpApi', {
   defaultAuthorizer: authorizer,
   defaultAuthorizationScopes: ['manage:books'],
 });
@@ -67,39 +78,43 @@ The example below showcases default authorization, along with route authorizatio
 - `POST /login` removes the default authorizer (unauthenticated route)
 
 ```ts
-const authorizer = new HttpJwtAuthorizer({
-  ...
+import { HttpJwtAuthorizer } from '@aws-cdk/aws-apigatewayv2-authorizers';
+import { HttpUrlIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
+
+const issuer = 'https://test.us.auth0.com';
+const authorizer = new HttpJwtAuthorizer('DefaultAuthorizer', issuer, {
+  jwtAudience: ['3131231'],
 });
 
-const api = new HttpApi(stack, 'HttpApi', {
+const api = new apigwv2.HttpApi(this, 'HttpApi', {
   defaultAuthorizer: authorizer,
   defaultAuthorizationScopes: ['read:books'],
 });
 
 api.addRoutes({
-  ...
+  integration: new HttpUrlIntegration('BooksIntegration', 'https://get-books-proxy.myproxy.internal'),
   path: '/books',
-  method: 'get',
+  methods: [apigwv2.HttpMethod.GET],
 });
 
 api.addRoutes({
-  ...
+  integration: new HttpUrlIntegration('BooksIdIntegration', 'https://get-books-proxy.myproxy.internal'),
   path: '/books/{id}',
-  method: 'get',
+  methods: [apigwv2.HttpMethod.GET],
 });
 
 api.addRoutes({
-  ...
+  integration: new HttpUrlIntegration('BooksIntegration', 'https://get-books-proxy.myproxy.internal'),
   path: '/books',
-  method: 'post',
+  methods: [apigwv2.HttpMethod.POST],
   authorizationScopes: ['write:books']
 });
 
 api.addRoutes({
-  ...
+  integration: new HttpUrlIntegration('LoginIntegration', 'https://get-books-proxy.myproxy.internal'),
   path: '/login',
-  method: 'post',
-  authorizer: new NoneAuthorizer(),
+  methods: [apigwv2.HttpMethod.POST],
+  authorizer: new apigwv2.HttpNoneAuthorizer(),
 });
 ```
 
@@ -120,17 +135,18 @@ Clients that fail authorization are presented with either 2 responses:
 - `403 - Forbidden` - When the JWT validation is successful but the required scopes are not met
 
 ```ts
-const authorizer = new HttpJwtAuthorizer({
+import { HttpJwtAuthorizer } from '@aws-cdk/aws-apigatewayv2-authorizers';
+import { HttpUrlIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
+
+const issuer = 'https://test.us.auth0.com';
+const authorizer = new HttpJwtAuthorizer('BooksAuthorizer', issuer, {
   jwtAudience: ['3131231'],
-  jwtIssuer: 'https://test.us.auth0.com',
 });
 
-const api = new HttpApi(stack, 'HttpApi');
+const api = new apigwv2.HttpApi(this, 'HttpApi');
 
 api.addRoutes({
-  integration: new HttpProxyIntegration({
-    url: 'https://get-books-proxy.myproxy.internal',
-  }),
+  integration: new HttpUrlIntegration('BooksIntegration', 'https://get-books-proxy.myproxy.internal'),
   path: '/books',
   authorizer,
 });
@@ -145,20 +161,18 @@ They must then use this token in the specified `identitySource` for the API call
 pools as authorizer](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-integrate-with-cognito.html).
 
 ```ts
-const userPool = new UserPool(stack, 'UserPool');
-const userPoolClient = userPool.addClient('UserPoolClient');
+import * as cognito from '@aws-cdk/aws-cognito';
+import { HttpUserPoolAuthorizer } from '@aws-cdk/aws-apigatewayv2-authorizers';
+import { HttpUrlIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
 
-const authorizer = new HttpUserPoolAuthorizer({
-  userPool,
-  userPoolClient,
-});
+const userPool = new cognito.UserPool(this, 'UserPool');
 
-const api = new HttpApi(stack, 'HttpApi');
+const authorizer = new HttpUserPoolAuthorizer('BooksAuthorizer', userPool);
+
+const api = new apigwv2.HttpApi(this, 'HttpApi');
 
 api.addRoutes({
-  integration: new HttpProxyIntegration({
-    url: 'https://get-books-proxy.myproxy.internal',
-  }),
+  integration: new HttpUrlIntegration('BooksIntegration', 'https://get-books-proxy.myproxy.internal'),
   path: '/books',
   authorizer,
 });
@@ -172,22 +186,20 @@ Lambda authorizers depending on their response, fall into either two types - Sim
 
 
 ```ts
+import { HttpLambdaAuthorizer, HttpLambdaResponseType } from '@aws-cdk/aws-apigatewayv2-authorizers';
+import { HttpUrlIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
+
 // This function handles your auth logic
-const authHandler = new Function(this, 'auth-function', {
-  //...
+declare const authHandler: lambda.Function;
+
+const authorizer = new HttpLambdaAuthorizer('BooksAuthorizer', authHandler, {
+  responseTypes: [HttpLambdaResponseType.SIMPLE], // Define if returns simple and/or iam response
 });
 
-const authorizer = new HttpLambdaAuthorizer({
-  responseTypes: [HttpLambdaResponseType.SIMPLE] // Define if returns simple and/or iam response
-  handler: authHandler,
-});
-
-const api = new HttpApi(stack, 'HttpApi');
+const api = new apigwv2.HttpApi(this, 'HttpApi');
 
 api.addRoutes({
-  integration: new HttpProxyIntegration({
-    url: 'https://get-books-proxy.myproxy.internal',
-  }),
+  integration: new HttpUrlIntegration('BooksIntegration', 'https://get-books-proxy.myproxy.internal'),
   path: '/books',
   authorizer,
 });

@@ -8,7 +8,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
 import * as route53 from '@aws-cdk/aws-route53';
-import { App, Stack, Duration, SecretValue } from '@aws-cdk/core';
+import { App, Stack, Duration, SecretValue, CfnParameter, Token } from '@aws-cdk/core';
 import { Domain, ElasticsearchVersion } from '../lib';
 
 let app: App;
@@ -244,6 +244,45 @@ describe('UltraWarm instances', () => {
     });
   });
 
+});
+
+test('can use tokens in capacity configuration', () => {
+  new Domain(stack, 'Domain', {
+    version: ElasticsearchVersion.V7_10,
+    capacity: {
+      dataNodeInstanceType: Token.asString({ Ref: 'dataNodeInstanceType' }),
+      dataNodes: Token.asNumber({ Ref: 'dataNodes' }),
+      masterNodeInstanceType: Token.asString({ Ref: 'masterNodeInstanceType' }),
+      masterNodes: Token.asNumber({ Ref: 'masterNodes' }),
+      warmInstanceType: Token.asString({ Ref: 'warmInstanceType' }),
+      warmNodes: Token.asNumber({ Ref: 'warmNodes' }),
+    },
+  });
+
+  expect(stack).toHaveResourceLike('AWS::Elasticsearch::Domain', {
+    ElasticsearchClusterConfig: {
+      InstanceCount: {
+        Ref: 'dataNodes',
+      },
+      InstanceType: {
+        Ref: 'dataNodeInstanceType',
+      },
+      DedicatedMasterEnabled: true,
+      DedicatedMasterCount: {
+        Ref: 'masterNodes',
+      },
+      DedicatedMasterType: {
+        Ref: 'masterNodeInstanceType',
+      },
+      WarmEnabled: true,
+      WarmCount: {
+        Ref: 'warmNodes',
+      },
+      WarmType: {
+        Ref: 'warmInstanceType',
+      },
+    },
+  });
 });
 
 describe('log groups', () => {
@@ -900,7 +939,7 @@ describe('import', () => {
 
   test('static fromDomainAttributes(attributes) allows importing an external/existing domain', () => {
     const domainName = 'test-domain-2w2x2u3tifly';
-    const domainArn = `es:testregion:1234:domain/${domainName}`;
+    const domainArn = `arn:aws:es:testregion:1234:domain/${domainName}`;
     const domainEndpoint = `https://${domainName}-jcjotrt6f7otem4sqcwbch3c4u.testregion.es.amazonaws.com`;
     const imported = Domain.fromDomainAttributes(stack, 'Domain', {
       domainArn,
@@ -913,6 +952,43 @@ describe('import', () => {
     expect(stack).not.toHaveResource('AWS::Elasticsearch::Domain');
   });
 
+  test('static fromDomainAttributes(attributes) allows importing with token arn and endpoint', () => {
+    const domainArn = new CfnParameter(stack, 'domainArn', { type: 'String' }).valueAsString;
+    const domainEndpoint = new CfnParameter(stack, 'domainEndpoint', { type: 'String' }).valueAsString;
+    const imported = Domain.fromDomainAttributes(stack, 'Domain', {
+      domainArn,
+      domainEndpoint,
+    });
+    const expectedDomainName = {
+      'Fn::Select': [
+        1,
+        {
+          'Fn::Split': [
+            '/',
+            {
+              'Fn::Select': [
+                5,
+                {
+                  'Fn::Split': [
+                    ':',
+                    {
+                      Ref: 'domainArn',
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    };
+
+    expect(stack.resolve(imported.domainName)).toEqual(expectedDomainName);
+    expect(imported.domainArn).toEqual(domainArn);
+    expect(imported.domainEndpoint).toEqual(domainEndpoint);
+
+    expect(stack).not.toHaveResource('AWS::Elasticsearch::Domain');
+  });
 });
 
 describe('advanced security options', () => {
@@ -1280,24 +1356,27 @@ describe('custom error responses', () => {
     })).toThrow(/Unknown Elasticsearch version: 5\.4/);
   });
 
-  test('error when log publishing is enabled for elasticsearch version < 5.1', () => {
-    const error = /logs publishing requires Elasticsearch version 5.1 or later/;
+  test('error when invalid domain name is given', () => {
+    expect(() => new Domain(stack, 'Domain1', {
+      version: ElasticsearchVersion.V7_4,
+      domainName: 'InvalidName',
+    })).toThrow(/Valid characters are a-z/);
+    expect(() => new Domain(stack, 'Domain2', {
+      version: ElasticsearchVersion.V7_4,
+      domainName: 'a'.repeat(29),
+    })).toThrow(/It must be between 3 and 28 characters/);
+    expect(() => new Domain(stack, 'Domain3', {
+      version: ElasticsearchVersion.V7_4,
+      domainName: '123domain',
+    })).toThrow(/It must start with a lowercase letter/);
+  });
+
+  test('error when error log publishing is enabled for elasticsearch version < 5.1', () => {
+    const error = /Error logs publishing requires Elasticsearch version 5.1 or later/;
     expect(() => new Domain(stack, 'Domain1', {
       version: ElasticsearchVersion.V2_3,
       logging: {
         appLogEnabled: true,
-      },
-    })).toThrow(error);
-    expect(() => new Domain(stack, 'Domain2', {
-      version: ElasticsearchVersion.V1_5,
-      logging: {
-        slowSearchLogEnabled: true,
-      },
-    })).toThrow(error);
-    expect(() => new Domain(stack, 'Domain3', {
-      version: ElasticsearchVersion.V1_5,
-      logging: {
-        slowIndexLogEnabled: true,
       },
     })).toThrow(error);
   });
@@ -1358,11 +1437,21 @@ describe('custom error responses', () => {
     })).toThrow(/Node-to-node encryption requires Elasticsearch version 6.0 or later/);
   });
 
-  test('error when i3 instance types are specified with EBS enabled', () => {
+  test('error when i3 or r6g instance types are specified with EBS enabled', () => {
     expect(() => new Domain(stack, 'Domain1', {
       version: ElasticsearchVersion.V7_4,
       capacity: {
         dataNodeInstanceType: 'i3.2xlarge.elasticsearch',
+      },
+      ebs: {
+        volumeSize: 100,
+        volumeType: EbsDeviceVolumeType.GENERAL_PURPOSE_SSD,
+      },
+    })).toThrow(/I3 and R6GD instance types do not support EBS storage volumes/);
+    expect(() => new Domain(stack, 'Domain2', {
+      version: ElasticsearchVersion.V7_4,
+      capacity: {
+        dataNodeInstanceType: 'r6gd.large.elasticsearch',
       },
       ebs: {
         volumeSize: 100,
@@ -1421,6 +1510,41 @@ describe('custom error responses', () => {
         masterNodeInstanceType: 'm5.large.elasticsearch',
       },
     })).toThrow(/EBS volumes are required when using instance types other than r3, i3 or r6gd/);
+    expect(() => new Domain(stack, 'Domain2', {
+      version: ElasticsearchVersion.V7_4,
+      ebs: {
+        enabled: false,
+      },
+      capacity: {
+        dataNodeInstanceType: 'm5.large.elasticsearch',
+      },
+    })).toThrow(/EBS volumes are required when using instance types other than r3, i3 or r6gd/);
+  });
+
+  test('can use compatible master instance types that does not have local storage when data node type is i3 or r6gd', () => {
+    new Domain(stack, 'Domain1', {
+      version: ElasticsearchVersion.V7_4,
+      ebs: {
+        enabled: false,
+      },
+      capacity: {
+        masterNodeInstanceType: 'c5.2xlarge.elasticsearch',
+        dataNodeInstanceType: 'i3.2xlarge.elasticsearch',
+      },
+    });
+    new Domain(stack, 'Domain2', {
+      version: ElasticsearchVersion.V7_4,
+      ebs: {
+        enabled: false,
+      },
+      capacity: {
+        masterNodes: 3,
+        masterNodeInstanceType: 'c6g.large.elasticsearch',
+        dataNodeInstanceType: 'r6gd.large.elasticsearch',
+      },
+    });
+    // both configurations pass synth-time validation
+    expect(stack).toCountResources('AWS::Elasticsearch::Domain', 2);
   });
 
   test('error when availabilityZoneCount is not 2 or 3', () => {
@@ -1608,6 +1732,34 @@ describe('unsigned basic auth', () => {
   });
 });
 
+describe('advanced options', () => {
+  test('use advanced options', () => {
+    new Domain(stack, 'Domain', {
+      version: ElasticsearchVersion.V7_1,
+      advancedOptions: {
+        'rest.action.multi.allow_explicit_index': 'true',
+        'indices.fielddata.cache.size': '50',
+      },
+    });
+
+    expect(stack).toHaveResourceLike('AWS::Elasticsearch::Domain', {
+      AdvancedOptions: {
+        'rest.action.multi.allow_explicit_index': 'true',
+        'indices.fielddata.cache.size': '50',
+      },
+    });
+  });
+
+  test('advanced options absent by default', () => {
+    new Domain(stack, 'Domain', {
+      version: ElasticsearchVersion.V7_1,
+    });
+
+    expect(stack).toHaveResourceLike('AWS::Elasticsearch::Domain', {
+      AdvancedOptions: assert.ABSENT,
+    });
+  });
+});
 
 function testGrant(
   expectedActions: string[],

@@ -1,7 +1,7 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { ConstructNode, IResource, Resource, Token } from '@aws-cdk/core';
+import { ArnFormat, ConstructNode, IResource, Resource, Token } from '@aws-cdk/core';
 import { AliasOptions } from './alias';
 import { EventInvokeConfig, EventInvokeConfigOptions } from './event-invoke-config';
 import { IEventSource } from './event-source';
@@ -21,7 +21,7 @@ export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable {
   readonly functionName: string;
 
   /**
-   * The ARN fo the function.
+   * The ARN of the function.
    *
    * @attribute
    */
@@ -383,7 +383,7 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
     if (Token.isUnresolved(this.stack.account) || Token.isUnresolved(this.functionArn)) {
       return false;
     }
-    return this.stack.parseArn(this.functionArn).account === this.stack.account;
+    return this.stack.splitArn(this.functionArn, ArnFormat.SLASH_RESOURCE_NAME).account === this.stack.account;
   }
 
   /**

@@ -1,4 +1,4 @@
-import { ArnComponents } from './arn';
+import { ArnComponents, ArnFormat } from './arn';
 import { CfnResource } from './cfn-resource';
 import { IConstruct, Construct as CoreConstruct } from './construct-compat';
 import { IStringProducer, Lazy } from './lazy';
@@ -145,7 +145,10 @@ export abstract class Resource extends CoreConstruct implements IResource {
 
     this.stack = Stack.of(this);
 
-    const parsedArn = props.environmentFromArn ? this.stack.parseArn(props.environmentFromArn) : undefined;
+    const parsedArn = props.environmentFromArn ?
+      // Since we only want the region and account, NO_RESOURE_NAME is good enough
+      this.stack.splitArn(props.environmentFromArn, ArnFormat.NO_RESOURCE_NAME)
+      : undefined;
     this.env = {
       account: props.account ?? parsedArn?.account ?? this.stack.account,
       region: props.region ?? parsedArn?.region ?? this.stack.region,
@@ -203,7 +206,7 @@ export abstract class Resource extends CoreConstruct implements IResource {
    * CDK application or because you've made a change that requires the resource
    * to be replaced.
    *
-   * The resource can be deleted (`RemovalPolicy.DELETE`), or left in your AWS
+   * The resource can be deleted (`RemovalPolicy.DESTROY`), or left in your AWS
    * account for data recovery and cleanup later (`RemovalPolicy.RETAIN`).
    */
   public applyRemovalPolicy(policy: RemovalPolicy) {

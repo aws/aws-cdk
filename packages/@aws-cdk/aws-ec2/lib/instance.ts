@@ -1,8 +1,9 @@
 import * as crypto from 'crypto';
 import * as iam from '@aws-cdk/aws-iam';
 
-import { Annotations, Duration, Fn, IResource, Lazy, Resource, Stack, Tags } from '@aws-cdk/core';
+import { Annotations, Aspects, Duration, Fn, IResource, Lazy, Resource, Stack, Tags } from '@aws-cdk/core';
 import { Construct } from 'constructs';
+import { InstanceRequireImdsv2Aspect } from './aspects';
 import { CloudFormationInit } from './cfn-init';
 import { Connections, IConnectable } from './connections';
 import { CfnInstance } from './ec2.generated';
@@ -230,6 +231,13 @@ export interface InstanceProps {
    * @default - default options
    */
   readonly initOptions?: ApplyCloudFormationInitOptions;
+
+  /**
+   * Whether IMDSv2 should be required on this instance.
+   *
+   * @default - false
+   */
+  readonly requireImdsv2?: boolean;
 }
 
 /**
@@ -408,6 +416,10 @@ export class Instance extends Resource implements IInstance {
         return `${originalLogicalId}${digest}`;
       },
     }));
+
+    if (props.requireImdsv2) {
+      Aspects.of(this).add(new InstanceRequireImdsv2Aspect());
+    }
   }
 
   /**
@@ -452,6 +464,8 @@ export class Instance extends Resource implements IInstance {
       embedFingerprint: options.embedFingerprint,
       printLog: options.printLog,
       ignoreFailures: options.ignoreFailures,
+      includeRole: options.includeRole,
+      includeUrl: options.includeUrl,
     });
     this.waitForResourceSignal(options.timeout ?? Duration.minutes(5));
   }
@@ -557,4 +571,23 @@ export interface ApplyCloudFormationInitOptions {
    * @default false
    */
   readonly ignoreFailures?: boolean;
+
+  /**
+   * Include --url argument when running cfn-init and cfn-signal commands
+   *
+   * This will be the cloudformation endpoint in the deployed region
+   * e.g. https://cloudformation.us-east-1.amazonaws.com
+   *
+   * @default false
+   */
+  readonly includeUrl?: boolean;
+
+  /**
+   * Include --role argument when running cfn-init and cfn-signal commands
+   *
+   * This will be the IAM instance profile attached to the EC2 instance
+   *
+   * @default false
+   */
+  readonly includeRole?: boolean;
 }

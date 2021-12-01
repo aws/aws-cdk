@@ -43,6 +43,13 @@ export interface AwsCloudFormationStackProperties {
   readonly assumeRoleArn?: string;
 
   /**
+   * External ID to use when assuming role for cloudformation deployments
+   *
+   * @default - No external ID
+   */
+  readonly assumeRoleExternalId?: string;
+
+  /**
    * The role that is passed to CloudFormation to execute the change set
    *
    * @default - No role is passed (currently assumed role/credentials are used)

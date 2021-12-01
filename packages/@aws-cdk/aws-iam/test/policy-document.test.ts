@@ -283,7 +283,7 @@ describe('IAM policy document', () => {
 
       expect(stack.resolve(p)).toEqual({
         Statement: [
-          { Effect: 'Allow', Principal: '*' },
+          { Effect: 'Allow', Principal: { AWS: '*' } },
         ],
         Version: '2012-10-17',
       });
@@ -297,7 +297,7 @@ describe('IAM policy document', () => {
 
       expect(stack.resolve(p)).toEqual({
         Statement: [
-          { Effect: 'Allow', Principal: '*' },
+          { Effect: 'Allow', Principal: { AWS: '*' } },
         ],
         Version: '2012-10-17',
       });
@@ -313,7 +313,7 @@ describe('IAM policy document', () => {
 
       expect(stack.resolve(p)).toEqual({
         Statement: [
-          { Effect: 'Allow', Principal: '*' },
+          { Effect: 'Allow', Principal: { AWS: '*' } },
         ],
         Version: '2012-10-17',
       });
@@ -764,6 +764,7 @@ describe('IAM policy document', () => {
         });
       }).toThrow(/Statement must be an array/);
     });
+
   });
 
   test('adding another condition with the same operator does not delete the original', () => {

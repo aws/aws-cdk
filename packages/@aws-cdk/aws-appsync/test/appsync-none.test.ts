@@ -1,5 +1,5 @@
-import '@aws-cdk/assert-internal/jest';
 import * as path from 'path';
+import { Template } from '@aws-cdk/assertions';
 import * as cdk from '@aws-cdk/core';
 import * as appsync from '../lib';
 
@@ -21,7 +21,7 @@ describe('None Data Source configuration', () => {
     api.addNoneDataSource('ds');
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::DataSource', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
       Type: 'NONE',
       Name: 'ds',
     });
@@ -34,7 +34,7 @@ describe('None Data Source configuration', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::DataSource', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
       Type: 'NONE',
       Name: 'custom',
     });
@@ -48,7 +48,7 @@ describe('None Data Source configuration', () => {
     });
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::DataSource', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
       Type: 'NONE',
       Name: 'custom',
       Description: 'custom description',
@@ -81,7 +81,7 @@ describe('adding none data source from imported api', () => {
     importedApi.addNoneDataSource('none');
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::DataSource', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
       Type: 'NONE',
       ApiId: { 'Fn::GetAtt': ['baseApiCDA4D43A', 'ApiId'] },
     });
@@ -96,7 +96,7 @@ describe('adding none data source from imported api', () => {
     importedApi.addNoneDataSource('none');
 
     // THEN
-    expect(stack).toHaveResourceLike('AWS::AppSync::DataSource', {
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
       Type: 'NONE',
       ApiId: { 'Fn::GetAtt': ['baseApiCDA4D43A', 'ApiId'] },
     });

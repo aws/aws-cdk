@@ -1,4 +1,4 @@
-import { expect as cdkExpect, haveResource } from '@aws-cdk/assert-internal';
+import { Template } from '@aws-cdk/assertions';
 import * as cdk from '@aws-cdk/core';
 import { ClusterParameterGroup } from '../lib';
 
@@ -15,7 +15,7 @@ test('create a cluster parameter group', () => {
   });
 
   // THEN
-  cdkExpect(stack).to(haveResource('AWS::Redshift::ClusterParameterGroup', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Redshift::ClusterParameterGroup', {
     Description: 'desc',
     ParameterGroupFamily: 'redshift-1.0',
     Parameters: [
@@ -24,6 +24,6 @@ test('create a cluster parameter group', () => {
         ParameterValue: 'value',
       },
     ],
-  }));
+  });
 
 });

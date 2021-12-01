@@ -570,6 +570,8 @@ export abstract class BaseService extends Resource
    *
    * @example
    *
+   * declare const listener: elbv2.ApplicationListener;
+   * declare const service: ecs.BaseService;
    * listener.addTargets('ECS', {
    *   port: 80,
    *   targets: [service.loadBalancerTarget({
@@ -605,6 +607,8 @@ export abstract class BaseService extends Resource
    *
    * @example
    *
+   * declare const listener: elbv2.ApplicationListener;
+   * declare const service: ecs.BaseService;
    * service.registerLoadBalancerTargets(
    *   {
    *     containerName: 'web',
@@ -746,7 +750,7 @@ export abstract class BaseService extends Resource
     return new cloudwatch.Metric({
       namespace: 'AWS/ECS',
       metricName,
-      dimensions: { ClusterName: this.cluster.clusterName, ServiceName: this.serviceName },
+      dimensionsMap: { ClusterName: this.cluster.clusterName, ServiceName: this.serviceName },
       ...props,
     }).attachTo(this);
   }
@@ -945,7 +949,7 @@ export interface CloudMapOptions {
   /**
    * The amount of time that you want DNS resolvers to cache the settings for this record.
    *
-   * @default 60
+   * @default Duration.minutes(1)
    */
   readonly dnsTtl?: Duration;
 

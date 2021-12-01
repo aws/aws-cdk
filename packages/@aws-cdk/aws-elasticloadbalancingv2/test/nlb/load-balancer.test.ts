@@ -4,7 +4,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import { testFutureBehavior } from 'cdk-build-tools/lib/feature-flag';
+import { testFutureBehavior } from '@aws-cdk/cdk-build-tools/lib/feature-flag';
 import * as elbv2 from '../../lib';
 
 const s3GrantWriteCtx = { [cxapi.S3_GRANT_WRITE_WITHOUT_ACL]: true };
@@ -95,6 +95,10 @@ describe('tests', () => {
         {
           Key: 'access_logs.s3.bucket',
           Value: { Ref: 'AccessLoggingBucketA6D88F29' },
+        },
+        {
+          Key: 'access_logs.s3.prefix',
+          Value: '',
         },
       ),
     });
@@ -479,4 +483,3 @@ describe('tests', () => {
     });
   });
 });
-

@@ -1,7 +1,7 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
-import { Arn, Duration, IResource, Resource, Stack, Token } from '@aws-cdk/core';
+import { Arn, ArnFormat, Duration, IResource, Resource, Stack, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { StateGraph } from './state-graph';
 import { StatesMetrics } from './stepfunctions-canned-metrics.generated';
@@ -165,6 +165,18 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
   }
 
   /**
+   * Grant the given identity permissions to start a synchronous execution of
+   * this state machine.
+   */
+  public grantStartSyncExecution(identity: iam.IGrantable): iam.Grant {
+    return iam.Grant.addToPrincipal({
+      grantee: identity,
+      actions: ['states:StartSyncExecution'],
+      resourceArns: [this.stateMachineArn],
+    });
+  }
+
+  /**
    * Grant the given identity permissions to read results from state
    * machine.
    */
@@ -244,7 +256,7 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
     return new cloudwatch.Metric({
       namespace: 'AWS/States',
       metricName,
-      dimensions: { StateMachineArn: this.stateMachineArn },
+      dimensionsMap: { StateMachineArn: this.stateMachineArn },
       statistic: 'sum',
       ...props,
     }).attachTo(this);
@@ -333,8 +345,8 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
     return Stack.of(this).formatArn({
       resource: 'execution',
       service: 'states',
-      resourceName: Arn.parse(this.stateMachineArn, ':').resourceName,
-      sep: ':',
+      resourceName: Arn.split(this.stateMachineArn, ArnFormat.COLON_RESOURCE_NAME).resourceName,
+      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
     });
   }
 
@@ -412,7 +424,7 @@ export class StateMachine extends StateMachineBase {
       service: 'states',
       resource: 'stateMachine',
       resourceName: this.physicalName,
-      sep: ':',
+      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
     });
   }
 
@@ -504,6 +516,14 @@ export interface IStateMachine extends IResource, iam.IGrantable {
    * @param identity The principal
    */
   grantStartExecution(identity: iam.IGrantable): iam.Grant;
+
+  /**
+   * Grant the given identity permissions to start a synchronous execution of
+   * this state machine.
+   *
+   * @param identity The principal
+   */
+  grantStartSyncExecution(identity: iam.IGrantable): iam.Grant;
 
   /**
    * Grant the given identity read permissions for this state machine

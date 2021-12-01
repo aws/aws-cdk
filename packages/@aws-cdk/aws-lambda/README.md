@@ -14,9 +14,6 @@
 This construct library allows you to define AWS Lambda Functions.
 
 ```ts
-import * as lambda from '@aws-cdk/aws-lambda';
-import * as path from 'path';
-
 const fn = new lambda.Function(this, 'MyFunction', {
   runtime: lambda.Runtime.NODEJS_12_X,
   handler: 'index.handler',
@@ -81,6 +78,9 @@ new lambda.DockerImageFunction(this, 'ECRFunction', {
 });
 ```
 
+The props for these docker image resources allow overriding the image's `CMD`, `ENTRYPOINT`, and `WORKDIR`
+configurations. See their docs for more information.
+
 ## Execution Role
 
 Lambda functions assume an IAM role during execution. In CDK by default, Lambda
@@ -94,8 +94,9 @@ const fn = new lambda.Function(this, 'MyFunction', {
   runtime: lambda.Runtime.NODEJS_12_X,
   handler: 'index.handler',
   code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
+});
 
-fn.role // the Role
+const role = fn.role; // the Role
 ```
 
 You can also provide your own IAM role. Provided IAM roles will not automatically
@@ -103,15 +104,51 @@ be given permissions to execute the Lambda function. To provide a role and grant
 it appropriate permissions:
 
 ```ts
+const myRole = new iam.Role(this, 'My Role', {
+  assumedBy: new iam.ServicePrincipal('sns.amazonaws.com'),
+});
+
 const fn = new lambda.Function(this, 'MyFunction', {
   runtime: lambda.Runtime.NODEJS_12_X,
   handler: 'index.handler',
   code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
-  role: myRole // user-provided role
+  role: myRole, // user-provided role
 });
 
-myRole.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName("service-role/AWSLambdaBasicExecutionRole"));
-myRole.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName("service-role/AWSLambdaVPCAccessExecutionRole")); // only required if your function lives in a VPC
+myRole.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName("service-role/AWSLambdaBasicExecutionRole"));
+myRole.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName("service-role/AWSLambdaVPCAccessExecutionRole")); // only required if your function lives in a VPC
+```
+
+## Function Timeout
+
+AWS Lambda functions have a default timeout of 3 seconds, but this can be increased
+up to 15 minutes. The timeout is available as a property of `Function` so that
+you can reference it elsewhere in your stack. For instance, you could use it to create
+a CloudWatch alarm to report when your function timed out:
+
+```ts
+import * as cdk from '@aws-cdk/core';
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
+
+const fn = new lambda.Function(this, 'MyFunction', {
+   runtime: lambda.Runtime.NODEJS_12_X,
+   handler: 'index.handler',
+   code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
+   timeout: cdk.Duration.minutes(5),
+});
+
+if (fn.timeout) {
+   new cloudwatch.Alarm(this, `MyAlarm`, {
+      metric: fn.metricDuration().with({
+         statistic: 'Maximum',
+      }),
+      evaluationPeriods: 1,
+      datapointsToAlarm: 1,
+      threshold: fn.timeout.toMilliseconds(),
+      treatMissingData: cloudwatch.TreatMissingData.IGNORE,
+      alarmName: 'My Lambda Timeout',
+   });
+}
 ```
 
 ## Resource-based Policies
@@ -124,7 +161,7 @@ a source account or ARN (representing the account and identifier of the resource
 that accesses the function or layer).
 
 ```ts
-import * as iam from '@aws-cdk/aws-iam';
+declare const fn: lambda.Function;
 const principal = new iam.ServicePrincipal('my-service');
 
 fn.grantInvoke(principal);
@@ -147,7 +184,7 @@ operation (see above), these conditions will be automatically added to the
 resource policy.
 
 ```ts
-import * as iam from '@aws-cdk/aws-iam';
+declare const fn: lambda.Function;
 const servicePrincipal = new iam.ServicePrincipal('my-service');
 const sourceArn = 'arn:aws:s3:::my-bucket';
 const sourceAccount = '111122223333';
@@ -188,8 +225,8 @@ The function version includes the following information:
 You could create a version to your lambda function using the `Version` construct.
 
 ```ts
-const fn = new Function(this, 'MyFunction', ...);
-const version = new Version(this, 'MyVersion', {
+declare const fn: lambda.Function;
+const version = new lambda.Version(this, 'MyVersion', {
   lambda: fn,
 });
 ```
@@ -206,9 +243,12 @@ latest code. For instance -
 ```ts
 const codeVersion = "stringOrMethodToGetCodeVersion";
 const fn = new lambda.Function(this, 'MyFunction', {
- environment: {
-   'CodeVersionString': codeVersion
- }
+  runtime: lambda.Runtime.NODEJS_12_X,
+  handler: 'index.handler',
+  code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
+  environment: {
+    'CodeVersionString': codeVersion,
+  },
 });
 ```
 
@@ -289,8 +329,11 @@ property.
 const fn = new lambda.Function(this, 'MyFunction', {
   currentVersionOptions: {
     removalPolicy: RemovalPolicy.RETAIN, // retain old versions
-    retryAttempts: 1                     // async retry attempts
-  }
+    retryAttempts: 1,                   // async retry attempts
+  },
+  runtime: lambda.Runtime.NODEJS_12_X,
+  handler: 'index.handler',
+  code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
 });
 
 fn.currentVersion.addAlias('live');
@@ -308,9 +351,63 @@ By default, updating a layer creates a new layer version, and CloudFormation wil
 Alternatively, a removal policy can be used to retain the old version:
 
 ```ts
-import { LayerVersion } from '@aws-cdk/aws-lambda';
-new LayerVersion(this, 'MyLayer', {
-  removalPolicy: RemovalPolicy.RETAIN
+new lambda.LayerVersion(this, 'MyLayer', {
+  removalPolicy: RemovalPolicy.RETAIN,
+  code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
+});
+```
+
+## Architecture
+
+Lambda functions, by default, run on compute systems that have the 64 bit x86 architecture.
+
+The AWS Lambda service also runs compute on the ARM architecture, which can reduce cost
+for some workloads.
+
+A lambda function can be configured to be run on one of these platforms:
+
+```ts
+new lambda.Function(this, 'MyFunction', {
+  runtime: lambda.Runtime.NODEJS_12_X,
+  handler: 'index.handler',
+  code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
+  architecture: lambda.Architecture.ARM_64,
+});
+```
+
+Similarly, lambda layer versions can also be tagged with architectures it is compatible with.
+
+```ts
+new lambda.LayerVersion(this, 'MyLayer', {
+  removalPolicy: RemovalPolicy.RETAIN,
+  code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
+  compatibleArchitectures: [lambda.Architecture.X86_64, lambda.Architecture.ARM_64],
+});
+```
+
+## Lambda Insights
+
+Lambda functions can be configured to use CloudWatch [Lambda Insights](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Lambda-Insights.html)
+which provides low-level runtime metrics for a Lambda functions.
+
+```ts
+new lambda.Function(this, 'MyFunction', {
+  runtime: lambda.Runtime.NODEJS_12_X,
+  handler: 'index.handler',
+  code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
+  insightsVersion: lambda.LambdaInsightsVersion.VERSION_1_0_98_0,
+});
+```
+
+If the version of insights is not yet available in the CDK, you can also provide the ARN directly as so -
+
+```ts
+const layerArn = 'arn:aws:lambda:us-east-1:580247275435:layer:LambdaInsightsExtension:14';
+new lambda.Function(this, 'MyFunction', {
+  runtime: lambda.Runtime.NODEJS_12_X,
+  handler: 'index.handler',
+  code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
+  insightsVersion: lambda.LambdaInsightsVersion.fromInsightVersionArn(layerArn),
 });
 ```
 
@@ -320,8 +417,14 @@ You can use an AWS Lambda function as a target for an Amazon CloudWatch event
 rule:
 
 ```ts
+import * as events from '@aws-cdk/aws-events';
 import * as targets from '@aws-cdk/aws-events-targets';
-rule.addTarget(new targets.LambdaFunction(myFunction));
+
+declare const fn: lambda.Function;
+const rule = new events.Rule(this, 'Schedule Rule', {
+ schedule: events.Schedule.cron({ minute: '0', hour: '4' }),
+});
+rule.addTarget(new targets.LambdaFunction(fn));
 ```
 
 ## Event Sources
@@ -340,16 +443,24 @@ includes classes for the various event sources supported by AWS Lambda.
 For example, the following code adds an SQS queue as an event source for a function:
 
 ```ts
-import { SqsEventSource } from '@aws-cdk/aws-lambda-event-sources';
-fn.addEventSource(new SqsEventSource(queue));
+import * as eventsources from '@aws-cdk/aws-lambda-event-sources';
+import * as sqs from '@aws-cdk/aws-sqs';
+
+declare const fn: lambda.Function;
+const queue = new sqs.Queue(this, 'Queue');
+fn.addEventSource(new eventsources.SqsEventSource(queue));
 ```
 
 The following code adds an S3 bucket notification as an event source:
 
 ```ts
-import { S3EventSource } from '@aws-cdk/aws-lambda-event-sources';
-fn.addEventSource(new S3EventSource(bucket, {
-  events: [ s3.EventType.OBJECT_CREATED, s3.EventType.OBJECT_DELETED ],
+import * as eventsources from '@aws-cdk/aws-lambda-event-sources';
+import * as s3 from '@aws-cdk/aws-s3';
+
+declare const fn: lambda.Function;
+const bucket = new s3.Bucket(this, 'Bucket');
+fn.addEventSource(new eventsources.S3EventSource(bucket, {
+  events: [ s3.EventType.OBJECT_CREATED, s3.EventType.OBJECT_REMOVED ],
   filters: [ { prefix: 'subdir/' } ] // optional
 }));
 ```
@@ -362,28 +473,25 @@ A dead-letter queue can be automatically created for a Lambda function by
 setting the `deadLetterQueueEnabled: true` configuration.
 
 ```ts
-import * as lambda from '@aws-cdk/aws-lambda';
-
 const fn = new lambda.Function(this, 'MyFunction', {
-    runtime: lambda.Runtime.NODEJS_12_X,
-    handler: 'index.handler',
-    code: lambda.Code.fromInline('exports.handler = function(event, ctx, cb) { return cb(null, "hi"); }'),
-    deadLetterQueueEnabled: true
+  runtime: lambda.Runtime.NODEJS_12_X,
+  handler: 'index.handler',
+  code: lambda.Code.fromInline('exports.handler = function(event, ctx, cb) { return cb(null, "hi"); }'),
+  deadLetterQueueEnabled: true,
 });
 ```
 
 It is also possible to provide a dead-letter queue instead of getting a new queue created:
 
 ```ts
-import * as lambda from '@aws-cdk/aws-lambda';
 import * as sqs from '@aws-cdk/aws-sqs';
 
 const dlq = new sqs.Queue(this, 'DLQ');
 const fn = new lambda.Function(this, 'MyFunction', {
-    runtime: lambda.Runtime.NODEJS_12_X,
-    handler: 'index.handler',
-    code: lambda.Code.fromInline('exports.handler = function(event, ctx, cb) { return cb(null, "hi"); }'),
-    deadLetterQueue: dlq
+  runtime: lambda.Runtime.NODEJS_12_X,
+  handler: 'index.handler',
+  code: lambda.Code.fromInline('exports.handler = function(event, ctx, cb) { return cb(null, "hi"); }'),
+  deadLetterQueue: dlq,
 });
 ```
 
@@ -393,13 +501,11 @@ to learn more about AWS Lambdas and DLQs.
 ## Lambda with X-Ray Tracing
 
 ```ts
-import * as lambda from '@aws-cdk/aws-lambda';
-
 const fn = new lambda.Function(this, 'MyFunction', {
-    runtime: lambda.Runtime.NODEJS_12_X,
-    handler: 'index.handler',
-    code: lambda.Code.fromInline('exports.handler = function(event, ctx, cb) { return cb(null, "hi"); }'),
-    tracing: lambda.Tracing.ACTIVE
+  runtime: lambda.Runtime.NODEJS_12_X,
+  handler: 'index.handler',
+  code: lambda.Code.fromInline('exports.handler = function(event, ctx, cb) { return cb(null, "hi"); }'),
+  tracing: lambda.Tracing.ACTIVE,
 });
 ```
 
@@ -412,13 +518,11 @@ The following code configures the lambda function with CodeGuru profiling. By de
 profiling group -
 
 ```ts
-import * as lambda from '@aws-cdk/aws-lambda';
-
 const fn = new lambda.Function(this, 'MyFunction', {
-    runtime: lambda.Runtime.PYTHON_3_6,
-    handler: 'index.handler',
-    code: lambda.Code.fromAsset('lambda-handler'),
-    profiling: true
+  runtime: lambda.Runtime.PYTHON_3_6,
+  handler: 'index.handler',
+  code: lambda.Code.fromAsset('lambda-handler'),
+  profiling: true,
 });
 ```
 
@@ -432,13 +536,11 @@ to learn more about AWS Lambda's Profiling support.
 ## Lambda with Reserved Concurrent Executions
 
 ```ts
-import * as lambda from '@aws-cdk/aws-lambda';
-
 const fn = new lambda.Function(this, 'MyFunction', {
-    runtime: lambda.Runtime.NODEJS_12_X,
-    handler: 'index.handler',
-    code: lambda.Code.fromInline('exports.handler = function(event, ctx, cb) { return cb(null, "hi"); }'),
-    reservedConcurrentExecutions: 100
+  runtime: lambda.Runtime.NODEJS_12_X,
+  handler: 'index.handler',
+  code: lambda.Code.fromInline('exports.handler = function(event, ctx, cb) { return cb(null, "hi"); }'),
+  reservedConcurrentExecutions: 100,
 });
 ```
 
@@ -450,13 +552,16 @@ managing concurrency.
 You can use Application AutoScaling to automatically configure the provisioned concurrency for your functions. AutoScaling can be set to track utilization or be based on a schedule. To configure AutoScaling on a function alias:
 
 ```ts
-const alias = new lambda.Alias(stack, 'Alias', {
+import * as autoscaling from '@aws-cdk/aws-autoscaling';
+
+declare const fn: lambda.Function;
+const alias = new lambda.Alias(this, 'Alias', {
   aliasName: 'prod',
-  version,
+  version: fn.latestVersion,
 });
 
 // Create AutoScaling target
-const as = alias.addAutoScaling({ maxCapacity: 50 })
+const as = alias.addAutoScaling({ maxCapacity: 50 });
 
 // Configure Target Tracking
 as.scaleOnUtilization({
@@ -465,7 +570,7 @@ as.scaleOnUtilization({
 
 // Configure Scheduled Scaling
 as.scaleOnSchedule('ScaleUpInTheMorning', {
-  schedule: appscaling.Schedule.cron({ hour: '8', minute: '0'}),
+  schedule: autoscaling.Schedule.cron({ hour: '8', minute: '0'}),
   minCapacity: 20,
 });
 ```
@@ -504,8 +609,14 @@ from lambda function, the Amazon EFS access point will be required.
 The following sample allows the lambda function to mount the Amazon EFS access point to `/mnt/msg` in the runtime environment and access the filesystem with the POSIX identity defined in `posixUser`.
 
 ```ts
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as efs from '@aws-cdk/aws-efs';
+
+// create a new VPC
+const vpc = new ec2.Vpc(this, 'VPC');
+
 // create a new Amazon EFS filesystem
-const fileSystem = new efs.FileSystem(stack, 'Efs', { vpc });
+const fileSystem = new efs.FileSystem(this, 'Efs', { vpc });
 
 // create a new access point from the filesystem
 const accessPoint = fileSystem.addAccessPoint('AccessPoint', {
@@ -524,13 +635,13 @@ const accessPoint = fileSystem.addAccessPoint('AccessPoint', {
   },
 });
 
-const fn = new lambda.Function(stack, 'MyLambda', {
-  code,
-  handler,
-  runtime,
-  vpc,
+const fn = new lambda.Function(this, 'MyLambda', {
   // mount the access point to /mnt/msg in the lambda runtime environment
   filesystem: lambda.FileSystem.fromEfsAccessPoint(accessPoint, '/mnt/msg'),
+  runtime: lambda.Runtime.NODEJS_12_X,
+  handler: 'index.handler',
+  code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
+  vpc,
 });
 ```
 
@@ -562,14 +673,14 @@ Example with Python:
 new lambda.Function(this, 'Function', {
   code: lambda.Code.fromAsset(path.join(__dirname, 'my-python-handler'), {
     bundling: {
-      image: lambda.Runtime.PYTHON_3_8.bundlingImage,
+      image: lambda.Runtime.PYTHON_3_9.bundlingImage,
       command: [
         'bash', '-c',
         'pip install -r requirements.txt -t /asset-output && cp -au . /asset-output'
       ],
     },
   }),
-  runtime: lambda.Runtime.PYTHON_3_8,
+  runtime: lambda.Runtime.PYTHON_3_9,
   handler: 'index.handler',
 });
 ```
@@ -580,12 +691,10 @@ Use `cdk.DockerImage.fromRegistry(image)` to use an existing image or
 `cdk.DockerImage.fromBuild(path)` to build a specific image:
 
 ```ts
-import * as cdk from '@aws-cdk/core';
-
 new lambda.Function(this, 'Function', {
   code: lambda.Code.fromAsset('/path/to/handler', {
     bundling: {
-      image: cdk.DockerImage.fromBuild('/path/to/dir/with/DockerFile', {
+      image: DockerImage.fromBuild('/path/to/dir/with/DockerFile', {
         buildArgs: {
           ARG1: 'value1',
         },
@@ -593,7 +702,8 @@ new lambda.Function(this, 'Function', {
       command: ['my', 'cool', 'command'],
     },
   }),
-  // ...
+  runtime: lambda.Runtime.PYTHON_3_9,
+  handler: 'index.handler',
 });
 ```
 
@@ -606,24 +716,26 @@ Language-specific higher level constructs are provided in separate modules:
 
 ## Code Signing
 
-Code signing for AWS Lambda helps to ensure that only trusted code runs in your Lambda functions. 
+Code signing for AWS Lambda helps to ensure that only trusted code runs in your Lambda functions.
 When enabled, AWS Lambda checks every code deployment and verifies that the code package is signed by a trusted source.
 For more information, see [Configuring code signing for AWS Lambda](https://docs.aws.amazon.com/lambda/latest/dg/configuration-codesigning.html).
 The following code configures a function with code signing.
 
-```typescript
+```ts
 import * as signer from '@aws-cdk/aws-signer';
 
-const signerProfile = signer.SigningProfile(this, 'SigningProfile', {
-  platform: Platform.AWS_LAMBDA_SHA384_ECDSA
+const signingProfile = new signer.SigningProfile(this, 'SigningProfile', {
+  platform: signer.Platform.AWS_LAMBDA_SHA384_ECDSA,
 });
 
-const codeSigningConfig = new lambda.CodeSigningConfig(stack, 'CodeSigningConfig', {
-   signingProfiles: [signingProfile],
+const codeSigningConfig = new lambda.CodeSigningConfig(this, 'CodeSigningConfig', {
+  signingProfiles: [signingProfile],
 });
 
 new lambda.Function(this, 'Function', {
-   codeSigningConfig,
-   // ...
+  codeSigningConfig,
+  runtime: lambda.Runtime.NODEJS_12_X,
+  handler: 'index.handler',
+  code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
 });
 ```

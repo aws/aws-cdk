@@ -610,6 +610,7 @@
       "Type": "AWS::RDS::DBCluster",
       "Properties": {
         "Engine": "aurora",
+        "CopyTagsToSnapshot": true,
         "AssociatedRoles": [
           {
             "RoleArn": {

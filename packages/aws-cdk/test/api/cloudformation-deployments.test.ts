@@ -34,6 +34,21 @@ function mockSuccessfulBootstrapStackLookup(props?: Record<string, any>) {
   mockToolkitInfoLookup.mockResolvedValue(ToolkitInfo.fromStack(fakeStack, sdkProvider.sdk));
 }
 
+test('passes through hotswap=true to deployStack()', async () => {
+  // WHEN
+  await deployments.deployStack({
+    stack: testStack({
+      stackName: 'boop',
+    }),
+    hotswap: true,
+  });
+
+  // THEN
+  expect(deployStack).toHaveBeenCalledWith(expect.objectContaining({
+    hotswap: true,
+  }));
+});
+
 test('placeholders are substituted in CloudFormation execution role', async () => {
   await deployments.deployStack({
     stack: testStack({

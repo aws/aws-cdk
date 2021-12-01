@@ -136,6 +136,34 @@ export interface DatabaseClusterProps {
    * @default - Retain cluster.
    */
   readonly removalPolicy?: RemovalPolicy
+
+  /**
+   * Specifies whether this cluster can be deleted. If deletionProtection is
+   * enabled, the cluster cannot be deleted unless it is modified and
+   * deletionProtection is disabled. deletionProtection protects clusters from
+   * being accidentally deleted.
+   *
+   * @default - false
+   */
+  readonly deletionProtection?: boolean;
+
+  /**
+   * Whether the profiler logs should be exported to CloudWatch.
+   * Note that you also have to configure the profiler log export in the Cluster's Parameter Group.
+   *
+   * @see https://docs.aws.amazon.com/documentdb/latest/developerguide/profiling.html#profiling.enable-profiling
+   * @default false
+   */
+  readonly exportProfilerLogsToCloudWatch?: boolean;
+
+  /**
+   * Whether the audit logs should be exported to CloudWatch.
+   * Note that you also have to configure the audit log export in the Cluster's Parameter Group.
+   *
+   * @see https://docs.aws.amazon.com/documentdb/latest/developerguide/event-auditing.html#event-auditing-enabling-auditing
+   * @default false
+   */
+  readonly exportAuditLogsToCloudWatch?: boolean;
 }
 
 /**
@@ -336,12 +364,23 @@ export class DatabaseCluster extends DatabaseClusterBase {
     }
     this.securityGroupId = securityGroup.securityGroupId;
 
+    // Create the CloudwatchLogsConfiguratoin
+    const enableCloudwatchLogsExports: string[] = [];
+    if (props.exportAuditLogsToCloudWatch) {
+      enableCloudwatchLogsExports.push('audit');
+    }
+    if (props.exportProfilerLogsToCloudWatch) {
+      enableCloudwatchLogsExports.push('profiler');
+    }
+
     // Create the secret manager secret if no password is specified
     let secret: DatabaseSecret | undefined;
     if (!props.masterUser.password) {
       secret = new DatabaseSecret(this, 'Secret', {
         username: props.masterUser.username,
         encryptionKey: props.masterUser.kmsKey,
+        excludeCharacters: props.masterUser.excludeCharacters,
+        secretName: props.masterUser.secretName,
       });
     }
 
@@ -361,6 +400,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
       port: props.port,
       vpcSecurityGroupIds: [this.securityGroupId],
       dbClusterParameterGroupName: props.parameterGroup?.parameterGroupName,
+      deletionProtection: props.deletionProtection,
       // Admin
       masterUsername: secret ? secret.secretValueFromJson('username').toString() : props.masterUser.username,
       masterUserPassword: secret
@@ -370,6 +410,8 @@ export class DatabaseCluster extends DatabaseClusterBase {
       backupRetentionPeriod: props.backup?.retention?.toDays(),
       preferredBackupWindow: props.backup?.preferredWindow,
       preferredMaintenanceWindow: props.preferredMaintenanceWindow,
+      // EnableCloudwatchLogsExports
+      enableCloudwatchLogsExports: enableCloudwatchLogsExports.length > 0 ? enableCloudwatchLogsExports : undefined,
       // Encryption
       kmsKeyId: props.kmsKey?.keyArn,
       storageEncrypted,
@@ -449,6 +491,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
       secret: this.secret,
       automaticallyAfter,
       application: DatabaseCluster.SINGLE_USER_ROTATION_APPLICATION,
+      excludeCharacters: (this.node.tryFindChild('Secret') as DatabaseSecret)._excludedCharacters,
       vpc: this.vpc,
       vpcSubnets: this.vpcSubnets,
       target: this,
@@ -466,6 +509,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
       secret: options.secret,
       masterSecret: this.secret,
       automaticallyAfter: options.automaticallyAfter,
+      excludeCharacters: (this.node.tryFindChild('Secret') as DatabaseSecret)._excludedCharacters,
       application: DatabaseCluster.MULTI_USER_ROTATION_APPLICATION,
       vpc: this.vpc,
       vpcSubnets: this.vpcSubnets,

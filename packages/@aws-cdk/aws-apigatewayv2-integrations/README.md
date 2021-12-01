@@ -3,13 +3,21 @@
 
 ---
 
-![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
+Features                               | Stability
+---------------------------------------|------------------------------------------------------------
+Integration classes for HTTP APIs      | ![Stable](https://img.shields.io/badge/stable-success.svg?style=for-the-badge)
+Integration classes for Websocket APIs | ![Experimental](https://img.shields.io/badge/experimental-important.svg?style=for-the-badge)
 
-> The APIs of higher level constructs in this module are experimental and under active development.
-> They are subject to non-backward compatible changes or removal in any future version. These are
-> not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be
-> announced in the release notes. This means that while you may use them, you may need to update
-> your source code when upgrading to a newer version of this package.
+> **Experimental:** Higher level constructs in this module that are marked as experimental are
+> under active development. They are subject to non-backward compatible changes or removal in any
+> future version. These are not subject to the [Semantic Versioning](https://semver.org/) model and
+> breaking changes will be announced in the release notes. This means that while you may use them,
+> you may need to update your source code when upgrading to a newer version of this package.
+
+<!-- -->
+
+> **Stable:** Higher level constructs in this module that are marked stable will not undergo any
+> breaking changes. They will strictly follow the [Semantic Versioning](https://semver.org/) model.
 
 ---
 
@@ -21,6 +29,7 @@
   - [Lambda Integration](#lambda)
   - [HTTP Proxy Integration](#http-proxy)
   - [Private Integration](#private-integration)
+  - [Request Parameters](#request-parameters)
 - [WebSocket APIs](#websocket-apis)
   - [Lambda WebSocket Integration](#lambda-websocket-integration)
 
@@ -40,16 +49,16 @@ proxy integrations](https://docs.aws.amazon.com/apigateway/latest/developerguide
 The following code configures a route `GET /books` with a Lambda proxy integration.
 
 ```ts
-const booksFn = new lambda.Function(stack, 'BooksDefaultFn', { ... });
-const booksIntegration = new LambdaProxyIntegration({
-  handler: booksDefaultFn,
-});
+import { HttpLambdaIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
 
-const httpApi = new HttpApi(stack, 'HttpApi');
+declare const booksDefaultFn: lambda.Function;
+const booksIntegration = new HttpLambdaIntegration('BooksIntegration', booksDefaultFn);
+
+const httpApi = new apigwv2.HttpApi(this, 'HttpApi');
 
 httpApi.addRoutes({
   path: '/books',
-  methods: [ HttpMethod.GET ],
+  methods: [ apigwv2.HttpMethod.GET ],
   integration: booksIntegration,
 });
 ```
@@ -65,15 +74,15 @@ The following code configures a route `GET /books` with an HTTP proxy integratio
 `get-books-proxy.myproxy.internal`.
 
 ```ts
-const booksIntegration = new HttpProxyIntegration({
-  url: 'https://get-books-proxy.myproxy.internal',
-});
+import { HttpUrlIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
 
-const httpApi = new HttpApi(stack, 'HttpApi');
+const booksIntegration = new HttpUrlIntegration('BooksIntegration', 'https://get-books-proxy.myproxy.internal');
+
+const httpApi = new apigwv2.HttpApi(this, 'HttpApi');
 
 httpApi.addRoutes({
   path: '/books',
-  methods: [ HttpMethod.GET ],
+  methods: [ apigwv2.HttpMethod.GET ],
   integration: booksIntegration,
 });
 ```
@@ -91,17 +100,17 @@ The following integrations are supported for private resources in a VPC.
 The following code is a basic application load balancer private integration of HTTP API:
 
 ```ts
-const vpc = new ec2.Vpc(stack, 'VPC');
-const lb = new elbv2.ALB(stack, 'lb', { vpc });
+import { HttpAlbIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
+
+const vpc = new ec2.Vpc(this, 'VPC');
+const lb = new elbv2.ApplicationLoadBalancer(this, 'lb', { vpc });
 const listener = lb.addListener('listener', { port: 80 });
 listener.addTargets('target', {
   port: 80,
 });
 
-const httpEndpoint = new HttpApi(stack, 'HttpProxyPrivateApi', {
-  defaultIntegration: new HttpAlbIntegration({
-    listener,
-  }),
+const httpEndpoint = new apigwv2.HttpApi(this, 'HttpProxyPrivateApi', {
+  defaultIntegration: new HttpAlbIntegration('DefaultIntegration', listener),
 });
 ```
 
@@ -112,17 +121,17 @@ When an imported load balancer is used, the `vpc` option must be specified for `
 The following code is a basic network load balancer private integration of HTTP API:
 
 ```ts
-const vpc = new ec2.Vpc(stack, 'VPC');
-const lb = new elbv2.NLB(stack, 'lb', { vpc });
+import { HttpNlbIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
+
+const vpc = new ec2.Vpc(this, 'VPC');
+const lb = new elbv2.NetworkLoadBalancer(this, 'lb', { vpc });
 const listener = lb.addListener('listener', { port: 80 });
 listener.addTargets('target', {
   port: 80,
 });
 
-const httpEndpoint = new HttpApi(stack, 'HttpProxyPrivateApi', {
-  defaultIntegration: new HttpNlbIntegration({
-    listener,
-  }),
+const httpEndpoint = new apigwv2.HttpApi(this, 'HttpProxyPrivateApi', {
+  defaultIntegration: new HttpNlbIntegration('DefaultIntegration', listener),
 });
 ```
 
@@ -133,21 +142,68 @@ When an imported load balancer is used, the `vpc` option must be specified for `
 The following code is a basic discovery service private integration of HTTP API:
 
 ```ts
-const vpc = new ec2.Vpc(stack, 'VPC');
-const vpcLink = new VpcLink(stack, 'VpcLink', { vpc });
-const namespace = new servicediscovery.PrivateDnsNamespace(stack, 'Namespace', {
+import * as servicediscovery from '@aws-cdk/aws-servicediscovery';
+import { HttpServiceDiscoveryIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
+
+const vpc = new ec2.Vpc(this, 'VPC');
+const vpcLink = new apigwv2.VpcLink(this, 'VpcLink', { vpc });
+const namespace = new servicediscovery.PrivateDnsNamespace(this, 'Namespace', {
   name: 'boobar.com',
   vpc,
 });
 const service = namespace.createService('Service');
 
-const httpEndpoint = new HttpApi(stack, 'HttpProxyPrivateApi', {
-  defaultIntegration: new HttpServiceDiscoveryIntegration({
+const httpEndpoint = new apigwv2.HttpApi(this, 'HttpProxyPrivateApi', {
+  defaultIntegration: new HttpServiceDiscoveryIntegration('DefaultIntegration', service, {
     vpcLink,
-    service,
   }),
 });
 ```
+
+### Request Parameters
+
+Request parameter mapping allows API requests from clients to be modified before they reach backend integrations.
+Parameter mapping can be used to specify modifications to request parameters. See [Transforming API requests and
+responses](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-parameter-mapping.html).
+
+The following example creates a new header - `header2` - as a copy of `header1` and removes `header1`.
+
+```ts
+import { HttpAlbIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
+
+declare const lb: elbv2.ApplicationLoadBalancer;
+const listener = lb.addListener('listener', { port: 80 });
+listener.addTargets('target', {
+  port: 80,
+});
+
+const httpEndpoint = new apigwv2.HttpApi(this, 'HttpProxyPrivateApi', {
+  defaultIntegration: new HttpAlbIntegration('DefaultIntegration', listener, {
+    parameterMapping: new apigwv2.ParameterMapping()
+      .appendHeader('header2', apigwv2.MappingValue.requestHeader('header1'))
+      .removeHeader('header1'),
+  }),
+});
+```
+
+To add mapping keys and values not yet supported by the CDK, use the `custom()` method:
+
+```ts
+import { HttpAlbIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
+
+declare const lb: elbv2.ApplicationLoadBalancer;
+const listener = lb.addListener('listener', { port: 80 });
+listener.addTargets('target', {
+  port: 80,
+});
+
+const httpEndpoint = new apigwv2.HttpApi(this, 'HttpProxyPrivateApi', {
+  defaultIntegration: new HttpAlbIntegration('DefaultIntegration', listener, {
+    parameterMapping: new apigwv2.ParameterMapping().custom('myKey', 'myValue'),
+  }),
+});
+```
+
 
 ## WebSocket APIs
 
@@ -155,7 +211,7 @@ WebSocket integrations connect a route to backend resources. The following integ
 
 ### Lambda WebSocket Integration
 
-Lambda integrations enable integrating a WebSocket API route with a Lambda function. When a client connects/disconnects 
+Lambda integrations enable integrating a WebSocket API route with a Lambda function. When a client connects/disconnects
 or sends message specific to a route, the API Gateway service forwards the request to the Lambda function
 
 The API Gateway service will invoke the lambda function with an event payload of a specific format.
@@ -163,17 +219,17 @@ The API Gateway service will invoke the lambda function with an event payload of
 The following code configures a `sendmessage` route with a Lambda integration
 
 ```ts
-const webSocketApi = new WebSocketApi(stack, 'mywsapi');
-new WebSocketStage(stack, 'mystage', {
+import { WebSocketLambdaIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
+
+const webSocketApi = new apigwv2.WebSocketApi(this, 'mywsapi');
+new apigwv2.WebSocketStage(this, 'mystage', {
   webSocketApi,
   stageName: 'dev',
   autoDeploy: true,
 });
 
-const messageHandler = new lambda.Function(stack, 'MessageHandler', {...});
+declare const messageHandler: lambda.Function;
 webSocketApi.addRoute('sendmessage', {
-  integration: new LambdaWebSocketIntegration({
-    handler: connectHandler,
-  }),
+  integration: new WebSocketLambdaIntegration('SendMessageIntegration', messageHandler),
 });
 ```

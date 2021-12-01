@@ -154,6 +154,13 @@ export const EFS_DEFAULT_ENCRYPTION_AT_REST = '@aws-cdk/aws-efs:defaultEncryptio
 export const LAMBDA_RECOGNIZE_VERSION_PROPS = '@aws-cdk/aws-lambda:recognizeVersionProps';
 
 /**
+ * Enable this feature flag to have cloudfront distributions use the security policy TLSv1.2_2021 by default.
+ *
+ * The security policy can also be configured explicitly using the `minimumProtocolVersion` property.
+ */
+export const CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021 = '@aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2_2021';
+
+/**
  * This map includes context keys and values for feature flags that enable
  * capabilities "from the future", which we could not introduce as the default
  * behavior due to backwards compatibility for existing projects.
@@ -168,9 +175,9 @@ export const LAMBDA_RECOGNIZE_VERSION_PROPS = '@aws-cdk/aws-lambda:recognizeVers
  */
 export const FUTURE_FLAGS: { [key: string]: any } = {
   [APIGATEWAY_USAGEPLANKEY_ORDERINSENSITIVE_ID]: true,
-  [ENABLE_STACK_NAME_DUPLICATES_CONTEXT]: 'true',
-  [ENABLE_DIFF_NO_FAIL_CONTEXT]: 'true',
-  [STACK_RELATIVE_EXPORTS_CONTEXT]: 'true',
+  [ENABLE_STACK_NAME_DUPLICATES_CONTEXT]: true,
+  [ENABLE_DIFF_NO_FAIL_CONTEXT]: true,
+  [STACK_RELATIVE_EXPORTS_CONTEXT]: true,
   [DOCKER_IGNORE_SUPPORT]: true,
   [SECRETS_MANAGER_PARSE_OWNED_SECRET_NAME]: true,
   [KMS_DEFAULT_KEY_POLICIES]: true,
@@ -179,6 +186,7 @@ export const FUTURE_FLAGS: { [key: string]: any } = {
   [RDS_LOWERCASE_DB_IDENTIFIER]: true,
   [EFS_DEFAULT_ENCRYPTION_AT_REST]: true,
   [LAMBDA_RECOGNIZE_VERSION_PROPS]: true,
+  [CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021]: true,
 
   // We will advertise this flag when the feature is complete
   // [NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: 'true',
@@ -209,8 +217,9 @@ const FUTURE_FLAGS_DEFAULTS: { [key: string]: boolean } = {
   [RDS_LOWERCASE_DB_IDENTIFIER]: false,
   [EFS_DEFAULT_ENCRYPTION_AT_REST]: false,
   [LAMBDA_RECOGNIZE_VERSION_PROPS]: false,
+  [CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021]: false,
 };
 
-export function futureFlagDefault(flag: string): boolean {
+export function futureFlagDefault(flag: string): boolean | undefined {
   return FUTURE_FLAGS_DEFAULTS[flag];
 }

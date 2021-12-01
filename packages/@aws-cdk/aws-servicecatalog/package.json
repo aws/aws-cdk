@@ -55,7 +55,6 @@
   },
   "cdk-build": {
     "cloudformation": "AWS::ServiceCatalog",
-    "jest": true,
     "env": {
       "AWSLINT_BASE_CONSTRUCT": true
     }
@@ -73,21 +72,25 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/jest": "^26.0.23",
-    "cdk-build-tools": "0.0.0",
-    "cdk-integ-tools": "0.0.0",
-    "cfn2ts": "0.0.0",
-    "pkglint": "0.0.0",
-    "@aws-cdk/assert-internal": "0.0.0"
+    "@aws-cdk/assertions": "0.0.0",
+    "@aws-cdk/cdk-build-tools": "0.0.0",
+    "@aws-cdk/cdk-integ-tools": "0.0.0",
+    "@aws-cdk/cfn2ts": "0.0.0",
+    "@aws-cdk/pkglint": "0.0.0",
+    "@types/jest": "^27.0.3"
   },
   "dependencies": {
     "@aws-cdk/aws-iam": "0.0.0",
+    "@aws-cdk/aws-s3-assets": "0.0.0",
+    "@aws-cdk/aws-sns": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "constructs": "^3.3.69"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
     "@aws-cdk/aws-iam": "0.0.0",
+    "@aws-cdk/aws-s3-assets": "0.0.0",
+    "@aws-cdk/aws-sns": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "constructs": "^3.3.69"
   },
@@ -96,8 +99,13 @@
   },
   "awslint": {
     "exclude": [
+      "resource-attribute:@aws-cdk/aws-servicecatalog.CloudFormationProduct.cloudFormationProductProductName",
+      "resource-attribute:@aws-cdk/aws-servicecatalog.CloudFormationProduct.cloudFormationProductProvisioningArtifactIds",
+      "resource-attribute:@aws-cdk/aws-servicecatalog.CloudFormationProduct.cloudFormationProductProvisioningArtifactNames",
+      "props-physical-name:@aws-cdk/aws-servicecatalog.CloudFormationProductProps",
       "resource-attribute:@aws-cdk/aws-servicecatalog.Portfolio.portfolioName",
-      "props-physical-name:@aws-cdk/aws-servicecatalog.PortfolioProps"
+      "props-physical-name:@aws-cdk/aws-servicecatalog.PortfolioProps",
+      "props-physical-name:@aws-cdk/aws-servicecatalog.ProductStack"
     ]
   },
   "maturity": "experimental",

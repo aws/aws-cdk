@@ -140,7 +140,7 @@ $ cdk diff --app='node bin/main.js' MyStackName --template=path/to/template.yml
 
 ### `cdk deploy`
 
-Deploys a stack of your CDK app to it's environment. During the deployment, the toolkit will output progress
+Deploys a stack of your CDK app to its environment. During the deployment, the toolkit will output progress
 indications, similar to what can be observed in the AWS CloudFormation Console. If the environment was never
 bootstrapped (using `cdk bootstrap`), only stacks that are not using assets and synthesize to a template that is under
 51,200 bytes will successfully deploy.
@@ -153,6 +153,24 @@ Before creating a change set, `cdk deploy` will compare the template and tags of
 currently deployed stack to the template and tags that are about to be deployed and
 will skip deployment if they are identical. Use `--force` to override this behavior
 and always deploy the stack.
+
+#### Disabling Rollback
+
+If a resource fails to be created or updated, the deployment will *roll back* before the CLI returns. All changes made
+up to that point will be undone (resources that were created will be deleted, updates that were made will be changed
+back) in order to leave the stack in a consistent state at the end of the operation. If you are using the CDK CLI
+to iterate on a development stack in your personal account, you might not require CloudFormation to leave your
+stack in a consistent state, but instead would prefer to update your CDK application and try again.
+
+To disable the rollback feature, specify `--no-rollback` (`-R` for short):
+
+```console
+$ cdk deploy --no-rollback
+$ cdk deploy -R
+```
+
+NOTE: you cannot use `--no-rollback` for any updates that would cause a resource replacement, only for updates
+and creations of new resources.
 
 #### Deploying multiple stacks
 
@@ -220,6 +238,24 @@ Specify an outputs file to write to by supplying the `--outputs-file` parameter
 ```console
 $ cdk deploy --outputs-file outputs.json
 ```
+
+Alternatively, the `outputsFile` key can be specified in the project config (`cdk.json`).
+
+The following shows a sample `cdk.json` where the `outputsFile` key is set to *outputs.json*.
+
+```json
+{
+  "app": "npx ts-node bin/myproject.ts",
+  "context": {
+    "@aws-cdk/core:enableStackNameDuplicates": "true",
+    "aws-cdk:enableDiffNoFail": "true",
+    "@aws-cdk/core:stackRelativeExports": "true"
+  },
+  "outputsFile": "outputs.json"
+}
+```
+
+The `outputsFile` key can also be specified as a user setting (`~/.cdk.json`)
 
 When the stack finishes deployment, `outputs.json` would look like this:
 
@@ -291,12 +327,113 @@ For more control over when stack changes are deployed, the CDK can generate a
 CloudFormation change set but not execute it. The default name of the generated
 change set is *cdk-deploy-change-set*, and a previous change set with that
 name will be overwritten. The change set will always be created, even if it
-is empty. A name can also be given to the change set to make it easier to later 
+is empty. A name can also be given to the change set to make it easier to later
 execute.
 
 ```console
 $ cdk deploy --no-execute --change-set-name MyChangeSetName
 ```
+
+#### Hotswap deployments for faster development
+
+You can pass the `--hotswap` flag to the `deploy` command:
+
+```console
+$ cdk deploy --hotswap [StackNames]
+```
+
+This will attempt to perform a faster, short-circuit deployment if possible
+(for example, if you only changed the code of a Lambda function in your CDK app,
+but nothing else in your CDK code),
+skipping CloudFormation, and updating the affected resources directly.
+If the tool detects that the change does not support hotswapping,
+it will fall back and perform a full CloudFormation deployment,
+exactly like `cdk deploy` does without the `--hotswap` flag.
+
+Passing this option to `cdk deploy` will make it use your current AWS credentials to perform the API calls -
+it will not assume the Roles from your bootstrap stack,
+even if the `@aws-cdk/core:newStyleStackSynthesis` feature flag is set to `true`
+(as those Roles do not have the necessary permissions to update AWS resources directly, without using CloudFormation).
+For that reason, make sure that your credentials are for the same AWS account that the Stack(s)
+you are performing the hotswap deployment for belong to,
+and that you have the necessary IAM permissions to update the resources that are being deployed.
+
+Hotswapping is currently supported for the following changes
+(additional changes will be supported in the future):
+
+- Code asset changes of AWS Lambda functions.
+- Definition changes of AWS Step Functions State Machines.
+- Container asset changes of AWS ECS Services.
+
+**⚠ Note #1**: This command deliberately introduces drift in CloudFormation stacks in order to speed up deployments.
+For this reason, only use it for development purposes.
+**Never use this flag for your production deployments**!
+
+**⚠ Note #2**: This command is considered experimental,
+and might have breaking changes in the future.
+
+### `cdk watch`
+
+The `watch` command is similar to `deploy`,
+but instead of being a one-shot operation,
+the command continuously monitors the files of the project,
+and triggers a deployment whenever it detects any changes:
+
+```console
+$ cdk watch DevelopmentStack
+Detected change to 'lambda-code/index.js' (type: change). Triggering 'cdk deploy'
+DevelopmentStack: deploying...
+
+ ✅  DevelopmentStack
+
+^C
+```
+
+To end a `cdk watch` session, interrupt the process by pressing Ctrl+C.
+
+What files are observed is determined by the `"watch"` setting in your `cdk.json` file.
+It has two sub-keys, `"include"` and `"exclude"`, each of which can be either a single string, or an array of strings.
+Each entry is interpreted as a path relative to the location of the `cdk.json` file.
+Globs, both `*` and `**`, are allowed to be used.
+Example:
+
+```json
+{
+  "app": "mvn -e -q compile exec:java",
+  "watch": {
+    "include": "src/main/**",
+    "exclude": "target/*"
+  }
+}
+```
+
+The default for `"include"` is `"**/*"`
+(which means all files and directories in the root of the project),
+and `"exclude"` is optional
+(note that we always ignore files and directories starting with `.`,
+the CDK output directory, and the `node_modules` directory),
+so the minimal settings to enable `watch` are `"watch": {}`.
+
+If either your CDK code, or application code, needs a build step before being deployed,
+`watch` works with the `"build"` key in the `cdk.json` file,
+for example:
+
+```json
+{
+  "app": "mvn -e -q exec:java",
+  "build": "mvn package",
+  "watch": {
+    "include": "src/main/**",
+    "exclude": "target/*"
+  }
+}
+```
+
+Note that `watch` by default uses hotswap deployments (see above for details) --
+to turn them off, pass the `--no-hotswap` option when invoking it.
+
+**Note**: This command is considered experimental,
+and might have breaking changes in the future.
 
 ### `cdk destroy`
 
@@ -390,6 +527,7 @@ Some of the interesting keys that can be used in the JSON configuration files:
 ```json5
 {
     "app": "node bin/main.js",        // Command to start the CDK app      (--app='node bin/main.js')
+    "build": "mvn package",           // Specify pre-synth build           (no command line option)
     "context": {                      // Context entries                   (--context=key=value)
         "key": "value"
     },
@@ -398,6 +536,12 @@ Some of the interesting keys that can be used in the JSON configuration files:
     "versionReporting": false,         // Opt-out of version reporting      (--no-version-reporting)
 }
 ```
+
+If specified, the command in the `build` key will be executed immediately before synthesis.
+This can be used to build Lambda Functions, CDK Application code, or other assets. 
+`build` cannot be specified on the command line or in the User configuration, 
+and must be specified in the Project configuration. The command specified
+in `build` will be executed by the "watch" process before deployment.
 
 ### Environment
 

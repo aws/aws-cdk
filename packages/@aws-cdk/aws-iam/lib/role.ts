@@ -1,4 +1,4 @@
-import { Duration, Resource, Stack, Token, TokenComparison } from '@aws-cdk/core';
+import { ArnFormat, Duration, Resource, Stack, Token, TokenComparison } from '@aws-cdk/core';
 import { Construct, Node } from 'constructs';
 import { Grant } from './grant';
 import { CfnRole } from './iam.generated';
@@ -143,9 +143,20 @@ export interface FromRoleArnOptions {
    * Whether the imported role can be modified by attaching policy resources to it.
    *
    * @default true
-   *
    */
   readonly mutable?: boolean;
+
+  /**
+   * For immutable roles: add grants to resources instead of dropping them
+   *
+   * If this is `false` or not specified, grant permissions added to this role are ignored.
+   * It is your own responsibility to make sure the role has the required permissions.
+   *
+   * If this is `true`, any grant permissions will be added to the resource instead.
+   *
+   * @default false
+   */
+  readonly addGrantsToResources?: boolean;
 }
 
 /**
@@ -174,7 +185,7 @@ export class Role extends Resource implements IRole {
    */
   public static fromRoleArn(scope: Construct, id: string, roleArn: string, options: FromRoleArnOptions = {}): IRole {
     const scopeStack = Stack.of(scope);
-    const parsedArn = scopeStack.parseArn(roleArn);
+    const parsedArn = scopeStack.splitArn(roleArn, ArnFormat.SLASH_RESOURCE_NAME);
     const resourceName = parsedArn.resourceName!;
     const roleAccount = parsedArn.account;
     // service roles have an ARN like 'arn:aws:iam::<account>:role/service-role/<roleName>'
@@ -246,6 +257,10 @@ export class Role extends Resource implements IRole {
       }
     }
 
+    if (options.addGrantsToResources !== undefined && options.mutable !== false) {
+      throw new Error('\'addGrantsToResources\' can only be passed if \'mutable: false\'');
+    }
+
     const importedRole = new Import(scope, id);
     const roleArnAndScopeStackAccountComparison = Token.compareStrings(importedRole.env.account, scopeStack.account);
     const equalOrAnyUnresolved = roleArnAndScopeStackAccountComparison === TokenComparison.SAME ||
@@ -254,7 +269,7 @@ export class Role extends Resource implements IRole {
     // we only return an immutable Role if both accounts were explicitly provided, and different
     return options.mutable !== false && equalOrAnyUnresolved
       ? importedRole
-      : new ImmutableRole(scope, `ImmutableRole${id}`, importedRole);
+      : new ImmutableRole(scope, `ImmutableRole${id}`, importedRole, options.addGrantsToResources ?? false);
   }
 
   public readonly grantPrincipal: IPrincipal = this;
@@ -421,9 +436,9 @@ export class Role extends Resource implements IRole {
    * If you do, you are responsible for adding the correct statements to the
    * Role's policies yourself.
    */
-  public withoutPolicyUpdates(): IRole {
+  public withoutPolicyUpdates(options: WithoutPolicyUpdatesOptions = {}): IRole {
     if (!this.immutableRole) {
-      this.immutableRole = new ImmutableRole(Node.of(this).scope as Construct, `ImmutableRole${this.node.id}`, this);
+      this.immutableRole = new ImmutableRole(Node.of(this).scope as Construct, `ImmutableRole${this.node.id}`, this, options.addGrantsToResources ?? false);
     }
 
     return this.immutableRole;
@@ -508,4 +523,21 @@ class AwsStarStatement extends PolicyStatement {
 
     return stat;
   }
+}
+
+/**
+ * Options for the `withoutPolicyUpdates()` modifier of a Role
+ */
+export interface WithoutPolicyUpdatesOptions {
+  /**
+   * Add grants to resources instead of dropping them
+   *
+   * If this is `false` or not specified, grant permissions added to this role are ignored.
+   * It is your own responsibility to make sure the role has the required permissions.
+   *
+   * If this is `true`, any grant permissions will be added to the resource instead.
+   *
+   * @default false
+   */
+  readonly addGrantsToResources?: boolean;
 }

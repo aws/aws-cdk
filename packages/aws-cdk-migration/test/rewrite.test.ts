@@ -1,13 +1,13 @@
-import { rewriteImports } from '../lib/rewrite';
+import { rewriteMonoPackageImports, rewriteReadmeImports } from '../lib/rewrite';
 
-describe(rewriteImports, () => {
+describe(rewriteMonoPackageImports, () => {
   test('correctly rewrites naked "import"', () => {
-    const output = rewriteImports(`
+    const output = rewriteMonoPackageImports(`
     // something before
     import '@aws-cdk/aws-s3/hello';
     // something after
 
-    console.log('Look! I did something!');`, 'subject.ts');
+    console.log('Look! I did something!');`, 'aws-cdk-lib', 'subject.ts');
 
     expect(output).toBe(`
     // something before
@@ -18,12 +18,12 @@ describe(rewriteImports, () => {
   });
 
   test('correctly rewrites naked "require"', () => {
-    const output = rewriteImports(`
+    const output = rewriteMonoPackageImports(`
     // something before
     require('@aws-cdk/aws-s3/hello');
     // something after
 
-    console.log('Look! I did something!');`, 'subject.ts');
+    console.log('Look! I did something!');`, 'aws-cdk-lib', 'subject.ts');
 
     expect(output).toBe(`
     // something before
@@ -34,50 +34,52 @@ describe(rewriteImports, () => {
   });
 
   test('correctly rewrites "import from"', () => {
-    const output = rewriteImports(`
-  // something before
-  import * as s3 from '@aws-cdk/aws-s3';
-  import * as cfndiff from '@aws-cdk/cloudformation-diff';
-  import { Stack } from "@aws-cdk/core";
-  // something after
+    const output = rewriteMonoPackageImports(`
+    // something before
+    import * as s3 from '@aws-cdk/aws-s3';
+    import * as cfndiff from '@aws-cdk/cloudformation-diff';
+    import { Construct } from "@aws-cdk/core";
+    // something after
 
-  console.log('Look! I did something!');`, 'subject.ts');
+    console.log('Look! I did something!');`, 'aws-cdk-lib', 'subject.ts');
 
     expect(output).toBe(`
-  // something before
-  import * as s3 from 'aws-cdk-lib/aws-s3';
-  import * as cfndiff from '@aws-cdk/cloudformation-diff';
-  import { Stack } from "aws-cdk-lib";
-  // something after
+    // something before
+    import * as s3 from 'aws-cdk-lib/aws-s3';
+    import * as cfndiff from '@aws-cdk/cloudformation-diff';
+    import { Construct } from "aws-cdk-lib";
+    // something after
 
-  console.log('Look! I did something!');`);
+    console.log('Look! I did something!');`);
   });
 
   test('correctly rewrites "import = require"', () => {
-    const output = rewriteImports(`
-  // something before
-  import s3 = require('@aws-cdk/aws-s3');
-  import cfndiff = require('@aws-cdk/cloudformation-diff');
-  // something after
+    const output = rewriteMonoPackageImports(`
+    // something before
+    import s3 = require('@aws-cdk/aws-s3');
+    import cfndiff = require('@aws-cdk/cloudformation-diff');
+    import { Construct } = require("@aws-cdk/core");
+    // something after
 
-  console.log('Look! I did something!');`, 'subject.ts');
+    console.log('Look! I did something!');`, 'aws-cdk-lib', 'subject.ts');
 
     expect(output).toBe(`
-  // something before
-  import s3 = require('aws-cdk-lib/aws-s3');
-  import cfndiff = require('@aws-cdk/cloudformation-diff');
-  // something after
+    // something before
+    import s3 = require('aws-cdk-lib/aws-s3');
+    import cfndiff = require('@aws-cdk/cloudformation-diff');
+    import { Construct } = require("aws-cdk-lib");
+    // something after
 
-  console.log('Look! I did something!');`);
+    console.log('Look! I did something!');`);
   });
 
   test('does not rewrite @aws-cdk/assert', () => {
-    const output = rewriteImports(`
+    const output = rewriteMonoPackageImports(`
     // something before
     import '@aws-cdk/assert/jest';
     // something after
 
-    console.log('Look! I did something!');`, 'subject.ts');
+    console.log('Look! I did something!');`, 'aws-cdk-lib', 'subject.ts');
 
     expect(output).toBe(`
     // something before
@@ -87,93 +89,145 @@ describe(rewriteImports, () => {
     console.log('Look! I did something!');`);
   });
 
-  test('correctly rewrites import namespaced Construct by moving to constructs', () => {
-    const output = rewriteImports(`
-  // something before
-  import * as cdk from '@aws-cdk/core';
-  // something after
+  test('correctly rewrites Cfn imports', () => {
+    // Codestar example
+    const codestar = rewriteMonoPackageImports(`
+    // something before
+    import * as codestar from './codestar.generated';
+    import { CfnY } from '../codestar.generated';
+    import { CfnX } from '../lib/codestar.generated';
+    // something after
 
-  ${constructFileBody('cdk.Construct')}
-  console.log('Look! I did something!');`, 'subject.ts');
+    console.log('Look! I did something!');`, 'aws-cdk-lib', 'subject.ts', {
+      rewriteCfnImports: true,
+      packageUnscopedName: 'aws-codestar',
+    });
 
-    expect(output).toBe(`
-  // something before
-  import * as cdk from 'aws-cdk-lib';
-  import * as constructs from 'constructs';
-  // something after
+    expect(codestar).toBe(`
+    // something before
+    import * as codestar from 'aws-cdk-lib/aws-codestar';
+    import { CfnY } from 'aws-cdk-lib/aws-codestar';
+    import { CfnX } from 'aws-cdk-lib/aws-codestar';
+    // something after
 
-  ${constructFileBody('constructs.Construct')}
-  console.log('Look! I did something!');`);
+    console.log('Look! I did something!');`);
   });
 
-  test('correctly rewrites require namespaced Construct by moving to constructs', () => {
-    const output = rewriteImports(`
-  // something before
-  import cdk = require('@aws-cdk/core');
-  // something after
+  test('correctly rewrites Cfn imports from an alpha module', () => {
+    const customModules = {
+      '@aws-cdk/aws-kinesisfirehose': 'aws-kinesisfirehose-alpha',
+    };
+    const output = rewriteMonoPackageImports(`
+    // something before
+    import * as firehose from '@aws-cdk/aws-kinesisfirehose';
+    import { CfnDeliveryStream } from '@aws-cdk/aws-kinesisfirehose';
+    // something after
 
-  ${constructFileBody('cdk.Construct')}
-  console.log('Look! I did something!');`, 'subject.ts');
-
-    expect(output).toBe(`
-  // something before
-  import cdk = require('aws-cdk-lib');
-  import constructs = require('constructs');
-  // something after
-
-  ${constructFileBody('constructs.Construct')}
-  console.log('Look! I did something!');`);
-  });
-
-  test('correctly rewrites barrel Construct by moving to constructs', () => {
-    const output = rewriteImports(`
-  // something before
-  import { Construct, Stack } from '@aws-cdk/core';
-  // something after
-
-  ${constructFileBody('Construct')}
-  console.log('Look! I did something!');`, 'subject.ts');
+    console.log('Look! I did something!');`, 'aws-cdk-lib', 'subject.ts', {
+      rewriteCfnImports: true,
+      customModules: customModules,
+    });
 
     expect(output).toBe(`
-  // something before
-  import { Stack } from 'aws-cdk-lib';
-  import { Construct } from 'constructs';
-  // something after
+    // something before
+    import * as firehose from 'aws-kinesisfirehose-alpha';
+    import { CfnDeliveryStream } from 'aws-cdk-lib/aws-kinesisfirehose';
+    // something after
 
-  ${constructFileBody('Construct')}
-  console.log('Look! I did something!');`);
-  });
-
-  test('correctly rewrites aliased barrel Construct by moving to constructs', () => {
-    const output = rewriteImports(`
-  // something before
-  import { App, Construct as CoreConstruct } from '@aws-cdk/core';
-  // something after
-
-  ${constructFileBody('CoreConstruct')}
-  console.log('Look! I did something!');`, 'subject.ts');
-
-    expect(output).toBe(`
-  // something before
-  import { App } from 'aws-cdk-lib';
-  import { Construct as CoreConstruct } from 'constructs';
-  // something after
-
-  ${constructFileBody('CoreConstruct')}
-  console.log('Look! I did something!');`);
+    console.log('Look! I did something!');`);
   });
 });
 
-function constructFileBody(identifier: string) {
-  return `
-interface I {
-    c: ${identifier};
-}
-class C {
-    constructor(c: ${identifier}) {}
-}
-function f(c: ${identifier}) {
-    new ${identifier}(c as ${identifier}, 'id')
-}
-`;
-}
+describe(rewriteReadmeImports, () => {
+  test('parses ts code snippet', () => {
+    const output = rewriteReadmeImports(`
+    Some README text.
+    \`\`\`ts
+    import * as s3 from '@aws-cdk/aws-s3';
+    import { Construct } from "@aws-cdk/core";
+    \`\`\`
+    Some more README text.`, 'aws-cdk-lib', 'subject.ts');
+
+    expect(output).toBe(`
+    Some README text.
+    \`\`\`ts
+    import * as s3 from 'aws-cdk-lib/aws-s3';
+    import { Construct } from "aws-cdk-lib";
+    \`\`\`
+    Some more README text.`);
+  });
+
+  test('parses typescript code snippet', () => {
+    const output = rewriteReadmeImports(`
+    Some README text.
+    \`\`\`typescript
+    import * as s3 from '@aws-cdk/aws-s3';
+    import { Construct } from "@aws-cdk/core";
+    \`\`\`
+    Some more README text.`, 'aws-cdk-lib', 'subject.ts');
+
+    expect(output).toBe(`
+    Some README text.
+    \`\`\`typescript
+    import * as s3 from 'aws-cdk-lib/aws-s3';
+    import { Construct } from "aws-cdk-lib";
+    \`\`\`
+    Some more README text.`);
+  });
+
+  test('parses text code snippet', () => {
+    const output = rewriteReadmeImports(`
+    Some README text.
+    \`\`\`text
+    import * as s3 from '@aws-cdk/aws-s3';
+    import { Construct } from "@aws-cdk/core";
+    \`\`\`
+    Some more README text.`, 'aws-cdk-lib', 'subject.ts');
+
+    expect(output).toBe(`
+    Some README text.
+    \`\`\`text
+    import * as s3 from 'aws-cdk-lib/aws-s3';
+    import { Construct } from "aws-cdk-lib";
+    \`\`\`
+    Some more README text.`);
+  });
+
+  test('ignores non ts|typescript|text code snippet', () => {
+    const output = rewriteReadmeImports(`
+    Some README text.
+    \`\`\`java
+    import * as s3 from '@aws-cdk/aws-s3';
+    \`\`\`
+    Some more README text.`, 'aws-cdk-lib', 'subject.ts');
+
+    expect(output).toBe(`
+    Some README text.
+    \`\`\`java
+    import * as s3 from '@aws-cdk/aws-s3';
+    \`\`\`
+    Some more README text.`);
+  });
+
+  test('parses multiple snippets', () => {
+    const output = rewriteReadmeImports(`
+    Some README text.
+    \`\`\`ts
+    import * as s3 from '@aws-cdk/aws-s3';
+    \`\`\`
+    Some more README text.
+    \`\`\`ts
+    import { CfnDeliveryStream } from '@aws-cdk/aws-kinesisfirehose';
+    \`\`\``, 'aws-cdk-lib', 'subject.ts');
+
+    expect(output).toBe(`
+    Some README text.
+    \`\`\`ts
+    import * as s3 from 'aws-cdk-lib/aws-s3';
+    \`\`\`
+    Some more README text.
+    \`\`\`ts
+    import { CfnDeliveryStream } from 'aws-cdk-lib/aws-kinesisfirehose';
+    \`\`\``);
+  });
+});

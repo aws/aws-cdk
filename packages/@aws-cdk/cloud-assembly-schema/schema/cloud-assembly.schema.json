@@ -299,6 +299,10 @@
                     "description": "The role that needs to be assumed to deploy the stack (Default - No role is assumed (current credentials are used))",
                     "type": "string"
                 },
+                "assumeRoleExternalId": {
+                    "description": "External ID to use when assuming role for cloudformation deployments (Default - No external ID)",
+                    "type": "string"
+                },
                 "cloudFormationExecutionRoleArn": {
                     "description": "The role that is passed to CloudFormation to execute the change set (Default - No role is passed (currently assumed role/credentials are used))",
                     "type": "string"
@@ -416,6 +420,9 @@
                         },
                         {
                             "$ref": "#/definitions/SecurityGroupContextQuery"
+                        },
+                        {
+                            "$ref": "#/definitions/KeyContextQuery"
                         }
                     ]
                 }
@@ -433,6 +440,7 @@
                 "availability-zones",
                 "endpoint-service-availability-zones",
                 "hosted-zone",
+                "key-provider",
                 "load-balancer",
                 "load-balancer-listener",
                 "security-group",
@@ -753,14 +761,48 @@
                     "type": "string"
                 },
                 "securityGroupId": {
-                    "description": "Security group id",
+                    "description": "Security group id (Default - None)",
+                    "type": "string"
+                },
+                "securityGroupName": {
+                    "description": "Security group name (Default - None)",
+                    "type": "string"
+                },
+                "vpcId": {
+                    "description": "VPC ID (Default - None)",
                     "type": "string"
                 }
             },
             "required": [
                 "account",
-                "region",
-                "securityGroupId"
+                "region"
+            ]
+        },
+        "KeyContextQuery": {
+            "description": "Query input for looking up a KMS Key",
+            "type": "object",
+            "properties": {
+                "account": {
+                    "description": "Query account",
+                    "type": "string"
+                },
+                "region": {
+                    "description": "Query region",
+                    "type": "string"
+                },
+                "lookupRoleArn": {
+                    "description": "The ARN of the role that should be used to look up the missing values (Default - None)",
+                    "type": "string"
+                },
+                "aliasName": {
+                    "description": "Alias name used to search the Key",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "account",
+                "aliasName",
+                "region"
             ]
         },
         "RuntimeInfo": {

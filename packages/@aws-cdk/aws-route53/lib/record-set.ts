@@ -1,6 +1,6 @@
 import * as path from 'path';
 import * as iam from '@aws-cdk/aws-iam';
-import { CustomResource, CustomResourceProvider, CustomResourceProviderRuntime, Duration, IResource, Resource, Token } from '@aws-cdk/core';
+import { CustomResource, CustomResourceProvider, CustomResourceProviderRuntime, Duration, IResource, RemovalPolicy, Resource, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { IAliasRecordTarget } from './alias-record-target';
 import { IHostedZone } from './hosted-zone-ref';
@@ -659,6 +659,13 @@ export interface CrossAccountZoneDelegationRecordProps {
    * @default Duration.days(2)
    */
   readonly ttl?: Duration;
+
+  /**
+   * The removal policy to apply to the record set.
+   *
+   * @default RemovalPolicy.DESTROY
+   */
+  readonly removalPolicy?: RemovalPolicy;
 }
 
 /**
@@ -685,6 +692,7 @@ export class CrossAccountZoneDelegationRecord extends CoreConstruct {
     new CustomResource(this, 'CrossAccountZoneDelegationCustomResource', {
       resourceType: CROSS_ACCOUNT_ZONE_DELEGATION_RESOURCE_TYPE,
       serviceToken,
+      removalPolicy: props.removalPolicy,
       properties: {
         AssumeRoleArn: props.delegationRole.roleArn,
         ParentZoneName: props.parentHostedZoneName,

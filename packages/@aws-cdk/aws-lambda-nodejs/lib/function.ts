@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as lambda from '@aws-cdk/aws-lambda';
+import { Architecture } from '@aws-cdk/aws-lambda';
 import { Bundling } from './bundling';
 import { PackageManager } from './package-manager';
 import { BundlingOptions } from './types';
@@ -73,6 +74,13 @@ export interface NodejsFunctionProps extends lambda.FunctionOptions {
    *   modules are bundled.
    */
   readonly bundling?: BundlingOptions;
+
+  /**
+   * The path to the directory containing project config files (`package.json` or `tsconfig.json`)
+   *
+   * @default - the directory containing the `depsLockFilePath`
+   */
+  readonly projectRoot?: string;
 }
 
 /**
@@ -88,7 +96,9 @@ export class NodejsFunction extends lambda.Function {
     const entry = path.resolve(findEntry(id, props.entry));
     const handler = props.handler ?? 'handler';
     const runtime = props.runtime ?? lambda.Runtime.NODEJS_14_X;
+    const architecture = props.architecture ?? Architecture.X86_64;
     const depsLockFilePath = findLockFile(props.depsLockFilePath);
+    const projectRoot = props.projectRoot ?? path.dirname(depsLockFilePath);
 
     super(scope, id, {
       ...props,
@@ -97,7 +107,9 @@ export class NodejsFunction extends lambda.Function {
         ...props.bundling ?? {},
         entry,
         runtime,
+        architecture,
         depsLockFilePath,
+        projectRoot,
       }),
       handler: `index.${handler}`,
     });
