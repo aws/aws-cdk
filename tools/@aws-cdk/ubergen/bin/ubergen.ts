@@ -393,6 +393,19 @@ async function transformPackage(
       { spaces: 2 },
     );
   }
+
+  // if libRoot is _not_ under the root of the package, generate a file at the
+  // root that will refer to the one under lib/ so that users can still import
+  // from "monocdk/aws-lambda".
+  const relativeLibRoot = uberPackageJson.ubergen?.libRoot;
+  if (relativeLibRoot && relativeLibRoot !== '.') {
+    await fs.writeFile(
+      path.resolve(relativeLibRoot, '..', `${library.shortName}.ts`),
+      `export * from './${relativeLibRoot}/${library.shortName}';\n`,
+      { encoding: 'utf8' },
+    );
+  }
+
   return true;
 }
 
