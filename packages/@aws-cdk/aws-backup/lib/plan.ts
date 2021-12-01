@@ -29,15 +29,6 @@ export interface BackupPlanProps {
   readonly backupPlanName?: string;
 
   /**
-   * Option used to set Windows VSS options
-   *
-   * @default false
-   * @see https://docs.aws.amazon.com/aws-backup/latest/devguide/windows-backups.html}
-   */
-  readonly windowsVss? : boolean;
-
-
-  /**
    * The backup vault where backups are stored
    *
    * @default - use the vault defined at the rule level. If not defined a new
@@ -52,6 +43,15 @@ export interface BackupPlanProps {
    * @default - use `addRule()` to add rules
    */
   readonly backupPlanRules?: BackupPlanRule[];
+
+  /**
+   * Enable Windows VSS backup.
+   *
+   * @see https://docs.aws.amazon.com/aws-backup/latest/devguide/windows-backups.html
+   *
+   * @default false
+   */
+  readonly windowsVss?: boolean;
 }
 
 /**
@@ -124,8 +124,10 @@ export class BackupPlan extends Resource implements IBackupPlan {
    * @attribute
    */
   public readonly versionId: string;
+
   private readonly rules: CfnBackupPlan.BackupRuleResourceTypeProperty[] = [];
   private _backupVault?: IBackupVault;
+
   constructor(scope: Construct, id: string, props: BackupPlanProps = {}) {
     super(scope, id);
 
@@ -136,6 +138,7 @@ export class BackupPlan extends Resource implements IBackupPlan {
         backupPlanRule: Lazy.any({ produce: () => this.rules }, { omitEmptyArray: true }),
       },
     });
+
     this.backupPlanId = plan.attrBackupPlanId;
     this.backupPlanArn = plan.attrBackupPlanArn;
     this.versionId = plan.attrVersionId;

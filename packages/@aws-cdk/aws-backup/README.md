@@ -82,7 +82,10 @@ const plan = backup.BackupPlan.daily35DayRetention(this, 'Plan', myVault); // Us
 plan.addRule(backup.BackupPlanRule.monthly1Year(otherVault)); // Use `otherVault` for this specific rule
 ```
 
-This can be used by the [windowsVss](https://docs.aws.amazon.com/aws-backup/latest/devguide/windows-backups.html) parameter, and the default value of this parameter is false.
+You can [backup](https://docs.aws.amazon.com/aws-backup/latest/devguide/windows-backups.html)
+VSS-enabled Windows applications running on Amazon EC2 instances by setting the `windowsVss`
+parameter to `true`. If the application has VSS writer registered with Windows VSS,
+then AWS Backup creates a snapshot that will be consistent for that application.
 
 ```ts
 const plan = new backup.BackupPlan(this, 'Plan', {
