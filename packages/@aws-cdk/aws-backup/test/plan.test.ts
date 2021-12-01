@@ -71,28 +71,6 @@ test('create a plan and add rules', () => {
 });
 
 test('create a plan and add rules - add BackupPlan.AdvancedBackupSettings.BackupOptions', () => {
-  // GIVEN
-  const vault = new BackupVault(stack, 'Vault');
-  const otherVault = new BackupVault(stack, 'OtherVault');
-
-  // WHEN
-  const plan = new BackupPlan(stack, 'Plan', {
-    windowsVss: true,
-    backupVault: vault,
-    backupPlanRules: [
-      new BackupPlanRule({
-        completionWindow: Duration.hours(2),
-        startWindow: Duration.hours(1),
-        scheduleExpression: events.Schedule.cron({
-          day: '15',
-          hour: '3',
-          minute: '30',
-        }),
-        moveToColdStorageAfter: Duration.days(30),
-      }),
-    ],
-  });
-  // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::Backup::BackupPlan', {
     BackupPlan: {
       AdvancedBackupSettings: [{ BackupOptions: { WindowsVSS: 'enabled' }, ResourceType: 'EC2' }],

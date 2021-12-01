@@ -89,6 +89,7 @@ const plan = new backup.BackupPlan(this, 'Plan', {
   windowsVss: true,
 });
 ```
+
 ## Backup vault
 
 In AWS Backup, a *backup vault* is a container that you organize your backups in. You can use backup

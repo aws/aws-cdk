@@ -124,9 +124,29 @@ export class BackupPlan extends Resource implements IBackupPlan {
    * @attribute
    */
   public readonly versionId: string;
-
   private readonly rules: CfnBackupPlan.BackupRuleResourceTypeProperty[] = [];
   private _backupVault?: IBackupVault;
+  constructor(scope: Construct, id: string, props: BackupPlanProps = {}) {
+    super(scope, id);
+
+    const plan = new CfnBackupPlan(this, 'Resource', {
+      backupPlan: {
+        advancedBackupSettings: this.advancedBackupSettings(props),
+        backupPlanName: props.backupPlanName || id,
+        backupPlanRule: Lazy.any({ produce: () => this.rules }, { omitEmptyArray: true }),
+      },
+    });
+    this.backupPlanId = plan.attrBackupPlanId;
+    this.backupPlanArn = plan.attrBackupPlanArn;
+    this.versionId = plan.attrVersionId;
+
+    this._backupVault = props.backupVault;
+
+    for (const rule of props.backupPlanRules || []) {
+      this.addRule(rule);
+    }
+  }
+
   private advancedBackupSettings(props: BackupPlanProps) {
     if (!props.windowsVss) {
       return undefined;
@@ -137,27 +157,6 @@ export class BackupPlan extends Resource implements IBackupPlan {
       },
       resourceType: 'EC2',
     }];
-  }
-  constructor(scope: Construct, id: string, props: BackupPlanProps = {}) {
-    super(scope, id);
-
-    const plan = new CfnBackupPlan(this, 'Resource', {
-      backupPlan: {
-        advancedBackupSettings: this.advancedBackupSettings(props),
-        backupPlanName: props.backupPlanName || id,
-        backupPlanRule: Lazy.any({ produce: () => this.rules }, { omitEmptyArray: true }),
-    },
-  })
-    
-    this.backupPlanId = plan.attrBackupPlanId;
-    this.backupPlanArn = plan.attrBackupPlanArn;
-    this.versionId = plan.attrVersionId;
-
-    this._backupVault = props.backupVault;
-
-    for (const rule of props.backupPlanRules || []) {
-      this.addRule(rule);
-    }
   }
 
   /**
