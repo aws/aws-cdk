@@ -147,7 +147,7 @@ describe('scale on cpu utilization', () => {
 
   });
 
-  test('should error if connfiguring autoscaling target both in the extension and the Service', () => {
+  test('should error if configuring autoscaling target both in the extension and the Service', () => {
     // GIVEN
     const stack = new cdk.Stack();
 

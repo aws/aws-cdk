@@ -299,7 +299,7 @@ export class Service extends Construct {
     const maxCapacity = props.autoScaleTaskCount?.maxTaskCount ?? scaleOnCpuExtension?.maxTaskCount;
     if (maxCapacity) {
       this.scalableTaskCount = this.ecsService.autoScaleTaskCount({
-        maxCapacity: props.autoScaleTaskCount?.maxTaskCount ?? scaleOnCpuExtension?.maxTaskCount,
+        maxCapacity,
         minCapacity: props.autoScaleTaskCount?.minTaskCount ?? scaleOnCpuExtension?.minTaskCount,
       });
     }
