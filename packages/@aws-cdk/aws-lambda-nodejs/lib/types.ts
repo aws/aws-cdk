@@ -205,6 +205,19 @@ export interface BundlingOptions {
   /**
    * Build arguments to pass into esbuild.
    *
+   * For example, to add the [--main-fields](https://esbuild.github.io/api/#main-fields) flag:
+   *
+   * ```text
+   * new NodejsFunction(scope, id, {
+   *   ...
+   *   bundling: {
+   *     esbuildArgs: {
+   *       "--main-fields": "module,main"
+   *     }
+   *   }
+   * });
+   * ```
+   *
    * @default - no additional build arguments are passed
    */
   readonly esbuildArgs?: { [key: string]: string };
