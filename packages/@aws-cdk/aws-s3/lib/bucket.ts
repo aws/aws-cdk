@@ -432,6 +432,19 @@ export interface BucketAttributes {
 }
 
 /**
+ * Props common to all buckets
+ */
+export interface BucketBaseProps extends ResourceProps {
+
+  /**
+   * The role to be used by the notifications handler
+   *
+   * @default - a new role will be created.
+   */
+  readonly notificationsHandlerRole?: iam.IRole;
+}
+
+/**
  * Represents an S3 Bucket.
  *
  * Buckets can be either defined within this stack:
@@ -488,12 +501,15 @@ export abstract class BucketBase extends Resource implements IBucket {
 
   private readonly notifications: BucketNotifications;
 
-  constructor(scope: Construct, id: string, props: ResourceProps = {}) {
+  constructor(scope: Construct, id: string, props: BucketBaseProps = {}) {
     super(scope, id, props);
 
     // defines a BucketNotifications construct. Notice that an actual resource will only
     // be added if there are notifications added, so we don't need to condition this.
-    this.notifications = new BucketNotifications(this, 'Notifications', { bucket: this });
+    this.notifications = new BucketNotifications(this, 'Notifications', {
+      bucket: this,
+      handlerRole: props.notificationsHandlerRole,
+    });
   }
 
   /**
@@ -1215,7 +1231,7 @@ export enum ObjectOwnership {
    */
   OBJECT_WRITER = 'ObjectWriter',
 }
-export interface BucketProps {
+export interface BucketProps extends BucketBaseProps {
   /**
    * The kind of server-side encryption to apply to this bucket.
    *
@@ -1555,6 +1571,7 @@ export class Bucket extends BucketBase {
   constructor(scope: Construct, id: string, props: BucketProps = {}) {
     super(scope, id, {
       physicalName: props.bucketName,
+      notificationsHandlerRole: props.notificationsHandlerRole,
     });
 
     const { bucketEncryption, encryptionKey } = this.parseEncryption(props);

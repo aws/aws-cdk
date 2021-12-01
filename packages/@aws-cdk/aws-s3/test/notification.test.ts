@@ -1,5 +1,6 @@
 import '@aws-cdk/assert-internal/jest';
 import { ResourcePart } from '@aws-cdk/assert-internal';
+import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import * as s3 from '../lib';
 
@@ -31,6 +32,29 @@ describe('notification', () => {
     });
 
 
+  });
+
+  test('can specify a custom role for the notifications handler', () => {
+    const stack = new cdk.Stack();
+
+    const importedRole = iam.Role.fromRoleArn(stack, 'role', 'arn:aws:iam::111111111111:role/DevsNotAllowedToTouch');
+
+    const bucket = new s3.Bucket(stack, 'MyBucket', {
+      notificationsHandlerRole: importedRole,
+    });
+
+    bucket.addEventNotification(s3.EventType.OBJECT_CREATED, {
+      bind: () => ({
+        arn: 'ARN',
+        type: s3.BucketNotificationDestinationType.TOPIC,
+      }),
+    });
+
+    expect(stack).toHaveResource('AWS::S3::Bucket');
+    expect(stack).toHaveResource('AWS::Lambda::Function', {
+      Description: 'AWS CloudFormation handler for "Custom::S3BucketNotifications" resources (@aws-cdk/aws-s3)',
+      Role: 'arn:aws:iam::111111111111:role/DevsNotAllowedToTouch',
+    });
   });
 
   test('can specify prefix and suffix filter rules', () => {

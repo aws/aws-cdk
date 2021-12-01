@@ -249,6 +249,23 @@ const bucket = s3.Bucket.fromBucketAttributes(this, 'ImportedBucket', {
 bucket.addEventNotification(s3.EventType.OBJECT_CREATED, new s3n.SnsDestination(topic));
 ```
 
+When you add an event notification to a bucket, a custom resource is created to 
+manage the notifications. By default, a new role is created for the Lambda
+function that implements this feature. If you want to use your own role instead,
+you should provide it in the `Bucket` constructor:
+
+```ts
+declare const importedRole: iam.IRole;
+const bucket = new s3.Bucket(this, 'MyBucket', {
+  notificationsHandlerRole: importedRole,
+});
+```
+
+> NOTE: If you provide your own handler role, make sure that it has at least
+>`s3:PutBucketNotification` and `s3:GetBucketNotification` permissions to the
+> bucket as well as the permissions present in `AWSLambdaBasicExecutionRole` (AWS
+> managed role). The lack of these permissions will cause the deployment to fail!
+
 [S3 Bucket Notifications]: https://docs.aws.amazon.com/AmazonS3/latest/dev/NotificationHowTo.html
 
 

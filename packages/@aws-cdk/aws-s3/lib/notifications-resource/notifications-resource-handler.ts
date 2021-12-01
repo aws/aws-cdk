@@ -7,6 +7,10 @@ import * as cdk from '@aws-cdk/core';
 // eslint-disable-next-line no-duplicate-imports, import/order
 import { Construct } from '@aws-cdk/core';
 
+export class NotificationsResourceHandlerProps {
+  role?: iam.IRole;
+}
+
 /**
  * A Lambda-based custom resource handler that provisions S3 bucket
  * notifications for a bucket.
@@ -31,14 +35,14 @@ export class NotificationsResourceHandler extends Construct {
    *
    * @returns The ARN of the custom resource lambda function.
    */
-  public static singleton(context: Construct) {
+  public static singleton(context: Construct, props: NotificationsResourceHandlerProps = {}) {
     const root = cdk.Stack.of(context);
 
     // well-known logical id to ensure stack singletonity
     const logicalId = 'BucketNotificationsHandler050a0587b7544547bf325f094a3db834';
     let lambda = root.node.tryFindChild(logicalId) as NotificationsResourceHandler;
     if (!lambda) {
-      lambda = new NotificationsResourceHandler(root, logicalId);
+      lambda = new NotificationsResourceHandler(root, logicalId, props);
     }
 
     return lambda;
@@ -53,22 +57,12 @@ export class NotificationsResourceHandler extends Construct {
   /**
    * The role of the handler's lambda function.
    */
-  public readonly role: iam.Role;
+  public readonly role: iam.IRole;
 
-  constructor(scope: Construct, id: string) {
+  constructor(scope: Construct, id: string, props: NotificationsResourceHandlerProps = {}) {
     super(scope, id);
 
-    this.role = new iam.Role(this, 'Role', {
-      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
-      managedPolicies: [
-        iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole'),
-      ],
-    });
-
-    this.role.addToPolicy(new iam.PolicyStatement({
-      actions: ['s3:PutBucketNotification'],
-      resources: ['*'],
-    }));
+    this.role = props.role ?? this.createRole();
 
     const resourceType = 'AWS::Lambda::Function';
     class InLineLambda extends cdk.CfnResource {
@@ -94,5 +88,25 @@ export class NotificationsResourceHandler extends Construct {
     resource.node.addDependency(this.role);
 
     this.functionArn = resource.getAtt('Arn').toString();
+  }
+
+  public addToRolePolicy(statement: iam.PolicyStatement) {
+    this.role.addToPrincipalPolicy(statement);
+  }
+
+  private createRole(): iam.IRole {
+    const role = new iam.Role(this, 'Role', {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+      managedPolicies: [
+        iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole'),
+      ],
+    });
+
+    role.addToPrincipalPolicy(new iam.PolicyStatement({
+      actions: ['s3:PutBucketNotification'],
+      resources: ['*'],
+    }));
+
+    return role;
   }
 }
