@@ -3,13 +3,21 @@
 
 ---
 
-![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
+Features                               | Stability
+---------------------------------------|------------------------------------------------------------
+Integration classes for HTTP APIs      | ![Stable](https://img.shields.io/badge/stable-success.svg?style=for-the-badge)
+Integration classes for Websocket APIs | ![Experimental](https://img.shields.io/badge/experimental-important.svg?style=for-the-badge)
 
-> The APIs of higher level constructs in this module are experimental and under active development.
-> They are subject to non-backward compatible changes or removal in any future version. These are
-> not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be
-> announced in the release notes. This means that while you may use them, you may need to update
-> your source code when upgrading to a newer version of this package.
+> **Experimental:** Higher level constructs in this module that are marked as experimental are
+> under active development. They are subject to non-backward compatible changes or removal in any
+> future version. These are not subject to the [Semantic Versioning](https://semver.org/) model and
+> breaking changes will be announced in the release notes. This means that while you may use them,
+> you may need to update your source code when upgrading to a newer version of this package.
+
+<!-- -->
+
+> **Stable:** Higher level constructs in this module that are marked stable will not undergo any
+> breaking changes. They will strictly follow the [Semantic Versioning](https://semver.org/) model.
 
 ---
 
@@ -41,12 +49,10 @@ proxy integrations](https://docs.aws.amazon.com/apigateway/latest/developerguide
 The following code configures a route `GET /books` with a Lambda proxy integration.
 
 ```ts
-import { LambdaProxyIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
+import { HttpLambdaIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
 
 declare const booksDefaultFn: lambda.Function;
-const booksIntegration = new LambdaProxyIntegration({
-  handler: booksDefaultFn,
-});
+const booksIntegration = new HttpLambdaIntegration('BooksIntegration', booksDefaultFn);
 
 const httpApi = new apigwv2.HttpApi(this, 'HttpApi');
 
@@ -68,11 +74,9 @@ The following code configures a route `GET /books` with an HTTP proxy integratio
 `get-books-proxy.myproxy.internal`.
 
 ```ts
-import { HttpProxyIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
+import { HttpUrlIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
 
-const booksIntegration = new HttpProxyIntegration({
-  url: 'https://get-books-proxy.myproxy.internal',
-});
+const booksIntegration = new HttpUrlIntegration('BooksIntegration', 'https://get-books-proxy.myproxy.internal');
 
 const httpApi = new apigwv2.HttpApi(this, 'HttpApi');
 
@@ -106,9 +110,7 @@ listener.addTargets('target', {
 });
 
 const httpEndpoint = new apigwv2.HttpApi(this, 'HttpProxyPrivateApi', {
-  defaultIntegration: new HttpAlbIntegration({
-    listener,
-  }),
+  defaultIntegration: new HttpAlbIntegration('DefaultIntegration', listener),
 });
 ```
 
@@ -129,9 +131,7 @@ listener.addTargets('target', {
 });
 
 const httpEndpoint = new apigwv2.HttpApi(this, 'HttpProxyPrivateApi', {
-  defaultIntegration: new HttpNlbIntegration({
-    listener,
-  }),
+  defaultIntegration: new HttpNlbIntegration('DefaultIntegration', listener),
 });
 ```
 
@@ -154,9 +154,8 @@ const namespace = new servicediscovery.PrivateDnsNamespace(this, 'Namespace', {
 const service = namespace.createService('Service');
 
 const httpEndpoint = new apigwv2.HttpApi(this, 'HttpProxyPrivateApi', {
-  defaultIntegration: new HttpServiceDiscoveryIntegration({
+  defaultIntegration: new HttpServiceDiscoveryIntegration('DefaultIntegration', service, {
     vpcLink,
-    service,
   }),
 });
 ```
@@ -179,8 +178,7 @@ listener.addTargets('target', {
 });
 
 const httpEndpoint = new apigwv2.HttpApi(this, 'HttpProxyPrivateApi', {
-  defaultIntegration: new HttpAlbIntegration({
-    listener,
+  defaultIntegration: new HttpAlbIntegration('DefaultIntegration', listener, {
     parameterMapping: new apigwv2.ParameterMapping()
       .appendHeader('header2', apigwv2.MappingValue.requestHeader('header1'))
       .removeHeader('header1'),
@@ -200,8 +198,7 @@ listener.addTargets('target', {
 });
 
 const httpEndpoint = new apigwv2.HttpApi(this, 'HttpProxyPrivateApi', {
-  defaultIntegration: new HttpAlbIntegration({
-    listener,
+  defaultIntegration: new HttpAlbIntegration('DefaultIntegration', listener, {
     parameterMapping: new apigwv2.ParameterMapping().custom('myKey', 'myValue'),
   }),
 });
@@ -222,7 +219,7 @@ The API Gateway service will invoke the lambda function with an event payload of
 The following code configures a `sendmessage` route with a Lambda integration
 
 ```ts
-import { LambdaWebSocketIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
+import { WebSocketLambdaIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
 
 const webSocketApi = new apigwv2.WebSocketApi(this, 'mywsapi');
 new apigwv2.WebSocketStage(this, 'mystage', {
@@ -233,8 +230,6 @@ new apigwv2.WebSocketStage(this, 'mystage', {
 
 declare const messageHandler: lambda.Function;
 webSocketApi.addRoute('sendmessage', {
-  integration: new LambdaWebSocketIntegration({
-    handler: messageHandler,
-  }),
+  integration: new WebSocketLambdaIntegration('SendMessageIntegration', messageHandler),
 });
 ```

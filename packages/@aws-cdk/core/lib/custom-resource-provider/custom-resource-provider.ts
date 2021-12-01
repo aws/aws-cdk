@@ -1,5 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { AssetStaging } from '../asset-staging';
 import { FileAssetPackaging } from '../assets';
@@ -189,8 +190,10 @@ export class CustomResourceProvider extends CoreConstruct {
       sourcePath: props.codeDirectory,
     });
 
+    const assetFileName = staging.relativeStagedPath(stack);
+
     const asset = stack.synthesizer.addFileAsset({
-      fileName: staging.relativeStagedPath(stack),
+      fileName: assetFileName,
       sourceHash: staging.assetHash,
       packaging: FileAssetPackaging.ZIP_DIRECTORY,
     });
@@ -241,6 +244,11 @@ export class CustomResourceProvider extends CoreConstruct {
     });
 
     handler.addDependsOn(role);
+
+    if (this.node.tryGetContext(cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT)) {
+      handler.addMetadata(cxapi.ASSET_RESOURCE_METADATA_PATH_KEY, assetFileName);
+      handler.addMetadata(cxapi.ASSET_RESOURCE_METADATA_PROPERTY_KEY, 'Code');
+    }
 
     this.serviceToken = Token.asString(handler.getAtt('Arn'));
   }
