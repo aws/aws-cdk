@@ -313,6 +313,68 @@ test('Recognize public subnet by route table', async () => {
   });
 });
 
+test('Recognize isolated subnet by route table', async () => {
+  // GIVEN
+  mockVpcLookup({
+    subnets: [
+      { SubnetId: 'sub-123456', AvailabilityZone: 'bermuda-triangle-1337', MapPublicIpOnLaunch: false },
+    ],
+    routeTables: [
+      {
+        Associations: [{ SubnetId: 'sub-123456' }],
+        RouteTableId: 'rtb-123456',
+        Routes: [
+          {
+            DestinationCidrBlock: '1.1.2.1/24',
+            GatewayId: 'local',
+            Origin: 'CreateRouteTable',
+            State: 'active',
+          },
+        ],
+      },
+    ],
+  });
+
+  // WHEN
+  const result = await new VpcNetworkContextProviderPlugin(mockSDK).getValue({
+    account: '1234',
+    region: 'us-east-1',
+    filter: { foo: 'bar' },
+    returnAsymmetricSubnets: true,
+  });
+
+  // THEN
+  expect(result).toEqual({
+    availabilityZones: [],
+    vpcCidrBlock: '1.1.1.1/16',
+    isolatedSubnetIds: undefined,
+    isolatedSubnetNames: undefined,
+    isolatedSubnetRouteTableIds: undefined,
+    privateSubnetIds: undefined,
+    privateSubnetNames: undefined,
+    privateSubnetRouteTableIds: undefined,
+    publicSubnetIds: undefined,
+    publicSubnetNames: undefined,
+    publicSubnetRouteTableIds: undefined,
+    subnetGroups: [
+      {
+        name: 'Isolated',
+        type: 'Isolated',
+        subnets: [
+          {
+            subnetId: 'sub-123456',
+            availabilityZone: 'bermuda-triangle-1337',
+            routeTableId: 'rtb-123456',
+            cidr: undefined,
+          },
+        ],
+      },
+    ],
+    vpcId: 'vpc-1234567',
+    vpnGatewayId: undefined,
+  });
+});
+
 test('Recognize private subnet by route table', async () => {
   // GIVEN
   mockVpcLookup({

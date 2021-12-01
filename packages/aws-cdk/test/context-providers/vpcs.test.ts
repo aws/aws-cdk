@@ -331,6 +331,57 @@ test('Recognize private subnet by route table', async () => {
   });
 });
 
+test('Recognize isolated subnet by route table', async () => {
+  // GIVEN
+  const filter = { foo: 'bar' };
+  const provider = new VpcNetworkContextProviderPlugin(mockSDK);
+
+  mockVpcLookup({
+    subnets: [
+      { SubnetId: 'sub-123456', AvailabilityZone: 'bermuda-triangle-1337', MapPublicIpOnLaunch: false },
+    ],
+    routeTables: [
+      {
+        Associations: [{ SubnetId: 'sub-123456' }],
+        RouteTableId: 'rtb-123456',
+        Routes: [
+          {
+            DestinationCidrBlock: '10.0.1.0/24',
+            GatewayId: 'local',
+            Origin: 'CreateRouteTable',
+            State: 'active',
+          },
+        ],
+      },
+    ],
+  });
+
+  // WHEN
+  const result = await provider.getValue({
+    account: '1234',
+    region: 'us-east-1',
+    filter,
+  });
+
+  // THEN
+  expect(result).toEqual({
+    vpcId: 'vpc-1234567',
+    vpcCidrBlock: '1.1.1.1/16',
+    availabilityZones: ['bermuda-triangle-1337'],
+    isolatedSubnetIds: ['sub-123456'],
+    isolatedSubnetNames: ['Isolated'],
+    isolatedSubnetRouteTableIds: ['rtb-123456'],
+    privateSubnetIds: undefined,
+    privateSubnetNames: undefined,
+    privateSubnetRouteTableIds: undefined,
+    publicSubnetIds: undefined,
+    publicSubnetNames: undefined,
+    publicSubnetRouteTableIds: undefined,
+    vpnGatewayId: undefined,
+    subnetGroups: undefined,
+  });
+});
+
 interface VpcLookupOptions {
   subnets: aws.EC2.Subnet[];
   routeTables: aws.EC2.RouteTable[];
