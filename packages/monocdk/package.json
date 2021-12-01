@@ -37,6 +37,8 @@
     }
   },
   "ubergen": {
+    "explicitExports": false,
+    "libRoot": "lib",
     "deprecatedPackages": [
       "@aws-cdk/aws-dynamodb-global",
       "@aws-cdk/cdk-assets-schema"
