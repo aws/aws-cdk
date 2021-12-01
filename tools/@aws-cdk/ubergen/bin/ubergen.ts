@@ -400,7 +400,7 @@ async function transformPackage(
   const relativeLibRoot = uberPackageJson.ubergen?.libRoot;
   if (relativeLibRoot && relativeLibRoot !== '.') {
     await fs.writeFile(
-      path.resolve(relativeLibRoot, '..', `${library.shortName}.ts`),
+      path.resolve(MONOPACKAGE_ROOT, `${library.shortName}.ts`),
       `export * from './${relativeLibRoot}/${library.shortName}';\n`,
       { encoding: 'utf8' },
     );
