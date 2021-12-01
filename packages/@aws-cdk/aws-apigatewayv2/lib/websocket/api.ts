@@ -48,8 +48,7 @@ export interface WebSocketApiProps {
 
   /**
    * An API key selection expression. Providing this option will require an API Key be provided to access the API.
-   * Currently only supports '$request.header.x-api-key' and '$context.authorizer.usageIdentifierKey'
-   * @default - none
+   * @default - Key is not required to access these APIs
    */
   readonly apiKeySelectionExpression?: ApiKeySelectionExpression
 
