@@ -264,6 +264,25 @@ describe('step scaling policy', () => {
       Threshold: 100,
     });
   });
+
+  test('step scaling with invalid datapointsToAlarm throws error', () => {
+    const stack = new cdk.Stack();
+    const target = createScalableTarget(stack);
+
+    expect(() => {
+      target.scaleOnMetric('Tracking', {
+        metric: new cloudwatch.Metric({ namespace: 'Test', metricName: 'Metric', statistic: 'p99' }),
+        scalingSteps: [
+          { upper: 0, change: -1 },
+          { lower: 100, change: +1 },
+          { lower: 500, change: +5 },
+        ],
+        evaluationPeriods: 10,
+        datapointsToAlarm: 0,
+        metricAggregationType: appscaling.MetricAggregationType.MAXIMUM,
+      });
+    }).toThrow('datapointsToAlarm cannot be less than 1, got: 0');
+  });
 });
 
 /**

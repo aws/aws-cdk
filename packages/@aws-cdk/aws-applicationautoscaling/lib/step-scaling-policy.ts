@@ -115,6 +115,10 @@ export class StepScalingPolicy extends CoreConstruct {
       throw new Error('You must supply at least 2 intervals for autoscaling');
     }
 
+    if (props.datapointsToAlarm !== undefined && props.datapointsToAlarm < 1) {
+      throw new RangeError(`datapointsToAlarm cannot be less than 1, got: ${props.datapointsToAlarm}`);
+    }
+
     const adjustmentType = props.adjustmentType || AdjustmentType.CHANGE_IN_CAPACITY;
     const changesAreAbsolute = adjustmentType === AdjustmentType.EXACT_CAPACITY;
 
