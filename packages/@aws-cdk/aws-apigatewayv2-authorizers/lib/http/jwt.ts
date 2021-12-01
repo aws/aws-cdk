@@ -5,7 +5,6 @@ import {
   HttpRouteAuthorizerConfig,
   IHttpRouteAuthorizer,
 } from '@aws-cdk/aws-apigatewayv2';
-import { Token } from '@aws-cdk/core';
 
 /**
  * Properties to initialize HttpJwtAuthorizer.
@@ -14,7 +13,7 @@ export interface HttpJwtAuthorizerProps {
 
   /**
    * The name of the authorizer
-   * @default 'JwtAuthorizer'
+   * @default - same value as `id` passed in the constructor
    */
   readonly authorizerName?: string;
 
@@ -30,11 +29,6 @@ export interface HttpJwtAuthorizerProps {
    * A valid JWT must provide an aud that matches at least one entry in this list.
    */
   readonly jwtAudience: string[]
-
-  /**
-   * The base domain of the identity provider that issues JWT.
-   */
-  readonly jwtIssuer: string;
 }
 
 /**
@@ -44,21 +38,27 @@ export interface HttpJwtAuthorizerProps {
 export class HttpJwtAuthorizer implements IHttpRouteAuthorizer {
   private authorizer?: HttpAuthorizer;
 
-  constructor(private readonly props: HttpJwtAuthorizerProps) {
+  /**
+   * Initialize a JWT authorizer to be bound with HTTP route.
+   * @param id The id of the underlying construct
+   * @param jwtIssuer The base domain of the identity provider that issues JWT
+   * @param props Properties to configure the authorizer
+   */
+  constructor(
+    private readonly id: string,
+    private readonly jwtIssuer: string,
+    private readonly props: HttpJwtAuthorizerProps) {
   }
 
   public bind(options: HttpRouteAuthorizerBindOptions): HttpRouteAuthorizerConfig {
     if (!this.authorizer) {
-      const id = this.props.authorizerName && !Token.isUnresolved(this.props.authorizerName) ?
-        this.props.authorizerName : 'JwtAuthorizer';
-
-      this.authorizer = new HttpAuthorizer(options.scope, id, {
+      this.authorizer = new HttpAuthorizer(options.scope, this.id, {
         httpApi: options.route.httpApi,
         identitySource: this.props.identitySource ?? ['$request.header.Authorization'],
         type: HttpAuthorizerType.JWT,
-        authorizerName: this.props.authorizerName,
+        authorizerName: this.props.authorizerName ?? this.id,
         jwtAudience: this.props.jwtAudience,
-        jwtIssuer: this.props.jwtIssuer,
+        jwtIssuer: this.jwtIssuer,
       });
     }
 

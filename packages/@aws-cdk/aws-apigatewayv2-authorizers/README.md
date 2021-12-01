@@ -1,20 +1,28 @@
 # AWS APIGatewayv2 Authorizers
-
 <!--BEGIN STABILITY BANNER-->
 
 ---
 
-![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
+Features                              | Stability
+--------------------------------------|-------------------------------------------------------------
+Authorizer classes for HTTP APIs      | ![Stable](https://img.shields.io/badge/stable-success.svg?style=for-the-badge)
+Authorizer classes for Websocket APIs | ![Experimental](https://img.shields.io/badge/experimental-important.svg?style=for-the-badge)
 
-> The APIs of higher level constructs in this module are experimental and under active development.
-> They are subject to non-backward compatible changes or removal in any future version. These are
-> not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be
-> announced in the release notes. This means that while you may use them, you may need to update
-> your source code when upgrading to a newer version of this package.
+> **Experimental:** Higher level constructs in this module that are marked as experimental are
+> under active development. They are subject to non-backward compatible changes or removal in any
+> future version. These are not subject to the [Semantic Versioning](https://semver.org/) model and
+> breaking changes will be announced in the release notes. This means that while you may use them,
+> you may need to update your source code when upgrading to a newer version of this package.
+
+<!-- -->
+
+> **Stable:** Higher level constructs in this module that are marked stable will not undergo any
+> breaking changes. They will strictly follow the [Semantic Versioning](https://semver.org/) model.
 
 ---
 
 <!--END STABILITY BANNER-->
+
 
 ## Table of Contents
 
@@ -48,9 +56,9 @@ In the example below, all routes will require the `manage:books` scope present i
 ```ts
 import { HttpJwtAuthorizer } from '@aws-cdk/aws-apigatewayv2-authorizers';
 
-const authorizer = new HttpJwtAuthorizer({
+const issuer = 'https://test.us.auth0.com';
+const authorizer = new HttpJwtAuthorizer('DefaultAuthorizer', issuer, {
   jwtAudience: ['3131231'],
-  jwtIssuer: 'https://test.us.auth0.com',
 });
 
 const api = new apigwv2.HttpApi(this, 'HttpApi', {
@@ -73,9 +81,9 @@ The example below showcases default authorization, along with route authorizatio
 import { HttpJwtAuthorizer } from '@aws-cdk/aws-apigatewayv2-authorizers';
 import { HttpUrlIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
 
-const authorizer = new HttpJwtAuthorizer({
+const issuer = 'https://test.us.auth0.com';
+const authorizer = new HttpJwtAuthorizer('DefaultAuthorizer', issuer, {
   jwtAudience: ['3131231'],
-  jwtIssuer: 'https://test.us.auth0.com',
 });
 
 const api = new apigwv2.HttpApi(this, 'HttpApi', {
@@ -130,9 +138,9 @@ Clients that fail authorization are presented with either 2 responses:
 import { HttpJwtAuthorizer } from '@aws-cdk/aws-apigatewayv2-authorizers';
 import { HttpUrlIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
 
-const authorizer = new HttpJwtAuthorizer({
+const issuer = 'https://test.us.auth0.com';
+const authorizer = new HttpJwtAuthorizer('BooksAuthorizer', issuer, {
   jwtAudience: ['3131231'],
-  jwtIssuer: 'https://test.us.auth0.com',
 });
 
 const api = new apigwv2.HttpApi(this, 'HttpApi');
@@ -158,12 +166,8 @@ import { HttpUserPoolAuthorizer } from '@aws-cdk/aws-apigatewayv2-authorizers';
 import { HttpUrlIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
 
 const userPool = new cognito.UserPool(this, 'UserPool');
-const userPoolClient = userPool.addClient('UserPoolClient');
 
-const authorizer = new HttpUserPoolAuthorizer({
-  userPool,
-  userPoolClients: [userPoolClient],
-});
+const authorizer = new HttpUserPoolAuthorizer('BooksAuthorizer', userPool);
 
 const api = new apigwv2.HttpApi(this, 'HttpApi');
 
@@ -188,10 +192,8 @@ import { HttpUrlIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
 // This function handles your auth logic
 declare const authHandler: lambda.Function;
 
-const authorizer = new HttpLambdaAuthorizer({
-  authorizerName: 'lambda-authorizer',
+const authorizer = new HttpLambdaAuthorizer('BooksAuthorizer', authHandler, {
   responseTypes: [HttpLambdaResponseType.SIMPLE], // Define if returns simple and/or iam response
-  handler: authHandler,
 });
 
 const api = new apigwv2.HttpApi(this, 'HttpApi');
