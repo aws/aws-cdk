@@ -82,7 +82,7 @@ test('can set role', () => {
     sql: iot.IotSql.fromStringAsVer20160323("SELECT topic(2) as device_id FROM 'device/+/data'"),
   });
   const logGroup = logs.LogGroup.fromLogGroupArn(stack, 'my-log-group', 'arn:aws:logs:us-east-1:123456789012:log-group:my-log-group');
-  const role = iam.Role.fromRoleArn(stack, 'MyRole', 'arn:aws:iam::123456789012:role/ForTest', {mutable: false});
+  const role = iam.Role.fromRoleArn(stack, 'MyRole', 'arn:aws:iam::123456789012:role/ForTest');
 
   // WHEN
   topicRule.addAction(
