@@ -36,7 +36,7 @@ describe('Lambda caching config', () => {
       typeName: 'Query',
       fieldName: 'allPosts',
       cachingConfig: {
-        cachingKeys: ['$context.argument'],
+        cachingKeys: ['$context.identity'],
         ttl: 300,
       }
     });
@@ -46,7 +46,7 @@ describe('Lambda caching config', () => {
       TypeName: 'Query',
       FieldName: 'allPosts',
       CachingConfig: {
-        CachingKeys: ['$context.argument'],
+        CachingKeys: ['$context.identity'],
         Ttl: 300
       }
     });
