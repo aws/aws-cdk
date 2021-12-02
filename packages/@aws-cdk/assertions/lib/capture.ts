@@ -1,3 +1,4 @@
+import { Match } from '.';
 import { Matcher, MatchResult } from './matcher';
 import { Type, getType } from './private/type';
 
@@ -12,7 +13,12 @@ export class Capture extends Matcher {
   public _captured: any[] = [];
   private idx = 0;
 
-  constructor() {
+  /**
+   * Initialize a new capture
+   * @param pattern a nested pattern or Matcher.
+   * If a nested pattern is provided `objectLike()` matching is applied.
+   */
+  constructor(private readonly pattern?: any) {
     super();
     this.name = 'Capture';
   }
@@ -25,9 +31,17 @@ export class Capture extends Matcher {
         path: [],
         message: `Can only capture non-nullish values. Found ${actual}`,
       });
-    } else {
-      result.recordCapture({ capture: this, value: actual });
     }
+
+    if (this.pattern !== undefined) {
+      const innerMatcher = Matcher.isMatcher(this.pattern) ? this.pattern : Match.objectLike(this.pattern);
+      const innerResult = innerMatcher.test(actual);
+      if (innerResult.hasFailed()) {
+        return innerResult;
+      }
+    }
+
+    result.recordCapture({ capture: this, value: actual });
     return result;
   }
 

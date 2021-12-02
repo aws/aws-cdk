@@ -92,4 +92,32 @@ describe('Capture', () => {
     expect(capture.asNumber()).toEqual(5);
     expect(capture.next()).toEqual(false);
   });
+
+  test('nested pattern match', () => {
+    const capture = new Capture(Match.objectLike({ bar: 'baz' }));
+    const matcher = Match.objectLike({ foo: capture });
+
+    matcher.test({
+      foo: {
+        bar: 'baz',
+        fred: 'waldo',
+      },
+    }).finalize();
+
+    expect(capture.asObject()).toEqual({ bar: 'baz', fred: 'waldo' });
+    expect(capture.next()).toEqual(false);
+  });
+
+  test('nested pattern does not match', () => {
+    const capture = new Capture(Match.objectLike({ bar: 'baz' }));
+    const matcher = Match.objectLike({ foo: capture });
+
+    matcher.test({
+      foo: {
+        fred: 'waldo',
+      },
+    }).finalize();
+
+    expect(() => capture.asObject()).toThrow(/No value captured/);
+  });
 });

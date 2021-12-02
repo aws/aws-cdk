@@ -125,15 +125,16 @@ export class MatchResult {
    * Prepare the result to be analyzed.
    * This API *must* be called prior to analyzing these results.
    */
-  public finalize(): void {
+  public finalize(): this {
     if (this.finalized) {
-      return;
+      return this;
     }
 
     if (this.failCount === 0) {
       this.captures.forEach((vals, cap) => cap._captured.push(...vals));
     }
     this.finalized = true;
+    return this;
   }
 
   /**

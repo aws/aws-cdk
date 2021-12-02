@@ -421,6 +421,37 @@ fredCapture.asArray(); // returns ["Flob", "Cat"]
 waldoCapture.asString(); // returns "Qux"
 ```
 
+With captures, a nested pattern can also be specified, so that only targets
+that match the nested pattern will be captured. This pattern can be literals or
+further Matchers.
+
+```ts
+// Given a template -
+// {
+//   "Resources": {
+//     "MyBar1": {
+//       "Type": "Foo::Bar",
+//       "Properties": {
+//         "Fred": ["Flob", "Cat"],
+//       }
+//     }
+//     "MyBar2": {
+//       "Type": "Foo::Bar",
+//       "Properties": {
+//         "Fred": ["Qix", "Qux"],
+//       }
+//     }
+//   }
+// }
+
+const capture = new Capture(Match.arrayWith(['Cat']));
+template.hasResourceProperties('Foo::Bar', {
+  Fred: capture,
+});
+
+capture.asArray(); // returns ['Flob', 'Cat']
+```
+
 When multiple resources match the given condition, each `Capture` defined in
 the condition will capture all matching values. They can be paged through using
 the `next()` API. The following example illustrates this -
