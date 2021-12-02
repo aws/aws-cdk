@@ -953,6 +953,13 @@ export interface VpcProps {
    * @default - No flow logs.
    */
   readonly flowLogs?: { [id: string]: FlowLogOptions }
+
+  /**
+   * A map of tags to assign to the VPC resource. Use reserved tag 'Name' if you want to assign a name to your VPC.
+   *
+   * @default - No parameters
+   */
+  readonly tags?: { [id: string]: string };
 }
 
 /**
@@ -1298,7 +1305,10 @@ export class Vpc extends VpcBase {
     this.vpcDefaultSecurityGroup = this.resource.attrDefaultSecurityGroup;
     this.vpcIpv6CidrBlocks = this.resource.attrIpv6CidrBlocks;
 
+    // Default VPC name if tag "Name" not present
     Tags.of(this).add(NAME_TAG, this.node.path);
+
+    this.addTags(props.tags || {});
 
     this.availabilityZones = stack.availabilityZones;
 
@@ -1412,6 +1422,19 @@ export class Vpc extends VpcBase {
       vpc: this,
       subnets,
     });
+  }
+
+  /**
+   * Assign tags to the VPC resource. "Name" is a reserved case sensitive tag name displayed in the AWS console
+   */
+  private addTags(tags: { [id: string]: string }) {
+    for (const tagKey of Object.keys(tags)) {
+      const tagValue = tags[tagKey];
+      if (tagKey !== 'Name' && tagKey.toLowerCase() === 'name') {
+        Annotations.of(this).addWarning(`Use tag "Name" instead of "${tagKey}" if you want to define the VPC name`);
+      }
+      Tags.of(this).add(tagKey, tagValue);
+    }
   }
 
   private createNatGateways(provider: NatProvider, natCount: number, placement: SubnetSelection): void {

@@ -433,7 +433,6 @@ describe('vpc', () => {
       });
 
     });
-
     test('with public subnets MapPublicIpOnLaunch is true if parameter mapPublicIpOnLaunch is true', () => {
       const stack = getTestStack();
       new Vpc(stack, 'VPC', {
@@ -509,6 +508,177 @@ describe('vpc', () => {
           ],
         });
       }).toThrow(/subnet cannot include mapPublicIpOnLaunch parameter/);
+    });
+    test('verify the Default VPC name', () => {
+      const stack = getTestStack();
+      const tagName = { Key: 'Name', Value: `${stack.node.path}/VPC` };
+      new Vpc(stack, 'VPC', {
+        maxAzs: 1,
+        subnetConfiguration: [
+          {
+            name: 'public',
+            subnetType: SubnetType.PUBLIC,
+          },
+          {
+            name: 'private',
+            subnetType: SubnetType.PRIVATE_WITH_NAT,
+          },
+        ],
+      });
+      expect(stack).toCountResources('AWS::EC2::Subnet', 2);
+      expect(stack).toHaveResource('AWS::EC2::NatGateway');
+      expect(stack).toHaveResource('AWS::EC2::Subnet', {
+        MapPublicIpOnLaunch: true,
+      });
+      expect(stack).toHaveResource('AWS::EC2::VPC', hasTags([tagName]));
+    });
+    test('verify the Default VPC name passing empty tags', () => {
+      const stack = getTestStack();
+      const tagName = { Key: 'Name', Value: `${stack.node.path}/VPC` };
+      new Vpc(stack, 'VPC', {
+        maxAzs: 1,
+        subnetConfiguration: [
+          {
+            name: 'public',
+            subnetType: SubnetType.PUBLIC,
+          },
+          {
+            name: 'private',
+            subnetType: SubnetType.PRIVATE_WITH_NAT,
+          },
+        ],
+        tags: {},
+      });
+      expect(stack).toCountResources('AWS::EC2::Subnet', 2);
+      expect(stack).toHaveResource('AWS::EC2::NatGateway');
+      expect(stack).toHaveResource('AWS::EC2::Subnet', {
+        MapPublicIpOnLaunch: true,
+      });
+      expect(stack).toHaveResource('AWS::EC2::VPC', hasTags([tagName]));
+    });
+    test('verify the assigned VPC name passing the "Name" tag', () => {
+      const stack = getTestStack();
+      const tagNameDefault = { Key: 'Name', Value: `${stack.node.path}/VPC` };
+      const tagName = { Key: 'Name', Value: 'CustomVPCName' };
+      new Vpc(stack, 'VPC', {
+        maxAzs: 1,
+        subnetConfiguration: [
+          {
+            name: 'public',
+            subnetType: SubnetType.PUBLIC,
+          },
+          {
+            name: 'private',
+            subnetType: SubnetType.PRIVATE_WITH_NAT,
+          },
+        ],
+        tags: {
+          Name: 'CustomVPCName',
+        },
+      });
+      expect(stack).toCountResources('AWS::EC2::Subnet', 2);
+      expect(stack).toHaveResource('AWS::EC2::NatGateway');
+      expect(stack).toHaveResource('AWS::EC2::Subnet', {
+        MapPublicIpOnLaunch: true,
+      });
+      expect(stack).not.toHaveResource('AWS::EC2::VPC', hasTags([tagNameDefault]));
+      expect(stack).toHaveResource('AWS::EC2::VPC', hasTags([tagName]));
+    });
+    test('verify the assigned VPC name passing the "name" tag', () => {
+      const stack = getTestStack();
+      const tagNameDefault = { Key: 'Name', Value: `${stack.node.path}/VPC` };
+      const tagNameLowercase = { Key: 'name', Value: 'CustomVPCName' };
+      new Vpc(stack, 'VPC', {
+        maxAzs: 1,
+        subnetConfiguration: [
+          {
+            name: 'public',
+            subnetType: SubnetType.PUBLIC,
+          },
+          {
+            name: 'private',
+            subnetType: SubnetType.PRIVATE_WITH_NAT,
+          },
+        ],
+        tags: {
+          name: 'CustomVPCName',
+        },
+      });
+      expect(stack).toCountResources('AWS::EC2::Subnet', 2);
+      expect(stack).toHaveResource('AWS::EC2::NatGateway');
+      expect(stack).toHaveResource('AWS::EC2::Subnet', {
+        MapPublicIpOnLaunch: true,
+      });
+      expect(stack).toHaveResource('AWS::EC2::VPC', hasTags([tagNameDefault]));
+      expect(stack).toHaveResource('AWS::EC2::VPC', hasTags([tagNameLowercase]));
+    });
+    test('verify the assigned VPC name passing the "Name" and "name" tags', () => {
+      const stack = getTestStack();
+      const tagNameDefault = { Key: 'Name', Value: `${stack.node.path}/VPC` };
+      const tagName = { Key: 'Name', Value: 'CustomVPCName' };
+      const tagNameLowercase = { Key: 'name', Value: 'CustomVPCNameLowercase' };
+      new Vpc(stack, 'VPC', {
+        maxAzs: 1,
+        subnetConfiguration: [
+          {
+            name: 'public',
+            subnetType: SubnetType.PUBLIC,
+          },
+          {
+            name: 'private',
+            subnetType: SubnetType.PRIVATE_WITH_NAT,
+          },
+        ],
+        tags: {
+          Name: 'CustomVPCName',
+          name: 'CustomVPCNameLowercase',
+        },
+      });
+      expect(stack).toCountResources('AWS::EC2::Subnet', 2);
+      expect(stack).toHaveResource('AWS::EC2::NatGateway');
+      expect(stack).toHaveResource('AWS::EC2::Subnet', {
+        MapPublicIpOnLaunch: true,
+      });
+      expect(stack).not.toHaveResource('AWS::EC2::VPC', hasTags([tagNameDefault]));
+      expect(stack).toHaveResource('AWS::EC2::VPC', hasTags([tagName]));
+      expect(stack).toHaveResource('AWS::EC2::VPC', hasTags([tagNameLowercase]));
+    });
+    test('verify the assigned VPC name passing various tags', () => {
+      const stack = getTestStack();
+      const tagNameDefault = { Key: 'Name', Value: `${stack.node.path}/VPC` };
+      const tagName = { Key: 'Name', Value: 'CustomVPCName' };
+      const tagNameDescription = { Key: 'Description', Value: 'TagDescription' };
+      const tagNameDepartment = { Key: 'Department', Value: 'TagDepartment' };
+      const tagNameEnv = { Key: 'Env', Value: 'TagEnvironment' };
+      new Vpc(stack, 'VPC', {
+        maxAzs: 1,
+        subnetConfiguration: [
+          {
+            name: 'public',
+            subnetType: SubnetType.PUBLIC,
+          },
+          {
+            name: 'private',
+            subnetType: SubnetType.PRIVATE_WITH_NAT,
+          },
+        ],
+        tags: {
+          Name: 'CustomVPCName',
+          Description: 'TagDescription',
+          Department: 'TagDepartment',
+          Env: 'TagEnvironment',
+        },
+      });
+      expect(stack).toCountResources('AWS::EC2::Subnet', 2);
+      expect(stack).toHaveResource('AWS::EC2::NatGateway');
+      expect(stack).toHaveResource('AWS::EC2::Subnet', {
+        MapPublicIpOnLaunch: true,
+      });
+      expect(stack).not.toHaveResource('AWS::EC2::VPC', hasTags([tagNameDefault]));
+      expect(stack).toHaveResource('AWS::EC2::VPC', hasTags([tagName]));
+      expect(stack).toHaveResource('AWS::EC2::VPC', hasTags([tagNameDescription]));
+      expect(stack).toHaveResource('AWS::EC2::VPC', hasTags([tagNameDepartment]));
+      expect(stack).toHaveResource('AWS::EC2::VPC', hasTags([tagNameEnv]));
     });
     test('maxAZs defaults to 3 if unset', () => {
       const stack = getTestStack();
