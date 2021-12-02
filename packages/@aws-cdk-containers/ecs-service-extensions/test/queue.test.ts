@@ -77,6 +77,9 @@ describe('queue', () => {
     // Ensure there are no SNS Subscriptions created
     expect(stack).toCountResources('AWS::SNS::Subscription', 0);
 
+    // Ensure that the log group was created
+    expect(stack).toHaveResource('AWS::Logs::LogGroup');
+
     // Ensure that the queue URL has been correctly appended to the environment variables
     expect(stack).toHaveResource('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
@@ -95,6 +98,18 @@ describe('queue', () => {
             },
           ],
           Image: 'nathanpeck/name',
+          LogConfiguration: {
+            LogDriver: 'awslogs',
+            Options: {
+              'awslogs-group': {
+                Ref: 'myservicelogs176EE19F',
+              },
+              'awslogs-stream-prefix': 'my-service',
+              'awslogs-region': {
+                Ref: 'AWS::Region',
+              },
+            },
+          },
           Essential: true,
           Memory: 512,
           Name: 'app',
@@ -269,6 +284,9 @@ describe('queue', () => {
       },
     });
 
+    // Ensure that the log group was created
+    expect(stack).toHaveResource('AWS::Logs::LogGroup');
+
     // Ensure that the queue URL has been correctly appended to the environment variables
     expect(stack).toHaveResource('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
@@ -287,6 +305,18 @@ describe('queue', () => {
             },
           ],
           Image: 'nathanpeck/name',
+          LogConfiguration: {
+            LogDriver: 'awslogs',
+            Options: {
+              'awslogs-group': {
+                Ref: 'myservicelogs176EE19F',
+              },
+              'awslogs-stream-prefix': 'my-service',
+              'awslogs-region': {
+                Ref: 'AWS::Region',
+              },
+            },
+          },
           Essential: true,
           Memory: 512,
           Name: 'app',
@@ -470,6 +500,9 @@ describe('queue', () => {
       },
     });
 
+    // Ensure that the log group was created
+    expect(stack).toHaveResource('AWS::Logs::LogGroup');
+
     // Ensure that the queue URL has been correctly added to the environment variables
     expect(stack).toHaveResource('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
@@ -484,6 +517,18 @@ describe('queue', () => {
             },
           ],
           Image: 'nathanpeck/name',
+          LogConfiguration: {
+            LogDriver: 'awslogs',
+            Options: {
+              'awslogs-group': {
+                Ref: 'myservicelogs176EE19F',
+              },
+              'awslogs-stream-prefix': 'my-service',
+              'awslogs-region': {
+                Ref: 'AWS::Region',
+              },
+            },
+          },
           Essential: true,
           Memory: 512,
           Name: 'app',

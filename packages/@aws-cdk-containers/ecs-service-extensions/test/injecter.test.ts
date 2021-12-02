@@ -67,6 +67,9 @@ describe('injecter', () => {
       },
     }));
 
+    // Ensure that the log group was created
+    expect(stack).to(haveResource('AWS::Logs::LogGroup'));
+
     // Ensure that the topic ARNs have been correctly appended to the environment variables
     expect(stack).to(haveResource('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
@@ -91,6 +94,18 @@ describe('injecter', () => {
             },
           ],
           Image: 'nathanpeck/name',
+          LogConfiguration: {
+            LogDriver: 'awslogs',
+            Options: {
+              'awslogs-group': {
+                Ref: 'myservicelogs176EE19F',
+              },
+              'awslogs-stream-prefix': 'my-service',
+              'awslogs-region': {
+                Ref: 'AWS::Region',
+              },
+            },
+          },
           Essential: true,
           Memory: 512,
           Name: 'app',

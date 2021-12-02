@@ -27,6 +27,9 @@ describe('xray', () => {
     });
 
     // THEN
+    // Ensure that the log groups were created
+    expect(stack).toCountResources('AWS::Logs::LogGroup', 2);
+
     expect(stack).toHaveResource('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
         {
@@ -39,6 +42,18 @@ describe('xray', () => {
           ],
           Essential: true,
           Image: 'nathanpeck/name',
+          LogConfiguration: {
+            LogDriver: 'awslogs',
+            Options: {
+              'awslogs-group': {
+                Ref: 'myservicelogs176EE19F',
+              },
+              'awslogs-stream-prefix': 'my-service',
+              'awslogs-region': {
+                Ref: 'AWS::Region',
+              },
+            },
+          },
           Memory: 512,
           Name: 'app',
           PortMappings: [
