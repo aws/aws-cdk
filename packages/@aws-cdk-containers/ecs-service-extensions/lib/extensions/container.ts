@@ -63,7 +63,7 @@ export class Container extends ServiceExtension {
   /**
    * The default log group into which application container logs should be routed.
    */
-  private _logGroup?: awslogs.ILogGroup;
+  public logGroup?: awslogs.ILogGroup;
 
   /**
    * The settings for the container.
@@ -74,7 +74,7 @@ export class Container extends ServiceExtension {
     super('service-container');
     this.props = props;
     this.trafficPort = props.trafficPort;
-    this._logGroup = props.logGroup;
+    this.logGroup = props.logGroup;
   }
 
   public prehook(service: Service, scope: Construct) {
@@ -112,8 +112,8 @@ export class Container extends ServiceExtension {
     // default awslogs log driver
     if (!containerProps.logging) {
       // Create a log group for the service, if one is not provided by the user
-      if (!this._logGroup) {
-        this._logGroup = new awslogs.LogGroup(this.scope, `${this.parentService.id}-logs`, {
+      if (!this.logGroup) {
+        this.logGroup = new awslogs.LogGroup(this.scope, `${this.parentService.id}-logs`, {
           logGroupName: `${this.parentService.id}-logs`,
           removalPolicy: cdk.RemovalPolicy.DESTROY,
           retention: awslogs.RetentionDays.ONE_MONTH,
@@ -128,7 +128,7 @@ export class Container extends ServiceExtension {
         }),
       };
     } else {
-      if (this._logGroup) {
+      if (this.logGroup) {
         throw Error(`A log configuration has already been specified for the service '${this.parentService.id}'. The default log group provided to the service container will not be used.`);
       }
     }
@@ -184,9 +184,5 @@ export class Container extends ServiceExtension {
         condition: ecs.ContainerDependencyCondition.HEALTHY,
       });
     }
-  }
-
-  public get logGroup(): awslogs.ILogGroup | undefined {
-    return this._logGroup;
   }
 }
