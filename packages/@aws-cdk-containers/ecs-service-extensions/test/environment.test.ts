@@ -2,8 +2,9 @@ import '@aws-cdk/assert-internal/jest';
 import * as autoscaling from '@aws-cdk/aws-autoscaling';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
+import * as awslogs from '@aws-cdk/aws-logs';
 import * as cdk from '@aws-cdk/core';
-import { Container, Environment, EnvironmentCapacityType, Service, ServiceDescription } from '../lib';
+import { Container, Environment, EnvironmentCapacityType, FireLensExtension, Service, ServiceDescription } from '../lib';
 
 describe('environment', () => {
   test('should be able to add a service to an environment', () => {
@@ -29,12 +30,27 @@ describe('environment', () => {
     // THEN
     expect(stack).toCountResources('AWS::ECS::Service', 1);
 
+    // Ensure that the log group was created
+    expect(stack).toHaveResource('AWS::Logs::LogGroup');
+
     expect(stack).toHaveResource('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
         {
           Cpu: 256,
           Essential: true,
           Image: 'nathanpeck/name',
+          LogConfiguration: {
+            LogDriver: 'awslogs',
+            Options: {
+              'awslogs-group': {
+                Ref: 'myservicelogs176EE19F',
+              },
+              'awslogs-stream-prefix': 'my-service',
+              'awslogs-region': {
+                Ref: 'AWS::Region',
+              },
+            },
+          },
           Memory: 512,
           Name: 'app',
           PortMappings: [
@@ -90,6 +106,7 @@ describe('environment', () => {
       memoryMiB: 512,
       trafficPort: 80,
       image: ecs.ContainerImage.fromRegistry('nathanpeck/name'),
+      logGroup: new awslogs.LogGroup(stack, 'MyLogGroup'),
     }));
 
     new Service(stack, 'my-service', {
@@ -100,12 +117,27 @@ describe('environment', () => {
     // THEN
     expect(stack).toCountResources('AWS::ECS::Service', 1);
 
+    // Ensure that the log group was created
+    expect(stack).toHaveResource('AWS::Logs::LogGroup');
+
     expect(stack).toHaveResource('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
         {
           Cpu: 256,
           Essential: true,
           Image: 'nathanpeck/name',
+          LogConfiguration: {
+            LogDriver: 'awslogs',
+            Options: {
+              'awslogs-group': {
+                Ref: 'MyLogGroup5C0DAD85',
+              },
+              'awslogs-stream-prefix': 'my-service',
+              'awslogs-region': {
+                Ref: 'AWS::Region',
+              },
+            },
+          },
           Memory: 512,
           Name: 'app',
           PortMappings: [
@@ -179,12 +211,27 @@ describe('environment', () => {
     // THEN
     expect(stack).toCountResources('AWS::ECS::Service', 1);
 
+    // Ensure that the log group was created
+    expect(stack).toHaveResource('AWS::Logs::LogGroup');
+
     expect(stack).toHaveResource('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
         {
           Cpu: 256,
           Essential: true,
           Image: 'nathanpeck/name',
+          LogConfiguration: {
+            LogDriver: 'awslogs',
+            Options: {
+              'awslogs-group': {
+                Ref: 'myservicelogs176EE19F',
+              },
+              'awslogs-stream-prefix': 'my-service',
+              'awslogs-region': {
+                Ref: 'AWS::Region',
+              },
+            },
+          },
           Memory: 512,
           Name: 'app',
           PortMappings: [
@@ -248,5 +295,31 @@ describe('environment', () => {
     expect(environment.id).toEqual('Environment');
 
 
+  });
+
+  test('should error when log group is provided in the container extension and another observability extension is added', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const environment = new Environment(stack, 'production');
+    const serviceDescription = new ServiceDescription();
+
+    serviceDescription.add(new Container({
+      cpu: 256,
+      memoryMiB: 512,
+      trafficPort: 80,
+      image: ecs.ContainerImage.fromRegistry('nathanpeck/name'),
+      logGroup: new awslogs.LogGroup(stack, 'MyLogGroup'),
+    }));
+    serviceDescription.add(new FireLensExtension());
+
+    // THEN
+    expect(() => {
+      new Service(stack, 'my-service', {
+        environment,
+        serviceDescription,
+      });
+    }).toThrow(/A log configuration has already been specified for the service 'my-service'. The default log group provided to the service container will not be used./);
   });
 });

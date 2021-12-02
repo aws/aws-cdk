@@ -1,4 +1,6 @@
 import * as ecs from '@aws-cdk/aws-ecs';
+import * as awslogs from '@aws-cdk/aws-logs';
+import * as cdk from '@aws-cdk/core';
 import { Service } from '../service';
 import { ServiceExtension } from './extension-interfaces';
 
@@ -38,6 +40,13 @@ export interface ContainerExtensionProps {
   readonly environment?: {
     [key: string]: string,
   }
+
+  /**
+   * The default log group into which application container logs should be routed.
+   *
+   * @default - A log group is automatically created for you.
+   */
+  readonly logGroup?: awslogs.ILogGroup;
 }
 
 /**
@@ -52,6 +61,11 @@ export class Container extends ServiceExtension {
   public readonly trafficPort: number;
 
   /**
+   * The default log group into which application container logs should be routed.
+   */
+  private _logGroup?: awslogs.ILogGroup;
+
+  /**
    * The settings for the container.
    */
   private props: ContainerExtensionProps;
@@ -60,11 +74,12 @@ export class Container extends ServiceExtension {
     super('service-container');
     this.props = props;
     this.trafficPort = props.trafficPort;
+    this._logGroup = props.logGroup;
   }
 
-  // @ts-ignore - Ignore unused params that are required for abstract class extend
   public prehook(service: Service, scope: Construct) {
     this.parentService = service;
+    this.scope = scope;
   }
 
   // This hook sets the overall task resource requirements to the
@@ -93,6 +108,30 @@ export class Container extends ServiceExtension {
       containerProps = hookProvider.mutateContainerDefinition(containerProps);
     });
 
+    // If no observability extensions have been added to the service description, we can configure
+    // default awslogs log driver
+    if (!containerProps.logging) {
+      // Create a log group for the service, if one is not provided by the user
+      if (!this._logGroup) {
+        this._logGroup = new awslogs.LogGroup(this.scope, `${this.parentService.id}-logs`, {
+          logGroupName: `${this.parentService.id}-logs`,
+          removalPolicy: cdk.RemovalPolicy.DESTROY,
+          retention: awslogs.RetentionDays.ONE_MONTH,
+        });
+      }
+
+      containerProps = {
+        ...containerProps,
+        logging: new ecs.AwsLogDriver({
+          streamPrefix: this.parentService.id,
+          logGroup: this.logGroup,
+        }),
+      };
+    } else {
+      if (this._logGroup) {
+        throw Error(`A log configuration has already been specified for the service '${this.parentService.id}'. The default log group provided to the service container will not be used.`);
+      }
+    }
     this.container = taskDefinition.addContainer('app', containerProps);
 
     // Create a port mapping for the container
@@ -145,5 +184,9 @@ export class Container extends ServiceExtension {
         condition: ecs.ContainerDependencyCondition.HEALTHY,
       });
     }
+  }
+
+  public get logGroup(): awslogs.ILogGroup | undefined {
+    return this._logGroup;
   }
 }

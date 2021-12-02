@@ -66,12 +66,27 @@ describe('service', () => {
     // THEN
     expect(stack).toCountResources('AWS::ECS::Service', 1);
 
+    // Ensure that the log group was created
+    expect(stack).toHaveResource('AWS::Logs::LogGroup');
+
     expect(stack).toHaveResource('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
         {
           Cpu: 256,
           Essential: true,
           Image: 'nathanpeck/name',
+          LogConfiguration: {
+            LogDriver: 'awslogs',
+            Options: {
+              'awslogs-group': {
+                Ref: 'myservicelogs176EE19F',
+              },
+              'awslogs-stream-prefix': 'my-service',
+              'awslogs-region': {
+                Ref: 'AWS::Region',
+              },
+            },
+          },
           Memory: 512,
           Name: 'app',
           PortMappings: [
