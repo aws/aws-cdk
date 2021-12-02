@@ -154,6 +154,7 @@ this capability, please see the
 
 ## More Resources
 * [CDK Workshop](https://cdkworkshop.com/)
+* [Construct Hub](https://constructs.dev) - Find and use open-source Cloud Development Kit (CDK) libraries
 * **[CDK Construction Zone](https://www.twitch.tv/collections/9kCOGphNZBYVdA)** - A Twitch live coding series hosted by the CDK team, season one episodes:
   * Triggers: Join us as we implement [Triggers](https://github.com/aws/aws-cdk-rfcs/issues/71), a Construct for configuring deploy time actions. Episodes 1-3:
     * [S1E1](https://www.twitch.tv/videos/917691798): Triggers (part 1); **Participants:** @NetaNir, @eladb, @richardhboyd
