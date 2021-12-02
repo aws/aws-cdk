@@ -20,9 +20,13 @@ export class Capture extends Matcher {
   public test(actual: any): MatchResult {
     const result = new MatchResult(actual);
     if (actual == null) {
-      result.push(this, [], `Can only capture non-nullish values. Found ${actual}`);
+      return result.recordFailure({
+        matcher: this,
+        path: [],
+        message: `Can only capture non-nullish values. Found ${actual}`,
+      });
     } else {
-      result._registerCapture(this, actual);
+      result.recordCapture({ capture: this, value: actual });
     }
     return result;
   }
