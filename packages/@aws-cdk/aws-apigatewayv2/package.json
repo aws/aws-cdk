@@ -124,7 +124,7 @@
   "features": [
     {
       "name": "Higher level constructs for HTTP APIs",
-      "stability": "Stable"
+      "stability": "Experimental"
     },
     {
       "name": "Higher level constructs for Websocket APIs",
