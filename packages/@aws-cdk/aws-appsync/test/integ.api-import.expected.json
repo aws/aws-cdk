@@ -144,7 +144,6 @@
           "FieldName": "getTests",
           "TypeName": "Query",
           "CachingConfig": {},
-          "CachingConfig": {},
           "DataSourceName": "ds",
           "Kind": "UNIT",
           "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Scan\"}",
