@@ -1,6 +1,7 @@
 import { Construct } from 'constructs';
 import { IAppsyncFunction } from './appsync-function';
 import { CfnResolver } from './appsync.generated';
+import { CachingConfig } from './caching-config';
 import { BaseDataSource } from './data-source';
 import { IGraphqlApi } from './graphqlapi-base';
 import { MappingTemplate } from './mapping-template';
@@ -40,6 +41,12 @@ export interface BaseResolverProps {
    * @default - No mapping template
    */
   readonly responseMappingTemplate?: MappingTemplate;
+  /**
+   * The caching configuration for this resolver
+   * 
+   * @defualt - No caching configuration
+   */
+  readonly cachingConfig?: CachingConfig;
 }
 
 /**
@@ -95,6 +102,7 @@ export class Resolver extends CoreConstruct {
       pipelineConfig: pipelineConfig,
       requestMappingTemplate: props.requestMappingTemplate ? props.requestMappingTemplate.renderTemplate() : undefined,
       responseMappingTemplate: props.responseMappingTemplate ? props.responseMappingTemplate.renderTemplate() : undefined,
+      cachingConfig: props.cachingConfig,
     });
     props.api.addSchemaDependency(this.resolver);
     if (props.dataSource) {
