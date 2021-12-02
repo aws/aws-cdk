@@ -54,6 +54,7 @@ export class HotswappableChangeCandidate {
    */
   public readonly propertyUpdates: { [key: string]: cfn_diff.PropertyDifference<any> };
 
+
   public constructor(newValue: cfn_diff.Resource, propertyUpdates: { [key: string]: cfn_diff.PropertyDifference<any> }) {
     this.newValue = newValue;
     this.propertyUpdates = propertyUpdates;

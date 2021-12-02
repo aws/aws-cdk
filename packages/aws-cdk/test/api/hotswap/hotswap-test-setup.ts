@@ -81,9 +81,15 @@ export class HotswapMockSdkProvider {
     });
   }
 
-  public setUpdateFunctionCodeMock(mockUpdateLambdaCode: (input: lambda.UpdateFunctionCodeRequest) => lambda.FunctionConfiguration) {
+  public stubLambda(
+    mockUpdateLambdaCode?: (input: lambda.UpdateFunctionCodeRequest) => lambda.FunctionConfiguration,
+    mockTagResource?: (input: lambda.TagResourceRequest) => {},
+    mockUntagResource?: (input: lambda.UntagResourceRequest) => {},
+  ) {
     this.mockSdkProvider.stubLambda({
-      updateFunctionCode: mockUpdateLambdaCode,
+      updateFunctionCode: mockUpdateLambdaCode ?? jest.fn(),
+      tagResource: mockTagResource ?? jest.fn(),
+      untagResource: mockUntagResource ?? jest.fn(),
     });
   }
 

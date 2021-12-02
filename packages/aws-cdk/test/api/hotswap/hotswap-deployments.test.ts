@@ -11,7 +11,7 @@ beforeEach(() => {
   mockUpdateLambdaCode = jest.fn();
   mockUpdateMachineDefinition = jest.fn();
   mockGetEndpointSuffix = jest.fn(() => 'amazonaws.com');
-  hotswapMockSdkProvider.setUpdateFunctionCodeMock(mockUpdateLambdaCode);
+  hotswapMockSdkProvider.stubLambda(mockUpdateLambdaCode);
   hotswapMockSdkProvider.setUpdateStateMachineMock(mockUpdateMachineDefinition);
   hotswapMockSdkProvider.stubGetEndpointSuffix(mockGetEndpointSuffix);
 });
