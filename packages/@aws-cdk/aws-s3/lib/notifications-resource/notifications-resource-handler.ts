@@ -62,7 +62,17 @@ export class NotificationsResourceHandler extends Construct {
   constructor(scope: Construct, id: string, props: NotificationsResourceHandlerProps = {}) {
     super(scope, id);
 
-    this.role = props.role ?? this.createRole();
+    this.role = props.role ?? new iam.Role(this, 'Role', {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+    });
+
+    this.role.addManagedPolicy(
+      iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole'),
+    );
+    this.role.addToPrincipalPolicy(new iam.PolicyStatement({
+      actions: ['s3:PutBucketNotification'],
+      resources: ['*'],
+    }));
 
     const resourceType = 'AWS::Lambda::Function';
     class InLineLambda extends cdk.CfnResource {
@@ -92,21 +102,5 @@ export class NotificationsResourceHandler extends Construct {
 
   public addToRolePolicy(statement: iam.PolicyStatement) {
     this.role.addToPrincipalPolicy(statement);
-  }
-
-  private createRole(): iam.IRole {
-    const role = new iam.Role(this, 'Role', {
-      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
-      managedPolicies: [
-        iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole'),
-      ],
-    });
-
-    role.addToPrincipalPolicy(new iam.PolicyStatement({
-      actions: ['s3:PutBucketNotification'],
-      resources: ['*'],
-    }));
-
-    return role;
   }
 }

@@ -429,6 +429,13 @@ export interface BucketAttributes {
    * @default - it's assumed the bucket is in the same region as the scope it's being imported into
    */
   readonly region?: string;
+
+  /**
+   * The role to be used by the notifications handler
+   *
+   * @default - a new role will be created.
+   */
+  readonly notificationsHandlerRole?: iam.IRole;
 }
 
 /**
@@ -1498,6 +1505,7 @@ export class Bucket extends BucketBase {
     return new Import(scope, id, {
       account: attrs.account,
       region: attrs.region,
+      notificationsHandlerRole: attrs.notificationsHandlerRole,
     });
   }
 

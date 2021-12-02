@@ -57,6 +57,29 @@ describe('notification', () => {
     });
   });
 
+  test('can specify a custom role for the notifications handler of imported buckets', () => {
+    const stack = new cdk.Stack();
+
+    const importedRole = iam.Role.fromRoleArn(stack, 'role', 'arn:aws:iam::111111111111:role/DevsNotAllowedToTouch');
+
+    const bucket = s3.Bucket.fromBucketAttributes(stack, 'MyBucket', {
+      bucketName: 'foo-bar',
+      notificationsHandlerRole: importedRole,
+    });
+
+    bucket.addEventNotification(s3.EventType.OBJECT_CREATED, {
+      bind: () => ({
+        arn: 'ARN',
+        type: s3.BucketNotificationDestinationType.TOPIC,
+      }),
+    });
+
+    expect(stack).toHaveResourceLike('AWS::Lambda::Function', {
+      Description: 'AWS CloudFormation handler for "Custom::S3BucketNotifications" resources (@aws-cdk/aws-s3)',
+      Role: 'arn:aws:iam::111111111111:role/DevsNotAllowedToTouch',
+    });
+  });
+
   test('can specify prefix and suffix filter rules', () => {
     const stack = new cdk.Stack();
 

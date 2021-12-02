@@ -255,16 +255,26 @@ function that implements this feature. If you want to use your own role instead,
 you should provide it in the `Bucket` constructor:
 
 ```ts
-declare const importedRole: iam.IRole;
+declare const myRole: iam.IRole;
 const bucket = new s3.Bucket(this, 'MyBucket', {
-  notificationsHandlerRole: importedRole,
+  notificationsHandlerRole: myRole,
 });
 ```
 
-> NOTE: If you provide your own handler role, make sure that it has at least
->`s3:PutBucketNotification` and `s3:GetBucketNotification` permissions to the
-> bucket as well as the permissions present in `AWSLambdaBasicExecutionRole` (AWS
-> managed role). The lack of these permissions will cause the deployment to fail!
+Whatever role you provide, the CDK will try to modify it by adding the 
+permissions from `AWSLambdaBasicExecutionRole` (an AWS managed policy) as well 
+as the permissions `s3:PutBucketNotification` and `s3:GetBucketNotification`. 
+If you’re passing an imported role, and you don’t want this to happen, configure 
+it to be immutable:
+
+```ts
+const importedRole = iam.Role.fromRoleArn(this, 'role', 'arn:aws:iam::123456789012:role/RoleName', {
+  mutable: false,
+});
+```
+
+> If you provide an imported immutable role, make sure that it has at least all 
+> the permissions mentioned above. Otherwise, the deployment will fail!
 
 [S3 Bucket Notifications]: https://docs.aws.amazon.com/AmazonS3/latest/dev/NotificationHowTo.html
 
