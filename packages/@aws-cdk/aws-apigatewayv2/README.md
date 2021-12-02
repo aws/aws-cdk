@@ -432,7 +432,7 @@ To require an API Key when accessing the Websocket API:
 
 ```ts
 const webSocketApi = new WebSocketApi(stack, 'mywsapi',{
-      apiKeySelectionExpression: ApiKeySelectionExpression.X_API_KEY,
+      apiKeySelectionExpression: WebSocketApiKeySelectionExpression.HEADER_X_API_KEY,
     });
 ...
 ```

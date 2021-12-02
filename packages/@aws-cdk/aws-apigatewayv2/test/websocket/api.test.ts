@@ -2,8 +2,7 @@ import { Match, Template } from '@aws-cdk/assertions';
 import { User } from '@aws-cdk/aws-iam';
 import { Stack } from '@aws-cdk/core';
 import {
-  ApiKeySelectionExpression,
-  IWebSocketRouteIntegration, WebSocketApi, WebSocketIntegrationType,
+  IWebSocketRouteIntegration, WebSocketApi, WebSocketApiKeySelectionExpression, WebSocketIntegrationType,
   WebSocketRouteIntegrationBindOptions, WebSocketRouteIntegrationConfig,
 } from '../../lib';
 
@@ -32,7 +31,7 @@ describe('WebSocketApi', () => {
 
     // WHEN
     new WebSocketApi(stack, 'api', {
-      apiKeySelectionExpression: ApiKeySelectionExpression.USAGE_IDENTIFIER_KEY,
+      apiKeySelectionExpression: WebSocketApiKeySelectionExpression.AUTHORIZER_USAGE_IDENTIFIER_KEY,
     });
 
     // THEN
