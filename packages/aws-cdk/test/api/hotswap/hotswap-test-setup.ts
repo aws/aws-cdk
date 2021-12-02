@@ -42,8 +42,8 @@ export function pushStackResourceSummaries(...items: CloudFormation.StackResourc
 }
 
 export function setCurrentCfnStackTemplate(_template: Template) {
-  let template = JSON.parse(JSON.stringify(_template)); // deep copy the _template, so our tests can mutate one template instead of creating two
-  currentCfnStack.setTemplate(template);
+  const templateDeepCopy = JSON.parse(JSON.stringify(_template)); // deep copy the _template, so our tests can mutate one template instead of creating two
+  currentCfnStack.setTemplate(templateDeepCopy);
 }
 
 export function stackSummaryOf(logicalId: string, resourceType: string, physicalResourceId: string): CloudFormation.StackResourceSummary {

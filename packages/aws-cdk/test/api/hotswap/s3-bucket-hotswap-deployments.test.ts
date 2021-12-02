@@ -4,21 +4,20 @@ import * as setup from './hotswap-test-setup';
 
 let mockLambdaInvoke: (params: Lambda.Types.InvocationRequest) => Lambda.Types.InvocationResponse;
 let cfnMockProvider: setup.CfnMockProvider;
-let payload: { [key: string]: any};
+
+const payloadWithoutCustomResProps = {
+  RequestType: 'Update',
+  ResponseURL: REQUIRED_BY_CFN,
+  PhysicalResourceId: REQUIRED_BY_CFN,
+  StackId: REQUIRED_BY_CFN,
+  RequestId: REQUIRED_BY_CFN,
+  LogicalResourceId: REQUIRED_BY_CFN,
+};
 
 beforeEach(() => {
   cfnMockProvider = setup.setupHotswapTests();
   mockLambdaInvoke = jest.fn();
   cfnMockProvider.setInvokeLambdaMock(mockLambdaInvoke);
-
-  payload = {
-    RequestType: 'Update',
-    ResponseURL: REQUIRED_BY_CFN,
-    PhysicalResourceId: REQUIRED_BY_CFN,
-    StackId: REQUIRED_BY_CFN,
-    RequestId: REQUIRED_BY_CFN,
-    LogicalResourceId: REQUIRED_BY_CFN,
-  };
 });
 
 test('returns undefined when a new S3 Deployment is added to the Stack', async () => {
@@ -38,6 +37,7 @@ test('returns undefined when a new S3 Deployment is added to the Stack', async (
 
   // THEN
   expect(deployStackResult).toBeUndefined();
+  expect(mockLambdaInvoke).not.toHaveBeenCalled();
 });
 
 test('calls the lambdaInvoke() API when it receives only an asset difference in an s3 bucket deployment', async () => {
@@ -55,6 +55,7 @@ test('calls the lambdaInvoke() API when it receives only an asset difference in 
             'src-key-old',
           ],
           DestinationBucketName: 'dest-bucket',
+          DestinationBucketKeyPrefix: 'my-key/some-old-prefix',
         },
       },
     },
@@ -73,6 +74,7 @@ test('calls the lambdaInvoke() API when it receives only an asset difference in 
               'src-key-new',
             ],
             DestinationBucketName: 'dest-bucket',
+            DestinationBucketKeyPrefix: 'my-key/some-new-prefix',
           },
         },
       },
@@ -84,19 +86,22 @@ test('calls the lambdaInvoke() API when it receives only an asset difference in 
 
   // THEN
   expect(deployStackResult).not.toBeUndefined();
-  payload.ResourceProperties = {
-    SourceBucketNames: [
-      'src-bucket',
-    ],
-    SourceObjectKeys: [
-      'src-key-new',
-    ],
-    DestinationBucketName: 'dest-bucket',
-  };
 
   expect(mockLambdaInvoke).toHaveBeenCalledWith({
     FunctionName: 'a-lambda-arn',
-    Payload: JSON.stringify(payload),
+    Payload: JSON.stringify({
+      ...payloadWithoutCustomResProps,
+      ResourceProperties: {
+        SourceBucketNames: [
+          'src-bucket',
+        ],
+        SourceObjectKeys: [
+          'src-key-new',
+        ],
+        DestinationBucketName: 'dest-bucket',
+        DestinationBucketKeyPrefix: 'my-key/some-new-prefix',
+      },
+    }),
   });
 });
 
@@ -160,22 +165,23 @@ test('correctly evaluates the service token when it references a lambda found in
 
   // WHEN
   const deployStackResult = await cfnMockProvider.tryHotswapDeployment(cdkStackArtifact);
-  payload.ResourceProperties = {
-    SourceBucketNames: [
-      'src-bucket',
-    ],
-    SourceObjectKeys: [
-      'src-key-old',
-    ],
-    DestinationBucketName: 'dest-bucket',
-  };
-
 
   // THEN
   expect(deployStackResult).not.toBeUndefined();
   expect(mockLambdaInvoke).toHaveBeenCalledWith({
     FunctionName: 'lambda-my-deployment-lambda-function',
-    Payload: JSON.stringify(payload),
+    Payload: JSON.stringify({
+      ...payloadWithoutCustomResProps,
+      ResourceProperties: {
+        SourceBucketNames: [
+          'src-bucket',
+        ],
+        SourceObjectKeys: [
+          'src-key-old',
+        ],
+        DestinationBucketName: 'dest-bucket',
+      },
+    }),
   });
 });
 
@@ -332,69 +338,6 @@ test('does not call the invoke() API when a resource with type that is not Custo
   expect(mockLambdaInvoke).not.toHaveBeenCalled();
 });
 
-test('can use the DestinationBucketKeyPrefix property', async () => {
-  // GIVEN
-  setup.setCurrentCfnStackTemplate({
-    Resources: {
-      S3Deployment: {
-        Type: 'Custom::CDKBucketDeployment',
-        Properties: {
-          ServiceToken: 'a-lambda-arn',
-          SourceBucketNames: [
-            'src-bucket',
-          ],
-          SourceObjectKeys: [
-            'src-key-old',
-          ],
-          DestinationBucketName: 'dest-bucket',
-          DestinationBucketKeyPrefix: 'my-key/some-old-prefix',
-        },
-      },
-    },
-  });
-  const cdkStackArtifact = setup.cdkStackArtifactOf({
-    template: {
-      Resources: {
-        S3Deployment: {
-          Type: 'Custom::CDKBucketDeployment',
-          Properties: {
-            ServiceToken: 'a-lambda-arn',
-            SourceBucketNames: [
-              'src-bucket',
-            ],
-            SourceObjectKeys: [
-              'src-key-new',
-            ],
-            DestinationBucketName: 'dest-bucket',
-            DestinationBucketKeyPrefix: 'my-key/some-new-prefix',
-          },
-        },
-      },
-    },
-  });
-
-  // WHEN
-  const deployStackResult = await cfnMockProvider.tryHotswapDeployment(cdkStackArtifact);
-
-  // THEN
-  expect(deployStackResult).not.toBeUndefined();
-  payload.ResourceProperties = {
-    SourceBucketNames: [
-      'src-bucket',
-    ],
-    SourceObjectKeys: [
-      'src-key-new',
-    ],
-    DestinationBucketName: 'dest-bucket',
-    DestinationBucketKeyPrefix: 'my-key/some-new-prefix',
-  };
-
-  expect(mockLambdaInvoke).toHaveBeenCalledWith({
-    FunctionName: 'a-lambda-arn',
-    Payload: JSON.stringify(payload),
-  });
-});
-
 test('does not call the invokeLambda() api if the updated Policy has no Roles', async () => {
   // GIVEN
   setup.setCurrentCfnStackTemplate({
@@ -438,22 +381,22 @@ test('does not call the invokeLambda() api if the updated Policy has no Roles', 
   const cdkStackArtifact = setup.cdkStackArtifactOf({
     template: {
       Resources: {
+        S3Deployment: {
+          Type: 'Custom::CDKBucketDeployment',
+          Properties: {
+            ServiceToken: 'a-lambda-arn',
+            SourceBucketNames: [
+              'src-bucket',
+            ],
+            SourceObjectKeys: [
+              'src-key-new',
+            ],
+            DestinationBucketName: 'dest-bucket',
+          },
+        },
         Policy: {
           Type: 'AWS::IAM::Policy',
           Properties: {
-            S3Deployment: {
-              Type: 'Custom::CDKBucketDeployment',
-              Properties: {
-                ServiceToken: 'a-lambda-arn',
-                SourceBucketNames: [
-                  'src-bucket',
-                ],
-                SourceObjectKeys: [
-                  'src-key-new',
-                ],
-                DestinationBucketName: 'dest-bucket',
-              },
-            },
             PolicyDocument: {
               Statement: [
                 {
@@ -463,7 +406,7 @@ test('does not call the invokeLambda() api if the updated Policy has no Roles', 
                   Effect: 'Allow',
                   Resource: {
                     'Fn::GetAtt': [
-                      'WebsiteBucketOld',
+                      'WebsiteBucketNew',
                       'Arn',
                     ],
                   },
@@ -611,7 +554,7 @@ describe('old-style synthesis', () => {
 
     policy.Properties.PolicyDocument.Statement[0].Resource = {
       'Fn::GetAtt': [
-        'WebsiteBucketNewasdf',
+        'WebsiteBucketNew',
         'Arn',
       ],
     };
@@ -632,19 +575,20 @@ describe('old-style synthesis', () => {
 
     // THEN
     expect(deployStackResult).not.toBeUndefined();
-    payload.ResourceProperties = {
-      SourceBucketNames: [
-        'src-bucket-new',
-      ],
-      SourceObjectKeys: [
-        'src-key-new',
-      ],
-      DestinationBucketName: 'WebsiteBucketNew',
-    };
-
     expect(mockLambdaInvoke).toHaveBeenCalledWith({
       FunctionName: 'arn:aws:lambda:here:123456789012:function:my-deployment-lambda',
-      Payload: JSON.stringify(payload),
+      Payload: JSON.stringify({
+        ...payloadWithoutCustomResProps,
+        ResourceProperties: {
+          SourceBucketNames: [
+            'src-bucket-new',
+          ],
+          SourceObjectKeys: [
+            'src-key-new',
+          ],
+          DestinationBucketName: 'WebsiteBucketNew',
+        },
+      }),
     });
   });
 
@@ -772,7 +716,7 @@ describe('old-style synthesis', () => {
       Properties: {
         ServiceToken: {
           'Fn::GetAtt': [
-            'S3DeploymentLambda',
+            'S3DeploymentLambda2',
             'Arn',
           ],
         },
@@ -786,12 +730,18 @@ describe('old-style synthesis', () => {
       },
     };
 
+    policy2.Properties.Roles = [
+      { Ref: 'ServiceRole2' },
+    ];
+
     setup.setCurrentCfnStackTemplate({
       Resources: {
         ServiceRole: serviceRole,
+        ServiceRole2: serviceRole,
         Policy1: policy,
         Policy2: policy2,
         S3DeploymentLambda: deploymentLambda,
+        S3DeploymentLambda2: deploymentLambda,
         S3Deployment: s3Deployment,
         S3Deployment2: s3Deployment2,
       },
@@ -823,11 +773,92 @@ describe('old-style synthesis', () => {
       template: {
         Resources: {
           ServiceRole: serviceRole,
+          ServiceRole2: serviceRole,
+          Policy1: policy,
+          Policy2: policy2,
+          S3DeploymentLambda: deploymentLambda,
+          S3DeploymentLambda2: deploymentLambda,
+          S3Deployment: s3Deployment,
+          S3Deployment2: s3Deployment2,
+        },
+      },
+    });
+
+    // WHEN
+    setup.pushStackResourceSummaries(
+      setup.stackSummaryOf('S3DeploymentLambda2', 'AWS::Lambda::Function', 'my-deployment-lambda-2'),
+      setup.stackSummaryOf('ServiceRole2', 'AWS::IAM::Role', 'my-service-role-2'),
+    );
+
+    const deployStackResult = await cfnMockProvider.tryHotswapDeployment(cdkStackArtifact);
+
+    // THEN
+    expect(deployStackResult).not.toBeUndefined();
+
+    expect(mockLambdaInvoke).toHaveBeenCalledWith({
+      FunctionName: 'arn:aws:lambda:here:123456789012:function:my-deployment-lambda',
+      Payload: JSON.stringify({
+        ...payloadWithoutCustomResProps,
+        ResourceProperties: {
+          SourceBucketNames: [
+            'src-bucket-new',
+          ],
+          SourceObjectKeys: [
+            'src-key-new',
+          ],
+          DestinationBucketName: 'WebsiteBucketNew',
+        },
+      }),
+    });
+
+    expect(mockLambdaInvoke).toHaveBeenCalledWith({
+      FunctionName: 'arn:aws:lambda:here:123456789012:function:my-deployment-lambda-2',
+      Payload: JSON.stringify({
+        ...payloadWithoutCustomResProps,
+        ResourceProperties: {
+          SourceBucketNames: [
+            'src-bucket-new',
+          ],
+          SourceObjectKeys: [
+            'src-key-new',
+          ],
+          DestinationBucketName: 'DifferentBucketNew',
+        },
+      }),
+    });
+  });
+
+  test('does not call the lambdaInvoke() API when it receives an asset difference in an s3 bucket deployment that references two different policies', async () => {
+    // GIVEN
+    setup.setCurrentCfnStackTemplate({
+      Resources: {
+        ServiceRole: serviceRole,
+        Policy1: policy,
+        Policy2: policy2,
+        S3DeploymentLambda: deploymentLambda,
+        S3Deployment: s3Deployment,
+      },
+    });
+
+    policy.Properties.PolicyDocument.Statement[0].Resource = {
+      'Fn::GetAtt': [
+        'WebsiteBucketNew',
+        'Arn',
+      ],
+    };
+
+    s3Deployment.Properties.SourceBucketNames = ['src-bucket-new'];
+    s3Deployment.Properties.SourceObjectKeys = ['src-key-new'];
+    s3Deployment.Properties.DestinationBucketName = 'WebsiteBucketNew';
+
+    const cdkStackArtifact = setup.cdkStackArtifactOf({
+      template: {
+        Resources: {
+          ServiceRole: serviceRole,
           Policy1: policy,
           Policy2: policy2,
           S3DeploymentLambda: deploymentLambda,
           S3Deployment: s3Deployment,
-          S3Deployment2: s3Deployment2,
         },
       },
     });
@@ -836,28 +867,64 @@ describe('old-style synthesis', () => {
     const deployStackResult = await cfnMockProvider.tryHotswapDeployment(cdkStackArtifact);
 
     // THEN
-    expect(deployStackResult).not.toBeUndefined();
+    expect(deployStackResult).toBeUndefined();
+    expect(mockLambdaInvoke).not.toHaveBeenCalled();
+  });
 
-    payload.ResourceProperties = {
-      SourceBucketNames: [
-        'src-bucket-new',
+  test('does not call the lambdaInvoke() API when a policy is referenced by a resource that is not an s3 deployment', async () => {
+    // GIVEN
+    setup.setCurrentCfnStackTemplate({
+      Resources: {
+        ServiceRole: serviceRole,
+        Policy1: policy,
+        S3DeploymentLambda: deploymentLambda,
+        S3Deployment: s3Deployment,
+        NotADeployment: {
+          Type: 'AWS::Not::S3Deployment',
+          Properties: {
+            Prop: {
+              Ref: 'ServiceRole',
+            },
+          },
+        },
+      },
+    });
+
+    policy.Properties.PolicyDocument.Statement[0].Resource = {
+      'Fn::GetAtt': [
+        'WebsiteBucketNew',
+        'Arn',
       ],
-      SourceObjectKeys: [
-        'src-key-new',
-      ],
-      DestinationBucketName: 'WebsiteBucketNew',
     };
 
-    expect(mockLambdaInvoke).toHaveBeenCalledWith({
-      FunctionName: 'arn:aws:lambda:here:123456789012:function:my-deployment-lambda',
-      Payload: JSON.stringify(payload),
+    s3Deployment.Properties.SourceBucketNames = ['src-bucket-new'];
+    s3Deployment.Properties.SourceObjectKeys = ['src-key-new'];
+    s3Deployment.Properties.DestinationBucketName = 'WebsiteBucketNew';
+
+    const cdkStackArtifact = setup.cdkStackArtifactOf({
+      template: {
+        Resources: {
+          ServiceRole: serviceRole,
+          Policy1: policy,
+          S3DeploymentLambda: deploymentLambda,
+          S3Deployment: s3Deployment,
+          NotADeployment: {
+            Type: 'AWS::Not::S3Deployment',
+            Properties: {
+              Prop: {
+                Ref: 'ServiceRole',
+              },
+            },
+          },
+        },
+      },
     });
 
-    payload.ResourceProperties.DestinationBucketName = 'DifferentBucketNew';;
+    // WHEN
+    const deployStackResult = await cfnMockProvider.tryHotswapDeployment(cdkStackArtifact);
 
-    expect(mockLambdaInvoke).toHaveBeenCalledWith({
-      FunctionName: 'arn:aws:lambda:here:123456789012:function:my-deployment-lambda',
-      Payload: JSON.stringify(payload),
-    });
+    // THEN
+    expect(deployStackResult).toBeUndefined();
+    expect(mockLambdaInvoke).not.toHaveBeenCalled();
   });
 });

@@ -364,7 +364,7 @@ Hotswapping is currently supported for the following changes
 - Code asset changes of AWS Lambda functions.
 - Definition changes of AWS Step Functions State Machines.
 - Container asset changes of AWS ECS Services.
-- Website asset changes of AWS S3 Bucket Deployments
+- Website asset changes of AWS S3 Bucket Deployments.
 
 **⚠ Note #1**: This command deliberately introduces drift in CloudFormation stacks in order to speed up deployments.
 For this reason, only use it for development purposes.

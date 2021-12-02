@@ -2,6 +2,7 @@ import { ISDK } from '../aws-auth';
 import { ChangeHotswapImpact, ChangeHotswapResult, HotswapOperation, HotswappableChangeCandidate, establishResourcePhysicalName } from './common';
 import { EvaluateCloudFormationTemplate } from './evaluate-cloudformation-template';
 
+/*eslint-disable*/
 /**
  * This means that the value is required to exist by CloudFormation's API (or our S3 Bucket Deployment Lambda)
  * but the actual value specified is irrelevant
@@ -14,16 +15,18 @@ export async function isHotswappableS3BucketDeploymentChange(
   // In old-style synthesis, the policy used by the lambda to copy assets Ref's the assets directly,
   // meaning that the changes made to the Policy are artifacts that can be safely ignored
   if (change.newValue.Type === 'AWS::IAM::Policy') {
-    return isOldStyleSynthesisArtifact(change, evaluateCfnTemplate);
+    return changeIsForS3DeployCustomResourcePolicy(logicalId, change, evaluateCfnTemplate);
   }
 
   if (change.newValue.Type !== 'Custom::CDKBucketDeployment') {
+    console.log('ah 1')
     return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
   }
 
   // note that this gives the ARN of the lambda, not the name. This is fine though, the invoke() sdk call will take either
   const functionName = await establishResourcePhysicalName(logicalId, change.newValue.Properties?.ServiceToken, evaluateCfnTemplate);
   if (!functionName) {
+    console.log('ah 2')
     return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
   }
 
@@ -59,33 +62,44 @@ class S3BucketDeploymentHotswapOperation implements HotswapOperation {
   }
 }
 
-async function isOldStyleSynthesisArtifact(
-  change: HotswappableChangeCandidate, evaluateCfnTemplate: EvaluateCloudFormationTemplate,
+async function changeIsForS3DeployCustomResourcePolicy(
+  logicalId: string, change: HotswappableChangeCandidate, evaluateCfnTemplate: EvaluateCloudFormationTemplate,
 ): Promise<ChangeHotswapImpact | EmptyHotswapOperation> {
   const roles = change.newValue.Properties?.Roles;
   if (!roles) {
+    console.log('ah 3')
     return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
   }
 
   for (const role of roles) {
     const roleLogicalId = await evaluateCfnTemplate.findLogicalIdForPhysicalName(await evaluateCfnTemplate.evaluateCfnExpression(role));
     if (!roleLogicalId) {
+      console.log('ah 4')
       return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
     }
 
     const roleRefs = evaluateCfnTemplate.findReferencesTo(roleLogicalId);
     for (const roleRef of roleRefs) {
-      if (roleRef.Type !== 'AWS::Lambda::Function' && roleRef.Type !== 'AWS::IAM::Policy') {
-        return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
-      } else if (roleRef.Type === 'AWS::Lambda::Function') {
+      if (roleRef.Type === 'AWS::Lambda::Function') {
         const lambdaRefs = evaluateCfnTemplate.findReferencesTo(roleRef.LogicalId);
         for (const lambdaRef of lambdaRefs) {
           // If S3Deployment -> Lambda -> Role and IAM::Policy -> Role, then this IAM::Policy change is an
           // artifact of old-style synthesis
           if (lambdaRef.Type !== 'Custom::CDKBucketDeployment') {
+            console.log('ah 5')
             return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
           }
         }
+      } else if (roleRef.Type === 'AWS::IAM::Policy') {
+        if (roleRef.LogicalId !== logicalId) {
+          console.log(roleRef.LogicalId)
+          console.log(logicalId)
+          console.log('ah 6')
+          return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
+        }
+      } else if (roleRef.Type !== 'AWS::IAM::Policy') {
+        console.log('ah 7')
+        return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
       }
     }
   }
