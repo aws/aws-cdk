@@ -13,6 +13,8 @@ beforeEach(() => {
   assets = new AssetManifestBuilder();
 });
 
+const moduleExt = __filename.split('.').pop();
+
 describe('file assets', () => {
   test('convert to manifest and parameters', async () => {
     // GIVEN
@@ -34,7 +36,7 @@ describe('file assets', () => {
     // THEN
     expect(params).toEqual({
       BucketParameter: 'MockToolkitBucketName',
-      KeyParameter: 'assets/SomeStackSomeResource4567/||source-hash.js',
+      KeyParameter: `assets/SomeStackSomeResource4567/||source-hash.${moduleExt}`,
       ArtifactHashParameter: 'source-hash',
     });
 
@@ -42,7 +44,7 @@ describe('file assets', () => {
       expect.objectContaining({
         destination: {
           bucketName: 'MockToolkitBucketName',
-          objectKey: 'assets/SomeStackSomeResource4567/source-hash.js',
+          objectKey: `assets/SomeStackSomeResource4567/source-hash.${moduleExt}`,
         },
         source: {
           packaging: 'file',
@@ -74,7 +76,7 @@ describe('file assets', () => {
       expect.objectContaining({
         destination: {
           bucketName: 'MockToolkitBucketName',
-          objectKey: 'assets/source-hash.js',
+          objectKey: `assets/source-hash.${moduleExt}`,
         },
       }),
     ]);
