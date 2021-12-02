@@ -43,8 +43,8 @@ export interface BaseResolverProps {
   readonly responseMappingTemplate?: MappingTemplate;
   /**
    * The caching configuration for this resolver
-   * 
-   * @defualt - No caching configuration
+   *
+   * @default - No caching configuration
    */
   readonly cachingConfig?: CachingConfig;
 }
@@ -102,7 +102,10 @@ export class Resolver extends CoreConstruct {
       pipelineConfig: pipelineConfig,
       requestMappingTemplate: props.requestMappingTemplate ? props.requestMappingTemplate.renderTemplate() : undefined,
       responseMappingTemplate: props.responseMappingTemplate ? props.responseMappingTemplate.renderTemplate() : undefined,
-      cachingConfig: props.cachingConfig,
+      cachingConfig: {
+        cachingKeys: props.cachingConfig?.cachingKeys,
+        ttl: props.cachingConfig?.ttl?.toSeconds(),
+      },
     });
     props.api.addSchemaDependency(this.resolver);
     if (props.dataSource) {

@@ -2,6 +2,7 @@ import * as path from 'path';
 import { Template } from '@aws-cdk/assertions';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
+import { Duration } from '@aws-cdk/core';
 import * as appsync from '../lib';
 
 let stack: cdk.Stack;
@@ -37,8 +38,8 @@ describe('Lambda caching config', () => {
       fieldName: 'allPosts',
       cachingConfig: {
         cachingKeys: ['$context.identity'],
-        ttl: 300,
-      }
+        ttl: Duration.seconds(300),
+      },
     });
 
     // THEN
@@ -47,8 +48,8 @@ describe('Lambda caching config', () => {
       FieldName: 'allPosts',
       CachingConfig: {
         CachingKeys: ['$context.identity'],
-        Ttl: 300
-      }
+        Ttl: 300,
+      },
     });
   });
 });
