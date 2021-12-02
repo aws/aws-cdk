@@ -93,12 +93,14 @@ async function changeIsForS3DeployCustomResourcePolicy(
       } else if (roleRef.Type === 'AWS::IAM::Policy') {
         if (roleRef.LogicalId !== logicalId) {
           console.log(roleRef.LogicalId)
+          debugger;
           console.log(logicalId)
           console.log('ah 6')
           return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
         }
       } else if (roleRef.Type !== 'AWS::IAM::Policy') {
         console.log('ah 7')
+        debugger;
         return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
       }
     }
