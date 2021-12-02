@@ -153,8 +153,9 @@ export interface GrpcGatewayRouteMatch {
  */
 export interface CommonGatewayRouteSpecOptions {
   /**
-   * The priority for the gateway route. Gateway routes are matched based on the specified
-   * value, where 0 is the highest priority.
+   * The priority for the gateway route. When a Virtual Gateway has multiple gateway routes, gateway route match
+   * is performed in the order of specified value, where 0 is the highest priority,
+   * and first matched gateway route is selected.
    *
    * @default - no particular priority
    */
@@ -220,8 +221,9 @@ export interface GatewayRouteSpecConfig {
   readonly grpcSpecConfig?: CfnGatewayRoute.GrpcGatewayRouteProperty;
 
   /**
-   * The priority for the gateway route. Gateway routes are matched based on the specified
-   * value, where 0 is the highest priority.
+   * The priority for the gateway route. When a Virtual Gateway has multiple gateway routes, gateway route match
+   * is performed in the order of specified value, where 0 is the highest priority,
+   * and first matched gateway route is selected.
    *
    * @default - no particular priority
    */
