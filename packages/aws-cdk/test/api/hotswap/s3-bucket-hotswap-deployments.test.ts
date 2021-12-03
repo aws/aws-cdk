@@ -73,72 +73,6 @@ test('calls the lambdaInvoke() API when it receives only an asset difference in 
   });
 });
 
-/*
-test('correctly evaluates the service token when it references a lambda found in the template', async () => {
-  // GIVEN
-  setup.setCurrentCfnStackTemplate({
-    Resources: {
-      Lambda: {
-        Type: 'AWS::Lambda::Function',
-      },
-      S3Deployment: {
-        Type: 'Custom::CDKBucketDeployment',
-        Properties: {
-          ServiceToken: 'a-lambda-arn',
-          SourceBucketNames: ['src-bucket'],
-          SourceObjectKeys: [
-            'src-key-old',
-          ],
-          DestinationBucketName: 'dest-bucket',
-        },
-      },
-    },
-  });
-  setup.pushStackResourceSummaries(setup.stackSummaryOf('Lambda', 'AWS::Lambda::Function', 'my-deployment-lambda'));
-  const cdkStackArtifact = setup.cdkStackArtifactOf({
-    template: {
-      Resources: {
-        Lambda: {
-          Type: 'AWS::Lambda::Function',
-        },
-        S3Deployment: {
-          Type: 'Custom::CDKBucketDeployment',
-          Properties: {
-            ServiceToken: {
-              'Fn::GetAtt': ['Lambda', 'Arn'],
-            },
-            SourceBucketNames: ['src-bucket'],
-            SourceObjectKeys: [
-              'src-key-old',
-            ],
-            DestinationBucketName: 'dest-bucket',
-          },
-        },
-      },
-    },
-  });
-
-  // WHEN
-  const deployStackResult = await cfnMockProvider.tryHotswapDeployment(cdkStackArtifact);
-
-  // THEN
-  expect(deployStackResult).not.toBeUndefined();
-  expect(mockLambdaInvoke).toHaveBeenCalledWith({
-    FunctionName: 'arn:aws:lambda:here:123456789012:function:my-deployment-lambda',
-    Payload: JSON.stringify({
-      ...payloadWithoutCustomResProps,
-      ResourceProperties: {
-        SourceBucketNames: ['src-bucket'],
-        SourceObjectKeys: [
-          'src-key-old',
-        ],
-        DestinationBucketName: 'dest-bucket',
-      },
-    }),
-  });
-});
-*/
-
 test('does not call the invoke() API when a resource with type that is not Custom::CDKBucketDeployment but has the same properties is changed', async () => {
   // GIVEN
   setup.setCurrentCfnStackTemplate({
@@ -256,78 +190,157 @@ test('does not call the invokeLambda() api if the updated Policy has no Roles', 
 });
 
 describe('old-style synthesis', () => {
-  let serviceRole: any;
-  let policy: any;
-  let deploymentLambda: any;
-  let s3Deployment: any;
-  beforeEach(() => {
-    serviceRole = {
-      Type: 'AWS::IAM::Role',
-      Properties: {
-        AssumeRolePolicyDocument: {
-          Statement: [
-            {
-              Action: 'sts:AssumeRole',
-              Effect: 'Allow',
-              Principal: {
-                Service: 'lambda.amazonaws.com',
-              },
+  const serviceRole = {
+    Type: 'AWS::IAM::Role',
+    Properties: {
+      AssumeRolePolicyDocument: {
+        Statement: [
+          {
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
+            Principal: {
+              Service: 'lambda.amazonaws.com',
             },
-          ],
-          Version: '2012-10-17',
-        },
-      },
-    };
-
-    policy = {
-      Type: 'AWS::IAM::Policy',
-      Properties: {
-        Roles: [
-          { Ref: 'ServiceRole' },
+          },
         ],
-        PolicyDocument: {
-          Statement: [
-            {
-              Action: ['s3:GetObject*'],
-              Effect: 'Allow',
-              Resource: {
-                'Fn::GetAtt': [
-                  'WebsiteBucketOld',
-                  'Arn',
-                ],
-              },
-            },
-          ],
-        },
+        Version: '2012-10-17',
       },
-    };
+    },
+  };
 
-    // TODO: inline policy and policy2 where possible. Also rename the Foo1 and Foo2 IDs to be FooOld and FooNew
-    deploymentLambda = {
-      Type: 'AWS::Lambda::Function',
-      Role: {
+  const policyOld = {
+    Type: 'AWS::IAM::Policy',
+    Properties: {
+      Roles: [
+        { Ref: 'ServiceRole' },
+      ],
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: ['s3:GetObject*'],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': [
+                'WebsiteBucketOld',
+                'Arn',
+              ],
+            },
+          },
+        ],
+      },
+    },
+  };
+
+  const policyNew = {
+    Type: 'AWS::IAM::Policy',
+    Properties: {
+      Roles: [
+        { Ref: 'ServiceRole' },
+      ],
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: ['s3:GetObject*'],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': [
+                'WebsiteBucketNew',
+                'Arn',
+              ],
+            },
+          },
+        ],
+      },
+    },
+  };
+
+  const policy2Old = {
+    Type: 'AWS::IAM::Policy',
+    Properties: {
+      Roles: [
+        { Ref: 'ServiceRole' },
+      ],
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: ['s3:GetObject*'],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': [
+                'WebsiteBucketOld',
+                'Arn',
+              ],
+            },
+          },
+        ],
+      },
+    },
+  };
+
+  const policy2New = {
+    Type: 'AWS::IAM::Policy',
+    Properties: {
+      Roles: [
+        { Ref: 'ServiceRole2' },
+      ],
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: ['s3:GetObject*'],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': [
+                'DifferentBucketNew',
+                'Arn',
+              ],
+            },
+          },
+        ],
+      },
+    },
+  };
+
+  const deploymentLambda = {
+    Type: 'AWS::Lambda::Function',
+    Role: {
+      'Fn::GetAtt': [
+        'ServiceRole',
+        'Arn',
+      ],
+    },
+  };
+
+  const s3DeploymentOld = {
+    Type: 'Custom::CDKBucketDeployment',
+    Properties: {
+      ServiceToken: {
         'Fn::GetAtt': [
-          'ServiceRole',
+          'S3DeploymentLambda',
           'Arn',
         ],
       },
-    };
+      SourceBucketNames: ['src-bucket-old'],
+      SourceObjectKeys: ['src-key-old'],
+      DestinationBucketName: 'WebsiteBucketOld',
+    },
+  };
 
-    s3Deployment = {
-      Type: 'Custom::CDKBucketDeployment',
-      Properties: {
-        ServiceToken: {
-          'Fn::GetAtt': [
-            'S3DeploymentLambda',
-            'Arn',
-          ],
-        },
-        SourceBucketNames: ['src-bucket-old'],
-        SourceObjectKeys: ['src-key-old'],
-        DestinationBucketName: 'WebsiteBucketOld',
+  const s3DeploymentNew = {
+    Type: 'Custom::CDKBucketDeployment',
+    Properties: {
+      ServiceToken: {
+        'Fn::GetAtt': [
+          'S3DeploymentLambda',
+          'Arn',
+        ],
       },
-    };
+      SourceBucketNames: ['src-bucket-new'],
+      SourceObjectKeys: ['src-key-new'],
+      DestinationBucketName: 'WebsiteBucketNew',
+    },
+  };
 
+  beforeEach(() => {
     setup.pushStackResourceSummaries(
       setup.stackSummaryOf('S3DeploymentLambda', 'AWS::Lambda::Function', 'my-deployment-lambda'),
       setup.stackSummaryOf('ServiceRole', 'AWS::IAM::Role', 'my-service-role'),
@@ -339,65 +352,19 @@ describe('old-style synthesis', () => {
     setup.setCurrentCfnStackTemplate({
       Resources: {
         ServiceRole: serviceRole,
-        Policy: {
-          Type: 'AWS::IAM::Policy',
-          Properties: {
-            Roles: [
-              { Ref: 'ServiceRole' },
-            ],
-            PolicyDocument: {
-              Statement: [
-                {
-                  Action: ['s3:GetObject*'],
-                  Effect: 'Allow',
-                  Resource: {
-                    'Fn::GetAtt': [
-                      'WebsiteBucketOld',
-                      'Arn',
-                    ],
-                  },
-                },
-              ],
-            },
-          },
-        },
+        Policy: policyOld,
         S3DeploymentLambda: deploymentLambda,
-        S3Deployment: s3Deployment,
+        S3Deployment: s3DeploymentOld,
       },
     });
-
-    s3Deployment.Properties.SourceBucketNames = ['src-bucket-new'];
-    s3Deployment.Properties.SourceObjectKeys = ['src-key-new'];
-    s3Deployment.Properties.DestinationBucketName = 'WebsiteBucketNew';
 
     const cdkStackArtifact = setup.cdkStackArtifactOf({
       template: {
         Resources: {
           ServiceRole: serviceRole,
-          Policy: {
-            Type: 'AWS::IAM::Policy',
-            Properties: {
-              Roles: [
-                { Ref: 'ServiceRole' },
-              ],
-              PolicyDocument: {
-                Statement: [
-                  {
-                    Action: ['s3:GetObject*'],
-                    Effect: 'Allow',
-                    Resource: {
-                      'Fn::GetAtt': [
-                        'WebsiteBucketNew',
-                        'Arn',
-                      ],
-                    },
-                  },
-                ],
-              },
-            },
-          },
+          Policy: policyNew,
           S3DeploymentLambda: deploymentLambda,
-          S3Deployment: s3Deployment,
+          S3Deployment: s3DeploymentNew,
         },
       },
     });
@@ -425,52 +392,10 @@ describe('old-style synthesis', () => {
     setup.setCurrentCfnStackTemplate({
       Resources: {
         ServiceRole: serviceRole,
-        Policy1: {
-          Type: 'AWS::IAM::Policy',
-          Properties: {
-            Roles: [
-              { Ref: 'ServiceRole' },
-            ],
-            PolicyDocument: {
-              Statement: [
-                {
-                  Action: ['s3:GetObject*'],
-                  Effect: 'Allow',
-                  Resource: {
-                    'Fn::GetAtt': [
-                      'WebsiteBucketOld',
-                      'Arn',
-                    ],
-                  },
-                },
-              ],
-            },
-          },
-        },
-        Policy2: {
-          Type: 'AWS::IAM::Policy',
-          Properties: {
-            Roles: [
-              { Ref: 'ServiceRole' },
-            ],
-            PolicyDocument: {
-              Statement: [
-                {
-                  Action: ['s3:GetObject*'],
-                  Effect: 'Allow',
-                  Resource: {
-                    'Fn::GetAtt': [
-                      'DifferentBucketOld',
-                      'Arn',
-                    ],
-                  },
-                },
-              ],
-            },
-          },
-        },
+        Policy1: policyOld,
+        Policy2: policy2Old,
         S3DeploymentLambda: deploymentLambda,
-        S3Deployment: s3Deployment,
+        S3Deployment: s3DeploymentOld,
       },
     });
 
@@ -478,30 +403,8 @@ describe('old-style synthesis', () => {
       template: {
         Resources: {
           ServiceRole: serviceRole,
-          Policy1: {
-            Type: 'AWS::IAM::Policy',
-            Properties: {
-              Roles: [
-                { Ref: 'ServiceRole' },
-              ],
-              PolicyDocument: {
-                Statement: [
-                  {
-                    Action: ['s3:GetObject*'],
-                    Effect: 'Allow',
-                    Resource: {
-                      'Fn::GetAtt': [
-                        'WebsiteBucketNew',
-                        'Arn',
-                      ],
-                    },
-                  },
-                ],
-              },
-            },
-          },
+          Policy1: policyNew,
           Policy2: {
-            Type: 'AWS::IAM::Policy',
             Properties: {
               Roles: [
                 { Ref: 'ServiceRole' },
@@ -524,7 +427,7 @@ describe('old-style synthesis', () => {
             },
           },
           S3DeploymentLambda: deploymentLambda,
-          S3Deployment: s3Deployment,
+          S3Deployment: s3DeploymentNew,
         },
       },
     });
@@ -542,30 +445,9 @@ describe('old-style synthesis', () => {
     setup.setCurrentCfnStackTemplate({
       Resources: {
         ServiceRole: serviceRole,
-        Policy: {
-          Type: 'AWS::IAM::Policy',
-          Properties: {
-            Roles: [
-              { Ref: 'ServiceRole' },
-            ],
-            PolicyDocument: {
-              Statement: [
-                {
-                  Action: ['s3:GetObject*'],
-                  Effect: 'Allow',
-                  Resource: {
-                    'Fn::GetAtt': [
-                      'WebsiteBucketOld',
-                      'Arn',
-                    ],
-                  },
-                },
-              ],
-            },
-          },
-        },
+        Policy: policyOld,
         S3DeploymentLambda: deploymentLambda,
-        S3Deployment: s3Deployment,
+        S3Deployment: s3DeploymentOld,
         Endpoint: {
           Type: 'AWS::Lambda::Permission',
           Properties: {
@@ -582,38 +464,13 @@ describe('old-style synthesis', () => {
       },
     });
 
-    s3Deployment.Properties.SourceBucketNames = ['src-bucket-new'];
-    s3Deployment.Properties.SourceObjectKeys = ['src-key-new'];
-    s3Deployment.Properties.DestinationBucketName = 'WebsiteBucketNew';
-
     const cdkStackArtifact = setup.cdkStackArtifactOf({
       template: {
         Resources: {
           ServiceRole: serviceRole,
-          Policy: {
-            Type: 'AWS::IAM::Policy',
-            Properties: {
-              Roles: [
-                { Ref: 'ServiceRole' },
-              ],
-              PolicyDocument: {
-                Statement: [
-                  {
-                    Action: ['s3:GetObject*'],
-                    Effect: 'Allow',
-                    Resource: {
-                      'Fn::GetAtt': [
-                        'WebsiteBucketNew',
-                        'Arn',
-                      ],
-                    },
-                  },
-                ],
-              },
-            },
-          },
+          Policy: policyNew,
           S3DeploymentLambda: deploymentLambda,
-          S3Deployment: s3Deployment,
+          S3Deployment: s3DeploymentNew,
           Endpoint: {
             Type: 'AWS::Lambda::Permission',
             Properties: {
@@ -641,7 +498,7 @@ describe('old-style synthesis', () => {
 
   test('calls the lambdaInvoke() API when it receives an asset difference in two s3 bucket deployments and IAM Policy differences using old-style synthesis', async () => {
     // GIVEN
-    let s3Deployment2 = {
+    const s3Deployment2Old = {
       Type: 'Custom::CDKBucketDeployment',
       Properties: {
         ServiceToken: {
@@ -656,122 +513,46 @@ describe('old-style synthesis', () => {
       },
     };
 
+    const s3Deployment2New = {
+      Type: 'Custom::CDKBucketDeployment',
+      Properties: {
+        ServiceToken: {
+          'Fn::GetAtt': [
+            'S3DeploymentLambda2',
+            'Arn',
+          ],
+        },
+        SourceBucketNames: ['src-bucket-new'],
+        SourceObjectKeys: ['src-key-new'],
+        DestinationBucketName: 'DifferentBucketNew',
+      },
+    };
+
     setup.setCurrentCfnStackTemplate({
       Resources: {
         ServiceRole: serviceRole,
         ServiceRole2: serviceRole,
-        Policy1: {
-          Type: 'AWS::IAM::Policy',
-          Properties: {
-            Roles: [
-              { Ref: 'ServiceRole' },
-            ],
-            PolicyDocument: {
-              Statement: [
-                {
-                  Action: ['s3:GetObject*'],
-                  Effect: 'Allow',
-                  Resource: {
-                    'Fn::GetAtt': [
-                      'WebsiteBucketOld',
-                      'Arn',
-                    ],
-                  },
-                },
-              ],
-            },
-          },
-        },
-        Policy2: {
-          Type: 'AWS::IAM::Policy',
-          Properties: {
-            Roles: [
-              { Ref: 'ServiceRole2' },
-            ],
-            PolicyDocument: {
-              Statement: [
-                {
-                  Action: ['s3:GetObject*'],
-                  Effect: 'Allow',
-                  Resource: {
-                    'Fn::GetAtt': [
-                      'DifferentBucketOld',
-                      'Arn',
-                    ],
-                  },
-                },
-              ],
-            },
-          },
-        },
+        Policy1: policyOld,
+        Policy2: policy2Old,
         S3DeploymentLambda: deploymentLambda,
         S3DeploymentLambda2: deploymentLambda,
-        S3Deployment: s3Deployment,
-        S3Deployment2: s3Deployment2,
+        S3Deployment: s3DeploymentOld,
+        S3Deployment2: s3Deployment2Old,
       },
     });
 
-    s3Deployment.Properties.SourceBucketNames = ['src-bucket-new'];
-    s3Deployment.Properties.SourceObjectKeys = ['src-key-new'];
-    s3Deployment.Properties.DestinationBucketName = 'WebsiteBucketNew';
-
-    s3Deployment2.Properties.SourceBucketNames = ['src-bucket-new'];
-    s3Deployment2.Properties.SourceObjectKeys = ['src-key-new'];
-    s3Deployment2.Properties.DestinationBucketName = 'DifferentBucketNew';
 
     const cdkStackArtifact = setup.cdkStackArtifactOf({
       template: {
         Resources: {
           ServiceRole: serviceRole,
           ServiceRole2: serviceRole,
-          Policy1: {
-            Type: 'AWS::IAM::Policy',
-            Properties: {
-              Roles: [
-                { Ref: 'ServiceRole' },
-              ],
-              PolicyDocument: {
-                Statement: [
-                  {
-                    Action: ['s3:GetObject*'],
-                    Effect: 'Allow',
-                    Resource: {
-                      'Fn::GetAtt': [
-                        'WebsiteBucketNew',
-                        'Arn',
-                      ],
-                    },
-                  },
-                ],
-              },
-            },
-          },
-          Policy2: {
-            Type: 'AWS::IAM::Policy',
-            Properties: {
-              Roles: [
-                { Ref: 'ServiceRole2' },
-              ],
-              PolicyDocument: {
-                Statement: [
-                  {
-                    Action: ['s3:GetObject*'],
-                    Effect: 'Allow',
-                    Resource: {
-                      'Fn::GetAtt': [
-                        'DifferentBucketNew',
-                        'Arn',
-                      ],
-                    },
-                  },
-                ],
-              },
-            },
-          },
+          Policy1: policyNew,
+          Policy2: policy2New,
           S3DeploymentLambda: deploymentLambda,
           S3DeploymentLambda2: deploymentLambda,
-          S3Deployment: s3Deployment,
-          S3Deployment2: s3Deployment2,
+          S3Deployment: s3DeploymentNew,
+          S3Deployment2: s3Deployment2New,
         },
       },
     });
@@ -786,7 +567,6 @@ describe('old-style synthesis', () => {
 
     // THEN
     expect(deployStackResult).not.toBeUndefined();
-
     expect(mockLambdaInvoke).toHaveBeenCalledWith({
       FunctionName: 'arn:aws:lambda:here:123456789012:function:my-deployment-lambda',
       Payload: JSON.stringify({
@@ -817,94 +597,19 @@ describe('old-style synthesis', () => {
     setup.setCurrentCfnStackTemplate({
       Resources: {
         ServiceRole: serviceRole,
-        Policy1: {
-          Type: 'AWS::IAM::Policy',
-          Properties: {
-            Roles: [
-              { Ref: 'ServiceRole' },
-            ],
-            PolicyDocument: {
-              Statement: [
-                {
-                  Action: ['s3:GetObject*'],
-                  Effect: 'Allow',
-                  Resource: {
-                    'Fn::GetAtt': [
-                      'WebsiteBucketOld',
-                      'Arn',
-                    ],
-                  },
-                },
-              ],
-            },
-          },
-        },
-        Policy2: {
-          Type: 'AWS::IAM::Policy',
-          Properties: {
-            Roles: [
-              { Ref: 'ServiceRole' },
-            ],
-            PolicyDocument: {
-              Statement: [
-                {
-                  Action: ['s3:GetObject*'],
-                  Effect: 'Allow',
-                  Resource: {
-                    'Fn::GetAtt': [
-                      'DifferentBucketOld',
-                      'Arn',
-                    ],
-                  },
-                },
-              ],
-            },
-          },
-        },
+        Policy1: policyOld,
+        Policy2: policy2Old,
         S3DeploymentLambda: deploymentLambda,
-        S3Deployment: s3Deployment,
+        S3Deployment: s3DeploymentOld,
       },
     });
-
-    policy.Properties.PolicyDocument.Statement[0].Resource = {
-      'Fn::GetAtt': [
-        'WebsiteBucketNew',
-        'Arn',
-      ],
-    };
-
-    s3Deployment.Properties.SourceBucketNames = ['src-bucket-new'];
-    s3Deployment.Properties.SourceObjectKeys = ['src-key-new'];
-    s3Deployment.Properties.DestinationBucketName = 'WebsiteBucketNew';
 
     const cdkStackArtifact = setup.cdkStackArtifactOf({
       template: {
         Resources: {
           ServiceRole: serviceRole,
-          Policy1: {
-            Type: 'AWS::IAM::Policy',
-            Properties: {
-              Roles: [
-                { Ref: 'ServiceRole' },
-              ],
-              PolicyDocument: {
-                Statement: [
-                  {
-                    Action: ['s3:GetObject*'],
-                    Effect: 'Allow',
-                    Resource: {
-                      'Fn::GetAtt': [
-                        'WebsiteBucketNew',
-                        'Arn',
-                      ],
-                    },
-                  },
-                ],
-              },
-            },
-          },
+          Policy1: policyNew,
           Policy2: {
-            Type: 'AWS::IAM::Policy',
             Properties: {
               Roles: [
                 { Ref: 'ServiceRole' },
@@ -916,7 +621,7 @@ describe('old-style synthesis', () => {
                     Effect: 'Allow',
                     Resource: {
                       'Fn::GetAtt': [
-                        'DifferentBucketOld',
+                        'DifferentBucketNew',
                         'Arn',
                       ],
                     },
@@ -926,7 +631,7 @@ describe('old-style synthesis', () => {
             },
           },
           S3DeploymentLambda: deploymentLambda,
-          S3Deployment: s3Deployment,
+          S3Deployment: s3DeploymentNew,
         },
       },
     });
@@ -944,30 +649,9 @@ describe('old-style synthesis', () => {
     setup.setCurrentCfnStackTemplate({
       Resources: {
         ServiceRole: serviceRole,
-        Policy1: {
-          Type: 'AWS::IAM::Policy',
-          Properties: {
-            Roles: [
-              { Ref: 'ServiceRole' },
-            ],
-            PolicyDocument: {
-              Statement: [
-                {
-                  Action: ['s3:GetObject*'],
-                  Effect: 'Allow',
-                  Resource: {
-                    'Fn::GetAtt': [
-                      'WebsiteBucketOld',
-                      'Arn',
-                    ],
-                  },
-                },
-              ],
-            },
-          },
-        },
+        Policy1: policyOld,
         S3DeploymentLambda: deploymentLambda,
-        S3Deployment: s3Deployment,
+        S3Deployment: s3DeploymentOld,
         NotADeployment: {
           Type: 'AWS::Not::S3Deployment',
           Properties: {
@@ -979,45 +663,13 @@ describe('old-style synthesis', () => {
       },
     });
 
-    policy.Properties.PolicyDocument.Statement[0].Resource = {
-      'Fn::GetAtt': [
-        'WebsiteBucketNew',
-        'Arn',
-      ],
-    };
-
-    s3Deployment.Properties.SourceBucketNames = ['src-bucket-new'];
-    s3Deployment.Properties.SourceObjectKeys = ['src-key-new'];
-    s3Deployment.Properties.DestinationBucketName = 'WebsiteBucketNew';
-
     const cdkStackArtifact = setup.cdkStackArtifactOf({
       template: {
         Resources: {
           ServiceRole: serviceRole,
-          Policy1: {
-            Type: 'AWS::IAM::Policy',
-            Properties: {
-              Roles: [
-                { Ref: 'ServiceRole' },
-              ],
-              PolicyDocument: {
-                Statement: [
-                  {
-                    Action: ['s3:GetObject*'],
-                    Effect: 'Allow',
-                    Resource: {
-                      'Fn::GetAtt': [
-                        'WebsiteBucketNew',
-                        'Arn',
-                      ],
-                    },
-                  },
-                ],
-              },
-            },
-          },
+          Policy1: policyNew,
           S3DeploymentLambda: deploymentLambda,
-          S3Deployment: s3Deployment,
+          S3Deployment: s3DeploymentNew,
           NotADeployment: {
             Type: 'AWS::Not::S3Deployment',
             Properties: {
