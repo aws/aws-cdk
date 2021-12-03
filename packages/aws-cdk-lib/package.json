@@ -9,8 +9,8 @@
     "url": "https://github.com/aws/aws-cdk.git",
     "directory": "packages/aws-cdk-lib"
   },
-  "stability": "experimental",
-  "maturity": "developer-preview",
+  "stability": "stable",
+  "maturity": "stable",
   "scripts": {
     "gen": "ubergen",
     "build": "cdk-build",
