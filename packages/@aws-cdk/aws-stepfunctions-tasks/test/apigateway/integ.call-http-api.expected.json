@@ -17,7 +17,7 @@
         "AutoDeploy": true
       }
     },
-    "MyHttpApiANYCallHttpApiIntegMyHttpApiANY7E6F12A3Permission59116CA6": {
+    "MyHttpApiANYDefaultIntegrationPermissionAB8301EF": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -54,7 +54,7 @@
         }
       }
     },
-    "MyHttpApiANYHttpIntegration71abbf75d6f8e5ea93ec2120c0d78b754BBCECF5": {
+    "MyHttpApiANYDefaultIntegration5FAD8850": {
       "Type": "AWS::ApiGatewayV2::Integration",
       "Properties": {
         "ApiId": {
@@ -84,7 +84,7 @@
             [
               "integrations/",
               {
-                "Ref": "MyHttpApiANYHttpIntegration71abbf75d6f8e5ea93ec2120c0d78b754BBCECF5"
+                "Ref": "MyHttpApiANYDefaultIntegration5FAD8850"
               }
             ]
           ]

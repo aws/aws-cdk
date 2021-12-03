@@ -186,7 +186,7 @@ abstract class PortfolioBase extends cdk.Resource implements IPortfolio {
   }
 
   public associateTagOptions(tagOptions: TagOptions) {
-    AssociationManager.associateTagOptions(this, tagOptions);
+    AssociationManager.associateTagOptions(this, this.portfolioId, tagOptions);
   }
 
   public constrainTagUpdates(product: IProduct, options: TagUpdateConstraintOptions = {}): void {
@@ -275,7 +275,7 @@ export interface PortfolioProps {
   readonly description?: string;
 
   /**
-   * TagOptions associated directly on portfolio
+   * TagOptions associated directly to a portfolio.
    *
    * @default - No tagOptions provided
    */

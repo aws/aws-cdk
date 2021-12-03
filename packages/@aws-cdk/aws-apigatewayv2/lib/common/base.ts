@@ -1,6 +1,5 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import { Resource } from '@aws-cdk/core';
-import { IntegrationCache } from '../private/integration-cache';
 import { IApi } from './api';
 import { ApiMapping } from './api-mapping';
 import { DomainMappingOptions, IStage } from './stage';
@@ -12,10 +11,6 @@ import { DomainMappingOptions, IStage } from './stage';
 export abstract class ApiBase extends Resource implements IApi {
   abstract readonly apiId: string;
   abstract readonly apiEndpoint: string;
-  /**
-   * @internal
-   */
-  protected _integrationCache: IntegrationCache = new IntegrationCache();
 
   public metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
     return new cloudwatch.Metric({

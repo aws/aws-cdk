@@ -1,7 +1,7 @@
 import { Template } from '@aws-cdk/assertions';
 import { HttpApi, HttpIntegration, HttpIntegrationType, HttpMethod, HttpRoute, HttpRouteKey, MappingValue, ParameterMapping, PayloadFormatVersion } from '@aws-cdk/aws-apigatewayv2';
 import { Stack } from '@aws-cdk/core';
-import { HttpProxyIntegration } from '../../lib';
+import { HttpUrlIntegration } from '../../lib';
 
 describe('HttpProxyIntegration', () => {
   test('default', () => {
@@ -9,9 +9,7 @@ describe('HttpProxyIntegration', () => {
     const api = new HttpApi(stack, 'HttpApi');
     new HttpRoute(stack, 'HttpProxyRoute', {
       httpApi: api,
-      integration: new HttpProxyIntegration({
-        url: 'some-target-url',
-      }),
+      integration: new HttpUrlIntegration('Integration', 'some-target-url'),
       routeKey: HttpRouteKey.with('/pets'),
     });
 
@@ -28,10 +26,7 @@ describe('HttpProxyIntegration', () => {
     const api = new HttpApi(stack, 'HttpApi');
     new HttpRoute(stack, 'HttpProxyRoute', {
       httpApi: api,
-      integration: new HttpProxyIntegration({
-        url: 'some-target-url',
-        method: HttpMethod.PATCH,
-      }),
+      integration: new HttpUrlIntegration('Integration', 'some-target-url', { method: HttpMethod.PATCH }),
       routeKey: HttpRouteKey.with('/pets'),
     });
 

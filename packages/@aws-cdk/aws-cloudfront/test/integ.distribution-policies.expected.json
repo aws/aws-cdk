@@ -12,8 +12,8 @@
             "CookiesConfig": {
               "CookieBehavior": "none"
             },
-            "EnableAcceptEncodingGzip": false,
             "EnableAcceptEncodingBrotli": false,
+            "EnableAcceptEncodingGzip": false,
             "HeadersConfig": {
               "HeaderBehavior": "none"
             },
@@ -44,6 +44,42 @@
         }
       }
     },
+    "ResponseHeadersPolicy13DBF9E0": {
+      "Type": "AWS::CloudFront::ResponseHeadersPolicy",
+      "Properties": {
+        "ResponseHeadersPolicyConfig": {
+          "CorsConfig": {
+            "AccessControlAllowCredentials": false,
+            "AccessControlAllowHeaders": {
+              "Items": [
+                "X-Custom-Header-1",
+                "X-Custom-Header-2"
+              ]
+            },
+            "AccessControlAllowMethods": {
+              "Items": [
+                "GET",
+                "POST"
+              ]
+            },
+            "AccessControlAllowOrigins": {
+              "Items": [
+                "*"
+              ]
+            },
+            "AccessControlExposeHeaders": {
+              "Items": [
+                "X-Custom-Header-1",
+                "X-Custom-Header-2"
+              ]
+            },
+            "AccessControlMaxAgeSec": 600,
+            "OriginOverride": true
+          },
+          "Name": "ACustomResponseHeadersPolicy"
+        }
+      }
+    },
     "DistB3B78991": {
       "Type": "AWS::CloudFront::Distribution",
       "Properties": {
@@ -55,6 +91,9 @@
             "Compress": true,
             "OriginRequestPolicyId": {
               "Ref": "OriginRequestPolicy3EFDB4FA"
+            },
+            "ResponseHeadersPolicyId": {
+              "Ref": "ResponseHeadersPolicy13DBF9E0"
             },
             "TargetOriginId": "integdistributionpoliciesDistOrigin17849EF2C",
             "ViewerProtocolPolicy": "allow-all"

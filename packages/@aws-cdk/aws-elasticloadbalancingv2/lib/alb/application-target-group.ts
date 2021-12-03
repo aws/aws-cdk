@@ -162,6 +162,10 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
       const result = target.attachToApplicationTargetGroup(this);
       this.addLoadBalancerTarget(result);
     }
+
+    if (this.targetType === TargetType.LAMBDA) {
+      this.setAttribute('stickiness.enabled', undefined);
+    }
   }
 
   /**

@@ -304,6 +304,7 @@ Resources:
           - Action:
               - s3:GetObject*
               - s3:GetBucket*
+              - s3:GetEncryptionConfiguration
               - s3:List*
               - s3:DeleteObject*
               - s3:PutObject*
@@ -490,7 +491,7 @@ Resources:
       Type: String
       Name:
         Fn::Sub: '/cdk-bootstrap/${Qualifier}/version'
-      Value: '8'
+      Value: '9'
 Outputs:
   BucketName:
     Description: The name of the S3 bucket owned by the CDK toolkit stack

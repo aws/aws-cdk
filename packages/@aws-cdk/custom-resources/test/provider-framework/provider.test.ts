@@ -397,3 +397,27 @@ describe('role', () => {
     });
   });
 });
+
+describe('name', () => {
+  it('uses custom name when present', () => {
+    // GIVEN
+    const stack = new Stack();
+    const providerFunctionName = 'test-name';
+
+    // WHEN
+    new cr.Provider(stack, 'MyProvider', {
+      onEventHandler: new lambda.Function(stack, 'MyHandler', {
+        code: lambda.Code.fromAsset(path.join(__dirname, './integration-test-fixtures/s3-file-handler')),
+        handler: 'index.onEvent',
+        runtime: lambda.Runtime.NODEJS_10_X,
+      }),
+      providerFunctionName,
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::Lambda::Function', {
+      FunctionName: providerFunctionName,
+    });
+  });
+});
+

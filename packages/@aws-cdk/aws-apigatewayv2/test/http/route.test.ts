@@ -2,7 +2,7 @@ import { Template } from '@aws-cdk/assertions';
 import { Stack, App } from '@aws-cdk/core';
 import {
   HttpApi, HttpAuthorizer, HttpAuthorizerType, HttpConnectionType, HttpIntegrationType, HttpMethod, HttpRoute,
-  HttpRouteAuthorizerBindOptions, HttpRouteAuthorizerConfig, HttpRouteIntegrationConfig, HttpRouteKey, IHttpRouteAuthorizer, IHttpRouteIntegration,
+  HttpRouteAuthorizerBindOptions, HttpRouteAuthorizerConfig, HttpRouteIntegrationConfig, HttpRouteKey, IHttpRouteAuthorizer, HttpRouteIntegration,
   MappingValue,
   ParameterMapping,
   PayloadFormatVersion,
@@ -28,7 +28,7 @@ describe('HttpRoute', () => {
           [
             'integrations/',
             {
-              Ref: 'HttpRouteHttpIntegrationcff2618c192d3bd8581dd2a4093464f6FB1097D0',
+              Ref: 'HttpRouteDummyIntegration10F77519',
             },
           ],
         ],
@@ -81,42 +81,42 @@ describe('HttpRoute', () => {
     Template.fromStack(stack).resourceCountIs('AWS::ApiGatewayV2::Integration', 1);
   });
 
-  test('integration can be used across HttpApis', () => {
+  test('integration cannot be used across HttpApis', () => {
     // GIVEN
     const integration = new DummyIntegration();
 
     // WHEN
-    const stack1 = new Stack();
-    const httpApi1 = new HttpApi(stack1, 'HttpApi1');
+    const stack = new Stack();
+    const httpApi1 = new HttpApi(stack, 'HttpApi1');
+    const httpApi2 = new HttpApi(stack, 'HttpApi2');
 
-    new HttpRoute(stack1, 'HttpRoute1', {
+    new HttpRoute(stack, 'HttpRoute1', {
       httpApi: httpApi1,
       integration,
       routeKey: HttpRouteKey.with('/books', HttpMethod.GET),
     });
-    new HttpRoute(stack1, 'HttpRoute2', {
-      httpApi: httpApi1,
-      integration,
-      routeKey: HttpRouteKey.with('/books', HttpMethod.POST),
-    });
 
-    const stack2 = new Stack();
-    const httpApi2 = new HttpApi(stack2, 'HttpApi2');
-
-    new HttpRoute(stack2, 'HttpRoute1', {
+    expect(() => new HttpRoute(stack, 'HttpRoute2', {
       httpApi: httpApi2,
       integration,
       routeKey: HttpRouteKey.with('/books', HttpMethod.GET),
+    })).toThrow(/cannot be associated with multiple APIs/);
+  });
+
+  test('associating integrations in different APIs creates separate AWS::ApiGatewayV2::Integration', () => {
+    const stack = new Stack();
+
+    const api = new HttpApi(stack, 'HttpApi');
+    api.addRoutes({
+      path: '/books',
+      integration: new DummyIntegration(),
     });
-    new HttpRoute(stack2, 'HttpRoute2', {
-      httpApi: httpApi2,
-      integration,
-      routeKey: HttpRouteKey.with('/books', HttpMethod.POST),
+    api.addRoutes({
+      path: '/magazines',
+      integration: new DummyIntegration(),
     });
 
-    // THEN
-    Template.fromStack(stack1).resourceCountIs('AWS::ApiGatewayV2::Integration', 1);
-    Template.fromStack(stack2).resourceCountIs('AWS::ApiGatewayV2::Integration', 1);
+    Template.fromStack(stack).hasResource('AWS::ApiGatewayV2::Integration', 2);
   });
 
   test('route defined in a separate stack does not create cycles', () => {
@@ -167,7 +167,7 @@ describe('HttpRoute', () => {
     const stack = new Stack();
     const httpApi = new HttpApi(stack, 'HttpApi');
 
-    class PrivateIntegration implements IHttpRouteIntegration {
+    class PrivateIntegration extends HttpRouteIntegration {
       public bind(): HttpRouteIntegrationConfig {
         return {
           method: HttpMethod.ANY,
@@ -187,7 +187,7 @@ describe('HttpRoute', () => {
     // WHEN
     new HttpRoute(stack, 'HttpRoute', {
       httpApi,
-      integration: new PrivateIntegration(),
+      integration: new PrivateIntegration('PrivateIntegration'),
       routeKey: HttpRouteKey.with('/books', HttpMethod.GET),
     });
 
@@ -212,7 +212,7 @@ describe('HttpRoute', () => {
     const stack = new Stack();
     const httpApi = new HttpApi(stack, 'HttpApi');
 
-    class PrivateIntegration implements IHttpRouteIntegration {
+    class PrivateIntegration extends HttpRouteIntegration {
       public bind(): HttpRouteIntegrationConfig {
         return {
           method: HttpMethod.ANY,
@@ -229,7 +229,7 @@ describe('HttpRoute', () => {
     // WHEN
     new HttpRoute(stack, 'HttpRoute', {
       httpApi,
-      integration: new PrivateIntegration(),
+      integration: new PrivateIntegration('PrivateIntegration'),
       routeKey: HttpRouteKey.with('/books', HttpMethod.GET),
     });
 
@@ -310,7 +310,11 @@ describe('HttpRoute', () => {
   });
 });
 
-class DummyIntegration implements IHttpRouteIntegration {
+class DummyIntegration extends HttpRouteIntegration {
+  constructor(name?: string) {
+    super(name ?? 'DummyIntegration');
+  }
+
   public bind(): HttpRouteIntegrationConfig {
     return {
       type: HttpIntegrationType.HTTP_PROXY,

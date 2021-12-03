@@ -2,8 +2,9 @@ import { IPrincipal, IRole, PolicyStatement } from '@aws-cdk/aws-iam';
 import { CfnOutput, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { AmazonLinuxGeneration, InstanceArchitecture, InstanceClass, InstanceSize, InstanceType } from '.';
+import { CloudFormationInit } from './cfn-init';
 import { Connections } from './connections';
-import { IInstance, Instance } from './instance';
+import { ApplyCloudFormationInitOptions, IInstance, Instance } from './instance';
 import { AmazonLinuxCpuType, IMachineImage, MachineImage } from './machine-image';
 import { IPeer } from './peer';
 import { Port } from './port';
@@ -80,6 +81,22 @@ export interface BastionHostLinuxProps {
    * @default - Uses the block device mapping of the AMI
    */
   readonly blockDevices?: BlockDevice[];
+
+  /**
+   * Apply the given CloudFormation Init configuration to the instance at startup
+   *
+   * @default - no CloudFormation init
+   */
+  readonly init?: CloudFormationInit;
+
+  /**
+   * Use the given options for applying CloudFormation Init
+   *
+   * Describes the configsets to use and the timeout to wait
+   *
+   * @default - default options
+   */
+  readonly initOptions?: ApplyCloudFormationInitOptions;
 }
 
 /**
@@ -159,6 +176,8 @@ export class BastionHostLinux extends Resource implements IInstance {
       }),
       vpcSubnets: props.subnetSelection ?? {},
       blockDevices: props.blockDevices ?? undefined,
+      init: props.init,
+      initOptions: props.initOptions,
     });
     this.instance.addToRolePolicy(new PolicyStatement({
       actions: [

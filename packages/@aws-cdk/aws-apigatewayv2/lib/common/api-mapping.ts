@@ -1,7 +1,6 @@
 import { IResource, Resource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnApiMapping, CfnApiMappingProps } from '../apigatewayv2.generated';
-import { HttpApi } from '../http/api';
 import { IApi } from './api';
 import { IDomainName } from './domain-name';
 import { IStage } from './stage';
@@ -90,17 +89,13 @@ export class ApiMapping extends Resource implements IApiMapping {
   constructor(scope: Construct, id: string, props: ApiMappingProps) {
     super(scope, id);
 
-    let stage = props.stage;
+    // defaultStage is present in IHttpStage.
+    // However, importing "http" or "websocket" must import "common", but creating dependencies
+    // the other way will cause potential cycles.
+    // So casting to 'any'
+    let stage = props.stage ?? (props.api as any).defaultStage;
     if (!stage) {
-      if (props.api instanceof HttpApi) {
-        if (props.api.defaultStage) {
-          stage = props.api.defaultStage;
-        } else {
-          throw new Error('stage is required if default stage is not available');
-        }
-      } else {
-        throw new Error('stage is required for WebSocket API');
-      }
+      throw new Error('stage property must be specified');
     }
 
     if (props.apiMappingKey === '') {

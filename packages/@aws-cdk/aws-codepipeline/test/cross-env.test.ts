@@ -1,13 +1,20 @@
 import '@aws-cdk/assert-internal/jest';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
-import { Stack, App } from '@aws-cdk/core';
+import { Stack, App, Stage as CdkStage } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import * as codepipeline from '../lib';
 import { FakeBuildAction } from './fake-build-action';
 import { FakeSourceAction } from './fake-source-action';
 
-describe.each(['legacy', 'modern'])('with %s synthesis', (synthesisStyle: string) => {
+describe.each([
+  ['legacy', false],
+  ['legacy', true],
+  ['modern', false],
+  ['modern', true],
+])('with %s synthesis, in Stage=%p', (synthesisStyle: string, inStage: boolean) => {
   let app: App;
+  let stackScope: Construct;
   let stack: Stack;
   let sourceArtifact: codepipeline.Artifact;
   let initialStages: codepipeline.StageProps[];
@@ -18,7 +25,9 @@ describe.each(['legacy', 'modern'])('with %s synthesis', (synthesisStyle: string
         ...synthesisStyle === 'modern' ? { '@aws-cdk/core:newStyleStackSynthesis': true } : undefined,
       },
     });
-    stack = new Stack(app, 'PipelineStack', { env: { account: '2222', region: 'us-east-1' } });
+    stackScope = inStage ? new CdkStage(app, 'MyStage') : app;
+
+    stack = new Stack(stackScope, 'PipelineStack', { env: { account: '2222', region: 'us-east-1' } });
     sourceArtifact = new codepipeline.Artifact();
     initialStages = [
       {
@@ -114,7 +123,8 @@ describe.each(['legacy', 'modern'])('with %s synthesis', (synthesisStyle: string
         }));
 
         // THEN
-        const asm = app.synth();
+        let asm = app.synth();
+        asm = inStage ? asm.getNestedAssembly('assembly-MyStage') : asm;
         const supportStack = asm.getStackByName(`${stack.stackName}-support-eu-west-1`);
 
         // THEN
@@ -123,7 +133,7 @@ describe.each(['legacy', 'modern'])('with %s synthesis', (synthesisStyle: string
       });
 
       test('when twiddling another stack', () => {
-        const stack2 = new Stack(app, 'Stack2', { env: { account: '2222', region: 'eu-west-1' } });
+        const stack2 = new Stack(stackScope, 'Stack2', { env: { account: '2222', region: 'eu-west-1' } });
 
         // WHEN
         stage.addAction(new FakeBuildAction({
