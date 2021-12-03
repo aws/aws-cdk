@@ -1426,6 +1426,8 @@ export class Vpc extends VpcBase {
 
   /**
    * Assign tags to the VPC resource. "Name" is a reserved case sensitive tag name displayed in the AWS console
+   * NOTES: Tags can be empty strings. More detailed information here:
+   *        https://docs.aws.amazon.com/kms/latest/APIReference/API_Tag.html
    */
   private addTags(tags: { [id: string]: string }) {
     for (const tagKey of Object.keys(tags)) {
