@@ -3,21 +3,13 @@
 
 ---
 
-Features                               | Stability
----------------------------------------|------------------------------------------------------------
-Integration classes for HTTP APIs      | ![Stable](https://img.shields.io/badge/stable-success.svg?style=for-the-badge)
-Integration classes for Websocket APIs | ![Experimental](https://img.shields.io/badge/experimental-important.svg?style=for-the-badge)
+![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
 
-> **Experimental:** Higher level constructs in this module that are marked as experimental are
-> under active development. They are subject to non-backward compatible changes or removal in any
-> future version. These are not subject to the [Semantic Versioning](https://semver.org/) model and
-> breaking changes will be announced in the release notes. This means that while you may use them,
-> you may need to update your source code when upgrading to a newer version of this package.
-
-<!-- -->
-
-> **Stable:** Higher level constructs in this module that are marked stable will not undergo any
-> breaking changes. They will strictly follow the [Semantic Versioning](https://semver.org/) model.
+> The APIs of higher level constructs in this module are experimental and under active development.
+> They are subject to non-backward compatible changes or removal in any future version. These are
+> not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be
+> announced in the release notes. This means that while you may use them, you may need to update
+> your source code when upgrading to a newer version of this package.
 
 ---
 
