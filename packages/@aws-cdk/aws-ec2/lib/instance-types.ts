@@ -89,6 +89,16 @@ export enum InstanceClass {
   M5DN = 'm5dn',
 
   /**
+   * Standard instances with high memory and compute capacity based on Intel Xeon Scalable (Cascade Lake) processors, 5nd generation
+   */
+  STANDARD5_HIGH_COMPUTE = 'm5zn',
+
+  /**
+   * Standard instances with high memory and compute capacity based on Intel Xeon Scalable (Cascade Lake) processors, 5nd generation
+   */
+  M5ZN = 'm5zn',
+
+  /**
    * Memory optimized instances, 3rd generation
    */
   MEMORY3 = 'r3',
@@ -117,6 +127,16 @@ export enum InstanceClass {
    * Memory optimized instances, 5th generation
    */
   R5 = 'r5',
+
+  /**
+   * Memory optimized instances, 6th generation with Intel Xeon Scalable processors (3rd generation processors code named Ice Lake)
+   */
+  MEMORY6_INTEL = 'r6i',
+
+  /**
+   * Memory optimized instances, 6th generation with Intel Xeon Scalable processors (3rd generation processors code named Ice Lake)
+   */
+  R6I = 'r6i',
 
   /**
    * Memory optimized instances for high performance computing, 5th generation
@@ -467,6 +487,26 @@ export enum InstanceClass {
   G4DN = 'g4dn',
 
   /**
+   * Graphics-optimized instances, 5th generation
+   */
+  GRAPHICS5 = 'g5',
+
+  /**
+   * Graphics-optimized instances, 5th generation
+   */
+  G5 = 'g5',
+
+  /**
+   * Graphics-optimized instances powered by AWS Graviton2 Processors and NVIDIA T4G Tensor Core GPUs, 5th generation
+   */
+  GRAPHICS5_GRAVITON2 = 'g5g',
+
+  /**
+  * Graphics-optimized instances powered by AWS Graviton2 Processors and NVIDIA T4G Tensor Core GPUs, 5th generation
+  */
+  G5G = 'g5g',
+
+  /**
    * Parallel-processing optimized instances, 2nd generation
    */
   PARALLEL2 = 'p2',
@@ -527,6 +567,16 @@ export enum InstanceClass {
   M6I = 'm6i',
 
   /**
+   * Standard instances based on 3rd Gen AMD EPYC processors, 6th generation.
+   */
+  STANDARD6_AMD = 'm6a',
+
+  /**
+  * Standard instances based on 3rd Gen AMD EPYC processors, 6th generation.
+  */
+  M6A = 'm6a',
+
+  /**
    * Standard instances, 6th generation with Graviton2 processors and local NVME drive
    */
   STANDARD6_GRAVITON2_NVME_DRIVE = 'm6gd',
@@ -554,7 +604,27 @@ export enum InstanceClass {
   /**
    * Inferentia Chips based instances for machine learning inference applications, 1st generation
    */
-  INF1 = 'inf1'
+  INF1 = 'inf1',
+
+  /**
+   * Macintosh instances built on Apple Mac mini computers, 1st generation with Intel procesors
+   */
+  MACINTOSH1_INTEL = 'mac1',
+
+  /**
+   * Macintosh instances built on Apple Mac mini computers, 1st generation with Intel procesors
+   */
+  MAC1 = 'mac1',
+
+  /**
+   * Multi-stream video transcoding instances for resolutions up to 4K UHD, 1st generation
+   */
+  VIDEO_TRANSCODING1 = 'vt1',
+
+  /**
+   * Multi-stream video transcoding instances for resolutions up to 4K UHD, 1st generation
+   */
+  VT1 = 'vt1',
 }
 
 /**
@@ -667,10 +737,14 @@ export enum InstanceSize {
   XLARGE32 = '32xlarge',
 
   /**
+   * Instance size XLARGE48 (48xlarge)
+   */
+  XLARGE48 = '48xlarge',
+
+  /**
    * Instance size METAL (metal)
    */
   METAL = 'metal',
-
 }
 
 /**

@@ -40,7 +40,7 @@ test('minimal example renders correctly', () => {
         DomainName: 'TestDomain',
         AccessPolicies: '{"Statement":[{"Action":"es:ESHttp*","Effect":"Allow","Principal":{"AWS":"*"},"Resource":"test:arn"}],"Version":"2012-10-17"}',
       },
-      outputPath: 'DomainConfig.ElasticsearchClusterConfig.AccessPolicies',
+      outputPaths: ['DomainConfig.ElasticsearchClusterConfig.AccessPolicies'],
       physicalResourceId: { id: 'TestDomainAccessPolicy' },
     }),
     Update: JSON.stringify({
@@ -50,7 +50,7 @@ test('minimal example renders correctly', () => {
         DomainName: 'TestDomain',
         AccessPolicies: '{"Statement":[{"Action":"es:ESHttp*","Effect":"Allow","Principal":{"AWS":"*"},"Resource":"test:arn"}],"Version":"2012-10-17"}',
       },
-      outputPath: 'DomainConfig.ElasticsearchClusterConfig.AccessPolicies',
+      outputPaths: ['DomainConfig.ElasticsearchClusterConfig.AccessPolicies'],
       physicalResourceId: { id: 'TestDomainAccessPolicy' },
     }),
   });

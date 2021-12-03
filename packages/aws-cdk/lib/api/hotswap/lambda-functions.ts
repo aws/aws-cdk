@@ -104,6 +104,8 @@ interface LambdaFunctionResource {
 }
 
 class LambdaFunctionHotswapOperation implements HotswapOperation {
+  public readonly service = 'lambda-function';
+
   constructor(private readonly lambdaFunctionResource: LambdaFunctionResource) {
   }
 

@@ -24,6 +24,7 @@ Currently supported are:
 - Invoke a Lambda function
 - Put objects to a S3 bucket
 - Put logs to CloudWatch Logs
+- Capture CloudWatch metrics
 - Put records to Kinesis Data Firehose stream
 
 ## Invoke a Lambda function
@@ -123,6 +124,30 @@ new iot.TopicRule(this, 'TopicRule', {
 });
 ```
 
+## Capture CloudWatch metrics
+
+The code snippet below creates an AWS IoT Rule that capture CloudWatch metrics
+when it is triggered.
+
+```ts
+import * as iot from '@aws-cdk/aws-iot';
+import * as actions from '@aws-cdk/aws-iot-actions';
+
+const topicRule = new iot.TopicRule(this, 'TopicRule', {
+  sql: iot.IotSql.fromStringAsVer20160323(
+    "SELECT topic(2) as device_id, namespace, unit, value, timestamp FROM 'device/+/data'",
+  ),
+  actions: [
+    new actions.CloudWatchPutMetricAction({
+      metricName: '${topic(2)}',
+      metricNamespace: '${namespace}',
+      metricUnit: '${unit}',
+      metricValue: '${value}',
+      metricTimestamp: '${timestamp}',
+    }),
+  ],
+});
+```
 
 ## Put records to Kinesis Data Firehose stream
 
@@ -136,9 +161,7 @@ import * as s3 from '@aws-cdk/aws-s3';
 import * as firehose from '@aws-cdk/aws-kinesisfirehose';
 import * as destinations from '@aws-cdk/aws-kinesisfirehose-destinations';
 
-const bucket = new s3.Bucket(this, 'MyBucket', {
-  removalPolicy: cdk.RemovalPolicy.DESTROY,
-});
+const bucket = new s3.Bucket(this, 'MyBucket');
 const stream = new firehose.DeliveryStream(this, 'MyStream', {
   destinations: [new destinations.S3Bucket(bucket)],
 });
@@ -149,7 +172,7 @@ const topicRule = new iot.TopicRule(this, 'TopicRule', {
     new actions.FirehoseStreamAction(stream, {
       batchMode: true,
       recordSeparator: actions.FirehoseStreamRecordSeparator.NEWLINE,
-    })
+    }),
   ],
 });
 ```

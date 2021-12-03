@@ -1,11 +1,12 @@
 import '@aws-cdk/assert-internal/jest';
 import { expect, haveResource, MatchStyle } from '@aws-cdk/assert-internal';
 import * as ec2 from '@aws-cdk/aws-ec2';
+import { describeDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import * as constructs from 'constructs';
 import * as autoscaling from '../lib';
 
-describe('scheduled action', () => {
+describeDeprecated('scheduled action', () => {
   test('can schedule an action', () => {
     // GIVEN
     const stack = new cdk.Stack();
