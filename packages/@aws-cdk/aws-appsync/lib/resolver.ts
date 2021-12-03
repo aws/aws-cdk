@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import { IAppsyncFunction } from './appsync-function';
 import { CfnResolver } from './appsync.generated';
 import { CachingConfig } from './caching-config';
+import { BASE_CACHING_KEYS } from './caching-key';
 import { BaseDataSource } from './data-source';
 import { IGraphqlApi } from './graphqlapi-base';
 import { MappingTemplate } from './mapping-template';
@@ -91,6 +92,16 @@ export class Resolver extends CoreConstruct {
 
     if (pipelineConfig && props.dataSource) {
       throw new Error(`Pipeline Resolver cannot have data source. Received: ${props.dataSource.name}`);
+    }
+
+    if (props.cachingConfig?.ttl && (props.cachingConfig.ttl.toSeconds() < 1 || props.cachingConfig.ttl.toSeconds() > 3600)) {
+      throw new Error(`Caching config TTL must be between 1 and 3600 seconds. Received: ${props.cachingConfig.ttl.toSeconds()}`);
+    }
+
+    if (props.cachingConfig?.cachingKeys) {
+      if (props.cachingConfig.cachingKeys.find(cachingKey => !BASE_CACHING_KEYS.find(baseCachingKey => cachingKey.startsWith(baseCachingKey)))) {
+        throw new Error(`Caching config keys must begin with $context.arguments, $context.source or $context.identity. Received: ${props.cachingConfig.cachingKeys}`);
+      }
     }
 
     this.resolver = new CfnResolver(this, 'Resource', {

@@ -29,7 +29,7 @@ describe('Lambda caching config', () => {
     });
   });
 
-  test('Lambda resolver contains caching config with caching keys and TTL', () => {
+  test('Lambda resolver contains caching config with caching key and TTL', () => {
     // WHEN
     const lambdaDS = api.addLambdaDataSource('LambdaDS', func);
 
@@ -37,7 +37,7 @@ describe('Lambda caching config', () => {
       typeName: 'Query',
       fieldName: 'allPosts',
       cachingConfig: {
-        cachingKeys: ['$context.identity'],
+        cachingKeys: ['$context.arguments', '$context.source', '$context.identity'],
         ttl: Duration.seconds(300),
       },
     });
@@ -47,9 +47,63 @@ describe('Lambda caching config', () => {
       TypeName: 'Query',
       FieldName: 'allPosts',
       CachingConfig: {
-        CachingKeys: ['$context.identity'],
+        CachingKeys: ['$context.arguments', '$context.source', '$context.identity'],
         Ttl: 300,
       },
     });
+  });
+
+  test('Lambda resolver throws error when caching config with TTL is less than 1 second', () => {
+    // WHEN
+    const ttlInSconds = 0;
+    const lambdaDS = api.addLambdaDataSource('LambdaDS', func);
+
+    // THEN
+    expect(() => {
+      lambdaDS.createResolver({
+        typeName: 'Query',
+        fieldName: 'allPosts',
+        cachingConfig: {
+          cachingKeys: ['$context.identity'],
+          ttl: Duration.seconds(0),
+        },
+      });
+    }).toThrowError(`Caching config TTL must be between 1 and 3600 seconds. Received: ${ttlInSconds}`);
+  });
+
+  test('Lambda resolver throws error when caching config with TTL is greater than 3600 seconds', () => {
+    // WHEN
+    const ttlInSconds = 4200;
+    const lambdaDS = api.addLambdaDataSource('LambdaDS', func);
+
+    // THEN
+    expect(() => {
+      lambdaDS.createResolver({
+        typeName: 'Query',
+        fieldName: 'allPosts',
+        cachingConfig: {
+          cachingKeys: ['$context.identity'],
+          ttl: Duration.seconds(ttlInSconds),
+        },
+      });
+    }).toThrowError(`Caching config TTL must be between 1 and 3600 seconds. Received: ${ttlInSconds}`);
+  });
+
+  test('Lambda resolver throws error when caching config has invalid caching keys', () => {
+    // WHEN
+    const invalidCachingKeys = ['$context.metadata'];
+    const lambdaDS = api.addLambdaDataSource('LambdaDS', func);
+
+    // THEN
+    expect(() => {
+      lambdaDS.createResolver({
+        typeName: 'Query',
+        fieldName: 'allPosts',
+        cachingConfig: {
+          cachingKeys: invalidCachingKeys,
+          ttl: Duration.seconds(300),
+        },
+      });
+    }).toThrowError(`Caching config keys must begin with $context.arguments, $context.source or $context.identity. Received: ${invalidCachingKeys}`);
   });
 });
