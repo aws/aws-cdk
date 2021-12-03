@@ -99,6 +99,6 @@
   },
   "maturity": "stable",
   "publishConfig": {
-    "tag": "latest"
+    "tag": "latest-1"
   }
 }
