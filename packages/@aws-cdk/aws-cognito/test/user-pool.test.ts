@@ -1,5 +1,6 @@
 import { Match, Template } from '@aws-cdk/assertions';
 import { Role, ServicePrincipal } from '@aws-cdk/aws-iam';
+import * as kms from '@aws-cdk/aws-kms';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { CfnParameter, Duration, Stack, Tags } from '@aws-cdk/core';
@@ -334,11 +335,13 @@ describe('User Pool', () => {
   test('custom sender lambda triggers via properties are correctly configured', () => {
     // GIVEN
     const stack = new Stack();
+    const kmsKey = fooKey(stack, 'TestKMSKey');
     const emailFn = fooFunction(stack, 'customEmailSender');
     const smsFn = fooFunction(stack, 'customSmsSender');
 
     // WHEN
     new UserPool(stack, 'Pool', {
+      customSenderKmsKey: kmsKey,
       lambdaTriggers: {
         customEmailSender: emailFn,
         customSmsSender: smsFn,
@@ -373,19 +376,17 @@ describe('User Pool', () => {
   test('lambda trigger KMS Key ID via properties is correctly configured', () => {
     // GIVEN
     const stack = new Stack();
-    const kmsKeyId = 'test-key-id';
+    const kmsKey = fooKey(stack, 'TestKMSKey');
 
     // WHEN
     new UserPool(stack, 'Pool', {
-      lambdaTriggers: {
-        kmsKeyId,
-      },
+      customSenderKmsKey: kmsKey,
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
       LambdaConfig: {
-        KMSKeyID: kmsKeyId,
+        KMSKeyID: { 'Fn::GetAtt': ['TestKMSKey32509532', 'Arn'] },
       },
     });
   });
@@ -393,6 +394,7 @@ describe('User Pool', () => {
   test('add* API correctly appends triggers', () => {
     // GIVEN
     const stack = new Stack();
+    const kmsKey = fooKey(stack, 'TestKMSKey');
 
     const createAuthChallenge = fooFunction(stack, 'createAuthChallenge');
     const customMessage = fooFunction(stack, 'customMessage');
@@ -408,7 +410,9 @@ describe('User Pool', () => {
     const customSmsSender = fooFunction(stack, 'customSmsSender');
 
     // WHEN
-    const pool = new UserPool(stack, 'Pool');
+    const pool = new UserPool(stack, 'Pool', {
+      customSenderKmsKey: kmsKey,
+    });
     pool.addTrigger(UserPoolOperation.CREATE_AUTH_CHALLENGE, createAuthChallenge);
     pool.addTrigger(UserPoolOperation.CUSTOM_MESSAGE, customMessage);
     pool.addTrigger(UserPoolOperation.DEFINE_AUTH_CHALLENGE, defineAuthChallenge);
@@ -1770,4 +1774,8 @@ function fooFunction(scope: Construct, name: string): lambda.IFunction {
     runtime: lambda.Runtime.NODEJS_12_X,
     handler: 'index.handler',
   });
+}
+
+function fooKey(scope: Construct, name: string): kms.Key {
+  return new kms.Key(scope, name);
 }

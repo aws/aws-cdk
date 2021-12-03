@@ -1,4 +1,5 @@
 import { IRole, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
+import { IKey } from '@aws-cdk/aws-kms';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { ArnFormat, Duration, IResource, Lazy, Names, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
@@ -153,16 +154,9 @@ export interface UserPoolTriggers {
   readonly customSmsSender?: lambda.IFunction
 
   /**
-   * This key will be used to encrypt temporary passwords and authorization codes that Amazon Cognito generates.
-   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-custom-sender-triggers.html
-   * @default - no key ID configured
-   */
-  readonly kmsKeyId?: string
-
-  /**
    * Index signature
    */
-  [trigger: string]: lambda.IFunction | string | undefined;
+  [trigger: string]: lambda.IFunction | undefined;
 }
 
 /**
@@ -649,6 +643,13 @@ export interface UserPoolProps {
    * @default - see defaults on each property of DeviceTracking.
    */
   readonly deviceTracking?: DeviceTracking;
+
+  /**
+   * This key will be used to encrypt temporary passwords and authorization codes that Amazon Cognito generates.
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-custom-sender-triggers.html
+   * @default - no key ID configured
+   */
+  readonly customSenderKmsKey?: IKey;
 }
 
 /**
@@ -799,15 +800,20 @@ export class UserPool extends UserPoolBase {
 
     const signIn = this.signInConfiguration(props);
 
+    if (props.customSenderKmsKey) {
+      const kmsKey = props.customSenderKmsKey;
+      (this.triggers as any).kmsKeyId = kmsKey.keyArn;
+    }
+
     if (props.lambdaTriggers) {
       for (const t of Object.keys(props.lambdaTriggers)) {
         let trigger: lambda.IFunction | undefined;
         switch (t) {
-          case 'kmsKeyId':
-            (this.triggers as any)[t] = props.lambdaTriggers[t];
-            break;
           case 'customSmsSender':
           case 'customEmailSender':
+            if (!this.triggers.kmsKeyId) {
+              throw new Error('you must specify a KMS key if you are using customSmsSender or customEmailSender.');
+            }
             trigger = props.lambdaTriggers[t];
             const version = 'V1_0';
             if (trigger !== undefined) {
@@ -904,6 +910,9 @@ export class UserPool extends UserPoolBase {
     switch (operation.operationName) {
       case 'customEmailSender':
       case 'customSmsSender':
+        if (!this.triggers.kmsKeyId) {
+          throw new Error('you must specify a KMS key if you are using customSmsSender or customEmailSender.');
+        }
         (this.triggers as any)[operation.operationName] = {
           lambdaArn: fn.functionArn,
           lambdaVersion: 'V1_0',
