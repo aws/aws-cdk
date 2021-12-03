@@ -5,6 +5,7 @@ import * as glob from 'glob';
 import * as semver from 'semver';
 import { LICENSE, NOTICE } from './licensing';
 import { PackageJson, ValidationRule } from './packagejson';
+import { cfnOnlyReadmeContents } from './readme-contents';
 import {
   deepGet, deepSet,
   expectDevDependency, expectJSON,
@@ -233,6 +234,27 @@ export class ReadmeFile extends ValidationRule {
     }
     const scope: string = typeof scopes === 'string' ? scopes : scopes[0];
     const serviceName = AWS_SERVICE_NAMES[scope];
+
+    // If this is a 'cfn-only' package, we fix the README to specific file contents, and
+    // don't do any other checks.
+    if (pkg.json.maturity === 'cfn-only') {
+      fileShouldBe(this.name, pkg, 'README.md', cfnOnlyReadmeContents({
+        cfnNamespace: scope,
+        packageName: pkg.packageName,
+      }));
+      return;
+    }
+
+    // Otherwise, the cfn-specific disclaimer in it MUST NOT exist.
+    const disclaimerRegex = beginEndRegex('CFNONLY DISCLAIMER');
+    const currentReadme = readIfExists(readmeFile);
+    if (currentReadme && disclaimerRegex.test(currentReadme)) {
+      pkg.report({
+        ruleName: this.name,
+        message: 'README must not include CFNONLY DISCLAIMER section',
+        fix: () => fs.writeFileSync(readmeFile, currentReadme.replace(disclaimerRegex, '')),
+      });
+    }
 
     const headline = serviceName && `${serviceName} Construct Library`;
 
@@ -1841,4 +1863,12 @@ function isIncludedInMonolith(pkg: PackageJson): boolean {
     return false;
   }
   return true;
+}
+
+function beginEndRegex(label: string) {
+  return new RegExp(`(<\!--BEGIN ${label}-->)([\s\S]+)(<\!--END ${label}-->)`, 'm');
+}
+
+function readIfExists(filename: string): string | undefined {
+  return fs.existsSync(filename) ? fs.readFileSync(filename, { encoding: 'utf8' }) : undefined;
 }

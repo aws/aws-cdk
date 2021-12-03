@@ -859,8 +859,42 @@ describe('staging', () => {
     expect(asset.stagedPath).toEqual(directory);
     expect(asset.relativeStagedPath(stack)).toEqual(directory);
     expect(asset.assetHash).toEqual('f66d7421aa2d044a6c1f60ddfc76dc78571fcd8bd228eb48eb394e2dbad94a5c');
+  });
 
+  test('correctly skips bundling with stack under stage', () => {
+    // GIVEN
+    const app = new App();
 
+    const stage = new Stage(app, 'Stage');
+    stage.node.setContext(cxapi.BUNDLING_STACKS, ['Stage/Stack1']);
+
+    const stack1 = new Stack(stage, 'Stack1');
+    const stack2 = new Stack(stage, 'Stack2');
+    const directory = path.join(__dirname, 'fs', 'fixtures', 'test1');
+
+    new AssetStaging(stack1, 'Asset', {
+      sourcePath: directory,
+      assetHashType: AssetHashType.OUTPUT,
+      bundling: {
+        image: DockerImage.fromRegistry('alpine'),
+        command: [DockerStubCommand.SUCCESS],
+      },
+    });
+
+    new AssetStaging(stack2, 'Asset', {
+      sourcePath: directory,
+      assetHashType: AssetHashType.OUTPUT,
+      bundling: {
+        image: DockerImage.fromRegistry('alpine'),
+        command: [DockerStubCommand.MULTIPLE_FILES],
+      },
+    });
+
+    const dockerStubInput = readDockerStubInputConcat();
+    // Docker ran for the asset in Stack1
+    expect(dockerStubInput).toMatch(DockerStubCommand.SUCCESS);
+    // DOcker did not run for the asset in Stack2
+    expect(dockerStubInput).not.toMatch(DockerStubCommand.MULTIPLE_FILES);
   });
 
   test('bundling still occurs with partial wildcard', () => {

@@ -88,7 +88,7 @@
     "@aws-cdk/cx-api": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/aws-lambda": "^8.10.85",
-    "@types/jest": "^27.0.2",
+    "@types/jest": "^27.0.3",
     "jest": "^27.3.1"
   },
   "dependencies": {
