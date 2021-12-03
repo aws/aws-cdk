@@ -296,7 +296,8 @@ DatabaseSubnet3   |`ISOLATED`|`10.0.6.32/28`|#3|Only routes within the VPC
 
 ### VPC Tags
 
-The `tags` property will allow you to define tags for the VPC resource. It is recommended to follow these [best practices](https://docs.aws.amazon.com/general/latest/gr/aws_tagging.html)
+The `tags` property will allow you to define tags for the VPC resource. It is recommended to follow these [best practices](https://docs.aws.amazon.com/general/latest/gr/aws_tagging.html):
+
 ```ts
 const vpc = new ec2.Vpc(this, 'TheVPC', {
   natGateways: 1,
