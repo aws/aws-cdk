@@ -253,6 +253,9 @@ const vpc = new ec2.Vpc(this, 'TheVPC', {
       // If 'cidrMask' is left out the available address space is evenly
       // divided across the remaining subnet groups.
       cidrMask: 24,
+
+      // Controls if a public IP is associated to an instance at launch
+      mapPublicIpOnLaunch: false, // or true
     },
     {
       cidrMask: 24,
@@ -290,6 +293,33 @@ ApplicationSubnet3|`PRIVATE` |`10.0.5.0/24` |#3|Route to NAT in IngressSubnet3
 DatabaseSubnet1   |`ISOLATED`|`10.0.6.0/28` |#1|Only routes within the VPC
 DatabaseSubnet2   |`ISOLATED`|`10.0.6.16/28`|#2|Only routes within the VPC
 DatabaseSubnet3   |`ISOLATED`|`10.0.6.32/28`|#3|Only routes within the VPC
+
+### VPC Tags
+
+The `tags` property will allow you to define tags for the VPC resource. It is recommended to follow these [best practices](https://docs.aws.amazon.com/general/latest/gr/aws_tagging.html)
+```ts
+const vpc = new ec2.Vpc(this, 'TheVPC', {
+  natGateways: 1,
+  subnetConfiguration: [
+    {
+      name: 'private-subnet-1',
+      subnetType: ec2.SubnetType.PRIVATE,
+      cidrMask: 24,
+    },
+    {
+      name: 'public-subnet-1',
+      subnetType: ec2.SubnetType.PUBLIC,
+      cidrMask: 24,
+      mapPublicIpOnLaunch: false, // or true
+    },
+  ],
+  tags: {
+    Name: 'CustomVPCName', // This will owerwrite the default VPC name
+    Description: 'MyDescription',
+    OtherTags: 'MyOtherTags',
+  }
+});
+```
 
 ### Accessing the Internet Gateway
 
