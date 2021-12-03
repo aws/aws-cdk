@@ -1,9 +1,10 @@
-import '@aws-cdk/assert-internal/jest';
 import * as path from 'path';
 import { MatchStyle, objectLike } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import * as cloudfront from '@aws-cdk/aws-cloudfront';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
+import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import { testDeprecated, testFutureBehavior } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
@@ -73,6 +74,22 @@ test('deploy from local directory asset', () => {
       Ref: 'DestC383B82A',
     },
   });
+});
+
+test('deploy with configured log retention', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest');
+
+  // WHEN
+  new s3deploy.BucketDeployment(stack, 'Deploy', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+    destinationBucket: bucket,
+    logRetention: logs.RetentionDays.ONE_WEEK,
+  });
+
+  // THEN
+  expect(stack).toHaveResourceLike('Custom::LogRetention', { RetentionInDays: 7 });
 });
 
 test('deploy from local directory assets', () => {
