@@ -80,15 +80,6 @@ export class Parallel extends State implements INextable {
   }
 
   /**
-   * Returns the branches of the state that have not yet been created.
-   * The creation of parallel branches happens when Parallel.bindToGraph
-   * is called.
-   */
-  public get branchableBranches() {
-    return this._branches;
-  }
-
-  /**
    * Add retry configuration for this state
    *
    * This controls if and how the execution will be retried if a particular

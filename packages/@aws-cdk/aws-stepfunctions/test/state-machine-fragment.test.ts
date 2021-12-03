@@ -1,4 +1,4 @@
-import { Capture, Template } from '@aws-cdk/assertions';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import * as stepfunctions from '../lib';
@@ -17,41 +17,26 @@ describe('State Machine Fragment', () => {
     });
 
     // THEN
-    const definitionString = new Capture();
     Template.fromStack(stack).hasResourceProperties('AWS::StepFunctions::StateMachine', {
-      DefinitionString: definitionString,
-    });
-
-    expect(JSON.parse(definitionString.asString())).toEqual({
-      StartAt: 'Fragment 1: Parallel State',
-      States: {
-        'Fragment 1: Parallel State': {
-          Type: 'Parallel',
-          Next: 'Fragment 2: Parallel State',
-          Branches: [{
-            StartAt: 'Fragment 1: Step 1',
-            States: {
-              'Fragment 1: Step 1': {
-                Type: 'Pass',
-                End: true,
+      DefinitionString: Match.serializedJson({
+        StartAt: 'Fragment 1: Parallel State',
+        States: {
+          'Fragment 1: Parallel State': Match.objectLike({
+            Branches: [Match.objectLike({
+              States: {
+                'Fragment 1: Step 1': Match.anyValue(),
               },
-            },
-          }],
-        },
-        'Fragment 2: Parallel State': {
-          Type: 'Parallel',
-          End: true,
-          Branches: [{
-            StartAt: 'Fragment 2: Step 1',
-            States: {
-              'Fragment 2: Step 1': {
-                Type: 'Pass',
-                End: true,
+            })],
+          }),
+          'Fragment 2: Parallel State': Match.objectLike({
+            Branches: [Match.objectLike({
+              States: {
+                'Fragment 2: Step 1': Match.anyValue(),
               },
-            },
-          }],
+            })],
+          }),
         },
-      },
+      }),
     });
   });
 });

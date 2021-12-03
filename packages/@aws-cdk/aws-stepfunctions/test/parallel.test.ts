@@ -1,6 +1,5 @@
 import * as cdk from '@aws-cdk/core';
 import * as stepfunctions from '../lib';
-import { State } from '../lib';
 
 describe('Parallel State', () => {
   test('State Machine With Parallel State', () => {
@@ -55,32 +54,6 @@ describe('Parallel State', () => {
             'buz': 'buz',
             'baz.$': '$.baz',
           },
-        },
-      },
-    });
-  });
-
-  test('Prefix is bound to all branches', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-
-    // WHEN
-    const parallel = new stepfunctions.Parallel(stack, 'Parallel State');
-    parallel.branch(new stepfunctions.Pass(stack, 'Branch 1'));
-    parallel.branch(new stepfunctions.Pass(stack, 'Branch 2'));
-    State.prefixStates(parallel, 'Prefix ');
-
-    // THEN
-    expect(render(parallel)).toStrictEqual({
-      StartAt: 'Prefix Parallel State',
-      States: {
-        'Prefix Parallel State': {
-          Type: 'Parallel',
-          End: true,
-          Branches: [
-            { StartAt: 'Prefix Branch 1', States: { 'Prefix Branch 1': { Type: 'Pass', End: true } } },
-            { StartAt: 'Prefix Branch 2', States: { 'Prefix Branch 2': { Type: 'Pass', End: true } } },
-          ],
         },
       },
     });
