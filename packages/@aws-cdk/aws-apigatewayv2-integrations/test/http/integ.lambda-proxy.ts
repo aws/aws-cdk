@@ -1,7 +1,7 @@
 import { HttpApi } from '@aws-cdk/aws-apigatewayv2';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { App, CfnOutput, Stack } from '@aws-cdk/core';
-import { LambdaProxyIntegration } from '../../lib';
+import { HttpLambdaIntegration } from '../../lib';
 
 /*
  * Stack verification steps:
@@ -19,9 +19,7 @@ const handler = new lambda.Function(stack, 'AlwaysSuccess', {
 });
 
 const endpoint = new HttpApi(stack, 'LambdaProxyApi', {
-  defaultIntegration: new LambdaProxyIntegration({
-    handler,
-  }),
+  defaultIntegration: new HttpLambdaIntegration('DefaultIntegration', handler),
 });
 
 new CfnOutput(stack, 'Endpoint', {

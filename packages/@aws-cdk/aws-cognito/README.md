@@ -582,7 +582,7 @@ pool.addClient('app-client', {
 An app client can be configured to prevent user existence errors. This
 instructs the Cognito authentication API to return generic authentication
 failure responses instead of an UserNotFoundException. By default, the flag
-is not set, which means different things for existing and new stacks. See the
+is not set, which means the CloudFormation default (false) will be used. See the
 [documentation](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pool-managing-errors.html)
 for the full details on the behavior of this flag.
 

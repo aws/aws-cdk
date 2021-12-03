@@ -145,6 +145,8 @@ export class SecretRotationApplication {
       return this.applicationId;
     } else if (partition === 'aws-cn') {
       return `arn:aws-cn:serverlessrepo:cn-north-1:193023089310:applications/${this.applicationName}`;
+    } else if (partition === 'aws-us-gov') {
+      return `arn:aws-us-gov:serverlessrepo:us-gov-west-1:023102451235:applications/${this.applicationName}`;
     } else {
       throw new Error(`unsupported partition: ${partition}`);
     }
@@ -159,6 +161,8 @@ export class SecretRotationApplication {
       return this.semanticVersion;
     } else if (partition === 'aws-cn') {
       return '1.1.37';
+    } else if (partition === 'aws-us-gov') {
+      return '1.1.93';
     } else {
       throw new Error(`unsupported partition: ${partition}`);
     }
@@ -311,6 +315,10 @@ export class SecretRotation extends Construct {
         'aws-cn': {
           applicationId: props.application.applicationArnForPartition('aws-cn'),
           semanticVersion: props.application.semanticVersionForPartition('aws-cn'),
+        },
+        'aws-us-gov': {
+          applicationId: props.application.applicationArnForPartition('aws-us-gov'),
+          semanticVersion: props.application.semanticVersionForPartition('aws-us-gov'),
         },
       },
     });

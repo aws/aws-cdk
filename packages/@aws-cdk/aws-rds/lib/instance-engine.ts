@@ -1569,7 +1569,7 @@ export class DatabaseInstanceEngine {
   /**
    * The unversioned 'mariadb' instance engine.
    *
-   * @deprecated using unversioned engines is an availability risk.
+   * NOTE: using unversioned engines is an availability risk.
    *   We recommend using versioned engines created using the {@link mariaDb()} method
    */
   public static readonly MARIADB: IInstanceEngine = new MariaDbInstanceEngine();
@@ -1577,7 +1577,7 @@ export class DatabaseInstanceEngine {
   /**
    * The unversioned 'mysql' instance engine.
    *
-   * @deprecated using unversioned engines is an availability risk.
+   * NOTE: using unversioned engines is an availability risk.
    *   We recommend using versioned engines created using the {@link mysql()} method
    */
   public static readonly MYSQL: IInstanceEngine = new MySqlInstanceEngine();
@@ -1585,7 +1585,7 @@ export class DatabaseInstanceEngine {
   /**
    * The unversioned 'oracle-ee' instance engine.
    *
-   * @deprecated using unversioned engines is an availability risk.
+   * NOTE: using unversioned engines is an availability risk.
    *   We recommend using versioned engines created using the {@link oracleEe()} method
    */
   public static readonly ORACLE_EE: IInstanceEngine = new OracleEeInstanceEngine();
@@ -1593,7 +1593,7 @@ export class DatabaseInstanceEngine {
   /**
    * The unversioned 'oracle-se2' instance engine.
    *
-   * @deprecated using unversioned engines is an availability risk.
+   * NOTE: using unversioned engines is an availability risk.
    *   We recommend using versioned engines created using the {@link oracleSe2()} method
    */
   public static readonly ORACLE_SE2: IInstanceEngine = new OracleSe2InstanceEngine();
@@ -1615,7 +1615,7 @@ export class DatabaseInstanceEngine {
   /**
    * The unversioned 'postgres' instance engine.
    *
-   * @deprecated using unversioned engines is an availability risk.
+   * NOTE: using unversioned engines is an availability risk.
    *   We recommend using versioned engines created using the {@link postgres()} method
    */
   public static readonly POSTGRES: IInstanceEngine = new PostgresInstanceEngine();
@@ -1623,7 +1623,7 @@ export class DatabaseInstanceEngine {
   /**
    * The unversioned 'sqlserver-ee' instance engine.
    *
-   * @deprecated using unversioned engines is an availability risk.
+   * NOTE: using unversioned engines is an availability risk.
    *   We recommend using versioned engines created using the {@link sqlServerEe()} method
    */
   public static readonly SQL_SERVER_EE: IInstanceEngine = new SqlServerEeInstanceEngine();
@@ -1631,7 +1631,7 @@ export class DatabaseInstanceEngine {
   /**
    * The unversioned 'sqlserver-se' instance engine.
    *
-   * @deprecated using unversioned engines is an availability risk.
+   * NOTE: using unversioned engines is an availability risk.
    *   We recommend using versioned engines created using the {@link sqlServerSe()} method
    */
   public static readonly SQL_SERVER_SE: IInstanceEngine = new SqlServerSeInstanceEngine();
@@ -1639,7 +1639,7 @@ export class DatabaseInstanceEngine {
   /**
    * The unversioned 'sqlserver-ex' instance engine.
    *
-   * @deprecated using unversioned engines is an availability risk.
+   * NOTE: using unversioned engines is an availability risk.
    *   We recommend using versioned engines created using the {@link sqlServerEx()} method
    */
   public static readonly SQL_SERVER_EX: IInstanceEngine = new SqlServerExInstanceEngine();
@@ -1647,7 +1647,7 @@ export class DatabaseInstanceEngine {
   /**
    * The unversioned 'sqlserver-web' instance engine.
    *
-   * @deprecated using unversioned engines is an availability risk.
+   * NOTE: using unversioned engines is an availability risk.
    *   We recommend using versioned engines created using the {@link sqlServerWeb()} method
    */
   public static readonly SQL_SERVER_WEB: IInstanceEngine = new SqlServerWebInstanceEngine();

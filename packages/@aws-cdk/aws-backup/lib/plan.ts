@@ -43,6 +43,15 @@ export interface BackupPlanProps {
    * @default - use `addRule()` to add rules
    */
   readonly backupPlanRules?: BackupPlanRule[];
+
+  /**
+   * Enable Windows VSS backup.
+   *
+   * @see https://docs.aws.amazon.com/aws-backup/latest/devguide/windows-backups.html
+   *
+   * @default false
+   */
+  readonly windowsVss?: boolean;
 }
 
 /**
@@ -124,6 +133,7 @@ export class BackupPlan extends Resource implements IBackupPlan {
 
     const plan = new CfnBackupPlan(this, 'Resource', {
       backupPlan: {
+        advancedBackupSettings: this.advancedBackupSettings(props),
         backupPlanName: props.backupPlanName || id,
         backupPlanRule: Lazy.any({ produce: () => this.rules }, { omitEmptyArray: true }),
       },
@@ -140,6 +150,18 @@ export class BackupPlan extends Resource implements IBackupPlan {
     }
 
     this.node.addValidation({ validate: () => this.validatePlan() });
+  }
+
+  private advancedBackupSettings(props: BackupPlanProps) {
+    if (!props.windowsVss) {
+      return undefined;
+    }
+    return [{
+      backupOptions: {
+        WindowsVSS: 'enabled',
+      },
+      resourceType: 'EC2',
+    }];
   }
 
   /**

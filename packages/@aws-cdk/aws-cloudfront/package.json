@@ -85,7 +85,7 @@
     "@aws-cdk/cdk-integ-tools": "0.0.0",
     "@aws-cdk/cfn2ts": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/jest": "^27.0.2",
+    "@types/jest": "^27.0.3",
     "aws-sdk": "^2.848.0",
     "jest": "^27.3.1"
   },
@@ -170,7 +170,10 @@
       "resource-attribute:@aws-cdk/aws-cloudfront.KeyGroup.keyGroupLastModifiedTime",
       "resource-attribute:@aws-cdk/aws-cloudfront.PublicKey.publicKeyCreatedTime",
       "resource-attribute:@aws-cdk/aws-cloudfront.OriginAccessIdentity.cloudFrontOriginAccessIdentityId",
-      "resource-attribute:@aws-cdk/aws-cloudfront.Function.functionMetadataFunctionArn"
+      "resource-attribute:@aws-cdk/aws-cloudfront.Function.functionMetadataFunctionArn",
+      "construct-interface-extends-iconstruct:@aws-cdk/aws-cloudfront.IResponseHeadersPolicy",
+      "resource-interface-extends-resource:@aws-cdk/aws-cloudfront.IResponseHeadersPolicy",
+      "resource-attribute:@aws-cdk/aws-cloudfront.ResponseHeadersPolicy.responseHeadersPolicyLastModifiedTime"
     ]
   },
   "awscdkio": {
