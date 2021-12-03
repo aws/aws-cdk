@@ -129,7 +129,7 @@ export class Container extends ServiceExtension {
       };
     } else {
       if (this.logGroup) {
-        throw Error(`A log configuration has already been specified for the service '${this.parentService.id}'. The default log group provided to the service container will not be used.`);
+        throw Error(`Log configuration already specified. You cannot provide a default log group for the application container of service '${this.parentService.id}' while also adding log configuration separately using service extensions.`);
       }
     }
     this.container = taskDefinition.addContainer('app', containerProps);

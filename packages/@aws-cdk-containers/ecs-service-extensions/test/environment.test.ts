@@ -320,6 +320,6 @@ describe('environment', () => {
         environment,
         serviceDescription,
       });
-    }).toThrow(/A log configuration has already been specified for the service 'my-service'. The default log group provided to the service container will not be used./);
+    }).toThrow(/Log configuration already specified. You cannot provide a default log group for the application container of service 'my-service' while also adding log configuration separately using service extensions./);
   });
 });
