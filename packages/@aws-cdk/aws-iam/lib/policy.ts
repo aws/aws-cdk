@@ -177,6 +177,8 @@ export class Policy extends Resource implements IPolicy {
     if (props.statements) {
       props.statements.forEach(p => this.addStatements(p));
     }
+
+    this.node.addValidation({ validate: () => this.validatePolicy() });
   }
 
   /**
@@ -223,7 +225,7 @@ export class Policy extends Resource implements IPolicy {
     return this._policyName;
   }
 
-  protected validate(): string[] {
+  private validatePolicy(): string[] {
     const result = new Array<string>();
 
     // validate that the policy document is not empty
