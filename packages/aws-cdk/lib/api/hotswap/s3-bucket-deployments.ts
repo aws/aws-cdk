@@ -2,7 +2,6 @@ import { ISDK } from '../aws-auth';
 import { ChangeHotswapImpact, ChangeHotswapResult, HotswapOperation, HotswappableChangeCandidate, establishResourcePhysicalName } from './common';
 import { EvaluateCloudFormationTemplate } from './evaluate-cloudformation-template';
 
-/*eslint-disable*/
 /**
  * This means that the value is required to exist by CloudFormation's API (or our S3 Bucket Deployment Lambda)
  * but the actual value specified is irrelevant
@@ -19,14 +18,12 @@ export async function isHotswappableS3BucketDeploymentChange(
   }
 
   if (change.newValue.Type !== 'Custom::CDKBucketDeployment') {
-    console.log('ah 1')
     return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
   }
 
   // note that this gives the ARN of the lambda, not the name. This is fine though, the invoke() sdk call will take either
   const functionName = await establishResourcePhysicalName(logicalId, change.newValue.Properties?.ServiceToken, evaluateCfnTemplate);
   if (!functionName) {
-    console.log('ah 2')
     return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
   }
 
@@ -39,6 +36,8 @@ export async function isHotswappableS3BucketDeploymentChange(
 }
 
 class S3BucketDeploymentHotswapOperation implements HotswapOperation {
+  public readonly service = 'custom-s3-deployment';
+
   constructor(private readonly functionName: string, private readonly customResourceProperties: any) {
   }
 
@@ -67,14 +66,12 @@ async function changeIsForS3DeployCustomResourcePolicy(
 ): Promise<ChangeHotswapImpact | EmptyHotswapOperation> {
   const roles = change.newValue.Properties?.Roles;
   if (!roles) {
-    console.log('ah 3')
     return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
   }
 
   for (const role of roles) {
     const roleLogicalId = await evaluateCfnTemplate.findLogicalIdForPhysicalName(await evaluateCfnTemplate.evaluateCfnExpression(role));
     if (!roleLogicalId) {
-      console.log('ah 4')
       return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
     }
 
@@ -86,19 +83,14 @@ async function changeIsForS3DeployCustomResourcePolicy(
           // If S3Deployment -> Lambda -> Role and IAM::Policy -> Role, then this IAM::Policy change is an
           // artifact of old-style synthesis
           if (lambdaRef.Type !== 'Custom::CDKBucketDeployment') {
-            console.log('ah 5')
             return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
           }
         }
       } else if (roleRef.Type === 'AWS::IAM::Policy') {
         if (roleRef.LogicalId !== logicalId) {
-          console.log(roleRef.LogicalId)
-          console.log(logicalId)
-          console.log('ah 6')
           return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
         }
       } else if (roleRef.Type !== 'AWS::IAM::Policy') {
-        console.log('ah 7')
         return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
       }
     }
@@ -126,6 +118,7 @@ function stringifyObject(obj: any): any {
 }
 
 class EmptyHotswapOperation implements HotswapOperation {
+  readonly service = 'AWS::IAM::Policy';
   public async apply(sdk: ISDK): Promise<any> {
     return Promise.resolve(sdk);
   }

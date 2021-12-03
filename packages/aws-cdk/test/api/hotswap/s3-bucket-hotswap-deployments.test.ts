@@ -3,7 +3,7 @@ import { REQUIRED_BY_CFN } from '../../../lib/api/hotswap/s3-bucket-deployments'
 import * as setup from './hotswap-test-setup';
 
 let mockLambdaInvoke: (params: Lambda.Types.InvocationRequest) => Lambda.Types.InvocationResponse;
-let cfnMockProvider: setup.CfnMockProvider;
+let hotswapMockSdkProvider: setup.HotswapMockSdkProvider;
 
 const payloadWithoutCustomResProps = {
   RequestType: 'Update',
@@ -15,9 +15,9 @@ const payloadWithoutCustomResProps = {
 };
 
 beforeEach(() => {
-  cfnMockProvider = setup.setupHotswapTests();
+  hotswapMockSdkProvider = setup.setupHotswapTests();
   mockLambdaInvoke = jest.fn();
-  cfnMockProvider.setInvokeLambdaMock(mockLambdaInvoke);
+  hotswapMockSdkProvider.setInvokeLambdaMock(mockLambdaInvoke);
 });
 
 test('calls the lambdaInvoke() API when it receives only an asset difference in an s3 bucket deployment', async () => {
@@ -54,7 +54,7 @@ test('calls the lambdaInvoke() API when it receives only an asset difference in 
   });
 
   // WHEN
-  const deployStackResult = await cfnMockProvider.tryHotswapDeployment(cdkStackArtifact);
+  const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(cdkStackArtifact);
 
   // THEN
   expect(deployStackResult).not.toBeUndefined();
@@ -105,7 +105,7 @@ test('does not call the invoke() API when a resource with type that is not Custo
   });
 
   // WHEN
-  const deployStackResult = await cfnMockProvider.tryHotswapDeployment(cdkStackArtifact);
+  const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(cdkStackArtifact);
 
   // THEN
   expect(deployStackResult).toBeUndefined();
@@ -182,7 +182,7 @@ test('does not call the invokeLambda() api if the updated Policy has no Roles', 
   });
 
   // WHEN
-  const deployStackResult = await cfnMockProvider.tryHotswapDeployment(cdkStackArtifact);
+  const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(cdkStackArtifact);
 
   // THEN
   expect(deployStackResult).toBeUndefined();
@@ -370,7 +370,7 @@ describe('old-style synthesis', () => {
     });
 
     // WHEN
-    const deployStackResult = await cfnMockProvider.tryHotswapDeployment(cdkStackArtifact);
+    const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(cdkStackArtifact);
 
     // THEN
     expect(deployStackResult).not.toBeUndefined();
@@ -433,7 +433,7 @@ describe('old-style synthesis', () => {
     });
 
     // WHEN
-    const deployStackResult = await cfnMockProvider.tryHotswapDeployment(cdkStackArtifact);
+    const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(cdkStackArtifact);
 
     // THEN
     expect(deployStackResult).toBeUndefined();
@@ -489,7 +489,7 @@ describe('old-style synthesis', () => {
     });
 
     // WHEN
-    const deployStackResult = await cfnMockProvider.tryHotswapDeployment(cdkStackArtifact);
+    const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(cdkStackArtifact);
 
     // THEN
     expect(deployStackResult).toBeUndefined();
@@ -563,7 +563,7 @@ describe('old-style synthesis', () => {
       setup.stackSummaryOf('ServiceRole2', 'AWS::IAM::Role', 'my-service-role-2'),
     );
 
-    const deployStackResult = await cfnMockProvider.tryHotswapDeployment(cdkStackArtifact);
+    const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(cdkStackArtifact);
 
     // THEN
     expect(deployStackResult).not.toBeUndefined();
@@ -637,7 +637,7 @@ describe('old-style synthesis', () => {
     });
 
     // WHEN
-    const deployStackResult = await cfnMockProvider.tryHotswapDeployment(cdkStackArtifact);
+    const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(cdkStackArtifact);
 
     // THEN
     expect(deployStackResult).toBeUndefined();
@@ -683,7 +683,7 @@ describe('old-style synthesis', () => {
     });
 
     // WHEN
-    const deployStackResult = await cfnMockProvider.tryHotswapDeployment(cdkStackArtifact);
+    const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(cdkStackArtifact);
 
     // THEN
     expect(deployStackResult).toBeUndefined();
