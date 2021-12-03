@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.0.0](https://github.com/aws/aws-cdk/compare/v2.0.0-rc.33...v2.0.0) (2021-12-02)
+
+
+### Features
+
+* aws-cdk-lib is now stable! ([fa2ecc9](https://github.com/aws/aws-cdk/commit/fa2ecc971cd756ea0cbf2dace64076ce964f88bc))
+
 ## [2.0.0-rc.33](https://github.com/aws/aws-cdk/compare/v2.0.0-rc.32...v2.0.0-rc.33) (2021-11-26)
 
 ## [2.0.0-rc.32](https://github.com/aws/aws-cdk/compare/v2.0.0-rc.31...v2.0.0-rc.32) (2021-11-25)

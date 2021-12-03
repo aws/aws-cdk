@@ -69,6 +69,6 @@
     ]
   },
   "publishConfig": {
-    "tag": "next"
+    "tag": "latest"
   }
 }
