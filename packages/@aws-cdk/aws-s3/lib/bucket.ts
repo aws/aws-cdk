@@ -439,19 +439,6 @@ export interface BucketAttributes {
 }
 
 /**
- * Props common to all buckets
- */
-export interface BucketBaseProps extends ResourceProps {
-
-  /**
-   * The role to be used by the notifications handler
-   *
-   * @default - a new role will be created.
-   */
-  readonly notificationsHandlerRole?: iam.IRole;
-}
-
-/**
  * Represents an S3 Bucket.
  *
  * Buckets can be either defined within this stack:
@@ -506,17 +493,14 @@ export abstract class BucketBase extends Resource implements IBucket {
    */
   protected abstract disallowPublicAccess?: boolean;
 
-  private readonly notifications: BucketNotifications;
+  private notifications?: BucketNotifications;
 
-  constructor(scope: Construct, id: string, props: BucketBaseProps = {}) {
+  protected notificationsHandlerRole?: iam.IRole;
+
+  protected handlerRole?: iam.IRole;
+
+  constructor(scope: Construct, id: string, props: ResourceProps = {}) {
     super(scope, id, props);
-
-    // defines a BucketNotifications construct. Notice that an actual resource will only
-    // be added if there are notifications added, so we don't need to condition this.
-    this.notifications = new BucketNotifications(this, 'Notifications', {
-      bucket: this,
-      handlerRole: props.notificationsHandlerRole,
-    });
   }
 
   /**
@@ -861,6 +845,12 @@ export abstract class BucketBase extends Resource implements IBucket {
    * https://docs.aws.amazon.com/AmazonS3/latest/dev/NotificationHowTo.html
    */
   public addEventNotification(event: EventType, dest: IBucketNotificationDestination, ...filters: NotificationKeyFilter[]) {
+    if (!this.notifications) {
+      this.notifications = new BucketNotifications(this, 'Notifications', {
+        bucket: this,
+        handlerRole: this.notificationsHandlerRole,
+      });
+    }
     this.notifications.addNotification(event, dest, ...filters);
   }
 
@@ -1238,7 +1228,7 @@ export enum ObjectOwnership {
    */
   OBJECT_WRITER = 'ObjectWriter',
 }
-export interface BucketProps extends BucketBaseProps {
+export interface BucketProps {
   /**
    * The kind of server-side encryption to apply to this bucket.
    *
@@ -1434,6 +1424,13 @@ export interface BucketProps extends BucketBaseProps {
    * @default false
    */
   readonly transferAcceleration?: boolean;
+
+  /**
+   * The role to be used by the notifications handler
+   *
+   * @default - a new role will be created.
+   */
+  readonly notificationsHandlerRole?: iam.IRole;
 }
 
 /**
@@ -1493,6 +1490,7 @@ export class Bucket extends BucketBase {
       public policy?: BucketPolicy = undefined;
       protected autoCreatePolicy = false;
       protected disallowPublicAccess = false;
+      protected notificationsHandlerRole = attrs.notificationsHandlerRole;
 
       /**
        * Exports this bucket from the stack.
@@ -1505,7 +1503,6 @@ export class Bucket extends BucketBase {
     return new Import(scope, id, {
       account: attrs.account,
       region: attrs.region,
-      notificationsHandlerRole: attrs.notificationsHandlerRole,
     });
   }
 
@@ -1579,8 +1576,9 @@ export class Bucket extends BucketBase {
   constructor(scope: Construct, id: string, props: BucketProps = {}) {
     super(scope, id, {
       physicalName: props.bucketName,
-      notificationsHandlerRole: props.notificationsHandlerRole,
     });
+
+    this.notificationsHandlerRole = props.notificationsHandlerRole;
 
     const { bucketEncryption, encryptionKey } = this.parseEncryption(props);
 
