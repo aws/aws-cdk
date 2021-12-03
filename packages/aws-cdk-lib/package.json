@@ -1,6 +1,5 @@
 {
   "name": "aws-cdk-lib",
-  "private": "true",
   "version": "0.0.0",
   "description": "Version 2 of the AWS Cloud Development Kit library",
   "main": "index.js",
@@ -10,8 +9,8 @@
     "url": "https://github.com/aws/aws-cdk.git",
     "directory": "packages/aws-cdk-lib"
   },
-  "stability": "experimental",
-  "maturity": "developer-preview",
+  "stability": "stable",
+  "maturity": "stable",
   "scripts": {
     "gen": "ubergen",
     "build": "cdk-build",
@@ -338,17 +337,17 @@
     "@aws-cdk/ubergen": "0.0.0",
     "@types/fs-extra": "^8.1.2",
     "@types/node": "^10.17.60",
-    "constructs": "^3.3.69",
+    "constructs": "^10.0.0",
     "fs-extra": "^9.1.0",
     "ts-node": "^9.1.1",
     "typescript": "~3.8.3"
   },
   "peerDependencies": {
-    "constructs": "^3.3.69"
+    "constructs": "^10.0.0"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
-    "node": ">= 10.13.0 <13 || >=13.7.0"
+    "node": ">= 14.15.0"
   },
   "keywords": [
     "aws",
@@ -574,5 +573,8 @@
     "./pipelines": "./pipelines/index.js",
     "./pipelines/lib/helpers-internal": "./pipelines/lib/helpers-internal/index.js",
     "./region-info": "./region-info/index.js"
+  },
+  "publishConfig": {
+    "tag": "latest"
   }
 }

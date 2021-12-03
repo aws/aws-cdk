@@ -322,18 +322,16 @@ describe('tokens returning CloudFormation intrinsics', () => {
 
     // THEN
     const asm = app.synth();
-    expect(asm.getStackByName('Stack2').template).toEqual({
-      Outputs: {
-        Stack1Id: {
-          Value: {
-            'Fn::Join': ['', [
-              '{"Stack1Id":"',
-              { 'Fn::ImportValue': 'Stack1:ExportsOutputRefAWSStackIdB2DD5BAA' },
-              '","Stack2Id":"',
-              { Ref: 'AWS::StackId' },
-              '"}',
-            ]],
-          },
+    expect(asm.getStackByName('Stack2').template?.Outputs).toEqual({
+      Stack1Id: {
+        Value: {
+          'Fn::Join': ['', [
+            '{"Stack1Id":"',
+            { 'Fn::ImportValue': 'Stack1:ExportsOutputRefAWSStackIdB2DD5BAA' },
+            '","Stack2Id":"',
+            { Ref: 'AWS::StackId' },
+            '"}',
+          ]],
         },
       },
     });

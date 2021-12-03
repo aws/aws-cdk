@@ -494,6 +494,8 @@ export abstract class BucketBase extends Resource implements IBucket {
     // defines a BucketNotifications construct. Notice that an actual resource will only
     // be added if there are notifications added, so we don't need to condition this.
     this.notifications = new BucketNotifications(this, 'Notifications', { bucket: this });
+
+    this.node.addValidation({ validate: () => this.policy?.document.validateForResourcePolicy() ?? [] });
   }
 
   /**
@@ -608,12 +610,6 @@ export abstract class BucketBase extends Resource implements IBucket {
     }
 
     return { statementAdded: false };
-  }
-
-  protected validate(): string[] {
-    const errors = super.validate();
-    errors.push(...this.policy?.document.validateForResourcePolicy() || []);
-    return errors;
   }
 
   /**
