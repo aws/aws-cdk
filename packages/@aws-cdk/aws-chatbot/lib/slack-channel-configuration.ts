@@ -138,6 +138,11 @@ export interface ISlackChannelConfiguration extends cdk.IResource, iam.IGrantabl
    * Return the given named metric for this SlackChannelConfiguration
    */
   metric(metricName: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+
+  /**
+   * Adds a SNS topic that deliver notifications to AWS Chatbot.
+   */
+  addNotificationTopic(notificationTopic: sns.ITopic): void;
 }
 
 /**
