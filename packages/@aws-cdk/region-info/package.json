@@ -90,6 +90,6 @@
     "announce": false
   },
   "publishConfig": {
-    "tag": "latest"
+    "tag": "latest-1"
   }
 }
