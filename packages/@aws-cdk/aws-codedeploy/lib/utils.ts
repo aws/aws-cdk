@@ -1,5 +1,5 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
-import { Aws } from '@aws-cdk/core';
+import { Aws, Fn } from '@aws-cdk/core';
 import { CfnDeploymentGroup } from './codedeploy.generated';
 import { AutoRollbackConfig } from './rollback-config';
 
@@ -64,4 +64,9 @@ CfnDeploymentGroup.AutoRollbackConfigurationProperty | undefined {
       events,
     }
     : undefined;
+}
+
+export function targetGruopNameFromArn(targetGruopArn: string) {
+  const arnParts = Fn.split('/', targetGruopArn);
+  return `${Fn.select(1, arnParts)}`;
 }
