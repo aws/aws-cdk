@@ -759,7 +759,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
     },
-    "UserProviderframeworkonEventServiceRole8FBA2FBD": {
+    "UserProviderFrameworkServiceRole61A4F1C9": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -792,7 +792,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
     },
-    "UserProviderframeworkonEventServiceRoleDefaultPolicy9A9E044F": {
+    "UserProviderFrameworkServiceRoleDefaultPolicyC80CE6C1": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -810,10 +810,10 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "UserProviderframeworkonEventServiceRoleDefaultPolicy9A9E044F",
+        "PolicyName": "UserProviderFrameworkServiceRoleDefaultPolicyC80CE6C1",
         "Roles": [
           {
-            "Ref": "UserProviderframeworkonEventServiceRole8FBA2FBD"
+            "Ref": "UserProviderFrameworkServiceRole61A4F1C9"
           }
         ]
       },
@@ -863,7 +863,7 @@
         },
         "Role": {
           "Fn::GetAtt": [
-            "UserProviderframeworkonEventServiceRole8FBA2FBD",
+            "UserProviderFrameworkServiceRole61A4F1C9",
             "Arn"
           ]
         },
@@ -883,8 +883,8 @@
         "Timeout": 900
       },
       "DependsOn": [
-        "UserProviderframeworkonEventServiceRoleDefaultPolicy9A9E044F",
-        "UserProviderframeworkonEventServiceRole8FBA2FBD"
+        "UserProviderFrameworkServiceRoleDefaultPolicyC80CE6C1",
+        "UserProviderFrameworkServiceRole61A4F1C9"
       ],
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
@@ -914,7 +914,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
     },
-    "UserTablePrivilegesProviderframeworkonEventServiceRole56BAEC9A": {
+    "UserTablePrivilegesProviderFrameworkServiceRole67B2C92A": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -947,7 +947,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
     },
-    "UserTablePrivilegesProviderframeworkonEventServiceRoleDefaultPolicy3B6EF50C": {
+    "UserTablePrivilegesProviderFrameworkServiceRoleDefaultPolicy8470856A": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -965,10 +965,10 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "UserTablePrivilegesProviderframeworkonEventServiceRoleDefaultPolicy3B6EF50C",
+        "PolicyName": "UserTablePrivilegesProviderFrameworkServiceRoleDefaultPolicy8470856A",
         "Roles": [
           {
-            "Ref": "UserTablePrivilegesProviderframeworkonEventServiceRole56BAEC9A"
+            "Ref": "UserTablePrivilegesProviderFrameworkServiceRole67B2C92A"
           }
         ]
       },
@@ -1018,7 +1018,7 @@
         },
         "Role": {
           "Fn::GetAtt": [
-            "UserTablePrivilegesProviderframeworkonEventServiceRole56BAEC9A",
+            "UserTablePrivilegesProviderFrameworkServiceRole67B2C92A",
             "Arn"
           ]
         },
@@ -1038,8 +1038,8 @@
         "Timeout": 900
       },
       "DependsOn": [
-        "UserTablePrivilegesProviderframeworkonEventServiceRoleDefaultPolicy3B6EF50C",
-        "UserTablePrivilegesProviderframeworkonEventServiceRole56BAEC9A"
+        "UserTablePrivilegesProviderFrameworkServiceRoleDefaultPolicy8470856A",
+        "UserTablePrivilegesProviderFrameworkServiceRole67B2C92A"
       ],
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
@@ -1167,7 +1167,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParameters85597bcd6a07abd4673fe02c7e92e21df5859eee0d831e9db67f4d2e74d4d066S3Bucket0B347C2E"
+            "Ref": "AssetParameters104629e772240371441c4f76a71184cb01d6d09afe126b3ddc9243d03f78fb3bS3Bucket2B744261"
           },
           "S3Key": {
             "Fn::Join": [
@@ -1180,7 +1180,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameters85597bcd6a07abd4673fe02c7e92e21df5859eee0d831e9db67f4d2e74d4d066S3VersionKey932D0479"
+                          "Ref": "AssetParameters104629e772240371441c4f76a71184cb01d6d09afe126b3ddc9243d03f78fb3bS3VersionKey26C2ED2C"
                         }
                       ]
                     }
@@ -1193,7 +1193,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameters85597bcd6a07abd4673fe02c7e92e21df5859eee0d831e9db67f4d2e74d4d066S3VersionKey932D0479"
+                          "Ref": "AssetParameters104629e772240371441c4f76a71184cb01d6d09afe126b3ddc9243d03f78fb3bS3VersionKey26C2ED2C"
                         }
                       ]
                     }
@@ -1220,7 +1220,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
     },
-    "TableProviderframeworkonEventServiceRoleC3128F67": {
+    "TableProviderFrameworkServiceRoleA0353E69": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -1253,7 +1253,7 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
     },
-    "TableProviderframeworkonEventServiceRoleDefaultPolicyAD08715D": {
+    "TableProviderFrameworkServiceRoleDefaultPolicy31751416": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -1271,10 +1271,10 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "TableProviderframeworkonEventServiceRoleDefaultPolicyAD08715D",
+        "PolicyName": "TableProviderFrameworkServiceRoleDefaultPolicy31751416",
         "Roles": [
           {
-            "Ref": "TableProviderframeworkonEventServiceRoleC3128F67"
+            "Ref": "TableProviderFrameworkServiceRoleA0353E69"
           }
         ]
       },
@@ -1324,7 +1324,7 @@
         },
         "Role": {
           "Fn::GetAtt": [
-            "TableProviderframeworkonEventServiceRoleC3128F67",
+            "TableProviderFrameworkServiceRoleA0353E69",
             "Arn"
           ]
         },
@@ -1344,8 +1344,8 @@
         "Timeout": 900
       },
       "DependsOn": [
-        "TableProviderframeworkonEventServiceRoleDefaultPolicyAD08715D",
-        "TableProviderframeworkonEventServiceRoleC3128F67"
+        "TableProviderFrameworkServiceRoleDefaultPolicy31751416",
+        "TableProviderFrameworkServiceRoleA0353E69"
       ],
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
@@ -1396,17 +1396,17 @@
     }
   },
   "Parameters": {
-    "AssetParameters85597bcd6a07abd4673fe02c7e92e21df5859eee0d831e9db67f4d2e74d4d066S3Bucket0B347C2E": {
+    "AssetParameters104629e772240371441c4f76a71184cb01d6d09afe126b3ddc9243d03f78fb3bS3Bucket2B744261": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"85597bcd6a07abd4673fe02c7e92e21df5859eee0d831e9db67f4d2e74d4d066\""
+      "Description": "S3 bucket for asset \"104629e772240371441c4f76a71184cb01d6d09afe126b3ddc9243d03f78fb3b\""
     },
-    "AssetParameters85597bcd6a07abd4673fe02c7e92e21df5859eee0d831e9db67f4d2e74d4d066S3VersionKey932D0479": {
+    "AssetParameters104629e772240371441c4f76a71184cb01d6d09afe126b3ddc9243d03f78fb3bS3VersionKey26C2ED2C": {
       "Type": "String",
-      "Description": "S3 key for asset version \"85597bcd6a07abd4673fe02c7e92e21df5859eee0d831e9db67f4d2e74d4d066\""
+      "Description": "S3 key for asset version \"104629e772240371441c4f76a71184cb01d6d09afe126b3ddc9243d03f78fb3b\""
     },
-    "AssetParameters85597bcd6a07abd4673fe02c7e92e21df5859eee0d831e9db67f4d2e74d4d066ArtifactHash78689978": {
+    "AssetParameters104629e772240371441c4f76a71184cb01d6d09afe126b3ddc9243d03f78fb3bArtifactHash00C57864": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"85597bcd6a07abd4673fe02c7e92e21df5859eee0d831e9db67f4d2e74d4d066\""
+      "Description": "Artifact hash for asset \"104629e772240371441c4f76a71184cb01d6d09afe126b3ddc9243d03f78fb3b\""
     },
     "AssetParametersdaeb79e3cee39c9b902dc0d5c780223e227ed573ea60976252947adab5fb2be1S3BucketDC4B98B1": {
       "Type": "String",
