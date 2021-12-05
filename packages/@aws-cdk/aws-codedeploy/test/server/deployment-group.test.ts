@@ -183,9 +183,16 @@ describe('CodeDeploy Server Deployment Group', () => {
         'TargetGroupInfoList': [
           {
             'Name': {
-              'Fn::GetAtt': [
-                'ALBListenerFleetGroup008CEEE4',
-                'TargetGroupName',
+              'Fn::Select': [
+                1,
+                {
+                  'Fn::Split': [
+                    '/',
+                    {
+                      'Ref': 'ALBListenerFleetGroup008CEEE4',
+                    },
+                  ],
+                },
               ],
             },
           },
@@ -215,9 +222,16 @@ describe('CodeDeploy Server Deployment Group', () => {
         'TargetGroupInfoList': [
           {
             'Name': {
-              'Fn::GetAtt': [
-                'NLBListenerFleetGroupB882EC86',
-                'TargetGroupName',
+              'Fn::Select': [
+                1,
+                {
+                  'Fn::Split': [
+                    '/',
+                    {
+                      'Ref': 'NLBListenerFleetGroupB882EC86',
+                    },
+                  ],
+                },
               ],
             },
           },
