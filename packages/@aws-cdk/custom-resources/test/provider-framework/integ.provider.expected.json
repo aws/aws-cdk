@@ -138,7 +138,7 @@
         "comamazonawscdkcustomresourcess3fileproviders3fileoneventServiceRole999CEEB6"
       ]
     },
-    "comamazonawscdkcustomresourcess3fileproviderframeworkonEventServiceRoleABFCDA11": {
+    "comamazonawscdkcustomresourcess3fileproviderFrameworkServiceRole8248B952": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -169,7 +169,7 @@
         ]
       }
     },
-    "comamazonawscdkcustomresourcess3fileproviderframeworkonEventServiceRoleDefaultPolicyA61D075B": {
+    "comamazonawscdkcustomresourcess3fileproviderFrameworkServiceRoleDefaultPolicyE0405828": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -187,10 +187,10 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "comamazonawscdkcustomresourcess3fileproviderframeworkonEventServiceRoleDefaultPolicyA61D075B",
+        "PolicyName": "comamazonawscdkcustomresourcess3fileproviderFrameworkServiceRoleDefaultPolicyE0405828",
         "Roles": [
           {
-            "Ref": "comamazonawscdkcustomresourcess3fileproviderframeworkonEventServiceRoleABFCDA11"
+            "Ref": "comamazonawscdkcustomresourcess3fileproviderFrameworkServiceRole8248B952"
           }
         ]
       }
@@ -238,7 +238,7 @@
         },
         "Role": {
           "Fn::GetAtt": [
-            "comamazonawscdkcustomresourcess3fileproviderframeworkonEventServiceRoleABFCDA11",
+            "comamazonawscdkcustomresourcess3fileproviderFrameworkServiceRole8248B952",
             "Arn"
           ]
         },
@@ -258,8 +258,8 @@
         "Timeout": 900
       },
       "DependsOn": [
-        "comamazonawscdkcustomresourcess3fileproviderframeworkonEventServiceRoleDefaultPolicyA61D075B",
-        "comamazonawscdkcustomresourcess3fileproviderframeworkonEventServiceRoleABFCDA11"
+        "comamazonawscdkcustomresourcess3fileproviderFrameworkServiceRoleDefaultPolicyE0405828",
+        "comamazonawscdkcustomresourcess3fileproviderFrameworkServiceRole8248B952"
       ]
     },
     "file23283EA00": {
@@ -501,7 +501,7 @@
         "comamazonawscdkcustomresourcess3assertproviders3assertiscompleteServiceRoleACAA755A"
       ]
     },
-    "comamazonawscdkcustomresourcess3assertproviderframeworkonEventServiceRole34070F2C": {
+    "comamazonawscdkcustomresourcess3assertproviderFrameworkServiceRole09136204": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -532,7 +532,7 @@
         ]
       }
     },
-    "comamazonawscdkcustomresourcess3assertproviderframeworkonEventServiceRoleDefaultPolicyDD1903FC": {
+    "comamazonawscdkcustomresourcess3assertproviderFrameworkServiceRoleDefaultPolicy80EDAF7E": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -567,10 +567,10 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "comamazonawscdkcustomresourcess3assertproviderframeworkonEventServiceRoleDefaultPolicyDD1903FC",
+        "PolicyName": "comamazonawscdkcustomresourcess3assertproviderFrameworkServiceRoleDefaultPolicy80EDAF7E",
         "Roles": [
           {
-            "Ref": "comamazonawscdkcustomresourcess3assertproviderframeworkonEventServiceRole34070F2C"
+            "Ref": "comamazonawscdkcustomresourcess3assertproviderFrameworkServiceRole09136204"
           }
         ]
       }
@@ -618,7 +618,7 @@
         },
         "Role": {
           "Fn::GetAtt": [
-            "comamazonawscdkcustomresourcess3assertproviderframeworkonEventServiceRole34070F2C",
+            "comamazonawscdkcustomresourcess3assertproviderFrameworkServiceRole09136204",
             "Arn"
           ]
         },
@@ -647,76 +647,9 @@
         "Timeout": 900
       },
       "DependsOn": [
-        "comamazonawscdkcustomresourcess3assertproviderframeworkonEventServiceRoleDefaultPolicyDD1903FC",
-        "comamazonawscdkcustomresourcess3assertproviderframeworkonEventServiceRole34070F2C"
+        "comamazonawscdkcustomresourcess3assertproviderFrameworkServiceRoleDefaultPolicy80EDAF7E",
+        "comamazonawscdkcustomresourcess3assertproviderFrameworkServiceRole09136204"
       ]
-    },
-    "comamazonawscdkcustomresourcess3assertproviderframeworkisCompleteServiceRole2C8C7983": {
-      "Type": "AWS::IAM::Role",
-      "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Statement": [
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": {
-                "Service": "lambda.amazonaws.com"
-              }
-            }
-          ],
-          "Version": "2012-10-17"
-        },
-        "ManagedPolicyArns": [
-          {
-            "Fn::Join": [
-              "",
-              [
-                "arn:",
-                {
-                  "Ref": "AWS::Partition"
-                },
-                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-              ]
-            ]
-          }
-        ]
-      }
-    },
-    "comamazonawscdkcustomresourcess3assertproviderframeworkisCompleteServiceRoleDefaultPolicy38CF2774": {
-      "Type": "AWS::IAM::Policy",
-      "Properties": {
-        "PolicyDocument": {
-          "Statement": [
-            {
-              "Action": "lambda:InvokeFunction",
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "comamazonawscdkcustomresourcess3assertproviders3assertoneventF1EEF783",
-                  "Arn"
-                ]
-              }
-            },
-            {
-              "Action": "lambda:InvokeFunction",
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "comamazonawscdkcustomresourcess3assertproviders3assertiscomplete6AC08EF9",
-                  "Arn"
-                ]
-              }
-            }
-          ],
-          "Version": "2012-10-17"
-        },
-        "PolicyName": "comamazonawscdkcustomresourcess3assertproviderframeworkisCompleteServiceRoleDefaultPolicy38CF2774",
-        "Roles": [
-          {
-            "Ref": "comamazonawscdkcustomresourcess3assertproviderframeworkisCompleteServiceRole2C8C7983"
-          }
-        ]
-      }
     },
     "comamazonawscdkcustomresourcess3assertproviderframeworkisComplete63829575": {
       "Type": "AWS::Lambda::Function",
@@ -761,7 +694,7 @@
         },
         "Role": {
           "Fn::GetAtt": [
-            "comamazonawscdkcustomresourcess3assertproviderframeworkisCompleteServiceRole2C8C7983",
+            "comamazonawscdkcustomresourcess3assertproviderFrameworkServiceRole09136204",
             "Arn"
           ]
         },
@@ -787,76 +720,9 @@
         "Timeout": 900
       },
       "DependsOn": [
-        "comamazonawscdkcustomresourcess3assertproviderframeworkisCompleteServiceRoleDefaultPolicy38CF2774",
-        "comamazonawscdkcustomresourcess3assertproviderframeworkisCompleteServiceRole2C8C7983"
+        "comamazonawscdkcustomresourcess3assertproviderFrameworkServiceRoleDefaultPolicy80EDAF7E",
+        "comamazonawscdkcustomresourcess3assertproviderFrameworkServiceRole09136204"
       ]
-    },
-    "comamazonawscdkcustomresourcess3assertproviderframeworkonTimeoutServiceRole15F6DFA2": {
-      "Type": "AWS::IAM::Role",
-      "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Statement": [
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": {
-                "Service": "lambda.amazonaws.com"
-              }
-            }
-          ],
-          "Version": "2012-10-17"
-        },
-        "ManagedPolicyArns": [
-          {
-            "Fn::Join": [
-              "",
-              [
-                "arn:",
-                {
-                  "Ref": "AWS::Partition"
-                },
-                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-              ]
-            ]
-          }
-        ]
-      }
-    },
-    "comamazonawscdkcustomresourcess3assertproviderframeworkonTimeoutServiceRoleDefaultPolicyC7408011": {
-      "Type": "AWS::IAM::Policy",
-      "Properties": {
-        "PolicyDocument": {
-          "Statement": [
-            {
-              "Action": "lambda:InvokeFunction",
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "comamazonawscdkcustomresourcess3assertproviders3assertoneventF1EEF783",
-                  "Arn"
-                ]
-              }
-            },
-            {
-              "Action": "lambda:InvokeFunction",
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "comamazonawscdkcustomresourcess3assertproviders3assertiscomplete6AC08EF9",
-                  "Arn"
-                ]
-              }
-            }
-          ],
-          "Version": "2012-10-17"
-        },
-        "PolicyName": "comamazonawscdkcustomresourcess3assertproviderframeworkonTimeoutServiceRoleDefaultPolicyC7408011",
-        "Roles": [
-          {
-            "Ref": "comamazonawscdkcustomresourcess3assertproviderframeworkonTimeoutServiceRole15F6DFA2"
-          }
-        ]
-      }
     },
     "comamazonawscdkcustomresourcess3assertproviderframeworkonTimeoutA1E1E5DC": {
       "Type": "AWS::Lambda::Function",
@@ -901,7 +767,7 @@
         },
         "Role": {
           "Fn::GetAtt": [
-            "comamazonawscdkcustomresourcess3assertproviderframeworkonTimeoutServiceRole15F6DFA2",
+            "comamazonawscdkcustomresourcess3assertproviderFrameworkServiceRole09136204",
             "Arn"
           ]
         },
@@ -927,8 +793,8 @@
         "Timeout": 900
       },
       "DependsOn": [
-        "comamazonawscdkcustomresourcess3assertproviderframeworkonTimeoutServiceRoleDefaultPolicyC7408011",
-        "comamazonawscdkcustomresourcess3assertproviderframeworkonTimeoutServiceRole15F6DFA2"
+        "comamazonawscdkcustomresourcess3assertproviderFrameworkServiceRoleDefaultPolicy80EDAF7E",
+        "comamazonawscdkcustomresourcess3assertproviderFrameworkServiceRole09136204"
       ]
     },
     "comamazonawscdkcustomresourcess3assertproviderwaiterstatemachineRole39E8529F": {

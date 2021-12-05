@@ -364,6 +364,7 @@ describe('role', () => {
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::Lambda::Function', {
+      Description: 'AWS CDK resource provider framework - onEvent (Default/MyProvider)',
       Role: {
         'Fn::GetAtt': [
           'MyRoleF48FFE04',
@@ -388,9 +389,57 @@ describe('role', () => {
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::Lambda::Function', {
+      Description: 'AWS CDK resource provider framework - onEvent (Default/MyProvider)',
       Role: {
         'Fn::GetAtt': [
-          'MyProviderframeworkonEventServiceRole8761E48D',
+          'MyProviderFrameworkServiceRole18569284',
+          'Arn',
+        ],
+      },
+    });
+  });
+  it('uses the same role for onEvent, isComplete and onTimeout', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new cr.Provider(stack, 'MyProvider', {
+      onEventHandler: new lambda.Function(stack, 'MyHandler1', {
+        code: lambda.Code.fromAsset(path.join(__dirname, './integration-test-fixtures/s3-file-handler')),
+        handler: 'index.onEvent',
+        runtime: lambda.Runtime.NODEJS_10_X,
+      }),
+      isCompleteHandler: new lambda.Function(stack, 'MyHandler2', {
+        code: lambda.Code.fromAsset(path.join(__dirname, './integration-test-fixtures/s3-file-handler')),
+        handler: 'index.isComplete',
+        runtime: lambda.Runtime.NODEJS_10_X,
+      }),
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::Lambda::Function', {
+      Description: 'AWS CDK resource provider framework - onEvent (Default/MyProvider)',
+      Role: {
+        'Fn::GetAtt': [
+          'MyProviderFrameworkServiceRole18569284',
+          'Arn',
+        ],
+      },
+    });
+    expect(stack).toHaveResourceLike('AWS::Lambda::Function', {
+      Description: 'AWS CDK resource provider framework - isComplete (Default/MyProvider)',
+      Role: {
+        'Fn::GetAtt': [
+          'MyProviderFrameworkServiceRole18569284',
+          'Arn',
+        ],
+      },
+    });
+    expect(stack).toHaveResourceLike('AWS::Lambda::Function', {
+      Description: 'AWS CDK resource provider framework - onTimeout (Default/MyProvider)',
+      Role: {
+        'Fn::GetAtt': [
+          'MyProviderFrameworkServiceRole18569284',
           'Arn',
         ],
       },
