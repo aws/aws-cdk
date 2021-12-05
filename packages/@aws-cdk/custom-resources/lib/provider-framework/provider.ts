@@ -191,6 +191,9 @@ export class Provider extends CoreConstruct implements ICustomResourceProvider {
       assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
       managedPolicies,
     });;
+    /**
+     * End of duplicate lambdaCode
+     */
 
     const onEventFunction = this.createFunction(consts.FRAMEWORK_ON_EVENT_HANDLER_NAME, props.providerFunctionName);
 
