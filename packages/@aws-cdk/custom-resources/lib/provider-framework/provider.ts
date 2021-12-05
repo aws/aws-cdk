@@ -175,7 +175,7 @@ export class Provider extends CoreConstruct implements ICustomResourceProvider {
     /**
      * The following code is a duplicate of the iam role initalization of
      * the lambdaFunction constructor, but with this we reduce the amount of iam 
-     * roles created for a cr provider by 2 to 3
+     * roles created for a cr provider by factor 2 to 3
      */ 
     const managedPolicies = new Array<iam.IManagedPolicy>();
     
