@@ -163,7 +163,25 @@ export class Provider extends CoreConstruct implements ICustomResourceProvider {
     this.vpcSubnets = props.vpcSubnets;
     this.securityGroups = props.securityGroups;
 
-    this.role = props.role;
+    /**
+     * The following code is a duplicate of the iam role initalization of
+     * the lambdaFunction constructor, but with this we reduce the amount of iam 
+     * roles created for a cr provider by 2 to 3
+     */ 
+    const managedPolicies = new Array<iam.IManagedPolicy>();
+    
+    // the arn is in the form of - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+    managedPolicies.push(iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole'));
+
+    if (props.vpc) {
+      // Policy that will have ENI creation permissions
+      managedPolicies.push(iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaVPCAccessExecutionRole'));
+    }
+
+    this.role = props.role ?? new iam.Role(this, 'FrameworkServiceRole', {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+      managedPolicies,
+    });;
 
     const onEventFunction = this.createFunction(consts.FRAMEWORK_ON_EVENT_HANDLER_NAME);
 
