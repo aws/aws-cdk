@@ -17,8 +17,7 @@ it sends a lifecycle event notification to a **custom resource provider**. The p
 handles the event (e.g. creates a resource) and sends back a response to CloudFormation.
 
 The `@aws-cdk/custom-resources.Provider` construct is a "mini-framework" for
-implementing providers for AWS CloudFormation custom resources. The framework offers a high-level API which makes it easier to implement robust
-and powerful custom resources and includes the following capabilities:
+implementing providers for AWS CloudFormation custom resources. The framework offers a high-level API which makes it easier to implement robust and powerful custom resources and includes the following capabilities:
 
 * Handles responses to AWS CloudFormation and protects against blocked
   deployments
