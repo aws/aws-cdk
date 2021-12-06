@@ -100,7 +100,7 @@ export class Resolver extends CoreConstruct {
 
     if (props.cachingConfig?.cachingKeys) {
       if (props.cachingConfig.cachingKeys.find(cachingKey =>
-        !Token.isUnresolved(cachingKey) && !BASE_CACHING_KEYS.find(baseCachingKey => cachingKey.startsWith(baseCachingKey)))) {       
+        !Token.isUnresolved(cachingKey) && !BASE_CACHING_KEYS.find(baseCachingKey => cachingKey.startsWith(baseCachingKey)))) {
         throw new Error(`Caching config keys must begin with $context.arguments, $context.source or $context.identity. Received: ${props.cachingConfig.cachingKeys}`);
       }
     }
