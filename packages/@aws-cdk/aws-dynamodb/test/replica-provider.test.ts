@@ -16,11 +16,13 @@ afterAll(() => {
 
 AWS.setSDK(require.resolve('aws-sdk'));
 
+const REGION = 'eu-west-2';
+
 const createEvent: OnEventRequest = {
   RequestType: 'Create',
   ResourceProperties: {
     TableName: 'my-table',
-    Region: 'eu-west-2',
+    Region: REGION,
     ServiceToken: 'token',
   },
   ServiceToken: 'token',
@@ -47,7 +49,7 @@ test('on event', async () => {
     ReplicaUpdates: [
       {
         Create: {
-          RegionName: 'eu-west-2',
+          RegionName: REGION,
         },
       },
     ],
@@ -58,9 +60,16 @@ test('on event', async () => {
   });
 });
 
-test('on event calls updateTable with Create for Update requests with table replacement', async () => {
-  const updateTableMock = sinon.fake.resolves({});
+test("on Update event from CFN calls updateTable with Create if a replica in the region doesn't exist", async () => {
+  AWS.mock('DynamoDB', 'describeTable', sinon.fake.resolves({
+    Table: {
+      Replicas: [
+        // no replicas exist yet
+      ],
+    },
+  }));
 
+  const updateTableMock = sinon.fake.resolves({});
   AWS.mock('DynamoDB', 'updateTable', updateTableMock);
 
   const data = await onEventHandler({
@@ -76,7 +85,7 @@ test('on event calls updateTable with Create for Update requests with table repl
     ReplicaUpdates: [
       {
         Create: {
-          RegionName: 'eu-west-2',
+          RegionName: REGION,
         },
       },
     ],
@@ -85,6 +94,29 @@ test('on event calls updateTable with Create for Update requests with table repl
   expect(data).toEqual({
     PhysicalResourceId: 'my-table-eu-west-2',
   });
+});
+
+test("on Update event from CFN calls doesn't call updateTable if a replica in the region does exist", async () => {
+  AWS.mock('DynamoDB', 'describeTable', sinon.fake.resolves({
+    Table: {
+      Replicas: [
+        { RegionName: REGION },
+      ],
+    },
+  }));
+
+  const updateTableMock = sinon.fake.resolves({});
+  AWS.mock('DynamoDB', 'updateTable', updateTableMock);
+
+  await onEventHandler({
+    ...createEvent,
+    OldResourceProperties: {
+      TableName: 'my-old-table',
+    },
+    RequestType: 'Update',
+  });
+
+  sinon.assert.notCalled(updateTableMock);
 });
 
 test('on event calls updateTable with Delete', async () => {
@@ -102,7 +134,7 @@ test('on event calls updateTable with Delete', async () => {
     ReplicaUpdates: [
       {
         Delete: {
-          RegionName: 'eu-west-2',
+          RegionName: REGION,
         },
       },
     ],
@@ -129,7 +161,7 @@ test('is complete for create returns false when replica is not active', async ()
     Table: {
       Replicas: [
         {
-          RegionName: 'eu-west-2',
+          RegionName: REGION,
           ReplicaStatus: 'CREATING',
         },
       ],
@@ -148,7 +180,7 @@ test('is complete for create returns false when table is not active', async () =
     Table: {
       Replicas: [
         {
-          RegionName: 'eu-west-2',
+          RegionName: REGION,
           ReplicaStatus: 'ACTIVE',
         },
       ],
@@ -168,7 +200,7 @@ test('is complete for create returns true when replica is active', async () => {
     Table: {
       Replicas: [
         {
-          RegionName: 'eu-west-2',
+          RegionName: REGION,
           ReplicaStatus: 'ACTIVE',
         },
       ],
