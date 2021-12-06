@@ -120,7 +120,12 @@ describe.each(['legacy', 'modern'])('with %s synthesis', (synthesisStyle: string
         // THEN
         expect(supportStack).not.toHaveResource('AWS::KMS::Key');
         expect(supportStack).toHaveResourceLike('AWS::S3::Bucket', {
-          PublicAccessBlockConfiguration: {},
+          PublicAccessBlockConfiguration: {
+            BlockPublicAcls: true,
+            BlockPublicPolicy: true,
+            IgnorePublicAcls: true,
+            RestrictPublicBuckets: true,
+          },
         });
       });
 
