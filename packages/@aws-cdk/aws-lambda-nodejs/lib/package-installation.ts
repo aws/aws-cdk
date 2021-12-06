@@ -1,5 +1,5 @@
 import { spawnSync } from 'child_process';
-import { tryGetModuleVersion } from './util';
+import { tryGetModuleVersionFromRequire } from './util';
 
 /**
  * Package installation
@@ -8,7 +8,7 @@ export abstract class PackageInstallation {
   public static detect(module: string): PackageInstallation | undefined {
     try {
       // Check local version first
-      const version = tryGetModuleVersion(module);
+      const version = tryGetModuleVersionFromRequire(module);
       if (version) {
         return {
           isLocal: true,
