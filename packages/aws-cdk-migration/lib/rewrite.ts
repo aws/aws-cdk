@@ -42,18 +42,79 @@ export interface RewriteOptions {
  * - `require('@aws-cdk/lib');
  *
  * @param sourceText the source code where imports should be re-written.
+ * @param libName the mono CDK library name.
  * @param fileName   a customized file name to provide the TypeScript processor.
  *
  * @returns the updated source code.
  */
-export function rewriteImports(sourceText: string, fileName: string = 'index.ts', options: RewriteOptions = {}): string {
+export function rewriteMonoPackageImports(sourceText: string, libName: string, fileName: string = 'index.ts', options: RewriteOptions = {}): string {
+  return rewriteImports(sourceText, (modPath, importedElements) => updatedExternalLocation(modPath, libName, options, importedElements), fileName);
+}
+
+/**
+ * Re-writes READMEs of "hyper-modular" CDK imports (most packages in `@aws-cdk/*`)
+ * to the relevant "mono" CDK import path. The re-writing will only modify the imported
+ * library path, presrving the existing quote style, etc...
+ *
+ * Syntax errors in the README snippets being processed may cause some import
+ * statements to not be re-written.
+ *
+ * Supported import statement forms are:
+ * - `import * as lib from '@aws-cdk/lib';`
+ * - `import { Type } from '@aws-cdk/lib';`
+ * - `import '@aws-cdk/lib';`
+ * - `import lib = require('@aws-cdk/lib');`
+ * - `import { Type } = require('@aws-cdk/lib');
+ * - `require('@aws-cdk/lib');
+ *
+ * @param sourceText the README where snippet imports should be re-written.
+ * @param libName the mono CDK library name.
+ * @param fileName   a customized file name to provide the TypeScript processor.
+ *
+ * @returns the updated source code.
+ */
+export function rewriteReadmeImports(sourceText: string, libName: string, fileName: string = 'index.ts', options: RewriteOptions = {}): string {
+  return sourceText.replace(/(```(?:ts|typescript|text)[^\n]*\n)(.*?)(\n\s*```)/gs, (_m, prefix, body, suffix) => {
+    return prefix +
+      rewriteImports(body, (modPath, importedElements) => updatedExternalLocation(modPath, libName, options, importedElements), fileName) +
+      suffix;
+  });
+}
+
+/**
+ * Re-writes "hyper-modular" CDK imports (most packages in `@aws-cdk/*`) to the
+ * relevant "mono" CDK import path. The re-writing will only modify the imported
+ * library path, presrving the existing quote style, etc...
+ *
+ * Syntax errors in the source file being processed may cause some import
+ * statements to not be re-written.
+ *
+ * Supported import statement forms are:
+ * - `import * as lib from '@aws-cdk/lib';`
+ * - `import { Type } from '@aws-cdk/lib';`
+ * - `import '@aws-cdk/lib';`
+ * - `import lib = require('@aws-cdk/lib');`
+ * - `import { Type } = require('@aws-cdk/lib');
+ * - `require('@aws-cdk/lib');
+ *
+ * @param sourceText         the source code where imports should be re-written.
+ * @param updatedLocation    a function that returns the updated location of the import.
+ * @param fileName           a customized file name to provide the TypeScript processor.
+ *
+ * @returns the updated source code.
+ */
+export function rewriteImports(
+  sourceText: string,
+  updatedLocation: (modulePath: string, importedElements?: ts.NodeArray<ts.ImportSpecifier>) => string | undefined,
+  fileName: string = 'index.ts',
+): string {
   const sourceFile = ts.createSourceFile(fileName, sourceText, ts.ScriptTarget.ES2018);
 
   const replacements = new Array<{ original: ts.Node, updatedLocation: string }>();
 
   const visitor = <T extends ts.Node>(node: T): ts.VisitResult<T> => {
     const moduleSpecifier = getModuleSpecifier(node);
-    const newTarget = moduleSpecifier && updatedLocationOf(moduleSpecifier.text, options, getImportedElements(node));
+    const newTarget = moduleSpecifier && updatedLocation(moduleSpecifier.text, getImportedElements(node));
 
     if (moduleSpecifier != null && newTarget != null) {
       replacements.push({ original: moduleSpecifier, updatedLocation: newTarget });
@@ -131,7 +192,12 @@ const EXEMPTIONS = new Set([
   '@aws-cdk/pkglint',
 ]);
 
-function updatedLocationOf(modulePath: string, options: RewriteOptions, importedElements?: ts.NodeArray<ts.ImportSpecifier>): string | undefined {
+function updatedExternalLocation(
+  modulePath: string,
+  libName: string,
+  options: RewriteOptions,
+  importedElements?: ts.NodeArray<ts.ImportSpecifier>,
+): string | undefined {
   const customModulePath = options.customModules?.[modulePath];
   if (customModulePath) {
     let awsCdkLibLocation = undefined;
@@ -139,7 +205,7 @@ function updatedLocationOf(modulePath: string, options: RewriteOptions, imported
       if (e.name.text.startsWith('Cfn') || e.propertyName?.text.startsWith('Cfn')) {
         // This is an L1 import, so don't return the customModulePath (which is the alpha module).
         // Return the relevant aws-cdk-lib location.
-        awsCdkLibLocation = `aws-cdk-lib/${modulePath.substring('@aws-cdk/'.length)}`;
+        awsCdkLibLocation = `${libName}/${modulePath.substring('@aws-cdk/'.length)}`;
       }
     });
     if (awsCdkLibLocation) {
@@ -149,7 +215,7 @@ function updatedLocationOf(modulePath: string, options: RewriteOptions, imported
   }
 
   if (options.rewriteCfnImports && modulePath.endsWith(`${options.packageUnscopedName?.substr('aws-'.length)}.generated`)) {
-    return `aws-cdk-lib/${options.packageUnscopedName}`;
+    return `${libName}/${options.packageUnscopedName}`;
   }
 
   if (
@@ -161,11 +227,11 @@ function updatedLocationOf(modulePath: string, options: RewriteOptions, imported
   }
 
   if (modulePath.startsWith('@aws-cdk/core/lib')) {
-    return `aws-cdk-lib/lib/core/lib/${modulePath.substring('@aws-cdk/core/lib/'.length)}`;
+    return `${libName}/core/lib/${modulePath.substring('@aws-cdk/core/lib/'.length)}`;
   }
 
   if (modulePath === '@aws-cdk/core') {
-    return 'aws-cdk-lib';
+    return libName;
   }
 
   // These 2 are unchanged
@@ -183,7 +249,7 @@ function updatedLocationOf(modulePath: string, options: RewriteOptions, imported
     return '@aws-cdk/assert/jest';
   }
 
-  return `aws-cdk-lib/${modulePath.substring('@aws-cdk/'.length)}`;
+  return `${libName}/${modulePath.substring('@aws-cdk/'.length)}`;
 }
 
 /**
