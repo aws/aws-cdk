@@ -225,7 +225,7 @@ const FUTURE_FLAGS_DEFAULTS: { [key: string]: boolean } = {
   [RDS_LOWERCASE_DB_IDENTIFIER]: true,
   [EFS_DEFAULT_ENCRYPTION_AT_REST]: true,
   [LAMBDA_RECOGNIZE_VERSION_PROPS]: false,
-  [CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021]: false,
+  [CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021]: true,
 };
 
 export function futureFlagDefault(flag: string): boolean | undefined {
