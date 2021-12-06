@@ -613,9 +613,12 @@ describe('States Language', () => {
     const state1 = new stepfunctions.Pass(stack, 'State1');
     const state2 = new stepfunctions.Pass(stack, 'State2');
 
-    expect(() => new stepfunctions.Parallel(stack, 'Parallel')
+    const parallel = new stepfunctions.Parallel(stack, 'Parallel')
       .branch(state1.next(state2))
-      .branch(state2)).toThrow();
+      .branch(state2);
+
+    // WHEN
+    expect(() => render(parallel)).toThrow();
   }),
 
   describe('findReachableStates', () => {
