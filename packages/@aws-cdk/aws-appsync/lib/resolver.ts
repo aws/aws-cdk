@@ -9,7 +9,7 @@ import { MappingTemplate } from './mapping-template';
 
 // v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
 // eslint-disable-next-line
-import { Construct as CoreConstruct } from '@aws-cdk/core';
+import { Construct as CoreConstruct, Token } from '@aws-cdk/core';
 
 /**
  * Basic properties for an AppSync resolver
@@ -99,7 +99,8 @@ export class Resolver extends CoreConstruct {
     }
 
     if (props.cachingConfig?.cachingKeys) {
-      if (props.cachingConfig.cachingKeys.find(cachingKey => !BASE_CACHING_KEYS.find(baseCachingKey => cachingKey.startsWith(baseCachingKey)))) {
+      if (props.cachingConfig.cachingKeys.find(cachingKey =>
+        !Token.isUnresolved(cachingKey) && !BASE_CACHING_KEYS.find(baseCachingKey => cachingKey.startsWith(baseCachingKey)))) {       
         throw new Error(`Caching config keys must begin with $context.arguments, $context.source or $context.identity. Received: ${props.cachingConfig.cachingKeys}`);
       }
     }
