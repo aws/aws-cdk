@@ -224,8 +224,8 @@ const FUTURE_FLAGS_DEFAULTS: { [key: string]: boolean } = {
   [ECS_REMOVE_DEFAULT_DESIRED_COUNT]: true,
   [RDS_LOWERCASE_DB_IDENTIFIER]: true,
   [EFS_DEFAULT_ENCRYPTION_AT_REST]: true,
-  [LAMBDA_RECOGNIZE_VERSION_PROPS]: true,
-  [CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021]: true,
+  [LAMBDA_RECOGNIZE_VERSION_PROPS]: false,
+  [CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021]: false,
 };
 
 export function futureFlagDefault(flag: string): boolean | undefined {
