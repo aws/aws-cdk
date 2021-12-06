@@ -5,7 +5,7 @@ import {
   ICluster, LogDriver, PropagatedTagSource, Secret,
 } from '@aws-cdk/aws-ecs';
 import { IQueue, Queue } from '@aws-cdk/aws-sqs';
-import { CfnOutput, Duration, Stack } from '@aws-cdk/core';
+import { CfnOutput, Duration, FeatureFlags, Stack } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 
@@ -315,7 +315,7 @@ export abstract class QueueProcessingServiceBase extends Construct {
     this.desiredCount = props.desiredTaskCount ?? 1;
 
     // Determine the desired task count (minimum) and maximum scaling capacity
-    if (!this.node.tryGetContext(cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT)) {
+    if (!FeatureFlags.of(this).isEnabled(cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT)) {
       this.minCapacity = props.minScalingCapacity ?? this.desiredCount;
       this.maxCapacity = props.maxScalingCapacity || (2 * this.desiredCount);
     } else {
