@@ -18,8 +18,11 @@ This module exports a single class called `KubectlLayer` which is a `lambda.Laye
 Usage:
 
 ```ts
-const fn = new lambda.Function(...);
-fn.addLayers(new KubectlLayer(stack, 'KubectlLayer'));
+// KubectlLayer bundles the 'kubectl' and 'helm' command lines
+import { KubectlLayer } from '@aws-cdk/lambda-layer-kubectl';
+
+declare const fn: lambda.Function;
+fn.addLayers(new KubectlLayer(this, 'KubectlLayer'));
 ```
 
 `kubectl` will be installed under `/opt/kubectl/kubectl`, and `helm` will be installed under `/opt/helm/helm`.

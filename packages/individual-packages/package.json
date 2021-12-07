@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "build": "echo OK"
+    "build": "echo OK",
+    "test": "echo OK"
   },
   "devDependencies": {
     "lerna": "^4.0.0"

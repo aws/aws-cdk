@@ -4,8 +4,18 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import {
-  App, BootstraplessSynthesizer, DefaultStackSynthesizer,
-  IStackSynthesizer, Lazy, Names, PhysicalName, RemovalPolicy, Resource, Stack, Token,
+  ArnFormat,
+  BootstraplessSynthesizer,
+  DefaultStackSynthesizer,
+  IStackSynthesizer,
+  Lazy,
+  Names,
+  PhysicalName,
+  RemovalPolicy,
+  Resource,
+  Stack,
+  Stage as CdkStage,
+  Token,
 } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { ActionCategory, IAction, IPipeline, IStage, PipelineNotificationEvents, PipelineNotifyOnOptions } from './action';
@@ -263,15 +273,19 @@ abstract class PipelineBase extends Resource implements IPipeline {
  *
  * @example
  * // create a pipeline
- * const pipeline = new Pipeline(this, 'Pipeline');
+ * import * as codecommit from '@aws-cdk/aws-codecommit';
+ *
+ * const pipeline = new codepipeline.Pipeline(this, 'Pipeline');
  *
  * // add a stage
  * const sourceStage = pipeline.addStage({ stageName: 'Source' });
  *
  * // add a source action to the stage
+ * declare const repo: codecommit.Repository;
+ * declare const sourceArtifact: codepipeline.Artifact;
  * sourceStage.addAction(new codepipeline_actions.CodeCommitSourceAction({
  *   actionName: 'Source',
- *   outputArtifactName: 'SourceArtifact',
+ *   output: sourceArtifact,
  *   repository: repo,
  * }));
  *
@@ -287,7 +301,7 @@ export class Pipeline extends PipelineBase {
    */
   public static fromPipelineArn(scope: Construct, id: string, pipelineArn: string): IPipeline {
     class Import extends PipelineBase {
-      public readonly pipelineName = Stack.of(scope).parseArn(pipelineArn).resource;
+      public readonly pipelineName = Stack.of(scope).splitArn(pipelineArn, ArnFormat.SLASH_RESOURCE_NAME).resource;
       public readonly pipelineArn = pipelineArn;
     }
 
@@ -616,7 +630,7 @@ export class Pipeline extends PipelineBase {
       throw new Error("You need to specify an explicit account when using CodePipeline's cross-region support");
     }
 
-    const app = this.requireApp();
+    const app = this.supportScope();
     const supportStackId = `cross-region-stack-${pipelineAccount}:${actionRegion}`;
     let supportStack = app.node.tryFindChild(supportStackId) as CrossRegionSupportStack;
     if (!supportStack) {
@@ -812,7 +826,7 @@ export class Pipeline extends PipelineBase {
     let targetAccountStack: Stack | undefined = this._crossAccountSupport[targetAccount];
     if (!targetAccountStack) {
       const stackId = `cross-account-support-stack-${targetAccount}`;
-      const app = this.requireApp();
+      const app = this.supportScope();
       targetAccountStack = app.node.tryFindChild(stackId) as Stack;
       if (!targetAccountStack) {
         const actionRegion = action.actionProperties.resource
@@ -1022,12 +1036,12 @@ export class Pipeline extends PipelineBase {
     return region;
   }
 
-  private requireApp(): App {
-    const app = this.node.root;
-    if (!app || !App.isApp(app)) {
-      throw new Error('Pipeline stack which uses cross-environment actions must be part of a CDK app');
+  private supportScope(): CdkStage {
+    const scope = CdkStage.of(this);
+    if (!scope) {
+      throw new Error('Pipeline stack which uses cross-environment actions must be part of a CDK App or Stage');
     }
-    return app;
+    return scope;
   }
 }
 

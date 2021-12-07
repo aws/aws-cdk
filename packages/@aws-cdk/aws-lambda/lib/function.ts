@@ -5,7 +5,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
 import * as sqs from '@aws-cdk/aws-sqs';
-import { Annotations, CfnResource, Duration, Fn, Lazy, Names, Stack } from '@aws-cdk/core';
+import { Annotations, ArnFormat, CfnResource, Duration, Fn, Lazy, Names, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { Architecture } from './architecture';
 import { Code, CodeConfig } from './code';
@@ -573,7 +573,18 @@ export class Function extends FunctionBase {
    */
   public readonly deadLetterQueue?: sqs.IQueue;
 
+  /**
+   * The architecture of this Lambda Function (this is an optional attribute and defaults to X86_64).
+   */
+  public readonly architecture?: Architecture;
+
+  /**
+   * The timeout configured for this lambda.
+   */
+  public readonly timeout?: Duration;
+
   public readonly permissionsNode = this.node;
+
 
   protected readonly canCreatePermissions = true;
 
@@ -716,10 +727,13 @@ export class Function extends FunctionBase {
       service: 'lambda',
       resource: 'function',
       resourceName: this.physicalName,
-      sep: ':',
+      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
     });
 
     this.runtime = props.runtime;
+    this.timeout = props.timeout;
+
+    this.architecture = props.architecture;
 
     if (props.layers) {
       if (props.runtime === Runtime.FROM_IMAGE) {

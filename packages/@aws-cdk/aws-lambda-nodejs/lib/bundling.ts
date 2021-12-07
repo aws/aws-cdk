@@ -54,7 +54,8 @@ export class Bundling implements cdk.BundlingOptions {
    */
   public static bundle(options: BundlingProps): AssetCode {
     return Code.fromAsset(options.projectRoot, {
-      assetHashType: cdk.AssetHashType.OUTPUT,
+      assetHash: options.assetHash,
+      assetHashType: options.assetHash ? cdk.AssetHashType.CUSTOM : cdk.AssetHashType.OUTPUT,
       bundling: new Bundling(options),
     });
   }
@@ -304,22 +305,22 @@ class OsCommand {
   public writeJson(filePath: string, data: any): string {
     const stringifiedData = JSON.stringify(data);
     if (this.osPlatform === 'win32') {
-      return `echo ^${stringifiedData}^ > ${filePath}`;
+      return `echo ^${stringifiedData}^ > "${filePath}"`;
     }
 
-    return `echo '${stringifiedData}' > ${filePath}`;
+    return `echo '${stringifiedData}' > "${filePath}"`;
   }
 
   public copy(src: string, dest: string): string {
     if (this.osPlatform === 'win32') {
-      return `copy ${src} ${dest}`;
+      return `copy "${src}" "${dest}"`;
     }
 
-    return `cp ${src} ${dest}`;
+    return `cp "${src}" "${dest}"`;
   }
 
   public changeDirectory(dir: string): string {
-    return `cd ${dir}`;
+    return `cd "${dir}"`;
   }
 }
 

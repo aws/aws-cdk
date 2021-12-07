@@ -11,7 +11,6 @@
   },
   "devDependencies": {
     "aws-cdk": "%cdk-version%",
-    "@aws-cdk/assertions-alpha": "%cdk-version%",
     "jest": "^26.4.2"
   },
   "dependencies": {

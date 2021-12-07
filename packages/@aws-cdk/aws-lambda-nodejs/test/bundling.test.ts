@@ -169,9 +169,9 @@ test('esbuild bundling with externals and dependencies', () => {
         'bash', '-c',
         [
           'esbuild --bundle "/asset-input/test/bundling.test.js" --target=node12 --platform=node --outfile="/asset-output/index.js" --external:abc --external:delay',
-          `echo \'{\"dependencies\":{\"delay\":\"${delayVersion}\"}}\' > /asset-output/package.json`,
-          'cp /asset-input/package-lock.json /asset-output/package-lock.json',
-          'cd /asset-output',
+          `echo \'{\"dependencies\":{\"delay\":\"${delayVersion}\"}}\' > "/asset-output/package.json"`,
+          'cp "/asset-input/package-lock.json" "/asset-output/package-lock.json"',
+          'cd "/asset-output"',
           'npm ci',
         ].join(' && '),
       ],
@@ -342,7 +342,7 @@ test('Detects yarn.lock', () => {
     assetHashType: AssetHashType.OUTPUT,
     bundling: expect.objectContaining({
       command: expect.arrayContaining([
-        expect.stringMatching(/yarn\.lock.+yarn install/),
+        expect.stringMatching(/yarn\.lock.+yarn install --no-immutable/),
       ]),
     }),
   });
@@ -550,9 +550,9 @@ test('esbuild bundling with projectRoot and externals and dependencies', () => {
         'bash', '-c',
         [
           'esbuild --bundle "/asset-input/packages/@aws-cdk/aws-lambda-nodejs/test/bundling.test.js" --target=node12 --platform=node --outfile="/asset-output/index.js" --external:abc --external:delay',
-          `echo \'{\"dependencies\":{\"delay\":\"${delayVersion}\"}}\' > /asset-output/package.json`,
-          'cp /asset-input/common/package-lock.json /asset-output/package-lock.json',
-          'cd /asset-output',
+          `echo \'{\"dependencies\":{\"delay\":\"${delayVersion}\"}}\' > "/asset-output/package.json"`,
+          'cp "/asset-input/common/package-lock.json" "/asset-output/package-lock.json"',
+          'cd "/asset-output"',
           'npm ci',
         ].join(' && '),
       ],
@@ -657,4 +657,22 @@ test('esbuild bundling with pre compilations and undefined tsconfig ( Should thr
     });
   }).toThrow('Cannot find a tsconfig.json, please specify the prop: tsconfig');
 
+});
+
+test('with custom hash', () => {
+  Bundling.bundle({
+    entry,
+    projectRoot,
+    depsLockFilePath,
+    runtime: Runtime.NODEJS_14_X,
+    forceDockerBundling: true,
+    assetHash: 'custom',
+    architecture: Architecture.X86_64,
+  });
+
+  // Correctly passes asset hash options
+  expect(Code.fromAsset).toHaveBeenCalledWith(path.dirname(depsLockFilePath), expect.objectContaining({
+    assetHash: 'custom',
+    assetHashType: AssetHashType.CUSTOM,
+  }));
 });

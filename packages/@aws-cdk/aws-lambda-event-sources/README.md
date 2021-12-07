@@ -24,12 +24,14 @@ sources regardless of the underlying mechanism they use.
 The following code sets up a lambda function with an SQS queue event source -
 
 ```ts
-const fn = new lambda.Function(this, 'MyFunction', { /* ... */ });
+import { SqsEventSource } from '@aws-cdk/aws-lambda-event-sources';
 
+declare const fn: lambda.Function;
 const queue = new sqs.Queue(this, 'MyQueue');
-const eventSource = fn.addEventSource(new SqsEventSource(queue));
+const eventSource = new SqsEventSource(queue);
+fn.addEventSource(eventSource);
 
-const eventSourceId = eventSource.eventSourceId;
+const eventSourceId = eventSource.eventSourceMappingId;
 ```
 
 The `eventSourceId` property contains the event source id. This will be a
@@ -58,18 +60,18 @@ behavior:
 * __enabled__: If the SQS event source mapping should be enabled. The default is true.
 
 ```ts
-import * as sqs from '@aws-cdk/aws-sqs';
 import { SqsEventSource } from '@aws-cdk/aws-lambda-event-sources';
-import { Duration } from '@aws-cdk/core';
 
 const queue = new sqs.Queue(this, 'MyQueue', {
-  visibilityTimeout: Duration.seconds(30)      // default,
-  receiveMessageWaitTime: Duration.seconds(20) // default
+  visibilityTimeout: Duration.seconds(30),      // default,
+  receiveMessageWaitTime: Duration.seconds(20), // default
 });
+declare const fn: lambda.Function;
 
-lambda.addEventSource(new SqsEventSource(queue, {
+fn.addEventSource(new SqsEventSource(queue, {
   batchSize: 10, // default
   maxBatchingWindow: Duration.minutes(5),
+  reportBatchItemFailures: true, // default to false
 }));
 ```
 
@@ -88,11 +90,12 @@ Amazon S3 to publish and which Lambda function to invoke.
 import * as s3 from '@aws-cdk/aws-s3';
 import { S3EventSource } from '@aws-cdk/aws-lambda-event-sources';
 
-const bucket = new s3.Bucket(...);
+const bucket = new s3.Bucket(this, 'mybucket');
+declare const fn: lambda.Function;
 
-lambda.addEventSource(new S3EventSource(bucket, {
+fn.addEventSource(new S3EventSource(bucket, {
   events: [ s3.EventType.OBJECT_CREATED, s3.EventType.OBJECT_REMOVED ],
-  filters: [ { prefix: 'subdir/' } ] // optional
+  filters: [ { prefix: 'subdir/' } ], // optional
 }));
 ```
 
@@ -118,12 +121,13 @@ Accounts](https://docs.aws.amazon.com/lambda/latest/dg/with-sns.html).
 import * as sns from '@aws-cdk/aws-sns';
 import { SnsEventSource } from '@aws-cdk/aws-lambda-event-sources';
 
-const topic = new sns.Topic(...);
+declare const topic: sns.Topic;
 const deadLetterQueue = new sqs.Queue(this, 'deadLetterQueue');
 
-lambda.addEventSource(new SnsEventSource(topic, {
-  filterPolicy: { ... },
-  deadLetterQueue: deadLetterQueue
+declare const fn: lambda.Function;
+fn.addEventSource(new SnsEventSource(topic, {
+  filterPolicy: { },
+  deadLetterQueue: deadLetterQueue,
 }));
 ```
 
@@ -157,24 +161,19 @@ and add it to your Lambda function. The following parameters will impact Amazon 
 
 ```ts
 import * as dynamodb from '@aws-cdk/aws-dynamodb';
-import * as lambda from '@aws-cdk/aws-lambda';
-import * as sqs from '@aws-cdk/aws-sqs';
 import { DynamoEventSource, SqsDlq } from '@aws-cdk/aws-lambda-event-sources';
 
-const table = new dynamodb.Table(..., {
-  partitionKey: ...,
-  stream: dynamodb.StreamViewType.NEW_IMAGE // make sure stream is configured
-});
+declare const table: dynamodb.Table;
 
 const deadLetterQueue = new sqs.Queue(this, 'deadLetterQueue');
 
-const function = new lambda.Function(...);
-function.addEventSource(new DynamoEventSource(table, {
+declare const fn: lambda.Function;
+fn.addEventSource(new DynamoEventSource(table, {
   startingPosition: lambda.StartingPosition.TRIM_HORIZON,
   batchSize: 5,
   bisectBatchOnError: true,
   onFailure: new SqsDlq(deadLetterQueue),
-  retryAttempts: 10
+  retryAttempts: 10,
 }));
 ```
 
@@ -202,15 +201,15 @@ behavior:
 * __enabled__: If the DynamoDB Streams event source mapping should be enabled. The default is true.
 
 ```ts
-import * as lambda from '@aws-cdk/aws-lambda';
 import * as kinesis from '@aws-cdk/aws-kinesis';
 import { KinesisEventSource } from '@aws-cdk/aws-lambda-event-sources';
 
 const stream = new kinesis.Stream(this, 'MyStream');
 
+declare const myFunction: lambda.Function;
 myFunction.addEventSource(new KinesisEventSource(stream, {
   batchSize: 100, // default
-  startingPosition: lambda.StartingPosition.TRIM_HORIZON
+  startingPosition: lambda.StartingPosition.TRIM_HORIZON,
 }));
 ```
 
@@ -222,27 +221,26 @@ The following code sets up Amazon MSK as an event source for a lambda function. 
 MSK cluster, as described in [Username/Password authentication](https://docs.aws.amazon.com/msk/latest/developerguide/msk-password.html).
 
 ```ts
-import * as lambda from '@aws-cdk/aws-lambda';
-import * as msk from '@aws-cdk/aws-lambda';
-import { Secret } from '@aws-cdk/aws-secretmanager';
+import { Secret } from '@aws-cdk/aws-secretsmanager';
 import { ManagedKafkaEventSource } from '@aws-cdk/aws-lambda-event-sources';
 
 // Your MSK cluster arn
-const cluster = 'arn:aws:kafka:us-east-1:0123456789019:cluster/SalesCluster/abcd1234-abcd-cafe-abab-9876543210ab-4';
+const clusterArn = 'arn:aws:kafka:us-east-1:0123456789019:cluster/SalesCluster/abcd1234-abcd-cafe-abab-9876543210ab-4';
 
 // The Kafka topic you want to subscribe to
-const topic = 'some-cool-topic'
+const topic = 'some-cool-topic';
 
 // The secret that allows access to your MSK cluster
 // You still have to make sure that it is associated with your cluster as described in the documentation
 const secret = new Secret(this, 'Secret', { secretName: 'AmazonMSK_KafkaSecret' });
 
+declare const myFunction: lambda.Function;
 myFunction.addEventSource(new ManagedKafkaEventSource({
   clusterArn,
   topic: topic,
   secret: secret,
   batchSize: 100, // default
-  startingPosition: lambda.StartingPosition.TRIM_HORIZON
+  startingPosition: lambda.StartingPosition.TRIM_HORIZON,
 }));
 ```
 
@@ -250,25 +248,25 @@ The following code sets up a self managed Kafka cluster as an event source. User
 will need to be set up as described in [Managing access and permissions](https://docs.aws.amazon.com/lambda/latest/dg/smaa-permissions.html#smaa-permissions-add-secret).
 
 ```ts
-import * as lambda from '@aws-cdk/aws-lambda';
-import { Secret } from '@aws-cdk/aws-secretmanager';
+import { Secret } from '@aws-cdk/aws-secretsmanager';
 import { SelfManagedKafkaEventSource } from '@aws-cdk/aws-lambda-event-sources';
 
 // The list of Kafka brokers
-const bootstrapServers = ['kafka-broker:9092']
+const bootstrapServers = ['kafka-broker:9092'];
 
 // The Kafka topic you want to subscribe to
-const topic = 'some-cool-topic'
+const topic = 'some-cool-topic';
 
 // The secret that allows access to your self hosted Kafka cluster
-const secret = new Secret(this, 'Secret', { ... });
+declare const secret: Secret;
 
+declare const myFunction: lambda.Function;
 myFunction.addEventSource(new SelfManagedKafkaEventSource({
   bootstrapServers: bootstrapServers,
   topic: topic,
   secret: secret,
   batchSize: 100, // default
-  startingPosition: lambda.StartingPosition.TRIM_HORIZON
+  startingPosition: lambda.StartingPosition.TRIM_HORIZON,
 }));
 ```
 
