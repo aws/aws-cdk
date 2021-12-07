@@ -338,7 +338,6 @@ describe('security group', () => {
     });
   });
 
-
   describe('Peer security group ID validation', () => {
     test('passes with valid security group ID', () => {
       //GIVEN
