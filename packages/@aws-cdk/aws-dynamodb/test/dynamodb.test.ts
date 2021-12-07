@@ -2468,7 +2468,7 @@ describe('global', () => {
           Ref: 'TableCD117FA1',
         },
         Region: 'eu-west-2',
-        SkipReplicationCompletedWait: true,
+        SkipReplicationCompletedWait: 'true',
       },
       Condition: 'TableStackRegionNotEqualseuwest2A03859E7',
     }, ResourcePart.CompleteDefinition);
@@ -2479,7 +2479,7 @@ describe('global', () => {
           Ref: 'TableCD117FA1',
         },
         Region: 'eu-central-1',
-        SkipReplicationCompletedWait: true,
+        SkipReplicationCompletedWait: 'true',
       },
       Condition: 'TableStackRegionNotEqualseucentral199D46FC0',
     }, ResourcePart.CompleteDefinition);
