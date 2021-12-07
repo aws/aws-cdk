@@ -168,14 +168,14 @@ test('calls the updateStateMachine() API when it receives a change to the defini
   });
 
   // WHEN
-  setup.pushStackResourceSummaries(setup.stackSummaryOf('Machine', 'AWS::StepFunctions::StateMachine', 'mock-machine-resource-id'));
+  setup.pushStackResourceSummaries(setup.stackSummaryOf('Machine', 'AWS::StepFunctions::StateMachine', 'mock-state-machine-arn'));
   const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(cdkStackArtifact);
 
   // THEN
   expect(deployStackResult).not.toBeUndefined();
   expect(mockUpdateMachineDefinition).toHaveBeenCalledWith({
     definition: '{ "Prop" : "new-value" }',
-    stateMachineArn: 'mock-machine-resource-id', // the sdk will convert the ID to the arn in a production environment
+    stateMachineArn: 'mock-state-machine-arn',
   });
 });
 
@@ -281,7 +281,7 @@ test('can correctly hotswap old style synth changes', async () => {
   });
 
   // WHEN
-  setup.pushStackResourceSummaries( setup.stackSummaryOf('Machine', 'AWS::StepFunctions::StateMachine', 'mock-machine-resource-id'));
+  setup.pushStackResourceSummaries( setup.stackSummaryOf('Machine', 'AWS::StepFunctions::StateMachine', 'mock-state-machine-arn'));
   const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(cdkStackArtifact, { AssetParam2: 'asset-param-2' });
 
   // THEN
@@ -349,7 +349,7 @@ test('calls the updateStateMachine() API when it receives a change to the defini
 
   // WHEN
   setup.pushStackResourceSummaries(
-    setup.stackSummaryOf('Machine', 'AWS::StepFunctions::StateMachine', 'mock-machine-resource-id'),
+    setup.stackSummaryOf('Machine', 'AWS::StepFunctions::StateMachine', 'mock-state-machine-arn'),
     setup.stackSummaryOf('Func', 'AWS::Lambda::Function', 'my-func'),
   );
   const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(cdkStackArtifact);

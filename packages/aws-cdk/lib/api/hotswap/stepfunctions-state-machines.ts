@@ -12,15 +12,11 @@ export async function isHotswappableStateMachineChange(
   }
 
   const machineNameInCfnTemplate = change.newValue?.Properties?.StateMachineName;
-  let machineArn;
 
-  if (machineNameInCfnTemplate) {
-    machineArn = await evaluateCfnTemplate.evaluateCfnExpression({
-      'Fn::Sub': 'arn:${AWS::Partition}:states:${AWS::Region}:${AWS::AccountId}:stateMachine:' + machineNameInCfnTemplate,
-    });
-  } else {
-    machineArn = await establishResourcePhysicalName(logicalId, machineNameInCfnTemplate, evaluateCfnTemplate);
-  }
+  const machineArn = machineNameInCfnTemplate ? await evaluateCfnTemplate.evaluateCfnExpression({
+    'Fn::Sub': 'arn:${AWS::Partition}:states:${AWS::Region}:${AWS::AccountId}:stateMachine:' + machineNameInCfnTemplate,
+  }) : await establishResourcePhysicalName(logicalId, machineNameInCfnTemplate, evaluateCfnTemplate);
+
 
   if (!machineArn) {
     return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
