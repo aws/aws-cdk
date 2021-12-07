@@ -17,7 +17,6 @@ export async function isHotswappableStateMachineChange(
     'Fn::Sub': 'arn:${AWS::Partition}:states:${AWS::Region}:${AWS::AccountId}:stateMachine:' + machineNameInCfnTemplate,
   }) : await establishResourcePhysicalName(logicalId, machineNameInCfnTemplate, evaluateCfnTemplate);
 
-
   if (!machineArn) {
     return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
   }
