@@ -12,14 +12,23 @@ export async function isHotswappableStateMachineChange(
   }
 
   const machineNameInCfnTemplate = change.newValue?.Properties?.StateMachineName;
-  const machineName = await establishResourcePhysicalName(logicalId, machineNameInCfnTemplate, evaluateCfnTemplate);
-  if (!machineName) {
+  let machineArn;
+
+  if (machineNameInCfnTemplate) {
+    machineArn = await evaluateCfnTemplate.evaluateCfnExpression({
+      'Fn::Sub': 'arn:${AWS::Partition}:states:${AWS::Region}:${AWS::AccountId}:stateMachine:' + machineNameInCfnTemplate,
+    });
+  } else {
+    machineArn = await establishResourcePhysicalName(logicalId, machineNameInCfnTemplate, evaluateCfnTemplate);
+  }
+
+  if (!machineArn) {
     return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
   }
 
   return new StateMachineHotswapOperation({
     definition: stateMachineDefinitionChange,
-    stateMachineName: machineName,
+    stateMachineArn: machineArn,
   });
 }
 
@@ -43,7 +52,7 @@ async function isStateMachineDefinitionOnlyChange(
 }
 
 interface StateMachineResource {
-  readonly stateMachineName: string;
+  readonly stateMachineArn: string;
   readonly definition: string;
 }
 
@@ -56,8 +65,7 @@ class StateMachineHotswapOperation implements HotswapOperation {
   public async apply(sdk: ISDK): Promise<any> {
     // not passing the optional properties leaves them unchanged
     return sdk.stepFunctions().updateStateMachine({
-      // even though the name of the property is stateMachineArn, passing the name of the state machine is allowed here
-      stateMachineArn: this.stepFunctionResource.stateMachineName,
+      stateMachineArn: this.stepFunctionResource.stateMachineArn,
       definition: this.stepFunctionResource.definition,
     }).promise();
   }
