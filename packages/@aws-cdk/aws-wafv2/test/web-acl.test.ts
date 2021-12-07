@@ -1,4 +1,4 @@
-import { Template } from '@aws-cdk/assertions';
+import { Template, Match } from '@aws-cdk/assertions';
 import * as cdk from '@aws-cdk/core';
 import * as wafv2 from '../lib';
 
@@ -19,16 +19,7 @@ test('Default property', () => {
     Scope: 'REGIONAL',
     VisibilityConfig: {
       CloudWatchMetricsEnabled: true,
-      MetricName: {
-        'Fn::Join': [
-          '',
-          [
-            'WebAcl_',
-            { Ref: 'AWS::StackId' },
-            '_MyWebAcl',
-          ],
-        ],
-      },
+      MetricName: 'MyWebAcl',
       SampledRequestsEnabled: true,
     },
   });
@@ -130,6 +121,9 @@ test('can set physical name', () => {
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::WAFv2::WebACL', {
     Name: 'test-WebAcl',
+    VisibilityConfig: Match.objectLike({
+      MetricName: 'test-WebAcl',
+    }),
   });
 });
 
