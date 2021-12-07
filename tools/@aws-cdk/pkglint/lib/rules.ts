@@ -54,11 +54,25 @@ export class DescriptionIsRequired extends ValidationRule {
 export class PublishConfigTagIsRequired extends ValidationRule {
   public readonly name = 'package-info/publish-config-tag';
 
+  // The list of packages that are publicly published in both v1 and v2.
+  private readonly SHARED_PACKAGES = [
+    '@aws-cdk/assert',
+    '@aws-cdk/cloud-assembly-schema',
+    '@aws-cdk/cloudformation-diff',
+    '@aws-cdk/cx-api',
+    '@aws-cdk/region-info',
+    'aws-cdk',
+    'awslint',
+    'cdk-assets',
+  ];
+
   public validate(pkg: PackageJson): void {
     if (pkg.json.private) { return; }
 
-    // Now that v2 is GA, we publish all v2 packages with 'latest'; v1 packages get a 'latest-1' tag instead.
-    const defaultPublishTag = cdkMajorVersion() === 2 ? 'latest' : 'latest-1';
+    // v1 packages that are v1-only (e.g., `@aws-cdk/aws-s3`) are always published as `latest`.
+    // Packages that are published with the same namespace to both v1 and v2 are published as `latest-1` on v1 and `latest` on v2.
+    // All v2-only packages are just `latest`.
+    const defaultPublishTag = (cdkMajorVersion() === 2 || !this.SHARED_PACKAGES.includes(pkg.packageName)) ? 'latest' : 'latest-1';
 
     if (pkg.json.publishConfig?.tag !== defaultPublishTag) {
       pkg.report({

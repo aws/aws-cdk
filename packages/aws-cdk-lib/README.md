@@ -1,7 +1,5 @@
 # AWS Cloud Development Kit Library
 
-[![experimental](http://badges.github.io/stability-badges/dist/experimental.svg)](http://github.com/badges/stability-badges)
-
 The AWS CDK construct library provides APIs to define your CDK application and add
 CDK constructs to the application.
 
