@@ -393,7 +393,7 @@ export class ContainerDefinition extends CoreConstruct {
   public readonly taskDefinition: TaskDefinition;
 
   /**
-   * The environment files for this container
+   * The environment variables for this container
    */
   public readonly environment?: { [key: string]: string };
 
