@@ -56,6 +56,6 @@
   "stability": "stable",
   "maturity": "stable",
   "publishConfig": {
-    "tag": "latest-1"
+    "tag": "latest"
   }
 }

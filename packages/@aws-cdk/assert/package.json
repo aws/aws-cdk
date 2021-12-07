@@ -72,6 +72,6 @@
   "stability": "experimental",
   "maturity": "developer-preview",
   "publishConfig": {
-    "tag": "latest-1"
+    "tag": "latest"
   }
 }
