@@ -395,6 +395,11 @@ export class ContainerDefinition extends CoreConstruct {
   /**
    * The environment files for this container
    */
+  public readonly environment?: { [key: string]: string };
+
+  /**
+   * The environment files for this container
+   */
   public readonly environmentFiles?: EnvironmentFileConfig[];
 
   /**
@@ -437,6 +442,7 @@ export class ContainerDefinition extends CoreConstruct {
     this.memoryLimitSpecified = props.memoryLimitMiB !== undefined || props.memoryReservationMiB !== undefined;
     this.linuxParameters = props.linuxParameters;
     this.containerName = props.containerName ?? this.node.id;
+    this.environment = props.environment ?? undefined;
 
     this.imageConfig = props.image.bind(this, this);
     if (props.logging) {
@@ -669,7 +675,7 @@ export class ContainerDefinition extends CoreConstruct {
       volumesFrom: cdk.Lazy.any({ produce: () => this.volumesFrom.map(renderVolumeFrom) }, { omitEmptyArray: true }),
       workingDirectory: this.props.workingDirectory,
       logConfiguration: this.logDriverConfig,
-      environment: this.props.environment && renderKV(this.props.environment, 'name', 'value'),
+      environment: this.environment && renderKV(this.environment, 'name', 'value'),
       environmentFiles: this.environmentFiles && renderEnvironmentFiles(this.environmentFiles),
       secrets: this.secrets,
       extraHosts: this.props.extraHosts && renderKV(this.props.extraHosts, 'hostname', 'ipAddress'),
