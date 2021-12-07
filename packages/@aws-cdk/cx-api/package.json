@@ -157,6 +157,6 @@
     "announce": false
   },
   "publishConfig": {
-    "tag": "latest-1"
+    "tag": "latest"
   }
 }
