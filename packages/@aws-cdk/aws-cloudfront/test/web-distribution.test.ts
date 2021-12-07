@@ -290,7 +290,7 @@ describe('web distribution', () => {
     const sourceBucket = new s3.Bucket(stack, 'Bucket');
 
     new CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably', {
-      comment: `Adding a comment longer than 128 characters should be trimmed and 
+      comment: `Adding a comment longer than 128 characters should be trimmed and
 added the ellipsis so a user would know there was more to read and everything beyond this point should not show up`,
       originConfigs: [
         {
@@ -344,8 +344,8 @@ added the ellipsis so a user would know there was more to read and everything be
                 },
                 Compress: true,
               },
-              Comment: `Adding a comment longer than 128 characters should be trimmed and 
-added the ellipsis so a user would know there was more to ...`,
+              Comment: `Adding a comment longer than 128 characters should be trimmed and
+added the ellipsis so a user would know there was more to r...`,
               Enabled: true,
               IPV6Enabled: true,
               HttpVersion: 'http2',
@@ -871,7 +871,7 @@ added the ellipsis so a user would know there was more to ...`,
               'EventType': 'origin-request',
               'IncludeBody': true,
               'LambdaFunctionARN': {
-                'Ref': 'LambdaCurrentVersionDF706F6A97fb843e9bd06fcd2bb15eeace80e13e',
+                'Ref': 'LambdaCurrentVersionDF706F6A25bf7d67df4eb614ea2e1ea69c8759b6',
               },
             },
           ],
