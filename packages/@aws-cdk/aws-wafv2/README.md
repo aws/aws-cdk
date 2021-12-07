@@ -9,23 +9,48 @@
 >
 > [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib
 
+![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
+
+> The APIs of higher level constructs in this module are experimental and under active development.
+> They are subject to non-backward compatible changes or removal in any future version. These are
+> not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be
+> announced in the release notes. This means that while you may use them, you may need to update
+> your source code when upgrading to a newer version of this package.
+
 ---
 
 <!--END STABILITY BANNER-->
 
-This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
+## Installation
 
-```ts nofixture
+Install the module:
+
+```console
+$ npm i @aws-cdk/aws-wafv2
+```
+
+Import it into your code:
+
+```ts
 import * as wafv2 from '@aws-cdk/aws-wafv2';
 ```
 
-<!--BEGIN CFNONLY DISCLAIMER-->
+## `WebAcl`
 
-There are no hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet. 
-However, you can still use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, and use this service exactly as you would using CloudFormation directly.
+Create a web ACL that gives you fine-grained control over all of the HTTP(S) web requests that your protected resource responds to.  
+You can create a web ACL as following:
 
-For more information on the resources and properties available for this service, see the [CloudFormation documentation for AWS::WAFv2](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_WAFv2.html).
+```ts
+import * as wafv2 from '@aws-cdk/aws-wafv2';
 
-(Read the [CDK Contributing Guide](https://github.com/aws/aws-cdk/blob/master/CONTRIBUTING.md) if you are interested in contributing to this construct library.)
-
-<!--END CFNONLY DISCLAIMER-->
+new wafv2.WebAcl(this, 'WebAcl', {
+  webAclName: 'my-web-acl-name', // OPTIONAL
+  scope: wafv2.Scope.CLOUDFRONT,
+  defaultAction: wafv2.DefaultAction.block(),
+  visibilityConfig: { // OPTIONAL
+    cloudWatchMetricsEnabled: true,
+    metricName: 'test-metric-name',
+    sampledRequestsEnabled: true,
+  },
+});
+```

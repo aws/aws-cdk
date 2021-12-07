@@ -1,0 +1,19 @@
+{
+  "Resources": {
+    "WebAclE76B067C": {
+      "Type": "AWS::WAFv2::WebACL",
+      "Properties": {
+        "DefaultAction": {
+          "Block": {}
+        },
+        "Scope": "CLOUDFRONT",
+        "VisibilityConfig": {
+          "CloudWatchMetricsEnabled": false,
+          "MetricName": "test-metric-name",
+          "SampledRequestsEnabled": false
+        },
+        "Name": "my-web-acl-name"
+      }
+    }
+  }
+}
