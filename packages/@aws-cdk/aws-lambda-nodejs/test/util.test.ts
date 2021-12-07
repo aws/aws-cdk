@@ -130,7 +130,7 @@ describe('extractDependencies', () => {
     }));
 
     expect(extractDependencies(pkgPath, ['my-module'])).toEqual({
-      'my-module': expect.stringMatching(/aws-cdk\/packages\/@aws-cdk\/core/),
+      'my-module': expect.stringMatching(/packages\/@aws-cdk\/core/),
     });
 
     fs.unlinkSync(pkgPath);
