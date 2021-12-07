@@ -77,7 +77,7 @@ export class HttpRouteKey {
   /**
    * The catch-all route of the API, i.e., when no other routes match
    */
-  public static readonly DEFAULT = new HttpRouteKey(HttpMethod.ANY);
+  public static readonly DEFAULT = new HttpRouteKey();
 
   /**
    * Create a route key with the combination of the path and the method.
@@ -87,8 +87,7 @@ export class HttpRouteKey {
     if (path !== '/' && (!path.startsWith('/') || path.endsWith('/'))) {
       throw new Error('A route path must always start with a "/" and not end with a "/"');
     }
-    const keyMethod = method ?? HttpMethod.ANY;
-    return new HttpRouteKey(keyMethod, path);
+    return new HttpRouteKey(method, path);
   }
 
   /**
@@ -105,8 +104,8 @@ export class HttpRouteKey {
    */
   public readonly path?: string;
 
-  private constructor(method: HttpMethod, path?: string) {
-    this.method = method;
+  private constructor(method?: HttpMethod, path?: string) {
+    this.method = method ?? HttpMethod.ANY;
     this.path = path;
     this.key = path ? `${method} ${path}` : '$default';
   }
