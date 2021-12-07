@@ -296,7 +296,7 @@ const httpApi = new apigwv2.HttpApi(stack, 'HttpApi', {
   defaultAuthorizer: authorizer,
 });
 
-const routes = httpApi.addRoute({
+const routes = httpApi.addRoutes({
   integration,
   path: '/books/{book}',
 });

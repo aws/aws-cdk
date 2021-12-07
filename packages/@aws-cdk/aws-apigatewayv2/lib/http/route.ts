@@ -30,6 +30,8 @@ export interface IHttpRoute extends IRoute {
 
   /**
    * Grant access to invoke the route.
+   * This method requires that the authorizer of the route is undefined or is
+   * an `HttpIamAuthorizer`.
    */
   grantInvoke(grantee: iam.IGrantable, options?: GrantInvokeOptions): iam.Grant;
 }
@@ -75,7 +77,7 @@ export class HttpRouteKey {
   /**
    * The catch-all route of the API, i.e., when no other routes match
    */
-  public static readonly DEFAULT = new HttpRouteKey(HttpMethod.ANY, '$default');
+  public static readonly DEFAULT = new HttpRouteKey(HttpMethod.ANY);
 
   /**
    * Create a route key with the combination of the path and the method.
@@ -86,7 +88,7 @@ export class HttpRouteKey {
       throw new Error('A route path must always start with a "/" and not end with a "/"');
     }
     const keyMethod = method ?? HttpMethod.ANY;
-    return new HttpRouteKey(keyMethod, `${keyMethod} ${path}`, path);
+    return new HttpRouteKey(keyMethod, path);
   }
 
   /**
@@ -103,10 +105,10 @@ export class HttpRouteKey {
    */
   public readonly path?: string;
 
-  private constructor(method: HttpMethod, key: string, path?: string) {
+  private constructor(method: HttpMethod, path?: string) {
     this.method = method;
-    this.key = key;
     this.path = path;
+    this.key = path ? `${method} ${path}` : '$default';
   }
 }
 
