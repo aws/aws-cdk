@@ -601,7 +601,6 @@
         "DeploymentController": {
           "Type": "ECS"
         },
-        "DesiredCount": 1,
         "EnableECSManagedTags": false,
         "LaunchType": "FARGATE",
         "NetworkConfiguration": {
