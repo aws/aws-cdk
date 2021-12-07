@@ -44,7 +44,7 @@ describe('function hash', () => {
       });
 
       expect(calculateFunctionHash(fn1)).toEqual(calculateFunctionHash(fn2));
-      expect(calculateFunctionHash(fn1)).toEqual('aea5463dba236007afe91d2832b3c836');
+      expect(calculateFunctionHash(fn1)).toEqual('e5235e3cb7a9b70c42c1a665a3ebd77c');
     });
   });
 
@@ -61,8 +61,8 @@ describe('function hash', () => {
       handler: 'index.handler',
     });
 
-    expect(calculateFunctionHash(fn1)).not.toEqual('aea5463dba236007afe91d2832b3c836');
-    expect(calculateFunctionHash(fn1)).toEqual('979b4a14c6f174c745cdbcd1036cf844');
+    expect(calculateFunctionHash(fn1)).not.toEqual('e5235e3cb7a9b70c42c1a665a3ebd77c');
+    expect(calculateFunctionHash(fn1)).toEqual('bb95ae2489ebc480a23ff373362e453a');
   });
 
   test('environment variables impact hash', () => {
@@ -91,8 +91,8 @@ describe('function hash', () => {
       },
     });
 
-    expect(calculateFunctionHash(fn1)).toEqual('d1bc824ac5022b7d62d8b12dbae6580c');
-    expect(calculateFunctionHash(fn2)).toEqual('3b683d05465012b0aa9c4ff53b32f014');
+    expect(calculateFunctionHash(fn1)).toEqual('a072f10967c25eb87c187e3d61d88f58');
+    expect(calculateFunctionHash(fn2)).toEqual('29aa77e049793f5424d31e880d6ce535');
   });
 
   test('runtime impacts hash', () => {
@@ -121,8 +121,8 @@ describe('function hash', () => {
       },
     });
 
-    expect(calculateFunctionHash(fn1)).toEqual('d1bc824ac5022b7d62d8b12dbae6580c');
-    expect(calculateFunctionHash(fn2)).toEqual('0f168f0772463e8e547bb3800937e54d');
+    expect(calculateFunctionHash(fn1)).toEqual('a072f10967c25eb87c187e3d61d88f58');
+    expect(calculateFunctionHash(fn2)).toEqual('c27e1d43e5595311b185324306244f1b');
   });
 
   test('inline code change impacts the hash', () => {
@@ -140,8 +140,8 @@ describe('function hash', () => {
       handler: 'index.handler',
     });
 
-    expect(calculateFunctionHash(fn1)).toEqual('ebf2e871fc6a3062e8bdcc5ebe16db3f');
-    expect(calculateFunctionHash(fn2)).toEqual('ffedf6424a18a594a513129dc97bf53c');
+    expect(calculateFunctionHash(fn1)).toEqual('ae3a05e0797a7b59e850d453a2e8ea97');
+    expect(calculateFunctionHash(fn2)).toEqual('bdce872a679fc58e06ab8b0cd30ffb37');
   });
 
   describe('impact of env variables order on hash', () => {
