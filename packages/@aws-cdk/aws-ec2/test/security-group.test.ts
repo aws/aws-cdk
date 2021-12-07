@@ -178,6 +178,7 @@ describe('security group', () => {
       Peer.anyIpv4(),
       Peer.anyIpv6(),
       Peer.prefixList('pl-012345'),
+      Peer.securityGroupId('sg-012345678'),
     ];
 
     const ports = [
@@ -337,7 +338,127 @@ describe('security group', () => {
     });
   });
 
-  testDeprecated('can look up a security group', () => {
+
+  describe('Peer security group ID validation', () => {
+    test('passes with valid security group ID', () => {
+      //GIVEN
+      const securityGroupIds = ['sg-12345678', 'sg-0123456789abcdefg'];
+
+      // THEN
+      for (const securityGroupId of securityGroupIds) {
+        expect(Peer.securityGroupId(securityGroupId).uniqueId).toEqual(securityGroupId);
+      }
+    });
+
+    test('passes with valid security group ID and source owner id', () => {
+      //GIVEN
+      const securityGroupIds = ['sg-12345678', 'sg-0123456789abcdefg'];
+      const ownerIds = ['000000000000', '000000000001'];
+
+      // THEN
+      for (const securityGroupId of securityGroupIds) {
+        for (const ownerId of ownerIds) {
+          expect(Peer.securityGroupId(securityGroupId, ownerId).uniqueId).toEqual(securityGroupId);
+        }
+      }
+    });
+
+    test('passes with unresolved security group id token or owner id token', () => {
+      // GIVEN
+      Token.asString('securityGroupId');
+
+      const securityGroupId = Lazy.string({ produce: () => 'sg-01234567' });
+      const ownerId = Lazy.string({ produce: () => '000000000000' });
+      Peer.securityGroupId(securityGroupId);
+      Peer.securityGroupId(securityGroupId, ownerId);
+
+      // THEN: don't throw
+    });
+
+    test('throws if invalid security group ID', () => {
+      // THEN
+      expect(() => {
+        Peer.securityGroupId('invalid');
+      }).toThrow(/Invalid security group ID/);
+
+
+    });
+
+    test('throws if invalid source security group id', () => {
+      // THEN
+      expect(() => {
+        Peer.securityGroupId('sg-12345678', 'invalid');
+      }).toThrow(/Invalid security group owner ID/);
+    });
+  });
+
+  describe('SourceSecurityGroupOwnerId property validation', () => {
+    test('SourceSecurityGroupOwnerId property is not present when value is not provided to ingress rule', () => {
+      // GIVEN
+      const stack = new Stack(undefined, 'TestStack');
+      const vpc = new Vpc(stack, 'VPC');
+      const sg = new SecurityGroup(stack, 'SG', { vpc });
+
+      //WHEN
+      sg.addIngressRule(Peer.securityGroupId('sg-123456789'), Port.allTcp(), 'no owner id property');
+
+      //THEN
+      expect(stack).toHaveResource('AWS::EC2::SecurityGroup', {
+        SecurityGroupIngress: [{
+          SourceSecurityGroupId: 'sg-123456789',
+          Description: 'no owner id property',
+          FromPort: 0,
+          ToPort: 65535,
+          IpProtocol: 'tcp',
+        }],
+      });
+    });
+
+    test('SourceSecurityGroupOwnerId property is present when value is provided to ingress rule', () => {
+      // GIVEN
+      const stack = new Stack(undefined, 'TestStack');
+      const vpc = new Vpc(stack, 'VPC');
+      const sg = new SecurityGroup(stack, 'SG', { vpc });
+
+      //WHEN
+      sg.addIngressRule(Peer.securityGroupId('sg-123456789', '000000000000'), Port.allTcp(), 'contains owner id property');
+
+      //THEN
+      expect(stack).toHaveResource('AWS::EC2::SecurityGroup', {
+        SecurityGroupIngress: [{
+          SourceSecurityGroupId: 'sg-123456789',
+          SourceSecurityGroupOwnerId: '000000000000',
+          Description: 'contains owner id property',
+          FromPort: 0,
+          ToPort: 65535,
+          IpProtocol: 'tcp',
+        }],
+      });
+    });
+
+    test('SourceSecurityGroupOwnerId property is not present when value is provided to egress rule', () => {
+      // GIVEN
+      const stack = new Stack(undefined, 'TestStack');
+      const vpc = new Vpc(stack, 'VPC');
+      const sg = new SecurityGroup(stack, 'SG', { vpc, allowAllOutbound: false });
+
+      //WHEN
+      sg.addEgressRule(Peer.securityGroupId('sg-123456789', '000000000000'), Port.allTcp(), 'no owner id property');
+
+      //THEN
+      expect(stack).toHaveResource('AWS::EC2::SecurityGroup', {
+        SecurityGroupEgress: [{
+          DestinationSecurityGroupId: 'sg-123456789',
+          Description: 'no owner id property',
+          FromPort: 0,
+          ToPort: 65535,
+          IpProtocol: 'tcp',
+        }],
+      });
+    });
+  });
+
+  test('can look up a security group', () => {
     const app = new App();
     const stack = new Stack(app, 'stack', {
       env: {
@@ -353,7 +474,7 @@ describe('security group', () => {
 
   });
 
-  test('can look up a security group by id', () => {
+  testDeprecated('can look up a security group', () => {
     // GIVEN
     const app = new App();
     const stack = new Stack(app, 'stack', {
