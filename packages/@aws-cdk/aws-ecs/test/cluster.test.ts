@@ -62,7 +62,7 @@ describe('cluster', () => {
                   Ref: 'EcsCluster97242B84',
                 },
                 // eslint-disable-next-line max-len
-                ' >> /etc/ecs/ecs.config\nsudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nsudo service iptables save\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config',
+                ' >> /etc/ecs/ecs.config\nyum -y install iptables-services\nsystemctl enable --now iptables\niptables -N DOCKER-USER || :\niptables --insert DOCKER-USER 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nservice iptables save\nsystemctl try-restart docker\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config',
               ],
             ],
           },
@@ -233,7 +233,7 @@ describe('cluster', () => {
                   Ref: 'EcsCluster97242B84',
                 },
                 // eslint-disable-next-line max-len
-                ' >> /etc/ecs/ecs.config\nsudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nsudo service iptables save\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config',
+                ' >> /etc/ecs/ecs.config\nyum -y install iptables-services\nsystemctl enable --now iptables\niptables -N DOCKER-USER || :\niptables --insert DOCKER-USER 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nservice iptables save\nsystemctl try-restart docker\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config',
               ],
             ],
           },
@@ -597,7 +597,7 @@ describe('cluster', () => {
                   Ref: 'EcsCluster97242B84',
                 },
                 // eslint-disable-next-line max-len
-                ' >> /etc/ecs/ecs.config\nsudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nsudo service iptables save\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config',
+                ' >> /etc/ecs/ecs.config\nyum -y install iptables-services\nsystemctl enable --now iptables\niptables -N DOCKER-USER || :\niptables --insert DOCKER-USER 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nservice iptables save\nsystemctl try-restart docker\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config',
               ],
             ],
           },
@@ -1161,7 +1161,7 @@ describe('cluster', () => {
               {
                 Ref: 'EcsCluster97242B84',
               },
-              ' >> /etc/ecs/ecs.config\nsudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nsudo service iptables save\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config\necho ECS_ENABLE_SPOT_INSTANCE_DRAINING=true >> /etc/ecs/ecs.config',
+              ' >> /etc/ecs/ecs.config\nyum -y install iptables-services\nsystemctl enable --now iptables\niptables -N DOCKER-USER || :\niptables --insert DOCKER-USER 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nservice iptables save\nsystemctl try-restart docker\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config\necho ECS_ENABLE_SPOT_INSTANCE_DRAINING=true >> /etc/ecs/ecs.config',
             ],
           ],
         },
@@ -1445,7 +1445,7 @@ describe('cluster', () => {
                 Ref: 'EcsCluster97242B84',
               },
               // eslint-disable-next-line max-len
-              ' >> /etc/ecs/ecs.config\nsudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nsudo service iptables save\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config',
+              ' >> /etc/ecs/ecs.config\nyum -y install iptables-services\nsystemctl enable --now iptables\niptables -N DOCKER-USER || :\niptables --insert DOCKER-USER 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nservice iptables save\nsystemctl try-restart docker\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config',
             ],
           ],
         },
@@ -2222,7 +2222,7 @@ test('can add ASG capacity via Capacity Provider by not specifying machineImageT
               Ref: 'EcsCluster97242B84',
 
             },
-            ' >> /etc/ecs/ecs.config\nsudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nsudo service iptables save\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config',
+            ' >> /etc/ecs/ecs.config\nyum -y install iptables-services\nsystemctl enable --now iptables\niptables -N DOCKER-USER || :\niptables --insert DOCKER-USER 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nservice iptables save\nsystemctl try-restart docker\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config',
           ],
         ],
       },

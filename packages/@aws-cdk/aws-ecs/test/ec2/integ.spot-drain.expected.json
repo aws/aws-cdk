@@ -95,14 +95,14 @@
     "VpcPublicSubnet1NATGateway4D7517AA": {
       "Type": "AWS::EC2::NatGateway",
       "Properties": {
+        "SubnetId": {
+          "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
+        },
         "AllocationId": {
           "Fn::GetAtt": [
             "VpcPublicSubnet1EIPD7E02669",
             "AllocationId"
           ]
-        },
-        "SubnetId": {
-          "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
         },
         "Tags": [
           {
@@ -192,14 +192,14 @@
     "VpcPublicSubnet2NATGateway9182C01D": {
       "Type": "AWS::EC2::NatGateway",
       "Properties": {
+        "SubnetId": {
+          "Ref": "VpcPublicSubnet2Subnet691E08A3"
+        },
         "AllocationId": {
           "Fn::GetAtt": [
             "VpcPublicSubnet2EIP3C605A87",
             "AllocationId"
           ]
-        },
-        "SubnetId": {
-          "Ref": "VpcPublicSubnet2Subnet691E08A3"
         },
         "Tags": [
           {
@@ -509,7 +509,7 @@
                 {
                   "Ref": "EcsCluster97242B84"
                 },
-                " >> /etc/ecs/ecs.config\nsudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nsudo service iptables save\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config\necho ECS_ENABLE_SPOT_INSTANCE_DRAINING=true >> /etc/ecs/ecs.config"
+                " >> /etc/ecs/ecs.config\nyum -y install iptables-services\nsystemctl enable --now iptables\niptables -N DOCKER-USER || :\niptables --insert DOCKER-USER 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nservice iptables save\nsystemctl try-restart docker\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config\necho ECS_ENABLE_SPOT_INSTANCE_DRAINING=true >> /etc/ecs/ecs.config"
               ]
             ]
           }
@@ -990,7 +990,7 @@
                 {
                   "Ref": "EcsCluster97242B84"
                 },
-                " >> /etc/ecs/ecs.config\nsudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nsudo service iptables save\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config"
+                " >> /etc/ecs/ecs.config\nyum -y install iptables-services\nsystemctl enable --now iptables\niptables -N DOCKER-USER || :\niptables --insert DOCKER-USER 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nservice iptables save\nsystemctl try-restart docker\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config"
               ]
             ]
           }

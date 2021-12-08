@@ -44,6 +44,8 @@ service.registerLoadBalancerTargets(
     newTargetGroupId: 'ECS',
   },
 );
+// Allow NLB health checks to succeed so that the service can stabilize
+service.connections.allowFrom(ec2.Peer.ipv4(vpc.vpcCidrBlock), ec2.Port.tcp(80));
 
 new cdk.CfnOutput(stack, 'LoadBalancerDNS', { value: lb.loadBalancerDnsName });
 

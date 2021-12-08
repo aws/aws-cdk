@@ -381,8 +381,12 @@ export class Cluster extends Resource implements ICluster {
           if (!options.canContainersAccessInstanceRole) {
             // Deny containers access to instance metadata service
             // Source: https://docs.aws.amazon.com/AmazonECS/latest/developerguide/instance_IAM_role.html
-            autoScalingGroup.addUserData('sudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP');
-            autoScalingGroup.addUserData('sudo service iptables save');
+            autoScalingGroup.addUserData('yum -y install iptables-services');
+            autoScalingGroup.addUserData('systemctl enable --now iptables');
+            autoScalingGroup.addUserData('iptables -N DOCKER-USER || :');
+            autoScalingGroup.addUserData('iptables --insert DOCKER-USER 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP');
+            autoScalingGroup.addUserData('service iptables save');
+            autoScalingGroup.addUserData('systemctl try-restart docker');
             // The following is only for AwsVpc networking mode, but doesn't hurt for the other modes.
             autoScalingGroup.addUserData('echo ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config');
           }
