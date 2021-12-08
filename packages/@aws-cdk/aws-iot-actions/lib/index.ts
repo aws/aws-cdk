@@ -1,5 +1,6 @@
 export * from './cloudwatch-logs-action';
 export * from './cloudwatch-put-metric-action';
+export * from './cloudwatch-alarm-action';
 export * from './common-action-props';
 export * from './firehose-stream-action';
 export * from './lambda-function-action';

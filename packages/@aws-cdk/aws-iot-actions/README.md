@@ -25,6 +25,7 @@ Currently supported are:
 - Put objects to a S3 bucket
 - Put logs to CloudWatch Logs
 - Capture CloudWatch metrics
+- Change state for a CloudWatch alarm
 - Put records to Kinesis Data Firehose stream
 
 ## Invoke a Lambda function
@@ -146,6 +147,40 @@ const topicRule = new iot.TopicRule(this, 'TopicRule', {
       metricTimestamp: '${timestamp}',
     }),
   ],
+});
+```
+
+## Change state for a CloudWatch alarm
+
+The code snippet below creates an AWS IoT Rule that changes a CloudWatch alarm
+when it is triggered.
+
+```ts
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
+import * as iot from '@aws-cdk/aws-iot';
+import * as actions from '@aws-cdk/aws-iot-actions';
+
+const metric = new cloudwatch.Metric({
+  namespace: 'MyNamespace',
+  metricName: 'MyMetric',
+  dimensions: { MyDimension: 'MyDimensionValue' },
+});
+
+const alarm = new cloudwatch.Alarm(this, 'MyAlarm', {
+  metric: metric,
+  threshold: 100,
+  evaluationPeriods: 3,
+  datapointsToAlarm: 2,
+});
+
+const topicRule = new iot.TopicRule(this, 'TopicRule', {
+  sql: iot.IotSql.fromStringAsVer20160323("SELECT topic(2) as device_id FROM 'device/+/data'"),
+  actions: [
+    new actions.CloudWatchAlarmAction(alarm, {
+      stateReason: 'AWS Iot Rule action is triggered',
+      stateValue: 'ALARM',
+    }),
+  ]
 });
 ```
 
