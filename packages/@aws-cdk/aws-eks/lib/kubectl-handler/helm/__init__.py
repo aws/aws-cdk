@@ -66,7 +66,8 @@ def helm_handler(event, context):
 
     if request_type == 'Create' or request_type == 'Update':
         # Ensure chart or chart_asset_url are set
-        assert(chart != None or chart_asset_url != None)
+        if chart == None and chart_asset_url == None:
+            raise RuntimeError(f'chart or chartAsset must be specified')
 
         if chart_asset_url != None:
             assert(chart==None)
