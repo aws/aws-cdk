@@ -68,6 +68,26 @@ export interface IInstance extends IResource, IConnectable, iam.IGrantable {
 }
 
 /**
+ * Properties for requiring IMDSv2 on an instance.
+ */
+export interface RequireImdsv2Options {
+  /**
+   * Whether IMDSv2 should be required on the instance or not.
+   *
+   * @default - false
+   */
+  readonly required?: boolean;
+
+  /**
+   * Whether the Launch Template names generated to enable IMDSv2 should be unique.
+   * **We highly recommend setting this to `true` to avoid name collisions.**
+   *
+   * @default - false
+   */
+  readonly uniqueLaunchTemplateNames?: boolean;
+}
+
+/**
  * Properties of an EC2 Instance
  */
 export interface InstanceProps {
@@ -243,8 +263,18 @@ export interface InstanceProps {
    * Whether IMDSv2 should be required on this instance.
    *
    * @default - false
+   * @deprecated use `requireImdsv2Options` instead
    */
   readonly requireImdsv2?: boolean;
+
+  /**
+   * Options for requiring IMDSv2 on this instance.
+   *
+   * **It is highly recommend to set `uniqueLaunchTemplateNames` to `true`.**
+   *
+   * @default - IMDSv2 is not required.
+   */
+  readonly requireImdsv2Options?: RequireImdsv2Options
 }
 
 /**
@@ -425,8 +455,14 @@ export class Instance extends Resource implements IInstance {
       },
     }));
 
-    if (props.requireImdsv2) {
-      Aspects.of(this).add(new InstanceRequireImdsv2Aspect());
+    if (props.requireImdsv2Options !== undefined && props.requireImdsv2 !== undefined) {
+      throw new Error("Cannot set both 'requireImdsv2' and 'requireImdsv2Options' since 'requireImdsv2' is deprecated. Use 'requireImdsv2Options' instead");
+    }
+
+    if (props.requireImdsv2 || props.requireImdsv2Options?.required) {
+      Aspects.of(this).add(new InstanceRequireImdsv2Aspect({
+        uniqueLaunchTemplateNames: props.requireImdsv2Options?.uniqueLaunchTemplateNames,
+      }));
     }
   }
 

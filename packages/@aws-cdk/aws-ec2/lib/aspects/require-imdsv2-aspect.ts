@@ -45,6 +45,13 @@ abstract class RequireImdsv2Aspect implements cdk.IAspect {
  */
 export interface InstanceRequireImdsv2AspectProps extends RequireImdsv2AspectProps {
   /**
+   * Whether the Launch Templates created should use unique names. It is highly recommended to set this to `true`.
+   *
+   * @default - false
+   */
+  readonly uniqueLaunchTemplateNames?: boolean;
+
+  /**
    * Whether warnings that would be raised when an Instance is associated with an existing Launch Template
    * should be suppressed or not.
    *
@@ -59,6 +66,10 @@ export interface InstanceRequireImdsv2AspectProps extends RequireImdsv2AspectPro
 /**
  * Aspect that applies IMDS configuration on EC2 Instance constructs.
  *
+ * **We highly recommend always setting the `unqiueLaunchTemplateNames` property to `true`.**
+ * This will ensure that the Launch Templates created by this aspect will have unique names,
+ * avoiding name collision issues during deployment.
+ *
  * This aspect configures IMDS on an EC2 instance by creating a Launch Template with the
  * IMDS configuration and associating that Launch Template with the instance. If an Instance
  * is already associated with a Launch Template, a warning will (optionally) be added to the
@@ -68,10 +79,12 @@ export interface InstanceRequireImdsv2AspectProps extends RequireImdsv2AspectPro
  */
 export class InstanceRequireImdsv2Aspect extends RequireImdsv2Aspect {
   private readonly suppressLaunchTemplateWarning: boolean;
+  private readonly uniqueLaunchTemplateNames: boolean;
 
   constructor(props?: InstanceRequireImdsv2AspectProps) {
     super(props);
     this.suppressLaunchTemplateWarning = props?.suppressLaunchTemplateWarning ?? false;
+    this.uniqueLaunchTemplateNames = props?.uniqueLaunchTemplateNames ?? false;
   }
 
   visit(node: cdk.IConstruct): void {
@@ -90,7 +103,7 @@ export class InstanceRequireImdsv2Aspect extends RequireImdsv2Aspect {
         },
       },
     });
-    launchTemplate.launchTemplateName = cdk.Names.uniqueId(launchTemplate);
+    launchTemplate.launchTemplateName = this.uniqueLaunchTemplateNames ? cdk.Names.uniqueId(launchTemplate) : `${node.node.id}LaunchTemplate`;
     node.instance.launchTemplate = {
       launchTemplateName: launchTemplate.launchTemplateName,
       version: launchTemplate.getAtt('LatestVersionNumber').toString(),
