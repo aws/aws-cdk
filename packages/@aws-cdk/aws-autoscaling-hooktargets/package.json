@@ -70,8 +70,8 @@
     "@aws-cdk/cdk-integ-tools": "0.0.0",
     "@aws-cdk/cfn2ts": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/jest": "^27.0.2",
-    "jest": "^27.3.1"
+    "@types/jest": "^27.0.3",
+    "jest": "^27.4.3"
   },
   "dependencies": {
     "@aws-cdk/aws-autoscaling": "0.0.0",

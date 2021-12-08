@@ -203,6 +203,7 @@ test('addResourceMetadata can be used to add CFN metadata to resources', () => {
   expect(stack).toHaveResource('My::Resource::Type', {
     Metadata: {
       'aws:asset:path': 'asset.6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2',
+      'aws:asset:is-bundled': false,
       'aws:asset:property': 'PropName',
     },
   }, ResourcePart.CompleteDefinition);
@@ -222,6 +223,7 @@ test('asset metadata is only emitted if ASSET_RESOURCE_METADATA_ENABLED_CONTEXT 
   expect(stack).not.toHaveResource('My::Resource::Type', {
     Metadata: {
       'aws:asset:path': SAMPLE_ASSET_DIR,
+      'aws:asset:is-bundled': false,
       'aws:asset:property': 'PropName',
     },
   }, ResourcePart.CompleteDefinition);
@@ -351,6 +353,7 @@ describe('staging', () => {
     const template = SynthUtils.synthesize(stack).template;
     expect(template.Resources.MyResource.Metadata).toEqual({
       'aws:asset:path': 'asset.6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2',
+      'aws:asset:is-bundled': false,
       'aws:asset:property': 'PropName',
     });
   });
@@ -377,6 +380,7 @@ describe('staging', () => {
     const template = SynthUtils.synthesize(stack).template;
     expect(template.Resources.MyResource.Metadata).toEqual({
       'aws:asset:path': SAMPLE_ASSET_DIR,
+      'aws:asset:is-bundled': false,
       'aws:asset:property': 'PropName',
     });
   });

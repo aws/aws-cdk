@@ -83,8 +83,8 @@
     "@aws-cdk/cdk-integ-tools": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/jest": "^27.0.2",
-    "jest": "^27.3.1"
+    "@types/jest": "^27.0.3",
+    "jest": "^27.4.3"
   },
   "dependencies": {
     "@aws-cdk/aws-cloudfront": "0.0.0",
@@ -92,6 +92,7 @@
     "@aws-cdk/aws-efs": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-lambda": "0.0.0",
+    "@aws-cdk/aws-logs": "0.0.0",
     "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/aws-s3-assets": "0.0.0",
     "@aws-cdk/core": "0.0.0",
@@ -106,6 +107,7 @@
     "@aws-cdk/aws-efs": "0.0.0",
     "@aws-cdk/aws-iam": "0.0.0",
     "@aws-cdk/aws-lambda": "0.0.0",
+    "@aws-cdk/aws-logs": "0.0.0",
     "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/aws-s3-assets": "0.0.0",
     "@aws-cdk/core": "0.0.0",
