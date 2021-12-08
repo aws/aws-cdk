@@ -1,6 +1,17 @@
-import { Resource } from '@aws-cdk/core';
+import { Resource, IResource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnInput } from './iotevents.generated';
+
+/**
+ * Represents an AWS IoT Events input
+ */
+export interface IInput extends IResource {
+  /**
+   * The name of the input
+   * @attribute
+   */
+  readonly inputName: string;
+}
 
 /**
  * Properties for defining an AWS IoT Events input
@@ -26,11 +37,17 @@ export interface InputProps {
 /**
  * Defines an AWS IoT Events input in this stack.
  */
-export class Input extends Resource {
+export class Input extends Resource implements IInput {
   /**
-   * The name of the input
-   * @attribute
+   * Import an existing input
    */
+  public static fromInputName(scope: Construct, id: string, inputName: string): IInput {
+    class Import extends Resource implements IInput {
+      public readonly inputName = inputName;
+    }
+    return new Import(scope, id);
+  }
+
   public readonly inputName: string;
 
   constructor(scope: Construct, id: string, props: InputProps) {

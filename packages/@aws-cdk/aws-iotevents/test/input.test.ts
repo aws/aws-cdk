@@ -53,3 +53,16 @@ test('can set physical name', () => {
     InputName: 'test_input',
   });
 });
+
+test('can import a Input by inputName', () => {
+  const stack = new cdk.Stack();
+
+  // WHEN
+  const inputName = 'test-input-name';
+  const topicRule = iotevents.Input.fromInputName(stack, 'InputFromInputName', inputName);
+
+  // THEN
+  expect(topicRule).toMatchObject({
+    inputName,
+  });
+});
