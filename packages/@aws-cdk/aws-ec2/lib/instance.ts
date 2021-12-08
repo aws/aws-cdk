@@ -218,7 +218,7 @@ export interface InstanceProps {
 
   /**
    * Propagate the EC2 instance tags to the EBS volumes.
-   * 
+   *
    * @default - false
    */
   readonly propagateTagsToVolumeOnCreation?: boolean;
