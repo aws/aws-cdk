@@ -9,6 +9,7 @@ import { AsgCapacityProvider } from '@aws-cdk/aws-ecs';
 import { ApplicationLoadBalancer, ApplicationProtocol, ApplicationProtocolVersion, NetworkLoadBalancer, SslPolicy } from '@aws-cdk/aws-elasticloadbalancingv2';
 import { PublicHostedZone } from '@aws-cdk/aws-route53';
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
+import { testLegacyBehavior } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as ecsPatterns from '../../lib';
@@ -72,9 +73,9 @@ test('test ECS loadbalanced construct', () => {
   });
 });
 
-test('ApplicationLoadBalancedEc2Service desiredCount can be undefined when feature flag is set', () => {
+testLegacyBehavior('ApplicationLoadBalancedEc2Service desiredCount can be undefined when feature flag is set', cdk.App, (app) => {
   // GIVEN
-  const stack = new cdk.Stack();
+  const stack = new cdk.Stack(app);
   stack.node.setContext(cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT, true);
 
   const vpc = new ec2.Vpc(stack, 'VPC');
@@ -101,9 +102,9 @@ test('ApplicationLoadBalancedEc2Service desiredCount can be undefined when featu
   });
 });
 
-test('ApplicationLoadBalancedFargateService desiredCount can be undefined when feature flag is set', () => {
+testLegacyBehavior('ApplicationLoadBalancedFargateService desiredCount can be undefined when feature flag is set', cdk.App, (app) => {
   // GIVEN
-  const stack = new cdk.Stack();
+  const stack = new cdk.Stack(app);
   stack.node.setContext(cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT, true);
 
   const vpc = new ec2.Vpc(stack, 'VPC');
@@ -122,9 +123,9 @@ test('ApplicationLoadBalancedFargateService desiredCount can be undefined when f
   });
 });
 
-test('NetworkLoadBalancedEc2Service desiredCount can be undefined when feature flag is set', () => {
+testLegacyBehavior('NetworkLoadBalancedEc2Service desiredCount can be undefined when feature flag is set', cdk.App, (app) => {
   // GIVEN
-  const stack = new cdk.Stack();
+  const stack = new cdk.Stack(app);
   stack.node.setContext(cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT, true);
 
   const vpc = new ec2.Vpc(stack, 'VPC');
@@ -151,9 +152,9 @@ test('NetworkLoadBalancedEc2Service desiredCount can be undefined when feature f
   });
 });
 
-test('NetworkLoadBalancedFargateService desiredCount can be undefined when feature flag is set', () => {
+testLegacyBehavior('NetworkLoadBalancedFargateService desiredCount can be undefined when feature flag is set', cdk.App, (app) => {
   // GIVEN
-  const stack = new cdk.Stack();
+  const stack = new cdk.Stack(app);
   stack.node.setContext(cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT, true);
 
   const vpc = new ec2.Vpc(stack, 'VPC');
@@ -547,7 +548,6 @@ test('test Fargate loadbalanced construct with TLS', () => {
   });
 
   expect(stack).toHaveResource('AWS::ECS::Service', {
-    DesiredCount: 1,
     LaunchType: 'FARGATE',
   });
 
@@ -609,7 +609,6 @@ test('test Fargateloadbalanced construct with TLS and default certificate', () =
   });
 
   expect(stack).toHaveResource('AWS::ECS::Service', {
-    DesiredCount: 1,
     LaunchType: 'FARGATE',
   });
 
