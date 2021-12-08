@@ -80,6 +80,43 @@ test('create a plan with continuous backup option', () => {
     backupPlanRules: [
       new BackupPlanRule({
         enableContinuousBackup: true,
+      }),
+    ],
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Backup::BackupPlan', {
+    BackupPlan: {
+      BackupPlanName: 'Plan',
+      BackupPlanRule: [
+        {
+          EnableContinuousBackup: true,
+          Lifecycle: {
+            DeleteAfterDays: 35,
+          },
+          RuleName: 'PlanRule0',
+          TargetBackupVault: {
+            'Fn::GetAtt': [
+              'Vault23237E5B',
+              'BackupVaultName',
+            ],
+          },
+        },
+      ],
+    },
+  });
+});
+
+test('create a plan with continuous backup option and specify deleteAfter', () => {
+  // GIVEN
+  const vault = new BackupVault(stack, 'Vault');
+
+  // WHEN
+  new BackupPlan(stack, 'Plan', {
+    backupVault: vault,
+    backupPlanRules: [
+      new BackupPlanRule({
+        enableContinuousBackup: true,
         deleteAfter: Duration.days(1),
       }),
     ],
@@ -243,12 +280,6 @@ test('synth fails when plan has no rules', () => {
   expect(() => app.synth()).toThrow(/A backup plan must have at least 1 rule/);
 });
 
-test('throws when deleteAfter is not used with enableContinuousBackup', () => {
-  expect(() => new BackupPlanRule({
-    enableContinuousBackup: true,
-  })).toThrow(/`deleteAfter` must be specified if `enableContinuousBackup` is enabled/);
-});
-
 test('throws when moveToColdStorageAfter is used with enableContinuousBackup', () => {
   expect(() => new BackupPlanRule({
     enableContinuousBackup: true,
@@ -261,12 +292,12 @@ test('throws when deleteAfter is less than 1 in combination with enableContinuou
   expect(() => new BackupPlanRule({
     enableContinuousBackup: true,
     deleteAfter: Duration.hours(12),
-  })).toThrow(/`deleteAfter` must be between 1 and 35 if `enableContinuousBackup` is enabled`/);
+  })).toThrow(/'deleteAfter' must be between 1 and 35 days if 'enableContinuousBackup' is enabled, but got 12 hours/);
 });
 
 test('throws when deleteAfter is greater than 35 in combination with enableContinuousBackup', () => {
   expect(() => new BackupPlanRule({
     enableContinuousBackup: true,
     deleteAfter: Duration.days(36),
-  })).toThrow(/`deleteAfter` must be between 1 and 35 if `enableContinuousBackup` is enabled`/);
+  })).toThrow(/'deleteAfter' must be between 1 and 35 days if 'enableContinuousBackup' is enabled, but got 36 days/);
 });
