@@ -1116,11 +1116,12 @@ the chart in the cluster.
 Additionally, the `chartAsset` property can be an `aws-s3-assets.Asset`. This allows the use of local, private helm charts.
 
 ```ts
+declare const cluster: eks.Cluster;
 const chartAsset = new Asset(this, 'ChartAsset', {
   path: path.join(__dirname, 'test-chart'),
 });
 
-this.cluster.addHelmChart('test-chart', {
+cluster.addHelmChart('test-chart', {
   chartAsset: chartAsset,
 });
 ```
