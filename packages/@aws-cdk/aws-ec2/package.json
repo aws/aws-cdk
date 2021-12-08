@@ -86,9 +86,9 @@
     "@aws-cdk/cloud-assembly-schema": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/aws-lambda": "^8.10.85",
+    "@types/aws-lambda": "^8.10.86",
     "@types/jest": "^27.0.3",
-    "jest": "^27.3.1"
+    "jest": "^27.4.3"
   },
   "dependencies": {
     "@aws-cdk/aws-cloudwatch": "0.0.0",
