@@ -141,8 +141,10 @@ export interface MethodDeploymentOptions {
   readonly loggingLevel?: MethodLoggingLevel;
 
   /**
-   * Specifies whether data trace logging is enabled for this method, which
-   * effects the log entries pushed to Amazon CloudWatch Logs.
+   * Specifies whether data trace logging is enabled for this method.
+   * When enabled, API gateway will log the full API requests and responses.
+   * This can be useful to troubleshoot APIs, but can result in logging sensitive data.
+   * We recommend that you don't enable this feature for production APIs.
    *
    * @default false
    */
