@@ -3,8 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "description": "An experiment to bundle the entire CDK into a single module",
-  "main": "index.js",
-  "types": "index.d.ts",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "repository": {
     "type": "git",
     "url": "https://github.com/aws/aws-cdk.git",
@@ -38,6 +38,8 @@
     }
   },
   "ubergen": {
+    "explicitExports": false,
+    "libRoot": "lib",
     "deprecatedPackages": [
       "@aws-cdk/aws-dynamodb-global",
       "@aws-cdk/cdk-assets-schema"

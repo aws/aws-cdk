@@ -1,6 +1,6 @@
 import { App, CfnMapping, CfnOutput, CfnResource, LegacyStackSynthesizer, NestedStack, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { Match, Template } from '../lib';
+import { Capture, Match, Template } from '../lib';
 
 describe('Template', () => {
   test('fromString', () => {
@@ -295,6 +295,33 @@ describe('Template', () => {
       expect(() => inspect.hasResource('Foo::Baz', {
         Properties: Match.objectLike({ baz: 'qux' }),
       })).toThrow(/No resource/);
+    });
+
+    test('capture', () => {
+      const stack = new Stack();
+      new CfnResource(stack, 'Bar1', {
+        type: 'Foo::Bar',
+        properties: { baz: 'qux', real: true },
+      });
+      new CfnResource(stack, 'Bar2', {
+        type: 'Foo::Bar',
+        properties: { baz: 'waldo', real: true },
+      });
+      new CfnResource(stack, 'Bar3', {
+        type: 'Foo::Bar',
+        properties: { baz: 'fred', real: false },
+      });
+
+      const capture = new Capture();
+      const inspect = Template.fromStack(stack);
+      inspect.hasResource('Foo::Bar', {
+        Properties: Match.objectLike({ baz: capture, real: true }),
+      });
+
+      expect(capture.asString()).toEqual('qux');
+      expect(capture.next()).toEqual(true);
+      expect(capture.asString()).toEqual('waldo');
+      expect(capture.next()).toEqual(false);
     });
   });
 
