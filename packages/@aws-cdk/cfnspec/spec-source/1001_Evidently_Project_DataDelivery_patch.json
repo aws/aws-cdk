@@ -1,0 +1,15 @@
+{
+  "ResourceTypes": {
+    "AWS::Evidently::Project": {
+      "patch": {
+        "description": "Primitive type should not exist because it already has a complex type of DataDeliveryObject",
+        "operations": [
+          {
+            "path": "/Properties/DataDelivery/PrimitiveType",
+            "op": "remove"
+          }
+        ]
+      }
+    }
+  }
+}

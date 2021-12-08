@@ -101,7 +101,8 @@
   "awslint": {
     "exclude": [
       "props-physical-name:@aws-cdk/aws-fsx.LustreFileSystemProps",
-      "resource-interface:@aws-cdk/aws-fsx.LustreFileSystem"
+      "resource-interface:@aws-cdk/aws-fsx.LustreFileSystem",
+      "resource-attribute:@aws-cdk/aws-fsx.LustreFileSystem.fileSystemRootVolumeId"
     ]
   },
   "stability": "stable",
