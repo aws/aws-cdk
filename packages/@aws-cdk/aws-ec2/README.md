@@ -1073,6 +1073,19 @@ instance.userData.addCommands(
 );
 ```
 
+#### Tagging Volumes
+
+You can configure [tag propagation on volume creation](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-instance.html#cfn-ec2-instance-propagatetagstovolumeoncreation).
+
+```ts
+  new ec2.Instance(stack, 'Instance', {
+    vpc,
+    machineImage: new AmazonLinuxImage(),
+    instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.LARGE),
+    propagateTagsToVolumeOnCreation: true,
+  });
+```
+
 ### Configuring Instance Metadata Service (IMDS)
 
 #### Toggling IMDSv1
