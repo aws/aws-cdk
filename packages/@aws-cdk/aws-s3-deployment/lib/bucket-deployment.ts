@@ -4,6 +4,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as efs from '@aws-cdk/aws-efs';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
+import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import { AwsCliLayer } from '@aws-cdk/lambda-layer-awscli';
@@ -100,6 +101,14 @@ export interface BucketDeploymentProps {
    * @default - All files under the destination bucket key prefix will be invalidated.
    */
   readonly distributionPaths?: string[];
+
+
+  /**
+   * The number of days that the lambda function's log events are kept in CloudWatch Logs.
+   *
+   * @default logs.RetentionDays.INFINITE
+   */
+  readonly logRetention?: logs.RetentionDays;
 
   /**
    * The amount of memory (in MiB) to allocate to the AWS Lambda function which
@@ -297,6 +306,7 @@ export class BucketDeployment extends CoreConstruct {
         accessPoint,
         mountPath,
       ) : undefined,
+      logRetention: props.logRetention,
     });
 
     const handlerRole = handler.role;
