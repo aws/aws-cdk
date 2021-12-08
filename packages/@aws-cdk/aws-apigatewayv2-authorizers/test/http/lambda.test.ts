@@ -1,8 +1,9 @@
 import { Match, Template } from '@aws-cdk/assertions';
-import { HttpApi, HttpIntegrationType, HttpRouteIntegrationBindOptions, IHttpRouteIntegration, PayloadFormatVersion } from '@aws-cdk/aws-apigatewayv2';
+import { HttpApi } from '@aws-cdk/aws-apigatewayv2';
 import { Code, Function, Runtime } from '@aws-cdk/aws-lambda';
 import { Duration, Stack } from '@aws-cdk/core';
 import { HttpLambdaAuthorizer, HttpLambdaResponseType } from '../../lib';
+import { DummyRouteIntegration } from './integration';
 
 describe('HttpLambdaAuthorizer', () => {
 
@@ -17,10 +18,7 @@ describe('HttpLambdaAuthorizer', () => {
       handler: 'index.handler',
     });
 
-    const authorizer = new HttpLambdaAuthorizer({
-      authorizerName: 'default-authorizer',
-      handler,
-    });
+    const authorizer = new HttpLambdaAuthorizer('BooksAuthorizer', handler);
 
     // WHEN
     api.addRoutes({
@@ -31,7 +29,7 @@ describe('HttpLambdaAuthorizer', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Authorizer', {
-      Name: 'default-authorizer',
+      Name: 'BooksAuthorizer',
       AuthorizerType: 'REQUEST',
       AuthorizerResultTtlInSeconds: 300,
       AuthorizerPayloadFormatVersion: '1.0',
@@ -56,10 +54,8 @@ describe('HttpLambdaAuthorizer', () => {
       handler: 'index.handler',
     });
 
-    const authorizer = new HttpLambdaAuthorizer({
-      authorizerName: 'my-simple-authorizer',
+    const authorizer = new HttpLambdaAuthorizer('BooksAuthorizer', handler, {
       responseTypes: [HttpLambdaResponseType.SIMPLE],
-      handler,
     });
 
     // WHEN
@@ -87,10 +83,8 @@ describe('HttpLambdaAuthorizer', () => {
       handler: 'index.handler',
     });
 
-    const authorizer = new HttpLambdaAuthorizer({
-      authorizerName: 'my-iam-authorizer',
+    const authorizer = new HttpLambdaAuthorizer('BooksAuthorizer', handler, {
       responseTypes: [HttpLambdaResponseType.IAM],
-      handler,
     });
 
     // WHEN
@@ -118,10 +112,8 @@ describe('HttpLambdaAuthorizer', () => {
       handler: 'index.handler',
     });
 
-    const authorizer = new HttpLambdaAuthorizer({
-      authorizerName: 'my-simple-iam-authorizer',
+    const authorizer = new HttpLambdaAuthorizer('BooksAuthorizer', handler, {
       responseTypes: [HttpLambdaResponseType.IAM, HttpLambdaResponseType.SIMPLE],
-      handler,
     });
 
     // WHEN
@@ -149,10 +141,7 @@ describe('HttpLambdaAuthorizer', () => {
       handler: 'index.handler',
     });
 
-    const authorizer = new HttpLambdaAuthorizer({
-      authorizerName: 'my-simple-authorizer',
-      responseTypes: [HttpLambdaResponseType.SIMPLE],
-      handler,
+    const authorizer = new HttpLambdaAuthorizer('BooksAuthorizer', handler, {
       resultsCacheTtl: Duration.minutes(10),
     });
 
@@ -169,13 +158,3 @@ describe('HttpLambdaAuthorizer', () => {
     });
   });
 });
-
-class DummyRouteIntegration implements IHttpRouteIntegration {
-  public bind(_: HttpRouteIntegrationBindOptions) {
-    return {
-      payloadFormatVersion: PayloadFormatVersion.VERSION_2_0,
-      type: HttpIntegrationType.HTTP_PROXY,
-      uri: 'some-uri',
-    };
-  }
-}

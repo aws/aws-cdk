@@ -14,16 +14,7 @@ export async function readTemplate(templateFile: string) {
 
 export async function loadTypeSystem(validate = true) {
   const typeSystem = new jsiiReflect.TypeSystem();
-  const packageJson = require('../package.json');
-
-  for (const depName of Object.keys(packageJson.dependencies || {})) {
-    const jsiiModuleDir = path.dirname(require.resolve(`${depName}/package.json`));
-    if (!fs.existsSync(path.resolve(jsiiModuleDir, '.jsii'))) {
-      continue;
-    }
-    await typeSystem.load(jsiiModuleDir, { validate });
-  }
-
+  await typeSystem.loadNpmDependencies(path.resolve(__dirname, '..'), { validate });
   return typeSystem;
 }
 

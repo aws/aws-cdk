@@ -71,6 +71,7 @@ export interface ParallelProps {
  */
 export class Parallel extends State implements INextable {
   public readonly endStates: INextable[];
+  private readonly _branches: IChainable[] = [];
 
   constructor(scope: Construct, id: string, props: ParallelProps = {}) {
     super(scope, id, props);
@@ -112,11 +113,23 @@ export class Parallel extends State implements INextable {
    * Define one or more branches to run in parallel
    */
   public branch(...branches: IChainable[]): Parallel {
-    for (const branch of branches) {
+    // Store branches for late-bound stategraph creation when we call bindToGraph.
+    this._branches.push(...branches);
+    return this;
+  }
+
+  /**
+   * Overwrites State.bindToGraph. Adds branches to
+   * the Parallel state here so that any necessary
+   * prefixes are appended first.
+   */
+  public bindToGraph(graph: StateGraph) {
+    for (const branch of this._branches) {
       const name = `Parallel '${this.stateId}' branch ${this.branches.length + 1}`;
       super.addBranch(new StateGraph(branch.startState, name));
     }
-    return this;
+    this._branches.splice(0, this._branches.length);
+    return super.bindToGraph(graph);
   }
 
   /**

@@ -68,6 +68,21 @@ export enum Operation {
   /** BatchWriteItem */
   BATCH_WRITE_ITEM = 'BatchWriteItem',
 
+  /** TransactWriteItems */
+  TRANSACT_WRITE_ITEMS = 'TransactWriteItems',
+
+  /** TransactGetItems */
+  TRANSACT_GET_ITEMS = 'TransactGetItems',
+
+  /** ExecuteTransaction */
+  EXECUTE_TRANSACTION = 'ExecuteTransaction',
+
+  /** BatchExecuteStatement */
+  BATCH_EXECUTE_STATEMENT = 'BatchExecuteStatement',
+
+  /** ExecuteStatement */
+  EXECUTE_STATEMENT = 'ExecuteStatement',
+
 }
 
 /**
@@ -1540,7 +1555,11 @@ export class Table extends TableBase {
         properties: {
           TableName: this.tableName,
           Region: region,
-          SkipReplicationCompletedWait: waitForReplicationToFinish === undefined ? undefined : !waitForReplicationToFinish,
+          SkipReplicationCompletedWait: waitForReplicationToFinish == null
+            ? undefined
+            // CFN changes Custom Resource properties to strings anyways,
+            // so let's do that ourselves to make it clear in the handler this is a string, not a boolean
+            : (!waitForReplicationToFinish).toString(),
         },
       });
       currentRegion.node.addDependency(

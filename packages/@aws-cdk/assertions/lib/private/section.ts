@@ -15,6 +15,7 @@ export function matchSection(section: any, props: any): MatchSuccess | MatchFail
 
     (logicalId, entry) => {
       const result = matcher.test(entry);
+      result.finished();
       if (!result.hasFailed()) {
         matching[logicalId] = entry;
       } else {

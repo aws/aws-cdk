@@ -1,7 +1,9 @@
 import { ArnFormat, IResource, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
+import { TagOptions } from '.';
 import { CloudFormationTemplate } from './cloudformation-template';
 import { MessageLanguage } from './common';
+import { AssociationManager } from './private/association-manager';
 import { InputValidator } from './private/validation';
 import { CfnCloudFormationProduct } from './servicecatalog.generated';
 
@@ -20,11 +22,22 @@ export interface IProduct extends IResource {
    * @attribute
    */
   readonly productId: string;
+
+  /**
+   * Associate Tag Options.
+   * A TagOption is a key-value pair managed in AWS Service Catalog.
+   * It is not an AWS tag, but serves as a template for creating an AWS tag based on the TagOption.
+   */
+  associateTagOptions(tagOptions: TagOptions): void;
 }
 
 abstract class ProductBase extends Resource implements IProduct {
   public abstract readonly productArn: string;
   public abstract readonly productId: string;
+
+  public associateTagOptions(tagOptions: TagOptions) {
+    AssociationManager.associateTagOptions(this, this.productId, tagOptions);
+  }
 }
 
 /**
@@ -118,6 +131,13 @@ export interface CloudFormationProductProps {
    * @default - No support URL provided
    */
   readonly supportUrl?: string;
+
+  /**
+   * TagOptions associated directly to a product.
+   *
+   * @default - No tagOptions provided
+   */
+  readonly tagOptions?: TagOptions
 }
 
 /**
@@ -170,13 +190,16 @@ export class CloudFormationProduct extends Product {
       supportUrl: props.supportUrl,
     });
 
+    this.productId = product.ref;
     this.productArn = Stack.of(this).formatArn({
       service: 'catalog',
       resource: 'product',
       resourceName: product.ref,
     });
 
-    this.productId = product.ref;
+    if (props.tagOptions !== undefined) {
+      this.associateTagOptions(props.tagOptions);
+    }
   }
 
   private renderProvisioningArtifacts(

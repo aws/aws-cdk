@@ -48,9 +48,9 @@ In the example below, all routes will require the `manage:books` scope present i
 ```ts
 import { HttpJwtAuthorizer } from '@aws-cdk/aws-apigatewayv2-authorizers';
 
-const authorizer = new HttpJwtAuthorizer({
+const issuer = 'https://test.us.auth0.com';
+const authorizer = new HttpJwtAuthorizer('DefaultAuthorizer', issuer, {
   jwtAudience: ['3131231'],
-  jwtIssuer: 'https://test.us.auth0.com',
 });
 
 const api = new apigwv2.HttpApi(this, 'HttpApi', {
@@ -71,11 +71,11 @@ The example below showcases default authorization, along with route authorizatio
 
 ```ts
 import { HttpJwtAuthorizer } from '@aws-cdk/aws-apigatewayv2-authorizers';
-import { HttpProxyIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
+import { HttpUrlIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
 
-const authorizer = new HttpJwtAuthorizer({
+const issuer = 'https://test.us.auth0.com';
+const authorizer = new HttpJwtAuthorizer('DefaultAuthorizer', issuer, {
   jwtAudience: ['3131231'],
-  jwtIssuer: 'https://test.us.auth0.com',
 });
 
 const api = new apigwv2.HttpApi(this, 'HttpApi', {
@@ -84,34 +84,26 @@ const api = new apigwv2.HttpApi(this, 'HttpApi', {
 });
 
 api.addRoutes({
-  integration: new HttpProxyIntegration({
-    url: 'https://get-books-proxy.myproxy.internal',
-  }),
+  integration: new HttpUrlIntegration('BooksIntegration', 'https://get-books-proxy.myproxy.internal'),
   path: '/books',
   methods: [apigwv2.HttpMethod.GET],
 });
 
 api.addRoutes({
-  integration: new HttpProxyIntegration({
-    url: 'https://get-books-proxy.myproxy.internal',
-  }),
+  integration: new HttpUrlIntegration('BooksIdIntegration', 'https://get-books-proxy.myproxy.internal'),
   path: '/books/{id}',
   methods: [apigwv2.HttpMethod.GET],
 });
 
 api.addRoutes({
-  integration: new HttpProxyIntegration({
-    url: 'https://get-books-proxy.myproxy.internal',
-  }),
+  integration: new HttpUrlIntegration('BooksIntegration', 'https://get-books-proxy.myproxy.internal'),
   path: '/books',
   methods: [apigwv2.HttpMethod.POST],
   authorizationScopes: ['write:books']
 });
 
 api.addRoutes({
-  integration: new HttpProxyIntegration({
-    url: 'https://get-books-proxy.myproxy.internal',
-  }),
+  integration: new HttpUrlIntegration('LoginIntegration', 'https://get-books-proxy.myproxy.internal'),
   path: '/login',
   methods: [apigwv2.HttpMethod.POST],
   authorizer: new apigwv2.HttpNoneAuthorizer(),
@@ -136,19 +128,17 @@ Clients that fail authorization are presented with either 2 responses:
 
 ```ts
 import { HttpJwtAuthorizer } from '@aws-cdk/aws-apigatewayv2-authorizers';
-import { HttpProxyIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
+import { HttpUrlIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
 
-const authorizer = new HttpJwtAuthorizer({
+const issuer = 'https://test.us.auth0.com';
+const authorizer = new HttpJwtAuthorizer('BooksAuthorizer', issuer, {
   jwtAudience: ['3131231'],
-  jwtIssuer: 'https://test.us.auth0.com',
 });
 
 const api = new apigwv2.HttpApi(this, 'HttpApi');
 
 api.addRoutes({
-  integration: new HttpProxyIntegration({
-    url: 'https://get-books-proxy.myproxy.internal',
-  }),
+  integration: new HttpUrlIntegration('BooksIntegration', 'https://get-books-proxy.myproxy.internal'),
   path: '/books',
   authorizer,
 });
@@ -165,22 +155,16 @@ pools as authorizer](https://docs.aws.amazon.com/apigateway/latest/developerguid
 ```ts
 import * as cognito from '@aws-cdk/aws-cognito';
 import { HttpUserPoolAuthorizer } from '@aws-cdk/aws-apigatewayv2-authorizers';
-import { HttpProxyIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
+import { HttpUrlIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
 
 const userPool = new cognito.UserPool(this, 'UserPool');
-const userPoolClient = userPool.addClient('UserPoolClient');
 
-const authorizer = new HttpUserPoolAuthorizer({
-  userPool,
-  userPoolClients: [userPoolClient],
-});
+const authorizer = new HttpUserPoolAuthorizer('BooksAuthorizer', userPool);
 
 const api = new apigwv2.HttpApi(this, 'HttpApi');
 
 api.addRoutes({
-  integration: new HttpProxyIntegration({
-    url: 'https://get-books-proxy.myproxy.internal',
-  }),
+  integration: new HttpUrlIntegration('BooksIntegration', 'https://get-books-proxy.myproxy.internal'),
   path: '/books',
   authorizer,
 });
@@ -195,23 +179,19 @@ Lambda authorizers depending on their response, fall into either two types - Sim
 
 ```ts
 import { HttpLambdaAuthorizer, HttpLambdaResponseType } from '@aws-cdk/aws-apigatewayv2-authorizers';
-import { HttpProxyIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
+import { HttpUrlIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
 
 // This function handles your auth logic
 declare const authHandler: lambda.Function;
 
-const authorizer = new HttpLambdaAuthorizer({
-  authorizerName: 'lambda-authorizer',
+const authorizer = new HttpLambdaAuthorizer('BooksAuthorizer', authHandler, {
   responseTypes: [HttpLambdaResponseType.SIMPLE], // Define if returns simple and/or iam response
-  handler: authHandler,
 });
 
 const api = new apigwv2.HttpApi(this, 'HttpApi');
 
 api.addRoutes({
-  integration: new HttpProxyIntegration({
-    url: 'https://get-books-proxy.myproxy.internal',
-  }),
+  integration: new HttpUrlIntegration('BooksIntegration', 'https://get-books-proxy.myproxy.internal'),
   path: '/books',
   authorizer,
 });

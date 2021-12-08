@@ -1,4 +1,5 @@
 import * as child_process from 'child_process';
+import * as fs from 'fs';
 import * as path from 'path';
 import { callsites, exec, extractDependencies, findUp } from '../lib/util';
 
@@ -118,5 +119,20 @@ describe('extractDependencies', () => {
       path.join(__dirname, '../package.json'),
       ['unknown'],
     )).toThrow(/Cannot extract version for module 'unknown'/);
+  });
+
+  test('with file dependency', () => {
+    const pkgPath = path.join(__dirname, 'package-file.json');
+    fs.writeFileSync(pkgPath, JSON.stringify({
+      dependencies: {
+        'my-module': 'file:../../core',
+      },
+    }));
+
+    expect(extractDependencies(pkgPath, ['my-module'])).toEqual({
+      'my-module': expect.stringMatching(/packages\/@aws-cdk\/core/),
+    });
+
+    fs.unlinkSync(pkgPath);
   });
 });

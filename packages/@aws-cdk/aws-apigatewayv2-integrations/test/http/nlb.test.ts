@@ -18,9 +18,7 @@ describe('HttpNlbIntegration', () => {
     const api = new HttpApi(stack, 'HttpApi');
     new HttpRoute(stack, 'HttpProxyPrivateRoute', {
       httpApi: api,
-      integration: new HttpNlbIntegration({
-        listener,
-      }),
+      integration: new HttpNlbIntegration('Integration', listener),
       routeKey: HttpRouteKey.with('/pets'),
     });
 
@@ -52,10 +50,7 @@ describe('HttpNlbIntegration', () => {
     const api = new HttpApi(stack, 'HttpApi');
     new HttpRoute(stack, 'HttpProxyPrivateRoute', {
       httpApi: api,
-      integration: new HttpNlbIntegration({
-        vpcLink,
-        listener,
-      }),
+      integration: new HttpNlbIntegration('Integration', listener, { vpcLink }),
       routeKey: HttpRouteKey.with('/pets'),
     });
 
@@ -86,10 +81,7 @@ describe('HttpNlbIntegration', () => {
     const api = new HttpApi(stack, 'HttpApi');
     new HttpRoute(stack, 'HttpProxyPrivateRoute', {
       httpApi: api,
-      integration: new HttpNlbIntegration({
-        listener,
-        method: HttpMethod.PATCH,
-      }),
+      integration: new HttpNlbIntegration('Integration', listener, { method: HttpMethod.PATCH }),
       routeKey: HttpRouteKey.with('/pets'),
     });
 
@@ -107,9 +99,7 @@ describe('HttpNlbIntegration', () => {
 
     expect(() => new HttpRoute(stack, 'HttpProxyPrivateRoute', {
       httpApi: api,
-      integration: new HttpNlbIntegration({
-        listener,
-      }),
+      integration: new HttpNlbIntegration('Integration', listener),
       routeKey: HttpRouteKey.with('/pets'),
     })).toThrow(/vpcLink property must be specified/);
   });
@@ -126,10 +116,7 @@ describe('HttpNlbIntegration', () => {
     const api = new HttpApi(stack, 'HttpApi');
     new HttpRoute(stack, 'HttpProxyPrivateRoute', {
       httpApi: api,
-      integration: new HttpNlbIntegration({
-        listener,
-        secureServerName: 'name-to-verify',
-      }),
+      integration: new HttpNlbIntegration('Integration', listener, { secureServerName: 'name-to-verify' }),
       routeKey: HttpRouteKey.with('/pets'),
     });
 
@@ -153,8 +140,7 @@ describe('HttpNlbIntegration', () => {
     const api = new HttpApi(stack, 'HttpApi');
     new HttpRoute(stack, 'HttpProxyPrivateRoute', {
       httpApi: api,
-      integration: new HttpNlbIntegration({
-        listener,
+      integration: new HttpNlbIntegration('Integration', listener, {
         parameterMapping: new ParameterMapping()
           .appendHeader('header2', MappingValue.requestHeader('header1'))
           .removeHeader('header1'),

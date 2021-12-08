@@ -119,6 +119,38 @@ myRole.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName("service-role
 myRole.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName("service-role/AWSLambdaVPCAccessExecutionRole")); // only required if your function lives in a VPC
 ```
 
+## Function Timeout
+
+AWS Lambda functions have a default timeout of 3 seconds, but this can be increased
+up to 15 minutes. The timeout is available as a property of `Function` so that
+you can reference it elsewhere in your stack. For instance, you could use it to create
+a CloudWatch alarm to report when your function timed out:
+
+```ts
+import * as cdk from '@aws-cdk/core';
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
+
+const fn = new lambda.Function(this, 'MyFunction', {
+   runtime: lambda.Runtime.NODEJS_12_X,
+   handler: 'index.handler',
+   code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
+   timeout: cdk.Duration.minutes(5),
+});
+
+if (fn.timeout) {
+   new cloudwatch.Alarm(this, `MyAlarm`, {
+      metric: fn.metricDuration().with({
+         statistic: 'Maximum',
+      }),
+      evaluationPeriods: 1,
+      datapointsToAlarm: 1,
+      threshold: fn.timeout.toMilliseconds(),
+      treatMissingData: cloudwatch.TreatMissingData.IGNORE,
+      alarmName: 'My Lambda Timeout',
+   });
+}
+```
+
 ## Resource-based Policies
 
 AWS Lambda supports resource-based policies for controlling access to Lambda
