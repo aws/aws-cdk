@@ -395,7 +395,7 @@ export class ContainerDefinition extends CoreConstruct {
   /**
    * The environment variables for this container
    */
-  public readonly environment?: { [key: string]: string };
+  public readonly environment: { [key: string]: string };
 
   /**
    * The environment files for this container
@@ -442,7 +442,7 @@ export class ContainerDefinition extends CoreConstruct {
     this.memoryLimitSpecified = props.memoryLimitMiB !== undefined || props.memoryReservationMiB !== undefined;
     this.linuxParameters = props.linuxParameters;
     this.containerName = props.containerName ?? this.node.id;
-    this.environment = props.environment ?? undefined;
+    this.environment = props.environment ?? {};
 
     this.imageConfig = props.image.bind(this, this);
     if (props.logging) {
