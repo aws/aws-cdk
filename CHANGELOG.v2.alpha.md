@@ -2,6 +2,74 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.1.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.0.0-alpha.11...v2.1.0-alpha.0) (2021-12-08)
+
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **apigatewayv2-authorizers:** The default value for the prop `authorizerName`
+in `HttpJwtAuthorizerProps` has changed.
+* **apigatewayv2-authorizers:** `HttpJwtAuthorizer` now takes the
+  construct id and the target jwt issuer as part of its constructor.
+* **apigatewayv2-authorizers:** `HttpLambdaAuthorizer` now takes
+  the construct id and the target lambda function handler as part of
+  its constructor.
+* **apigatewayv2-authorizers:** The default value for the prop
+  `authorizerName` in `HttpUserPoolAuthorizerProps` has changed.
+* **apigatewayv2:** The `HttpIntegration` and `WebSocketIntegration`
+classes require an "id" parameter to be provided during its initialization.
+* **apigatewayv2-integrations:** The `LambdaWebSocketIntegration` is now
+  renamed to `WebSocketLambdaIntegration`. The new class accepts the
+  handler to the target lambda function directly in its constructor.
+* **apigatewayv2-integrations:** `HttpProxyIntegration` and
+  `HttpProxyIntegrationProps` are now renamed to `HttpUrlIntegration`
+  and `HttpUrlIntegrationProps` respectively. The new class accepts the
+  target url directly in its constructor.
+* **apigatewayv2-integrations:** `LambdaProxyIntegration` and
+  `LambdaProxyIntegrationProps` are now renamed to
+  `HttpLambdaIntegration` and `HttpLambdaIntegrationProps` respectively.
+  The new class accepts the lambda function handler directly in its
+  constructor.
+* **apigatewayv2-integrations:** `HttpAlbIntegration` now accepts the
+  ELB listener directly in its constructor.
+* **apigatewayv2-integrations:** `HttpNlbIntegration` now accepts the
+  ELB listener directly in its constructor.
+* **apigatewayv2-integrations:** `HttpServiceDiscoveryIntegration` now
+  accepts the service discovery Service directly in its constructor.
+* **apigatewayv2-authorizers:** `UserPoolAuthorizerProps` is now
+  renamed to `HttpUserPoolAuthorizerProps`.
+* **apigatewayv2:** The interface `IHttpRouteIntegration` is replaced by
+the abstract class `HttpRouteIntegration`.
+* **apigatewayv2:** The interface `IWebSocketRouteIntegration` is now
+  replaced by the abstract class `WebSocketRouteIntegration`.
+* **apigatewayv2:** Previously, we allowed the usage of integration
+  classes to be used with routes defined in multiple `HttpApi` instances
+  (or `WebSocketApi` instances). This is now disallowed, and separate
+  instances must be created for each instance of `HttpApi` or
+  `WebSocketApi`.
+
+### Features
+
+* **apigatewayv2:** constructs for http api are now stable! 🤘 ([#17773](https://github.com/aws/aws-cdk/issues/17773)) ([b25590f](https://github.com/aws/aws-cdk/commit/b25590ff15d92a8a6ddc1f3a37263f90793b15f4))
+* **iot:** add Action to capture CloudWatch metrics ([#17503](https://github.com/aws/aws-cdk/issues/17503)) ([ec4187c](https://github.com/aws/aws-cdk/commit/ec4187c26d68df970d72d0e766d7d27b42e8b784)), closes [/github.com/aws/aws-cdk/pull/16681#issuecomment-942233029](https://github.com/aws//github.com/aws/aws-cdk/pull/16681/issues/issuecomment-942233029)
+* **neptune:** add engine version 1.1.0.0 and instance types t4g, r6g ([#17669](https://github.com/aws/aws-cdk/issues/17669)) ([83e669d](https://github.com/aws/aws-cdk/commit/83e669dcdae9390990598236c75015832af766b4))
+* **servicecatalog:** Add TagOptions to a CloudformationProduct ([#17672](https://github.com/aws/aws-cdk/issues/17672)) ([2d19e15](https://github.com/aws/aws-cdk/commit/2d19e1535586d2b006d43da787ffbb0fad8b4978))
+
+
+### Bug Fixes
+
+* **apigatewayv2:** integration class does not render an integration resource ([#17729](https://github.com/aws/aws-cdk/issues/17729)) ([3b5b97a](https://github.com/aws/aws-cdk/commit/3b5b97ac1f972f53240798df19af43d85ebf6f13)), closes [#13213](https://github.com/aws/aws-cdk/issues/13213)
+* **apprunner:** startCommand and environment are ignored in imageConfiguration  ([#16939](https://github.com/aws/aws-cdk/issues/16939)) ([d911c58](https://github.com/aws/aws-cdk/commit/d911c5878c59498a2d0e14ff536e0f8f9f503bfe)), closes [#16812](https://github.com/aws/aws-cdk/issues/16812)
+* **appsync:** add caching config to AppSync resolvers ([#17815](https://github.com/aws/aws-cdk/issues/17815)) ([52b535b](https://github.com/aws/aws-cdk/commit/52b535bda5f26b07377fcdfca63a75c62eb5f883))
+* **appsync:** remove 'id' suffix to union definition key ([#17787](https://github.com/aws/aws-cdk/issues/17787)) ([86e7780](https://github.com/aws/aws-cdk/commit/86e77806391dc3fe8cd254fec773320cdb425dec)), closes [#17771](https://github.com/aws/aws-cdk/issues/17771)
+* **assert:** support multiline strings with `stringLike()` ([#17692](https://github.com/aws/aws-cdk/issues/17692)) ([37596e6](https://github.com/aws/aws-cdk/commit/37596e6be4cf05432dcba3838955484e512beca6))
+
+
+### Miscellaneous Chores
+
+* **apigatewayv2:** integration api re-organization ([#17752](https://github.com/aws/aws-cdk/issues/17752)) ([29039e8](https://github.com/aws/aws-cdk/commit/29039e8bd13a4fdb7f84254038b3331c179273fd))
+* **apigatewayv2-authorizers:** re-organize authorizer api ([#17772](https://github.com/aws/aws-cdk/issues/17772)) ([719f33e](https://github.com/aws/aws-cdk/commit/719f33e20c723f161fc35230fafd7e99bca66a61))
+
 ## [2.0.0-alpha.11](https://github.com/aws/aws-cdk/compare/v2.0.0-alpha.10...v2.0.0-alpha.11) (2021-12-02)
 
 ## [2.0.0-alpha.10](https://github.com/aws/aws-cdk/compare/v2.0.0-alpha.9...v2.0.0-alpha.10) (2021-11-26)
