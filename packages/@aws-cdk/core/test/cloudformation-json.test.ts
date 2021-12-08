@@ -1,19 +1,5 @@
-import {
-  App,
-  Aws,
-  CfnOutput,
-  CfnResource,
-  Fn,
-  IPostProcessor,
-  IResolvable,
-  IResolveContext,
-  Lazy,
-  Stack,
-  StringConcat,
-  Token,
-} from '../lib';
+import { App, Aws, CfnOutput, CfnResource, Fn, IPostProcessor, IResolvable, IResolveContext, Lazy, Stack, Token } from '../lib';
 import { Intrinsic } from '../lib/private/intrinsic';
-import { RememberingTokenResolver, resolve } from '../lib/private/resolve';
 import { evaluateCFN } from './evaluate-cfn';
 
 let app: App;
@@ -36,39 +22,6 @@ test('JSONification of literals looks like JSON.stringify', () => {
 
   expect(stack.resolve(stack.toJsonString(structure))).toEqual(JSON.stringify(structure));
   expect(stack.resolve(stack.toJsonString(structure, 2))).toEqual(JSON.stringify(structure, undefined, 2));
-});
-
-test('foo', () => {
-  // const tags = new TagManager(TagType.KEY_VALUE, 'Custom::AWSCDK-EKS-HelmChart');
-  // const annotations = tags.renderedTags;
-
-  // const structure = {
-  //   annotations,
-  // };
-
-  // eslint-disable-next-line no-console
-  // console.log(stack.toJsonString(structure));
-
-  const resolver = new RememberingTokenResolver(new StringConcat());
-
-  // resolve(fn(), { scope, prefix: [], resolver, preparing: true });
-
-  // eslint-disable-next-line no-console
-  // console.log(resolve(stack.toJsonString(structure), {
-  //   scope: stack,
-  //   resolver,
-  //   preparing: true,
-  // }));
-
-
-  const renderTags = () => 'foopeta';
-
-
-  resolve(Lazy.any({ produce: () => renderTags() }), {
-    scope: stack,
-    resolver,
-    preparing: true,
-  });
 });
 
 test('JSONification of undefined leads to undefined', () => {
