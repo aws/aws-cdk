@@ -1078,10 +1078,14 @@ instance.userData.addCommands(
 You can configure [tag propagation on volume creation](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-instance.html#cfn-ec2-instance-propagatetagstovolumeoncreation).
 
 ```ts
-  new ec2.Instance(stack, 'Instance', {
+  declare const vpc: ec2.Vpc;
+  declare const instanceType: ec2.InstanceType;
+  declare const machineImage: ec2.IMachineImage;
+
+  new ec2.Instance(this, 'Instance', {
     vpc,
-    machineImage: new AmazonLinuxImage(),
-    instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.LARGE),
+    machineImage,
+    instanceType,
     propagateTagsToVolumeOnCreation: true,
   });
 ```
