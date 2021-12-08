@@ -10,6 +10,20 @@ import { deployArtifactBounds } from '../common';
 import { Construct } from '@aws-cdk/core';
 
 /**
+ * ECS Service Attributes to describle the CodePipeline Actions.
+ */
+export interface EcsServiceAttribute {
+  /**
+   * The ECS serviceName to deploy to.
+   */
+  readonly serviceName: string;
+  /**
+   * The ECS clusterName to deploy to.
+   */
+  readonly clusterName: string;
+}
+
+/**
  * Construction properties of {@link EcsDeployAction}.
  */
 export interface EcsDeployActionProps extends codepipeline.CommonAwsActionProps {
@@ -42,9 +56,23 @@ export interface EcsDeployActionProps extends codepipeline.CommonAwsActionProps 
 
   /**
    * The ECS Service to deploy.
+   * @default - one of this property, or `serviceAttributes`, is required
    */
-  readonly service: ecs.IBaseService;
+  readonly service?: ecs.IBaseService;
 
+  /**
+   * The ECS Service Attributes to deploy, must be specificed with `region` and `role`.
+   * Ensure if the role being specified is not in the same account has ECS deployment permissions.
+   * @default - one of this property, or `service`, is required
+   * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/how-to-custom-role.html#how-to-update-role-new-services
+   */
+  readonly serviceAttributes?: EcsServiceAttribute;
+
+  /**
+   * The region the ECS Service is deployed in, must be specificed when using `serviceAttributes`.
+   * @default - will be defined by `service`.
+   */
+  readonly region?: string;
   /**
    * Timeout for the ECS deployment in minutes. Value must be between 1-60.
    *
@@ -71,6 +99,27 @@ export class EcsDeployAction extends Action {
       resource: props.service,
     });
 
+    if (props.service && props.serviceAttributes) {
+      throw new Error("Exactly one of 'service' or 'serviceAttributes' can be provided in the ECS deploy Action");
+    }
+    if (!props.service && !props.serviceAttributes) {
+      throw new Error("Specifying one of 'service' or 'serviceAttributes' is required for the ECS deploy Action");
+    }
+    if (props.serviceAttributes) {
+      if (!props.region && !props.role) {
+        throw new Error("Specifying 'region' and 'role' is required when specifying 'serviceAttributes'");
+      }
+      if (!props.region) {
+        throw new Error("Specifying 'region' is required when specifying 'serviceAttributes'");
+      }
+      if (!props.role) {
+        throw new Error("Specifying 'role' is required when specifying 'serviceAttributes'");
+      }
+    }
+    if (props.service && props.region) {
+      throw new Error("Must not specify 'region' when specifying 'service'");
+    }
+
     const deploymentTimeout = props.deploymentTimeout?.toMinutes({ integral: true });
     if (deploymentTimeout !== undefined && (deploymentTimeout < 1 || deploymentTimeout > 60)) {
       throw new Error(`Deployment timeout must be between 1 and 60 minutes, got: ${deploymentTimeout}`);
@@ -84,6 +133,7 @@ export class EcsDeployAction extends Action {
   codepipeline.ActionConfig {
     // permissions based on CodePipeline documentation:
     // https://docs.aws.amazon.com/codepipeline/latest/userguide/how-to-custom-role.html#how-to-update-role-new-services
+    // If this role is not in the same account, this policy will not be applied.
     options.role.addToPolicy(new iam.PolicyStatement({
       actions: [
         'ecs:DescribeServices',
@@ -113,8 +163,8 @@ export class EcsDeployAction extends Action {
 
     return {
       configuration: {
-        ClusterName: this.props.service.cluster.clusterName,
-        ServiceName: this.props.service.serviceName,
+        ClusterName: this.props.serviceAttributes ? this.props.serviceAttributes!.clusterName : this.props.service!.cluster.clusterName,
+        ServiceName: this.props.serviceAttributes ? this.props.serviceAttributes!.serviceName: this.props.service!.serviceName,
         FileName: this.props.imageFile?.fileName,
         DeploymentTimeout: this.deploymentTimeout,
       },
