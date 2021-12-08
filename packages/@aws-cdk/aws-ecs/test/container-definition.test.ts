@@ -43,8 +43,7 @@ describe('container definition', () => {
       const stack = new cdk.Stack();
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
       const secret = new secretsmanager.Secret(stack, 'Secret');
-      const environment = { keyOne: 'valueOne', keyTwo: 'valueTwo' };
-      const containerDefinition = new ecs.ContainerDefinition(stack, 'Container', {
+      new ecs.ContainerDefinition(stack, 'Container', {
         image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
         taskDefinition,
         memoryLimitMiB: 1024,
@@ -61,7 +60,10 @@ describe('container definition', () => {
         },
         dockerSecurityOptions: ['ECS_SELINUX_CAPABLE=true'],
         entryPoint: ['top', '-b'],
-        environment,
+        environment: {
+          key: 'foo',
+          value: 'bar',
+        },
         environmentFiles: [ecs.EnvironmentFile.fromAsset(path.join(__dirname, 'demo-envfiles/test-envfile.env'))],
         essential: true,
         extraHosts: {
@@ -87,7 +89,6 @@ describe('container definition', () => {
           { namespace: 'SomeNamespace', value: 'SomeValue' },
         ],
       });
-      containerDefinition.environment!.keyThree = 'valueThree';
 
       // THEN
       expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
@@ -117,16 +118,12 @@ describe('container definition', () => {
             ],
             Environment: [
               {
-                Name: 'keyOne',
-                Value: 'valueOne',
+                Name: 'key',
+                Value: 'foo',
               },
               {
-                Name: 'keyTwo',
-                Value: 'valueTwo',
-              },
-              {
-                Name: 'keyThree',
-                Value: 'valueThree',
+                Name: 'value',
+                Value: 'bar',
               },
             ],
             EnvironmentFiles: [{

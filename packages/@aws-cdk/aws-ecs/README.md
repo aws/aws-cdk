@@ -651,7 +651,8 @@ rule.addTarget(new targets.EcsTask({
   containerOverrides: [{
     containerName: 'TheContainer',
     environment: [{
-      I_WAS_TRIGGERED: 'From CloudWatch Events'
+      name: 'I_WAS_TRIGGERED',
+      value: 'From CloudWatch Events'
     }],
   }],
 }));
