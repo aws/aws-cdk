@@ -350,7 +350,12 @@ export interface TargetGroupAttributes {
    * ARN of the target group
    */
   readonly targetGroupArn: string;
-
+  /**
+   * The name of the target group
+   *
+   * @default targetGroupName
+   */
+  readonly targetGroupName?: string;
   /**
    * Port target group is listening on
    *
@@ -376,6 +381,10 @@ export interface TargetGroupImportProps extends TargetGroupAttributes {
  * A target group
  */
 export interface ITargetGroup extends cdk.IConstruct {
+  /**
+   * The name of the target group
+   */
+  readonly targetGroupName: string;
   /**
    * ARN of the target group
    */

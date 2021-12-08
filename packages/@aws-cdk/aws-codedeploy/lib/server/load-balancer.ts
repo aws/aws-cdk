@@ -1,6 +1,5 @@
 import * as elb from '@aws-cdk/aws-elasticloadbalancing';
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
-import { targetGruopNameFromArn } from '../utils';
 
 /**
  * The generations of AWS load balancing solutions.
@@ -45,7 +44,7 @@ export abstract class LoadBalancer {
   public static application(albTargetGroup: elbv2.IApplicationTargetGroup): LoadBalancer {
     class AlbLoadBalancer extends LoadBalancer {
       public readonly generation = LoadBalancerGeneration.SECOND;
-      public readonly name = targetGruopNameFromArn(albTargetGroup.targetGroupArn);
+      public readonly name = albTargetGroup.targetGroupName;
     }
 
     return new AlbLoadBalancer();
@@ -59,7 +58,7 @@ export abstract class LoadBalancer {
   public static network(nlbTargetGroup: elbv2.INetworkTargetGroup): LoadBalancer {
     class NlbLoadBalancer extends LoadBalancer {
       public readonly generation = LoadBalancerGeneration.SECOND;
-      public readonly name = targetGruopNameFromArn(nlbTargetGroup.targetGroupArn);
+      public readonly name = nlbTargetGroup.targetGroupName;
     }
 
     return new NlbLoadBalancer();
