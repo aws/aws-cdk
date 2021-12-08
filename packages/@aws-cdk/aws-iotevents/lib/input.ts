@@ -20,7 +20,7 @@ export interface InputProps {
   /**
    * The name of the input
    *
-   * @default xxx
+   * @default None
    */
   readonly inputName?: string,
 
