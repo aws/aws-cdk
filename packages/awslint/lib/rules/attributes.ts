@@ -1,3 +1,4 @@
+import { TypeReference, isPrimitiveTypeReference, PrimitiveType, isCollectionTypeReference } from '@jsii/spec';
 import { Linter } from '../linter';
 import { Attribute, ResourceReflection } from './resource';
 
@@ -35,3 +36,24 @@ attributesLinter.add({
     e.assert(tag, e.ctx.fqn, `${e.ctx.attr.property.parentType.fqn}.${e.ctx.attr.property.name}`);
   },
 });
+
+attributesLinter.add({
+  code: 'attribute-type',
+  message: 'attribute properties must be type of string, number or string[]',
+  eval: e => {
+    const type = e.ctx.attr.property.type.spec;
+    e.assert(isString(type) || isNumber(type) || isStringArray(type), e.ctx.fqn);
+  },
+});
+
+function isString(type: TypeReference | undefined): boolean {
+  return isPrimitiveTypeReference(type) && type.primitive === PrimitiveType.String;
+}
+
+function isNumber(type: TypeReference | undefined): boolean {
+  return isPrimitiveTypeReference(type) && type.primitive === PrimitiveType.Number;
+}
+
+function isStringArray(type: TypeReference | undefined): boolean {
+  return isCollectionTypeReference(type) && isString(type.collection.elementtype);
+}
