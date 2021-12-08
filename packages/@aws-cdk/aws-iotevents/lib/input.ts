@@ -55,6 +55,10 @@ export class Input extends Resource implements IInput {
       physicalName: props.inputName,
     });
 
+    if (props.attributeJsonPaths.length === 0) {
+      throw new Error('attributeJsonPaths property cannot be empty');
+    }
+
     const resource = new CfnInput(this, 'Resource', {
       inputName: this.physicalName,
       inputDefinition: {

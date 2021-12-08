@@ -66,3 +66,13 @@ test('can import a Input by inputName', () => {
     inputName,
   });
 });
+
+test('cannot be created with an empty array of attributeJsonPaths', () => {
+  const stack = new cdk.Stack();
+
+  expect(() => {
+    new iotevents.Input(stack, 'MyInput', {
+      attributeJsonPaths: [],
+    });
+  }).toThrow('attributeJsonPaths property cannot be empty');
+});
