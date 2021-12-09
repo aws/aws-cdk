@@ -55,9 +55,9 @@ if [[ "${jsii_pkgs_file}" = "" ]]; then
 fi
 
 rosetta_cache_file=$HOME/.s3buildcache/rosetta-cache.tabl.json
-rosetta_cache_opts=""
-if [[ -f $rosetta_cache_file ]]; then
-    rosetta_cache_opts="--cache-from ${rosetta_cache_file}"
+extract_opts=""
+if $infuse; then
+    extract_opts="--infuse"
 fi
 
 #----------------------------------------------------------------------
@@ -65,40 +65,23 @@ fi
 # Compile examples with respect to "decdk" directory, as all packages will
 # be symlinked there so they can all be included.
 echo "💎 Extracting code samples" >&2
-$ROSETTA \
+$ROSETTA extract \
     --compile \
     --verbose \
-    --output samples.tabl.json \
-    $rosetta_cache_opts \
+    --cache ${rosetta_cache_file} \
     --directory packages/decdk \
+    ${extract_opts} \
     $(cat $jsii_pkgs_file)
 
-
 if $infuse; then
-    echo "💎 Infusing examples back into assemblies" >&2
-    $ROSETTA infuse \
-        --verbose \
-        samples.tabl.json \
-        $(cat $jsii_pkgs_file)
-
     echo "💎 Generating synthetic examples for the remainder" >&2
     time npx cdk-generate-synthetic-examples \
+        --extract \
+        --extract-cache ${rosetta_cache_file} \
+        --extract-directory packages/decdk \
         $(cat $jsii_pkgs_file)
-
-    echo "💎 Extracting synthetic examples into tablet" >&2
-    $ROSETTA extract \
-        --compile \
-        --verbose \
-        --output samples.tabl.json \
-        $rosetta_cache_opts \
-        --directory packages/decdk \
-        $(cat $jsii_pkgs_file)
-
 fi
 
-#----------------------------------------------------------------------
-
-if [[ -d $(dirname $rosetta_cache_file) ]]; then
-    # If the cache directory is available, copy the current tablet into it
-    cp samples.tabl.json $rosetta_cache_file
-fi
+$ROSETTA trim-cache \
+    ${rosetta_cache_file} \
+    $(cat $jsii_pkgs_file)
