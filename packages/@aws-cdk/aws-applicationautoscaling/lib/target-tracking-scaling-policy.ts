@@ -253,7 +253,7 @@ export enum PredefinedMetric {
    * @see https://docs.aws.amazon.com/autoscaling/application/APIReference/API_PredefinedMetricSpecification.html
    */
   ELASTICACHE_REPLICA_ENGINE_CPU_UTILIZATION = 'ElastiCacheReplicaEngineCPUUtilization',
-    /**
+  /**
    * ELASTIC_CACHE_REPLICA_ENGINE_CPU_UTILIZATION
    * @see https://docs.aws.amazon.com/autoscaling/application/APIReference/API_PredefinedMetricSpecification.html
    */
