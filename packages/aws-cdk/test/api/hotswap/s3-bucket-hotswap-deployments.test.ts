@@ -20,7 +20,7 @@ beforeEach(() => {
   hotswapMockSdkProvider.setInvokeLambdaMock(mockLambdaInvoke);
 });
 
-test('calls the lambdaInvoke() API when it receives only an asset difference in an s3 bucket deployment', async () => {
+test('calls the lambdaInvoke() API when it receives only an asset difference in an S3 bucket deployment and evaluates CFN expressions in S3 Deployment Properties', async () => {
   // GIVEN
   setup.setCurrentCfnStackTemplate({
     Resources: {
@@ -44,7 +44,12 @@ test('calls the lambdaInvoke() API when it receives only an asset difference in 
           Properties: {
             ServiceToken: 'a-lambda-arn',
             SourceBucketNames: ['src-bucket'],
-            SourceObjectKeys: ['src-key-new'],
+            SourceObjectKeys: {
+              'Fn::Split': [
+                '-',
+                'key1-key2-key3',
+              ],
+            },
             DestinationBucketName: 'dest-bucket',
             DestinationBucketKeyPrefix: 'my-key/some-new-prefix',
           },
@@ -65,7 +70,7 @@ test('calls the lambdaInvoke() API when it receives only an asset difference in 
       ...payloadWithoutCustomResProps,
       ResourceProperties: {
         SourceBucketNames: ['src-bucket'],
-        SourceObjectKeys: ['src-key-new'],
+        SourceObjectKeys: ['key1', 'key2', 'key3'],
         DestinationBucketName: 'dest-bucket',
         DestinationBucketKeyPrefix: 'my-key/some-new-prefix',
       },
@@ -80,10 +85,7 @@ test('does not call the invoke() API when a resource with type that is not Custo
       S3Deployment: {
         Type: 'Custom::NotCDKBucketDeployment',
         Properties: {
-          ServiceToken: 'a-lambda-arn',
-          SourceBucketNames: ['src-bucket'],
           SourceObjectKeys: ['src-key-old'],
-          DestinationBucketName: 'dest-bucket',
         },
       },
     },
@@ -94,10 +96,7 @@ test('does not call the invoke() API when a resource with type that is not Custo
         S3Deployment: {
           Type: 'Custom::NotCDKBucketDeployment',
           Properties: {
-            ServiceToken: 'a-lambda-arn',
-            SourceBucketNames: ['src-bucket'],
             SourceObjectKeys: ['src-key-new'],
-            DestinationBucketName: 'dest-bucket',
           },
         },
       },
@@ -115,14 +114,16 @@ test('does not call the invoke() API when a resource with type that is not Custo
 test('does not call the invokeLambda() api if the updated Policy has no Roles', async () => {
   // GIVEN
   setup.setCurrentCfnStackTemplate({
+    Parameters: {
+      WebsiteBucketParamOld: { Type: 'String' },
+      WebsiteBucketParamNew: { Type: 'String' },
+    },
     Resources: {
       S3Deployment: {
         Type: 'Custom::CDKBucketDeployment',
         Properties: {
           ServiceToken: 'a-lambda-arn',
-          SourceBucketNames: ['src-bucket'],
           SourceObjectKeys: ['src-key-old'],
-          DestinationBucketName: 'dest-bucket',
         },
       },
       Policy: {
@@ -134,10 +135,7 @@ test('does not call the invokeLambda() api if the updated Policy has no Roles', 
                 Action: ['s3:GetObject*'],
                 Effect: 'Allow',
                 Resource: {
-                  'Fn::GetAtt': [
-                    'WebsiteBucketOld',
-                    'Arn',
-                  ],
+                  Ref: 'WebsiteBucketParamOld',
                 },
               },
             ],
@@ -148,14 +146,16 @@ test('does not call the invokeLambda() api if the updated Policy has no Roles', 
   });
   const cdkStackArtifact = setup.cdkStackArtifactOf({
     template: {
+      Parameters: {
+        WebsiteBucketParamOld: { Type: 'String' },
+        WebsiteBucketParamNew: { Type: 'String' },
+      },
       Resources: {
         S3Deployment: {
           Type: 'Custom::CDKBucketDeployment',
           Properties: {
             ServiceToken: 'a-lambda-arn',
-            SourceBucketNames: ['src-bucket'],
             SourceObjectKeys: ['src-key-new'],
-            DestinationBucketName: 'dest-bucket',
           },
         },
         Policy: {
@@ -167,10 +167,7 @@ test('does not call the invokeLambda() api if the updated Policy has no Roles', 
                   Action: ['s3:GetObject*'],
                   Effect: 'Allow',
                   Resource: {
-                    'Fn::GetAtt': [
-                      'WebsiteBucketNew',
-                      'Arn',
-                    ],
+                    Ref: 'WebsiteBucketParamNew',
                   },
                 },
               ],
@@ -189,7 +186,56 @@ test('does not call the invokeLambda() api if the updated Policy has no Roles', 
   expect(mockLambdaInvoke).not.toHaveBeenCalled();
 });
 
+test('throws an error when the serviceToken fails evaluation in the template', async () => {
+  // GIVEN
+  setup.setCurrentCfnStackTemplate({
+    Resources: {
+      S3Deployment: {
+        Type: 'Custom::CDKBucketDeployment',
+        Properties: {
+          ServiceToken: {
+            Ref: 'BadLamba',
+          },
+          SourceBucketNames: ['src-bucket'],
+          SourceObjectKeys: ['src-key-old'],
+          DestinationBucketName: 'dest-bucket',
+        },
+      },
+    },
+  });
+  const cdkStackArtifact = setup.cdkStackArtifactOf({
+    template: {
+      Resources: {
+        S3Deployment: {
+          Type: 'Custom::CDKBucketDeployment',
+          Properties: {
+            ServiceToken: {
+              Ref: 'BadLamba',
+            },
+            SourceBucketNames: ['src-bucket'],
+            SourceObjectKeys: ['src-key-new'],
+            DestinationBucketName: 'dest-bucket',
+          },
+        },
+      },
+    },
+  });
+
+  // WHEN
+  await expect(() =>
+    hotswapMockSdkProvider.tryHotswapDeployment(cdkStackArtifact),
+  ).rejects.toThrow(/Parameter or resource 'BadLamba' could not be found for evaluation/);
+
+  expect(mockLambdaInvoke).not.toHaveBeenCalled();
+});
+
 describe('old-style synthesis', () => {
+  const parameters = {
+    WebsiteBucketParamOld: { Type: 'String' },
+    WebsiteBucketParamNew: { Type: 'String' },
+    DifferentBucketParamNew: { Type: 'String' },
+  };
+
   const serviceRole = {
     Type: 'AWS::IAM::Role',
     Properties: {
@@ -220,10 +266,7 @@ describe('old-style synthesis', () => {
             Action: ['s3:GetObject*'],
             Effect: 'Allow',
             Resource: {
-              'Fn::GetAtt': [
-                'WebsiteBucketOld',
-                'Arn',
-              ],
+              Ref: 'WebsiteBucketParamOld',
             },
           },
         ],
@@ -243,10 +286,7 @@ describe('old-style synthesis', () => {
             Action: ['s3:GetObject*'],
             Effect: 'Allow',
             Resource: {
-              'Fn::GetAtt': [
-                'WebsiteBucketNew',
-                'Arn',
-              ],
+              Ref: 'WebsiteBucketParamNew',
             },
           },
         ],
@@ -266,10 +306,7 @@ describe('old-style synthesis', () => {
             Action: ['s3:GetObject*'],
             Effect: 'Allow',
             Resource: {
-              'Fn::GetAtt': [
-                'WebsiteBucketOld',
-                'Arn',
-              ],
+              Ref: 'WebsiteBucketParamOld',
             },
           },
         ],
@@ -289,10 +326,7 @@ describe('old-style synthesis', () => {
             Action: ['s3:GetObject*'],
             Effect: 'Allow',
             Resource: {
-              'Fn::GetAtt': [
-                'DifferentBucketNew',
-                'Arn',
-              ],
+              Ref: 'DifferentBucketParamOld',
             },
           },
         ],
@@ -347,10 +381,11 @@ describe('old-style synthesis', () => {
     );
   });
 
-  test('calls the lambdaInvoke() API when it receives an asset difference in an s3 bucket deployment and an IAM Policy difference using old-style synthesis', async () => {
+  test('calls the lambdaInvoke() API when it receives an asset difference in an S3 bucket deployment and an IAM Policy difference using old-style synthesis', async () => {
     // GIVEN
     setup.setCurrentCfnStackTemplate({
       Resources: {
+        Parameters: parameters,
         ServiceRole: serviceRole,
         Policy: policyOld,
         S3DeploymentLambda: deploymentLambda,
@@ -361,6 +396,7 @@ describe('old-style synthesis', () => {
     const cdkStackArtifact = setup.cdkStackArtifactOf({
       template: {
         Resources: {
+          Parameters: parameters,
           ServiceRole: serviceRole,
           Policy: policyNew,
           S3DeploymentLambda: deploymentLambda,
@@ -370,7 +406,7 @@ describe('old-style synthesis', () => {
     });
 
     // WHEN
-    const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(cdkStackArtifact);
+    const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(cdkStackArtifact, { WebsiteBucketParamOld: 'WebsiteBucketOld', WebsiteBucketParamNew: 'WebsiteBucketNew' });
 
     // THEN
     expect(deployStackResult).not.toBeUndefined();
@@ -387,7 +423,7 @@ describe('old-style synthesis', () => {
     });
   });
 
-  test('does not call the lambdaInvoke() API when the difference in the s3 deployment is referred to in one IAM policy change but not another', async () => {
+  test('does not call the lambdaInvoke() API when the difference in the S3 deployment is referred to in one IAM policy change but not another', async () => {
     // GIVEN
     setup.setCurrentCfnStackTemplate({
       Resources: {
@@ -440,7 +476,7 @@ describe('old-style synthesis', () => {
     expect(mockLambdaInvoke).not.toHaveBeenCalled();
   });
 
-  test('does not call the lambdaInvoke() API when the lambda that references the role is referred to by something other than an s3 deployment', async () => {
+  test('does not call the lambdaInvoke() API when the lambda that references the role is referred to by something other than an S3 deployment', async () => {
     // GIVEN
     setup.setCurrentCfnStackTemplate({
       Resources: {
@@ -496,7 +532,7 @@ describe('old-style synthesis', () => {
     expect(mockLambdaInvoke).not.toHaveBeenCalled();
   });
 
-  test('calls the lambdaInvoke() API when it receives an asset difference in two s3 bucket deployments and IAM Policy differences using old-style synthesis', async () => {
+  test('calls the lambdaInvoke() API when it receives an asset difference in two S3 bucket deployments and IAM Policy differences using old-style synthesis', async () => {
     // GIVEN
     const s3Deployment2Old = {
       Type: 'Custom::CDKBucketDeployment',
@@ -541,10 +577,10 @@ describe('old-style synthesis', () => {
       },
     });
 
-
     const cdkStackArtifact = setup.cdkStackArtifactOf({
       template: {
         Resources: {
+          Parameters: parameters,
           ServiceRole: serviceRole,
           ServiceRole2: serviceRole,
           Policy1: policyNew,
@@ -563,7 +599,11 @@ describe('old-style synthesis', () => {
       setup.stackSummaryOf('ServiceRole2', 'AWS::IAM::Role', 'my-service-role-2'),
     );
 
-    const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(cdkStackArtifact);
+    const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(cdkStackArtifact, {
+      WebsiteBucketParamOld: 'WebsiteBucketOld',
+      WebsiteBucketParamNew: 'WebsiteBucketNew',
+      DifferentBucketParamNew: 'WebsiteBucketNew',
+    });
 
     // THEN
     expect(deployStackResult).not.toBeUndefined();
@@ -592,7 +632,7 @@ describe('old-style synthesis', () => {
     });
   });
 
-  test('does not call the lambdaInvoke() API when it receives an asset difference in an s3 bucket deployment that references two different policies', async () => {
+  test('does not call the lambdaInvoke() API when it receives an asset difference in an S3 bucket deployment that references two different policies', async () => {
     // GIVEN
     setup.setCurrentCfnStackTemplate({
       Resources: {
@@ -644,7 +684,7 @@ describe('old-style synthesis', () => {
     expect(mockLambdaInvoke).not.toHaveBeenCalled();
   });
 
-  test('does not call the lambdaInvoke() API when a policy is referenced by a resource that is not an s3 deployment', async () => {
+  test('does not call the lambdaInvoke() API when a policy is referenced by a resource that is not an S3 deployment', async () => {
     // GIVEN
     setup.setCurrentCfnStackTemplate({
       Resources: {

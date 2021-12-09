@@ -1,5 +1,5 @@
 import { ISDK } from '../aws-auth';
-import { ChangeHotswapImpact, ChangeHotswapResult, HotswapOperation, HotswappableChangeCandidate, establishResourcePhysicalName } from './common';
+import { ChangeHotswapImpact, ChangeHotswapResult, HotswapOperation, HotswappableChangeCandidate/*, establishResourcePhysicalName*/ } from './common';
 import { EvaluateCloudFormationTemplate } from './evaluate-cloudformation-template';
 
 /**
@@ -22,7 +22,7 @@ export async function isHotswappableS3BucketDeploymentChange(
   }
 
   // note that this gives the ARN of the lambda, not the name. This is fine though, the invoke() sdk call will take either
-  const functionName = await establishResourcePhysicalName(logicalId, change.newValue.Properties?.ServiceToken, evaluateCfnTemplate);
+  const functionName = await evaluateCfnTemplate.evaluateCfnExpression(change.newValue.Properties?.ServiceToken);
   if (!functionName) {
     return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
   }
@@ -42,9 +42,6 @@ class S3BucketDeploymentHotswapOperation implements HotswapOperation {
   }
 
   public async apply(sdk: ISDK): Promise<any> {
-    // JSON.stringify() doesn't turn the actual objects to strings, but the lambda expects strings
-    const resourceProperties = stringifyObject(this.customResourceProperties);
-
     return sdk.lambda().invoke({
       FunctionName: this.functionName,
       // Lambda refuses to take a direct JSON object and requires it to be stringify()'d
@@ -55,15 +52,15 @@ class S3BucketDeploymentHotswapOperation implements HotswapOperation {
         StackId: REQUIRED_BY_CFN,
         RequestId: REQUIRED_BY_CFN,
         LogicalResourceId: REQUIRED_BY_CFN,
-        ResourceProperties: resourceProperties,
+        ResourceProperties: stringifyObject(this.customResourceProperties), // JSON.stringify() doesn't turn the actual objects to strings, but the lambda expects strings
       }),
     }).promise();
   }
 }
 
 async function changeIsForS3DeployCustomResourcePolicy(
-  logicalId: string, change: HotswappableChangeCandidate, evaluateCfnTemplate: EvaluateCloudFormationTemplate,
-): Promise<ChangeHotswapImpact | EmptyHotswapOperation> {
+  iamPolicyLogicalId: string, change: HotswappableChangeCandidate, evaluateCfnTemplate: EvaluateCloudFormationTemplate,
+): Promise<ChangeHotswapResult> {
   const roles = change.newValue.Properties?.Roles;
   if (!roles) {
     return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
@@ -87,10 +84,10 @@ async function changeIsForS3DeployCustomResourcePolicy(
           }
         }
       } else if (roleRef.Type === 'AWS::IAM::Policy') {
-        if (roleRef.LogicalId !== logicalId) {
+        if (roleRef.LogicalId !== iamPolicyLogicalId) {
           return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
         }
-      } else if (roleRef.Type !== 'AWS::IAM::Policy') {
+      } else {
         return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
       }
     }
@@ -118,7 +115,7 @@ function stringifyObject(obj: any): any {
 }
 
 class EmptyHotswapOperation implements HotswapOperation {
-  readonly service = 'AWS::IAM::Policy';
+  readonly service = 'empty';
   public async apply(sdk: ISDK): Promise<any> {
     return Promise.resolve(sdk);
   }
