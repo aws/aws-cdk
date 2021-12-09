@@ -86,3 +86,9 @@ removed:@aws-cdk/aws-stepfunctions-tasks.EmrCreateClusterProps.autoTerminationPo
 # Changed property securityGroupId to optional because either securityGroupId or 
 # securityGroupName is required. Therefore securityGroupId is no longer mandatory.
 weakened:@aws-cdk/cloud-assembly-schema.SecurityGroupContextQuery
+
+# autoscaling role
+incompatible-argument:@aws-cdk/aws-autoscaling-hooktargets.FunctionHook.bind
+incompatible-argument:@aws-cdk/aws-autoscaling-hooktargets.QueueHook.bind
+incompatible-argument:@aws-cdk/aws-autoscaling-hooktargets.TopicHook.bind
+incompatible-argument:@aws-cdk/aws-autoscaling.ILifecycleHookTarget.bind
