@@ -37,11 +37,11 @@
     "@aws-cdk/assert-internal": "0.0.0",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/jest": "^27.0.2",
+    "@types/jest": "^27.0.3",
     "aws-cdk-migration": "0.0.0",
     "constructs": "^3.3.69",
     "jest": "^27.3.1",
-    "ts-jest": "^27.0.7"
+    "ts-jest": "^27.1.1"
   },
   "dependencies": {
     "@aws-cdk/cloudformation-diff": "0.0.0",
@@ -74,6 +74,6 @@
   "stability": "experimental",
   "maturity": "developer-preview",
   "publishConfig": {
-    "tag": "latest"
+    "tag": "latest-1"
   }
 }

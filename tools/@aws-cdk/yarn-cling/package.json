@@ -38,11 +38,11 @@
   },
   "devDependencies": {
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/jest": "^27.0.2",
+    "@types/jest": "^27.0.3",
     "@types/node": "^10.17.60",
     "@types/semver": "^7.3.9",
     "@types/yarnpkg__lockfile": "^1.1.5",
-    "jest": "^27.3.1",
+    "jest": "^27.4.3",
     "typescript": "~3.9.10"
   },
   "dependencies": {
