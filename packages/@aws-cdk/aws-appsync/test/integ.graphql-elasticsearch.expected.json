@@ -196,6 +196,7 @@
         },
         "FieldName": "getTests",
         "TypeName": "Query",
+        "CachingConfig": {},
         "DataSourceName": "ds",
         "Kind": "UNIT",
         "RequestMappingTemplate": "{\"version\":\"2017-02-28\",\"operation\":\"GET\",\"path\":\"/id/post/_search\",\"params\":{\"headers\":{},\"queryString\":{},\"body\":{\"from\":0,\"size\":50}}}",
