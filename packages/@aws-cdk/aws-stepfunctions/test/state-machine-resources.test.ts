@@ -196,6 +196,36 @@ describe('State Machine Resources', () => {
 
   }),
 
+  test('Created state machine can grant start sync execution to a role', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const task = new FakeTask(stack, 'Task');
+    const stateMachine = new stepfunctions.StateMachine(stack, 'StateMachine', {
+      definition: task,
+      stateMachineType: stepfunctions.StateMachineType.EXPRESS,
+    });
+    const role = new iam.Role(stack, 'Role', {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+    });
+
+    // WHEN
+    stateMachine.grantStartSyncExecution(role);
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([Match.objectLike({
+          Action: 'states:StartSyncExecution',
+          Effect: 'Allow',
+          Resource: {
+            Ref: 'StateMachine2E01A3A5',
+          },
+        })]),
+      },
+    });
+
+  }),
+
   test('Created state machine can grant read access to a role', () => {
     // GIVEN
     const stack = new cdk.Stack();
