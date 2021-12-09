@@ -5,7 +5,7 @@ import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import { Resource, Duration, Token, Annotations, RemovalPolicy, IResource, Stack, Lazy, FeatureFlags, ArnFormat } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
-import { CfnDBClusterProps } from '.';
+import { CfnDBClusterProps, DatabaseSecret, SnapshotCredentials } from '.';
 import { IClusterEngine } from './cluster-engine';
 import { Endpoint } from './endpoint';
 import { IParameterGroup } from './parameter-group';
@@ -349,7 +349,7 @@ abstract class ServerlessClusterNew extends ServerlessClusterBase {
   protected readonly subnetGroup: ISubnetGroup;
   protected readonly securityGroups: ec2.ISecurityGroup[];
 
-  constructor(scope: Construct, id: string, props: ServerlessClusterBaseProps) { // xyz
+  constructor(scope: Construct, id: string, props: ServerlessClusterBaseProps) {
     super(scope, id);
 
     const { subnetIds } = props.vpc.selectSubnets(props.vpcSubnets);
@@ -623,17 +623,20 @@ export interface ServerlessClusterFromSnapshotProps extends ServerlessClusterBas
   readonly snapshotIdentifier: string;
 
   /**
-   * The secret attached to the database cluster
+   * Master user credentials.
    *
-   * @default - no secret
+   * Note - It is not possible to change the master username for a snapshot;
+   * however, it is possible to provide (or generate) a new password.
+   *
+   * @default - The existing username and password from the snapshot will be used.
    */
-  readonly secret?: secretsmanager.ISecret;
+  readonly credentials?: SnapshotCredentials;
 }
 
 /**
  * A Aurora Serverless Cluster restored from a snapshot.
  *
- * @resource AWS::RDS::DBInstance
+ * @resource AWS::RDS::DBCluster
  */
 export class ServerlessClusterFromSnapshot extends ServerlessClusterNew {
   public readonly clusterIdentifier: string;
@@ -643,16 +646,31 @@ export class ServerlessClusterFromSnapshot extends ServerlessClusterNew {
   protected enableDataApi?: boolean;
   public readonly secret?: secretsmanager.ISecret;
 
-
   constructor(scope: Construct, id: string, props: ServerlessClusterFromSnapshotProps) {
     super(scope, id, props);
 
     this.enableDataApi = props.enableDataApi;
-    this.secret = props.secret;
+
+    let credentials = props.credentials;
+    let secret = credentials?.secret;
+    if (!secret && credentials?.generatePassword) {
+      if (!credentials.username) {
+        throw new Error('`credentials` `username` must be specified when `generatePassword` is set to true');
+      }
+
+      secret = new DatabaseSecret(this, 'Secret', {
+        username: credentials.username,
+        encryptionKey: credentials.encryptionKey,
+        excludeCharacters: credentials.excludeCharacters,
+        replaceOnPasswordCriteriaChanges: credentials.replaceOnPasswordCriteriaChanges,
+        replicaRegions: credentials.replicaRegions,
+      });
+    }
 
     const cluster = new CfnDBCluster(this, 'Resource', {
       ...this.newCfnProps,
       snapshotIdentifier: props.snapshotIdentifier,
+      masterUserPassword: secret?.secretValueFromJson('password')?.toString() ?? credentials?.password?.toString(),
     });
 
     this.clusterIdentifier = cluster.ref;
@@ -666,7 +684,10 @@ export class ServerlessClusterFromSnapshot extends ServerlessClusterNew {
       defaultPort: ec2.Port.tcp(this.clusterEndpoint.port),
     });
 
-    cluster.applyRemovalPolicy(props.removalPolicy ?? RemovalPolicy.SNAPSHOT);
+    if (secret) {
+      this.secret = secret.attach(this);
+    }
 
+    cluster.applyRemovalPolicy(props.removalPolicy ?? RemovalPolicy.SNAPSHOT);
   }
 }
