@@ -41,7 +41,6 @@ const myFn = new lambda.Function(this, 'Fn', {
 Example with a SQS queue for unsuccessful invocations:
 
 ```ts
-import * as lambda from '@aws-cdk/aws-lambda';
 import * as destinations from '@aws-cdk/aws-lambda-destinations';
 import * as sqs from '@aws-cdk/aws-sqs';
 
