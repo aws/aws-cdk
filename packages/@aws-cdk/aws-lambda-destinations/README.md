@@ -48,7 +48,6 @@ import * as sqs from '@aws-cdk/aws-sqs';
 const deadLetterQueue = new sqs.Queue(this, 'DeadLetterQueue');;
 
 const myFn = new lambda.Function(this, 'Fn', {
-  // other props
   onFailure: new destinations.SqsDestination(deadLetterQueue)
 })
 ```
