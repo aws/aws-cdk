@@ -1,5 +1,6 @@
 import '@aws-cdk/assert-internal/jest';
 import { isSuperObject, MatchStyle, SynthUtils } from '@aws-cdk/assert-internal';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { CfnOutput, CfnResource, Fn, Lazy, Stack, Tags } from '@aws-cdk/core';
 import {
   AclCidr,
@@ -433,6 +434,82 @@ describe('vpc', () => {
 
     });
 
+    test('with public subnets MapPublicIpOnLaunch is true if parameter mapPublicIpOnLaunch is true', () => {
+      const stack = getTestStack();
+      new Vpc(stack, 'VPC', {
+        maxAzs: 1,
+        subnetConfiguration: [
+          {
+            cidrMask: 24,
+            name: 'ingress',
+            subnetType: SubnetType.PUBLIC,
+            mapPublicIpOnLaunch: true,
+          },
+        ],
+      });
+      expect(stack).toCountResources('AWS::EC2::Subnet', 1);
+      expect(stack).not.toHaveResource('AWS::EC2::NatGateway');
+      expect(stack).toHaveResource('AWS::EC2::Subnet', {
+        MapPublicIpOnLaunch: true,
+      });
+    });
+    test('with public subnets MapPublicIpOnLaunch is false if parameter mapPublicIpOnLaunch is false', () => {
+      const stack = getTestStack();
+      new Vpc(stack, 'VPC', {
+        maxAzs: 1,
+        subnetConfiguration: [
+          {
+            cidrMask: 24,
+            name: 'ingress',
+            subnetType: SubnetType.PUBLIC,
+            mapPublicIpOnLaunch: false,
+          },
+        ],
+      });
+      expect(stack).toCountResources('AWS::EC2::Subnet', 1);
+      expect(stack).not.toHaveResource('AWS::EC2::NatGateway');
+      expect(stack).toHaveResource('AWS::EC2::Subnet', {
+        MapPublicIpOnLaunch: false,
+      });
+    });
+    test('with private subnets throw exception if parameter mapPublicIpOnLaunch is defined', () => {
+      const stack = getTestStack();
+      expect(() => {
+        new Vpc(stack, 'VPC', {
+          maxAzs: 1,
+          subnetConfiguration: [
+            {
+              name: 'public',
+              subnetType: SubnetType.PUBLIC,
+            },
+            {
+              name: 'private',
+              subnetType: SubnetType.PRIVATE_WITH_NAT,
+              mapPublicIpOnLaunch: true,
+            },
+          ],
+        });
+      }).toThrow(/subnet cannot include mapPublicIpOnLaunch parameter/);
+    });
+    test('with isolated subnets throw exception if parameter mapPublicIpOnLaunch is defined', () => {
+      const stack = getTestStack();
+      expect(() => {
+        new Vpc(stack, 'VPC', {
+          maxAzs: 1,
+          subnetConfiguration: [
+            {
+              name: 'public',
+              subnetType: SubnetType.PUBLIC,
+            },
+            {
+              name: 'private',
+              subnetType: SubnetType.PRIVATE_ISOLATED,
+              mapPublicIpOnLaunch: true,
+            },
+          ],
+        });
+      }).toThrow(/subnet cannot include mapPublicIpOnLaunch parameter/);
+    });
     test('maxAZs defaults to 3 if unset', () => {
       const stack = getTestStack();
       new Vpc(stack, 'VPC');
@@ -583,6 +660,31 @@ describe('vpc', () => {
         Value: 'ingress',
       }]));
 
+    });
+
+    test('EIP passed with NAT gateway does not create duplicate EIP', () => {
+      const stack = getTestStack();
+      new Vpc(stack, 'VPC', {
+        cidr: '10.0.0.0/16',
+        subnetConfiguration: [
+          {
+            cidrMask: 24,
+            name: 'ingress',
+            subnetType: SubnetType.PUBLIC,
+          },
+          {
+            cidrMask: 24,
+            name: 'application',
+            subnetType: SubnetType.PRIVATE_WITH_NAT,
+          },
+        ],
+        natGatewayProvider: NatProvider.gateway({ eipAllocationIds: ['b'] }),
+        natGateways: 1,
+      });
+      expect(stack).toCountResources('AWS::EC2::EIP', 0);
+      expect(stack).toHaveResource('AWS::EC2::NatGateway', {
+        AllocationId: 'b',
+      });
     });
 
     test('with mis-matched nat and subnet configs it throws', () => {
@@ -997,7 +1099,7 @@ describe('vpc', () => {
 
     });
 
-    test('can configure Security Groups of NAT instances with allowAllTraffic false', () => {
+    testDeprecated('can configure Security Groups of NAT instances with allowAllTraffic false', () => {
       // GIVEN
       const stack = getTestStack();
 

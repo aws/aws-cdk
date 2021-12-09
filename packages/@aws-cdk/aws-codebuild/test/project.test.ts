@@ -673,7 +673,7 @@ describe('Environment', () => {
   test('logs config - s3', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    const bucket = s3.Bucket.fromBucketName(stack, 'LogBucket', 'MyBucketName');
+    const bucket = s3.Bucket.fromBucketName(stack, 'LogBucket', 'mybucketname');
 
     // WHEN
     new codebuild.Project(stack, 'Project', {
@@ -693,7 +693,7 @@ describe('Environment', () => {
     expect(stack).toHaveResourceLike('AWS::CodeBuild::Project', {
       LogsConfig: objectLike({
         S3Logs: {
-          Location: 'MyBucketName/my-logs',
+          Location: 'mybucketname/my-logs',
           Status: 'ENABLED',
         },
       }),
@@ -703,7 +703,7 @@ describe('Environment', () => {
   test('logs config - cloudWatch and s3', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    const bucket = s3.Bucket.fromBucketName(stack, 'LogBucket2', 'MyBucketName');
+    const bucket = s3.Bucket.fromBucketName(stack, 'LogBucket2', 'mybucketname');
     const logGroup = logs.LogGroup.fromLogGroupName(stack, 'LogGroup2', 'MyLogGroupName');
 
     // WHEN
@@ -730,7 +730,7 @@ describe('Environment', () => {
           Status: 'ENABLED',
         },
         S3Logs: {
-          Location: 'MyBucketName',
+          Location: 'mybucketname',
           Status: 'ENABLED',
         },
       }),

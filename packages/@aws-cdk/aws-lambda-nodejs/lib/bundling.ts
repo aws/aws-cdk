@@ -54,7 +54,8 @@ export class Bundling implements cdk.BundlingOptions {
    */
   public static bundle(options: BundlingProps): AssetCode {
     return Code.fromAsset(options.projectRoot, {
-      assetHashType: cdk.AssetHashType.OUTPUT,
+      assetHash: options.assetHash,
+      assetHashType: options.assetHash ? cdk.AssetHashType.CUSTOM : cdk.AssetHashType.OUTPUT,
       bundling: new Bundling(options),
     });
   }
@@ -182,6 +183,7 @@ export class Bundling implements cdk.BundlingOptions {
     const sourceMapEnabled = this.props.sourceMapMode ?? this.props.sourceMap;
     const sourceMapMode = this.props.sourceMapMode ?? SourceMapMode.DEFAULT;
     const sourceMapValue = sourceMapMode === SourceMapMode.DEFAULT ? '' : `=${this.props.sourceMapMode}`;
+    const sourcesContent = this.props.sourcesContent ?? true;
 
     const esbuildCommand: string[] = [
       options.esbuildRunner,
@@ -191,6 +193,7 @@ export class Bundling implements cdk.BundlingOptions {
       `--outfile="${pathJoin(options.outputDir, 'index.js')}"`,
       ...this.props.minify ? ['--minify'] : [],
       ...sourceMapEnabled ? [`--sourcemap${sourceMapValue}`] : [],
+      ...sourcesContent ? [] : [`--sources-content=${sourcesContent}`],
       ...this.externals.map(external => `--external:${external}`),
       ...loaders.map(([ext, name]) => `--loader:${ext}=${name}`),
       ...defines.map(([key, value]) => `--define:${key}=${JSON.stringify(value)}`),
@@ -200,6 +203,7 @@ export class Bundling implements cdk.BundlingOptions {
       ...this.props.metafile ? [`--metafile=${pathJoin(options.outputDir, 'index.meta.json')}`] : [],
       ...this.props.banner ? [`--banner:js=${JSON.stringify(this.props.banner)}`] : [],
       ...this.props.footer ? [`--footer:js=${JSON.stringify(this.props.footer)}`] : [],
+      ...this.props.charset ? [`--charset=${this.props.charset}`] : [],
     ];
 
     let depsCommand = '';
@@ -301,22 +305,22 @@ class OsCommand {
   public writeJson(filePath: string, data: any): string {
     const stringifiedData = JSON.stringify(data);
     if (this.osPlatform === 'win32') {
-      return `echo ^${stringifiedData}^ > ${filePath}`;
+      return `echo ^${stringifiedData}^ > "${filePath}"`;
     }
 
-    return `echo '${stringifiedData}' > ${filePath}`;
+    return `echo '${stringifiedData}' > "${filePath}"`;
   }
 
   public copy(src: string, dest: string): string {
     if (this.osPlatform === 'win32') {
-      return `copy ${src} ${dest}`;
+      return `copy "${src}" "${dest}"`;
     }
 
-    return `cp ${src} ${dest}`;
+    return `cp "${src}" "${dest}"`;
   }
 
   public changeDirectory(dir: string): string {
-    return `cd ${dir}`;
+    return `cd "${dir}"`;
   }
 }
 

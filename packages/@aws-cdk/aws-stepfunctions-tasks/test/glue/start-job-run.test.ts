@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import { Duration, Stack } from '@aws-cdk/core';
 import * as tasks from '../../lib';
@@ -129,11 +129,11 @@ test('permitted role actions limited to start job run if service integration pat
     definition: task,
   });
 
-  expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
-      Statement: [{
+      Statement: [Match.objectLike({
         Action: 'glue:StartJobRun',
-      }],
+      })],
     },
   });
 });
@@ -148,16 +148,16 @@ test('permitted role actions include start, get, and stop job run if service int
     definition: task,
   });
 
-  expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
-      Statement: [{
+      Statement: [Match.objectLike({
         Action: [
           'glue:StartJobRun',
           'glue:GetJobRun',
           'glue:GetJobRuns',
           'glue:BatchStopJobRun',
         ],
-      }],
+      })],
     },
   });
 });

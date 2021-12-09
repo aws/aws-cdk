@@ -1,6 +1,6 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { IResource, Resource, Stack } from '@aws-cdk/core';
+import { ArnFormat, IResource, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnComputeEnvironment } from './batch.generated';
 
@@ -325,7 +325,7 @@ export class ComputeEnvironment extends Resource implements IComputeEnvironment 
    */
   public static fromComputeEnvironmentArn(scope: Construct, id: string, computeEnvironmentArn: string): IComputeEnvironment {
     const stack = Stack.of(scope);
-    const computeEnvironmentName = stack.parseArn(computeEnvironmentArn).resourceName!;
+    const computeEnvironmentName = stack.splitArn(computeEnvironmentArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
 
     class Import extends Resource implements IComputeEnvironment {
       public readonly computeEnvironmentArn = computeEnvironmentArn;

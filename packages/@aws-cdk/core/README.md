@@ -172,6 +172,13 @@ Duration.days(7)        // 7 days
 Duration.parse('PT5M')  // 5 minutes
 ```
 
+Durations can be added or subtracted together:
+
+```ts
+Duration.minutes(1).plus(Duration.seconds(60)); // 2 minutes
+Duration.minutes(5).minus(Duration.seconds(10)); // 290 secondes
+```
+
 ## Size (Digital Information Quantity)
 
 To make specification of digital storage quantities unambiguous, a class called
@@ -230,6 +237,8 @@ this purpose.
 use the region and account of the stack you're calling it on:
 
 ```ts
+declare const stack: Stack;
+
 // Builds "arn:<PARTITION>:lambda:<REGION>:<ACCOUNT>:function:MyFunction"
 stack.formatArn({
   service: 'lambda',
@@ -245,6 +254,8 @@ but in case of a deploy-time value be aware that the result will be another
 deploy-time value which cannot be inspected in the CDK application.
 
 ```ts
+declare const stack: Stack;
+
 // Extracts the function name out of an AWS Lambda Function ARN
 const arnComponents = stack.parseArn(arn, ':');
 const functionName = arnComponents.resourceName;
@@ -376,7 +387,11 @@ examples ensures that only a single SNS topic is defined:
 function getOrCreate(scope: Construct): sns.Topic {
   const stack = Stack.of(scope);
   const uniqueid = 'GloballyUniqueIdForSingleton'; // For example, a UUID from `uuidgen`
-  return stack.node.tryFindChild(uniqueid) as sns.Topic  ?? new sns.Topic(stack, uniqueid);
+  const existing = stack.node.tryFindChild(uniqueid);
+  if (existing) {
+    return existing as sns.Topic;
+  }
+  return new sns.Topic(stack, uniqueid);
 }
 ```
 
@@ -805,10 +820,12 @@ regionTable.findInMap('us-east-2', 'regionName');
 ```
 
 On the other hand, the following code will produce the "Mappings" section shown above,
-since the top-level key is an unresolved token. The call to `findInMap` will return a token that resolves to 
+since the top-level key is an unresolved token. The call to `findInMap` will return a token that resolves to
 `{ "Fn::FindInMap": [ "RegionTable", { "Ref": "AWS::Region" }, "regionName" ] }`.
 
 ```ts
+declare const regionTable: CfnMapping;
+
 regionTable.findInMap(Aws.REGION, 'regionName');
 ```
 

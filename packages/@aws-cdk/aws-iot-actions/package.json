@@ -71,18 +71,41 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/assertions": "0.0.0",
+    "@aws-cdk/aws-kinesisfirehose-destinations": "0.0.0",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/cdk-integ-tools": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/jest": "^26.0.24",
+    "@types/jest": "^27.0.3",
     "constructs": "^3.3.69",
-    "jest": "^26.6.3"
+    "jest": "^27.4.3"
   },
   "dependencies": {
+    "@aws-cdk/aws-cloudwatch": "0.0.0",
+    "@aws-cdk/aws-iam": "0.0.0",
+    "@aws-cdk/aws-iot": "0.0.0",
+    "@aws-cdk/aws-kinesisfirehose": "0.0.0",
+    "@aws-cdk/aws-lambda": "0.0.0",
+    "@aws-cdk/aws-logs": "0.0.0",
+    "@aws-cdk/aws-s3": "0.0.0",
+    "@aws-cdk/core": "0.0.0",
+    "case": "1.6.3",
+    "constructs": "^3.3.69"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
+    "@aws-cdk/aws-cloudwatch": "0.0.0",
+    "@aws-cdk/aws-iam": "0.0.0",
+    "@aws-cdk/aws-iot": "0.0.0",
+    "@aws-cdk/aws-kinesisfirehose": "0.0.0",
+    "@aws-cdk/aws-lambda": "0.0.0",
+    "@aws-cdk/aws-logs": "0.0.0",
+    "@aws-cdk/aws-s3": "0.0.0",
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^3.3.69"
   },
+  "bundledDependencies": [
+    "case"
+  ],
   "engines": {
     "node": ">= 10.13.0 <13 || >=13.7.0"
   },

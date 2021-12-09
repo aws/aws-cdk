@@ -671,6 +671,12 @@
       "Properties": {
         "Port": 80,
         "Protocol": "HTTP",
+        "TargetGroupAttributes": [
+          {
+            "Key": "stickiness.enabled",
+            "Value": "false"
+          }
+        ],
         "TargetType": "instance",
         "VpcId": {
           "Ref": "VPCB9E5F0B4"
