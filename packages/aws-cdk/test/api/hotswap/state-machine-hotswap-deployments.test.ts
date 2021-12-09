@@ -168,14 +168,14 @@ test('calls the updateStateMachine() API when it receives a change to the defini
   });
 
   // WHEN
-  setup.pushStackResourceSummaries(setup.stackSummaryOf('Machine', 'AWS::StepFunctions::StateMachine', 'mock-state-machine-arn'));
+  setup.pushStackResourceSummaries(setup.stackSummaryOf('Machine', 'AWS::StepFunctions::StateMachine', 'arn:aws:states:here:123456789012:stateMachine:my-machine'));
   const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(cdkStackArtifact);
 
   // THEN
   expect(deployStackResult).not.toBeUndefined();
   expect(mockUpdateMachineDefinition).toHaveBeenCalledWith({
     definition: '{ "Prop" : "new-value" }',
-    stateMachineArn: 'mock-state-machine-arn',
+    stateMachineArn: 'arn:aws:states:here:123456789012:stateMachine:my-machine',
   });
 });
 
@@ -281,7 +281,7 @@ test('can correctly hotswap old style synth changes', async () => {
   });
 
   // WHEN
-  setup.pushStackResourceSummaries( setup.stackSummaryOf('Machine', 'AWS::StepFunctions::StateMachine', 'mock-state-machine-arn'));
+  setup.pushStackResourceSummaries(setup.stackSummaryOf('Machine', 'AWS::StepFunctions::StateMachine', 'arn:aws:states:here:123456789012:stateMachine:my-machine'));
   const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(cdkStackArtifact, { AssetParam2: 'asset-param-2' });
 
   // THEN
@@ -349,7 +349,7 @@ test('calls the updateStateMachine() API when it receives a change to the defini
 
   // WHEN
   setup.pushStackResourceSummaries(
-    setup.stackSummaryOf('Machine', 'AWS::StepFunctions::StateMachine', 'mock-state-machine-arn'),
+    setup.stackSummaryOf('Machine', 'AWS::StepFunctions::StateMachine', 'arn:aws:states:here:123456789012:stateMachine:my-machine'),
     setup.stackSummaryOf('Func', 'AWS::Lambda::Function', 'my-func'),
   );
   const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(cdkStackArtifact);

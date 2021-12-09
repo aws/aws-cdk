@@ -1,5 +1,5 @@
 import { ISDK } from '../aws-auth';
-import { ChangeHotswapImpact, ChangeHotswapResult, HotswapOperation, HotswappableChangeCandidate, establishResourcePhysicalName } from './common';
+import { ChangeHotswapImpact, ChangeHotswapResult, HotswapOperation, HotswappableChangeCandidate } from './common';
 import { EvaluateCloudFormationTemplate } from './evaluate-cloudformation-template';
 
 export async function isHotswappableStateMachineChange(
@@ -11,19 +11,20 @@ export async function isHotswappableStateMachineChange(
     return stateMachineDefinitionChange;
   }
 
-  const machineNameInCfnTemplate = change.newValue?.Properties?.StateMachineName;
+  const stateMachineNameInCfnTemplate = change.newValue?.Properties?.StateMachineName;
+  const stateMachineArn = stateMachineNameInCfnTemplate
+    ? await evaluateCfnTemplate.evaluateCfnExpression({
+      'Fn::Sub': 'arn:${AWS::Partition}:states:${AWS::Region}:${AWS::AccountId}:stateMachine:' + stateMachineNameInCfnTemplate,
+    })
+    : await evaluateCfnTemplate.findPhysicalNameFor(logicalId);
 
-  const machineArn = machineNameInCfnTemplate ? await evaluateCfnTemplate.evaluateCfnExpression({
-    'Fn::Sub': 'arn:${AWS::Partition}:states:${AWS::Region}:${AWS::AccountId}:stateMachine:' + machineNameInCfnTemplate,
-  }) : await establishResourcePhysicalName(logicalId, machineNameInCfnTemplate, evaluateCfnTemplate);
-
-  if (!machineArn) {
+  if (!stateMachineArn) {
     return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
   }
 
   return new StateMachineHotswapOperation({
     definition: stateMachineDefinitionChange,
-    stateMachineArn: machineArn,
+    stateMachineArn: stateMachineArn,
   });
 }
 
