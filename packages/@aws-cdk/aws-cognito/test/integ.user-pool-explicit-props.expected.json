@@ -842,6 +842,9 @@
           "EmailMessage": "verification email body from the integ test. Code is {####}.",
           "EmailSubject": "verification email subject from the integ test",
           "SmsMessage": "verification sms message from the integ test. Code is {####}."
+        },
+        "UserPoolAddOns": {
+          "AdvancedSecurityMode": "ENFORCED" 
         }
       },
       "UpdateReplacePolicy": "Delete",
