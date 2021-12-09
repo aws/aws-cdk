@@ -129,6 +129,7 @@ test('does not call the invokeLambda() api if the updated Policy has no Roles', 
       Policy: {
         Type: 'AWS::IAM::Policy',
         Properties: {
+          PolicyName: 'my-policy',
           PolicyDocument: {
             Statement: [
               {
@@ -161,6 +162,7 @@ test('does not call the invokeLambda() api if the updated Policy has no Roles', 
         Policy: {
           Type: 'AWS::IAM::Policy',
           Properties: {
+            PolicyName: 'my-policy',
             PolicyDocument: {
               Statement: [
                 {
@@ -257,6 +259,7 @@ describe('old-style synthesis', () => {
   const policyOld = {
     Type: 'AWS::IAM::Policy',
     Properties: {
+      PolicyName: 'my-policy',
       Roles: [
         { Ref: 'ServiceRole' },
       ],
@@ -277,6 +280,7 @@ describe('old-style synthesis', () => {
   const policyNew = {
     Type: 'AWS::IAM::Policy',
     Properties: {
+      PolicyName: 'my-policy',
       Roles: [
         { Ref: 'ServiceRole' },
       ],
@@ -297,6 +301,7 @@ describe('old-style synthesis', () => {
   const policy2Old = {
     Type: 'AWS::IAM::Policy',
     Properties: {
+      PolicyName: 'my-policy',
       Roles: [
         { Ref: 'ServiceRole' },
       ],
@@ -317,6 +322,7 @@ describe('old-style synthesis', () => {
   const policy2New = {
     Type: 'AWS::IAM::Policy',
     Properties: {
+      PolicyName: 'my-policy',
       Roles: [
         { Ref: 'ServiceRole2' },
       ],
