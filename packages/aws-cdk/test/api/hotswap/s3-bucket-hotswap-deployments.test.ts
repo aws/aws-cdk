@@ -259,7 +259,7 @@ describe('old-style synthesis', () => {
   const policyOld = {
     Type: 'AWS::IAM::Policy',
     Properties: {
-      PolicyName: 'my-policy',
+      PolicyName: 'my-policy-old',
       Roles: [
         { Ref: 'ServiceRole' },
       ],
@@ -280,7 +280,7 @@ describe('old-style synthesis', () => {
   const policyNew = {
     Type: 'AWS::IAM::Policy',
     Properties: {
-      PolicyName: 'my-policy',
+      PolicyName: 'my-policy-new',
       Roles: [
         { Ref: 'ServiceRole' },
       ],
@@ -301,7 +301,7 @@ describe('old-style synthesis', () => {
   const policy2Old = {
     Type: 'AWS::IAM::Policy',
     Properties: {
-      PolicyName: 'my-policy',
+      PolicyName: 'my-policy-old-2',
       Roles: [
         { Ref: 'ServiceRole' },
       ],
@@ -322,7 +322,7 @@ describe('old-style synthesis', () => {
   const policy2New = {
     Type: 'AWS::IAM::Policy',
     Properties: {
-      PolicyName: 'my-policy',
+      PolicyName: 'my-policy-new-2',
       Roles: [
         { Ref: 'ServiceRole2' },
       ],
