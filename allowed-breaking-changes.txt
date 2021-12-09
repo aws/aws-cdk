@@ -87,7 +87,8 @@ removed:@aws-cdk/aws-stepfunctions-tasks.EmrCreateClusterProps.autoTerminationPo
 # securityGroupName is required. Therefore securityGroupId is no longer mandatory.
 weakened:@aws-cdk/cloud-assembly-schema.SecurityGroupContextQuery
 
-# autoscaling role
+# refactor autoscaling lifecycle hook target bind() methods to make role optional by
+# having bind() methods create the role if it isn't passed to them 
 incompatible-argument:@aws-cdk/aws-autoscaling-hooktargets.FunctionHook.bind
 incompatible-argument:@aws-cdk/aws-autoscaling-hooktargets.QueueHook.bind
 incompatible-argument:@aws-cdk/aws-autoscaling-hooktargets.TopicHook.bind
