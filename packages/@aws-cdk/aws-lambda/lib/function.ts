@@ -450,6 +450,7 @@ export class Function extends FunctionBase {
       public readonly grantPrincipal: iam.IPrincipal;
       public readonly role = role;
       public readonly permissionsNode = this.node;
+      public readonly architecture = attrs.architecture ?? Architecture.X86_64;
 
       protected readonly canCreatePermissions = attrs.sameEnvironment ?? this._isStackAccount();
 
@@ -576,7 +577,7 @@ export class Function extends FunctionBase {
   /**
    * The architecture of this Lambda Function (this is an optional attribute and defaults to X86_64).
    */
-  public readonly architecture?: Architecture;
+  public readonly architecture: Architecture;
 
   /**
    * The timeout configured for this lambda.
@@ -735,7 +736,7 @@ export class Function extends FunctionBase {
     this.runtime = props.runtime;
     this.timeout = props.timeout;
 
-    this.architecture = props.architecture;
+    this.architecture = props.architecture ?? Architecture.X86_64;
 
     if (props.layers) {
       if (props.runtime === Runtime.FROM_IMAGE) {
