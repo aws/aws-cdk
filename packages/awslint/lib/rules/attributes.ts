@@ -39,7 +39,7 @@ attributesLinter.add({
 
 attributesLinter.add({
   code: 'attribute-type',
-  message: 'attribute properties must be type of string, number or string[]',
+  message: 'attribute property type must be string, number or string[]',
   eval: e => {
     const type = e.ctx.attr.property.type.spec;
     e.assert(isString(type) || isNumber(type) || isStringArray(type), e.ctx.fqn);

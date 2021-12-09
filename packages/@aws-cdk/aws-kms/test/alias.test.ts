@@ -206,7 +206,7 @@ test('imported alias by name - will throw an error when accessing the key', () =
 
   const myAlias = Alias.fromAliasName(stack, 'MyAlias', 'alias/myAlias');
 
-  expect(() => myAlias.aliasTargetKey).toThrow('Cannot access aliasTargetKey on an Alias imported by Alias.fromAliasName().');
+  expect(() => myAlias.targetKey).toThrow('Cannot access aliasTargetKey on an Alias imported by Alias.fromAliasName().');
 });
 
 test('fails if alias policy is invalid', () => {

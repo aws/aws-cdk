@@ -21,10 +21,8 @@ export interface IAlias extends IKey {
 
   /**
    * The Key to which the Alias refers.
-   *
-   * @attribute
    */
-  readonly aliasTargetKey: IKey;
+  readonly targetKey: IKey;
 }
 
 /**
@@ -56,7 +54,7 @@ export interface AliasProps {
 abstract class AliasBase extends Resource implements IAlias {
   public abstract readonly aliasName: string;
 
-  public abstract readonly aliasTargetKey: IKey;
+  public abstract readonly targetKey: IKey;
 
   public get keyArn(): string {
     return Stack.of(this).formatArn({
@@ -71,27 +69,27 @@ abstract class AliasBase extends Resource implements IAlias {
   }
 
   public addAlias(alias: string): Alias {
-    return this.aliasTargetKey.addAlias(alias);
+    return this.targetKey.addAlias(alias);
   }
 
   public addToResourcePolicy(statement: iam.PolicyStatement, allowNoOp?: boolean): iam.AddToResourcePolicyResult {
-    return this.aliasTargetKey.addToResourcePolicy(statement, allowNoOp);
+    return this.targetKey.addToResourcePolicy(statement, allowNoOp);
   }
 
   public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
-    return this.aliasTargetKey.grant(grantee, ...actions);
+    return this.targetKey.grant(grantee, ...actions);
   }
 
   public grantDecrypt(grantee: iam.IGrantable): iam.Grant {
-    return this.aliasTargetKey.grantDecrypt(grantee);
+    return this.targetKey.grantDecrypt(grantee);
   }
 
   public grantEncrypt(grantee: iam.IGrantable): iam.Grant {
-    return this.aliasTargetKey.grantEncrypt(grantee);
+    return this.targetKey.grantEncrypt(grantee);
   }
 
   public grantEncryptDecrypt(grantee: iam.IGrantable): iam.Grant {
-    return this.aliasTargetKey.grantEncryptDecrypt(grantee);
+    return this.targetKey.grantEncryptDecrypt(grantee);
   }
 }
 
@@ -132,7 +130,7 @@ export class Alias extends AliasBase {
   public static fromAliasAttributes(scope: Construct, id: string, attrs: AliasAttributes): IAlias {
     class _Alias extends AliasBase {
       public get aliasName() { return attrs.aliasName; }
-      public get aliasTargetKey() { return attrs.aliasTargetKey; }
+      public get targetKey() { return attrs.aliasTargetKey; }
     }
     return new _Alias(scope, id);
   }
@@ -151,7 +149,7 @@ export class Alias extends AliasBase {
       public readonly keyArn = Stack.of(this).formatArn({ service: 'kms', resource: aliasName });
       public readonly keyId = aliasName;
       public readonly aliasName = aliasName;
-      public get aliasTargetKey(): IKey { throw new Error('Cannot access aliasTargetKey on an Alias imported by Alias.fromAliasName().'); }
+      public get targetKey(): IKey { throw new Error('Cannot access aliasTargetKey on an Alias imported by Alias.fromAliasName().'); }
       public addAlias(_alias: string): Alias { throw new Error('Cannot call addAlias on an Alias imported by Alias.fromAliasName().'); }
       public addToResourcePolicy(_statement: iam.PolicyStatement, _allowNoOp?: boolean): iam.AddToResourcePolicyResult {
         return { statementAdded: false };
@@ -166,7 +164,7 @@ export class Alias extends AliasBase {
   }
 
   public readonly aliasName: string;
-  public readonly aliasTargetKey: IKey;
+  public readonly targetKey: IKey;
 
   constructor(scope: Construct, id: string, props: AliasProps) {
     let aliasName = props.aliasName;
@@ -193,11 +191,11 @@ export class Alias extends AliasBase {
       physicalName: aliasName,
     });
 
-    this.aliasTargetKey = props.targetKey;
+    this.targetKey = props.targetKey;
 
     const resource = new CfnAlias(this, 'Resource', {
       aliasName: this.physicalName,
-      targetKeyId: this.aliasTargetKey.keyArn,
+      targetKeyId: this.targetKey.keyArn,
     });
 
     this.aliasName = this.getResourceNameAttribute(resource.aliasName);
