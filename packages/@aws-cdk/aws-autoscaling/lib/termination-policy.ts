@@ -31,9 +31,7 @@ export enum TerminationPolicy {
   OLDEST_INSTANCE = 'OldestInstance',
 
   /**
-   * Terminate instances that have the oldest launch configuration. This policy
-   * is useful when you're updating a group and phasing out the instances from
-   * a previous configuration.
+   * Terminate instances that have the oldest launch configuration.
    */
   OLDEST_LAUNCH_CONFIGURATION = 'OldestLaunchConfiguration',
 
