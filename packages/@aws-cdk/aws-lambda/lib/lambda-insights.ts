@@ -8,9 +8,14 @@ import { IFunction } from './function-base';
 // This is the name of the mapping that will be added to the CloudFormation template, if a stack is region agnostic
 const DEFAULT_MAPPING_PREFIX = 'LambdaInsightsVersions';
 
+/**
+ * Config returned from {@link LambdaInsightsVersion._bind}
+ */
 interface InsightsBindConfig {
+  /**
+   * ARN of the Lambda Insights Layer Version
+   */
   readonly arn: string;
-
 }
 
 // To add new versions, update fact-tables.ts `CLOUDWATCH_LAMBDA_INSIGHTS_ARNS` and create a new `public static readonly VERSION_A_B_C_D`
