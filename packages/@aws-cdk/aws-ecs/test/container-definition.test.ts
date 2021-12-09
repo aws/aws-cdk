@@ -236,6 +236,45 @@ describe('container definition', () => {
 
     });
 
+    test('can add additional environment variables to a container definition', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+      const container = new ecs.ContainerDefinition(stack, 'Container', {
+        image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+        taskDefinition,
+        memoryLimitMiB: 1024,
+        environment: {
+          key: 'foo',
+          value: 'bar',
+        },
+      });
+      container.addEnvironment('newKey', 'newValue');
+
+      // THEN
+      expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+        ContainerDefinitions: [
+          {
+            Environment: [
+              {
+                Name: 'key',
+                Value: 'foo',
+              },
+              {
+                Name: 'value',
+                Value: 'bar',
+              },
+              {
+                Name: 'newKey',
+                Value: 'newValue',
+              },
+            ],
+            Memory: 1024,
+          },
+        ],
+      });
+    });
+
     test('throws when MemoryLimit is less than MemoryReservationLimit', () => {
       // GIVEN
       const stack = new cdk.Stack();
