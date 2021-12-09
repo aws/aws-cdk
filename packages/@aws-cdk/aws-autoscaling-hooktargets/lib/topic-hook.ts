@@ -1,6 +1,9 @@
 import * as autoscaling from '@aws-cdk/aws-autoscaling';
 import * as sns from '@aws-cdk/aws-sns';
-import { Construct } from '@aws-cdk/core';
+
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from 'constructs';
 
 /**
  * Use an SNS topic as a hook target
