@@ -21,10 +21,7 @@ describe('HttpServiceDiscoveryIntegration', () => {
     const api = new HttpApi(stack, 'HttpApi');
     new HttpRoute(stack, 'HttpProxyPrivateRoute', {
       httpApi: api,
-      integration: new HttpServiceDiscoveryIntegration({
-        vpcLink,
-        service,
-      }),
+      integration: new HttpServiceDiscoveryIntegration('Integration', service, { vpcLink }),
       routeKey: HttpRouteKey.with('/pets'),
     });
 
@@ -61,9 +58,8 @@ describe('HttpServiceDiscoveryIntegration', () => {
     const api = new HttpApi(stack, 'HttpApi');
     new HttpRoute(stack, 'HttpProxyPrivateRoute', {
       httpApi: api,
-      integration: new HttpServiceDiscoveryIntegration({
+      integration: new HttpServiceDiscoveryIntegration('Integration', service, {
         vpcLink,
-        service,
         method: HttpMethod.PATCH,
       }),
       routeKey: HttpRouteKey.with('/pets'),
@@ -87,10 +83,7 @@ describe('HttpServiceDiscoveryIntegration', () => {
 
     expect(() => new HttpRoute(stack, 'HttpProxyPrivateRoute', {
       httpApi: api,
-      integration: new HttpServiceDiscoveryIntegration({
-        service,
-        method: HttpMethod.PATCH,
-      }),
+      integration: new HttpServiceDiscoveryIntegration('Integration', service, { method: HttpMethod.PATCH }),
       routeKey: HttpRouteKey.with('/pets'),
     })).toThrow(/vpcLink property is mandatory/);
   });
@@ -110,9 +103,8 @@ describe('HttpServiceDiscoveryIntegration', () => {
     const api = new HttpApi(stack, 'HttpApi');
     new HttpRoute(stack, 'HttpProxyPrivateRoute', {
       httpApi: api,
-      integration: new HttpServiceDiscoveryIntegration({
+      integration: new HttpServiceDiscoveryIntegration('Integration', service, {
         vpcLink,
-        service,
         secureServerName: 'name-to-verify',
       }),
       routeKey: HttpRouteKey.with('/pets'),
@@ -141,9 +133,8 @@ describe('HttpServiceDiscoveryIntegration', () => {
     const api = new HttpApi(stack, 'HttpApi');
     new HttpRoute(stack, 'HttpProxyPrivateRoute', {
       httpApi: api,
-      integration: new HttpServiceDiscoveryIntegration({
+      integration: new HttpServiceDiscoveryIntegration('Integration', service, {
         vpcLink,
-        service,
         parameterMapping: new ParameterMapping()
           .appendHeader('header2', MappingValue.requestHeader('header1'))
           .removeHeader('header1'),

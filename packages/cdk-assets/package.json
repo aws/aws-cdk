@@ -32,13 +32,13 @@
   "devDependencies": {
     "@types/archiver": "^5.3.0",
     "@types/glob": "^7.2.0",
-    "@types/jest": "^27.0.2",
+    "@types/jest": "^27.0.3",
     "@types/mime": "^2.0.3",
     "@types/mock-fs": "^4.13.1",
     "@types/node": "^10.17.60",
     "@types/yargs": "^15.0.14",
     "@aws-cdk/cdk-build-tools": "0.0.0",
-    "jest": "^27.3.1",
+    "jest": "^27.4.3",
     "jszip": "^3.7.1",
     "mock-fs": "^4.14.0",
     "@aws-cdk/pkglint": "0.0.0"
@@ -78,6 +78,6 @@
   "stability": "experimental",
   "maturity": "experimental",
   "publishConfig": {
-    "tag": "latest"
+    "tag": "latest-1"
   }
 }
