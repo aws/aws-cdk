@@ -65,7 +65,7 @@ fi
 # Compile examples with respect to "decdk" directory, as all packages will
 # be symlinked there so they can all be included.
 echo "💎 Extracting code samples" >&2
-$ROSETTA extract \
+time $ROSETTA extract \
     --compile \
     --verbose \
     --cache ${rosetta_cache_file} \
@@ -73,15 +73,20 @@ $ROSETTA extract \
     ${extract_opts} \
     $(cat $jsii_pkgs_file)
 
-if $infuse; then
-    echo "💎 Generating synthetic examples for the remainder" >&2
-    time npx cdk-generate-synthetic-examples \
-        --extract \
-        --extract-cache ${rosetta_cache_file} \
-        --extract-directory packages/decdk \
-        $(cat $jsii_pkgs_file)
-fi
+ $infuse; then
+  echo "💎 Generating synthetic examples for the remainder" >&2
+  time npx cdk-generate-synthetic-examples \
+      $(cat $jsii_pkgs_file)
+  
+  echo "💎 Extracting generated examples" >&2
+  time $ROSETTA extract \
+      --compile \
+      --verbose \
+      --cache ${rosetta_cache_file} \
+      --directory packages/decdk \
+      $(cat $jsii_pkgs_file)
 
-$ROSETTA trim-cache \
+
+time $ROSETTA trim-cache \
     ${rosetta_cache_file} \
     $(cat $jsii_pkgs_file)
