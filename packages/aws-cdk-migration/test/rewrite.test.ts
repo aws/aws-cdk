@@ -240,7 +240,7 @@ describe('constructs imports', () => {
       class FooBar extends core.Construct {
         private readonly foo: core.Construct;
         private doStuff() { return new core.Construct(); }
-      }`, 'aws-cdk-lib', 'subject.ts');
+      }`, 'aws-cdk-lib', 'subject.ts', { rewriteConstructsImports: true });
 
       expect(output).toBe(`
       import * as constructs from 'constructs';
@@ -257,7 +257,7 @@ describe('constructs imports', () => {
       class FooBar extends core.Construct {
         private readonly foo: core.Construct;
         private doStuff() { return new core.Construct(); }
-      }`, 'aws-cdk-lib', 'subject.ts');
+      }`, 'aws-cdk-lib', 'subject.ts', { rewriteConstructsImports: true });
 
       expect(output).toBe(`
       import * as constructs from 'constructs';
@@ -273,7 +273,8 @@ describe('constructs imports', () => {
     test('no constructs imports', () => {
       const output = rewriteMonoPackageImports(`
       import { Stack, StackProps } from '@aws-cdk/core';
-      class FooBar extends Stack { }`, 'aws-cdk-lib', 'subject.ts');
+      class FooBar extends Stack { }`,
+      'aws-cdk-lib', 'subject.ts', { rewriteConstructsImports: true });
 
       expect(output).toBe(`
       import { Stack, StackProps } from 'aws-cdk-lib';
@@ -283,7 +284,8 @@ describe('constructs imports', () => {
     test('all constructs imports', () => {
       const output = rewriteMonoPackageImports(`
       import { IConstruct, Construct } from '@aws-cdk/core';
-      class FooBar implements IConstruct extends Construct { }`, 'aws-cdk-lib', 'subject.ts');
+      class FooBar implements IConstruct extends Construct { }`,
+      'aws-cdk-lib', 'subject.ts', { rewriteConstructsImports: true });
 
       expect(output).toBe(`
       import { IConstruct, Construct } from 'constructs';
@@ -293,7 +295,8 @@ describe('constructs imports', () => {
     test('mixed constructs and core imports', () => {
       const output = rewriteMonoPackageImports(`
       import { Stack, Construct, IConstruct, StackProps } from '@aws-cdk/core';
-      class FooBar implements IConstruct extends Construct { }`, 'aws-cdk-lib', 'subject.ts');
+      class FooBar implements IConstruct extends Construct { }`,
+      'aws-cdk-lib', 'subject.ts', { rewriteConstructsImports: true });
 
       expect(output).toBe(`
       import { Construct, IConstruct } from 'constructs';
@@ -317,7 +320,7 @@ describe('constructs imports', () => {
       readonly foo1: core2.Construct;
       public static bar1() { return CoreConstruct(); }
       public static bar2() { return new class implements IConstruct {}; }
-    }`, 'aws-cdk-lib', 'subject.ts');
+    }`, 'aws-cdk-lib', 'subject.ts', { rewriteConstructsImports: true });
 
     expect(output).toBe(`
     import * as constructs from 'constructs';
@@ -338,6 +341,36 @@ describe('constructs imports', () => {
     }`);
   });
 
+  test('does not rewrite constructs imports unless the option is explicitly set', () => {
+    const output = rewriteMonoPackageImports(`
+    import * as core1 from '@aws-cdk/core';
+    // a comment of some kind
+    import { Stack } from '@aws-cdk/core';
+    // more comments
+    import { Construct as CoreConstruct } from '@aws-cdk/core';
+    import { IConstruct, Stack, StackProps } from '@aws-cdk/core';
+    import * as s3 from '@aws-cdk/aws-s3';
+
+    class FooBar implements core1.IConstruct {
+      readonly foo1: CoreConstruct;
+      public static bar2() { return new class implements IConstruct {}; }
+    }`, 'aws-cdk-lib', 'subject.ts');
+
+    expect(output).toBe(`
+    import * as core1 from 'aws-cdk-lib';
+    // a comment of some kind
+    import { Stack } from 'aws-cdk-lib';
+    // more comments
+    import { Construct as CoreConstruct } from 'aws-cdk-lib';
+    import { IConstruct, Stack, StackProps } from 'aws-cdk-lib';
+    import * as s3 from 'aws-cdk-lib/aws-s3';
+
+    class FooBar implements core1.IConstruct {
+      readonly foo1: CoreConstruct;
+      public static bar2() { return new class implements IConstruct {}; }
+    }`);
+  });
+
   test('puts constructs imports after shebang lines', () => {
     const output = rewriteMonoPackageImports(`
     #!/usr/bin/env node
@@ -345,7 +378,7 @@ describe('constructs imports', () => {
     class FooBar extends core.Construct {
       private readonly foo: core.Construct;
       private doStuff() { return new core.Construct(); }
-    }`, 'aws-cdk-lib', 'subject.ts');
+    }`, 'aws-cdk-lib', 'subject.ts', { rewriteConstructsImports: true });
 
     expect(output).toBe(`
     #!/usr/bin/env node
@@ -368,7 +401,7 @@ describe('constructs imports', () => {
       public bar() { return new Construct(); }
     }
     \`\`\`
-    Some more README text.`, 'aws-cdk-lib', 'subject.ts');
+    Some more README text.`, 'aws-cdk-lib', 'subject.ts', { rewriteConstructsImports: true });
 
     expect(output).toBe(`
     Some README text.

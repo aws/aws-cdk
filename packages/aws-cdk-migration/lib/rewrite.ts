@@ -23,6 +23,13 @@ export interface RewriteOptions {
    * The unscoped name of the package, e.g. 'aws-kinesisfirehose'.
    */
   readonly packageUnscopedName?: string;
+
+  /**
+   * When true, imports to known types from the 'constructs' library will be rewritten
+   * to explicitly import from 'constructs', rather than '@aws-cdk/core'.
+   * @default false
+   */
+  readonly rewriteConstructsImports?: boolean;
 }
 
 /**
@@ -48,7 +55,12 @@ export interface RewriteOptions {
  * @returns the updated source code.
  */
 export function rewriteMonoPackageImports(sourceText: string, libName: string, fileName: string = 'index.ts', options: RewriteOptions = {}): string {
-  return rewriteImports(sourceText, (modPath, importedElements) => updatedExternalLocation(modPath, libName, options, importedElements), fileName);
+  return rewriteImports(
+    sourceText,
+    (modPath, importedElements) => updatedExternalLocation(modPath, libName, options, importedElements),
+    fileName,
+    options.rewriteConstructsImports,
+  );
 }
 
 /**
@@ -76,7 +88,12 @@ export function rewriteMonoPackageImports(sourceText: string, libName: string, f
 export function rewriteReadmeImports(sourceText: string, libName: string, fileName: string = 'index.ts', options: RewriteOptions = {}): string {
   return sourceText.replace(/(```(?:ts|typescript|text)[^\n]*\n)(.*?)(\n\s*```)/gs, (_m, prefix, body, suffix) => {
     return prefix +
-      rewriteImports(body, (modPath, importedElements) => updatedExternalLocation(modPath, libName, options, importedElements), fileName) +
+      rewriteImports(
+        body,
+        (modPath, importedElements) => updatedExternalLocation(modPath, libName, options, importedElements),
+        fileName,
+        options.rewriteConstructsImports,
+      ) +
       suffix;
   });
 }
@@ -107,9 +124,10 @@ export function rewriteImports(
   sourceText: string,
   updatedLocation: (modulePath: string, importedElements?: ts.NodeArray<ts.ImportSpecifier>) => string | undefined,
   fileName: string = 'index.ts',
+  rewriteConstructsImports: boolean = false,
 ): string {
   const sourceFile = ts.createSourceFile(fileName, sourceText, ts.ScriptTarget.ES2018, true);
-  const rewriter = new ImportRewriter(sourceFile, updatedLocation);
+  const rewriter = new ImportRewriter(sourceFile, updatedLocation, rewriteConstructsImports);
   ts.transform(sourceFile, [rewriter.rewriteTransformer()]);
   return rewriter.rewriteImports();
 }
@@ -126,7 +144,9 @@ class ImportRewriter {
 
   public constructor(
     private readonly sourceFile: ts.SourceFile,
-    private readonly updatedLocation: (modulePath: string, importedElements?: ts.NodeArray<ts.ImportSpecifier>) => string | undefined) { }
+    private readonly updatedLocation: (modulePath: string, importedElements?: ts.NodeArray<ts.ImportSpecifier>) => string | undefined,
+    private readonly rewriteConstructsImports: boolean,
+  ) { }
 
   public rewriteTransformer(): ts.TransformerFactory<ts.SourceFile> {
     const coreNamespaceImports: Set<string> = new Set();
@@ -191,7 +211,7 @@ class ImportRewriter {
     if (!this.firstImportNode) { this.firstImportNode = node; }
 
     // Special-case @aws-cdk/core for the case of constructs imports.
-    if (moduleSpecifier.text === '@aws-cdk/core') {
+    if (this.rewriteConstructsImports && moduleSpecifier.text === '@aws-cdk/core') {
       if (ts.isImportEqualsDeclaration(node)) {
         // import core = require('@aws-cdk/core');
         coreNamespaceImports.add(node.name.text);
