@@ -59,6 +59,7 @@ test('throws an error when using skipBuildDefaults with installCommands', () => 
       installCommands: ['/bin/true'],
       input: cdkp.CodePipelineSource.gitHub('test/test', 'main'),
       skipDefaultBuildSpec: true,
+      commands: [],
     });
   }).toThrow(/not specify 'commands', 'installCommands' or 'partialBuildSpec' when specifying 'skipDefaultBuildSpec'/);
 });
@@ -77,6 +78,7 @@ test('throws an error when using skipBuildDefaults with partialBuildSpec', () =>
       }),
       input: cdkp.CodePipelineSource.gitHub('test/test', 'main'),
       skipDefaultBuildSpec: true,
+      commands: [],
     });
   }).toThrow(/not specify 'commands', 'installCommands' or 'partialBuildSpec' when specifying 'skipDefaultBuildSpec'/);
 });
@@ -85,6 +87,7 @@ test('create build step with skipDefaultBuildSpec', () => {
     new cdkp.CodeBuildStep('Synth', {
       input: cdkp.CodePipelineSource.gitHub('test/test', 'main'),
       skipDefaultBuildSpec: true,
+      commands: [],
     });
   }).not.toThrow();
 });
@@ -92,6 +95,7 @@ test('throws an error when using skipDefaultBuildSpec on synth action', () => {
   const synthAction = new cdkp.CodeBuildStep('Synth', {
     input: cdkp.CodePipelineSource.gitHub('test/test', 'main'),
     skipDefaultBuildSpec: true,
+    commands: [],
   });
   const codepipeline = new cdkp.CodePipeline(pipelineStack, 'Pipeline', {
     synth: synthAction,
@@ -106,6 +110,7 @@ test('skipDefaultBuildSpec creates the correct project without buildspec', () =>
   const buildAction = new cdkp.CodeBuildStep('Source', {
     input: cdkp.CodePipelineSource.gitHub('source/source', 'main'),
     skipDefaultBuildSpec: true,
+    commands: [],
   });
 
   const synthAction = new cdkp.CodeBuildStep('Synth', {
@@ -149,6 +154,7 @@ test('fullBuildSpec creates the correct project with buildspec', () => {
     input: cdkp.CodePipelineSource.gitHub('source/source', 'main'),
     skipDefaultBuildSpec: true,
     fullBuildSpec: BuildSpec.fromSourceFilename('buildspec-from-source-code.yml'),
+    commands: [],
   });
   const synthAction = new cdkp.CodeBuildStep('Synth', {
     commands: ['/bin/true'],

@@ -1,19 +1,12 @@
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { ShellStep, ShellStepCommonProps } from '../blueprint';
+import { ShellStep, ShellStepProps } from '../blueprint';
 
 /**
  * Construction props for a CodeBuildStep
  */
-export interface CodeBuildStepProps extends ShellStepCommonProps {
-  /**
-   * Commands to run, required if not using skipDefaultBuildSpec.
-   *
-   * @default - no commands provided
-   */
-  readonly commands?: string[];
-
+export interface CodeBuildStepProps extends ShellStepProps {
   /**
    * Name for the generated CodeBuild project
    *
@@ -92,12 +85,21 @@ export interface CodeBuildStepProps extends ShellStepCommonProps {
 
   /**
    * Use on source code which is not going to be the synth step, must also provide a `fullBuildSpec`.
+   *
+   * Set the `commands` to an empty array when using a `fullBuildSpec`.
+   * `primaryOutputDirectory` will not be used when leverage `skipBuildDefaultSpec` is true.
+   *
    * This will not use `commands`, `installCommands` or `partialBuildSpec` it will only reference `fullBuildSpec`, if provided.
    * @default - false
    */
   readonly skipDefaultBuildSpec?: boolean
+
   /**
    * Use to provide a full build spec which can reference a buildspec on disk.  Must also specify `skipDefaultBuildSpec` as `true`.
+   *
+   * Set the `commands` to an empty array when using a `fullBuildSpec`.
+   * `primaryOutputDirectory` will not be used when leverage `skipBuildDefaultSpec` is true.
+   *
    * @default - undefined will not use a build spec in the build project.
    */
   readonly fullBuildSpec?: codebuild.BuildSpec;
@@ -183,7 +185,6 @@ export class CodeBuildStep extends ShellStep {
     const primaryOutputDirectory = skipDefaultBuildSpec ? '.' : props.primaryOutputDirectory;
     super(id, {
       ...props,
-      commands: props.commands ? props.commands : [],
       primaryOutputDirectory: primaryOutputDirectory,
     });
 
@@ -195,7 +196,7 @@ export class CodeBuildStep extends ShellStep {
     this.role = props.role;
     this.rolePolicyStatements = props.rolePolicyStatements;
     this.securityGroups = props.securityGroups;
-    this.skipDefaultBuildSpec = props.skipDefaultBuildSpec ? true : false;
+    this.skipDefaultBuildSpec = skipDefaultBuildSpec;
     this.fullBuildSpec = props.fullBuildSpec;
 
     if (this.skipDefaultBuildSpec && (this.commands.length || this.installCommands.length || this.partialBuildSpec) ) {
