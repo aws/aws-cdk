@@ -1,13 +1,31 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
-import { ArnFormat, Fn, IResource, Resource, Stack } from '@aws-cdk/core';
+import { ArnFormat, Fn, IResource, Names, Resource, Stack } from '@aws-cdk/core';
+import * as cr from '@aws-cdk/custom-resources';
 import { Construct } from 'constructs';
 import { DataFormat } from './data-format';
 import { IDatabase } from './database';
 import { CfnTable } from './glue.generated';
 import { Column } from './schema';
 
+/**
+ * Properties of a Partition Index.
+ */
+export interface PartitionIndexProps {
+  /**
+   * The name of the partition index.
+   *
+   * @default - a name will be generated for you.
+   */
+  readonly indexName: string;
+
+  /**
+   * The partition index keys. These keys
+   * must be a subet of the table's partition keys.
+   */
+  readonly keys: string[];
+}
 export interface ITable extends IResource {
   /**
    * @attribute
@@ -230,6 +248,8 @@ export class Table extends Resource implements ITable {
    */
   public readonly partitionKeys?: Column[];
 
+  private partitionIndecies: number = 0;
+
   constructor(scope: Construct, id: string, props: TableProps) {
     super(scope, id, {
       physicalName: props.tableName,
@@ -290,6 +310,59 @@ export class Table extends Resource implements ITable {
   }
 
   /**
+   * Add a partition index to the table.
+   * @see https://docs.aws.amazon.com/glue/latest/dg/partition-indexes.html
+   *
+   * Partition index keys must be a subset of the tables partition keys.
+   */
+  public addPartitionIndex(props: PartitionIndexProps) {
+    if (this.partitionIndecies >= 3) {
+      throw new Error('Table can have a maximum of 3 partition indecies');
+    }
+    this.partitionIndecies++;
+    this.validatePartitionIndex(props);
+    const partitionIndex = new cr.AwsCustomResource(this, 'table-partition-index', {
+      onCreate: {
+        service: 'Glue',
+        action: 'createPartitionIndex',
+        parameters: {
+          DatabaseName: this.database.databaseName,
+          TableName: this.tableName,
+          PartitionIndex: {
+            IndexName: props.indexName ?? this.generateName(),
+            Keys: props.keys,
+          },
+        },
+        physicalResourceId: cr.PhysicalResourceId.of(
+          'CreatePartitionIndex',
+        ),
+      },
+      policy: cr.AwsCustomResourcePolicy.fromSdkCalls({
+        resources: cr.AwsCustomResourcePolicy.ANY_RESOURCE,
+      }),
+    });
+
+    this.grantToUnderlyingResources(partitionIndex, ['glue:UpdateTable']);
+  }
+
+  private generateName(): string {
+    return Names.uniqueId(this);
+  }
+
+  private validatePartitionIndex(props: PartitionIndexProps) {
+    if (props.indexName && !props.indexName.match(/^[A-Za-z0-9\_\-])/)) {
+      throw new Error(`Index name can only have letters, numbers, hyphens, or underscores but received ${props.indexName}`);
+    }
+    if (!this.partitionKeys || this.partitionKeys.length === 0) {
+      throw new Error('To create a partition index the table must have partition keys');
+    }
+    const keyNames = this.partitionKeys.map(pk => pk.name);
+    if (!props.keys.every(k => keyNames.includes(k))) {
+      throw new Error(`All index keys must also be partition keys. Got ${props.keys} but partition key names are ${keyNames}`);
+    }
+  }
+
+  /**
    * Grant read permissions to the table and the underlying data stored in S3 to an IAM principal.
    *
    * @param grantee the principal
@@ -332,6 +405,22 @@ export class Table extends Resource implements ITable {
     return iam.Grant.addToPrincipal({
       grantee,
       resourceArns: [this.tableArn],
+      actions,
+    });
+  }
+
+  /**
+   * Grant the given identity custom permissions to ALL underlying resources of the table.
+   * Permissions will be granted to the catalog, the database, and the table.
+   */
+  public grantToUnderlyingResources(grantee: iam.IGrantable, actions: string[]) {
+    return iam.Grant.addToPrincipal({
+      grantee,
+      resourceArns: [
+        this.tableArn,
+        this.database.catalogArn,
+        this.database.databaseArn,
+      ],
       actions,
     });
   }
