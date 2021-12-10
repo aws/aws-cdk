@@ -56,7 +56,7 @@
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/fs-extra": "^8.1.2",
-    "@types/jest": "^27.0.2",
+    "@types/jest": "^27.0.3",
     "fs-extra": "^9.1.0"
   },
   "repository": {
@@ -90,6 +90,6 @@
     "announce": false
   },
   "publishConfig": {
-    "tag": "latest"
+    "tag": "latest-1"
   }
 }
