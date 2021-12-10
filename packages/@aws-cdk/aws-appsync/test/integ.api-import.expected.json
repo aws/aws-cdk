@@ -143,7 +143,6 @@
           },
           "FieldName": "getTests",
           "TypeName": "Query",
-          "CachingConfig": {},
           "DataSourceName": "ds",
           "Kind": "UNIT",
           "RequestMappingTemplate": "{\"version\" : \"2017-02-28\", \"operation\" : \"Scan\"}",
@@ -161,7 +160,6 @@
           },
           "FieldName": "addTest",
           "TypeName": "Mutation",
-          "CachingConfig": {},
           "DataSourceName": "ds",
           "Kind": "UNIT",
           "RequestMappingTemplate": "\n      #set($input = $ctx.args.test)\n      \n      {\n        \"version\": \"2017-02-28\",\n        \"operation\": \"PutItem\",\n        \"key\" : {\n      \"id\" : $util.dynamodb.toDynamoDBJson($util.autoId())\n    },\n        \"attributeValues\": $util.dynamodb.toMapValuesJson($input)\n      }",
@@ -225,7 +223,6 @@
           },
           "FieldName": "version",
           "TypeName": "test",
-          "CachingConfig": {},
           "Kind": "PIPELINE",
           "PipelineConfig": {
             "Functions": [
