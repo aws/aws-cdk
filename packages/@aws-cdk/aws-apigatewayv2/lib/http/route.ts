@@ -4,7 +4,7 @@ import { CfnRoute, CfnRouteProps } from '../apigatewayv2.generated';
 import { IRoute } from '../common';
 import { IHttpApi } from './api';
 import { IHttpRouteAuthorizer } from './authorizer';
-import { IHttpRouteIntegration } from './integration';
+import { HttpRouteIntegration } from './integration';
 
 /**
  * Represents a Route for an HTTP API.
@@ -88,7 +88,7 @@ export interface BatchHttpRouteOptions {
   /**
    * The integration to be configured on this route.
    */
-  readonly integration: IHttpRouteIntegration;
+  readonly integration: HttpRouteIntegration;
 }
 
 /**
@@ -149,12 +149,10 @@ export class HttpRoute extends Resource implements IHttpRoute {
     this.httpApi = props.httpApi;
     this.path = props.routeKey.path;
 
-    const config = props.integration.bind({
+    const config = props.integration._bindToRoute({
       route: this,
       scope: this,
     });
-
-    const integration = props.httpApi._addIntegration(this, config);
 
     const authBindResult = props.authorizer ? props.authorizer.bind({
       route: this,
@@ -181,7 +179,7 @@ export class HttpRoute extends Resource implements IHttpRoute {
     const routeProps: CfnRouteProps = {
       apiId: props.httpApi.apiId,
       routeKey: props.routeKey.key,
-      target: `integrations/${integration.integrationId}`,
+      target: `integrations/${config.integrationId}`,
       authorizerId: authBindResult?.authorizerId,
       authorizationType: authBindResult?.authorizationType ?? 'NONE', // must be explicitly NONE (not undefined) for stack updates to work correctly
       authorizationScopes,

@@ -120,7 +120,7 @@ describe('ApiMapping', () => {
         api,
         domainName: dn,
       });
-    }).toThrow(/stage is required if default stage is not available/);
+    }).toThrow(/stage property must be specified/);
   });
 
   test('stage validation - throws if stage not provided for WebSocketApi', () => {
@@ -138,6 +138,6 @@ describe('ApiMapping', () => {
         api,
         domainName: dn,
       });
-    }).toThrow(/stage is required for WebSocket API/);
+    }).toThrow(/stage property must be specified/);
   });
 });

@@ -8,7 +8,11 @@ export class AbsentMatch extends Matcher {
   public test(actual: any): MatchResult {
     const result = new MatchResult(actual);
     if (actual !== undefined) {
-      result.push(this, [], `Received ${actual}, but key should be absent`);
+      result.recordFailure({
+        matcher: this,
+        path: [],
+        message: `Received ${actual}, but key should be absent`,
+      });
     }
     return result;
   }
