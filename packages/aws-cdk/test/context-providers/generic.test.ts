@@ -100,3 +100,21 @@ test('context provider can be registered using PluginHost', async () => {
   // THEN - error is marked transient
   expect(called).toEqual(true);
 });
+
+test('context provider can be called without account/region', async () => {
+  // GIVEN
+  PluginHost.instance.registerContextProviderAlpha(TEST_PROVIDER, {
+    async getValue(_: {[key: string]: any}): Promise<any> {
+      return 'yay';
+    },
+  });
+  const context = new Context();
+
+  // WHEN
+  await contextproviders.provideContextValues([
+    { key: 'asdf', props: { banana: 'yellow' } as any, provider: TEST_PROVIDER },
+  ], context, mockSDK);
+
+  // THEN - error is marked transient
+  expect(context.get('asdf')).toEqual('yay');
+});

@@ -99,9 +99,9 @@ export class PluginHost {
    *   getValue(args: {[key: string]: any}): Promise<any>;
    * ```
    *
-   * Currently, they cannot reuse the CDK's authentication mechanism, so they
-   * must be prepared to either not make AWS calls or use their own authentication
-   * mechanism.
+   * Currently, they cannot reuse the CDK's authentication mechanisms, so they
+   * must be prepared to either not make AWS calls or use their own source of
+   * AWS credentials.
    *
    * This feature is experimental, and only intended to be used internally at Amazon
    * as a trial.

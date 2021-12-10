@@ -38,8 +38,13 @@ export async function provideContextValues(
 
     let value;
     try {
-      const environment = cxapi.EnvironmentUtils.make(missingContext.props.account, missingContext.props.region);
-      const resolvedEnvironment = await sdk.resolveEnvironment(environment);
+      const environment = missingContext.props.account && missingContext.props.region
+        ? cxapi.EnvironmentUtils.make(missingContext.props.account, missingContext.props.region)
+        : undefined;
+
+      const resolvedEnvironment: cxapi.Environment = environment
+        ? await sdk.resolveEnvironment(environment)
+        : { account: '?', region: '?', name: '?' };
 
       const arns = await replaceEnvPlaceholders({
         lookupRoleArn: missingContext.props.lookupRoleArn,
