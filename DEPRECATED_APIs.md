@@ -600,20 +600,10 @@
 | @aws-cdk/aws-dynamodb | Table.​grantListStreams() | Use {@link #grantTableListStreams} for more granular permission |
 | @aws-cdk/aws-dynamodb | Table.​metricSystemErrors() | use `metricSystemErrorsForOperations`. |
 | @aws-cdk/aws-dynamodb | TableOptions.​serverSideEncryption | This property is deprecated. In order to obtain the same behavior as enabling this, set the `encryption` property to `TableEncryption.AWS_MANAGED` instead. |
-| @aws-cdk/aws-rds | Credentials.​fromUsername() | use `fromGeneratedSecret()` or `fromPassword()` for new Clusters and Instances. Note that switching from `fromUsername()` to `fromGeneratedSecret()` or `fromPassword()` for already deployed Clusters or Instances will result in their replacement! |
 | @aws-cdk/aws-rds | CredentialsFromUsernameOptions | supporting API `fromUsername()` has been deprecated. See deprecation notice of the API. |
 | @aws-cdk/aws-rds | CredentialsFromUsernameOptions.​password | supporting API `fromUsername()` has been deprecated. See deprecation notice of the API. |
-| @aws-cdk/aws-rds | DatabaseInstanceEngine.​MARIADB | using unversioned engines is an availability risk. We recommend using versioned engines created using the {@link mariaDb()} method |
-| @aws-cdk/aws-rds | DatabaseInstanceEngine.​MYSQL | using unversioned engines is an availability risk. We recommend using versioned engines created using the {@link mysql()} method |
-| @aws-cdk/aws-rds | DatabaseInstanceEngine.​ORACLE_​EE | using unversioned engines is an availability risk. We recommend using versioned engines created using the {@link oracleEe()} method |
 | @aws-cdk/aws-rds | DatabaseInstanceEngine.​ORACLE_​SE | instances can no longer be created with this engine. See https://forums.aws.amazon.com/ann.jspa?annID=7341 |
 | @aws-cdk/aws-rds | DatabaseInstanceEngine.​ORACLE_​SE1 | instances can no longer be created with this engine. See https://forums.aws.amazon.com/ann.jspa?annID=7341 |
-| @aws-cdk/aws-rds | DatabaseInstanceEngine.​ORACLE_​SE2 | using unversioned engines is an availability risk. We recommend using versioned engines created using the {@link oracleSe2()} method |
-| @aws-cdk/aws-rds | DatabaseInstanceEngine.​POSTGRES | using unversioned engines is an availability risk. We recommend using versioned engines created using the {@link postgres()} method |
-| @aws-cdk/aws-rds | DatabaseInstanceEngine.​SQL_​SERVER_​EE | using unversioned engines is an availability risk. We recommend using versioned engines created using the {@link sqlServerEe()} method |
-| @aws-cdk/aws-rds | DatabaseInstanceEngine.​SQL_​SERVER_​EX | using unversioned engines is an availability risk. We recommend using versioned engines created using the {@link sqlServerEx()} method |
-| @aws-cdk/aws-rds | DatabaseInstanceEngine.​SQL_​SERVER_​SE | using unversioned engines is an availability risk. We recommend using versioned engines created using the {@link sqlServerSe()} method |
-| @aws-cdk/aws-rds | DatabaseInstanceEngine.​SQL_​SERVER_​WEB | using unversioned engines is an availability risk. We recommend using versioned engines created using the {@link sqlServerWeb()} method |
 | @aws-cdk/aws-rds | DatabaseInstanceEngine.​oracleSe() | instances can no longer be created with this engine. See https://forums.aws.amazon.com/ann.jspa?annID=7341 |
 | @aws-cdk/aws-rds | DatabaseInstanceEngine.​oracleSe1() | instances can no longer be created with this engine. See https://forums.aws.amazon.com/ann.jspa?annID=7341 |
 | @aws-cdk/aws-rds | DatabaseInstanceNewProps.​vpcPlacement | use `vpcSubnets` |
@@ -751,7 +741,6 @@
 | @aws-cdk/aws-ecs | BaseService.​configureAwsVpcNetworking() | use configureAwsVpcNetworkingWithSecurityGroups instead. |
 | @aws-cdk/aws-ecs | BaseServiceOptions.​propagateTaskTagsFrom | Use `propagateTags` instead. |
 | @aws-cdk/aws-ecs | Cluster.​addAutoScalingGroup() | Use {@link Cluster.addAsgCapacityProvider} instead. |
-| @aws-cdk/aws-ecs | Cluster.​addCapacity() | Use {@link Cluster.addAsgCapacityProvider} instead. |
 | @aws-cdk/aws-ecs | Cluster.​addCapacityProvider() | Use {@link enableFargateCapacityProviders} instead. |
 | @aws-cdk/aws-ecs | ClusterProps.​capacityProviders | Use {@link ClusterProps.enableFargateCapacityProviders} instead. |
 | @aws-cdk/aws-ecs | Ec2ServiceProps.​securityGroup | use securityGroups instead. |

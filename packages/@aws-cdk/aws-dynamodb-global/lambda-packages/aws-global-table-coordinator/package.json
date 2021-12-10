@@ -30,14 +30,14 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "aws-sdk": "^2.596.0",
-    "aws-sdk-mock": "^5.4.0",
+    "aws-sdk-mock": "^5.5.0",
     "eslint": "^7.32.0",
     "eslint-config-standard": "^14.1.1",
     "eslint-plugin-import": "^2.25.3",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^4.3.1",
     "eslint-plugin-standard": "^4.1.0",
-    "jest": "^27.3.1",
+    "jest": "^27.4.3",
     "lambda-tester": "^3.6.0",
     "nock": "^13.2.1"
   }

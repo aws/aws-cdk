@@ -32,3 +32,5 @@ account: '919830735681' #cn-northwest-1
 account: '297356227824'
 # partition aws-cn
 account: '193023089310'
+# partition aws-us-gov
+account: '023102451235'

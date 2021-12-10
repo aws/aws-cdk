@@ -72,9 +72,9 @@
     "@aws-cdk/assert-internal": "0.0.0",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/jest": "^27.0.2",
+    "@types/jest": "^27.0.3",
     "@types/yaml": "^1.9.7",
-    "jest": "^27.3.1"
+    "jest": "^27.4.3"
   },
   "bundledDependencies": [
     "yaml"
