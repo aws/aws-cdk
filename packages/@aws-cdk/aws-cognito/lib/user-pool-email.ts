@@ -3,11 +3,6 @@ import { Construct } from 'constructs';
 import { toASCII as punycodeEncode } from 'punycode/';
 
 /**
-  * The valid Amazon SES configuration regions
-  */
-const REGIONS = ['us-east-1', 'us-west-2', 'eu-west-1'];
-
-/**
  * Configuration for Cognito sending emails via Amazon SES
  */
 export interface UserPoolSESOptions {
@@ -162,12 +157,6 @@ class SESEmail extends UserPoolEmail {
 
     if (Token.isUnresolved(region) && !this.options.sesRegion) {
       throw new Error('Your stack region cannot be determined so "sesRegion" is required in SESOptions');
-    }
-
-    if (this.options.sesRegion && !REGIONS.includes(this.options.sesRegion)) {
-      throw new Error(`sesRegion must be one of 'us-east-1', 'us-west-2', 'eu-west-1'. received ${this.options.sesRegion}`);
-    } else if (!this.options.sesRegion && !REGIONS.includes(region)) {
-      throw new Error(`Your stack is in ${region}, which is not a SES Region. Please provide a valid value for 'sesRegion'`);
     }
 
     let from = this.options.fromEmail;
