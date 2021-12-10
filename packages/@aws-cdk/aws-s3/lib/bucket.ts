@@ -2050,6 +2050,7 @@ export enum BucketEncryption {
 
 /**
  * Notification event types.
+ * @link https://docs.aws.amazon.com/AmazonS3/latest/userguide/notification-how-to-event-types-and-destinations.html#supported-notification-event-types
  */
 export enum EventType {
   /**
@@ -2201,6 +2202,67 @@ export enum EventType {
    * by replication metrics.
    */
   REPLICATION_OPERATION_NOT_TRACKED = 's3:Replication:OperationNotTracked',
+
+  /**
+   * By using the LifecycleExpiration event types, you can receive a notification
+   * when Amazon S3 deletes an object based on your S3 Lifecycle configuration.
+   */
+  LIFECYCLE_EXPIRATION = 's3:LifecycleExpiration:*',
+
+  /**
+   * The s3:LifecycleExpiration:Delete event type notifies you when an object
+   * in an unversioned bucket is deleted.
+   * It also notifies you when an object version is permanently deleted by an
+   * S3 Lifecycle configuration.
+   */
+  LIFECYCLE_EXPIRATION_DELETE = 's3:LifecycleExpiration:Delete',
+
+  /**
+   * The s3:LifecycleExpiration:DeleteMarkerCreated event type notifies you
+   * when S3 Lifecycle creates a delete marker when a current version of an
+   * object in versioned bucket is deleted.
+   */
+  LIFECYCLE_EXPIRATION_DELETE_MARKER_CREATED = 's3:LifecycleExpiration:DeleteMarkerCreated',
+
+  /**
+   * You receive this notification event when an object is transitioned to
+   * another Amazon S3 storage class by an S3 Lifecycle configuration.
+   */
+  LIFECYCLE_TRANSITION = 's3:LifecycleTransition',
+
+  /**
+   * You receive this notification event when an object within the
+   * S3 Intelligent-Tiering storage class moved to the Archive Access tier or
+   * Deep Archive Access tier.
+   */
+  INTELLIGENT_TIERING = 's3:IntelligentTiering',
+
+  /**
+   * By using the ObjectTagging event types, you can enable notification when
+   * an object tag is added or deleted from an object.
+   */
+  OBJECT_TAGGING = 's3:ObjectTagging:*',
+
+  /**
+   * The s3:ObjectTagging:Put event type notifies you when a tag is PUT on an
+   * object or an existing tag is updated.
+
+   */
+  OBJECT_TAGGING_PUT = 's3:ObjectTagging:Put',
+
+  /**
+   * The s3:ObjectTagging:Delete event type notifies you when a tag is removed
+   * from an object.
+   */
+  OBJECT_TAGGING_DELETE = 's3:ObjectTagging:Delete',
+
+  /**
+   * You receive this notification event when an ACL is PUT on an object or when
+   * an existing ACL is changed.
+   * An event is not generated when a request results in no change to an
+   * object’s ACL.
+   */
+  OBJECT_ACL_PUT = 's3:ObjectAcl:Put',
 }
 
 export interface NotificationKeyFilter {
