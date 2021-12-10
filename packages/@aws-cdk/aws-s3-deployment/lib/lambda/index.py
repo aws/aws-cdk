@@ -15,10 +15,13 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 cloudfront = boto3.client('cloudfront')
+s3 = boto3.client('s3')
 
 CFN_SUCCESS = "SUCCESS"
 CFN_FAILED = "FAILED"
 ENV_KEY_MOUNT_PATH = "MOUNT_PATH"
+
+CUSTOM_RESOURCE_OWNER_TAG = "aws-cdk:cr-owned"
 
 def handler(event, context):
 
@@ -68,8 +71,8 @@ def handler(event, context):
 
         s3_source_zips = map(lambda name, key: "s3://%s/%s" % (name, key), source_bucket_names, source_object_keys)
         s3_dest = "s3://%s/%s" % (dest_bucket_name, dest_bucket_prefix)
-
         old_s3_dest = "s3://%s/%s" % (old_props.get("DestinationBucketName", ""), old_props.get("DestinationBucketKeyPrefix", ""))
+
 
         # obviously this is not
         if old_s3_dest == "s3:///":
@@ -89,7 +92,8 @@ def handler(event, context):
 
         # delete or create/update (only if "retain_on_delete" is false)
         if request_type == "Delete" and not retain_on_delete:
-            aws_command("s3", "rm", s3_dest, "--recursive")
+            if not bucket_owned(dest_bucket_name, dest_bucket_prefix):
+                aws_command("s3", "rm", s3_dest, "--recursive")
 
         # if we are updating without retention and the destination changed, delete first
         if request_type == "Update" and not retain_on_delete and old_s3_dest != s3_dest:
@@ -233,3 +237,21 @@ def cfn_send(event, context, responseStatus, responseData={}, physicalResourceId
     except Exception as e:
         logger.error("| unable to send response to CloudFormation")
         logger.exception(e)
+
+
+#---------------------------------------------------------------------------------------------------
+# check if bucket is owned by a custom resource
+# if it is then we don't want to delete content
+def bucket_owned(bucketName, keyPrefix):
+    tag = CUSTOM_RESOURCE_OWNER_TAG
+    if keyPrefix != "":
+        tag = tag + ':' + keyPrefix
+    try:
+        request = s3.get_bucket_tagging(
+            Bucket=bucketName,
+        )
+        return any((x["Key"].startswith(tag)) for x in request["TagSet"])
+    except Exception as e:
+        logger.info("| error getting tags from bucket")
+        logger.exception(e)
+        return False
