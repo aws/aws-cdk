@@ -59,7 +59,8 @@ export async function provideContextValues(
 /**
  * Register a context provider
  *
- * (Only available for testing right now).
+ * (Only available for testing and internal usage at Amazon. Don't change the signature
+ * of this function).
  */
 export function registerContextProvider(name: string, provider: ProviderConstructor) {
   availableContextProviders[name] = provider;
