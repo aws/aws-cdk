@@ -144,6 +144,8 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
         partialBuildSpec: step.partialBuildSpec,
         vpc: step.vpc,
         subnetSelection: step.subnetSelection,
+        skipDefaultBuildSpec: step.skipDefaultBuildSpec,
+        fullBuildSpec: step.fullBuildSpec,
         ...additional?.projectOptions,
       },
       ...additional,
@@ -168,6 +170,9 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
     private readonly props: CodeBuildFactoryProps) {
 
     this.stepId = props.stepId ?? constructId;
+    if (this.props.projectOptions?.skipDefaultBuildSpec && this.props.isSynth) {
+      throw new Error(`Must not specify 'skipDefaultBuildSpec' on 'synth' found on ${constructId}.`);
+    }
   }
 
   public get project(): codebuild.IProject {
@@ -253,6 +258,10 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
       projectBuildSpec = codebuild.BuildSpec.fromSourceFilename(relativeSpecFile);
     } else {
       projectBuildSpec = actualBuildSpec;
+    }
+
+    if ( this.props.projectOptions?.skipDefaultBuildSpec ) {
+      projectBuildSpec = this.props.projectOptions!.fullBuildSpec!;
     }
 
     // A hash over the values that make the CodeBuild Project unique (and necessary

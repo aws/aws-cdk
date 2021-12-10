@@ -5,13 +5,9 @@ import { StackDeployment } from './stack-deployment';
 import { Step } from './step';
 
 /**
- * Construction properties for a `ShellStep`.
+ * Common properties shared for `ShellStep` and `CodeBuildStep`.
  */
-export interface ShellStepProps {
-  /**
-   * Commands to run
-   */
-  readonly commands: string[];
+export interface ShellStepCommonProps {
 
   /**
    * Installation commands to run before the regular commands
@@ -88,6 +84,16 @@ export interface ShellStepProps {
    */
   readonly primaryOutputDirectory?: string;
 
+}
+
+/**
+ * Construction properties for a `ShellStep`.
+ */
+export interface ShellStepProps extends ShellStepCommonProps {
+  /**
+   * Commands to run
+   */
+  readonly commands: string[];
 }
 
 /**

@@ -227,6 +227,19 @@ export interface CodeBuildOptions {
   readonly partialBuildSpec?: cb.BuildSpec;
 
   /**
+   * Use on source code which is not going to be the synth step, must also provide a `fullBuildSpec`.
+   * This will not use `commands`, `installCommands` or `partialBuildSpec` it will only reference `fullBuildSpec`, if provided.
+   * @default - false
+   */
+  readonly skipDefaultBuildSpec?: boolean;
+
+  /**
+    * Use to provide a full build spec which can reference a buildspec on disk.  Must also specify `skipDefaultBuildSpec` as `true`.
+   * @default - undefined will not use a build spec in the build project.
+  */
+  readonly fullBuildSpec?: cb.BuildSpec;
+
+  /**
    * Which security group(s) to associate with the project network interfaces.
    *
    * Only used if 'vpc' is supplied.
@@ -508,8 +521,8 @@ export class CodePipeline extends PipelineBase {
         : step.id;
 
       return step instanceof CodeBuildStep
-        ? CodeBuildFactory.fromCodeBuildStep(constructId, step)
-        : CodeBuildFactory.fromShellStep(constructId, step);
+        ? CodeBuildFactory.fromCodeBuildStep(constructId, step, { isSynth: nodeType === CodeBuildProjectType.SYNTH })
+        : CodeBuildFactory.fromShellStep(constructId, step, { isSynth: nodeType === CodeBuildProjectType.SYNTH });
     }
 
     if (step instanceof ManualApprovalStep) {

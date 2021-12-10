@@ -1,12 +1,19 @@
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { ShellStep, ShellStepProps } from '../blueprint';
+import { ShellStep, ShellStepCommonProps } from '../blueprint';
 
 /**
  * Construction props for a CodeBuildStep
  */
-export interface CodeBuildStepProps extends ShellStepProps {
+export interface CodeBuildStepProps extends ShellStepCommonProps {
+  /**
+   * Commands to run, required if not using skipDefaultBuildSpec.
+   *
+   * @default - no commands provided
+   */
+  readonly commands?: string[];
+
   /**
    * Name for the generated CodeBuild project
    *
@@ -82,6 +89,18 @@ export interface CodeBuildStepProps extends ShellStepProps {
    * @default - Security group will be automatically created.
    */
   readonly securityGroups?: ec2.ISecurityGroup[];
+
+  /**
+   * Use on source code which is not going to be the synth step, must also provide a `fullBuildSpec`.
+   * This will not use `commands`, `installCommands` or `partialBuildSpec` it will only reference `fullBuildSpec`, if provided.
+   * @default - false
+   */
+  readonly skipDefaultBuildSpec?: boolean
+  /**
+   * Use to provide a full build spec which can reference a buildspec on disk.  Must also specify `skipDefaultBuildSpec` as `true`.
+   * @default - undefined will not use a build spec in the build project.
+   */
+  readonly fullBuildSpec?: codebuild.BuildSpec;
 }
 
 /**
@@ -144,10 +163,29 @@ export class CodeBuildStep extends ShellStep {
    */
   readonly securityGroups?: ec2.ISecurityGroup[];
 
+  /**
+   * Use on source code which is not going to be the synth step, must also provide a `fullBuildSpec`.
+   * This will not use `commands`, `installCommands` or `partialBuildSpec` it will only reference `fullBuildSpec`, if provided.
+   * @default - false
+   */
+  readonly skipDefaultBuildSpec?: boolean
+
+  /**
+    * Use to provide a full build spec which can reference a buildspec on disk.  Must also specify `skipDefaultBuildSpec` as `true`.
+    * @default - undefined will not use a build spec in the build project.
+    */
+  readonly fullBuildSpec?: codebuild.BuildSpec;
+
   private _project?: codebuild.IProject;
 
   constructor(id: string, props: CodeBuildStepProps) {
-    super(id, props);
+    const skipDefaultBuildSpec = props.skipDefaultBuildSpec ? true : false;
+    const primaryOutputDirectory = skipDefaultBuildSpec ? '.' : props.primaryOutputDirectory;
+    super(id, {
+      ...props,
+      commands: props.commands ? props.commands : [],
+      primaryOutputDirectory: primaryOutputDirectory,
+    });
 
     this.projectName = props.projectName;
     this.buildEnvironment = props.buildEnvironment;
@@ -157,6 +195,13 @@ export class CodeBuildStep extends ShellStep {
     this.role = props.role;
     this.rolePolicyStatements = props.rolePolicyStatements;
     this.securityGroups = props.securityGroups;
+    this.skipDefaultBuildSpec = props.skipDefaultBuildSpec ? true : false;
+    this.fullBuildSpec = props.fullBuildSpec;
+
+    if (this.skipDefaultBuildSpec && (this.commands.length || this.installCommands.length || this.partialBuildSpec) ) {
+      throw new Error("Must not specify 'commands', 'installCommands' or 'partialBuildSpec' when specifying 'skipDefaultBuildSpec'.");
+    }
+
   }
 
   /**
