@@ -68,7 +68,7 @@ export function registerContextProvider(name: string, provider: ContextProviderP
 /**
  * Register a context provider factory
  *
- * A context provider factory takes an SdkProvider and the context provider plugin.
+ * A context provider factory takes an SdkProvider and returns the context provider plugin.
  */
 export function registerContextProviderFactory(name: string, provider: ContextProviderFactory) {
   availableContextProviders[name] = provider;
