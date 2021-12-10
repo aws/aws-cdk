@@ -599,17 +599,8 @@ constructs.Node#uniqueId
 @aws-cdk/aws-rds.Credentials#fromUsername
 @aws-cdk/aws-rds.CredentialsFromUsernameOptions
 @aws-cdk/aws-rds.CredentialsFromUsernameOptions#password
-@aws-cdk/aws-rds.DatabaseInstanceEngine#MARIADB
-@aws-cdk/aws-rds.DatabaseInstanceEngine#MYSQL
-@aws-cdk/aws-rds.DatabaseInstanceEngine#ORACLE_EE
 @aws-cdk/aws-rds.DatabaseInstanceEngine#ORACLE_SE
 @aws-cdk/aws-rds.DatabaseInstanceEngine#ORACLE_SE1
-@aws-cdk/aws-rds.DatabaseInstanceEngine#ORACLE_SE2
-@aws-cdk/aws-rds.DatabaseInstanceEngine#POSTGRES
-@aws-cdk/aws-rds.DatabaseInstanceEngine#SQL_SERVER_EE
-@aws-cdk/aws-rds.DatabaseInstanceEngine#SQL_SERVER_EX
-@aws-cdk/aws-rds.DatabaseInstanceEngine#SQL_SERVER_SE
-@aws-cdk/aws-rds.DatabaseInstanceEngine#SQL_SERVER_WEB
 @aws-cdk/aws-rds.DatabaseInstanceEngine#oracleSe
 @aws-cdk/aws-rds.DatabaseInstanceEngine#oracleSe1
 @aws-cdk/aws-rds.DatabaseInstanceNewProps#vpcPlacement
@@ -721,7 +712,6 @@ constructs.Node#uniqueId
 @aws-cdk/aws-rds.PostgresEngineVersion#VER_9_6_6
 @aws-cdk/aws-rds.PostgresEngineVersion#VER_9_6_8
 @aws-cdk/aws-rds.PostgresEngineVersion#VER_9_6_9
-@aws-cdk/aws-rds.SnapshotCredentials#fromGeneratedPassword
 @aws-cdk/aws-rds.SqlServerEngineVersion#VER_15_00_4043_23_V1
 @aws-cdk/aws-autoscaling.BlockDevice#mappingEnabled
 @aws-cdk/aws-autoscaling.CommonAutoScalingGroupProps#notificationsTopic
@@ -747,7 +737,6 @@ constructs.Node#uniqueId
 @aws-cdk/aws-ecs.BaseService#configureAwsVpcNetworking
 @aws-cdk/aws-ecs.BaseServiceOptions#propagateTaskTagsFrom
 @aws-cdk/aws-ecs.Cluster#addAutoScalingGroup
-@aws-cdk/aws-ecs.Cluster#addCapacity
 @aws-cdk/aws-ecs.Cluster#addCapacityProvider
 @aws-cdk/aws-ecs.ClusterProps#capacityProviders
 @aws-cdk/aws-ecs.Ec2ServiceProps#securityGroup

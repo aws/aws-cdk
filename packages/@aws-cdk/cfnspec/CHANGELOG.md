@@ -1,3 +1,234 @@
+# CloudFormation Resource Specification v50.0.0
+
+## New Resource Types
+
+* AWS::AmplifyUIBuilder::Component
+* AWS::AmplifyUIBuilder::Theme
+* AWS::Connect::ContactFlow
+* AWS::Connect::ContactFlowModule
+* AWS::EC2::IPAM
+* AWS::EC2::IPAMAllocation
+* AWS::EC2::IPAMPool
+* AWS::EC2::IPAMScope
+* AWS::Evidently::Experiment
+* AWS::Evidently::Feature
+* AWS::Evidently::Launch
+* AWS::Evidently::Project
+* AWS::RUM::AppMonitor
+* AWS::RefactorSpaces::Application
+* AWS::RefactorSpaces::Environment
+* AWS::RefactorSpaces::Route
+* AWS::RefactorSpaces::Service
+* AWS::ResilienceHub::App
+* AWS::ResilienceHub::ResiliencyPolicy
+* AWS::Timestream::ScheduledQuery
+* AWS::Transfer::Workflow
+
+## Attribute Changes
+
+* AWS::EC2::NetworkInterface Id (__added__)
+* AWS::EC2::NetworkInterface SecondaryPrivateIpAddresses.DuplicatesAllowed (__added__)
+* AWS::EC2::NetworkInterface Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-network-interface.html
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-networkinterface.html
+* AWS::EC2::SubnetRouteTableAssociation Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-subnet-route-table-assoc.html
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-subnetroutetableassociation.html
+* AWS::EC2::SubnetRouteTableAssociation Id (__added__)
+* AWS::EC2::VPCEndpoint Id (__added__)
+* AWS::EC2::VPCEndpoint DnsEntries.DuplicatesAllowed (__added__)
+* AWS::EC2::VPCEndpoint NetworkInterfaceIds.DuplicatesAllowed (__added__)
+* AWS::EKS::Cluster KubernetesNetworkConfig.ServiceIpv6Cidr (__added__)
+* AWS::FSx::FileSystem RootVolumeId (__added__)
+
+## Property Changes
+
+* AWS::DynamoDB::Table TableClass (__added__)
+* AWS::EC2::Instance PropagateTagsToVolumeOnCreation (__added__)
+* AWS::EC2::NetworkInterface Description.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-network-interface.html#cfn-awsec2networkinterface-description
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-networkinterface.html#cfn-ec2-networkinterface-description
+* AWS::EC2::NetworkInterface GroupSet.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-network-interface.html#cfn-awsec2networkinterface-groupset
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-networkinterface.html#cfn-ec2-networkinterface-groupset
+* AWS::EC2::NetworkInterface GroupSet.DuplicatesAllowed (__changed__)
+  * Old: false
+  * New: true
+* AWS::EC2::NetworkInterface InterfaceType.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-network-interface.html#cfn-ec2-networkinterface-interfacetype
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-networkinterface.html#cfn-ec2-networkinterface-interfacetype
+* AWS::EC2::NetworkInterface Ipv6AddressCount.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-network-interface.html#cfn-ec2-networkinterface-ipv6addresscount
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-networkinterface.html#cfn-ec2-networkinterface-ipv6addresscount
+* AWS::EC2::NetworkInterface Ipv6Addresses.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-network-interface.html#cfn-ec2-networkinterface-ipv6addresses
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-networkinterface.html#cfn-ec2-networkinterface-ipv6addresses
+* AWS::EC2::NetworkInterface PrivateIpAddress.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-network-interface.html#cfn-awsec2networkinterface-privateipaddress
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-networkinterface.html#cfn-ec2-networkinterface-privateipaddress
+* AWS::EC2::NetworkInterface PrivateIpAddresses.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-network-interface.html#cfn-awsec2networkinterface-privateipaddresses
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-networkinterface.html#cfn-ec2-networkinterface-privateipaddresses
+* AWS::EC2::NetworkInterface PrivateIpAddresses.DuplicatesAllowed (__changed__)
+  * Old: false
+  * New: true
+* AWS::EC2::NetworkInterface PrivateIpAddresses.UpdateType (__changed__)
+  * Old: Conditional
+  * New: Mutable
+* AWS::EC2::NetworkInterface SecondaryPrivateIpAddressCount.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-network-interface.html#cfn-awsec2networkinterface-secondaryprivateipcount
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-networkinterface.html#cfn-ec2-networkinterface-secondaryprivateipaddresscount
+* AWS::EC2::NetworkInterface SourceDestCheck.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-network-interface.html#cfn-awsec2networkinterface-sourcedestcheck
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-networkinterface.html#cfn-ec2-networkinterface-sourcedestcheck
+* AWS::EC2::NetworkInterface SubnetId.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-network-interface.html#cfn-awsec2networkinterface-subnetid
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-networkinterface.html#cfn-ec2-networkinterface-subnetid
+* AWS::EC2::NetworkInterface Tags.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-network-interface.html#cfn-awsec2networkinterface-tags
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-networkinterface.html#cfn-ec2-networkinterface-tags
+* AWS::EC2::SubnetRouteTableAssociation RouteTableId.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-subnet-route-table-assoc.html#cfn-ec2-subnetroutetableassociation-routetableid
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-subnetroutetableassociation.html#cfn-ec2-subnetroutetableassociation-routetableid
+* AWS::EC2::SubnetRouteTableAssociation RouteTableId.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::SubnetRouteTableAssociation SubnetId.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-subnet-route-table-assoc.html#cfn-ec2-subnetroutetableassociation-subnetid
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-subnetroutetableassociation.html#cfn-ec2-subnetroutetableassociation-subnetid
+* AWS::EMR::InstanceGroupConfig CustomAmiId (__added__)
+* AWS::ElastiCache::ReplicationGroup DataTieringEnabled (__added__)
+* AWS::FSx::FileSystem OpenZFSConfiguration (__added__)
+* AWS::IoTSiteWise::Project AssetIds (__added__)
+
+## Property Type Changes
+
+* AWS::FSx::FileSystem.ClientConfigurations (__added__)
+* AWS::FSx::FileSystem.NfsExports (__added__)
+* AWS::FSx::FileSystem.OpenZFSConfiguration (__added__)
+* AWS::FSx::FileSystem.RootVolumeConfiguration (__added__)
+* AWS::FSx::FileSystem.UserAndGroupQuotas (__added__)
+* AWS::MediaLive::Channel.AudioHlsRenditionSelection (__added__)
+* AWS::MediaLive::Channel.AudioWatermarkSettings (__added__)
+* AWS::MediaLive::Channel.NielsenCBET (__added__)
+* AWS::MediaLive::Channel.NielsenNaesIiNw (__added__)
+* AWS::MediaLive::Channel.NielsenWatermarksSettings (__added__)
+* AWS::S3::Bucket.EventBridgeConfiguration (__added__)
+* AWS::S3::Bucket.NoncurrentVersionExpiration (__added__)
+* AWS::S3::StorageLens.CloudWatchMetrics (__added__)
+* AWS::SageMaker::EndpointConfig.ServerlessConfig (__added__)
+* AWS::EC2::NetworkInterface.PrivateIpAddressSpecification Primary.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-network-interface-privateipspec.html#cfn-ec2-networkinterface-privateipspecification-primary
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-networkinterface-privateipaddressspecification.html#cfn-ec2-networkinterface-privateipaddressspecification-primary
+* AWS::EC2::NetworkInterface.PrivateIpAddressSpecification PrivateIpAddress.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-network-interface-privateipspec.html#cfn-ec2-networkinterface-privateipspecification-privateipaddress
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-networkinterface-privateipaddressspecification.html#cfn-ec2-networkinterface-privateipaddressspecification-privateipaddress
+* AWS::EKS::Cluster.KubernetesNetworkConfig IpFamily (__added__)
+* AWS::EKS::Cluster.KubernetesNetworkConfig ServiceIpv6Cidr (__added__)
+* AWS::EMR::Cluster.InstanceGroupConfig CustomAmiId (__added__)
+* AWS::EMR::Cluster.InstanceTypeConfig CustomAmiId (__added__)
+* AWS::EMR::InstanceFleetConfig.InstanceTypeConfig CustomAmiId (__added__)
+* AWS::FSx::FileSystem.DiskIopsConfiguration Iops.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-fsx-filesystem-ontapconfiguration-diskiopsconfiguration.html#cfn-fsx-filesystem-ontapconfiguration-diskiopsconfiguration-iops
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-fsx-filesystem-openzfsconfiguration-diskiopsconfiguration.html#cfn-fsx-filesystem-openzfsconfiguration-diskiopsconfiguration-iops
+* AWS::FSx::FileSystem.DiskIopsConfiguration Mode.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-fsx-filesystem-ontapconfiguration-diskiopsconfiguration.html#cfn-fsx-filesystem-ontapconfiguration-diskiopsconfiguration-mode
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-fsx-filesystem-openzfsconfiguration-diskiopsconfiguration.html#cfn-fsx-filesystem-openzfsconfiguration-diskiopsconfiguration-mode
+* AWS::MediaLive::Channel.AudioDescription AudioWatermarkingSettings (__added__)
+* AWS::MediaLive::Channel.AudioSelectorSettings AudioHlsRenditionSelection (__added__)
+* AWS::MediaLive::Channel.DvbSubSourceSettings OcrLanguage (__added__)
+* AWS::MediaLive::Channel.HlsInputSettings Scte35Source (__added__)
+* AWS::MediaLive::Channel.Scte27SourceSettings OcrLanguage (__added__)
+* AWS::MediaLive::Channel.WebvttDestinationSettings StyleControl (__added__)
+* AWS::S3::Bucket.NoncurrentVersionTransition NewerNoncurrentVersions (__added__)
+* AWS::S3::Bucket.NotificationConfiguration EventBridgeConfiguration (__added__)
+* AWS::S3::Bucket.Rule NoncurrentVersionExpiration (__added__)
+* AWS::S3::Bucket.Rule ObjectSizeGreaterThan (__added__)
+* AWS::S3::Bucket.Rule ObjectSizeLessThan (__added__)
+* AWS::S3::StorageLens.DataExport CloudWatchMetrics (__added__)
+* AWS::S3::StorageLens.DataExport S3BucketDestination.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::SageMaker::EndpointConfig.ProductionVariant ServerlessConfig (__added__)
+* AWS::SageMaker::EndpointConfig.ProductionVariant InitialInstanceCount.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::SageMaker::EndpointConfig.ProductionVariant InstanceType.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::SageMaker::Model.ContainerDefinition InferenceSpecificationName (__added__)
+
+
+# CloudFormation Resource Specification v49.0.0
+
+## New Resource Types
+
+* AWS::AppStream::AppBlock
+* AWS::AppStream::Application
+* AWS::AppStream::ApplicationFleetAssociation
+* AWS::DataBrew::Ruleset
+
+## Attribute Changes
+
+* AWS::EC2::VPCDHCPOptionsAssociation Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpc-dhcp-options-assoc.html
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpcdhcpoptionsassociation.html
+* AWS::EC2::VPCDHCPOptionsAssociation Id (__added__)
+
+## Property Changes
+
+* AWS::APS::RuleGroupsNamespace Name.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::AppStream::Fleet MaxConcurrentSessions (__added__)
+* AWS::AppStream::Fleet Platform (__added__)
+* AWS::AppStream::Fleet UsbDeviceFilterStrings (__added__)
+* AWS::AppStream::Fleet ComputeCapacity.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::Chatbot::SlackChannelConfiguration GuardrailPolicies (__added__)
+* AWS::Chatbot::SlackChannelConfiguration UserRoleRequired (__added__)
+* AWS::CloudFormation::StackSet ManagedExecution (__added__)
+* AWS::CloudWatch::AnomalyDetector MetricMathAnomalyDetector (__added__)
+* AWS::CloudWatch::AnomalyDetector SingleMetricAnomalyDetector (__added__)
+* AWS::DataBrew::Job ValidationConfigurations (__added__)
+* AWS::DataBrew::Job Recipe.PrimitiveType (__deleted__)
+* AWS::EC2::VPCDHCPOptionsAssociation DhcpOptionsId.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpc-dhcp-options-assoc.html#cfn-ec2-vpcdhcpoptionsassociation-dhcpoptionsid
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpcdhcpoptionsassociation.html#cfn-ec2-vpcdhcpoptionsassociation-dhcpoptionsid
+* AWS::EC2::VPCDHCPOptionsAssociation DhcpOptionsId.UpdateType (__changed__)
+  * Old: Mutable
+  * New: Immutable
+* AWS::EC2::VPCDHCPOptionsAssociation VpcId.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpc-dhcp-options-assoc.html#cfn-ec2-vpcdhcpoptionsassociation-vpcid
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpcdhcpoptionsassociation.html#cfn-ec2-vpcdhcpoptionsassociation-vpcid
+* AWS::EC2::VPCEndpointService PayerResponsibility (__deleted__)
+* AWS::Lambda::EventSourceMapping FilterCriteria (__added__)
+* AWS::Logs::LogGroup Tags (__added__)
+* AWS::Route53::HostedZone Name.Required (__changed__)
+  * Old: true
+  * New: false
+
+## Property Type Changes
+
+* AWS::CloudWatch::AnomalyDetector.MetricMathAnomalyDetector (__added__)
+* AWS::CloudWatch::AnomalyDetector.SingleMetricAnomalyDetector (__added__)
+* AWS::DataBrew::Dataset.Metadata (__added__)
+* AWS::DataBrew::Job.AllowedStatistics (__added__)
+* AWS::DataBrew::Job.EntityDetectorConfiguration (__added__)
+* AWS::DataBrew::Job.ValidationConfiguration (__added__)
+* AWS::MSK::Cluster.ConnectivityInfo (__added__)
+* AWS::MSK::Cluster.PublicAccess (__added__)
+* AWS::DataBrew::Dataset.DatabaseInputDefinition QueryString (__added__)
+* AWS::DataBrew::Dataset.DatabaseInputDefinition GlueConnectionName.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::DataBrew::Dataset.Input Metadata (__added__)
+* AWS::DataBrew::Job.ProfileConfiguration EntityDetectorConfiguration (__added__)
+* AWS::MSK::Cluster.BrokerNodeGroupInfo ConnectivityInfo (__added__)
+* AWS::Transfer::Server.IdentityProviderDetails Function (__added__)
+
+
 # CloudFormation Resource Specification v48.0.0
 
 ## New Resource Types
