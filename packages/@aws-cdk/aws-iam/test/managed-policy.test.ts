@@ -614,3 +614,10 @@ describe('managed policy', () => {
     });
   });
 });
+
+test('ARN for two instances of the same AWS Managed Policy is the same', () => {
+  const mp1 = ManagedPolicy.fromAwsManagedPolicyName('foo/bar');
+  const mp2 = ManagedPolicy.fromAwsManagedPolicyName('foo/bar');
+
+  expect(mp1.managedPolicyArn).toEqual(mp2.managedPolicyArn);
+});
