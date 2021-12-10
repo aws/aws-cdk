@@ -46,6 +46,9 @@ import * as sqs from '@aws-cdk/aws-sqs';
 const deadLetterQueue = new sqs.Queue(this, 'DeadLetterQueue');;
 
 const myFn = new lambda.Function(this, 'Fn', {
+  runtime: lambda.Runtime.NODEJS_12_X,
+  handler: 'index.handler',
+  code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
   onFailure: new destinations.SqsDestination(deadLetterQueue)
 })
 ```
