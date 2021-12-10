@@ -953,6 +953,13 @@ export interface VpcProps {
    * @default - No flow logs.
    */
   readonly flowLogs?: { [id: string]: FlowLogOptions }
+
+  /**
+   * The VPC name.
+   *
+   * @default this.node.path
+   */
+  readonly vpcName?: string;
 }
 
 /**
@@ -1298,7 +1305,7 @@ export class Vpc extends VpcBase {
     this.vpcDefaultSecurityGroup = this.resource.attrDefaultSecurityGroup;
     this.vpcIpv6CidrBlocks = this.resource.attrIpv6CidrBlocks;
 
-    Tags.of(this).add(NAME_TAG, this.node.path);
+    Tags.of(this).add(NAME_TAG, props.vpcName || this.node.path);
 
     this.availabilityZones = stack.availabilityZones;
 
