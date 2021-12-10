@@ -196,7 +196,6 @@ describe('log retention', () => {
     expect(stack).toHaveResource('AWS::Lambda::Function', {
       Metadata: {
         'aws:asset:path': assetLocation,
-        'aws:asset:original-path': assetLocation,
         'aws:asset:is-bundled': false,
         'aws:asset:property': 'Code',
       },
