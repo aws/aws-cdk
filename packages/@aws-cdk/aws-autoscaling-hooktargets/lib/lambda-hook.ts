@@ -4,6 +4,7 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import * as sns from '@aws-cdk/aws-sns';
 import * as subs from '@aws-cdk/aws-sns-subscriptions';
 
+import { createRole } from './common';
 import { TopicHook } from './topic-hook';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
@@ -32,7 +33,7 @@ export class FunctionHook implements autoscaling.ILifecycleHookTarget {
       masterKey: this.encryptionKey,
     });
 
-    const role = autoscaling.createRole(_scope, options.role);
+    const role = createRole(_scope, options.role);
 
     // Per: https://docs.aws.amazon.com/sns/latest/dg/sns-key-management.html#sns-what-permissions-for-sse
     // Topic's grantPublish() is in a base class that does not know there is a kms key, and so does not
