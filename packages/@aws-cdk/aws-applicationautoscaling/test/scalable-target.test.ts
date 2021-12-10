@@ -144,6 +144,7 @@ describe('scalable target', () => {
     expect(appscaling.ServiceNamespace.LAMBDA).toEqual('lambda');
     expect(appscaling.ServiceNamespace.RDS).toEqual('rds');
     expect(appscaling.ServiceNamespace.SAGEMAKER).toEqual('sagemaker');
+    expect(appscaling.ServiceNamespace.ELASTICACHE).toEqual('elasticache');
   });
 
   test('create scalable target with negative minCapacity throws error', () => {

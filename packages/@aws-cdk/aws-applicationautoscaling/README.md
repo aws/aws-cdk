@@ -206,3 +206,20 @@ target.scaleToTrackMetric('PceTracking', {
   predefinedMetric: appscaling.PredefinedMetric.LAMBDA_PROVISIONED_CONCURRENCY_UTILIZATION,
 })
 ```
+
+### ElastiCache Redis shards scaling with target value
+
+```ts
+const shardsScalableTarget = new appscaling.ScalableTarget(this, 'ElastiCacheRedisShardsScalableTarget', {
+  serviceNamespace: appscaling.ServiceNamespace.ELASTICACHE,
+  scalableDimension: 'elasticache:replication-group:NodeGroups',
+  minCapacity: 2,
+  maxCapacity: 10,
+  resourceId: 'replication-group/main-cluster',
+});
+
+shardsScalableTarget.scaleToTrackMetric('ElastiCacheRedisShardsCPUUtilization', {
+  targetValue: 20,
+  predefinedMetric: appscaling.PredefinedMetric.ELASTICACHE_PRIMARY_ENGINE_CPU_UTILIZATION,
+});
+```
