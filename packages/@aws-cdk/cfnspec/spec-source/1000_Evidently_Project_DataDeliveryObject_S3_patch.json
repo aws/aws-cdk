@@ -1,0 +1,15 @@
+{
+  "PropertyTypes": {
+    "AWS::Evidently::Project.DataDeliveryObject": {
+      "patch": {
+        "description": "Primitive type should not exist because it already has a complex type of S3Destination",
+        "operations": [
+          {
+            "path": "/Properties/S3/PrimitiveType",
+            "op": "remove"
+          }
+        ]
+      }
+    }
+  }
+}
