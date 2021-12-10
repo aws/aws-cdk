@@ -4,7 +4,6 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import * as constructs from 'constructs';
-import { createRole } from '../../aws-autoscaling-hooktargets';
 import * as autoscaling from '../lib';
 
 describe('lifecycle hooks', () => {
@@ -174,8 +173,19 @@ test('adding a lifecycle hook with a role and with no notificationTarget to an A
 });
 
 class FakeNotificationTarget implements autoscaling.ILifecycleHookTarget {
+  private createRole(scope: constructs.Construct, _role?: iam.IRole) {
+    let role = _role;
+    if (!role) {
+      role = new iam.Role(scope, 'Role', {
+        assumedBy: new iam.ServicePrincipal('autoscaling.amazonaws.com'),
+      });
+    }
+
+    return role;
+  }
+
   public bind(_scope: constructs.Construct, options: autoscaling.BindHookTargetOptions): autoscaling.LifecycleHookTargetConfig {
-    const role = createRole(options.lifecycleHook, options.role);
+    const role = this.createRole(options.lifecycleHook, options.role);
 
     role.addToPrincipalPolicy(new iam.PolicyStatement({
       actions: ['action:Work'],
