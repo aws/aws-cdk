@@ -8,7 +8,7 @@ describe('HttpPrivateIntegration', () => {
     const stack = new Stack();
     class DummyPrivateIntegration extends HttpPrivateIntegration {
       constructor() {
-        super();
+        super('DummyPrivateIntegration');
       }
 
       public bind(options: HttpRouteIntegrationBindOptions): HttpRouteIntegrationConfig {

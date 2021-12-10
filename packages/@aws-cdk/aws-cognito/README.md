@@ -349,7 +349,7 @@ new cognito.UserPool(this, 'myuserpool', {
 });
 ```
 
-Sending emails through SES requires that SES be configured (as described above) in one of the regions - `us-east-1`, `us-west-1`, or `eu-west-1`.
+Sending emails through SES requires that SES be configured (as described above) in a valid SES region.
 If the UserPool is being created in a different region, `sesRegion` must be used to specify the correct SES region.
 
 ```ts
@@ -582,7 +582,7 @@ pool.addClient('app-client', {
 An app client can be configured to prevent user existence errors. This
 instructs the Cognito authentication API to return generic authentication
 failure responses instead of an UserNotFoundException. By default, the flag
-is not set, which means different things for existing and new stacks. See the
+is not set, which means the CloudFormation default (false) will be used. See the
 [documentation](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pool-managing-errors.html)
 for the full details on the behavior of this flag.
 

@@ -3,7 +3,6 @@ import { CfnLintFileSchema } from './_private_schema/cfn-lint';
 import * as schema from './schema';
 export { schema };
 export * from './canned-metrics';
-export * from './library-creation';
 
 /**
  * The complete AWS CloudFormation Resource specification, having any CDK patches and enhancements included in it.

@@ -214,7 +214,14 @@ export interface InstanceProps {
    *
    * @default - no association
    */
-  readonly privateIpAddress?: string
+  readonly privateIpAddress?: string;
+
+  /**
+   * Propagate the EC2 instance tags to the EBS volumes.
+   *
+   * @default - false
+   */
+  readonly propagateTagsToVolumeOnCreation?: boolean;
 
   /**
    * Apply the given CloudFormation Init configuration to the instance at startup
@@ -373,6 +380,7 @@ export class Instance extends Resource implements IInstance {
       sourceDestCheck: props.sourceDestCheck,
       blockDeviceMappings: props.blockDevices !== undefined ? instanceBlockDeviceMappings(this, props.blockDevices) : undefined,
       privateIpAddress: props.privateIpAddress,
+      propagateTagsToVolumeOnCreation: props.propagateTagsToVolumeOnCreation,
     });
     this.instance.node.addDependency(this.role);
 

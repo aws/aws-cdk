@@ -556,6 +556,12 @@ contain three slashes to achieve the same effect:
 For a practical example of how making sample code compilable works, see the
 `aws-ec2` package.
 
+> ⚠️ NOTE: README files often contain code snippets that refer to modules that are consumers
+> of the current module, and hence not present in the current module's dependency closure.
+> Compilation of these snippets will fail if the module referenced has not been built.
+> For the best experience when working on snippets, a full build of the CDK repo is required.
+> However, it may be prudent to "build up" these modules as required.
+
 #### Recommendations
 
 In order to offer a consistent documentation style throughout the AWS CDK

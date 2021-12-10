@@ -334,6 +334,7 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
           node: this.node,
           stack: this.stack,
           env: this.env,
+          applyRemovalPolicy: this.applyRemovalPolicy,
         },
       });
       this._invocationGrants[identifier] = grant;

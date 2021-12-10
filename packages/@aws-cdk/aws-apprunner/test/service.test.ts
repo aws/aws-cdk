@@ -1,4 +1,5 @@
 import * as path from 'path';
+import '@aws-cdk/assert-internal/jest';
 import { Template } from '@aws-cdk/assertions';
 import * as ecr from '@aws-cdk/aws-ecr';
 import * as ecr_assets from '@aws-cdk/aws-ecr-assets';
@@ -24,6 +25,92 @@ test('create a service with ECR Public(image repository type: ECR_PUBLIC)', () =
       ImageRepository: {
         ImageConfiguration: {
           Port: '8000',
+        },
+        ImageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+        ImageRepositoryType: 'ECR_PUBLIC',
+      },
+    },
+  });
+});
+
+test('custom environment variables and start commands are allowed for imageConfiguration with defined port', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'demo-stack');
+  // WHEN
+  new Service(stack, 'DemoService', {
+    source: Source.fromEcrPublic({
+      imageConfiguration: {
+        port: 8000,
+        environment: {
+          foo: 'fooval',
+          bar: 'barval',
+        },
+        startCommand: '/root/start-command.sh',
+      },
+      imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+    }),
+  });
+  // we should have the service
+  Template.fromStack(stack).hasResourceProperties('AWS::AppRunner::Service', {
+    SourceConfiguration: {
+      AuthenticationConfiguration: {},
+      ImageRepository: {
+        ImageConfiguration: {
+          Port: '8000',
+          RuntimeEnvironmentVariables: [
+            {
+              Name: 'foo',
+              Value: 'fooval',
+            },
+            {
+              Name: 'bar',
+              Value: 'barval',
+            },
+          ],
+          StartCommand: '/root/start-command.sh',
+        },
+        ImageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+        ImageRepositoryType: 'ECR_PUBLIC',
+      },
+    },
+  });
+});
+
+test('custom environment variables and start commands are allowed for imageConfiguration with port undefined', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'demo-stack');
+  // WHEN
+  new Service(stack, 'DemoService', {
+    source: Source.fromEcrPublic({
+      imageConfiguration: {
+        environment: {
+          foo: 'fooval',
+          bar: 'barval',
+        },
+        startCommand: '/root/start-command.sh',
+      },
+      imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+    }),
+  });
+  // we should have the service
+  Template.fromStack(stack).hasResourceProperties('AWS::AppRunner::Service', {
+    SourceConfiguration: {
+      AuthenticationConfiguration: {},
+      ImageRepository: {
+        ImageConfiguration: {
+          RuntimeEnvironmentVariables: [
+            {
+              Name: 'foo',
+              Value: 'fooval',
+            },
+            {
+              Name: 'bar',
+              Value: 'barval',
+            },
+          ],
+          StartCommand: '/root/start-command.sh',
         },
         ImageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
         ImageRepositoryType: 'ECR_PUBLIC',
@@ -249,6 +336,66 @@ test('create a service with github repository - undefined branch name is allowed
   });
 });
 
+test('create a service with github repository - buildCommand, environment and startCommand are allowed', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'demo-stack');
+  // WHEN
+  new Service(stack, 'DemoService', {
+    source: Source.fromGitHub({
+      repositoryUrl: 'https://github.com/aws-containers/hello-app-runner',
+      configurationSource: ConfigurationSourceType.API,
+      codeConfigurationValues: {
+        runtime: Runtime.PYTHON_3,
+        port: '8000',
+        buildCommand: '/root/build.sh',
+        environment: {
+          foo: 'fooval',
+          bar: 'barval',
+        },
+        startCommand: '/root/start.sh',
+      },
+      connection: GitHubConnection.fromConnectionArn('MOCK'),
+    }),
+  });
+
+  // THEN
+  // we should have the service with the branch value as 'main'
+  Template.fromStack(stack).hasResourceProperties('AWS::AppRunner::Service', {
+    SourceConfiguration: {
+      AuthenticationConfiguration: {
+        ConnectionArn: 'MOCK',
+      },
+      CodeRepository: {
+        CodeConfiguration: {
+          CodeConfigurationValues: {
+            Port: '8000',
+            Runtime: 'PYTHON_3',
+            BuildCommand: '/root/build.sh',
+            RuntimeEnvironmentVariables: [
+              {
+                Name: 'foo',
+                Value: 'fooval',
+              },
+              {
+                Name: 'bar',
+                Value: 'barval',
+              },
+            ],
+            StartCommand: '/root/start.sh',
+          },
+          ConfigurationSource: 'API',
+        },
+        RepositoryUrl: 'https://github.com/aws-containers/hello-app-runner',
+        SourceCodeVersion: {
+          Type: 'BRANCH',
+          Value: 'main',
+        },
+      },
+    },
+  });
+});
+
 
 test('import from service name', () => {
   // GIVEN
@@ -416,4 +563,24 @@ test('custom cpu and memory units are allowed', () => {
       Memory: 'Some GB',
     },
   });
+});
+
+test('environment variable with a prefix of AWSAPPRUNNER should throw an error', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'demo-stack');
+  // WHEN
+  // we should have the service
+  expect(() => {
+    new Service(stack, 'DemoService', {
+      source: Source.fromEcrPublic({
+        imageConfiguration: {
+          environment: {
+            AWSAPPRUNNER_FOO: 'bar',
+          },
+        },
+        imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+      }),
+    });
+  }).toThrow('Environment variable key AWSAPPRUNNER_FOO with a prefix of AWSAPPRUNNER is not allowed');
 });

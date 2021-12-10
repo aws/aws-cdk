@@ -346,9 +346,7 @@ export abstract class SnapshotCredentials {
    *
    * Note - The username must match the existing master username of the snapshot.
    *
-   * @deprecated use `fromGeneratedSecret()` for new Clusters and Instances.
-   *   Note that switching from `fromGeneratedPassword()` to `fromGeneratedSecret()` for already deployed
-   *   Clusters or Instances will update their master password.
+   * NOTE: use `fromGeneratedSecret()` for new Clusters and Instances.
    */
   public static fromGeneratedPassword(username: string, options: SnapshotCredentialsFromGeneratedPasswordOptions = {}): SnapshotCredentials {
     return {

@@ -26,6 +26,13 @@
     "build+extract": "yarn build && yarn rosetta:extract",
     "build+test+extract": "yarn build+test && yarn rosetta:extract"
   },
+  "exports": {
+    ".": "./lib/index.js",
+    "./package.json": "./package.json",
+    "./.jsii": "./.jsii",
+    "./.warnings.jsii.js": "./.warnings.jsii.js",
+    "./lib/helpers-internal": "./lib/helpers-internal/index.js"
+  },
   "author": {
     "name": "Amazon Web Services",
     "url": "https://aws.amazon.com",
@@ -41,7 +48,7 @@
     "@aws-cdk/cdk-integ-tools": "0.0.0",
     "@aws-cdk/cfn2ts": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/jest": "^27.0.2",
+    "@types/jest": "^27.0.3",
     "aws-sdk": "^2.848.0"
   },
   "peerDependencies": {

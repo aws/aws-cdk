@@ -1,0 +1,4 @@
+export const CONTEXT_ARGUMENTS_CACHING_KEY = '$context.arguments';
+export const CONTEXT_SOURCE_CACHING_KEY = '$context.source';
+export const CONTEXT_IDENTITY_CACHING_KEY = '$context.identity';
+export const BASE_CACHING_KEYS = [CONTEXT_ARGUMENTS_CACHING_KEY, CONTEXT_SOURCE_CACHING_KEY, CONTEXT_IDENTITY_CACHING_KEY];

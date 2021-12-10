@@ -2479,4 +2479,173 @@ describe('bucket', () => {
       autoDeleteObjects: true,
     })).toThrow(/Cannot use \'autoDeleteObjects\' property on a bucket without setting removal policy to \'DESTROY\'/);
   });
+
+  test('bucket with transfer acceleration turned on', () => {
+    const stack = new cdk.Stack();
+    new s3.Bucket(stack, 'MyBucket', {
+      transferAcceleration: true,
+    });
+
+    expect(stack).toMatchTemplate({
+      'Resources': {
+        'MyBucketF68F3FF0': {
+          'Type': 'AWS::S3::Bucket',
+          'Properties': {
+            'AccelerateConfiguration': {
+              'AccelerationStatus': 'Enabled',
+            },
+          },
+          'DeletionPolicy': 'Retain',
+          'UpdateReplacePolicy': 'Retain',
+        },
+      },
+    });
+
+  });
+
+  test('transferAccelerationUrlForObject returns a token with the S3 URL of the token', () => {
+    const stack = new cdk.Stack();
+    const bucket = new s3.Bucket(stack, 'MyBucket');
+    const bucketWithRegion = s3.Bucket.fromBucketAttributes(stack, 'RegionalBucket', {
+      bucketArn: 'arn:aws:s3:::explicit-region-bucket',
+      region: 'us-west-2',
+    });
+
+    new cdk.CfnOutput(stack, 'BucketURL', { value: bucket.transferAccelerationUrlForObject() });
+    new cdk.CfnOutput(stack, 'MyFileURL', { value: bucket.transferAccelerationUrlForObject('my/file.txt') });
+    new cdk.CfnOutput(stack, 'YourFileURL', { value: bucket.transferAccelerationUrlForObject('/your/file.txt') }); // "/" is optional
+    new cdk.CfnOutput(stack, 'RegionBucketURL', { value: bucketWithRegion.transferAccelerationUrlForObject() });
+
+    expect(stack).toMatchTemplate({
+      'Resources': {
+        'MyBucketF68F3FF0': {
+          'Type': 'AWS::S3::Bucket',
+          'DeletionPolicy': 'Retain',
+          'UpdateReplacePolicy': 'Retain',
+        },
+      },
+      'Outputs': {
+        'BucketURL': {
+          'Value': {
+            'Fn::Join': [
+              '',
+              [
+                'https://',
+                {
+                  'Ref': 'MyBucketF68F3FF0',
+                },
+                '.s3-accelerate.amazonaws.com/',
+              ],
+            ],
+          },
+        },
+        'MyFileURL': {
+          'Value': {
+            'Fn::Join': [
+              '',
+              [
+                'https://',
+                {
+                  'Ref': 'MyBucketF68F3FF0',
+                },
+                '.s3-accelerate.amazonaws.com/my/file.txt',
+              ],
+            ],
+          },
+        },
+        'YourFileURL': {
+          'Value': {
+            'Fn::Join': [
+              '',
+              [
+                'https://',
+                {
+                  'Ref': 'MyBucketF68F3FF0',
+                },
+                '.s3-accelerate.amazonaws.com/your/file.txt',
+              ],
+            ],
+          },
+        },
+        'RegionBucketURL': {
+          'Value': 'https://explicit-region-bucket.s3-accelerate.amazonaws.com/',
+        },
+      },
+    });
+
+
+  });
+
+  test('transferAccelerationUrlForObject with dual stack option returns a token with the S3 URL of the token', () => {
+    const stack = new cdk.Stack();
+    const bucket = new s3.Bucket(stack, 'MyBucket');
+    const bucketWithRegion = s3.Bucket.fromBucketAttributes(stack, 'RegionalBucket', {
+      bucketArn: 'arn:aws:s3:::explicit-region-bucket',
+      region: 'us-west-2',
+    });
+
+    new cdk.CfnOutput(stack, 'BucketURL', { value: bucket.transferAccelerationUrlForObject(undefined, { dualStack: true }) });
+    new cdk.CfnOutput(stack, 'MyFileURL', { value: bucket.transferAccelerationUrlForObject('my/file.txt', { dualStack: true }) });
+    new cdk.CfnOutput(stack, 'YourFileURL', { value: bucket.transferAccelerationUrlForObject('/your/file.txt', { dualStack: true }) }); // "/" is optional
+    new cdk.CfnOutput(stack, 'RegionBucketURL', { value: bucketWithRegion.transferAccelerationUrlForObject(undefined, { dualStack: true }) });
+
+    expect(stack).toMatchTemplate({
+      'Resources': {
+        'MyBucketF68F3FF0': {
+          'Type': 'AWS::S3::Bucket',
+          'DeletionPolicy': 'Retain',
+          'UpdateReplacePolicy': 'Retain',
+        },
+      },
+      'Outputs': {
+        'BucketURL': {
+          'Value': {
+            'Fn::Join': [
+              '',
+              [
+                'https://',
+                {
+                  'Ref': 'MyBucketF68F3FF0',
+                },
+                '.s3-accelerate.dualstack.amazonaws.com/',
+              ],
+            ],
+          },
+        },
+        'MyFileURL': {
+          'Value': {
+            'Fn::Join': [
+              '',
+              [
+                'https://',
+                {
+                  'Ref': 'MyBucketF68F3FF0',
+                },
+                '.s3-accelerate.dualstack.amazonaws.com/my/file.txt',
+              ],
+            ],
+          },
+        },
+        'YourFileURL': {
+          'Value': {
+            'Fn::Join': [
+              '',
+              [
+                'https://',
+                {
+                  'Ref': 'MyBucketF68F3FF0',
+                },
+                '.s3-accelerate.dualstack.amazonaws.com/your/file.txt',
+              ],
+            ],
+          },
+        },
+        'RegionBucketURL': {
+          'Value': 'https://explicit-region-bucket.s3-accelerate.dualstack.amazonaws.com/',
+        },
+      },
+    });
+
+
+  });
 });

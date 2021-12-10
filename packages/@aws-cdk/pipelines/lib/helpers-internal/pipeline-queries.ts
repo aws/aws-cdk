@@ -17,6 +17,9 @@ export class PipelineQueries {
       steps.push(...wave.pre, ...wave.post);
       for (const stage of wave.stages) {
         steps.push(...stage.pre, ...stage.post);
+        for (const stackDeployment of stage.stacks) {
+          steps.push(...stackDeployment.pre, ...stackDeployment.changeSet, ...stackDeployment.post);
+        }
       }
     }
 

@@ -7,18 +7,23 @@ import { HttpPrivateIntegration } from './private/integration';
  * Properties to initialize `HttpServiceDiscoveryIntegration`.
  */
 export interface HttpServiceDiscoveryIntegrationProps extends HttpPrivateIntegrationOptions {
-  /**
-   * The discovery service used for the integration
-   */
-  readonly service: servicediscovery.IService;
 }
 
 /**
  * The Service Discovery integration resource for HTTP API
  */
 export class HttpServiceDiscoveryIntegration extends HttpPrivateIntegration {
-  constructor(private readonly props: HttpServiceDiscoveryIntegrationProps) {
-    super();
+  /**
+   * @param id id of the underlying integration construct
+   * @param service the service discovery resource to integrate with
+   * @param props properties to configure the integration
+   */
+  constructor(
+    id: string,
+    private readonly service: servicediscovery.IService,
+    private readonly props: HttpServiceDiscoveryIntegrationProps = {}) {
+
+    super(id);
   }
 
   public bind(_: HttpRouteIntegrationBindOptions): HttpRouteIntegrationConfig {
@@ -32,7 +37,7 @@ export class HttpServiceDiscoveryIntegration extends HttpPrivateIntegration {
       type: this.integrationType,
       connectionType: this.connectionType,
       connectionId: this.props.vpcLink.vpcLinkId,
-      uri: this.props.service.serviceArn,
+      uri: this.service.serviceArn,
       secureServerName: this.props.secureServerName,
       parameterMapping: this.props.parameterMapping,
     };

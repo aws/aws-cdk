@@ -4,6 +4,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as efs from '@aws-cdk/aws-efs';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
+import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import { AwsCliLayer } from '@aws-cdk/lambda-layer-awscli';
@@ -15,6 +16,8 @@ import { ISource, SourceConfig } from './source';
 // eslint-disable-next-line no-duplicate-imports, import/order
 import { Construct as CoreConstruct } from '@aws-cdk/core';
 
+// tag key has a limit of 128 characters
+const CUSTOM_RESOURCE_OWNER_TAG = 'aws-cdk:cr-owned';
 /**
  * Properties for `BucketDeployment`.
  */
@@ -31,6 +34,8 @@ export interface BucketDeploymentProps {
 
   /**
    * Key prefix in the destination bucket.
+   *
+   * Must be <=104 characters
    *
    * @default "/" (unzip to root of the destination bucket)
    */
@@ -96,6 +101,14 @@ export interface BucketDeploymentProps {
    * @default - All files under the destination bucket key prefix will be invalidated.
    */
   readonly distributionPaths?: string[];
+
+
+  /**
+   * The number of days that the lambda function's log events are kept in CloudWatch Logs.
+   *
+   * @default logs.RetentionDays.INFINITE
+   */
+  readonly logRetention?: logs.RetentionDays;
 
   /**
    * The amount of memory (in MiB) to allocate to the AWS Lambda function which
@@ -292,7 +305,8 @@ export class BucketDeployment extends CoreConstruct {
       filesystem: accessPoint ? lambda.FileSystem.fromEfsAccessPoint(
         accessPoint,
         mountPath,
-      ): undefined,
+      ) : undefined,
+      logRetention: props.logRetention,
     });
 
     const handlerRole = handler.role;
@@ -309,7 +323,8 @@ export class BucketDeployment extends CoreConstruct {
       }));
     }
 
-    new cdk.CustomResource(this, 'CustomResource', {
+    const crUniqueId = `CustomResource${this.renderUniqueId(props.memoryLimit, props.vpc)}`;
+    const cr = new cdk.CustomResource(this, crUniqueId, {
       serviceToken: handler.functionArn,
       resourceType: 'Custom::CDKBucketDeployment',
       properties: {
@@ -328,10 +343,65 @@ export class BucketDeployment extends CoreConstruct {
       },
     });
 
+    let prefix: string = props.destinationKeyPrefix ?
+      `:${props.destinationKeyPrefix}` :
+      '';
+    prefix += `:${cr.node.addr.substr(-8)}`;
+    const tagKey = CUSTOM_RESOURCE_OWNER_TAG + prefix;
+
+    // destinationKeyPrefix can be 104 characters before we hit
+    // the tag key limit of 128
+    // '/this/is/a/random/key/prefix/that/is/a/lot/of/characters/do/we/think/that/it/will/ever/be/this/long?????'
+    // better to throw an error here than wait for CloudFormation to fail
+    if (tagKey.length > 128) {
+      throw new Error('The BucketDeployment construct requires that the "destinationKeyPrefix" be <=104 characters');
+    }
+
+    /*
+     * This will add a tag to the deployment bucket in the format of
+     * `aws-cdk:cr-owned:{keyPrefix}:{uniqueHash}`
+     *
+     * For example:
+     * {
+     *   Key: 'aws-cdk:cr-owned:deploy/here/:240D17B3',
+     *   Value: 'true',
+     * }
+     *
+     * This will allow for scenarios where there is a single S3 Bucket that has multiple
+     * BucketDeployment resources deploying to it. Each bucket + keyPrefix can be "owned" by
+     * 1 or more BucketDeployment resources. Since there are some scenarios where multiple BucketDeployment
+     * resources can deploy to the same bucket and key prefix (e.g. using include/exclude) we
+     * also append part of the id to make the key unique.
+     *
+     * As long as a bucket + keyPrefix is "owned" by a BucketDeployment resource, another CR
+     * cannot delete data. There are a couple of scenarios where this comes into play.
+     *
+     * 1. If the LogicalResourceId of the CustomResource changes (e.g. the crUniqueId changes)
+     * CloudFormation will first issue a 'Create' to create the new CustomResource and will
+     * update the Tag on the bucket. CloudFormation will then issue a 'Delete' on the old CustomResource
+     * and since the new CR "owns" the Bucket+keyPrefix it will not delete the contents of the bucket
+     *
+     * 2. If the BucketDeployment resource is deleted _and_ it is the only CR for that bucket+keyPrefix
+     * then CloudFormation will first remove the tag from the bucket and then issue a "Delete" to the
+     * CR. Since there are no tags indicating that this bucket+keyPrefix is "owned" then it will delete
+     * the contents.
+     *
+     * 3. If the BucketDeployment resource is deleted _and_ it is *not* the only CR for that bucket:keyPrefix
+     * then CloudFormation will first remove the tag from the bucket and then issue a "Delete" to the CR.
+     * Since there are other CRs that also "own" that bucket+keyPrefix there will still be a tag on the bucket
+     * and the contents will not be removed.
+     *
+     * 4. If the BucketDeployment resource _and_ the S3 Bucket are both removed, then CloudFormation will first
+     * issue a "Delete" to the CR and since there is a tag on the bucket the contents will not be removed. If you
+     * want the contents of the bucket to be removed on bucket deletion, then `autoDeleteObjects` property should
+     * be set to true on the Bucket.
+     */
+    cdk.Tags.of(props.destinationBucket).add(tagKey, 'true');
+
   }
 
-  private renderSingletonUuid(memoryLimit?: number, vpc?: ec2.IVpc) {
-    let uuid = '8693BB64-9689-44B6-9AAF-B0CC9EB8756C';
+  private renderUniqueId(memoryLimit?: number, vpc?: ec2.IVpc) {
+    let uuid = '';
 
     // if user specify a custom memory limit, define another singleton handler
     // with this configuration. otherwise, it won't be possible to use multiple
@@ -351,6 +421,14 @@ export class BucketDeployment extends CoreConstruct {
     if (vpc) {
       uuid += `-${vpc.node.addr}`;
     }
+
+    return uuid;
+  }
+
+  private renderSingletonUuid(memoryLimit?: number, vpc?: ec2.IVpc) {
+    let uuid = '8693BB64-9689-44B6-9AAF-B0CC9EB8756C';
+
+    uuid += this.renderUniqueId(memoryLimit, vpc);
 
     return uuid;
   }
@@ -453,7 +531,7 @@ export class CacheControl {
      * The raw cache control setting.
      */
     public readonly value: any,
-  ) {}
+  ) { }
 }
 
 /**
@@ -551,7 +629,7 @@ export class Expires {
      * The raw expiration date expression.
      */
     public readonly value: any,
-  ) {}
+  ) { }
 }
 
 /**

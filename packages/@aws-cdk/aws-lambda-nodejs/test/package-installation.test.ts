@@ -13,7 +13,7 @@ test('detects local version', () => {
 });
 
 test('checks global version if local detection fails', () => {
-  const getModuleVersionMock = jest.spyOn(util, 'tryGetModuleVersion').mockReturnValue(undefined);
+  const getModuleVersionMock = jest.spyOn(util, 'tryGetModuleVersionFromRequire').mockReturnValue(undefined);
   const spawnSyncMock = jest.spyOn(child_process, 'spawnSync').mockReturnValue({
     status: 0,
     stderr: Buffer.from('stderr'),
@@ -33,7 +33,7 @@ test('checks global version if local detection fails', () => {
 });
 
 test('returns undefined on error', () => {
-  const getModuleVersionMock = jest.spyOn(util, 'tryGetModuleVersion').mockReturnValue(undefined);
+  const getModuleVersionMock = jest.spyOn(util, 'tryGetModuleVersionFromRequire').mockReturnValue(undefined);
   const spawnSyncMock = jest.spyOn(child_process, 'spawnSync').mockReturnValue({
     error: new Error('bad error'),
     status: 0,

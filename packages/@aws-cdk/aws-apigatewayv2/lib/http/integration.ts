@@ -1,4 +1,3 @@
-/* eslint-disable quotes */
 import { Resource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnIntegration } from '../apigatewayv2.generated';
@@ -191,11 +190,46 @@ export interface HttpRouteIntegrationBindOptions {
 /**
  * The interface that various route integration classes will inherit.
  */
-export interface IHttpRouteIntegration {
+export abstract class HttpRouteIntegration {
+  private integration?: HttpIntegration;
+
+  /**
+   * Initialize an integration for a route on http api.
+   * @param id id of the underlying `HttpIntegration` construct.
+   */
+  constructor(private readonly id: string) {}
+
+  /**
+   * Internal method called when binding this integration to the route.
+   * @internal
+   */
+  public _bindToRoute(options: HttpRouteIntegrationBindOptions): { readonly integrationId: string } {
+    if (this.integration && this.integration.httpApi.node.addr !== options.route.httpApi.node.addr) {
+      throw new Error('A single integration cannot be associated with multiple APIs.');
+    }
+
+    if (!this.integration) {
+      const config = this.bind(options);
+
+      this.integration = new HttpIntegration(options.scope, this.id, {
+        httpApi: options.route.httpApi,
+        integrationType: config.type,
+        integrationUri: config.uri,
+        method: config.method,
+        connectionId: config.connectionId,
+        connectionType: config.connectionType,
+        payloadFormatVersion: config.payloadFormatVersion,
+        secureServerName: config.secureServerName,
+        parameterMapping: config.parameterMapping,
+      });
+    }
+    return { integrationId: this.integration.integrationId };
+  }
+
   /**
    * Bind this integration to the route.
    */
-  bind(options: HttpRouteIntegrationBindOptions): HttpRouteIntegrationConfig;
+  public abstract bind(options: HttpRouteIntegrationBindOptions): HttpRouteIntegrationConfig;
 }
 
 /**

@@ -87,11 +87,41 @@ export interface WebSocketRouteIntegrationBindOptions {
 /**
  * The interface that various route integration classes will inherit.
  */
-export interface IWebSocketRouteIntegration {
+export abstract class WebSocketRouteIntegration {
+  private integration?: WebSocketIntegration;
+
+  /**
+   * Initialize an integration for a route on websocket api.
+   * @param id id of the underlying `WebSocketIntegration` construct.
+   */
+  constructor(private readonly id: string) {}
+
+  /**
+   * Internal method called when binding this integration to the route.
+   * @internal
+   */
+  public _bindToRoute(options: WebSocketRouteIntegrationBindOptions): { readonly integrationId: string } {
+    if (this.integration && this.integration.webSocketApi.node.addr !== options.route.webSocketApi.node.addr) {
+      throw new Error('A single integration cannot be associated with multiple APIs.');
+    }
+
+    if (!this.integration) {
+      const config = this.bind(options);
+
+      this.integration = new WebSocketIntegration(options.scope, this.id, {
+        webSocketApi: options.route.webSocketApi,
+        integrationType: config.type,
+        integrationUri: config.uri,
+      });
+    }
+
+    return { integrationId: this.integration.integrationId };
+  }
+
   /**
    * Bind this integration to the route.
    */
-  bind(options: WebSocketRouteIntegrationBindOptions): WebSocketRouteIntegrationConfig;
+  public abstract bind(options: WebSocketRouteIntegrationBindOptions): WebSocketRouteIntegrationConfig;
 }
 
 /**

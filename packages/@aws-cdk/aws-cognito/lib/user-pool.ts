@@ -1,4 +1,5 @@
 import { IRole, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
+import { IKey } from '@aws-cdk/aws-kms';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { ArnFormat, Duration, IResource, Lazy, Names, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
@@ -139,6 +140,20 @@ export interface UserPoolTriggers {
   readonly verifyAuthChallengeResponse?: lambda.IFunction;
 
   /**
+   * Amazon Cognito invokes this trigger to send email notifications to users.
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-custom-email-sender.html
+   * @default - no trigger configured
+   */
+  readonly customEmailSender?: lambda.IFunction
+
+  /**
+   * Amazon Cognito invokes this trigger to send SMS notifications to users.
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-custom-sms-sender.html
+   * @default - no trigger configured
+   */
+  readonly customSmsSender?: lambda.IFunction
+
+  /**
    * Index signature
    */
   [trigger: string]: lambda.IFunction | undefined;
@@ -207,6 +222,18 @@ export class UserPoolOperation {
    * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-verify-auth-challenge-response.html
    */
   public static readonly VERIFY_AUTH_CHALLENGE_RESPONSE = new UserPoolOperation('verifyAuthChallengeResponse');
+
+  /**
+   * Amazon Cognito invokes this trigger to send email notifications to users.
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-custom-email-sender.html
+   */
+  public static readonly CUSTOM_EMAIL_SENDER = new UserPoolOperation('customEmailSender');
+
+  /**
+   * Amazon Cognito invokes this trigger to send email notifications to users.
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-custom-sms-sender.html
+   */
+  public static readonly CUSTOM_SMS_SENDER = new UserPoolOperation('customSmsSender');
 
   /** A custom user pool operation */
   public static of(name: string): UserPoolOperation {
@@ -616,6 +643,13 @@ export interface UserPoolProps {
    * @default - see defaults on each property of DeviceTracking.
    */
   readonly deviceTracking?: DeviceTracking;
+
+  /**
+   * This key will be used to encrypt temporary passwords and authorization codes that Amazon Cognito generates.
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-custom-sender-triggers.html
+   * @default - no key ID configured
+   */
+  readonly customSenderKmsKey?: IKey;
 }
 
 /**
@@ -766,12 +800,37 @@ export class UserPool extends UserPoolBase {
 
     const signIn = this.signInConfiguration(props);
 
+    if (props.customSenderKmsKey) {
+      const kmsKey = props.customSenderKmsKey;
+      (this.triggers as any).kmsKeyId = kmsKey.keyArn;
+    }
+
     if (props.lambdaTriggers) {
       for (const t of Object.keys(props.lambdaTriggers)) {
-        const trigger = props.lambdaTriggers[t];
-        if (trigger !== undefined) {
-          this.addLambdaPermission(trigger as lambda.IFunction, t);
-          (this.triggers as any)[t] = (trigger as lambda.IFunction).functionArn;
+        let trigger: lambda.IFunction | undefined;
+        switch (t) {
+          case 'customSmsSender':
+          case 'customEmailSender':
+            if (!this.triggers.kmsKeyId) {
+              throw new Error('you must specify a KMS key if you are using customSmsSender or customEmailSender.');
+            }
+            trigger = props.lambdaTriggers[t];
+            const version = 'V1_0';
+            if (trigger !== undefined) {
+              this.addLambdaPermission(trigger as lambda.IFunction, t);
+              (this.triggers as any)[t] = {
+                lambdaArn: trigger.functionArn,
+                lambdaVersion: version,
+              };
+            }
+            break;
+          default:
+            trigger = props.lambdaTriggers[t] as lambda.IFunction | undefined;
+            if (trigger !== undefined) {
+              this.addLambdaPermission(trigger as lambda.IFunction, t);
+              (this.triggers as any)[t] = (trigger as lambda.IFunction).functionArn;
+            }
+            break;
         }
       }
     }
@@ -848,7 +907,21 @@ export class UserPool extends UserPoolBase {
     }
 
     this.addLambdaPermission(fn, operation.operationName);
-    (this.triggers as any)[operation.operationName] = fn.functionArn;
+    switch (operation.operationName) {
+      case 'customEmailSender':
+      case 'customSmsSender':
+        if (!this.triggers.kmsKeyId) {
+          throw new Error('you must specify a KMS key if you are using customSmsSender or customEmailSender.');
+        }
+        (this.triggers as any)[operation.operationName] = {
+          lambdaArn: fn.functionArn,
+          lambdaVersion: 'V1_0',
+        };
+        break;
+      default:
+        (this.triggers as any)[operation.operationName] = fn.functionArn;
+    }
+
   }
 
   private addLambdaPermission(fn: lambda.IFunction, name: string): void {
