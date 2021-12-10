@@ -1,6 +1,9 @@
+import { inspect } from 'util';
 import { green } from 'colors/safe';
 
 import { CredentialProviderSource } from './api/aws-auth/credentials';
+import { registerContextProvider } from './context-providers';
+import { ContextProviderPlugin, isContextProviderPlugin } from './context-providers/provider';
 import { error } from './logging';
 
 /**
@@ -85,5 +88,30 @@ export class PluginHost {
    */
   public registerCredentialProviderSource(source: CredentialProviderSource) {
     this.credentialProviderSources.push(source);
+  }
+
+  /**
+   * (EXPERIMENTAL) Allow plugins to register context providers
+   *
+   * Context providers are objects with the following method:
+   *
+   * ```ts
+   *   getValue(args: {[key: string]: any}): Promise<any>;
+   * ```
+   *
+   * Currently, they cannot reuse the CDK's authentication mechanism, so they
+   * must be prepared to either not make AWS calls or use their own authentication
+   * mechanism.
+   *
+   * This feature is experimental, and only intended to be used internally at Amazon
+   * as a trial.
+   *
+   * @experimental
+   */
+  public registerContextProviderAlpha(providerName: string, provider: ContextProviderPlugin) {
+    if (!isContextProviderPlugin(provider)) {
+      throw new Error(`Object you gave me does not look like a ContextProviderPlugin: ${inspect(provider)}`);
+    }
+    registerContextProvider(providerName, provider);
   }
 }
