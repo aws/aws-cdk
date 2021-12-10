@@ -20,7 +20,7 @@ export interface InputProps {
   /**
    * The name of the input
    *
-   * @default None
+   * @default - CloudFormation will generate a unique name of the input
    */
   readonly inputName?: string,
 
