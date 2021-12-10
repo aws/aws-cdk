@@ -218,7 +218,7 @@ export interface BundlingOptions {
    * });
    * ```
    *
-   * @default - no additional build arguments are passed
+   * @default - no additional esbuild arguments are passed
    */
   readonly esbuildArgs?: { [key: string]: string };
 

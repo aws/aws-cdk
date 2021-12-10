@@ -229,7 +229,7 @@ test('esbuild bundling with esbuild options', () => {
           '--log-level=silent --keep-names --tsconfig=/asset-input/lib/custom-tsconfig.ts',
           '--metafile=/asset-output/index.meta.json --banner:js="/* comments */" --footer:js="/* comments */"',
           '--charset=utf8',
-          '--main-fields=module,main --log-limit=0 --resolve-extensions=.ts,.js',
+          '--main-fields="module,main" --log-limit="0" --resolve-extensions=".ts,.js"',
         ].join(' '),
       ],
     }),
