@@ -4,6 +4,7 @@ var constructs = require('constructs');
 if (process.env.PACKAGE_LAYOUT_VERSION === '1') {
   var cdk = require('@aws-cdk/core');
   var ec2 = require('@aws-cdk/aws-ec2');
+  var s3 = require('@aws-cdk/aws-s3');
   var ssm = require('@aws-cdk/aws-ssm');
   var iam = require('@aws-cdk/aws-iam');
   var sns = require('@aws-cdk/aws-sns');
@@ -13,6 +14,7 @@ if (process.env.PACKAGE_LAYOUT_VERSION === '1') {
   var cdk = require('aws-cdk-lib');
   var {
     aws_ec2: ec2,
+    aws_s3: s3,
     aws_ssm: ssm,
     aws_iam: iam,
     aws_sns: sns,
@@ -109,7 +111,7 @@ class OutputsStack extends cdk.Stack {
   constructor(parent, id, props) {
     super(parent, id, props);
 
-    const topic =  new sns.Topic(this, 'MyOutput', {
+    const topic = new sns.Topic(this, 'MyOutput', {
       topicName: `${cdk.Stack.of(this).stackName}MyTopic`
     });
 
@@ -299,6 +301,17 @@ class StageUsingContext extends cdk.Stage {
   }
 }
 
+class BuiltinLambdaStack extends cdk.Stack {
+  constructor(parent, id, props) {
+    super(parent, id, props);
+
+    new s3.Bucket(this, 'Bucket', {
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      autoDeleteObjects: true, // will deploy a Nodejs lambda backed custom resource
+    });
+  }
+}
+
 const app = new cdk.App();
 
 const defaultEnv = {
@@ -339,7 +352,7 @@ switch (stackSet) {
       if (process.env.ENABLE_VPC_TESTING === 'DEFINE')
         new DefineVpcStack(app, `${stackPrefix}-define-vpc`, { env });
       if (process.env.ENABLE_VPC_TESTING === 'IMPORT')
-      new ImportVpcStack(app, `${stackPrefix}-import-vpc`, { env });
+        new ImportVpcStack(app, `${stackPrefix}-import-vpc`, { env });
     }
 
     new ConditionalResourceStack(app, `${stackPrefix}-conditional-resource`)
@@ -352,6 +365,8 @@ switch (stackSet) {
     });
 
     new SomeStage(app, `${stackPrefix}-stage`);
+
+    new BuiltinLambdaStack(app, `${stackPrefix}-builtin-lambda-function`);
     break;
 
   case 'stage-using-context':
