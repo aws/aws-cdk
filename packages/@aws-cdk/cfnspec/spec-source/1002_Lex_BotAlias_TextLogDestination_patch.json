@@ -2,16 +2,11 @@
   "PropertyTypes": {
     "AWS::Lex::BotAlias.TextLogDestination": {
       "patch": {
-        "description": "Replace empty Type",
+        "description": "Temporarily remove AWS::Lex::BotAlias.TextLogDestination.CloudWatch until cfn specs for it are stable.",
         "operations": [
           {
-            "op": "add",
-            "path": "/Properties/CloudWatch/PrimitiveType",
-            "value": "String"
-          },
-          {
             "op": "remove",
-            "path": "/Properties/CloudWatch/Type"
+            "path": "/Properties/CloudWatch"
           }
         ]
       }
