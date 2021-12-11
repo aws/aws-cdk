@@ -24,6 +24,10 @@ import * as codecommit from '@aws-cdk/aws-codecommit';
 const repo = new codecommit.Repository(this, 'Repository' ,{
     repositoryName: 'MyRepositoryName',
     description: 'Some description.', // optional property
+    code: { // optional property
+        branchName: 'main', // optional property
+        asset: asset, // refers to an instance of a CDK asset, pointing to a directory
+    },
 });
 ```
 
@@ -35,6 +39,30 @@ To add an Amazon SNS trigger to your repository:
 ```ts
 // trigger is established for all repository actions on all branches by default.
 repo.notify('arn:aws:sns:*:123456789012:my_topic');
+```
+
+## Initialize with Code
+
+It is possible to initialize the Repository with an Asset.
+For learning how assets work, see the CDK Assets documentation.
+Be aware, that this will only work on *directories*, not on single files.
+This is due to the fact, that CodeCommit expects a zip in the S3 Bucket.
+
+Example:
+
+```ts
+const readmeAsset = new assets.Asset(this, 'ReadmeAsset', {
+      path: path.join(__dirname, 'directory/'),
+});
+
+const repo = new codecommit.Repository(this, 'Repository' ,{
+    repositoryName: 'MyRepositoryName',
+    description: 'Some description.', // optional property
+    code: { // optional property
+        branchName: 'main', // optional, defaults to main
+        asset: readmeAsset,
+    },
+});
 ```
 
 ## Events

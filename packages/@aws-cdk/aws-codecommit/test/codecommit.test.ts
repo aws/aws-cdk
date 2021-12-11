@@ -1,7 +1,10 @@
 import '@aws-cdk/assert-internal/jest';
+import { join } from 'path';
 import { Role, ServicePrincipal } from '@aws-cdk/aws-iam';
+import { Asset } from '@aws-cdk/aws-s3-assets';
 import { Stack } from '@aws-cdk/core';
 import { Repository, RepositoryProps } from '../lib';
+
 
 describe('codecommit', () => {
   describe('CodeCommit Repositories', () => {
@@ -64,6 +67,28 @@ describe('codecommit', () => {
       expect(stack.resolve(repo.repositoryName)).toEqual('my-repo');
 
 
+    });
+
+    test('can be setup with asset deployment', () => {
+      // GIVEN
+      const stack = new Stack();
+
+      // WHEN
+      const readmeAsset = new Asset(stack, 'ReadmeAsset', {
+        path: join(__dirname, '../README.md'),
+      });
+
+      const repo = new Repository(stack, 'Repository', {
+        repositoryName: 'MyRepositoryName',
+        description: 'Some description.', // optional property
+        code: { // optional property
+          branchName: 'main',
+          asset: readmeAsset,
+        },
+      });
+
+      // THEN
+      expect(stack.resolve(repo.repositoryName)).toEqual('MyRepositoryName');
     });
 
     /**

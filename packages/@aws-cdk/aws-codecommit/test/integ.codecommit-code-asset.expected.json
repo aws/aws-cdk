@@ -1,0 +1,65 @@
+{
+  "Parameters": {
+    "AssetParameters69f18ddee6c66a02ca55f943a62347dc512721463206d1947f2e853bf581cc69S3Bucket09136F76": {
+      "Type": "String",
+      "Description": "S3 bucket for asset \"69f18ddee6c66a02ca55f943a62347dc512721463206d1947f2e853bf581cc69\""
+    },
+    "AssetParameters69f18ddee6c66a02ca55f943a62347dc512721463206d1947f2e853bf581cc69S3VersionKeyDDBE6AA5": {
+      "Type": "String",
+      "Description": "S3 key for asset version \"69f18ddee6c66a02ca55f943a62347dc512721463206d1947f2e853bf581cc69\""
+    },
+    "AssetParameters69f18ddee6c66a02ca55f943a62347dc512721463206d1947f2e853bf581cc69ArtifactHashE2BB9A05": {
+      "Type": "String",
+      "Description": "Artifact hash for asset \"69f18ddee6c66a02ca55f943a62347dc512721463206d1947f2e853bf581cc69\""
+    }
+  },
+  "Resources": {
+    "Repo02AC86CF": {
+      "Type": "AWS::CodeCommit::Repository",
+      "Properties": {
+        "RepositoryName": "aws-cdk-codecommit-events",
+        "Code": {
+          "BranchName": "main",
+          "S3": {
+            "Bucket": {
+              "Ref": "AssetParameters69f18ddee6c66a02ca55f943a62347dc512721463206d1947f2e853bf581cc69S3Bucket09136F76"
+            },
+            "Key": {
+              "Fn::Join": [
+                "",
+                [
+                  {
+                    "Fn::Select": [
+                      0,
+                      {
+                        "Fn::Split": [
+                          "||",
+                          {
+                            "Ref": "AssetParameters69f18ddee6c66a02ca55f943a62347dc512721463206d1947f2e853bf581cc69S3VersionKeyDDBE6AA5"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "Fn::Select": [
+                      1,
+                      {
+                        "Fn::Split": [
+                          "||",
+                          {
+                            "Ref": "AssetParameters69f18ddee6c66a02ca55f943a62347dc512721463206d1947f2e853bf581cc69S3VersionKeyDDBE6AA5"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

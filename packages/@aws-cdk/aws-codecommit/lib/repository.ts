@@ -1,6 +1,7 @@
 import * as notifications from '@aws-cdk/aws-codestarnotifications';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
+import { Asset } from '@aws-cdk/aws-s3-assets';
 import { ArnFormat, IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnRepository } from './codecommit.generated';
@@ -488,6 +489,31 @@ export interface RepositoryProps {
    * @default - No description.
    */
   readonly description?: string;
+
+  /**
+   * The asset the repository with the given branch should be initialized
+   *
+   * @default - No initialization (create empty repo)
+   */
+  readonly code? : CodeInitializationProps;
+}
+
+/**
+ * Initializes a repository with code, when specified
+ */
+export interface CodeInitializationProps {
+  /**
+   * The branch on which the code should be deployed
+   *
+   * @default - "main"
+   */
+  readonly branchName?: string,
+
+  /**
+   * The asset to upload.
+   * This is required, when making use of this feature.
+   */
+  readonly asset: Asset
 }
 
 /**
@@ -543,6 +569,7 @@ export class Repository extends RepositoryBase {
   public readonly repositoryCloneUrlGrc: string;
   private readonly triggers = new Array<CfnRepository.RepositoryTriggerProperty>();
 
+
   constructor(scope: Construct, id: string, props: RepositoryProps) {
     super(scope, id, {
       physicalName: props.repositoryName,
@@ -552,6 +579,7 @@ export class Repository extends RepositoryBase {
       repositoryName: props.repositoryName,
       repositoryDescription: props.description,
       triggers: Lazy.any({ produce: () => this.triggers }, { omitEmptyArray: true }),
+      code: props.code ? this._handleAsset(props.code) : undefined,
     });
 
     this.repositoryName = this.getResourceNameAttribute(repository.attrName);
@@ -562,6 +590,19 @@ export class Repository extends RepositoryBase {
     this.repositoryCloneUrlHttp = repository.attrCloneUrlHttp;
     this.repositoryCloneUrlSsh = repository.attrCloneUrlSsh;
     this.repositoryCloneUrlGrc = makeCloneUrl(Stack.of(this), this.repositoryName, 'grc');
+  }
+
+  private _handleAsset(assetConfig: CodeInitializationProps): CfnRepository.CodeProperty {
+    const codeCommitPrincipal = new iam.ServicePrincipal('codecommit.amazonaws.com');
+    assetConfig.asset.grantRead(codeCommitPrincipal);
+
+    return {
+      branchName: assetConfig.branchName ? assetConfig.branchName : 'main',
+      s3: {
+        bucket: assetConfig.asset.s3BucketName,
+        key: assetConfig.asset.s3ObjectKey,
+      },
+    };
   }
 
   /**
