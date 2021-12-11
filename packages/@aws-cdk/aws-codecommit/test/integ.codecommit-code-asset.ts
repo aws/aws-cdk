@@ -11,7 +11,7 @@ const readmeAsset = new Asset(stack, 'ReadmeAsset', {
 });
 
 const repo = new codecommit.Repository(stack, 'Repo', {
-  repositoryName: 'aws-cdk-codecommit-events',
+  repositoryName: 'aws-cdk-codecommit-assets',
   code: {
     branchName: 'main',
     asset: readmeAsset,

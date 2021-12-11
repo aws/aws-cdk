@@ -495,7 +495,7 @@ export interface RepositoryProps {
    *
    * @default - No initialization (create empty repo)
    */
-  readonly code? : CodeInitializationProps;
+  readonly code?: CodeInitializationProps;
 }
 
 /**
@@ -579,7 +579,13 @@ export class Repository extends RepositoryBase {
       repositoryName: props.repositoryName,
       repositoryDescription: props.description,
       triggers: Lazy.any({ produce: () => this.triggers }, { omitEmptyArray: true }),
-      code: props.code ? this._handleAsset(props.code) : undefined,
+      code: props.code ? {
+        branchName: props.code.branchName ? props.code.branchName : 'main',
+        s3: {
+          bucket: props.code.asset.s3BucketName,
+          key: props.code.asset.s3ObjectKey,
+        },
+      } : undefined,
     });
 
     this.repositoryName = this.getResourceNameAttribute(repository.attrName);
@@ -590,19 +596,6 @@ export class Repository extends RepositoryBase {
     this.repositoryCloneUrlHttp = repository.attrCloneUrlHttp;
     this.repositoryCloneUrlSsh = repository.attrCloneUrlSsh;
     this.repositoryCloneUrlGrc = makeCloneUrl(Stack.of(this), this.repositoryName, 'grc');
-  }
-
-  private _handleAsset(assetConfig: CodeInitializationProps): CfnRepository.CodeProperty {
-    const codeCommitPrincipal = new iam.ServicePrincipal('codecommit.amazonaws.com');
-    assetConfig.asset.grantRead(codeCommitPrincipal);
-
-    return {
-      branchName: assetConfig.branchName ? assetConfig.branchName : 'main',
-      s3: {
-        bucket: assetConfig.asset.s3BucketName,
-        key: assetConfig.asset.s3ObjectKey,
-      },
-    };
   }
 
   /**

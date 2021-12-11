@@ -17,7 +17,7 @@
     "Repo02AC86CF": {
       "Type": "AWS::CodeCommit::Repository",
       "Properties": {
-        "RepositoryName": "aws-cdk-codecommit-events",
+        "RepositoryName": "aws-cdk-codecommit-assets",
         "Code": {
           "BranchName": "main",
           "S3": {

@@ -1,10 +1,11 @@
+import { readFileSync } from 'fs';
 import '@aws-cdk/assert-internal/jest';
 import { join } from 'path';
 import { Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import { Asset } from '@aws-cdk/aws-s3-assets';
-import { Stack } from '@aws-cdk/core';
+import { App, Stack } from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import { Repository, RepositoryProps } from '../lib';
-
 
 describe('codecommit', () => {
   describe('CodeCommit Repositories', () => {
@@ -71,14 +72,21 @@ describe('codecommit', () => {
 
     test('can be setup with asset deployment', () => {
       // GIVEN
-      const stack = new Stack();
+      const app = new App({
+        context: {
+          [cxapi.DISABLE_ASSET_STAGING_CONTEXT]: 'true',
+        },
+      });
+      const stack = new Stack(app, 'MyStack');
+
+      const ASSET_DIR = join(__dirname, 'asset-test');
 
       // WHEN
       const readmeAsset = new Asset(stack, 'ReadmeAsset', {
-        path: join(__dirname, '../README.md'),
+        path: ASSET_DIR,
       });
 
-      const repo = new Repository(stack, 'Repository', {
+      /*const repo = */new Repository(stack, 'Repository', {
         repositoryName: 'MyRepositoryName',
         description: 'Some description.', // optional property
         code: { // optional property
@@ -88,7 +96,60 @@ describe('codecommit', () => {
       });
 
       // THEN
-      expect(stack.resolve(repo.repositoryName)).toEqual('MyRepositoryName');
+      const entry = stack.node.metadataEntry.find(m => m.type === 'aws:cdk:asset');
+      expect(entry).toBeTruthy();
+
+      // verify that now the template contains parameters for this asset
+      const session = app.synth();
+      const template = JSON.parse(readFileSync(join(session.directory, 'MyStack.template.json'), { encoding: 'utf-8' }));
+
+      const s3BucketParameter = 'AssetParameters69f18ddee6c66a02ca55f943a62347dc512721463206d1947f2e853bf581cc69S3Bucket09136F76';
+
+      expect(template.Resources.Repository22E53BBD.Properties.Code.BranchName).toEqual('main');
+      expect(template.Resources.Repository22E53BBD.Properties.Code.S3.Bucket.Ref).toEqual(s3BucketParameter);
+      expect(template.Resources.Repository22E53BBD.Properties.Code.S3.Key).toEqual({
+        'Fn::Join': [
+          '',
+          [
+            {
+              'Fn::Select': [
+                0,
+                {
+                  'Fn::Split': [
+                    '||',
+                    {
+                      Ref: 'AssetParameters69f18ddee6c66a02ca55f943a62347dc512721463206d1947f2e853bf581cc69S3VersionKeyDDBE6AA5',
+                    },
+                  ],
+                },
+              ],
+            },
+            {
+              'Fn::Select': [
+                1,
+                {
+                  'Fn::Split': [
+                    '||',
+                    {
+                      Ref: 'AssetParameters69f18ddee6c66a02ca55f943a62347dc512721463206d1947f2e853bf581cc69S3VersionKeyDDBE6AA5',
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        ],
+      });
+
+      expect(stack.resolve(entry!.data)).toEqual({
+        path: ASSET_DIR,
+        id: '69f18ddee6c66a02ca55f943a62347dc512721463206d1947f2e853bf581cc69',
+        packaging: 'zip',
+        sourceHash: '69f18ddee6c66a02ca55f943a62347dc512721463206d1947f2e853bf581cc69',
+        s3BucketParameter,
+        s3KeyParameter: 'AssetParameters69f18ddee6c66a02ca55f943a62347dc512721463206d1947f2e853bf581cc69S3VersionKeyDDBE6AA5',
+        artifactHashParameter: 'AssetParameters69f18ddee6c66a02ca55f943a62347dc512721463206d1947f2e853bf581cc69ArtifactHashE2BB9A05',
+      });
     });
 
     /**
