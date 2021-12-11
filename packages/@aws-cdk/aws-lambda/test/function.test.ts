@@ -2270,6 +2270,30 @@ describe('function', () => {
     });
     expect(fn.architecture?.name).toEqual('arm64');
   });
+
+  test('Error when function name is longer than 140 chars', ()=>{
+    const stack = new cdk.Stack();
+    expect(() => new lambda.Function(stack, 'MyFunction', {
+      code: lambda.Code.fromInline('foo'),
+      runtime: lambda.Runtime.NODEJS_12_X,
+      handler: 'index.handler',
+      functionName: 'a'.repeat(141),
+    })).toThrow(/Function name can not be longer than 140 characters./);
+  });
+
+  test('Error when function name contains invalid characters', ()=>{
+    const stack = new cdk.Stack();
+    [' ', '\n', '\r', '[', ']', '<', '>', '$'].forEach(invalidChar=>{
+      expect(()=>{
+        new lambda.Function(stack, `foo${invalidChar}`, {
+          code: new lambda.InlineCode('foo'),
+          handler: 'index.handler',
+          runtime: lambda.Runtime.NODEJS_10_X,
+          functionName: `foo${invalidChar}`,
+        });
+      }).toThrow(/Function name can contain only letters, numbers, hyphens, or underscores with no spaces./);
+    });
+  });
 });
 
 function newTestLambda(scope: constructs.Construct) {
