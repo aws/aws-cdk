@@ -1,4 +1,5 @@
-import { Template } from '@aws-cdk/assertions';
+import { SynthUtils } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import * as cdk from '@aws-cdk/core';
 import * as iam from '../lib';
 
@@ -24,7 +25,7 @@ describe('automatic cross-stack references', () => {
     //
 
     // THEN
-    Template.fromStack(stackWithUser).templateMatches({
+    expect(stackWithUser).toMatchTemplate({
       Resources: {
         User00B015A1: {
           Type: 'AWS::IAM::User',
@@ -34,7 +35,7 @@ describe('automatic cross-stack references', () => {
         },
       },
     });
-    Template.fromStack(stackWithGroup).templateMatches({
+    expect(stackWithGroup).toMatchTemplate({
       Outputs: {
         ExportsOutputRefGroupC77FDACD8CF7DD5B: {
           Value: { Ref: 'GroupC77FDACD' },
@@ -58,6 +59,6 @@ describe('automatic cross-stack references', () => {
     group.addUser(user);
 
     // THEN
-    expect(() => Template.fromStack(stack1)).toThrow(/Cannot reference across apps/);
+    expect(() => SynthUtils.synthesize(stack1)).toThrow(/Cannot reference across apps/);
   });
 });

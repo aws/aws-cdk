@@ -9,10 +9,6 @@ package_name() {
     node -pe "require('$1/package.json').name"
 }
 
-package_name_and_dist_tag() {
-    node -pe "const pkg = require('$1/package.json'); pkg.name + '@' + pkg.publishConfig.tag"
-}
-
 # Determine whether an NPM package exists on NPM
 #
 # Doesn't use 'npm view' as that is slow. Direct curl'ing npmjs is better
@@ -48,7 +44,6 @@ dirs_for_existing_pkgs() {
 }
 
 export -f package_name
-export -f package_name_and_dist_tag
 export -f package_exists_on_npm
 export -f dirs_for_existing_pkgs
 
@@ -64,8 +59,9 @@ if ! ${SKIP_DOWNLOAD:-false}; then
     echo "  Current version is $version." >&2
 
     if ! package_exists_on_npm aws-cdk $version; then
-        echo "  Version $version does not exist in npm. Falling back to package dist tags" >&2
-        existing_names=$(echo "$existing_pkg_dirs" | xargs -n1 -P4 -I {} bash -c 'package_name_and_dist_tag "$@"' _ {})
+        major_version=$(echo "$version" | sed -e 's/\..*//g')
+        echo "  Version $version does not exist in npm. Falling back to package major version ${major_version}" >&2
+        existing_names=$(echo "$existing_names" | sed -e "s/$/@$major_version/")
     else
         echo "Using version '$version' as the baseline..."
         existing_names=$(echo "$existing_names" | sed -e "s/$/@$version/")

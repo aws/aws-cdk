@@ -119,7 +119,8 @@
                 "kinesis:GetShardIterator",
                 "kinesis:ListShards",
                 "kinesis:SubscribeToShard",
-                "kinesis:DescribeStream"
+                "kinesis:DescribeStream",
+                "kinesis:ListStreams"
               ],
               "Effect": "Allow",
               "Resource": {

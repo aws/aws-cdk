@@ -1,4 +1,5 @@
 import * as path from 'path';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { CloudAssembly } from '../lib';
 
 const FIXTURES = path.join(__dirname, 'fixtures');
@@ -105,7 +106,7 @@ test('fails for invalid dependencies', () => {
   expect(() => new CloudAssembly(path.join(FIXTURES, 'invalid-depends'))).toThrow('Artifact StackC depends on non-existing artifact StackX');
 });
 
-test('stack artifacts can specify an explicit stack name that is different from the artifact id', () => {
+testDeprecated('stack artifacts can specify an explicit stack name that is different from the artifact id', () => {
   const assembly = new CloudAssembly(path.join(FIXTURES, 'explicit-stack-name'));
 
   expect(assembly.getStackByName('TheStackName').stackName).toStrictEqual('TheStackName');

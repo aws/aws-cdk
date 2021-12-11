@@ -5,7 +5,7 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
-import { ArnComponents, Duration, FeatureFlags, IResource, Lazy, RemovalPolicy, Resource, Stack, Token, Tokenization } from '@aws-cdk/core';
+import { ArnComponents, ArnFormat, Duration, FeatureFlags, IResource, Lazy, RemovalPolicy, Resource, Stack, Token, Tokenization } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { DatabaseSecret } from './database-secret';
@@ -190,7 +190,7 @@ export abstract class DatabaseInstanceBase extends Resource implements IDatabase
     const commonAnComponents: ArnComponents = {
       service: 'rds',
       resource: 'db',
-      sep: ':',
+      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
     };
     const localArn = Stack.of(this).formatArn({
       ...commonAnComponents,
@@ -360,6 +360,13 @@ export interface DatabaseInstanceNewProps {
   readonly port?: number;
 
   /**
+   * The DB parameter group to associate with the instance.
+   *
+   * @default - no parameter group
+   */
+  readonly parameterGroup?: IParameterGroup;
+
+  /**
    * The option group to associate with the instance.
    *
    * @default - no option group
@@ -380,7 +387,7 @@ export interface DatabaseInstanceNewProps {
    * When creating a read replica, you must enable automatic backups on the source
    * database instance by setting the backup retention to a value other than zero.
    *
-   * @default Duration.days(1)
+   * @default - Duration.days(1) for source instances, disabled for read replicas
    */
   readonly backupRetention?: Duration;
 
@@ -576,7 +583,6 @@ export interface DatabaseInstanceNewProps {
 
   /**
    * Role that will be associated with this DB instance to enable S3 export.
-   * This feature is only supported by the Microsoft SQL Server and Oracle engines.
    *
    * This property must not be used if `s3ExportBuckets` is used.
    *
@@ -591,7 +597,6 @@ export interface DatabaseInstanceNewProps {
 
   /**
    * S3 buckets that you want to load data into.
-   * This feature is only supported by the Microsoft SQL Server and Oracle engines.
    *
    * This property must not be used if `s3ExportRole` is used.
    *
@@ -711,6 +716,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
       ? props.instanceIdentifier?.toLowerCase()
       : props.instanceIdentifier;
 
+    const instanceParameterGroupConfig = props.parameterGroup?.bindToInstance({});
     this.newCfnProps = {
       autoMinorVersionUpgrade: props.autoMinorVersionUpgrade,
       availabilityZone: props.multiAz ? undefined : props.availabilityZone,
@@ -734,6 +740,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
       monitoringInterval: props.monitoringInterval?.toSeconds(),
       monitoringRoleArn: monitoringRole?.roleArn,
       multiAz: props.multiAz,
+      dbParameterGroupName: instanceParameterGroupConfig?.parameterGroupName,
       optionGroupName: props.optionGroup?.optionGroupName,
       performanceInsightsKmsKeyId: props.performanceInsightEncryptionKey?.keyArn,
       performanceInsightsRetentionPeriod: enablePerformanceInsights
@@ -815,13 +822,6 @@ export interface DatabaseInstanceSourceProps extends DatabaseInstanceNewProps {
    * @default - no name
    */
   readonly databaseName?: string;
-
-  /**
-   * The DB parameter group to associate with the instance.
-   *
-   * @default - no parameter group
-   */
-  readonly parameterGroup?: IParameterGroup;
 }
 
 /**
@@ -847,7 +847,10 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
     this.multiUserRotationApplication = props.engine.multiUserRotationApplication;
     this.engine = props.engine;
 
-    let { s3ImportRole, s3ExportRole } = setupS3ImportExport(this, props, true);
+    const engineType = props.engine.engineType;
+    // only Oracle and SQL Server require the import and export Roles to be the same
+    const combineRoles = engineType.startsWith('oracle-') || engineType.startsWith('sqlserver-');
+    let { s3ImportRole, s3ExportRole } = setupS3ImportExport(this, props, combineRoles);
     const engineConfig = props.engine.bindToInstance(this, {
       ...props,
       s3ImportRole,
@@ -866,15 +869,14 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
       if (!engineFeatures?.s3Export) {
         throw new Error(`Engine '${engineDescription(props.engine)}' does not support S3 export`);
       }
-      // Only add the export role and feature if they are different from the import role & feature.
-      if (s3ImportRole !== s3ExportRole || engineFeatures.s3Import !== engineFeatures?.s3Export) {
+      // only add the export feature if it's different from the import feature
+      if (engineFeatures.s3Import !== engineFeatures?.s3Export) {
         instanceAssociatedRoles.push({ roleArn: s3ExportRole.roleArn, featureName: engineFeatures?.s3Export });
       }
     }
 
     this.instanceType = props.instanceType ?? ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.LARGE);
 
-    const instanceParameterGroupConfig = props.parameterGroup?.bindToInstance({});
     this.sourceCfnProps = {
       ...this.newCfnProps,
       associatedRoles: instanceAssociatedRoles.length > 0 ? instanceAssociatedRoles : undefined,
@@ -882,8 +884,7 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
       allocatedStorage: props.allocatedStorage?.toString() ?? '100',
       allowMajorVersionUpgrade: props.allowMajorVersionUpgrade,
       dbName: props.databaseName,
-      dbParameterGroupName: instanceParameterGroupConfig?.parameterGroupName,
-      engine: props.engine.engineType,
+      engine: engineType,
       engineVersion: props.engine.engineVersion?.fullVersion,
       licenseModel: props.licenseModel,
       timezone: props.timezone,
@@ -1141,6 +1142,12 @@ export class DatabaseInstanceReadReplica extends DatabaseInstanceNew implements 
 
   constructor(scope: Construct, id: string, props: DatabaseInstanceReadReplicaProps) {
     super(scope, id, props);
+
+    if (props.sourceDatabaseInstance.engine
+        && !props.sourceDatabaseInstance.engine.supportsReadReplicaBackups
+        && props.backupRetention) {
+      throw new Error(`Cannot set 'backupRetention', as engine '${engineDescription(props.sourceDatabaseInstance.engine)}' does not support automatic backups for read replicas`);
+    }
 
     const instance = new CfnDBInstance(this, 'Resource', {
       ...this.newCfnProps,

@@ -19,8 +19,10 @@
  * as shown in the following example:
  *
  * ```ts
- * const cfnBucket = bucket.node.findChild('Resource') as cdk.CfnResource;
- * cfnBucket.applyRemovalPolicy(cdk.RemovalPolicy.DESTROY);
+ * declare const bucket: s3.Bucket;
+ *
+ * const cfnBucket = bucket.node.findChild('Resource') as CfnResource;
+ * cfnBucket.applyRemovalPolicy(RemovalPolicy.DESTROY);
  * ```
  */
 export enum RemovalPolicy {

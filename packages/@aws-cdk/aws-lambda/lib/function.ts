@@ -5,8 +5,9 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
 import * as sqs from '@aws-cdk/aws-sqs';
-import { Annotations, CfnResource, Duration, Fn, Lazy, Names, Stack } from '@aws-cdk/core';
+import { Annotations, ArnFormat, CfnResource, Duration, Fn, Lazy, Names, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
+import { Architecture } from './architecture';
 import { Code, CodeConfig } from './code';
 import { ICodeSigningConfig } from './code-signing-config';
 import { EventInvokeConfigOptions } from './event-invoke-config';
@@ -219,6 +220,10 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    * Specify the version of CloudWatch Lambda insights to use for monitoring
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Lambda-Insights.html
    *
+   * When used with `DockerImageFunction` or `DockerImageCode`, the Docker image should have
+   * the Lambda insights agent installed.
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Lambda-Insights-Getting-Started-docker.html
+   *
    * @default - No Lambda Insights
    */
   readonly insightsVersion?: LambdaInsightsVersion;
@@ -310,6 +315,19 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    * @default - Not Sign the Code
    */
   readonly codeSigningConfig?: ICodeSigningConfig;
+
+  /**
+   * DEPRECATED
+   * @default [Architecture.X86_64]
+   * @deprecated use `architecture`
+   */
+  readonly architectures?: Architecture[];
+
+  /**
+   * The system architectures compatible with this lambda function.
+   * @default Architecture.X86_64
+   */
+  readonly architecture?: Architecture;
 }
 
 export interface FunctionProps extends FunctionOptions {
@@ -555,7 +573,18 @@ export class Function extends FunctionBase {
    */
   public readonly deadLetterQueue?: sqs.IQueue;
 
+  /**
+   * The architecture of this Lambda Function (this is an optional attribute and defaults to X86_64).
+   */
+  public readonly architecture?: Architecture;
+
+  /**
+   * The timeout configured for this lambda.
+   */
+  public readonly timeout?: Duration;
+
   public readonly permissionsNode = this.node;
+
 
   protected readonly canCreatePermissions = true;
 
@@ -648,6 +677,14 @@ export class Function extends FunctionBase {
       }];
     }
 
+    if (props.architecture && props.architectures !== undefined) {
+      throw new Error('Either architecture or architectures must be specified but not both.');
+    }
+    if (props.architectures && props.architectures.length > 1) {
+      throw new Error('Only one architecture must be specified.');
+    }
+    const architecture = props.architecture ?? (props.architectures && props.architectures[0]);
+
     const resource: CfnFunction = new CfnFunction(this, 'Resource', {
       functionName: this.physicalName,
       description: props.description,
@@ -680,6 +717,7 @@ export class Function extends FunctionBase {
       kmsKeyArn: props.environmentEncryption?.keyArn,
       fileSystemConfigs,
       codeSigningConfigArn: props.codeSigningConfig?.codeSigningConfigArn,
+      architectures: architecture ? [architecture.name] : undefined,
     });
 
     resource.node.addDependency(this.role);
@@ -689,10 +727,13 @@ export class Function extends FunctionBase {
       service: 'lambda',
       resource: 'function',
       resourceName: this.physicalName,
-      sep: ':',
+      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
     });
 
     this.runtime = props.runtime;
+    this.timeout = props.timeout;
+
+    this.architecture = props.architecture;
 
     if (props.layers) {
       if (props.runtime === Runtime.FROM_IMAGE) {
@@ -759,9 +800,7 @@ export class Function extends FunctionBase {
     }
 
     // Configure Lambda insights
-    if (props.insightsVersion !== undefined) {
-      this.configureLambdaInsights(props.insightsVersion);
-    }
+    this.configureLambdaInsights(props);
   }
 
   /**
@@ -792,6 +831,11 @@ export class Function extends FunctionBase {
         const runtimes = layer.compatibleRuntimes.map(runtime => runtime.name).join(', ');
         throw new Error(`This lambda function uses a runtime that is incompatible with this layer (${this.runtime.name} is not in [${runtimes}])`);
       }
+
+      // Currently no validations for compatible architectures since Lambda service
+      // allows layers configured with one architecture to be used with a Lambda function
+      // from another architecture.
+
       this.layers.push(layer);
     }
   }
@@ -884,8 +928,15 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
    *
    * https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Lambda-Insights-extension-versions.html
    */
-  private configureLambdaInsights(insightsVersion: LambdaInsightsVersion): void {
-    this.addLayers(LayerVersion.fromLayerVersionArn(this, 'LambdaInsightsLayer', insightsVersion.layerVersionArn));
+  private configureLambdaInsights(props: FunctionProps): void {
+    if (props.insightsVersion === undefined) {
+      return;
+    }
+    if (props.runtime !== Runtime.FROM_IMAGE) {
+      // Layers cannot be added to Lambda container images. The image should have the insights agent installed.
+      // See https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Lambda-Insights-Getting-Started-docker.html
+      this.addLayers(LayerVersion.fromLayerVersionArn(this, 'LambdaInsightsLayer', props.insightsVersion.layerVersionArn));
+    }
     this.role?.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('CloudWatchLambdaInsightsExecutionRolePolicy'));
   }
 

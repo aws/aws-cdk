@@ -1,5 +1,5 @@
 import { ContainerDefinition, Secret } from '../container-definition';
-import { LogDriver, LogDriverConfig } from '../index';
+import { LogDriver, LogDriverConfig } from './log-driver';
 import { removeEmpty, renderLogDriverSecretOptions } from './utils';
 
 // v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.

@@ -28,7 +28,14 @@
         ]
       }
     },
-    "projectReferences": true
+    "projectReferences": true,
+    "metadata": {
+      "jsii": {
+        "rosetta": {
+          "strict": true
+        }
+      }
+    }
   },
   "repository": {
     "type": "git",
@@ -71,6 +78,7 @@
     "@aws-cdk/aws-acmpca": "0.0.0",
     "@aws-cdk/aws-amazonmq": "0.0.0",
     "@aws-cdk/aws-amplify": "0.0.0",
+    "@aws-cdk/aws-amplifyuibuilder": "0.0.0",
     "@aws-cdk/aws-apigateway": "0.0.0",
     "@aws-cdk/aws-apigatewayv2": "0.0.0",
     "@aws-cdk/aws-appconfig": "0.0.0",
@@ -138,6 +146,7 @@
     "@aws-cdk/aws-emrcontainers": "0.0.0",
     "@aws-cdk/aws-events": "0.0.0",
     "@aws-cdk/aws-eventschemas": "0.0.0",
+    "@aws-cdk/aws-evidently": "0.0.0",
     "@aws-cdk/aws-finspace": "0.0.0",
     "@aws-cdk/aws-fis": "0.0.0",
     "@aws-cdk/aws-fms": "0.0.0",
@@ -172,6 +181,7 @@
     "@aws-cdk/aws-lakeformation": "0.0.0",
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/aws-licensemanager": "0.0.0",
+    "@aws-cdk/aws-lightsail": "0.0.0",
     "@aws-cdk/aws-location": "0.0.0",
     "@aws-cdk/aws-logs": "0.0.0",
     "@aws-cdk/aws-lookoutequipment": "0.0.0",
@@ -194,6 +204,7 @@
     "@aws-cdk/aws-opensearchservice": "0.0.0",
     "@aws-cdk/aws-opsworks": "0.0.0",
     "@aws-cdk/aws-opsworkscm": "0.0.0",
+    "@aws-cdk/aws-panorama": "0.0.0",
     "@aws-cdk/aws-pinpoint": "0.0.0",
     "@aws-cdk/aws-pinpointemail": "0.0.0",
     "@aws-cdk/aws-qldb": "0.0.0",
@@ -201,12 +212,16 @@
     "@aws-cdk/aws-ram": "0.0.0",
     "@aws-cdk/aws-rds": "0.0.0",
     "@aws-cdk/aws-redshift": "0.0.0",
+    "@aws-cdk/aws-refactorspaces": "0.0.0",
+    "@aws-cdk/aws-rekognition": "0.0.0",
+    "@aws-cdk/aws-resiliencehub": "0.0.0",
     "@aws-cdk/aws-resourcegroups": "0.0.0",
     "@aws-cdk/aws-robomaker": "0.0.0",
     "@aws-cdk/aws-route53": "0.0.0",
     "@aws-cdk/aws-route53recoverycontrol": "0.0.0",
     "@aws-cdk/aws-route53recoveryreadiness": "0.0.0",
     "@aws-cdk/aws-route53resolver": "0.0.0",
+    "@aws-cdk/aws-rum": "0.0.0",
     "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/aws-s3objectlambda": "0.0.0",
     "@aws-cdk/aws-s3outposts": "0.0.0",
@@ -233,6 +248,7 @@
     "@aws-cdk/aws-waf": "0.0.0",
     "@aws-cdk/aws-wafregional": "0.0.0",
     "@aws-cdk/aws-wafv2": "0.0.0",
+    "@aws-cdk/aws-wisdom": "0.0.0",
     "@aws-cdk/aws-workspaces": "0.0.0",
     "@aws-cdk/aws-xray": "0.0.0",
     "@aws-cdk/core": "0.0.0",
@@ -245,6 +261,7 @@
     "@aws-cdk/aws-acmpca": "0.0.0",
     "@aws-cdk/aws-amazonmq": "0.0.0",
     "@aws-cdk/aws-amplify": "0.0.0",
+    "@aws-cdk/aws-amplifyuibuilder": "0.0.0",
     "@aws-cdk/aws-apigateway": "0.0.0",
     "@aws-cdk/aws-apigatewayv2": "0.0.0",
     "@aws-cdk/aws-appconfig": "0.0.0",
@@ -312,6 +329,7 @@
     "@aws-cdk/aws-emrcontainers": "0.0.0",
     "@aws-cdk/aws-events": "0.0.0",
     "@aws-cdk/aws-eventschemas": "0.0.0",
+    "@aws-cdk/aws-evidently": "0.0.0",
     "@aws-cdk/aws-finspace": "0.0.0",
     "@aws-cdk/aws-fis": "0.0.0",
     "@aws-cdk/aws-fms": "0.0.0",
@@ -346,6 +364,7 @@
     "@aws-cdk/aws-lakeformation": "0.0.0",
     "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/aws-licensemanager": "0.0.0",
+    "@aws-cdk/aws-lightsail": "0.0.0",
     "@aws-cdk/aws-location": "0.0.0",
     "@aws-cdk/aws-logs": "0.0.0",
     "@aws-cdk/aws-lookoutequipment": "0.0.0",
@@ -368,6 +387,7 @@
     "@aws-cdk/aws-opensearchservice": "0.0.0",
     "@aws-cdk/aws-opsworks": "0.0.0",
     "@aws-cdk/aws-opsworkscm": "0.0.0",
+    "@aws-cdk/aws-panorama": "0.0.0",
     "@aws-cdk/aws-pinpoint": "0.0.0",
     "@aws-cdk/aws-pinpointemail": "0.0.0",
     "@aws-cdk/aws-qldb": "0.0.0",
@@ -375,12 +395,16 @@
     "@aws-cdk/aws-ram": "0.0.0",
     "@aws-cdk/aws-rds": "0.0.0",
     "@aws-cdk/aws-redshift": "0.0.0",
+    "@aws-cdk/aws-refactorspaces": "0.0.0",
+    "@aws-cdk/aws-rekognition": "0.0.0",
+    "@aws-cdk/aws-resiliencehub": "0.0.0",
     "@aws-cdk/aws-resourcegroups": "0.0.0",
     "@aws-cdk/aws-robomaker": "0.0.0",
     "@aws-cdk/aws-route53": "0.0.0",
     "@aws-cdk/aws-route53recoverycontrol": "0.0.0",
     "@aws-cdk/aws-route53recoveryreadiness": "0.0.0",
     "@aws-cdk/aws-route53resolver": "0.0.0",
+    "@aws-cdk/aws-rum": "0.0.0",
     "@aws-cdk/aws-s3": "0.0.0",
     "@aws-cdk/aws-s3objectlambda": "0.0.0",
     "@aws-cdk/aws-s3outposts": "0.0.0",
@@ -407,19 +431,20 @@
     "@aws-cdk/aws-waf": "0.0.0",
     "@aws-cdk/aws-wafregional": "0.0.0",
     "@aws-cdk/aws-wafv2": "0.0.0",
+    "@aws-cdk/aws-wisdom": "0.0.0",
     "@aws-cdk/aws-workspaces": "0.0.0",
     "@aws-cdk/aws-xray": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "constructs": "^3.3.69"
   },
   "devDependencies": {
-    "@types/jest": "^26.0.24",
-    "cdk-build-tools": "0.0.0",
-    "cdk-integ-tools": "0.0.0",
-    "jest": "^26.6.3",
-    "pkglint": "0.0.0",
-    "ts-jest": "^26.5.6",
-    "@aws-cdk/assert-internal": "0.0.0"
+    "@aws-cdk/assert-internal": "0.0.0",
+    "@aws-cdk/cdk-build-tools": "0.0.0",
+    "@aws-cdk/cdk-integ-tools": "0.0.0",
+    "@aws-cdk/pkglint": "0.0.0",
+    "@types/jest": "^27.0.3",
+    "jest": "^27.4.3",
+    "ts-jest": "^27.1.1"
   },
   "bundledDependencies": [
     "yaml"

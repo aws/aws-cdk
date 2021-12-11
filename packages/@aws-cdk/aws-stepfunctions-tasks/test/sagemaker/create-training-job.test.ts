@@ -1,4 +1,3 @@
-import '@aws-cdk/assert-internal/jest';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
@@ -142,6 +141,7 @@ test('create complex training job', () => {
         },
       ],
     },
+    enableNetworkIsolation: true,
     hyperparameters: {
       lr: '0.1',
     },
@@ -221,6 +221,7 @@ test('create complex training job', () => {
           { Name: 'mymetric', Regex: 'regex_pattern' },
         ],
       },
+      EnableNetworkIsolation: true,
       HyperParameters: {
         lr: '0.1',
       },

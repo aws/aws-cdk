@@ -2,7 +2,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import {
   App, App as Root, CfnCondition,
   CfnDeletionPolicy, CfnResource, Construct,
-  Fn, RemovalPolicy, Resource, Stack,
+  Fn, IResource, RemovalPolicy, Resource, Stack,
 } from '../lib';
 import { synthesize } from '../lib/private/synthesis';
 import { toCloudFormation } from './util';
@@ -316,6 +316,33 @@ describe('resource', () => {
       },
     });
 
+  });
+
+  test('applyRemovalPolicy available for interface resources', () => {
+    class Child extends Resource {
+      constructor(scope: Construct, id: string) {
+        super(scope, id);
+
+        new CfnResource(this, 'Resource', {
+          type: 'ChildResourceType',
+        });
+      }
+    }
+
+    const stack = new Stack();
+    const child: IResource = new Child(stack, 'Child');
+
+    child.applyRemovalPolicy(RemovalPolicy.RETAIN);
+
+    expect(toCloudFormation(stack)).toEqual({
+      Resources: {
+        ChildDAB30558: {
+          DeletionPolicy: 'Retain',
+          Type: 'ChildResourceType',
+          UpdateReplacePolicy: 'Retain',
+        },
+      },
+    });
   });
 
   test('addDependency adds all dependencyElements of dependent constructs', () => {

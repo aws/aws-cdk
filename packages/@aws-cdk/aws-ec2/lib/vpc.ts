@@ -79,6 +79,12 @@ export interface IVpc extends IResource {
   readonly vpcId: string;
 
   /**
+   * ARN for this VPC
+   * @attribute
+   */
+  readonly vpcArn: string;
+
+  /**
    * CIDR range for this VPC
    *
    * @attribute
@@ -947,6 +953,13 @@ export interface VpcProps {
    * @default - No flow logs.
    */
   readonly flowLogs?: { [id: string]: FlowLogOptions }
+
+  /**
+   * The VPC name.
+   *
+   * @default this.node.path
+   */
+  readonly vpcName?: string;
 }
 
 /**
@@ -1007,6 +1020,13 @@ export interface SubnetConfiguration {
    * @default false
    */
   readonly reserved?: boolean;
+
+  /**
+   * Controls if a public IP is associated to an instance at launch
+   *
+   * @default true in Subnet.Public, false in Subnet.Private or Subnet.Isolated.
+   */
+  readonly mapPublicIpOnLaunch?: boolean;
 }
 
 /**
@@ -1123,9 +1143,15 @@ export class Vpc extends VpcBase {
       filter.isDefault = options.isDefault ? 'true' : 'false';
     }
 
+    const overrides: {[key: string]: string} = {};
+    if (options.region) {
+      overrides.region = options.region;
+    }
+
     const attributes: cxapi.VpcContextResponse = ContextProvider.getValue(scope, {
       provider: cxschema.ContextProvider.VPC_PROVIDER,
       props: {
+        ...overrides,
         filter,
         returnAsymmetricSubnets: true,
         subnetGroupNameTag: options.subnetGroupNameTag,
@@ -1279,7 +1305,7 @@ export class Vpc extends VpcBase {
     this.vpcDefaultSecurityGroup = this.resource.attrDefaultSecurityGroup;
     this.vpcIpv6CidrBlocks = this.resource.attrIpv6CidrBlocks;
 
-    Tags.of(this).add(NAME_TAG, this.node.path);
+    Tags.of(this).add(NAME_TAG, props.vpcName || this.node.path);
 
     this.availabilityZones = stack.availabilityZones;
 
@@ -1440,12 +1466,23 @@ export class Vpc extends VpcBase {
         return;
       }
 
+      // mapPublicIpOnLaunch true in Subnet.Public, false in Subnet.Private or Subnet.Isolated.
+      let mapPublicIpOnLaunch = false;
+      if (subnetConfig.subnetType !== SubnetType.PUBLIC && subnetConfig.mapPublicIpOnLaunch !== undefined) {
+        throw new Error(`${subnetConfig.subnetType} subnet cannot include mapPublicIpOnLaunch parameter`);
+      }
+      if (subnetConfig.subnetType === SubnetType.PUBLIC) {
+        mapPublicIpOnLaunch = (subnetConfig.mapPublicIpOnLaunch !== undefined)
+          ? subnetConfig.mapPublicIpOnLaunch
+          : true;
+      }
+
       const name = subnetId(subnetConfig.name, index);
       const subnetProps: SubnetProps = {
         availabilityZone: zone,
         vpcId: this.vpcId,
         cidrBlock: this.networkBuilder.addSubnet(cidrMask),
-        mapPublicIpOnLaunch: (subnetConfig.subnetType === SubnetType.PUBLIC),
+        mapPublicIpOnLaunch: mapPublicIpOnLaunch,
       };
 
       let subnet: Subnet;
@@ -1828,11 +1865,11 @@ export class PublicSubnet extends Subnet implements IPublicSubnet {
    * Also adds the EIP for the managed NAT.
    * @returns A ref to the the NAT Gateway ID
    */
-  public addNatGateway() {
+  public addNatGateway(eipAllocationId?: string) {
     // Create a NAT Gateway in this public subnet
     const ngw = new CfnNatGateway(this, 'NATGateway', {
       subnetId: this.subnetId,
-      allocationId: new CfnEIP(this, 'EIP', {
+      allocationId: eipAllocationId ?? new CfnEIP(this, 'EIP', {
         domain: 'vpc',
       }).attrAllocationId,
     });

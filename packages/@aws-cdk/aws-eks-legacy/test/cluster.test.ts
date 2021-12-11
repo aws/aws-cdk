@@ -1,6 +1,7 @@
 import '@aws-cdk/assert-internal/jest';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
+import { describeDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import * as eks from '../lib';
 import { spotInterruptHandler } from '../lib/spot-interrupt-handler';
@@ -8,7 +9,7 @@ import { testFixture, testFixtureNoVpc } from './util';
 
 /* eslint-disable max-len */
 
-describe('cluster', () => {
+describeDeprecated('cluster', () => {
   test('a default cluster spans all subnets', () => {
     // GIVEN
     const { stack, vpc } = testFixture();

@@ -1,4 +1,4 @@
-import { Match, Template } from '@aws-cdk/assertions';
+import '@aws-cdk/assert-internal/jest';
 import { User } from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import { EventField, IRuleTarget, RuleTargetInput, Schedule } from '../lib';
@@ -17,11 +17,11 @@ describe('input', () => {
       rule.addTarget(new SomeTarget(RuleTargetInput.fromObject({ SomeObject: 'withAValue' })));
 
       // THEN
-      Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+      expect(stack).toHaveResourceLike('AWS::Events::Rule', {
         Targets: [
-          Match.objectLike({
+          {
             Input: '{"SomeObject":"withAValue"}',
-          }),
+          },
         ],
       });
 
@@ -41,9 +41,9 @@ describe('input', () => {
       })));
 
       // THEN
-      Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+      expect(stack).toHaveResourceLike('AWS::Events::Rule', {
         Targets: [
-          Match.objectLike({
+          {
             InputTransformer: {
               InputPathsMap: {
                 f1: '$',
@@ -59,7 +59,7 @@ describe('input', () => {
                 ],
               },
             },
-          }),
+          },
         ],
       });
 
@@ -80,9 +80,9 @@ describe('input', () => {
       })));
 
       // THEN
-      Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+      expect(stack).toHaveResourceLike('AWS::Events::Rule', {
         Targets: [
-          Match.objectLike({
+          {
             InputTransformer: {
               InputPathsMap: {
                 f1: '$',
@@ -98,7 +98,7 @@ describe('input', () => {
                 ],
               },
             },
-          }),
+          },
         ],
       });
 
@@ -119,9 +119,9 @@ describe('input', () => {
       })));
 
       // THEN
-      Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+      expect(stack).toHaveResourceLike('AWS::Events::Rule', {
         Targets: [
-          Match.objectLike({
+          {
             InputTransformer: {
               InputPathsMap: {
                 f1: '$',
@@ -137,7 +137,7 @@ describe('input', () => {
                 ],
               },
             },
-          }),
+          },
         ],
       });
 
@@ -158,9 +158,9 @@ describe('input', () => {
       })));
 
       // THEN
-      Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+      expect(stack).toHaveResourceLike('AWS::Events::Rule', {
         Targets: [
-          Match.objectLike({
+          {
             InputTransformer: {
               InputPathsMap: {
                 f1: '$',
@@ -176,7 +176,7 @@ describe('input', () => {
                 ],
               },
             },
-          }),
+          },
         ],
       });
 
@@ -197,9 +197,9 @@ describe('input', () => {
       })));
 
       // THEN
-      Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+      expect(stack).toHaveResourceLike('AWS::Events::Rule', {
         Targets: [
-          Match.objectLike({
+          {
             InputTransformer: {
               InputPathsMap: {
                 f1: '$',
@@ -215,7 +215,7 @@ describe('input', () => {
                 ],
               },
             },
-          }),
+          },
         ],
       });
 
@@ -234,9 +234,9 @@ describe('input', () => {
       rule.addTarget(new SomeTarget(RuleTargetInput.fromObject({ userArn: user.userArn })));
 
       // THEN
-      Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+      expect(stack).toHaveResourceLike('AWS::Events::Rule', {
         Targets: [
-          Match.objectLike({
+          {
             Input: {
               'Fn::Join': [
                 '',
@@ -252,7 +252,7 @@ describe('input', () => {
                 ],
               ],
             },
-          }),
+          },
         ],
       });
 
@@ -271,11 +271,11 @@ describe('input', () => {
       rule.addTarget(new SomeTarget(RuleTargetInput.fromMultilineText('I have\nmultiple lines')));
 
       // THEN
-      Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+      expect(stack).toHaveResourceLike('AWS::Events::Rule', {
         Targets: [
-          Match.objectLike({
+          {
             Input: '"I have"\n"multiple lines"',
-          }),
+          },
         ],
       });
 
@@ -293,11 +293,11 @@ describe('input', () => {
       rule.addTarget(new SomeTarget(RuleTargetInput.fromMultilineText('this is not\\na real newline'))),
 
       // THEN
-      Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+      expect(stack).toHaveResourceLike('AWS::Events::Rule', {
         Targets: [
-          Match.objectLike({
+          {
             Input: '"this is not\\\\na real newline"',
-          }),
+          },
         ],
       });
 
@@ -317,11 +317,11 @@ describe('input', () => {
       rule.addTarget(new SomeTarget(RuleTargetInput.fromText(`hello ${world}`)));
 
       // THEN
-      Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+      expect(stack).toHaveResourceLike('AWS::Events::Rule', {
         Targets: [
-          Match.objectLike({
+          {
             Input: '"hello world"',
-          }),
+          },
         ],
       });
 

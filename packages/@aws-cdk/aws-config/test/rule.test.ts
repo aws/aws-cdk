@@ -101,6 +101,9 @@ describe('rule', () => {
 
     expect(stack).toHaveResource('AWS::Lambda::Permission', {
       Principal: 'config.amazonaws.com',
+      SourceAccount: {
+        Ref: 'AWS::AccountId',
+      },
     });
 
     expect(stack).toHaveResource('AWS::IAM::Role', {

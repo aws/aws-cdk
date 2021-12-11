@@ -7,9 +7,9 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
+import { testFutureBehavior } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import { testFutureBehavior } from 'cdk-build-tools/lib/feature-flag';
 import * as rds from '../lib';
 
 let stack: cdk.Stack;
@@ -258,8 +258,8 @@ describe('instance', () => {
       }),
       credentials: rds.Credentials.fromUsername('syscdk'),
       vpc,
-      vpcPlacement: {
-        subnetType: ec2.SubnetType.PRIVATE,
+      vpcSubnets: {
+        subnetType: ec2.SubnetType.PRIVATE_WITH_NAT,
       },
     });
 
@@ -305,7 +305,7 @@ describe('instance', () => {
         snapshotIdentifier: 'my-snapshot',
         engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
         vpc,
-        credentials: rds.SnapshotCredentials.fromGeneratedPassword('admin', {
+        credentials: rds.SnapshotCredentials.fromGeneratedSecret('admin', {
           excludeCharacters: '"@/\\',
         }),
       });
@@ -313,7 +313,11 @@ describe('instance', () => {
       expect(stack).toHaveResourceLike('AWS::RDS::DBInstance', {
         MasterUsername: ABSENT,
         MasterUserPassword: {
-          'Fn::Join': ['', ['{{resolve:secretsmanager:', { Ref: 'InstanceSecret478E0A47' }, ':SecretString:password::}}']],
+          'Fn::Join': ['', [
+            '{{resolve:secretsmanager:',
+            { Ref: 'InstanceSecretB6DFA6BE8ee0a797cad8a68dbeb85f8698cdb5bb' },
+            ':SecretString:password::}}',
+          ]],
         },
       });
       expect(stack).toHaveResource('AWS::SecretsManager::Secret', {
@@ -736,6 +740,184 @@ describe('instance', () => {
     });
 
 
+  });
+
+  test('addRotationSingleUser()', () => {
+    // GIVEN
+    const instance = new rds.DatabaseInstance(stack, 'Database', {
+      engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_10 }),
+      vpc,
+    });
+
+    // WHEN
+    instance.addRotationSingleUser();
+
+    // THEN
+    expect(stack).toHaveResource('AWS::SecretsManager::RotationSchedule', {
+      SecretId: {
+        Ref: 'DatabaseSecretAttachmentE5D1B020',
+      },
+      RotationLambdaARN: {
+        'Fn::GetAtt': [
+          'DatabaseRotationSingleUser65F55654',
+          'Outputs.RotationLambdaARN',
+        ],
+      },
+      RotationRules: {
+        AutomaticallyAfterDays: 30,
+      },
+    });
+  });
+
+  test('addRotationMultiUser()', () => {
+    // GIVEN
+    const instance = new rds.DatabaseInstance(stack, 'Database', {
+      engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_10 }),
+      vpc,
+    });
+
+    // WHEN
+    const userSecret = new rds.DatabaseSecret(stack, 'UserSecret', { username: 'user' });
+    instance.addRotationMultiUser('user', { secret: userSecret.attach(instance) });
+
+    // THEN
+    expect(stack).toHaveResource('AWS::SecretsManager::RotationSchedule', {
+      SecretId: {
+        Ref: 'UserSecretAttachment16ACBE6D',
+      },
+      RotationLambdaARN: {
+        'Fn::GetAtt': [
+          'DatabaseuserECD1FB0C',
+          'Outputs.RotationLambdaARN',
+        ],
+      },
+      RotationRules: {
+        AutomaticallyAfterDays: 30,
+      },
+    });
+
+    expect(stack).toHaveResourceLike('AWS::Serverless::Application', {
+      Parameters: {
+        masterSecretArn: {
+          Ref: 'DatabaseSecretAttachmentE5D1B020',
+        },
+      },
+    });
+  });
+
+  test('addRotationSingleUser() with options', () => {
+    // GIVEN
+    const vpcWithIsolated = new ec2.Vpc(stack, 'Vpc', {
+      subnetConfiguration: [
+        { name: 'public', subnetType: ec2.SubnetType.PUBLIC },
+        { name: 'private', subnetType: ec2.SubnetType.PRIVATE_WITH_NAT },
+        { name: 'isolated', subnetType: ec2.SubnetType.PRIVATE_ISOLATED },
+      ],
+    });
+
+    // WHEN
+    // DB in isolated subnet (no internet connectivity)
+    const instance = new rds.DatabaseInstance(stack, 'Database', {
+      engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_10 }),
+      vpc: vpcWithIsolated,
+      vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_ISOLATED },
+    });
+
+    // Rotation in private subnet (internet via NAT)
+    instance.addRotationSingleUser({
+      automaticallyAfter: cdk.Duration.days(15),
+      excludeCharacters: '°_@',
+      vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_NAT },
+    });
+
+    // THEN
+    expect(stack).toHaveResource('AWS::SecretsManager::RotationSchedule', {
+      RotationRules: {
+        AutomaticallyAfterDays: 15,
+      },
+    });
+
+    expect(stack).toHaveResource('AWS::Serverless::Application', {
+      Parameters: {
+        endpoint: {
+          'Fn::Join': ['', [
+            'https://secretsmanager.',
+            { Ref: 'AWS::Region' },
+            '.',
+            { Ref: 'AWS::URLSuffix' },
+          ]],
+        },
+        functionName: 'DatabaseRotationSingleUser458A45BE',
+        vpcSubnetIds: {
+          'Fn::Join': ['', [
+            { Ref: 'VpcprivateSubnet1SubnetCEAD3716' },
+            ',',
+            { Ref: 'VpcprivateSubnet2Subnet2DE7549C' },
+          ]],
+        },
+        vpcSecurityGroupIds: {
+          'Fn::GetAtt': [
+            'DatabaseRotationSingleUserSecurityGroupAC6E0E73',
+            'GroupId',
+          ],
+        },
+        excludeCharacters: '°_@',
+      },
+    });
+  });
+
+
+  test('addRotationSingleUser() with VPC interface endpoint', () => {
+    // GIVEN
+    const vpcIsolatedOnly = new ec2.Vpc(stack, 'Vpc', { natGateways: 0 });
+
+    const endpoint = new ec2.InterfaceVpcEndpoint(stack, 'Endpoint', {
+      service: ec2.InterfaceVpcEndpointAwsService.SECRETS_MANAGER,
+      vpc: vpcIsolatedOnly,
+      subnets: { subnetType: ec2.SubnetType.PRIVATE_ISOLATED },
+    });
+
+    // WHEN
+    // DB in isolated subnet (no internet connectivity)
+    const instance = new rds.DatabaseInstance(stack, 'Database', {
+      engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_10 }),
+      vpc: vpcIsolatedOnly,
+      vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_ISOLATED },
+    });
+
+    // Rotation in isolated subnet with access to Secrets Manager API via endpoint
+    instance.addRotationSingleUser({ endpoint });
+
+    // THEN
+    expect(stack).toHaveResource('AWS::Serverless::Application', {
+      Parameters: {
+        endpoint: {
+          'Fn::Join': ['', [
+            'https://',
+            { Ref: 'EndpointEEF1FD8F' },
+            '.secretsmanager.',
+            { Ref: 'AWS::Region' },
+            '.',
+            { Ref: 'AWS::URLSuffix' },
+          ]],
+        },
+        functionName: 'DatabaseRotationSingleUser458A45BE',
+        vpcSubnetIds: {
+          'Fn::Join': ['', [
+            { Ref: 'VpcIsolatedSubnet1SubnetE48C5737' },
+            ',',
+            { Ref: 'VpcIsolatedSubnet2Subnet16364B91' },
+          ]],
+        },
+        vpcSecurityGroupIds: {
+          'Fn::GetAtt': [
+            'DatabaseRotationSingleUserSecurityGroupAC6E0E73',
+            'GroupId',
+          ],
+        },
+        excludeCharacters: " %+~`#$&*()|[]{}:;<>?!'/@\"\\",
+      },
+    });
   });
 
   test('throws when trying to add rotation to an instance without secret', () => {
@@ -1401,6 +1583,53 @@ describe('instance', () => {
     });
   });
 
+  test('throws with backupRetention on a read replica if engine does not support it', () => {
+    // GIVEN
+    const instanceType = ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.SMALL);
+    const backupRetention = cdk.Duration.days(5);
+    const source = new rds.DatabaseInstance(stack, 'Source', {
+      engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_13 }),
+      backupRetention,
+      instanceType,
+      vpc,
+    });
+
+    expect(() => {
+      new rds.DatabaseInstanceReadReplica(stack, 'Replica', {
+        sourceDatabaseInstance: source,
+        backupRetention,
+        instanceType,
+        vpc,
+      });
+    }).toThrow(/Cannot set 'backupRetention', as engine 'postgres-13' does not support automatic backups for read replicas/);
+  });
+
+  test('can set parameter group on read replica', () => {
+    // GIVEN
+    const instanceType = ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.SMALL);
+    const engine = rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_13 });
+    const parameterGroup = new rds.ParameterGroup(stack, 'ParameterGroup', { engine });
+    const source = new rds.DatabaseInstance(stack, 'Source', {
+      engine,
+      instanceType,
+      vpc,
+    });
+
+    // WHEN
+    new rds.DatabaseInstanceReadReplica(stack, 'Replica', {
+      sourceDatabaseInstance: source,
+      parameterGroup,
+      instanceType,
+      vpc,
+    });
+
+    // THEN
+    expect(stack).toHaveResource('AWS::RDS::DBInstance', {
+      DBParameterGroupName: {
+        Ref: 'ParameterGroup5E32DECB',
+      },
+    });
+  });
 });
 
 test.each([

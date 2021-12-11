@@ -1,5 +1,6 @@
 import '@aws-cdk/assert-internal/jest';
 import { MatchStyle } from '@aws-cdk/assert-internal';
+import * as ecr from '@aws-cdk/aws-ecr';
 import * as cdk from '@aws-cdk/core';
 import * as lambda from '../lib';
 
@@ -312,5 +313,44 @@ describe('lambda-insights', () => {
     }, MatchStyle.EXACT);
     // On synthesis it should not throw an error
     expect(() => app.synth()).not.toThrow();
+  });
+
+  test('insights layer is skipped for container images and the role is updated', () => {
+    const stack = new cdk.Stack();
+    new lambda.DockerImageFunction(stack, 'MyFunction', {
+      code: lambda.DockerImageCode.fromEcr(ecr.Repository.fromRepositoryArn(stack, 'MyRepo',
+        'arn:aws:ecr:us-east-1:0123456789:repository/MyRepo')),
+      insightsVersion: lambda.LambdaInsightsVersion.VERSION_1_0_98_0,
+    });
+
+    expect(stack).toCountResources('AWS::Lambda::LayerVersion', 0);
+
+    expect(stack).toHaveResourceLike('AWS::IAM::Role', {
+      'AssumeRolePolicyDocument': {
+        'Statement': [
+          {
+            'Action': 'sts:AssumeRole',
+            'Principal': {
+              'Service': 'lambda.amazonaws.com',
+            },
+          },
+        ],
+      },
+      'ManagedPolicyArns': [
+        { },
+        {
+          'Fn::Join': [
+            '',
+            [
+              'arn:',
+              {
+                'Ref': 'AWS::Partition',
+              },
+              ':iam::aws:policy/CloudWatchLambdaInsightsExecutionRolePolicy',
+            ],
+          ],
+        },
+      ],
+    });
   });
 });

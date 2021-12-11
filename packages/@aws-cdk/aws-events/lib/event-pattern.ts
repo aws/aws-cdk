@@ -2,10 +2,14 @@
  * Events in Amazon CloudWatch Events are represented as JSON objects. For more
  * information about JSON objects, see RFC 7159.
  *
+ * **Important**: this class can only be used with a `Rule` class. In particular,
+ * do not use it with `CfnRule` class: your pattern will not be rendered
+ * correctly. In a `CfnRule` class, write the pattern as you normally would when
+ * directly writing CloudFormation.
+ *
  * Rules use event patterns to select events and route them to targets. A
  * pattern either matches an event or it doesn't. Event patterns are represented
- * as JSON objects with a structure that is similar to that of events, for
- * example:
+ * as JSON objects with a structure that is similar to that of events.
  *
  * It is important to remember the following about event pattern matching:
  *

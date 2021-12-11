@@ -26,7 +26,7 @@ export abstract class CodePipelineSource extends Step implements ICodePipelineAc
    * Pass in the owner and repository in a single string, like this:
    *
    * ```ts
-   * CodePipelineSource.gitHub('owner/repo', 'main');
+   * pipelines.CodePipelineSource.gitHub('owner/repo', 'main');
    * ```
    *
    * Authentication will be done by a secret called `github-token` in AWS
@@ -51,8 +51,8 @@ export abstract class CodePipelineSource extends Step implements ICodePipelineAc
    * Example:
    *
    * ```ts
-   * const bucket: IBucket = ...
-   * CodePipelineSource.s3(bucket, {
+   * declare const bucket: s3.Bucket;
+   * pipelines.CodePipelineSource.s3(bucket, {
    *   key: 'path/to/file.zip',
    * });
    * ```
@@ -74,7 +74,7 @@ export abstract class CodePipelineSource extends Step implements ICodePipelineAc
    * Example:
    *
    * ```ts
-   * CodePipelineSource.connection('owner/repo', 'main', {
+   * pipelines.CodePipelineSource.connection('owner/repo', 'main', {
    *   connectionArn: 'arn:aws:codestar-connections:us-east-1:222222222222:connection/7d2469ff-514a-4e4f-9003-5ca4a43cdc41', // Created using the AWS console
    * });
    * ```
@@ -131,7 +131,6 @@ export interface GitHubSourceOptions {
    *
    * ```ts
    * const oauth = cdk.SecretValue.secretsManager('my-github-token');
-   * new GitHubSource(this, 'GitHubSource', { authentication: oauth, ... });
    * ```
    *
    * The GitHub Personal Access Token should have these scopes:

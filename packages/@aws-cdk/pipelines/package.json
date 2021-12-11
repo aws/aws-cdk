@@ -26,6 +26,13 @@
     "build+extract": "yarn build && yarn rosetta:extract",
     "build+test+extract": "yarn build+test && yarn rosetta:extract"
   },
+  "exports": {
+    ".": "./lib/index.js",
+    "./package.json": "./package.json",
+    "./.jsii": "./.jsii",
+    "./.warnings.jsii.js": "./.warnings.jsii.js",
+    "./lib/helpers-internal": "./lib/helpers-internal/index.js"
+  },
   "author": {
     "name": "Amazon Web Services",
     "url": "https://aws.amazon.com",
@@ -35,14 +42,14 @@
     "@aws-cdk/assertions": "0.0.0",
     "@aws-cdk/aws-apigateway": "0.0.0",
     "@aws-cdk/aws-ecr-assets": "0.0.0",
-    "@aws-cdk/aws-sqs": "0.0.0",
     "@aws-cdk/aws-sns-subscriptions": "0.0.0",
-    "@types/jest": "^26.0.24",
-    "aws-sdk": "^2.848.0",
-    "cdk-build-tools": "0.0.0",
-    "cdk-integ-tools": "0.0.0",
-    "cfn2ts": "0.0.0",
-    "pkglint": "0.0.0"
+    "@aws-cdk/aws-sqs": "0.0.0",
+    "@aws-cdk/cdk-build-tools": "0.0.0",
+    "@aws-cdk/cdk-integ-tools": "0.0.0",
+    "@aws-cdk/cfn2ts": "0.0.0",
+    "@aws-cdk/pkglint": "0.0.0",
+    "@types/jest": "^27.0.3",
+    "aws-sdk": "^2.848.0"
   },
   "peerDependencies": {
     "@aws-cdk/aws-codebuild": "0.0.0",
@@ -126,7 +133,14 @@
         ]
       }
     },
-    "projectReferences": true
+    "projectReferences": true,
+    "metadata": {
+      "jsii": {
+        "rosetta": {
+          "strict": true
+        }
+      }
+    }
   },
   "awscdkio": {
     "announce": false

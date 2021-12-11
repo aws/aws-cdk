@@ -14,7 +14,7 @@ test('filteredSpecification(s => s.startsWith("AWS::S3::")', () => {
 });
 
 for (const name of resourceTypes().sort()) {
-  test(`filteredSpecification(${JSON.stringify(name)})`, () => {
+  describe(`filteredSpecification(${JSON.stringify(name)})`, () => {
     const filteredSpec = filteredSpecification(name);
     expect(filteredSpec).not.toEqual(specification);
     expect(filteredSpec.ResourceTypes).not.toEqual({});
