@@ -13,8 +13,11 @@ import { Construct } from 'constructs';
 
 /**
  * Properties for creating a Lambda@Edge function
+ * 
+ * Lambda@Edge does not support all the props that normal Lambda functions do. See
+ * https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/edge-functions-restrictions.html
  */
-export interface EdgeFunctionProps extends lambda.FunctionProps {
+export interface EdgeFunctionProps extends Omit<lambda.FunctionProps, 'layers' | 'environment'> {
   /**
    * The stack ID of Lambda@Edge function.
    *
