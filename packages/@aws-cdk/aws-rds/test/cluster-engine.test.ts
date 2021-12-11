@@ -82,7 +82,6 @@ describe('cluster engine', () => {
 
     // THEN
     expect(family).toEqual('aurora-mysql8.0');
-
   });
 
   test('cluster parameter group correctly determined for AURORA_POSTGRESQL and given version', () => {

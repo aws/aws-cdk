@@ -357,8 +357,8 @@ export class AuroraMysqlEngineVersion {
     return new AuroraMysqlEngineVersion(`5.7.${addStandardPrefix ? 'mysql_aurora.' : ''}${minorVersion}`);
   }
 
-  private static builtIn_8_0(minorVersion: string, addStandardPrefix: boolean = true): AuroraMysqlEngineVersion {
-    return new AuroraMysqlEngineVersion(`8.0.${addStandardPrefix ? 'mysql_aurora.' : ''}${minorVersion}`, '8.0');
+  private static builtIn_8_0(minorVersion: string): AuroraMysqlEngineVersion {
+    return new AuroraMysqlEngineVersion(`8.0.mysql_aurora.${minorVersion}`, '8.0');
   }
 
   /** The full version string, for example, "5.7.mysql_aurora.1.78.3.6". */
