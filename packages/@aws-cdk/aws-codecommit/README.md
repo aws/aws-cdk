@@ -21,13 +21,9 @@ To add a CodeCommit Repository to your stack:
 ```ts
 import * as codecommit from '@aws-cdk/aws-codecommit';
 
-const repo = new codecommit.Repository(this, 'Repository' ,{
+const repo = new codecommit.Repository(this, 'Repository', {
     repositoryName: 'MyRepositoryName',
     description: 'Some description.', // optional property
-    code: { // optional property
-        branchName: 'main', // optional property
-        asset: asset, // refers to an instance of a CDK asset, pointing to a directory
-    },
 });
 ```
 
@@ -55,7 +51,7 @@ const readmeAsset = new assets.Asset(this, 'ReadmeAsset', {
       path: path.join(__dirname, 'directory/'),
 });
 
-const repo = new codecommit.Repository(this, 'Repository' ,{
+const repo = new Repository(this, 'Repository', {
     repositoryName: 'MyRepositoryName',
     description: 'Some description.', // optional property
     code: { // optional property
