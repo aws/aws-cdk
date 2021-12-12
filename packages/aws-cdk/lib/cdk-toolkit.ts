@@ -8,12 +8,12 @@ import * as promptly from 'promptly';
 import { environmentsFromDescriptors, globEnvironmentsFromStacks, looksLikeGlob } from '../lib/api/cxapp/environments';
 import { SdkProvider } from './api/aws-auth';
 import { Bootstrapper, BootstrapEnvironmentOptions } from './api/bootstrap';
-import { CloudFormationDeployments, DeployStackOptions } from './api/cloudformation-deployments';
+import { CloudFormationDeployments } from './api/cloudformation-deployments';
 import { CloudAssembly, DefaultSelection, ExtendedStackSelection, StackCollection, StackSelector } from './api/cxapp/cloud-assembly';
 import { CloudExecutable } from './api/cxapp/cloud-executable';
 import { StackActivityProgress } from './api/util/cloudformation/stack-activity-monitor';
 import { printSecurityDiff, printStackDiff, RequireApproval } from './diff';
-import { ResourceImporter } from './import';
+import { ResourceImporter, ResourceMap } from './import';
 import { data, debug, error, highlight, print, success, warning } from './logging';
 import { deserializeStructure } from './serialize';
 import { Configuration, PROJECT_CONFIG } from './settings';
@@ -191,25 +191,62 @@ export class CdkToolkit {
         tags = tagsForStack(stack);
       }
 
-      await this.cfnDeployStack({
-        stack,
-        deployName: stack.stackName,
-        roleArn: options.roleArn,
-        toolkitStackName: options.toolkitStackName,
-        reuseAssets: options.reuseAssets,
-        notificationArns: options.notificationArns,
-        tags,
-        execute: options.execute,
-        changeSetName: options.changeSetName,
-        force: options.force,
-        parameters: Object.assign({}, parameterMap['*'], parameterMap[stack.stackName]),
-        usePreviousParameters: options.usePreviousParameters,
-        progress: options.progress,
-        ci: options.ci,
-        rollback: options.rollback,
-        hotswap: options.hotswap,
-        extraUserAgent: options.extraUserAgent,
-      }, stackOutputs, outputsFile);
+      try {
+        const result = await this.props.cloudFormation.deployStack({
+          stack,
+          deployName: stack.stackName,
+          roleArn: options.roleArn,
+          toolkitStackName: options.toolkitStackName,
+          reuseAssets: options.reuseAssets,
+          notificationArns: options.notificationArns,
+          tags,
+          execute: options.execute,
+          changeSetName: options.changeSetName,
+          force: options.force,
+          parameters: Object.assign({}, parameterMap['*'], parameterMap[stack.stackName]),
+          usePreviousParameters: options.usePreviousParameters,
+          progress: options.progress,
+          ci: options.ci,
+          rollback: options.rollback,
+          hotswap: options.hotswap,
+          extraUserAgent: options.extraUserAgent,
+        });
+
+        const message = result.noOp
+          ? ' ✅  %s (no changes)'
+          : ' ✅  %s';
+
+        success('\n' + message, stack.displayName);
+
+        if (Object.keys(result.outputs).length > 0) {
+          print('\nOutputs:');
+
+          stackOutputs[stack.stackName] = result.outputs;
+        }
+
+        for (const name of Object.keys(result.outputs).sort()) {
+          const value = result.outputs[name];
+          print('%s.%s = %s', colors.cyan(stack.id), colors.cyan(name), colors.underline(colors.cyan(value)));
+        }
+
+        print('\nStack ARN:');
+
+        data(result.stackArn);
+      } catch (e) {
+        error('\n ❌  %s failed: %s', colors.bold(stack.displayName), e);
+        throw e;
+      } finally {
+        // If an outputs file has been specified, create the file path and write stack outputs to it once.
+        // Outputs are written after all stacks have been deployed. If a stack deployment fails,
+        // all of the outputs from successfully deployed stacks before the failure will still be written.
+        if (outputsFile) {
+          fs.ensureFileSync(outputsFile);
+          await fs.writeJson(outputsFile, stackOutputs, {
+            spaces: 2,
+            encoding: 'utf8',
+          });
+        }
+      }
     }
   }
 
@@ -314,13 +351,29 @@ export class CdkToolkit {
     }
 
     const resourceImporter = new ResourceImporter(stack, this.props.cloudFormation);
-    const resourcesToImport = await resourceImporter.prepareImport();
 
+    // Prepare a mapping of physical resources to CDK constructs
+    let resourcesMapping: ResourceMap;
+    if (options.createResourceMapping || !options.resourceMappingFile) {
+      resourcesMapping = await resourceImporter.createPhysicalResourceMap();
+    } else {
+      resourcesMapping = await fs.readJson(options.resourceMappingFile);
+    }
+
+    // If "--create-resource-mapping" option was passed, write the resource mapping to the given file and exit
+    if (options.createResourceMapping && options.resourceMappingFile) {
+      fs.ensureFileSync(options.resourceMappingFile);
+      await fs.writeJson(options.resourceMappingFile, resourcesMapping, {
+        spaces: 2,
+        encoding: 'utf8',
+      });
+      return;
+    }
+
+    // Import the resources according to the given mapping
     print('%s: importing resources into stack...', colors.bold(stack.displayName));
-
     const tags = tagsForStack(stack);
-
-    await this.cfnDeployStack({
+    await resourceImporter.importResources(resourcesMapping, {
       stack,
       deployName: stack.stackName,
       roleArn: options.roleArn,
@@ -331,7 +384,6 @@ export class CdkToolkit {
       usePreviousParameters: true,
       progress: options.progress,
       rollback: options.rollback,
-      resourcesToImport,
     });
   }
 
@@ -606,49 +658,6 @@ export class CdkToolkit {
       // just continue - deploy will show the error
     }
   }
-
-  private async cfnDeployStack(options: DeployStackOptions, stackOutputs?: { [key: string]: any }, outputsFile?: string) {
-    try {
-      const result = await this.props.cloudFormation.deployStack(options);
-
-      const message = result.noOp
-        ? ' ✅  %s (no changes)'
-        : ' ✅  %s';
-
-      success('\n' + message, options.stack.displayName);
-
-      if (Object.keys(result.outputs).length > 0) {
-        print('\nOutputs:');
-
-        if (stackOutputs) {
-          stackOutputs[options.stack.stackName] = result.outputs;
-        }
-      }
-
-      for (const name of Object.keys(result.outputs).sort()) {
-        const value = result.outputs[name];
-        print('%s.%s = %s', colors.cyan(options.stack.id), colors.cyan(name), colors.underline(colors.cyan(value)));
-      }
-
-      print('\nStack ARN:');
-
-      data(result.stackArn);
-    } catch (e) {
-      error('\n ❌  %s failed: %s', colors.bold(options.stack.displayName), e);
-      throw e;
-    } finally {
-      // If an outputs file has been specified, create the file path and write stack outputs to it once.
-      // Outputs are written after all stacks have been deployed. If a stack deployment fails,
-      // all of the outputs from successfully deployed stacks before the failure will still be written.
-      if (stackOutputs && outputsFile) {
-        fs.ensureFileSync(outputsFile);
-        await fs.writeJson(outputsFile, stackOutputs, {
-          spaces: 2,
-          encoding: 'utf8',
-        });
-      }
-    }
-  }
 }
 
 export interface DiffOptions {
@@ -853,7 +862,16 @@ export interface DeployOptions extends CfnDeployOptions, WatchOptions {
   readonly cacheCloudAssembly?: boolean;
 }
 
-export interface ImportOptions extends CfnDeployOptions {}
+export interface ImportOptions extends CfnDeployOptions {
+  /**
+   * Build a physical resource mapping and write it to the given file, without performing the actual import operation
+   */
+  readonly createResourceMapping?: boolean;
+  /**
+   * Path to a file with with the physical resource mapping to CDK constructs in JSON format
+   */
+  readonly resourceMappingFile?: string;
+}
 
 export interface DestroyOptions {
   /**

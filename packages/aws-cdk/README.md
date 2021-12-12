@@ -20,6 +20,7 @@ Command                           | Description
 [`cdk diff`](#cdk-diff)           | Diff stacks against current state
 [`cdk deploy`](#cdk-deploy)       | Deploy a stack into an AWS account
 [`cdk destroy`](#cdk-destroy)     | Deletes a stack from an AWS account
+[`cdk import`](#cdk-import)       | Import existing AWS resources into a CDK stack
 [`cdk bootstrap`](#cdk-bootstrap) | Deploy a toolkit stack to support deploying large stacks & artifacts
 [`cdk doctor`](#cdk-doctor)       | Inspect the environment and produce information useful for troubleshooting
 
@@ -436,9 +437,7 @@ to turn them off, pass the `--no-hotswap` option when invoking it.
 **Note**: This command is considered experimental,
 and might have breaking changes in the future.
 
-#### Import existing resources
-
-**Important:** This is a work in progress
+### `cdk import`
 
 Sometimes, it is beneficial to import (enroll/adopt/...) AWS resources, that were
 created manually (or by different means), into a CDK stack. Some resources can simply be

@@ -133,6 +133,20 @@ async function parseCommandLineArguments() {
         type: 'boolean',
         desc: "Rollback stack to stable state on failure. Defaults to 'true', iterate more rapidly with --no-rollback or -R. " +
           'Note: do **not** disable this flag for deployments with resource replacements, as that will always fail',
+      })
+      .option('create-resource-mapping', {
+        type: 'string',
+        alias: 'o',
+        requiresArg: true,
+        desc: 'If specified, CDK will generate a mapping of existing physical resources to CDK resources to be imported as. The mapping ' +
+          'will be written in the given file path. No actual import operation will be performed',
+      })
+      .option('resource-mapping', {
+        type: 'string',
+        alias: 'm',
+        requiresArg: true,
+        desc: 'If specified, CDK will use the given file to map physical resources to CDK resources for import, instead of interactively ' +
+          'asking the user. Can be run from scripts',
       }),
     )
     .command('watch [STACKS..]', "Shortcut for 'deploy --watch'", yargs => yargs
@@ -395,6 +409,8 @@ async function initCommandLine() {
           changeSetName: args.changeSetName,
           progress: configuration.settings.get(['progress']),
           rollback: configuration.settings.get(['rollback']),
+          createResourceMapping: args['create-resource-mapping']?.length > 0,
+          resourceMappingFile: args['create-resource-mapping'] ? args['create-resource-mapping'] : args['resource-mapping'],
         });
 
       case 'watch':
