@@ -837,20 +837,6 @@ export class Stack extends CoreConstruct implements ITaggable {
     }
 
     const lookupMap = partitions ? RegionInfo.limitedRegionMap(factName, partitions) : RegionInfo.regionMap(factName);
-    const lookupValues = Object.values(lookupMap);
-
-    // If there are no lookups, just return the default
-    if (lookupValues.length === 0) {
-      if (!defaultValue) {
-        throw new Error(`region-info: don't have any information for ${factName}. Use 'Fact.register' to provide values, or add partitions to the '${cxapi.TARGET_PARTITIONS}' context value.`);
-      }
-      return defaultValue;
-    }
-
-    // If all values are the same, we can just return the value directly
-    if (lookupValues.length > 1 && lookupValues.every((v) => v === lookupValues[0])) {
-      return lookupValues[0];
-    }
 
     return deployTimeLookup(this, factName, lookupMap);
   }
@@ -1354,34 +1340,6 @@ export interface ExportValueOptions {
   readonly name?: string;
 }
 
-/**
- * Make sure a CfnMapping exists in the given stack with the lookup values for the given fact
- *
- * Add to an existing CfnMapping if possible.
- */
-function deployTimeLookup(stack: Stack, factName: string, mapValues: Record<string, string>) {
-  // Derive map name and lookup key from the factName, splitting on ':' if it exists
-  const [factClass, factParam] = factName.includes(':')
-    ? factName.split(':')
-    : [factName, 'value'] as const;
-
-  const mapId = `${ucfirst(factClass)}Map`;
-  const factKey = factParam.replace(/[^a-zA-Z0-9]/g, '_');
-
-  let mapping = stack.node.tryFindChild(mapId) as CfnMapping | undefined;
-  if (!mapping) {
-    mapping = new CfnMapping(stack, mapId);
-  }
-  for (const [region, value] of Object.entries(mapValues)) {
-    mapping.setValue(region, factKey, value);
-  }
-  return mapping.findInMap(Aws.REGION, factKey);
-}
-
-function ucfirst(x: string) {
-  return `${x.substr(0, 1).toUpperCase()}${x.substr(1)}`;
-}
-
 // These imports have to be at the end to prevent circular imports
 import { CfnOutput } from './cfn-output';
 import { addDependency } from './deps';
@@ -1393,6 +1351,6 @@ import { DefaultStackSynthesizer, IStackSynthesizer, LegacyStackSynthesizer } fr
 import { Stage } from './stage';
 import { ITaggable, TagManager } from './tag-manager';
 import { Token, Tokenization } from './token';
-import { referenceNestedStackValueInParent } from './private/refs';import { Fact, RegionInfo } from '@aws-cdk/region-info';
-import { CfnMapping } from './cfn-mapping';
-
+import { referenceNestedStackValueInParent } from './private/refs';
+import { Fact, RegionInfo } from '@aws-cdk/region-info';
+import { deployTimeLookup } from './private/region-lookup';

@@ -183,7 +183,7 @@ export const TARGET_PARTITIONS = '@aws-cdk/core:target-partitions';
  *
  * Tests must cover the default (disabled) case and the future (enabled) case.
  */
-export const FUTURE_FLAGS: { [key: string]: any } = {
+export const FUTURE_FLAGS: { [key: string]: boolean } = {
   [APIGATEWAY_USAGEPLANKEY_ORDERINSENSITIVE_ID]: true,
   [ENABLE_STACK_NAME_DUPLICATES_CONTEXT]: true,
   [ENABLE_DIFF_NO_FAIL_CONTEXT]: true,
@@ -197,10 +197,16 @@ export const FUTURE_FLAGS: { [key: string]: any } = {
   [EFS_DEFAULT_ENCRYPTION_AT_REST]: true,
   [LAMBDA_RECOGNIZE_VERSION_PROPS]: true,
   [CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021]: true,
-  [TARGET_PARTITIONS]: ['aws', 'aws-cn'],
 
   // We will advertise this flag when the feature is complete
   // [NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: 'true',
+};
+
+/**
+ * Values that will be set by default in a new project, which are not necessarily booleans (and don't expire)
+ */
+export const NEW_PROJECT_DEFAULT_CONTEXT: { [key: string]: any} = {
+  [TARGET_PARTITIONS]: ['aws', 'aws-cn'],
 };
 
 /**
