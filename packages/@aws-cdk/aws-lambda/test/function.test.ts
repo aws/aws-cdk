@@ -2276,6 +2276,6 @@ function newTestLambda(scope: constructs.Construct) {
   return new lambda.Function(scope, 'MyLambda', {
     code: new lambda.InlineCode('foo'),
     handler: 'bar',
-    runtime: lambda.Runtime.PYTHON_2_7,
+    runtime: lambda.Runtime.PYTHON_3_9,
   });
 }
