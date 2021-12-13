@@ -10,7 +10,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-glue-connection/Vpc"
+            "Value": "aws-ecs-integ/Vpc"
           }
         ]
       }
@@ -18,7 +18,7 @@
     "VpcPublicSubnet1Subnet5C2D37C4": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
-        "CidrBlock": "10.0.0.0/19",
+        "CidrBlock": "10.0.0.0/18",
         "VpcId": {
           "Ref": "Vpc8378EB38"
         },
@@ -35,7 +35,7 @@
           },
           {
             "Key": "Name",
-            "Value": "aws-glue-connection/Vpc/PublicSubnet1"
+            "Value": "aws-ecs-integ/Vpc/PublicSubnet1"
           }
         ]
       }
@@ -49,7 +49,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-glue-connection/Vpc/PublicSubnet1"
+            "Value": "aws-ecs-integ/Vpc/PublicSubnet1"
           }
         ]
       }
@@ -87,7 +87,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-glue-connection/Vpc/PublicSubnet1"
+            "Value": "aws-ecs-integ/Vpc/PublicSubnet1"
           }
         ]
       }
@@ -107,7 +107,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-glue-connection/Vpc/PublicSubnet1"
+            "Value": "aws-ecs-integ/Vpc/PublicSubnet1"
           }
         ]
       }
@@ -115,7 +115,7 @@
     "VpcPublicSubnet2Subnet691E08A3": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
-        "CidrBlock": "10.0.32.0/19",
+        "CidrBlock": "10.0.64.0/18",
         "VpcId": {
           "Ref": "Vpc8378EB38"
         },
@@ -132,7 +132,7 @@
           },
           {
             "Key": "Name",
-            "Value": "aws-glue-connection/Vpc/PublicSubnet2"
+            "Value": "aws-ecs-integ/Vpc/PublicSubnet2"
           }
         ]
       }
@@ -146,7 +146,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-glue-connection/Vpc/PublicSubnet2"
+            "Value": "aws-ecs-integ/Vpc/PublicSubnet2"
           }
         ]
       }
@@ -184,7 +184,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-glue-connection/Vpc/PublicSubnet2"
+            "Value": "aws-ecs-integ/Vpc/PublicSubnet2"
           }
         ]
       }
@@ -204,104 +204,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-glue-connection/Vpc/PublicSubnet2"
-          }
-        ]
-      }
-    },
-    "VpcPublicSubnet3SubnetBE12F0B6": {
-      "Type": "AWS::EC2::Subnet",
-      "Properties": {
-        "CidrBlock": "10.0.64.0/19",
-        "VpcId": {
-          "Ref": "Vpc8378EB38"
-        },
-        "AvailabilityZone": "test-region-1c",
-        "MapPublicIpOnLaunch": true,
-        "Tags": [
-          {
-            "Key": "aws-cdk:subnet-name",
-            "Value": "Public"
-          },
-          {
-            "Key": "aws-cdk:subnet-type",
-            "Value": "Public"
-          },
-          {
-            "Key": "Name",
-            "Value": "aws-glue-connection/Vpc/PublicSubnet3"
-          }
-        ]
-      }
-    },
-    "VpcPublicSubnet3RouteTable93458DBB": {
-      "Type": "AWS::EC2::RouteTable",
-      "Properties": {
-        "VpcId": {
-          "Ref": "Vpc8378EB38"
-        },
-        "Tags": [
-          {
-            "Key": "Name",
-            "Value": "aws-glue-connection/Vpc/PublicSubnet3"
-          }
-        ]
-      }
-    },
-    "VpcPublicSubnet3RouteTableAssociation1F1EDF02": {
-      "Type": "AWS::EC2::SubnetRouteTableAssociation",
-      "Properties": {
-        "RouteTableId": {
-          "Ref": "VpcPublicSubnet3RouteTable93458DBB"
-        },
-        "SubnetId": {
-          "Ref": "VpcPublicSubnet3SubnetBE12F0B6"
-        }
-      }
-    },
-    "VpcPublicSubnet3DefaultRoute4697774F": {
-      "Type": "AWS::EC2::Route",
-      "Properties": {
-        "RouteTableId": {
-          "Ref": "VpcPublicSubnet3RouteTable93458DBB"
-        },
-        "DestinationCidrBlock": "0.0.0.0/0",
-        "GatewayId": {
-          "Ref": "VpcIGWD7BA715C"
-        }
-      },
-      "DependsOn": [
-        "VpcVPCGWBF912B6E"
-      ]
-    },
-    "VpcPublicSubnet3EIP3A666A23": {
-      "Type": "AWS::EC2::EIP",
-      "Properties": {
-        "Domain": "vpc",
-        "Tags": [
-          {
-            "Key": "Name",
-            "Value": "aws-glue-connection/Vpc/PublicSubnet3"
-          }
-        ]
-      }
-    },
-    "VpcPublicSubnet3NATGateway7640CD1D": {
-      "Type": "AWS::EC2::NatGateway",
-      "Properties": {
-        "SubnetId": {
-          "Ref": "VpcPublicSubnet3SubnetBE12F0B6"
-        },
-        "AllocationId": {
-          "Fn::GetAtt": [
-            "VpcPublicSubnet3EIP3A666A23",
-            "AllocationId"
-          ]
-        },
-        "Tags": [
-          {
-            "Key": "Name",
-            "Value": "aws-glue-connection/Vpc/PublicSubnet3"
+            "Value": "aws-ecs-integ/Vpc/PublicSubnet2"
           }
         ]
       }
@@ -309,7 +212,7 @@
     "VpcPrivateSubnet1Subnet536B997A": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
-        "CidrBlock": "10.0.96.0/19",
+        "CidrBlock": "10.0.128.0/18",
         "VpcId": {
           "Ref": "Vpc8378EB38"
         },
@@ -326,7 +229,7 @@
           },
           {
             "Key": "Name",
-            "Value": "aws-glue-connection/Vpc/PrivateSubnet1"
+            "Value": "aws-ecs-integ/Vpc/PrivateSubnet1"
           }
         ]
       }
@@ -340,7 +243,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-glue-connection/Vpc/PrivateSubnet1"
+            "Value": "aws-ecs-integ/Vpc/PrivateSubnet1"
           }
         ]
       }
@@ -371,7 +274,7 @@
     "VpcPrivateSubnet2Subnet3788AAA1": {
       "Type": "AWS::EC2::Subnet",
       "Properties": {
-        "CidrBlock": "10.0.128.0/19",
+        "CidrBlock": "10.0.192.0/18",
         "VpcId": {
           "Ref": "Vpc8378EB38"
         },
@@ -388,7 +291,7 @@
           },
           {
             "Key": "Name",
-            "Value": "aws-glue-connection/Vpc/PrivateSubnet2"
+            "Value": "aws-ecs-integ/Vpc/PrivateSubnet2"
           }
         ]
       }
@@ -402,7 +305,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-glue-connection/Vpc/PrivateSubnet2"
+            "Value": "aws-ecs-integ/Vpc/PrivateSubnet2"
           }
         ]
       }
@@ -430,75 +333,13 @@
         }
       }
     },
-    "VpcPrivateSubnet3SubnetF258B56E": {
-      "Type": "AWS::EC2::Subnet",
-      "Properties": {
-        "CidrBlock": "10.0.160.0/19",
-        "VpcId": {
-          "Ref": "Vpc8378EB38"
-        },
-        "AvailabilityZone": "test-region-1c",
-        "MapPublicIpOnLaunch": false,
-        "Tags": [
-          {
-            "Key": "aws-cdk:subnet-name",
-            "Value": "Private"
-          },
-          {
-            "Key": "aws-cdk:subnet-type",
-            "Value": "Private"
-          },
-          {
-            "Key": "Name",
-            "Value": "aws-glue-connection/Vpc/PrivateSubnet3"
-          }
-        ]
-      }
-    },
-    "VpcPrivateSubnet3RouteTableD98824C7": {
-      "Type": "AWS::EC2::RouteTable",
-      "Properties": {
-        "VpcId": {
-          "Ref": "Vpc8378EB38"
-        },
-        "Tags": [
-          {
-            "Key": "Name",
-            "Value": "aws-glue-connection/Vpc/PrivateSubnet3"
-          }
-        ]
-      }
-    },
-    "VpcPrivateSubnet3RouteTableAssociation16BDDC43": {
-      "Type": "AWS::EC2::SubnetRouteTableAssociation",
-      "Properties": {
-        "RouteTableId": {
-          "Ref": "VpcPrivateSubnet3RouteTableD98824C7"
-        },
-        "SubnetId": {
-          "Ref": "VpcPrivateSubnet3SubnetF258B56E"
-        }
-      }
-    },
-    "VpcPrivateSubnet3DefaultRoute94B74F0D": {
-      "Type": "AWS::EC2::Route",
-      "Properties": {
-        "RouteTableId": {
-          "Ref": "VpcPrivateSubnet3RouteTableD98824C7"
-        },
-        "DestinationCidrBlock": "0.0.0.0/0",
-        "NatGatewayId": {
-          "Ref": "VpcPublicSubnet3NATGateway7640CD1D"
-        }
-      }
-    },
     "VpcIGWD7BA715C": {
       "Type": "AWS::EC2::InternetGateway",
       "Properties": {
         "Tags": [
           {
             "Key": "Name",
-            "Value": "aws-glue-connection/Vpc"
+            "Value": "aws-ecs-integ/Vpc"
           }
         ]
       }
@@ -514,10 +355,67 @@
         }
       }
     },
-    "SecurityGroupDD263621": {
+    "FargateCluster7CCD5F93": {
+      "Type": "AWS::ECS::Cluster"
+    },
+    "TaskDefTaskRole1EDB4A67": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "ecs-tasks.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
+    "TaskDef54694570": {
+      "Type": "AWS::ECS::TaskDefinition",
+      "Properties": {
+        "ContainerDefinitions": [
+          {
+            "Environment": [
+              {
+                "Name": "nameOne",
+                "Value": "valueOne"
+              }
+            ],
+            "Essential": true,
+            "Image": "nginx",
+            "Name": "nginx",
+            "PortMappings": [
+              {
+                "ContainerPort": 80,
+                "Protocol": "tcp"
+              }
+            ]
+          }
+        ],
+        "Cpu": "512",
+        "Family": "awsecsintegTaskDef6FDFB69A",
+        "Memory": "1024",
+        "NetworkMode": "awsvpc",
+        "RequiresCompatibilities": [
+          "FARGATE"
+        ],
+        "TaskRoleArn": {
+          "Fn::GetAtt": [
+            "TaskDefTaskRole1EDB4A67",
+            "Arn"
+          ]
+        }
+      }
+    },
+    "websvcsgA808F313": {
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
-        "GroupDescription": "aws-glue-connection/SecurityGroup",
+        "GroupDescription": "aws-ecs-integ/websvc-sg",
         "SecurityGroupEgress": [
           {
             "CidrIp": "0.0.0.0/0",
@@ -525,33 +423,55 @@
             "IpProtocol": "-1"
           }
         ],
+        "SecurityGroupIngress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "from 0.0.0.0/0:80",
+            "FromPort": 80,
+            "IpProtocol": "tcp",
+            "ToPort": 80
+          }
+        ],
         "VpcId": {
           "Ref": "Vpc8378EB38"
         }
       }
     },
-    "NetworkConnection2B07B7E5": {
-      "Type": "AWS::Glue::Connection",
+    "ServiceD69D759B": {
+      "Type": "AWS::ECS::Service",
       "Properties": {
-        "CatalogId": {
-          "Ref": "AWS::AccountId"
+        "Cluster": {
+          "Ref": "FargateCluster7CCD5F93"
         },
-        "ConnectionInput": {
-          "ConnectionType": "NETWORK",
-          "PhysicalConnectionRequirements": {
-            "AvailabilityZone": "test-region-1a",
-            "SecurityGroupIdList": [
+        "DeploymentConfiguration": {
+          "MaximumPercent": 200,
+          "MinimumHealthyPercent": 50
+        },
+        "EnableECSManagedTags": false,
+        "LaunchType": "FARGATE",
+        "NetworkConfiguration": {
+          "AwsvpcConfiguration": {
+            "AssignPublicIp": "ENABLED",
+            "SecurityGroups": [
               {
                 "Fn::GetAtt": [
-                  "SecurityGroupDD263621",
+                  "websvcsgA808F313",
                   "GroupId"
                 ]
               }
             ],
-            "SubnetId": {
-              "Ref": "VpcPrivateSubnet1Subnet536B997A"
-            }
+            "Subnets": [
+              {
+                "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
+              },
+              {
+                "Ref": "VpcPublicSubnet2Subnet691E08A3"
+              }
+            ]
           }
+        },
+        "TaskDefinition": {
+          "Ref": "TaskDef54694570"
         }
       }
     }
