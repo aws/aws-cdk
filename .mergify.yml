@@ -19,7 +19,9 @@ pull_request_rules:
       queue:
         name: default
         method: squash
-        commit_message: title+body
+        commit_message_template: |-
+          {{ title }} (#{{ number }})
+          {{ body }}
     conditions:
       - base!=release
       - -title~=(WIP|wip)
@@ -40,7 +42,9 @@ pull_request_rules:
       queue:
         name: default
         method: squash
-        commit_message: title+body
+        commit_message_template: |-
+          {{ title }} (#{{ number }})
+          {{ body }}
     conditions:
       - base!=release
       - -title~=(WIP|wip)
@@ -62,7 +66,9 @@ pull_request_rules:
       queue:
         name: default
         method: merge
-        commit_message: title+body
+        commit_message_template: |-
+          {{ title }} (#{{ number }})
+          {{ body }}
     conditions:
       - -title~=(WIP|wip)
       - -label~=(blocked|do-not-merge)
@@ -106,7 +112,9 @@ pull_request_rules:
       queue:
         name: default
         method: squash
-        commit_message: title+body
+        commit_message_template: |-
+          {{ title }} (#{{ number }})
+          {{ body }}
     conditions:
       - -title~=(WIP|wip)
       - -label~=(blocked|do-not-merge)
