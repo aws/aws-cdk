@@ -474,7 +474,7 @@ function getAmiTypeForInstanceType(instanceType: InstanceType) {
 function getAmiType(instanceTypes: InstanceType[]) {
   // const amiTypes = new Set(instanceTypes.map(i => getAmiTypeForInstanceType(i)));
   const amiTypes = new Set<NodegroupAmiType>();
-  for (let t of instanceTypes) {
+  for (const instanceType of instanceTypes) {
     getAmiTypeForInstanceType(t).forEach(x => amiTypes.add(x));
   }
   if (new Set(amiTypes).size == 0) { // protective code, the current implementation will never result in this.
