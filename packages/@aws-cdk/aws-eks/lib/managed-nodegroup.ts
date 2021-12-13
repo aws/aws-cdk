@@ -375,20 +375,6 @@ export class Nodegroup extends Resource implements INodegroup {
       if (props.amiType && !possibleAmiTypes.includes(props.amiType)) {
         throw new Error(`The specified AMI does not match the instance types architecture, either specify one of ${possibleAmiTypes} or dont specify any`);
       }
-
-      /**
-       * if both props.amiType and props.launchTemplateSpec are undefined, cloudformation uses `AL2_X86_64` implicitly as the default AMI type,
-       * we have to make sure the instance types provided are compatible with it.
-       * see - https://github.com/aws/aws-cdk/pull/17775#issuecomment-984461324
-       */
-       if (!props.amiType && !props.launchTemplateSpec && !possibleAmiTypes.includes(NodegroupAmiType.AL2_X86_64)) {
-        /**
-          * The default AMI type is incompatible with the instance types provided, we can't just
-          * assign the amiType for user as there might be multiple possibleAmiTypes. We should
-          * throw an error and let user specify it explicitly.
-          */
-        throw new Error('Instance types provided are not compatible with the default amiType(AL2_X86_64), please explicitly specify the amiType.');
-      }
     }
 
 
