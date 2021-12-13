@@ -414,13 +414,13 @@ export class Nodegroup extends Resource implements INodegroup {
        * Case 1: If launchTemplate is explicitly specified with custom AMI, we cannot specify amiType, or the node group deployment will fail.
        * As we don't know if the custom AMI is specified in the lauchTemplate, we just use props.amiType.
        *
-       * Case 2: If launchTemplate is not specified, we try to determine amiType from the instanceTypes. However, we are not able to do that
-       * as nodegroup now supports both Amazon Linux 2 and Bottlerocket for both x86_64 and arm_64. We can just check if user mixes instance types
-       * of different CPU archietctures. We can't determine the correct amiType from instance types now. Hence, we leave props.amiType as-is.
+       * Case 2: If launchTemplate is not specified, we try to determine amiType from the instanceTypes and it could be either AL2 or Bottlerocket.
+       * To avoid breaking changes, we use possibleAmiTypes[0] if amiType is undefined and make sure AL2 is always the first element in possibleAmiTypes
+       * as AL2 is previously the `expectedAmi` and this avoids breaking changes.
        *
        * That being said, users now either have to explicitly specify correct amiType or just leave it undefined.
        */
-      amiType: props.amiType,
+      amiType: props.launchTemplateSpec ? props.amiType : (props.amiType ?? possibleAmiTypes[0]),
       capacityType: props.capacityType ? props.capacityType.valueOf() : undefined,
       diskSize: props.diskSize,
       forceUpdateEnabled: props.forceUpdate ?? true,
@@ -472,6 +472,10 @@ export class Nodegroup extends Resource implements INodegroup {
   }
 }
 
+/**
+ * AMI types of different architectures. Make sure AL2 is always the first element, which will be the default AmiType if amiType and
+ * launchTemplateSpec are both undefined.
+ */
 const arm64AmiTypes: NodegroupAmiType[] = [NodegroupAmiType.AL2_ARM_64, NodegroupAmiType.BOTTLEROCKET_ARM_64];
 const x8664AmiTypes: NodegroupAmiType[] = [NodegroupAmiType.AL2_X86_64, NodegroupAmiType.BOTTLEROCKET_X86_64];
 const gpuAmiTypes: NodegroupAmiType[] = [NodegroupAmiType.AL2_X86_64_GPU];
