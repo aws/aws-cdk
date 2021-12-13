@@ -393,6 +393,26 @@ export enum InstanceClass {
   D2 = 'd2',
 
   /**
+   * Storage-optimized instances, 3rd generation
+   */
+  STORAGE3 = 'd3',
+
+  /**
+   * Storage-optimized instances, 3rd generation
+   */
+  D3 = 'd3',
+
+  /**
+  * Storage-optimized instances, 3rd generation
+  */
+  STORAGE3_ENHANCED_NETWORK = 'd3en',
+
+  /**
+  * Storage-optimized instances, 3rd generation
+  */
+  D3EN = 'd3en',
+
+  /**
    * Storage/compute balanced instances, 1st generation
    */
   STORAGE_COMPUTE_1 = 'h1',
