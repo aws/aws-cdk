@@ -15,13 +15,7 @@ class EventStack extends cdk.Stack {
 
     const vpc = new ec2.Vpc(this, 'Vpc', { maxAzs: 1 });
     const cluster = new ecs.Cluster(this, 'FargateCluster', { vpc });
-    const role = new iam.Role(this, 'UserRole', {
-      path: '/',
-      assumedBy: new iam.CompositePrincipal(
-        new iam.ServicePrincipal('ecs.amazonaws.com'),
-        new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
-      ),
-    });
+    const role = undefined;
 
     // Create the scheduled task
     new ScheduledFargateTask(this, 'ScheduledFargateTask', {
