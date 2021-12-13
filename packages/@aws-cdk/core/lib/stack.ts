@@ -804,6 +804,59 @@ export class Stack extends CoreConstruct implements ITaggable {
   }
 
   /**
+   * Look up a fact value for the given fact for the region of this stack
+   *
+   * Will return a definite value only if the region of the current stack is resolved.
+   * If not, a lookup map will be added to the stack and the lookup will be done at
+   * CDK deployment time.
+   *
+   * What regions will be included in the lookup map is controlled by the
+   * `@aws-cdk/core:target-partitions` context value: it must be set to a list
+   * of partitions, and only regions from the given partitions will be included.
+   * If no such context key is set, all regions will be included.
+   *
+   * This function is intended to be used by construct library authors. Application
+   * builders can rely on the abstractions offered by construct libraries and do
+   * not have to worry about regional facts.
+   *
+   * If `defaultValue` is not given, it is an error if the fact is unknown for
+   * the given region.
+   */
+  public regionalFact(factName: string, defaultValue?: string): string {
+    if (!Token.isUnresolved(this.region)) {
+      const ret = Fact.find(this.region, factName) ?? defaultValue;
+      if (ret === undefined) {
+        throw new Error(`region-info: don't know ${factName} for region ${this.region}. Use 'Fact.register' to provide this value.`);
+      }
+      return ret;
+    }
+
+    const regions = Node.of(this).tryGetContext(cxapi.TARGET_PARTITIONS);
+    if (regions !== undefined && !Array.isArray(regions)) {
+      throw new Error(`Context value '${cxapi.TARGET_PARTITIONS}' should be a list of strings, got: ${JSON.stringify(cxapi.TARGET_PARTITIONS)}`);
+    }
+
+    const lookupMap = regions ? RegionInfo.limitedRegionMap(factName, regions) : RegionInfo.regionMap(factName);
+    const lookupValues = Object.values(lookupMap);
+
+    // If there are no lookups, just return the default
+    if (lookupValues.length === 0) {
+      if (!defaultValue) {
+        throw new Error(`region-info: don't have any information for ${factName}. Use 'Fact.register' to provide values, or add partitions to the '${cxapi.TARGET_PARTITIONS}' context value.`);
+      }
+      return defaultValue;
+    }
+
+    // If all values are the same, we can just return the value directly
+    if (lookupValues.length > 1 && lookupValues.every((v) => v === lookupValues[0])) {
+      return lookupValues[0];
+    }
+
+    return deployTimeLookup(this, factName, lookupMap);
+  }
+
+
+  /**
    * Create a CloudFormation Export for a value
    *
    * Returns a string representing the corresponding `Fn.importValue()`
@@ -1301,6 +1354,34 @@ export interface ExportValueOptions {
   readonly name?: string;
 }
 
+/**
+ * Make sure a CfnMapping exists in the given stack with the lookup values for the given fact
+ *
+ * Add to an existing CfnMapping if possible.
+ */
+function deployTimeLookup(stack: Stack, factName: string, mapValues: Record<string, string>) {
+  // Derive map name and lookup key from the factName, splitting on ':' if it exists
+  const [factClass, factParam] = factName.includes(':')
+    ? factName.split(':')
+    : [factName, 'value'] as const;
+
+  const mapId = `${ucfirst(factClass)}Map`;
+  const factKey = factParam.replace(/[^a-zA-Z0-9]/g, '_');
+
+  let mapping = stack.node.tryFindChild(mapId) as CfnMapping | undefined;
+  if (!mapping) {
+    mapping = new CfnMapping(stack, mapId);
+  }
+  for (const [region, value] of Object.entries(mapValues)) {
+    mapping.setValue(region, factKey, value);
+  }
+  return mapping.findInMap(Aws.REGION, factKey);
+}
+
+function ucfirst(x: string) {
+  return `${x.substr(0, 1).toUpperCase()}${x.substr(1)}`;
+}
+
 // These imports have to be at the end to prevent circular imports
 import { CfnOutput } from './cfn-output';
 import { addDependency } from './deps';
@@ -1312,4 +1393,6 @@ import { DefaultStackSynthesizer, IStackSynthesizer, LegacyStackSynthesizer } fr
 import { Stage } from './stage';
 import { ITaggable, TagManager } from './tag-manager';
 import { Token, Tokenization } from './token';
-import { referenceNestedStackValueInParent } from './private/refs';
+import { referenceNestedStackValueInParent } from './private/refs';import { Fact, RegionInfo } from '@aws-cdk/region-info';
+import { CfnMapping } from './cfn-mapping';
+
