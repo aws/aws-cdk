@@ -160,6 +160,7 @@
     "@aws-cdk/aws-lambda-go": "0.0.0",
     "@aws-cdk/aws-lambda-nodejs": "0.0.0",
     "@aws-cdk/aws-lambda-python": "0.0.0",
+    "@aws-cdk/aws-lex": "0.0.0",
     "@aws-cdk/aws-licensemanager": "0.0.0",
     "@aws-cdk/aws-lightsail": "0.0.0",
     "@aws-cdk/aws-location": "0.0.0",
