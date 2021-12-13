@@ -3,8 +3,8 @@ import { assetMetadataChanged, ChangeHotswapImpact, ChangeHotswapResult, Hotswap
 import { EvaluateCloudFormationTemplate } from './evaluate-cloudformation-template';
 
 /**
- * Returns `false` if the change cannot be short-circuited,
- * `true` if the change is irrelevant from a short-circuit perspective
+ * Returns `ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT` if the change cannot be short-circuited,
+ * `ChangeHotswapImpact.IRRELEVANT` if the change is irrelevant from a short-circuit perspective
  * (like a change to CDKMetadata),
  * or a LambdaFunctionResource if the change can be short-circuited.
  */
@@ -104,6 +104,8 @@ interface LambdaFunctionResource {
 }
 
 class LambdaFunctionHotswapOperation implements HotswapOperation {
+  public readonly service = 'lambda-function';
+
   constructor(private readonly lambdaFunctionResource: LambdaFunctionResource) {
   }
 

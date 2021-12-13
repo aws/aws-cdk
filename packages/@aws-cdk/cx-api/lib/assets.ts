@@ -14,6 +14,7 @@ export const ASSET_RESOURCE_METADATA_DOCKERFILE_PATH_KEY = 'aws:asset:dockerfile
 export const ASSET_RESOURCE_METADATA_DOCKER_BUILD_ARGS_KEY = 'aws:asset:docker-build-args';
 export const ASSET_RESOURCE_METADATA_DOCKER_BUILD_TARGET_KEY = 'aws:asset:docker-build-target';
 export const ASSET_RESOURCE_METADATA_PROPERTY_KEY = 'aws:asset:property';
+export const ASSET_RESOURCE_METADATA_IS_BUNDLED_KEY = 'aws:asset:is-bundled';
 
 /**
  * Separator string that separates the prefix separator from the object key separator.

@@ -87,6 +87,7 @@ describe('stage', () => {
     expect(stack).toHaveResource('AWS::ApiGateway::Stage', {
       MethodSettings: [
         {
+          DataTraceEnabled: false,
           HttpMethod: '*',
           LoggingLevel: 'INFO',
           ResourcePath: '/*',
@@ -119,12 +120,14 @@ describe('stage', () => {
     expect(stack).toHaveResource('AWS::ApiGateway::Stage', {
       MethodSettings: [
         {
+          DataTraceEnabled: false,
           HttpMethod: '*',
           LoggingLevel: 'INFO',
           ResourcePath: '/*',
           ThrottlingRateLimit: 12,
         },
         {
+          DataTraceEnabled: false,
           HttpMethod: 'GET',
           LoggingLevel: 'ERROR',
           ResourcePath: '/~1goo~1bar',
@@ -207,6 +210,7 @@ describe('stage', () => {
       CacheClusterSize: '0.5',
       MethodSettings: [
         {
+          DataTraceEnabled: false,
           CachingEnabled: true,
           HttpMethod: '*',
           ResourcePath: '/*',
