@@ -348,11 +348,11 @@ export class Table extends Resource implements ITable {
   }
 
   private validatePartitionIndex(props: PartitionIndexProps) {
-    if (props.indexName && !props.indexName.match(/^[A-Za-z0-9\_\-])/)) {
+    if (props.indexName && !props.indexName.match(/^[A-Za-z0-9\_\-]/)) {
       throw new Error(`Index name can only have letters, numbers, hyphens, or underscores but received ${props.indexName}`);
     }
     if (!this.partitionKeys || this.partitionKeys.length === 0) {
-      throw new Error('To create a partition index the table must have partition keys');
+      throw new Error('The table must have partition keys to create a partition index');
     }
     const keyNames = this.partitionKeys.map(pk => pk.name);
     if (!props.keys.every(k => keyNames.includes(k))) {

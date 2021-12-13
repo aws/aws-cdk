@@ -933,6 +933,82 @@ test('explicit s3 bucket and with empty prefix', () => {
   });
 });
 
+describe('add partition index', () => {
+  test('fails if no partition keys', () => {
+    const stack = new cdk.Stack();
+    const database = new glue.Database(stack, 'Database', {
+      databaseName: 'database',
+    });
+
+    const table = new glue.Table(stack, 'Table', {
+      database,
+      tableName: 'table',
+      columns: [{
+        name: 'col',
+        type: glue.Schema.STRING,
+      }],
+      dataFormat: glue.DataFormat.JSON,
+    });
+
+    expect(() => table.addPartitionIndex({
+      indexName: 'my-part',
+      keys: ['part'],
+    })).toThrowError(/The table must have partition keys to create a partition index/);
+  });
+
+  test('fails if partition index does not match partition keys', () => {
+    const stack = new cdk.Stack();
+    const database = new glue.Database(stack, 'Database', {
+      databaseName: 'database',
+    });
+
+    const table = new glue.Table(stack, 'Table', {
+      database,
+      tableName: 'table',
+      columns: [{
+        name: 'col',
+        type: glue.Schema.STRING,
+      }],
+      partitionKeys: [{
+        name: 'part',
+        type: glue.Schema.SMALL_INT,
+      }],
+      dataFormat: glue.DataFormat.JSON,
+    });
+
+    expect(() => table.addPartitionIndex({
+      indexName: 'my-part',
+      keys: ['not-part'],
+    })).toThrowError(/All index keys must also be partition keys/);
+  });
+
+  test('fails with bad index name', () => {
+    const stack = new cdk.Stack();
+    const database = new glue.Database(stack, 'Database', {
+      databaseName: 'database',
+    });
+
+    const table = new glue.Table(stack, 'Table', {
+      database,
+      tableName: 'table',
+      columns: [{
+        name: 'col',
+        type: glue.Schema.STRING,
+      }],
+      partitionKeys: [{
+        name: 'part',
+        type: glue.Schema.SMALL_INT,
+      }],
+      dataFormat: glue.DataFormat.JSON,
+    });
+
+    expect(() => table.addPartitionIndex({
+      indexName: '$my-part',
+      keys: ['part'],
+    })).toThrowError(/Index name can only have letters, numbers, hyphens, or underscores/);
+  });
+});
+
 describe('grants', () => {
   test('custom permissions', () => {
     const stack = new cdk.Stack();
