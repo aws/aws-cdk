@@ -1630,6 +1630,38 @@ describe('instance', () => {
       },
     });
   });
+
+  test('instance with port', () => {
+    // WHEN
+    new rds.DatabaseInstance(stack, 'Database', {
+      engine: rds.DatabaseInstanceEngine.MYSQL,
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+      vpc,
+      port: 3306,
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::RDS::DBInstance', {
+      Port: '3306',
+    });
+  });
+
+  test('instance with port from token', () => {
+    // WHEN
+    new rds.DatabaseInstance(stack, 'Database', {
+      engine: rds.DatabaseInstanceEngine.MYSQL,
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+      vpc,
+      port: cdk.Token.asNumber({ Ref: 'port' }),
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::RDS::DBInstance', {
+      Port: {
+        Ref: 'port',
+      },
+    });
+  });
 });
 
 test.each([
