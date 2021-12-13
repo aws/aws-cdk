@@ -2,7 +2,7 @@
 const RULE_ = 'RULE_';
 
 /**
- * After this point, SSM only creates regional principals anymore
+ * After this point, SSM only creates regional principals
  */
 export const RULE_SSM_PRINCIPALS_ARE_REGIONAL = `${RULE_}SSM_PRINCIPALS_ARE_REGIONAL`;
 
