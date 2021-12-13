@@ -422,6 +422,8 @@ export class ContainerDefinition extends CoreConstruct {
 
   private readonly secrets?: CfnTaskDefinition.SecretProperty[];
 
+  private readonly environment: { [key: string]: string };
+
   /**
    * Constructs a new instance of the ContainerDefinition class.
    */
@@ -455,6 +457,12 @@ export class ContainerDefinition extends CoreConstruct {
           valueFrom: secret.arn,
         });
       }
+    }
+
+    if (props.environment) {
+      this.environment = { ...props.environment };
+    } else {
+      this.environment = {};
     }
 
     if (props.environmentFiles) {
@@ -545,6 +553,13 @@ export class ContainerDefinition extends CoreConstruct {
 
       return pm;
     }));
+  }
+
+  /**
+   * This method adds an environment variable to the container.
+   */
+  public addEnvironment(name: string, value: string) {
+    this.environment[name] = value;
   }
 
   /**
@@ -669,7 +684,7 @@ export class ContainerDefinition extends CoreConstruct {
       volumesFrom: cdk.Lazy.any({ produce: () => this.volumesFrom.map(renderVolumeFrom) }, { omitEmptyArray: true }),
       workingDirectory: this.props.workingDirectory,
       logConfiguration: this.logDriverConfig,
-      environment: this.props.environment && renderKV(this.props.environment, 'name', 'value'),
+      environment: this.environment && Object.keys(this.environment).length ? renderKV(this.environment, 'name', 'value') : undefined,
       environmentFiles: this.environmentFiles && renderEnvironmentFiles(this.environmentFiles),
       secrets: this.secrets,
       extraHosts: this.props.extraHosts && renderKV(this.props.extraHosts, 'hostname', 'ipAddress'),
