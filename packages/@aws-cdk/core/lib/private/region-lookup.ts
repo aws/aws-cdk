@@ -20,9 +20,9 @@ export function deployTimeLookup(stack: Stack, factName: string, lookupMap: Reco
 
   // If the tokenized representation of all values is the same, we can just
   // return the value directly and don't need to produce an actual map.
-  const tokenizedValues = Object.values(tokenizedMap(lookupMap));
-  if (tokenizedValues.every((v) => v === tokenizedValues[0])) {
-    return tokenizedValues[0];
+  const pattern = findValuePattern(lookupMap);
+  if (pattern !== undefined) {
+    return pattern;
   }
 
   // Derive map name and lookup key from the factName, splitting on ':' if it exists
@@ -57,22 +57,46 @@ function ucfirst(x: string) {
  * This wouldn't have been necessary if the region-info library had encoded the
  * pattern information instead of the literal values... but let's do it here now.
  */
-function tokenizedMap(regionMap: Record<string, string>): Record<string, string> {
-  const ret: Record<string, string> = {};
-  for (const [region, value] of Object.entries(regionMap)) {
-    let tokenizedValue = value;
+function findValuePattern(regionMap: Record<string, string>): string | undefined {
+  const simplified: Record<string, string> = { ...regionMap };
 
-    const info = RegionInfo.get(region);
-    if (info?.domainSuffix) {
-      tokenizedValue = replaceAll(tokenizedValue, info.domainSuffix, Aws.URL_SUFFIX);
+  // If they all contain URL_SUFFIX, substitute it, but only if the value is different
+  // among some values in the list (we don't want to tokenize unnecessarily, i.e. we don't
+  // want to replace `amazonaws.com` with URL_SUFFIX if it's not necessary)
+  const urlSuffixes = Object.keys(simplified).map(urlSuffix);
+  if (!allSame(urlSuffixes) && Object.entries(simplified).every(([region, value]) => value.includes(urlSuffix(region)))) {
+    for (const region in simplified) {
+      simplified[region] = replaceAll(simplified[region], urlSuffix(region), Aws.URL_SUFFIX);
     }
-    tokenizedValue = replaceAll(tokenizedValue, region, Aws.REGION);
-
-    ret[region] = tokenizedValue;
   }
-  return ret;
+
+  // If they all contain REGION, substitute it (no need to do the "is everything different"
+  // check, this is true by design for these values)
+  if (Object.entries(simplified).every(([region, value]) => value.includes(region))) {
+    for (const region in simplified) {
+      simplified[region] = replaceAll(simplified[region], region, Aws.REGION);
+    }
+  }
+
+  // If the values are now all the same, return the singleton value
+  const values = Object.values(simplified);
+  if (allSame(values)) {
+    return values[0];
+  }
+
+  // Otherwise we failed
+  return undefined;
+}
+
+function allSame(xs: string[]) {
+  return xs.every((x) => x === xs[0]);
+}
+
+function urlSuffix(region: string) {
+  return RegionInfo.get(region)?.domainSuffix ?? 'amazonaws.com';
 }
 
 function replaceAll(x: string, pat: string, replacement: string) {
   return x.split(pat).join(replacement);
 }
+

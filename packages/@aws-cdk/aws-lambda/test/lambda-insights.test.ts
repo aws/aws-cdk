@@ -81,17 +81,17 @@ describe('lambda-insights', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'Stack', {});
 
-    functionWithInsightsVersion(stack, 'MyLambda', lambda.LambdaInsightsVersion.VERSION_1_0_54_0);
+    functionWithInsightsVersion(stack, 'MyLambda', lambda.LambdaInsightsVersion.VERSION_1_0_98_0);
 
-    // Should be looking up a mapping
+    // Still resolves because all elements of the mapping map to the same value
     expect(stack).toHaveResource('AWS::Lambda::Function', {
       Layers: [{
         'Fn::FindInMap': [
-          'LambdaInsightsVersions10540',
+          'CloudwatchlambdainsightsversionMap',
           {
             Ref: 'AWS::Region',
           },
-          'arn',
+          '1_0_98_0',
         ],
       }],
     });
@@ -105,212 +105,223 @@ describe('lambda-insights', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'Stack', {});
 
-    functionWithInsightsVersion(stack, 'MyLambda1', lambda.LambdaInsightsVersion.VERSION_1_0_54_0);
-    functionWithInsightsVersion(stack, 'MyLambda2', lambda.LambdaInsightsVersion.VERSION_1_0_54_0);
+    functionWithInsightsVersion(stack, 'MyLambda1', lambda.LambdaInsightsVersion.VERSION_1_0_98_0);
+    functionWithInsightsVersion(stack, 'MyLambda2', lambda.LambdaInsightsVersion.VERSION_1_0_98_0);
 
     /* eslint-disable quote-props */
-    expect(stack).toMatchTemplate({
-      Resources: {
-        MyLambda1ServiceRole69A7E1EA: {
-          'Type': 'AWS::IAM::Role',
-          'Properties': {
-            'AssumeRolePolicyDocument': {
-              'Statement': [
-                {
-                  'Action': 'sts:AssumeRole',
-                  'Effect': 'Allow',
-                  'Principal': {
-                    'Service': 'lambda.amazonaws.com',
+    expect(stack).toMatchTemplate(
+      {
+        Resources: {
+          MyLambda1ServiceRole69A7E1EA: {
+            Type: 'AWS::IAM::Role',
+            Properties: {
+              AssumeRolePolicyDocument: {
+                Statement: [
+                  {
+                    Action: 'sts:AssumeRole',
+                    Effect: 'Allow',
+                    Principal: {
+                      Service: 'lambda.amazonaws.com',
+                    },
                   },
+                ],
+                Version: '2012-10-17',
+              },
+              ManagedPolicyArns: [
+                {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      {
+                        Ref: 'AWS::Partition',
+                      },
+                      ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole',
+                    ],
+                  ],
+                },
+                {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      {
+                        Ref: 'AWS::Partition',
+                      },
+                      ':iam::aws:policy/CloudWatchLambdaInsightsExecutionRolePolicy',
+                    ],
+                  ],
                 },
               ],
-              'Version': '2012-10-17',
             },
-            'ManagedPolicyArns': [
-              {
-                'Fn::Join': [
-                  '',
-                  [
-                    'arn:',
-                    {
-                      'Ref': 'AWS::Partition',
-                    },
-                    ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole',
-                  ],
-                ],
-              },
-              {
-                'Fn::Join': [
-                  '',
-                  [
-                    'arn:',
-                    {
-                      'Ref': 'AWS::Partition',
-                    },
-                    ':iam::aws:policy/CloudWatchLambdaInsightsExecutionRolePolicy',
-                  ],
-                ],
-              },
-            ],
           },
-        },
-        MyLambda1AAFB4554: {
-          'Type': 'AWS::Lambda::Function',
-          'Properties': {
-            'Code': {
-              'ZipFile': 'foo',
-            },
-            'Role': {
-              'Fn::GetAtt': [
-                'MyLambda1ServiceRole69A7E1EA',
-                'Arn',
-              ],
-            },
-            'Handler': 'index.handler',
-            'Layers': [
-              {
-                'Fn::FindInMap': [
-                  'LambdaInsightsVersions10540',
-                  {
-                    'Ref': 'AWS::Region',
-                  },
-                  'arn',
-                ],
+          MyLambda1AAFB4554: {
+            Type: 'AWS::Lambda::Function',
+            Properties: {
+              Code: {
+                ZipFile: 'foo',
               },
-            ],
-            'Runtime': 'nodejs10.x',
-          },
-          'DependsOn': [
-            'MyLambda1ServiceRole69A7E1EA',
-          ],
-        },
-        MyLambda2ServiceRoleD09B370C: {
-          'Type': 'AWS::IAM::Role',
-          'Properties': {
-            'AssumeRolePolicyDocument': {
-              'Statement': [
+              Role: {
+                'Fn::GetAtt': ['MyLambda1ServiceRole69A7E1EA', 'Arn'],
+              },
+              Handler: 'index.handler',
+              Layers: [
                 {
-                  'Action': 'sts:AssumeRole',
-                  'Effect': 'Allow',
-                  'Principal': {
-                    'Service': 'lambda.amazonaws.com',
-                  },
+                  'Fn::FindInMap': [
+                    'CloudwatchlambdainsightsversionMap',
+                    {
+                      Ref: 'AWS::Region',
+                    },
+                    '1_0_98_0',
+                  ],
                 },
               ],
-              'Version': '2012-10-17',
+              Runtime: 'nodejs10.x',
             },
-            'ManagedPolicyArns': [
-              {
-                'Fn::Join': [
-                  '',
-                  [
-                    'arn:',
-                    {
-                      'Ref': 'AWS::Partition',
-                    },
-                    ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole',
-                  ],
-                ],
-              },
-              {
-                'Fn::Join': [
-                  '',
-                  [
-                    'arn:',
-                    {
-                      'Ref': 'AWS::Partition',
-                    },
-                    ':iam::aws:policy/CloudWatchLambdaInsightsExecutionRolePolicy',
-                  ],
-                ],
-              },
-            ],
+            DependsOn: ['MyLambda1ServiceRole69A7E1EA'],
           },
-        },
-        MyLambda2254B54D5: {
-          'Type': 'AWS::Lambda::Function',
-          'Properties': {
-            'Code': {
-              'ZipFile': 'foo',
-            },
-            'Role': {
-              'Fn::GetAtt': [
-                'MyLambda2ServiceRoleD09B370C',
-                'Arn',
+          MyLambda2ServiceRoleD09B370C: {
+            Type: 'AWS::IAM::Role',
+            Properties: {
+              AssumeRolePolicyDocument: {
+                Statement: [
+                  {
+                    Action: 'sts:AssumeRole',
+                    Effect: 'Allow',
+                    Principal: {
+                      Service: 'lambda.amazonaws.com',
+                    },
+                  },
+                ],
+                Version: '2012-10-17',
+              },
+              ManagedPolicyArns: [
+                {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      {
+                        Ref: 'AWS::Partition',
+                      },
+                      ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole',
+                    ],
+                  ],
+                },
+                {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      {
+                        Ref: 'AWS::Partition',
+                      },
+                      ':iam::aws:policy/CloudWatchLambdaInsightsExecutionRolePolicy',
+                    ],
+                  ],
+                },
               ],
             },
-            'Handler': 'index.handler',
-            'Layers': [
-              {
-                'Fn::FindInMap': [
-                  'LambdaInsightsVersions10540',
-                  {
-                    'Ref': 'AWS::Region',
-                  },
-                  'arn',
-                ],
+          },
+          MyLambda2254B54D5: {
+            Type: 'AWS::Lambda::Function',
+            Properties: {
+              Code: {
+                ZipFile: 'foo',
               },
-            ],
-            'Runtime': 'nodejs10.x',
-          },
-          'DependsOn': [
-            'MyLambda2ServiceRoleD09B370C',
-          ],
-        },
-      },
-      Mappings: {
-        LambdaInsightsVersions10540: {
-          'ap-northeast-1': {
-            arn: 'arn:aws:lambda:ap-northeast-1:580247275435:layer:LambdaInsightsExtension:2',
-          },
-          'ap-northeast-2': {
-            'arn': 'arn:aws:lambda:ap-northeast-2:580247275435:layer:LambdaInsightsExtension:2',
-          },
-          'ap-south-1': {
-            'arn': 'arn:aws:lambda:ap-south-1:580247275435:layer:LambdaInsightsExtension:2',
-          },
-          'ap-southeast-1': {
-            'arn': 'arn:aws:lambda:ap-southeast-1:580247275435:layer:LambdaInsightsExtension:2',
-          },
-          'ap-southeast-2': {
-            'arn': 'arn:aws:lambda:ap-southeast-2:580247275435:layer:LambdaInsightsExtension:2',
-          },
-          'ca-central-1': {
-            'arn': 'arn:aws:lambda:ca-central-1:580247275435:layer:LambdaInsightsExtension:2',
-          },
-          'eu-central-1': {
-            'arn': 'arn:aws:lambda:eu-central-1:580247275435:layer:LambdaInsightsExtension:2',
-          },
-          'eu-north-1': {
-            'arn': 'arn:aws:lambda:eu-north-1:580247275435:layer:LambdaInsightsExtension:2',
-          },
-          'eu-west-1': {
-            'arn': 'arn:aws:lambda:eu-west-1:580247275435:layer:LambdaInsightsExtension:2',
-          },
-          'eu-west-2': {
-            'arn': 'arn:aws:lambda:eu-west-2:580247275435:layer:LambdaInsightsExtension:2',
-          },
-          'eu-west-3': {
-            'arn': 'arn:aws:lambda:eu-west-3:580247275435:layer:LambdaInsightsExtension:2',
-          },
-          'sa-east-1': {
-            'arn': 'arn:aws:lambda:sa-east-1:580247275435:layer:LambdaInsightsExtension:2',
-          },
-          'us-east-1': {
-            'arn': 'arn:aws:lambda:us-east-1:580247275435:layer:LambdaInsightsExtension:2',
-          },
-          'us-east-2': {
-            'arn': 'arn:aws:lambda:us-east-2:580247275435:layer:LambdaInsightsExtension:2',
-          },
-          'us-west-1': {
-            'arn': 'arn:aws:lambda:us-west-1:580247275435:layer:LambdaInsightsExtension:2',
-          },
-          'us-west-2': {
-            'arn': 'arn:aws:lambda:us-west-2:580247275435:layer:LambdaInsightsExtension:2',
+              Role: {
+                'Fn::GetAtt': ['MyLambda2ServiceRoleD09B370C', 'Arn'],
+              },
+              Handler: 'index.handler',
+              Layers: [
+                {
+                  'Fn::FindInMap': [
+                    'CloudwatchlambdainsightsversionMap',
+                    {
+                      Ref: 'AWS::Region',
+                    },
+                    '1_0_98_0',
+                  ],
+                },
+              ],
+              Runtime: 'nodejs10.x',
+            },
+            DependsOn: ['MyLambda2ServiceRoleD09B370C'],
           },
         },
+        Mappings: {
+          CloudwatchlambdainsightsversionMap: {
+            'af-south-1': {
+              '1_0_98_0': 'arn:aws:lambda:af-south-1:012438385374:layer:LambdaInsightsExtension:8',
+            },
+            'ap-east-1': {
+              '1_0_98_0': 'arn:aws:lambda:ap-east-1:519774774795:layer:LambdaInsightsExtension:8',
+            },
+            'ap-northeast-1': {
+              '1_0_98_0': 'arn:aws:lambda:ap-northeast-1:580247275435:layer:LambdaInsightsExtension:14',
+            },
+            'ap-northeast-2': {
+              '1_0_98_0': 'arn:aws:lambda:ap-northeast-2:580247275435:layer:LambdaInsightsExtension:14',
+            },
+            'ap-south-1': {
+              '1_0_98_0': 'arn:aws:lambda:ap-south-1:580247275435:layer:LambdaInsightsExtension:14',
+            },
+            'ap-southeast-1': {
+              '1_0_98_0': 'arn:aws:lambda:ap-southeast-1:580247275435:layer:LambdaInsightsExtension:14',
+            },
+            'ap-southeast-2': {
+              '1_0_98_0': 'arn:aws:lambda:ap-southeast-2:580247275435:layer:LambdaInsightsExtension:14',
+            },
+            'ca-central-1': {
+              '1_0_98_0': 'arn:aws:lambda:ca-central-1:580247275435:layer:LambdaInsightsExtension:14',
+            },
+            'cn-north-1': {
+              '1_0_98_0': 'arn:aws-cn:lambda:cn-north-1:488211338238:layer:LambdaInsightsExtension:8',
+            },
+            'cn-northwest-1': {
+              '1_0_98_0': 'arn:aws-cn:lambda:cn-northwest-1:488211338238:layer:LambdaInsightsExtension:8',
+            },
+            'eu-central-1': {
+              '1_0_98_0': 'arn:aws:lambda:eu-central-1:580247275435:layer:LambdaInsightsExtension:14',
+            },
+            'eu-north-1': {
+              '1_0_98_0': 'arn:aws:lambda:eu-north-1:580247275435:layer:LambdaInsightsExtension:14',
+            },
+            'eu-south-1': {
+              '1_0_98_0': 'arn:aws:lambda:eu-south-1:339249233099:layer:LambdaInsightsExtension:8',
+            },
+            'eu-west-1': {
+              '1_0_98_0': 'arn:aws:lambda:eu-west-1:580247275435:layer:LambdaInsightsExtension:14',
+            },
+            'eu-west-2': {
+              '1_0_98_0': 'arn:aws:lambda:eu-west-2:580247275435:layer:LambdaInsightsExtension:14',
+            },
+            'eu-west-3': {
+              '1_0_98_0': 'arn:aws:lambda:eu-west-3:580247275435:layer:LambdaInsightsExtension:14',
+            },
+            'me-south-1': {
+              '1_0_98_0': 'arn:aws:lambda:me-south-1:285320876703:layer:LambdaInsightsExtension:8',
+            },
+            'sa-east-1': {
+              '1_0_98_0': 'arn:aws:lambda:sa-east-1:580247275435:layer:LambdaInsightsExtension:14',
+            },
+            'us-east-1': {
+              '1_0_98_0': 'arn:aws:lambda:us-east-1:580247275435:layer:LambdaInsightsExtension:14',
+            },
+            'us-east-2': {
+              '1_0_98_0': 'arn:aws:lambda:us-east-2:580247275435:layer:LambdaInsightsExtension:14',
+            },
+            'us-west-1': {
+              '1_0_98_0': 'arn:aws:lambda:us-west-1:580247275435:layer:LambdaInsightsExtension:14',
+            },
+            'us-west-2': {
+              '1_0_98_0': 'arn:aws:lambda:us-west-2:580247275435:layer:LambdaInsightsExtension:14',
+            },
+          },
+        },
       },
-    }, MatchStyle.EXACT);
+      MatchStyle.EXACT
+    );
     // On synthesis it should not throw an error
     expect(() => app.synth()).not.toThrow();
   });
