@@ -18,7 +18,7 @@ export interface PartitionIndexProps {
    *
    * @default - a name will be generated for you.
    */
-  readonly indexName: string;
+  readonly indexName?: string;
 
   /**
    * The partition index keys. These keys
