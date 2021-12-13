@@ -1,5 +1,19 @@
 import { IResolveContext, Lazy, Stack, Token } from '@aws-cdk/core';
 import { FactName, RegionInfo } from '@aws-cdk/region-info';
+import { Construct } from 'constructs';
+import { Architecture } from './architecture';
+import { IFunction } from './function-base';
+
+
+/**
+ * Config returned from {@link LambdaInsightsVersion._bind}
+ */
+interface InsightsBindConfig {
+  /**
+   * ARN of the Lambda Insights Layer Version
+   */
+  readonly arn: string;
+}
 
 // To add new versions, update fact-tables.ts `CLOUDWATCH_LAMBDA_INSIGHTS_ARNS` and create a new `public static readonly VERSION_A_B_C_D`
 
@@ -29,6 +43,11 @@ export abstract class LambdaInsightsVersion {
   public static readonly VERSION_1_0_98_0 = LambdaInsightsVersion.fromInsightsVersion('1.0.98.0');
 
   /**
+   * Version 1.0.119.0
+   */
+  public static readonly VERSION_1_0_119_0 = LambdaInsightsVersion.fromInsightsVersion('1.0.119.0');
+
+  /**
    * Use the insights extension associated with the provided ARN. Make sure the ARN is associated
    * with same region as your function
    *
@@ -37,6 +56,9 @@ export abstract class LambdaInsightsVersion {
   public static fromInsightVersionArn(arn: string): LambdaInsightsVersion {
     class InsightsArn extends LambdaInsightsVersion {
       public readonly layerVersionArn = arn;
+      public _bind(_scope: Construct, _function: IFunction): InsightsBindConfig {
+        return { arn };
+      }
     }
     return new InsightsArn();
   }
@@ -44,16 +66,25 @@ export abstract class LambdaInsightsVersion {
   // Use the verison to build the object. Not meant to be called by the user -- user should use e.g. VERSION_1_0_54_0
   private static fromInsightsVersion(insightsVersion: string): LambdaInsightsVersion {
 
-    // Check if insights version is valid. This should only happen if one of the public static readonly versions are set incorrectly
-    const versionExists = RegionInfo.regions.some(regionInfo => regionInfo.cloudwatchLambdaInsightsArn(insightsVersion));
-    if (!versionExists) {
-      throw new Error(`Insights version ${insightsVersion} does not exist.`);
-    }
-
     class InsightsVersion extends LambdaInsightsVersion {
       public readonly layerVersionArn = Lazy.uncachedString({
         produce: (context) => getVersionArn(context, insightsVersion),
       });
+
+      public _bind(_scope: Construct, _function: IFunction): InsightsBindConfig {
+        const arch = _function.architecture?.name ?? Architecture.X86_64.name;
+        // Check if insights version is valid. This should only happen if one of the public static readonly versions are set incorrectly
+        // or if the version is not available for the Lambda Architecture
+        const versionExists = RegionInfo.regions.some(regionInfo => regionInfo.cloudwatchLambdaInsightsArn(insightsVersion, arch));
+        if (!versionExists) {
+          throw new Error(`Insights version ${insightsVersion} does not exist.`);
+        }
+        return {
+          arn: Lazy.uncachedString({
+            produce: (context) => getVersionArn(context, insightsVersion, arch),
+          }),
+        };
+      }
     }
     return new InsightsVersion();
   }
@@ -62,6 +93,13 @@ export abstract class LambdaInsightsVersion {
    * The arn of the Lambda Insights extension
    */
   public readonly layerVersionArn: string = '';
+
+  /**
+   * Returns the arn of the Lambda Insights extension based on the
+   * Lambda architecture
+   * @internal
+   */
+  public abstract _bind(_scope: Construct, _function: IFunction): InsightsBindConfig;
 }
 
 /**
@@ -70,14 +108,15 @@ export abstract class LambdaInsightsVersion {
  *
  * This function is run on CDK synthesis.
  */
-function getVersionArn(context: IResolveContext, insightsVersion: string): string {
+function getVersionArn(context: IResolveContext, insightsVersion: string, architecture?: string): string {
 
   const scopeStack = Stack.of(context.scope);
   const region = scopeStack.region;
+  const arch = architecture ?? Architecture.X86_64.name;
 
   // Region is defined, look up the arn, or throw an error if the version isn't supported by a region
   if (region !== undefined && !Token.isUnresolved(region)) {
-    const arn = RegionInfo.get(region).cloudwatchLambdaInsightsArn(insightsVersion);
+    const arn = RegionInfo.get(region).cloudwatchLambdaInsightsArn(insightsVersion, arch);
     if (arn === undefined) {
       throw new Error(`Insights version ${insightsVersion} is not supported in region ${region}`);
     }
