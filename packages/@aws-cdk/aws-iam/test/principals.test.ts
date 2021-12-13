@@ -1,4 +1,5 @@
 import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import { App, CfnOutput, Stack } from '@aws-cdk/core';
 import * as iam from '../lib';
 
@@ -243,4 +244,20 @@ test('PrincipalWithConditions inherits principalAccount from AccountPrincipal ',
   // THEN
   expect(accountPrincipal.principalAccount).toStrictEqual('123456789012');
   expect(principalWithConditions.principalAccount).toStrictEqual('123456789012');
+});
+
+test('ServicePrincipal in agnostic stack generates lookup table', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  new iam.Role(stack, 'Role', {
+    assumedBy: new iam.ServicePrincipal('ssm.amazonaws.com'),
+  });
+
+  // THEN
+  const template = Template.fromStack(stack);
+  const mappings = template.findMappings('ServicePrincipalMap');
+  expect(mappings.ServicePrincipalMap['af-south-1']?.ssm).toEqual('ssm.af-south-1.amazonaws.com');
+  expect(mappings.ServicePrincipalMap['us-east-1']?.ssm).toEqual('ssm.amazonaws.com');
 });

@@ -1,6 +1,6 @@
-import { AWS_REGIONS, AWS_SERVICES } from '../build-tools/aws-entities';
 import { CLOUDWATCH_LAMBDA_INSIGHTS_ARNS } from '../build-tools/fact-tables';
 import { RegionInfo } from '../lib';
+import { AWS_REGIONS, AWS_SERVICES } from '../lib/aws-entities';
 
 test('built-in data is correct', () => {
   const snapshot: any = {};

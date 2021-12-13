@@ -1,5 +1,5 @@
 import * as cdk from '@aws-cdk/core';
-import { Default, RegionInfo } from '@aws-cdk/region-info';
+import { Default, Fact, FactName, RegionInfo } from '@aws-cdk/region-info';
 import { IOpenIdConnectProvider } from './oidc-provider';
 import { Condition, Conditions, PolicyStatement } from './policy-statement';
 import { ISamlProvider } from './saml-provider';
@@ -694,9 +694,14 @@ class ServicePrincipalToken implements cdk.IResolvable {
   }
 
   public resolve(ctx: cdk.IResolveContext) {
-    const region = this.opts.region || cdk.Stack.of(ctx.scope).region;
-    const fact = RegionInfo.get(region).servicePrincipal(this.service);
-    return fact || Default.servicePrincipal(this.service, region, cdk.Aws.URL_SUFFIX);
+    const stack = cdk.Stack.of(ctx.scope);
+    const region = this.opts.region ?? stack.region;
+    return regionalFact(
+      stack,
+      region,
+      FactName.servicePrincipal(this.service),
+      Default.servicePrincipal(this.service, region, cdk.Aws.URL_SUFFIX),
+    );
   }
 
   public toString() {
@@ -713,4 +718,37 @@ class ServicePrincipalToken implements cdk.IResolvable {
   public toJSON() {
     return `<${this.service}>`;
   }
+}
+
+function regionalFact(stack: cdk.Stack, region: string, factName: string, defaultValue: string) {
+  if (!cdk.Token.isUnresolved(region)) {
+    return Fact.find(region, factName) ?? defaultValue;
+  }
+
+  const lookupMap = RegionInfo.regionMap(factName);
+  const lookupValues = Object.values(lookupMap);
+
+  // If there are no lookups, just return the default
+  if (lookupValues.length === 0) { return defaultValue; }
+
+  // If all values are the same, we can just return the value directly
+  if (lookupValues.length > 1 && lookupValues.every((v) => v === lookupValues[0])) {
+    return lookupValues[0];
+  }
+
+  return deployTimeLookup(stack, factName, lookupMap);
+}
+
+function deployTimeLookup(stack: cdk.Stack, factName: string, mapValues: Record<string, string>) {
+  const factKey = factName.replace(/[^a-zA-Z0-9]/g, '_').replace(/^service_principal_/, '');
+
+  const id = 'ServicePrincipalMap';
+  let mapping = stack.node.tryFindChild(id) as cdk.CfnMapping | undefined;
+  if (!mapping) {
+    mapping = new cdk.CfnMapping(stack, id);
+  }
+  for (const [region, value] of Object.entries(mapValues)) {
+    mapping.setValue(region, factKey, value);
+  }
+  return mapping.findInMap(cdk.Aws.REGION, factKey);
 }
