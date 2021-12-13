@@ -44,12 +44,20 @@ class TestStack extends Stack {
       vpcSubnets,
     });
 
+    const parameterGroup = new rds.ParameterGroup(this, 'ReplicaParameterGroup', {
+      engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0 }),
+      parameters: {
+        wait_timeout: '86400',
+      },
+    });
+
     new rds.DatabaseInstanceReadReplica(this, 'MysqlReplica', {
       sourceDatabaseInstance: mysqlSource,
       backupRetention: Duration.days(3),
       instanceType,
       vpc,
       vpcSubnets,
+      parameterGroup,
     });
   }
 }
