@@ -510,6 +510,55 @@ describe('vpc', () => {
         });
       }).toThrow(/subnet cannot include mapPublicIpOnLaunch parameter/);
     });
+    test('verify the Default VPC name', () => {
+      const stack = getTestStack();
+      const tagName = { Key: 'Name', Value: `${stack.node.path}/VPC` };
+      new Vpc(stack, 'VPC', {
+        maxAzs: 1,
+        subnetConfiguration: [
+          {
+            name: 'public',
+            subnetType: SubnetType.PUBLIC,
+          },
+          {
+            name: 'private',
+            subnetType: SubnetType.PRIVATE_WITH_NAT,
+          },
+        ],
+      });
+      expect(stack).toCountResources('AWS::EC2::Subnet', 2);
+      expect(stack).toHaveResource('AWS::EC2::NatGateway');
+      expect(stack).toHaveResource('AWS::EC2::Subnet', {
+        MapPublicIpOnLaunch: true,
+      });
+      expect(stack).toHaveResource('AWS::EC2::VPC', hasTags([tagName]));
+    });
+    test('verify the assigned VPC name passing the "vpcName" prop', () => {
+      const stack = getTestStack();
+      const tagNameDefault = { Key: 'Name', Value: `${stack.node.path}/VPC` };
+      const tagName = { Key: 'Name', Value: 'CustomVPCName' };
+      new Vpc(stack, 'VPC', {
+        maxAzs: 1,
+        subnetConfiguration: [
+          {
+            name: 'public',
+            subnetType: SubnetType.PUBLIC,
+          },
+          {
+            name: 'private',
+            subnetType: SubnetType.PRIVATE_WITH_NAT,
+          },
+        ],
+        vpcName: 'CustomVPCName',
+      });
+      expect(stack).toCountResources('AWS::EC2::Subnet', 2);
+      expect(stack).toHaveResource('AWS::EC2::NatGateway');
+      expect(stack).toHaveResource('AWS::EC2::Subnet', {
+        MapPublicIpOnLaunch: true,
+      });
+      expect(stack).not.toHaveResource('AWS::EC2::VPC', hasTags([tagNameDefault]));
+      expect(stack).toHaveResource('AWS::EC2::VPC', hasTags([tagName]));
+    });
     test('maxAZs defaults to 3 if unset', () => {
       const stack = getTestStack();
       new Vpc(stack, 'VPC');
@@ -524,8 +573,6 @@ describe('vpc', () => {
         DestinationCidrBlock: '0.0.0.0/0',
         NatGatewayId: {},
       });
-
-
     });
 
     test('with maxAZs set to 2', () => {
