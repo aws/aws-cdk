@@ -369,7 +369,7 @@ export class Nodegroup extends Resource implements INodegroup {
        * 2. user-specified amiType should be included in `possibleAmiTypes`.
        * 3. The instance types should be compatible with the default amiType(AL2_X86_64) if props.amiType is undefined.
        */
-      possibleAmiTypes = getAmiType(instanceTypes);
+      possibleAmiTypes = getPossibleAmiTypes(instanceTypes);
 
       // if the user explicitly configured an ami type, make sure it's included in the possibleAmiTypes
       if (props.amiType && !possibleAmiTypes.includes(props.amiType)) {
@@ -492,7 +492,7 @@ function getPossibleAmiTypesForInstanceType(instanceType: InstanceType): Nodegro
 // this function examines the CPU architecture of every instance type and determines
 // what ami type is compatible for all of them. it either throws or produces an array of possible instance types because
 // instance types of different CPU architectures are not supported.
-function getAmiType(instanceTypes: InstanceType[]) {
+function getPossibleAmiTypes(instanceTypes: InstanceType[]) {
   const amiTypes = new Set<NodegroupAmiType>();
   for (const t of instanceTypes) {
     getPossibleAmiTypesForInstanceType(t).forEach(x => amiTypes.add(x));
