@@ -197,6 +197,20 @@ describe('instance', () => {
 
 
   });
+  test('can propagate EBS volume tags', () => {
+    // WHEN
+    new Instance(stack, 'Instance', {
+      vpc,
+      machineImage: new AmazonLinuxImage(),
+      instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.LARGE),
+      propagateTagsToVolumeOnCreation: true,
+    });
+
+    // THEN
+    expect(stack).toHaveResource('AWS::EC2::Instance', {
+      PropagateTagsToVolumeOnCreation: true,
+    });
+  });
   describe('blockDeviceMappings', () => {
     test('can set blockDeviceMappings', () => {
       // WHEN

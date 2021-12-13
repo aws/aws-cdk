@@ -88,6 +88,7 @@ export function withCdkApp<A extends TestContext & AwsContext>(block: (context: 
           '@aws-cdk/aws-ecr-assets': installationVersion,
           '@aws-cdk/aws-cloudformation': installationVersion,
           '@aws-cdk/aws-ec2': installationVersion,
+          '@aws-cdk/aws-s3': installationVersion,
           'constructs': '^3',
         });
       } else {
@@ -283,7 +284,7 @@ export class TestFixture {
     this.output.write(`${s}\n`);
   }
 
-  public async shell(command: string[], options: Omit<ShellOptions, 'cwd'|'output'> = {}): Promise<string> {
+  public async shell(command: string[], options: Omit<ShellOptions, 'cwd' | 'output'> = {}): Promise<string> {
     return shell(command, {
       output: this.output,
       cwd: this.integTestDir,
