@@ -171,7 +171,7 @@ export const CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021 = '@aws-cdk/aws-cl
 export const TARGET_PARTITIONS = '@aws-cdk/core:target-partitions';
 
 /**
- *  This map includes context keys and values for feature flags that enable
+ * This map includes context keys and values for feature flags that enable
  * capabilities "from the future", which we could not introduce as the default
  * behavior due to backwards compatibility for existing projects.
  *
