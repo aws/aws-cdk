@@ -377,7 +377,6 @@ export class Nodegroup extends Resource implements INodegroup {
       }
     }
 
-
     if (!props.nodeRole) {
       const ngRole = new Role(this, 'NodeGroupRole', {
         assumedBy: new ServicePrincipal('ec2.amazonaws.com'),
