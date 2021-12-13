@@ -10,9 +10,11 @@ import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as cloudmap from '@aws-cdk/aws-servicediscovery';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import * as ecs from '../../lib';
 import { DeploymentControllerType, LaunchType, PropagatedTagSource } from '../../lib/base/base-service';
+import { addDefaultCapacityProvider } from '../util';
 
 describe('fargate service', () => {
   describe('When creating a Fargate Service', () => {
@@ -136,7 +138,7 @@ describe('fargate service', () => {
 
     });
 
-    test('does not set launchType when capacity provider strategies specified (deprecated)', () => {
+    testDeprecated('does not set launchType when capacity provider strategies specified (deprecated)', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -513,12 +515,12 @@ describe('fargate service', () => {
           type: ecs.DeploymentControllerType.ECS,
         },
         circuitBreaker: { rollback: true },
-        securityGroup: new ec2.SecurityGroup(stack, 'SecurityGroup1', {
+        securityGroups: [new ec2.SecurityGroup(stack, 'SecurityGroup1', {
           allowAllOutbound: true,
           description: 'Example',
           securityGroupName: 'Bob',
           vpc,
-        }),
+        })],
         serviceName: 'bonjour',
         vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
       });
@@ -652,7 +654,7 @@ describe('fargate service', () => {
       });
 
       // THEN
-      expect(service.node.metadata[0].data).toEqual('taskDefinition and launchType are blanked out when using external deployment controller.');
+      expect(service.node.metadataEntry[0].data).toEqual('taskDefinition and launchType are blanked out when using external deployment controller.');
       expect(stack).toHaveResource('AWS::ECS::Service', {
         Cluster: {
           Ref: 'EcsCluster97242B84',
@@ -797,7 +799,7 @@ describe('fargate service', () => {
 
     });
 
-    test('throws when securityGroup and securityGroups are supplied', () => {
+    testDeprecated('throws when securityGroup and securityGroups are supplied', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
@@ -1933,7 +1935,7 @@ describe('fargate service', () => {
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+      addDefaultCapacityProvider(cluster, stack, vpc);
 
       const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
       const container = taskDefinition.addContainer('MainContainer', {
@@ -1994,7 +1996,7 @@ describe('fargate service', () => {
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+      addDefaultCapacityProvider(cluster, stack, vpc);
 
       const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
       const container = taskDefinition.addContainer('MainContainer', {
@@ -2342,7 +2344,7 @@ describe('fargate service', () => {
           logging: ecs.ExecuteCommandLogging.NONE,
         },
       });
-      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+      addDefaultCapacityProvider(cluster, stack, vpc);
       const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
 
       const logGroup = new logs.LogGroup(stack, 'LogGroup');
@@ -2411,7 +2413,7 @@ describe('fargate service', () => {
           logging: ecs.ExecuteCommandLogging.OVERRIDE,
         },
       });
-      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+      addDefaultCapacityProvider(cluster, stack, vpc);
       const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
 
       taskDefinition.addContainer('web', {
@@ -2531,7 +2533,7 @@ describe('fargate service', () => {
         },
       });
 
-      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+      addDefaultCapacityProvider(cluster, stack, vpc);
       const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
 
       taskDefinition.addContainer('web', {
@@ -2737,7 +2739,7 @@ describe('fargate service', () => {
         },
       });
 
-      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+      addDefaultCapacityProvider(cluster, stack, vpc);
       const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
 
       taskDefinition.addContainer('web', {
@@ -2972,7 +2974,7 @@ describe('fargate service', () => {
 
     });
 
-    test('with both propagateTags and propagateTaskTagsFrom defined', () => {
+    testDeprecated('with both propagateTags and propagateTaskTagsFrom defined', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});

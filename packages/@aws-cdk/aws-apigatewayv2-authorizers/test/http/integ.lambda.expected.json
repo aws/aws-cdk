@@ -17,7 +17,7 @@
         "AutoDeploy": true
       }
     },
-    "MyHttpApiGETAuthorizerIntegMyHttpApiGET16D02385PermissionBB02EBFE": {
+    "MyHttpApiGETRootIntegrationPermission81613491": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -54,7 +54,7 @@
         }
       }
     },
-    "MyHttpApiGETHttpIntegration6f095b8469365f72e33fa33d9711b140516EBE31": {
+    "MyHttpApiGETRootIntegration5068C5B0": {
       "Type": "AWS::ApiGatewayV2::Integration",
       "Properties": {
         "ApiId": {
@@ -79,7 +79,7 @@
         "RouteKey": "GET /",
         "AuthorizationType": "CUSTOM",
         "AuthorizerId": {
-          "Ref": "MyHttpApimysimpleauthorizer98398C16"
+          "Ref": "MyHttpApiLambdaAuthorizerB8A0E2A4"
         },
         "Target": {
           "Fn::Join": [
@@ -87,23 +87,20 @@
             [
               "integrations/",
               {
-                "Ref": "MyHttpApiGETHttpIntegration6f095b8469365f72e33fa33d9711b140516EBE31"
+                "Ref": "MyHttpApiGETRootIntegration5068C5B0"
               }
             ]
           ]
         }
       }
     },
-    "MyHttpApimysimpleauthorizer98398C16": {
+    "MyHttpApiLambdaAuthorizerB8A0E2A4": {
       "Type": "AWS::ApiGatewayV2::Authorizer",
       "Properties": {
         "ApiId": {
           "Ref": "MyHttpApi8AEAAC21"
         },
         "AuthorizerType": "REQUEST",
-        "IdentitySource": [
-          "$request.header.X-API-Key"
-        ],
         "Name": "my-simple-authorizer",
         "AuthorizerPayloadFormatVersion": "2.0",
         "AuthorizerResultTtlInSeconds": 300,
@@ -130,10 +127,13 @@
             ]
           ]
         },
-        "EnableSimpleResponses": true
+        "EnableSimpleResponses": true,
+        "IdentitySource": [
+          "$request.header.X-API-Key"
+        ]
       }
     },
-    "MyHttpApiAuthorizerIntegMyHttpApimysimpleauthorizer0F14A472PermissionF37EF5C8": {
+    "MyHttpApiAuthorizerIntegMyHttpApiLambdaAuthorizerB89228D7Permission82260331": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "Action": "lambda:InvokeFunction",
@@ -166,7 +166,7 @@
               },
               "/authorizers/",
               {
-                "Ref": "MyHttpApimysimpleauthorizer98398C16"
+                "Ref": "MyHttpApiLambdaAuthorizerB8A0E2A4"
               }
             ]
           ]

@@ -180,7 +180,7 @@ describe('lambda api', () => {
 
     expect(() => new apigw.LambdaRestApi(stack, 'lambda-rest-api', {
       handler,
-      options: { defaultIntegration: new apigw.HttpIntegration('https://foo/bar') },
+      defaultIntegration: new apigw.HttpIntegration('https://foo/bar'),
     })).toThrow(/Cannot specify \"defaultIntegration\" since Lambda integration is automatically defined/);
 
     expect(() => new apigw.LambdaRestApi(stack, 'lambda-rest-api', {

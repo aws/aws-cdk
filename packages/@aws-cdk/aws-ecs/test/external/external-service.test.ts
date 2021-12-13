@@ -7,6 +7,7 @@ import * as cloudmap from '@aws-cdk/aws-servicediscovery';
 import * as cdk from '@aws-cdk/core';
 import * as ecs from '../../lib';
 import { LaunchType } from '../../lib/base/base-service';
+import { addDefaultCapacityProvider } from '../util';
 
 describe('external service', () => {
   describe('When creating an External Service', () => {
@@ -15,7 +16,7 @@ describe('external service', () => {
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
       const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-      cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+      addDefaultCapacityProvider(cluster, stack, vpc);
       const taskDefinition = new ecs.ExternalTaskDefinition(stack, 'ExternalTaskDef');
 
       taskDefinition.addContainer('web', {
@@ -45,8 +46,6 @@ describe('external service', () => {
       });
 
       expect(service.node.defaultChild).toBeDefined();
-
-
     });
   });
 
@@ -55,7 +54,7 @@ describe('external service', () => {
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-    cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+    addDefaultCapacityProvider(cluster, stack, vpc);
     const taskDefinition = new ecs.ExternalTaskDefinition(stack, 'ExternalTaskDef');
 
     taskDefinition.addContainer('web', {
@@ -105,7 +104,7 @@ describe('external service', () => {
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-    cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+    addDefaultCapacityProvider(cluster, stack, vpc);
     const taskDefinition = new ecs.ExternalTaskDefinition(stack, 'ExternalTaskDef');
 
     cluster.addDefaultCloudMapNamespace({
@@ -138,7 +137,7 @@ describe('external service', () => {
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-    cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+    addDefaultCapacityProvider(cluster, stack, vpc);
     const taskDefinition = new ecs.ExternalTaskDefinition(stack, 'ExternalTaskDef');
     taskDefinition.addContainer('web', {
       image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
@@ -235,7 +234,7 @@ describe('external service', () => {
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-    cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+    addDefaultCapacityProvider(cluster, stack, vpc);
     const taskDefinition = new ecs.ExternalTaskDefinition(stack, 'ExternalTaskDef');
     taskDefinition.addContainer('BaseContainer', {
       image: ecs.ContainerImage.fromRegistry('test'),
@@ -258,7 +257,7 @@ describe('external service', () => {
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-    cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+    addDefaultCapacityProvider(cluster, stack, vpc);
     const taskDefinition = new ecs.ExternalTaskDefinition(stack, 'TaskDef');
 
     taskDefinition.addContainer('web', {
@@ -284,7 +283,7 @@ describe('external service', () => {
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-    cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+    addDefaultCapacityProvider(cluster, stack, vpc);
     const taskDefinition = new ecs.ExternalTaskDefinition(stack, 'TaskDef');
 
     taskDefinition.addContainer('web', {
@@ -308,7 +307,7 @@ describe('external service', () => {
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-    cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+    addDefaultCapacityProvider(cluster, stack, vpc);
     const taskDefinition = new ecs.ExternalTaskDefinition(stack, 'TaskDef');
 
     taskDefinition.addContainer('web', {
@@ -346,7 +345,7 @@ describe('external service', () => {
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-    cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+    addDefaultCapacityProvider(cluster, stack, vpc);
     const taskDefinition = new ecs.ExternalTaskDefinition(stack, 'TaskDef');
 
     taskDefinition.addContainer('web', {
@@ -377,7 +376,7 @@ describe('external service', () => {
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-    cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+    addDefaultCapacityProvider(cluster, stack, vpc);
     const taskDefinition = new ecs.ExternalTaskDefinition(stack, 'TaskDef');
 
     taskDefinition.addContainer('web', {
@@ -404,7 +403,7 @@ describe('external service', () => {
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-    cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+    addDefaultCapacityProvider(cluster, stack, vpc);
     const taskDefinition = new ecs.ExternalTaskDefinition(stack, 'TaskDef');
 
     taskDefinition.addContainer('web', {
@@ -438,7 +437,7 @@ describe('external service', () => {
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-    cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+    addDefaultCapacityProvider(cluster, stack, vpc);
     const taskDefinition = new ecs.ExternalTaskDefinition(stack, 'TaskDef');
 
     taskDefinition.addContainer('web', {
@@ -466,7 +465,7 @@ describe('external service', () => {
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-    cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+    addDefaultCapacityProvider(cluster, stack, vpc);
     const taskDefinition = new ecs.ExternalTaskDefinition(stack, 'TaskDef');
 
     taskDefinition.addContainer('web', {
@@ -491,7 +490,7 @@ describe('external service', () => {
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'MyVpc', {});
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
-    cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+    addDefaultCapacityProvider(cluster, stack, vpc);
     const taskDefinition = new ecs.ExternalTaskDefinition(stack, 'TaskDef');
 
     const container = taskDefinition.addContainer('web', {

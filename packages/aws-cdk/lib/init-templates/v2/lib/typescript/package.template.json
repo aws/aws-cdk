@@ -12,7 +12,6 @@
     "@types/jest": "^26.0.10",
     "@types/node": "10.17.27",
     "aws-cdk-lib": "%cdk-version%",
-    "@aws-cdk/assertions-alpha": "%cdk-version%",
     "constructs": "%constructs-version%",
     "jest": "^26.4.2",
     "ts-jest": "^26.2.0",

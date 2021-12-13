@@ -1,6 +1,7 @@
 import * as path from 'path';
 import { format } from 'util';
 import * as cxapi from '@aws-cdk/cx-api';
+import * as chokidar from 'chokidar';
 import * as colors from 'colors/safe';
 import * as fs from 'fs-extra';
 import * as promptly from 'promptly';
@@ -12,9 +13,9 @@ import { CloudAssembly, DefaultSelection, ExtendedStackSelection, StackCollectio
 import { CloudExecutable } from './api/cxapp/cloud-executable';
 import { StackActivityProgress } from './api/util/cloudformation/stack-activity-monitor';
 import { printSecurityDiff, printStackDiff, RequireApproval } from './diff';
-import { data, error, highlight, print, success, warning } from './logging';
+import { data, debug, error, highlight, print, success, warning } from './logging';
 import { deserializeStructure } from './serialize';
-import { Configuration } from './settings';
+import { Configuration, PROJECT_CONFIG } from './settings';
 import { numberFromBool, partition } from './util';
 
 export interface CdkToolkitProps {
@@ -112,7 +113,11 @@ export class CdkToolkit {
   }
 
   public async deploy(options: DeployOptions) {
-    const stacks = await this.selectStacksForDeploy(options.selector, options.exclusively);
+    if (options.watch) {
+      return this.watch(options);
+    }
+
+    const stacks = await this.selectStacksForDeploy(options.selector, options.exclusively, options.cacheCloudAssembly);
 
     const requireApproval = options.requireApproval ?? RequireApproval.Broadening;
 
@@ -203,6 +208,7 @@ export class CdkToolkit {
           ci: options.ci,
           rollback: options.rollback,
           hotswap: options.hotswap,
+          extraUserAgent: options.extraUserAgent,
         });
 
         const message = result.noOp
@@ -241,6 +247,85 @@ export class CdkToolkit {
         }
       }
     }
+  }
+
+  public async watch(options: WatchOptions) {
+    const rootDir = path.dirname(path.resolve(PROJECT_CONFIG));
+    debug("root directory used for 'watch' is: %s", rootDir);
+
+    const watchSettings: { include?: string | string[], exclude: string | string [] } | undefined =
+        this.props.configuration.settings.get(['watch']);
+    if (!watchSettings) {
+      throw new Error("Cannot use the 'watch' command without specifying at least one directory to monitor. " +
+        'Make sure to add a "watch" key to your cdk.json');
+    }
+
+    // For the "include" subkey under the "watch" key, the behavior is:
+    // 1. No "watch" setting? We error out.
+    // 2. "watch" setting without an "include" key? We default to observing "./**".
+    // 3. "watch" setting with an empty "include" key? We default to observing "./**".
+    // 4. Non-empty "include" key? Just use the "include" key.
+    const watchIncludes = this.patternsArrayForWatch(watchSettings.include, { rootDir, returnRootDirIfEmpty: true });
+    debug("'include' patterns for 'watch': %s", watchIncludes);
+
+    // For the "exclude" subkey under the "watch" key,
+    // the behavior is to add some default excludes in addition to the ones specified by the user:
+    // 1. The CDK output directory.
+    // 2. Any file whose name starts with a dot.
+    // 3. Any directory's content whose name starts with a dot.
+    // 4. Any node_modules and its content (even if it's not a JS/TS project, you might be using a local aws-cli package)
+    const outputDir = this.props.configuration.settings.get(['output']);
+    const watchExcludes = this.patternsArrayForWatch(watchSettings.exclude, { rootDir, returnRootDirIfEmpty: false }).concat(
+      `${outputDir}/**`,
+      '**/.*',
+      '**/.*/**',
+      '**/node_modules/**',
+    );
+    debug("'exclude' patterns for 'watch': %s", watchExcludes);
+
+    // Since 'cdk deploy' is a relatively slow operation for a 'watch' process,
+    // introduce a concurrency latch that tracks the state.
+    // This way, if file change events arrive when a 'cdk deploy' is still executing,
+    // we will batch them, and trigger another 'cdk deploy' after the current one finishes,
+    // making sure 'cdk deploy's  always execute one at a time.
+    // Here's a diagram showing the state transitions:
+    // --------------                --------    file changed     --------------    file changed     --------------  file changed
+    // |            |  ready event   |      | ------------------> |            | ------------------> |            | --------------|
+    // | pre-ready  | -------------> | open |                     | deploying  |                     |   queued   |               |
+    // |            |                |      | <------------------ |            | <------------------ |            | <-------------|
+    // --------------                --------  'cdk deploy' done  --------------  'cdk deploy' done  --------------
+    let latch: 'pre-ready' | 'open' | 'deploying' | 'queued' = 'pre-ready';
+    chokidar.watch(watchIncludes, {
+      ignored: watchExcludes,
+      cwd: rootDir,
+      // ignoreInitial: true,
+    }).on('ready', () => {
+      latch = 'open';
+      debug("'watch' received the 'ready' event. From now on, all file changes will trigger a deployment");
+    }).on('all', async (event, filePath) => {
+      if (latch === 'pre-ready') {
+        print(`'watch' is observing ${event === 'addDir' ? 'directory' : 'the file'} '%s' for changes`, filePath);
+      } else if (latch === 'open') {
+        latch = 'deploying';
+        print("Detected change to '%s' (type: %s). Triggering 'cdk deploy'", filePath, event);
+        await this.invokeDeployFromWatch(options);
+
+        // If latch is still 'deploying' after the 'await', that's fine,
+        // but if it's 'queued', that means we need to deploy again
+        while ((latch as 'deploying' | 'queued') === 'queued') {
+          // TypeScript doesn't realize latch can change between 'awaits',
+          // and thinks the above 'while' condition is always 'false' without the cast
+          latch = 'deploying';
+          print("Detected file changes during deployment. Invoking 'cdk deploy' again");
+          await this.invokeDeployFromWatch(options);
+        }
+        latch = 'open';
+      } else { // this means latch is either 'deploying' or 'queued'
+        latch = 'queued';
+        print("Detected change to '%s' (type: %s) while 'cdk deploy' is still running. " +
+            'Will queue for another deployment after this one finishes', filePath, event);
+      }
+    });
   }
 
   public async destroy(options: DestroyOptions) {
@@ -397,8 +482,8 @@ export class CdkToolkit {
     return stacks;
   }
 
-  private async selectStacksForDeploy(selector: StackSelector, exclusively?: boolean): Promise<StackCollection> {
-    const assembly = await this.assembly();
+  private async selectStacksForDeploy(selector: StackSelector, exclusively?: boolean, cacheCloudAssembly?: boolean): Promise<StackCollection> {
+    const assembly = await this.assembly(cacheCloudAssembly);
     const stacks = await assembly.selectStacks(selector, {
       extend: exclusively ? ExtendedStackSelection.None : ExtendedStackSelection.Upstream,
       defaultBehavior: DefaultSelection.OnlySingle,
@@ -480,10 +565,40 @@ export class CdkToolkit {
     return assembly.stackById(stacks.firstStack.id);
   }
 
-  private assembly(): Promise<CloudAssembly> {
-    return this.props.cloudExecutable.synthesize();
+  private assembly(cacheCloudAssembly?: boolean): Promise<CloudAssembly> {
+    return this.props.cloudExecutable.synthesize(cacheCloudAssembly);
   }
 
+  private patternsArrayForWatch(patterns: string | string[] | undefined, options: { rootDir: string, returnRootDirIfEmpty: boolean }): string[] {
+    const patternsArray: string[] = patterns !== undefined
+      ? (Array.isArray(patterns) ? patterns : [patterns])
+      : [];
+    return patternsArray.length > 0
+      ? patternsArray
+      : (options.returnRootDirIfEmpty ? [options.rootDir] : []);
+  }
+
+  private async invokeDeployFromWatch(options: WatchOptions): Promise<void> {
+    // 'watch' has different defaults than regular 'deploy'
+    const hotswap = options.hotswap === undefined ? true : options.hotswap;
+    const deployOptions: DeployOptions = {
+      ...options,
+      requireApproval: RequireApproval.Never,
+      // if 'watch' is called by invoking 'cdk deploy --watch',
+      // we need to make sure to not call 'deploy' with 'watch' again,
+      // as that would lead to a cycle
+      watch: false,
+      cacheCloudAssembly: false,
+      hotswap: hotswap,
+      extraUserAgent: `cdk-watch/hotswap-${hotswap ? 'on' : 'off'}`,
+    };
+
+    try {
+      await this.deploy(deployOptions);
+    } catch (e) {
+      // just continue - deploy will show the error
+    }
+  }
 }
 
 export interface DiffOptions {
@@ -542,7 +657,7 @@ export interface DiffOptions {
   securityOnly?: boolean;
 }
 
-export interface DeployOptions {
+interface WatchOptions {
   /**
    * Criteria for selecting stacks to deploy
    */
@@ -568,33 +683,9 @@ export interface DeployOptions {
   roleArn?: string;
 
   /**
-   * ARNs of SNS topics that CloudFormation will notify with stack related events
-   */
-  notificationArns?: string[];
-
-  /**
-   * What kind of security changes require approval
-   *
-   * @default RequireApproval.Broadening
-   */
-  requireApproval?: RequireApproval;
-
-  /**
    * Reuse the assets with the given asset IDs
    */
   reuseAssets?: string[];
-
-  /**
-   * Tags to pass to CloudFormation for deployment
-   */
-  tags?: Tag[];
-
-  /**
-   * Whether to execute the ChangeSet
-   * Not providing `execute` parameter will result in execution of ChangeSet
-   * @default true
-   */
-  execute?: boolean;
 
   /**
    * Optional name to use for the CloudFormation change set.
@@ -607,6 +698,63 @@ export interface DeployOptions {
    * @default false
    */
   force?: boolean;
+
+  /**
+   * Display mode for stack deployment progress.
+   *
+   * @default - StackActivityProgress.Bar - stack events will be displayed for
+   *   the resource currently being deployed.
+   */
+  progress?: StackActivityProgress;
+
+  /**
+   * Rollback failed deployments
+   *
+   * @default true
+   */
+  readonly rollback?: boolean;
+
+  /**
+   * Whether to perform a 'hotswap' deployment.
+   * A 'hotswap' deployment will attempt to short-circuit CloudFormation
+   * and update the affected resources like Lambda functions directly.
+   *
+   * @default - false for regular deployments, true for 'watch' deployments
+   */
+  readonly hotswap?: boolean;
+
+  /**
+   * The extra string to append to the User-Agent header when performing AWS SDK calls.
+   *
+   * @default - nothing extra is appended to the User-Agent header
+   */
+  readonly extraUserAgent?: string;
+}
+
+export interface DeployOptions extends WatchOptions {
+  /**
+   * ARNs of SNS topics that CloudFormation will notify with stack related events
+   */
+  notificationArns?: string[];
+
+  /**
+   * What kind of security changes require approval
+   *
+   * @default RequireApproval.Broadening
+   */
+  requireApproval?: RequireApproval;
+
+  /**
+   * Tags to pass to CloudFormation for deployment
+   */
+  tags?: Tag[];
+
+  /**
+   * Whether to execute the ChangeSet
+   * Not providing `execute` parameter will result in execution of ChangeSet
+   * @default true
+   */
+  execute?: boolean;
 
   /**
    * Additional parameters for CloudFormation at deploy time
@@ -624,14 +772,6 @@ export interface DeployOptions {
   usePreviousParameters?: boolean;
 
   /**
-   * Display mode for stack deployment progress.
-   *
-   * @default - StackActivityProgress.Bar - stack events will be displayed for
-   *   the resource currently being deployed.
-   */
-  progress?: StackActivityProgress;
-
-  /**
    * Path to file where stack outputs will be written after a successful deploy as JSON
    * @default - Outputs are not written to any file
    */
@@ -645,20 +785,20 @@ export interface DeployOptions {
   readonly ci?: boolean;
 
   /**
-   * Rollback failed deployments
+   * Whether this 'deploy' command should actually delegate to the 'watch' command.
+   *
+   * @default false
+   */
+  readonly watch?: boolean;
+
+  /**
+   * Whether we should cache the Cloud Assembly after the first time it has been synthesized.
+   * The default is 'true', we only don't want to do it in case the deployment is triggered by
+   * 'cdk watch'.
    *
    * @default true
    */
-  readonly rollback?: boolean;
-
-  /*
-   * Whether to perform a 'hotswap' deployment.
-   * A 'hotswap' deployment will attempt to short-circuit CloudFormation
-   * and update the affected resources like Lambda functions directly.
-   *
-   * @default - false (do not perform a 'hotswap' deployment)
-   */
-  readonly hotswap?: boolean;
+  readonly cacheCloudAssembly?: boolean;
 }
 
 export interface DestroyOptions {
