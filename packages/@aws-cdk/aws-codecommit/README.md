@@ -37,27 +37,17 @@ To add an Amazon SNS trigger to your repository:
 repo.notify('arn:aws:sns:*:123456789012:my_topic');
 ```
 
-## Initialize with Code
+## Add initial commit
 
-It is possible to initialize the Repository with an Asset.
-For learning how assets work, see the CDK Assets documentation.
-Be aware, that this will only work on *directories*, not on single files.
-This is due to the fact, that CodeCommit expects a zip in the S3 Bucket.
+It is possible to initialize the Repository via the `Code` class.
+It provides methods for loading code from a directory, `.zip` file and from a pre-created CDK Asset.
 
 Example:
 
 ```ts
-const readmeAsset = new assets.Asset(this, 'ReadmeAsset', {
-      path: path.join(__dirname, 'directory/'),
-});
-
 const repo = new Repository(this, 'Repository', {
     repositoryName: 'MyRepositoryName',
-    description: 'Some description.', // optional property
-    code: { // optional property
-        branchName: 'main', // optional, defaults to main
-        asset: readmeAsset,
-    },
+    code: Code.fromDirectory(path.join(__dirname, 'directory/'), 'develop'), // optional property, branch parameter can be omitted
 });
 ```
 

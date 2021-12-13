@@ -7,7 +7,7 @@ const stack = new cdk.Stack(app, 'aws-cdk-codecommit-assets');
 
 new codecommit.Repository(stack, 'Repo', {
   repositoryName: 'aws-cdk-codecommit-assets',
-  code: Code.fromDirectory('./asset-test'),
+  code: Code.fromZipFile('./asset-test.zip'),
 });
 
 app.synth();

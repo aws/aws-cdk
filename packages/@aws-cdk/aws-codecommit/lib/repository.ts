@@ -1,9 +1,9 @@
 import * as notifications from '@aws-cdk/aws-codestarnotifications';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
-import { Asset } from '@aws-cdk/aws-s3-assets';
 import { ArnFormat, IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
+import { Code } from './code';
 import { CfnRepository } from './codecommit.generated';
 
 /**
@@ -491,29 +491,11 @@ export interface RepositoryProps {
   readonly description?: string;
 
   /**
-   * The asset the repository with the given branch should be initialized
+   * Information about code to be committed to a repository after it is created.
    *
    * @default - No initialization (create empty repo)
    */
-  readonly code?: CodeInitializationProps;
-}
-
-/**
- * Initializes a repository with code, when specified
- */
-export interface CodeInitializationProps {
-  /**
-   * The branch on which the code should be deployed
-   *
-   * @default - "main"
-   */
-  readonly branchName?: string,
-
-  /**
-   * The asset to upload.
-   * This is required, when making use of this feature.
-   */
-  readonly asset: Asset
+  readonly code?: Code;
 }
 
 /**
@@ -569,7 +551,6 @@ export class Repository extends RepositoryBase {
   public readonly repositoryCloneUrlGrc: string;
   private readonly triggers = new Array<CfnRepository.RepositoryTriggerProperty>();
 
-
   constructor(scope: Construct, id: string, props: RepositoryProps) {
     super(scope, id, {
       physicalName: props.repositoryName,
@@ -579,13 +560,7 @@ export class Repository extends RepositoryBase {
       repositoryName: props.repositoryName,
       repositoryDescription: props.description,
       triggers: Lazy.any({ produce: () => this.triggers }, { omitEmptyArray: true }),
-      code: props.code ? {
-        branchName: props.code.branchName ? props.code.branchName : 'main',
-        s3: {
-          bucket: props.code.asset.s3BucketName,
-          key: props.code.asset.s3ObjectKey,
-        },
-      } : undefined,
+      code: props.code ? props.code.bind(this) : undefined,
     });
 
     this.repositoryName = this.getResourceNameAttribute(repository.attrName);
