@@ -355,7 +355,7 @@ export enum InstanceClass {
   /**
   * Storage-optimized instances, 3rd generation
   */
-  STORAGE3_ELASTIC_NETWORK = 'd3en',
+  STORAGE3_ENHANCED_NETWORK = 'd3en',
 
   /**
   * Storage-optimized instances, 3rd generation
