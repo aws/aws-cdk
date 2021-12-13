@@ -375,7 +375,17 @@ export enum InstanceClass {
   /**
    * Storage optimized instances powered by Graviton2 processor, 4th generation
    */
+  STORAGE4_GRAVITON_NETWORK_OPTIMIZED = 'im4gn',
+
+  /**
+   * Storage optimized instances powered by Graviton2 processor, 4th generation
+   */
   IM4GN = 'im4gn',
+
+  /**
+   * Storage optimized instances powered by Graviton2 processor, 4th generation
+   */
+  STORAGE4_GRAVITON_NETWORK_STORAGE_OPTIMIZED = 'is4gen',
 
   /**
    * Storage optimized instances powered by Graviton2 processor, 4th generation
