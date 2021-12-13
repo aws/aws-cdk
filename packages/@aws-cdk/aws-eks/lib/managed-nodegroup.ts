@@ -367,7 +367,6 @@ export class Nodegroup extends Resource implements INodegroup {
        *
        * 1. instance types of different CPU architectures are not mixed(e.g. X86 with ARM).
        * 2. user-specified amiType should be included in `possibleAmiTypes`.
-       * 3. The instance types should be compatible with the default amiType(AL2_X86_64) if props.amiType is undefined.
        */
       possibleAmiTypes = getPossibleAmiTypes(instanceTypes);
 
