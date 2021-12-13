@@ -831,12 +831,12 @@ export class Stack extends CoreConstruct implements ITaggable {
       return ret;
     }
 
-    const regions = Node.of(this).tryGetContext(cxapi.TARGET_PARTITIONS);
-    if (regions !== undefined && !Array.isArray(regions)) {
+    const partitions = Node.of(this).tryGetContext(cxapi.TARGET_PARTITIONS);
+    if (partitions !== undefined && !Array.isArray(partitions)) {
       throw new Error(`Context value '${cxapi.TARGET_PARTITIONS}' should be a list of strings, got: ${JSON.stringify(cxapi.TARGET_PARTITIONS)}`);
     }
 
-    const lookupMap = regions ? RegionInfo.limitedRegionMap(factName, regions) : RegionInfo.regionMap(factName);
+    const lookupMap = partitions ? RegionInfo.limitedRegionMap(factName, partitions) : RegionInfo.regionMap(factName);
     const lookupValues = Object.values(lookupMap);
 
     // If there are no lookups, just return the default
