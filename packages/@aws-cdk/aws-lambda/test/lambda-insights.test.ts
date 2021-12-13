@@ -320,7 +320,7 @@ describe('lambda-insights', () => {
           },
         },
       },
-      MatchStyle.EXACT
+      MatchStyle.EXACT,
     );
     // On synthesis it should not throw an error
     expect(() => app.synth()).not.toThrow();
