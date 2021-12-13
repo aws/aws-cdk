@@ -120,9 +120,10 @@ export class RegionInfo {
   /**
    * The ARN of the CloudWatch Lambda Insights extension, for the given version.
    * @param insightsVersion the version (e.g. 1.0.98.0)
+   * @param architecture the Lambda Function architecture (e.g. 'x86_64' or 'arm64')
    */
-  public cloudwatchLambdaInsightsArn(insightsVersion: string): string | undefined {
-    return Fact.find(this.name, FactName.cloudwatchLambdaInsightsVersion(insightsVersion));
+  public cloudwatchLambdaInsightsArn(insightsVersion: string, architecture?: string): string | undefined {
+    return Fact.find(this.name, FactName.cloudwatchLambdaInsightsVersion(insightsVersion, architecture));
   }
 
   /**
