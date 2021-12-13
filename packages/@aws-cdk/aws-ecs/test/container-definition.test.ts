@@ -690,13 +690,14 @@ describe('container definition', () => {
     const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
 
     // WHEN
-    taskDefinition.addContainer('cont', {
+    const container = taskDefinition.addContainer('cont', {
       image: ecs.ContainerImage.fromRegistry('test'),
       memoryLimitMiB: 1024,
       environment: {
         TEST_ENVIRONMENT_VARIABLE: 'test environment variable value',
       },
     });
+    container.addEnvironment('SECOND_ENVIRONEMENT_VARIABLE', 'second test value');
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
@@ -705,6 +706,37 @@ describe('container definition', () => {
           Environment: [{
             Name: 'TEST_ENVIRONMENT_VARIABLE',
             Value: 'test environment variable value',
+          },
+          {
+            Name: 'SECOND_ENVIRONEMENT_VARIABLE',
+            Value: 'second test value',
+          }],
+        },
+      ],
+    });
+
+
+  });
+
+  test('can add environment variables to container definition with no environment', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+
+    // WHEN
+    const container = taskDefinition.addContainer('cont', {
+      image: ecs.ContainerImage.fromRegistry('test'),
+      memoryLimitMiB: 1024,
+    });
+    container.addEnvironment('SECOND_ENVIRONEMENT_VARIABLE', 'second test value');
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+      ContainerDefinitions: [
+        {
+          Environment: [{
+            Name: 'SECOND_ENVIRONEMENT_VARIABLE',
+            Value: 'second test value',
           }],
         },
       ],
