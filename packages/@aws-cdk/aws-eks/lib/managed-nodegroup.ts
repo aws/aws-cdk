@@ -492,7 +492,7 @@ function getPossibleAmiTypesForInstanceType(instanceType: InstanceType): Nodegro
 // this function examines the CPU architecture of every instance type and determines
 // what ami type is compatible for all of them. it either throws or produces an array of possible instance types because
 // instance types of different CPU architectures are not supported.
-function getPossibleAmiTypes(instanceTypes: InstanceType[]) {
+function getPossibleAmiTypes(instanceTypes: InstanceType[]): NodegroupAmiType[] {
   const amiTypes = new Set<NodegroupAmiType>();
   for (const t of instanceTypes) {
     getPossibleAmiTypesForInstanceType(t).forEach(x => amiTypes.add(x));
