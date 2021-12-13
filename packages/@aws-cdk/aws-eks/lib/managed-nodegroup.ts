@@ -476,7 +476,12 @@ const arm64AmiTypes: NodegroupAmiType[] = [NodegroupAmiType.AL2_ARM_64, Nodegrou
 const x8664AmiTypes: NodegroupAmiType[] = [NodegroupAmiType.AL2_X86_64, NodegroupAmiType.BOTTLEROCKET_X86_64];
 const gpuAmiTypes: NodegroupAmiType[] = [NodegroupAmiType.AL2_X86_64_GPU];
 
-function getAmiTypeForInstanceType(instanceType: InstanceType) {
+/**
+ * This function returns an array of "possible AMI types" from the given instance type
+ * @param instanceType The instance type
+ * @returns NodegroupAmiType[]
+ */
+function getPossibleAmiTypesForInstanceType(instanceType: InstanceType): NodegroupAmiType[] {
   return INSTANCE_TYPES.graviton2.includes(instanceType.toString().substring(0, 3)) ? arm64AmiTypes :
     INSTANCE_TYPES.graviton.includes(instanceType.toString().substring(0, 2)) ? arm64AmiTypes :
       INSTANCE_TYPES.gpu.includes(instanceType.toString().substring(0, 2)) ? gpuAmiTypes :
@@ -488,10 +493,9 @@ function getAmiTypeForInstanceType(instanceType: InstanceType) {
 // what ami type is compatible for all of them. it either throws or produces an array of possible instance types because
 // instance types of different CPU architectures are not supported.
 function getAmiType(instanceTypes: InstanceType[]) {
-  // const amiTypes = new Set(instanceTypes.map(i => getAmiTypeForInstanceType(i)));
   const amiTypes = new Set<NodegroupAmiType>();
   for (const t of instanceTypes) {
-    getAmiTypeForInstanceType(t).forEach(x => amiTypes.add(x));
+    getPossibleAmiTypesForInstanceType(t).forEach(x => amiTypes.add(x));
   }
   if (new Set(amiTypes).size == 0) { // protective code, the current implementation will never result in this.
     throw new Error(`Cannot determine any ami type comptaible with instance types: ${instanceTypes.map(i => i.toString).join(',')}`);
