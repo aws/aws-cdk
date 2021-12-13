@@ -257,7 +257,7 @@ test('ServicePrincipal in agnostic stack generates lookup table', () => {
 
   // THEN
   const template = Template.fromStack(stack);
-  const mappings = template.findMappings('ServicePrincipalMap');
-  expect(mappings.ServicePrincipalMap['af-south-1']?.ssm).toEqual('ssm.af-south-1.amazonaws.com');
-  expect(mappings.ServicePrincipalMap['us-east-1']?.ssm).toEqual('ssm.amazonaws.com');
+  const mappings = template.findMappings('ServiceprincipalMap');
+  expect(mappings.ServiceprincipalMap['af-south-1']?.ssm).toEqual('ssm.af-south-1.amazonaws.com');
+  expect(mappings.ServiceprincipalMap['us-east-1']?.ssm).toEqual('ssm.amazonaws.com');
 });

@@ -138,11 +138,3 @@ export class UniqueStringSet implements IResolvable, IPostProcessor {
 function isEmptyObject(x: { [key: string]: any }): boolean {
   return Object.keys(x).length === 0;
 }
-
-export function mkdict<A>(xs: ReadonlyArray<readonly [string, A]>): Record<string, A> {
-  const ret: Record<string, A> = {};
-  for (const [key, value] of xs) {
-    ret[key] = value;
-  }
-  return ret;
-}

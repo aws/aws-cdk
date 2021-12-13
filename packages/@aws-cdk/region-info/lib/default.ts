@@ -23,8 +23,6 @@ export class Default {
    * @param urlSuffix deprecated and ignored.
    */
   public static servicePrincipal(serviceFqn: string, region: string, urlSuffix: string): string {
-    Array.isArray(urlSuffix);
-
     const service = extractSimpleName(serviceFqn);
     if (!service) {
       // Return "service" if it does not look like any of the following:
@@ -84,7 +82,7 @@ export class Default {
     }
 
     switch (service) {
-      // Services with a regional AND China-variable principal
+      // Services with a regional AND partitional principal
       case 'codedeploy':
       case 'logs':
         return `${service}.${region}.${urlSuffix}`;
@@ -93,8 +91,8 @@ export class Default {
       case 'states':
         return `${service}.${region}.amazonaws.com`;
 
+      // Services with a partitional pricnipal
       case 'ec2':
-        // Services with principally a universal principal but a different one in China
         return `${service}.${urlSuffix}`;
 
       // Services with a universal principal across all regions/partitions (the default case)
