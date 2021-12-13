@@ -838,7 +838,7 @@ export class Stack extends CoreConstruct implements ITaggable {
 
     const lookupMap = partitions ? RegionInfo.limitedRegionMap(factName, partitions) : RegionInfo.regionMap(factName);
 
-    return deployTimeLookup(this, factName, lookupMap);
+    return deployTimeLookup(this, factName, lookupMap, defaultValue);
   }
 
 

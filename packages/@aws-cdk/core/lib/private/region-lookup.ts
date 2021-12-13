@@ -9,10 +9,13 @@ import { Stack } from '../stack';
  *
  * Add to an existing CfnMapping if possible.
  */
-export function deployTimeLookup(stack: Stack, factName: string, lookupMap: Record<string, string>) {
+export function deployTimeLookup(stack: Stack, factName: string, lookupMap: Record<string, string>, defaultValue?: string) {
   // If there are no lookups, just return the default
   if (Object.values(lookupMap).length === 0) {
-    throw new Error(`region-info: don't have any information for ${factName}. Use 'Fact.register' to provide values, or add partitions to the '${cxapi.TARGET_PARTITIONS}' context value.`);
+    if (defaultValue === undefined) {
+      throw new Error(`region-info: don't have any information for ${factName}. Use 'Fact.register' to provide values, or add partitions to the '${cxapi.TARGET_PARTITIONS}' context value.`);
+    }
+    return defaultValue;
   }
 
   // If the tokenized representation of all values is the same, we can just
