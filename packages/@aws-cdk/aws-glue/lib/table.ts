@@ -308,10 +308,11 @@ export class Table extends Resource implements ITable {
   }
 
   /**
-   * Add a partition index to the table.
-   * @see https://docs.aws.amazon.com/glue/latest/dg/partition-indexes.html
+   * Add a partition index to the table. You can have a maximum of 3 partition
+   * indecies to a table. Partition index keys must be a subet of the table's
+   * partition keys.
    *
-   * Partition index keys must be a subset of the tables partition keys.
+   * @see https://docs.aws.amazon.com/glue/latest/dg/partition-indexes.html
    */
   public addPartitionIndex(props: PartitionIndexProps) {
     this.validatePartitionIndex(props);
@@ -323,7 +324,7 @@ export class Table extends Resource implements ITable {
           DatabaseName: this.database.databaseName,
           TableName: this.tableName,
           PartitionIndex: {
-            IndexName: props.indexName ?? this.generateName(props.keys),
+            IndexName: props.indexName ?? this.generateIndexName(props.keys),
             Keys: props.keys,
           },
         },
@@ -339,10 +340,10 @@ export class Table extends Resource implements ITable {
     this.grantToUnderlyingResources(partitionIndex, ['glue:UpdateTable']);
   }
 
-  private generateName(keys: string[]): string {
+  private generateIndexName(keys: string[]): string {
     const prefix = keys.join('-');
     const uniqueId = Names.uniqueId(this);
-    const maxIndexLength = 80; // self-specified
+    const maxIndexLength = 80; // arbitrarily specified
     const startIndex = Math.max(0, uniqueId.length - (maxIndexLength - prefix.length));
     return prefix + uniqueId.substring(startIndex);
   }
