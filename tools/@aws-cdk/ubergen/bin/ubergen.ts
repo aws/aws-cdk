@@ -2,7 +2,7 @@ import * as console from 'console';
 import * as path from 'path';
 import * as process from 'process';
 import cfn2ts from '@aws-cdk/cfn2ts';
-import * as cfnspec from '@aws-cdk/cfnspec';
+import * as pkglint from '@aws-cdk/pkglint';
 import * as awsCdkMigration from 'aws-cdk-migration';
 import * as fs from 'fs-extra';
 
@@ -10,21 +10,22 @@ import * as fs from 'fs-extra';
 // The directory where our 'package.json' lives
 const MONOPACKAGE_ROOT = process.cwd();
 
-// The directory where we're going to collect all the libraries. Currently
-// purposely the same as the monopackage root so that our two import styles
-// resolve to the same files.
-const LIB_ROOT = MONOPACKAGE_ROOT;
-
 const ROOT_PATH = findWorkspacePath();
 const UBER_PACKAGE_JSON_PATH = path.join(MONOPACKAGE_ROOT, 'package.json');
 
 async function main() {
   console.log(`🌴  workspace root path is: ${ROOT_PATH}`);
-  const uberPackageJson = await fs.readJson(UBER_PACKAGE_JSON_PATH);
+  const uberPackageJson = await fs.readJson(UBER_PACKAGE_JSON_PATH) as PackageJson;
   const libraries = await findLibrariesToPackage(uberPackageJson);
   await verifyDependencies(uberPackageJson, libraries);
   await prepareSourceFiles(libraries, uberPackageJson);
   await combineRosettaFixtures(libraries, uberPackageJson);
+
+  // if explicitExports is set to `false`, remove the "exports" section from package.json
+  const explicitExports = uberPackageJson.ubergen?.explicitExports ?? true;
+  if (!explicitExports) {
+    delete uberPackageJson.exports;
+  }
 
   // Rewrite package.json (exports will have changed)
   await fs.writeJson(UBER_PACKAGE_JSON_PATH, uberPackageJson, { spaces: 2 });
@@ -79,6 +80,21 @@ interface PackageJson {
   readonly ubergen?: {
     readonly deprecatedPackages?: readonly string[];
     readonly excludeExperimentalModules?: boolean;
+
+    /**
+     * The directory where we're going to collect all the libraries.
+     *
+     * @default - root of the ubergen package
+     */
+    readonly libRoot?: string;
+
+    /**
+     * Adds an `exports` section to the ubergen package.json file to ensure that
+     * consumers won't be able to accidentally import a private file.
+     *
+     * @default true
+     */
+    readonly explicitExports?: boolean;
   };
   exports?: Record<string, string>;
 }
@@ -236,9 +252,11 @@ async function prepareSourceFiles(libraries: readonly LibraryReference[], packag
     console.log('\t 👩🏻‍🔬 \'excludeExperimentalModules\' enabled. Regenerating all experimental modules as L1s using cfn2ts...');
   }
 
+  const libRoot = resolveLibRoot(packageJson);
+
   // Should not remove collection directory if we're currently in it. The OS would be unhappy.
-  if (LIB_ROOT !== process.cwd()) {
-    await fs.remove(LIB_ROOT);
+  if (libRoot !== process.cwd()) {
+    await fs.remove(libRoot);
   }
 
   // Control 'exports' field of the 'package.json'. This will control what kind of 'import' statements are
@@ -257,7 +275,7 @@ async function prepareSourceFiles(libraries: readonly LibraryReference[], packag
 
   const indexStatements = new Array<string>();
   for (const library of libraries) {
-    const libDir = path.join(LIB_ROOT, library.shortName);
+    const libDir = path.join(libRoot, library.shortName);
     const copied = await transformPackage(library, packageJson, libDir, libraries);
 
     if (!copied) {
@@ -271,7 +289,7 @@ async function prepareSourceFiles(libraries: readonly LibraryReference[], packag
     }
   }
 
-  await fs.writeFile(path.join(LIB_ROOT, 'index.ts'), indexStatements.join('\n'), { encoding: 'utf8' });
+  await fs.writeFile(path.join(libRoot, 'index.ts'), indexStatements.join('\n'), { encoding: 'utf8' });
 
   console.log('\t🍺 Success!');
 }
@@ -352,7 +370,7 @@ async function transformPackage(
       cfnScopes.map(s => (s === 'AWS::Serverless' ? 'AWS::SAM' : s).split('::')[1].toLocaleLowerCase())
         .map(s => `export * from './${s}.generated';`)
         .join('\n'));
-    await cfnspec.createLibraryReadme(cfnScopes[0], path.join(destination, 'README.md'));
+    await pkglint.createLibraryReadme(cfnScopes[0], path.join(destination, 'README.md'));
 
     await copyOrTransformFiles(destination, destination, allLibraries, uberPackageJson);
   } else {
@@ -375,6 +393,19 @@ async function transformPackage(
       { spaces: 2 },
     );
   }
+
+  // if libRoot is _not_ under the root of the package, generate a file at the
+  // root that will refer to the one under lib/ so that users can still import
+  // from "monocdk/aws-lambda".
+  const relativeLibRoot = uberPackageJson.ubergen?.libRoot;
+  if (relativeLibRoot && relativeLibRoot !== '.') {
+    await fs.writeFile(
+      path.resolve(MONOPACKAGE_ROOT, `${library.shortName}.ts`),
+      `export * from './${relativeLibRoot}/${library.shortName}';\n`,
+      { encoding: 'utf8' },
+    );
+  }
+
   return true;
 }
 
@@ -414,6 +445,7 @@ function transformTargets(monoConfig: PackageJson['jsii']['targets'], targets: P
 }
 
 async function copyOrTransformFiles(from: string, to: string, libraries: readonly LibraryReference[], uberPackageJson: PackageJson) {
+  const libRoot = resolveLibRoot(uberPackageJson);
   const promises = (await fs.readdir(from)).map(async name => {
     if (shouldIgnoreFile(name)) { return; }
 
@@ -436,7 +468,7 @@ async function copyOrTransformFiles(from: string, to: string, libraries: readonl
     if (name.endsWith('.ts')) {
       return fs.writeFile(
         destination,
-        await rewriteLibraryImports(source, to, libraries),
+        await rewriteLibraryImports(source, to, libRoot, libraries),
         { encoding: 'utf8' },
       );
     } else if (name === 'cfn-types-2-classes.json') {
@@ -483,7 +515,7 @@ async function rewriteReadmeImports(fromFile: string, libName: string): Promise<
 /**
  * Rewrites imports in libaries, using the relative path (i.e. '../../assertions').
  */
-async function rewriteLibraryImports(fromFile: string, targetDir: string, libraries: readonly LibraryReference[]): Promise<string> {
+async function rewriteLibraryImports(fromFile: string, targetDir: string, libRoot: string, libraries: readonly LibraryReference[]): Promise<string> {
   const source = await fs.readFile(fromFile, { encoding: 'utf8' });
   return awsCdkMigration.rewriteImports(source, relativeImport);
 
@@ -496,8 +528,8 @@ async function rewriteLibraryImports(fromFile: string, targetDir: string, librar
     if (sourceLibrary == null) { return undefined; }
 
     const importedFile = modulePath === sourceLibrary.packageJson.name
-      ? path.join(LIB_ROOT, sourceLibrary.shortName)
-      : path.join(LIB_ROOT, sourceLibrary.shortName, modulePath.substr(sourceLibrary.packageJson.name.length + 1));
+      ? path.join(libRoot, sourceLibrary.shortName)
+      : path.join(libRoot, sourceLibrary.shortName, modulePath.substr(sourceLibrary.packageJson.name.length + 1));
 
     return path.relative(targetDir, importedFile);
   }
@@ -545,4 +577,18 @@ function sortObject<T>(obj: Record<string, T>): Record<string, T> {
  */
 function unixPath(x: string) {
   return x.replace(/\\/g, '/');
+}
+
+/**
+ * Resolves the directory where we're going to collect all the libraries.
+ *
+ * By default, this is purposely the same as the monopackage root so that our
+ * two import styles resolve to the same files but it can be overridden by
+ * seeting `ubergen.libRoot` in the package.json of the uber package.
+ *
+ * @param uberPackageJson package.json contents of the uber package
+ * @returns The directory where we should collect all the libraries.
+ */
+function resolveLibRoot(uberPackageJson: PackageJson): string {
+  return path.resolve(uberPackageJson.ubergen?.libRoot ?? MONOPACKAGE_ROOT);
 }
