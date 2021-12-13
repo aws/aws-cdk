@@ -91,7 +91,7 @@ export class Default {
       case 'states':
         return `${service}.${region}.amazonaws.com`;
 
-      // Services with a partitional pricnipal
+      // Services with a partitional principal
       case 'ec2':
         return `${service}.${urlSuffix}`;
 
