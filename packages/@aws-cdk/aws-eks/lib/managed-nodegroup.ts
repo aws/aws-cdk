@@ -365,8 +365,9 @@ export class Nodegroup extends Resource implements INodegroup {
        * if the user explicitly configured instance types, we can't caculate the expected ami type as we support
        * Amazon Linux 2 and Bottlerocket now. However we can check:
        *
-       * 1. instance types of different CPU architectures are not mixed(e.g. X86 with ARM)
-       * 2. user-specified amiType should be included in `possibleAmiTypes`
+       * 1. instance types of different CPU architectures are not mixed(e.g. X86 with ARM).
+       * 2. user-specified amiType should be included in `possibleAmiTypes`.
+       * 3. The instance types should be compatible with the default amiType(AL2_X86_64) if props.amiType is undefined.
        */
       possibleAmiTypes = getAmiType(instanceTypes);
 
@@ -374,7 +375,22 @@ export class Nodegroup extends Resource implements INodegroup {
       if (props.amiType && !possibleAmiTypes.includes(props.amiType)) {
         throw new Error(`The specified AMI does not match the instance types architecture, either specify one of ${possibleAmiTypes} or dont specify any`);
       }
+
+      /**
+       * if props.amiType is undefined, cloudformation uses `AL2_X86_64` implicitly as the default AMI type,
+       * we have to make sure the instance types provided are compatible with it.
+       * see - https://github.com/aws/aws-cdk/pull/17775#issuecomment-984461324
+       */
+      if (!props.amiType && !possibleAmiTypes.includes(NodegroupAmiType.AL2_X86_64)) {
+        /**
+          * The default AMI type is incompatible with the instance types provided, we can't just
+          * assign the amiType for user as there might be multiple possibleAmiTypes. We should
+          * throw an error and let user specify it explicitly.
+          */
+        throw new Error('Instance types provided are not compatible with the default amiType(AL2_X86_64), please explicitly specify the amiType.');
+      }
     }
+
 
     if (!props.nodeRole) {
       const ngRole = new Role(this, 'NodeGroupRole', {
@@ -474,7 +490,7 @@ function getAmiTypeForInstanceType(instanceType: InstanceType) {
 function getAmiType(instanceTypes: InstanceType[]) {
   // const amiTypes = new Set(instanceTypes.map(i => getAmiTypeForInstanceType(i)));
   const amiTypes = new Set<NodegroupAmiType>();
-  for (const instanceType of instanceTypes) {
+  for (const t of instanceTypes) {
     getAmiTypeForInstanceType(t).forEach(x => amiTypes.add(x));
   }
   if (new Set(amiTypes).size == 0) { // protective code, the current implementation will never result in this.
