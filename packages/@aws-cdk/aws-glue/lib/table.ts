@@ -248,8 +248,6 @@ export class Table extends Resource implements ITable {
    */
   public readonly partitionKeys?: Column[];
 
-  private partitionIndecies: number = 0;
-
   constructor(scope: Construct, id: string, props: TableProps) {
     super(scope, id, {
       physicalName: props.tableName,
@@ -316,10 +314,6 @@ export class Table extends Resource implements ITable {
    * Partition index keys must be a subset of the tables partition keys.
    */
   public addPartitionIndex(props: PartitionIndexProps) {
-    if (this.partitionIndecies >= 3) {
-      throw new Error('Table can have a maximum of 3 partition indecies');
-    }
-    this.partitionIndecies++;
     this.validatePartitionIndex(props);
     const partitionIndex = new cr.AwsCustomResource(this, 'table-partition-index', {
       onCreate: {
@@ -329,7 +323,7 @@ export class Table extends Resource implements ITable {
           DatabaseName: this.database.databaseName,
           TableName: this.tableName,
           PartitionIndex: {
-            IndexName: props.indexName ?? this.generateName(),
+            IndexName: props.indexName ?? this.generateName(props.keys),
             Keys: props.keys,
           },
         },
@@ -345,8 +339,12 @@ export class Table extends Resource implements ITable {
     this.grantToUnderlyingResources(partitionIndex, ['glue:UpdateTable']);
   }
 
-  private generateName(): string {
-    return Names.uniqueId(this);
+  private generateName(keys: string[]): string {
+    const prefix = keys.join('-');
+    const uniqueId = Names.uniqueId(this);
+    const maxIndexLength = 80; // self-specified
+    const startIndex = Math.max(0, uniqueId.length - (maxIndexLength - prefix.length));
+    return prefix + uniqueId.substring(startIndex);
   }
 
   private validatePartitionIndex(props: PartitionIndexProps) {
