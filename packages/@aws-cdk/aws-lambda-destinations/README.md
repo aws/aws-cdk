@@ -44,15 +44,15 @@ Example with a SQS queue for unsuccessful invocations:
 // An sqs queue for unsuccessful invocations of a lambda function
 import * as sqs from '@aws-cdk/aws-sqs';
 
-const deadLetterQueue = new sqs.Queue(this, 'DeadLetterQueue');;
+const deadLetterQueue = new sqs.Queue(this, 'DeadLetterQueue');
 
 const myFn = new lambda.Function(this, 'Fn', {
   runtime: lambda.Runtime.NODEJS_12_X,
   handler: 'index.handler',
-  code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
+  code: lambda.Code.fromInline('// your code'),
   // sqs queue for unsuccessful invocations
-  onFailure: new destinations.SqsDestination(deadLetterQueue)
-})
+  onFailure: new destinations.SqsDestination(deadLetterQueue),
+});
 ```
 
 See also [Configuring Destinations for Asynchronous Invocation](https://docs.aws.amazon.com/lambda/latest/dg/invocation-async.html#invocation-async-destinations).
