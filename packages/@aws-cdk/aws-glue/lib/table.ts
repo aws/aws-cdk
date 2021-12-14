@@ -341,12 +341,16 @@ export class Table extends Resource implements ITable {
 
   /**
    * Add a partition index to the table. You can have a maximum of 3 partition
-   * indecies to a table. Partition index keys must be a subet of the table's
+   * indexes to a table. Partition index keys must be a subset of the table's
    * partition keys.
    *
    * @see https://docs.aws.amazon.com/glue/latest/dg/partition-indexes.html
    */
   public addPartitionIndex(index: PartitionIndex) {
+    const numPartitions = this.partitionIndexCustomResources.length;
+    if (numPartitions > 3) {
+      throw new Error(`Maximum number of partition indexes allowed is 3 but got ${numPartitions}`);
+    }
     this.validatePartitionIndex(index);
 
     const indexName = index.indexName ?? this.generateIndexName(index.keyNames);
@@ -372,15 +376,10 @@ export class Table extends Resource implements ITable {
     });
     this.grantToUnderlyingResources(partitionIndexCustomResource, ['glue:UpdateTable']);
 
-    const numPartitions = this.partitionIndexCustomResources.length;
-    if (numPartitions > 3) {
-      throw new Error(`Maximum number of partition indexes allowed is 3 but got ${numPartitions}`);
-    }
     // Depend on previous partition index if possible, to avoid race condition
     if (numPartitions > 0) {
       this.partitionIndexCustomResources[numPartitions-1].node.addDependency(partitionIndexCustomResource);
     }
-
     this.partitionIndexCustomResources.push(partitionIndexCustomResource);
   }
 
