@@ -237,6 +237,12 @@
       "ca-central-1": {
         "value": "763104351884"
       },
+      "cn-north-1": {
+        "value": "727897471807"
+      },
+      "cn-northwest-1": {
+        "value": "727897471807"
+      },
       "eu-central-1": {
         "value": "763104351884"
       },

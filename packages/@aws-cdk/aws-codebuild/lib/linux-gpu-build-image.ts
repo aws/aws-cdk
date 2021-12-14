@@ -10,7 +10,7 @@ import {
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct, Lazy } from '@aws-cdk/core';
+import { Construct } from '@aws-cdk/core';
 
 /**
  * A CodeBuild GPU image running Linux.
@@ -113,7 +113,7 @@ export class LinuxGpuBuildImage implements IBindableBuildImage {
   private _imageId?: string;
 
   private constructor(private readonly repositoryName: string, private readonly tag: string, private readonly account: string | undefined) {
-    this.imageId = Lazy.string({
+    this.imageId = core.Lazy.string({
       produce: () => {
         if (this._imageId === undefined) {
           throw new Error('Make sure this \'LinuxGpuBuildImage\' is used in a CodeBuild Project construct');
