@@ -1,10 +1,9 @@
-import { readFileSync } from 'fs';
 import '@aws-cdk/assert-internal/jest';
 import { join } from 'path';
 import { Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import { Asset } from '@aws-cdk/aws-s3-assets';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { App, Stack } from '@aws-cdk/core';
-import * as cxapi from '@aws-cdk/cx-api';
 import { Code, Repository, RepositoryProps } from '../lib';
 
 describe('codecommit', () => {
@@ -70,40 +69,25 @@ describe('codecommit', () => {
 
     });
 
-    test('can be setup with file deployment', () => {
+    test('Repository can be initialized with contents from a ZIP file', () => {
       // GIVEN
-      const app = new App({
-        context: {
-          [cxapi.DISABLE_ASSET_STAGING_CONTEXT]: 'true',
-        },
-      });
+      const app = new App();
       const stack = new Stack(app, 'MyStack');
 
       // WHEN
-
       new Repository(stack, 'Repository', {
         repositoryName: 'MyRepositoryName',
         code: Code.fromZipFile(join(__dirname, 'asset-test.zip')),
       });
 
       // THEN
-      const entry = stack.node.metadataEntry.find(m => m.type === 'aws:cdk:asset');
-      expect(entry).toBeTruthy();
-
-      // verify that now the template contains parameters for this asset
-      const assembly = app.synth();
-      const template = JSON.parse(readFileSync(join(assembly.directory, 'MyStack.template.json'), { encoding: 'utf-8' }));
-
-      expect(template.Resources.Repository22E53BBD.Properties.Code.S3.Bucket).toBeDefined();
+      const assetMetadata = app.synth().tryGetArtifact(stack.stackName)!.findMetadataByType(cxschema.ArtifactMetadataEntryType.ASSET);
+      expect(assetMetadata).toHaveLength(1);
     });
 
-    test('can be setup with directory deployment', () => {
+    test('Repository can be initialized with contents from a directory', () => {
       // GIVEN
-      const app = new App({
-        context: {
-          [cxapi.DISABLE_ASSET_STAGING_CONTEXT]: 'true',
-        },
-      });
+      const app = new App();
       const stack = new Stack(app, 'MyStack');
 
       // WHEN
@@ -114,23 +98,13 @@ describe('codecommit', () => {
       });
 
       // THEN
-      const entry = stack.node.metadataEntry.find(m => m.type === 'aws:cdk:asset');
-      expect(entry).toBeTruthy();
-
-      // verify that now the template contains parameters for this asset
-      const assembly = app.synth();
-      const template = JSON.parse(readFileSync(join(assembly.directory, 'MyStack.template.json'), { encoding: 'utf-8' }));
-
-      expect(template.Resources.Repository22E53BBD.Properties.Code.S3.Bucket).toBeDefined();
+      const assetMetadata = app.synth().tryGetArtifact(stack.stackName)!.findMetadataByType(cxschema.ArtifactMetadataEntryType.ASSET);
+      expect(assetMetadata).toHaveLength(1);
     });
 
-    test('can be setup with asset deployment', () => {
+    test('Repository can be initialized with contents from an asset', () => {
       // GIVEN
-      const app = new App({
-        context: {
-          [cxapi.DISABLE_ASSET_STAGING_CONTEXT]: 'true',
-        },
-      });
+      const app = new App();
       const stack = new Stack(app, 'MyStack');
 
       const readmeAsset = new Asset(stack, 'ReadmeAsset', {
@@ -145,14 +119,36 @@ describe('codecommit', () => {
       });
 
       // THEN
-      const entry = stack.node.metadataEntry.find(m => m.type === 'aws:cdk:asset');
-      expect(entry).toBeTruthy();
+      const assetMetadata = app.synth().tryGetArtifact(stack.stackName)!.findMetadataByType(cxschema.ArtifactMetadataEntryType.ASSET);
+      expect(assetMetadata).toHaveLength(1);
+    });
 
-      // verify that now the template contains parameters for this asset
-      const assembly = app.synth();
-      const template = JSON.parse(readFileSync(join(assembly.directory, 'MyStack.template.json'), { encoding: 'utf-8' }));
+    test('Repository throws Error when initialized with file while expecting directory', () => {
+      // GIVEN
+      const app = new App();
+      const stack = new Stack(app, 'MyStack');
 
-      expect(template.Resources.Repository22E53BBD.Properties.Code.S3.Bucket).toBeDefined();
+      // THEN
+      expect(() => {
+        new Repository(stack, 'Repository', {
+          repositoryName: 'MyRepositoryName',
+          code: Code.fromDirectory(join(__dirname, 'asset-test/test.md')),
+        });
+      }).toThrow();
+    });
+
+    test('Repository throws Error when initialized with directory while expecting file', () => {
+      // GIVEN
+      const app = new App();
+      const stack = new Stack(app, 'MyStack');
+
+      // THEN
+      expect(() => {
+        new Repository(stack, 'Repository', {
+          repositoryName: 'MyRepositoryName',
+          code: Code.fromZipFile(join(__dirname, 'asset-test/')),
+        });
+      }).toThrow();
     });
 
     /**

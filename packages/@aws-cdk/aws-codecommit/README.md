@@ -45,9 +45,12 @@ It provides methods for loading code from a directory, `.zip` file and from a pr
 Example:
 
 ```ts
-const repo = new Repository(this, 'Repository', {
+import * as codecommit from '@aws-cdk/aws-codecommit';
+import * as path from 'path';
+
+const repo = new codecommit.Repository(this, 'Repository', {
     repositoryName: 'MyRepositoryName',
-    code: Code.fromDirectory(path.join(__dirname, 'directory/'), 'develop'), // optional property, branch parameter can be omitted
+    code: codecommit.Code.fromDirectory(path.join(__dirname, 'directory/'), 'develop'), // optional property, branch parameter can be omitted
 });
 ```
 

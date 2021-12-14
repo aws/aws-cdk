@@ -491,7 +491,7 @@ export interface RepositoryProps {
   readonly description?: string;
 
   /**
-   * Information about code to be committed to a repository after it is created.
+   * The contents with which to initialize the repository after it has been created.
    *
    * @default - No initialization (create empty repo)
    */
@@ -556,11 +556,13 @@ export class Repository extends RepositoryBase {
       physicalName: props.repositoryName,
     });
 
+    const codeInContext = props.code?.bind(this);
+
     const repository = new CfnRepository(this, 'Resource', {
       repositoryName: props.repositoryName,
       repositoryDescription: props.description,
       triggers: Lazy.any({ produce: () => this.triggers }, { omitEmptyArray: true }),
-      code: props.code ? props.code.bind(this) : undefined,
+      code: codeInContext?.code,
     });
 
     this.repositoryName = this.getResourceNameAttribute(repository.attrName);

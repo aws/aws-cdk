@@ -3,10 +3,10 @@ import * as codecommit from '../lib';
 import { Code } from '../lib';
 
 const app = new cdk.App();
-const stack = new cdk.Stack(app, 'aws-cdk-codecommit-assets');
+const stack = new cdk.Stack(app, 'aws-cdk-codecommit-repo-contents-assets');
 
 new codecommit.Repository(stack, 'Repo', {
-  repositoryName: 'aws-cdk-codecommit-assets',
+  repositoryName: 'aws-cdk-codecommit-repo-contents-assets',
   code: Code.fromDirectory('./asset-test'),
 });
 
