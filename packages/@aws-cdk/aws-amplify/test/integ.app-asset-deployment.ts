@@ -14,8 +14,7 @@ class TestStack extends Stack {
     });
 
     const amplifyApp = new amplify.App(this, 'App', {});
-    const branch = amplifyApp.addBranch('main');
-    branch.addAssetDeployment(asset);
+    amplifyApp.addBranch('main', { asset });
   }
 }
 
