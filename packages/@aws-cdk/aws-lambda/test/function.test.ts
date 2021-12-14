@@ -157,7 +157,7 @@ describe('function', () => {
               'Arn',
             ],
           },
-          Runtime: 'python2.7',
+          Runtime: 'python3.9',
         },
         DependsOn: [
           'MyLambdaServiceRole4539ECB6',
