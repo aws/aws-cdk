@@ -1,7 +1,10 @@
 import '@aws-cdk/assert-internal/jest';
+import { join, resolve } from 'path';
 import { Role, ServicePrincipal } from '@aws-cdk/aws-iam';
-import { Stack } from '@aws-cdk/core';
-import { Repository, RepositoryProps } from '../lib';
+import { Asset } from '@aws-cdk/aws-s3-assets';
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
+import { App, Stack } from '@aws-cdk/core';
+import { Code, Repository, RepositoryProps } from '../lib';
 
 describe('codecommit', () => {
   describe('CodeCommit Repositories', () => {
@@ -64,6 +67,89 @@ describe('codecommit', () => {
       expect(stack.resolve(repo.repositoryName)).toEqual('my-repo');
 
 
+    });
+
+    test('Repository can be initialized with contents from a ZIP file', () => {
+      // GIVEN
+      const app = new App();
+      const stack = new Stack(app, 'MyStack');
+
+      // WHEN
+      new Repository(stack, 'Repository', {
+        repositoryName: 'MyRepositoryName',
+        code: Code.fromZipFile(join(__dirname, 'asset-test.zip')),
+      });
+
+      // THEN
+      const assetMetadata = app.synth().tryGetArtifact(stack.stackName)!.findMetadataByType(cxschema.ArtifactMetadataEntryType.ASSET);
+      expect(assetMetadata).toHaveLength(1);
+    });
+
+    test('Repository can be initialized with contents from a directory', () => {
+      // GIVEN
+      const app = new App();
+      const stack = new Stack(app, 'MyStack');
+
+      // WHEN
+      new Repository(stack, 'Repository', {
+        repositoryName: 'MyRepositoryName',
+        code: Code.fromDirectory(join(__dirname, 'asset-test')),
+      });
+
+      // THEN
+      const assetMetadata = app.synth().tryGetArtifact(stack.stackName)!.findMetadataByType(cxschema.ArtifactMetadataEntryType.ASSET);
+      expect(assetMetadata).toHaveLength(1);
+    });
+
+    test('Repository can be initialized with contents from an asset', () => {
+      // GIVEN
+      const app = new App();
+      const stack = new Stack(app, 'MyStack');
+
+      const readmeAsset = new Asset(stack, 'ReadmeAsset', {
+        path: join(__dirname, 'asset-test'),
+      });
+
+      // WHEN
+      new Repository(stack, 'Repository', {
+        repositoryName: 'MyRepositoryName',
+        code: Code.fromAsset(readmeAsset),
+      });
+
+      // THEN
+      const assetMetadata = app.synth().tryGetArtifact(stack.stackName)!.findMetadataByType(cxschema.ArtifactMetadataEntryType.ASSET);
+      expect(assetMetadata).toHaveLength(1);
+    });
+
+    test('Repository throws Error when initialized with file while expecting directory', () => {
+      // GIVEN
+      const app = new App();
+      const stack = new Stack(app, 'MyStack');
+      const filePath = join(__dirname, 'asset-test/test.md');
+
+      // THEN
+      expect(() => {
+        new Repository(stack, 'Repository', {
+          repositoryName: 'MyRepositoryName',
+          code: Code.fromDirectory(filePath),
+        });
+      }).toThrow(`'${filePath}' needs to be a path to a directory (resolved to: '${resolve(filePath)}')`);
+    });
+
+    test('Repository throws Error when initialized with directory while expecting file', () => {
+      // GIVEN
+      const app = new App();
+      const stack = new Stack(app, 'MyStack');
+
+      const dirPath = join(__dirname, 'asset-test/');
+
+      // THEN
+      expect(() => {
+        new Repository(stack, 'Repository', {
+          repositoryName: 'MyRepositoryName',
+          code: Code.fromZipFile(dirPath),
+        });
+      }).toThrow(`'${dirPath}' needs to be a path to a ZIP file (resolved to: '${resolve(dirPath)}')`);
     });
 
     /**

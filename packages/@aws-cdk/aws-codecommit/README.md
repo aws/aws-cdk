@@ -21,7 +21,7 @@ To add a CodeCommit Repository to your stack:
 ```ts
 import * as codecommit from '@aws-cdk/aws-codecommit';
 
-const repo = new codecommit.Repository(this, 'Repository' ,{
+const repo = new codecommit.Repository(this, 'Repository', {
     repositoryName: 'MyRepositoryName',
     description: 'Some description.', // optional property
 });
@@ -35,6 +35,23 @@ To add an Amazon SNS trigger to your repository:
 ```ts
 // trigger is established for all repository actions on all branches by default.
 repo.notify('arn:aws:sns:*:123456789012:my_topic');
+```
+
+## Add initial commit
+
+It is possible to initialize the Repository via the `Code` class.
+It provides methods for loading code from a directory, `.zip` file and from a pre-created CDK Asset.
+
+Example:
+
+```ts
+import * as codecommit from '@aws-cdk/aws-codecommit';
+import * as path from 'path';
+
+const repo = new codecommit.Repository(this, 'Repository', {
+    repositoryName: 'MyRepositoryName',
+    code: codecommit.Code.fromDirectory(path.join(__dirname, 'directory/'), 'develop'), // optional property, branch parameter can be omitted
+});
 ```
 
 ## Events
