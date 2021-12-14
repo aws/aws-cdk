@@ -156,8 +156,8 @@ new backup.BackupVault(this, 'Vault', {
   blockRecoveryPointDeletion: true,
 });
 
-const plan = backup.BackupPlan.dailyMonthly1YearRetention(this, 'Plan');
-plan.backupVault.blockRecoveryPointDeletion();
+declare const backupVault: backup.BackupVault;
+backupVault.blockRecoveryPointDeletion();
 ```
 
 By default access is not restricted.
