@@ -47,7 +47,6 @@ describe('When Application Load Balancer', () => {
     expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::LoadBalancer');
 
     expect(stack).toHaveResource('AWS::ECS::Service', {
-      DesiredCount: 1,
       LaunchType: 'EC2',
     });
 
@@ -929,7 +928,6 @@ describe('When Network Load Balancer', () => {
     expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::LoadBalancer');
 
     expect(stack).toHaveResource('AWS::ECS::Service', {
-      DesiredCount: 1,
       LaunchType: 'EC2',
     });
 
