@@ -224,7 +224,7 @@ const integration = new WebSocketLambdaIntegration(
   handler,
 );
 
-new WebSocketApi(stack, 'WebSocketApi', {
+new apigwv2.WebSocketApi(stack, 'WebSocketApi', {
   connectRouteOptions: {
     integration,
     authorizer,
