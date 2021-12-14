@@ -2303,6 +2303,32 @@ describe('bucket', () => {
 
   });
 
+  test('Bucket with objectOwnership set to BUCKET_OWNER_ENFORCED', () => {
+    const stack = new cdk.Stack();
+    new s3.Bucket(stack, 'MyBucket', {
+      objectOwnership: s3.ObjectOwnership.BUCKET_OWNER_ENFORCED,
+    });
+    expect(stack).toMatchTemplate({
+      'Resources': {
+        'MyBucketF68F3FF0': {
+          'Type': 'AWS::S3::Bucket',
+          'Properties': {
+            'OwnershipControls': {
+              'Rules': [
+                {
+                  'ObjectOwnership': 'BucketOwnerEnforced',
+                },
+              ],
+            },
+          },
+          'UpdateReplacePolicy': 'Retain',
+          'DeletionPolicy': 'Retain',
+        },
+      },
+    });
+
+  });
+
   test('Bucket with objectOwnership set to BUCKET_OWNER_PREFERRED', () => {
     const stack = new cdk.Stack();
     new s3.Bucket(stack, 'MyBucket', {
