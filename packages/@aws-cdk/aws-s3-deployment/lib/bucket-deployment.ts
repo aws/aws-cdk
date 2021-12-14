@@ -102,6 +102,14 @@ export interface BucketDeploymentProps {
    */
   readonly distributionPaths?: string[];
 
+
+  /**
+   * The number of days that the lambda function's log events are kept in CloudWatch Logs.
+   *
+   * @default logs.RetentionDays.INFINITE
+   */
+  readonly logRetention?: logs.RetentionDays;
+
   /**
    * The amount of memory (in MiB) to allocate to the AWS Lambda function which
    * replicates the files from the CDK bucket to the destination bucket.
@@ -306,6 +314,7 @@ export class BucketDeployment extends CoreConstruct {
         accessPoint,
         mountPath,
       ) : undefined,
+      logRetention: props.logRetention,
     });
 
     const handlerRole = handler.role;
