@@ -1,6 +1,6 @@
-import { IResolveContext, Lazy, Stack, Token } from '@aws-cdk/core';
+import { Lazy, Stack, Token } from '@aws-cdk/core';
 import { FactName, RegionInfo } from '@aws-cdk/region-info';
-import { Construct } from 'constructs';
+import { Construct, IConstruct } from 'constructs';
 import { Architecture } from './architecture';
 import { IFunction } from './function-base';
 
@@ -68,7 +68,7 @@ export abstract class LambdaInsightsVersion {
 
     class InsightsVersion extends LambdaInsightsVersion {
       public readonly layerVersionArn = Lazy.uncachedString({
-        produce: (context) => getVersionArn(context, insightsVersion),
+        produce: (context) => getVersionArn(context.scope, insightsVersion),
       });
 
       public _bind(_scope: Construct, _function: IFunction): InsightsBindConfig {
@@ -80,9 +80,7 @@ export abstract class LambdaInsightsVersion {
           throw new Error(`Insights version ${insightsVersion} does not exist.`);
         }
         return {
-          arn: Lazy.uncachedString({
-            produce: (context) => getVersionArn(context, insightsVersion, arch),
-          }),
+          arn: getVersionArn(_scope, insightsVersion, arch),
         };
       }
     }
@@ -108,9 +106,9 @@ export abstract class LambdaInsightsVersion {
  *
  * This function is run on CDK synthesis.
  */
-function getVersionArn(context: IResolveContext, insightsVersion: string, architecture?: string): string {
+function getVersionArn(scope: IConstruct, insightsVersion: string, architecture?: string): string {
 
-  const scopeStack = Stack.of(context.scope);
+  const scopeStack = Stack.of(scope);
   const region = scopeStack.region;
   const arch = architecture ?? Architecture.X86_64.name;
 
@@ -124,5 +122,5 @@ function getVersionArn(context: IResolveContext, insightsVersion: string, archit
   }
 
   // Otherwise, need to add a mapping to be looked up at deployment time
-  return scopeStack.regionalFact(FactName.cloudwatchLambdaInsightsVersion(insightsVersion));
+  return scopeStack.regionalFact(FactName.cloudwatchLambdaInsightsVersion(insightsVersion, arch));
 }
