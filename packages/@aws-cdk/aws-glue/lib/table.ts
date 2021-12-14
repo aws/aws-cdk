@@ -3,6 +3,7 @@ import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import { ArnFormat, Fn, IResource, Names, Resource, Stack } from '@aws-cdk/core';
 import * as cr from '@aws-cdk/custom-resources';
+import { AwsCustomResource } from '@aws-cdk/custom-resources';
 import { Construct } from 'constructs';
 import { DataFormat } from './data-format';
 import { IDatabase } from './database';
@@ -263,6 +264,13 @@ export class Table extends Resource implements ITable {
    */
   public readonly partitionIndexes?: PartitionIndex[];
 
+  /**
+   * Partition indexes must be created one at a time. To avoid
+   * race conditions, we store the resource and add dependencies
+   * each time a new partition index is created.
+   */
+  private partitionIndexCustomResources: AwsCustomResource[] = [];
+
   constructor(scope: Construct, id: string, props: TableProps) {
     super(scope, id, {
       physicalName: props.tableName,
@@ -275,14 +283,6 @@ export class Table extends Resource implements ITable {
     validateSchema(props.columns, props.partitionKeys);
     this.columns = props.columns;
     this.partitionKeys = props.partitionKeys;
-
-    if (props.partitionIndexes) {
-      if (props.partitionIndexes.length > 3) {
-        throw new Error(`Maximum number of partition indexes allowed is 3 but got ${props.partitionIndexes.length}`);
-      }
-      this.partitionIndexes = props.partitionIndexes;
-      this.partitionIndexes.forEach((index) => this.addPartitionIndex(index));
-    }
 
     this.compressed = props.compressed ?? false;
     const { bucket, encryption, encryptionKey } = createBucket(this, props);
@@ -328,6 +328,15 @@ export class Table extends Resource implements ITable {
       resourceName: `${this.database.databaseName}/${this.tableName}`,
     });
     this.node.defaultChild = tableResource;
+
+    // Partition index creation relies on created table.
+    if (props.partitionIndexes) {
+      if (props.partitionIndexes.length > 3) {
+        throw new Error(`Maximum number of partition indexes allowed is 3 but got ${props.partitionIndexes.length}`);
+      }
+      this.partitionIndexes = props.partitionIndexes;
+      this.partitionIndexes.forEach((index) => this.addPartitionIndex(index));
+    }
   }
 
   /**
@@ -362,6 +371,17 @@ export class Table extends Resource implements ITable {
       }),
     });
     this.grantToUnderlyingResources(partitionIndexCustomResource, ['glue:UpdateTable']);
+
+    const numPartitions = this.partitionIndexCustomResources.length;
+    if (numPartitions > 3) {
+      throw new Error(`Maximum number of partition indexes allowed is 3 but got ${numPartitions}`);
+    }
+    // Depend on previous partition index if possible, to avoid race condition
+    if (numPartitions > 0) {
+      this.partitionIndexCustomResources[numPartitions-1].node.addDependency(partitionIndexCustomResource);
+    }
+
+    this.partitionIndexCustomResources.push(partitionIndexCustomResource);
   }
 
   private generateIndexName(keys: string[]): string {
