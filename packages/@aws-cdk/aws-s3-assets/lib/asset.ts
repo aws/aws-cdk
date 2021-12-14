@@ -118,14 +118,6 @@ export class Asset extends Construct implements cdk.IAsset {
   public readonly assetHash: string;
 
   /**
-   * The original Asset Path before it got staged.
-   *
-   * If asset staging is disabled, this will be same value as assetPath.
-   * If asset staging is enabled, it will be the Asset original path before staging.
-   */
-  private readonly originalAssetPath: string;
-
-  /**
    * Indicates if this asset got bundled before staged, or not.
    */
   private readonly isBundled: boolean;
@@ -133,13 +125,12 @@ export class Asset extends Construct implements cdk.IAsset {
   constructor(scope: Construct, id: string, props: AssetProps) {
     super(scope, id);
 
-    this.originalAssetPath = path.resolve(props.path);
     this.isBundled = props.bundling != null;
 
     // stage the asset source (conditionally).
     const staging = new cdk.AssetStaging(this, 'Stage', {
       ...props,
-      sourcePath: this.originalAssetPath,
+      sourcePath: path.resolve(props.path),
       follow: props.followSymlinks ?? toSymlinkFollow(props.follow),
       assetHash: props.assetHash ?? props.sourceHash,
     });
@@ -204,7 +195,6 @@ export class Asset extends Construct implements cdk.IAsset {
     // points to a local path in order to enable local invocation of this function.
     resource.cfnOptions.metadata = resource.cfnOptions.metadata || { };
     resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_PATH_KEY] = this.assetPath;
-    resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_ORIGINAL_PATH_KEY] = this.originalAssetPath;
     resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_IS_BUNDLED_KEY] = this.isBundled;
     resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_PROPERTY_KEY] = resourceProperty;
   }

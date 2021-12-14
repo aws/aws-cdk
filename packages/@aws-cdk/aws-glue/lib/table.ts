@@ -325,7 +325,10 @@ export class Table extends Resource implements ITable {
     return ret;
   }
 
-  private grant(grantee: iam.IGrantable, actions: string[]) {
+  /**
+   * Grant the given identity custom permissions.
+   */
+  public grant(grantee: iam.IGrantable, actions: string[]) {
     return iam.Grant.addToPrincipal({
       grantee,
       resourceArns: [this.tableArn],
@@ -400,7 +403,6 @@ function createBucket(table: Table, props: TableProps) {
 }
 
 const readPermissions = [
-  'glue:BatchDeletePartition',
   'glue:BatchGetPartition',
   'glue:GetPartition',
   'glue:GetPartitions',

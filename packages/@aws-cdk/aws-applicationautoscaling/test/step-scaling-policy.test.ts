@@ -227,6 +227,62 @@ describe('step scaling policy', () => {
 
 
   });
+
+  test('step scaling with evaluation period & data points to alarm configured', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const target = createScalableTarget(stack);
+
+    // WHEN
+    target.scaleOnMetric('Tracking', {
+      metric: new cloudwatch.Metric({ namespace: 'Test', metricName: 'Metric', statistic: 'p99' }),
+      scalingSteps: [
+        { upper: 0, change: -1 },
+        { lower: 100, change: +1 },
+        { lower: 500, change: +5 },
+      ],
+      evaluationPeriods: 10,
+      datapointsToAlarm: 6,
+      metricAggregationType: appscaling.MetricAggregationType.MAXIMUM,
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::ApplicationAutoScaling::ScalingPolicy', {
+      PolicyType: 'StepScaling',
+      StepScalingPolicyConfiguration: {
+        AdjustmentType: 'ChangeInCapacity',
+        MetricAggregationType: 'Maximum',
+      },
+    });
+    expect(stack).toHaveResource('AWS::CloudWatch::Alarm', {
+      ComparisonOperator: 'GreaterThanOrEqualToThreshold',
+      EvaluationPeriods: 10,
+      DatapointsToAlarm: 6,
+      ExtendedStatistic: 'p99',
+      MetricName: 'Metric',
+      Namespace: 'Test',
+      Threshold: 100,
+    });
+  });
+
+  test('step scaling with invalid datapointsToAlarm throws error', () => {
+    const stack = new cdk.Stack();
+    const target = createScalableTarget(stack);
+
+    expect(() => {
+      target.scaleOnMetric('Tracking', {
+        metric: new cloudwatch.Metric({ namespace: 'Test', metricName: 'Metric', statistic: 'p99' }),
+        scalingSteps: [
+          { upper: 0, change: -1 },
+          { lower: 100, change: +1 },
+          { lower: 500, change: +5 },
+        ],
+        evaluationPeriods: 10,
+        datapointsToAlarm: 0,
+        metricAggregationType: appscaling.MetricAggregationType.MAXIMUM,
+      });
+    }).toThrow('datapointsToAlarm cannot be less than 1, got: 0');
+  });
 });
 
 /**

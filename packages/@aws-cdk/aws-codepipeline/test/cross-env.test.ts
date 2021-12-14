@@ -129,7 +129,14 @@ describe.each([
 
         // THEN
         expect(supportStack).not.toHaveResource('AWS::KMS::Key');
-        expect(supportStack).toHaveResource('AWS::S3::Bucket');
+        expect(supportStack).toHaveResourceLike('AWS::S3::Bucket', {
+          PublicAccessBlockConfiguration: {
+            BlockPublicAcls: true,
+            BlockPublicPolicy: true,
+            IgnorePublicAcls: true,
+            RestrictPublicBuckets: true,
+          },
+        });
       });
 
       test('when twiddling another stack', () => {

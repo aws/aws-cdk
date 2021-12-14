@@ -316,7 +316,7 @@ export class Stage extends Resource implements IStage {
         cacheDataEncrypted: options.cacheDataEncrypted,
         cacheTtlInSeconds: options.cacheTtl && options.cacheTtl.toSeconds(),
         cachingEnabled: options.cachingEnabled,
-        dataTraceEnabled: options.dataTraceEnabled,
+        dataTraceEnabled: options.dataTraceEnabled ?? false,
         loggingLevel: options.loggingLevel,
         metricsEnabled: options.metricsEnabled,
         throttlingBurstLimit: options.throttlingBurstLimit,

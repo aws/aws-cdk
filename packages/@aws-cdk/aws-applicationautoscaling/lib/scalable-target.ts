@@ -281,4 +281,9 @@ export enum ServiceNamespace {
    * Kafka
    */
   KAFKA = 'kafka',
+
+  /**
+   * ElastiCache
+   */
+  ELASTICACHE = 'elasticache',
 }

@@ -95,6 +95,7 @@
           },
           {
             "CachingEnabled": true,
+            "DataTraceEnabled": false,
             "HttpMethod": "GET",
             "ResourcePath": "/~1api~1appliances"
           }

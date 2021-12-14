@@ -259,6 +259,79 @@ describe('domains', () => {
     });
   });
 
+  test('a base path can be defined when adding a domain name', () => {
+    // GIVEN
+    const domainName = 'my.domain.com';
+    const basePath = 'users';
+    const stack = new Stack();
+    const certificate = new acm.Certificate(stack, 'cert', { domainName: 'my.domain.com' });
+
+    // WHEN
+    const api = new apigw.RestApi(stack, 'api', {});
+
+    api.root.addMethod('GET');
+
+    api.addDomainName('domainId', { domainName, certificate, basePath });
+
+    // THEN
+    expect(stack).toHaveResource('AWS::ApiGateway::BasePathMapping', {
+      'BasePath': 'users',
+      'RestApiId': {
+        'Ref': 'apiC8550315',
+      },
+    });
+  });
+
+  test('additional base paths can added if addDomainName was called with a non-empty base path', () => {
+    // GIVEN
+    const domainName = 'my.domain.com';
+    const basePath = 'users';
+    const stack = new Stack();
+    const certificate = new acm.Certificate(stack, 'cert', { domainName: 'my.domain.com' });
+
+    // WHEN
+    const api = new apigw.RestApi(stack, 'api', {});
+
+    api.root.addMethod('GET');
+
+    const dn = api.addDomainName('domainId', { domainName, certificate, basePath });
+    dn.addBasePathMapping(api, {
+      basePath: 'books',
+    });
+
+    // THEN
+    expect(stack).toHaveResource('AWS::ApiGateway::BasePathMapping', {
+      'BasePath': 'users',
+      'RestApiId': {
+        'Ref': 'apiC8550315',
+      },
+    });
+    expect(stack).toHaveResource('AWS::ApiGateway::BasePathMapping', {
+      'BasePath': 'books',
+      'RestApiId': {
+        'Ref': 'apiC8550315',
+      },
+    });
+  });
+
+  test('no additional base paths can added if addDomainName was called without a base path', () => {
+    // GIVEN
+    const domainName = 'my.domain.com';
+    const stack = new Stack();
+    const certificate = new acm.Certificate(stack, 'cert', { domainName: 'my.domain.com' });
+
+    // WHEN
+    const api = new apigw.RestApi(stack, 'api', {});
+
+    api.root.addMethod('GET');
+
+    const dn = api.addDomainName('domainId', { domainName, certificate });
+
+    expect(() => dn.addBasePathMapping(api, { basePath: 'books' }))
+      .toThrow(/No additional base paths are allowed/);
+  });
+
+
   test('domain name cannot contain uppercase letters', () => {
     // GIVEN
     const stack = new Stack();
