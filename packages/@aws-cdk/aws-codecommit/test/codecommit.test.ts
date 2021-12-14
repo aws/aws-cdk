@@ -1,5 +1,5 @@
 import '@aws-cdk/assert-internal/jest';
-import { join } from 'path';
+import { join, resolve } from 'path';
 import { Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import { Asset } from '@aws-cdk/aws-s3-assets';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
@@ -125,14 +125,15 @@ describe('codecommit', () => {
       // GIVEN
       const app = new App();
       const stack = new Stack(app, 'MyStack');
+      const filePath = join(__dirname, 'asset-test/test.md');
 
       // THEN
       expect(() => {
         new Repository(stack, 'Repository', {
           repositoryName: 'MyRepositoryName',
-          code: Code.fromDirectory(join(__dirname, 'asset-test/test.md')),
+          code: Code.fromDirectory(filePath),
         });
-      }).toThrow(/'asset-test/test.md' needs to be a path to a directory/);
+      }).toThrow(`'${filePath}' needs to be a path to a directory (resolved to: '${resolve(filePath)}')`);
     });
 
     test('Repository throws Error when initialized with directory while expecting file', () => {
@@ -140,13 +141,15 @@ describe('codecommit', () => {
       const app = new App();
       const stack = new Stack(app, 'MyStack');
 
+      const dirPath = join(__dirname, 'asset-test/');
+
       // THEN
       expect(() => {
         new Repository(stack, 'Repository', {
           repositoryName: 'MyRepositoryName',
-          code: Code.fromZipFile(join(__dirname, 'asset-test/')),
+          code: Code.fromZipFile(dirPath),
         });
-      }).toThrow();
+      }).toThrow(`'${dirPath}' needs to be a path to a ZIP file (resolved to: '${resolve(dirPath)}')`);
     });
 
     /**

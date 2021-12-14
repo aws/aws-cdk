@@ -556,13 +556,11 @@ export class Repository extends RepositoryBase {
       physicalName: props.repositoryName,
     });
 
-    const codeInContext = props.code?.bind(this);
-
     const repository = new CfnRepository(this, 'Resource', {
       repositoryName: props.repositoryName,
       repositoryDescription: props.description,
       triggers: Lazy.any({ produce: () => this.triggers }, { omitEmptyArray: true }),
-      code: codeInContext?.code,
+      code: (props.code?.bind(this))?.code,
     });
 
     this.repositoryName = this.getResourceNameAttribute(repository.attrName);

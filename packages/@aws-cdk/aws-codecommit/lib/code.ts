@@ -72,12 +72,12 @@ class PathResolvedCode extends Code {
     super();
   }
 
-  public bind(_scope: Construct): CodeConfig {
-    const asset = new assets.Asset(_scope, 'PathResolvedCodeAsset', {
+  public bind(scope: Construct): CodeConfig {
+    const asset = new assets.Asset(scope, 'PathResolvedCodeAsset', {
       path: this.resolvedPath,
     });
 
-    return (new AssetCode(asset, this.branch)).bind(_scope);
+    return (new AssetCode(asset, this.branch)).bind(scope);
   }
 }
 
@@ -88,7 +88,7 @@ class AssetCode extends Code {
 
   public bind(_scope: Construct): CodeConfig {
     if (!this.asset.isZipArchive) {
-      throw new Error('Asset must be a .zip file or a directory');
+      throw new Error('Asset must be a .zip file or a directory (resolved to: ' + this.asset.assetPath + ' )');
     }
 
     return {
