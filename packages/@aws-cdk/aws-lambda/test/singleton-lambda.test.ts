@@ -16,7 +16,7 @@ describe('singleton lambda', () => {
       new lambda.SingletonFunction(stack, `Singleton${i}`, {
         uuid: '84c0de93-353f-4217-9b0b-45b6c993251a',
         code: new lambda.InlineCode('def hello(): pass'),
-        runtime: lambda.Runtime.PYTHON_2_7,
+        runtime: lambda.Runtime.PYTHON_3_9,
         handler: 'index.hello',
         timeout: cdk.Duration.minutes(5),
       });
@@ -53,7 +53,7 @@ describe('singleton lambda', () => {
             },
             Handler: 'index.hello',
             Role: { 'Fn::GetAtt': ['SingletonLambda84c0de93353f42179b0b45b6c993251aServiceRole26D59235', 'Arn'] },
-            Runtime: 'python2.7',
+            Runtime: 'python3.9',
             Timeout: 300,
           },
           DependsOn: ['SingletonLambda84c0de93353f42179b0b45b6c993251aServiceRole26D59235'],
@@ -68,7 +68,7 @@ describe('singleton lambda', () => {
     const singleton = new lambda.SingletonFunction(stack, 'Singleton', {
       uuid: '84c0de93-353f-4217-9b0b-45b6c993251a',
       code: new lambda.InlineCode('def hello(): pass'),
-      runtime: lambda.Runtime.PYTHON_2_7,
+      runtime: lambda.Runtime.PYTHON_3_9,
       handler: 'index.hello',
       timeout: cdk.Duration.minutes(5),
     });
@@ -92,7 +92,7 @@ describe('singleton lambda', () => {
     const singleton = new lambda.SingletonFunction(stack, 'Singleton', {
       uuid: '84c0de93-353f-4217-9b0b-45b6c993251a',
       code: new lambda.InlineCode('def hello(): pass'),
-      runtime: lambda.Runtime.PYTHON_2_7,
+      runtime: lambda.Runtime.PYTHON_3_9,
       handler: 'index.hello',
       timeout: cdk.Duration.minutes(5),
     });
@@ -116,7 +116,7 @@ describe('singleton lambda', () => {
     const singleton = new lambda.SingletonFunction(stack, 'Singleton', {
       uuid: '84c0de93-353f-4217-9b0b-45b6c993251a',
       code: new lambda.InlineCode('def hello(): pass'),
-      runtime: lambda.Runtime.PYTHON_2_7,
+      runtime: lambda.Runtime.PYTHON_3_9,
       handler: 'index.hello',
       timeout: cdk.Duration.minutes(5),
     });
@@ -140,14 +140,14 @@ describe('singleton lambda', () => {
     const singleton = new lambda.SingletonFunction(stack, 'Singleton', {
       uuid: '84c0de93-353f-4217-9b0b-45b6c993251a',
       code: new lambda.InlineCode('def hello(): pass'),
-      runtime: lambda.Runtime.PYTHON_2_7,
+      runtime: lambda.Runtime.PYTHON_3_9,
       handler: 'index.hello',
       timeout: cdk.Duration.minutes(5),
     });
     const bucket = new s3.Bucket(stack, 'Bucket');
     const layer = new lambda.LayerVersion(stack, 'myLayer', {
       code: new lambda.S3Code(bucket, 'ObjectKey'),
-      compatibleRuntimes: [lambda.Runtime.PYTHON_2_7],
+      compatibleRuntimes: [lambda.Runtime.PYTHON_3_9],
     });
 
     // WHEN
@@ -167,7 +167,7 @@ describe('singleton lambda', () => {
     const singleton = new lambda.SingletonFunction(stack, 'Singleton', {
       uuid: '84c0de93-353f-4217-9b0b-45b6c993251a',
       code: new lambda.InlineCode('def hello(): pass'),
-      runtime: lambda.Runtime.PYTHON_2_7,
+      runtime: lambda.Runtime.PYTHON_3_9,
       handler: 'index.hello',
     });
 
@@ -194,7 +194,7 @@ describe('singleton lambda', () => {
     const singleton = new lambda.SingletonFunction(stack, 'Singleton', {
       uuid: '84c0de93-353f-4217-9b0b-45b6c993251a',
       code: new lambda.InlineCode('def hello(): pass'),
-      runtime: lambda.Runtime.PYTHON_2_7,
+      runtime: lambda.Runtime.PYTHON_3_9,
       handler: 'index.hello',
       environment: {
         KEY: 'value',
@@ -214,7 +214,7 @@ describe('singleton lambda', () => {
     const singleton = new lambda.SingletonFunction(stack, 'Singleton', {
       uuid: '84c0de93-353f-4217-9b0b-45b6c993251a',
       code: new lambda.InlineCode('def hello(): pass'),
-      runtime: lambda.Runtime.PYTHON_2_7,
+      runtime: lambda.Runtime.PYTHON_3_9,
       handler: 'index.hello',
       timeout: cdk.Duration.minutes(5),
     });
@@ -232,13 +232,13 @@ describe('singleton lambda', () => {
     const singleton = new lambda.SingletonFunction(stack, 'Singleton', {
       uuid: '84c0de93-353f-4217-9b0b-45b6c993251a',
       code: new lambda.InlineCode('def hello(): pass'),
-      runtime: lambda.Runtime.PYTHON_2_7,
+      runtime: lambda.Runtime.PYTHON_3_9,
       handler: 'index.hello',
       timeout: cdk.Duration.minutes(5),
     });
 
     // THEN
-    expect(singleton.runtime).toStrictEqual(lambda.Runtime.PYTHON_2_7);
+    expect(singleton.runtime).toStrictEqual(lambda.Runtime.PYTHON_3_9);
   });
 
   test('current version of a singleton function', () => {

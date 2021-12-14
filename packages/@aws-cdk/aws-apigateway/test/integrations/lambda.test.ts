@@ -9,7 +9,7 @@ describe('lambda', () => {
     const stack = new cdk.Stack();
     const api = new apigateway.RestApi(stack, 'my-api');
     const handler = new lambda.Function(stack, 'Handler', {
-      runtime: lambda.Runtime.PYTHON_2_7,
+      runtime: lambda.Runtime.PYTHON_3_9,
       handler: 'boom',
       code: lambda.Code.fromInline('foo'),
     });
