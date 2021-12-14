@@ -24,7 +24,6 @@ describe('When Application Load Balancer', () => {
     expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::LoadBalancer');
 
     expect(stack).toHaveResource('AWS::ECS::Service', {
-      DesiredCount: 1,
       LaunchType: 'FARGATE',
       LoadBalancers: [
         {
@@ -319,7 +318,6 @@ describe('When Application Load Balancer', () => {
     });
 
     expect(stack).toHaveResource('AWS::ECS::Service', {
-      DesiredCount: 1,
       LaunchType: 'FARGATE',
       LoadBalancers: [
         {
@@ -393,7 +391,6 @@ describe('When Network Load Balancer', () => {
     expect(stack).toHaveResource('AWS::ElasticLoadBalancingV2::LoadBalancer');
 
     expect(stack).toHaveResource('AWS::ECS::Service', {
-      DesiredCount: 1,
       LaunchType: 'FARGATE',
       LoadBalancers: [
         {
