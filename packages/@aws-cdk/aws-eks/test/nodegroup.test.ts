@@ -483,28 +483,30 @@ describe('node group', () => {
     expect(stack).toHaveResourceLike('AWS::EKS::Nodegroup', {
       AmiType: 'BOTTLEROCKET_x86_64',
     });
+  });
 
-    /**
+  /**
      * BOTTOEROCKET_ARM_64 with defined instance types w/o launchTemplateSpec should deploy correctly.
      */
-    test('BOTTOEROCKET_ARM_64 with defined instance types w/o launchTemplateSpec should deploy correctly', () => {
-      // GIVEN
-      const { stack, vpc } = testFixture();
-      const cluster = new eks.Cluster(stack, 'Cluster', {
-        vpc,
-        defaultCapacity: 0,
-        version: CLUSTER_VERSION,
-      });
+  test('BOTTOEROCKET_ARM_64 with defined instance types w/o launchTemplateSpec should deploy correctly', () => {
+    // GIVEN
+    const { stack, vpc } = testFixture();
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+    });
       // THEN
-      cluster.addNodegroupCapacity('bottlerocket', {
-        instanceTypes: [new ec2.InstanceType('c7g.xlarge')],
-        amiType: NodegroupAmiType.BOTTLEROCKET_ARM_64,
-      });
+    cluster.addNodegroupCapacity('bottlerocket', {
+      instanceTypes: [new ec2.InstanceType('c7g.xlarge')],
+      amiType: NodegroupAmiType.BOTTLEROCKET_ARM_64,
+    });
 
-      // THEN
-      expect(stack).toHaveResourceLike('AWS::EKS::Nodegroup', {
-        AmiType: 'BOTTLEROCKET_ARM_64',
-      });
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::EKS::Nodegroup', {
+      AmiType: 'BOTTLEROCKET_ARM_64',
+    });
+  });
 
   test('aws-auth will be updated', () => {
     // GIVEN
