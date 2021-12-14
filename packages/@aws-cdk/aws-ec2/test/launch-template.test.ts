@@ -509,6 +509,22 @@ describe('LaunchTemplate', () => {
       },
     });
   });
+
+  test('Requires IMDSv2', () => {
+    // WHEN
+    new LaunchTemplate(stack, 'Template', {
+      requireImdsv2: true,
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::EC2::LaunchTemplate', {
+      LaunchTemplateData: {
+        MetadataOptions: {
+          HttpTokens: 'required',
+        },
+      },
+    });
+  });
 });
 
 describe('LaunchTemplate marketOptions', () => {
@@ -550,7 +566,7 @@ describe('LaunchTemplate marketOptions', () => {
     });
 
     // THEN
-    expect(template.node.metadata).toHaveLength(expectedErrors);
+    expect(template.node.metadataEntry).toHaveLength(expectedErrors);
   });
 
   test('for bad duration', () => {

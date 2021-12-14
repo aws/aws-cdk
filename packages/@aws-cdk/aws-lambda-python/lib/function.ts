@@ -102,12 +102,14 @@ export class PythonFunction extends lambda.Function {
 
     const handler = props.handler ?? 'handler';
     const runtime = props.runtime ?? lambda.Runtime.PYTHON_3_7;
+    const architecture = props.architecture ?? lambda.Architecture.X86_64;
 
     super(scope, id, {
       ...props,
       runtime,
       code: bundle({
         runtime,
+        architecture,
         entry,
         outputPathSuffix: '.',
         assetHashType: props.assetHashType,

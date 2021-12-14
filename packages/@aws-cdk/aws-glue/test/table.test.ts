@@ -2,10 +2,11 @@ import { Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
+import { testFutureBehavior } from '@aws-cdk/cdk-build-tools/lib/feature-flag';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import { testFutureBehavior } from 'cdk-build-tools/lib/feature-flag';
 import * as glue from '../lib';
+import { CfnTable } from '../lib/glue.generated';
 
 const s3GrantWriteCtx = { [cxapi.S3_GRANT_WRITE_WITHOUT_ACL]: true };
 
@@ -78,7 +79,6 @@ test('unpartitioned JSON table', () => {
       TableType: 'EXTERNAL_TABLE',
     },
   });
-
 });
 
 test('partitioned JSON table', () => {
@@ -156,7 +156,6 @@ test('partitioned JSON table', () => {
       TableType: 'EXTERNAL_TABLE',
     },
   });
-
 });
 
 test('compressed table', () => {
@@ -222,7 +221,6 @@ test('compressed table', () => {
       TableType: 'EXTERNAL_TABLE',
     },
   });
-
 });
 
 test('table.node.defaultChild', () => {
@@ -245,7 +243,7 @@ test('table.node.defaultChild', () => {
   });
 
   // THEN
-  expect(table.node.defaultChild instanceof glue.CfnTable).toEqual(true);
+  expect(table.node.defaultChild instanceof CfnTable).toEqual(true);
 });
 
 test('encrypted table: SSE-S3', () => {
@@ -324,7 +322,6 @@ test('encrypted table: SSE-S3', () => {
       ],
     },
   });
-
 });
 
 test('encrypted table: SSE-KMS (implicitly created key)', () => {
@@ -412,7 +409,6 @@ test('encrypted table: SSE-KMS (implicitly created key)', () => {
       TableType: 'EXTERNAL_TABLE',
     },
   });
-
 });
 
 test('encrypted table: SSE-KMS (explicitly created key)', () => {
@@ -505,7 +501,6 @@ test('encrypted table: SSE-KMS (explicitly created key)', () => {
       TableType: 'EXTERNAL_TABLE',
     },
   });
-
 });
 
 test('encrypted table: SSE-KMS_MANAGED', () => {
@@ -584,7 +579,6 @@ test('encrypted table: SSE-KMS_MANAGED', () => {
       TableType: 'EXTERNAL_TABLE',
     },
   });
-
 });
 
 test('encrypted table: CSE-KMS (implicitly created key)', () => {
@@ -653,7 +647,6 @@ test('encrypted table: CSE-KMS (implicitly created key)', () => {
       TableType: 'EXTERNAL_TABLE',
     },
   });
-
 });
 
 test('encrypted table: CSE-KMS (explicitly created key)', () => {
@@ -728,7 +721,6 @@ test('encrypted table: CSE-KMS (explicitly created key)', () => {
       TableType: 'EXTERNAL_TABLE',
     },
   });
-
 });
 
 test('encrypted table: CSE-KMS (explicitly passed bucket and key)', () => {
@@ -805,7 +797,6 @@ test('encrypted table: CSE-KMS (explicitly passed bucket and key)', () => {
       TableType: 'EXTERNAL_TABLE',
     },
   });
-
 });
 
 test('explicit s3 bucket and prefix', () => {
@@ -873,7 +864,6 @@ test('explicit s3 bucket and prefix', () => {
       TableType: 'EXTERNAL_TABLE',
     },
   });
-
 });
 
 test('explicit s3 bucket and with empty prefix', () => {
@@ -941,7 +931,72 @@ test('explicit s3 bucket and with empty prefix', () => {
       TableType: 'EXTERNAL_TABLE',
     },
   });
+});
 
+test('grants: custom', () => {
+  const stack = new cdk.Stack();
+  const user = new iam.User(stack, 'User');
+  const database = new glue.Database(stack, 'Database', {
+    databaseName: 'database',
+  });
+
+  const table = new glue.Table(stack, 'Table', {
+    database,
+    tableName: 'table',
+    columns: [{
+      name: 'col',
+      type: glue.Schema.STRING,
+    }],
+    compressed: true,
+    dataFormat: glue.DataFormat.JSON,
+  });
+
+  table.grant(user, ['glue:UpdateTable']);
+
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: 'glue:UpdateTable',
+          Effect: 'Allow',
+          Resource: {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                {
+                  Ref: 'AWS::Partition',
+                },
+                ':glue:',
+                {
+                  Ref: 'AWS::Region',
+                },
+                ':',
+                {
+                  Ref: 'AWS::AccountId',
+                },
+                ':table/',
+                {
+                  Ref: 'DatabaseB269D8BB',
+                },
+                '/',
+                {
+                  Ref: 'Table4C2D914F',
+                },
+              ],
+            ],
+          },
+        },
+      ],
+      Version: '2012-10-17',
+    },
+    PolicyName: 'UserDefaultPolicy1F97781E',
+    Users: [
+      {
+        Ref: 'User00B015A1',
+      },
+    ],
+  });
 });
 
 test('grants: read only', () => {
@@ -969,7 +1024,6 @@ test('grants: read only', () => {
       Statement: [
         {
           Action: [
-            'glue:BatchDeletePartition',
             'glue:BatchGetPartition',
             'glue:GetPartition',
             'glue:GetPartitions',
@@ -1047,7 +1101,6 @@ test('grants: read only', () => {
       },
     ],
   });
-
 });
 
 testFutureBehavior('grants: write only', s3GrantWriteCtx, cdk.App, (app) => {
@@ -1150,7 +1203,6 @@ testFutureBehavior('grants: write only', s3GrantWriteCtx, cdk.App, (app) => {
       },
     ],
   });
-
 });
 
 testFutureBehavior('grants: read and write', s3GrantWriteCtx, cdk.App, (app) => {
@@ -1178,7 +1230,6 @@ testFutureBehavior('grants: read and write', s3GrantWriteCtx, cdk.App, (app) => 
       Statement: [
         {
           Action: [
-            'glue:BatchDeletePartition',
             'glue:BatchGetPartition',
             'glue:GetPartition',
             'glue:GetPartitions',
@@ -1187,6 +1238,7 @@ testFutureBehavior('grants: read and write', s3GrantWriteCtx, cdk.App, (app) => 
             'glue:GetTableVersion',
             'glue:GetTableVersions',
             'glue:BatchCreatePartition',
+            'glue:BatchDeletePartition',
             'glue:CreatePartition',
             'glue:DeletePartition',
             'glue:UpdatePartition',
@@ -1263,7 +1315,6 @@ testFutureBehavior('grants: read and write', s3GrantWriteCtx, cdk.App, (app) => 
       },
     ],
   });
-
 });
 
 test('validate: at least one column', () => {

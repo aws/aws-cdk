@@ -28,6 +28,34 @@ test('creating a String SSM Parameter', () => {
   });
 });
 
+test('type cannot be specified as AWS_EC2_IMAGE_ID', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+
+  // THEN
+  expect(() => new ssm.StringParameter(stack, 'myParam', {
+    stringValue: 'myValue',
+    type: ssm.ParameterType.AWS_EC2_IMAGE_ID,
+  })).toThrow('The type must either be ParameterType.STRING or ParameterType.STRING_LIST. Did you mean to set dataType: ParameterDataType.AWS_EC2_IMAGE instead?');
+});
+
+test('dataType can be specified', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+
+  // WHEN
+  new ssm.StringParameter(stack, 'myParam', {
+    stringValue: 'myValue',
+    dataType: ssm.ParameterDataType.AWS_EC2_IMAGE,
+  });
+
+  // THEN
+  expect(stack).toHaveResource('AWS::SSM::Parameter', {
+    Value: 'myValue',
+    DataType: 'aws:ec2:image',
+  });
+});
+
 test('expect String SSM Parameter to have tier properly set', () => {
   // GIVEN
   const stack = new cdk.Stack();
@@ -141,7 +169,21 @@ test('String SSM Parameter throws on long names', () => {
       Nam eget dui. Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit amet adipiscing \
       sem neque sed ipsum.',
     });
-  }).toThrow(/Name cannot be longer than 2048 characters./);
+  }).toThrow(/name cannot be longer than 2048 characters./);
+});
+
+test.each([
+  '/parameter/with spaces',
+  'charactersOtherThan^allowed',
+  'trying;this',
+])('String SSM Parameter throws on invalid name %s', (parameterName) => {
+  // GIVEN
+  const stack = new cdk.Stack();
+
+  // THEN
+  expect(() => {
+    new ssm.StringParameter(stack, 'Parameter', { stringValue: 'Foo', parameterName });
+  }).toThrow(/name must only contain letters, numbers, and the following 4 symbols.*/);
 });
 
 test('StringList SSM Parameter throws on long descriptions', () => {
@@ -194,7 +236,21 @@ test('StringList SSM Parameter throws on long names', () => {
       Nam eget dui. Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit amet adipiscing \
       sem neque sed ipsum.',
     });
-  }).toThrow(/Name cannot be longer than 2048 characters./);
+  }).toThrow(/name cannot be longer than 2048 characters./);
+});
+
+test.each([
+  '/parameter/with spaces',
+  'charactersOtherThan^allowed',
+  'trying;this',
+])('StringList SSM Parameter throws on invalid name %s', (parameterName) => {
+  // GIVEN
+  const stack = new cdk.Stack();
+
+  // THEN
+  expect(() => {
+    new ssm.StringListParameter(stack, 'Parameter', { stringListValue: ['Foo'], parameterName });
+  }).toThrow(/name must only contain letters, numbers, and the following 4 symbols.*/);
 });
 
 test('StringList SSM Parameter values cannot contain commas', () => {

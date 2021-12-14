@@ -14,6 +14,7 @@ let stack: Stack;
 let instanceRole: iam.Role;
 let resource: CfnResource;
 let linuxUserData: ec2.UserData;
+let signalResource: CfnResource;
 
 function resetState() {
   resetStateWithSynthesizer();
@@ -29,6 +30,9 @@ function resetStateWithSynthesizer(customSynthesizer?: IStackSynthesizer) {
     assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
   });
   resource = new CfnResource(stack, 'Resource', {
+    type: 'CDK::Test::Resource',
+  });
+  signalResource = new CfnResource(stack, 'SignalResource', {
     type: 'CDK::Test::Resource',
   });
   linuxUserData = ec2.UserData.forLinux();
@@ -135,11 +139,7 @@ describe('userdata', () => {
     );
   });
 
-  test('linux userdata contains right commands', () => {
-    // WHEN
-    simpleInit.attach(resource, linuxOptions());
-
-    // THEN
+  function linuxUserDataTest(signalLogicalId: string) {
     const lines = linuxUserData.render().split('\n');
     expectLine(lines, cmdArg('cfn-init', `--region ${Aws.REGION}`));
     expectLine(lines, cmdArg('cfn-init', `--stack ${Aws.STACK_NAME}`));
@@ -147,10 +147,46 @@ describe('userdata', () => {
     expectLine(lines, cmdArg('cfn-init', '-c default'));
     expectLine(lines, cmdArg('cfn-signal', `--region ${Aws.REGION}`));
     expectLine(lines, cmdArg('cfn-signal', `--stack ${Aws.STACK_NAME}`));
-    expectLine(lines, cmdArg('cfn-signal', `--resource ${resource.logicalId}`));
+    expectLine(lines, cmdArg('cfn-signal', `--resource ${signalLogicalId}`));
     expectLine(lines, cmdArg('cfn-signal', '-e $?'));
     expectLine(lines, cmdArg('cat', 'cfn-init.log'));
     expectLine(lines, /fingerprint/);
+  }
+
+  function windowsUserDataTest(
+    windowsUserData: ec2.UserData,
+    signalLogicalId: string,
+  ) {
+    const lines = windowsUserData.render().split('\n');
+    expectLine(lines, cmdArg('cfn-init', `--region ${Aws.REGION}`));
+    expectLine(lines, cmdArg('cfn-init', `--stack ${Aws.STACK_NAME}`));
+    expectLine(lines, cmdArg('cfn-init', `--resource ${resource.logicalId}`));
+    expectLine(lines, cmdArg('cfn-init', '-c default'));
+    expectLine(lines, cmdArg('cfn-signal', `--region ${Aws.REGION}`));
+    expectLine(lines, cmdArg('cfn-signal', `--stack ${Aws.STACK_NAME}`));
+    expectLine(lines, cmdArg('cfn-signal', `--resource ${signalLogicalId}`));
+    expectLine(lines, cmdArg('cfn-signal', '-e $LASTEXITCODE'));
+    expectLine(lines, cmdArg('type', 'cfn-init.log'));
+    expectLine(lines, /fingerprint/);
+  }
+
+  test('linux userdata contains right commands', () => {
+    // WHEN
+    simpleInit.attach(resource, linuxOptions());
+
+    // THEN
+    linuxUserDataTest(resource.logicalId);
+  });
+
+  test('linux userdata contains right commands with different signal resource', () => {
+    // WHEN
+    simpleInit.attach(resource, {
+      ...linuxOptions(),
+      signalResource,
+    });
+
+    // THEN
+    linuxUserDataTest(signalResource.logicalId);
   });
 
   test('linux userdata contains right commands when url and role included', () => {
@@ -192,17 +228,22 @@ describe('userdata', () => {
     });
 
     // THEN
-    const lines = windowsUserData.render().split('\n');
-    expectLine(lines, cmdArg('cfn-init', `--region ${Aws.REGION}`));
-    expectLine(lines, cmdArg('cfn-init', `--stack ${Aws.STACK_NAME}`));
-    expectLine(lines, cmdArg('cfn-init', `--resource ${resource.logicalId}`));
-    expectLine(lines, cmdArg('cfn-init', '-c default'));
-    expectLine(lines, cmdArg('cfn-signal', `--region ${Aws.REGION}`));
-    expectLine(lines, cmdArg('cfn-signal', `--stack ${Aws.STACK_NAME}`));
-    expectLine(lines, cmdArg('cfn-signal', `--resource ${resource.logicalId}`));
-    expectLine(lines, cmdArg('cfn-signal', '-e $LASTEXITCODE'));
-    expectLine(lines, cmdArg('type', 'cfn-init.log'));
-    expectLine(lines, /fingerprint/);
+    windowsUserDataTest(windowsUserData, resource.logicalId);
+  });
+
+  test('Windows userdata contains right commands with different signal resource', () => {
+    // WHEN
+    const windowsUserData = ec2.UserData.forWindows();
+
+    simpleInit.attach(resource, {
+      platform: ec2.OperatingSystemType.WINDOWS,
+      instanceRole,
+      userData: windowsUserData,
+      signalResource,
+    });
+
+    // THEN
+    windowsUserDataTest(windowsUserData, signalResource.logicalId);
   });
 
   test('ignoreFailures disables result code reporting', () => {
@@ -626,7 +667,7 @@ class SingletonLocationSythesizer extends DefaultStackSynthesizer {
   public addFileAsset(_asset: FileAssetSource): FileAssetLocation {
     const httpUrl = 'https://MyBucket.s3.amazonaws.com/MyAsset';
     return {
-      bucketName: 'MyAssetBucket',
+      bucketName: 'myassetbucket',
       objectKey: 'MyAssetFile',
       httpUrl,
       s3ObjectUrl: httpUrl,

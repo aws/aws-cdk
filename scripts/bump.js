@@ -65,8 +65,7 @@ async function main() {
     // good thing we're getting rid of it...
     opts.verbose = !!process.env.VERBOSE;
     if (majorVersion > 1) {
-      // NOTE - Once we start publishing alpha modules independently, this needs to be flipped to 'separate'
-      opts.experimentalChangesTreatment = 'strip';
+      opts.experimentalChangesTreatment = 'separate';
     }
     // Rename some options to match cdk-release inputs (replaces bumpFiles, packageFiles, and infile)
     opts.versionFile = ver.versionFile;
@@ -74,8 +73,8 @@ async function main() {
     opts.alphaChangelogFile = ver.alphaChangelogFile;
     console.error("🎉 Calling our 'cdk-release' package to make the bump");
     console.error("ℹ️ Set the LEGACY_BUMP env variable to use the old 'standard-version' bump instead");
-    const cdkRelease = require('cdk-release');
-    cdkRelease(opts);
+    const cdkRelease = require('@aws-cdk/cdk-release');
+    cdkRelease.createRelease(opts);
   }
 }
 

@@ -1,3 +1,4 @@
+export * from './aspects';
 export * from './auto-scaling-group';
 export * from './schedule';
 export * from './lifecycle-hook';

@@ -287,11 +287,11 @@ export class Cluster extends Resource implements ICluster {
   }
 
   /**
+   * It is highly recommended to use {@link Cluster.addAsgCapacityProvider} instead of this method.
+   *
    * This method adds compute capacity to a cluster by creating an AutoScalingGroup with the specified options.
    *
    * Returns the AutoScalingGroup so you can add autoscaling settings to it.
-   *
-   * @deprecated Use {@link Cluster.addAsgCapacityProvider} instead.
    */
   public addCapacity(id: string, options: AddCapacityOptions): autoscaling.AutoScalingGroup {
     // Do 2-way defaulting here: if the machineImageType is BOTTLEROCKET, pick the right AMI.
@@ -324,15 +324,15 @@ export class Cluster extends Resource implements ICluster {
    *
    * @param provider the capacity provider to add to this cluster.
    */
-  public addAsgCapacityProvider(provider: AsgCapacityProvider, options: AddAutoScalingGroupCapacityOptions = {}) {
+  public addAsgCapacityProvider(provider: AsgCapacityProvider, options: AddAutoScalingGroupCapacityOptions= {}) {
     // Don't add the same capacity provider more than once.
     if (this._capacityProviderNames.includes(provider.capacityProviderName)) {
       return;
     }
-
     this._hasEc2Capacity = true;
     this.configureAutoScalingGroup(provider.autoScalingGroup, {
       ...options,
+      machineImageType: provider.machineImageType,
       // Don't enable the instance-draining lifecycle hook if managed termination protection is enabled
       taskDrainTime: provider.enableManagedTerminationProtection ? Duration.seconds(0) : options.taskDrainTime,
     });
@@ -555,7 +555,7 @@ export class Cluster extends Resource implements ICluster {
     return new cloudwatch.Metric({
       namespace: 'AWS/ECS',
       metricName,
-      dimensions: { ClusterName: this.clusterName },
+      dimensionsMap: { ClusterName: this.clusterName },
       ...props,
     }).attachTo(this);
   }
@@ -821,11 +821,9 @@ export interface AddCapacityOptions extends AddAutoScalingGroupCapacityOptions, 
    * To use an image that does not update on every deployment, pass:
    *
    * ```ts
-   * {
-   *   machineImage: EcsOptimizedImage.amazonLinux2(AmiHardwareType.STANDARD, {
-   *     cachedInContext: true,
-   *   }),
-   * }
+   * const machineImage = ecs.EcsOptimizedImage.amazonLinux2(ecs.AmiHardwareType.STANDARD, {
+   *   cachedInContext: true,
+   * });
    * ```
    *
    * For more information, see [Amazon ECS-optimized
@@ -998,7 +996,9 @@ export interface ExecuteCommandLogConfiguration {
  */
 export interface AsgCapacityProviderProps extends AddAutoScalingGroupCapacityOptions {
   /**
-   * The name for the capacity provider.
+   * The name of the capacity provider. If a name is specified,
+   * it cannot start with `aws`, `ecs`, or `fargate`. If no name is specified,
+   * a default name in the CFNStackName-CFNResourceName-RandomString format is used.
    *
    * @default CloudFormation-generated name
    */
@@ -1065,6 +1065,11 @@ export class AsgCapacityProvider extends CoreConstruct {
   readonly autoScalingGroup: autoscaling.AutoScalingGroup;
 
   /**
+   * Auto Scaling Group machineImageType.
+   */
+  readonly machineImageType: MachineImageType;
+
+  /**
    * Whether managed termination protection is enabled
    */
   readonly enableManagedTerminationProtection?: boolean;
@@ -1074,13 +1079,19 @@ export class AsgCapacityProvider extends CoreConstruct {
 
     this.autoScalingGroup = props.autoScalingGroup as autoscaling.AutoScalingGroup;
 
+    this.machineImageType = props.machineImageType ?? MachineImageType.AMAZON_LINUX_2;
+
     this.enableManagedTerminationProtection =
       props.enableManagedTerminationProtection === undefined ? true : props.enableManagedTerminationProtection;
 
     if (this.enableManagedTerminationProtection) {
       this.autoScalingGroup.protectNewInstancesFromScaleIn();
     }
-
+    if (props.capacityProviderName) {
+      if (!(/^(?!aws|ecs|fargate).+/gm.test(props.capacityProviderName))) {
+        throw new Error(`Invalid Capacity Provider Name: ${props.capacityProviderName}, If a name is specified, it cannot start with aws, ecs, or fargate.`);
+      }
+    }
     const capacityProvider = new CfnCapacityProvider(this, id, {
       name: props.capacityProviderName,
       autoScalingGroupProvider: {

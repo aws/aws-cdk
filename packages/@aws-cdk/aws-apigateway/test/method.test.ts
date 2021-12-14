@@ -2,6 +2,7 @@ import '@aws-cdk/assert-internal/jest';
 import { ABSENT } from '@aws-cdk/assert-internal';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import * as apigw from '../lib';
 
@@ -902,7 +903,7 @@ describe('method', () => {
 
   });
 
-  test('"restApi" and "api" properties return the RestApi correctly', () => {
+  testDeprecated('"restApi" and "api" properties return the RestApi correctly', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -918,7 +919,7 @@ describe('method', () => {
 
   });
 
-  test('"restApi" throws an error on imported while "api" returns correctly', () => {
+  testDeprecated('"restApi" throws an error on imported while "api" returns correctly', () => {
     // GIVEN
     const stack = new cdk.Stack();
 

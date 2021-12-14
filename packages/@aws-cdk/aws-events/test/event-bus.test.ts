@@ -1,6 +1,7 @@
 import '@aws-cdk/assert-internal/jest';
 import * as iam from '@aws-cdk/aws-iam';
-import { Aws, CfnResource, Stack, Arn } from '@aws-cdk/core';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
+import { Aws, CfnResource, Stack, Arn, App, PhysicalName, CfnOutput } from '@aws-cdk/core';
 import { EventBus } from '../lib';
 
 describe('event bus', () => {
@@ -287,7 +288,7 @@ describe('event bus', () => {
 
   });
 
-  test('can grant PutEvents', () => {
+  testDeprecated('can grant PutEvents', () => {
     // GIVEN
     const stack = new Stack();
     const role = new iam.Role(stack, 'Role', {
@@ -514,5 +515,33 @@ describe('event bus', () => {
     });
 
 
+  });
+  test('cross account event bus uses generated physical name', () => {
+    // GIVEN
+    const app = new App();
+    const stack1 = new Stack(app, 'Stack1', {
+      env: {
+        account: '11111111111',
+        region: 'us-east-1',
+      },
+    });
+    const stack2 = new Stack(app, 'Stack2', {
+      env: {
+        account: '22222222222',
+        region: 'us-east-1',
+      },
+    });
+
+    // WHEN
+    const bus1 = new EventBus(stack1, 'Bus', {
+      eventBusName: PhysicalName.GENERATE_IF_NEEDED,
+    });
+
+    new CfnOutput(stack2, 'BusName', { value: bus1.eventBusName });
+
+    // THEN
+    expect(stack1).toHaveResource('AWS::Events::EventBus', {
+      Name: 'stack1stack1busca19bdf8ab2e51b62a5a',
+    });
   });
 });

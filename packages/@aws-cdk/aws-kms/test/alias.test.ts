@@ -124,7 +124,7 @@ test('can be used wherever a key is expected', () => {
     aliasName: 'alias/myAlias',
   });
 
-  /* eslint-disable cdk/no-core-construct */
+  /* eslint-disable @aws-cdk/no-core-construct */
   class MyConstruct extends Construct {
     constructor(scope: Construct, id: string, key: IKey) {
       super(scope, id);
@@ -138,7 +138,7 @@ test('can be used wherever a key is expected', () => {
     }
   }
   new MyConstruct(stack, 'MyConstruct', myAlias);
-  /* eslint-enable cdk/no-core-construct */
+  /* eslint-enable @aws-cdk/no-core-construct */
 
   expect(stack).toHaveOutput({
     outputName: 'OutId',
@@ -165,7 +165,7 @@ test('imported alias by name - can be used where a key is expected', () => {
 
   const myAlias = Alias.fromAliasName(stack, 'MyAlias', 'alias/myAlias');
 
-  /* eslint-disable cdk/no-core-construct */
+  /* eslint-disable @aws-cdk/no-core-construct */
   class MyConstruct extends Construct {
     constructor(scope: Construct, id: string, key: IKey) {
       super(scope, id);
@@ -179,7 +179,7 @@ test('imported alias by name - can be used where a key is expected', () => {
     }
   }
   new MyConstruct(stack, 'MyConstruct', myAlias);
-  /* eslint-enable cdk/no-core-construct */
+  /* eslint-enable @aws-cdk/no-core-construct */
 
   expect(stack).toHaveOutput({
     outputName: 'OutId',

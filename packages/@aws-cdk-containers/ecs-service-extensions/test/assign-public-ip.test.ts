@@ -1,4 +1,5 @@
 import '@aws-cdk/assert-internal/jest';
+import * as autoscaling from '@aws-cdk/aws-autoscaling';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as route53 from '@aws-cdk/aws-route53';
@@ -45,9 +46,13 @@ describe('assign public ip', () => {
 
     const vpc = new ec2.Vpc(stack, 'VPC');
     const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
-    cluster.addCapacity('DefaultAutoScalingGroup', {
-      instanceType: new ec2.InstanceType('t2.micro'),
-    });
+    cluster.addAsgCapacityProvider(new ecs.AsgCapacityProvider(stack, 'Provider', {
+      autoScalingGroup: new autoscaling.AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+        vpc,
+        machineImage: ec2.MachineImage.latestAmazonLinux(),
+        instanceType: new ec2.InstanceType('t2.micro'),
+      }),
+    }));
 
     const environment = new Environment(stack, 'production', {
       vpc,

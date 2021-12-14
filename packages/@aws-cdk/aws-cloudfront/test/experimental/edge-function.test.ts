@@ -298,6 +298,16 @@ test('cross-region stack supports new-style synthesis with assets', () => {
   expect(() => app.synth()).not.toThrow();
 });
 
+test('SSM parameter name is sanitized to remove disallowed characters', () => {
+  new cloudfront.experimental.EdgeFunction(stack, 'My Bad#Fn$Name-With.Bonus', defaultEdgeFunctionProps());
+
+  const fnStack = getFnStack();
+
+  expect(fnStack).toHaveResourceLike('AWS::SSM::Parameter', {
+    Name: '/cdk/EdgeFunctionArn/testregion/Stack/My_Bad_Fn_Name-With.Bonus',
+  });
+});
+
 function defaultEdgeFunctionProps(stackId?: string) {
   return {
     code: lambda.Code.fromInline('foo'),

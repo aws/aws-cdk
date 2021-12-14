@@ -15,7 +15,19 @@
     "NameForUserImportedByArn": {
       "Value": "rossrhodes"
     },
+    "NameForUserImportedByArnPath": {
+      "Value": "johndoe"
+    },
+    "NameForUserImportedByArnPathMultiple": {
+      "Value": "johndoe"
+    },
     "NameForUserImportedByAttributes": {
+      "Value": "johndoe"
+    },
+    "NameForUserImportedByAttributesPath": {
+      "Value": "johndoe"
+    },
+    "NameForUserImportedByAttributesPathMultiple": {
       "Value": "johndoe"
     },
     "NameForUserImportedByName": {
