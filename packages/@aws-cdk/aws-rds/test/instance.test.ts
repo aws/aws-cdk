@@ -1631,7 +1631,7 @@ describe('instance', () => {
     });
   });
 
-  test('instance with port', () => {
+  test('instance with port provided as a number', () => {
     // WHEN
     new rds.DatabaseInstance(stack, 'Database', {
       engine: rds.DatabaseInstanceEngine.MYSQL,
@@ -1646,19 +1646,24 @@ describe('instance', () => {
     });
   });
 
-  test('instance with port from token', () => {
+  test('instance with port provided as a CloudFormation parameter', () => {
+    // GIVEN
+    const port = new cdk.CfnParameter(stack, 'Port', {
+      type: 'Number',
+    }).valueAsNumber;
+
     // WHEN
     new rds.DatabaseInstance(stack, 'Database', {
       engine: rds.DatabaseInstanceEngine.MYSQL,
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
       vpc,
-      port: cdk.Token.asNumber({ Ref: 'port' }),
+      port,
     });
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::RDS::DBInstance', {
       Port: {
-        Ref: 'port',
+        Ref: 'Port',
       },
     });
   });
