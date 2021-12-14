@@ -1,0 +1,51 @@
+{
+  "name": "@aws-cdk/generate-examples",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Generate missing examples",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/aws/aws-cdk"
+  },
+  "pkglint": {
+    "ignore": true
+  },
+  "bin": {
+    "generate-examples": "bin/generate-examples"
+  },
+  "scripts": {
+    "build": "tsc -b && chmod +x bin/generate-examples",
+    "test": "jest",
+    "build+test": "npm run build && npm test",
+    "build+test+package": "npm run build && npm test",
+    "watch": "tsc -b -w",
+    "lint": "tsc -b && eslint . --ext=.ts"
+  },
+  "keywords": [
+    "aws",
+    "cdk"
+  ],
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com"
+  },
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@types/jest": "^26.0.24",
+    "@types/yargs": "^15.0.14",
+    "jest": "^26.6.3",
+    "typescript": "~3.9.10"
+  },
+  "nozem": {
+     "ostools": ["chmod", "cp"]
+  },
+  "dependencies": {
+    "@jsii/spec": "1.47.0",
+    "jsii-reflect": "1.47.0",
+    "jsii-rosetta": "1.47.0",
+    "fs-extra": "^9.1.0",
+    "yargs": "^16.2.0"
+  }
+}

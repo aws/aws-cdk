@@ -1,3 +1,4 @@
+import { describeDeprecated, testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Arn, ArnComponents, ArnFormat, Aws, CfnOutput, ScopedAws, Stack, Token } from '../lib';
 import { Intrinsic } from '../lib/private/intrinsic';
 import { evaluateCFN } from './evaluate-cfn';
@@ -17,6 +18,14 @@ describe('arn', () => {
     expect(stack.resolve(arn)).toEqual(
       stack.resolve(`arn:${pseudo.partition}:sqs:${pseudo.region}:${pseudo.accountId}:myqueuename`));
 
+  });
+
+  test('cannot rely on defaults when stack not known', () => {
+    expect(() =>
+      Arn.format({
+        service: 'sqs',
+        resource: 'myqueuename',
+      })).toThrow(/must all be passed if stack is not/);
   });
 
   test('create from components with specific values for the various components', () => {
@@ -53,7 +62,7 @@ describe('arn', () => {
 
   });
 
-  test('resourcePathSep can be set to ":" instead of the default "/"', () => {
+  testDeprecated('resourcePathSep can be set to ":" instead of the default "/"', () => {
     const stack = new Stack();
 
     const arn = stack.formatArn({
@@ -70,7 +79,7 @@ describe('arn', () => {
 
   });
 
-  test('resourcePathSep can be set to "" instead of the default "/"', () => {
+  testDeprecated('resourcePathSep can be set to "" instead of the default "/"', () => {
     const stack = new Stack();
 
     const arn = stack.formatArn({
@@ -98,7 +107,7 @@ describe('arn', () => {
 
   });
 
-  describe('Arn.parse(s)', () => {
+  describeDeprecated('Arn.parse(s)', () => {
 
     describe('fails', () => {
       test('if doesn\'t start with "arn:"', () => {
@@ -335,7 +344,7 @@ describe('arn', () => {
 
   });
 
-  test('parse other fields if only some are tokens', () => {
+  testDeprecated('parse other fields if only some are tokens', () => {
     // GIVEN
     const stack = new Stack();
 

@@ -4,7 +4,7 @@ import { CfnRoute } from '../apigatewayv2.generated';
 import { IRoute } from '../common';
 import { IWebSocketApi } from './api';
 import { IWebSocketRouteAuthorizer, WebSocketNoneAuthorizer } from './authorizer';
-import { IWebSocketRouteIntegration } from './integration';
+import { WebSocketRouteIntegration } from './integration';
 
 /**
  * Represents a Route for an WebSocket API.
@@ -29,7 +29,7 @@ export interface WebSocketRouteOptions {
   /**
    * The integration to be configured on this route.
    */
-  readonly integration: IWebSocketRouteIntegration;
+  readonly integration: WebSocketRouteIntegration;
 
   /**
    * The authorize to this route. You can only set authorizer to a $connect route.
@@ -78,7 +78,7 @@ export class WebSocketRoute extends Resource implements IWebSocketRoute {
     this.webSocketApi = props.webSocketApi;
     this.routeKey = props.routeKey;
 
-    const config = props.integration.bind({
+    const config = props.integration._bindToRoute({
       route: this,
       scope: this,
     });
@@ -94,7 +94,7 @@ export class WebSocketRoute extends Resource implements IWebSocketRoute {
     const route = new CfnRoute(this, 'Resource', {
       apiId: props.webSocketApi.apiId,
       routeKey: props.routeKey,
-      target: `integrations/${integration.integrationId}`,
+      target: `integrations/${config.integrationId}`,
       authorizerId: authBindResult.authorizerId,
       authorizationType: authBindResult.authorizationType,
     });

@@ -4,6 +4,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kinesis from '@aws-cdk/aws-kinesis';
 import * as kms from '@aws-cdk/aws-kms';
 import {
+  ArnFormat,
   Aws, CfnCondition, CfnCustomResource, CfnResource, CustomResource, Duration,
   Fn, IResource, Lazy, Names, RemovalPolicy, Resource, Stack, Token,
 } from '@aws-cdk/core';
@@ -70,6 +71,21 @@ export enum Operation {
 
   /** BatchWriteItem */
   BATCH_WRITE_ITEM = 'BatchWriteItem',
+
+  /** TransactWriteItems */
+  TRANSACT_WRITE_ITEMS = 'TransactWriteItems',
+
+  /** TransactGetItems */
+  TRANSACT_GET_ITEMS = 'TransactGetItems',
+
+  /** ExecuteTransaction */
+  EXECUTE_TRANSACTION = 'ExecuteTransaction',
+
+  /** BatchExecuteStatement */
+  BATCH_EXECUTE_STATEMENT = 'BatchExecuteStatement',
+
+  /** ExecuteStatement */
+  EXECUTE_STATEMENT = 'ExecuteStatement',
 
 }
 
@@ -739,7 +755,7 @@ abstract class TableBase extends Resource implements ITable {
     return new cloudwatch.Metric({
       namespace: 'AWS/DynamoDB',
       metricName,
-      dimensions: {
+      dimensionsMap: {
         TableName: this.tableName,
       },
       ...props,
@@ -772,17 +788,18 @@ abstract class TableBase extends Resource implements ITable {
    * @deprecated use `metricSystemErrorsForOperations`.
    */
   public metricSystemErrors(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    if (!props?.dimensions?.Operation) {
+    if (!props?.dimensions?.Operation && !props?.dimensionsMap?.Operation) {
       // 'Operation' must be passed because its an operational metric.
       throw new Error("'Operation' dimension must be passed for the 'SystemErrors' metric.");
     }
 
-    const dimensions = {
+    const dimensionsMap = {
       TableName: this.tableName,
       ...props?.dimensions ?? {},
+      ...props?.dimensionsMap ?? {},
     };
 
-    return this.metric('SystemErrors', { statistic: 'sum', ...props, dimensions });
+    return this.metric('SystemErrors', { statistic: 'sum', ...props, dimensionsMap });
   }
 
   /**
@@ -799,7 +816,7 @@ abstract class TableBase extends Resource implements ITable {
 
     // overriding 'dimensions' here because this metric is an account metric.
     // see 'UserErrors' in https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/metrics-dimensions.html
-    return this.metric('UserErrors', { statistic: 'sum', ...props, dimensions: {} });
+    return this.metric('UserErrors', { statistic: 'sum', ...props, dimensionsMap: {} });
   }
 
   /**
@@ -828,19 +845,19 @@ abstract class TableBase extends Resource implements ITable {
    * You can customize this by using the `statistic` and `period` properties.
    */
   public metricSuccessfulRequestLatency(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    if (!props?.dimensions?.Operation) {
+    if (!props?.dimensions?.Operation && !props?.dimensionsMap?.Operation) {
       throw new Error("'Operation' dimension must be passed for the 'SuccessfulRequestLatency' metric.");
     }
 
-    const dimensions = {
+    const dimensionsMap = {
       TableName: this.tableName,
-      Operation: props.dimensions.Operation,
+      Operation: props.dimensionsMap?.Operation ?? props.dimensions?.Operation,
     };
 
     return new cloudwatch.Metric({
-      ...DynamoDBMetrics.successfulRequestLatencyAverage(dimensions),
+      ...DynamoDBMetrics.successfulRequestLatencyAverage(dimensionsMap),
       ...props,
-      dimensions,
+      dimensionsMap,
     }).attachTo(this);
   }
 
@@ -898,7 +915,7 @@ abstract class TableBase extends Resource implements ITable {
 
       const metric = this.metric(metricName, {
         ...props,
-        dimensions: {
+        dimensionsMap: {
           TableName: this.tableName,
           Operation: operation,
           ...props?.dimensions,
@@ -1048,7 +1065,7 @@ export class Table extends TableBase {
       if (!attrs.tableArn) { throw new Error('One of tableName or tableArn is required!'); }
 
       arn = attrs.tableArn;
-      const maybeTableName = stack.parseArn(attrs.tableArn).resourceName;
+      const maybeTableName = stack.splitArn(attrs.tableArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName;
       if (!maybeTableName) { throw new Error('ARN for DynamoDB table must be in the form: ...'); }
       name = maybeTableName;
     } else {
@@ -1540,7 +1557,11 @@ export class Table extends TableBase {
         properties: {
           TableName: this.tableName,
           Region: region,
-          SkipReplicationCompletedWait: waitForReplicationToFinish === undefined ? undefined : !waitForReplicationToFinish,
+          SkipReplicationCompletedWait: waitForReplicationToFinish == null
+            ? undefined
+            // CFN changes Custom Resource properties to strings anyways,
+            // so let's do that ourselves to make it clear in the handler this is a string, not a boolean
+            : (!waitForReplicationToFinish).toString(),
         },
       });
       currentRegion.node.addDependency(

@@ -86,6 +86,35 @@ describe('user data', () => {
     );
 
   });
+  test('can windows userdata download S3 files with given region', () => {
+    // GIVEN
+    const stack = new Stack();
+    const userData = ec2.UserData.forWindows();
+    const bucket = Bucket.fromBucketName( stack, 'testBucket', 'test' );
+    const bucket2 = Bucket.fromBucketName( stack, 'testBucket2', 'test2' );
+
+    // WHEN
+    userData.addS3DownloadCommand({
+      bucket,
+      bucketKey: 'filename.bat',
+      region: 'us-east-1',
+    } );
+    userData.addS3DownloadCommand({
+      bucket: bucket2,
+      bucketKey: 'filename2.bat',
+      localFile: 'c:\\test\\location\\otherScript.bat',
+      region: 'us-east-1',
+    } );
+
+    // THEN
+    const rendered = userData.render();
+    expect(rendered).toEqual('<powershell>mkdir (Split-Path -Path \'C:/temp/filename.bat\' ) -ea 0\n' +
+      'Read-S3Object -BucketName \'test\' -key \'filename.bat\' -file \'C:/temp/filename.bat\' -ErrorAction Stop -Region us-east-1\n' +
+      'mkdir (Split-Path -Path \'c:\\test\\location\\otherScript.bat\' ) -ea 0\n' +
+      'Read-S3Object -BucketName \'test2\' -key \'filename2.bat\' -file \'c:\\test\\location\\otherScript.bat\' -ErrorAction Stop -Region us-east-1</powershell>',
+    );
+
+  });
   test('can windows userdata execute files', () => {
     // GIVEN
     const userData = ec2.UserData.forWindows();
@@ -187,6 +216,36 @@ describe('user data', () => {
       'aws s3 cp \'s3://test/filename.sh\' \'/tmp/filename.sh\'\n' +
       'mkdir -p $(dirname \'c:\\test\\location\\otherScript.sh\')\n' +
       'aws s3 cp \'s3://test2/filename2.sh\' \'c:\\test\\location\\otherScript.sh\'',
+    );
+
+  });
+  test('can linux userdata download S3 files from specific region', () => {
+    // GIVEN
+    const stack = new Stack();
+    const userData = ec2.UserData.forLinux();
+    const bucket = Bucket.fromBucketName( stack, 'testBucket', 'test' );
+    const bucket2 = Bucket.fromBucketName( stack, 'testBucket2', 'test2' );
+
+    // WHEN
+    userData.addS3DownloadCommand({
+      bucket,
+      bucketKey: 'filename.sh',
+      region: 'us-east-1',
+    } );
+    userData.addS3DownloadCommand({
+      bucket: bucket2,
+      bucketKey: 'filename2.sh',
+      localFile: 'c:\\test\\location\\otherScript.sh',
+      region: 'us-east-1',
+    } );
+
+    // THEN
+    const rendered = userData.render();
+    expect(rendered).toEqual('#!/bin/bash\n' +
+      'mkdir -p $(dirname \'/tmp/filename.sh\')\n' +
+      'aws s3 cp \'s3://test/filename.sh\' \'/tmp/filename.sh\' --region us-east-1\n' +
+      'mkdir -p $(dirname \'c:\\test\\location\\otherScript.sh\')\n' +
+      'aws s3 cp \'s3://test2/filename2.sh\' \'c:\\test\\location\\otherScript.sh\' --region us-east-1',
     );
 
   });

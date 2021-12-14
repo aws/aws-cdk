@@ -78,3 +78,18 @@ strengthened:@aws-cdk/aws-lambda-event-sources.ManagedKafkaEventSourceProps
 # Remove IO2 from autoscaling EbsDeviceVolumeType. This value is not supported 
 # at the moment and was not supported in the past.
 removed:@aws-cdk/aws-autoscaling.EbsDeviceVolumeType.IO2
+
+# Remove autoTerminationPolicy from stepfunctions-tasks EmrCreateClusterProps. This value is not supported by stepfunctions at the moment and was not supported in the past.
+removed:@aws-cdk/aws-stepfunctions-tasks.EmrCreateCluster.AutoTerminationPolicyProperty
+removed:@aws-cdk/aws-stepfunctions-tasks.EmrCreateClusterProps.autoTerminationPolicy
+
+# Changed property securityGroupId to optional because either securityGroupId or 
+# securityGroupName is required. Therefore securityGroupId is no longer mandatory.
+weakened:@aws-cdk/cloud-assembly-schema.SecurityGroupContextQuery
+
+# refactor autoscaling lifecycle hook target bind() methods to make role optional by
+# having bind() methods create the role if it isn't passed to them 
+incompatible-argument:@aws-cdk/aws-autoscaling-hooktargets.FunctionHook.bind
+incompatible-argument:@aws-cdk/aws-autoscaling-hooktargets.QueueHook.bind
+incompatible-argument:@aws-cdk/aws-autoscaling-hooktargets.TopicHook.bind
+incompatible-argument:@aws-cdk/aws-autoscaling.ILifecycleHookTarget.bind

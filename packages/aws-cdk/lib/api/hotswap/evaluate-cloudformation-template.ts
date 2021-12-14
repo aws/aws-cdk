@@ -16,7 +16,7 @@ export interface EvaluateCloudFormationTemplateProps {
   readonly account: string;
   readonly region: string;
   readonly partition: string;
-  readonly urlSuffix: string;
+  readonly urlSuffix: (region: string) => string;
   readonly listStackResources: ListStackResources;
 }
 
@@ -27,6 +27,8 @@ export class EvaluateCloudFormationTemplate {
   private readonly account: string;
   private readonly region: string;
   private readonly partition: string;
+  private readonly urlSuffix: (region: string) => string;
+  private cachedUrlSuffix: string | undefined;
 
   constructor(props: EvaluateCloudFormationTemplateProps) {
     this.stackResources = props.listStackResources;
@@ -35,17 +37,22 @@ export class EvaluateCloudFormationTemplate {
       'AWS::AccountId': props.account,
       'AWS::Region': props.region,
       'AWS::Partition': props.partition,
-      'AWS::URLSuffix': props.urlSuffix,
       ...props.parameters,
     };
     this.account = props.account;
     this.region = props.region;
     this.partition = props.partition;
+    this.urlSuffix = props.urlSuffix;
   }
 
   public async findPhysicalNameFor(logicalId: string): Promise<string | undefined> {
     const stackResources = await this.stackResources.listStackResources();
     return stackResources.find(sr => sr.LogicalResourceId === logicalId)?.PhysicalResourceId;
+  }
+
+  public async findLogicalIdForPhysicalName(physicalName: string): Promise<string | undefined> {
+    const stackResources = await this.stackResources.listStackResources();
+    return stackResources.find(sr => sr.PhysicalResourceId === physicalName)?.LogicalResourceId;
   }
 
   public findReferencesTo(logicalId: string): Array<ResourceDefinition> {
@@ -184,6 +191,14 @@ export class EvaluateCloudFormationTemplate {
 
   private async findRefTarget(logicalId: string): Promise<string | undefined> {
     // first, check to see if the Ref is a Parameter who's value we have
+    if (logicalId === 'AWS::URLSuffix') {
+      if (!this.cachedUrlSuffix) {
+        this.cachedUrlSuffix = this.urlSuffix(this.region);
+      }
+
+      return this.cachedUrlSuffix;
+    }
+
     const parameterTarget = this.context[logicalId];
     if (parameterTarget) {
       return parameterTarget;

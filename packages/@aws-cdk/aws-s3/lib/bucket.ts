@@ -105,9 +105,10 @@ export interface IBucket extends IResource {
 
   /**
    * The https URL of an S3 object. For example:
-   * @example https://s3.us-west-1.amazonaws.com/onlybucket
-   * @example https://s3.us-west-1.amazonaws.com/bucket/key
-   * @example https://s3.cn-north-1.amazonaws.com.cn/china-bucket/mykey
+   *
+   * - `https://s3.us-west-1.amazonaws.com/onlybucket`
+   * - `https://s3.us-west-1.amazonaws.com/bucket/key`
+   * - `https://s3.cn-north-1.amazonaws.com.cn/china-bucket/mykey`
    * @param key The S3 key of the object. If not specified, the URL of the
    *      bucket is returned.
    * @returns an ObjectS3Url token
@@ -115,12 +116,27 @@ export interface IBucket extends IResource {
   urlForObject(key?: string): string;
 
   /**
+   * The https Transfer Acceleration URL of an S3 object. Specify `dualStack: true` at the options
+   * for dual-stack endpoint (connect to the bucket over IPv6). For example:
+   *
+   * - `https://bucket.s3-accelerate.amazonaws.com`
+   * - `https://bucket.s3-accelerate.amazonaws.com/key`
+   *
+   * @param key The S3 key of the object. If not specified, the URL of the
+   *      bucket is returned.
+   * @param options Options for generating URL.
+   * @returns an TransferAccelerationUrl token
+   */
+  transferAccelerationUrlForObject(key?: string, options?: TransferAccelerationUrlOptions): string;
+
+  /**
    * The virtual hosted-style URL of an S3 object. Specify `regional: false` at
    * the options for non-regional URL. For example:
-   * @example https://only-bucket.s3.us-west-1.amazonaws.com
-   * @example https://bucket.s3.us-west-1.amazonaws.com/key
-   * @example https://bucket.s3.amazonaws.com/key
-   * @example https://china-bucket.s3.cn-north-1.amazonaws.com.cn/mykey
+   *
+   * - `https://only-bucket.s3.us-west-1.amazonaws.com`
+   * - `https://bucket.s3.us-west-1.amazonaws.com/key`
+   * - `https://bucket.s3.amazonaws.com/key`
+   * - `https://china-bucket.s3.cn-north-1.amazonaws.com.cn/mykey`
    * @param key The S3 key of the object. If not specified, the URL of the
    *      bucket is returned.
    * @param options Options for generating URL.
@@ -130,8 +146,8 @@ export interface IBucket extends IResource {
 
   /**
    * The S3 URL of an S3 object. For example:
-   * @example s3://onlybucket
-   * @example s3://bucket/key
+   * - `s3://onlybucket`
+   * - `s3://bucket/key`
    * @param key The S3 key of the object. If not specified, the S3 URL of the
    *      bucket is returned.
    * @returns an ObjectS3Url token
@@ -603,9 +619,11 @@ export abstract class BucketBase extends Resource implements IBucket {
   /**
    * The https URL of an S3 object. Specify `regional: false` at the options
    * for non-regional URLs. For example:
-   * @example https://s3.us-west-1.amazonaws.com/onlybucket
-   * @example https://s3.us-west-1.amazonaws.com/bucket/key
-   * @example https://s3.cn-north-1.amazonaws.com.cn/china-bucket/mykey
+   *
+   * - `https://s3.us-west-1.amazonaws.com/onlybucket`
+   * - `https://s3.us-west-1.amazonaws.com/bucket/key`
+   * - `https://s3.cn-north-1.amazonaws.com.cn/china-bucket/mykey`
+   *
    * @param key The S3 key of the object. If not specified, the URL of the
    *      bucket is returned.
    * @returns an ObjectS3Url token
@@ -620,12 +638,35 @@ export abstract class BucketBase extends Resource implements IBucket {
   }
 
   /**
+   * The https Transfer Acceleration URL of an S3 object. Specify `dualStack: true` at the options
+   * for dual-stack endpoint (connect to the bucket over IPv6). For example:
+   *
+   * - `https://bucket.s3-accelerate.amazonaws.com`
+   * - `https://bucket.s3-accelerate.amazonaws.com/key`
+   *
+   * @param key The S3 key of the object. If not specified, the URL of the
+   *      bucket is returned.
+   * @param options Options for generating URL.
+   * @returns an TransferAccelerationUrl token
+   */
+  public transferAccelerationUrlForObject(key?: string, options?: TransferAccelerationUrlOptions): string {
+    const dualStack = options?.dualStack ? '.dualstack' : '';
+    const prefix = `https://${this.bucketName}.s3-accelerate${dualStack}.amazonaws.com/`;
+    if (typeof key !== 'string') {
+      return this.urlJoin(prefix);
+    }
+    return this.urlJoin(prefix, key);
+  }
+
+  /**
    * The virtual hosted-style URL of an S3 object. Specify `regional: false` at
    * the options for non-regional URL. For example:
-   * @example https://only-bucket.s3.us-west-1.amazonaws.com
-   * @example https://bucket.s3.us-west-1.amazonaws.com/key
-   * @example https://bucket.s3.amazonaws.com/key
-   * @example https://china-bucket.s3.cn-north-1.amazonaws.com.cn/mykey
+   *
+   * - `https://only-bucket.s3.us-west-1.amazonaws.com`
+   * - `https://bucket.s3.us-west-1.amazonaws.com/key`
+   * - `https://bucket.s3.amazonaws.com/key`
+   * - `https://china-bucket.s3.cn-north-1.amazonaws.com.cn/mykey`
+   *
    * @param key The S3 key of the object. If not specified, the URL of the
    *      bucket is returned.
    * @param options Options for generating URL.
@@ -642,8 +683,10 @@ export abstract class BucketBase extends Resource implements IBucket {
 
   /**
    * The S3 URL of an S3 object. For example:
-   * @example s3://onlybucket
-   * @example s3://bucket/key
+   *
+   * - `s3://onlybucket`
+   * - `s3://bucket/key`
+   *
    * @param key The S3 key of the object. If not specified, the S3 URL of the
    *      bucket is returned.
    * @returns an ObjectS3Url token
@@ -1164,6 +1207,13 @@ export interface Inventory {
    */
 export enum ObjectOwnership {
   /**
+   * ACLs are disabled, and the bucket owner automatically owns
+   * and has full control over every object in the bucket.
+   * ACLs no longer affect permissions to data in the S3 bucket.
+   * The bucket uses policies to define access control.
+   */
+  BUCKET_OWNER_ENFORCED = 'BucketOwnerEnforced',
+  /**
    * Objects uploaded to the bucket change ownership to the bucket owner .
    */
   BUCKET_OWNER_PREFERRED = 'BucketOwnerPreferred',
@@ -1361,6 +1411,13 @@ export interface BucketProps {
    *
    */
   readonly objectOwnership?: ObjectOwnership;
+
+  /**
+   * Whether this bucket should have transfer acceleration turned on or not.
+   *
+   * @default false
+   */
+  readonly transferAcceleration?: boolean;
 }
 
 /**
@@ -1396,6 +1453,7 @@ export class Bucket extends BucketBase {
     if (!bucketName) {
       throw new Error('Bucket name is required');
     }
+    Bucket.validateBucketName(bucketName);
 
     const newUrlFormat = attrs.bucketWebsiteNewUrlFormat === undefined
       ? false
@@ -1434,6 +1492,52 @@ export class Bucket extends BucketBase {
     });
   }
 
+  /**
+   * Thrown an exception if the given bucket name is not valid.
+   *
+   * @param physicalName name of the bucket.
+   */
+  public static validateBucketName(physicalName: string): void {
+    const bucketName = physicalName;
+    if (!bucketName || Token.isUnresolved(bucketName)) {
+      // the name is a late-bound value, not a defined string,
+      // so skip validation
+      return;
+    }
+
+    const errors: string[] = [];
+
+    // Rules codified from https://docs.aws.amazon.com/AmazonS3/latest/dev/BucketRestrictions.html
+    if (bucketName.length < 3 || bucketName.length > 63) {
+      errors.push('Bucket name must be at least 3 and no more than 63 characters');
+    }
+    const charsetMatch = bucketName.match(/[^a-z0-9.-]/);
+    if (charsetMatch) {
+      errors.push('Bucket name must only contain lowercase characters and the symbols, period (.) and dash (-) '
+        + `(offset: ${charsetMatch.index})`);
+    }
+    if (!/[a-z0-9]/.test(bucketName.charAt(0))) {
+      errors.push('Bucket name must start and end with a lowercase character or number '
+        + '(offset: 0)');
+    }
+    if (!/[a-z0-9]/.test(bucketName.charAt(bucketName.length - 1))) {
+      errors.push('Bucket name must start and end with a lowercase character or number '
+        + `(offset: ${bucketName.length - 1})`);
+    }
+    const consecSymbolMatch = bucketName.match(/\.-|-\.|\.\./);
+    if (consecSymbolMatch) {
+      errors.push('Bucket name must not have dash next to period, or period next to dash, or consecutive periods '
+        + `(offset: ${consecSymbolMatch.index})`);
+    }
+    if (/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(bucketName)) {
+      errors.push('Bucket name must not resemble an IP address');
+    }
+
+    if (errors.length > 0) {
+      throw new Error(`Invalid S3 bucket name (value: ${bucketName})${EOL}${errors.join(EOL)}`);
+    }
+  }
+
   public readonly bucketArn: string;
   public readonly bucketName: string;
   public readonly bucketDomainName: string;
@@ -1462,7 +1566,7 @@ export class Bucket extends BucketBase {
 
     const { bucketEncryption, encryptionKey } = this.parseEncryption(props);
 
-    this.validateBucketName(this.physicalName);
+    Bucket.validateBucketName(this.physicalName);
 
     const websiteConfiguration = this.renderWebsiteConfiguration(props);
     this.isWebsite = (websiteConfiguration !== undefined);
@@ -1480,6 +1584,7 @@ export class Bucket extends BucketBase {
       loggingConfiguration: this.parseServerAccessLogs(props),
       inventoryConfigurations: Lazy.any({ produce: () => this.parseInventoryConfiguration() }),
       ownershipControls: this.parseOwnershipControls(props),
+      accelerateConfiguration: props.transferAcceleration ? { accelerationStatus: 'Enabled' } : undefined,
     });
     this._resource = resource;
 
@@ -1598,47 +1703,6 @@ export class Bucket extends BucketBase {
       principals: [new iam.AnyPrincipal()],
     });
     this.addToResourcePolicy(statement);
-  }
-
-  private validateBucketName(physicalName: string): void {
-    const bucketName = physicalName;
-    if (!bucketName || Token.isUnresolved(bucketName)) {
-      // the name is a late-bound value, not a defined string,
-      // so skip validation
-      return;
-    }
-
-    const errors: string[] = [];
-
-    // Rules codified from https://docs.aws.amazon.com/AmazonS3/latest/dev/BucketRestrictions.html
-    if (bucketName.length < 3 || bucketName.length > 63) {
-      errors.push('Bucket name must be at least 3 and no more than 63 characters');
-    }
-    const charsetMatch = bucketName.match(/[^a-z0-9.-]/);
-    if (charsetMatch) {
-      errors.push('Bucket name must only contain lowercase characters and the symbols, period (.) and dash (-) '
-        + `(offset: ${charsetMatch.index})`);
-    }
-    if (!/[a-z0-9]/.test(bucketName.charAt(0))) {
-      errors.push('Bucket name must start and end with a lowercase character or number '
-        + '(offset: 0)');
-    }
-    if (!/[a-z0-9]/.test(bucketName.charAt(bucketName.length - 1))) {
-      errors.push('Bucket name must start and end with a lowercase character or number '
-        + `(offset: ${bucketName.length - 1})`);
-    }
-    const consecSymbolMatch = bucketName.match(/\.-|-\.|\.\./);
-    if (consecSymbolMatch) {
-      errors.push('Bucket name must not have dash next to period, or period next to dash, or consecutive periods '
-        + `(offset: ${consecSymbolMatch.index})`);
-    }
-    if (/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(bucketName)) {
-      errors.push('Bucket name must not resemble an IP address');
-    }
-
-    if (errors.length > 0) {
-      throw new Error(`Invalid S3 bucket name (value: ${bucketName})${EOL}${errors.join(EOL)}`);
-    }
   }
 
   /**
@@ -2314,6 +2378,18 @@ export interface VirtualHostedStyleUrlOptions {
    * @default - true
    */
   readonly regional?: boolean;
+}
+
+/**
+ * Options for creating a Transfer Acceleration URL.
+ */
+export interface TransferAccelerationUrlOptions {
+  /**
+   * Dual-stack support to connect to the bucket over IPv6.
+   *
+   * @default - false
+   */
+  readonly dualStack?: boolean;
 }
 
 function mapOrUndefined<T, U>(list: T[] | undefined, callback: (element: T) => U): U[] | undefined {

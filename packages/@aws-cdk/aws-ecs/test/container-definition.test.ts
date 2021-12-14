@@ -85,6 +85,9 @@ describe('container definition', () => {
         secrets: {
           SECRET: ecs.Secret.fromSecretsManager(secret),
         },
+        systemControls: [
+          { namespace: 'SomeNamespace', value: 'SomeValue' },
+        ],
       });
 
       // THEN
@@ -218,6 +221,12 @@ describe('container definition', () => {
             ],
             StartTimeout: 2,
             StopTimeout: 5,
+            SystemControls: [
+              {
+                Namespace: 'SomeNamespace',
+                Value: 'SomeValue',
+              },
+            ],
             User: 'rootUser',
             WorkingDirectory: 'a/b/c',
           },
@@ -681,13 +690,14 @@ describe('container definition', () => {
     const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
 
     // WHEN
-    taskDefinition.addContainer('cont', {
+    const container = taskDefinition.addContainer('cont', {
       image: ecs.ContainerImage.fromRegistry('test'),
       memoryLimitMiB: 1024,
       environment: {
         TEST_ENVIRONMENT_VARIABLE: 'test environment variable value',
       },
     });
+    container.addEnvironment('SECOND_ENVIRONEMENT_VARIABLE', 'second test value');
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
@@ -696,6 +706,37 @@ describe('container definition', () => {
           Environment: [{
             Name: 'TEST_ENVIRONMENT_VARIABLE',
             Value: 'test environment variable value',
+          },
+          {
+            Name: 'SECOND_ENVIRONEMENT_VARIABLE',
+            Value: 'second test value',
+          }],
+        },
+      ],
+    });
+
+
+  });
+
+  test('can add environment variables to container definition with no environment', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+
+    // WHEN
+    const container = taskDefinition.addContainer('cont', {
+      image: ecs.ContainerImage.fromRegistry('test'),
+      memoryLimitMiB: 1024,
+    });
+    container.addEnvironment('SECOND_ENVIRONEMENT_VARIABLE', 'second test value');
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+      ContainerDefinitions: [
+        {
+          Environment: [{
+            Name: 'SECOND_ENVIRONEMENT_VARIABLE',
+            Value: 'second test value',
           }],
         },
       ],
@@ -747,6 +788,40 @@ describe('container definition', () => {
           PortMappings: [
             { ContainerPort: 80 },
             { ContainerPort: 443 },
+          ],
+        },
+      ],
+    });
+  });
+
+  test('can specify system controls', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+
+    // WHEN
+    taskDefinition.addContainer('cont', {
+      image: ecs.ContainerImage.fromRegistry('test'),
+      memoryLimitMiB: 1024,
+      systemControls: [
+        { namespace: 'SomeNamespace1', value: 'SomeValue1' },
+        { namespace: 'SomeNamespace2', value: 'SomeValue2' },
+      ],
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+      ContainerDefinitions: [
+        {
+          SystemControls: [
+            {
+              Namespace: 'SomeNamespace1',
+              Value: 'SomeValue1',
+            },
+            {
+              Namespace: 'SomeNamespace2',
+              Value: 'SomeValue2',
+            },
           ],
         },
       ],

@@ -3,10 +3,11 @@ import * as cxapi from '@aws-cdk/cx-api';
 import { CloudFormation } from 'aws-sdk';
 import { ISDK, Mode, SdkProvider } from './aws-auth';
 import { DeployStackResult } from './deploy-stack';
-import { ChangeHotswapImpact, ChangeHotswapResult, HotswapOperation, ListStackResources, HotswappableChangeCandidate } from './hotswap/common';
+import { ChangeHotswapImpact, ChangeHotswapResult, HotswapOperation, HotswappableChangeCandidate, ListStackResources } from './hotswap/common';
 import { isHotswappableEcsServiceChange } from './hotswap/ecs-services';
 import { EvaluateCloudFormationTemplate } from './hotswap/evaluate-cloudformation-template';
 import { isHotswappableLambdaFunctionChange } from './hotswap/lambda-functions';
+import { isHotswappableS3BucketDeploymentChange } from './hotswap/s3-bucket-deployments';
 import { isHotswappableStateMachineChange } from './hotswap/stepfunctions-state-machines';
 import { CloudFormationStack } from './util/cloudformation';
 
@@ -35,10 +36,8 @@ export async function tryHotswapDeployment(
     parameters: assetParams,
     account: resolvedEnv.account,
     region: resolvedEnv.region,
-    // ToDo make this better:
-    partition: 'aws',
-    // ToDo make this better:
-    urlSuffix: 'amazonaws.com',
+    partition: (await sdk.currentAccount()).partition,
+    urlSuffix: sdk.getEndpointSuffix,
     listStackResources,
   });
 
@@ -75,6 +74,7 @@ async function findAllHotswappableChanges(
         isHotswappableLambdaFunctionChange(logicalId, resourceHotswapEvaluation, evaluateCfnTemplate),
         isHotswappableStateMachineChange(logicalId, resourceHotswapEvaluation, evaluateCfnTemplate),
         isHotswappableEcsServiceChange(logicalId, resourceHotswapEvaluation, evaluateCfnTemplate),
+        isHotswappableS3BucketDeploymentChange(logicalId, resourceHotswapEvaluation, evaluateCfnTemplate),
       ]);
     }
   });
@@ -140,8 +140,20 @@ async function applyAllHotswappableChanges(
   sdk: ISDK, hotswappableChanges: HotswapOperation[],
 ): Promise<void[]> {
   return Promise.all(hotswappableChanges.map(hotswapOperation => {
-    return hotswapOperation.apply(sdk);
+    return applyHotswappableChange(sdk, hotswapOperation);
   }));
+}
+
+async function applyHotswappableChange(sdk: ISDK, hotswapOperation: HotswapOperation): Promise<any> {
+  // note the type of service that was successfully hotswapped in the User-Agent
+  const customUserAgent = `cdk-hotswap/success-${hotswapOperation.service}`;
+  sdk.appendCustomUserAgent(customUserAgent);
+
+  try {
+    return await hotswapOperation.apply(sdk);
+  } finally {
+    sdk.removeCustomUserAgent(customUserAgent);
+  }
 }
 
 class LazyListStackResources implements ListStackResources {

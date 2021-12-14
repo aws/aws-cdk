@@ -13,7 +13,7 @@ import { FakeCloudformationStack } from '../fake-cloudformation-stack';
 const STACK_NAME = 'withouterrors';
 export const STACK_ID = 'stackId';
 
-let cfnMockProvider: CfnMockProvider;
+let hotswapMockSdkProvider: HotswapMockSdkProvider;
 let currentCfnStack: FakeCloudformationStack;
 const currentCfnStackResources: CloudFormation.StackResourceSummary[] = [];
 
@@ -21,13 +21,13 @@ export function setupHotswapTests() {
   jest.resetAllMocks();
   // clear the array
   currentCfnStackResources.splice(0);
-  cfnMockProvider = new CfnMockProvider();
+  hotswapMockSdkProvider = new HotswapMockSdkProvider();
   currentCfnStack = new FakeCloudformationStack({
     stackName: STACK_NAME,
     stackId: STACK_ID,
   });
 
-  return cfnMockProvider;
+  return hotswapMockSdkProvider;
 }
 
 export function cdkStackArtifactOf(testStackArtifact: Partial<TestStackArtifact> = {}): cxapi.CloudFormationStackArtifact {
@@ -42,7 +42,8 @@ export function pushStackResourceSummaries(...items: CloudFormation.StackResourc
 }
 
 export function setCurrentCfnStackTemplate(template: Template) {
-  currentCfnStack.setTemplate(template);
+  const templateDeepCopy = JSON.parse(JSON.stringify(template)); // deep copy the template, so our tests can mutate one template instead of creating two
+  currentCfnStack.setTemplate(templateDeepCopy);
 }
 
 export function stackSummaryOf(logicalId: string, resourceType: string, physicalResourceId: string): CloudFormation.StackResourceSummary {
@@ -55,8 +56,8 @@ export function stackSummaryOf(logicalId: string, resourceType: string, physical
   };
 }
 
-export class CfnMockProvider {
-  private mockSdkProvider: MockSdkProvider;
+export class HotswapMockSdkProvider {
+  public readonly mockSdkProvider: MockSdkProvider;
 
   constructor() {
     this.mockSdkProvider = new MockSdkProvider({ realSdk: false });
@@ -87,8 +88,18 @@ export class CfnMockProvider {
     });
   }
 
+  public setInvokeLambdaMock(mockInvokeLambda: (input: lambda.InvocationRequest) => lambda.InvocationResponse) {
+    this.mockSdkProvider.stubLambda({
+      invoke: mockInvokeLambda,
+    });
+  }
+
   public stubEcs(stubs: SyncHandlerSubsetOf<AWS.ECS>, additionalProperties: { [key: string]: any } = {}): void {
     this.mockSdkProvider.stubEcs(stubs, additionalProperties);
+  }
+
+  public stubGetEndpointSuffix(stub: () => string) {
+    this.mockSdkProvider.stubGetEndpointSuffix(stub);
   }
 
   public tryHotswapDeployment(
