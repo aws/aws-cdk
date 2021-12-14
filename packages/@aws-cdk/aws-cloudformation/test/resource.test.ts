@@ -105,7 +105,7 @@ testDeprecated('custom resource is added twice, lambda is added once', () => {
               'Arn',
             ],
           },
-          'Runtime': 'python2.7',
+          'Runtime': 'python3.9',
           'Timeout': 300,
         },
         'DependsOn': [
@@ -208,7 +208,7 @@ class TestCustomResource extends Construct {
     const singletonLambda = new lambda.SingletonFunction(this, 'Lambda', {
       uuid: 'TestCustomResourceProvider',
       code: new lambda.InlineCode('def hello(): pass'),
-      runtime: lambda.Runtime.PYTHON_2_7,
+      runtime: lambda.Runtime.PYTHON_3_9,
       handler: 'index.hello',
       timeout: cdk.Duration.minutes(5),
     });

@@ -364,13 +364,16 @@ async function transformPackage(
     await fs.mkdirp(destinationLib);
     await cfn2ts(cfnScopes, destinationLib);
 
+    // We know what this is going to be, so predict it
+    const alphaPackageName = `${library.packageJson.name}-alpha`;
+
     // create a lib/index.ts which only exports the generated files
     fs.writeFileSync(path.join(destinationLib, 'index.ts'),
       /// logic copied from `create-missing-libraries.ts`
       cfnScopes.map(s => (s === 'AWS::Serverless' ? 'AWS::SAM' : s).split('::')[1].toLocaleLowerCase())
         .map(s => `export * from './${s}.generated';`)
         .join('\n'));
-    await pkglint.createLibraryReadme(cfnScopes[0], path.join(destination, 'README.md'));
+    await pkglint.createLibraryReadme(cfnScopes[0], path.join(destination, 'README.md'), alphaPackageName);
 
     await copyOrTransformFiles(destination, destination, allLibraries, uberPackageJson);
   } else {
