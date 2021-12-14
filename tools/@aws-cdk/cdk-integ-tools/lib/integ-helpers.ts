@@ -354,8 +354,11 @@ export const DEFAULT_SYNTH_OPTIONS = {
     // Enable feature flags for all integ tests
     ...FUTURE_FLAGS,
 
-    // Restrict target partitions to only 'aws', so all service principals stay the same
-    [TARGET_PARTITIONS]: ['aws'],
+    // Restricting to these target partitions makes most service principals synthesize to
+    // `service.${URL_SUFFIX}`, which is technically *incorrect* (it's only `amazonaws.com`
+    // or `amazonaws.com.cn`, never UrlSuffix for any of the restricted regions) but it's what
+    // most existing integ tests contain, and we want to disturb as few as possible.
+    [TARGET_PARTITIONS]: ['aws', 'aws-cn'],
   },
   env: {
     CDK_INTEG_ACCOUNT: '12345678',
