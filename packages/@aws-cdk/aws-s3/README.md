@@ -498,7 +498,7 @@ bucket.transferAccelerationUrlForObject('objectname');
 [Intelligent TIering](https://docs.aws.amazon.com/AmazonS3/latest/userguide/transfer-acceleration.html) can be configured to enable fast, easy, and secure transfers of files over long distances:
 
 ```ts
-    new s3.Bucket(stack, 'MyBucket', {
+    new s3.Bucket(this, 'MyBucket', {
    intelligentTieringConfigurations: [{
       name: 'foo',
    }],
