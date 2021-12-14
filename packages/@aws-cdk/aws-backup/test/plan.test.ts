@@ -321,8 +321,8 @@ test('throws when moveToColdStorageAfter is used with enableContinuousBackup', (
 test('throws when deleteAfter is less than 1 in combination with enableContinuousBackup', () => {
   expect(() => new BackupPlanRule({
     enableContinuousBackup: true,
-    deleteAfter: Duration.hours(12),
-  })).toThrow(/'deleteAfter' must be between 1 and 35 days if 'enableContinuousBackup' is enabled, but got 12 hours/);
+    deleteAfter: Duration.days(0),
+  })).toThrow(/'deleteAfter' must be between 1 and 35 days if 'enableContinuousBackup' is enabled, but got 0 days/);
 });
 
 test('throws when deleteAfter is greater than 35 in combination with enableContinuousBackup', () => {

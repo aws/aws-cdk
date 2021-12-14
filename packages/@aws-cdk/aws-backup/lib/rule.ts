@@ -181,8 +181,7 @@ export class BackupPlanRule {
     }
 
     if (props.enableContinuousBackup && props.deleteAfter &&
-      ((props.deleteAfter?.toSeconds() < Duration.days(1).toSeconds() ||
-        (props.deleteAfter?.toSeconds() > Duration.days(35).toSeconds())))) {
+      (props.deleteAfter?.toDays() < 1 || props.deleteAfter?.toDays() > 35)) {
       throw new Error(`'deleteAfter' must be between 1 and 35 days if 'enableContinuousBackup' is enabled, but got ${props.deleteAfter.toHumanString()}`);
     }
 
