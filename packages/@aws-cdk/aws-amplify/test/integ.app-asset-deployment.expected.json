@@ -111,12 +111,7 @@
             "AppId"
           ]
         },
-        "BranchName": {
-          "Fn::GetAtt": [
-            "AppmainF505BAED",
-            "BranchName"
-          ]
-        },
+        "BranchName": "main",
         "S3ObjectKey": {
           "Fn::Join": [
             "",

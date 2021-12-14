@@ -123,12 +123,7 @@ test('with asset deployment', () => {
         'AppId',
       ],
     },
-    BranchName: {
-      'Fn::GetAtt': [
-        'AppdevB328DAFC',
-        'BranchName',
-      ],
-    },
+    BranchName: 'dev',
     S3ObjectKey: {
       'Fn::Join': [
         '',
