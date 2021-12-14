@@ -5,7 +5,7 @@ import { Architecture } from '@aws-cdk/aws-lambda';
 import { Bundling } from './bundling';
 import { PackageManager } from './package-manager';
 import { BundlingOptions } from './types';
-import { callsites, findUp } from './util';
+import { callsites, findUpMultiple } from './util';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
@@ -137,15 +137,20 @@ function findLockFile(depsLockFilePath?: string): string {
     return path.resolve(depsLockFilePath);
   }
 
-  const lockFile = findUp(PackageManager.PNPM.lockFile)
-    ?? findUp(PackageManager.YARN.lockFile)
-    ?? findUp(PackageManager.NPM.lockFile);
+  const lockFiles = findUpMultiple([
+    PackageManager.PNPM.lockFile,
+    PackageManager.YARN.lockFile,
+    PackageManager.NPM.lockFile,
+  ]);
 
-  if (!lockFile) {
+  if (lockFiles.length === 0) {
     throw new Error('Cannot find a package lock file (`pnpm-lock.yaml`, `yarn.lock` or `package-lock.json`). Please specify it with `depsFileLockPath`.');
   }
+  if (lockFiles.length > 1) {
+    throw new Error(`Multiple package lock files found: ${lockFiles.join(', ')}. Please specify the desired one with \`depsFileLockPath\`.`);
+  }
 
-  return lockFile;
+  return lockFiles[0];
 }
 
 /**
