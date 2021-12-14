@@ -67,7 +67,7 @@ export interface BackupPlanRuleProps {
    *
    * Property `moveToColdStorageAfter` must not be specified because PITR does not support this option.
    *
-   * @default - not enabled
+   * @default false
    */
   readonly enableContinuousBackup?: boolean;
 }
@@ -166,7 +166,7 @@ export class BackupPlanRule {
   /** @param props Rule properties */
   constructor(props: BackupPlanRuleProps) {
     if (props.deleteAfter && props.moveToColdStorageAfter &&
-        props.deleteAfter.toSeconds() < props.moveToColdStorageAfter.toSeconds()) {
+      props.deleteAfter.toSeconds() < props.moveToColdStorageAfter.toSeconds()) {
       throw new Error('`deleteAfter` must be greater than `moveToColdStorageAfter`');
     }
 
@@ -174,10 +174,7 @@ export class BackupPlanRule {
       throw new Error('`scheduleExpression` must be of type `cron`');
     }
 
-    let deleteAfter = props.deleteAfter;
-    if (props.enableContinuousBackup && !props.deleteAfter) {
-      deleteAfter = Duration.days(35);
-    }
+    const deleteAfter = (props.enableContinuousBackup && !props.deleteAfter) ? Duration.days(35) : props.deleteAfter;
 
     if (props.enableContinuousBackup && props.moveToColdStorageAfter) {
       throw new Error('`moveToColdStorageAfter` must not be specified if `enableContinuousBackup` is enabled');
@@ -185,7 +182,7 @@ export class BackupPlanRule {
 
     if (props.enableContinuousBackup && props.deleteAfter &&
       ((props.deleteAfter?.toSeconds() < Duration.days(1).toSeconds() ||
-      (props.deleteAfter?.toSeconds() > Duration.days(35).toSeconds())))) {
+        (props.deleteAfter?.toSeconds() > Duration.days(35).toSeconds())))) {
       throw new Error(`'deleteAfter' must be between 1 and 35 days if 'enableContinuousBackup' is enabled, but got ${props.deleteAfter.toHumanString()}`);
     }
 
