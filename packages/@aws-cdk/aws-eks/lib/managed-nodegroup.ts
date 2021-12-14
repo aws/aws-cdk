@@ -160,7 +160,7 @@ export interface NodegroupOptions {
    * The AMI type for your node group. If you explicitly specify the launchTemplate with custom AMI, do not specify this property, or
    * the node group deployment will fail. In other cases, you will need to specify correct amiType for the nodegroup.
    *
-   * @default - undefined.
+   * @default - auto-determined from the instanceTypes property when launchTemplateSpec property is not specified
    */
   readonly amiType?: NodegroupAmiType;
   /**
@@ -372,7 +372,7 @@ export class Nodegroup extends Resource implements INodegroup {
 
       // if the user explicitly configured an ami type, make sure it's included in the possibleAmiTypes
       if (props.amiType && !possibleAmiTypes.includes(props.amiType)) {
-        throw new Error(`The specified AMI does not match the instance types architecture, either specify one of ${possibleAmiTypes} or dont specify any`);
+        throw new Error(`The specified AMI does not match the instance types architecture, either specify one of ${possibleAmiTypes} or don't specify any`);
       }
     }
 
@@ -470,22 +470,27 @@ const gpuAmiTypes: NodegroupAmiType[] = [NodegroupAmiType.AL2_X86_64_GPU];
  * @returns NodegroupAmiType[]
  */
 function getPossibleAmiTypesForInstanceType(instanceType: InstanceType): NodegroupAmiType[] {
-  return INSTANCE_TYPES.graviton2.includes(instanceType.toString().substring(0, 3)) ? arm64AmiTypes :
-    INSTANCE_TYPES.graviton.includes(instanceType.toString().substring(0, 2)) ? arm64AmiTypes :
-      INSTANCE_TYPES.gpu.includes(instanceType.toString().substring(0, 2)) ? gpuAmiTypes :
-        INSTANCE_TYPES.inferentia.includes(instanceType.toString().substring(0, 4)) ? gpuAmiTypes :
-          x8664AmiTypes;
+  return INSTANCE_TYPES.graviton3.includes(instanceType.toString().substring(0, 3)) ? arm64AmiTypes :
+    INSTANCE_TYPES.graviton2.includes(instanceType.toString().substring(0, 3)) ? arm64AmiTypes :
+      INSTANCE_TYPES.graviton.includes(instanceType.toString().substring(0, 2)) ? arm64AmiTypes :
+        INSTANCE_TYPES.gpu.includes(instanceType.toString().substring(0, 2)) ? gpuAmiTypes :
+          INSTANCE_TYPES.inferentia.includes(instanceType.toString().substring(0, 4)) ? gpuAmiTypes :
+            x8664AmiTypes;
 }
 
-// this function examines the CPU architecture of every instance type and determines
-// what ami type is compatible for all of them. it either throws or produces an array of possible instance types because
-// instance types of different CPU architectures are not supported.
+/**
+ * This function examines the CPU architecture of every instance type and determines
+ * what AMI types are compatible for all of them. it either throws or produces an array of possible AMI types because
+ * instance types of different CPU architectures are not supported.
+ * @param instanceTypes The instance types
+ * @returns NodegroupAmiType[]
+ */
 function getPossibleAmiTypes(instanceTypes: InstanceType[]): NodegroupAmiType[] {
   const amiTypes = new Set<NodegroupAmiType>();
   for (const t of instanceTypes) {
     getPossibleAmiTypesForInstanceType(t).forEach(x => amiTypes.add(x));
   }
-  if (new Set(amiTypes).size == 0) { // protective code, the current implementation will never result in this.
+  if (amiTypes.size === 0) { // protective code, the current implementation will never result in this.
     throw new Error(`Cannot determine any ami type comptaible with instance types: ${instanceTypes.map(i => i.toString).join(',')}`);
   }
   let cpuArchTypes: number = 0;

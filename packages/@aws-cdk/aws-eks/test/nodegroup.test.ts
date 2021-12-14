@@ -276,7 +276,7 @@ describe('node group', () => {
       cluster,
       instanceTypes: [
         new ec2.InstanceType('c6g.large'),
-        new ec2.InstanceType('m6g.large'),
+        new ec2.InstanceType('c7g.large'),
       ],
     });
 
@@ -332,7 +332,7 @@ describe('node group', () => {
         new ec2.InstanceType('p3.large'),
         new ec2.InstanceType('g3.large'),
       ],
-    })).toThrow(/The specified AMI does not match the instance types architecture, either specify one of AL2_x86_64_GPU or dont specify any/);
+    })).toThrow(/The specified AMI does not match the instance types architecture, either specify one of AL2_x86_64_GPU or don't specify any/);
   });
   /**
    * When LaunchTemplate is undefined, amiType is AL2_ARM_64 and instanceTypes are not ARM_64,
@@ -353,7 +353,7 @@ describe('node group', () => {
         new ec2.InstanceType('c5.large'),
         new ec2.InstanceType('m5.large'),
       ],
-    })).toThrow(/The specified AMI does not match the instance types architecture, either specify one of AL2_x86_64,BOTTLEROCKET_x86_64 or dont specify any/);
+    })).toThrow(/The specified AMI does not match the instance types architecture, either specify one of AL2_x86_64,BOTTLEROCKET_x86_64 or don't specify any/);
   });
 
   /**
@@ -375,7 +375,7 @@ describe('node group', () => {
         new ec2.InstanceType('c5.large'),
         new ec2.InstanceType('m5.large'),
       ],
-    })).toThrow(/The specified AMI does not match the instance types architecture, either specify one of AL2_x86_64,BOTTLEROCKET_x86_64 or dont specify any/);
+    })).toThrow(/The specified AMI does not match the instance types architecture, either specify one of AL2_x86_64,BOTTLEROCKET_x86_64 or don't specify any/);
   });
   /**
    * When LaunchTemplate is defined, amiType is undefined and instanceTypes are GPU instances,
