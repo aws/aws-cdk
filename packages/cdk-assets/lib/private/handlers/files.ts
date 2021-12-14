@@ -30,7 +30,7 @@ export class FileAssetHandler implements IAssetHandler {
 
     // A thunk for describing the current account. Used when we need to format an error
     // message, not in the success case.
-    const account = async () => (await this.host.aws.discoverCurrentAccount())?.accountId;
+    const account = async () => (await this.host.aws.discoverTargetAccount(destination))?.accountId;
     switch (await bucketInfo.bucketOwnership(s3, destination.bucketName)) {
       case BucketOwnership.MINE:
         break;
