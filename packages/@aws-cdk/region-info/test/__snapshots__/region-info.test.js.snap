@@ -253,7 +253,11 @@ Object {
   "ap-southeast-3": Object {
     "cdkMetadataResourceAvailable": false,
     "domainSuffix": "amazonaws.com",
+    "lambdaInsightsArmVersions": Object {
+      "1.0.119.0": undefined,
+    },
     "lambdaInsightsVersions": Object {
+      "1.0.119.0": undefined,
       "1.0.54.0": undefined,
       "1.0.86.0": undefined,
       "1.0.89.0": undefined,
@@ -466,7 +470,11 @@ Object {
   "eu-south-2": Object {
     "cdkMetadataResourceAvailable": false,
     "domainSuffix": "amazonaws.com",
+    "lambdaInsightsArmVersions": Object {
+      "1.0.119.0": undefined,
+    },
     "lambdaInsightsVersions": Object {
+      "1.0.119.0": undefined,
       "1.0.54.0": undefined,
       "1.0.86.0": undefined,
       "1.0.89.0": undefined,
@@ -803,7 +811,11 @@ Object {
   "us-iso-west-1": Object {
     "cdkMetadataResourceAvailable": false,
     "domainSuffix": "c2s.ic.gov",
+    "lambdaInsightsArmVersions": Object {
+      "1.0.119.0": undefined,
+    },
     "lambdaInsightsVersions": Object {
+      "1.0.119.0": undefined,
       "1.0.54.0": undefined,
       "1.0.86.0": undefined,
       "1.0.89.0": undefined,
