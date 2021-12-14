@@ -4,7 +4,6 @@ import * as assets from '@aws-cdk/aws-s3-assets';
 import { Construct } from 'constructs';
 import { CfnRepository } from './codecommit.generated';
 
-
 /**
  * Represents the structure to pass into the underlying CfnRepository class.
  */
@@ -16,40 +15,36 @@ export interface CodeConfig {
 }
 
 /**
- * Represents the Code to initialize the repo with
+ * Represents the contents to initialize the repository with.
  */
 export abstract class Code {
   /**
-   * Code from directory
-   * @param directoryPath path relative to the calling file
-   * @param branch optional branch like 'main
-   * @returns Directory
+   * Code from directory.
+   * @param directoryPath the path to the local directory containing the contents to initialize the repository with
+   * @param branch the name of the branch to create in the repository. Default is "main"
    */
   public static fromDirectory(directoryPath: string, branch?: string): Code {
     const resolvedPath = path.resolve(directoryPath);
 
     const statResult = fs.statSync(resolvedPath);
-
     if (!statResult || !statResult.isDirectory()) {
-      throw new Error(`No directory at ${resolvedPath}`);
+      throw new Error(`'${directoryPath}' needs to be a path to a directory (resolved to: '${resolvedPath }')`);
     }
 
     return new PathResolvedCode(resolvedPath, branch);
   }
 
   /**
-   * Code from preexisting zip file
-   * @param filePath path relative to the calling file
-   * @param branch optional branch like 'main'
-   * @returns ZipFile
+   * Code from preexisting ZIP file.
+   * @param filePath the path to the local ZIP file containing the contents to initialize the repository with
+   * @param branch the name of the branch to create in the repository. Default is "main"
    */
   public static fromZipFile(filePath: string, branch?: string): Code {
     const resolvedPath = path.resolve(filePath);
 
     const statResult = fs.statSync(resolvedPath);
-
     if (!statResult || !statResult.isFile()) {
-      throw new Error(`No file at ${resolvedPath}`);
+      throw new Error(`'${filePath}' needs to be a path to a ZIP file (resolved to: '${resolvedPath }')`);
     }
 
     return new PathResolvedCode(resolvedPath, branch);
@@ -58,27 +53,21 @@ export abstract class Code {
   /**
    * Code from user-supplied asset.
    * @param asset pre-existing asset
-   * @param branch optional branch like 'main'
-   * @returns ExistingAsset
-   * @throws Error when path is not resolvable (see @aws-cdk/core - AssetStaging)
+   * @param branch the name of the branch to create in the repository. Default is "main"
    */
   public static fromAsset(asset: assets.Asset, branch?: string): Code {
     return new AssetCode(asset, branch);
   }
 
   /**
-     * Called when the repository is initialized
-     *
-     * @param scope the binding scope
-     */
+   * This method is called after a repository is passed this instance of Code in its 'code' property.
+   *
+   * @param scope the binding scope
+   */
   public abstract bind(scope: Construct): CodeConfig;
 }
 
 class PathResolvedCode extends Code {
-  /**
-     * @param resolvedPath the path to the zip/directory
-     * @param branch optional branch like 'main'
-     */
   constructor(private readonly resolvedPath: string, private readonly branch?: string) {
     super();
   }
@@ -92,15 +81,7 @@ class PathResolvedCode extends Code {
   }
 }
 
-/**
- * Code from existing asset
- */
 class AssetCode extends Code {
-
-  /**
-     * @param asset The asset
-     * @param branch optional branch like 'main'
-     */
   constructor(private readonly asset: assets.Asset, private readonly branch?: string) {
     super();
   }

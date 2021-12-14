@@ -91,7 +91,6 @@ describe('codecommit', () => {
       const stack = new Stack(app, 'MyStack');
 
       // WHEN
-
       new Repository(stack, 'Repository', {
         repositoryName: 'MyRepositoryName',
         code: Code.fromDirectory(join(__dirname, 'asset-test')),
@@ -112,7 +111,6 @@ describe('codecommit', () => {
       });
 
       // WHEN
-
       new Repository(stack, 'Repository', {
         repositoryName: 'MyRepositoryName',
         code: Code.fromAsset(readmeAsset),
@@ -134,7 +132,7 @@ describe('codecommit', () => {
           repositoryName: 'MyRepositoryName',
           code: Code.fromDirectory(join(__dirname, 'asset-test/test.md')),
         });
-      }).toThrow();
+      }).toThrow(/'asset-test/test.md' needs to be a path to a directory/);
     });
 
     test('Repository throws Error when initialized with directory while expecting file', () => {
