@@ -9,6 +9,25 @@ import { ToolkitInfo } from './toolkit-info';
 import { CloudFormationStack, Template } from './util/cloudformation';
 import { StackActivityProgress } from './util/cloudformation/stack-activity-monitor';
 
+/**
+ * Replace the {ACCOUNT} and {REGION} placeholders in all strings found in a complex object.
+ */
+export async function replaceEnvPlaceholders<A extends { }>(object: A, env: cxapi.Environment, sdkProvider: SdkProvider): Promise<A> {
+  return cxapi.EnvironmentPlaceholders.replaceAsync(object, {
+    accountId: () => Promise.resolve(env.account),
+    region: () => Promise.resolve(env.region),
+    partition: async () => {
+      // There's no good way to get the partition!
+      // We should have had it already, except we don't.
+      //
+      // Best we can do is ask the "base credentials" for this environment for their partition. Cross-partition
+      // AssumeRole'ing will never work anyway, so this answer won't be wrong (it will just be slow!)
+      return (await sdkProvider.baseCredentialsPartition(env, Mode.ForReading)) ?? 'aws';
+    },
+  });
+}
+
+
 export interface DeployStackOptions {
   /**
    * Stack to deploy
@@ -110,6 +129,29 @@ export interface DeployStackOptions {
    * @default false
    */
   readonly ci?: boolean;
+
+  /**
+   * Rollback failed deployments
+   *
+   * @default true
+   */
+  readonly rollback?: boolean;
+
+  /*
+   * Whether to perform a 'hotswap' deployment.
+   * A 'hotswap' deployment will attempt to short-circuit CloudFormation
+   * and update the affected resources like Lambda functions directly.
+   *
+   * @default - false for regular deployments, true for 'watch' deployments
+   */
+  readonly hotswap?: boolean;
+
+  /**
+   * The extra string to append to the User-Agent header when performing AWS SDK calls.
+   *
+   * @default - nothing extra is appended to the User-Agent header
+   */
+  readonly extraUserAgent?: string;
 }
 
 export interface DestroyStackOptions {
@@ -185,6 +227,9 @@ export class CloudFormationDeployments {
       usePreviousParameters: options.usePreviousParameters,
       progress: options.progress,
       ci: options.ci,
+      rollback: options.rollback,
+      hotswap: options.hotswap,
+      extraUserAgent: options.extraUserAgent,
     });
   }
 
@@ -223,15 +268,16 @@ export class CloudFormationDeployments {
     const resolvedEnvironment = await this.sdkProvider.resolveEnvironment(stack.environment);
 
     // Substitute any placeholders with information about the current environment
-    const arns = await this.replaceEnvPlaceholders({
+    const arns = await replaceEnvPlaceholders({
       assumeRoleArn: stack.assumeRoleArn,
 
       // Use the override if given, otherwise use the field from the stack
       cloudFormationRoleArn: roleArn ?? stack.cloudFormationExecutionRoleArn,
-    }, resolvedEnvironment);
+    }, resolvedEnvironment, this.sdkProvider);
 
     const stackSdk = await this.sdkProvider.forEnvironment(resolvedEnvironment, mode, {
       assumeRoleArn: arns.assumeRoleArn,
+      assumeRoleExternalId: stack.assumeRoleExternalId,
     });
 
     return {
@@ -239,24 +285,6 @@ export class CloudFormationDeployments {
       resolvedEnvironment,
       cloudFormationRoleArn: arns.cloudFormationRoleArn,
     };
-  }
-
-  /**
-   * Replace the {ACCOUNT} and {REGION} placeholders in all strings found in a complex object.
-   */
-  private async replaceEnvPlaceholders<A extends { }>(object: A, env: cxapi.Environment): Promise<A> {
-    return cxapi.EnvironmentPlaceholders.replaceAsync(object, {
-      accountId: () => Promise.resolve(env.account),
-      region: () => Promise.resolve(env.region),
-      partition: async () => {
-        // There's no good way to get the partition!
-        // We should have had it already, except we don't.
-        //
-        // Best we can do is ask the "base credentials" for this environment for their partition. Cross-partition
-        // AssumeRole'ing will never work anyway, so this answer won't be wrong (it will just be slow!)
-        return (await this.sdkProvider.baseCredentialsPartition(env, Mode.ForReading)) ?? 'aws';
-      },
-    });
   }
 
   /**

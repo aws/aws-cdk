@@ -41,7 +41,7 @@ export interface StreamEventSourceProps {
    * * Minimum value of 60 seconds
    * * Maximum value of 7 days
    *
-   * @default Duration.days(7)
+   * @default - the retention period configured on the stream
    */
   readonly maxRecordAge?: Duration;
 
@@ -51,7 +51,7 @@ export interface StreamEventSourceProps {
    * * Minimum value of 0
    * * Maximum value of 10000
    *
-   * @default 10000
+   * @default - retry until the record expires
    */
   readonly retryAttempts?: number;
 
@@ -69,6 +69,15 @@ export interface StreamEventSourceProps {
    * Where to begin consuming the stream.
    */
   readonly startingPosition: lambda.StartingPosition;
+
+  /**
+   * Allow functions to return partially successful responses for a batch of records.
+   *
+   * @see https://docs.aws.amazon.com/lambda/latest/dg/with-ddb.html#services-ddb-batchfailurereporting
+   *
+   * @default false
+   */
+  readonly reportBatchItemFailures?: boolean;
 
   /**
    * The maximum amount of time to gather records before invoking the function.
@@ -109,6 +118,7 @@ export abstract class StreamEventSource implements lambda.IEventSource {
       batchSize: this.props.batchSize || 100,
       bisectBatchOnError: this.props.bisectBatchOnError,
       startingPosition: this.props.startingPosition,
+      reportBatchItemFailures: this.props.reportBatchItemFailures,
       maxBatchingWindow: this.props.maxBatchingWindow,
       maxRecordAge: this.props.maxRecordAge,
       retryAttempts: this.props.retryAttempts,

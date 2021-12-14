@@ -62,6 +62,13 @@ export class CloudFormationStackArtifact extends CloudArtifact {
   public readonly assumeRoleArn?: string;
 
   /**
+   * External ID to use when assuming role for cloudformation deployments
+   *
+   * @default - No external ID
+   */
+  readonly assumeRoleExternalId?: string;
+
+  /**
    * The role that is passed to CloudFormation to execute the change set
    *
    * @default - No role is passed (currently assumed role/credentials are used)
@@ -94,6 +101,13 @@ export class CloudFormationStackArtifact extends CloudArtifact {
    */
   public readonly terminationProtection?: boolean;
 
+  /**
+   * Whether this stack should be validated by the CLI after synthesis
+   *
+   * @default - false
+   */
+  public readonly validateOnSynth?: boolean;
+
   private _template: any | undefined;
 
   constructor(assembly: CloudAssembly, artifactId: string, artifact: cxschema.ArtifactManifest) {
@@ -114,11 +128,13 @@ export class CloudFormationStackArtifact extends CloudArtifact {
     // from the stack metadata
     this.tags = properties.tags ?? this.tagsFromMetadata();
     this.assumeRoleArn = properties.assumeRoleArn;
+    this.assumeRoleExternalId = properties.assumeRoleExternalId;
     this.cloudFormationExecutionRoleArn = properties.cloudFormationExecutionRoleArn;
     this.stackTemplateAssetObjectUrl = properties.stackTemplateAssetObjectUrl;
     this.requiresBootstrapStackVersion = properties.requiresBootstrapStackVersion;
     this.bootstrapStackVersionSsmParameter = properties.bootstrapStackVersionSsmParameter;
     this.terminationProtection = properties.terminationProtection;
+    this.validateOnSynth = properties.validateOnSynth;
 
     this.stackName = properties.stackName || artifactId;
     this.assets = this.findMetadataByType(cxschema.ArtifactMetadataEntryType.ASSET).map(e => e.data as cxschema.AssetMetadataEntry);

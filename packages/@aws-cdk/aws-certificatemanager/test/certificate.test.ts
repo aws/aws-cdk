@@ -1,7 +1,7 @@
 import '@aws-cdk/assert-internal/jest';
 import * as route53 from '@aws-cdk/aws-route53';
-import { Lazy, Stack } from '@aws-cdk/core';
-import { Certificate, CertificateValidation, ValidationMethod } from '../lib';
+import { Duration, Lazy, Stack } from '@aws-cdk/core';
+import { Certificate, CertificateValidation } from '../lib';
 
 test('apex domain selection by default', () => {
   const stack = new Stack();
@@ -19,14 +19,33 @@ test('apex domain selection by default', () => {
   });
 });
 
+test('metricDaysToExpiry', () => {
+  const stack = new Stack();
+
+  const certificate = new Certificate(stack, 'Certificate', {
+    domainName: 'test.example.com',
+  });
+
+  expect(stack.resolve(certificate.metricDaysToExpiry().toMetricConfig())).toEqual({
+    metricStat: {
+      dimensions: [{ name: 'CertificateArn', value: stack.resolve(certificate.certificateArn) }],
+      metricName: 'DaysToExpiry',
+      namespace: 'AWS/CertificateManager',
+      period: Duration.days(1),
+      statistic: 'Minimum',
+    },
+    renderingProperties: expect.anything(),
+  });
+});
+
 test('validation domain can be overridden', () => {
   const stack = new Stack();
 
   new Certificate(stack, 'Certificate', {
     domainName: 'test.example.com',
-    validationDomains: {
+    validation: CertificateValidation.fromEmail({
       'test.example.com': 'test.example.com',
-    },
+    }),
   });
 
   expect(stack).toHaveResource('AWS::CertificateManager::Certificate', {
@@ -53,7 +72,7 @@ test('can configure validation method', () => {
 
   new Certificate(stack, 'Certificate', {
     domainName: 'test.example.com',
-    validationMethod: ValidationMethod.DNS,
+    validation: CertificateValidation.fromDns(),
   });
 
   expect(stack).toHaveResource('AWS::CertificateManager::Certificate', {
@@ -79,9 +98,9 @@ test('validationdomains can be given for a Token', () => {
   const domainName = Lazy.string({ produce: () => 'my.example.com' });
   new Certificate(stack, 'Certificate', {
     domainName,
-    validationDomains: {
+    validation: CertificateValidation.fromEmail({
       [domainName]: 'example.com',
-    },
+    }),
   });
 
   expect(stack).toHaveResource('AWS::CertificateManager::Certificate', {

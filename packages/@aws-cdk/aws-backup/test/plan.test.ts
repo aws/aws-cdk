@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as events from '@aws-cdk/aws-events';
 import { App, Duration, Stack } from '@aws-cdk/core';
 import { BackupPlan, BackupPlanRule, BackupVault } from '../lib';
@@ -32,7 +32,7 @@ test('create a plan and add rules', () => {
   plan.addRule(BackupPlanRule.monthly5Year(otherVault));
 
   // THEN
-  expect(stack).toHaveResource('AWS::Backup::BackupPlan', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Backup::BackupPlan', {
     BackupPlan: {
       BackupPlanName: 'Plan',
       BackupPlanRule: [
@@ -70,12 +70,42 @@ test('create a plan and add rules', () => {
   });
 });
 
+test('create a plan and add rules - add BackupPlan.AdvancedBackupSettings.BackupOptions', () => {
+  const vault = new BackupVault(stack, 'Vault');
+  const otherVault = new BackupVault(stack, 'OtherVault');
+
+  // WHEN
+  const plan = new BackupPlan(stack, 'Plan', {
+    windowsVss: true,
+    backupVault: vault,
+    backupPlanRules: [
+      new BackupPlanRule({
+        completionWindow: Duration.hours(2),
+        startWindow: Duration.hours(1),
+        scheduleExpression: events.Schedule.cron({
+          day: '15',
+          hour: '3',
+          minute: '30',
+        }),
+        moveToColdStorageAfter: Duration.days(30),
+      }),
+    ],
+  });
+  plan.addRule(BackupPlanRule.monthly5Year(otherVault));
+
+  Template.fromStack(stack).hasResourceProperties('AWS::Backup::BackupPlan', {
+    BackupPlan: {
+      AdvancedBackupSettings: [{ BackupOptions: { WindowsVSS: 'enabled' }, ResourceType: 'EC2' }],
+    },
+  });
+});
+
 test('daily35DayRetention', () => {
   // WHEN
   BackupPlan.daily35DayRetention(stack, 'D35');
 
   // THEN
-  expect(stack).toHaveResource('AWS::Backup::BackupPlan', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Backup::BackupPlan', {
     BackupPlan: {
       BackupPlanName: 'D35',
       BackupPlanRule: [
@@ -102,7 +132,7 @@ test('dailyWeeklyMonthly7YearRetention', () => {
   BackupPlan.dailyWeeklyMonthly7YearRetention(stack, 'DWM7');
 
   // THEN
-  expect(stack).toHaveResource('AWS::Backup::BackupPlan', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Backup::BackupPlan', {
     BackupPlan: {
       BackupPlanName: 'DWM7',
       BackupPlanRule: [
@@ -159,7 +189,7 @@ test('automatically creates a new vault', () => {
   plan.addRule(BackupPlanRule.daily());
 
   // THEN
-  expect(stack).toHaveResource('AWS::Backup::BackupPlan', {
+  Template.fromStack(stack).hasResourceProperties('AWS::Backup::BackupPlan', {
     BackupPlan: {
       BackupPlanName: 'Plan',
       BackupPlanRule: [

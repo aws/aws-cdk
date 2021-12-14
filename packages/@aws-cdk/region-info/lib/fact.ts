@@ -129,6 +129,11 @@ export class FactName {
   public static readonly S3_STATIC_WEBSITE_ZONE_53_HOSTED_ZONE_ID = 's3-static-website:route-53-hosted-zone-id';
 
   /**
+   * The hosted zone ID used by Route 53 to alias a EBS environment endpoint in this region (e.g: Z2O1EMRO9K5GLX)
+   */
+  public static readonly EBS_ENV_ENDPOINT_HOSTED_ZONE_ID = 'ebs-environment:route-53-hosted-zone-id';
+
+  /**
    * The prefix for VPC Endpoint Service names,
    * cn.com.amazonaws.vpce for China regions,
    * com.amazonaws.vpce otherwise.
@@ -151,6 +156,21 @@ export class FactName {
    * AWS App Mesh Envoy Proxy images in a given region.
    */
   public static readonly APPMESH_ECR_ACCOUNT = 'appMeshRepositoryAccount';
+
+  /**
+   * The CIDR block used by Kinesis Data Firehose servers.
+   */
+  public static readonly FIREHOSE_CIDR_BLOCK = 'firehoseCidrBlock';
+
+  /**
+   * The ARN of CloudWatch Lambda Insights for a version (e.g. 1.0.98.0)
+   */
+  public static cloudwatchLambdaInsightsVersion(version: string, arch?: string) {
+    // if we are provided an architecture use that, otherwise
+    // default to x86_64 for backwards compatibility
+    const suffix = version.split('.').join('_') + `_${arch ?? 'x86_64'}`;
+    return `cloudwatch-lambda-insights-version:${suffix}`;
+  }
 
   /**
    * The name of the regional service principal for a given service.

@@ -613,13 +613,14 @@
             ]
           }
         },
+        "Handler": "index.handler",
         "Role": {
           "Fn::GetAtt": [
             "myClusterResourceHandlerServiceRole95F554E2",
             "Arn"
           ]
         },
-        "Handler": "index.handler",
+        "Runtime": "python3.7",
         "Layers": [
           {
             "Fn::GetAtt": [
@@ -629,7 +630,6 @@
           }
         ],
         "MemorySize": 512,
-        "Runtime": "python3.7",
         "Timeout": 900
       },
       "DependsOn": [
@@ -723,12 +723,14 @@
             ]
           }
         },
+        "Handler": "index.handler",
         "Role": {
           "Fn::GetAtt": [
             "myClusterResourceHandlerServiceRole95F554E2",
             "Arn"
           ]
         },
+        "Runtime": "python3.7",
         "Environment": {
           "Variables": {
             "CLUSTER_NAME": {
@@ -736,7 +738,6 @@
             }
           }
         },
-        "Handler": "index.handler",
         "Layers": [
           {
             "Fn::GetAtt": [
@@ -746,7 +747,6 @@
           }
         ],
         "MemorySize": 256,
-        "Runtime": "python3.7",
         "Timeout": 900
       },
       "DependsOn": [
@@ -949,7 +949,9 @@
     "myClusterDefaultCapacityLaunchConfigCF6D4B81": {
       "Type": "AWS::AutoScaling::LaunchConfiguration",
       "Properties": {
-        "ImageId": "{{resolve:ssm:/aws/service/eks/optimized-ami/1.14/amazon-linux-2/recommended/image_id}}",
+        "ImageId": {
+          "Ref": "SsmParameterValueawsserviceeksoptimizedami114amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+        },
         "InstanceType": "m5.large",
         "IamInstanceProfile": {
           "Ref": "myClusterDefaultCapacityInstanceProfileE7E48198"
@@ -1268,7 +1270,9 @@
     "myClusterspotLaunchConfig6681F311": {
       "Type": "AWS::AutoScaling::LaunchConfiguration",
       "Properties": {
-        "ImageId": "{{resolve:ssm:/aws/service/eks/optimized-ami/1.14/amazon-linux-2/recommended/image_id}}",
+        "ImageId": {
+          "Ref": "SsmParameterValueawsserviceeksoptimizedami114amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+        },
         "InstanceType": "t3.large",
         "IamInstanceProfile": {
           "Ref": "myClusterspotInstanceProfile93D80EE5"
@@ -1438,6 +1442,10 @@
     "AssetParameters640847533c8a00b3133aeb128edcac41fb7b60349c9e18764fcf7ea4af14d444ArtifactHash606C8127": {
       "Type": "String",
       "Description": "Artifact hash for asset \"640847533c8a00b3133aeb128edcac41fb7b60349c9e18764fcf7ea4af14d444\""
+    },
+    "SsmParameterValueawsserviceeksoptimizedami114amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
+      "Type": "AWS::SSM::Parameter::Value<String>",
+      "Default": "/aws/service/eks/optimized-ami/1.14/amazon-linux-2/recommended/image_id"
     }
   }
 }

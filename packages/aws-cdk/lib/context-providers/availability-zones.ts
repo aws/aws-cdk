@@ -15,7 +15,8 @@ export class AZContextProviderPlugin implements ContextProviderPlugin {
     const region = args.region;
     const account = args.account;
     debug(`Reading AZs for ${account}:${region}`);
-    const ec2 = (await this.aws.forEnvironment(cxapi.EnvironmentUtils.make(account, region), Mode.ForReading)).ec2();
+    const options = { assumeRoleArn: args.lookupRoleArn };
+    const ec2 = (await this.aws.forEnvironment(cxapi.EnvironmentUtils.make(account, region), Mode.ForReading, options)).ec2();
     const response = await ec2.describeAvailabilityZones().promise();
     if (!response.AvailabilityZones) { return []; }
     const azs = response.AvailabilityZones.filter(zone => zone.State === 'available').map(zone => zone.ZoneName);

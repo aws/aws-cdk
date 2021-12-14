@@ -2,9 +2,9 @@ import '@aws-cdk/assert-internal/jest';
 import { arrayWith } from '@aws-cdk/assert-internal';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
+import { testFutureBehavior, testLegacyBehavior } from '@aws-cdk/cdk-build-tools';
 import { App, Duration, Stack, CfnParameter } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import { testFutureBehavior, testLegacyBehavior } from 'cdk-build-tools/lib/feature-flag';
 import { Stream, StreamEncryption } from '../lib';
 
 /* eslint-disable quote-props */
@@ -503,6 +503,8 @@ describe('Kinesis data streams', () => {
                     'kinesis:GetShardIterator',
                     'kinesis:ListShards',
                     'kinesis:SubscribeToShard',
+                    'kinesis:DescribeStream',
+                    'kinesis:ListStreams',
                   ],
                   Effect: 'Allow',
                   Resource: {
@@ -811,6 +813,8 @@ describe('Kinesis data streams', () => {
                     'kinesis:GetShardIterator',
                     'kinesis:ListShards',
                     'kinesis:SubscribeToShard',
+                    'kinesis:DescribeStream',
+                    'kinesis:ListStreams',
                     'kinesis:PutRecord',
                     'kinesis:PutRecords',
                   ],
@@ -884,6 +888,8 @@ describe('Kinesis data streams', () => {
                     'kinesis:GetShardIterator',
                     'kinesis:ListShards',
                     'kinesis:SubscribeToShard',
+                    'kinesis:DescribeStream',
+                    'kinesis:ListStreams',
                   ],
                   Effect: 'Allow',
                   Resource: {
@@ -1050,6 +1056,8 @@ describe('Kinesis data streams', () => {
                     'kinesis:GetShardIterator',
                     'kinesis:ListShards',
                     'kinesis:SubscribeToShard',
+                    'kinesis:DescribeStream',
+                    'kinesis:ListStreams',
                     'kinesis:PutRecord',
                     'kinesis:PutRecords',
                   ],
@@ -1329,6 +1337,8 @@ describe('Kinesis data streams', () => {
         AwsCdkKinesisEncryptedStreamsUnsupportedRegions: {
           'Fn::Or': [
             {
+
+
               'Fn::Equals': [
                 {
                   Ref: 'AWS::Region',
@@ -1347,6 +1357,209 @@ describe('Kinesis data streams', () => {
           ],
         },
       },
+    });
+  });
+
+  test('basic stream-level metrics (StreamName dimension only)', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    const fiveMinutes = {
+      amount: 5,
+      unit: {
+        label: 'minutes',
+        isoLabel: 'M',
+        inMillis: 60000,
+      },
+    };
+
+    // WHEN
+    const stream = new Stream(stack, 'MyStream');
+
+    // THEN
+    // should resolve the basic metrics (source https://docs.aws.amazon.com/streams/latest/dev/monitoring-with-cloudwatch.html#kinesis-metrics-stream)
+    expect(stack.resolve(stream.metricGetRecordsBytes())).toEqual({
+      dimensions: { StreamName: { Ref: 'MyStream5C050E93' } },
+      namespace: 'AWS/Kinesis',
+      metricName: 'GetRecords.Bytes',
+      period: fiveMinutes,
+      statistic: 'Average',
+    });
+
+    expect(stack.resolve(stream.metricGetRecordsIteratorAgeMilliseconds())).toEqual({
+      dimensions: { StreamName: { Ref: 'MyStream5C050E93' } },
+      namespace: 'AWS/Kinesis',
+      metricName: 'GetRecords.IteratorAgeMilliseconds',
+      period: fiveMinutes,
+      statistic: 'Maximum',
+    });
+
+    expect(stack.resolve(stream.metricGetRecordsLatency())).toEqual({
+      dimensions: { StreamName: { Ref: 'MyStream5C050E93' } },
+      namespace: 'AWS/Kinesis',
+      metricName: 'GetRecords.Latency',
+      period: fiveMinutes,
+      statistic: 'Average',
+    });
+
+    expect(stack.resolve(stream.metricGetRecords())).toEqual({
+      dimensions: { StreamName: { Ref: 'MyStream5C050E93' } },
+      namespace: 'AWS/Kinesis',
+      metricName: 'GetRecords.Records',
+      period: fiveMinutes,
+      statistic: 'Average',
+    });
+
+    expect(stack.resolve(stream.metricGetRecordsSuccess())).toEqual({
+      dimensions: { StreamName: { Ref: 'MyStream5C050E93' } },
+      namespace: 'AWS/Kinesis',
+      metricName: 'GetRecords.Success',
+      period: fiveMinutes,
+      statistic: 'Average',
+    });
+
+    expect(stack.resolve(stream.metricIncomingBytes())).toEqual({
+      dimensions: { StreamName: { Ref: 'MyStream5C050E93' } },
+      namespace: 'AWS/Kinesis',
+      metricName: 'IncomingBytes',
+      period: fiveMinutes,
+      statistic: 'Average',
+    });
+
+    expect(stack.resolve(stream.metricIncomingRecords())).toEqual({
+      dimensions: { StreamName: { Ref: 'MyStream5C050E93' } },
+      namespace: 'AWS/Kinesis',
+      metricName: 'IncomingRecords',
+      period: fiveMinutes,
+      statistic: 'Average',
+    });
+
+    expect(stack.resolve(stream.metricPutRecordsBytes())).toEqual({
+      dimensions: { StreamName: { Ref: 'MyStream5C050E93' } },
+      namespace: 'AWS/Kinesis',
+      metricName: 'PutRecords.Bytes',
+      period: fiveMinutes,
+      statistic: 'Average',
+    });
+
+    expect(stack.resolve(stream.metricPutRecordsLatency())).toEqual({
+      dimensions: { StreamName: { Ref: 'MyStream5C050E93' } },
+      namespace: 'AWS/Kinesis',
+      metricName: 'PutRecords.Latency',
+      period: fiveMinutes,
+      statistic: 'Average',
+    });
+
+    expect(stack.resolve(stream.metricPutRecordsSuccess())).toEqual({
+      dimensions: { StreamName: { Ref: 'MyStream5C050E93' } },
+      namespace: 'AWS/Kinesis',
+      metricName: 'PutRecords.Success',
+      period: fiveMinutes,
+      statistic: 'Average',
+    });
+
+    expect(stack.resolve(stream.metricPutRecordsTotalRecords())).toEqual({
+      dimensions: { StreamName: { Ref: 'MyStream5C050E93' } },
+      namespace: 'AWS/Kinesis',
+      metricName: 'PutRecords.TotalRecords',
+      period: fiveMinutes,
+      statistic: 'Average',
+    });
+
+    expect(stack.resolve(stream.metricPutRecordsSuccessfulRecords())).toEqual({
+      dimensions: { StreamName: { Ref: 'MyStream5C050E93' } },
+      namespace: 'AWS/Kinesis',
+      metricName: 'PutRecords.SuccessfulRecords',
+      period: fiveMinutes,
+      statistic: 'Average',
+    });
+
+    expect(stack.resolve(stream.metricPutRecordsFailedRecords())).toEqual({
+      dimensions: { StreamName: { Ref: 'MyStream5C050E93' } },
+      namespace: 'AWS/Kinesis',
+      metricName: 'PutRecords.FailedRecords',
+      period: fiveMinutes,
+      statistic: 'Average',
+    });
+
+    expect(stack.resolve(stream.metricPutRecordsThrottledRecords())).toEqual({
+      dimensions: { StreamName: { Ref: 'MyStream5C050E93' } },
+      namespace: 'AWS/Kinesis',
+      metricName: 'PutRecords.ThrottledRecords',
+      period: fiveMinutes,
+      statistic: 'Average',
+    });
+
+    expect(stack.resolve(stream.metricReadProvisionedThroughputExceeded())).toEqual({
+      dimensions: { StreamName: { Ref: 'MyStream5C050E93' } },
+      namespace: 'AWS/Kinesis',
+      metricName: 'ReadProvisionedThroughputExceeded',
+      period: fiveMinutes,
+      statistic: 'Average',
+    });
+
+    expect(stack.resolve(stream.metricWriteProvisionedThroughputExceeded())).toEqual({
+      dimensions: { StreamName: { Ref: 'MyStream5C050E93' } },
+      namespace: 'AWS/Kinesis',
+      metricName: 'WriteProvisionedThroughputExceeded',
+      period: fiveMinutes,
+      statistic: 'Average',
+    });
+  });
+
+  test('allow to overide metric options', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    const fiveMinutes = {
+      amount: 5,
+      unit: {
+        label: 'minutes',
+        isoLabel: 'M',
+        inMillis: 60000,
+      },
+    };
+
+    // WHEN
+    const stream = new Stream(stack, 'MyStream');
+
+    // THEN
+    expect(stack.resolve(stream.metricGetRecordsBytes())).toEqual({
+      dimensions: { StreamName: { Ref: 'MyStream5C050E93' } },
+      namespace: 'AWS/Kinesis',
+      metricName: 'GetRecords.Bytes',
+      period: fiveMinutes,
+      statistic: 'Average',
+    });
+
+    expect(stack.resolve(stream.metricGetRecordsBytes({
+      period: Duration.minutes(1),
+      statistic: 'Maximum',
+    }))).toEqual({
+      dimensions: { StreamName: { Ref: 'MyStream5C050E93' } },
+      namespace: 'AWS/Kinesis',
+      metricName: 'GetRecords.Bytes',
+      period: { ...fiveMinutes, amount: 1 },
+      statistic: 'Maximum',
+    });
+
+    expect(stack.resolve(stream.metricIncomingBytes())).toEqual({
+      dimensions: { StreamName: { Ref: 'MyStream5C050E93' } },
+      namespace: 'AWS/Kinesis',
+      metricName: 'IncomingBytes',
+      period: fiveMinutes,
+      statistic: 'Average',
+    });
+
+    expect(stack.resolve(stream.metricIncomingBytes({
+      period: Duration.minutes(1),
+      statistic: 'Sum',
+    }))).toEqual({
+      dimensions: { StreamName: { Ref: 'MyStream5C050E93' } },
+      namespace: 'AWS/Kinesis',
+      metricName: 'IncomingBytes',
+      period: { ...fiveMinutes, amount: 1 },
+      statistic: 'Sum',
     });
   });
 });

@@ -1,4 +1,4 @@
-import { Lazy, Names, Stack } from '@aws-cdk/core';
+import { ArnFormat, Lazy, Names, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { AlarmBase, IAlarm, IAlarmRule } from './alarm-base';
 import { CfnCompositeAlarm } from './cloudwatch.generated';
@@ -68,7 +68,7 @@ export class CompositeAlarm extends AlarmBase {
   public static fromCompositeAlarmArn(scope: Construct, id: string, compositeAlarmArn: string): IAlarm {
     class Import extends AlarmBase implements IAlarm {
       public readonly alarmArn = compositeAlarmArn;
-      public readonly alarmName = Stack.of(scope).parseArn(compositeAlarmArn).resourceName!;
+      public readonly alarmName = Stack.of(scope).splitArn(compositeAlarmArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
     }
     return new Import(scope, id);
   }
@@ -115,7 +115,7 @@ export class CompositeAlarm extends AlarmBase {
       service: 'cloudwatch',
       resource: 'alarm',
       resourceName: this.physicalName,
-      sep: ':',
+      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
     });
 
   }

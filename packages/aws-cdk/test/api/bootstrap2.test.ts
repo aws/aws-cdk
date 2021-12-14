@@ -123,6 +123,21 @@ describe('Bootstrapping v2', () => {
     }));
   });
 
+  test('passing trusted accounts for lookup generates the correct stack parameter', async () => {
+    await bootstrapper.bootstrapEnvironment(env, sdk, {
+      parameters: {
+        trustedAccountsForLookup: ['123456789012'],
+        cloudFormationExecutionPolicies: ['aws://foo'],
+      },
+    });
+
+    expect(mockDeployStack).toHaveBeenCalledWith(expect.objectContaining({
+      parameters: expect.objectContaining({
+        TrustedAccountsForLookup: '123456789012',
+      }),
+    }));
+  });
+
   test('allow adding trusted account if there was already a policy on the stack', async () => {
     // GIVEN
     mockTheToolkitInfo({

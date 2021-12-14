@@ -1,5 +1,13 @@
 /* eslint-disable no-console */
 import { execSync } from 'child_process';
+import * as fs from 'fs';
+import { join } from 'path';
+// import the AWSLambda package explicitly,
+// which is globally available in the Lambda runtime,
+// as otherwise linking this repository with link-all.sh
+// fails in the CDK app executed with ts-node
+/* eslint-disable-next-line import/no-extraneous-dependencies,import/no-unresolved */
+import * as AWSLambda from 'aws-lambda';
 import { AwsSdkCall } from '../aws-custom-resource';
 
 /**
@@ -71,6 +79,38 @@ function installLatestSdk(): void {
   latestSdkInstalled = true;
 }
 
+const patchedServices: { serviceName: string; apiVersions: string[] }[] = [
+  { serviceName: 'OpenSearch', apiVersions: ['2021-01-01'] },
+];
+/**
+ * Patches the AWS SDK by loading service models in the same manner as the actual SDK
+ */
+function patchSdk(awsSdk: any): any {
+  const apiLoader = awsSdk.apiLoader;
+  patchedServices.forEach(({ serviceName, apiVersions }) => {
+    const lowerServiceName = serviceName.toLowerCase();
+    if (!awsSdk.Service.hasService(lowerServiceName)) {
+      apiLoader.services[lowerServiceName] = {};
+      awsSdk[serviceName] = awsSdk.Service.defineService(lowerServiceName, apiVersions);
+    } else {
+      awsSdk.Service.addVersions(awsSdk[serviceName], apiVersions);
+    }
+    apiVersions.forEach(apiVersion => {
+      Object.defineProperty(apiLoader.services[lowerServiceName], apiVersion, {
+        get: function get() {
+          const modelFilePrefix = `aws-sdk-patch/${lowerServiceName}-${apiVersion}`;
+          const model = JSON.parse(fs.readFileSync(join(__dirname, `${modelFilePrefix}.service.json`), 'utf-8'));
+          model.paginators = JSON.parse(fs.readFileSync(join(__dirname, `${modelFilePrefix}.paginators.json`), 'utf-8')).pagination;
+          return model;
+        },
+        enumerable: true,
+        configurable: true,
+      });
+    });
+  });
+  return awsSdk;
+}
+
 /* eslint-disable @typescript-eslint/no-require-imports, import/no-extraneous-dependencies */
 export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent, context: AWSLambda.Context) {
   try {
@@ -87,6 +127,11 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
       AWS = require('/tmp/node_modules/aws-sdk');
     } else {
       AWS = require('aws-sdk');
+    }
+    try {
+      AWS = patchSdk(AWS);
+    } catch (e) {
+      console.log(`Failed to patch AWS SDK: ${e}. Proceeding with the installed copy.`);
     }
 
     console.log(JSON.stringify(event));
@@ -115,8 +160,27 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
     const call: AwsSdkCall | undefined = event.ResourceProperties[event.RequestType];
 
     if (call) {
+
+      let credentials;
+      if (call.assumedRoleArn) {
+        const timestamp = (new Date()).getTime();
+
+        const params = {
+          RoleArn: call.assumedRoleArn,
+          RoleSessionName: `${timestamp}-${physicalResourceId}`.substring(0, 64),
+        };
+
+        credentials = new AWS.ChainableTemporaryCredentials({
+          params: params,
+        });
+      }
+
+      if (!Object.prototype.hasOwnProperty.call(AWS, call.service)) {
+        throw Error(`Service ${call.service} does not exist in AWS SDK version ${AWS.VERSION}.`);
+      }
       const awsService = new (AWS as any)[call.service]({
         apiVersion: call.apiVersion,
+        credentials: credentials,
         region: call.region,
       });
 
@@ -128,9 +192,19 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
           region: awsService.config.region, // For test purposes: check if region was correctly passed.
           ...flatten(response),
         };
-        data = call.outputPath
-          ? filterKeys(flatData, k => k.startsWith(call.outputPath!))
-          : flatData;
+
+        let outputPaths: string[] | undefined;
+        if (call.outputPath) {
+          outputPaths = [call.outputPath];
+        } else if (call.outputPaths) {
+          outputPaths = call.outputPaths;
+        }
+
+        if (outputPaths) {
+          data = filterKeys(flatData, startsWithOneOf(outputPaths));
+        } else {
+          data = flatData;
+        }
       } catch (e) {
         if (!call.ignoreErrorCodesMatching || !new RegExp(call.ignoreErrorCodesMatching).test(e.code)) {
           throw e;
@@ -188,4 +262,15 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
 function decodeCall(call: string | undefined) {
   if (!call) { return undefined; }
   return JSON.parse(call);
+}
+
+function startsWithOneOf(searchStrings: string[]): (string: string) => boolean {
+  return function(string: string): boolean {
+    for (const searchString of searchStrings) {
+      if (string.startsWith(searchString)) {
+        return true;
+      }
+    }
+    return false;
+  };
 }

@@ -3,13 +3,11 @@ import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
-// hack, as this is not exported by the Lambda module
-import { calculateFunctionHash } from '@aws-cdk/aws-lambda/lib/function-hash';
 import * as ssm from '@aws-cdk/aws-ssm';
 import {
-  ConstructNode,
+  CfnResource, ConstructNode,
   CustomResource, CustomResourceProvider, CustomResourceProviderRuntime,
-  Resource, Stack, Stage, Token,
+  Lazy, Resource, Stack, Stage, Token,
 } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 
@@ -48,6 +46,7 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
   public readonly permissionsNode: ConstructNode;
   public readonly role?: iam.IRole;
   public readonly version: string;
+  public readonly architecture: lambda.Architecture;
 
   private readonly _edgeFunction: lambda.Function;
 
@@ -68,6 +67,7 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
     this.grantPrincipal = this._edgeFunction.role!;
     this.permissionsNode = this._edgeFunction.permissionsNode;
     this.version = lambda.extractQualifierFromArn(this.functionArn);
+    this.architecture = this._edgeFunction.architecture;
 
     this.node.defaultChild = this._edgeFunction;
   }
@@ -146,28 +146,31 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
 
   /** Create a support stack and function in us-east-1, and a SSM reader in-region */
   private createCrossRegionFunction(id: string, props: EdgeFunctionProps): FunctionConfig {
-    const parameterNamePrefix = '/cdk/EdgeFunctionArn';
+    const parameterNamePrefix = 'cdk/EdgeFunctionArn';
     if (Token.isUnresolved(this.env.region)) {
       throw new Error('stacks which use EdgeFunctions must have an explicitly set region');
     }
-    const parameterName = `${parameterNamePrefix}/${this.env.region}/${this.node.path}`;
+    // SSM parameter names must only contain letters, numbers, ., _, -, or /.
+    const sanitizedPath = this.node.path.replace(/[^\/\w.-]/g, '_');
+    const parameterName = `/${parameterNamePrefix}/${this.env.region}/${sanitizedPath}`;
     const functionStack = this.edgeStack(props.stackId);
 
     const edgeFunction = new lambda.Function(functionStack, id, props);
     addEdgeLambdaToRoleTrustStatement(edgeFunction.role!);
 
     // Store the current version's ARN to be retrieved by the cross region reader below.
+    const version = edgeFunction.currentVersion;
     new ssm.StringParameter(edgeFunction, 'Parameter', {
       parameterName,
-      stringValue: edgeFunction.currentVersion.edgeArn,
+      stringValue: version.edgeArn,
     });
 
-    const edgeArn = this.createCrossRegionArnReader(parameterNamePrefix, parameterName, edgeFunction);
+    const edgeArn = this.createCrossRegionArnReader(parameterNamePrefix, parameterName, version);
 
     return { edgeFunction, edgeArn };
   }
 
-  private createCrossRegionArnReader(parameterNamePrefix: string, parameterName: string, edgeFunction: lambda.Function): string {
+  private createCrossRegionArnReader(parameterNamePrefix: string, parameterName: string, version: lambda.Version): string {
     // Prefix of the parameter ARN that applies to all EdgeFunctions.
     // This is necessary because the `CustomResourceProvider` is a singleton, and the `policyStatement`
     // must work for multiple EdgeFunctions.
@@ -176,7 +179,6 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
       region: EdgeFunction.EDGE_REGION,
       resource: 'parameter',
       resourceName: parameterNamePrefix + '/*',
-      sep: '',
     });
 
     const resourceType = 'Custom::CrossRegionStringParameterReader';
@@ -196,7 +198,15 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
         Region: EdgeFunction.EDGE_REGION,
         ParameterName: parameterName,
         // This is used to determine when the function has changed, to refresh the ARN from the custom resource.
-        RefreshToken: calculateFunctionHash(edgeFunction),
+        //
+        // Use the logical id of the function version. Whenever a function version changes, the logical id must be
+        // changed for it to take effect - a good candidate for RefreshToken.
+        RefreshToken: Lazy.uncachedString({
+          produce: () => {
+            const cfn = version.node.defaultChild as CfnResource;
+            return this.stack.resolve(cfn.logicalId);
+          },
+        }),
       },
     });
 

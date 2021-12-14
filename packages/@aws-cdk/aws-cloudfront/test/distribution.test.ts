@@ -4,7 +4,21 @@ import * as acm from '@aws-cdk/aws-certificatemanager';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
 import { App, Duration, Stack } from '@aws-cdk/core';
-import { CfnDistribution, Distribution, GeoRestriction, HttpVersion, IOrigin, LambdaEdgeEventType, PriceClass, SecurityPolicyProtocol } from '../lib';
+import { CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021 } from '@aws-cdk/cx-api';
+import { testFutureBehavior, testLegacyBehavior } from '@aws-cdk/cdk-build-tools/lib/feature-flag';
+import {
+  CfnDistribution,
+  Distribution,
+  Function,
+  FunctionCode,
+  FunctionEventType,
+  GeoRestriction,
+  HttpVersion,
+  IOrigin,
+  LambdaEdgeEventType,
+  PriceClass,
+  SecurityPolicyProtocol,
+} from '../lib';
 import { defaultOrigin, defaultOriginGroup } from './test-origin';
 
 let app: App;
@@ -60,6 +74,7 @@ test('exhaustive example of props renders correctly', () => {
     httpVersion: HttpVersion.HTTP1_1,
     logFilePrefix: 'logs/',
     logIncludesCookies: true,
+    minimumProtocolVersion: SecurityPolicyProtocol.TLS_V1_2_2019,
     priceClass: PriceClass.PRICE_CLASS_100,
     webAclId: '473e64fd-f30b-4765-81a0-62ad96dd167a',
   });
@@ -111,7 +126,7 @@ test('ensure comment prop is not greater than max lenght', () => {
   const origin = defaultOrigin();
   new Distribution(stack, 'MyDist', {
     defaultBehavior: { origin },
-    comment: `Adding a comment longer than 128 characters should be trimmed and added the 
+    comment: `Adding a comment longer than 128 characters should be trimmed and added the\x20
 ellipsis so a user would know there was more to read and everything beyond this point should not show up`,
   });
 
@@ -123,7 +138,7 @@ ellipsis so a user would know there was more to read and everything beyond this 
         TargetOriginId: 'StackMyDistOrigin1D6D5E535',
         ViewerProtocolPolicy: 'allow-all',
       },
-      Comment: `Adding a comment longer than 128 characters should be trimmed and added the 
+      Comment: `Adding a comment longer than 128 characters should be trimmed and added the\x20
 ellipsis so a user would know there was more to ...`,
       Enabled: true,
       HttpVersion: 'http2',
@@ -328,25 +343,61 @@ describe('certificates', () => {
     }).toThrow(/Must specify at least one domain name/);
   });
 
-  test('adding a certificate and domain renders the correct ViewerCertificate and Aliases property', () => {
-    const certificate = acm.Certificate.fromCertificateArn(stack, 'Cert', 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012');
+  describe('adding a certificate and domain renders the correct ViewerCertificate and Aliases property', () => {
+    testFutureBehavior(
+      'when @aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2_2021 is enabled, use the TLSv1.2_2021 security policy by default',
+      { [CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021]: true },
+      App,
+      (customApp) => {
+        const customStack = new Stack(customApp);
 
-    new Distribution(stack, 'Dist', {
-      defaultBehavior: { origin: defaultOrigin() },
-      domainNames: ['example.com', 'www.example.com'],
-      certificate,
-    });
+        const certificate = acm.Certificate.fromCertificateArn(customStack, 'Cert', 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012');
 
-    expect(stack).toHaveResourceLike('AWS::CloudFront::Distribution', {
-      DistributionConfig: {
-        Aliases: ['example.com', 'www.example.com'],
-        ViewerCertificate: {
-          AcmCertificateArn: 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012',
-          SslSupportMethod: 'sni-only',
-          MinimumProtocolVersion: 'TLSv1.2_2019',
-        },
+        new Distribution(customStack, 'Dist', {
+          defaultBehavior: { origin: defaultOrigin() },
+          domainNames: ['example.com', 'www.example.com'],
+          certificate,
+        });
+
+        expect(customStack).toHaveResourceLike('AWS::CloudFront::Distribution', {
+          DistributionConfig: {
+            Aliases: ['example.com', 'www.example.com'],
+            ViewerCertificate: {
+              AcmCertificateArn: 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012',
+              SslSupportMethod: 'sni-only',
+              MinimumProtocolVersion: 'TLSv1.2_2021',
+            },
+          },
+        });
       },
-    });
+    );
+
+    testLegacyBehavior(
+      'when @aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2_2021 is disabled, use the TLSv1.2_2019 security policy by default',
+      App,
+      (customApp) => {
+        const customStack = new Stack(customApp);
+
+        const certificate = acm.Certificate.fromCertificateArn(customStack, 'Cert', 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012');
+
+        new Distribution(customStack, 'Dist', {
+          defaultBehavior: { origin: defaultOrigin() },
+          domainNames: ['example.com', 'www.example.com'],
+          certificate,
+        });
+
+        expect(customStack).toHaveResourceLike('AWS::CloudFront::Distribution', {
+          DistributionConfig: {
+            Aliases: ['example.com', 'www.example.com'],
+            ViewerCertificate: {
+              AcmCertificateArn: 'arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012',
+              SslSupportMethod: 'sni-only',
+              MinimumProtocolVersion: 'TLSv1.2_2019',
+            },
+          },
+        });
+      },
+    );
   });
 
   test('adding a certificate with non default security policy protocol', () => {
@@ -728,6 +779,44 @@ describe('with Lambda@Edge functions', () => {
       },
     });
   });
+});
+
+describe('with CloudFront functions', () => {
+
+  test('can add a CloudFront function to the default behavior', () => {
+    new Distribution(stack, 'MyDist', {
+      defaultBehavior: {
+        origin: defaultOrigin(),
+        functionAssociations: [
+          {
+            eventType: FunctionEventType.VIEWER_REQUEST,
+            function: new Function(stack, 'TestFunction', {
+              code: FunctionCode.fromInline('foo'),
+            }),
+          },
+        ],
+      },
+    });
+
+    expect(stack).toHaveResourceLike('AWS::CloudFront::Distribution', {
+      DistributionConfig: {
+        DefaultCacheBehavior: {
+          FunctionAssociations: [
+            {
+              EventType: 'viewer-request',
+              FunctionARN: {
+                'Fn::GetAtt': [
+                  'TestFunction22AD90FC',
+                  'FunctionARN',
+                ],
+              },
+            },
+          ],
+        },
+      },
+    });
+  });
+
 });
 
 test('price class is included if provided', () => {

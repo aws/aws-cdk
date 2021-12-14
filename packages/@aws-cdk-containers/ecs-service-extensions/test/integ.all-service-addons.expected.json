@@ -102,14 +102,14 @@
     "productionenvironmentvpcPublicSubnet1NATGateway6075E4CA": {
       "Type": "AWS::EC2::NatGateway",
       "Properties": {
+        "SubnetId": {
+          "Ref": "productionenvironmentvpcPublicSubnet1Subnet8D92C089"
+        },
         "AllocationId": {
           "Fn::GetAtt": [
             "productionenvironmentvpcPublicSubnet1EIP54BA88DB",
             "AllocationId"
           ]
-        },
-        "SubnetId": {
-          "Ref": "productionenvironmentvpcPublicSubnet1Subnet8D92C089"
         },
         "Tags": [
           {
@@ -199,14 +199,14 @@
     "productionenvironmentvpcPublicSubnet2NATGatewayE1850FCC": {
       "Type": "AWS::EC2::NatGateway",
       "Properties": {
+        "SubnetId": {
+          "Ref": "productionenvironmentvpcPublicSubnet2Subnet298E6C31"
+        },
         "AllocationId": {
           "Fn::GetAtt": [
             "productionenvironmentvpcPublicSubnet2EIP14CA46AA",
             "AllocationId"
           ]
-        },
-        "SubnetId": {
-          "Ref": "productionenvironmentvpcPublicSubnet2Subnet298E6C31"
         },
         "Tags": [
           {
@@ -296,14 +296,14 @@
     "productionenvironmentvpcPublicSubnet3NATGateway94604057": {
       "Type": "AWS::EC2::NatGateway",
       "Properties": {
+        "SubnetId": {
+          "Ref": "productionenvironmentvpcPublicSubnet3SubnetC7B5665D"
+        },
         "AllocationId": {
           "Fn::GetAtt": [
             "productionenvironmentvpcPublicSubnet3EIP53405AED",
             "AllocationId"
           ]
-        },
-        "SubnetId": {
-          "Ref": "productionenvironmentvpcPublicSubnet3SubnetC7B5665D"
         },
         "Tags": [
           {
@@ -765,7 +765,9 @@
             "FirelensConfiguration": {
               "Type": "fluentbit"
             },
-            "Image": "{{resolve:ssm:/aws/service/aws-for-fluent-bit/latest}}",
+            "Image": {
+              "Ref": "SsmParameterValueawsserviceawsforfluentbitlatestC96584B6F00A464EAD1953AFF4B05118Parameter"
+            },
             "LogConfiguration": {
               "LogDriver": "awslogs",
               "Options": {
@@ -947,7 +949,11 @@
                 "Fn::Join": [
                   "",
                   [
-                    "arn:aws:ecr:",
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":ecr:",
                     {
                       "Ref": "AWS::Region"
                     },
@@ -1632,7 +1638,9 @@
             "FirelensConfiguration": {
               "Type": "fluentbit"
             },
-            "Image": "{{resolve:ssm:/aws/service/aws-for-fluent-bit/latest}}",
+            "Image": {
+              "Ref": "SsmParameterValueawsserviceawsforfluentbitlatestC96584B6F00A464EAD1953AFF4B05118Parameter"
+            },
             "LogConfiguration": {
               "LogDriver": "awslogs",
               "Options": {
@@ -1814,7 +1822,11 @@
                 "Fn::Join": [
                   "",
                   [
-                    "arn:aws:ecr:",
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":ecr:",
                     {
                       "Ref": "AWS::Region"
                     },
@@ -2379,6 +2391,10 @@
           {
             "Key": "deregistration_delay.timeout_seconds",
             "Value": "10"
+          },
+          {
+            "Key": "stickiness.enabled",
+            "Value": "false"
           }
         ],
         "TargetType": "ip",
@@ -2618,7 +2634,9 @@
             "FirelensConfiguration": {
               "Type": "fluentbit"
             },
-            "Image": "{{resolve:ssm:/aws/service/aws-for-fluent-bit/latest}}",
+            "Image": {
+              "Ref": "SsmParameterValueawsserviceawsforfluentbitlatestC96584B6F00A464EAD1953AFF4B05118Parameter"
+            },
             "LogConfiguration": {
               "LogDriver": "awslogs",
               "Options": {
@@ -2800,7 +2818,11 @@
                 "Fn::Join": [
                   "",
                   [
-                    "arn:aws:ecr:",
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":ecr:",
                     {
                       "Ref": "AWS::Region"
                     },
@@ -3310,6 +3332,12 @@
       "ca-central-1": {
         "ecrRepo": "840364872350"
       },
+      "cn-north-1": {
+        "ecrRepo": "919366029133"
+      },
+      "cn-northwest-1": {
+        "ecrRepo": "919830735681"
+      },
       "eu-central-1": {
         "ecrRepo": "840364872350"
       },
@@ -3371,6 +3399,12 @@
       },
       "ca-central-1": {
         "ecrRepo": "840364872350"
+      },
+      "cn-north-1": {
+        "ecrRepo": "919366029133"
+      },
+      "cn-northwest-1": {
+        "ecrRepo": "919830735681"
       },
       "eu-central-1": {
         "ecrRepo": "840364872350"
@@ -3434,6 +3468,12 @@
       "ca-central-1": {
         "ecrRepo": "840364872350"
       },
+      "cn-north-1": {
+        "ecrRepo": "919366029133"
+      },
+      "cn-northwest-1": {
+        "ecrRepo": "919830735681"
+      },
       "eu-central-1": {
         "ecrRepo": "840364872350"
       },
@@ -3476,6 +3516,12 @@
       "af-south-1": {
         "ecrRepo": "924023996002"
       }
+    }
+  },
+  "Parameters": {
+    "SsmParameterValueawsserviceawsforfluentbitlatestC96584B6F00A464EAD1953AFF4B05118Parameter": {
+      "Type": "AWS::SSM::Parameter::Value<String>",
+      "Default": "/aws/service/aws-for-fluent-bit/latest"
     }
   },
   "Outputs": {

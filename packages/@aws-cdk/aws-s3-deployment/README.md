@@ -48,14 +48,22 @@ This is what happens under the hood:
 
 The following source types are supported for bucket deployments:
 
- - Local .zip file: `s3deploy.Source.asset('/path/to/local/file.zip')`
- - Local directory: `s3deploy.Source.asset('/path/to/local/directory')`
- - Another bucket: `s3deploy.Source.bucket(bucket, zipObjectKey)`
+- Local .zip file: `s3deploy.Source.asset('/path/to/local/file.zip')`
+- Local directory: `s3deploy.Source.asset('/path/to/local/directory')`
+- Another bucket: `s3deploy.Source.bucket(bucket, zipObjectKey)`
 
 To create a source from a single file, you can pass `AssetOptions` to exclude
 all but a single file:
 
- - Single file: `s3deploy.Source.asset('/path/to/local/directory', { exclude: ['**', '!onlyThisFile.txt'] })`
+- Single file: `s3deploy.Source.asset('/path/to/local/directory', { exclude: ['**', '!onlyThisFile.txt'] })`
+
+**IMPORTANT** The `aws-s3-deployment` module is only intended to be used with
+zip files from trusted sources. Directories bundled by the CDK CLI (by using
+`Source.asset()` on a directory) are safe. If you are using `Source.asset()` or
+`Source.bucket()` to reference an existing zip file, make sure you trust the
+file you are referencing. Zips from untrusted sources might be able to execute
+arbitrary code in the Lambda Function used by this module, and use its permissions
+to read or write unexpected files in the S3 bucket.
 
 ## Retain on Delete
 
@@ -77,7 +85,7 @@ Configuring this has a few implications you should be aware of:
 - **Destination Changes**
 
   When the destination bucket or prefix is changed, all files in the previous destination will **first** be
-  deleted and then uploaded to the new destination location. This could have availablity implications
+  deleted and then uploaded to the new destination location. This could have availability implications
   on your users.
 
 ### General Recommendations
@@ -129,6 +137,29 @@ new BucketDeployment(this, 'HTMLBucketDeployment', {
 });
 ```
 
+## Exclude and Include Filters
+
+There are two points at which filters are evaluated in a deployment: asset bundling and the actual deployment. If you simply want to exclude files in the asset bundling process, you should leverage the `exclude` property of `AssetOptions` when defining your source:
+
+```ts
+new BucketDeployment(this, 'HTMLBucketDeployment', {
+  sources: [Source.asset('./website', { exclude: ['*', '!index.html'] })],
+  destinationBucket: bucket,
+});
+```
+
+If you want to specify filters to be used in the deployment process, you can use the `exclude` and `include` filters on `BucketDeployment`.  If excluded, these files will not be deployed to the destination bucket. In addition, if the file already exists in the destination bucket, it will not be deleted if you are using the `prune` option:
+
+```ts
+new s3deploy.BucketDeployment(this, 'DeployButExcludeSpecificFiles', {
+  sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+  destinationBucket,
+  exclude: ['*.txt']
+});
+```
+
+These filters follow the same format that is used for the AWS CLI.  See the CLI documentation for information on [Using Include and Exclude Filters](https://docs.aws.amazon.com/cli/latest/reference/s3/index.html#use-of-exclude-and-include-filters).
+
 ## Objects metadata
 
 You can specify metadata to be set on all the objects in your deployment.
@@ -138,17 +169,22 @@ User-defined metadata are not used by S3 and keys always begin with `x-amz-meta-
 
 System defined metadata keys include the following:
 
-- cache-control
-- content-disposition
-- content-encoding
-- content-language
-- content-type
-- expires
-- server-side-encryption
-- storage-class
-- website-redirect-location
-- ssekms-key-id
-- sse-customer-algorithm
+- cache-control (`--cache-control` in `aws s3 sync`)
+- content-disposition (`--content-disposition` in `aws s3 sync`)
+- content-encoding (`--content-encoding` in `aws s3 sync`)
+- content-language (`--content-language` in `aws s3 sync`)
+- content-type (`--content-type` in `aws s3 sync`)
+- expires (`--expires` in `aws s3 sync`)
+- x-amz-storage-class (`--storage-class` in `aws s3 sync`)
+- x-amz-website-redirect-location (`--website-redirect` in `aws s3 sync`)
+- x-amz-server-side-encryption (`--sse` in `aws s3 sync`)
+- x-amz-server-side-encryption-aws-kms-key-id (`--sse-kms-key-id` in `aws s3 sync`)
+- x-amz-server-side-encryption-customer-algorithm (`--sse-c-copy-source` in `aws s3 sync`)
+- x-amz-acl (`--acl` in `aws s3 sync`)
+
+You can find more information about system defined metadata keys in
+[S3 PutObject documentation](https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutObject.html)
+and [`aws s3 sync` documentation](https://docs.aws.amazon.com/cli/latest/reference/s3/sync.html).
 
 ```ts
 const websiteBucket = new s3.Bucket(this, 'WebsiteBucket', {
@@ -168,6 +204,7 @@ new s3deploy.BucketDeployment(this, 'DeployWebsite', {
   storageClass: StorageClass.INTELLIGENT_TIERING,
   serverSideEncryption: ServerSideEncryption.AES_256,
   cacheControl: [CacheControl.setPublic(), CacheControl.maxAge(cdk.Duration.hours(1))],
+  accessControl: s3.BucketAccessControl.BUCKET_OWNER_FULL_CONTROL,
 });
 ```
 
@@ -203,6 +240,26 @@ size of the AWS Lambda resource handler.
 > NOTE: a new AWS Lambda handler will be created in your stack for each memory
 > limit configuration.
 
+## EFS Support
+
+If your workflow needs more disk space than default (512 MB) disk space, you may attach an EFS storage to underlying
+lambda function. To Enable EFS support set `efs` and `vpc` props for BucketDeployment.
+
+Check sample usage below.
+Please note that creating VPC inline may cause stack deletion failures. It is shown as below for simplicity.
+To avoid such condition, keep your network infra (VPC) in a separate stack and pass as props.
+
+```ts
+new s3deploy.BucketDeployment(this, 'DeployMeWithEfsStorage', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+    destinationBucket,
+    destinationKeyPrefix: 'efs/',
+    useEfs: true,
+    vpc: new ec2.Vpc(this, 'Vpc'),
+    retainOnDelete: false,
+});
+```
+
 ## Notes
 
 - This library uses an AWS CloudFormation custom resource which about 10MiB in
@@ -221,7 +278,7 @@ size of the AWS Lambda resource handler.
 ## Development
 
 The custom resource is implemented in Python 3.6 in order to be able to leverage
-the AWS CLI for "aws sync". The code is under [`lib/lambda`](https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk/aws-s3-deployment/lib/lambda) and
+the AWS CLI for "aws s3 sync". The code is under [`lib/lambda`](https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk/aws-s3-deployment/lib/lambda) and
 unit tests are under [`test/lambda`](https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk/aws-s3-deployment/test/lambda).
 
 This package requires Python 3.6 during build time in order to create the custom
@@ -230,4 +287,4 @@ might be tricky to build on Windows.
 
 ## Roadmap
 
- - [ ] Support "blue/green" deployments ([#954](https://github.com/aws/aws-cdk/issues/954))
+- [ ] Support "blue/green" deployments ([#954](https://github.com/aws/aws-cdk/issues/954))

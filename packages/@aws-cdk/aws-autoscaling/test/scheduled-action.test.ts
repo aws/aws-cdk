@@ -1,12 +1,13 @@
+import '@aws-cdk/assert-internal/jest';
 import { expect, haveResource, MatchStyle } from '@aws-cdk/assert-internal';
 import * as ec2 from '@aws-cdk/aws-ec2';
+import { describeDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import * as constructs from 'constructs';
-import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as autoscaling from '../lib';
 
-nodeunitShim({
-  'can schedule an action'(test: Test) {
+describeDeprecated('scheduled action', () => {
+  test('can schedule an action', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const asg = makeAutoScalingGroup(stack);
@@ -23,10 +24,10 @@ nodeunitShim({
       MinSize: 10,
     }));
 
-    test.done();
-  },
 
-  'correctly formats date objects'(test: Test) {
+  });
+
+  test('correctly formats date objects', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const asg = makeAutoScalingGroup(stack);
@@ -43,10 +44,31 @@ nodeunitShim({
       StartTime: '2033-09-10T12:00:00Z',
     }));
 
-    test.done();
-  },
 
-  'autoscaling group has recommended updatepolicy for scheduled actions'(test: Test) {
+  });
+
+  test('have timezone property', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const asg = makeAutoScalingGroup(stack);
+
+    // WHEN
+    asg.scaleOnSchedule('ScaleOutAtMiddaySeoul', {
+      schedule: autoscaling.Schedule.cron({ hour: '12', minute: '0' }),
+      minCapacity: 12,
+      timeZone: 'Asia/Seoul',
+    });
+
+    // THEN
+    expect(stack).to(haveResource('AWS::AutoScaling::ScheduledAction', {
+      MinSize: 12,
+      Recurrence: '0 12 * * *',
+      TimeZone: 'Asia/Seoul',
+    }));
+
+  });
+
+  test('autoscaling group has recommended updatepolicy for scheduled actions', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const asg = makeAutoScalingGroup(stack);
@@ -96,10 +118,16 @@ nodeunitShim({
           },
         },
       },
+      Parameters: {
+        SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter: {
+          Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>',
+          Default: '/aws/service/ami-amazon-linux-latest/amzn-ami-hvm-x86_64-gp2',
+        },
+      },
     }, MatchStyle.SUPERSET);
 
-    test.done();
-  },
+
+  });
 });
 
 function makeAutoScalingGroup(scope: constructs.Construct) {

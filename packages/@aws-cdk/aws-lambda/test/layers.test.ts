@@ -82,6 +82,7 @@ describe('layers', () => {
     expect(canonicalizeTemplate(SynthUtils.toCloudFormation(stack))).toHaveResource('AWS::Lambda::LayerVersion', {
       Metadata: {
         'aws:asset:path': 'asset.Asset1Hash',
+        'aws:asset:is-bundled': false,
         'aws:asset:property': 'Content',
       },
     }, ResourcePart.CompleteDefinition);
@@ -102,5 +103,19 @@ describe('layers', () => {
       UpdateReplacePolicy: 'Retain',
       DeletionPolicy: 'Retain',
     }, ResourcePart.CompleteDefinition);
+  });
+
+  test('specified compatible architectures is recognized', () => {
+    const stack = new cdk.Stack();
+    const bucket = new s3.Bucket(stack, 'Bucket');
+    const code = new lambda.S3Code(bucket, 'ObjectKey');
+    new lambda.LayerVersion(stack, 'MyLayer', {
+      code,
+      compatibleArchitectures: [lambda.Architecture.ARM_64],
+    });
+
+    expect(stack).toHaveResource('AWS::Lambda::LayerVersion', {
+      CompatibleArchitectures: ['arm64'],
+    });
   });
 });

@@ -1,3 +1,4 @@
+import { CfnResource } from '@aws-cdk/core';
 import { Node, IConstruct } from 'constructs';
 import { CfnRole, CfnUser } from './iam.generated';
 import { IManagedPolicy } from './managed-policy';
@@ -5,10 +6,10 @@ import { IManagedPolicy } from './managed-policy';
 /**
  * Modify the Permissions Boundaries of Users and Roles in a construct tree
  *
- * @example
- *
- * const policy = ManagedPolicy.fromAwsManagedPolicyName('ReadOnlyAccess');
- * PermissionsBoundary.of(stack).apply(policy);
+ * ```ts
+ * const policy = iam.ManagedPolicy.fromAwsManagedPolicyName('ReadOnlyAccess');
+ * iam.PermissionsBoundary.of(this).apply(policy);
+ * ```
  */
 export class PermissionsBoundary {
   /**
@@ -22,7 +23,8 @@ export class PermissionsBoundary {
   }
 
   /**
-   * Apply the given policy as Permissions Boundary to all Roles in the scope
+   * Apply the given policy as Permissions Boundary to all Roles and Users in
+   * the scope.
    *
    * Will override any Permissions Boundaries configured previously; in case
    * a Permission Boundary is applied in multiple scopes, the Boundary applied
@@ -31,8 +33,11 @@ export class PermissionsBoundary {
   public apply(boundaryPolicy: IManagedPolicy) {
     Node.of(this.scope).applyAspect({
       visit(node: IConstruct) {
-        if (node instanceof CfnRole || node instanceof CfnUser) {
-          node.permissionsBoundary = boundaryPolicy.managedPolicyArn;
+        if (
+          CfnResource.isCfnResource(node) &&
+            (node.cfnResourceType == CfnRole.CFN_RESOURCE_TYPE_NAME || node.cfnResourceType == CfnUser.CFN_RESOURCE_TYPE_NAME)
+        ) {
+          node.addPropertyOverride('PermissionsBoundary', boundaryPolicy.managedPolicyArn);
         }
       },
     });
@@ -44,8 +49,11 @@ export class PermissionsBoundary {
   public clear() {
     Node.of(this.scope).applyAspect({
       visit(node: IConstruct) {
-        if (node instanceof CfnRole || node instanceof CfnUser) {
-          node.permissionsBoundary = undefined;
+        if (
+          CfnResource.isCfnResource(node) &&
+            (node.cfnResourceType == CfnRole.CFN_RESOURCE_TYPE_NAME || node.cfnResourceType == CfnUser.CFN_RESOURCE_TYPE_NAME)
+        ) {
+          node.addPropertyDeletionOverride('PermissionsBoundary');
         }
       },
     });

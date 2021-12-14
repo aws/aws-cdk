@@ -24,11 +24,15 @@
 The `@aws-cdk/aws-appsync` package contains constructs for building flexible
 APIs that use GraphQL.
 
+```ts nofixture
+import * as appsync from '@aws-cdk/aws-appsync';
+```
+
 ## Example
 
 ### DynamoDB
 
-Example of a GraphQL API with `AWS_IAM` authorization resolving into a DynamoDb
+Example of a GraphQL API with `AWS_IAM` [authorization](#authorization) resolving into a DynamoDb
 backend data source.
 
 GraphQL schema file `schema.graphql`:
@@ -52,24 +56,21 @@ type Mutation {
 CDK stack file `app-stack.ts`:
 
 ```ts
-import * as appsync from '@aws-cdk/aws-appsync';
-import * as db from '@aws-cdk/aws-dynamodb';
-
-const api = new appsync.GraphqlApi(stack, 'Api', {
+const api = new appsync.GraphqlApi(this, 'Api', {
   name: 'demo',
-  schema: appsync.Schema.fromAsset(join(__dirname, 'schema.graphql')),
+  schema: appsync.Schema.fromAsset(path.join(__dirname, 'schema.graphql')),
   authorizationConfig: {
     defaultAuthorization: {
-      authorizationType: appsync.AuthorizationType.IAM
+      authorizationType: appsync.AuthorizationType.IAM,
     },
   },
   xrayEnabled: true,
 });
 
-const demoTable = new db.Table(stack, 'DemoTable', {
+const demoTable = new dynamodb.Table(this, 'DemoTable', {
   partitionKey: {
     name: 'id',
-    type: db.AttributeType.STRING,
+    type: dynamodb.AttributeType.STRING,
   },
 });
 
@@ -89,7 +90,7 @@ demoDS.createResolver({
   fieldName: 'addDemo',
   requestMappingTemplate: appsync.MappingTemplate.dynamoDbPutItem(
     appsync.PrimaryKey.partition('id').auto(),
-    appsync.Values.projecting('input')
+    appsync.Values.projecting('input'),
   ),
   responseMappingTemplate: appsync.MappingTemplate.dynamoDbResultItem(),
 });
@@ -103,15 +104,15 @@ against the Data API with GraphQL queries, mutations, and subscriptions.
 
 ```ts
 // Create username and password secret for DB Cluster
-const secret = new rds.DatabaseSecret(stack, 'AuroraSecret', {
+const secret = new rds.DatabaseSecret(this, 'AuroraSecret', {
   username: 'clusteradmin',
 });
 
 // The VPC to place the cluster in
-const vpc = new ec2.Vpc(stack, 'AuroraVpc');
+const vpc = new ec2.Vpc(this, 'AuroraVpc');
 
 // Create the serverless cluster, provide all values needed to customise the database.
-const cluster = new rds.ServerlessCluster(stack, 'AuroraCluster', {
+const cluster = new rds.ServerlessCluster(this, 'AuroraCluster', {
   engine: rds.DatabaseClusterEngine.AURORA_MYSQL,
   vpc,
   credentials: { username: 'clusteradmin' },
@@ -120,13 +121,14 @@ const cluster = new rds.ServerlessCluster(stack, 'AuroraCluster', {
 });
 
 // Build a data source for AppSync to access the database.
+declare const api: appsync.GraphqlApi;
 const rdsDS = api.addRdsDataSource('rds', cluster, secret, 'demos');
 
 // Set up a resolver for an RDS query.
 rdsDS.createResolver({
   typeName: 'Query',
   fieldName: 'getDemosRds',
-  requestMappingTemplate: MappingTemplate.fromString(`
+  requestMappingTemplate: appsync.MappingTemplate.fromString(`
   {
     "version": "2018-05-29",
     "statements": [
@@ -134,8 +136,8 @@ rdsDS.createResolver({
     ]
   }
   `),
-  responseMappingTemplate: MappingTemplate.fromString(`
-    $util.rds.toJsonObject($ctx.result)
+  responseMappingTemplate: appsync.MappingTemplate.fromString(`
+    $utils.toJson($utils.rds.toJsonObject($ctx.result)[0])
   `),
 });
 
@@ -143,7 +145,7 @@ rdsDS.createResolver({
 rdsDS.createResolver({
   typeName: 'Mutation',
   fieldName: 'addDemoRds',
-  requestMappingTemplate: MappingTemplate.fromString(`
+  requestMappingTemplate: appsync.MappingTemplate.fromString(`
   {
     "version": "2018-05-29",
     "statements": [
@@ -156,8 +158,8 @@ rdsDS.createResolver({
     }
   }
   `),
-  responseMappingTemplate: MappingTemplate.fromString(`
-    $util.rds.toJsonObject($ctx.result)
+  responseMappingTemplate: appsync.MappingTemplate.fromString(`
+    $utils.toJson($utils.rds.toJsonObject($ctx.result)[1][0])
   `),
 });
 ```
@@ -212,11 +214,9 @@ GraphQL response mapping template `response.vtl`:
 CDK stack file `app-stack.ts`:
 
 ```ts
-import * as appsync from '@aws-cdk/aws-appsync';
-
-const api = new appsync.GraphqlApi(scope, 'api', {
+const api = new appsync.GraphqlApi(this, 'api', {
   name: 'api',
-  schema: appsync.Schema.fromFile(join(__dirname, 'schema.graphql')),
+  schema: appsync.Schema.fromAsset(path.join(__dirname, 'schema.graphql')),
 });
 
 const httpDs = api.addHttpDataSource(
@@ -227,7 +227,7 @@ const httpDs = api.addHttpDataSource(
     description: 'from appsync to StepFunctions Workflow',
     authorizationConfig: {
       signingRegion: 'us-east-1',
-      signingServiceName: 'states'
+      signingServiceName: 'states',
     }
   }
 );
@@ -235,8 +235,52 @@ const httpDs = api.addHttpDataSource(
 httpDs.createResolver({
   typeName: 'Mutation',
   fieldName: 'callStepFunction',
-  requestMappingTemplate: MappingTemplate.fromFile('request.vtl'),
-  responseMappingTemplate: MappingTemplate.fromFile('response.vtl')
+  requestMappingTemplate: appsync.MappingTemplate.fromFile('request.vtl'),
+  responseMappingTemplate: appsync.MappingTemplate.fromFile('response.vtl'),
+});
+```
+
+### Elasticsearch
+
+AppSync has builtin support for Elasticsearch from domains that are provisioned
+through your AWS account. You can use AppSync resolvers to perform GraphQL operations
+such as queries, mutations, and subscriptions.
+
+```ts
+import * as es from '@aws-cdk/aws-elasticsearch';
+
+const user = new iam.User(this, 'User');
+const domain = new es.Domain(this, 'Domain', {
+  version: es.ElasticsearchVersion.V7_1,
+  removalPolicy: RemovalPolicy.DESTROY,
+  fineGrainedAccessControl: { masterUserArn: user.userArn },
+  encryptionAtRest: { enabled: true },
+  nodeToNodeEncryption: true,
+  enforceHttps: true,
+});
+
+declare const api: appsync.GraphqlApi;
+const ds = api.addElasticsearchDataSource('ds', domain);
+
+ds.createResolver({
+  typeName: 'Query',
+  fieldName: 'getTests',
+  requestMappingTemplate: appsync.MappingTemplate.fromString(JSON.stringify({
+    version: '2017-02-28',
+    operation: 'GET',
+    path: '/id/post/_search',
+    params: {
+      headers: {},
+      queryString: {},
+      body: { from: 0, size: 50 },
+    },
+  })),
+  responseMappingTemplate: appsync.MappingTemplate.fromString(`[
+    #foreach($entry in $context.result.hits.hits)
+    #if( $velocityCount > 1 ) , #end
+    $utils.toJson($entry.get("_source"))
+    #end
+  ]`),
 });
 ```
 
@@ -252,23 +296,23 @@ When declaring your GraphQL Api, CDK defaults to a code-first approach if the
 `schema` property is not configured.
 
 ```ts
-const api = new appsync.GraphqlApi(stack, 'api', { name: 'myApi' });
+const api = new appsync.GraphqlApi(this, 'api', { name: 'myApi' });
 ```
 
 CDK will declare a `Schema` class that will give your Api access functions to
-define your schema code-first: `addType`, `addObjectType`, `addToSchema`, etc.
+define your schema code-first: `addType`, `addToSchema`, etc.
 
 You can also declare your `Schema` class outside of your CDK stack, to define
 your schema externally.
 
 ```ts
 const schema = new appsync.Schema();
-schema.addObjectType('demo', {
+schema.addType(new appsync.ObjectType('demo', {
   definition: { id: appsync.GraphqlType.id() },
-});
-const api = new appsync.GraphqlApi(stack, 'api', {
+}));
+const api = new appsync.GraphqlApi(this, 'api', {
   name: 'myApi',
-  schema
+  schema,
 });
 ```
 
@@ -280,9 +324,9 @@ You can define your GraphQL Schema from a file on disk. For convenience, use
 the `appsync.Schema.fromAsset` to specify the file representing your schema.
 
 ```ts
-const api = appsync.GraphqlApi(stack, 'api', {
+const api = new appsync.GraphqlApi(this, 'api', {
   name: 'myApi',
-  schema: appsync.Schema.fromAsset(join(__dirname, 'schema.graphl')),
+  schema: appsync.Schema.fromAsset(path.join(__dirname, 'schema.graphl')),
 });
 ```
 
@@ -293,9 +337,11 @@ another stack into your CDK app. Utilizing the `fromXxx` function, you have
 the ability to add data sources and resolvers through a `IGraphqlApi` interface.
 
 ```ts
-const importedApi = appsync.GraphqlApi.fromGraphqlApiAttributes(stack, 'IApi', {
+declare const api: appsync.GraphqlApi;
+declare const table: dynamodb.Table;
+const importedApi = appsync.GraphqlApi.fromGraphqlApiAttributes(this, 'IApi', {
   graphqlApiId: api.apiId,
-  graphqlArn: api.arn,
+  graphqlApiArn: api.arn,
 });
 importedApi.addDynamoDbDataSource('TableDataSource', table);
 ```
@@ -303,6 +349,41 @@ importedApi.addDynamoDbDataSource('TableDataSource', table);
 If you don't specify `graphqlArn` in `fromXxxAttributes`, CDK will autogenerate
 the expected `arn` for the imported api, given the `apiId`. For creating data
 sources and resolvers, an `apiId` is sufficient.
+
+## Authorization
+
+There are multiple authorization types available for GraphQL API to cater to different
+access use cases. They are:
+
+- API Keys (`AuthorizationType.API_KEY`)
+- Amazon Cognito User Pools (`AuthorizationType.USER_POOL`)
+- OpenID Connect (`AuthorizationType.OPENID_CONNECT`)
+- AWS Identity and Access Management (`AuthorizationType.AWS_IAM`)
+- AWS Lambda (`AuthorizationType.AWS_LAMBDA`)
+
+These types can be used simultaneously in a single API, allowing different types of clients to
+access data. When you specify an authorization type, you can also specify the corresponding
+authorization mode to finish defining your authorization. For example, this is a GraphQL API
+with AWS Lambda Authorization.
+
+```ts
+import * as lambda from '@aws-cdk/aws-lambda';
+declare const authFunction: lambda.Function;
+
+new appsync.GraphqlApi(this, 'api', {
+  name: 'api',
+  schema: appsync.Schema.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
+  authorizationConfig: {
+    defaultAuthorization: {
+      authorizationType: appsync.AuthorizationType.LAMBDA,
+      lambdaAuthorizerConfig: {
+        handler: authFunction, 
+        // can also specify `resultsCacheTtl` and `validationRegex`.
+      },
+    },
+  },
+});
+```
 
 ## Permissions
 
@@ -315,7 +396,7 @@ for `IAM` authorized access you would configure the following.
 
 In `schema.graphql`:
 
-```ts
+```gql
 type Mutation {
   updateExample(...): ...
     @aws_iam
@@ -326,18 +407,18 @@ In `IAM`:
 
 ```json
 {
-   "Version": "2012-10-17",
-   "Statement": [
-      {
-         "Effect": "Allow",
-         "Action": [
-            "appsync:GraphQL"
-         ],
-         "Resource": [
-            "arn:aws:appsync:REGION:ACCOUNT_ID:apis/GRAPHQL_ID/types/Mutation/fields/updateExample"
-         ]
-      }
-   ]
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "appsync:GraphQL"
+      ],
+      "Resource": [
+        "arn:aws:appsync:REGION:ACCOUNT_ID:apis/GRAPHQL_ID/types/Mutation/fields/updateExample"
+      ]
+    }
+  ]
 }
 ```
 
@@ -348,14 +429,12 @@ To make this easier, CDK provides `grant` API.
 Use the `grant` function for more granular authorization.
 
 ```ts
-const role = new iam.Role(stack, 'Role', {
+const role = new iam.Role(this, 'Role', {
   assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
 });
-const api = new appsync.GraphqlApi(stack, 'API', {
-  definition
-});
+declare const api: appsync.GraphqlApi;
 
-api.grant(role, appsync.IamResource.custom('types/Mutation/fields/updateExample'), 'appsync:GraphQL')
+api.grant(role, appsync.IamResource.custom('types/Mutation/fields/updateExample'), 'appsync:GraphQL');
 ```
 
 ### IamResource
@@ -379,6 +458,9 @@ These include:
 - grantSubscription (use to grant access to Subscription fields)
 
 ```ts
+declare const api: appsync.GraphqlApi;
+declare const role: iam.Role;
+
 // For generic types
 api.grantMutation(role, 'updateExample');
 
@@ -393,10 +475,12 @@ backend data source. Developers can compose operations (Functions) and execute
 them in sequence with Pipeline Resolvers.
 
 ```ts
-const appsyncFunction = new appsync.AppsyncFunction(stack, 'function', {
+declare const api: appsync.GraphqlApi;
+
+const appsyncFunction = new appsync.AppsyncFunction(this, 'function', {
   name: 'appsync_function',
-  api: api,
-  dataSource: apiDataSource,
+  api,
+  dataSource: api.addNoneDataSource('none'),
   requestMappingTemplate: appsync.MappingTemplate.fromFile('request.vtl'),
   responseMappingTemplate: appsync.MappingTemplate.fromFile('response.vtl'),
 });
@@ -406,10 +490,14 @@ AppSync Functions are used in tandem with pipeline resolvers to compose multiple
 operations.
 
 ```ts
-const pipelineResolver = new appsync.Resolver(stack, 'pipeline', {
-  name: 'pipeline_resolver',
-  api: api,
-  dataSource: apiDataSource,
+declare const api: appsync.GraphqlApi;
+declare const appsyncFunction: appsync.AppsyncFunction;
+
+const pipelineResolver = new appsync.Resolver(this, 'pipeline', {
+  api,
+  dataSource: api.addNoneDataSource('none'),
+  typeName: 'typeName',
+  fieldName: 'fieldName',
   requestMappingTemplate: appsync.MappingTemplate.fromFile('beforeRequest.vtl'),
   pipelineConfig: [appsyncFunction],
   responseMappingTemplate: appsync.MappingTemplate.fromFile('afterResponse.vtl'),
@@ -462,48 +550,38 @@ Above we see a schema that allows for generating paginated responses. For exampl
 we can query `allFilms(first: 100)` since `FilmConnection` acts as an intermediary
 for holding `FilmEdges` we can write a resolver to return the first 100 films.
 
-In a separate file, we can declare our scalar types: `scalar-types.ts`.
-
-```ts
-import { GraphqlType } from '@aws-cdk/aws-appsync';
-
-export const string = appsync.GraphqlType.string();
-export const int = appsync.GraphqlType.int();
-```
-
-In another separate file, we can declare our object types and related functions.
+In a separate file, we can declare our object types and related functions.
 We will call this file `object-types.ts` and we will have created it in a way that
 allows us to generate other `XxxConnection` and `XxxEdges` in the future.
 
-```ts
-const pluralize = require('pluralize');
-import * as scalar from './scalar-types.ts';
+```ts nofixture
 import * as appsync from '@aws-cdk/aws-appsync';
+const pluralize = require('pluralize');
 
 export const args = {
-  after: scalar.string,
-  first: scalar.int,
-  before: scalar.string,
-  last: scalar.int,
+  after: appsync.GraphqlType.string(),
+  first: appsync.GraphqlType.int(),
+  before: appsync.GraphqlType.string(),
+  last: appsync.GraphqlType.int(),
 };
 
 export const Node = new appsync.InterfaceType('Node', {
-  definition: { id: scalar.string }
+  definition: { id: appsync.GraphqlType.string() }
 });
-export const FilmNode = new appsync.ObjectType.implementInterface('FilmNode', {
+export const FilmNode = new appsync.ObjectType('FilmNode', {
   interfaceTypes: [Node],
-  definition: { filmName: scalar.string }
+  definition: { filmName: appsync.GraphqlType.string() }
 });
 
 export function generateEdgeAndConnection(base: appsync.ObjectType) {
   const edge = new appsync.ObjectType(`${base.name}Edge`, {
-    definition: { node: base.attribute(), cursor: scalar.string }
+    definition: { node: base.attribute(), cursor: appsync.GraphqlType.string() }
   });
   const connection = new appsync.ObjectType(`${base.name}Connection`, {
     definition: {
-      edges: edges.attribute({ isList: true }),
+      edges: edge.attribute({ isList: true }),
       [pluralize(base.name)]: base.attribute({ isList: true }),
-      totalCount: scalar.int,
+      totalCount: appsync.GraphqlType.int(),
     }
   });
   return { edge: edge, connection: connection };
@@ -513,29 +591,30 @@ export function generateEdgeAndConnection(base: appsync.ObjectType) {
 Finally, we will go to our `cdk-stack` and combine everything together
 to generate our schema.
 
-```ts
-import * as appsync from '@aws-cdk/aws-appsync';
-import * as schema from './object-types';
+```ts fixture=with-objects
+declare const dummyRequest: appsync.MappingTemplate;
+declare const dummyResponse: appsync.MappingTemplate;
 
-const api = new appsync.GraphqlApi(stack, 'Api', {
+const api = new appsync.GraphqlApi(this, 'Api', {
   name: 'demo',
 });
 
-this.objectTypes = [ schema.Node, schema.Film ];
+const objectTypes = [ Node, FilmNode ];
 
-const filmConnections = schema.generateEdgeAndConnection(schema.Film);
+const filmConnections = generateEdgeAndConnection(FilmNode);
 
 api.addQuery('allFilms', new appsync.ResolvableField({
-    returnType: filmConnections.connection.attribute(),
-    args: schema.args,
-    dataSource: dummyDataSource,
-    requestMappingTemplate: dummyRequest,
-    responseMappingTemplate: dummyResponse,
-  }),
-});
+  returnType: filmConnections.connection.attribute(),
+  args: args,
+  dataSource: api.addNoneDataSource('none'),
+  requestMappingTemplate: dummyRequest,
+  responseMappingTemplate: dummyResponse,
+}));
 
-this.objectTypes.map((t) => api.addType(t));
-Object.keys(filmConnections).forEach((key) => api.addType(filmConnections[key]));
+api.addType(Node);
+api.addType(FilmNode);
+api.addType(filmConnections.edge);
+api.addType(filmConnections.connection);
 ```
 
 Notice how we can utilize the `generateEdgeAndConnection` function to generate
@@ -626,6 +705,9 @@ type Info {
 The CDK code required would be:
 
 ```ts
+declare const api: appsync.GraphqlApi;
+declare const dummyRequest: appsync.MappingTemplate;
+declare const dummyResponse: appsync.MappingTemplate;
 const info = new appsync.ObjectType('Info', {
   definition: {
     node: new appsync.ResolvableField({
@@ -654,6 +736,9 @@ type Query {
 The CDK code required would be:
 
 ```ts
+declare const api: appsync.GraphqlApi;
+declare const dummyRequest: appsync.MappingTemplate;
+declare const dummyResponse: appsync.MappingTemplate;
 const query = new appsync.ObjectType('Query', {
   definition: {
     get: new appsync.ResolvableField({
@@ -709,49 +794,43 @@ To learn more about **Interface Types**, read the docs [here](https://graphql.or
 the `demo` variable is an **Object Type**. **Object Types** are defined by
 GraphQL Types and are only usable when linked to a GraphQL Api.
 
-You can create Object Types in three ways:
+You can create Object Types in two ways:
 
 1. Object Types can be created ***externally***.
 
     ```ts
-    const api = new appsync.GraphqlApi(stack, 'Api', {
+    const api = new appsync.GraphqlApi(this, 'Api', {
       name: 'demo',
     });
     const demo = new appsync.ObjectType('Demo', {
-      defintion: {
+      definition: {
         id: appsync.GraphqlType.string({ isRequired: true }),
         version: appsync.GraphqlType.string({ isRequired: true }),
       },
     });
 
-    api.addType(object);
+    api.addType(demo);
     ```
 
     > This method allows for reusability and modularity, ideal for larger projects.
     For example, imagine moving all Object Type definition outside the stack.
 
-    `scalar-types.ts` - a file for scalar type definitions
-
-    ```ts
-    export const required_string = appsync.GraphqlType.string({ isRequired: true });
-    ```
-
     `object-types.ts` - a file for object type definitions
 
-    ```ts
-    import { required_string } from './scalar-types';
+    ```ts nofixture
+    import * as appsync from '@aws-cdk/aws-appsync';
     export const demo = new appsync.ObjectType('Demo', {
-      defintion: {
-        id: required_string,
-        version: required_string,
+      definition: {
+        id: appsync.GraphqlType.string({ isRequired: true }),
+        version: appsync.GraphqlType.string({ isRequired: true }),
       },
     });
     ```
 
     `cdk-stack.ts` - a file containing our cdk stack
 
-    ```ts
-    import { demo } from './object-types';
+    ```ts fixture=with-objects
+    declare const api: appsync.GraphqlApi;
     api.addType(demo);
     ```
 
@@ -765,7 +844,7 @@ You can create Object Types in three ways:
     });
     const demo = new appsync.ObjectType('Demo', {
       interfaceTypes: [ node ],
-      defintion: {
+      definition: {
         version: appsync.GraphqlType.string({ isRequired: true }),
       },
     });
@@ -794,6 +873,7 @@ enum Episode {
 The above GraphQL Enumeration Type can be expressed in CDK as the following:
 
 ```ts
+declare const api: appsync.GraphqlApi;
 const episode = new appsync.EnumType('Episode', {
   definition: [
     'NEWHOPE',
@@ -821,10 +901,11 @@ input Review {
 The above GraphQL Input Type can be expressed in CDK as the following:
 
 ```ts
+declare const api: appsync.GraphqlApi;
 const review = new appsync.InputType('Review', {
   definition: {
-    stars: GraphqlType.int({ isRequired: true }),
-    commentary: GraphqlType.string(),
+    stars: appsync.GraphqlType.int({ isRequired: true }),
+    commentary: appsync.GraphqlType.string(),
   },
 });
 api.addType(review);
@@ -848,6 +929,7 @@ The above GraphQL Union Type encompasses the Object Types of Human, Droid and St
 can be expressed in CDK as the following:
 
 ```ts
+declare const api: appsync.GraphqlApi;
 const string = appsync.GraphqlType.string();
 const human = new appsync.ObjectType('Human', { definition: { name: string } });
 const droid = new appsync.ObjectType('Droid', { definition: { name: string } });
@@ -870,6 +952,11 @@ To add fields for these queries, we can simply run the `addQuery` function to ad
 to the schema's `Query` type.
 
 ```ts
+declare const api: appsync.GraphqlApi;
+declare const filmConnection: appsync.InterfaceType;
+declare const dummyRequest: appsync.MappingTemplate;
+declare const dummyResponse: appsync.MappingTemplate;
+
 const string = appsync.GraphqlType.string();
 const int = appsync.GraphqlType.int();
 api.addQuery('allFilms', new appsync.ResolvableField({
@@ -893,10 +980,15 @@ To add fields for these mutations, we can simply run the `addMutation` function 
 to the schema's `Mutation` type.
 
 ```ts
+declare const api: appsync.GraphqlApi;
+declare const filmNode: appsync.ObjectType;
+declare const dummyRequest: appsync.MappingTemplate;
+declare const dummyResponse: appsync.MappingTemplate;
+
 const string = appsync.GraphqlType.string();
 const int = appsync.GraphqlType.int();
 api.addMutation('addFilm', new appsync.ResolvableField({
-  returnType: film.attribute(),
+  returnType: filmNode.attribute(),
   args: { name: string, film_number: int },
   dataSource: api.addNoneDataSource('none'),
   requestMappingTemplate: dummyRequest,
@@ -919,10 +1011,13 @@ To add fields for these subscriptions, we can simply run the `addSubscription` f
 to the schema's `Subscription` type.
 
 ```ts
-api.addSubscription('addedFilm', new appsync.ResolvableField({
+declare const api: appsync.GraphqlApi;
+declare const film: appsync.InterfaceType;
+
+api.addSubscription('addedFilm', new appsync.Field({
   returnType: film.attribute(),
   args: { id: appsync.GraphqlType.id({ isRequired: true }) },
-  directive: [appsync.Directive.subscribe('addFilm')],
+  directives: [appsync.Directive.subscribe('addFilm')],
 }));
 ```
 

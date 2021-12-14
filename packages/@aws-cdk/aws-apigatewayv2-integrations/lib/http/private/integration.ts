@@ -3,7 +3,7 @@ import {
   HttpIntegrationType,
   HttpRouteIntegrationBindOptions,
   HttpRouteIntegrationConfig,
-  IHttpRouteIntegration,
+  HttpRouteIntegration,
   PayloadFormatVersion,
   HttpMethod,
   IVpcLink,
@@ -37,7 +37,7 @@ export interface VpcLinkConfigurationOptions {
  *
  * @internal
  */
-export abstract class HttpPrivateIntegration implements IHttpRouteIntegration {
+export abstract class HttpPrivateIntegration extends HttpRouteIntegration {
   protected httpMethod = HttpMethod.ANY;
   protected payloadFormatVersion = PayloadFormatVersion.VERSION_1_0; // 1.0 is required and is the only supported format
   protected integrationType = HttpIntegrationType.HTTP_PROXY;

@@ -6,6 +6,7 @@
  */
 
 import * as path from 'path';
+import * as pkglint from '@aws-cdk/pkglint';
 import * as fs from 'fs-extra';
 import * as cfnspec from '../lib';
 
@@ -24,13 +25,9 @@ async function main() {
 
   // iterate over all cloudformation namespaces
   for (const namespace of cfnspec.namespaces()) {
-    const [moduleFamily, moduleBaseName] = (namespace === 'AWS::Serverless' ? 'AWS::SAM' : namespace).split('::');
-
-    const moduleName = `${moduleFamily}-${moduleBaseName.replace(/V\d+$/, '')}`.toLocaleLowerCase();
-    const packagePath = path.join(root, moduleName);
-
-    const lowcaseModuleName = moduleBaseName.toLocaleLowerCase();
-    const packageName = `@aws-cdk/${moduleName}`;
+    const module = pkglint.createModuleDefinitionFromCfnNamespace(namespace);
+    const lowcaseModuleName = module.moduleBaseName.toLocaleLowerCase();
+    const packagePath = path.join(root, module.moduleName);
 
     // we already have a module for this namesapce, move on.
     if (await fs.pathExists(packagePath)) {
@@ -42,12 +39,12 @@ async function main() {
       if (scopes.indexOf(namespace) !== -1) {
         // V2-style module is already modeled in the root package, nothing to be done!
         continue;
-      } else if (await fs.pathExists(path.join(root, `${moduleFamily}-${moduleBaseName}`.toLocaleLowerCase()))) {
+      } else if (await fs.pathExists(path.join(root, `${module.moduleFamily}-${module.moduleBaseName}`.toLocaleLowerCase()))) {
         // V2-style package already has it's own package (legacy behavior), nothing to be done!
         continue;
       } else {
         // V2-style package needs to be added to it's "V1" package... Get down to business!
-        console.error(`Adding ${namespace} to ${packageName}`);
+        console.error(`Adding ${namespace} to ${module.packageName}`);
         scopes.push(namespace);
         packageJson['cdk-build'].cloudformation = scopes;
         await fs.writeJson(packageJsonPath, packageJson, { encoding: 'utf-8', spaces: 2 });
@@ -61,22 +58,6 @@ async function main() {
         continue;
       }
     }
-
-    // dotnet names
-    const dotnetPackage = `Amazon.CDK.${moduleFamily}.${moduleBaseName}`;
-
-    // java names
-    const javaGroupId = 'software.amazon.awscdk';
-    const javaPackage = moduleFamily === 'AWS'
-      ? `services.${lowcaseModuleName}`
-      : `${moduleFamily.toLocaleLowerCase()}.${lowcaseModuleName}`;
-    const javaArtifactId = moduleFamily === 'AWS'
-      ? lowcaseModuleName
-      : `${moduleFamily.toLocaleLowerCase()}-${lowcaseModuleName}`;
-
-    // python names
-    const pythonDistName = `aws-cdk.${moduleName}`;
-    const pythonModuleName = pythonDistName.replace(/-/g, '_');
 
     async function write(relativePath: string, contents: string[] | string | object) {
       const fullPath = path.join(packagePath, relativePath);
@@ -97,12 +78,14 @@ async function main() {
       await fs.writeFile(fullPath, data + '\n');
     }
 
-    console.log(`generating module for ${packageName}...`);
+    console.log(`generating module for ${module.packageName}...`);
+
+    const description = `${namespace} Construct Library`;
 
     await write('package.json', {
-      name: packageName,
+      name: module.packageName,
       version,
-      description: `The CDK Construct Library for ${namespace}`,
+      description,
       main: 'lib/index.js',
       types: 'lib/index.d.ts',
       jsii: {
@@ -110,17 +93,17 @@ async function main() {
         projectReferences: true,
         targets: {
           dotnet: {
-            namespace: dotnetPackage,
-            packageId: dotnetPackage,
+            namespace: module.dotnetPackage,
+            packageId: module.dotnetPackage,
             signAssembly: true,
             assemblyOriginatorKeyFile: '../../key.snk',
             iconUrl: 'https://raw.githubusercontent.com/aws/aws-cdk/master/logo/default-256-dark.png',
           },
           java: {
-            package: `${javaGroupId}.${javaPackage}`,
+            package: `${module.javaGroupId}.${module.javaPackage}`,
             maven: {
-              groupId: javaGroupId,
-              artifactId: javaArtifactId,
+              groupId: module.javaGroupId,
+              artifactId: module.javaArtifactId,
             },
           },
           python: {
@@ -128,15 +111,22 @@ async function main() {
               'Framework :: AWS CDK',
               'Framework :: AWS CDK :: 1',
             ],
-            distName: pythonDistName,
-            module: pythonModuleName,
+            distName: module.pythonDistName,
+            module: module.pythonModuleName,
+          },
+        },
+        metadata: {
+          jsii: {
+            rosetta: {
+              strict: true,
+            },
           },
         },
       },
       repository: {
         type: 'git',
         url: 'https://github.com/aws/aws-cdk.git',
-        directory: `packages/${packageName}`,
+        directory: `packages/${module.packageName}`,
       },
       homepage: 'https://github.com/aws/aws-cdk',
       scripts: {
@@ -154,6 +144,8 @@ async function main() {
         compat: 'cdk-compat',
         gen: 'cfn2ts',
         'rosetta:extract': 'yarn --silent jsii-rosetta extract',
+        'build+extract': 'yarn build && yarn rosetta:extract',
+        'build+test+extract': 'yarn build+test && yarn rosetta:extract',
       },
       'cdk-build': {
         cloudformation: namespace,
@@ -167,7 +159,7 @@ async function main() {
         'cdk',
         'constructs',
         namespace,
-        moduleName,
+        module.moduleName,
       ],
       author: {
         name: 'Amazon Web Services',
@@ -176,10 +168,11 @@ async function main() {
       },
       license: 'Apache-2.0',
       devDependencies: {
-        '@aws-cdk/assert-internal': version,
-        'cdk-build-tools': version,
-        'cfn2ts': version,
-        'pkglint': version,
+        '@aws-cdk/assertions': version,
+        '@aws-cdk/cdk-build-tools': version,
+        '@aws-cdk/cfn2ts': version,
+        '@aws-cdk/pkglint': version,
+        '@types/jest': '^26.0.22',
       },
       dependencies: {
         '@aws-cdk/core': version,
@@ -251,6 +244,7 @@ async function main() {
       '**/cdk.out',
       'junit.xml',
       'test/',
+      '!*.lit.ts',
     ]);
 
     await write('lib/index.ts', [
@@ -259,7 +253,7 @@ async function main() {
     ]);
 
     await write(`test/${lowcaseModuleName}.test.ts`, [
-      "import '@aws-cdk/assert-internal/jest';",
+      "import '@aws-cdk/assertions';",
       "import {} from '../lib';",
       '',
       "test('No tests are specified for this package', () => {",
@@ -267,38 +261,28 @@ async function main() {
       '});',
     ]);
 
-    await write('README.md', [
-      `# ${namespace} Construct Library`,
-      '<!--BEGIN STABILITY BANNER-->',
-      '',
-      '---',
-      '',
-      '![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)',
-      '',
-      '> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.',
-      '>',
-      '> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib',
-      '',
-      '---',
-      '',
-      '<!--END STABILITY BANNER-->',
-      '',
-      'This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.',
-      '',
-      '```ts',
-      `import ${lowcaseModuleName} = require('${packageName}');`,
-      '```',
-    ]);
+    await pkglint.createLibraryReadme(namespace, path.join(packagePath, 'README.md'));
 
     await write('.eslintrc.js', [
-      "const baseConfig = require('cdk-build-tools/config/eslintrc');",
+      "const baseConfig = require('@aws-cdk/cdk-build-tools/config/eslintrc');",
       "baseConfig.parserOptions.project = __dirname + '/tsconfig.json';",
       'module.exports = baseConfig;',
     ]);
 
     await write('jest.config.js', [
-      "const baseConfig = require('cdk-build-tools/config/jest.config');",
+      "const baseConfig = require('@aws-cdk/cdk-build-tools/config/jest.config');",
       'module.exports = baseConfig;',
+    ]);
+
+    await write('rosetta/default.ts-fixture', [
+      "import { Construct } from 'constructs';",
+      "import { Stack } from '@aws-cdk/core';",
+      '',
+      'class MyStack extends Stack {',
+      '  constructor(scope: Construct, id: string) {',
+      '    /// here',
+      '  }',
+      '}',
     ]);
 
     const templateDir = path.join(__dirname, 'template');
@@ -306,10 +290,10 @@ async function main() {
       await fs.copy(path.join(templateDir, file), path.join(packagePath, file));
     }
 
-    await addDependencyToMegaPackage(path.join('@aws-cdk', 'cloudformation-include'), packageName, version, ['dependencies', 'peerDependencies']);
-    await addDependencyToMegaPackage('aws-cdk-lib', packageName, version, ['devDependencies']);
-    await addDependencyToMegaPackage('monocdk', packageName, version, ['devDependencies']);
-    await addDependencyToMegaPackage('decdk', packageName, version, ['dependencies']);
+    await addDependencyToMegaPackage(path.join('@aws-cdk', 'cloudformation-include'), module.packageName, version, ['dependencies', 'peerDependencies']);
+    await addDependencyToMegaPackage('aws-cdk-lib', module.packageName, version, ['devDependencies']);
+    await addDependencyToMegaPackage('monocdk', module.packageName, version, ['devDependencies']);
+    await addDependencyToMegaPackage('decdk', module.packageName, version, ['dependencies']);
   }
 }
 

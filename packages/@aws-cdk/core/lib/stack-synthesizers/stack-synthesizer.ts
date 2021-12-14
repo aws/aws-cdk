@@ -87,6 +87,13 @@ export interface SynthesizeStackArtifactOptions {
   readonly assumeRoleArn?: string;
 
   /**
+   * The externalID to use with the assumeRoleArn
+   *
+   * @default - No externalID is used
+   */
+  readonly assumeRoleExternalId?: string;
+
+  /**
    * The role that is passed to CloudFormation to execute the change set
    *
    * @default - No role is passed (currently assumed role/credentials are used)

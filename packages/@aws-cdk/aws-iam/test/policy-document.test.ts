@@ -283,7 +283,7 @@ describe('IAM policy document', () => {
 
       expect(stack.resolve(p)).toEqual({
         Statement: [
-          { Effect: 'Allow', Principal: '*' },
+          { Effect: 'Allow', Principal: { AWS: '*' } },
         ],
         Version: '2012-10-17',
       });
@@ -297,7 +297,7 @@ describe('IAM policy document', () => {
 
       expect(stack.resolve(p)).toEqual({
         Statement: [
-          { Effect: 'Allow', Principal: '*' },
+          { Effect: 'Allow', Principal: { AWS: '*' } },
         ],
         Version: '2012-10-17',
       });
@@ -313,7 +313,7 @@ describe('IAM policy document', () => {
 
       expect(stack.resolve(p)).toEqual({
         Statement: [
-          { Effect: 'Allow', Principal: '*' },
+          { Effect: 'Allow', Principal: { AWS: '*' } },
         ],
         Version: '2012-10-17',
       });
@@ -331,6 +331,40 @@ describe('IAM policy document', () => {
       Effect: 'Allow',
       Action: ['a', 'b', 'c'],
       Resource: ['x', 'y', 'z'],
+    });
+  });
+
+  test('addResources()/addActions() will not add duplicates', () => {
+    const stack = new Stack();
+
+    const statement = new PolicyStatement();
+    statement.addActions('a');
+    statement.addActions('a');
+
+    statement.addResources('x');
+    statement.addResources('x');
+
+    expect(stack.resolve(statement.toStatementJson())).toEqual({
+      Effect: 'Allow',
+      Action: ['a'],
+      Resource: ['x'],
+    });
+  });
+
+  test('addNotResources()/addNotActions() will not add duplicates', () => {
+    const stack = new Stack();
+
+    const statement = new PolicyStatement();
+    statement.addNotActions('a');
+    statement.addNotActions('a');
+
+    statement.addNotResources('x');
+    statement.addNotResources('x');
+
+    expect(stack.resolve(statement.toStatementJson())).toEqual({
+      Effect: 'Allow',
+      NotAction: ['a'],
+      NotResource: ['x'],
     });
   });
 
@@ -730,6 +764,7 @@ describe('IAM policy document', () => {
         });
       }).toThrow(/Statement must be an array/);
     });
+
   });
 
   test('adding another condition with the same operator does not delete the original', () => {

@@ -3,8 +3,8 @@ import { Construct } from 'constructs';
 import { CfnRoute, CfnRouteProps } from '../apigatewayv2.generated';
 import { IRoute } from '../common';
 import { IHttpApi } from './api';
-import { HttpAuthorizerType, IHttpRouteAuthorizer } from './authorizer';
-import { IHttpRouteIntegration } from './integration';
+import { IHttpRouteAuthorizer } from './authorizer';
+import { HttpRouteIntegration } from './integration';
 
 /**
  * Represents a Route for an HTTP API.
@@ -59,7 +59,7 @@ export class HttpRouteKey {
    */
   public static with(path: string, method?: HttpMethod) {
     if (path !== '/' && (!path.startsWith('/') || path.endsWith('/'))) {
-      throw new Error('path must always start with a "/" and not end with a "/"');
+      throw new Error('A route path must always start with a "/" and not end with a "/"');
     }
     return new HttpRouteKey(`${method ?? HttpMethod.ANY} ${path}`, path);
   }
@@ -88,7 +88,7 @@ export interface BatchHttpRouteOptions {
   /**
    * The integration to be configured on this route.
    */
-  readonly integration: IHttpRouteIntegration;
+  readonly integration: HttpRouteIntegration;
 }
 
 /**
@@ -121,6 +121,20 @@ export interface HttpRouteProps extends BatchHttpRouteOptions {
 }
 
 /**
+ * Supported Route Authorizer types
+ */
+enum HttpRouteAuthorizationType {
+  /** JSON Web Tokens */
+  JWT = 'JWT',
+
+  /** Lambda Authorizer */
+  CUSTOM = 'CUSTOM',
+
+  /** No authorizer */
+  NONE = 'NONE'
+}
+
+/**
  * Route class that creates the Route for API Gateway HTTP API
  * @resource AWS::ApiGatewayV2::Route
  */
@@ -135,17 +149,19 @@ export class HttpRoute extends Resource implements IHttpRoute {
     this.httpApi = props.httpApi;
     this.path = props.routeKey.path;
 
-    const config = props.integration.bind({
+    const config = props.integration._bindToRoute({
       route: this,
       scope: this,
     });
-
-    const integration = props.httpApi._addIntegration(this, config);
 
     const authBindResult = props.authorizer ? props.authorizer.bind({
       route: this,
       scope: this.httpApi instanceof Construct ? this.httpApi : this, // scope under the API if it's not imported
     }) : undefined;
+
+    if (authBindResult && !(authBindResult.authorizationType in HttpRouteAuthorizationType)) {
+      throw new Error('authorizationType should either be JWT, CUSTOM, or NONE');
+    }
 
     let authorizationScopes = authBindResult?.authorizationScopes;
 
@@ -156,8 +172,6 @@ export class HttpRoute extends Resource implements IHttpRoute {
       ]));
     }
 
-    const authorizationType = authBindResult?.authorizationType === HttpAuthorizerType.NONE ? undefined : authBindResult?.authorizationType;
-
     if (authorizationScopes?.length === 0) {
       authorizationScopes = undefined;
     }
@@ -165,9 +179,9 @@ export class HttpRoute extends Resource implements IHttpRoute {
     const routeProps: CfnRouteProps = {
       apiId: props.httpApi.apiId,
       routeKey: props.routeKey.key,
-      target: `integrations/${integration.integrationId}`,
+      target: `integrations/${config.integrationId}`,
       authorizerId: authBindResult?.authorizerId,
-      authorizationType,
+      authorizationType: authBindResult?.authorizationType ?? 'NONE', // must be explicitly NONE (not undefined) for stack updates to work correctly
       authorizationScopes,
     };
 

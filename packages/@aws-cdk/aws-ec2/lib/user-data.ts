@@ -37,6 +37,12 @@ export interface S3DownloadOptions {
    */
   readonly localFile?: string;
 
+  /**
+   * The region of the S3 Bucket (needed for access via VPC Gateway)
+   * @default none
+   */
+  readonly region?: string
+
 }
 
 /**
@@ -156,7 +162,7 @@ class LinuxUserData extends UserData {
     const localPath = ( params.localFile && params.localFile.length !== 0 ) ? params.localFile : `/tmp/${ params.bucketKey }`;
     this.addCommands(
       `mkdir -p $(dirname '${localPath}')`,
-      `aws s3 cp '${s3Path}' '${localPath}'`,
+      `aws s3 cp '${s3Path}' '${localPath}'` + (params.region !== undefined ? ` --region ${params.region}` : ''),
     );
 
     return localPath;
@@ -215,7 +221,7 @@ class WindowsUserData extends UserData {
     const localPath = ( params.localFile && params.localFile.length !== 0 ) ? params.localFile : `C:/temp/${ params.bucketKey }`;
     this.addCommands(
       `mkdir (Split-Path -Path '${localPath}' ) -ea 0`,
-      `Read-S3Object -BucketName '${params.bucket.bucketName}' -key '${params.bucketKey}' -file '${localPath}' -ErrorAction Stop`,
+      `Read-S3Object -BucketName '${params.bucket.bucketName}' -key '${params.bucketKey}' -file '${localPath}' -ErrorAction Stop` + (params.region !== undefined ? ` -Region ${params.region}` : ''),
     );
     return localPath;
   }
@@ -436,12 +442,14 @@ export interface MultipartUserDataOptions {
  *
  */
 export class MultipartUserData extends UserData {
-  private static readonly USE_PART_ERROR = 'MultipartUserData does not support this operation. Please add part using addPart.';
+  private static readonly USE_PART_ERROR = 'MultipartUserData only supports this operation if it has a default UserData. Call addUserDataPart with makeDefault=true.';
   private static readonly BOUNDRY_PATTERN = '[^a-zA-Z0-9()+,-./:=?]';
 
   private parts: MultipartBody[] = [];
 
   private opts: MultipartUserDataOptions;
+
+  private defaultUserData?: UserData;
 
   constructor(opts?: MultipartUserDataOptions) {
     super();
@@ -472,16 +480,32 @@ export class MultipartUserData extends UserData {
   }
 
   /**
-   * Adds a multipart part based on a UserData object
+   * Adds a multipart part based on a UserData object.
    *
-   * This is the same as calling:
+   * If `makeDefault` is true, then the UserData added by this method
+   * will also be the target of calls to the `add*Command` methods on
+   * this MultipartUserData object.
+   *
+   * If `makeDefault` is false, then this is the same as calling:
    *
    * ```ts
-   * multiPart.addPart(MultipartBody.fromUserData(userData, contentType));
+   * declare const multiPart: ec2.MultipartUserData;
+   * declare const userData: ec2.UserData;
+   * declare const contentType: string;
+   *
+   * multiPart.addPart(ec2.MultipartBody.fromUserData(userData, contentType));
    * ```
+   *
+   * An undefined `makeDefault` defaults to either:
+   * - `true` if no default UserData has been set yet; or
+   * - `false` if there is no default UserData set.
    */
-  public addUserDataPart(userData: UserData, contentType?: string) {
+  public addUserDataPart(userData: UserData, contentType?: string, makeDefault?: boolean) {
     this.addPart(MultipartBody.fromUserData(userData, contentType));
+    makeDefault = makeDefault ?? (this.defaultUserData === undefined ? true : false);
+    if (makeDefault) {
+      this.defaultUserData = userData;
+    }
   }
 
   public render(): string {
@@ -510,23 +534,43 @@ export class MultipartUserData extends UserData {
     return resultArchive.join('\n');
   }
 
-  public addS3DownloadCommand(_params: S3DownloadOptions): string {
-    throw new Error(MultipartUserData.USE_PART_ERROR);
+  public addS3DownloadCommand(params: S3DownloadOptions): string {
+    if (this.defaultUserData) {
+      return this.defaultUserData.addS3DownloadCommand(params);
+    } else {
+      throw new Error(MultipartUserData.USE_PART_ERROR);
+    }
   }
 
-  public addExecuteFileCommand(_params: ExecuteFileOptions): void {
-    throw new Error(MultipartUserData.USE_PART_ERROR);
+  public addExecuteFileCommand(params: ExecuteFileOptions): void {
+    if (this.defaultUserData) {
+      this.defaultUserData.addExecuteFileCommand(params);
+    } else {
+      throw new Error(MultipartUserData.USE_PART_ERROR);
+    }
   }
 
-  public addSignalOnExitCommand(_resource: Resource): void {
-    throw new Error(MultipartUserData.USE_PART_ERROR);
+  public addSignalOnExitCommand(resource: Resource): void {
+    if (this.defaultUserData) {
+      this.defaultUserData.addSignalOnExitCommand(resource);
+    } else {
+      throw new Error(MultipartUserData.USE_PART_ERROR);
+    }
   }
 
-  public addCommands(..._commands: string[]): void {
-    throw new Error(MultipartUserData.USE_PART_ERROR);
+  public addCommands(...commands: string[]): void {
+    if (this.defaultUserData) {
+      this.defaultUserData.addCommands(...commands);
+    } else {
+      throw new Error(MultipartUserData.USE_PART_ERROR);
+    }
   }
 
-  public addOnExitCommands(..._commands: string[]): void {
-    throw new Error(MultipartUserData.USE_PART_ERROR);
+  public addOnExitCommands(...commands: string[]): void {
+    if (this.defaultUserData) {
+      this.defaultUserData.addOnExitCommands(...commands);
+    } else {
+      throw new Error(MultipartUserData.USE_PART_ERROR);
+    }
   }
 }

@@ -1,8 +1,9 @@
 import '@aws-cdk/assert-internal/jest';
+import * as kms from '@aws-cdk/aws-kms';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as sns from '@aws-cdk/aws-sns';
 import * as sqs from '@aws-cdk/aws-sqs';
-import { CfnParameter, Duration, Stack, Token } from '@aws-cdk/core';
+import { App, CfnParameter, Duration, RemovalPolicy, Stack, Token } from '@aws-cdk/core';
 import * as subs from '../lib';
 
 /* eslint-disable quote-props */
@@ -307,6 +308,455 @@ test('queue subscription', () => {
   });
 });
 
+test('queue subscription cross region', () => {
+  const app = new App();
+  const topicStack = new Stack(app, 'TopicStack', {
+    env: {
+      account: '11111111111',
+      region: 'us-east-1',
+    },
+  });
+  const queueStack = new Stack(app, 'QueueStack', {
+    env: {
+      account: '11111111111',
+      region: 'us-east-2',
+    },
+  });
+
+  const topic1 = new sns.Topic(topicStack, 'Topic', {
+    topicName: 'topicName',
+    displayName: 'displayName',
+  });
+
+  const queue = new sqs.Queue(queueStack, 'MyQueue');
+
+  topic1.addSubscription(new subs.SqsSubscription(queue));
+
+  expect(topicStack).toMatchTemplate({
+    'Resources': {
+      'TopicBFC7AF6E': {
+        'Type': 'AWS::SNS::Topic',
+        'Properties': {
+          'DisplayName': 'displayName',
+          'TopicName': 'topicName',
+        },
+      },
+    },
+  });
+
+  expect(queueStack).toMatchTemplate({
+    'Resources': {
+      'MyQueueE6CA6235': {
+        'Type': 'AWS::SQS::Queue',
+        'UpdateReplacePolicy': 'Delete',
+        'DeletionPolicy': 'Delete',
+      },
+      'MyQueuePolicy6BBEDDAC': {
+        'Type': 'AWS::SQS::QueuePolicy',
+        'Properties': {
+          'PolicyDocument': {
+            'Statement': [
+              {
+                'Action': 'sqs:SendMessage',
+                'Condition': {
+                  'ArnEquals': {
+                    'aws:SourceArn': {
+                      'Fn::Join': [
+                        '',
+                        [
+                          'arn:',
+                          {
+                            'Ref': 'AWS::Partition',
+                          },
+                          ':sns:us-east-1:11111111111:topicName',
+                        ],
+                      ],
+                    },
+                  },
+                },
+                'Effect': 'Allow',
+                'Principal': {
+                  'Service': 'sns.amazonaws.com',
+                },
+                'Resource': {
+                  'Fn::GetAtt': [
+                    'MyQueueE6CA6235',
+                    'Arn',
+                  ],
+                },
+              },
+            ],
+            'Version': '2012-10-17',
+          },
+          'Queues': [
+            {
+              'Ref': 'MyQueueE6CA6235',
+            },
+          ],
+        },
+      },
+      'MyQueueTopicStackTopicFBF76EB349BDFA94': {
+        'Type': 'AWS::SNS::Subscription',
+        'Properties': {
+          'Protocol': 'sqs',
+          'TopicArn': {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                {
+                  'Ref': 'AWS::Partition',
+                },
+                ':sns:us-east-1:11111111111:topicName',
+              ],
+            ],
+          },
+          'Endpoint': {
+            'Fn::GetAtt': [
+              'MyQueueE6CA6235',
+              'Arn',
+            ],
+          },
+          'Region': 'us-east-1',
+        },
+      },
+    },
+  });
+});
+
+test('queue subscription cross region, env agnostic', () => {
+  const app = new App();
+  const topicStack = new Stack(app, 'TopicStack', {});
+  const queueStack = new Stack(app, 'QueueStack', {});
+
+  const topic1 = new sns.Topic(topicStack, 'Topic', {
+    topicName: 'topicName',
+    displayName: 'displayName',
+  });
+
+  const queue = new sqs.Queue(queueStack, 'MyQueue');
+
+  topic1.addSubscription(new subs.SqsSubscription(queue));
+
+  expect(topicStack).toMatchTemplate({
+    'Resources': {
+      'TopicBFC7AF6E': {
+        'Type': 'AWS::SNS::Topic',
+        'Properties': {
+          'DisplayName': 'displayName',
+          'TopicName': 'topicName',
+        },
+      },
+    },
+    'Outputs': {
+      'ExportsOutputRefTopicBFC7AF6ECB4A357A': {
+        'Value': {
+          'Ref': 'TopicBFC7AF6E',
+        },
+        'Export': {
+          'Name': 'TopicStack:ExportsOutputRefTopicBFC7AF6ECB4A357A',
+        },
+      },
+    },
+  });
+
+  expect(queueStack).toMatchTemplate({
+    'Resources': {
+      'MyQueueE6CA6235': {
+        'Type': 'AWS::SQS::Queue',
+        'UpdateReplacePolicy': 'Delete',
+        'DeletionPolicy': 'Delete',
+      },
+      'MyQueuePolicy6BBEDDAC': {
+        'Type': 'AWS::SQS::QueuePolicy',
+        'Properties': {
+          'PolicyDocument': {
+            'Statement': [
+              {
+                'Action': 'sqs:SendMessage',
+                'Condition': {
+                  'ArnEquals': {
+                    'aws:SourceArn': {
+                      'Fn::ImportValue': 'TopicStack:ExportsOutputRefTopicBFC7AF6ECB4A357A',
+                    },
+                  },
+                },
+                'Effect': 'Allow',
+                'Principal': {
+                  'Service': 'sns.amazonaws.com',
+                },
+                'Resource': {
+                  'Fn::GetAtt': [
+                    'MyQueueE6CA6235',
+                    'Arn',
+                  ],
+                },
+              },
+            ],
+            'Version': '2012-10-17',
+          },
+          'Queues': [
+            {
+              'Ref': 'MyQueueE6CA6235',
+            },
+          ],
+        },
+      },
+      'MyQueueTopicStackTopicFBF76EB349BDFA94': {
+        'Type': 'AWS::SNS::Subscription',
+        'Properties': {
+          'Protocol': 'sqs',
+          'TopicArn': {
+            'Fn::ImportValue': 'TopicStack:ExportsOutputRefTopicBFC7AF6ECB4A357A',
+          },
+          'Endpoint': {
+            'Fn::GetAtt': [
+              'MyQueueE6CA6235',
+              'Arn',
+            ],
+          },
+        },
+      },
+    },
+  });
+});
+
+test('queue subscription cross region, topic env agnostic', () => {
+  const app = new App();
+  const topicStack = new Stack(app, 'TopicStack', {});
+  const queueStack = new Stack(app, 'QueueStack', {
+    env: {
+      account: '11111111111',
+      region: 'us-east-1',
+    },
+  });
+
+  const topic1 = new sns.Topic(topicStack, 'Topic', {
+    topicName: 'topicName',
+    displayName: 'displayName',
+  });
+
+  const queue = new sqs.Queue(queueStack, 'MyQueue');
+
+  topic1.addSubscription(new subs.SqsSubscription(queue));
+
+  expect(topicStack).toMatchTemplate({
+    'Resources': {
+      'TopicBFC7AF6E': {
+        'Type': 'AWS::SNS::Topic',
+        'Properties': {
+          'DisplayName': 'displayName',
+          'TopicName': 'topicName',
+        },
+      },
+    },
+  });
+
+  expect(queueStack).toMatchTemplate({
+    'Resources': {
+      'MyQueueE6CA6235': {
+        'Type': 'AWS::SQS::Queue',
+        'UpdateReplacePolicy': 'Delete',
+        'DeletionPolicy': 'Delete',
+      },
+      'MyQueuePolicy6BBEDDAC': {
+        'Type': 'AWS::SQS::QueuePolicy',
+        'Properties': {
+          'PolicyDocument': {
+            'Statement': [
+              {
+                'Action': 'sqs:SendMessage',
+                'Condition': {
+                  'ArnEquals': {
+                    'aws:SourceArn': {
+                      'Fn::Join': [
+                        '',
+                        [
+                          'arn:',
+                          {
+                            'Ref': 'AWS::Partition',
+                          },
+                          ':sns:',
+                          {
+                            'Ref': 'AWS::Region',
+                          },
+                          ':',
+                          {
+                            'Ref': 'AWS::AccountId',
+                          },
+                          ':topicName',
+                        ],
+                      ],
+                    },
+                  },
+                },
+                'Effect': 'Allow',
+                'Principal': {
+                  'Service': 'sns.amazonaws.com',
+                },
+                'Resource': {
+                  'Fn::GetAtt': [
+                    'MyQueueE6CA6235',
+                    'Arn',
+                  ],
+                },
+              },
+            ],
+            'Version': '2012-10-17',
+          },
+          'Queues': [
+            {
+              'Ref': 'MyQueueE6CA6235',
+            },
+          ],
+        },
+      },
+      'MyQueueTopicStackTopicFBF76EB349BDFA94': {
+        'Type': 'AWS::SNS::Subscription',
+        'Properties': {
+          'Protocol': 'sqs',
+          'TopicArn': {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                {
+                  'Ref': 'AWS::Partition',
+                },
+                ':sns:',
+                {
+                  'Ref': 'AWS::Region',
+                },
+                ':',
+                {
+                  'Ref': 'AWS::AccountId',
+                },
+                ':topicName',
+              ],
+            ],
+          },
+          'Endpoint': {
+            'Fn::GetAtt': [
+              'MyQueueE6CA6235',
+              'Arn',
+            ],
+          },
+        },
+      },
+    },
+  });
+});
+
+test('queue subscription cross region, queue env agnostic', () => {
+  const app = new App();
+  const topicStack = new Stack(app, 'TopicStack', {
+    env: {
+      account: '11111111111',
+      region: 'us-east-1',
+    },
+  });
+  const queueStack = new Stack(app, 'QueueStack', {});
+
+  const topic1 = new sns.Topic(topicStack, 'Topic', {
+    topicName: 'topicName',
+    displayName: 'displayName',
+  });
+
+  const queue = new sqs.Queue(queueStack, 'MyQueue');
+
+  topic1.addSubscription(new subs.SqsSubscription(queue));
+
+  expect(topicStack).toMatchTemplate({
+    'Resources': {
+      'TopicBFC7AF6E': {
+        'Type': 'AWS::SNS::Topic',
+        'Properties': {
+          'DisplayName': 'displayName',
+          'TopicName': 'topicName',
+        },
+      },
+    },
+  });
+
+  expect(queueStack).toMatchTemplate({
+    'Resources': {
+      'MyQueueE6CA6235': {
+        'Type': 'AWS::SQS::Queue',
+        'UpdateReplacePolicy': 'Delete',
+        'DeletionPolicy': 'Delete',
+      },
+      'MyQueuePolicy6BBEDDAC': {
+        'Type': 'AWS::SQS::QueuePolicy',
+        'Properties': {
+          'PolicyDocument': {
+            'Statement': [
+              {
+                'Action': 'sqs:SendMessage',
+                'Condition': {
+                  'ArnEquals': {
+                    'aws:SourceArn': {
+                      'Fn::Join': [
+                        '',
+                        [
+                          'arn:',
+                          {
+                            'Ref': 'AWS::Partition',
+                          },
+                          ':sns:us-east-1:11111111111:topicName',
+                        ],
+                      ],
+                    },
+                  },
+                },
+                'Effect': 'Allow',
+                'Principal': {
+                  'Service': 'sns.amazonaws.com',
+                },
+                'Resource': {
+                  'Fn::GetAtt': [
+                    'MyQueueE6CA6235',
+                    'Arn',
+                  ],
+                },
+              },
+            ],
+            'Version': '2012-10-17',
+          },
+          'Queues': [
+            {
+              'Ref': 'MyQueueE6CA6235',
+            },
+          ],
+        },
+      },
+      'MyQueueTopicStackTopicFBF76EB349BDFA94': {
+        'Type': 'AWS::SNS::Subscription',
+        'Properties': {
+          'Protocol': 'sqs',
+          'TopicArn': {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                {
+                  'Ref': 'AWS::Partition',
+                },
+                ':sns:us-east-1:11111111111:topicName',
+              ],
+            ],
+          },
+          'Endpoint': {
+            'Fn::GetAtt': [
+              'MyQueueE6CA6235',
+              'Arn',
+            ],
+          },
+          'Region': 'us-east-1',
+        },
+      },
+    },
+  });
+});
 test('queue subscription with user provided dlq', () => {
   const queue = new sqs.Queue(stack, 'MyQueue');
   const dlQueue = new sqs.Queue(stack, 'DeadLetterQueue', {
@@ -458,6 +908,156 @@ test('queue subscription (with raw delivery)', () => {
   });
 });
 
+test('encrypted queue subscription', () => {
+  const key = new kms.Key(stack, 'MyKey', {
+    removalPolicy: RemovalPolicy.DESTROY,
+  });
+
+  const queue = new sqs.Queue(stack, 'MyQueue', {
+    encryption: sqs.QueueEncryption.KMS,
+    encryptionMasterKey: key,
+  });
+
+  topic.addSubscription(new subs.SqsSubscription(queue));
+
+  expect(stack).toMatchTemplate({
+    'Resources': {
+      'MyTopic86869434': {
+        'Type': 'AWS::SNS::Topic',
+        'Properties': {
+          'DisplayName': 'displayName',
+          'TopicName': 'topicName',
+        },
+      },
+      'MyKey6AB29FA6': {
+        'Type': 'AWS::KMS::Key',
+        'Properties': {
+          'KeyPolicy': {
+            'Statement': [
+              {
+                'Action': [
+                  'kms:Create*',
+                  'kms:Describe*',
+                  'kms:Enable*',
+                  'kms:List*',
+                  'kms:Put*',
+                  'kms:Update*',
+                  'kms:Revoke*',
+                  'kms:Disable*',
+                  'kms:Get*',
+                  'kms:Delete*',
+                  'kms:ScheduleKeyDeletion',
+                  'kms:CancelKeyDeletion',
+                  'kms:GenerateDataKey',
+                  'kms:TagResource',
+                  'kms:UntagResource',
+                ],
+                'Effect': 'Allow',
+                'Principal': {
+                  'AWS': {
+                    'Fn::Join': [
+                      '',
+                      [
+                        'arn:',
+                        {
+                          'Ref': 'AWS::Partition',
+                        },
+                        ':iam::',
+                        {
+                          'Ref': 'AWS::AccountId',
+                        },
+                        ':root',
+                      ],
+                    ],
+                  },
+                },
+                'Resource': '*',
+              },
+              {
+                'Action': [
+                  'kms:Decrypt',
+                  'kms:GenerateDataKey',
+                ],
+                'Effect': 'Allow',
+                'Principal': {
+                  'Service': 'sns.amazonaws.com',
+                },
+                'Resource': '*',
+              },
+            ],
+            'Version': '2012-10-17',
+          },
+        },
+        'UpdateReplacePolicy': 'Delete',
+        'DeletionPolicy': 'Delete',
+      },
+      'MyQueueE6CA6235': {
+        'Type': 'AWS::SQS::Queue',
+        'Properties': {
+          'KmsMasterKeyId': {
+            'Fn::GetAtt': [
+              'MyKey6AB29FA6',
+              'Arn',
+            ],
+          },
+        },
+        'DeletionPolicy': 'Delete',
+        'UpdateReplacePolicy': 'Delete',
+      },
+      'MyQueuePolicy6BBEDDAC': {
+        'Type': 'AWS::SQS::QueuePolicy',
+        'Properties': {
+          'PolicyDocument': {
+            'Statement': [
+              {
+                'Action': 'sqs:SendMessage',
+                'Condition': {
+                  'ArnEquals': {
+                    'aws:SourceArn': {
+                      'Ref': 'MyTopic86869434',
+                    },
+                  },
+                },
+                'Effect': 'Allow',
+                'Principal': {
+                  'Service': 'sns.amazonaws.com',
+                },
+                'Resource': {
+                  'Fn::GetAtt': [
+                    'MyQueueE6CA6235',
+                    'Arn',
+                  ],
+                },
+              },
+            ],
+            'Version': '2012-10-17',
+          },
+          'Queues': [
+            {
+              'Ref': 'MyQueueE6CA6235',
+            },
+          ],
+        },
+      },
+      'MyQueueMyTopic9B00631B': {
+        'Type': 'AWS::SNS::Subscription',
+        'Properties': {
+          'Protocol': 'sqs',
+          'TopicArn': {
+            'Ref': 'MyTopic86869434',
+          },
+          'Endpoint': {
+            'Fn::GetAtt': [
+              'MyQueueE6CA6235',
+              'Arn',
+            ],
+          },
+        },
+      },
+    },
+  });
+});
+
 test('lambda subscription', () => {
   const fction = new lambda.Function(stack, 'MyFunc', {
     runtime: lambda.Runtime.NODEJS_10_X,
@@ -555,6 +1155,243 @@ test('lambda subscription', () => {
               'Arn',
             ],
           },
+        },
+      },
+    },
+  });
+});
+
+test('lambda subscription, cross region env agnostic', () => {
+  const app = new App();
+  const topicStack = new Stack(app, 'TopicStack', {});
+  const lambdaStack = new Stack(app, 'LambdaStack', {});
+
+  const topic1 = new sns.Topic(topicStack, 'Topic', {
+    topicName: 'topicName',
+    displayName: 'displayName',
+  });
+  const fction = new lambda.Function(lambdaStack, 'MyFunc', {
+    runtime: lambda.Runtime.NODEJS_10_X,
+    handler: 'index.handler',
+    code: lambda.Code.fromInline('exports.handler = function(e, c, cb) { return cb() }'),
+  });
+
+  topic1.addSubscription(new subs.LambdaSubscription(fction));
+
+  expect(lambdaStack).toMatchTemplate({
+    'Resources': {
+      'MyFuncServiceRole54065130': {
+        'Type': 'AWS::IAM::Role',
+        'Properties': {
+          'AssumeRolePolicyDocument': {
+            'Statement': [
+              {
+                'Action': 'sts:AssumeRole',
+                'Effect': 'Allow',
+                'Principal': {
+                  'Service': 'lambda.amazonaws.com',
+                },
+              },
+            ],
+            'Version': '2012-10-17',
+          },
+          'ManagedPolicyArns': [
+            {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    'Ref': 'AWS::Partition',
+                  },
+                  ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole',
+                ],
+              ],
+            },
+          ],
+        },
+      },
+      'MyFunc8A243A2C': {
+        'Type': 'AWS::Lambda::Function',
+        'Properties': {
+          'Code': {
+            'ZipFile': 'exports.handler = function(e, c, cb) { return cb() }',
+          },
+          'Role': {
+            'Fn::GetAtt': [
+              'MyFuncServiceRole54065130',
+              'Arn',
+            ],
+          },
+          'Handler': 'index.handler',
+          'Runtime': 'nodejs10.x',
+        },
+        'DependsOn': [
+          'MyFuncServiceRole54065130',
+        ],
+      },
+      'MyFuncAllowInvokeTopicStackTopicFBF76EB3D4A699EF': {
+        'Type': 'AWS::Lambda::Permission',
+        'Properties': {
+          'Action': 'lambda:InvokeFunction',
+          'FunctionName': {
+            'Fn::GetAtt': [
+              'MyFunc8A243A2C',
+              'Arn',
+            ],
+          },
+          'Principal': 'sns.amazonaws.com',
+          'SourceArn': {
+            'Fn::ImportValue': 'TopicStack:ExportsOutputRefTopicBFC7AF6ECB4A357A',
+          },
+        },
+      },
+      'MyFuncTopic3B7C24C5': {
+        'Type': 'AWS::SNS::Subscription',
+        'Properties': {
+          'Protocol': 'lambda',
+          'TopicArn': {
+            'Fn::ImportValue': 'TopicStack:ExportsOutputRefTopicBFC7AF6ECB4A357A',
+          },
+          'Endpoint': {
+            'Fn::GetAtt': [
+              'MyFunc8A243A2C',
+              'Arn',
+            ],
+          },
+        },
+      },
+    },
+  });
+});
+
+test('lambda subscription, cross region', () => {
+  const app = new App();
+  const topicStack = new Stack(app, 'TopicStack', {
+    env: {
+      account: '11111111111',
+      region: 'us-east-1',
+    },
+  });
+  const lambdaStack = new Stack(app, 'LambdaStack', {
+    env: {
+      account: '11111111111',
+      region: 'us-east-2',
+    },
+  });
+
+  const topic1 = new sns.Topic(topicStack, 'Topic', {
+    topicName: 'topicName',
+    displayName: 'displayName',
+  });
+  const fction = new lambda.Function(lambdaStack, 'MyFunc', {
+    runtime: lambda.Runtime.NODEJS_10_X,
+    handler: 'index.handler',
+    code: lambda.Code.fromInline('exports.handler = function(e, c, cb) { return cb() }'),
+  });
+
+  topic1.addSubscription(new subs.LambdaSubscription(fction));
+
+  expect(lambdaStack).toMatchTemplate({
+    'Resources': {
+      'MyFuncServiceRole54065130': {
+        'Type': 'AWS::IAM::Role',
+        'Properties': {
+          'AssumeRolePolicyDocument': {
+            'Statement': [
+              {
+                'Action': 'sts:AssumeRole',
+                'Effect': 'Allow',
+                'Principal': {
+                  'Service': 'lambda.amazonaws.com',
+                },
+              },
+            ],
+            'Version': '2012-10-17',
+          },
+          'ManagedPolicyArns': [
+            {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    'Ref': 'AWS::Partition',
+                  },
+                  ':iam::aws:policy/service-role/AWSLambdaBasicExecutionRole',
+                ],
+              ],
+            },
+          ],
+        },
+      },
+      'MyFunc8A243A2C': {
+        'Type': 'AWS::Lambda::Function',
+        'Properties': {
+          'Code': {
+            'ZipFile': 'exports.handler = function(e, c, cb) { return cb() }',
+          },
+          'Role': {
+            'Fn::GetAtt': [
+              'MyFuncServiceRole54065130',
+              'Arn',
+            ],
+          },
+          'Handler': 'index.handler',
+          'Runtime': 'nodejs10.x',
+        },
+        'DependsOn': [
+          'MyFuncServiceRole54065130',
+        ],
+      },
+      'MyFuncAllowInvokeTopicStackTopicFBF76EB3D4A699EF': {
+        'Type': 'AWS::Lambda::Permission',
+        'Properties': {
+          'Action': 'lambda:InvokeFunction',
+          'FunctionName': {
+            'Fn::GetAtt': [
+              'MyFunc8A243A2C',
+              'Arn',
+            ],
+          },
+          'Principal': 'sns.amazonaws.com',
+          'SourceArn': {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                {
+                  'Ref': 'AWS::Partition',
+                },
+                ':sns:us-east-1:11111111111:topicName',
+              ],
+            ],
+          },
+        },
+      },
+      'MyFuncTopic3B7C24C5': {
+        'Type': 'AWS::SNS::Subscription',
+        'Properties': {
+          'Protocol': 'lambda',
+          'TopicArn': {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                {
+                  'Ref': 'AWS::Partition',
+                },
+                ':sns:us-east-1:11111111111:topicName',
+              ],
+            ],
+          },
+          'Endpoint': {
+            'Fn::GetAtt': [
+              'MyFunc8A243A2C',
+              'Arn',
+            ],
+          },
+          'Region': 'us-east-1',
         },
       },
     },

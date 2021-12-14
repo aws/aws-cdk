@@ -39,7 +39,32 @@ describe('IAM policy statement', () => {
       const doc2 = PolicyDocument.fromJson(doc1.toJSON());
 
       expect(stack.resolve(doc2)).toEqual(stack.resolve(doc1));
+    });
 
+    test('should not convert `Principal: *` to `Principal: { AWS: * }`', () => {
+      const stack = new Stack();
+      const s = PolicyStatement.fromJson({
+        Action: ['service:action1'],
+        Principal: '*',
+        Resource: '*',
+      });
+
+      const doc1 = new PolicyDocument();
+      doc1.addStatements(s);
+
+      const rendered = stack.resolve(doc1);
+
+      expect(rendered).toEqual({
+        Statement: [
+          {
+            Action: 'service:action1',
+            Effect: 'Allow',
+            Principal: '*',
+            Resource: '*',
+          },
+        ],
+        Version: '2012-10-17',
+      });
     });
 
     test('parses a given notPrincipal', () => {

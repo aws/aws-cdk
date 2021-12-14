@@ -1,15 +1,16 @@
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { IResource, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
+import { ArnFormat, RemovalPolicy, Resource, Stack, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { LogStream } from './log-stream';
 import { CfnLogGroup } from './logs.generated';
 import { MetricFilter } from './metric-filter';
 import { FilterPattern, IFilterPattern } from './pattern';
+import { ResourcePolicy } from './policy';
 import { ILogSubscriptionDestination, SubscriptionFilter } from './subscription-filter';
 
-export interface ILogGroup extends IResource {
+export interface ILogGroup extends iam.IResourceWithPolicy {
   /**
    * The ARN of this log group, with ':*' appended
    *
@@ -72,6 +73,11 @@ export interface ILogGroup extends IResource {
    * Give the indicated permissions on this log group and all streams
    */
   grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant;
+
+  /**
+   * Public method to get the physical name of this log group
+   */
+  logGroupPhysicalName(): string;
 }
 
 /**
@@ -87,6 +93,9 @@ abstract class LogGroupBase extends Resource implements ILogGroup {
    * The name of this log group
    */
   public abstract readonly logGroupName: string;
+
+
+  private policy?: ResourcePolicy;
 
   /**
    * Create a new Log Stream for this Log Group
@@ -164,14 +173,35 @@ abstract class LogGroupBase extends Resource implements ILogGroup {
    * Give the indicated permissions on this log group and all streams
    */
   public grant(grantee: iam.IGrantable, ...actions: string[]) {
-    return iam.Grant.addToPrincipal({
+    return iam.Grant.addToPrincipalOrResource({
       grantee,
       actions,
       // A LogGroup ARN out of CloudFormation already includes a ':*' at the end to include the log streams under the group.
       // See https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-logs-loggroup.html#w2ab1c21c10c63c43c11
       resourceArns: [this.logGroupArn],
-      scope: this,
+      resource: this,
     });
+  }
+
+  /**
+   * Public method to get the physical name of this log group
+   * @returns Physical name of log group
+   */
+  public logGroupPhysicalName(): string {
+    return this.physicalName;
+  }
+
+  /**
+   * Adds a statement to the resource policy associated with this log group.
+   * A resource policy will be automatically created upon the first call to `addToResourcePolicy`.
+   * @param statement The policy statement to add
+   */
+  public addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
+    if (!this.policy) {
+      this.policy = new ResourcePolicy(this, 'Policy');
+    }
+    this.policy.document.addStatements(statement);
+    return { statementAdded: true, policyDependable: this.policy };
   }
 }
 
@@ -322,7 +352,7 @@ export class LogGroup extends LogGroupBase {
 
     class Import extends LogGroupBase {
       public readonly logGroupArn = `${baseLogGroupArn}:*`;
-      public readonly logGroupName = Stack.of(scope).parseArn(baseLogGroupArn, ':').resourceName!;
+      public readonly logGroupName = Stack.of(scope).splitArn(baseLogGroupArn, ArnFormat.COLON_RESOURCE_NAME).resourceName!;
     }
 
     return new Import(scope, id);
@@ -339,7 +369,7 @@ export class LogGroup extends LogGroupBase {
       public readonly logGroupArn = Stack.of(scope).formatArn({
         service: 'logs',
         resource: 'log-group',
-        sep: ':',
+        arnFormat: ArnFormat.COLON_RESOURCE_NAME,
         resourceName: baseLogGroupName + ':*',
       });
     }
@@ -382,7 +412,7 @@ export class LogGroup extends LogGroupBase {
       service: 'logs',
       resource: 'log-group',
       resourceName: this.physicalName,
-      sep: ':',
+      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
     });
     this.logGroupName = this.getResourceNameAttribute(resource.ref);
   }

@@ -46,7 +46,9 @@ const checkJobStateLambda = new Function(stack, 'checkJobStateLambda', {
 
 const checkJobState = new LambdaInvoke(stack, 'Check the job state', {
   lambdaFunction: checkJobStateLambda,
-  outputPath: '$.Payload',
+  resultSelector: {
+    status: sfn.JsonPath.stringAt('$.Payload.status'),
+  },
 });
 
 const isComplete = new sfn.Choice(stack, 'Job Complete?');

@@ -5,9 +5,9 @@ import { ManagedPolicy, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
+import { testFutureBehavior } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import { testFutureBehavior } from 'cdk-build-tools/lib/feature-flag';
 import {
   AuroraEngineVersion, AuroraMysqlEngineVersion, AuroraPostgresEngineVersion, CfnDBCluster, Credentials, DatabaseCluster,
   DatabaseClusterEngine, DatabaseClusterFromSnapshot, ParameterGroup, PerformanceInsightRetention, SubnetGroup, DatabaseSecret,
@@ -30,6 +30,7 @@ describe('cluster', () => {
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
         vpc,
       },
+      iamAuthentication: true,
     });
 
     // THEN
@@ -40,6 +41,8 @@ describe('cluster', () => {
         MasterUsername: 'admin',
         MasterUserPassword: 'tooshort',
         VpcSecurityGroupIds: [{ 'Fn::GetAtt': ['DatabaseSecurityGroup5C91FDCB', 'GroupId'] }],
+        EnableIAMDatabaseAuthentication: true,
+        CopyTagsToSnapshot: true,
       },
       DeletionPolicy: 'Snapshot',
       UpdateReplacePolicy: 'Snapshot',
@@ -74,7 +77,7 @@ describe('cluster', () => {
     const vpc = new ec2.Vpc(stack, 'VPC');
 
     // WHEN
-    new DatabaseCluster(stack, 'Database', {
+    const cluster = new DatabaseCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA,
       instances: 1,
       credentials: {
@@ -94,6 +97,28 @@ describe('cluster', () => {
       MasterUsername: 'admin',
       MasterUserPassword: 'tooshort',
       VpcSecurityGroupIds: [{ 'Fn::GetAtt': ['DatabaseSecurityGroup5C91FDCB', 'GroupId'] }],
+    });
+
+    expect(cluster.instanceIdentifiers).toHaveLength(1);
+    expect(stack.resolve(cluster.instanceIdentifiers[0])).toEqual({
+      Ref: 'DatabaseInstance1844F58FD',
+    });
+
+    expect(cluster.instanceEndpoints).toHaveLength(1);
+    expect(stack.resolve(cluster.instanceEndpoints[0])).toEqual({
+      hostname: {
+        'Fn::GetAtt': ['DatabaseInstance1844F58FD', 'Endpoint.Address'],
+      },
+      port: {
+        'Fn::GetAtt': ['DatabaseB269D8BB', 'Endpoint.Port'],
+      },
+      socketAddress: {
+        'Fn::Join': ['', [
+          { 'Fn::GetAtt': ['DatabaseInstance1844F58FD', 'Endpoint.Address'] },
+          ':',
+          { 'Fn::GetAtt': ['DatabaseB269D8BB', 'Endpoint.Port'] },
+        ]],
+      },
     });
   });
 
@@ -695,6 +720,197 @@ describe('cluster', () => {
     }, ResourcePart.Properties);
 
 
+  });
+
+  test('addRotationSingleUser()', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
+      instanceProps: {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        vpc,
+      },
+    });
+
+    // WHEN
+    cluster.addRotationSingleUser();
+
+    expect(stack).toHaveResource('AWS::SecretsManager::RotationSchedule', {
+      SecretId: {
+        Ref: 'DatabaseSecretAttachmentE5D1B020',
+      },
+      RotationLambdaARN: {
+        'Fn::GetAtt': [
+          'DatabaseRotationSingleUser65F55654',
+          'Outputs.RotationLambdaARN',
+        ],
+      },
+      RotationRules: {
+        AutomaticallyAfterDays: 30,
+      },
+    });
+  });
+
+  test('addRotationMultiUser()', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
+      instanceProps: {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        vpc,
+      },
+    });
+
+    const userSecret = new DatabaseSecret(stack, 'UserSecret', { username: 'user' });
+    cluster.addRotationMultiUser('user', { secret: userSecret.attach(cluster) });
+
+    expect(stack).toHaveResource('AWS::SecretsManager::RotationSchedule', {
+      SecretId: {
+        Ref: 'UserSecretAttachment16ACBE6D',
+      },
+      RotationLambdaARN: {
+        'Fn::GetAtt': [
+          'DatabaseuserECD1FB0C',
+          'Outputs.RotationLambdaARN',
+        ],
+      },
+      RotationRules: {
+        AutomaticallyAfterDays: 30,
+      },
+    });
+
+    expect(stack).toHaveResourceLike('AWS::Serverless::Application', {
+      Parameters: {
+        masterSecretArn: {
+          Ref: 'DatabaseSecretAttachmentE5D1B020',
+        },
+      },
+    });
+  });
+
+  test('addRotationSingleUser() with options', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpcWithIsolated = new ec2.Vpc(stack, 'Vpc', {
+      subnetConfiguration: [
+        { name: 'public', subnetType: ec2.SubnetType.PUBLIC },
+        { name: 'private', subnetType: ec2.SubnetType.PRIVATE_WITH_NAT },
+        { name: 'isolated', subnetType: ec2.SubnetType.PRIVATE_ISOLATED },
+      ],
+    });
+
+    // WHEN
+    // DB in isolated subnet (no internet connectivity)
+    const cluster = new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
+      instanceProps: {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        vpc: vpcWithIsolated,
+        vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_ISOLATED },
+      },
+    });
+
+    // Rotation in private subnet (internet via NAT)
+    cluster.addRotationSingleUser({
+      automaticallyAfter: cdk.Duration.days(15),
+      excludeCharacters: '°_@',
+      vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_NAT },
+    });
+
+    // THEN
+    expect(stack).toHaveResource('AWS::SecretsManager::RotationSchedule', {
+      RotationRules: {
+        AutomaticallyAfterDays: 15,
+      },
+    });
+
+    expect(stack).toHaveResource('AWS::Serverless::Application', {
+      Parameters: {
+        endpoint: {
+          'Fn::Join': ['', [
+            'https://secretsmanager.',
+            { Ref: 'AWS::Region' },
+            '.',
+            { Ref: 'AWS::URLSuffix' },
+          ]],
+        },
+        functionName: 'DatabaseRotationSingleUser458A45BE',
+        vpcSubnetIds: {
+          'Fn::Join': ['', [
+            { Ref: 'VpcprivateSubnet1SubnetCEAD3716' },
+            ',',
+            { Ref: 'VpcprivateSubnet2Subnet2DE7549C' },
+          ]],
+        },
+        vpcSecurityGroupIds: {
+          'Fn::GetAtt': [
+            'DatabaseRotationSingleUserSecurityGroupAC6E0E73',
+            'GroupId',
+          ],
+        },
+        excludeCharacters: '°_@',
+      },
+    });
+  });
+
+
+  test('addRotationSingleUser() with VPC interface endpoint', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpcIsolatedOnly = new ec2.Vpc(stack, 'Vpc', { natGateways: 0 });
+
+    const endpoint = new ec2.InterfaceVpcEndpoint(stack, 'Endpoint', {
+      service: ec2.InterfaceVpcEndpointAwsService.SECRETS_MANAGER,
+      vpc: vpcIsolatedOnly,
+      subnets: { subnetType: ec2.SubnetType.PRIVATE_ISOLATED },
+    });
+
+    // DB in isolated subnet (no internet connectivity)
+    const cluster = new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA_MYSQL,
+      instanceProps: {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        vpc: vpcIsolatedOnly,
+        vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_ISOLATED },
+      },
+    });
+
+    // Rotation in isolated subnet with access to Secrets Manager API via endpoint
+    cluster.addRotationSingleUser({ endpoint });
+
+    expect(stack).toHaveResource('AWS::Serverless::Application', {
+      Parameters: {
+        endpoint: {
+          'Fn::Join': ['', [
+            'https://',
+            { Ref: 'EndpointEEF1FD8F' },
+            '.secretsmanager.',
+            { Ref: 'AWS::Region' },
+            '.',
+            { Ref: 'AWS::URLSuffix' },
+          ]],
+        },
+        functionName: 'DatabaseRotationSingleUser458A45BE',
+        vpcSubnetIds: {
+          'Fn::Join': ['', [
+            { Ref: 'VpcIsolatedSubnet1SubnetE48C5737' },
+            ',',
+            { Ref: 'VpcIsolatedSubnet2Subnet16364B91' },
+          ]],
+        },
+        vpcSecurityGroupIds: {
+          'Fn::GetAtt': [
+            'DatabaseRotationSingleUserSecurityGroupAC6E0E73',
+            'GroupId',
+          ],
+        },
+        excludeCharacters: " %+~`#$&*()|[]{}:;<>?!'/@\"\\",
+      },
+    });
   });
 
   test('throws when trying to add rotation to a cluster without secret', () => {
@@ -1633,12 +1849,13 @@ describe('cluster', () => {
     const vpc = new ec2.Vpc(stack, 'VPC');
 
     // WHEN
-    new DatabaseClusterFromSnapshot(stack, 'Database', {
+    const cluster = new DatabaseClusterFromSnapshot(stack, 'Database', {
       engine: DatabaseClusterEngine.aurora({ version: AuroraEngineVersion.VER_1_22_2 }),
       instanceProps: {
         vpc,
       },
       snapshotIdentifier: 'mySnapshot',
+      iamAuthentication: true,
     });
 
     // THEN
@@ -1649,6 +1866,7 @@ describe('cluster', () => {
         DBSubnetGroupName: { Ref: 'DatabaseSubnets56F17B9A' },
         VpcSecurityGroupIds: [{ 'Fn::GetAtt': ['DatabaseSecurityGroup5C91FDCB', 'GroupId'] }],
         SnapshotIdentifier: 'mySnapshot',
+        EnableIAMDatabaseAuthentication: true,
       },
       DeletionPolicy: 'Snapshot',
       UpdateReplacePolicy: 'Snapshot',
@@ -1656,7 +1874,27 @@ describe('cluster', () => {
 
     expect(stack).toCountResources('AWS::RDS::DBInstance', 2);
 
+    expect(cluster.instanceIdentifiers).toHaveLength(2);
+    expect(stack.resolve(cluster.instanceIdentifiers[0])).toEqual({
+      Ref: 'DatabaseInstance1844F58FD',
+    });
 
+    expect(cluster.instanceEndpoints).toHaveLength(2);
+    expect(stack.resolve(cluster.instanceEndpoints[0])).toEqual({
+      hostname: {
+        'Fn::GetAtt': ['DatabaseInstance1844F58FD', 'Endpoint.Address'],
+      },
+      port: {
+        'Fn::GetAtt': ['DatabaseB269D8BB', 'Endpoint.Port'],
+      },
+      socketAddress: {
+        'Fn::Join': ['', [
+          { 'Fn::GetAtt': ['DatabaseInstance1844F58FD', 'Endpoint.Address'] },
+          ':',
+          { 'Fn::GetAtt': ['DatabaseB269D8BB', 'Endpoint.Port'] },
+        ]],
+      },
+    });
   });
 
   test('reuse an existing subnet group', () => {
@@ -1737,8 +1975,32 @@ describe('cluster', () => {
         ],
       },
     });
+  });
 
+  test('fromGeneratedSecret with replica regions', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
 
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.aurora({ version: AuroraEngineVersion.VER_1_22_2 }),
+      credentials: Credentials.fromGeneratedSecret('admin', {
+        replicaRegions: [{ region: 'eu-west-1' }],
+      }),
+      instanceProps: {
+        vpc,
+      },
+    });
+
+    // THEN
+    expect(stack).toHaveResource('AWS::SecretsManager::Secret', {
+      ReplicaRegions: [
+        {
+          Region: 'eu-west-1',
+        },
+      ],
+    });
   });
 
   test('can set custom name to database secret by fromSecret', () => {
@@ -1900,6 +2162,85 @@ describe('cluster', () => {
     // THEN
     expect(stack).toHaveResourceLike('AWS::RDS::DBCluster', {
       DBClusterIdentifier: clusterIdentifier,
+    });
+  });
+
+  test('cluster with copyTagsToSnapshot default', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA,
+      instanceProps: {
+        vpc,
+      },
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::RDS::DBCluster', {
+      CopyTagsToSnapshot: true,
+    });
+  });
+
+  test('cluster with copyTagsToSnapshot disabled', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA,
+      instanceProps: {
+        vpc,
+      },
+      copyTagsToSnapshot: false,
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::RDS::DBCluster', {
+      CopyTagsToSnapshot: false,
+    });
+  });
+
+  test('cluster with copyTagsToSnapshot enabled', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA,
+      copyTagsToSnapshot: true,
+      instanceProps: {
+        vpc,
+      },
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::RDS::DBCluster', {
+      CopyTagsToSnapshot: true,
+    });
+  });
+
+  test('cluster has BacktrackWindow in seconds', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA,
+      instanceProps: {
+        vpc,
+      },
+      backtrackWindow: cdk.Duration.days(1),
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::RDS::DBCluster', {
+      BacktrackWindow: 24 * 60 * 60,
     });
   });
 });

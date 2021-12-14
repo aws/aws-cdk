@@ -1,5 +1,5 @@
 import * as iam from '@aws-cdk/aws-iam';
-import { IResource, Lazy, Names, Resource, Stack, Token } from '@aws-cdk/core';
+import { ArnFormat, IResource, Lazy, Names, Resource, Stack, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { Archive, BaseArchiveProps } from './archive';
 import { CfnEventBus } from './events.generated';
@@ -169,11 +169,31 @@ export class EventBus extends EventBusBase {
    * @param eventBusArn ARN of imported event bus
    */
   public static fromEventBusArn(scope: Construct, id: string, eventBusArn: string): IEventBus {
-    const parts = Stack.of(scope).parseArn(eventBusArn);
+    const parts = Stack.of(scope).splitArn(eventBusArn, ArnFormat.SLASH_RESOURCE_NAME);
 
     return new ImportedEventBus(scope, id, {
       eventBusArn: eventBusArn,
       eventBusName: parts.resourceName || '',
+      eventBusPolicy: '',
+    });
+  }
+
+  /**
+   * Import an existing event bus resource
+   * @param scope Parent construct
+   * @param id Construct ID
+   * @param eventBusName Name of imported event bus
+   */
+  public static fromEventBusName(scope: Construct, id: string, eventBusName: string): IEventBus {
+    const eventBusArn = Stack.of(scope).formatArn({
+      resource: 'event-bus',
+      service: 'events',
+      resourceName: eventBusName,
+    });
+
+    return EventBus.fromEventBusAttributes(scope, id, {
+      eventBusName: eventBusName,
+      eventBusArn: eventBusArn,
       eventBusPolicy: '',
     });
   }
@@ -256,6 +276,8 @@ export class EventBus extends EventBusBase {
           );
         }
         return { eventBusName: eventSourceName, eventSourceName };
+      } else {
+        return { eventBusName: props.eventBusName };
       }
     }
     return { eventBusName: defaultEventBusName };
@@ -291,7 +313,7 @@ export class EventBus extends EventBusBase {
     super(scope, id, { physicalName: eventBusName });
 
     const eventBus = new CfnEventBus(this, 'Resource', {
-      name: eventBusName,
+      name: this.physicalName,
       eventSourceName,
     });
 
@@ -313,7 +335,7 @@ class ImportedEventBus extends EventBusBase {
   public readonly eventBusPolicy: string;
   public readonly eventSourceName?: string;
   constructor(scope: Construct, id: string, attrs: EventBusAttributes) {
-    const arnParts = Stack.of(scope).parseArn(attrs.eventBusArn);
+    const arnParts = Stack.of(scope).splitArn(attrs.eventBusArn, ArnFormat.SLASH_RESOURCE_NAME);
     super(scope, id, {
       account: arnParts.account,
       region: arnParts.region,

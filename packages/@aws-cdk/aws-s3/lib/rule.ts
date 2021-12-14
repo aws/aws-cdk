@@ -100,6 +100,14 @@ export interface LifecycleRule {
    * @default Rule applies to all objects
    */
   readonly tagFilters?: {[tag: string]: any};
+
+  /**
+   * Indicates whether Amazon S3 will remove a delete marker with no noncurrent versions.
+   * If set to true, the delete marker will be expired.
+   *
+   * @default false
+   */
+  readonly expiredObjectDeleteMarker?: boolean;
 }
 
 /**
@@ -175,6 +183,17 @@ export class StorageClass {
    * minimum, you are charged for 90 days.
    */
   public static readonly GLACIER = new StorageClass('GLACIER');
+
+  /**
+   * Storage class for long-term archival that can be accessed in a few milliseconds.
+   *
+   * It is ideal for data that is accessed once or twice per quarter, and
+   * that requires immediate access. Data stored in the GLACIER_IR storage class
+   * has a minimum storage duration period of 90 days and can be accessed in
+   * as milliseconds. If you delete an object before the 90-day minimum,
+   * you are charged for 90 days.
+   */
+  public static readonly GLACIER_INSTANT_RETRIEVAL = new StorageClass('GLACIER_IR');
 
   /**
    * Use for archiving data that rarely needs to be accessed. Data stored in the

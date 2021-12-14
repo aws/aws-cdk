@@ -1,6 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { FeatureFlags, Fn, IResource, Lazy, RemovalPolicy, Resource, SecretValue, Stack, Token } from '@aws-cdk/core';
+import { ArnFormat, FeatureFlags, Fn, IResource, Lazy, RemovalPolicy, Resource, SecretValue, Stack, Token } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { IConstruct, Construct } from 'constructs';
 import { ResourcePolicy } from './policy';
@@ -207,14 +207,16 @@ abstract class SecretBase extends Resource implements ISecret {
   public grantRead(grantee: iam.IGrantable, versionStages?: string[]): iam.Grant {
     // @see https://docs.aws.amazon.com/secretsmanager/latest/userguide/auth-and-access_identity-based-policies.html
 
-    const result = iam.Grant.addToPrincipal({
+    const result = iam.Grant.addToPrincipalOrResource({
       grantee,
       actions: ['secretsmanager:GetSecretValue', 'secretsmanager:DescribeSecret'],
       resourceArns: [this.arnForPolicies],
-      scope: this,
+      resource: this,
     });
-    if (versionStages != null && result.principalStatement) {
-      result.principalStatement.addCondition('ForAnyValue:StringEquals', {
+
+    const statement = result.principalStatement || result.resourceStatement;
+    if (versionStages != null && statement) {
+      statement.addCondition('ForAnyValue:StringEquals', {
         'secretsmanager:VersionStage': versionStages,
       });
     }
@@ -226,16 +228,21 @@ abstract class SecretBase extends Resource implements ISecret {
       );
     }
 
+    // Throw if secret is not imported and it's shared cross account and no KMS key is provided
+    if (this instanceof Secret && result.resourceStatement && !this.encryptionKey) {
+      throw new Error('KMS Key must be provided for cross account access to Secret');
+    }
+
     return result;
   }
 
   public grantWrite(grantee: iam.IGrantable): iam.Grant {
     // See https://docs.aws.amazon.com/secretsmanager/latest/userguide/auth-and-access_identity-based-policies.html
-    const result = iam.Grant.addToPrincipal({
+    const result = iam.Grant.addToPrincipalOrResource({
       grantee,
       actions: ['secretsmanager:PutSecretValue', 'secretsmanager:UpdateSecret'],
       resourceArns: [this.arnForPolicies],
-      scope: this,
+      resource: this,
     });
 
     if (this.encryptionKey) {
@@ -243,6 +250,11 @@ abstract class SecretBase extends Resource implements ISecret {
       this.encryptionKey.grantEncrypt(
         new kms.ViaServicePrincipal(`secretsmanager.${Stack.of(this).region}.amazonaws.com`, grantee.grantPrincipal),
       );
+    }
+
+    // Throw if secret is not imported and it's shared cross account and no KMS key is provided
+    if (this instanceof Secret && result.resourceStatement && !this.encryptionKey) {
+      throw new Error('KMS Key must be provided for cross account access to Secret');
     }
 
     return result;
@@ -361,7 +373,7 @@ export class Secret extends SecretBase {
           service: 'secretsmanager',
           resource: 'secret',
           resourceName: this.secretName + '*',
-          sep: ':',
+          arnFormat: ArnFormat.COLON_RESOURCE_NAME,
         });
       }
     }(scope, id);
@@ -385,7 +397,7 @@ export class Secret extends SecretBase {
           service: 'secretsmanager',
           resource: 'secret',
           resourceName: secretName,
-          sep: ':',
+          arnFormat: ArnFormat.COLON_RESOURCE_NAME,
         });
       }
     }(scope, id);
@@ -425,7 +437,7 @@ export class Secret extends SecretBase {
       public readonly secretName = parseSecretName(scope, secretArn);
       protected readonly autoCreatePolicy = false;
       public get secretFullArn() { return secretArnIsPartial ? undefined : secretArn; }
-    }(scope, id);
+    }(scope, id, { environmentFromArn: secretArn });
   }
 
   public readonly encryptionKey?: kms.IKey;
@@ -455,15 +467,15 @@ export class Secret extends SecretBase {
       replicaRegions: Lazy.any({ produce: () => this.replicaRegions }, { omitEmptyArray: true }),
     });
 
-    if (props.removalPolicy) {
-      resource.applyRemovalPolicy(props.removalPolicy);
-    }
+    resource.applyRemovalPolicy(props.removalPolicy, {
+      default: RemovalPolicy.DESTROY,
+    });
 
     this.secretArn = this.getResourceArnAttribute(resource.ref, {
       service: 'secretsmanager',
       resource: 'secret',
       resourceName: this.physicalName,
-      sep: ':',
+      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
     });
 
     this.encryptionKey = props.encryptionKey;
@@ -592,8 +604,6 @@ export interface SecretAttachmentTargetProps {
 
 /**
  * Options to add a secret attachment to a secret.
- *
- * @deprecated use `secret.attach()` instead
  */
 export interface AttachedSecretOptions {
   /**
@@ -746,7 +756,7 @@ export interface SecretStringGenerator {
 
 /** Parses the secret name from the ARN. */
 function parseSecretName(construct: IConstruct, secretArn: string) {
-  const resourceName = Stack.of(construct).parseArn(secretArn, ':').resourceName;
+  const resourceName = Stack.of(construct).splitArn(secretArn, ArnFormat.COLON_RESOURCE_NAME).resourceName;
   if (resourceName) {
     // Can't operate on the token to remove the SecretsManager suffix, so just return the full secret name
     if (Token.isUnresolved(resourceName)) {
@@ -772,7 +782,7 @@ function parseSecretName(construct: IConstruct, secretArn: string) {
  * explicit between the Secret and wherever the secretName might be used (i.e., using Tokens).
  */
 function parseSecretNameForOwnedSecret(construct: Construct, secretArn: string, secretName?: string) {
-  const resourceName = Stack.of(construct).parseArn(secretArn, ':').resourceName;
+  const resourceName = Stack.of(construct).splitArn(secretArn, ArnFormat.COLON_RESOURCE_NAME).resourceName;
   if (!resourceName) {
     throw new Error('invalid ARN format; no secret name provided');
   }

@@ -28,6 +28,11 @@ export interface BundlingOptions {
   readonly runtime: lambda.Runtime;
 
   /**
+   * The system architecture of the lambda function
+   */
+  readonly architecture: lambda.Architecture;
+
+  /**
    * Output path suffix ('python' for a layer, '.' otherwise)
    */
   readonly outputPathSuffix: string;
@@ -77,7 +82,7 @@ export interface BundlingOptions {
  * Produce bundled Lambda asset code
  */
 export function bundle(options: BundlingOptions): lambda.Code {
-  const { entry, runtime, outputPathSuffix } = options;
+  const { entry, runtime, architecture, outputPathSuffix } = options;
 
   const stagedir = cdk.FileSystem.mkdtemp('python-bundling-');
   const hasDeps = stageDependencies(entry, stagedir);
@@ -100,8 +105,9 @@ export function bundle(options: BundlingOptions): lambda.Code {
 
   const image = cdk.DockerImage.fromBuild(stagedir, {
     buildArgs: {
-      IMAGE: runtime.bundlingDockerImage.image,
+      IMAGE: runtime.bundlingImage.image,
     },
+    platform: architecture.dockerPlatform,
     file: dockerfile,
   });
 

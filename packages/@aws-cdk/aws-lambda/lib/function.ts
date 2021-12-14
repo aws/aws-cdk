@@ -5,8 +5,9 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as logs from '@aws-cdk/aws-logs';
 import * as sqs from '@aws-cdk/aws-sqs';
-import { Annotations, CfnResource, Duration, Fn, Lazy, Names, Stack } from '@aws-cdk/core';
+import { Annotations, ArnFormat, CfnResource, Duration, Fn, Lazy, Names, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
+import { Architecture } from './architecture';
 import { Code, CodeConfig } from './code';
 import { ICodeSigningConfig } from './code-signing-config';
 import { EventInvokeConfigOptions } from './event-invoke-config';
@@ -15,9 +16,10 @@ import { FileSystem } from './filesystem';
 import { FunctionAttributes, FunctionBase, IFunction } from './function-base';
 import { calculateFunctionHash, trimFromStart } from './function-hash';
 import { Handler } from './handler';
+import { LambdaInsightsVersion } from './lambda-insights';
 import { Version, VersionOptions } from './lambda-version';
 import { CfnFunction } from './lambda.generated';
-import { ILayerVersion } from './layers';
+import { LayerVersion, ILayerVersion } from './layers';
 import { Runtime } from './runtime';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
@@ -215,6 +217,18 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
   readonly profilingGroup?: IProfilingGroup;
 
   /**
+   * Specify the version of CloudWatch Lambda insights to use for monitoring
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Lambda-Insights.html
+   *
+   * When used with `DockerImageFunction` or `DockerImageCode`, the Docker image should have
+   * the Lambda insights agent installed.
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Lambda-Insights-Getting-Started-docker.html
+   *
+   * @default - No Lambda Insights
+   */
+  readonly insightsVersion?: LambdaInsightsVersion;
+
+  /**
    * A list of layers to add to the function's execution environment. You can configure your Lambda function to pull in
    * additional code during initialization in the form of layers. Layers are packages of libraries or other dependencies
    * that can be used by multiple functions.
@@ -301,6 +315,19 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    * @default - Not Sign the Code
    */
   readonly codeSigningConfig?: ICodeSigningConfig;
+
+  /**
+   * DEPRECATED
+   * @default [Architecture.X86_64]
+   * @deprecated use `architecture`
+   */
+  readonly architectures?: Architecture[];
+
+  /**
+   * The system architectures compatible with this lambda function.
+   * @default Architecture.X86_64
+   */
+  readonly architecture?: Architecture;
 }
 
 export interface FunctionProps extends FunctionOptions {
@@ -336,7 +363,7 @@ export interface FunctionProps extends FunctionOptions {
 }
 
 /**
- * Deploys a file from from inside the construct library as a function.
+ * Deploys a file from inside the construct library as a function.
  *
  * The supplied file is subject to the 4096 bytes limit of being embedded in a
  * CloudFormation template.
@@ -383,6 +410,23 @@ export class Function extends FunctionBase {
     return this._currentVersion;
   }
 
+  /** @internal */
+  public static _VER_PROPS: { [key: string]: boolean } = {};
+
+  /**
+   * Record whether specific properties in the `AWS::Lambda::Function` resource should
+   * also be associated to the Version resource.
+   * See 'currentVersion' section in the module README for more details.
+   * @param propertyName The property to classify
+   * @param locked whether the property should be associated to the version or not.
+   */
+  public static classifyVersionProperty(propertyName: string, locked: boolean) {
+    this._VER_PROPS[propertyName] = locked;
+  }
+
+  /**
+   * Import a lambda function into the CDK using its ARN
+   */
   public static fromFunctionArn(scope: Construct, id: string, functionArn: string): IFunction {
     return Function.fromFunctionAttributes(scope, id, { functionArn });
   }
@@ -406,6 +450,7 @@ export class Function extends FunctionBase {
       public readonly grantPrincipal: iam.IPrincipal;
       public readonly role = role;
       public readonly permissionsNode = this.node;
+      public readonly architecture = attrs.architecture ?? Architecture.X86_64;
 
       protected readonly canCreatePermissions = attrs.sameEnvironment ?? this._isStackAccount();
 
@@ -529,7 +574,18 @@ export class Function extends FunctionBase {
    */
   public readonly deadLetterQueue?: sqs.IQueue;
 
+  /**
+   * The architecture of this Lambda Function (this is an optional attribute and defaults to X86_64).
+   */
+  public readonly architecture: Architecture;
+
+  /**
+   * The timeout configured for this lambda.
+   */
+  public readonly timeout?: Duration;
+
   public readonly permissionsNode = this.node;
+
 
   protected readonly canCreatePermissions = true;
 
@@ -544,6 +600,8 @@ export class Function extends FunctionBase {
 
   private readonly currentVersionOptions?: VersionOptions;
   private _currentVersion?: Version;
+
+  private _architecture?: Architecture;
 
   constructor(scope: Construct, id: string, props: FunctionProps) {
     super(scope, id, {
@@ -622,6 +680,14 @@ export class Function extends FunctionBase {
       }];
     }
 
+    if (props.architecture && props.architectures !== undefined) {
+      throw new Error('Either architecture or architectures must be specified but not both.');
+    }
+    if (props.architectures && props.architectures.length > 1) {
+      throw new Error('Only one architecture must be specified.');
+    }
+    this._architecture = props.architecture ?? (props.architectures && props.architectures[0]);
+
     const resource: CfnFunction = new CfnFunction(this, 'Resource', {
       functionName: this.physicalName,
       description: props.description,
@@ -632,7 +698,7 @@ export class Function extends FunctionBase {
         zipFile: code.inlineCode,
         imageUri: code.image?.imageUri,
       },
-      layers: Lazy.list({ produce: () => this.layers.map(layer => layer.layerVersionArn) }, { omitEmpty: true }),
+      layers: Lazy.list({ produce: () => this.layers.map(layer => layer.layerVersionArn) }, { omitEmpty: true }), // Evaluated on synthesis
       handler: props.handler === Handler.FROM_IMAGE ? undefined : props.handler,
       timeout: props.timeout && props.timeout.toSeconds(),
       packageType: props.runtime === Runtime.FROM_IMAGE ? 'Image' : undefined,
@@ -649,10 +715,12 @@ export class Function extends FunctionBase {
       imageConfig: undefinedIfNoKeys({
         command: code.image?.cmd,
         entryPoint: code.image?.entrypoint,
+        workingDirectory: code.image?.workingDirectory,
       }),
       kmsKeyArn: props.environmentEncryption?.keyArn,
       fileSystemConfigs,
       codeSigningConfigArn: props.codeSigningConfig?.codeSigningConfigArn,
+      architectures: this._architecture ? [this._architecture.name] : undefined,
     });
 
     resource.node.addDependency(this.role);
@@ -662,12 +730,19 @@ export class Function extends FunctionBase {
       service: 'lambda',
       resource: 'function',
       resourceName: this.physicalName,
-      sep: ':',
+      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
     });
 
     this.runtime = props.runtime;
+    this.timeout = props.timeout;
+
+    this.architecture = props.architecture ?? Architecture.X86_64;
 
     if (props.layers) {
+      if (props.runtime === Runtime.FROM_IMAGE) {
+        throw new Error('Layers are not supported for container image functions');
+      }
+
       this.addLayers(...props.layers);
     }
 
@@ -701,11 +776,34 @@ export class Function extends FunctionBase {
     this.currentVersionOptions = props.currentVersionOptions;
 
     if (props.filesystem) {
+      if (!props.vpc) {
+        throw new Error('Cannot configure \'filesystem\' without configuring a VPC.');
+      }
       const config = props.filesystem.config;
       if (config.dependency) {
         this.node.addDependency(...config.dependency);
       }
+      // There could be a race if the Lambda is used in a CustomResource. It is possible for the Lambda to
+      // fail to attach to a given FileSystem if we do not have a dependency on the SecurityGroup ingress/egress
+      // rules that were created between this Lambda's SG & the Filesystem SG.
+      this.connections.securityGroups.forEach(sg => {
+        sg.node.findAll().forEach(child => {
+          if (child instanceof CfnResource && child.cfnResourceType === 'AWS::EC2::SecurityGroupEgress') {
+            resource.node.addDependency(child);
+          }
+        });
+      });
+      config.connections?.securityGroups.forEach(sg => {
+        sg.node.findAll().forEach(child => {
+          if (child instanceof CfnResource && child.cfnResourceType === 'AWS::EC2::SecurityGroupIngress') {
+            resource.node.addDependency(child);
+          }
+        });
+      });
     }
+
+    // Configure Lambda insights
+    this.configureLambdaInsights(props);
   }
 
   /**
@@ -736,6 +834,11 @@ export class Function extends FunctionBase {
         const runtimes = layer.compatibleRuntimes.map(runtime => runtime.name).join(', ');
         throw new Error(`This lambda function uses a runtime that is incompatible with this layer (${this.runtime.name} is not in [${runtimes}])`);
       }
+
+      // Currently no validations for compatible architectures since Lambda service
+      // allows layers configured with one architecture to be used with a Lambda function
+      // from another architecture.
+
       this.layers.push(layer);
     }
   }
@@ -820,6 +923,24 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
     }
 
     return;
+  }
+
+  /**
+   * Configured lambda insights on the function if specified. This is acheived by adding an imported layer which is added to the
+   * list of lambda layers on synthesis.
+   *
+   * https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Lambda-Insights-extension-versions.html
+   */
+  private configureLambdaInsights(props: FunctionProps): void {
+    if (props.insightsVersion === undefined) {
+      return;
+    }
+    if (props.runtime !== Runtime.FROM_IMAGE) {
+      // Layers cannot be added to Lambda container images. The image should have the insights agent installed.
+      // See https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Lambda-Insights-Getting-Started-docker.html
+      this.addLayers(LayerVersion.fromLayerVersionArn(this, 'LambdaInsightsLayer', props.insightsVersion._bind(this, this).arn));
+    }
+    this.role?.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('CloudWatchLambdaInsightsExecutionRolePolicy'));
   }
 
   private renderEnvironment() {
