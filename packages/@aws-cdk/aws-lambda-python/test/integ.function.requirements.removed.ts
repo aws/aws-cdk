@@ -20,7 +20,7 @@ class TestStack extends Stack {
 
     const fn = new lambda.PythonFunction(this, 'function', {
       entry: workDir,
-      runtime: Runtime.PYTHON_2_7,
+      runtime: Runtime.PYTHON_3_9,
     });
 
     new CfnOutput(this, 'Function', {
@@ -43,7 +43,7 @@ fs.copyFileSync(path.join(__dirname, 'lambda-handler', 'index.py'), path.join(wo
 const requirementsTxtPath = path.join(workDir, 'requirements.txt');
 
 // Write a requirements.txt with an extraneous dependency (colorama)
-const beforeDeps = 'certifi==2020.6.20\nchardet==3.0.4\nidna==2.10\nurllib3==1.25.11\nrequests==2.23.0\npillow==6.2.2\ncolorama==0.4.3\n';
+const beforeDeps = 'certifi==2020.6.20\nchardet==3.0.4\nidna==2.10\nurllib3==1.26.7\nrequests==2.26.0\nPillow==8.4.0\ncolorama==0.4.3\n';
 fs.writeFileSync(requirementsTxtPath, beforeDeps);
 
 // Synth the first time
@@ -52,7 +52,7 @@ const stack1 = new TestStack(app, 'cdk-integ-lambda-python-requirements-removed1
 app.synth();
 
 // Then, write a requirements.txt without the extraneous dependency and synth again
-const afterDeps = 'certifi==2020.6.20\nchardet==3.0.4\nidna==2.10\nurllib3==1.25.11\nrequests==2.23.0\npillow==6.2.2\n';
+const afterDeps = 'certifi==2020.6.20\nchardet==3.0.4\nidna==2.10\nurllib3==1.26.7\nrequests==2.26.0\nPillow==8.4.0\n';
 fs.writeFileSync(requirementsTxtPath, afterDeps);
 
 // Synth the same stack a second time with different requirements.txt contents
