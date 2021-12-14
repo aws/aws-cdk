@@ -417,7 +417,7 @@ bucket.virtualHostedUrlForObject('objectname', { regional: false }); // Virtual 
 
 ## Object Ownership
 
-You can use the two following properties to specify the bucket [object Ownership].
+You can use one of following properties to specify the bucket [object Ownership].
 
 [object Ownership]: https://docs.aws.amazon.com/AmazonS3/latest/dev/about-object-ownership.html
 
@@ -438,6 +438,16 @@ The bucket owner will own the object if the object is uploaded with the bucket-o
 ```ts
 new s3.Bucket(this, 'MyBucket', {
   objectOwnership: s3.ObjectOwnership.BUCKET_OWNER_PREFERRED,
+});
+```
+
+### Bucket owner enforced (recommended)
+
+ACLs are disabled, and the bucket owner automatically owns and has full control over every object in the bucket. ACLs no longer affect permissions to data in the S3 bucket. The bucket uses policies to define access control.
+
+```ts
+new s3.Bucket(this, 'MyBucket', {
+  objectOwnership: s3.ObjectOwnership.BUCKET_OWNER_ENFORCED,
 });
 ```
 
