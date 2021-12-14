@@ -107,8 +107,7 @@ test('with asset deployment', () => {
   const asset = new Asset(app, 'SampleAsset', {
     path: path.join(__dirname, './test-asset'),
   });
-  const branch = app.addBranch('dev');
-  branch.addAssetDeployment(asset);
+  app.addBranch('dev', { asset });
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('Custom::AmplifyAssetDeployment', {

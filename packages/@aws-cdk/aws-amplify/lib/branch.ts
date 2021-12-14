@@ -104,6 +104,16 @@ export interface BranchOptions {
    * @default - no stage
    */
   readonly stage?: string;
+
+  /**
+   * Asset for deployment.
+   *
+   * The Amplify app must not have a sourceCodeProvider configured as this resource uses Amplify's
+   * startDeployment API to initiate and deploy a S3 asset onto the App.
+   *
+   * @default - no asset
+   */
+  readonly asset?: Asset
 }
 
 /**
@@ -139,8 +149,6 @@ export class Branch extends Resource implements IBranch {
 
   public readonly branchName: string;
 
-  private readonly appId: string;
-
   private readonly environmentVariables: { [name: string]: string };
 
   constructor(scope: Construct, id: string, props: BranchProps) {
@@ -164,7 +172,19 @@ export class Branch extends Resource implements IBranch {
 
     this.arn = branch.attrArn;
     this.branchName = branch.attrBranchName;
-    this.appId = props.app.appId;
+
+    if (props.asset) {
+      new CustomResource(this, 'DeploymentResource', {
+        serviceToken: AmplifyAssetDeploymentProvider.getOrCreate(this),
+        resourceType: 'Custom::AmplifyAssetDeployment',
+        properties: {
+          AppId: props.app.appId,
+          BranchName: branchName,
+          S3ObjectKey: props.asset.s3ObjectKey,
+          S3BucketName: props.asset.s3BucketName,
+        },
+      });
+    }
   }
 
   /**
@@ -176,25 +196,6 @@ export class Branch extends Resource implements IBranch {
   public addEnvironment(name: string, value: string) {
     this.environmentVariables[name] = value;
     return this;
-  }
-
-  /**
-   * Allows deployment of S3 assets to Amplify via a custom resource.
-   *
-   * The Amplify app must not have a sourceCodeProvider configured as this resource uses Amplify's
-   * startDeployment API to initiate and deploy a S3 asset onto the App.
-   */
-  public addAssetDeployment(asset: Asset) {
-    new CustomResource(this, 'DeploymentResource', {
-      serviceToken: AmplifyAssetDeploymentProvider.getOrCreate(this),
-      resourceType: 'Custom::AmplifyAssetDeployment',
-      properties: {
-        AppId: this.appId,
-        BranchName: this.branchName,
-        S3ObjectKey: asset.s3ObjectKey,
-        S3BucketName: asset.s3BucketName,
-      },
-    });
   }
 }
 
