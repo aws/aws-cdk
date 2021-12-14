@@ -60,7 +60,7 @@
   "maturity": "developer-preview",
   "stability": "experimental",
   "engines": {
-    "node": ">= 10.13.0 <13 || >=13.7.0"
+    "node": ">= 14.15.0"
   },
   "nozem": {
     "ostools": [
@@ -69,6 +69,6 @@
     ]
   },
   "publishConfig": {
-    "tag": "latest-1"
+    "tag": "latest"
   }
 }

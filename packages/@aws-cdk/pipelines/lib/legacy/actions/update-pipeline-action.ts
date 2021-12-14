@@ -8,10 +8,6 @@ import { Construct } from 'constructs';
 import { dockerCredentialsInstallCommands, DockerCredential, DockerCredentialUsage } from '../../docker-credentials';
 import { embeddedAsmPath } from '../../private/construct-internals';
 
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from '@aws-cdk/core';
-
 /**
  * Props for the UpdatePipelineAction
  *
@@ -84,7 +80,7 @@ export interface UpdatePipelineActionProps {
  *
  * @deprecated This class is part of the old API. Use the API based on the `CodePipeline` class instead
  */
-export class UpdatePipelineAction extends CoreConstruct implements codepipeline.IAction {
+export class UpdatePipelineAction extends Construct implements codepipeline.IAction {
   private readonly action: codepipeline.IAction;
 
   constructor(scope: Construct, id: string, props: UpdatePipelineActionProps) {
@@ -154,7 +150,7 @@ export class UpdatePipelineAction extends CoreConstruct implements codepipeline.
   /**
    * Exists to implement IAction
    */
-  public bind(scope: CoreConstruct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions): codepipeline.ActionConfig {
+  public bind(scope: Construct, stage: codepipeline.IStage, options: codepipeline.ActionBindOptions): codepipeline.ActionConfig {
     return this.action.bind(scope, stage, options);
   }
 
