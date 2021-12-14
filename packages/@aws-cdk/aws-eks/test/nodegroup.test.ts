@@ -276,7 +276,7 @@ describe('node group', () => {
       cluster,
       instanceTypes: [
         new ec2.InstanceType('c6g.large'),
-        new ec2.InstanceType('c7g.large'),
+        new ec2.InstanceType('t4g.large'),
       ],
     });
 
@@ -498,7 +498,7 @@ describe('node group', () => {
     });
       // THEN
     cluster.addNodegroupCapacity('bottlerocket', {
-      instanceTypes: [new ec2.InstanceType('c7g.xlarge')],
+      instanceTypes: [new ec2.InstanceType('c6g.xlarge')],
       amiType: NodegroupAmiType.BOTTLEROCKET_ARM_64,
     });
 

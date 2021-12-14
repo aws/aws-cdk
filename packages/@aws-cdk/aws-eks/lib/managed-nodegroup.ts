@@ -470,12 +470,11 @@ const gpuAmiTypes: NodegroupAmiType[] = [NodegroupAmiType.AL2_X86_64_GPU];
  * @returns NodegroupAmiType[]
  */
 function getPossibleAmiTypesForInstanceType(instanceType: InstanceType): NodegroupAmiType[] {
-  return INSTANCE_TYPES.graviton3.includes(instanceType.toString().substring(0, 3)) ? arm64AmiTypes :
-    INSTANCE_TYPES.graviton2.includes(instanceType.toString().substring(0, 3)) ? arm64AmiTypes :
-      INSTANCE_TYPES.graviton.includes(instanceType.toString().substring(0, 2)) ? arm64AmiTypes :
-        INSTANCE_TYPES.gpu.includes(instanceType.toString().substring(0, 2)) ? gpuAmiTypes :
-          INSTANCE_TYPES.inferentia.includes(instanceType.toString().substring(0, 4)) ? gpuAmiTypes :
-            x8664AmiTypes;
+  return INSTANCE_TYPES.graviton2.includes(instanceType.toString().substring(0, 3)) ? arm64AmiTypes :
+    INSTANCE_TYPES.graviton.includes(instanceType.toString().substring(0, 2)) ? arm64AmiTypes :
+      INSTANCE_TYPES.gpu.includes(instanceType.toString().substring(0, 2)) ? gpuAmiTypes :
+        INSTANCE_TYPES.inferentia.includes(instanceType.toString().substring(0, 4)) ? gpuAmiTypes :
+          x8664AmiTypes;
 }
 
 /**
