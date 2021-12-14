@@ -56,11 +56,12 @@ export function createModuleDefinitionFromCfnNamespace(namespace: string): Modul
 }
 
 
-export async function createLibraryReadme(namespace: string, readmePath: string) {
+export async function createLibraryReadme(namespace: string, readmePath: string, alphaPackageName?: string) {
   const module = createModuleDefinitionFromCfnNamespace(namespace);
 
   await fs.writeFile(readmePath, cfnOnlyReadmeContents({
     cfnNamespace: namespace,
     packageName: module.packageName,
+    alphaPackageName,
   }));
 }
