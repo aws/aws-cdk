@@ -32,9 +32,10 @@ export enum HttpLambdaResponseType {
 export interface HttpLambdaAuthorizerProps {
 
   /**
-   * The name of the authorizer
+   * Friendly authorizer name
+   * @default - same value as `id` passed in the constructor.
    */
-  readonly authorizerName: string;
+  readonly authorizerName?: string;
 
   /**
    * The identity source for which authorization is requested.
@@ -42,11 +43,6 @@ export interface HttpLambdaAuthorizerProps {
    * @default ['$request.header.Authorization']
    */
   readonly identitySource?: string[];
-
-  /**
-   * The lambda function used for authorization
-   */
-  readonly handler: IFunction;
 
   /**
    * How long APIGateway should cache the results. Max 1 hour.
@@ -76,7 +72,16 @@ export class HttpLambdaAuthorizer implements IHttpRouteAuthorizer {
   private authorizer?: HttpAuthorizer;
   private httpApi?: IHttpApi;
 
-  constructor(private readonly props: HttpLambdaAuthorizerProps) {
+  /**
+   * Initialize a lambda authorizer to be bound with HTTP route.
+   * @param id The id of the underlying construct
+   * @param pool The lambda function handler to use for authorization
+   * @param props Properties to configure the authorizer
+   */
+  constructor(
+    private readonly id: string,
+    private readonly handler: IFunction,
+    private readonly props: HttpLambdaAuthorizerProps = {}) {
   }
 
   public bind(options: HttpRouteAuthorizerBindOptions): HttpRouteAuthorizerConfig {
@@ -85,26 +90,24 @@ export class HttpLambdaAuthorizer implements IHttpRouteAuthorizer {
     }
 
     if (!this.authorizer) {
-      const id = this.props.authorizerName;
-
       const responseTypes = this.props.responseTypes ?? [HttpLambdaResponseType.IAM];
       const enableSimpleResponses = responseTypes.includes(HttpLambdaResponseType.SIMPLE) || undefined;
 
       this.httpApi = options.route.httpApi;
-      this.authorizer = new HttpAuthorizer(options.scope, id, {
+      this.authorizer = new HttpAuthorizer(options.scope, this.id, {
         httpApi: options.route.httpApi,
         identitySource: this.props.identitySource ?? [
           '$request.header.Authorization',
         ],
         type: HttpAuthorizerType.LAMBDA,
-        authorizerName: this.props.authorizerName,
+        authorizerName: this.props.authorizerName ?? this.id,
         enableSimpleResponses,
         payloadFormatVersion: enableSimpleResponses ? AuthorizerPayloadVersion.VERSION_2_0 : AuthorizerPayloadVersion.VERSION_1_0,
-        authorizerUri: lambdaAuthorizerArn(this.props.handler),
+        authorizerUri: lambdaAuthorizerArn(this.handler),
         resultsCacheTtl: this.props.resultsCacheTtl ?? Duration.minutes(5),
       });
 
-      this.props.handler.addPermission(`${Names.nodeUniqueId(this.authorizer.node)}-Permission`, {
+      this.handler.addPermission(`${Names.nodeUniqueId(this.authorizer.node)}-Permission`, {
         scope: options.scope as CoreConstruct,
         principal: new ServicePrincipal('apigateway.amazonaws.com'),
         sourceArn: Stack.of(options.route).formatArn({

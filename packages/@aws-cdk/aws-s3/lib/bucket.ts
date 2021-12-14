@@ -116,6 +116,20 @@ export interface IBucket extends IResource {
   urlForObject(key?: string): string;
 
   /**
+   * The https Transfer Acceleration URL of an S3 object. Specify `dualStack: true` at the options
+   * for dual-stack endpoint (connect to the bucket over IPv6). For example:
+   *
+   * - `https://bucket.s3-accelerate.amazonaws.com`
+   * - `https://bucket.s3-accelerate.amazonaws.com/key`
+   *
+   * @param key The S3 key of the object. If not specified, the URL of the
+   *      bucket is returned.
+   * @param options Options for generating URL.
+   * @returns an TransferAccelerationUrl token
+   */
+  transferAccelerationUrlForObject(key?: string, options?: TransferAccelerationUrlOptions): string;
+
+  /**
    * The virtual hosted-style URL of an S3 object. Specify `regional: false` at
    * the options for non-regional URL. For example:
    *
@@ -621,6 +635,27 @@ export abstract class BucketBase extends Resource implements IBucket {
       return this.urlJoin(prefix, this.bucketName);
     }
     return this.urlJoin(prefix, this.bucketName, key);
+  }
+
+  /**
+   * The https Transfer Acceleration URL of an S3 object. Specify `dualStack: true` at the options
+   * for dual-stack endpoint (connect to the bucket over IPv6). For example:
+   *
+   * - `https://bucket.s3-accelerate.amazonaws.com`
+   * - `https://bucket.s3-accelerate.amazonaws.com/key`
+   *
+   * @param key The S3 key of the object. If not specified, the URL of the
+   *      bucket is returned.
+   * @param options Options for generating URL.
+   * @returns an TransferAccelerationUrl token
+   */
+  public transferAccelerationUrlForObject(key?: string, options?: TransferAccelerationUrlOptions): string {
+    const dualStack = options?.dualStack ? '.dualstack' : '';
+    const prefix = `https://${this.bucketName}.s3-accelerate${dualStack}.amazonaws.com/`;
+    if (typeof key !== 'string') {
+      return this.urlJoin(prefix);
+    }
+    return this.urlJoin(prefix, key);
   }
 
   /**
@@ -1172,6 +1207,13 @@ export interface Inventory {
    */
 export enum ObjectOwnership {
   /**
+   * ACLs are disabled, and the bucket owner automatically owns
+   * and has full control over every object in the bucket.
+   * ACLs no longer affect permissions to data in the S3 bucket.
+   * The bucket uses policies to define access control.
+   */
+  BUCKET_OWNER_ENFORCED = 'BucketOwnerEnforced',
+  /**
    * Objects uploaded to the bucket change ownership to the bucket owner .
    */
   BUCKET_OWNER_PREFERRED = 'BucketOwnerPreferred',
@@ -1369,6 +1411,13 @@ export interface BucketProps {
    *
    */
   readonly objectOwnership?: ObjectOwnership;
+
+  /**
+   * Whether this bucket should have transfer acceleration turned on or not.
+   *
+   * @default false
+   */
+  readonly transferAcceleration?: boolean;
 }
 
 /**
@@ -1535,6 +1584,7 @@ export class Bucket extends BucketBase {
       loggingConfiguration: this.parseServerAccessLogs(props),
       inventoryConfigurations: Lazy.any({ produce: () => this.parseInventoryConfiguration() }),
       ownershipControls: this.parseOwnershipControls(props),
+      accelerateConfiguration: props.transferAcceleration ? { accelerationStatus: 'Enabled' } : undefined,
     });
     this._resource = resource;
 
@@ -2328,6 +2378,18 @@ export interface VirtualHostedStyleUrlOptions {
    * @default - true
    */
   readonly regional?: boolean;
+}
+
+/**
+ * Options for creating a Transfer Acceleration URL.
+ */
+export interface TransferAccelerationUrlOptions {
+  /**
+   * Dual-stack support to connect to the bucket over IPv6.
+   *
+   * @default - false
+   */
+  readonly dualStack?: boolean;
 }
 
 function mapOrUndefined<T, U>(list: T[] | undefined, callback: (element: T) => U): U[] | undefined {
