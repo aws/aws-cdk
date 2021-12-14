@@ -34,7 +34,7 @@ Higher level constructs for Websocket APIs | ![Experimental](https://img.shields
   - [Cross Origin Resource Sharing (CORS)](#cross-origin-resource-sharing-cors)
   - [Publishing HTTP APIs](#publishing-http-apis)
   - [Custom Domain](#custom-domain)
-- [Mutual TLS (mTLS)](#mutual-tls-mtls)
+  - [Mutual TLS](#mutual-tls-mtls)
   - [Managing access to HTTP APIs](#managing-access-to-http-apis)
   - [Metrics](#metrics)
   - [VPC Link](#vpc-link)
@@ -255,7 +255,7 @@ declare const apiDemo: apigwv2.HttpApi;
 const demoDomainUrl = apiDemo.defaultStage?.domainUrl; // returns "https://example.com/demo"
 ```
 
-## Mutual TLS (mTLS)
+### Mutual TLS (mTLS)
 
 Mutual TLS can be configured to limit access to your API based by using client certificates instead of (or as an extension of) using authorization headers.
 
@@ -276,9 +276,9 @@ new DomainName(stack, 'DomainName', {
 })
 ```
 
-### Managing access to HTTP APIs
 Instructions for configuring your trust store can be found [here](https://aws.amazon.com/blogs/compute/introducing-mutual-tls-authentication-for-amazon-api-gateway/)
 
+### Managing access to HTTP APIs
 API Gateway supports multiple mechanisms for [controlling and managing access to your HTTP
 API](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-access-control.html) through authorizers.
 

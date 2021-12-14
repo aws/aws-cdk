@@ -83,8 +83,6 @@ export class WebSocketRoute extends Resource implements IWebSocketRoute {
       scope: this,
     });
 
-    const integration = props.webSocketApi._addIntegration(this, config);
-
     const authorizer = props.authorizer ?? new WebSocketNoneAuthorizer(); // must be explicitly NONE (not undefined) for stack updates to work correctly
     const authBindResult = authorizer.bind({
       route: this,
