@@ -3,6 +3,7 @@ jest.mock('child_process');
 import { Manifest } from '@aws-cdk/cloud-assembly-schema';
 import * as mockfs from 'mock-fs';
 import { AssetManifest, AssetPublishing } from '../lib';
+import { FakeListener } from './fake-listener';
 import { mockAws, mockedApiFailure, mockedApiResult, mockUpload } from './mock-aws';
 import { mockSpawn } from './mock-child_process';
 
@@ -226,7 +227,8 @@ test('will only read bucketEncryption once even for multiple assets', async () =
 });
 
 test('no server side encryption header if access denied for bucket encryption', async () => {
-  const pub = new AssetPublishing(AssetManifest.fromPath('/simple/cdk.out'), { aws });
+  const progressListener = new FakeListener();
+  const pub = new AssetPublishing(AssetManifest.fromPath('/simple/cdk.out'), { aws, progressListener });
 
   aws.mockS3.getBucketEncryption = mockedApiFailure('AccessDenied', 'Access Denied');
 
@@ -243,7 +245,8 @@ test('no server side encryption header if access denied for bucket encryption', 
     ServerSideEncryption: 'AES256',
   }));
 
-  // We'll just have to assume the contents are correct
+  // Error message references target_account, not current_account
+  expect(progressListener.messages).toContainEqual(expect.stringMatching(/ACCES_DENIED.*target_account/));
 });
 
 test('correctly looks up content type', async () => {
@@ -294,6 +297,7 @@ test('successful run does not need to query account ID', async () => {
   await pub.publish();
 
   expect(aws.discoverCurrentAccount).not.toHaveBeenCalled();
+  expect(aws.discoverTargetAccount).not.toHaveBeenCalled();
 });
 
 test('correctly identify asset path if path is absolute', async () => {

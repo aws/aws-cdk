@@ -96,7 +96,7 @@ test('Bundling a layer with dependencies', () => {
 
   bundle({
     entry: entry,
-    runtime: Runtime.PYTHON_2_7,
+    runtime: Runtime.PYTHON_3_9,
     architecture: Architecture.X86_64,
     outputPathSuffix: 'python',
   });
@@ -116,7 +116,7 @@ test('Bundling a python code layer', () => {
 
   bundle({
     entry: path.join(entry, '.'),
-    runtime: Runtime.PYTHON_2_7,
+    runtime: Runtime.PYTHON_3_9,
     architecture: Architecture.X86_64,
     outputPathSuffix: 'python',
   });
