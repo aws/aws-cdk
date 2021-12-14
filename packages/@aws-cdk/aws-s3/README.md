@@ -466,11 +466,11 @@ by deploying with CDK version `1.126.0` or later **before** switching this value
 
 ## Transfer Acceleration
 
-[Transfer Acceleration](https://docs.aws.amazon.com/AmazonS3/latest/userguide/transfer-acceleration.html) can be configured to enable fast, easy, and secure transfers of files over long distances: 
+[Transfer Acceleration](https://docs.aws.amazon.com/AmazonS3/latest/userguide/transfer-acceleration.html) can be configured to enable fast, easy, and secure transfers of files over long distances:
 
 ```ts
 const bucket = new s3.Bucket(this, 'MyBucket', {
-  transferAcceleration: true,
+   transferAcceleration: true,
 });
 ```
 
@@ -478,7 +478,20 @@ To access the bucket that is enabled for Transfer Acceleration, you must use a s
 
 ```ts
 const bucket = new s3.Bucket(this, 'MyBucket', {
-  transferAcceleration: true,
+   transferAcceleration: true,
 });
 bucket.transferAccelerationUrlForObject('objectname');
+```
+
+## Intelligent Tiering
+
+[Intelligent TIering](https://docs.aws.amazon.com/AmazonS3/latest/userguide/transfer-acceleration.html) can be configured to enable fast, easy, and secure transfers of files over long distances:
+
+```ts
+    new s3.Bucket(stack, 'MyBucket', {
+   intelligentTieringConfigurations: [{
+      name: 'foo',
+   }],
+});
+
 ```
