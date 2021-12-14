@@ -788,7 +788,7 @@ describe('node group', () => {
         // ARM64
         new ec2.InstanceType('m6g.large'),
       ],
-    })).toThrow(/instanceTypes of different CPU architectures is not allowed/);
+    })).toThrow(/instanceTypes of different architectures is not allowed/);
 
   });
   test('throws when amiType provided is incorrect', () => {

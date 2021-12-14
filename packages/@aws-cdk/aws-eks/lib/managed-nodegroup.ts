@@ -1,10 +1,9 @@
-import { InstanceType, ISecurityGroup, SubnetSelection } from '@aws-cdk/aws-ec2';
+import { InstanceType, ISecurityGroup, SubnetSelection, InstanceArchitecture } from '@aws-cdk/aws-ec2';
 import { IRole, ManagedPolicy, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import { IResource, Resource, Annotations, withResolved } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { Cluster, ICluster } from './cluster';
 import { CfnNodegroup } from './eks.generated';
-import { INSTANCE_TYPES } from './instance-types';
 
 /**
  * NodeGroup interface
@@ -457,24 +456,26 @@ export class Nodegroup extends Resource implements INodegroup {
 }
 
 /**
- * AMI types of different architectures. Make sure AL2 is always the first element, which will be the default AmiType if amiType and
- * launchTemplateSpec are both undefined.
+ * AMI types of different architectures. Make sure AL2 is always the first element, which will be the default
+ * AmiType if amiType and launchTemplateSpec are both undefined.
  */
 const arm64AmiTypes: NodegroupAmiType[] = [NodegroupAmiType.AL2_ARM_64, NodegroupAmiType.BOTTLEROCKET_ARM_64];
 const x8664AmiTypes: NodegroupAmiType[] = [NodegroupAmiType.AL2_X86_64, NodegroupAmiType.BOTTLEROCKET_X86_64];
 const gpuAmiTypes: NodegroupAmiType[] = [NodegroupAmiType.AL2_X86_64_GPU];
 
+
 /**
- * This function returns an array of "possible AMI types" from the given instance type
- * @param instanceType The instance type
- * @returns NodegroupAmiType[]
+ * This function check if the instanceType is GPU instance.
+ * @param instanceType The EC2 instance type
  */
-function getPossibleAmiTypesForInstanceType(instanceType: InstanceType): NodegroupAmiType[] {
-  return INSTANCE_TYPES.graviton2.includes(instanceType.toString().substring(0, 3)) ? arm64AmiTypes :
-    INSTANCE_TYPES.graviton.includes(instanceType.toString().substring(0, 2)) ? arm64AmiTypes :
-      INSTANCE_TYPES.gpu.includes(instanceType.toString().substring(0, 2)) ? gpuAmiTypes :
-        INSTANCE_TYPES.inferentia.includes(instanceType.toString().substring(0, 4)) ? gpuAmiTypes :
-          x8664AmiTypes;
+function isGpuInstanceType(instanceType: InstanceType): boolean {
+  // capture the family, generation, capabilities, and size portions of the instance type id
+  const instanceTypeComponents = instanceType.toString().match(/^([a-z]+)(\d{1,2})([a-z]*)\.([a-z0-9]+)$/);
+  if (instanceTypeComponents == null) {
+    throw new Error('Malformed instance type identifier');
+  }
+  const family = instanceTypeComponents[1];
+  return ['p', 'g', 'inf'].includes(family);
 }
 
 /**
@@ -485,23 +486,39 @@ function getPossibleAmiTypesForInstanceType(instanceType: InstanceType): Nodegro
  * @returns NodegroupAmiType[]
  */
 function getPossibleAmiTypes(instanceTypes: InstanceType[]): NodegroupAmiType[] {
-  const amiTypes = new Set<NodegroupAmiType>();
-  for (const t of instanceTypes) {
-    getPossibleAmiTypesForInstanceType(t).forEach(x => amiTypes.add(x));
+  const archAmiMap = new Map<InstanceArchitecture, NodegroupAmiType[]>([
+    [InstanceArchitecture.ARM_64, arm64AmiTypes],
+    [InstanceArchitecture.X86_64, x8664AmiTypes],
+  ]);
+  /**
+   * We have to seperate:
+   *
+   * 1. GPU instance
+   * 2. X86_64 instance without GPU
+   * 3. ARM_64 instance
+   */
+  let archTypes: number = 0;
+  // GPU instance
+  if (instanceTypes.some(x => isGpuInstanceType(x))) {
+    archTypes = archTypes + 1;
   }
-  if (amiTypes.size === 0) { // protective code, the current implementation will never result in this.
+  // X86_64 without GPU
+  if (instanceTypes.some(x => x.architecture === InstanceArchitecture.X86_64 && !isGpuInstanceType(x))) {
+    archTypes = archTypes + 1;
+  }
+  // ARM_64 without GPU
+  if (instanceTypes.some(x => x.architecture === InstanceArchitecture.ARM_64)) {
+    archTypes = archTypes + 1;
+  }
+
+  if (archTypes === 0) { // protective code, the current implementation will never result in this.
     throw new Error(`Cannot determine any ami type comptaible with instance types: ${instanceTypes.map(i => i.toString).join(',')}`);
   }
-  let cpuArchTypes: number = 0;
-  // if any detected amiType is ARM_64
-  if (Array.from(amiTypes).some(x => arm64AmiTypes.includes(x))) { cpuArchTypes = cpuArchTypes + 1; }
-  // if any detected amiType is X86_64
-  if (Array.from(amiTypes).some(x => x8664AmiTypes.includes(x))) { cpuArchTypes = cpuArchTypes + 1; }
-  // if any detected amiType is GPU
-  if (Array.from(amiTypes).some(x => gpuAmiTypes.includes(x))) { cpuArchTypes = cpuArchTypes + 1; }
 
-  if (cpuArchTypes > 1) {
-    throw new Error('instanceTypes of different CPU architectures is not allowed');
+  if (archTypes > 1) {
+    throw new Error('instanceTypes of different architectures is not allowed');
   }
-  return Array.from(amiTypes);
+
+  // now we have single architecture
+  return isGpuInstanceType(instanceTypes[0]) ? gpuAmiTypes : archAmiMap.get(instanceTypes[0].architecture)!;
 }
