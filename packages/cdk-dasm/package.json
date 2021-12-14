@@ -29,13 +29,13 @@
   },
   "license": "Apache-2.0",
   "dependencies": {
-    "codemaker": "^1.46.0",
+    "codemaker": "^1.47.0",
     "yaml": "1.10.2"
   },
   "devDependencies": {
     "@types/jest": "^27.0.3",
     "@types/yaml": "1.9.7",
-    "jest": "^27.3.1",
+    "jest": "^27.4.3",
     "typescript": "~3.9.10"
   },
   "keywords": [

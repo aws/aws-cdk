@@ -20,6 +20,14 @@ describe('arn', () => {
 
   });
 
+  test('cannot rely on defaults when stack not known', () => {
+    expect(() =>
+      Arn.format({
+        service: 'sqs',
+        resource: 'myqueuename',
+      })).toThrow(/must all be passed if stack is not/);
+  });
+
   test('create from components with specific values for the various components', () => {
     const stack = new Stack();
 

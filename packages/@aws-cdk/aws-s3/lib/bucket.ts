@@ -1203,6 +1203,13 @@ export interface Inventory {
    */
 export enum ObjectOwnership {
   /**
+   * ACLs are disabled, and the bucket owner automatically owns
+   * and has full control over every object in the bucket.
+   * ACLs no longer affect permissions to data in the S3 bucket.
+   * The bucket uses policies to define access control.
+   */
+  BUCKET_OWNER_ENFORCED = 'BucketOwnerEnforced',
+  /**
    * Objects uploaded to the bucket change ownership to the bucket owner .
    */
   BUCKET_OWNER_PREFERRED = 'BucketOwnerPreferred',
