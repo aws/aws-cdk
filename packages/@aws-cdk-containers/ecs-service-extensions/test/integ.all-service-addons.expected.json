@@ -1116,7 +1116,7 @@
           "Ref": "productionenvironmentclusterC6599D2D"
         },
         "DeploymentConfiguration": {
-          "MaximumPercent": 125,
+          "MaximumPercent": 150,
           "MinimumHealthyPercent": 100
         },
         "EnableECSManagedTags": false,
@@ -1988,7 +1988,7 @@
           "Ref": "productionenvironmentclusterC6599D2D"
         },
         "DeploymentConfiguration": {
-          "MaximumPercent": 125,
+          "MaximumPercent": 150,
           "MinimumHealthyPercent": 100
         },
         "EnableECSManagedTags": false,
@@ -2983,7 +2983,7 @@
           "Ref": "productionenvironmentclusterC6599D2D"
         },
         "DeploymentConfiguration": {
-          "MaximumPercent": 125,
+          "MaximumPercent": 150,
           "MinimumHealthyPercent": 100
         },
         "EnableECSManagedTags": false,

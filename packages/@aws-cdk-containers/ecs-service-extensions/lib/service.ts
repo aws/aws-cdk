@@ -238,14 +238,6 @@ export class Service extends Construct {
       }
     }
 
-    // Set desiredCount to `undefined` if auto scaling is configured for the service
-    if (props.autoScaleTaskCount || this.autoScalingPoliciesEnabled) {
-      serviceProps = {
-        ...serviceProps,
-        desiredCount: undefined,
-      };
-    }
-
     // If a maxHealthyPercent and desired count has been set while minHealthyPercent == 100% then we
     // need to do some failsafe checking to ensure that the maxHealthyPercent
     // actually allows a rolling deploy. Otherwise it is possible to end up with
@@ -277,6 +269,14 @@ export class Service extends Construct {
           maxHealthyPercent: Math.max(125, serviceProps.maxHealthyPercent),
         };
       }
+    }
+
+    // Set desiredCount to `undefined` if auto scaling is configured for the service
+    if (props.autoScaleTaskCount || this.autoScalingPoliciesEnabled) {
+      serviceProps = {
+        ...serviceProps,
+        desiredCount: undefined,
+      };
     }
 
     // Now that the service props are determined we can create
