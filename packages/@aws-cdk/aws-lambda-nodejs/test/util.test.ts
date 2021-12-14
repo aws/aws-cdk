@@ -1,7 +1,7 @@
 import * as child_process from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
-import { callsites, exec, extractDependencies, findUp } from '../lib/util';
+import { callsites, exec, extractDependencies, findUp, findUpMultiple } from '../lib/util';
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -30,6 +30,49 @@ describe('findUp', () => {
 
   test('Starting at a relative path', () => {
     expect(findUp('util.test.ts', 'test/integ-handlers')).toMatch(/aws-lambda-nodejs\/test\/util.test.ts$/);
+  });
+});
+
+describe('findUpMultiple', () => {
+  test('Starting at process.cwd()', () => {
+    const files = findUpMultiple(['README.md', 'package.json']);
+    expect(files).toHaveLength(2);
+    expect(files[0]).toMatch(/aws-lambda-nodejs\/README\.md$/);
+    expect(files[1]).toMatch(/aws-lambda-nodejs\/package\.json$/);
+  });
+
+  test('Non existing files', () => {
+    expect(findUpMultiple(['non-existing-file.unknown', 'non-existing-file.unknown2'])).toEqual([]);
+  });
+
+  test('Existing and non existing files', () => {
+    const files = findUpMultiple(['non-existing-file.unknown', 'README.md']);
+    expect(files).toHaveLength(1);
+    expect(files[0]).toMatch(/aws-lambda-nodejs\/README\.md$/);
+  });
+
+  test('Starting at a specific path', () => {
+    const files = findUpMultiple(['util.test.ts', 'function.test.ts'], path.join(__dirname, 'integ-handlers'));
+    expect(files).toHaveLength(2);
+    expect(files[0]).toMatch(/aws-lambda-nodejs\/test\/util\.test\.ts$/);
+    expect(files[1]).toMatch(/aws-lambda-nodejs\/test\/function\.test\.ts$/);
+  });
+
+  test('Non existing files starting at a non existing relative path', () => {
+    expect(findUpMultiple(['not-to-be-found.txt', 'not-to-be-found2.txt'], 'non-existing/relative/path')).toEqual([]);
+  });
+
+  test('Starting at a relative path', () => {
+    const files = findUpMultiple(['util.test.ts', 'function.test.ts'], 'test/integ-handlers');
+    expect(files).toHaveLength(2);
+    expect(files[0]).toMatch(/aws-lambda-nodejs\/test\/util\.test\.ts$/);
+    expect(files[1]).toMatch(/aws-lambda-nodejs\/test\/function\.test\.ts$/);
+  });
+
+  test('Files on multiple levels', () => {
+    const files = findUpMultiple(['README.md', 'util.test.ts'], path.join(__dirname, 'integ-handlers'));
+    expect(files).toHaveLength(1);
+    expect(files[0]).toMatch(/aws-lambda-nodejs\/test\/util\.test\.ts$/);
   });
 });
 
