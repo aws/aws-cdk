@@ -21,8 +21,9 @@ export interface WebSocketLambdaAuthorizerProps {
 
   /**
    * The name of the authorizer
+   * @default - same value as `id` passed in the constructor.
    */
-  readonly authorizerName: string;
+  readonly authorizerName?: string;
 
   /**
    * The identity source for which authorization is requested.
@@ -30,11 +31,6 @@ export interface WebSocketLambdaAuthorizerProps {
    * @default ['$request.header.Authorization']
    */
   readonly identitySource?: string[];
-
-  /**
-   * The lambda function used for authorization
-   */
-  readonly handler: IFunction;
 }
 
 /**
@@ -44,7 +40,10 @@ export class WebSocketLambdaAuthorizer implements IWebSocketRouteAuthorizer {
   private authorizer?: WebSocketAuthorizer;
   private webSocketApi?: IWebSocketApi;
 
-  constructor(private readonly props: WebSocketLambdaAuthorizerProps) {
+  constructor(
+    private readonly id: string,
+    private readonly handler: IFunction,
+    private readonly props: WebSocketLambdaAuthorizerProps = {}) {
   }
 
   public bind(options: WebSocketRouteAuthorizerBindOptions): WebSocketRouteAuthorizerConfig {
@@ -53,20 +52,18 @@ export class WebSocketLambdaAuthorizer implements IWebSocketRouteAuthorizer {
     }
 
     if (!this.authorizer) {
-      const id = this.props.authorizerName;
-
       this.webSocketApi = options.route.webSocketApi;
-      this.authorizer = new WebSocketAuthorizer(options.scope, id, {
+      this.authorizer = new WebSocketAuthorizer(options.scope, this.id, {
         webSocketApi: options.route.webSocketApi,
         identitySource: this.props.identitySource ?? [
           '$request.header.Authorization',
         ],
         type: WebSocketAuthorizerType.LAMBDA,
-        authorizerName: this.props.authorizerName,
-        authorizerUri: lambdaAuthorizerArn(this.props.handler),
+        authorizerName: this.props.authorizerName ?? this.id,
+        authorizerUri: lambdaAuthorizerArn(this.handler),
       });
 
-      this.props.handler.addPermission(`${Names.nodeUniqueId(this.authorizer.node)}-Permission`, {
+      this.handler.addPermission(`${Names.nodeUniqueId(this.authorizer.node)}-Permission`, {
         scope: options.scope as CoreConstruct,
         principal: new ServicePrincipal('apigateway.amazonaws.com'),
         sourceArn: Stack.of(options.route).formatArn({

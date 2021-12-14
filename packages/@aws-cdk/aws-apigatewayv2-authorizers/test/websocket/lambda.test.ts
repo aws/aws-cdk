@@ -1,6 +1,6 @@
 import { Template } from '@aws-cdk/assertions';
 import { WebSocketApi } from '@aws-cdk/aws-apigatewayv2';
-import { LambdaWebSocketIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
+import { WebSocketLambdaIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
 import { Code, Function, Runtime } from '@aws-cdk/aws-lambda';
 import { Stack } from '@aws-cdk/core';
 import { WebSocketLambdaAuthorizer } from '../../lib';
@@ -15,14 +15,12 @@ describe('WebSocketLambdaAuthorizer', () => {
       code: Code.fromInline('exports.handler = () => {return true}'),
       handler: 'index.handler',
     });
-    const integration = new LambdaWebSocketIntegration({
+    const integration = new WebSocketLambdaIntegration(
+      'Integration',
       handler,
-    });
+    );
 
-    const authorizer = new WebSocketLambdaAuthorizer({
-      authorizerName: 'default-authorizer',
-      handler,
-    });
+    const authorizer = new WebSocketLambdaAuthorizer('default-authorizer', handler);
 
     // WHEN
     new WebSocketApi(stack, 'WebSocketApi', {
