@@ -7,9 +7,9 @@ import * as glue from '../lib';
  * Stack verification steps:
  * * aws cloudformation describe-stacks --stack-name aws-cdk-glue --query Stacks[0].Outputs[0].OutputValue
  * * aws glue get-partition-indexes --catalog-id <output-from-above> --database-name my_database --table-name csv_table
- * returns an index with name 'my-index' and one key with name 'year'
+ * returns two indexes named 'index1' and 'index2'
  * * aws glue get-partition-indexes --catalog-id <output-from-above> --database-name my_database --table-name json_table
- * returns an index with name 'year-month...' and keys 'year' and 'month'
+ * returns an index with name 'year-month...'
  */
 
 const app = new cdk.App();
@@ -38,12 +38,19 @@ const partitionKeys = [{
   type: glue.Schema.BIG_INT,
 }];
 
-const csvTable = new glue.Table(stack, 'CSVTable', {
+new glue.Table(stack, 'CSVTable', {
   database,
   bucket,
   tableName: 'csv_table',
   columns,
   partitionKeys,
+  partitionIndexes: [{
+    indexName: 'index1',
+    keyNames: ['month'],
+  }, {
+    indexName: 'index2',
+    keyNames: ['month', 'year'],
+  }],
   dataFormat: glue.DataFormat.CSV,
 });
 
@@ -56,17 +63,9 @@ const jsonTable = new glue.Table(stack, 'JSONTable', {
   dataFormat: glue.DataFormat.JSON,
 });
 
-const partitionIndexProps: glue.PartitionIndexProps = {
-  indexName: 'my-index',
-  keys: ['year'],
-};
-
-const partitionIndexPropsWithoutName: glue.PartitionIndexProps = {
-  keys: ['year', 'month'],
-};
-
-csvTable.addPartitionIndex(partitionIndexProps);
-jsonTable.addPartitionIndex(partitionIndexPropsWithoutName);
+jsonTable.addPartitionIndex({
+  keyNames: ['year', 'month'],
+});
 
 // output necessary for stack verification
 new cdk.CfnOutput(stack, 'CatalogId', {

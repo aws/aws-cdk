@@ -952,7 +952,7 @@ describe('add partition index', () => {
 
     expect(() => table.addPartitionIndex({
       indexName: 'my-part',
-      keys: ['part'],
+      keyNames: ['part'],
     })).toThrowError(/The table must have partition keys to create a partition index/);
   });
 
@@ -978,7 +978,7 @@ describe('add partition index', () => {
 
     expect(() => table.addPartitionIndex({
       indexName: 'my-part',
-      keys: ['not-part'],
+      keyNames: ['not-part'],
     })).toThrowError(/All index keys must also be partition keys/);
   });
 
@@ -1004,8 +1004,34 @@ describe('add partition index', () => {
 
     expect(() => table.addPartitionIndex({
       indexName: '$my-part',
-      keys: ['part'],
+      keyNames: ['part'],
     })).toThrowError(/Index name can only have letters, numbers, hyphens, or underscores/);
+  });
+
+  test('fails with > 3 indexes', () => {
+    const stack = new cdk.Stack();
+    const database = new glue.Database(stack, 'Database', {
+      databaseName: 'database',
+    });
+
+    const index = {
+      keyNames: ['part'],
+    };
+
+    expect(() => new glue.Table(stack, 'Table', {
+      database,
+      tableName: 'table',
+      columns: [{
+        name: 'col',
+        type: glue.Schema.STRING,
+      }],
+      partitionKeys: [{
+        name: 'part',
+        type: glue.Schema.SMALL_INT,
+      }],
+      partitionIndexes: [index, index, index, index],
+      dataFormat: glue.DataFormat.JSON,
+    })).toThrowError('Maximum number of partition indexes allowed is 3 but got 4');
   });
 });
 

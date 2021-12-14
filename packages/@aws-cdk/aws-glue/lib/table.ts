@@ -12,7 +12,7 @@ import { Column } from './schema';
 /**
  * Properties of a Partition Index.
  */
-export interface PartitionIndexProps {
+export interface PartitionIndex {
   /**
    * The name of the partition index.
    *
@@ -21,10 +21,11 @@ export interface PartitionIndexProps {
   readonly indexName?: string;
 
   /**
-   * The partition index keys. These keys
-   * must be a subet of the table's partition keys.
+   * The partition key names that comprise the partition
+   * index. The names must correspond to a name in the
+   * table's partition keys.
    */
-  readonly keys: string[];
+  readonly keyNames: string[];
 }
 export interface ITable extends IResource {
   /**
@@ -120,7 +121,16 @@ export interface TableProps {
    *
    * @default table is not partitioned
    */
-  readonly partitionKeys?: Column[]
+  readonly partitionKeys?: Column[];
+
+  /**
+   * Partition indecies on the table. A maximum of 3 indexes
+   * are allowed on a table. Keys in the index must be part
+   * of the table's partition keys.
+   *
+   * @default table has no partition indecies
+   */
+  readonly partitionIndexes?: PartitionIndex[];
 
   /**
    * Storage type of the table's data.
@@ -248,6 +258,11 @@ export class Table extends Resource implements ITable {
    */
   public readonly partitionKeys?: Column[];
 
+  /**
+   * This table's partition indexes.
+   */
+  public readonly partitionIndexes?: PartitionIndex[];
+
   constructor(scope: Construct, id: string, props: TableProps) {
     super(scope, id, {
       physicalName: props.tableName,
@@ -260,6 +275,14 @@ export class Table extends Resource implements ITable {
     validateSchema(props.columns, props.partitionKeys);
     this.columns = props.columns;
     this.partitionKeys = props.partitionKeys;
+
+    if (props.partitionIndexes) {
+      if (props.partitionIndexes.length > 3) {
+        throw new Error(`Maximum number of partition indexes allowed is 3 but got ${props.partitionIndexes.length}`);
+      }
+      this.partitionIndexes = props.partitionIndexes;
+      this.partitionIndexes.forEach((index) => this.addPartitionIndex(index));
+    }
 
     this.compressed = props.compressed ?? false;
     const { bucket, encryption, encryptionKey } = createBucket(this, props);
@@ -314,9 +337,11 @@ export class Table extends Resource implements ITable {
    *
    * @see https://docs.aws.amazon.com/glue/latest/dg/partition-indexes.html
    */
-  public addPartitionIndex(props: PartitionIndexProps) {
-    this.validatePartitionIndex(props);
-    const partitionIndex = new cr.AwsCustomResource(this, 'table-partition-index', {
+  public addPartitionIndex(index: PartitionIndex) {
+    this.validatePartitionIndex(index);
+
+    const indexName = index.indexName ?? this.generateIndexName(index.keyNames);
+    const partitionIndexCustomResource = new cr.AwsCustomResource(this, `table-partition-index-${indexName}`, {
       onCreate: {
         service: 'Glue',
         action: 'createPartitionIndex',
@@ -324,40 +349,39 @@ export class Table extends Resource implements ITable {
           DatabaseName: this.database.databaseName,
           TableName: this.tableName,
           PartitionIndex: {
-            IndexName: props.indexName ?? this.generateIndexName(props.keys),
-            Keys: props.keys,
+            IndexName: indexName,
+            Keys: index.keyNames,
           },
         },
         physicalResourceId: cr.PhysicalResourceId.of(
-          'CreatePartitionIndex',
+          indexName,
         ),
       },
       policy: cr.AwsCustomResourcePolicy.fromSdkCalls({
         resources: cr.AwsCustomResourcePolicy.ANY_RESOURCE,
       }),
     });
-
-    this.grantToUnderlyingResources(partitionIndex, ['glue:UpdateTable']);
+    this.grantToUnderlyingResources(partitionIndexCustomResource, ['glue:UpdateTable']);
   }
 
   private generateIndexName(keys: string[]): string {
-    const prefix = keys.join('-');
+    const prefix = keys.join('-') + '-';
     const uniqueId = Names.uniqueId(this);
     const maxIndexLength = 80; // arbitrarily specified
     const startIndex = Math.max(0, uniqueId.length - (maxIndexLength - prefix.length));
     return prefix + uniqueId.substring(startIndex);
   }
 
-  private validatePartitionIndex(props: PartitionIndexProps) {
-    if (props.indexName && !props.indexName.match(/^[A-Za-z0-9\_\-]/)) {
-      throw new Error(`Index name can only have letters, numbers, hyphens, or underscores but received ${props.indexName}`);
+  private validatePartitionIndex(index: PartitionIndex) {
+    if (index.indexName && !index.indexName.match(/^[A-Za-z0-9\_\-]/)) {
+      throw new Error(`Index name can only have letters, numbers, hyphens, or underscores but received ${index.indexName}`);
     }
     if (!this.partitionKeys || this.partitionKeys.length === 0) {
       throw new Error('The table must have partition keys to create a partition index');
     }
     const keyNames = this.partitionKeys.map(pk => pk.name);
-    if (!props.keys.every(k => keyNames.includes(k))) {
-      throw new Error(`All index keys must also be partition keys. Got ${props.keys} but partition key names are ${keyNames}`);
+    if (!index.keyNames.every(k => keyNames.includes(k))) {
+      throw new Error(`All index keys must also be partition keys. Got ${index.keyNames} but partition key names are ${keyNames}`);
     }
   }
 
