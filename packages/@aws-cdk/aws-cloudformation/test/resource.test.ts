@@ -105,7 +105,7 @@ testDeprecated('custom resource is added twice, lambda is added once', () => {
               'Arn',
             ],
           },
-          'Runtime': 'python2.7',
+          'Runtime': 'python3.9',
           'Timeout': 300,
         },
         'DependsOn': [
