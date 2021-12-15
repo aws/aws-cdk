@@ -1,6 +1,6 @@
-import { AWS_REGIONS, AWS_SERVICES } from '../build-tools/aws-entities';
 import { CLOUDWATCH_LAMBDA_INSIGHTS_ARNS } from '../build-tools/fact-tables';
-import { RegionInfo } from '../lib';
+import { FactName, RegionInfo } from '../lib';
+import { AWS_REGIONS, AWS_SERVICES } from '../lib/aws-entities';
 
 test('built-in data is correct', () => {
   const snapshot: any = {};
@@ -42,4 +42,15 @@ test('built-in data features known regions', () => {
   for (const expected of AWS_REGIONS) {
     expect(regions.map(region => region.name)).toContain(expected);
   }
+});
+
+test('limitedRegionMap only returns information for certain regions', () => {
+
+  const map = RegionInfo.limitedRegionMap(FactName.ELBV2_ACCOUNT, ['aws']);
+  expect(map['us-east-1']).toBeDefined();
+  expect(map['cn-north-1']).not.toBeDefined();
+
+  const map2 = RegionInfo.limitedRegionMap(FactName.ELBV2_ACCOUNT, ['aws-cn']);
+  expect(map2['us-east-1']).not.toBeDefined();
+  expect(map2['cn-north-1']).toBeDefined();
 });
