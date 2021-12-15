@@ -3,6 +3,7 @@ import { ABSENT } from '@aws-cdk/assert-internal';
 import * as certificatemanager from '@aws-cdk/aws-certificatemanager';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import {
   CfnDistribution,
@@ -605,6 +606,109 @@ added the ellipsis so a user would know there was more to ...`,
 
   });
 
+  test('distribution with ViewerProtocolPolicy overridden in Behavior', () => {
+    const stack = new cdk.Stack();
+    const sourceBucket = new s3.Bucket(stack, 'Bucket');
+
+    new CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably', {
+      viewerProtocolPolicy: ViewerProtocolPolicy.ALLOW_ALL,
+      originConfigs: [
+        {
+          s3OriginSource: {
+            s3BucketSource: sourceBucket,
+          },
+          behaviors: [
+            {
+              isDefaultBehavior: true,
+            },
+            {
+              pathPattern: '/test/*',
+              viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+            },
+          ],
+        },
+      ],
+    });
+
+    expect(stack).toMatchTemplate({
+      'Resources': {
+        'Bucket83908E77': {
+          'Type': 'AWS::S3::Bucket',
+          'DeletionPolicy': 'Retain',
+          'UpdateReplacePolicy': 'Retain',
+        },
+        'AnAmazingWebsiteProbablyCFDistribution47E3983B': {
+          'Type': 'AWS::CloudFront::Distribution',
+          'Properties': {
+            'DistributionConfig': {
+              'CacheBehaviors': [
+                {
+                  'AllowedMethods': [
+                    'GET',
+                    'HEAD',
+                  ],
+                  'CachedMethods': [
+                    'GET',
+                    'HEAD',
+                  ],
+                  'Compress': true,
+                  'ForwardedValues': {
+                    'Cookies': {
+                      'Forward': 'none',
+                    },
+                    'QueryString': false,
+                  },
+                  'PathPattern': '/test/*',
+                  'TargetOriginId': 'origin1',
+                  'ViewerProtocolPolicy': 'redirect-to-https',
+                },
+              ],
+              'DefaultRootObject': 'index.html',
+              'Origins': [
+                {
+                  'ConnectionAttempts': 3,
+                  'ConnectionTimeout': 10,
+                  'DomainName': {
+                    'Fn::GetAtt': [
+                      'Bucket83908E77',
+                      'RegionalDomainName',
+                    ],
+                  },
+                  'Id': 'origin1',
+                  'S3OriginConfig': {},
+                },
+              ],
+              'ViewerCertificate': {
+                'CloudFrontDefaultCertificate': true,
+              },
+              'PriceClass': 'PriceClass_100',
+              'DefaultCacheBehavior': {
+                'AllowedMethods': [
+                  'GET',
+                  'HEAD',
+                ],
+                'CachedMethods': [
+                  'GET',
+                  'HEAD',
+                ],
+                'TargetOriginId': 'origin1',
+                'ViewerProtocolPolicy': 'allow-all',
+                'ForwardedValues': {
+                  'QueryString': false,
+                  'Cookies': { 'Forward': 'none' },
+                },
+                'Compress': true,
+              },
+              'Enabled': true,
+              'IPV6Enabled': true,
+              'HttpVersion': 'http2',
+            },
+          },
+        },
+      },
+    });
+  });
+
   test('distribution with disabled compression', () => {
     const stack = new cdk.Stack();
     const sourceBucket = new s3.Bucket(stack, 'Bucket');
@@ -905,7 +1009,7 @@ added the ellipsis so a user would know there was more to ...`,
 
   });
 
-  test('allows multiple aliasConfiguration CloudFrontWebDistribution per stack', () => {
+  testDeprecated('allows multiple aliasConfiguration CloudFrontWebDistribution per stack', () => {
     const stack = new cdk.Stack();
     const s3BucketSource = new s3.Bucket(stack, 'Bucket');
 
@@ -1145,7 +1249,7 @@ added the ellipsis so a user would know there was more to ...`,
       });
     });
     describe('errors', () => {
-      test('throws if both deprecated aliasConfiguration and viewerCertificate', () => {
+      testDeprecated('throws if both deprecated aliasConfiguration and viewerCertificate', () => {
         const stack = new cdk.Stack();
         const sourceBucket = new s3.Bucket(stack, 'Bucket');
 

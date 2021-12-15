@@ -2,12 +2,13 @@ import '@aws-cdk/assert-internal/jest';
 import { arrayWith, objectLike } from '@aws-cdk/assert-internal';
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
+import { describeDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Stack } from '@aws-cdk/core';
 import * as cpactions from '../../lib';
 
 /* eslint-disable quote-props */
 
-describe('BitBucket source Action', () => {
+describeDeprecated('BitBucket source Action', () => {
   describe('BitBucket source Action', () => {
     test('produces the correct configuration when added to a pipeline', () => {
       const stack = new Stack();

@@ -1,6 +1,14 @@
-const cfn = require('@aws-cdk/aws-cloudformation');
-const sns = require('@aws-cdk/aws-sns');
-const { Stack, CfnParameter } = require('@aws-cdk/core');
+if (process.env.PACKAGE_LAYOUT_VERSION === '1') {
+  var cfn = require('@aws-cdk/aws-cloudformation');
+  var sns = require('@aws-cdk/aws-sns');
+  var { Stack, CfnParameter } = require('@aws-cdk/core');
+} else {
+  var {
+    aws_cloudformation: cfn,
+    aws_sns: sns,
+  } = require('aws-cdk-lib');
+  var { Stack, CfnParameter } = require('aws-cdk-lib');
+}
 
 class StackWithNestedStack extends Stack {
   constructor(scope, id) {

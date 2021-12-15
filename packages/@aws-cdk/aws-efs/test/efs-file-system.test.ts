@@ -4,8 +4,8 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import { App, RemovalPolicy, Size, Stack, Tags } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import { testFutureBehavior, testLegacyBehavior } from 'cdk-build-tools/lib/feature-flag';
-import { FileSystem, LifecyclePolicy, OutOfInfrequentAccessPolicy, PerformanceMode, ThroughputMode } from '../lib';
+import { testFutureBehavior, testLegacyBehavior } from '@aws-cdk/cdk-build-tools/lib/feature-flag';
+import { FileSystem, LifecyclePolicy, PerformanceMode, ThroughputMode, OutOfInfrequentAccessPolicy } from '../lib';
 
 let stack = new Stack();
 let vpc = new ec2.Vpc(stack, 'VPC');
@@ -42,7 +42,7 @@ testLegacyBehavior('when @aws-cdk/aws-efs:defaultEncryptionAtRest is missing, en
   });
 
   Template.fromStack(customStack).hasResourceProperties('AWS::EFS::FileSystem', {
-    Encrypted: Match.absentProperty(),
+    Encrypted: Match.absent(),
   });
 
 });

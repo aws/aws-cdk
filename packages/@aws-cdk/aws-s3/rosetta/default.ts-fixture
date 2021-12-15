@@ -1,0 +1,18 @@
+// Fixture with packages imported, but nothing else
+import cdk = require('@aws-cdk/core');
+import s3 = require('@aws-cdk/aws-s3');
+import kms = require('@aws-cdk/aws-kms');
+import iam = require('@aws-cdk/aws-iam');
+import lambda = require('@aws-cdk/aws-lambda');
+import s3n = require('@aws-cdk/aws-s3-notifications');
+import sns = require('@aws-cdk/aws-sns');
+import sqs = require('@aws-cdk/aws-sqs');
+import assert = require('assert');
+
+class Fixture extends cdk.Stack {
+  constructor(scope: cdk.Construct, id: string) {
+    super(scope, id);
+
+    /// here
+  }
+}

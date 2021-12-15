@@ -1,6 +1,7 @@
 import { CfnDynamicReference, CfnDynamicReferenceService } from './cfn-dynamic-reference';
 import { CfnParameter } from './cfn-parameter';
 import { Intrinsic } from './private/intrinsic';
+import { Token } from './token';
 
 /**
  * Work with secret values in the CDK
@@ -39,7 +40,7 @@ export class SecretValue extends Intrinsic {
       throw new Error('secretId cannot be empty');
     }
 
-    if (!secretId.startsWith('arn:') && secretId.includes(':')) {
+    if (!Token.isUnresolved(secretId) && !secretId.startsWith('arn:') && secretId.includes(':')) {
       throw new Error(`secret id "${secretId}" is not an ARN but contains ":"`);
     }
 

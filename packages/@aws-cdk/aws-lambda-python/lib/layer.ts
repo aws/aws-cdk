@@ -21,6 +21,12 @@ export interface PythonLayerVersionProps extends lambda.LayerVersionOptions {
    * @default - All runtimes are supported.
    */
   readonly compatibleRuntimes?: lambda.Runtime[];
+
+  /**
+   * The system architectures compatible with this layer.
+   * @default [Architecture.X86_64]
+   */
+  readonly compatibleArchitectures?: lambda.Architecture[];
 }
 
 /**
@@ -30,6 +36,7 @@ export interface PythonLayerVersionProps extends lambda.LayerVersionOptions {
 export class PythonLayerVersion extends lambda.LayerVersion {
   constructor(scope: Construct, id: string, props: PythonLayerVersionProps) {
     const compatibleRuntimes = props.compatibleRuntimes ?? [lambda.Runtime.PYTHON_3_7];
+    const compatibleArchitectures = props.compatibleArchitectures ?? [lambda.Architecture.X86_64];
 
     // Ensure that all compatible runtimes are python
     for (const runtime of compatibleRuntimes) {
@@ -40,8 +47,9 @@ export class PythonLayerVersion extends lambda.LayerVersion {
 
     // Entry and defaults
     const entry = path.resolve(props.entry);
-    // Pick the first compatibleRuntime to use for bundling or PYTHON_3_7
-    const runtime = compatibleRuntimes[0] ?? lambda.Runtime.PYTHON_3_7;
+    // Pick the first compatibleRuntime and compatibleArchitectures to use for bundling
+    const runtime = compatibleRuntimes[0];
+    const architecture = compatibleArchitectures[0];
 
     super(scope, id, {
       ...props,
@@ -49,6 +57,7 @@ export class PythonLayerVersion extends lambda.LayerVersion {
       code: bundle({
         entry,
         runtime,
+        architecture,
         outputPathSuffix: 'python',
       }),
     });

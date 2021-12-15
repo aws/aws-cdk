@@ -2,9 +2,9 @@ import '@aws-cdk/assert-internal/jest';
 import { arrayWith } from '@aws-cdk/assert-internal';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
+import { testFutureBehavior, testLegacyBehavior } from '@aws-cdk/cdk-build-tools';
 import { App, Duration, Stack, CfnParameter } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import { testFutureBehavior, testLegacyBehavior } from 'cdk-build-tools/lib/feature-flag';
 import { Stream, StreamEncryption } from '../lib';
 
 /* eslint-disable quote-props */
@@ -503,6 +503,8 @@ describe('Kinesis data streams', () => {
                     'kinesis:GetShardIterator',
                     'kinesis:ListShards',
                     'kinesis:SubscribeToShard',
+                    'kinesis:DescribeStream',
+                    'kinesis:ListStreams',
                   ],
                   Effect: 'Allow',
                   Resource: {
@@ -811,6 +813,8 @@ describe('Kinesis data streams', () => {
                     'kinesis:GetShardIterator',
                     'kinesis:ListShards',
                     'kinesis:SubscribeToShard',
+                    'kinesis:DescribeStream',
+                    'kinesis:ListStreams',
                     'kinesis:PutRecord',
                     'kinesis:PutRecords',
                   ],
@@ -884,6 +888,8 @@ describe('Kinesis data streams', () => {
                     'kinesis:GetShardIterator',
                     'kinesis:ListShards',
                     'kinesis:SubscribeToShard',
+                    'kinesis:DescribeStream',
+                    'kinesis:ListStreams',
                   ],
                   Effect: 'Allow',
                   Resource: {
@@ -1050,6 +1056,8 @@ describe('Kinesis data streams', () => {
                     'kinesis:GetShardIterator',
                     'kinesis:ListShards',
                     'kinesis:SubscribeToShard',
+                    'kinesis:DescribeStream',
+                    'kinesis:ListStreams',
                     'kinesis:PutRecord',
                     'kinesis:PutRecords',
                   ],

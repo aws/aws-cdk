@@ -13,7 +13,7 @@ export class KinesisMetrics {
     return {
       namespace: 'AWS/Kinesis',
       metricName: 'GetRecords.Bytes',
-      dimensions,
+      dimensionsMap: dimensions,
       statistic: 'Average',
     };
   }
@@ -21,7 +21,7 @@ export class KinesisMetrics {
     return {
       namespace: 'AWS/Kinesis',
       metricName: 'GetRecords.Success',
-      dimensions,
+      dimensionsMap: dimensions,
       statistic: 'Average',
     };
   }
@@ -29,7 +29,7 @@ export class KinesisMetrics {
     return {
       namespace: 'AWS/Kinesis',
       metricName: 'GetRecords.Records',
-      dimensions,
+      dimensionsMap: dimensions,
       statistic: 'Average',
     };
   }
@@ -37,7 +37,7 @@ export class KinesisMetrics {
     return {
       namespace: 'AWS/Kinesis',
       metricName: 'GetRecords.Latency',
-      dimensions,
+      dimensionsMap: dimensions,
       statistic: 'Average',
     };
   }
@@ -45,7 +45,7 @@ export class KinesisMetrics {
     return {
       namespace: 'AWS/Kinesis',
       metricName: 'PutRecord.Bytes',
-      dimensions,
+      dimensionsMap: dimensions,
       statistic: 'Average',
     };
   }
@@ -53,7 +53,7 @@ export class KinesisMetrics {
     return {
       namespace: 'AWS/Kinesis',
       metricName: 'PutRecord.Latency',
-      dimensions,
+      dimensionsMap: dimensions,
       statistic: 'Average',
     };
   }
@@ -70,7 +70,7 @@ export class KinesisMetrics {
     return {
       namespace: 'AWS/Kinesis',
       metricName: 'PutRecords.Latency',
-      dimensions,
+      dimensionsMap: dimensions,
       statistic: 'Average',
     };
   }
@@ -78,7 +78,7 @@ export class KinesisMetrics {
     return {
       namespace: 'AWS/Kinesis',
       metricName: 'PutRecords.Success',
-      dimensions,
+      dimensionsMap: dimensions,
       statistic: 'Average',
     };
   }
@@ -86,7 +86,7 @@ export class KinesisMetrics {
     return {
       namespace: 'AWS/Kinesis',
       metricName: 'PutRecords.TotalRecords',
-      dimensions,
+      dimensionsMap: dimensions,
       statistic: 'Average',
     };
   }
@@ -94,7 +94,7 @@ export class KinesisMetrics {
     return {
       namespace: 'AWS/Kinesis',
       metricName: 'PutRecords.SuccessfulRecords',
-      dimensions,
+      dimensionsMap: dimensions,
       statistic: 'Average',
     };
   }
@@ -102,7 +102,7 @@ export class KinesisMetrics {
     return {
       namespace: 'AWS/Kinesis',
       metricName: 'PutRecords.FailedRecords',
-      dimensions,
+      dimensionsMap: dimensions,
       statistic: 'Average',
     };
   }
@@ -110,7 +110,7 @@ export class KinesisMetrics {
     return {
       namespace: 'AWS/Kinesis',
       metricName: 'PutRecords.ThrottledRecords',
-      dimensions,
+      dimensionsMap: dimensions,
       statistic: 'Average',
     };
   }

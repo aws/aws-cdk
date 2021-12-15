@@ -53,6 +53,20 @@ export interface Login {
    * @default default master key
    */
   readonly kmsKey?: kms.IKey;
+
+  /**
+   * Specifies characters to not include in generated passwords.
+   *
+   * @default "\"@/"
+   */
+  readonly excludeCharacters?: string;
+
+  /**
+   * The physical name of the secret, that will be generated.
+   *
+   * @default Secretsmanager will generate a physical name for the secret
+   */
+  readonly secretName?: string;
 }
 
 /**

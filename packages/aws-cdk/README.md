@@ -362,12 +362,78 @@ Hotswapping is currently supported for the following changes
 (additional changes will be supported in the future):
 
 - Code asset changes of AWS Lambda functions.
+- Definition changes of AWS Step Functions State Machines.
+- Container asset changes of AWS ECS Services.
+- Website asset changes of AWS S3 Bucket Deployments.
 
 **⚠ Note #1**: This command deliberately introduces drift in CloudFormation stacks in order to speed up deployments.
 For this reason, only use it for development purposes.
 **Never use this flag for your production deployments**!
 
 **⚠ Note #2**: This command is considered experimental,
+and might have breaking changes in the future.
+
+### `cdk watch`
+
+The `watch` command is similar to `deploy`,
+but instead of being a one-shot operation,
+the command continuously monitors the files of the project,
+and triggers a deployment whenever it detects any changes:
+
+```console
+$ cdk watch DevelopmentStack
+Detected change to 'lambda-code/index.js' (type: change). Triggering 'cdk deploy'
+DevelopmentStack: deploying...
+
+ ✅  DevelopmentStack
+
+^C
+```
+
+To end a `cdk watch` session, interrupt the process by pressing Ctrl+C.
+
+What files are observed is determined by the `"watch"` setting in your `cdk.json` file.
+It has two sub-keys, `"include"` and `"exclude"`, each of which can be either a single string, or an array of strings.
+Each entry is interpreted as a path relative to the location of the `cdk.json` file.
+Globs, both `*` and `**`, are allowed to be used.
+Example:
+
+```json
+{
+  "app": "mvn -e -q compile exec:java",
+  "watch": {
+    "include": "src/main/**",
+    "exclude": "target/*"
+  }
+}
+```
+
+The default for `"include"` is `"**/*"`
+(which means all files and directories in the root of the project),
+and `"exclude"` is optional
+(note that we always ignore files and directories starting with `.`,
+the CDK output directory, and the `node_modules` directory),
+so the minimal settings to enable `watch` are `"watch": {}`.
+
+If either your CDK code, or application code, needs a build step before being deployed,
+`watch` works with the `"build"` key in the `cdk.json` file,
+for example:
+
+```json
+{
+  "app": "mvn -e -q exec:java",
+  "build": "mvn package",
+  "watch": {
+    "include": "src/main/**",
+    "exclude": "target/*"
+  }
+}
+```
+
+Note that `watch` by default uses hotswap deployments (see above for details) --
+to turn them off, pass the `--no-hotswap` option when invoking it.
+
+**Note**: This command is considered experimental,
 and might have breaking changes in the future.
 
 ### `cdk destroy`
@@ -462,6 +528,7 @@ Some of the interesting keys that can be used in the JSON configuration files:
 ```json5
 {
     "app": "node bin/main.js",        // Command to start the CDK app      (--app='node bin/main.js')
+    "build": "mvn package",           // Specify pre-synth build           (no command line option)
     "context": {                      // Context entries                   (--context=key=value)
         "key": "value"
     },
@@ -470,6 +537,12 @@ Some of the interesting keys that can be used in the JSON configuration files:
     "versionReporting": false,         // Opt-out of version reporting      (--no-version-reporting)
 }
 ```
+
+If specified, the command in the `build` key will be executed immediately before synthesis.
+This can be used to build Lambda Functions, CDK Application code, or other assets. 
+`build` cannot be specified on the command line or in the User configuration, 
+and must be specified in the Project configuration. The command specified
+in `build` will be executed by the "watch" process before deployment.
 
 ### Environment
 

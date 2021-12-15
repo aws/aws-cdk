@@ -56,8 +56,12 @@ export class VpcNetworkContextProviderPlugin implements ContextProviderPlugin {
     // Now comes our job to separate these subnets out into AZs and subnet groups (Public, Private, Isolated)
     // We have the following attributes to go on:
     // - Type tag, we tag subnets with their type. In absence of this tag, we
-    //   fall back to MapPublicIpOnLaunch => must be a Public subnet, anything
-    //   else is considered Priate.
+    //   determine the subnet must be Public if either:
+    //   a) it has the property MapPublicIpOnLaunch
+    //   b) it has a route to an Internet Gateway
+    //   If both of the above is false but the subnet has a route to a NAT Gateway
+    //   and the destination CIDR block is "0.0.0.0/0", we assume it to be a Private subnet.
+    //   Anything else is considered Isolated.
     // - Name tag, we tag subnets with their subnet group name. In absence of this tag,
     //   we use the type as the name.
 
@@ -68,7 +72,8 @@ export class VpcNetworkContextProviderPlugin implements ContextProviderPlugin {
       let type = getTag('aws-cdk:subnet-type', subnet.Tags);
       if (type === undefined && subnet.MapPublicIpOnLaunch) { type = SubnetType.Public; }
       if (type === undefined && routeTables.hasRouteToIgw(subnet.SubnetId)) { type = SubnetType.Public; }
-      if (type === undefined) { type = SubnetType.Private; }
+      if (type === undefined && routeTables.hasRouteToNatGateway(subnet.SubnetId)) { type = SubnetType.Private; }
+      if (type === undefined) { type = SubnetType.Isolated; }
 
       if (!isValidSubnetType(type)) {
         // eslint-disable-next-line max-len
@@ -155,10 +160,19 @@ class RouteTables {
   }
 
   /**
+   * Whether the given subnet has a route to a NAT Gateway
+   */
+  public hasRouteToNatGateway(subnetId: string | undefined): boolean {
+    const table = this.tableForSubnet(subnetId) || this.mainRouteTable;
+
+    return !!table && !!table.Routes && table.Routes.some(route => !!route.NatGatewayId && route.DestinationCidrBlock === '0.0.0.0/0');
+  }
+
+  /**
    * Whether the given subnet has a route to an IGW
    */
   public hasRouteToIgw(subnetId: string | undefined): boolean {
-    const table = this.tableForSubnet(subnetId);
+    const table = this.tableForSubnet(subnetId) || this.mainRouteTable;
 
     return !!table && !!table.Routes && table.Routes.some(route => !!route.GatewayId && route.GatewayId.startsWith('igw-'));
   }

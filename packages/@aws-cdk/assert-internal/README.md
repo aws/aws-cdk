@@ -11,6 +11,8 @@
 > announced in the release notes. This means that while you may use them, you may need to update
 > your source code when upgrading to a newer version of this package.
 
+If using monocdk, use [@monocdk-experiment/assert](https://www.npmjs.com/package/@monocdk-experiment/assert) instead.
+
 ---
 
 <!--END STABILITY BANNER-->
@@ -101,7 +103,7 @@ The following matchers exist:
   back to exact value matching.
 - `arrayWith(E, [F, ...])` - value must be an array containing the given elements (or matchers) in any order.
 - `stringLike(S)` - value must be a string matching `S`. `S` may contain `*` as wildcard to match any number
-  of characters.
+  of characters. Multiline strings are supported.
 - `anything()` - matches any value.
 - `notMatching(M)` - any value that does NOT match the given matcher (or exact value) given.
 - `encodedJson(M)` - value must be a string which, when decoded as JSON, matches the given matcher or
