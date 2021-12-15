@@ -931,10 +931,14 @@ describe('import', () => {
   test('static fromDomainEndpoint(endpoint) allows importing an external/existing domain', () => {
     const domainName = 'test-domain-2w2x2u3tifly';
     const domainEndpoint = `https://${domainName}-jcjotrt6f7otem4sqcwbch3c4u.testregion.es.amazonaws.com`;
+    const domainEndpointWithoutHttps = `${domainName}-jcjotrt6f7otem4sqcwbch3c4u.testregion.es.amazonaws.com`;
+
     const imported = Domain.fromDomainEndpoint(stack, 'Domain', domainEndpoint);
 
     expect(imported.domainName).toEqual(domainName);
     expect(imported.domainArn).toMatch(RegExp(`es:testregion:1234:domain/${domainName}$`));
+    expect(imported.domainEndpoint).toEqual(domainEndpointWithoutHttps);
+
 
     expect(stack).not.toHaveResource('AWS::OpenSearchService::Domain');
   });
@@ -943,6 +947,8 @@ describe('import', () => {
     const domainName = 'test-domain-2w2x2u3tifly';
     const domainArn = `arn:aws:es:testregion:1234:domain/${domainName}`;
     const domainEndpoint = `https://${domainName}-jcjotrt6f7otem4sqcwbch3c4u.testregion.es.amazonaws.com`;
+    const domainEndpointWithoutHttps = `${domainName}-jcjotrt6f7otem4sqcwbch3c4u.testregion.es.amazonaws.com`;
+
     const imported = Domain.fromDomainAttributes(stack, 'Domain', {
       domainArn,
       domainEndpoint,
@@ -950,6 +956,7 @@ describe('import', () => {
 
     expect(imported.domainName).toEqual(domainName);
     expect(imported.domainArn).toEqual(domainArn);
+    expect(imported.domainEndpoint).toEqual(domainEndpointWithoutHttps);
 
     expect(stack).not.toHaveResource('AWS::OpenSearchService::Domain');
   });
