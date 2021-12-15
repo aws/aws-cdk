@@ -1,4 +1,5 @@
 import '@aws-cdk/assert-internal/jest';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Lazy, Stack, Token } from '@aws-cdk/core';
 import {
   AccountPrincipal, Anyone, AnyPrincipal, ArnPrincipal, CanonicalUserPrincipal, CompositePrincipal,
@@ -444,7 +445,8 @@ describe('IAM policy document', () => {
       });
     });
 
-    test('regional service principals resolve appropriately (with user-set region)', () => {
+    // Deprecated: 'region' parameter to ServicePrincipal shouldn't be used.
+    testDeprecated('regional service principals resolve appropriately (with user-set region)', () => {
       const stack = new Stack(undefined, undefined, { env: { region: 'cn-northeast-1' } });
       const s = new PolicyStatement();
       s.addActions('test:Action');
