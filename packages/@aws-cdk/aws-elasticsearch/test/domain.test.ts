@@ -951,7 +951,7 @@ describe('import', () => {
 
     expect(imported.domainName).toEqual(domainName);
     expect(imported.domainArn).toEqual(domainArn);
-    expect(imported.domainArn).toEqual(domainEndpointWithoutHttps);
+    expect(imported.domainEndpoint).toEqual(domainEndpointWithoutHttps);
 
     expect(stack).not.toHaveResource('AWS::Elasticsearch::Domain');
   });
