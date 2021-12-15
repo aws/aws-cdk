@@ -1,10 +1,13 @@
 import { testDeprecated, testFutureBehavior, testLegacyBehavior } from '@aws-cdk/cdk-build-tools';
 import * as cxapi from '@aws-cdk/cx-api';
+import { Fact } from '@aws-cdk/region-info';
+import { Node } from 'constructs';
 import {
   App, CfnCondition, CfnInclude, CfnOutput, CfnParameter,
   CfnResource, Construct, Lazy, ScopedAws, Stack, validateString,
   ISynthesisSession, Tags, LegacyStackSynthesizer, DefaultStackSynthesizer,
   NestedStack,
+  Aws,
 } from '../lib';
 import { Intrinsic } from '../lib/private/intrinsic';
 import { resolveReferences } from '../lib/private/refs';
@@ -1187,6 +1190,58 @@ describe('stack', () => {
     const app = new App();
     expect(new Stack(app, 'Stack', { analyticsReporting: true })._versionReportingEnabled).toBeDefined();
 
+  });
+});
+
+describe('regionalFact', () => {
+  Fact.register({ name: 'MyFact', region: 'us-east-1', value: 'x.amazonaws.com' });
+  Fact.register({ name: 'MyFact', region: 'eu-west-1', value: 'x.amazonaws.com' });
+  Fact.register({ name: 'MyFact', region: 'cn-north-1', value: 'x.amazonaws.com.cn' });
+
+  Fact.register({ name: 'WeirdFact', region: 'us-east-1', value: 'oneformat' });
+  Fact.register({ name: 'WeirdFact', region: 'eu-west-1', value: 'otherformat' });
+
+  test('regional facts return a literal value if possible', () => {
+    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-east-1' } });
+    expect(stack.regionalFact('MyFact')).toEqual('x.amazonaws.com');
+  });
+
+  test('regional facts are simplified to use URL_SUFFIX token if possible', () => {
+    const stack = new Stack();
+    expect(stack.regionalFact('MyFact')).toEqual(`x.${Aws.URL_SUFFIX}`);
+  });
+
+  test('regional facts are simplified to use concrete values if URL_SUFFIX token is not necessary', () => {
+    const stack = new Stack();
+    Node.of(stack).setContext(cxapi.TARGET_PARTITIONS, ['aws']);
+    expect(stack.regionalFact('MyFact')).toEqual('x.amazonaws.com');
+  });
+
+  test('regional facts generate a mapping if necessary', () => {
+    const stack = new Stack();
+    new CfnOutput(stack, 'TheFact', {
+      value: stack.regionalFact('WeirdFact'),
+    });
+
+    expect(toCloudFormation(stack)).toEqual({
+      Mappings: {
+        WeirdFactMap: {
+          'eu-west-1': { value: 'otherformat' },
+          'us-east-1': { value: 'oneformat' },
+        },
+      },
+      Outputs: {
+        TheFact: {
+          Value: {
+            'Fn::FindInMap': [
+              'WeirdFactMap',
+              { Ref: 'AWS::Region' },
+              'value',
+            ],
+          },
+        },
+      },
+    });
   });
 });
 
