@@ -113,7 +113,7 @@ export class LinuxGpuBuildImage implements IBindableBuildImage {
   private _imageAccount?: string;
 
   private constructor(private readonly repositoryName: string, tag: string, private readonly account: string | undefined) {
-    const imageAccount = core.Lazy.string({
+    const imageAccount = account ?? core.Lazy.string({
       produce: () => {
         if (this._imageAccount === undefined) {
           throw new Error('Make sure this \'LinuxGpuBuildImage\' is used in a CodeBuild Project construct');
