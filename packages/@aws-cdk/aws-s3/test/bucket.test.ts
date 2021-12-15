@@ -2671,7 +2671,144 @@ describe('bucket', () => {
         },
       },
     });
-
-
   });
+
+  test('bucket with intelligent tiering turned on', () => {
+    const stack = new cdk.Stack();
+    new s3.Bucket(stack, 'MyBucket', {
+      intelligentTieringConfigurations: [{
+        name: 'foo',
+      }],
+    });
+
+    expect(stack).toMatchTemplate({
+      'Resources': {
+        'MyBucketF68F3FF0': {
+          'Type': 'AWS::S3::Bucket',
+          'Properties': {
+            'IntelligentTieringConfigurations': [
+              {
+                'Id': 'foo',
+                'Status': 'Enabled',
+                'Tierings': [],
+              },
+            ],
+          },
+          'DeletionPolicy': 'Retain',
+          'UpdateReplacePolicy': 'Retain',
+        },
+      },
+    });
+  });
+
+  test('bucket with intelligent tiering turned on with archive access', () => {
+    const stack = new cdk.Stack();
+    new s3.Bucket(stack, 'MyBucket', {
+      intelligentTieringConfigurations: [{
+        name: 'foo',
+        archiveAccessTierTime: cdk.Duration.days(90),
+      }],
+    });
+
+    expect(stack).toMatchTemplate({
+      'Resources': {
+        'MyBucketF68F3FF0': {
+          'Type': 'AWS::S3::Bucket',
+          'Properties': {
+            'IntelligentTieringConfigurations': [
+              {
+                'Id': 'foo',
+                'Status': 'Enabled',
+                'Tierings': [{
+                  'AccessTier': 'ARCHIVE_ACCESS',
+                  'Days': 90,
+                }],
+              },
+            ],
+          },
+          'DeletionPolicy': 'Retain',
+          'UpdateReplacePolicy': 'Retain',
+        },
+      },
+    });
+  });
+
+  test('bucket with intelligent tiering turned on with deep archive access', () => {
+    const stack = new cdk.Stack();
+    new s3.Bucket(stack, 'MyBucket', {
+      intelligentTieringConfigurations: [{
+        name: 'foo',
+        deepArchiveAccessTierTime: cdk.Duration.days(180),
+      }],
+    });
+
+    expect(stack).toMatchTemplate({
+      'Resources': {
+        'MyBucketF68F3FF0': {
+          'Type': 'AWS::S3::Bucket',
+          'Properties': {
+            'IntelligentTieringConfigurations': [
+              {
+                'Id': 'foo',
+                'Status': 'Enabled',
+                'Tierings': [{
+                  'AccessTier': 'DEEP_ARCHIVE_ACCESS',
+                  'Days': 180,
+                }],
+              },
+            ],
+          },
+          'DeletionPolicy': 'Retain',
+          'UpdateReplacePolicy': 'Retain',
+        },
+      },
+    });
+  });
+
+  test('bucket with intelligent tiering turned on with all properties', () => {
+    const stack = new cdk.Stack();
+    new s3.Bucket(stack, 'MyBucket', {
+      intelligentTieringConfigurations: [{
+        name: 'foo',
+        prefix: 'bar',
+        archiveAccessTierTime: cdk.Duration.days(90),
+        deepArchiveAccessTierTime: cdk.Duration.days(180),
+        tags: [{ key: 'test', value: 'bazz' }],
+      }],
+    });
+
+    expect(stack).toMatchTemplate({
+      'Resources': {
+        'MyBucketF68F3FF0': {
+          'Type': 'AWS::S3::Bucket',
+          'Properties': {
+            'IntelligentTieringConfigurations': [
+              {
+                'Id': 'foo',
+                'Prefix': 'bar',
+                'Status': 'Enabled',
+                'TagFilters': [
+                  {
+                    'Key': 'test',
+                    'Value': 'bazz',
+                  },
+                ],
+                'Tierings': [{
+                  'AccessTier': 'ARCHIVE_ACCESS',
+                  'Days': 90,
+                },
+                {
+                  'AccessTier': 'DEEP_ARCHIVE_ACCESS',
+                  'Days': 180,
+                }],
+              },
+            ],
+          },
+          'DeletionPolicy': 'Retain',
+          'UpdateReplacePolicy': 'Retain',
+        },
+      },
+    });
+  });
+
 });
