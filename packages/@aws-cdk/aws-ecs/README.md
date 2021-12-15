@@ -405,7 +405,7 @@ declare const parameter: ssm.StringParameter;
 declare const taskDefinition: ecs.TaskDefinition;
 declare const s3Bucket: s3.Bucket;
 
-taskDefinition.addContainer('container', {
+const newContainer = taskDefinition.addContainer('container', {
   image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
   memoryLimitMiB: 1024,
   environment: { // clear text, not for sensitive data
@@ -421,6 +421,7 @@ taskDefinition.addContainer('container', {
     PARAMETER: ecs.Secret.fromSsmParameter(parameter),
   },
 });
+newContainer.addEnvironment('QUEUE_NAME', 'MyQueue');
 ```
 
 The task execution role is automatically granted read permissions on the secrets/parameters. Support for environment
