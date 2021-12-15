@@ -77,7 +77,10 @@
           "Ref": "corsapitestDeployment2BF1633A228079ea05e5799220dd4ca13512b92d"
         },
         "StageName": "prod"
-      }
+      },
+      "DependsOn": [
+        "corsapitestAccount7D1D6854"
+      ]
     },
     "corsapitesttwitch0E3D1559": {
       "Type": "AWS::ApiGateway::Resource",
