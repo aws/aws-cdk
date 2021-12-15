@@ -930,7 +930,6 @@ describe('import', () => {
     const domainName = 'test-domain-2w2x2u3tifly';
     const domainEndpoint = `https://${domainName}-jcjotrt6f7otem4sqcwbch3c4u.testregion.es.amazonaws.com`;
     const domainEndpointWithoutHttps = `${domainName}-jcjotrt6f7otem4sqcwbch3c4u.testregion.es.amazonaws.com`;
-
     const imported = Domain.fromDomainEndpoint(stack, 'Domain', domainEndpoint);
 
     expect(imported.domainName).toEqual(domainName);
@@ -945,7 +944,6 @@ describe('import', () => {
     const domainArn = `arn:aws:es:testregion:1234:domain/${domainName}`;
     const domainEndpoint = `https://${domainName}-jcjotrt6f7otem4sqcwbch3c4u.testregion.es.amazonaws.com`;
     const domainEndpointWithoutHttps = `${domainName}-jcjotrt6f7otem4sqcwbch3c4u.testregion.es.amazonaws.com`;
-
     const imported = Domain.fromDomainAttributes(stack, 'Domain', {
       domainArn,
       domainEndpoint,
@@ -954,7 +952,6 @@ describe('import', () => {
     expect(imported.domainName).toEqual(domainName);
     expect(imported.domainArn).toEqual(domainArn);
     expect(imported.domainArn).toEqual(domainEndpointWithoutHttps);
-
 
     expect(stack).not.toHaveResource('AWS::Elasticsearch::Domain');
   });
