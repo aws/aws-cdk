@@ -1,5 +1,5 @@
 import * as cdk from '@aws-cdk/core';
-import { Default, RegionInfo } from '@aws-cdk/region-info';
+import { Default, FactName, RegionInfo } from '@aws-cdk/region-info';
 import { IOpenIdConnectProvider } from './oidc-provider';
 import { Condition, Conditions, PolicyStatement } from './policy-statement';
 import { ISamlProvider } from './saml-provider';
@@ -331,6 +331,7 @@ export interface ServicePrincipalOpts {
    * The region in which the service is operating.
    *
    * @default the current Stack's region.
+   * @deprecated You should not need to set this. The stack's region is always correct.
    */
   readonly region?: string;
 
@@ -694,9 +695,23 @@ class ServicePrincipalToken implements cdk.IResolvable {
   }
 
   public resolve(ctx: cdk.IResolveContext) {
-    const region = this.opts.region || cdk.Stack.of(ctx.scope).region;
-    const fact = RegionInfo.get(region).servicePrincipal(this.service);
-    return fact || Default.servicePrincipal(this.service, region, cdk.Aws.URL_SUFFIX);
+    if (this.opts.region) {
+      // Special case, handle it separately to not break legacy behavior.
+      return (
+        RegionInfo.get(this.opts.region).servicePrincipal(this.service) ??
+        Default.servicePrincipal(
+          this.service,
+          this.opts.region,
+          cdk.Aws.URL_SUFFIX,
+        )
+      );
+    }
+
+    const stack = cdk.Stack.of(ctx.scope);
+    return stack.regionalFact(
+      FactName.servicePrincipal(this.service),
+      Default.servicePrincipal(this.service, stack.region, cdk.Aws.URL_SUFFIX),
+    );
   }
 
   public toString() {

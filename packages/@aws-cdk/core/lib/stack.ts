@@ -804,6 +804,45 @@ export class Stack extends CoreConstruct implements ITaggable {
   }
 
   /**
+   * Look up a fact value for the given fact for the region of this stack
+   *
+   * Will return a definite value only if the region of the current stack is resolved.
+   * If not, a lookup map will be added to the stack and the lookup will be done at
+   * CDK deployment time.
+   *
+   * What regions will be included in the lookup map is controlled by the
+   * `@aws-cdk/core:target-partitions` context value: it must be set to a list
+   * of partitions, and only regions from the given partitions will be included.
+   * If no such context key is set, all regions will be included.
+   *
+   * This function is intended to be used by construct library authors. Application
+   * builders can rely on the abstractions offered by construct libraries and do
+   * not have to worry about regional facts.
+   *
+   * If `defaultValue` is not given, it is an error if the fact is unknown for
+   * the given region.
+   */
+  public regionalFact(factName: string, defaultValue?: string): string {
+    if (!Token.isUnresolved(this.region)) {
+      const ret = Fact.find(this.region, factName) ?? defaultValue;
+      if (ret === undefined) {
+        throw new Error(`region-info: don't know ${factName} for region ${this.region}. Use 'Fact.register' to provide this value.`);
+      }
+      return ret;
+    }
+
+    const partitions = Node.of(this).tryGetContext(cxapi.TARGET_PARTITIONS);
+    if (partitions !== undefined && !Array.isArray(partitions)) {
+      throw new Error(`Context value '${cxapi.TARGET_PARTITIONS}' should be a list of strings, got: ${JSON.stringify(cxapi.TARGET_PARTITIONS)}`);
+    }
+
+    const lookupMap = partitions ? RegionInfo.limitedRegionMap(factName, partitions) : RegionInfo.regionMap(factName);
+
+    return deployTimeLookup(this, factName, lookupMap, defaultValue);
+  }
+
+
+  /**
    * Create a CloudFormation Export for a value
    *
    * Returns a string representing the corresponding `Fn.importValue()`
@@ -1313,3 +1352,6 @@ import { Stage } from './stage';
 import { ITaggable, TagManager } from './tag-manager';
 import { Token, Tokenization } from './token';
 import { referenceNestedStackValueInParent } from './private/refs';
+import { Fact, RegionInfo } from '@aws-cdk/region-info';
+import { deployTimeLookup } from './private/region-lookup';
+
