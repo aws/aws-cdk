@@ -9,6 +9,10 @@ import * as codepipeline from '../lib';
 import { FakeBuildAction } from './fake-build-action';
 import { FakeSourceAction } from './fake-source-action';
 
+// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
+// eslint-disable-next-line no-duplicate-imports, import/order
+import { Construct } from 'constructs';
+
 /* eslint-disable quote-props */
 
 describe('', () => {
@@ -335,6 +339,127 @@ describe('', () => {
         expect(supportStackArtifact.cloudFormationExecutionRoleArn).toEqual(
           'arn:${AWS::Partition}:iam::123456789012:role/cdk-hnb659fds-cfn-exec-role-123456789012-us-west-2');
 
+
+      });
+      test('generates the same support stack containing the replication Bucket without the need to bootstrap in that environment for multiple pipelines', () => {
+        const app = new cdk.App({
+          treeMetadata: false, // we can't set the context otherwise, because App will have a child
+        });
+        app.node.setContext(cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT, true);
+
+        class PipelineStack extends cdk.Stack {
+          public constructor(scope: Construct, id: string, props: cdk.StackProps ) {
+            super(scope, id, props);
+            const sourceOutput = new codepipeline.Artifact();
+            new codepipeline.Pipeline(this, 'Pipeline', {
+              stages: [
+                {
+                  stageName: 'Source',
+                  actions: [new FakeSourceAction({
+                    actionName: 'Source',
+                    output: sourceOutput,
+                  })],
+                },
+                {
+                  stageName: 'Build',
+                  actions: [new FakeBuildAction({
+                    actionName: 'Build',
+                    input: sourceOutput,
+                    region: 'eu-south-1',
+                  })],
+                },
+              ],
+            });
+          }
+        }
+        new PipelineStack(app, 'PipelineStackA', {
+          env: { region: 'us-west-2', account: '123456789012' },
+        });
+        new PipelineStack(app, 'PipelineStackB', {
+          env: { region: 'us-west-2', account: '123456789012' },
+        });
+
+        const assembly = app.synth();
+        const supportStackArtifact = assembly.getStackByName('PipelineStackA-support-eu-south-1');
+        expect(supportStackArtifact.assumeRoleArn).toEqual(
+          'arn:${AWS::Partition}:iam::123456789012:role/cdk-hnb659fds-deploy-role-123456789012-us-west-2');
+        expect(supportStackArtifact.cloudFormationExecutionRoleArn).toEqual(
+          'arn:${AWS::Partition}:iam::123456789012:role/cdk-hnb659fds-cfn-exec-role-123456789012-us-west-2');
+        expect(() => {
+          assembly.getStackByName('PipelineStackB-support-eu-south-1');
+        }).toThrowError(/Unable to find stack with stack name/);
+
+      });
+      test('generates the unique support stack containing the replication Bucket without the need to bootstrap in that environment for multiple pipelines', () => {
+        const app = new cdk.App({
+          treeMetadata: false, // we can't set the context otherwise, because App will have a child
+        });
+        app.node.setContext(cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT, true);
+
+        class PipelineStack extends cdk.Stack {
+          public constructor(scope: Construct, id: string, props: cdk.StackProps ) {
+            super(scope, id, props);
+            const sourceOutput = new codepipeline.Artifact();
+            new codepipeline.Pipeline(this, 'Pipeline', {
+              uniqueCrossRegionStackName: true,
+              stages: [
+                {
+                  stageName: 'Source',
+                  actions: [new FakeSourceAction({
+                    actionName: 'Source',
+                    output: sourceOutput,
+                  })],
+                },
+                {
+                  stageName: 'Build',
+                  actions: [new FakeBuildAction({
+                    actionName: 'Build',
+                    input: sourceOutput,
+                    region: 'eu-south-1',
+                  })],
+                },
+              ],
+            });
+          }
+        }
+        new PipelineStack(app, 'PipelineStackA', {
+          env: { region: 'us-west-2', account: '123456789012' },
+        });
+        new PipelineStack(app, 'PipelineStackB', {
+          env: { region: 'us-west-2', account: '123456789012' },
+        });
+
+        const assembly = app.synth();
+        const supportStackAArtifact = assembly.getStackByName('PipelineStackA-support-eu-south-1');
+        expect(supportStackAArtifact.assumeRoleArn).toEqual(
+          'arn:${AWS::Partition}:iam::123456789012:role/cdk-hnb659fds-deploy-role-123456789012-us-west-2');
+        expect(supportStackAArtifact.cloudFormationExecutionRoleArn).toEqual(
+          'arn:${AWS::Partition}:iam::123456789012:role/cdk-hnb659fds-cfn-exec-role-123456789012-us-west-2');
+
+        const supportStackBArtifact = assembly.getStackByName('PipelineStackB-support-eu-south-1');
+        expect(supportStackBArtifact.assumeRoleArn).toEqual(
+          'arn:${AWS::Partition}:iam::123456789012:role/cdk-hnb659fds-deploy-role-123456789012-us-west-2');
+        expect(supportStackBArtifact.cloudFormationExecutionRoleArn).toEqual(
+          'arn:${AWS::Partition}:iam::123456789012:role/cdk-hnb659fds-cfn-exec-role-123456789012-us-west-2');
+
+        const supportStackATemplate = supportStackAArtifact.template;
+
+        expect(supportStackATemplate).toHaveResourceLike('AWS::S3::Bucket', {
+          BucketName: 'pipelinestacka-support-eueplicationbucket8934e91f26961aa6cbfa',
+        });
+        expect(supportStackATemplate).toHaveResourceLike('AWS::KMS::Alias', {
+          AliasName: 'alias/pport-eutencryptionalias02f1cda3732942f6c529',
+        });
+
+        const supportStackBTemplate = supportStackBArtifact.template;
+
+        expect(supportStackBTemplate).toHaveResourceLike('AWS::S3::Bucket', {
+          BucketName: 'pipelinestackb-support-eueplicationbucketdf7c0e10245faa377228',
+        });
+
+        expect(supportStackBTemplate).toHaveResourceLike('AWS::KMS::Alias', {
+          AliasName: 'alias/pport-eutencryptionaliasdef3fd3fec63bc54980e',
+        });
 
       });
     });

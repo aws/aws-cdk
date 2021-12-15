@@ -146,6 +146,13 @@ export interface PipelineProps {
    * @default - false (key rotation is disabled)
    */
   readonly enableKeyRotation?: boolean;
+
+  /**
+   * Generate a unique cross region support stack.
+   *
+   * @default - false (Use the same support stack for all pipelines in App)
+   */
+  readonly uniqueCrossRegionStackName?: boolean;
 }
 
 abstract class PipelineBase extends Resource implements IPipeline {
@@ -342,6 +349,7 @@ export class Pipeline extends PipelineBase {
   private readonly _crossAccountSupport: { [account: string]: Stack } = {};
   private readonly crossAccountKeys: boolean;
   private readonly enableKeyRotation?: boolean;
+  private readonly uniqueCrossRegionStackName?: boolean;
 
   constructor(scope: Construct, id: string, props: PipelineProps = {}) {
     super(scope, id, {
@@ -363,6 +371,8 @@ export class Pipeline extends PipelineBase {
     if (this.enableKeyRotation && !this.crossAccountKeys) {
       throw new Error("Setting 'enableKeyRotation' to true also requires 'crossAccountKeys' to be enabled");
     }
+
+    this.uniqueCrossRegionStackName = props.uniqueCrossRegionStackName ?? false;
 
     // If a bucket has been provided, use it - otherwise, create a bucket.
     let propsBucket = this.getArtifactBucketFromProps(props);
@@ -631,7 +641,10 @@ export class Pipeline extends PipelineBase {
     }
 
     const app = this.supportScope();
-    const supportStackId = `cross-region-stack-${pipelineAccount}:${actionRegion}`;
+    let supportStackId = `cross-region-stack-${pipelineAccount}:${actionRegion}`;
+    if (this.uniqueCrossRegionStackName) {
+      supportStackId = `cross-region-stack-${pipelineStack.stackName}:${actionRegion}`;
+    }
     let supportStack = app.node.tryFindChild(supportStackId) as CrossRegionSupportStack;
     if (!supportStack) {
       supportStack = new CrossRegionSupportStack(app, supportStackId, {
