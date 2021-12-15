@@ -23,9 +23,14 @@ export function actionName<A>(node: GraphNode<A>, parent: GraphNode<A>) {
   //
   // wouldn't sort and comprehend nicely. We will therefore trim each component individually.
   const totalMax = 100; // Max length of everything
+
+  // No need to do anything
+  if (names.join('.').length <= totalMax) {
+    return names.join('.');
+  }
+
   const componentMin = 15; // Can't really go shorter than this, becomes unreadable
   const dots = names.length - 1;
-
   const maxLength = Math.max(componentMin, Math.floor((totalMax - dots) / names.length));
   const trimmedNames = names.map(name => limitIdentifierLength(name, maxLength));
 
