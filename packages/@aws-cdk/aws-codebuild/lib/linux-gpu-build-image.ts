@@ -110,31 +110,34 @@ export class LinuxGpuBuildImage implements IBindableBuildImage {
   public readonly imagePullPrincipalType?: ImagePullPrincipalType = ImagePullPrincipalType.SERVICE_ROLE;
   public readonly imageId: string;
 
-  private _imageId?: string;
+  private _imageAccount?: string;
 
-  private constructor(private readonly repositoryName: string, private readonly tag: string, private readonly account: string | undefined) {
-    this.imageId = core.Lazy.string({
+  private constructor(private readonly repositoryName: string, tag: string, private readonly account: string | undefined) {
+    const imageAccount = core.Lazy.string({
       produce: () => {
-        if (this._imageId === undefined) {
+        if (this._imageAccount === undefined) {
           throw new Error('Make sure this \'LinuxGpuBuildImage\' is used in a CodeBuild Project construct');
         }
-        return this._imageId;
+        return this._imageAccount;
       },
     });
+
+    // The value of imageId below *should* have been `Lazy.stringValue(() => repository.repositoryUriForTag(this.tag))`,
+    // but we can't change that anymore because someone somewhere might at this point have written code
+    // to do `image.imageId.includes('pytorch')` and changing this to a full-on token would break them.
+    this.imageId = `${imageAccount}.dkr.ecr.${core.Aws.REGION}.${core.Aws.URL_SUFFIX}/${repositoryName}:${tag}`;
   }
 
   public bind(scope: Construct, project: IProject, _options: BuildImageBindOptions): BuildImageConfig {
+    const account = this.account ?? core.Stack.of(scope).regionalFact(FactName.DLC_REPOSITORY_ACCOUNT);
     const repository = ecr.Repository.fromRepositoryAttributes(scope, 'AwsDlcRepositoryCodeBuild', {
       repositoryName: this.repositoryName,
-      repositoryArn: ecr.Repository.arnForLocalRepository(
-        this.repositoryName,
-        scope,
-        this.account ?? core.Stack.of(scope).regionalFact(FactName.DLC_REPOSITORY_ACCOUNT),
-      ),
+      repositoryArn: ecr.Repository.arnForLocalRepository(this.repositoryName, scope, account),
     });
 
     repository.grantPull(project);
-    this._imageId = repository.repositoryUriForTag(this.tag);
+
+    this._imageAccount = account;
 
     return {
     };
