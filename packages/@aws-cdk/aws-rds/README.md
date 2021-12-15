@@ -635,11 +635,8 @@ You can access your Aurora Serverless DB cluster using the built-in Data API. Th
 The following example shows granting Data API access to a Lamba function.
 
 ```ts
-declare const vpc: ec2.Vpc;
-
 const cluster = new rds.ServerlessCluster(this, 'AnotherCluster', {
   engine: rds.DatabaseClusterEngine.AURORA_MYSQL,
-  vpc,
   enableDataApi: true, // Optional - will be automatically set if you call grantDataApiAccess()
 });
 
@@ -659,3 +656,11 @@ cluster.grantDataApiAccess(fn);
 **Note**: To invoke the Data API, the resource will need to read the secret associated with the cluster.
 
 To learn more about using the Data API, see the [documentation](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/data-api.html).
+
+### Default VPC
+
+The `vpc` parameter is optional. 
+
+If not provided, the cluster will be created in the default VPC of the account and region.
+As this VPC is not deployed with AWS CDK, you can't configure the `vpcSubnets`, `subnetGroup` or `securityGroups` of the Aurora Serverless Cluster. 
+If you want to provide one of `vpcSubnets`, `subnetGroup` or `securityGroups` parameter, please provide a `vpc`.
