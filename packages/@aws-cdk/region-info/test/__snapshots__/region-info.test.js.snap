@@ -5,7 +5,11 @@ Object {
   "af-south-1": Object {
     "cdkMetadataResourceAvailable": true,
     "domainSuffix": "amazonaws.com",
+    "lambdaInsightsArmVersions": Object {
+      "1.0.119.0": undefined,
+    },
     "lambdaInsightsVersions": Object {
+      "1.0.119.0": "arn:aws:lambda:af-south-1:012438385374:layer:LambdaInsightsExtension:9",
       "1.0.54.0": undefined,
       "1.0.86.0": undefined,
       "1.0.89.0": undefined,
@@ -31,7 +35,11 @@ Object {
   "ap-east-1": Object {
     "cdkMetadataResourceAvailable": true,
     "domainSuffix": "amazonaws.com",
+    "lambdaInsightsArmVersions": Object {
+      "1.0.119.0": undefined,
+    },
     "lambdaInsightsVersions": Object {
+      "1.0.119.0": "arn:aws:lambda:ap-east-1:519774774795:layer:LambdaInsightsExtension:9",
       "1.0.54.0": undefined,
       "1.0.86.0": undefined,
       "1.0.89.0": undefined,
@@ -57,7 +65,11 @@ Object {
   "ap-northeast-1": Object {
     "cdkMetadataResourceAvailable": true,
     "domainSuffix": "amazonaws.com",
+    "lambdaInsightsArmVersions": Object {
+      "1.0.119.0": "arn:aws:lambda:ap-northeast-1:580247275435:layer:LambdaInsightsExtension-Arm64:1",
+    },
     "lambdaInsightsVersions": Object {
+      "1.0.119.0": "arn:aws:lambda:ap-northeast-1:580247275435:layer:LambdaInsightsExtension:23",
       "1.0.54.0": "arn:aws:lambda:ap-northeast-1:580247275435:layer:LambdaInsightsExtension:2",
       "1.0.86.0": "arn:aws:lambda:ap-northeast-1:580247275435:layer:LambdaInsightsExtension:11",
       "1.0.89.0": "arn:aws:lambda:ap-northeast-1:580247275435:layer:LambdaInsightsExtension:12",
@@ -83,7 +95,11 @@ Object {
   "ap-northeast-2": Object {
     "cdkMetadataResourceAvailable": true,
     "domainSuffix": "amazonaws.com",
+    "lambdaInsightsArmVersions": Object {
+      "1.0.119.0": undefined,
+    },
     "lambdaInsightsVersions": Object {
+      "1.0.119.0": "arn:aws:lambda:ap-northeast-2:580247275435:layer:LambdaInsightsExtension:16",
       "1.0.54.0": "arn:aws:lambda:ap-northeast-2:580247275435:layer:LambdaInsightsExtension:2",
       "1.0.86.0": "arn:aws:lambda:ap-northeast-2:580247275435:layer:LambdaInsightsExtension:11",
       "1.0.89.0": "arn:aws:lambda:ap-northeast-2:580247275435:layer:LambdaInsightsExtension:12",
@@ -109,7 +125,11 @@ Object {
   "ap-northeast-3": Object {
     "cdkMetadataResourceAvailable": false,
     "domainSuffix": "amazonaws.com",
+    "lambdaInsightsArmVersions": Object {
+      "1.0.119.0": undefined,
+    },
     "lambdaInsightsVersions": Object {
+      "1.0.119.0": undefined,
       "1.0.54.0": undefined,
       "1.0.86.0": undefined,
       "1.0.89.0": undefined,
@@ -135,7 +155,11 @@ Object {
   "ap-south-1": Object {
     "cdkMetadataResourceAvailable": true,
     "domainSuffix": "amazonaws.com",
+    "lambdaInsightsArmVersions": Object {
+      "1.0.119.0": "arn:aws:lambda:ap-south-1:580247275435:layer:LambdaInsightsExtension-Arm64:1",
+    },
     "lambdaInsightsVersions": Object {
+      "1.0.119.0": "arn:aws:lambda:ap-south-1:580247275435:layer:LambdaInsightsExtension:16",
       "1.0.54.0": "arn:aws:lambda:ap-south-1:580247275435:layer:LambdaInsightsExtension:2",
       "1.0.86.0": "arn:aws:lambda:ap-south-1:580247275435:layer:LambdaInsightsExtension:11",
       "1.0.89.0": "arn:aws:lambda:ap-south-1:580247275435:layer:LambdaInsightsExtension:12",
@@ -161,7 +185,11 @@ Object {
   "ap-southeast-1": Object {
     "cdkMetadataResourceAvailable": true,
     "domainSuffix": "amazonaws.com",
+    "lambdaInsightsArmVersions": Object {
+      "1.0.119.0": "arn:aws:lambda:ap-southeast-1:580247275435:layer:LambdaInsightsExtension-Arm64:1",
+    },
     "lambdaInsightsVersions": Object {
+      "1.0.119.0": "arn:aws:lambda:ap-southeast-1:580247275435:layer:LambdaInsightsExtension:16",
       "1.0.54.0": "arn:aws:lambda:ap-southeast-1:580247275435:layer:LambdaInsightsExtension:2",
       "1.0.86.0": "arn:aws:lambda:ap-southeast-1:580247275435:layer:LambdaInsightsExtension:11",
       "1.0.89.0": "arn:aws:lambda:ap-southeast-1:580247275435:layer:LambdaInsightsExtension:12",
@@ -187,7 +215,11 @@ Object {
   "ap-southeast-2": Object {
     "cdkMetadataResourceAvailable": true,
     "domainSuffix": "amazonaws.com",
+    "lambdaInsightsArmVersions": Object {
+      "1.0.119.0": "arn:aws:lambda:ap-southeast-2:580247275435:layer:LambdaInsightsExtension-Arm64:1",
+    },
     "lambdaInsightsVersions": Object {
+      "1.0.119.0": "arn:aws:lambda:ap-southeast-2:580247275435:layer:LambdaInsightsExtension:16",
       "1.0.54.0": "arn:aws:lambda:ap-southeast-2:580247275435:layer:LambdaInsightsExtension:2",
       "1.0.86.0": "arn:aws:lambda:ap-southeast-2:580247275435:layer:LambdaInsightsExtension:11",
       "1.0.89.0": "arn:aws:lambda:ap-southeast-2:580247275435:layer:LambdaInsightsExtension:12",
@@ -213,7 +245,11 @@ Object {
   "ca-central-1": Object {
     "cdkMetadataResourceAvailable": true,
     "domainSuffix": "amazonaws.com",
+    "lambdaInsightsArmVersions": Object {
+      "1.0.119.0": undefined,
+    },
     "lambdaInsightsVersions": Object {
+      "1.0.119.0": "arn:aws:lambda:ca-central-1:580247275435:layer:LambdaInsightsExtension:16",
       "1.0.54.0": "arn:aws:lambda:ca-central-1:580247275435:layer:LambdaInsightsExtension:2",
       "1.0.86.0": "arn:aws:lambda:ca-central-1:580247275435:layer:LambdaInsightsExtension:11",
       "1.0.89.0": "arn:aws:lambda:ca-central-1:580247275435:layer:LambdaInsightsExtension:12",
@@ -239,7 +275,11 @@ Object {
   "cn-north-1": Object {
     "cdkMetadataResourceAvailable": true,
     "domainSuffix": "amazonaws.com.cn",
+    "lambdaInsightsArmVersions": Object {
+      "1.0.119.0": undefined,
+    },
     "lambdaInsightsVersions": Object {
+      "1.0.119.0": "arn:aws-cn:lambda:cn-north-1:488211338238:layer:LambdaInsightsExtension:9",
       "1.0.54.0": undefined,
       "1.0.86.0": undefined,
       "1.0.89.0": undefined,
@@ -265,7 +305,11 @@ Object {
   "cn-northwest-1": Object {
     "cdkMetadataResourceAvailable": true,
     "domainSuffix": "amazonaws.com.cn",
+    "lambdaInsightsArmVersions": Object {
+      "1.0.119.0": undefined,
+    },
     "lambdaInsightsVersions": Object {
+      "1.0.119.0": "arn:aws-cn:lambda:cn-northwest-1:488211338238:layer:LambdaInsightsExtension:9",
       "1.0.54.0": undefined,
       "1.0.86.0": undefined,
       "1.0.89.0": undefined,
@@ -291,7 +335,11 @@ Object {
   "eu-central-1": Object {
     "cdkMetadataResourceAvailable": true,
     "domainSuffix": "amazonaws.com",
+    "lambdaInsightsArmVersions": Object {
+      "1.0.119.0": "arn:aws:lambda:eu-central-1:580247275435:layer:LambdaInsightsExtension-Arm64:1",
+    },
     "lambdaInsightsVersions": Object {
+      "1.0.119.0": "arn:aws:lambda:eu-central-1:580247275435:layer:LambdaInsightsExtension:16",
       "1.0.54.0": "arn:aws:lambda:eu-central-1:580247275435:layer:LambdaInsightsExtension:2",
       "1.0.86.0": "arn:aws:lambda:eu-central-1:580247275435:layer:LambdaInsightsExtension:11",
       "1.0.89.0": "arn:aws:lambda:eu-central-1:580247275435:layer:LambdaInsightsExtension:12",
@@ -317,7 +365,11 @@ Object {
   "eu-north-1": Object {
     "cdkMetadataResourceAvailable": true,
     "domainSuffix": "amazonaws.com",
+    "lambdaInsightsArmVersions": Object {
+      "1.0.119.0": undefined,
+    },
     "lambdaInsightsVersions": Object {
+      "1.0.119.0": "arn:aws:lambda:eu-north-1:580247275435:layer:LambdaInsightsExtension:16",
       "1.0.54.0": "arn:aws:lambda:eu-north-1:580247275435:layer:LambdaInsightsExtension:2",
       "1.0.86.0": "arn:aws:lambda:eu-north-1:580247275435:layer:LambdaInsightsExtension:11",
       "1.0.89.0": "arn:aws:lambda:eu-north-1:580247275435:layer:LambdaInsightsExtension:12",
@@ -343,7 +395,11 @@ Object {
   "eu-south-1": Object {
     "cdkMetadataResourceAvailable": true,
     "domainSuffix": "amazonaws.com",
+    "lambdaInsightsArmVersions": Object {
+      "1.0.119.0": undefined,
+    },
     "lambdaInsightsVersions": Object {
+      "1.0.119.0": "arn:aws:lambda:eu-south-1:339249233099:layer:LambdaInsightsExtension:9",
       "1.0.54.0": undefined,
       "1.0.86.0": undefined,
       "1.0.89.0": undefined,
@@ -369,7 +425,11 @@ Object {
   "eu-west-1": Object {
     "cdkMetadataResourceAvailable": true,
     "domainSuffix": "amazonaws.com",
+    "lambdaInsightsArmVersions": Object {
+      "1.0.119.0": "arn:aws:lambda:eu-west-1:580247275435:layer:LambdaInsightsExtension-Arm64:1",
+    },
     "lambdaInsightsVersions": Object {
+      "1.0.119.0": "arn:aws:lambda:eu-west-1:580247275435:layer:LambdaInsightsExtension:16",
       "1.0.54.0": "arn:aws:lambda:eu-west-1:580247275435:layer:LambdaInsightsExtension:2",
       "1.0.86.0": "arn:aws:lambda:eu-west-1:580247275435:layer:LambdaInsightsExtension:11",
       "1.0.89.0": "arn:aws:lambda:eu-west-1:580247275435:layer:LambdaInsightsExtension:12",
@@ -395,7 +455,11 @@ Object {
   "eu-west-2": Object {
     "cdkMetadataResourceAvailable": true,
     "domainSuffix": "amazonaws.com",
+    "lambdaInsightsArmVersions": Object {
+      "1.0.119.0": "arn:aws:lambda:eu-west-2:580247275435:layer:LambdaInsightsExtension-Arm64:1",
+    },
     "lambdaInsightsVersions": Object {
+      "1.0.119.0": "arn:aws:lambda:eu-west-2:580247275435:layer:LambdaInsightsExtension:16",
       "1.0.54.0": "arn:aws:lambda:eu-west-2:580247275435:layer:LambdaInsightsExtension:2",
       "1.0.86.0": "arn:aws:lambda:eu-west-2:580247275435:layer:LambdaInsightsExtension:11",
       "1.0.89.0": "arn:aws:lambda:eu-west-2:580247275435:layer:LambdaInsightsExtension:12",
@@ -421,7 +485,11 @@ Object {
   "eu-west-3": Object {
     "cdkMetadataResourceAvailable": true,
     "domainSuffix": "amazonaws.com",
+    "lambdaInsightsArmVersions": Object {
+      "1.0.119.0": undefined,
+    },
     "lambdaInsightsVersions": Object {
+      "1.0.119.0": "arn:aws:lambda:eu-west-3:580247275435:layer:LambdaInsightsExtension:16",
       "1.0.54.0": "arn:aws:lambda:eu-west-3:580247275435:layer:LambdaInsightsExtension:2",
       "1.0.86.0": "arn:aws:lambda:eu-west-3:580247275435:layer:LambdaInsightsExtension:11",
       "1.0.89.0": "arn:aws:lambda:eu-west-3:580247275435:layer:LambdaInsightsExtension:12",
@@ -447,7 +515,11 @@ Object {
   "me-south-1": Object {
     "cdkMetadataResourceAvailable": true,
     "domainSuffix": "amazonaws.com",
+    "lambdaInsightsArmVersions": Object {
+      "1.0.119.0": undefined,
+    },
     "lambdaInsightsVersions": Object {
+      "1.0.119.0": "arn:aws:lambda:me-south-1:285320876703:layer:LambdaInsightsExtension:9",
       "1.0.54.0": undefined,
       "1.0.86.0": undefined,
       "1.0.89.0": undefined,
@@ -473,7 +545,11 @@ Object {
   "sa-east-1": Object {
     "cdkMetadataResourceAvailable": true,
     "domainSuffix": "amazonaws.com",
+    "lambdaInsightsArmVersions": Object {
+      "1.0.119.0": undefined,
+    },
     "lambdaInsightsVersions": Object {
+      "1.0.119.0": "arn:aws:lambda:sa-east-1:580247275435:layer:LambdaInsightsExtension:16",
       "1.0.54.0": "arn:aws:lambda:sa-east-1:580247275435:layer:LambdaInsightsExtension:2",
       "1.0.86.0": "arn:aws:lambda:sa-east-1:580247275435:layer:LambdaInsightsExtension:11",
       "1.0.89.0": "arn:aws:lambda:sa-east-1:580247275435:layer:LambdaInsightsExtension:12",
@@ -499,7 +575,11 @@ Object {
   "us-east-1": Object {
     "cdkMetadataResourceAvailable": true,
     "domainSuffix": "amazonaws.com",
+    "lambdaInsightsArmVersions": Object {
+      "1.0.119.0": "arn:aws:lambda:us-east-1:580247275435:layer:LambdaInsightsExtension-Arm64:1",
+    },
     "lambdaInsightsVersions": Object {
+      "1.0.119.0": "arn:aws:lambda:us-east-1:580247275435:layer:LambdaInsightsExtension:16",
       "1.0.54.0": "arn:aws:lambda:us-east-1:580247275435:layer:LambdaInsightsExtension:2",
       "1.0.86.0": "arn:aws:lambda:us-east-1:580247275435:layer:LambdaInsightsExtension:11",
       "1.0.89.0": "arn:aws:lambda:us-east-1:580247275435:layer:LambdaInsightsExtension:12",
@@ -525,7 +605,11 @@ Object {
   "us-east-2": Object {
     "cdkMetadataResourceAvailable": true,
     "domainSuffix": "amazonaws.com",
+    "lambdaInsightsArmVersions": Object {
+      "1.0.119.0": "arn:aws:lambda:us-east-2:580247275435:layer:LambdaInsightsExtension-Arm64:1",
+    },
     "lambdaInsightsVersions": Object {
+      "1.0.119.0": "arn:aws:lambda:us-east-2:580247275435:layer:LambdaInsightsExtension:16",
       "1.0.54.0": "arn:aws:lambda:us-east-2:580247275435:layer:LambdaInsightsExtension:2",
       "1.0.86.0": "arn:aws:lambda:us-east-2:580247275435:layer:LambdaInsightsExtension:11",
       "1.0.89.0": "arn:aws:lambda:us-east-2:580247275435:layer:LambdaInsightsExtension:12",
@@ -551,7 +635,11 @@ Object {
   "us-gov-east-1": Object {
     "cdkMetadataResourceAvailable": false,
     "domainSuffix": "amazonaws.com",
+    "lambdaInsightsArmVersions": Object {
+      "1.0.119.0": undefined,
+    },
     "lambdaInsightsVersions": Object {
+      "1.0.119.0": undefined,
       "1.0.54.0": undefined,
       "1.0.86.0": undefined,
       "1.0.89.0": undefined,
@@ -577,7 +665,11 @@ Object {
   "us-gov-west-1": Object {
     "cdkMetadataResourceAvailable": false,
     "domainSuffix": "amazonaws.com",
+    "lambdaInsightsArmVersions": Object {
+      "1.0.119.0": undefined,
+    },
     "lambdaInsightsVersions": Object {
+      "1.0.119.0": undefined,
       "1.0.54.0": undefined,
       "1.0.86.0": undefined,
       "1.0.89.0": undefined,
@@ -603,7 +695,11 @@ Object {
   "us-iso-east-1": Object {
     "cdkMetadataResourceAvailable": false,
     "domainSuffix": "c2s.ic.gov",
+    "lambdaInsightsArmVersions": Object {
+      "1.0.119.0": undefined,
+    },
     "lambdaInsightsVersions": Object {
+      "1.0.119.0": undefined,
       "1.0.54.0": undefined,
       "1.0.86.0": undefined,
       "1.0.89.0": undefined,
@@ -629,7 +725,11 @@ Object {
   "us-isob-east-1": Object {
     "cdkMetadataResourceAvailable": false,
     "domainSuffix": "sc2s.sgov.gov",
+    "lambdaInsightsArmVersions": Object {
+      "1.0.119.0": undefined,
+    },
     "lambdaInsightsVersions": Object {
+      "1.0.119.0": undefined,
       "1.0.54.0": undefined,
       "1.0.86.0": undefined,
       "1.0.89.0": undefined,
@@ -655,7 +755,11 @@ Object {
   "us-west-1": Object {
     "cdkMetadataResourceAvailable": true,
     "domainSuffix": "amazonaws.com",
+    "lambdaInsightsArmVersions": Object {
+      "1.0.119.0": undefined,
+    },
     "lambdaInsightsVersions": Object {
+      "1.0.119.0": "arn:aws:lambda:us-west-1:580247275435:layer:LambdaInsightsExtension:16",
       "1.0.54.0": "arn:aws:lambda:us-west-1:580247275435:layer:LambdaInsightsExtension:2",
       "1.0.86.0": "arn:aws:lambda:us-west-1:580247275435:layer:LambdaInsightsExtension:11",
       "1.0.89.0": "arn:aws:lambda:us-west-1:580247275435:layer:LambdaInsightsExtension:12",
@@ -681,7 +785,11 @@ Object {
   "us-west-2": Object {
     "cdkMetadataResourceAvailable": true,
     "domainSuffix": "amazonaws.com",
+    "lambdaInsightsArmVersions": Object {
+      "1.0.119.0": "arn:aws:lambda:us-west-2:580247275435:layer:LambdaInsightsExtension-Arm64:1",
+    },
     "lambdaInsightsVersions": Object {
+      "1.0.119.0": "arn:aws:lambda:us-west-2:580247275435:layer:LambdaInsightsExtension:16",
       "1.0.54.0": "arn:aws:lambda:us-west-2:580247275435:layer:LambdaInsightsExtension:2",
       "1.0.86.0": "arn:aws:lambda:us-west-2:580247275435:layer:LambdaInsightsExtension:11",
       "1.0.89.0": "arn:aws:lambda:us-west-2:580247275435:layer:LambdaInsightsExtension:12",

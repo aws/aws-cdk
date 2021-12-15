@@ -50,6 +50,11 @@ export class EvaluateCloudFormationTemplate {
     return stackResources.find(sr => sr.LogicalResourceId === logicalId)?.PhysicalResourceId;
   }
 
+  public async findLogicalIdForPhysicalName(physicalName: string): Promise<string | undefined> {
+    const stackResources = await this.stackResources.listStackResources();
+    return stackResources.find(sr => sr.PhysicalResourceId === physicalName)?.LogicalResourceId;
+  }
+
   public findReferencesTo(logicalId: string): Array<ResourceDefinition> {
     const ret = new Array<ResourceDefinition>();
     for (const [resourceLogicalId, resourceDef] of Object.entries(this.template?.Resources ?? {})) {

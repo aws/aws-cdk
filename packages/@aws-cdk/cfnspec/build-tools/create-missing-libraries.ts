@@ -26,7 +26,7 @@ async function main() {
   // iterate over all cloudformation namespaces
   for (const namespace of cfnspec.namespaces()) {
     const module = pkglint.createModuleDefinitionFromCfnNamespace(namespace);
-    const lowcaseModuleName = module.moduleName.toLocaleLowerCase();
+    const lowcaseModuleName = module.moduleBaseName.toLocaleLowerCase();
     const packagePath = path.join(root, module.moduleName);
 
     // we already have a module for this namesapce, move on.

@@ -19,6 +19,19 @@ integTest('VPC Lookup', withDefaultFixture(async (fixture) => {
   await fixture.cdkDeploy('import-vpc', { modEnv: { ENABLE_VPC_TESTING: 'IMPORT' } });
 }));
 
+// testing a construct with a builtin Nodejs Lambda Function.
+// In this case we are testing the s3.Bucket construct with the
+// autoDeleteObjects prop set to true, which creates a Lambda backed
+// CustomResource. Since the compiled Lambda code (e.g. __entrypoint__.js)
+// is bundled as part of the CDK package, we want to make sure we don't
+// introduce changes to the compiled code that could prevent the Lambda from
+// executing. If we do, this test will timeout and fail.
+integTest('Construct with builtin Lambda function', withDefaultFixture(async (fixture) => {
+  await fixture.cdkDeploy('builtin-lambda-function');
+  fixture.log('Setup complete!');
+  await fixture.cdkDestroy('builtin-lambda-function');
+}));
+
 integTest('Two ways of shoing the version', withDefaultFixture(async (fixture) => {
   const version1 = await fixture.cdk(['version'], { verbose: false });
   const version2 = await fixture.cdk(['--version'], { verbose: false });
@@ -259,7 +272,7 @@ integTest('update to stack in ROLLBACK_COMPLETE state will delete stack and crea
   });
 
   // THEN
-  expect (stackArn).not.toEqual(newStackArn); // new stack was created
+  expect(stackArn).not.toEqual(newStackArn); // new stack was created
   expect(newStackResponse.Stacks?.[0].StackStatus).toEqual('CREATE_COMPLETE');
   expect(newStackResponse.Stacks?.[0].Parameters).toContainEqual(
     {

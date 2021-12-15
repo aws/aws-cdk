@@ -85,7 +85,7 @@
     "@aws-cdk/pkglint": "0.0.0",
     "@types/jest": "^27.0.3",
     "@types/lodash": "^4.14.177",
-    "jest": "^27.3.1",
+    "jest": "^27.4.3",
     "lodash": "^4.17.21"
   },
   "dependencies": {

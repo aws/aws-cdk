@@ -71,6 +71,19 @@ describe('cluster engine', () => {
 
   });
 
+  test('cluster parameter group correctly determined for AURORA_MYSQL and given version 3', () => {
+    // GIVEN
+    const engine = DatabaseClusterEngine.auroraMysql({
+      version: AuroraMysqlEngineVersion.VER_3_01_0,
+    });
+
+    // WHEN
+    const family = engine.parameterGroupFamily;
+
+    // THEN
+    expect(family).toEqual('aurora-mysql8.0');
+  });
+
   test('cluster parameter group correctly determined for AURORA_POSTGRESQL and given version', () => {
     // GIVEN
     const engine = DatabaseClusterEngine.auroraPostgres({

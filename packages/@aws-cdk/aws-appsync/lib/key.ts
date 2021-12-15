@@ -68,14 +68,14 @@ export class KeyCondition {
    */
   public renderTemplate(): string {
     return `"query" : {
-            "expression" : "${this.cond.renderCondition()}",
-            "expressionNames" : {
+              "expression" : "${this.cond.renderCondition()}",
+              "expressionNames" : {
                 ${this.cond.renderExpressionNames()}
-            },
-            "expressionValues" : {
+              },
+              "expressionValues" : {
                 ${this.cond.renderExpressionValues()}
-            }
-        }`;
+              }
+            }`;
   }
 }
 

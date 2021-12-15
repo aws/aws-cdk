@@ -119,6 +119,7 @@ export class GatewayRoute extends cdk.Resource implements IGatewayRoute {
         httpRoute: routeSpecConfig.httpSpecConfig,
         http2Route: routeSpecConfig.http2SpecConfig,
         grpcRoute: routeSpecConfig.grpcSpecConfig,
+        priority: routeSpecConfig.priority,
       },
       virtualGatewayName: this.virtualGateway.virtualGatewayName,
     });

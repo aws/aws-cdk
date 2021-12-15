@@ -9,12 +9,18 @@ test('built-in data is correct', () => {
 
     const servicePrincipals: { [service: string]: string | undefined } = {};
     const lambdaInsightsVersions: { [service: string]: string | undefined } = {};
+    const lambdaInsightsArmVersions: { [service: string]: string | undefined } = {};
 
     AWS_SERVICES.forEach(service => servicePrincipals[service] = region.servicePrincipal(service));
 
     for (const version in CLOUDWATCH_LAMBDA_INSIGHTS_ARNS) {
       lambdaInsightsVersions[version] = region.cloudwatchLambdaInsightsArn(version);
+
+      if ('arm64' in CLOUDWATCH_LAMBDA_INSIGHTS_ARNS[version]) {
+        lambdaInsightsArmVersions[version] = region.cloudwatchLambdaInsightsArn(version, 'arm64');
+      }
     };
+
 
     snapshot[name] = {
       cdkMetadataResourceAvailable: region.cdkMetadataResourceAvailable,
@@ -24,6 +30,7 @@ test('built-in data is correct', () => {
       vpcEndPointServiceNamePrefix: region.vpcEndpointServiceNamePrefix,
       servicePrincipals,
       lambdaInsightsVersions,
+      lambdaInsightsArmVersions,
     };
   }
   expect(snapshot).toMatchSnapshot();
