@@ -502,8 +502,8 @@ bucket.transferAccelerationUrlForObject('objectname');
    intelligentTieringConfigurations: [{
       name: 'foo',
       prefix: 'folder/name',
-      archiveAccessTierTime: Duration.days(90),
-      deepArchiveAccessTierTime: Duration.days(180),
+      archiveAccessTierTime: cdk.Duration.days(90),
+      deepArchiveAccessTierTime: cdk.Duration.days(180),
       tags: [{key: 'tagname', value: 'tagvalue'}]
    }],
 });
