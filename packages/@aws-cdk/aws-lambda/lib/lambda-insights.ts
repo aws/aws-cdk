@@ -1,12 +1,9 @@
-import { Aws, CfnMapping, Fn, IResolveContext, Lazy, Stack, Token } from '@aws-cdk/core';
+import { Lazy, Stack, Token } from '@aws-cdk/core';
 import { FactName, RegionInfo } from '@aws-cdk/region-info';
-import { Construct } from 'constructs';
+import { Construct, IConstruct } from 'constructs';
 import { Architecture } from './architecture';
 import { IFunction } from './function-base';
 
-
-// This is the name of the mapping that will be added to the CloudFormation template, if a stack is region agnostic
-const DEFAULT_MAPPING_PREFIX = 'LambdaInsightsVersions';
 
 /**
  * Config returned from {@link LambdaInsightsVersion._bind}
@@ -71,7 +68,7 @@ export abstract class LambdaInsightsVersion {
 
     class InsightsVersion extends LambdaInsightsVersion {
       public readonly layerVersionArn = Lazy.uncachedString({
-        produce: (context) => getVersionArn(context, insightsVersion),
+        produce: (context) => getVersionArn(context.scope, insightsVersion),
       });
 
       public _bind(_scope: Construct, _function: IFunction): InsightsBindConfig {
@@ -83,9 +80,7 @@ export abstract class LambdaInsightsVersion {
           throw new Error(`Insights version ${insightsVersion} does not exist.`);
         }
         return {
-          arn: Lazy.uncachedString({
-            produce: (context) => getVersionArn(context, insightsVersion, arch),
-          }),
+          arn: getVersionArn(_scope, insightsVersion, arch),
         };
       }
     }
@@ -111,9 +106,9 @@ export abstract class LambdaInsightsVersion {
  *
  * This function is run on CDK synthesis.
  */
-function getVersionArn(context: IResolveContext, insightsVersion: string, architecture?: string): string {
+function getVersionArn(scope: IConstruct, insightsVersion: string, architecture?: string): string {
 
-  const scopeStack = Stack.of(context.scope);
+  const scopeStack = Stack.of(scope);
   const region = scopeStack.region;
   const arch = architecture ?? Architecture.X86_64.name;
 
@@ -127,61 +122,5 @@ function getVersionArn(context: IResolveContext, insightsVersion: string, archit
   }
 
   // Otherwise, need to add a mapping to be looked up at deployment time
-
-  /**
-   * See this for the context as to why the mappings are the way they are
-   * https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/mappings-section-structure.html
-   *
-   * Mappings have to have a structure like this, and no functions can be used inside them:
-   * <Alphanumeric only>
-   * - <Can be non-alphanumeric>
-   * -- { <alphanumeric>: "value1"},
-   * -- { <alphanumeric>: "value2"}
-   *
-   * So we cannot have an otherwise ideal mapping like this, because '1.0.98.0' is non-alphanumeric:
-   * LambdaInsightsVersions
-   * - us-east-1
-   * -- {'1.0.98.0': 'arn1'},
-   * -- {'1.0.89.0': 'arn2'}
-   *
-   * To get around this limitation, this is the mapping structure:
-   * LambdaInsightsVersions10980 // for version 1.0.98.0
-   * - us-east-1
-   * -- {'arn': 'arn1'},
-   * - us-east-2
-   * -- {'arn': 'arn2'}
-   * LambdaInsightsVersions10890 // a separate mapping version 1.0.89.0
-   * - us-east-1
-   * -- {'arn': 'arn3'},
-   * - us-east-2
-   * -- {'arn': 'arn4'}
-   * LambdaInsightsVersions101190arm64 // a separate mapping version 1.0.119.0 arm64
-   * - us-east-1
-   * -- {'arn': 'arn3'},
-   * - us-east-2
-   * -- {'arn': 'arn4'}
-   */
-
-  let mapName = DEFAULT_MAPPING_PREFIX + insightsVersion.split('.').join('');
-  // if the architecture is arm64 then append that to the end of the name
-  // this is so that we can have a separate mapping for x86 vs arm in scenarios
-  // where we have Lambda functions with both architectures in the same stack
-  if (arch === Architecture.ARM_64.name) {
-    mapName += arch;
-  }
-  const mapping: { [k1: string]: { [k2: string]: any } } = {};
-  const region2arns = RegionInfo.regionMap(FactName.cloudwatchLambdaInsightsVersion(insightsVersion, arch));
-  for (const [reg, arn] of Object.entries(region2arns)) {
-    mapping[reg] = { arn };
-  }
-
-  // Only create a given mapping once. If another version of insights is used elsewhere, that mapping will also exist
-  if (!scopeStack.node.tryFindChild(mapName)) {
-    // need to call findInMap here if we are going to set lazy=true, otherwise
-    // we get the informLazyUse info message
-    const map = new CfnMapping(scopeStack, mapName, { mapping, lazy: true });
-    return map.findInMap(Aws.REGION, 'arn');
-  }
-  // The ARN will be looked up at deployment time from the mapping we created
-  return Fn.findInMap(mapName, Aws.REGION, 'arn');
+  return scopeStack.regionalFact(FactName.cloudwatchLambdaInsightsVersion(insightsVersion, arch));
 }
