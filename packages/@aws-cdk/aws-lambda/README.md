@@ -411,6 +411,19 @@ new lambda.Function(this, 'MyFunction', {
 });
 ```
 
+If you are deploying an ARM_64 Lambda Function, you must specify a
+Lambda Insights Version >= `1_0_119_0`.
+
+```ts
+new lambda.Function(this, 'MyFunction', {
+  runtime: lambda.Runtime.NODEJS_12_X,
+  handler: 'index.handler',
+  architecture: lambda.Architecture.ARM_64,
+  code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
+  insightsVersion: lambda.LambdaInsightsVersion.VERSION_1_0_119_0,
+});
+```
+
 ## Event Rule Target
 
 You can use an AWS Lambda function as a target for an Amazon CloudWatch event
