@@ -1,3 +1,91 @@
+# CloudFormation Resource Specification v51.0.0
+
+## New Resource Types
+
+* AWS::AppSync::DomainName
+* AWS::AppSync::DomainNameApiAssociation
+* AWS::Lex::Bot
+* AWS::Lex::BotAlias
+* AWS::Lex::BotVersion
+* AWS::Lex::ResourcePolicy
+
+## Attribute Changes
+
+* AWS::ApiGateway::Deployment DeploymentId (__added__)
+* AWS::EC2::VPCEndpoint Id (__deleted__)
+* AWS::EC2::VPCEndpoint DnsEntries.DuplicatesAllowed (__deleted__)
+* AWS::EC2::VPCEndpoint NetworkInterfaceIds.DuplicatesAllowed (__deleted__)
+* AWS::IoTAnalytics::Pipeline Id (__added__)
+
+## Property Changes
+
+* AWS::EC2::VPCEndpointService PayerResponsibility (__added__)
+* AWS::Evidently::Project DataDelivery.PrimitiveType (__deleted__)
+* AWS::IoTAnalytics::Pipeline PipelineActivities.DuplicatesAllowed (__added__)
+* AWS::IoTAnalytics::Pipeline Tags.DuplicatesAllowed (__added__)
+* AWS::Kinesis::Stream StreamModeDetails (__added__)
+* AWS::Kinesis::Stream ShardCount.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::WAFv2::WebACL CaptchaConfig (__added__)
+
+## Property Type Changes
+
+* AWS::Kinesis::Stream.StreamModeDetails (__added__)
+* AWS::WAFv2::RuleGroup.CaptchaConfig (__added__)
+* AWS::WAFv2::RuleGroup.ImmunityTimeProperty (__added__)
+* AWS::WAFv2::RuleGroup.RegexMatchStatement (__added__)
+* AWS::WAFv2::WebACL.CaptchaAction (__added__)
+* AWS::WAFv2::WebACL.CaptchaConfig (__added__)
+* AWS::WAFv2::WebACL.ImmunityTimeProperty (__added__)
+* AWS::WAFv2::WebACL.RegexMatchStatement (__added__)
+* AWS::ApiGateway::Deployment.CanarySetting StageVariableOverrides.DuplicatesAllowed (__deleted__)
+* AWS::ApiGateway::Deployment.DeploymentCanarySettings StageVariableOverrides.DuplicatesAllowed (__deleted__)
+* AWS::ApiGateway::Deployment.MethodSetting CacheDataEncrypted.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apigateway-deployment-stagedescription-methodsetting.html#cfn-apigateway-deployment-stagedescription-methodsetting-cachedataencrypted
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apigateway-deployment-methodsetting.html#cfn-apigateway-deployment-methodsetting-cachedataencrypted
+* AWS::ApiGateway::Deployment.MethodSetting CacheTtlInSeconds.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apigateway-deployment-stagedescription-methodsetting.html#cfn-apigateway-deployment-stagedescription-methodsetting-cachettlinseconds
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apigateway-deployment-methodsetting.html#cfn-apigateway-deployment-methodsetting-cachettlinseconds
+* AWS::ApiGateway::Deployment.MethodSetting CachingEnabled.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apigateway-deployment-stagedescription-methodsetting.html#cfn-apigateway-deployment-stagedescription-methodsetting-cachingenabled
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apigateway-deployment-methodsetting.html#cfn-apigateway-deployment-methodsetting-cachingenabled
+* AWS::ApiGateway::Deployment.MethodSetting DataTraceEnabled.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apigateway-deployment-stagedescription-methodsetting.html#cfn-apigateway-deployment-stagedescription-methodsetting-datatraceenabled
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apigateway-deployment-methodsetting.html#cfn-apigateway-deployment-methodsetting-datatraceenabled
+* AWS::ApiGateway::Deployment.MethodSetting HttpMethod.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apigateway-deployment-stagedescription-methodsetting.html#cfn-apigateway-deployment-stagedescription-methodsetting-httpmethod
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apigateway-deployment-methodsetting.html#cfn-apigateway-deployment-methodsetting-httpmethod
+* AWS::ApiGateway::Deployment.MethodSetting LoggingLevel.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apigateway-deployment-stagedescription-methodsetting.html#cfn-apigateway-deployment-stagedescription-methodsetting-logginglevel
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apigateway-deployment-methodsetting.html#cfn-apigateway-deployment-methodsetting-logginglevel
+* AWS::ApiGateway::Deployment.MethodSetting MetricsEnabled.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apigateway-deployment-stagedescription-methodsetting.html#cfn-apigateway-deployment-stagedescription-methodsetting-metricsenabled
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apigateway-deployment-methodsetting.html#cfn-apigateway-deployment-methodsetting-metricsenabled
+* AWS::ApiGateway::Deployment.MethodSetting ResourcePath.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apigateway-deployment-stagedescription-methodsetting.html#cfn-apigateway-deployment-stagedescription-methodsetting-resourcepath
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apigateway-deployment-methodsetting.html#cfn-apigateway-deployment-methodsetting-resourcepath
+* AWS::ApiGateway::Deployment.MethodSetting ThrottlingBurstLimit.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apigateway-deployment-stagedescription-methodsetting.html#cfn-apigateway-deployment-stagedescription-methodsetting-throttlingburstlimit
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apigateway-deployment-methodsetting.html#cfn-apigateway-deployment-methodsetting-throttlingburstlimit
+* AWS::ApiGateway::Deployment.MethodSetting ThrottlingRateLimit.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apigateway-deployment-stagedescription-methodsetting.html#cfn-apigateway-deployment-stagedescription-methodsetting-throttlingratelimit
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apigateway-deployment-methodsetting.html#cfn-apigateway-deployment-methodsetting-throttlingratelimit
+* AWS::ApiGateway::Deployment.StageDescription Tags.Documentation (__changed__)
+  * Old: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apigateway-deployment-stagedescription.html#cfn-apigateway-deployment-tags
+  * New: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apigateway-deployment-stagedescription.html#cfn-apigateway-deployment-stagedescription-tags
+* AWS::ApiGateway::Deployment.StageDescription Variables.DuplicatesAllowed (__deleted__)
+* AWS::Evidently::Project.DataDeliveryObject S3.PrimitiveType (__deleted__)
+* AWS::IoTAnalytics::Pipeline.RemoveAttributes Attributes.DuplicatesAllowed (__added__)
+* AWS::IoTAnalytics::Pipeline.SelectAttributes Attributes.DuplicatesAllowed (__added__)
+* AWS::WAFv2::RuleGroup.Rule CaptchaConfig (__added__)
+* AWS::WAFv2::RuleGroup.RuleAction Captcha (__added__)
+* AWS::WAFv2::RuleGroup.Statement RegexMatchStatement (__added__)
+* AWS::WAFv2::WebACL.Rule CaptchaConfig (__added__)
+* AWS::WAFv2::WebACL.RuleAction Captcha (__added__)
+* AWS::WAFv2::WebACL.Statement RegexMatchStatement (__added__)
+
+
 # CloudFormation Resource Specification v50.0.0
 
 ## New Resource Types

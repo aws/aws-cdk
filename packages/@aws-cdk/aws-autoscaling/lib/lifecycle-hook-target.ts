@@ -1,9 +1,42 @@
-
-import { ILifecycleHook } from './lifecycle-hook';
+// eslint-disable-next-line import/order
+import { LifecycleHook } from './lifecycle-hook';
+import * as iam from '@aws-cdk/aws-iam';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct } from '@aws-cdk/core';
+import * as constructs from 'constructs';
+
+/**
+ * Options needed to bind a target to a lifecycle hook.
+ * [disable-awslint:ref-via-interface] The lifecycle hook to attach to and an IRole to use
+ */
+export interface BindHookTargetOptions {
+  /**
+   * The lifecycle hook to attach to.
+   * [disable-awslint:ref-via-interface]
+   */
+  readonly lifecycleHook: LifecycleHook;
+  /**
+   * The role to use when attaching to the lifecycle hook.
+   * [disable-awslint:ref-via-interface]
+   * @default: a role is not created unless the target arn is specified
+   */
+  readonly role?: iam.IRole;
+}
+
+/**
+ * Result of binding a lifecycle hook to a target.
+ */
+export interface LifecycleHookTargetConfig {
+  /**
+   * The IRole that was used to bind the lifecycle hook to the target
+   */
+  readonly createdRole: iam.IRole;
+  /**
+   * The targetArn that the lifecycle hook was bound to
+   */
+  readonly notificationTargetArn: string;
+}
 
 /**
  * Interface for autoscaling lifecycle hook targets
@@ -11,16 +44,7 @@ import { Construct } from '@aws-cdk/core';
 export interface ILifecycleHookTarget {
   /**
    * Called when this object is used as the target of a lifecycle hook
+   * @param options [disable-awslint:ref-via-interface] The lifecycle hook to attach to and a role to use
    */
-  bind(scope: Construct, lifecycleHook: ILifecycleHook): LifecycleHookTargetConfig;
-}
-
-/**
- * Properties to add the target to a lifecycle hook
- */
-export interface LifecycleHookTargetConfig {
-  /**
-   * The ARN to use as the notification target
-   */
-  readonly notificationTargetArn: string;
+  bind(scope: constructs.Construct, options: BindHookTargetOptions): LifecycleHookTargetConfig;
 }

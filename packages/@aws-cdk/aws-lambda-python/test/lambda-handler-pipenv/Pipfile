@@ -4,5 +4,5 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [packages]
-requests = "==2.23.0"
-pillow = "==6.2.2"
+requests = "==2.26.0"
+Pillow = "==8.4.0"
