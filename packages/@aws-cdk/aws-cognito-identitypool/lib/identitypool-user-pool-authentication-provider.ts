@@ -1,10 +1,10 @@
 import { randomBytes } from 'crypto';
-import { DependableTrait } from '@aws-cdk/core';
 import {
+  IUserPoolIdentityProvider,
   UserPoolClient,
   UserPoolClientProps,
-} from './user-pool-client';
-import { IUserPoolIdentityProvider } from './user-pool-idp';
+} from '@aws-cdk/aws-cognito';
+import { DependableTrait } from '@aws-cdk/core';
 
 /**
  * Represents a UserPoolAuthenticationProvider
@@ -16,7 +16,7 @@ export interface IUserPoolAuthenticationProvider {
   readonly clientId: string
 
   /**
-   * Whether to disable the user pool's default server side token check
+   * Whether to disable the pool's default server side token check
    */
   readonly disableServerSideTokenCheck: boolean;
 
@@ -40,7 +40,7 @@ export interface UserPoolAuthenticationProviderProps extends UserPoolClientProps
 }
 
 /**
- * Defines a User Pool Authentication Provider
+ * Defines an User Pool Authentication Provider
  */
 export class UserPoolAuthenticationProvider implements IUserPoolAuthenticationProvider {
 
@@ -50,7 +50,7 @@ export class UserPoolAuthenticationProvider implements IUserPoolAuthenticationPr
   public readonly clientId: string
 
   /**
-   * Whether to disable the user pool's default server side token check
+   * Whether to disable the pool's default server side token check
    */
   public readonly disableServerSideTokenCheck: boolean;
 
