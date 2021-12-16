@@ -1,7 +1,5 @@
-import * as colors from 'colors/safe';
-import { print } from '../../logging';
 import { ISDK } from '../aws-auth';
-import { ICON, ChangeHotswapImpact, ChangeHotswapResult, HotswapOperation, HotswappableChangeCandidate } from './common';
+import { ChangeHotswapImpact, ChangeHotswapResult, HotswapOperation, HotswappableChangeCandidate } from './common';
 import { EvaluateCloudFormationTemplate } from './evaluate-cloudformation-template';
 
 export async function isHotswappableStateMachineChange(
@@ -9,7 +7,7 @@ export async function isHotswappableStateMachineChange(
 ): Promise<ChangeHotswapResult> {
   const stateMachineDefinitionChange = await isStateMachineDefinitionOnlyChange(change, evaluateCfnTemplate);
   if (stateMachineDefinitionChange === ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT ||
-    stateMachineDefinitionChange === ChangeHotswapImpact.IRRELEVANT) {
+      stateMachineDefinitionChange === ChangeHotswapImpact.IRRELEVANT) {
     return stateMachineDefinitionChange;
   }
 
@@ -56,14 +54,15 @@ interface StateMachineResource {
 
 class StateMachineHotswapOperation implements HotswapOperation {
   public readonly service = 'stepfunctions-state-machine';
+  public readonly resourceNames: string[];
 
   constructor(private readonly stepFunctionResource: StateMachineResource) {
+    const name = this.stepFunctionResource.stateMachineArn.split(':')[6];
+    this.resourceNames = [name];
   }
 
   public async apply(sdk: ISDK): Promise<any> {
     // not passing the optional properties leaves them unchanged
-    const name = this.stepFunctionResource.stateMachineArn.split(':')[6];
-    print(` ${ICON} hotswapping state machine: %s`, colors.bold(name));
     return sdk.stepFunctions().updateStateMachine({
       stateMachineArn: this.stepFunctionResource.stateMachineArn,
       definition: this.stepFunctionResource.definition,

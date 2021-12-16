@@ -18,6 +18,11 @@ export interface HotswapOperation {
    */
   readonly service: string;
 
+  /**
+   * The names of the resources being hotswapped.
+   */
+  readonly resourceNames: string[];
+
   apply(sdk: ISDK): Promise<any>;
 }
 

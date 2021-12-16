@@ -52,9 +52,7 @@ export async function tryHotswapDeployment(
   }
 
   // apply the short-circuitable changes
-  print(`\n${ICON} %s\n`, colors.bold('starting hotswap deployment...'));
   await applyAllHotswappableChanges(sdk, hotswappableChanges);
-  print(`\n${ICON} %s\n`, colors.bold('hotswap deployment complete'));
 
   return { noOp: hotswappableChanges.length === 0, stackArn: cloudFormationStack.stackId, outputs: cloudFormationStack.outputs, stackArtifact };
 }
@@ -143,6 +141,7 @@ export function isCandidateForHotswapping(change: cfn_diff.ResourceDifference): 
 async function applyAllHotswappableChanges(
   sdk: ISDK, hotswappableChanges: HotswapOperation[],
 ): Promise<void[]> {
+  print(`\n${ICON} hotswapping resources:`);
   return Promise.all(hotswappableChanges.map(hotswapOperation => {
     return applyHotswappableChange(sdk, hotswapOperation);
   }));
@@ -154,8 +153,14 @@ async function applyHotswappableChange(sdk: ISDK, hotswapOperation: HotswapOpera
   sdk.appendCustomUserAgent(customUserAgent);
 
   try {
+    for (const name of hotswapOperation.resourceNames) {
+      print(`   ${ICON} hotswapping ${hotswapOperation.service}: %s`, colors.bold(name));
+    }
     return await hotswapOperation.apply(sdk);
   } finally {
+    for (const name of hotswapOperation.resourceNames) {
+      print(`${ICON} ${hotswapOperation.service}: %s %s`, colors.bold(name), colors.green('hotswapped!'));
+    }
     sdk.removeCustomUserAgent(customUserAgent);
   }
 }

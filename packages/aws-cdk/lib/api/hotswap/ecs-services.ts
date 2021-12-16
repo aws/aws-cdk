@@ -1,8 +1,6 @@
 import * as AWS from 'aws-sdk';
-import * as colors from 'colors/safe';
-import { print } from '../../logging';
 import { ISDK } from '../aws-auth';
-import { ICON, ChangeHotswapImpact, ChangeHotswapResult, establishResourcePhysicalName, HotswapOperation, HotswappableChangeCandidate } from './common';
+import { ChangeHotswapImpact, ChangeHotswapResult, establishResourcePhysicalName, HotswapOperation, HotswappableChangeCandidate } from './common';
 import { EvaluateCloudFormationTemplate } from './evaluate-cloudformation-template';
 
 export async function isHotswappableEcsServiceChange(
@@ -38,7 +36,7 @@ export async function isHotswappableEcsServiceChange(
     }
   }
   if (ecsServicesReferencingTaskDef.length === 0 ||
-    resourcesReferencingTaskDef.length > ecsServicesReferencingTaskDef.length) {
+      resourcesReferencingTaskDef.length > ecsServicesReferencingTaskDef.length) {
     // if there are either no resources referencing the TaskDefinition,
     // or something besides an ECS Service is referencing it,
     // hotswap is not possible
@@ -79,11 +77,17 @@ interface EcsService {
 
 class EcsServiceHotswapOperation implements HotswapOperation {
   public readonly service = 'ecs-service';
+  public readonly resourceNames: string[] = [];
 
   constructor(
     private readonly taskDefinitionResource: any,
     private readonly servicesReferencingTaskDef: EcsService[],
-  ) { }
+  ) {
+    for (const ecsService of servicesReferencingTaskDef) {
+      const serviceName: string = ecsService.serviceArn.split('/')[2];
+      this.resourceNames.push(serviceName);
+    }
+  }
 
   public async apply(sdk: ISDK): Promise<any> {
     // Step 1 - update the changed TaskDefinition, creating a new TaskDefinition Revision
@@ -96,8 +100,6 @@ class EcsServiceHotswapOperation implements HotswapOperation {
     // Step 2 - update the services using that TaskDefinition to point to the new TaskDefinition Revision
     const servicePerClusterUpdates: { [cluster: string]: Array<{ promise: Promise<any>, ecsService: EcsService }> } = {};
     for (const ecsService of this.servicesReferencingTaskDef) {
-      const serviceName = ecsService.serviceArn.split('/')[2];
-      print(` ${ICON} hotswapping ecs service: %s`, colors.bold(serviceName));
       const clusterName = ecsService.serviceArn.split('/')[1];
 
       const existingClusterPromises = servicePerClusterUpdates[clusterName];

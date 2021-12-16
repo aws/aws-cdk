@@ -235,7 +235,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
     // if we can skip deployment and we are performing a hotswap, let the user know
     // that no hotswap deployment happened
     if (options.hotswap) {
-      print(`\n ${ICON} %s\n`, colors.bold('no hotswap deployment'));
+      print(`\n ${ICON} %s\n`, colors.bold('hotswap deployment skipped - no changes were detected (use --force to override)'));
     }
     return {
       noOp: true,

@@ -1,7 +1,5 @@
-import * as colors from 'colors/safe';
-import { print } from '../../logging';
 import { ISDK } from '../aws-auth';
-import { ICON, ChangeHotswapImpact, ChangeHotswapResult, HotswapOperation, HotswappableChangeCandidate/*, establishResourcePhysicalName*/ } from './common';
+import { ChangeHotswapImpact, ChangeHotswapResult, HotswapOperation, HotswappableChangeCandidate/*, establishResourcePhysicalName*/ } from './common';
 import { EvaluateCloudFormationTemplate } from './evaluate-cloudformation-template';
 
 /**
@@ -39,12 +37,13 @@ export async function isHotswappableS3BucketDeploymentChange(
 
 class S3BucketDeploymentHotswapOperation implements HotswapOperation {
   public readonly service = 'custom-s3-deployment';
+  public readonly resourceNames: string[];
 
   constructor(private readonly functionName: string, private readonly customResourceProperties: any) {
+    this.resourceNames = [this.customResourceProperties.DestinationBucketName];
   }
 
   public async apply(sdk: ISDK): Promise<any> {
-    print(` ${ICON} hotswapping bucket deployment: %s`, colors.bold(this.customResourceProperties.DestinationBucketName));
     return sdk.lambda().invoke({
       FunctionName: this.functionName,
       // Lambda refuses to take a direct JSON object and requires it to be stringify()'d
@@ -119,6 +118,7 @@ function stringifyObject(obj: any): any {
 
 class EmptyHotswapOperation implements HotswapOperation {
   readonly service = 'empty';
+  readonly resourceNames = ['empty'];
   public async apply(sdk: ISDK): Promise<any> {
     return Promise.resolve(sdk);
   }
