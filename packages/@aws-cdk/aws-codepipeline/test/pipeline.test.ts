@@ -342,10 +342,7 @@ describe('', () => {
 
       });
       test('generates the same support stack containing the replication Bucket without the need to bootstrap in that environment for multiple pipelines', () => {
-        const app = new cdk.App({
-          treeMetadata: false, // we can't set the context otherwise, because App will have a child
-        });
-        app.node.setContext(cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT, true);
+        const app = new cdk.App();
 
         class PipelineStack extends cdk.Stack {
           public constructor(scope: Construct, id: string, props: cdk.StackProps ) {
@@ -380,28 +377,22 @@ describe('', () => {
         });
 
         const assembly = app.synth();
-        const supportStackArtifact = assembly.getStackByName('PipelineStackA-support-eu-south-1');
-        expect(supportStackArtifact.assumeRoleArn).toEqual(
-          'arn:${AWS::Partition}:iam::123456789012:role/cdk-hnb659fds-deploy-role-123456789012-us-west-2');
-        expect(supportStackArtifact.cloudFormationExecutionRoleArn).toEqual(
-          'arn:${AWS::Partition}:iam::123456789012:role/cdk-hnb659fds-cfn-exec-role-123456789012-us-west-2');
+        assembly.getStackByName('PipelineStackA-support-eu-south-1');
         expect(() => {
           assembly.getStackByName('PipelineStackB-support-eu-south-1');
         }).toThrowError(/Unable to find stack with stack name/);
 
       });
+
       test('generates the unique support stack containing the replication Bucket without the need to bootstrap in that environment for multiple pipelines', () => {
-        const app = new cdk.App({
-          treeMetadata: false, // we can't set the context otherwise, because App will have a child
-        });
-        app.node.setContext(cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT, true);
+        const app = new cdk.App();
 
         class PipelineStack extends cdk.Stack {
           public constructor(scope: Construct, id: string, props: cdk.StackProps ) {
             super(scope, id, props);
             const sourceOutput = new codepipeline.Artifact();
             new codepipeline.Pipeline(this, 'Pipeline', {
-              uniqueCrossRegionStackName: true,
+              reuseCrossRegionSupportStacks: false,
               stages: [
                 {
                   stageName: 'Source',
@@ -431,16 +422,8 @@ describe('', () => {
 
         const assembly = app.synth();
         const supportStackAArtifact = assembly.getStackByName('PipelineStackA-support-eu-south-1');
-        expect(supportStackAArtifact.assumeRoleArn).toEqual(
-          'arn:${AWS::Partition}:iam::123456789012:role/cdk-hnb659fds-deploy-role-123456789012-us-west-2');
-        expect(supportStackAArtifact.cloudFormationExecutionRoleArn).toEqual(
-          'arn:${AWS::Partition}:iam::123456789012:role/cdk-hnb659fds-cfn-exec-role-123456789012-us-west-2');
 
         const supportStackBArtifact = assembly.getStackByName('PipelineStackB-support-eu-south-1');
-        expect(supportStackBArtifact.assumeRoleArn).toEqual(
-          'arn:${AWS::Partition}:iam::123456789012:role/cdk-hnb659fds-deploy-role-123456789012-us-west-2');
-        expect(supportStackBArtifact.cloudFormationExecutionRoleArn).toEqual(
-          'arn:${AWS::Partition}:iam::123456789012:role/cdk-hnb659fds-cfn-exec-role-123456789012-us-west-2');
 
         const supportStackATemplate = supportStackAArtifact.template;
 

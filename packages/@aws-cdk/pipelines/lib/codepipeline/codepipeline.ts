@@ -198,11 +198,11 @@ export interface CodePipelineProps {
   readonly codePipeline?: cp.Pipeline;
 
   /**
-   * Generate a unique cross region support stack.
+   * Reuse the same cross region support stack for all pipelines in the App.
    *
-   * @default - false (Use the same support stack for all pipelines in App)
+   * @default - true (Use the same support stack for all pipelines in App)
    */
-  readonly uniqueCrossRegionStackName?: boolean;
+  readonly reuseCrossRegionSupportStacks?: boolean;
 }
 
 /**
@@ -347,7 +347,7 @@ export class CodePipeline extends PipelineBase {
       this._pipeline = new cp.Pipeline(this, 'Pipeline', {
         pipelineName: this.props.pipelineName,
         crossAccountKeys: this.props.crossAccountKeys ?? false,
-        uniqueCrossRegionStackName: this.props.uniqueCrossRegionStackName ?? false,
+        reuseCrossRegionSupportStacks: this.props.reuseCrossRegionSupportStacks ?? false,
         // This is necessary to make self-mutation work (deployments are guaranteed
         // to happen only after the builds of the latest pipeline definition).
         restartExecutionOnUpdate: true,

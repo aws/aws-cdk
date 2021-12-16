@@ -148,11 +148,11 @@ export interface PipelineProps {
   readonly enableKeyRotation?: boolean;
 
   /**
-   * Generate a unique cross region support stack.
+   * Reuse the same cross region support stack for all pipelines in the App.
    *
-   * @default - false (Use the same support stack for all pipelines in App)
+   * @default - true (Use the same support stack for all pipelines in App)
    */
-  readonly uniqueCrossRegionStackName?: boolean;
+  readonly reuseCrossRegionSupportStacks?: boolean;
 }
 
 abstract class PipelineBase extends Resource implements IPipeline {
@@ -349,7 +349,7 @@ export class Pipeline extends PipelineBase {
   private readonly _crossAccountSupport: { [account: string]: Stack } = {};
   private readonly crossAccountKeys: boolean;
   private readonly enableKeyRotation?: boolean;
-  private readonly uniqueCrossRegionStackName?: boolean;
+  private readonly reuseCrossRegionSupportStacks?: boolean;
 
   constructor(scope: Construct, id: string, props: PipelineProps = {}) {
     super(scope, id, {
@@ -372,7 +372,7 @@ export class Pipeline extends PipelineBase {
       throw new Error("Setting 'enableKeyRotation' to true also requires 'crossAccountKeys' to be enabled");
     }
 
-    this.uniqueCrossRegionStackName = props.uniqueCrossRegionStackName ?? false;
+    this.reuseCrossRegionSupportStacks = props.reuseCrossRegionSupportStacks ?? true;
 
     // If a bucket has been provided, use it - otherwise, create a bucket.
     let propsBucket = this.getArtifactBucketFromProps(props);
@@ -641,10 +641,7 @@ export class Pipeline extends PipelineBase {
     }
 
     const app = this.supportScope();
-    let supportStackId = `cross-region-stack-${pipelineAccount}:${actionRegion}`;
-    if (this.uniqueCrossRegionStackName) {
-      supportStackId = `cross-region-stack-${pipelineStack.stackName}:${actionRegion}`;
-    }
+    const supportStackId = `cross-region-stack-${this.reuseCrossRegionSupportStacks === false ? pipelineStack.stackName : pipelineAccount}:${actionRegion}`;
     let supportStack = app.node.tryFindChild(supportStackId) as CrossRegionSupportStack;
     if (!supportStack) {
       supportStack = new CrossRegionSupportStack(app, supportStackId, {
