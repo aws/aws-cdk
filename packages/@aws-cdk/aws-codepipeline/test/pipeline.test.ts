@@ -339,8 +339,8 @@ describe('', () => {
         expect(supportStackArtifact.cloudFormationExecutionRoleArn).toEqual(
           'arn:${AWS::Partition}:iam::123456789012:role/cdk-hnb659fds-cfn-exec-role-123456789012-us-west-2');
 
-
       });
+
       test('generates the same support stack containing the replication Bucket without the need to bootstrap in that environment for multiple pipelines', () => {
         const app = new cdk.App();
 
