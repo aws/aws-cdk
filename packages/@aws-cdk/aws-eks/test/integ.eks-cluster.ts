@@ -1,7 +1,9 @@
 /// !cdk-integ pragma:ignore-assets
+import * as path from 'path';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
+import { Asset } from '@aws-cdk/aws-s3-assets';
 import { App, CfnOutput, Duration, Token, Fn } from '@aws-cdk/core';
 import * as cdk8s from 'cdk8s';
 import * as kplus from 'cdk8s-plus-21';
@@ -61,6 +63,8 @@ class EksClusterStack extends TestStack {
     this.assertManifestWithoutValidation();
 
     this.assertSimpleHelmChart();
+
+    this.assertHelmChartAsset();
 
     this.assertSimpleCdk8sChart();
 
@@ -132,6 +136,17 @@ class EksClusterStack extends TestStack {
       repository: 'https://kubernetes.github.io/dashboard/',
     });
   }
+
+  private assertHelmChartAsset() {
+    // get helm chart from Asset
+    const chartAsset = new Asset(this, 'ChartAsset', {
+      path: path.join(__dirname, 'test-chart'),
+    });
+    this.cluster.addHelmChart('test-chart', {
+      chartAsset: chartAsset,
+    });
+  }
+
   private assertSimpleManifest() {
     // apply a kubernetes manifest
     this.cluster.addManifest('HelloApp', ...hello.resources);
