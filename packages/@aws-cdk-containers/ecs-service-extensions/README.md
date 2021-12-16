@@ -109,7 +109,39 @@ nameDescription.add(new Container({
 Every `ServiceDescription` requires at minimum that you add a `Container` extension
 which defines the main application (essential) container to run for the service.
 
-After that, you can optionally enable additional features for the service using the `ServiceDescription.add()` method:
+### Enable default logging using `awslogs` log driver
+
+The `ECS_SERVICE_EXTENSIONS_ENABLE_DEFAULT_LOG_DRIVER` feature flag is used to enable default logging for the ECS Service Extensions. When this flag is set, the `awslogs` log driver is enabled for the application container of the service to send the container logs to CloudWatch Logs.
+
+To enable the feature flag, ensure that the `ECS_SERVICE_EXTENSIONS_ENABLE_DEFAULT_LOG_DRIVER` flag within an application stack context is set to true, like so:
+
+```ts
+stack.node.setContext(cxapi.ECS_SERVICE_EXTENSIONS_ENABLE_DEFAULT_LOG_DRIVER, true);
+```
+
+Following is an example of an application with the `ECS_SERVICE_EXTENSIONS_ENABLE_DEFAULT_LOG_DRIVER` feature flag enabled:
+
+```ts
+const stack = new cdk.Stack();
+stack.node.setContext(cxapi.ECS_SERVICE_EXTENSIONS_ENABLE_DEFAULT_LOG_DRIVER, true);
+
+const environment = new Environment(stack, 'production');
+
+const nameDescription = new ServiceDescription();
+nameDescription.add(new Container({
+  cpu: 1024,
+  memoryMiB: 2048,
+  trafficPort: 80,
+  image: ContainerImage.fromRegistry('nathanpeck/name'),
+  environment: {
+    PORT: '80',
+  },
+  // Optionally provide a log group to send the application container logs to (If not provided, a log group will be created on your behalf)
+  logging: new awslogs.LogGroup(stack, 'MyLogGroup'),
+}));
+```
+
+After adding the `Container` extension, you can optionally enable additional features for the service using the `ServiceDescription.add()` method:
 
 ```ts
 nameDescription.add(new AppMeshExtension({ mesh }));
