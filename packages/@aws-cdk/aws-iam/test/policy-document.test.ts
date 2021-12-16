@@ -3,7 +3,7 @@ import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Lazy, Stack, Token } from '@aws-cdk/core';
 import {
   AccountPrincipal, Anyone, AnyPrincipal, ArnPrincipal, CanonicalUserPrincipal, CompositePrincipal,
-  Effect, FederatedPrincipal, IPrincipal, PolicyDocument, PolicyStatement, PrincipalPolicyFragment, ServicePrincipal,
+  Effect, FederatedPrincipal, IPrincipal, PolicyDocument, PolicyStatement, PrincipalPolicyFragment, ServicePrincipal, Role,
 } from '../lib';
 
 describe('IAM policy document', () => {
@@ -483,10 +483,46 @@ describe('IAM policy document', () => {
       expect(stack.resolve(statement.toStatementJson())).toEqual({ Effect: 'Allow', Principal: { AWS: 'i:am:an:arn' } });
     });
 
-    test('conditions are not allowed on individual principals of a composite', () => {
-      const p = new CompositePrincipal(new ArnPrincipal('i:am'));
-      expect(() => p.addPrincipals(new FederatedPrincipal('federated', { StringEquals: { 'aws:some-key': 'some-value' } })))
-        .toThrow(/Components of a CompositePrincipal must not have conditions/);
+    test('conditions are allowed in an assumerolepolicydocument', () => {
+      const stack = new Stack();
+      new Role(stack, 'Role', {
+        assumedBy: new CompositePrincipal(
+          new ArnPrincipal('i:am'),
+          new FederatedPrincipal('federated', { StringEquals: { 'aws:some-key': 'some-value' } }),
+        ),
+      });
+
+      expect(stack).toHaveResourceLike('AWS::IAM::Role', {
+        AssumeRolePolicyDocument: {
+          Statement: [
+            {
+              Action: 'sts:AssumeRole',
+              Effect: 'Allow',
+              Principal: { AWS: 'i:am' },
+            },
+            {
+              Action: 'sts:AssumeRole',
+              Condition: {
+                StringEquals: { 'aws:some-key': 'some-value' },
+              },
+              Effect: 'Allow',
+              Principal: { Federated: 'federated' },
+            },
+          ],
+        },
+      });
+    });
+
+    test('conditions are not allowed when used in a single statement', () => {
+
+      expect(() => {
+        new PolicyStatement({
+          actions: ['s3:test'],
+          principals: [new CompositePrincipal(
+            new ArnPrincipal('i:am'),
+            new FederatedPrincipal('federated', { StringEquals: { 'aws:some-key': 'some-value' } }))],
+        });
+      }).toThrow(/Components of a CompositePrincipal must not have conditions/);
     });
 
     test('principals and conditions are a big nice merge', () => {
@@ -521,13 +557,33 @@ describe('IAM policy document', () => {
       });
     });
 
-    test('cannot mix types of assumeRoleAction in a single composite', () => {
-      // GIVEN
-      const p = new CompositePrincipal(new ArnPrincipal('arn')); // assumeRoleAction is "sts:AssumeRule"
+    test('can mix types of assumeRoleAction in a single composite', () => {
+      const stack = new Stack();
+
+      // WHEN
+      new Role(stack, 'Role', {
+        assumedBy: new CompositePrincipal(
+          new ArnPrincipal('arn'),
+          new FederatedPrincipal('fed', {}, 'sts:Boom')),
+      });
 
       // THEN
-      expect(() => p.addPrincipals(new FederatedPrincipal('fed', {}, 'sts:Boom')))
-        .toThrow(/Cannot add multiple principals with different "assumeRoleAction". Expecting "sts:AssumeRole", got "sts:Boom"/);
+      expect(stack).toHaveResourceLike('AWS::IAM::Role', {
+        AssumeRolePolicyDocument: {
+          Statement: [
+            {
+              Action: 'sts:AssumeRole',
+              Effect: 'Allow',
+              Principal: { AWS: 'arn' },
+            },
+            {
+              Action: 'sts:Boom',
+              Effect: 'Allow',
+              Principal: { Federated: 'fed' },
+            },
+          ],
+        },
+      });
     });
   });
 

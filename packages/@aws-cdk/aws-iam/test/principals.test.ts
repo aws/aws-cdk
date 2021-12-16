@@ -261,3 +261,35 @@ test('ServicePrincipal in agnostic stack generates lookup table', () => {
   expect(mappings.ServiceprincipalMap['af-south-1']?.ssm).toEqual('ssm.af-south-1.amazonaws.com');
   expect(mappings.ServiceprincipalMap['us-east-1']?.ssm).toEqual('ssm.amazonaws.com');
 });
+
+test('Can enable session tags', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  new iam.Role(stack, 'Role', {
+    assumedBy: new iam.WebIdentityPrincipal(
+      'cognito-identity.amazonaws.com',
+      {
+        'StringEquals': { 'cognito-identity.amazonaws.com:aud': 'asdf' },
+        'ForAnyValue:StringLike': { 'cognito-identity.amazonaws.com:amr': 'authenticated' },
+      }).withSessionTags(),
+  });
+
+  // THEN
+  expect(stack).toHaveResourceLike('AWS::IAM::Role', {
+    AssumeRolePolicyDocument: {
+      Statement: [
+        {
+          Action: ['sts:AssumeRoleWithWebIdentity', 'sts:TagSession'],
+          Condition: {
+            'StringEquals': { 'cognito-identity.amazonaws.com:aud': 'asdf' },
+            'ForAnyValue:StringLike': { 'cognito-identity.amazonaws.com:amr': 'authenticated' },
+          },
+          Effect: 'Allow',
+          Principal: { Federated: 'cognito-identity.amazonaws.com' },
+        },
+      ],
+    },
+  });
+});
