@@ -9,8 +9,63 @@
               "JsonPath": "payload.temperature"
             }
           ]
+        }
+      }
+    },
+    "MyDetectorModelDetectorModelRoleF2FB4D88": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "iotevents.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
+    "MyDetectorModel559C0B0E": {
+      "Type": "AWS::IoTEvents::DetectorModel",
+      "Properties": {
+        "DetectorModelDefinition": {
+          "InitialStateName": "online",
+          "States": [
+            {
+              "OnEnter": {
+                "Events": [
+                  {
+                    "Condition": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "currentInput(\"",
+                          {
+                            "Ref": "MyInput08947B23"
+                          },
+                          "\")"
+                        ]
+                      ]
+                    },
+                    "EventName": "test-event"
+                  }
+                ]
+              },
+              "StateName": "online"
+            }
+          ]
         },
-        "InputName": "test_input"
+        "RoleArn": {
+          "Fn::GetAtt": [
+            "MyDetectorModelDetectorModelRoleF2FB4D88",
+            "Arn"
+          ]
+        },
+        "DetectorModelName": "test-detector-model"
       }
     }
   }

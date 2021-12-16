@@ -40,15 +40,30 @@ Import it into your code:
 import * as iotevents from '@aws-cdk/aws-iotevents';
 ```
 
-## `Input`
+## `DetectorModel`
 
-Add an AWS IoT Events input to your stack:
+The following example creates an AWS IoT Events detector dodel to your stack.
+The detector must have at least one reference to an AWS IoT Events input.
+AWS IoT Events input enable that the detector can get MQTT payload values from IoT Core rules.
 
 ```ts
 import * as iotevents from '@aws-cdk/aws-iotevents';
 
-new iotevents.Input(this, 'MyInput', {
-  inputName: 'my_input',
+const input = new iotevents.Input(this, 'MyInput', {
+  inputName: 'my_input', // optional
   attributeJsonPaths: ['payload.temperature'],
+});
+
+const onlineState = new iotevents.State({
+  stateName: 'online',
+  onEnterEvents: [{
+    eventName: 'test-event',
+    condition: `currentInput("${input.inputName}")`,
+  }],
+});
+
+new iotevents.DetectorModel(this, 'MyDetectorModel', {
+  detectorModelName: 'test-detector-model', // optional
+  initialState: onlineState,
 });
 ```
