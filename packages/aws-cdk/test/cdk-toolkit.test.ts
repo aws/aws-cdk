@@ -380,6 +380,7 @@ describe('watch', () => {
           fakeChokidarWatcherOn.fileEventCallback('add', 'my-file1'),
           fakeChokidarWatcherOn.fileEventCallback('change', 'my-file2'),
           fakeChokidarWatcherOn.fileEventCallback('unlink', 'my-file3'),
+          fakeChokidarWatcherOn.fileEventCallback('add', 'my-file4'),
         ]);
 
         expect(cdkDeployMock).toHaveBeenCalledTimes(3);

@@ -331,12 +331,11 @@ export class CdkToolkit {
       // ignoreInitial: true,
     }).on('ready', () => {
       latch = 'open';
+      debug("'watch' is triggering an initial deployment");
+      debug("'watch' received the 'ready' event. From now on, all file changes will trigger a deployment");
       // trigger a dummy event here to make an intial deployment,
       // the values sent into workflow are dummy values.
-      // intentionally not awaiting the result so that we can begin to watch and queue changes.
-      debug("'watch' is triggering an initial deployment");
-      void handleFileChangeEvent('add');
-      debug("'watch' received the 'ready' event. From now on, all file changes will trigger a deployment");
+      return handleFileChangeEvent('add');
     }).on('all', handleFileChangeEvent);
   }
 
