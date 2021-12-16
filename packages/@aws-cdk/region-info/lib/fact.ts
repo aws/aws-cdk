@@ -1,3 +1,5 @@
+import { AWS_REGIONS } from './aws-entities';
+
 /**
  * A database of regional information.
  */
@@ -7,7 +9,7 @@ export class Fact {
    *          may not be an exhaustive list of all available AWS regions.
    */
   public static get regions(): string[] {
-    return Object.keys(this.database);
+    return AWS_REGIONS;
   }
 
   /**
@@ -165,8 +167,11 @@ export class FactName {
   /**
    * The ARN of CloudWatch Lambda Insights for a version (e.g. 1.0.98.0)
    */
-  public static cloudwatchLambdaInsightsVersion(version: string) {
-    return `cloudwatch-lambda-insights-version:${version.split('.').join('_')}`;
+  public static cloudwatchLambdaInsightsVersion(version: string, arch?: string) {
+    // if we are provided an architecture use that, otherwise
+    // default to x86_64 for backwards compatibility
+    const suffix = version.split('.').join('_') + `_${arch ?? 'x86_64'}`;
+    return `cloudwatch-lambda-insights-version:${suffix}`;
   }
 
   /**

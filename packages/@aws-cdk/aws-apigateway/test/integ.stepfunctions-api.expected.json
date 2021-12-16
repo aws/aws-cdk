@@ -255,7 +255,10 @@
           "Ref": "deployment33381975b5dafda9a97138f301ea25da405640e8"
         },
         "StageName": "prod"
-      }
+      },
+      "DependsOn": [
+        "StepFunctionsRestApiAccountBD0CCC0E"
+      ]
     }
   },
   "Outputs": {
