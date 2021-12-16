@@ -154,6 +154,8 @@ export class KubernetesManifest extends CoreConstruct {
         SkipValidation: props.skipValidation,
       },
     });
+
+    this.node.defaultChild = this.node.defaultChild?.node.defaultChild;
   }
 
   /**
