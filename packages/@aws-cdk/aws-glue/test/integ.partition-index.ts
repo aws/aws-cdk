@@ -6,9 +6,9 @@ import * as glue from '../lib';
 /**
  * Stack verification steps:
  * * aws cloudformation describe-stacks --stack-name aws-cdk-glue --query Stacks[0].Outputs[0].OutputValue
- * * aws glue get-partition-indexes --catalog-id <output-from-above> --database-name my_database --table-name csv_table
+ * * aws glue get-partition-indexes --catalog-id <output-from-above> --database-name database --table-name csv_table
  * returns two indexes named 'index1' and 'index2'
- * * aws glue get-partition-indexes --catalog-id <output-from-above> --database-name my_database --table-name json_table
+ * * aws glue get-partition-indexes --catalog-id <output-from-above> --database-name database --table-name json_table
  * returns an index with name 'year-month...'
  */
 
@@ -16,7 +16,7 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-glue');
 const bucket = new s3.Bucket(stack, 'DataBucket');
 const database = new glue.Database(stack, 'MyDatabase', {
-  databaseName: 'my_database',
+  databaseName: 'database',
 });
 
 const columns = [{

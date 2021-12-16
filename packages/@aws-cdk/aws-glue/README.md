@@ -222,7 +222,7 @@ new glue.Table(this, 'MyTable', {
 
 Another way to improve query performance is to specify partition indexes. If no partition indexes are
 present on the table, AWS Glue loads all partitions of the table and filters the loaded partitions using
-the query expression. The query takes more time to run as the number of partitiosn increase. With an
+the query expression. The query takes more time to run as the number of partitions increase. With an
 index, the query will try to fetch a subset of the partitions instead of loading all partitions of the
 table.
 

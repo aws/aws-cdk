@@ -125,11 +125,11 @@ export interface TableProps {
   readonly partitionKeys?: Column[];
 
   /**
-   * Partition indecies on the table. A maximum of 3 indexes
+   * Partition indexes on the table. A maximum of 3 indexes
    * are allowed on a table. Keys in the index must be part
    * of the table's partition keys.
    *
-   * @default table has no partition indecies
+   * @default table has no partition indexes
    */
   readonly partitionIndexes?: PartitionIndex[];
 
@@ -331,9 +331,6 @@ export class Table extends Resource implements ITable {
 
     // Partition index creation relies on created table.
     if (props.partitionIndexes) {
-      if (props.partitionIndexes.length > 3) {
-        throw new Error(`Maximum number of partition indexes allowed is 3 but got ${props.partitionIndexes.length}`);
-      }
       this.partitionIndexes = props.partitionIndexes;
       this.partitionIndexes.forEach((index) => this.addPartitionIndex(index));
     }
@@ -348,13 +345,13 @@ export class Table extends Resource implements ITable {
    */
   public addPartitionIndex(index: PartitionIndex) {
     const numPartitions = this.partitionIndexCustomResources.length;
-    if (numPartitions > 3) {
-      throw new Error(`Maximum number of partition indexes allowed is 3 but got ${numPartitions}`);
+    if (numPartitions >= 3) {
+      throw new Error('Maximum number of partition indexes allowed is 3');
     }
     this.validatePartitionIndex(index);
 
     const indexName = index.indexName ?? this.generateIndexName(index.keyNames);
-    const partitionIndexCustomResource = new cr.AwsCustomResource(this, `table-partition-index-${indexName}`, {
+    const partitionIndexCustomResource = new cr.AwsCustomResource(this, `partition-index-${indexName}`, {
       onCreate: {
         service: 'Glue',
         action: 'createPartitionIndex',
@@ -392,8 +389,8 @@ export class Table extends Resource implements ITable {
   }
 
   private validatePartitionIndex(index: PartitionIndex) {
-    if (index.indexName && !index.indexName.match(/^[A-Za-z0-9\_\-]/)) {
-      throw new Error(`Index name can only have letters, numbers, hyphens, or underscores but received ${index.indexName}`);
+    if (index.indexName !== undefined && (index.indexName.length < 1 || index.indexName.length > 255)) {
+      throw new Error(`Index name must be between 1 and 255 characters, but got ${index.indexName.length}`);
     }
     if (!this.partitionKeys || this.partitionKeys.length === 0) {
       throw new Error('The table must have partition keys to create a partition index');

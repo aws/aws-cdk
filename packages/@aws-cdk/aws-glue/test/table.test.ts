@@ -6,6 +6,7 @@ import { testFutureBehavior } from '@aws-cdk/cdk-build-tools/lib/feature-flag';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as glue from '../lib';
+import { PartitionIndex } from '../lib';
 import { CfnTable } from '../lib/glue.generated';
 
 const s3GrantWriteCtx = { [cxapi.S3_GRANT_WRITE_WITHOUT_ACL]: true };
@@ -982,7 +983,7 @@ describe('add partition index', () => {
     })).toThrowError(/All index keys must also be partition keys/);
   });
 
-  test('fails with bad index name', () => {
+  test('fails with index name < 1 character', () => {
     const stack = new cdk.Stack();
     const database = new glue.Database(stack, 'Database', {
       databaseName: 'database',
@@ -1003,9 +1004,9 @@ describe('add partition index', () => {
     });
 
     expect(() => table.addPartitionIndex({
-      indexName: '$my-part',
+      indexName: '',
       keyNames: ['part'],
-    })).toThrowError(/Index name can only have letters, numbers, hyphens, or underscores/);
+    })).toThrowError(/Index name must be between 1 and 255 characters, but got 0/);
   });
 
   test('fails with > 3 indexes', () => {
@@ -1014,9 +1015,19 @@ describe('add partition index', () => {
       databaseName: 'database',
     });
 
-    const index = {
+    const indexes: PartitionIndex[] = [{
+      indexName: 'ind1',
       keyNames: ['part'],
-    };
+    }, {
+      indexName: 'ind2',
+      keyNames: ['part'],
+    }, {
+      indexName: 'ind3',
+      keyNames: ['part'],
+    }, {
+      indexName: 'ind4',
+      keyNames: ['part'],
+    }];
 
     expect(() => new glue.Table(stack, 'Table', {
       database,
@@ -1029,9 +1040,9 @@ describe('add partition index', () => {
         name: 'part',
         type: glue.Schema.SMALL_INT,
       }],
-      partitionIndexes: [index, index, index, index],
+      partitionIndexes: indexes,
       dataFormat: glue.DataFormat.JSON,
-    })).toThrowError('Maximum number of partition indexes allowed is 3 but got 4');
+    })).toThrowError('Maximum number of partition indexes allowed is 3');
   });
 });
 

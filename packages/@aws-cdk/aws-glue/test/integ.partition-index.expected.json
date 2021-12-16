@@ -12,7 +12,7 @@
           "Ref": "AWS::AccountId"
         },
         "DatabaseInput": {
-          "Name": "my_database"
+          "Name": "database"
         }
       }
     },
@@ -81,7 +81,7 @@
         }
       }
     },
-    "CSVTabletablepartitionindexindex1CustomResourcePolicyCADBE000": {
+    "CSVTablepartitionindexindex1CustomResourcePolicy4983F2A9": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -94,7 +94,7 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "CSVTabletablepartitionindexindex1CustomResourcePolicyCADBE000",
+        "PolicyName": "CSVTablepartitionindexindex1CustomResourcePolicy4983F2A9",
         "Roles": [
           {
             "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
@@ -102,11 +102,11 @@
         ]
       },
       "DependsOn": [
-        "CSVTabletablepartitionindexindex2CustomResourcePolicyC0A14188",
-        "CSVTabletablepartitionindexindex2DAFCAA94"
+        "CSVTablepartitionindexindex2CustomResourcePolicy4FF1AF9F",
+        "CSVTablepartitionindexindex29D554319"
       ]
     },
-    "CSVTabletablepartitionindexindex17C2F0FDC": {
+    "CSVTablepartitionindexindex16247ABF6": {
       "Type": "Custom::AWS",
       "Properties": {
         "ServiceToken": {
@@ -134,14 +134,14 @@
         "InstallLatestAwsSdk": true
       },
       "DependsOn": [
-        "CSVTabletablepartitionindexindex1CustomResourcePolicyCADBE000",
-        "CSVTabletablepartitionindexindex2CustomResourcePolicyC0A14188",
-        "CSVTabletablepartitionindexindex2DAFCAA94"
+        "CSVTablepartitionindexindex1CustomResourcePolicy4983F2A9",
+        "CSVTablepartitionindexindex2CustomResourcePolicy4FF1AF9F",
+        "CSVTablepartitionindexindex29D554319"
       ],
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
     },
-    "CSVTabletablepartitionindexindex2CustomResourcePolicyC0A14188": {
+    "CSVTablepartitionindexindex2CustomResourcePolicy4FF1AF9F": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -154,7 +154,7 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "CSVTabletablepartitionindexindex2CustomResourcePolicyC0A14188",
+        "PolicyName": "CSVTablepartitionindexindex2CustomResourcePolicy4FF1AF9F",
         "Roles": [
           {
             "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
@@ -162,7 +162,7 @@
         ]
       }
     },
-    "CSVTabletablepartitionindexindex2DAFCAA94": {
+    "CSVTablepartitionindexindex29D554319": {
       "Type": "Custom::AWS",
       "Properties": {
         "ServiceToken": {
@@ -190,7 +190,7 @@
         "InstallLatestAwsSdk": true
       },
       "DependsOn": [
-        "CSVTabletablepartitionindexindex2CustomResourcePolicyC0A14188"
+        "CSVTablepartitionindexindex2CustomResourcePolicy4FF1AF9F"
       ],
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
@@ -515,7 +515,7 @@
         }
       }
     },
-    "JSONTabletablepartitionindexyearmonthawscdkglueJSONTable937C116BCustomResourcePolicyE66443B9": {
+    "JSONTablepartitionindexyearmonthawscdkglueJSONTable937C116BCustomResourcePolicy92B3C1AE": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -528,7 +528,7 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "JSONTabletablepartitionindexyearmonthawscdkglueJSONTable937C116BCustomResourcePolicyE66443B9",
+        "PolicyName": "JSONTablepartitionindexyearmonthawscdkglueJSONTable937C116BCustomResourcePolicy92B3C1AE",
         "Roles": [
           {
             "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
@@ -536,7 +536,7 @@
         ]
       }
     },
-    "JSONTabletablepartitionindexyearmonthawscdkglueJSONTable937C116BAB62E6B0": {
+    "JSONTablepartitionindexyearmonthawscdkglueJSONTable937C116B74A5990F": {
       "Type": "Custom::AWS",
       "Properties": {
         "ServiceToken": {
@@ -564,7 +564,7 @@
         "InstallLatestAwsSdk": true
       },
       "DependsOn": [
-        "JSONTabletablepartitionindexyearmonthawscdkglueJSONTable937C116BCustomResourcePolicyE66443B9"
+        "JSONTablepartitionindexyearmonthawscdkglueJSONTable937C116BCustomResourcePolicy92B3C1AE"
       ],
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
