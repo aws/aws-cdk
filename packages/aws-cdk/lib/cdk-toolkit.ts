@@ -304,6 +304,7 @@ export class CdkToolkit {
         if (filePath) {
           print("Detected change to '%s' (type: %s). Triggering 'cdk deploy'", filePath, event);
         } else {
+          // there is no filePath when we trigger our initial deployment
           print("Triggering initial 'cdk deploy'");
         }
         await this.invokeDeployFromWatch(options);
@@ -333,8 +334,7 @@ export class CdkToolkit {
       latch = 'open';
       debug("'watch' is triggering an initial deployment");
       debug("'watch' received the 'ready' event. From now on, all file changes will trigger a deployment");
-      // trigger a dummy event here to make an intial deployment,
-      // the values sent into workflow are dummy values.
+      // trigger a dummy event here to make an intial deployment
       return handleFileChangeEvent('add');
     }).on('all', handleFileChangeEvent);
   }
