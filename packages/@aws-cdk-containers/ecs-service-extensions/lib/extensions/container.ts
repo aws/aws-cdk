@@ -1,6 +1,7 @@
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as awslogs from '@aws-cdk/aws-logs';
 import * as cdk from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import { Service } from '../service';
 import { ServiceExtension } from './extension-interfaces';
 
@@ -108,9 +109,9 @@ export class Container extends ServiceExtension {
       containerProps = hookProvider.mutateContainerDefinition(containerProps);
     });
 
-    // If no observability extensions have been added to the service description, we can configure
+    // If no observability extensions have been added to the service description and the feature flag is set, we can configure
     // default awslogs log driver
-    if (!containerProps.logging) {
+    if (!containerProps.logging && this.parentService.node.tryGetContext(cxapi.ECS_SERVICE_EXTENSIONS_ENABLE_DEFAULT_LOG_DRIVER)) {
       // Create a log group for the service, if one is not provided by the user
       if (!this.logGroup) {
         this.logGroup = new awslogs.LogGroup(this.scope, `${this.parentService.id}-logs`, {
@@ -127,9 +128,11 @@ export class Container extends ServiceExtension {
           logGroup: this.logGroup,
         }),
       };
-    } else {
-      if (this.logGroup) {
+    } else if (this.logGroup) {
+      if (containerProps.logging) {
         throw Error(`Log configuration already specified. You cannot provide a default log group for the application container of service '${this.parentService.id}' while also adding log configuration separately using service extensions.`);
+      } else if (!this.parentService.node.tryGetContext(cxapi.ECS_SERVICE_EXTENSIONS_ENABLE_DEFAULT_LOG_DRIVER)) {
+        throw Error(`You cannot provide a default log group for the application container of service '${this.parentService.id}' when the '@aws-cdk-containers/ecs-service-extensions:enableDefaultLogDriver' feature flag is not set.`);
       }
     }
     this.container = taskDefinition.addContainer('app', containerProps);
