@@ -301,7 +301,11 @@ export class CdkToolkit {
         print(`'watch' is observing ${event === 'addDir' ? 'directory' : 'the file'} '%s' for changes`, filePath);
       } else if (latch === 'open') {
         latch = 'deploying';
-        print("Detected change to '%s' (type: %s). Triggering 'cdk deploy'", filePath, event);
+        if (filePath === 'initial') {
+          print("Triggering initial 'cdk deploy'");
+        } else {
+          print("Detected change to '%s' (type: %s). Triggering 'cdk deploy'", filePath, event);
+        }
         await this.invokeDeployFromWatch(options);
 
         // If latch is still 'deploying' after the 'await', that's fine,
@@ -330,7 +334,7 @@ export class CdkToolkit {
       // trigger a dummy event here to make an intial deployment,
       // the values sent into workflow are dummy values.
       // intentionally not awaiting the result so that we can begin to watch and queue changes.
-      void workflow('add', '');
+      void workflow('add', 'initial');
       debug("'watch' is triggering an initial deployment");
       debug("'watch' received the 'ready' event. From now on, all file changes will trigger a deployment");
     }).on('all', workflow);
