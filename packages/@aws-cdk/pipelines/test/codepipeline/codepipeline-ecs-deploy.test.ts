@@ -10,11 +10,9 @@ import * as cdkp from '../../lib';
 import { PIPELINE_ENV, TestApp } from '../testhelpers';
 
 let app: TestApp;
-let pipelineStack: cdk.Stack;
 
 beforeEach(() => {
   app = new TestApp();
-  pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
 });
 
 afterEach(() => {
@@ -33,53 +31,7 @@ const testStageEnvs: Required<cdk.Environment>[] = [
 ];
 
 test('CodePipline ECS Deploy Cross Region/Account with create', () => {
-  const repo = new ccommit.Repository(pipelineStack, 'Repo', {
-    repositoryName: 'MyRepo',
-  });
-
-  const cdkInput = cdkp.CodePipelineSource.codeCommit(
-    repo,
-    'main',
-  );
-  /**
-   * for this example not using additionalInputs, but you could leverage them if your source code
-   * is in a different repo.
-  */
-  const synthStep = new cdkp.ShellStep('Synth', {
-    input: cdkInput,
-    installCommands: ['npm ci'],
-    commands: [
-      'npm run build',
-      'npx cdk synth',
-    ],
-  });
-
-  const pipeline = new cdkp.CodePipeline(pipelineStack, 'Pipeline', {
-    synth: synthStep,
-    selfMutation: true,
-    crossAccountKeys: true,
-  });
-
-  testStageEnvs.forEach((stageEnv) => {
-    const stage = new TestEcsCreateStage(
-      pipelineStack, `infra-${stageEnv.account}-${stageEnv.region}`,
-      {
-        env: stageEnv,
-      },
-    );
-    const iStage = pipeline.addStage(stage);
-    const ecsDeployStep = new EcsDeployStep(
-      `deploy-${stageEnv.account}-${stageEnv.region}`,
-      {
-        input: synthStep.primaryOutput!,
-        serviceArn: stage.serviceArn,
-        clusterName: stage.clusterName,
-        role: stage.deployRole,
-        stack: pipelineStack,
-      },
-    );
-    iStage.addPost(ecsDeployStep);
-  });
+  const pipelineStack = new PipelineEcsCreateStack(app, 'PipelineStack', { env: PIPELINE_ENV });
 
   expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
     Stages: [
@@ -130,56 +82,7 @@ test('CodePipline ECS Deploy Cross Region/Account with create', () => {
 });
 
 test('CodePipline ECS Deploy Cross Region/Account with import of existing service', () => {
-  const repo = new ccommit.Repository(pipelineStack, 'Repo', {
-    repositoryName: 'MyRepo',
-  });
-
-  const cdkInput = cdkp.CodePipelineSource.codeCommit(
-    repo,
-    'main',
-  );
-  /**
-   * for this example not using additionalInputs, but you could leverage them if your source code
-   * is in a different repo.
-  */
-  const synthStep = new cdkp.ShellStep('Synth', {
-    input: cdkInput,
-    installCommands: ['npm ci'],
-    commands: [
-      'npm run build',
-      'npx cdk synth',
-    ],
-  });
-
-  const pipeline = new cdkp.CodePipeline(pipelineStack, 'Pipeline', {
-    synth: synthStep,
-    selfMutation: true,
-    crossAccountKeys: true,
-  });
-
-
-  testStageEnvs.forEach((stageEnv) => {
-    const stage = new TestEcsImportStage(
-      pipelineStack, `infra-${stageEnv.account}-${stageEnv.region}`,
-      {
-        env: stageEnv,
-        clusterName: 'cluster-name',
-        serviceName: 'service-name',
-      },
-    );
-    const iStage = pipeline.addStage(stage);
-    const ecsDeployStep = new EcsDeployStep(
-      `deploy-${stageEnv.account}-${stageEnv.region}`,
-      {
-        input: synthStep.primaryOutput!,
-        serviceArn: stage.serviceArn,
-        clusterName: stage.clusterName,
-        role: stage.deployRole,
-        stack: pipelineStack,
-      },
-    );
-    iStage.addPost(ecsDeployStep);
-  });
+  const pipelineStack = new PipelineEcsImportStack(app, 'PipelineStack', { env: PIPELINE_ENV });
 
   expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
     Stages: [
@@ -228,6 +131,71 @@ test('CodePipline ECS Deploy Cross Region/Account with import of existing servic
     ],
   });
 });
+
+class PipelineBaseStack extends cdk.Stack {
+  public readonly pipeline: cdkp.CodePipeline;
+  public readonly synthStep: cdkp.IFileSetProducer
+  public constructor(scope: Construct, id: string, props: cdk.StackProps) {
+    super(scope, id, props);
+    const repo = new ccommit.Repository(this, 'Repo', {
+      repositoryName: 'MyRepo',
+    });
+    const cdkInput = cdkp.CodePipelineSource.codeCommit(
+      repo,
+      'main',
+    );
+    /**
+     * for this example not using additionalInputs, but you could leverage them if your source code
+     * is in a different repo.
+    */
+    const synthStep = new cdkp.ShellStep('Synth', {
+      input: cdkInput,
+      installCommands: ['npm ci'],
+      commands: [
+        'npm run build',
+        'npx cdk synth',
+      ],
+    });
+    this.synthStep = synthStep;
+    const pipeline = new cdkp.CodePipeline(this, 'Pipeline', {
+      synth: synthStep,
+      selfMutation: true,
+      crossAccountKeys: true,
+    });
+    this.pipeline = pipeline;
+
+    this.addStages();
+  }
+
+  public addStages() {
+    throw new Error('Not Implemented');
+  }
+}
+
+class PipelineEcsCreateStack extends PipelineBaseStack {
+  public addStages() {
+    testStageEnvs.forEach((stageEnv) => {
+      const stage = new TestEcsCreateStage(
+        this, `infra-${stageEnv.account}-${stageEnv.region}`,
+        {
+          env: stageEnv,
+        },
+      );
+      const iStage = this.pipeline.addStage(stage);
+      const ecsDeployStep = new EcsDeployStep(
+        `deploy-${stageEnv.account}-${stageEnv.region}`,
+        {
+          input: this.synthStep.primaryOutput!,
+          serviceArn: stage.serviceArn,
+          clusterName: stage.clusterName,
+          role: stage.deployRole,
+          stack: this,
+        },
+      );
+      iStage.addPost(ecsDeployStep);
+    });
+  }
+}
 
 class TestEcsCreateStage extends cdk.Stage {
   public readonly serviceArn: string;
@@ -315,6 +283,33 @@ class TestEcsCreateStack extends cdk.Stack {
       }),
     );
 
+  }
+}
+
+class PipelineEcsImportStack extends PipelineBaseStack {
+  public addStages() {
+    testStageEnvs.forEach((stageEnv) => {
+      const stage = new TestEcsImportStage(
+        this, `infra-${stageEnv.account}-${stageEnv.region}`,
+        {
+          env: stageEnv,
+          clusterName: 'cluster-name',
+          serviceName: 'service-name',
+        },
+      );
+      const iStage = this.pipeline.addStage(stage);
+      const ecsDeployStep = new EcsDeployStep(
+        `deploy-${stageEnv.account}-${stageEnv.region}`,
+        {
+          input: this.synthStep.primaryOutput!,
+          serviceArn: stage.serviceArn,
+          clusterName: stage.clusterName,
+          role: stage.deployRole,
+          stack: this,
+        },
+      );
+      iStage.addPost(ecsDeployStep);
+    });
   }
 }
 
