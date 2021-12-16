@@ -9,14 +9,15 @@ import * as cxapi from '@aws-cdk/cx-api';
 import { Construct, Node } from 'constructs';
 import { AssetType, FileSet, IFileSetProducer, ManualApprovalStep, ShellStep, StackAsset, StackDeployment, Step } from '../blueprint';
 import { DockerCredential, dockerCredentialsInstallCommands, DockerCredentialUsage } from '../docker-credentials';
-import { GraphNode, GraphNodeCollection, isGraph, AGraphNode, PipelineGraph } from '../helpers-internal';
+import { GraphNodeCollection, isGraph, AGraphNode, PipelineGraph } from '../helpers-internal';
 import { PipelineBase } from '../main';
 import { AssetSingletonRole } from '../private/asset-singleton-role';
 import { appOf, assemblyBuilderOf, embeddedAsmPath, obtainScope } from '../private/construct-internals';
 import { toPosixPath } from '../private/fs';
+import { actionName, stackVariableNamespace } from '../private/identifiers';
 import { enumerate, flatten, maybeSuffix, noUndefined } from '../private/javascript';
 import { writeTemplateConfiguration } from '../private/template-configuration';
-import { CodeBuildFactory, mergeCodeBuildOptions, stackVariableNamespace } from './_codebuild-factory';
+import { CodeBuildFactory, mergeCodeBuildOptions } from './_codebuild-factory';
 import { ArtifactMap } from './artifact-map';
 import { CodeBuildStep } from './codebuild-step';
 import { CodePipelineActionFactoryResult, ICodePipelineActionFactory } from './codepipeline-action-factory';
@@ -837,15 +838,6 @@ enum CodeBuildProjectType {
   ASSETS = 'ASSETS',
   SELF_MUTATE = 'SELF_MUTATE',
   STEP = 'STEP',
-}
-
-function actionName<A>(node: GraphNode<A>, parent: GraphNode<A>) {
-  const names = node.ancestorPath(parent).map(n => n.id);
-  return names.map(sanitizeName).join('.').substr(0, 100); // Cannot exceed 100 chars
-}
-
-function sanitizeName(x: string): string {
-  return x.replace(/[^A-Za-z0-9.@\-_]/g, '_');
 }
 
 /**
