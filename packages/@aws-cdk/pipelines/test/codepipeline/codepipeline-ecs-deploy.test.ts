@@ -67,7 +67,7 @@ test('CodePipline ECS Deploy Cross Region/Account with create', () => {
                   {
                     Ref: 'AWS::Partition',
                   },
-                  ':iam:us-east-1:123456789012:role/cdk-hnb659fds-deploy-role-123456789012-us-east-1',
+                  ':iam::123456789012:role/cdk-hnb659fds-deploy-role-123456789012-us-east-1',
                 ],
               ],
             },
@@ -118,7 +118,7 @@ test('CodePipline ECS Deploy Cross Region/Account with import of existing servic
                   {
                     Ref: 'AWS::Partition',
                   },
-                  ':iam:us-east-1:123456789012:role/cdk-hnb659fds-deploy-role-123456789012-us-east-1',
+                  ':iam::123456789012:role/cdk-hnb659fds-deploy-role-123456789012-us-east-1',
                 ],
               ],
             },
@@ -244,6 +244,7 @@ class TestEcsCreateStack extends cdk.Stack {
     const cdkBootstrapQualifier = 'hnb659fds';
     const deployRoleName = `cdk-${cdkBootstrapQualifier}-deploy-role-${props.env!.account!}-${props.env!.region!}`;
     const deployArn = this.formatArn({
+      region: '',
       service: 'iam',
       resource: 'role',
       resourceName: deployRoleName,
@@ -383,6 +384,7 @@ class TestEcsImportStack extends cdk.Stack {
     const cdkBootstrapQualifier = 'hnb659fds';
     const deployRoleName = `cdk-${cdkBootstrapQualifier}-deploy-role-${props.env!.account!}-${props.env!.region!}`;
     const deployArn = this.formatArn({
+      region: '',
       service: 'iam',
       resource: 'role',
       resourceName: deployRoleName,
