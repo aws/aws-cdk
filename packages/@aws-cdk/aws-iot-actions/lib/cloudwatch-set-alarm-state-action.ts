@@ -7,24 +7,27 @@ import { singletonActionRole } from './private/role';
 /**
  * Configuration properties of an action for CloudWatch alarm.
  */
-export interface CloudWatchAlarmActionProps extends CommonActionProps {
+export interface CloudWatchSetAlarmStateActionProps extends CommonActionProps {
   /**
    * The reason for the alarm change.
+   *
+   * @default None
    */
-  readonly stateReason: string;
+  readonly reason?: string;
+
   /**
-   * The value of the alarm state.
+   * The value of the alarm state to set.
    */
-  readonly stateValue: string;
+  readonly alarmStateToSet: cloudwatch.AlarmState;
 }
 
 /**
- * The action to change a CloudWatch alarm state.
+ * The action to change the state of an Amazon CloudWatch alarm.
  */
-export class CloudWatchAlarmAction implements iot.IAction {
+export class CloudWatchSetAlarmStateAction implements iot.IAction {
   constructor(
     private readonly alarm: cloudwatch.IAlarm,
-    private readonly props: CloudWatchAlarmActionProps,
+    private readonly props: CloudWatchSetAlarmStateActionProps,
   ) {
   }
 
@@ -40,8 +43,8 @@ export class CloudWatchAlarmAction implements iot.IAction {
         cloudwatchAlarm: {
           alarmName: this.alarm.alarmName,
           roleArn: role.roleArn,
-          stateReason: this.props.stateReason,
-          stateValue: this.props.stateValue,
+          stateReason: this.props.reason ?? 'AWS IoT Rule action triggers a change',
+          stateValue: this.props.alarmStateToSet,
         },
       },
     };

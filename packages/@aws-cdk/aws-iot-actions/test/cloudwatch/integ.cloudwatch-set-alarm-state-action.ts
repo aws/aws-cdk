@@ -26,9 +26,9 @@ class TestStack extends cdk.Stack {
       datapointsToAlarm: 2,
     });
 
-    topicRule.addAction(new actions.CloudWatchAlarmAction(alarm, {
-      stateReason: 'Test reason',
-      stateValue: 'ALARM',
+    topicRule.addAction(new actions.CloudWatchSetAlarmStateAction(alarm, {
+      reason: 'Test reason',
+      alarmStateToSet: cloudwatch.AlarmState.ALARM,
     }));
   }
 }

@@ -150,10 +150,9 @@ const topicRule = new iot.TopicRule(this, 'TopicRule', {
 });
 ```
 
-## Change state for a CloudWatch alarm
+## Change the state of an Amazon CloudWatch alarm
 
-The code snippet below creates an AWS IoT Rule that changes a CloudWatch alarm
-when it is triggered.
+The code snippet below creates an AWS IoT Rule that changes the state of an Amazon CloudWatch alarm when it is triggered.
 
 ```ts
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
@@ -178,9 +177,9 @@ const topicRule = new iot.TopicRule(this, 'TopicRule', {
   actions: [
     new actions.CloudWatchAlarmAction(alarm, {
       stateReason: 'AWS Iot Rule action is triggered',
-      stateValue: 'ALARM',
+      stateValue: cloudwatch.AlarmState.ALARM,
     }),
-  ]
+  ],
 });
 ```
 
