@@ -485,17 +485,17 @@ function isGpuInstanceType(instanceType: InstanceType): boolean {
  * @param instanceTypes The instance types
  * @returns NodegroupAmiType[]
  */
-type MyArchitecture = InstanceArchitecture | 'GPU';
+type AmiArchitecture = InstanceArchitecture | 'GPU';
 function getPossibleAmiTypes(instanceTypes: InstanceType[]): NodegroupAmiType[] {
-  function typeToArch(instanceType: InstanceType): MyArchitecture {
+  function typeToArch(instanceType: InstanceType): AmiArchitecture {
     return isGpuInstanceType(instanceType) ? 'GPU' : instanceType.architecture;
   }
-  const archAmiMap = new Map<MyArchitecture, NodegroupAmiType[]>([
+  const archAmiMap = new Map<AmiArchitecture, NodegroupAmiType[]>([
     [InstanceArchitecture.ARM_64, arm64AmiTypes],
     [InstanceArchitecture.X86_64, x8664AmiTypes],
     ['GPU', gpuAmiTypes],
   ]);
-  const architectures: Set<MyArchitecture> = new Set(instanceTypes.flatMap(typeToArch));
+  const architectures: Set<AmiArchitecture> = new Set(instanceTypes.map(typeToArch));
 
   if (architectures.size === 0) { // protective code, the current implementation will never result in this.
     throw new Error(`Cannot determine any ami type comptaible with instance types: ${instanceTypes.map(i => i.toString).join(',')}`);
