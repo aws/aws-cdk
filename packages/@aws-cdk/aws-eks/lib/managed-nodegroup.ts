@@ -485,40 +485,25 @@ function isGpuInstanceType(instanceType: InstanceType): boolean {
  * @param instanceTypes The instance types
  * @returns NodegroupAmiType[]
  */
+type MyArchitecture = InstanceArchitecture | 'GPU';
 function getPossibleAmiTypes(instanceTypes: InstanceType[]): NodegroupAmiType[] {
-  const archAmiMap = new Map<InstanceArchitecture, NodegroupAmiType[]>([
+  function typeToArch(instanceType: InstanceType): MyArchitecture {
+    return isGpuInstanceType(instanceType) ? 'GPU' : instanceType.architecture;
+  }
+  const archAmiMap = new Map<MyArchitecture, NodegroupAmiType[]>([
     [InstanceArchitecture.ARM_64, arm64AmiTypes],
     [InstanceArchitecture.X86_64, x8664AmiTypes],
+    ['GPU', gpuAmiTypes],
   ]);
-  /**
-   * We have to seperate:
-   *
-   * 1. GPU instance
-   * 2. X86_64 instance without GPU
-   * 3. ARM_64 instance
-   */
-  let archTypes: number = 0;
-  // GPU instance
-  if (instanceTypes.some(x => isGpuInstanceType(x))) {
-    archTypes = archTypes + 1;
-  }
-  // X86_64 without GPU
-  if (instanceTypes.some(x => x.architecture === InstanceArchitecture.X86_64 && !isGpuInstanceType(x))) {
-    archTypes = archTypes + 1;
-  }
-  // ARM_64 without GPU
-  if (instanceTypes.some(x => x.architecture === InstanceArchitecture.ARM_64)) {
-    archTypes = archTypes + 1;
-  }
+  const architectures: Set<MyArchitecture> = new Set(instanceTypes.flatMap(typeToArch));
 
-  if (archTypes === 0) { // protective code, the current implementation will never result in this.
+  if (architectures.size === 0) { // protective code, the current implementation will never result in this.
     throw new Error(`Cannot determine any ami type comptaible with instance types: ${instanceTypes.map(i => i.toString).join(',')}`);
   }
 
-  if (archTypes > 1) {
+  if (architectures.size > 1) {
     throw new Error('instanceTypes of different architectures is not allowed');
   }
 
-  // now we have single architecture
-  return isGpuInstanceType(instanceTypes[0]) ? gpuAmiTypes : archAmiMap.get(instanceTypes[0].architecture)!;
+  return archAmiMap.get(Array.from(architectures)[0])!;
 }
