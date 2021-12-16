@@ -349,7 +349,7 @@ export class Pipeline extends PipelineBase {
   private readonly _crossAccountSupport: { [account: string]: Stack } = {};
   private readonly crossAccountKeys: boolean;
   private readonly enableKeyRotation?: boolean;
-  private readonly reuseCrossRegionSupportStacks?: boolean;
+  private readonly reuseCrossRegionSupportStacks: boolean;
 
   constructor(scope: Construct, id: string, props: PipelineProps = {}) {
     super(scope, id, {
@@ -641,7 +641,7 @@ export class Pipeline extends PipelineBase {
     }
 
     const app = this.supportScope();
-    const supportStackId = `cross-region-stack-${this.reuseCrossRegionSupportStacks === false ? pipelineStack.stackName : pipelineAccount}:${actionRegion}`;
+    const supportStackId = `cross-region-stack-${this.reuseCrossRegionSupportStacks ? pipelineAccount : pipelineStack.stackName}:${actionRegion}`;
     let supportStack = app.node.tryFindChild(supportStackId) as CrossRegionSupportStack;
     if (!supportStack) {
       supportStack = new CrossRegionSupportStack(app, supportStackId, {
