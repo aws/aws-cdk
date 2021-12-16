@@ -81,10 +81,12 @@ new ecr.Repository(this, 'Repo', { imageTagMutability: ecr.TagMutability.IMMUTAB
 
 ### Encryption
 
-By default a Repository is server-side encrypted with AES-256 by AWS. However, you can use AWS managed KMS or customer managed KMS. When an encryptionKey is set, the `encryptionType` must be `KMS` or empty.
+By default a Repository is server-side encrypted with AES-256 by AWS. However, you can use AWS managed KMS or customer managed KMS. When `encryptionKey` is set, the `encryption` must be `KMS` or empty.
 
 ```ts
-new ecr.Repository(stack, 'Repo', { encryptionType: ecr.RepositoryEncryption.KMS })
+new ecr.Repository(this, 'Repo', {
+  encryption: ecr.RepositoryEncryption.KMS
+});
 ```
 
 or
@@ -92,9 +94,9 @@ or
 ```ts
 import * as kms from '@aws-cdk/aws-kms';
 
-const my_kms = kms.Key(stack, 'Key');
-
-new ecr.Repository(stack, 'Repo', { encryptionKey: my_kms })
+new ecr.Repository(this, 'Repo', {
+  encryptionKey: new kms.Key(this, 'Key'),
+});
 ```
 
 ## Automatically clean up repositories
