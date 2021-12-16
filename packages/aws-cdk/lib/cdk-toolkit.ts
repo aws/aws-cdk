@@ -295,14 +295,8 @@ export class CdkToolkit {
     // |            |                |      | <------------------ |            | <------------------ |            | <-------------|
     // --------------                --------  'cdk deploy' done  --------------  'cdk deploy' done  --------------
     let latch: 'pre-ready' | 'open' | 'deploying' | 'queued' = 'pre-ready';
-    chokidar.watch(watchIncludes, {
-      ignored: watchExcludes,
-      cwd: rootDir,
-      // ignoreInitial: true,
-    }).on('ready', () => {
-      latch = 'open';
-      debug("'watch' received the 'ready' event. From now on, all file changes will trigger a deployment");
-    }).on('all', async (event, filePath) => {
+
+    const workflow = async (event: 'add' | 'addDir' | 'change' | 'unlink' | 'unlinkDir', filePath: string) => {
       if (latch === 'pre-ready') {
         print(`'watch' is observing ${event === 'addDir' ? 'directory' : 'the file'} '%s' for changes`, filePath);
       } else if (latch === 'open') {
@@ -325,7 +319,21 @@ export class CdkToolkit {
         print("Detected change to '%s' (type: %s) while 'cdk deploy' is still running. " +
             'Will queue for another deployment after this one finishes', filePath, event);
       }
-    });
+    };
+
+    chokidar.watch(watchIncludes, {
+      ignored: watchExcludes,
+      cwd: rootDir,
+      // ignoreInitial: true,
+    }).on('ready', () => {
+      latch = 'open';
+      // trigger a dummy event here to make an intial deployment,
+      // the values sent into workflow are dummy values.
+      // intentionally not awaiting the result so that we can begin to watch and queue changes.
+      void workflow('add', '');
+      debug("'watch' is triggering an initial deployment");
+      debug("'watch' received the 'ready' event. From now on, all file changes will trigger a deployment");
+    }).on('all', workflow);
   }
 
   public async destroy(options: DestroyOptions) {
