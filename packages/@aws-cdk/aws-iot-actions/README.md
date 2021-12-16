@@ -175,9 +175,9 @@ const alarm = new cloudwatch.Alarm(this, 'MyAlarm', {
 const topicRule = new iot.TopicRule(this, 'TopicRule', {
   sql: iot.IotSql.fromStringAsVer20160323("SELECT topic(2) as device_id FROM 'device/+/data'"),
   actions: [
-    new actions.CloudWatchAlarmAction(alarm, {
-      stateReason: 'AWS Iot Rule action is triggered',
-      stateValue: cloudwatch.AlarmState.ALARM,
+    new actions.CloudWatchSetAlarmStateAction(alarm, {
+      reason: 'AWS Iot Rule action is triggered',
+      alarmStateToSet: cloudwatch.AlarmState.ALARM,
     }),
   ],
 });
