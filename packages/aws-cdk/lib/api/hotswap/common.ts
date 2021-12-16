@@ -3,6 +3,7 @@ import { CloudFormation } from 'aws-sdk';
 import { ISDK } from '../aws-auth';
 import { CfnEvaluationException, EvaluateCloudFormationTemplate } from './evaluate-cloudformation-template';
 
+export const ICON = '✨';
 export interface ListStackResources {
   listStackResources(): Promise<CloudFormation.StackResourceSummary[]>;
 }

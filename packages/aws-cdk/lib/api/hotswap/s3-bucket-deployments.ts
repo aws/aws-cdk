@@ -1,5 +1,7 @@
+import * as colors from 'colors/safe';
+import { print } from '../../logging';
 import { ISDK } from '../aws-auth';
-import { ChangeHotswapImpact, ChangeHotswapResult, HotswapOperation, HotswappableChangeCandidate/*, establishResourcePhysicalName*/ } from './common';
+import { ICON, ChangeHotswapImpact, ChangeHotswapResult, HotswapOperation, HotswappableChangeCandidate/*, establishResourcePhysicalName*/ } from './common';
 import { EvaluateCloudFormationTemplate } from './evaluate-cloudformation-template';
 
 /**
@@ -42,6 +44,7 @@ class S3BucketDeploymentHotswapOperation implements HotswapOperation {
   }
 
   public async apply(sdk: ISDK): Promise<any> {
+    print(` ${ICON} hotswapping bucket deployment: %s`, colors.bold(this.customResourceProperties.DestinationBucketName));
     return sdk.lambda().invoke({
       FunctionName: this.functionName,
       // Lambda refuses to take a direct JSON object and requires it to be stringify()'d

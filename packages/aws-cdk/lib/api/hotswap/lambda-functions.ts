@@ -1,5 +1,7 @@
+import * as colors from 'colors/safe';
+import { print } from '../../logging';
 import { ISDK } from '../aws-auth';
-import { assetMetadataChanged, ChangeHotswapImpact, ChangeHotswapResult, HotswapOperation, HotswappableChangeCandidate, establishResourcePhysicalName } from './common';
+import { ICON, assetMetadataChanged, ChangeHotswapImpact, ChangeHotswapResult, HotswapOperation, HotswappableChangeCandidate, establishResourcePhysicalName } from './common';
 import { EvaluateCloudFormationTemplate } from './evaluate-cloudformation-template';
 
 /**
@@ -110,6 +112,7 @@ class LambdaFunctionHotswapOperation implements HotswapOperation {
   }
 
   public async apply(sdk: ISDK): Promise<any> {
+    print(` ${ICON} hotswapping lambda function: %s`, colors.bold(this.lambdaFunctionResource.physicalName));
     return sdk.lambda().updateFunctionCode({
       FunctionName: this.lambdaFunctionResource.physicalName,
       S3Bucket: this.lambdaFunctionResource.code.s3Bucket,
