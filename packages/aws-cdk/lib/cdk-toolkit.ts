@@ -330,12 +330,12 @@ export class CdkToolkit {
       ignored: watchExcludes,
       cwd: rootDir,
       // ignoreInitial: true,
-    }).on('ready', () => {
+    }).on('ready', async () => {
       latch = 'open';
       debug("'watch' is triggering an initial deployment");
       debug("'watch' received the 'ready' event. From now on, all file changes will trigger a deployment");
       // trigger a dummy event here to make an intial deployment
-      return handleFileChangeEvent('add');
+      await handleFileChangeEvent('add');
     }).on('all', handleFileChangeEvent);
   }
 
