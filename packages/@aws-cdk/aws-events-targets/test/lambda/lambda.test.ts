@@ -106,7 +106,7 @@ test('adding same singleton lambda function as target mutiple times creates perm
   const fn = new lambda.SingletonFunction(stack, 'MyLambda', {
     code: new lambda.InlineCode('foo'),
     handler: 'bar',
-    runtime: lambda.Runtime.PYTHON_2_7,
+    runtime: lambda.Runtime.PYTHON_3_9,
     uuid: 'uuid',
   });
   const rule = new events.Rule(stack, 'Rule', {
@@ -133,7 +133,7 @@ test('lambda handler and cloudwatch event across stacks', () => {
   const fn = new lambda.Function(lambdaStack, 'MyLambda', {
     code: new lambda.InlineCode('foo'),
     handler: 'bar',
-    runtime: lambda.Runtime.PYTHON_2_7,
+    runtime: lambda.Runtime.PYTHON_3_9,
   });
 
   const eventStack = new cdk.Stack(app, 'EventStack');
@@ -156,7 +156,7 @@ test('use a Dead Letter Queue for the rule target', () => {
   const fn = new lambda.Function(stack, 'MyLambda', {
     code: new lambda.InlineCode('foo'),
     handler: 'bar',
-    runtime: lambda.Runtime.PYTHON_2_7,
+    runtime: lambda.Runtime.PYTHON_3_9,
   });
 
   const queue = new sqs.Queue(stack, 'Queue');
@@ -248,7 +248,7 @@ test('throw an error when using a Dead Letter Queue for the rule target in a dif
   const fn = new lambda.Function(stack1, 'MyLambda', {
     code: new lambda.InlineCode('foo'),
     handler: 'bar',
-    runtime: lambda.Runtime.PYTHON_2_7,
+    runtime: lambda.Runtime.PYTHON_3_9,
   });
 
   const queue = new sqs.Queue(stack2, 'Queue');
@@ -285,7 +285,7 @@ test('must display a warning when using a Dead Letter Queue from another account
   const fn = new lambda.Function(stack1, 'MyLambda', {
     code: new lambda.InlineCode('foo'),
     handler: 'bar',
-    runtime: lambda.Runtime.PYTHON_2_7,
+    runtime: lambda.Runtime.PYTHON_3_9,
   });
 
   const queue = sqs.Queue.fromQueueArn(stack2, 'Queue', 'arn:aws:sqs:eu-west-1:444455556666:queue1');
@@ -334,7 +334,7 @@ test('specifying retry policy', () => {
   const fn = new lambda.Function(stack, 'MyLambda', {
     code: new lambda.InlineCode('foo'),
     handler: 'bar',
-    runtime: lambda.Runtime.PYTHON_2_7,
+    runtime: lambda.Runtime.PYTHON_3_9,
   });
 
   // WHEN
@@ -375,6 +375,6 @@ function newTestLambda(scope: constructs.Construct, suffix = '') {
   return new lambda.Function(scope, `MyLambda${suffix}`, {
     code: new lambda.InlineCode('foo'),
     handler: 'bar',
-    runtime: lambda.Runtime.PYTHON_2_7,
+    runtime: lambda.Runtime.PYTHON_3_9,
   });
 }

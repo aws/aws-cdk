@@ -191,6 +191,7 @@ export class InitTemplate {
     config.context = {
       ...config.context,
       ...futureFlags,
+      ...cxapi.NEW_PROJECT_DEFAULT_CONTEXT,
     };
 
     await fs.writeJson(cdkJson, config, { spaces: 2 });

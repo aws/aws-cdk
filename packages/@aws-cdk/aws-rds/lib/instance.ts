@@ -360,6 +360,13 @@ export interface DatabaseInstanceNewProps {
   readonly port?: number;
 
   /**
+   * The DB parameter group to associate with the instance.
+   *
+   * @default - no parameter group
+   */
+  readonly parameterGroup?: IParameterGroup;
+
+  /**
    * The option group to associate with the instance.
    *
    * @default - no option group
@@ -709,6 +716,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
       ? props.instanceIdentifier?.toLowerCase()
       : props.instanceIdentifier;
 
+    const instanceParameterGroupConfig = props.parameterGroup?.bindToInstance({});
     this.newCfnProps = {
       autoMinorVersionUpgrade: props.autoMinorVersionUpgrade,
       availabilityZone: props.multiAz ? undefined : props.availabilityZone,
@@ -732,12 +740,13 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
       monitoringInterval: props.monitoringInterval?.toSeconds(),
       monitoringRoleArn: monitoringRole?.roleArn,
       multiAz: props.multiAz,
+      dbParameterGroupName: instanceParameterGroupConfig?.parameterGroupName,
       optionGroupName: props.optionGroup?.optionGroupName,
       performanceInsightsKmsKeyId: props.performanceInsightEncryptionKey?.keyArn,
       performanceInsightsRetentionPeriod: enablePerformanceInsights
         ? (props.performanceInsightRetention || PerformanceInsightRetention.DEFAULT)
         : undefined,
-      port: props.port?.toString(),
+      port: props.port !== undefined ? Tokenization.stringifyNumber(props.port) : undefined,
       preferredBackupWindow: props.preferredBackupWindow,
       preferredMaintenanceWindow: props.preferredMaintenanceWindow,
       processorFeatures: props.processorFeatures && renderProcessorFeatures(props.processorFeatures),
@@ -813,13 +822,6 @@ export interface DatabaseInstanceSourceProps extends DatabaseInstanceNewProps {
    * @default - no name
    */
   readonly databaseName?: string;
-
-  /**
-   * The DB parameter group to associate with the instance.
-   *
-   * @default - no parameter group
-   */
-  readonly parameterGroup?: IParameterGroup;
 }
 
 /**
@@ -875,7 +877,6 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
 
     this.instanceType = props.instanceType ?? ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.LARGE);
 
-    const instanceParameterGroupConfig = props.parameterGroup?.bindToInstance({});
     this.sourceCfnProps = {
       ...this.newCfnProps,
       associatedRoles: instanceAssociatedRoles.length > 0 ? instanceAssociatedRoles : undefined,
@@ -883,7 +884,6 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
       allocatedStorage: props.allocatedStorage?.toString() ?? '100',
       allowMajorVersionUpgrade: props.allowMajorVersionUpgrade,
       dbName: props.databaseName,
-      dbParameterGroupName: instanceParameterGroupConfig?.parameterGroupName,
       engine: engineType,
       engineVersion: props.engine.engineVersion?.fullVersion,
       licenseModel: props.licenseModel,
