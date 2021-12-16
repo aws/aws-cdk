@@ -347,7 +347,7 @@ export class CodePipeline extends PipelineBase {
       this._pipeline = new cp.Pipeline(this, 'Pipeline', {
         pipelineName: this.props.pipelineName,
         crossAccountKeys: this.props.crossAccountKeys ?? false,
-        reuseCrossRegionSupportStacks: this.props.reuseCrossRegionSupportStacks ?? false,
+        reuseCrossRegionSupportStacks: this.props.reuseCrossRegionSupportStacks,
         // This is necessary to make self-mutation work (deployments are guaranteed
         // to happen only after the builds of the latest pipeline definition).
         restartExecutionOnUpdate: true,

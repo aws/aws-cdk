@@ -344,39 +344,16 @@ describe('', () => {
       test('generates the same support stack containing the replication Bucket without the need to bootstrap in that environment for multiple pipelines', () => {
         const app = new cdk.App();
 
-        class PipelineStack extends cdk.Stack {
-          public constructor(scope: Construct, id: string, props: cdk.StackProps ) {
-            super(scope, id, props);
-            const sourceOutput = new codepipeline.Artifact();
-            new codepipeline.Pipeline(this, 'Pipeline', {
-              stages: [
-                {
-                  stageName: 'Source',
-                  actions: [new FakeSourceAction({
-                    actionName: 'Source',
-                    output: sourceOutput,
-                  })],
-                },
-                {
-                  stageName: 'Build',
-                  actions: [new FakeBuildAction({
-                    actionName: 'Build',
-                    input: sourceOutput,
-                    region: 'eu-south-1',
-                  })],
-                },
-              ],
-            });
-          }
-        }
-        new PipelineStack(app, 'PipelineStackA', {
+        new ReusePipelineStack(app, 'PipelineStackA', {
           env: { region: 'us-west-2', account: '123456789012' },
         });
-        new PipelineStack(app, 'PipelineStackB', {
+        new ReusePipelineStack(app, 'PipelineStackB', {
           env: { region: 'us-west-2', account: '123456789012' },
         });
 
         const assembly = app.synth();
+        // 2 Pipeline Stacks and 1 support stack for both pipeline stacks.
+        expect(assembly.stacks.length).toEqual(3);
         assembly.getStackByName('PipelineStackA-support-eu-south-1');
         expect(() => {
           assembly.getStackByName('PipelineStackB-support-eu-south-1');
@@ -387,46 +364,22 @@ describe('', () => {
       test('generates the unique support stack containing the replication Bucket without the need to bootstrap in that environment for multiple pipelines', () => {
         const app = new cdk.App();
 
-        class PipelineStack extends cdk.Stack {
-          public constructor(scope: Construct, id: string, props: cdk.StackProps ) {
-            super(scope, id, props);
-            const sourceOutput = new codepipeline.Artifact();
-            new codepipeline.Pipeline(this, 'Pipeline', {
-              reuseCrossRegionSupportStacks: false,
-              stages: [
-                {
-                  stageName: 'Source',
-                  actions: [new FakeSourceAction({
-                    actionName: 'Source',
-                    output: sourceOutput,
-                  })],
-                },
-                {
-                  stageName: 'Build',
-                  actions: [new FakeBuildAction({
-                    actionName: 'Build',
-                    input: sourceOutput,
-                    region: 'eu-south-1',
-                  })],
-                },
-              ],
-            });
-          }
-        }
-        new PipelineStack(app, 'PipelineStackA', {
+        new ReusePipelineStack(app, 'PipelineStackA', {
           env: { region: 'us-west-2', account: '123456789012' },
+          reuseCrossRegionSupportStacks: false,
         });
-        new PipelineStack(app, 'PipelineStackB', {
+        new ReusePipelineStack(app, 'PipelineStackB', {
           env: { region: 'us-west-2', account: '123456789012' },
+          reuseCrossRegionSupportStacks: false,
         });
 
         const assembly = app.synth();
+        // 2 Pipeline Stacks and 1 support stack for each pipeline stack.
+        expect(assembly.stacks.length).toEqual(4);
         const supportStackAArtifact = assembly.getStackByName('PipelineStackA-support-eu-south-1');
-
         const supportStackBArtifact = assembly.getStackByName('PipelineStackB-support-eu-south-1');
 
         const supportStackATemplate = supportStackAArtifact.template;
-
         expect(supportStackATemplate).toHaveResourceLike('AWS::S3::Bucket', {
           BucketName: 'pipelinestacka-support-eueplicationbucket8934e91f26961aa6cbfa',
         });
@@ -435,15 +388,12 @@ describe('', () => {
         });
 
         const supportStackBTemplate = supportStackBArtifact.template;
-
         expect(supportStackBTemplate).toHaveResourceLike('AWS::S3::Bucket', {
           BucketName: 'pipelinestackb-support-eueplicationbucketdf7c0e10245faa377228',
         });
-
         expect(supportStackBTemplate).toHaveResourceLike('AWS::KMS::Alias', {
           AliasName: 'alias/pport-eutencryptionaliasdef3fd3fec63bc54980e',
         });
-
       });
     });
 
@@ -574,3 +524,45 @@ describe('test with shared setup', () => {
     });
   });
 });
+
+
+interface ReusePipelineStackProps extends cdk.StackProps {
+  reuseCrossRegionSupportStacks?: boolean;
+}
+
+class ReusePipelineStack extends cdk.Stack {
+  public constructor(scope: Construct, id: string, props: ReusePipelineStackProps ) {
+    super(scope, id, props);
+    const sourceOutput = new codepipeline.Artifact();
+    const buildOutput = new codepipeline.Artifact();
+    new codepipeline.Pipeline(this, 'Pipeline', {
+      reuseCrossRegionSupportStacks: props.reuseCrossRegionSupportStacks,
+      stages: [
+        {
+          stageName: 'Source',
+          actions: [new FakeSourceAction({
+            actionName: 'Source',
+            output: sourceOutput,
+          })],
+        },
+        {
+          stageName: 'Build',
+          actions: [new FakeBuildAction({
+            actionName: 'Build',
+            input: sourceOutput,
+            region: 'eu-south-1',
+            output: buildOutput,
+          })],
+        },
+        {
+          stageName: 'Deploy',
+          actions: [new FakeBuildAction({
+            actionName: 'Deploy',
+            input: buildOutput,
+            region: 'eu-south-1',
+          })],
+        },
+      ],
+    });
+  }
+}
