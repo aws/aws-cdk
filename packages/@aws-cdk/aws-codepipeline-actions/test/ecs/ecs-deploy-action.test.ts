@@ -2,8 +2,10 @@ import '@aws-cdk/assert-internal/jest';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
+import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import * as cpactions from '../../lib';
 
 describe('ecs deploy action', () => {
@@ -197,6 +199,99 @@ describe('ecs deploy action', () => {
 
     });
   });
+  describe('ECS deploy Action service reference cross account/region', () => {
+    test('leverage existing service', () => {
+      const app = new cdk.App();
+      const stack = new PipelineEcsDeployImportStack(app, 'PipelineStack', {
+        env: {
+          region: 'us-east-1',
+          account: '234567890123',
+        },
+      });
+      app.synth();
+
+      expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+        Stages: [
+          {},
+          {
+            Actions: [
+              {
+                Name: 'ECS',
+                ActionTypeId: {
+                  Category: 'Deploy',
+                  Provider: 'ECS',
+                },
+                Configuration: {
+                  ClusterName: 'cluster-name',
+                  ServiceName: 'service-name',
+                  FileName: 'imageFile.json',
+                },
+                Region: 'us-west-2',
+                RoleArn: {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      {
+                        Ref: 'AWS::Partition',
+                      },
+                      ':iam::123456789012:role/pipelinestack-support-123ageecsactionrolec7a0155032b56a30da59',
+                    ],
+                  ],
+                },
+              },
+            ],
+          },
+        ],
+      });
+
+    });
+    test('create new service', () => {
+      const app = new cdk.App();
+      const stack = new PipelineEcsDeployCreateStack(app, 'PipelineStack', {
+        env: {
+          region: 'us-east-1',
+          account: '234567890123',
+        },
+      });
+      app.synth();
+
+      expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+        Stages: [
+          {},
+          {
+            Actions: [
+              {
+                Name: 'ECS',
+                ActionTypeId: {
+                  Category: 'Deploy',
+                  Provider: 'ECS',
+                },
+                Configuration: {
+                  ClusterName: 'teststage-ecsstackeecsstackcluster631300db487421429f3b',
+                  ServiceName: 'teststage-ecsstackckfargateservicecb7fe40e2cebe441d9da',
+                  FileName: 'imageFile.json',
+                },
+                Region: 'us-west-2',
+                RoleArn: {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      {
+                        Ref: 'AWS::Partition',
+                      },
+                      ':iam::123456789012:role/deployrole',
+                    ],
+                  ],
+                },
+              },
+            ],
+          },
+        ],
+      });
+    });
+  });
 });
 
 function anyEcsService(): ecs.FargateService {
@@ -213,4 +308,187 @@ function anyEcsService(): ecs.FargateService {
     cluster,
     taskDefinition,
   });
+}
+
+class PipelineEcsDeployBaseStack extends cdk.Stack {
+  public readonly pipeline: codepipeline.Pipeline;
+  public readonly artifact: codepipeline.Artifact;
+  constructor(scope: Construct, id: string, props: cdk.StackProps) {
+    super(scope, id, props);
+    const artifact = new codepipeline.Artifact('Artifact');
+    this.artifact = artifact;
+    const bucket = new s3.Bucket(this, 'PipelineBucket', {
+      versioned: true,
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+    });
+    const source = new cpactions.S3SourceAction({
+      actionName: 'Source',
+      output: artifact,
+      bucket,
+      bucketKey: 'key',
+    });
+    this.pipeline = new codepipeline.Pipeline(this, 'Pipeline', {
+      stages: [
+        {
+          stageName: 'Source',
+          actions: [source],
+        },
+      ],
+    });
+    this.addStages();
+  }
+  public addStages() {
+    throw new Error('Not Implemented');
+  }
+}
+
+class TestImportStack extends cdk.Stack {
+  public readonly serviceArn: string;
+  public readonly clusterName: string;
+
+  constructor(scope: Construct, id: string, props: cdk.StackProps) {
+    super(scope, id, props);
+    const vpc = new ec2.Vpc(this, 'Vpc');
+    this.clusterName = 'cluster-name';
+    const service = ecs.FargateService.fromFargateServiceAttributes(this, 'FargateService', {
+      serviceName: 'service-name',
+      cluster: ecs.Cluster.fromClusterAttributes(this, 'Cluster', {
+        vpc,
+        securityGroups: [],
+        clusterName: this.clusterName,
+      }),
+    });
+    this.serviceArn = service.serviceArn;
+  }
+}
+class TestImportStage extends cdk.Stage {
+  public readonly serviceArn: string;
+  public readonly clusterName: string;
+
+  constructor(scope: Construct, id: string, props: cdk.StageProps) {
+    super(scope, id, props);
+    const testStack = new TestImportStack(this, 'ecsStack', {});
+    this.serviceArn = testStack.serviceArn;
+    this.clusterName = testStack.clusterName;
+  }
+}
+
+class PipelineEcsDeployImportStack extends PipelineEcsDeployBaseStack {
+  public addStages() {
+    const testStage = new TestImportStage(
+      this,
+      'TestStage',
+      {
+        env: {
+          region: 'us-west-2',
+          account: '123456789012',
+        },
+      },
+    );
+    const testIStage = this.pipeline.addStage(testStage);
+    const service = ecs.FargateService.fromFargateServiceAttributes(this, 'FargateService', {
+      serviceArn: testStage.serviceArn,
+      cluster: ecs.Cluster.fromClusterAttributes(this, 'Cluster', {
+        vpc: new ec2.Vpc(this, 'Vpc'),
+        securityGroups: [],
+        clusterName: testStage.clusterName,
+      }),
+    });
+    /**
+     * It is highly recommended passing in the role from the stage/stack, if not a new role
+     * is created which most likely will not exist in the account you are deploying to.
+     * The create test has an example of how to leverage that role.
+     */
+    const deployAction = new cpactions.EcsDeployAction({
+      actionName: 'ECS',
+      service: service,
+      imageFile: this.artifact.atPath('imageFile.json'),
+    });
+    testIStage.addAction(deployAction);
+  }
+}
+
+class TestCreateStack extends cdk.Stack {
+  public readonly serviceArn: string;
+  public readonly clusterName: string;
+  public readonly deployRole: iam.IRole;
+
+  constructor(scope: Construct, id: string, props: cdk.StackProps) {
+    super(scope, id, props);
+    const taskDefinition = new ecs.FargateTaskDefinition(this, 'TaskDefinition');
+    taskDefinition.addContainer('MainContainer', {
+      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+    });
+    const vpc = new ec2.Vpc(this, 'VPC');
+    const cluster = new ecs.Cluster(this, 'Cluster', {
+      clusterName: cdk.PhysicalName.GENERATE_IF_NEEDED,
+      vpc,
+    });
+    const service = new ecs.FargateService(this, 'FargateService', {
+      cluster,
+      taskDefinition,
+      serviceName: cdk.PhysicalName.GENERATE_IF_NEEDED,
+    });
+    this.serviceArn = this.formatArn({
+      service: 'ecs',
+      resource: 'service',
+      resourceName: service.serviceName,
+    });
+    this.clusterName = cluster.clusterName;
+    const deployArn = this.formatArn({
+      region: '',
+      service: 'iam',
+      resource: 'role',
+      resourceName: 'deployrole',
+    });
+    this.deployRole = iam.Role.fromRoleArn(
+      this,
+      'DeployRole',
+      deployArn,
+    );
+  }
+}
+class TestCreateStage extends cdk.Stage {
+  public readonly serviceArn: string;
+  public readonly clusterName: string;
+  public readonly deployRole: iam.IRole;
+
+  constructor(scope: Construct, id: string, props: cdk.StageProps) {
+    super(scope, id, props);
+    const testStack = new TestCreateStack(this, 'ecsStack', {});
+    this.serviceArn = testStack.serviceArn;
+    this.clusterName = testStack.clusterName;
+    this.deployRole = testStack.deployRole;
+  }
+}
+
+class PipelineEcsDeployCreateStack extends PipelineEcsDeployBaseStack {
+  public addStages() {
+    const testStage = new TestCreateStage(
+      this,
+      'TestStage',
+      {
+        env: {
+          region: 'us-west-2',
+          account: '123456789012',
+        },
+      },
+    );
+    const testIStage = this.pipeline.addStage(testStage);
+    const service = ecs.FargateService.fromFargateServiceAttributes(this, 'FargateService', {
+      serviceArn: testStage.serviceArn,
+      cluster: ecs.Cluster.fromClusterAttributes(this, 'Cluster', {
+        vpc: new ec2.Vpc(this, 'Vpc'),
+        securityGroups: [],
+        clusterName: testStage.clusterName,
+      }),
+    });
+    const deployAction = new cpactions.EcsDeployAction({
+      actionName: 'ECS',
+      service: service,
+      imageFile: this.artifact.atPath('imageFile.json'),
+      role: testStage.deployRole,
+    });
+    testIStage.addAction(deployAction);
+  }
 }
