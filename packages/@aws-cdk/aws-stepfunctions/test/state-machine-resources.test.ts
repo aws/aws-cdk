@@ -202,7 +202,7 @@ describe('State Machine Resources', () => {
     const task = new FakeTask(stack, 'Task');
     const stateMachine = new stepfunctions.StateMachine(stack, 'StateMachine', {
       definition: task,
-      stateMachineType: stepfunctions.StateMachineType.EXPRESS,
+      type: stepfunctions.StateMachineType.EXPRESS,
     });
     const role = new iam.Role(stack, 'Role', {
       assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),

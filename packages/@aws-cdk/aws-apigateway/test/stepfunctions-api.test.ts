@@ -99,7 +99,7 @@ describe('Step Functions api', () => {
 
     const stateMachine: sfn.IStateMachine = new StateMachine(stack, 'StateMachine', {
       definition: passTask,
-      stateMachineType: sfn.StateMachineType.STANDARD,
+      type: sfn.StateMachineType.STANDARD,
     });
 
     //WHEN & THEN
@@ -118,7 +118,7 @@ function givenSetup() {
 
   const stateMachine: sfn.IStateMachine = new StateMachine(stack, 'StateMachine', {
     definition: passTask,
-    stateMachineType: sfn.StateMachineType.EXPRESS,
+    type: sfn.StateMachineType.EXPRESS,
   });
 
   return { stack, stateMachine };

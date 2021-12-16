@@ -112,7 +112,7 @@ export interface StateMachineProps {
    *
    * @default StateMachineType.STANDARD
    */
-  readonly stateMachineType?: StateMachineType;
+  readonly type?: StateMachineType;
 
   /**
    * Defines what execution history events are logged and where they are logged.
@@ -382,9 +382,8 @@ export class StateMachine extends StateMachineBase {
 
   /**
    * Type of the state machine
-   * @attribute
    */
-  public readonly stateMachineType: StateMachineType;
+  public readonly type: StateMachineType;
 
   constructor(scope: Construct, id: string, props: StateMachineProps) {
     super(scope, id, {
@@ -402,11 +401,11 @@ export class StateMachine extends StateMachineBase {
     const graph = new StateGraph(props.definition.startState, `State Machine ${id} definition`);
     graph.timeout = props.timeout;
 
-    this.stateMachineType = props.stateMachineType ?? StateMachineType.STANDARD;
+    this.type = props.type ?? StateMachineType.STANDARD;
 
     const resource = new CfnStateMachine(this, 'Resource', {
       stateMachineName: this.physicalName,
-      stateMachineType: props.stateMachineType ?? undefined,
+      stateMachineType: props.type ?? undefined,
       roleArn: this.role.roleArn,
       definitionString: Stack.of(this).toJsonString(graph.toGraphJson()),
       loggingConfiguration: props.logs ? this.buildLoggingConfiguration(props.logs) : undefined,

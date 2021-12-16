@@ -30,7 +30,7 @@ describe('State Machine', () => {
     new stepfunctions.StateMachine(stack, 'MyStateMachine', {
       stateMachineName: 'MyStateMachine',
       definition: stepfunctions.Chain.start(new stepfunctions.Pass(stack, 'Pass')),
-      stateMachineType: stepfunctions.StateMachineType.STANDARD,
+      type: stepfunctions.StateMachineType.STANDARD,
     });
 
     // THEN
@@ -50,7 +50,7 @@ describe('State Machine', () => {
     new stepfunctions.StateMachine(stack, 'MyStateMachine', {
       stateMachineName: 'MyStateMachine',
       definition: stepfunctions.Chain.start(new stepfunctions.Pass(stack, 'Pass')),
-      stateMachineType: stepfunctions.StateMachineType.EXPRESS,
+      type: stepfunctions.StateMachineType.EXPRESS,
     });
 
     // THEN
@@ -71,7 +71,7 @@ describe('State Machine', () => {
       new stepfunctions.StateMachine(stack, name + 'StateMachine', {
         stateMachineName: name,
         definition: stepfunctions.Chain.start(new stepfunctions.Pass(stack, name + 'Pass')),
-        stateMachineType: stepfunctions.StateMachineType.EXPRESS,
+        type: stepfunctions.StateMachineType.EXPRESS,
       });
     };
     const tooShortName = '';
@@ -108,7 +108,7 @@ describe('State Machine', () => {
       new stepfunctions.StateMachine(stack, 'TokenTest-StateMachine', {
         stateMachineName: nameContainingToken,
         definition: stepfunctions.Chain.start(new stepfunctions.Pass(stack, 'TokenTest-StateMachinePass')),
-        stateMachineType: stepfunctions.StateMachineType.EXPRESS,
+        type: stepfunctions.StateMachineType.EXPRESS,
       });
     }).not.toThrow();
 
@@ -116,7 +116,7 @@ describe('State Machine', () => {
       new stepfunctions.StateMachine(stack, 'ValidNameTest-StateMachine', {
         stateMachineName: validName,
         definition: stepfunctions.Chain.start(new stepfunctions.Pass(stack, 'ValidNameTest-StateMachinePass')),
-        stateMachineType: stepfunctions.StateMachineType.EXPRESS,
+        type: stepfunctions.StateMachineType.EXPRESS,
       });
     }).not.toThrow();
   });

@@ -20,7 +20,7 @@ class StepFunctionsRestApiDeploymentStack extends cdk.Stack {
 
     const stateMachine = new sfn.StateMachine(this, 'StateMachine', {
       definition: passTask,
-      stateMachineType: sfn.StateMachineType.EXPRESS,
+      type: sfn.StateMachineType.EXPRESS,
     });
 
     const api = new apigw.StepFunctionsRestApi(this, 'StepFunctionsRestApi', {

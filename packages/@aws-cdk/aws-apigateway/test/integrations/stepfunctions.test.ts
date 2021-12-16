@@ -278,7 +278,7 @@ describe('StepFunctionsIntegration', () => {
 
       const stateMachine: sfn.IStateMachine = new StateMachine(stack, 'StateMachine', {
         definition: passTask,
-        stateMachineType: sfn.StateMachineType.EXPRESS,
+        type: sfn.StateMachineType.EXPRESS,
       });
 
       api.root.addMethod('ANY', apigw.StepFunctionsIntegration.startExecution(stateMachine));
@@ -301,7 +301,7 @@ describe('StepFunctionsIntegration', () => {
 
       const stateMachine: sfn.IStateMachine = new StateMachine(stack, 'StateMachine', {
         definition: passTask,
-        stateMachineType: sfn.StateMachineType.EXPRESS,
+        type: sfn.StateMachineType.EXPRESS,
       });
 
       const integ = apigw.StepFunctionsIntegration.startExecution(stateMachine);
@@ -336,7 +336,7 @@ describe('StepFunctionsIntegration', () => {
       const method = restapi.root.addMethod('ANY');
       const stateMachine: sfn.StateMachine = new StateMachine(stack, 'StateMachine', {
         definition: new sfn.Pass(stack, 'passTask'),
-        stateMachineType: StateMachineType.STANDARD,
+        type: StateMachineType.STANDARD,
       });
       const integration = apigw.StepFunctionsIntegration.startExecution(stateMachine);
 
@@ -356,7 +356,7 @@ function givenSetup() {
 
   const stateMachine: sfn.IStateMachine = new StateMachine(stack, 'StateMachine', {
     definition: passTask,
-    stateMachineType: sfn.StateMachineType.EXPRESS,
+    type: sfn.StateMachineType.EXPRESS,
   });
 
   return { stack, api, stateMachine };
