@@ -62,7 +62,7 @@ export class FileAssetHandler implements IAssetHandler {
         this.host.emitMessage(EventType.DEBUG, `No bucket named '${destination.bucketName}'. Is account ${await account()} bootstrapped?`);
         break;
       case BucketEncryption.ACCES_DENIED:
-        this.host.emitMessage(EventType.DEBUG, `ACCES_DENIED for getting encryption of bucket '${destination.bucketName}'. Either wrong account ${await account()} or s3:GetEncryptionConfiguration not set for cdk role. Try "cdk bootstrap" again.`);
+        this.host.emitMessage(EventType.DEBUG, `Could not read encryption settings of bucket '${destination.bucketName}': uploading with default settings ("cdk bootstrap" to version 9 if your organization's policies prevent a successful upload or to get rid of this message).`);
         break;
     }
 
