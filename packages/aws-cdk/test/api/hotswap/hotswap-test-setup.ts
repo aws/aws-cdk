@@ -42,7 +42,8 @@ export function pushStackResourceSummaries(...items: CloudFormation.StackResourc
 }
 
 export function setCurrentCfnStackTemplate(template: Template) {
-  currentCfnStack.setTemplate(template);
+  const templateDeepCopy = JSON.parse(JSON.stringify(template)); // deep copy the template, so our tests can mutate one template instead of creating two
+  currentCfnStack.setTemplate(templateDeepCopy);
 }
 
 export function stackSummaryOf(logicalId: string, resourceType: string, physicalResourceId: string): CloudFormation.StackResourceSummary {
@@ -82,7 +83,7 @@ export class HotswapMockSdkProvider {
   }
 
   public stubLambda(
-    mockUpdateLambdaCode?: (input: lambda.UpdateFunctionCodeRequest) => lambda.FunctionConfiguration,
+    mockUpdateLambdaCode: (input: lambda.UpdateFunctionCodeRequest) => lambda.FunctionConfiguration,
     mockTagResource?: (input: lambda.TagResourceRequest) => {},
     mockUntagResource?: (input: lambda.UntagResourceRequest) => {},
   ) {
@@ -90,6 +91,12 @@ export class HotswapMockSdkProvider {
       updateFunctionCode: mockUpdateLambdaCode ?? jest.fn(),
       tagResource: mockTagResource ?? jest.fn(),
       untagResource: mockUntagResource ?? jest.fn(),
+    });
+  }
+
+  public setInvokeLambdaMock(mockInvokeLambda: (input: lambda.InvocationRequest) => lambda.InvocationResponse) {
+    this.mockSdkProvider.stubLambda({
+      invoke: mockInvokeLambda,
     });
   }
 

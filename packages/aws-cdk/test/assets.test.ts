@@ -1,4 +1,3 @@
-import { extname } from 'path';
 import { AssetMetadataEntry } from '@aws-cdk/cloud-assembly-schema';
 import { ToolkitInfo } from '../lib/api';
 import { addMetadataAssetsToManifest } from '../lib/assets';
@@ -13,8 +12,6 @@ beforeEach(() => {
   toolkit = new MockToolkitInfo(new MockSdk());
   assets = new AssetManifestBuilder();
 });
-
-const moduleExt = extname(__filename);
 
 describe('file assets', () => {
   test('convert to manifest and parameters', async () => {
@@ -37,7 +34,7 @@ describe('file assets', () => {
     // THEN
     expect(params).toEqual({
       BucketParameter: 'MockToolkitBucketName',
-      KeyParameter: `assets/SomeStackSomeResource4567/||source-hash${moduleExt}`,
+      KeyParameter: 'assets/SomeStackSomeResource4567/||source-hash.js',
       ArtifactHashParameter: 'source-hash',
     });
 
@@ -45,7 +42,7 @@ describe('file assets', () => {
       expect.objectContaining({
         destination: {
           bucketName: 'MockToolkitBucketName',
-          objectKey: `assets/SomeStackSomeResource4567/source-hash${moduleExt}`,
+          objectKey: 'assets/SomeStackSomeResource4567/source-hash.js',
         },
         source: {
           packaging: 'file',
@@ -77,7 +74,7 @@ describe('file assets', () => {
       expect.objectContaining({
         destination: {
           bucketName: 'MockToolkitBucketName',
-          objectKey: `assets/source-hash${moduleExt}`,
+          objectKey: 'assets/source-hash.js',
         },
       }),
     ]);

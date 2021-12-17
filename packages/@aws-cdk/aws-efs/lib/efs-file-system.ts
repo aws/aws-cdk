@@ -43,6 +43,19 @@ export enum LifecyclePolicy {
 }
 
 /**
+ * EFS Out Of Infrequent Access Policy, if a file is accessed given times, it will move back to primary
+ * storage class.
+ *
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-efs-filesystem-lifecyclepolicy.html#cfn-efs-filesystem-lifecyclepolicy-transitiontoprimarystorageclass
+ */
+export enum OutOfInfrequentAccessPolicy {
+  /**
+   * After 1 access
+   */
+  AFTER_1_ACCESS = 'AFTER_1_ACCESS'
+}
+
+/**
  * EFS Performance mode.
  *
  * @see https://docs.aws.amazon.com/efs/latest/ug/performance.html#performancemodes
@@ -165,6 +178,13 @@ export interface FileSystemProps {
    */
   readonly lifecyclePolicy?: LifecyclePolicy;
 
+  /**
+   * A policy used by EFS lifecycle management to transition files from Infrequent Access (IA) storage class to
+   * primary storage class.
+   *
+   * @default - None. EFS will not transition files from IA storage to primary storage.
+   */
+  readonly outOfInfrequentAccessPolicy?: OutOfInfrequentAccessPolicy;
   /**
    * The performance mode that the file system will operate under.
    * An Amazon EFS file system's performance mode can't be changed after the file system has been created.
@@ -324,7 +344,12 @@ export class FileSystem extends FileSystemBase {
     const filesystem = new CfnFileSystem(this, 'Resource', {
       encrypted: encrypted,
       kmsKeyId: props.kmsKey?.keyArn,
-      lifecyclePolicies: (props.lifecyclePolicy ? [{ transitionToIa: props.lifecyclePolicy }] : undefined),
+      lifecyclePolicies: (
+        (props.lifecyclePolicy || props.outOfInfrequentAccessPolicy) ?
+          [{
+            transitionToIa: props.lifecyclePolicy,
+            transitionToPrimaryStorageClass: props.outOfInfrequentAccessPolicy,
+          }] : undefined),
       performanceMode: props.performanceMode,
       throughputMode: props.throughputMode,
       provisionedThroughputInMibps: props.provisionedThroughputPerSecond?.toMebibytes(),

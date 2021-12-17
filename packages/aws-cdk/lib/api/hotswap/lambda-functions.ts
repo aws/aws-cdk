@@ -3,8 +3,8 @@ import { ChangeHotswapImpact, ChangeHotswapResult, HotswapOperation, Hotswappabl
 import { EvaluateCloudFormationTemplate } from './evaluate-cloudformation-template';
 
 /**
- * Returns `false` if the change cannot be short-circuited,
- * `true` if the change is irrelevant from a short-circuit perspective
+ * Returns `ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT` if the change cannot be short-circuited,
+ * `ChangeHotswapImpact.IRRELEVANT` if the change is irrelevant from a short-circuit perspective
  * (like a change to CDKMetadata),
  * or a LambdaFunctionResource if the change can be short-circuited.
  */
@@ -16,14 +16,13 @@ export async function isHotswappableLambdaFunctionChange(
     return lambdaCodeChange;
   } else {
     const functionName = await establishResourcePhysicalName(logicalId, change.newValue.Properties?.FunctionName, evaluateCfnTemplate);
-    const functionArn = await evaluateCfnTemplate.evaluateCfnExpression({
-      'Fn::Sub': 'arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:' + functionName,
-    });
-
-
     if (!functionName) {
       return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
     }
+
+    const functionArn = await evaluateCfnTemplate.evaluateCfnExpression({
+      'Fn::Sub': 'arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:' + functionName,
+    });
 
     return new LambdaFunctionHotswapOperation({
       physicalName: functionName,
@@ -46,7 +45,6 @@ async function isLambdaFunctionCodeOnlyChange(
   change: HotswappableChangeCandidate, evaluateCfnTemplate: EvaluateCloudFormationTemplate,
 ): Promise<LambdaFunctionChange | ChangeHotswapImpact> {
   const newResourceType = change.newValue.Type;
-
   if (newResourceType !== 'AWS::Lambda::Function') {
     return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
   }
@@ -64,8 +62,8 @@ async function isLambdaFunctionCodeOnlyChange(
    */
   // Make sure only the code in the Lambda function changed
   const propertyUpdates = change.propertyUpdates;
-  let code: LambdaFunctionCode | void = undefined;
-  let tags: LambdaFunctionTags | void = undefined;
+  let code: LambdaFunctionCode | undefined = undefined;
+  let tags: LambdaFunctionTags | undefined = undefined;
 
   for (const updatedPropName in propertyUpdates) {
     const updatedProp = propertyUpdates[updatedPropName];
@@ -113,9 +111,7 @@ async function isLambdaFunctionCodeOnlyChange(
             }
           });
 
-          tags = {
-            tagUpdates,
-          };
+          tags = { tagUpdates };
         }
         break;
       default:
@@ -123,12 +119,7 @@ async function isLambdaFunctionCodeOnlyChange(
     }
   }
 
-  return (code || tags) ?
-    {
-      code,
-      tags,
-    }
-    : ChangeHotswapImpact.IRRELEVANT;
+  return code || tags ? { code, tags } : ChangeHotswapImpact.IRRELEVANT;
 }
 
 interface CfnDiffTagValue {
@@ -150,8 +141,8 @@ interface LambdaFunctionTags {
 }
 
 interface LambdaFunctionChange {
-  readonly code: LambdaFunctionCode | void,
-  readonly tags: LambdaFunctionTags | void,
+  readonly code?: LambdaFunctionCode;
+  readonly tags?: LambdaFunctionTags;
 }
 
 interface LambdaFunctionResource {
@@ -180,10 +171,6 @@ class LambdaFunctionHotswapOperation implements HotswapOperation {
     }
 
     if (resource.tags !== undefined) {
-      // It's really unfortunate, but Lambda allows function _names_ for code
-      // updates, but we need the function ARN if we're managing tags. We also
-      // can't assume we'll get it from the preceding code update, since there
-      // might not _be_ a code update.
       const tagsToDelete: string[] = Object.entries(resource.tags.tagUpdates)
         .filter(([_key, val]) => val === TagDeletion.DELETE)
         .map(([key, _val]) => key);
