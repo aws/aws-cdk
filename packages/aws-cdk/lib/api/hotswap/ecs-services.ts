@@ -83,10 +83,7 @@ class EcsServiceHotswapOperation implements HotswapOperation {
     private readonly taskDefinitionResource: any,
     private readonly servicesReferencingTaskDef: EcsService[],
   ) {
-    for (const ecsService of servicesReferencingTaskDef) {
-      const serviceName: string = ecsService.serviceArn.split('/')[2];
-      this.resourceNames.push(serviceName);
-    }
+    this.resourceNames = servicesReferencingTaskDef.map(ecsService => ecsService.serviceArn.split('/')[2]);
   }
 
   public async apply(sdk: ISDK): Promise<any> {

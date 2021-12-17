@@ -118,7 +118,7 @@ function stringifyObject(obj: any): any {
 
 class EmptyHotswapOperation implements HotswapOperation {
   readonly service = 'empty';
-  readonly resourceNames = ['empty'];
+  public readonly resourceNames = [];
   public async apply(sdk: ISDK): Promise<any> {
     return Promise.resolve(sdk);
   }
