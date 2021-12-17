@@ -356,7 +356,7 @@ describe('watch', () => {
         fakeChokidarWatcherOn.readyCallback();
       });
 
-      test("an initial 'deploy' is triggered", async () => {
+      test("an initial 'deploy' is triggered, without any file changes", async () => {
         expect(cdkDeployMock).toHaveBeenCalledTimes(1);
       });
 
