@@ -1,6 +1,6 @@
 import * as notifications from '@aws-cdk/aws-codestarnotifications';
 import * as iam from '@aws-cdk/aws-iam';
-import { IResource, Resource, Token } from '@aws-cdk/core';
+import { IResource, Names, Resource, Token } from '@aws-cdk/core';
 import * as constructs from 'constructs';
 import { TopicPolicy } from './policy';
 import { ITopicSubscription } from './subscriber';
@@ -98,7 +98,8 @@ export abstract class TopicBase extends Resource implements ITopic {
    */
   public addToResourcePolicy(statement: iam.PolicyStatement, scope?: Construct): iam.AddToResourcePolicyResult {
     if (!this.policy && this.autoCreatePolicy) {
-      this.policy = new TopicPolicy(scope ?? this, 'Policy', { topics: [this] });
+      const id = scope ? `${Names.uniqueId(this)}:Policy` : 'Policy';
+      this.policy = new TopicPolicy(scope ?? this, id, { topics: [this] });
     }
 
     if (this.policy) {
