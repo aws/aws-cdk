@@ -699,6 +699,14 @@ export interface StreamProps {
    *   will be created and associated with this stream.
    */
   readonly encryptionKey?: kms.IKey;
+
+  /**
+   * Optional details to specify the capacity mode of this stream. The default is mode is provisioned when unspecified.
+   *
+   * @default - No value output to CloudFormation.
+   *   The default behaviour is the same as using the PROVISIONED mode.
+   */
+  readonly streamModeDetails?: StreamModeDetails;
 }
 
 /**
@@ -746,6 +754,15 @@ export class Stream extends StreamBase {
     });
 
     const shardCount = props.shardCount || 1;
+
+    const streamMode = props.streamModeDetails;
+    let streamModeDetails: CfnStream.StreamModeDetailsProperty | undefined = undefined;
+    if (streamMode !== undefined) {
+      streamModeDetails = {
+        streamMode: StreamModeDetails[streamMode],
+      };
+    }
+
     const retentionPeriodHours = props.retentionPeriod?.toHours() ?? 24;
     if (!Token.isUnresolved(retentionPeriodHours)) {
       if (retentionPeriodHours < 24 || retentionPeriodHours > 8760) {
@@ -760,6 +777,7 @@ export class Stream extends StreamBase {
       retentionPeriodHours,
       shardCount,
       streamEncryption,
+      streamModeDetails,
     });
 
     this.streamArn = this.getResourceArnAttribute(this.stream.attrArn, {
@@ -857,4 +875,17 @@ export enum StreamEncryption {
    * Server-side encryption with a master key managed by Amazon Kinesis
    */
   MANAGED = 'MANAGED'
+}
+
+/**
+ * Specifies the capacity mode to apply to this stream.
+ */
+export enum StreamModeDetails {
+  /**
+   * Specify the provisioned capacity mode.
+   */
+  PROVISIONED = 'PROVISIONED',
+
+  /** Specify the on-demand capacity mode. */
+  ON_DEMAND = 'ON_DEMAND'
 }
