@@ -296,34 +296,21 @@ export class CdkToolkit {
     // --------------                --------  'cdk deploy' done  --------------  'cdk deploy' done  --------------
     let latch: 'pre-ready' | 'open' | 'deploying' | 'queued' = 'pre-ready';
 
-    const handleFileChangeEvent = async (event: 'add' | 'addDir' | 'change' | 'unlink' | 'unlinkDir', filePath?: string) => {
-      if (latch === 'pre-ready') {
-        print(`'watch' is observing ${event === 'addDir' ? 'directory' : 'the file'} '%s' for changes`, filePath);
-      } else if (latch === 'open') {
-        latch = 'deploying';
-        if (filePath) {
-          print("Detected change to '%s' (type: %s). Triggering 'cdk deploy'", filePath, event);
-        } else {
-          // there is no filePath when we trigger our initial deployment
-          print("Triggering initial 'cdk deploy'");
-        }
-        await this.invokeDeployFromWatch(options);
+    const deployAndWatch = async () => {
+      latch = 'deploying';
 
-        // If latch is still 'deploying' after the 'await', that's fine,
-        // but if it's 'queued', that means we need to deploy again
-        while ((latch as 'deploying' | 'queued') === 'queued') {
-          // TypeScript doesn't realize latch can change between 'awaits',
-          // and thinks the above 'while' condition is always 'false' without the cast
-          latch = 'deploying';
-          print("Detected file changes during deployment. Invoking 'cdk deploy' again");
-          await this.invokeDeployFromWatch(options);
-        }
-        latch = 'open';
-      } else { // this means latch is either 'deploying' or 'queued'
-        latch = 'queued';
-        print("Detected change to '%s' (type: %s) while 'cdk deploy' is still running. " +
-            'Will queue for another deployment after this one finishes', filePath, event);
+      await this.invokeDeployFromWatch(options);
+
+      // If latch is still 'deploying' after the 'await', that's fine,
+      // but if it's 'queued', that means we need to deploy again
+      while ((latch as 'deploying' | 'queued') === 'queued') {
+        // TypeScript doesn't realize latch can change between 'awaits',
+        // and thinks the above 'while' condition is always 'false' without the cast
+        latch = 'deploying';
+        print("Detected file changes during deployment. Invoking 'cdk deploy' again");
+        await this.invokeDeployFromWatch(options);
       }
+      latch = 'open';
     };
 
     chokidar.watch(watchIncludes, {
@@ -332,11 +319,21 @@ export class CdkToolkit {
       // ignoreInitial: true,
     }).on('ready', async () => {
       latch = 'open';
-      debug("'watch' is triggering an initial deployment");
       debug("'watch' received the 'ready' event. From now on, all file changes will trigger a deployment");
-      // trigger a dummy event here to make an intial deployment
-      await handleFileChangeEvent('add');
-    }).on('all', handleFileChangeEvent);
+      print("Triggering initial 'cdk deploy'");
+      await deployAndWatch();
+    }).on('all', async (event: 'add' | 'addDir' | 'change' | 'unlink' | 'unlinkDir', filePath?: string) => {
+      if (latch === 'pre-ready') {
+        print(`'watch' is observing ${event === 'addDir' ? 'directory' : 'the file'} '%s' for changes`, filePath);
+      } else if (latch === 'open') {
+        print("Detected change to '%s' (type: %s). Triggering 'cdk deploy'", filePath, event);
+        await deployAndWatch();
+      } else { // this means latch is either 'deploying' or 'queued'
+        latch = 'queued';
+        print("Detected change to '%s' (type: %s) while 'cdk deploy' is still running. " +
+            'Will queue for another deployment after this one finishes', filePath, event);
+      }
+    });
   }
 
   public async destroy(options: DestroyOptions) {
