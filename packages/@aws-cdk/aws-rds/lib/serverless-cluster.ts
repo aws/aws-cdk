@@ -5,14 +5,14 @@ import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import { Resource, Duration, Token, Annotations, RemovalPolicy, IResource, Stack, Lazy, FeatureFlags, ArnFormat } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
-import { CfnDBClusterProps, DatabaseSecret, SnapshotCredentials } from '.';
 import { IClusterEngine } from './cluster-engine';
+import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
 import { IParameterGroup } from './parameter-group';
 import { DATA_API_ACTIONS } from './perms';
 import { defaultDeletionProtection, DEFAULT_PASSWORD_EXCLUDE_CHARS, renderCredentials } from './private/util';
-import { Credentials, RotationMultiUserOptions, RotationSingleUserOptions } from './props';
-import { CfnDBCluster } from './rds.generated';
+import { Credentials, RotationMultiUserOptions, RotationSingleUserOptions, SnapshotCredentials } from './props';
+import { CfnDBCluster, CfnDBClusterProps } from './rds.generated';
 import { ISubnetGroup, SubnetGroup } from './subnet-group';
 
 /**
