@@ -5,7 +5,6 @@ import { CfnRoute, CfnRouteProps } from '../apigatewayv2.generated';
 import { IRoute } from '../common';
 import { IHttpApi } from './api';
 import { HttpRouteAuthorizerConfig, IHttpRouteAuthorizer } from './authorizer';
-import { HttpIamAuthorizer } from './iam';
 import { HttpRouteIntegration } from './integration';
 
 /**
@@ -196,62 +195,39 @@ export class HttpRoute extends Resource implements IHttpRoute {
       scope: this,
     });
 
-    // Bind early to emit any exceptions as early as possible.
-    this.tryAuthorizerBinding();
+    this.authBindResult = this.authorizer?.bind({
+      route: this,
+      scope: this.httpApi instanceof Construct ? this.httpApi : this, // scope under the API if it's not imported
+    });
+
+    if (this.authBindResult && !(this.authBindResult.authorizationType in HttpRouteAuthorizationType)) {
+      throw new Error(`authorizationType should either be AWS_IAM, JWT, CUSTOM, or NONE but was '${this.authBindResult.authorizationType}'`);
+    }
+
+    let authorizationScopes = this.authBindResult?.authorizationScopes;
+
+    if (this.authBindResult && props.authorizationScopes) {
+      authorizationScopes = Array.from(new Set([
+        ...authorizationScopes ?? [],
+        ...props.authorizationScopes,
+      ]));
+    }
+
+    if (authorizationScopes?.length === 0) {
+      authorizationScopes = undefined;
+    }
 
     const routeProps: CfnRouteProps = {
       apiId: props.httpApi.apiId,
       routeKey: props.routeKey.key,
       target: `integrations/${config.integrationId}`,
       authorizerId: Lazy.string({ produce: () => this.authBindResult?.authorizerId }),
-      authorizationType: Lazy.string({
-        produce: () => {
-          // Provide the authorization type or explicitly 'NONE'. We must use
-          // 'NONE' and not undefined or CloudFormation doesn't remove an
-          // authorizer. @see https://github.com/aws/aws-cdk/pull/14424
-          return this.authBindResult?.authorizationType ?? 'NONE';
-        },
-      }),
-      authorizationScopes: Lazy.list({
-        produce: () => {
-          let authorizationScopes = this.authBindResult?.authorizationScopes;
-
-          if (this.authBindResult && props.authorizationScopes) {
-            authorizationScopes = Array.from(new Set([
-              ...authorizationScopes ?? [],
-              ...props.authorizationScopes,
-            ]));
-          }
-
-          if (authorizationScopes?.length === 0) {
-            authorizationScopes = undefined;
-          }
-
-          return authorizationScopes;
-        },
-      }),
+      authorizationType: this.authBindResult?.authorizationType ?? 'NONE',
+      authorizationScopes,
     };
 
     const route = new CfnRoute(this, 'Resource', routeProps);
     this.routeId = route.ref;
-  }
-
-  protected onPrepare() {
-    super.onPrepare();
-    this.tryAuthorizerBinding();
-  }
-
-  private tryAuthorizerBinding() {
-    if (this.authorizer && !this.authBindResult) {
-      this.authBindResult = this.authorizer.bind({
-        route: this,
-        scope: this.httpApi instanceof Construct ? this.httpApi : this, // scope under the API if it's not imported
-      });
-
-      if (!(this.authBindResult.authorizationType in HttpRouteAuthorizationType)) {
-        throw new Error('authorizationType should either be AWS_IAM, JWT, CUSTOM, or NONE');
-      }
-    }
   }
 
   private produceRouteArn(httpMethod: HttpMethod): string {
@@ -266,12 +242,8 @@ export class HttpRoute extends Resource implements IHttpRoute {
   }
 
   public grantInvoke(grantee: iam.IGrantable, options: GrantInvokeOptions = {}): iam.Grant {
-    if (this.authorizer && !(this.authorizer instanceof HttpIamAuthorizer)) {
-      throw new Error('The authorizer has been set, so we cannot enable IAM authorization');
-    }
-
-    if (!this.authorizer) {
-      this.authorizer = new HttpIamAuthorizer();
+    if (!this.authBindResult || this.authBindResult.authorizationType !== HttpRouteAuthorizationType.AWS_IAM) {
+      throw new Error('To use grantInvoke, you must use IAM authorization');
     }
 
     const httpMethods = Array.from(new Set(options.httpMethods ?? [this.method]));

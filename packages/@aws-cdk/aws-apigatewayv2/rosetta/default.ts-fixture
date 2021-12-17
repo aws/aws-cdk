@@ -3,7 +3,6 @@ import { Construct } from 'constructs';
 import { Duration, Stack } from '@aws-cdk/core';
 import * as apigwv2 from '@aws-cdk/aws-apigatewayv2';
 import * as lambda from '@aws-cdk/aws-lambda';
-import * as iam from '@aws-cdk/aws-iam';
 
 class Fixture extends Stack {
   constructor(scope: Construct, id: string) {

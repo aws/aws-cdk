@@ -321,6 +321,7 @@ describe('HttpRoute', () => {
       httpApi,
       integration: new DummyIntegration(),
       routeKey: HttpRouteKey.with('/books', HttpMethod.GET),
+      authorizer: new SomeAuthorizerType('AWS_IAM'),
     });
 
     // WHEN
@@ -368,6 +369,7 @@ describe('HttpRoute', () => {
       httpApi,
       integration: new DummyIntegration(),
       routeKey: HttpRouteKey.with('/books'),
+      authorizer: new SomeAuthorizerType('AWS_IAM'),
     });
 
     // WHEN
@@ -433,6 +435,7 @@ describe('HttpRoute', () => {
       httpApi,
       integration: new DummyIntegration(),
       routeKey: HttpRouteKey.with('/books/{book}/something'),
+      authorizer: new SomeAuthorizerType('AWS_IAM'),
     });
 
     // WHEN
@@ -480,6 +483,7 @@ describe('HttpRoute', () => {
       httpApi,
       integration: new DummyIntegration(),
       routeKey: HttpRouteKey.with('/books/{book}/something', HttpMethod.GET),
+      authorizer: new SomeAuthorizerType('AWS_IAM'),
     });
 
     expect(() =>
@@ -487,6 +491,27 @@ describe('HttpRoute', () => {
         httpMethods: [HttpMethod.DELETE],
       }),
     ).toThrowError(/This route does not support granting invoke for all requested http methods/i);
+  });
+
+  test('throws when granting invoke with the wrong authorizer type', () => {
+    const stack = new Stack();
+    const httpApi = new HttpApi(stack, 'HttpApi');
+    const role = new Role(stack, 'Role', {
+      assumedBy: new AccountPrincipal('111111111111'),
+    });
+
+    const route = new HttpRoute(stack, 'HttpRoute', {
+      httpApi,
+      integration: new DummyIntegration(),
+      routeKey: HttpRouteKey.with('/books/{book}/something', HttpMethod.GET),
+      authorizer: new SomeAuthorizerType('JWT'),
+    });
+
+    expect(() =>
+      route.grantInvoke(role, {
+        httpMethods: [HttpMethod.DELETE],
+      }),
+    ).toThrowError(/To use grantInvoke, you must use IAM authorization/i);
   });
 
   test('accessing an ANY route arn', () => {
@@ -595,6 +620,16 @@ class InvalidTypeAuthorizer implements IHttpRouteAuthorizer {
     return {
       authorizerId: this.authorizer.authorizerId,
       authorizationType: 'Random',
+    };
+  }
+}
+
+class SomeAuthorizerType implements IHttpRouteAuthorizer {
+  constructor(private readonly authorizationType: string) {}
+
+  bind(_: HttpRouteAuthorizerBindOptions): HttpRouteAuthorizerConfig {
+    return {
+      authorizationType: this.authorizationType,
     };
   }
 }

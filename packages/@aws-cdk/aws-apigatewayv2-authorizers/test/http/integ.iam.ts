@@ -1,6 +1,7 @@
+import * as apigatewayv2 from '@aws-cdk/aws-apigatewayv2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
-import * as apigatewayv2 from '../../lib';
+import { HttpIamAuthorizer } from '../../lib';
 
 class ExampleComIntegration extends apigatewayv2.HttpRouteIntegration {
   public bind(): apigatewayv2.HttpRouteIntegrationConfig {
@@ -21,7 +22,7 @@ const userAccessKey = new iam.CfnAccessKey(stack, 'UserAccess', {
 });
 
 const httpApi = new apigatewayv2.HttpApi(stack, 'HttpApi', {
-  defaultAuthorizer: new apigatewayv2.HttpIamAuthorizer(),
+  defaultAuthorizer: new HttpIamAuthorizer(),
 });
 
 const [fooRoute] = httpApi.addRoutes({
