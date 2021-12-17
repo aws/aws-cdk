@@ -931,7 +931,7 @@ describe('import', () => {
   test('static fromDomainEndpoint(endpoint) allows importing an external/existing domain', () => {
     const domainName = 'test-domain-2w2x2u3tifly';
     const domainEndpointWithoutHttps = `${domainName}-jcjotrt6f7otem4sqcwbch3c4u.testregion.es.amazonaws.com`;
-    const domainEndpoint = `https://${domainEndpointWithoutHttps}`; 
+    const domainEndpoint = `https://${domainEndpointWithoutHttps}`;
     const imported = Domain.fromDomainEndpoint(stack, 'Domain', domainEndpoint);
 
     expect(imported.domainName).toEqual(domainName);
