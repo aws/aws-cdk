@@ -1,5 +1,5 @@
 import * as iam from '@aws-cdk/aws-iam';
-import { Resource, Lazy } from '@aws-cdk/core';
+import { Resource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnRoute, CfnRouteProps } from '../apigatewayv2.generated';
 import { IRoute } from '../common';
@@ -178,8 +178,7 @@ export class HttpRoute extends Resource implements IHttpRoute {
   public readonly routeArn: string;
 
   private readonly method: HttpMethod;
-  private authorizer?: IHttpRouteAuthorizer;
-  private authBindResult?: HttpRouteAuthorizerConfig;
+  private readonly authBindResult?: HttpRouteAuthorizerConfig;
 
   constructor(scope: Construct, id: string, props: HttpRouteProps) {
     super(scope, id);
@@ -188,14 +187,13 @@ export class HttpRoute extends Resource implements IHttpRoute {
     this.path = props.routeKey.path;
     this.method = props.routeKey.method;
     this.routeArn = this.produceRouteArn(props.routeKey.method);
-    this.authorizer = props.authorizer;
 
     const config = props.integration._bindToRoute({
       route: this,
       scope: this,
     });
 
-    this.authBindResult = this.authorizer?.bind({
+    this.authBindResult = props.authorizer?.bind({
       route: this,
       scope: this.httpApi instanceof Construct ? this.httpApi : this, // scope under the API if it's not imported
     });
