@@ -49,10 +49,10 @@ describe('AWS::CDK::Metadata', () => {
 });
 
 test('stop executing if context providers are not making progress', async () => {
-  registerContextProvider(cxschema.ContextProvider.AVAILABILITY_ZONE_PROVIDER, class {
-    public async getValue(_: { [key: string]: any }): Promise<any> {
+  registerContextProvider(cxschema.ContextProvider.AVAILABILITY_ZONE_PROVIDER, {
+    async getValue(_: { [key: string]: any }): Promise<any> {
       return 'foo';
-    }
+    },
   });
 
   const cloudExecutable = new MockCloudExecutable({

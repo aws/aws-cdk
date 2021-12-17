@@ -3,6 +3,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
+import { Architecture } from './architecture';
 import { Function as LambdaFunction, FunctionProps, EnvironmentOptions } from './function';
 import { FunctionBase } from './function-base';
 import { Version } from './lambda-version';
@@ -50,6 +51,7 @@ export class SingletonFunction extends FunctionBase {
   public readonly functionArn: string;
   public readonly role?: iam.IRole;
   public readonly permissionsNode: cdk.ConstructNode;
+  public readonly architecture: Architecture;
 
   /**
    * The runtime environment for the Lambda function.
@@ -64,6 +66,7 @@ export class SingletonFunction extends FunctionBase {
 
     this.lambdaFunction = this.ensureLambda(props);
     this.permissionsNode = this.lambdaFunction.node;
+    this.architecture = this.lambdaFunction.architecture;
 
     this.functionArn = this.lambdaFunction.functionArn;
     this.functionName = this.lambdaFunction.functionName;

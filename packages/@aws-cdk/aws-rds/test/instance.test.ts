@@ -1611,6 +1611,43 @@ describe('instance', () => {
       },
     });
   });
+
+  test('instance with port provided as a number', () => {
+    // WHEN
+    new rds.DatabaseInstance(stack, 'Database', {
+      engine: rds.DatabaseInstanceEngine.MYSQL,
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+      vpc,
+      port: 3306,
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::RDS::DBInstance', {
+      Port: '3306',
+    });
+  });
+
+  test('instance with port provided as a CloudFormation parameter', () => {
+    // GIVEN
+    const port = new cdk.CfnParameter(stack, 'Port', {
+      type: 'Number',
+    }).valueAsNumber;
+
+    // WHEN
+    new rds.DatabaseInstance(stack, 'Database', {
+      engine: rds.DatabaseInstanceEngine.MYSQL,
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+      vpc,
+      port,
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::RDS::DBInstance', {
+      Port: {
+        Ref: 'Port',
+      },
+    });
+  });
 });
 
 test.each([
