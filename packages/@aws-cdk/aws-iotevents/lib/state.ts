@@ -8,14 +8,14 @@ export interface StateProps {
   /**
    * The name of the state
    */
-  readonly stateName: string
+  readonly stateName: string;
 
   /**
    * Specifies the actions that are performed when the state is entered and the `condition` is `TRUE`
    *
    * @default None
    */
-  readonly onEnterEvents?: Event[]
+  readonly onEnterEvents?: Event[];
 }
 
 /**

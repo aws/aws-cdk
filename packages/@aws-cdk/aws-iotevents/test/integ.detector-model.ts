@@ -8,6 +8,7 @@ class TestStack extends cdk.Stack {
     super(scope, id, props);
 
     const input = new iotevents.Input(this, 'MyInput', {
+      inputName: 'test_input',
       attributeJsonPaths: ['payload.temperature'],
     });
 

@@ -9,7 +9,8 @@
               "JsonPath": "payload.temperature"
             }
           ]
-        }
+        },
+        "InputName": "test_input"
       }
     },
     "MyDetectorModelDetectorModelRoleF2FB4D88": {
