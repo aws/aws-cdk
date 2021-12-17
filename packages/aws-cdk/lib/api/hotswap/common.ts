@@ -3,6 +3,7 @@ import { CloudFormation } from 'aws-sdk';
 import { ISDK } from '../aws-auth';
 import { CfnEvaluationException, EvaluateCloudFormationTemplate } from './evaluate-cloudformation-template';
 
+export const ICON = '✨';
 export interface ListStackResources {
   listStackResources(): Promise<CloudFormation.StackResourceSummary[]>;
 }
@@ -16,6 +17,11 @@ export interface HotswapOperation {
    * Used to set a custom User-Agent for SDK calls.
    */
   readonly service: string;
+
+  /**
+   * The names of the resources being hotswapped.
+   */
+  readonly resourceNames: string[];
 
   apply(sdk: ISDK): Promise<any>;
 }
