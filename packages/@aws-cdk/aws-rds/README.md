@@ -572,7 +572,7 @@ Read more about the [limitations of Aurora Serverless](https://docs.aws.amazon.c
 
 Learn more about using Amazon Aurora Serverless by reading the [documentation](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless.html)
 
-Use `DatabaseClusterFromSnapshot` to create a cluster from a snapshot:
+Use `ServerlessClusterFromSnapshot` to create a serverless cluster from a snapshot:
 
 ```ts
 declare const vpc: ec2.Vpc;

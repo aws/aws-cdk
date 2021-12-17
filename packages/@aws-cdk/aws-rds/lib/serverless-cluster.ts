@@ -344,9 +344,7 @@ abstract class ServerlessClusterBase extends Resource implements IServerlessClus
  *
  */
 abstract class ServerlessClusterNew extends ServerlessClusterBase {
-
   protected readonly newCfnProps: CfnDBClusterProps;
-  protected readonly subnetGroup: ISubnetGroup;
   protected readonly securityGroups: ec2.ISecurityGroup[];
 
   constructor(scope: Construct, id: string, props: ServerlessClusterBaseProps) {
@@ -359,7 +357,7 @@ abstract class ServerlessClusterNew extends ServerlessClusterBase {
       Annotations.of(this).addError(`Cluster requires at least 2 subnets, got ${subnetIds.length}`);
     }
 
-    this.subnetGroup = props.subnetGroup ?? new SubnetGroup(this, 'Subnets', {
+    const subnetGroup = props.subnetGroup ?? new SubnetGroup(this, 'Subnets', {
       description: `Subnets for ${id} database`,
       vpc: props.vpc,
       vpcSubnets: props.vpcSubnets,
@@ -396,7 +394,7 @@ abstract class ServerlessClusterNew extends ServerlessClusterBase {
       databaseName: props.defaultDatabaseName,
       dbClusterIdentifier: clusterIdentifier,
       dbClusterParameterGroupName: clusterParameterGroupConfig?.parameterGroupName,
-      dbSubnetGroupName: this.subnetGroup.subnetGroupName,
+      dbSubnetGroupName: subnetGroup.subnetGroupName,
       deletionProtection: defaultDeletionProtection(props.deletionProtection, props.removalPolicy),
       engine: props.engine.engineType,
       engineVersion: props.engine.engineVersion?.fullVersion,
@@ -406,7 +404,6 @@ abstract class ServerlessClusterNew extends ServerlessClusterBase {
       storageEncrypted: true,
       vpcSecurityGroupIds: this.securityGroups.map(sg => sg.securityGroupId),
     };
-
   }
 
   private renderScalingConfiguration(options: ServerlessScalingOptions): CfnDBCluster.ScalingConfigurationProperty {
@@ -457,12 +454,12 @@ export interface ServerlessClusterProps extends ServerlessClusterBaseProps {
  *
  */
 export class ServerlessCluster extends ServerlessClusterNew {
-
   /**
    * Import an existing DatabaseCluster from properties
    */
-  public static fromServerlessClusterAttributes(scope: Construct, id: string,
-    attrs: ServerlessClusterAttributes): IServerlessCluster {
+  public static fromServerlessClusterAttributes(
+    scope: Construct, id: string, attrs: ServerlessClusterAttributes,
+  ): IServerlessCluster {
 
     return new ImportedServerlessCluster(scope, id, attrs);
   }
