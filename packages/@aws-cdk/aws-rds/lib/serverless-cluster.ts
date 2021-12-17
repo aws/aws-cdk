@@ -52,7 +52,7 @@ export interface IServerlessCluster extends IResource, ec2.IConnectable, secrets
 /**
  *  Common Properties to configure new Aurora Serverless Cluster or Aurora Serverless Cluster from snapshot
  */
-interface ServerlessClusterBaseProps {
+interface ServerlessClusterNewProps {
   /**
    * What kind of database to start
    */
@@ -341,14 +341,14 @@ abstract class ServerlessClusterBase extends Resource implements IServerlessClus
  * Create an Aurora Serverless Cluster
  *
  * @resource AWS::RDS::DBCluster
- *
  */
 abstract class ServerlessClusterNew extends ServerlessClusterBase {
   public readonly connections: ec2.Connections;
   protected readonly newCfnProps: CfnDBClusterProps;
   protected readonly securityGroups: ec2.ISecurityGroup[];
+  protected enableDataApi?: boolean;
 
-  constructor(scope: Construct, id: string, props: ServerlessClusterBaseProps) {
+  constructor(scope: Construct, id: string, props: ServerlessClusterNewProps) {
     super(scope, id);
 
     const { subnetIds } = props.vpc.selectSubnets(props.vpcSubnets);
@@ -437,7 +437,7 @@ abstract class ServerlessClusterNew extends ServerlessClusterBase {
 /**
  * Properties for a new Aurora Serverless Cluster
  */
-export interface ServerlessClusterProps extends ServerlessClusterBaseProps {
+export interface ServerlessClusterProps extends ServerlessClusterNewProps {
   /**
    * Credentials for the administrative user
    *
@@ -475,8 +475,6 @@ export class ServerlessCluster extends ServerlessClusterNew {
   public readonly clusterReadEndpoint: Endpoint;
 
   public readonly secret?: secretsmanager.ISecret;
-
-  protected enableDataApi?: boolean;
 
   private readonly vpc: ec2.IVpc;
   private readonly vpcSubnets?: ec2.SubnetSelection;
@@ -612,7 +610,7 @@ class ImportedServerlessCluster extends ServerlessClusterBase implements IServer
 /**
  * Properties for ``ServerlessClusterFromSnapshot``
  */
-export interface ServerlessClusterFromSnapshotProps extends ServerlessClusterBaseProps {
+export interface ServerlessClusterFromSnapshotProps extends ServerlessClusterNewProps {
   /**
    * The identifier for the DB instance snapshot or DB cluster snapshot to restore from.
    * You can use either the name or the Amazon Resource Name (ARN) to specify a DB cluster snapshot.
@@ -640,7 +638,6 @@ export class ServerlessClusterFromSnapshot extends ServerlessClusterNew {
   public readonly clusterIdentifier: string;
   public readonly clusterEndpoint: Endpoint;
   public readonly clusterReadEndpoint: Endpoint;
-  protected enableDataApi?: boolean;
   public readonly secret?: secretsmanager.ISecret;
 
   constructor(scope: Construct, id: string, props: ServerlessClusterFromSnapshotProps) {
