@@ -1113,6 +1113,21 @@ are being passed down (such as `repo`, `values`, `version`, `namespace`, `wait`,
 This means that if the chart is added to CDK with the same release name, it will try to update
 the chart in the cluster.
 
+Additionally, the `chartAsset` property can be an `aws-s3-assets.Asset`. This allows the use of local, private helm charts.
+
+```ts
+import * as s3Assets from '@aws-cdk/aws-s3-assets';
+
+declare const cluster: eks.Cluster;
+const chartAsset = new s3Assets.Asset(this, 'ChartAsset', {
+  path: '/path/to/asset'
+});
+
+cluster.addHelmChart('test-chart', {
+  chartAsset: chartAsset,
+});
+```
+
 Helm charts are implemented as CloudFormation resources in CDK.
 This means that if the chart is deleted from your code (or the stack is
 deleted), the next `cdk deploy` will issue a `helm uninstall` command and the
