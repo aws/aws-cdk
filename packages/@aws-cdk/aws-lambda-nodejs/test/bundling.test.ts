@@ -16,7 +16,7 @@ beforeEach(() => {
   jest.resetAllMocks();
   jest.restoreAllMocks();
   Bundling.clearEsbuildInstallationCache();
-  Bundling.clearTscInstallationCache();
+  //Bundling.clearTscInstallationCache();
 
   jest.spyOn(Code, 'fromAsset');
 
@@ -591,43 +591,16 @@ test('esbuild bundling with pre compilations', () => {
       command: [
         'bash', '-c',
         [
-          'tsc --project /asset-input/lib/custom-tsconfig.ts --rootDir ./ --outDir ./ &&',
+          'tsc /asset-input/lib/handler.ts --rootDir ./ --outDir ./  &&',
           'esbuild --bundle \"/asset-input/lib/handler.js\" --target=node14 --platform=node --outfile=\"/asset-output/index.js\"',
           '--external:aws-sdk --tsconfig=/asset-input/lib/custom-tsconfig.ts',
         ].join(' '),
       ],
     }),
   });
-
-  Bundling.bundle({
-    entry,
-    projectRoot,
-    depsLockFilePath,
-    runtime: Runtime.NODEJS_14_X,
-    forceDockerBundling: true,
-    tsconfig,
-    preCompilation: true,
-    architecture: Architecture.X86_64,
-  });
-
-  // Correctly bundles with esbuild
-  expect(Code.fromAsset).toHaveBeenCalledWith(path.dirname(depsLockFilePath), {
-    assetHashType: AssetHashType.OUTPUT,
-    bundling: expect.objectContaining({
-      command: [
-        'bash', '-c',
-        [
-          'esbuild --bundle \"/asset-input/lib/handler.js\" --target=node14 --platform=node --outfile=\"/asset-output/index.js\"',
-          '--external:aws-sdk --tsconfig=/asset-input/lib/custom-tsconfig.ts',
-        ].join(' '),
-      ],
-    }),
-  });
-
 });
 
 test('esbuild bundling with pre compilations with undefined tsconfig ( Should find in root directory )', () => {
-  Bundling.clearTscCompilationCache();
   const packageLock = path.join(__dirname, '..', 'package-lock.json');
 
   Bundling.bundle({
@@ -647,7 +620,7 @@ test('esbuild bundling with pre compilations with undefined tsconfig ( Should fi
       command: [
         'bash', '-c',
         [
-          'tsc --project /asset-input/tsconfig.json --rootDir ./ --outDir ./ &&',
+          'tsc /asset-input/test/bundling.test.ts --rootDir ./ --outDir ./  &&',
           'esbuild --bundle \"/asset-input/test/bundling.test.js\" --target=node14 --platform=node --outfile=\"/asset-output/index.js\"',
           '--external:aws-sdk',
         ].join(' '),

@@ -5,7 +5,7 @@ import * as cdk from '@aws-cdk/core';
 import { PackageInstallation } from './package-installation';
 import { PackageManager } from './package-manager';
 import { BundlingOptions, OutputFormat, SourceMapMode } from './types';
-import { exec, extractDependencies, findUp } from './util';
+import { exec, extractDependencies, findUp, tryGetTsconfigCompilerOptions } from './util';
 
 const ESBUILD_MAJOR_VERSION = '0';
 
@@ -68,13 +68,13 @@ export class Bundling implements cdk.BundlingOptions {
     this.tscInstallation = undefined;
   }
 
-  public static clearTscCompilationCache(): void {
-    this.tscCompiled = false;
-  }
+  // public static clearTscCompilationCache(): void {
+  //   this.tscCompiled = false;
+  // }
 
   private static esbuildInstallation?: PackageInstallation;
   private static tscInstallation?: PackageInstallation;
-  private static tscCompiled = false
+  //private static tscCompiled = false
 
   // Core bundling options
   public readonly image: cdk.DockerImage;
@@ -157,7 +157,8 @@ export class Bundling implements cdk.BundlingOptions {
   private createBundlingCommand(options: BundlingCommandOptions): string {
     const pathJoin = osPathJoin(options.osPlatform);
     let tscCommand: string = '';
-    let relativeEntryPath = this.relativeEntryPath;
+    let relativeEntryPath = pathJoin(options.inputDir, this.relativeEntryPath);
+    let compilerOptionsString = '';
 
     if (this.props.preCompilation) {
 
@@ -169,13 +170,9 @@ export class Bundling implements cdk.BundlingOptions {
         }
         tsconfig = path.relative(this.projectRoot, findConfig);
       }
-
+      compilerOptionsString = tryGetTsconfigCompilerOptions(pathJoin(options.inputDir, tsconfig));
+      tscCommand = `${options.tscRunner} ${relativeEntryPath} ${compilerOptionsString}`;
       relativeEntryPath = relativeEntryPath.replace(/\.ts(x?)$/, '.js$1');
-      if (!Bundling.tscCompiled) {
-        // Intentionally Setting rootDir and outDir, so that the compiled js file always end up next ts file.
-        tscCommand = `${options.tscRunner} --project ${pathJoin(options.inputDir, tsconfig)} --rootDir ./ --outDir ./`;
-        Bundling.tscCompiled = true;
-      }
     }
 
     const loaders = Object.entries(this.props.loader ?? {});
@@ -193,7 +190,7 @@ export class Bundling implements cdk.BundlingOptions {
     const outFile = this.props.format === OutputFormat.ESM ? 'index.mjs' : 'index.js';
     const esbuildCommand: string[] = [
       options.esbuildRunner,
-      '--bundle', `"${pathJoin(options.inputDir, relativeEntryPath)}"`,
+      '--bundle', `"${relativeEntryPath}"`,
       `--target=${this.props.target ?? toTarget(this.props.runtime)}`,
       '--platform=node',
       ...this.props.format ? [`--format=${this.props.format}`] : [],
