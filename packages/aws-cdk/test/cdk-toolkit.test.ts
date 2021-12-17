@@ -350,13 +350,20 @@ describe('watch', () => {
 
     describe("when the 'ready' event has already fired", () => {
       beforeEach(() => {
+        // The ready callback triggers a deployment so each test
+        // that uses this function will see 'cdkDeployMock' called
+        // an additional time.
         fakeChokidarWatcherOn.readyCallback();
+      });
+
+      test("an initial 'deploy' is triggered, without any file changes", async () => {
+        expect(cdkDeployMock).toHaveBeenCalledTimes(1);
       });
 
       test("does trigger a 'deploy' for a file change", async () => {
         await fakeChokidarWatcherOn.fileEventCallback('add', 'my-file');
 
-        expect(cdkDeployMock).toHaveBeenCalled();
+        expect(cdkDeployMock).toHaveBeenCalledTimes(2);
       });
 
       test("triggers a 'deploy' twice for two file changes", async () => {
@@ -365,7 +372,7 @@ describe('watch', () => {
           fakeChokidarWatcherOn.fileEventCallback('change', 'my-file2'),
         ]);
 
-        expect(cdkDeployMock).toHaveBeenCalledTimes(2);
+        expect(cdkDeployMock).toHaveBeenCalledTimes(3);
       });
 
       test("batches file changes that happen during 'deploy'", async () => {
@@ -373,9 +380,10 @@ describe('watch', () => {
           fakeChokidarWatcherOn.fileEventCallback('add', 'my-file1'),
           fakeChokidarWatcherOn.fileEventCallback('change', 'my-file2'),
           fakeChokidarWatcherOn.fileEventCallback('unlink', 'my-file3'),
+          fakeChokidarWatcherOn.fileEventCallback('add', 'my-file4'),
         ]);
 
-        expect(cdkDeployMock).toHaveBeenCalledTimes(2);
+        expect(cdkDeployMock).toHaveBeenCalledTimes(3);
       });
     });
   });
