@@ -40,7 +40,7 @@ export interface ITopic extends IResource, notifications.INotificationRuleTarget
    * will be automatically created upon the first call to `addToPolicy`. If
    * the topic is imported (`Topic.import`), then this is a no-op.
    */
-  addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult;
+  addToResourcePolicy(statement: iam.PolicyStatement, scope?: Construct): iam.AddToResourcePolicyResult;
 
   /**
    * Grant topic publishing permissions to the given identity
@@ -96,9 +96,9 @@ export abstract class TopicBase extends Resource implements ITopic {
    * will be automatically created upon the first call to `addToPolicy`. If
    * the topic is imported (`Topic.import`), then this is a no-op.
    */
-  public addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
+  public addToResourcePolicy(statement: iam.PolicyStatement, scope?: Construct): iam.AddToResourcePolicyResult {
     if (!this.policy && this.autoCreatePolicy) {
-      this.policy = new TopicPolicy(this, 'Policy', { topics: [this] });
+      this.policy = new TopicPolicy(scope ?? this, 'Policy', { topics: [this] });
     }
 
     if (this.policy) {

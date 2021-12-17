@@ -2,6 +2,7 @@ import { Template } from '@aws-cdk/assertions';
 import * as notifications from '@aws-cdk/aws-codestarnotifications';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
+import { App } from '@aws-cdk/core';
 import * as cdk from '@aws-cdk/core';
 import * as sns from '../lib';
 
@@ -190,8 +191,35 @@ describe('Topic', () => {
         }],
       },
     });
+  });
 
+  test('can provide a custom scope for the topic policy', () => {
+    // GIVEN
+    const app = new App();
+    const stack1 = new cdk.Stack(app, 'stack1');
+    const stack2 = new cdk.Stack(app, 'stack2');
+    const topic = new sns.Topic(stack1, 'Topic');
 
+    // WHEN
+    topic.addToResourcePolicy(new iam.PolicyStatement({
+      resources: ['*'],
+      actions: ['sns:*'],
+      principals: [new iam.ArnPrincipal('arn')],
+    }), stack2);
+
+    // THEN
+    Template.fromStack(stack2).hasResourceProperties('AWS::SNS::TopicPolicy', {
+      PolicyDocument: {
+        Version: '2012-10-17',
+        Statement: [{
+          'Sid': '0',
+          'Action': 'sns:*',
+          'Effect': 'Allow',
+          'Principal': { 'AWS': 'arn' },
+          'Resource': '*',
+        }],
+      },
+    });
   });
 
   test('give publishing permissions', () => {

@@ -31,7 +31,7 @@ test('asBucketNotificationDestination adds bucket permissions only once for each
       MyTopic86869434: {
         Type: 'AWS::SNS::Topic',
       },
-      MyTopicPolicy12A5EC17: {
+      BucketPolicyE9A3008A: { // The policy is created in the scope that was passed to bind()
         Type: 'AWS::SNS::TopicPolicy',
         Properties: {
           PolicyDocument: {
