@@ -153,8 +153,10 @@ interface LambdaFunctionResource {
 
 class LambdaFunctionHotswapOperation implements HotswapOperation {
   public readonly service = 'lambda-function';
+  public readonly resourceNames: string[];
 
   constructor(private readonly lambdaFunctionResource: LambdaFunctionResource) {
+    this.resourceNames = [lambdaFunctionResource.physicalName];
   }
 
   public async apply(sdk: ISDK): Promise<any> {
