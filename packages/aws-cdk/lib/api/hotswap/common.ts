@@ -76,7 +76,3 @@ export async function establishResourcePhysicalName(
   }
   return evaluateCfnTemplate.findPhysicalNameFor(logicalId);
 }
-
-export function assetMetadataChanged(change: HotswappableChangeCandidate): boolean {
-  return !!change.newValue?.Metadata['aws:asset:path'];
-}
