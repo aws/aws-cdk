@@ -199,6 +199,6 @@ class LambdaFunctionHotswapOperation implements HotswapOperation {
     }
 
     // run all of our updates in parallel
-    await Promise.all(operations);
+    return Promise.all(operations);
   }
 }
