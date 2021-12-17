@@ -478,6 +478,7 @@ function isGpuInstanceType(instanceType: InstanceType): boolean {
   return ['p', 'g', 'inf'].includes(family);
 }
 
+type AmiArchitecture = InstanceArchitecture | 'GPU';
 /**
  * This function examines the CPU architecture of every instance type and determines
  * what AMI types are compatible for all of them. it either throws or produces an array of possible AMI types because
@@ -485,7 +486,6 @@ function isGpuInstanceType(instanceType: InstanceType): boolean {
  * @param instanceTypes The instance types
  * @returns NodegroupAmiType[]
  */
-type AmiArchitecture = InstanceArchitecture | 'GPU';
 function getPossibleAmiTypes(instanceTypes: InstanceType[]): NodegroupAmiType[] {
   function typeToArch(instanceType: InstanceType): AmiArchitecture {
     return isGpuInstanceType(instanceType) ? 'GPU' : instanceType.architecture;
