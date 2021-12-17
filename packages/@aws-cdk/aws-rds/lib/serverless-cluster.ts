@@ -344,6 +344,7 @@ abstract class ServerlessClusterBase extends Resource implements IServerlessClus
  *
  */
 abstract class ServerlessClusterNew extends ServerlessClusterBase {
+  public readonly connections: ec2.Connections;
   protected readonly newCfnProps: CfnDBClusterProps;
   protected readonly securityGroups: ec2.ISecurityGroup[];
 
@@ -404,6 +405,11 @@ abstract class ServerlessClusterNew extends ServerlessClusterBase {
       storageEncrypted: true,
       vpcSecurityGroupIds: this.securityGroups.map(sg => sg.securityGroupId),
     };
+
+    this.connections = new ec2.Connections({
+      securityGroups: this.securityGroups,
+      defaultPort: ec2.Port.tcp(Lazy.number({ produce: () => this.clusterEndpoint.port })),
+    });
   }
 
   private renderScalingConfiguration(options: ServerlessScalingOptions): CfnDBCluster.ScalingConfigurationProperty {
@@ -467,7 +473,6 @@ export class ServerlessCluster extends ServerlessClusterNew {
   public readonly clusterIdentifier: string;
   public readonly clusterEndpoint: Endpoint;
   public readonly clusterReadEndpoint: Endpoint;
-  public readonly connections: ec2.Connections;
 
   public readonly secret?: secretsmanager.ISecret;
 
@@ -506,10 +511,6 @@ export class ServerlessCluster extends ServerlessClusterNew {
     const portAttribute = Token.asNumber(cluster.attrEndpointPort);
     this.clusterEndpoint = new Endpoint(cluster.attrEndpointAddress, portAttribute);
     this.clusterReadEndpoint = new Endpoint(cluster.attrReadEndpointAddress, portAttribute);
-    this.connections = new ec2.Connections({
-      securityGroups: this.securityGroups,
-      defaultPort: ec2.Port.tcp(this.clusterEndpoint.port),
-    });
 
     cluster.applyRemovalPolicy(props.removalPolicy ?? RemovalPolicy.SNAPSHOT);
 
@@ -639,7 +640,6 @@ export class ServerlessClusterFromSnapshot extends ServerlessClusterNew {
   public readonly clusterIdentifier: string;
   public readonly clusterEndpoint: Endpoint;
   public readonly clusterReadEndpoint: Endpoint;
-  public readonly connections: ec2.Connections;
   protected enableDataApi?: boolean;
   public readonly secret?: secretsmanager.ISecret;
 
@@ -676,15 +676,11 @@ export class ServerlessClusterFromSnapshot extends ServerlessClusterNew {
     const portAttribute = Token.asNumber(cluster.attrEndpointPort);
     this.clusterEndpoint = new Endpoint(cluster.attrEndpointAddress, portAttribute);
     this.clusterReadEndpoint = new Endpoint(cluster.attrReadEndpointAddress, portAttribute);
-    this.connections = new ec2.Connections({
-      securityGroups: this.securityGroups,
-      defaultPort: ec2.Port.tcp(this.clusterEndpoint.port),
-    });
+
+    cluster.applyRemovalPolicy(props.removalPolicy ?? RemovalPolicy.SNAPSHOT);
 
     if (secret) {
       this.secret = secret.attach(this);
     }
-
-    cluster.applyRemovalPolicy(props.removalPolicy ?? RemovalPolicy.SNAPSHOT);
   }
 }
