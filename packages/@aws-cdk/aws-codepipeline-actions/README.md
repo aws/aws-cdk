@@ -747,6 +747,24 @@ Here's an example:
 
 [example ECS pipeline for an application in a separate source code repository](test/integ.pipeline-ecs-separate-source.lit.ts)
 
+#### Deploying to ECS across account or regions with an existing service
+
+CodePipeline can deploy to an existing ECS service across accounts and/or regions this requires importing of the ECS service in the
+account and region it is defined in to get the ARN for the service which then can be used to import the ECS service by the pipeline stack
+to determine the correct region for the ECS action.
+Here's an example:
+
+[example ECS pipeline existing ECS service cross account and region](test/integ.pipeline-ecs-import-cross-account.lit.ts)
+
+#### Deploying to ECS across account or regions with an new service
+
+CodePipeline can deploy to an new ECS service across accounts and/or regions this requires creating of the ECS service in the
+account and region it is defined in and using stackFormat to get the ARN for the service which then can be used to import the
+ECS service by the pipeline stack to determine the correct region for the ECS action.
+Here's an example:
+
+[example ECS pipeline new ECS service cross account and region](test/integ.pipeline-ecs-create-cross-account.lit.ts)
+
 ### AWS S3 Deployment
 
 To use an S3 Bucket as a deployment target in CodePipeline:

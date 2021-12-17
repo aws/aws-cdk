@@ -1,0 +1,1195 @@
+[
+  {
+    "Resources": {
+      "PipelineBucketB967BD35": {
+        "Type": "AWS::S3::Bucket",
+        "Properties": {
+          "VersioningConfiguration": {
+            "Status": "Enabled"
+          }
+        },
+        "UpdateReplacePolicy": "Delete",
+        "DeletionPolicy": "Delete"
+      },
+      "PipelineArtifactsBucketEncryptionKey01D58D69": {
+        "Type": "AWS::KMS::Key",
+        "Properties": {
+          "KeyPolicy": {
+            "Statement": [
+              {
+                "Action": "kms:*",
+                "Effect": "Allow",
+                "Principal": {
+                  "AWS": {
+                    "Fn::Join": [
+                      "",
+                      [
+                        "arn:",
+                        {
+                          "Ref": "AWS::Partition"
+                        },
+                        ":iam::234567890123:root"
+                      ]
+                    ]
+                  }
+                },
+                "Resource": "*"
+              }
+            ],
+            "Version": "2012-10-17"
+          }
+        },
+        "UpdateReplacePolicy": "Delete",
+        "DeletionPolicy": "Delete"
+      },
+      "PipelineArtifactsBucketEncryptionKeyAlias5C510EEE": {
+        "Type": "AWS::KMS::Alias",
+        "Properties": {
+          "AliasName": "alias/codepipeline-importpipelinestackpipeline916b0bc4",
+          "TargetKeyId": {
+            "Fn::GetAtt": [
+              "PipelineArtifactsBucketEncryptionKey01D58D69",
+              "Arn"
+            ]
+          }
+        },
+        "UpdateReplacePolicy": "Delete",
+        "DeletionPolicy": "Delete"
+      },
+      "PipelineArtifactsBucket22248F97": {
+        "Type": "AWS::S3::Bucket",
+        "Properties": {
+          "BucketEncryption": {
+            "ServerSideEncryptionConfiguration": [
+              {
+                "ServerSideEncryptionByDefault": {
+                  "KMSMasterKeyID": {
+                    "Fn::GetAtt": [
+                      "PipelineArtifactsBucketEncryptionKey01D58D69",
+                      "Arn"
+                    ]
+                  },
+                  "SSEAlgorithm": "aws:kms"
+                }
+              }
+            ]
+          },
+          "PublicAccessBlockConfiguration": {
+            "BlockPublicAcls": true,
+            "BlockPublicPolicy": true,
+            "IgnorePublicAcls": true,
+            "RestrictPublicBuckets": true
+          }
+        },
+        "UpdateReplacePolicy": "Retain",
+        "DeletionPolicy": "Retain"
+      },
+      "PipelineRoleD68726F7": {
+        "Type": "AWS::IAM::Role",
+        "Properties": {
+          "AssumeRolePolicyDocument": {
+            "Statement": [
+              {
+                "Action": "sts:AssumeRole",
+                "Effect": "Allow",
+                "Principal": {
+                  "Service": "codepipeline.amazonaws.com"
+                }
+              }
+            ],
+            "Version": "2012-10-17"
+          }
+        }
+      },
+      "PipelineRoleDefaultPolicyC7A05455": {
+        "Type": "AWS::IAM::Policy",
+        "Properties": {
+          "PolicyDocument": {
+            "Statement": [
+              {
+                "Action": [
+                  "s3:GetObject*",
+                  "s3:GetBucket*",
+                  "s3:List*",
+                  "s3:DeleteObject*",
+                  "s3:PutObject",
+                  "s3:Abort*"
+                ],
+                "Effect": "Allow",
+                "Resource": [
+                  {
+                    "Fn::GetAtt": [
+                      "PipelineArtifactsBucket22248F97",
+                      "Arn"
+                    ]
+                  },
+                  {
+                    "Fn::Join": [
+                      "",
+                      [
+                        {
+                          "Fn::GetAtt": [
+                            "PipelineArtifactsBucket22248F97",
+                            "Arn"
+                          ]
+                        },
+                        "/*"
+                      ]
+                    ]
+                  }
+                ]
+              },
+              {
+                "Action": [
+                  "kms:Decrypt",
+                  "kms:DescribeKey",
+                  "kms:Encrypt",
+                  "kms:ReEncrypt*",
+                  "kms:GenerateDataKey*"
+                ],
+                "Effect": "Allow",
+                "Resource": {
+                  "Fn::GetAtt": [
+                    "PipelineArtifactsBucketEncryptionKey01D58D69",
+                    "Arn"
+                  ]
+                }
+              },
+              {
+                "Action": "sts:AssumeRole",
+                "Effect": "Allow",
+                "Resource": {
+                  "Fn::GetAtt": [
+                    "PipelineSourceCodePipelineActionRoleC6F9E7F5",
+                    "Arn"
+                  ]
+                }
+              },
+              {
+                "Action": [
+                  "s3:GetObject*",
+                  "s3:GetBucket*",
+                  "s3:List*",
+                  "s3:DeleteObject*",
+                  "s3:PutObject",
+                  "s3:Abort*"
+                ],
+                "Effect": "Allow",
+                "Resource": [
+                  {
+                    "Fn::Join": [
+                      "",
+                      [
+                        "arn:",
+                        {
+                          "Ref": "AWS::Partition"
+                        },
+                        ":s3:::importpipelinestack-suppoeplicationbucket85400285375f11cdb695"
+                      ]
+                    ]
+                  },
+                  {
+                    "Fn::Join": [
+                      "",
+                      [
+                        "arn:",
+                        {
+                          "Ref": "AWS::Partition"
+                        },
+                        ":s3:::importpipelinestack-suppoeplicationbucket85400285375f11cdb695/*"
+                      ]
+                    ]
+                  }
+                ]
+              },
+              {
+                "Action": [
+                  "kms:Decrypt",
+                  "kms:DescribeKey",
+                  "kms:Encrypt",
+                  "kms:ReEncrypt*",
+                  "kms:GenerateDataKey*"
+                ],
+                "Effect": "Allow",
+                "Resource": "*"
+              },
+              {
+                "Action": "sts:AssumeRole",
+                "Effect": "Allow",
+                "Resource": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":iam::123456789012:role/deployrole"
+                    ]
+                  ]
+                }
+              }
+            ],
+            "Version": "2012-10-17"
+          },
+          "PolicyName": "PipelineRoleDefaultPolicyC7A05455",
+          "Roles": [
+            {
+              "Ref": "PipelineRoleD68726F7"
+            }
+          ]
+        }
+      },
+      "PipelineC660917D": {
+        "Type": "AWS::CodePipeline::Pipeline",
+        "Properties": {
+          "RoleArn": {
+            "Fn::GetAtt": [
+              "PipelineRoleD68726F7",
+              "Arn"
+            ]
+          },
+          "Stages": [
+            {
+              "Actions": [
+                {
+                  "ActionTypeId": {
+                    "Category": "Source",
+                    "Owner": "AWS",
+                    "Provider": "S3",
+                    "Version": "1"
+                  },
+                  "Configuration": {
+                    "S3Bucket": {
+                      "Ref": "PipelineBucketB967BD35"
+                    },
+                    "S3ObjectKey": "key"
+                  },
+                  "Name": "Source",
+                  "OutputArtifacts": [
+                    {
+                      "Name": "Artifact"
+                    }
+                  ],
+                  "RoleArn": {
+                    "Fn::GetAtt": [
+                      "PipelineSourceCodePipelineActionRoleC6F9E7F5",
+                      "Arn"
+                    ]
+                  },
+                  "RunOrder": 1
+                }
+              ],
+              "Name": "Source"
+            },
+            {
+              "Actions": [
+                {
+                  "ActionTypeId": {
+                    "Category": "Deploy",
+                    "Owner": "AWS",
+                    "Provider": "ECS",
+                    "Version": "1"
+                  },
+                  "Configuration": {
+                    "ClusterName": "cluster-name",
+                    "ServiceName": "service-name",
+                    "FileName": "imageFile.json"
+                  },
+                  "InputArtifacts": [
+                    {
+                      "Name": "Artifact"
+                    }
+                  ],
+                  "Name": "ECS",
+                  "Region": "us-west-2",
+                  "RoleArn": {
+                    "Fn::Join": [
+                      "",
+                      [
+                        "arn:",
+                        {
+                          "Ref": "AWS::Partition"
+                        },
+                        ":iam::123456789012:role/deployrole"
+                      ]
+                    ]
+                  },
+                  "RunOrder": 1
+                }
+              ],
+              "Name": "TestStage"
+            }
+          ],
+          "ArtifactStores": [
+            {
+              "ArtifactStore": {
+                "EncryptionKey": {
+                  "Id": {
+                    "Fn::Join": [
+                      "",
+                      [
+                        "arn:",
+                        {
+                          "Ref": "AWS::Partition"
+                        },
+                        ":kms:us-west-2:234567890123:alias/ck-suppotencryptionaliasc4e901c1908c861dd80e"
+                      ]
+                    ]
+                  },
+                  "Type": "KMS"
+                },
+                "Location": "importpipelinestack-suppoeplicationbucket85400285375f11cdb695",
+                "Type": "S3"
+              },
+              "Region": "us-west-2"
+            },
+            {
+              "ArtifactStore": {
+                "EncryptionKey": {
+                  "Id": {
+                    "Fn::GetAtt": [
+                      "PipelineArtifactsBucketEncryptionKey01D58D69",
+                      "Arn"
+                    ]
+                  },
+                  "Type": "KMS"
+                },
+                "Location": {
+                  "Ref": "PipelineArtifactsBucket22248F97"
+                },
+                "Type": "S3"
+              },
+              "Region": "us-east-1"
+            }
+          ]
+        },
+        "DependsOn": [
+          "PipelineRoleDefaultPolicyC7A05455",
+          "PipelineRoleD68726F7"
+        ]
+      },
+      "PipelineSourceCodePipelineActionRoleC6F9E7F5": {
+        "Type": "AWS::IAM::Role",
+        "Properties": {
+          "AssumeRolePolicyDocument": {
+            "Statement": [
+              {
+                "Action": "sts:AssumeRole",
+                "Effect": "Allow",
+                "Principal": {
+                  "AWS": {
+                    "Fn::Join": [
+                      "",
+                      [
+                        "arn:",
+                        {
+                          "Ref": "AWS::Partition"
+                        },
+                        ":iam::234567890123:root"
+                      ]
+                    ]
+                  }
+                }
+              }
+            ],
+            "Version": "2012-10-17"
+          }
+        }
+      },
+      "PipelineSourceCodePipelineActionRoleDefaultPolicy2D565925": {
+        "Type": "AWS::IAM::Policy",
+        "Properties": {
+          "PolicyDocument": {
+            "Statement": [
+              {
+                "Action": [
+                  "s3:GetObject*",
+                  "s3:GetBucket*",
+                  "s3:List*"
+                ],
+                "Effect": "Allow",
+                "Resource": [
+                  {
+                    "Fn::GetAtt": [
+                      "PipelineBucketB967BD35",
+                      "Arn"
+                    ]
+                  },
+                  {
+                    "Fn::Join": [
+                      "",
+                      [
+                        {
+                          "Fn::GetAtt": [
+                            "PipelineBucketB967BD35",
+                            "Arn"
+                          ]
+                        },
+                        "/key"
+                      ]
+                    ]
+                  }
+                ]
+              },
+              {
+                "Action": [
+                  "s3:DeleteObject*",
+                  "s3:PutObject",
+                  "s3:Abort*"
+                ],
+                "Effect": "Allow",
+                "Resource": [
+                  {
+                    "Fn::GetAtt": [
+                      "PipelineArtifactsBucket22248F97",
+                      "Arn"
+                    ]
+                  },
+                  {
+                    "Fn::Join": [
+                      "",
+                      [
+                        {
+                          "Fn::GetAtt": [
+                            "PipelineArtifactsBucket22248F97",
+                            "Arn"
+                          ]
+                        },
+                        "/*"
+                      ]
+                    ]
+                  }
+                ]
+              },
+              {
+                "Action": [
+                  "kms:Encrypt",
+                  "kms:ReEncrypt*",
+                  "kms:GenerateDataKey*",
+                  "kms:Decrypt"
+                ],
+                "Effect": "Allow",
+                "Resource": {
+                  "Fn::GetAtt": [
+                    "PipelineArtifactsBucketEncryptionKey01D58D69",
+                    "Arn"
+                  ]
+                }
+              }
+            ],
+            "Version": "2012-10-17"
+          },
+          "PolicyName": "PipelineSourceCodePipelineActionRoleDefaultPolicy2D565925",
+          "Roles": [
+            {
+              "Ref": "PipelineSourceCodePipelineActionRoleC6F9E7F5"
+            }
+          ]
+        }
+      },
+      "Vpc8378EB38": {
+        "Type": "AWS::EC2::VPC",
+        "Properties": {
+          "CidrBlock": "10.0.0.0/16",
+          "EnableDnsHostnames": true,
+          "EnableDnsSupport": true,
+          "InstanceTenancy": "default",
+          "Tags": [
+            {
+              "Key": "Name",
+              "Value": "ImportPipelineStack/Vpc"
+            }
+          ]
+        }
+      },
+      "VpcPublicSubnet1Subnet5C2D37C4": {
+        "Type": "AWS::EC2::Subnet",
+        "Properties": {
+          "CidrBlock": "10.0.0.0/19",
+          "VpcId": {
+            "Ref": "Vpc8378EB38"
+          },
+          "AvailabilityZone": "dummy1a",
+          "MapPublicIpOnLaunch": true,
+          "Tags": [
+            {
+              "Key": "aws-cdk:subnet-name",
+              "Value": "Public"
+            },
+            {
+              "Key": "aws-cdk:subnet-type",
+              "Value": "Public"
+            },
+            {
+              "Key": "Name",
+              "Value": "ImportPipelineStack/Vpc/PublicSubnet1"
+            }
+          ]
+        }
+      },
+      "VpcPublicSubnet1RouteTable6C95E38E": {
+        "Type": "AWS::EC2::RouteTable",
+        "Properties": {
+          "VpcId": {
+            "Ref": "Vpc8378EB38"
+          },
+          "Tags": [
+            {
+              "Key": "Name",
+              "Value": "ImportPipelineStack/Vpc/PublicSubnet1"
+            }
+          ]
+        }
+      },
+      "VpcPublicSubnet1RouteTableAssociation97140677": {
+        "Type": "AWS::EC2::SubnetRouteTableAssociation",
+        "Properties": {
+          "RouteTableId": {
+            "Ref": "VpcPublicSubnet1RouteTable6C95E38E"
+          },
+          "SubnetId": {
+            "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
+          }
+        }
+      },
+      "VpcPublicSubnet1DefaultRoute3DA9E72A": {
+        "Type": "AWS::EC2::Route",
+        "Properties": {
+          "RouteTableId": {
+            "Ref": "VpcPublicSubnet1RouteTable6C95E38E"
+          },
+          "DestinationCidrBlock": "0.0.0.0/0",
+          "GatewayId": {
+            "Ref": "VpcIGWD7BA715C"
+          }
+        },
+        "DependsOn": [
+          "VpcVPCGWBF912B6E"
+        ]
+      },
+      "VpcPublicSubnet1EIPD7E02669": {
+        "Type": "AWS::EC2::EIP",
+        "Properties": {
+          "Domain": "vpc",
+          "Tags": [
+            {
+              "Key": "Name",
+              "Value": "ImportPipelineStack/Vpc/PublicSubnet1"
+            }
+          ]
+        }
+      },
+      "VpcPublicSubnet1NATGateway4D7517AA": {
+        "Type": "AWS::EC2::NatGateway",
+        "Properties": {
+          "SubnetId": {
+            "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
+          },
+          "AllocationId": {
+            "Fn::GetAtt": [
+              "VpcPublicSubnet1EIPD7E02669",
+              "AllocationId"
+            ]
+          },
+          "Tags": [
+            {
+              "Key": "Name",
+              "Value": "ImportPipelineStack/Vpc/PublicSubnet1"
+            }
+          ]
+        }
+      },
+      "VpcPublicSubnet2Subnet691E08A3": {
+        "Type": "AWS::EC2::Subnet",
+        "Properties": {
+          "CidrBlock": "10.0.32.0/19",
+          "VpcId": {
+            "Ref": "Vpc8378EB38"
+          },
+          "AvailabilityZone": "dummy1b",
+          "MapPublicIpOnLaunch": true,
+          "Tags": [
+            {
+              "Key": "aws-cdk:subnet-name",
+              "Value": "Public"
+            },
+            {
+              "Key": "aws-cdk:subnet-type",
+              "Value": "Public"
+            },
+            {
+              "Key": "Name",
+              "Value": "ImportPipelineStack/Vpc/PublicSubnet2"
+            }
+          ]
+        }
+      },
+      "VpcPublicSubnet2RouteTable94F7E489": {
+        "Type": "AWS::EC2::RouteTable",
+        "Properties": {
+          "VpcId": {
+            "Ref": "Vpc8378EB38"
+          },
+          "Tags": [
+            {
+              "Key": "Name",
+              "Value": "ImportPipelineStack/Vpc/PublicSubnet2"
+            }
+          ]
+        }
+      },
+      "VpcPublicSubnet2RouteTableAssociationDD5762D8": {
+        "Type": "AWS::EC2::SubnetRouteTableAssociation",
+        "Properties": {
+          "RouteTableId": {
+            "Ref": "VpcPublicSubnet2RouteTable94F7E489"
+          },
+          "SubnetId": {
+            "Ref": "VpcPublicSubnet2Subnet691E08A3"
+          }
+        }
+      },
+      "VpcPublicSubnet2DefaultRoute97F91067": {
+        "Type": "AWS::EC2::Route",
+        "Properties": {
+          "RouteTableId": {
+            "Ref": "VpcPublicSubnet2RouteTable94F7E489"
+          },
+          "DestinationCidrBlock": "0.0.0.0/0",
+          "GatewayId": {
+            "Ref": "VpcIGWD7BA715C"
+          }
+        },
+        "DependsOn": [
+          "VpcVPCGWBF912B6E"
+        ]
+      },
+      "VpcPublicSubnet2EIP3C605A87": {
+        "Type": "AWS::EC2::EIP",
+        "Properties": {
+          "Domain": "vpc",
+          "Tags": [
+            {
+              "Key": "Name",
+              "Value": "ImportPipelineStack/Vpc/PublicSubnet2"
+            }
+          ]
+        }
+      },
+      "VpcPublicSubnet2NATGateway9182C01D": {
+        "Type": "AWS::EC2::NatGateway",
+        "Properties": {
+          "SubnetId": {
+            "Ref": "VpcPublicSubnet2Subnet691E08A3"
+          },
+          "AllocationId": {
+            "Fn::GetAtt": [
+              "VpcPublicSubnet2EIP3C605A87",
+              "AllocationId"
+            ]
+          },
+          "Tags": [
+            {
+              "Key": "Name",
+              "Value": "ImportPipelineStack/Vpc/PublicSubnet2"
+            }
+          ]
+        }
+      },
+      "VpcPublicSubnet3SubnetBE12F0B6": {
+        "Type": "AWS::EC2::Subnet",
+        "Properties": {
+          "CidrBlock": "10.0.64.0/19",
+          "VpcId": {
+            "Ref": "Vpc8378EB38"
+          },
+          "AvailabilityZone": "dummy1c",
+          "MapPublicIpOnLaunch": true,
+          "Tags": [
+            {
+              "Key": "aws-cdk:subnet-name",
+              "Value": "Public"
+            },
+            {
+              "Key": "aws-cdk:subnet-type",
+              "Value": "Public"
+            },
+            {
+              "Key": "Name",
+              "Value": "ImportPipelineStack/Vpc/PublicSubnet3"
+            }
+          ]
+        }
+      },
+      "VpcPublicSubnet3RouteTable93458DBB": {
+        "Type": "AWS::EC2::RouteTable",
+        "Properties": {
+          "VpcId": {
+            "Ref": "Vpc8378EB38"
+          },
+          "Tags": [
+            {
+              "Key": "Name",
+              "Value": "ImportPipelineStack/Vpc/PublicSubnet3"
+            }
+          ]
+        }
+      },
+      "VpcPublicSubnet3RouteTableAssociation1F1EDF02": {
+        "Type": "AWS::EC2::SubnetRouteTableAssociation",
+        "Properties": {
+          "RouteTableId": {
+            "Ref": "VpcPublicSubnet3RouteTable93458DBB"
+          },
+          "SubnetId": {
+            "Ref": "VpcPublicSubnet3SubnetBE12F0B6"
+          }
+        }
+      },
+      "VpcPublicSubnet3DefaultRoute4697774F": {
+        "Type": "AWS::EC2::Route",
+        "Properties": {
+          "RouteTableId": {
+            "Ref": "VpcPublicSubnet3RouteTable93458DBB"
+          },
+          "DestinationCidrBlock": "0.0.0.0/0",
+          "GatewayId": {
+            "Ref": "VpcIGWD7BA715C"
+          }
+        },
+        "DependsOn": [
+          "VpcVPCGWBF912B6E"
+        ]
+      },
+      "VpcPublicSubnet3EIP3A666A23": {
+        "Type": "AWS::EC2::EIP",
+        "Properties": {
+          "Domain": "vpc",
+          "Tags": [
+            {
+              "Key": "Name",
+              "Value": "ImportPipelineStack/Vpc/PublicSubnet3"
+            }
+          ]
+        }
+      },
+      "VpcPublicSubnet3NATGateway7640CD1D": {
+        "Type": "AWS::EC2::NatGateway",
+        "Properties": {
+          "SubnetId": {
+            "Ref": "VpcPublicSubnet3SubnetBE12F0B6"
+          },
+          "AllocationId": {
+            "Fn::GetAtt": [
+              "VpcPublicSubnet3EIP3A666A23",
+              "AllocationId"
+            ]
+          },
+          "Tags": [
+            {
+              "Key": "Name",
+              "Value": "ImportPipelineStack/Vpc/PublicSubnet3"
+            }
+          ]
+        }
+      },
+      "VpcPrivateSubnet1Subnet536B997A": {
+        "Type": "AWS::EC2::Subnet",
+        "Properties": {
+          "CidrBlock": "10.0.96.0/19",
+          "VpcId": {
+            "Ref": "Vpc8378EB38"
+          },
+          "AvailabilityZone": "dummy1a",
+          "MapPublicIpOnLaunch": false,
+          "Tags": [
+            {
+              "Key": "aws-cdk:subnet-name",
+              "Value": "Private"
+            },
+            {
+              "Key": "aws-cdk:subnet-type",
+              "Value": "Private"
+            },
+            {
+              "Key": "Name",
+              "Value": "ImportPipelineStack/Vpc/PrivateSubnet1"
+            }
+          ]
+        }
+      },
+      "VpcPrivateSubnet1RouteTableB2C5B500": {
+        "Type": "AWS::EC2::RouteTable",
+        "Properties": {
+          "VpcId": {
+            "Ref": "Vpc8378EB38"
+          },
+          "Tags": [
+            {
+              "Key": "Name",
+              "Value": "ImportPipelineStack/Vpc/PrivateSubnet1"
+            }
+          ]
+        }
+      },
+      "VpcPrivateSubnet1RouteTableAssociation70C59FA6": {
+        "Type": "AWS::EC2::SubnetRouteTableAssociation",
+        "Properties": {
+          "RouteTableId": {
+            "Ref": "VpcPrivateSubnet1RouteTableB2C5B500"
+          },
+          "SubnetId": {
+            "Ref": "VpcPrivateSubnet1Subnet536B997A"
+          }
+        }
+      },
+      "VpcPrivateSubnet1DefaultRouteBE02A9ED": {
+        "Type": "AWS::EC2::Route",
+        "Properties": {
+          "RouteTableId": {
+            "Ref": "VpcPrivateSubnet1RouteTableB2C5B500"
+          },
+          "DestinationCidrBlock": "0.0.0.0/0",
+          "NatGatewayId": {
+            "Ref": "VpcPublicSubnet1NATGateway4D7517AA"
+          }
+        }
+      },
+      "VpcPrivateSubnet2Subnet3788AAA1": {
+        "Type": "AWS::EC2::Subnet",
+        "Properties": {
+          "CidrBlock": "10.0.128.0/19",
+          "VpcId": {
+            "Ref": "Vpc8378EB38"
+          },
+          "AvailabilityZone": "dummy1b",
+          "MapPublicIpOnLaunch": false,
+          "Tags": [
+            {
+              "Key": "aws-cdk:subnet-name",
+              "Value": "Private"
+            },
+            {
+              "Key": "aws-cdk:subnet-type",
+              "Value": "Private"
+            },
+            {
+              "Key": "Name",
+              "Value": "ImportPipelineStack/Vpc/PrivateSubnet2"
+            }
+          ]
+        }
+      },
+      "VpcPrivateSubnet2RouteTableA678073B": {
+        "Type": "AWS::EC2::RouteTable",
+        "Properties": {
+          "VpcId": {
+            "Ref": "Vpc8378EB38"
+          },
+          "Tags": [
+            {
+              "Key": "Name",
+              "Value": "ImportPipelineStack/Vpc/PrivateSubnet2"
+            }
+          ]
+        }
+      },
+      "VpcPrivateSubnet2RouteTableAssociationA89CAD56": {
+        "Type": "AWS::EC2::SubnetRouteTableAssociation",
+        "Properties": {
+          "RouteTableId": {
+            "Ref": "VpcPrivateSubnet2RouteTableA678073B"
+          },
+          "SubnetId": {
+            "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
+          }
+        }
+      },
+      "VpcPrivateSubnet2DefaultRoute060D2087": {
+        "Type": "AWS::EC2::Route",
+        "Properties": {
+          "RouteTableId": {
+            "Ref": "VpcPrivateSubnet2RouteTableA678073B"
+          },
+          "DestinationCidrBlock": "0.0.0.0/0",
+          "NatGatewayId": {
+            "Ref": "VpcPublicSubnet2NATGateway9182C01D"
+          }
+        }
+      },
+      "VpcPrivateSubnet3SubnetF258B56E": {
+        "Type": "AWS::EC2::Subnet",
+        "Properties": {
+          "CidrBlock": "10.0.160.0/19",
+          "VpcId": {
+            "Ref": "Vpc8378EB38"
+          },
+          "AvailabilityZone": "dummy1c",
+          "MapPublicIpOnLaunch": false,
+          "Tags": [
+            {
+              "Key": "aws-cdk:subnet-name",
+              "Value": "Private"
+            },
+            {
+              "Key": "aws-cdk:subnet-type",
+              "Value": "Private"
+            },
+            {
+              "Key": "Name",
+              "Value": "ImportPipelineStack/Vpc/PrivateSubnet3"
+            }
+          ]
+        }
+      },
+      "VpcPrivateSubnet3RouteTableD98824C7": {
+        "Type": "AWS::EC2::RouteTable",
+        "Properties": {
+          "VpcId": {
+            "Ref": "Vpc8378EB38"
+          },
+          "Tags": [
+            {
+              "Key": "Name",
+              "Value": "ImportPipelineStack/Vpc/PrivateSubnet3"
+            }
+          ]
+        }
+      },
+      "VpcPrivateSubnet3RouteTableAssociation16BDDC43": {
+        "Type": "AWS::EC2::SubnetRouteTableAssociation",
+        "Properties": {
+          "RouteTableId": {
+            "Ref": "VpcPrivateSubnet3RouteTableD98824C7"
+          },
+          "SubnetId": {
+            "Ref": "VpcPrivateSubnet3SubnetF258B56E"
+          }
+        }
+      },
+      "VpcPrivateSubnet3DefaultRoute94B74F0D": {
+        "Type": "AWS::EC2::Route",
+        "Properties": {
+          "RouteTableId": {
+            "Ref": "VpcPrivateSubnet3RouteTableD98824C7"
+          },
+          "DestinationCidrBlock": "0.0.0.0/0",
+          "NatGatewayId": {
+            "Ref": "VpcPublicSubnet3NATGateway7640CD1D"
+          }
+        }
+      },
+      "VpcIGWD7BA715C": {
+        "Type": "AWS::EC2::InternetGateway",
+        "Properties": {
+          "Tags": [
+            {
+              "Key": "Name",
+              "Value": "ImportPipelineStack/Vpc"
+            }
+          ]
+        }
+      },
+      "VpcVPCGWBF912B6E": {
+        "Type": "AWS::EC2::VPCGatewayAttachment",
+        "Properties": {
+          "VpcId": {
+            "Ref": "Vpc8378EB38"
+          },
+          "InternetGatewayId": {
+            "Ref": "VpcIGWD7BA715C"
+          }
+        }
+      }
+    }
+  },
+  {
+    "Resources": {
+      "CrossRegionCodePipelineReplicationBucketEncryptionKey70216490": {
+        "Type": "AWS::KMS::Key",
+        "Properties": {
+          "KeyPolicy": {
+            "Statement": [
+              {
+                "Action": "kms:*",
+                "Effect": "Allow",
+                "Principal": {
+                  "AWS": {
+                    "Fn::Join": [
+                      "",
+                      [
+                        "arn:",
+                        {
+                          "Ref": "AWS::Partition"
+                        },
+                        ":iam::234567890123:root"
+                      ]
+                    ]
+                  }
+                },
+                "Resource": "*"
+              },
+              {
+                "Action": [
+                  "kms:Decrypt",
+                  "kms:DescribeKey",
+                  "kms:Encrypt",
+                  "kms:ReEncrypt*",
+                  "kms:GenerateDataKey*"
+                ],
+                "Effect": "Allow",
+                "Principal": {
+                  "AWS": {
+                    "Fn::Join": [
+                      "",
+                      [
+                        "arn:",
+                        {
+                          "Ref": "AWS::Partition"
+                        },
+                        ":iam::234567890123:root"
+                      ]
+                    ]
+                  }
+                },
+                "Resource": "*"
+              },
+              {
+                "Action": [
+                  "kms:Decrypt",
+                  "kms:DescribeKey"
+                ],
+                "Effect": "Allow",
+                "Principal": {
+                  "AWS": {
+                    "Fn::Join": [
+                      "",
+                      [
+                        "arn:",
+                        {
+                          "Ref": "AWS::Partition"
+                        },
+                        ":iam::123456789012:role/deployrole"
+                      ]
+                    ]
+                  }
+                },
+                "Resource": "*"
+              }
+            ],
+            "Version": "2012-10-17"
+          }
+        },
+        "UpdateReplacePolicy": "Delete",
+        "DeletionPolicy": "Delete"
+      },
+      "CrossRegionCodePipelineReplicationBucketEncryptionAliasF1A0F37D": {
+        "Type": "AWS::KMS::Alias",
+        "Properties": {
+          "AliasName": "alias/ck-suppotencryptionaliasc4e901c1908c861dd80e",
+          "TargetKeyId": {
+            "Fn::GetAtt": [
+              "CrossRegionCodePipelineReplicationBucketEncryptionKey70216490",
+              "Arn"
+            ]
+          }
+        },
+        "UpdateReplacePolicy": "Delete",
+        "DeletionPolicy": "Delete"
+      },
+      "CrossRegionCodePipelineReplicationBucketFC3227F2": {
+        "Type": "AWS::S3::Bucket",
+        "Properties": {
+          "BucketEncryption": {
+            "ServerSideEncryptionConfiguration": [
+              {
+                "ServerSideEncryptionByDefault": {
+                  "KMSMasterKeyID": {
+                    "Fn::Join": [
+                      "",
+                      [
+                        "arn:",
+                        {
+                          "Ref": "AWS::Partition"
+                        },
+                        ":kms:us-west-2:234567890123:alias/ck-suppotencryptionaliasc4e901c1908c861dd80e"
+                      ]
+                    ]
+                  },
+                  "SSEAlgorithm": "aws:kms"
+                }
+              }
+            ]
+          },
+          "BucketName": "importpipelinestack-suppoeplicationbucket85400285375f11cdb695",
+          "PublicAccessBlockConfiguration": {
+            "BlockPublicAcls": true,
+            "BlockPublicPolicy": true,
+            "IgnorePublicAcls": true,
+            "RestrictPublicBuckets": true
+          }
+        },
+        "UpdateReplacePolicy": "Retain",
+        "DeletionPolicy": "Retain"
+      },
+      "CrossRegionCodePipelineReplicationBucketPolicyB7BA2BCA": {
+        "Type": "AWS::S3::BucketPolicy",
+        "Properties": {
+          "Bucket": {
+            "Ref": "CrossRegionCodePipelineReplicationBucketFC3227F2"
+          },
+          "PolicyDocument": {
+            "Statement": [
+              {
+                "Action": [
+                  "s3:GetObject*",
+                  "s3:GetBucket*",
+                  "s3:List*"
+                ],
+                "Effect": "Allow",
+                "Principal": {
+                  "AWS": {
+                    "Fn::Join": [
+                      "",
+                      [
+                        "arn:",
+                        {
+                          "Ref": "AWS::Partition"
+                        },
+                        ":iam::123456789012:role/deployrole"
+                      ]
+                    ]
+                  }
+                },
+                "Resource": [
+                  {
+                    "Fn::GetAtt": [
+                      "CrossRegionCodePipelineReplicationBucketFC3227F2",
+                      "Arn"
+                    ]
+                  },
+                  {
+                    "Fn::Join": [
+                      "",
+                      [
+                        {
+                          "Fn::GetAtt": [
+                            "CrossRegionCodePipelineReplicationBucketFC3227F2",
+                            "Arn"
+                          ]
+                        },
+                        "/*"
+                      ]
+                    ]
+                  }
+                ]
+              }
+            ],
+            "Version": "2012-10-17"
+          }
+        }
+      }
+    }
+  }
+]
