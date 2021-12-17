@@ -205,11 +205,12 @@ api.addRoutes({
 API Gateway supports IAM via the included `HttpIamAuthorizer` and grant syntax:
 
 ```ts
+import { HttpIamAuthorizer } from '@aws-cdk/aws-apigatewayv2-authorizers';
 import { HttpUrlIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
 
 declare const principal: iam.AnyPrincipal;
 
-const authorizer = new apigwv2.HttpIamAuthorizer();
+const authorizer = new HttpIamAuthorizer();
 
 const httpApi = new apigwv2.HttpApi(this, 'HttpApi', {
   defaultAuthorizer: authorizer,
