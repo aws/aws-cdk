@@ -6,6 +6,7 @@
 Features                                   | Stability
 -------------------------------------------|--------------------------------------------------------
 CFN Resources                              | ![Stable](https://img.shields.io/badge/stable-success.svg?style=for-the-badge)
+Higher level constructs for User Pools     | ![Not Implemented](https://img.shields.io/badge/not--implemented-black.svg?style=for-the-badge)
 Higher level constructs for Identity Pools | ![Experimental](https://img.shields.io/badge/experimental-important.svg?style=for-the-badge)
 
 > **CFN Resources:** All classes with the `Cfn` prefix in this module ([CFN Resources]) are always

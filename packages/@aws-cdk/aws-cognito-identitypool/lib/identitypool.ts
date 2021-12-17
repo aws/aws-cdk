@@ -1,7 +1,4 @@
 import {
-  CfnIdentityPool,
-} from '@aws-cdk/aws-cognito/cognito.generated';
-import {
   IOpenIdConnectProvider,
   ISamlProvider,
   Role,
@@ -20,12 +17,15 @@ import {
   Construct,
 } from 'constructs';
 import {
-  IUserPoolAuthenticationProvider,
-} from './identitypool-user-pool-authentication-provider';
+  CfnIdentityPool,
+} from './cognito.generated';
 import {
   IdentityPoolRoleAttachment,
-  IdentityPoolRoleMapping
+  IdentityPoolRoleMapping,
 } from './identitypool-role-attachment';
+import {
+  IUserPoolAuthenticationProvider,
+} from './identitypool-user-pool-authentication-provider';
 
 /**
  * Represents a Cognito IdentityPool
@@ -101,7 +101,7 @@ export interface IdentityPoolProps {
 /**
  * Types of Identity Pool Login Providers
  */
- export enum IdentityPoolProviderType {
+export enum IdentityPoolProviderType {
   /** Facebook Provider type */
   FACEBOOK = 'Facebook',
   /** Google Provider Type */
@@ -303,6 +303,8 @@ export interface IdentityPoolAuthenticationProviders extends IdentityPoolProvide
 
 /**
  * Define a Cognito Identity Pool
+ *
+ *  @resource AWS::Cognito::IdentityPool
  */
 export class IdentityPool extends Resource implements IIdentityPool {
 

@@ -1,7 +1,4 @@
 import {
-  CfnIdentityPoolRoleAttachment,
-} from '@aws-cdk/aws-cognito/cognito.generated';
-import {
   IRole,
 } from '@aws-cdk/aws-iam';
 import {
@@ -14,14 +11,17 @@ import {
   Construct,
 } from 'constructs';
 import {
+  CfnIdentityPoolRoleAttachment,
+} from './cognito.generated';
+import {
   IIdentityPool,
-  IdentityPoolProviderUrl
+  IdentityPoolProviderUrl,
 } from './identitypool';
 
 /**
  * Represents an Identity Pool Role Attachment
  */
- export interface IIdentityPoolRoleAttachment extends IResource {
+export interface IIdentityPoolRoleAttachment extends IResource {
   /**
    * Id of the Attachments Underlying Identity Pool
    */
@@ -158,6 +158,8 @@ export interface RoleMappingRule {
 
 /**
  * Defines an Identity Pool Role Attachment
+ *
+ * @resource AWS::Cognito::IdentityPoolRoleAttachment
  */
 export class IdentityPoolRoleAttachment extends Resource implements IIdentityPoolRoleAttachment {
   /**

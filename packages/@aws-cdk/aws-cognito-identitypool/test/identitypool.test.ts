@@ -1,7 +1,9 @@
-import { Template } from '@aws-cdk/assertions';
-import { 
+import {
+  Template,
+} from '@aws-cdk/assertions';
+import {
   UserPool,
-  UserPoolIdentityProvider
+  UserPoolIdentityProvider,
 } from '@aws-cdk/aws-cognito';
 import {
   Role,
@@ -15,13 +17,15 @@ import {
   Effect,
   PolicyDocument,
 } from '@aws-cdk/aws-iam';
-import { Stack } from '@aws-cdk/core';
+import {
+  Stack,
+} from '@aws-cdk/core';
 import {
   IdentityPool,
   IdentityPoolProviderUrl,
 } from '../lib/identitypool';
 import {
-  RoleMappingMatchType
+  RoleMappingMatchType,
 } from '../lib/identitypool-role-attachment';
 import { UserPoolAuthenticationProvider } from '../lib/identitypool-user-pool-authentication-provider';
 

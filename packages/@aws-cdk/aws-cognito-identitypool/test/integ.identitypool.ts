@@ -1,11 +1,23 @@
-import { Effect, PolicyStatement } from '@aws-cdk/aws-iam';
-import { UserPool } from '@aws-cdk/aws-cognito';
-import { App, Stack } from '@aws-cdk/core';
-import { IdentityPool } from '../lib/identity-pool';
-import { UserPoolAuthenticationProvider } from '../lib/identitypool-user-pool-authentication-provider';
+import {
+  UserPool,
+} from '@aws-cdk/aws-cognito';
+import {
+  Effect,
+  PolicyStatement,
+} from '@aws-cdk/aws-iam';
+import {
+  App,
+  Stack,
+} from '@aws-cdk/core';
+import {
+  IdentityPool,
+} from '../lib/identitypool';
+import {
+  UserPoolAuthenticationProvider,
+} from '../lib/identitypool-user-pool-authentication-provider';
 
 const app = new App();
-const stack = new Stack(app, 'integ-identity-pool');
+const stack = new Stack(app, 'integ-identitypool');
 
 const userPool = new UserPool(stack, 'Pool');
 const otherPool = new UserPool(stack, 'OtherPool');

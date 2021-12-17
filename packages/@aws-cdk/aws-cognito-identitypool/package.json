@@ -21,7 +21,7 @@
       },
       "python": {
         "distName": "aws-cdk.aws-cognito-identitypool",
-        "module": "aws_cdk.aws_cognito-identitypool",
+        "module": "aws_cdk.aws_cognito_identitypool",
         "classifiers": [
           "Framework :: AWS CDK",
           "Framework :: AWS CDK :: 1"
@@ -54,6 +54,7 @@
     "build+test+extract": "yarn build+test && yarn rosetta:extract"
   },
   "cdk-build": {
+    "cloudformation": "AWS::Cognito",
     "env": {
       "AWSLINT_BASE_CONSTRUCT": true
     }
@@ -110,8 +111,12 @@
   "maturity": "experimental",
   "features": [
     {
+      "name": "Higher level constructs for User Pools",
+      "stability": "Not Implemented"
+    },
+    {
       "name": "Higher level constructs for Identity Pools",
-      "stability": "Stable"
+      "stability": "Experimental"
     }
   ],
   "awscdkio": {
