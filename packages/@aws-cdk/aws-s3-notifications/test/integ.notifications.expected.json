@@ -45,21 +45,11 @@
         "Managed": true
       },
       "DependsOn": [
-        "TopicPolicyA1747468",
         "TopicBFC7AF6E",
-        "Topic3Policy49BDDFBD",
         "Topic3DEAE47A7"
       ]
     },
-    "Bucket83908E77": {
-      "Type": "AWS::S3::Bucket",
-      "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete"
-    },
-    "TopicBFC7AF6E": {
-      "Type": "AWS::SNS::Topic"
-    },
-    "TopicPolicyA1747468": {
+    "BucketNotificationstest3Topic6766D782Policy4D642C2D": {
       "Type": "AWS::SNS::TopicPolicy",
       "Properties": {
         "PolicyDocument": {
@@ -95,10 +85,7 @@
         ]
       }
     },
-    "Topic3DEAE47A7": {
-      "Type": "AWS::SNS::Topic"
-    },
-    "Topic3Policy49BDDFBD": {
+    "BucketNotificationstest3Topic3C3E92563Policy4A5B65F6": {
       "Type": "AWS::SNS::TopicPolicy",
       "Properties": {
         "PolicyDocument": {
@@ -184,6 +171,17 @@
           }
         ]
       }
+    },
+    "Bucket83908E77": {
+      "Type": "AWS::S3::Bucket",
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "TopicBFC7AF6E": {
+      "Type": "AWS::SNS::Topic"
+    },
+    "Topic3DEAE47A7": {
+      "Type": "AWS::SNS::Topic"
     },
     "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC": {
       "Type": "AWS::IAM::Role",
@@ -305,7 +303,6 @@
         "Managed": true
       },
       "DependsOn": [
-        "Topic3Policy49BDDFBD",
         "Topic3DEAE47A7"
       ]
     },
@@ -341,7 +338,6 @@
         "Managed": false
       },
       "DependsOn": [
-        "Topic3Policy49BDDFBD",
         "Topic3DEAE47A7"
       ]
     }
