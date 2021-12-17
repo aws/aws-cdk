@@ -221,7 +221,7 @@ export class HttpRoute extends Resource implements IHttpRoute {
       apiId: props.httpApi.apiId,
       routeKey: props.routeKey.key,
       target: `integrations/${config.integrationId}`,
-      authorizerId: Lazy.string({ produce: () => this.authBindResult?.authorizerId }),
+      authorizerId: this.authBindResult?.authorizerId,
       authorizationType: this.authBindResult?.authorizationType ?? 'NONE',
       authorizationScopes,
     };
