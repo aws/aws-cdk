@@ -335,25 +335,6 @@ describe('instance', () => {
 
     });
 
-    test('fromGeneratedSecret', () => {
-      new rds.DatabaseInstanceFromSnapshot(stack, 'Instance', {
-        snapshotIdentifier: 'my-snapshot',
-        engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
-        vpc,
-        credentials: rds.SnapshotCredentials.fromGeneratedSecret('admin', {
-          excludeCharacters: '"@/\\',
-        }),
-      });
-
-      expect(stack).toHaveResourceLike('AWS::RDS::DBInstance', {
-        MasterUsername: ABSENT,
-        MasterUserPassword: {
-          // logical id of secret has a hash
-          'Fn::Join': ['', ['{{resolve:secretsmanager:', { Ref: 'InstanceSecretB6DFA6BE8ee0a797cad8a68dbeb85f8698cdb5bb' }, ':SecretString:password::}}']],
-        },
-      });
-    });
-
     test('fromGeneratedSecret with replica regions', () => {
       new rds.DatabaseInstanceFromSnapshot(stack, 'Instance', {
         snapshotIdentifier: 'my-snapshot',
