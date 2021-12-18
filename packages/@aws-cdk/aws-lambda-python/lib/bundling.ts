@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import * as lambda from '@aws-cdk/aws-lambda';
+import { Architecture, AssetCode, Code, Runtime } from '@aws-cdk/aws-lambda';
 import * as cdk from '@aws-cdk/core';
 
 /**
@@ -16,7 +16,7 @@ export const BUNDLER_DEPENDENCIES_CACHE = '/var/dependencies';
 /**
  * Options for bundling
  */
-export interface BundlingOptions {
+export interface BundlingProps {
   /**
    * Entry path
    */
@@ -25,17 +25,24 @@ export interface BundlingOptions {
   /**
    * The runtime of the lambda function
    */
-  readonly runtime: lambda.Runtime;
+  readonly runtime: Runtime;
 
   /**
    * The system architecture of the lambda function
    */
-  readonly architecture: lambda.Architecture;
+  readonly architecture: Architecture;
 
   /**
    * Output path suffix ('python' for a layer, '.' otherwise)
    */
   readonly outputPathSuffix: string;
+
+  /**
+   * Docker image to use for bundling. If no options are provided, the default bundling image
+   * will be used. The bundling Docker image must have `rsync` installed. Dependencies will be
+   * copied from the image's`/var/dependencies` directory into the Lambda asset.
+   */
+  readonly image?: cdk.DockerImage;
 
   /**
    * Determines how asset hash is calculated. Assets will get rebuild and
@@ -81,45 +88,54 @@ export interface BundlingOptions {
 /**
  * Produce bundled Lambda asset code
  */
-export function bundle(options: BundlingOptions): lambda.Code {
-  const { entry, runtime, architecture, outputPathSuffix } = options;
+export class Bundling implements cdk.BundlingOptions {
+  public static bundle(options: BundlingProps): AssetCode {
+    return Code.fromAsset(options.entry, {
+      assetHash: options.assetHash,
+      assetHashType: options.assetHashType,
+      exclude: DEPENDENCY_EXCLUDES,
+      bundling: new Bundling(options),
+    });
 
-  const stagedir = cdk.FileSystem.mkdtemp('python-bundling-');
-  const hasDeps = stageDependencies(entry, stagedir);
+  }
 
-  const depsCommand = chain([
-    hasDeps ? `rsync -r ${BUNDLER_DEPENDENCIES_CACHE}/. ${cdk.AssetStaging.BUNDLING_OUTPUT_DIR}/${outputPathSuffix}` : '',
-    `rsync -r . ${cdk.AssetStaging.BUNDLING_OUTPUT_DIR}/${outputPathSuffix}`,
-  ]);
+  public readonly image: cdk.DockerImage;
+  public readonly command: string[];
 
-  // Determine which dockerfile to use. When dependencies are present, we use a
-  // Dockerfile that can create a cacheable layer. We can't use this Dockerfile
-  // if there aren't dependencies or the Dockerfile will complain about missing
-  // sources.
-  const dockerfile = hasDeps
-    ? 'Dockerfile.dependencies'
-    : 'Dockerfile';
 
-  // copy Dockerfile to workdir
-  fs.copyFileSync(path.join(__dirname, dockerfile), path.join(stagedir, dockerfile));
+  constructor(props: BundlingProps) {
 
-  const image = cdk.DockerImage.fromBuild(stagedir, {
-    buildArgs: {
-      IMAGE: runtime.bundlingImage.image,
-    },
-    platform: architecture.dockerPlatform,
-    file: dockerfile,
-  });
+    const { entry, runtime, architecture, outputPathSuffix } = props;
 
-  return lambda.Code.fromAsset(entry, {
-    assetHashType: options.assetHashType,
-    assetHash: options.assetHash,
-    exclude: DEPENDENCY_EXCLUDES,
-    bundling: {
-      image,
-      command: ['bash', '-c', depsCommand],
-    },
-  });
+    const stagedir = cdk.FileSystem.mkdtemp('python-bundling-');
+    const hasDeps = stageDependencies(entry, stagedir);
+
+    const depsCommand = chain([
+      hasDeps ? `rsync -r ${BUNDLER_DEPENDENCIES_CACHE}/. ${cdk.AssetStaging.BUNDLING_OUTPUT_DIR}/${outputPathSuffix}` : '',
+      `rsync -r . ${cdk.AssetStaging.BUNDLING_OUTPUT_DIR}/${outputPathSuffix}`,
+    ]);
+
+    // Determine which dockerfile to use. When dependencies are present, we use a
+    // Dockerfile that can create a cacheable layer. We can't use this Dockerfile
+    // if there aren't dependencies or the Dockerfile will complain about missing
+    // sources.
+    const dockerfile = hasDeps
+      ? 'Dockerfile.dependencies'
+      : 'Dockerfile';
+
+    // copy Dockerfile to workdir
+    fs.copyFileSync(path.join(__dirname, dockerfile), path.join(stagedir, dockerfile));
+
+    const defaultImage = cdk.DockerImage.fromBuild(stagedir, {
+      buildArgs: {
+        IMAGE: runtime.bundlingImage.image,
+      },
+      platform: architecture.dockerPlatform,
+      file: dockerfile,
+    });
+    this.image = props.image ?? defaultImage;
+    this.command = ['bash', '-c', depsCommand];
+  }
 }
 
 /**
