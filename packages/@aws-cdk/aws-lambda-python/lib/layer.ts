@@ -1,6 +1,6 @@
 import * as path from 'path';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { bundle } from './bundling';
+import { Bundling } from './bundling';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
@@ -54,7 +54,7 @@ export class PythonLayerVersion extends lambda.LayerVersion {
     super(scope, id, {
       ...props,
       compatibleRuntimes,
-      code: bundle({
+      code: Bundling.bundle({
         entry,
         runtime,
         architecture,

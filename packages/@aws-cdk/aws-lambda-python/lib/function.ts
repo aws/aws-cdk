@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { AssetHashType } from '@aws-cdk/core';
-import { bundle } from './bundling';
+import { Bundling } from './bundling';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
@@ -105,7 +105,7 @@ export class PythonFunction extends lambda.Function {
     super(scope, id, {
       ...props,
       runtime,
-      code: bundle({
+      code: Bundling.bundle({
         runtime,
         architecture,
         entry,
