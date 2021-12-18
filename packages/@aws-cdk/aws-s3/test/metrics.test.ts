@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import { Stack } from '@aws-cdk/core';
 import { Bucket } from '../lib';
 
@@ -14,13 +14,11 @@ describe('metrics', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::S3::Bucket', {
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
       MetricsConfigurations: [{
         Id: 'test',
       }],
     });
-
-
   });
 
   test('Bucket with metrics on prefix', () => {
@@ -36,14 +34,12 @@ describe('metrics', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::S3::Bucket', {
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
       MetricsConfigurations: [{
         Id: 'test',
         Prefix: 'prefix',
       }],
     });
-
-
   });
 
   test('Bucket with metrics on tag filter', () => {
@@ -59,7 +55,7 @@ describe('metrics', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::S3::Bucket', {
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
       MetricsConfigurations: [{
         Id: 'test',
         TagFilters: [
@@ -68,8 +64,6 @@ describe('metrics', () => {
         ],
       }],
     });
-
-
   });
 
   test('Bucket with multiple metric configurations', () => {
@@ -92,7 +86,7 @@ describe('metrics', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::S3::Bucket', {
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
       MetricsConfigurations: [{
         Id: 'test',
         TagFilters: [
@@ -105,7 +99,5 @@ describe('metrics', () => {
         Prefix: 'prefix',
       }],
     });
-
-
   });
 });
