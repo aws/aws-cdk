@@ -1,22 +1,24 @@
 import * as path from 'path';
 import { Runtime } from '@aws-cdk/aws-lambda';
 import { Stack } from '@aws-cdk/core';
-import { stageDependencies, bundle } from '../lib/bundling';
+import { stageDependencies, Bundling } from '../lib/bundling';
 import { PythonLayerVersion } from '../lib/layer';
 
 jest.mock('../lib/bundling', () => {
   return {
-    bundle: jest.fn().mockReturnValue({
-      bind: () => {
-        return {
-          s3Location: {
-            bucketName: 'bucket',
-            objectKey: 'key',
-          },
-        };
-      },
-      bindToResource: () => { return; },
-    }),
+    Bundling: {
+      bundle: jest.fn().mockReturnValue({
+        bind: () => {
+          return {
+            s3Location: {
+              bucketName: 'bucket',
+              objectKey: 'key',
+            },
+          };
+        },
+        bindToResource: () => { return; },
+      }),
+    },
     stageDependencies: jest.fn().mockReturnValue(true),
   };
 });
@@ -37,7 +39,7 @@ test('Bundling a layer from files', () => {
     entry,
   });
 
-  expect(bundle).toHaveBeenCalledWith(expect.objectContaining({
+  expect(Bundling.bundle).toHaveBeenCalledWith(expect.objectContaining({
     entry,
     outputPathSuffix: 'python',
   }));

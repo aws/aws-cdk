@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { Architecture, Code, Runtime } from '@aws-cdk/aws-lambda';
 import { DockerImage, FileSystem } from '@aws-cdk/core';
-import { stageDependencies, bundle } from '../lib/bundling';
+import { stageDependencies, Bundling } from '../lib/bundling';
 
 jest.spyOn(Code, 'fromAsset');
 jest.spyOn(DockerImage, 'fromBuild');
@@ -26,7 +26,7 @@ beforeEach(() => {
 
 test('Bundling a function without dependencies', () => {
   const entry = path.join(__dirname, 'lambda-handler-nodeps');
-  bundle({
+  Bundling.bundle({
     entry: entry,
     runtime: Runtime.PYTHON_3_7,
     architecture: Architecture.X86_64,
@@ -53,7 +53,7 @@ test('Bundling a function without dependencies', () => {
 
 test('Bundling a function with requirements.txt installed', () => {
   const entry = path.join(__dirname, 'lambda-handler');
-  bundle({
+  Bundling.bundle({
     entry: entry,
     runtime: Runtime.PYTHON_3_7,
     architecture: Architecture.X86_64,
@@ -73,7 +73,7 @@ test('Bundling a function with requirements.txt installed', () => {
 
 test('Bundling Python 2.7 with requirements.txt installed', () => {
   const entry = path.join(__dirname, 'lambda-handler');
-  bundle({
+  Bundling.bundle({
     entry: entry,
     runtime: Runtime.PYTHON_2_7,
     architecture: Architecture.X86_64,
@@ -94,7 +94,7 @@ test('Bundling Python 2.7 with requirements.txt installed', () => {
 test('Bundling a layer with dependencies', () => {
   const entry = path.join(__dirname, 'lambda-handler');
 
-  bundle({
+  Bundling.bundle({
     entry: entry,
     runtime: Runtime.PYTHON_3_9,
     architecture: Architecture.X86_64,
@@ -114,7 +114,7 @@ test('Bundling a layer with dependencies', () => {
 test('Bundling a python code layer', () => {
   const entry = path.join(__dirname, 'lambda-handler-nodeps');
 
-  bundle({
+  Bundling.bundle({
     entry: path.join(entry, '.'),
     runtime: Runtime.PYTHON_3_9,
     architecture: Architecture.X86_64,

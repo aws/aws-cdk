@@ -2,37 +2,39 @@ import { Template } from '@aws-cdk/assertions';
 import { Code, Runtime } from '@aws-cdk/aws-lambda';
 import { AssetHashType, AssetOptions, Stack } from '@aws-cdk/core';
 import { PythonFunction } from '../lib';
-import { bundle } from '../lib/bundling';
+import { Bundling } from '../lib/bundling';
 
 jest.mock('../lib/bundling', () => {
   return {
-    bundle: jest.fn().mockImplementation((options: AssetOptions): Code => {
-      const mockObjectKey = (() => {
-        const hashType = options.assetHashType ?? (options.assetHash ? 'custom' : 'source');
-        switch (hashType) {
-          case 'source': return 'SOURCE_MOCK';
-          case 'output': return 'OUTPUT_MOCK';
-          case 'custom': {
-            if (!options.assetHash) { throw new Error('no custom hash'); }
-            return options.assetHash;
+    Bundling: {
+      bundle: jest.fn().mockImplementation((options: AssetOptions): Code => {
+        const mockObjectKey = (() => {
+          const hashType = options.assetHashType ?? (options.assetHash ? 'custom' : 'source');
+          switch (hashType) {
+            case 'source': return 'SOURCE_MOCK';
+            case 'output': return 'OUTPUT_MOCK';
+            case 'custom': {
+              if (!options.assetHash) { throw new Error('no custom hash'); }
+              return options.assetHash;
+            }
           }
-        }
 
-        throw new Error('unexpected asset hash type');
-      })();
+          throw new Error('unexpected asset hash type');
+        })();
 
-      return {
-        isInline: false,
-        bind: () => ({
-          s3Location: {
-            bucketName: 'mock-bucket-name',
-            objectKey: mockObjectKey,
-          },
-        }),
-        bindToResource: () => { return; },
-      };
-    }),
-    hasDependencies: jest.fn().mockReturnValue(false),
+        return {
+          isInline: false,
+          bind: () => ({
+            s3Location: {
+              bucketName: 'mock-bucket-name',
+              objectKey: mockObjectKey,
+            },
+          }),
+          bindToResource: () => { return; },
+        };
+      }),
+      hasDependencies: jest.fn().mockReturnValue(false),
+    },
   };
 });
 
@@ -48,7 +50,7 @@ test('PythonFunction with defaults', () => {
     runtime: Runtime.PYTHON_3_8,
   });
 
-  expect(bundle).toHaveBeenCalledWith(expect.objectContaining({
+  expect(Bundling.bundle).toHaveBeenCalledWith(expect.objectContaining({
     entry: expect.stringMatching(/aws-lambda-python\/test\/lambda-handler$/),
     outputPathSuffix: '.',
   }));
@@ -66,7 +68,7 @@ test('PythonFunction with index in a subdirectory', () => {
     runtime: Runtime.PYTHON_3_8,
   });
 
-  expect(bundle).toHaveBeenCalledWith(expect.objectContaining({
+  expect(Bundling.bundle).toHaveBeenCalledWith(expect.objectContaining({
     entry: expect.stringMatching(/aws-lambda-python\/test\/lambda-handler-sub$/),
     outputPathSuffix: '.',
   }));
