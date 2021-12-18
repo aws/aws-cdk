@@ -58,6 +58,18 @@ export interface BackupPlanRuleProps {
    * common vault for the plan will be created
    */
   readonly backupVault?: IBackupVault;
+
+  /**
+   * Enables continuous backup and point-in-time restores (PITR).
+   *
+   * Property `deleteAfter` defines the retention period for the backup. It is mandatory if PITR is enabled.
+   * If no value is specified, the retention period is set to 35 days which is the maximum retention period supported by PITR.
+   *
+   * Property `moveToColdStorageAfter` must not be specified because PITR does not support this option.
+   *
+   * @default false
+   */
+  readonly enableContinuousBackup?: boolean;
 }
 
 /**
@@ -146,15 +158,37 @@ export class BackupPlanRule {
     });
   }
 
+  /**
+   * Properties of BackupPlanRule
+   */
+  public readonly props: BackupPlanRuleProps
+
   /** @param props Rule properties */
-  constructor(public readonly props: BackupPlanRuleProps) {
+  constructor(props: BackupPlanRuleProps) {
     if (props.deleteAfter && props.moveToColdStorageAfter &&
-        props.deleteAfter.toSeconds() < props.moveToColdStorageAfter.toSeconds()) {
+      props.deleteAfter.toDays() < props.moveToColdStorageAfter.toDays()) {
       throw new Error('`deleteAfter` must be greater than `moveToColdStorageAfter`');
     }
 
     if (props.scheduleExpression && !/^cron/.test(props.scheduleExpression.expressionString)) {
       throw new Error('`scheduleExpression` must be of type `cron`');
     }
+
+    const deleteAfter = (props.enableContinuousBackup && !props.deleteAfter) ? Duration.days(35) : props.deleteAfter;
+
+    if (props.enableContinuousBackup && props.moveToColdStorageAfter) {
+      throw new Error('`moveToColdStorageAfter` must not be specified if `enableContinuousBackup` is enabled');
+    }
+
+    if (props.enableContinuousBackup && props.deleteAfter &&
+      (props.deleteAfter?.toDays() < 1 || props.deleteAfter?.toDays() > 35)) {
+      throw new Error(`'deleteAfter' must be between 1 and 35 days if 'enableContinuousBackup' is enabled, but got ${props.deleteAfter.toHumanString()}`);
+    }
+
+    this.props = {
+      ...props,
+      deleteAfter,
+    };
+
   }
 }
