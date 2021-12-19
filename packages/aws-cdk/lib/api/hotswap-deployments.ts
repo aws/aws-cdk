@@ -1,12 +1,15 @@
 import * as cfn_diff from '@aws-cdk/cloudformation-diff';
 import * as cxapi from '@aws-cdk/cx-api';
 import { CloudFormation } from 'aws-sdk';
+import * as colors from 'colors/safe';
+import { print } from '../logging';
 import { ISDK, Mode, SdkProvider } from './aws-auth';
 import { DeployStackResult } from './deploy-stack';
-import { ChangeHotswapImpact, ChangeHotswapResult, HotswapOperation, HotswappableChangeCandidate, ListStackResources } from './hotswap/common';
+import { ICON, ChangeHotswapImpact, ChangeHotswapResult, HotswapOperation, HotswappableChangeCandidate, ListStackResources } from './hotswap/common';
 import { isHotswappableEcsServiceChange } from './hotswap/ecs-services';
 import { EvaluateCloudFormationTemplate } from './hotswap/evaluate-cloudformation-template';
 import { isHotswappableLambdaFunctionChange } from './hotswap/lambda-functions';
+import { isHotswappableS3BucketDeploymentChange } from './hotswap/s3-bucket-deployments';
 import { isHotswappableStateMachineChange } from './hotswap/stepfunctions-state-machines';
 import { CloudFormationStack } from './util/cloudformation';
 
@@ -73,6 +76,7 @@ async function findAllHotswappableChanges(
         isHotswappableLambdaFunctionChange(logicalId, resourceHotswapEvaluation, evaluateCfnTemplate),
         isHotswappableStateMachineChange(logicalId, resourceHotswapEvaluation, evaluateCfnTemplate),
         isHotswappableEcsServiceChange(logicalId, resourceHotswapEvaluation, evaluateCfnTemplate),
+        isHotswappableS3BucketDeploymentChange(logicalId, resourceHotswapEvaluation, evaluateCfnTemplate),
       ]);
     }
   });
@@ -137,6 +141,7 @@ export function isCandidateForHotswapping(change: cfn_diff.ResourceDifference): 
 async function applyAllHotswappableChanges(
   sdk: ISDK, hotswappableChanges: HotswapOperation[],
 ): Promise<void[]> {
+  print(`\n${ICON} hotswapping resources:`);
   return Promise.all(hotswappableChanges.map(hotswapOperation => {
     return applyHotswappableChange(sdk, hotswapOperation);
   }));
@@ -148,8 +153,14 @@ async function applyHotswappableChange(sdk: ISDK, hotswapOperation: HotswapOpera
   sdk.appendCustomUserAgent(customUserAgent);
 
   try {
+    for (const name of hotswapOperation.resourceNames) {
+      print(`   ${ICON} hotswapping ${hotswapOperation.service}: %s`, colors.bold(name));
+    }
     return await hotswapOperation.apply(sdk);
   } finally {
+    for (const name of hotswapOperation.resourceNames) {
+      print(`${ICON} ${hotswapOperation.service}: %s %s`, colors.bold(name), colors.green('hotswapped!'));
+    }
     sdk.removeCustomUserAgent(customUserAgent);
   }
 }
