@@ -14,10 +14,12 @@ export abstract class ImportedTargetGroupBase extends CoreConstruct implements I
    * ARN of the target group
    */
   public readonly targetGroupArn: string;
+
   /**
    * The name of the target group
    */
   public readonly targetGroupName: string;
+
   /**
    * A token representing a list of ARNs of the load balancers that route traffic to this target group
    */
