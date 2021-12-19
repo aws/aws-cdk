@@ -367,10 +367,14 @@
               "Action": "sts:AssumeRole",
               "Effect": "Allow",
               "Principal": {
-                "Service": [
-                  "ecs.amazonaws.com",
-                  "ecs-tasks.amazonaws.com"
-                ]
+                "Service": "ecs.amazonaws.com"
+              }
+            },
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "ecs-tasks.amazonaws.com"
               }
             }
           ],
