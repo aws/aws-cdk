@@ -26,6 +26,7 @@ Currently supported are:
 - Put logs to CloudWatch Logs
 - Capture CloudWatch metrics
 - Put records to Kinesis Data Firehose stream
+- Put SQS queues
 
 ## Invoke a Lambda function
 
