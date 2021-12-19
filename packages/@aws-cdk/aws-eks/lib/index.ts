@@ -7,6 +7,7 @@ export * from './helm-chart';
 export * from './k8s-patch';
 export * from './k8s-manifest';
 export * from './k8s-object-value';
+export * from './kubectl-provider';
 export * from './fargate-cluster';
 export * from './service-account';
 export * from './managed-nodegroup';
