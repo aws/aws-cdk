@@ -14,15 +14,10 @@ test('Default cloudwatch alarm action', () => {
   const alarm = cloudwatch.Alarm.fromAlarmArn(stack, 'MyAlarm', 'arn:aws:cloudwatch:us-east-1:123456789012:alarm:MyAlarm');
 
   // When
-  topicRule.addAction(
-    new actions.CloudWatchSetAlarmStateAction(
-      alarm,
-      {
-        reason: 'Test reason',
-        alarmStateToSet: cloudwatch.AlarmState.ALARM,
-      },
-    ),
-  );
+  topicRule.addAction(new actions.CloudWatchSetAlarmStateAction(alarm, {
+    reason: 'Test reason',
+    alarmStateToSet: cloudwatch.AlarmState.ALARM,
+  }));
 
   // Then
   Template.fromStack(stack).hasResourceProperties('AWS::IoT::TopicRule', {
@@ -81,16 +76,14 @@ test('can set role', () => {
   });
 
   // When
-  topicRule.addAction(
-    new actions.CloudWatchSetAlarmStateAction(
-      cloudwatch.Alarm.fromAlarmArn(stack, 'MyAlarm', 'arn:aws:cloudwatch:us-east-1:123456789012:alarm:MyAlarm'),
-      {
-        reason: '${stateReason}',
-        alarmStateToSet: cloudwatch.AlarmState.ALARM,
-        role: iam.Role.fromRoleArn(stack, 'MyRole', 'arn:aws:iam::123456789012:role/ForTest'),
-      },
-    ),
-  );
+  topicRule.addAction(new actions.CloudWatchSetAlarmStateAction(
+    cloudwatch.Alarm.fromAlarmArn(stack, 'MyAlarm', 'arn:aws:cloudwatch:us-east-1:123456789012:alarm:MyAlarm'),
+    {
+      reason: '${stateReason}',
+      alarmStateToSet: cloudwatch.AlarmState.ALARM,
+      role: iam.Role.fromRoleArn(stack, 'MyRole', 'arn:aws:iam::123456789012:role/ForTest'),
+    },
+  ));
 
   // Then
   Template.fromStack(stack).hasResourceProperties('AWS::IoT::TopicRule', {
@@ -116,14 +109,9 @@ test('set default reason', () => {
   const alarm = cloudwatch.Alarm.fromAlarmArn(stack, 'MyAlarm', 'arn:aws:cloudwatch:us-east-1:123456789012:alarm:MyAlarm');
 
   // When
-  topicRule.addAction(
-    new actions.CloudWatchSetAlarmStateAction(
-      alarm,
-      {
-        alarmStateToSet: cloudwatch.AlarmState.ALARM,
-      },
-    ),
-  );
+  topicRule.addAction(new actions.CloudWatchSetAlarmStateAction(alarm, {
+    alarmStateToSet: cloudwatch.AlarmState.ALARM,
+  }));
 
   // Then
   Template.fromStack(stack).hasResourceProperties('AWS::IoT::TopicRule', {
@@ -135,7 +123,7 @@ test('set default reason', () => {
             RoleArn: {
               'Fn::GetAtt': ['MyTopicRuleTopicRuleActionRoleCE2D05DA', 'Arn'],
             },
-            StateReason: 'AWS IoT Rule action triggers a change',
+            StateReason: "Set state of 'MyAlarm' to 'ALARM'",
             StateValue: cloudwatch.AlarmState.ALARM,
           },
         },

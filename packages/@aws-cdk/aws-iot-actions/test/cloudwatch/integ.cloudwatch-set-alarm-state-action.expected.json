@@ -1,5 +1,24 @@
 {
   "Resources": {
+    "MyAlarm696658B6": {
+      "Type": "AWS::CloudWatch::Alarm",
+      "Properties": {
+        "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+        "EvaluationPeriods": 3,
+        "DatapointsToAlarm": 2,
+        "Dimensions": [
+          {
+            "Name": "MyDimension",
+            "Value": "MyDimensionValue"
+          }
+        ],
+        "MetricName": "MyMetric",
+        "Namespace": "MyNamespace",
+        "Period": 300,
+        "Statistic": "Average",
+        "Threshold": 100
+      }
+    },
     "TopicRule40A4EA44": {
       "Type": "AWS::IoT::TopicRule",
       "Properties": {
@@ -16,7 +35,18 @@
                     "Arn"
                   ]
                 },
-                "StateReason": "Test reason",
+                "StateReason": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "Set state of '",
+                      {
+                        "Ref": "MyAlarm696658B6"
+                      },
+                      "' to 'ALARM'"
+                    ]
+                  ]
+                },
                 "StateValue": "ALARM"
               }
             }
@@ -67,25 +97,6 @@
             "Ref": "TopicRuleTopicRuleActionRole246C4F77"
           }
         ]
-      }
-    },
-    "MyAlarm696658B6": {
-      "Type": "AWS::CloudWatch::Alarm",
-      "Properties": {
-        "ComparisonOperator": "GreaterThanOrEqualToThreshold",
-        "EvaluationPeriods": 3,
-        "DatapointsToAlarm": 2,
-        "Dimensions": [
-          {
-            "Name": "MyDimension",
-            "Value": "MyDimensionValue"
-          }
-        ],
-        "MetricName": "MyMetric",
-        "Namespace": "MyNamespace",
-        "Period": 300,
-        "Statistic": "Average",
-        "Threshold": 100
       }
     }
   }

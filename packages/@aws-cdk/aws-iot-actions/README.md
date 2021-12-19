@@ -152,7 +152,7 @@ const topicRule = new iot.TopicRule(this, 'TopicRule', {
 
 ## Change the state of an Amazon CloudWatch alarm
 
-The code snippet below creates an AWS IoT Rule that changes the state of an Amazon CloudWatch alarm when it is triggered.
+The code snippet below creates an AWS IoT Rule that changes the state of an Amazon CloudWatch alarm when it is triggered:
 
 ```ts
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
@@ -164,7 +164,6 @@ const metric = new cloudwatch.Metric({
   metricName: 'MyMetric',
   dimensions: { MyDimension: 'MyDimensionValue' },
 });
-
 const alarm = new cloudwatch.Alarm(this, 'MyAlarm', {
   metric: metric,
   threshold: 100,
