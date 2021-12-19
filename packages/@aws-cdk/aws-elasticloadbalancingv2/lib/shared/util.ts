@@ -1,5 +1,4 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
-import { Fn } from '@aws-cdk/core';
 import { ApplicationProtocol, Protocol } from './enums';
 
 export type Attributes = { [key: string]: string | undefined };
@@ -90,12 +89,4 @@ export function validateNetworkProtocol(protocol: Protocol) {
 export function mapTagMapToCxschema(tagMap: Record<string, string>): cxschema.Tag[] {
   return Object.entries(tagMap)
     .map(([key, value]) => ({ key, value }));
-}
-
-/**
- * Return the targetGroupName from targetGroupArn
- */
-export function targetGroupNameFromArn(targetGroupArn: string) {
-  const arnParts = Fn.split('/', targetGroupArn);
-  return `${Fn.select(1, arnParts)}`;
 }

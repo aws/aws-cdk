@@ -413,40 +413,22 @@ describe('CodeDeploy Server Deployment Group', () => {
     expect(() => SynthUtils.toCloudFormation(stack)).toThrow(/deploymentInAlarm/);
   });
 
-  test('can be imported with an ALB Target Group as the load balancer', () => {
+  test('can be used with an imported ALB Target Group as the load balancer', () => {
     const stack = new cdk.Stack();
-
-    const alb = new lbv2.ApplicationLoadBalancer(stack, 'ALB', {
-      vpc: new ec2.Vpc(stack, 'VPC'),
-    });
-    const listener = alb.addListener('Listener', { protocol: lbv2.ApplicationProtocol.HTTP });
-    const targetGroup = listener.addTargets('Fleet', { protocol: lbv2.ApplicationProtocol.HTTP });
 
     new codedeploy.ServerDeploymentGroup(stack, 'DeploymentGroup', {
       loadBalancer: codedeploy.LoadBalancer.application(
         lbv2.ApplicationTargetGroup.fromTargetGroupAttributes(stack, 'importedAlbTg', {
-          targetGroupArn: targetGroup.targetGroupArn,
+          targetGroupArn: 'arn:aws:elasticloadbalancing:us-west-2:123456789012:targetgroup/myAlbTargetGroup/73e2d6bc24d8a067',
         }),
       ),
     });
 
-    expect(stack).toHaveResource('AWS::CodeDeploy::DeploymentGroup', {
+    expect(stack).toHaveResourceLike('AWS::CodeDeploy::DeploymentGroup', {
       'LoadBalancerInfo': {
         'TargetGroupInfoList': [
           {
-            'Name': {
-              'Fn::Select': [
-                1,
-                {
-                  'Fn::Split': [
-                    '/',
-                    {
-                      'Ref': 'ALBListenerFleetGroup008CEEE4',
-                    },
-                  ],
-                },
-              ],
-            },
+            'Name': 'myAlbTargetGroup',
           },
         ],
       },
@@ -456,46 +438,4 @@ describe('CodeDeploy Server Deployment Group', () => {
     });
   });
 
-  test('can be imported with an NLB Target Group as the load balancer', () => {
-    const stack = new cdk.Stack();
-
-    const nlb = new lbv2.NetworkLoadBalancer(stack, 'NLB', {
-      vpc: new ec2.Vpc(stack, 'VPC'),
-    });
-    const listener = nlb.addListener('Listener', { port: 80 });
-    const targetGroup = listener.addTargets('Fleet', { port: 80 });
-
-    new codedeploy.ServerDeploymentGroup(stack, 'DeploymentGroup', {
-      loadBalancer: codedeploy.LoadBalancer.network(
-        lbv2.NetworkTargetGroup.fromTargetGroupAttributes(stack, 'importedNlbTg', {
-          targetGroupArn: targetGroup.targetGroupArn,
-        }),
-      ),
-    });
-
-    expect(stack).toHaveResource('AWS::CodeDeploy::DeploymentGroup', {
-      'LoadBalancerInfo': {
-        'TargetGroupInfoList': [
-          {
-            'Name': {
-              'Fn::Select': [
-                1,
-                {
-                  'Fn::Split': [
-                    '/',
-                    {
-                      'Ref': 'NLBListenerFleetGroupB882EC86',
-                    },
-                  ],
-                },
-              ],
-            },
-          },
-        ],
-      },
-      'DeploymentStyle': {
-        'DeploymentOption': 'WITH_TRAFFIC_CONTROL',
-      },
-    });
-  });
 });

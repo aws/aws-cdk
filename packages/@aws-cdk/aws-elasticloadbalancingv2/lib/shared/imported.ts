@@ -1,7 +1,6 @@
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { ITargetGroup, TargetGroupImportProps } from './base-target-group';
-import { targetGroupNameFromArn } from './util';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
@@ -33,7 +32,7 @@ export abstract class ImportedTargetGroupBase extends CoreConstruct implements I
     super(scope, id);
 
     this.targetGroupArn = props.targetGroupArn;
-    this.targetGroupName = targetGroupNameFromArn(props.targetGroupArn) || cdk.Aws.NO_VALUE;
+    this.targetGroupName = cdk.Stack.of(scope).splitArn(props.targetGroupArn, cdk.ArnFormat.SLASH_RESOURCE_SLASH_RESOURCE_NAME).resourceName!.split('/')[0];
     this.loadBalancerArns = props.loadBalancerArns || cdk.Aws.NO_VALUE;
   }
 }
