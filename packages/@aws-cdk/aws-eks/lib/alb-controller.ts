@@ -233,8 +233,10 @@ export class AlbController extends CoreConstruct {
         },
         region: Stack.of(this).region,
         vpcId: props.cluster.vpc.vpcId,
-        repository: props.repository ?? '602401143452.dkr.ecr.us-west-2.amazonaws.com/amazon/aws-load-balancer-controller',
-        tag: props.version.version,
+        image: {
+          repository: props.repository ?? '602401143452.dkr.ecr.us-west-2.amazonaws.com/amazon/aws-load-balancer-controller',
+          tag: props.version.version,
+        },
       },
     });
 
@@ -243,5 +245,4 @@ export class AlbController extends CoreConstruct {
     chart.node.addDependency(props.cluster.openIdConnectProvider);
     chart.node.addDependency(props.cluster.awsAuth);
   }
-
 }
