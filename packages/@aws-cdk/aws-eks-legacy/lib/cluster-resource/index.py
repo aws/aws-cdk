@@ -44,7 +44,7 @@ def handler(event, context):
         logger.info(json.dumps(config))
 
         session = botocore.session.get_session()
-        eks = session.create_client('eks');
+        eks = session.create_client('eks')
 
         # determine cluster name: the it can either be explicitly
         # specified in the resource properties or brought in from
