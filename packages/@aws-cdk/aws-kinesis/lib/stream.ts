@@ -755,12 +755,6 @@ export class Stream extends StreamBase {
     const shardCount = props.shardCount || 1;
 
     const streamMode = props.streamMode;
-    let streamModeDetails: CfnStream.StreamModeDetailsProperty | undefined = undefined;
-    if (streamMode !== undefined) {
-      streamModeDetails = {
-        streamMode: StreamMode[streamMode],
-      };
-    }
 
     const retentionPeriodHours = props.retentionPeriod?.toHours() ?? 24;
     if (!Token.isUnresolved(retentionPeriodHours)) {
@@ -776,7 +770,7 @@ export class Stream extends StreamBase {
       retentionPeriodHours,
       shardCount,
       streamEncryption,
-      streamModeDetails,
+      streamModeDetails: streamMode ? { streamMode } : undefined,
     });
 
     this.streamArn = this.getResourceArnAttribute(this.stream.attrArn, {
