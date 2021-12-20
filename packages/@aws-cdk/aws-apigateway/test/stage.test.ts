@@ -1,4 +1,5 @@
 import '@aws-cdk/assert-internal/jest';
+import { ResourcePart } from '@aws-cdk/assert-internal';
 import * as logs from '@aws-cdk/aws-logs';
 import * as cdk from '@aws-cdk/core';
 import * as apigateway from '../lib';
@@ -69,6 +70,21 @@ describe('stage', () => {
     });
   });
 
+  test('stage depends on the CloudWatch role when it exists', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: true, deploy: false });
+    const deployment = new apigateway.Deployment(stack, 'my-deployment', { api });
+    api.root.addMethod('GET');
+
+    // WHEN
+    new apigateway.Stage(stack, 'my-stage', { deployment });
+
+    expect(stack).toHaveResourceLike('AWS::ApiGateway::Stage', {
+      DependsOn: ['testapiAccount9B907665'],
+    }, ResourcePart.CompleteDefinition);
+  });
+
   test('common method settings can be set at the stage level', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -87,6 +103,7 @@ describe('stage', () => {
     expect(stack).toHaveResource('AWS::ApiGateway::Stage', {
       MethodSettings: [
         {
+          DataTraceEnabled: false,
           HttpMethod: '*',
           LoggingLevel: 'INFO',
           ResourcePath: '/*',
@@ -119,12 +136,14 @@ describe('stage', () => {
     expect(stack).toHaveResource('AWS::ApiGateway::Stage', {
       MethodSettings: [
         {
+          DataTraceEnabled: false,
           HttpMethod: '*',
           LoggingLevel: 'INFO',
           ResourcePath: '/*',
           ThrottlingRateLimit: 12,
         },
         {
+          DataTraceEnabled: false,
           HttpMethod: 'GET',
           LoggingLevel: 'ERROR',
           ResourcePath: '/~1goo~1bar',
@@ -207,6 +226,7 @@ describe('stage', () => {
       CacheClusterSize: '0.5',
       MethodSettings: [
         {
+          DataTraceEnabled: false,
           CachingEnabled: true,
           HttpMethod: '*',
           ResourcePath: '/*',

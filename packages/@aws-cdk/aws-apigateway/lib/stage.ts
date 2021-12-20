@@ -3,7 +3,7 @@ import { Construct } from 'constructs';
 import { AccessLogFormat, IAccessLogDestination } from './access-log';
 import { CfnStage } from './apigateway.generated';
 import { Deployment } from './deployment';
-import { IRestApi } from './restapi';
+import { IRestApi, RestApiBase } from './restapi';
 import { parseMethodOptionsPath } from './util';
 
 /**
@@ -256,6 +256,10 @@ export class Stage extends Resource implements IStage {
 
     this.stageName = resource.ref;
     this.restApi = props.deployment.api;
+
+    if (RestApiBase._isRestApiBase(this.restApi)) {
+      this.restApi._attachStage(this);
+    }
   }
 
   /**
@@ -316,7 +320,7 @@ export class Stage extends Resource implements IStage {
         cacheDataEncrypted: options.cacheDataEncrypted,
         cacheTtlInSeconds: options.cacheTtl && options.cacheTtl.toSeconds(),
         cachingEnabled: options.cachingEnabled,
-        dataTraceEnabled: options.dataTraceEnabled,
+        dataTraceEnabled: options.dataTraceEnabled ?? false,
         loggingLevel: options.loggingLevel,
         metricsEnabled: options.metricsEnabled,
         throttlingBurstLimit: options.throttlingBurstLimit,

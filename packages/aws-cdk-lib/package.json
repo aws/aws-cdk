@@ -39,7 +39,8 @@
     "stripDeprecated": true,
     "post": [
       "node ./scripts/verify-imports-resolve-same.js",
-      "node ./scripts/verify-imports-shielded.js"
+      "node ./scripts/verify-imports-shielded.js",
+      "/bin/bash ./scripts/minify-sources.sh"
     ]
   },
   "cdk-package": {
@@ -248,6 +249,7 @@
     "@aws-cdk/aws-lambda-go": "0.0.0",
     "@aws-cdk/aws-lambda-nodejs": "0.0.0",
     "@aws-cdk/aws-lambda-python": "0.0.0",
+    "@aws-cdk/aws-lex": "0.0.0",
     "@aws-cdk/aws-licensemanager": "0.0.0",
     "@aws-cdk/aws-lightsail": "0.0.0",
     "@aws-cdk/aws-location": "0.0.0",
@@ -344,6 +346,7 @@
     "@types/fs-extra": "^8.1.2",
     "@types/node": "^10.17.60",
     "constructs": "^3.3.69",
+    "esbuild": "^0.14.5",
     "fs-extra": "^9.1.0",
     "ts-node": "^9.1.1",
     "typescript": "~3.8.3"
