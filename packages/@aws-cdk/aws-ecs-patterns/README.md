@@ -76,6 +76,25 @@ If you need to encrypt the traffic between the load balancer and the ECS tasks, 
 
 Additionally, if more than one application target group are needed, instantiate one of the following:
 
+On Fargate Platform Version 1.4.0 or later, you may specify up to 200GiB of [ephemeral storage](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/fargate-task-storage.html#fargate-task-storage-pv14):
+
+```ts
+declare const cluster: ecs.Cluster;
+const loadBalancedFargateService = new ecsPatterns.ApplicationLoadBalancedFargateService(this, 'Service', {
+  cluster,
+  memoryLimitMiB: 1024,
+  cpu: 512,
+  ephemeralStorageGiB: 100,
+  taskImageOptions: {
+    image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+  },
+});
+
+loadBalancedFargateService.targetGroup.configureHealthCheck({
+  path: "/custom-health-path",
+});
+```
+
 * `ApplicationMultipleTargetGroupsEc2Service`
 
 ```ts
@@ -109,6 +128,32 @@ const loadBalancedFargateService = new ecsPatterns.ApplicationMultipleTargetGrou
   cluster,
   memoryLimitMiB: 1024,
   cpu: 512,
+  taskImageOptions: {
+    image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+  },
+  targetGroups: [
+    {
+      containerPort: 80,
+    },
+    {
+      containerPort: 90,
+      pathPattern: 'a/b/c',
+      priority: 10,
+    },
+  ],
+});
+```
+
+On Fargate Platform Version 1.4.0 or later, you may specify up to 200GiB of [ephemeral storage](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/fargate-task-storage.html#fargate-task-storage-pv14):
+
+```ts
+// One application load balancer with one listener and two target groups.
+declare const cluster: ecs.Cluster;
+const loadBalancedFargateService = new ecsPatterns.ApplicationMultipleTargetGroupsFargateService(this, 'Service', {
+  cluster,
+  memoryLimitMiB: 1024,
+  cpu: 512,
+  ephemeralStorageGiB: 100,
   taskImageOptions: {
     image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
   },
@@ -168,6 +213,21 @@ If `cluster` and `vpc` are omitted, the CDK creates a new VPC with subnets in tw
 If you specify the option `recordType` you can decide if you want the construct to use CNAME or Route53-Aliases as record sets.
 
 Additionally, if more than one network target group is needed, instantiate one of the following:
+
+On Fargate Platform Version 1.4.0 or later, you may specify up to 200GiB of [ephemeral storage](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/fargate-task-storage.html#fargate-task-storage-pv14):
+
+```ts
+declare const cluster: ecs.Cluster;
+const loadBalancedFargateService = new ecsPatterns.NetworkLoadBalancedFargateService(this, 'Service', {
+  cluster,
+  memoryLimitMiB: 1024,
+  cpu: 512,
+  ephemeralStorageGiB: 100,
+  taskImageOptions: {
+    image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+  },
+});
+```
 
 * NetworkMultipleTargetGroupsEc2Service
 
@@ -253,6 +313,49 @@ const loadBalancedFargateService = new ecsPatterns.NetworkMultipleTargetGroupsFa
 });
 ```
 
+On Fargate Platform Version 1.4.0 or later, you may specify up to 200GiB of [ephemeral storage](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/fargate-task-storage.html#fargate-task-storage-pv14):
+
+```ts
+// Two network load balancers, each with their own listener and target group.
+declare const cluster: ecs.Cluster;
+const loadBalancedFargateService = new ecsPatterns.NetworkMultipleTargetGroupsFargateService(this, 'Service', {
+  cluster,
+  memoryLimitMiB: 512,
+  ephemeralStorageGiB: 100,
+  taskImageOptions: {
+    image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+  },
+  loadBalancers: [
+    {
+      name: 'lb1',
+      listeners: [
+        {
+          name: 'listener1',
+        },
+      ],
+    },
+    {
+      name: 'lb2',
+      listeners: [
+        {
+          name: 'listener2',
+        },
+      ],
+    },
+  ],
+  targetGroups: [
+    {
+      containerPort: 80,
+      listener: 'listener1',
+    },
+    {
+      containerPort: 90,
+      listener: 'listener2',
+    },
+  ],
+});
+```
+
 ## Queue Processing Services
 
 To define a service that creates a queue and reads from that queue, instantiate one of the following:
@@ -299,6 +402,27 @@ const queueProcessingFargateService = new ecsPatterns.QueueProcessingFargateServ
 
 when queue not provided by user, CDK will create a primary queue and a dead letter queue with default redrive policy and attach permission to the task to be able to access the primary queue.
 
+On Fargate Platform Version 1.4.0 or later, you may specify up to 200GiB of [ephemeral storage](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/fargate-task-storage.html#fargate-task-storage-pv14):
+
+```ts
+declare const cluster: ecs.Cluster;
+const queueProcessingFargateService = new ecsPatterns.QueueProcessingFargateService(this, 'Service', {
+  cluster,
+  memoryLimitMiB: 512,
+  ephemeralStorageGiB: 100,
+  image: ecs.ContainerImage.fromRegistry('test'),
+  command: ["-c", "4", "amazon.com"],
+  enableLogging: false,
+  desiredTaskCount: 2,
+  environment: {
+    TEST_ENVIRONMENT_VARIABLE1: "test environment variable 1 value",
+    TEST_ENVIRONMENT_VARIABLE2: "test environment variable 2 value",
+  },
+  maxScalingCapacity: 5,
+  containerName: 'test',
+});
+```
+
 ## Scheduled Tasks
 
 To define a task that runs periodically, there are 2 options:
@@ -330,6 +454,22 @@ const scheduledFargateTask = new ecsPatterns.ScheduledFargateTask(this, 'Schedul
   scheduledFargateTaskImageOptions: {
     image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
     memoryLimitMiB: 512,
+  },
+  schedule: appscaling.Schedule.expression('rate(1 minute)'),
+  platformVersion: ecs.FargatePlatformVersion.LATEST,
+});
+```
+
+On Fargate Platform Version 1.4.0 or later, you may specify up to 200GiB of [ephemeral storage](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/fargate-task-storage.html#fargate-task-storage-pv14):
+
+```ts
+declare const cluster: ecs.Cluster;
+const scheduledFargateTask = new ecsPatterns.ScheduledFargateTask(this, 'ScheduledFargateTask', {
+  cluster,
+  scheduledFargateTaskImageOptions: {
+    image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+    memoryLimitMiB: 512,
+    ephemeralStorageGiB: 100,
   },
   schedule: appscaling.Schedule.expression('rate(1 minute)'),
   platformVersion: ecs.FargatePlatformVersion.LATEST,

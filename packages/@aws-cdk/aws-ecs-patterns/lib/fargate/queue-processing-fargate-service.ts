@@ -52,6 +52,17 @@ export interface QueueProcessingFargateServiceProps extends QueueProcessingServi
   readonly memoryLimitMiB?: number;
 
   /**
+   * The amount (in GiB) of ephemeral storage to be allocated to the task. The maximum supported value is 200 GiB.
+   *
+   * NOTE: This parameter is only supported for tasks hosted on AWS Fargate using platform version 1.4.0 or later.
+   *
+   * This default is set in the underlying FargateTaskDefinition construct.
+   *
+   * @default 20
+   */
+  readonly ephemeralStorageGiB?: number;
+
+  /**
    * The platform version on which to run your service.
    *
    * If one is not specified, the LATEST platform version is used by default. For more information, see
@@ -116,6 +127,7 @@ export class QueueProcessingFargateService extends QueueProcessingServiceBase {
     this.taskDefinition = new FargateTaskDefinition(this, 'QueueProcessingTaskDef', {
       memoryLimitMiB: props.memoryLimitMiB || 512,
       cpu: props.cpu || 256,
+      ephemeralStorageGiB: props.ephemeralStorageGiB,
       family: props.family,
     });
 

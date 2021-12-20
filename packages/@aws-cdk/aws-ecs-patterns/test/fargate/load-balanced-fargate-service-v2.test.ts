@@ -115,6 +115,7 @@ describe('When Application Load Balancer', () => {
       cpu: 256,
       assignPublicIp: true,
       memoryLimitMiB: 512,
+      ephemeralStorageGiB: 100,
       desiredCount: 3,
       enableECSManagedTags: true,
       healthCheckGracePeriod: Duration.millis(2000),
@@ -235,6 +236,9 @@ describe('When Application Load Balancer', () => {
       },
       Family: 'Ec2TaskDef',
       Memory: '512',
+      EphemeralStorage: {
+        SizeInGiB: 100,
+      },
       NetworkMode: 'awsvpc',
       RequiresCompatibilities: [
         'FARGATE',
@@ -484,6 +488,7 @@ describe('When Network Load Balancer', () => {
       cpu: 256,
       assignPublicIp: true,
       memoryLimitMiB: 512,
+      ephemeralStorageGiB: 100,
       desiredCount: 3,
       enableECSManagedTags: true,
       healthCheckGracePeriod: Duration.millis(2000),
@@ -599,6 +604,9 @@ describe('When Network Load Balancer', () => {
       },
       Family: 'Ec2TaskDef',
       Memory: '512',
+      EphemeralStorage: {
+        SizeInGiB: 100,
+      },
       NetworkMode: 'awsvpc',
       RequiresCompatibilities: [
         'FARGATE',

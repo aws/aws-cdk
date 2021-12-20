@@ -65,6 +65,17 @@ export interface ApplicationMultipleTargetGroupsFargateServiceProps extends Appl
   readonly memoryLimitMiB?: number;
 
   /**
+   * The amount (in GiB) of ephemeral storage to be allocated to the task. The maximum supported value is 200 GiB.
+   *
+   * NOTE: This parameter is only supported for tasks hosted on AWS Fargate using platform version 1.4.0 or later.
+   *
+   * This default is set in the underlying FargateTaskDefinition construct.
+   *
+   * @default 20
+   */
+  readonly ephemeralStorageGiB?: number;
+
+  /**
    * Determines whether the service will be assigned a public IP address.
    *
    * @default false
@@ -125,6 +136,7 @@ export class ApplicationMultipleTargetGroupsFargateService extends ApplicationMu
       this.taskDefinition = new FargateTaskDefinition(this, 'TaskDef', {
         memoryLimitMiB: props.memoryLimitMiB,
         cpu: props.cpu,
+        ephemeralStorageGiB: props.ephemeralStorageGiB,
         executionRole: taskImageOptions.executionRole,
         taskRole: taskImageOptions.taskRole,
         family: taskImageOptions.family,

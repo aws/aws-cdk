@@ -316,6 +316,40 @@ test('setting platform version', () => {
   });
 });
 
+test('setting ephemeral storage on NLB Fargate Service', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+
+  // WHEN
+  new ecsPatterns.NetworkLoadBalancedFargateService(stack, 'Service', {
+    taskImageOptions: {
+      image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+    },
+    ephemeralStorageGiB: 100,
+  });
+
+  // THEN
+  const serviceTaskDefinition = SynthUtils.synthesize(stack).template.Resources.ServiceTaskDef1922A00F;
+  expect(serviceTaskDefinition.Properties.EphemeralStorage).toEqual({ SizeInGiB: 100 });
+});
+
+test('setting ephemeral storage on ALB Fargate Service', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+
+  // WHEN
+  new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+    taskImageOptions: {
+      image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+    },
+    ephemeralStorageGiB: 100,
+  });
+
+  // THEN
+  const serviceTaskDefinition = SynthUtils.synthesize(stack).template.Resources.ServiceTaskDef1922A00F;
+  expect(serviceTaskDefinition.Properties.EphemeralStorage).toEqual({ SizeInGiB: 100 });
+});
+
 test('test load balanced service with family defined', () => {
   // GIVEN
   const stack = new cdk.Stack();

@@ -69,6 +69,17 @@ export interface ScheduledFargateTaskImageOptions extends ScheduledTaskImageProp
    * @default 512
    */
   readonly memoryLimitMiB?: number;
+
+  /**
+   * The amount (in GiB) of ephemeral storage to be allocated to the task. The maximum supported value is 200 GiB.
+   *
+   * NOTE: This parameter is only supported for tasks hosted on AWS Fargate using platform version 1.4.0 or later.
+   *
+   * This default is set in the underlying FargateTaskDefinition construct.
+   *
+   * @default 20
+   */
+  readonly ephemeralStorageGiB?: number;
 }
 
 /**
@@ -114,6 +125,7 @@ export class ScheduledFargateTask extends ScheduledTaskBase {
       this.taskDefinition = new FargateTaskDefinition(this, 'ScheduledTaskDef', {
         memoryLimitMiB: taskImageOptions.memoryLimitMiB || 512,
         cpu: taskImageOptions.cpu || 256,
+        ephemeralStorageGiB: taskImageOptions.ephemeralStorageGiB,
       });
       this.taskDefinition.addContainer('ScheduledContainer', {
         image: taskImageOptions.image,
