@@ -412,4 +412,30 @@ describe('CodeDeploy Server Deployment Group', () => {
 
     expect(() => SynthUtils.toCloudFormation(stack)).toThrow(/deploymentInAlarm/);
   });
+
+  test('can be used with an imported ALB Target Group as the load balancer', () => {
+    const stack = new cdk.Stack();
+
+    new codedeploy.ServerDeploymentGroup(stack, 'DeploymentGroup', {
+      loadBalancer: codedeploy.LoadBalancer.application(
+        lbv2.ApplicationTargetGroup.fromTargetGroupAttributes(stack, 'importedAlbTg', {
+          targetGroupArn: 'arn:aws:elasticloadbalancing:us-west-2:123456789012:targetgroup/myAlbTargetGroup/73e2d6bc24d8a067',
+        }),
+      ),
+    });
+
+    expect(stack).toHaveResourceLike('AWS::CodeDeploy::DeploymentGroup', {
+      'LoadBalancerInfo': {
+        'TargetGroupInfoList': [
+          {
+            'Name': 'myAlbTargetGroup',
+          },
+        ],
+      },
+      'DeploymentStyle': {
+        'DeploymentOption': 'WITH_TRAFFIC_CONTROL',
+      },
+    });
+  });
+
 });
