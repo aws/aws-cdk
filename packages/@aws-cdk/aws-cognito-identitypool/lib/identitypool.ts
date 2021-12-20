@@ -1,4 +1,7 @@
 import {
+  CfnIdentityPool,
+} from '@aws-cdk/aws-cognito/lib/cognito.generated';
+import {
   IOpenIdConnectProvider,
   ISamlProvider,
   Role,
@@ -16,9 +19,6 @@ import {
 import {
   Construct,
 } from 'constructs';
-import {
-  CfnIdentityPool,
-} from './cognito.generated';
 import {
   IdentityPoolRoleAttachment,
   IdentityPoolRoleMapping,
