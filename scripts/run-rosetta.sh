@@ -21,10 +21,9 @@
 set -eu
 scriptdir=$(cd $(dirname $0) && pwd)
 
-#ROSETTA=${ROSETTA:-npx jsii-rosetta}
-ROSETTA=$HOME/Desktop/jsii-kaizen/main/jsii/packages/jsii-rosetta/bin/jsii-rosetta
+ROSETTA=${ROSETTA:-npx jsii-rosetta}
 
-infuse=true
+infuse=false
 jsii_pkgs_file=""
 while [[ $# -gt 0 ]]; do
     case $1 in
@@ -50,7 +49,7 @@ done
 
 if [[ "${jsii_pkgs_file}" = "" ]]; then
     echo "Collecting package list..." >&2
-    TMPDIR=kaizen #${TMPDIR:-$(dirname $(mkdir kaizen -u))}
+    TMPDIR=${TMPDIR:-$(dirname $(mktemp -u))}
     node $scriptdir/list-packages $TMPDIR/jsii.txt $TMPDIR/nonjsii.txt
     jsii_pkgs_file=$TMPDIR/jsii.txt
 fi
