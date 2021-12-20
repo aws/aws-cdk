@@ -21,9 +21,10 @@
 set -eu
 scriptdir=$(cd $(dirname $0) && pwd)
 
-ROSETTA=${ROSETTA:-npx jsii-rosetta}
+#ROSETTA=${ROSETTA:-npx jsii-rosetta}
+ROSETTA=$HOME/Desktop/jsii-kaizen/main/jsii/packages/jsii-rosetta/bin/jsii-rosetta
 
-infuse=false
+infuse=true
 jsii_pkgs_file=""
 while [[ $# -gt 0 ]]; do
     case $1 in
@@ -49,7 +50,7 @@ done
 
 if [[ "${jsii_pkgs_file}" = "" ]]; then
     echo "Collecting package list..." >&2
-    TMPDIR=${TMPDIR:-$(dirname $(mktemp -u))}
+    TMPDIR=kaizen #${TMPDIR:-$(dirname $(mkdir kaizen -u))}
     node $scriptdir/list-packages $TMPDIR/jsii.txt $TMPDIR/nonjsii.txt
     jsii_pkgs_file=$TMPDIR/jsii.txt
 fi
@@ -73,19 +74,18 @@ time $ROSETTA extract \
     ${extract_opts} \
     $(cat $jsii_pkgs_file)
 
- $infuse; then
-  echo "💎 Generating synthetic examples for the remainder" >&2
-  time npx cdk-generate-synthetic-examples \
-      $(cat $jsii_pkgs_file)
-  
-  echo "💎 Extracting generated examples" >&2
-  time $ROSETTA extract \
-      --compile \
-      --verbose \
-      --cache ${rosetta_cache_file} \
-      --directory packages/decdk \
-      $(cat $jsii_pkgs_file)
+if $infuse; then
+    echo "💎 Generating synthetic examples for the remainder" >&2
+    time npx cdk-generate-synthetic-examples \
+        $(cat $jsii_pkgs_file)
 
+    time $ROSETTA extract \
+        --compile \
+        --verbose \
+        --cache ${rosetta_cache_file} \
+        --directory packages/decdk \
+        $(cat $jsii_pkgs_file)
+fi
 
 time $ROSETTA trim-cache \
     ${rosetta_cache_file} \
