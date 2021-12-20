@@ -760,7 +760,6 @@
     chalk "^4.1.2"
     semver "^7.3.5"
 
-<<<<<<< HEAD
 "@jsii/check-node@1.49.0":
   version "1.49.0"
   resolved "https://registry.npmjs.org/@jsii/check-node/-/check-node-1.49.0.tgz#111fd229eefb6fa8d1e2b5eb29f695052188008a"
@@ -769,8 +768,6 @@
     chalk "^4.1.2"
     semver "^7.3.5"
 
-=======
->>>>>>> 32f1c807a34464e8c13a8d03bfdcb6a3006f51ba
 "@jsii/spec@1.47.0", "@jsii/spec@^1.47.0":
   version "1.47.0"
   resolved "https://registry.npmjs.org/@jsii/spec/-/spec-1.47.0.tgz#6bc24dbf9f4949a0260d9fb51a2f9d7b30c6b4f4"
@@ -1784,11 +1781,6 @@
   dependencies:
     "@types/glob" "*"
 
-"@types/aws-lambda@^8.10.85":
-  version "8.10.88"
-  resolved "https://registry.npmjs.org/@types/aws-lambda/-/aws-lambda-8.10.88.tgz#1f18ac2e15be30376e86a688a943390e7d6683e5"
-  integrity sha512-Gbdr5tmGMGV1bgWDEfgNnfqtS9YVKDCkyAgYPmYIeEQFTSjU+VzVoE0Gc1MyrzREdk3Iu5daUCRU9eQL5s+iYQ==
-
 "@types/aws-lambda@^8.10.86":
   version "8.10.86"
   resolved "https://registry.npmjs.org/@types/aws-lambda/-/aws-lambda-8.10.86.tgz#f97d9e2f75f87b03401bcd19737b025ec08de200"
@@ -1901,7 +1893,7 @@
     jest-diff "^26.0.0"
     pretty-format "^26.0.0"
 
-"@types/jest@^27.0.2", "@types/jest@^27.0.3":
+"@types/jest@^27.0.3":
   version "27.0.3"
   resolved "https://registry.npmjs.org/@types/jest/-/jest-27.0.3.tgz#0cf9dfe9009e467f70a342f0f94ead19842a783a"
   integrity sha512-cmmwv9t7gBYt7hNKH5Spu7Kuu/DotGa+Ff+JGRKZ4db5eh8PnKS4LuebJ3YLUoyOyIHraTGyULn23YtEAm0VSg==
@@ -3140,7 +3132,6 @@ codemaker@^1.47.0:
     decamelize "^5.0.1"
     fs-extra "^9.1.0"
 
-<<<<<<< HEAD
 codemaker@^1.49.0:
   version "1.49.0"
   resolved "https://registry.npmjs.org/codemaker/-/codemaker-1.49.0.tgz#ae429001996b3942ad92fe0b7f9aeaac62a088d0"
@@ -3150,8 +3141,6 @@ codemaker@^1.49.0:
     decamelize "^5.0.1"
     fs-extra "^9.1.0"
 
-=======
->>>>>>> 32f1c807a34464e8c13a8d03bfdcb6a3006f51ba
 collect-v8-coverage@^1.0.0:
   version "1.0.1"
   resolved "https://registry.npmjs.org/collect-v8-coverage/-/collect-v8-coverage-1.0.1.tgz#cc2c8e94fc18bbdffe64d6534570c8a673b27f59"
