@@ -701,10 +701,9 @@ export interface StreamProps {
   readonly encryptionKey?: kms.IKey;
 
   /**
-   * Optional details to specify the capacity mode of this stream. The default is mode is provisioned when unspecified.
+   * The capacity mode of this stream.
    *
-   * @default - No value output to CloudFormation.
-   *   The default behaviour is the same as using the PROVISIONED mode.
+   * @default StreamModeDetails.PROVISIONED
    */
   readonly streamModeDetails?: StreamModeDetails;
 }
