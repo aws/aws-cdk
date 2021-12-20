@@ -760,10 +760,25 @@
     chalk "^4.1.2"
     semver "^7.3.5"
 
+"@jsii/check-node@1.49.0":
+  version "1.49.0"
+  resolved "https://registry.npmjs.org/@jsii/check-node/-/check-node-1.49.0.tgz#111fd229eefb6fa8d1e2b5eb29f695052188008a"
+  integrity sha512-NRlfVfsczS503K0Y476YkfqLr1yjtgGpj5xcPahS4qaPHJoxMdeiiPuvtybKif37+CKUj/BGsZc8yRXp5bzI1w==
+  dependencies:
+    chalk "^4.1.2"
+    semver "^7.3.5"
+
 "@jsii/spec@1.47.0", "@jsii/spec@^1.47.0":
   version "1.47.0"
   resolved "https://registry.npmjs.org/@jsii/spec/-/spec-1.47.0.tgz#6bc24dbf9f4949a0260d9fb51a2f9d7b30c6b4f4"
   integrity sha512-5F9Qw0lnK8mCumHvpA+XhoBJezgW6q92sLM2jsvo7bzXWXyRRfr1cHl1g5fxQ0yS82B5NMa1fN2n28BsEKs+Gw==
+  dependencies:
+    jsonschema "^1.4.0"
+
+"@jsii/spec@1.49.0", "@jsii/spec@^1.49.0":
+  version "1.49.0"
+  resolved "https://registry.npmjs.org/@jsii/spec/-/spec-1.49.0.tgz#6a5aafe41cb3301a90f642986bcfaa63c753e3b7"
+  integrity sha512-uf3wr4c/bCl52VDLQGOGQQynAvyEvwCJ2jcN83nmHhovUkxmhVlqaKt8pumOyjfB5N5SoLW5tiY7ClMQ/q8UoQ==
   dependencies:
     jsonschema "^1.4.0"
 
@@ -1766,7 +1781,7 @@
   dependencies:
     "@types/glob" "*"
 
-"@types/aws-lambda@^8.10.85", "@types/aws-lambda@^8.10.86":
+"@types/aws-lambda@^8.10.86":
   version "8.10.86"
   resolved "https://registry.npmjs.org/@types/aws-lambda/-/aws-lambda-8.10.86.tgz#f97d9e2f75f87b03401bcd19737b025ec08de200"
   integrity sha512-CH7MtDqW8hAm05alc837XHvqKcrfx/kacc4EyUoyN5PoFK3D0lIfN0GK2WsV6YKU4tUsLTLAVLSyBrcFdHP9Bw==
@@ -1878,7 +1893,7 @@
     jest-diff "^26.0.0"
     pretty-format "^26.0.0"
 
-"@types/jest@^27.0.2", "@types/jest@^27.0.3":
+"@types/jest@^27.0.3":
   version "27.0.3"
   resolved "https://registry.npmjs.org/@types/jest/-/jest-27.0.3.tgz#0cf9dfe9009e467f70a342f0f94ead19842a783a"
   integrity sha512-cmmwv9t7gBYt7hNKH5Spu7Kuu/DotGa+Ff+JGRKZ4db5eh8PnKS4LuebJ3YLUoyOyIHraTGyULn23YtEAm0VSg==
@@ -3117,6 +3132,15 @@ codemaker@^1.47.0:
     decamelize "^5.0.1"
     fs-extra "^9.1.0"
 
+codemaker@^1.49.0:
+  version "1.49.0"
+  resolved "https://registry.npmjs.org/codemaker/-/codemaker-1.49.0.tgz#ae429001996b3942ad92fe0b7f9aeaac62a088d0"
+  integrity sha512-WtHwTvbR1uORGHNnl2D3kcPk52u21x4oQNsLC5n7r6vCXdRE7RAsy0hUi1ovt+9NQ4jvM9BfeMUdZp9o8h4oog==
+  dependencies:
+    camelcase "^6.2.1"
+    decamelize "^5.0.1"
+    fs-extra "^9.1.0"
+
 collect-v8-coverage@^1.0.0:
   version "1.0.1"
   resolved "https://registry.npmjs.org/collect-v8-coverage/-/collect-v8-coverage-1.0.1.tgz#cc2c8e94fc18bbdffe64d6534570c8a673b27f59"
@@ -3244,11 +3268,6 @@ console-control-strings@^1.0.0, console-control-strings@~1.1.0:
   version "1.1.0"
   resolved "https://registry.npmjs.org/console-control-strings/-/console-control-strings-1.1.0.tgz#3d7cf4464db6446ea644bf4b39507f9851008e8e"
   integrity sha1-PXz0Rk22RG6mRL9LOVB/mFEAjo4=
-
-constructs@^10.0.0:
-  version "10.0.10"
-  resolved "https://registry.npmjs.org/constructs/-/constructs-10.0.10.tgz#ab0dfcecfb7f10419c512cd3f5b809ef034882cc"
-  integrity sha512-lQqY39wuQksXfm63rxcplif8CpW7ZuGWqQNGG/qoxfVeBjG4DWpCzD3K3pVukRCe+EhvsIvLpZxfL6SKLAfvlw==
 
 constructs@^3.3.69:
   version "3.3.162"
@@ -6730,33 +6749,33 @@ jsesc@^2.5.1:
   resolved "https://registry.npmjs.org/jsesc/-/jsesc-2.5.2.tgz#80564d2e483dacf6e8ef209650a67df3f0c283a4"
   integrity sha512-OYu7XEzjkCQ3C5Ps3QIZsQfNpqoJyZZA99wd9aWd05NCtC5pWOkShK2mkL6HXQR6/Cy2lbNdPlZBpuQHXE63gA==
 
-jsii-diff@^1.47.0:
-  version "1.47.0"
-  resolved "https://registry.npmjs.org/jsii-diff/-/jsii-diff-1.47.0.tgz#c8803539c34000763b3181d8149e19b950de1791"
-  integrity sha512-n+/AqWjNMWL3Jqpfk1tsv3zS+ptPpM3zQAlyl8d76B+iyUOPdR7hgMzUZVUbqY2lKHaMAP2pIlh3AZWZ9tyS+Q==
+jsii-diff@^1.49.0:
+  version "1.49.0"
+  resolved "https://registry.npmjs.org/jsii-diff/-/jsii-diff-1.49.0.tgz#35a15ed7948b23bdd8bb5f1babd20c3fe21d880a"
+  integrity sha512-qhDEH8n+IIhhYmd3hMRTeVLIHuOUjFvLEGQUfD14Av2epQeLg1R0/uBFZ0BSiIE1OCipv9XyW2NrpXq6hpgduA==
   dependencies:
-    "@jsii/check-node" "1.47.0"
-    "@jsii/spec" "^1.47.0"
+    "@jsii/check-node" "1.49.0"
+    "@jsii/spec" "^1.49.0"
     fs-extra "^9.1.0"
-    jsii-reflect "^1.47.0"
+    jsii-reflect "^1.49.0"
     log4js "^6.3.0"
     typescript "~3.9.10"
     yargs "^16.2.0"
 
-jsii-pacmak@^1.47.0:
-  version "1.47.0"
-  resolved "https://registry.npmjs.org/jsii-pacmak/-/jsii-pacmak-1.47.0.tgz#82e687b5444847d79f1030b9ef480b68b63c0e91"
-  integrity sha512-VGrHZsK2jv7NuPBULvJBJGF0hLpGwdJa7esI2qzOeX1UbHxXSOah9oboheYELbX5KCH3hSe2uDbcPSnEqIT68Q==
+jsii-pacmak@^1.49.0:
+  version "1.49.0"
+  resolved "https://registry.npmjs.org/jsii-pacmak/-/jsii-pacmak-1.49.0.tgz#eac45db5f7457e6f23916151f18127c76270966c"
+  integrity sha512-tU5N3wFAl0MrjR29JBzN96kAmm2swrMW3nK8YRdVOZDgNzhyuh0+d6tFfrS5/b6/LTV2sM+wVH6uH6w0FYWxOw==
   dependencies:
-    "@jsii/check-node" "1.47.0"
-    "@jsii/spec" "^1.47.0"
+    "@jsii/check-node" "1.49.0"
+    "@jsii/spec" "^1.49.0"
     clone "^2.1.2"
-    codemaker "^1.47.0"
+    codemaker "^1.49.0"
     commonmark "^0.30.0"
     escape-string-regexp "^4.0.0"
     fs-extra "^9.1.0"
-    jsii-reflect "^1.47.0"
-    jsii-rosetta "^1.47.0"
+    jsii-reflect "^1.49.0"
+    jsii-rosetta "^1.49.0"
     semver "^7.3.5"
     spdx-license-list "^6.4.0"
     xmlbuilder "^15.1.1"
@@ -6772,6 +6791,18 @@ jsii-reflect@1.47.0, jsii-reflect@^1.47.0:
     colors "^1.4.0"
     fs-extra "^9.1.0"
     oo-ascii-tree "^1.47.0"
+    yargs "^16.2.0"
+
+jsii-reflect@^1.49.0:
+  version "1.49.0"
+  resolved "https://registry.npmjs.org/jsii-reflect/-/jsii-reflect-1.49.0.tgz#b9d371dc8b94648e649a5892a7e8020a692861b0"
+  integrity sha512-aTpvvkSuinx2xtuxEz69LchQAN7eTK79s6M9512c8Ajvg0+brolHR83mzINKp/i3DWrUAZ+fb3su+PuSmqvEuQ==
+  dependencies:
+    "@jsii/check-node" "1.49.0"
+    "@jsii/spec" "^1.49.0"
+    colors "^1.4.0"
+    fs-extra "^9.1.0"
+    oo-ascii-tree "^1.49.0"
     yargs "^16.2.0"
 
 jsii-rosetta@1.47.0, jsii-rosetta@^1.47.0:
@@ -6790,6 +6821,22 @@ jsii-rosetta@1.47.0, jsii-rosetta@^1.47.0:
     workerpool "^6.1.5"
     yargs "^16.2.0"
 
+jsii-rosetta@^1.49.0:
+  version "1.49.0"
+  resolved "https://registry.npmjs.org/jsii-rosetta/-/jsii-rosetta-1.49.0.tgz#0a00e447775cfbf0601d8675b8bd9a976abb3342"
+  integrity sha512-rXj3z0qssulanbqSegJIYhHZmJqwjBed4nJYIsxiUstDCM8vQ5QoewSAO4c7+EZV68EklHh3UCKBkBa5QmQ/hw==
+  dependencies:
+    "@jsii/check-node" "1.49.0"
+    "@jsii/spec" "1.49.0"
+    "@xmldom/xmldom" "^0.7.5"
+    commonmark "^0.30.0"
+    fs-extra "^9.1.0"
+    jsii "1.49.0"
+    sort-json "^2.0.0"
+    typescript "~3.9.10"
+    workerpool "^6.1.5"
+    yargs "^16.2.0"
+
 jsii@1.47.0, jsii@^1.47.0:
   version "1.47.0"
   resolved "https://registry.npmjs.org/jsii/-/jsii-1.47.0.tgz#79b85c7e90098f93863e9a38eca1a4c42a382aaa"
@@ -6797,6 +6844,25 @@ jsii@1.47.0, jsii@^1.47.0:
   dependencies:
     "@jsii/check-node" "1.47.0"
     "@jsii/spec" "^1.47.0"
+    case "^1.6.3"
+    colors "^1.4.0"
+    deep-equal "^2.0.5"
+    fs-extra "^9.1.0"
+    log4js "^6.3.0"
+    semver "^7.3.5"
+    semver-intersect "^1.4.0"
+    sort-json "^2.0.0"
+    spdx-license-list "^6.4.0"
+    typescript "~3.9.10"
+    yargs "^16.2.0"
+
+jsii@1.49.0, jsii@^1.49.0:
+  version "1.49.0"
+  resolved "https://registry.npmjs.org/jsii/-/jsii-1.49.0.tgz#b2536985350c24132eb3dcbbff5ad866b1b0aa85"
+  integrity sha512-0/nn32SoCVgvuDSvVD8UuEwMJZbKbROuYtYQJRNN3n/O9g1jA/cj1eM95rRlu4THdWChTw0FDQxLfcuK+oEwpQ==
+  dependencies:
+    "@jsii/check-node" "1.49.0"
+    "@jsii/spec" "^1.49.0"
     case "^1.6.3"
     colors "^1.4.0"
     deep-equal "^2.0.5"
@@ -8122,6 +8188,11 @@ oo-ascii-tree@^1.47.0:
   version "1.47.0"
   resolved "https://registry.npmjs.org/oo-ascii-tree/-/oo-ascii-tree-1.47.0.tgz#dd715c88186d9c0bf5e9410ce5e254794e8e7dbc"
   integrity sha512-m8ZGdK0JSMFOZyjV0kkzBwcbPMGqW5WhCYp4CgPrJz4/y128hwhWGB8x4G7b5CAKRNo583y51kL0UCklaxt1Nw==
+
+oo-ascii-tree@^1.49.0:
+  version "1.49.0"
+  resolved "https://registry.npmjs.org/oo-ascii-tree/-/oo-ascii-tree-1.49.0.tgz#fa3a527dabb0308cdc4c6110395ca2cbbb07545c"
+  integrity sha512-Y84LTdUO7/ptZRgJqzmxgvuSDlRh23p/mag4T4NTN3TVuBlfg9pvu80Hqo5NEC2Z3GFpUTI5FgIEwiSgqWlevA==
 
 open@^7.4.2:
   version "7.4.2"
