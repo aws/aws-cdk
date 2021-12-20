@@ -703,9 +703,9 @@ export interface StreamProps {
   /**
    * The capacity mode of this stream.
    *
-   * @default StreamModeDetails.PROVISIONED
+   * @default StreamMode.PROVISIONED
    */
-  readonly streamModeDetails?: StreamModeDetails;
+  readonly streamMode?: StreamMode;
 }
 
 /**
@@ -754,11 +754,11 @@ export class Stream extends StreamBase {
 
     const shardCount = props.shardCount || 1;
 
-    const streamMode = props.streamModeDetails;
+    const streamMode = props.streamMode;
     let streamModeDetails: CfnStream.StreamModeDetailsProperty | undefined = undefined;
     if (streamMode !== undefined) {
       streamModeDetails = {
-        streamMode: StreamModeDetails[streamMode],
+        streamMode: StreamMode[streamMode],
       };
     }
 
@@ -879,12 +879,16 @@ export enum StreamEncryption {
 /**
  * Specifies the capacity mode to apply to this stream.
  */
-export enum StreamModeDetails {
+export enum StreamMode {
   /**
-   * Specify the provisioned capacity mode.
+   * Specify the provisioned capacity mode. The stream will have `shardCount` shards unless
+   * modified and will be billed according to the provisioned capacity.
    */
   PROVISIONED = 'PROVISIONED',
 
-  /** Specify the on-demand capacity mode. */
+  /**
+   * Specify the on-demand capacity mode. The stream will autoscale and be billed according to the
+   * volume of data ingested and retrieved.
+   */
   ON_DEMAND = 'ON_DEMAND'
 }

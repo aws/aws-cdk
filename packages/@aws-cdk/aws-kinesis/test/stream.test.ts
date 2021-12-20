@@ -5,7 +5,7 @@ import * as kms from '@aws-cdk/aws-kms';
 import { testFutureBehavior, testLegacyBehavior } from '@aws-cdk/cdk-build-tools';
 import { App, Duration, Stack, CfnParameter } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import { Stream, StreamEncryption, StreamModeDetails } from '../lib';
+import { Stream, StreamEncryption, StreamMode } from '../lib';
 
 /* eslint-disable quote-props */
 
@@ -374,11 +374,11 @@ describe('Kinesis data streams', () => {
     });
   }),
 
-  test.each([StreamModeDetails.ON_DEMAND, StreamModeDetails.PROVISIONED])('uses explicit capacity mode %s', (mode: StreamModeDetails) => {
+  test.each([StreamMode.ON_DEMAND, StreamMode.PROVISIONED])('uses explicit capacity mode %s', (mode: StreamMode) => {
     const stack = new Stack();
 
     new Stream(stack, 'MyStream', {
-      streamModeDetails: mode,
+      streamMode: mode,
     });
 
     expect(stack).toMatchTemplate({
@@ -389,7 +389,7 @@ describe('Kinesis data streams', () => {
             ShardCount: 1,
             RetentionPeriodHours: 24,
             StreamModeDetails: {
-              StreamMode: StreamModeDetails[mode],
+              StreamMode: StreamMode[mode],
             },
             StreamEncryption: {
               'Fn::If': [
