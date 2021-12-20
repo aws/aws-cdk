@@ -53,7 +53,7 @@ test('can configure a custom repository', () => {
           {
             Ref: 'ClusterDefaultVpcFA9F2722',
           },
-          '","repository":"custom","tag":"v2.3.0"}',
+          '","image":{"repository":"custom","tag":"v2.3.0"}}',
         ],
       ],
     },
