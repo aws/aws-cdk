@@ -4,16 +4,14 @@ import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as iam from '@aws-cdk/aws-iam';
-import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import * as cpactions from '../lib';
-
-
+import { EcsServiceCrossRegionAccountPipelineStack } from './ecs-pipeline-cross-region-account-helpers';
 /**
  * This example demonstrates how to create a CodePipeline that deploys to an existing ECS Service across accounts and regions.
  * This will not deploy because integ tests only run in one account.
- * Updates to this require yarn integ --dry-run integ.pipeline-ecs-import-cross-account.lit.js to generate the expected JSON file.
+ * Updates to this require yarn integ --dry-run integ.ecs-pipeline-cross-region-account-existing.lit.js to generate the expected JSON file.
  */
 
 /// !show
@@ -29,12 +27,14 @@ const app = new cdk.App();
  * This is the Stack which will import our existing ECS Service that uses
  * the provided clusterName and serviceName.
  */
-class TestImportEcsStack extends cdk.Stack {
+class ExistingEcsServiceStack extends cdk.Stack {
   public readonly serviceArn: string;
   public readonly clusterName: string;
   public readonly deployRole: iam.IRole;
+
   constructor(scope: Construct, id: string, props: cdk.StackProps) {
     super(scope, id, props);
+
     // import the existing VPC
     const vpc = ec2.Vpc.fromLookup(this, 'VpcLookup', {
       isDefault: false,
@@ -90,8 +90,8 @@ class TestImportEcsStack extends cdk.Stack {
       conditions: {
         StringEqualsIfExists: {
           'iam:PassedToService': [
-          'ec2.amazonaws.com',
-          'ecs-tasks.amazonaws.com',
+            'ec2.amazonaws.com',
+            'ecs-tasks.amazonaws.com',
           ],
         },
       },
@@ -100,16 +100,19 @@ class TestImportEcsStack extends cdk.Stack {
 }
 
 /**
- * This is the Stage which does our import using {@link TestImportEcsStack}.
+ * This is the Stage which does our import using {@link ExistingEcsServiceStack}.
  */
-class TestImportEcsStage extends cdk.Stage {
+class ExistingEcsServiceStage extends cdk.Stage {
   public readonly serviceArn: string;
   public readonly clusterName: string;
   public readonly deployRole: iam.IRole;
+  public readonly stack: cdk.Stack
 
   constructor(scope: Construct, id: string, props: cdk.StageProps) {
     super(scope, id, props);
-    const testStack = new TestImportEcsStack(this, 'ecsStack', {});
+
+    const testStack = new ExistingEcsServiceStack(this, 'ecsStack', {});
+    this.stack = testStack;
     this.serviceArn = testStack.serviceArn;
     this.clusterName = testStack.clusterName;
     this.deployRole = testStack.deployRole;
@@ -117,74 +120,75 @@ class TestImportEcsStage extends cdk.Stage {
 }
 
 /**
- * This is our pipeline which will import our existing ECS Service and deploy
- * to is using {@link EcsDeployAction} using our {@link TestImportEcsStage}
+ * This is our pipeline which will create an ECS Service and deploy
+ * to is using {@link EcsDeployAction} using our {@link NewEcsServiceStage}
  */
-class PipelineEcsDeployImportStack extends cdk.Stack {
-  constructor(scope: Construct, id: string, props: cdk.StackProps) {
-    super(scope, id, props);
-    const artifact = new codepipeline.Artifact('Artifact');
-    const bucket = new s3.Bucket(this, 'PipelineBucket', {
-      versioned: true,
-      removalPolicy: cdk.RemovalPolicy.DESTROY,
-    });
-    const source = new cpactions.S3SourceAction({
-      actionName: 'Source',
-      output: artifact,
-      bucket,
-      bucketKey: 'key',
-    });
-    const pipeline = new codepipeline.Pipeline(this, 'Pipeline', {
-      stages: [
-        {
-          stageName: 'Source',
-          actions: [source],
-        },
-      ],
-    });
-    const testStage = new TestImportEcsStage(this, 'TestStage', {
-      env: {
-        region: 'us-west-2',
-        account: '123456789012',
-      },
-    });
-    const testIStage = pipeline.addStage(testStage);
-    /**
-     * This imports the service so it can be used by the ECS Deploy Action.
-     * This must use the serviceArn so that the region is set correctly.
-     * The VPC doesn't actually matter and it doesn't get created.
-     * The construct ids will need to be unique.
-    */
-    const service = ecs.FargateService.fromFargateServiceAttributes(this, 'FargateService', {
-      serviceArn: testStage.serviceArn,
-      cluster: ecs.Cluster.fromClusterAttributes(this, 'Cluster', {
-        vpc: new ec2.Vpc(this, 'Vpc'),
-        securityGroups: [],
-        clusterName: testStage.clusterName,
-      }),
-    });
-    /**
-     * It is highly recommended passing in the role from the stage/stack, if not a new role
-     * will be added to the pipeline action, will not exist in the account you are deploying to.
-     */
-    const deployAction = new cpactions.EcsDeployAction({
-      actionName: 'ECS',
-      service: service,
-      imageFile: artifact.atPath('imageFile.json'),
-      role: testStage.deployRole,
-    });
-    testIStage.addAction(deployAction);
-  }
-}
-
-// Define our ECS Deploy Import Stack related to import and deploy existing services.
-new PipelineEcsDeployImportStack(app, 'ImportPipelineStack', {
+const pipelineStack = new EcsServiceCrossRegionAccountPipelineStack(app, 'ExistingEcsServicePipelineStack', {
   env: {
-    region: 'us-east-1',
-    account: '234567890123',
+    region: 'pipeline-region',
+    account: 'pipeline-account',
   },
 });
+const pipeline: codepipeline.Pipeline = pipelineStack.pipeline;
+const artifact: codepipeline.Artifact = pipelineStack.artifact;
 
+const testStage = new ExistingEcsServiceStage(pipelineStack, 'TestStage', {
+  env: {
+    region: 'service-region',
+    account: 'service-account',
+  },
+});
+const stackName = testStage.stack.stackName;
+const changeSetName = `changeset-${testStage.stack.stackName}`;
+const stageActions = [
+  new cpactions.CloudFormationCreateReplaceChangeSetAction({
+    actionName: 'PrepareChanges',
+    stackName: stackName,
+    changeSetName: changeSetName,
+    adminPermissions: true,
+    templatePath: artifact.atPath(testStage.stack.templateFile),
+    runOrder: 1,
+  }),
+  new cpactions.CloudFormationExecuteChangeSetAction({
+    actionName: 'ExecuteChanges',
+    stackName: stackName,
+    changeSetName: changeSetName,
+    runOrder: 2,
+  }),
+];
+
+const testIStage = pipeline.addStage({
+  stageName: testStage.stageName,
+  actions: stageActions,
+});
+/**
+ * This imports the service so it can be used by the ECS Deploy Action.
+ * This must use the serviceArn so that the region is set correctly.
+ * The VPC doesn't actually matter and it doesn't get created.
+ * The construct ids will need to be unique.
+*/
+const service = ecs.FargateService.fromFargateServiceAttributes(pipelineStack, 'FargateService', {
+  serviceArn: testStage.serviceArn,
+  cluster: ecs.Cluster.fromClusterAttributes(pipelineStack, 'Cluster', {
+    vpc: new ec2.Vpc(pipelineStack, 'Vpc'),
+    securityGroups: [],
+    clusterName: testStage.clusterName,
+  }),
+});
+/**
+ * It is highly recommended passing in the role from the stage/stack, if not a new role
+ * will be added to the pipeline action, will not exist in the account you are deploying to.
+ *
+ * Using input however imageFile could be used as well, based on your use case.
+ */
+const deployAction = new cpactions.EcsDeployAction({
+  actionName: 'ECS',
+  service: service,
+  input: artifact,
+  role: testStage.deployRole,
+  runOrder: 3,
+});
+testIStage.addAction(deployAction);
 
 /// !hide
 

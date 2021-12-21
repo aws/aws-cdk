@@ -28,7 +28,7 @@
                         {
                           "Ref": "AWS::Partition"
                         },
-                        ":iam::234567890123:root"
+                        ":iam::pipeline-account:root"
                       ]
                     ]
                   }
@@ -45,7 +45,7 @@
       "PipelineArtifactsBucketEncryptionKeyAlias5C510EEE": {
         "Type": "AWS::KMS::Alias",
         "Properties": {
-          "AliasName": "alias/codepipeline-createpipelinestackpipelinecc1a70d2",
+          "AliasName": "alias/codepipeline-existingecsservicepipelinestackpipelinef8304f40",
           "TargetKeyId": {
             "Fn::GetAtt": [
               "PipelineArtifactsBucketEncryptionKey01D58D69",
@@ -166,6 +166,26 @@
                 }
               },
               {
+                "Action": "sts:AssumeRole",
+                "Effect": "Allow",
+                "Resource": {
+                  "Fn::GetAtt": [
+                    "PipelineTestStagePrepareChangesCodePipelineActionRole96F79520",
+                    "Arn"
+                  ]
+                }
+              },
+              {
+                "Action": "sts:AssumeRole",
+                "Effect": "Allow",
+                "Resource": {
+                  "Fn::GetAtt": [
+                    "PipelineTestStageExecuteChangesCodePipelineActionRole92A91B69",
+                    "Arn"
+                  ]
+                }
+              },
+              {
                 "Action": [
                   "s3:GetObject*",
                   "s3:GetBucket*",
@@ -184,7 +204,7 @@
                         {
                           "Ref": "AWS::Partition"
                         },
-                        ":s3:::createpipelinestack-suppoeplicationbucket85400285e4a9a6dd80de"
+                        ":s3:::existingecsservicepipelineplicationbucketaedc716a96aab89ec381"
                       ]
                     ]
                   },
@@ -196,7 +216,7 @@
                         {
                           "Ref": "AWS::Partition"
                         },
-                        ":s3:::createpipelinestack-suppoeplicationbucket85400285e4a9a6dd80de/*"
+                        ":s3:::existingecsservicepipelineplicationbucketaedc716a96aab89ec381/*"
                       ]
                     ]
                   }
@@ -224,7 +244,7 @@
                       {
                         "Ref": "AWS::Partition"
                       },
-                      ":iam::123456789012:role/deployrole"
+                      ":iam::service-account:role/deployrole"
                     ]
                   ]
                 }
@@ -288,13 +308,67 @@
                   "ActionTypeId": {
                     "Category": "Deploy",
                     "Owner": "AWS",
+                    "Provider": "CloudFormation",
+                    "Version": "1"
+                  },
+                  "Configuration": {
+                    "StackName": "TestStage-ecsStack",
+                    "Capabilities": "CAPABILITY_NAMED_IAM",
+                    "RoleArn": {
+                      "Fn::GetAtt": [
+                        "PipelineTestStagePrepareChangesRoleB43D8DC1",
+                        "Arn"
+                      ]
+                    },
+                    "ActionMode": "CHANGE_SET_REPLACE",
+                    "ChangeSetName": "changeset-TestStage-ecsStack",
+                    "TemplatePath": "Artifact::ExistingEcsServicePipelineStackTestStageecsStack6FB39135.template.json"
+                  },
+                  "InputArtifacts": [
+                    {
+                      "Name": "Artifact"
+                    }
+                  ],
+                  "Name": "PrepareChanges",
+                  "RoleArn": {
+                    "Fn::GetAtt": [
+                      "PipelineTestStagePrepareChangesCodePipelineActionRole96F79520",
+                      "Arn"
+                    ]
+                  },
+                  "RunOrder": 1
+                },
+                {
+                  "ActionTypeId": {
+                    "Category": "Deploy",
+                    "Owner": "AWS",
+                    "Provider": "CloudFormation",
+                    "Version": "1"
+                  },
+                  "Configuration": {
+                    "StackName": "TestStage-ecsStack",
+                    "ActionMode": "CHANGE_SET_EXECUTE",
+                    "ChangeSetName": "changeset-TestStage-ecsStack"
+                  },
+                  "Name": "ExecuteChanges",
+                  "RoleArn": {
+                    "Fn::GetAtt": [
+                      "PipelineTestStageExecuteChangesCodePipelineActionRole92A91B69",
+                      "Arn"
+                    ]
+                  },
+                  "RunOrder": 2
+                },
+                {
+                  "ActionTypeId": {
+                    "Category": "Deploy",
+                    "Owner": "AWS",
                     "Provider": "ECS",
                     "Version": "1"
                   },
                   "Configuration": {
-                    "ClusterName": "teststage-ecsstackeecsstackclusterc0cbbdd5a4045b3c3e44",
-                    "ServiceName": "teststage-ecsstackckfargateservicee0fd7ddb3c75ddfbf877",
-                    "FileName": "imageFile.json"
+                    "ClusterName": "cluster-name",
+                    "ServiceName": "service-name"
                   },
                   "InputArtifacts": [
                     {
@@ -302,7 +376,7 @@
                     }
                   ],
                   "Name": "ECS",
-                  "Region": "us-west-2",
+                  "Region": "service-region",
                   "RoleArn": {
                     "Fn::Join": [
                       "",
@@ -311,11 +385,11 @@
                         {
                           "Ref": "AWS::Partition"
                         },
-                        ":iam::123456789012:role/deployrole"
+                        ":iam::service-account:role/deployrole"
                       ]
                     ]
                   },
-                  "RunOrder": 1
+                  "RunOrder": 3
                 }
               ],
               "Name": "TestStage"
@@ -333,16 +407,16 @@
                         {
                           "Ref": "AWS::Partition"
                         },
-                        ":kms:us-west-2:234567890123:alias/ck-suppotencryptionaliasc4e901c15e32d81a2380"
+                        ":kms:service-region:pipeline-account:alias/epipelintencryptionalias6398ac74ff79104bcf6e"
                       ]
                     ]
                   },
                   "Type": "KMS"
                 },
-                "Location": "createpipelinestack-suppoeplicationbucket85400285e4a9a6dd80de",
+                "Location": "existingecsservicepipelineplicationbucketaedc716a96aab89ec381",
                 "Type": "S3"
               },
-              "Region": "us-west-2"
+              "Region": "service-region"
             },
             {
               "ArtifactStore": {
@@ -360,7 +434,7 @@
                 },
                 "Type": "S3"
               },
-              "Region": "us-east-1"
+              "Region": "pipeline-region"
             }
           ]
         },
@@ -386,7 +460,7 @@
                         {
                           "Ref": "AWS::Partition"
                         },
-                        ":iam::234567890123:root"
+                        ":iam::pipeline-account:root"
                       ]
                     ]
                   }
@@ -488,6 +562,279 @@
           ]
         }
       },
+      "PipelineTestStagePrepareChangesCodePipelineActionRole96F79520": {
+        "Type": "AWS::IAM::Role",
+        "Properties": {
+          "AssumeRolePolicyDocument": {
+            "Statement": [
+              {
+                "Action": "sts:AssumeRole",
+                "Effect": "Allow",
+                "Principal": {
+                  "AWS": {
+                    "Fn::Join": [
+                      "",
+                      [
+                        "arn:",
+                        {
+                          "Ref": "AWS::Partition"
+                        },
+                        ":iam::pipeline-account:root"
+                      ]
+                    ]
+                  }
+                }
+              }
+            ],
+            "Version": "2012-10-17"
+          }
+        }
+      },
+      "PipelineTestStagePrepareChangesCodePipelineActionRoleDefaultPolicy815C349E": {
+        "Type": "AWS::IAM::Policy",
+        "Properties": {
+          "PolicyDocument": {
+            "Statement": [
+              {
+                "Action": "iam:PassRole",
+                "Effect": "Allow",
+                "Resource": {
+                  "Fn::GetAtt": [
+                    "PipelineTestStagePrepareChangesRoleB43D8DC1",
+                    "Arn"
+                  ]
+                }
+              },
+              {
+                "Action": [
+                  "s3:GetObject*",
+                  "s3:GetBucket*",
+                  "s3:List*"
+                ],
+                "Effect": "Allow",
+                "Resource": [
+                  {
+                    "Fn::GetAtt": [
+                      "PipelineArtifactsBucket22248F97",
+                      "Arn"
+                    ]
+                  },
+                  {
+                    "Fn::Join": [
+                      "",
+                      [
+                        {
+                          "Fn::GetAtt": [
+                            "PipelineArtifactsBucket22248F97",
+                            "Arn"
+                          ]
+                        },
+                        "/*"
+                      ]
+                    ]
+                  }
+                ]
+              },
+              {
+                "Action": [
+                  "kms:Decrypt",
+                  "kms:DescribeKey"
+                ],
+                "Effect": "Allow",
+                "Resource": {
+                  "Fn::GetAtt": [
+                    "PipelineArtifactsBucketEncryptionKey01D58D69",
+                    "Arn"
+                  ]
+                }
+              },
+              {
+                "Action": [
+                  "cloudformation:CreateChangeSet",
+                  "cloudformation:DeleteChangeSet",
+                  "cloudformation:DescribeChangeSet",
+                  "cloudformation:DescribeStacks"
+                ],
+                "Condition": {
+                  "StringEqualsIfExists": {
+                    "cloudformation:ChangeSetName": "changeset-TestStage-ecsStack"
+                  }
+                },
+                "Effect": "Allow",
+                "Resource": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":cloudformation:pipeline-region:pipeline-account:stack/TestStage-ecsStack/*"
+                    ]
+                  ]
+                }
+              }
+            ],
+            "Version": "2012-10-17"
+          },
+          "PolicyName": "PipelineTestStagePrepareChangesCodePipelineActionRoleDefaultPolicy815C349E",
+          "Roles": [
+            {
+              "Ref": "PipelineTestStagePrepareChangesCodePipelineActionRole96F79520"
+            }
+          ]
+        }
+      },
+      "PipelineTestStagePrepareChangesRoleB43D8DC1": {
+        "Type": "AWS::IAM::Role",
+        "Properties": {
+          "AssumeRolePolicyDocument": {
+            "Statement": [
+              {
+                "Action": "sts:AssumeRole",
+                "Effect": "Allow",
+                "Principal": {
+                  "Service": "cloudformation.amazonaws.com"
+                }
+              }
+            ],
+            "Version": "2012-10-17"
+          }
+        }
+      },
+      "PipelineTestStagePrepareChangesRoleDefaultPolicy56424C45": {
+        "Type": "AWS::IAM::Policy",
+        "Properties": {
+          "PolicyDocument": {
+            "Statement": [
+              {
+                "Action": [
+                  "s3:GetObject*",
+                  "s3:GetBucket*",
+                  "s3:List*"
+                ],
+                "Effect": "Allow",
+                "Resource": [
+                  {
+                    "Fn::GetAtt": [
+                      "PipelineArtifactsBucket22248F97",
+                      "Arn"
+                    ]
+                  },
+                  {
+                    "Fn::Join": [
+                      "",
+                      [
+                        {
+                          "Fn::GetAtt": [
+                            "PipelineArtifactsBucket22248F97",
+                            "Arn"
+                          ]
+                        },
+                        "/*"
+                      ]
+                    ]
+                  }
+                ]
+              },
+              {
+                "Action": [
+                  "kms:Decrypt",
+                  "kms:DescribeKey"
+                ],
+                "Effect": "Allow",
+                "Resource": {
+                  "Fn::GetAtt": [
+                    "PipelineArtifactsBucketEncryptionKey01D58D69",
+                    "Arn"
+                  ]
+                }
+              },
+              {
+                "Action": "*",
+                "Effect": "Allow",
+                "Resource": "*"
+              }
+            ],
+            "Version": "2012-10-17"
+          },
+          "PolicyName": "PipelineTestStagePrepareChangesRoleDefaultPolicy56424C45",
+          "Roles": [
+            {
+              "Ref": "PipelineTestStagePrepareChangesRoleB43D8DC1"
+            }
+          ]
+        }
+      },
+      "PipelineTestStageExecuteChangesCodePipelineActionRole92A91B69": {
+        "Type": "AWS::IAM::Role",
+        "Properties": {
+          "AssumeRolePolicyDocument": {
+            "Statement": [
+              {
+                "Action": "sts:AssumeRole",
+                "Effect": "Allow",
+                "Principal": {
+                  "AWS": {
+                    "Fn::Join": [
+                      "",
+                      [
+                        "arn:",
+                        {
+                          "Ref": "AWS::Partition"
+                        },
+                        ":iam::pipeline-account:root"
+                      ]
+                    ]
+                  }
+                }
+              }
+            ],
+            "Version": "2012-10-17"
+          }
+        }
+      },
+      "PipelineTestStageExecuteChangesCodePipelineActionRoleDefaultPolicy30A1554D": {
+        "Type": "AWS::IAM::Policy",
+        "Properties": {
+          "PolicyDocument": {
+            "Statement": [
+              {
+                "Action": [
+                  "cloudformation:DescribeChangeSet",
+                  "cloudformation:DescribeStacks",
+                  "cloudformation:ExecuteChangeSet"
+                ],
+                "Condition": {
+                  "StringEqualsIfExists": {
+                    "cloudformation:ChangeSetName": "changeset-TestStage-ecsStack"
+                  }
+                },
+                "Effect": "Allow",
+                "Resource": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":cloudformation:pipeline-region:pipeline-account:stack/TestStage-ecsStack/*"
+                    ]
+                  ]
+                }
+              }
+            ],
+            "Version": "2012-10-17"
+          },
+          "PolicyName": "PipelineTestStageExecuteChangesCodePipelineActionRoleDefaultPolicy30A1554D",
+          "Roles": [
+            {
+              "Ref": "PipelineTestStageExecuteChangesCodePipelineActionRole92A91B69"
+            }
+          ]
+        }
+      },
       "Vpc8378EB38": {
         "Type": "AWS::EC2::VPC",
         "Properties": {
@@ -498,7 +845,7 @@
           "Tags": [
             {
               "Key": "Name",
-              "Value": "CreatePipelineStack/Vpc"
+              "Value": "ExistingEcsServicePipelineStack/Vpc"
             }
           ]
         }
@@ -523,7 +870,7 @@
             },
             {
               "Key": "Name",
-              "Value": "CreatePipelineStack/Vpc/PublicSubnet1"
+              "Value": "ExistingEcsServicePipelineStack/Vpc/PublicSubnet1"
             }
           ]
         }
@@ -537,7 +884,7 @@
           "Tags": [
             {
               "Key": "Name",
-              "Value": "CreatePipelineStack/Vpc/PublicSubnet1"
+              "Value": "ExistingEcsServicePipelineStack/Vpc/PublicSubnet1"
             }
           ]
         }
@@ -575,7 +922,7 @@
           "Tags": [
             {
               "Key": "Name",
-              "Value": "CreatePipelineStack/Vpc/PublicSubnet1"
+              "Value": "ExistingEcsServicePipelineStack/Vpc/PublicSubnet1"
             }
           ]
         }
@@ -595,7 +942,7 @@
           "Tags": [
             {
               "Key": "Name",
-              "Value": "CreatePipelineStack/Vpc/PublicSubnet1"
+              "Value": "ExistingEcsServicePipelineStack/Vpc/PublicSubnet1"
             }
           ]
         }
@@ -620,7 +967,7 @@
             },
             {
               "Key": "Name",
-              "Value": "CreatePipelineStack/Vpc/PublicSubnet2"
+              "Value": "ExistingEcsServicePipelineStack/Vpc/PublicSubnet2"
             }
           ]
         }
@@ -634,7 +981,7 @@
           "Tags": [
             {
               "Key": "Name",
-              "Value": "CreatePipelineStack/Vpc/PublicSubnet2"
+              "Value": "ExistingEcsServicePipelineStack/Vpc/PublicSubnet2"
             }
           ]
         }
@@ -672,7 +1019,7 @@
           "Tags": [
             {
               "Key": "Name",
-              "Value": "CreatePipelineStack/Vpc/PublicSubnet2"
+              "Value": "ExistingEcsServicePipelineStack/Vpc/PublicSubnet2"
             }
           ]
         }
@@ -692,7 +1039,7 @@
           "Tags": [
             {
               "Key": "Name",
-              "Value": "CreatePipelineStack/Vpc/PublicSubnet2"
+              "Value": "ExistingEcsServicePipelineStack/Vpc/PublicSubnet2"
             }
           ]
         }
@@ -717,7 +1064,7 @@
             },
             {
               "Key": "Name",
-              "Value": "CreatePipelineStack/Vpc/PublicSubnet3"
+              "Value": "ExistingEcsServicePipelineStack/Vpc/PublicSubnet3"
             }
           ]
         }
@@ -731,7 +1078,7 @@
           "Tags": [
             {
               "Key": "Name",
-              "Value": "CreatePipelineStack/Vpc/PublicSubnet3"
+              "Value": "ExistingEcsServicePipelineStack/Vpc/PublicSubnet3"
             }
           ]
         }
@@ -769,7 +1116,7 @@
           "Tags": [
             {
               "Key": "Name",
-              "Value": "CreatePipelineStack/Vpc/PublicSubnet3"
+              "Value": "ExistingEcsServicePipelineStack/Vpc/PublicSubnet3"
             }
           ]
         }
@@ -789,7 +1136,7 @@
           "Tags": [
             {
               "Key": "Name",
-              "Value": "CreatePipelineStack/Vpc/PublicSubnet3"
+              "Value": "ExistingEcsServicePipelineStack/Vpc/PublicSubnet3"
             }
           ]
         }
@@ -814,7 +1161,7 @@
             },
             {
               "Key": "Name",
-              "Value": "CreatePipelineStack/Vpc/PrivateSubnet1"
+              "Value": "ExistingEcsServicePipelineStack/Vpc/PrivateSubnet1"
             }
           ]
         }
@@ -828,7 +1175,7 @@
           "Tags": [
             {
               "Key": "Name",
-              "Value": "CreatePipelineStack/Vpc/PrivateSubnet1"
+              "Value": "ExistingEcsServicePipelineStack/Vpc/PrivateSubnet1"
             }
           ]
         }
@@ -876,7 +1223,7 @@
             },
             {
               "Key": "Name",
-              "Value": "CreatePipelineStack/Vpc/PrivateSubnet2"
+              "Value": "ExistingEcsServicePipelineStack/Vpc/PrivateSubnet2"
             }
           ]
         }
@@ -890,7 +1237,7 @@
           "Tags": [
             {
               "Key": "Name",
-              "Value": "CreatePipelineStack/Vpc/PrivateSubnet2"
+              "Value": "ExistingEcsServicePipelineStack/Vpc/PrivateSubnet2"
             }
           ]
         }
@@ -938,7 +1285,7 @@
             },
             {
               "Key": "Name",
-              "Value": "CreatePipelineStack/Vpc/PrivateSubnet3"
+              "Value": "ExistingEcsServicePipelineStack/Vpc/PrivateSubnet3"
             }
           ]
         }
@@ -952,7 +1299,7 @@
           "Tags": [
             {
               "Key": "Name",
-              "Value": "CreatePipelineStack/Vpc/PrivateSubnet3"
+              "Value": "ExistingEcsServicePipelineStack/Vpc/PrivateSubnet3"
             }
           ]
         }
@@ -986,7 +1333,7 @@
           "Tags": [
             {
               "Key": "Name",
-              "Value": "CreatePipelineStack/Vpc"
+              "Value": "ExistingEcsServicePipelineStack/Vpc"
             }
           ]
         }
@@ -1023,7 +1370,7 @@
                         {
                           "Ref": "AWS::Partition"
                         },
-                        ":iam::234567890123:root"
+                        ":iam::pipeline-account:root"
                       ]
                     ]
                   }
@@ -1048,7 +1395,7 @@
                         {
                           "Ref": "AWS::Partition"
                         },
-                        ":iam::234567890123:root"
+                        ":iam::pipeline-account:root"
                       ]
                     ]
                   }
@@ -1070,7 +1417,7 @@
                         {
                           "Ref": "AWS::Partition"
                         },
-                        ":iam::123456789012:role/deployrole"
+                        ":iam::service-account:role/deployrole"
                       ]
                     ]
                   }
@@ -1087,7 +1434,7 @@
       "CrossRegionCodePipelineReplicationBucketEncryptionAliasF1A0F37D": {
         "Type": "AWS::KMS::Alias",
         "Properties": {
-          "AliasName": "alias/ck-suppotencryptionaliasc4e901c15e32d81a2380",
+          "AliasName": "alias/epipelintencryptionalias6398ac74ff79104bcf6e",
           "TargetKeyId": {
             "Fn::GetAtt": [
               "CrossRegionCodePipelineReplicationBucketEncryptionKey70216490",
@@ -1113,7 +1460,7 @@
                         {
                           "Ref": "AWS::Partition"
                         },
-                        ":kms:us-west-2:234567890123:alias/ck-suppotencryptionaliasc4e901c15e32d81a2380"
+                        ":kms:service-region:pipeline-account:alias/epipelintencryptionalias6398ac74ff79104bcf6e"
                       ]
                     ]
                   },
@@ -1122,7 +1469,7 @@
               }
             ]
           },
-          "BucketName": "createpipelinestack-suppoeplicationbucket85400285e4a9a6dd80de",
+          "BucketName": "existingecsservicepipelineplicationbucketaedc716a96aab89ec381",
           "PublicAccessBlockConfiguration": {
             "BlockPublicAcls": true,
             "BlockPublicPolicy": true,
@@ -1157,7 +1504,7 @@
                         {
                           "Ref": "AWS::Partition"
                         },
-                        ":iam::123456789012:role/deployrole"
+                        ":iam::service-account:role/deployrole"
                       ]
                     ]
                   }
