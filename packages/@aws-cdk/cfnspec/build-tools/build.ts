@@ -15,9 +15,9 @@ async function main() {
   const inputDir = path.join(process.cwd(), 'spec-source');
   const outDir = path.join(process.cwd(), 'spec');
 
-  await fs.copyFile(path.join(inputDir, 'cfn-docs', 'cfn-docs.json'), path.join(outDir, 'cfn-docs.json'));
   await generateResourceSpecification(inputDir, path.join(outDir, 'specification.json'));
   await mergeSpecificationFromDirs(path.join(inputDir, 'cfn-lint'), path.join(outDir, 'cfn-lint.json'));
+  await fs.copyFile(path.join(inputDir, 'cfn-docs', 'cfn-docs.json'), path.join(outDir, 'cfn-docs.json'));
 }
 
 /**
