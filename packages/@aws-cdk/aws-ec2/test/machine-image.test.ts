@@ -177,6 +177,74 @@ test('cached lookups of Amazon Linux', () => {
   ]);
 });
 
+test('lookups of Amazon Linux 2', () => {
+  // WHEN
+  const ami = ec2.MachineImage.latestAmazonLinux({
+    cachedInContext: true,
+    generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2,
+  }).getImage(stack).imageId;
+
+  // THEN
+  expect(ami).toEqual('dummy-value-for-/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2');
+  expect(app.synth().manifest.missing).toEqual([
+    {
+      key: 'ssm:account=1234:parameterName=/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2:region=testregion',
+      props: {
+        account: '1234',
+        region: 'testregion',
+        parameterName: '/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2',
+      },
+      provider: 'ssm',
+    },
+  ]);
+});
+
+test('lookups of Amazon Linux 2 with kernel 5.x', () => {
+  // WHEN
+  const ami = ec2.MachineImage.latestAmazonLinux({
+    cachedInContext: true,
+    generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2,
+    kernel: ec2.AmazonLinuxKernel.KERNEL5_X,
+  }).getImage(stack).imageId;
+
+  // THEN
+  expect(ami).toEqual('dummy-value-for-/aws/service/ami-amazon-linux-latest/amzn2-ami-kernel-5.10-hvm-x86_64-gp2');
+  expect(app.synth().manifest.missing).toEqual([
+    {
+      key: 'ssm:account=1234:parameterName=/aws/service/ami-amazon-linux-latest/amzn2-ami-kernel-5.10-hvm-x86_64-gp2:region=testregion',
+      props: {
+        account: '1234',
+        region: 'testregion',
+        parameterName: '/aws/service/ami-amazon-linux-latest/amzn2-ami-kernel-5.10-hvm-x86_64-gp2',
+      },
+      provider: 'ssm',
+    },
+  ]);
+});
+
+test('lookups of Amazon Linux 2022 with kernel 5.x', () => {
+  // WHEN
+  const ami = ec2.MachineImage.latestAmazonLinux({
+    cachedInContext: true,
+    generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2022,
+    // kernel: ec2.AmazonLinuxKernel.KERNEL5_X,
+  }).getImage(stack).imageId;
+
+  // THEN
+  expect(ami).toEqual('dummy-value-for-/aws/service/ami-amazon-linux-latest/al2022-ami-kernel-5.10-x86_64');
+  expect(app.synth().manifest.missing).toEqual([
+    {
+      key: 'ssm:account=1234:parameterName=/aws/service/ami-amazon-linux-latest/al2022-ami-kernel-5.10-x86_64:region=testregion',
+      props: {
+        account: '1234',
+        region: 'testregion',
+        parameterName: '/aws/service/ami-amazon-linux-latest/al2022-ami-kernel-5.10-x86_64',
+      },
+      provider: 'ssm',
+    },
+  ]);
+});
+
 function isWindowsUserData(ud: ec2.UserData) {
   return ud.render().indexOf('powershell') > -1;
 }

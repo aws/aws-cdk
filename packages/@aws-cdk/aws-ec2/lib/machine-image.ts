@@ -310,6 +310,13 @@ export interface AmazonLinuxImageProps {
   readonly edition?: AmazonLinuxEdition;
 
   /**
+   * What kernel version of Amazon Linux to use
+   *
+   * @default Standard
+   */
+  readonly kernel?: AmazonLinuxKernel;
+
+  /**
    * Virtualization type
    *
    * @default HVM
@@ -374,15 +381,24 @@ export class AmazonLinuxImage extends GenericSSMParameterImage {
    * Return the SSM parameter name that will contain the Amazon Linux image with the given attributes
    */
   public static ssmParameterName(props: AmazonLinuxImageProps = {}) {
-    const generation = (props && props.generation) || AmazonLinuxGeneration.AMAZON_LINUX;
-    const edition = (props && props.edition) || AmazonLinuxEdition.STANDARD;
-    const virtualization = (props && props.virtualization) || AmazonLinuxVirt.HVM;
-    const storage = (props && props.storage) || AmazonLinuxStorage.GENERAL_PURPOSE;
-    const cpu = (props && props.cpuType) || AmazonLinuxCpuType.X86_64;
+    let generation = (props && props.generation) || AmazonLinuxGeneration.AMAZON_LINUX;
+    let edition = (props && props.edition) || AmazonLinuxEdition.STANDARD;
+    let kernel = (props && props.kernel) || undefined;
+    let virtualization: AmazonLinuxVirt | undefined = (props && props.virtualization) || AmazonLinuxVirt.HVM;
+    let cpu = (props && props.cpuType) || AmazonLinuxCpuType.X86_64;
+    let storage: AmazonLinuxStorage | undefined = (props && props.storage) || AmazonLinuxStorage.GENERAL_PURPOSE;
+
+    if (generation === AmazonLinuxGeneration.AMAZON_LINUX_2022) {
+      kernel = AmazonLinuxKernel.KERNEL5_X;
+      storage = undefined;
+      virtualization = undefined;
+    }
+
     const parts: Array<string|undefined> = [
       generation,
       'ami',
       edition !== AmazonLinuxEdition.STANDARD ? edition : undefined,
+      kernel,
       virtualization,
       cpu,
       storage,
@@ -427,6 +443,21 @@ export enum AmazonLinuxGeneration {
    * Amazon Linux 2
    */
   AMAZON_LINUX_2 = 'amzn2',
+
+  /**
+   * Amazon Linux 2022
+   */
+  AMAZON_LINUX_2022 = 'al2022',
+}
+
+/**
+ * Amazon Linux Kernel
+ */
+export enum AmazonLinuxKernel {
+  /**
+   * Standard edition
+   */
+  KERNEL5_X = 'kernel-5.10',
 }
 
 /**
@@ -441,7 +472,7 @@ export enum AmazonLinuxEdition {
   /**
    * Minimal edition
    */
-  MINIMAL = 'minimal'
+  MINIMAL = 'minimal',
 }
 
 /**
@@ -456,7 +487,7 @@ export enum AmazonLinuxVirt {
   /**
    * PV virtualization
    */
-  PV = 'pv'
+  PV = 'pv',
 }
 
 export enum AmazonLinuxStorage {
@@ -468,7 +499,7 @@ export enum AmazonLinuxStorage {
   /**
    * S3-backed storage
    */
-  S3 = 'ebs',
+  S3 = 's3',
 
   /**
    * General Purpose-based storage (recommended)
