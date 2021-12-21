@@ -28,7 +28,7 @@
     "patch-package": "^6.4.7",
     "standard-version": "^9.3.2",
     "typescript": "~3.9.10",
-    "cdk-generate-synthetic-examples": "^0.0.4"
+    "cdk-generate-synthetic-examples": "^0.0.6"
   },
   "resolutions": {
     "string-width": "^4.2.3"
