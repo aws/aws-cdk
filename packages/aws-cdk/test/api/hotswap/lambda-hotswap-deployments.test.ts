@@ -2,12 +2,16 @@ import { Lambda } from 'aws-sdk';
 import * as setup from './hotswap-test-setup';
 
 let mockUpdateLambdaCode: (params: Lambda.Types.UpdateFunctionCodeRequest) => Lambda.Types.FunctionConfiguration;
+let mockTagResource: (params: Lambda.Types.TagResourceRequest) => {};
+let mockUntagResource: (params: Lambda.Types.UntagResourceRequest) => {};
 let hotswapMockSdkProvider: setup.HotswapMockSdkProvider;
 
 beforeEach(() => {
   hotswapMockSdkProvider = setup.setupHotswapTests();
   mockUpdateLambdaCode = jest.fn();
-  hotswapMockSdkProvider.setUpdateFunctionCodeMock(mockUpdateLambdaCode);
+  mockTagResource = jest.fn();
+  mockUntagResource = jest.fn();
+  hotswapMockSdkProvider.stubLambda(mockUpdateLambdaCode, mockTagResource, mockUntagResource);
 });
 
 test('returns undefined when a new Lambda function is added to the Stack', async () => {
@@ -78,6 +82,89 @@ test('calls the updateLambdaCode() API when it receives only a code difference i
     S3Bucket: 'current-bucket',
     S3Key: 'new-key',
   });
+});
+
+test('calls the tagResource() API when it receives only a tag difference in a Lambda function', async () => {
+  // GIVEN
+  const currentTemplate = {
+    Resources: {
+      Func: {
+        Type: 'AWS::Lambda::Function',
+        Properties: {
+          Code: {
+            S3Bucket: 'current-bucket',
+            S3Key: 'current-key',
+          },
+          FunctionName: 'my-function',
+          Tags: [
+            {
+              Key: 'to-be-deleted',
+              Value: 'a-value',
+            },
+            {
+              Key: 'to-be-changed',
+              Value: 'current-tag-value',
+            },
+          ],
+        },
+        Metadata: {
+          'aws:asset:path': 'old-path',
+        },
+      },
+    },
+  };
+
+  setup.setCurrentCfnStackTemplate(currentTemplate);
+  const cdkStackArtifact = setup.cdkStackArtifactOf({
+    template: {
+      Resources: {
+        Func: {
+          Type: 'AWS::Lambda::Function',
+          Properties: {
+            Code: {
+              S3Bucket: 'current-bucket',
+              S3Key: 'current-key',
+            },
+            FunctionName: 'my-function',
+            Tags: [
+              {
+                Key: 'to-be-changed',
+                Value: 'new-tag-value',
+              },
+              {
+                Key: 'to-be-added',
+                Value: 'added-tag-value',
+              },
+            ],
+          },
+          Metadata: {
+            'aws:asset:path': 'old-path',
+          },
+        },
+      },
+    },
+  });
+
+  // WHEN
+  const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(cdkStackArtifact);
+
+  // THEN
+  expect(deployStackResult).not.toBeUndefined();
+
+  expect(mockUntagResource).toHaveBeenCalledWith({
+    Resource: 'arn:aws:lambda:here:123456789012:function:my-function',
+    TagKeys: ['to-be-deleted'],
+  });
+
+  expect(mockTagResource).toHaveBeenCalledWith({
+    Resource: 'arn:aws:lambda:here:123456789012:function:my-function',
+    Tags: {
+      'to-be-changed': 'new-tag-value',
+      'to-be-added': 'added-tag-value',
+    },
+  });
+
+  expect(mockUpdateLambdaCode).not.toHaveBeenCalled();
 });
 
 test("correctly evaluates the function's name when it references a different resource from the template", async () => {

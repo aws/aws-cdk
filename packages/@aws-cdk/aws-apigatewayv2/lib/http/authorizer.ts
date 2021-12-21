@@ -10,6 +10,9 @@ import { IHttpRoute } from './route';
  * Supported Authorizer types
  */
 export enum HttpAuthorizerType {
+  /** IAM Authorizer */
+  IAM = 'AWS_IAM',
+
   /** JSON Web Tokens */
   JWT = 'JWT',
 
@@ -221,6 +224,7 @@ export interface HttpRouteAuthorizerConfig {
    * The type of authorization
    *
    * Possible values are:
+   * - AWS_IAM - IAM Authorizer
    * - JWT - JSON Web Token Authorizer
    * - CUSTOM - Lambda Authorizer
    * - NONE - No Authorization

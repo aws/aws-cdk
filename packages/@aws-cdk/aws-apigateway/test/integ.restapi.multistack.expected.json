@@ -144,7 +144,10 @@
             "Ref": "BooksApiDeployment86CA39AF4ff82f86c127f53c9de94d266b1906be"
           },
           "StageName": "prod"
-        }
+        },
+        "DependsOn": [
+          "BooksApiAccount9C44AF8E"
+        ]
       },
       "BooksApiANY0C4EABE3": {
         "Type": "AWS::ApiGateway::Method",

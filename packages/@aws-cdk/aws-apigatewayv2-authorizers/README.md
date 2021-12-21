@@ -25,6 +25,7 @@
   - [JWT Authorizers](#jwt-authorizers)
     - [User Pool Authorizer](#user-pool-authorizer)
   - [Lambda Authorizers](#lambda-authorizers)
+  - [IAM Authorizers](#iam-authorizers)
 - [WebSocket APIs](#websocket-apis)
   - [Lambda Authorizer](#lambda-authorizer)
 
@@ -197,6 +198,30 @@ api.addRoutes({
   path: '/books',
   authorizer,
 });
+```
+
+### IAM Authorizers
+
+API Gateway supports IAM via the included `HttpIamAuthorizer` and grant syntax:
+
+```ts
+import { HttpIamAuthorizer } from '@aws-cdk/aws-apigatewayv2-authorizers';
+import { HttpUrlIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
+
+declare const principal: iam.AnyPrincipal;
+
+const authorizer = new HttpIamAuthorizer();
+
+const httpApi = new apigwv2.HttpApi(this, 'HttpApi', {
+  defaultAuthorizer: authorizer,
+});
+
+const routes = httpApi.addRoutes({
+  integration: new HttpUrlIntegration('BooksIntegration', 'https://get-books-proxy.myproxy.internal'),
+  path: '/books/{book}',
+});
+
+routes[0].grantInvoke(principal);
 ```
 
 ## WebSocket APIs

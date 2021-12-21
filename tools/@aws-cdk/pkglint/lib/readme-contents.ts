@@ -66,9 +66,9 @@ export function cfnOnlyReadmeContents(options: LibraryReadmeOptions) {
     ...(options.alphaPackageName ? [
       '',
       '> The construct library for this service is in preview. Since it is not stable yet, it is distributed',
-      '> as a separate package so that you can pin its version independently of the rest of the CDK. See the package named:',
+      '> as a separate package so that you can pin its version independently of the rest of the CDK. See the package:',
       '>',
-      `>     ${options.alphaPackageName}`,
+      `> <span class="package-reference">${options.alphaPackageName}</span>`,
     ] : []),
     '',
     '<!--BEGIN CFNONLY DISCLAIMER-->',

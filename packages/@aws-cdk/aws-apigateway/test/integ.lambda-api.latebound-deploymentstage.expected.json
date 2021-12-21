@@ -377,7 +377,10 @@
           "Ref": "deployment3338197541aef5f15bf9a60b10e06fdbe72854f4"
         },
         "StageName": "prod"
-      }
+      },
+      "DependsOn": [
+        "lambdarestapiAccount856938D8"
+      ]
     }
   }
 }

@@ -700,7 +700,10 @@
           "Ref": "MyApiDeploymentECB0D05E58dcfc85d01f2b81270e177f5347476d"
         },
         "StageName": "prod"
-      }
+      },
+      "DependsOn": [
+        "MyApiAccount13882D84"
+      ]
     },
     "MyApiGETD0C7AA0C": {
       "Type": "AWS::ApiGateway::Method",

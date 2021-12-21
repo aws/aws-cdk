@@ -5,7 +5,7 @@ import * as kms from '@aws-cdk/aws-kms';
 import { testFutureBehavior, testLegacyBehavior } from '@aws-cdk/cdk-build-tools';
 import { App, Duration, Stack, CfnParameter } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import { Stream, StreamEncryption } from '../lib';
+import { Stream, StreamEncryption, StreamMode } from '../lib';
 
 /* eslint-disable quote-props */
 
@@ -373,6 +373,63 @@ describe('Kinesis data streams', () => {
       },
     });
   }),
+
+  test.each([StreamMode.ON_DEMAND, StreamMode.PROVISIONED])('uses explicit capacity mode %s', (mode: StreamMode) => {
+    const stack = new Stack();
+
+    new Stream(stack, 'MyStream', {
+      streamMode: mode,
+    });
+
+    expect(stack).toMatchTemplate({
+      Resources: {
+        MyStream5C050E93: {
+          Type: 'AWS::Kinesis::Stream',
+          Properties: {
+            ShardCount: 1,
+            RetentionPeriodHours: 24,
+            StreamModeDetails: {
+              StreamMode: StreamMode[mode],
+            },
+            StreamEncryption: {
+              'Fn::If': [
+                'AwsCdkKinesisEncryptedStreamsUnsupportedRegions',
+                {
+                  Ref: 'AWS::NoValue',
+                },
+                {
+                  EncryptionType: 'KMS',
+                  KeyId: 'alias/aws/kinesis',
+                },
+              ],
+            },
+          },
+        },
+      },
+      Conditions: {
+        AwsCdkKinesisEncryptedStreamsUnsupportedRegions: {
+          'Fn::Or': [
+            {
+              'Fn::Equals': [
+                {
+                  Ref: 'AWS::Region',
+                },
+                'cn-north-1',
+              ],
+            },
+            {
+              'Fn::Equals': [
+                {
+                  Ref: 'AWS::Region',
+                },
+                'cn-northwest-1',
+              ],
+            },
+          ],
+        },
+      },
+    });
+  });
 
   test('grantRead creates and attaches a policy with read only access to the principal', () => {
     const stack = new Stack();

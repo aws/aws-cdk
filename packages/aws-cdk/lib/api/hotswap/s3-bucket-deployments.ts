@@ -37,8 +37,10 @@ export async function isHotswappableS3BucketDeploymentChange(
 
 class S3BucketDeploymentHotswapOperation implements HotswapOperation {
   public readonly service = 'custom-s3-deployment';
+  public readonly resourceNames: string[];
 
   constructor(private readonly functionName: string, private readonly customResourceProperties: any) {
+    this.resourceNames = [this.customResourceProperties.DestinationBucketName];
   }
 
   public async apply(sdk: ISDK): Promise<any> {
@@ -116,6 +118,7 @@ function stringifyObject(obj: any): any {
 
 class EmptyHotswapOperation implements HotswapOperation {
   readonly service = 'empty';
+  public readonly resourceNames = [];
   public async apply(sdk: ISDK): Promise<any> {
     return Promise.resolve(sdk);
   }

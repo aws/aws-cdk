@@ -3,10 +3,11 @@ import * as GitHub from 'github-api';
 import { breakingModules } from './parser';
 import { findModulePath, moduleStability } from './module';
 
-const OWNER = "aws"
-const REPO = "aws-cdk"
-const EXEMPT_README = 'pr-linter/exempt-readme'
-const EXEMPT_TEST = 'pr-linter/exempt-test'
+const OWNER = 'aws';
+const REPO = 'aws-cdk';
+const EXEMPT_README = 'pr-linter/exempt-readme';
+const EXEMPT_TEST = 'pr-linter/exempt-test';
+const EXEMPT_BREAKING_CHANGE = 'pr-linter/exempt-breaking-change';
 
 class LinterError extends Error {
   constructor(message: string) {
@@ -18,9 +19,9 @@ function createGitHubClient() {
   const token = process.env.GITHUB_TOKEN;
 
   if (token) {
-    console.log("Creating authenticated GitHub Client")
+    console.log("Creating authenticated GitHub Client");
   } else {
-    console.log("Creating un-authenticated GitHub Client")
+    console.log("Creating un-authenticated GitHub Client");
   }
 
   return new GitHub({'token': token});
@@ -49,19 +50,19 @@ function readmeChanged(files: any[]) {
 function featureContainsReadme(issue: any, files: any[]) {
   if (isFeature(issue) && !readmeChanged(files) && !isPkgCfnspec(issue)) {
     throw new LinterError("Features must contain a change to a README file");
-  };
+  }
 };
 
 function featureContainsTest(issue: any, files: any[]) {
   if (isFeature(issue) && !testChanged(files)) {
     throw new LinterError("Features must contain a change to a test file");
-  };
+  }
 };
 
 function fixContainsTest(issue: any, files: any[]) {
   if (isFix(issue) && !testChanged(files)) {
     throw new LinterError("Fixes must contain a change to a test file");
-  };
+  }
 };
 
 function shouldExemptReadme(issue: any) {
@@ -70,6 +71,10 @@ function shouldExemptReadme(issue: any) {
 
 function shouldExemptTest(issue: any) {
   return hasLabel(issue, EXEMPT_TEST);
+}
+
+function shouldExemptBreakingChange(issue: any) {
+  return hasLabel(issue, EXEMPT_BREAKING_CHANGE);
 }
 
 function hasLabel(issue: any, labelName: string) {
@@ -93,7 +98,7 @@ function validateBreakingChangeFormat(title: string, body: string) {
       throw new LinterError(`Breaking changes should be indicated by starting a line with 'BREAKING CHANGE: ', variations are not allowed. (found: '${m[0]}')`);
     }
     if (m[0].substr('BREAKING CHANGE:'.length).trim().length === 0) {
-      throw new LinterError("The description of the first breaking change should immediately follow the 'BREAKING CHANGE: ' clause")
+      throw new LinterError("The description of the first breaking change should immediately follow the 'BREAKING CHANGE: ' clause");
     }
     const titleRe = /^[a-z]+\([0-9a-z-_]+\)/;
     if (!titleRe.exec(title)) {
@@ -104,7 +109,7 @@ function validateBreakingChangeFormat(title: string, body: string) {
 
 function assertStability(title: string, body: string) {
   const breakingStable = breakingModules(title, body)
-    .filter(mod => 'stable' === moduleStability(findModulePath(mod)))
+    .filter(mod => 'stable' === moduleStability(findModulePath(mod)));
 
   if (breakingStable.length > 0) {
     throw new Error(`Breaking changes in stable modules [${breakingStable.join(', ')}] is disallowed.`);
@@ -114,7 +119,7 @@ function assertStability(title: string, body: string) {
 export async function validatePr(number: number) {
 
   if (!number) {
-    throw new Error('Must provide a PR number')
+    throw new Error('Must provide a PR number');
   }
 
   const gh = createGitHubClient();
@@ -122,32 +127,35 @@ export async function validatePr(number: number) {
   const issues = gh.getIssues(OWNER, REPO);
   const repo = gh.getRepo(OWNER, REPO);
   
-  console.log(`⌛  Fetching PR number ${number}`)
+  console.log(`⌛  Fetching PR number ${number}`);
   const issue = (await issues.getIssue(number)).data;
   
-  console.log(`⌛  Fetching files for PR number ${number}`)
+  console.log(`⌛  Fetching files for PR number ${number}`);
   const files = (await repo.listPullRequestFiles(number)).data;
   
   console.log("⌛  Validating...");
   
   if (shouldExemptReadme(issue)) {
-    console.log(`Not validating README changes since the PR is labeled with '${EXEMPT_README}'`)
+    console.log(`Not validating README changes since the PR is labeled with '${EXEMPT_README}'`);
   } else {
     featureContainsReadme(issue, files);
   }
   
   if (shouldExemptTest(issue)) {
-    console.log(`Not validating test changes since the PR is labeled with '${EXEMPT_TEST}'`)
+    console.log(`Not validating test changes since the PR is labeled with '${EXEMPT_TEST}'`);
   } else {
     featureContainsTest(issue, files);
     fixContainsTest(issue, files);
   }
-  
+ 
   validateBreakingChangeFormat(issue.title, issue.body);
+  if (shouldExemptBreakingChange(issue)) {
+    console.log(`Not validating breaking changes since the PR is labeled with '${EXEMPT_BREAKING_CHANGE}'`);
+  } else {
+    assertStability(issue.title, issue.body);
+  }
 
-  assertStability(issue.title, issue.body)
-  
-  console.log("✅  Success")
+  console.log("✅  Success");
 
 }
 

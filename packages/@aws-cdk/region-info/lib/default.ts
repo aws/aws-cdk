@@ -1,3 +1,5 @@
+import { before, RULE_SSM_PRINCIPALS_ARE_REGIONAL } from './aws-entities';
+
 /**
  * Provides default values for certain regional information points.
  */
@@ -16,23 +18,21 @@ export class Default {
    * all you have is `{ "Ref": "AWS::Region" }`). This way you get the same defaulting behavior that is normally used
    * for built-in data.
    *
-   * @param service   the name of the service (s3, s3.amazonaws.com, ...)
+   * @param serviceFqn the name of the service (s3, s3.amazonaws.com, ...)
    * @param region    the region in which the service principal is needed.
-   * @param urlSuffix the URL suffix for the partition in which the region is located.
+   * @param urlSuffix deprecated and ignored.
    */
-  public static servicePrincipal(service: string, region: string, urlSuffix: string): string {
-    const matches = service.match(/^([^.]+)(?:(?:\.amazonaws\.com(?:\.cn)?)|(?:\.c2s\.ic\.gov)|(?:\.sc2s\.sgov\.gov))?$/);
-    if (!matches) {
+  public static servicePrincipal(serviceFqn: string, region: string, urlSuffix: string): string {
+    const service = extractSimpleName(serviceFqn);
+    if (!service) {
       // Return "service" if it does not look like any of the following:
       // - s3
       // - s3.amazonaws.com
       // - s3.amazonaws.com.cn
       // - s3.c2s.ic.gov
       // - s3.sc2s.sgov.gov
-      return service;
+      return serviceFqn;
     }
-
-    service = matches[1]; // Simplify the service name down to something like "s3"
 
     // Exceptions for Service Principals in us-iso-*
     const US_ISO_EXCEPTIONS = new Set([
@@ -40,12 +40,6 @@ export class Default {
       'config',
       'states',
       'workspaces',
-    ]);
-
-    // Exceptions for Service Principals in us-isob-*
-    const US_ISOB_EXCEPTIONS = new Set([
-      'dms',
-      'states',
     ]);
 
     // Account for idiosyncratic Service Principals in `us-iso-*` regions
@@ -61,6 +55,12 @@ export class Default {
       }
     }
 
+    // Exceptions for Service Principals in us-isob-*
+    const US_ISOB_EXCEPTIONS = new Set([
+      'dms',
+      'states',
+    ]);
+
     // Account for idiosyncratic Service Principals in `us-isob-*` regions
     if (region.startsWith('us-isob-') && US_ISOB_EXCEPTIONS.has(service)) {
       switch (service) {
@@ -74,6 +74,13 @@ export class Default {
       }
     }
 
+    // SSM turned from global to regional at some point
+    if (service === 'ssm') {
+      return before(region, RULE_SSM_PRINCIPALS_ARE_REGIONAL)
+        ? `${service}.amazonaws.com`
+        : `${service}.${region}.amazonaws.com`;
+    }
+
     switch (service) {
       // Services with a regional AND partitional principal
       case 'codedeploy':
@@ -82,7 +89,6 @@ export class Default {
 
       // Services with a regional principal
       case 'states':
-      case 'ssm':
         return `${service}.${region}.amazonaws.com`;
 
       // Services with a partitional principal
@@ -97,4 +103,9 @@ export class Default {
   }
 
   private constructor() { }
+}
+
+function extractSimpleName(serviceFqn: string) {
+  const matches = serviceFqn.match(/^([^.]+)(?:(?:\.amazonaws\.com(?:\.cn)?)|(?:\.c2s\.ic\.gov)|(?:\.sc2s\.sgov\.gov))?$/);
+  return matches ? matches[1] : undefined;
 }

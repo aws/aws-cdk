@@ -8,7 +8,9 @@ import { Policy } from './policy';
 import { PolicyDocument } from './policy-document';
 import { PolicyStatement } from './policy-statement';
 import { AddToPrincipalPolicyResult, ArnPrincipal, IPrincipal, PrincipalPolicyFragment } from './principals';
+import { defaultAddPrincipalToAssumeRole } from './private/assume-role-policy';
 import { ImmutableRole } from './private/immutable-role';
+import { MutatingPolicyDocumentAdapter } from './private/policydoc-adapter';
 import { AttachedPolicies, UniqueStringSet } from './util';
 
 /**
@@ -484,17 +486,21 @@ export interface IRole extends IIdentity {
 }
 
 function createAssumeRolePolicy(principal: IPrincipal, externalIds: string[]) {
-  const statement = new AwsStarStatement();
-  statement.addPrincipals(principal);
-  statement.addActions(principal.assumeRoleAction);
+  const actualDoc = new PolicyDocument();
 
-  if (externalIds.length) {
-    statement.addCondition('StringEquals', { 'sts:ExternalId': externalIds.length === 1 ? externalIds[0] : externalIds });
-  }
+  // If requested, add externalIds to every statement added to this doc
+  const addDoc = externalIds.length === 0
+    ? actualDoc
+    : new MutatingPolicyDocumentAdapter(actualDoc, (statement) => {
+      statement.addCondition('StringEquals', {
+        'sts:ExternalId': externalIds.length === 1 ? externalIds[0] : externalIds,
+      });
+      return statement;
+    });
 
-  const doc = new PolicyDocument();
-  doc.addStatements(statement);
-  return doc;
+  defaultAddPrincipalToAssumeRole(principal, addDoc);
+
+  return actualDoc;
 }
 
 function validateMaxSessionDuration(duration?: number) {
@@ -504,24 +510,6 @@ function validateMaxSessionDuration(duration?: number) {
 
   if (duration < 3600 || duration > 43200) {
     throw new Error(`maxSessionDuration is set to ${duration}, but must be >= 3600sec (1hr) and <= 43200sec (12hrs)`);
-  }
-}
-
-/**
- * A PolicyStatement that normalizes its Principal field differently
- *
- * Normally, "anyone" is normalized to "Principal: *", but this statement
- * normalizes to "Principal: { AWS: * }".
- */
-class AwsStarStatement extends PolicyStatement {
-  public toStatementJson(): any {
-    const stat = super.toStatementJson();
-
-    if (stat.Principal === '*') {
-      stat.Principal = { AWS: '*' };
-    }
-
-    return stat;
   }
 }
 
