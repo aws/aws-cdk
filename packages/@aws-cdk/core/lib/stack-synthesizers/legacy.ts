@@ -75,7 +75,7 @@ export class LegacyStackSynthesizer extends StackSynthesizer {
     }
     this.cycle = true;
     try {
-      return this.stack.synthesizer.addFileAsset(asset);
+      return this.stack.addFileAsset(asset);
     } finally {
       this.cycle = false;
     }
@@ -91,7 +91,7 @@ export class LegacyStackSynthesizer extends StackSynthesizer {
     }
     this.cycle = true;
     try {
-      return this.stack.synthesizer.addDockerImageAsset(asset);
+      return this.stack.addDockerImageAsset(asset);
     } finally {
       this.cycle = false;
     }
