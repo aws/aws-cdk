@@ -2916,10 +2916,10 @@ caseless@~0.12.0:
   resolved "https://registry.npmjs.org/caseless/-/caseless-0.12.0.tgz#1b681c21ff84033c826543090689420d187151dc"
   integrity sha1-G2gcIf+EAzyCZUMJBolCDRhxUdw=
 
-cdk-generate-synthetic-examples@^0.0.7:
-  version "0.0.7"
-  resolved "https://registry.npmjs.org/cdk-generate-synthetic-examples/-/cdk-generate-synthetic-examples-0.0.7.tgz#589fc9e439677fc9beaaa31821395b62b98081ce"
-  integrity sha512-qaHPNAqgcXsLhJ9HQ4kpHRBXxUQCTiQcyP3mQFoANq9sPSo/2YT045J4TE6oDMrTxXJWbyfgsEMbQCd1ApfgMg==
+cdk-generate-synthetic-examples@^0.0.8:
+  version "0.0.8"
+  resolved "https://registry.npmjs.org/cdk-generate-synthetic-examples/-/cdk-generate-synthetic-examples-0.0.8.tgz#bd2eb4027c9ee85c5ed3dd30d1bd181bdcb945b4"
+  integrity sha512-vgOnlidvoqDrNxaFE1RJV8fufAs4NVbZhi7T5DFhX5Hsh1aWF+koqjHfHZm8ONXELbey4XGQt7+LG89p0foJAA==
   dependencies:
     "@jsii/spec" "^1.49.0"
     fs-extra "^10.0.0"
