@@ -227,7 +227,6 @@ test('lookups of Amazon Linux 2022 with kernel 5.x', () => {
   const ami = ec2.MachineImage.latestAmazonLinux({
     cachedInContext: true,
     generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2022,
-    // kernel: ec2.AmazonLinuxKernel.KERNEL5_X,
   }).getImage(stack).imageId;
 
   // THEN
