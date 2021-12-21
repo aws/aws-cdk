@@ -77,11 +77,14 @@ interface EcsService {
 
 class EcsServiceHotswapOperation implements HotswapOperation {
   public readonly service = 'ecs-service';
+  public readonly resourceNames: string[] = [];
 
   constructor(
     private readonly taskDefinitionResource: any,
     private readonly servicesReferencingTaskDef: EcsService[],
-  ) {}
+  ) {
+    this.resourceNames = servicesReferencingTaskDef.map(ecsService => ecsService.serviceArn.split('/')[2]);
+  }
 
   public async apply(sdk: ISDK): Promise<any> {
     // Step 1 - update the changed TaskDefinition, creating a new TaskDefinition Revision

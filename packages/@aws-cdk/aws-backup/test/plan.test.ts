@@ -70,6 +70,81 @@ test('create a plan and add rules', () => {
   });
 });
 
+test('create a plan with continuous backup option', () => {
+  // GIVEN
+  const vault = new BackupVault(stack, 'Vault');
+
+  // WHEN
+  new BackupPlan(stack, 'Plan', {
+    backupVault: vault,
+    backupPlanRules: [
+      new BackupPlanRule({
+        enableContinuousBackup: true,
+      }),
+    ],
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Backup::BackupPlan', {
+    BackupPlan: {
+      BackupPlanName: 'Plan',
+      BackupPlanRule: [
+        {
+          EnableContinuousBackup: true,
+          Lifecycle: {
+            DeleteAfterDays: 35,
+          },
+          RuleName: 'PlanRule0',
+          TargetBackupVault: {
+            'Fn::GetAtt': [
+              'Vault23237E5B',
+              'BackupVaultName',
+            ],
+          },
+        },
+      ],
+    },
+  });
+});
+
+test('create a plan with continuous backup option and specify deleteAfter', () => {
+  // GIVEN
+  const vault = new BackupVault(stack, 'Vault');
+
+  // WHEN
+  new BackupPlan(stack, 'Plan', {
+    backupVault: vault,
+    backupPlanRules: [
+      new BackupPlanRule({
+        enableContinuousBackup: true,
+        deleteAfter: Duration.days(1),
+      }),
+    ],
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Backup::BackupPlan', {
+    BackupPlan: {
+      BackupPlanName: 'Plan',
+      BackupPlanRule: [
+        {
+          EnableContinuousBackup: true,
+          Lifecycle: {
+            DeleteAfterDays: 1,
+          },
+          RuleName: 'PlanRule0',
+          TargetBackupVault: {
+            'Fn::GetAtt': [
+              'Vault23237E5B',
+              'BackupVaultName',
+            ],
+          },
+        },
+      ],
+    },
+  });
+});
+
 test('create a plan and add rules - add BackupPlan.AdvancedBackupSettings.BackupOptions', () => {
   const vault = new BackupVault(stack, 'Vault');
   const otherVault = new BackupVault(stack, 'OtherVault');
@@ -233,4 +308,26 @@ test('synth fails when plan has no rules', () => {
   new BackupPlan(myStack, 'Plan');
 
   expect(() => app.synth()).toThrow(/A backup plan must have at least 1 rule/);
+});
+
+test('throws when moveToColdStorageAfter is used with enableContinuousBackup', () => {
+  expect(() => new BackupPlanRule({
+    enableContinuousBackup: true,
+    deleteAfter: Duration.days(30),
+    moveToColdStorageAfter: Duration.days(10),
+  })).toThrow(/`moveToColdStorageAfter` must not be specified if `enableContinuousBackup` is enabled/);
+});
+
+test('throws when deleteAfter is less than 1 in combination with enableContinuousBackup', () => {
+  expect(() => new BackupPlanRule({
+    enableContinuousBackup: true,
+    deleteAfter: Duration.days(0),
+  })).toThrow(/'deleteAfter' must be between 1 and 35 days if 'enableContinuousBackup' is enabled, but got 0 days/);
+});
+
+test('throws when deleteAfter is greater than 35 in combination with enableContinuousBackup', () => {
+  expect(() => new BackupPlanRule({
+    enableContinuousBackup: true,
+    deleteAfter: Duration.days(36),
+  })).toThrow(/'deleteAfter' must be between 1 and 35 days if 'enableContinuousBackup' is enabled, but got 36 days/);
 });
