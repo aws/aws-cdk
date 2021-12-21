@@ -74,7 +74,7 @@ class TestCreateEcsStack extends cdk.Stack {
      *
      * The role could be created in another pipeline or you could leverage the CDKBootstrap created role.
      *
-     *  To leverage the CDKBootstrap created role you would use something like this to define the resourceName
+     * To leverage the CDKBootstrap created role you would use something like this to define the resourceName.
      * 'hnb659fds' is the default bootstrap qualifier if you leverage a different qualifer change that.
      * const cdkBootstrapQualifier = 'hnb659fds';
      * const deployRoleName = `cdk-${cdkBootstrapQualifier}-deploy-role-${props.env!.account!}-${props.env!.region!}`;
@@ -88,40 +88,32 @@ class TestCreateEcsStack extends cdk.Stack {
       resource: 'role',
       resourceName: 'deployrole',
     });
-    this.deployRole = iam.Role.fromRoleArn(
-      this,
-      'DeployRole',
-      deployArn,
-    );
+    this.deployRole = iam.Role.fromRoleArn(this, 'DeployRole', deployArn);
     // Adding ECS Deploy Permissions to deployRole
-    this.deployRole.addToPrincipalPolicy(
-      new iam.PolicyStatement({
-        actions: [
-          'ecs:DescribeServices',
-          'ecs:DescribeTaskDefinition',
-          'ecs:DescribeTasks',
-          'ecs:ListTasks',
-          'ecs:RegisterTaskDefinition',
-          'ecs:UpdateService',
-        ],
-        resources: ['*'],
-      }),
-    );
+    this.deployRole.addToPrincipalPolicy(new iam.PolicyStatement({
+      actions: [
+        'ecs:DescribeServices',
+        'ecs:DescribeTaskDefinition',
+        'ecs:DescribeTasks',
+        'ecs:ListTasks',
+        'ecs:RegisterTaskDefinition',
+        'ecs:UpdateService',
+      ],
+      resources: ['*'],
+    }));
 
-    this.deployRole.addToPrincipalPolicy(
-      new iam.PolicyStatement({
-        actions: ['iam:PassRole'],
-        resources: ['*'],
-        conditions: {
-          StringEqualsIfExists: {
-            'iam:PassedToService': [
-              'ec2.amazonaws.com',
-              'ecs-tasks.amazonaws.com',
-            ],
-          },
+    this.deployRole.addToPrincipalPolicy(new iam.PolicyStatement({
+      actions: ['iam:PassRole'],
+      resources: ['*'],
+      conditions: {
+        StringEqualsIfExists: {
+          'iam:PassedToService': [
+            'ec2.amazonaws.com',
+            'ecs-tasks.amazonaws.com',
+          ],
         },
-      }),
-    );
+      },
+    }));
 
   }
 }
@@ -169,16 +161,12 @@ class PipelineEcsDeployCreateStack extends cdk.Stack {
         },
       ],
     });
-    const testStage = new TestCreateEcsStage(
-      this,
-      'TestStage',
-      {
-        env: {
-          region: 'us-west-2',
-          account: '123456789012',
-        },
+    const testStage = new TestCreateEcsStage(this, 'TestStage', {
+      env: {
+        region: 'us-west-2',
+        account: '123456789012',
       },
-    );
+    });
     const testIStage = pipeline.addStage(testStage);
     /**
      * This imports the service so it can be used by the ECS Deploy Action.

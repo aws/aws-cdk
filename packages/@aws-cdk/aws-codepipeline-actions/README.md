@@ -747,23 +747,24 @@ Here's an example:
 
 [example ECS pipeline for an application in a separate source code repository](test/integ.pipeline-ecs-separate-source.lit.ts)
 
-#### Deploying to ECS across account or regions with an existing service
+#### Deploying to an existing ECS service across account and/or regions
 
-CodePipeline can deploy to an existing ECS service across accounts and/or regions this requires importing of the ECS service in the
-account and region it is defined in to get the ARN for the service which then can be used to import the ECS service by the pipeline stack
-to determine the correct region for the ECS action.
+CodePipeline can deploy to an existing ECS service, even across accounts and/or regions.
+This requires importing the ECS service in the pipeline stack using the service's full ARN,
+which is then used to determine the correct account and region for the ECS Action.
 Here's an example:
 
-[example ECS pipeline existing ECS service cross account and region](test/integ.pipeline-ecs-import-cross-account.lit.ts)
+[example pipeline deploying to an existing ECS service cross account and region](test/integ.ecs-pipeline-cross-region-account-existing.lit.ts)
 
-#### Deploying to ECS across account or regions with an new service
+#### Deploying to a new ECS service across account and/or regions
 
-CodePipeline can deploy to an new ECS service across accounts and/or regions this requires creating of the ECS service in the
-account and region it is defined in and using stackFormat to get the ARN for the service which then can be used to import the
-ECS service by the pipeline stack to determine the correct region for the ECS action.
+CodePipeline can also deploy to a new ECS service across accounts and/or regions.
+This can be accomplished by using the `Stack.formatArn` method to save the full ARN of the service,
+which can then be used to import the ECS service in the pipeline stack,
+and the region and account of the ECS Action will be determined from that ARN.
 Here's an example:
 
-[example ECS pipeline new ECS service cross account and region](test/integ.pipeline-ecs-create-cross-account.lit.ts)
+[example pipeline deploying to a new ECS service cross account and region](test/integ.ecs-pipeline-cross-region-account-new.lit.ts)
 
 ### AWS S3 Deployment
 

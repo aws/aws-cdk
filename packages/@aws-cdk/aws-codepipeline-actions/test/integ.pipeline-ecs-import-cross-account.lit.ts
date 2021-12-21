@@ -11,8 +11,7 @@ import * as cpactions from '../lib';
 
 
 /**
- * This example demonstrates how to create a CodePipeline that deploy to an existing an ECS Service across
- * accounts and regions.
+ * This example demonstrates how to create a CodePipeline that deploys to an existing ECS Service across accounts and regions.
  * This will not deploy because integ tests only run in one account.
  * Updates to this require yarn integ --dry-run integ.pipeline-ecs-import-cross-account.lit.js to generate the expected JSON file.
  */
@@ -22,7 +21,7 @@ import * as cpactions from '../lib';
 const app = new cdk.App();
 
 /**
- * Deploying a existing ECS Service using CodePipeline across account(s) and/or region(s).
+ * Deploying to an existing ECS Service using CodePipeline across account(s) and/or region(s).
  */
 
 
@@ -37,13 +36,9 @@ class TestImportEcsStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props: cdk.StackProps) {
     super(scope, id, props);
     // import the existing VPC
-    const vpc = ec2.Vpc.fromLookup(
-      this,
-      'VpcLookup',
-      {
-        isDefault: false,
-      },
-    );
+    const vpc = ec2.Vpc.fromLookup(this, 'VpcLookup', {
+      isDefault: false,
+    });
     this.clusterName = 'cluster-name';
     const service = ecs.FargateService.fromFargateServiceAttributes(this, 'FargateService', {
       serviceName: 'service-name',
@@ -61,7 +56,7 @@ class TestImportEcsStack extends cdk.Stack {
      *
      * The role could be created in another pipeline or you could leverage the CDKBootstrap created role.
      *
-     *  To leverage the CDKBootstrap created role you would use something like this to define the resourceName
+     * To leverage the CDKBootstrap created role you would use something like this to define the resourceName.
      * 'hnb659fds' is the default bootstrap qualifier if you leverage a different qualifer change that.
      * const cdkBootstrapQualifier = 'hnb659fds';
      * const deployRoleName = `cdk-${cdkBootstrapQualifier}-deploy-role-${props.env!.account!}-${props.env!.region!}`;
@@ -75,40 +70,32 @@ class TestImportEcsStack extends cdk.Stack {
       resource: 'role',
       resourceName: 'deployrole',
     });
-    this.deployRole = iam.Role.fromRoleArn(
-      this,
-      'DeployRole',
-      deployArn,
-    );
+    this.deployRole = iam.Role.fromRoleArn(this, 'DeployRole', deployArn);
     // Adding ECS Deploy Permissions to deployRole
-    this.deployRole.addToPrincipalPolicy(
-      new iam.PolicyStatement({
-        actions: [
-          'ecs:DescribeServices',
-          'ecs:DescribeTaskDefinition',
-          'ecs:DescribeTasks',
-          'ecs:ListTasks',
-          'ecs:RegisterTaskDefinition',
-          'ecs:UpdateService',
-        ],
-        resources: ['*'],
-      }),
-    );
+    this.deployRole.addToPrincipalPolicy(new iam.PolicyStatement({
+      actions: [
+        'ecs:DescribeServices',
+        'ecs:DescribeTaskDefinition',
+        'ecs:DescribeTasks',
+        'ecs:ListTasks',
+        'ecs:RegisterTaskDefinition',
+        'ecs:UpdateService',
+      ],
+      resources: ['*'],
+    }));
 
-    this.deployRole.addToPrincipalPolicy(
-      new iam.PolicyStatement({
-        actions: ['iam:PassRole'],
-        resources: ['*'],
-        conditions: {
-          StringEqualsIfExists: {
-            'iam:PassedToService': [
-              'ec2.amazonaws.com',
-              'ecs-tasks.amazonaws.com',
-            ],
-          },
+    this.deployRole.addToPrincipalPolicy(new iam.PolicyStatement({
+      actions: ['iam:PassRole'],
+      resources: ['*'],
+      conditions: {
+        StringEqualsIfExists: {
+          'iam:PassedToService': [
+          'ec2.amazonaws.com',
+          'ecs-tasks.amazonaws.com',
+          ],
         },
-      }),
-    );
+      },
+    }));
   }
 }
 
@@ -155,16 +142,12 @@ class PipelineEcsDeployImportStack extends cdk.Stack {
         },
       ],
     });
-    const testStage = new TestImportEcsStage(
-      this,
-      'TestStage',
-      {
-        env: {
-          region: 'us-west-2',
-          account: '123456789012',
-        },
+    const testStage = new TestImportEcsStage(this, 'TestStage', {
+      env: {
+        region: 'us-west-2',
+        account: '123456789012',
       },
-    );
+    });
     const testIStage = pipeline.addStage(testStage);
     /**
      * This imports the service so it can be used by the ECS Deploy Action.
