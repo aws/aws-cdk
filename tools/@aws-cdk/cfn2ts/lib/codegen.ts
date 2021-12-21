@@ -966,7 +966,7 @@ export default class CodeGenerator {
   private docLink(link: string | undefined, ...before: string[]): void {
     if (!link && before.length === 0) { return; }
     this.code.line('/**');
-    before.flatMap(x => x.split('\n')).forEach(line => this.code.line(` * ${line}`.trimRight()));
+    before.flatMap(x => x.split('\n')).forEach(line => this.code.line(` * ${escapeDocText(line)}`.trimRight()));
     if (link) {
       if (before.length > 0) {
         this.code.line(' *');
@@ -974,7 +974,15 @@ export default class CodeGenerator {
       this.code.line(` * @link ${link}`);
     }
     this.code.line(' */');
-    return;
+
+    /**
+     * If '* /' occurs literally somewhere in the doc text, it will break the docstring parsing.
+     *
+     * Break up those characters by inserting a zero-width space.
+     */
+    function escapeDocText(x: string) {
+      return x.replace(/\*\//g, '*\u200b/');
+    }
   }
 }
 
