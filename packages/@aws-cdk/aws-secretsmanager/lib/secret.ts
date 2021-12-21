@@ -189,8 +189,8 @@ export class SecretStringValueBeta1 {
 
   /**
    * Creates a `SecretStringValueBeta1` from a plaintext value.
-   * This approach is inherently unsafe, as the secret value will be visible in plaintext in the resulting
-   * CloudFormation template, including in the AWS Console or APIs.
+   * This approach is inherently unsafe, as the secret value may be visible in your source control repository
+   * and will also appear in plaintext in the resulting CloudFormation template, including in the AWS Console or APIs.
    * Usage of this method is discouraged, especially for production workloads.
    */
   public static fromUnsafePlaintext(secretValue: string) { return new SecretStringValueBeta1(secretValue); }
@@ -202,6 +202,7 @@ export class SecretStringValueBeta1 {
    * This method throws if it determines the input is an unsafe plaintext string.
    *
    * For example:
+   * ```ts
    *     // Creates a new IAM user, access and secret keys, and stores the secret access key in a Secret.
    *     const user = new iam.User(this, 'User');
    *     const accessKey = new iam.CfnAccessKey(this, 'AccessKey', { userName: user.userName });
@@ -209,6 +210,7 @@ export class SecretStringValueBeta1 {
    *     new secretsmanager.Secret(this, 'Secret', {
    *       secretValueBeta1: secretValue,
    *     });
+   * ```
    *
    * The secret may also be embedded in a string representation of a JSON structure:
    *     const secretValue = SecretStringValueBeta1.fromToken(JSON.stringify({
