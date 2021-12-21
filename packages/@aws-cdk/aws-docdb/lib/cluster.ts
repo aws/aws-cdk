@@ -495,7 +495,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
    * Sets up CloudWatch log retention if configured.
    */
   private setLogRetention(cluster: DatabaseCluster, props: DatabaseClusterProps, cloudwatchLogsExports: string[]) {
-    if (cloudwatchLogsExports && props.cloudWatchLogsRetention) {
+    if (props.cloudWatchLogsRetention) {
       for (const log of cloudwatchLogsExports) {
         new logs.LogRetention(cluster, `LogRetention${log}`, {
           logGroupName: `/aws/docdb/${cluster.clusterIdentifier}/${log}`,
