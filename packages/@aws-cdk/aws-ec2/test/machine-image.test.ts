@@ -177,7 +177,7 @@ test('cached lookups of Amazon Linux', () => {
   ]);
 });
 
-test('lookups of Amazon Linux 2', () => {
+test('cached lookups of Amazon Linux 2', () => {
   // WHEN
   const ami = ec2.MachineImage.latestAmazonLinux({
     cachedInContext: true,
@@ -199,7 +199,7 @@ test('lookups of Amazon Linux 2', () => {
   ]);
 });
 
-test('lookups of Amazon Linux 2 with kernel 5.x', () => {
+test('cached lookups of Amazon Linux 2 with kernel 5.x', () => {
   // WHEN
   const ami = ec2.MachineImage.latestAmazonLinux({
     cachedInContext: true,
@@ -222,7 +222,7 @@ test('lookups of Amazon Linux 2 with kernel 5.x', () => {
   ]);
 });
 
-test('lookups of Amazon Linux 2022 with kernel 5.x', () => {
+test('cached lookups of Amazon Linux 2022 with kernel 5.x', () => {
   // WHEN
   const ami = ec2.MachineImage.latestAmazonLinux({
     cachedInContext: true,
