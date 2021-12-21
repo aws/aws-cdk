@@ -1,6 +1,6 @@
 import {
   CfnIdentityPool,
-} from '@aws-cdk/aws-cognito/lib/cognito.generated';
+} from '@aws-cdk/aws-cognito';
 import {
   IOpenIdConnectProvider,
   ISamlProvider,

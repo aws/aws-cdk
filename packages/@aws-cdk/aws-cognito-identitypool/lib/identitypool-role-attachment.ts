@@ -1,6 +1,6 @@
 import {
   CfnIdentityPoolRoleAttachment,
-} from '@aws-cdk/aws-cognito/lib/cognito.generated';
+} from '@aws-cdk/aws-cognito';
 import {
   IRole,
 } from '@aws-cdk/aws-iam';
