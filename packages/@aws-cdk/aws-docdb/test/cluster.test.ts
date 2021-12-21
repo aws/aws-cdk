@@ -667,7 +667,7 @@ describe('DatabaseCluster', () => {
       vpc,
       exportAuditLogsToCloudWatch: true,
       exportProfilerLogsToCloudWatch: true,
-      cloudwatchLogsRetention: logs.RetentionDays.THREE_MONTHS,
+      cloudWatchLogsRetention: logs.RetentionDays.THREE_MONTHS,
     });
 
     // THEN

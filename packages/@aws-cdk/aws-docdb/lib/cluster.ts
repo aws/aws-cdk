@@ -174,7 +174,7 @@ export interface DatabaseClusterProps {
    *
    * @default - logs never expire
    */
-  readonly cloudwatchLogsRetention?: logs.RetentionDays;
+  readonly cloudWatchLogsRetention?: logs.RetentionDays;
 
   /**
     * The IAM role for the Lambda function associated with the custom resource
@@ -182,7 +182,7 @@ export interface DatabaseClusterProps {
     *
     * @default - a new role is created.
     */
-  readonly cloudwatchLogsRetentionRole?: IRole;
+  readonly cloudWatchLogsRetentionRole?: IRole;
 }
 
 /**
@@ -495,12 +495,12 @@ export class DatabaseCluster extends DatabaseClusterBase {
    * Sets up CloudWatch log retention if configured.
    */
   private setLogRetention(cluster: DatabaseCluster, props: DatabaseClusterProps, cloudwatchLogsExports: string[]) {
-    if (cloudwatchLogsExports && props.cloudwatchLogsRetention) {
+    if (cloudwatchLogsExports && props.cloudWatchLogsRetention) {
       for (const log of cloudwatchLogsExports) {
         new logs.LogRetention(cluster, `LogRetention${log}`, {
           logGroupName: `/aws/docdb/${cluster.clusterIdentifier}/${log}`,
-          retention: props.cloudwatchLogsRetention,
-          role: props.cloudwatchLogsRetentionRole,
+          retention: props.cloudWatchLogsRetention,
+          role: props.cloudWatchLogsRetentionRole,
         });
       }
     }
