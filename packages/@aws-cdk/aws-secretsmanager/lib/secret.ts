@@ -206,14 +206,14 @@ export class SecretStringValueBeta1 {
    *     // Creates a new IAM user, access and secret keys, and stores the secret access key in a Secret.
    *     const user = new iam.User(this, 'User');
    *     const accessKey = new iam.CfnAccessKey(this, 'AccessKey', { userName: user.userName });
-   *     const secretValue = SecretStringValueBeta1.fromToken(accessKey.attrSecretAccessKey);
+   *     const secretValue = secretsmanager.SecretStringValueBeta1.fromToken(accessKey.attrSecretAccessKey);
    *     new secretsmanager.Secret(this, 'Secret', {
-   *       secretValueBeta1: secretValue,
+   *       secretStringBeta1: secretValue,
    *     });
    * ```
    *
    * The secret may also be embedded in a string representation of a JSON structure:
-   *     const secretValue = SecretStringValueBeta1.fromToken(JSON.stringify({
+   *     const secretValue = secretsmanager.SecretStringValueBeta1.fromToken(JSON.stringify({
    *       username: user.userName,
    *       database: 'foo',
    *       password: accessKey.attrSecretAccessKey
