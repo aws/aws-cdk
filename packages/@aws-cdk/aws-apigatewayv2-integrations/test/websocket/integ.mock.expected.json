@@ -1,0 +1,136 @@
+{
+  "Resources": {
+    "mywsapi32E6CE11": {
+      "Type": "AWS::ApiGatewayV2::Api",
+      "Properties": {
+        "Name": "mywsapi",
+        "ProtocolType": "WEBSOCKET",
+        "RouteSelectionExpression": "$request.body.action"
+      }
+    },
+    "mywsapiconnectRouteWebSocketIntegration127d0ae2db4af590bf857fb7403b7d4d61CE41B6": {
+      "Type": "AWS::ApiGatewayV2::Integration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "mywsapi32E6CE11"
+        },
+        "IntegrationType": "MOCK",
+        "IntegrationUri": ""
+      }
+    },
+    "mywsapiconnectRoute45A0ED6A": {
+      "Type": "AWS::ApiGatewayV2::Route",
+      "Properties": {
+        "ApiId": {
+          "Ref": "mywsapi32E6CE11"
+        },
+        "RouteKey": "$connect",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "mywsapiconnectRouteWebSocketIntegration127d0ae2db4af590bf857fb7403b7d4d61CE41B6"
+              }
+            ]
+          ]
+        }
+      }
+    },
+    "mywsapidisconnectRoute421A8CB9": {
+      "Type": "AWS::ApiGatewayV2::Route",
+      "Properties": {
+        "ApiId": {
+          "Ref": "mywsapi32E6CE11"
+        },
+        "RouteKey": "$disconnect",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "mywsapiconnectRouteWebSocketIntegration127d0ae2db4af590bf857fb7403b7d4d61CE41B6"
+              }
+            ]
+          ]
+        }
+      }
+    },
+    "mywsapidefaultRouteE9382DF8": {
+      "Type": "AWS::ApiGatewayV2::Route",
+      "Properties": {
+        "ApiId": {
+          "Ref": "mywsapi32E6CE11"
+        },
+        "RouteKey": "$default",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "mywsapiconnectRouteWebSocketIntegration127d0ae2db4af590bf857fb7403b7d4d61CE41B6"
+              }
+            ]
+          ]
+        }
+      }
+    },
+    "mywsapisendmessageRouteAE873328": {
+      "Type": "AWS::ApiGatewayV2::Route",
+      "Properties": {
+        "ApiId": {
+          "Ref": "mywsapi32E6CE11"
+        },
+        "RouteKey": "sendmessage",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "mywsapiconnectRouteWebSocketIntegration127d0ae2db4af590bf857fb7403b7d4d61CE41B6"
+              }
+            ]
+          ]
+        }
+      }
+    },
+    "mystage114C35EC": {
+      "Type": "AWS::ApiGatewayV2::Stage",
+      "Properties": {
+        "ApiId": {
+          "Ref": "mywsapi32E6CE11"
+        },
+        "StageName": "dev",
+        "AutoDeploy": true
+      }
+    }
+  },
+  "Outputs": {
+    "ApiEndpoint": {
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "wss://",
+            {
+              "Ref": "mywsapi32E6CE11"
+            },
+            ".execute-api.",
+            {
+              "Ref": "AWS::Region"
+            },
+            ".",
+            {
+              "Ref": "AWS::URLSuffix"
+            },
+            "/dev"
+          ]
+        ]
+      }
+    }
+  }
+}

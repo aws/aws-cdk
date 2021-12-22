@@ -19,29 +19,7 @@ describe('MockWebSocketIntegration', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Integration', {
       IntegrationType: 'MOCK',
-      IntegrationUri: {
-        'Fn::Join': [
-          '',
-          [
-            'arn:',
-            {
-              Ref: 'AWS::Partition',
-            },
-            ':apigateway:',
-            {
-              Ref: 'AWS::Region',
-            },
-            ':lambda:path/2015-03-31/functions/',
-            {
-              'Fn::GetAtt': [
-                'Fn9270CBC0',
-                'Arn',
-              ],
-            },
-            '/invocations',
-          ],
-        ],
-      },
+      IntegrationUri: '',
     });
   });
 });

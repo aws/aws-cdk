@@ -25,7 +25,7 @@ export class MockWebSocketIntegration implements IWebSocketRouteIntegration {
   bind(options: WebSocketRouteIntegrationBindOptions): WebSocketRouteIntegrationConfig {
     options; this.props;
     return {
-      type: WebSocketIntegrationType.AWS_PROXY,
+      type: WebSocketIntegrationType.MOCK,
       uri: '',
     };
   }

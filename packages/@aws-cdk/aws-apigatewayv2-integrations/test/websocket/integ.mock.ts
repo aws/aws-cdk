@@ -11,7 +11,7 @@ import { MockWebSocketIntegration } from '../../lib';
  */
 
 const app = new App();
-const stack = new Stack(app, 'WebSocketApiInteg');
+const stack = new Stack(app, 'integ-mock-websocket-integration');
 
 const webSocketApi = new WebSocketApi(stack, 'mywsapi', {
   connectRouteOptions: { integration: new MockWebSocketIntegration({ }) },
