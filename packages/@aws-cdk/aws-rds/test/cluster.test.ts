@@ -323,6 +323,56 @@ describe('cluster', () => {
     });
   });
 
+  test('cluster with inline parameter group', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA,
+      credentials: {
+        username: 'admin',
+      },
+      parameters: {
+        key: 'value',
+      },
+      instanceProps: {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        vpc,
+        parameters: {
+          key2: 'value2',
+        },
+      },
+    });
+
+    expect(stack).toHaveResource('AWS::RDS::DBCluster', {
+      DBClusterParameterGroupName: {
+        Ref: 'DatabaseParameterGroup2A921026',
+      },
+    });
+
+    expect(stack).toHaveResource('AWS::RDS::DBClusterParameterGroup', {
+      Family: 'aurora5.6',
+      Parameters: {
+        key: 'value',
+      },
+    });
+
+    expect(stack).toHaveResource('AWS::RDS::DBInstance', {
+      DBParameterGroupName: {
+        Ref: 'DatabaseInstanceParameterGroup6968C5BF',
+      },
+    });
+
+    expect(stack).toHaveResource('AWS::RDS::DBParameterGroup', {
+      Family: 'aurora5.6',
+      Parameters: {
+        key2: 'value2',
+      },
+    });
+  });
+
   describe('performance insights', () => {
     test('cluster with all performance insights properties', () => {
       // GIVEN
