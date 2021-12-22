@@ -11,7 +11,7 @@ import { FileSet, Step } from '../blueprint';
 import { CodePipelineActionFactoryResult, ProduceActionOptions, ICodePipelineActionFactory } from './codepipeline-action-factory';
 
 /**
- * CodePipeline source steps
+ * Factory for CodePipeline source steps
  *
  * This class contains a number of factory methods for the different types
  * of sources that CodePipeline supports.
