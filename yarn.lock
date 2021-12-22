@@ -2620,10 +2620,10 @@ caseless@~0.12.0:
   resolved "https://registry.npmjs.org/caseless/-/caseless-0.12.0.tgz#1b681c21ff84033c826543090689420d187151dc"
   integrity sha1-G2gcIf+EAzyCZUMJBolCDRhxUdw=
 
-cdk-generate-synthetic-examples@^0.0.8:
-  version "0.0.8"
-  resolved "https://registry.npmjs.org/cdk-generate-synthetic-examples/-/cdk-generate-synthetic-examples-0.0.8.tgz#bd2eb4027c9ee85c5ed3dd30d1bd181bdcb945b4"
-  integrity sha512-vgOnlidvoqDrNxaFE1RJV8fufAs4NVbZhi7T5DFhX5Hsh1aWF+koqjHfHZm8ONXELbey4XGQt7+LG89p0foJAA==
+cdk-generate-synthetic-examples@^0.1.0:
+  version "0.1.0"
+  resolved "https://registry.npmjs.org/cdk-generate-synthetic-examples/-/cdk-generate-synthetic-examples-0.1.0.tgz#9920188c0eadd010391e9ed5181b5362e4c5de8e"
+  integrity sha512-wQQw6SewjOwRQNQvi8oXktcaFgoVXekXgp+orKzjN4137xMocANoGngyh32wLtXQrtL6AMFPAax0thvcJNzWIQ==
   dependencies:
     "@jsii/spec" "^1.49.0"
     fs-extra "^10.0.0"
