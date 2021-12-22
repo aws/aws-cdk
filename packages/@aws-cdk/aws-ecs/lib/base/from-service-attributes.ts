@@ -1,7 +1,12 @@
-import { ArnFormat, Resource, Stack } from '@aws-cdk/core';
+import { ArnFormat, FeatureFlags, Fn, Resource, Stack, Token } from '@aws-cdk/core';
+import { ECS_ARN_FORMAT_INCLUDES_CLUSTER_NAME } from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { IBaseService } from '../base/base-service';
 import { ICluster } from '../cluster';
+
+// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
+// eslint-disable-next-line
+import { Construct as CoreConstruct } from '@aws-cdk/core';
 
 /**
  * The properties to import from the service.
@@ -32,22 +37,38 @@ export function fromServiceAtrributes(scope: Construct, id: string, attrs: Servi
     throw new Error('You can only specify either serviceArn or serviceName.');
   }
 
+  const featureConstruct = new CoreConstruct(scope, randomString());
+  const newArnFormat = FeatureFlags.of(featureConstruct).isEnabled(ECS_ARN_FORMAT_INCLUDES_CLUSTER_NAME);
+
   const stack = Stack.of(scope);
   let name: string;
   let arn: string;
   if (attrs.serviceName) {
     name = attrs.serviceName as string;
+    const resourceName = newArnFormat ? `${attrs.cluster.clusterName}/${attrs.serviceName}` : attrs.serviceName as string;
     arn = stack.formatArn({
       partition: stack.partition,
       service: 'ecs',
       region: stack.region,
       account: stack.account,
       resource: 'service',
-      resourceName: name,
+      resourceName,
     });
   } else {
     arn = attrs.serviceArn as string;
-    name = stack.splitArn(arn, ArnFormat.SLASH_RESOURCE_NAME).resourceName as string;
+    if (Token.isUnresolved(arn)) {
+      if (newArnFormat) {
+        const components = Fn.split(':', arn);
+        const lastComponents = Fn.split('/', Fn.select(5, components));
+        name = Fn.select(2, lastComponents);
+      } else {
+        name = stack.splitArn(arn, ArnFormat.SLASH_RESOURCE_NAME).resourceName as string;
+      }
+    } else {
+      const resourceName = stack.splitArn(arn, ArnFormat.SLASH_RESOURCE_NAME).resourceName as string;
+      const resourceNameSplit = resourceName.split('/');
+      name = resourceNameSplit.length === 1 ? resourceName : resourceNameSplit[1];
+    }
   }
   class Import extends Resource implements IBaseService {
     public readonly serviceArn = arn;
@@ -57,4 +78,9 @@ export function fromServiceAtrributes(scope: Construct, id: string, attrs: Servi
   return new Import(scope, id, {
     environmentFromArn: arn,
   });
+}
+
+function randomString() {
+  // Crazy
+  return Math.random().toString(36).replace(/[^a-z0-9]+/g, '');
 }

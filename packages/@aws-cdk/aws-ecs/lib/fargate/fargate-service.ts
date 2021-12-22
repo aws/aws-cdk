@@ -1,6 +1,7 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as cdk from '@aws-cdk/core';
-import { ArnFormat } from '@aws-cdk/core';
+import { ArnFormat, FeatureFlags, Fn, Token } from '@aws-cdk/core';
+import { ECS_ARN_FORMAT_INCLUDES_CLUSTER_NAME } from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { BaseService, BaseServiceOptions, DeploymentControllerType, IBaseService, IService, LaunchType } from '../base/base-service';
 import { fromServiceAtrributes } from '../base/from-service-attributes';
@@ -105,9 +106,25 @@ export class FargateService extends BaseService implements IFargateService {
   public static fromFargateServiceArn(scope: Construct, id: string, fargateServiceArn: string): IFargateService {
     class Import extends cdk.Resource implements IFargateService {
       public readonly serviceArn = fargateServiceArn;
-      public readonly serviceName = cdk.Stack.of(scope).splitArn(fargateServiceArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName as string;
+      public readonly serviceName: string;
+      constructor() {
+        super(scope, id);
+        const resourceName = cdk.Stack.of(scope).splitArn(fargateServiceArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName as string;
+        if (Token.isUnresolved(fargateServiceArn)) {
+          if (FeatureFlags.of(this).isEnabled(ECS_ARN_FORMAT_INCLUDES_CLUSTER_NAME)) {
+            const components = Fn.split(':', fargateServiceArn);
+            const lastComponents = Fn.split('/', Fn.select(5, components));
+            this.serviceName = Fn.select(2, lastComponents);
+          } else {
+            this.serviceName = resourceName;
+          }
+        } else {
+          const resourceNameSplit = resourceName.split('/');
+          this.serviceName = resourceNameSplit.length === 1 ? resourceName : resourceNameSplit[1];
+        }
+      }
     }
-    return new Import(scope, id);
+    return new Import();
   }
 
   /**

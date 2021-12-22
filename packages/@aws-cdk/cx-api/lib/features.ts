@@ -171,6 +171,17 @@ export const CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021 = '@aws-cdk/aws-cl
 export const TARGET_PARTITIONS = '@aws-cdk/core:target-partitions';
 
 /**
+ * ARN format used by ECS. In the new ARN format, the cluster name is part
+ * of the resource ID.
+ *
+ * If this flag is not set, the old ARN format (without cluster name) for ECS is used.
+ * If this flag is set, the new ARN format (with cluster name) for ECS is used.
+ *
+ * This is a feature flag as the old format is still valid for existing ECS clusters.
+ */
+export const ECS_ARN_FORMAT_INCLUDES_CLUSTER_NAME = '@aws-cdk/aws-ecs:arnFormatIncludesClusterName';
+
+/**
  * This map includes context keys and values for feature flags that enable
  * capabilities "from the future", which we could not introduce as the default
  * behavior due to backwards compatibility for existing projects.
@@ -197,6 +208,7 @@ export const FUTURE_FLAGS: { [key: string]: boolean } = {
   [EFS_DEFAULT_ENCRYPTION_AT_REST]: true,
   [LAMBDA_RECOGNIZE_VERSION_PROPS]: true,
   [CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021]: true,
+  [ECS_ARN_FORMAT_INCLUDES_CLUSTER_NAME]: true,
 
   // We will advertise this flag when the feature is complete
   // [NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: 'true',
@@ -235,6 +247,7 @@ const FUTURE_FLAGS_DEFAULTS: { [key: string]: boolean } = {
   [EFS_DEFAULT_ENCRYPTION_AT_REST]: false,
   [LAMBDA_RECOGNIZE_VERSION_PROPS]: false,
   [CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021]: false,
+  [ECS_ARN_FORMAT_INCLUDES_CLUSTER_NAME]: false,
 };
 
 export function futureFlagDefault(flag: string): boolean | undefined {
