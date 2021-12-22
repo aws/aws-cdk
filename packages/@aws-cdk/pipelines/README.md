@@ -716,6 +716,7 @@ new pipelines.CodePipeline(this, 'Pipeline', {
   selfMutationCodeBuildDefaults: { /* ... */ },
 });
 ```
+
 ### ECS Service CodePipeline deploy action
 
 If you want to deploy to an ECS service as a `Step` you can use `EcsDeployStep`
