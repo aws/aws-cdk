@@ -11,7 +11,6 @@ import { testFutureBehavior } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as rds from '../lib';
-import { SqlServerEngineVersion } from '../lib';
 
 let stack: cdk.Stack;
 let vpc: ec2.Vpc;
@@ -255,7 +254,7 @@ describe('instance', () => {
   test('instance with inline parameter group', () => {
     // WHEN
     new rds.DatabaseInstance(stack, 'Database', {
-      engine: rds.DatabaseInstanceEngine.sqlServerEe({ version: SqlServerEngineVersion.VER_12_00_5000_0_V1 }),
+      engine: rds.DatabaseInstanceEngine.sqlServerEe({ version: rds.SqlServerEngineVersion.VER_12_00_5000_0_V1 }),
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
       vpc,
       parameters: {
@@ -275,7 +274,6 @@ describe('instance', () => {
         key: 'value',
       },
     });
-
   });
 
   test('can specify subnet type', () => {
