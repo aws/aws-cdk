@@ -93,7 +93,7 @@ export abstract class CodePipelineSource extends Step implements ICodePipelineAc
    *
    * @example
    * declare const repository: codecommit.IRepository;
-   * CodePipelineSource.codeCommit(repository, 'main');
+   * pipelines.CodePipelineSource.codeCommit(repository, 'main');
    */
   public static codeCommit(repository: codecommit.IRepository, branch: string, props: CodeCommitSourceOptions = {}): CodePipelineSource {
     return new CodeCommitSource(repository, branch, props);
