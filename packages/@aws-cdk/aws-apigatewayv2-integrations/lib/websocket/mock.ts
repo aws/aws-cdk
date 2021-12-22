@@ -1,29 +1,24 @@
 import {
-  IWebSocketRouteIntegration,
+  WebSocketRouteIntegration,
   WebSocketIntegrationType,
-  WebSocketRouteIntegrationBindOptions,
   WebSocketRouteIntegrationConfig,
+  WebSocketRouteIntegrationBindOptions,
 } from '@aws-cdk/aws-apigatewayv2';
-
-/**
- * Mock WebSocket Integration props
- */
-export interface MockWebSocketIntegrationProps {
-  // TODO: any props?
-  /**
-   * Prop description
-   */
-  //readonly prop: IFunction
-}
 
 /**
  * Mock WebSocket Integration
  */
-export class MockWebSocketIntegration implements IWebSocketRouteIntegration {
-  constructor(private props: MockWebSocketIntegrationProps) {}
+export class MockWebSocketIntegration extends WebSocketRouteIntegration {
+
+  /**
+   * @param id id of the underlying integration construct
+   */
+  constructor(id: string) {
+    super(id);
+  }
 
   bind(options: WebSocketRouteIntegrationBindOptions): WebSocketRouteIntegrationConfig {
-    options; this.props;
+    options;
     return {
       type: WebSocketIntegrationType.MOCK,
       uri: '',

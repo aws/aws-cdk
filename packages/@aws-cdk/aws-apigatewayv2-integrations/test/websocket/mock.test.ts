@@ -11,9 +11,7 @@ describe('MockWebSocketIntegration', () => {
 
     // WHEN
     new WebSocketApi(stack, 'Api', {
-      connectRouteOptions: {
-        integration: new MockWebSocketIntegration({}),
-      },
+      defaultRouteOptions: { integration: new MockWebSocketIntegration('DefaultIntegration') },
     });
 
     // THEN
