@@ -716,6 +716,29 @@ new pipelines.CodePipeline(this, 'Pipeline', {
   selfMutationCodeBuildDefaults: { /* ... */ },
 });
 ```
+### ECS Service CodePipeline deploy action
+
+If you want to deploy to an ECS service as a `Step` you can use `EcsDeployStep`
+which will adding an `EcsDeployAction` to the stage.
+
+Here's an example the adds a ECS deployment action:
+
+```ts
+declare const input: pipelines.IFileSetProducer;
+declare const synth: pipelines.ShellStep;
+const stage = new MyApplicationStage(this, 'MyApplication');
+const pipeline = new pipelines.CodePipeline(this, 'Pipeline', { synth });
+
+const serviceArn = 'arn:aws:ecs:us-east-1:222222222222:service/service-name';
+const clusterName = 'cluster-name';
+const ecsDeployStep = new cdkp.EcsDeployStep(pipelineStack, 'DeployStep', {
+  clusterName: clusterName,
+  serviceArn: serviceArn,
+  input: input,
+});
+
+pipeline.addStage(stage, { post: [ecsDeployStep] });
+```
 
 ### Arbitrary CodePipeline actions
 
