@@ -19,6 +19,7 @@ Command                           | Description
 [`cdk synth`](#cdk-synthesize)    | Synthesize a CDK app to CloudFormation template(s)
 [`cdk diff`](#cdk-diff)           | Diff stacks against current state
 [`cdk deploy`](#cdk-deploy)       | Deploy a stack into an AWS account
+[`cdk watch`](#cdk-watch)         | Watches a CDK app for deployable and hotswappable changes
 [`cdk destroy`](#cdk-destroy)     | Deletes a stack from an AWS account
 [`cdk bootstrap`](#cdk-bootstrap) | Deploy a toolkit stack to support deploying large stacks & artifacts
 [`cdk doctor`](#cdk-doctor)       | Inspect the environment and produce information useful for troubleshooting
