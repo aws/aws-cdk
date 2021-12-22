@@ -11,7 +11,7 @@ import { FileSet, Step } from '../blueprint';
 import { CodePipelineActionFactoryResult, ProduceActionOptions, ICodePipelineActionFactory } from './codepipeline-action-factory';
 
 /**
- * CodePipeline source steps
+ * Factory for CodePipeline source steps
  *
  * This class contains a number of factory methods for the different types
  * of sources that CodePipeline supports.
@@ -48,14 +48,9 @@ export abstract class CodePipelineSource extends Step implements ICodePipelineAc
    * @param props The options, which include the key that identifies the source code file and
    * and how the pipeline should be triggered.
    *
-   * Example:
-   *
-   * ```ts
+   * @example
    * declare const bucket: s3.Bucket;
-   * pipelines.CodePipelineSource.s3(bucket, {
-   *   key: 'path/to/file.zip',
-   * });
-   * ```
+   * pipelines.CodePipelineSource.s3(bucket, 'path/to/file.zip');
    */
   public static s3(bucket: IBucket, objectKey: string, props: S3SourceOptions = {}): CodePipelineSource {
     return new S3Source(bucket, objectKey, props);
@@ -96,12 +91,9 @@ export abstract class CodePipelineSource extends Step implements ICodePipelineAc
    * @param branch The branch to use.
    * @param props The source properties.
    *
-   * Example:
-   *
-   * ```ts
-   * const repository: IRepository = ...
-   * CodePipelineSource.codeCommit(repository, 'main');
-   * ```
+   * @example
+   * declare const repository: codecommit.IRepository;
+   * pipelines.CodePipelineSource.codeCommit(repository, 'main');
    */
   public static codeCommit(repository: codecommit.IRepository, branch: string, props: CodeCommitSourceOptions = {}): CodePipelineSource {
     return new CodeCommitSource(repository, branch, props);
