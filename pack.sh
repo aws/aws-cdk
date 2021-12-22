@@ -40,10 +40,8 @@ scripts/run-rosetta.sh --infuse --pkgs-from $TMPDIR/jsii.txt
 
 # Jsii packaging (all at once using jsii-pacmak)
 echo "Packaging jsii modules" >&2
-rosetta_cache_file=$HOME/.s3buildcache/rosetta-cache.tabl.json
 $PACMAK \
   --verbose \
-  --rosetta-tablet ${rosetta_cache_file} \
   $(cat $TMPDIR/jsii.txt)
 
 # Non-jsii packaging, which means running 'package' in every individual
