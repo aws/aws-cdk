@@ -362,7 +362,7 @@ export class IdentityPool extends Resource implements IIdentityPool {
   public readonly identityPoolArn: string;
 
   /**
-   * The ARN of the Identity Pool
+   * The name of the Identity Pool
    * @attribute
    */
   public readonly identityPoolName: string;
