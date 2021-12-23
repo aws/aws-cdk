@@ -421,7 +421,7 @@ export class IdentityPool extends Resource implements IIdentityPool {
     });
     this.authenticatedRole = props.authenticatedRole ? props.authenticatedRole : this.configureDefaultRole('Authenticated');
     this.unauthenticatedRole = props.unauthenticatedRole ? props.unauthenticatedRole : this.configureDefaultRole('Unauthenticated');
-    const attachment = new IdentityPoolRoleAttachment(this, `${this.id}DefaultRoleAttachment`, {
+    const attachment = new IdentityPoolRoleAttachment(this, `DefaultRoleAttachment`, {
       identityPool: this,
       roles: {
         authenticated: this.authenticatedRole,
