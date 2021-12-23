@@ -405,7 +405,7 @@ export class IdentityPool extends Resource implements IIdentityPool {
     this.cfnIdentityPool = new CfnIdentityPool(this, id, {
       allowUnauthenticatedIdentities: props.allowUnauthenticatedIdentities ? true : false,
       allowClassicFlow: props.allowClassicFlow,
-      identityPoolName: props.identityPoolName,
+      identityPoolName: this.physicalName,
       developerProviderName: authProviders.customProvider,
       openIdConnectProviderArns: this.configureOpenIdConnectProviderArns(authProviders.openIdConnectProvider),
       samlProviderArns: this.configureSamlProviderArns(authProviders.samlProvider),
