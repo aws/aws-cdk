@@ -13,8 +13,6 @@ import {
   IResource,
   Stack,
   ArnFormat,
-  Lazy,
-  Names,
 } from '@aws-cdk/core';
 import {
   Construct,
@@ -394,9 +392,7 @@ export class IdentityPool extends Resource implements IIdentityPool {
 
   constructor(scope: Construct, private id: string, props:IdentityPoolProps = {}) {
     super(scope, id, {
-      physicalName: props.identityPoolName || Lazy.string({
-        produce: () => Names.uniqueId(this).substring(0, 20),
-      }),
+      physicalName: props.identityPoolName,
     });
     this.identityPoolName = this.physicalName;
     const authProviders: IdentityPoolAuthenticationProviders = props.authenticationProviders || {};

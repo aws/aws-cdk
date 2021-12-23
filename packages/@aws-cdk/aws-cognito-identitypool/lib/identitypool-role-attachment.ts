@@ -7,8 +7,6 @@ import {
 import {
   Resource,
   IResource,
-  Lazy,
-  Names,
 } from '@aws-cdk/core';
 import {
   Construct,
@@ -169,9 +167,7 @@ export class IdentityPoolRoleAttachment extends Resource implements IIdentityPoo
 
   constructor(scope: Construct, id: string, props: IdentityPoolRoleAttachmentProps) {
     super(scope, id, {
-      physicalName: props.identityPoolRoleAttachmentName || Lazy.string({
-        produce: () => Names.uniqueId(this).substring(0, 20),
-      }),
+      physicalName: props.identityPoolRoleAttachmentName,
     });
     this.identityPoolId = props.identityPool.identityPoolId;
     const authenticatedRole = props.roles?.authenticated;
