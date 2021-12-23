@@ -732,7 +732,7 @@ const pipeline = new pipelines.CodePipeline(this, 'Pipeline', { synth });
 
 const serviceArn = 'arn:aws:ecs:us-east-1:222222222222:service/service-name';
 const clusterName = 'cluster-name';
-const ecsDeployStep = new pipelines.EcsDeployStep(pipelineStack, 'DeployStep', {
+const ecsDeployStep = new pipelines.EcsDeployStep(this, 'DeployStep', {
   clusterName: clusterName,
   serviceArn: serviceArn,
   input: input,
