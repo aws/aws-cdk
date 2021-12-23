@@ -402,7 +402,7 @@ export class IdentityPool extends Resource implements IIdentityPool {
     const authProviders: IdentityPoolAuthenticationProviders = props.authenticationProviders || {};
     const providers = this.configureUserPool(authProviders.userPool);
     if (providers && providers.length) this.cognitoIdentityProviders = providers;
-    this.cfnIdentityPool = new CfnIdentityPool(this, id, {
+    this.cfnIdentityPool = new CfnIdentityPool(this, 'Resource', {
       allowUnauthenticatedIdentities: props.allowUnauthenticatedIdentities ? true : false,
       allowClassicFlow: props.allowClassicFlow,
       identityPoolName: this.physicalName,
