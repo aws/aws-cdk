@@ -132,10 +132,10 @@ The properties can also be passed directly to the identity pool.
 new cognito.IdentityPool(this, 'myidentitypool', {
   identityPoolName: 'myidentitypool',
   authenticationProviders: {
-    userPool: new UserPoolAuthenticationProvider({
+    userPool: {
       clientId: myUserPoolClientId,
       identityProviders: [...myUserPoolIdentityProviders]
-    }),
+    },
   },
 });
 ```
