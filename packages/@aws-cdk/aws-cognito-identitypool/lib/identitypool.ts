@@ -394,7 +394,6 @@ export class IdentityPool extends Resource implements IIdentityPool {
     super(scope, id, {
       physicalName: props.identityPoolName,
     });
-    this.identityPoolName = this.physicalName;
     const authProviders: IdentityPoolAuthenticationProviders = props.authenticationProviders || {};
     const providers = this.configureUserPool(authProviders.userPool);
     if (providers && providers.length) this.cognitoIdentityProviders = providers;
@@ -408,6 +407,7 @@ export class IdentityPool extends Resource implements IIdentityPool {
       supportedLoginProviders: this.configureLoginProviders(authProviders),
       cognitoIdentityProviders: providers,
     });
+    this.identityPoolName = this.cfnIdentityPool.attrName;
     this.identityPoolId = this.cfnIdentityPool.ref;
     this.identityPoolArn = Stack.of(scope).formatArn({
       service: 'cognito-identity',
@@ -519,10 +519,8 @@ export class IdentityPool extends Resource implements IIdentityPool {
    * Configure Default Roles For Identity Pool
    */
   private configureDefaultRole(type: string): IRole {
-    const name = `${this.id}${type}Role`;
     const assumedBy = this.configureDefaultGrantPrincipal(type.toLowerCase());
-    const role = new Role(this, name, {
-      roleName: name,
+    const role = new Role(this, `${this.id}${type}Role`, {
       description: `Default ${type} Role for Identity Pool ${this.identityPoolName}`,
       assumedBy,
     });
