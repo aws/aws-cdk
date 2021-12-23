@@ -111,8 +111,26 @@ export enum CustomResourceProviderRuntime {
 }
 
 /**
- * An AWS-Lambda backed custom resource provider.
+ * An AWS-Lambda backed custom resource provider, for CDK Construct Library constructs
  *
+ * This is a provider for `CustomResource` constructs, backed by an AWS Lambda
+ * Function. It only supports NodeJS runtimes.
+ *
+ * **This is not a generic custom resource provider class**. It is specifically
+ * intended to be used only by constructs in the AWS CDK Construct Library, and
+ * only exists here because of reverse dependency issues (for example, it cannot
+ * use `iam.PolicyStatement` objects, since the `iam` library already depends on
+ * the CDK `core` library and we cannot have cyclic dependencies).
+ *
+ * If you are not writing constructs for the AWS Construct Library, you should
+ * use the `Provider` class in the `custom-resources` module instead, which has
+ * a better API and supports all Lambda runtimes, not just Node.
+ *
+ * N.B.: When you are writing Custom Resource Providers, there are a number of
+ * lifecycle events you have to pay attention to. These are documented in the
+ * README of the `custom-resources` module. Be sure to give the documentation
+ * in that module a read, regardless of whether you end up using the Provider
+ * class in there or this one.
  */
 export class CustomResourceProvider extends CoreConstruct {
   /**

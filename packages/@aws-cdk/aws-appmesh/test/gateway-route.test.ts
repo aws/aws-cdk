@@ -1122,8 +1122,86 @@ describe('gateway route', () => {
           },
         },
       });
+    });
+  });
 
+  describe('with priority', () => {
+    test('should set the priority for http gateway route', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
 
+      // WHEN
+      const mesh = new appmesh.Mesh(stack, 'mesh', {
+        meshName: 'test-mesh',
+      });
+
+      const virtualGateway = new appmesh.VirtualGateway(stack, 'gateway-1', {
+        listeners: [appmesh.VirtualGatewayListener.http()],
+        mesh: mesh,
+      });
+
+      const virtualService = new appmesh.VirtualService(stack, 'vs-1', {
+        virtualServiceProvider: appmesh.VirtualServiceProvider.none(mesh),
+        virtualServiceName: 'target.local',
+      });
+
+      // Add an HTTP Route
+      virtualGateway.addGatewayRoute('gateway-http-route', {
+        routeSpec: appmesh.GatewayRouteSpec.http({
+          routeTarget: virtualService,
+          match: {
+          },
+          priority: 100,
+        }),
+        gatewayRouteName: 'gateway-http-route',
+      });
+
+      // THEN
+      expect(stack).toHaveResourceLike('AWS::AppMesh::GatewayRoute', {
+        Spec: {
+          Priority: 100,
+        },
+      });
+    });
+
+    test('should set the priority for grpc gateway route', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      const mesh = new appmesh.Mesh(stack, 'mesh', {
+        meshName: 'test-mesh',
+      });
+
+      const virtualGateway = new appmesh.VirtualGateway(stack, 'gateway-1', {
+        listeners: [appmesh.VirtualGatewayListener.grpc()],
+        mesh: mesh,
+      });
+
+      const virtualService = new appmesh.VirtualService(stack, 'vs-1', {
+        virtualServiceProvider: appmesh.VirtualServiceProvider.none(mesh),
+        virtualServiceName: 'target.local',
+      });
+
+      // Add an Grpc Route
+      new appmesh.GatewayRoute(stack, 'test-node', {
+        routeSpec: appmesh.GatewayRouteSpec.grpc({
+          match: {
+            serviceName: virtualService.virtualServiceName,
+          },
+          routeTarget: virtualService,
+          priority: 500,
+        }),
+        virtualGateway: virtualGateway,
+        gatewayRouteName: 'routeWithPriority',
+      });
+
+      // THEN
+      expect(stack).toHaveResourceLike('AWS::AppMesh::GatewayRoute', {
+        Spec: {
+          Priority: 500,
+        },
+      });
     });
   });
 
