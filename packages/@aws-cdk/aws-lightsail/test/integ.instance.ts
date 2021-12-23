@@ -1,5 +1,5 @@
 import * as cdk from '@aws-cdk/core';
-import { Instance, Bundle, Blueprint } from '../lib';
+import { Instance, Bundle, Platform, LinuxOSBlueprint } from '../lib';
 
 const app = new cdk.App();
 
@@ -12,5 +12,5 @@ const stack = new cdk.Stack(app, 'integ-lightsail-instance', { env });
 
 new Instance(stack, 'Instance', {
   bundle: Bundle.SMALL_2_0,
-  blueprint: Blueprint.AMAZON_LINUX_2,
+  image: Platform.linuxOS({ blueprint: LinuxOSBlueprint.AMAZON_LINUX_2 }),
 });
