@@ -483,7 +483,7 @@ export class IdentityPool extends Resource implements IIdentityPool {
    */
   private configureDefaultRole(type: string): IRole {
     const assumedBy = this.configureDefaultGrantPrincipal(type.toLowerCase());
-    const role = new Role(this, `${this.id}${type}Role`, {
+    const role = new Role(this, `${type}Role`, {
       description: `Default ${type} Role for Identity Pool ${this.identityPoolName}`,
       assumedBy,
     });
