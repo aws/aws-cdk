@@ -386,7 +386,7 @@ export class IdentityPool extends Resource implements IIdentityPool {
    */
   private roleAttachmentCount: number = 0;
 
-  constructor(scope: Construct, private id: string, props:IdentityPoolProps = {}) {
+  constructor(scope: Construct, id: string, props:IdentityPoolProps = {}) {
     super(scope, id, {
       physicalName: props.identityPoolName,
     });

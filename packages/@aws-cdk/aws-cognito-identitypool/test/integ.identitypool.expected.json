@@ -127,7 +127,7 @@
         }
       }
     },
-    "identitypoolidentitypoolAuthenticatedRole8591A38F": {
+    "identitypoolAuthenticatedRoleB074B49D": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -168,7 +168,7 @@
         }
       }
     },
-    "identitypoolidentitypoolAuthenticatedRoleDefaultPolicy8660132D": {
+    "identitypoolAuthenticatedRoleDefaultPolicyCB4D2992": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -181,15 +181,15 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "identitypoolidentitypoolAuthenticatedRoleDefaultPolicy8660132D",
+        "PolicyName": "identitypoolAuthenticatedRoleDefaultPolicyCB4D2992",
         "Roles": [
           {
-            "Ref": "identitypoolidentitypoolAuthenticatedRole8591A38F"
+            "Ref": "identitypoolAuthenticatedRoleB074B49D"
           }
         ]
       }
     },
-    "identitypoolidentitypoolUnauthenticatedRoleCEE08F6C": {
+    "identitypoolUnauthenticatedRoleE61CAC70": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -230,7 +230,7 @@
         }
       }
     },
-    "identitypoolidentitypoolUnauthenticatedRoleDefaultPolicyA8F8549F": {
+    "identitypoolUnauthenticatedRoleDefaultPolicyBFACCE98": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyDocument": {
@@ -243,15 +243,15 @@
           ],
           "Version": "2012-10-17"
         },
-        "PolicyName": "identitypoolidentitypoolUnauthenticatedRoleDefaultPolicyA8F8549F",
+        "PolicyName": "identitypoolUnauthenticatedRoleDefaultPolicyBFACCE98",
         "Roles": [
           {
-            "Ref": "identitypoolidentitypoolUnauthenticatedRoleCEE08F6C"
+            "Ref": "identitypoolUnauthenticatedRoleE61CAC70"
           }
         ]
       }
     },
-    "identitypoolDefaultRoleAttachmentC73843DE": {
+    "identitypoolDefaultRoleAttachment6BCAB114": {
       "Type": "AWS::Cognito::IdentityPoolRoleAttachment",
       "Properties": {
         "IdentityPoolId": {
@@ -260,24 +260,24 @@
         "Roles": {
           "authenticated": {
             "Fn::GetAtt": [
-              "identitypoolidentitypoolAuthenticatedRole8591A38F",
+              "identitypoolAuthenticatedRoleB074B49D",
               "Arn"
             ]
           },
           "unauthenticated": {
             "Fn::GetAtt": [
-              "identitypoolidentitypoolUnauthenticatedRoleCEE08F6C",
+              "identitypoolUnauthenticatedRoleE61CAC70",
               "Arn"
             ]
           }
         }
       },
       "DependsOn": [
-        "identitypoolidentitypoolAuthenticatedRoleDefaultPolicy8660132D",
-        "identitypoolidentitypoolAuthenticatedRole8591A38F",
-        "identitypoolidentitypoolUnauthenticatedRoleDefaultPolicyA8F8549F",
-        "identitypoolidentitypoolUnauthenticatedRoleCEE08F6C",
-        "identitypoolE2A6D099"
+        "identitypoolAuthenticatedRoleDefaultPolicyCB4D2992",
+        "identitypoolAuthenticatedRoleB074B49D",
+        "identitypoolE2A6D099",
+        "identitypoolUnauthenticatedRoleDefaultPolicyBFACCE98",
+        "identitypoolUnauthenticatedRoleE61CAC70"
       ]
     }
   }

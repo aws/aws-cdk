@@ -32,12 +32,6 @@ export interface IIdentityPoolRoleAttachment extends IResource {
 export interface IdentityPoolRoleAttachmentProps {
 
   /**
-   * The name of the Identity Pool Role Attachment
-   * @default - automatically generated name by CloudFormation at deploy time
-   */
-  readonly identityPoolRoleAttachmentName?: string;
-
-  /**
    * Id of the Attachments Underlying Identity Pool
    */
   readonly identityPool: IIdentityPool;
@@ -155,9 +149,7 @@ export class IdentityPoolRoleAttachment extends Resource implements IIdentityPoo
   public readonly identityPoolId: string
 
   constructor(scope: Construct, id: string, props: IdentityPoolRoleAttachmentProps) {
-    super(scope, id, {
-      physicalName: props.identityPoolRoleAttachmentName,
-    });
+    super(scope, id);
     this.identityPoolId = props.identityPool.identityPoolId;
     const mappings = props.roleMappings || [];
     let roles: any = undefined, roleMappings: any = undefined;

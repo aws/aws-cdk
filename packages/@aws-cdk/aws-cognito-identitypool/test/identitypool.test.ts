@@ -383,13 +383,13 @@ describe('role mappings', () => {
       Roles: {
         authenticated: {
           'Fn::GetAtt': [
-            'TestIdentityPoolRoleMappingTokenTestIdentityPoolRoleMappingTokenAuthenticatedRoleD2ED95FF',
+            'TestIdentityPoolRoleMappingTokenAuthenticatedRoleD99CE043',
             'Arn',
           ],
         },
         unauthenticated: {
           'Fn::GetAtt': [
-            'TestIdentityPoolRoleMappingTokenTestIdentityPoolRoleMappingTokenUnauthenticatedRole0BEF1509',
+            'TestIdentityPoolRoleMappingTokenUnauthenticatedRole1D86D800',
             'Arn',
           ],
         },
@@ -512,13 +512,13 @@ describe('role mappings', () => {
       Roles: {
         authenticated: {
           'Fn::GetAtt': [
-            'TestIdentityPoolRoleMappingRulesTestIdentityPoolRoleMappingRulesAuthenticatedRole1785BA7D',
+            'TestIdentityPoolRoleMappingRulesAuthenticatedRole14D102C7',
             'Arn',
           ],
         },
         unauthenticated: {
           'Fn::GetAtt': [
-            'TestIdentityPoolRoleMappingRulesTestIdentityPoolRoleMappingRulesUnauthenticatedRoleA5D688B7',
+            'TestIdentityPoolRoleMappingRulesUnauthenticatedRole79A7AF99',
             'Arn',
           ],
         },
