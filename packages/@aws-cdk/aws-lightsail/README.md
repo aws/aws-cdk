@@ -23,8 +23,8 @@
 
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
-```ts
-import lightsail = require('@aws-cdk/aws-lightsail');
+```ts nofixture
+import * as lightsail from '@aws-cdk/aws-lightsail';
 ```
 
 ## Instance

@@ -1,14 +1,13 @@
 /// !cdk-integ Stack1 Stack2
 
 import * as sns from '@aws-cdk/aws-sns';
-import { App, Fn, Stack } from '@aws-cdk/core';
-import * as cfn from '../lib';
+import { App, Fn, NestedStack, Stack } from '@aws-cdk/core';
 
 const app = new App();
 const stack1 = new Stack(app, 'Stack1');
 const stack2 = new Stack(app, 'Stack2');
 
-const nestedUnderStack1 = new cfn.NestedStack(stack1, 'NestedUnderStack1');
+const nestedUnderStack1 = new NestedStack(stack1, 'NestedUnderStack1');
 const topicInNestedUnderStack1 = new sns.Topic(nestedUnderStack1, 'TopicInNestedUnderStack1');
 
 new sns.Topic(stack2, 'TopicInStack2', {

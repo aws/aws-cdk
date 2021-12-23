@@ -4,41 +4,68 @@ import { ListStackResources } from './common';
 
 export class CfnEvaluationException extends Error {}
 
+export interface ResourceDefinition {
+  readonly LogicalId: string;
+  readonly Type: string;
+  readonly Properties: { [p: string]: any };
+}
+
 export interface EvaluateCloudFormationTemplateProps {
   readonly stackArtifact: cxapi.CloudFormationStackArtifact;
   readonly parameters: { [parameterName: string]: string };
   readonly account: string;
   readonly region: string;
   readonly partition: string;
-  readonly urlSuffix: string;
-
+  readonly urlSuffix: (region: string) => string;
   readonly listStackResources: ListStackResources;
 }
 
 export class EvaluateCloudFormationTemplate {
   private readonly stackResources: ListStackResources;
+  private readonly template: { [section: string]: { [headings: string]: any } };
   private readonly context: { [k: string]: string };
   private readonly account: string;
   private readonly region: string;
   private readonly partition: string;
+  private readonly urlSuffix: (region: string) => string;
+  private cachedUrlSuffix: string | undefined;
 
   constructor(props: EvaluateCloudFormationTemplateProps) {
     this.stackResources = props.listStackResources;
+    this.template = props.stackArtifact.template;
     this.context = {
       'AWS::AccountId': props.account,
       'AWS::Region': props.region,
       'AWS::Partition': props.partition,
-      'AWS::URLSuffix': props.urlSuffix,
       ...props.parameters,
     };
     this.account = props.account;
     this.region = props.region;
     this.partition = props.partition;
+    this.urlSuffix = props.urlSuffix;
   }
 
   public async findPhysicalNameFor(logicalId: string): Promise<string | undefined> {
     const stackResources = await this.stackResources.listStackResources();
     return stackResources.find(sr => sr.LogicalResourceId === logicalId)?.PhysicalResourceId;
+  }
+
+  public async findLogicalIdForPhysicalName(physicalName: string): Promise<string | undefined> {
+    const stackResources = await this.stackResources.listStackResources();
+    return stackResources.find(sr => sr.PhysicalResourceId === physicalName)?.LogicalResourceId;
+  }
+
+  public findReferencesTo(logicalId: string): Array<ResourceDefinition> {
+    const ret = new Array<ResourceDefinition>();
+    for (const [resourceLogicalId, resourceDef] of Object.entries(this.template?.Resources ?? {})) {
+      if (logicalId !== resourceLogicalId && this.references(logicalId, resourceDef)) {
+        ret.push({
+          ...(resourceDef as any),
+          LogicalId: resourceLogicalId,
+        });
+      }
+    }
+    return ret;
   }
 
   public async evaluateCfnExpression(cfnExpression: any): Promise<any> {
@@ -131,6 +158,26 @@ export class EvaluateCloudFormationTemplate {
     return cfnExpression;
   }
 
+  private references(logicalId: string, templateElement: any): boolean {
+    if (typeof templateElement === 'string') {
+      return logicalId === templateElement;
+    }
+
+    if (templateElement == null) {
+      return false;
+    }
+
+    if (Array.isArray(templateElement)) {
+      return templateElement.some(el => this.references(logicalId, el));
+    }
+
+    if (typeof templateElement === 'object') {
+      return Object.values(templateElement).some(el => this.references(logicalId, el));
+    }
+
+    return false;
+  }
+
   private parseIntrinsic(x: any): Intrinsic | undefined {
     const keys = Object.keys(x);
     if (keys.length === 1 && (keys[0].startsWith('Fn::') || keys[0] === 'Ref')) {
@@ -144,6 +191,14 @@ export class EvaluateCloudFormationTemplate {
 
   private async findRefTarget(logicalId: string): Promise<string | undefined> {
     // first, check to see if the Ref is a Parameter who's value we have
+    if (logicalId === 'AWS::URLSuffix') {
+      if (!this.cachedUrlSuffix) {
+        this.cachedUrlSuffix = this.urlSuffix(this.region);
+      }
+
+      return this.cachedUrlSuffix;
+    }
+
     const parameterTarget = this.context[logicalId];
     if (parameterTarget) {
       return parameterTarget;

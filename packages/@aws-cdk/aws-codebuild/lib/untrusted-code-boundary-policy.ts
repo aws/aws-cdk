@@ -39,7 +39,8 @@ export interface UntrustedCodeBoundaryPolicyProps {
  *
  * @example
  *
- * iam.PermissionsBoundary.of(project).apply(new UntrustedCodeBoundaryPolicy(this, 'Boundary'));
+ * declare const project: codebuild.Project;
+ * iam.PermissionsBoundary.of(project).apply(new codebuild.UntrustedCodeBoundaryPolicy(this, 'Boundary'));
  */
 export class UntrustedCodeBoundaryPolicy extends iam.ManagedPolicy {
   constructor(scope: Construct, id: string, props: UntrustedCodeBoundaryPolicyProps = {}) {

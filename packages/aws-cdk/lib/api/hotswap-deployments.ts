@@ -1,11 +1,16 @@
 import * as cfn_diff from '@aws-cdk/cloudformation-diff';
 import * as cxapi from '@aws-cdk/cx-api';
 import { CloudFormation } from 'aws-sdk';
+import * as colors from 'colors/safe';
+import { print } from '../logging';
 import { ISDK, Mode, SdkProvider } from './aws-auth';
 import { DeployStackResult } from './deploy-stack';
-import { ChangeHotswapImpact, ChangeHotswapResult, HotswapOperation, ListStackResources } from './hotswap/common';
+import { ICON, ChangeHotswapImpact, ChangeHotswapResult, HotswapOperation, HotswappableChangeCandidate, ListStackResources } from './hotswap/common';
+import { isHotswappableEcsServiceChange } from './hotswap/ecs-services';
 import { EvaluateCloudFormationTemplate } from './hotswap/evaluate-cloudformation-template';
 import { isHotswappableLambdaFunctionChange } from './hotswap/lambda-functions';
+import { isHotswappableS3BucketDeploymentChange } from './hotswap/s3-bucket-deployments';
+import { isHotswappableStateMachineChange } from './hotswap/stepfunctions-state-machines';
 import { CloudFormationStack } from './util/cloudformation';
 
 /**
@@ -33,10 +38,8 @@ export async function tryHotswapDeployment(
     parameters: assetParams,
     account: resolvedEnv.account,
     region: resolvedEnv.region,
-    // ToDo make this better:
-    partition: 'aws',
-    // ToDo make this better:
-    urlSuffix: 'amazonaws.com',
+    partition: (await sdk.currentAccount()).partition,
+    urlSuffix: sdk.getEndpointSuffix,
     listStackResources,
   });
 
@@ -57,32 +60,109 @@ export async function tryHotswapDeployment(
 async function findAllHotswappableChanges(
   stackChanges: cfn_diff.TemplateDiff, evaluateCfnTemplate: EvaluateCloudFormationTemplate,
 ): Promise<HotswapOperation[] | undefined> {
-  const promises = new Array<Promise<ChangeHotswapResult>>();
-  stackChanges.resources.forEachDifference(async (logicalId: string, change: cfn_diff.ResourceDifference) => {
-    promises.push(isHotswappableLambdaFunctionChange(logicalId, change, evaluateCfnTemplate));
+  let foundNonHotswappableChange = false;
+  const promises: Array<Array<Promise<ChangeHotswapResult>>> = [];
+
+  // gather the results of the detector functions
+  stackChanges.resources.forEachDifference((logicalId: string, change: cfn_diff.ResourceDifference) => {
+    const resourceHotswapEvaluation = isCandidateForHotswapping(change);
+
+    if (resourceHotswapEvaluation === ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT) {
+      foundNonHotswappableChange = true;
+    } else if (resourceHotswapEvaluation === ChangeHotswapImpact.IRRELEVANT) {
+      // empty 'if' just for flow-aware typing to kick in...
+    } else {
+      promises.push([
+        isHotswappableLambdaFunctionChange(logicalId, resourceHotswapEvaluation, evaluateCfnTemplate),
+        isHotswappableStateMachineChange(logicalId, resourceHotswapEvaluation, evaluateCfnTemplate),
+        isHotswappableEcsServiceChange(logicalId, resourceHotswapEvaluation, evaluateCfnTemplate),
+        isHotswappableS3BucketDeploymentChange(logicalId, resourceHotswapEvaluation, evaluateCfnTemplate),
+      ]);
+    }
   });
-  return Promise.all(promises).then(hotswapDetectionResults => {
-    const hotswappableResources = new Array<HotswapOperation>();
-    let foundNonHotswappableChange = false;
-    for (const lambdaFunctionShortCircuitChange of hotswapDetectionResults) {
-      if (lambdaFunctionShortCircuitChange === ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT) {
-        foundNonHotswappableChange = true;
-      } else if (lambdaFunctionShortCircuitChange === ChangeHotswapImpact.IRRELEVANT) {
-        // empty 'if' just for flow-aware typing to kick in...
-      } else {
-        hotswappableResources.push(lambdaFunctionShortCircuitChange);
+
+  const changesDetectionResults: Array<Array<ChangeHotswapResult>> = [];
+  for (const detectorResultPromises of promises) {
+    const hotswapDetectionResults = await Promise.all(detectorResultPromises);
+    changesDetectionResults.push(hotswapDetectionResults);
+  }
+
+  const hotswappableResources = new Array<HotswapOperation>();
+
+  // resolve all detector results
+  for (const hotswapDetectionResults of changesDetectionResults) {
+    const perChangeHotswappableResources = new Array<HotswapOperation>();
+
+    for (const result of hotswapDetectionResults) {
+      if (typeof result !== 'string') {
+        perChangeHotswappableResources.push(result);
       }
     }
-    return foundNonHotswappableChange ? undefined : hotswappableResources;
-  });
+
+    // if we found any hotswappable changes, return now
+    if (perChangeHotswappableResources.length > 0) {
+      hotswappableResources.push(...perChangeHotswappableResources);
+      continue;
+    }
+
+    // no hotswappable changes found, so any REQUIRES_FULL_DEPLOYMENTs imply a non-hotswappable change
+    for (const result of hotswapDetectionResults) {
+      if (result === ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT) {
+        foundNonHotswappableChange = true;
+      }
+    }
+    // no REQUIRES_FULL_DEPLOYMENT implies that all results are IRRELEVANT
+  }
+
+  return foundNonHotswappableChange ? undefined : hotswappableResources;
+}
+
+/**
+ * returns `ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT` if a resource was deleted, or a change that we cannot short-circuit occured.
+ * Returns `ChangeHotswapImpact.IRRELEVANT` if a change that does not impact shortcircuiting occured, such as a metadata change.
+ */
+export function isCandidateForHotswapping(change: cfn_diff.ResourceDifference): HotswappableChangeCandidate | ChangeHotswapImpact {
+  // a resource has been removed OR a resource has been added; we can't short-circuit that change
+  if (!change.newValue || !change.oldValue) {
+    return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
+  }
+
+  // Ignore Metadata changes
+  if (change.newValue.Type === 'AWS::CDK::Metadata') {
+    return ChangeHotswapImpact.IRRELEVANT;
+  }
+
+  return {
+    newValue: change.newValue,
+    propertyUpdates: change.propertyUpdates,
+  };
 }
 
 async function applyAllHotswappableChanges(
   sdk: ISDK, hotswappableChanges: HotswapOperation[],
 ): Promise<void[]> {
+  print(`\n${ICON} hotswapping resources:`);
   return Promise.all(hotswappableChanges.map(hotswapOperation => {
-    return hotswapOperation.apply(sdk);
+    return applyHotswappableChange(sdk, hotswapOperation);
   }));
+}
+
+async function applyHotswappableChange(sdk: ISDK, hotswapOperation: HotswapOperation): Promise<any> {
+  // note the type of service that was successfully hotswapped in the User-Agent
+  const customUserAgent = `cdk-hotswap/success-${hotswapOperation.service}`;
+  sdk.appendCustomUserAgent(customUserAgent);
+
+  try {
+    for (const name of hotswapOperation.resourceNames) {
+      print(`   ${ICON} hotswapping ${hotswapOperation.service}: %s`, colors.bold(name));
+    }
+    return await hotswapOperation.apply(sdk);
+  } finally {
+    for (const name of hotswapOperation.resourceNames) {
+      print(`${ICON} ${hotswapOperation.service}: %s %s`, colors.bold(name), colors.green('hotswapped!'));
+    }
+    sdk.removeCustomUserAgent(customUserAgent);
+  }
 }
 
 class LazyListStackResources implements ListStackResources {

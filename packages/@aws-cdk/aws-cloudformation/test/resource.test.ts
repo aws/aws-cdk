@@ -2,6 +2,7 @@ import { ResourcePart } from '@aws-cdk/assert-internal';
 import '@aws-cdk/assert-internal/jest';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as sns from '@aws-cdk/aws-sns';
+import { describeDeprecated, testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import { CustomResource, CustomResourceProvider } from '../lib';
 
@@ -12,7 +13,7 @@ import { Construct } from '@aws-cdk/core';
 /* eslint-disable @aws-cdk/no-core-construct */
 /* eslint-disable quote-props */
 
-describe('custom resources honor removalPolicy', () => {
+describeDeprecated('custom resources honor removalPolicy', () => {
   test('unspecified (aka .Destroy)', () => {
     // GIVEN
     const app = new cdk.App();
@@ -55,7 +56,7 @@ describe('custom resources honor removalPolicy', () => {
   });
 });
 
-test('custom resource is added twice, lambda is added once', () => {
+testDeprecated('custom resource is added twice, lambda is added once', () => {
   // GIVEN
   const app = new cdk.App();
   const stack = new cdk.Stack(app, 'Test');
@@ -104,7 +105,7 @@ test('custom resource is added twice, lambda is added once', () => {
               'Arn',
             ],
           },
-          'Runtime': 'python2.7',
+          'Runtime': 'python3.9',
           'Timeout': 300,
         },
         'DependsOn': [
@@ -141,7 +142,7 @@ test('custom resource is added twice, lambda is added once', () => {
   });
 });
 
-test('custom resources can specify a resource type that starts with Custom::', () => {
+testDeprecated('custom resources can specify a resource type that starts with Custom::', () => {
   const app = new cdk.App();
   const stack = new cdk.Stack(app, 'Test');
   new CustomResource(stack, 'MyCustomResource', {
@@ -151,7 +152,7 @@ test('custom resources can specify a resource type that starts with Custom::', (
   expect(stack).toHaveResource('Custom::MyCustomResourceType');
 });
 
-describe('fails if custom resource type is invalid', () => {
+describeDeprecated('fails if custom resource type is invalid', () => {
   test('does not start with "Custom::"', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'Test');
@@ -189,7 +190,7 @@ describe('fails if custom resource type is invalid', () => {
   });
 });
 
-test('.ref returns the intrinsic reference (physical name)', () => {
+testDeprecated('.ref returns the intrinsic reference (physical name)', () => {
   // GIVEN
   const stack = new cdk.Stack();
   const res = new TestCustomResource(stack, 'myResource');
@@ -207,7 +208,7 @@ class TestCustomResource extends Construct {
     const singletonLambda = new lambda.SingletonFunction(this, 'Lambda', {
       uuid: 'TestCustomResourceProvider',
       code: new lambda.InlineCode('def hello(): pass'),
-      runtime: lambda.Runtime.PYTHON_2_7,
+      runtime: lambda.Runtime.PYTHON_3_9,
       handler: 'index.hello',
       timeout: cdk.Duration.minutes(5),
     });

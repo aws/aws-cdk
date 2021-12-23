@@ -11,7 +11,7 @@ import { FileSet, Step } from '../blueprint';
 import { CodePipelineActionFactoryResult, ProduceActionOptions, ICodePipelineActionFactory } from './codepipeline-action-factory';
 
 /**
- * CodePipeline source steps
+ * Factory for CodePipeline source steps
  *
  * This class contains a number of factory methods for the different types
  * of sources that CodePipeline supports.
@@ -26,7 +26,7 @@ export abstract class CodePipelineSource extends Step implements ICodePipelineAc
    * Pass in the owner and repository in a single string, like this:
    *
    * ```ts
-   * CodePipelineSource.gitHub('owner/repo', 'main');
+   * pipelines.CodePipelineSource.gitHub('owner/repo', 'main');
    * ```
    *
    * Authentication will be done by a secret called `github-token` in AWS
@@ -48,14 +48,9 @@ export abstract class CodePipelineSource extends Step implements ICodePipelineAc
    * @param props The options, which include the key that identifies the source code file and
    * and how the pipeline should be triggered.
    *
-   * Example:
-   *
-   * ```ts
-   * const bucket: IBucket = ...
-   * CodePipelineSource.s3(bucket, {
-   *   key: 'path/to/file.zip',
-   * });
-   * ```
+   * @example
+   * declare const bucket: s3.Bucket;
+   * pipelines.CodePipelineSource.s3(bucket, 'path/to/file.zip');
    */
   public static s3(bucket: IBucket, objectKey: string, props: S3SourceOptions = {}): CodePipelineSource {
     return new S3Source(bucket, objectKey, props);
@@ -74,7 +69,7 @@ export abstract class CodePipelineSource extends Step implements ICodePipelineAc
    * Example:
    *
    * ```ts
-   * CodePipelineSource.connection('owner/repo', 'main', {
+   * pipelines.CodePipelineSource.connection('owner/repo', 'main', {
    *   connectionArn: 'arn:aws:codestar-connections:us-east-1:222222222222:connection/7d2469ff-514a-4e4f-9003-5ca4a43cdc41', // Created using the AWS console
    * });
    * ```
@@ -96,12 +91,9 @@ export abstract class CodePipelineSource extends Step implements ICodePipelineAc
    * @param branch The branch to use.
    * @param props The source properties.
    *
-   * Example:
-   *
-   * ```ts
-   * const repository: IRepository = ...
-   * CodePipelineSource.codeCommit(repository, 'main');
-   * ```
+   * @example
+   * declare const repository: codecommit.IRepository;
+   * pipelines.CodePipelineSource.codeCommit(repository, 'main');
    */
   public static codeCommit(repository: codecommit.IRepository, branch: string, props: CodeCommitSourceOptions = {}): CodePipelineSource {
     return new CodeCommitSource(repository, branch, props);
@@ -131,7 +123,6 @@ export interface GitHubSourceOptions {
    *
    * ```ts
    * const oauth = cdk.SecretValue.secretsManager('my-github-token');
-   * new GitHubSource(this, 'GitHubSource', { authentication: oauth, ... });
    * ```
    *
    * The GitHub Personal Access Token should have these scopes:

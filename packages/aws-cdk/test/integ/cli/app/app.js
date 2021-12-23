@@ -1,14 +1,30 @@
 const path = require('path');
-const cdk = require('@aws-cdk/core');
-const ec2 = require('@aws-cdk/aws-ec2');
-const ssm = require('@aws-cdk/aws-ssm');
-const iam = require('@aws-cdk/aws-iam');
-const sns = require('@aws-cdk/aws-sns');
-const lambda = require('@aws-cdk/aws-lambda');
-const docker = require('@aws-cdk/aws-ecr-assets');
-const core = require('@aws-cdk/core')
+
+var constructs = require('constructs');
+if (process.env.PACKAGE_LAYOUT_VERSION === '1') {
+  var cdk = require('@aws-cdk/core');
+  var ec2 = require('@aws-cdk/aws-ec2');
+  var s3 = require('@aws-cdk/aws-s3');
+  var ssm = require('@aws-cdk/aws-ssm');
+  var iam = require('@aws-cdk/aws-iam');
+  var sns = require('@aws-cdk/aws-sns');
+  var lambda = require('@aws-cdk/aws-lambda');
+  var docker = require('@aws-cdk/aws-ecr-assets');
+} else {
+  var cdk = require('aws-cdk-lib');
+  var {
+    aws_ec2: ec2,
+    aws_s3: s3,
+    aws_ssm: ssm,
+    aws_iam: iam,
+    aws_sns: sns,
+    aws_lambda: lambda,
+    aws_ecr_assets: docker
+  } = require('aws-cdk-lib');
+}
+
+const { Annotations } = cdk;
 const { StackWithNestedStack, StackWithNestedStackUsingParameters } = require('./nested-stack');
-const { Annotations } = require('@aws-cdk/core');
 
 const stackPrefix = process.env.STACK_NAME_PREFIX;
 if (!stackPrefix) {
@@ -48,11 +64,11 @@ class YourStack extends cdk.Stack {
 class StackUsingContext extends cdk.Stack {
   constructor(parent, id, props) {
     super(parent, id, props);
-    new core.CfnResource(this, 'Handle', {
+    new cdk.CfnResource(this, 'Handle', {
       type: 'AWS::CloudFormation::WaitConditionHandle'
     });
 
-    new core.CfnOutput(this, 'Output', {
+    new cdk.CfnOutput(this, 'Output', {
       value: this.availabilityZones,
     });
   }
@@ -95,7 +111,7 @@ class OutputsStack extends cdk.Stack {
   constructor(parent, id, props) {
     super(parent, id, props);
 
-    const topic =  new sns.Topic(this, 'MyOutput', {
+    const topic = new sns.Topic(this, 'MyOutput', {
       topicName: `${cdk.Stack.of(this).stackName}MyTopic`
     });
 
@@ -167,7 +183,7 @@ class MissingSSMParameterStack extends cdk.Stack {
   constructor(parent, id, props) {
     super(parent, id, props);
 
-    const parameterName = this.node.tryGetContext('test:ssm-parameter-name');
+    const parameterName = constructs.Node.of(this).tryGetContext('test:ssm-parameter-name');
     if (parameterName) {
       const param = getSsmParameterValue(this, parameterName);
       new iam.Role(this, 'PhonyRole', { assumedBy: new iam.AccountPrincipal(param) });
@@ -181,7 +197,7 @@ class LambdaStack extends cdk.Stack {
 
     const fn = new lambda.Function(this, 'my-function', {
       code: lambda.Code.asset(path.join(__dirname, 'lambda')),
-      runtime: lambda.Runtime.NODEJS_10_X,
+      runtime: lambda.Runtime.NODEJS_12_X,
       handler: 'index.handler'
     });
 
@@ -199,7 +215,7 @@ class DockerStack extends cdk.Stack {
 
     // Add at least a single resource (WaitConditionHandle), otherwise this stack will never
     // be deployed (and its assets never built)
-    new core.CfnResource(this, 'Handle', {
+    new cdk.CfnResource(this, 'Handle', {
       type: 'AWS::CloudFormation::WaitConditionHandle'
     });
   }
@@ -216,7 +232,7 @@ class DockerStackWithCustomFile extends cdk.Stack {
 
     // Add at least a single resource (WaitConditionHandle), otherwise this stack will never
     // be deployed (and its assets never built)
-    new core.CfnResource(this, 'Handle', {
+    new cdk.CfnResource(this, 'Handle', {
       type: 'AWS::CloudFormation::WaitConditionHandle'
     });
   }
@@ -228,7 +244,7 @@ class FailedStack extends cdk.Stack {
     super(parent, id, props);
 
     // fails on 'Property PolicyDocument cannot be empty'.
-    new core.CfnResource(this, 'EmptyPolicy', {
+    new cdk.CfnResource(this, 'EmptyPolicy', {
       type: 'AWS::IAM::Policy'
     })
 
@@ -243,9 +259,10 @@ class DefineVpcStack extends cdk.Stack {
   constructor(parent, id, props) {
     super(parent, id, props);
 
-    new ec2.Vpc(this, 'VPC', {
+    const vpc = new ec2.Vpc(this, 'VPC', {
       maxAzs: 1,
-    }).node.applyAspect(new cdk.Tag(VPC_TAG_NAME, VPC_TAG_VALUE));
+    })
+    cdk.Aspects.of(vpc).add(new cdk.Tag(VPC_TAG_NAME, VPC_TAG_VALUE));
   }
 }
 
@@ -281,6 +298,17 @@ class StageUsingContext extends cdk.Stage {
     super(parent, id, props);
 
     new StackUsingContext(this, 'StackInStage');
+  }
+}
+
+class BuiltinLambdaStack extends cdk.Stack {
+  constructor(parent, id, props) {
+    super(parent, id, props);
+
+    new s3.Bucket(this, 'Bucket', {
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      autoDeleteObjects: true, // will deploy a Nodejs lambda backed custom resource
+    });
   }
 }
 
@@ -324,7 +352,7 @@ switch (stackSet) {
       if (process.env.ENABLE_VPC_TESTING === 'DEFINE')
         new DefineVpcStack(app, `${stackPrefix}-define-vpc`, { env });
       if (process.env.ENABLE_VPC_TESTING === 'IMPORT')
-      new ImportVpcStack(app, `${stackPrefix}-import-vpc`, { env });
+        new ImportVpcStack(app, `${stackPrefix}-import-vpc`, { env });
     }
 
     new ConditionalResourceStack(app, `${stackPrefix}-conditional-resource`)
@@ -337,6 +365,8 @@ switch (stackSet) {
     });
 
     new SomeStage(app, `${stackPrefix}-stage`);
+
+    new BuiltinLambdaStack(app, `${stackPrefix}-builtin-lambda-function`);
     break;
 
   case 'stage-using-context':

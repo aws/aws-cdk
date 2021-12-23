@@ -5,6 +5,7 @@ import * as glob from 'glob';
 import * as semver from 'semver';
 import { LICENSE, NOTICE } from './licensing';
 import { PackageJson, ValidationRule } from './packagejson';
+import { cfnOnlyReadmeContents } from './readme-contents';
 import {
   deepGet, deepSet,
   expectDevDependency, expectJSON,
@@ -14,9 +15,8 @@ import {
   monoRepoRoot,
 } from './util';
 
-const AWS_SERVICE_NAMES = require('./aws-service-official-names.json'); // eslint-disable-line @typescript-eslint/no-require-imports
-
 const PKGLINT_VERSION = require('../package.json').version; // eslint-disable-line @typescript-eslint/no-require-imports
+const AWS_SERVICE_NAMES = require('./aws-service-official-names.json'); // eslint-disable-line @typescript-eslint/no-require-imports
 
 /**
  * Verify that the package name matches the directory name
@@ -54,16 +54,25 @@ export class DescriptionIsRequired extends ValidationRule {
 export class PublishConfigTagIsRequired extends ValidationRule {
   public readonly name = 'package-info/publish-config-tag';
 
+  // The list of packages that are publicly published in both v1 and v2.
+  private readonly SHARED_PACKAGES = [
+    '@aws-cdk/assert',
+    '@aws-cdk/cloud-assembly-schema',
+    '@aws-cdk/cloudformation-diff',
+    '@aws-cdk/cx-api',
+    '@aws-cdk/region-info',
+    'aws-cdk',
+    'awslint',
+    'cdk-assets',
+  ];
+
   public validate(pkg: PackageJson): void {
     if (pkg.json.private) { return; }
 
-    // While v2 is still under development, we publish all v2 packages with the 'next'
-    // distribution tag, while still tagging all v1 packages as 'latest'.
-    // There are two sets of exceptions:
-    // 'aws-cdk-lib' (new v2 package) and all of the '*-alpha' modules, since they are also new packages for v2.
-    const newV2Packages = ['aws-cdk-lib'];
-    const isNewPackageForV2 = newV2Packages.includes(pkg.json.name) || pkg.packageName.endsWith('-alpha');
-    const defaultPublishTag = (cdkMajorVersion() === 2 && !isNewPackageForV2) ? 'next' : 'latest';
+    // v1 packages that are v1-only (e.g., `@aws-cdk/aws-s3`) are always published as `latest`.
+    // Packages that are published with the same namespace to both v1 and v2 are published as `latest-1` on v1 and `latest` on v2.
+    // All v2-only packages are just `latest`.
+    const defaultPublishTag = (cdkMajorVersion() === 2 || !this.SHARED_PACKAGES.includes(pkg.packageName)) ? 'latest' : 'latest-1';
 
     if (pkg.json.publishConfig?.tag !== defaultPublishTag) {
       pkg.report({
@@ -239,6 +248,27 @@ export class ReadmeFile extends ValidationRule {
     }
     const scope: string = typeof scopes === 'string' ? scopes : scopes[0];
     const serviceName = AWS_SERVICE_NAMES[scope];
+
+    // If this is a 'cfn-only' package, we fix the README to specific file contents, and
+    // don't do any other checks.
+    if (pkg.json.maturity === 'cfn-only') {
+      fileShouldBe(this.name, pkg, 'README.md', cfnOnlyReadmeContents({
+        cfnNamespace: scope,
+        packageName: pkg.packageName,
+      }));
+      return;
+    }
+
+    // Otherwise, the cfn-specific disclaimer in it MUST NOT exist.
+    const disclaimerRegex = beginEndRegex('CFNONLY DISCLAIMER');
+    const currentReadme = readIfExists(readmeFile);
+    if (currentReadme && disclaimerRegex.test(currentReadme)) {
+      pkg.report({
+        ruleName: this.name,
+        message: 'README must not include CFNONLY DISCLAIMER section',
+        fix: () => fs.writeFileSync(readmeFile, currentReadme.replace(disclaimerRegex, '')),
+      });
+    }
 
     const headline = serviceName && `${serviceName} Construct Library`;
 
@@ -831,25 +861,33 @@ function cdkModuleName(name: string) {
   const isCdkPkg = name === '@aws-cdk/core';
   const isLegacyCdkPkg = name === '@aws-cdk/cdk';
 
-  name = name.replace(/^aws-cdk-/, '');
-  name = name.replace(/^@aws-cdk\//, '');
+  let suffix = name;
+  suffix = suffix.replace(/^aws-cdk-/, '');
+  suffix = suffix.replace(/^@aws-cdk\//, '');
 
-  const dotnetSuffix = name.split('-')
+  const dotnetSuffix = suffix.split('-')
     .map(s => s === 'aws' ? 'AWS' : caseUtils.pascal(s))
     .join('.');
 
-  const pythonName = name.replace(/^@/g, '').replace(/\//g, '.').split('.').map(caseUtils.kebab).join('.');
+  const pythonName = suffix.replace(/^@/g, '').replace(/\//g, '.').split('.').map(caseUtils.kebab).join('.');
+
+  // list of packages with special-cased Maven ArtifactId.
+  const mavenIdMap: Record<string, string> = {
+    '@aws-cdk/core': 'core',
+    '@aws-cdk/cdk': 'cdk',
+    '@aws-cdk/assertions': 'assertions',
+    '@aws-cdk/assertions-alpha': 'assertions-alpha',
+  };
+  /* eslint-disable @typescript-eslint/indent */
+  const mavenArtifactId =
+    name in mavenIdMap ? mavenIdMap[name] :
+    (suffix.startsWith('aws-') || suffix.startsWith('alexa-')) ? suffix.replace(/aws-/, '') :
+    suffix.startsWith('cdk-') ? suffix : `cdk-${suffix}`;
+  /* eslint-enable @typescript-eslint/indent */
 
   return {
-    javaPackage: `software.amazon.awscdk${isLegacyCdkPkg ? '' : `.${name.replace(/aws-/, 'services-').replace(/-/g, '.')}`}`,
-    mavenArtifactId:
-      isLegacyCdkPkg
-        ? 'cdk'
-        : (isCdkPkg
-          ? 'core'
-          : (name.startsWith('aws-') || name.startsWith('alexa-')
-            ? name.replace(/aws-/, '')
-            : (name.startsWith('cdk-') ? name : `cdk-${name}`))),
+    javaPackage: `software.amazon.awscdk${isLegacyCdkPkg ? '' : `.${suffix.replace(/aws-/, 'services-').replace(/-/g, '.')}`}`,
+    mavenArtifactId,
     dotnetNamespace: `Amazon.CDK${isCdkPkg ? '' : `.${dotnetSuffix}`}`,
     python: {
       distName: `aws-cdk.${pythonName}`,
@@ -1122,7 +1160,11 @@ export class MustHaveNodeEnginesDeclaration extends ValidationRule {
   public readonly name = 'package-info/engines';
 
   public validate(pkg: PackageJson): void {
-    expectJSON(this.name, pkg, 'engines.node', '>= 10.13.0 <13 || >=13.7.0');
+    if (cdkMajorVersion() === 2) {
+      expectJSON(this.name, pkg, 'engines.node', '>= 14.15.0');
+    } else {
+      expectJSON(this.name, pkg, 'engines.node', '>= 10.13.0 <13 || >=13.7.0');
+    }
   }
 }
 
@@ -1642,6 +1684,7 @@ export class NoExperimentalDependents extends ValidationRule {
     ['@aws-cdk/aws-apigatewayv2-authorizers', ['@aws-cdk/aws-apigatewayv2']],
     ['@aws-cdk/aws-events-targets', ['@aws-cdk/aws-kinesisfirehose']],
     ['@aws-cdk/aws-kinesisfirehose-destinations', ['@aws-cdk/aws-kinesisfirehose']],
+    ['@aws-cdk/aws-iot-actions', ['@aws-cdk/aws-iot', '@aws-cdk/aws-kinesisfirehose']],
   ]);
 
   private readonly excludedModules = ['@aws-cdk/cloudformation-include'];
@@ -1830,4 +1873,12 @@ function isIncludedInMonolith(pkg: PackageJson): boolean {
     return false;
   }
   return true;
+}
+
+function beginEndRegex(label: string) {
+  return new RegExp(`(<\!--BEGIN ${label}-->)([\s\S]+)(<\!--END ${label}-->)`, 'm');
+}
+
+function readIfExists(filename: string): string | undefined {
+  return fs.existsSync(filename) ? fs.readFileSync(filename, { encoding: 'utf8' }) : undefined;
 }

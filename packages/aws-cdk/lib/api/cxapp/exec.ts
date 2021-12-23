@@ -46,6 +46,11 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
   debug('context:', context);
   env[cxapi.CONTEXT_ENV] = JSON.stringify(context);
 
+  const build = config.settings.get(['build']);
+  if (build) {
+    await exec(build);
+  }
+
   const app = config.settings.get(['app']);
   if (!app) {
     throw new Error(`--app is required either in command-line, in ${PROJECT_CONFIG} or in ${USER_DEFAULTS}`);
@@ -74,7 +79,7 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
 
   debug('env:', env);
 
-  await exec();
+  await exec(commandLine.join(' '));
 
   return createAssembly(outdir);
 
@@ -91,7 +96,7 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
     }
   }
 
-  async function exec() {
+  async function exec(commandAndArgs: string) {
     return new Promise<void>((ok, fail) => {
       // We use a slightly lower-level interface to:
       //
@@ -103,7 +108,7 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
       //   anyway, and if the subprocess is printing to it for debugging purposes the
       //   user gets to see it sooner. Plus, capturing doesn't interact nicely with some
       //   processes like Maven.
-      const proc = childProcess.spawn(commandLine[0], commandLine.slice(1), {
+      const proc = childProcess.spawn(commandAndArgs, {
         stdio: ['ignore', 'inherit', 'inherit'],
         detached: false,
         shell: true,

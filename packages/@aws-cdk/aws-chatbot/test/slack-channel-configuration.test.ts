@@ -194,7 +194,7 @@ describe('SlackChannelConfiguration', () => {
     expect(metric).toEqual(new cloudwatch.Metric({
       namespace: 'AWS/Chatbot',
       region: 'us-east-1',
-      dimensions: {
+      dimensionsMap: {
         ConfigurationName: 'ConfigurationName',
       },
       metricName: 'MetricName',
