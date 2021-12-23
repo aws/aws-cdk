@@ -572,6 +572,7 @@ const IGNORED_FILE_NAMES = new Set([
   '.npmignore',
   'node_modules',
   'package.json',
+  'test',
   'tsconfig.json',
   'tsconfig.tsbuildinfo',
   'LICENSE',
