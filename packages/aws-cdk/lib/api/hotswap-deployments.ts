@@ -32,6 +32,10 @@ export async function tryHotswapDeployment(
   // create a new SDK using the CLI credentials, because the default one will not work for new-style synthesis -
   // it assumes the bootstrap deploy Role, which doesn't have permissions to update Lambda functions
   const sdk = await sdkProvider.forEnvironment(resolvedEnv, Mode.ForWriting);
+
+  // add the sdk to the hotswapLogMonitor so that it also has the
+  // correct credentials to monitor CloudWatch log groups
+  hotswapLogMonitor?.addSDK(sdk);
   // The current resources of the Stack.
   // We need them to figure out the physical name of a resource in case it wasn't specified by the user.
   // We fetch it lazily, to save a service call, in case all hotswapped resources have their physical names set.
@@ -232,7 +236,7 @@ async function applyHotswappableChange(sdk: ISDK, hotswapOperation: HotswapOpera
   // lambda functions always have a log group with the name
   // /aws/lambda/function-name
   if (hotswapOperation.service === 'lambda-function') {
-    await logMonitor?.addLogGroups(sdk, hotswapOperation.resourceNames.map(name => {
+    logMonitor?.addLogGroups(hotswapOperation.resourceNames.map(name => {
       return `/aws/lambda/${name}`;
     }));
   }

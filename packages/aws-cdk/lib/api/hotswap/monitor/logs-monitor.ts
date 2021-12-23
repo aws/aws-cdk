@@ -1,5 +1,4 @@
 import * as util from 'util';
-import { CloudWatchLogs } from 'aws-sdk';
 import * as colors from 'colors/safe';
 import { error } from '../../../logging';
 import { ISDK } from '../../aws-auth';
@@ -12,11 +11,6 @@ export interface WithDefaultPrinterProps {
    */
   readonly hotswapTime?: Date;
 
-}
-
-interface SDKMap {
-  sdk: ISDK;
-  resources: string[];
 }
 
 export interface CloudWatchLogEvent {
@@ -53,8 +47,10 @@ export class CloudWatchLogEventMonitor {
    */
   private readPromise?: Promise<any>;
 
-  private activity: Map<string, boolean> = new Map();
-  private sdkMaps: Map<string, SDKMap> = new Map();
+  private activity = new Set<string>();
+
+  private logGroups = new Set<string>();
+  private sdk?: ISDK;
 
   constructor(
     private readonly printer: IEventPrinter,
@@ -69,26 +65,19 @@ export class CloudWatchLogEventMonitor {
     return this;
   }
 
+  public addSDK(sdk: ISDK) {
+    this.sdk = sdk;
+  }
+
   /**
    * Adds a CloudWatch log group to read log events from
-   * Since we could be reading from multiple log groups in multiple
-   * AWS accounts, we also  need to pass an SDK object for that account
    */
-  public async addLogGroups(sdk: ISDK, logGroups: string[]) {
-    const currentAccount = await sdk.currentAccount();
-    if (this.sdkMaps.has(currentAccount.accountId)) {
-      let existing = this.sdkMaps.get(currentAccount.accountId)!.resources;
-      existing.push(...logGroups);
-      this.sdkMaps.set(currentAccount.accountId, {
-        sdk,
-        resources: existing,
-      });
-    } else {
-      this.sdkMaps.set(currentAccount.accountId, {
-        sdk,
-        resources: logGroups,
-      });
-    }
+  public addLogGroups(logGroups: string[]) {
+    logGroups.forEach(group => {
+      if (!this.logGroups.has(group)) {
+        this.logGroups.add(group);
+      }
+    });
   }
 
   public async stop() {
@@ -129,12 +118,8 @@ export class CloudWatchLogEventMonitor {
    */
   private async readNewEvents(): Promise<void[]> {
     const promises: Array<Promise<void>> = [];
-    for (const value of this.sdkMaps.values()) {
-      const logs = value.sdk.cloudwatchLogs();
-
-      promises.push(...value.resources.map(resource => {
-        return this.readEventsFromLogGroup(resource, logs);
-      }));
+    for (let group of this.logGroups) {
+      promises.push(this.readEventsFromLogGroup(group));
     }
     return Promise.all(promises);
   }
@@ -145,12 +130,16 @@ export class CloudWatchLogEventMonitor {
    *
    * Only prints out events that have not been printed already
    */
-  private async readEventsFromLogGroup(logGroupName: string, logsSDK: CloudWatchLogs): Promise<void> {
+  private async readEventsFromLogGroup(logGroupName: string): Promise<void> {
+    // this should not be possible
+    if (!this.sdk) {
+      return;
+    }
     try {
       let finished = false;
       let nextToken: string | undefined;
       while (!finished) {
-        const response = await logsSDK.filterLogEvents({
+        const response = await this.sdk!.cloudwatchLogs().filterLogEvents({
           logGroupName: logGroupName,
           nextToken,
           startTime: this.startTime,
@@ -161,7 +150,7 @@ export class CloudWatchLogEventMonitor {
         for (const event of eventPage) {
           if (event.eventId && this.activity.has(event.eventId)) {
           } else {
-            if (event.eventId) this.activity.set(event.eventId, true);
+            if (event.eventId) this.activity.add(event.eventId);
             if (event.message) {
               const ingestionTime: Date = event.ingestionTime ?
                 new Date(event.ingestionTime) : new Date();
