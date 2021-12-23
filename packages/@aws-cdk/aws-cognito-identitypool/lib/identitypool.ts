@@ -13,6 +13,7 @@ import {
   IResource,
   Stack,
   ArnFormat,
+  Lazy
 } from '@aws-cdk/core';
 import {
   Construct,
@@ -405,8 +406,8 @@ export class IdentityPool extends Resource implements IIdentityPool {
       openIdConnectProviderArns: this.configureOpenIdConnectProviderArns(authProviders.openIdConnectProvider),
       samlProviderArns: this.configureSamlProviderArns(authProviders.samlProvider),
       supportedLoginProviders: this.configureLoginProviders(authProviders),
-      cognitoIdentityProviders: providers,
-    });
+      cognitoIdentityProviders: Lazy.anyValue({ produce: () => this.cognitoIdentityProviders }),
+    }),
     this.identityPoolName = this.cfnIdentityPool.attrName;
     this.identityPoolId = this.cfnIdentityPool.ref;
     this.identityPoolArn = Stack.of(scope).formatArn({
@@ -429,19 +430,11 @@ export class IdentityPool extends Resource implements IIdentityPool {
   }
 
   /**
-   * Add a User Pool to the IdentityPool and configures User Pool Client to handle identities
+   * Add a User Pool to the IdentityPool and configure User Pool Client to handle identities
    */
   public addUserPoolAuthentication(userPool: IUserPoolAuthenticationProvider): void {
-    this.cognitoIdentityProviders = this.cognitoIdentityProviders
-      .concat(this.configureAuthenticationProviders(userPool));
-    const providers = this.cognitoIdentityProviders.map(provider => {
-      return {
-        ClientId: provider.clientId,
-        ProviderName: provider.providerName,
-        ServerSideTokenCheck: provider.serverSideTokenCheck,
-      };
-    }, this);
-    this.cfnIdentityPool.addPropertyOverride('CognitoIdentityProviders', providers);
+    const providers = this.configureAuthenticationProviders(userPool);
+    providers.forEach(provider => this.cognitoIdentityProviders.push(provider), this);
   }
 
   /**
@@ -466,11 +459,12 @@ export class IdentityPool extends Resource implements IIdentityPool {
    * Configure Authentication Providers for User Pools
    */
   private configureAuthenticationProviders(provider: IUserPoolAuthenticationProvider): CfnIdentityPool.CognitoIdentityProviderProperty[] {
-    return provider.identityProviders.map(identityProvider => {
+    const identityProviders = provider.identityProviders || [];
+    return identityProviders.map(identityProvider => {
       return {
         clientId: provider.clientId,
         providerName: identityProvider.providerName,
-        serverSideTokenCheck: provider.disableServerSideTokenCheck,
+        serverSideTokenCheck: !provider.disableServerSideTokenCheck,
       };
     });
   }
