@@ -6,11 +6,11 @@ import { CfnInstance } from './lightsail.generated';
 
 
 export interface IPlatform {
-  blueprint: BlueprintBase;
+  readonly blueprint: BlueprintBase;
 }
 
 export interface LinuxAppProps {
-  blueprint: LinuxAppBlueprint;
+  readonly blueprint: LinuxAppBlueprint;
 }
 
 export class LinuxApp implements IPlatform {
@@ -21,7 +21,7 @@ export class LinuxApp implements IPlatform {
 }
 
 export interface LinuxOSProps {
-  blueprint: LinuxOSBlueprint;
+  readonly blueprint: LinuxOSBlueprint;
 }
 
 export class LinuxOS implements IPlatform {
@@ -32,7 +32,7 @@ export class LinuxOS implements IPlatform {
 }
 
 export interface WindowsOSProps {
-  blueprint: WindowsOSBlueprint;
+  readonly blueprint: WindowsOSBlueprint;
 }
 
 export class WindowsOS implements IPlatform {
