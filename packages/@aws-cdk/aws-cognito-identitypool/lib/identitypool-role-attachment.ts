@@ -43,33 +43,22 @@ export interface IdentityPoolRoleAttachmentProps {
   readonly identityPool: IIdentityPool;
 
   /**
-   * Default roles to apply when no role mapping conditions are met
-   * @default - Default roles will be created
+   * Default Authenticated (User) Role
+   * @default - No default role will be added
    */
-  readonly roles?: IdentityPoolDefaultRoles
+   readonly authenticatedRole?: IRole;
+
+   /**
+    * Default Unauthenticated (Guest) Role
+    * @default - No default role will be added
+    */
+   readonly unauthenticatedRole?: IRole;
 
   /**
    * Rules for mapping roles to users
    * @default - no Role Mappings
    */
   readonly roleMappings?: IdentityPoolRoleMapping[];
-}
-
-/**
- * Default Roles Attached to Identity Pools
- */
-export interface IdentityPoolDefaultRoles {
-  /**
-   * Default Authenticated (User) Role
-   * @default - No default role will be added
-   */
-  readonly authenticated?: IRole;
-
-  /**
-   * Default Unauthenticated (Guest) Role
-   * @default - No default role will be added
-   */
-  readonly unauthenticated?: IRole;
 }
 
 /**
@@ -170,14 +159,12 @@ export class IdentityPoolRoleAttachment extends Resource implements IIdentityPoo
       physicalName: props.identityPoolRoleAttachmentName,
     });
     this.identityPoolId = props.identityPool.identityPoolId;
-    const authenticatedRole = props.roles?.authenticated;
-    const unauthenticatedRole = props.roles?.unauthenticated;
     const mappings = props.roleMappings || [];
     let roles: any = undefined, roleMappings: any = undefined;
-    if (authenticatedRole || unauthenticatedRole) {
+    if (props.authenticatedRole || props.unauthenticatedRole) {
       roles = {};
-      if (authenticatedRole) roles.authenticated = authenticatedRole.roleArn;
-      if (unauthenticatedRole) roles.unauthenticated = unauthenticatedRole.roleArn;
+      if (props.authenticatedRole) roles.authenticated = props.authenticatedRole.roleArn;
+      if (props.unauthenticatedRole) roles.unauthenticated = props.unauthenticatedRole.roleArn;
     }
     if (mappings) {
       roleMappings = this.configureRoleMappings(...mappings);

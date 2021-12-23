@@ -411,7 +411,7 @@ export class IdentityPool extends Resource implements IIdentityPool {
     if (authProviders.digits) supportedLoginProviders[IdentityPoolProviderUrl.DIGITS.value] = `${authProviders.digits.consumerKey};${authProviders.digits.consumerSecret}`;
     if (!Object.keys(supportedLoginProviders).length) supportedLoginProviders = undefined;
 
-    const cfnIdentityPool = new CfnIdentityPool(this, id, {
+    const cfnIdentityPool = new CfnIdentityPool(this, 'Resource', {
       allowUnauthenticatedIdentities: props.allowUnauthenticatedIdentities ? true : false,
       allowClassicFlow: props.allowClassicFlow,
       identityPoolName: this.physicalName,
@@ -456,7 +456,7 @@ export class IdentityPool extends Resource implements IIdentityPool {
   public addRoleMappings(...roleMappings: IdentityPoolRoleMapping[]): void {
     if (!roleMappings || !roleMappings.length) return;
     this.roleAttachmentCount++;
-    const name = this.id + 'RoleMappingAttachment' + this.roleAttachmentCount.toString();
+    const name = 'RoleMappingAttachment' + this.roleAttachmentCount.toString();
     const attachment = new IdentityPoolRoleAttachment(this, name, {
       identityPool: this,
       roles: {
