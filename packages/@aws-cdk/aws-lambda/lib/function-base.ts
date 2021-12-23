@@ -3,6 +3,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import { ArnFormat, ConstructNode, IResource, Resource, Token } from '@aws-cdk/core';
 import { AliasOptions } from './alias';
+import { Architecture } from './architecture';
 import { EventInvokeConfig, EventInvokeConfigOptions } from './event-invoke-config';
 import { IEventSource } from './event-source';
 import { EventSourceMapping, EventSourceMappingOptions } from './event-source-mapping';
@@ -55,6 +56,11 @@ export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable {
    * The construct node where permissions are attached.
    */
   readonly permissionsNode: ConstructNode;
+
+  /**
+   * The system architectures compatible with this lambda function.
+   */
+  readonly architecture: Architecture;
 
   /**
    * Adds an event source that maps to this AWS Lambda function.
@@ -173,6 +179,12 @@ export interface FunctionAttributes {
    * For environment-agnostic stacks this will default to `false`.
    */
   readonly sameEnvironment?: boolean;
+
+  /**
+   * The architecture of this Lambda Function (this is an optional attribute and defaults to X86_64).
+   * @default - Architecture.X86_64
+   */
+  readonly architecture?: Architecture;
 }
 
 export abstract class FunctionBase extends Resource implements IFunction, ec2.IClientVpnConnectionHandler {
@@ -202,6 +214,11 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
    * The construct node where permissions are attached.
    */
   public abstract readonly permissionsNode: ConstructNode;
+
+  /**
+   * The architecture of this Lambda Function.
+   */
+  public abstract readonly architecture: Architecture;
 
   /**
    * Whether the addPermission() call adds any permissions
@@ -401,9 +418,9 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
     // Try some specific common classes first.
     // use duck-typing, not instance of
     // @deprecated: after v2, we can change these to 'instanceof'
-    if ('conditions' in principal) {
+    if ('wrapped' in principal) {
       // eslint-disable-next-line dot-notation
-      principal = principal['principal'];
+      principal = principal['wrapped'];
     }
 
     if ('accountId' in principal) {
@@ -519,6 +536,10 @@ class LatestVersion extends FunctionBase implements IVersion {
 
   public get functionName() {
     return `${this.lambda.functionName}:${this.version}`;
+  }
+
+  public get architecture() {
+    return this.lambda.architecture;
   }
 
   public get grantPrincipal() {

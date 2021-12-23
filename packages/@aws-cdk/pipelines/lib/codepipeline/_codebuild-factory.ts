@@ -1,4 +1,3 @@
-import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as codebuild from '@aws-cdk/aws-codebuild';
@@ -8,9 +7,10 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import { IDependable, Stack } from '@aws-cdk/core';
 import { Construct, Node } from 'constructs';
-import { FileSetLocation, ShellStep, StackDeployment, StackOutputReference } from '../blueprint';
+import { FileSetLocation, ShellStep, StackOutputReference } from '../blueprint';
 import { PipelineQueries } from '../helpers-internal/pipeline-queries';
 import { cloudAssemblyBuildSpecDir, obtainScope } from '../private/construct-internals';
+import { hash, stackVariableNamespace } from '../private/identifiers';
 import { mapValues, mkdict, noEmptyObject, noUndefined, partition } from '../private/javascript';
 import { ArtifactMap } from './artifact-map';
 import { CodeBuildStep } from './codebuild-step';
@@ -426,12 +426,6 @@ function isDefined<A>(x: A | undefined): x is NonNullable<A> {
   return x !== undefined;
 }
 
-function hash<A>(obj: A) {
-  const d = crypto.createHash('sha256');
-  d.update(JSON.stringify(obj));
-  return d.digest('hex');
-}
-
 /**
  * Serialize a build environment to data (get rid of constructs & objects), so we can JSON.stringify it
  */
@@ -445,10 +439,6 @@ function serializeBuildEnvironment(env: codebuild.BuildEnvironment) {
     imagePullPrincipalType: env.buildImage?.imagePullPrincipalType,
     secretsManagerArn: env.buildImage?.secretsManagerCredentials?.secretArn,
   };
-}
-
-export function stackVariableNamespace(stack: StackDeployment) {
-  return stack.stackArtifactId;
 }
 
 /**

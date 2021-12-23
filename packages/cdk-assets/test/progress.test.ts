@@ -1,6 +1,7 @@
 import { Manifest } from '@aws-cdk/cloud-assembly-schema';
 import * as mockfs from 'mock-fs';
-import { AssetManifest, AssetPublishing, EventType, IPublishProgress, IPublishProgressListener } from '../lib';
+import { AssetManifest, AssetPublishing } from '../lib';
+import { FakeListener } from './fake-listener';
 import { mockAws, mockedApiResult, mockUpload } from './mock-aws';
 
 let aws: ReturnType<typeof mockAws>;
@@ -69,18 +70,3 @@ test('test abort', async () => {
   // We never get to asset 2
   expect(allMessages).not.toContain('theAsset:theDestination2');
 });
-
-class FakeListener implements IPublishProgressListener {
-  public readonly messages = new Array<string>();
-
-  constructor(private readonly doAbort = false) {
-  }
-
-  public onPublishEvent(_type: EventType, event: IPublishProgress): void {
-    this.messages.push(event.message);
-
-    if (this.doAbort) {
-      event.abort();
-    }
-  }
-}
