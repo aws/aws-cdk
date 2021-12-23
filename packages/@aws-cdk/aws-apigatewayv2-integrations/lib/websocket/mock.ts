@@ -8,7 +8,7 @@ import {
 /**
  * Mock WebSocket Integration
  */
-export class MockWebSocketIntegration extends WebSocketRouteIntegration {
+export class WebSocketMockIntegration extends WebSocketRouteIntegration {
 
   /**
    * @param id id of the underlying integration construct

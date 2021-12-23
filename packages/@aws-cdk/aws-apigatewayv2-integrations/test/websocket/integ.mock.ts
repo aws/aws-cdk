@@ -1,6 +1,6 @@
 import { WebSocketApi, WebSocketStage } from '@aws-cdk/aws-apigatewayv2';
 import { App, CfnOutput, Stack } from '@aws-cdk/core';
-import { MockWebSocketIntegration } from '../../lib';
+import { WebSocketMockIntegration } from '../../lib';
 
 /*
  * Stack verification steps:
@@ -11,7 +11,7 @@ const app = new App();
 const stack = new Stack(app, 'integ-mock-websocket-integration');
 
 const webSocketApi = new WebSocketApi(stack, 'mywsapi', {
-  defaultRouteOptions: { integration: new MockWebSocketIntegration('DefaultIntegration') },
+  defaultRouteOptions: { integration: new WebSocketMockIntegration('DefaultIntegration') },
 });
 const stage = new WebSocketStage(stack, 'mystage', {
   webSocketApi,
@@ -19,6 +19,6 @@ const stage = new WebSocketStage(stack, 'mystage', {
   autoDeploy: true,
 });
 
-webSocketApi.addRoute('sendmessage', { integration: new MockWebSocketIntegration('SendMessageIntegration') });
+webSocketApi.addRoute('sendmessage', { integration: new WebSocketMockIntegration('SendMessageIntegration') });
 
 new CfnOutput(stack, 'ApiEndpoint', { value: stage.url });

@@ -1,7 +1,7 @@
 import { Template } from '@aws-cdk/assertions';
 import { WebSocketApi } from '@aws-cdk/aws-apigatewayv2';
 import { Stack } from '@aws-cdk/core';
-import { MockWebSocketIntegration } from '../../lib';
+import { WebSocketMockIntegration } from '../../lib';
 
 
 describe('MockWebSocketIntegration', () => {
@@ -11,7 +11,7 @@ describe('MockWebSocketIntegration', () => {
 
     // WHEN
     new WebSocketApi(stack, 'Api', {
-      defaultRouteOptions: { integration: new MockWebSocketIntegration('DefaultIntegration') },
+      defaultRouteOptions: { integration: new WebSocketMockIntegration('DefaultIntegration') },
     });
 
     // THEN
