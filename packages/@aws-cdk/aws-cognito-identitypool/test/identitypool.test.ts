@@ -49,7 +49,7 @@ describe('identity pool', () => {
             Condition: {
               'StringEquals': {
                 'cognito-identity.amazonaws.com:aud': {
-                  Ref: 'TestIdentityPoolMinimalCA44517F',
+                  Ref: 'TestIdentityPoolMinimal44837852',
                 },
               },
               'ForAnyValue:StringLike': {
@@ -65,6 +65,29 @@ describe('identity pool', () => {
       },
     });
 
+    temp.hasResourceProperties('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Statement: [
+          {
+            Action: 'sts:AssumeRoleWithWebIdentity',
+            Condition: {
+              'StringEquals': {
+                'cognito-identity.amazonaws.com:aud': {
+                  Ref: 'TestIdentityPoolMinimal44837852',
+                },
+              },
+              'ForAnyValue:StringLike': {
+                'cognito-identity.amazonaws.com:amr': 'unauthenticated',
+              },
+            },
+            Effect: 'Allow',
+            Principal: {
+              Federated: 'cognito-identity.amazonaws.com',
+            },
+          },
+        ],
+      },
+    });
   });
 
   test('providing default roles directly', () => {
@@ -93,6 +116,19 @@ describe('identity pool', () => {
     temp.resourceCountIs('AWS::IAM::Policy', 2);
     temp.hasResourceProperties('AWS::Cognito::IdentityPool', {
       AllowUnauthenticatedIdentities: true,
+    });
+    temp.hasResourceProperties('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Statement: [
+          {
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
+            Principal: {
+              Service: 'service.amazonaws.com',
+            },
+          },
+        ],
+      },
     });
     temp.hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
@@ -252,14 +288,14 @@ describe('identity pool', () => {
             Ref: 'PoolUserPoolClientForundefinedBF6BDE57',
           },
           ProviderName: 'poolProvider',
-          ServerSideTokenCheck: false,
+          ServerSideTokenCheck: true,
         },
         {
           ClientId: {
             Ref: 'OtherPoolUserPoolClientForundefined1B97829F',
           },
           ProviderName: 'otherPoolProvider',
-          ServerSideTokenCheck: true,
+          ServerSideTokenCheck: false,
         },
       ],
     });
@@ -277,8 +313,8 @@ describe('identity pool', () => {
     });
     new IdentityPool(stack, 'TestIdentityPoolCustomProviders', {
       authenticationProviders: {
-        openIdConnectProvider: openId,
-        samlProvider: saml,
+        openIdConnectProviders: [openId],
+        samlProviders: [saml],
         customProvider: 'my-custom-provider.com',
       },
       allowClassicFlow: true,
@@ -335,7 +371,7 @@ describe('role mappings', () => {
     });
     Template.fromStack(stack).hasResourceProperties('AWS::Cognito::IdentityPoolRoleAttachment', {
       IdentityPoolId: {
-        Ref: 'TestIdentityPoolRoleMappingTokenE6CC49E0',
+        Ref: 'TestIdentityPoolRoleMappingToken0B11D690',
       },
       RoleMappings: {
         'www.amazon.com': {
@@ -438,7 +474,7 @@ describe('role mappings', () => {
     temp.resourceCountIs('AWS::Cognito::IdentityPoolRoleAttachment', 2);
     temp.hasResourceProperties('AWS::Cognito::IdentityPoolRoleAttachment', {
       IdentityPoolId: {
-        Ref: 'TestIdentityPoolRoleMappingRulesA841EAFB',
+        Ref: 'TestIdentityPoolRoleMappingRulesC8C07BC3',
       },
       RoleMappings: {
         'www.amazon.com': {
@@ -490,7 +526,7 @@ describe('role mappings', () => {
     });
     temp.hasResourceProperties('AWS::Cognito::IdentityPoolRoleAttachment', {
       IdentityPoolId: {
-        Ref: 'TestIdentityPoolRoleMappingRulesA841EAFB',
+        Ref: 'TestIdentityPoolRoleMappingRulesC8C07BC3',
       },
       RoleMappings: {
         'graph.facebook.com': {

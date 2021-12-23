@@ -44,15 +44,15 @@ export interface IdentityPoolRoleAttachmentProps {
 
   /**
    * Default Authenticated (User) Role
-   * @default - No default role will be added
+   * @default - Default authenticated role will be created
    */
-   readonly authenticatedRole?: IRole;
+  readonly authenticatedRole?: IRole;
 
-   /**
+  /**
     * Default Unauthenticated (Guest) Role
-    * @default - No default role will be added
+    * @default - Default unauthenticated role will be created
     */
-   readonly unauthenticatedRole?: IRole;
+  readonly unauthenticatedRole?: IRole;
 
   /**
    * Rules for mapping roles to users
@@ -169,7 +169,7 @@ export class IdentityPoolRoleAttachment extends Resource implements IIdentityPoo
     if (mappings) {
       roleMappings = this.configureRoleMappings(...mappings);
     }
-    new CfnIdentityPoolRoleAttachment(this, id, {
+    new CfnIdentityPoolRoleAttachment(this, 'Resource', {
       identityPoolId: this.identityPoolId,
       roles,
       roleMappings,

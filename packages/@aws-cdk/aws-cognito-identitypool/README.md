@@ -159,7 +159,7 @@ AWS credentials for the user.
 If the user is signed out or deleted, the identity pool will return a 400 Not Authorized error. This setting can be  
 disabled, however, in several ways.
 
-Setting `disableServerSideTokenCheck` to true will change the default behavior to no server side token check Learn  
+Setting `disableServerSideTokenCheck` to true will change the default behavior to no server side token check. Learn  
 more [here](https://docs.aws.amazon.com/cognitoidentity/latest/APIReference/API_CognitoIdentityProvider.html#CognitoIdentity-Type-CognitoIdentityProvider-ServerSideTokenCheck):
 
 ```ts
