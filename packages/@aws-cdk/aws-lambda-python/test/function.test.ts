@@ -45,6 +45,7 @@ beforeEach(() => {
 test('PythonFunction with defaults', () => {
   new PythonFunction(stack, 'handler', {
     entry: 'test/lambda-handler',
+    runtime: Runtime.PYTHON_3_8,
   });
 
   expect(bundle).toHaveBeenCalledWith(expect.objectContaining({
@@ -62,6 +63,7 @@ test('PythonFunction with index in a subdirectory', () => {
     entry: 'test/lambda-handler-sub',
     index: 'inner/custom_index.py',
     handler: 'custom_handler',
+    runtime: Runtime.PYTHON_3_8,
   });
 
   expect(bundle).toHaveBeenCalledWith(expect.objectContaining({
@@ -78,12 +80,14 @@ test('throws when index is not py', () => {
   expect(() => new PythonFunction(stack, 'Fn', {
     entry: 'test/lambda-handler',
     index: 'index.js',
+    runtime: Runtime.PYTHON_3_8,
   })).toThrow(/Only Python \(\.py\) index files are supported/);
 });
 
 test('throws when entry does not exist', () => {
   expect(() => new PythonFunction(stack, 'Fn', {
     entry: 'notfound',
+    runtime: Runtime.PYTHON_3_8,
   })).toThrow(/Cannot find index file at/);
 });
 
@@ -99,6 +103,7 @@ test('allows specifying hash type', () => {
     entry: 'test/lambda-handler-nodeps',
     index: 'index.py',
     handler: 'handler',
+    runtime: Runtime.PYTHON_3_8,
   });
 
   new PythonFunction(stack, 'source2', {
@@ -106,6 +111,7 @@ test('allows specifying hash type', () => {
     index: 'index.py',
     handler: 'handler',
     assetHashType: AssetHashType.SOURCE,
+    runtime: Runtime.PYTHON_3_8,
   });
 
   new PythonFunction(stack, 'output', {
@@ -113,6 +119,7 @@ test('allows specifying hash type', () => {
     index: 'index.py',
     handler: 'handler',
     assetHashType: AssetHashType.OUTPUT,
+    runtime: Runtime.PYTHON_3_8,
   });
 
   new PythonFunction(stack, 'custom', {
@@ -120,6 +127,7 @@ test('allows specifying hash type', () => {
     index: 'index.py',
     handler: 'handler',
     assetHash: 'MY_CUSTOM_HASH',
+    runtime: Runtime.PYTHON_3_8,
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {

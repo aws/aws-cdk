@@ -34,10 +34,8 @@ export interface PythonFunctionProps extends lambda.FunctionOptions {
   /**
    * The runtime environment. Only runtimes of the Python family are
    * supported.
-   *
-   * @default lambda.Runtime.PYTHON_3_7
    */
-  readonly runtime?: lambda.Runtime;
+  readonly runtime: lambda.Runtime;
 
   /**
    * Determines how asset hash is calculated. Assets will get rebuild and

@@ -27,9 +27,9 @@ Define a `PythonFunction`:
 ```ts
 new lambda.PythonFunction(this, 'MyFunction', {
   entry: '/path/to/my/function', // required
+  runtime: Runtime.PYTHON_3_6, // required
   index: 'my_index.py', // optional, defaults to 'index.py'
   handler: 'my_exported_func', // optional, defaults to 'handler'
-  runtime: Runtime.PYTHON_3_6, // optional, defaults to lambda.Runtime.PYTHON_3_7
 });
 ```
 
@@ -86,6 +86,7 @@ layer.
 ```ts
 new lambda.PythonFunction(this, 'MyFunction', {
   entry: '/path/to/my/function',
+  runtime: Runtime.PYTHON_3_6,
   layers: [
     new lambda.PythonLayerVersion(this, 'MyLayer', {
       entry: '/path/to/my/layer', // point this to your library's directory
