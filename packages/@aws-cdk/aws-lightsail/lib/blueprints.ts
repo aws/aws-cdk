@@ -1,3 +1,6 @@
+/**
+ * The Blueprint base object.
+ */
 export class BlueprintBase {
   /**
    * @param id the blueprint id
@@ -5,6 +8,9 @@ export class BlueprintBase {
   constructor(public readonly id: string) { }
 }
 
+/**
+ * Blueprint for Windows OS.
+ */
 export class WindowsOSBlueprint extends BlueprintBase {
   /**
    * windows_server_2019
@@ -32,6 +38,9 @@ export class WindowsOSBlueprint extends BlueprintBase {
   }
 }
 
+/**
+ * Blueprint for Linux OS.
+ */
 export class LinuxOSBlueprint extends BlueprintBase {
   /**
    * amazon_linux_2
@@ -91,6 +100,9 @@ export class LinuxOSBlueprint extends BlueprintBase {
   }
 }
 
+/**
+ * Blueprint for Linux App.
+ */
 export class LinuxAppBlueprint extends BlueprintBase {
 
   /**

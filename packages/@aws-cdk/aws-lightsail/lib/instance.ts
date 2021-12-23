@@ -5,50 +5,110 @@ import { Bundle } from './bundle';
 import { CfnInstance } from './lightsail.generated';
 
 
+/**
+ * Represents the Platform.
+ */
 export interface IPlatform {
+  /**
+   * The blueprint fo the platform.
+   */
   readonly blueprint: BlueprintBase;
 }
 
+/**
+ * The properties for the LinuxApp.
+ */
 export interface LinuxAppProps {
+  /**
+   * the blueprint for the Linux App.
+   */
   readonly blueprint: LinuxAppBlueprint;
 }
 
+/**
+ * Represents the Linux Application with the blueprint property for the instance.
+ */
 export class LinuxApp implements IPlatform {
-  public readonly blueprint: LinuxAppBlueprint;
+  /**
+   * the blueprint for the Linux App.
+   */
+  public readonly blueprint: BlueprintBase;
   constructor(props: LinuxAppProps) {
     this.blueprint = props.blueprint;
   }
 }
 
+/**
+ * The properties for the LinuxOS.
+ */
 export interface LinuxOSProps {
+  /**
+   * the blueprint for the Linux OS.
+   */
   readonly blueprint: LinuxOSBlueprint;
 }
 
+/**
+ * Represents the LinuxOS.
+ */
 export class LinuxOS implements IPlatform {
-  public readonly blueprint: LinuxOSBlueprint;
+  /**
+   * the blueprint for the Linux OS.
+   */
+  public readonly blueprint: BlueprintBase;
   constructor(props: LinuxOSProps) {
     this.blueprint = props.blueprint;
   }
 }
 
+/**
+ * The properties for the WindowsOS.
+ */
 export interface WindowsOSProps {
+  /**
+   * the blueprint for the Windows OS.
+   */
   readonly blueprint: WindowsOSBlueprint;
 }
 
+/**
+ * Represents the WindowsOS.
+ */
 export class WindowsOS implements IPlatform {
-  public readonly blueprint: WindowsOSBlueprint;
+  /**
+   * the blueprint for the Windows OS.
+   */
+  public readonly blueprint: BlueprintBase;
   constructor(props: WindowsOSProps) {
     this.blueprint = props.blueprint;
   }
 }
 
+/**
+ * Represents the Platform which could be LinuxOS, LinuxApp or WindowsOS.
+ */
 export class Platform {
+  /**
+   * get a LinuxApp.
+   * @param props the LinuxApp properties
+   * @returns LinuxApp
+   */
   public static linuxApp(props: LinuxAppProps): LinuxApp {
     return new LinuxApp(props);
   }
+  /**
+   * get a LinuxOS
+   * @param props the LinuxOS properties.
+   * @returns LinuxOS
+   */
   public static linuxOS(props: LinuxOSProps): LinuxOS {
     return new LinuxOS(props);
   }
+  /**
+   * get a WindowsOS
+   * @param props the WindowsOS properties.
+   * @returns WindowsOS
+   */
   public static windowsOS(props: WindowsOSProps): WindowsOS {
     return new WindowsOS(props);
   }
