@@ -182,7 +182,7 @@ export class IdentityPoolRoleAttachment extends Resource implements IIdentityPoo
     if (mappings) {
       roleMappings = this.configureRoleMappings(...mappings);
     }
-    new CfnIdentityPoolRoleAttachment(this, 'Resource', {
+    new CfnIdentityPoolRoleAttachment(this, id, {
       identityPoolId: this.identityPoolId,
       roles,
       roleMappings,

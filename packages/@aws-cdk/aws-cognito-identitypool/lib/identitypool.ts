@@ -285,13 +285,13 @@ export interface IdentityPoolAuthenticationProviders extends IdentityPoolProvide
    * The OpenIdConnect Provider associated with this Identity Pool
    * @default - no OpenIdConnectProvider
   */
-  readonly openIdConnectProvider?: IOpenIdConnectProvider;
+  readonly openIdConnectProviders?: IOpenIdConnectProvider[];
 
   /**
    * The Security Assertion Markup Language Provider associated with this Identity Pool
    * @default - no SamlProvider
   */
-  readonly samlProvider?: ISamlProvider;
+  readonly samlProviders?: ISamlProvider[];
 
   /**
    * The Developer Provider Name to associate with this Identity Pool
@@ -377,11 +377,6 @@ export class IdentityPool extends Resource implements IIdentityPool {
   public readonly unauthenticatedRole: IRole;
 
   /**
-   * The Identity Pool Cloud Formation Construct
-   */
-  private cfnIdentityPool: CfnIdentityPool;
-
-  /**
    * List of Identity Providers added in constructor for use with property overrides
    */
   private cognitoIdentityProviders: CfnIdentityPool.CognitoIdentityProviderProperty[] = [];
@@ -396,20 +391,38 @@ export class IdentityPool extends Resource implements IIdentityPool {
       physicalName: props.identityPoolName,
     });
     const authProviders: IdentityPoolAuthenticationProviders = props.authenticationProviders || {};
-    const providers = this.configureUserPool(authProviders.userPool);
+    const providers = this.configureAuthenticationProviders(authProviders.userPool);
     if (providers && providers.length) this.cognitoIdentityProviders = providers;
-    this.cfnIdentityPool = new CfnIdentityPool(this, id, {
+    const openIdConnectProviderArns = authProviders.openIdConnectProviders ? 
+      authProviders.openIdConnectProviders.map(openIdProvider => 
+        openIdProvider.openIdConnectProviderArn
+      ) : undefined;
+    const samlProviderArns = authProviders.samlProviders ? 
+      authProviders.samlProviders.map(samlProvider => 
+        samlProvider.samlProviderArn
+      ) : undefined;
+    
+    let supportedLoginProviders:any = {};
+    if (authProviders.amazon) supportedLoginProviders[IdentityPoolProviderUrl.AMAZON.value] = authProviders.amazon.appId;
+    if (authProviders.facebook) supportedLoginProviders[IdentityPoolProviderUrl.FACEBOOK.value] = authProviders.facebook.appId;
+    if (authProviders.google) supportedLoginProviders[IdentityPoolProviderUrl.GOOGLE.value] = authProviders.google.clientId;
+    if (authProviders.apple) supportedLoginProviders[IdentityPoolProviderUrl.APPLE.value] = authProviders.apple.servicesId;
+    if (authProviders.twitter) supportedLoginProviders[IdentityPoolProviderUrl.TWITTER.value] = `${authProviders.twitter.consumerKey};${authProviders.twitter.consumerSecret}`;
+    if (authProviders.digits) supportedLoginProviders[IdentityPoolProviderUrl.DIGITS.value] = `${authProviders.digits.consumerKey};${authProviders.digits.consumerSecret}`;
+    if (!Object.keys(supportedLoginProviders).length) supportedLoginProviders = undefined;
+
+    const cfnIdentityPool = new CfnIdentityPool(this, id, {
       allowUnauthenticatedIdentities: props.allowUnauthenticatedIdentities ? true : false,
       allowClassicFlow: props.allowClassicFlow,
       identityPoolName: this.physicalName,
       developerProviderName: authProviders.customProvider,
-      openIdConnectProviderArns: this.configureOpenIdConnectProviderArns(authProviders.openIdConnectProvider),
-      samlProviderArns: this.configureSamlProviderArns(authProviders.samlProvider),
-      supportedLoginProviders: this.configureLoginProviders(authProviders),
+      openIdConnectProviderArns,
+      samlProviderArns,
+      supportedLoginProviders,
       cognitoIdentityProviders: Lazy.anyValue({ produce: () => this.cognitoIdentityProviders }),
-    }),
-    this.identityPoolName = this.cfnIdentityPool.attrName;
-    this.identityPoolId = this.cfnIdentityPool.ref;
+    });
+    this.identityPoolName = cfnIdentityPool.attrName;
+    this.identityPoolId = cfnIdentityPool.ref;
     this.identityPoolArn = Stack.of(scope).formatArn({
       service: 'cognito-identity',
       resource: 'identitypool',
@@ -467,46 +480,6 @@ export class IdentityPool extends Resource implements IIdentityPool {
         serverSideTokenCheck: !provider.disableServerSideTokenCheck,
       };
     });
-  }
-
-  /**
-   * Configure CognitoIdentityProviders from list of User Pools
-   */
-  private configureUserPool(userPool?: IUserPoolAuthenticationProvider): CfnIdentityPool.CognitoIdentityProviderProperty[] | undefined {
-    if (!userPool) return undefined;
-    return this.configureAuthenticationProviders(userPool);
-  }
-
-  /**
-   * Converts OpenIdConnectProvider constructs to an array of Arns
-   */
-  private configureOpenIdConnectProviderArns(provider?: IOpenIdConnectProvider): string[] | undefined {
-    if (!provider) return undefined;
-    return [provider.openIdConnectProviderArn];
-  }
-
-  /**
-   * Converts SamlProvider constructs to an array of Arns
-   */
-  private configureSamlProviderArns(provider?: ISamlProvider): string[] | undefined {
-    if (!provider) return undefined;
-    return [provider.samlProviderArn];
-  }
-
-  /**
-   * Formats authentication providers
-   */
-  private configureLoginProviders(providers?: IdentityPoolProviders): any {
-    if (!providers) return undefined;
-    const authenticatedProviders:any = {};
-    if (providers.amazon) authenticatedProviders[IdentityPoolProviderUrl.AMAZON.value] = providers.amazon.appId;
-    if (providers.facebook) authenticatedProviders[IdentityPoolProviderUrl.FACEBOOK.value] = providers.facebook.appId;
-    if (providers.google) authenticatedProviders[IdentityPoolProviderUrl.GOOGLE.value] = providers.google.clientId;
-    if (providers.apple) authenticatedProviders[IdentityPoolProviderUrl.APPLE.value] = providers.apple.servicesId;
-    if (providers.twitter) authenticatedProviders[IdentityPoolProviderUrl.TWITTER.value] = `${providers.twitter.consumerKey};${providers.twitter.consumerSecret}`;
-    if (providers.digits) authenticatedProviders[IdentityPoolProviderUrl.DIGITS.value] = `${providers.digits.consumerKey};${providers.digits.consumerSecret}`;
-    if (!Object.keys(authenticatedProviders).length) return undefined;
-    return authenticatedProviders;
   }
 
   /**
