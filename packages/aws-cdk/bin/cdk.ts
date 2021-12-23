@@ -157,6 +157,10 @@ async function parseCommandLineArguments() {
           'which skips CloudFormation and updates the resources directly, ' +
           'and falls back to a full deployment if that is not possible. ' +
           "'true' by default, use --no-hotswap to turn off",
+      })
+      .options('logs', {
+        type: 'boolean',
+        desc: 'Show CloudWatch log events from hotswapped resources in the terminal',
       }),
     )
     .command('destroy [STACKS..]', 'Destroy the stack(s) named STACKS', yargs => yargs
@@ -394,6 +398,7 @@ async function initCommandLine() {
           progress: configuration.settings.get(['progress']),
           rollback: configuration.settings.get(['rollback']),
           hotswap: args.hotswap,
+          logs: args.logs,
         });
 
       case 'destroy':

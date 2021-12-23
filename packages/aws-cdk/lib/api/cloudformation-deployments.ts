@@ -5,6 +5,7 @@ import { debug } from '../logging';
 import { publishAssets } from '../util/asset-publishing';
 import { Mode, SdkProvider } from './aws-auth';
 import { deployStack, DeployStackResult, destroyStack } from './deploy-stack';
+import { CloudWatchLogEventMonitor } from './hotswap/monitor/logs-monitor';
 import { ToolkitInfo } from './toolkit-info';
 import { CloudFormationStack, Template } from './util/cloudformation';
 import { StackActivityProgress } from './util/cloudformation/stack-activity-monitor';
@@ -12,7 +13,7 @@ import { StackActivityProgress } from './util/cloudformation/stack-activity-moni
 /**
  * Replace the {ACCOUNT} and {REGION} placeholders in all strings found in a complex object.
  */
-export async function replaceEnvPlaceholders<A extends { }>(object: A, env: cxapi.Environment, sdkProvider: SdkProvider): Promise<A> {
+export async function replaceEnvPlaceholders<A extends {}>(object: A, env: cxapi.Environment, sdkProvider: SdkProvider): Promise<A> {
   return cxapi.EnvironmentPlaceholders.replaceAsync(object, {
     accountId: () => Promise.resolve(env.account),
     region: () => Promise.resolve(env.region),
@@ -152,6 +153,14 @@ export interface DeployStackOptions {
    * @default - nothing extra is appended to the User-Agent header
    */
   readonly extraUserAgent?: string;
+
+  /**
+   * Allows adding CloudWatch log groups to the log monitor via
+   * hotswapLogMonitor.addLogGroups();
+   *
+   * @default - not monitoring CloudWatch logs
+   */
+  readonly hotswapLogMonitor?: CloudWatchLogEventMonitor;
 }
 
 export interface DestroyStackOptions {
@@ -230,6 +239,7 @@ export class CloudFormationDeployments {
       rollback: options.rollback,
       hotswap: options.hotswap,
       extraUserAgent: options.extraUserAgent,
+      hotswapLogMonitor: options.hotswapLogMonitor,
     });
   }
 

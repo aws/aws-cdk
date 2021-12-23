@@ -11,6 +11,7 @@ import { Bootstrapper, BootstrapEnvironmentOptions } from './api/bootstrap';
 import { CloudFormationDeployments } from './api/cloudformation-deployments';
 import { CloudAssembly, DefaultSelection, ExtendedStackSelection, StackCollection, StackSelector } from './api/cxapp/cloud-assembly';
 import { CloudExecutable } from './api/cxapp/cloud-executable';
+import { CloudWatchLogEventMonitor } from './api/hotswap/monitor/logs-monitor';
 import { StackActivityProgress } from './api/util/cloudformation/stack-activity-monitor';
 import { printSecurityDiff, printStackDiff, RequireApproval } from './diff';
 import { data, debug, error, highlight, print, success, warning } from './logging';
@@ -141,7 +142,7 @@ export class CdkToolkit {
       warning('⚠️ It should only be used for development - never use it for your production Stacks!');
     }
 
-    const stackOutputs: { [key: string]: any } = { };
+    const stackOutputs: { [key: string]: any } = {};
     const outputsFile = options.outputsFile;
 
     for (const stack of stacks.stackArtifacts) {
@@ -209,6 +210,7 @@ export class CdkToolkit {
           rollback: options.rollback,
           hotswap: options.hotswap,
           extraUserAgent: options.extraUserAgent,
+          hotswapLogMonitor: options.hotswapLogMonitor,
         });
 
         const message = result.noOp
@@ -253,8 +255,8 @@ export class CdkToolkit {
     const rootDir = path.dirname(path.resolve(PROJECT_CONFIG));
     debug("root directory used for 'watch' is: %s", rootDir);
 
-    const watchSettings: { include?: string | string[], exclude: string | string [] } | undefined =
-        this.props.configuration.settings.get(['watch']);
+    const watchSettings: { include?: string | string[], exclude: string | string[] } | undefined =
+      this.props.configuration.settings.get(['watch']);
     if (!watchSettings) {
       throw new Error("Cannot use the 'watch' command without specifying at least one directory to monitor. " +
         'Make sure to add a "watch" key to your cdk.json');
@@ -296,10 +298,14 @@ export class CdkToolkit {
     // --------------                --------  'cdk deploy' done  --------------  'cdk deploy' done  --------------
     let latch: 'pre-ready' | 'open' | 'deploying' | 'queued' = 'pre-ready';
 
+    let logMonitor: CloudWatchLogEventMonitor | undefined = undefined;
+    if (options.logs) {
+      logMonitor = CloudWatchLogEventMonitor.withDefaultPrinter({ hotswapTime: new Date() }).start();
+    }
     const deployAndWatch = async () => {
       latch = 'deploying';
 
-      await this.invokeDeployFromWatch(options);
+      await this.invokeDeployFromWatch(options, logMonitor);
 
       // If latch is still 'deploying' after the 'await', that's fine,
       // but if it's 'queued', that means we need to deploy again
@@ -308,7 +314,7 @@ export class CdkToolkit {
         // and thinks the above 'while' condition is always 'false' without the cast
         latch = 'deploying';
         print("Detected file changes during deployment. Invoking 'cdk deploy' again");
-        await this.invokeDeployFromWatch(options);
+        await this.invokeDeployFromWatch(options, logMonitor);
       }
       latch = 'open';
     };
@@ -331,7 +337,7 @@ export class CdkToolkit {
       } else { // this means latch is either 'deploying' or 'queued'
         latch = 'queued';
         print("Detected change to '%s' (type: %s) while 'cdk deploy' is still running. " +
-            'Will queue for another deployment after this one finishes', filePath, event);
+          'Will queue for another deployment after this one finishes', filePath, event);
       }
     });
   }
@@ -367,7 +373,7 @@ export class CdkToolkit {
     }
   }
 
-  public async list(selectors: string[], options: { long?: boolean } = { }) {
+  public async list(selectors: string[], options: { long?: boolean } = {}) {
     const stacks = await this.selectStacksForList(selectors);
 
     // if we are in "long" mode, emit the array as-is (JSON/YAML)
@@ -586,7 +592,7 @@ export class CdkToolkit {
       : (options.returnRootDirIfEmpty ? [options.rootDir] : []);
   }
 
-  private async invokeDeployFromWatch(options: WatchOptions): Promise<void> {
+  private async invokeDeployFromWatch(options: WatchOptions, hotswapLogMonitor?: CloudWatchLogEventMonitor): Promise<void> {
     // 'watch' has different defaults than regular 'deploy'
     const hotswap = options.hotswap === undefined ? true : options.hotswap;
     const deployOptions: DeployOptions = {
@@ -596,6 +602,7 @@ export class CdkToolkit {
       // we need to make sure to not call 'deploy' with 'watch' again,
       // as that would lead to a cycle
       watch: false,
+      hotswapLogMonitor,
       cacheCloudAssembly: false,
       hotswap: hotswap,
       extraUserAgent: `cdk-watch/hotswap-${hotswap ? 'on' : 'off'}`,
@@ -737,6 +744,12 @@ interface WatchOptions {
    * @default - nothing extra is appended to the User-Agent header
    */
   readonly extraUserAgent?: string;
+
+  /**
+   * Whether to show CloudWatch logs for hotswapped resources
+   * locally in the users terminal
+   */
+  readonly logs?: boolean;
 }
 
 export interface DeployOptions extends WatchOptions {
@@ -807,6 +820,14 @@ export interface DeployOptions extends WatchOptions {
    * @default true
    */
   readonly cacheCloudAssembly?: boolean;
+
+  /**
+   * Allows adding CloudWatch log groups to the log monitor via
+   * hotswapLogMonitor.addLogGroups();
+   *
+   * @default - not monitoring CloudWatch logs
+   */
+  readonly hotswapLogMonitor?: CloudWatchLogEventMonitor;
 }
 
 export interface DestroyOptions {

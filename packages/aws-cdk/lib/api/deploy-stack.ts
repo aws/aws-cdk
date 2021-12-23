@@ -12,6 +12,7 @@ import { ISDK, SdkProvider } from './aws-auth';
 import { tryHotswapDeployment } from './hotswap-deployments';
 import { ICON } from './hotswap/common';
 import { CfnEvaluationException } from './hotswap/evaluate-cloudformation-template';
+import { CloudWatchLogEventMonitor } from './hotswap/monitor/logs-monitor';
 import { ToolkitInfo } from './toolkit-info';
 import {
   changeSetHasNoChanges, CloudFormationStack, TemplateParameters, waitForChangeSet,
@@ -190,6 +191,14 @@ export interface DeployStackOptions {
    * @default - nothing extra is appended to the User-Agent header
    */
   readonly extraUserAgent?: string;
+
+  /**
+   * Allows adding CloudWatch log groups to the log monitor via
+   * hotswapLogMonitor.addLogGroups();
+   *
+   * @default - not monitoring CloudWatch logs
+   */
+  readonly hotswapLogMonitor?: CloudWatchLogEventMonitor;
 }
 
 const LARGE_TEMPLATE_SIZE_KB = 50;
@@ -253,7 +262,8 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
   if (options.hotswap) {
     // attempt to short-circuit the deployment if possible
     try {
-      const hotswapDeploymentResult = await tryHotswapDeployment(options.sdkProvider, assetParams, cloudFormationStack, stackArtifact);
+      const hotswapDeploymentResult = await tryHotswapDeployment(
+        options.sdkProvider, assetParams, cloudFormationStack, stackArtifact, options.hotswapLogMonitor);
       if (hotswapDeploymentResult) {
         return hotswapDeploymentResult;
       }

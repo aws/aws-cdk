@@ -10,6 +10,7 @@ import { ICON, ChangeHotswapImpact, ChangeHotswapResult, HotswapOperation, Hotsw
 import { isHotswappableEcsServiceChange } from './hotswap/ecs-services';
 import { EvaluateCloudFormationTemplate } from './hotswap/evaluate-cloudformation-template';
 import { isHotswappableLambdaFunctionChange } from './hotswap/lambda-functions';
+import { CloudWatchLogEventMonitor } from './hotswap/monitor/logs-monitor';
 import { isHotswappableS3BucketDeploymentChange } from './hotswap/s3-bucket-deployments';
 import { isHotswappableStateMachineChange } from './hotswap/stepfunctions-state-machines';
 import { CloudFormationStack } from './util/cloudformation';
@@ -24,6 +25,7 @@ import { CloudFormationStack } from './util/cloudformation';
 export async function tryHotswapDeployment(
   sdkProvider: SdkProvider, assetParams: { [key: string]: string },
   cloudFormationStack: CloudFormationStack, stackArtifact: cxapi.CloudFormationStackArtifact,
+  hotswapLogMonitor?: CloudWatchLogEventMonitor,
 ): Promise<DeployStackResult | undefined> {
   // resolve the environment, so we can substitute things like AWS::Region in CFN expressions
   const resolvedEnv = await sdkProvider.resolveEnvironment(stackArtifact.environment);
@@ -53,10 +55,11 @@ export async function tryHotswapDeployment(
   }
 
   // apply the short-circuitable changes
-  await applyAllHotswappableChanges(sdk, hotswappableChanges);
+  await applyAllHotswappableChanges(sdk, hotswappableChanges, hotswapLogMonitor);
 
   return { noOp: hotswappableChanges.length === 0, stackArn: cloudFormationStack.stackId, outputs: cloudFormationStack.outputs, stackArtifact };
 }
+
 
 async function findAllHotswappableChanges(
   stackChanges: cfn_diff.TemplateDiff, evaluateCfnTemplate: EvaluateCloudFormationTemplate,
@@ -213,17 +216,26 @@ function isCandidateForHotswapping(change: cfn_diff.ResourceDifference): Hotswap
 
 async function applyAllHotswappableChanges(
   sdk: ISDK, hotswappableChanges: HotswapOperation[],
+  hotswapLogMonitor?: CloudWatchLogEventMonitor,
 ): Promise<void[]> {
   print(`\n${ICON} hotswapping resources:`);
   return Promise.all(hotswappableChanges.map(hotswapOperation => {
-    return applyHotswappableChange(sdk, hotswapOperation);
+    return applyHotswappableChange(sdk, hotswapOperation, hotswapLogMonitor);
   }));
 }
 
-async function applyHotswappableChange(sdk: ISDK, hotswapOperation: HotswapOperation): Promise<any> {
+async function applyHotswappableChange(sdk: ISDK, hotswapOperation: HotswapOperation, logMonitor?: CloudWatchLogEventMonitor): Promise<any> {
   // note the type of service that was successfully hotswapped in the User-Agent
   const customUserAgent = `cdk-hotswap/success-${hotswapOperation.service}`;
   sdk.appendCustomUserAgent(customUserAgent);
+
+  // lambda functions always have a log group with the name
+  // /aws/lambda/function-name
+  if (hotswapOperation.service === 'lambda-function') {
+    await logMonitor?.addLogGroups(sdk, hotswapOperation.resourceNames.map(name => {
+      return `/aws/lambda/${name}`;
+    }));
+  }
 
   try {
     for (const name of hotswapOperation.resourceNames) {
