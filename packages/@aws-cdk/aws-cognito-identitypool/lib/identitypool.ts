@@ -454,7 +454,7 @@ export class IdentityPool extends Resource implements IIdentityPool {
   public addRoleMappings(...roleMappings: IdentityPoolRoleMapping[]): void {
     if (!roleMappings || !roleMappings.length) return;
     this.roleAttachmentCount++;
-    const name = this.id + 'RoleMappingAttachment' + this.roleAttachmentCount.toString();
+    const name = 'RoleMappingAttachment' + this.roleAttachmentCount.toString();
     const attachment = new IdentityPoolRoleAttachment(this, name, {
       identityPool: this,
       roles: {
