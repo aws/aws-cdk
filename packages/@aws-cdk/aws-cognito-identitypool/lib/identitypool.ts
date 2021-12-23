@@ -13,7 +13,7 @@ import {
   IResource,
   Stack,
   ArnFormat,
-  Lazy
+  Lazy,
 } from '@aws-cdk/core';
 import {
   Construct,
@@ -391,17 +391,17 @@ export class IdentityPool extends Resource implements IIdentityPool {
       physicalName: props.identityPoolName,
     });
     const authProviders: IdentityPoolAuthenticationProviders = props.authenticationProviders || {};
-    const providers = this.configureAuthenticationProviders(authProviders.userPool);
+    const providers = authProviders.userPool ? this.configureAuthenticationProviders(authProviders.userPool) : undefined;
     if (providers && providers.length) this.cognitoIdentityProviders = providers;
-    const openIdConnectProviderArns = authProviders.openIdConnectProviders ? 
-      authProviders.openIdConnectProviders.map(openIdProvider => 
-        openIdProvider.openIdConnectProviderArn
+    const openIdConnectProviderArns = authProviders.openIdConnectProviders ?
+      authProviders.openIdConnectProviders.map(openIdProvider =>
+        openIdProvider.openIdConnectProviderArn,
       ) : undefined;
-    const samlProviderArns = authProviders.samlProviders ? 
-      authProviders.samlProviders.map(samlProvider => 
-        samlProvider.samlProviderArn
+    const samlProviderArns = authProviders.samlProviders ?
+      authProviders.samlProviders.map(samlProvider =>
+        samlProvider.samlProviderArn,
       ) : undefined;
-    
+
     let supportedLoginProviders:any = {};
     if (authProviders.amazon) supportedLoginProviders[IdentityPoolProviderUrl.AMAZON.value] = authProviders.amazon.appId;
     if (authProviders.facebook) supportedLoginProviders[IdentityPoolProviderUrl.FACEBOOK.value] = authProviders.facebook.appId;
@@ -419,7 +419,7 @@ export class IdentityPool extends Resource implements IIdentityPool {
       openIdConnectProviderArns,
       samlProviderArns,
       supportedLoginProviders,
-      cognitoIdentityProviders: Lazy.anyValue({ produce: () => this.cognitoIdentityProviders }),
+      cognitoIdentityProviders: Lazy.any({ produce: () => this.cognitoIdentityProviders }),
     });
     this.identityPoolName = cfnIdentityPool.attrName;
     this.identityPoolId = cfnIdentityPool.ref;
@@ -431,12 +431,10 @@ export class IdentityPool extends Resource implements IIdentityPool {
     });
     this.authenticatedRole = props.authenticatedRole ? props.authenticatedRole : this.configureDefaultRole('Authenticated');
     this.unauthenticatedRole = props.unauthenticatedRole ? props.unauthenticatedRole : this.configureDefaultRole('Unauthenticated');
-    const attachment = new IdentityPoolRoleAttachment(this, `DefaultRoleAttachment`, {
+    const attachment = new IdentityPoolRoleAttachment(this, 'DefaultRoleAttachment', {
       identityPool: this,
-      roles: {
-        authenticated: this.authenticatedRole,
-        unauthenticated: this.unauthenticatedRole,
-      },
+      authenticatedRole: this.authenticatedRole,
+      unauthenticatedRole: this.unauthenticatedRole,
       roleMappings: props.roleMappings,
     });
     attachment.node.addDependency(this);
@@ -459,10 +457,8 @@ export class IdentityPool extends Resource implements IIdentityPool {
     const name = 'RoleMappingAttachment' + this.roleAttachmentCount.toString();
     const attachment = new IdentityPoolRoleAttachment(this, name, {
       identityPool: this,
-      roles: {
-        authenticated: this.authenticatedRole,
-        unauthenticated: this.unauthenticatedRole,
-      },
+      authenticatedRole: this.authenticatedRole,
+      unauthenticatedRole: this.unauthenticatedRole,
       roleMappings,
     });
     attachment.node.addDependency(this);

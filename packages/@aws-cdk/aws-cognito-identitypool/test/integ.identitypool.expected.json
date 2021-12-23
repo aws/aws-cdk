@@ -114,7 +114,7 @@
         ]
       }
     },
-    "identitypool51BC8967": {
+    "identitypoolE2A6D099": {
       "Type": "AWS::Cognito::IdentityPool",
       "Properties": {
         "AllowUnauthenticatedIdentities": false,
@@ -137,7 +137,7 @@
               "Condition": {
                 "StringEquals": {
                   "cognito-identity.amazonaws.com:aud": {
-                    "Ref": "identitypool51BC8967"
+                    "Ref": "identitypoolE2A6D099"
                   }
                 },
                 "ForAnyValue:StringLike": {
@@ -152,8 +152,20 @@
           ],
           "Version": "2012-10-17"
         },
-        "Description": "Default Authenticated Role for Identity Pool my-id-pool",
-        "RoleName": "identitypoolAuthenticatedRole"
+        "Description": {
+          "Fn::Join": [
+            "",
+            [
+              "Default Authenticated Role for Identity Pool ",
+              {
+                "Fn::GetAtt": [
+                  "identitypoolE2A6D099",
+                  "Name"
+                ]
+              }
+            ]
+          ]
+        }
       }
     },
     "identitypoolidentitypoolAuthenticatedRoleDefaultPolicy8660132D": {
@@ -187,7 +199,7 @@
               "Condition": {
                 "StringEquals": {
                   "cognito-identity.amazonaws.com:aud": {
-                    "Ref": "identitypool51BC8967"
+                    "Ref": "identitypoolE2A6D099"
                   }
                 },
                 "ForAnyValue:StringLike": {
@@ -202,8 +214,20 @@
           ],
           "Version": "2012-10-17"
         },
-        "Description": "Default Unauthenticated Role for Identity Pool my-id-pool",
-        "RoleName": "identitypoolUnauthenticatedRole"
+        "Description": {
+          "Fn::Join": [
+            "",
+            [
+              "Default Unauthenticated Role for Identity Pool ",
+              {
+                "Fn::GetAtt": [
+                  "identitypoolE2A6D099",
+                  "Name"
+                ]
+              }
+            ]
+          ]
+        }
       }
     },
     "identitypoolidentitypoolUnauthenticatedRoleDefaultPolicyA8F8549F": {
@@ -227,11 +251,11 @@
         ]
       }
     },
-    "identitypoolidentitypoolDefaultRoleAttachmentB154BD67": {
+    "identitypoolDefaultRoleAttachmentC73843DE": {
       "Type": "AWS::Cognito::IdentityPoolRoleAttachment",
       "Properties": {
         "IdentityPoolId": {
-          "Ref": "identitypool51BC8967"
+          "Ref": "identitypoolE2A6D099"
         },
         "Roles": {
           "authenticated": {
@@ -249,11 +273,11 @@
         }
       },
       "DependsOn": [
-        "identitypool51BC8967",
         "identitypoolidentitypoolAuthenticatedRoleDefaultPolicy8660132D",
         "identitypoolidentitypoolAuthenticatedRole8591A38F",
         "identitypoolidentitypoolUnauthenticatedRoleDefaultPolicyA8F8549F",
-        "identitypoolidentitypoolUnauthenticatedRoleCEE08F6C"
+        "identitypoolidentitypoolUnauthenticatedRoleCEE08F6C",
+        "identitypoolE2A6D099"
       ]
     }
   }

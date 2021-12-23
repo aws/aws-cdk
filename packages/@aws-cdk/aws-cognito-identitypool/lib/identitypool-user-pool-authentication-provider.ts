@@ -40,7 +40,7 @@ export interface UserPoolAuthenticationProviderProps extends UserPoolClientProps
 }
 
 /**
- * Defines an User Pool Authentication Provider
+ * Defines a User Pool Authentication Provider
  */
 export class UserPoolAuthenticationProvider implements IUserPoolAuthenticationProvider {
 
