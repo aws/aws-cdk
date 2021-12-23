@@ -255,8 +255,6 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
       return;
     }
 
-    // eslint-disable-next-line no-console
-    console.log(permission);
     const principal = this.parsePermissionPrincipal(permission.principal);
     const { sourceAccount, sourceArn } = this.parseConditions(permission.principal) ?? {};
     const action = permission.action ?? 'lambda:InvokeFunction';
