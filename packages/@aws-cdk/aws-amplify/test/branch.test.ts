@@ -1,4 +1,6 @@
+import * as path from 'path';
 import { Template } from '@aws-cdk/assertions';
+import { Asset } from '@aws-cdk/aws-s3-assets';
 import { SecretValue, Stack } from '@aws-cdk/core';
 import * as amplify from '../lib';
 
@@ -97,5 +99,34 @@ test('with env vars', () => {
         Value: 'value2',
       },
     ],
+  });
+});
+
+test('with asset deployment', () => {
+  // WHEN
+  const asset = new Asset(app, 'SampleAsset', {
+    path: path.join(__dirname, './test-asset'),
+  });
+  app.addBranch('dev', { asset });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('Custom::AmplifyAssetDeployment', {
+    ServiceToken: {
+      'Fn::GetAtt': [
+        'comamazonawscdkcustomresourcesamplifyassetdeploymentproviderNestedStackcomamazonawscdkcustomresourcesamplifyassetdeploymentproviderNestedStackResource89BDFEB2',
+        'Outputs.comamazonawscdkcustomresourcesamplifyassetdeploymentprovideramplifyassetdeploymenthandlerproviderframeworkonEventA449D9A9Arn',
+      ],
+    },
+    AppId: {
+      'Fn::GetAtt': [
+        'AppF1B96344',
+        'AppId',
+      ],
+    },
+    BranchName: 'dev',
+    S3ObjectKey: '8c89eadc6be22019c81ed6b9c7d9929ae10de55679fd8e0e9fd4c00f8edc1cda.zip',
+    S3BucketName: {
+      'Fn::Sub': 'cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}',
+    },
   });
 });

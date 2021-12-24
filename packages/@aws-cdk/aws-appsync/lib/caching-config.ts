@@ -16,7 +16,6 @@ export interface CachingConfig {
    * The TTL in seconds for a resolver that has caching enabled.
    * Valid values are between 1 and 3600 seconds.
    *
-   * @default - No TTL
    */
-  readonly ttl?: Duration;
+  readonly ttl: Duration;
 }
