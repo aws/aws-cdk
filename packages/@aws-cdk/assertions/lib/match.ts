@@ -304,12 +304,12 @@ class SerializedJson extends Matcher {
     super();
   };
 
-  private serializeCfFn(object: any): any {
+  private serializeCfnJoinGettAtt(object: any): any {
     if (typeof object === 'object') {
       if (object === null) return null;
       if (object instanceof Array) {
         for (var i = 0; i < object.length; i++) {
-          object[i] = this.serializeCfFn(object[i]);
+          object[i] = this.serializeCfnJoinGettAtt(object[i]);
         }
       } else {
         if ( object['Fn::GetAtt'] instanceof Array) {
@@ -317,10 +317,10 @@ class SerializedJson extends Matcher {
         } else if ( object['Fn::Join'] instanceof Array && object['Fn::Join'].length == 2 && object['Fn::Join'][1] instanceof Array ) {
           const delimiter = object['Fn::Join'][0];
           const valuesList = object['Fn::Join'][1];
-          return valuesList.map( (attr) => this.serializeCfFn(attr)).join(delimiter);
+          return valuesList.map( (attr) => this.serializeCfnJoinGettAtt(attr)).join(delimiter);
         } else {
           for (var property in object) {
-            object[property] = this.serializeCfFn(object[property]);
+            object[property] = this.serializeCfnJoinGettAtt(object[property]);
           }
         }
       }
@@ -330,13 +330,7 @@ class SerializedJson extends Matcher {
 
   public test(actual: any): MatchResult {
     const result = new MatchResult(actual);
-    // eslint-disable-next-line no-console
-    console.log(actual);
-    actual = this.serializeCfFn(actual);
-    // eslint-disable-next-line no-console
-    console.log(actual);
-    // eslint-disable-next-line no-console
-    console.log(getType(actual));
+    actual = this.serializeCfnJoinGettAtt(actual);
     if (getType(actual) !== 'string') {
       result.recordFailure({
         matcher: this,

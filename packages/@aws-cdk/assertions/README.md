@@ -366,6 +366,50 @@ template.hasResourceProperties('Foo::Bar', {
 });
 ```
 
+It will serialize the CloudFormation intrinsic functions Fn::Join and Fn::GetAtt, as they will be sometimes created by cdk if you reference other resources inside the object that will be stringified by cdk.
+
+```ts
+// Given a template -
+// {
+//   "Resources": {
+//     "MyBar": {
+//       "Type": "Foo::Bar",
+//       "Properties": {
+//         "Baz": {
+//           "Fn::Join": [
+//             "",
+//             [
+//               "{ \"Foo\": \"",
+//               {
+//                 "Fn::GetAtt": [
+//                   "SomeResource",
+//                   "SomeAttribute"
+//                 ]
+//               },
+//               ":",
+//               {
+//                 "Fn::GetAtt": [
+//                   "SomeResource",
+//                   "SomeOtherAttribute"
+//                 ]
+//               },
+//               "\" }"
+//             ]
+//           ]
+//         }
+//       }
+//     }
+//   }
+// }
+
+// The following will NOT throw an assertion error
+template.hasResourceProperties('Foo::Bar', {
+  Baz: Match.serializedJson({
+    Foo: '<Fn::GetAtt:SomeResource:SomeAttribute>:<Fn::GetAtt:SomeResource:SomeOtherAttribute>',
+  }),
+});
+```
+
 [Pipeline BuildSpec]: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codebuild-project-source.html#cfn-codebuild-project-source-buildspec
 [StateMachine Definition]: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-stepfunctions-statemachine.html#cfn-stepfunctions-statemachine-definition
 

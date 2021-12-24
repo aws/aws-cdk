@@ -373,7 +373,7 @@ describe('Matchers', () => {
         'Fn::Join': [
           '',
           [
-            '{ "Foo": \"',
+            '{ "Foo": "',
             {
               'Fn::GetAtt': [
                 'SomeResource',
@@ -387,7 +387,7 @@ describe('Matchers', () => {
                 'SomeOtherAttribute',
               ],
             },
-            '\" }',
+            '" }',
           ],
         ],
       });
