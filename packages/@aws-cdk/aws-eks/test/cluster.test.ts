@@ -28,7 +28,7 @@ describe('cluster', () => {
     const cluster = new eks.Cluster(stack, 'Cluster', {
       version: CLUSTER_VERSION,
       albController: {
-        version: eks.AlbControllerVersion.V2_3_0,
+        version: eks.AlbControllerVersion.V2_3_1,
       },
     });
 

@@ -539,7 +539,7 @@ To deploy the controller on your EKS cluster, configure the `albController` prop
 new eks.Cluster(this, 'HelloEKS', {
   version: eks.KubernetesVersion.V1_21,
   albController: {
-    version: eks.AlbControllerVersion.V2_3_0,
+    version: eks.AlbControllerVersion.V2_3_1,
   },
 });
 ```
