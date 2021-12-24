@@ -78,6 +78,11 @@ export class AlbControllerVersion {
   public static readonly V2_3_0 = new AlbControllerVersion('v2.3.0', false);
 
   /**
+   * v2.3.1
+   */
+  public static readonly V2_3_1 = new AlbControllerVersion('v2.3.1', false);
+
+  /**
    * Specify a custom version.
    * Use this if the version you need is not available in one of the predefined versions.
    * Note that in this case, you will also need to provide an IAM policy in the controller options.
