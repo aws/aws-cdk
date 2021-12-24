@@ -304,8 +304,39 @@ class SerializedJson extends Matcher {
     super();
   };
 
+  private serializeCfFn(object: any): any {
+    if (typeof object === 'object') {
+      if (object === null) return null;
+      if (object instanceof Array) {
+        for (var i = 0; i < object.length; i++) {
+          object[i] = this.serializeCfFn(object[i]);
+        }
+      } else {
+        if ( object['Fn::GetAtt'] instanceof Array) {
+          return `<Fn::GetAtt:${object['Fn::GetAtt'][0]}:${object['Fn::GetAtt'][1]}>`;
+        } else if ( object['Fn::Join'] instanceof Array && object['Fn::Join'].length == 2 && object['Fn::Join'][1] instanceof Array ) {
+          const delimiter = object['Fn::Join'][0];
+          const valuesList = object['Fn::Join'][1];
+          return valuesList.map( (attr) => this.serializeCfFn(attr)).join(delimiter);
+        } else {
+          for (var property in object) {
+            object[property] = this.serializeCfFn(object[property]);
+          }
+        }
+      }
+    }
+    return object;
+  }
+
   public test(actual: any): MatchResult {
     const result = new MatchResult(actual);
+    // eslint-disable-next-line no-console
+    console.log(actual);
+    actual = this.serializeCfFn(actual);
+    // eslint-disable-next-line no-console
+    console.log(actual);
+    // eslint-disable-next-line no-console
+    console.log(getType(actual));
     if (getType(actual) !== 'string') {
       result.recordFailure({
         matcher: this,

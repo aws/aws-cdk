@@ -363,6 +363,35 @@ describe('Matchers', () => {
 
       expectFailure(matcher, '{ "Foo"', [/invalid JSON string/i]);
     });
+
+    test('serialize CfnFunctions first', () => {
+      matcher = Match.serializedJson(Match.objectLike({
+        Foo: '<Fn::GetAtt:SomeResource:SomeAttribute>:<Fn::GetAtt:SomeResource:SomeOtherAttribute>',
+      }));
+
+      expectPass(matcher, {
+        'Fn::Join': [
+          '',
+          [
+            '{ "Foo": \"',
+            {
+              'Fn::GetAtt': [
+                'SomeResource',
+                'SomeAttribute',
+              ],
+            },
+            ':',
+            {
+              'Fn::GetAtt': [
+                'SomeResource',
+                'SomeOtherAttribute',
+              ],
+            },
+            '\" }',
+          ],
+        ],
+      });
+    });
   });
 
   describe('absent', () => {
