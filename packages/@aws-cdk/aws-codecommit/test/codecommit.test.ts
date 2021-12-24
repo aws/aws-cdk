@@ -3,7 +3,6 @@ import * as fs from 'fs';
 import { join, resolve } from 'path';
 import { Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import { Asset } from '@aws-cdk/aws-s3-assets';
-import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { App, Stack } from '@aws-cdk/core';
 import { Code, Repository, RepositoryProps } from '../lib';
 
