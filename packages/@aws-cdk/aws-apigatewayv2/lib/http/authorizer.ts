@@ -166,7 +166,7 @@ export class HttpAuthorizer extends Resource implements IHttpAuthorizer {
     }
 
     /**
-     * This check is required because Cloudformation will fail stack creation is this property
+     * This check is required because Cloudformation will fail stack creation if this property
      * is set for the JWT authorizer. AuthorizerPayloadFormatVersion can only be set for REQUEST authorizer
      */
     if (props.type === HttpAuthorizerType.LAMBDA && typeof authorizerPayloadFormatVersion === 'undefined') {
