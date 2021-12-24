@@ -1,6 +1,7 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import { CloudFormation } from 'aws-sdk';
 import * as AWS from 'aws-sdk';
+import * as codebuild from 'aws-sdk/clients/codebuild';
 import * as lambda from 'aws-sdk/clients/lambda';
 import * as stepfunctions from 'aws-sdk/clients/stepfunctions';
 import { DeployStackResult } from '../../../lib/api';
@@ -91,6 +92,12 @@ export class HotswapMockSdkProvider {
       updateFunctionCode: mockUpdateLambdaCode ?? jest.fn(),
       tagResource: mockTagResource ?? jest.fn(),
       untagResource: mockUntagResource ?? jest.fn(),
+    });
+  }
+
+  public setUpdateProjectMock(mockUpdateProject: (input: codebuild.UpdateProjectInput) => codebuild.UpdateProjectOutput) {
+    this.mockSdkProvider.stubCodeBuild({
+      updateProject: mockUpdateProject,
     });
   }
 
