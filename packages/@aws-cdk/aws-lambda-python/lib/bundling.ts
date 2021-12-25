@@ -1,7 +1,7 @@
-import * as fs from 'fs';
 import * as path from 'path';
 import { Architecture, AssetCode, Code, Runtime } from '@aws-cdk/aws-lambda';
-import * as cdk from '@aws-cdk/core';
+import { AssetHashType, AssetStaging, BundlingOptions, DockerImage } from '@aws-cdk/core';
+import { Packaging, DependenciesFile } from './packaging';
 
 /**
  * Dependency files to exclude from the asset hash.
@@ -35,14 +35,15 @@ export interface BundlingProps {
   /**
    * Output path suffix ('python' for a layer, '.' otherwise)
    */
-  readonly outputPathSuffix: string;
+  readonly outputPathSuffix?: string;
 
   /**
    * Docker image to use for bundling. If no options are provided, the default bundling image
    * will be used. The bundling Docker image must have `rsync` installed. Dependencies will be
    * copied from the image's`/var/dependencies` directory into the Lambda asset.
+   * @default: - the default bundling image
    */
-  readonly image?: cdk.DockerImage;
+  readonly image?: DockerImage;
 
   /**
    * Determines how asset hash is calculated. Assets will get rebuild and
@@ -66,7 +67,7 @@ export interface BundlingProps {
    * default is `CUSTOM`. This means that only updates to the source will cause
    * the asset to rebuild.
    */
-  readonly assetHashType?: cdk.AssetHashType;
+  readonly assetHashType?: AssetHashType;
 
   /**
    * Specify a custom hash for this asset. If `assetHashType` is set it must
@@ -88,7 +89,7 @@ export interface BundlingProps {
 /**
  * Produce bundled Lambda asset code
  */
-export class Bundling implements cdk.BundlingOptions {
+export class Bundling implements BundlingOptions {
   public static bundle(options: BundlingProps): AssetCode {
     return Code.fromAsset(options.entry, {
       assetHash: options.assetHash,
@@ -96,73 +97,54 @@ export class Bundling implements cdk.BundlingOptions {
       exclude: DEPENDENCY_EXCLUDES,
       bundling: new Bundling(options),
     });
-
   }
 
-  public readonly image: cdk.DockerImage;
+  public readonly image: DockerImage;
   public readonly command: string[];
-
 
   constructor(props: BundlingProps) {
 
     const { entry, runtime, architecture, outputPathSuffix } = props;
 
-    const stagedir = cdk.FileSystem.mkdtemp('python-bundling-');
-    const hasDeps = stageDependencies(entry, stagedir);
+    const outputPath = outputPathSuffix? `${AssetStaging.BUNDLING_OUTPUT_DIR}/${outputPathSuffix}`: AssetStaging.BUNDLING_OUTPUT_DIR;
 
-    const depsCommand = chain([
-      hasDeps ? `rsync -r ${BUNDLER_DEPENDENCIES_CACHE}/. ${cdk.AssetStaging.BUNDLING_OUTPUT_DIR}/${outputPathSuffix}` : '',
-      `rsync -r . ${cdk.AssetStaging.BUNDLING_OUTPUT_DIR}/${outputPathSuffix}`,
-    ]);
+    const bundlingCommands = this.createBundlingCommand({
+      entry,
+      inputDir: AssetStaging.BUNDLING_INPUT_DIR,
+      outputDir: outputPath,
+    });
 
-    // Determine which dockerfile to use. When dependencies are present, we use a
-    // Dockerfile that can create a cacheable layer. We can't use this Dockerfile
-    // if there aren't dependencies or the Dockerfile will complain about missing
-    // sources.
-    const dockerfile = hasDeps
-      ? 'Dockerfile.dependencies'
-      : 'Dockerfile';
-
-    // copy Dockerfile to workdir
-    fs.copyFileSync(path.join(__dirname, dockerfile), path.join(stagedir, dockerfile));
-
-    const defaultImage = cdk.DockerImage.fromBuild(stagedir, {
+    const defaultImage = DockerImage.fromBuild(path.join(__dirname, '../lib'), {
       buildArgs: {
         IMAGE: runtime.bundlingImage.image,
       },
       platform: architecture.dockerPlatform,
-      file: dockerfile,
     });
     this.image = props.image ?? defaultImage;
-    this.command = ['bash', '-c', depsCommand];
+    this.command = ['bash', '-c', chain(bundlingCommands)];
   }
+  private createBundlingCommand(options: BundlingCommandOptions): string[] {
+    const packaging = Packaging.fromEntry(options.entry);
+    let bundlingCommands: string[] = [];
+    // bundlingCommands.push(packaging.installCommand ?? '');
+    bundlingCommands.push(packaging.exportCommand ?? '');
+    if (packaging.dependenciesFile) {
+      bundlingCommands.push(`python -m pip install -r ${DependenciesFile.PIP} -t ${options.outputDir}`);
+    };
+    bundlingCommands.push(`cp -R ${options.inputDir} ${options.outputDir}`);
+    return bundlingCommands;
+  }
+}
+
+interface BundlingCommandOptions {
+  readonly entry: string;
+  readonly inputDir: string;
+  readonly outputDir: string;
 }
 
 /**
- * Checks to see if the `entry` directory contains a type of dependency that
- * we know how to install.
+ * Chain commands
  */
-export function stageDependencies(entry: string, stagedir: string): boolean {
-  const prefixes = [
-    'Pipfile',
-    'pyproject',
-    'poetry',
-    'requirements.txt',
-  ];
-
-  let found = false;
-  for (const file of fs.readdirSync(entry)) {
-    for (const prefix of prefixes) {
-      if (file.startsWith(prefix)) {
-        fs.copyFileSync(path.join(entry, file), path.join(stagedir, file));
-        found = true;
-      }
-    }
-  }
-
-  return found;
-}
-
 function chain(commands: string[]): string {
   return commands.filter(c => !!c).join(' && ');
 }
