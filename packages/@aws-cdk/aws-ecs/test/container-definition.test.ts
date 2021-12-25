@@ -1261,8 +1261,8 @@ describe('container definition', () => {
       secrets: {
         SECRET: ecs.Secret.fromSecretsManager(secret),
         PARAMETER: ecs.Secret.fromSsmParameter(parameter),
-        SECRET_ID: ecs.Secret.fromSecretsManagerVersion(secret, {versionId: 'version-id'}),
-        SECRET_STAGE: ecs.Secret.fromSecretsManagerVersion(secret, {versionStage: 'version-stage'}),
+        SECRET_ID: ecs.Secret.fromSecretsManagerVersion(secret, { versionId: 'version-id' }),
+        SECRET_STAGE: ecs.Secret.fromSecretsManagerVersion(secret, { versionStage: 'version-stage' }),
       },
     });
 
@@ -1439,8 +1439,8 @@ describe('container definition', () => {
       memoryLimitMiB: 1024,
       secrets: {
         SECRET_KEY: ecs.Secret.fromSecretsManager(secret, 'specificKey'),
-        SECRET_KEY_ID: ecs.Secret.fromSecretsManagerVersion(secret, {versionId: 'version-id'}, 'specificKey'),
-        SECRET_KEY_STAGE: ecs.Secret.fromSecretsManagerVersion(secret, {versionStage: 'version-stage'}, 'specificKey'),
+        SECRET_KEY_ID: ecs.Secret.fromSecretsManagerVersion(secret, { versionId: 'version-id' }, 'specificKey'),
+        SECRET_KEY_STAGE: ecs.Secret.fromSecretsManagerVersion(secret, { versionStage: 'version-stage' }, 'specificKey'),
       },
     });
 
