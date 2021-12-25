@@ -74,7 +74,7 @@
     "@aws-cdk/pkglint": "0.0.0",
     "@types/jest": "^27.0.3",
     "@types/yaml": "^1.9.7",
-    "jest": "^27.4.3"
+    "jest": "^27.4.5"
   },
   "bundledDependencies": [
     "yaml"
