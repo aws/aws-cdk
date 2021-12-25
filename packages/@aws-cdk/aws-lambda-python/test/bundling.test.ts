@@ -166,3 +166,26 @@ test('Bundling a function with poetry dependencies', () => {
     }),
   }));
 });
+
+test('Bundling a function with custom bundling image', () => {
+  const entry = path.join(__dirname, 'lambda-handler-custom-build');
+
+  Bundling.bundle({
+    entry: path.join(entry, '.'),
+    runtime: Runtime.PYTHON_3_9,
+    architecture: Architecture.X86_64,
+    outputPathSuffix: 'python',
+    image: DockerImage.fromBuild(path.join(entry)),
+  });
+
+  expect(Code.fromAsset).toHaveBeenCalledWith(entry, expect.objectContaining({
+    bundling: expect.objectContaining({
+      command: [
+        'bash', '-c',
+        'python -m pip install -r requirements.txt -t /asset-output/python && cp -R /asset-input /asset-output/python',
+      ],
+    }),
+  }));
+
+  expect(DockerImage.fromBuild).toHaveBeenCalledWith(expect.stringMatching(entry));
+});
