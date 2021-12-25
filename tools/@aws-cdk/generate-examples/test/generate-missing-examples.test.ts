@@ -47,7 +47,7 @@ test('test end-to-end and translation to Python', async () => {
     expect(classInstantiation).toEqual([
       '# The code below shows an example of how to instantiate this type.',
       '# The values are placeholders you should change.',
-      'import my_assembly as my_assembly',
+      'import example_test_demo as my_assembly',
       '',
       'my_class = my_assembly.MyClass(\"value\",',
       '    some_number=123,',
