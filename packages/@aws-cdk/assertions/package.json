@@ -67,8 +67,8 @@
     "@types/fs-extra": "^9.0.13",
     "@types/jest": "^27.0.3",
     "constructs": "^3.3.69",
-    "jest": "^27.4.3",
-    "ts-jest": "^27.1.1"
+    "jest": "^27.4.5",
+    "ts-jest": "^27.1.2"
   },
   "dependencies": {
     "@aws-cdk/cloud-assembly-schema": "0.0.0",

@@ -79,7 +79,7 @@
     "@aws-cdk/pkglint": "0.0.0",
     "@types/jest": "^27.0.3",
     "@types/punycode": "^2.1.0",
-    "jest": "^27.4.3"
+    "jest": "^27.4.5"
   },
   "dependencies": {
     "@aws-cdk/aws-certificatemanager": "0.0.0",

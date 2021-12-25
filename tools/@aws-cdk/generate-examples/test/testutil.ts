@@ -46,20 +46,22 @@ export class AssemblyFixture {
 }
 
 export const DUMMY_ASSEMBLY_TARGETS = {
-  dotnet: {
-    namespace: 'Example.Test.Demo',
-    packageId: 'Example.Test.Demo',
-  },
-  go: { moduleName: 'example.test/demo' },
-  java: {
-    maven: {
-      groupId: 'example.test',
-      artifactId: 'demo',
+  targets: {
+    dotnet: {
+      namespace: 'Example.Test.Demo',
+      packageId: 'Example.Test.Demo',
     },
-    package: 'example.test.demo',
-  },
-  python: {
-    distName: 'example-test.demo',
-    module: 'example_test_demo',
+    go: { moduleName: 'example.test/demo' },
+    java: {
+      maven: {
+        groupId: 'example.test',
+        artifactId: 'demo',
+      },
+      package: 'example.test.demo',
+    },
+    python: {
+      distName: 'example-test.demo',
+      module: 'example_test_demo',
+    },
   },
 };

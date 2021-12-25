@@ -86,7 +86,7 @@
     "@aws-cdk/pkglint": "0.0.0",
     "@types/jest": "^27.0.3",
     "aws-sdk": "^2.848.0",
-    "jest": "^27.4.3"
+    "jest": "^27.4.5"
   },
   "dependencies": {
     "@aws-cdk/aws-codestarnotifications": "0.0.0",

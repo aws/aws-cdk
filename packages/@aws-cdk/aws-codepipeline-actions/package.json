@@ -83,8 +83,8 @@
     "@aws-cdk/cx-api": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/jest": "^27.0.3",
-    "@types/lodash": "^4.14.177",
-    "jest": "^27.4.3",
+    "@types/lodash": "^4.14.178",
+    "jest": "^27.4.5",
     "lodash": "^4.17.21"
   },
   "dependencies": {

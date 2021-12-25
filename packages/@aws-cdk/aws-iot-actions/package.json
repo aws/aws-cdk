@@ -77,7 +77,7 @@
     "@aws-cdk/pkglint": "0.0.0",
     "@types/jest": "^27.0.3",
     "constructs": "^3.3.69",
-    "jest": "^27.4.3"
+    "jest": "^27.4.5"
   },
   "dependencies": {
     "@aws-cdk/aws-cloudwatch": "0.0.0",

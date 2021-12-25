@@ -38,17 +38,17 @@
     "@types/node": "^10.17.60",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "constructs": "^3.3.69",
-    "jest": "^27.4.3",
+    "jest": "^27.4.5",
     "monocdk": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "ts-jest": "^27.1.1"
+    "ts-jest": "^27.1.2"
   },
   "dependencies": {
     "@aws-cdk/cloudformation-diff": "0.0.0"
   },
   "peerDependencies": {
     "constructs": "^3.3.69",
-    "jest": "^27.4.3",
+    "jest": "^27.4.5",
     "monocdk": "^0.0.0"
   },
   "repository": {
