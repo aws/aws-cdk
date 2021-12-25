@@ -1,4 +1,4 @@
-import { schema, cfnLintAnnotations, typeDocs } from '@aws-cdk/cfnspec';
+import { schema, cfnLintAnnotations } from '@aws-cdk/cfnspec';
 import { CodeMaker } from 'codemaker';
 import * as genspec from './genspec';
 import { itemTypeNames, PropertyAttributeName, scalarTypeNames, SpecName } from './spec-utils';
@@ -115,7 +115,7 @@ export default class CodeGenerator {
     const name = genspec.CodeName.forResourceProperties(resourceContext);
 
     this.docLink(spec.Documentation,
-      `Properties for defining a \`${resourceContext.className}\``,
+      `Properties for defining a \`${resourceContext.specName!.fqn}\``,
       '',
       '@stability external');
     this.code.openBlock(`export interface ${name.className}`);
@@ -144,17 +144,15 @@ export default class CodeGenerator {
     container: Container): Dictionary<string> {
     const propertyMap: Dictionary<string> = {};
 
-    const docs = typeDocs(resource.specName?.fqn ?? '');
-
     Object.keys(propertiesSpec).sort(propertyComparator).forEach(propName => {
       this.code.line();
       const propSpec = propertiesSpec[propName];
-      const additionalDocs = docs.properties[propName] || quoteCode(resource.specName!.relativeName(propName).fqn);
+      const additionalDocs = resource.specName!.relativeName(propName).fqn;
       const newName = this.emitProperty({
         context: resource,
         propName,
         spec: propSpec,
-        additionalDocs,
+        additionalDocs: quoteCode(additionalDocs),
       },
       container,
       );
@@ -194,20 +192,15 @@ export default class CodeGenerator {
       this.code.line();
     }
 
-    const docs = typeDocs(cfnName);
-
     //
     // The class declaration representing this Resource
     //
 
-    this.docLink(spec.Documentation, ...[
+    this.docLink(spec.Documentation,
       `A CloudFormation \`${cfnName}\``,
       '',
-      ...docs.description.split('\n'),
-      '',
       `@cloudformationResource ${cfnName}`,
-      '@stability external',
-    ]);
+      '@stability external');
     this.openClass(resourceName, RESOURCE_BASE_CLASS);
 
     //
@@ -278,9 +271,7 @@ export default class CodeGenerator {
 
         this.code.line();
 
-        this.docLink(undefined,
-          docs.attributes?.[attributeName] ?? '',
-          `@cloudformationAttribute ${attributeName}`);
+        this.docLink(undefined, `@cloudformationAttribute ${attributeName}`);
         const attr = genspec.attributeDefinition(attributeName, attributeSpec);
 
         this.code.line(`public readonly ${attr.propertyName}: ${attr.attributeType};`);
@@ -856,13 +847,7 @@ export default class CodeGenerator {
     this.code.line();
     this.beginNamespace(typeName);
 
-    const docs = typeDocs(resourceContext.specName?.fqn ?? '', (typeName.specName as PropertyAttributeName | undefined)?.propAttrName);
-
-    this.docLink(
-      propTypeSpec.Documentation,
-      docs.description,
-      '@stability external',
-    );
+    this.docLink(propTypeSpec.Documentation, '@stability external');
     /*
     if (!propTypeSpec.Properties || Object.keys(propTypeSpec.Properties).length === 0) {
       this.code.line('// eslint-disable-next-line somethingsomething | A genuine empty-object type');
@@ -870,11 +855,10 @@ export default class CodeGenerator {
     */
     this.code.openBlock(`export interface ${typeName.className}`);
     const conversionTable: Dictionary<string> = {};
-
     if (propTypeSpec.Properties) {
       Object.keys(propTypeSpec.Properties).forEach(propName => {
         const propSpec = propTypeSpec.Properties[propName];
-        const additionalDocs = docs.properties[propName] || quoteCode(`${typeName.fqn}.${propName}`);
+        const additionalDocs = quoteCode(`${typeName.fqn}.${propName}`);
         const newName = this.emitInterfaceProperty({
           context: resourceContext,
           propName,
@@ -966,23 +950,12 @@ export default class CodeGenerator {
   private docLink(link: string | undefined, ...before: string[]): void {
     if (!link && before.length === 0) { return; }
     this.code.line('/**');
-    before.flatMap(x => x.split('\n')).forEach(line => this.code.line(` * ${escapeDocText(line)}`.trimRight()));
+    before.forEach(line => this.code.line(` * ${line}`.trimRight()));
     if (link) {
-      if (before.length > 0) {
-        this.code.line(' *');
-      }
       this.code.line(` * @link ${link}`);
     }
     this.code.line(' */');
-
-    /**
-     * If '* /' occurs literally somewhere in the doc text, it will break the docstring parsing.
-     *
-     * Break up those characters by inserting a zero-width space.
-     */
-    function escapeDocText(x: string) {
-      return x.replace(/\*\//g, '*\u200b/');
-    }
+    return;
   }
 }
 
