@@ -1,7 +1,7 @@
 import * as path from 'path';
 import { Runtime } from '@aws-cdk/aws-lambda';
 import { Stack } from '@aws-cdk/core';
-import { stageDependencies, Bundling } from '../lib/bundling';
+import { Bundling } from '../lib/bundling';
 import { PythonLayerVersion } from '../lib/layer';
 
 jest.mock('../lib/bundling', () => {
@@ -23,8 +23,6 @@ jest.mock('../lib/bundling', () => {
   };
 });
 
-const hasDependenciesMock = (stageDependencies as jest.Mock);
-
 let stack: Stack;
 beforeEach(() => {
   stack = new Stack();
@@ -32,8 +30,6 @@ beforeEach(() => {
 });
 
 test('Bundling a layer from files', () => {
-  hasDependenciesMock.mockReturnValue(false);
-
   const entry = path.join(__dirname, 'test/lambda-handler-project');
   new PythonLayerVersion(stack, 'layer', {
     entry,

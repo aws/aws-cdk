@@ -52,7 +52,6 @@ test('PythonFunction with defaults', () => {
 
   expect(Bundling.bundle).toHaveBeenCalledWith(expect.objectContaining({
     entry: expect.stringMatching(/aws-lambda-python\/test\/lambda-handler$/),
-    outputPathSuffix: '.',
   }));
 
   Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
@@ -70,7 +69,6 @@ test('PythonFunction with index in a subdirectory', () => {
 
   expect(Bundling.bundle).toHaveBeenCalledWith(expect.objectContaining({
     entry: expect.stringMatching(/aws-lambda-python\/test\/lambda-handler-sub$/),
-    outputPathSuffix: '.',
   }));
 
   Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
