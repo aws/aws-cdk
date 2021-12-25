@@ -18,9 +18,17 @@ import { Construct as CoreConstruct } from '@aws-cdk/core';
  * Specify the secret's version id or versions stage
  */
 export interface SecretVersionInfo {
-  /** version id of the secret */
+  /** 
+   * version id of the secret 
+   *
+   * @default - use default version id
+   */
   readonly versionId?: string;
-  /** version stage of the secret */
+  /**
+   * version stage of the secret
+   *
+   * @default - use default version stage
+   */
   readonly versionStage?: string;
 }
 
