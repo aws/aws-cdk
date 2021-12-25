@@ -68,7 +68,7 @@ export abstract class Secret {
    * If you do not specify a JSON field, then the full content of the secret is
    * used.
    */
-   public static fromSecretsManagerVersion(secret: secretsmanager.ISecret, versionInfo: SecretVersionInfo, field?: string): Secret {
+  public static fromSecretsManagerVersion(secret: secretsmanager.ISecret, versionInfo: SecretVersionInfo, field?: string): Secret {
     return {
       arn: `${secret.secretArn}:${field ?? ''}:${versionInfo.versionStage}:${versionInfo.versionId}`,
       hasField: !!field,
