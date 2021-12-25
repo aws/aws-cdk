@@ -535,7 +535,9 @@ You manage your database configuration by associating your DB instances with par
 You can create your onw parameter group for your cluster or instance and associate it with your database.
 
 ```ts
-const parameterGroup = new rds.ParameterGroup(stack, 'ParameterGroup', {
+declare const vpc: ec2.Vpc;
+
+const parameterGroup = new rds.ParameterGroup(this, 'ParameterGroup', {
   engine: rds.DatabaseInstanceEngine.sqlServerEe({
     version: rds.SqlServerEngineVersion.VER_11,
   }),
@@ -544,7 +546,7 @@ const parameterGroup = new rds.ParameterGroup(stack, 'ParameterGroup', {
   },
 });
 
-new rds.DatabaseInstance(stack, 'Database', {
+new rds.DatabaseInstance(this, 'Database', {
   engine: rds.DatabaseInstanceEngine.SQL_SERVER_EE,
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
   vpc,
@@ -555,7 +557,9 @@ new rds.DatabaseInstance(stack, 'Database', {
 Another way to specify parameters is to use the inline field `parameters` that creates an RDS parameter group for you. You can use this if you do not want to reuse the parameter group instance for different instances.
 
 ```ts
-new rds.DatabaseInstance(stack, 'Database', {
+declare const vpc: ec2.Vpc;
+
+new rds.DatabaseInstance(this, 'Database', {
   engine: rds.DatabaseInstanceEngine.sqlServerEe({ version: rds.SqlServerEngineVersion.VER_12_00_5000_0_V1 }),
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
   vpc,
