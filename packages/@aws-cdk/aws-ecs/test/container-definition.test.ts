@@ -1261,6 +1261,8 @@ describe('container definition', () => {
       secrets: {
         SECRET: ecs.Secret.fromSecretsManager(secret),
         PARAMETER: ecs.Secret.fromSsmParameter(parameter),
+        SECRET_ID: ecs.Secret.fromSecretsManagerVersion(secret, {versionId: 'version-id'}),
+        SECRET_STAGE: ecs.Secret.fromSecretsManagerVersion(secret, {versionStage: 'version-stage'}),
       },
     });
 
@@ -1273,6 +1275,34 @@ describe('container definition', () => {
               Name: 'SECRET',
               ValueFrom: {
                 Ref: 'SecretA720EF05',
+              },
+            },
+            {
+              Name: 'SECRET_ID',
+              ValueFrom: {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      Ref: 'SecretA720EF05',
+                    },
+                    '::version-id:',
+                  ],
+                ],
+              },
+            },
+            {
+              Name: 'SECRET_STAGE',
+              ValueFrom: {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      Ref: 'SecretA720EF05',
+                    },
+                    ':::version-stage',
+                  ],
+                ],
               },
             },
             {
@@ -1409,6 +1439,8 @@ describe('container definition', () => {
       memoryLimitMiB: 1024,
       secrets: {
         SECRET_KEY: ecs.Secret.fromSecretsManager(secret, 'specificKey'),
+        SECRET_KEY_ID: ecs.Secret.fromSecretsManagerVersion(secret, {versionId: 'version-id'}, 'specificKey'),
+        SECRET_KEY_STAGE: ecs.Secret.fromSecretsManagerVersion(secret, {versionStage: 'version-stage'}, 'specificKey'),
       },
     });
 
@@ -1427,6 +1459,34 @@ describe('container definition', () => {
                       Ref: 'SecretA720EF05',
                     },
                     ':specificKey::',
+                  ],
+                ],
+              },
+            },
+            {
+              Name: 'SECRET_KEY_ID',
+              ValueFrom: {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      Ref: 'SecretA720EF05',
+                    },
+                    ':specificKey:version-id:',
+                  ],
+                ],
+              },
+            },
+            {
+              Name: 'SECRET_KEY_STAGE',
+              ValueFrom: {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      Ref: 'SecretA720EF05',
+                    },
+                    ':specificKey::version-stage',
                   ],
                 ],
               },
