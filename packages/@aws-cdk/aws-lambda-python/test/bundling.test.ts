@@ -1,8 +1,7 @@
-import * as fs from 'fs';
 import * as path from 'path';
 import { Architecture, Code, Runtime } from '@aws-cdk/aws-lambda';
-import { DockerImage, FileSystem } from '@aws-cdk/core';
-import { stageDependencies, Bundling } from '../lib/bundling';
+import { DockerImage } from '@aws-cdk/core';
+import { Bundling } from '../lib/bundling';
 
 jest.spyOn(Code, 'fromAsset');
 jest.spyOn(DockerImage, 'fromBuild');
@@ -30,7 +29,6 @@ test('Bundling a function without dependencies', () => {
     entry: entry,
     runtime: Runtime.PYTHON_3_7,
     architecture: Architecture.X86_64,
-    outputPathSuffix: '.',
   });
 
   // Correctly bundles
@@ -38,12 +36,12 @@ test('Bundling a function without dependencies', () => {
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',
-        'rsync -r . /asset-output/.',
+        'cp -R /asset-input /asset-output',
       ],
     }),
   }));
 
-  expect(DockerImage.fromBuild).toHaveBeenCalledWith(expect.stringMatching(/python-bundling/), expect.objectContaining({
+  expect(DockerImage.fromBuild).toHaveBeenCalledWith(expect.stringMatching(path.join(__dirname, '../lib')), expect.objectContaining({
     buildArgs: expect.objectContaining({
       IMAGE: expect.stringMatching(/build-python/),
     }),
@@ -51,13 +49,12 @@ test('Bundling a function without dependencies', () => {
   }));
 });
 
-test('Bundling a function with requirements.txt installed', () => {
+test('Bundling a function with requirements.txt', () => {
   const entry = path.join(__dirname, 'lambda-handler');
   Bundling.bundle({
     entry: entry,
     runtime: Runtime.PYTHON_3_7,
     architecture: Architecture.X86_64,
-    outputPathSuffix: '.',
   });
 
   // Correctly bundles
@@ -65,7 +62,7 @@ test('Bundling a function with requirements.txt installed', () => {
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',
-        'rsync -r /var/dependencies/. /asset-output/. && rsync -r . /asset-output/.',
+        'python -m pip install -r requirements.txt -t /asset-output && cp -R /asset-input /asset-output',
       ],
     }),
   }));
@@ -77,7 +74,6 @@ test('Bundling Python 2.7 with requirements.txt installed', () => {
     entry: entry,
     runtime: Runtime.PYTHON_2_7,
     architecture: Architecture.X86_64,
-    outputPathSuffix: '.',
   });
 
   // Correctly bundles with requirements.txt pip installed
@@ -85,7 +81,7 @@ test('Bundling Python 2.7 with requirements.txt installed', () => {
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',
-        'rsync -r /var/dependencies/. /asset-output/. && rsync -r . /asset-output/.',
+        'python -m pip install -r requirements.txt -t /asset-output && cp -R /asset-input /asset-output',
       ],
     }),
   }));
@@ -105,7 +101,7 @@ test('Bundling a layer with dependencies', () => {
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',
-        'rsync -r /var/dependencies/. /asset-output/python && rsync -r . /asset-output/python',
+        'python -m pip install -r requirements.txt -t /asset-output/python && cp -R /asset-input /asset-output/python',
       ],
     }),
   }));
@@ -125,30 +121,48 @@ test('Bundling a python code layer', () => {
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',
-        'rsync -r . /asset-output/python',
+        'cp -R /asset-input /asset-output/python',
       ],
     }),
   }));
 });
 
+test('Bundling a function with pipenv dependencies', () => {
+  const entry = path.join(__dirname, 'lambda-handler-pipenv');
 
-describe('Dependency detection', () => {
-  test.each(['Pipfile', 'poetry.lock', 'requirements.txt'])('detect dependency %p', filename => {
-    // GIVEN
-    const sourcedir = FileSystem.mkdtemp('source-');
-    const stagedir = FileSystem.mkdtemp('stage-');
-    fs.writeFileSync(path.join(sourcedir, filename), 'dummy!');
-
-    // WHEN
-    const found = stageDependencies(sourcedir, stagedir);
-
-    // THEN
-    expect(found).toBeTruthy();
-    expect(fs.existsSync(path.join(stagedir, filename))).toBeTruthy();
+  Bundling.bundle({
+    entry: path.join(entry, '.'),
+    runtime: Runtime.PYTHON_3_9,
+    architecture: Architecture.X86_64,
+    outputPathSuffix: 'python',
   });
 
-  test('No known dependencies', () => {
-    const sourcedir = FileSystem.mkdtemp('source-');
-    expect(stageDependencies(sourcedir, '/dummy')).toEqual(false);
+  expect(Code.fromAsset).toHaveBeenCalledWith(entry, expect.objectContaining({
+    bundling: expect.objectContaining({
+      command: [
+        'bash', '-c',
+        'PIPENV_VENV_IN_PROJECT=1 pipenv lock -r > requirements.txt && rm -rf .venv && python -m pip install -r requirements.txt -t /asset-output/python && cp -R /asset-input /asset-output/python',
+      ],
+    }),
+  }));
+});
+
+test('Bundling a function with poetry dependencies', () => {
+  const entry = path.join(__dirname, 'lambda-handler-poetry');
+
+  Bundling.bundle({
+    entry: path.join(entry, '.'),
+    runtime: Runtime.PYTHON_3_9,
+    architecture: Architecture.X86_64,
+    outputPathSuffix: 'python',
   });
+
+  expect(Code.fromAsset).toHaveBeenCalledWith(entry, expect.objectContaining({
+    bundling: expect.objectContaining({
+      command: [
+        'bash', '-c',
+        'poetry export --with-credentials --format requirements.txt --output requirements.txt && python -m pip install -r requirements.txt -t /asset-output/python && cp -R /asset-input /asset-output/python',
+      ],
+    }),
+  }));
 });
