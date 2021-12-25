@@ -106,7 +106,7 @@ export class Bundling implements BundlingOptions {
 
     const { entry, runtime, architecture, outputPathSuffix } = props;
 
-    const outputPath = outputPathSuffix? `${AssetStaging.BUNDLING_OUTPUT_DIR}/${outputPathSuffix}`: AssetStaging.BUNDLING_OUTPUT_DIR;
+    const outputPath = path.join(AssetStaging.BUNDLING_OUTPUT_DIR, outputPathSuffix ?? '');
 
     const bundlingCommands = this.createBundlingCommand({
       entry,

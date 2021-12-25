@@ -8,26 +8,26 @@ export enum DependenciesFile {
   NONE = ''
 }
 
-interface PackagingProps {
-  dependenciesFile: DependenciesFile;
-  exportCommand?: string;
+export interface PackagingProps {
+  readonly dependenciesFile: DependenciesFile;
+  readonly exportCommand?: string;
 }
 
 export class Packaging {
-  public static PIP = new Packaging({
+  public static readonly PIP = new Packaging({
     dependenciesFile: DependenciesFile.PIP,
   });
-  public static PIPENV = new Packaging({
+  public static readonly PIPENV = new Packaging({
     dependenciesFile: DependenciesFile.PIPENV,
     // By default, pipenv creates a virtualenv in `/.local`, so we force it to create one in the package directory.
     // At the end, we remove the virtualenv to avoid creating a duplicate copy in the Lambda package.
     exportCommand: `PIPENV_VENV_IN_PROJECT=1 pipenv lock -r > ${DependenciesFile.PIP} && rm -rf .venv`,
   });
-  public static POETRY = new Packaging({
+  public static readonly POETRY = new Packaging({
     dependenciesFile: DependenciesFile.POETRY,
     exportCommand: `poetry export --with-credentials --format ${DependenciesFile.PIP} --output ${DependenciesFile.PIP}`,
   });
-  public static NONE = new Packaging({ dependenciesFile: DependenciesFile.NONE });
+  public static readonly NONE = new Packaging({ dependenciesFile: DependenciesFile.NONE });
 
   public static fromEntry(entry: string): Packaging {
     if (fs.existsSync(path.join(entry, DependenciesFile.PIPENV))) {
