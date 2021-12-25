@@ -110,24 +110,21 @@ test('allows specifying hash type', () => {
     entry: 'test/lambda-handler-nodeps',
     index: 'index.py',
     handler: 'handler',
-    assetHashType: AssetHashType.SOURCE,
-    runtime: Runtime.PYTHON_3_8,
+    bundling: { assetHashType: AssetHashType.SOURCE },
   });
 
   new PythonFunction(stack, 'output', {
     entry: 'test/lambda-handler-nodeps',
     index: 'index.py',
     handler: 'handler',
-    assetHashType: AssetHashType.OUTPUT,
-    runtime: Runtime.PYTHON_3_8,
+    bundling: { assetHashType: AssetHashType.OUTPUT },
   });
 
   new PythonFunction(stack, 'custom', {
     entry: 'test/lambda-handler-nodeps',
     index: 'index.py',
     handler: 'handler',
-    assetHash: 'MY_CUSTOM_HASH',
-    runtime: Runtime.PYTHON_3_8,
+    bundling: { assetHash: 'MY_CUSTOM_HASH' },
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
