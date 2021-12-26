@@ -1,8 +1,6 @@
+import '@aws-cdk/assert-internal/jest';
 import {
   arrayWith,
-  expect as cdkExpect,
-  haveResource,
-  haveResourceLike,
   ResourcePart,
 } from '@aws-cdk/assert-internal';
 import {
@@ -12,7 +10,7 @@ import {
 import * as kms from '@aws-cdk/aws-kms';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import { testFutureBehavior, testLegacyBehavior } from 'cdk-build-tools/lib/feature-flag';
+import { testFutureBehavior, testLegacyBehavior } from '@aws-cdk/cdk-build-tools/lib/feature-flag';
 import {
   AmazonLinuxGeneration,
   EbsDeviceVolumeType,
@@ -36,7 +34,7 @@ describe('volume', () => {
     });
 
     // THEN
-    cdkExpect(stack).to(haveResource('AWS::EC2::Volume', {
+    expect(stack).toHaveResource('AWS::EC2::Volume', {
       AvailabilityZone: 'us-east-1a',
       MultiAttachEnabled: false,
       Size: 8,
@@ -47,11 +45,11 @@ describe('volume', () => {
           Value: 'MyVolume',
         },
       ],
-    }, ResourcePart.Properties));
+    }, ResourcePart.Properties);
 
-    cdkExpect(stack).to(haveResource('AWS::EC2::Volume', {
+    expect(stack).toHaveResource('AWS::EC2::Volume', {
       DeletionPolicy: 'Retain',
-    }, ResourcePart.CompleteDefinition));
+    }, ResourcePart.CompleteDefinition);
   });
 
   test('fromVolumeAttributes', () => {
@@ -87,7 +85,7 @@ describe('volume', () => {
     cdk.Tags.of(volume).add('TagKey', 'TagValue');
 
     // THEN
-    cdkExpect(stack).to(haveResource('AWS::EC2::Volume', {
+    expect(stack).toHaveResource('AWS::EC2::Volume', {
       AvailabilityZone: 'us-east-1a',
       MultiAttachEnabled: false,
       Size: 8,
@@ -96,7 +94,7 @@ describe('volume', () => {
         Key: 'TagKey',
         Value: 'TagValue',
       }],
-    }, ResourcePart.Properties));
+    }, ResourcePart.Properties);
 
 
   });
@@ -113,9 +111,9 @@ describe('volume', () => {
     });
 
     // THEN
-    cdkExpect(stack).to(haveResourceLike('AWS::EC2::Volume', {
+    expect(stack).toHaveResourceLike('AWS::EC2::Volume', {
       AutoEnableIO: true,
-    }, ResourcePart.Properties));
+    }, ResourcePart.Properties);
 
 
   });
@@ -132,9 +130,9 @@ describe('volume', () => {
     });
 
     // THEN
-    cdkExpect(stack).to(haveResourceLike('AWS::EC2::Volume', {
+    expect(stack).toHaveResourceLike('AWS::EC2::Volume', {
       Encrypted: true,
-    }, ResourcePart.Properties));
+    }, ResourcePart.Properties);
 
 
   });
@@ -153,7 +151,7 @@ describe('volume', () => {
     });
 
     // THEN
-    cdkExpect(stack).to(haveResourceLike('AWS::EC2::Volume', {
+    expect(stack).toHaveResourceLike('AWS::EC2::Volume', {
       Encrypted: true,
       KmsKeyId: {
         'Fn::GetAtt': [
@@ -161,8 +159,8 @@ describe('volume', () => {
           'Arn',
         ],
       },
-    }, ResourcePart.Properties));
-    cdkExpect(stack).to(haveResourceLike('AWS::KMS::Key', {
+    }, ResourcePart.Properties);
+    expect(stack).toHaveResourceLike('AWS::KMS::Key', {
       KeyPolicy: {
         Statement: [
           {},
@@ -213,7 +211,7 @@ describe('volume', () => {
           },
         ],
       },
-    }));
+    });
 
 
   });
@@ -235,7 +233,7 @@ describe('volume', () => {
     });
 
     // THEN
-    cdkExpect(stack).to(haveResourceLike('AWS::KMS::Key', {
+    expect(stack).toHaveResourceLike('AWS::KMS::Key', {
       KeyPolicy: {
         Statement: [
           {},
@@ -248,7 +246,7 @@ describe('volume', () => {
           },
         ],
       },
-    }));
+    });
 
 
   });
@@ -266,10 +264,10 @@ describe('volume', () => {
     });
 
     // THEN
-    cdkExpect(stack).to(haveResourceLike('AWS::EC2::Volume', {
+    expect(stack).toHaveResourceLike('AWS::EC2::Volume', {
       Iops: 500,
       VolumeType: 'io1',
-    }, ResourcePart.Properties));
+    }, ResourcePart.Properties);
 
 
   });
@@ -288,9 +286,9 @@ describe('volume', () => {
     });
 
     // THEN
-    cdkExpect(stack).to(haveResourceLike('AWS::EC2::Volume', {
+    expect(stack).toHaveResourceLike('AWS::EC2::Volume', {
       MultiAttachEnabled: true,
-    }, ResourcePart.Properties));
+    }, ResourcePart.Properties);
 
 
   });
@@ -306,9 +304,9 @@ describe('volume', () => {
     });
 
     // THEN
-    cdkExpect(stack).to(haveResourceLike('AWS::EC2::Volume', {
+    expect(stack).toHaveResourceLike('AWS::EC2::Volume', {
       SnapshotId: 'snap-00000000',
-    }, ResourcePart.Properties));
+    }, ResourcePart.Properties);
 
 
   });
@@ -325,9 +323,9 @@ describe('volume', () => {
     });
 
     // THEN
-    cdkExpect(stack).to(haveResourceLike('AWS::EC2::Volume', {
+    expect(stack).toHaveResourceLike('AWS::EC2::Volume', {
       VolumeType: 'standard',
-    }, ResourcePart.Properties));
+    }, ResourcePart.Properties);
 
 
   });
@@ -345,9 +343,9 @@ describe('volume', () => {
     });
 
     // THEN
-    cdkExpect(stack).to(haveResourceLike('AWS::EC2::Volume', {
+    expect(stack).toHaveResourceLike('AWS::EC2::Volume', {
       VolumeType: 'io1',
-    }, ResourcePart.Properties));
+    }, ResourcePart.Properties);
 
 
   });
@@ -365,9 +363,9 @@ describe('volume', () => {
     });
 
     // THEN
-    cdkExpect(stack).to(haveResourceLike('AWS::EC2::Volume', {
+    expect(stack).toHaveResourceLike('AWS::EC2::Volume', {
       VolumeType: 'io2',
-    }, ResourcePart.Properties));
+    }, ResourcePart.Properties);
 
 
   });
@@ -384,9 +382,9 @@ describe('volume', () => {
     });
 
     // THEN
-    cdkExpect(stack).to(haveResourceLike('AWS::EC2::Volume', {
+    expect(stack).toHaveResourceLike('AWS::EC2::Volume', {
       VolumeType: 'gp2',
-    }, ResourcePart.Properties));
+    }, ResourcePart.Properties);
 
 
   });
@@ -403,9 +401,9 @@ describe('volume', () => {
     });
 
     // THEN
-    cdkExpect(stack).to(haveResourceLike('AWS::EC2::Volume', {
+    expect(stack).toHaveResourceLike('AWS::EC2::Volume', {
       VolumeType: 'gp3',
-    }, ResourcePart.Properties));
+    }, ResourcePart.Properties);
 
 
   });
@@ -422,9 +420,9 @@ describe('volume', () => {
     });
 
     // THEN
-    cdkExpect(stack).to(haveResourceLike('AWS::EC2::Volume', {
+    expect(stack).toHaveResourceLike('AWS::EC2::Volume', {
       VolumeType: 'st1',
-    }, ResourcePart.Properties));
+    }, ResourcePart.Properties);
 
 
   });
@@ -441,9 +439,9 @@ describe('volume', () => {
     });
 
     // THEN
-    cdkExpect(stack).to(haveResourceLike('AWS::EC2::Volume', {
+    expect(stack).toHaveResourceLike('AWS::EC2::Volume', {
       VolumeType: 'sc1',
-    }, ResourcePart.Properties));
+    }, ResourcePart.Properties);
 
 
   });
@@ -461,7 +459,7 @@ describe('volume', () => {
     volume.grantAttachVolume(role);
 
     // THEN
-    cdkExpect(stack).to(haveResource('AWS::IAM::Policy', {
+    expect(stack).toHaveResource('AWS::IAM::Policy', {
       PolicyDocument: {
         Version: '2012-10-17',
         Statement: [{
@@ -514,7 +512,7 @@ describe('volume', () => {
           ],
         }],
       },
-    }));
+    });
 
   });
 
@@ -538,7 +536,7 @@ describe('volume', () => {
       volume.grantAttachVolume(role);
 
       // THEN
-      cdkExpect(stack).to(haveResourceLike('AWS::KMS::Key', {
+      expect(stack).toHaveResourceLike('AWS::KMS::Key', {
         KeyPolicy: {
           Statement: [
             {},
@@ -578,7 +576,7 @@ describe('volume', () => {
             },
           ],
         },
-      }));
+      });
 
 
     });
@@ -599,7 +597,7 @@ describe('volume', () => {
       volume.grantAttachVolume(role);
 
       // THEN
-      cdkExpect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+      expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
         PolicyDocument: {
           Statement: arrayWith({
             Effect: 'Allow',
@@ -632,7 +630,7 @@ describe('volume', () => {
             },
           }),
         },
-      }));
+      });
 
 
     });
@@ -672,7 +670,7 @@ describe('volume', () => {
     volume.grantAttachVolume(role);
 
     // THEN
-    cdkExpect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
       PolicyDocument: {
         Version: '2012-10-17',
         Statement: [
@@ -709,7 +707,7 @@ describe('volume', () => {
           },
         ],
       },
-    }));
+    });
 
 
   });
@@ -740,7 +738,7 @@ describe('volume', () => {
     volume.grantAttachVolume(role, [instance1, instance2]);
 
     // THEN
-    cdkExpect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
       PolicyDocument: {
         Version: '2012-10-17',
         Statement: [{
@@ -797,7 +795,7 @@ describe('volume', () => {
           ],
         }],
       },
-    }));
+    });
 
 
   });
@@ -821,7 +819,7 @@ describe('volume', () => {
     volume.grantAttachVolumeByResourceTag(instance.grantPrincipal, [instance]);
 
     // THEN
-    cdkExpect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
       PolicyDocument: {
         Version: '2012-10-17',
         Statement: [{
@@ -857,16 +855,16 @@ describe('volume', () => {
           },
         }],
       },
-    }));
-    cdkExpect(stack).to(haveResourceLike('AWS::EC2::Volume', {
+    });
+    expect(stack).toHaveResourceLike('AWS::EC2::Volume', {
       Tags: [
         {
           Key: 'VolumeGrantAttach-B2376B2BDA',
           Value: 'b2376b2bda65cb40f83c290dd844c4aa',
         },
       ],
-    }, ResourcePart.Properties));
-    cdkExpect(stack).to(haveResourceLike('AWS::EC2::Instance', {
+    }, ResourcePart.Properties);
+    expect(stack).toHaveResourceLike('AWS::EC2::Instance', {
       Tags: [
         {},
         {
@@ -874,7 +872,7 @@ describe('volume', () => {
           Value: 'b2376b2bda65cb40f83c290dd844c4aa',
         },
       ],
-    }, ResourcePart.Properties));
+    }, ResourcePart.Properties);
 
 
   });
@@ -898,7 +896,7 @@ describe('volume', () => {
     volume.grantAttachVolumeByResourceTag(instance.grantPrincipal, [instance], 'TestSuffix');
 
     // THEN
-    cdkExpect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
       PolicyDocument: {
         Version: '2012-10-17',
         Statement: [{
@@ -934,16 +932,16 @@ describe('volume', () => {
           },
         }],
       },
-    }));
-    cdkExpect(stack).to(haveResourceLike('AWS::EC2::Volume', {
+    });
+    expect(stack).toHaveResourceLike('AWS::EC2::Volume', {
       Tags: [
         {
           Key: 'VolumeGrantAttach-TestSuffix',
           Value: 'b2376b2bda65cb40f83c290dd844c4aa',
         },
       ],
-    }, ResourcePart.Properties));
-    cdkExpect(stack).to(haveResourceLike('AWS::EC2::Instance', {
+    }, ResourcePart.Properties);
+    expect(stack).toHaveResourceLike('AWS::EC2::Instance', {
       Tags: [
         {},
         {
@@ -951,7 +949,7 @@ describe('volume', () => {
           Value: 'b2376b2bda65cb40f83c290dd844c4aa',
         },
       ],
-    }, ResourcePart.Properties));
+    }, ResourcePart.Properties);
 
   });
 
@@ -968,7 +966,7 @@ describe('volume', () => {
     volume.grantDetachVolume(role);
 
     // THEN
-    cdkExpect(stack).to(haveResource('AWS::IAM::Policy', {
+    expect(stack).toHaveResource('AWS::IAM::Policy', {
       PolicyDocument: {
         Version: '2012-10-17',
         Statement: [{
@@ -1021,7 +1019,7 @@ describe('volume', () => {
           ],
         }],
       },
-    }));
+    });
 
   });
 
@@ -1051,7 +1049,7 @@ describe('volume', () => {
     volume.grantDetachVolume(role, [instance1, instance2]);
 
     // THEN
-    cdkExpect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
       PolicyDocument: {
         Version: '2012-10-17',
         Statement: [{
@@ -1108,7 +1106,7 @@ describe('volume', () => {
           ],
         }],
       },
-    }));
+    });
 
 
   });
@@ -1132,7 +1130,7 @@ describe('volume', () => {
     volume.grantDetachVolumeByResourceTag(instance.grantPrincipal, [instance]);
 
     // THEN
-    cdkExpect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
       PolicyDocument: {
         Version: '2012-10-17',
         Statement: [{
@@ -1168,16 +1166,16 @@ describe('volume', () => {
           },
         }],
       },
-    }));
-    cdkExpect(stack).to(haveResourceLike('AWS::EC2::Volume', {
+    });
+    expect(stack).toHaveResourceLike('AWS::EC2::Volume', {
       Tags: [
         {
           Key: 'VolumeGrantDetach-B2376B2BDA',
           Value: 'b2376b2bda65cb40f83c290dd844c4aa',
         },
       ],
-    }, ResourcePart.Properties));
-    cdkExpect(stack).to(haveResourceLike('AWS::EC2::Instance', {
+    }, ResourcePart.Properties);
+    expect(stack).toHaveResourceLike('AWS::EC2::Instance', {
       Tags: [
         {},
         {
@@ -1185,7 +1183,7 @@ describe('volume', () => {
           Value: 'b2376b2bda65cb40f83c290dd844c4aa',
         },
       ],
-    }, ResourcePart.Properties));
+    }, ResourcePart.Properties);
 
 
   });
@@ -1209,7 +1207,7 @@ describe('volume', () => {
     volume.grantDetachVolumeByResourceTag(instance.grantPrincipal, [instance], 'TestSuffix');
 
     // THEN
-    cdkExpect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
       PolicyDocument: {
         Version: '2012-10-17',
         Statement: [{
@@ -1245,16 +1243,16 @@ describe('volume', () => {
           },
         }],
       },
-    }));
-    cdkExpect(stack).to(haveResourceLike('AWS::EC2::Volume', {
+    });
+    expect(stack).toHaveResourceLike('AWS::EC2::Volume', {
       Tags: [
         {
           Key: 'VolumeGrantDetach-TestSuffix',
           Value: 'b2376b2bda65cb40f83c290dd844c4aa',
         },
       ],
-    }, ResourcePart.Properties));
-    cdkExpect(stack).to(haveResourceLike('AWS::EC2::Instance', {
+    }, ResourcePart.Properties);
+    expect(stack).toHaveResourceLike('AWS::EC2::Instance', {
       Tags: [
         {},
         {
@@ -1262,7 +1260,7 @@ describe('volume', () => {
           Value: 'b2376b2bda65cb40f83c290dd844c4aa',
         },
       ],
-    }, ResourcePart.Properties));
+    }, ResourcePart.Properties);
 
   });
 

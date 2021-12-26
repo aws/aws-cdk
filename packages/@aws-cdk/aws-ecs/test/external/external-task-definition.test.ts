@@ -6,12 +6,11 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as ssm from '@aws-cdk/aws-ssm';
 import * as cdk from '@aws-cdk/core';
-import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as ecs from '../../lib';
 
-nodeunitShim({
-  'When creating an External TaskDefinition': {
-    'with only required properties set, it correctly sets default properties'(test: Test) {
+describe('external task definition', () => {
+  describe('When creating an External TaskDefinition', () => {
+    test('with only required properties set, it correctly sets default properties', () => {
       // GIVEN
       const stack = new cdk.Stack();
       new ecs.ExternalTaskDefinition(stack, 'ExternalTaskDef');
@@ -23,10 +22,10 @@ nodeunitShim({
         RequiresCompatibilities: ['EXTERNAL'],
       });
 
-      test.done();
-    },
 
-    'with all properties set'(test: Test) {
+    });
+
+    test('with all properties set', () => {
       // GIVEN
       const stack = new cdk.Stack();
       new ecs.ExternalTaskDefinition(stack, 'ExternalTaskDef', {
@@ -64,10 +63,10 @@ nodeunitShim({
         },
       });
 
-      test.done();
-    },
 
-    'correctly sets containers'(test: Test) {
+    });
+
+    test('correctly sets containers', () => {
       // GIVEN
       const stack = new cdk.Stack();
 
@@ -131,10 +130,10 @@ nodeunitShim({
         },
       });
 
-      test.done();
-    },
 
-    'all container definition options defined'(test: Test) {
+    });
+
+    test('all container definition options defined', () => {
       const stack = new cdk.Stack();
 
       const taskDefinition = new ecs.ExternalTaskDefinition(stack, 'ExternalTaskDef');
@@ -330,10 +329,10 @@ nodeunitShim({
         ],
       });
 
-      test.done();
-    },
 
-    'correctly sets containers from ECR repository using all props'(test: Test) {
+    });
+
+    test('correctly sets containers from ECR repository using all props', () => {
       // GIVEN
       const stack = new cdk.Stack();
 
@@ -423,11 +422,11 @@ nodeunitShim({
         }],
       });
 
-      test.done();
-    },
-  },
 
-  'correctly sets containers from ECR repository using an image tag'(test: Test) {
+    });
+  });
+
+  test('correctly sets containers from ECR repository using an image tag', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -498,10 +497,10 @@ nodeunitShim({
       }],
     });
 
-    test.done();
-  },
 
-  'correctly sets containers from ECR repository using an image digest'(test: Test) {
+  });
+
+  test('correctly sets containers from ECR repository using an image digest', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const taskDefinition = new ecs.ExternalTaskDefinition(stack, 'ExternalTaskDef');
@@ -571,10 +570,10 @@ nodeunitShim({
       }],
     });
 
-    test.done();
-  },
 
-  'correctly sets containers from ECR repository using default props'(test: Test) {
+  });
+
+  test('correctly sets containers from ECR repository using default props', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const taskDefinition = new ecs.ExternalTaskDefinition(stack, 'ExternalTaskDef');
@@ -588,10 +587,10 @@ nodeunitShim({
     // THEN
     expect(stack).toHaveResource('AWS::ECR::Repository', {});
 
-    test.done();
-  },
 
-  'warns when setting containers from ECR repository using fromRegistry method'(test: Test) {
+  });
+
+  test('warns when setting containers from ECR repository using fromRegistry method', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -603,12 +602,12 @@ nodeunitShim({
     });
 
     // THEN
-    expect(container.node.metadata[0].data).toEqual("Proper policies need to be attached before pulling from ECR repository, or use 'fromEcrRepository'.");
+    expect(container.node.metadataEntry[0].data).toEqual("Proper policies need to be attached before pulling from ECR repository, or use 'fromEcrRepository'.");
 
-    test.done();
-  },
 
-  'correctly sets volumes from'(test: Test) {
+  });
+
+  test('correctly sets volumes from', () => {
     const stack = new cdk.Stack();
     const taskDefinition = new ecs.ExternalTaskDefinition(stack, 'ExternalTaskDef', {});
 
@@ -620,10 +619,10 @@ nodeunitShim({
       name: 'scratch',
     })).toThrow('External task definitions doesnt support volumes' );
 
-    test.done();
-  },
 
-  'error when interferenceAccelerators set'(test: Test) {
+  });
+
+  test('error when interferenceAccelerators set', () => {
     const stack = new cdk.Stack();
     const taskDefinition = new ecs.ExternalTaskDefinition(stack, 'ExternalTaskDef', {});
 
@@ -633,6 +632,6 @@ nodeunitShim({
       deviceType: 'eia2.medium',
     })).toThrow('Cannot use inference accelerators on tasks that run on External service');
 
-    test.done();
-  },
+
+  });
 });

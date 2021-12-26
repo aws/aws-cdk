@@ -1,11 +1,10 @@
-import { expect, haveResourceLike } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
-import { nodeunitShim, Test } from 'nodeunit-shim';
 import { CloudFrontWebDistribution, FailoverStatusCode } from '../lib';
 
-nodeunitShim({
-  'Distribution with custom origin failover'(test: Test) {
+describe('origin group', () => {
+  test('Distribution with custom origin failover', () => {
     const stack = new cdk.Stack();
 
     new CloudFrontWebDistribution(stack, 'ADistribution', {
@@ -29,8 +28,8 @@ nodeunitShim({
       ],
     });
 
-    expect(stack).to(
-      haveResourceLike('AWS::CloudFront::Distribution', {
+    expect(stack)
+      .toHaveResourceLike('AWS::CloudFront::Distribution', {
         DistributionConfig: {
           OriginGroups: {
             Items: [
@@ -105,13 +104,12 @@ nodeunitShim({
             },
           ],
         },
-      }),
-    );
+      });
 
-    test.done();
-  },
 
-  'Distribution with s3 origin failover'(test: Test) {
+  });
+
+  test('Distribution with s3 origin failover', () => {
     const stack = new cdk.Stack();
 
     new CloudFrontWebDistribution(stack, 'ADistribution', {
@@ -141,8 +139,8 @@ nodeunitShim({
       ],
     });
 
-    expect(stack).to(
-      haveResourceLike('AWS::CloudFront::Distribution', {
+    expect(stack)
+      .toHaveResourceLike('AWS::CloudFront::Distribution', {
         DistributionConfig: {
           OriginGroups: {
             Items: [
@@ -226,9 +224,8 @@ nodeunitShim({
             },
           ],
         },
-      }),
-    );
+      });
 
-    test.done();
-  },
+
+  });
 });

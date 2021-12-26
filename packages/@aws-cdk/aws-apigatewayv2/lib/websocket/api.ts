@@ -1,19 +1,15 @@
+import { Grant, IGrantable } from '@aws-cdk/aws-iam';
+import { Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnApi } from '../apigatewayv2.generated';
 import { IApi } from '../common/api';
 import { ApiBase } from '../common/base';
-import { WebSocketRouteIntegrationConfig, WebSocketIntegration } from './integration';
 import { WebSocketRoute, WebSocketRouteOptions } from './route';
 
 /**
  * Represents a WebSocket API
  */
 export interface IWebSocketApi extends IApi {
-  /**
-   * Add a websocket integration
-   * @internal
-   */
-  _addIntegration(scope: Construct, config: WebSocketRouteIntegrationConfig): WebSocketIntegration
 }
 
 /**
@@ -21,7 +17,7 @@ export interface IWebSocketApi extends IApi {
  */
 export interface WebSocketApiProps {
   /**
-   * Name for the WebSocket API resoruce
+   * Name for the WebSocket API resource
    * @default - id of the WebSocketApi construct.
    */
   readonly apiName?: string;
@@ -99,25 +95,6 @@ export class WebSocketApi extends ApiBase implements IWebSocketApi {
   }
 
   /**
-   * @internal
-   */
-  public _addIntegration(scope: Construct, config: WebSocketRouteIntegrationConfig): WebSocketIntegration {
-    const { configHash, integration: existingIntegration } = this._integrationCache.getIntegration(scope, config);
-    if (existingIntegration) {
-      return existingIntegration as WebSocketIntegration;
-    }
-
-    const integration = new WebSocketIntegration(scope, `WebSocketIntegration-${configHash}`, {
-      webSocketApi: this,
-      integrationType: config.type,
-      integrationUri: config.uri,
-    });
-    this._integrationCache.saveIntegration(scope, config, integration);
-
-    return integration;
-  }
-
-  /**
    * Add a new route
    */
   public addRoute(routeKey: string, options: WebSocketRouteOptions) {
@@ -125,6 +102,25 @@ export class WebSocketApi extends ApiBase implements IWebSocketApi {
       webSocketApi: this,
       routeKey,
       ...options,
+    });
+  }
+
+  /**
+   * Grant access to the API Gateway management API for this WebSocket API to an IAM
+   * principal (Role/Group/User).
+   *
+   * @param identity The principal
+   */
+  public grantManageConnections(identity: IGrantable): Grant {
+    const arn = Stack.of(this).formatArn({
+      service: 'execute-api',
+      resource: this.apiId,
+    });
+
+    return Grant.addToPrincipal({
+      grantee: identity,
+      actions: ['execute-api:ManageConnections'],
+      resourceArns: [`${arn}/*/POST/@connections/*`],
     });
   }
 }

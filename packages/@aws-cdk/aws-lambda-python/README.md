@@ -25,14 +25,11 @@ To use this module, you will need to have Docker installed.
 Define a `PythonFunction`:
 
 ```ts
-import * as lambda from "@aws-cdk/aws-lambda";
-import { PythonFunction } from "@aws-cdk/aws-lambda-python";
-
-new PythonFunction(this, 'MyFunction', {
+new lambda.PythonFunction(this, 'MyFunction', {
   entry: '/path/to/my/function', // required
+  runtime: Runtime.PYTHON_3_6, // required
   index: 'my_index.py', // optional, defaults to 'index.py'
   handler: 'my_exported_func', // optional, defaults to 'handler'
-  runtime: lambda.Runtime.PYTHON_3_6, // optional, defaults to lambda.Runtime.PYTHON_3_7
 });
 ```
 
@@ -42,11 +39,11 @@ All other properties of `lambda.Function` are supported, see also the [AWS Lambd
 
 If `requirements.txt` or `Pipfile` exists at the entry path, the construct will handle installing
 all required modules in a [Lambda compatible Docker container](https://gallery.ecr.aws/sam/build-python3.7)
-according to the `runtime`.
+according to the `runtime` and with the Docker platform based on the target architecture of the Lambda function.
 
-Python bundles are only recreated and published when a file in a source directory has changed. 
+Python bundles are only recreated and published when a file in a source directory has changed.
 Therefore (and as a general best-practice), it is highly recommended to commit a lockfile with a
-list of all transitive dependencies and their exact versions. 
+list of all transitive dependencies and their exact versions.
 This will ensure that when any dependency version is updated, the bundle asset is recreated and uploaded.
 
 To that end, we recommend using [`pipenv`] or [`poetry`] which has lockfile support.
@@ -89,6 +86,7 @@ layer.
 ```ts
 new lambda.PythonFunction(this, 'MyFunction', {
   entry: '/path/to/my/function',
+  runtime: Runtime.PYTHON_3_6,
   layers: [
     new lambda.PythonLayerVersion(this, 'MyLayer', {
       entry: '/path/to/my/layer', // point this to your library's directory

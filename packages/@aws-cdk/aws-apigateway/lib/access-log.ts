@@ -486,15 +486,17 @@ export class AccessLogFormat {
    * Custom log format.
    * You can create any log format string. You can easily get the $ context variable by using the methods of AccessLogField.
    * @param format
-   * @example custom(JSON.stringify({
-   *  requestId: AccessLogField.contextRequestId(),
-   *  sourceIp: AccessLogField.contextIdentitySourceIp(),
-   *  method: AccessLogFiled.contextHttpMethod(),
-   *  userContext: {
-   *    sub: AccessLogField.contextAuthorizerClaims('sub'),
-   *    email: AccessLogField.contextAuthorizerClaims('email')
-   *  }
-   * }))
+   * @example
+   *
+   *  apigateway.AccessLogFormat.custom(JSON.stringify({
+   *      requestId: apigateway.AccessLogField.contextRequestId(),
+   *      sourceIp: apigateway.AccessLogField.contextIdentitySourceIp(),
+   *      method: apigateway.AccessLogField.contextHttpMethod(),
+   *      userContext: {
+   *        sub: apigateway.AccessLogField.contextAuthorizerClaims('sub'),
+   *        email: apigateway.AccessLogField.contextAuthorizerClaims('email')
+   *      }
+   *   }))
    */
   public static custom(format: string): AccessLogFormat {
     return new AccessLogFormat(format);

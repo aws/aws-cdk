@@ -48,6 +48,11 @@ export enum ContextProvider {
    * Security group provider
    */
   SECURITY_GROUP_PROVIDER = 'security-group',
+
+  /**
+   * KMS Key Provider
+   */
+  KEY_PROVIDER = 'key-provider',
 }
 
 /**
@@ -411,8 +416,52 @@ export interface SecurityGroupContextQuery {
 
   /**
    * Security group id
+   *
+   * @default - None
    */
-  readonly securityGroupId: string;
+  readonly securityGroupId?: string;
+
+  /**
+   * Security group name
+   *
+   * @default - None
+   */
+  readonly securityGroupName?: string;
+
+  /**
+   * VPC ID
+   *
+   * @default - None
+   */
+  readonly vpcId?: string;
+}
+
+/**
+ * Query input for looking up a KMS Key
+ */
+export interface KeyContextQuery {
+  /**
+   * Query account
+   */
+  readonly account: string;
+
+  /**
+   * Query region
+   */
+  readonly region: string;
+
+  /**
+   * The ARN of the role that should be used to look up the missing values
+   *
+   * @default - None
+   */
+  readonly lookupRoleArn?: string;
+
+  /**
+   * Alias name used to search the Key
+   */
+  readonly aliasName: string;
+
 }
 
 export type ContextQueryProperties = AmiContextQuery
@@ -423,4 +472,5 @@ export type ContextQueryProperties = AmiContextQuery
 | EndpointServiceAvailabilityZonesContextQuery
 | LoadBalancerContextQuery
 | LoadBalancerListenerContextQuery
-| SecurityGroupContextQuery;
+| SecurityGroupContextQuery
+| KeyContextQuery;

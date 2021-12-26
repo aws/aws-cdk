@@ -1,22 +1,21 @@
-import { expect, haveResourceLike } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as ssm from '@aws-cdk/aws-ssm';
 import * as cdk from '@aws-cdk/core';
-import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as ecs from '../lib';
 
 let stack: cdk.Stack;
 let td: ecs.TaskDefinition;
 const image = ecs.ContainerImage.fromRegistry('test-image');
 
-nodeunitShim({
-  'setUp'(cb: () => void) {
+describe('firelens log driver', () => {
+  beforeEach(() => {
     stack = new cdk.Stack();
     td = new ecs.Ec2TaskDefinition(stack, 'TaskDefinition');
 
-    cb();
-  },
-  'create a firelens log driver with default options'(test: Test) {
+
+  });
+  test('create a firelens log driver with default options', () => {
     // WHEN
     td.addContainer('Container', {
       image,
@@ -25,7 +24,7 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+    expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
         {
           LogConfiguration: {
@@ -39,12 +38,12 @@ nodeunitShim({
           },
         },
       ],
-    }));
+    });
 
-    test.done();
-  },
 
-  'create a firelens log driver with secret options'(test: Test) {
+  });
+
+  test('create a firelens log driver with secret options', () => {
     const secret = new secretsmanager.Secret(stack, 'Secret');
     const parameter = ssm.StringParameter.fromSecureStringParameterAttributes(stack, 'Parameter', {
       parameterName: '/host',
@@ -72,7 +71,7 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+    expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
         {
           LogConfiguration: {
@@ -125,9 +124,9 @@ nodeunitShim({
           },
         },
       ],
-    }));
+    });
 
-    expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
           {
@@ -172,12 +171,12 @@ nodeunitShim({
         ],
         Version: '2012-10-17',
       },
-    }));
+    });
 
-    test.done();
-  },
 
-  'create a firelens log driver to route logs to CloudWatch Logs with Fluent Bit'(test: Test) {
+  });
+
+  test('create a firelens log driver to route logs to CloudWatch Logs with Fluent Bit', () => {
     // WHEN
     td.addContainer('Container', {
       image,
@@ -194,7 +193,7 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+    expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
         {
           LogConfiguration: {
@@ -215,12 +214,12 @@ nodeunitShim({
           },
         },
       ],
-    }));
+    });
 
-    test.done();
-  },
 
-  'create a firelens log driver to route logs to kinesis firehose Logs with Fluent Bit'(test: Test) {
+  });
+
+  test('create a firelens log driver to route logs to kinesis firehose Logs with Fluent Bit', () => {
     // WHEN
     td.addContainer('Container', {
       image,
@@ -235,7 +234,7 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+    expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
         {
           LogConfiguration: {
@@ -254,13 +253,13 @@ nodeunitShim({
           },
         },
       ],
-    }));
+    });
 
-    test.done();
-  },
 
-  'Firelens Configuration': {
-    'fluentd log router container'(test: Test) {
+  });
+
+  describe('Firelens Configuration', () => {
+    test('fluentd log router container', () => {
       // GIVEN
       td.addFirelensLogRouter('log_router', {
         image: ecs.ContainerImage.fromRegistry('fluent/fluentd'),
@@ -271,7 +270,7 @@ nodeunitShim({
       });
 
       // THEN
-      expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+      expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
         ContainerDefinitions: [
           {
             Essential: true,
@@ -283,11 +282,11 @@ nodeunitShim({
             },
           },
         ],
-      }));
-      test.done();
-    },
+      });
 
-    'fluent-bit log router container with options'(test: Test) {
+    });
+
+    test('fluent-bit log router container with options', () => {
       // GIVEN
       const stack2 = new cdk.Stack(undefined, 'Stack2', { env: { region: 'us-east-1' } });
       const td2 = new ecs.Ec2TaskDefinition(stack2, 'TaskDefinition');
@@ -305,7 +304,7 @@ nodeunitShim({
       });
 
       // THEN
-      expect(stack2).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+      expect(stack2).toHaveResourceLike('AWS::ECS::TaskDefinition', {
         ContainerDefinitions: [
           {
             Essential: true,
@@ -321,12 +320,12 @@ nodeunitShim({
             },
           },
         ],
-      }));
+      });
 
-      test.done();
-    },
 
-    'fluent-bit log router with file config type'(test: Test) {
+    });
+
+    test('fluent-bit log router with file config type', () => {
       // GIVEN
       td.addFirelensLogRouter('log_router', {
         image: ecs.obtainDefaultFluentBitECRImage(td, undefined, '2.1.0'),
@@ -343,7 +342,7 @@ nodeunitShim({
       });
 
       // THEN
-      expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+      expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
         ContainerDefinitions: [
           {
             Essential: true,
@@ -359,9 +358,9 @@ nodeunitShim({
             },
           },
         ],
-      }));
+      });
 
-      test.done();
-    },
-  },
+
+    });
+  });
 });

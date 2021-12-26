@@ -1,3 +1,4 @@
+import { throws } from 'assert';
 import { Template } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecr from '@aws-cdk/aws-ecr';
@@ -7,6 +8,7 @@ import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as ssm from '@aws-cdk/aws-ssm';
 import * as cdk from '@aws-cdk/core';
 import * as batch from '../lib';
+import { PlatformCapabilities } from '../lib';
 
 describe('Batch Job Definition', () => {
   let stack: cdk.Stack;
@@ -61,6 +63,7 @@ describe('Batch Job Definition', () => {
       },
       retryAttempts: 2,
       timeout: cdk.Duration.seconds(30),
+      platformCapabilities: [batch.PlatformCapabilities.EC2],
     };
   });
 
@@ -87,14 +90,16 @@ describe('Batch Job Definition', () => {
             'awslogs-region': 'us-east-1',
           },
         },
-        Memory: jobDefProps.container.memoryLimitMiB,
         MountPoints: [],
         Privileged: jobDefProps.container.privileged,
         ReadonlyRootFilesystem: jobDefProps.container.readOnly,
-        ResourceRequirements: [{ Type: 'GPU', Value: String(jobDefProps.container.gpuCount) }],
+        ResourceRequirements: [
+          { Type: 'VCPU', Value: String(jobDefProps.container.vcpus) },
+          { Type: 'MEMORY', Value: String(jobDefProps.container.memoryLimitMiB) },
+          { Type: 'GPU', Value: String(jobDefProps.container.gpuCount) },
+        ],
         Ulimits: [],
         User: jobDefProps.container.user,
-        Vcpus: jobDefProps.container.vcpus,
         Volumes: [],
       } : undefined,
       NodeProperties: jobDefProps.nodeProps ? {
@@ -112,8 +117,77 @@ describe('Batch Job Definition', () => {
         AttemptDurationSeconds: jobDefProps.timeout ? jobDefProps.timeout.toSeconds() : -1,
       },
       Type: 'container',
+      PlatformCapabilities: ['EC2'],
     });
   });
+
+  test('renders the correct cloudformation properties for a Fargate job definition', () => {
+    // WHEN
+    const executionRole = new iam.Role(stack, 'execution-role', {
+      assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+    });
+
+    new batch.JobDefinition(stack, 'job-def', {
+      ...jobDefProps,
+      container: { ...jobDefProps.container, executionRole, gpuCount: undefined },
+      platformCapabilities: [PlatformCapabilities.FARGATE],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobDefinition', {
+      JobDefinitionName: jobDefProps.jobDefinitionName,
+      ContainerProperties: jobDefProps.container ? {
+        Command: jobDefProps.container.command,
+        Environment: [
+          {
+            Name: 'foo',
+            Value: 'bar',
+          },
+        ],
+        ExecutionRoleArn: {
+          'Fn::GetAtt': [
+            'executionroleD9A39BE6',
+            'Arn',
+          ],
+        },
+        InstanceType: jobDefProps.container.instanceType ? jobDefProps.container.instanceType.toString() : '',
+        LinuxParameters: {},
+        LogConfiguration: {
+          LogDriver: 'awslogs',
+          Options: {
+            'awslogs-region': 'us-east-1',
+          },
+        },
+        MountPoints: [],
+        Privileged: jobDefProps.container.privileged,
+        ReadonlyRootFilesystem: jobDefProps.container.readOnly,
+        ResourceRequirements: [
+          { Type: 'VCPU', Value: String(jobDefProps.container.vcpus) },
+          { Type: 'MEMORY', Value: String(jobDefProps.container.memoryLimitMiB) },
+        ],
+        Ulimits: [],
+        User: jobDefProps.container.user,
+        Volumes: [],
+      } : undefined,
+      NodeProperties: jobDefProps.nodeProps ? {
+        MainNode: jobDefProps.nodeProps.mainNode,
+        NodeRangeProperties: [],
+        NumNodes: jobDefProps.nodeProps.count,
+      } : undefined,
+      Parameters: {
+        foo: 'bar',
+      },
+      RetryStrategy: {
+        Attempts: jobDefProps.retryAttempts,
+      },
+      Timeout: {
+        AttemptDurationSeconds: jobDefProps.timeout ? jobDefProps.timeout.toSeconds() : -1,
+      },
+      Type: 'container',
+      PlatformCapabilities: ['FARGATE'],
+    });
+  });
+
   test('can use an ecr image', () => {
     // WHEN
     const repo = new ecr.Repository(stack, 'image-repo');
@@ -176,10 +250,12 @@ describe('Batch Job Definition', () => {
             ],
           ],
         },
-        Memory: 4,
         Privileged: false,
         ReadonlyRootFilesystem: false,
-        Vcpus: 1,
+        ResourceRequirements: [
+          { Type: 'VCPU', Value: '1' },
+          { Type: 'MEMORY', Value: '4' },
+        ],
       },
     });
   });
@@ -196,10 +272,12 @@ describe('Batch Job Definition', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobDefinition', {
       ContainerProperties: {
         Image: 'docker/whalesay',
-        Memory: 4,
         Privileged: false,
         ReadonlyRootFilesystem: false,
-        Vcpus: 1,
+        ResourceRequirements: [
+          { Type: 'VCPU', Value: '1' },
+          { Type: 'MEMORY', Value: '4' },
+        ],
       },
     });
   });
@@ -284,6 +362,42 @@ describe('Batch Job Definition', () => {
           ],
         },
       },
+    });
+  });
+  describe('using fargate job definition', () => {
+    test('can configure platform configuration properly', () => {
+      // GIVEN
+      const executionRole = new iam.Role(stack, 'execution-role', {
+        assumedBy: new iam.ServicePrincipal('batch.amazonaws.com'),
+      });
+      // WHEN
+      new batch.JobDefinition(stack, 'job-def', {
+        platformCapabilities: [batch.PlatformCapabilities.FARGATE],
+        container: {
+          image: ecs.EcrImage.fromRegistry('docker/whalesay'),
+          platformVersion: ecs.FargatePlatformVersion.LATEST,
+          executionRole: executionRole,
+        },
+      });
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobDefinition', {
+        ContainerProperties: {
+          FargatePlatformConfiguration: {
+            PlatformVersion: 'LATEST',
+          },
+        },
+      });
+    });
+    test('must require executionRole', () => {
+      throws(() => {
+        // WHEN
+        new batch.JobDefinition(stack, 'job-def', {
+          platformCapabilities: [batch.PlatformCapabilities.FARGATE],
+          container: {
+            image: ecs.EcrImage.fromRegistry('docker/whalesay'),
+          },
+        });
+      });
     });
   });
 });

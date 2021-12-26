@@ -10,6 +10,7 @@ import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as signer from '@aws-cdk/aws-signer';
 import * as sqs from '@aws-cdk/aws-sqs';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import * as constructs from 'constructs';
 import * as _ from 'lodash';
@@ -156,7 +157,7 @@ describe('function', () => {
               'Arn',
             ],
           },
-          Runtime: 'python2.7',
+          Runtime: 'python3.9',
         },
         DependsOn: [
           'MyLambdaServiceRole4539ECB6',
@@ -1382,7 +1383,7 @@ describe('function', () => {
     });
   });
 
-  test('add a version with event invoke config', () => {
+  testDeprecated('add a version with event invoke config', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new lambda.Function(stack, 'fn', {
@@ -1841,6 +1842,39 @@ describe('function', () => {
     });
   });
 
+  describe('lambda.Function timeout', () => {
+    test('should be a cdk.Duration when defined', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      const { timeout } = new lambda.Function(stack, 'MyFunction', {
+        handler: 'foo',
+        runtime: lambda.Runtime.NODEJS_12_X,
+        code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
+        timeout: cdk.Duration.minutes(2),
+      });
+
+      // THEN
+      expect(timeout).toEqual(cdk.Duration.minutes(2));
+    });
+
+    test('should be optional', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      const { timeout } = new lambda.Function(stack, 'MyFunction', {
+        handler: 'foo',
+        runtime: lambda.Runtime.NODEJS_12_X,
+        code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
+      });
+
+      // THEN
+      expect(timeout).not.toBeDefined();
+    });
+  });
+
   describe('currentVersion', () => {
     // see test.function-hash.ts for more coverage for this
     test('logical id of version is based on the function hash', () => {
@@ -2112,6 +2146,7 @@ describe('function', () => {
             imageUri: 'ecr image uri',
             cmd: ['cmd', 'param1'],
             entrypoint: ['entrypoint', 'param2'],
+            workingDirectory: '/some/path',
           },
         }),
         handler: lambda.Handler.FROM_IMAGE,
@@ -2122,6 +2157,7 @@ describe('function', () => {
         ImageConfig: {
           Command: ['cmd', 'param1'],
           EntryPoint: ['entrypoint', 'param2'],
+          WorkingDirectory: '/some/path',
         },
       });
     });
@@ -2172,12 +2208,74 @@ describe('function', () => {
     })).toThrow(/Layers are not supported for container image functions/);
   });
 
+  testDeprecated('specified architectures is recognized', () => {
+    const stack = new cdk.Stack();
+    new lambda.Function(stack, 'MyFunction', {
+      code: lambda.Code.fromInline('foo'),
+      runtime: lambda.Runtime.NODEJS_12_X,
+      handler: 'index.handler',
+
+      architectures: [lambda.Architecture.ARM_64],
+    });
+
+    expect(stack).toHaveResource('AWS::Lambda::Function', {
+      Architectures: ['arm64'],
+    });
+  });
+
+  test('specified architecture is recognized', () => {
+    const stack = new cdk.Stack();
+    new lambda.Function(stack, 'MyFunction', {
+      code: lambda.Code.fromInline('foo'),
+      runtime: lambda.Runtime.NODEJS_12_X,
+      handler: 'index.handler',
+
+      architecture: lambda.Architecture.ARM_64,
+    });
+
+    expect(stack).toHaveResource('AWS::Lambda::Function', {
+      Architectures: ['arm64'],
+    });
+  });
+
+  testDeprecated('both architectures and architecture are not recognized', () => {
+    const stack = new cdk.Stack();
+    expect(() => new lambda.Function(stack, 'MyFunction', {
+      code: lambda.Code.fromInline('foo'),
+      runtime: lambda.Runtime.NODEJS_12_X,
+      handler: 'index.handler',
+
+      architecture: lambda.Architecture.ARM_64,
+      architectures: [lambda.Architecture.X86_64],
+    })).toThrow(/architecture or architectures must be specified/);
+  });
+
+  testDeprecated('Only one architecture allowed', () => {
+    const stack = new cdk.Stack();
+    expect(() => new lambda.Function(stack, 'MyFunction', {
+      code: lambda.Code.fromInline('foo'),
+      runtime: lambda.Runtime.NODEJS_12_X,
+      handler: 'index.handler',
+
+      architectures: [lambda.Architecture.X86_64, lambda.Architecture.ARM_64],
+    })).toThrow(/one architecture must be specified/);
+  });
+  test('Architecture is properly readable from the function', () => {
+    const stack = new cdk.Stack();
+    const fn = new lambda.Function(stack, 'MyFunction', {
+      code: lambda.Code.fromInline('foo'),
+      runtime: lambda.Runtime.NODEJS_14_X,
+      handler: 'index.handler',
+      architecture: lambda.Architecture.ARM_64,
+    });
+    expect(fn.architecture?.name).toEqual('arm64');
+  });
 });
 
 function newTestLambda(scope: constructs.Construct) {
   return new lambda.Function(scope, 'MyLambda', {
     code: new lambda.InlineCode('foo'),
     handler: 'bar',
-    runtime: lambda.Runtime.PYTHON_2_7,
+    runtime: lambda.Runtime.PYTHON_3_9,
   });
 }

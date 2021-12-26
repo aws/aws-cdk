@@ -44,19 +44,18 @@ This is what happens under the hood:
    `websiteBucket`). If there is more than one source, the sources will be
    downloaded and merged pre-deployment at this step.
 
-
 ## Supported sources
 
 The following source types are supported for bucket deployments:
 
- - Local .zip file: `s3deploy.Source.asset('/path/to/local/file.zip')`
- - Local directory: `s3deploy.Source.asset('/path/to/local/directory')`
- - Another bucket: `s3deploy.Source.bucket(bucket, zipObjectKey)`
+- Local .zip file: `s3deploy.Source.asset('/path/to/local/file.zip')`
+- Local directory: `s3deploy.Source.asset('/path/to/local/directory')`
+- Another bucket: `s3deploy.Source.bucket(bucket, zipObjectKey)`
 
 To create a source from a single file, you can pass `AssetOptions` to exclude
 all but a single file:
 
- - Single file: `s3deploy.Source.asset('/path/to/local/directory', { exclude: ['**', '!onlyThisFile.txt'] })`
+- Single file: `s3deploy.Source.asset('/path/to/local/directory', { exclude: ['**', '!onlyThisFile.txt'] })`
 
 **IMPORTANT** The `aws-s3-deployment` module is only intended to be used with
 zip files from trusted sources. Directories bundled by the CDK CLI (by using
@@ -241,6 +240,26 @@ size of the AWS Lambda resource handler.
 > NOTE: a new AWS Lambda handler will be created in your stack for each memory
 > limit configuration.
 
+## EFS Support
+
+If your workflow needs more disk space than default (512 MB) disk space, you may attach an EFS storage to underlying
+lambda function. To Enable EFS support set `efs` and `vpc` props for BucketDeployment.
+
+Check sample usage below.
+Please note that creating VPC inline may cause stack deletion failures. It is shown as below for simplicity.
+To avoid such condition, keep your network infra (VPC) in a separate stack and pass as props.
+
+```ts
+new s3deploy.BucketDeployment(this, 'DeployMeWithEfsStorage', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+    destinationBucket,
+    destinationKeyPrefix: 'efs/',
+    useEfs: true,
+    vpc: new ec2.Vpc(this, 'Vpc'),
+    retainOnDelete: false,
+});
+```
+
 ## Notes
 
 - This library uses an AWS CloudFormation custom resource which about 10MiB in
@@ -268,4 +287,4 @@ might be tricky to build on Windows.
 
 ## Roadmap
 
- - [ ] Support "blue/green" deployments ([#954](https://github.com/aws/aws-cdk/issues/954))
+- [ ] Support "blue/green" deployments ([#954](https://github.com/aws/aws-cdk/issues/954))

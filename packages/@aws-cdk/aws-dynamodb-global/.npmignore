@@ -26,3 +26,4 @@ tsconfig.json
 junit.xml
 test/
 !*.lit.ts
+jest.config.js

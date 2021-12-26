@@ -1,4 +1,4 @@
-import { expect, haveResource } from '@aws-cdk/assert-internal';
+import { Template } from '@aws-cdk/assertions';
 import { Stack } from '@aws-cdk/core';
 import { ClusterParameterGroup, ParameterGroup } from '../lib';
 
@@ -17,12 +17,12 @@ describe('ClusterParameterGroup', () => {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::Neptune::DBClusterParameterGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Neptune::DBClusterParameterGroup', {
       Description: 'desc',
       Parameters: {
         key: 'value',
       },
-    }));
+    });
 
   });
 
@@ -39,12 +39,12 @@ describe('ClusterParameterGroup', () => {
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::Neptune::DBParameterGroup', {
+    Template.fromStack(stack).hasResourceProperties('AWS::Neptune::DBParameterGroup', {
       Description: 'desc',
       Parameters: {
         key: 'value',
       },
-    }));
+    });
 
   });
 });

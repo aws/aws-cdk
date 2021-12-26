@@ -2,6 +2,7 @@ import { Template } from '@aws-cdk/assertions';
 import { Queue } from '@aws-cdk/aws-sqs';
 import * as cdk from '@aws-cdk/core';
 import * as sns from '../lib';
+import { SubscriptionProtocol } from '../lib';
 
 describe('Subscription', () => {
   test('create a subscription', () => {
@@ -152,6 +153,40 @@ describe('Subscription', () => {
 
   });
 
+  test('with numeric filter and 0 values', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const topic = new sns.Topic(stack, 'Topic');
+
+    // WHEN
+    new sns.Subscription(stack, 'Subscription', {
+      endpoint: 'endpoint',
+      filterPolicy: {
+        price: sns.SubscriptionFilter.numericFilter({
+          greaterThan: 0,
+          greaterThanOrEqualTo: 0,
+          lessThan: 0,
+          lessThanOrEqualTo: 0,
+        }),
+      },
+      protocol: sns.SubscriptionProtocol.LAMBDA,
+      topic,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::SNS::Subscription', {
+      FilterPolicy: {
+        price: [
+          { numeric: ['>', 0] },
+          { numeric: ['>=', 0] },
+          { numeric: ['<', 0] },
+          { numeric: ['<=', 0] },
+        ],
+      },
+    });
+
+  });
+
   test('with existsFilter', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -176,19 +211,26 @@ describe('Subscription', () => {
 
   });
 
-  test('throws with raw delivery for protocol other than http, https or sqs', () => {
+
+  test.each(
+    [
+      SubscriptionProtocol.LAMBDA,
+      SubscriptionProtocol.EMAIL,
+      SubscriptionProtocol.EMAIL_JSON,
+      SubscriptionProtocol.SMS,
+      SubscriptionProtocol.APPLICATION,
+    ])
+  ('throws with raw delivery for %s protocol', (protocol: SubscriptionProtocol) => {
     // GIVEN
     const stack = new cdk.Stack();
     const topic = new sns.Topic(stack, 'Topic');
-
     // THEN
     expect(() => new sns.Subscription(stack, 'Subscription', {
       endpoint: 'endpoint',
-      protocol: sns.SubscriptionProtocol.LAMBDA,
+      protocol: protocol,
       topic,
       rawMessageDelivery: true,
     })).toThrow(/Raw message delivery/);
-
   });
 
   test('throws with more than 5 attributes in a filter policy', () => {
@@ -231,5 +273,18 @@ describe('Subscription', () => {
       },
     })).toThrow(/\(120\) must not exceed 100/);
 
+  });
+
+  test('throws an error when subscription role arn is not entered with firehose subscription protocol', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const topic = new sns.Topic(stack, 'Topic');
+
+    //THEN
+    expect(() => new sns.Subscription(stack, 'Subscription', {
+      endpoint: 'endpoint',
+      protocol: sns.SubscriptionProtocol.FIREHOSE,
+      topic,
+    })).toThrow(/Subscription role arn is required field for subscriptions with a firehose protocol./);
   });
 });

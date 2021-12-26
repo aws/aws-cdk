@@ -1,5 +1,5 @@
-import '@aws-cdk/assert-internal/jest';
 import { ABSENT } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as iam from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
@@ -99,6 +99,26 @@ describe('SlackChannelConfiguration', () => {
     });
   });
 
+  test('allows adding a Topic after creating the SlackChannel', () => {
+    const slackChannel = new chatbot.SlackChannelConfiguration(stack, 'MySlackChannel', {
+      slackWorkspaceId: 'ABC123',
+      slackChannelId: 'DEF456',
+      slackChannelConfigurationName: 'Test',
+    });
+
+    const topic = new sns.Topic(stack, 'MyTopic');
+    slackChannel.addNotificationTopic(topic);
+
+    expect(stack).toHaveResourceLike('AWS::Chatbot::SlackChannelConfiguration', {
+      ConfigurationName: 'Test',
+      SnsTopicArns: [
+        {
+          Ref: 'MyTopic86869434',
+        },
+      ],
+    });
+  });
+
   test('created with existing role', () => {
     const role = iam.Role.fromRoleArn(stack, 'Role', 'arn:aws:iam:::role/test-role');
 
@@ -174,7 +194,7 @@ describe('SlackChannelConfiguration', () => {
     expect(metric).toEqual(new cloudwatch.Metric({
       namespace: 'AWS/Chatbot',
       region: 'us-east-1',
-      dimensions: {
+      dimensionsMap: {
         ConfigurationName: 'ConfigurationName',
       },
       metricName: 'MetricName',

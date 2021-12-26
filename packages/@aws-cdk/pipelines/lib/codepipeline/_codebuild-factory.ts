@@ -1,4 +1,3 @@
-import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as codebuild from '@aws-cdk/aws-codebuild';
@@ -8,9 +7,10 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import { IDependable, Stack } from '@aws-cdk/core';
 import { Construct, Node } from 'constructs';
-import { FileSetLocation, ShellStep, StackDeployment, StackOutputReference } from '../blueprint';
+import { FileSetLocation, ShellStep, StackOutputReference } from '../blueprint';
 import { PipelineQueries } from '../helpers-internal/pipeline-queries';
 import { cloudAssemblyBuildSpecDir, obtainScope } from '../private/construct-internals';
+import { hash, stackVariableNamespace } from '../private/identifiers';
 import { mapValues, mkdict, noEmptyObject, noUndefined, partition } from '../private/javascript';
 import { ArtifactMap } from './artifact-map';
 import { CodeBuildStep } from './codebuild-step';
@@ -241,7 +241,15 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
       // Write to disk and replace with a reference
       const relativeSpecFile = `buildspec-${Node.of(scope).addr}-${this.constructId}.yaml`;
       const absSpecFile = path.join(cloudAssemblyBuildSpecDir(scope), relativeSpecFile);
-      fs.writeFileSync(absSpecFile, Stack.of(scope).resolve(actualBuildSpec.toBuildSpec()), { encoding: 'utf-8' });
+
+      // This should resolve to a pure JSON string. If it resolves to an object, it's a CFN
+      // expression, and we can't support that yet. Maybe someday if we think really hard about it.
+      const fileContents = Stack.of(scope).resolve(actualBuildSpec.toBuildSpec());
+
+      if (typeof fileContents !== 'string') {
+        throw new Error(`This BuildSpec contains CloudFormation references and is supported by publishInParallel=false: ${JSON.stringify(fileContents, undefined, 2)}`);
+      }
+      fs.writeFileSync(absSpecFile, fileContents, { encoding: 'utf-8' });
       projectBuildSpec = codebuild.BuildSpec.fromSourceFilename(relativeSpecFile);
     } else {
       projectBuildSpec = actualBuildSpec;
@@ -325,8 +333,11 @@ function generateInputArtifactLinkCommands(artifacts: ArtifactMap, inputs: FileS
   return inputs.map(input => {
     const fragments = [];
 
-    if (!['.', '..'].includes(path.dirname(input.directory))) {
-      fragments.push(`mkdir -p -- "${input.directory}"`);
+    fragments.push(`[ ! -d "${input.directory}" ] || { echo 'additionalInputs: "${input.directory}" must not exist yet. If you want to merge multiple artifacts, use a "cp" command.'; exit 1; }`);
+
+    const parentDirectory = path.dirname(input.directory);
+    if (!['.', '..'].includes(parentDirectory)) {
+      fragments.push(`mkdir -p -- "${parentDirectory}"`);
     }
 
     const artifact = artifacts.toCodePipeline(input.fileSet);
@@ -415,12 +426,6 @@ function isDefined<A>(x: A | undefined): x is NonNullable<A> {
   return x !== undefined;
 }
 
-function hash<A>(obj: A) {
-  const d = crypto.createHash('sha256');
-  d.update(JSON.stringify(obj));
-  return d.digest('hex');
-}
-
 /**
  * Serialize a build environment to data (get rid of constructs & objects), so we can JSON.stringify it
  */
@@ -434,10 +439,6 @@ function serializeBuildEnvironment(env: codebuild.BuildEnvironment) {
     imagePullPrincipalType: env.buildImage?.imagePullPrincipalType,
     secretsManagerArn: env.buildImage?.secretsManagerCredentials?.secretArn,
   };
-}
-
-export function stackVariableNamespace(stack: StackDeployment) {
-  return stack.stackArtifactId;
 }
 
 /**

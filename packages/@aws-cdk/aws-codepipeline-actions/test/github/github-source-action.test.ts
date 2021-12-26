@@ -1,15 +1,15 @@
-import { expect, haveResourceLike, SynthUtils } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
+import { SynthUtils } from '@aws-cdk/assert-internal';
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import { SecretValue, Stack } from '@aws-cdk/core';
-import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as cpactions from '../../lib';
 
 /* eslint-disable quote-props */
 
-nodeunitShim({
-  'GitHub source Action': {
-    'exposes variables for other actions to consume'(test: Test) {
+describe('Github source action', () => {
+  describe('GitHub source Action', () => {
+    test('exposes variables for other actions to consume', () => {
       const stack = new Stack();
 
       const sourceOutput = new codepipeline.Artifact();
@@ -42,7 +42,7 @@ nodeunitShim({
         ],
       });
 
-      expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+      expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
         'Stages': [
           {
             'Name': 'Source',
@@ -59,12 +59,12 @@ nodeunitShim({
             ],
           },
         ],
-      }));
+      });
 
-      test.done();
-    },
 
-    'always renders the customer-supplied namespace, even if none of the variables are used'(test: Test) {
+    });
+
+    test('always renders the customer-supplied namespace, even if none of the variables are used', () => {
       const stack = new Stack();
 
       const sourceOutput = new codepipeline.Artifact();
@@ -96,7 +96,7 @@ nodeunitShim({
         ],
       });
 
-      expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+      expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
         'Stages': [
           {
             'Name': 'Source',
@@ -110,12 +110,12 @@ nodeunitShim({
           {
           },
         ],
-      }));
+      });
 
-      test.done();
-    },
 
-    'fails if a variable from an action without a namespace set that is not part of a pipeline is referenced'(test: Test) {
+    });
+
+    test('fails if a variable from an action without a namespace set that is not part of a pipeline is referenced', () => {
       const stack = new Stack();
 
       const unusedSourceAction = new cpactions.GitHubSourceAction({
@@ -154,14 +154,14 @@ nodeunitShim({
         ],
       });
 
-      test.throws(() => {
+      expect(() => {
         SynthUtils.synthesize(stack);
-      }, /Cannot reference variables of action 'Source2', as that action was never added to a pipeline/);
+      }).toThrow(/Cannot reference variables of action 'Source2', as that action was never added to a pipeline/);
 
-      test.done();
-    },
 
-    'fails if a variable from an action with a namespace set that is not part of a pipeline is referenced'(test: Test) {
+    });
+
+    test('fails if a variable from an action with a namespace set that is not part of a pipeline is referenced', () => {
       const stack = new Stack();
 
       const unusedSourceAction = new cpactions.GitHubSourceAction({
@@ -201,11 +201,11 @@ nodeunitShim({
         ],
       });
 
-      test.throws(() => {
+      expect(() => {
         SynthUtils.synthesize(stack);
-      }, /Cannot reference variables of action 'Source2', as that action was never added to a pipeline/);
+      }).toThrow(/Cannot reference variables of action 'Source2', as that action was never added to a pipeline/);
 
-      test.done();
-    },
-  },
+
+    });
+  });
 });
