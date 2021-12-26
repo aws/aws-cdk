@@ -42,9 +42,9 @@
      "ostools": ["chmod", "cp"]
   },
   "dependencies": {
-    "@jsii/spec": "1.49.0",
-    "jsii-reflect": "1.49.0",
-    "jsii-rosetta": "1.49.0",
+    "@jsii/spec": "1.50.0",
+    "jsii-reflect": "1.50.0",
+    "jsii-rosetta": "1.50.0",
     "fs-extra": "^9.1.0",
     "yargs": "^16.2.0"
   }
