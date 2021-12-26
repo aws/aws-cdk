@@ -1286,7 +1286,7 @@ describe('container definition', () => {
                     {
                       Ref: 'SecretA720EF05',
                     },
-                    '::version-id:',
+                    ':::version-id',
                   ],
                 ],
               },
@@ -1300,7 +1300,7 @@ describe('container definition', () => {
                     {
                       Ref: 'SecretA720EF05',
                     },
-                    ':::version-stage',
+                    '::version-stage:',
                   ],
                 ],
               },
@@ -1472,7 +1472,7 @@ describe('container definition', () => {
                     {
                       Ref: 'SecretA720EF05',
                     },
-                    ':specificKey:version-id:',
+                    ':specificKey::version-id',
                   ],
                 ],
               },
@@ -1486,7 +1486,7 @@ describe('container definition', () => {
                     {
                       Ref: 'SecretA720EF05',
                     },
-                    ':specificKey::version-stage',
+                    ':specificKey:version-stage:',
                   ],
                 ],
               },

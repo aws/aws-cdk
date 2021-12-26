@@ -78,7 +78,7 @@ export abstract class Secret {
    */
   public static fromSecretsManagerVersion(secret: secretsmanager.ISecret, versionInfo: SecretVersionInfo, field?: string): Secret {
     return {
-      arn: `${secret.secretArn}:${field ?? ''}:${versionInfo.versionStage}:${versionInfo.versionId}`,
+      arn: `${secret.secretArn}:${field ?? ''}:${versionInfo.versionStage ?? ''}:${versionInfo.versionId ?? ''}`,
       hasField: !!field,
       grantRead: grantee => secret.grantRead(grantee),
     };
