@@ -978,10 +978,11 @@ export default class CodeGenerator {
     /**
      * If '* /' occurs literally somewhere in the doc text, it will break the docstring parsing.
      *
-     * Break up those characters by inserting a zero-width space.
+     * Break up those characters by inserting a space. I tried using a zero-width
+     * space but Java does not like those at all and will fail the compilation.
      */
     function escapeDocText(x: string) {
-      return x.replace(/\*\//g, '*\u200b/');
+      return x.replace(/\*\//g, '* /');
     }
   }
 }
