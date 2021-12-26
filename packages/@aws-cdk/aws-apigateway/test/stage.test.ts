@@ -113,6 +113,38 @@ describe('stage', () => {
     });
   });
 
+  test('"stageResourceArn" returns the ARN for the stage', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const api = new apigateway.RestApi(stack, 'test-api');
+    const deployment = new apigateway.Deployment(stack, 'test-deploymnet', {
+      api,
+    });
+    api.root.addMethod('GET');
+
+    // WHEN
+    const stage = new apigateway.Stage(stack, 'test-stage', {
+      deployment,
+    });
+
+    // THEN
+    expect(stack.resolve(stage.stageArn)).toEqual({
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          { Ref: 'AWS::Partition' },
+          ':apigateway:',
+          { Ref: 'AWS::Region' },
+          '::/restapis/',
+          { Ref: 'testapiD6451F70' },
+          '/stages/',
+          { Ref: 'teststage8788861E' },
+        ],
+      ],
+    });
+  });
+
   test('custom method settings can be set by their path', () => {
     // GIVEN
     const stack = new cdk.Stack();
