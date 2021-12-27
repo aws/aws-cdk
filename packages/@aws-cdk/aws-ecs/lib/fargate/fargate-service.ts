@@ -104,13 +104,9 @@ export class FargateService extends BaseService implements IFargateService {
   public static fromFargateServiceArn(scope: Construct, id: string, fargateServiceArn: string): IFargateService {
     class Import extends cdk.Resource implements IFargateService {
       public readonly serviceArn = fargateServiceArn;
-      public readonly serviceName: string;
-      constructor() {
-        super(scope, id);
-        this.serviceName = extractServiceNameFromArn(this, fargateServiceArn);
-      }
+      public readonly serviceName = extractServiceNameFromArn(this, fargateServiceArn);
     }
-    return new Import();
+    return new Import(scope, id);
   }
 
   /**

@@ -128,13 +128,9 @@ export class Ec2Service extends BaseService implements IEc2Service {
   public static fromEc2ServiceArn(scope: Construct, id: string, ec2ServiceArn: string): IEc2Service {
     class Import extends Resource implements IEc2Service {
       public readonly serviceArn = ec2ServiceArn;
-      public readonly serviceName: string;
-      constructor() {
-        super(scope, id);
-        this.serviceName = extractServiceNameFromArn(this, ec2ServiceArn);
-      }
+      public readonly serviceName = extractServiceNameFromArn(this, ec2ServiceArn);
     }
-    return new Import();
+    return new Import(scope, id);
   }
 
   /**
