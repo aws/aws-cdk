@@ -178,6 +178,8 @@ export const TARGET_PARTITIONS = '@aws-cdk/core:target-partitions';
  * If this flag is set, the new ARN format (with cluster name) for ECS is used.
  *
  * This is a feature flag as the old format is still valid for existing ECS clusters.
+ *
+ * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-account-settings.html#ecs-resource-ids
  */
 export const ECS_ARN_FORMAT_INCLUDES_CLUSTER_NAME = '@aws-cdk/aws-ecs:arnFormatIncludesClusterName';
 

@@ -56,19 +56,7 @@ export function fromServiceAtrributes(scope: Construct, id: string, attrs: Servi
     });
   } else {
     arn = attrs.serviceArn as string;
-    if (Token.isUnresolved(arn)) {
-      if (newArnFormat) {
-        const components = Fn.split(':', arn);
-        const lastComponents = Fn.split('/', Fn.select(5, components));
-        name = Fn.select(2, lastComponents);
-      } else {
-        name = stack.splitArn(arn, ArnFormat.SLASH_RESOURCE_NAME).resourceName as string;
-      }
-    } else {
-      const resourceName = stack.splitArn(arn, ArnFormat.SLASH_RESOURCE_NAME).resourceName as string;
-      const resourceNameSplit = resourceName.split('/');
-      name = resourceNameSplit.length === 1 ? resourceName : resourceNameSplit[1];
-    }
+    name = extractServiceNameFromArn(featureConstruct, arn);
   }
   class Import extends Resource implements IBaseService {
     public readonly serviceArn = arn;
@@ -78,6 +66,25 @@ export function fromServiceAtrributes(scope: Construct, id: string, attrs: Servi
   return new Import(scope, id, {
     environmentFromArn: arn,
   });
+}
+
+export function extractServiceNameFromArn(scope: CoreConstruct, arn: string): string {
+  const newArnFormat = FeatureFlags.of(scope).isEnabled(ECS_ARN_FORMAT_INCLUDES_CLUSTER_NAME);
+  const stack = Stack.of(scope);
+
+  if (Token.isUnresolved(arn)) {
+    if (newArnFormat) {
+      const components = Fn.split(':', arn);
+      const lastComponents = Fn.split('/', Fn.select(5, components));
+      return Fn.select(2, lastComponents);
+    } else {
+      return stack.splitArn(arn, ArnFormat.SLASH_RESOURCE_NAME).resourceName as string;
+    }
+  } else {
+    const resourceName = stack.splitArn(arn, ArnFormat.SLASH_RESOURCE_NAME).resourceName as string;
+    const resourceNameSplit = resourceName.split('/');
+    return resourceNameSplit.length === 1 ? resourceName : resourceNameSplit[1];
+  }
 }
 
 function randomString() {

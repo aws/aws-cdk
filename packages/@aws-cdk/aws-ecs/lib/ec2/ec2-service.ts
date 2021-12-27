@@ -1,9 +1,8 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
-import { ArnFormat, FeatureFlags, Fn, Lazy, Resource, Stack, Token } from '@aws-cdk/core';
-import { ECS_ARN_FORMAT_INCLUDES_CLUSTER_NAME } from '@aws-cdk/cx-api';
+import { Lazy, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { BaseService, BaseServiceOptions, DeploymentControllerType, IBaseService, IService, LaunchType } from '../base/base-service';
-import { fromServiceAtrributes } from '../base/from-service-attributes';
+import { fromServiceAtrributes, extractServiceNameFromArn } from '../base/from-service-attributes';
 import { NetworkMode, TaskDefinition } from '../base/task-definition';
 import { ICluster } from '../cluster';
 import { CfnService } from '../ecs.generated';
@@ -132,19 +131,7 @@ export class Ec2Service extends BaseService implements IEc2Service {
       public readonly serviceName: string;
       constructor() {
         super(scope, id);
-        const resourceName = Stack.of(scope).splitArn(ec2ServiceArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName as string;
-        if (Token.isUnresolved(ec2ServiceArn)) {
-          if (FeatureFlags.of(this).isEnabled(ECS_ARN_FORMAT_INCLUDES_CLUSTER_NAME)) {
-            const components = Fn.split(':', ec2ServiceArn);
-            const lastComponents = Fn.split('/', Fn.select(5, components));
-            this.serviceName = Fn.select(2, lastComponents);
-          } else {
-            this.serviceName = resourceName;
-          }
-        } else {
-          const resourceNameSplit = resourceName.split('/');
-          this.serviceName = resourceNameSplit.length === 1 ? resourceName : resourceNameSplit[1];
-        }
+        this.serviceName = extractServiceNameFromArn(this, ec2ServiceArn);
       }
     }
     return new Import();
