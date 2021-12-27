@@ -2612,7 +2612,7 @@ caseless@~0.12.0:
   resolved "https://registry.npmjs.org/caseless/-/caseless-0.12.0.tgz#1b681c21ff84033c826543090689420d187151dc"
   integrity sha1-G2gcIf+EAzyCZUMJBolCDRhxUdw=
 
-cdk-generate-synthetic-examples@^0.1.0:
+cdk-generate-synthetic-examples@^0.1.1:
   version "0.1.1"
   resolved "https://registry.npmjs.org/cdk-generate-synthetic-examples/-/cdk-generate-synthetic-examples-0.1.1.tgz#0e93c4ddda60920017d6943d097389f5816a9470"
   integrity sha512-12Ion5PE2Gox2IR25c1PNv7usZlyO7679KE72esyoVcrznja/DPVJw+zS0B/y2VccnVMLamwanBZqE9vRVXexw==
