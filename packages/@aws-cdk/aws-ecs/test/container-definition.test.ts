@@ -1278,6 +1278,29 @@ describe('container definition', () => {
               },
             },
             {
+              Name: 'PARAMETER',
+              ValueFrom: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition',
+                    },
+                    ':ssm:',
+                    {
+                      Ref: 'AWS::Region',
+                    },
+                    ':',
+                    {
+                      Ref: 'AWS::AccountId',
+                    },
+                    ':parameter/name',
+                  ],
+                ],
+              },
+            },
+            {
               Name: 'SECRET_ID',
               ValueFrom: {
                 'Fn::Join': [
@@ -1301,29 +1324,6 @@ describe('container definition', () => {
                       Ref: 'SecretA720EF05',
                     },
                     '::version-stage:',
-                  ],
-                ],
-              },
-            },
-            {
-              Name: 'PARAMETER',
-              ValueFrom: {
-                'Fn::Join': [
-                  '',
-                  [
-                    'arn:',
-                    {
-                      Ref: 'AWS::Partition',
-                    },
-                    ':ssm:',
-                    {
-                      Ref: 'AWS::Region',
-                    },
-                    ':',
-                    {
-                      Ref: 'AWS::AccountId',
-                    },
-                    ':parameter/name',
                   ],
                 ],
               },
