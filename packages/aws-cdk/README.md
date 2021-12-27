@@ -19,6 +19,7 @@ Command                           | Description
 [`cdk synth`](#cdk-synthesize)    | Synthesize a CDK app to CloudFormation template(s)
 [`cdk diff`](#cdk-diff)           | Diff stacks against current state
 [`cdk deploy`](#cdk-deploy)       | Deploy a stack into an AWS account
+[`cdk watch`](#cdk-watch)         | Watches a CDK app for deployable and hotswappable changes
 [`cdk destroy`](#cdk-destroy)     | Deletes a stack from an AWS account
 [`cdk bootstrap`](#cdk-bootstrap) | Deploy a toolkit stack to support deploying large stacks & artifacts
 [`cdk doctor`](#cdk-doctor)       | Inspect the environment and produce information useful for troubleshooting
@@ -365,6 +366,7 @@ Hotswapping is currently supported for the following changes
 - Definition changes of AWS Step Functions State Machines.
 - Container asset changes of AWS ECS Services.
 - Website asset changes of AWS S3 Bucket Deployments.
+- Source and Environment changes of AWS CodeBuild Projects.
 
 **⚠ Note #1**: This command deliberately introduces drift in CloudFormation stacks in order to speed up deployments.
 For this reason, only use it for development purposes.
