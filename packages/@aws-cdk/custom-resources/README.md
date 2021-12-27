@@ -201,7 +201,7 @@ must return this name in `PhysicalResourceId` and make sure to handle
 replacement properly. The `S3File` example demonstrates this
 through the `objectKey` property.
 
-### Handling Provider Framework Error
+### When there are errors
 
 As mentioned above, if any of the user handlers fail (i.e. throws an exception)
 or times out (due to their AWS Lambda timing out), the framework will trap these
@@ -224,6 +224,39 @@ lifecycle events:
 * If an `Update` event fails, CloudFormation will issue an additional `Update`
   with the previous properties.
 * If a `Delete` event fails, CloudFormation will abandon this resource.
+
+### Important cases to handle
+
+You should keep the following list in mind when writing custom resources to
+make sure your custom resource behaves correctly in all cases:
+
+* During `Create`:
+  * If the create fails, the *provider framework* will make sure you
+    don't get a subsequent `Delete` event. If your create involves multiple distinct
+    operations, it is your responsibility to catch and rethrow and clean up
+    any partial updates that have already been performed. Make sure your
+    API call timeouts and Lambda timeouts allow for this.
+* During `Update`:
+  * If the update fails, you will get a subsequent `Update` event
+    to roll back to the previous state (with `ResourceProperties` and
+    `OldResourceProperties` reversed).
+  * If you return a different `PhysicalResourceId`, you will subsequently
+    receive a `Delete` event to clean up the previous state of the resource.
+* During `Delete`:
+  * If the behavior of your custom resource is tied to another AWS resource
+    (for example, it exists to clean the contents of a stateful resource), keep
+    in mind that your custom resource may be deleted independently of the other
+    resource and you must confirm that it is appropriate to perform the action.
+  * (only if you are *not* using the provider framework) a `Delete` event
+    may be caused by a failed `Create`. You must be able to handle the case
+    where the resource you are trying to delete hasn't even been created yet.
+* If you update the code of your custom resource and change the format of the
+  resource properties, be aware that there may still be already-deployed
+  instances of your custom resource out there, and you may still receive
+  the *old* property format in `ResourceProperties` (during `Delete` and
+  rollback `Updates`) or in `OldResourceProperties` (during rollforward
+  `Update`). You must continue to handle all possible sets of properties
+  your custom resource could have ever been created with in the past.
 
 ### Provider Framework Execution Policy
 
@@ -268,8 +301,8 @@ This module includes a few examples for custom resource implementations:
 
 Provisions an object in an S3 bucket with textual contents. See the source code
 for the
-[construct](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.ts) and
-[handler](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert-handler/index.py).
+[construct](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.ts) and
+[handler](https://github.com/aws/aws-cdk/blob/master/packages/%40aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-file-handler/index.ts).
 
 The following example will create the file `folder/file1.txt` inside `myBucket`
 with the contents `hello!`.
@@ -313,6 +346,25 @@ This sample demonstrates the following concepts:
 * Asynchronous implementation
 * Non-intrinsic physical IDs
 * Implemented in Python
+
+
+### Customizing Provider Function name
+
+In multi-account environments or when the custom resource may be re-utilized across several 
+stacks it may be useful to manually set a name for the Provider Function Lambda and therefore
+have a predefined service token ARN.
+
+```ts
+
+const myProvider = new cr.Provider(this, 'MyProvider', {
+  onEventHandler: onEvent,
+  isCompleteHandler: isComplete,
+  logRetention: logs.RetentionDays.ONE_DAY,
+  role: myRole,
+  providerFunctionName: 'the-lambda-name',   // Optional
+});
+
+```
 
 ## Custom Resources for AWS APIs
 
@@ -518,7 +570,7 @@ const getParameter = new AwsCustomResource(this, 'AssociateVPCWithHostedZone', {
     physicalResourceId: PhysicalResourceId.of('${vpcStack.SharedVpc.VpcId}-${vpcStack.Region}-${PrivateHostedZone.HostedZoneId}')
   },
   //Will ignore any resource and use the assumedRoleArn as resource and 'sts:AssumeRole' for service:action
-  policy: AwsCustomResourcePolicy.fromSdkCalls({resources: AwsCustomResourcePolicy.ANY_RESOURCE}) 
+  policy: AwsCustomResourcePolicy.fromSdkCalls({resources: AwsCustomResourcePolicy.ANY_RESOURCE})
 });
 
 ```

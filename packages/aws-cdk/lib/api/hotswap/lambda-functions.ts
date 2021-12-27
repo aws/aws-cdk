@@ -1,77 +1,51 @@
-import * as cfn_diff from '@aws-cdk/cloudformation-diff';
 import { ISDK } from '../aws-auth';
-import { assetMetadataChanged, ChangeHotswapImpact, ChangeHotswapResult, HotswapOperation, ListStackResources, stringifyPotentialCfnExpression } from './common';
+import { ChangeHotswapImpact, ChangeHotswapResult, HotswapOperation, HotswappableChangeCandidate, establishResourcePhysicalName } from './common';
+import { EvaluateCloudFormationTemplate } from './evaluate-cloudformation-template';
 
 /**
- * Returns `false` if the change cannot be short-circuited,
- * `true` if the change is irrelevant from a short-circuit perspective
+ * Returns `ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT` if the change cannot be short-circuited,
+ * `ChangeHotswapImpact.IRRELEVANT` if the change is irrelevant from a short-circuit perspective
  * (like a change to CDKMetadata),
  * or a LambdaFunctionResource if the change can be short-circuited.
  */
-export function isHotswappableLambdaFunctionChange(
-  logicalId: string, change: cfn_diff.ResourceDifference, assetParamsWithEnv: { [key: string]: string },
-): ChangeHotswapResult {
-  const lambdaCodeChange = isLambdaFunctionCodeOnlyChange(change, assetParamsWithEnv);
+export async function isHotswappableLambdaFunctionChange(
+  logicalId: string, change: HotswappableChangeCandidate, evaluateCfnTemplate: EvaluateCloudFormationTemplate,
+): Promise<ChangeHotswapResult> {
+  const lambdaCodeChange = await isLambdaFunctionCodeOnlyChange(change, evaluateCfnTemplate);
   if (typeof lambdaCodeChange === 'string') {
     return lambdaCodeChange;
   } else {
-    // verify that the Asset changed - otherwise,
-    // it's a Code property-only change,
-    // but not to an asset change
-    // (for example, going from Code.fromAsset() to Code.fromInline())
-    if (!assetMetadataChanged(change)) {
+    const functionName = await establishResourcePhysicalName(logicalId, change.newValue.Properties?.FunctionName, evaluateCfnTemplate);
+    if (!functionName) {
       return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
     }
 
-    let functionPhysicalName: string | undefined;
-    try {
-      functionPhysicalName = stringifyPotentialCfnExpression(change.newValue?.Properties?.FunctionName, assetParamsWithEnv);
-    } catch (e) {
-      // It's possible we can't evaluate the function's name -
-      // for example, it can use a Ref to a different resource,
-      // which we wouldn't have in `assetParamsWithEnv`.
-      // That's fine though - ignore any errors,
-      // and treat this case the same way as if the name wasn't provided at all,
-      // which means it will be looked up using the listStackResources() call
-      // by the later phase (which actually does the Lambda function update)
-      functionPhysicalName = undefined;
-    }
+    const functionArn = await evaluateCfnTemplate.evaluateCfnExpression({
+      'Fn::Sub': 'arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:' + functionName,
+    });
 
     return new LambdaFunctionHotswapOperation({
-      logicalId,
-      physicalName: functionPhysicalName,
-      code: lambdaCodeChange,
+      physicalName: functionName,
+      functionArn: functionArn,
+      resource: lambdaCodeChange,
     });
   }
 }
 
 /**
- * Returns `true` if the change is not for a AWS::Lambda::Function,
+ * Returns `ChangeHotswapImpact.IRRELEVANT` if the change is not for a AWS::Lambda::Function,
  * but doesn't prevent short-circuiting
  * (like a change to CDKMetadata resource),
- * `false` if the change is to a AWS::Lambda::Function,
+ * `ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT` if the change is to a AWS::Lambda::Function,
  * but not only to its Code property,
  * or a LambdaFunctionCode if the change is to a AWS::Lambda::Function,
  * and only affects its Code property.
  */
-function isLambdaFunctionCodeOnlyChange(
-  change: cfn_diff.ResourceDifference, assetParamsWithEnv: { [key: string]: string },
-): LambdaFunctionCode | ChangeHotswapImpact {
-  if (!change.newValue) {
-    return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
-  }
+async function isLambdaFunctionCodeOnlyChange(
+  change: HotswappableChangeCandidate, evaluateCfnTemplate: EvaluateCloudFormationTemplate,
+): Promise<LambdaFunctionChange | ChangeHotswapImpact> {
   const newResourceType = change.newValue.Type;
-  // Ignore Metadata changes
-  if (newResourceType === 'AWS::CDK::Metadata') {
-    return ChangeHotswapImpact.IRRELEVANT;
-  }
-  // The only other resource change we should see is a Lambda function
   if (newResourceType !== 'AWS::Lambda::Function') {
-    return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
-  }
-  if (change.oldValue?.Type == null) {
-    // this means this is a brand-new Lambda function -
-    // obviously, we can't short-circuit that!
     return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
   }
 
@@ -86,37 +60,71 @@ function isLambdaFunctionCodeOnlyChange(
    * even if only one of them was actually changed,
    * which means we don't need the "old" values at all, and we can safely initialize these with just `''`.
    */
-  let s3Bucket = '', s3Key = '';
-  let foundCodeDifference = false;
   // Make sure only the code in the Lambda function changed
   const propertyUpdates = change.propertyUpdates;
+  let code: LambdaFunctionCode | undefined = undefined;
+  let tags: LambdaFunctionTags | undefined = undefined;
+
   for (const updatedPropName in propertyUpdates) {
     const updatedProp = propertyUpdates[updatedPropName];
-    if (updatedProp.newValue === undefined) {
-      return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
-    }
-    for (const newPropName in updatedProp.newValue) {
-      switch (newPropName) {
-        case 'S3Bucket':
-          foundCodeDifference = true;
-          s3Bucket = stringifyPotentialCfnExpression(updatedProp.newValue[newPropName], assetParamsWithEnv);
-          break;
-        case 'S3Key':
-          foundCodeDifference = true;
-          s3Key = stringifyPotentialCfnExpression(updatedProp.newValue[newPropName], assetParamsWithEnv);
-          break;
-        default:
-          return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
-      }
+
+    switch (updatedPropName) {
+      case 'Code':
+        let foundCodeDifference = false;
+        let s3Bucket = '', s3Key = '';
+
+        for (const newPropName in updatedProp.newValue) {
+          switch (newPropName) {
+            case 'S3Bucket':
+              foundCodeDifference = true;
+              s3Bucket = await evaluateCfnTemplate.evaluateCfnExpression(updatedProp.newValue[newPropName]);
+              break;
+            case 'S3Key':
+              foundCodeDifference = true;
+              s3Key = await evaluateCfnTemplate.evaluateCfnExpression(updatedProp.newValue[newPropName]);
+              break;
+            default:
+              return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
+          }
+        }
+        if (foundCodeDifference) {
+          code = {
+            s3Bucket,
+            s3Key,
+          };
+        }
+        break;
+      case 'Tags':
+        /*
+         * Tag updates are a bit odd; they manifest as two lists, are flagged only as
+         * `isDifferent`, and we have to reconcile them.
+         */
+        const tagUpdates: { [tag: string]: string | TagDeletion } = {};
+        if (updatedProp?.isDifferent) {
+          updatedProp.newValue.forEach((tag: CfnDiffTagValue) => {
+            tagUpdates[tag.Key] = tag.Value;
+          });
+
+          updatedProp.oldValue.forEach((tag: CfnDiffTagValue) => {
+            if (tagUpdates[tag.Key] === undefined) {
+              tagUpdates[tag.Key] = TagDeletion.DELETE;
+            }
+          });
+
+          tags = { tagUpdates };
+        }
+        break;
+      default:
+        return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
     }
   }
 
-  return foundCodeDifference
-    ? {
-      s3Bucket,
-      s3Key,
-    }
-    : ChangeHotswapImpact.IRRELEVANT;
+  return code || tags ? { code, tags } : ChangeHotswapImpact.IRRELEVANT;
+}
+
+interface CfnDiffTagValue {
+  readonly Key: string;
+  readonly Value: string;
 }
 
 interface LambdaFunctionCode {
@@ -124,36 +132,75 @@ interface LambdaFunctionCode {
   readonly s3Key: string;
 }
 
+enum TagDeletion {
+  DELETE = -1,
+}
+
+interface LambdaFunctionTags {
+  readonly tagUpdates: { [tag : string] : string | TagDeletion };
+}
+
+interface LambdaFunctionChange {
+  readonly code?: LambdaFunctionCode;
+  readonly tags?: LambdaFunctionTags;
+}
+
 interface LambdaFunctionResource {
-  readonly logicalId: string;
-  readonly physicalName?: string;
-  readonly code: LambdaFunctionCode;
+  readonly physicalName: string;
+  readonly functionArn: string;
+  readonly resource: LambdaFunctionChange;
 }
 
 class LambdaFunctionHotswapOperation implements HotswapOperation {
+  public readonly service = 'lambda-function';
+  public readonly resourceNames: string[];
+
   constructor(private readonly lambdaFunctionResource: LambdaFunctionResource) {
+    this.resourceNames = [lambdaFunctionResource.physicalName];
   }
 
-  public async apply(sdk: ISDK, stackResources: ListStackResources): Promise<any> {
-    let functionPhysicalName: string;
-    if (this.lambdaFunctionResource.physicalName) {
-      functionPhysicalName = this.lambdaFunctionResource.physicalName;
-    } else {
-      const stackResourceList = await stackResources.listStackResources();
-      const foundFunctionName = stackResourceList
-        .find(resSummary => resSummary.LogicalResourceId === this.lambdaFunctionResource.logicalId)
-        ?.PhysicalResourceId;
-      if (!foundFunctionName) {
-        // if we couldn't find the function in the current stack, we can't update it
-        return;
-      }
-      functionPhysicalName = foundFunctionName;
+  public async apply(sdk: ISDK): Promise<any> {
+    const lambda = sdk.lambda();
+    const resource = this.lambdaFunctionResource.resource;
+    const operations: Promise<any>[] = [];
+
+    if (resource.code !== undefined) {
+      operations.push(lambda.updateFunctionCode({
+        FunctionName: this.lambdaFunctionResource.physicalName,
+        S3Bucket: resource.code.s3Bucket,
+        S3Key: resource.code.s3Key,
+      }).promise());
     }
 
-    return sdk.lambda().updateFunctionCode({
-      FunctionName: functionPhysicalName,
-      S3Bucket: this.lambdaFunctionResource.code.s3Bucket,
-      S3Key: this.lambdaFunctionResource.code.s3Key,
-    }).promise();
+    if (resource.tags !== undefined) {
+      const tagsToDelete: string[] = Object.entries(resource.tags.tagUpdates)
+        .filter(([_key, val]) => val === TagDeletion.DELETE)
+        .map(([key, _val]) => key);
+
+      const tagsToSet: { [tag: string]: string } = {};
+      Object.entries(resource.tags!.tagUpdates)
+        .filter(([_key, val]) => val !== TagDeletion.DELETE)
+        .forEach(([tagName, tagValue]) => {
+          tagsToSet[tagName] = tagValue as string;
+        });
+
+
+      if (tagsToDelete.length > 0) {
+        operations.push(lambda.untagResource({
+          Resource: this.lambdaFunctionResource.functionArn,
+          TagKeys: tagsToDelete,
+        }).promise());
+      }
+
+      if (Object.keys(tagsToSet).length > 0) {
+        operations.push(lambda.tagResource({
+          Resource: this.lambdaFunctionResource.functionArn,
+          Tags: tagsToSet,
+        }).promise());
+      }
+    }
+
+    // run all of our updates in parallel
+    return Promise.all(operations);
   }
 }

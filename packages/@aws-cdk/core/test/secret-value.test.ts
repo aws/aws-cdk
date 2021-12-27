@@ -1,4 +1,4 @@
-import { CfnDynamicReference, CfnDynamicReferenceService, CfnParameter, SecretValue, Stack } from '../lib';
+import { CfnDynamicReference, CfnDynamicReferenceService, CfnParameter, SecretValue, Stack, Token } from '../lib';
 
 describe('secret value', () => {
   test('plainText', () => {
@@ -28,6 +28,30 @@ describe('secret value', () => {
 
   });
 
+  test('secretsManager with secret-id from token', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const v = SecretValue.secretsManager(Token.asString({ Ref: 'secret-id' }), {
+      jsonField: 'json-key',
+      versionStage: 'version-stage',
+    });
+
+    // THEN
+    expect(stack.resolve(v)).toEqual({
+      'Fn::Join': [
+        '',
+        [
+          '{{resolve:secretsmanager:',
+          { Ref: 'secret-id' },
+          ':SecretString:json-key:version-stage:}}',
+        ],
+      ],
+    });
+
+  });
+
   test('secretsManager with defaults', () => {
     // GIVEN
     const stack = new Stack();
@@ -37,6 +61,27 @@ describe('secret value', () => {
 
     // THEN
     expect(stack.resolve(v)).toEqual('{{resolve:secretsmanager:secret-id:SecretString:::}}');
+
+  });
+
+  test('secretsManager with defaults, secret-id from token', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const v = SecretValue.secretsManager(Token.asString({ Ref: 'secret-id' }));
+
+    // THEN
+    expect(stack.resolve(v)).toEqual({
+      'Fn::Join': [
+        '',
+        [
+          '{{resolve:secretsmanager:',
+          { Ref: 'secret-id' },
+          ':SecretString:::}}',
+        ],
+      ],
+    });
 
   });
 

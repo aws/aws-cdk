@@ -1,4 +1,5 @@
-import { Match, Template } from '@aws-cdk/assertions';
+import '@aws-cdk/assert-internal/jest';
+import { arrayWith, objectLike } from '@aws-cdk/assert-internal';
 import * as cdk from '@aws-cdk/core';
 import * as codepipeline from '../lib';
 import { FakeBuildAction } from './fake-build-action';
@@ -37,18 +38,18 @@ describe('variables', () => {
       }));
       // --
 
-      Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
-        'Stages': Match.arrayWith([
+      expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+        'Stages': [
           {
             'Name': 'Source',
             'Actions': [
-              Match.objectLike({
+              {
                 'Name': 'Source',
                 'Namespace': 'MyNamespace',
-              }),
+              },
             ],
           },
-        ]),
+        ],
       });
 
 
@@ -79,20 +80,20 @@ describe('variables', () => {
         ],
       });
 
-      Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+      expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
         'Stages': [
-          Match.objectLike({
+          {
             'Name': 'Source',
-          }),
+          },
           {
             'Name': 'Build',
             'Actions': [
-              Match.objectLike({
+              {
                 'Name': 'Build',
                 'Configuration': {
                   'CustomConfigKey': '#{SourceVariables.FirstVariable}',
                 },
-              }),
+              },
             ],
           },
         ],
@@ -143,12 +144,12 @@ describe('variables', () => {
         ],
       });
 
-      Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
-        'Stages': Match.arrayWith([
+      expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+        'Stages': arrayWith(
           {
             'Name': 'Build',
             'Actions': [
-              Match.objectLike({
+              objectLike({
                 'Name': 'Build',
                 'Configuration': {
                   'CustomConfigKey': '#{codepipeline.PipelineExecutionId}',
@@ -156,7 +157,7 @@ describe('variables', () => {
               }),
             ],
           },
-        ]),
+        ),
       });
 
 

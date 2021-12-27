@@ -1,6 +1,9 @@
-import { Match, Template } from '@aws-cdk/assertions';
+import * as path from 'path';
+import '@aws-cdk/assert-internal/jest';
+import { ABSENT, ResourcePart } from '@aws-cdk/assert-internal';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import { LogRetention, RetentionDays } from '../lib';
 
 /* eslint-disable quote-props */
@@ -17,7 +20,7 @@ describe('log retention', () => {
     });
 
     // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    expect(stack).toHaveResource('AWS::IAM::Policy', {
       'PolicyDocument': {
         'Statement': [
           {
@@ -39,12 +42,12 @@ describe('log retention', () => {
       ],
     });
 
-    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+    expect(stack).toHaveResource('AWS::Lambda::Function', {
       Handler: 'index.handler',
       Runtime: 'nodejs14.x',
     });
 
-    Template.fromStack(stack).hasResourceProperties('Custom::LogRetention', {
+    expect(stack).toHaveResource('Custom::LogRetention', {
       'ServiceToken': {
         'Fn::GetAtt': [
           'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A',
@@ -71,7 +74,7 @@ describe('log retention', () => {
     });
 
     // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    expect(stack).toHaveResource('AWS::IAM::Policy', {
       'PolicyDocument': {
         'Statement': [
           {
@@ -91,7 +94,7 @@ describe('log retention', () => {
       ],
     });
 
-    Template.fromStack(stack).resourceCountIs('AWS::IAM::Role', 0);
+    expect(stack).toCountResources('AWS::IAM::Role', 0);
 
 
   });
@@ -104,8 +107,8 @@ describe('log retention', () => {
       retention: RetentionDays.INFINITE,
     });
 
-    Template.fromStack(stack).hasResourceProperties('Custom::LogRetention', {
-      RetentionInDays: Match.absentProperty(),
+    expect(stack).toHaveResource('Custom::LogRetention', {
+      RetentionInDays: ABSENT,
     });
 
 
@@ -119,7 +122,7 @@ describe('log retention', () => {
       retention: RetentionDays.INFINITE,
     });
 
-    Template.fromStack(stack).hasResourceProperties('Custom::LogRetention', {
+    expect(stack).toHaveResource('Custom::LogRetention', {
       LogGroupRegion: 'us-east-1',
     });
 
@@ -153,6 +156,50 @@ describe('log retention', () => {
     expect(logGroupArn.indexOf('logs')).toBeGreaterThan(-1);
     expect(logGroupArn.indexOf('log-group')).toBeGreaterThan(-1);
     expect(logGroupArn.endsWith(':*')).toEqual(true);
+
+  });
+
+  test('retention Lambda CfnResource receives propagated tags', () => {
+    const stack = new cdk.Stack();
+    cdk.Tags.of(stack).add('test-key', 'test-value');
+    new LogRetention(stack, 'MyLambda', {
+      logGroupName: 'group',
+      retention: RetentionDays.ONE_MONTH,
+    });
+
+    expect(stack).toHaveResourceLike('AWS::Lambda::Function', {
+      Tags: [
+        {
+          Key: 'test-key',
+          Value: 'test-value',
+        },
+      ],
+    });
+
+  });
+
+  test('asset metadata added to log retention construct lambda function', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    stack.node.setContext(cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT, true);
+    stack.node.setContext(cxapi.DISABLE_ASSET_STAGING_CONTEXT, true);
+
+    const assetLocation = path.join(__dirname, '../', '/lib', '/log-retention-provider');
+
+    // WHEN
+    new LogRetention(stack, 'MyLambda', {
+      logGroupName: 'group',
+      retention: RetentionDays.ONE_MONTH,
+    });
+
+    // Then
+    expect(stack).toHaveResource('AWS::Lambda::Function', {
+      Metadata: {
+        'aws:asset:path': assetLocation,
+        'aws:asset:is-bundled': false,
+        'aws:asset:property': 'Code',
+      },
+    }, ResourcePart.CompleteDefinition);
 
   });
 });

@@ -36,8 +36,6 @@ describe('bucket policy', () => {
         ],
       },
     });
-
-
   });
 
   test('when specifying a removalPolicy at creation', () => {
@@ -84,8 +82,6 @@ describe('bucket policy', () => {
         },
       },
     });
-
-
   });
 
   test('when specifying a removalPolicy after creation', () => {
@@ -129,8 +125,6 @@ describe('bucket policy', () => {
         },
       },
     });
-
-
   });
 
   test('fails if bucket policy has no actions', () => {
@@ -143,8 +137,6 @@ describe('bucket policy', () => {
     }));
 
     expect(() => app.synth()).toThrow(/A PolicyStatement must specify at least one \'action\' or \'notAction\'/);
-
-
   });
 
   test('fails if bucket policy has no IAM principals', () => {
@@ -157,7 +149,5 @@ describe('bucket policy', () => {
     }));
 
     expect(() => app.synth()).toThrow(/A PolicyStatement used in a resource-based policy must specify at least one IAM principal/);
-
-
   });
 });

@@ -23,8 +23,6 @@ describe('cors', () => {
         }],
       },
     });
-
-
   });
 
   test('Bucket with multiple cors configurations', () => {
@@ -114,7 +112,5 @@ describe('cors', () => {
         ],
       },
     });
-
-
   });
 });

@@ -1,4 +1,4 @@
-import { Template } from '@aws-cdk/assertions';
+import '@aws-cdk/assert-internal/jest';
 import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as cdk from '@aws-cdk/core';
 import * as appscaling from '../lib';
@@ -17,7 +17,7 @@ describe('target tracking', () => {
     });
 
     // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::ApplicationAutoScaling::ScalingPolicy', {
+    expect(stack).toHaveResource('AWS::ApplicationAutoScaling::ScalingPolicy', {
       PolicyType: 'TargetTrackingScaling',
       TargetTrackingScalingPolicyConfiguration: {
         PredefinedMetricSpecification: { PredefinedMetricType: 'EC2SpotFleetRequestAverageCPUUtilization' },
@@ -41,7 +41,7 @@ describe('target tracking', () => {
     });
 
     // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::ApplicationAutoScaling::ScalingPolicy', {
+    expect(stack).toHaveResource('AWS::ApplicationAutoScaling::ScalingPolicy', {
       PolicyType: 'TargetTrackingScaling',
       TargetTrackingScalingPolicyConfiguration: {
         PredefinedMetricSpecification: { PredefinedMetricType: 'LambdaProvisionedConcurrencyUtilization' },
@@ -65,7 +65,7 @@ describe('target tracking', () => {
     });
 
     // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::ApplicationAutoScaling::ScalingPolicy', {
+    expect(stack).toHaveResource('AWS::ApplicationAutoScaling::ScalingPolicy', {
       PolicyType: 'TargetTrackingScaling',
       TargetTrackingScalingPolicyConfiguration: {
         CustomizedMetricSpecification: {

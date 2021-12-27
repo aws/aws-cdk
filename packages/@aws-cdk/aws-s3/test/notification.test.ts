@@ -28,8 +28,6 @@ describe('notification', () => {
         ],
       },
     });
-
-
   });
 
   test('can specify prefix and suffix filter rules', () => {
@@ -70,8 +68,6 @@ describe('notification', () => {
         ],
       },
     });
-
-
   });
 
   test('the notification lambda handler must depend on the role to prevent executing too early', () => {
@@ -99,8 +95,6 @@ describe('notification', () => {
       DependsOn: ['BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleDefaultPolicy2CF63D36',
         'BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC'],
     });
-
-
   });
 
   test('throws with multiple prefix rules in a filter', () => {
@@ -114,8 +108,6 @@ describe('notification', () => {
         type: s3.BucketNotificationDestinationType.TOPIC,
       }),
     }, { prefix: 'images/' }, { prefix: 'archive/' })).toThrow(/prefix rule/);
-
-
   });
 
   test('throws with multiple suffix rules in a filter', () => {
@@ -129,7 +121,5 @@ describe('notification', () => {
         type: s3.BucketNotificationDestinationType.TOPIC,
       }),
     }, { suffix: '.png' }, { suffix: '.zip' })).toThrow(/suffix rule/);
-
-
   });
 });

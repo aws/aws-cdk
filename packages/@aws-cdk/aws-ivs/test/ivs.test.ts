@@ -1,4 +1,4 @@
-import { Template } from '@aws-cdk/assertions';
+import { Match, Template } from '@aws-cdk/assertions';
 import { App, Stack } from '@aws-cdk/core';
 import * as ivs from '../lib';
 
@@ -22,12 +22,8 @@ beforeEach( () => {
 test('channel default properties', () => {
   new ivs.Channel(stack, 'Channel');
 
-  Template.fromStack(stack).templateMatches({
-    Resources: {
-      Channel4048F119: {
-        Type: 'AWS::IVS::Channel',
-      },
-    },
+  Template.fromStack(stack).hasResource('AWS::IVS::Channel', {
+    Properties: Match.absent(),
   });
 });
 
@@ -36,15 +32,8 @@ test('channel name', () => {
     name: 'CarrotsAreTasty',
   });
 
-  Template.fromStack(stack).templateMatches({
-    Resources: {
-      Channel4048F119: {
-        Type: 'AWS::IVS::Channel',
-        Properties: {
-          Name: 'CarrotsAreTasty',
-        },
-      },
-    },
+  Template.fromStack(stack).hasResourceProperties('AWS::IVS::Channel', {
+    Name: 'CarrotsAreTasty',
   });
 });
 
@@ -53,15 +42,8 @@ test('channel is authorized', () => {
     authorized: true,
   });
 
-  Template.fromStack(stack).templateMatches({
-    Resources: {
-      Channel4048F119: {
-        Type: 'AWS::IVS::Channel',
-        Properties: {
-          Authorized: 'true',
-        },
-      },
-    },
+  Template.fromStack(stack).hasResourceProperties('AWS::IVS::Channel', {
+    Authorized: true,
   });
 });
 
@@ -70,15 +52,8 @@ test('channel type', () => {
     type: ivs.ChannelType.BASIC,
   });
 
-  Template.fromStack(stack).templateMatches({
-    Resources: {
-      Channel4048F119: {
-        Type: 'AWS::IVS::Channel',
-        Properties: {
-          Type: 'BASIC',
-        },
-      },
-    },
+  Template.fromStack(stack).hasResourceProperties('AWS::IVS::Channel', {
+    Type: 'BASIC',
   });
 });
 
@@ -87,15 +62,8 @@ test('channel latency mode', () => {
     latencyMode: ivs.LatencyMode.NORMAL,
   });
 
-  Template.fromStack(stack).templateMatches({
-    Resources: {
-      Channel4048F119: {
-        Type: 'AWS::IVS::Channel',
-        Properties: {
-          LatencyMode: 'NORMAL',
-        },
-      },
-    },
+  Template.fromStack(stack).hasResourceProperties('AWS::IVS::Channel', {
+    LatencyMode: 'NORMAL',
   });
 });
 
@@ -116,15 +84,8 @@ test('playback key pair mandatory properties', () => {
     publicKeyMaterial: publicKey,
   });
 
-  Template.fromStack(stack).templateMatches({
-    Resources: {
-      PlaybackKeyPairBE17315B: {
-        Type: 'AWS::IVS::PlaybackKeyPair',
-        Properties: {
-          PublicKeyMaterial: publicKey,
-        },
-      },
-    },
+  Template.fromStack(stack).hasResourceProperties('AWS::IVS::PlaybackKeyPair', {
+    PublicKeyMaterial: publicKey,
   });
 });
 
@@ -134,16 +95,9 @@ test('playback key pair name', () => {
     name: 'CarrotsAreNutritious',
   });
 
-  Template.fromStack(stack).templateMatches({
-    Resources: {
-      PlaybackKeyPairBE17315B: {
-        Type: 'AWS::IVS::PlaybackKeyPair',
-        Properties: {
-          PublicKeyMaterial: publicKey,
-          Name: 'CarrotsAreNutritious',
-        },
-      },
-    },
+  Template.fromStack(stack).hasResourceProperties('AWS::IVS::PlaybackKeyPair', {
+    PublicKeyMaterial: publicKey,
+    Name: 'CarrotsAreNutritious',
   });
 });
 
@@ -159,15 +113,8 @@ test('stream key mandatory properties', () => {
     channel: ivs.Channel.fromChannelArn(stack, 'ChannelRef', 'arn:aws:ivs:us-west-2:123456789012:channel/abcdABCDefgh'),
   });
 
-  Template.fromStack(stack).templateMatches({
-    Resources: {
-      StreamKey9F296F4F: {
-        Type: 'AWS::IVS::StreamKey',
-        Properties: {
-          ChannelArn: 'arn:aws:ivs:us-west-2:123456789012:channel/abcdABCDefgh',
-        },
-      },
-    },
+  Template.fromStack(stack).hasResourceProperties('AWS::IVS::StreamKey', {
+    ChannelArn: 'arn:aws:ivs:us-west-2:123456789012:channel/abcdABCDefgh',
   });
 });
 
@@ -194,15 +141,8 @@ test('stream key from channel reference', () => {
   const channel = ivs.Channel.fromChannelArn(stack, 'Channel', 'arn:aws:ivs:us-west-2:123456789012:channel/abcdABCDefgh');
   channel.addStreamKey('StreamKey');
 
-  Template.fromStack(stack).templateMatches({
-    Resources: {
-      ChannelStreamKey60BDC2BE: {
-        Type: 'AWS::IVS::StreamKey',
-        Properties: {
-          ChannelArn: 'arn:aws:ivs:us-west-2:123456789012:channel/abcdABCDefgh',
-        },
-      },
-    },
+  Template.fromStack(stack).hasResourceProperties('AWS::IVS::StreamKey', {
+    ChannelArn: 'arn:aws:ivs:us-west-2:123456789012:channel/abcdABCDefgh',
   });
 });
 

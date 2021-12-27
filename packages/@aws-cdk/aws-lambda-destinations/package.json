@@ -28,7 +28,14 @@
         ]
       }
     },
-    "projectReferences": true
+    "projectReferences": true,
+    "metadata": {
+      "jsii": {
+        "rosetta": {
+          "strict": true
+        }
+      }
+    }
   },
   "repository": {
     "type": "git",
@@ -69,8 +76,8 @@
     "@aws-cdk/cdk-integ-tools": "0.0.0",
     "@aws-cdk/cfn2ts": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/jest": "^26.0.24",
-    "jest": "^26.6.3"
+    "@types/jest": "^27.0.3",
+    "jest": "^27.4.5"
   },
   "dependencies": {
     "@aws-cdk/aws-events": "0.0.0",

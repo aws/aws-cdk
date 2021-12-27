@@ -105,8 +105,17 @@ export class Duration {
    */
   public plus(rhs: Duration): Duration {
     const targetUnit = finestUnit(this.unit, rhs.unit);
-    const total = convert(this.amount, this.unit, targetUnit, {}) + convert(rhs.amount, rhs.unit, targetUnit, {});
-    return new Duration(total, targetUnit);
+    const res = convert(this.amount, this.unit, targetUnit, {}) + convert(rhs.amount, rhs.unit, targetUnit, {});
+    return new Duration(res, targetUnit);
+  }
+
+  /**
+   * Substract two Durations together
+   */
+  public minus(rhs: Duration): Duration {
+    const targetUnit = finestUnit(this.unit, rhs.unit);
+    const res = convert(this.amount, this.unit, targetUnit, {}) - convert(rhs.amount, rhs.unit, targetUnit, {});
+    return new Duration(res, targetUnit);
   }
 
   /**

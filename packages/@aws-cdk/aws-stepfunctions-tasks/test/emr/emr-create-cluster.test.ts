@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
@@ -170,6 +170,112 @@ test('Create Cluster with clusterConfiguration Name from payload', () => {
       },
     },
   });
+});
+
+describe('Cluster with StepConcurrencyLevel', () => {
+  test('can be specified', async () => {
+    // WHEN
+    const task = new EmrCreateCluster(stack, 'Task', {
+      instances: {},
+      clusterRole,
+      name: 'Cluster',
+      serviceRole,
+      autoScalingRole,
+      stepConcurrencyLevel: 2,
+      integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
+    });
+
+    // THEN
+    expect(stack.resolve(task.toStateJson())).toMatchObject({
+      Parameters: {
+        Name: 'Cluster',
+        StepConcurrencyLevel: 2,
+      },
+    });
+  });
+
+  test('throws if < 1 or > 256', async () => {
+    expect(() => new EmrCreateCluster(stack, 'Task1', {
+      instances: {},
+      clusterRole,
+      name: 'Cluster',
+      serviceRole,
+      autoScalingRole,
+      stepConcurrencyLevel: 0,
+      integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
+    })).toThrow('Step concurrency level must be in range [1, 256], but got 0.');
+
+    expect(() => new EmrCreateCluster(stack, 'Task2', {
+      instances: {},
+      clusterRole,
+      name: 'Cluster',
+      serviceRole,
+      autoScalingRole,
+      stepConcurrencyLevel: 257,
+      integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
+    })).toThrow('Step concurrency level must be in range [1, 256], but got 257.');
+  });
+
+  test('throws if EMR release label below 5.28 and StepConcurrencyLevel !== 1', async () => {
+    expect(() => new EmrCreateCluster(stack, 'Task2', {
+      instances: {},
+      clusterRole,
+      name: 'Cluster',
+      serviceRole,
+      autoScalingRole,
+      releaseLabel: 'emr-5.14.0',
+      stepConcurrencyLevel: 2,
+      integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
+    })).toThrow('Step concurrency is only supported in EMR release version 5.28.0 and above but got emr-5.14.0.');
+  });
+
+  test('does not throw if EMR release label below 5.28 and StepConcurrencyLevel === 1', async () => {
+    new EmrCreateCluster(stack, 'Task1', {
+      instances: {},
+      clusterRole,
+      name: 'Cluster',
+      serviceRole,
+      autoScalingRole,
+      releaseLabel: 'emr-5.14.0',
+      stepConcurrencyLevel: 1,
+      integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
+    });
+  });
+});
+
+test('Cluster with invalid release label will throw', async () => {
+  expect(() => new EmrCreateCluster(stack, 'Task1', {
+    instances: {},
+    clusterRole,
+    name: 'Cluster',
+    serviceRole,
+    autoScalingRole,
+    releaseLabel: 'emra-5.14.0',
+    stepConcurrencyLevel: 1,
+    integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
+  })).toThrow('The release label must be in the format \'emr-x.x.x\' but got emra-5.14.0');
+
+  expect(() => new EmrCreateCluster(stack, 'Task2', {
+    instances: {},
+    clusterRole,
+    name: 'Cluster',
+    serviceRole,
+    autoScalingRole,
+    releaseLabel: 'emr-5.14.a',
+    stepConcurrencyLevel: 1,
+    integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
+  })).toThrow('The release label must be in the format \'emr-x.x.x\' but got emr-5.14.a');
+
+  expect(() => new EmrCreateCluster(stack, 'Task3', {
+    instances: {},
+    clusterRole,
+    name: 'Cluster',
+    serviceRole,
+    autoScalingRole,
+    releaseLabel: 'emr-5.14.0.0',
+    stepConcurrencyLevel: 1,
+    integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
+  })).toThrow('The release label must be in the format \'emr-x.x.x\' but got emr-5.14.0.0');
 });
 
 test('Create Cluster with Tags', () => {
@@ -499,7 +605,7 @@ test('Create Cluster without Roles', () => {
     },
   });
 
-  expect(stack).toHaveResourceLike('AWS::IAM::Role', {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
     AssumeRolePolicyDocument: {
       Version: '2012-10-17',
       Statement: [
@@ -514,7 +620,7 @@ test('Create Cluster without Roles', () => {
 
   // The stack renders the ec2.amazonaws.com Service principal id with a
   // Join to the URLSuffix
-  expect(stack).toHaveResourceLike('AWS::IAM::Role', {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
     AssumeRolePolicyDocument: {
       Version: '2012-10-17',
       Statement: [
@@ -540,7 +646,7 @@ test('Create Cluster without Roles', () => {
     },
   });
 
-  expect(stack).toHaveResourceLike('AWS::IAM::Role', {
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
     AssumeRolePolicyDocument: {
       Version: '2012-10-17',
       Statement: [

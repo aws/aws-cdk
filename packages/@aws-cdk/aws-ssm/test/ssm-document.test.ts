@@ -1,4 +1,4 @@
-import { Template } from '@aws-cdk/assertions';
+import { expect, haveResource } from '@aws-cdk/assert-internal';
 import * as cdk from '@aws-cdk/core';
 import * as ssm from '../lib';
 
@@ -16,11 +16,11 @@ test('association name is rendered properly in L1 construct', () => {
   });
 
   // THEN
-  Template.fromStack(stack).hasResourceProperties('AWS::SSM::Association', {
+  expect(stack).to(haveResource('AWS::SSM::Association', {
     Name: 'document',
     Parameters: {
       a: ['a'],
       B: [],
     },
-  });
+  }));
 });

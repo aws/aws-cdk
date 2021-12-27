@@ -16,8 +16,6 @@ describe('aspect', () => {
     const assembly = app.synth().getStackArtifact(stack.artifactId);
     const errorMessage = assembly.messages.find(m => m.entry.data === 'Bucket versioning is not enabled');
     expect(errorMessage).toBeDefined();
-
-
   });
 
   test('bucket must have versioning: success', () => {
@@ -34,8 +32,6 @@ describe('aspect', () => {
     // THEN
     const assembly = app.synth().getStackArtifact(stack.artifactId);
     expect(assembly.messages.length).toEqual(0);
-
-
   });
 });
 

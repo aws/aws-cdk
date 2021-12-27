@@ -28,7 +28,14 @@
         ]
       }
     },
-    "projectReferences": true
+    "projectReferences": true,
+    "metadata": {
+      "jsii": {
+        "rosetta": {
+          "strict": true
+        }
+      }
+    }
   },
   "repository": {
     "type": "git",
@@ -79,9 +86,9 @@
     "@aws-cdk/cloud-assembly-schema": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/aws-lambda": "^8.10.83",
-    "@types/jest": "^26.0.24",
-    "jest": "^26.6.3"
+    "@types/aws-lambda": "^8.10.88",
+    "@types/jest": "^27.0.3",
+    "jest": "^27.4.5"
   },
   "dependencies": {
     "@aws-cdk/aws-cloudwatch": "0.0.0",
@@ -117,6 +124,7 @@
   },
   "awslint": {
     "exclude": [
+      "resource-attribute:@aws-cdk/aws-ec2.NetworkAclEntry.networkAclEntryId",
       "resource-attribute:@aws-cdk/aws-ec2.ISecurityGroup.securityGroupVpcId",
       "no-unused-type:@aws-cdk/aws-ec2.ConnectionRule",
       "no-unused-type:@aws-cdk/aws-ec2.Protocol",
@@ -131,6 +139,7 @@
       "props-physical-name:@aws-cdk/aws-ec2.InterfaceVpcEndpointProps",
       "props-physical-name:@aws-cdk/aws-ec2.VpcEndpointServiceProps",
       "from-method:@aws-cdk/aws-ec2.Instance",
+      "from-method:@aws-cdk/aws-ec2.NetworkAclEntry",
       "from-method:@aws-cdk/aws-ec2.VpcEndpointService",
       "attribute-tag:@aws-cdk/aws-ec2.BastionHostLinux.instance",
       "attribute-tag:@aws-cdk/aws-ec2.Instance.instance",
@@ -224,6 +233,8 @@
       "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.CODECOMMIT_FIPS",
       "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.CODECOMMIT_GIT",
       "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.CODECOMMIT_GIT_FIPS",
+      "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.CODEGURU_PROFILER",
+      "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.CODEGURU_REVIEWER",
       "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.CODEPIPELINE",
       "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.CONFIG",
       "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.EC2",
@@ -262,6 +273,7 @@
       "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.STEP_FUNCTIONS",
       "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.LAMBDA",
       "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.TRANSCRIBE",
+      "docs-public-apis:@aws-cdk/aws-ec2.InterfaceVpcEndpointAwsService.XRAY",
       "docs-public-apis:@aws-cdk/aws-ec2.Port.toString",
       "docs-public-apis:@aws-cdk/aws-ec2.PrivateSubnet.fromPrivateSubnetAttributes",
       "docs-public-apis:@aws-cdk/aws-ec2.PublicSubnet.fromPublicSubnetAttributes",

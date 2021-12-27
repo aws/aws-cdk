@@ -1,5 +1,6 @@
 import * as path from 'path';
-import { Match, Template } from '@aws-cdk/assertions';
+import { ABSENT } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import { App, CfnResource, CustomResourceProvider, CustomResourceProviderRuntime, Stack } from '@aws-cdk/core';
 import * as iam from '../lib';
 
@@ -20,7 +21,7 @@ test('apply imported boundary to a role', () => {
   iam.PermissionsBoundary.of(role).apply(iam.ManagedPolicy.fromAwsManagedPolicyName('ReadOnlyAccess'));
 
   // THEN
-  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+  expect(stack).toHaveResource('AWS::IAM::Role', {
     PermissionsBoundary: {
       'Fn::Join': ['', [
         'arn:',
@@ -39,7 +40,7 @@ test('apply imported boundary to a user', () => {
   iam.PermissionsBoundary.of(user).apply(iam.ManagedPolicy.fromAwsManagedPolicyName('ReadOnlyAccess'));
 
   // THEN
-  Template.fromStack(stack).hasResourceProperties('AWS::IAM::User', {
+  expect(stack).toHaveResource('AWS::IAM::User', {
     PermissionsBoundary: {
       'Fn::Join': ['', [
         'arn:',
@@ -67,7 +68,7 @@ test('apply newly created boundary to a role', () => {
   }));
 
   // THEN
-  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+  expect(stack).toHaveResource('AWS::IAM::Role', {
     PermissionsBoundary: { Ref: 'Policy23B91518' },
   });
 });
@@ -90,7 +91,7 @@ test('apply boundary to role created by a custom resource', () => {
   }));
 
   // THEN
-  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+  expect(stack).toHaveResource('AWS::IAM::Role', {
     PermissionsBoundary: { Ref: 'Policy23B91518' },
   });
 });
@@ -112,7 +113,7 @@ test('apply boundary to users created via CfnResource', () => {
   }));
 
   // THEN
-  Template.fromStack(stack).hasResourceProperties('AWS::IAM::User', {
+  expect(stack).toHaveResource('AWS::IAM::User', {
     PermissionsBoundary: { Ref: 'Policy23B91518' },
   });
 });
@@ -134,7 +135,7 @@ test('apply boundary to roles created via CfnResource', () => {
   }));
 
   // THEN
-  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+  expect(stack).toHaveResource('AWS::IAM::Role', {
     PermissionsBoundary: { Ref: 'Policy23B91518' },
   });
 });
@@ -148,12 +149,8 @@ test('unapply inherited boundary from a user: order 1', () => {
   iam.PermissionsBoundary.of(user).clear();
 
   // THEN
-  // Template.fromStack(stack).hasResource('AWS::IAM::User', {
-  //   PermissionsBoundary: Match.absentProperty(),
-  // });
-  // Correct after when this issue is fixed - https://github.com/aws/aws-cdk/issues/16626
-  Template.fromStack(stack).hasResource('AWS::IAM::User', {
-    Properties: Match.absentProperty(),
+  expect(stack).toHaveResource('AWS::IAM::User', {
+    PermissionsBoundary: ABSENT,
   });
 });
 
@@ -166,11 +163,7 @@ test('unapply inherited boundary from a user: order 2', () => {
   iam.PermissionsBoundary.of(stack).apply(iam.ManagedPolicy.fromAwsManagedPolicyName('ReadOnlyAccess'));
 
   // THEN
-  // Template.fromStack(stack).hasResource('AWS::IAM::User', {
-  //   PermissionsBoundary: Match.absentProperty(),
-  // });
-  // Correct after when this issue is fixed - https://github.com/aws/aws-cdk/issues/16626
-  Template.fromStack(stack).hasResource('AWS::IAM::User', {
-    Properties: Match.absentProperty(),
+  expect(stack).toHaveResource('AWS::IAM::User', {
+    PermissionsBoundary: ABSENT,
   });
 });

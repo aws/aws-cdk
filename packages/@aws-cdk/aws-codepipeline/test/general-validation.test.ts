@@ -1,3 +1,4 @@
+import '@aws-cdk/assert-internal/jest';
 import * as cdk from '@aws-cdk/core';
 import { IStage } from '../lib/action';
 import { Artifact } from '../lib/artifact';

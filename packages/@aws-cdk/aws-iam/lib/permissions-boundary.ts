@@ -6,10 +6,10 @@ import { IManagedPolicy } from './managed-policy';
 /**
  * Modify the Permissions Boundaries of Users and Roles in a construct tree
  *
- * @example
- *
- * const policy = ManagedPolicy.fromAwsManagedPolicyName('ReadOnlyAccess');
- * PermissionsBoundary.of(stack).apply(policy);
+ * ```ts
+ * const policy = iam.ManagedPolicy.fromAwsManagedPolicyName('ReadOnlyAccess');
+ * iam.PermissionsBoundary.of(this).apply(policy);
+ * ```
  */
 export class PermissionsBoundary {
   /**

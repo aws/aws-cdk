@@ -19,8 +19,6 @@ describe('metrics', () => {
         Id: 'test',
       }],
     });
-
-
   });
 
   test('Bucket with metrics on prefix', () => {
@@ -42,8 +40,6 @@ describe('metrics', () => {
         Prefix: 'prefix',
       }],
     });
-
-
   });
 
   test('Bucket with metrics on tag filter', () => {
@@ -68,8 +64,6 @@ describe('metrics', () => {
         ],
       }],
     });
-
-
   });
 
   test('Bucket with multiple metric configurations', () => {
@@ -105,7 +99,5 @@ describe('metrics', () => {
         Prefix: 'prefix',
       }],
     });
-
-
   });
 });

@@ -23,8 +23,6 @@ describe('rules', () => {
         }],
       },
     });
-
-
   });
 
   test('Can use addLifecycleRule() to add a lifecycle rule', () => {
@@ -46,8 +44,6 @@ describe('rules', () => {
         }],
       },
     });
-
-
   });
 
   test('Bucket with expiration date', () => {
@@ -70,8 +66,6 @@ describe('rules', () => {
         }],
       },
     });
-
-
   });
 
   test('Bucket with transition rule', () => {
@@ -100,8 +94,6 @@ describe('rules', () => {
         }],
       },
     });
-
-
   });
 
   test('Noncurrent rule on nonversioned bucket fails', () => {
@@ -124,8 +116,6 @@ describe('rules', () => {
         noncurrentVersionExpiration: Duration.days(10),
       }],
     });
-
-
   });
 
   test('Bucket with expiredObjectDeleteMarker', () => {
@@ -148,7 +138,5 @@ describe('rules', () => {
         }],
       },
     });
-
-
   });
 });

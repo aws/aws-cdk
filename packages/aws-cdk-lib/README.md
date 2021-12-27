@@ -1,7 +1,5 @@
 # AWS Cloud Development Kit Library
 
-[![experimental](http://badges.github.io/stability-badges/dist/experimental.svg)](http://github.com/badges/stability-badges)
-
 The AWS CDK construct library provides APIs to define your CDK application and add
 CDK constructs to the application.
 
@@ -81,7 +79,7 @@ logical application. You can then treat that new unit the same way you used
 to be able to treat a single stack: by instantiating it multiple times
 for different instances of your application.
 
-You can define a custom subclass of `Construct`, holding one or more
+You can define a custom subclass of `Stage`, holding one or more
 `Stack`s, to represent a single logical instance of your application.
 
 As a final note: `Stack`s are not a unit of reuse. They describe physical
@@ -205,6 +203,13 @@ Duration.days(7)        // 7 days
 Duration.parse('PT5M')  // 5 minutes
 ```
 
+Durations can be added or subtracted together:
+
+```ts
+Duration.minutes(1).plus(Duration.seconds(60)); // 2 minutes
+Duration.minutes(5).minus(Duration.seconds(10)); // 290 secondes
+```
+
 ## Size (Digital Information Quantity)
 
 To make specification of digital storage quantities unambiguous, a class called
@@ -263,6 +268,8 @@ this purpose.
 use the region and account of the stack you're calling it on:
 
 ```ts
+declare const stack: Stack;
+
 // Builds "arn:<PARTITION>:lambda:<REGION>:<ACCOUNT>:function:MyFunction"
 stack.formatArn({
   service: 'lambda',
@@ -278,6 +285,8 @@ but in case of a deploy-time value be aware that the result will be another
 deploy-time value which cannot be inspected in the CDK application.
 
 ```ts
+declare const stack: Stack;
+
 // Extracts the function name out of an AWS Lambda Function ARN
 const arnComponents = stack.parseArn(arn, ':');
 const functionName = arnComponents.resourceName;
@@ -409,7 +418,11 @@ examples ensures that only a single SNS topic is defined:
 function getOrCreate(scope: Construct): sns.Topic {
   const stack = Stack.of(scope);
   const uniqueid = 'GloballyUniqueIdForSingleton'; // For example, a UUID from `uuidgen`
-  return stack.node.tryFindChild(uniqueid) as sns.Topic  ?? new sns.Topic(stack, uniqueid);
+  const existing = stack.node.tryFindChild(uniqueid);
+  if (existing) {
+    return existing as sns.Topic;
+  }
+  return new sns.Topic(stack, uniqueid);
 }
 ```
 
@@ -786,16 +799,19 @@ CloudFormation [mappings][cfn-mappings] are created and queried using the
 ```ts
 const regionTable = new CfnMapping(this, 'RegionTable', {
   mapping: {
-    regionName: {
-      'us-east-1': 'US East (N. Virginia)',
-      'us-east-2': 'US East (Ohio)',
+    'us-east-1': {
+      regionName: 'US East (N. Virginia)',
+      // ...
+    },
+    'us-east-2': {
+      regionName: 'US East (Ohio)',
       // ...
     },
     // ...
   }
 });
 
-regionTable.findInMap('regionName', Aws.REGION);
+regionTable.findInMap(Aws.REGION, 'regionName')
 ```
 
 This will yield the following template:
@@ -803,9 +819,10 @@ This will yield the following template:
 ```yaml
 Mappings:
   RegionTable:
-    regionName:
-      us-east-1: US East (N. Virginia)
-      us-east-2: US East (Ohio)
+    us-east-1:
+      regionName: US East (N. Virginia)
+    us-east-2:
+      regionName: US East (Ohio)
 ```
 
 Mappings can also be synthesized "lazily"; lazy mappings will only render a "Mappings"
@@ -820,24 +837,27 @@ call to `findInMap` will be able to resolve the value during synthesis and simpl
 ```ts
 const regionTable = new CfnMapping(this, 'RegionTable', {
   mapping: {
-    regionName: {
-      'us-east-1': 'US East (N. Virginia)',
-      'us-east-2': 'US East (Ohio)',
+    'us-east-1': {
+      regionName: 'US East (N. Virginia)',
+    },
+    'us-east-2': {
+      regionName: 'US East (Ohio)',
     },
   },
   lazy: true,
 });
 
-regionTable.findInMap('regionName', 'us-east-2');
+regionTable.findInMap('us-east-2', 'regionName');
 ```
 
 On the other hand, the following code will produce the "Mappings" section shown above,
-since the second-level key is an unresolved token. The call to `findInMap` will return a
-token that resolves to `{ Fn::FindInMap: [ 'RegionTable', 'regionName', { Ref: AWS::Region
-} ] }`.
+since the top-level key is an unresolved token. The call to `findInMap` will return a token that resolves to
+`{ "Fn::FindInMap": [ "RegionTable", { "Ref": "AWS::Region" }, "regionName" ] }`.
 
 ```ts
-regionTable.findInMap('regionName', Aws.REGION);
+declare const regionTable: CfnMapping;
+
+regionTable.findInMap(Aws.REGION, 'regionName');
 ```
 
 [cfn-mappings]: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/mappings-section-structure.html

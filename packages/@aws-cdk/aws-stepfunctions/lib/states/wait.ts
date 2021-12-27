@@ -18,21 +18,21 @@ export class WaitTime {
   /**
    * Wait until the given ISO8601 timestamp
    *
-   * @example 2016-03-14T01:59:00Z
+   * Example value: `2016-03-14T01:59:00Z`
    */
   public static timestamp(timestamp: string) { return new WaitTime({ Timestamp: timestamp }); }
 
   /**
    * Wait for a number of seconds stored in the state object.
    *
-   * @example $.waitSeconds
+   * Example value: `$.waitSeconds`
    */
   public static secondsPath(path: string) { return new WaitTime({ SecondsPath: path }); }
 
   /**
    * Wait until a timestamp found in the state object.
    *
-   * @example $.waitTimestamp
+   * Example value: `$.waitTimestamp`
    */
   public static timestampPath(path: string) { return new WaitTime({ TimestampPath: path }); }
 
