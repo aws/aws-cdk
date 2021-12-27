@@ -311,8 +311,9 @@ export interface StringParameterAttributes extends CommonStringParameterAttribut
  */
 export interface SecureStringParameterAttributes extends CommonStringParameterAttributes {
   /**
-   * The version number of the value you wish to retrieve. If you don't specify the exact
-   * version, AWS CloudFormation uses the latest version of the parameter.
+   * The version number of the value you wish to retrieve.
+   *
+   * @default - AWS CloudFormation uses the latest version of the parameter
    */
   readonly version?: number;
 
