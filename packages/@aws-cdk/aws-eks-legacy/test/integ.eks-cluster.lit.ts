@@ -7,7 +7,7 @@ const env = {
   account: process.env.CDK_INTEG_ACCOUNT || process.env.CDK_DEFAULT_ACCOUNT,
 };
 
-class EksClusterStack extends Stack {
+class EksClusterStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string) {
     super(scope, id, { env });
 
