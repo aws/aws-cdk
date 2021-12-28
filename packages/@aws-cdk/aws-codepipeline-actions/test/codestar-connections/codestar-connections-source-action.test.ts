@@ -152,7 +152,7 @@ describe('CodeStar Connections source Action', () => {
 
   test('exposes variables', () => {
     const stack = new Stack();
-    createBitBucketAndCodeBuildPipeline(stack, {});
+    createBitBucketAndCodeBuildPipeline(stack);
 
     expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
       'Stages': [
@@ -208,7 +208,7 @@ describe('CodeStar Connections source Action', () => {
 
   test('fail if variable from unused action is referenced', () => {
     const stack = new Stack();
-    const pipeline = createBitBucketAndCodeBuildPipeline(stack, {});
+    const pipeline = createBitBucketAndCodeBuildPipeline(stack);
 
     const unusedSourceOutput = new codepipeline.Artifact();
     const unusedSourceAction = new cpactions.CodeStarConnectionsSourceAction({
@@ -222,7 +222,6 @@ describe('CodeStar Connections source Action', () => {
       actionName: 'UnusedCodeBuild',
       project: new codebuild.PipelineProject(stack, 'UnusedMyProject'),
       input: unusedSourceOutput,
-      outputs: [new codepipeline.Artifact()],
       environmentVariables: {
         CommitId: { value: unusedSourceAction.variables.commitId },
       },
@@ -232,7 +231,6 @@ describe('CodeStar Connections source Action', () => {
     expect(() => {
       SynthUtils.synthesize(stack);
     }).toThrow(/Cannot reference variables of action 'UnusedBitBucket', as that action was never added to a pipeline/);
-
   });
 
   test('fail if variable from unused action with custom namespace is referenced', () => {
@@ -253,7 +251,6 @@ describe('CodeStar Connections source Action', () => {
       actionName: 'UnusedCodeBuild',
       project: new codebuild.PipelineProject(stack, 'UnusedProject'),
       input: unusedSourceOutput,
-      outputs: [new codepipeline.Artifact()],
       environmentVariables: {
         CommitId: { value: unusedSourceAction.variables.commitId },
       },
@@ -266,7 +263,7 @@ describe('CodeStar Connections source Action', () => {
   });
 });
 
-function createBitBucketAndCodeBuildPipeline(stack: Stack, props: Partial<cpactions.BitBucketSourceActionProps>): codepipeline.Pipeline {
+function createBitBucketAndCodeBuildPipeline(stack: Stack, props: Partial<cpactions.CodeStarConnectionsSourceActionProps> = {}): codepipeline.Pipeline {
   const sourceOutput = new codepipeline.Artifact();
   const sourceAction = new cpactions.CodeStarConnectionsSourceAction({
     actionName: 'BitBucket',
