@@ -55,12 +55,13 @@ export class Bundling implements CdkBundlingOptions {
   constructor(props: BundlingProps) {
     const {
       entry,
-      runtime = Runtime.PYTHON_3_7,
-      architecture = Architecture.X86_64, outputPathSuffix,
+      runtime,
+      architecture = Architecture.X86_64,
+      outputPathSuffix = '',
       image,
     } = props;
 
-    const outputPath = path.join(AssetStaging.BUNDLING_OUTPUT_DIR, outputPathSuffix ?? '');
+    const outputPath = path.join(AssetStaging.BUNDLING_OUTPUT_DIR, outputPathSuffix);
 
     const bundlingCommands = this.createBundlingCommand({
       entry,
