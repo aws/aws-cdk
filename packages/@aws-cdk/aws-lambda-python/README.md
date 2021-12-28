@@ -73,6 +73,7 @@ To that end, we recommend using [`pipenv`] or [`poetry`] which have lockfile sup
 - [`poetry`](https://python-poetry.org/docs/basic-usage/#commit-your-poetrylock-file-to-version-control)
 
 Packaging is executed using the `Packaging` class, which:
+
 1. Infers the packaging type based on the files present.
 2. If it sees a `Pipfile` or a `poetry.lock` file, it exports it to a compatible `requirements.txt` file with credentials (if they're available in the source files or in the bundling container).
 3. Installs dependencies using `pip`.
