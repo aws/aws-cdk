@@ -82,7 +82,6 @@ export class Bundling implements CdkBundlingOptions {
   private createBundlingCommand(options: BundlingCommandOptions): string[] {
     const packaging = Packaging.fromEntry(options.entry);
     let bundlingCommands: string[] = [];
-    // bundlingCommands.push(packaging.installCommand ?? '');
     bundlingCommands.push(packaging.exportCommand ?? '');
     if (packaging.dependenciesFile) {
       bundlingCommands.push(`python -m pip install -r ${DependenciesFile.PIP} -t ${options.outputDir}`);
