@@ -3,125 +3,108 @@ import * as colors from 'colors/safe';
 import { error } from '../../../logging';
 import { ISDK } from '../../aws-auth';
 
-export interface WithDefaultPrinterProps {
-  /**
-   * Time that the latest hotswap operation occurred
-   *
-   * @default - local machine's current time
-   */
-  readonly hotswapTime?: Date;
+// how often we should read events from CloudWatchLogs
+const SLEEP = 2_000;
 
-}
-
+/**
+ * Represents a CloudWatch Log Event that will be
+ * printed to the terminal
+ */
 export interface CloudWatchLogEvent {
   readonly message: string;
   readonly logGroup: string;
-  readonly logStream?: string;
-  readonly ingestionTime: Date;
+  readonly timestamp: Date;
+}
+
+/**
+ * Options for creating a CloudWatchLogEventMonitor
+ */
+export interface CloudWatchLogEventMonitorOptions {
+  /**
+   * The time that watch was first triggered.
+   * CloudWatch logs will be filtered using this start time
+   *
+   * @default - the current time
+   */
+  readonly hotswapTime?: Date;
+
+  /**
+   * The EventPrinter to use to print out CloudWatch events
+   *
+   * @default - a default printer will be created
+   */
+  readonly printer?: IEventPrinter;
 }
 
 export class CloudWatchLogEventMonitor {
-  public static withDefaultPrinter(options: WithDefaultPrinterProps = {}) {
-    const stream = process.stderr;
-    const props: PrinterProps = {
-      stream,
-    };
-
-    return new CloudWatchLogEventMonitor(new EventPrinter(props), options.hotswapTime);
-  }
-
-  private active = false;
-
   /**
    * Determines which events not to display
    */
   private startTime: number;
 
-  /**
-   * Current tick timer
-   */
-  private tickTimer?: NodeJS.Timer;
-
-  /**
-   * Set to the activity of reading the current events
-   */
-  private readPromise?: Promise<any>;
-
-  private activity = new Set<string>();
-
   private logGroups = new Set<string>();
   private sdk?: ISDK;
 
-  constructor(
-    private readonly printer: IEventPrinter,
-    hotswapTime?: Date,
-  ) {
-    this.startTime = hotswapTime?.getTime() ?? Date.now();
+  /**
+   * The event printer that controls printing out
+   * CloudWatchLog Events
+   */
+  public printer: IEventPrinter;
+
+  constructor(options: CloudWatchLogEventMonitorOptions = {}) {
+    this.startTime = options.hotswapTime?.getTime() ?? Date.now();
+    this.printer = options.printer ?? new EventPrinter({
+      stream: process.stderr,
+    });
   }
 
-  public start() {
-    this.active = true;
-    this.scheduleNextTick();
+  public start(): CloudWatchLogEventMonitor {
+    // call tick every x seconds
+    setInterval(() => void (this.tick()), SLEEP);
     return this;
   }
 
-  public addSDK(sdk: ISDK) {
+  public addSDK(sdk: ISDK): void {
     this.sdk = sdk;
   }
 
   /**
    * Adds a CloudWatch log group to read log events from
    */
-  public addLogGroups(logGroups: string[]) {
+  public addLogGroups(logGroups: string[]): void {
     logGroups.forEach(group => {
-      if (!this.logGroups.has(group)) {
-        this.logGroups.add(group);
-      }
+      this.logGroups.add(group);
     });
   }
 
-  public async stop() {
-    this.active = false;
-    if (this.tickTimer) {
-      clearTimeout(this.tickTimer);
-    }
-  }
-
-  private scheduleNextTick() {
-    if (!this.active) {
-      return;
-    }
-    this.tickTimer = setTimeout(() => void (this.tick()), this.printer.updateSleep);
-  }
-
-  private async tick() {
-    if (!this.active) {
-      return;
-    }
+  private async tick(): Promise<void> {
     try {
-      this.readPromise = this.readNewEvents();
-      await this.readPromise;
-      this.readPromise = undefined;
-
-      if (!this.active) { return; }
+      const events = await this.readNewEvents();
+      const flatEvents: CloudWatchLogEvent[] = Array.prototype.concat.apply([], events);
+      flatEvents.forEach(event => {
+        this.printer.print(event);
+      });
+      // don't update the startTime until we've processed events
+      // we may miss some events if they come in after we've read the
+      // events, but before we update the startTime
+      if (flatEvents.length > 0) {
+        this.startTime = Date.now();
+      }
 
     } catch (e) {
       error('Error occurred while monitoring logs: %s', e);
     }
-    this.scheduleNextTick();
-
   }
 
   /**
    * Reads all new log events from a set of CloudWatch Log Groups
    * in parallel
    */
-  private async readNewEvents(): Promise<void[]> {
-    const promises: Array<Promise<void>> = [];
-    for (const group of this.logGroups) {
-      promises.push(this.readEventsFromLogGroup(group));
-    }
-    return Promise.all(promises);
+  private async readNewEvents(): Promise<Array<CloudWatchLogEvent[]>> {
+    const groups = Array.from(this.logGroups);
+    return Promise.all(groups.map(group => {
+      return this.readEventsFromLogGroup(group);
+    }));
   }
 
   /**
@@ -130,37 +113,26 @@ export class CloudWatchLogEventMonitor {
    *
    * Only prints out events that have not been printed already
    */
-  private async readEventsFromLogGroup(logGroupName: string): Promise<void> {
-    // this should not be possible
-    if (!this.sdk) {
-      return;
-    }
+  private async readEventsFromLogGroup(logGroupName: string): Promise<CloudWatchLogEvent[]> {
+    const events: CloudWatchLogEvent[] = [];
     try {
       let finished = false;
       let nextToken: string | undefined;
       while (!finished) {
-        const response = await this.sdk!.cloudwatchLogs().filterLogEvents({
+        const response = await this.sdk!.cloudWatchLogs().filterLogEvents({
           logGroupName: logGroupName,
           nextToken,
           startTime: this.startTime,
         }).promise();
         const eventPage = response.events ?? [];
 
-
         for (const event of eventPage) {
-          if (event.eventId && this.activity.has(event.eventId)) {
-          } else {
-            if (event.eventId) this.activity.add(event.eventId);
-            if (event.message) {
-              const ingestionTime = new Date(event.ingestionTime);
-              this.printer.print({
-                message: event.message,
-                logGroup: logGroupName,
-                logStream: event.logStreamName,
-                ingestionTime,
-              });
-            }
-
+          if (event.message) {
+            events.push({
+              message: event.message,
+              logGroup: logGroupName,
+              timestamp: event.timestamp ? new Date(event.timestamp) : new Date(),
+            });
           }
         }
 
@@ -174,12 +146,12 @@ export class CloudWatchLogEventMonitor {
       // until something is logged, so just keep polling until
       // there is somthing to find
       if (e.code === 'ResourceNotFoundException') {
-        return;
+        return [];
       }
       throw e;
     }
+    return events;
   }
-
 }
 
 interface PrinterProps {
@@ -190,13 +162,10 @@ interface PrinterProps {
 }
 
 export interface IEventPrinter {
-  readonly updateSleep: number;
-
   print(event: CloudWatchLogEvent): void;
 }
 
 abstract class EventPrinterBase {
-  public readonly updateSleep: number = 5_000;
   protected readonly stream: NodeJS.WriteStream;
 
   constructor(protected readonly props: PrinterProps) {
@@ -206,16 +175,18 @@ abstract class EventPrinterBase {
   public abstract print(event: CloudWatchLogEvent): void;
 }
 
+/**
+ * a CloudWatchLogs event printer
+ */
 export class EventPrinter extends EventPrinterBase {
   constructor(props: PrinterProps) {
     super(props);
   }
 
   public print(event: CloudWatchLogEvent): void {
-    this.stream.write(util.format('%s %s %s %s',
+    this.stream.write(util.format('[%s] %s %s',
       colors.blue(event.logGroup),
-      event.logStream ? colors.blue(event.logStream) : '',
-      colors.yellow(event.ingestionTime.toLocaleTimeString()),
+      colors.yellow(event.timestamp.toLocaleTimeString()),
       event.message));
   }
 }

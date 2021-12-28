@@ -6,10 +6,18 @@ import { MockSdk } from './../../util/mock-sdk';
 
 let sdk: MockSdk;
 let printer: FakePrinter;
+jest.spyOn(global, 'setInterval');
 beforeEach(() => {
+  jest.useFakeTimers('legacy');
   sdk = new MockSdk();
   printer = new FakePrinter();
 });
+
+afterAll(() => {
+  jest.useRealTimers();
+});
+
+// const flushPromises = () => new Promise(res => process.nextTick(res));
 
 let TIMESTAMP: number;
 let HUMAN_TIME: string;
@@ -27,12 +35,11 @@ test('outputs correctly', () => {
     allActivityPrinter.print({
       message: 'this is a log message',
       logGroup: 'log-group-name',
-      ingestionTime: new Date(TIMESTAMP),
-      logStream: 'stream-name',
+      timestamp: new Date(TIMESTAMP),
     });
   });
 
-  expect(output[0].trim()).toStrictEqual(`${blue('log-group-name')} ${blue('stream-name')} ${yellow(HUMAN_TIME)} this is a log message`);
+  expect(output[0].trim()).toStrictEqual(`[${blue('log-group-name')}] ${yellow(HUMAN_TIME)} this is a log message`);
 });
 
 test('continue to the next page if it exists', async () => {
@@ -51,27 +58,10 @@ test('continue to the next page if it exists', async () => {
       };
     },
   ]);
+  // jest.advanceTimersByTime(2000);
+  expect(setInterval).toHaveBeenCalledTimes(1);
 
   expect(printer.eventMessages).toEqual(['message', 'some-message']);
-});
-
-test('do not process events we have already seen', async () => {
-  await testMonitorWithEventCalls([
-    (request) => {
-      expect(request.nextToken).toBeUndefined();
-      return {
-        events: [event(102, 'message'), event(101, 'first-message')],
-      };
-    },
-    (request) => {
-      expect(request.nextToken).toBeUndefined;
-      return {
-        events: [event(101, 'first-message'), event(103, 'second-message')],
-      };
-    },
-  ]);
-
-  expect(printer.eventMessages).toEqual(['message', 'first-message', 'second-message']);
 });
 
 const T0 = 1597837230504;
@@ -80,14 +70,12 @@ function event(nr: number, message: string): AWS.CloudWatchLogs.FilteredLogEvent
   return {
     eventId: `${nr}`,
     message,
-    timestamp: new Date(T0 * nr * 1000).getUTCDate(),
-    ingestionTime: new Date(T0 * nr * 1000).getUTCDate(),
-    logStreamName: 'stream',
+    timestamp: new Date(T0 * nr * 1000).getTime(),
+    ingestionTime: new Date(T0 * nr * 1000).getTime(),
   };
 }
 
 class FakePrinter implements IEventPrinter {
-  public updateSleep: number = 0;
   public readonly events: CloudWatchLogEvent[] = [];
 
   public print(e: CloudWatchLogEvent): void {
@@ -113,6 +101,7 @@ async function testMonitorWithEventCalls(
     filterLogEvents = filterLogEvents.mockImplementationOnce(request => {
       const ret = e_(request);
       if (isLast) {
+        jest.advanceTimersByTime(2000);
         finished = true;
       }
       return ret;
@@ -120,14 +109,14 @@ async function testMonitorWithEventCalls(
   }
   filterLogEvents.mockImplementation(() => { return {}; });
   sdk.stubCloudWatchLogs({ filterLogEvents });
-  const monitor = new CloudWatchLogEventMonitor(printer, new Date(T100)).start();
+  const monitor = new CloudWatchLogEventMonitor({ printer, hotswapTime: new Date(T100) }).start();
   monitor.addSDK(sdk);
   monitor.addLogGroups(['loggroup']);
   await waitForCondition(() => finished);
-  await monitor.stop();
 }
 
 async function waitForCondition(cb: () => boolean): Promise<void> {
+  jest.advanceTimersByTime(2000);
   while (!cb()) {
     await sleep(10);
   }

@@ -125,6 +125,7 @@ describe('deploy', () => {
         selector: { patterns: ['Test-Stack-A'] },
         requireApproval: RequireApproval.Never,
         hotswap: true,
+        logs: false,
       });
 
       // THEN

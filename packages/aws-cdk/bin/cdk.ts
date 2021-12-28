@@ -160,7 +160,8 @@ async function parseCommandLineArguments() {
       })
       .options('logs', {
         type: 'boolean',
-        desc: 'Show CloudWatch log events from hotswapped resources in the terminal',
+        desc: 'Show CloudWatch log events from hotswapped resources in the terminal. ' +
+          "'true' by default, use --no-logs to turn off",
       }),
     )
     .command('destroy [STACKS..]', 'Destroy the stack(s) named STACKS', yargs => yargs

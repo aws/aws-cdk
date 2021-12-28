@@ -6,6 +6,7 @@ import { print } from '../logging';
 import { ISDK, Mode, SdkProvider } from './aws-auth';
 import { DeployStackResult } from './deploy-stack';
 import { isHotswappableCodeBuildProjectChange } from './hotswap/code-build-projects';
+import { findCloudWatchLogGroups } from './hotswap/cloudwatch-logs';
 import { ICON, ChangeHotswapImpact, ChangeHotswapResult, HotswapOperation, HotswappableChangeCandidate, ListStackResources } from './hotswap/common';
 import { isHotswappableEcsServiceChange } from './hotswap/ecs-services';
 import { EvaluateCloudFormationTemplate } from './hotswap/evaluate-cloudformation-template';
@@ -58,12 +59,15 @@ export async function tryHotswapDeployment(
     return undefined;
   }
 
+  if (hotswapLogMonitor) {
+    await findCloudWatchLogGroups(listStackResources, evaluateCfnTemplate, hotswapLogMonitor);
+  }
+
   // apply the short-circuitable changes
-  await applyAllHotswappableChanges(sdk, hotswappableChanges, hotswapLogMonitor);
+  await applyAllHotswappableChanges(sdk, hotswappableChanges);
 
   return { noOp: hotswappableChanges.length === 0, stackArn: cloudFormationStack.stackId, outputs: cloudFormationStack.outputs, stackArtifact };
 }
-
 
 async function findAllHotswappableChanges(
   stackChanges: cfn_diff.TemplateDiff, evaluateCfnTemplate: EvaluateCloudFormationTemplate,
@@ -219,27 +223,17 @@ function isCandidateForHotswapping(change: cfn_diff.ResourceDifference): Hotswap
 }
 
 async function applyAllHotswappableChanges(
-  sdk: ISDK, hotswappableChanges: HotswapOperation[],
-  hotswapLogMonitor?: CloudWatchLogEventMonitor,
-): Promise<void[]> {
+  sdk: ISDK, hotswappableChanges: HotswapOperation[]): Promise<void[]> {
   print(`\n${ICON} hotswapping resources:`);
   return Promise.all(hotswappableChanges.map(hotswapOperation => {
-    return applyHotswappableChange(sdk, hotswapOperation, hotswapLogMonitor);
+    return applyHotswappableChange(sdk, hotswapOperation);
   }));
 }
 
-async function applyHotswappableChange(sdk: ISDK, hotswapOperation: HotswapOperation, logMonitor?: CloudWatchLogEventMonitor): Promise<any> {
+async function applyHotswappableChange(sdk: ISDK, hotswapOperation: HotswapOperation): Promise<any> {
   // note the type of service that was successfully hotswapped in the User-Agent
   const customUserAgent = `cdk-hotswap/success-${hotswapOperation.service}`;
   sdk.appendCustomUserAgent(customUserAgent);
-
-  // lambda functions always have a log group with the name
-  // /aws/lambda/function-name
-  if (hotswapOperation.service === 'lambda-function') {
-    logMonitor?.addLogGroups(hotswapOperation.resourceNames.map(name => {
-      return `/aws/lambda/${name}`;
-    }));
-  }
 
   try {
     for (const name of hotswapOperation.resourceNames) {
