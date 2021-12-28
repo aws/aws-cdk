@@ -14,8 +14,9 @@ export interface BundlingOptions {
 
   /**
    * Docker image to use for bundling. If no options are provided, the default bundling image
-   * will be used. The bundling Docker image must have `rsync` installed. Dependencies will be
-   * copied from the image's`/var/dependencies` directory into the Lambda asset.
+   * will be used. Dependencies will be installed using the default packaging commands
+   * and copied over from into the Lambda asset.
+   *
    * @default - Default bundling image.
    */
   readonly image?: DockerImage;
