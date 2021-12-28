@@ -51,7 +51,7 @@ class ProjectHotswapOperation implements HotswapOperation {
   constructor(
     private readonly updateProjectInput: AWS.CodeBuild.UpdateProjectInput,
   ) {
-    this.resourceNames = [updateProjectInput.name];
+    this.resourceNames = [`CodeBuild project '${updateProjectInput.name}'`];
   }
 
   public async apply(sdk: ISDK): Promise<any> {
