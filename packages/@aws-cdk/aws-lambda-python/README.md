@@ -121,7 +121,7 @@ A different bundling Docker image that is in the same directory as the function 
 const entry = '/path/to/function';
 const image = DockerImage.fromBuild(entry);
 
-new PythonFunction(stack, 'function', {
+new lambda.PythonFunction(this, 'function', {
   entry,
   bundling: { image },
 });
