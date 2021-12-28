@@ -118,7 +118,7 @@ export class CloudWatchLogEventMonitor {
    */
   private async readNewEvents(): Promise<void[]> {
     const promises: Array<Promise<void>> = [];
-    for (let group of this.logGroups) {
+    for (const group of this.logGroups) {
       promises.push(this.readEventsFromLogGroup(group));
     }
     return Promise.all(promises);
@@ -152,8 +152,7 @@ export class CloudWatchLogEventMonitor {
           } else {
             if (event.eventId) this.activity.add(event.eventId);
             if (event.message) {
-              const ingestionTime: Date = event.ingestionTime ?
-                new Date(event.ingestionTime) : new Date();
+              const ingestionTime = new Date(event.ingestionTime);
               this.printer.print({
                 message: event.message,
                 logGroup: logGroupName,
@@ -213,14 +212,10 @@ export class EventPrinter extends EventPrinterBase {
   }
 
   public print(event: CloudWatchLogEvent): void {
-    this.stream.write(
-      util.format(
-        '%s %s %s %s',
-        colors.blue(event.logGroup),
-        (event.logStream ? colors.blue(event.logStream) : ''),
-        colors.yellow(event.ingestionTime.toLocaleTimeString()),
-        event.message,
-      ),
-    );
+    this.stream.write(util.format('%s %s %s %s',
+      colors.blue(event.logGroup),
+      event.logStream ? colors.blue(event.logStream) : '',
+      colors.yellow(event.ingestionTime.toLocaleTimeString()),
+      event.message));
   }
 }

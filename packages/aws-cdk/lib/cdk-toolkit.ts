@@ -298,10 +298,7 @@ export class CdkToolkit {
     // --------------                --------  'cdk deploy' done  --------------  'cdk deploy' done  --------------
     let latch: 'pre-ready' | 'open' | 'deploying' | 'queued' = 'pre-ready';
 
-    let logMonitor: CloudWatchLogEventMonitor | undefined = undefined;
-    if (options.logs) {
-      logMonitor = CloudWatchLogEventMonitor.withDefaultPrinter({ hotswapTime: new Date() }).start();
-    }
+    const logMonitor = options.logs ? CloudWatchLogEventMonitor.withDefaultPrinter({ hotswapTime: new Date() }).start() : undefined;
     const deployAndWatch = async () => {
       latch = 'deploying';
 
