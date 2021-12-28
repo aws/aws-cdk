@@ -1,6 +1,6 @@
 import * as path from 'path';
 import { Runtime } from '@aws-cdk/aws-lambda';
-import { Stack } from '@aws-cdk/core';
+import { DockerImage, Stack } from '@aws-cdk/core';
 import { Bundling } from '../lib/bundling';
 import { PythonLayerVersion } from '../lib/layer';
 
@@ -48,4 +48,18 @@ test('Fails when bundling a layer for a runtime not supported', () => {
       compatibleRuntimes: [Runtime.PYTHON_2_7, Runtime.NODEJS],
     });
   }).toThrow(/PYTHON.*support/);
+});
+
+test('Allows use of custom bundling image', () => {
+  const entry = path.join(__dirname, 'lambda-handler-custom-build');
+  const image = DockerImage.fromBuild(path.join(entry));
+
+  new PythonLayerVersion(stack, 'layer', {
+    entry,
+    bundling: { image },
+  });
+
+  expect(Bundling.bundle).toHaveBeenCalledWith(expect.objectContaining({
+    image,
+  }));
 });

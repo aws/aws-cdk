@@ -1,13 +1,14 @@
+import * as path from 'path';
 import { Template } from '@aws-cdk/assertions';
 import { Code, Runtime } from '@aws-cdk/aws-lambda';
-import { AssetHashType, AssetOptions, Stack } from '@aws-cdk/core';
+import { AssetHashType, DockerImage, Stack } from '@aws-cdk/core';
 import { PythonFunction } from '../lib';
-import { Bundling } from '../lib/bundling';
+import { Bundling, BundlingProps } from '../lib/bundling';
 
 jest.mock('../lib/bundling', () => {
   return {
     Bundling: {
-      bundle: jest.fn().mockImplementation((options: AssetOptions): Code => {
+      bundle: jest.fn().mockImplementation((options: BundlingProps): Code => {
         const mockObjectKey = (() => {
           const hashType = options.assetHashType ?? (options.assetHash ? 'custom' : 'source');
           switch (hashType) {
@@ -147,4 +148,18 @@ test('allows specifying hash type', () => {
       S3Key: 'MY_CUSTOM_HASH',
     },
   });
+});
+
+test('Allows use of custom bundling image', () => {
+  const entry = path.join(__dirname, 'lambda-handler-custom-build');
+  const image = DockerImage.fromBuild(path.join(entry));
+
+  new PythonFunction(stack, 'function', {
+    entry,
+    bundling: { image },
+  });
+
+  expect(Bundling.bundle).toHaveBeenCalledWith(expect.objectContaining({
+    image,
+  }));
 });
