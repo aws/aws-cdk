@@ -210,7 +210,7 @@ describe('CodeStar Connections source Action', () => {
     const stack = new Stack();
     const pipeline = createBitBucketAndCodeBuildPipeline(stack, {});
 
-    const unusedSourceOutput = new codepipeline.Artifact()
+    const unusedSourceOutput = new codepipeline.Artifact();
     const unusedSourceAction = new cpactions.CodeStarConnectionsSourceAction({
       actionName: 'UnusedBitBucket',
       owner: 'aws',
@@ -240,7 +240,7 @@ describe('CodeStar Connections source Action', () => {
     const pipeline = createBitBucketAndCodeBuildPipeline(stack, {
       variablesNamespace: 'kornicameister',
     });
-    const unusedSourceOutput = new codepipeline.Artifact()
+    const unusedSourceOutput = new codepipeline.Artifact();
     const unusedSourceAction = new cpactions.CodeStarConnectionsSourceAction({
       actionName: 'UnusedBitBucket',
       owner: 'aws',
