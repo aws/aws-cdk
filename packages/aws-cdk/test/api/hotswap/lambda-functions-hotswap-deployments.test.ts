@@ -11,7 +11,11 @@ beforeEach(() => {
   mockUpdateLambdaCode = jest.fn();
   mockTagResource = jest.fn();
   mockUntagResource = jest.fn();
-  hotswapMockSdkProvider.stubLambda(mockUpdateLambdaCode, mockTagResource, mockUntagResource);
+  hotswapMockSdkProvider.stubLambda({
+    updateFunctionCode: mockUpdateLambdaCode,
+    tagResource: mockTagResource,
+    untagResource: mockUntagResource,
+  });
 });
 
 test('returns undefined when a new Lambda function is added to the Stack', async () => {
