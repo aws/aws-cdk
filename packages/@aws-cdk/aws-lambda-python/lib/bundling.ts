@@ -71,6 +71,7 @@ export class Bundling implements CdkBundlingOptions {
 
     const defaultImage = DockerImage.fromBuild(path.join(__dirname, '../lib'), {
       buildArgs: {
+        ...props.buildArgs ?? {},
         IMAGE: runtime.bundlingImage.image,
       },
       platform: architecture.dockerPlatform,

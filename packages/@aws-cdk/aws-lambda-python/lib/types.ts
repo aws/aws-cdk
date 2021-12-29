@@ -22,6 +22,15 @@ export interface BundlingOptions {
   readonly image?: DockerImage;
 
   /**
+   * Optional build arguments to pass to the default container. This can be used to customize
+   * the index URLs used for installing dependencies.
+   * This is not used if a custom image is provided.
+   *
+   * @default - No build arguments.
+   */
+  readonly buildArgs?: { [key: string]: string };
+
+  /**
    * Determines how asset hash is calculated. Assets will get rebuild and
    * uploaded only if their hash has changed.
    *
