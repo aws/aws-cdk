@@ -240,6 +240,10 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
     ? templateParams.updateExisting(finalParameterValues, cloudFormationStack.parameters)
     : templateParams.supplyAll(finalParameterValues);
 
+  if (options.hotswapLogMonitor) {
+    await registerCloudWatchLogGroups(options.sdkProvider, stackArtifact, assetParams, options.hotswapLogMonitor);
+  }
+
   if (await canSkipDeploy(options, cloudFormationStack, stackParams.hasChanges(cloudFormationStack.parameters))) {
     debug(`${deployName}: skipping deployment (use --force to override)`);
     // if we can skip deployment and we are performing a hotswap, let the user know
@@ -259,10 +263,6 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
 
   const bodyParameter = await makeBodyParameter(stackArtifact, options.resolvedEnvironment, legacyAssets, options.toolkitInfo, options.sdk);
   await publishAssets(legacyAssets.toManifest(stackArtifact.assembly.directory), options.sdkProvider, stackEnv);
-
-  if (options.hotswapLogMonitor) {
-    await registerCloudWatchLogGroups(options.sdkProvider, stackArtifact, assetParams, options.hotswapLogMonitor);
-  }
 
   if (options.hotswap) {
     // attempt to short-circuit the deployment if possible

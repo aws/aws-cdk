@@ -6,6 +6,8 @@ import * as lambda from 'aws-sdk/clients/lambda';
 import * as stepfunctions from 'aws-sdk/clients/stepfunctions';
 import { DeployStackResult } from '../../../lib/api';
 import * as deployments from '../../../lib/api/hotswap-deployments';
+import { registerCloudWatchLogGroups } from '../../../lib/api/hotswap/cloudwatch-logs';
+import { CloudWatchLogEventMonitor } from '../../../lib/api/hotswap/monitor/logs-monitor';
 import { Template } from '../../../lib/api/util/cloudformation';
 import { testStack, TestStackArtifact } from '../../util';
 import { MockSdkProvider, SyncHandlerSubsetOf } from '../../util/mock-sdk';
@@ -105,6 +107,14 @@ export class HotswapMockSdkProvider {
 
   public stubGetEndpointSuffix(stub: () => string) {
     this.mockSdkProvider.stubGetEndpointSuffix(stub);
+  }
+
+  public registerCloudWatchLogGroups(
+    stackArtifact: cxapi.CloudFormationStackArtifact,
+    hotswapLogMonitor: CloudWatchLogEventMonitor,
+    assetParams: { [key: string]: string } = {},
+  ): Promise<void> {
+    return registerCloudWatchLogGroups(this.mockSdkProvider, stackArtifact, assetParams, hotswapLogMonitor);
   }
 
   public tryHotswapDeployment(

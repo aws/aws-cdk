@@ -1,8 +1,9 @@
 import { blue, yellow } from 'colors/safe';
-import { EventPrinter, IEventPrinter, CloudWatchLogEventMonitor, CloudWatchLogEvent } from '../../../lib/api/hotswap/monitor/logs-monitor';
+import { EventPrinter, CloudWatchLogEventMonitor } from '../../../lib/api/hotswap/monitor/logs-monitor';
 import { sleep } from '../../integ/helpers/aws';
 import { stderr } from '../console-listener';
 import { MockSdk } from './../../util/mock-sdk';
+import { FakePrinter } from './fake-printer';
 
 let sdk: MockSdk;
 let printer: FakePrinter;
@@ -73,20 +74,6 @@ function event(nr: number, message: string): AWS.CloudWatchLogs.FilteredLogEvent
   };
 }
 
-class FakePrinter implements IEventPrinter {
-  public readonly events: CloudWatchLogEvent[] = [];
-
-  public print(e: CloudWatchLogEvent): void {
-    this.events.push(e);
-  }
-
-  public get eventMessages() {
-    return this.events.map(a => a.message);
-  }
-
-  public start(): void { }
-  public stop(): void { }
-}
 
 async function testMonitorWithEventCalls(
   events: Array<(x: AWS.CloudWatchLogs.FilterLogEventsRequest) => AWS.CloudWatchLogs.FilterLogEventsResponse>) {

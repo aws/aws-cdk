@@ -128,7 +128,7 @@ export class CloudWatchLogEventMonitor {
           // we update the startTime to be the latest event timestamp that we read
           // from any log group
           if (event.timestamp && event.timestamp > this.startTime) {
-            this.startTime = event.timestamp;
+            this.startTime = event.timestamp+1;
           }
         }
         nextToken = response.nextToken;

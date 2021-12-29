@@ -4,12 +4,24 @@ import { Mode, SdkProvider } from './../aws-auth';
 import { EvaluateCloudFormationTemplate } from './evaluate-cloudformation-template';
 import { CloudWatchLogEventMonitor } from './monitor/logs-monitor';
 
+// resource types that have associated CloudWatch Log Groups that should
+// be monitored
+const includedTypes = ['AWS::StepFunctions::StateMachine', 'AWS::ECS::TaskDefinition'];
+
+// resource types that will create a cloudwatch log group
+// with a specific name if one is not provided
+const implicitTypes = ['AWS::Lambda::Function', 'AWS::CodeBuild::Project'];
+
 export async function registerCloudWatchLogGroups(
   sdkProvider: SdkProvider,
   stackArtifact: cxapi.CloudFormationStackArtifact,
   assetParams: { [key: string]: string },
   hotswapLogMonitor: CloudWatchLogEventMonitor,
 ): Promise<void> {
+
+  const logGroupNames = new Array<string>();
+  const logGroupLogicalIds = new Set<string>();
+  const implicitMap = new Map<string, string>();
   //
   // resolve the environment, so we can substitute things like AWS::Region in CFN expressions
   const resolvedEnv = await sdkProvider.resolveEnvironment(stackArtifact.environment);
@@ -35,24 +47,51 @@ export async function registerCloudWatchLogGroups(
   });
 
   const resources = await listStackResources.listStackResources();
-  const allGroups = resources.filter(resource => resource.ResourceType === 'AWS::Logs::LogGroup');
-  const functions = resources.filter(resource => resource.ResourceType === 'AWS::Lambda::Function');
-  const functionLogGroups = await Promise.all(functions.map(async f => {
-    const name = await evaluateCfnTemplate.findPhysicalNameFor(f.LogicalResourceId);
-    return `/aws/lambda/${name}`;
-  }));
 
-  hotswapLogMonitor.addLogGroups(functionLogGroups);
-
-  const relevantGroups = allGroups.filter(group => {
-    const resourcesReferencingLogGroup = evaluateCfnTemplate.findReferencesTo(group.LogicalResourceId);
-    return resourcesReferencingLogGroup.some(r => (r.Type === 'AWS::ECS::TaskDefinition' || r.Type === 'AWS::StepFunctions::StateMachine'));
-  });
-
-  for (let group of relevantGroups) {
-    const groupName = await evaluateCfnTemplate.findPhysicalNameFor(group.LogicalResourceId);
-    if (groupName) {
-      hotswapLogMonitor.addLogGroups([groupName]);
+  // do a first pass at identifying all log groups
+  for (const resource of resources) {
+    if (resource.ResourceType === 'AWS::Logs::LogGroup') {
+      logGroupLogicalIds.add(resource.LogicalResourceId);
+      // track all the resources that will create a log group if one
+      // is not provided
+    } else if (implicitTypes.includes(resource.ResourceType)) {
+      const pathPart = resource.ResourceType.split('::')[1].toLowerCase();
+      implicitMap.set(resource.LogicalResourceId, pathPart);
     }
   }
+
+  // For each CloudWatch Log group in the template, find all resources that
+  // reference that log group and if it matches once of the included types, add it.
+  for (const id of logGroupLogicalIds) {
+    const resourcesReferencingLogGroup = evaluateCfnTemplate.findReferencesTo(id);
+    for (const r of resourcesReferencingLogGroup) {
+      if (includedTypes.includes(r.Type)) {
+        const groupName = await evaluateCfnTemplate.findPhysicalNameFor(id);
+        if (groupName) {
+          logGroupNames.push(groupName);
+        }
+        // we are explicitely creating a cloudwatch log group for this resource
+        // so add that log group and remove the resource from the list of resources
+        // that might have an implicitely created log group
+      } else if (implicitTypes.includes(r.Type)) {
+        implicitMap.delete(r.LogicalId);
+        const groupName = await evaluateCfnTemplate.findPhysicalNameFor(id);
+        if (groupName) {
+          logGroupNames.push(groupName);
+        }
+      }
+    };
+  }
+
+  // some resources can be created with a custom log group (handled above).
+  // if a custom log group is not created, then the service will create one with a
+  // specific name i.e. '/aws/codebuild/project-name'
+  for (const [k, v] of implicitMap) {
+    const name = await evaluateCfnTemplate.findPhysicalNameFor(k);
+    if (name) {
+      logGroupNames.push(`/aws/${v}/${name}`);
+    }
+  }
+
+  hotswapLogMonitor.addLogGroups(logGroupNames);
 }
