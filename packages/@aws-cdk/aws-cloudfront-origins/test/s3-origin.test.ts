@@ -82,6 +82,20 @@ describe('With bucket', () => {
         Comment: 'Identity for bucket provided by test',
       },
     });
+
+    expect(stack).toHaveResourceLike('AWS::S3::BucketPolicy', {
+      PolicyDocument: {
+        Statement: [{
+          Action: 's3:GetObject',
+          Principal: {
+            CanonicalUser: { 'Fn::GetAtt': ['OriginAccessIdentityDF1E3CAC', 'S3CanonicalUserId'] },
+          },
+          Resource: {
+            'Fn::Join': ['', [{ 'Fn::GetAtt': ['Bucket83908E77', 'Arn'] }, '/*']],
+          },
+        }],
+      },
+    });
   });
 
   test('creates an OriginAccessIdentity and grants read permissions on the bucket', () => {
