@@ -1,8 +1,9 @@
 import { Metric } from '@aws-cdk/aws-cloudwatch';
+import { describeDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import * as sfn from '../lib';
 
-describe('Task state', () => {
+describeDeprecated('Task state', () => {
 
   let stack: cdk.Stack;
   let task: sfn.Task;

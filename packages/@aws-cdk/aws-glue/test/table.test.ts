@@ -2,10 +2,11 @@ import { Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
+import { testFutureBehavior } from '@aws-cdk/cdk-build-tools/lib/feature-flag';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import { testFutureBehavior } from '@aws-cdk/cdk-build-tools/lib/feature-flag';
 import * as glue from '../lib';
+import { PartitionIndex } from '../lib';
 import { CfnTable } from '../lib/glue.generated';
 
 const s3GrantWriteCtx = { [cxapi.S3_GRANT_WRITE_WITHOUT_ACL]: true };
@@ -79,7 +80,6 @@ test('unpartitioned JSON table', () => {
       TableType: 'EXTERNAL_TABLE',
     },
   });
-
 });
 
 test('partitioned JSON table', () => {
@@ -157,7 +157,6 @@ test('partitioned JSON table', () => {
       TableType: 'EXTERNAL_TABLE',
     },
   });
-
 });
 
 test('compressed table', () => {
@@ -223,7 +222,6 @@ test('compressed table', () => {
       TableType: 'EXTERNAL_TABLE',
     },
   });
-
 });
 
 test('table.node.defaultChild', () => {
@@ -325,7 +323,6 @@ test('encrypted table: SSE-S3', () => {
       ],
     },
   });
-
 });
 
 test('encrypted table: SSE-KMS (implicitly created key)', () => {
@@ -413,7 +410,6 @@ test('encrypted table: SSE-KMS (implicitly created key)', () => {
       TableType: 'EXTERNAL_TABLE',
     },
   });
-
 });
 
 test('encrypted table: SSE-KMS (explicitly created key)', () => {
@@ -506,7 +502,6 @@ test('encrypted table: SSE-KMS (explicitly created key)', () => {
       TableType: 'EXTERNAL_TABLE',
     },
   });
-
 });
 
 test('encrypted table: SSE-KMS_MANAGED', () => {
@@ -585,7 +580,6 @@ test('encrypted table: SSE-KMS_MANAGED', () => {
       TableType: 'EXTERNAL_TABLE',
     },
   });
-
 });
 
 test('encrypted table: CSE-KMS (implicitly created key)', () => {
@@ -654,7 +648,6 @@ test('encrypted table: CSE-KMS (implicitly created key)', () => {
       TableType: 'EXTERNAL_TABLE',
     },
   });
-
 });
 
 test('encrypted table: CSE-KMS (explicitly created key)', () => {
@@ -729,7 +722,6 @@ test('encrypted table: CSE-KMS (explicitly created key)', () => {
       TableType: 'EXTERNAL_TABLE',
     },
   });
-
 });
 
 test('encrypted table: CSE-KMS (explicitly passed bucket and key)', () => {
@@ -806,7 +798,6 @@ test('encrypted table: CSE-KMS (explicitly passed bucket and key)', () => {
       TableType: 'EXTERNAL_TABLE',
     },
   });
-
 });
 
 test('explicit s3 bucket and prefix', () => {
@@ -874,7 +865,6 @@ test('explicit s3 bucket and prefix', () => {
       TableType: 'EXTERNAL_TABLE',
     },
   });
-
 });
 
 test('explicit s3 bucket and with empty prefix', () => {
@@ -942,442 +932,619 @@ test('explicit s3 bucket and with empty prefix', () => {
       TableType: 'EXTERNAL_TABLE',
     },
   });
-
 });
 
-test('grants: read only', () => {
-  const stack = new cdk.Stack();
-  const user = new iam.User(stack, 'User');
-  const database = new glue.Database(stack, 'Database', {
-    databaseName: 'database',
-  });
-
-  const table = new glue.Table(stack, 'Table', {
-    database,
-    tableName: 'table',
-    columns: [{
-      name: 'col',
-      type: glue.Schema.STRING,
-    }],
-    compressed: true,
-    dataFormat: glue.DataFormat.JSON,
-  });
-
-  table.grantRead(user);
-
-  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-    PolicyDocument: {
-      Statement: [
-        {
-          Action: [
-            'glue:BatchDeletePartition',
-            'glue:BatchGetPartition',
-            'glue:GetPartition',
-            'glue:GetPartitions',
-            'glue:GetTable',
-            'glue:GetTables',
-            'glue:GetTableVersion',
-            'glue:GetTableVersions',
-          ],
-          Effect: 'Allow',
-          Resource: {
-            'Fn::Join': [
-              '',
-              [
-                'arn:',
-                {
-                  Ref: 'AWS::Partition',
-                },
-                ':glue:',
-                {
-                  Ref: 'AWS::Region',
-                },
-                ':',
-                {
-                  Ref: 'AWS::AccountId',
-                },
-                ':table/',
-                {
-                  Ref: 'DatabaseB269D8BB',
-                },
-                '/',
-                {
-                  Ref: 'Table4C2D914F',
-                },
-              ],
-            ],
-          },
-        },
-        {
-          Action: [
-            's3:GetObject*',
-            's3:GetBucket*',
-            's3:List*',
-          ],
-          Effect: 'Allow',
-          Resource: [
-            {
-              'Fn::GetAtt': [
-                'TableBucketDA42407C',
-                'Arn',
-              ],
-            },
-            {
-              'Fn::Join': [
-                '',
-                [
-                  {
-                    'Fn::GetAtt': [
-                      'TableBucketDA42407C',
-                      'Arn',
-                    ],
-                  },
-                  '/*',
-                ],
-              ],
-            },
-          ],
-        },
-      ],
-      Version: '2012-10-17',
-    },
-    PolicyName: 'UserDefaultPolicy1F97781E',
-    Users: [
-      {
-        Ref: 'User00B015A1',
-      },
-    ],
-  });
-
-});
-
-testFutureBehavior('grants: write only', s3GrantWriteCtx, cdk.App, (app) => {
-  const stack = new cdk.Stack(app);
-  const user = new iam.User(stack, 'User');
-  const database = new glue.Database(stack, 'Database', {
-    databaseName: 'database',
-  });
-
-  const table = new glue.Table(stack, 'Table', {
-    database,
-    tableName: 'table',
-    columns: [{
-      name: 'col',
-      type: glue.Schema.STRING,
-    }],
-    compressed: true,
-    dataFormat: glue.DataFormat.JSON,
-  });
-
-  table.grantWrite(user);
-
-  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-    PolicyDocument: {
-      Statement: [
-        {
-          Action: [
-            'glue:BatchCreatePartition',
-            'glue:BatchDeletePartition',
-            'glue:CreatePartition',
-            'glue:DeletePartition',
-            'glue:UpdatePartition',
-          ],
-          Effect: 'Allow',
-          Resource: {
-            'Fn::Join': [
-              '',
-              [
-                'arn:',
-                {
-                  Ref: 'AWS::Partition',
-                },
-                ':glue:',
-                {
-                  Ref: 'AWS::Region',
-                },
-                ':',
-                {
-                  Ref: 'AWS::AccountId',
-                },
-                ':table/',
-                {
-                  Ref: 'DatabaseB269D8BB',
-                },
-                '/',
-                {
-                  Ref: 'Table4C2D914F',
-                },
-              ],
-            ],
-          },
-        },
-        {
-          Action: [
-            's3:DeleteObject*',
-            's3:PutObject',
-            's3:Abort*',
-          ],
-          Effect: 'Allow',
-          Resource: [
-            {
-              'Fn::GetAtt': [
-                'TableBucketDA42407C',
-                'Arn',
-              ],
-            },
-            {
-              'Fn::Join': [
-                '',
-                [
-                  {
-                    'Fn::GetAtt': [
-                      'TableBucketDA42407C',
-                      'Arn',
-                    ],
-                  },
-                  '/*',
-                ],
-              ],
-            },
-          ],
-        },
-      ],
-      Version: '2012-10-17',
-    },
-    PolicyName: 'UserDefaultPolicy1F97781E',
-    Users: [
-      {
-        Ref: 'User00B015A1',
-      },
-    ],
-  });
-
-});
-
-testFutureBehavior('grants: read and write', s3GrantWriteCtx, cdk.App, (app) => {
-  const stack = new cdk.Stack(app);
-  const user = new iam.User(stack, 'User');
-  const database = new glue.Database(stack, 'Database', {
-    databaseName: 'database',
-  });
-
-  const table = new glue.Table(stack, 'Table', {
-    database,
-    tableName: 'table',
-    columns: [{
-      name: 'col',
-      type: glue.Schema.STRING,
-    }],
-    compressed: true,
-    dataFormat: glue.DataFormat.JSON,
-  });
-
-  table.grantReadWrite(user);
-
-  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-    PolicyDocument: {
-      Statement: [
-        {
-          Action: [
-            'glue:BatchDeletePartition',
-            'glue:BatchGetPartition',
-            'glue:GetPartition',
-            'glue:GetPartitions',
-            'glue:GetTable',
-            'glue:GetTables',
-            'glue:GetTableVersion',
-            'glue:GetTableVersions',
-            'glue:BatchCreatePartition',
-            'glue:CreatePartition',
-            'glue:DeletePartition',
-            'glue:UpdatePartition',
-          ],
-          Effect: 'Allow',
-          Resource: {
-            'Fn::Join': [
-              '',
-              [
-                'arn:',
-                {
-                  Ref: 'AWS::Partition',
-                },
-                ':glue:',
-                {
-                  Ref: 'AWS::Region',
-                },
-                ':',
-                {
-                  Ref: 'AWS::AccountId',
-                },
-                ':table/',
-                {
-                  Ref: 'DatabaseB269D8BB',
-                },
-                '/',
-                {
-                  Ref: 'Table4C2D914F',
-                },
-              ],
-            ],
-          },
-        },
-        {
-          Action: [
-            's3:GetObject*',
-            's3:GetBucket*',
-            's3:List*',
-            's3:DeleteObject*',
-            's3:PutObject',
-            's3:Abort*',
-          ],
-          Effect: 'Allow',
-          Resource: [
-            {
-              'Fn::GetAtt': [
-                'TableBucketDA42407C',
-                'Arn',
-              ],
-            },
-            {
-              'Fn::Join': [
-                '',
-                [
-                  {
-                    'Fn::GetAtt': [
-                      'TableBucketDA42407C',
-                      'Arn',
-                    ],
-                  },
-                  '/*',
-                ],
-              ],
-            },
-          ],
-        },
-      ],
-      Version: '2012-10-17',
-    },
-    PolicyName: 'UserDefaultPolicy1F97781E',
-    Users: [
-      {
-        Ref: 'User00B015A1',
-      },
-    ],
-  });
-
-});
-
-test('validate: at least one column', () => {
-  expect(() => {
-    createTable({
-      columns: [],
-      tableName: 'name',
+describe('add partition index', () => {
+  test('fails if no partition keys', () => {
+    const stack = new cdk.Stack();
+    const database = new glue.Database(stack, 'Database', {
+      databaseName: 'database',
     });
-  }).toThrowError('you must specify at least one column for the table');
 
-});
-
-test('validate: unique column names', () => {
-  expect(() => {
-    createTable({
-      tableName: 'name',
+    const table = new glue.Table(stack, 'Table', {
+      database,
+      tableName: 'table',
       columns: [{
-        name: 'col1',
-        type: glue.Schema.STRING,
-      }, {
-        name: 'col1',
+        name: 'col',
         type: glue.Schema.STRING,
       }],
+      dataFormat: glue.DataFormat.JSON,
     });
-  }).toThrowError("column names and partition keys must be unique, but 'col1' is duplicated");
 
-});
+    expect(() => table.addPartitionIndex({
+      indexName: 'my-part',
+      keyNames: ['part'],
+    })).toThrowError(/The table must have partition keys to create a partition index/);
+  });
 
-test('validate: unique partition keys', () => {
-  expect(() => {
-    createTable({
-      tableName: 'name',
+  test('fails if partition index does not match partition keys', () => {
+    const stack = new cdk.Stack();
+    const database = new glue.Database(stack, 'Database', {
+      databaseName: 'database',
+    });
+
+    const table = new glue.Table(stack, 'Table', {
+      database,
+      tableName: 'table',
       columns: [{
-        name: 'col1',
+        name: 'col',
         type: glue.Schema.STRING,
       }],
       partitionKeys: [{
-        name: 'p1',
-        type: glue.Schema.STRING,
-      }, {
-        name: 'p1',
-        type: glue.Schema.STRING,
+        name: 'part',
+        type: glue.Schema.SMALL_INT,
       }],
+      dataFormat: glue.DataFormat.JSON,
     });
-  }).toThrowError("column names and partition keys must be unique, but 'p1' is duplicated");
 
-});
+    expect(() => table.addPartitionIndex({
+      indexName: 'my-part',
+      keyNames: ['not-part'],
+    })).toThrowError(/All index keys must also be partition keys/);
+  });
 
-test('validate: column names and partition keys are all unique', () => {
-  expect(() => {
-    createTable({
-      tableName: 'name',
+  test('fails with index name < 1 character', () => {
+    const stack = new cdk.Stack();
+    const database = new glue.Database(stack, 'Database', {
+      databaseName: 'database',
+    });
+
+    const table = new glue.Table(stack, 'Table', {
+      database,
+      tableName: 'table',
       columns: [{
-        name: 'col1',
+        name: 'col',
         type: glue.Schema.STRING,
       }],
       partitionKeys: [{
-        name: 'col1',
+        name: 'part',
+        type: glue.Schema.SMALL_INT,
+      }],
+      dataFormat: glue.DataFormat.JSON,
+    });
+
+    expect(() => table.addPartitionIndex({
+      indexName: '',
+      keyNames: ['part'],
+    })).toThrowError(/Index name must be between 1 and 255 characters, but got 0/);
+  });
+
+  test('fails with > 3 indexes', () => {
+    const stack = new cdk.Stack();
+    const database = new glue.Database(stack, 'Database', {
+      databaseName: 'database',
+    });
+
+    const indexes: PartitionIndex[] = [{
+      indexName: 'ind1',
+      keyNames: ['part'],
+    }, {
+      indexName: 'ind2',
+      keyNames: ['part'],
+    }, {
+      indexName: 'ind3',
+      keyNames: ['part'],
+    }, {
+      indexName: 'ind4',
+      keyNames: ['part'],
+    }];
+
+    expect(() => new glue.Table(stack, 'Table', {
+      database,
+      tableName: 'table',
+      columns: [{
+        name: 'col',
         type: glue.Schema.STRING,
       }],
-    });
-  }).toThrowError("column names and partition keys must be unique, but 'col1' is duplicated");
-
+      partitionKeys: [{
+        name: 'part',
+        type: glue.Schema.SMALL_INT,
+      }],
+      partitionIndexes: indexes,
+      dataFormat: glue.DataFormat.JSON,
+    })).toThrowError('Maximum number of partition indexes allowed is 3');
+  });
 });
 
-test('validate: can not specify an explicit bucket and encryption', () => {
-  expect(() => {
-    createTable({
+describe('grants', () => {
+  test('custom permissions', () => {
+    const stack = new cdk.Stack();
+    const user = new iam.User(stack, 'User');
+    const database = new glue.Database(stack, 'Database', {
+      databaseName: 'database',
+    });
+
+    const table = new glue.Table(stack, 'Table', {
+      database,
+      tableName: 'table',
+      columns: [{
+        name: 'col',
+        type: glue.Schema.STRING,
+      }],
+      compressed: true,
+      dataFormat: glue.DataFormat.JSON,
+    });
+
+    table.grant(user, ['glue:UpdateTable']);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'glue:UpdateTable',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':glue:',
+                  {
+                    Ref: 'AWS::Region',
+                  },
+                  ':',
+                  {
+                    Ref: 'AWS::AccountId',
+                  },
+                  ':table/',
+                  {
+                    Ref: 'DatabaseB269D8BB',
+                  },
+                  '/',
+                  {
+                    Ref: 'Table4C2D914F',
+                  },
+                ],
+              ],
+            },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+      PolicyName: 'UserDefaultPolicy1F97781E',
+      Users: [
+        {
+          Ref: 'User00B015A1',
+        },
+      ],
+    });
+  });
+
+  test('read only', () => {
+    const stack = new cdk.Stack();
+    const user = new iam.User(stack, 'User');
+    const database = new glue.Database(stack, 'Database', {
+      databaseName: 'database',
+    });
+
+    const table = new glue.Table(stack, 'Table', {
+      database,
+      tableName: 'table',
+      columns: [{
+        name: 'col',
+        type: glue.Schema.STRING,
+      }],
+      compressed: true,
+      dataFormat: glue.DataFormat.JSON,
+    });
+
+    table.grantRead(user);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              'glue:BatchGetPartition',
+              'glue:GetPartition',
+              'glue:GetPartitions',
+              'glue:GetTable',
+              'glue:GetTables',
+              'glue:GetTableVersion',
+              'glue:GetTableVersions',
+            ],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':glue:',
+                  {
+                    Ref: 'AWS::Region',
+                  },
+                  ':',
+                  {
+                    Ref: 'AWS::AccountId',
+                  },
+                  ':table/',
+                  {
+                    Ref: 'DatabaseB269D8BB',
+                  },
+                  '/',
+                  {
+                    Ref: 'Table4C2D914F',
+                  },
+                ],
+              ],
+            },
+          },
+          {
+            Action: [
+              's3:GetObject*',
+              's3:GetBucket*',
+              's3:List*',
+            ],
+            Effect: 'Allow',
+            Resource: [
+              {
+                'Fn::GetAtt': [
+                  'TableBucketDA42407C',
+                  'Arn',
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      'Fn::GetAtt': [
+                        'TableBucketDA42407C',
+                        'Arn',
+                      ],
+                    },
+                    '/*',
+                  ],
+                ],
+              },
+            ],
+          },
+        ],
+        Version: '2012-10-17',
+      },
+      PolicyName: 'UserDefaultPolicy1F97781E',
+      Users: [
+        {
+          Ref: 'User00B015A1',
+        },
+      ],
+    });
+  });
+
+  testFutureBehavior('write only', s3GrantWriteCtx, cdk.App, (app) => {
+    const stack = new cdk.Stack(app);
+    const user = new iam.User(stack, 'User');
+    const database = new glue.Database(stack, 'Database', {
+      databaseName: 'database',
+    });
+
+    const table = new glue.Table(stack, 'Table', {
+      database,
+      tableName: 'table',
+      columns: [{
+        name: 'col',
+        type: glue.Schema.STRING,
+      }],
+      compressed: true,
+      dataFormat: glue.DataFormat.JSON,
+    });
+
+    table.grantWrite(user);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              'glue:BatchCreatePartition',
+              'glue:BatchDeletePartition',
+              'glue:CreatePartition',
+              'glue:DeletePartition',
+              'glue:UpdatePartition',
+            ],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':glue:',
+                  {
+                    Ref: 'AWS::Region',
+                  },
+                  ':',
+                  {
+                    Ref: 'AWS::AccountId',
+                  },
+                  ':table/',
+                  {
+                    Ref: 'DatabaseB269D8BB',
+                  },
+                  '/',
+                  {
+                    Ref: 'Table4C2D914F',
+                  },
+                ],
+              ],
+            },
+          },
+          {
+            Action: [
+              's3:DeleteObject*',
+              's3:PutObject',
+              's3:Abort*',
+            ],
+            Effect: 'Allow',
+            Resource: [
+              {
+                'Fn::GetAtt': [
+                  'TableBucketDA42407C',
+                  'Arn',
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      'Fn::GetAtt': [
+                        'TableBucketDA42407C',
+                        'Arn',
+                      ],
+                    },
+                    '/*',
+                  ],
+                ],
+              },
+            ],
+          },
+        ],
+        Version: '2012-10-17',
+      },
+      PolicyName: 'UserDefaultPolicy1F97781E',
+      Users: [
+        {
+          Ref: 'User00B015A1',
+        },
+      ],
+    });
+  });
+
+  testFutureBehavior('read and write', s3GrantWriteCtx, cdk.App, (app) => {
+    const stack = new cdk.Stack(app);
+    const user = new iam.User(stack, 'User');
+    const database = new glue.Database(stack, 'Database', {
+      databaseName: 'database',
+    });
+
+    const table = new glue.Table(stack, 'Table', {
+      database,
+      tableName: 'table',
+      columns: [{
+        name: 'col',
+        type: glue.Schema.STRING,
+      }],
+      compressed: true,
+      dataFormat: glue.DataFormat.JSON,
+    });
+
+    table.grantReadWrite(user);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: [
+              'glue:BatchGetPartition',
+              'glue:GetPartition',
+              'glue:GetPartitions',
+              'glue:GetTable',
+              'glue:GetTables',
+              'glue:GetTableVersion',
+              'glue:GetTableVersions',
+              'glue:BatchCreatePartition',
+              'glue:BatchDeletePartition',
+              'glue:CreatePartition',
+              'glue:DeletePartition',
+              'glue:UpdatePartition',
+            ],
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':glue:',
+                  {
+                    Ref: 'AWS::Region',
+                  },
+                  ':',
+                  {
+                    Ref: 'AWS::AccountId',
+                  },
+                  ':table/',
+                  {
+                    Ref: 'DatabaseB269D8BB',
+                  },
+                  '/',
+                  {
+                    Ref: 'Table4C2D914F',
+                  },
+                ],
+              ],
+            },
+          },
+          {
+            Action: [
+              's3:GetObject*',
+              's3:GetBucket*',
+              's3:List*',
+              's3:DeleteObject*',
+              's3:PutObject',
+              's3:Abort*',
+            ],
+            Effect: 'Allow',
+            Resource: [
+              {
+                'Fn::GetAtt': [
+                  'TableBucketDA42407C',
+                  'Arn',
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    {
+                      'Fn::GetAtt': [
+                        'TableBucketDA42407C',
+                        'Arn',
+                      ],
+                    },
+                    '/*',
+                  ],
+                ],
+              },
+            ],
+          },
+        ],
+        Version: '2012-10-17',
+      },
+      PolicyName: 'UserDefaultPolicy1F97781E',
+      Users: [
+        {
+          Ref: 'User00B015A1',
+        },
+      ],
+    });
+  });
+});
+
+describe('validate', () => {
+  test('at least one column', () => {
+    expect(() => {
+      createTable({
+        columns: [],
+        tableName: 'name',
+      });
+    }).toThrowError('you must specify at least one column for the table');
+
+  });
+
+  test('unique column names', () => {
+    expect(() => {
+      createTable({
+        tableName: 'name',
+        columns: [{
+          name: 'col1',
+          type: glue.Schema.STRING,
+        }, {
+          name: 'col1',
+          type: glue.Schema.STRING,
+        }],
+      });
+    }).toThrowError("column names and partition keys must be unique, but 'col1' is duplicated");
+
+  });
+
+  test('unique partition keys', () => {
+    expect(() => {
+      createTable({
+        tableName: 'name',
+        columns: [{
+          name: 'col1',
+          type: glue.Schema.STRING,
+        }],
+        partitionKeys: [{
+          name: 'p1',
+          type: glue.Schema.STRING,
+        }, {
+          name: 'p1',
+          type: glue.Schema.STRING,
+        }],
+      });
+    }).toThrowError("column names and partition keys must be unique, but 'p1' is duplicated");
+
+  });
+
+  test('column names and partition keys are all unique', () => {
+    expect(() => {
+      createTable({
+        tableName: 'name',
+        columns: [{
+          name: 'col1',
+          type: glue.Schema.STRING,
+        }],
+        partitionKeys: [{
+          name: 'col1',
+          type: glue.Schema.STRING,
+        }],
+      });
+    }).toThrowError("column names and partition keys must be unique, but 'col1' is duplicated");
+
+  });
+
+  test('can not specify an explicit bucket and encryption', () => {
+    expect(() => {
+      createTable({
+        tableName: 'name',
+        columns: [{
+          name: 'col1',
+          type: glue.Schema.STRING,
+        }],
+        bucket: new s3.Bucket(new cdk.Stack(), 'Bucket'),
+        encryption: glue.TableEncryption.KMS,
+      });
+    }).toThrowError('you can not specify encryption settings if you also provide a bucket');
+  });
+
+  test('can explicitly pass bucket if Encryption undefined', () => {
+    expect(() => createTable({
       tableName: 'name',
       columns: [{
         name: 'col1',
         type: glue.Schema.STRING,
       }],
       bucket: new s3.Bucket(new cdk.Stack(), 'Bucket'),
-      encryption: glue.TableEncryption.KMS,
-    });
-  }).toThrowError('you can not specify encryption settings if you also provide a bucket');
-});
+      encryption: undefined,
+    })).not.toThrow();
+  });
 
-test('validate: can explicitly pass bucket if Encryption undefined', () => {
-  expect(() => createTable({
-    tableName: 'name',
-    columns: [{
-      name: 'col1',
-      type: glue.Schema.STRING,
-    }],
-    bucket: new s3.Bucket(new cdk.Stack(), 'Bucket'),
-    encryption: undefined,
-  })).not.toThrow();
-});
+  test('can explicitly pass bucket if Unencrypted', () => {
+    expect(() => createTable({
+      tableName: 'name',
+      columns: [{
+        name: 'col1',
+        type: glue.Schema.STRING,
+      }],
+      bucket: new s3.Bucket(new cdk.Stack(), 'Bucket'),
+      encryption: undefined,
+    })).not.toThrow();
+  });
 
-test('validate: can explicitly pass bucket if Unencrypted', () => {
-  expect(() => createTable({
-    tableName: 'name',
-    columns: [{
-      name: 'col1',
-      type: glue.Schema.STRING,
-    }],
-    bucket: new s3.Bucket(new cdk.Stack(), 'Bucket'),
-    encryption: undefined,
-  })).not.toThrow();
-});
-
-test('validate: can explicitly pass bucket if ClientSideKms', () => {
-  expect(() => createTable({
-    tableName: 'name',
-    columns: [{
-      name: 'col1',
-      type: glue.Schema.STRING,
-    }],
-    bucket: new s3.Bucket(new cdk.Stack(), 'Bucket'),
-    encryption: glue.TableEncryption.CLIENT_SIDE_KMS,
-  })).not.toThrow();
+  test('can explicitly pass bucket if ClientSideKms', () => {
+    expect(() => createTable({
+      tableName: 'name',
+      columns: [{
+        name: 'col1',
+        type: glue.Schema.STRING,
+      }],
+      bucket: new s3.Bucket(new cdk.Stack(), 'Bucket'),
+      encryption: glue.TableEncryption.CLIENT_SIDE_KMS,
+    })).not.toThrow();
+  });
 });
 
 test('Table.fromTableArn', () => {

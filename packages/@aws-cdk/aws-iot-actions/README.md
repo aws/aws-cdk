@@ -24,6 +24,9 @@ Currently supported are:
 - Invoke a Lambda function
 - Put objects to a S3 bucket
 - Put logs to CloudWatch Logs
+- Capture CloudWatch metrics
+- Change state for a CloudWatch alarm
+- Put records to Kinesis Data Firehose stream
 
 ## Invoke a Lambda function
 
@@ -119,5 +122,90 @@ const logGroup = new logs.LogGroup(this, 'MyLogGroup');
 new iot.TopicRule(this, 'TopicRule', {
   sql: iot.IotSql.fromStringAsVer20160323("SELECT topic(2) as device_id FROM 'device/+/data'"),
   actions: [new actions.CloudWatchLogsAction(logGroup)],
+});
+```
+
+## Capture CloudWatch metrics
+
+The code snippet below creates an AWS IoT Rule that capture CloudWatch metrics
+when it is triggered.
+
+```ts
+import * as iot from '@aws-cdk/aws-iot';
+import * as actions from '@aws-cdk/aws-iot-actions';
+
+const topicRule = new iot.TopicRule(this, 'TopicRule', {
+  sql: iot.IotSql.fromStringAsVer20160323(
+    "SELECT topic(2) as device_id, namespace, unit, value, timestamp FROM 'device/+/data'",
+  ),
+  actions: [
+    new actions.CloudWatchPutMetricAction({
+      metricName: '${topic(2)}',
+      metricNamespace: '${namespace}',
+      metricUnit: '${unit}',
+      metricValue: '${value}',
+      metricTimestamp: '${timestamp}',
+    }),
+  ],
+});
+```
+
+## Change the state of an Amazon CloudWatch alarm
+
+The code snippet below creates an AWS IoT Rule that changes the state of an Amazon CloudWatch alarm when it is triggered:
+
+```ts
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
+import * as iot from '@aws-cdk/aws-iot';
+import * as actions from '@aws-cdk/aws-iot-actions';
+
+const metric = new cloudwatch.Metric({
+  namespace: 'MyNamespace',
+  metricName: 'MyMetric',
+  dimensions: { MyDimension: 'MyDimensionValue' },
+});
+const alarm = new cloudwatch.Alarm(this, 'MyAlarm', {
+  metric: metric,
+  threshold: 100,
+  evaluationPeriods: 3,
+  datapointsToAlarm: 2,
+});
+
+const topicRule = new iot.TopicRule(this, 'TopicRule', {
+  sql: iot.IotSql.fromStringAsVer20160323("SELECT topic(2) as device_id FROM 'device/+/data'"),
+  actions: [
+    new actions.CloudWatchSetAlarmStateAction(alarm, {
+      reason: 'AWS Iot Rule action is triggered',
+      alarmStateToSet: cloudwatch.AlarmState.ALARM,
+    }),
+  ],
+});
+```
+
+## Put records to Kinesis Data Firehose stream
+
+The code snippet below creates an AWS IoT Rule that put records to Put records
+to Kinesis Data Firehose stream when it is triggered.
+
+```ts
+import * as iot from '@aws-cdk/aws-iot';
+import * as actions from '@aws-cdk/aws-iot-actions';
+import * as s3 from '@aws-cdk/aws-s3';
+import * as firehose from '@aws-cdk/aws-kinesisfirehose';
+import * as destinations from '@aws-cdk/aws-kinesisfirehose-destinations';
+
+const bucket = new s3.Bucket(this, 'MyBucket');
+const stream = new firehose.DeliveryStream(this, 'MyStream', {
+  destinations: [new destinations.S3Bucket(bucket)],
+});
+
+const topicRule = new iot.TopicRule(this, 'TopicRule', {
+  sql: iot.IotSql.fromStringAsVer20160323("SELECT * FROM 'device/+/data'"),
+  actions: [
+    new actions.FirehoseStreamAction(stream, {
+      batchMode: true,
+      recordSeparator: actions.FirehoseStreamRecordSeparator.NEWLINE,
+    }),
+  ],
 });
 ```

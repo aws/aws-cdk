@@ -208,6 +208,7 @@ export class CdkToolkit {
           ci: options.ci,
           rollback: options.rollback,
           hotswap: options.hotswap,
+          extraUserAgent: options.extraUserAgent,
         });
 
         const message = result.noOp
@@ -294,31 +295,39 @@ export class CdkToolkit {
     // |            |                |      | <------------------ |            | <------------------ |            | <-------------|
     // --------------                --------  'cdk deploy' done  --------------  'cdk deploy' done  --------------
     let latch: 'pre-ready' | 'open' | 'deploying' | 'queued' = 'pre-ready';
+
+    const deployAndWatch = async () => {
+      latch = 'deploying';
+
+      await this.invokeDeployFromWatch(options);
+
+      // If latch is still 'deploying' after the 'await', that's fine,
+      // but if it's 'queued', that means we need to deploy again
+      while ((latch as 'deploying' | 'queued') === 'queued') {
+        // TypeScript doesn't realize latch can change between 'awaits',
+        // and thinks the above 'while' condition is always 'false' without the cast
+        latch = 'deploying';
+        print("Detected file changes during deployment. Invoking 'cdk deploy' again");
+        await this.invokeDeployFromWatch(options);
+      }
+      latch = 'open';
+    };
+
     chokidar.watch(watchIncludes, {
       ignored: watchExcludes,
       cwd: rootDir,
       // ignoreInitial: true,
-    }).on('ready', () => {
+    }).on('ready', async () => {
       latch = 'open';
       debug("'watch' received the 'ready' event. From now on, all file changes will trigger a deployment");
-    }).on('all', async (event, filePath) => {
+      print("Triggering initial 'cdk deploy'");
+      await deployAndWatch();
+    }).on('all', async (event: 'add' | 'addDir' | 'change' | 'unlink' | 'unlinkDir', filePath?: string) => {
       if (latch === 'pre-ready') {
         print(`'watch' is observing ${event === 'addDir' ? 'directory' : 'the file'} '%s' for changes`, filePath);
       } else if (latch === 'open') {
-        latch = 'deploying';
         print("Detected change to '%s' (type: %s). Triggering 'cdk deploy'", filePath, event);
-        await this.invokeDeployFromWatch(options);
-
-        // If latch is still 'deploying' after the 'await', that's fine,
-        // but if it's 'queued', that means we need to deploy again
-        while ((latch as 'deploying' | 'queued') === 'queued') {
-          // TypeScript doesn't realize latch can change between 'awaits',
-          // and thinks the above 'while' condition is always 'false' without the cast
-          latch = 'deploying';
-          print("Detected file changes during deployment. Invoking 'cdk deploy' again");
-          await this.invokeDeployFromWatch(options);
-        }
-        latch = 'open';
+        await deployAndWatch();
       } else { // this means latch is either 'deploying' or 'queued'
         latch = 'queued';
         print("Detected change to '%s' (type: %s) while 'cdk deploy' is still running. " +
@@ -579,6 +588,7 @@ export class CdkToolkit {
 
   private async invokeDeployFromWatch(options: WatchOptions): Promise<void> {
     // 'watch' has different defaults than regular 'deploy'
+    const hotswap = options.hotswap === undefined ? true : options.hotswap;
     const deployOptions: DeployOptions = {
       ...options,
       requireApproval: RequireApproval.Never,
@@ -587,7 +597,8 @@ export class CdkToolkit {
       // as that would lead to a cycle
       watch: false,
       cacheCloudAssembly: false,
-      hotswap: options.hotswap === undefined ? true : options.hotswap,
+      hotswap: hotswap,
+      extraUserAgent: `cdk-watch/hotswap-${hotswap ? 'on' : 'off'}`,
     };
 
     try {
@@ -719,6 +730,13 @@ interface WatchOptions {
    * @default - false for regular deployments, true for 'watch' deployments
    */
   readonly hotswap?: boolean;
+
+  /**
+   * The extra string to append to the User-Agent header when performing AWS SDK calls.
+   *
+   * @default - nothing extra is appended to the User-Agent header
+   */
+  readonly extraUserAgent?: string;
 }
 
 export interface DeployOptions extends WatchOptions {
