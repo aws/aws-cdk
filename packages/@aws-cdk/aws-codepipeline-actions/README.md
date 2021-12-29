@@ -201,6 +201,8 @@ You can also use the `CodeStarConnectionsSourceAction` to connect to GitHub, in 
 Similarly to `GitHubSourceAction`, `CodeStarConnectionsSourceAction` also emits the variables:
 
 ```ts
+declare const project: codebuild.Project;
+
 const sourceOutput = new codepipeline.Artifact();
 const sourceAction = new codepipeline_actions.CodeStarConnectionsSourceAction({
   actionName: 'BitBucket_Source',
