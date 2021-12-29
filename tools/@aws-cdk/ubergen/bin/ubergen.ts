@@ -378,6 +378,7 @@ async function transformPackage(
     await copyOrTransformFiles(destination, destination, allLibraries, uberPackageJson);
   } else {
     await copyOrTransformFiles(library.root, destination, allLibraries, uberPackageJson);
+    await copyLiterateSources(path.join(library.root, 'test'), path.join(destination, 'test'), allLibraries, uberPackageJson);
   }
 
   await fs.writeFile(
@@ -505,6 +506,23 @@ async function copyOrTransformFiles(from: string, to: string, libraries: readonl
   });
 
   await Promise.all(promises);
+}
+
+async function copyLiterateSources(from: string, to: string, libraries: readonly LibraryReference[], uberPackageJson: PackageJson) {
+  const libRoot = resolveLibRoot(uberPackageJson);
+  await Promise.all((await fs.readdir(from)).flatMap(async name => {
+    if (!name.endsWith('.lit.ts')) {
+      return [];
+    }
+
+    await fs.mkdirp(to);
+
+    return fs.writeFile(
+      path.join(to, name),
+      await rewriteLibraryImports(path.join(from, name), to, libRoot, libraries),
+      { encoding: 'utf8' },
+    );
+  }));
 }
 
 /**
