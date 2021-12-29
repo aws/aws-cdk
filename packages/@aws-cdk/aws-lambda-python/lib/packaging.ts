@@ -16,7 +16,7 @@ export interface PackagingProps {
   /**
    * Command to export the dependencies into a pip-compatible `requirements.txt` format.
    *
-   * @default '''
+   * @default - No dependencies are exported.
    */
   readonly exportCommand?: string;
 }
