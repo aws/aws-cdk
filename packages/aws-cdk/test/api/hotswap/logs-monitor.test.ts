@@ -57,8 +57,6 @@ test('continue to the next page if it exists', async () => {
       };
     },
   ]);
-  // jest.advanceTimersByTime(2000);
-  expect(setInterval).toHaveBeenCalledTimes(1);
 
   expect(printer.eventMessages).toEqual(['message', 'some-message']);
 });

@@ -301,6 +301,7 @@ export class CdkToolkit {
     const logMonitor = options.logs ? new CloudWatchLogEventMonitor({ hotswapTime: new Date() }) : undefined;
     const deployAndWatch = async () => {
       latch = 'deploying';
+      logMonitor?.setActive(false);
 
       await this.invokeDeployFromWatch(options, logMonitor);
 
@@ -314,6 +315,7 @@ export class CdkToolkit {
         await this.invokeDeployFromWatch(options, logMonitor);
       }
       latch = 'open';
+      logMonitor?.setActive(true);
     };
 
     chokidar.watch(watchIncludes, {

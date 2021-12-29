@@ -1,6 +1,6 @@
 import * as util from 'util';
 import * as colors from 'colors/safe';
-import { error } from '../../../logging';
+import { print, error } from '../../../logging';
 import { flatten } from '../../../util/arrays';
 import { ISDK } from '../../aws-auth';
 
@@ -46,6 +46,8 @@ export class CloudWatchLogEventMonitor {
   private logGroups = new Set<string>();
   private sdk?: ISDK;
 
+  private active = true;
+
   /**
    * The event printer that controls printing out
    * CloudWatchLog Events
@@ -54,16 +56,20 @@ export class CloudWatchLogEventMonitor {
 
   constructor(options: CloudWatchLogEventMonitorOptions = {}) {
     this.startTime = options.hotswapTime?.getTime() ?? Date.now();
-    this.printer = options.printer ?? new EventPrinter({
-      stream: process.stderr,
-    });
+    this.printer = options.printer ?? new EventPrinter();
 
-    // call tick every x seconds
-    setInterval(() => void (this.tick()), SLEEP);
+    this.scheduleNextTick();
   }
 
   public addSdk(sdk: ISDK): void {
     this.sdk = sdk;
+  }
+
+  // allows the ability to "pause" the monitor. The primary
+  // use case for this is when we are in the middle of performing a deployment
+  // and don't want to interweave all the logs together
+  public setActive(active: boolean): void {
+    this.active = active;
   }
 
   /**
@@ -75,15 +81,27 @@ export class CloudWatchLogEventMonitor {
     });
   }
 
+  private scheduleNextTick(): void {
+    setTimeout(() => void(this.tick()), SLEEP);
+  }
+
   private async tick(): Promise<void> {
+    if (!this.active) {
+      this.scheduleNextTick();
+      return;
+    }
     try {
       const events = flatten(await this.readNewEvents());
+      if (events.length > 0) {
+        this.startTime = Date.now();
+      }
       events.forEach(event => {
         this.printer.print(event);
       });
     } catch (e) {
       error('Error occurred while monitoring logs: %s', e);
     }
+    this.scheduleNextTick();
   }
 
   /**
@@ -124,12 +142,6 @@ export class CloudWatchLogEventMonitor {
               timestamp: event.timestamp ? new Date(event.timestamp) : new Date(),
             });
           }
-          // we are processing all of the log groups in parallel so
-          // we update the startTime to be the latest event timestamp that we read
-          // from any log group
-          if (event.timestamp && event.timestamp > this.startTime) {
-            this.startTime = event.timestamp+1;
-          }
         }
         nextToken = response.nextToken;
       } while (nextToken);
@@ -146,22 +158,14 @@ export class CloudWatchLogEventMonitor {
   }
 }
 
-interface PrinterProps {
-  /**
-   * Stream to write to
-   */
-  readonly stream: NodeJS.WriteStream;
-}
+interface PrinterProps {}
 
 export interface IEventPrinter {
   print(event: CloudWatchLogEvent): void;
 }
 
 abstract class EventPrinterBase {
-  protected readonly stream: NodeJS.WriteStream;
-
-  constructor(protected readonly props: PrinterProps) {
-    this.stream = props.stream;
+  constructor(protected readonly props?: PrinterProps) {
   }
 
   public abstract print(event: CloudWatchLogEvent): void;
@@ -171,12 +175,12 @@ abstract class EventPrinterBase {
  * a CloudWatchLogs event printer
  */
 export class EventPrinter extends EventPrinterBase {
-  constructor(props: PrinterProps) {
+  constructor(props?: PrinterProps) {
     super(props);
   }
 
   public print(event: CloudWatchLogEvent): void {
-    this.stream.write(util.format('[%s] %s %s',
+    print(util.format('[%s] %s %s',
       colors.blue(event.logGroup),
       colors.yellow(event.timestamp.toLocaleTimeString()),
       event.message));
