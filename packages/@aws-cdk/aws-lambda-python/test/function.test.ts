@@ -73,7 +73,7 @@ test('PythonFunction with index in a subdirectory', () => {
   }));
 
   Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
-    Handler: 'inner/custom_index.custom_handler',
+    Handler: 'inner.custom_index.custom_handler',
   });
 });
 

@@ -78,7 +78,7 @@
             "Arn"
           ]
         },
-        "Handler": "inner/custom_index.custom_handler",
+        "Handler": "inner.custom_index.custom_handler",
         "Runtime": "python3.7"
       },
       "DependsOn": [

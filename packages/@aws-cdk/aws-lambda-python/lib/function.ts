@@ -14,7 +14,7 @@ import { Construct } from '@aws-cdk/core';
  */
 export interface PythonFunctionProps extends FunctionOptions {
   /**
-   * The path to the root directory of the function.
+   * Path to the source of the function or the location for dependencies.
    */
   readonly entry: string;
 
@@ -70,6 +70,8 @@ export class PythonFunction extends Function {
       throw new Error('Only `PYTHON` runtimes are supported.');
     }
 
+    const resolvedHandler =`${index.slice(0, -3)}.${handler}`.replace('/', '.');
+
     super(scope, id, {
       ...props,
       runtime,
@@ -78,7 +80,7 @@ export class PythonFunction extends Function {
         runtime,
         ...props.bundling,
       }),
-      handler: `${index.slice(0, -3)}.${handler}`,
+      handler: resolvedHandler,
     });
   }
 }
