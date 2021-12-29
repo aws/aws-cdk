@@ -423,7 +423,7 @@ new autoscaling.AutoScalingGroup(this, 'ASG', {
     autoscaling.TerminationPolicy.OLDEST_INSTANCE,
     autoscaling.TerminationPolicy.DEFAULT,
   ],
-)};
+});
 ```
 
 ## Protecting new instances from being terminated on scale-in
