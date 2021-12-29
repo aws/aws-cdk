@@ -149,17 +149,45 @@ describe('log group', () => {
 
   });
 
-  test('import from arn', () => {
+  test('import from arn, same region', () => {
     // GIVEN
     const stack2 = new Stack();
 
     // WHEN
-    const imported = LogGroup.fromLogGroupArn(stack2, 'lg', 'arn:aws:logs:us-east-1:123456789012:log-group:my-log-group');
+    const imported = LogGroup.fromLogGroupArn(
+      stack2,
+      'lg',
+      `arn:aws:logs:${stack2.region}:123456789012:log-group:my-log-group`,
+    );
     imported.addStream('MakeMeAStream');
 
     // THEN
     expect(imported.logGroupName).toEqual('my-log-group');
-    expect(imported.logGroupArn).toEqual('arn:aws:logs:us-east-1:123456789012:log-group:my-log-group:*');
+    expect(imported.logGroupArn).toEqual(`arn:aws:logs:${stack2.region}:123456789012:log-group:my-log-group:*`);
+    expect(imported.env.region).toEqual(stack2.region);
+    expect(stack2).toHaveResource('AWS::Logs::LogStream', {
+      LogGroupName: 'my-log-group',
+    });
+
+  });
+
+  test('import from arn, different region', () => {
+    // GIVEN
+    const stack2 = new Stack();
+    const importRegion = 'asgard-1';
+
+    // WHEN
+    const imported = LogGroup.fromLogGroupArn(
+      stack2,
+      'lg',
+      `arn:aws:logs:${importRegion}:123456789012:log-group:my-log-group`,
+    );
+    imported.addStream('MakeMeAStream');
+
+    // THEN
+    expect(imported.logGroupName).toEqual('my-log-group');
+    expect(imported.logGroupArn).toEqual(`arn:aws:logs:${importRegion}:123456789012:log-group:my-log-group:*`);
+    expect(imported.env.region).toEqual(importRegion);
     expect(stack2).toHaveResource('AWS::Logs::LogStream', {
       LogGroupName: 'my-log-group',
     });
