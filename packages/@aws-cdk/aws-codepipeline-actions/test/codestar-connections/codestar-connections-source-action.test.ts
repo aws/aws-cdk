@@ -263,7 +263,9 @@ describe('CodeStar Connections source Action', () => {
   });
 });
 
-function createBitBucketAndCodeBuildPipeline(stack: Stack, props: Partial<cpactions.CodeStarConnectionsSourceActionProps> = {}): codepipeline.Pipeline {
+function createBitBucketAndCodeBuildPipeline(
+  stack: Stack, props: Partial<cpactions.CodeStarConnectionsSourceActionProps> = {},
+): codepipeline.Pipeline {
   const sourceOutput = new codepipeline.Artifact();
   const sourceAction = new cpactions.CodeStarConnectionsSourceAction({
     actionName: 'BitBucket',
