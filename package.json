@@ -16,6 +16,7 @@
   },
   "devDependencies": {
     "@yarnpkg/lockfile": "^1.1.0",
+    "cdk-generate-synthetic-examples": "^0.1.1",
     "conventional-changelog-cli": "^2.2.2",
     "fs-extra": "^9.1.0",
     "graceful-fs": "^4.2.8",
@@ -27,8 +28,7 @@
     "lerna": "^4.0.0",
     "patch-package": "^6.4.7",
     "standard-version": "^9.3.2",
-    "typescript": "~3.9.10",
-    "cdk-generate-synthetic-examples": "^0.1.1"
+    "typescript": "~3.9.10"
   },
   "resolutions": {
     "string-width": "^4.2.3"
