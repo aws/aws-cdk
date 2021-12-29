@@ -298,7 +298,7 @@ export class CdkToolkit {
     // --------------                --------  'cdk deploy' done  --------------  'cdk deploy' done  --------------
     let latch: 'pre-ready' | 'open' | 'deploying' | 'queued' = 'pre-ready';
 
-    const logMonitor = options.logs !== false ? new CloudWatchLogEventMonitor({ hotswapTime: new Date() }).start() : undefined;
+    const logMonitor = options.logs ? new CloudWatchLogEventMonitor({ hotswapTime: new Date() }) : undefined;
     const deployAndWatch = async () => {
       latch = 'deploying';
 
@@ -746,7 +746,7 @@ interface WatchOptions {
    * Whether to show CloudWatch logs for hotswapped resources
    * locally in the users terminal
    *
-   * @default - true
+   * @default - false
    */
   readonly logs?: boolean;
 }

@@ -17,8 +17,6 @@ afterAll(() => {
   jest.useRealTimers();
 });
 
-// const flushPromises = () => new Promise(res => process.nextTick(res));
-
 let TIMESTAMP: number;
 let HUMAN_TIME: string;
 
@@ -109,8 +107,8 @@ async function testMonitorWithEventCalls(
   }
   filterLogEvents.mockImplementation(() => { return {}; });
   sdk.stubCloudWatchLogs({ filterLogEvents });
-  const monitor = new CloudWatchLogEventMonitor({ printer, hotswapTime: new Date(T100) }).start();
-  monitor.addSDK(sdk);
+  const monitor = new CloudWatchLogEventMonitor({ printer, hotswapTime: new Date(T100) });
+  monitor.addSdk(sdk);
   monitor.addLogGroups(['loggroup']);
   await waitForCondition(() => finished);
 }

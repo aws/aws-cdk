@@ -1,6 +1,7 @@
 import * as util from 'util';
 import * as colors from 'colors/safe';
 import { error } from '../../../logging';
+import { flatten } from '../../../util/arrays';
 import { ISDK } from '../../aws-auth';
 
 // how often we should read events from CloudWatchLogs
@@ -49,22 +50,19 @@ export class CloudWatchLogEventMonitor {
    * The event printer that controls printing out
    * CloudWatchLog Events
    */
-  public printer: IEventPrinter;
+  private readonly printer: IEventPrinter;
 
   constructor(options: CloudWatchLogEventMonitorOptions = {}) {
     this.startTime = options.hotswapTime?.getTime() ?? Date.now();
     this.printer = options.printer ?? new EventPrinter({
       stream: process.stderr,
     });
-  }
 
-  public start(): CloudWatchLogEventMonitor {
     // call tick every x seconds
     setInterval(() => void (this.tick()), SLEEP);
-    return this;
   }
 
-  public addSDK(sdk: ISDK): void {
+  public addSdk(sdk: ISDK): void {
     this.sdk = sdk;
   }
 
@@ -79,18 +77,10 @@ export class CloudWatchLogEventMonitor {
 
   private async tick(): Promise<void> {
     try {
-      const events = await this.readNewEvents();
-      const flatEvents: CloudWatchLogEvent[] = Array.prototype.concat.apply([], events);
-      flatEvents.forEach(event => {
+      const events = flatten(await this.readNewEvents());
+      events.forEach(event => {
         this.printer.print(event);
       });
-      // don't update the startTime until we've processed events
-      // we may miss some events if they come in after we've read the
-      // events, but before we update the startTime
-      if (flatEvents.length > 0) {
-        this.startTime = Date.now();
-      }
-
     } catch (e) {
       error('Error occurred while monitoring logs: %s', e);
     }
@@ -100,7 +90,7 @@ export class CloudWatchLogEventMonitor {
    * Reads all new log events from a set of CloudWatch Log Groups
    * in parallel
    */
-  private async readNewEvents(): Promise<Array<CloudWatchLogEvent[]>> {
+  private async readNewEvents(): Promise<Array<Array<CloudWatchLogEvent>>> {
     const groups = Array.from(this.logGroups);
     return Promise.all(groups.map(group => {
       return this.readEventsFromLogGroup(group);
@@ -116,12 +106,12 @@ export class CloudWatchLogEventMonitor {
   private async readEventsFromLogGroup(logGroupName: string): Promise<CloudWatchLogEvent[]> {
     const events: CloudWatchLogEvent[] = [];
     try {
-      let finished = false;
       let nextToken: string | undefined;
-      while (!finished) {
+      do {
         const response = await this.sdk!.cloudWatchLogs().filterLogEvents({
           logGroupName: logGroupName,
           nextToken,
+          limit: 100,
           startTime: this.startTime,
         }).promise();
         const eventPage = response.events ?? [];
@@ -134,13 +124,15 @@ export class CloudWatchLogEventMonitor {
               timestamp: event.timestamp ? new Date(event.timestamp) : new Date(),
             });
           }
+          // we are processing all of the log groups in parallel so
+          // we update the startTime to be the latest event timestamp that we read
+          // from any log group
+          if (event.timestamp && event.timestamp > this.startTime) {
+            this.startTime = event.timestamp;
+          }
         }
-
         nextToken = response.nextToken;
-        if (nextToken === undefined) {
-          finished = true;
-        }
-      }
+      } while (nextToken);
     } catch (e) {
       // with Lambda functions the CloudWatch is not created
       // until something is logged, so just keep polling until

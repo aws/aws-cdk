@@ -6,12 +6,10 @@ import { print } from '../logging';
 import { ISDK, Mode, SdkProvider } from './aws-auth';
 import { DeployStackResult } from './deploy-stack';
 import { isHotswappableCodeBuildProjectChange } from './hotswap/code-build-projects';
-import { findCloudWatchLogGroups } from './hotswap/cloudwatch-logs';
 import { ICON, ChangeHotswapImpact, ChangeHotswapResult, HotswapOperation, HotswappableChangeCandidate, ListStackResources } from './hotswap/common';
 import { isHotswappableEcsServiceChange } from './hotswap/ecs-services';
 import { EvaluateCloudFormationTemplate } from './hotswap/evaluate-cloudformation-template';
 import { isHotswappableLambdaFunctionChange } from './hotswap/lambda-functions';
-import { CloudWatchLogEventMonitor } from './hotswap/monitor/logs-monitor';
 import { isHotswappableS3BucketDeploymentChange } from './hotswap/s3-bucket-deployments';
 import { isHotswappableStateMachineChange } from './hotswap/stepfunctions-state-machines';
 import { CloudFormationStack } from './util/cloudformation';
@@ -26,7 +24,6 @@ import { CloudFormationStack } from './util/cloudformation';
 export async function tryHotswapDeployment(
   sdkProvider: SdkProvider, assetParams: { [key: string]: string },
   cloudFormationStack: CloudFormationStack, stackArtifact: cxapi.CloudFormationStackArtifact,
-  hotswapLogMonitor?: CloudWatchLogEventMonitor,
 ): Promise<DeployStackResult | undefined> {
   // resolve the environment, so we can substitute things like AWS::Region in CFN expressions
   const resolvedEnv = await sdkProvider.resolveEnvironment(stackArtifact.environment);
@@ -34,9 +31,6 @@ export async function tryHotswapDeployment(
   // it assumes the bootstrap deploy Role, which doesn't have permissions to update Lambda functions
   const sdk = await sdkProvider.forEnvironment(resolvedEnv, Mode.ForWriting);
 
-  // add the sdk to the hotswapLogMonitor so that it also has the
-  // correct credentials to monitor CloudWatch log groups
-  hotswapLogMonitor?.addSDK(sdk);
   // The current resources of the Stack.
   // We need them to figure out the physical name of a resource in case it wasn't specified by the user.
   // We fetch it lazily, to save a service call, in case all hotswapped resources have their physical names set.
@@ -59,9 +53,6 @@ export async function tryHotswapDeployment(
     return undefined;
   }
 
-  if (hotswapLogMonitor) {
-    await findCloudWatchLogGroups(listStackResources, evaluateCfnTemplate, hotswapLogMonitor);
-  }
 
   // apply the short-circuitable changes
   await applyAllHotswappableChanges(sdk, hotswappableChanges);
@@ -223,7 +214,9 @@ function isCandidateForHotswapping(change: cfn_diff.ResourceDifference): Hotswap
 }
 
 async function applyAllHotswappableChanges(
-  sdk: ISDK, hotswappableChanges: HotswapOperation[]): Promise<void[]> {
+  sdk: ISDK,
+  hotswappableChanges: HotswapOperation[],
+): Promise<void[]> {
   print(`\n${ICON} hotswapping resources:`);
   return Promise.all(hotswappableChanges.map(hotswapOperation => {
     return applyHotswappableChange(sdk, hotswapOperation);
@@ -248,7 +241,7 @@ async function applyHotswappableChange(sdk: ISDK, hotswapOperation: HotswapOpera
   }
 }
 
-class LazyListStackResources implements ListStackResources {
+export class LazyListStackResources implements ListStackResources {
   private stackResources: CloudFormation.StackResourceSummary[] | undefined;
 
   constructor(private readonly sdk: ISDK, private readonly stackName: string) {

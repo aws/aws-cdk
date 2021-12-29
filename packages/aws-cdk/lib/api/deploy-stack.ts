@@ -10,6 +10,7 @@ import { publishAssets } from '../util/asset-publishing';
 import { contentHash } from '../util/content-hash';
 import { ISDK, SdkProvider } from './aws-auth';
 import { tryHotswapDeployment } from './hotswap-deployments';
+import { registerCloudWatchLogGroups } from './hotswap/cloudwatch-logs';
 import { ICON } from './hotswap/common';
 import { CfnEvaluationException } from './hotswap/evaluate-cloudformation-template';
 import { CloudWatchLogEventMonitor } from './hotswap/monitor/logs-monitor';
@@ -259,11 +260,15 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
   const bodyParameter = await makeBodyParameter(stackArtifact, options.resolvedEnvironment, legacyAssets, options.toolkitInfo, options.sdk);
   await publishAssets(legacyAssets.toManifest(stackArtifact.assembly.directory), options.sdkProvider, stackEnv);
 
+  if (options.hotswapLogMonitor) {
+    await registerCloudWatchLogGroups(options.sdkProvider, stackArtifact, assetParams, options.hotswapLogMonitor);
+  }
+
   if (options.hotswap) {
     // attempt to short-circuit the deployment if possible
     try {
       const hotswapDeploymentResult = await tryHotswapDeployment(
-        options.sdkProvider, assetParams, cloudFormationStack, stackArtifact, options.hotswapLogMonitor);
+        options.sdkProvider, assetParams, cloudFormationStack, stackArtifact);
       if (hotswapDeploymentResult) {
         return hotswapDeploymentResult;
       }

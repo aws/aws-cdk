@@ -160,6 +160,7 @@ async function parseCommandLineArguments() {
       })
       .options('logs', {
         type: 'boolean',
+        default: true,
         desc: 'Show CloudWatch log events from hotswapped resources in the terminal. ' +
           "'true' by default, use --no-logs to turn off",
       }),
