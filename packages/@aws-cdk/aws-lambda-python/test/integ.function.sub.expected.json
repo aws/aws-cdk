@@ -79,7 +79,7 @@
           ]
         },
         "Handler": "inner.custom_index.custom_handler",
-        "Runtime": "python3.7"
+        "Runtime": "python3.8"
       },
       "DependsOn": [
         "myhandlerServiceRole77891068"

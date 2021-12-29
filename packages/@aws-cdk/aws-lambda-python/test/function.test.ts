@@ -111,6 +111,7 @@ test('allows specifying hash type', () => {
     entry: 'test/lambda-handler-nodeps',
     index: 'index.py',
     handler: 'handler',
+    runtime: Runtime.PYTHON_3_8,
     bundling: { assetHashType: AssetHashType.SOURCE },
   });
 
@@ -118,6 +119,7 @@ test('allows specifying hash type', () => {
     entry: 'test/lambda-handler-nodeps',
     index: 'index.py',
     handler: 'handler',
+    runtime: Runtime.PYTHON_3_8,
     bundling: { assetHashType: AssetHashType.OUTPUT },
   });
 
@@ -125,6 +127,7 @@ test('allows specifying hash type', () => {
     entry: 'test/lambda-handler-nodeps',
     index: 'index.py',
     handler: 'handler',
+    runtime: Runtime.PYTHON_3_8,
     bundling: { assetHash: 'MY_CUSTOM_HASH' },
   });
 
@@ -156,6 +159,7 @@ test('Allows use of custom bundling image', () => {
 
   new PythonFunction(stack, 'function', {
     entry,
+    runtime: Runtime.PYTHON_3_8,
     bundling: { image },
   });
 

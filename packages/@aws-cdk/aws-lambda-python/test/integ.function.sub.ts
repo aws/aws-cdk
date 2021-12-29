@@ -1,4 +1,5 @@
 import * as path from 'path';
+import { Runtime } from '@aws-cdk/aws-lambda';
 import { App, CfnOutput, Stack, StackProps } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import * as lambda from '../lib';
@@ -16,6 +17,7 @@ class TestStack extends Stack {
       entry: path.join(__dirname, 'lambda-handler-sub'),
       index: 'inner/custom_index.py',
       handler: 'custom_handler',
+      runtime: Runtime.PYTHON_3_8,
     });
 
     new CfnOutput(this, 'FunctionArn', {

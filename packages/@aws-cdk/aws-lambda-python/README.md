@@ -27,7 +27,7 @@ Define a `PythonFunction`:
 ```ts
 new lambda.PythonFunction(this, 'MyFunction', {
   entry: '/path/to/my/function', // required
-  runtime: Runtime.PYTHON_3_6, // optional, defaults to Python 3.7
+  runtime: Runtime.PYTHON_3_8, // required
   index: 'my_index.py', // optional, defaults to 'index.py'
   handler: 'my_exported_func', // optional, defaults to 'handler'
 });
@@ -36,6 +36,10 @@ new lambda.PythonFunction(this, 'MyFunction', {
 All other properties of `lambda.Function` are supported, see also the [AWS Lambda construct library](https://github.com/aws/aws-cdk/tree/master/packages/%40aws-cdk/aws-lambda).
 
 ## Python Layer
+
+You may create a python-based lambda layer with `PythonLayerVersion`. If `PythonLayerVersion` detects a `requirements.txt`
+or `Pipfile` or `poetry.lock` with the associated `pyproject.toml` at the entry path, then `PythonLayerVersion` will include the dependencies inline with your code in the
+layer.
 
 Define a `PythonLayerVersion`:
 
@@ -50,7 +54,7 @@ A layer can also be used as a part of a `PythonFunction`:
 ```ts
 new lambda.PythonFunction(this, 'MyFunction', {
   entry: '/path/to/my/function',
-  runtime: Runtime.PYTHON_3_6,
+  runtime: Runtime.PYTHON_3_8,
   layers: [
     new lambda.PythonLayerVersion(this, 'MyLayer', {
       entry: '/path/to/my/layer', // point this to your library's directory
@@ -105,12 +109,6 @@ Packaging is executed using the `Packaging` class, which:
 ├── poetry.lock # your poetry lock file has to be present at the entry path
 ```
 
-**Lambda Layer Support**
-
-You may create a python-based lambda layer with `PythonLayerVersion`. If `PythonLayerVersion` detects a `requirements.txt`
-or `Pipfile` or `poetry.lock` with the associated `pyproject.toml` at the entry path, then `PythonLayerVersion` will include the dependencies inline with your code in the
-layer.
-
 ## Custom Bundling
 
 Custom bundling can be performed by using custom Docker images for bundling dependencies. If using a custom Docker image for bundling, the dependencies are installed with `pip`, `pipenv` or `poetry` by using the `Packaging` class.
@@ -123,6 +121,7 @@ const image = DockerImage.fromBuild(entry);
 
 new lambda.PythonFunction(this, 'function', {
   entry,
+  runtime: Runtime.PYTHON_3_8,
   bundling: { image },
 });
 ```

@@ -1,4 +1,5 @@
 import * as path from 'path';
+import { Runtime } from '@aws-cdk/aws-lambda';
 import { App, CfnOutput, DockerImage, Stack, StackProps } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import * as lambda from '../lib';
@@ -16,6 +17,7 @@ class TestStack extends Stack {
     const fn = new lambda.PythonFunction(this, 'my_handler', {
       entry: entry,
       bundling: { image: DockerImage.fromBuild(path.join(entry)) },
+      runtime: Runtime.PYTHON_3_8,
     });
 
     new CfnOutput(this, 'FunctionArn', {

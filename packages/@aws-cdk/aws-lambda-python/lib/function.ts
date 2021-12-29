@@ -18,6 +18,15 @@ export interface PythonFunctionProps extends FunctionOptions {
    */
   readonly entry: string;
 
+
+  /**
+   * The runtime environment. Only runtimes of the Python family are
+   * supported.
+   *
+   * @default Runtime.PYTHON_3_7
+   */
+  readonly runtime: Runtime;
+
   /**
    * The path (relative to entry) to the index file containing the exported handler.
    *
@@ -33,14 +42,6 @@ export interface PythonFunctionProps extends FunctionOptions {
   readonly handler?: string;
 
   /**
-   * The runtime environment. Only runtimes of the Python family are
-   * supported.
-   *
-   * @default Runtime.PYTHON_3_7
-   */
-  readonly runtime?: Runtime;
-
-  /**
    * Bundling options to use for this function. Use this to specify custom bundling options like
    * the bundling Docker image, asset hash type, custom hash, architecture, etc.
    *
@@ -54,7 +55,7 @@ export interface PythonFunctionProps extends FunctionOptions {
  */
 export class PythonFunction extends Function {
   constructor(scope: Construct, id: string, props: PythonFunctionProps) {
-    const { index = 'index.py', handler = 'handler', runtime = Runtime.PYTHON_3_7 } = props;
+    const { index = 'index.py', handler = 'handler', runtime } = props;
     if (props.index && !/\.py$/.test(props.index)) {
       throw new Error('Only Python (.py) index files are supported.');
     }
@@ -66,11 +67,11 @@ export class PythonFunction extends Function {
       throw new Error(`Cannot find index file at ${resolvedIndex}`);
     }
 
+    const resolvedHandler =`${index.slice(0, -3)}.${handler}`.replace('/', '.');
+
     if (props.runtime && props.runtime.family !== RuntimeFamily.PYTHON) {
       throw new Error('Only `PYTHON` runtimes are supported.');
     }
-
-    const resolvedHandler =`${index.slice(0, -3)}.${handler}`.replace('/', '.');
 
     super(scope, id, {
       ...props,
