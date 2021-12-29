@@ -82,3 +82,31 @@ export async function establishResourcePhysicalName(
   }
   return evaluateCfnTemplate.findPhysicalNameFor(logicalId);
 }
+
+/**
+ * This function transforms all keys (recursively) in the provided `val` object.
+ *
+ * @param val The object whose keys need to be transformed.
+ * @param transform The function that will be applied to each key.
+ * @returns A new object with the same values as `val`, but with all keys transformed according to `transform`.
+ */
+export function transformObjectKeys(val: any, transform: (str: string) => string): any {
+  if (val == null || typeof val !== 'object') {
+    return val;
+  }
+  if (Array.isArray(val)) {
+    return val.map((input: any) => transformObjectKeys(input, transform));
+  }
+  const ret: { [k: string]: any; } = {};
+  for (const [k, v] of Object.entries(val)) {
+    ret[transform(k)] = transformObjectKeys(v, transform);
+  }
+  return ret;
+}
+
+/**
+ * This function lower cases the first character of the string provided.
+ */
+export function lowerCaseFirstCharacter(str: string): string {
+  return str.length > 0 ? `${str[0].toLowerCase()}${str.substr(1)}` : str;
+}
