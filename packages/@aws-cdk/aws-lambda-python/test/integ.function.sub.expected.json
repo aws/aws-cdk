@@ -36,7 +36,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParametersd0ac5e077793c756d208df04eb91701183746739c972112bb3c7f7a0305a5997S3Bucket58F8CFE2"
+            "Ref": "AssetParametersaae099a54a7a6ae974f100887ef280892eff27c6417284a4acc3674c326a3095S3Bucket5DE7143C"
           },
           "S3Key": {
             "Fn::Join": [
@@ -49,7 +49,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersd0ac5e077793c756d208df04eb91701183746739c972112bb3c7f7a0305a5997S3VersionKey84BD7D73"
+                          "Ref": "AssetParametersaae099a54a7a6ae974f100887ef280892eff27c6417284a4acc3674c326a3095S3VersionKey0A92875A"
                         }
                       ]
                     }
@@ -62,7 +62,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParametersd0ac5e077793c756d208df04eb91701183746739c972112bb3c7f7a0305a5997S3VersionKey84BD7D73"
+                          "Ref": "AssetParametersaae099a54a7a6ae974f100887ef280892eff27c6417284a4acc3674c326a3095S3VersionKey0A92875A"
                         }
                       ]
                     }
@@ -87,17 +87,17 @@
     }
   },
   "Parameters": {
-    "AssetParametersd0ac5e077793c756d208df04eb91701183746739c972112bb3c7f7a0305a5997S3Bucket58F8CFE2": {
+    "AssetParametersaae099a54a7a6ae974f100887ef280892eff27c6417284a4acc3674c326a3095S3Bucket5DE7143C": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"d0ac5e077793c756d208df04eb91701183746739c972112bb3c7f7a0305a5997\""
+      "Description": "S3 bucket for asset \"aae099a54a7a6ae974f100887ef280892eff27c6417284a4acc3674c326a3095\""
     },
-    "AssetParametersd0ac5e077793c756d208df04eb91701183746739c972112bb3c7f7a0305a5997S3VersionKey84BD7D73": {
+    "AssetParametersaae099a54a7a6ae974f100887ef280892eff27c6417284a4acc3674c326a3095S3VersionKey0A92875A": {
       "Type": "String",
-      "Description": "S3 key for asset version \"d0ac5e077793c756d208df04eb91701183746739c972112bb3c7f7a0305a5997\""
+      "Description": "S3 key for asset version \"aae099a54a7a6ae974f100887ef280892eff27c6417284a4acc3674c326a3095\""
     },
-    "AssetParametersd0ac5e077793c756d208df04eb91701183746739c972112bb3c7f7a0305a5997ArtifactHash66313509": {
+    "AssetParametersaae099a54a7a6ae974f100887ef280892eff27c6417284a4acc3674c326a3095ArtifactHash7B9F443A": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"d0ac5e077793c756d208df04eb91701183746739c972112bb3c7f7a0305a5997\""
+      "Description": "Artifact hash for asset \"aae099a54a7a6ae974f100887ef280892eff27c6417284a4acc3674c326a3095\""
     }
   },
   "Outputs": {
