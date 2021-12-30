@@ -159,6 +159,9 @@ function findPatches(data: any, patchSource: any): Patch[] {
       }
     } else {
       for (const key of Object.keys(fragment)) {
+        if (!(key in actualData)) {
+          actualData[key] = {};
+        }
         recurse(actualData[key], fragment[key], [...jsonPath, key]);
       }
     }
