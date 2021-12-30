@@ -125,7 +125,13 @@
           "www.amazon.com": "amzn1.application.12312k3j234j13rjiwuenf",
           "accounts.google.com": "12345678012.apps.googleusercontent.com"
         }
-      }
+      },
+      "DependsOn": [
+        "OtherPool7DA7F2F7",
+        "OtherPoolUserPoolClientForundefined1B97829F",
+        "PoolD3F588B8",
+        "PoolUserPoolClientForundefinedBF6BDE57"
+      ]
     },
     "identitypoolAuthenticatedRoleB074B49D": {
       "Type": "AWS::IAM::Role",
@@ -166,7 +172,13 @@
             ]
           ]
         }
-      }
+      },
+      "DependsOn": [
+        "OtherPool7DA7F2F7",
+        "OtherPoolUserPoolClientForundefined1B97829F",
+        "PoolD3F588B8",
+        "PoolUserPoolClientForundefinedBF6BDE57"
+      ]
     },
     "identitypoolAuthenticatedRoleDefaultPolicyCB4D2992": {
       "Type": "AWS::IAM::Policy",
@@ -187,7 +199,13 @@
             "Ref": "identitypoolAuthenticatedRoleB074B49D"
           }
         ]
-      }
+      },
+      "DependsOn": [
+        "OtherPool7DA7F2F7",
+        "OtherPoolUserPoolClientForundefined1B97829F",
+        "PoolD3F588B8",
+        "PoolUserPoolClientForundefinedBF6BDE57"
+      ]
     },
     "identitypoolUnauthenticatedRoleE61CAC70": {
       "Type": "AWS::IAM::Role",
@@ -228,7 +246,13 @@
             ]
           ]
         }
-      }
+      },
+      "DependsOn": [
+        "OtherPool7DA7F2F7",
+        "OtherPoolUserPoolClientForundefined1B97829F",
+        "PoolD3F588B8",
+        "PoolUserPoolClientForundefinedBF6BDE57"
+      ]
     },
     "identitypoolUnauthenticatedRoleDefaultPolicyBFACCE98": {
       "Type": "AWS::IAM::Policy",
@@ -249,7 +273,13 @@
             "Ref": "identitypoolUnauthenticatedRoleE61CAC70"
           }
         ]
-      }
+      },
+      "DependsOn": [
+        "OtherPool7DA7F2F7",
+        "OtherPoolUserPoolClientForundefined1B97829F",
+        "PoolD3F588B8",
+        "PoolUserPoolClientForundefinedBF6BDE57"
+      ]
     },
     "identitypoolDefaultRoleAttachment6BCAB114": {
       "Type": "AWS::Cognito::IdentityPoolRoleAttachment",
@@ -277,7 +307,11 @@
         "identitypoolAuthenticatedRoleB074B49D",
         "identitypoolE2A6D099",
         "identitypoolUnauthenticatedRoleDefaultPolicyBFACCE98",
-        "identitypoolUnauthenticatedRoleE61CAC70"
+        "identitypoolUnauthenticatedRoleE61CAC70",
+        "OtherPool7DA7F2F7",
+        "OtherPoolUserPoolClientForundefined1B97829F",
+        "PoolD3F588B8",
+        "PoolUserPoolClientForundefinedBF6BDE57"
       ]
     }
   }

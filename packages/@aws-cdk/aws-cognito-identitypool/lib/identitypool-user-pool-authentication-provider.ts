@@ -93,9 +93,6 @@ export class UserPoolAuthenticationProvider implements IUserPoolAuthenticationPr
     identityPool: IIdentityPool,
     options?: UserPoolAuthenticationProviderBindOptions,
   ): UserPoolAuthenticationProviderBindConfig[] {
-    if (!this.userPool.identityProviders || !this.userPool.identityProviders.length) {
-      throw new Error('User Pool has no Identity Providers. A User Pool must have Identity Providers to be used with an Identity Pool');
-    }
     if (options?.hasOwnProperty('disableServerSideTokenCheck') && typeof options!.disableServerSideTokenCheck === 'boolean') {
       this.disableServerSideTokenCheck = options!.disableServerSideTokenCheck;
     }
