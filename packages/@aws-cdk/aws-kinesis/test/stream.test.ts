@@ -398,7 +398,7 @@ describe('Kinesis data streams', () => {
     });
   }),
 
-  test('uses explicit provisioned streamMode %s', () => {
+  test('uses explicit provisioned streamMode', () => {
     const stack = new Stack();
 
     new Stream(stack, 'MyStream', {
@@ -455,7 +455,7 @@ describe('Kinesis data streams', () => {
     });
   });
 
-  test('uses explicit on-demand streamMode %s', () => {
+  test('uses explicit on-demand streamMode', () => {
     const stack = new Stack();
 
     new Stream(stack, 'MyStream', {
