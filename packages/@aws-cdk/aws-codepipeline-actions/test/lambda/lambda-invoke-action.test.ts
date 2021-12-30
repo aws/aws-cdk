@@ -130,6 +130,55 @@ describe('', () => {
       })).toThrow(/Only one of userParameters or userParametersString can be specified/);
     });
 
+    test("assigns the Action's Region, when provided a region and stack has a configured region", () => {
+      const stack = new Stack(undefined, 'Stack', {
+        env: { region: 'us-east-1' },
+      });
+      new codepipeline.Pipeline(stack, 'Pipeline', {
+        stages: [
+          {
+            stageName: 'Source',
+            actions: [
+              new cpactions.GitHubSourceAction({
+                actionName: 'GitHub',
+                output: new codepipeline.Artifact(),
+                oauthToken: SecretValue.plainText('secret'),
+                owner: 'awslabs',
+                repo: 'aws-cdk',
+              }),
+            ],
+          },
+          {
+            stageName: 'Invoke',
+            actions: [
+              new cpactions.LambdaInvokeAction({
+                actionName: 'Lambda',
+                lambda: new lambda.Function(stack, 'Lambda', {
+                  code: lambda.Code.fromCfnParameters(),
+                  handler: 'index.handler',
+                  runtime: lambda.Runtime.NODEJS_10_X,
+                }),
+                region: 'us-east-1',
+              }),
+            ],
+          },
+        ],
+      });
+
+      expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+        Stages: [
+          {},
+          {
+            Actions: [
+              {
+                Region: 'us-east-1',
+              },
+            ],
+          },
+        ],
+      });
+    });
+
     test("assigns the Action's Role with read permissions to the Bucket if it has only inputs", () => {
       const stack = stackIncludingLambdaInvokeCodePipeline({
         lambdaInput: new codepipeline.Artifact(),
