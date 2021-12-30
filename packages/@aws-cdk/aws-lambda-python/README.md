@@ -123,7 +123,7 @@ Additional build args for bundling that refer to PyPI indexes can be specified a
 const entry = '/path/to/function';
 const image = DockerImage.fromBuild(entry);
 
-new PythonFunction(this, 'function', {
+new lambda.PythonFunction(this, 'function', {
   entry,
   runtime: Runtime.PYTHON_3_8,
   bundling: {
@@ -162,7 +162,7 @@ const codeArtifactAuthToken = execSync(`aws codeartifact get-authorization-token
 
 const indexUrl = `https://aws:${codeArtifactAuthToken}@${domain}-${domainOwner}.d.codeartifact.${this.stack.env?.region}.amazonaws.com/pypi/${repoName}/simple/`;
 
-new PythonFunction(this, 'function', {
+new lambda.PythonFunction(this, 'function', {
   entry,
   runtime: Runtime.PYTHON_3_8,
   bundling: {
