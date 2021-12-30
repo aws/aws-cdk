@@ -336,6 +336,10 @@ describe('Kinesis data streams', () => {
 
     // THEN
     expect(stack).toHaveResource('AWS::Kinesis::Stream', {
+      ShardCount: 1,
+      StreamModeDetails: {
+        StreamMode: 'PROVISIONED',
+      },
       RetentionPeriodHours: 24,
       StreamEncryption: {
         EncryptionType: 'KMS',
@@ -382,6 +386,10 @@ describe('Kinesis data streams', () => {
     });
 
     expect(stack).toHaveResource('AWS::Kinesis::Stream', {
+      ShardCount: 1,
+      StreamModeDetails: {
+        StreamMode: 'PROVISIONED',
+      },
       RetentionPeriodHours: 24,
       StreamEncryption: {
         EncryptionType: 'KMS',
