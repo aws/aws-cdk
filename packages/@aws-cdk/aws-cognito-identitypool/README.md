@@ -340,7 +340,7 @@ See [here](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-pr
 
 ### Authentication Flow
 
-Identity Pool [Authentication Flow](https://docs.aws.amazon.com/cognito/latest/developerguide/authentication-flow.html)  defaults to the enhanced, simplified flow. The Classic (basic) Authentication Flow  
+Identity Pool [Authentication Flow](https://docs.aws.amazon.com/cognito/latest/developerguide/authentication-flow.html) defaults to the enhanced, simplified flow. The Classic (basic) Authentication Flow  
 can also be implemented using `allowClassicFlow`:
 
 ```ts
