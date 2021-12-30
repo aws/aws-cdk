@@ -96,7 +96,8 @@
   "awslint": {
     "exclude": [
       "no-unused-type:@aws-cdk/aws-cognito.IdentityPoolProviderType",
-      "props-physical-name:@aws-cdk/aws-cognito-identitypool.IdentityPoolRoleAttachmentProps"
+      "props-physical-name:@aws-cdk/aws-cognito-identitypool.IdentityPoolRoleAttachmentProps",
+      "integ-return-type:@aws-cdk/aws-cognito-identitypool.IUserPoolAuthenticationProvider.bind"
     ]
   },
   "stability": "experimental",

@@ -24,7 +24,6 @@ import {
 } from './identitypool-role-attachment';
 import {
   IUserPoolAuthenticationProvider,
-  UserPoolAuthenticationProviderBindConfig,
 } from './identitypool-user-pool-authentication-provider';
 
 /**
@@ -392,7 +391,7 @@ export class IdentityPool extends Resource implements IIdentityPool {
       physicalName: props.identityPoolName,
     });
     const authProviders: IdentityPoolAuthenticationProviders = props.authenticationProviders || {};
-    const providers = authProviders.userPool ? authProviders.userPool.bind(this) : undefined;
+    const providers = authProviders.userPool ? authProviders.userPool.bind(this, this) : undefined;
     if (providers && providers.length) this.cognitoIdentityProviders = providers;
     const openIdConnectProviderArns = authProviders.openIdConnectProviders ?
       authProviders.openIdConnectProviders.map(openIdProvider =>
@@ -445,7 +444,7 @@ export class IdentityPool extends Resource implements IIdentityPool {
    * Add a User Pool to the IdentityPool and configure User Pool Client to handle identities
    */
   public addUserPoolAuthentication(userPool: IUserPoolAuthenticationProvider): void {
-    const providers = userPool.bind(this);
+    const providers = userPool.bind(this, this);
     this.cognitoIdentityProviders = this.cognitoIdentityProviders.concat(providers);
   }
 

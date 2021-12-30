@@ -1,27 +1,27 @@
 import { randomBytes } from 'crypto';
 import {
   IUserPool,
-  IUserPoolIdentityProvider,
   UserPoolClient,
   UserPoolClientProps,
 } from '@aws-cdk/aws-cognito';
 import {
   Construct, Node,
 } from 'constructs';
-import { IdentityPool } from './identitypool';
+import { IIdentityPool } from './identitypool';
 
 /**
  * Represents the concept of a User Pool Authentication Provider.
  * You use user pool authentication providers to configure User Pools
  * and User Pool Clients for use with Identity Pools
  */
- export interface IUserPoolAuthenticationProvider {
+export interface IUserPoolAuthenticationProvider {
   /**
    * The method called when a given User Pool Authentication Provider is added
    * (for the first time) to an Identity Pool.
    */
   bind(
-    scope: IdentityPool,
+    scope: Construct,
+    identityPool: IIdentityPool,
     options?: UserPoolAuthenticationProviderBindOptions
   ): UserPoolAuthenticationProviderBindConfig[];
 }
@@ -46,7 +46,7 @@ export interface UserPoolAuthenticationProviderBindOptions {
 /**
  * Represents a UserPoolAuthenticationProvider Bind Configuration
  */
- export interface UserPoolAuthenticationProviderBindConfig {
+export interface UserPoolAuthenticationProviderBindConfig {
   /**
    * Client Id of the Associated User Pool Client
    */
@@ -66,7 +66,7 @@ export interface UserPoolAuthenticationProviderBindOptions {
 /**
  * Defines a User Pool Authentication Provider
  */
-export class UserPoolAuthenticationProvider {
+export class UserPoolAuthenticationProvider implements IUserPoolAuthenticationProvider {
 
   /**
    * The User Pool of the Associated Identity Providers
@@ -88,22 +88,26 @@ export class UserPoolAuthenticationProvider {
     this.disableServerSideTokenCheck = props.disableServerSideTokenCheck ? true : false;
   }
 
-  public bind(scope: IdentityPool, options?: UserPoolAuthenticationProviderBindOptions): UserPoolAuthenticationProviderBindConfig[] {
+  public bind(
+    _scope: Construct,
+    identityPool: IIdentityPool,
+    options?: UserPoolAuthenticationProviderBindOptions,
+  ): UserPoolAuthenticationProviderBindConfig[] {
     if (!this.userPool.identityProviders || !this.userPool.identityProviders.length) {
       throw new Error('User Pool has no Identity Providers. A User Pool must have Identity Providers to be used with an Identity Pool');
     }
-    if (options.hasOwnProperty('disableServerSideTokenCheck')) {
-      this.disableServerSideTokenCheck = options.disableServerSideTokenCheck;
+    if (options?.hasOwnProperty('disableServerSideTokenCheck') && typeof options!.disableServerSideTokenCheck === 'boolean') {
+      this.disableServerSideTokenCheck = options!.disableServerSideTokenCheck;
     }
-    Node.of(scope).addDependency(this.userPool);
-    Node.of(scope).addDependency(this.userPoolClient);
+    Node.of(identityPool).addDependency(this.userPool);
+    Node.of(identityPool).addDependency(this.userPoolClient);
     const serverSideTokenCheck = !this.disableServerSideTokenCheck;
     return this.userPool.identityProviders.map(identityProvider => {
       return {
         clientId: this.userPoolClient.userPoolClientId,
         providerName: identityProvider.providerName,
         serverSideTokenCheck,
-      }
+      };
     });
   }
 
