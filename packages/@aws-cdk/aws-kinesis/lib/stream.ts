@@ -752,7 +752,7 @@ export class Stream extends StreamBase {
       physicalName: props.streamName,
     });
 
-    const shardCount = props.shardCount || 1;
+    const shardCount = props.shardCount;
 
     const streamMode = props.streamMode;
 

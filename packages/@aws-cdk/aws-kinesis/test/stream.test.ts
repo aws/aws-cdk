@@ -21,7 +21,6 @@ describe('Kinesis data streams', () => {
         MyStream5C050E93: {
           Type: 'AWS::Kinesis::Stream',
           Properties: {
-            ShardCount: 1,
             RetentionPeriodHours: 24,
             StreamEncryption: {
               'Fn::If': [
@@ -74,7 +73,6 @@ describe('Kinesis data streams', () => {
         MyStream5C050E93: {
           Type: 'AWS::Kinesis::Stream',
           Properties: {
-            ShardCount: 1,
             RetentionPeriodHours: 24,
             StreamEncryption: {
               'Fn::If': [
@@ -93,7 +91,6 @@ describe('Kinesis data streams', () => {
         MyOtherStream86FCC9CE: {
           Type: 'AWS::Kinesis::Stream',
           Properties: {
-            ShardCount: 1,
             RetentionPeriodHours: 24,
             StreamEncryption: {
               'Fn::If': [
@@ -211,7 +208,6 @@ describe('Kinesis data streams', () => {
         MyStream5C050E93: {
           Type: 'AWS::Kinesis::Stream',
           Properties: {
-            ShardCount: 1,
             RetentionPeriodHours: 168,
             StreamEncryption: {
               'Fn::If': [
@@ -282,7 +278,6 @@ describe('Kinesis data streams', () => {
         MyStream5C050E93: {
           Type: 'AWS::Kinesis::Stream',
           Properties: {
-            ShardCount: 1,
             RetentionPeriodHours: 24,
             StreamEncryption: {
               EncryptionType: 'KMS',
@@ -318,7 +313,6 @@ describe('Kinesis data streams', () => {
 
     // THEN
     expect(stack).toHaveResource('AWS::Kinesis::Stream', {
-      ShardCount: 1,
       RetentionPeriodHours: 24,
       StreamEncryption: {
         EncryptionType: 'KMS',
@@ -366,7 +360,6 @@ describe('Kinesis data streams', () => {
 
     expect(stack).toHaveResource('AWS::Kinesis::Stream', {
       RetentionPeriodHours: 24,
-      ShardCount: 1,
       StreamEncryption: {
         EncryptionType: 'KMS',
         KeyId: stack.resolve(explicitKey.keyArn),
@@ -386,7 +379,6 @@ describe('Kinesis data streams', () => {
         MyStream5C050E93: {
           Type: 'AWS::Kinesis::Stream',
           Properties: {
-            ShardCount: 1,
             RetentionPeriodHours: 24,
             StreamModeDetails: {
               StreamMode: StreamMode[mode],
@@ -535,7 +527,6 @@ describe('Kinesis data streams', () => {
         MyStream5C050E93: {
           Type: 'AWS::Kinesis::Stream',
           Properties: {
-            ShardCount: 1,
             RetentionPeriodHours: 24,
             StreamEncryption: {
               EncryptionType: 'KMS',
@@ -694,7 +685,6 @@ describe('Kinesis data streams', () => {
         MyStream5C050E93: {
           Type: 'AWS::Kinesis::Stream',
           Properties: {
-            ShardCount: 1,
             RetentionPeriodHours: 24,
             StreamEncryption: {
               EncryptionType: 'KMS',
@@ -846,7 +836,6 @@ describe('Kinesis data streams', () => {
           Type: 'AWS::Kinesis::Stream',
           Properties: {
             RetentionPeriodHours: 24,
-            ShardCount: 1,
             StreamEncryption: {
               EncryptionType: 'KMS',
               KeyId: {
@@ -914,7 +903,6 @@ describe('Kinesis data streams', () => {
         MyStream5C050E93: {
           Type: 'AWS::Kinesis::Stream',
           Properties: {
-            ShardCount: 1,
             RetentionPeriodHours: 24,
             StreamEncryption: {
               'Fn::If': [
@@ -1002,7 +990,6 @@ describe('Kinesis data streams', () => {
         MyStream5C050E93: {
           Type: 'AWS::Kinesis::Stream',
           Properties: {
-            ShardCount: 1,
             RetentionPeriodHours: 24,
             StreamEncryption: {
               'Fn::If': [
@@ -1082,7 +1069,6 @@ describe('Kinesis data streams', () => {
         MyStream5C050E93: {
           Type: 'AWS::Kinesis::Stream',
           Properties: {
-            ShardCount: 1,
             RetentionPeriodHours: 24,
             StreamEncryption: {
               'Fn::If': [
@@ -1172,7 +1158,6 @@ describe('Kinesis data streams', () => {
         MyStream5C050E93: {
           Type: 'AWS::Kinesis::Stream',
           Properties: {
-            ShardCount: 1,
             RetentionPeriodHours: 24,
             StreamEncryption: {
               'Fn::If': [
@@ -1254,7 +1239,6 @@ describe('Kinesis data streams', () => {
         MyStream5C050E93: {
           Type: 'AWS::Kinesis::Stream',
           Properties: {
-            ShardCount: 1,
             RetentionPeriodHours: 24,
             StreamEncryption: {
               'Fn::If': [
@@ -1371,7 +1355,6 @@ describe('Kinesis data streams', () => {
         MyStream5C050E93: {
           Type: 'AWS::Kinesis::Stream',
           Properties: {
-            ShardCount: 1,
             RetentionPeriodHours: {
               Ref: 'myretentionperiod',
             },
