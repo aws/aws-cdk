@@ -59,7 +59,7 @@ directly. Learn more at [Amazon Cognito Identity Pools](https://docs.aws.amazon.
 
 Identity pools define two types of identities: authenticated(`user`) and unauthenticated (`guest`). Every identity in  
 an identity pool is either authenticated or unauthenticated. Each identity pool has a default role for authenticated  
-identities, and a default role for authenticated identities. Absent other overriding rules (see below), these are the  
+identities, and a default role for unauthenticated identities. Absent other overriding rules (see below), these are the  
 roles that will be assumed by the corresponding users in the authentication process. 
 
 A basic Identity Pool with minimal configuration has no required props, with default authenticated (user) and  
@@ -326,7 +326,7 @@ See [here](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-pr
 
 ### Authentication Flow
 
-Identity Pool [Authentication Flow](https://docs.aws.amazon.com/cognito/latest/developerguide/authentication-flow.html)  defaults to the enhanced, simplified flow. The Classic (basic) Authentication Flow  
+Identity Pool [Authentication Flow](https://docs.aws.amazon.com/cognito/latest/developerguide/authentication-flow.html) defaults to the enhanced, simplified flow. The Classic (basic) Authentication Flow  
 can also be implemented using `allowClassicFlow`:
 
 ```ts
