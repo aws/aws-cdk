@@ -1,5 +1,9 @@
 # Amazon Cognito Identity Pool Construct Library
 
+** Identity Pools are in a separate module while the API is being stabilized. Once we stabilize the module, they will
+be included into the stable [aws-cognito](../aws-cognito) library. Please provide feedback on this experience by
+creating an [issue here](https://github.com/aws/aws-cdk/issues/new/choose) **
+
 <!--BEGIN STABILITY BANNER-->
 
 ---
