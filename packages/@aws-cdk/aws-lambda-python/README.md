@@ -140,3 +140,30 @@ new lambda.PythonFunction(this, 'function', {
   bundling: { image },
 });
 ```
+
+## Custom Bundling with Code Artifact
+
+To use a Code Artifact PyPI repo, the `PIP_INDEX_URL` for bundling the function can be customized (requires AWS CLI in the build environment):
+
+```ts
+import { execSync } from 'child_process';
+
+const entry = '/path/to/function';
+const image = DockerImage.fromBuild(entry);
+
+const domain = 'my-domain';
+const domainOwner = '111122223333';
+const codeArtifactAuthToken = execSync(`aws codeartifact get-authorization-token --domain ${domain} --domain-owner ${domainOwner} --query authorizationToken --output text`).toString().trim();
+
+const indexUrl = `https://aws:${codeArtifactAuthToken}@${domain}-${domainOwner}.d.codeartifact.${stack.env?.region}.amazonaws.com/pypi/my_repo/simple/`;
+
+new PythonFunction(stack, 'function', {
+  entry,
+  runtime: Runtime.PYTHON_3_8,
+  bundling: {
+    buildArgs: { PIP_INDEX_URL: indexUrl },
+  },
+});
+```
+
+This type of an example should work for `pip` and `poetry` based dependencies, but will not work for `pipenv`.
