@@ -673,6 +673,9 @@ export interface StreamProps {
 
   /**
    * The number of shards for the stream.
+   *
+   * Can only be provided if streamMode is Provisioned.
+   *
    * @default 1
    */
   readonly shardCount?: number;
@@ -752,9 +755,18 @@ export class Stream extends StreamBase {
       physicalName: props.streamName,
     });
 
-    const shardCount = props.shardCount;
+    let shardCount = props.shardCount;
+    let streamMode = props.streamMode;
 
-    const streamMode = props.streamMode;
+    if (streamMode === StreamMode.ON_DEMAND && shardCount !== undefined) {
+      throw new Error('`streamMode` must be set to `PROVISIONED` (default) when specifying `shardCount`.');
+    }
+    if (streamMode === undefined) {
+      streamMode = StreamMode.PROVISIONED;
+    }
+    if (shardCount === undefined) {
+      shardCount = 1;
+    }
 
     const retentionPeriodHours = props.retentionPeriod?.toHours() ?? 24;
     if (!Token.isUnresolved(retentionPeriodHours)) {

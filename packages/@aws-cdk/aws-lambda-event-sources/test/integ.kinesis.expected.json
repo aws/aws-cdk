@@ -115,6 +115,10 @@
     "Q63C6E3AB": {
       "Type": "AWS::Kinesis::Stream",
       "Properties": {
+        "ShardCount": 1,
+        "StreamModeDetails": {
+          "StremMode": "PROVISIONED"
+        },
         "RetentionPeriodHours": 24,
         "StreamEncryption": {
           "Fn::If": [
