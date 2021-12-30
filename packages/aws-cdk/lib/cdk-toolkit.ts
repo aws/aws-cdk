@@ -117,7 +117,10 @@ export class CdkToolkit {
       return this.watch(options);
     }
 
+    const startSynthTime = new Date().getTime();
     const stacks = await this.selectStacksForDeploy(options.selector, options.exclusively, options.cacheCloudAssembly);
+    const elapsedSynthTime = new Date().getTime() - startSynthTime;
+    print('\n✨  Synthesis time: %ss\n', roundPercentage(elapsedSynthTime / 1000));
 
     const requireApproval = options.requireApproval ?? RequireApproval.Broadening;
 
@@ -184,12 +187,14 @@ export class CdkToolkit {
       }
 
       print('%s: deploying...', colors.bold(stack.displayName));
+      const startDeployTime = new Date().getTime();
 
       let tags = options.tags;
       if (!tags || tags.length === 0) {
         tags = tagsForStack(stack);
       }
 
+      let elapsedDeployTime = 0;
       try {
         const result = await this.props.cloudFormation.deployStack({
           stack,
@@ -216,6 +221,8 @@ export class CdkToolkit {
           : ' ✅  %s';
 
         success('\n' + message, stack.displayName);
+        elapsedDeployTime = new Date().getTime() - startDeployTime;
+        print('\n✨  Deployment time: %ss', roundPercentage(elapsedDeployTime / 1000));
 
         if (Object.keys(result.outputs).length > 0) {
           print('\nOutputs:');
@@ -246,6 +253,7 @@ export class CdkToolkit {
           });
         }
       }
+      print('\n✨  Total time: %ss', roundPercentage((elapsedSynthTime + elapsedDeployTime) / 1000));
     }
   }
 
@@ -846,4 +854,12 @@ function tagsForStack(stack: cxapi.CloudFormationStackArtifact): Tag[] {
 export interface Tag {
   readonly Key: string;
   readonly Value: string;
+}
+
+/**
+ * Rounds a decimal number to two decimal points.
+ * The function is useful for fractions that need to be outputted as percentages.
+ */
+function roundPercentage(num: number): number {
+  return Math.round(100 * num) / 100;
 }
