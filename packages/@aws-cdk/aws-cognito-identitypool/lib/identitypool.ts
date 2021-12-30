@@ -24,6 +24,7 @@ import {
 } from './identitypool-role-attachment';
 import {
   IUserPoolAuthenticationProvider,
+  UserPoolAuthenticationProviderBindConfig,
 } from './identitypool-user-pool-authentication-provider';
 
 /**
@@ -391,7 +392,7 @@ export class IdentityPool extends Resource implements IIdentityPool {
       physicalName: props.identityPoolName,
     });
     const authProviders: IdentityPoolAuthenticationProviders = props.authenticationProviders || {};
-    const providers = authProviders.userPool ? this.configureAuthenticationProviders(authProviders.userPool) : undefined;
+    const providers = authProviders.userPool ? authProviders.userPool.bind(this) : undefined;
     if (providers && providers.length) this.cognitoIdentityProviders = providers;
     const openIdConnectProviderArns = authProviders.openIdConnectProviders ?
       authProviders.openIdConnectProviders.map(openIdProvider =>
@@ -444,8 +445,8 @@ export class IdentityPool extends Resource implements IIdentityPool {
    * Add a User Pool to the IdentityPool and configure User Pool Client to handle identities
    */
   public addUserPoolAuthentication(userPool: IUserPoolAuthenticationProvider): void {
-    const providers = this.configureAuthenticationProviders(userPool);
-    providers.forEach(provider => this.cognitoIdentityProviders.push(provider), this);
+    const providers = userPool.bind(this);
+    this.cognitoIdentityProviders = this.cognitoIdentityProviders.concat(providers);
   }
 
   /**
@@ -462,20 +463,6 @@ export class IdentityPool extends Resource implements IIdentityPool {
       roleMappings,
     });
     attachment.node.addDependency(this);
-  }
-
-  /**
-   * Configure Authentication Providers for User Pools
-   */
-  private configureAuthenticationProviders(provider: IUserPoolAuthenticationProvider): CfnIdentityPool.CognitoIdentityProviderProperty[] {
-    const identityProviders = provider.identityProviders || [];
-    return identityProviders.map(identityProvider => {
-      return {
-        clientId: provider.clientId,
-        providerName: identityProvider.providerName,
-        serverSideTokenCheck: !provider.disableServerSideTokenCheck,
-      };
-    });
   }
 
   /**

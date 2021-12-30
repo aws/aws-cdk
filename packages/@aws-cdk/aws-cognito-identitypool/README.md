@@ -130,20 +130,6 @@ new cognito.IdentityPool(this, 'myidentitypool', {
 });
 ```
 
-The properties can also be passed directly to the identity pool.
-
-```ts
-new cognito.IdentityPool(this, 'myidentitypool', {
-  identityPoolName: 'myidentitypool',
-  authenticationProviders: {
-    userPool: {
-      clientId: myUserPoolClientId,
-      identityProviders: [...myUserPoolIdentityProviders]
-    },
-  },
-});
-```
-
 User pools can also be associated with an identity pool after instantiation. The Identity Pool's `addUserPoolAuthentication` method  
 returns the User Pool Client that has been created:
 
