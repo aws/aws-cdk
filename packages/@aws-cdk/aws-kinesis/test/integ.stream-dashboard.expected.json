@@ -3,7 +3,6 @@
     "myStream547FAD7F": {
       "Type": "AWS::Kinesis::Stream",
       "Properties": {
-        "ShardCount": 1,
         "RetentionPeriodHours": 24,
         "StreamEncryption": {
           "Fn::If": [
