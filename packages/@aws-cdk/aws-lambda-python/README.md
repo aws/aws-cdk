@@ -111,9 +111,24 @@ Packaging is executed using the `Packaging` class, which:
 
 ## Custom Bundling
 
-Custom bundling can be performed by using custom Docker images for bundling dependencies. If using a custom Docker image for bundling, the dependencies are installed with `pip`, `pipenv` or `poetry` by using the `Packaging` class.
+Custom bundling can be performed by passing in additional build arguments that point to index URLs to private repos, or by using an entirely custom Docker images for bundling dependencies.
 
-A different bundling Docker image that is in the same directory as the function can be specified as:
+Additional build args for bundling that refer to PyPI indexes can be specified as:
+
+```ts
+const entry = '/path/to/function';
+const image = DockerImage.fromBuild(entry);
+
+new PythonFunction(stack, 'function', {
+  entry,
+  runtime: Runtime.PYTHON_3_8,
+  bundling: {
+    buildArgs: { PIP_INDEX_URL: "https://your.index.url/simple/", PIP_EXTRA_INDEX_URL: "https://your.extra-index.url/simple/" },
+  },
+});
+```
+
+If using a custom Docker image for bundling, the dependencies are installed with `pip`, `pipenv` or `poetry` by using the `Packaging` class. A different bundling Docker image that is in the same directory as the function can be specified as:
 
  ```ts
 const entry = '/path/to/function';
