@@ -5,9 +5,9 @@ import * as codebuild from 'aws-sdk/clients/codebuild';
 import * as lambda from 'aws-sdk/clients/lambda';
 import * as stepfunctions from 'aws-sdk/clients/stepfunctions';
 import { DeployStackResult } from '../../../lib/api';
+import { registerCloudWatchLogGroups } from '../../../lib/api/cloudwatch-logs';
 import * as deployments from '../../../lib/api/hotswap-deployments';
-import { registerCloudWatchLogGroups } from '../../../lib/api/hotswap/cloudwatch-logs';
-import { CloudWatchLogEventMonitor } from '../../../lib/api/hotswap/monitor/logs-monitor';
+import { CloudWatchLogEventMonitor } from '../../../lib/api/monitor/logs-monitor';
 import { Template } from '../../../lib/api/util/cloudformation';
 import { testStack, TestStackArtifact } from '../../util';
 import { MockSdkProvider, SyncHandlerSubsetOf } from '../../util/mock-sdk';
@@ -111,10 +111,9 @@ export class HotswapMockSdkProvider {
 
   public registerCloudWatchLogGroups(
     stackArtifact: cxapi.CloudFormationStackArtifact,
-    hotswapLogMonitor: CloudWatchLogEventMonitor,
-    assetParams: { [key: string]: string } = {},
+    cloudWatchLogMonitor: CloudWatchLogEventMonitor,
   ): Promise<void> {
-    return registerCloudWatchLogGroups(this.mockSdkProvider, stackArtifact, assetParams, hotswapLogMonitor);
+    return registerCloudWatchLogGroups(this.mockSdkProvider, stackArtifact, cloudWatchLogMonitor);
   }
 
   public tryHotswapDeployment(

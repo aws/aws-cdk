@@ -1,12 +1,8 @@
 import * as cfn_diff from '@aws-cdk/cloudformation-diff';
-import { CloudFormation } from 'aws-sdk';
 import { ISDK } from '../aws-auth';
-import { CfnEvaluationException, EvaluateCloudFormationTemplate } from './evaluate-cloudformation-template';
+import { CfnEvaluationException, EvaluateCloudFormationTemplate } from '../evaluate-cloudformation-template';
 
 export const ICON = '✨';
-export interface ListStackResources {
-  listStackResources(): Promise<CloudFormation.StackResourceSummary[]>;
-}
 
 /**
  * An interface that represents a change that can be deployed in a short-circuit manner.

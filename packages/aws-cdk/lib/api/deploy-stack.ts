@@ -9,11 +9,9 @@ import { AssetManifestBuilder } from '../util/asset-manifest-builder';
 import { publishAssets } from '../util/asset-publishing';
 import { contentHash } from '../util/content-hash';
 import { ISDK, SdkProvider } from './aws-auth';
+import { CfnEvaluationException } from './evaluate-cloudformation-template';
 import { tryHotswapDeployment } from './hotswap-deployments';
-import { registerCloudWatchLogGroups } from './hotswap/cloudwatch-logs';
 import { ICON } from './hotswap/common';
-import { CfnEvaluationException } from './hotswap/evaluate-cloudformation-template';
-import { CloudWatchLogEventMonitor } from './hotswap/monitor/logs-monitor';
 import { ToolkitInfo } from './toolkit-info';
 import {
   changeSetHasNoChanges, CloudFormationStack, TemplateParameters, waitForChangeSet,
@@ -192,14 +190,6 @@ export interface DeployStackOptions {
    * @default - nothing extra is appended to the User-Agent header
    */
   readonly extraUserAgent?: string;
-
-  /**
-   * Allows adding CloudWatch log groups to the log monitor via
-   * hotswapLogMonitor.addLogGroups();
-   *
-   * @default - not monitoring CloudWatch logs
-   */
-  readonly hotswapLogMonitor?: CloudWatchLogEventMonitor;
 }
 
 const LARGE_TEMPLATE_SIZE_KB = 50;
@@ -240,10 +230,6 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
     ? templateParams.updateExisting(finalParameterValues, cloudFormationStack.parameters)
     : templateParams.supplyAll(finalParameterValues);
 
-  if (options.hotswapLogMonitor) {
-    await registerCloudWatchLogGroups(options.sdkProvider, stackArtifact, assetParams, options.hotswapLogMonitor);
-  }
-
   if (await canSkipDeploy(options, cloudFormationStack, stackParams.hasChanges(cloudFormationStack.parameters))) {
     debug(`${deployName}: skipping deployment (use --force to override)`);
     // if we can skip deployment and we are performing a hotswap, let the user know
@@ -267,8 +253,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
   if (options.hotswap) {
     // attempt to short-circuit the deployment if possible
     try {
-      const hotswapDeploymentResult = await tryHotswapDeployment(
-        options.sdkProvider, assetParams, cloudFormationStack, stackArtifact);
+      const hotswapDeploymentResult = await tryHotswapDeployment(options.sdkProvider, assetParams, cloudFormationStack, stackArtifact);
       if (hotswapDeploymentResult) {
         return hotswapDeploymentResult;
       }

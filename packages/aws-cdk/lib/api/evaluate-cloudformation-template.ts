@@ -1,6 +1,39 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import * as AWS from 'aws-sdk';
-import { ListStackResources } from './common';
+import { CloudFormation } from 'aws-sdk';
+import { ISDK } from './aws-auth';
+
+export interface ListStackResources {
+  listStackResources(): Promise<CloudFormation.StackResourceSummary[]>;
+}
+
+export class LazyListStackResources implements ListStackResources {
+  private stackResources: CloudFormation.StackResourceSummary[] | undefined;
+
+  constructor(private readonly sdk: ISDK, private readonly stackName: string) {
+  }
+
+  async listStackResources(): Promise<CloudFormation.StackResourceSummary[]> {
+    if (this.stackResources === undefined) {
+      this.stackResources = await this.getStackResources();
+    }
+    return this.stackResources;
+  }
+
+  private async getStackResources(): Promise<CloudFormation.StackResourceSummary[]> {
+    const ret = new Array<CloudFormation.StackResourceSummary>();
+    let nextToken: string | undefined;
+    do {
+      const stackResourcesResponse = await this.sdk.cloudFormation().listStackResources({
+        StackName: this.stackName,
+        NextToken: nextToken,
+      }).promise();
+      ret.push(...(stackResourcesResponse.StackResourceSummaries ?? []));
+      nextToken = stackResourcesResponse.NextToken;
+    } while (nextToken);
+    return ret;
+  }
+}
 
 export class CfnEvaluationException extends Error {}
 

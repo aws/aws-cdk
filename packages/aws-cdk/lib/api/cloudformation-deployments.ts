@@ -5,7 +5,7 @@ import { debug } from '../logging';
 import { publishAssets } from '../util/asset-publishing';
 import { Mode, SdkProvider } from './aws-auth';
 import { deployStack, DeployStackResult, destroyStack } from './deploy-stack';
-import { CloudWatchLogEventMonitor } from './hotswap/monitor/logs-monitor';
+import { CloudWatchLogEventMonitor } from './monitor/logs-monitor';
 import { ToolkitInfo } from './toolkit-info';
 import { CloudFormationStack, Template } from './util/cloudformation';
 import { StackActivityProgress } from './util/cloudformation/stack-activity-monitor';
@@ -156,11 +156,11 @@ export interface DeployStackOptions {
 
   /**
    * Allows adding CloudWatch log groups to the log monitor via
-   * hotswapLogMonitor.addLogGroups();
+   * cloudWatchLogMonitor.setLogGroups();
    *
    * @default - not monitoring CloudWatch logs
    */
-  readonly hotswapLogMonitor?: CloudWatchLogEventMonitor;
+  readonly cloudWatchLogMonitor?: CloudWatchLogEventMonitor;
 }
 
 export interface DestroyStackOptions {
@@ -239,7 +239,6 @@ export class CloudFormationDeployments {
       rollback: options.rollback,
       hotswap: options.hotswap,
       extraUserAgent: options.extraUserAgent,
-      hotswapLogMonitor: options.hotswapLogMonitor,
     });
   }
 

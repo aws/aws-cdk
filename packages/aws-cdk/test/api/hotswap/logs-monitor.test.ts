@@ -1,5 +1,5 @@
 import { blue, yellow } from 'colors/safe';
-import { EventPrinter, CloudWatchLogEventMonitor } from '../../../lib/api/hotswap/monitor/logs-monitor';
+import { EventPrinter, CloudWatchLogEventMonitor } from '../../../lib/api/monitor/logs-monitor';
 import { sleep } from '../../integ/helpers/aws';
 import { stderr } from '../console-listener';
 import { MockSdk } from './../../util/mock-sdk';
@@ -94,7 +94,8 @@ async function testMonitorWithEventCalls(
   sdk.stubCloudWatchLogs({ filterLogEvents });
   const monitor = new CloudWatchLogEventMonitor({ printer, hotswapTime: new Date(T100) });
   monitor.addSdk(sdk);
-  monitor.addLogGroups(['loggroup']);
+  monitor.setLogGroups(['loggroup']);
+  monitor.activate();
   await waitForCondition(() => finished);
 }
 

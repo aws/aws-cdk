@@ -1,8 +1,8 @@
 import * as util from 'util';
 import * as colors from 'colors/safe';
-import { print, error } from '../../../logging';
-import { flatten } from '../../../util/arrays';
-import { ISDK } from '../../aws-auth';
+import { print, error } from '../../logging';
+import { flatten } from '../../util/arrays';
+import { ISDK } from '../aws-auth';
 
 // how often we should read events from CloudWatchLogs
 const SLEEP = 2_000;
@@ -46,7 +46,7 @@ export class CloudWatchLogEventMonitor {
   private logGroups = new Set<string>();
   private sdk?: ISDK;
 
-  private active = true;
+  private active = false;
 
   /**
    * The event printer that controls printing out
@@ -68,17 +68,19 @@ export class CloudWatchLogEventMonitor {
   // allows the ability to "pause" the monitor. The primary
   // use case for this is when we are in the middle of performing a deployment
   // and don't want to interweave all the logs together
-  public setActive(active: boolean): void {
-    this.active = active;
+  public activate(): void {
+    this.active = true;
+  }
+
+  public deactivate(): void {
+    this.active = false;
   }
 
   /**
    * Adds a CloudWatch log group to read log events from
    */
-  public addLogGroups(logGroups: string[]): void {
-    logGroups.forEach(group => {
-      this.logGroups.add(group);
-    });
+  public setLogGroups(logGroups: string[]): void {
+    this.logGroups = new Set(logGroups);
   }
 
   private scheduleNextTick(): void {

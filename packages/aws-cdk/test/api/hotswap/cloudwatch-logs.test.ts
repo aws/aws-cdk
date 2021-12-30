@@ -1,4 +1,4 @@
-import { CloudWatchLogEventMonitor } from '../../../lib/api/hotswap/monitor/logs-monitor';
+import { CloudWatchLogEventMonitor } from '../../../lib/api/monitor/logs-monitor';
 import { FakePrinter } from './fake-printer';
 import * as setup from './hotswap-test-setup';
 
@@ -12,7 +12,7 @@ beforeEach(() => {
   hotswapMockSdkProvider = setup.setupHotswapTests();
   logMonitor = jest.fn();
   eventMonitor = new CloudWatchLogEventMonitor({ printer: new FakePrinter() });
-  eventMonitor.addLogGroups = logMonitor;
+  eventMonitor.setLogGroups = logMonitor;
   mockGetEndpointSuffix = jest.fn(() => 'amazonaws.com');
   hotswapMockSdkProvider.stubGetEndpointSuffix(mockGetEndpointSuffix);
 });

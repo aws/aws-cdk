@@ -124,6 +124,12 @@ async function parseCommandLineArguments() {
         desc: 'Continuously observe the project files, ' +
           'and deploy the given stack(s) automatically when changes are detected. ' +
           'Implies --hotswap by default',
+      })
+      .options('logs', {
+        type: 'boolean',
+        default: true,
+        desc: 'Show CloudWatch log events from hotswapped resources in the terminal. ' +
+          "'true' by default, use --no-logs to turn off",
       }),
     )
     .command('watch [STACKS..]', "Shortcut for 'deploy --watch'", yargs => yargs
@@ -381,6 +387,7 @@ async function initCommandLine() {
           rollback: configuration.settings.get(['rollback']),
           hotswap: args.hotswap,
           watch: args.watch,
+          traceLogs: args.logs,
         });
 
       case 'watch':
@@ -400,7 +407,7 @@ async function initCommandLine() {
           progress: configuration.settings.get(['progress']),
           rollback: configuration.settings.get(['rollback']),
           hotswap: args.hotswap,
-          logs: args.logs,
+          traceLogs: args.logs,
         });
 
       case 'destroy':
