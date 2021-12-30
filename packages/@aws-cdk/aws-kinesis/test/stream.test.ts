@@ -511,7 +511,7 @@ describe('Kinesis data streams', () => {
         shardCount: 2,
         streamMode: StreamMode.ON_DEMAND,
       });
-    }).toThrow(/`streamMode` must be set to `PROVISIONED` (default) when specifying `shardCount`./);
+    }).toThrow(/streamMode must be set to PROVISIONED (default) when specifying shardCount/);
   });
 
   test('grantRead creates and attaches a policy with read only access to the principal', () => {
