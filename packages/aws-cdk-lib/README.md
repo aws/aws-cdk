@@ -254,7 +254,9 @@ Using AWS Secrets Manager is the recommended way to reference secrets in a CDK a
 `SecretValue` also supports the following secret sources:
 
  - `SecretValue.plainText(secret)`: stores the secret as plain text in your app and the resulting template (not recommended).
- - `SecretValue.ssmSecure(param, version)`: refers to a secret stored as a SecureString in the SSM Parameter Store.
+ - `SecretValue.ssmSecure(param, version)`: refers to a secret stored as a SecureString in the SSM
+ Parameter Store. If you don't specify the exact version, AWS CloudFormation uses the latest
+ version of the parameter.
  - `SecretValue.cfnParameter(param)`: refers to a secret passed through a CloudFormation parameter (must have `NoEcho: true`).
  - `SecretValue.cfnDynamicReference(dynref)`: refers to a secret described by a CloudFormation dynamic reference (used by `ssmSecure` and `secretsManager`).
 
