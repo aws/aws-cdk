@@ -117,7 +117,7 @@
       "Properties": {
         "ShardCount": 1,
         "StreamModeDetails": {
-          "StremMode": "PROVISIONED"
+          "StreamMode": "PROVISIONED"
         },
         "RetentionPeriodHours": 24,
         "StreamEncryption": {
