@@ -119,6 +119,12 @@ export class CdkToolkit {
       return this.watch(options);
     }
 
+    // before we start the deployment, reset the tracked log groups
+    // each stack will then register their log groups with the monitor
+    if (options.cloudWatchLogMonitor) {
+      options.cloudWatchLogMonitor.resetLogGroups();
+    }
+
     const stacks = await this.selectStacksForDeploy(options.selector, options.exclusively, options.cacheCloudAssembly);
 
     const requireApproval = options.requireApproval ?? RequireApproval.Broadening;
@@ -211,7 +217,6 @@ export class CdkToolkit {
           rollback: options.rollback,
           hotswap: options.hotswap,
           extraUserAgent: options.extraUserAgent,
-          cloudWatchLogMonitor: options.cloudWatchLogMonitor,
         });
 
         const message = result.noOp

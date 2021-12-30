@@ -12,7 +12,7 @@ beforeEach(() => {
   hotswapMockSdkProvider = setup.setupHotswapTests();
   logMonitor = jest.fn();
   eventMonitor = new CloudWatchLogEventMonitor({ printer: new FakePrinter() });
-  eventMonitor.setLogGroups = logMonitor;
+  eventMonitor.addLogGroups = logMonitor;
   mockGetEndpointSuffix = jest.fn(() => 'amazonaws.com');
   hotswapMockSdkProvider.stubGetEndpointSuffix(mockGetEndpointSuffix);
 });

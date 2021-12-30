@@ -79,8 +79,14 @@ export class CloudWatchLogEventMonitor {
   /**
    * Adds a CloudWatch log group to read log events from
    */
-  public setLogGroups(logGroups: string[]): void {
-    this.logGroups = new Set(logGroups);
+  public addLogGroups(logGroups: string[]): void {
+    logGroups.forEach(group => {
+      this.logGroups.add(group);
+    });
+  }
+
+  public resetLogGroups(): void {
+    this.logGroups = new Set();
   }
 
   private scheduleNextTick(): void {

@@ -90,5 +90,5 @@ export async function registerCloudWatchLogGroups(
     }
   }
 
-  cloudWatchLogMonitor.setLogGroups(logGroupNames);
+  cloudWatchLogMonitor.addLogGroups(logGroupNames);
 }

@@ -94,7 +94,7 @@ async function testMonitorWithEventCalls(
   sdk.stubCloudWatchLogs({ filterLogEvents });
   const monitor = new CloudWatchLogEventMonitor({ printer, hotswapTime: new Date(T100) });
   monitor.addSdk(sdk);
-  monitor.setLogGroups(['loggroup']);
+  monitor.addLogGroups(['loggroup']);
   monitor.activate();
   await waitForCondition(() => finished);
 }
