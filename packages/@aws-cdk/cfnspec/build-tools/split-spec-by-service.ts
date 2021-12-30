@@ -19,7 +19,7 @@ import { CfnSpec, CfnSpecValidator, formatErrorInContext } from './validate-cfn'
 
 async function main(args: string[]) {
   if (args.length < 2) {
-    throw new Error('Usage: split-spec-by-service <SPECFILE> <SCHEMA> <DIRECTORY>');
+    throw new Error('Usage: split-spec-by-service <SPECFILE> <DIRECTORY>');
   }
 
   const [specFile, outDir] = args;

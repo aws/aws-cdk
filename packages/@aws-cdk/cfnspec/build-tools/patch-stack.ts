@@ -8,6 +8,9 @@ import * as path from 'path';
 import * as fastJsonPatch from 'fast-json-patch';
 import * as fs from 'fs-extra';
 
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const sortJson = require('sort-json');
+
 export interface PatchOptions {
   readonly quiet?: boolean;
 }
@@ -64,18 +67,12 @@ export async function resolveStack(targetFile: string, sourceDirectory: string, 
 }
 
 export async function writeSorted(targetFile: string, data: any) {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const sortJson = require('sort-json');
   await fs.mkdirp(path.dirname(targetFile));
-  data = sortJson(data);
-  await fs.writeJson(targetFile, data, { spaces: 2 });
+  await fs.writeJson(targetFile, sortJson(data), { spaces: 2 });
 }
 
 function printSorted(data: any) {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const sortJson = require('sort-json');
-  data = sortJson(data);
-  process.stdout.write(JSON.stringify(data, undefined, 2));
+  process.stdout.write(JSON.stringify(sortJson(data), undefined, 2));
 }
 
 function merge(target: any, fragment: any, jsonPath: string[]) {
@@ -194,8 +191,6 @@ function findPatches(data: any, patchSource: any): Patch[] {
 
 /**
  * Run this file as a CLI tool, to apply a patch stack from the command line
- *
- * Usage: patch-stack <TARGET_FILE> <DIR> [DIR [...]]
  */
 async function main(args: string[]) {
   const quiet = eatArg('-q', args) || eatArg('--quiet', args);
@@ -206,15 +201,16 @@ async function main(args: string[]) {
 
   const [dir, targetFile] = args;
 
+  const stack = await loadStack(dir, { quiet });
   if (targetFile) {
-    await resolveStack(targetFile, dir, { quiet });
+    await writeSorted(targetFile, stack);
   } else {
-    printSorted(await loadStack(dir, { quiet }));
+    printSorted(stack);
   }
 }
 
 function eatArg(arg: string, args: string[]) {
-  for (let i = 0; i < args.length && args[i] !== '--'; i++) {
+  for (let i = 0; i < args.length; i++) {
     if (args[i] === arg) {
       args.splice(i, 1);
       return true;

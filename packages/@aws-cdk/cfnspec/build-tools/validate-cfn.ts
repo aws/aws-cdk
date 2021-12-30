@@ -20,7 +20,28 @@
  * - instance.PropertyTypes["..."].Properties.Xyz is not exactly one from "Primitive","Complex Type","Collection of Primitives","Collection of Complex Types"
  * ```
  *
- * No bueno.
+ * No bueno. In contrast, this script prints:
+ *
+ * ```
+ * {
+ *   "ResourceTypes": {
+ *     "AWS::SageMaker::Device": {
+ *       "Properties": {
+ *         "Device": {
+ *
+ * !!!       must have exactly one of 'Type', 'PrimitiveType', found: {"Type":"Device","PrimitiveType":"Json"} !!!
+ *
+ *           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sagemaker-device.html#cfn-sagemaker-device-device",
+ *           "UpdateType": "Mutable",
+ *           "Required": false,
+ *           "PrimitiveType": "Json",
+ *           "Type": "Device"
+ *         }
+ *       }
+ *     }
+ *   }
+ * }
+ * ```
  */
 import * as fs from 'fs-extra';
 

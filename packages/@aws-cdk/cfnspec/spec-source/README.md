@@ -2,7 +2,7 @@
 
 This directory contains specifications for the following things:
 
-- `specifictation`: CloudFormation and SAM resource specification
+- `specification`: CloudFormation and SAM resource specification
 - `cfn-lint`: information that is sourced from the
   [cfn-lint](https://github.com/aws-cloudformation/cfn-lint) project. This
   directory is treated as a collection of plain JSON files and patches just like

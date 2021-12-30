@@ -5,7 +5,6 @@
 # See: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-resource-specification.html
 ###
 
-set -x
 set -euo pipefail
 scriptdir=$(cd $(dirname $0) && pwd)
 
@@ -41,7 +40,7 @@ function update-spec() {
 
     node build-tools/patch-stack.js --quiet "${targetdir}" "${oldcombined}"
     if ${split}; then
-        node build-tools/split-cfn-to-stack.js "${newspec}" "${targetdir}"
+        node build-tools/split-spec-by-service.js "${newspec}" "${targetdir}"
     else
         cp "${newspec}" "${targetdir}/spec.json"
         sort-json "${targetdir}/spec.json"
