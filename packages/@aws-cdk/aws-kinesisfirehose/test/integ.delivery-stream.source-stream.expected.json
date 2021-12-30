@@ -74,7 +74,6 @@
     "SourceStream95FF52BE": {
       "Type": "AWS::Kinesis::Stream",
       "Properties": {
-        "ShardCount": 1,
         "RetentionPeriodHours": 24,
         "StreamEncryption": {
           "Fn::If": [
