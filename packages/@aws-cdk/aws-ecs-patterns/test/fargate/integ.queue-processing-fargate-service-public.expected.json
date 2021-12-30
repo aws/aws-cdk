@@ -604,6 +604,15 @@
               }
             ],
             "Essential": true,
+            "HealthCheck": {
+              "Command": [
+                "CMD-SHELL",
+                "custom-healthcheck-command"
+              ],
+              "Interval": 30,
+              "Retries": 3,
+              "Timeout": 5
+            },
             "Image": {
               "Fn::Join": [
                 "",

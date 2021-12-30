@@ -14,6 +14,9 @@ new QueueProcessingFargateService(stack, 'PublicQueueService', {
   memoryLimitMiB: 512,
   image: new ecs.AssetImage(path.join(__dirname, '..', 'sqs-reader')),
   assignPublicIp: true,
+  healthCheck: {
+    command: ['custom-healthcheck-command'],
+  },
 });
 
 app.synth();
