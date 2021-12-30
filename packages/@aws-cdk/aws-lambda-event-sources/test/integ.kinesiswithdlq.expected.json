@@ -139,7 +139,6 @@
     "S509448A1": {
       "Type": "AWS::Kinesis::Stream",
       "Properties": {
-        "ShardCount": 1,
         "RetentionPeriodHours": 24,
         "StreamEncryption": {
           "Fn::If": [
