@@ -1,6 +1,6 @@
 
 /**
- * Apply a JSON patch stack into the given target file
+ * Apply a JSON patch set into the given target file
  *
  * The sources can be taken from one or more directories.
  */
@@ -16,9 +16,9 @@ export interface PatchOptions {
 }
 
 /**
- * Apply a stack to an existing model
+ * Load a patch set from a directory
  */
-export async function loadStack(sourceDirectory: string, options: PatchOptions = {}) {
+export async function loadPatchSet(sourceDirectory: string, options: PatchOptions = {}) {
   const targetObject: any = {};
 
   const files = await fs.readdir(sourceDirectory);
@@ -28,7 +28,7 @@ export async function loadStack(sourceDirectory: string, options: PatchOptions =
 
     let data;
     if ((await fs.stat(fullFile)).isDirectory()) {
-      data = await loadStack(fullFile, options);
+      data = await loadPatchSet(fullFile, options);
     } else if (file.endsWith('.json')) {
       data = await fs.readJson(fullFile);
     } else {
@@ -57,13 +57,11 @@ export async function loadStack(sourceDirectory: string, options: PatchOptions =
 }
 
 /**
- * Combine a number of stacks and write a file
- *
- * Stacks are loaded individually, and merged afterwards.
+ * Load a patch set and write it out to a file
  */
-export async function resolveStack(targetFile: string, sourceDirectory: string, options: PatchOptions = {}) {
-  const stack = await loadStack(sourceDirectory, options);
-  await writeSorted(targetFile, stack);
+export async function resolvePatchSet(targetFile: string, sourceDirectory: string, options: PatchOptions = {}) {
+  const model = await loadPatchSet(sourceDirectory, options);
+  await writeSorted(targetFile, model);
 }
 
 export async function writeSorted(targetFile: string, data: any) {
@@ -193,22 +191,22 @@ function findPatches(data: any, patchSource: any): Patch[] {
 
 
 /**
- * Run this file as a CLI tool, to apply a patch stack from the command line
+ * Run this file as a CLI tool, to apply a patch set from the command line
  */
 async function main(args: string[]) {
   const quiet = eatArg('-q', args) || eatArg('--quiet', args);
 
   if (args.length < 1) {
-    throw new Error('Usage: patch-stack <DIR> [<FILE>]');
+    throw new Error('Usage: patch-set <DIR> [<FILE>]');
   }
 
   const [dir, targetFile] = args;
 
-  const stack = await loadStack(dir, { quiet });
+  const model = await loadPatchSet(dir, { quiet });
   if (targetFile) {
-    await writeSorted(targetFile, stack);
+    await writeSorted(targetFile, model);
   } else {
-    printSorted(stack);
+    printSorted(model);
   }
 }
 

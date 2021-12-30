@@ -38,14 +38,14 @@ function update-spec() {
     # Calculate the old and new combined specs, so we can do a diff on the changes
     echo >&2 "Updating source spec..."
 
-    node build-tools/patch-stack.js --quiet "${targetdir}" "${oldcombined}"
+    node build-tools/patch-set.js --quiet "${targetdir}" "${oldcombined}"
     if ${split}; then
         node build-tools/split-spec-by-service.js "${newspec}" "${targetdir}"
     else
         cp "${newspec}" "${targetdir}/spec.json"
         sort-json "${targetdir}/spec.json"
     fi
-    node build-tools/patch-stack.js --quiet "${targetdir}" "${newcombined}"
+    node build-tools/patch-set.js --quiet "${targetdir}" "${newcombined}"
 
     echo >&2 "Updating CHANGELOG.md..."
     node build-tools/spec-diff.js "${title}" "${oldcombined}" "${newcombined}" >> CHANGELOG.md.new

@@ -10,9 +10,9 @@ This directory contains specifications for the following things:
 - `cfn-docs`: information that is sourced from the CloudFormation documentation website.
   Contains the documentation strings for all CloudFormation resources and properties.
 
-Each of these directories contains a "JSON patch stack".
+Each of these directories contains a "JSON patch set".
 
-## JSON Patch Stacks
+## JSON Patch Set
 
 (This is not a standard, it's a local convention.)
 

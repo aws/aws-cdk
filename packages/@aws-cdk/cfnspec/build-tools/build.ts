@@ -9,15 +9,15 @@ import * as path from 'path';
 import * as md5 from 'md5';
 import { schema } from '../lib';
 import { massageSpec, normalize } from './massage-spec';;
-import { writeSorted, loadStack, resolveStack } from './patch-stack';
+import { writeSorted, loadPatchSet, resolvePatchSet } from './patch-set';
 
 async function main() {
   const inputDir = path.join(process.cwd(), 'spec-source');
   const outDir = path.join(process.cwd(), 'spec');
 
   await generateResourceSpecification(inputDir, path.join(outDir, 'specification.json'));
-  await resolveStack(path.join(outDir, 'cfn-lint.json'), path.join(inputDir, 'cfn-lint'));
-  await resolveStack(path.join(outDir, 'cfn-docs.json'), path.join(inputDir, 'cfn-docs'));
+  await resolvePatchSet(path.join(outDir, 'cfn-lint.json'), path.join(inputDir, 'cfn-lint'));
+  await resolvePatchSet(path.join(outDir, 'cfn-docs.json'), path.join(inputDir, 'cfn-docs'));
 }
 
 /**
@@ -26,7 +26,7 @@ async function main() {
 async function generateResourceSpecification(inputDir: string, outFile: string) {
   const spec: schema.Specification = { PropertyTypes: {}, ResourceTypes: {}, Fingerprint: '' };
 
-  Object.assign(spec, await loadStack(path.join(inputDir, 'specification')));
+  Object.assign(spec, await loadPatchSet(path.join(inputDir, 'specification')));
   massageSpec(spec);
   spec.Fingerprint = md5(JSON.stringify(normalize(spec)));
 

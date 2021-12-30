@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 /**
- * Split the given CloudFormation resource specification up into a patch stack, by service
+ * Split the given CloudFormation resource specification up into a patch set, by service
  *
  * After splitting, only write out those fragments that are valid.(*)
  *
@@ -14,7 +14,7 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
 
-import { writeSorted } from './patch-stack';
+import { writeSorted } from './patch-set';
 import { CfnSpec, CfnSpecValidator, formatErrorInContext } from './validate-cfn';
 
 async function main(args: string[]) {
