@@ -60,6 +60,13 @@ export interface LambdaInvokeActionProps extends codepipeline.CommonAwsActionPro
    * The lambda function to invoke.
    */
   readonly lambda: lambda.IFunction;
+
+  /**
+   * The region of the Lambda Function.
+   *
+   * @default - same region as the stack
+   */
+  readonly region?: string;
 }
 
 /**
@@ -74,6 +81,7 @@ export class LambdaInvokeAction extends Action {
     super({
       ...props,
       resource: props.lambda,
+      region: props.region,
       category: codepipeline.ActionCategory.INVOKE,
       provider: 'Lambda',
       artifactBounds: {
