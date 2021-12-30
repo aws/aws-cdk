@@ -158,9 +158,10 @@ const image = DockerImage.fromBuild(entry);
 const domain = 'my-domain';
 const domainOwner = '111122223333';
 const repoName = 'my_repo';
+const region = 'us-east-1';
 const codeArtifactAuthToken = execSync(`aws codeartifact get-authorization-token --domain ${domain} --domain-owner ${domainOwner} --query authorizationToken --output text`).toString().trim();
 
-const indexUrl = `https://aws:${codeArtifactAuthToken}@${domain}-${domainOwner}.d.codeartifact.${this.stack.env?.region}.amazonaws.com/pypi/${repoName}/simple/`;
+const indexUrl = `https://aws:${codeArtifactAuthToken}@${domain}-${domainOwner}.d.codeartifact.${region}.amazonaws.com/pypi/${repoName}/simple/`;
 
 new lambda.PythonFunction(this, 'function', {
   entry,
