@@ -5,6 +5,7 @@ FROM $IMAGE
 
 ARG PIP_INDEX_URL
 ARG PIP_EXTRA_INDEX_URL
+ARG HTTPS_PROXY
 
 # Upgrade pip (required by cryptography v3.4 and above, which is a dependency of poetry)
 RUN pip install --upgrade pip

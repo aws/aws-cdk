@@ -111,7 +111,11 @@ Packaging is executed using the `Packaging` class, which:
 
 ## Custom Bundling
 
-Custom bundling can be performed by passing in additional build arguments that point to index URLs to private repos, or by using an entirely custom Docker images for bundling dependencies.
+Custom bundling can be performed by passing in additional build arguments that point to index URLs to private repos, or by using an entirely custom Docker images for bundling dependencies. The build args currently supported are:
+
+- `PIP_INDEX_URL`
+- `PIP_EXTRA_INDEX_URL`
+- `HTTPS_PROXY`
 
 Additional build args for bundling that refer to PyPI indexes can be specified as:
 
