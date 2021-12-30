@@ -4,17 +4,16 @@ import { EvaluateCloudFormationTemplate, LazyListStackResources } from './evalua
 import { CloudWatchLogEventMonitor } from './monitor/logs-monitor';
 
 // resource types that have associated CloudWatch Log Groups that should
-// be monitored
-const includedTypes = ['AWS::StepFunctions::StateMachine', 'AWS::ECS::TaskDefinition'];
+// _not_ be monitored
+const excludedTypes: string[] = ['AWS::EC2::FlowLog', 'AWS::CloudTrail::Trail'];
 
 // resource types that will create a cloudwatch log group
 // with a specific name if one is not provided
-const implicitTypes = ['AWS::Lambda::Function', 'AWS::CodeBuild::Project'];
+const implicitTypes: string[] = ['AWS::Lambda::Function', 'AWS::CodeBuild::Project'];
 
 export async function registerCloudWatchLogGroups(
   sdkProvider: SdkProvider,
   stackArtifact: cxapi.CloudFormationStackArtifact,
-  // assetParams: { [key: string]: string },
   cloudWatchLogMonitor: CloudWatchLogEventMonitor,
 ): Promise<void> {
 
@@ -59,25 +58,26 @@ export async function registerCloudWatchLogGroups(
     }
   }
 
-  // For each CloudWatch Log group in the template, find all resources that
-  // reference that log group and if it matches once of the included types, add it.
+  // For each log group in the template make:
+  // 1. make sure it is not associated with an excluded type
+  // 2. see if it is associated with a resource type that implicitely
+  //   creates a log group so we know not to add the implicit log group later
   for (const id of logGroupLogicalIds) {
     const resourcesReferencingLogGroup = evaluateCfnTemplate.findReferencesTo(id);
     for (const r of resourcesReferencingLogGroup) {
-      let groupName;
-      if (includedTypes.includes(r.Type)) {
-        groupName = await evaluateCfnTemplate.findPhysicalNameFor(id);
-        // we are explicitely creating a cloudwatch log group for this resource
-        // so add that log group and remove the resource from the list of resources
-        // that might have an implicitely created log group
+      if (excludedTypes.includes(r.Type)) {
+        logGroupLogicalIds.delete(id);
       } else if (implicitTypes.includes(r.Type)) {
         implicitMap.delete(r.LogicalId);
-        groupName = await evaluateCfnTemplate.findPhysicalNameFor(id);
-      }
-      if (groupName) {
-        logGroupNames.push(groupName);
       }
     };
+  }
+
+  for (const id of logGroupLogicalIds) {
+    const groupName = await evaluateCfnTemplate.findPhysicalNameFor(id);
+    if (groupName) {
+      logGroupNames.push(groupName);
+    }
   }
 
   // some resources can be created with a custom log group (handled above).

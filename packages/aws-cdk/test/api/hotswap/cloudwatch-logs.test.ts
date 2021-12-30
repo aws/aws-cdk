@@ -167,3 +167,75 @@ test('add log groups from CodeBuild Projects, implicit', async () => {
   await hotswapMockSdkProvider.registerCloudWatchLogGroups(cdkStackArtifact, eventMonitor);
   expect(logMonitor).toHaveBeenCalledWith(['/aws/codebuild/project']);
 });
+
+test('excluded log groups are not added', async () => {
+  // GIVEN
+  setup.pushStackResourceSummaries(setup.stackSummaryOf('FlowLog', 'AWS::EC2::FlowLog', 'flow'));
+  setup.pushStackResourceSummaries(setup.stackSummaryOf('Def', 'AWS::CodeBuild::Project', 'project'));
+  setup.pushStackResourceSummaries(setup.stackSummaryOf('LogGroup', 'AWS::Logs::LogGroup', 'log_group'));
+  setup.pushStackResourceSummaries(setup.stackSummaryOf('LogGroup2', 'AWS::Logs::LogGroup', 'log_group2'));
+  const cdkStackArtifact = setup.cdkStackArtifactOf({
+    template: {
+      Resources: {
+        LogGroup: {
+          Properties: {
+            Type: 'AWS::Logs::LogGroup',
+            LogGroupName: 'log_group',
+          },
+        },
+        LogGroup2: {
+          Properties: {
+            Type: 'AWS::Logs::LogGroup',
+            LogGroupName: 'log_group2',
+          },
+        },
+        Def: {
+          Type: 'AWS::CodeBuild::Project',
+          Properties: {
+            PojectName: 'project',
+          },
+        },
+        FlowLog: {
+          Type: 'AWS::EC2::FlowLog',
+          Properties: {
+            LogDestination: {
+              Ref: 'LogGroup',
+            },
+          },
+        },
+        FlowLog2: {
+          Type: 'AWS::EC2::FlowLog',
+          Properties: {
+            LogDestination: {
+              'Fn::GetAtt': [
+                'LogGroup2',,
+                'Arn',
+              ],
+            },
+          },
+        },
+      },
+    },
+  });
+  await hotswapMockSdkProvider.registerCloudWatchLogGroups(cdkStackArtifact, eventMonitor);
+  expect(logMonitor).toHaveBeenCalledWith(['/aws/codebuild/project']);
+});
+
+test('unassociated log groups are added', async () => {
+  // GIVEN
+  setup.pushStackResourceSummaries(setup.stackSummaryOf('LogGroup', 'AWS::Logs::LogGroup', 'log_group'));
+  const cdkStackArtifact = setup.cdkStackArtifactOf({
+    template: {
+      Resources: {
+        LogGroup: {
+          Properties: {
+            Type: 'AWS::Logs::LogGroup',
+            LogGroupName: 'log_group',
+          },
+        },
+      },
+    },
+  });
+  await hotswapMockSdkProvider.registerCloudWatchLogGroups(cdkStackArtifact, eventMonitor);
+  expect(logMonitor).toHaveBeenCalledWith(['log_group']);
+});
