@@ -1021,6 +1021,7 @@ declare const fn: lambda.Function;
 const pipeline = new codepipeline.Pipeline(this, 'MyPipeline');
 const lambdaAction = new codepipeline_actions.LambdaInvokeAction({
   actionName: 'Lambda',
+  region: 'us-east-1',
   lambda: fn,
   userParameters: {
     foo: 'bar',
