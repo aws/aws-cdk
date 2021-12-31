@@ -9,12 +9,12 @@ import { singletonActionRole } from './private/role';
  */
 export interface SQSQueueActionProps extends CommonActionProps {
   /**
-   * TODO
+   * The URL of the Amazon SQS queue.
    */
   readonly queueUrl: string
 
   /**
-   * TODO
+   * Specifies whether to use Base64 encoding.
    *
    * @default false
    */
@@ -22,7 +22,7 @@ export interface SQSQueueActionProps extends CommonActionProps {
 }
 
 /**
- * The action to write the data from an MQTT message to an Amazon S3 bucket.
+ * The action to write the data from an MQTT message to an Amazon SQS queue.
  */
 export class SQSQueueAction implements iot.IAction {
   private readonly role?: iam.IRole;
