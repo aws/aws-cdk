@@ -756,7 +756,7 @@ export class Stream extends StreamBase {
     });
 
     let shardCount = props.shardCount;
-    let streamMode = props.streamMode ?? StreamMode.PROVISIONED;
+    const streamMode = props.streamMode ?? StreamMode.PROVISIONED;
 
     if (streamMode === StreamMode.ON_DEMAND && shardCount !== undefined) {
       throw new Error('streamMode must be set to PROVISIONED (default) when specifying shardCount');
