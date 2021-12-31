@@ -177,3 +177,30 @@ const topicRule = new iot.TopicRule(this, 'TopicRule', {
   ],
 });
 ```
+
+## Send messages to a SQS queue
+
+The code snippet below creates an AWS IoT Rule that send messages
+to a SQS queue when it is triggered.
+
+```ts
+import * as iot from '@aws-cdk/aws-iot';
+import * as actions from '@aws-cdk/aws-iot-actions';
+import * as sqs from '@aws-cdk/aws-sqs';
+
+const queue = new sqs.Queue(this, 'MyQueue');
+const stream = new firehose.DeliveryStream(this, 'MyStream', {
+  destinations: [new destinations.S3Bucket(bucket)],
+});
+
+const topicRule = new iot.TopicRule(this, 'TopicRule', {
+  sql: iot.IotSql.fromStringAsVer20160323(
+    "SELECT topic(2) as device_id, year, month, day FROM 'device/+/data'",
+  ),
+  actions: [
+    new actions.SQSQueueAction(queue, {
+      useBase64: false,
+    }),
+  ]
+});
+```
