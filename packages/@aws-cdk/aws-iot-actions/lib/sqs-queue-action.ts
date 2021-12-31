@@ -13,7 +13,7 @@ export interface SQSQueueActionProps extends CommonActionProps {
    *
    * @default false
    */
-  readonly useBase64: boolean
+  readonly useBase64?: boolean
 }
 
 /**
@@ -22,7 +22,7 @@ export interface SQSQueueActionProps extends CommonActionProps {
 export class SQSQueueAction implements iot.IAction {
   private readonly role?: iam.IRole;
   private readonly queue: sqs.Queue;
-  private readonly useBase64: boolean;
+  private readonly useBase64?: boolean;
 
   /**
    * @param queue The Amazon SQS queue to which to write data.
