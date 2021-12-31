@@ -1313,6 +1313,67 @@ test('NetworkLoadBalancedEC2Service accepts imported load balancer', () => {
   });
 });
 
+test('NLB - set daemon scheduling strategy', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+
+  const vpc = new ec2.Vpc(stack, 'VPC');
+  const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+  cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+    autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+      vpc,
+      instanceType: new ec2.InstanceType('t2.micro'),
+      machineImage: MachineImage.latestAmazonLinux(),
+    }),
+  }));
+
+  // WHEN
+  new ecsPatterns.NetworkLoadBalancedEc2Service(stack, 'Service', {
+    daemon: true,
+    cluster,
+    memoryLimitMiB: 1024,
+    taskImageOptions: {
+      image: ecs.ContainerImage.fromRegistry('test'),
+    },
+  });
+
+  expect(stack).toHaveResource('AWS::ECS::Service', {
+    SchedulingStrategy: 'DAEMON',
+    DeploymentConfiguration: {
+      MaximumPercent: 100,
+      MinimumHealthyPercent: 0,
+    },
+  });
+});
+
+test('NLB - throws if both desiredCount and daemon scheduling strategy are set', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+
+  const vpc = new ec2.Vpc(stack, 'VPC');
+  const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+  cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+    autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+      vpc,
+      instanceType: new ec2.InstanceType('t2.micro'),
+      machineImage: MachineImage.latestAmazonLinux(),
+    }),
+  }));
+
+  // THEN
+  expect(() =>
+    new ecsPatterns.NetworkLoadBalancedEc2Service(stack, 'Service', {
+      daemon: true,
+      desiredCount: 5,
+      cluster,
+      memoryLimitMiB: 1024,
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('test'),
+      },
+    }),
+  ).toThrow(/Daemon mode launches one task on every instance. Don't supply desiredCount./);
+});
+
 test('ApplicationLoadBalancedEC2Service accepts previously created load balancer', () => {
   // GIVEN
   const stack = new cdk.Stack();

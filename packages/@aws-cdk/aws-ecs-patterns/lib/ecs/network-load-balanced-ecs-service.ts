@@ -61,6 +61,16 @@ export interface NetworkLoadBalancedEc2ServiceProps extends NetworkLoadBalancedS
    * @default - No memory reserved.
    */
   readonly memoryReservationMiB?: number;
+
+  /**
+   * Specifies whether the service will use the daemon scheduling strategy.
+   * If true, the service scheduler deploys exactly one task on each container instance in your cluster.
+   *
+   * When you are using this strategy, do not specify a desired number of tasks or any task placement strategies.
+   *
+   * @default false
+   */
+  readonly daemon?: boolean;
 }
 
 /**
@@ -117,7 +127,12 @@ export class NetworkLoadBalancedEc2Service extends NetworkLoadBalancedServiceBas
       throw new Error('You must specify one of: taskDefinition or image');
     }
 
-    const desiredCount = this.node.tryGetContext(cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT) ? this.internalDesiredCount : this.desiredCount;
+    let desiredCount = undefined;
+    if (props.daemon) {
+      desiredCount = props.desiredCount;
+    } else {
+      desiredCount = this.node.tryGetContext(cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT) ? this.internalDesiredCount : this.desiredCount;
+    }
 
     this.service = new Ec2Service(this, 'Service', {
       cluster: this.cluster,
@@ -133,6 +148,7 @@ export class NetworkLoadBalancedEc2Service extends NetworkLoadBalancedServiceBas
       cloudMapOptions: props.cloudMapOptions,
       deploymentController: props.deploymentController,
       circuitBreaker: props.circuitBreaker,
+      daemon: props.daemon,
     });
     this.addServiceAsTarget(this.service);
   }
