@@ -112,7 +112,17 @@ function makeIdentifier(s: string) {
  * Return an anonymous TypeScript type that would accept the given dimensions
  */
 function dimensionsType(dims: string[]) {
-  return `{ ${dims.map(d => `${d}: string`).join(', ')} }`;
+  return `{ ${dims.map(d => `${escapeIdentifier(d)}: string`).join(', ')} }`;
+}
+
+/**
+ * Escape identifiers
+ *
+ * Most services choose nice and neat ASCII characters for their dimension
+ * names, but of course you know some won't.
+ */
+function escapeIdentifier(ident: string) {
+  return ident.match(/[^a-zA-Z0-9]/) ? `'${ident}'` : ident;
 }
 
 function groupByNamespace(metrics: cfnspec.CannedMetric[]): Record<string, cfnspec.CannedMetric[]> {
