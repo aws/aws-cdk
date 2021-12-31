@@ -159,14 +159,12 @@ export class CfnSpecValidator {
     this.assertOptional(primitiveType, isValidPrimitive);
 
     let isCollectionType = false;
+    const itemType = typedObject.get('ItemType');
+    const primitiveItemType = typedObject.get('PrimitiveItemType');
 
     if (type.hasValue) {
       isCollectionType = COLLECTION_TYPES.includes(type.value);
-
       if (isCollectionType) {
-        const itemType = typedObject.get('ItemType');
-        const primitiveItemType = typedObject.get('PrimitiveItemType');
-
         if (itemType.hasValue === primitiveItemType.hasValue) {
           this.report(typedObject, `must have exactly one of 'ItemType', 'PrimitiveItemType', found: ${JSON.stringify({
             ItemType: itemType.valueOrUndefined,
@@ -180,6 +178,12 @@ export class CfnSpecValidator {
         }
       } else {
         this.assertValidPropertyTypeReference(type);
+      }
+    }
+
+    if (!isCollectionType) {
+      if (itemType.hasValue || primitiveItemType.hasValue) {
+        this.report(typedObject, 'only \'List\' or \'Map\' types can have \'ItemType\', \'PrimitiveItemType\'');
       }
     }
 

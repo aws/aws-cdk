@@ -15,52 +15,83 @@ export interface PatchOptions {
   readonly quiet?: boolean;
 }
 
+export type PatchSet = Record<string, PatchSetElement>;
+
+export type PatchSetElement =
+  | { readonly type: 'fragment'; readonly data: any }
+  | { readonly type: 'patch'; readonly data: any }
+  | { readonly type: 'set'; readonly sources: PatchSet }
+  ;
+
+export async function loadPatchSet(sourceDirectory: string, relativeTo = process.cwd()): Promise<PatchSet> {
+  const ret: PatchSet = {};
+
+  const files = await fs.readdir(sourceDirectory);
+  for (const file of files) {
+    const fullFile = path.join(sourceDirectory, file);
+    const relName = path.relative(relativeTo, fullFile);
+
+    if ((await fs.stat(fullFile)).isDirectory()) {
+      ret[relName] = {
+        type: 'set',
+        sources: await loadPatchSet(fullFile, sourceDirectory),
+      };
+    } else if (file.endsWith('.json')) {
+      ret[relName] = {
+        type: file.indexOf('patch') === -1 ? 'fragment' : 'patch',
+        data: await fs.readJson(fullFile),
+      };
+    }
+  }
+
+  return ret;
+}
+
+export function evaluatePatchSet(sources: PatchSet, options: PatchOptions = {}) {
+  const targetObject: any = {};
+
+  for (const key of Object.keys(sources).sort()) {
+    const value = sources[key];
+
+    switch (value.type) {
+      case 'fragment':
+        log(key);
+        merge(targetObject, value.data, []);
+        break;
+      case 'patch':
+        patch(targetObject, value.data, (m) => log(`${key}: ${m}`));
+        break;
+      case 'set':
+        const evaluated = evaluatePatchSet(value.sources, options);
+        log(key);
+        merge(targetObject, evaluated, []);
+        break;
+    }
+  }
+
+  return targetObject;
+
+  function log(x: string) {
+    if (!options.quiet) {
+      // eslint-disable-next-line no-console
+      console.log(x);
+    }
+  }
+}
+
 /**
  * Load a patch set from a directory
  */
-export async function loadPatchSet(sourceDirectory: string, options: PatchOptions = {}) {
-  const targetObject: any = {};
-
-  const files = await fs.readdir(sourceDirectory);
-  for (const file of files.sort()) {
-    const fullFile = path.join(sourceDirectory, file);
-    const relName = path.relative(process.cwd(), fullFile);
-
-    let data;
-    if ((await fs.stat(fullFile)).isDirectory()) {
-      data = await loadPatchSet(fullFile, options);
-    } else if (file.endsWith('.json')) {
-      data = await fs.readJson(fullFile);
-    } else {
-      continue;
-    }
-
-    if (file.indexOf('patch') === -1) {
-      if (!options.quiet) {
-        // eslint-disable-next-line no-console
-        console.log(relName);
-      }
-
-      // Copy properties from current object into structure, adding/overwriting whatever is found
-      merge(targetObject, data, []);
-    } else {
-      // Apply the loaded file as a patch onto the current structure
-      patch(targetObject, data, (x) => {
-        if (!options.quiet) {
-          // eslint-disable-next-line no-console
-          console.log(`${relName}: ${x}`);
-        }
-      });
-    }
-  }
-  return targetObject;
+export async function applyPatchSet(sourceDirectory: string, options: PatchOptions = {}) {
+  const patches = await loadPatchSet(sourceDirectory);
+  return evaluatePatchSet(patches, options);
 }
 
 /**
  * Load a patch set and write it out to a file
  */
-export async function resolvePatchSet(targetFile: string, sourceDirectory: string, options: PatchOptions = {}) {
-  const model = await loadPatchSet(sourceDirectory, options);
+export async function applyAndWrite(targetFile: string, sourceDirectory: string, options: PatchOptions = {}) {
+  const model = await applyPatchSet(sourceDirectory, options);
   await writeSorted(targetFile, model);
 }
 
@@ -75,6 +106,10 @@ function printSorted(data: any) {
 
 function merge(target: any, fragment: any, jsonPath: string[]) {
   if (!fragment) { return; }
+  if (!target || typeof target !== 'object' || Array.isArray(target)) {
+    throw new Error(`Expected object, found: '${target}' at '$.${jsonPath.join('.')}'`);
+  }
+
   for (const key of Object.keys(fragment)) {
     if (key.startsWith('$')) { continue; }
 
@@ -85,7 +120,10 @@ function merge(target: any, fragment: any, jsonPath: string[]) {
         // eslint-disable-next-line max-len
         throw new Error(`Attempted to merge ${JSON.stringify(fragVal)} into incompatible ${JSON.stringify(specVal)} at path ${jsonPath.join('/')}/${key}`);
       }
-      if (typeof specVal !== 'object' && specVal !== fragVal) {
+      if (specVal == fragVal) {
+        continue;
+      }
+      if (typeof specVal !== 'object') {
         // eslint-disable-next-line max-len
         throw new Error(`Conflict when attempting to merge ${JSON.stringify(fragVal)} into ${JSON.stringify(specVal)} at path ${jsonPath.join('/')}/${key}`);
       }
@@ -140,14 +178,21 @@ function findPatches(data: any, patchSource: any): Patch[] {
     if (!fragment) { return; }
 
     if ('patch' in fragment) {
+      const p = fragment.patch;
+      if (!p.operations) {
+        throw new Error(`Patch needs 'operations' key, got: ${JSON.stringify(p)}`);
+      }
       ret.push({
-        description: fragment.patch.description,
-        operations: fragment.patch.operations.map((op: any) => adjustPaths(op, jsonPath)),
+        description: p.description,
+        operations: p.operations.map((op: any) => adjustPaths(op, jsonPath)),
       });
     } else if ('patch:each' in fragment) {
       const p = fragment['patch:each'];
       if (typeof actualData !== 'object') {
         throw new Error(`Patch ${p.description}: expecting object in data, found '${actualData}'`);
+      }
+      if (!p.operations) {
+        throw new Error(`Patch needs 'operations' key, got: ${JSON.stringify(p)}`);
       }
       for (const key in actualData) {
         ret.push({
@@ -202,7 +247,7 @@ async function main(args: string[]) {
 
   const [dir, targetFile] = args;
 
-  const model = await loadPatchSet(dir, { quiet });
+  const model = await applyPatchSet(dir, { quiet });
   if (targetFile) {
     await writeSorted(targetFile, model);
   } else {
