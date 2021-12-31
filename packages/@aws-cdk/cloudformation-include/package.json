@@ -180,6 +180,7 @@
     "@aws-cdk/aws-kms": "0.0.0",
     "@aws-cdk/aws-lakeformation": "0.0.0",
     "@aws-cdk/aws-lambda": "0.0.0",
+    "@aws-cdk/aws-lex": "0.0.0",
     "@aws-cdk/aws-licensemanager": "0.0.0",
     "@aws-cdk/aws-lightsail": "0.0.0",
     "@aws-cdk/aws-location": "0.0.0",
@@ -363,6 +364,7 @@
     "@aws-cdk/aws-kms": "0.0.0",
     "@aws-cdk/aws-lakeformation": "0.0.0",
     "@aws-cdk/aws-lambda": "0.0.0",
+    "@aws-cdk/aws-lex": "0.0.0",
     "@aws-cdk/aws-licensemanager": "0.0.0",
     "@aws-cdk/aws-lightsail": "0.0.0",
     "@aws-cdk/aws-location": "0.0.0",
@@ -443,8 +445,8 @@
     "@aws-cdk/cdk-integ-tools": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/jest": "^27.0.3",
-    "jest": "^27.4.3",
-    "ts-jest": "^27.1.1"
+    "jest": "^27.4.5",
+    "ts-jest": "^27.1.2"
   },
   "bundledDependencies": [
     "yaml"
