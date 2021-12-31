@@ -6,9 +6,9 @@ import { AssetHashType, DockerImage } from '@aws-cdk/core';
  */
 export interface BundlingOptions {
   /**
-   * Output path suffix ('python' for a layer, '' otherwise)
+   * Output path suffix: the suffix for the directory into which the bundled output is written.
    *
-   * @default '''
+   * @default - 'python' for a layer, empty string otherwise.
    */
   readonly outputPathSuffix?: string;
 
