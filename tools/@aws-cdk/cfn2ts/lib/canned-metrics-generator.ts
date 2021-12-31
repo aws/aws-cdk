@@ -118,9 +118,19 @@ function dimensionsType(dims: string[]) {
 function groupByNamespace(metrics: cfnspec.CannedMetric[]): Record<string, cfnspec.CannedMetric[]> {
   const ret: Record<string, cfnspec.CannedMetric[]> = {};
   for (const metric of metrics) {
-    // Always starts with 'AWS/' (except when it doesn't, looking at you `CloudWatchSynthetics`)
-    const namespace = metric.namespace.replace(/^AWS\//, '');
+    const namespace = sanitizeNamespace(metric.namespace);
     (ret[namespace] ?? (ret[namespace] = [])).push(metric);
   }
   return ret;
+}
+
+/**
+ * Sanitize metrics namespace
+ *
+ * - Most namespaces look like 'AWS/<ServiceName>'.
+ * - 'AWS/CloudWatch/MetricStreams' has 2 slashes in it.
+ * - 'CloudWatchSynthetics' doesn't have a slash at all.
+ */
+function sanitizeNamespace(namespace: string) {
+  return namespace.replace(/^AWS\//, '').replace('/', '');
 }
