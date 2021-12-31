@@ -27,7 +27,7 @@ Currently supported are:
 - Capture CloudWatch metrics
 - Change state for a CloudWatch alarm
 - Put records to Kinesis Data Firehose stream
-- Put SQS queues
+- Send messages to SQS queues
 
 ## Invoke a Lambda function
 
