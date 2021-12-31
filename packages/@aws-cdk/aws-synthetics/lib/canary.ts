@@ -258,6 +258,7 @@ export class Canary extends cdk.Resource {
   public metricDuration(options?: MetricOptions): Metric {
     return new Metric({
       ...CloudWatchSyntheticsMetrics.durationMaximum({ CanaryName: this.canaryName }),
+      ...{ statistic: 'Average' },
       ...options,
     }).attachTo(this);
   }
