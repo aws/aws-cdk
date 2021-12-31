@@ -23,7 +23,7 @@ describe('Kinesis data streams', () => {
           Properties: {
             ShardCount: 1,
             StreamModeDetails: {
-              StreamMode: 'PROVISIONED',
+              StreamMode: StreamMode.PROVISIONED,
             },
             RetentionPeriodHours: 24,
             StreamEncryption: {
@@ -79,7 +79,7 @@ describe('Kinesis data streams', () => {
           Properties: {
             ShardCount: 1,
             StreamModeDetails: {
-              StreamMode: 'PROVISIONED',
+              StreamMode: StreamMode.PROVISIONED,
             },
             RetentionPeriodHours: 24,
             StreamEncryption: {
@@ -101,7 +101,7 @@ describe('Kinesis data streams', () => {
           Properties: {
             ShardCount: 1,
             StreamModeDetails: {
-              StreamMode: 'PROVISIONED',
+              StreamMode: StreamMode.PROVISIONED,
             },
             RetentionPeriodHours: 24,
             StreamEncryption: {
@@ -168,7 +168,7 @@ describe('Kinesis data streams', () => {
           Properties: {
             ShardCount: 2,
             StreamModeDetails: {
-              StreamMode: 'PROVISIONED',
+              StreamMode: StreamMode.PROVISIONED,
             },
             RetentionPeriodHours: 24,
             StreamEncryption: {
@@ -225,7 +225,7 @@ describe('Kinesis data streams', () => {
           Properties: {
             ShardCount: 1,
             StreamModeDetails: {
-              StreamMode: 'PROVISIONED',
+              StreamMode: StreamMode.PROVISIONED,
             },
             RetentionPeriodHours: 168,
             StreamEncryption: {
@@ -299,7 +299,7 @@ describe('Kinesis data streams', () => {
           Properties: {
             ShardCount: 1,
             StreamModeDetails: {
-              StreamMode: 'PROVISIONED',
+              StreamMode: StreamMode.PROVISIONED,
             },
             RetentionPeriodHours: 24,
             StreamEncryption: {
@@ -338,7 +338,7 @@ describe('Kinesis data streams', () => {
     expect(stack).toHaveResource('AWS::Kinesis::Stream', {
       ShardCount: 1,
       StreamModeDetails: {
-        StreamMode: 'PROVISIONED',
+        StreamMode: StreamMode.PROVISIONED,
       },
       RetentionPeriodHours: 24,
       StreamEncryption: {
@@ -388,7 +388,7 @@ describe('Kinesis data streams', () => {
     expect(stack).toHaveResource('AWS::Kinesis::Stream', {
       ShardCount: 1,
       StreamModeDetails: {
-        StreamMode: 'PROVISIONED',
+        StreamMode: StreamMode.PROVISIONED,
       },
       RetentionPeriodHours: 24,
       StreamEncryption: {
@@ -628,7 +628,7 @@ describe('Kinesis data streams', () => {
           Properties: {
             ShardCount: 1,
             StreamModeDetails: {
-              StreamMode: 'PROVISIONED',
+              StreamMode: StreamMode.PROVISIONED,
             },
             RetentionPeriodHours: 24,
             StreamEncryption: {
@@ -790,7 +790,7 @@ describe('Kinesis data streams', () => {
           Properties: {
             ShardCount: 1,
             StreamModeDetails: {
-              StreamMode: 'PROVISIONED',
+              StreamMode: StreamMode.PROVISIONED,
             },
             RetentionPeriodHours: 24,
             StreamEncryption: {
@@ -944,7 +944,7 @@ describe('Kinesis data streams', () => {
           Properties: {
             ShardCount: 1,
             StreamModeDetails: {
-              StreamMode: 'PROVISIONED',
+              StreamMode: StreamMode.PROVISIONED,
             },
             RetentionPeriodHours: 24,
             StreamEncryption: {
@@ -1016,7 +1016,7 @@ describe('Kinesis data streams', () => {
           Properties: {
             ShardCount: 1,
             StreamModeDetails: {
-              StreamMode: 'PROVISIONED',
+              StreamMode: StreamMode.PROVISIONED,
             },
             RetentionPeriodHours: 24,
             StreamEncryption: {
@@ -1107,7 +1107,7 @@ describe('Kinesis data streams', () => {
           Properties: {
             ShardCount: 1,
             StreamModeDetails: {
-              StreamMode: 'PROVISIONED',
+              StreamMode: StreamMode.PROVISIONED,
             },
             RetentionPeriodHours: 24,
             StreamEncryption: {
@@ -1190,7 +1190,7 @@ describe('Kinesis data streams', () => {
           Properties: {
             ShardCount: 1,
             StreamModeDetails: {
-              StreamMode: 'PROVISIONED',
+              StreamMode: StreamMode.PROVISIONED,
             },
             RetentionPeriodHours: 24,
             StreamEncryption: {
@@ -1283,7 +1283,7 @@ describe('Kinesis data streams', () => {
           Properties: {
             ShardCount: 1,
             StreamModeDetails: {
-              StreamMode: 'PROVISIONED',
+              StreamMode: StreamMode.PROVISIONED,
             },
             RetentionPeriodHours: 24,
             StreamEncryption: {
@@ -1368,7 +1368,7 @@ describe('Kinesis data streams', () => {
           Properties: {
             ShardCount: 1,
             StreamModeDetails: {
-              StreamMode: 'PROVISIONED',
+              StreamMode: StreamMode.PROVISIONED,
             },
             RetentionPeriodHours: 24,
             StreamEncryption: {
@@ -1488,7 +1488,7 @@ describe('Kinesis data streams', () => {
           Properties: {
             ShardCount: 1,
             StreamModeDetails: {
-              StreamMode: 'PROVISIONED',
+              StreamMode: StreamMode.PROVISIONED,
             },
             RetentionPeriodHours: {
               Ref: 'myretentionperiod',
