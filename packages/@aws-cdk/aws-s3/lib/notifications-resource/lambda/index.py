@@ -5,7 +5,7 @@ import urllib.request
 
 s3 = boto3.client("s3")
 
-CONFIGURATION_TYPES = ["TopicConfigurations", "QueueConfigurations", "LambdaFunctionConfigurations"]
+CONFIGURATION_TYPES = ["TopicConfigurations", "QueueConfigurations", "LambdaFunctionConfigurations", "EventBridgeConfiguration"]
 
 def handler(event: dict, context):
     response_status = "SUCCESS"

@@ -19,7 +19,7 @@ except ModuleNotFoundError as _:
     )
     sys.exit(1)
 
-CONFIGURATION_TYPES = ["TopicConfigurations", "QueueConfigurations", "LambdaFunctionConfigurations"]
+CONFIGURATION_TYPES = ["TopicConfigurations", "QueueConfigurations", "LambdaFunctionConfigurations", "EventBridgeConfiguration"]
 
 
 def make_event(request_type: str, managed: bool):
