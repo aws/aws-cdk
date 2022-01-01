@@ -46,5 +46,6 @@ export interface BucketNotificationDestinationConfig {
 export enum BucketNotificationDestinationType {
   LAMBDA,
   QUEUE,
-  TOPIC
+  TOPIC,
+  EVENT_BRIDGE,
 }

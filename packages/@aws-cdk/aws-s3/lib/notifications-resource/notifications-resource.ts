@@ -34,6 +34,7 @@ export class BucketNotifications extends Construct {
   private readonly lambdaNotifications = new Array<LambdaFunctionConfiguration>();
   private readonly queueNotifications = new Array<QueueConfiguration>();
   private readonly topicNotifications = new Array<TopicConfiguration>();
+  private eventBridgeNotification: EventBridgeConfiguration = null;
   private resource?: cdk.CfnResource;
   private readonly bucket: IBucket;
 
@@ -82,6 +83,10 @@ export class BucketNotifications extends Construct {
         this.topicNotifications.push({ ...commonConfig, TopicArn: targetProps.arn });
         break;
 
+      case BucketNotificationDestinationType.EVENT_BRIDGE:
+        this.eventBridgeNotification = {...commonConfig, EventBridgeEnabled: true};
+        break;
+  
       default:
         throw new Error('Unsupported notification target type:' + BucketNotificationDestinationType[targetProps.type]);
     }
@@ -92,6 +97,7 @@ export class BucketNotifications extends Construct {
       LambdaFunctionConfigurations: this.lambdaNotifications.length > 0 ? this.lambdaNotifications : undefined,
       QueueConfigurations: this.queueNotifications.length > 0 ? this.queueNotifications : undefined,
       TopicConfigurations: this.topicNotifications.length > 0 ? this.topicNotifications : undefined,
+      EventBridgeConfiguration: this.eventBridgeNotification ? this.eventBridgeNotification : undefined,
     };
   }
 
@@ -170,6 +176,7 @@ interface NotificationConfiguration {
   LambdaFunctionConfigurations?: LambdaFunctionConfiguration[];
   QueueConfigurations?: QueueConfiguration[];
   TopicConfigurations?: TopicConfiguration[];
+  EventBridgeConfiguration?: EventBridgeConfiguration;
 }
 
 interface CommonConfiguration {
@@ -188,6 +195,10 @@ interface QueueConfiguration extends CommonConfiguration {
 
 interface TopicConfiguration extends CommonConfiguration {
   TopicArn: string;
+}
+
+interface EventBridgeConfiguration extends CommonConfiguration {
+  EventBridgeEnabled: boolean;
 }
 
 interface FilterRule {
