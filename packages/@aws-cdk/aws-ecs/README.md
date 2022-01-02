@@ -361,6 +361,17 @@ const container = fargateTaskDefinition.addVolume(volume);
 
 > Note: ECS Anywhere doesn't support volume attachments in the task definition.
 
+To use Graviton based ARM64 containers, or specific operating system, specify the `runtimePlatform` option:
+
+```ts
+const ec2TaskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef', {
+  runtimePlatform: {
+    cpuArchitecture: ecs.CpuArchitecture.ARM64,
+    operatingSystemFamily: ecs.OperatingSystemFamily.LINUX,
+  }
+});
+```
+
 To use a TaskDefinition that can be used with either Amazon EC2 or
 AWS Fargate launch types, use the `TaskDefinition` construct.
 

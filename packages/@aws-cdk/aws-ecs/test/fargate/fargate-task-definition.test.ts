@@ -2,6 +2,7 @@ import '@aws-cdk/assert-internal/jest';
 import * as iam from '@aws-cdk/aws-iam';
 import * as cdk from '@aws-cdk/core';
 import * as ecs from '../../lib';
+import { CpuArchitecture, OperatingSystemFamily } from '../../lib';
 
 describe('fargate task definition', () => {
   describe('When creating a Fargate TaskDefinition', () => {
@@ -58,6 +59,10 @@ describe('fargate task definition', () => {
           assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
         }),
         ephemeralStorageGiB: 21,
+        runtimePlatform: {
+          cpuArchitecture: CpuArchitecture.X86_64,
+          operatingSystemFamily: OperatingSystemFamily.LINUX,
+        },
       });
 
       taskDefinition.addVolume({
@@ -99,6 +104,10 @@ describe('fargate task definition', () => {
             Name: 'scratch',
           },
         ],
+        RuntimePlatform: {
+          CpuArchitecture: 'X86_64',
+          OperatingSystemFamily: 'LINUX',
+        },
       });
 
 

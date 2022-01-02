@@ -9,6 +9,7 @@ import { testFutureBehavior } from '@aws-cdk/cdk-build-tools/lib/feature-flag';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as ecs from '../../lib';
+import { CpuArchitecture, OperatingSystemFamily } from '../../lib';
 
 describe('ec2 task definition', () => {
   describe('When creating an ECS TaskDefinition', () => {
@@ -53,6 +54,10 @@ describe('ec2 task definition', () => {
           },
           name: 'scratch',
         }],
+        runtimePlatform: {
+          cpuArchitecture: CpuArchitecture.X86_64,
+          operatingSystemFamily: OperatingSystemFamily.LINUX,
+        },
       });
 
       // THEN
@@ -90,6 +95,10 @@ describe('ec2 task definition', () => {
             Name: 'scratch',
           },
         ],
+        RuntimePlatform: {
+          CpuArchitecture: 'X86_64',
+          OperatingSystemFamily: 'LINUX',
+        },
       });
 
 

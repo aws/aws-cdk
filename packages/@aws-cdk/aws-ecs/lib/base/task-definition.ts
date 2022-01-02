@@ -99,6 +99,15 @@ export interface CommonTaskDefinitionProps {
    * @default - No volumes are passed to the Docker daemon on a container instance.
    */
   readonly volumes?: Volume[];
+
+  /**
+   * The operating system that your task definitions are running on.
+   * A platform family is specified only for tasks using the Fargate launch type.
+   * When you specify a task in a service, this value must match the runtimePlatform value of the service.
+   *
+   * @default - Undefined
+   */
+  readonly runtimePlatform?: RuntimePlatform;
 }
 
 /**
@@ -444,6 +453,10 @@ export class TaskDefinition extends TaskDefinitionBase {
       }, { omitEmptyArray: true }),
       ephemeralStorage: this.ephemeralStorageGiB ? {
         sizeInGiB: this.ephemeralStorageGiB,
+      } : undefined,
+      runtimePlatform: props.runtimePlatform ? {
+        cpuArchitecture: props.runtimePlatform.cpuArchitecture,
+        operatingSystemFamily: props.runtimePlatform.operatingSystemFamily,
       } : undefined,
     });
 
@@ -1040,6 +1053,84 @@ export enum Compatibility {
    * The task should specify the External launch type.
    */
   EXTERNAL
+}
+
+/**
+ * Identifies an ECS task's CPU architecture
+ */
+export enum CpuArchitecture {
+  /**
+   * ARM64 architecture
+   */
+  ARM64 = 'ARM64',
+
+  /**
+   * x86-64 architecture
+   */
+  X86_64 = 'X86_64',
+}
+
+/**
+ * Identifies a Fargate task's operating system
+ */
+export enum OperatingSystemFamily {
+  /**
+   * Linux
+   */
+  LINUX = 'LINUX',
+
+  /**
+   * Windows Server 2004 Core
+   */
+  WINDOWS_SERVER_2004_CORE = 'WINDOWS_SERVER_2004_CORE',
+
+  /**
+   * Windows Server 2016 Full
+   */
+  WINDOWS_SERVER_2016_FULL = 'WINDOWS_SERVER_2016_FULL',
+
+  /**
+   * Windows Server 2019 Core
+   */
+  WINDOWS_SERVER_2019_CORE = 'WINDOWS_SERVER_2019_CORE',
+
+  /**
+   * Windows Server 2019 Full
+   */
+  WINDOWS_SERVER_2019_FULL = 'WINDOWS_SERVER_2019_FULL',
+
+  /**
+   * Windows Server 2022 Core
+   */
+  WINDOWS_SERVER_2022_CORE = 'WINDOWS_SERVER_2022_CORE',
+
+  /**
+   * Windows Server 2022 Full
+   */
+  WINDOWS_SERVER_2022_FULL = 'WINDOWS_SERVER_2022_FULL',
+
+  /**
+   * Windows Server 20H2 Core
+   */
+  WINDOWS_SERVER_20H2_CORE = 'WINDOWS_SERVER_20H2_CORE',
+}
+
+/**
+ * Information about the platform for the Amazon ECS service or task.
+ */
+export interface RuntimePlatform {
+  /**
+   * The CPU architecture.
+   *
+   * @default - CpuArchitecture.X86_64
+   */
+  readonly cpuArchitecture?: CpuArchitecture;
+  /**
+   * The operating system family.
+   *
+   * @default - OperatingSystemFamily.LINUX
+   */
+  readonly operatingSystemFamily?: OperatingSystemFamily;
 }
 
 /**
