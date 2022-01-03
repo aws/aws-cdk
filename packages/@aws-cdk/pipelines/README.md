@@ -563,12 +563,32 @@ pipeline.addStage(prod, {
     stack: prod.stack1,
     pre: [new pipelines.ManualApprovalStep('Pre-Stack Check')], // Executed before stack is prepared
     changeSet: [new pipelines.ManualApprovalStep('ChangeSet Approval')], // Executed after stack is prepared but before the stack is deployed
-    post: [new pipelines.ManualApprovalStep('Post-Deploy Check')], // Executed after staack is deployed
+    post: [new pipelines.ManualApprovalStep('Post-Deploy Check')], // Executed after stack is deployed
   }, {
     stack: prod.stack2,
-    post: [new pipelines.ManualApprovalStep('Post-Deploy Check')], // Executed after staack is deployed
+    post: [new pipelines.ManualApprovalStep('Post-Deploy Check')], // Executed after stack is deployed
   }],
 });
+```
+
+If you specify multiple steps, they will __not__ depend on each other by default. However,
+you can manually add dependencies in two ways if you wish to specify an order. To add a dependency,you can call `step.AddStepDependency()`:
+
+```ts
+const firstStep = new pipelines.ManualApprovalStep('B');
+const secondStep = new pipelines.ManualApprovalStep('A');
+secondStep.addStepDependency(firstStep);
+```
+
+Alternatively, you can use `Step.sequence()` to help you define your dependencies:
+
+```ts
+// Step A will depend on step B and step B will depend on step C
+const orderedSteps = pipelines.Step.sequence([
+  new pipelines.ManualApprovalStep('C');
+  new pipelines.ManualApprovalStep('B');
+  new pipelines.ManualApprovalStep('A');
+]);
 ```
 
 #### Using CloudFormation Stack Outputs in approvals
