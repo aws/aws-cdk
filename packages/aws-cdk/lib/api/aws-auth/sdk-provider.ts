@@ -375,16 +375,15 @@ function parseHttpOptions(options: SdkHttpOptions) {
   config.customUserAgent = userAgent;
 
   const caBundlePath = options.caBundlePath || caBundlePathFromEnvironment();
-
-  if (options.proxyAddress) {
-    debug('Using command line proxy server: %s', options.proxyAddress);
-  }
-
   if (caBundlePath) {
     debug('Using CA bundle path: %s', caBundlePath);
     (config.httpOptions as any).ca = readIfPossible(caBundlePath);
   }
 
+  if (options.proxyAddress) {
+    debug('Proxy server from command-line arguments: %s', options.proxyAddress);
+  }
+  
   // Configure the proxy agent. By default, this will use HTTPS?_PROXY and
   // NO_PROXY environment variables to determine which proxy to use for each
   // request.
