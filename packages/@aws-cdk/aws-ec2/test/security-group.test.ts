@@ -457,7 +457,7 @@ describe('security group', () => {
     });
   });
 
-  test('can look up a security group', () => {
+  testDeprecated('can look up a security group', () => {
     const app = new App();
     const stack = new Stack(app, 'stack', {
       env: {
@@ -473,7 +473,7 @@ describe('security group', () => {
 
   });
 
-  testDeprecated('can look up a security group', () => {
+  test('can look up a security group by id', () => {
     // GIVEN
     const app = new App();
     const stack = new Stack(app, 'stack', {
