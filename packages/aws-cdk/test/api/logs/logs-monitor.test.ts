@@ -93,7 +93,7 @@ async function testMonitorWithEventCalls(
   filterLogEvents.mockImplementation(() => { return {}; });
   sdk.stubCloudWatchLogs({ filterLogEvents });
   const monitor = new CloudWatchLogEventMonitor({ printer, hotswapTime: new Date(T100) });
-  monitor.addSdk(sdk);
+  monitor.setSdk(sdk);
   monitor.addLogGroups(['loggroup']);
   monitor.activate();
   await waitForCondition(() => finished);

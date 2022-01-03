@@ -29,7 +29,7 @@ export async function registerCloudWatchLogGroups(
 
   // add the sdk to the cloudWatchLogMonitor so that it also has the
   // correct credentials to monitor CloudWatch log groups
-  cloudWatchLogMonitor.addSdk(sdk);
+  cloudWatchLogMonitor.setSdk(sdk);
   // The current resources of the Stack.
   // We need them to figure out the physical name of a resource in case it wasn't specified by the user.
   // We fetch it lazily, to save a service call, in case all hotswapped resources have their physical names set.

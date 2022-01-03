@@ -61,7 +61,7 @@ export class CloudWatchLogEventMonitor {
     this.scheduleNextTick();
   }
 
-  public addSdk(sdk: ISDK): void {
+  public setSdk(sdk: ISDK): void {
     this.sdk = sdk;
   }
 
