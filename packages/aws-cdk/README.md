@@ -437,7 +437,7 @@ Note that `watch` by default uses hotswap deployments (see above for details) --
 to turn them off, pass the `--no-hotswap` option when invoking it.
 
 By default `watch` will also monitor all CloudWatch Log Groups in your application and stream the log events
-locally to your terminal. To disable this feature you can pass the `--no-logs` option when invoking it.
+locally to your terminal. To disable this feature you can pass the `--no-logs` option when invoking it:
 
 ```console
 $ cdk watch --no-logs

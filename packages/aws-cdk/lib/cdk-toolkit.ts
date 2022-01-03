@@ -121,9 +121,7 @@ export class CdkToolkit {
 
     // before we start the deployment, reset the tracked log groups
     // each stack will then register their log groups with the monitor
-    if (options.cloudWatchLogMonitor) {
-      options.cloudWatchLogMonitor.resetLogGroups();
-    }
+    options?.cloudWatchLogMonitor.resetLogGroups();
 
     const stacks = await this.selectStacksForDeploy(options.selector, options.exclusively, options.cacheCloudAssembly);
 
