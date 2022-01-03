@@ -70,7 +70,7 @@
     "@aws-cdk/cdk-integ-tools": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/jest": "^27.0.3",
-    "jest": "^27.4.3",
+    "jest": "^27.4.5",
     "@aws-cdk/aws-ecs": "0.0.0",
     "@aws-cdk/aws-ecs-patterns": "0.0.0"
   },

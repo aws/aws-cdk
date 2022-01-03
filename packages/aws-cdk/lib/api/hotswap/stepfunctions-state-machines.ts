@@ -57,7 +57,7 @@ class StateMachineHotswapOperation implements HotswapOperation {
   public readonly resourceNames: string[];
 
   constructor(private readonly stepFunctionResource: StateMachineResource) {
-    this.resourceNames = [this.stepFunctionResource.stateMachineArn.split(':')[6]];
+    this.resourceNames = [`StateMachine '${this.stepFunctionResource.stateMachineArn.split(':')[6]}'`];
   }
 
   public async apply(sdk: ISDK): Promise<any> {

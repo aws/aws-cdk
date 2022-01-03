@@ -76,7 +76,7 @@
     "@types/jest": "^27.0.3",
     "aws-sdk": "^2.848.0",
     "aws-sdk-mock": "^5.5.0",
-    "jest": "^27.4.3"
+    "jest": "^27.4.5"
   },
   "dependencies": {
     "@aws-cdk/aws-ec2": "0.0.0",
