@@ -225,7 +225,7 @@ export class CdkToolkit {
         print('\n✨  Deployment time: %ss\n', roundPercentage(millisecondsToSeconds(elapsedDeployTime)));
 
         if (Object.keys(result.outputs).length > 0) {
-          print('\nOutputs:');
+          print('Outputs:');
 
           stackOutputs[stack.stackName] = result.outputs;
         }
@@ -235,7 +235,7 @@ export class CdkToolkit {
           print('%s.%s = %s', colors.cyan(stack.id), colors.cyan(name), colors.underline(colors.cyan(value)));
         }
 
-        print('\nStack ARN:');
+        print('Stack ARN:');
 
         data(result.stackArn);
       } catch (e) {
