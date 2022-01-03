@@ -1,4 +1,3 @@
-import * as https from 'https';
 import * as os from 'os';
 import * as path from 'path';
 import * as cxapi from '@aws-cdk/cx-api';
@@ -375,30 +374,22 @@ function parseHttpOptions(options: SdkHttpOptions) {
   config.customUserAgent = userAgent;
 
   const caBundlePath = options.caBundlePath || caBundlePathFromEnvironment();
-
-  if (options.proxyAddress && caBundlePath) {
-    throw new Error(`At the moment, cannot specify Proxy (${options.proxyAddress}) and CA Bundle (${caBundlePath}) at the same time. See https://github.com/aws/aws-cdk/issues/5804`);
-    // Maybe it's possible after all, but I've been staring at
-    // https://github.com/TooTallNate/node-proxy-agent/blob/master/index.js#L79
-    // a while now trying to figure out what to pass in so that the underlying Agent
-    // object will get the 'ca' argument. It's not trivial and I don't want to risk it.
-  }
-
   if (caBundlePath) {
     debug('Using CA bundle path: %s', caBundlePath);
-    config.httpOptions.agent = new https.Agent({
-      ca: readIfPossible(caBundlePath),
-      keepAlive: true,
-    });
-  } else {
-    // Configure the proxy agent. By default, this will use HTTPS?_PROXY and
-    // NO_PROXY environment variables to determine which proxy to use for each
-    // request.
-    //
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const ProxyAgent: any = require('proxy-agent');
-    config.httpOptions.agent = new ProxyAgent();
+    (config.httpOptions as any).ca = readIfPossible(caBundlePath);
   }
+
+  if (options.proxyAddress) {
+    debug('Proxy server from command-line arguments: %s', options.proxyAddress);
+  }
+
+  // Configure the proxy agent. By default, this will use HTTPS?_PROXY and
+  // NO_PROXY environment variables to determine which proxy to use for each
+  // request.
+  //
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const ProxyAgent = require('proxy-agent');
+  config.httpOptions.agent = new ProxyAgent(options.proxyAddress);
 
   return config;
 }
