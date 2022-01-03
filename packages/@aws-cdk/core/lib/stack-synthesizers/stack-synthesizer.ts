@@ -128,4 +128,11 @@ export interface SynthesizeStackArtifactOptions {
    * @default - Bootstrap stack version number looked up
    */
   readonly bootstrapStackVersionSsmParameter?: string;
+
+  /**
+   * The role to use to look up values from the target AWS account during synthesis
+   *
+   * @default - None
+   */
+  readonly lookupRoleArn?: string;
 }

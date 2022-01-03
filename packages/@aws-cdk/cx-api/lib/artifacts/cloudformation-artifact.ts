@@ -108,6 +108,13 @@ export class CloudFormationStackArtifact extends CloudArtifact {
    */
   public readonly validateOnSynth?: boolean;
 
+  /**
+   * The role to use to look up values from the target AWS account during synthesis
+   *
+   * @default - None
+   */
+  public readonly lookupRoleArn?: string;
+
   private _template: any | undefined;
 
   constructor(assembly: CloudAssembly, artifactId: string, artifact: cxschema.ArtifactManifest) {
@@ -135,6 +142,7 @@ export class CloudFormationStackArtifact extends CloudArtifact {
     this.bootstrapStackVersionSsmParameter = properties.bootstrapStackVersionSsmParameter;
     this.terminationProtection = properties.terminationProtection;
     this.validateOnSynth = properties.validateOnSynth;
+    this.lookupRoleArn = properties.lookupRoleArn;
 
     this.stackName = properties.stackName || artifactId;
     this.assets = this.findMetadataByType(cxschema.ArtifactMetadataEntryType.ASSET).map(e => e.data as cxschema.AssetMetadataEntry);

@@ -42,7 +42,9 @@ test('add log groups from lambda function', async () => {
     },
   });
   await logsMockSdkProvider.registerCloudWatchLogGroups(cdkStackArtifact, eventMonitor);
-  expect(logMonitor).toHaveBeenCalledWith(['/aws/lambda/my-function']);
+  expect(logMonitor).toHaveBeenCalledWith('123456789012', expect.objectContaining({
+    groups: new Set(['/aws/lambda/my-function']),
+  }));
 });
 
 test('add log groups from ECS Task Definitions', async () => {
@@ -80,7 +82,9 @@ test('add log groups from ECS Task Definitions', async () => {
     },
   });
   await logsMockSdkProvider.registerCloudWatchLogGroups(cdkStackArtifact, eventMonitor);
-  expect(logMonitor).toHaveBeenCalledWith(['log_group']);
+  expect(logMonitor).toHaveBeenCalledWith('123456789012', expect.objectContaining({
+    groups: new Set(['log_group']),
+  }));
 });
 
 test('add log groups from State Machines', async () => {
@@ -119,7 +123,9 @@ test('add log groups from State Machines', async () => {
     },
   });
   await logsMockSdkProvider.registerCloudWatchLogGroups(cdkStackArtifact, eventMonitor);
-  expect(logMonitor).toHaveBeenCalledWith(['log_group']);
+  expect(logMonitor).toHaveBeenCalledWith('123456789012', expect.objectContaining({
+    groups: new Set(['log_group']),
+  }));
 });
 
 test('add log groups from CodeBuild Projects', async () => {
@@ -152,7 +158,9 @@ test('add log groups from CodeBuild Projects', async () => {
     },
   });
   await logsMockSdkProvider.registerCloudWatchLogGroups(cdkStackArtifact, eventMonitor);
-  expect(logMonitor).toHaveBeenCalledWith(['log_group']);
+  expect(logMonitor).toHaveBeenCalledWith('123456789012', expect.objectContaining({
+    groups: new Set(['log_group']),
+  }));
 });
 
 test('add log groups from CodeBuild Projects, implicit', async () => {
@@ -171,7 +179,9 @@ test('add log groups from CodeBuild Projects, implicit', async () => {
     },
   });
   await logsMockSdkProvider.registerCloudWatchLogGroups(cdkStackArtifact, eventMonitor);
-  expect(logMonitor).toHaveBeenCalledWith(['/aws/codebuild/project']);
+  expect(logMonitor).toHaveBeenCalledWith('123456789012', expect.objectContaining({
+    groups: new Set(['/aws/codebuild/project']),
+  }));
 });
 
 test('excluded log groups are not added', async () => {
@@ -224,7 +234,9 @@ test('excluded log groups are not added', async () => {
     },
   });
   await logsMockSdkProvider.registerCloudWatchLogGroups(cdkStackArtifact, eventMonitor);
-  expect(logMonitor).toHaveBeenCalledWith(['/aws/codebuild/project']);
+  expect(logMonitor).toHaveBeenCalledWith('123456789012', expect.objectContaining({
+    groups: new Set(['/aws/codebuild/project']),
+  }));
 });
 
 test('unassociated log groups are added', async () => {
@@ -243,7 +255,9 @@ test('unassociated log groups are added', async () => {
     },
   });
   await logsMockSdkProvider.registerCloudWatchLogGroups(cdkStackArtifact, eventMonitor);
-  expect(logMonitor).toHaveBeenCalledWith(['log_group']);
+  expect(logMonitor).toHaveBeenCalledWith('123456789012', expect.objectContaining({
+    groups: new Set(['log_group']),
+  }));
 });
 
 const STACK_NAME = 'withouterrors';

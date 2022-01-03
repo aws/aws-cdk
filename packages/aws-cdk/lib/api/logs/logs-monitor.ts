@@ -12,9 +12,35 @@ const SLEEP = 2_000;
  * printed to the terminal
  */
 export interface CloudWatchLogEvent {
+  /**
+   * The log event message
+   */
   readonly message: string;
+
+  /**
+   * The name of the log group
+   */
   readonly logGroup: string;
+
+  /**
+   * The time at which the event occurred
+   */
   readonly timestamp: Date;
+}
+
+/**
+ * Configuration that holds an SDK and list of log groups
+ */
+export interface LogGroupConfig {
+  /**
+   * The SDK for a given account
+   */
+  readonly sdk: ISDK;
+
+  /**
+   * A list of log groups in a given account
+   */
+  readonly groups: Set<string>;
 }
 
 /**
@@ -43,8 +69,16 @@ export class CloudWatchLogEventMonitor {
    */
   private startTime: number;
 
-  private readonly logGroups = new Set<string>();
-  private sdk?: ISDK;
+  /**
+   * Tracks the startTime for each log group separately
+   * Map of group name to starTime
+   */
+  private readonly groupStartTime = new Map<string, number>();
+
+  /**
+   * Map of account to LogGroupConfig
+   */
+  private readonly logGroups = new Map<string, LogGroupConfig>();
 
   private active = false;
 
@@ -61,10 +95,6 @@ export class CloudWatchLogEventMonitor {
     this.scheduleNextTick();
   }
 
-  public setSdk(sdk: ISDK): void {
-    this.sdk = sdk;
-  }
-
   // allows the ability to "pause" the monitor. The primary
   // use case for this is when we are in the middle of performing a deployment
   // and don't want to interweave all the logs together
@@ -77,15 +107,32 @@ export class CloudWatchLogEventMonitor {
   }
 
   /**
-   * Adds a CloudWatch log group to read log events from
+   * Adds CloudWatch log groups to read log events from.
+   * Since we could be watching multiple stacks that deploy to
+   * multiple AWS accounts, we need to store a list of log groups
+   * per account along with the SDK object that has access to read from
+   * that AWS account.
    */
-  public addLogGroups(logGroups: string[]): void {
-    logGroups.forEach(group => {
-      this.logGroups.add(group);
-    });
+  public addLogGroups(account: string, config: LogGroupConfig): void {
+    const logGroup = this.logGroups.get(account);
+    if (logGroup) {
+      config.groups.forEach(group => {
+        logGroup.groups.add(group);
+        this.groupStartTime.set(group, this.startTime);
+      });
+    } else {
+      this.logGroups.set(account, config);
+    }
   }
 
+  /**
+   * reset the list of log groups that are being monitored
+   * along with the startTime.
+   *
+   * This should only be triggered prior to a CFN deployment
+   */
   public resetLogGroups(): void {
+    this.startTime = Date.now();
     this.logGroups.clear();
   }
 
@@ -100,9 +147,6 @@ export class CloudWatchLogEventMonitor {
     }
     try {
       const events = flatten(await this.readNewEvents());
-      if (events.length > 0) {
-        this.startTime = Date.now();
-      }
       events.forEach(event => {
         this.printer.print(event);
       });
@@ -117,10 +161,14 @@ export class CloudWatchLogEventMonitor {
    * in parallel
    */
   private async readNewEvents(): Promise<Array<Array<CloudWatchLogEvent>>> {
-    const groups = Array.from(this.logGroups);
-    return Promise.all(groups.map(group => {
-      return this.readEventsFromLogGroup(group);
-    }));
+    const promises: Array<Promise<Array<CloudWatchLogEvent>>> = [];
+    for (const config of this.logGroups.values()) {
+      const sdk = config.sdk;
+      for (const group of config.groups) {
+        promises.push(this.readEventsFromLogGroup(sdk, group));
+      }
+    }
+    return Promise.all(promises);
   }
 
   /**
@@ -129,16 +177,22 @@ export class CloudWatchLogEventMonitor {
    *
    * Only prints out events that have not been printed already
    */
-  private async readEventsFromLogGroup(logGroupName: string): Promise<CloudWatchLogEvent[]> {
+  private async readEventsFromLogGroup(sdk: ISDK, logGroupName: string): Promise<CloudWatchLogEvent[]> {
     const events: CloudWatchLogEvent[] = [];
+
+    // log events from some service are ingested faster than others
+    // so we need to track the start/end time for each log group individually
+    // to make sure that we process all events from each log group
+    const startTime = this.groupStartTime.get(logGroupName) ?? this.startTime;
+    let endTime = startTime;
     try {
       let nextToken: string | undefined;
       do {
-        const response = await this.sdk!.cloudWatchLogs().filterLogEvents({
+        const response = await sdk.cloudWatchLogs().filterLogEvents({
           logGroupName: logGroupName,
           nextToken,
           limit: 100,
-          startTime: this.startTime,
+          startTime: startTime,
         }).promise();
         const eventPage = response.events ?? [];
 
@@ -149,6 +203,10 @@ export class CloudWatchLogEventMonitor {
               logGroup: logGroupName,
               timestamp: event.timestamp ? new Date(event.timestamp) : new Date(),
             });
+
+            if (event.timestamp && endTime < event.timestamp) {
+              endTime = event.timestamp;
+            }
           }
         }
         nextToken = response.nextToken;
@@ -162,6 +220,7 @@ export class CloudWatchLogEventMonitor {
       }
       throw e;
     }
+    this.groupStartTime.set(logGroupName, endTime+1);
     return events;
   }
 }

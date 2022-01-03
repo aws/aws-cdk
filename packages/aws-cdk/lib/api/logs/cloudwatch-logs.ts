@@ -1,5 +1,6 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import { Mode, SdkProvider } from '../aws-auth';
+import { replaceEnvPlaceholders } from '../cloudformation-deployments';
 import { EvaluateCloudFormationTemplate, LazyListStackResources } from '../evaluate-cloudformation-template';
 import { CloudWatchLogEventMonitor } from './logs-monitor';
 
@@ -17,19 +18,20 @@ export async function registerCloudWatchLogGroups(
   cloudWatchLogMonitor: CloudWatchLogEventMonitor,
 ): Promise<void> {
 
-  const logGroupNames = new Array<string>();
+  const logGroupNames = new Set<string>();
   const logGroupLogicalIds = new Set<string>();
   const implicitMap = new Map<string, string>();
   //
   // resolve the environment, so we can substitute things like AWS::Region in CFN expressions
   const resolvedEnv = await sdkProvider.resolveEnvironment(stackArtifact.environment);
-  // create a new SDK using the CLI credentials, because the default one will not work for new-style synthesis -
-  // it assumes the bootstrap deploy Role which does not have access to read CloudWatch logs
-  const sdk = await sdkProvider.forEnvironment(resolvedEnv, Mode.ForReading);
 
-  // add the sdk to the cloudWatchLogMonitor so that it also has the
-  // correct credentials to monitor CloudWatch log groups
-  cloudWatchLogMonitor.setSdk(sdk);
+  const arns = await replaceEnvPlaceholders({
+    lookupRoleArn: stackArtifact.lookupRoleArn,
+  }, resolvedEnv, sdkProvider);
+  const sdk = await sdkProvider.forEnvironment(resolvedEnv, Mode.ForReading, {
+    assumeRoleArn: arns.lookupRoleArn,
+  });
+
   // The current resources of the Stack.
   // We need them to figure out the physical name of a resource in case it wasn't specified by the user.
   // We fetch it lazily, to save a service call, in case all hotswapped resources have their physical names set.
@@ -76,7 +78,7 @@ export async function registerCloudWatchLogGroups(
   for (const id of logGroupLogicalIds) {
     const groupName = await evaluateCfnTemplate.findPhysicalNameFor(id);
     if (groupName) {
-      logGroupNames.push(groupName);
+      logGroupNames.add(groupName);
     }
   }
 
@@ -86,9 +88,12 @@ export async function registerCloudWatchLogGroups(
   for (const [logicalId, serviceName] of implicitMap) {
     const name = await evaluateCfnTemplate.findPhysicalNameFor(logicalId);
     if (name) {
-      logGroupNames.push(`/aws/${serviceName}/${name}`);
+      logGroupNames.add(`/aws/${serviceName}/${name}`);
     }
   }
 
-  cloudWatchLogMonitor.addLogGroups(logGroupNames);
+  cloudWatchLogMonitor.addLogGroups(resolvedEnv.account, {
+    sdk,
+    groups: logGroupNames,
+  });
 }
