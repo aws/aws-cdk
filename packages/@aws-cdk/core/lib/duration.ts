@@ -1,4 +1,5 @@
 import { Token, Tokenization } from './token';
+import { Lazy } from './lazy';
 
 /**
  * Represents a length of time.
@@ -225,11 +226,15 @@ export class Duration {
    * `to*` methods instead.
    */
   public toString(): string {
-    return Token.asString(
-      () => {
-        throw new Error('Duration.toString() was used, but .toSeconds, .toMinutes or .toDays should have been called instead');
+    return Lazy.string(
+      {
+        produce: () => {
+          throw new Error(
+            'Duration.toString() was used, but .toSeconds, .toMinutes or .toDays should have been called instead',
+          );
+        },
       },
-      { displayHint: `${this.amount} ${this.unit.label}` },
+      { displayHint: `Duration.${this.amount}.${this.unit.label}` },
     );
   }
 
