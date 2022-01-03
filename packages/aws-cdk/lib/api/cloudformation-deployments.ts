@@ -12,7 +12,7 @@ import { StackActivityProgress } from './util/cloudformation/stack-activity-moni
 /**
  * Replace the {ACCOUNT} and {REGION} placeholders in all strings found in a complex object.
  */
-export async function replaceEnvPlaceholders<A extends {}>(object: A, env: cxapi.Environment, sdkProvider: SdkProvider): Promise<A> {
+export async function replaceEnvPlaceholders<A extends { }>(object: A, env: cxapi.Environment, sdkProvider: SdkProvider): Promise<A> {
   return cxapi.EnvironmentPlaceholders.replaceAsync(object, {
     accountId: () => Promise.resolve(env.account),
     region: () => Promise.resolve(env.region),
