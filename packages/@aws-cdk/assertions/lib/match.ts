@@ -304,7 +304,7 @@ class SerializedJson extends Matcher {
     super();
   };
 
-  private serializeCfnJoinGettAtt(object: any): any {
+  private serializeCfnJoinGetAtt(object: any): any {
     if (typeof object === 'object') {
       if (object === null) return null;
       if (object instanceof Array) {
