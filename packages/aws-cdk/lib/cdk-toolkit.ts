@@ -120,7 +120,7 @@ export class CdkToolkit {
     const startSynthTime = new Date().getTime();
     const stacks = await this.selectStacksForDeploy(options.selector, options.exclusively, options.cacheCloudAssembly);
     const elapsedSynthTime = new Date().getTime() - startSynthTime;
-    print('\n✨  Synthesis time: %ss\n', roundPercentage(elapsedSynthTime / 1000));
+    print('\n✨  Synthesis time: %ss\n', roundPercentage(millisecondsToSeconds(elapsedSynthTime)));
 
     const requireApproval = options.requireApproval ?? RequireApproval.Broadening;
 
@@ -222,7 +222,7 @@ export class CdkToolkit {
 
         success('\n' + message, stack.displayName);
         elapsedDeployTime = new Date().getTime() - startDeployTime;
-        print('\n✨  Deployment time: %ss', roundPercentage(elapsedDeployTime / 1000));
+        print('\n✨  Deployment time: %ss\n', roundPercentage(millisecondsToSeconds(elapsedDeployTime)));
 
         if (Object.keys(result.outputs).length > 0) {
           print('\nOutputs:');
@@ -253,7 +253,7 @@ export class CdkToolkit {
           });
         }
       }
-      print('\n✨  Total time: %ss', roundPercentage((elapsedSynthTime + elapsedDeployTime) / 1000));
+      print('\n✨  Total time: %ss\n', roundPercentage(millisecondsToSeconds(elapsedSynthTime + elapsedDeployTime)));
     }
   }
 
@@ -862,4 +862,11 @@ export interface Tag {
  */
 function roundPercentage(num: number): number {
   return Math.round(100 * num) / 100;
+}
+
+/**
+ * Given a time in miliseconds, return an equivalent amount in seconds.
+ */
+function millisecondsToSeconds(num: number): number {
+  return num / 1000;
 }
