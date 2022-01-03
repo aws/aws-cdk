@@ -1,20 +1,26 @@
-import { CloudWatchLogEventMonitor } from '../../../lib/api/monitor/logs-monitor';
+import * as cxapi from '@aws-cdk/cx-api';
+import { CloudFormation } from 'aws-sdk';
+import { registerCloudWatchLogGroups } from '../../../lib/api/logs/cloudwatch-logs';
+import { CloudWatchLogEventMonitor } from '../../../lib/api/logs/logs-monitor';
+import { testStack, TestStackArtifact } from '../../util';
+import { MockSdkProvider } from '../../util/mock-sdk';
 import { FakePrinter } from './fake-printer';
-import * as setup from './hotswap-test-setup';
 
-let hotswapMockSdkProvider: setup.HotswapMockSdkProvider;
+let logsMockSdkProvider: LogsMockSdkProvider;
 let logMonitor: jest.Mock;
 let eventMonitor: CloudWatchLogEventMonitor;
 let mockGetEndpointSuffix: () => string;
 
 beforeEach(() => {
   jest.useFakeTimers();
-  hotswapMockSdkProvider = setup.setupHotswapTests();
+  logsMockSdkProvider = new LogsMockSdkProvider();
   logMonitor = jest.fn();
   eventMonitor = new CloudWatchLogEventMonitor({ printer: new FakePrinter() });
   eventMonitor.addLogGroups = logMonitor;
   mockGetEndpointSuffix = jest.fn(() => 'amazonaws.com');
-  hotswapMockSdkProvider.stubGetEndpointSuffix(mockGetEndpointSuffix);
+  logsMockSdkProvider.stubGetEndpointSuffix(mockGetEndpointSuffix);
+  // clear the array
+  currentCfnStackResources.splice(0);
 });
 afterAll(() => {
   jest.useRealTimers();
@@ -22,8 +28,8 @@ afterAll(() => {
 
 test('add log groups from lambda function', async () => {
   // GIVEN
-  setup.pushStackResourceSummaries(setup.stackSummaryOf('Func', 'AWS::Lambda::Function', 'my-function'));
-  const cdkStackArtifact = setup.cdkStackArtifactOf({
+  pushStackResourceSummaries(stackSummaryOf('Func', 'AWS::Lambda::Function', 'my-function'));
+  const cdkStackArtifact = cdkStackArtifactOf({
     template: {
       Resources: {
         Func: {
@@ -35,15 +41,15 @@ test('add log groups from lambda function', async () => {
       },
     },
   });
-  await hotswapMockSdkProvider.registerCloudWatchLogGroups(cdkStackArtifact, eventMonitor);
+  await logsMockSdkProvider.registerCloudWatchLogGroups(cdkStackArtifact, eventMonitor);
   expect(logMonitor).toHaveBeenCalledWith(['/aws/lambda/my-function']);
 });
 
 test('add log groups from ECS Task Definitions', async () => {
   // GIVEN
-  setup.pushStackResourceSummaries(setup.stackSummaryOf('Def', 'AWS::ECS::TaskDefinition', 'app'));
-  setup.pushStackResourceSummaries(setup.stackSummaryOf('LogGroup', 'AWS::Logs::LogGroup', 'log_group'));
-  const cdkStackArtifact = setup.cdkStackArtifactOf({
+  pushStackResourceSummaries(stackSummaryOf('Def', 'AWS::ECS::TaskDefinition', 'app'));
+  pushStackResourceSummaries(stackSummaryOf('LogGroup', 'AWS::Logs::LogGroup', 'log_group'));
+  const cdkStackArtifact = cdkStackArtifactOf({
     template: {
       Resources: {
         LogGroup: {
@@ -73,15 +79,15 @@ test('add log groups from ECS Task Definitions', async () => {
       },
     },
   });
-  await hotswapMockSdkProvider.registerCloudWatchLogGroups(cdkStackArtifact, eventMonitor);
+  await logsMockSdkProvider.registerCloudWatchLogGroups(cdkStackArtifact, eventMonitor);
   expect(logMonitor).toHaveBeenCalledWith(['log_group']);
 });
 
 test('add log groups from State Machines', async () => {
   // GIVEN
-  setup.pushStackResourceSummaries(setup.stackSummaryOf('Def', 'AWS::StepFunctions::StateMachine', 'machine'));
-  setup.pushStackResourceSummaries(setup.stackSummaryOf('LogGroup', 'AWS::Logs::LogGroup', 'log_group'));
-  const cdkStackArtifact = setup.cdkStackArtifactOf({
+  pushStackResourceSummaries(stackSummaryOf('Def', 'AWS::StepFunctions::StateMachine', 'machine'));
+  pushStackResourceSummaries(stackSummaryOf('LogGroup', 'AWS::Logs::LogGroup', 'log_group'));
+  const cdkStackArtifact = cdkStackArtifactOf({
     template: {
       Resources: {
         LogGroup: {
@@ -112,15 +118,15 @@ test('add log groups from State Machines', async () => {
       },
     },
   });
-  await hotswapMockSdkProvider.registerCloudWatchLogGroups(cdkStackArtifact, eventMonitor);
+  await logsMockSdkProvider.registerCloudWatchLogGroups(cdkStackArtifact, eventMonitor);
   expect(logMonitor).toHaveBeenCalledWith(['log_group']);
 });
 
 test('add log groups from CodeBuild Projects', async () => {
   // GIVEN
-  setup.pushStackResourceSummaries(setup.stackSummaryOf('Def', 'AWS::CodeBuild::Project', 'project'));
-  setup.pushStackResourceSummaries(setup.stackSummaryOf('LogGroup', 'AWS::Logs::LogGroup', 'log_group'));
-  const cdkStackArtifact = setup.cdkStackArtifactOf({
+  pushStackResourceSummaries(stackSummaryOf('Def', 'AWS::CodeBuild::Project', 'project'));
+  pushStackResourceSummaries(stackSummaryOf('LogGroup', 'AWS::Logs::LogGroup', 'log_group'));
+  const cdkStackArtifact = cdkStackArtifactOf({
     template: {
       Resources: {
         LogGroup: {
@@ -145,14 +151,14 @@ test('add log groups from CodeBuild Projects', async () => {
       },
     },
   });
-  await hotswapMockSdkProvider.registerCloudWatchLogGroups(cdkStackArtifact, eventMonitor);
+  await logsMockSdkProvider.registerCloudWatchLogGroups(cdkStackArtifact, eventMonitor);
   expect(logMonitor).toHaveBeenCalledWith(['log_group']);
 });
 
 test('add log groups from CodeBuild Projects, implicit', async () => {
   // GIVEN
-  setup.pushStackResourceSummaries(setup.stackSummaryOf('Def', 'AWS::CodeBuild::Project', 'project'));
-  const cdkStackArtifact = setup.cdkStackArtifactOf({
+  pushStackResourceSummaries(stackSummaryOf('Def', 'AWS::CodeBuild::Project', 'project'));
+  const cdkStackArtifact = cdkStackArtifactOf({
     template: {
       Resources: {
         Def: {
@@ -164,17 +170,17 @@ test('add log groups from CodeBuild Projects, implicit', async () => {
       },
     },
   });
-  await hotswapMockSdkProvider.registerCloudWatchLogGroups(cdkStackArtifact, eventMonitor);
+  await logsMockSdkProvider.registerCloudWatchLogGroups(cdkStackArtifact, eventMonitor);
   expect(logMonitor).toHaveBeenCalledWith(['/aws/codebuild/project']);
 });
 
 test('excluded log groups are not added', async () => {
   // GIVEN
-  setup.pushStackResourceSummaries(setup.stackSummaryOf('FlowLog', 'AWS::EC2::FlowLog', 'flow'));
-  setup.pushStackResourceSummaries(setup.stackSummaryOf('Def', 'AWS::CodeBuild::Project', 'project'));
-  setup.pushStackResourceSummaries(setup.stackSummaryOf('LogGroup', 'AWS::Logs::LogGroup', 'log_group'));
-  setup.pushStackResourceSummaries(setup.stackSummaryOf('LogGroup2', 'AWS::Logs::LogGroup', 'log_group2'));
-  const cdkStackArtifact = setup.cdkStackArtifactOf({
+  pushStackResourceSummaries(stackSummaryOf('FlowLog', 'AWS::EC2::FlowLog', 'flow'));
+  pushStackResourceSummaries(stackSummaryOf('Def', 'AWS::CodeBuild::Project', 'project'));
+  pushStackResourceSummaries(stackSummaryOf('LogGroup', 'AWS::Logs::LogGroup', 'log_group'));
+  pushStackResourceSummaries(stackSummaryOf('LogGroup2', 'AWS::Logs::LogGroup', 'log_group2'));
+  const cdkStackArtifact = cdkStackArtifactOf({
     template: {
       Resources: {
         LogGroup: {
@@ -217,14 +223,14 @@ test('excluded log groups are not added', async () => {
       },
     },
   });
-  await hotswapMockSdkProvider.registerCloudWatchLogGroups(cdkStackArtifact, eventMonitor);
+  await logsMockSdkProvider.registerCloudWatchLogGroups(cdkStackArtifact, eventMonitor);
   expect(logMonitor).toHaveBeenCalledWith(['/aws/codebuild/project']);
 });
 
 test('unassociated log groups are added', async () => {
   // GIVEN
-  setup.pushStackResourceSummaries(setup.stackSummaryOf('LogGroup', 'AWS::Logs::LogGroup', 'log_group'));
-  const cdkStackArtifact = setup.cdkStackArtifactOf({
+  pushStackResourceSummaries(stackSummaryOf('LogGroup', 'AWS::Logs::LogGroup', 'log_group'));
+  const cdkStackArtifact = cdkStackArtifactOf({
     template: {
       Resources: {
         LogGroup: {
@@ -236,6 +242,61 @@ test('unassociated log groups are added', async () => {
       },
     },
   });
-  await hotswapMockSdkProvider.registerCloudWatchLogGroups(cdkStackArtifact, eventMonitor);
+  await logsMockSdkProvider.registerCloudWatchLogGroups(cdkStackArtifact, eventMonitor);
   expect(logMonitor).toHaveBeenCalledWith(['log_group']);
 });
+
+const STACK_NAME = 'withouterrors';
+// const STACK_ID = 'stackId';
+const currentCfnStackResources: CloudFormation.StackResourceSummary[] = [];
+
+function pushStackResourceSummaries(...items: CloudFormation.StackResourceSummary[]) {
+  currentCfnStackResources.push(...items);
+}
+
+function stackSummaryOf(logicalId: string, resourceType: string, physicalResourceId: string): CloudFormation.StackResourceSummary {
+  return {
+    LogicalResourceId: logicalId,
+    PhysicalResourceId: physicalResourceId,
+    ResourceType: resourceType,
+    ResourceStatus: 'CREATE_COMPLETE',
+    LastUpdatedTimestamp: new Date(),
+  };
+}
+
+function cdkStackArtifactOf(testStackArtifact: Partial<TestStackArtifact> = {}): cxapi.CloudFormationStackArtifact {
+  return testStack({
+    stackName: STACK_NAME,
+    ...testStackArtifact,
+  });
+}
+
+class LogsMockSdkProvider {
+  public readonly mockSdkProvider: MockSdkProvider;
+
+  constructor() {
+    this.mockSdkProvider = new MockSdkProvider({ realSdk: false });
+
+    this.mockSdkProvider.stubCloudFormation({
+      listStackResources: ({ StackName: stackName }) => {
+        if (stackName !== STACK_NAME) {
+          throw new Error(`Expected Stack name in listStackResources() call to be: '${STACK_NAME}', but received: ${stackName}'`);
+        }
+        return {
+          StackResourceSummaries: currentCfnStackResources,
+        };
+      },
+    });
+  }
+
+  public stubGetEndpointSuffix(stub: () => string) {
+    this.mockSdkProvider.stubGetEndpointSuffix(stub);
+  }
+
+  public registerCloudWatchLogGroups(
+    stackArtifact: cxapi.CloudFormationStackArtifact,
+    cloudWatchLogMonitor: CloudWatchLogEventMonitor,
+  ): Promise<void> {
+    return registerCloudWatchLogGroups(this.mockSdkProvider, stackArtifact, cloudWatchLogMonitor);
+  }
+}

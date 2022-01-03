@@ -9,10 +9,10 @@ import { environmentsFromDescriptors, globEnvironmentsFromStacks, looksLikeGlob 
 import { SdkProvider } from './api/aws-auth';
 import { Bootstrapper, BootstrapEnvironmentOptions } from './api/bootstrap';
 import { CloudFormationDeployments } from './api/cloudformation-deployments';
-import { registerCloudWatchLogGroups } from './api/cloudwatch-logs';
 import { CloudAssembly, DefaultSelection, ExtendedStackSelection, StackCollection, StackSelector } from './api/cxapp/cloud-assembly';
 import { CloudExecutable } from './api/cxapp/cloud-executable';
-import { CloudWatchLogEventMonitor } from './api/monitor/logs-monitor';
+import { registerCloudWatchLogGroups } from './api/logs/cloudwatch-logs';
+import { CloudWatchLogEventMonitor } from './api/logs/logs-monitor';
 import { StackActivityProgress } from './api/util/cloudformation/stack-activity-monitor';
 import { printSecurityDiff, printStackDiff, RequireApproval } from './diff';
 import { data, debug, error, highlight, print, success, warning } from './logging';
@@ -121,7 +121,7 @@ export class CdkToolkit {
 
     // before we start the deployment, reset the tracked log groups
     // each stack will then register their log groups with the monitor
-    options?.cloudWatchLogMonitor.resetLogGroups();
+    options?.cloudWatchLogMonitor?.resetLogGroups();
 
     const stacks = await this.selectStacksForDeploy(options.selector, options.exclusively, options.cacheCloudAssembly);
 

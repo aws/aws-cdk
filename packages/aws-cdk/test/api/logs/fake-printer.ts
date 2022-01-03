@@ -1,4 +1,4 @@
-import { IEventPrinter, CloudWatchLogEvent } from '../../../lib/api/monitor/logs-monitor';
+import { IEventPrinter, CloudWatchLogEvent } from '../../../lib/api/logs/logs-monitor';
 
 export class FakePrinter implements IEventPrinter {
   public readonly events: CloudWatchLogEvent[] = [];

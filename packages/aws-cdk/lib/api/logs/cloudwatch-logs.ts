@@ -1,15 +1,15 @@
 import * as cxapi from '@aws-cdk/cx-api';
-import { Mode, SdkProvider } from './aws-auth';
-import { EvaluateCloudFormationTemplate, LazyListStackResources } from './evaluate-cloudformation-template';
-import { CloudWatchLogEventMonitor } from './monitor/logs-monitor';
+import { Mode, SdkProvider } from '../aws-auth';
+import { EvaluateCloudFormationTemplate, LazyListStackResources } from '../evaluate-cloudformation-template';
+import { CloudWatchLogEventMonitor } from './logs-monitor';
 
 // resource types that have associated CloudWatch Log Groups that should
 // _not_ be monitored
-const excludedTypes: string[] = ['AWS::EC2::FlowLog', 'AWS::CloudTrail::Trail'];
+const excludedTypes = ['AWS::EC2::FlowLog', 'AWS::CloudTrail::Trail'];
 
 // resource types that will create a cloudwatch log group
 // with a specific name if one is not provided
-const implicitTypes: string[] = ['AWS::Lambda::Function', 'AWS::CodeBuild::Project'];
+const implicitTypes = ['AWS::Lambda::Function', 'AWS::CodeBuild::Project'];
 
 export async function registerCloudWatchLogGroups(
   sdkProvider: SdkProvider,
@@ -24,7 +24,7 @@ export async function registerCloudWatchLogGroups(
   // resolve the environment, so we can substitute things like AWS::Region in CFN expressions
   const resolvedEnv = await sdkProvider.resolveEnvironment(stackArtifact.environment);
   // create a new SDK using the CLI credentials, because the default one will not work for new-style synthesis -
-  // it assumes the bootstrap deploy Role, which doesn't have permissions to update Lambda functions
+  // it assumes the bootstrap deploy Role which does not have access to read CloudWatch logs
   const sdk = await sdkProvider.forEnvironment(resolvedEnv, Mode.ForReading);
 
   // add the sdk to the cloudWatchLogMonitor so that it also has the

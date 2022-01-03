@@ -43,7 +43,7 @@ export class CloudWatchLogEventMonitor {
    */
   private startTime: number;
 
-  private logGroups = new Set<string>();
+  private readonly logGroups = new Set<string>();
   private sdk?: ISDK;
 
   private active = false;
@@ -86,7 +86,7 @@ export class CloudWatchLogEventMonitor {
   }
 
   public resetLogGroups(): void {
-    this.logGroups = new Set();
+    this.logGroups.clear();
   }
 
   private scheduleNextTick(): void {

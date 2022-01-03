@@ -1,5 +1,5 @@
 import { blue, yellow } from 'colors/safe';
-import { EventPrinter, CloudWatchLogEventMonitor } from '../../../lib/api/monitor/logs-monitor';
+import { EventPrinter, CloudWatchLogEventMonitor } from '../../../lib/api/logs/logs-monitor';
 import { sleep } from '../../integ/helpers/aws';
 import { stderr } from '../console-listener';
 import { MockSdk } from './../../util/mock-sdk';
