@@ -147,7 +147,7 @@ export class CdkToolkit {
       warning('⚠️ It should only be used for development - never use it for your production Stacks!');
     }
 
-    const stackOutputs: { [key: string]: any } = {};
+    const stackOutputs: { [key: string]: any } = { };
     const outputsFile = options.outputsFile;
 
     for (const stack of stacks.stackArtifacts) {
@@ -262,8 +262,8 @@ export class CdkToolkit {
     const rootDir = path.dirname(path.resolve(PROJECT_CONFIG));
     debug("root directory used for 'watch' is: %s", rootDir);
 
-    const watchSettings: { include?: string | string[], exclude: string | string[] } | undefined =
-      this.props.configuration.settings.get(['watch']);
+    const watchSettings: { include?: string | string[], exclude: string | string [] } | undefined =
+        this.props.configuration.settings.get(['watch']);
     if (!watchSettings) {
       throw new Error("Cannot use the 'watch' command without specifying at least one directory to monitor. " +
         'Make sure to add a "watch" key to your cdk.json');
@@ -343,7 +343,7 @@ export class CdkToolkit {
       } else { // this means latch is either 'deploying' or 'queued'
         latch = 'queued';
         print("Detected change to '%s' (type: %s) while 'cdk deploy' is still running. " +
-          'Will queue for another deployment after this one finishes', filePath, event);
+            'Will queue for another deployment after this one finishes', filePath, event);
       }
     });
   }
@@ -379,7 +379,7 @@ export class CdkToolkit {
     }
   }
 
-  public async list(selectors: string[], options: { long?: boolean } = {}) {
+  public async list(selectors: string[], options: { long?: boolean } = { }) {
     const stacks = await this.selectStacksForList(selectors);
 
     // if we are in "long" mode, emit the array as-is (JSON/YAML)
