@@ -12,6 +12,7 @@ import * as cdk8s from 'cdk8s';
 import * as constructs from 'constructs';
 import * as YAML from 'yaml';
 import * as eks from '../lib';
+import { KubectlProvider } from '../lib/kubectl-provider';
 import { BottleRocketImage } from '../lib/private/bottlerocket';
 import { testFixture, testFixtureNoVpc } from './util';
 
@@ -27,7 +28,7 @@ describe('cluster', () => {
     const cluster = new eks.Cluster(stack, 'Cluster', {
       version: CLUSTER_VERSION,
       albController: {
-        version: eks.AlbControllerVersion.V2_3_0,
+        version: eks.AlbControllerVersion.V2_3_1,
       },
     });
 
@@ -978,6 +979,88 @@ describe('cluster', () => {
       bootstrapOptions: {},
     })).toThrow(/bootstrapOptions is not supported for Bottlerocket/);
 
+  });
+
+  test('import cluster with existing kubectl provider function', () => {
+
+    const { stack } = testFixture();
+
+    const handlerRole = iam.Role.fromRoleArn(stack, 'HandlerRole', 'arn:aws:iam::123456789012:role/lambda-role');
+    const kubectlProvider = KubectlProvider.fromKubectlProviderAttributes(stack, 'KubectlProvider', {
+      functionArn: 'arn:aws:lambda:us-east-2:123456789012:function:my-function:1',
+      kubectlRoleArn: 'arn:aws:iam::123456789012:role/kubectl-role',
+      handlerRole: handlerRole,
+    });
+
+    const cluster = eks.Cluster.fromClusterAttributes(stack, 'Cluster', {
+      clusterName: 'cluster',
+      kubectlProvider: kubectlProvider,
+    });
+
+    expect(cluster.kubectlProvider).toEqual(kubectlProvider);
+  });
+
+  test('import cluster with existing kubectl provider function should work as expected with resources relying on kubectl getOrCreate', () => {
+
+    const { stack } = testFixture();
+
+    const handlerRole = iam.Role.fromRoleArn(stack, 'HandlerRole', 'arn:aws:iam::123456789012:role/lambda-role');
+    const kubectlProvider = KubectlProvider.fromKubectlProviderAttributes(stack, 'KubectlProvider', {
+      functionArn: 'arn:aws:lambda:us-east-2:123456789012:function:my-function:1',
+      kubectlRoleArn: 'arn:aws:iam::123456789012:role/kubectl-role',
+      handlerRole: handlerRole,
+    });
+
+    const cluster = eks.Cluster.fromClusterAttributes(stack, 'Cluster', {
+      clusterName: 'cluster',
+      kubectlProvider: kubectlProvider,
+    });
+
+    new eks.HelmChart(stack, 'Chart', {
+      cluster: cluster,
+      chart: 'chart',
+    });
+
+    expect(stack).toHaveResourceLike('Custom::AWSCDK-EKS-HelmChart', {
+      ServiceToken: kubectlProvider.serviceToken,
+      RoleArn: kubectlProvider.roleArn,
+    });
+
+    new eks.KubernetesPatch(stack, 'Patch', {
+      cluster: cluster,
+      applyPatch: {},
+      restorePatch: {},
+      resourceName: 'PatchResource',
+    });
+
+    expect(stack).toHaveResourceLike('Custom::AWSCDK-EKS-KubernetesPatch', {
+      ServiceToken: kubectlProvider.serviceToken,
+      RoleArn: kubectlProvider.roleArn,
+    });
+
+    new eks.KubernetesManifest(stack, 'Manifest', {
+      cluster: cluster,
+      manifest: [],
+    });
+
+    expect(stack).toHaveResourceLike('Custom::AWSCDK-EKS-KubernetesResource', {
+      ServiceToken: kubectlProvider.serviceToken,
+      RoleArn: kubectlProvider.roleArn,
+    });
+
+    new eks.KubernetesObjectValue(stack, 'ObjectValue', {
+      cluster: cluster,
+      jsonPath: '',
+      objectName: 'name',
+      objectType: 'type',
+    });
+
+    expect(stack).toHaveResourceLike('Custom::AWSCDK-EKS-KubernetesObjectValue', {
+      ServiceToken: kubectlProvider.serviceToken,
+      RoleArn: kubectlProvider.roleArn,
+    });
+
+    expect(cluster.kubectlProvider).not.toBeInstanceOf(eks.KubectlProvider);
   });
 
   test('import cluster with new kubectl private subnets', () => {
