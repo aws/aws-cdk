@@ -11,6 +11,18 @@
 
 A construct library for painless Continuous Delivery of CDK applications.
 
+CDK Pipelines is an *opinionated construct library*. It is purpose-built to
+deploy one or more copies of your CDK applications using CloudFormation with a
+minimal amount of effort on your part. It is *not* intended to support arbitrary
+deployment pipelines, and very specifically it is not built to use CodeDeploy to
+applications to instances, or deploy your custom-built ECR images to an ECS
+cluster directly: use CDK file assets with CloudFormation Init for instances, or
+CDK container assets for ECS clusters instead.
+
+Give the CDK Pipelines way of doing things a shot first: you might find it does
+everything you need. If you want or need more control, we recommend you drop
+down to using the `aws-codepipeline` construct library directly.
+
 > This module contains two sets of APIs: an **original** and a **modern** version of
 CDK Pipelines. The *modern* API has been updated to be easier to work with and
 customize, and will be the preferred API going forward. The *original* version
@@ -728,7 +740,7 @@ Here's an example that adds a Jenkins step:
 ```ts
 class MyJenkinsStep extends pipelines.Step implements pipelines.ICodePipelineActionFactory {
   constructor(
-    private readonly provider: cpactions.JenkinsProvider, 
+    private readonly provider: cpactions.JenkinsProvider,
     private readonly input: pipelines.FileSet,
   ) {
     super('MyJenkinsStep');
@@ -1392,7 +1404,7 @@ is not able to read the cloud assembly produced by the new framework version.
 
 Solution: change the `cliVersion` first, commit, push and deploy, and only then
 change the framework version.
- 
+
 We recommend you avoid specifying the `cliVersion` parameter at all. By default
 the pipeline will use the latest CLI version, which will support all cloud assembly
 versions.
