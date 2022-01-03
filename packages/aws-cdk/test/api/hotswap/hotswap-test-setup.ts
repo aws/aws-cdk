@@ -83,16 +83,8 @@ export class HotswapMockSdkProvider {
     });
   }
 
-  public stubLambda(
-    mockUpdateLambdaCode: (input: lambda.UpdateFunctionCodeRequest) => lambda.FunctionConfiguration,
-    mockTagResource?: (input: lambda.TagResourceRequest) => {},
-    mockUntagResource?: (input: lambda.UntagResourceRequest) => {},
-  ) {
-    this.mockSdkProvider.stubLambda({
-      updateFunctionCode: mockUpdateLambdaCode ?? jest.fn(),
-      tagResource: mockTagResource ?? jest.fn(),
-      untagResource: mockUntagResource ?? jest.fn(),
-    });
+  public stubLambda(stubs: SyncHandlerSubsetOf<AWS.Lambda>) {
+    this.mockSdkProvider.stubLambda(stubs);
   }
 
   public setUpdateProjectMock(mockUpdateProject: (input: codebuild.UpdateProjectInput) => codebuild.UpdateProjectOutput) {
