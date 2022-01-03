@@ -1,4 +1,3 @@
-import * as https from 'https';
 import * as os from 'os';
 import * as path from 'path';
 import * as cxapi from '@aws-cdk/cx-api';
@@ -383,7 +382,7 @@ function parseHttpOptions(options: SdkHttpOptions) {
   if (options.proxyAddress) {
     debug('Proxy server from command-line arguments: %s', options.proxyAddress);
   }
-  
+
   // Configure the proxy agent. By default, this will use HTTPS?_PROXY and
   // NO_PROXY environment variables to determine which proxy to use for each
   // request.
