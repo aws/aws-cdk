@@ -1,9 +1,14 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import { Default } from '../lib/default';
-import { AWS_REGIONS, AWS_SERVICES } from './aws-entities';
 import {
-  APPMESH_ECR_ACCOUNTS, AWS_CDK_METADATA, AWS_OLDER_REGIONS, CLOUDWATCH_LAMBDA_INSIGHTS_ARNS, DLC_REPOSITORY_ACCOUNTS,
+  AWS_REGIONS,
+  AWS_SERVICES,
+  before,
+  RULE_S3_WEBSITE_REGIONAL_SUBDOMAIN,
+} from '../lib/aws-entities';
+import { Default } from '../lib/default';
+import {
+  APPMESH_ECR_ACCOUNTS, AWS_CDK_METADATA, CLOUDWATCH_LAMBDA_INSIGHTS_ARNS, DLC_REPOSITORY_ACCOUNTS,
   ELBV2_ACCOUNTS, FIREHOSE_CIDR_BLOCKS, PARTITION_MAP, ROUTE_53_BUCKET_WEBSITE_ZONE_IDS, EBS_ENV_ENDPOINT_HOSTED_ZONE_IDS,
 } from './fact-tables';
 
@@ -51,14 +56,13 @@ async function main(): Promise<void> {
 
     registerFact(region, 'CDK_METADATA_RESOURCE_AVAILABLE', AWS_CDK_METADATA.has(region) ? 'YES' : 'NO');
 
-    registerFact(region, 'S3_STATIC_WEBSITE_ENDPOINT', AWS_OLDER_REGIONS.has(region)
+    registerFact(region, 'S3_STATIC_WEBSITE_ENDPOINT', before(region, RULE_S3_WEBSITE_REGIONAL_SUBDOMAIN)
       ? `s3-website-${region}.${domainSuffix}`
       : `s3-website.${region}.${domainSuffix}`);
 
     registerFact(region, 'S3_STATIC_WEBSITE_ZONE_53_HOSTED_ZONE_ID', ROUTE_53_BUCKET_WEBSITE_ZONE_IDS[region] || '');
 
     registerFact(region, 'EBS_ENV_ENDPOINT_HOSTED_ZONE_ID', EBS_ENV_ENDPOINT_HOSTED_ZONE_IDS[region] || '');
-
 
     registerFact(region, 'ELBV2_ACCOUNT', ELBV2_ACCOUNTS[region]);
 
@@ -79,7 +83,10 @@ async function main(): Promise<void> {
     }
 
     for (const version in CLOUDWATCH_LAMBDA_INSIGHTS_ARNS) {
-      registerFact(region, ['cloudwatchLambdaInsightsVersion', version], CLOUDWATCH_LAMBDA_INSIGHTS_ARNS[version][region]);
+      for (const arch in CLOUDWATCH_LAMBDA_INSIGHTS_ARNS[version]) {
+        registerFact(region, ['cloudwatchLambdaInsightsVersion', version, arch], CLOUDWATCH_LAMBDA_INSIGHTS_ARNS[version][arch][region]);
+
+      }
     }
   }
   lines.push('  }');
@@ -112,13 +119,16 @@ function checkRegions(map: Record<string, unknown>) {
  * Verifies that the provided map of <KEY> to region to fact does not contain an entry
  * for a region that was not registered in `AWS_REGIONS`.
  */
-function checkRegionsSubMap(map: Record<string, Record<string, unknown>>) {
+function checkRegionsSubMap(map: Record<string, Record<string, Record<string, unknown>>>) {
   const allRegions = new Set(AWS_REGIONS);
   for (const key of Object.keys(map)) {
-    for (const region of Object.keys(map[key])) {
-      if (!allRegions.has(region)) {
-        throw new Error(`Un-registered region fact found: ${region}. Add to AWS_REGIONS list!`);
+    for (const subKey of Object.keys(map[key])) {
+      for (const region of Object.keys(map[key][subKey])) {
+        if (!allRegions.has(region)) {
+          throw new Error(`Un-registered region fact found: ${region}. Add to AWS_REGIONS list!`);
+        }
       }
+
     }
   }
 }

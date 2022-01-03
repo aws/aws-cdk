@@ -209,12 +209,30 @@ The `WebIdentityPrincipal` class can be used as a principal for web identities l
 Cognito, Amazon, Google or Facebook, for example:
 
 ```ts
-const principal = new iam.WebIdentityPrincipal('cognito-identity.amazonaws.com')
-  .withConditions({
-    "StringEquals": { "cognito-identity.amazonaws.com:aud": "us-east-2:12345678-abcd-abcd-abcd-123456" },
-    "ForAnyValue:StringLike": {"cognito-identity.amazonaws.com:amr": "unauthenticated" },
-  });
+const principal = new iam.WebIdentityPrincipal('cognito-identity.amazonaws.com', {
+  'StringEquals': { 'cognito-identity.amazonaws.com:aud': 'us-east-2:12345678-abcd-abcd-abcd-123456' },
+  'ForAnyValue:StringLike': {'cognito-identity.amazonaws.com:amr': 'unauthenticated' },
+});
 ```
+
+If your identity provider is configured to assume a Role with [session
+tags](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_session-tags.html), you
+need to call `.withSessionTags()` to add the required permissions to the Role's
+policy document:
+
+```ts
+new iam.Role(this, 'Role', {
+  assumedBy: new iam.WebIdentityPrincipal('cognito-identity.amazonaws.com', {
+    'StringEquals': {
+      'cognito-identity.amazonaws.com:aud': 'us-east-2:12345678-abcd-abcd-abcd-123456',
+     },
+    'ForAnyValue:StringLike': {
+      'cognito-identity.amazonaws.com:amr': 'unauthenticated',
+    },
+  }).withSessionTags(),
+});
+```
+
 
 ## Parsing JSON Policy Documents
 
