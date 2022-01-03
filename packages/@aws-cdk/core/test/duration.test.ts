@@ -6,11 +6,8 @@ describe('duration', () => {
     expect(() => Duration.seconds(-1)).toThrow(/negative/);
   });
 
-  test('can stringify but not resolve', () => {
-    const stringified = `${Duration.hours(1)}`;
-
-    const stack = new Stack();
-    expect(() => stack.resolve(stringified)).toThrow(/Duration.toString/);
+  test('can stringify', () => {
+    expect(`${Duration.hours(1)}`).toEqual('Duration.hours(1)');
   });
 
   test('unresolved amount', () => {
