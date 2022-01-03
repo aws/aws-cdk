@@ -120,7 +120,7 @@ export class CdkToolkit {
     const startSynthTime = new Date().getTime();
     const stacks = await this.selectStacksForDeploy(options.selector, options.exclusively, options.cacheCloudAssembly);
     const elapsedSynthTime = new Date().getTime() - startSynthTime;
-    print('\n✨  Synthesis time: %ss\n', roundPercentage(millisecondsToSeconds(elapsedSynthTime)));
+    print('\n✨  Synthesis time: %ss\n', formatTime(elapsedSynthTime));
 
     const requireApproval = options.requireApproval ?? RequireApproval.Broadening;
 
@@ -222,7 +222,7 @@ export class CdkToolkit {
 
         success('\n' + message, stack.displayName);
         elapsedDeployTime = new Date().getTime() - startDeployTime;
-        print('\n✨  Deployment time: %ss\n', roundPercentage(millisecondsToSeconds(elapsedDeployTime)));
+        print('\n✨  Deployment time: %ss\n', formatTime(elapsedDeployTime));
 
         if (Object.keys(result.outputs).length > 0) {
           print('Outputs:');
@@ -253,7 +253,7 @@ export class CdkToolkit {
           });
         }
       }
-      print('\n✨  Total time: %ss\n', roundPercentage(millisecondsToSeconds(elapsedSynthTime + elapsedDeployTime)));
+      print('\n✨  Total time: %ss\n', formatTime(elapsedSynthTime + elapsedDeployTime));
     }
   }
 
@@ -854,6 +854,15 @@ function tagsForStack(stack: cxapi.CloudFormationStackArtifact): Tag[] {
 export interface Tag {
   readonly Key: string;
   readonly Value: string;
+}
+
+/**
+ * Formats time in milliseconds (which we get from 'Date.getTime()')
+ * to a human-readable time; returns time in seconds rounded to 2
+ * decimal places.
+ */
+function formatTime(num: number): number {
+  return roundPercentage(millisecondsToSeconds(num));
 }
 
 /**
