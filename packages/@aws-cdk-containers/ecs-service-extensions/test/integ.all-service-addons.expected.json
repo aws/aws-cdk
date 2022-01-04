@@ -3185,22 +3185,12 @@
           "Backends": [
             {
               "VirtualService": {
-                "VirtualServiceName": {
-                  "Fn::GetAtt": [
-                    "namevirtualservice3DDDDF1E",
-                    "VirtualServiceName"
-                  ]
-                }
+                "VirtualServiceName": "name.production"
               }
             },
             {
               "VirtualService": {
-                "VirtualServiceName": {
-                  "Fn::GetAtt": [
-                    "greetingvirtualservice60AD3AD9",
-                    "VirtualServiceName"
-                  ]
-                }
+                "VirtualServiceName": "greeting.production"
               }
             }
           ],
