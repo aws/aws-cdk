@@ -211,10 +211,10 @@ const topicRule = new iot.TopicRule(this, 'TopicRule', {
 });
 ```
 
-## Send messages to a SQS queue
+## Send messages to an SQS queue
 
 The code snippet below creates an AWS IoT Rule that send messages
-to a SQS queue when it is triggered.
+to an SQS queue when it is triggered:
 
 ```ts
 import * as iot from '@aws-cdk/aws-iot';
@@ -229,7 +229,7 @@ const topicRule = new iot.TopicRule(this, 'TopicRule', {
   ),
   actions: [
     new actions.SqsQueueAction(queue, {
-      useBase64: false,
+      useBase64: true, // optional property, default is 'false'
     }),
   ]
 });
