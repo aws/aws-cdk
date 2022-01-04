@@ -11,7 +11,7 @@ test('Default SQS queue action', () => {
   const topicRule = new iot.TopicRule(stack, 'MyTopicRule', {
     sql: iot.IotSql.fromStringAsVer20160323("SELECT topic(2) as device_id FROM 'device/+/data'"),
   });
-  const queue = sqs.Queue.fromQueueArn(stack, 'MyQueue', 'arn:aws:s3::123456789012:test-queue');
+  const queue = sqs.Queue.fromQueueArn(stack, 'MyQueue', 'arn:aws:sqs::123456789012:test-queue');
 
   // WHEN
   topicRule.addAction(new actions.SqsQueueAction(queue));
@@ -62,7 +62,7 @@ test('Default SQS queue action', () => {
         {
           Action: 'sqs:SendMessage',
           Effect: 'Allow',
-          Resource: 'arn:aws:s3::123456789012:test-queue',
+          Resource: 'arn:aws:sqs::123456789012:test-queue',
         },
       ],
       Version: '2012-10-17',
@@ -80,7 +80,7 @@ test('Can set useBase64', () => {
   const topicRule = new iot.TopicRule(stack, 'MyTopicRule', {
     sql: iot.IotSql.fromStringAsVer20160323("SELECT topic(2) as device_id FROM 'device/+/data'"),
   });
-  const queue = sqs.Queue.fromQueueArn(stack, 'MyQueue', 'arn:aws:s3::123456789012:test-queue');
+  const queue = sqs.Queue.fromQueueArn(stack, 'MyQueue', 'arn:aws:sqs::123456789012:test-queue');
 
   // WHEN
   topicRule.addAction(new actions.SqsQueueAction(queue, {
@@ -103,7 +103,7 @@ test('Can set role', () => {
   const topicRule = new iot.TopicRule(stack, 'MyTopicRule', {
     sql: iot.IotSql.fromStringAsVer20160323("SELECT topic(2) as device_id FROM 'device/+/data'"),
   });
-  const queue = sqs.Queue.fromQueueArn(stack, 'MyQueue', 'arn:aws:s3::123456789012:test-queue');
+  const queue = sqs.Queue.fromQueueArn(stack, 'MyQueue', 'arn:aws:sqs::123456789012:test-queue');
   const role = iam.Role.fromRoleArn(stack, 'MyRole', 'arn:aws:iam::123456789012:role/ForTest');
 
   // WHEN
