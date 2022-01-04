@@ -222,9 +222,6 @@ import * as actions from '@aws-cdk/aws-iot-actions';
 import * as sqs from '@aws-cdk/aws-sqs';
 
 const queue = new sqs.Queue(this, 'MyQueue');
-const stream = new firehose.DeliveryStream(this, 'MyStream', {
-  destinations: [new destinations.S3Bucket(bucket)],
-});
 
 const topicRule = new iot.TopicRule(this, 'TopicRule', {
   sql: iot.IotSql.fromStringAsVer20160323(
