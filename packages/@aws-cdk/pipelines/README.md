@@ -687,6 +687,7 @@ new pipelines.CodeBuildStep('Synth', {
   buildEnvironment: {
     computeType: codebuild.ComputeType.LARGE,
   },
+  timeout: Duration.minutes(90),
 
   // Control Elastic Network Interface creation
   vpc: vpc,
