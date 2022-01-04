@@ -1,0 +1,25 @@
+{
+  "PropertyTypes": {
+      "AWS::ECS::Service.NetworkConfiguration": {
+          "patch": {
+            "description": "resource is in CloudFormation Registry where property types are case insensitive. modifying property to previous casing to avoid breaking existing CDK users",
+            "operations": [
+              {
+                "op": "remove",
+                "path": "/Properties/AwsVpcConfiguration"
+              },
+              {
+                "op": "add",
+                "path": "/Properties/AwsvpcConfiguration",
+                "value": {
+                  "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecs-service-networkconfiguration.html#cfn-ecs-service-networkconfiguration-awsvpcconfiguration",
+                  "Required": false,
+                  "Type": "AwsVpcConfiguration",
+                  "UpdateType": "Mutable"
+                }
+              }
+            ]
+          }
+      }
+  }
+}
