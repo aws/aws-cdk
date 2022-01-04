@@ -229,7 +229,7 @@ const topicRule = new iot.TopicRule(this, 'TopicRule', {
   ),
   actions: [
     new actions.SqsQueueAction(queue, {
-      useBase64: false,
+      useBase64: true, // optional property, default is 'false'
     }),
   ]
 });
