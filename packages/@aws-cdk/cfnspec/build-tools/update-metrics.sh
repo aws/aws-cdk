@@ -1,6 +1,8 @@
 #!/bin/bash
 set -eu
 
+# Run this script on the tarball found in the release artifacts of the CloudWatchConsoleServiceDirectory package.
+
 explorer_tarball="$1"
 
 target_file=lib/canned-metrics/services.json

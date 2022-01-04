@@ -804,6 +804,9 @@
         "Source": {
           "Type": "CODEPIPELINE"
         },
+        "Cache": {
+          "Type": "NO_CACHE"
+        },
         "EncryptionKey": {
           "Fn::GetAtt": [
             "MyPipelineArtifactsBucketEncryptionKey8BF0A7F3",
