@@ -268,7 +268,7 @@ export class Queue extends QueueBase {
       public readonly encryptionMasterKey = attrs.keyArn
         ? kms.Key.fromKeyArn(this, 'Key', attrs.keyArn)
         : undefined;
-      public readonly fifo: boolean = this.determineFifo();;
+      public readonly fifo: boolean = this.determineFifo();
 
       protected readonly autoCreatePolicy = false;
 
