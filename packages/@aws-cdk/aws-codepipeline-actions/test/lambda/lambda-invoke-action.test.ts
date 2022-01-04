@@ -267,7 +267,9 @@ describe('', () => {
     });
 
     test('exposes variables for other actions to consume', () => {
-      const stack = new Stack();
+      const stack = new Stack(undefined, undefined, {
+        env: { account: '123456789012', region: 'us-east-1' },
+      });
 
       const sourceOutput = new codepipeline.Artifact();
       const lambdaInvokeAction = new cpactions.LambdaInvokeAction({
