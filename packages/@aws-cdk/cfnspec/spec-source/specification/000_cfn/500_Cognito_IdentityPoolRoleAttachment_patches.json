@@ -1,0 +1,25 @@
+{
+    "ResourceTypes": {
+        "AWS::Cognito::IdentityPoolRoleAttachment": {
+            "patch": {
+                "description": "make the use of RoleMappings more type safe",
+                "operations": [
+                    {
+                        "op": "remove",
+                        "path": "/Properties/RoleMappings/PrimitiveType"
+                    },
+                    {
+                        "op": "add",
+                        "path": "/Properties/RoleMappings/Type",
+                        "value": "Map"
+                    },
+                    {
+                        "op": "add",
+                        "path": "/Properties/RoleMappings/ItemType",
+                        "value": "RoleMapping"
+                    }
+                ]
+            }
+        }
+    }
+}
