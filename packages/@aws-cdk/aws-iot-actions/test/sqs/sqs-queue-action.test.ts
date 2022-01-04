@@ -25,16 +25,11 @@ test('Default sqs queue action', () => {
         {
           Sqs: {
             QueueUrl: {
-              'Fn::Join': [
-                '',
-                [
-                  'https://sqs..',
-                  {
-                    Ref: 'AWS::URLSuffix',
-                  },
-                  '/123456789012/test-queue',
-                ],
-              ],
+              'Fn::Join': ['', [
+                'https://sqs..',
+                { Ref: 'AWS::URLSuffix' },
+                '/123456789012/test-queue',
+              ]],
             },
             RoleArn: {
               'Fn::GetAtt': [
