@@ -572,7 +572,7 @@ pipeline.addStage(prod, {
 ```
 
 If you specify multiple steps, they will execute in parallel by default. However,
-you can manually add dependencies in two ways if you wish to specify an order. To add a dependency,you can call `step.AddStepDependency()`:
+you can manually add dependencies in two ways if you wish to specify an order. To add a dependency,you can call `step.addStepDependency()`:
 
 ```ts
 const firstStep = new pipelines.ManualApprovalStep('B');
