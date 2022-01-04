@@ -833,9 +833,23 @@ abstract class TableBase extends Resource implements ITable {
    * How many requests are throttled on this table
    *
    * Default: sum over 5 minutes
+   *
+   * @deprecated Do not use this function. It returns an invalid metric. Use `metricThrottledRequestsForOperation` instead.
    */
   public metricThrottledRequests(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.cannedMetric(DynamoDBMetrics.throttledRequestsSum, props);
+    return this.metric('ThrottledRequests', { statistic: 'sum', ...props });
+  }
+
+  /**
+   * How many requests are throttled on this table, for the given operation
+   *
+   * Default: sum over 5 minutes
+   */
+  public metricThrottledRequestsForOperation(operation: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return new cloudwatch.Metric({
+      ...DynamoDBMetrics.throttledRequestsSum({ Operation: operation, TableName: this.tableName }),
+      ...props,
+    }).attachTo(this);
   }
 
   /**

@@ -114,6 +114,9 @@
           "ReportBuildStatus": false,
           "Type": "GITHUB"
         },
+        "Cache": {
+          "Type": "NO_CACHE"
+        },
         "EncryptionKey": "alias/aws/s3"
       }
     }

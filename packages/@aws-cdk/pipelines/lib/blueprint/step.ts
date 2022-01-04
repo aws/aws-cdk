@@ -12,6 +12,16 @@ import { FileSet, IFileSetProducer } from './file-set';
  */
 export abstract class Step implements IFileSetProducer {
   /**
+   * Define a sequence of steps to be executed in order.
+   */
+  public static sequence(steps: Step[]): Step[] {
+    for (let i = 1; i < steps.length; i++) {
+      steps[i].addStepDependency(steps[i-1]);
+    }
+    return steps;
+  }
+
+  /**
    * The list of FileSets consumed by this Step
    */
   public readonly dependencyFileSets: FileSet[] = [];
@@ -24,6 +34,8 @@ export abstract class Step implements IFileSetProducer {
   public readonly isSource: boolean = false;
 
   private _primaryOutput?: FileSet;
+
+  private _dependencies: Step[] = [];
 
   constructor(
     /** Identifier for this step */
@@ -38,7 +50,7 @@ export abstract class Step implements IFileSetProducer {
    * Return the steps this step depends on, based on the FileSets it requires
    */
   public get dependencies(): Step[] {
-    return this.dependencyFileSets.map(f => f.producer);
+    return this.dependencyFileSets.map(f => f.producer).concat(this._dependencies);
   }
 
   /**
@@ -57,6 +69,13 @@ export abstract class Step implements IFileSetProducer {
   public get primaryOutput(): FileSet | undefined {
     // Accessor so it can be mutable in children
     return this._primaryOutput;
+  }
+
+  /**
+   * Add a dependency on another step.
+   */
+  public addStepDependency(step: Step) {
+    this._dependencies.push(step);
   }
 
   /**
