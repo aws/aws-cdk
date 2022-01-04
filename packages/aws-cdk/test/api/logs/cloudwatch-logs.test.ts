@@ -1,22 +1,15 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import { CloudFormation } from 'aws-sdk';
 import { registerCloudWatchLogGroups } from '../../../lib/api/logs/cloudwatch-logs';
-import { CloudWatchLogEventMonitor } from '../../../lib/api/logs/logs-monitor';
 import { testStack, TestStackArtifact } from '../../util';
 import { MockSdkProvider } from '../../util/mock-sdk';
-import { FakePrinter } from './fake-printer';
 
 let logsMockSdkProvider: LogsMockSdkProvider;
-let logMonitor: jest.Mock;
-let eventMonitor: CloudWatchLogEventMonitor;
 let mockGetEndpointSuffix: () => string;
 
 beforeEach(() => {
   jest.useFakeTimers();
   logsMockSdkProvider = new LogsMockSdkProvider();
-  logMonitor = jest.fn();
-  eventMonitor = new CloudWatchLogEventMonitor({ printer: new FakePrinter() });
-  eventMonitor.addLogGroups = logMonitor;
   mockGetEndpointSuffix = jest.fn(() => 'amazonaws.com');
   logsMockSdkProvider.stubGetEndpointSuffix(mockGetEndpointSuffix);
   // clear the array
@@ -41,10 +34,8 @@ test('add log groups from lambda function', async () => {
       },
     },
   });
-  await logsMockSdkProvider.registerCloudWatchLogGroups(cdkStackArtifact, eventMonitor);
-  expect(logMonitor).toHaveBeenCalledWith('123456789012', expect.objectContaining({
-    groups: new Set(['/aws/lambda/my-function']),
-  }));
+  const result = await registerCloudWatchLogGroups(logsMockSdkProvider.mockSdkProvider, cdkStackArtifact);
+  expect(result.groups).toEqual(new Set(['/aws/lambda/my-function']));
 });
 
 test('add log groups from ECS Task Definitions', async () => {
@@ -81,10 +72,8 @@ test('add log groups from ECS Task Definitions', async () => {
       },
     },
   });
-  await logsMockSdkProvider.registerCloudWatchLogGroups(cdkStackArtifact, eventMonitor);
-  expect(logMonitor).toHaveBeenCalledWith('123456789012', expect.objectContaining({
-    groups: new Set(['log_group']),
-  }));
+  const result = await registerCloudWatchLogGroups(logsMockSdkProvider.mockSdkProvider, cdkStackArtifact);
+  expect(result.groups).toEqual(new Set(['log_group']));
 });
 
 test('add log groups from State Machines', async () => {
@@ -122,10 +111,8 @@ test('add log groups from State Machines', async () => {
       },
     },
   });
-  await logsMockSdkProvider.registerCloudWatchLogGroups(cdkStackArtifact, eventMonitor);
-  expect(logMonitor).toHaveBeenCalledWith('123456789012', expect.objectContaining({
-    groups: new Set(['log_group']),
-  }));
+  const result = await registerCloudWatchLogGroups(logsMockSdkProvider.mockSdkProvider, cdkStackArtifact);
+  expect(result.groups).toEqual(new Set(['log_group']));
 });
 
 test('add log groups from CodeBuild Projects', async () => {
@@ -157,10 +144,8 @@ test('add log groups from CodeBuild Projects', async () => {
       },
     },
   });
-  await logsMockSdkProvider.registerCloudWatchLogGroups(cdkStackArtifact, eventMonitor);
-  expect(logMonitor).toHaveBeenCalledWith('123456789012', expect.objectContaining({
-    groups: new Set(['log_group']),
-  }));
+  const result = await registerCloudWatchLogGroups(logsMockSdkProvider.mockSdkProvider, cdkStackArtifact);
+  expect(result.groups).toEqual(new Set(['log_group']));
 });
 
 test('add log groups from CodeBuild Projects, implicit', async () => {
@@ -178,10 +163,8 @@ test('add log groups from CodeBuild Projects, implicit', async () => {
       },
     },
   });
-  await logsMockSdkProvider.registerCloudWatchLogGroups(cdkStackArtifact, eventMonitor);
-  expect(logMonitor).toHaveBeenCalledWith('123456789012', expect.objectContaining({
-    groups: new Set(['/aws/codebuild/project']),
-  }));
+  const result = await registerCloudWatchLogGroups(logsMockSdkProvider.mockSdkProvider, cdkStackArtifact);
+  expect(result.groups).toEqual(new Set(['/aws/codebuild/project']));
 });
 
 test('excluded log groups are not added', async () => {
@@ -233,10 +216,8 @@ test('excluded log groups are not added', async () => {
       },
     },
   });
-  await logsMockSdkProvider.registerCloudWatchLogGroups(cdkStackArtifact, eventMonitor);
-  expect(logMonitor).toHaveBeenCalledWith('123456789012', expect.objectContaining({
-    groups: new Set(['/aws/codebuild/project']),
-  }));
+  const result = await registerCloudWatchLogGroups(logsMockSdkProvider.mockSdkProvider, cdkStackArtifact);
+  expect(result.groups).toEqual(new Set(['/aws/codebuild/project']));
 });
 
 test('unassociated log groups are added', async () => {
@@ -254,14 +235,11 @@ test('unassociated log groups are added', async () => {
       },
     },
   });
-  await logsMockSdkProvider.registerCloudWatchLogGroups(cdkStackArtifact, eventMonitor);
-  expect(logMonitor).toHaveBeenCalledWith('123456789012', expect.objectContaining({
-    groups: new Set(['log_group']),
-  }));
+  const result = await registerCloudWatchLogGroups(logsMockSdkProvider.mockSdkProvider, cdkStackArtifact);
+  expect(result.groups).toEqual(new Set(['log_group']));
 });
 
 const STACK_NAME = 'withouterrors';
-// const STACK_ID = 'stackId';
 const currentCfnStackResources: CloudFormation.StackResourceSummary[] = [];
 
 function pushStackResourceSummaries(...items: CloudFormation.StackResourceSummary[]) {
@@ -305,12 +283,5 @@ class LogsMockSdkProvider {
 
   public stubGetEndpointSuffix(stub: () => string) {
     this.mockSdkProvider.stubGetEndpointSuffix(stub);
-  }
-
-  public registerCloudWatchLogGroups(
-    stackArtifact: cxapi.CloudFormationStackArtifact,
-    cloudWatchLogMonitor: CloudWatchLogEventMonitor,
-  ): Promise<void> {
-    return registerCloudWatchLogGroups(this.mockSdkProvider, stackArtifact, cloudWatchLogMonitor);
   }
 }

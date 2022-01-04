@@ -13,7 +13,7 @@ export class LazyListStackResources implements ListStackResources {
   constructor(private readonly sdk: ISDK, private readonly stackName: string) {
   }
 
-  async listStackResources(): Promise<CloudFormation.StackResourceSummary[]> {
+  public async listStackResources(): Promise<CloudFormation.StackResourceSummary[]> {
     if (this.stackResources === undefined) {
       this.stackResources = await this.getStackResources();
     }

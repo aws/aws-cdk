@@ -1,8 +1,7 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import { Mode, SdkProvider } from '../aws-auth';
-import { replaceEnvPlaceholders } from '../cloudformation-deployments';
 import { EvaluateCloudFormationTemplate, LazyListStackResources } from '../evaluate-cloudformation-template';
-import { CloudWatchLogEventMonitor } from './logs-monitor';
+import { AddLogGroupOptions } from './logs-monitor';
 
 // resource types that have associated CloudWatch Log Groups that should
 // _not_ be monitored
@@ -15,26 +14,15 @@ const implicitTypes = ['AWS::Lambda::Function', 'AWS::CodeBuild::Project'];
 export async function registerCloudWatchLogGroups(
   sdkProvider: SdkProvider,
   stackArtifact: cxapi.CloudFormationStackArtifact,
-  cloudWatchLogMonitor: CloudWatchLogEventMonitor,
-): Promise<void> {
+): Promise<AddLogGroupOptions> {
 
   const logGroupNames = new Set<string>();
   const logGroupLogicalIds = new Set<string>();
   const implicitMap = new Map<string, string>();
-  //
-  // resolve the environment, so we can substitute things like AWS::Region in CFN expressions
+
   const resolvedEnv = await sdkProvider.resolveEnvironment(stackArtifact.environment);
+  const sdk = await sdkProvider.forEnvironment(resolvedEnv, Mode.ForReading);
 
-  const arns = await replaceEnvPlaceholders({
-    lookupRoleArn: stackArtifact.lookupRoleArn,
-  }, resolvedEnv, sdkProvider);
-  const sdk = await sdkProvider.forEnvironment(resolvedEnv, Mode.ForReading, {
-    assumeRoleArn: arns.lookupRoleArn,
-  });
-
-  // The current resources of the Stack.
-  // We need them to figure out the physical name of a resource in case it wasn't specified by the user.
-  // We fetch it lazily, to save a service call, in case all hotswapped resources have their physical names set.
   const listStackResources = new LazyListStackResources(sdk, stackArtifact.stackName);
   const evaluateCfnTemplate = new EvaluateCloudFormationTemplate({
     stackArtifact,
@@ -72,7 +60,7 @@ export async function registerCloudWatchLogGroups(
       } else if (implicitTypes.includes(r.Type)) {
         implicitMap.delete(r.LogicalId);
       }
-    };
+    }
   }
 
   for (const id of logGroupLogicalIds) {
@@ -92,8 +80,10 @@ export async function registerCloudWatchLogGroups(
     }
   }
 
-  cloudWatchLogMonitor.addLogGroups(resolvedEnv.account, {
+  return {
+    account: resolvedEnv.account,
+    region: resolvedEnv.region,
     sdk,
     groups: logGroupNames,
-  });
+  };
 }

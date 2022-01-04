@@ -119,10 +119,6 @@ export class CdkToolkit {
       return this.watch(options);
     }
 
-    // before we start the deployment, reset the tracked log groups
-    // each stack will then register their log groups with the monitor
-    options?.cloudWatchLogMonitor?.resetLogGroups();
-
     const startSynthTime = new Date().getTime();
     const stacks = await this.selectStacksForDeploy(options.selector, options.exclusively, options.cacheCloudAssembly);
     const elapsedSynthTime = new Date().getTime() - startSynthTime;
@@ -249,7 +245,8 @@ export class CdkToolkit {
         throw e;
       } finally {
         if (options.cloudWatchLogMonitor) {
-          await registerCloudWatchLogGroups(this.props.sdkProvider, stack, options.cloudWatchLogMonitor);
+          const result = await registerCloudWatchLogGroups(this.props.sdkProvider, stack);
+          options.cloudWatchLogMonitor.addLogGroups(result);
         }
         // If an outputs file has been specified, create the file path and write stack outputs to it once.
         // Outputs are written after all stacks have been deployed. If a stack deployment fails,

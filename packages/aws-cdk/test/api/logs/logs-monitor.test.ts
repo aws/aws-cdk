@@ -1,21 +1,22 @@
 import { blue, yellow } from 'colors/safe';
-import { EventPrinter, CloudWatchLogEventMonitor } from '../../../lib/api/logs/logs-monitor';
+import { CloudWatchLogEventMonitor } from '../../../lib/api/logs/logs-monitor';
 import { sleep } from '../../integ/helpers/aws';
-import { stderr } from '../console-listener';
-import { MockSdk } from './../../util/mock-sdk';
-import { FakePrinter } from './fake-printer';
+import { MockSdk } from '../../util/mock-sdk';
 
 let sdk: MockSdk;
-let printer: FakePrinter;
-jest.spyOn(global, 'setInterval');
+let stderrMock: jest.SpyInstance;
+let monitor: CloudWatchLogEventMonitor;
 beforeEach(() => {
   jest.useFakeTimers('legacy');
+  monitor = new CloudWatchLogEventMonitor({ hotswapTime: new Date(T100) });
+  monitor.activate();
+  stderrMock = jest.spyOn(process.stderr, 'write').mockImplementation(() => { return true; });
   sdk = new MockSdk();
-  printer = new FakePrinter();
 });
 
 afterAll(() => {
   jest.useRealTimers();
+  stderrMock.mockRestore();
 });
 
 let TIMESTAMP: number;
@@ -24,21 +25,6 @@ let HUMAN_TIME: string;
 beforeAll(() => {
   TIMESTAMP = new Date().getTime();
   HUMAN_TIME = new Date(TIMESTAMP).toLocaleTimeString();
-});
-
-test('outputs correctly', () => {
-  const allActivityPrinter = new EventPrinter({
-    stream: process.stderr,
-  });
-  const output = stderr.inspectSync(() => {
-    allActivityPrinter.print({
-      message: 'this is a log message',
-      logGroup: 'log-group-name',
-      timestamp: new Date(TIMESTAMP),
-    });
-  });
-
-  expect(output[0].trim()).toStrictEqual(`[${blue('log-group-name')}] ${yellow(HUMAN_TIME)} this is a log message`);
 });
 
 test('continue to the next page if it exists', async () => {
@@ -58,7 +44,13 @@ test('continue to the next page if it exists', async () => {
     },
   ]);
 
-  expect(printer.eventMessages).toEqual(['message', 'some-message']);
+  expect(stderrMock).toHaveBeenCalledTimes(2);
+  expect(stderrMock.mock.calls[0][0]).toContain(
+    `[${blue('loggroup')}] ${yellow(HUMAN_TIME)} message`,
+  );
+  expect(stderrMock.mock.calls[1][0]).toContain(
+    `[${blue('loggroup')}] ${yellow(HUMAN_TIME)} some-message`,
+  );
 });
 
 const T0 = 1597837230504;
@@ -71,7 +63,6 @@ function event(nr: number, message: string): AWS.CloudWatchLogs.FilteredLogEvent
     ingestionTime: new Date(T0 * nr * 1000).getTime(),
   };
 }
-
 
 async function testMonitorWithEventCalls(
   events: Array<(x: AWS.CloudWatchLogs.FilterLogEventsRequest) => AWS.CloudWatchLogs.FilterLogEventsResponse>) {
@@ -92,9 +83,12 @@ async function testMonitorWithEventCalls(
   }
   filterLogEvents.mockImplementation(() => { return {}; });
   sdk.stubCloudWatchLogs({ filterLogEvents });
-  const monitor = new CloudWatchLogEventMonitor({ printer, hotswapTime: new Date(T100) });
-  monitor.addLogGroups('11111111111', { sdk, groups: new Set(['loggroup']) });
-  monitor.activate();
+  monitor.addLogGroups({
+    account: '11111111111',
+    region: 'us-east-1',
+    sdk,
+    groups: new Set(['loggroup']),
+  });
   await waitForCondition(() => finished);
 }
 

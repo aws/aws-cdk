@@ -29,7 +29,33 @@ export interface CloudWatchLogEvent {
 }
 
 /**
- * Configuration that holds an SDK and list of log groups
+ * Options for adding log groups to the CloudWatchLogEventMonitor
+ */
+export interface AddLogGroupOptions {
+  /**
+   * The AWS account that the log group lives in
+   */
+  readonly account: string;
+
+  /**
+   * The AWS region that the log group lives in
+   */
+  readonly region: string;
+
+  /**
+   * The SDK for a given account
+   */
+  readonly sdk: ISDK;
+
+  /**
+   * A map of log groups and startTime in a given account
+   */
+  readonly groups: Set<string>;
+}
+
+/**
+ * Configuration tracking information on the log groups that are
+ * being monitored
  */
 export interface LogGroupConfig {
   /**
@@ -38,9 +64,9 @@ export interface LogGroupConfig {
   readonly sdk: ISDK;
 
   /**
-   * A list of log groups in a given account
+   * A map of log groups and startTime in a given account
    */
-  readonly groups: Set<string>;
+  readonly groups: Map<string, number>;
 }
 
 /**
@@ -54,13 +80,6 @@ export interface CloudWatchLogEventMonitorOptions {
    * @default - the current time
    */
   readonly hotswapTime?: Date;
-
-  /**
-   * The EventPrinter to use to print out CloudWatch events
-   *
-   * @default - a default printer will be created
-   */
-  readonly printer?: IEventPrinter;
 }
 
 export class CloudWatchLogEventMonitor {
@@ -70,70 +89,63 @@ export class CloudWatchLogEventMonitor {
   private startTime: number;
 
   /**
-   * Tracks the startTime for each log group separately
-   * Map of group name to starTime
-   */
-  private readonly groupStartTime = new Map<string, number>();
-
-  /**
    * Map of account to LogGroupConfig
    */
   private readonly logGroups = new Map<string, LogGroupConfig>();
 
   private active = false;
 
-  /**
-   * The event printer that controls printing out
-   * CloudWatchLog Events
-   */
-  private readonly printer: IEventPrinter;
-
   constructor(options: CloudWatchLogEventMonitorOptions = {}) {
     this.startTime = options.hotswapTime?.getTime() ?? Date.now();
-    this.printer = options.printer ?? new EventPrinter();
-
     this.scheduleNextTick();
   }
 
-  // allows the ability to "pause" the monitor. The primary
-  // use case for this is when we are in the middle of performing a deployment
-  // and don't want to interweave all the logs together
+  /**
+   * resume reading/printing events
+   */
   public activate(): void {
     this.active = true;
   }
 
+  /**
+   * deactivates the monitor so no new events are read
+   * use case for this is when we are in the middle of performing a deployment
+   * and don't want to interweave all the logs together with the CFN
+   * deployment logs
+   *
+   * Also resets the start time to be when the new deployment was triggered
+   * and clears the list of tracked log groups
+   */
   public deactivate(): void {
     this.active = false;
+    this.startTime = Date.now();
+    this.logGroups.clear();
   }
 
   /**
    * Adds CloudWatch log groups to read log events from.
    * Since we could be watching multiple stacks that deploy to
-   * multiple AWS accounts, we need to store a list of log groups
-   * per account along with the SDK object that has access to read from
+   * multiple environments (account+region), we need to store a list of log groups
+   * per env along with the SDK object that has access to read from
    * that AWS account.
    */
-  public addLogGroups(account: string, config: LogGroupConfig): void {
-    const logGroup = this.logGroups.get(account);
+  public addLogGroups(options: AddLogGroupOptions): void {
+    const env = `${options.account}:${options.region}`;
+    const groups = new Map<string, number>();
+    options.groups.forEach(group => {
+      groups.set(group, this.startTime);
+    });
+    const logGroup = this.logGroups.get(env);
     if (logGroup) {
-      config.groups.forEach(group => {
-        logGroup.groups.add(group);
-        this.groupStartTime.set(group, this.startTime);
+      groups.forEach((time, group) => {
+        logGroup.groups.set(group, time);
       });
     } else {
-      this.logGroups.set(account, config);
+      this.logGroups.set(env, {
+        sdk: options.sdk,
+        groups,
+      });
     }
-  }
-
-  /**
-   * reset the list of log groups that are being monitored
-   * along with the startTime.
-   *
-   * This should only be triggered prior to a CFN deployment
-   */
-  public resetLogGroups(): void {
-    this.startTime = Date.now();
-    this.logGroups.clear();
   }
 
   private scheduleNextTick(): void {
@@ -148,12 +160,22 @@ export class CloudWatchLogEventMonitor {
     try {
       const events = flatten(await this.readNewEvents());
       events.forEach(event => {
-        this.printer.print(event);
+        this.print(event);
       });
     } catch (e) {
       error('Error occurred while monitoring logs: %s', e);
     }
     this.scheduleNextTick();
+  }
+
+  /**
+   * Print out a cloudwatch event
+   */
+  private print(event: CloudWatchLogEvent): void {
+    print(util.format('[%s] %s %s',
+      colors.blue(event.logGroup),
+      colors.yellow(event.timestamp.toLocaleTimeString()),
+      event.message.trim()));
   }
 
   /**
@@ -164,8 +186,8 @@ export class CloudWatchLogEventMonitor {
     const promises: Array<Promise<Array<CloudWatchLogEvent>>> = [];
     for (const config of this.logGroups.values()) {
       const sdk = config.sdk;
-      for (const group of config.groups) {
-        promises.push(this.readEventsFromLogGroup(sdk, group));
+      for (const group of config.groups.keys()) {
+        promises.push(this.readEventsFromLogGroup(config.groups, sdk, group));
       }
     }
     return Promise.all(promises);
@@ -177,13 +199,13 @@ export class CloudWatchLogEventMonitor {
    *
    * Only prints out events that have not been printed already
    */
-  private async readEventsFromLogGroup(sdk: ISDK, logGroupName: string): Promise<CloudWatchLogEvent[]> {
+  private async readEventsFromLogGroup(logGroupConfig: Map<string, number>, sdk: ISDK, logGroupName: string): Promise<CloudWatchLogEvent[]> {
     const events: CloudWatchLogEvent[] = [];
 
     // log events from some service are ingested faster than others
     // so we need to track the start/end time for each log group individually
     // to make sure that we process all events from each log group
-    const startTime = this.groupStartTime.get(logGroupName) ?? this.startTime;
+    const startTime = logGroupConfig.get(logGroupName) ?? this.startTime;
     let endTime = startTime;
     try {
       let nextToken: string | undefined;
@@ -220,36 +242,7 @@ export class CloudWatchLogEventMonitor {
       }
       throw e;
     }
-    this.groupStartTime.set(logGroupName, endTime+1);
+    logGroupConfig.set(logGroupName, endTime+1);
     return events;
-  }
-}
-
-interface PrinterProps {}
-
-export interface IEventPrinter {
-  print(event: CloudWatchLogEvent): void;
-}
-
-abstract class EventPrinterBase {
-  constructor(protected readonly props?: PrinterProps) {
-  }
-
-  public abstract print(event: CloudWatchLogEvent): void;
-}
-
-/**
- * a CloudWatchLogs event printer
- */
-export class EventPrinter extends EventPrinterBase {
-  constructor(props?: PrinterProps) {
-    super(props);
-  }
-
-  public print(event: CloudWatchLogEvent): void {
-    print(util.format('[%s] %s %s',
-      colors.blue(event.logGroup),
-      colors.yellow(event.timestamp.toLocaleTimeString()),
-      event.message));
   }
 }
