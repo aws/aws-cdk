@@ -149,7 +149,7 @@ describe('log group', () => {
 
   });
 
-  test('import from arn, same region', () => {
+  test('import from ARN, same region', () => {
     // GIVEN
     const stack2 = new Stack();
 
