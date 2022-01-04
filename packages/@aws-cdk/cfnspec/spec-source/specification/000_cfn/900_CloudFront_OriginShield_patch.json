@@ -1,0 +1,16 @@
+{
+  "PropertyTypes": {
+    "AWS::CloudFront::Distribution.Origin": {
+      "patch": {
+        "description": "Add Type to OriginShield property of AWS::CloudFront::Distribution.Origin",
+        "operations": [
+          {
+            "op": "add",
+            "path": "/Properties/OriginShield/Type",
+            "value": "OriginShield"
+          }
+        ]
+      }
+    }
+  }
+}
