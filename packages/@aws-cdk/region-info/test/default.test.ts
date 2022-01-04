@@ -54,6 +54,7 @@ describe('servicePrincipal', () => {
 describe('spot-check some service principals', () => {
   test('ssm', () => {
     expect(Default.servicePrincipal('ssm.amazonaws.com', 'us-east-1', 'x')).toBe('ssm.amazonaws.com');
+    expect(Default.servicePrincipal('ssm.amazonaws.com', 'eu-north-1', 'x')).toBe('ssm.amazonaws.com');
     expect(Default.servicePrincipal('ssm.amazonaws.com', 'ap-east-1', 'x')).toBe('ssm.ap-east-1.amazonaws.com');
     expect(Default.servicePrincipal('ssm.amazonaws.com', 'eu-south-1', 'x')).toBe('ssm.eu-south-1.amazonaws.com');
   });

@@ -67,11 +67,11 @@ export class SecretValue extends Intrinsic {
    * Parameter Store. The parameter name is case-sensitive.
    *
    * @param version An integer that specifies the version of the parameter to
-   * use. You must specify the exact version. You cannot currently specify that
-   * AWS CloudFormation use the latest version of a parameter.
+   * use. If you don't specify the exact version, AWS CloudFormation uses the
+   * latest version of the parameter.
    */
-  public static ssmSecure(parameterName: string, version: string): SecretValue {
-    const parts = [parameterName, version];
+  public static ssmSecure(parameterName: string, version?: string): SecretValue {
+    const parts = [parameterName, version ?? ''];
     return this.cfnDynamicReference(new CfnDynamicReference(CfnDynamicReferenceService.SSM_SECURE, parts.join(':')));
   }
 

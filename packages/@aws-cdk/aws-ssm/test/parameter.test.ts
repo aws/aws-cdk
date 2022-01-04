@@ -589,6 +589,19 @@ test('StringParameter.fromSecureStringParameterAttributes with encryption key cr
   });
 });
 
+test('StringParameter.fromSecureStringParameterAttributes without version', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+
+  // WHEN
+  const param = ssm.StringParameter.fromSecureStringParameterAttributes(stack, 'MyParamName', {
+    parameterName: 'MyParamName',
+  });
+
+  // THEN
+  expect(stack.resolve(param.stringValue)).toEqual('{{resolve:ssm-secure:MyParamName:}}');
+});
+
 test('StringListParameter.fromName', () => {
   // GIVEN
   const stack = new cdk.Stack();

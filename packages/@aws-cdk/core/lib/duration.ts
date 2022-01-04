@@ -220,17 +220,13 @@ export class Duration {
   }
 
   /**
-   * Returns a string representation of this `Duration` that is also a Token that cannot be successfully resolved. This
-   * protects users against inadvertently stringifying a `Duration` object, when they should have called one of the
-   * `to*` methods instead.
+   * Returns a string representation of this `Duration`
+   *
+   * This is is never the right function to use when you want to use the `Duration`
+   * object in a template. Use `toSeconds()`, `toMinutes()`, `toDays()`, etc. instead.
    */
   public toString(): string {
-    return Token.asString(
-      () => {
-        throw new Error('Duration.toString() was used, but .toSeconds, .toMinutes or .toDays should have been called instead');
-      },
-      { displayHint: `${this.amount} ${this.unit.label}` },
-    );
+    return `Duration.${this.unit.label}(${this.amount})`;
   }
 
   /**

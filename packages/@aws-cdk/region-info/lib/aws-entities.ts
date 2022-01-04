@@ -11,7 +11,7 @@ export const RULE_SSM_PRINCIPALS_ARE_REGIONAL = `${RULE_}SSM_PRINCIPALS_ARE_REGI
  *
  * Before this point, S3 website domains look like `s3-website-REGION.s3.amazonaws.com`.
  */
-export const RULE_S3_WEBSITE_REGIONAL_SUBDOMAIN = `${RULE_}SSM_PRINCIPALS_ARE_REGIONAL`;
+export const RULE_S3_WEBSITE_REGIONAL_SUBDOMAIN = `${RULE_}S3_WEBSITE_REGIONAL_SUBDOMAIN`;
 
 /**
  * List of AWS region, ordered by launch date (oldest to newest)

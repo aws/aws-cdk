@@ -1382,6 +1382,31 @@ describe('auto scaling group', () => {
       },
     });
   });
+
+  test('supports termination policies', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = mockVpc(stack);
+
+    // WHEN
+    new autoscaling.AutoScalingGroup(stack, 'MyASG', {
+      vpc,
+      instanceType: new ec2.InstanceType('t2.micro'),
+      machineImage: ec2.MachineImage.latestAmazonLinux(),
+      terminationPolicies: [
+        autoscaling.TerminationPolicy.OLDEST_INSTANCE,
+        autoscaling.TerminationPolicy.DEFAULT,
+      ],
+    });
+
+    // THEN
+    expect(stack).toHaveResource('AWS::AutoScaling::AutoScalingGroup', {
+      TerminationPolicies: [
+        'OldestInstance',
+        'Default',
+      ],
+    });
+  });
 });
 
 function mockVpc(stack: cdk.Stack) {

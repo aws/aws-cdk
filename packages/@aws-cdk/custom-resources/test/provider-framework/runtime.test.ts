@@ -230,6 +230,61 @@ test('if there is no user-defined "isComplete", the waiter will not be triggered
   expectCloudFormationSuccess({ PhysicalResourceId: MOCK_PHYSICAL_ID });
 });
 
+describe('NoEcho', () => {
+  test('with onEvent', async () => {
+    // GIVEN
+    mocks.onEventImplMock = async () => ({
+      Data: {
+        Very: 'Sensitive',
+      },
+      NoEcho: true,
+    });
+
+    // WHEN
+    await simulateEvent({
+      RequestType: 'Create',
+    });
+
+    // THEN
+    expectCloudFormationSuccess({
+      Data: {
+        Very: 'Sensitive',
+      },
+      NoEcho: true,
+    });
+  });
+
+  test('with isComplete', async () => {
+    // GIVEN
+    mocks.onEventImplMock = async () => ({
+      Data: {
+        Very: 'Sensitive',
+      },
+      NoEcho: true,
+    });
+    mocks.isCompleteImplMock = async () => ({
+      Data: {
+        Also: 'Confidential',
+      },
+      IsComplete: true,
+    });
+
+    // WHEN
+    await simulateEvent({
+      RequestType: 'Create',
+    });
+
+    // THEN
+    expectCloudFormationSuccess({
+      Data: {
+        Very: 'Sensitive',
+        Also: 'Confidential',
+      },
+      NoEcho: true,
+    });
+  });
+});
+
 test('fails if user handler returns a non-object response', async () => {
   // GIVEN
   mocks.stringifyPayload = false;
