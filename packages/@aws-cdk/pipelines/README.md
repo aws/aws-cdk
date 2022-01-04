@@ -575,8 +575,8 @@ If you specify multiple steps, they will execute in parallel by default. You can
 to if you wish to specify an order. To add a dependency, call `step.addStepDependency()`:
 
 ```ts
-const firstStep = new pipelines.ManualApprovalStep('B');
-const secondStep = new pipelines.ManualApprovalStep('A');
+const firstStep = new pipelines.ManualApprovalStep('A');
+const secondStep = new pipelines.ManualApprovalStep('B');
 secondStep.addStepDependency(firstStep);
 ```
 
@@ -586,9 +586,9 @@ so that the whole list executes in order:
 ```ts
 // Step A will depend on step B and step B will depend on step C
 const orderedSteps = pipelines.Step.sequence([
-  new pipelines.ManualApprovalStep('C');
-  new pipelines.ManualApprovalStep('B');
   new pipelines.ManualApprovalStep('A');
+  new pipelines.ManualApprovalStep('B');
+  new pipelines.ManualApprovalStep('C');
 ]);
 ```
 
