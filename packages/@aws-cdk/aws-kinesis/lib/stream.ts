@@ -746,15 +746,18 @@ export class Stream extends StreamBase {
   public readonly encryptionKey?: kms.IKey;
 
   private readonly stream: CfnStream;
+  private readonly shardCount: number | undefined;
 
   constructor(scope: Construct, id: string, props: StreamProps = {}) {
     super(scope, id, {
       physicalName: props.streamName,
     });
 
-    const shardCount = props.shardCount || 1;
-
     const streamMode = props.streamMode;
+
+    if (streamMode !== StreamMode.ON_DEMAND) {
+      this.shardCount = props.shardCount || 1;
+    }
 
     const retentionPeriodHours = props.retentionPeriod?.toHours() ?? 24;
     if (!Token.isUnresolved(retentionPeriodHours)) {
@@ -768,7 +771,7 @@ export class Stream extends StreamBase {
     this.stream = new CfnStream(this, 'Resource', {
       name: this.physicalName,
       retentionPeriodHours,
-      shardCount,
+      shardCount: this.shardCount ? this.shardCount : undefined,
       streamEncryption,
       streamModeDetails: streamMode ? { streamMode } : undefined,
     });

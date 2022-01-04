@@ -374,7 +374,7 @@ describe('Kinesis data streams', () => {
     });
   }),
 
-  test.each([StreamMode.ON_DEMAND, StreamMode.PROVISIONED])('uses explicit capacity mode %s', (mode: StreamMode) => {
+  test.each([StreamMode.PROVISIONED])('uses explicit capacity mode %s', (mode: StreamMode) => {
     const stack = new Stack();
 
     new Stream(stack, 'MyStream', {
@@ -390,6 +390,62 @@ describe('Kinesis data streams', () => {
             RetentionPeriodHours: 24,
             StreamModeDetails: {
               StreamMode: StreamMode[mode],
+            },
+            StreamEncryption: {
+              'Fn::If': [
+                'AwsCdkKinesisEncryptedStreamsUnsupportedRegions',
+                {
+                  Ref: 'AWS::NoValue',
+                },
+                {
+                  EncryptionType: 'KMS',
+                  KeyId: 'alias/aws/kinesis',
+                },
+              ],
+            },
+          },
+        },
+      },
+      Conditions: {
+        AwsCdkKinesisEncryptedStreamsUnsupportedRegions: {
+          'Fn::Or': [
+            {
+              'Fn::Equals': [
+                {
+                  Ref: 'AWS::Region',
+                },
+                'cn-north-1',
+              ],
+            },
+            {
+              'Fn::Equals': [
+                {
+                  Ref: 'AWS::Region',
+                },
+                'cn-northwest-1',
+              ],
+            },
+          ],
+        },
+      },
+    });
+  });
+
+  test('uses explicit capacity mode ON_DEMAND', () => {
+    const stack = new Stack();
+
+    new Stream(stack, 'MyStream', {
+      streamMode: StreamMode.ON_DEMAND,
+    });
+
+    expect(stack).toMatchTemplate({
+      Resources: {
+        MyStream5C050E93: {
+          Type: 'AWS::Kinesis::Stream',
+          Properties: {
+            RetentionPeriodHours: 24,
+            StreamModeDetails: {
+              StreamMode: StreamMode.ON_DEMAND,
             },
             StreamEncryption: {
               'Fn::If': [
