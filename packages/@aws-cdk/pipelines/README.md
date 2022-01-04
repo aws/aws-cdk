@@ -571,7 +571,7 @@ pipeline.addStage(prod, {
 });
 ```
 
-If you specify multiple steps, they will __not__ depend on each other by default. However,
+If you specify multiple steps, they will execute in parallel by default. However,
 you can manually add dependencies in two ways if you wish to specify an order. To add a dependency,you can call `step.AddStepDependency()`:
 
 ```ts
