@@ -182,6 +182,7 @@ describe('log group', () => {
     // THEN
     expect(imported.logGroupName).toEqual('my-log-group');
     expect(imported.logGroupArn).toEqual(`arn:aws:logs:${importRegion}:123456789012:log-group:my-log-group:*`);
+    expect(imported.env.region).not.toEqual(stack2.region);
     expect(imported.env.region).toEqual(importRegion);
 
     expect(stack2).toHaveResource('AWS::Logs::LogStream', {
