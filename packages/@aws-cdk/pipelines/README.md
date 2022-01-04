@@ -586,9 +586,9 @@ so that the whole list executes in order:
 ```ts
 // Step A will depend on step B and step B will depend on step C
 const orderedSteps = pipelines.Step.sequence([
-  new pipelines.ManualApprovalStep('A');
-  new pipelines.ManualApprovalStep('B');
-  new pipelines.ManualApprovalStep('C');
+  new pipelines.ManualApprovalStep('A'),
+  new pipelines.ManualApprovalStep('B'),
+  new pipelines.ManualApprovalStep('C'),
 ]);
 ```
 
