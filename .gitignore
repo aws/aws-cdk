@@ -23,6 +23,7 @@ coverage/
 *.sw[a-z]
 *~
 .idea
+*.iml
 junit.xml
 
 # We don't want tsconfig at the root
