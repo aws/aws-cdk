@@ -453,7 +453,6 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
       requiresBootstrapStackVersion: MIN_BOOTSTRAP_STACK_VERSION,
       bootstrapStackVersionSsmParameter: this.bootstrapStackVersionSsmParameter,
       additionalDependencies: [artifactId],
-      lookupRoleArn: this.lookupRoleArn,
     });
   }
 

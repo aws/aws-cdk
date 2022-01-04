@@ -91,13 +91,6 @@ export interface AwsCloudFormationStackProperties {
    * @default - false
    */
   readonly validateOnSynth?: boolean;
-
-  /**
-   * The role to use to look up values from the target AWS account during synthesis
-   *
-   * @default - None
-   */
-  readonly lookupRoleArn?: string;
 }
 
 /**

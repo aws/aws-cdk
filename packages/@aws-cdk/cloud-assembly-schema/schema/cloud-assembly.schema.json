@@ -322,10 +322,6 @@
                 "validateOnSynth": {
                     "description": "Whether this stack should be validated by the CLI after synthesis (Default - false)",
                     "type": "boolean"
-                },
-                "lookupRoleArn": {
-                    "description": "The role to use to look up values from the target AWS account during synthesis (Default - None)",
-                    "type": "string"
                 }
             },
             "required": [
@@ -602,7 +598,7 @@
                     }
                 },
                 "returnAsymmetricSubnets": {
-                    "description": "Whether to populate the subnetGroups field of the{@linkVpcContextResponse},\nwhich contains potentially asymmetric subnet groups.",
+                    "description": "Whether to populate the subnetGroups field of the {@link VpcContextResponse},\nwhich contains potentially asymmetric subnet groups.",
                     "default": false,
                     "type": "boolean"
                 },
