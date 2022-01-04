@@ -20,7 +20,7 @@ class TestStack extends cdk.Stack {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
     topicRule.addAction(
-      new actions.SQSQueueAction(queue),
+      new actions.SqsQueueAction(queue),
     );
   }
 }

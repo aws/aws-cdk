@@ -7,7 +7,7 @@ import { singletonActionRole } from './private/role';
 /**
  * Configuration properties of an action for s3.
  */
-export interface SQSQueueActionProps extends CommonActionProps {
+export interface SqsQueueActionProps extends CommonActionProps {
   /**
    * Specifies whether to use Base64 encoding.
    *
@@ -19,7 +19,7 @@ export interface SQSQueueActionProps extends CommonActionProps {
 /**
  * The action to write the data from an MQTT message to an Amazon SQS queue.
  */
-export class SQSQueueAction implements iot.IAction {
+export class SqsQueueAction implements iot.IAction {
   private readonly role?: iam.IRole;
   private readonly queue: sqs.IQueue;
   private readonly useBase64?: boolean;
@@ -28,7 +28,7 @@ export class SQSQueueAction implements iot.IAction {
    * @param queue The Amazon SQS queue to which to write data.
    * @param props Optional properties to not use default
    */
-  constructor(queue: sqs.IQueue, props: SQSQueueActionProps = {}) {
+  constructor(queue: sqs.IQueue, props: SqsQueueActionProps = {}) {
     this.queue = queue;
     this.role = props.role;
     this.useBase64 = props.useBase64;

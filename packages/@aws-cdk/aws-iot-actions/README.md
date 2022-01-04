@@ -231,7 +231,7 @@ const topicRule = new iot.TopicRule(this, 'TopicRule', {
     "SELECT topic(2) as device_id, year, month, day FROM 'device/+/data'",
   ),
   actions: [
-    new actions.SQSQueueAction(queue, {
+    new actions.SqsQueueAction(queue, {
       useBase64: false,
     }),
   ]

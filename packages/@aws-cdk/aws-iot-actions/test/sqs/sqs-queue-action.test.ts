@@ -15,7 +15,7 @@ test('Default sqs queue action', () => {
 
   // WHEN
   topicRule.addAction(
-    new actions.SQSQueueAction(queue),
+    new actions.SqsQueueAction(queue),
   );
 
   // THEN
@@ -91,7 +91,7 @@ test('Can set useBase64', () => {
 
   // WHEN
   topicRule.addAction(
-    new actions.SQSQueueAction(queue, {
+    new actions.SqsQueueAction(queue, {
       useBase64: true,
     }),
   );
@@ -117,7 +117,7 @@ test('Can set role', () => {
 
   // WHEN
   topicRule.addAction(
-    new actions.SQSQueueAction(queue, { role }),
+    new actions.SqsQueueAction(queue, { role }),
   );
 
   // THEN
