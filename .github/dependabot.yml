@@ -11,3 +11,5 @@ updates:
     labels:
       - "auto-approve"
     open-pull-requests-limit: 5
+    ignore:
+      - dependency-name: "setuptools"
