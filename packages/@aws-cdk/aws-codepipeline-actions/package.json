@@ -28,7 +28,14 @@
         ]
       }
     },
-    "projectReferences": true
+    "projectReferences": true,
+    "metadata": {
+      "jsii": {
+        "rosetta": {
+          "strict": true
+        }
+      }
+    }
   },
   "repository": {
     "type": "git",
@@ -75,9 +82,9 @@
     "@aws-cdk/cdk-integ-tools": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/jest": "^27.0.2",
-    "@types/lodash": "^4.14.176",
-    "jest": "^27.3.1",
+    "@types/jest": "^27.0.3",
+    "@types/lodash": "^4.14.178",
+    "jest": "^27.4.5",
     "lodash": "^4.17.21"
   },
   "dependencies": {

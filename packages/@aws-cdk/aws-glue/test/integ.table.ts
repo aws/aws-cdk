@@ -81,10 +81,7 @@ const encryptedTable = new glue.Table(stack, 'MyEncryptedTable', {
   database,
   tableName: 'my_encrypted_table',
   columns,
-  partitionKeys: [{
-    name: 'year',
-    type: glue.Schema.SMALL_INT,
-  }],
+  partitionKeys,
   dataFormat: glue.DataFormat.JSON,
   encryption: glue.TableEncryption.KMS,
   encryptionKey: new kms.Key(stack, 'MyKey'),

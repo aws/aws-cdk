@@ -223,7 +223,9 @@ Using AWS Secrets Manager is the recommended way to reference secrets in a CDK a
 `SecretValue` also supports the following secret sources:
 
  - `SecretValue.plainText(secret)`: stores the secret as plain text in your app and the resulting template (not recommended).
- - `SecretValue.ssmSecure(param, version)`: refers to a secret stored as a SecureString in the SSM Parameter Store.
+ - `SecretValue.ssmSecure(param, version)`: refers to a secret stored as a SecureString in the SSM
+ Parameter Store. If you don't specify the exact version, AWS CloudFormation uses the latest
+ version of the parameter.
  - `SecretValue.cfnParameter(param)`: refers to a secret passed through a CloudFormation parameter (must have `NoEcho: true`).
  - `SecretValue.cfnDynamicReference(dynref)`: refers to a secret described by a CloudFormation dynamic reference (used by `ssmSecure` and `secretsManager`).
 
@@ -237,6 +239,8 @@ this purpose.
 use the region and account of the stack you're calling it on:
 
 ```ts
+declare const stack: Stack;
+
 // Builds "arn:<PARTITION>:lambda:<REGION>:<ACCOUNT>:function:MyFunction"
 stack.formatArn({
   service: 'lambda',
@@ -252,6 +256,8 @@ but in case of a deploy-time value be aware that the result will be another
 deploy-time value which cannot be inspected in the CDK application.
 
 ```ts
+declare const stack: Stack;
+
 // Extracts the function name out of an AWS Lambda Function ARN
 const arnComponents = stack.parseArn(arn, ':');
 const functionName = arnComponents.resourceName;
@@ -383,7 +389,11 @@ examples ensures that only a single SNS topic is defined:
 function getOrCreate(scope: Construct): sns.Topic {
   const stack = Stack.of(scope);
   const uniqueid = 'GloballyUniqueIdForSingleton'; // For example, a UUID from `uuidgen`
-  return stack.node.tryFindChild(uniqueid) as sns.Topic  ?? new sns.Topic(stack, uniqueid);
+  const existing = stack.node.tryFindChild(uniqueid);
+  if (existing) {
+    return existing as sns.Topic;
+  }
+  return new sns.Topic(stack, uniqueid);
 }
 ```
 
@@ -816,6 +826,8 @@ since the top-level key is an unresolved token. The call to `findInMap` will ret
 `{ "Fn::FindInMap": [ "RegionTable", { "Ref": "AWS::Region" }, "regionName" ] }`.
 
 ```ts
+declare const regionTable: CfnMapping;
+
 regionTable.findInMap(Aws.REGION, 'regionName');
 ```
 

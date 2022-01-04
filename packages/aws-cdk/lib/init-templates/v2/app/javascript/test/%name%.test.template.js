@@ -1,5 +1,5 @@
 // const cdk = require('aws-cdk-lib');
-// const { Template } = require('@aws-cdk/assertions-alpha');
+// const { Template } = require('aws-cdk-lib/assertions');
 // const %name.PascalCased% = require('../lib/%name%-stack');
 
 // example test. To run these tests, uncomment this file along with the

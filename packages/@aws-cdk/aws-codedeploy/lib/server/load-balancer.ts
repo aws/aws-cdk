@@ -41,7 +41,7 @@ export abstract class LoadBalancer {
    *
    * @param albTargetGroup an ALB Target Group
    */
-  public static application(albTargetGroup: elbv2.ApplicationTargetGroup): LoadBalancer {
+  public static application(albTargetGroup: elbv2.IApplicationTargetGroup): LoadBalancer {
     class AlbLoadBalancer extends LoadBalancer {
       public readonly generation = LoadBalancerGeneration.SECOND;
       public readonly name = albTargetGroup.targetGroupName;
@@ -55,7 +55,7 @@ export abstract class LoadBalancer {
    *
    * @param nlbTargetGroup an NLB Target Group
    */
-  public static network(nlbTargetGroup: elbv2.NetworkTargetGroup): LoadBalancer {
+  public static network(nlbTargetGroup: elbv2.INetworkTargetGroup): LoadBalancer {
     class NlbLoadBalancer extends LoadBalancer {
       public readonly generation = LoadBalancerGeneration.SECOND;
       public readonly name = nlbTargetGroup.targetGroupName;

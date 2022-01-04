@@ -129,6 +129,10 @@ new rds.DatabaseInstanceReadReplica(this, 'ReadReplica', {
 });
 ```
 
+Automatic backups of read replica instances are only supported for MySQL and MariaDB. By default,
+automatic backups are disabled for read replicas and can only be enabled (using `backupRetention`)
+if also enabled on the source instance.
+
 Creating a "production" Oracle database instance with option and parameter groups:
 
 [example of setting up a production oracle instance](test/integ.instance.lit.ts)
@@ -567,6 +571,17 @@ Aurora Serverless Clusters do not support the following features:
 Read more about the [limitations of Aurora Serverless](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless.html#aurora-serverless.limitations)
 
 Learn more about using Amazon Aurora Serverless by reading the [documentation](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless.html)
+
+Use `ServerlessClusterFromSnapshot` to create a serverless cluster from a snapshot:
+
+```ts
+declare const vpc: ec2.Vpc;
+new rds.ServerlessClusterFromSnapshot(this, 'Cluster', {
+  engine: rds.DatabaseClusterEngine.AURORA_MYSQL,
+  vpc,
+  snapshotIdentifier: 'mySnapshot',
+});
+```
 
 ### Data API
 
