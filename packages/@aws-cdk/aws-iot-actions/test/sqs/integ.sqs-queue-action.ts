@@ -19,9 +19,7 @@ class TestStack extends cdk.Stack {
     const queue = new sqs.Queue(this, 'MyQueue', {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
-    topicRule.addAction(
-      new actions.SqsQueueAction(queue),
-    );
+    topicRule.addAction(new actions.SqsQueueAction(queue));
   }
 }
 

@@ -5,7 +5,7 @@ import * as sqs from '@aws-cdk/aws-sqs';
 import * as cdk from '@aws-cdk/core';
 import * as actions from '../../lib';
 
-test('Default sqs queue action', () => {
+test('Default SQS queue action', () => {
   // GIVEN
   const stack = new cdk.Stack();
   const topicRule = new iot.TopicRule(stack, 'MyTopicRule', {
@@ -14,9 +14,7 @@ test('Default sqs queue action', () => {
   const queue = sqs.Queue.fromQueueArn(stack, 'MyQueue', 'arn:aws:s3::123456789012:test-queue');
 
   // WHEN
-  topicRule.addAction(
-    new actions.SqsQueueAction(queue),
-  );
+  topicRule.addAction(new actions.SqsQueueAction(queue));
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::IoT::TopicRule', {
@@ -90,11 +88,9 @@ test('Can set useBase64', () => {
   const queue = sqs.Queue.fromQueueArn(stack, 'MyQueue', 'arn:aws:s3::123456789012:test-queue');
 
   // WHEN
-  topicRule.addAction(
-    new actions.SqsQueueAction(queue, {
-      useBase64: true,
-    }),
-  );
+  topicRule.addAction(new actions.SqsQueueAction(queue, {
+    useBase64: true,
+  }));
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::IoT::TopicRule', {
@@ -116,9 +112,7 @@ test('Can set role', () => {
   const role = iam.Role.fromRoleArn(stack, 'MyRole', 'arn:aws:iam::123456789012:role/ForTest');
 
   // WHEN
-  topicRule.addAction(
-    new actions.SqsQueueAction(queue, { role }),
-  );
+  topicRule.addAction(new actions.SqsQueueAction(queue, { role }));
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::IoT::TopicRule', {
