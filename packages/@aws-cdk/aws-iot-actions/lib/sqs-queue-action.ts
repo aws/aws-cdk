@@ -5,7 +5,7 @@ import { CommonActionProps } from './common-action-props';
 import { singletonActionRole } from './private/role';
 
 /**
- * Configuration properties of an action for s3.
+ * Configuration properties of an action for SQS.
  */
 export interface SqsQueueActionProps extends CommonActionProps {
   /**
