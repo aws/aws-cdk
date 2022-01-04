@@ -35,19 +35,34 @@ export function callsites(): CallSite[] {
  * Find a file by walking up parent directories
  */
 export function findUp(name: string, directory: string = process.cwd()): string | undefined {
+  return findUpMultiple([name], directory)[0];
+}
+
+/**
+ * Find the lowest of multiple files by walking up parent directories. If
+ * multiple files exist at the same level, they will all be returned.
+ */
+export function findUpMultiple(names: string[], directory: string = process.cwd()): string[] {
   const absoluteDirectory = path.resolve(directory);
 
-  const file = path.join(directory, name);
-  if (fs.existsSync(file)) {
-    return file;
+  const files = [];
+  for (const name of names) {
+    const file = path.join(directory, name);
+    if (fs.existsSync(file)) {
+      files.push(file);
+    }
+  }
+
+  if (files.length > 0) {
+    return files;
   }
 
   const { root } = path.parse(absoluteDirectory);
   if (absoluteDirectory === root) {
-    return undefined;
+    return [];
   }
 
-  return findUp(name, path.dirname(absoluteDirectory));
+  return findUpMultiple(names, path.dirname(absoluteDirectory));
 }
 
 /**
@@ -73,13 +88,37 @@ export function exec(cmd: string, args: string[], options?: SpawnSyncOptions) {
 /**
  * Returns a module version by requiring its package.json file
  */
-export function tryGetModuleVersion(mod: string): string | undefined {
+export function tryGetModuleVersionFromRequire(mod: string): string | undefined {
   try {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     return require(`${mod}/package.json`).version;
   } catch (err) {
     return undefined;
   }
+}
+
+/**
+ * Gets module version from package.json content
+ */
+export function tryGetModuleVersionFromPkg(mod: string, pkgJson: { [key: string]: any }, pkgPath: string): string | undefined {
+  const dependencies = {
+    ...pkgJson.dependencies ?? {},
+    ...pkgJson.devDependencies ?? {},
+    ...pkgJson.peerDependencies ?? {},
+  };
+
+  if (!dependencies[mod]) {
+    return undefined;
+  }
+
+  // If it's a "file:" version, make it absolute
+  const fileMatch = dependencies[mod].match(/file:(.+)/);
+  if (fileMatch && !path.isAbsolute(fileMatch[1])) {
+    const absoluteFilePath = path.join(path.dirname(pkgPath), fileMatch[1]);
+    return `file:${absoluteFilePath}`;
+  };
+
+  return dependencies[mod];
 }
 
 /**
@@ -94,14 +133,9 @@ export function extractDependencies(pkgPath: string, modules: string[]): { [key:
   // Use require for cache
   const pkgJson = require(pkgPath); // eslint-disable-line @typescript-eslint/no-require-imports
 
-  const pkgDependencies = {
-    ...pkgJson.dependencies ?? {},
-    ...pkgJson.devDependencies ?? {},
-    ...pkgJson.peerDependencies ?? {},
-  };
-
   for (const mod of modules) {
-    const version = pkgDependencies[mod] ?? tryGetModuleVersion(mod);
+    const version = tryGetModuleVersionFromPkg(mod, pkgJson, pkgPath)
+      ?? tryGetModuleVersionFromRequire(mod);
     if (!version) {
       throw new Error(`Cannot extract version for module '${mod}'. Check that it's referenced in your package.json or installed.`);
     }

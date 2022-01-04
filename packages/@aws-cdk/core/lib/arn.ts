@@ -130,10 +130,16 @@ export class Arn {
    * the 'scope' is attached to. If all ARN pieces are supplied, the supplied scope
    * can be 'undefined'.
    */
-  public static format(components: ArnComponents, stack: Stack): string {
-    const partition = components.partition ?? stack.partition;
-    const region = components.region ?? stack.region;
-    const account = components.account ?? stack.account;
+  public static format(components: ArnComponents, stack?: Stack): string {
+    const partition = components.partition ?? stack?.partition;
+    const region = components.region ?? stack?.region;
+    const account = components.account ?? stack?.account;
+
+    // Catch both 'null' and 'undefined'
+    if (partition == null || region == null || account == null) {
+      throw new Error(`Arn.format: partition (${partition}), region (${region}), and account (${account}) must all be passed if stack is not passed.`);
+    }
+
     const sep = components.sep ?? (components.arnFormat === ArnFormat.COLON_RESOURCE_NAME ? ':' : '/');
 
     const values = [

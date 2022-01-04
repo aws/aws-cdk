@@ -434,6 +434,131 @@ describe('vpc', () => {
 
     });
 
+    test('with public subnets MapPublicIpOnLaunch is true if parameter mapPublicIpOnLaunch is true', () => {
+      const stack = getTestStack();
+      new Vpc(stack, 'VPC', {
+        maxAzs: 1,
+        subnetConfiguration: [
+          {
+            cidrMask: 24,
+            name: 'ingress',
+            subnetType: SubnetType.PUBLIC,
+            mapPublicIpOnLaunch: true,
+          },
+        ],
+      });
+      expect(stack).toCountResources('AWS::EC2::Subnet', 1);
+      expect(stack).not.toHaveResource('AWS::EC2::NatGateway');
+      expect(stack).toHaveResource('AWS::EC2::Subnet', {
+        MapPublicIpOnLaunch: true,
+      });
+    });
+    test('with public subnets MapPublicIpOnLaunch is false if parameter mapPublicIpOnLaunch is false', () => {
+      const stack = getTestStack();
+      new Vpc(stack, 'VPC', {
+        maxAzs: 1,
+        subnetConfiguration: [
+          {
+            cidrMask: 24,
+            name: 'ingress',
+            subnetType: SubnetType.PUBLIC,
+            mapPublicIpOnLaunch: false,
+          },
+        ],
+      });
+      expect(stack).toCountResources('AWS::EC2::Subnet', 1);
+      expect(stack).not.toHaveResource('AWS::EC2::NatGateway');
+      expect(stack).toHaveResource('AWS::EC2::Subnet', {
+        MapPublicIpOnLaunch: false,
+      });
+    });
+    test('with private subnets throw exception if parameter mapPublicIpOnLaunch is defined', () => {
+      const stack = getTestStack();
+      expect(() => {
+        new Vpc(stack, 'VPC', {
+          maxAzs: 1,
+          subnetConfiguration: [
+            {
+              name: 'public',
+              subnetType: SubnetType.PUBLIC,
+            },
+            {
+              name: 'private',
+              subnetType: SubnetType.PRIVATE_WITH_NAT,
+              mapPublicIpOnLaunch: true,
+            },
+          ],
+        });
+      }).toThrow(/subnet cannot include mapPublicIpOnLaunch parameter/);
+    });
+    test('with isolated subnets throw exception if parameter mapPublicIpOnLaunch is defined', () => {
+      const stack = getTestStack();
+      expect(() => {
+        new Vpc(stack, 'VPC', {
+          maxAzs: 1,
+          subnetConfiguration: [
+            {
+              name: 'public',
+              subnetType: SubnetType.PUBLIC,
+            },
+            {
+              name: 'private',
+              subnetType: SubnetType.PRIVATE_ISOLATED,
+              mapPublicIpOnLaunch: true,
+            },
+          ],
+        });
+      }).toThrow(/subnet cannot include mapPublicIpOnLaunch parameter/);
+    });
+    test('verify the Default VPC name', () => {
+      const stack = getTestStack();
+      const tagName = { Key: 'Name', Value: `${stack.node.path}/VPC` };
+      new Vpc(stack, 'VPC', {
+        maxAzs: 1,
+        subnetConfiguration: [
+          {
+            name: 'public',
+            subnetType: SubnetType.PUBLIC,
+          },
+          {
+            name: 'private',
+            subnetType: SubnetType.PRIVATE_WITH_NAT,
+          },
+        ],
+      });
+      expect(stack).toCountResources('AWS::EC2::Subnet', 2);
+      expect(stack).toHaveResource('AWS::EC2::NatGateway');
+      expect(stack).toHaveResource('AWS::EC2::Subnet', {
+        MapPublicIpOnLaunch: true,
+      });
+      expect(stack).toHaveResource('AWS::EC2::VPC', hasTags([tagName]));
+    });
+    test('verify the assigned VPC name passing the "vpcName" prop', () => {
+      const stack = getTestStack();
+      const tagNameDefault = { Key: 'Name', Value: `${stack.node.path}/VPC` };
+      const tagName = { Key: 'Name', Value: 'CustomVPCName' };
+      new Vpc(stack, 'VPC', {
+        maxAzs: 1,
+        subnetConfiguration: [
+          {
+            name: 'public',
+            subnetType: SubnetType.PUBLIC,
+          },
+          {
+            name: 'private',
+            subnetType: SubnetType.PRIVATE_WITH_NAT,
+          },
+        ],
+        vpcName: 'CustomVPCName',
+      });
+      expect(stack).toCountResources('AWS::EC2::Subnet', 2);
+      expect(stack).toHaveResource('AWS::EC2::NatGateway');
+      expect(stack).toHaveResource('AWS::EC2::Subnet', {
+        MapPublicIpOnLaunch: true,
+      });
+      expect(stack).not.toHaveResource('AWS::EC2::VPC', hasTags([tagNameDefault]));
+      expect(stack).toHaveResource('AWS::EC2::VPC', hasTags([tagName]));
+    });
     test('maxAZs defaults to 3 if unset', () => {
       const stack = getTestStack();
       new Vpc(stack, 'VPC');
@@ -448,8 +573,6 @@ describe('vpc', () => {
         DestinationCidrBlock: '0.0.0.0/0',
         NatGatewayId: {},
       });
-
-
     });
 
     test('with maxAZs set to 2', () => {

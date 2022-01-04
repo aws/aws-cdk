@@ -312,11 +312,14 @@ export abstract class RestApiBase extends Resource implements IRestApi {
 
   /**
    * A human friendly name for this Rest API. Note that this is different from `restApiId`.
+   * @attribute
    */
   public readonly restApiName: string;
 
   private _latestDeployment?: Deployment;
   private _domainName?: DomainName;
+
+  protected cloudWatchAccount?: CfnAccount;
 
   constructor(scope: Construct, id: string, props: RestApiBaseProps = { }) {
     super(scope, id);
@@ -500,6 +503,17 @@ export abstract class RestApiBase extends Resource implements IRestApi {
   }
 
   /**
+   * Associates a Stage with this REST API
+   *
+   * @internal
+   */
+  public _attachStage(stage: Stage) {
+    if (this.cloudWatchAccount) {
+      stage.node.addDependency(this.cloudWatchAccount);
+    }
+  }
+
+  /**
    * @internal
    */
   protected _configureCloudWatchRole(apiResource: CfnRestApi) {
@@ -508,11 +522,11 @@ export abstract class RestApiBase extends Resource implements IRestApi {
       managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonAPIGatewayPushToCloudWatchLogs')],
     });
 
-    const resource = new CfnAccount(this, 'Account', {
+    this.cloudWatchAccount = new CfnAccount(this, 'Account', {
       cloudWatchRoleArn: role.roleArn,
     });
 
-    resource.node.addDependency(apiResource);
+    this.cloudWatchAccount.node.addDependency(apiResource);
   }
 
   /**

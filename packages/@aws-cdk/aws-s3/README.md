@@ -417,7 +417,7 @@ bucket.virtualHostedUrlForObject('objectname', { regional: false }); // Virtual 
 
 ## Object Ownership
 
-You can use the two following properties to specify the bucket [object Ownership].
+You can use one of following properties to specify the bucket [object Ownership].
 
 [object Ownership]: https://docs.aws.amazon.com/AmazonS3/latest/dev/about-object-ownership.html
 
@@ -438,6 +438,16 @@ The bucket owner will own the object if the object is uploaded with the bucket-o
 ```ts
 new s3.Bucket(this, 'MyBucket', {
   objectOwnership: s3.ObjectOwnership.BUCKET_OWNER_PREFERRED,
+});
+```
+
+### Bucket owner enforced (recommended)
+
+ACLs are disabled, and the bucket owner automatically owns and has full control over every object in the bucket. ACLs no longer affect permissions to data in the S3 bucket. The bucket uses policies to define access control.
+
+```ts
+new s3.Bucket(this, 'MyBucket', {
+  objectOwnership: s3.ObjectOwnership.BUCKET_OWNER_ENFORCED,
 });
 ```
 
@@ -463,3 +473,39 @@ const bucket = new s3.Bucket(this, 'MyTempFileBucket', {
 switching this to `false` in a CDK version *before* `1.126.0` will lead to
 all objects in the bucket being deleted. Be sure to update your bucket resources
 by deploying with CDK version `1.126.0` or later **before** switching this value to `false`.
+
+## Transfer Acceleration
+
+[Transfer Acceleration](https://docs.aws.amazon.com/AmazonS3/latest/userguide/transfer-acceleration.html) can be configured to enable fast, easy, and secure transfers of files over long distances:
+
+```ts
+const bucket = new s3.Bucket(this, 'MyBucket', {
+   transferAcceleration: true,
+});
+```
+
+To access the bucket that is enabled for Transfer Acceleration, you must use a special endpoint. The URL can be generated using method `transferAccelerationUrlForObject`:
+
+```ts
+const bucket = new s3.Bucket(this, 'MyBucket', {
+   transferAcceleration: true,
+});
+bucket.transferAccelerationUrlForObject('objectname');
+```
+
+## Intelligent Tiering
+
+[Intelligent Tiering](https://docs.aws.amazon.com/AmazonS3/latest/userguide/intelligent-tiering.html) can be configured to automatically move files to glacier:
+
+```ts
+    new s3.Bucket(this, 'MyBucket', {
+   intelligentTieringConfigurations: [{
+      name: 'foo',
+      prefix: 'folder/name',
+      archiveAccessTierTime: cdk.Duration.days(90),
+      deepArchiveAccessTierTime: cdk.Duration.days(180),
+      tags: [{key: 'tagname', value: 'tagvalue'}]
+   }],
+});
+
+```

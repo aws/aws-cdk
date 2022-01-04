@@ -157,7 +157,7 @@ describe('function', () => {
               'Arn',
             ],
           },
-          Runtime: 'python2.7',
+          Runtime: 'python3.9',
         },
         DependsOn: [
           'MyLambdaServiceRole4539ECB6',
@@ -1842,6 +1842,39 @@ describe('function', () => {
     });
   });
 
+  describe('lambda.Function timeout', () => {
+    test('should be a cdk.Duration when defined', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      const { timeout } = new lambda.Function(stack, 'MyFunction', {
+        handler: 'foo',
+        runtime: lambda.Runtime.NODEJS_12_X,
+        code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
+        timeout: cdk.Duration.minutes(2),
+      });
+
+      // THEN
+      expect(timeout).toEqual(cdk.Duration.minutes(2));
+    });
+
+    test('should be optional', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      const { timeout } = new lambda.Function(stack, 'MyFunction', {
+        handler: 'foo',
+        runtime: lambda.Runtime.NODEJS_12_X,
+        code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
+      });
+
+      // THEN
+      expect(timeout).not.toBeDefined();
+    });
+  });
+
   describe('currentVersion', () => {
     // see test.function-hash.ts for more coverage for this
     test('logical id of version is based on the function hash', () => {
@@ -2243,6 +2276,6 @@ function newTestLambda(scope: constructs.Construct) {
   return new lambda.Function(scope, 'MyLambda', {
     code: new lambda.InlineCode('foo'),
     handler: 'bar',
-    runtime: lambda.Runtime.PYTHON_2_7,
+    runtime: lambda.Runtime.PYTHON_3_9,
   });
 }

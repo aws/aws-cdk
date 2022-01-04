@@ -335,25 +335,6 @@ describe('instance', () => {
 
     });
 
-    test('fromGeneratedSecret', () => {
-      new rds.DatabaseInstanceFromSnapshot(stack, 'Instance', {
-        snapshotIdentifier: 'my-snapshot',
-        engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
-        vpc,
-        credentials: rds.SnapshotCredentials.fromGeneratedSecret('admin', {
-          excludeCharacters: '"@/\\',
-        }),
-      });
-
-      expect(stack).toHaveResourceLike('AWS::RDS::DBInstance', {
-        MasterUsername: ABSENT,
-        MasterUserPassword: {
-          // logical id of secret has a hash
-          'Fn::Join': ['', ['{{resolve:secretsmanager:', { Ref: 'InstanceSecretB6DFA6BE8ee0a797cad8a68dbeb85f8698cdb5bb' }, ':SecretString:password::}}']],
-        },
-      });
-    });
-
     test('fromGeneratedSecret with replica regions', () => {
       new rds.DatabaseInstanceFromSnapshot(stack, 'Instance', {
         snapshotIdentifier: 'my-snapshot',
@@ -1602,6 +1583,70 @@ describe('instance', () => {
         vpc,
       });
     }).toThrow(/Cannot set 'backupRetention', as engine 'postgres-13' does not support automatic backups for read replicas/);
+  });
+
+  test('can set parameter group on read replica', () => {
+    // GIVEN
+    const instanceType = ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.SMALL);
+    const engine = rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_13 });
+    const parameterGroup = new rds.ParameterGroup(stack, 'ParameterGroup', { engine });
+    const source = new rds.DatabaseInstance(stack, 'Source', {
+      engine,
+      instanceType,
+      vpc,
+    });
+
+    // WHEN
+    new rds.DatabaseInstanceReadReplica(stack, 'Replica', {
+      sourceDatabaseInstance: source,
+      parameterGroup,
+      instanceType,
+      vpc,
+    });
+
+    // THEN
+    expect(stack).toHaveResource('AWS::RDS::DBInstance', {
+      DBParameterGroupName: {
+        Ref: 'ParameterGroup5E32DECB',
+      },
+    });
+  });
+
+  test('instance with port provided as a number', () => {
+    // WHEN
+    new rds.DatabaseInstance(stack, 'Database', {
+      engine: rds.DatabaseInstanceEngine.MYSQL,
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+      vpc,
+      port: 3306,
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::RDS::DBInstance', {
+      Port: '3306',
+    });
+  });
+
+  test('instance with port provided as a CloudFormation parameter', () => {
+    // GIVEN
+    const port = new cdk.CfnParameter(stack, 'Port', {
+      type: 'Number',
+    }).valueAsNumber;
+
+    // WHEN
+    new rds.DatabaseInstance(stack, 'Database', {
+      engine: rds.DatabaseInstanceEngine.MYSQL,
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+      vpc,
+      port,
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::RDS::DBInstance', {
+      Port: {
+        Ref: 'Port',
+      },
+    });
   });
 });
 
