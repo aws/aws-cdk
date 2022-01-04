@@ -563,12 +563,33 @@ pipeline.addStage(prod, {
     stack: prod.stack1,
     pre: [new pipelines.ManualApprovalStep('Pre-Stack Check')], // Executed before stack is prepared
     changeSet: [new pipelines.ManualApprovalStep('ChangeSet Approval')], // Executed after stack is prepared but before the stack is deployed
-    post: [new pipelines.ManualApprovalStep('Post-Deploy Check')], // Executed after staack is deployed
+    post: [new pipelines.ManualApprovalStep('Post-Deploy Check')], // Executed after stack is deployed
   }, {
     stack: prod.stack2,
-    post: [new pipelines.ManualApprovalStep('Post-Deploy Check')], // Executed after staack is deployed
+    post: [new pipelines.ManualApprovalStep('Post-Deploy Check')], // Executed after stack is deployed
   }],
 });
+```
+
+If you specify multiple steps, they will execute in parallel by default. You can add dependencies between them
+to if you wish to specify an order. To add a dependency, call `step.addStepDependency()`:
+
+```ts
+const firstStep = new pipelines.ManualApprovalStep('A');
+const secondStep = new pipelines.ManualApprovalStep('B');
+secondStep.addStepDependency(firstStep);
+```
+
+For convenience, `Step.sequence()` will take an array of steps and dependencies between adjacent steps,
+so that the whole list executes in order:
+
+```ts
+// Step A will depend on step B and step B will depend on step C
+const orderedSteps = pipelines.Step.sequence([
+  new pipelines.ManualApprovalStep('A'),
+  new pipelines.ManualApprovalStep('B'),
+  new pipelines.ManualApprovalStep('C'),
+]);
 ```
 
 #### Using CloudFormation Stack Outputs in approvals
