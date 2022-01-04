@@ -117,7 +117,10 @@ export class CdkToolkit {
       return this.watch(options);
     }
 
+    const startSynthTime = new Date().getTime();
     const stacks = await this.selectStacksForDeploy(options.selector, options.exclusively, options.cacheCloudAssembly);
+    const elapsedSynthTime = new Date().getTime() - startSynthTime;
+    print('\n✨  Synthesis time: %ss\n', formatTime(elapsedSynthTime));
 
     const requireApproval = options.requireApproval ?? RequireApproval.Broadening;
 
@@ -184,12 +187,14 @@ export class CdkToolkit {
       }
 
       print('%s: deploying...', colors.bold(stack.displayName));
+      const startDeployTime = new Date().getTime();
 
       let tags = options.tags;
       if (!tags || tags.length === 0) {
         tags = tagsForStack(stack);
       }
 
+      let elapsedDeployTime = 0;
       try {
         const result = await this.props.cloudFormation.deployStack({
           stack,
@@ -216,9 +221,11 @@ export class CdkToolkit {
           : ' ✅  %s';
 
         success('\n' + message, stack.displayName);
+        elapsedDeployTime = new Date().getTime() - startDeployTime;
+        print('\n✨  Deployment time: %ss\n', formatTime(elapsedDeployTime));
 
         if (Object.keys(result.outputs).length > 0) {
-          print('\nOutputs:');
+          print('Outputs:');
 
           stackOutputs[stack.stackName] = result.outputs;
         }
@@ -228,7 +235,7 @@ export class CdkToolkit {
           print('%s.%s = %s', colors.cyan(stack.id), colors.cyan(name), colors.underline(colors.cyan(value)));
         }
 
-        print('\nStack ARN:');
+        print('Stack ARN:');
 
         data(result.stackArn);
       } catch (e) {
@@ -246,6 +253,7 @@ export class CdkToolkit {
           });
         }
       }
+      print('\n✨  Total time: %ss\n', formatTime(elapsedSynthTime + elapsedDeployTime));
     }
   }
 
@@ -846,4 +854,28 @@ function tagsForStack(stack: cxapi.CloudFormationStackArtifact): Tag[] {
 export interface Tag {
   readonly Key: string;
   readonly Value: string;
+}
+
+/**
+ * Formats time in milliseconds (which we get from 'Date.getTime()')
+ * to a human-readable time; returns time in seconds rounded to 2
+ * decimal places.
+ */
+function formatTime(num: number): number {
+  return roundPercentage(millisecondsToSeconds(num));
+}
+
+/**
+ * Rounds a decimal number to two decimal points.
+ * The function is useful for fractions that need to be outputted as percentages.
+ */
+function roundPercentage(num: number): number {
+  return Math.round(100 * num) / 100;
+}
+
+/**
+ * Given a time in miliseconds, return an equivalent amount in seconds.
+ */
+function millisecondsToSeconds(num: number): number {
+  return num / 1000;
 }
