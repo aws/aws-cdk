@@ -57,6 +57,13 @@ export interface AwsCloudFormationStackProperties {
   readonly cloudFormationExecutionRoleArn?: string;
 
   /**
+   * The role to use to look up values from the target AWS account
+   *
+   * @default - No role is assumed (current credentials are used)
+   */
+  readonly lookupRoleArn?: string;
+
+  /**
    * If the stack template has already been included in the asset manifest, its asset URL
    *
    * @default - Not uploaded yet, upload just before deploying

@@ -101,6 +101,13 @@ export interface SynthesizeStackArtifactOptions {
   readonly cloudFormationExecutionRoleArn?: string;
 
   /**
+   * The role to use to look up values from the target AWS account
+   *
+   * @default - None
+   */
+  readonly lookupRoleArn?: string;
+
+  /**
    * If the stack template has already been included in the asset manifest, its asset URL
    *
    * @default - Not uploaded yet, upload just before deploying
