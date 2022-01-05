@@ -1,4 +1,4 @@
-import { IResource, Resource } from '@aws-cdk/core';
+import { IResource, Resource, SecretValue } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnAccessKey } from './iam.generated';
 import { IUser } from './user';
@@ -36,7 +36,7 @@ export interface IAccessKey extends IResource {
    *
    * @attribute
    */
-  readonly secretAccessKey: string;
+  readonly secretAccessKey: SecretValue;
 }
 
 /**
@@ -75,7 +75,7 @@ export interface AccessKeyProps {
  */
 export class AccessKey extends Resource implements IAccessKey {
   public readonly accessKeyId: string;
-  public readonly secretAccessKey: string;
+  public readonly secretAccessKey: SecretValue;
 
   constructor(scope: Construct, id: string, props: AccessKeyProps) {
     super(scope, id);
@@ -86,6 +86,8 @@ export class AccessKey extends Resource implements IAccessKey {
     });
 
     this.accessKeyId = accessKey.ref;
-    this.secretAccessKey = accessKey.attrSecretAccessKey;
+
+    // Not actually 'plainText', but until we have a more apt constructor
+    this.secretAccessKey = SecretValue.plainText(accessKey.attrSecretAccessKey);
   }
 }
