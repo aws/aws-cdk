@@ -678,7 +678,7 @@ describe('CloudFormation Pipeline Actions', () => {
                 'AWS': '*',
               },
               'Resource': [
-                
+
               ],
             },
             {
