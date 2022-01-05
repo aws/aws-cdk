@@ -1,13 +1,16 @@
 import * as path from 'path';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { Duration, Stack, NestedStack, Names, IConstruct } from '@aws-cdk/core';
+import { Duration, Stack, NestedStack, Names } from '@aws-cdk/core';
 import * as cr from '@aws-cdk/custom-resources';
 import { AwsCliLayer } from '@aws-cdk/lambda-layer-awscli';
 import { KubectlLayer } from '@aws-cdk/lambda-layer-kubectl';
-import { Construct } from 'constructs';
+import { Construct, IConstruct } from 'constructs';
 import { ICluster, Cluster } from './cluster';
 
+/**
+ * Properties for a KubectlProvider
+ */
 export interface KubectlProviderProps {
   /**
    * The cluster to control.
@@ -177,7 +180,7 @@ export class KubectlProvider extends NestedStack implements IKubectlProvider {
 
 }
 
-class ImportedKubectlProvider extends CoreConstruct implements IKubectlProvider {
+class ImportedKubectlProvider extends Construct implements IKubectlProvider {
 
   /**
    * The custom resource provider's service token.
