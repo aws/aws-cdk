@@ -1,5 +1,5 @@
 import { ISDK } from '../aws-auth';
-import { ChangeHotswapImpact, ChangeHotswapResult, HotswapOperation, HotswappableChangeCandidate/*, establishResourcePhysicalName*/ } from './common';
+import { ChangeHotswapImpact, ChangeHotswapResult, HotswapOperation, HotswappableChangeCandidate } from './common';
 import { EvaluateCloudFormationTemplate } from './evaluate-cloudformation-template';
 
 /**
@@ -40,7 +40,7 @@ class S3BucketDeploymentHotswapOperation implements HotswapOperation {
   public readonly resourceNames: string[];
 
   constructor(private readonly functionName: string, private readonly customResourceProperties: any) {
-    this.resourceNames = [this.customResourceProperties.DestinationBucketName];
+    this.resourceNames = [`Contents of S3 Bucket '${this.customResourceProperties.DestinationBucketName}'`];
   }
 
   public async apply(sdk: ISDK): Promise<any> {
@@ -95,7 +95,7 @@ async function changeIsForS3DeployCustomResourcePolicy(
     }
   }
 
-  return new EmptyHotswapOperation();
+  return ChangeHotswapImpact.IRRELEVANT;
 }
 
 function stringifyObject(obj: any): any {
@@ -114,12 +114,4 @@ function stringifyObject(obj: any): any {
     ret[k] = stringifyObject(v);
   }
   return ret;
-}
-
-class EmptyHotswapOperation implements HotswapOperation {
-  readonly service = 'empty';
-  public readonly resourceNames = [];
-  public async apply(sdk: ISDK): Promise<any> {
-    return Promise.resolve(sdk);
-  }
 }

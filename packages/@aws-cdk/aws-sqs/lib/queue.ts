@@ -268,7 +268,7 @@ export class Queue extends QueueBase {
       public readonly encryptionMasterKey = attrs.keyArn
         ? kms.Key.fromKeyArn(this, 'Key', attrs.keyArn)
         : undefined;
-      public readonly fifo: boolean = this.determineFifo();;
+      public readonly fifo: boolean = this.determineFifo();
 
       protected readonly autoCreatePolicy = false;
 
@@ -320,6 +320,11 @@ export class Queue extends QueueBase {
    */
   public readonly fifo: boolean;
 
+  /**
+   * If this queue is configured with a dead-letter queue, this is the dead-letter queue settings.
+   */
+  public readonly deadLetterQueue?: DeadLetterQueue;
+
   protected readonly autoCreatePolicy = true;
 
   constructor(scope: Construct, id: string, props: QueueProps = {}) {
@@ -361,6 +366,7 @@ export class Queue extends QueueBase {
     this.queueName = this.getResourceNameAttribute(queue.attrQueueName);
     this.encryptionMasterKey = encryptionMasterKey;
     this.queueUrl = queue.ref;
+    this.deadLetterQueue = props.deadLetterQueue;
 
     function _determineEncryptionProps(this: Queue): { encryptionProps: EncryptionProps, encryptionMasterKey?: kms.IKey } {
       let encryption = props.encryption || QueueEncryption.UNENCRYPTED;

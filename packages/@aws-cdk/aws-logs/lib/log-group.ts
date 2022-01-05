@@ -355,7 +355,9 @@ export class LogGroup extends LogGroupBase {
       public readonly logGroupName = Stack.of(scope).splitArn(baseLogGroupArn, ArnFormat.COLON_RESOURCE_NAME).resourceName!;
     }
 
-    return new Import(scope, id);
+    return new Import(scope, id, {
+      environmentFromArn: baseLogGroupArn,
+    });
   }
 
   /**

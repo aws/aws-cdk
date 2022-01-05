@@ -400,6 +400,32 @@ new autoscaling.AutoScalingGroup(this, 'ASG', {
 });
 ```
 
+## Termination policies
+
+Auto Scaling uses [termination policies](https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-instance-termination.html)
+to determine which instances it terminates first during scale-in events. You
+can specify one or more termination policies with the `terminationPolicies`
+property:
+
+```ts
+declare const vpc: ec2.Vpc;
+declare const instanceType: ec2.InstanceType;
+declare const machineImage: ec2.IMachineImage;
+
+new autoscaling.AutoScalingGroup(this, 'ASG', {
+  vpc,
+  instanceType,
+  machineImage,
+
+  // ...
+
+  terminationPolicies: [
+    autoscaling.TerminationPolicy.OLDEST_INSTANCE,
+    autoscaling.TerminationPolicy.DEFAULT,
+  ],
+});
+```
+
 ## Protecting new instances from being terminated on scale-in
 
 By default, Auto Scaling can terminate an instance at any time after launch when
