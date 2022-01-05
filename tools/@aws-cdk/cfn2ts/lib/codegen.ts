@@ -117,6 +117,7 @@ export default class CodeGenerator {
     this.docLink(spec.Documentation,
       `Properties for defining a \`${resourceContext.className}\``,
       '',
+      '@struct', // Make this interface ALWAYS be treated as a struct, event if it's named `IPSet...` or something...
       '@stability external');
     this.code.openBlock(`export interface ${name.className}`);
 
@@ -861,6 +862,8 @@ export default class CodeGenerator {
     this.docLink(
       propTypeSpec.Documentation,
       docs.description,
+      '',
+      '@struct', // Make this interface ALWAYS be treated as a struct, event if it's named `IPSet...` or something...
       '@stability external',
     );
     /*
@@ -976,12 +979,26 @@ export default class CodeGenerator {
     this.code.line(' */');
 
     /**
-     * If '* /' occurs literally somewhere in the doc text, it will break the docstring parsing.
+     * Add escapes to the doc text to avoid text that breaks the parsing of the string
      *
-     * Break up those characters by inserting a zero-width space.
+     * We currently escape the following sequences:
+     *
+     * - <asterisk><slash> (* /): if this occurs somewhere in the doc text, it
+     *   will end the block comment in the wrong place. Break up those
+     *   characters by inserting a space. Would have loved to use a zero-width space,
+     *   but I'm very very afraid it will break codegen in subtle ways, and just using
+     *   a space feels safer.
+     * - \u: if this occurs in Java code, the Java compiler will try and parse the
+     *   following 4 characters as a unicode code point, and fail if the 4 characters
+     *   aren't hex digits. This is formally a bug in pacmak (it should do the escaping
+     *   while rendering, https://github.com/aws/jsii/issues/3302), but to
+     *   expedite the build fixing it here as well. Replace with '\ u' (tried using
+     *   `\\u` but for some reason that also doesn't carry over to codegen).
      */
     function escapeDocText(x: string) {
-      return x.replace(/\*\//g, '*\u200b/');
+      x = x.replace(/\*\//g, '* /');
+      x = x.replace(/\\u/g, '\\ u');
+      return x;
     }
   }
 }
