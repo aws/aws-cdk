@@ -27,20 +27,19 @@ const ExpectedBucketPolicyProperties = {
             'Fn::GetAtt': [
               'MyAmazingCloudTrailS3A580FE27',
               'Arn',
-            ]
+            ],
           },
           {
             'Fn::Join': [
               '',
               [{
-                  'Fn::GetAtt': [
-                    'MyAmazingCloudTrailS3A580FE27',
-                    'Arn',
-                  ],
-                },
-                '/*',
-              ],
-            ]
+                'Fn::GetAtt': [
+                  'MyAmazingCloudTrailS3A580FE27',
+                  'Arn',
+                ],
+              },
+              '/*'],
+            ],
           },
         ],
       },
