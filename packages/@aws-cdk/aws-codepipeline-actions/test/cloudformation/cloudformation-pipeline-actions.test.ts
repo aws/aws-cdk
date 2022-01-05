@@ -675,9 +675,7 @@ describe('CloudFormation Pipeline Actions', () => {
               },
               'Effect': 'Deny',
               'Principal': {
-                'AWS': {
-                  '*',
-                },
+                'AWS': '*',
               },
               'Resource': [
                 
