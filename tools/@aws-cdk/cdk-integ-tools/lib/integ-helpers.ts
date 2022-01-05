@@ -1,7 +1,7 @@
 // Helper functions for integration tests
 import { spawnSync } from 'child_process';
 import * as path from 'path';
-import { FUTURE_FLAGS, TARGET_PARTITIONS } from '@aws-cdk/cx-api';
+import { TARGET_PARTITIONS } from '@aws-cdk/cx-api';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs-extra';
 
