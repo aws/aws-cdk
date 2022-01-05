@@ -18,6 +18,7 @@ jobs:
         with:
           github-token: "${{ secrets.GITHUB_TOKEN }}"
           excluded-expressions: "[CDK CLI Version|TypeScript|Java|Python]"
+          area-is-keyword: true
           parameters: >
            [
            {"area":"package/tools","keywords":["cli","command line","init","synth","diff","bootstrap"],"labels":["package/tools"],"assignees":["rix0rrr"]},

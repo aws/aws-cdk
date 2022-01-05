@@ -135,7 +135,7 @@ export class KubernetesManifest extends Construct {
       this.injectIngressAlbAnnotations(props.manifest, props.ingressAlbScheme ?? AlbScheme.INTERNAL);
     }
 
-    new CustomResource(this, 'Resource', {
+    const customResource = new CustomResource(this, 'Resource', {
       serviceToken: provider.serviceToken,
       resourceType: KubernetesManifest.RESOURCE_TYPE,
       properties: {
@@ -150,6 +150,8 @@ export class KubernetesManifest extends Construct {
         SkipValidation: props.skipValidation,
       },
     });
+
+    this.node.defaultChild = customResource.node.defaultChild;
   }
 
   /**
