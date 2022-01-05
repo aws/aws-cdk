@@ -1,9 +1,12 @@
 import * as cfn_diff from '@aws-cdk/cloudformation-diff';
 import * as cxapi from '@aws-cdk/cx-api';
 import { CloudFormation } from 'aws-sdk';
+import * as colors from 'colors/safe';
+import { print } from '../logging';
 import { ISDK, Mode, SdkProvider } from './aws-auth';
 import { DeployStackResult } from './deploy-stack';
-import { ChangeHotswapImpact, ChangeHotswapResult, HotswapOperation, HotswappableChangeCandidate, ListStackResources } from './hotswap/common';
+import { isHotswappableCodeBuildProjectChange } from './hotswap/code-build-projects';
+import { ICON, ChangeHotswapImpact, ChangeHotswapResult, HotswapOperation, HotswappableChangeCandidate, ListStackResources } from './hotswap/common';
 import { isHotswappableEcsServiceChange } from './hotswap/ecs-services';
 import { EvaluateCloudFormationTemplate } from './hotswap/evaluate-cloudformation-template';
 import { isHotswappableLambdaFunctionChange } from './hotswap/lambda-functions';
@@ -58,11 +61,12 @@ export async function tryHotswapDeployment(
 async function findAllHotswappableChanges(
   stackChanges: cfn_diff.TemplateDiff, evaluateCfnTemplate: EvaluateCloudFormationTemplate,
 ): Promise<HotswapOperation[] | undefined> {
+  const resourceDifferences = getStackResourceDifferences(stackChanges);
+
   let foundNonHotswappableChange = false;
   const promises: Array<Array<Promise<ChangeHotswapResult>>> = [];
-
   // gather the results of the detector functions
-  stackChanges.resources.forEachDifference((logicalId: string, change: cfn_diff.ResourceDifference) => {
+  for (const [logicalId, change] of Object.entries(resourceDifferences)) {
     const resourceHotswapEvaluation = isCandidateForHotswapping(change);
 
     if (resourceHotswapEvaluation === ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT) {
@@ -75,10 +79,12 @@ async function findAllHotswappableChanges(
         isHotswappableStateMachineChange(logicalId, resourceHotswapEvaluation, evaluateCfnTemplate),
         isHotswappableEcsServiceChange(logicalId, resourceHotswapEvaluation, evaluateCfnTemplate),
         isHotswappableS3BucketDeploymentChange(logicalId, resourceHotswapEvaluation, evaluateCfnTemplate),
+        isHotswappableCodeBuildProjectChange(logicalId, resourceHotswapEvaluation, evaluateCfnTemplate),
       ]);
     }
-  });
+  }
 
+  // resolve all detector results
   const changesDetectionResults: Array<Array<ChangeHotswapResult>> = [];
   for (const detectorResultPromises of promises) {
     const hotswapDetectionResults = await Promise.all(detectorResultPromises);
@@ -86,8 +92,6 @@ async function findAllHotswappableChanges(
   }
 
   const hotswappableResources = new Array<HotswapOperation>();
-
-  // resolve all detector results
   for (const hotswapDetectionResults of changesDetectionResults) {
     const perChangeHotswappableResources = new Array<HotswapOperation>();
 
@@ -103,23 +107,94 @@ async function findAllHotswappableChanges(
       continue;
     }
 
-    // no hotswappable changes found, so any REQUIRES_FULL_DEPLOYMENTs imply a non-hotswappable change
-    for (const result of hotswapDetectionResults) {
-      if (result === ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT) {
-        foundNonHotswappableChange = true;
-      }
+    // no hotswappable changes found, so at least one IRRELEVANT means we can ignore this change;
+    // otherwise, all answers are REQUIRES_FULL_DEPLOYMENT, so this means we can't hotswap this change,
+    // and have to do a full deployment instead
+    if (!hotswapDetectionResults.some(hdr => hdr === ChangeHotswapImpact.IRRELEVANT)) {
+      foundNonHotswappableChange = true;
     }
-    // no REQUIRES_FULL_DEPLOYMENT implies that all results are IRRELEVANT
   }
 
   return foundNonHotswappableChange ? undefined : hotswappableResources;
 }
 
 /**
+ * Returns all changes to resources in the given Stack.
+ *
+ * @param stackChanges the collection of all changes to a given Stack
+ */
+function getStackResourceDifferences(stackChanges: cfn_diff.TemplateDiff): { [logicalId: string]: cfn_diff.ResourceDifference } {
+  // we need to collapse logical ID rename changes into one change,
+  // as they are represented in stackChanges as a pair of two changes: one addition and one removal
+  const allResourceChanges: { [logId: string]: cfn_diff.ResourceDifference } = stackChanges.resources.changes;
+  const allRemovalChanges = filterDict(allResourceChanges, resChange => resChange.isRemoval);
+  const allNonRemovalChanges = filterDict(allResourceChanges, resChange => !resChange.isRemoval);
+  for (const [logId, nonRemovalChange] of Object.entries(allNonRemovalChanges)) {
+    if (nonRemovalChange.isAddition) {
+      const addChange = nonRemovalChange;
+      // search for an identical removal change
+      const identicalRemovalChange = Object.entries(allRemovalChanges).find(([_, remChange]) => {
+        return changesAreForSameResource(remChange, addChange);
+      });
+      // if we found one, then this means this is a rename change
+      if (identicalRemovalChange) {
+        const [removedLogId, removedResourceChange] = identicalRemovalChange;
+        allNonRemovalChanges[logId] = makeRenameDifference(removedResourceChange, addChange);
+        // delete the removal change that forms the rename pair
+        delete allRemovalChanges[removedLogId];
+      }
+    }
+  }
+  // the final result are all of the remaining removal changes,
+  // plus all of the non-removal changes
+  // (we saved the rename changes in that object already)
+  return {
+    ...allRemovalChanges,
+    ...allNonRemovalChanges,
+  };
+}
+
+/** Filters an object with string keys based on whether the callback returns 'true' for the given value in the object. */
+function filterDict<T>(dict: { [key: string]: T }, func: (t: T) => boolean): { [key: string]: T } {
+  return Object.entries(dict).reduce((acc, [key, t]) => {
+    if (func(t)) {
+      acc[key] = t;
+    }
+    return acc;
+  }, {} as { [key: string]: T });
+}
+
+/** Returns 'true' if a pair of changes is for the same resource. */
+function changesAreForSameResource(oldChange: cfn_diff.ResourceDifference, newChange: cfn_diff.ResourceDifference): boolean {
+  return oldChange.oldResourceType === newChange.newResourceType &&
+      // this isn't great, but I don't want to bring in something like underscore just for this comparison
+      JSON.stringify(oldChange.oldProperties) === JSON.stringify(newChange.newProperties);
+}
+
+function makeRenameDifference(
+  remChange: cfn_diff.ResourceDifference,
+  addChange: cfn_diff.ResourceDifference,
+): cfn_diff.ResourceDifference {
+  return new cfn_diff.ResourceDifference(
+    // we have to fill in the old value, because otherwise this will be classified as a non-hotswappable change
+    remChange.oldValue,
+    addChange.newValue,
+    {
+      resourceType: {
+        oldType: remChange.oldResourceType,
+        newType: addChange.newResourceType,
+      },
+      propertyDiffs: (addChange as any).propertyDiffs,
+      otherDiffs: (addChange as any).otherDiffs,
+    },
+  );
+}
+
+/**
  * returns `ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT` if a resource was deleted, or a change that we cannot short-circuit occured.
  * Returns `ChangeHotswapImpact.IRRELEVANT` if a change that does not impact shortcircuiting occured, such as a metadata change.
  */
-export function isCandidateForHotswapping(change: cfn_diff.ResourceDifference): HotswappableChangeCandidate | ChangeHotswapImpact {
+function isCandidateForHotswapping(change: cfn_diff.ResourceDifference): HotswappableChangeCandidate | ChangeHotswapImpact {
   // a resource has been removed OR a resource has been added; we can't short-circuit that change
   if (!change.newValue || !change.oldValue) {
     return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
@@ -139,6 +214,7 @@ export function isCandidateForHotswapping(change: cfn_diff.ResourceDifference): 
 async function applyAllHotswappableChanges(
   sdk: ISDK, hotswappableChanges: HotswapOperation[],
 ): Promise<void[]> {
+  print(`\n${ICON} hotswapping resources:`);
   return Promise.all(hotswappableChanges.map(hotswapOperation => {
     return applyHotswappableChange(sdk, hotswapOperation);
   }));
@@ -150,8 +226,14 @@ async function applyHotswappableChange(sdk: ISDK, hotswapOperation: HotswapOpera
   sdk.appendCustomUserAgent(customUserAgent);
 
   try {
+    for (const name of hotswapOperation.resourceNames) {
+      print(`   ${ICON} %s`, colors.bold(name));
+    }
     return await hotswapOperation.apply(sdk);
   } finally {
+    for (const name of hotswapOperation.resourceNames) {
+      print(`${ICON} %s %s`, colors.bold(name), colors.green('hotswapped!'));
+    }
     sdk.removeCustomUserAgent(customUserAgent);
   }
 }
