@@ -22,6 +22,12 @@ export const BOOTSTRAP_QUALIFIER_CONTEXT = '@aws-cdk/core:bootstrapQualifier';
 const MIN_BOOTSTRAP_STACK_VERSION = 6;
 
 /**
+ * The minimum bootstrap stack version required
+ * to use the lookup role.
+ */
+const MIN_LOOKUP_ROLE_BOOTSTRAP_STACK_VERSION = 8;
+
+/**
  * Configuration properties for DefaultStackSynthesizer
  */
 export interface DefaultStackSynthesizerProps {
@@ -453,7 +459,11 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
       requiresBootstrapStackVersion: MIN_BOOTSTRAP_STACK_VERSION,
       bootstrapStackVersionSsmParameter: this.bootstrapStackVersionSsmParameter,
       additionalDependencies: [artifactId],
-      lookupRoleArn: this.lookupRoleArn,
+      lookupRole: this.lookupRoleArn ? {
+        arn: this.lookupRoleArn,
+        requiresBootstrapStackVersion: MIN_LOOKUP_ROLE_BOOTSTRAP_STACK_VERSION,
+        bootstrapStackVersionSsmParameter: this.bootstrapStackVersionSsmParameter,
+      } : undefined,
     });
   }
 

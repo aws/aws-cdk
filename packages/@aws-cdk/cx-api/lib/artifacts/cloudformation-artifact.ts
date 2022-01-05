@@ -5,32 +5,6 @@ import { CloudArtifact } from '../cloud-artifact';
 import { CloudAssembly } from '../cloud-assembly';
 import { Environment, EnvironmentUtils } from '../environment';
 
-/**
- * Information needed to access an IAM role created
- * as part of the bootstrap process
- */
-export interface BootstrapRole {
-  /**
-   * The ARN of the IAM role created as part of bootrapping
-   * e.g. lookupRoleArn
-   */
-  readonly arn: string;
-
-  /**
-   * Version of bootstrap stack required to use this role
-   *
-   * @default - No bootstrap stack required
-   */
-  readonly requiresBootstrapStackVersion?: number;
-
-  /**
-   * Name of SSM parameter with bootstrap stack version
-   *
-   * @default - Discover SSM parameter by reading stack
-   */
-  readonly bootstrapStackVersionSsmParameter?: string;
-}
-
 export class CloudFormationStackArtifact extends CloudArtifact {
   /**
    * The file name of the template.
@@ -106,7 +80,7 @@ export class CloudFormationStackArtifact extends CloudArtifact {
    *
    * @default - No role is assumed (current credentials are used)
    */
-  public readonly lookupRole?: BootstrapRole;
+  public readonly lookupRole?: cxschema.BootstrapRole;
 
   /**
    * If the stack template has already been included in the asset manifest, its asset URL
@@ -168,12 +142,7 @@ export class CloudFormationStackArtifact extends CloudArtifact {
     this.bootstrapStackVersionSsmParameter = properties.bootstrapStackVersionSsmParameter;
     this.terminationProtection = properties.terminationProtection;
     this.validateOnSynth = properties.validateOnSynth;
-    this.lookupRole = properties.lookupRoleArn ? {
-      arn: properties.lookupRoleArn,
-      // the lookup role was given ReadOnlyAccess in bootstrap version 8
-      requiresBootstrapStackVersion: 8,
-      bootstrapStackVersionSsmParameter: properties.bootstrapStackVersionSsmParameter,
-    } : undefined;
+    this.lookupRole = properties.lookupRole;
 
     this.stackName = properties.stackName || artifactId;
     this.assets = this.findMetadataByType(cxschema.ArtifactMetadataEntryType.ASSET).map(e => e.data as cxschema.AssetMetadataEntry);

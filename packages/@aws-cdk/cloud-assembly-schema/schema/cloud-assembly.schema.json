@@ -307,9 +307,9 @@
                     "description": "The role that is passed to CloudFormation to execute the change set (Default - No role is passed (currently assumed role/credentials are used))",
                     "type": "string"
                 },
-                "lookupRoleArn": {
+                "lookupRole": {
                     "description": "The role to use to look up values from the target AWS account (Default - No role is assumed (current credentials are used))",
-                    "type": "string"
+                    "$ref": "#/definitions/BootstrapRole"
                 },
                 "stackTemplateAssetObjectUrl": {
                     "description": "If the stack template has already been included in the asset manifest, its asset URL (Default - Not uploaded yet, upload just before deploying)",
@@ -330,6 +330,27 @@
             },
             "required": [
                 "templateFile"
+            ]
+        },
+        "BootstrapRole": {
+            "description": "Information needed to access an IAM role created\nas part of the bootstrap process",
+            "type": "object",
+            "properties": {
+                "arn": {
+                    "description": "The ARN of the IAM role created as part of bootrapping\ne.g. lookupRoleArn",
+                    "type": "string"
+                },
+                "requiresBootstrapStackVersion": {
+                    "description": "Version of bootstrap stack required to use this role (Default - No bootstrap stack required)",
+                    "type": "number"
+                },
+                "bootstrapStackVersionSsmParameter": {
+                    "description": "Name of SSM parameter with bootstrap stack version (Default - Discover SSM parameter by reading stack)",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "arn"
             ]
         },
         "AssetManifestProperties": {
