@@ -49,7 +49,7 @@ describe('general validation', () => {
       const stack = new cdk.Stack();
       const pipeline = new Pipeline(stack, 'Pipeline');
 
-      expect(cdk.ConstructNode.validate(pipeline.node).length).toEqual(1);
+      expect(pipeline.node.validate().length).toEqual(1);
 
 
     });
@@ -68,7 +68,7 @@ describe('general validation', () => {
         ],
       });
 
-      expect(cdk.ConstructNode.validate(pipeline.node).length).toEqual(1);
+      expect(pipeline.node.validate().length).toEqual(1);
 
 
     });
