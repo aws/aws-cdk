@@ -14,6 +14,34 @@ const ExpectedBucketPolicyProperties = {
   PolicyDocument: {
     Statement: [
       {
+        Action: 's3:*',
+        Condition: {
+          Bool: { 'aws:SecureTransport': 'false' },
+        },
+        Effect: 'Deny',
+        Principal: {
+          AWS: '*',
+        },
+        Resource: {
+          'Fn::GetAtt': [
+            'MyAmazingCloudTrailS3A580FE27',
+            'Arn',
+          ],
+          'Fn::Join': [
+            '',
+            [
+              {
+                'Fn::GetAtt': [
+                  'MyAmazingCloudTrailS3A580FE27',
+                  'Arn',
+                ],
+              },
+              '/*',
+            ],
+          ],
+        },
+      },
+      {
         Action: 's3:GetBucketAcl',
         Effect: 'Allow',
         Principal: {
