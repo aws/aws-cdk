@@ -218,7 +218,7 @@ export class SelfManagedKafkaEventSource extends StreamEventSource {
         authType = lambda.SourceAccessConfigurationType.BASIC_AUTH;
         break;
       case AuthenticationMethod.CLIENT_CERTIFICATE_TLS_AUTH:
-        authType = lambda.SourceAccessConfigurationType.of(AuthenticationMethod.CLIENT_CERTIFICATE_TLS_AUTH);
+        authType = lambda.SourceAccessConfigurationType.CLIENT_CERTIFICATE_TLS_AUTH;
         break;
       case AuthenticationMethod.SASL_SCRAM_256_AUTH:
         authType = lambda.SourceAccessConfigurationType.SASL_SCRAM_256_AUTH;
