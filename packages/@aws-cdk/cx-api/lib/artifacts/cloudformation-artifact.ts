@@ -5,6 +5,10 @@ import { CloudArtifact } from '../cloud-artifact';
 import { CloudAssembly } from '../cloud-assembly';
 import { Environment, EnvironmentUtils } from '../environment';
 
+/**
+ * Information needed to access an IAM role created
+ * as part of the bootstrap process
+ */
 export interface BootstrapRole {
   /**
    * The ARN of the IAM role created as part of bootrapping
