@@ -667,9 +667,7 @@ describe('CloudFormation Pipeline Actions', () => {
         'PolicyDocument': {
           'Statement': [
             {
-              'Action': [
-                's3:*',
-              ],
+              'Action': 's3:*',
               'Condition': {
                 'Bool': { 'aws:SecureTransport': 'false' },
               },
