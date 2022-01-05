@@ -1634,6 +1634,9 @@ Object {
         "Artifacts": Object {
           "Type": "CODEPIPELINE",
         },
+        "Cache": Object {
+          "Type": "NO_CACHE",
+        },
         "EncryptionKey": Object {
           "Fn::GetAtt": Array [
             "Key961B73FD",

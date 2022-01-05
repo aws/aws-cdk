@@ -362,7 +362,8 @@ and that you have the necessary IAM permissions to update the resources that are
 Hotswapping is currently supported for the following changes
 (additional changes will be supported in the future):
 
-- Code asset changes of AWS Lambda functions.
+- Code asset and tag changes of AWS Lambda functions.
+- AWS Lambda Versions and Aliases changes.
 - Definition changes of AWS Step Functions State Machines.
 - Container asset changes of AWS ECS Services.
 - Website asset changes of AWS S3 Bucket Deployments.

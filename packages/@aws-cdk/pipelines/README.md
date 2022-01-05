@@ -11,6 +11,18 @@
 
 A construct library for painless Continuous Delivery of CDK applications.
 
+CDK Pipelines is an *opinionated construct library*. It is purpose-built to
+deploy one or more copies of your CDK applications using CloudFormation with a
+minimal amount of effort on your part. It is *not* intended to support arbitrary
+deployment pipelines, and very specifically it is not built to use CodeDeploy to
+applications to instances, or deploy your custom-built ECR images to an ECS
+cluster directly: use CDK file assets with CloudFormation Init for instances, or
+CDK container assets for ECS clusters instead.
+
+Give the CDK Pipelines way of doing things a shot first: you might find it does
+everything you need. If you want or need more control, we recommend you drop
+down to using the `aws-codepipeline` construct library directly.
+
 > This module contains two sets of APIs: an **original** and a **modern** version of
 CDK Pipelines. The *modern* API has been updated to be easier to work with and
 customize, and will be the preferred API going forward. The *original* version
@@ -551,12 +563,33 @@ pipeline.addStage(prod, {
     stack: prod.stack1,
     pre: [new pipelines.ManualApprovalStep('Pre-Stack Check')], // Executed before stack is prepared
     changeSet: [new pipelines.ManualApprovalStep('ChangeSet Approval')], // Executed after stack is prepared but before the stack is deployed
-    post: [new pipelines.ManualApprovalStep('Post-Deploy Check')], // Executed after staack is deployed
+    post: [new pipelines.ManualApprovalStep('Post-Deploy Check')], // Executed after stack is deployed
   }, {
     stack: prod.stack2,
-    post: [new pipelines.ManualApprovalStep('Post-Deploy Check')], // Executed after staack is deployed
+    post: [new pipelines.ManualApprovalStep('Post-Deploy Check')], // Executed after stack is deployed
   }],
 });
+```
+
+If you specify multiple steps, they will execute in parallel by default. You can add dependencies between them
+to if you wish to specify an order. To add a dependency, call `step.addStepDependency()`:
+
+```ts
+const firstStep = new pipelines.ManualApprovalStep('A');
+const secondStep = new pipelines.ManualApprovalStep('B');
+secondStep.addStepDependency(firstStep);
+```
+
+For convenience, `Step.sequence()` will take an array of steps and dependencies between adjacent steps,
+so that the whole list executes in order:
+
+```ts
+// Step A will depend on step B and step B will depend on step C
+const orderedSteps = pipelines.Step.sequence([
+  new pipelines.ManualApprovalStep('A'),
+  new pipelines.ManualApprovalStep('B'),
+  new pipelines.ManualApprovalStep('C'),
+]);
 ```
 
 #### Using CloudFormation Stack Outputs in approvals
@@ -654,6 +687,7 @@ new pipelines.CodeBuildStep('Synth', {
   buildEnvironment: {
     computeType: codebuild.ComputeType.LARGE,
   },
+  timeout: Duration.minutes(90),
 
   // Control Elastic Network Interface creation
   vpc: vpc,
@@ -728,7 +762,7 @@ Here's an example that adds a Jenkins step:
 ```ts
 class MyJenkinsStep extends pipelines.Step implements pipelines.ICodePipelineActionFactory {
   constructor(
-    private readonly provider: cpactions.JenkinsProvider, 
+    private readonly provider: cpactions.JenkinsProvider,
     private readonly input: pipelines.FileSet,
   ) {
     super('MyJenkinsStep');
@@ -1392,7 +1426,7 @@ is not able to read the cloud assembly produced by the new framework version.
 
 Solution: change the `cliVersion` first, commit, push and deploy, and only then
 change the framework version.
- 
+
 We recommend you avoid specifying the `cliVersion` parameter at all. By default
 the pipeline will use the latest CLI version, which will support all cloud assembly
 versions.
