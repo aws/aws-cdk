@@ -418,9 +418,9 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
     // Try some specific common classes first.
     // use duck-typing, not instance of
     // @deprecated: after v2, we can change these to 'instanceof'
-    if ('conditions' in principal) {
+    if ('wrapped' in principal) {
       // eslint-disable-next-line dot-notation
-      principal = principal['principal'];
+      principal = principal['wrapped'];
     }
 
     if ('accountId' in principal) {

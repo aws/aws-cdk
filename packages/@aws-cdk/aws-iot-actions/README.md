@@ -25,7 +25,9 @@ Currently supported are:
 - Put objects to a S3 bucket
 - Put logs to CloudWatch Logs
 - Capture CloudWatch metrics
+- Change state for a CloudWatch alarm
 - Put records to Kinesis Data Firehose stream
+- Send messages to SQS queues
 
 ## Invoke a Lambda function
 
@@ -149,6 +151,38 @@ const topicRule = new iot.TopicRule(this, 'TopicRule', {
 });
 ```
 
+## Change the state of an Amazon CloudWatch alarm
+
+The code snippet below creates an AWS IoT Rule that changes the state of an Amazon CloudWatch alarm when it is triggered:
+
+```ts
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
+import * as iot from '@aws-cdk/aws-iot';
+import * as actions from '@aws-cdk/aws-iot-actions';
+
+const metric = new cloudwatch.Metric({
+  namespace: 'MyNamespace',
+  metricName: 'MyMetric',
+  dimensions: { MyDimension: 'MyDimensionValue' },
+});
+const alarm = new cloudwatch.Alarm(this, 'MyAlarm', {
+  metric: metric,
+  threshold: 100,
+  evaluationPeriods: 3,
+  datapointsToAlarm: 2,
+});
+
+const topicRule = new iot.TopicRule(this, 'TopicRule', {
+  sql: iot.IotSql.fromStringAsVer20160323("SELECT topic(2) as device_id FROM 'device/+/data'"),
+  actions: [
+    new actions.CloudWatchSetAlarmStateAction(alarm, {
+      reason: 'AWS Iot Rule action is triggered',
+      alarmStateToSet: cloudwatch.AlarmState.ALARM,
+    }),
+  ],
+});
+```
+
 ## Put records to Kinesis Data Firehose stream
 
 The code snippet below creates an AWS IoT Rule that put records to Put records
@@ -174,5 +208,29 @@ const topicRule = new iot.TopicRule(this, 'TopicRule', {
       recordSeparator: actions.FirehoseStreamRecordSeparator.NEWLINE,
     }),
   ],
+});
+```
+
+## Send messages to an SQS queue
+
+The code snippet below creates an AWS IoT Rule that send messages
+to an SQS queue when it is triggered:
+
+```ts
+import * as iot from '@aws-cdk/aws-iot';
+import * as actions from '@aws-cdk/aws-iot-actions';
+import * as sqs from '@aws-cdk/aws-sqs';
+
+const queue = new sqs.Queue(this, 'MyQueue');
+
+const topicRule = new iot.TopicRule(this, 'TopicRule', {
+  sql: iot.IotSql.fromStringAsVer20160323(
+    "SELECT topic(2) as device_id, year, month, day FROM 'device/+/data'",
+  ),
+  actions: [
+    new actions.SqsQueueAction(queue, {
+      useBase64: true, // optional property, default is 'false'
+    }),
+  ]
 });
 ```
