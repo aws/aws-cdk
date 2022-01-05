@@ -14,7 +14,6 @@ import { Construct } from '@aws-cdk/core';
  * Properties for a Kafka event source
  */
 export interface KafkaEventSourceProps extends BaseStreamEventSourceProps{
-
   /**
    * The Kafka topic to subscribe to
    */

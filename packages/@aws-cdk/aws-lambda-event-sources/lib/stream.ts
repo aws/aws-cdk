@@ -48,6 +48,7 @@ export interface BaseStreamEventSourceProps{
    */
   readonly enabled?: boolean;
 }
+
 /**
  * The set of properties for event sources that follow the streaming model,
  * such as, Dynamo, Kinesis.
@@ -70,7 +71,6 @@ export interface StreamEventSourceProps extends BaseStreamEventSourceProps {
    */
   readonly maxRecordAge?: Duration;
 
-
   /**
    * Maximum number of retry attempts
    * Valid Range:
@@ -80,7 +80,6 @@ export interface StreamEventSourceProps extends BaseStreamEventSourceProps {
    * @default - retry until the record expires
    */
   readonly retryAttempts?: number;
-
 
   /**
    * The number of batches to process from each shard concurrently.
@@ -92,7 +91,6 @@ export interface StreamEventSourceProps extends BaseStreamEventSourceProps {
    */
   readonly parallelizationFactor?: number;
 
-
   /**
    * Allow functions to return partially successful responses for a batch of records.
    *
@@ -101,7 +99,6 @@ export interface StreamEventSourceProps extends BaseStreamEventSourceProps {
    * @default false
    */
   readonly reportBatchItemFailures?: boolean;
-
 
   /**
    * The size of the tumbling windows to group records sent to DynamoDB or Kinesis
