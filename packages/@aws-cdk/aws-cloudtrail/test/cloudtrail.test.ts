@@ -22,24 +22,27 @@ const ExpectedBucketPolicyProperties = {
         Principal: {
           AWS: '*',
         },
-        Resource: {
-          'Fn::GetAtt': [
-            'MyAmazingCloudTrailS3A580FE27',
-            'Arn',
-          ],
-          'Fn::Join': [
-            '',
-            [
-              {
-                'Fn::GetAtt': [
-                  'MyAmazingCloudTrailS3A580FE27',
-                  'Arn',
-                ],
-              },
-              '/*',
-            ],
-          ],
-        },
+        Resource: [
+          {
+            'Fn::GetAtt': [
+              'MyAmazingCloudTrailS3A580FE27',
+              'Arn',
+            ]
+          },
+          {
+            'Fn::Join': [
+              '',
+              [{
+                  'Fn::GetAtt': [
+                    'MyAmazingCloudTrailS3A580FE27',
+                    'Arn',
+                  ],
+                },
+                '/*',
+              ],
+            ]
+          },
+        ],
       },
       {
         Action: 's3:GetBucketAcl',
