@@ -7,6 +7,7 @@ export * from './scheduled-action';
 export * from './step-scaling-action';
 export * from './step-scaling-policy';
 export * from './target-tracking-scaling-policy';
+export * from './termination-policy';
 export * from './volume';
 
 // AWS::AutoScaling CloudFormation Resources:
