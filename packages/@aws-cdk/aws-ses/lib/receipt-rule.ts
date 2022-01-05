@@ -7,10 +7,6 @@ import { IReceiptRuleAction } from './receipt-rule-action';
 import { IReceiptRuleSet } from './receipt-rule-set';
 import { CfnReceiptRule } from './ses.generated';
 
-// v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
-// eslint-disable-next-line
-import { Construct as CoreConstruct } from '@aws-cdk/core';
-
 /**
  * A receipt rule.
  */
@@ -169,7 +165,7 @@ export interface DropSpamReceiptRuleProps extends ReceiptRuleProps {
  *
  * @see https://docs.aws.amazon.com/ses/latest/DeveloperGuide/receiving-email-action-lambda-example-functions.html
  */
-export class DropSpamReceiptRule extends CoreConstruct {
+export class DropSpamReceiptRule extends Construct {
   public readonly rule: ReceiptRule;
 
   constructor(scope: Construct, id: string, props: DropSpamReceiptRuleProps) {
