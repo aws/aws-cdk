@@ -12,8 +12,6 @@ import {
 // eslint-disable-next-line no-duplicate-imports, import/order
 import { Construct } from 'constructs';
 
-const mappingName = 'AwsDeepLearningContainersRepositoriesAccounts';
-
 /**
  * A CodeBuild GPU image running Linux.
  *
