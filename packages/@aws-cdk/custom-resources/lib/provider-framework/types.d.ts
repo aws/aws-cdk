@@ -80,6 +80,15 @@ interface OnEventResponse {
    * Custom fields returned from OnEvent will be passed to IsComplete.
    */
   readonly [key: string]: any;
+
+  /**
+   * Whether to mask the output of the custom resource when retrieved
+   * by using the `Fn::GetAtt` function. If set to `true`, all returned
+   * values are masked with asterisks (*****).
+   *
+   * @default false
+   */
+  readonly NoEcho?: boolean;
 }
 
 /**

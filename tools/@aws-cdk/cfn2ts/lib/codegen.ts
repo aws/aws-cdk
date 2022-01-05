@@ -1,4 +1,4 @@
-import { schema, cfnLintAnnotations } from '@aws-cdk/cfnspec';
+import { schema, cfnLintAnnotations, typeDocs } from '@aws-cdk/cfnspec';
 import { CodeMaker } from 'codemaker';
 import * as genspec from './genspec';
 import { itemTypeNames, PropertyAttributeName, scalarTypeNames, SpecName } from './spec-utils';
@@ -115,8 +115,9 @@ export default class CodeGenerator {
     const name = genspec.CodeName.forResourceProperties(resourceContext);
 
     this.docLink(spec.Documentation,
-      `Properties for defining a \`${resourceContext.specName!.fqn}\``,
+      `Properties for defining a \`${resourceContext.className}\``,
       '',
+      '@struct', // Make this interface ALWAYS be treated as a struct, event if it's named `IPSet...` or something...
       '@stability external');
     this.code.openBlock(`export interface ${name.className}`);
 
@@ -144,15 +145,17 @@ export default class CodeGenerator {
     container: Container): Dictionary<string> {
     const propertyMap: Dictionary<string> = {};
 
+    const docs = typeDocs(resource.specName?.fqn ?? '');
+
     Object.keys(propertiesSpec).sort(propertyComparator).forEach(propName => {
       this.code.line();
       const propSpec = propertiesSpec[propName];
-      const additionalDocs = resource.specName!.relativeName(propName).fqn;
+      const additionalDocs = docs.properties[propName] || quoteCode(resource.specName!.relativeName(propName).fqn);
       const newName = this.emitProperty({
         context: resource,
         propName,
         spec: propSpec,
-        additionalDocs: quoteCode(additionalDocs),
+        additionalDocs,
       },
       container,
       );
@@ -192,15 +195,20 @@ export default class CodeGenerator {
       this.code.line();
     }
 
+    const docs = typeDocs(cfnName);
+
     //
     // The class declaration representing this Resource
     //
 
-    this.docLink(spec.Documentation,
+    this.docLink(spec.Documentation, ...[
       `A CloudFormation \`${cfnName}\``,
       '',
+      ...docs.description.split('\n'),
+      '',
       `@cloudformationResource ${cfnName}`,
-      '@stability external');
+      '@stability external',
+    ]);
     this.openClass(resourceName, RESOURCE_BASE_CLASS);
 
     //
@@ -271,7 +279,9 @@ export default class CodeGenerator {
 
         this.code.line();
 
-        this.docLink(undefined, `@cloudformationAttribute ${attributeName}`);
+        this.docLink(undefined,
+          docs.attributes?.[attributeName] ?? '',
+          `@cloudformationAttribute ${attributeName}`);
         const attr = genspec.attributeDefinition(attributeName, attributeSpec);
 
         this.code.line(`public readonly ${attr.propertyName}: ${attr.attributeType};`);
@@ -847,7 +857,15 @@ export default class CodeGenerator {
     this.code.line();
     this.beginNamespace(typeName);
 
-    this.docLink(propTypeSpec.Documentation, '@stability external');
+    const docs = typeDocs(resourceContext.specName?.fqn ?? '', (typeName.specName as PropertyAttributeName | undefined)?.propAttrName);
+
+    this.docLink(
+      propTypeSpec.Documentation,
+      docs.description,
+      '',
+      '@struct', // Make this interface ALWAYS be treated as a struct, event if it's named `IPSet...` or something...
+      '@stability external',
+    );
     /*
     if (!propTypeSpec.Properties || Object.keys(propTypeSpec.Properties).length === 0) {
       this.code.line('// eslint-disable-next-line somethingsomething | A genuine empty-object type');
@@ -855,10 +873,11 @@ export default class CodeGenerator {
     */
     this.code.openBlock(`export interface ${typeName.className}`);
     const conversionTable: Dictionary<string> = {};
+
     if (propTypeSpec.Properties) {
       Object.keys(propTypeSpec.Properties).forEach(propName => {
         const propSpec = propTypeSpec.Properties[propName];
-        const additionalDocs = quoteCode(`${typeName.fqn}.${propName}`);
+        const additionalDocs = docs.properties[propName] || quoteCode(`${typeName.fqn}.${propName}`);
         const newName = this.emitInterfaceProperty({
           context: resourceContext,
           propName,
@@ -950,12 +969,37 @@ export default class CodeGenerator {
   private docLink(link: string | undefined, ...before: string[]): void {
     if (!link && before.length === 0) { return; }
     this.code.line('/**');
-    before.forEach(line => this.code.line(` * ${line}`.trimRight()));
+    before.flatMap(x => x.split('\n')).forEach(line => this.code.line(` * ${escapeDocText(line)}`.trimRight()));
     if (link) {
+      if (before.length > 0) {
+        this.code.line(' *');
+      }
       this.code.line(` * @link ${link}`);
     }
     this.code.line(' */');
-    return;
+
+    /**
+     * Add escapes to the doc text to avoid text that breaks the parsing of the string
+     *
+     * We currently escape the following sequences:
+     *
+     * - <asterisk><slash> (* /): if this occurs somewhere in the doc text, it
+     *   will end the block comment in the wrong place. Break up those
+     *   characters by inserting a space. Would have loved to use a zero-width space,
+     *   but I'm very very afraid it will break codegen in subtle ways, and just using
+     *   a space feels safer.
+     * - \u: if this occurs in Java code, the Java compiler will try and parse the
+     *   following 4 characters as a unicode code point, and fail if the 4 characters
+     *   aren't hex digits. This is formally a bug in pacmak (it should do the escaping
+     *   while rendering, https://github.com/aws/jsii/issues/3302), but to
+     *   expedite the build fixing it here as well. Replace with '\ u' (tried using
+     *   `\\u` but for some reason that also doesn't carry over to codegen).
+     */
+    function escapeDocText(x: string) {
+      x = x.replace(/\*\//g, '* /');
+      x = x.replace(/\\u/g, '\\ u');
+      return x;
+    }
   }
 }
 
