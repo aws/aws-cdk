@@ -31,7 +31,8 @@ test('default properties', () => {
 test('with a dead letter queue', () => {
   const stack = new Stack();
   const dlq = new sqs.Queue(stack, 'DLQ');
-  new sqs.Queue(stack, 'Queue', { deadLetterQueue: { queue: dlq, maxReceiveCount: 3 } });
+  const dlqProps = { queue: dlq, maxReceiveCount: 3 };
+  const queue = new sqs.Queue(stack, 'Queue', { deadLetterQueue: dlqProps });
 
   expect(stack).toMatchTemplate({
     'Resources': {
@@ -58,6 +59,8 @@ test('with a dead letter queue', () => {
       },
     },
   });
+
+  expect(queue.deadLetterQueue).toEqual(dlqProps);
 });
 
 test('message retention period must be between 1 minute to 14 days', () => {

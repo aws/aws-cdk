@@ -6,12 +6,13 @@ import { Resource, Duration, Token, Annotations, RemovalPolicy, IResource, Stack
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { IClusterEngine } from './cluster-engine';
+import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
 import { IParameterGroup } from './parameter-group';
 import { DATA_API_ACTIONS } from './perms';
 import { defaultDeletionProtection, DEFAULT_PASSWORD_EXCLUDE_CHARS, renderCredentials } from './private/util';
-import { Credentials, RotationMultiUserOptions, RotationSingleUserOptions } from './props';
-import { CfnDBCluster } from './rds.generated';
+import { Credentials, RotationMultiUserOptions, RotationSingleUserOptions, SnapshotCredentials } from './props';
+import { CfnDBCluster, CfnDBClusterProps } from './rds.generated';
 import { ISubnetGroup, SubnetGroup } from './subnet-group';
 
 /**
@@ -49,21 +50,13 @@ export interface IServerlessCluster extends IResource, ec2.IConnectable, secrets
   grantDataApiAccess(grantee: iam.IGrantable): iam.Grant
 }
 /**
- *  Properties to configure an Aurora Serverless Cluster
- *
+ *  Common Properties to configure new Aurora Serverless Cluster or Aurora Serverless Cluster from snapshot
  */
-export interface ServerlessClusterProps {
+interface ServerlessClusterNewProps {
   /**
    * What kind of database to start
    */
   readonly engine: IClusterEngine;
-
-  /**
-   * Credentials for the administrative user
-   *
-   * @default - A username of 'admin' and SecretsManager-generated password
-   */
-  readonly credentials?: Credentials;
 
   /**
    * An optional identifier for the cluster
@@ -139,13 +132,6 @@ export interface ServerlessClusterProps {
    * @default - a new security group is created.
    */
   readonly securityGroups?: ec2.ISecurityGroup[];
-
-  /**
-   * The KMS key for storage encryption.
-   *
-   * @default - the default master key will be used for storage encryption
-   */
-  readonly storageEncryptionKey?: kms.IKey;
 
   /**
    * Additional parameters to pass to the database engine
@@ -355,54 +341,24 @@ abstract class ServerlessClusterBase extends Resource implements IServerlessClus
  * Create an Aurora Serverless Cluster
  *
  * @resource AWS::RDS::DBCluster
- *
  */
-export class ServerlessCluster extends ServerlessClusterBase {
-
-  /**
-   * Import an existing DatabaseCluster from properties
-   */
-  public static fromServerlessClusterAttributes(scope: Construct, id: string,
-    attrs: ServerlessClusterAttributes): IServerlessCluster {
-
-    return new ImportedServerlessCluster(scope, id, attrs);
-  }
-
-  public readonly clusterIdentifier: string;
-  public readonly clusterEndpoint: Endpoint;
-  public readonly clusterReadEndpoint: Endpoint;
+abstract class ServerlessClusterNew extends ServerlessClusterBase {
   public readonly connections: ec2.Connections;
+  protected readonly newCfnProps: CfnDBClusterProps;
+  protected readonly securityGroups: ec2.ISecurityGroup[];
+  protected enableDataApi?: boolean;
 
-  public readonly secret?: secretsmanager.ISecret;
-
-  protected enableDataApi?: boolean
-
-  private readonly subnetGroup: ISubnetGroup;
-  private readonly vpc: ec2.IVpc;
-  private readonly vpcSubnets?: ec2.SubnetSelection;
-
-  private readonly singleUserRotationApplication: secretsmanager.SecretRotationApplication;
-  private readonly multiUserRotationApplication: secretsmanager.SecretRotationApplication;
-
-  constructor(scope: Construct, id: string, props: ServerlessClusterProps) {
+  constructor(scope: Construct, id: string, props: ServerlessClusterNewProps) {
     super(scope, id);
 
-    this.vpc = props.vpc;
-    this.vpcSubnets = props.vpcSubnets;
-
-    this.singleUserRotationApplication = props.engine.singleUserRotationApplication;
-    this.multiUserRotationApplication = props.engine.multiUserRotationApplication;
-
-    this.enableDataApi = props.enableDataApi;
-
-    const { subnetIds } = this.vpc.selectSubnets(this.vpcSubnets);
+    const { subnetIds } = props.vpc.selectSubnets(props.vpcSubnets);
 
     // Cannot test whether the subnets are in different AZs, but at least we can test the amount.
     if (subnetIds.length < 2) {
       Annotations.of(this).addError(`Cluster requires at least 2 subnets, got ${subnetIds.length}`);
     }
 
-    this.subnetGroup = props.subnetGroup ?? new SubnetGroup(this, 'Subnets', {
+    const subnetGroup = props.subnetGroup ?? new SubnetGroup(this, 'Subnets', {
       description: `Subnets for ${id} database`,
       vpc: props.vpc,
       vpcSubnets: props.vpcSubnets,
@@ -416,9 +372,6 @@ export class ServerlessCluster extends ServerlessClusterBase {
       }
     }
 
-    const credentials = renderCredentials(this, props.engine, props.credentials);
-    const secret = credentials.secret;
-
     // bind the engine to the Cluster
     const clusterEngineBindConfig = props.engine.bindToCluster(this, {
       parameterGroup: props.parameterGroup,
@@ -426,10 +379,10 @@ export class ServerlessCluster extends ServerlessClusterBase {
     const clusterParameterGroup = props.parameterGroup ?? clusterEngineBindConfig.parameterGroup;
     const clusterParameterGroupConfig = clusterParameterGroup?.bindToCluster({});
 
-    const securityGroups = props.securityGroups ?? [
+    this.securityGroups = props.securityGroups ?? [
       new ec2.SecurityGroup(this, 'SecurityGroup', {
         description: 'RDS security group',
-        vpc: this.vpc,
+        vpc: props.vpc,
       }),
     ];
 
@@ -437,23 +390,117 @@ export class ServerlessCluster extends ServerlessClusterBase {
       ? props.clusterIdentifier?.toLowerCase()
       : props.clusterIdentifier;
 
-    const cluster = new CfnDBCluster(this, 'Resource', {
+    this.newCfnProps = {
       backupRetentionPeriod: props.backupRetention?.toDays(),
       databaseName: props.defaultDatabaseName,
       dbClusterIdentifier: clusterIdentifier,
       dbClusterParameterGroupName: clusterParameterGroupConfig?.parameterGroupName,
-      dbSubnetGroupName: this.subnetGroup.subnetGroupName,
+      dbSubnetGroupName: subnetGroup.subnetGroupName,
       deletionProtection: defaultDeletionProtection(props.deletionProtection, props.removalPolicy),
       engine: props.engine.engineType,
       engineVersion: props.engine.engineVersion?.fullVersion,
       engineMode: 'serverless',
       enableHttpEndpoint: Lazy.any({ produce: () => this.enableDataApi }),
-      kmsKeyId: props.storageEncryptionKey?.keyArn,
-      masterUsername: credentials.username,
-      masterUserPassword: credentials.password?.toString(),
       scalingConfiguration: props.scaling ? this.renderScalingConfiguration(props.scaling) : undefined,
       storageEncrypted: true,
-      vpcSecurityGroupIds: securityGroups.map(sg => sg.securityGroupId),
+      vpcSecurityGroupIds: this.securityGroups.map(sg => sg.securityGroupId),
+    };
+
+    this.connections = new ec2.Connections({
+      securityGroups: this.securityGroups,
+      defaultPort: ec2.Port.tcp(Lazy.number({ produce: () => this.clusterEndpoint.port })),
+    });
+  }
+
+  private renderScalingConfiguration(options: ServerlessScalingOptions): CfnDBCluster.ScalingConfigurationProperty {
+    const minCapacity = options.minCapacity;
+    const maxCapacity = options.maxCapacity;
+
+    if (minCapacity && maxCapacity && minCapacity > maxCapacity) {
+      throw new Error('maximum capacity must be greater than or equal to minimum capacity.');
+    }
+
+    const secondsToAutoPause = options.autoPause?.toSeconds();
+    if (secondsToAutoPause && (secondsToAutoPause < 300 || secondsToAutoPause > 86400)) {
+      throw new Error('auto pause time must be between 5 minutes and 1 day.');
+    }
+
+    return {
+      autoPause: (secondsToAutoPause === 0) ? false : true,
+      minCapacity: options.minCapacity,
+      maxCapacity: options.maxCapacity,
+      secondsUntilAutoPause: (secondsToAutoPause === 0) ? undefined : secondsToAutoPause,
+    };
+  }
+}
+
+/**
+ * Properties for a new Aurora Serverless Cluster
+ */
+export interface ServerlessClusterProps extends ServerlessClusterNewProps {
+  /**
+   * Credentials for the administrative user
+   *
+   * @default - A username of 'admin' and SecretsManager-generated password
+   */
+  readonly credentials?: Credentials;
+
+  /**
+   * The KMS key for storage encryption.
+   *
+   * @default - the default master key will be used for storage encryption
+   */
+  readonly storageEncryptionKey?: kms.IKey;
+}
+
+/**
+ * Create an Aurora Serverless Cluster
+ *
+ * @resource AWS::RDS::DBCluster
+ *
+ */
+export class ServerlessCluster extends ServerlessClusterNew {
+  /**
+   * Import an existing DatabaseCluster from properties
+   */
+  public static fromServerlessClusterAttributes(
+    scope: Construct, id: string, attrs: ServerlessClusterAttributes,
+  ): IServerlessCluster {
+
+    return new ImportedServerlessCluster(scope, id, attrs);
+  }
+
+  public readonly clusterIdentifier: string;
+  public readonly clusterEndpoint: Endpoint;
+  public readonly clusterReadEndpoint: Endpoint;
+
+  public readonly secret?: secretsmanager.ISecret;
+
+  private readonly vpc: ec2.IVpc;
+  private readonly vpcSubnets?: ec2.SubnetSelection;
+
+  private readonly singleUserRotationApplication: secretsmanager.SecretRotationApplication;
+  private readonly multiUserRotationApplication: secretsmanager.SecretRotationApplication;
+
+  constructor(scope: Construct, id: string, props: ServerlessClusterProps) {
+    super(scope, id, props);
+
+    this.vpc = props.vpc;
+    this.vpcSubnets = props.vpcSubnets;
+
+    this.singleUserRotationApplication = props.engine.singleUserRotationApplication;
+    this.multiUserRotationApplication = props.engine.multiUserRotationApplication;
+
+    this.enableDataApi = props.enableDataApi;
+
+    const credentials = renderCredentials(this, props.engine, props.credentials);
+    const secret = credentials.secret;
+
+    const cluster = new CfnDBCluster(this, 'Resource', {
+      ...this.newCfnProps,
+      masterUsername: credentials.username,
+      masterUserPassword: credentials.password?.toString(),
+      kmsKeyId: props.storageEncryptionKey?.keyArn,
     });
 
     this.clusterIdentifier = cluster.ref;
@@ -462,10 +509,6 @@ export class ServerlessCluster extends ServerlessClusterBase {
     const portAttribute = Token.asNumber(cluster.attrEndpointPort);
     this.clusterEndpoint = new Endpoint(cluster.attrEndpointAddress, portAttribute);
     this.clusterReadEndpoint = new Endpoint(cluster.attrReadEndpointAddress, portAttribute);
-    this.connections = new ec2.Connections({
-      securityGroups,
-      defaultPort: ec2.Port.tcp(this.clusterEndpoint.port),
-    });
 
     cluster.applyRemovalPolicy(props.removalPolicy ?? RemovalPolicy.SNAPSHOT);
 
@@ -516,27 +559,6 @@ export class ServerlessCluster extends ServerlessClusterBase {
       target: this,
     });
   }
-
-  private renderScalingConfiguration(options: ServerlessScalingOptions): CfnDBCluster.ScalingConfigurationProperty {
-    const minCapacity = options.minCapacity;
-    const maxCapacity = options.maxCapacity;
-
-    if (minCapacity && maxCapacity && minCapacity > maxCapacity) {
-      throw new Error('maximum capacity must be greater than or equal to minimum capacity.');
-    }
-
-    const secondsToAutoPause = options.autoPause?.toSeconds();
-    if (secondsToAutoPause && (secondsToAutoPause < 300 || secondsToAutoPause > 86400)) {
-      throw new Error('auto pause time must be between 5 minutes and 1 day.');
-    }
-
-    return {
-      autoPause: (secondsToAutoPause === 0) ? false : true,
-      minCapacity: options.minCapacity,
-      maxCapacity: options.maxCapacity,
-      secondsUntilAutoPause: (secondsToAutoPause === 0) ? undefined : secondsToAutoPause,
-    };
-  }
 }
 
 /**
@@ -582,5 +604,80 @@ class ImportedServerlessCluster extends ServerlessClusterBase implements IServer
       throw new Error('Cannot access `clusterReadEndpoint` of an imported cluster without a readerEndpointAddress and port');
     }
     return this._clusterReadEndpoint;
+  }
+}
+
+/**
+ * Properties for ``ServerlessClusterFromSnapshot``
+ */
+export interface ServerlessClusterFromSnapshotProps extends ServerlessClusterNewProps {
+  /**
+   * The identifier for the DB instance snapshot or DB cluster snapshot to restore from.
+   * You can use either the name or the Amazon Resource Name (ARN) to specify a DB cluster snapshot.
+   * However, you can use only the ARN to specify a DB instance snapshot.
+   */
+  readonly snapshotIdentifier: string;
+
+  /**
+   * Master user credentials.
+   *
+   * Note - It is not possible to change the master username for a snapshot;
+   * however, it is possible to provide (or generate) a new password.
+   *
+   * @default - The existing username and password from the snapshot will be used.
+   */
+  readonly credentials?: SnapshotCredentials;
+}
+
+/**
+ * A Aurora Serverless Cluster restored from a snapshot.
+ *
+ * @resource AWS::RDS::DBCluster
+ */
+export class ServerlessClusterFromSnapshot extends ServerlessClusterNew {
+  public readonly clusterIdentifier: string;
+  public readonly clusterEndpoint: Endpoint;
+  public readonly clusterReadEndpoint: Endpoint;
+  public readonly secret?: secretsmanager.ISecret;
+
+  constructor(scope: Construct, id: string, props: ServerlessClusterFromSnapshotProps) {
+    super(scope, id, props);
+
+    this.enableDataApi = props.enableDataApi;
+
+    let credentials = props.credentials;
+    let secret = credentials?.secret;
+    if (!secret && credentials?.generatePassword) {
+      if (!credentials.username) {
+        throw new Error('`credentials` `username` must be specified when `generatePassword` is set to true');
+      }
+
+      secret = new DatabaseSecret(this, 'Secret', {
+        username: credentials.username,
+        encryptionKey: credentials.encryptionKey,
+        excludeCharacters: credentials.excludeCharacters,
+        replaceOnPasswordCriteriaChanges: credentials.replaceOnPasswordCriteriaChanges,
+        replicaRegions: credentials.replicaRegions,
+      });
+    }
+
+    const cluster = new CfnDBCluster(this, 'Resource', {
+      ...this.newCfnProps,
+      snapshotIdentifier: props.snapshotIdentifier,
+      masterUserPassword: secret?.secretValueFromJson('password')?.toString() ?? credentials?.password?.toString(),
+    });
+
+    this.clusterIdentifier = cluster.ref;
+
+    // create a number token that represents the port of the cluster
+    const portAttribute = Token.asNumber(cluster.attrEndpointPort);
+    this.clusterEndpoint = new Endpoint(cluster.attrEndpointAddress, portAttribute);
+    this.clusterReadEndpoint = new Endpoint(cluster.attrReadEndpointAddress, portAttribute);
+
+    cluster.applyRemovalPolicy(props.removalPolicy ?? RemovalPolicy.SNAPSHOT);
+
+    if (secret) {
+      this.secret = secret.attach(this);
+    }
   }
 }

@@ -223,7 +223,7 @@ class AmplifyAssetDeploymentProvider extends NestedStack {
       {
         entry: path.join(
           __dirname,
-          'asset-deployment-handler/index.ts',
+          'asset-deployment-handler/index.js',
         ),
         runtime: lambda.Runtime.NODEJS_14_X,
         handler: 'onEvent',
@@ -247,7 +247,7 @@ class AmplifyAssetDeploymentProvider extends NestedStack {
       {
         entry: path.join(
           __dirname,
-          'asset-deployment-handler/index.ts',
+          'asset-deployment-handler/index.js',
         ),
         runtime: lambda.Runtime.NODEJS_14_X,
         handler: 'isComplete',

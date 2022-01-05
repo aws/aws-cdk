@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import { Duration, Stack } from '@aws-cdk/core';
 import { Bucket, StorageClass } from '../lib';
 
@@ -15,7 +15,7 @@ describe('rules', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::S3::Bucket', {
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
       LifecycleConfiguration: {
         Rules: [{
           ExpirationInDays: 30,
@@ -23,8 +23,6 @@ describe('rules', () => {
         }],
       },
     });
-
-
   });
 
   test('Can use addLifecycleRule() to add a lifecycle rule', () => {
@@ -38,7 +36,7 @@ describe('rules', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::S3::Bucket', {
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
       LifecycleConfiguration: {
         Rules: [{
           ExpirationInDays: 30,
@@ -46,8 +44,6 @@ describe('rules', () => {
         }],
       },
     });
-
-
   });
 
   test('Bucket with expiration date', () => {
@@ -62,7 +58,7 @@ describe('rules', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::S3::Bucket', {
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
       LifecycleConfiguration: {
         Rules: [{
           ExpirationDate: '2018-01-01T00:00:00',
@@ -70,8 +66,6 @@ describe('rules', () => {
         }],
       },
     });
-
-
   });
 
   test('Bucket with transition rule', () => {
@@ -89,7 +83,7 @@ describe('rules', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::S3::Bucket', {
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
       LifecycleConfiguration: {
         Rules: [{
           Transitions: [{
@@ -100,8 +94,6 @@ describe('rules', () => {
         }],
       },
     });
-
-
   });
 
   test('Noncurrent rule on nonversioned bucket fails', () => {
@@ -124,8 +116,6 @@ describe('rules', () => {
         noncurrentVersionExpiration: Duration.days(10),
       }],
     });
-
-
   });
 
   test('Bucket with expiredObjectDeleteMarker', () => {
@@ -140,7 +130,7 @@ describe('rules', () => {
     });
 
     // THEN
-    expect(stack).toHaveResource('AWS::S3::Bucket', {
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
       LifecycleConfiguration: {
         Rules: [{
           ExpiredObjectDeleteMarker: true,
@@ -148,7 +138,5 @@ describe('rules', () => {
         }],
       },
     });
-
-
   });
 });

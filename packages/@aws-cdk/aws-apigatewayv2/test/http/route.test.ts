@@ -1,4 +1,5 @@
 import { Template } from '@aws-cdk/assertions';
+import { AccountPrincipal, Role } from '@aws-cdk/aws-iam';
 import { Stack, App } from '@aws-cdk/core';
 import {
   HttpApi, HttpAuthorizer, HttpAuthorizerType, HttpConnectionType, HttpIntegrationType, HttpMethod, HttpRoute,
@@ -306,7 +307,261 @@ describe('HttpRoute', () => {
       integration: new DummyIntegration(),
       routeKey: HttpRouteKey.with('/books', HttpMethod.GET),
       authorizer,
-    })).toThrowError('authorizationType should either be JWT, CUSTOM, or NONE');
+    })).toThrowError('authorizationType should either be AWS_IAM, JWT, CUSTOM, or NONE');
+  });
+
+  test('granting invoke', () => {
+    const stack = new Stack();
+    const httpApi = new HttpApi(stack, 'HttpApi');
+    const role = new Role(stack, 'Role', {
+      assumedBy: new AccountPrincipal('111111111111'),
+    });
+
+    const route = new HttpRoute(stack, 'HttpRoute', {
+      httpApi,
+      integration: new DummyIntegration(),
+      routeKey: HttpRouteKey.with('/books', HttpMethod.GET),
+      authorizer: new SomeAuthorizerType('AWS_IAM'),
+    });
+
+    // WHEN
+    route.grantInvoke(role);
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Route', {
+      AuthorizationType: 'AWS_IAM',
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'execute-api:Invoke',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:aws:execute-api:',
+                  { Ref: 'AWS::Region' },
+                  ':',
+                  { Ref: 'AWS::AccountId' },
+                  ':',
+                  { Ref: 'HttpApiF5A9A8A7' },
+                  '/*/GET/books',
+                ],
+              ],
+            },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+  });
+
+  test('granting invoke with httpMethod GET and PUT', () => {
+    const stack = new Stack();
+    const httpApi = new HttpApi(stack, 'HttpApi');
+    const role = new Role(stack, 'Role', {
+      assumedBy: new AccountPrincipal('111111111111'),
+    });
+
+    const route = new HttpRoute(stack, 'HttpRoute', {
+      httpApi,
+      integration: new DummyIntegration(),
+      routeKey: HttpRouteKey.with('/books'),
+      authorizer: new SomeAuthorizerType('AWS_IAM'),
+    });
+
+    // WHEN
+    route.grantInvoke(role, {
+      httpMethods: [HttpMethod.GET, HttpMethod.PUT],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Route', {
+      AuthorizationType: 'AWS_IAM',
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'execute-api:Invoke',
+            Effect: 'Allow',
+            Resource: [
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:aws:execute-api:',
+                    { Ref: 'AWS::Region' },
+                    ':',
+                    { Ref: 'AWS::AccountId' },
+                    ':',
+                    { Ref: 'HttpApiF5A9A8A7' },
+                    '/*/GET/books',
+                  ],
+                ],
+              },
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:aws:execute-api:',
+                    { Ref: 'AWS::Region' },
+                    ':',
+                    { Ref: 'AWS::AccountId' },
+                    ':',
+                    { Ref: 'HttpApiF5A9A8A7' },
+                    '/*/PUT/books',
+                  ],
+                ],
+              },
+            ],
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+  });
+
+  test('granting invoke with path variables', () => {
+    const stack = new Stack();
+    const httpApi = new HttpApi(stack, 'HttpApi');
+    const role = new Role(stack, 'Role', {
+      assumedBy: new AccountPrincipal('111111111111'),
+    });
+
+    const route = new HttpRoute(stack, 'HttpRoute', {
+      httpApi,
+      integration: new DummyIntegration(),
+      routeKey: HttpRouteKey.with('/books/{book}/something'),
+      authorizer: new SomeAuthorizerType('AWS_IAM'),
+    });
+
+    // WHEN
+    route.grantInvoke(role);
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Route', {
+      AuthorizationType: 'AWS_IAM',
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'execute-api:Invoke',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:aws:execute-api:',
+                  { Ref: 'AWS::Region' },
+                  ':',
+                  { Ref: 'AWS::AccountId' },
+                  ':',
+                  { Ref: 'HttpApiF5A9A8A7' },
+                  '/*/*/books/*',
+                ],
+              ],
+            },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+  });
+
+  test('throws when granting invoke with httpMethods not supported by the route', () => {
+    const stack = new Stack();
+    const httpApi = new HttpApi(stack, 'HttpApi');
+    const role = new Role(stack, 'Role', {
+      assumedBy: new AccountPrincipal('111111111111'),
+    });
+
+    const route = new HttpRoute(stack, 'HttpRoute', {
+      httpApi,
+      integration: new DummyIntegration(),
+      routeKey: HttpRouteKey.with('/books/{book}/something', HttpMethod.GET),
+      authorizer: new SomeAuthorizerType('AWS_IAM'),
+    });
+
+    expect(() =>
+      route.grantInvoke(role, {
+        httpMethods: [HttpMethod.DELETE],
+      }),
+    ).toThrowError(/This route does not support granting invoke for all requested http methods/i);
+  });
+
+  test('throws when granting invoke with the wrong authorizer type', () => {
+    const stack = new Stack();
+    const httpApi = new HttpApi(stack, 'HttpApi');
+    const role = new Role(stack, 'Role', {
+      assumedBy: new AccountPrincipal('111111111111'),
+    });
+
+    const route = new HttpRoute(stack, 'HttpRoute', {
+      httpApi,
+      integration: new DummyIntegration(),
+      routeKey: HttpRouteKey.with('/books/{book}/something', HttpMethod.GET),
+      authorizer: new SomeAuthorizerType('JWT'),
+    });
+
+    expect(() =>
+      route.grantInvoke(role, {
+        httpMethods: [HttpMethod.DELETE],
+      }),
+    ).toThrowError(/To use grantInvoke, you must use IAM authorization/i);
+  });
+
+  test('accessing an ANY route arn', () => {
+    const stack = new Stack();
+    const httpApi = new HttpApi(stack, 'HttpApi');
+
+    // WHEN
+    const route = new HttpRoute(stack, 'HttpRoute', {
+      httpApi,
+      integration: new DummyIntegration(),
+      routeKey: HttpRouteKey.with('/books/{book}/something'),
+    });
+
+    // THEN
+    expect(stack.resolve(route.routeArn)).toEqual({
+      'Fn::Join': ['', [
+        'arn:aws:execute-api:',
+        { Ref: 'AWS::Region' },
+        ':',
+        { Ref: 'AWS::AccountId' },
+        ':',
+        { Ref: 'HttpApiF5A9A8A7' },
+        '/*/*/books/*',
+      ]],
+    });
+  });
+
+  test('accessing a GET route arn', () => {
+    const stack = new Stack();
+    const httpApi = new HttpApi(stack, 'HttpApi');
+
+    // WHEN
+    const route = new HttpRoute(stack, 'HttpRoute', {
+      httpApi,
+      integration: new DummyIntegration(),
+      routeKey: HttpRouteKey.with('/books/{book}/something', HttpMethod.GET),
+    });
+
+    // THEN
+    expect(stack.resolve(route.routeArn)).toEqual({
+      'Fn::Join': ['', [
+        'arn:aws:execute-api:',
+        { Ref: 'AWS::Region' },
+        ':',
+        { Ref: 'AWS::AccountId' },
+        ':',
+        { Ref: 'HttpApiF5A9A8A7' },
+        '/*/GET/books/*',
+      ]],
+    });
   });
 });
 
@@ -365,6 +620,16 @@ class InvalidTypeAuthorizer implements IHttpRouteAuthorizer {
     return {
       authorizerId: this.authorizer.authorizerId,
       authorizationType: 'Random',
+    };
+  }
+}
+
+class SomeAuthorizerType implements IHttpRouteAuthorizer {
+  constructor(private readonly authorizationType: string) {}
+
+  bind(_: HttpRouteAuthorizerBindOptions): HttpRouteAuthorizerConfig {
+    return {
+      authorizationType: this.authorizationType,
     };
   }
 }

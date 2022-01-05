@@ -309,6 +309,12 @@ describe('IAM role', () => {
             Effect: 'Allow',
             Principal: {
               Service: 'boom.amazonaws.test',
+            },
+          },
+          {
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
+            Principal: {
               AWS: '1111111',
             },
           },

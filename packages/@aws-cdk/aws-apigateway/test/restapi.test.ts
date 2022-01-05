@@ -50,6 +50,7 @@ describe('restapi', () => {
             DeploymentId: { Ref: 'myapiDeployment92F2CB4972a890db5063ec679071ba7eefc76f2a' },
             StageName: 'prod',
           },
+          DependsOn: ['myapiAccountEC421A0A'],
         },
         myapiCloudWatchRole095452E5: {
           Type: 'AWS::IAM::Role',

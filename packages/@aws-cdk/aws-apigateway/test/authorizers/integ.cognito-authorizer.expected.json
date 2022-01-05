@@ -34,12 +34,12 @@
     "myauthorizer23CB99DD": {
       "Type": "AWS::ApiGateway::Authorizer",
       "Properties": {
+        "Name": "CognitoUserPoolsAuthorizerIntegmyauthorizer10C804C1",
         "RestApiId": {
           "Ref": "myrestapi551C8392"
         },
         "Type": "COGNITO_USER_POOLS",
         "IdentitySource": "method.request.header.Authorization",
-        "Name": "CognitoUserPoolsAuthorizerIntegmyauthorizer10C804C1",
         "ProviderARNs": [
           {
             "Fn::GetAtt": [
@@ -123,7 +123,10 @@
           "Ref": "myrestapiDeployment419B1464b903292b53d7532ca4296973bcb95b1a"
         },
         "StageName": "prod"
-      }
+      },
+      "DependsOn": [
+        "myrestapiAccountA49A05BE"
+      ]
     },
     "myrestapiANY94B0497F": {
       "Type": "AWS::ApiGateway::Method",

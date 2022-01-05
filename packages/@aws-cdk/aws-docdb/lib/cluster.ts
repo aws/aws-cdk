@@ -1,5 +1,7 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
+import { IRole } from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
+import * as logs from '@aws-cdk/aws-logs';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import { CfnResource, Duration, RemovalPolicy, Resource, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
@@ -164,6 +166,23 @@ export interface DatabaseClusterProps {
    * @default false
    */
   readonly exportAuditLogsToCloudWatch?: boolean;
+
+  /**
+   * The number of days log events are kept in CloudWatch Logs. When updating
+   * this property, unsetting it doesn't remove the log retention policy. To
+   * remove the retention policy, set the value to `Infinity`.
+   *
+   * @default - logs never expire
+   */
+  readonly cloudWatchLogsRetention?: logs.RetentionDays;
+
+  /**
+    * The IAM role for the Lambda function associated with the custom resource
+    * that sets the retention policy.
+    *
+    * @default - a new role is created.
+    */
+  readonly cloudWatchLogsRetentionRole?: IRole;
 }
 
 /**
@@ -428,6 +447,8 @@ export class DatabaseCluster extends DatabaseClusterBase {
     this.clusterEndpoint = new Endpoint(this.cluster.attrEndpoint, port);
     this.clusterReadEndpoint = new Endpoint(this.cluster.attrReadEndpoint, port);
 
+    this.setLogRetention(this, props, enableCloudwatchLogsExports);
+
     if (secret) {
       this.secret = secret.attach(this);
     }
@@ -468,6 +489,21 @@ export class DatabaseCluster extends DatabaseClusterBase {
       defaultPort: ec2.Port.tcp(port),
       securityGroups: [securityGroup],
     });
+  }
+
+  /**
+   * Sets up CloudWatch log retention if configured.
+   */
+  private setLogRetention(cluster: DatabaseCluster, props: DatabaseClusterProps, cloudwatchLogsExports: string[]) {
+    if (props.cloudWatchLogsRetention) {
+      for (const log of cloudwatchLogsExports) {
+        new logs.LogRetention(cluster, `LogRetention${log}`, {
+          logGroupName: `/aws/docdb/${cluster.clusterIdentifier}/${log}`,
+          retention: props.cloudWatchLogsRetention,
+          role: props.cloudWatchLogsRetentionRole,
+        });
+      }
+    }
   }
 
   /**

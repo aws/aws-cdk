@@ -198,7 +198,10 @@
           "Ref": "MyRestApiDeploymentB555B582dcff966d69deeda8d47e3bf409ce29cb"
         },
         "StageName": "prod"
-      }
+      },
+      "DependsOn": [
+        "MyRestApiAccount2FB6DB7A"
+      ]
     },
     "MyRestApiANY05143F93": {
       "Type": "AWS::ApiGateway::Method",
@@ -239,6 +242,7 @@
     "MyAuthorizer6575980E": {
       "Type": "AWS::ApiGateway::Authorizer",
       "Properties": {
+        "Name": "TokenAuthorizerIntegMyAuthorizer793B1D5F",
         "RestApiId": {
           "Ref": "MyRestApi2D1F47A9"
         },
@@ -266,8 +270,7 @@
             ]
           ]
         },
-        "IdentitySource": "method.request.header.Authorization",
-        "Name": "TokenAuthorizerIntegMyAuthorizer793B1D5F"
+        "IdentitySource": "method.request.header.Authorization"
       }
     }
   },

@@ -4,8 +4,10 @@ import { Duration, Lazy, Stack, Token } from '../lib';
 describe('duration', () => {
   test('negative amount', () => {
     expect(() => Duration.seconds(-1)).toThrow(/negative/);
+  });
 
-
+  test('can stringify', () => {
+    expect(`${Duration.hours(1)}`).toEqual('Duration.hours(1)');
   });
 
   test('unresolved amount', () => {

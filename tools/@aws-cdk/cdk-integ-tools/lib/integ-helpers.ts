@@ -1,6 +1,7 @@
 // Helper functions for integration tests
 import { spawnSync } from 'child_process';
 import * as path from 'path';
+import { TARGET_PARTITIONS } from '@aws-cdk/cx-api';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs-extra';
 
@@ -358,6 +359,11 @@ export const DEFAULT_SYNTH_OPTIONS = {
         },
       ],
     },
+    // Restricting to these target partitions makes most service principals synthesize to
+    // `service.${URL_SUFFIX}`, which is technically *incorrect* (it's only `amazonaws.com`
+    // or `amazonaws.com.cn`, never UrlSuffix for any of the restricted regions) but it's what
+    // most existing integ tests contain, and we want to disturb as few as possible.
+    [TARGET_PARTITIONS]: ['aws', 'aws-cn'],
     ...futureFlags,
   },
   env: {

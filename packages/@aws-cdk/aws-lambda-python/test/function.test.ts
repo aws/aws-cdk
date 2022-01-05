@@ -1,38 +1,41 @@
+import * as path from 'path';
 import { Template } from '@aws-cdk/assertions';
 import { Code, Runtime } from '@aws-cdk/aws-lambda';
-import { AssetHashType, AssetOptions, Stack } from '@aws-cdk/core';
+import { AssetHashType, DockerImage, Stack } from '@aws-cdk/core';
 import { PythonFunction } from '../lib';
-import { bundle } from '../lib/bundling';
+import { Bundling, BundlingProps } from '../lib/bundling';
 
 jest.mock('../lib/bundling', () => {
   return {
-    bundle: jest.fn().mockImplementation((options: AssetOptions): Code => {
-      const mockObjectKey = (() => {
-        const hashType = options.assetHashType ?? (options.assetHash ? 'custom' : 'source');
-        switch (hashType) {
-          case 'source': return 'SOURCE_MOCK';
-          case 'output': return 'OUTPUT_MOCK';
-          case 'custom': {
-            if (!options.assetHash) { throw new Error('no custom hash'); }
-            return options.assetHash;
+    Bundling: {
+      bundle: jest.fn().mockImplementation((options: BundlingProps): Code => {
+        const mockObjectKey = (() => {
+          const hashType = options.assetHashType ?? (options.assetHash ? 'custom' : 'source');
+          switch (hashType) {
+            case 'source': return 'SOURCE_MOCK';
+            case 'output': return 'OUTPUT_MOCK';
+            case 'custom': {
+              if (!options.assetHash) { throw new Error('no custom hash'); }
+              return options.assetHash;
+            }
           }
-        }
 
-        throw new Error('unexpected asset hash type');
-      })();
+          throw new Error('unexpected asset hash type');
+        })();
 
-      return {
-        isInline: false,
-        bind: () => ({
-          s3Location: {
-            bucketName: 'mock-bucket-name',
-            objectKey: mockObjectKey,
-          },
-        }),
-        bindToResource: () => { return; },
-      };
-    }),
-    hasDependencies: jest.fn().mockReturnValue(false),
+        return {
+          isInline: false,
+          bind: () => ({
+            s3Location: {
+              bucketName: 'mock-bucket-name',
+              objectKey: mockObjectKey,
+            },
+          }),
+          bindToResource: () => { return; },
+        };
+      }),
+      hasDependencies: jest.fn().mockReturnValue(false),
+    },
   };
 });
 
@@ -45,11 +48,11 @@ beforeEach(() => {
 test('PythonFunction with defaults', () => {
   new PythonFunction(stack, 'handler', {
     entry: 'test/lambda-handler',
+    runtime: Runtime.PYTHON_3_8,
   });
 
-  expect(bundle).toHaveBeenCalledWith(expect.objectContaining({
+  expect(Bundling.bundle).toHaveBeenCalledWith(expect.objectContaining({
     entry: expect.stringMatching(/aws-lambda-python\/test\/lambda-handler$/),
-    outputPathSuffix: '.',
   }));
 
   Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
@@ -62,15 +65,15 @@ test('PythonFunction with index in a subdirectory', () => {
     entry: 'test/lambda-handler-sub',
     index: 'inner/custom_index.py',
     handler: 'custom_handler',
+    runtime: Runtime.PYTHON_3_8,
   });
 
-  expect(bundle).toHaveBeenCalledWith(expect.objectContaining({
+  expect(Bundling.bundle).toHaveBeenCalledWith(expect.objectContaining({
     entry: expect.stringMatching(/aws-lambda-python\/test\/lambda-handler-sub$/),
-    outputPathSuffix: '.',
   }));
 
   Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
-    Handler: 'inner/custom_index.custom_handler',
+    Handler: 'inner.custom_index.custom_handler',
   });
 });
 
@@ -78,12 +81,14 @@ test('throws when index is not py', () => {
   expect(() => new PythonFunction(stack, 'Fn', {
     entry: 'test/lambda-handler',
     index: 'index.js',
+    runtime: Runtime.PYTHON_3_8,
   })).toThrow(/Only Python \(\.py\) index files are supported/);
 });
 
 test('throws when entry does not exist', () => {
   expect(() => new PythonFunction(stack, 'Fn', {
     entry: 'notfound',
+    runtime: Runtime.PYTHON_3_8,
   })).toThrow(/Cannot find index file at/);
 });
 
@@ -99,27 +104,31 @@ test('allows specifying hash type', () => {
     entry: 'test/lambda-handler-nodeps',
     index: 'index.py',
     handler: 'handler',
+    runtime: Runtime.PYTHON_3_8,
   });
 
   new PythonFunction(stack, 'source2', {
     entry: 'test/lambda-handler-nodeps',
     index: 'index.py',
     handler: 'handler',
-    assetHashType: AssetHashType.SOURCE,
+    runtime: Runtime.PYTHON_3_8,
+    bundling: { assetHashType: AssetHashType.SOURCE },
   });
 
   new PythonFunction(stack, 'output', {
     entry: 'test/lambda-handler-nodeps',
     index: 'index.py',
     handler: 'handler',
-    assetHashType: AssetHashType.OUTPUT,
+    runtime: Runtime.PYTHON_3_8,
+    bundling: { assetHashType: AssetHashType.OUTPUT },
   });
 
   new PythonFunction(stack, 'custom', {
     entry: 'test/lambda-handler-nodeps',
     index: 'index.py',
     handler: 'handler',
-    assetHash: 'MY_CUSTOM_HASH',
+    runtime: Runtime.PYTHON_3_8,
+    bundling: { assetHash: 'MY_CUSTOM_HASH' },
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
@@ -142,4 +151,19 @@ test('allows specifying hash type', () => {
       S3Key: 'MY_CUSTOM_HASH',
     },
   });
+});
+
+test('Allows use of custom bundling image', () => {
+  const entry = path.join(__dirname, 'lambda-handler-custom-build');
+  const image = DockerImage.fromBuild(path.join(entry));
+
+  new PythonFunction(stack, 'function', {
+    entry,
+    runtime: Runtime.PYTHON_3_8,
+    bundling: { image },
+  });
+
+  expect(Bundling.bundle).toHaveBeenCalledWith(expect.objectContaining({
+    image,
+  }));
 });

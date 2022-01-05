@@ -30,7 +30,9 @@ def handler(event, context):
         cfn_send(event, context, CFN_FAILED, reason=message)
 
     try:
-        logger.info(event)
+        # We are not logging ResponseURL as this is a pre-signed S3 URL, and could be used to tamper
+        # with the response CloudFormation sees from this Custom Resource execution.
+        logger.info({ key:value for (key, value) in event.items() if key != 'ResponseURL'})
 
         # cloudformation request type (create/update/delete)
         request_type = event['RequestType']

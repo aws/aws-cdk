@@ -1134,9 +1134,8 @@ export class Project extends ProjectBase {
     }
 
     // bind
-    const bindFunction = (this.buildImage as any).bind;
-    if (bindFunction) {
-      bindFunction.call(this.buildImage, this, this, {});
+    if (isBindableBuildImage(this.buildImage)) {
+      this.buildImage.bind(this, this, {});
     }
 
     this.node.addValidation({ validate: () => this.validateProject() });
@@ -2117,4 +2116,8 @@ export enum ProjectNotificationEvents {
    * Trigger notification when project build phase success
    */
   BUILD_PHASE_SUCCEEDED = 'codebuild-project-build-phase-success',
+}
+
+function isBindableBuildImage(x: unknown): x is IBindableBuildImage {
+  return typeof x === 'object' && !!x && !!(x as any).bind;
 }

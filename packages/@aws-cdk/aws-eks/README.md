@@ -539,7 +539,7 @@ To deploy the controller on your EKS cluster, configure the `albController` prop
 new eks.Cluster(this, 'HelloEKS', {
   version: eks.KubernetesVersion.V1_21,
   albController: {
-    version: eks.AlbControllerVersion.V2_3_0,
+    version: eks.AlbControllerVersion.V2_3_1,
   },
 });
 ```
@@ -639,6 +639,22 @@ const cluster = new eks.Cluster(this, 'hello-eks', {
 ### Kubectl Support
 
 The resources are created in the cluster by running `kubectl apply` from a python lambda function.
+
+By default, CDK will create a new python lambda function to apply your k8s manifests. If you want to use an existing kubectl provider function, for example with tight trusted entities on your IAM Roles - you can import the existing provider and then use the imported provider when importing the cluster:
+
+```ts
+const handlerRole = iam.Role.fromRoleArn(this, 'HandlerRole', 'arn:aws:iam::123456789012:role/lambda-role');
+const kubectlProvider = eks.KubectlProvider.fromKubectlProviderAttributes(this, 'KubectlProvider', {
+  functionArn: 'arn:aws:lambda:us-east-2:123456789012:function:my-function:1',
+  kubectlRoleArn: 'arn:aws:iam::123456789012:role/kubectl-role',
+  handlerRole,
+});
+
+const cluster = eks.Cluster.fromClusterAttributes(this, 'Cluster', {
+  clusterName: 'cluster',
+  kubectlProvider,
+});
+```
 
 #### Environment
 
@@ -1112,6 +1128,21 @@ Helm charts will be installed and updated using `helm upgrade --install`, where 
 are being passed down (such as `repo`, `values`, `version`, `namespace`, `wait`, `timeout`, etc).
 This means that if the chart is added to CDK with the same release name, it will try to update
 the chart in the cluster.
+
+Additionally, the `chartAsset` property can be an `aws-s3-assets.Asset`. This allows the use of local, private helm charts.
+
+```ts
+import * as s3Assets from '@aws-cdk/aws-s3-assets';
+
+declare const cluster: eks.Cluster;
+const chartAsset = new s3Assets.Asset(this, 'ChartAsset', {
+  path: '/path/to/asset'
+});
+
+cluster.addHelmChart('test-chart', {
+  chartAsset: chartAsset,
+});
+```
 
 Helm charts are implemented as CloudFormation resources in CDK.
 This means that if the chart is deleted from your code (or the stack is

@@ -119,6 +119,17 @@ describe('secret value', () => {
 
   });
 
+  test('ssmSecure without version', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const v = SecretValue.ssmSecure('param-name');
+
+    // THEN
+    expect(stack.resolve(v)).toEqual('{{resolve:ssm-secure:param-name:}}');
+  });
+
   test('cfnDynamicReference', () => {
     // GIVEN
     const stack = new Stack();

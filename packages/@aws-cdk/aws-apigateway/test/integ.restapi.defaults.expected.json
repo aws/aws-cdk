@@ -73,7 +73,10 @@
           "Ref": "myapiDeployment92F2CB4972a890db5063ec679071ba7eefc76f2a"
         },
         "StageName": "prod"
-      }
+      },
+      "DependsOn": [
+        "myapiAccountEC421A0A"
+      ]
     },
     "myapiGETF990CE3C": {
       "Type": "AWS::ApiGateway::Method",

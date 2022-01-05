@@ -2,10 +2,10 @@ import { Template, Match } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
+import { testFutureBehavior, testLegacyBehavior } from '@aws-cdk/cdk-build-tools/lib/feature-flag';
 import { App, RemovalPolicy, Size, Stack, Tags } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import { testFutureBehavior, testLegacyBehavior } from '@aws-cdk/cdk-build-tools/lib/feature-flag';
-import { FileSystem, LifecyclePolicy, PerformanceMode, ThroughputMode } from '../lib';
+import { FileSystem, LifecyclePolicy, PerformanceMode, ThroughputMode, OutOfInfrequentAccessPolicy } from '../lib';
 
 let stack = new Stack();
 let vpc = new ec2.Vpc(stack, 'VPC');
@@ -125,6 +125,33 @@ test('file system is created correctly with a life cycle property', () => {
     LifecyclePolicies: [{
       TransitionToIA: 'AFTER_7_DAYS',
     }],
+  });
+});
+
+test('file system is created correctly with a life cycle property and out of infrequent access property', () => {
+  // WHEN
+  new FileSystem(stack, 'EfsFileSystem', {
+    vpc,
+    lifecyclePolicy: LifecyclePolicy.AFTER_7_DAYS,
+    outOfInfrequentAccessPolicy: OutOfInfrequentAccessPolicy.AFTER_1_ACCESS,
+  });
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::EFS::FileSystem', {
+    LifecyclePolicies: [{
+      TransitionToIA: 'AFTER_7_DAYS',
+      TransitionToPrimaryStorageClass: 'AFTER_1_ACCESS',
+    }],
+  });
+});
+
+test('LifecyclePolicies should be disabled when lifecyclePolicy and outInfrequentAccessPolicy are not specified', () => {
+  // WHEN
+  new FileSystem(stack, 'EfsFileSystem', {
+    vpc,
+  });
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::EFS::FileSystem', {
+    LifecyclePolicies: Match.absent(),
   });
 });
 
