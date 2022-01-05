@@ -8,7 +8,7 @@ let stderrMock: jest.SpyInstance;
 let monitor: CloudWatchLogEventMonitor;
 beforeEach(() => {
   jest.useFakeTimers('legacy');
-  monitor = new CloudWatchLogEventMonitor({ hotswapTime: new Date(T100) });
+  monitor = new CloudWatchLogEventMonitor(new Date(T100));
   monitor.activate();
   stderrMock = jest.spyOn(process.stderr, 'write').mockImplementation(() => { return true; });
   sdk = new MockSdk();
@@ -83,12 +83,15 @@ async function testMonitorWithEventCalls(
   }
   filterLogEvents.mockImplementation(() => { return {}; });
   sdk.stubCloudWatchLogs({ filterLogEvents });
-  monitor.addLogGroups({
-    account: '11111111111',
-    region: 'us-east-1',
+  monitor.addLogGroups(
+    {
+      name: 'name',
+      account: '11111111111',
+      region: 'us-east-1',
+    },
     sdk,
-    groups: new Set(['loggroup']),
-  });
+    ['loggroup'],
+  );
   await waitForCondition(() => finished);
 }
 

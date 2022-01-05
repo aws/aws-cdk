@@ -11,8 +11,8 @@ import { Bootstrapper, BootstrapEnvironmentOptions } from './api/bootstrap';
 import { CloudFormationDeployments } from './api/cloudformation-deployments';
 import { CloudAssembly, DefaultSelection, ExtendedStackSelection, StackCollection, StackSelector } from './api/cxapp/cloud-assembly';
 import { CloudExecutable } from './api/cxapp/cloud-executable';
-import { registerCloudWatchLogGroups } from './api/logs/cloudwatch-logs';
 import { CloudWatchLogEventMonitor } from './api/logs/logs-monitor';
+import { registerCloudWatchLogGroups } from './api/logs/register-cloudwatch-logs';
 import { StackActivityProgress } from './api/util/cloudformation/stack-activity-monitor';
 import { printSecurityDiff, printStackDiff, RequireApproval } from './diff';
 import { data, debug, error, highlight, print, success, warning } from './logging';
@@ -246,7 +246,7 @@ export class CdkToolkit {
       } finally {
         if (options.cloudWatchLogMonitor) {
           const result = await registerCloudWatchLogGroups(this.props.sdkProvider, stack);
-          options.cloudWatchLogMonitor.addLogGroups(result);
+          options.cloudWatchLogMonitor.addLogGroups(result.env, result.sdk, result.logGroupNames);
         }
         // If an outputs file has been specified, create the file path and write stack outputs to it once.
         // Outputs are written after all stacks have been deployed. If a stack deployment fails,

@@ -1,4 +1,5 @@
 import * as util from 'util';
+import * as cxapi from '@aws-cdk/cx-api';
 import * as colors from 'colors/safe';
 import { print, error } from '../../logging';
 import { flatten } from '../../util/arrays';
@@ -20,7 +21,7 @@ export interface CloudWatchLogEvent {
   /**
    * The name of the log group
    */
-  readonly logGroup: string;
+  readonly logGroupName: string;
 
   /**
    * The time at which the event occurred
@@ -31,7 +32,7 @@ export interface CloudWatchLogEvent {
 /**
  * Options for adding log groups to the CloudWatchLogEventMonitor
  */
-export interface AddLogGroupOptions {
+export interface AddLogGroupsOptions {
   /**
    * The AWS account that the log group lives in
    */
@@ -48,38 +49,29 @@ export interface AddLogGroupOptions {
   readonly sdk: ISDK;
 
   /**
-   * A map of log groups and startTime in a given account
+   * A list of CloudWatch log group names for a given
+   * AWS account/region that should be monitored
    */
-  readonly groups: Set<string>;
+  readonly logGroupNames: string[];
 }
 
 /**
  * Configuration tracking information on the log groups that are
  * being monitored
  */
-export interface LogGroupConfig {
+interface LogGroupsAccessSettings {
   /**
-   * The SDK for a given account
+   * The SDK for a given environment (account/region)
    */
   readonly sdk: ISDK;
 
   /**
-   * A map of log groups and startTime in a given account
-   */
-  readonly groups: Map<string, number>;
-}
-
-/**
- * Options for creating a CloudWatchLogEventMonitor
- */
-export interface CloudWatchLogEventMonitorOptions {
-  /**
-   * The time that watch was first triggered.
-   * CloudWatch logs will be filtered using this start time
+   * A map of log groups and associated startTime in a given account.
    *
-   * @default - the current time
+   * The monitor will read events from the log group starting at the
+   * associated startTime
    */
-  readonly hotswapTime?: Date;
+  readonly logGroupsStartTimes: { [logGroupName: string]: number };
 }
 
 export class CloudWatchLogEventMonitor {
@@ -89,14 +81,14 @@ export class CloudWatchLogEventMonitor {
   private startTime: number;
 
   /**
-   * Map of account to LogGroupConfig
+   * Map of environment (account:region) to LogGroupsAccessSettings
    */
-  private readonly logGroups = new Map<string, LogGroupConfig>();
+  private readonly envsLogGroupsAccessSettings = new Map<string, LogGroupsAccessSettings>();
 
   private active = false;
 
-  constructor(options: CloudWatchLogEventMonitorOptions = {}) {
-    this.startTime = options.hotswapTime?.getTime() ?? Date.now();
+  constructor(hotswapTime?: Date) {
+    this.startTime = hotswapTime?.getTime() ?? Date.now();
     this.scheduleNextTick();
   }
 
@@ -119,7 +111,7 @@ export class CloudWatchLogEventMonitor {
   public deactivate(): void {
     this.active = false;
     this.startTime = Date.now();
-    this.logGroups.clear();
+    this.envsLogGroupsAccessSettings.clear();
   }
 
   /**
@@ -127,25 +119,21 @@ export class CloudWatchLogEventMonitor {
    * Since we could be watching multiple stacks that deploy to
    * multiple environments (account+region), we need to store a list of log groups
    * per env along with the SDK object that has access to read from
-   * that AWS account.
+   * that environment.
    */
-  public addLogGroups(options: AddLogGroupOptions): void {
-    const env = `${options.account}:${options.region}`;
-    const groups = new Map<string, number>();
-    options.groups.forEach(group => {
-      groups.set(group, this.startTime);
+  public addLogGroups(env: cxapi.Environment, sdk: ISDK, logGroupNames: string[]): void {
+    const awsEnv = `${env.account}:${env.region}`;
+    const logGroupsStartTimes = logGroupNames.reduce((acc, groupName) => {
+      acc[groupName] = this.startTime;
+      return acc;
+    }, {} as { [logGroupName: string]: number });
+    this.envsLogGroupsAccessSettings.set(awsEnv, {
+      sdk,
+      logGroupsStartTimes: {
+        ...this.envsLogGroupsAccessSettings.get(awsEnv)?.logGroupsStartTimes,
+        ...logGroupsStartTimes,
+      },
     });
-    const logGroup = this.logGroups.get(env);
-    if (logGroup) {
-      groups.forEach((time, group) => {
-        logGroup.groups.set(group, time);
-      });
-    } else {
-      this.logGroups.set(env, {
-        sdk: options.sdk,
-        groups,
-      });
-    }
   }
 
   private scheduleNextTick(): void {
@@ -169,43 +157,45 @@ export class CloudWatchLogEventMonitor {
   }
 
   /**
-   * Print out a cloudwatch event
-   */
-  private print(event: CloudWatchLogEvent): void {
-    print(util.format('[%s] %s %s',
-      colors.blue(event.logGroup),
-      colors.yellow(event.timestamp.toLocaleTimeString()),
-      event.message.trim()));
-  }
-
-  /**
    * Reads all new log events from a set of CloudWatch Log Groups
    * in parallel
    */
   private async readNewEvents(): Promise<Array<Array<CloudWatchLogEvent>>> {
     const promises: Array<Promise<Array<CloudWatchLogEvent>>> = [];
-    for (const config of this.logGroups.values()) {
-      const sdk = config.sdk;
-      for (const group of config.groups.keys()) {
-        promises.push(this.readEventsFromLogGroup(config.groups, sdk, group));
+    for (const settings of this.envsLogGroupsAccessSettings.values()) {
+      for (const group of Object.keys(settings.logGroupsStartTimes)) {
+        promises.push(this.readEventsFromLogGroup(settings.logGroupsStartTimes, settings.sdk, group));
       }
     }
     return Promise.all(promises);
   }
 
   /**
-   * Reads all new log events from a CloudWatch Log Group
-   * starting when the hotswap was triggered
-   *
-   * Only prints out events that have not been printed already
+   * Print out a cloudwatch event
    */
-  private async readEventsFromLogGroup(logGroupConfig: Map<string, number>, sdk: ISDK, logGroupName: string): Promise<CloudWatchLogEvent[]> {
+  private print(event: CloudWatchLogEvent): void {
+    print(util.format('[%s] %s %s',
+      colors.blue(event.logGroupName),
+      colors.yellow(event.timestamp.toLocaleTimeString()),
+      event.message.trim()));
+  }
+
+  /**
+   * Reads all new log events from a CloudWatch Log Group
+   * starting at either the time the hotswap was triggered or
+   * when the last event was read on the previous tick
+   */
+  private async readEventsFromLogGroup(
+    logGroupsStartTimes: { [logGroupName: string]: number },
+    sdk: ISDK,
+    logGroupName: string,
+  ): Promise<Array<CloudWatchLogEvent>> {
     const events: CloudWatchLogEvent[] = [];
 
     // log events from some service are ingested faster than others
     // so we need to track the start/end time for each log group individually
     // to make sure that we process all events from each log group
-    const startTime = logGroupConfig.get(logGroupName) ?? this.startTime;
+    const startTime = logGroupsStartTimes[logGroupName] ?? this.startTime;
     let endTime = startTime;
     try {
       let nextToken: string | undefined;
@@ -216,13 +206,12 @@ export class CloudWatchLogEventMonitor {
           limit: 100,
           startTime: startTime,
         }).promise();
-        const eventPage = response.events ?? [];
 
-        for (const event of eventPage) {
+        for (const event of response.events ?? []) {
           if (event.message) {
             events.push({
               message: event.message,
-              logGroup: logGroupName,
+              logGroupName,
               timestamp: event.timestamp ? new Date(event.timestamp) : new Date(),
             });
 
@@ -242,7 +231,7 @@ export class CloudWatchLogEventMonitor {
       }
       throw e;
     }
-    logGroupConfig.set(logGroupName, endTime+1);
+    logGroupsStartTimes[logGroupName] = endTime + 1;
     return events;
   }
 }

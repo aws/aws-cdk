@@ -1,6 +1,6 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import { CloudFormation } from 'aws-sdk';
-import { registerCloudWatchLogGroups } from '../../../lib/api/logs/cloudwatch-logs';
+import { registerCloudWatchLogGroups } from '../../../lib/api/logs/register-cloudwatch-logs';
 import { testStack, TestStackArtifact } from '../../util';
 import { MockSdkProvider } from '../../util/mock-sdk';
 
@@ -8,20 +8,15 @@ let logsMockSdkProvider: LogsMockSdkProvider;
 let mockGetEndpointSuffix: () => string;
 
 beforeEach(() => {
-  jest.useFakeTimers();
   logsMockSdkProvider = new LogsMockSdkProvider();
   mockGetEndpointSuffix = jest.fn(() => 'amazonaws.com');
   logsMockSdkProvider.stubGetEndpointSuffix(mockGetEndpointSuffix);
   // clear the array
   currentCfnStackResources.splice(0);
 });
-afterAll(() => {
-  jest.useRealTimers();
-});
 
 test('add log groups from lambda function', async () => {
   // GIVEN
-  pushStackResourceSummaries(stackSummaryOf('Func', 'AWS::Lambda::Function', 'my-function'));
   const cdkStackArtifact = cdkStackArtifactOf({
     template: {
       Resources: {
@@ -34,14 +29,17 @@ test('add log groups from lambda function', async () => {
       },
     },
   });
+  pushStackResourceSummaries(stackSummaryOf('Func', 'AWS::Lambda::Function', 'my-function'));
+
+  // WHEN
   const result = await registerCloudWatchLogGroups(logsMockSdkProvider.mockSdkProvider, cdkStackArtifact);
-  expect(result.groups).toEqual(new Set(['/aws/lambda/my-function']));
+
+  // THEN
+  expect(result.logGroupNames).toEqual(['/aws/lambda/my-function']);
 });
 
 test('add log groups from ECS Task Definitions', async () => {
   // GIVEN
-  pushStackResourceSummaries(stackSummaryOf('Def', 'AWS::ECS::TaskDefinition', 'app'));
-  pushStackResourceSummaries(stackSummaryOf('LogGroup', 'AWS::Logs::LogGroup', 'log_group'));
   const cdkStackArtifact = cdkStackArtifactOf({
     template: {
       Resources: {
@@ -60,9 +58,7 @@ test('add log groups from ECS Task Definitions', async () => {
                 LogConfiguration: {
                   LogDriver: 'awslogs',
                   Options: {
-                    'awslogs-group': {
-                      Ref: 'LogGroup',
-                    },
+                    'awslogs-group': { Ref: 'LogGroup' },
                   },
                 },
               },
@@ -72,14 +68,18 @@ test('add log groups from ECS Task Definitions', async () => {
       },
     },
   });
+  pushStackResourceSummaries(stackSummaryOf('Def', 'AWS::ECS::TaskDefinition', 'app'));
+  pushStackResourceSummaries(stackSummaryOf('LogGroup', 'AWS::Logs::LogGroup', 'log_group'));
+
+  // WHEN
   const result = await registerCloudWatchLogGroups(logsMockSdkProvider.mockSdkProvider, cdkStackArtifact);
-  expect(result.groups).toEqual(new Set(['log_group']));
+
+  // THEN
+  expect(result.logGroupNames).toEqual(['log_group']);
 });
 
 test('add log groups from State Machines', async () => {
   // GIVEN
-  pushStackResourceSummaries(stackSummaryOf('Def', 'AWS::StepFunctions::StateMachine', 'machine'));
-  pushStackResourceSummaries(stackSummaryOf('LogGroup', 'AWS::Logs::LogGroup', 'log_group'));
   const cdkStackArtifact = cdkStackArtifactOf({
     template: {
       Resources: {
@@ -97,10 +97,7 @@ test('add log groups from State Machines', async () => {
                 {
                   CloudWatchLogsLogGroup: {
                     LogGroupArn: {
-                      'Fn::GetAtt': [
-                        'LogGroup',,
-                        'Arn',
-                      ],
+                      'Fn::GetAtt': ['LogGroup', 'Arn'],
                     },
                   },
                 },
@@ -111,14 +108,18 @@ test('add log groups from State Machines', async () => {
       },
     },
   });
+  pushStackResourceSummaries(stackSummaryOf('Def', 'AWS::StepFunctions::StateMachine', 'machine'));
+  pushStackResourceSummaries(stackSummaryOf('LogGroup', 'AWS::Logs::LogGroup', 'log_group'));
+
+  // WHEN
   const result = await registerCloudWatchLogGroups(logsMockSdkProvider.mockSdkProvider, cdkStackArtifact);
-  expect(result.groups).toEqual(new Set(['log_group']));
+
+  // THEN
+  expect(result.logGroupNames).toEqual(['log_group']);
 });
 
 test('add log groups from CodeBuild Projects', async () => {
   // GIVEN
-  pushStackResourceSummaries(stackSummaryOf('Def', 'AWS::CodeBuild::Project', 'project'));
-  pushStackResourceSummaries(stackSummaryOf('LogGroup', 'AWS::Logs::LogGroup', 'log_group'));
   const cdkStackArtifact = cdkStackArtifactOf({
     template: {
       Resources: {
@@ -134,9 +135,7 @@ test('add log groups from CodeBuild Projects', async () => {
             PojectName: 'project',
             LogsConfig: {
               CloudWatchLogs: {
-                GroupName: {
-                  Ref: 'LogGroup',
-                },
+                GroupName: { Ref: 'LogGroup' },
               },
             },
           },
@@ -144,13 +143,18 @@ test('add log groups from CodeBuild Projects', async () => {
       },
     },
   });
+  pushStackResourceSummaries(stackSummaryOf('Def', 'AWS::CodeBuild::Project', 'project'));
+  pushStackResourceSummaries(stackSummaryOf('LogGroup', 'AWS::Logs::LogGroup', 'log_group'));
+
+  // WHEN
   const result = await registerCloudWatchLogGroups(logsMockSdkProvider.mockSdkProvider, cdkStackArtifact);
-  expect(result.groups).toEqual(new Set(['log_group']));
+
+  // THEN
+  expect(result.logGroupNames).toEqual(['log_group']);
 });
 
 test('add log groups from CodeBuild Projects, implicit', async () => {
   // GIVEN
-  pushStackResourceSummaries(stackSummaryOf('Def', 'AWS::CodeBuild::Project', 'project'));
   const cdkStackArtifact = cdkStackArtifactOf({
     template: {
       Resources: {
@@ -163,16 +167,17 @@ test('add log groups from CodeBuild Projects, implicit', async () => {
       },
     },
   });
+  pushStackResourceSummaries(stackSummaryOf('Def', 'AWS::CodeBuild::Project', 'project'));
+
+  // WHEN
   const result = await registerCloudWatchLogGroups(logsMockSdkProvider.mockSdkProvider, cdkStackArtifact);
-  expect(result.groups).toEqual(new Set(['/aws/codebuild/project']));
+
+  // THEN
+  expect(result.logGroupNames).toEqual(['/aws/codebuild/project']);
 });
 
 test('excluded log groups are not added', async () => {
   // GIVEN
-  pushStackResourceSummaries(stackSummaryOf('FlowLog', 'AWS::EC2::FlowLog', 'flow'));
-  pushStackResourceSummaries(stackSummaryOf('Def', 'AWS::CodeBuild::Project', 'project'));
-  pushStackResourceSummaries(stackSummaryOf('LogGroup', 'AWS::Logs::LogGroup', 'log_group'));
-  pushStackResourceSummaries(stackSummaryOf('LogGroup2', 'AWS::Logs::LogGroup', 'log_group2'));
   const cdkStackArtifact = cdkStackArtifactOf({
     template: {
       Resources: {
@@ -197,32 +202,34 @@ test('excluded log groups are not added', async () => {
         FlowLog: {
           Type: 'AWS::EC2::FlowLog',
           Properties: {
-            LogDestination: {
-              Ref: 'LogGroup',
-            },
+            LogDestination: { Ref: 'LogGroup' },
           },
         },
         FlowLog2: {
           Type: 'AWS::EC2::FlowLog',
           Properties: {
             LogDestination: {
-              'Fn::GetAtt': [
-                'LogGroup2',,
-                'Arn',
-              ],
+              'Fn::GetAtt': ['LogGroup2', 'Arn'],
             },
           },
         },
       },
     },
   });
+  pushStackResourceSummaries(stackSummaryOf('FlowLog', 'AWS::EC2::FlowLog', 'flow'));
+  pushStackResourceSummaries(stackSummaryOf('Def', 'AWS::CodeBuild::Project', 'project'));
+  pushStackResourceSummaries(stackSummaryOf('LogGroup', 'AWS::Logs::LogGroup', 'log_group'));
+  pushStackResourceSummaries(stackSummaryOf('LogGroup2', 'AWS::Logs::LogGroup', 'log_group2'));
+
+  // WHEN
   const result = await registerCloudWatchLogGroups(logsMockSdkProvider.mockSdkProvider, cdkStackArtifact);
-  expect(result.groups).toEqual(new Set(['/aws/codebuild/project']));
+
+  // THEN
+  expect(result.logGroupNames).toEqual(['/aws/codebuild/project']);
 });
 
 test('unassociated log groups are added', async () => {
   // GIVEN
-  pushStackResourceSummaries(stackSummaryOf('LogGroup', 'AWS::Logs::LogGroup', 'log_group'));
   const cdkStackArtifact = cdkStackArtifactOf({
     template: {
       Resources: {
@@ -235,8 +242,13 @@ test('unassociated log groups are added', async () => {
       },
     },
   });
+  pushStackResourceSummaries(stackSummaryOf('LogGroup', 'AWS::Logs::LogGroup', 'log_group'));
+
+  // WHEN
   const result = await registerCloudWatchLogGroups(logsMockSdkProvider.mockSdkProvider, cdkStackArtifact);
-  expect(result.groups).toEqual(new Set(['log_group']));
+
+  // THEN
+  expect(result.logGroupNames).toEqual(['log_group']);
 });
 
 const STACK_NAME = 'withouterrors';

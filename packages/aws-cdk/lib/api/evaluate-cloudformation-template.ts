@@ -1,27 +1,26 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import * as AWS from 'aws-sdk';
-import { CloudFormation } from 'aws-sdk';
 import { ISDK } from './aws-auth';
 
 export interface ListStackResources {
-  listStackResources(): Promise<CloudFormation.StackResourceSummary[]>;
+  listStackResources(): Promise<AWS.CloudFormation.StackResourceSummary[]>;
 }
 
 export class LazyListStackResources implements ListStackResources {
-  private stackResources: CloudFormation.StackResourceSummary[] | undefined;
+  private stackResources: AWS.CloudFormation.StackResourceSummary[] | undefined;
 
   constructor(private readonly sdk: ISDK, private readonly stackName: string) {
   }
 
-  public async listStackResources(): Promise<CloudFormation.StackResourceSummary[]> {
+  public async listStackResources(): Promise<AWS.CloudFormation.StackResourceSummary[]> {
     if (this.stackResources === undefined) {
       this.stackResources = await this.getStackResources();
     }
     return this.stackResources;
   }
 
-  private async getStackResources(): Promise<CloudFormation.StackResourceSummary[]> {
-    const ret = new Array<CloudFormation.StackResourceSummary>();
+  private async getStackResources(): Promise<AWS.CloudFormation.StackResourceSummary[]> {
+    const ret = new Array<AWS.CloudFormation.StackResourceSummary>();
     let nextToken: string | undefined;
     do {
       const stackResourcesResponse = await this.sdk.cloudFormation().listStackResources({
