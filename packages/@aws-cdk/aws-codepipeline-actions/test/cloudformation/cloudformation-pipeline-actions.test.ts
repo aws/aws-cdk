@@ -668,6 +668,23 @@ describe('CloudFormation Pipeline Actions', () => {
           'Statement': [
             {
               'Action': [
+                's3:*',
+              ],
+              'Condition': {
+                'Bool': { 'aws:SecureTransport': 'false' },
+              },
+              'Effect': 'Deny',
+              'Principal': {
+                'AWS': {
+                  '*',
+                },
+              },
+              'Resource': [
+                
+              ],
+            },
+            {
+              'Action': [
                 's3:GetObject*',
                 's3:GetBucket*',
                 's3:List*',
