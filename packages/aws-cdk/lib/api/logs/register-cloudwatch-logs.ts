@@ -4,11 +4,11 @@ import { EvaluateCloudFormationTemplate, LazyListStackResources } from '../evalu
 
 // resource types that have associated CloudWatch Log Groups that should
 // _not_ be monitored
-const IGNORE_LOGS_RESOURCE_TYPES = ['AWS::EC2::FlowLog', 'AWS::CloudTrail::Trail'];
+const IGNORE_LOGS_RESOURCE_TYPES = ['AWS::EC2::FlowLog', 'AWS::CloudTrail::Trail', 'AWS::CodeBuild::Project'];
 
 // resource types that will create a cloudwatch log group
 // with a specific name if one is not provided
-const RESOURCE_TYPES_WITH_IMPLICIT_LOGS = ['AWS::Lambda::Function', 'AWS::CodeBuild::Project'];
+const RESOURCE_TYPES_WITH_IMPLICIT_LOGS = ['AWS::Lambda::Function'];
 
 export async function registerCloudWatchLogGroups(
   sdkProvider: SdkProvider,

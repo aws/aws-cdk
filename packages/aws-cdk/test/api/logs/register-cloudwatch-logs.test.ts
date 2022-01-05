@@ -118,64 +118,6 @@ test('add log groups from State Machines', async () => {
   expect(result.logGroupNames).toEqual(['log_group']);
 });
 
-test('add log groups from CodeBuild Projects', async () => {
-  // GIVEN
-  const cdkStackArtifact = cdkStackArtifactOf({
-    template: {
-      Resources: {
-        LogGroup: {
-          Properties: {
-            Type: 'AWS::Logs::LogGroup',
-            LogGroupName: 'log_group',
-          },
-        },
-        Def: {
-          Type: 'AWS::CodeBuild::Project',
-          Properties: {
-            PojectName: 'project',
-            LogsConfig: {
-              CloudWatchLogs: {
-                GroupName: { Ref: 'LogGroup' },
-              },
-            },
-          },
-        },
-      },
-    },
-  });
-  pushStackResourceSummaries(stackSummaryOf('Def', 'AWS::CodeBuild::Project', 'project'));
-  pushStackResourceSummaries(stackSummaryOf('LogGroup', 'AWS::Logs::LogGroup', 'log_group'));
-
-  // WHEN
-  const result = await registerCloudWatchLogGroups(logsMockSdkProvider.mockSdkProvider, cdkStackArtifact);
-
-  // THEN
-  expect(result.logGroupNames).toEqual(['log_group']);
-});
-
-test('add log groups from CodeBuild Projects, implicit', async () => {
-  // GIVEN
-  const cdkStackArtifact = cdkStackArtifactOf({
-    template: {
-      Resources: {
-        Def: {
-          Type: 'AWS::CodeBuild::Project',
-          Properties: {
-            PojectName: 'project',
-          },
-        },
-      },
-    },
-  });
-  pushStackResourceSummaries(stackSummaryOf('Def', 'AWS::CodeBuild::Project', 'project'));
-
-  // WHEN
-  const result = await registerCloudWatchLogGroups(logsMockSdkProvider.mockSdkProvider, cdkStackArtifact);
-
-  // THEN
-  expect(result.logGroupNames).toEqual(['/aws/codebuild/project']);
-});
-
 test('excluded log groups are not added', async () => {
   // GIVEN
   const cdkStackArtifact = cdkStackArtifactOf({
@@ -225,7 +167,7 @@ test('excluded log groups are not added', async () => {
   const result = await registerCloudWatchLogGroups(logsMockSdkProvider.mockSdkProvider, cdkStackArtifact);
 
   // THEN
-  expect(result.logGroupNames).toEqual(['/aws/codebuild/project']);
+  expect(result.logGroupNames).toEqual([]);
 });
 
 test('unassociated log groups are added', async () => {
