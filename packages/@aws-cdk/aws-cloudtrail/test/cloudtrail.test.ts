@@ -186,6 +186,40 @@ describe('cloudtrail', () => {
         PolicyDocument: {
           Statement: [
             {
+              Action: 's3:*',
+              Condition: {
+                Bool: {
+                  'aws:SecureTransport': 'false',
+                },
+              },
+              Effect: 'Deny',
+              Principal: {
+                AWS: '*',
+              },
+              Resource: [
+                {
+                  'Fn::GetAtt': [
+                    'TrailS30071F172',
+                    'Arn',
+                  ],
+                },
+                {
+                  'Fn::Join': [
+                    '',
+                    [
+                      {
+                        'Fn::GetAtt': [
+                          'TrailS30071F172',
+                          'Arn',
+                        ],
+                      },
+                      '/*',
+                    ],
+                  ],
+                },
+              ],
+            },
+            {
               Action: 's3:GetBucketAcl',
               Effect: 'Allow',
               Principal: { Service: 'cloudtrail.amazonaws.com' },
