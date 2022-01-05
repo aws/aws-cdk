@@ -72,6 +72,21 @@ export enum Operation {
   /** BatchWriteItem */
   BATCH_WRITE_ITEM = 'BatchWriteItem',
 
+  /** TransactWriteItems */
+  TRANSACT_WRITE_ITEMS = 'TransactWriteItems',
+
+  /** TransactGetItems */
+  TRANSACT_GET_ITEMS = 'TransactGetItems',
+
+  /** ExecuteTransaction */
+  EXECUTE_TRANSACTION = 'ExecuteTransaction',
+
+  /** BatchExecuteStatement */
+  BATCH_EXECUTE_STATEMENT = 'BatchExecuteStatement',
+
+  /** ExecuteStatement */
+  EXECUTE_STATEMENT = 'ExecuteStatement',
+
 }
 
 /**
@@ -818,9 +833,23 @@ abstract class TableBase extends Resource implements ITable {
    * How many requests are throttled on this table
    *
    * Default: sum over 5 minutes
+   *
+   * @deprecated Do not use this function. It returns an invalid metric. Use `metricThrottledRequestsForOperation` instead.
    */
   public metricThrottledRequests(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.cannedMetric(DynamoDBMetrics.throttledRequestsSum, props);
+    return this.metric('ThrottledRequests', { statistic: 'sum', ...props });
+  }
+
+  /**
+   * How many requests are throttled on this table, for the given operation
+   *
+   * Default: sum over 5 minutes
+   */
+  public metricThrottledRequestsForOperation(operation: string, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
+    return new cloudwatch.Metric({
+      ...DynamoDBMetrics.throttledRequestsSum({ Operation: operation, TableName: this.tableName }),
+      ...props,
+    }).attachTo(this);
   }
 
   /**
@@ -1542,7 +1571,11 @@ export class Table extends TableBase {
         properties: {
           TableName: this.tableName,
           Region: region,
-          SkipReplicationCompletedWait: waitForReplicationToFinish === undefined ? undefined : !waitForReplicationToFinish,
+          SkipReplicationCompletedWait: waitForReplicationToFinish == null
+            ? undefined
+            // CFN changes Custom Resource properties to strings anyways,
+            // so let's do that ourselves to make it clear in the handler this is a string, not a boolean
+            : (!waitForReplicationToFinish).toString(),
         },
       });
       currentRegion.node.addDependency(

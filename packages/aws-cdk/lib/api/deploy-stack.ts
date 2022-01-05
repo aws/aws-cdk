@@ -10,6 +10,7 @@ import { publishAssets } from '../util/asset-publishing';
 import { contentHash } from '../util/content-hash';
 import { ISDK, SdkProvider } from './aws-auth';
 import { tryHotswapDeployment } from './hotswap-deployments';
+import { ICON } from './hotswap/common';
 import { CfnEvaluationException } from './hotswap/evaluate-cloudformation-template';
 import { ToolkitInfo } from './toolkit-info';
 import {
@@ -231,6 +232,11 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
 
   if (await canSkipDeploy(options, cloudFormationStack, stackParams.hasChanges(cloudFormationStack.parameters))) {
     debug(`${deployName}: skipping deployment (use --force to override)`);
+    // if we can skip deployment and we are performing a hotswap, let the user know
+    // that no hotswap deployment happened
+    if (options.hotswap) {
+      print(`\n ${ICON} %s\n`, colors.bold('hotswap deployment skipped - no changes were detected (use --force to override)'));
+    }
     return {
       noOp: true,
       outputs: cloudFormationStack.outputs,

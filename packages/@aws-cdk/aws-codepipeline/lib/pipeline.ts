@@ -4,8 +4,18 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
 import {
-  App, ArnFormat, BootstraplessSynthesizer, DefaultStackSynthesizer,
-  IStackSynthesizer, Lazy, Names, PhysicalName, RemovalPolicy, Resource, Stack, Token,
+  ArnFormat,
+  BootstraplessSynthesizer,
+  DefaultStackSynthesizer,
+  IStackSynthesizer,
+  Lazy,
+  Names,
+  PhysicalName,
+  RemovalPolicy,
+  Resource,
+  Stack,
+  Stage as CdkStage,
+  Token,
 } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { ActionCategory, IAction, IPipeline, IStage, PipelineNotificationEvents, PipelineNotifyOnOptions } from './action';
@@ -136,6 +146,13 @@ export interface PipelineProps {
    * @default - false (key rotation is disabled)
    */
   readonly enableKeyRotation?: boolean;
+
+  /**
+   * Reuse the same cross region support stack for all pipelines in the App.
+   *
+   * @default - true (Use the same support stack for all pipelines in App)
+   */
+  readonly reuseCrossRegionSupportStacks?: boolean;
 }
 
 abstract class PipelineBase extends Resource implements IPipeline {
@@ -332,6 +349,7 @@ export class Pipeline extends PipelineBase {
   private readonly _crossAccountSupport: { [account: string]: Stack } = {};
   private readonly crossAccountKeys: boolean;
   private readonly enableKeyRotation?: boolean;
+  private readonly reuseCrossRegionSupportStacks: boolean;
 
   constructor(scope: Construct, id: string, props: PipelineProps = {}) {
     super(scope, id, {
@@ -353,6 +371,8 @@ export class Pipeline extends PipelineBase {
     if (this.enableKeyRotation && !this.crossAccountKeys) {
       throw new Error("Setting 'enableKeyRotation' to true also requires 'crossAccountKeys' to be enabled");
     }
+
+    this.reuseCrossRegionSupportStacks = props.reuseCrossRegionSupportStacks ?? true;
 
     // If a bucket has been provided, use it - otherwise, create a bucket.
     let propsBucket = this.getArtifactBucketFromProps(props);
@@ -620,8 +640,8 @@ export class Pipeline extends PipelineBase {
       throw new Error("You need to specify an explicit account when using CodePipeline's cross-region support");
     }
 
-    const app = this.requireApp();
-    const supportStackId = `cross-region-stack-${pipelineAccount}:${actionRegion}`;
+    const app = this.supportScope();
+    const supportStackId = `cross-region-stack-${this.reuseCrossRegionSupportStacks ? pipelineAccount : pipelineStack.stackName}:${actionRegion}`;
     let supportStack = app.node.tryFindChild(supportStackId) as CrossRegionSupportStack;
     if (!supportStack) {
       supportStack = new CrossRegionSupportStack(app, supportStackId, {
@@ -816,7 +836,7 @@ export class Pipeline extends PipelineBase {
     let targetAccountStack: Stack | undefined = this._crossAccountSupport[targetAccount];
     if (!targetAccountStack) {
       const stackId = `cross-account-support-stack-${targetAccount}`;
-      const app = this.requireApp();
+      const app = this.supportScope();
       targetAccountStack = app.node.tryFindChild(stackId) as Stack;
       if (!targetAccountStack) {
         const actionRegion = action.actionProperties.resource
@@ -1026,12 +1046,12 @@ export class Pipeline extends PipelineBase {
     return region;
   }
 
-  private requireApp(): App {
-    const app = this.node.root;
-    if (!app || !App.isApp(app)) {
-      throw new Error('Pipeline stack which uses cross-environment actions must be part of a CDK app');
+  private supportScope(): CdkStage {
+    const scope = CdkStage.of(this);
+    if (!scope) {
+      throw new Error('Pipeline stack which uses cross-environment actions must be part of a CDK App or Stage');
     }
-    return app;
+    return scope;
   }
 }
 

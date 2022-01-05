@@ -41,6 +41,8 @@ export async function generateShrinkwrap(options: ShrinkwrapOptions): Promise<Pa
     hoistDependencies({ version: '*', dependencies: lock.dependencies });
   }
 
+  validateTree(lock);
+
   if (options.outputFile) {
     // Write the shrinkwrap file
     await fs.writeFile(options.outputFile, JSON.stringify(lock, undefined, 2), { encoding: 'utf8' });
@@ -55,7 +57,7 @@ async function generateLockFile(pkgJson: PackageJson, yarnLock: YarnLock, rootDi
     version: pkgJson.version,
     lockfileVersion: 1,
     requires: true,
-    dependencies: await dependenciesFor(pkgJson.dependencies || {}, yarnLock, rootDir),
+    dependencies: await dependenciesFor(pkgJson.dependencies || {}, yarnLock, rootDir, [pkgJson.name]),
   };
 
   checkRequiredVersions(lockFile);
@@ -63,14 +65,29 @@ async function generateLockFile(pkgJson: PackageJson, yarnLock: YarnLock, rootDi
   return lockFile;
 }
 
+const CYCLES_REPORTED = new Set<string>();
+
 // eslint-disable-next-line max-len
-async function dependenciesFor(deps: Record<string, string>, yarnLock: YarnLock, rootDir: string): Promise<Record<string, PackageLockPackage>> {
+async function dependenciesFor(deps: Record<string, string>, yarnLock: YarnLock, rootDir: string, dependencyPath: string[]): Promise<Record<string, PackageLockPackage>> {
   const ret: Record<string, PackageLockPackage> = {};
 
   // Get rid of any monorepo symlinks
   rootDir = await fs.realpath(rootDir);
 
   for (const [depName, versionRange] of Object.entries(deps)) {
+    if (dependencyPath.includes(depName)) {
+      const index = dependencyPath.indexOf(depName);
+      const beforeCycle = dependencyPath.slice(0, index);
+      const inCycle = [...dependencyPath.slice(index), depName];
+      const cycleString = inCycle.join(' => ');
+      if (!CYCLES_REPORTED.has(cycleString)) {
+        // eslint-disable-next-line no-console
+        console.warn(`Dependency cycle: ${beforeCycle.join(' => ')} => [ ${cycleString} ]. Dropping dependency '${inCycle.slice(-2).join(' => ')}'.`);
+        CYCLES_REPORTED.add(cycleString);
+      }
+      continue;
+    }
+
     const depDir = await findPackageDir(depName, rootDir);
     const depPkgJsonFile = path.join(depDir, 'package.json');
     const depPkgJson = await loadPackageJson(depPkgJsonFile);
@@ -89,14 +106,14 @@ async function dependenciesFor(deps: Record<string, string>, yarnLock: YarnLock,
         integrity: yarnResolved.integrity,
         resolved: yarnResolved.resolved,
         requires: depPkgJson.dependencies,
-        dependencies: await dependenciesFor(depPkgJson.dependencies || {}, yarnLock, depDir),
+        dependencies: await dependenciesFor(depPkgJson.dependencies || {}, yarnLock, depDir, [...dependencyPath, depName]),
       };
     } else {
       // Comes from monorepo, just use whatever's in package.json
       ret[depName] = {
         version: depPkgJson.version,
         requires: depPkgJson.dependencies,
-        dependencies: await dependenciesFor(depPkgJson.dependencies || {}, yarnLock, depDir),
+        dependencies: await dependenciesFor(depPkgJson.dependencies || {}, yarnLock, depDir, [...dependencyPath, depName]),
       };
     }
 
@@ -264,4 +281,46 @@ export function checkRequiredVersions(root: PackageLock | PackageLockPackage) {
     }
     return undefined;
   }
+}
+
+/**
+ * Check that all packages still resolve their dependencies to the right versions
+ *
+ * We have manipulated the tree a bunch. Do a sanity check to ensure that all declared
+ * dependencies are satisfied.
+ */
+function validateTree(lock: PackageLock) {
+  let failed = false;
+  recurse(lock, [lock]);
+  if (failed) {
+    throw new Error('Could not satisfy one or more dependencies');
+  }
+
+  function recurse(pkg: PackageLockEntry, rootPath: PackageLockEntry[]) {
+    for (const pack of Object.values(pkg.dependencies ?? {})) {
+      const p = [pack, ...rootPath];
+      checkRequiresOf(pack, p);
+      recurse(pack, p);
+    }
+  }
+
+  // rootPath: most specific one first
+  function checkRequiresOf(pack: PackageLockPackage, rootPath: PackageLockEntry[]) {
+    for (const [name, declaredRange] of Object.entries(pack.requires ?? {})) {
+      const foundVersion = rootPath.map((p) => p.dependencies?.[name]?.version).find(isDefined);
+      if (!foundVersion) {
+        // eslint-disable-next-line no-console
+        console.error(`Dependency on ${name} not satisfied: not found`);
+        failed = true;
+      } else if (!semver.satisfies(foundVersion, declaredRange)) {
+        // eslint-disable-next-line no-console
+        console.error(`Dependency on ${name} not satisfied: declared range '${declaredRange}', found '${foundVersion}'`);
+        failed = true;
+      }
+    }
+  }
+}
+
+function isDefined<A>(x: A): x is NonNullable<A> {
+  return x !== undefined;
 }
