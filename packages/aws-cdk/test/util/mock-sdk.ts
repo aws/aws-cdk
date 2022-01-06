@@ -52,8 +52,8 @@ export class MockSdkProvider extends SdkProvider {
     return Promise.resolve({ accountId: '123456789012', partition: 'aws' });
   }
 
-  public forEnvironment(): Promise<ISDK> {
-    return Promise.resolve(this.sdk);
+  public forEnvironment(): Promise<{ sdk: ISDK, defaultCredentials: boolean }> {
+    return Promise.resolve({ sdk: this.sdk, defaultCredentials: false });
   }
 
   /**
