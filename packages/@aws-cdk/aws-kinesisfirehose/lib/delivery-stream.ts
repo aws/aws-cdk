@@ -132,15 +132,15 @@ abstract class DeliveryStreamBase extends cdk.Resource implements IDeliveryStrea
   }
 
   public metricIncomingBytes(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.cannedMetric(FirehoseMetrics.incomingBytesAverage, props);
+    return this.cannedMetric(FirehoseMetrics.incomingBytesSum, props);
   }
 
   public metricIncomingRecords(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.cannedMetric(FirehoseMetrics.incomingRecordsAverage, props);
+    return this.cannedMetric(FirehoseMetrics.incomingRecordsSum, props);
   }
 
   public metricBackupToS3Bytes(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.cannedMetric(FirehoseMetrics.backupToS3BytesAverage, props);
+    return this.cannedMetric(FirehoseMetrics.backupToS3BytesSum, props);
   }
 
   public metricBackupToS3DataFreshness(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
@@ -148,7 +148,7 @@ abstract class DeliveryStreamBase extends cdk.Resource implements IDeliveryStrea
   }
 
   public metricBackupToS3Records(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.cannedMetric(FirehoseMetrics.backupToS3RecordsAverage, props);
+    return this.cannedMetric(FirehoseMetrics.backupToS3RecordsSum, props);
   }
 
   private cannedMetric(fn: (dims: { DeliveryStreamName: string }) => cloudwatch.MetricProps, props?: cloudwatch.MetricOptions): cloudwatch.Metric {
