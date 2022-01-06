@@ -746,7 +746,7 @@ function createInstances(cluster: DatabaseClusterNew, props: DatabaseClusterBase
   const instanceType = instanceProps.instanceType ?? ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.MEDIUM);
 
   if (instanceProps.parameterGroup && instanceProps.parameters) {
-    throw new Error('You cannot specify parameterGroup and parameters');
+    throw new Error('You cannot specify both parameterGroup and parameters');
   }
 
   const instanceParameterGroup = instanceProps.parameterGroup ?? (
