@@ -2,25 +2,29 @@
 
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { App } from '@aws-cdk/core';
+import { App, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { Cluster } from '../lib';
-import { TestStack } from './util';
 
-class VpcStack extends TestStack {
+const env = {
+  region: process.env.CDK_INTEG_REGION || process.env.CDK_DEFAULT_REGION,
+  account: process.env.CDK_INTEG_ACCOUNT || process.env.CDK_DEFAULT_ACCOUNT,
+};
+
+class VpcStack extends Stack {
   public readonly vpc: ec2.Vpc;
 
   constructor(scope: Construct, id: string) {
-    super(scope, id);
+    super(scope, id, { env });
     this.vpc = new ec2.Vpc(this, 'vpc', { maxAzs: 2 });
   }
 }
 
-class ClusterStack extends TestStack {
+class ClusterStack extends Stack {
   public readonly cluster: Cluster;
 
   constructor(scope: Construct, id: string, props: { vpc: ec2.Vpc }) {
-    super(scope, id);
+    super(scope, id, { env });
 
     /// !show
     // define the cluster. kubectl is enabled by default.

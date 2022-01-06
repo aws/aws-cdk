@@ -375,6 +375,11 @@ export interface TargetGroupImportProps extends TargetGroupAttributes {
  */
 export interface ITargetGroup extends IConstruct {
   /**
+   * The name of the target group
+   */
+  readonly targetGroupName: string;
+
+  /**
    * ARN of the target group
    */
   readonly targetGroupArn: string;

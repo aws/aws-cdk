@@ -130,5 +130,7 @@ const cluster = new DatabaseCluster(this, 'Database', {
   ...,
   exportProfilerLogsToCloudWatch: true, // Enable sending profiler logs
   exportAuditLogsToCloudWatch: true, // Enable sending audit logs
+  cloudWatchLogsRetention: logs.RetentionDays.THREE_MONTHS, // Optional - default is to never expire logs
+  cloudWatchLogsRetentionRole: myLogsPublishingRole, // Optional - a role will be created if not provided
 });
 ```

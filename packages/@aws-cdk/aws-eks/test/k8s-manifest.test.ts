@@ -1,6 +1,6 @@
 import '@aws-cdk/assert-internal/jest';
 import { SynthUtils } from '@aws-cdk/assert-internal';
-import { Stack } from '@aws-cdk/core';
+import { CfnResource, Stack } from '@aws-cdk/core';
 import { Cluster, KubernetesManifest, KubernetesVersion, HelmChart } from '../lib';
 import { testFixtureNoVpc, testFixtureCluster } from './util';
 
@@ -107,6 +107,17 @@ describe('k8s manifest', () => {
     });
 
 
+  });
+
+  test('default child is a CfnResource', () => {
+    const stack = new Stack();
+    const cluster = Cluster.fromClusterAttributes(stack, 'MyCluster', {
+      clusterName: 'my-cluster-name',
+      kubectlRoleArn: 'arn:aws:iam::1111111:role/iam-role-that-has-masters-access',
+    });
+
+    const manifest = cluster.addManifest('foo', { bar: 2334 });
+    expect(manifest.node.defaultChild).toBeInstanceOf(CfnResource);
   });
 
   describe('prune labels', () => {

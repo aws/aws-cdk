@@ -158,6 +158,9 @@
           },
           "Type": "S3"
         },
+        "Cache": {
+          "Type": "NO_CACHE"
+        },
         "EncryptionKey": "alias/aws/s3"
       }
     }

@@ -16,7 +16,7 @@ class EksClusterInferenceStack extends TestStack {
       vpc,
       version: eks.KubernetesVersion.V1_21,
       albController: {
-        version: eks.AlbControllerVersion.V2_3_0,
+        version: eks.AlbControllerVersion.V2_3_1,
       },
     });
 

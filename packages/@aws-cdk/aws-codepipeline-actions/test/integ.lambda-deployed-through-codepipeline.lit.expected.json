@@ -1394,6 +1394,9 @@
           "BuildSpec": "{\n  \"version\": \"0.2\",\n  \"phases\": {\n    \"install\": {\n      \"commands\": \"npm install\"\n    },\n    \"build\": {\n      \"commands\": [\n        \"npm run build\",\n        \"npm run cdk synth LambdaStack -- -o .\"\n      ]\n    }\n  },\n  \"artifacts\": {\n    \"files\": \"LambdaStack.template.yaml\"\n  }\n}",
           "Type": "NO_SOURCE"
         },
+        "Cache": {
+          "Type": "NO_CACHE"
+        },
         "EncryptionKey": {
           "Fn::GetAtt": [
             "PipelineArtifactsBucketEncryptionKey01D58D69",
@@ -1612,6 +1615,9 @@
         "Source": {
           "BuildSpec": "{\n  \"version\": \"0.2\",\n  \"phases\": {\n    \"install\": {\n      \"commands\": \"npm install\"\n    },\n    \"build\": {\n      \"commands\": \"npm run build\"\n    }\n  },\n  \"artifacts\": {\n    \"files\": [\n      \"index.js\",\n      \"node_modules/**/*\"\n    ]\n  }\n}",
           "Type": "NO_SOURCE"
+        },
+        "Cache": {
+          "Type": "NO_CACHE"
         },
         "EncryptionKey": {
           "Fn::GetAtt": [

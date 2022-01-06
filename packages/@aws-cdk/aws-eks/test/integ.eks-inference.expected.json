@@ -2043,7 +2043,7 @@
               {
                 "Ref": "Vpc8378EB38"
               },
-              "\",\"repository\":\"602401143452.dkr.ecr.us-west-2.amazonaws.com/amazon/aws-load-balancer-controller\",\"tag\":\"v2.3.0\"}"
+              "\",\"image\":{\"repository\":\"602401143452.dkr.ecr.us-west-2.amazonaws.com/amazon/aws-load-balancer-controller\",\"tag\":\"v2.3.1\"}}"
             ]
           ]
         },

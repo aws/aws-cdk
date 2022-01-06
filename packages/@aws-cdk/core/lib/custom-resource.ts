@@ -98,11 +98,25 @@ export interface CustomResourceProps {
 }
 
 /**
- * Custom resource that is implemented using a Lambda
+ * Instantiation of a custom resource, whose implementation is provided a Provider
  *
- * As a custom resource author, you should be publishing a subclass of this class
- * that hides the choice of provider, and accepts a strongly-typed properties
- * object with the properties your provider accepts.
+ * This class is intended to be used by construct library authors. Application
+ * builder should not be able to tell whether or not a construct is backed by
+ * a custom resource, and so the use of this class should be invisible.
+ *
+ * Instead, construct library authors declare a custom construct that hides the
+ * choice of provider, and accepts a strongly-typed properties object with the
+ * properties your provider accepts.
+ *
+ * Your custom resource provider (identified by the `serviceToken` property)
+ * can be one of 4 constructs:
+ *
+ * - If you are authoring a construct library or application, we recommend you
+ *   use the `Provider` class in the `custom-resources` module.
+ * - If you are authoring a construct for the CDK's AWS Construct Library,
+ *   you should use the `CustomResourceProvider` construct in this package.
+ * - If you want full control over the provider, you can always directly use
+ *   a Lambda Function or SNS Topic by passing the ARN into `serviceToken`.
  *
  * @resource AWS::CloudFormation::CustomResource
  */

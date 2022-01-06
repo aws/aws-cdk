@@ -499,4 +499,18 @@ describe('tests', () => {
     expect(() => targetGroup.metricHealthyHostCount()).toThrow(/The TargetGroup needs to be attached to a LoadBalancer/);
     expect(() => targetGroup.metricUnHealthyHostCount()).toThrow(/The TargetGroup needs to be attached to a LoadBalancer/);
   });
+
+  test('imported targetGroup has targetGroupName', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack');
+
+    // WHEN
+    const importedTg = elbv2.NetworkTargetGroup.fromTargetGroupAttributes(stack, 'importedTg', {
+      targetGroupArn: 'arn:aws:elasticloadbalancing:us-west-2:123456789012:targetgroup/myNlbTargetGroup/73e2d6bc24d8a067',
+    });
+
+    // THEN
+    expect(importedTg.targetGroupName).toEqual('myNlbTargetGroup');
+  });
 });

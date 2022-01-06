@@ -16,8 +16,19 @@ describe('event bus', () => {
     expect(stack).toHaveResource('AWS::Events::EventBus', {
       Name: 'Bus',
     });
+  });
 
+  test('default event bus with empty props object', () => {
+    // GIVEN
+    const stack = new Stack();
 
+    // WHEN
+    new EventBus(stack, 'Bus', {});
+
+    // THEN
+    expect(stack).toHaveResource('AWS::Events::EventBus', {
+      Name: 'Bus',
+    });
   });
 
   test('named event bus', () => {

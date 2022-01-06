@@ -244,9 +244,6 @@ test('no server side encryption header if access denied for bucket encryption', 
   expect(aws.mockS3.upload).toHaveBeenCalledWith(expect.not.objectContaining({
     ServerSideEncryption: 'AES256',
   }));
-
-  // Error message references target_account, not current_account
-  expect(progressListener.messages).toContainEqual(expect.stringMatching(/ACCES_DENIED.*target_account/));
 });
 
 test('correctly looks up content type', async () => {

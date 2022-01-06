@@ -12,6 +12,11 @@ export abstract class ImportedTargetGroupBase extends Construct implements ITarg
   public readonly targetGroupArn: string;
 
   /**
+   * The name of the target group
+   */
+  public readonly targetGroupName: string;
+
+  /**
    * A token representing a list of ARNs of the load balancers that route traffic to this target group
    */
   public readonly loadBalancerArns: string;
@@ -25,6 +30,7 @@ export abstract class ImportedTargetGroupBase extends Construct implements ITarg
     super(scope, id);
 
     this.targetGroupArn = props.targetGroupArn;
+    this.targetGroupName = cdk.Stack.of(scope).splitArn(props.targetGroupArn, cdk.ArnFormat.SLASH_RESOURCE_SLASH_RESOURCE_NAME).resourceName!.split('/')[0];
     this.loadBalancerArns = props.loadBalancerArns || cdk.Aws.NO_VALUE;
   }
 }

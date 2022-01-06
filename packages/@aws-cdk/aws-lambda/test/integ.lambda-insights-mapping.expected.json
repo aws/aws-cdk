@@ -58,12 +58,15 @@
         "Handler": "index.handler",
         "Layers": [
           {
-            "Fn::FindInMap": [
-              "LambdaInsightsVersions10540",
-              {
-                "Ref": "AWS::Region"
-              },
-              "arn"
+            "Fn::Join": [
+              "",
+              [
+                "arn:aws:lambda:",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ":580247275435:layer:LambdaInsightsExtension:2"
+              ]
             ]
           }
         ],
@@ -131,12 +134,15 @@
         "Handler": "index.handler",
         "Layers": [
           {
-            "Fn::FindInMap": [
-              "LambdaInsightsVersions10860",
-              {
-                "Ref": "AWS::Region"
-              },
-              "arn"
+            "Fn::Join": [
+              "",
+              [
+                "arn:aws:lambda:",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ":580247275435:layer:LambdaInsightsExtension:11"
+              ]
             ]
           }
         ],
@@ -204,12 +210,15 @@
         "Handler": "index.handler",
         "Layers": [
           {
-            "Fn::FindInMap": [
-              "LambdaInsightsVersions10890",
-              {
-                "Ref": "AWS::Region"
-              },
-              "arn"
+            "Fn::Join": [
+              "",
+              [
+                "arn:aws:lambda:",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ":580247275435:layer:LambdaInsightsExtension:12"
+              ]
             ]
           }
         ],
@@ -278,11 +287,11 @@
         "Layers": [
           {
             "Fn::FindInMap": [
-              "LambdaInsightsVersions10980",
+              "CloudwatchlambdainsightsversionMap",
               {
                 "Ref": "AWS::Region"
               },
-              "arn"
+              "1_0_98_0_x86_64"
             ]
           }
         ],
@@ -351,11 +360,11 @@
         "Layers": [
           {
             "Fn::FindInMap": [
-              "LambdaInsightsVersions101190",
+              "CloudwatchlambdainsightsversionMap",
               {
                 "Ref": "AWS::Region"
               },
-              "arn"
+              "1_0_119_0_x86_64"
             ]
           }
         ],
@@ -426,12 +435,15 @@
         "Handler": "index.handler",
         "Layers": [
           {
-            "Fn::FindInMap": [
-              "LambdaInsightsVersions101190arm64",
-              {
-                "Ref": "AWS::Region"
-              },
-              "arn"
+            "Fn::Join": [
+              "",
+              [
+                "arn:aws:lambda:",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ":580247275435:layer:LambdaInsightsExtension-Arm64:1"
+              ]
             ]
           }
         ],
@@ -443,322 +455,94 @@
     }
   },
   "Mappings": {
-    "LambdaInsightsVersions10540": {
-      "ap-northeast-1": {
-        "arn": "arn:aws:lambda:ap-northeast-1:580247275435:layer:LambdaInsightsExtension:2"
-      },
-      "ap-northeast-2": {
-        "arn": "arn:aws:lambda:ap-northeast-2:580247275435:layer:LambdaInsightsExtension:2"
-      },
-      "ap-south-1": {
-        "arn": "arn:aws:lambda:ap-south-1:580247275435:layer:LambdaInsightsExtension:2"
-      },
-      "ap-southeast-1": {
-        "arn": "arn:aws:lambda:ap-southeast-1:580247275435:layer:LambdaInsightsExtension:2"
-      },
-      "ap-southeast-2": {
-        "arn": "arn:aws:lambda:ap-southeast-2:580247275435:layer:LambdaInsightsExtension:2"
-      },
-      "ca-central-1": {
-        "arn": "arn:aws:lambda:ca-central-1:580247275435:layer:LambdaInsightsExtension:2"
-      },
-      "eu-central-1": {
-        "arn": "arn:aws:lambda:eu-central-1:580247275435:layer:LambdaInsightsExtension:2"
-      },
-      "eu-north-1": {
-        "arn": "arn:aws:lambda:eu-north-1:580247275435:layer:LambdaInsightsExtension:2"
-      },
-      "eu-west-1": {
-        "arn": "arn:aws:lambda:eu-west-1:580247275435:layer:LambdaInsightsExtension:2"
-      },
-      "eu-west-2": {
-        "arn": "arn:aws:lambda:eu-west-2:580247275435:layer:LambdaInsightsExtension:2"
-      },
-      "eu-west-3": {
-        "arn": "arn:aws:lambda:eu-west-3:580247275435:layer:LambdaInsightsExtension:2"
-      },
-      "sa-east-1": {
-        "arn": "arn:aws:lambda:sa-east-1:580247275435:layer:LambdaInsightsExtension:2"
-      },
-      "us-east-1": {
-        "arn": "arn:aws:lambda:us-east-1:580247275435:layer:LambdaInsightsExtension:2"
-      },
-      "us-east-2": {
-        "arn": "arn:aws:lambda:us-east-2:580247275435:layer:LambdaInsightsExtension:2"
-      },
-      "us-west-1": {
-        "arn": "arn:aws:lambda:us-west-1:580247275435:layer:LambdaInsightsExtension:2"
-      },
-      "us-west-2": {
-        "arn": "arn:aws:lambda:us-west-2:580247275435:layer:LambdaInsightsExtension:2"
-      }
-    },
-    "LambdaInsightsVersions10860": {
-      "ap-northeast-1": {
-        "arn": "arn:aws:lambda:ap-northeast-1:580247275435:layer:LambdaInsightsExtension:11"
-      },
-      "ap-northeast-2": {
-        "arn": "arn:aws:lambda:ap-northeast-2:580247275435:layer:LambdaInsightsExtension:11"
-      },
-      "ap-south-1": {
-        "arn": "arn:aws:lambda:ap-south-1:580247275435:layer:LambdaInsightsExtension:11"
-      },
-      "ap-southeast-1": {
-        "arn": "arn:aws:lambda:ap-southeast-1:580247275435:layer:LambdaInsightsExtension:11"
-      },
-      "ap-southeast-2": {
-        "arn": "arn:aws:lambda:ap-southeast-2:580247275435:layer:LambdaInsightsExtension:11"
-      },
-      "ca-central-1": {
-        "arn": "arn:aws:lambda:ca-central-1:580247275435:layer:LambdaInsightsExtension:11"
-      },
-      "eu-central-1": {
-        "arn": "arn:aws:lambda:eu-central-1:580247275435:layer:LambdaInsightsExtension:11"
-      },
-      "eu-north-1": {
-        "arn": "arn:aws:lambda:eu-north-1:580247275435:layer:LambdaInsightsExtension:11"
-      },
-      "eu-west-1": {
-        "arn": "arn:aws:lambda:eu-west-1:580247275435:layer:LambdaInsightsExtension:11"
-      },
-      "eu-west-2": {
-        "arn": "arn:aws:lambda:eu-west-2:580247275435:layer:LambdaInsightsExtension:11"
-      },
-      "eu-west-3": {
-        "arn": "arn:aws:lambda:eu-west-3:580247275435:layer:LambdaInsightsExtension:11"
-      },
-      "sa-east-1": {
-        "arn": "arn:aws:lambda:sa-east-1:580247275435:layer:LambdaInsightsExtension:11"
-      },
-      "us-east-1": {
-        "arn": "arn:aws:lambda:us-east-1:580247275435:layer:LambdaInsightsExtension:11"
-      },
-      "us-east-2": {
-        "arn": "arn:aws:lambda:us-east-2:580247275435:layer:LambdaInsightsExtension:11"
-      },
-      "us-west-1": {
-        "arn": "arn:aws:lambda:us-west-1:580247275435:layer:LambdaInsightsExtension:11"
-      },
-      "us-west-2": {
-        "arn": "arn:aws:lambda:us-west-2:580247275435:layer:LambdaInsightsExtension:11"
-      }
-    },
-    "LambdaInsightsVersions10890": {
-      "ap-northeast-1": {
-        "arn": "arn:aws:lambda:ap-northeast-1:580247275435:layer:LambdaInsightsExtension:12"
-      },
-      "ap-northeast-2": {
-        "arn": "arn:aws:lambda:ap-northeast-2:580247275435:layer:LambdaInsightsExtension:12"
-      },
-      "ap-south-1": {
-        "arn": "arn:aws:lambda:ap-south-1:580247275435:layer:LambdaInsightsExtension:12"
-      },
-      "ap-southeast-1": {
-        "arn": "arn:aws:lambda:ap-southeast-1:580247275435:layer:LambdaInsightsExtension:12"
-      },
-      "ap-southeast-2": {
-        "arn": "arn:aws:lambda:ap-southeast-2:580247275435:layer:LambdaInsightsExtension:12"
-      },
-      "ca-central-1": {
-        "arn": "arn:aws:lambda:ca-central-1:580247275435:layer:LambdaInsightsExtension:12"
-      },
-      "eu-central-1": {
-        "arn": "arn:aws:lambda:eu-central-1:580247275435:layer:LambdaInsightsExtension:12"
-      },
-      "eu-north-1": {
-        "arn": "arn:aws:lambda:eu-north-1:580247275435:layer:LambdaInsightsExtension:12"
-      },
-      "eu-west-1": {
-        "arn": "arn:aws:lambda:eu-west-1:580247275435:layer:LambdaInsightsExtension:12"
-      },
-      "eu-west-2": {
-        "arn": "arn:aws:lambda:eu-west-2:580247275435:layer:LambdaInsightsExtension:12"
-      },
-      "eu-west-3": {
-        "arn": "arn:aws:lambda:eu-west-3:580247275435:layer:LambdaInsightsExtension:12"
-      },
-      "sa-east-1": {
-        "arn": "arn:aws:lambda:sa-east-1:580247275435:layer:LambdaInsightsExtension:12"
-      },
-      "us-east-1": {
-        "arn": "arn:aws:lambda:us-east-1:580247275435:layer:LambdaInsightsExtension:12"
-      },
-      "us-east-2": {
-        "arn": "arn:aws:lambda:us-east-2:580247275435:layer:LambdaInsightsExtension:12"
-      },
-      "us-west-1": {
-        "arn": "arn:aws:lambda:us-west-1:580247275435:layer:LambdaInsightsExtension:12"
-      },
-      "us-west-2": {
-        "arn": "arn:aws:lambda:us-west-2:580247275435:layer:LambdaInsightsExtension:12"
-      }
-    },
-    "LambdaInsightsVersions10980": {
+    "CloudwatchlambdainsightsversionMap": {
       "af-south-1": {
-        "arn": "arn:aws:lambda:af-south-1:012438385374:layer:LambdaInsightsExtension:8"
+        "1_0_98_0_x86_64": "arn:aws:lambda:af-south-1:012438385374:layer:LambdaInsightsExtension:8",
+        "1_0_119_0_x86_64": "arn:aws:lambda:af-south-1:012438385374:layer:LambdaInsightsExtension:9"
       },
       "ap-east-1": {
-        "arn": "arn:aws:lambda:ap-east-1:519774774795:layer:LambdaInsightsExtension:8"
+        "1_0_98_0_x86_64": "arn:aws:lambda:ap-east-1:519774774795:layer:LambdaInsightsExtension:8",
+        "1_0_119_0_x86_64": "arn:aws:lambda:ap-east-1:519774774795:layer:LambdaInsightsExtension:9"
       },
       "ap-northeast-1": {
-        "arn": "arn:aws:lambda:ap-northeast-1:580247275435:layer:LambdaInsightsExtension:14"
+        "1_0_98_0_x86_64": "arn:aws:lambda:ap-northeast-1:580247275435:layer:LambdaInsightsExtension:14",
+        "1_0_119_0_x86_64": "arn:aws:lambda:ap-northeast-1:580247275435:layer:LambdaInsightsExtension:23"
       },
       "ap-northeast-2": {
-        "arn": "arn:aws:lambda:ap-northeast-2:580247275435:layer:LambdaInsightsExtension:14"
+        "1_0_98_0_x86_64": "arn:aws:lambda:ap-northeast-2:580247275435:layer:LambdaInsightsExtension:14",
+        "1_0_119_0_x86_64": "arn:aws:lambda:ap-northeast-2:580247275435:layer:LambdaInsightsExtension:16"
       },
       "ap-south-1": {
-        "arn": "arn:aws:lambda:ap-south-1:580247275435:layer:LambdaInsightsExtension:14"
+        "1_0_98_0_x86_64": "arn:aws:lambda:ap-south-1:580247275435:layer:LambdaInsightsExtension:14",
+        "1_0_119_0_x86_64": "arn:aws:lambda:ap-south-1:580247275435:layer:LambdaInsightsExtension:16"
       },
       "ap-southeast-1": {
-        "arn": "arn:aws:lambda:ap-southeast-1:580247275435:layer:LambdaInsightsExtension:14"
+        "1_0_98_0_x86_64": "arn:aws:lambda:ap-southeast-1:580247275435:layer:LambdaInsightsExtension:14",
+        "1_0_119_0_x86_64": "arn:aws:lambda:ap-southeast-1:580247275435:layer:LambdaInsightsExtension:16"
       },
       "ap-southeast-2": {
-        "arn": "arn:aws:lambda:ap-southeast-2:580247275435:layer:LambdaInsightsExtension:14"
+        "1_0_98_0_x86_64": "arn:aws:lambda:ap-southeast-2:580247275435:layer:LambdaInsightsExtension:14",
+        "1_0_119_0_x86_64": "arn:aws:lambda:ap-southeast-2:580247275435:layer:LambdaInsightsExtension:16"
       },
       "ca-central-1": {
-        "arn": "arn:aws:lambda:ca-central-1:580247275435:layer:LambdaInsightsExtension:14"
+        "1_0_98_0_x86_64": "arn:aws:lambda:ca-central-1:580247275435:layer:LambdaInsightsExtension:14",
+        "1_0_119_0_x86_64": "arn:aws:lambda:ca-central-1:580247275435:layer:LambdaInsightsExtension:16"
       },
       "cn-north-1": {
-        "arn": "arn:aws-cn:lambda:cn-north-1:488211338238:layer:LambdaInsightsExtension:8"
+        "1_0_98_0_x86_64": "arn:aws-cn:lambda:cn-north-1:488211338238:layer:LambdaInsightsExtension:8",
+        "1_0_119_0_x86_64": "arn:aws-cn:lambda:cn-north-1:488211338238:layer:LambdaInsightsExtension:9"
       },
       "cn-northwest-1": {
-        "arn": "arn:aws-cn:lambda:cn-northwest-1:488211338238:layer:LambdaInsightsExtension:8"
+        "1_0_98_0_x86_64": "arn:aws-cn:lambda:cn-northwest-1:488211338238:layer:LambdaInsightsExtension:8",
+        "1_0_119_0_x86_64": "arn:aws-cn:lambda:cn-northwest-1:488211338238:layer:LambdaInsightsExtension:9"
       },
       "eu-central-1": {
-        "arn": "arn:aws:lambda:eu-central-1:580247275435:layer:LambdaInsightsExtension:14"
+        "1_0_98_0_x86_64": "arn:aws:lambda:eu-central-1:580247275435:layer:LambdaInsightsExtension:14",
+        "1_0_119_0_x86_64": "arn:aws:lambda:eu-central-1:580247275435:layer:LambdaInsightsExtension:16"
       },
       "eu-north-1": {
-        "arn": "arn:aws:lambda:eu-north-1:580247275435:layer:LambdaInsightsExtension:14"
+        "1_0_98_0_x86_64": "arn:aws:lambda:eu-north-1:580247275435:layer:LambdaInsightsExtension:14",
+        "1_0_119_0_x86_64": "arn:aws:lambda:eu-north-1:580247275435:layer:LambdaInsightsExtension:16"
       },
       "eu-south-1": {
-        "arn": "arn:aws:lambda:eu-south-1:339249233099:layer:LambdaInsightsExtension:8"
+        "1_0_98_0_x86_64": "arn:aws:lambda:eu-south-1:339249233099:layer:LambdaInsightsExtension:8",
+        "1_0_119_0_x86_64": "arn:aws:lambda:eu-south-1:339249233099:layer:LambdaInsightsExtension:9"
       },
       "eu-west-1": {
-        "arn": "arn:aws:lambda:eu-west-1:580247275435:layer:LambdaInsightsExtension:14"
+        "1_0_98_0_x86_64": "arn:aws:lambda:eu-west-1:580247275435:layer:LambdaInsightsExtension:14",
+        "1_0_119_0_x86_64": "arn:aws:lambda:eu-west-1:580247275435:layer:LambdaInsightsExtension:16"
       },
       "eu-west-2": {
-        "arn": "arn:aws:lambda:eu-west-2:580247275435:layer:LambdaInsightsExtension:14"
+        "1_0_98_0_x86_64": "arn:aws:lambda:eu-west-2:580247275435:layer:LambdaInsightsExtension:14",
+        "1_0_119_0_x86_64": "arn:aws:lambda:eu-west-2:580247275435:layer:LambdaInsightsExtension:16"
       },
       "eu-west-3": {
-        "arn": "arn:aws:lambda:eu-west-3:580247275435:layer:LambdaInsightsExtension:14"
+        "1_0_98_0_x86_64": "arn:aws:lambda:eu-west-3:580247275435:layer:LambdaInsightsExtension:14",
+        "1_0_119_0_x86_64": "arn:aws:lambda:eu-west-3:580247275435:layer:LambdaInsightsExtension:16"
       },
       "me-south-1": {
-        "arn": "arn:aws:lambda:me-south-1:285320876703:layer:LambdaInsightsExtension:8"
+        "1_0_98_0_x86_64": "arn:aws:lambda:me-south-1:285320876703:layer:LambdaInsightsExtension:8",
+        "1_0_119_0_x86_64": "arn:aws:lambda:me-south-1:285320876703:layer:LambdaInsightsExtension:9"
       },
       "sa-east-1": {
-        "arn": "arn:aws:lambda:sa-east-1:580247275435:layer:LambdaInsightsExtension:14"
+        "1_0_98_0_x86_64": "arn:aws:lambda:sa-east-1:580247275435:layer:LambdaInsightsExtension:14",
+        "1_0_119_0_x86_64": "arn:aws:lambda:sa-east-1:580247275435:layer:LambdaInsightsExtension:16"
       },
       "us-east-1": {
-        "arn": "arn:aws:lambda:us-east-1:580247275435:layer:LambdaInsightsExtension:14"
+        "1_0_98_0_x86_64": "arn:aws:lambda:us-east-1:580247275435:layer:LambdaInsightsExtension:14",
+        "1_0_119_0_x86_64": "arn:aws:lambda:us-east-1:580247275435:layer:LambdaInsightsExtension:16"
       },
       "us-east-2": {
-        "arn": "arn:aws:lambda:us-east-2:580247275435:layer:LambdaInsightsExtension:14"
+        "1_0_98_0_x86_64": "arn:aws:lambda:us-east-2:580247275435:layer:LambdaInsightsExtension:14",
+        "1_0_119_0_x86_64": "arn:aws:lambda:us-east-2:580247275435:layer:LambdaInsightsExtension:16"
       },
       "us-west-1": {
-        "arn": "arn:aws:lambda:us-west-1:580247275435:layer:LambdaInsightsExtension:14"
+        "1_0_98_0_x86_64": "arn:aws:lambda:us-west-1:580247275435:layer:LambdaInsightsExtension:14",
+        "1_0_119_0_x86_64": "arn:aws:lambda:us-west-1:580247275435:layer:LambdaInsightsExtension:16"
       },
       "us-west-2": {
-        "arn": "arn:aws:lambda:us-west-2:580247275435:layer:LambdaInsightsExtension:14"
-      }
-    },
-    "LambdaInsightsVersions101190": {
-      "af-south-1": {
-        "arn": "arn:aws:lambda:af-south-1:012438385374:layer:LambdaInsightsExtension:9"
-      },
-      "ap-east-1": {
-        "arn": "arn:aws:lambda:ap-east-1:519774774795:layer:LambdaInsightsExtension:9"
-      },
-      "ap-northeast-1": {
-        "arn": "arn:aws:lambda:ap-northeast-1:580247275435:layer:LambdaInsightsExtension:23"
-      },
-      "ap-northeast-2": {
-        "arn": "arn:aws:lambda:ap-northeast-2:580247275435:layer:LambdaInsightsExtension:16"
-      },
-      "ap-south-1": {
-        "arn": "arn:aws:lambda:ap-south-1:580247275435:layer:LambdaInsightsExtension:16"
-      },
-      "ap-southeast-1": {
-        "arn": "arn:aws:lambda:ap-southeast-1:580247275435:layer:LambdaInsightsExtension:16"
-      },
-      "ap-southeast-2": {
-        "arn": "arn:aws:lambda:ap-southeast-2:580247275435:layer:LambdaInsightsExtension:16"
-      },
-      "ca-central-1": {
-        "arn": "arn:aws:lambda:ca-central-1:580247275435:layer:LambdaInsightsExtension:16"
-      },
-      "cn-north-1": {
-        "arn": "arn:aws-cn:lambda:cn-north-1:488211338238:layer:LambdaInsightsExtension:9"
-      },
-      "cn-northwest-1": {
-        "arn": "arn:aws-cn:lambda:cn-northwest-1:488211338238:layer:LambdaInsightsExtension:9"
-      },
-      "eu-central-1": {
-        "arn": "arn:aws:lambda:eu-central-1:580247275435:layer:LambdaInsightsExtension:16"
-      },
-      "eu-north-1": {
-        "arn": "arn:aws:lambda:eu-north-1:580247275435:layer:LambdaInsightsExtension:16"
-      },
-      "eu-south-1": {
-        "arn": "arn:aws:lambda:eu-south-1:339249233099:layer:LambdaInsightsExtension:9"
-      },
-      "eu-west-1": {
-        "arn": "arn:aws:lambda:eu-west-1:580247275435:layer:LambdaInsightsExtension:16"
-      },
-      "eu-west-2": {
-        "arn": "arn:aws:lambda:eu-west-2:580247275435:layer:LambdaInsightsExtension:16"
-      },
-      "eu-west-3": {
-        "arn": "arn:aws:lambda:eu-west-3:580247275435:layer:LambdaInsightsExtension:16"
-      },
-      "me-south-1": {
-        "arn": "arn:aws:lambda:me-south-1:285320876703:layer:LambdaInsightsExtension:9"
-      },
-      "sa-east-1": {
-        "arn": "arn:aws:lambda:sa-east-1:580247275435:layer:LambdaInsightsExtension:16"
-      },
-      "us-east-1": {
-        "arn": "arn:aws:lambda:us-east-1:580247275435:layer:LambdaInsightsExtension:16"
-      },
-      "us-east-2": {
-        "arn": "arn:aws:lambda:us-east-2:580247275435:layer:LambdaInsightsExtension:16"
-      },
-      "us-west-1": {
-        "arn": "arn:aws:lambda:us-west-1:580247275435:layer:LambdaInsightsExtension:16"
-      },
-      "us-west-2": {
-        "arn": "arn:aws:lambda:us-west-2:580247275435:layer:LambdaInsightsExtension:16"
-      }
-    },
-    "LambdaInsightsVersions101190arm64": {
-      "ap-northeast-1": {
-        "arn": "arn:aws:lambda:ap-northeast-1:580247275435:layer:LambdaInsightsExtension-Arm64:1"
-      },
-      "ap-south-1": {
-        "arn": "arn:aws:lambda:ap-south-1:580247275435:layer:LambdaInsightsExtension-Arm64:1"
-      },
-      "ap-southeast-1": {
-        "arn": "arn:aws:lambda:ap-southeast-1:580247275435:layer:LambdaInsightsExtension-Arm64:1"
-      },
-      "ap-southeast-2": {
-        "arn": "arn:aws:lambda:ap-southeast-2:580247275435:layer:LambdaInsightsExtension-Arm64:1"
-      },
-      "eu-central-1": {
-        "arn": "arn:aws:lambda:eu-central-1:580247275435:layer:LambdaInsightsExtension-Arm64:1"
-      },
-      "eu-west-1": {
-        "arn": "arn:aws:lambda:eu-west-1:580247275435:layer:LambdaInsightsExtension-Arm64:1"
-      },
-      "eu-west-2": {
-        "arn": "arn:aws:lambda:eu-west-2:580247275435:layer:LambdaInsightsExtension-Arm64:1"
-      },
-      "us-east-1": {
-        "arn": "arn:aws:lambda:us-east-1:580247275435:layer:LambdaInsightsExtension-Arm64:1"
-      },
-      "us-east-2": {
-        "arn": "arn:aws:lambda:us-east-2:580247275435:layer:LambdaInsightsExtension-Arm64:1"
-      },
-      "us-west-2": {
-        "arn": "arn:aws:lambda:us-west-2:580247275435:layer:LambdaInsightsExtension-Arm64:1"
+        "1_0_98_0_x86_64": "arn:aws:lambda:us-west-2:580247275435:layer:LambdaInsightsExtension:14",
+        "1_0_119_0_x86_64": "arn:aws:lambda:us-west-2:580247275435:layer:LambdaInsightsExtension:16"
       }
     }
   }

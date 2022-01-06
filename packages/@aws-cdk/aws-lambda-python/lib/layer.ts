@@ -1,7 +1,8 @@
 import * as path from 'path';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { Construct } from 'constructs';
-import { bundle } from './bundling';
+import { Bundling } from './bundling';
+import { BundlingOptions } from './types';
 
 /**
  * Properties for PythonLayerVersion
@@ -15,7 +16,7 @@ export interface PythonLayerVersionProps extends lambda.LayerVersionOptions {
   /**
    * The runtimes compatible with the python layer.
    *
-   * @default - All runtimes are supported.
+   * @default - Only Python 3.7 is supported.
    */
   readonly compatibleRuntimes?: lambda.Runtime[];
 
@@ -24,6 +25,13 @@ export interface PythonLayerVersionProps extends lambda.LayerVersionOptions {
    * @default [Architecture.X86_64]
    */
   readonly compatibleArchitectures?: lambda.Architecture[];
+  /**
+   * Bundling options to use for this function. Use this to specify custom bundling options like
+   * the bundling Docker image, asset hash type, custom hash, architecture, etc.
+   *
+   * @default - Use the default bundling Docker image, with x86_64 architecture.
+   */
+  readonly bundling?: BundlingOptions;
 }
 
 /**
@@ -51,11 +59,12 @@ export class PythonLayerVersion extends lambda.LayerVersion {
     super(scope, id, {
       ...props,
       compatibleRuntimes,
-      code: bundle({
+      code: Bundling.bundle({
         entry,
         runtime,
         architecture,
         outputPathSuffix: 'python',
+        ...props.bundling,
       }),
     });
   }

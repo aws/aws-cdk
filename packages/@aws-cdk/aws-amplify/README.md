@@ -208,3 +208,13 @@ const amplifyApp = new amplify.App(stack, 'App', {
   ],
 });
 ```
+
+## Deploying Assets
+
+`sourceCodeProvider` is optional; when this is not specified the Amplify app can be deployed to using `.zip` packages. The `asset` property can be used to deploy S3 assets to Amplify as part of the CDK:
+
+```ts
+const asset = new assets.Asset(this, "SampleAsset", {});
+const amplifyApp = new amplify.App(this, 'MyApp', {});
+const branch = amplifyApp.addBranch("dev", { asset: asset });
+```

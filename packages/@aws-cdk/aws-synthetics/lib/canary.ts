@@ -256,7 +256,11 @@ export class Canary extends cdk.Resource {
    * @default avg over 5 minutes
    */
   public metricDuration(options?: MetricOptions): Metric {
-    return this.cannedMetric(CloudWatchSyntheticsMetrics.durationAverage, options);
+    return new Metric({
+      ...CloudWatchSyntheticsMetrics.durationMaximum({ CanaryName: this.canaryName }),
+      ...{ statistic: 'Average' },
+      ...options,
+    }).attachTo(this);
   }
 
   /**

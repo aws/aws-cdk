@@ -455,7 +455,9 @@ export class Function extends FunctionBase {
       protected readonly canCreatePermissions = attrs.sameEnvironment ?? this._isStackAccount();
 
       constructor(s: Construct, i: string) {
-        super(s, i);
+        super(s, i, {
+          environmentFromArn: functionArn,
+        });
 
         this.grantPrincipal = role || new iam.UnknownPrincipal({ resource: this });
 

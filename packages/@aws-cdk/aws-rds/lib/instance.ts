@@ -746,7 +746,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
       performanceInsightsRetentionPeriod: enablePerformanceInsights
         ? (props.performanceInsightRetention || PerformanceInsightRetention.DEFAULT)
         : undefined,
-      port: props.port?.toString(),
+      port: props.port !== undefined ? Tokenization.stringifyNumber(props.port) : undefined,
       preferredBackupWindow: props.preferredBackupWindow,
       preferredMaintenanceWindow: props.preferredMaintenanceWindow,
       processorFeatures: props.processorFeatures && renderProcessorFeatures(props.processorFeatures),

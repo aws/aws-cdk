@@ -1,6 +1,7 @@
 import { expect as expectCDK, haveResource, ResourcePart, arrayWith, haveResourceLike, objectLike } from '@aws-cdk/assert-internal';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as kms from '@aws-cdk/aws-kms';
+import * as logs from '@aws-cdk/aws-logs';
 import * as cdk from '@aws-cdk/core';
 
 import { ClusterParameterGroup, DatabaseCluster, DatabaseSecret } from '../lib';
@@ -649,6 +650,46 @@ describe('DatabaseCluster', () => {
     // THEN
     expectCDK(stack).to(haveResource('AWS::DocDB::DBCluster', {
       EnableCloudwatchLogsExports: ['audit', 'profiler'],
+    }));
+  });
+
+  test('can set CloudWatch log retention', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      masterUser: {
+        username: 'admin',
+      },
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+      vpc,
+      exportAuditLogsToCloudWatch: true,
+      exportProfilerLogsToCloudWatch: true,
+      cloudWatchLogsRetention: logs.RetentionDays.THREE_MONTHS,
+    });
+
+    // THEN
+    expectCDK(stack).to(haveResource('Custom::LogRetention', {
+      ServiceToken: {
+        'Fn::GetAtt': [
+          'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A',
+          'Arn',
+        ],
+      },
+      LogGroupName: { 'Fn::Join': ['', ['/aws/docdb/', { Ref: 'DatabaseB269D8BB' }, '/audit']] },
+      RetentionInDays: 90,
+    }));
+    expectCDK(stack).to(haveResource('Custom::LogRetention', {
+      ServiceToken: {
+        'Fn::GetAtt': [
+          'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A',
+          'Arn',
+        ],
+      },
+      LogGroupName: { 'Fn::Join': ['', ['/aws/docdb/', { Ref: 'DatabaseB269D8BB' }, '/profiler']] },
+      RetentionInDays: 90,
     }));
   });
 

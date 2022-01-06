@@ -63,6 +63,19 @@ plan.addRule(new backup.BackupPlanRule({
 }));
 ```
 
+Continuous backup and point-in-time restores (PITR) can be configured.
+Property `deleteAfter` defines the retention period for the backup. It is mandatory if PITR is enabled.
+If no value is specified, the retention period is set to 35 days which is the maximum retention period supported by PITR.
+Property `moveToColdStorageAfter` must not be specified because PITR does not support this option.
+This example defines an AWS Backup rule with PITR and a retention period set to 14 days:
+
+```ts fixture=with-plan
+plan.addRule(new backup.BackupPlanRule({
+  enableContinuousBackup: true,
+  deleteAfter: Duration.days(14),
+}));
+```
+
 Ready-made rules are also available:
 
 ```ts fixture=with-plan

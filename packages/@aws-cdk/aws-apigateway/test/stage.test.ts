@@ -1,4 +1,5 @@
 import '@aws-cdk/assert-internal/jest';
+import { ResourcePart } from '@aws-cdk/assert-internal';
 import * as logs from '@aws-cdk/aws-logs';
 import * as cdk from '@aws-cdk/core';
 import * as apigateway from '../lib';
@@ -69,6 +70,21 @@ describe('stage', () => {
     });
   });
 
+  test('stage depends on the CloudWatch role when it exists', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const api = new apigateway.RestApi(stack, 'test-api', { cloudWatchRole: true, deploy: false });
+    const deployment = new apigateway.Deployment(stack, 'my-deployment', { api });
+    api.root.addMethod('GET');
+
+    // WHEN
+    new apigateway.Stage(stack, 'my-stage', { deployment });
+
+    expect(stack).toHaveResourceLike('AWS::ApiGateway::Stage', {
+      DependsOn: ['testapiAccount9B907665'],
+    }, ResourcePart.CompleteDefinition);
+  });
+
   test('common method settings can be set at the stage level', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -93,6 +109,38 @@ describe('stage', () => {
           ResourcePath: '/*',
           ThrottlingRateLimit: 12,
         },
+      ],
+    });
+  });
+
+  test('"stageResourceArn" returns the ARN for the stage', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const api = new apigateway.RestApi(stack, 'test-api');
+    const deployment = new apigateway.Deployment(stack, 'test-deploymnet', {
+      api,
+    });
+    api.root.addMethod('GET');
+
+    // WHEN
+    const stage = new apigateway.Stage(stack, 'test-stage', {
+      deployment,
+    });
+
+    // THEN
+    expect(stack.resolve(stage.stageArn)).toEqual({
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          { Ref: 'AWS::Partition' },
+          ':apigateway:',
+          { Ref: 'AWS::Region' },
+          '::/restapis/',
+          { Ref: 'testapiD6451F70' },
+          '/stages/',
+          { Ref: 'teststage8788861E' },
+        ],
       ],
     });
   });
