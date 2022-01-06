@@ -5,10 +5,6 @@ import { CfnDeployment } from './apigateway.generated';
 import { Method } from './method';
 import { IRestApi, RestApi, SpecRestApi, RestApiBase } from './restapi';
 
-// keep this import separate from other imports to reduce chance for merge conflicts with v2-main
-// eslint-disable-next-line no-duplicate-imports, import/order
-import { Construct as CoreConstruct } from '@aws-cdk/core';
-
 export interface DeploymentProps {
   /**
    * The Rest API to deploy.
@@ -137,7 +133,7 @@ class LatestDeploymentResource extends CfnDeployment {
   private readonly originalLogicalId: string;
   private readonly api: IRestApi;
 
-  constructor(scope: CoreConstruct, id: string, props: LatestDeploymentResourceProps) {
+  constructor(scope: Construct, id: string, props: LatestDeploymentResourceProps) {
     super(scope, id, {
       description: props.description,
       restApiId: props.restApi.restApiId,
