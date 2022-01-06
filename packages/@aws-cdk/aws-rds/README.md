@@ -556,7 +556,8 @@ new rds.DatabaseInstance(this, 'Database', {
 });
 ```
 
-Another way to specify parameters is to use the inline field `parameters` that creates an RDS parameter group for you. You can use this if you do not want to reuse the parameter group instance for different instances.
+Another way to specify parameters is to use the inline field `parameters` that creates an RDS parameter group for you.
+You can use this if you do not want to reuse the parameter group instance for different instances.
 
 ```ts
 declare const vpc: ec2.Vpc;
