@@ -356,7 +356,6 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       props.parameters ?
         new ParameterGroup(this, 'ParameterGroup', {
           engine: props.engine,
-          description: 'Auto-generated parameter group',
           parameters: props.parameters,
         }) :
         undefined
