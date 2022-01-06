@@ -435,6 +435,8 @@ export class TaskDefinition extends TaskDefinitionBase {
 
     // validate the cpu and memory size for the Windows operation system family.
     if (props.runtimePlatform?.operatingSystemFamily?._operatingSystemFamily.includes('WINDOWS')) {
+      // We know that props.cpu and props.memoryMiB are defined because an error would have been thrown previously if they were not.
+      // But, typescript is not able to figure this out, so using the `!` operator here to let the type-checker know they are defined.
       this.checkFargateWindowsBasedTasksSize(props.cpu!, props.memoryMiB!, props.runtimePlatform!);
     }
 
@@ -728,15 +730,15 @@ export class TaskDefinition extends TaskDefinitionBase {
   private checkFargateWindowsBasedTasksSize(cpu: string, memory: string, runtimePlatform: RuntimePlatform) {
     if (Number(cpu) === 1024) {
       if (Number(memory) < 1024 || Number(memory) > 8192 || (Number(memory)% 1024 !== 0)) {
-        throw new Error(`If define vCPU equal ${cpu}, Memory need in Min. 2GB and Max. 8GB, in 1GB increments, cannot define ${Number(memory)}.`);
+        throw new Error(`If provided cpu is ${cpu}, then memoryMiB must have a min of 1024 and a max of 8192, in 1024 increments. Provided memoryMiB was ${Number(memory)}.`);
       }
     } else if (Number(cpu) === 2048) {
       if (Number(memory) < 4096 || Number(memory) > 16384 || (Number(memory) % 1024 !== 0)) {
-        throw new Error(`If define vCPU equal ${cpu}, Memory need in Min. 4GB and Max. 16GB, in 1GB increments, cannot define ${Number(memory)}.`);
+        throw new Error(`If provided cpu is ${cpu}, then memoryMiB must have a min of 4096 and max of 16384, in 1024 increments. Provided memoryMiB ${Number(memory)}.`);
       }
     } else if (Number(cpu) === 4096) {
       if (Number(memory) < 8192 || Number(memory) > 30720 || (Number(memory) % 1024 !== 0)) {
-        throw new Error(`If define vCPU equal ${cpu}, Memory need in Min. 8GB and Max. 30GB, in 1GB increments, cannot define ${Number(memory)}.`);
+        throw new Error(`If provided cpu is ${ cpu }, then memoryMiB must have a min of 8192 and a max of 30720, in 1024 increments.Provided memoryMiB was ${ Number(memory) }.`);
       }
     } else {
       throw new Error(`If operatingSystemFamily is ${runtimePlatform.operatingSystemFamily!._operatingSystemFamily}, then cpu must be in 1024 (1 vCPU), 2048 (2 vCPU), or 4096 (4 vCPU). Provided value was: ${cpu}`);
