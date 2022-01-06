@@ -2921,10 +2921,10 @@ console-control-strings@^1.0.0, console-control-strings@~1.1.0:
   resolved "https://registry.npmjs.org/console-control-strings/-/console-control-strings-1.1.0.tgz#3d7cf4464db6446ea644bf4b39507f9851008e8e"
   integrity sha1-PXz0Rk22RG6mRL9LOVB/mFEAjo4=
 
-constructs@^3.3.69:
-  version "3.3.172"
-  resolved "https://registry.npmjs.org/constructs/-/constructs-3.3.172.tgz#04396a7b6a3aa544e05a0a401938ea72c0aab2d2"
-  integrity sha512-VspQBS+pHn/UkcR36RHSJR8kSUquPS2vN6zuEfx5/9ADETfrY9X8/8ecLALfehGzcvuxllU7s7dPQ+W4KDYd1w==
+constructs@^10.0.0:
+  version "10.0.9"
+  resolved "https://registry.npmjs.org/constructs/-/constructs-10.0.9.tgz#fe724185e4288001850914e95cce2b32d848355f"
+  integrity sha512-C9la/fcnCKe3XIjKPbWuD49mnOYqSWdiMI6TNJmF0ao3pJw6Hap03Q4nsmCxpWMXuMzM546Kw/WnW7ElB3g4OA==
 
 conventional-changelog-angular@^5.0.12:
   version "5.0.13"
