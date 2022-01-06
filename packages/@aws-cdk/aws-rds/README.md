@@ -531,7 +531,8 @@ new rds.OptionGroup(this, 'Options', {
 
 Database parameters specify how the database is configured.
 For example, database parameters can specify the amount of resources, such as memory, to allocate to a database.
-You manage your database configuration by associating your DB instances with parameter groups. Amazon RDS defines parameter groups with default settings.
+You manage your database configuration by associating your DB instances with parameter groups.
+Amazon RDS defines parameter groups with default settings.
 
 You can create your onw parameter group for your cluster or instance and associate it with your database.
 
