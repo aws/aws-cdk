@@ -210,24 +210,6 @@
               "Ref": "PoolUserPoolClientForundefinedBF6BDE57"
             },
             "ProviderName": {
-              "Ref": "PoolProviderFb875111E6"
-            },
-            "ServerSideTokenCheck": true
-          },
-          {
-            "ClientId": {
-              "Ref": "PoolUserPoolClientForundefinedBF6BDE57"
-            },
-            "ProviderName": {
-              "Ref": "PoolProviderApple37ADEF7D"
-            },
-            "ServerSideTokenCheck": true
-          },
-          {
-            "ClientId": {
-              "Ref": "PoolUserPoolClientForundefinedBF6BDE57"
-            },
-            "ProviderName": {
               "Ref": "PoolProviderApple37ADEF7D"
             },
             "ServerSideTokenCheck": true
@@ -238,24 +220,6 @@
             },
             "ProviderName": {
               "Ref": "OtherPoolProviderFbB64E2DC9"
-            },
-            "ServerSideTokenCheck": true
-          },
-          {
-            "ClientId": {
-              "Ref": "OtherPoolUserPoolClientForundefined1B97829F"
-            },
-            "ProviderName": {
-              "Ref": "OtherPoolProviderFbB64E2DC9"
-            },
-            "ServerSideTokenCheck": true
-          },
-          {
-            "ClientId": {
-              "Ref": "OtherPoolUserPoolClientForundefined1B97829F"
-            },
-            "ProviderName": {
-              "Ref": "OtherPoolProviderApple4FB492B0"
             },
             "ServerSideTokenCheck": true
           },

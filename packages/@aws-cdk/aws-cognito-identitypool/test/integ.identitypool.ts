@@ -22,31 +22,31 @@ const app = new App();
 const stack = new Stack(app, 'integ-identitypool');
 
 const userPool = new UserPool(stack, 'Pool');
-userPool.registerIdentityProvider(new UserPoolIdentityProviderFacebook(stack, 'PoolProviderFb', {
+new UserPoolIdentityProviderFacebook(stack, 'PoolProviderFb', {
   userPool,
   clientId: '12345',
   clientSecret: '5678910',
-}));
-userPool.registerIdentityProvider(new UserPoolIdentityProviderApple(stack, 'PoolProviderApple', {
+});
+new UserPoolIdentityProviderApple(stack, 'PoolProviderApple', {
   userPool,
   clientId: '54321',
   teamId: '12345',
   keyId: '13579',
   privateKey: '12abcd',
-}));
+});
 const otherPool = new UserPool(stack, 'OtherPool');
-otherPool.registerIdentityProvider(new UserPoolIdentityProviderFacebook(stack, 'OtherPoolProviderFb', {
+new UserPoolIdentityProviderFacebook(stack, 'OtherPoolProviderFb', {
   userPool: otherPool,
   clientId: '12345123',
   clientSecret: '5678910wed',
-}));
-otherPool.registerIdentityProvider(new UserPoolIdentityProviderApple(stack, 'OtherPoolProviderApple', {
+});
+new UserPoolIdentityProviderApple(stack, 'OtherPoolProviderApple', {
   userPool: otherPool,
   clientId: '54321123',
   teamId: '123343',
   keyId: '13579',
   privateKey: '12abcddde',
-}));
+});
 const idPool = new IdentityPool(stack, 'identitypool', {
   authenticationProviders: {
     userPool: new UserPoolAuthenticationProvider({ userPool }),
