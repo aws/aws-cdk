@@ -350,7 +350,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
     let { s3ImportRole, s3ExportRole } = setupS3ImportExport(this, props, /* combineRoles */ false);
 
     if (props.parameterGroup && props.parameters) {
-      throw new Error('You cannot specify parameterGroup and parameters');
+      throw new Error('You cannot specify both parameterGroup and parameters');
     }
     const parameterGroup = props.parameterGroup ?? (
       props.parameters ?
