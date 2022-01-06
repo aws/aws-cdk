@@ -128,7 +128,7 @@ Resources:
                 kms:CallerAccount:
                   Ref: AWS::AccountId
                 kms:ViaService:
-                  - Fn::Sub: s3.${AWS::Region}.amazonaws.com
+                  - Fn::Sub: s3.${AWS::Region}.${AWS::URLSuffix}
           - Action:
               - kms:Decrypt
               - kms:DescribeKey
@@ -423,7 +423,7 @@ Resources:
                 Condition:
                   StringEquals:
                     kms:ViaService:
-                      Fn::Sub: s3.${AWS::Region}.amazonaws.com
+                      Fn::Sub: s3.${AWS::Region}.${AWS::URLSuffix}
               - Action: iam:PassRole
                 Resource:
                   Fn::Sub: "${CloudFormationExecutionRole.Arn}"
@@ -471,7 +471,7 @@ Resources:
           - Action: sts:AssumeRole
             Effect: Allow
             Principal:
-              Service: cloudformation.amazonaws.com
+              Service: cloudformation.${AWS::URLSuffix}
         Version: '2012-10-17'
       ManagedPolicyArns:
         Fn::If:
