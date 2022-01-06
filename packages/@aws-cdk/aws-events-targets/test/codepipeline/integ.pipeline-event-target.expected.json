@@ -83,6 +83,53 @@
       "UpdateReplacePolicy": "Retain",
       "DeletionPolicy": "Retain"
     },
+    "pipelinePipeline22F2A91DArtifactsBucketPolicy269103C2": {
+      "Type": "AWS::S3::BucketPolicy",
+      "Properties": {
+        "Bucket": {
+          "Ref": "pipelinePipeline22F2A91DArtifactsBucketC1799DCD"
+        },
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "s3:*",
+              "Condition": {
+                "Bool": {
+                  "aws:SecureTransport": "false"
+                }
+              },
+              "Effect": "Deny",
+              "Principal": {
+                "AWS": "*"
+              },
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "pipelinePipeline22F2A91DArtifactsBucketC1799DCD",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "pipelinePipeline22F2A91DArtifactsBucketC1799DCD",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
     "pipelinePipeline22F2A91DRole58B7B05E": {
       "Type": "AWS::IAM::Role",
       "Properties": {
