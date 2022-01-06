@@ -753,7 +753,6 @@ function createInstances(cluster: DatabaseClusterNew, props: DatabaseClusterBase
     instanceProps.parameters ?
       new ParameterGroup(cluster, 'InstanceParameterGroup', {
         engine: props.engine,
-        description: 'Auto-generated parameter group',
         parameters: instanceProps.parameters,
       }) :
       undefined
