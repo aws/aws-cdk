@@ -1,3 +1,5 @@
+import { AWS_REGIONS } from './aws-entities';
+
 /**
  * A database of regional information.
  */
@@ -7,7 +9,7 @@ export class Fact {
    *          may not be an exhaustive list of all available AWS regions.
    */
   public static get regions(): string[] {
-    return Object.keys(this.database);
+    return AWS_REGIONS;
   }
 
   /**
