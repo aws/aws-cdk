@@ -1377,7 +1377,7 @@ added the ellipsis so a user would know there was more to ...`,
     // GIVEN
     const stack = new cdk.Stack();
     const sourceBucket = new s3.Bucket(stack, 'Bucket');
-    const lambdaVersion = lambda.Version.fromVersionArn(stack, 'Version', 'arn:my-version');
+    const lambdaVersion = lambda.Version.fromVersionArn(stack, 'Version', 'arn:aws:lambda:function-region:111111111111:function:function-name');
 
     // WHEN
     new CloudFrontWebDistribution(stack, 'MyDistribution', {
