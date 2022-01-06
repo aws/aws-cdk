@@ -1,0 +1,14 @@
+{
+  "StatefulResources": {
+    "patch": {
+      "description": "Move ResourceTypes here",
+      "operations": [
+        {
+          "op": "move",
+          "path": "/ResourceTypes",
+          "from": "$/ResourceTypes"
+        }
+      ]
+    }
+  }
+}

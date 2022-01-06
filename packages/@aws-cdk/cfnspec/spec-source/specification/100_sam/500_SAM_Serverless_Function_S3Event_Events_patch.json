@@ -1,0 +1,16 @@
+{
+    "PropertyTypes": {
+        "AWS::Serverless::Function.S3Event": {
+            "patch": {
+                "description": "Sets AWS::Serverless::Function.S3Event.Events#UpdateType to Immutable",
+                "operations": [
+                    {
+                        "op": "add",
+                        "path": "/Properties/Events/UpdateType",
+                        "value": "Immutable"
+                    }
+                ]
+            }
+        }
+    }
+}
