@@ -1,6 +1,7 @@
 import { Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
+import { Token } from '@aws-cdk/core';
 import * as cdk from '@aws-cdk/core';
 import { EmrCreateCluster } from '../../lib';
 
@@ -32,6 +33,14 @@ beforeEach(() => {
       ],
     }),
   );
+});
+
+test('Create Cluster with an unresolved release label', () => {
+  new EmrCreateCluster(stack, 'Task', {
+    instances: {},
+    name: 'Cluster',
+    releaseLabel: Token.asString({}),
+  });
 });
 
 test('Create Cluster with FIRE_AND_FORGET integrationPattern', () => {

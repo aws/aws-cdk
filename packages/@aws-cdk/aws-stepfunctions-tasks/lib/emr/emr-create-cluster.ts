@@ -1,5 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
+import { Token } from '@aws-cdk/core';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
@@ -202,7 +203,7 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
 
     this.taskPolicies = this.createPolicyStatements(this._serviceRole, this._clusterRole, this._autoScalingRole);
 
-    if (this.props.releaseLabel !== undefined) {
+    if (this.props.releaseLabel !== undefined && !Token.isUnresolved(this.props.releaseLabel)) {
       this.validateReleaseLabel(this.props.releaseLabel);
     }
 
