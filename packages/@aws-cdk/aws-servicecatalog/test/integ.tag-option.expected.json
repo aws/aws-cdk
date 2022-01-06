@@ -1,0 +1,11 @@
+{
+  "Resources": {
+    "MyTagOption1TagOption0d08b9a4084fF9CC8896": {
+      "Type": "AWS::ServiceCatalog::TagOption",
+      "Properties": {
+        "Key": "tagOptionKey",
+        "Value": "tagOptionValue"
+      }
+    }
+  }
+}

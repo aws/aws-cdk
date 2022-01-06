@@ -219,61 +219,58 @@
         ]
       }
     },
-    "TestProductTagOptionAssociation0d813eebb333DA3E2F21": {
+    "TestProductTagOptionAssociation5e2d01d0ef5d3A77C40C": {
       "Type": "AWS::ServiceCatalog::TagOptionAssociation",
       "Properties": {
         "ResourceId": {
           "Ref": "TestProduct7606930B"
         },
         "TagOptionId": {
-          "Ref": "TagOptionab501c9aef99"
+          "Ref": "TagOption5f31c54ba705B2CBDB3B"
         }
       }
     },
-    "TestProductTagOptionAssociation5d93a5c977b4B664DD87": {
+    "TestProductTagOptionAssociation0283ede6c77bC233D125": {
       "Type": "AWS::ServiceCatalog::TagOptionAssociation",
       "Properties": {
         "ResourceId": {
           "Ref": "TestProduct7606930B"
         },
         "TagOptionId": {
-          "Ref": "TagOptiona453ac93ee6f"
+          "Ref": "TagOption8d263919cebb1B2D80D3"
         }
       }
     },
-    "TestProductTagOptionAssociationcfaf40b186a3E5FDECDC": {
+    "TestProductTagOptionAssociatione0e5ca48014e0D3E1526": {
       "Type": "AWS::ServiceCatalog::TagOptionAssociation",
       "Properties": {
         "ResourceId": {
           "Ref": "TestProduct7606930B"
         },
         "TagOptionId": {
-          "Ref": "TagOptiona006431604cb"
+          "Ref": "TagOptiona260cbbd99c456F25A47"
         }
       }
     },
-    "TagOptionab501c9aef99": {
+    "TagOption5f31c54ba705B2CBDB3B": {
       "Type": "AWS::ServiceCatalog::TagOption",
       "Properties": {
         "Key": "key1",
-        "Value": "value1",
-        "Active": true
+        "Value": "value1"
       }
     },
-    "TagOptiona453ac93ee6f": {
+    "TagOption8d263919cebb1B2D80D3": {
       "Type": "AWS::ServiceCatalog::TagOption",
       "Properties": {
         "Key": "key1",
-        "Value": "value2",
-        "Active": true
+        "Value": "value2"
       }
     },
-    "TagOptiona006431604cb": {
+    "TagOptiona260cbbd99c456F25A47": {
       "Type": "AWS::ServiceCatalog::TagOption",
       "Properties": {
         "Key": "key2",
-        "Value": "value1",
-        "Active": true
+        "Value": "value1"
       }
     }
   },

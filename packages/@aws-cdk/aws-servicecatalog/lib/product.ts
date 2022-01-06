@@ -1,6 +1,6 @@
 import { ArnFormat, IResource, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { TagOptions } from '.';
+import { ITagOption, TagOptions } from '.';
 import { CloudFormationTemplate } from './cloudformation-template';
 import { MessageLanguage } from './common';
 import { AssociationManager } from './private/association-manager';
@@ -24,6 +24,13 @@ export interface IProduct extends IResource {
   readonly productId: string;
 
   /**
+   * Associate a TagOption.
+   * A TagOption is a key-value pair managed in AWS Service Catalog.
+   * It is not an AWS tag, but serves as a template for creating an AWS tag based on the TagOption.
+   */
+  associateTagOption(tagOption: ITagOption): void;
+
+  /**
    * Associate Tag Options.
    * A TagOption is a key-value pair managed in AWS Service Catalog.
    * It is not an AWS tag, but serves as a template for creating an AWS tag based on the TagOption.
@@ -34,6 +41,10 @@ export interface IProduct extends IResource {
 abstract class ProductBase extends Resource implements IProduct {
   public abstract readonly productArn: string;
   public abstract readonly productId: string;
+
+  public associateTagOption(tagOption: ITagOption) {
+    AssociationManager.associateTagOption(this, this.productId, tagOption);
+  }
 
   public associateTagOptions(tagOptions: TagOptions) {
     AssociationManager.associateTagOptions(this, this.productId, tagOptions);
@@ -137,7 +148,7 @@ export interface CloudFormationProductProps {
    *
    * @default - No tagOptions provided
    */
-  readonly tagOptions?: TagOptions
+  readonly tagOptions?: TagOptions;
 }
 
 /**

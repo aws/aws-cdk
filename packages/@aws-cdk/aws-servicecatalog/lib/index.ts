@@ -4,7 +4,7 @@ export * from './cloudformation-template';
 export * from './portfolio';
 export * from './product';
 export * from './product-stack';
-export * from './tag-options';
+export * from './tag-option';
 
 // AWS::ServiceCatalog CloudFormation Resources:
 export * from './servicecatalog.generated';

@@ -105,7 +105,8 @@
       "props-physical-name:@aws-cdk/aws-servicecatalog.CloudFormationProductProps",
       "resource-attribute:@aws-cdk/aws-servicecatalog.Portfolio.portfolioName",
       "props-physical-name:@aws-cdk/aws-servicecatalog.PortfolioProps",
-      "props-physical-name:@aws-cdk/aws-servicecatalog.ProductStack"
+      "props-physical-name:@aws-cdk/aws-servicecatalog.ProductStack",
+      "props-physical-name:@aws-cdk/aws-servicecatalog.TagOptionProps"
     ]
   },
   "maturity": "experimental",

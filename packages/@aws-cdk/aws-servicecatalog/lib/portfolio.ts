@@ -11,7 +11,7 @@ import { hashValues } from './private/util';
 import { InputValidator } from './private/validation';
 import { IProduct } from './product';
 import { CfnPortfolio, CfnPortfolioPrincipalAssociation, CfnPortfolioShare } from './servicecatalog.generated';
-import { TagOptions } from './tag-options';
+import { ITagOption, TagOptions } from './tag-option';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
@@ -85,11 +85,18 @@ export interface IPortfolio extends cdk.IResource {
   addProduct(product: IProduct): void;
 
   /**
-   * Associate Tag Options.
+   * Associate a TagOption.
    * A TagOption is a key-value pair managed in AWS Service Catalog.
    * It is not an AWS tag, but serves as a template for creating an AWS tag based on the TagOption.
    */
-  associateTagOptions(tagOptions: TagOptions): void;
+  associateTagOption(tagOption: ITagOption): void;
+
+  /**
+   * Associate Tag Options Reousrce.
+   * A TagOption is a key-value pair managed in AWS Service Catalog.
+   * It is not an AWS tag, but serves as a template for creating an AWS tag based on the TagOption.
+   */
+  associateTagOptions(tagOptionsResource: TagOptions): void;
 
   /**
    * Add a Resource Update Constraint.
@@ -183,6 +190,10 @@ abstract class PortfolioBase extends cdk.Resource implements IPortfolio {
       shareTagOptions: options.shareTagOptions,
       acceptLanguage: options.messageLanguage,
     });
+  }
+
+  public associateTagOption(tagOption: ITagOption) {
+    AssociationManager.associateTagOption(this, this.portfolioId, tagOption);
   }
 
   public associateTagOptions(tagOptions: TagOptions) {
