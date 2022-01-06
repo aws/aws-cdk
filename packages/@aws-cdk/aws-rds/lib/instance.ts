@@ -905,7 +905,6 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
       ...props.parameters && {
         dbParameterGroupName: new ParameterGroup(this, 'ParameterGroup', {
           engine: props.engine,
-          description: 'Auto-generated parameter group',
           parameters: props.parameters,
         }).bindToInstance({}).parameterGroupName,
       },
