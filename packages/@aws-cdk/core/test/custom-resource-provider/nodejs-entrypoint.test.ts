@@ -186,7 +186,7 @@ async function invokeHandler(req: AWSLambda.CloudFormationCustomResourceEvent, u
     actualResponse = responseBody;
   };
 
-  await entrypoint.handler(req);
+  await entrypoint.handler(req, {} as AWSLambda.Context);
   if (!actualResponse) {
     throw new Error('no response sent to cloudformation');
   }
