@@ -12,7 +12,7 @@ const SLEEP = 2_000;
  * Represents a CloudWatch Log Event that will be
  * printed to the terminal
  */
-export interface CloudWatchLogEvent {
+interface CloudWatchLogEvent {
   /**
    * The log event message
    */
@@ -27,32 +27,6 @@ export interface CloudWatchLogEvent {
    * The time at which the event occurred
    */
   readonly timestamp: Date;
-}
-
-/**
- * Options for adding log groups to the CloudWatchLogEventMonitor
- */
-export interface AddLogGroupsOptions {
-  /**
-   * The AWS account that the log group lives in
-   */
-  readonly account: string;
-
-  /**
-   * The AWS region that the log group lives in
-   */
-  readonly region: string;
-
-  /**
-   * The SDK for a given account
-   */
-  readonly sdk: ISDK;
-
-  /**
-   * A list of CloudWatch log group names for a given
-   * AWS account/region that should be monitored
-   */
-  readonly logGroupNames: string[];
 }
 
 /**
@@ -87,9 +61,8 @@ export class CloudWatchLogEventMonitor {
 
   private active = false;
 
-  constructor(hotswapTime?: Date) {
-    this.startTime = hotswapTime?.getTime() ?? Date.now();
-    this.scheduleNextTick();
+  constructor(startTime?: Date) {
+    this.startTime = startTime?.getTime() ?? Date.now();
   }
 
   /**
@@ -97,6 +70,7 @@ export class CloudWatchLogEventMonitor {
    */
   public activate(): void {
     this.active = true;
+    this.scheduleNextTick();
   }
 
   /**
@@ -142,7 +116,6 @@ export class CloudWatchLogEventMonitor {
 
   private async tick(): Promise<void> {
     if (!this.active) {
-      this.scheduleNextTick();
       return;
     }
     try {
@@ -164,7 +137,7 @@ export class CloudWatchLogEventMonitor {
     const promises: Array<Promise<Array<CloudWatchLogEvent>>> = [];
     for (const settings of this.envsLogGroupsAccessSettings.values()) {
       for (const group of Object.keys(settings.logGroupsStartTimes)) {
-        promises.push(this.readEventsFromLogGroup(settings.logGroupsStartTimes, settings.sdk, group));
+        promises.push(this.readEventsFromLogGroup(settings, group));
       }
     }
     return Promise.all(promises);
@@ -186,8 +159,7 @@ export class CloudWatchLogEventMonitor {
    * when the last event was read on the previous tick
    */
   private async readEventsFromLogGroup(
-    logGroupsStartTimes: { [logGroupName: string]: number },
-    sdk: ISDK,
+    logGroupsAccessSettings: LogGroupsAccessSettings,
     logGroupName: string,
   ): Promise<Array<CloudWatchLogEvent>> {
     const events: CloudWatchLogEvent[] = [];
@@ -195,12 +167,12 @@ export class CloudWatchLogEventMonitor {
     // log events from some service are ingested faster than others
     // so we need to track the start/end time for each log group individually
     // to make sure that we process all events from each log group
-    const startTime = logGroupsStartTimes[logGroupName] ?? this.startTime;
+    const startTime = logGroupsAccessSettings.logGroupsStartTimes[logGroupName] ?? this.startTime;
     let endTime = startTime;
     try {
       let nextToken: string | undefined;
       do {
-        const response = await sdk.cloudWatchLogs().filterLogEvents({
+        const response = await logGroupsAccessSettings.sdk.cloudWatchLogs().filterLogEvents({
           logGroupName: logGroupName,
           nextToken,
           limit: 100,
@@ -231,7 +203,7 @@ export class CloudWatchLogEventMonitor {
       }
       throw e;
     }
-    logGroupsStartTimes[logGroupName] = endTime + 1;
+    logGroupsAccessSettings.logGroupsStartTimes[logGroupName] = endTime + 1;
     return events;
   }
 }

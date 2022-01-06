@@ -11,8 +11,8 @@ import { Bootstrapper, BootstrapEnvironmentOptions } from './api/bootstrap';
 import { CloudFormationDeployments } from './api/cloudformation-deployments';
 import { CloudAssembly, DefaultSelection, ExtendedStackSelection, StackCollection, StackSelector } from './api/cxapp/cloud-assembly';
 import { CloudExecutable } from './api/cxapp/cloud-executable';
+import { findCloudWatchLogGroups } from './api/logs/find-cloudwatch-logs';
 import { CloudWatchLogEventMonitor } from './api/logs/logs-monitor';
-import { registerCloudWatchLogGroups } from './api/logs/register-cloudwatch-logs';
 import { StackActivityProgress } from './api/util/cloudformation/stack-activity-monitor';
 import { printSecurityDiff, printStackDiff, RequireApproval } from './diff';
 import { data, debug, error, highlight, print, success, warning } from './logging';
@@ -245,8 +245,8 @@ export class CdkToolkit {
         throw e;
       } finally {
         if (options.cloudWatchLogMonitor) {
-          const result = await registerCloudWatchLogGroups(this.props.sdkProvider, stack);
-          options.cloudWatchLogMonitor.addLogGroups(result.env, result.sdk, result.logGroupNames);
+          const foundLogGroupsResult = await findCloudWatchLogGroups(this.props.sdkProvider, stack);
+          options.cloudWatchLogMonitor.addLogGroups(foundLogGroupsResult.env, foundLogGroupsResult.sdk, foundLogGroupsResult.logGroupNames);
         }
         // If an outputs file has been specified, create the file path and write stack outputs to it once.
         // Outputs are written after all stacks have been deployed. If a stack deployment fails,
@@ -310,12 +310,11 @@ export class CdkToolkit {
     // --------------                --------  'cdk deploy' done  --------------  'cdk deploy' done  --------------
     let latch: 'pre-ready' | 'open' | 'deploying' | 'queued' = 'pre-ready';
 
-    const logMonitor = options.traceLogs ? new CloudWatchLogEventMonitor() : undefined;
+    const cloudWatchLogMonitor = options.traceLogs ? new CloudWatchLogEventMonitor() : undefined;
     const deployAndWatch = async () => {
       latch = 'deploying';
-      logMonitor?.deactivate();
 
-      await this.invokeDeployFromWatch(options, logMonitor);
+      await this.invokeDeployFromWatch(options, cloudWatchLogMonitor);
 
       // If latch is still 'deploying' after the 'await', that's fine,
       // but if it's 'queued', that means we need to deploy again
@@ -324,10 +323,9 @@ export class CdkToolkit {
         // and thinks the above 'while' condition is always 'false' without the cast
         latch = 'deploying';
         print("Detected file changes during deployment. Invoking 'cdk deploy' again");
-        await this.invokeDeployFromWatch(options, logMonitor);
+        await this.invokeDeployFromWatch(options, cloudWatchLogMonitor);
       }
       latch = 'open';
-      logMonitor?.activate();
     };
 
     chokidar.watch(watchIncludes, {
@@ -338,13 +336,17 @@ export class CdkToolkit {
       latch = 'open';
       debug("'watch' received the 'ready' event. From now on, all file changes will trigger a deployment");
       print("Triggering initial 'cdk deploy'");
+      cloudWatchLogMonitor?.deactivate();
       await deployAndWatch();
+      cloudWatchLogMonitor?.activate();
     }).on('all', async (event: 'add' | 'addDir' | 'change' | 'unlink' | 'unlinkDir', filePath?: string) => {
       if (latch === 'pre-ready') {
         print(`'watch' is observing ${event === 'addDir' ? 'directory' : 'the file'} '%s' for changes`, filePath);
       } else if (latch === 'open') {
         print("Detected change to '%s' (type: %s). Triggering 'cdk deploy'", filePath, event);
+        cloudWatchLogMonitor?.deactivate();
         await deployAndWatch();
+        cloudWatchLogMonitor?.activate();
       } else { // this means latch is either 'deploying' or 'queued'
         latch = 'queued';
         print("Detected change to '%s' (type: %s) while 'cdk deploy' is still running. " +
