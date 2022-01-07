@@ -128,9 +128,9 @@ async function parseCommandLineArguments() {
       .options('logs', {
         type: 'boolean',
         default: true,
-        desc: 'Show CloudWatch log events from hotswapped resources in the terminal. ' +
+        desc: 'Show CloudWatch log events from all resources in the selected Stacks in the terminal. ' +
           "'true' by default, use --no-logs to turn off. " +
-          "Only in effect if '--watch' option is used",
+          "Only in effect if specified alongside the '--watch' option",
       }),
     )
     .command('watch [STACKS..]', "Shortcut for 'deploy --watch'", yargs => yargs
@@ -168,7 +168,7 @@ async function parseCommandLineArguments() {
       .options('logs', {
         type: 'boolean',
         default: true,
-        desc: 'Show CloudWatch log events from hotswapped resources in the terminal. ' +
+        desc: 'Show CloudWatch log events from all resources in the selected Stacks in the terminal. ' +
           "'true' by default, use --no-logs to turn off",
       }),
     )
