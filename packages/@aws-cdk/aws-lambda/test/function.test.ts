@@ -297,6 +297,35 @@ describe('function', () => {
     expect(imported.functionName).toEqual('ProcessKinesisRecords');
   });
 
+  describe('Function.fromFunctionAttributes()', () => {
+    let stack: cdk.Stack;
+
+    beforeEach(() => {
+      const app = new cdk.App();
+      stack = new cdk.Stack(app, 'Base', {
+        env: { account: '111111111111', region: 'stack-region' },
+      });
+    });
+
+    describe('for a function in a different account and region', () => {
+      let func: lambda.IFunction;
+
+      beforeEach(() => {
+        func = lambda.Function.fromFunctionAttributes(stack, 'iFunc', {
+          functionArn: 'arn:aws:lambda:function-region:222222222222:function:function-name',
+        });
+      });
+
+      test("the function's region is taken from the ARN", () => {
+        expect(func.env.region).toBe('function-region');
+      });
+
+      test("the function's account is taken from the ARN", () => {
+        expect(func.env.account).toBe('222222222222');
+      });
+    });
+  });
+
   describe('addPermissions', () => {
     test('imported Function w/ resolved account and function arn', () => {
       // GIVEN
