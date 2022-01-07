@@ -30,13 +30,7 @@ async function main() {
 
   // Read the domain to fetch from stdin
   let rawDomain = fs.readFileSync(0, { encoding: 'utf-8' }).trim();
-  // Paranoid handling to ensure new URL() doesn't throw if the schema is missing.
-  // Not convinced docker will ever pass in a url like 'index.docker.io/v1', but just in case...
-  rawDomain = rawDomain.includes('://') ? rawDomain : `https://${rawDomain}`;
-  const domain = new URL(rawDomain).hostname;
-
-  const credentials = await fetchDockerLoginCredentials(new DefaultAwsClient(), config, domain);
-
+  const credentials = await fetchDockerLoginCredentials(new DefaultAwsClient(), config, rawDomain);
   // Write the credentials back to stdout
   fs.writeFileSync(1, JSON.stringify(credentials));
 }
