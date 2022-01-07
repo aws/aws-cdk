@@ -313,6 +313,7 @@ export class CdkToolkit {
     const cloudWatchLogMonitor = options.traceLogs ? new CloudWatchLogEventMonitor() : undefined;
     const deployAndWatch = async () => {
       latch = 'deploying';
+      cloudWatchLogMonitor?.deactivate();
 
       await this.invokeDeployFromWatch(options, cloudWatchLogMonitor);
 
@@ -326,6 +327,7 @@ export class CdkToolkit {
         await this.invokeDeployFromWatch(options, cloudWatchLogMonitor);
       }
       latch = 'open';
+      cloudWatchLogMonitor?.activate();
     };
 
     chokidar.watch(watchIncludes, {
@@ -336,17 +338,13 @@ export class CdkToolkit {
       latch = 'open';
       debug("'watch' received the 'ready' event. From now on, all file changes will trigger a deployment");
       print("Triggering initial 'cdk deploy'");
-      cloudWatchLogMonitor?.deactivate();
       await deployAndWatch();
-      cloudWatchLogMonitor?.activate();
     }).on('all', async (event: 'add' | 'addDir' | 'change' | 'unlink' | 'unlinkDir', filePath?: string) => {
       if (latch === 'pre-ready') {
         print(`'watch' is observing ${event === 'addDir' ? 'directory' : 'the file'} '%s' for changes`, filePath);
       } else if (latch === 'open') {
         print("Detected change to '%s' (type: %s). Triggering 'cdk deploy'", filePath, event);
-        cloudWatchLogMonitor?.deactivate();
         await deployAndWatch();
-        cloudWatchLogMonitor?.activate();
       } else { // this means latch is either 'deploying' or 'queued'
         latch = 'queued';
         print("Detected change to '%s' (type: %s) while 'cdk deploy' is still running. " +

@@ -2,23 +2,6 @@ import * as cxapi from '@aws-cdk/cx-api';
 import * as AWS from 'aws-sdk';
 import { ISDK } from './aws-auth';
 
-export async function establishResourcePhysicalName(
-  logicalId: string, physicalNameInCfnTemplate: any, evaluateCfnTemplate: EvaluateCloudFormationTemplate,
-): Promise<string | undefined> {
-  if (physicalNameInCfnTemplate != null) {
-    try {
-      return await evaluateCfnTemplate.evaluateCfnExpression(physicalNameInCfnTemplate);
-    } catch (e) {
-      // If we can't evaluate the resource's name CloudFormation expression,
-      // just look it up in the currently deployed Stack
-      if (!(e instanceof CfnEvaluationException)) {
-        throw e;
-      }
-    }
-  }
-  return evaluateCfnTemplate.findPhysicalNameFor(logicalId);
-}
-
 export interface ListStackResources {
   listStackResources(): Promise<AWS.CloudFormation.StackResourceSummary[]>;
 }
@@ -92,6 +75,21 @@ export class EvaluateCloudFormationTemplate {
     this.region = props.region;
     this.partition = props.partition;
     this.urlSuffix = props.urlSuffix;
+  }
+
+  public async establishResourcePhysicalName(logicalId: string, physicalNameInCfnTemplate: any): Promise<string | undefined> {
+    if (physicalNameInCfnTemplate != null) {
+      try {
+        return await this.evaluateCfnExpression(physicalNameInCfnTemplate);
+      } catch (e) {
+        // If we can't evaluate the resource's name CloudFormation expression,
+        // just look it up in the currently deployed Stack
+        if (!(e instanceof CfnEvaluationException)) {
+          throw e;
+        }
+      }
+    }
+    return this.findPhysicalNameFor(logicalId);
   }
 
   public async findPhysicalNameFor(logicalId: string): Promise<string | undefined> {

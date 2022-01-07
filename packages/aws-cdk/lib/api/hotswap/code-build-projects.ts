@@ -1,6 +1,6 @@
 import * as AWS from 'aws-sdk';
 import { ISDK } from '../aws-auth';
-import { EvaluateCloudFormationTemplate, establishResourcePhysicalName } from '../evaluate-cloudformation-template';
+import { EvaluateCloudFormationTemplate } from '../evaluate-cloudformation-template';
 import { ChangeHotswapImpact, ChangeHotswapResult, HotswapOperation, HotswappableChangeCandidate, lowerCaseFirstCharacter, transformObjectKeys } from './common';
 
 export async function isHotswappableCodeBuildProjectChange(
@@ -36,7 +36,7 @@ export async function isHotswappableCodeBuildProjectChange(
     }
   }
 
-  const projectName = await establishResourcePhysicalName(logicalId, change.newValue.Properties?.Name, evaluateCfnTemplate);
+  const projectName = await evaluateCfnTemplate.establishResourcePhysicalName(logicalId, change.newValue.Properties?.Name);
   if (!projectName) {
     return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
   }

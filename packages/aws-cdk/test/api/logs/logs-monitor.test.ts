@@ -17,6 +17,7 @@ beforeEach(() => {
 afterAll(() => {
   jest.useRealTimers();
   stderrMock.mockRestore();
+  monitor.deactivate();
 });
 
 let TIMESTAMP: number;

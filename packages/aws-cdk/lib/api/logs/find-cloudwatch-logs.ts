@@ -1,6 +1,6 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import { Mode, SdkProvider, ISDK } from '../aws-auth';
-import { EvaluateCloudFormationTemplate, LazyListStackResources, establishResourcePhysicalName } from '../evaluate-cloudformation-template';
+import { EvaluateCloudFormationTemplate, LazyListStackResources } from '../evaluate-cloudformation-template';
 
 // resource types that have associated CloudWatch Log Groups that should _not_ be monitored
 const IGNORE_LOGS_RESOURCE_TYPES = ['AWS::EC2::FlowLog', 'AWS::CloudTrail::Trail', 'AWS::CodeBuild::Project'];
@@ -15,8 +15,8 @@ export async function findCloudWatchLogGroups(
   sdkProvider: SdkProvider,
   stackArtifact: cxapi.CloudFormationStackArtifact,
 ): Promise<{ env: cxapi.Environment, sdk: ISDK, logGroupNames: string[] }> {
-  const resolvedEnv = await sdkProvider.resolveEnvironment(stackArtifact.environment);
   // TODO: update this to use the lookup role once https://github.com/aws/aws-cdk/pull/18277 is merged
+  const resolvedEnv = await sdkProvider.resolveEnvironment(stackArtifact.environment);
   const sdk = await sdkProvider.forEnvironment(resolvedEnv, Mode.ForReading);
 
   const listStackResources = new LazyListStackResources(sdk, stackArtifact.stackName);
@@ -33,25 +33,17 @@ export async function findCloudWatchLogGroups(
   // map of logicalId to CloudFormation type
   // e.g. 'mylambdaFunction': 'AWS::Lambda::Function'
   const logicalIdsOfImplicitLogServices = new Map<string, string>();
-  const logGroupNames: string[] = [];
   const logGroupLogicalIds = new Set<string>();
   const template = stackArtifact.template as { [section: string]: any };
 
   // do a first pass at identifying all log groups
   for (const [logicalId, resource] of Object.entries(template.Resources ?? {})) {
-      const definition = resource as { [attributeName: string]: any };
-      if (definition.Type === 'AWS::Logs::LogGroup') {
-        logGroupLogicalIds.add(key);
-      } else if (RESOURCE_TYPES_WITH_IMPLICIT_LOGS[definition.Type]) {
-        logicalIdsOfImplicitLogServices.set(key, definition.Type);
-      }
+    const definition = resource as { [attributeName: string]: any };
+    if (definition.Type === 'AWS::Logs::LogGroup') {
+      logGroupLogicalIds.add(logicalId);
+    } else if (RESOURCE_TYPES_WITH_IMPLICIT_LOGS[definition.Type]) {
+      logicalIdsOfImplicitLogServices.set(logicalId, definition.Type);
     }
-  } else {
-    return {
-      env: resolvedEnv,
-      sdk,
-      logGroupNames: [],
-    };
   }
 
   // For each log group in the template make:
@@ -69,9 +61,10 @@ export async function findCloudWatchLogGroups(
     }
   }
 
+  const logGroupNames: string[] = [];
   for (const logicalId of logGroupLogicalIds) {
     const physicalNameInTemplate = getPhysicalNameProperty(template.Resources[logicalId], 'LogGroupName');
-    const groupName = await establishResourcePhysicalName(logicalId, physicalNameInTemplate, evaluateCfnTemplate);
+    const groupName = await evaluateCfnTemplate.establishResourcePhysicalName(logicalId, physicalNameInTemplate);
     if (groupName) {
       logGroupNames.push(groupName);
     }
@@ -81,11 +74,11 @@ export async function findCloudWatchLogGroups(
   // if a custom log group is not created, then the service will create one with a
   // specific name i.e. '/aws/codebuild/project-name'
   for (const [logicalId, cfnResourceType] of logicalIdsOfImplicitLogServices) {
-    const physicalNameProperty = RESOURCE_TYPES_WITH_IMPLICIT_LOGS[serviceName];
+    const physicalNameProperty = RESOURCE_TYPES_WITH_IMPLICIT_LOGS[cfnResourceType];
     const physicalNameInTemplate = getPhysicalNameProperty(template.Resources[logicalId], physicalNameProperty);
-    const servicePart = serviceName.split('::')[1].toLowerCase();
-    const name = await establishResourcePhysicalName(logicalId, physicalNameInTemplate, evaluateCfnTemplate);
+    const name = await evaluateCfnTemplate.establishResourcePhysicalName(logicalId, physicalNameInTemplate);
     if (name) {
+      const servicePart = cfnResourceType.split('::')[1].toLowerCase();
       logGroupNames.push(`/aws/${servicePart}/${name}`);
     }
   }

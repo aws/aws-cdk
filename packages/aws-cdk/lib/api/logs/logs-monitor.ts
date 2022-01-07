@@ -70,7 +70,7 @@ export class CloudWatchLogEventMonitor {
    */
   public activate(): void {
     this.active = true;
-    this.scheduleNextTick();
+    this.scheduleNextTick(0);
   }
 
   /**
@@ -110,8 +110,8 @@ export class CloudWatchLogEventMonitor {
     });
   }
 
-  private scheduleNextTick(): void {
-    setTimeout(() => void(this.tick()), SLEEP);
+  private scheduleNextTick(sleep: number): void {
+    setTimeout(() => void(this.tick()), sleep);
   }
 
   private async tick(): Promise<void> {
@@ -126,7 +126,7 @@ export class CloudWatchLogEventMonitor {
     } catch (e) {
       error('Error occurred while monitoring logs: %s', e);
     }
-    this.scheduleNextTick();
+    this.scheduleNextTick(SLEEP);
   }
 
   /**
