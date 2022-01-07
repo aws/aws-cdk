@@ -87,7 +87,7 @@ export class Bundling implements CdkBundlingOptions {
     if (packaging.dependenciesFile) {
       bundlingCommands.push(`python -m pip install -r ${DependenciesFile.PIP} -t ${options.outputDir}`);
     }
-    bundlingCommands.push(`cp -R ${options.inputDir}/* ${options.outputDir}`);
+    bundlingCommands.push(`cp -R ${options.inputDir}/ ${options.outputDir}`);
     return bundlingCommands;
   }
 }
