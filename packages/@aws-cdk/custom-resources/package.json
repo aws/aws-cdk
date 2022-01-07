@@ -80,7 +80,7 @@
     "@aws-cdk/cdk-integ-tools": "0.0.0",
     "@aws-cdk/cfn2ts": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/aws-lambda": "^8.10.86",
+    "@types/aws-lambda": "^8.10.89",
     "@types/fs-extra": "^8.1.2",
     "@types/jest": "^27.0.3",
     "@types/sinon": "^9.0.11",
