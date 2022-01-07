@@ -6989,7 +6989,7 @@
       "description": "Use event selectors to further specify the management and data event settings for your trail. By default, trails created without specific event selectors will be configured to log all read and write management events, and no data events. When an event occurs in your account, CloudTrail evaluates the event selector for all trails. For each trail, if the event matches any event selector, the trail processes and logs the event. If the event doesn't match any event selector, the trail doesn't log the event.\n\nYou can configure up to five event selectors for a trail.\n\nYou cannot apply both event selectors and advanced event selectors to a trail.",
       "properties": {
         "DataResources": "CloudTrail supports data event logging for Amazon S3 objects and AWS Lambda functions. You can specify up to 250 resources for an individual event selector, but the total number of data resources cannot exceed 250 across all event selectors in a trail. This limit does not apply if you configure resource logging for all data events.\n\nFor more information, see [Data Events](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/logging-management-and-data-events-with-cloudtrail.html#logging-data-events) and [Limits in AWS CloudTrail](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/WhatIsCloudTrail-Limits.html) in the *AWS CloudTrail User Guide* .",
-        "ExcludeManagementEventSources": "An optional list of service event sources from which you do not want management events to be logged on your trail. In this release, the list can be empty (disables the filter), or it can filter out AWS Key Management Service or Amazon RDS Data API events by containing `kms.amazonaws.com` or `rdsdata.amazonaws.com` . By default, `ExcludeManagementEventSources` is empty, and AWS KMS and Amazon RDS Data API events are logged to your trail. You can exclude management event sources only in regions that support the event source.",
+        "ExcludeManagementEventSources": "An optional list of service event sources from which you do not want management events to be logged on your trail. In this release, the list can be empty (disables the filter), or it can filter out AWS Key Management Service or Amazon RDS Data API events by containing `kms.amazonaws.com` or `rdsdata.amazonaws.com` . By default, `ExcludeManagementEventSources` is empty, and AWS KMS and Amazon RDS Data API events are logged to your trail.",
         "IncludeManagementEvents": "Specify if you want your event selector to include management events for your trail.\n\nFor more information, see [Management Events](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/logging-management-and-data-events-with-cloudtrail.html#logging-management-events) in the *AWS CloudTrail User Guide* .\n\nBy default, the value is `true` .\n\nThe first copy of management events is free. You are charged for additional copies of management events that you are logging on any subsequent trail in the same region. For more information about CloudTrail pricing, see [AWS CloudTrail Pricing](https://docs.aws.amazon.com/cloudtrail/pricing/) .",
         "ReadWriteType": "Specify if you want your trail to log read-only events, write-only events, or all. For example, the EC2 `GetConsoleOutput` is a read-only API operation and `RunInstances` is a write-only API operation.\n\nBy default, the value is `All` ."
       }
@@ -14221,7 +14221,7 @@
       "description": "The Kubernetes network configuration for the cluster.",
       "properties": {
         "IpFamily": "",
-        "ServiceIpv4Cidr": "The CIDR block to assign Kubernetes service IP addresses from. If you don't specify a block, Kubernetes assigns addresses from either the 10.100.0.0/16 or 172.20.0.0/16 CIDR blocks. We recommend that you specify a block that does not overlap with resources in other networks that are peered or connected to your VPC. The block must meet the following requirements:\n\n- Within one of the following private IP address blocks: 10.0.0.0/8, 172.16.0.0/12, or 192.168.0.0/16.\n- Doesn't overlap with any CIDR block assigned to the VPC that you selected for VPC.\n- Between /24 and /12.\n\n> You can only specify a custom CIDR block when you create a cluster and can't change this value once the cluster is created.",
+        "ServiceIpv4Cidr": "Don't specify a value if you select `ipv6` for *ipFamily* . The CIDR block to assign Kubernetes service IP addresses from. If you don't specify a block, Kubernetes assigns addresses from either the 10.100.0.0/16 or 172.20.0.0/16 CIDR blocks. We recommend that you specify a block that does not overlap with resources in other networks that are peered or connected to your VPC. The block must meet the following requirements:\n\n- Within one of the following private IP address blocks: 10.0.0.0/8, 172.16.0.0/12, or 192.168.0.0/16.\n- Doesn't overlap with any CIDR block assigned to the VPC that you selected for VPC.\n- Between /24 and /12.\n\n> You can only specify a custom CIDR block when you create a cluster and can't change this value once the cluster is created.",
         "ServiceIpv6Cidr": ""
       }
     },
@@ -14288,9 +14288,9 @@
         "NodegroupName": "The name associated with an Amazon EKS managed node group.",
         "Ref": "`Ref` returns the resource name. For example:\n\n`{ \"Ref\": \"myNodegroup\" }`\n\nFor the Amazon EKS node group `myNodegroup` , Ref returns the physical resource ID of the node group. For example, `<cluster_name>/<nodegroup_name>` ."
       },
-      "description": "Creates a managed node group for an Amazon EKS cluster. You can only create a node group for your cluster that is equal to the current Kubernetes version for the cluster.\n\nAn Amazon EKS managed node group is an Amazon EC2 Auto Scaling group and associated Amazon EC2 instances that are managed by AWS for an Amazon EKS cluster. Each node group uses a version of the Amazon EKS optimized Amazon Linux 2 AMI. For more information, see [Managed Node Groups](https://docs.aws.amazon.com/eks/latest/userguide/managed-node-groups.html) in the *Amazon EKS User Guide* .",
+      "description": "Creates a managed node group for an Amazon EKS cluster. You can only create a node group for your cluster that is equal to the current Kubernetes version for the cluster. All node groups are created with the latest AMI release version for the respective minor Kubernetes version of the cluster, unless you deploy a custom AMI using a launch template. For more information about using launch templates, see [Launch template support](https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html) .\n\nAn Amazon EKS managed node group is an Amazon EC2 Auto Scaling group and associated Amazon EC2 instances that are managed by AWS for an Amazon EKS cluster. Each node group uses a version of the Amazon EKS optimized Amazon Linux 2 AMI. For more information, see [Managed Node Groups](https://docs.aws.amazon.com/eks/latest/userguide/managed-node-groups.html) in the *Amazon EKS User Guide* .",
       "properties": {
-        "AmiType": "The AMI type for your node group. The following values are examples:\n\n- `AL2_x86_64` \u2013 Use for Amazon Linux 2 non-GPU instances.\n- `AL2_x86_64_GPU` \u2013 Use for Amazon Linux 2 GPU instances.\n- `AL2_ARM_64` \u2013 Use for Amazon Linux 2 Arm instances.\n- `CUSTOM` \u2013 Use when specifying a custom AMI ID with a launch template. For more information, see [Specifying an AMI](https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html#launch-template-custom-ami) in the *Amazon EKS User Guide* .\n- `BOTTLEROCKET_ARM_64` \u2013 Use for Bottlerocket Arm instances.\n- `BOTTLEROCKET_x86_64` \u2013 Use for Bottlerocket x86_64 instances.\n\nIf you specify `launchTemplate` , and your launch template uses a custom AMI, then don't specify `amiType` , or the node group deployment will fail. For more information about using launch templates with Amazon EKS, see [Launch template support](https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html) in the *Amazon EKS User Guide* .",
+        "AmiType": "The AMI type for your node group. GPU instance types should use the `AL2_x86_64_GPU` AMI type. Non-GPU instances should use the `AL2_x86_64` AMI type. Arm instances should use the `AL2_ARM_64` AMI type. All types use the Amazon EKS optimized Amazon Linux 2 AMI. If you specify `launchTemplate` , and your launch template uses a custom AMI, then don't specify `amiType` , or the node group deployment will fail. For more information about using launch templates with Amazon EKS, see [Launch template support](https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html) in the *Amazon EKS User Guide* .",
         "CapacityType": "The capacity type of your managed node group.",
         "ClusterName": "The name of the cluster to create the node group in.",
         "DiskSize": "The root device disk size (in GiB) for your node group instances. The default disk size is 20 GiB. If you specify `launchTemplate` , then don't specify `diskSize` , or the node group deployment will fail. For more information about using launch templates with Amazon EKS, see [Launch template support](https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html) in the *Amazon EKS User Guide* .",
@@ -20326,7 +20326,7 @@
       "properties": {
         "DisplayName": "Field that represents a friendly name in the console for the custom metric; it doesn't have to be unique. Don't use this name as the metric identifier in the device metric report. Can be updated.",
         "MetricName": "The name of the custom metric. This will be used in the metric report submitted from the device/thing. It shouldn't begin with `aws:` . Cannot be updated once it's defined.",
-        "MetricType": "The type of the custom metric. Types include `string-list` , `ip-address-list` , `number-list` , and `number` .",
+        "MetricType": "The type of the custom metric. Types include `string-list` , `ip-address-list` , and `number-list` .",
         "Tags": "Metadata that can be used to manage the custom metric."
       }
     },
@@ -20430,13 +20430,13 @@
     },
     "AWS::IoT::Logging": {
       "attributes": {
-        "Ref": "`Ref` returns\n\n`{ \"Ref\": \"AccountId\" }`"
+        "Ref": ""
       },
-      "description": "Sets the logging options in the V2 logging service.",
+      "description": "",
       "properties": {
-        "AccountId": "The unique identifier of the account to use when writing to CloudWatch logs.",
-        "DefaultLogLevel": "The logging level. Valid values are `DEBUG` , `INFO` , `ERROR` , `WARN` , and `DISABLED` .",
-        "RoleArn": "The ARN of the role that allows IoT to write to Cloudwatch logs."
+        "AccountId": "",
+        "DefaultLogLevel": "",
+        "RoleArn": ""
       }
     },
     "AWS::IoT::MitigationAction": {
@@ -20554,14 +20554,14 @@
     },
     "AWS::IoT::ResourceSpecificLogging": {
       "attributes": {
-        "Ref": "`Ref` returns\n\n`{ \"Ref\": \"TargetType:TargetName\" }`",
-        "TargetId": "The unique identifier of the log target."
+        "Ref": "",
+        "TargetId": ""
       },
-      "description": "Sets the logging options for a specific resource in the V2 logging service.",
+      "description": "",
       "properties": {
-        "LogLevel": "The logging level. Valid values are `DEBUG` , `INFO` , `ERROR` , `WARN` , and `DISABLED` .",
-        "TargetName": "The log target name.",
-        "TargetType": "The log target type."
+        "LogLevel": "",
+        "TargetName": "",
+        "TargetType": ""
       }
     },
     "AWS::IoT::ScheduledAudit": {
