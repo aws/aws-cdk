@@ -157,7 +157,7 @@ describe('function', () => {
               'Arn',
             ],
           },
-          Runtime: 'python2.7',
+          Runtime: 'python3.9',
         },
         DependsOn: [
           'MyLambdaServiceRole4539ECB6',
@@ -295,6 +295,35 @@ describe('function', () => {
     // THEN
     expect(imported.functionArn).toEqual('arn:aws:lambda:us-east-1:123456789012:function:ProcessKinesisRecords');
     expect(imported.functionName).toEqual('ProcessKinesisRecords');
+  });
+
+  describe('Function.fromFunctionAttributes()', () => {
+    let stack: cdk.Stack;
+
+    beforeEach(() => {
+      const app = new cdk.App();
+      stack = new cdk.Stack(app, 'Base', {
+        env: { account: '111111111111', region: 'stack-region' },
+      });
+    });
+
+    describe('for a function in a different account and region', () => {
+      let func: lambda.IFunction;
+
+      beforeEach(() => {
+        func = lambda.Function.fromFunctionAttributes(stack, 'iFunc', {
+          functionArn: 'arn:aws:lambda:function-region:222222222222:function:function-name',
+        });
+      });
+
+      test("the function's region is taken from the ARN", () => {
+        expect(func.env.region).toBe('function-region');
+      });
+
+      test("the function's account is taken from the ARN", () => {
+        expect(func.env.account).toBe('222222222222');
+      });
+    });
   });
 
   describe('addPermissions', () => {
@@ -2276,6 +2305,6 @@ function newTestLambda(scope: constructs.Construct) {
   return new lambda.Function(scope, 'MyLambda', {
     code: new lambda.InlineCode('foo'),
     handler: 'bar',
-    runtime: lambda.Runtime.PYTHON_2_7,
+    runtime: lambda.Runtime.PYTHON_3_9,
   });
 }

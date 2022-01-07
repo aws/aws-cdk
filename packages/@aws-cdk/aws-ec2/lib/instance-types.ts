@@ -393,6 +393,26 @@ export enum InstanceClass {
   D2 = 'd2',
 
   /**
+   * Storage-optimized instances, 3rd generation
+   */
+  STORAGE3 = 'd3',
+
+  /**
+   * Storage-optimized instances, 3rd generation
+   */
+  D3 = 'd3',
+
+  /**
+  * Storage-optimized instances, 3rd generation
+  */
+  STORAGE3_ENHANCED_NETWORK = 'd3en',
+
+  /**
+  * Storage-optimized instances, 3rd generation
+  */
+  D3EN = 'd3en',
+
+  /**
    * Storage/compute balanced instances, 1st generation
    */
   STORAGE_COMPUTE_1 = 'h1',
@@ -421,6 +441,26 @@ export enum InstanceClass {
    * I/O-optimized instances with local NVME drive, 3rd generation
    */
   I3EN = 'i3en',
+
+  /**
+   * Storage optimized instances powered by Graviton2 processor, 4th generation
+   */
+  STORAGE4_GRAVITON_NETWORK_OPTIMIZED = 'im4gn',
+
+  /**
+   * Storage optimized instances powered by Graviton2 processor, 4th generation
+   */
+  IM4GN = 'im4gn',
+
+  /**
+   * Storage optimized instances powered by Graviton2 processor, 4th generation
+   */
+  STORAGE4_GRAVITON_NETWORK_STORAGE_OPTIMIZED = 'is4gen',
+
+  /**
+   * Storage optimized instances powered by Graviton2 processor, 4th generation
+   */
+  IS4GEN = 'is4gen',
 
   /**
    * Burstable instances, 2nd generation
@@ -535,6 +575,16 @@ export enum InstanceClass {
    * Graphics-optimized instances with NVME drive for high performance computing, 4th generation
    */
   G4DN = 'g4dn',
+
+  /**
+   * Graphics-optimized instances based on AMD EPYC And Radeon Pro GPU (NAVI) with local NVME drive, 4th generation
+   */
+  GRAPHICS4_AMD_NVME_DRIVE = 'g4ad',
+
+  /**
+   * Graphics-optimized instances based on AMD EPYC And Radeon Pro GPU (NAVI) with local NVME drive, 4th generation
+   */
+  G4AD = 'g4ad',
 
   /**
    * Graphics-optimized instances, 5th generation
