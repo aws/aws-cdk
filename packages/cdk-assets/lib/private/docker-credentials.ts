@@ -39,17 +39,17 @@ export function cdkCredentialsConfig(): DockerCredentialsConfig | undefined {
 }
 
 /** Fetches login credentials from the configured source (e.g., SecretsManager, ECR) */
-export async function fetchDockerLoginCredentials(aws: IAws, config: DockerCredentialsConfig, rawDomain: string) {
+export async function fetchDockerLoginCredentials(aws: IAws, config: DockerCredentialsConfig, endpoint: string) {
   // Paranoid handling to ensure new URL() doesn't throw if the schema is missing
   // For official docker registry, docker will pass https://index.docker.io/v1/
-  rawDomain = rawDomain.includes('://') ? rawDomain : `https://${rawDomain}`;
-  const domain = new URL(rawDomain).hostname;
+  endpoint = endpoint.includes('://') ? endpoint : `https://${endpoint}`;
+  const domain = new URL(endpoint).hostname;
 
-  if (!Object.keys(config.domainCredentials).includes(domain) && !Object.keys(config.domainCredentials).includes(rawDomain)) {
+  if (!Object.keys(config.domainCredentials).includes(domain) && !Object.keys(config.domainCredentials).includes(endpoint)) {
     throw new Error(`unknown domain ${domain}`);
   }
 
-  let domainConfig = config.domainCredentials[domain] ?? config.domainCredentials[rawDomain];
+  let domainConfig = config.domainCredentials[domain] ?? config.domainCredentials[endpoint];
 
   if (domainConfig.secretsManagerSecretId) {
     const sm = await aws.secretsManagerClient({ assumeRoleArn: domainConfig.assumeRoleArn });

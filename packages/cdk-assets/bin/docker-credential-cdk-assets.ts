@@ -29,8 +29,8 @@ async function main() {
   }
 
   // Read the domain to fetch from stdin
-  let rawDomain = fs.readFileSync(0, { encoding: 'utf-8' }).trim();
-  const credentials = await fetchDockerLoginCredentials(new DefaultAwsClient(), config, rawDomain);
+  let endpoint = fs.readFileSync(0, { encoding: 'utf-8' }).trim();
+  const credentials = await fetchDockerLoginCredentials(new DefaultAwsClient(), config, endpoint);
   // Write the credentials back to stdout
   fs.writeFileSync(1, JSON.stringify(credentials));
 }
