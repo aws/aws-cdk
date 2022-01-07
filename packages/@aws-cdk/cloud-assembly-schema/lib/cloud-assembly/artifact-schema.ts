@@ -11,6 +11,13 @@ export interface BootstrapRole {
   readonly arn: string;
 
   /**
+   * External ID to use when assuming the bootstrap role
+   *
+   * @default - No external ID
+   */
+  readonly assumeRoleExternalId?: string;
+
+  /**
    * Version of bootstrap stack required to use this role
    *
    * @default - No bootstrap stack required

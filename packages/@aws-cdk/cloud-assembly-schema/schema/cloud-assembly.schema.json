@@ -340,6 +340,10 @@
                     "description": "The ARN of the IAM role created as part of bootrapping\ne.g. lookupRoleArn",
                     "type": "string"
                 },
+                "assumeRoleExternalId": {
+                    "description": "External ID to use when assuming the bootstrap role (Default - No external ID)",
+                    "type": "string"
+                },
                 "requiresBootstrapStackVersion": {
                     "description": "Version of bootstrap stack required to use this role (Default - No bootstrap stack required)",
                     "type": "number"

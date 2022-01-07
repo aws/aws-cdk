@@ -343,6 +343,7 @@ export class CloudFormationDeployments {
     try {
       const stackSdk = await this.sdkProvider.forEnvironment(resolvedEnvironment, Mode.ForReading, {
         assumeRoleArn: arns.lookupRoleArn,
+        assumeRoleExternalId: stack.lookupRole?.assumeRoleExternalId,
       });
 
       // if we succeed in assuming the lookup role, make sure we have the correct bootstrap stack version
