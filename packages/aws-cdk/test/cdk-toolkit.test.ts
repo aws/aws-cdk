@@ -55,6 +55,7 @@ import { DeployStackResult } from '../lib/api/deploy-stack';
 import { Template } from '../lib/api/util/cloudformation';
 import { CdkToolkit, Tag } from '../lib/cdk-toolkit';
 import { RequireApproval } from '../lib/diff';
+import { flatten } from '../lib/util';
 import { instanceMockFrom, MockCloudExecutable, TestStackArtifact } from './util';
 
 let cloudExecutable: MockCloudExecutable;
@@ -128,7 +129,7 @@ describe('readCurrentTemplate', () => {
         },
       ],
     });
-    mockForEnvironment = jest.fn().mockImplementation(() => { return { sdk: mockCloudExecutable.sdkProvider.sdk, defaultCredentials: false }; });
+    mockForEnvironment = jest.fn().mockImplementation(() => { return { sdk: mockCloudExecutable.sdkProvider.sdk, didAssumeRole: true }; });
     mockCloudExecutable.sdkProvider.forEnvironment = mockForEnvironment;
     mockCloudExecutable.sdkProvider.stubCloudFormation({
       getTemplate() {
@@ -150,7 +151,7 @@ describe('readCurrentTemplate', () => {
     });
   });
 
-  test('use lookup role', async () => {
+  test('lookup role is used', async () => {
     // GIVEN
     let requestedParameterName: string;
     mockCloudExecutable.sdkProvider.stubSSM({
@@ -182,6 +183,7 @@ describe('readCurrentTemplate', () => {
       assumeRoleArn: 'bloop-lookup:here:123456789012',
     });
   });
+
   test('fallback to deploy role if bootstrap stack version is not valid', async () => {
     // GIVEN
     let requestedParameterName: string;
@@ -208,7 +210,10 @@ describe('readCurrentTemplate', () => {
     });
 
     // THEN
-    expect(stderrMock.mock.calls[1]).toEqual(expect.arrayContaining([expect.stringMatching(/could not be assumed. Please upgrade to bootstrap stack >= 5/)]));
+    expect(flatten(stderrMock.mock.calls)).toEqual(expect.arrayContaining([
+      expect.stringMatching(/Could not assume bloop-lookup:here:123456789012/),
+      expect.stringMatching(/please upgrade to bootstrap version >= 5/),
+    ]));
     expect(requestedParameterName!).toEqual('/bootstrap/parameter');
     expect(mockForEnvironment.mock.calls.length).toEqual(3);
     expect(mockForEnvironment.mock.calls[0][2]).toEqual({
@@ -218,7 +223,8 @@ describe('readCurrentTemplate', () => {
       assumeRoleArn: 'bloop:here:123456789012',
     });
   });
-  test('fallback to deploy role if parameter not found', async () => {
+
+  test('fallback to deploy role if bootstrap version parameter not found', async () => {
     // GIVEN
     mockCloudExecutable.sdkProvider.stubSSM({
       getParameter() {
@@ -238,7 +244,10 @@ describe('readCurrentTemplate', () => {
     });
 
     // THEN
-    expect(stderrMock.mock.calls[1]).toEqual(expect.arrayContaining([expect.stringMatching(/could not be assumed. Please upgrade to bootstrap stack >= 5/)]));
+    expect(flatten(stderrMock.mock.calls)).toEqual(expect.arrayContaining([
+      expect.stringMatching(/Could not assume bloop-lookup:here:123456789012/),
+      expect.stringMatching(/please upgrade to bootstrap version >= 5/),
+    ]));
     expect(mockForEnvironment.mock.calls.length).toEqual(3);
     expect(mockForEnvironment.mock.calls[0][2]).toEqual({
       assumeRoleArn: 'bloop-lookup:here:123456789012',
@@ -247,9 +256,48 @@ describe('readCurrentTemplate', () => {
       assumeRoleArn: 'bloop:here:123456789012',
     });
   });
-  test('dont lookup parameter if default credentials are used', async () => {
+
+  test('fallback to deploy role if forEnvironment throws', async () => {
     // GIVEN
-    mockForEnvironment = jest.fn().mockImplementation(() => { return { sdk: mockCloudExecutable.sdkProvider.sdk, defaultCredentials: true }; });
+    // throw error first for the 'prepareSdkWithLookupRoleFor' call and succeed for the rest
+    mockForEnvironment = jest.fn().mockImplementationOnce(() => { throw new Error('error'); })
+      .mockImplementation(() => { return { sdk: mockCloudExecutable.sdkProvider.sdk, didAssumeRole: true };});
+    mockCloudExecutable.sdkProvider.forEnvironment = mockForEnvironment;
+    mockCloudExecutable.sdkProvider.stubSSM({
+      getParameter() {
+        return { };
+      },
+    });
+    const cdkToolkit = new CdkToolkit({
+      cloudExecutable: mockCloudExecutable,
+      configuration: mockCloudExecutable.configuration,
+      sdkProvider: mockCloudExecutable.sdkProvider,
+      cloudFormation: new CloudFormationDeployments({ sdkProvider: mockCloudExecutable.sdkProvider }),
+    });
+
+    // WHEN
+    await cdkToolkit.deploy({
+      selector: { patterns: ['Test-Stack-C'] },
+    });
+
+    // THEN
+    expect(mockCloudExecutable.sdkProvider.sdk.ssm).not.toHaveBeenCalled();
+    expect(flatten(stderrMock.mock.calls)).toEqual(expect.arrayContaining([
+      expect.stringMatching(/Could not assume bloop-lookup:here:123456789012/),
+      expect.stringMatching(/please upgrade to bootstrap version >= 5/),
+    ]));
+    expect(mockForEnvironment.mock.calls.length).toEqual(3);
+    expect(mockForEnvironment.mock.calls[0][2]).toEqual({
+      assumeRoleArn: 'bloop-lookup:here:123456789012',
+    });
+    expect(mockForEnvironment.mock.calls[1][2]).toEqual({
+      assumeRoleArn: 'bloop:here:123456789012',
+    });
+  });
+
+  test('dont lookup bootstrap version parameter if default credentials are used', async () => {
+    // GIVEN
+    mockForEnvironment = jest.fn().mockImplementation(() => { return { sdk: mockCloudExecutable.sdkProvider.sdk, didAssumeRole: false }; });
     mockCloudExecutable.sdkProvider.forEnvironment = mockForEnvironment;
     const cdkToolkit = new CdkToolkit({
       cloudExecutable: mockCloudExecutable,
@@ -259,11 +307,7 @@ describe('readCurrentTemplate', () => {
     });
     mockCloudExecutable.sdkProvider.stubSSM({
       getParameter() {
-        return {
-          Parameter: {
-            Value: '1',
-          },
-        };
+        return { };
       },
     });
 
@@ -273,7 +317,9 @@ describe('readCurrentTemplate', () => {
     });
 
     // THEN
-    expect(stderrMock.mock.calls[1]).toEqual(expect.arrayContaining([expect.stringMatching(/could not be assumed. Please upgrade to bootstrap stack >= 5/)]));
+    expect(flatten(stderrMock.mock.calls)).toEqual(expect.arrayContaining([
+      expect.stringMatching(/please upgrade to bootstrap version >= 5/),
+    ]));
     expect(mockCloudExecutable.sdkProvider.sdk.ssm).not.toHaveBeenCalled();
     expect(mockForEnvironment.mock.calls.length).toEqual(3);
     expect(mockForEnvironment.mock.calls[0][2]).toEqual({

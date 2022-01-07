@@ -98,6 +98,13 @@ export interface DefaultStackSynthesizerProps {
   readonly lookupRoleArn?: string;
 
   /**
+   * Whether or not to disable use of the lookup role
+   *
+   * @default - false
+   */
+  readonly disableLookupRole?: boolean;
+
+  /**
    * External ID to use when assuming role for image asset publishing
    *
    * @default - No external ID
@@ -459,7 +466,7 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
       requiresBootstrapStackVersion: MIN_BOOTSTRAP_STACK_VERSION,
       bootstrapStackVersionSsmParameter: this.bootstrapStackVersionSsmParameter,
       additionalDependencies: [artifactId],
-      lookupRole: this.lookupRoleArn ? {
+      lookupRole: !this.props.disableLookupRole && this.lookupRoleArn ? {
         arn: this.lookupRoleArn,
         requiresBootstrapStackVersion: MIN_LOOKUP_ROLE_BOOTSTRAP_STACK_VERSION,
         bootstrapStackVersionSsmParameter: this.bootstrapStackVersionSsmParameter,
