@@ -732,4 +732,137 @@ describe('record set', () => {
 
 
   });
+
+  test('Multiple cross account zone delegation records', () => {
+    // GIVEN
+    const stack = new Stack();
+    const parentZone = new route53.PublicHostedZone(stack, 'ParentHostedZone', {
+      zoneName: 'myzone.com',
+      crossAccountZoneDelegationPrincipal: new iam.AccountPrincipal('123456789012'),
+    });
+
+    // WHEN
+    const childZone = new route53.PublicHostedZone(stack, 'ChildHostedZone', {
+      zoneName: 'sub.myzone.com',
+    });
+    new route53.CrossAccountZoneDelegationRecord(stack, 'Delegation', {
+      delegatedZone: childZone,
+      parentHostedZoneName: 'myzone.com',
+      delegationRole: parentZone.crossAccountZoneDelegationRole!,
+      ttl: Duration.seconds(60),
+    });
+    const childZone2 = new route53.PublicHostedZone(stack, 'ChildHostedZone2', {
+      zoneName: 'anothersub.myzone.com',
+    });
+    new route53.CrossAccountZoneDelegationRecord(stack, 'Delegation2', {
+      delegatedZone: childZone2,
+      parentHostedZoneName: 'myzone.com',
+      delegationRole: parentZone.crossAccountZoneDelegationRole!,
+      ttl: Duration.seconds(60),
+    });
+
+    // THEN
+    const childHostedZones = [
+      { name: 'sub.myzone.com', id: 'ChildHostedZone4B14AC71' },
+      { name: 'anothersub.myzone.com', id: 'ChildHostedZone2A37198F0' },
+    ];
+
+    for (var childHostedZone of childHostedZones) {
+      expect(stack).toHaveResource('Custom::CrossAccountZoneDelegation', {
+        ServiceToken: {
+          'Fn::GetAtt': [
+            'CustomCrossAccountZoneDelegationCustomResourceProviderHandler44A84265',
+            'Arn',
+          ],
+        },
+        AssumeRoleArn: {
+          'Fn::GetAtt': [
+            'ParentHostedZoneCrossAccountZoneDelegationRole95B1C36E',
+            'Arn',
+          ],
+        },
+        ParentZoneName: 'myzone.com',
+        DelegatedZoneName: childHostedZone.name,
+        DelegatedZoneNameServers: {
+          'Fn::GetAtt': [
+            childHostedZone.id,
+            'NameServers',
+          ],
+        },
+        TTL: 60,
+      });
+    }
+  });
+
+  test('Cross account zone delegation policies', () => {
+    // GIVEN
+    const stack = new Stack();
+    const parentZone = new route53.PublicHostedZone(stack, 'ParentHostedZone', {
+      zoneName: 'myzone.com',
+      crossAccountZoneDelegationPrincipal: new iam.AccountPrincipal('123456789012'),
+    });
+
+    // WHEN
+    const childZone = new route53.PublicHostedZone(stack, 'ChildHostedZone', {
+      zoneName: 'sub.myzone.com',
+    });
+    new route53.CrossAccountZoneDelegationRecord(stack, 'Delegation', {
+      delegatedZone: childZone,
+      parentHostedZoneName: 'myzone.com',
+      delegationRole: parentZone.crossAccountZoneDelegationRole!,
+      ttl: Duration.seconds(60),
+    });
+    const childZone2 = new route53.PublicHostedZone(stack, 'ChildHostedZone2', {
+      zoneName: 'anothersub.myzone.com',
+    });
+    new route53.CrossAccountZoneDelegationRecord(stack, 'Delegation2', {
+      delegatedZone: childZone2,
+      parentHostedZoneName: 'myzone.com',
+      delegationRole: parentZone.crossAccountZoneDelegationRole!,
+      ttl: Duration.seconds(60),
+    });
+
+    // THEN
+    const policyNames = [
+      'DelegationcrossaccountzonedelegationhandlerrolePolicy1E157602',
+      'Delegation2crossaccountzonedelegationhandlerrolePolicy713BEAC3',
+    ];
+
+    for (var policyName of policyNames) {
+      expect(stack).toHaveResource('AWS::IAM::Policy', {
+        PolicyName: policyName,
+        PolicyDocument: {
+          Version: '2012-10-17',
+          Statement: [
+            {
+              Action: 'sts:AssumeRole',
+              Effect: 'Allow',
+              Resource: {
+                'Fn::GetAtt': [
+                  'ParentHostedZoneCrossAccountZoneDelegationRole95B1C36E',
+                  'Arn',
+                ],
+              },
+            },
+          ],
+        },
+        Roles: [
+          {
+            'Fn::Select': [1, {
+              'Fn::Split': ['/', {
+                'Fn::Select': [5, {
+                  'Fn::Split': [':', {
+                    'Fn::GetAtt': [
+                      'CustomCrossAccountZoneDelegationCustomResourceProviderRoleED64687B',
+                      'Arn',
+                    ],
+                  }],
+                }],
+              }],
+            }],
+          },
+        ],
+      });
+    }
+  });
 });

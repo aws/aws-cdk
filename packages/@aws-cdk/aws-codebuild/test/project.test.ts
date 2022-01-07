@@ -1,4 +1,4 @@
-import { objectLike, ResourcePart, arrayWith } from '@aws-cdk/assert-internal';
+import { ABSENT, objectLike, ResourcePart, arrayWith } from '@aws-cdk/assert-internal';
 import '@aws-cdk/assert-internal/jest';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
@@ -292,103 +292,126 @@ describe('BitBucket source', () => {
   });
 });
 
-test('project with s3 cache bucket', () => {
-  // GIVEN
-  const stack = new cdk.Stack();
+describe('caching', () => {
+  test('using Cache.none() results in NO_CACHE in the template', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
 
-  // WHEN
-  new codebuild.Project(stack, 'Project', {
-    source: codebuild.Source.s3({
-      bucket: new s3.Bucket(stack, 'SourceBucket'),
-      path: 'path',
-    }),
-    cache: codebuild.Cache.bucket(new s3.Bucket(stack, 'Bucket'), {
-      prefix: 'cache-prefix',
-    }),
+    // WHEN
+    new codebuild.PipelineProject(stack, 'Project', {
+      cache: codebuild.Cache.none(),
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::CodeBuild::Project', {
+      Cache: {
+        Type: 'NO_CACHE',
+        Location: ABSENT,
+      },
+    });
   });
 
-  // THEN
-  expect(stack).toHaveResourceLike('AWS::CodeBuild::Project', {
-    Cache: {
-      Type: 'S3',
-      Location: {
-        'Fn::Join': [
-          '/',
-          [
-            {
-              'Ref': 'Bucket83908E77',
-            },
-            'cache-prefix',
+  test('project with s3 cache bucket', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new codebuild.Project(stack, 'Project', {
+      source: codebuild.Source.s3({
+        bucket: new s3.Bucket(stack, 'SourceBucket'),
+        path: 'path',
+      }),
+      cache: codebuild.Cache.bucket(new s3.Bucket(stack, 'Bucket'), {
+        prefix: 'cache-prefix',
+      }),
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::CodeBuild::Project', {
+      Cache: {
+        Type: 'S3',
+        Location: {
+          'Fn::Join': [
+            '/',
+            [
+              {
+                'Ref': 'Bucket83908E77',
+              },
+              'cache-prefix',
+            ],
           ],
+        },
+      },
+    });
+  });
+
+  test('s3 codebuild project with sourceVersion', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new codebuild.Project(stack, 'Project', {
+      source: codebuild.Source.s3({
+        bucket: new s3.Bucket(stack, 'Bucket'),
+        path: 'path',
+        version: 's3version',
+      }),
+      cache: codebuild.Cache.local(codebuild.LocalCacheMode.CUSTOM, codebuild.LocalCacheMode.DOCKER_LAYER,
+        codebuild.LocalCacheMode.SOURCE),
+    });
+
+    // THEN
+    expect(stack).toHaveResource('AWS::CodeBuild::Project', {
+      SourceVersion: 's3version',
+    });
+  });
+
+  test('project with local cache modes', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new codebuild.Project(stack, 'Project', {
+      source: codebuild.Source.s3({
+        bucket: new s3.Bucket(stack, 'Bucket'),
+        path: 'path',
+      }),
+      cache: codebuild.Cache.local(codebuild.LocalCacheMode.CUSTOM, codebuild.LocalCacheMode.DOCKER_LAYER,
+        codebuild.LocalCacheMode.SOURCE),
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::CodeBuild::Project', {
+      Cache: {
+        Type: 'LOCAL',
+        Modes: [
+          'LOCAL_CUSTOM_CACHE',
+          'LOCAL_DOCKER_LAYER_CACHE',
+          'LOCAL_SOURCE_CACHE',
         ],
       },
-    },
-  });
-});
-
-test('s3 codebuild project with sourceVersion', () => {
-  // GIVEN
-  const stack = new cdk.Stack();
-
-  // WHEN
-  new codebuild.Project(stack, 'Project', {
-    source: codebuild.Source.s3({
-      bucket: new s3.Bucket(stack, 'Bucket'),
-      path: 'path',
-      version: 's3version',
-    }),
-    cache: codebuild.Cache.local(codebuild.LocalCacheMode.CUSTOM, codebuild.LocalCacheMode.DOCKER_LAYER,
-      codebuild.LocalCacheMode.SOURCE),
+    });
   });
 
-  // THEN
-  expect(stack).toHaveResource('AWS::CodeBuild::Project', {
-    SourceVersion: 's3version',
-  });
-});
+  test('project by default has cache type set to NO_CACHE', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
 
-test('project with local cache modes', () => {
-  // GIVEN
-  const stack = new cdk.Stack();
+    // WHEN
+    new codebuild.Project(stack, 'Project', {
+      source: codebuild.Source.s3({
+        bucket: new s3.Bucket(stack, 'Bucket'),
+        path: 'path',
+      }),
+    });
 
-  // WHEN
-  new codebuild.Project(stack, 'Project', {
-    source: codebuild.Source.s3({
-      bucket: new s3.Bucket(stack, 'Bucket'),
-      path: 'path',
-    }),
-    cache: codebuild.Cache.local(codebuild.LocalCacheMode.CUSTOM, codebuild.LocalCacheMode.DOCKER_LAYER,
-      codebuild.LocalCacheMode.SOURCE),
-  });
-
-  // THEN
-  expect(stack).toHaveResourceLike('AWS::CodeBuild::Project', {
-    Cache: {
-      Type: 'LOCAL',
-      Modes: [
-        'LOCAL_CUSTOM_CACHE',
-        'LOCAL_DOCKER_LAYER_CACHE',
-        'LOCAL_SOURCE_CACHE',
-      ],
-    },
-  });
-});
-
-test('project by default has no cache modes', () => {
-  // GIVEN
-  const stack = new cdk.Stack();
-
-  // WHEN
-  new codebuild.Project(stack, 'Project', {
-    source: codebuild.Source.s3({
-      bucket: new s3.Bucket(stack, 'Bucket'),
-      path: 'path',
-    }),
-  });
-
-  // THEN
-  expect(stack).not.toHaveResourceLike('AWS::CodeBuild::Project', {
-    Cache: {},
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::CodeBuild::Project', {
+      Cache: {
+        Type: 'NO_CACHE',
+        Location: ABSENT,
+      },
+    });
   });
 });
 

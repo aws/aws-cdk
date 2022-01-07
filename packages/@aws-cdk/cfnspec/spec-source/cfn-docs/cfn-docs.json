@@ -5976,7 +5976,7 @@
       "description": "The `AWS::Chatbot::SlackChannelConfiguration` resource configures a Slack channel to allow users to use AWS Chatbot with AWS CloudFormation templates.\n\nThis resource requires some setup to be done in the AWS Chatbot console. To provide the required Slack workspace ID, you must perform the initial authorization flow with Slack in the AWS Chatbot console, then copy and paste the workspace ID from the console. For more details, see steps 1-4 in [Setting Up AWS Chatbot with Slack](https://docs.aws.amazon.com/chatbot/latest/adminguide/setting-up.html#Setup_intro) in the *AWS Chatbot User Guide* .",
       "properties": {
         "ConfigurationName": "The name of the configuration.",
-        "GuardrailPolicies": "The list of IAM policy ARNs that are applied as channel guardrails. The AWS managed 'AdministratorAccess' policy is applied as a default if this is not set.",
+        "GuardrailPolicies": "The list of IAM policy ARNs that are applied as channel guardrails. The AWS managed 'AdministratorAccess' policy is applied as a default if this is not set. Currently, only 1 IAM policy is supported.",
         "IamRoleArn": "The ARN of the IAM role that defines the permissions for AWS Chatbot .\n\nThis is a user-definworked role that AWS Chatbot will assume. This is not the service-linked role. For more information, see [IAM Policies for AWS Chatbot](https://docs.aws.amazon.com/chatbot/latest/adminguide/chatbot-iam-policies.html) .",
         "LoggingLevel": "Specifies the logging level for this configuration. This property affects the log entries pushed to Amazon CloudWatch Logs.\n\nLogging levels include `ERROR` , `INFO` , or `NONE` .",
         "SlackChannelId": "The ID of the Slack channel.\n\nTo get the ID, open Slack, right click on the channel name in the left pane, then choose Copy Link. The channel ID is the 9-character string at the end of the URL. For example, `ABCBBLZZZ` .",
@@ -6989,7 +6989,7 @@
       "description": "Use event selectors to further specify the management and data event settings for your trail. By default, trails created without specific event selectors will be configured to log all read and write management events, and no data events. When an event occurs in your account, CloudTrail evaluates the event selector for all trails. For each trail, if the event matches any event selector, the trail processes and logs the event. If the event doesn't match any event selector, the trail doesn't log the event.\n\nYou can configure up to five event selectors for a trail.\n\nYou cannot apply both event selectors and advanced event selectors to a trail.",
       "properties": {
         "DataResources": "CloudTrail supports data event logging for Amazon S3 objects and AWS Lambda functions. You can specify up to 250 resources for an individual event selector, but the total number of data resources cannot exceed 250 across all event selectors in a trail. This limit does not apply if you configure resource logging for all data events.\n\nFor more information, see [Data Events](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/logging-management-and-data-events-with-cloudtrail.html#logging-data-events) and [Limits in AWS CloudTrail](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/WhatIsCloudTrail-Limits.html) in the *AWS CloudTrail User Guide* .",
-        "ExcludeManagementEventSources": "An optional list of service event sources from which you do not want management events to be logged on your trail. In this release, the list can be empty (disables the filter), or it can filter out AWS Key Management Service or Amazon RDS Data API events by containing `kms.amazonaws.com` or `rdsdata.amazonaws.com` . By default, `ExcludeManagementEventSources` is empty, and AWS KMS and Amazon RDS Data API events are logged to your trail. You can exclude management event sources only in regions that support the event source.",
+        "ExcludeManagementEventSources": "An optional list of service event sources from which you do not want management events to be logged on your trail. In this release, the list can be empty (disables the filter), or it can filter out AWS Key Management Service or Amazon RDS Data API events by containing `kms.amazonaws.com` or `rdsdata.amazonaws.com` . By default, `ExcludeManagementEventSources` is empty, and AWS KMS and Amazon RDS Data API events are logged to your trail.",
         "IncludeManagementEvents": "Specify if you want your event selector to include management events for your trail.\n\nFor more information, see [Management Events](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/logging-management-and-data-events-with-cloudtrail.html#logging-management-events) in the *AWS CloudTrail User Guide* .\n\nBy default, the value is `true` .\n\nThe first copy of management events is free. You are charged for additional copies of management events that you are logging on any subsequent trail in the same region. For more information about CloudTrail pricing, see [AWS CloudTrail Pricing](https://docs.aws.amazon.com/cloudtrail/pricing/) .",
         "ReadWriteType": "Specify if you want your trail to log read-only events, write-only events, or all. For example, the EC2 `GetConsoleOutput` is a read-only API operation and `RunInstances` is a write-only API operation.\n\nBy default, the value is `All` ."
       }
@@ -7576,8 +7576,8 @@
       "attributes": {},
       "description": "Information about the Amazon S3 bucket that contains the code that will be committed to the new repository. Changes to this property are ignored after initial resource creation.",
       "properties": {
-        "Bucket": "The name of the Amazon S3 bucket that contains the ZIP file with the content that will be committed to the new repository. This can be specified using an ARN or the name of the bucket in the AWS account . Changes to this property are ignored after initial resource creation.",
-        "Key": "The key to use for accessing the Amazon S3 bucket. Changes to this property are ignored after initial resource creation.",
+        "Bucket": "The name of the Amazon S3 bucket that contains the ZIP file with the content that will be committed to the new repository. This can be specified using the name of the bucket in the AWS account . Changes to this property are ignored after initial resource creation.",
+        "Key": "The key to use for accessing the Amazon S3 bucket. Changes to this property are ignored after initial resource creation. For more information, see [Creating object key names](https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-keys.html) and [Uploading objects](https://docs.aws.amazon.com/AmazonS3/latest/userguide/upload-objects.html) in the Amazon S3 User Guide.",
         "ObjectVersion": "The object version of the ZIP file, if versioning is enabled for the Amazon S3 bucket. Changes to this property are ignored after initial resource creation."
       }
     },
@@ -8247,14 +8247,14 @@
         "EmailVerificationMessage": "A string representing the email verification message. EmailVerificationMessage is allowed only if [EmailSendingAccount](https://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/API_EmailConfigurationType.html#CognitoUserPools-Type-EmailConfigurationType-EmailSendingAccount) is DEVELOPER.",
         "EmailVerificationSubject": "A string representing the email verification subject. EmailVerificationSubject is allowed only if [EmailSendingAccount](https://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/API_EmailConfigurationType.html#CognitoUserPools-Type-EmailConfigurationType-EmailSendingAccount) is DEVELOPER.",
         "EnabledMfas": "Enables MFA on a specified user pool. To disable all MFAs after it has been enabled, set MfaConfiguration to \u201cOFF\u201d and remove EnabledMfas. MFAs can only be all disabled if MfaConfiguration is OFF. Once SMS_MFA is enabled, SMS_MFA can only be disabled by setting MfaConfiguration to \u201cOFF\u201d. Can be one of the following values:\n\n- `SMS_MFA` - Enables SMS MFA for the user pool. SMS_MFA can only be enabled if SMS configuration is provided.\n- `SOFTWARE_TOKEN_MFA` - Enables software token MFA for the user pool.\n\nAllowed values: `SMS_MFA` | `SOFTWARE_TOKEN_MFA`",
-        "LambdaConfig": "The Lambda trigger configuration information for the new user pool.\n\n> In a push model, event sources (such as Amazon S3 and custom applications) need permission to invoke a function. So you will need to make an extra call to add permission for these event sources to invoke your Lambda function.\n> \n> For more information on using the Lambda API to add permission, see [AddPermission](https://docs.aws.amazon.com/lambda/latest/dg/API_AddPermission.html) .\n> \n> For adding permission using the AWS CLI , see [add-permission](https://docs.aws.amazon.com/cli/latest/reference/lambda/add-permission.html) .",
-        "MfaConfiguration": "The multi-factor (MFA) configuration. Valid values include:\n\n- `OFF` MFA will not be used for any users.\n- `ON` MFA is required for all users to sign in.\n- `OPTIONAL` MFA will be required only for individual users who have an MFA factor enabled.",
+        "LambdaConfig": "The Lambda trigger configuration information for the new user pool.\n\n> In a push model, event sources (such as Amazon S3 and custom applications) need permission to invoke a function. So you must make an extra call to add permission for these event sources to invoke your Lambda function.\n> \n> For more information on using the Lambda API to add permission, see [AddPermission](https://docs.aws.amazon.com/lambda/latest/dg/API_AddPermission.html) .\n> \n> For adding permission using the AWS CLI , see [add-permission](https://docs.aws.amazon.com/cli/latest/reference/lambda/add-permission.html) .",
+        "MfaConfiguration": "The multi-factor (MFA) configuration. Valid values include:\n\n- `OFF` MFA won't be used for any users.\n- `ON` MFA is required for all users to sign in.\n- `OPTIONAL` MFA will be required only for individual users who have an MFA factor activated.",
         "Policies": "The policy associated with a user pool.",
         "Schema": "The schema attributes for the new user pool. These attributes can be standard or custom attributes.\n\n> During a user pool update, you can add new schema attributes but you cannot modify or delete an existing schema attribute.",
         "SmsAuthenticationMessage": "A string representing the SMS authentication message.",
         "SmsConfiguration": "The SMS configuration.",
         "SmsVerificationMessage": "A string representing the SMS verification message.",
-        "UserPoolAddOns": "Used to enable advanced security risk detection. Set the key `AdvancedSecurityMode` to the value \"AUDIT\".",
+        "UserPoolAddOns": "Enables advanced security risk detection. Set the key `AdvancedSecurityMode` to the value \"AUDIT\".",
         "UserPoolName": "A string used to name the user pool.",
         "UserPoolTags": "The tag keys and values to assign to the user pool. A tag is a label that you can use to categorize and manage user pools in different ways, such as by purpose, owner, environment, or other criteria.",
         "UsernameAttributes": "Determines whether email addresses or phone numbers can be specified as user names when a user signs up. Possible values: `phone_number` or `email` .\n\nThis user pool property cannot be updated.",
@@ -8275,7 +8275,7 @@
       "properties": {
         "AllowAdminCreateUserOnly": "Set to `True` if only the administrator is allowed to create user profiles. Set to `False` if users can sign themselves up via an app.",
         "InviteMessageTemplate": "The message template to be used for the welcome message to new users.\n\nSee also [Customizing User Invitation Messages](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pool-settings-message-customizations.html#cognito-user-pool-settings-user-invitation-message-customization) .",
-        "UnusedAccountValidityDays": "The user account expiration limit, in days, after which the account is no longer usable. To reset the account after that time limit, you must call `AdminCreateUser` again, specifying `\"RESEND\"` for the `MessageAction` parameter. The default value for this parameter is 7.\n\n> If you set a value for `TemporaryPasswordValidityDays` in `PasswordPolicy` , that value will be used and `UnusedAccountValidityDays` will be deprecated for that user pool."
+        "UnusedAccountValidityDays": "The user account expiration limit, in days, after which the account is no longer usable. To reset the account after that time limit, you must call `AdminCreateUser` again, specifying `\"RESEND\"` for the `MessageAction` parameter. The default value for this parameter is 7.\n\n> If you set a value for `TemporaryPasswordValidityDays` in `PasswordPolicy` , that value will be used, and `UnusedAccountValidityDays` will be no longer be an available parameter for that user pool."
       }
     },
     "AWS::Cognito::UserPool.CustomEmailSender": {
@@ -8296,10 +8296,10 @@
     },
     "AWS::Cognito::UserPool.DeviceConfiguration": {
       "attributes": {},
-      "description": "The configuration for the user pool's device tracking.",
+      "description": "The device tracking configuration for a user pool. A user pool with device tracking deactivated returns a null value.\n\n> When you provide values for any DeviceConfiguration field, you activate device tracking.",
       "properties": {
-        "ChallengeRequiredOnNewDevice": "Indicates whether a challenge is required on a new device. Only applicable to a new device.",
-        "DeviceOnlyRememberedOnUserPrompt": "If true, a device is only remembered on user prompt."
+        "ChallengeRequiredOnNewDevice": "When true, device authentication can replace SMS and time-based one-time password (TOTP) factors for multi-factor authentication (MFA).\n\n> Users that sign in with devices that have not been confirmed or remembered will still have to provide a second factor, whether or not ChallengeRequiredOnNewDevice is true, when your user pool requires MFA.",
+        "DeviceOnlyRememberedOnUserPrompt": "When true, users can opt in to remembering their device. Your app code must use callback functions to return the user's choice."
       }
     },
     "AWS::Cognito::UserPool.EmailConfiguration": {
@@ -8307,10 +8307,10 @@
       "description": "The email configuration.",
       "properties": {
         "ConfigurationSet": "The set of configuration rules that can be applied to emails sent using Amazon SES. A configuration set is applied to an email by including a reference to the configuration set in the headers of the email. Once applied, all of the rules in that configuration set are applied to the email. Configuration sets can be used to apply the following types of rules to emails:\n\n- Event publishing \u2013 Amazon SES can track the number of send, delivery, open, click, bounce, and complaint events for each email sent. Use event publishing to send information about these events to other AWS services such as SNS and CloudWatch.\n- IP pool management \u2013 When leasing dedicated IP addresses with Amazon SES, you can create groups of IP addresses, called dedicated IP pools. You can then associate the dedicated IP pools with configuration sets.",
-        "EmailSendingAccount": "Specifies whether Amazon Cognito emails your users by using its built-in email functionality or your Amazon SES email configuration. Specify one of the following values:\n\n- **COGNITO_DEFAULT** - When Amazon Cognito emails your users, it uses its built-in email functionality. When you use the default option, Amazon Cognito allows only a limited number of emails each day for your user pool. For typical production environments, the default email limit is below the required delivery volume. To achieve a higher delivery volume, specify DEVELOPER to use your Amazon SES email configuration.\n\nTo look up the email delivery limit for the default option, see [Limits in Amazon Cognito](https://docs.aws.amazon.com/cognito/latest/developerguide/limits.html) in the *Amazon Cognito Developer Guide* .\n\nThe default FROM address is no-reply@verificationemail.com. To customize the FROM address, provide the ARN of an Amazon SES verified email address for the `SourceArn` parameter.\n\nIf EmailSendingAccount is COGNITO_DEFAULT, the following parameters aren't allowed:\n\n- EmailVerificationMessage\n- EmailVerificationSubject\n- InviteMessageTemplate.EmailMessage\n- InviteMessageTemplate.EmailSubject\n- VerificationMessageTemplate.EmailMessage\n- VerificationMessageTemplate.EmailMessageByLink\n- VerificationMessageTemplate.EmailSubject,\n- VerificationMessageTemplate.EmailSubjectByLink\n\n> DEVELOPER EmailSendingAccount is required.\n- **DEVELOPER** - When Amazon Cognito emails your users, it uses your Amazon SES configuration. Amazon Cognito calls Amazon SES on your behalf to send email from your verified email address. When you use this option, the email delivery limits are the same limits that apply to your Amazon SES verified email address in your AWS account .\n\nIf you use this option, you must provide the ARN of an Amazon SES verified email address for the `SourceArn` parameter.\n\nBefore Amazon Cognito can email your users, it requires additional permissions to call Amazon SES on your behalf. When you update your user pool with this option, Amazon Cognito creates a *service-linked role* , which is a type of IAM role, in your AWS account . This role contains the permissions that allow Amazon Cognito to access Amazon SES and send email messages with your address. For more information about the service-linked role that Amazon Cognito creates, see [Using Service-Linked Roles for Amazon Cognito](https://docs.aws.amazon.com/cognito/latest/developerguide/using-service-linked-roles.html) in the *Amazon Cognito Developer Guide* .",
+        "EmailSendingAccount": "Specifies whether Amazon Cognito emails your users by using its built-in email functionality or your Amazon Simple Email Service email configuration. Specify one of the following values:\n\n- **COGNITO_DEFAULT** - When Amazon Cognito emails your users, it uses its built-in email functionality. When you use the default option, Amazon Cognito allows only a limited number of emails each day for your user pool. For typical production environments, the default email limit is less than the required delivery volume. To achieve a higher delivery volume, specify DEVELOPER to use your Amazon SES email configuration.\n\nTo look up the email delivery limit for the default option, see [Limits in](https://docs.aws.amazon.com/cognito/latest/developerguide/limits.html) in the *Developer Guide* .\n\nThe default FROM address is `no-reply@verificationemail.com` . To customize the FROM address, provide the Amazon Resource Name (ARN) of an Amazon SES verified email address for the `SourceArn` parameter.\n\nIf EmailSendingAccount is COGNITO_DEFAULT, you can't use the following parameters:\n\n- EmailVerificationMessage\n- EmailVerificationSubject\n- InviteMessageTemplate.EmailMessage\n- InviteMessageTemplate.EmailSubject\n- VerificationMessageTemplate.EmailMessage\n- VerificationMessageTemplate.EmailMessageByLink\n- VerificationMessageTemplate.EmailSubject,\n- VerificationMessageTemplate.EmailSubjectByLink\n\n> DEVELOPER EmailSendingAccount is required.\n- **DEVELOPER** - When Amazon Cognito emails your users, it uses your Amazon SES configuration. Amazon Cognito calls Amazon SES on your behalf to send email from your verified email address. When you use this option, the email delivery limits are the same limits that apply to your Amazon SES verified email address in your AWS account .\n\nIf you use this option, you must provide the ARN of an Amazon SES verified email address for the `SourceArn` parameter.\n\nBefore Amazon Cognito can email your users, it requires additional permissions to call Amazon SES on your behalf. When you update your user pool with this option, Amazon Cognito creates a *service-linked role* , which is a type of role, in your AWS account . This role contains the permissions that allow to access Amazon SES and send email messages with your address. For more information about the service-linked role that Amazon Cognito creates, see [Using Service-Linked Roles for Amazon Cognito](https://docs.aws.amazon.com/cognito/latest/developerguide/using-service-linked-roles.html) in the *Amazon Cognito Developer Guide* .",
         "From": "Identifies either the sender's email address or the sender's name with their email address. For example, `testuser@example.com` or `Test User <testuser@example.com>` . This address appears before the body of the email.",
-        "ReplyToEmailAddress": "The destination to which the receiver of the email should reply to.",
-        "SourceArn": "The Amazon Resource Name (ARN) of a verified email address in Amazon SES. This email address is used in one of the following ways, depending on the value that you specify for the `EmailSendingAccount` parameter:\n\n- If you specify `COGNITO_DEFAULT` , Amazon Cognito uses this address as the custom FROM address when it emails your users by using its built-in email account.\n- If you specify `DEVELOPER` , Amazon Cognito emails your users with this address by calling Amazon SES on your behalf."
+        "ReplyToEmailAddress": "The destination to which the receiver of the email should reply.",
+        "SourceArn": "The ARN of a verified email address in Amazon SES. Amazon Cognito uses this email address in one of the following ways, depending on the value that you specify for the `EmailSendingAccount` parameter:\n\n- If you specify `COGNITO_DEFAULT` , Amazon Cognito uses this address as the custom FROM address when it emails your users using its built-in email account.\n- If you specify `DEVELOPER` , Amazon Cognito emails your users with this address by calling Amazon SES on your behalf."
       }
     },
     "AWS::Cognito::UserPool.InviteMessageTemplate": {
@@ -8343,7 +8343,7 @@
     },
     "AWS::Cognito::UserPool.NumberAttributeConstraints": {
       "attributes": {},
-      "description": "The minimum and maximum value of an attribute that is of the number data type.",
+      "description": "The minimum and maximum values of an attribute that is of the number data type.",
       "properties": {
         "MaxValue": "The maximum value of an attribute that is of the number data type.",
         "MinValue": "The minimum value of an attribute that is of the number data type."
@@ -8353,12 +8353,12 @@
       "attributes": {},
       "description": "The password policy type.",
       "properties": {
-        "MinimumLength": "The minimum length of the password policy that you have set. Cannot be less than 6.",
+        "MinimumLength": "The minimum length of the password in the policy that you have set. This value can't be less than 6.",
         "RequireLowercase": "In the password policy that you have set, refers to whether you have required users to use at least one lowercase letter in their password.",
         "RequireNumbers": "In the password policy that you have set, refers to whether you have required users to use at least one number in their password.",
         "RequireSymbols": "In the password policy that you have set, refers to whether you have required users to use at least one symbol in their password.",
         "RequireUppercase": "In the password policy that you have set, refers to whether you have required users to use at least one uppercase letter in their password.",
-        "TemporaryPasswordValidityDays": "In the password policy you have set, refers to the number of days a temporary password is valid. If the user does not sign-in during this time, their password will need to be reset by an administrator.\n\n> When you set `TemporaryPasswordValidityDays` for a user pool, you will no longer be able to set the deprecated `UnusedAccountValidityDays` value for that user pool."
+        "TemporaryPasswordValidityDays": "The number of days a temporary password is valid in the password policy. If the user doesn't sign in during this time, an administrator must reset their password.\n\n> When you set `TemporaryPasswordValidityDays` for a user pool, you can no longer set the deprecated `UnusedAccountValidityDays` value for that user pool."
       }
     },
     "AWS::Cognito::UserPool.Policies": {
@@ -8382,10 +8382,10 @@
       "properties": {
         "AttributeDataType": "The attribute data type.",
         "DeveloperOnlyAttribute": "> We recommend that you use [WriteAttributes](https://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/API_UserPoolClientType.html#CognitoUserPools-Type-UserPoolClientType-WriteAttributes) in the user pool client to control how attributes can be mutated for new use cases instead of using `DeveloperOnlyAttribute` . \n\nSpecifies whether the attribute type is developer only. This attribute can only be modified by an administrator. Users will not be able to modify this attribute using their access token.",
-        "Mutable": "Specifies whether the value of the attribute can be changed.\n\nFor any user pool attribute that's mapped to an identity provider attribute, you must set this parameter to `true` . Amazon Cognito updates mapped attributes when users sign in to your application through an identity provider. If an attribute is immutable, Amazon Cognito throws an error when it attempts to update the attribute. For more information, see [Specifying Identity Provider Attribute Mappings for Your User Pool](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-specifying-attribute-mapping.html) .",
+        "Mutable": "Specifies whether the value of the attribute can be changed.\n\nFor any user pool attribute that is mapped to an identity provider attribute, you must set this parameter to `true` . Amazon Cognito updates mapped attributes when users sign in to your application through an identity provider. If an attribute is immutable, Amazon Cognito throws an error when it attempts to update the attribute. For more information, see [Specifying Identity Provider Attribute Mappings for Your User Pool](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-specifying-attribute-mapping.html) .",
         "Name": "A schema attribute of the name type.",
         "NumberAttributeConstraints": "Specifies the constraints for an attribute of the number type.",
-        "Required": "Specifies whether a user pool attribute is required. If the attribute is required and the user does not provide a value, registration or sign-in will fail.",
+        "Required": "Specifies whether a user pool attribute is required. If the attribute is required and the user doesn't provide a value, registration or sign-in will fail.",
         "StringAttributeConstraints": "Specifies the constraints for an attribute of the string type."
       }
     },
@@ -8394,7 +8394,7 @@
       "description": "The SMS configuration type that includes the settings the Cognito User Pool needs to call for the Amazon SNS service to send an SMS message from your AWS account . The Cognito User Pool makes the request to the Amazon SNS Service by using an IAM role that you provide for your AWS account .",
       "properties": {
         "ExternalId": "The external ID is a value. We recommend you use `ExternalId` to add security to your IAM role, which is used to call Amazon SNS to send SMS messages for your user pool. If you provide an `ExternalId` , the Cognito User Pool uses it when attempting to assume your IAM role. You can also set your roles trust policy to require the `ExternalID` . If you use the Cognito Management Console to create a role for SMS MFA, Cognito creates a role with the required permissions and a trust policy that uses `ExternalId` .",
-        "SnsCallerArn": "The Amazon Resource Name (ARN) of the Amazon Simple Notification Service (SNS) caller. This is the ARN of the IAM role in your AWS account which Cognito will use to send SMS messages. SMS messages are subject to a [spending limit](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-email-phone-verification.html) ."
+        "SnsCallerArn": "The Amazon Resource Name (ARN) of the Amazon SNS caller. This is the ARN of the IAM role in your AWS account that Amazon Cognito will use to send SMS messages. SMS messages are subject to a [spending limit](https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-email-phone-verification.html) ."
       }
     },
     "AWS::Cognito::UserPool.StringAttributeConstraints": {
@@ -8416,7 +8416,7 @@
       "attributes": {},
       "description": "The `UsernameConfiguration` property type specifies case sensitivity on the username input for the selected sign-in option.",
       "properties": {
-        "CaseSensitive": "Specifies whether username case sensitivity will be applied for all users in the user pool through Cognito APIs.\n\nValid values include:\n\n- *`True`* : Enables case sensitivity for all username input. When this option is set to `True` , users must sign in using the exact capitalization of their given username. For example, \u201cUserName\u201d. This is the default value.\n- *`False`* : Enables case insensitivity for all username input. For example, when this option is set to `False` , users will be able to sign in using either \"username\" or \"Username\". This option also enables both `preferred_username` and `email` alias to be case insensitive, in addition to the `username` attribute."
+        "CaseSensitive": "Specifies whether username case sensitivity will be applied for all users in the user pool through Amazon Cognito APIs.\n\nValid values include:\n\n- *`True`* : Enables case sensitivity for all username input. When this option is set to `True` , users must sign in using the exact capitalization of their given username, such as \u201cUserName\u201d. This is the default value.\n- *`False`* : Enables case insensitivity for all username input. For example, when this option is set to `False` , users can sign in using either \"username\" or \"Username\". This option also enables both `preferred_username` and `email` alias to be case insensitive, in addition to the `username` attribute."
       }
     },
     "AWS::Cognito::UserPool.VerificationMessageTemplate": {
@@ -8439,34 +8439,34 @@
       "properties": {
         "AccessTokenValidity": "The time limit, after which the access token is no longer valid and cannot be used.",
         "AllowedOAuthFlows": "The allowed OAuth flows.\n\nSet to `code` to initiate a code grant flow, which provides an authorization code as the response. This code can be exchanged for access tokens with the token endpoint.\n\nSet to `implicit` to specify that the client should get the access token (and, optionally, ID token, based on scopes) directly.\n\nSet to `client_credentials` to specify that the client should get the access token (and, optionally, ID token, based on scopes) from the token endpoint using a combination of client and client_secret.",
-        "AllowedOAuthFlowsUserPoolClient": "Set to true if the client is allowed to follow the OAuth protocol when interacting with Cognito user pools.",
+        "AllowedOAuthFlowsUserPoolClient": "Set to true if the client is allowed to follow the OAuth protocol when interacting with Amazon Cognito user pools.",
         "AllowedOAuthScopes": "The allowed OAuth scopes. Possible values provided by OAuth are: `phone` , `email` , `openid` , and `profile` . Possible values provided by AWS are: `aws.cognito.signin.user.admin` . Custom scopes created in Resource Servers are also supported.",
-        "AnalyticsConfiguration": "The Amazon Pinpoint analytics configuration for collecting metrics for this user pool.\n\n> In regions where Pinpoint is not available, Cognito User Pools only supports sending events to Amazon Pinpoint projects in us-east-1. In regions where Pinpoint is available, Cognito User Pools will support sending events to Amazon Pinpoint projects within that same region.",
+        "AnalyticsConfiguration": "The Amazon Pinpoint analytics configuration for collecting metrics for this user pool.\n\n> In AWS Regions where isn't available, User Pools only supports sending events to Amazon Pinpoint projects in AWS Region us-east-1. In Regions where is available, User Pools will support sending events to Amazon Pinpoint projects within that same Region.",
         "CallbackURLs": "A list of allowed redirect (callback) URLs for the identity providers.\n\nA redirect URI must:\n\n- Be an absolute URI.\n- Be registered with the authorization server.\n- Not include a fragment component.\n\nSee [OAuth 2.0 - Redirection Endpoint](https://docs.aws.amazon.com/https://tools.ietf.org/html/rfc6749#section-3.1.2) .\n\nAmazon Cognito requires HTTPS over HTTP except for http://localhost for testing purposes only.\n\nApp callback URLs such as myapp://example are also supported.",
         "ClientName": "The client name for the user pool client you would like to create.",
         "DefaultRedirectURI": "The default redirect URI. Must be in the `CallbackURLs` list.\n\nA redirect URI must:\n\n- Be an absolute URI.\n- Be registered with the authorization server.\n- Not include a fragment component.\n\nSee [OAuth 2.0 - Redirection Endpoint](https://docs.aws.amazon.com/https://tools.ietf.org/html/rfc6749#section-3.1.2) .\n\nAmazon Cognito requires HTTPS over HTTP except for http://localhost for testing purposes only.\n\nApp callback URLs such as myapp://example are also supported.",
-        "EnableTokenRevocation": "Enables or disables token revocation. For more information about revoking tokens, see [RevokeToken](https://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/API_RevokeToken.html) .\n\nIf you don't include this parameter, token revocation is automatically enabled for the new user pool client.",
-        "ExplicitAuthFlows": "The authentication flows that are supported by the user pool clients. Flow names without the `ALLOW_` prefix are deprecated in favor of new names with the `ALLOW_` prefix. Note that values with `ALLOW_` prefix cannot be used along with values without `ALLOW_` prefix.\n\nValid values include:\n\n- `ALLOW_ADMIN_USER_PASSWORD_AUTH` : Enable admin based user password authentication flow `ADMIN_USER_PASSWORD_AUTH` . This setting replaces the `ADMIN_NO_SRP_AUTH` setting. With this authentication flow, Cognito receives the password in the request instead of using the SRP (Secure Remote Password protocol) protocol to verify passwords.\n- `ALLOW_CUSTOM_AUTH` : Enable Lambda trigger based authentication.\n- `ALLOW_USER_PASSWORD_AUTH` : Enable user password-based authentication. In this flow, Cognito receives the password in the request instead of using the SRP protocol to verify passwords.\n- `ALLOW_USER_SRP_AUTH` : Enable SRP based authentication.\n- `ALLOW_REFRESH_TOKEN_AUTH` : Enable authflow to refresh tokens.",
+        "EnableTokenRevocation": "Activates or deactivates token revocation. For more information about revoking tokens, see [RevokeToken](https://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/API_RevokeToken.html) .\n\nIf you don't include this parameter, token revocation is automatically activated for the new user pool client.",
+        "ExplicitAuthFlows": "The authentication flows that are supported by the user pool clients. Flow names without the `ALLOW_` prefix are no longer supported, in favor of new names with the `ALLOW_` prefix. Note that values with `ALLOW_` prefix must be used only along with the `ALLOW_` prefix.\n\nValid values include:\n\n- `ALLOW_ADMIN_USER_PASSWORD_AUTH` : Enable admin based user password authentication flow `ADMIN_USER_PASSWORD_AUTH` . This setting replaces the `ADMIN_NO_SRP_AUTH` setting. With this authentication flow, Amazon Cognito receives the password in the request instead of using the Secure Remote Password (SRP) protocol to verify passwords.\n- `ALLOW_CUSTOM_AUTH` : Enable AWS Lambda trigger based authentication.\n- `ALLOW_USER_PASSWORD_AUTH` : Enable user password-based authentication. In this flow, Amazon Cognito receives the password in the request instead of using the SRP protocol to verify passwords.\n- `ALLOW_USER_SRP_AUTH` : Enable SRP-based authentication.\n- `ALLOW_REFRESH_TOKEN_AUTH` : Enable authflow to refresh tokens.",
         "GenerateSecret": "Boolean to specify whether you want to generate a secret for the user pool client being created.",
         "IdTokenValidity": "The time limit, after which the ID token is no longer valid and cannot be used.",
         "LogoutURLs": "A list of allowed logout URLs for the identity providers.",
         "PreventUserExistenceErrors": "Use this setting to choose which errors and responses are returned by Cognito APIs during authentication, account confirmation, and password recovery when the user does not exist in the user pool. When set to `ENABLED` and the user does not exist, authentication returns an error indicating either the username or password was incorrect, and account confirmation and password recovery return a response indicating a code was sent to a simulated destination. When set to `LEGACY` , those APIs will return a `UserNotFoundException` exception if the user does not exist in the user pool.",
         "ReadAttributes": "The read attributes.",
-        "RefreshTokenValidity": "The time limit, in days, after which the refresh token is no longer valid and cannot be used.",
+        "RefreshTokenValidity": "The time limit, in days, after which the refresh token is no longer valid and can't be used.",
         "SupportedIdentityProviders": "A list of provider names for the identity providers that are supported on this client. The following are supported: `COGNITO` , `Facebook` , `SignInWithApple` , `Google` and `LoginWithAmazon` .",
         "TokenValidityUnits": "The units in which the validity times are represented in. Default for RefreshToken is days, and default for ID and access tokens are hours.",
         "UserPoolId": "The user pool ID for the user pool where you want to create a user pool client.",
-        "WriteAttributes": "The user pool attributes that the app client can write to.\n\nIf your app client allows users to sign in through an identity provider, this array must include all attributes that are mapped to identity provider attributes. Amazon Cognito updates mapped attributes when users sign in to your application through an identity provider. If your app client lacks write access to a mapped attribute, Amazon Cognito throws an error when it attempts to update the attribute. For more information, see [Specifying Identity Provider Attribute Mappings for Your User Pool](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-specifying-attribute-mapping.html) ."
+        "WriteAttributes": "The user pool attributes that the app client can write to.\n\nIf your app client allows users to sign in through an identity provider, this array must include all attributes that are mapped to identity provider attributes. Amazon Cognito updates mapped attributes when users sign in to your application through an identity provider. If your app client lacks write access to a mapped attribute, Amazon Cognito throws an error when it tries to update the attribute. For more information, see [Specifying Identity Provider Attribute Mappings for Your User Pool](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-specifying-attribute-mapping.html) ."
       }
     },
     "AWS::Cognito::UserPoolClient.AnalyticsConfiguration": {
       "attributes": {},
-      "description": "The Amazon Pinpoint analytics configuration for collecting metrics for a user pool.\n\n> In regions where Pinpoint is not available, Cognito User Pools only supports sending events to Amazon Pinpoint projects in us-east-1. In regions where Pinpoint is available, Cognito User Pools will support sending events to Amazon Pinpoint projects within that same region.",
+      "description": "The Amazon Pinpoint analytics configuration for collecting metrics for a user pool.\n\n> In Regions where Pinpoint isn't available, User Pools only supports sending events to Amazon Pinpoint projects in us-east-1. In Regions where Pinpoint is available, User Pools will support sending events to Amazon Pinpoint projects within that same Region.",
       "properties": {
         "ApplicationArn": "",
         "ApplicationId": "The application ID for an Amazon Pinpoint application.",
         "ExternalId": "The external ID.",
-        "RoleArn": "The ARN of an IAM role that authorizes Amazon Cognito to publish events to Amazon Pinpoint analytics.",
+        "RoleArn": "The ARN of an AWS Identity and Access Management role that authorizes Amazon Cognito to publish events to Amazon Pinpoint analytics.",
         "UserDataShared": "If `UserDataShared` is `true` , Amazon Cognito will include user data in the events it publishes to Amazon Pinpoint analytics."
       }
     },
@@ -8505,8 +8505,8 @@
       "properties": {
         "Description": "A string containing the description of the group.",
         "GroupName": "The name of the group. Must be unique.",
-        "Precedence": "A nonnegative integer value that specifies the precedence of this group relative to the other groups that a user can belong to in the user pool. Zero is the highest precedence value. Groups with lower `Precedence` values take precedence over groups with higher or null `Precedence` values. If a user belongs to two or more groups, it is the group with the lowest precedence value whose role ARN will be used in the `cognito:roles` and `cognito:preferred_role` claims in the user's tokens.\n\nTwo groups can have the same `Precedence` value. If this happens, neither group takes precedence over the other. If two groups with the same `Precedence` have the same role ARN, that role is used in the `cognito:preferred_role` claim in tokens for users in each group. If the two groups have different role ARNs, the `cognito:preferred_role` claim is not set in users' tokens.\n\nThe default `Precedence` value is null.",
-        "RoleArn": "The role ARN for the group.",
+        "Precedence": "A non-negative integer value that specifies the precedence of this group relative to the other groups that a user can belong to in the user pool. Zero is the highest precedence value. Groups with lower `Precedence` values take precedence over groups with higher ornull `Precedence` values. If a user belongs to two or more groups, it is the group with the lowest precedence value whose role ARN is given in the user's tokens for the `cognito:roles` and `cognito:preferred_role` claims.\n\nTwo groups can have the same `Precedence` value. If this happens, neither group takes precedence over the other. If two groups with the same `Precedence` have the same role ARN, that role is used in the `cognito:preferred_role` claim in tokens for users in each group. If the two groups have different role ARNs, the `cognito:preferred_role` claim isn't set in users' tokens.\n\nThe default `Precedence` value is null.",
+        "RoleArn": "The role Amazon Resource Name (ARN) for the group.",
         "UserPoolId": "The user pool ID for the user pool."
       }
     },
@@ -8518,7 +8518,7 @@
       "properties": {
         "AttributeMapping": "A mapping of identity provider attributes to standard and custom user pool attributes.",
         "IdpIdentifiers": "A list of identity provider identifiers.",
-        "ProviderDetails": "The identity provider details. The following list describes the provider detail keys for each identity provider type.\n\n- For Google and Login with Amazon:\n\n- client_id\n- client_secret\n- authorize_scopes\n- For Facebook:\n\n- client_id\n- client_secret\n- authorize_scopes\n- api_version\n- For Sign in with Apple:\n\n- client_id\n- team_id\n- key_id\n- private_key\n- authorize_scopes\n- For OIDC providers:\n\n- client_id\n- client_secret\n- attributes_request_method\n- oidc_issuer\n- authorize_scopes\n- authorize_url *if not available from discovery URL specified by oidc_issuer key*\n- token_url *if not available from discovery URL specified by oidc_issuer key*\n- attributes_url *if not available from discovery URL specified by oidc_issuer key*\n- jwks_uri *if not available from discovery URL specified by oidc_issuer key*\n- For SAML providers:\n\n- MetadataFile OR MetadataURL\n- IDPSignout *optional*",
+        "ProviderDetails": "The identity provider details. The following list describes the provider detail keys for each identity provider type.\n\n- For Google and Login with Amazon:\n\n- client_id\n- client_secret\n- authorize_scopes\n- For Facebook:\n\n- client_id\n- client_secret\n- authorize_scopes\n- api_version\n- For Sign in with Apple:\n\n- client_id\n- team_id\n- key_id\n- private_key\n- authorize_scopes\n- For OpenID Connect (OIDC) providers:\n\n- client_id\n- client_secret\n- attributes_request_method\n- oidc_issuer\n- authorize_scopes\n- authorize_url *if not available from discovery URL specified by oidc_issuer key*\n- token_url *if not available from discovery URL specified by oidc_issuer key*\n- attributes_url *if not available from discovery URL specified by oidc_issuer key*\n- jwks_uri *if not available from discovery URL specified by oidc_issuer key*\n- attributes_url_add_attributes *a read-only property that is set automatically*\n- For SAML providers:\n\n- MetadataFile OR MetadataURL\n- IDPSignout (optional)",
         "ProviderName": "The identity provider name.",
         "ProviderType": "The identity provider type.",
         "UserPoolId": "The user pool ID."
@@ -8550,9 +8550,9 @@
       },
       "description": "The `AWS::Cognito::UserPoolRiskConfigurationAttachment` resource sets the risk configuration that is used for Amazon Cognito advanced security features.\n\nYou can specify risk configuration for a single client (with a specific `clientId` ) or for all clients (by setting the `clientId` to `ALL` ). If you specify `ALL` , the default configuration is used for every client that has had no risk configuration set previously. If you specify risk configuration for a particular client, it no longer falls back to the `ALL` configuration.",
       "properties": {
-        "AccountTakeoverRiskConfiguration": "The account takeover risk configuration object including the `NotifyConfiguration` object and `Actions` to take in the case of an account takeover.",
+        "AccountTakeoverRiskConfiguration": "The account takeover risk configuration object, including the `NotifyConfiguration` object and `Actions` to take if there is an account takeover.",
         "ClientId": "The app client ID. You can specify the risk configuration for a single client (with a specific ClientId) or for all clients (by setting the ClientId to `ALL` ).",
-        "CompromisedCredentialsRiskConfiguration": "The compromised credentials risk configuration object including the `EventFilter` and the `EventAction`",
+        "CompromisedCredentialsRiskConfiguration": "The compromised credentials risk configuration object, including the `EventFilter` and the `EventAction` .",
         "RiskExceptionConfiguration": "The configuration to override the risk decision.",
         "UserPoolId": "The user pool ID."
       }
@@ -8561,7 +8561,7 @@
       "attributes": {},
       "description": "Account takeover action type.",
       "properties": {
-        "EventAction": "The event action.\n\n- `BLOCK` Choosing this action will block the request.\n- `MFA_IF_CONFIGURED` Throw MFA challenge if user has configured it, else allow the request.\n- `MFA_REQUIRED` Throw MFA challenge if user has configured it, else block the request.\n- `NO_ACTION` Allow the user sign-in.",
+        "EventAction": "The event action.\n\n- `BLOCK` Choosing this action will block the request.\n- `MFA_IF_CONFIGURED` Present an MFA challenge if user has configured it, else allow the request.\n- `MFA_REQUIRED` Present an MFA challenge if user has configured it, else block the request.\n- `NO_ACTION` Allow the user to sign in.",
         "Notify": "Flag specifying whether to send a notification."
       }
     },
@@ -8578,13 +8578,13 @@
       "attributes": {},
       "description": "Configuration for mitigation actions and notification for different levels of risk detected for a potential account takeover.",
       "properties": {
-        "Actions": "Account takeover risk configuration actions",
+        "Actions": "Account takeover risk configuration actions.",
         "NotifyConfiguration": "The notify configuration used to construct email notifications."
       }
     },
     "AWS::Cognito::UserPoolRiskConfigurationAttachment.CompromisedCredentialsActionsType": {
       "attributes": {},
-      "description": "The compromised credentials actions type",
+      "description": "The compromised credentials actions type.",
       "properties": {
         "EventAction": "The event action."
       }
@@ -8602,28 +8602,28 @@
       "description": "The notify configuration type.",
       "properties": {
         "BlockEmail": "Email template used when a detected risk event is blocked.",
-        "From": "The email address that is sending the email. It must be either individually verified with Amazon SES, or from a domain that has been verified with Amazon SES.",
-        "MfaEmail": "The MFA email template used when MFA is challenged as part of a detected risk.",
+        "From": "The email address that is sending the email. The address must be either individually verified with Amazon Simple Email Service, or from a domain that has been verified with Amazon SES.",
+        "MfaEmail": "The multi-factor authentication (MFA) email template used when MFA is challenged as part of a detected risk.",
         "NoActionEmail": "The email template used when a detected risk event is allowed.",
         "ReplyTo": "The destination to which the receiver of an email should reply to.",
-        "SourceArn": "The Amazon Resource Name (ARN) of the identity that is associated with the sending authorization policy. It permits Amazon Cognito to send for the email address specified in the `From` parameter."
+        "SourceArn": "The Amazon Resource Name (ARN) of the identity that is associated with the sending authorization policy. This identity permits Amazon Cognito to send for the email address specified in the `From` parameter."
       }
     },
     "AWS::Cognito::UserPoolRiskConfigurationAttachment.NotifyEmailType": {
       "attributes": {},
       "description": "The notify email type.",
       "properties": {
-        "HtmlBody": "The HTML body.",
-        "Subject": "The subject.",
-        "TextBody": "The text body."
+        "HtmlBody": "The email HTML body.",
+        "Subject": "The email subject.",
+        "TextBody": "The email text body."
       }
     },
     "AWS::Cognito::UserPoolRiskConfigurationAttachment.RiskExceptionConfigurationType": {
       "attributes": {},
       "description": "The type of the configuration to override the risk decision.",
       "properties": {
-        "BlockedIPRangeList": "Overrides the risk decision to always block the pre-authentication requests. The IP range is in CIDR notation: a compact representation of an IP address and its associated routing prefix.",
-        "SkippedIPRangeList": "Risk detection is not performed on the IP addresses in the range list. The IP range is in CIDR notation."
+        "BlockedIPRangeList": "Overrides the risk decision to always block the pre-authentication requests. The IP range is in CIDR notation, a compact representation of an IP address and its routing prefix.",
+        "SkippedIPRangeList": "Risk detection isn't performed on the IP addresses in this range list. The IP range is in CIDR notation."
       }
     },
     "AWS::Cognito::UserPoolUICustomizationAttachment": {
@@ -8644,13 +8644,13 @@
       "description": "The `AWS::Cognito::UserPoolUser` resource creates an Amazon Cognito user pool user.",
       "properties": {
         "ClientMetadata": "A map of custom key-value pairs that you can provide as input for the custom workflow that is invoked by the *pre sign-up* trigger.\n\nYou create custom workflows by assigning AWS Lambda functions to user pool triggers. When you create a `UserPoolUser` resource and include the `ClientMetadata` property, Amazon Cognito invokes the function that is assigned to the *pre sign-up* trigger. When Amazon Cognito invokes this function, it passes a JSON payload, which the function receives as input. This payload contains a `clientMetadata` attribute, which provides the data that you assigned to the ClientMetadata property. In your function code in AWS Lambda , you can process the `clientMetadata` value to enhance your workflow for your specific needs.\n\nFor more information, see [Customizing User Pool Workflows with Lambda Triggers](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-identity-pools-working-with-aws-lambda-triggers.html) in the *Amazon Cognito Developer Guide* .\n\n> Take the following limitations into consideration when you use the ClientMetadata parameter:\n> \n> - Amazon Cognito does not store the ClientMetadata value. This data is available only to AWS Lambda triggers that are assigned to a user pool to support custom workflows. If your user pool configuration does not include triggers, the ClientMetadata parameter serves no purpose.\n> - Amazon Cognito does not validate the ClientMetadata value.\n> - Amazon Cognito does not encrypt the the ClientMetadata value, so don't use it to provide sensitive information.",
-        "DesiredDeliveryMediums": "Specify `\"EMAIL\"` if email will be used to send the welcome message. Specify `\"SMS\"` if the phone number will be used. The default value is `\"SMS\"` . More than one value can be specified.",
-        "ForceAliasCreation": "This parameter is only used if the `phone_number_verified` or `email_verified` attribute is set to `True` . Otherwise, it is ignored.\n\nIf this parameter is set to `True` and the phone number or email address specified in the UserAttributes parameter already exists as an alias with a different user, the API call will migrate the alias from the previous user to the newly created user. The previous user will no longer be able to log in using that alias.\n\nIf this parameter is set to `False` , the API throws an `AliasExistsException` error if the alias already exists. The default value is `False` .",
-        "MessageAction": "Set to `\"RESEND\"` to resend the invitation message to a user that already exists and reset the expiration limit on the user's account. Set to `\"SUPPRESS\"` to suppress sending the message. Only one value can be specified.",
+        "DesiredDeliveryMediums": "Specify `\"EMAIL\"` if email will be used to send the welcome message. Specify `\"SMS\"` if the phone number will be used. The default value is `\"SMS\"` . You can specify more than one value.",
+        "ForceAliasCreation": "This parameter is used only if the `phone_number_verified` or `email_verified` attribute is set to `True` . Otherwise, it is ignored.\n\nIf this parameter is set to `True` and the phone number or email address specified in the UserAttributes parameter already exists as an alias with a different user, the API call will migrate the alias from the previous user to the newly created user. The previous user will no longer be able to log in using that alias.\n\nIf this parameter is set to `False` , the API throws an `AliasExistsException` error if the alias already exists. The default value is `False` .",
+        "MessageAction": "Set to `RESEND` to resend the invitation message to a user that already exists and reset the expiration limit on the user's account. Set to `SUPPRESS` to suppress sending the message. You can specify only one value.",
         "UserAttributes": "The user attributes and attribute values to be set for the user to be created. These are name-value pairs You can create a user without specifying any attributes other than `Username` . However, any attributes that you specify as required (in [](https://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/API_CreateUserPool.html) or in the *Attributes* tab of the console) must be supplied either by you (in your call to `AdminCreateUser` ) or by the user (when they sign up in response to your welcome message).\n\nFor custom attributes, you must prepend the `custom:` prefix to the attribute name.\n\nTo send a message inviting the user to sign up, you must specify the user's email address or phone number. This can be done in your call to AdminCreateUser or in the *Users* tab of the Amazon Cognito console for managing your user pools.\n\nIn your call to `AdminCreateUser` , you can set the `email_verified` attribute to `True` , and you can set the `phone_number_verified` attribute to `True` . (You can also do this by calling [](https://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/API_AdminUpdateUserAttributes.html) .)\n\n- *email* : The email address of the user to whom the message that contains the code and user name will be sent. Required if the `email_verified` attribute is set to `True` , or if `\"EMAIL\"` is specified in the `DesiredDeliveryMediums` parameter.\n- *phone_number* : The phone number of the user to whom the message that contains the code and user name will be sent. Required if the `phone_number_verified` attribute is set to `True` , or if `\"SMS\"` is specified in the `DesiredDeliveryMediums` parameter.",
         "UserPoolId": "The user pool ID for the user pool where the user will be created.",
-        "Username": "The username for the user. Must be unique within the user pool. Must be a UTF-8 string between 1 and 128 characters. After the user is created, the username cannot be changed.",
-        "ValidationData": "The user's validation data. This is an array of name-value pairs that contain user attributes and attribute values that you can use for custom validation, such as restricting the types of user accounts that can be registered. For example, you might choose to allow or disallow user sign-up based on the user's domain.\n\nTo configure custom validation, you must create a Pre Sign-up Lambda trigger for the user pool as described in the Amazon Cognito Developer Guide. The Lambda trigger receives the validation data and uses it in the validation process.\n\nThe user's validation data is not persisted."
+        "Username": "The username for the user. Must be unique within the user pool. Must be a UTF-8 string between 1 and 128 characters. After the user is created, the username can't be changed.",
+        "ValidationData": "The user's validation data. This is an array of name-value pairs that contain user attributes and attribute values that you can use for custom validation, such as restricting the types of user accounts that can be registered. For example, you might choose to allow or disallow user sign-up based on the user's domain.\n\nTo configure custom validation, you must create a Pre Sign-up AWS Lambda trigger for the user pool as described in the Amazon Cognito Developer Guide. The Lambda trigger receives the validation data and uses it in the validation process.\n\nThe user's validation data isn't persisted."
       }
     },
     "AWS::Cognito::UserPoolUser.AttributeType": {
@@ -13451,7 +13451,7 @@
       "properties": {
         "AutoScalingGroupArn": "The Amazon Resource Name (ARN) or short name that identifies the Auto Scaling group.",
         "ManagedScaling": "The managed scaling settings for the Auto Scaling group capacity provider.",
-        "ManagedTerminationProtection": "The managed termination protection setting to use for the Auto Scaling group capacity provider. This determines whether the Auto Scaling group has managed termination protection.\n\n> When using managed termination protection, managed scaling must also be used otherwise managed termination protection doesn't work. \n\nWhen managed termination protection is enabled, Amazon ECS prevents the Amazon EC2 instances in an Auto Scaling group that contain tasks from being terminated during a scale-in action. The Auto Scaling group and each instance in the Auto Scaling group must have instance protection from scale-in actions enabled as well. For more information, see [Instance Protection](https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-instance-termination.html#instance-protection) in the *AWS Auto Scaling User Guide* .\n\nWhen managed termination protection is disabled, your Amazon EC2 instances aren't protected from termination when the Auto Scaling group scales in."
+        "ManagedTerminationProtection": "The managed termination protection setting to use for the Auto Scaling group capacity provider. This determines whether the Auto Scaling group has managed termination protection. The default is disabled.\n\n> When using managed termination protection, managed scaling must also be used otherwise managed termination protection doesn't work. \n\nWhen managed termination protection is enabled, Amazon ECS prevents the Amazon EC2 instances in an Auto Scaling group that contain tasks from being terminated during a scale-in action. The Auto Scaling group and each instance in the Auto Scaling group must have instance protection from scale-in actions enabled as well. For more information, see [Instance Protection](https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-instance-termination.html#instance-protection) in the *AWS Auto Scaling User Guide* .\n\nWhen managed termination protection is disabled, your Amazon EC2 instances aren't protected from termination when the Auto Scaling group scales in."
       }
     },
     "AWS::ECS::CapacityProvider.ManagedScaling": {
@@ -13729,7 +13729,7 @@
         "Links": "The `links` parameter allows containers to communicate with each other without the need for port mappings. This parameter is only supported if the network mode of a task definition is `bridge` . The `name:internalName` construct is analogous to `name:alias` in Docker links. Up to 255 letters (uppercase and lowercase), numbers, underscores, and hyphens are allowed. For more information about linking Docker containers, go to [Legacy container links](https://docs.aws.amazon.com/https://docs.docker.com/network/links/) in the Docker documentation. This parameter maps to `Links` in the [Create a container](https://docs.aws.amazon.com/https://docs.docker.com/engine/api/v1.35/#operation/ContainerCreate) section of the [Docker Remote API](https://docs.aws.amazon.com/https://docs.docker.com/engine/api/v1.35/) and the `--link` option to [docker run](https://docs.aws.amazon.com/https://docs.docker.com/engine/reference/run/#security-configuration) .\n\n> This parameter is not supported for Windows containers. > Containers that are collocated on a single container instance may be able to communicate with each other without requiring links or host port mappings. Network isolation is achieved on the container instance using security groups and VPC settings.",
         "LinuxParameters": "Linux-specific modifications that are applied to the container, such as Linux kernel capabilities. For more information see [KernelCapabilities](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_KernelCapabilities.html) .\n\n> This parameter is not supported for Windows containers.",
         "LogConfiguration": "The log configuration specification for the container.\n\nThis parameter maps to `LogConfig` in the [Create a container](https://docs.aws.amazon.com/https://docs.docker.com/engine/api/v1.35/#operation/ContainerCreate) section of the [Docker Remote API](https://docs.aws.amazon.com/https://docs.docker.com/engine/api/v1.35/) and the `--log-driver` option to [docker run](https://docs.aws.amazon.com/https://docs.docker.com/engine/reference/run/) . By default, containers use the same logging driver that the Docker daemon uses. However, the container may use a different logging driver than the Docker daemon by specifying a log driver with this parameter in the container definition. To use a different logging driver for a container, the log system must be configured properly on the container instance (or on a different log server for remote logging options). For more information on the options for different supported log drivers, see [Configure logging drivers](https://docs.aws.amazon.com/https://docs.docker.com/engine/admin/logging/overview/) in the Docker documentation.\n\n> Amazon ECS currently supports a subset of the logging drivers available to the Docker daemon (shown in the [LogConfiguration](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_LogConfiguration.html) data type). Additional log drivers may be available in future releases of the Amazon ECS container agent. \n\nThis parameter requires version 1.18 of the Docker Remote API or greater on your container instance. To check the Docker Remote API version on your container instance, log in to your container instance and run the following command: `sudo docker version --format '{{.Server.APIVersion}}'`\n\n> The Amazon ECS container agent running on a container instance must register the logging drivers available on that instance with the `ECS_AVAILABLE_LOGGING_DRIVERS` environment variable before containers placed on that instance can use these log configuration options. For more information, see [Amazon ECS Container Agent Configuration](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-agent-config.html) in the *Amazon Elastic Container Service Developer Guide* .",
-        "Memory": "The amount (in MiB) of memory to present to the container. If your container attempts to exceed the memory specified here, the container is killed. The total amount of memory reserved for all containers within a task must be lower than the task `memory` value, if one is specified. This parameter maps to `Memory` in the [Create a container](https://docs.aws.amazon.com/https://docs.docker.com/engine/api/v1.35/#operation/ContainerCreate) section of the [Docker Remote API](https://docs.aws.amazon.com/https://docs.docker.com/engine/api/v1.35/) and the `--memory` option to [docker run](https://docs.aws.amazon.com/https://docs.docker.com/engine/reference/run/#security-configuration) .\n\nIf using the Fargate launch type, this parameter is optional.\n\nIf using the EC2 launch type, you must specify either a task-level memory value or a container-level memory value. If you specify both a container-level `memory` and `memoryReservation` value, `memory` must be greater than `memoryReservation` . If you specify `memoryReservation` , then that value is subtracted from the available memory resources for the container instance where the container is placed. Otherwise, the value of `memory` is used.\n\nThe Docker daemon reserves a minimum of 4 MiB of memory for a container. Therefore, we recommend that you specify fewer than 4 MiB of memory for your containers.",
+        "Memory": "The amount (in MiB) of memory to present to the container. If your container attempts to exceed the memory specified here, the container is killed. The total amount of memory reserved for all containers within a task must be lower than the task `memory` value, if one is specified. This parameter maps to `Memory` in the [Create a container](https://docs.aws.amazon.com/https://docs.docker.com/engine/api/v1.35/#operation/ContainerCreate) section of the [Docker Remote API](https://docs.aws.amazon.com/https://docs.docker.com/engine/api/v1.35/) and the `--memory` option to [docker run](https://docs.aws.amazon.com/https://docs.docker.com/engine/reference/run/#security-configuration) .\n\nIf using the Fargate launch type, this parameter is optional.\n\nIf using the EC2 launch type, you must specify either a task-level memory value or a container-level memory value. If you specify both a container-level `memory` and `memoryReservation` value, `memory` must be greater than `memoryReservation` . If you specify `memoryReservation` , then that value is subtracted from the available memory resources for the container instance where the container is placed. Otherwise, the value of `memory` is used.\n\nThe Docker 20.10.0 or later daemon reserves a minimum of 6 MiB of memory for a container, so you should not specify fewer than 6 MiB of memory for your containers.\n\nThe Docker 19.03.13-ce or earlier daemon reserves a minimum of 4 MiB of memory for a container, so you should not specify fewer than 4 MiB of memory for your containers.",
         "MemoryReservation": "The soft limit (in MiB) of memory to reserve for the container. When system memory is under heavy contention, Docker attempts to keep the container memory to this soft limit. However, your container can consume more memory when it needs to, up to either the hard limit specified with the `memory` parameter (if applicable), or all of the available memory on the container instance, whichever comes first. This parameter maps to `MemoryReservation` in the [Create a container](https://docs.aws.amazon.com/https://docs.docker.com/engine/api/v1.35/#operation/ContainerCreate) section of the [Docker Remote API](https://docs.aws.amazon.com/https://docs.docker.com/engine/api/v1.35/) and the `--memory-reservation` option to [docker run](https://docs.aws.amazon.com/https://docs.docker.com/engine/reference/run/#security-configuration) .\n\nIf a task-level memory value is not specified, you must specify a non-zero integer for one or both of `memory` or `memoryReservation` in a container definition. If you specify both, `memory` must be greater than `memoryReservation` . If you specify `memoryReservation` , then that value is subtracted from the available memory resources for the container instance where the container is placed. Otherwise, the value of `memory` is used.\n\nFor example, if your container normally uses 128 MiB of memory, but occasionally bursts to 256 MiB of memory for short periods of time, you can set a `memoryReservation` of 128 MiB, and a `memory` hard limit of 300 MiB. This configuration would allow the container to only reserve 128 MiB of memory from the remaining resources on the container instance, but also allow the container to consume more memory resources when needed.\n\nThe Docker daemon reserves a minimum of 4 MiB of memory for a container. Therefore, we recommend that you specify fewer than 4 MiB of memory for your containers.",
         "MountPoints": "The mount points for data volumes in your container.\n\nThis parameter maps to `Volumes` in the [Create a container](https://docs.aws.amazon.com/https://docs.docker.com/engine/api/v1.35/#operation/ContainerCreate) section of the [Docker Remote API](https://docs.aws.amazon.com/https://docs.docker.com/engine/api/v1.35/) and the `--volume` option to [docker run](https://docs.aws.amazon.com/https://docs.docker.com/engine/reference/run/#security-configuration) .\n\nWindows containers can mount whole directories on the same drive as `$env:ProgramData` . Windows containers can't mount directories on a different drive, and mount point can't be across drives.",
         "Name": "The name of a container. If you're linking multiple containers together in a task definition, the `name` of one container can be entered in the `links` of another container to connect the containers. Up to 255 letters (uppercase and lowercase), numbers, underscores, and hyphens are allowed. This parameter maps to `name` in the [Create a container](https://docs.aws.amazon.com/https://docs.docker.com/engine/api/v1.35/#operation/ContainerCreate) section of the [Docker Remote API](https://docs.aws.amazon.com/https://docs.docker.com/engine/api/v1.35/) and the `--name` option to [docker run](https://docs.aws.amazon.com/https://docs.docker.com/engine/reference/run/#security-configuration) .",
@@ -13927,9 +13927,9 @@
     },
     "AWS::ECS::TaskDefinition.RuntimePlatform": {
       "attributes": {},
-      "description": "Information about the platform for the Amazon ECS service or task.",
+      "description": "Information about the platform for the Amazon ECS service or task.\n\nFor more informataion about `RuntimePlatform` , see [RuntimePlatform](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_definition_parameters.html#runtime-platform) in the *Amazon Elastic Container Service Developer Guide* .",
       "properties": {
-        "CpuArchitecture": "The CPU architecture.",
+        "CpuArchitecture": "The CPU architecture.\n\nYou can run your Linux tasks on an ARM-based platform by setting the value to `ARM64` . This option is avaiable for tasks that run on Linuc Amazon EC2 instance or Linux containers on Fargate.",
         "OperatingSystemFamily": "The operating system."
       }
     },
@@ -14221,7 +14221,7 @@
       "description": "The Kubernetes network configuration for the cluster.",
       "properties": {
         "IpFamily": "",
-        "ServiceIpv4Cidr": "The CIDR block to assign Kubernetes service IP addresses from. If you don't specify a block, Kubernetes assigns addresses from either the 10.100.0.0/16 or 172.20.0.0/16 CIDR blocks. We recommend that you specify a block that does not overlap with resources in other networks that are peered or connected to your VPC. The block must meet the following requirements:\n\n- Within one of the following private IP address blocks: 10.0.0.0/8, 172.16.0.0/12, or 192.168.0.0/16.\n- Doesn't overlap with any CIDR block assigned to the VPC that you selected for VPC.\n- Between /24 and /12.\n\n> You can only specify a custom CIDR block when you create a cluster and can't change this value once the cluster is created.",
+        "ServiceIpv4Cidr": "Don't specify a value if you select `ipv6` for *ipFamily* . The CIDR block to assign Kubernetes service IP addresses from. If you don't specify a block, Kubernetes assigns addresses from either the 10.100.0.0/16 or 172.20.0.0/16 CIDR blocks. We recommend that you specify a block that does not overlap with resources in other networks that are peered or connected to your VPC. The block must meet the following requirements:\n\n- Within one of the following private IP address blocks: 10.0.0.0/8, 172.16.0.0/12, or 192.168.0.0/16.\n- Doesn't overlap with any CIDR block assigned to the VPC that you selected for VPC.\n- Between /24 and /12.\n\n> You can only specify a custom CIDR block when you create a cluster and can't change this value once the cluster is created.",
         "ServiceIpv6Cidr": ""
       }
     },
@@ -14288,9 +14288,9 @@
         "NodegroupName": "The name associated with an Amazon EKS managed node group.",
         "Ref": "`Ref` returns the resource name. For example:\n\n`{ \"Ref\": \"myNodegroup\" }`\n\nFor the Amazon EKS node group `myNodegroup` , Ref returns the physical resource ID of the node group. For example, `<cluster_name>/<nodegroup_name>` ."
       },
-      "description": "Creates a managed node group for an Amazon EKS cluster. You can only create a node group for your cluster that is equal to the current Kubernetes version for the cluster.\n\nAn Amazon EKS managed node group is an Amazon EC2 Auto Scaling group and associated Amazon EC2 instances that are managed by AWS for an Amazon EKS cluster. Each node group uses a version of the Amazon EKS optimized Amazon Linux 2 AMI. For more information, see [Managed Node Groups](https://docs.aws.amazon.com/eks/latest/userguide/managed-node-groups.html) in the *Amazon EKS User Guide* .",
+      "description": "Creates a managed node group for an Amazon EKS cluster. You can only create a node group for your cluster that is equal to the current Kubernetes version for the cluster. All node groups are created with the latest AMI release version for the respective minor Kubernetes version of the cluster, unless you deploy a custom AMI using a launch template. For more information about using launch templates, see [Launch template support](https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html) .\n\nAn Amazon EKS managed node group is an Amazon EC2 Auto Scaling group and associated Amazon EC2 instances that are managed by AWS for an Amazon EKS cluster. Each node group uses a version of the Amazon EKS optimized Amazon Linux 2 AMI. For more information, see [Managed Node Groups](https://docs.aws.amazon.com/eks/latest/userguide/managed-node-groups.html) in the *Amazon EKS User Guide* .",
       "properties": {
-        "AmiType": "The AMI type for your node group. The following values are examples:\n\n- `AL2_x86_64` \u2013 Use for Amazon Linux 2 non-GPU instances.\n- `AL2_x86_64_GPU` \u2013 Use for Amazon Linux 2 GPU instances.\n- `AL2_ARM_64` \u2013 Use for Amazon Linux 2 Arm instances.\n- `CUSTOM` \u2013 Use when specifying a custom AMI ID with a launch template. For more information, see [Specifying an AMI](https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html#launch-template-custom-ami) in the *Amazon EKS User Guide* .\n- `BOTTLEROCKET_ARM_64` \u2013 Use for Bottlerocket Arm instances.\n- `BOTTLEROCKET_x86_64` \u2013 Use for Bottlerocket x86_64 instances.\n\nIf you specify `launchTemplate` , and your launch template uses a custom AMI, then don't specify `amiType` , or the node group deployment will fail. For more information about using launch templates with Amazon EKS, see [Launch template support](https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html) in the *Amazon EKS User Guide* .",
+        "AmiType": "The AMI type for your node group. GPU instance types should use the `AL2_x86_64_GPU` AMI type. Non-GPU instances should use the `AL2_x86_64` AMI type. Arm instances should use the `AL2_ARM_64` AMI type. All types use the Amazon EKS optimized Amazon Linux 2 AMI. If you specify `launchTemplate` , and your launch template uses a custom AMI, then don't specify `amiType` , or the node group deployment will fail. For more information about using launch templates with Amazon EKS, see [Launch template support](https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html) in the *Amazon EKS User Guide* .",
         "CapacityType": "The capacity type of your managed node group.",
         "ClusterName": "The name of the cluster to create the node group in.",
         "DiskSize": "The root device disk size (in GiB) for your node group instances. The default disk size is 20 GiB. If you specify `launchTemplate` , then don't specify `diskSize` , or the node group deployment will fail. For more information about using launch templates with Amazon EKS, see [Launch template support](https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html) in the *Amazon EKS User Guide* .",
@@ -20326,7 +20326,7 @@
       "properties": {
         "DisplayName": "Field that represents a friendly name in the console for the custom metric; it doesn't have to be unique. Don't use this name as the metric identifier in the device metric report. Can be updated.",
         "MetricName": "The name of the custom metric. This will be used in the metric report submitted from the device/thing. It shouldn't begin with `aws:` . Cannot be updated once it's defined.",
-        "MetricType": "The type of the custom metric. Types include `string-list` , `ip-address-list` , `number-list` , and `number` .",
+        "MetricType": "The type of the custom metric. Types include `string-list` , `ip-address-list` , and `number-list` .",
         "Tags": "Metadata that can be used to manage the custom metric."
       }
     },
@@ -20430,13 +20430,13 @@
     },
     "AWS::IoT::Logging": {
       "attributes": {
-        "Ref": "`Ref` returns\n\n`{ \"Ref\": \"AccountId\" }`"
+        "Ref": ""
       },
-      "description": "Sets the logging options in the V2 logging service.",
+      "description": "",
       "properties": {
-        "AccountId": "The unique identifier of the account to use when writing to CloudWatch logs.",
-        "DefaultLogLevel": "The logging level. Valid values are `DEBUG` , `INFO` , `ERROR` , `WARN` , and `DISABLED` .",
-        "RoleArn": "The ARN of the role that allows IoT to write to Cloudwatch logs."
+        "AccountId": "",
+        "DefaultLogLevel": "",
+        "RoleArn": ""
       }
     },
     "AWS::IoT::MitigationAction": {
@@ -20554,14 +20554,14 @@
     },
     "AWS::IoT::ResourceSpecificLogging": {
       "attributes": {
-        "Ref": "`Ref` returns\n\n`{ \"Ref\": \"TargetType:TargetName\" }`",
-        "TargetId": "The unique identifier of the log target."
+        "Ref": "",
+        "TargetId": ""
       },
-      "description": "Sets the logging options for a specific resource in the V2 logging service.",
+      "description": "",
       "properties": {
-        "LogLevel": "The logging level. Valid values are `DEBUG` , `INFO` , `ERROR` , `WARN` , and `DISABLED` .",
-        "TargetName": "The log target name.",
-        "TargetType": "The log target type."
+        "LogLevel": "",
+        "TargetName": "",
+        "TargetType": ""
       }
     },
     "AWS::IoT::ScheduledAudit": {
@@ -31904,7 +31904,7 @@
         "AllowMajorVersionUpgrade": "A value that indicates whether major version upgrades are allowed. Changing this parameter doesn't result in an outage and the change is asynchronously applied as soon as possible.\n\nConstraints: Major version upgrades must be allowed when specifying a value for the `EngineVersion` parameter that is a different major version than the DB instance's current version.",
         "AssociatedRoles": "The AWS Identity and Access Management (IAM) roles associated with the DB instance.",
         "AutoMinorVersionUpgrade": "A value that indicates whether minor engine upgrades are applied automatically to the DB instance during the maintenance window. By default, minor engine upgrades are applied automatically.",
-        "AvailabilityZone": "The Availability Zone that the database instance will be created in.\n\nDefault: A random, system-chosen Availability Zone in the endpoint's region.\n\nExample: `us-east-1d`\n\nConstraint: The AvailabilityZone parameter cannot be specified if the MultiAZ parameter is set to `true` . The specified Availability Zone must be in the same region as the current endpoint.",
+        "AvailabilityZone": "The Availability Zone (AZ) where the database will be created. For information on AWS Regions and Availability Zones, see [Regions and Availability Zones](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.RegionsAndAvailabilityZones.html) .\n\n*Amazon Aurora*\n\nNot applicable. Availability Zones are managed by the DB cluster.\n\nDefault: A random, system-chosen Availability Zone in the endpoint's AWS Region.\n\nExample: `us-east-1d`\n\nConstraint: The `AvailabilityZone` parameter can't be specified if the DB instance is a Multi-AZ deployment. The specified Availability Zone must be in the same AWS Region as the current endpoint.\n\n> If you're creating a DB instance in an RDS on VMware environment, specify the identifier of the custom Availability Zone to create the DB instance in.\n> \n> For more information about RDS on VMware, see the [RDS on VMware User Guide.](https://docs.aws.amazon.com/AmazonRDS/latest/RDSonVMwareUserGuide/rds-on-vmware.html)",
         "BackupRetentionPeriod": "The number of days for which automated backups are retained. Setting this parameter to a positive number enables backups. Setting this parameter to 0 disables automated backups.\n\n*Amazon Aurora*\n\nNot applicable. The retention period for automated backups is managed by the DB cluster.\n\nDefault: 1\n\nConstraints:\n\n- Must be a value from 0 to 35\n- Can't be set to 0 if the DB instance is a source to read replicas",
         "CACertificateIdentifier": "The identifier of the CA certificate for this DB instance.\n\n> Specifying or updating this property triggers a reboot. \n\nFor more information about CA certificate identifiers for RDS DB engines, see [Rotating Your SSL/TLS Certificate](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.SSL-certificate-rotation.html) in the *Amazon RDS User Guide* .\n\nFor more information about CA certificate identifiers for Aurora DB engines, see [Rotating Your SSL/TLS Certificate](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/UsingWithRDS.SSL-certificate-rotation.html) in the *Amazon Aurora User Guide* .",
         "CharacterSetName": "For supported engines, indicates that the DB instance should be associated with the specified character set.\n\n*Amazon Aurora*\n\nNot applicable. The character set is managed by the DB cluster. For more information, see [AWS::RDS::DBCluster](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbcluster.html) .",
@@ -31976,7 +31976,7 @@
       },
       "description": "The `AWS::RDS::DBParameterGroup` resource creates a custom parameter group for an RDS database family.\n\nThis type can be declared in a template and referenced in the `DBParameterGroupName` property of an `[AWS::RDS::DBInstance](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-database-instance.html)` resource.\n\nFor information about configuring parameters for Amazon RDS DB instances, see [Working with DB parameter groups](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_WorkingWithParamGroups.html) in the *Amazon RDS User Guide* .\n\nFor information about configuring parameters for Amazon Aurora DB instances, see [Working with DB parameter groups and DB cluster parameter groups](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/USER_WorkingWithParamGroups.html) in the *Amazon Aurora User Guide* .\n\n> Applying a parameter group to a DB instance may require the DB instance to reboot, resulting in a database outage for the duration of the reboot.",
       "properties": {
-        "Description": "Provides the customer-specified description for this DB Parameter Group.",
+        "Description": "Provides the customer-specified description for this DB parameter group.",
         "Family": "The DB parameter group family name. A DB parameter group can be associated with one and only one DB parameter group family, and can be applied only to a DB instance running a DB engine and engine version compatible with that DB parameter group family.\n\n> The DB parameter group family can't be changed when updating a DB parameter group. \n\nTo list all of the available parameter group families, use the following command:\n\n`aws rds describe-db-engine-versions --query \"DBEngineVersions[].DBParameterGroupFamily\"`\n\nThe output contains duplicates.\n\nFor more information, see `[CreateDBParameterGroup](https://docs.aws.amazon.com//AmazonRDS/latest/APIReference/API_CreateDBParameterGroup.html)` .",
         "Parameters": "An array of parameter names and values for the parameter update. At least one parameter name and value must be supplied. Subsequent arguments are optional.\n\nFor more information about DB parameters and DB parameter groups for Amazon RDS DB engines, see [Working with DB Parameter Groups](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_WorkingWithParamGroups.html) in the *Amazon RDS User Guide* .\n\nFor more information about DB cluster and DB instance parameters and parameter groups for Amazon Aurora DB engines, see [Working with DB Parameter Groups and DB Cluster Parameter Groups](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/USER_WorkingWithParamGroups.html) in the *Amazon Aurora User Guide* .\n\n> AWS CloudFormation doesn't support specifying an apply method for each individual parameter. The default apply method for each parameter is used.",
         "Tags": "Tags to assign to the DB parameter group."
@@ -32081,7 +32081,7 @@
       "properties": {
         "DBSecurityGroupIngress": "Ingress rules to be applied to the DB security group.",
         "EC2VpcId": "The identifier of an Amazon VPC. This property indicates the VPC that this DB security group belongs to.\n\n> The `EC2VpcId` property is for backward compatibility with older regions, and is no longer recommended for providing security information to an RDS DB instance.",
-        "GroupDescription": "Provides the description of the DB Security Group.",
+        "GroupDescription": "Provides the description of the DB security group.",
         "Tags": "Tags to assign to the DB security group."
       }
     },
@@ -32090,9 +32090,9 @@
       "description": "The `Ingress` property type specifies an individual ingress rule within an `AWS::RDS::DBSecurityGroup` resource.",
       "properties": {
         "CIDRIP": "The IP range to authorize.",
-        "EC2SecurityGroupId": "Id of the EC2 Security Group to authorize. For VPC DB Security Groups, `EC2SecurityGroupId` must be provided. Otherwise, EC2SecurityGroupOwnerId and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided.",
-        "EC2SecurityGroupName": "Name of the EC2 Security Group to authorize. For VPC DB Security Groups, `EC2SecurityGroupId` must be provided. Otherwise, EC2SecurityGroupOwnerId and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided.",
-        "EC2SecurityGroupOwnerId": "AWS Account Number of the owner of the EC2 Security Group specified in the EC2SecurityGroupName parameter. The AWS Access Key ID is not an acceptable value. For VPC DB Security Groups, `EC2SecurityGroupId` must be provided. Otherwise, EC2SecurityGroupOwnerId and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided."
+        "EC2SecurityGroupId": "Id of the EC2 security group to authorize. For VPC DB security groups, `EC2SecurityGroupId` must be provided. Otherwise, `EC2SecurityGroupOwnerId` and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided.",
+        "EC2SecurityGroupName": "Name of the EC2 security group to authorize. For VPC DB security groups, `EC2SecurityGroupId` must be provided. Otherwise, `EC2SecurityGroupOwnerId` and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided.",
+        "EC2SecurityGroupOwnerId": "AWS account number of the owner of the EC2 security group specified in the `EC2SecurityGroupName` parameter. The AWS access key ID isn't an acceptable value. For VPC DB security groups, `EC2SecurityGroupId` must be provided. Otherwise, `EC2SecurityGroupOwnerId` and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided."
       }
     },
     "AWS::RDS::DBSecurityGroupIngress": {
@@ -32102,10 +32102,10 @@
       "description": "The `AWS::RDS::DBSecurityGroupIngress` resource enables ingress to a DB security group using one of two forms of authorization. First, you can add EC2 or VPC security groups to the DB security group if the application using the database is running on EC2 or VPC instances. Second, IP ranges are available if the application accessing your database is running on the Internet.\n\nThis type supports updates. For more information about updating stacks, see [AWS CloudFormation Stacks Updates](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks.html) .\n\nFor details about the settings for DB security group ingress, see [AuthorizeDBSecurityGroupIngress](https://docs.aws.amazon.com/AmazonRDS/latest/APIReference/API_AuthorizeDBSecurityGroupIngress.html) .",
       "properties": {
         "CIDRIP": "The IP range to authorize.",
-        "DBSecurityGroupName": "The name of the DB Security Group to add authorization to.",
-        "EC2SecurityGroupId": "Id of the EC2 Security Group to authorize. For VPC DB Security Groups, `EC2SecurityGroupId` must be provided. Otherwise, EC2SecurityGroupOwnerId and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided.",
-        "EC2SecurityGroupName": "Name of the EC2 Security Group to authorize. For VPC DB Security Groups, `EC2SecurityGroupId` must be provided. Otherwise, EC2SecurityGroupOwnerId and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided.",
-        "EC2SecurityGroupOwnerId": "AWS Account Number of the owner of the EC2 Security Group specified in the EC2SecurityGroupName parameter. The AWS Access Key ID is not an acceptable value. For VPC DB Security Groups, `EC2SecurityGroupId` must be provided. Otherwise, EC2SecurityGroupOwnerId and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided."
+        "DBSecurityGroupName": "The name of the DB security group to add authorization to.",
+        "EC2SecurityGroupId": "Id of the EC2 security group to authorize. For VPC DB security groups, `EC2SecurityGroupId` must be provided. Otherwise, `EC2SecurityGroupOwnerId` and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided.",
+        "EC2SecurityGroupName": "Name of the EC2 security group to authorize. For VPC DB security groups, `EC2SecurityGroupId` must be provided. Otherwise, `EC2SecurityGroupOwnerId` and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided.",
+        "EC2SecurityGroupOwnerId": "AWS account number of the owner of the EC2 security group specified in the `EC2SecurityGroupName` parameter. The AWS access key ID isn't an acceptable value. For VPC DB security groups, `EC2SecurityGroupId` must be provided. Otherwise, `EC2SecurityGroupOwnerId` and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided."
       }
     },
     "AWS::RDS::DBSubnetGroup": {
@@ -32114,9 +32114,9 @@
       },
       "description": "The `AWS::RDS::DBSubnetGroup` resource creates a database subnet group. Subnet groups must contain at least two subnets in two different Availability Zones in the same region.\n\nFor more information, see [Working with DB subnet groups](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_VPC.WorkingWithRDSInstanceinaVPC.html#USER_VPC.Subnets) in the *Amazon RDS User Guide* .",
       "properties": {
-        "DBSubnetGroupDescription": "The description for the DB Subnet Group.",
+        "DBSubnetGroupDescription": "The description for the DB subnet group.",
         "DBSubnetGroupName": "The name for the DB subnet group. This value is stored as a lowercase string.\n\nConstraints: Must contain no more than 255 lowercase alphanumeric characters or hyphens. Must not be \"Default\".\n\nExample: `mysubnetgroup`",
-        "SubnetIds": "The EC2 Subnet IDs for the DB Subnet Group.",
+        "SubnetIds": "The EC2 Subnet IDs for the DB subnet group.",
         "Tags": "Tags to assign to the DB subnet group."
       }
     },
@@ -32126,8 +32126,8 @@
       },
       "description": "The `AWS::RDS::EventSubscription` resource allows you to receive notifications for Amazon Relational Database Service events through the Amazon Simple Notification Service (Amazon SNS). For more information, see [Using Amazon RDS Event Notification](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_Events.html) in the *Amazon RDS User Guide* .",
       "properties": {
-        "Enabled": "A Boolean value; set to *true* to activate the subscription, set to *false* to create the subscription but not active it.",
-        "EventCategories": "A list of event categories for a SourceType that you want to subscribe to. You can see a list of the categories for a given SourceType in the [Events](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_Events.html) topic in the Amazon RDS User Guide or by using the *DescribeEventCategories* action.",
+        "Enabled": "A value that indicates whether to activate the subscription. If the event notification subscription isn't activated, the subscription is created but not active.",
+        "EventCategories": "A list of event categories for a particular source type ( `SourceType` ) that you want to subscribe to. You can see a list of the categories for a given source type in [Events](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_Events.html) in the *Amazon RDS User Guide* or by using the `DescribeEventCategories` operation.",
         "SnsTopicArn": "The Amazon Resource Name (ARN) of the SNS topic created for event notification. The ARN is created by Amazon SNS when you create a topic and subscribe to it.",
         "SourceIds": "The list of identifiers of the event sources for which events are returned. If not specified, then all sources are included in the response. An identifier must begin with a letter and must contain only ASCII letters, digits, and hyphens. It can't end with a hyphen or contain two consecutive hyphens.\n\nConstraints:\n\n- If a `SourceIds` value is supplied, `SourceType` must also be provided.\n- If the source type is a DB instance, a `DBInstanceIdentifier` value must be supplied.\n- If the source type is a DB cluster, a `DBClusterIdentifier` value must be supplied.\n- If the source type is a DB parameter group, a `DBParameterGroupName` value must be supplied.\n- If the source type is a DB security group, a `DBSecurityGroupName` value must be supplied.\n- If the source type is a DB snapshot, a `DBSnapshotIdentifier` value must be supplied.\n- If the source type is a DB cluster snapshot, a `DBClusterSnapshotIdentifier` value must be supplied.",
         "SourceType": "The type of source that is generating the events. For example, if you want to be notified of events generated by a DB instance, set this parameter to `db-instance` . If this value isn't specified, all events are returned.\n\nValid values: `db-instance` | `db-cluster` | `db-parameter-group` | `db-security-group` | `db-snapshot` | `db-cluster-snapshot`"
@@ -32695,7 +32695,7 @@
     },
     "AWS::RoboMaker::Robot": {
       "attributes": {
-        "Arn": "",
+        "Arn": "The Amazon Resource Name (ARN) of the robot.",
         "Ref": "When you pass the logical ID of an `AWS::RoboMaker::Robot` resource to the intrinsic `Ref` function, the function returns the Amazon Resource Name (ARN) of the robot application, such as `arn:aws:robomaker:us-west-2:123456789012:robot/MyRobot/1544035373264` ."
       },
       "description": "The `AWS::RoboMaker::RobotApplication` resource creates an AWS RoboMaker robot.",
@@ -32741,8 +32741,8 @@
     },
     "AWS::RoboMaker::RobotApplicationVersion": {
       "attributes": {
-        "ApplicationVersion": "",
-        "Arn": "",
+        "ApplicationVersion": "The robot application version.",
+        "Arn": "The Amazon Resource Name (ARN) of the robot application version.",
         "Ref": "When you pass the logical ID of an `AWS::RoboMaker::RobotApplicationVersion` resource to the intrinsic `Ref` function, the function returns the Amazon Resource Name (ARN) of the robot application version, such as `arn:aws:robomaker:us-west-2:123456789012:robot-application/MyRobotApplication/1546541208251` ."
       },
       "description": "The `AWS::RoboMaker::RobotApplicationVersion` resource creates an AWS RoboMaker robot version.",
@@ -32760,7 +32760,7 @@
       "description": "The `AWS::RoboMaker::SimulationApplication` resource creates an AWS RoboMaker simulation application.",
       "properties": {
         "CurrentRevisionId": "The current revision id.",
-        "Environment": "",
+        "Environment": "The environment of the simulation application.",
         "Name": "The name of the simulation application.",
         "RenderingEngine": "The rendering engine for the simulation application.",
         "RobotSoftwareSuite": "The robot software suite (ROS distribution) used by the simulation application.",
@@ -32804,8 +32804,8 @@
     },
     "AWS::RoboMaker::SimulationApplicationVersion": {
       "attributes": {
-        "ApplicationVersion": "",
-        "Arn": "",
+        "ApplicationVersion": "The simulation application version.",
+        "Arn": "The Amazon Resource Name (ARN) of the simulation application version.",
         "Ref": "When you pass the logical ID of an `AWS::RoboMaker::SimulationApplicationVersion` resource to the intrinsic `Ref` function, the function returns the Amazon Resource Name (ARN) of the simulation application version, such as `arn:aws:robomaker:us-west-2:123456789012:simulation-application/MySimulationApplication/1546541201334` ."
       },
       "description": "The `AWS::RoboMaker::SimulationApplicationVersion` resource creates a version of an AWS RoboMaker simulation application.",
@@ -33549,7 +33549,7 @@
     },
     "AWS::S3::Bucket.EventBridgeConfiguration": {
       "attributes": {},
-      "description": "Amazon S3 can send events to Amazon EventBridge whenever certain events happen in your bucket, see [Using EventBridge](https://docs.aws.amazon.com/AmazonS3/latest/userguide/EventBridge.html) in the *Amazon S3 User Guide* .\n\nUnlike other destinations, delivery of events to EventBridge can be either enabled or disabled for a bucket. If enabled, all events will be sent to EventBridge and you can use EventBridge rules and filters to route events to additional targets. For more information, see [What Is Amazon EventBridge](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-what-is.html) in the *Amazon EventBridge User Guide*",
+      "description": "Amazon S3 can send events to Amazon EventBridge whenever certain events happen in your bucket, see [Using EventBridge](https://docs.aws.amazon.com/AmazonS3/latest/userguide/EventBridge.html) in the *Amazon S3 User Guide* .\n\nUnlike other destinations, delivery of events to EventBridge can be either enabled or disabled for a bucket. If enabled, all events will be sent to EventBridge and you can use EventBridge rules to route events to additional targets. For more information, see [What Is Amazon EventBridge](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-what-is.html) in the *Amazon EventBridge User Guide*",
       "properties": {
         "EventBridgeEnabled": "Enables delivery of events to Amazon EventBridge."
       }
@@ -34683,8 +34683,8 @@
         "CutoffBehavior": "The specification for whether tasks should continue to run after the cutoff time specified in the maintenance windows is reached.",
         "Description": "A description of the task.",
         "LoggingInfo": "Information about an Amazon S3 bucket to write task-level logs to.\n\n> `LoggingInfo` has been deprecated. To specify an Amazon S3 bucket to contain logs, instead use the `OutputS3BucketName` and `OutputS3KeyPrefix` options in the `TaskInvocationParameters` structure. For information about how Systems Manager handles these options for the supported maintenance window task types, see [AWS Systems Manager MaintenanceWindowTask TaskInvocationParameters](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ssm-maintenancewindowtask-taskinvocationparameters.html) .",
-        "MaxConcurrency": "The maximum number of targets this task can be run for, in parallel.",
-        "MaxErrors": "The maximum number of errors allowed before this task stops being scheduled.",
+        "MaxConcurrency": "The maximum number of targets this task can be run for, in parallel.\n\n> Although this element is listed as \"Required: No\", a value can be omitted only when you are registering or updating a [targetless task](https://docs.aws.amazon.com/systems-manager/latest/userguide/maintenance-windows-targetless-tasks.html) You must provide a value in all other cases.\n> \n> For maintenance window tasks without a target specified, you can't supply a value for this option. Instead, the system inserts a placeholder value of `1` . This value doesn't affect the running of your task.",
+        "MaxErrors": "The maximum number of errors allowed before this task stops being scheduled.\n\n> Although this element is listed as \"Required: No\", a value can be omitted only when you are registering or updating a [targetless task](https://docs.aws.amazon.com/systems-manager/latest/userguide/maintenance-windows-targetless-tasks.html) You must provide a value in all other cases.\n> \n> For maintenance window tasks without a target specified, you can't supply a value for this option. Instead, the system inserts a placeholder value of `1` . This value doesn't affect the running of your task.",
         "Name": "The task name.",
         "Priority": "The priority of the task in the maintenance window. The lower the number, the higher the priority. Tasks that have the same priority are scheduled in parallel.",
         "ServiceRoleArn": "The Amazon Resource Name (ARN) of the AWS Identity and Access Management (IAM) service role to use to publish Amazon Simple Notification Service (Amazon SNS) notifications for maintenance window Run Command tasks.",
