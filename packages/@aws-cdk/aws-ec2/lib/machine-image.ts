@@ -381,7 +381,7 @@ export class AmazonLinuxImage extends GenericSSMParameterImage {
    * Return the SSM parameter name that will contain the Amazon Linux image with the given attributes
    */
   public static ssmParameterName(props: AmazonLinuxImageProps = {}) {
-    let generation = (props && props.generation) || AmazonLinuxGeneration.AMAZON_LINUX;
+    const generation = (props && props.generation) || AmazonLinuxGeneration.AMAZON_LINUX;
     let edition = (props && props.edition) || AmazonLinuxEdition.STANDARD;
     let kernel = (props && props.kernel) || undefined;
     let virtualization: AmazonLinuxVirt | undefined = (props && props.virtualization) || AmazonLinuxVirt.HVM;
