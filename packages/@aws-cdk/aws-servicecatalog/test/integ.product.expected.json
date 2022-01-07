@@ -219,61 +219,58 @@
         ]
       }
     },
-    "TestProductTagOptionAssociation0d813eebb333DA3E2F21": {
+    "TestProductTagOptionAssociation6141ab9843c862231887": {
       "Type": "AWS::ServiceCatalog::TagOptionAssociation",
       "Properties": {
         "ResourceId": {
           "Ref": "TestProduct7606930B"
         },
         "TagOptionId": {
-          "Ref": "TagOptionab501c9aef99"
+          "Ref": "TagOptions5f31c54ba705"
         }
       }
     },
-    "TestProductTagOptionAssociation5d93a5c977b4B664DD87": {
+    "TestProductTagOptionAssociation334c7d1b98adE56B2791": {
       "Type": "AWS::ServiceCatalog::TagOptionAssociation",
       "Properties": {
         "ResourceId": {
           "Ref": "TestProduct7606930B"
         },
         "TagOptionId": {
-          "Ref": "TagOptiona453ac93ee6f"
+          "Ref": "TagOptions8d263919cebb"
         }
       }
     },
-    "TestProductTagOptionAssociationcfaf40b186a3E5FDECDC": {
+    "TestProductTagOptionAssociation0696c10763d05579CC98": {
       "Type": "AWS::ServiceCatalog::TagOptionAssociation",
       "Properties": {
         "ResourceId": {
           "Ref": "TestProduct7606930B"
         },
         "TagOptionId": {
-          "Ref": "TagOptiona006431604cb"
+          "Ref": "TagOptionsa260cbbd99c4"
         }
       }
     },
-    "TagOptionab501c9aef99": {
+    "TagOptions5f31c54ba705": {
       "Type": "AWS::ServiceCatalog::TagOption",
       "Properties": {
         "Key": "key1",
-        "Value": "value1",
-        "Active": true
+        "Value": "value1"
       }
     },
-    "TagOptiona453ac93ee6f": {
+    "TagOptions8d263919cebb": {
       "Type": "AWS::ServiceCatalog::TagOption",
       "Properties": {
         "Key": "key1",
-        "Value": "value2",
-        "Active": true
+        "Value": "value2"
       }
     },
-    "TagOptiona006431604cb": {
+    "TagOptionsa260cbbd99c4": {
       "Type": "AWS::ServiceCatalog::TagOption",
       "Properties": {
         "Key": "key2",
-        "Value": "value1",
-        "Active": true
+        "Value": "value1"
       }
     }
   },

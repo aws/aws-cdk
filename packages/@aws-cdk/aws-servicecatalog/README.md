@@ -201,21 +201,20 @@ portfolio.addProduct(product);
 ## Tag Options
 
 TagOptions allow administrators to easily manage tags on provisioned products by creating a selection of tags for end users to choose from.
-For example, an end user can choose an `ec2` for the instance type size.
 TagOptions are created by specifying a key with a selection of values and can be associated with both portfolios and products.
 When launching a product, both the TagOptions associated with the product and the containing portfolio are made available.
 
 At the moment, TagOptions can only be disabled in the console.
 
 ```ts fixture=portfolio-product
-const tagOptionsForPortfolio = new servicecatalog.TagOptions({
-  costCenter: ['Data Insights', 'Marketing'],
+const tagOptionsForPortfolio= new servicecatalog.TagOptions(this, {
+  group: ['finance', 'engineering', 'marketing', 'research'],
+  costCenter: ['01', '02','03'],
 });
 portfolio.associateTagOptions(tagOptionsForPortfolio);
 
-const tagOptionsForProduct = new servicecatalog.TagOptions({
-  ec2InstanceType: ['A1', 'M4'],
-  ec2InstanceSize: ['medium', 'large'],
+const tagOptionsForProduct = new servicecatalog.TagOptions(this, {
+  environment: ['dev', 'alpha', 'prod'],
 });
 product.associateTagOptions(tagOptionsForProduct);
 ```

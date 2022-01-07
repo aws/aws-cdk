@@ -1,0 +1,376 @@
+{
+  "Resources": {
+    "TagOptions94f4cb06731c": {
+      "Type": "AWS::ServiceCatalog::TagOption",
+      "Properties": {
+        "Key": "tagOptionKey2",
+        "Value": "value2"
+      }
+    },
+    "TagOptions0202d11366eb": {
+      "Type": "AWS::ServiceCatalog::TagOption",
+      "Properties": {
+        "Key": "tagOptionKey2",
+        "Value": "value3"
+      }
+    },
+    "TagOptions90a707769437": {
+      "Type": "AWS::ServiceCatalog::TagOption",
+      "Properties": {
+        "Key": "tagOptionKey2",
+        "Value": "value4"
+      }
+    },
+    "TagOptionscaa16eca70b0": {
+      "Type": "AWS::ServiceCatalog::TagOption",
+      "Properties": {
+        "Key": "tagOptionKey3",
+        "Value": "value4"
+      }
+    },
+    "TagOptions586363a45538": {
+      "Type": "AWS::ServiceCatalog::TagOption",
+      "Properties": {
+        "Key": "tagOptionKey3",
+        "Value": "value5"
+      }
+    },
+    "TagOptions331e5dc147cc": {
+      "Type": "AWS::ServiceCatalog::TagOption",
+      "Properties": {
+        "Key": "tagOptionKey3",
+        "Value": "value6"
+      }
+    },
+    "TestPortfolio4AC794EB": {
+      "Type": "AWS::ServiceCatalog::Portfolio",
+      "Properties": {
+        "DisplayName": "TestPortfolio",
+        "ProviderName": "TestProvider",
+        "AcceptLanguage": "en",
+        "Description": "This is our Service Catalog Portfolio"
+      }
+    },
+    "TestPortfolioTagOptionAssociation560c44ce057934C529D6": {
+      "Type": "AWS::ServiceCatalog::TagOptionAssociation",
+      "Properties": {
+        "ResourceId": {
+          "Ref": "TestPortfolio4AC794EB"
+        },
+        "TagOptionId": {
+          "Ref": "TagOptions94f4cb06731c"
+        }
+      }
+    },
+    "TestPortfolioTagOptionAssociationcdd2020f44503DFE50C3": {
+      "Type": "AWS::ServiceCatalog::TagOptionAssociation",
+      "Properties": {
+        "ResourceId": {
+          "Ref": "TestPortfolio4AC794EB"
+        },
+        "TagOptionId": {
+          "Ref": "TagOptions0202d11366eb"
+        }
+      }
+    },
+    "TestPortfolioTagOptionAssociation99ca1298c5012471B389": {
+      "Type": "AWS::ServiceCatalog::TagOptionAssociation",
+      "Properties": {
+        "ResourceId": {
+          "Ref": "TestPortfolio4AC794EB"
+        },
+        "TagOptionId": {
+          "Ref": "TagOptions90a707769437"
+        }
+      }
+    },
+    "TestPortfolioTagOptionAssociationf2963aba1aa0B22F05C4": {
+      "Type": "AWS::ServiceCatalog::TagOptionAssociation",
+      "Properties": {
+        "ResourceId": {
+          "Ref": "TestPortfolio4AC794EB"
+        },
+        "TagOptionId": {
+          "Ref": "TagOptionscaa16eca70b0"
+        }
+      }
+    },
+    "TestPortfolioTagOptionAssociation29c1fcbfb37cAA994DD9": {
+      "Type": "AWS::ServiceCatalog::TagOptionAssociation",
+      "Properties": {
+        "ResourceId": {
+          "Ref": "TestPortfolio4AC794EB"
+        },
+        "TagOptionId": {
+          "Ref": "TagOptions586363a45538"
+        }
+      }
+    },
+    "TestPortfolioTagOptionAssociation01c1763d1b1a5C08DDE0": {
+      "Type": "AWS::ServiceCatalog::TagOptionAssociation",
+      "Properties": {
+        "ResourceId": {
+          "Ref": "TestPortfolio4AC794EB"
+        },
+        "TagOptionId": {
+          "Ref": "TagOptions331e5dc147cc"
+        }
+      }
+    },
+    "TestPortfolioTagOptionAssociation6ab4da54917cEDC8E985": {
+      "Type": "AWS::ServiceCatalog::TagOptionAssociation",
+      "Properties": {
+        "ResourceId": {
+          "Ref": "TestPortfolio4AC794EB"
+        },
+        "TagOptionId": {
+          "Ref": "TagOptions23d53121b236"
+        }
+      }
+    },
+    "TestPortfolioTagOptionAssociation0f22f28e19c51A74E2E4": {
+      "Type": "AWS::ServiceCatalog::TagOptionAssociation",
+      "Properties": {
+        "ResourceId": {
+          "Ref": "TestPortfolio4AC794EB"
+        },
+        "TagOptionId": {
+          "Ref": "TagOptionsa8ce0137c187"
+        }
+      }
+    },
+    "TestPortfolioTagOptionAssociationb8fc30b090bfE1F27A31": {
+      "Type": "AWS::ServiceCatalog::TagOptionAssociation",
+      "Properties": {
+        "ResourceId": {
+          "Ref": "TestPortfolio4AC794EB"
+        },
+        "TagOptionId": {
+          "Ref": "TagOptionsec42a4de25ea"
+        }
+      }
+    },
+    "TestPortfolioTagOptionAssociation78099f41d0074E4EB588": {
+      "Type": "AWS::ServiceCatalog::TagOptionAssociation",
+      "Properties": {
+        "ResourceId": {
+          "Ref": "TestPortfolio4AC794EB"
+        },
+        "TagOptionId": {
+          "Ref": "TagOptions4cc3e78b1c16"
+        }
+      }
+    },
+    "TestPortfolioTagOptionAssociationbed5ed52e4b41513EC65": {
+      "Type": "AWS::ServiceCatalog::TagOptionAssociation",
+      "Properties": {
+        "ResourceId": {
+          "Ref": "TestPortfolio4AC794EB"
+        },
+        "TagOptionId": {
+          "Ref": "TagOptionsbf0f762f1599"
+        }
+      }
+    },
+    "TestPortfolioTagOptionAssociation4a1c782b69c67B9A919F": {
+      "Type": "AWS::ServiceCatalog::TagOptionAssociation",
+      "Properties": {
+        "ResourceId": {
+          "Ref": "TestPortfolio4AC794EB"
+        },
+        "TagOptionId": {
+          "Ref": "TagOptionse827f93017b7"
+        }
+      }
+    },
+    "TestProduct7606930B": {
+      "Type": "AWS::ServiceCatalog::CloudFormationProduct",
+      "Properties": {
+        "Name": "testProduct",
+        "Owner": "testOwner",
+        "ProvisioningArtifactParameters": [
+          {
+            "DisableTemplateValidation": true,
+            "Info": {
+              "LoadTemplateFromURL": "https://awsdocs.s3.amazonaws.com/servicecatalog/development-environment.template"
+            }
+          }
+        ]
+      }
+    },
+    "TestProductTagOptionAssociation192e4e98de05CE0DA7AC": {
+      "Type": "AWS::ServiceCatalog::TagOptionAssociation",
+      "Properties": {
+        "ResourceId": {
+          "Ref": "TestProduct7606930B"
+        },
+        "TagOptionId": {
+          "Ref": "TagOptions94f4cb06731c"
+        }
+      }
+    },
+    "TestProductTagOptionAssociation702ef0b51abb370D8573": {
+      "Type": "AWS::ServiceCatalog::TagOptionAssociation",
+      "Properties": {
+        "ResourceId": {
+          "Ref": "TestProduct7606930B"
+        },
+        "TagOptionId": {
+          "Ref": "TagOptions0202d11366eb"
+        }
+      }
+    },
+    "TestProductTagOptionAssociation3a9c154aab4a9F9FA4CE": {
+      "Type": "AWS::ServiceCatalog::TagOptionAssociation",
+      "Properties": {
+        "ResourceId": {
+          "Ref": "TestProduct7606930B"
+        },
+        "TagOptionId": {
+          "Ref": "TagOptions90a707769437"
+        }
+      }
+    },
+    "TestProductTagOptionAssociationfaa801a710cb5C9CC0F0": {
+      "Type": "AWS::ServiceCatalog::TagOptionAssociation",
+      "Properties": {
+        "ResourceId": {
+          "Ref": "TestProduct7606930B"
+        },
+        "TagOptionId": {
+          "Ref": "TagOptionscaa16eca70b0"
+        }
+      }
+    },
+    "TestProductTagOptionAssociation609ef02d825d4F250532": {
+      "Type": "AWS::ServiceCatalog::TagOptionAssociation",
+      "Properties": {
+        "ResourceId": {
+          "Ref": "TestProduct7606930B"
+        },
+        "TagOptionId": {
+          "Ref": "TagOptions586363a45538"
+        }
+      }
+    },
+    "TestProductTagOptionAssociation8010ef3a86142D01915F": {
+      "Type": "AWS::ServiceCatalog::TagOptionAssociation",
+      "Properties": {
+        "ResourceId": {
+          "Ref": "TestProduct7606930B"
+        },
+        "TagOptionId": {
+          "Ref": "TagOptions331e5dc147cc"
+        }
+      }
+    },
+    "TestProductTagOptionAssociationf313db3bd86950CF02A5": {
+      "Type": "AWS::ServiceCatalog::TagOptionAssociation",
+      "Properties": {
+        "ResourceId": {
+          "Ref": "TestProduct7606930B"
+        },
+        "TagOptionId": {
+          "Ref": "TagOptions23d53121b236"
+        }
+      }
+    },
+    "TestProductTagOptionAssociation2eaf66892fc09659FEB2": {
+      "Type": "AWS::ServiceCatalog::TagOptionAssociation",
+      "Properties": {
+        "ResourceId": {
+          "Ref": "TestProduct7606930B"
+        },
+        "TagOptionId": {
+          "Ref": "TagOptionsa8ce0137c187"
+        }
+      }
+    },
+    "TestProductTagOptionAssociationc05e892dd288DEF00552": {
+      "Type": "AWS::ServiceCatalog::TagOptionAssociation",
+      "Properties": {
+        "ResourceId": {
+          "Ref": "TestProduct7606930B"
+        },
+        "TagOptionId": {
+          "Ref": "TagOptionsec42a4de25ea"
+        }
+      }
+    },
+    "TestProductTagOptionAssociation4f6f9ac8e684AD05AE2D": {
+      "Type": "AWS::ServiceCatalog::TagOptionAssociation",
+      "Properties": {
+        "ResourceId": {
+          "Ref": "TestProduct7606930B"
+        },
+        "TagOptionId": {
+          "Ref": "TagOptions4cc3e78b1c16"
+        }
+      }
+    },
+    "TestProductTagOptionAssociationeaa8dfd0cebbE7E23DF3": {
+      "Type": "AWS::ServiceCatalog::TagOptionAssociation",
+      "Properties": {
+        "ResourceId": {
+          "Ref": "TestProduct7606930B"
+        },
+        "TagOptionId": {
+          "Ref": "TagOptionsbf0f762f1599"
+        }
+      }
+    },
+    "TestProductTagOptionAssociation528612cfe68d34D04411": {
+      "Type": "AWS::ServiceCatalog::TagOptionAssociation",
+      "Properties": {
+        "ResourceId": {
+          "Ref": "TestProduct7606930B"
+        },
+        "TagOptionId": {
+          "Ref": "TagOptionse827f93017b7"
+        }
+      }
+    },
+    "TagOptions23d53121b236": {
+      "Type": "AWS::ServiceCatalog::TagOption",
+      "Properties": {
+        "Key": "tagOptionKey4",
+        "Value": "value2"
+      }
+    },
+    "TagOptionsa8ce0137c187": {
+      "Type": "AWS::ServiceCatalog::TagOption",
+      "Properties": {
+        "Key": "tagOptionKey4",
+        "Value": "value3"
+      }
+    },
+    "TagOptionsec42a4de25ea": {
+      "Type": "AWS::ServiceCatalog::TagOption",
+      "Properties": {
+        "Key": "tagOptionKey4",
+        "Value": "value4"
+      }
+    },
+    "TagOptions4cc3e78b1c16": {
+      "Type": "AWS::ServiceCatalog::TagOption",
+      "Properties": {
+        "Key": "tagOptionKey5",
+        "Value": "value4"
+      }
+    },
+    "TagOptionsbf0f762f1599": {
+      "Type": "AWS::ServiceCatalog::TagOption",
+      "Properties": {
+        "Key": "tagOptionKey5",
+        "Value": "value5"
+      }
+    },
+    "TagOptionse827f93017b7": {
+      "Type": "AWS::ServiceCatalog::TagOption",
+      "Properties": {
+        "Key": "tagOptionKey5",
+        "Value": "value6"
+      }
+    }
+  }
+}

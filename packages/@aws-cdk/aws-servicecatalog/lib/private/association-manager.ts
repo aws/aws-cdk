@@ -9,7 +9,7 @@ import { IPortfolio } from '../portfolio';
 import { IProduct } from '../product';
 import {
   CfnLaunchNotificationConstraint, CfnLaunchRoleConstraint, CfnLaunchTemplateConstraint, CfnPortfolioProductAssociation,
-  CfnResourceUpdateConstraint, CfnStackSetConstraint, CfnTagOption, CfnTagOptionAssociation,
+  CfnResourceUpdateConstraint, CfnStackSetConstraint, CfnTagOptionAssociation,
 } from '../servicecatalog.generated';
 import { TagOptions } from '../tag-options';
 import { hashValues } from './util';
@@ -139,36 +139,7 @@ export class AssociationManager {
     }
   }
 
-
-  public static associateTagOptions(resource: cdk.IResource, resourceId: string, tagOptions: TagOptions): void {
-    const resourceStack = cdk.Stack.of(resource);
-    for (const [key, tagOptionsList] of Object.entries(tagOptions.tagOptionsMap)) {
-      InputValidator.validateLength(resource.node.addr, 'TagOption key', 1, 128, key);
-      tagOptionsList.forEach((value: string) => {
-        InputValidator.validateLength(resource.node.addr, 'TagOption value', 1, 256, value);
-        const tagOptionKey = hashValues(key, value, resourceStack.node.addr);
-        const tagOptionConstructId = `TagOption${tagOptionKey}`;
-        let cfnTagOption = resourceStack.node.tryFindChild(tagOptionConstructId) as CfnTagOption;
-        if (!cfnTagOption) {
-          cfnTagOption = new CfnTagOption(resourceStack, tagOptionConstructId, {
-            key: key,
-            value: value,
-            active: true,
-          });
-        }
-        const tagAssocationKey = hashValues(key, value, resource.node.addr);
-        const tagAssocationConstructId = `TagOptionAssociation${tagAssocationKey}`;
-        if (!resource.node.tryFindChild(tagAssocationConstructId)) {
-          new CfnTagOptionAssociation(resource as cdk.Resource, tagAssocationConstructId, {
-            resourceId: resourceId,
-            tagOptionId: cfnTagOption.ref,
-          });
-        }
-      });
-    };
-  }
-
-  private static setLaunchRoleConstraint(
+  public static setLaunchRoleConstraint(
     portfolio: IPortfolio, product: IProduct, options: CommonConstraintOptions,
     roleOptions: LaunchRoleConstraintRoleOptions,
   ): void {
@@ -193,6 +164,18 @@ export class AssociationManager {
       constraint.addDependsOn(association.cfnPortfolioProductAssociation);
     } else {
       throw new Error(`Cannot set multiple launch roles for association ${this.prettyPrintAssociation(portfolio, product)}`);
+    }
+  }
+
+  public static associateTagOptions(resource: cdk.IResource, resourceId: string, tagOptions: TagOptions): void {
+    for (const [tagOptionIdentifier, cfnTagOption] of Object.entries(tagOptions.tagOptionsMap)) {
+      const tagAssocationConstructId = `TagOptionAssociation${hashValues(resource.node.addr, tagOptionIdentifier)}`;
+      if (!resource.node.tryFindChild(tagAssocationConstructId)) {
+        new CfnTagOptionAssociation(resource as cdk.Resource, tagAssocationConstructId, {
+          resourceId: resourceId,
+          tagOptionId: cfnTagOption.ref,
+        });
+      }
     }
   }
 

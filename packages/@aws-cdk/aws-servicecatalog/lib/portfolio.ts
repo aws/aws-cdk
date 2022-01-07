@@ -89,7 +89,7 @@ export interface IPortfolio extends cdk.IResource {
    * A TagOption is a key-value pair managed in AWS Service Catalog.
    * It is not an AWS tag, but serves as a template for creating an AWS tag based on the TagOption.
    */
-  associateTagOptions(tagOptions: TagOptions): void;
+  associateTagOptions(tagOptionsResource: TagOptions): void;
 
   /**
    * Add a Resource Update Constraint.
