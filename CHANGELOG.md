@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.138.1](https://github.com/aws/aws-cdk/compare/v1.138.0...v1.138.1) (2022-01-07)
+
+
+### Bug Fixes
+
+* **lambda-python:** asset files are generated inside the 'asset-input' folder ([#18306](https://github.com/aws/aws-cdk/issues/18306)) ([b00b44e](https://github.com/aws/aws-cdk/commit/b00b44efd6e402744725e711906b456a28cebc5b))
+
 ## [1.138.0](https://github.com/aws/aws-cdk/compare/v1.137.0...v1.138.0) (2022-01-04)
 
 
