@@ -1119,6 +1119,7 @@
           "MaximumPercent": 150,
           "MinimumHealthyPercent": 100
         },
+        "DesiredCount": 2,
         "EnableECSManagedTags": false,
         "LaunchType": "FARGATE",
         "NetworkConfiguration": {
@@ -1991,6 +1992,7 @@
           "MaximumPercent": 150,
           "MinimumHealthyPercent": 100
         },
+        "DesiredCount": 2,
         "EnableECSManagedTags": false,
         "LaunchType": "FARGATE",
         "NetworkConfiguration": {
@@ -2986,6 +2988,7 @@
           "MaximumPercent": 150,
           "MinimumHealthyPercent": 100
         },
+        "DesiredCount": 2,
         "EnableECSManagedTags": false,
         "HealthCheckGracePeriodSeconds": 60,
         "LaunchType": "FARGATE",

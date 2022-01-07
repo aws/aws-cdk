@@ -1,3 +1,4 @@
+import * as ecs from '@aws-cdk/aws-ecs';
 import * as cdk from '@aws-cdk/core';
 import { ServiceExtension, ServiceBuild } from './extension-interfaces';
 
@@ -119,7 +120,6 @@ export class ScaleOnCpuUtilization extends ServiceExtension {
   // This service modifies properties of the service prior
   // to construct creation.
   public modifyServiceProps(props: ServiceBuild): ServiceBuild {
-    this.parentService.enableAutoScalingPolicy();
     return {
       ...props,
 
@@ -129,5 +129,24 @@ export class ScaleOnCpuUtilization extends ServiceExtension {
       // count doesn't rollback to the initial level on each deploy.
       desiredCount: this.initialTaskCount,
     } as ServiceBuild;
+  }
+
+  // This hook utilizes the resulting service construct
+  // once it is created.
+  public useService(service: ecs.Ec2Service | ecs.FargateService) {
+    if (this.parentService.scalableTaskCount) {
+      throw Error('Cannot specify \'minTaskCount\' or \'maxTaskCount\' in the Service construct and also provide a  \'ScaleOnCpuUtilization\' extension. \'ScaleOnCpuUtilization\' is deprecated. Please only provide \'minTaskCount\' and \'maxTaskCount\'.');
+    }
+    const scalingTarget = service.autoScaleTaskCount({
+      minCapacity: this.minTaskCount,
+      maxCapacity: this.maxTaskCount,
+    });
+
+    scalingTarget.scaleOnCpuUtilization(`${this.parentService.id}-target-cpu-utilization-${this.targetCpuUtilization}`, {
+      targetUtilizationPercent: this.targetCpuUtilization,
+      scaleInCooldown: this.scaleInCooldown,
+      scaleOutCooldown: this.scaleOutCooldown,
+    });
+    this.parentService.enableAutoScalingPolicy();
   }
 }

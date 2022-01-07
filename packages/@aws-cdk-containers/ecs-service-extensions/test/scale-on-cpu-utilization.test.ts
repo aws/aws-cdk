@@ -32,6 +32,7 @@ describe('scale on cpu utilization', () => {
         MaximumPercent: 200,
         MinimumHealthyPercent: 100,
       },
+      DesiredCount: 2,
     });
 
     expect(stack).toHaveResource('AWS::ApplicationAutoScaling::ScalableTarget', {
@@ -129,6 +130,7 @@ describe('scale on cpu utilization', () => {
         MaximumPercent: 200,
         MinimumHealthyPercent: 100,
       },
+      DesiredCount: 25,
     });
 
     expect(stack).toHaveResourceLike('AWS::ApplicationAutoScaling::ScalableTarget', {
@@ -172,7 +174,7 @@ describe('scale on cpu utilization', () => {
           maxTaskCount: 5,
         },
       });
-    }).toThrow('Cannot specify \'minTaskCount\' and \'maxTaskCount\' both in the Service construct and the \'ScaleOnCpuUtilization\' extension (deprecated). Please only provide the values in either one.');
+    }).toThrow('Cannot specify \'minTaskCount\' or \'maxTaskCount\' in the Service construct and also provide a  \'ScaleOnCpuUtilization\' extension. \'ScaleOnCpuUtilization\' is deprecated. Please only provide \'minTaskCount\' and \'maxTaskCount\'.');
   });
 
 });
