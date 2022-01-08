@@ -25,21 +25,6 @@ class TestStack extends cdk.Stack {
     instance.connections.allowFromAnyIpv4(ec2.Port.icmpPing());
 
     instance.addUserData('yum install -y');
-
-    const instance2 = new ec2.Instance(this, 'Instance', {
-      vpc,
-      instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.NANO),
-      machineImage: new ec2.AmazonLinuxImage({ generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2022 }),
-    });
-
-    instance2.addToRolePolicy(new PolicyStatement({
-      actions: ['ssm:*'],
-      resources: ['*'],
-    }));
-
-    instance2.connections.allowFromAnyIpv4(ec2.Port.icmpPing());
-
-    instance2.addUserData('yum install -y');
   }
 }
 
