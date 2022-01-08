@@ -1,7 +1,5 @@
 import * as iot from '@aws-cdk/aws-iot';
 import * as kinesis from '@aws-cdk/aws-kinesis';
-import * as lambda from '@aws-cdk/aws-lambda';
-import * as lambdaEventSources from '@aws-cdk/aws-lambda-event-sources';
 import * as logs from '@aws-cdk/aws-logs';
 import * as cdk from '@aws-cdk/core';
 import * as actions from '../../lib';
@@ -28,23 +26,6 @@ class TestStack extends cdk.Stack {
     topicRule.addAction(
       new actions.KinesisPutRecordAction(stream, {
         partitionKey: '${timestamp()}',
-      }),
-    );
-
-    const func = new lambda.Function(this, 'MyLambda', {
-      code: lambda.Code.fromInline(`
-        exports.handler = (event) => {
-          event.Records.forEach(rec => {
-            console.log('eventID:', rec.eventID)
-          })
-        }
-      `),
-      handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_14_X,
-    });
-    func.addEventSource(
-      new lambdaEventSources.KinesisEventSource(stream, {
-        startingPosition: lambda.StartingPosition.TRIM_HORIZON,
       }),
     );
   }
