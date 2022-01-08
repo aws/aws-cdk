@@ -1,0 +1,268 @@
+{
+  "Resources": {
+    "Logs6819BB44": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "RetentionInDays": 731
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "TopicRuleTopicRuleActionRole246C4F77": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "iot.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
+    "TopicRuleTopicRuleActionRoleDefaultPolicy99ADD687": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "Logs6819BB44",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": "logs:DescribeLogStreams",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "Logs6819BB44",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": "kinesis:PutRecord",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "MyStream5C050E93",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "TopicRuleTopicRuleActionRoleDefaultPolicy99ADD687",
+        "Roles": [
+          {
+            "Ref": "TopicRuleTopicRuleActionRole246C4F77"
+          }
+        ]
+      }
+    },
+    "TopicRule40A4EA44": {
+      "Type": "AWS::IoT::TopicRule",
+      "Properties": {
+        "TopicRulePayload": {
+          "Actions": [
+            {
+              "Kinesis": {
+                "PartitionKey": "${timestamp()}",
+                "RoleArn": {
+                  "Fn::GetAtt": [
+                    "TopicRuleTopicRuleActionRole246C4F77",
+                    "Arn"
+                  ]
+                },
+                "StreamName": {
+                  "Ref": "MyStream5C050E93"
+                }
+              }
+            }
+          ],
+          "AwsIotSqlVersion": "2016-03-23",
+          "ErrorAction": {
+            "CloudwatchLogs": {
+              "LogGroupName": {
+                "Ref": "Logs6819BB44"
+              },
+              "RoleArn": {
+                "Fn::GetAtt": [
+                  "TopicRuleTopicRuleActionRole246C4F77",
+                  "Arn"
+                ]
+              }
+            }
+          },
+          "Sql": "SELECT * FROM 'device/+/data'"
+        }
+      }
+    },
+    "MyStream5C050E93": {
+      "Type": "AWS::Kinesis::Stream",
+      "Properties": {
+        "ShardCount": 3,
+        "RetentionPeriodHours": 24,
+        "StreamEncryption": {
+          "Fn::If": [
+            "AwsCdkKinesisEncryptedStreamsUnsupportedRegions",
+            {
+              "Ref": "AWS::NoValue"
+            },
+            {
+              "EncryptionType": "KMS",
+              "KeyId": "alias/aws/kinesis"
+            }
+          ]
+        }
+      }
+    },
+    "MyLambdaServiceRole4539ECB6": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    "MyLambdaServiceRoleDefaultPolicy5BBC6F68": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "kinesis:DescribeStreamSummary",
+                "kinesis:GetRecords",
+                "kinesis:GetShardIterator",
+                "kinesis:ListShards",
+                "kinesis:SubscribeToShard",
+                "kinesis:DescribeStream",
+                "kinesis:ListStreams"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "MyStream5C050E93",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": "kinesis:DescribeStream",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "MyStream5C050E93",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "MyLambdaServiceRoleDefaultPolicy5BBC6F68",
+        "Roles": [
+          {
+            "Ref": "MyLambdaServiceRole4539ECB6"
+          }
+        ]
+      }
+    },
+    "MyLambdaCCE802FB": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "ZipFile": "\n        exports.handler = (event) => {\n          event.Records.forEach(rec => {\n            console.log('eventID:', rec.eventID)\n          })\n        }\n      "
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "MyLambdaServiceRole4539ECB6",
+            "Arn"
+          ]
+        },
+        "Handler": "index.handler",
+        "Runtime": "nodejs14.x"
+      },
+      "DependsOn": [
+        "MyLambdaServiceRoleDefaultPolicy5BBC6F68",
+        "MyLambdaServiceRole4539ECB6"
+      ]
+    },
+    "MyLambdaKinesisEventSourceteststackMyStreamED37A4A443E4E7EF": {
+      "Type": "AWS::Lambda::EventSourceMapping",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "MyLambdaCCE802FB"
+        },
+        "BatchSize": 100,
+        "EventSourceArn": {
+          "Fn::GetAtt": [
+            "MyStream5C050E93",
+            "Arn"
+          ]
+        },
+        "StartingPosition": "TRIM_HORIZON"
+      }
+    }
+  },
+  "Conditions": {
+    "AwsCdkKinesisEncryptedStreamsUnsupportedRegions": {
+      "Fn::Or": [
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "AWS::Region"
+            },
+            "cn-north-1"
+          ]
+        },
+        {
+          "Fn::Equals": [
+            {
+              "Ref": "AWS::Region"
+            },
+            "cn-northwest-1"
+          ]
+        }
+      ]
+    }
+  }
+}
