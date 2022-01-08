@@ -854,6 +854,46 @@ You can use the `Instance` class to start up a single EC2 instance. For producti
 you use an `AutoScalingGroup` from the `aws-autoscaling` module instead, as AutoScalingGroups will take
 care of restarting your instance if it ever fails.
 
+```ts
+declare const vpc: ec2.Vpc;
+declare const instanceType: ec2.InstanceType;
+
+// AWS Linux
+new ec2.Instance(this, 'Instance1', {
+  vpc,
+  instanceType,
+  machineImage: new ec2.AmazonLinuxImage(),
+}
+
+// AWS Linux 2
+new ec2.Instance(this, 'Instance2', {
+  vpc,
+  instanceType,
+  machineImage: new ec2.AmazonLinuxImage({
+    generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2,
+  }),
+}
+
+// AWS Linux 2 with kernel 5.x 
+new ec2.Instance(this, 'Instance3', {
+  vpc,
+  instanceType,
+  machineImage: new ec2.AmazonLinuxImage({ 
+    generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2,
+    kernel: ec2.AmazonLinuxKernel.KERNEL5_X,
+  }),
+}
+
+// AWS Linux 2022
+new ec2.Instance(this, 'Instance4', {
+  vpc,
+  instanceType,
+  machineImage: new ec2.AmazonLinuxImage({ 
+    generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2022,
+  }),
+}
+```
+
 ### Configuring Instances using CloudFormation Init (cfn-init)
 
 CloudFormation Init allows you to configure your instances by writing files to them, installing software
