@@ -54,44 +54,31 @@
         ],
         "SupportedIdentityProviders": [
           {
-            "Ref": "PoolProviderFb875111E6"
-          },
-          {
-            "Ref": "PoolProviderApple37ADEF7D"
+            "Ref": "PoolProviderGoogle76A1E8D0"
           },
           "COGNITO"
         ]
       }
     },
-    "PoolProviderFb875111E6": {
+    "PoolProviderGoogle76A1E8D0": {
       "Type": "AWS::Cognito::UserPoolIdentityProvider",
       "Properties": {
-        "ProviderName": "Facebook",
-        "ProviderType": "Facebook",
+        "ProviderName": "Google",
+        "ProviderType": "Google",
         "UserPoolId": {
           "Ref": "PoolD3F588B8"
         },
-        "ProviderDetails": {
-          "client_id": "12345",
-          "client_secret": "5678910",
-          "authorize_scopes": "public_profile"
-        }
-      }
-    },
-    "PoolProviderApple37ADEF7D": {
-      "Type": "AWS::Cognito::UserPoolIdentityProvider",
-      "Properties": {
-        "ProviderName": "SignInWithApple",
-        "ProviderType": "SignInWithApple",
-        "UserPoolId": {
-          "Ref": "PoolD3F588B8"
+        "AttributeMapping": {
+          "given_name": "given_name",
+          "family_name": "family_name",
+          "email": "email",
+          "gender": "gender",
+          "names": "names"
         },
         "ProviderDetails": {
-          "client_id": "54321",
-          "team_id": "12345",
-          "key_id": "13579",
-          "private_key": "12abcd",
-          "authorize_scopes": "name"
+          "client_id": "google-client-id",
+          "client_secret": "google-client-secret",
+          "authorize_scopes": "profile"
         }
       }
     },
@@ -149,44 +136,29 @@
         ],
         "SupportedIdentityProviders": [
           {
-            "Ref": "OtherPoolProviderFbB64E2DC9"
-          },
-          {
-            "Ref": "OtherPoolProviderApple4FB492B0"
+            "Ref": "OtherPoolProviderAmazon4EB0592F"
           },
           "COGNITO"
         ]
       }
     },
-    "OtherPoolProviderFbB64E2DC9": {
+    "OtherPoolProviderAmazon4EB0592F": {
       "Type": "AWS::Cognito::UserPoolIdentityProvider",
       "Properties": {
-        "ProviderName": "Facebook",
-        "ProviderType": "Facebook",
+        "ProviderName": "LoginWithAmazon",
+        "ProviderType": "LoginWithAmazon",
         "UserPoolId": {
           "Ref": "OtherPool7DA7F2F7"
         },
-        "ProviderDetails": {
-          "client_id": "12345123",
-          "client_secret": "5678910wed",
-          "authorize_scopes": "public_profile"
-        }
-      }
-    },
-    "OtherPoolProviderApple4FB492B0": {
-      "Type": "AWS::Cognito::UserPoolIdentityProvider",
-      "Properties": {
-        "ProviderName": "SignInWithApple",
-        "ProviderType": "SignInWithApple",
-        "UserPoolId": {
-          "Ref": "OtherPool7DA7F2F7"
+        "AttributeMapping": {
+          "given_name": "name",
+          "email": "email",
+          "userId": "user_id"
         },
         "ProviderDetails": {
-          "client_id": "54321123",
-          "team_id": "123343",
-          "key_id": "13579",
-          "private_key": "12abcddde",
-          "authorize_scopes": "name"
+          "client_id": "amzn-client-id",
+          "client_secret": "amzn-client-secret",
+          "authorize_scopes": "profile"
         }
       }
     },
@@ -201,16 +173,10 @@
               "Ref": "PoolUserPoolClientForundefinedBF6BDE57"
             },
             "ProviderName": {
-              "Ref": "PoolProviderFb875111E6"
-            },
-            "ServerSideTokenCheck": true
-          },
-          {
-            "ClientId": {
-              "Ref": "PoolUserPoolClientForundefinedBF6BDE57"
-            },
-            "ProviderName": {
-              "Ref": "PoolProviderApple37ADEF7D"
+              "Fn::GetAtt": [
+                "PoolD3F588B8",
+                "ProviderName"
+              ]
             },
             "ServerSideTokenCheck": true
           },
@@ -219,16 +185,10 @@
               "Ref": "OtherPoolUserPoolClientForundefined1B97829F"
             },
             "ProviderName": {
-              "Ref": "OtherPoolProviderFbB64E2DC9"
-            },
-            "ServerSideTokenCheck": true
-          },
-          {
-            "ClientId": {
-              "Ref": "OtherPoolUserPoolClientForundefined1B97829F"
-            },
-            "ProviderName": {
-              "Ref": "OtherPoolProviderApple4FB492B0"
+              "Fn::GetAtt": [
+                "OtherPool7DA7F2F7",
+                "ProviderName"
+              ]
             },
             "ServerSideTokenCheck": true
           }

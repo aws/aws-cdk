@@ -220,7 +220,7 @@ describe('identity pool', () => {
     otherPool.registerIdentityProvider(otherPoolProvider);
     const idPool = new IdentityPool(stack, 'TestIdentityPoolUserPools', {
       authenticationProviders: {
-        userPool: new UserPoolAuthenticationProvider({ userPool: pool }),
+        userPools: [new UserPoolAuthenticationProvider({ userPool: pool })],
       },
     });
     idPool.addUserPoolAuthentication(
@@ -287,14 +287,24 @@ describe('identity pool', () => {
           ClientId: {
             Ref: 'PoolUserPoolClientForundefinedBF6BDE57',
           },
-          ProviderName: 'poolProvider',
+          ProviderName: {
+            'Fn::GetAtt': [
+              'PoolD3F588B8',
+              'ProviderName',
+            ],
+          },
           ServerSideTokenCheck: true,
         },
         {
           ClientId: {
             Ref: 'OtherPoolUserPoolClientForundefined1B97829F',
           },
-          ProviderName: 'otherPoolProvider',
+          ProviderName: {
+            'Fn::GetAtt': [
+              'OtherPool7DA7F2F7',
+              'ProviderName',
+            ],
+          },
           ServerSideTokenCheck: false,
         },
       ],

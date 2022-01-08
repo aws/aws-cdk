@@ -276,10 +276,10 @@ export interface IdentityPoolProviders {
 export interface IdentityPoolAuthenticationProviders extends IdentityPoolProviders {
 
   /**
-   * The User Pool Authentication Provider associated with this Identity Pool
+   * The User Pool Authentication Providers associated with this Identity Pool
    * @default - no User Pools Associated
    */
-  readonly userPool?: IUserPoolAuthenticationProvider;
+  readonly userPools?: IUserPoolAuthenticationProvider[];
 
   /**
    * The OpenIdConnect Provider associated with this Identity Pool
@@ -391,7 +391,7 @@ export class IdentityPool extends Resource implements IIdentityPool {
       physicalName: props.identityPoolName,
     });
     const authProviders: IdentityPoolAuthenticationProviders = props.authenticationProviders || {};
-    const providers = authProviders.userPool ? authProviders.userPool.bind(this, this) : undefined;
+    const providers = authProviders.userPools ? authProviders.userPools.map(userPool => userPool.bind(this, this)) : undefined;
     if (providers && providers.length) this.cognitoIdentityProviders = providers;
     const openIdConnectProviderArns = authProviders.openIdConnectProviders ?
       authProviders.openIdConnectProviders.map(openIdProvider =>

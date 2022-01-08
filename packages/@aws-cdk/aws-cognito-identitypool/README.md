@@ -125,7 +125,7 @@ const userPool = new cognito.UserPool(this, 'Pool');
 new cognito.IdentityPool(this, 'myidentitypool', {
   identityPoolName: 'myidentitypool',
   authenticationProviders: {
-    userPool: new UserPoolAuthenticationProvider({ userPool }),
+    userPools: [new UserPoolAuthenticationProvider({ userPool })],
   },
 });
 ```
@@ -136,7 +136,7 @@ returns the User Pool Client that has been created:
 ```ts
 const userPool = new cognito.UserPool(this, 'Pool');
 const userPoolClient = identityPool.addUserPoolAuthentication({
-  userPool: new UserPoolAuthenticationProvider({ userPool });
+  userPools: [new UserPoolAuthenticationProvider({ userPool })];
 });
 ```
 

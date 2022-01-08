@@ -1,7 +1,8 @@
 import {
   UserPool,
-  UserPoolIdentityProviderFacebook,
-  UserPoolIdentityProviderApple,
+  UserPoolIdentityProviderGoogle,
+  UserPoolIdentityProviderAmazon,
+  ProviderAttribute,
 } from '@aws-cdk/aws-cognito';
 import {
   Effect,
@@ -22,34 +23,36 @@ const app = new App();
 const stack = new Stack(app, 'integ-identitypool');
 
 const userPool = new UserPool(stack, 'Pool');
-new UserPoolIdentityProviderFacebook(stack, 'PoolProviderFb', {
+new UserPoolIdentityProviderGoogle(stack, 'PoolProviderGoogle', {
   userPool,
-  clientId: '12345',
-  clientSecret: '5678910',
-});
-new UserPoolIdentityProviderApple(stack, 'PoolProviderApple', {
-  userPool,
-  clientId: '54321',
-  teamId: '12345',
-  keyId: '13579',
-  privateKey: '12abcd',
+  clientId: 'google-client-id',
+  clientSecret: 'google-client-secret',
+  attributeMapping: {
+    givenName: ProviderAttribute.GOOGLE_GIVEN_NAME,
+    familyName: ProviderAttribute.GOOGLE_FAMILY_NAME,
+    email: ProviderAttribute.GOOGLE_EMAIL,
+    gender: ProviderAttribute.GOOGLE_GENDER,
+    custom: {
+      names: ProviderAttribute.GOOGLE_NAMES,
+    },
+  },
 });
 const otherPool = new UserPool(stack, 'OtherPool');
-new UserPoolIdentityProviderFacebook(stack, 'OtherPoolProviderFb', {
+new UserPoolIdentityProviderAmazon(stack, 'OtherPoolProviderAmazon', {
   userPool: otherPool,
-  clientId: '12345123',
-  clientSecret: '5678910wed',
-});
-new UserPoolIdentityProviderApple(stack, 'OtherPoolProviderApple', {
-  userPool: otherPool,
-  clientId: '54321123',
-  teamId: '123343',
-  keyId: '13579',
-  privateKey: '12abcddde',
+  clientId: 'amzn-client-id',
+  clientSecret: 'amzn-client-secret',
+  attributeMapping: {
+    givenName: ProviderAttribute.AMAZON_NAME,
+    email: ProviderAttribute.AMAZON_EMAIL,
+    custom: {
+      userId: ProviderAttribute.AMAZON_USER_ID,
+    },
+  },
 });
 const idPool = new IdentityPool(stack, 'identitypool', {
   authenticationProviders: {
-    userPool: new UserPoolAuthenticationProvider({ userPool }),
+    userPools: [new UserPoolAuthenticationProvider({ userPool })],
     amazon: { appId: 'amzn1.application.12312k3j234j13rjiwuenf' },
     google: { clientId: '12345678012.apps.googleusercontent.com' },
   },

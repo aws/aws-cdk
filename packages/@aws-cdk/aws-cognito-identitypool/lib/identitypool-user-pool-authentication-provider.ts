@@ -1,5 +1,6 @@
 import { randomBytes } from 'crypto';
 import {
+  CfnUserPool,
   IUserPool,
   UserPoolClient,
   UserPoolClientProps,
@@ -23,7 +24,7 @@ export interface IUserPoolAuthenticationProvider {
     scope: Construct,
     identityPool: IIdentityPool,
     options?: UserPoolAuthenticationProviderBindOptions
-  ): UserPoolAuthenticationProviderBindConfig[];
+  ): UserPoolAuthenticationProviderBindConfig;
 }
 
 /**
@@ -92,20 +93,18 @@ export class UserPoolAuthenticationProvider implements IUserPoolAuthenticationPr
     _scope: Construct,
     identityPool: IIdentityPool,
     options?: UserPoolAuthenticationProviderBindOptions,
-  ): UserPoolAuthenticationProviderBindConfig[] {
+  ): UserPoolAuthenticationProviderBindConfig {
     if (options?.hasOwnProperty('disableServerSideTokenCheck') && typeof options!.disableServerSideTokenCheck === 'boolean') {
       this.disableServerSideTokenCheck = options!.disableServerSideTokenCheck;
     }
     Node.of(identityPool).addDependency(this.userPool);
     Node.of(identityPool).addDependency(this.userPoolClient);
     const serverSideTokenCheck = !this.disableServerSideTokenCheck;
-    return this.userPool.identityProviders.map(identityProvider => {
-      return {
-        clientId: this.userPoolClient.userPoolClientId,
-        providerName: identityProvider.providerName,
-        serverSideTokenCheck,
-      };
-    });
+    return {
+      clientId: this.userPoolClient.userPoolClientId,
+      providerName: (this.userPool.node.defaultChild as CfnUserPool).attrProviderName,
+      serverSideTokenCheck,
+    };
   }
 
   /**
