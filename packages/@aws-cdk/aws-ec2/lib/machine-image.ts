@@ -312,7 +312,7 @@ export interface AmazonLinuxImageProps {
   /**
    * What kernel version of Amazon Linux to use
    *
-   * @default Standard
+   * @default -
    */
   readonly kernel?: AmazonLinuxKernel;
 
@@ -382,16 +382,23 @@ export class AmazonLinuxImage extends GenericSSMParameterImage {
    */
   public static ssmParameterName(props: AmazonLinuxImageProps = {}) {
     const generation = (props && props.generation) || AmazonLinuxGeneration.AMAZON_LINUX;
-    let edition = (props && props.edition) || AmazonLinuxEdition.STANDARD;
+    const edition = (props && props.edition) || AmazonLinuxEdition.STANDARD;
+    const cpu = (props && props.cpuType) || AmazonLinuxCpuType.X86_64;
     let kernel = (props && props.kernel) || undefined;
-    let virtualization: AmazonLinuxVirt | undefined = (props && props.virtualization) || AmazonLinuxVirt.HVM;
-    let cpu = (props && props.cpuType) || AmazonLinuxCpuType.X86_64;
-    let storage: AmazonLinuxStorage | undefined = (props && props.storage) || AmazonLinuxStorage.GENERAL_PURPOSE;
+    let virtualization: AmazonLinuxVirt | undefined;
+    let storage: AmazonLinuxStorage | undefined;
 
     if (generation === AmazonLinuxGeneration.AMAZON_LINUX_2022) {
       kernel = AmazonLinuxKernel.KERNEL5_X;
-      storage = undefined;
-      virtualization = undefined;
+      if (props && props.storage) {
+        throw new Error('Storage parameter does not exist in smm parameter name for Amazon Linux 2022.');
+      }
+      if (props && props.virtualization) {
+        throw new Error('Virtualization parameter does not exist in smm parameter name for Amazon Linux 2022.');
+      }
+    } else {
+      virtualization = (props && props.virtualization) || AmazonLinuxVirt.HVM;
+      storage = (props && props.storage) || AmazonLinuxStorage.GENERAL_PURPOSE;
     }
 
     const parts: Array<string|undefined> = [
