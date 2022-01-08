@@ -863,7 +863,7 @@ new ec2.Instance(this, 'Instance1', {
   vpc,
   instanceType,
   machineImage: new ec2.AmazonLinuxImage(),
-}
+});
 
 // AWS Linux 2
 new ec2.Instance(this, 'Instance2', {
@@ -872,7 +872,7 @@ new ec2.Instance(this, 'Instance2', {
   machineImage: new ec2.AmazonLinuxImage({
     generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2,
   }),
-}
+});
 
 // AWS Linux 2 with kernel 5.x 
 new ec2.Instance(this, 'Instance3', {
@@ -882,7 +882,7 @@ new ec2.Instance(this, 'Instance3', {
     generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2,
     kernel: ec2.AmazonLinuxKernel.KERNEL5_X,
   }),
-}
+});
 
 // AWS Linux 2022
 new ec2.Instance(this, 'Instance4', {
@@ -891,7 +891,7 @@ new ec2.Instance(this, 'Instance4', {
   machineImage: new ec2.AmazonLinuxImage({ 
     generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2022,
   }),
-}
+});
 ```
 
 ### Configuring Instances using CloudFormation Init (cfn-init)
