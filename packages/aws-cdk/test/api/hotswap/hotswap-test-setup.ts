@@ -1,6 +1,7 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import { CloudFormation } from 'aws-sdk';
 import * as AWS from 'aws-sdk';
+import * as codebuild from 'aws-sdk/clients/codebuild';
 import * as lambda from 'aws-sdk/clients/lambda';
 import * as stepfunctions from 'aws-sdk/clients/stepfunctions';
 import { DeployStackResult } from '../../../lib/api';
@@ -42,7 +43,8 @@ export function pushStackResourceSummaries(...items: CloudFormation.StackResourc
 }
 
 export function setCurrentCfnStackTemplate(template: Template) {
-  currentCfnStack.setTemplate(template);
+  const templateDeepCopy = JSON.parse(JSON.stringify(template)); // deep copy the template, so our tests can mutate one template instead of creating two
+  currentCfnStack.setTemplate(templateDeepCopy);
 }
 
 export function stackSummaryOf(logicalId: string, resourceType: string, physicalResourceId: string): CloudFormation.StackResourceSummary {
@@ -81,9 +83,19 @@ export class HotswapMockSdkProvider {
     });
   }
 
-  public setUpdateFunctionCodeMock(mockUpdateLambdaCode: (input: lambda.UpdateFunctionCodeRequest) => lambda.FunctionConfiguration) {
+  public stubLambda(stubs: SyncHandlerSubsetOf<AWS.Lambda>) {
+    this.mockSdkProvider.stubLambda(stubs);
+  }
+
+  public setUpdateProjectMock(mockUpdateProject: (input: codebuild.UpdateProjectInput) => codebuild.UpdateProjectOutput) {
+    this.mockSdkProvider.stubCodeBuild({
+      updateProject: mockUpdateProject,
+    });
+  }
+
+  public setInvokeLambdaMock(mockInvokeLambda: (input: lambda.InvocationRequest) => lambda.InvocationResponse) {
     this.mockSdkProvider.stubLambda({
-      updateFunctionCode: mockUpdateLambdaCode,
+      invoke: mockInvokeLambda,
     });
   }
 

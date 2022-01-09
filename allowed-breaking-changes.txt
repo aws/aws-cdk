@@ -86,3 +86,33 @@ removed:@aws-cdk/aws-stepfunctions-tasks.EmrCreateClusterProps.autoTerminationPo
 # Changed property securityGroupId to optional because either securityGroupId or 
 # securityGroupName is required. Therefore securityGroupId is no longer mandatory.
 weakened:@aws-cdk/cloud-assembly-schema.SecurityGroupContextQuery
+
+# refactor autoscaling lifecycle hook target bind() methods to make role optional by
+# having bind() methods create the role if it isn't passed to them 
+incompatible-argument:@aws-cdk/aws-autoscaling-hooktargets.FunctionHook.bind
+incompatible-argument:@aws-cdk/aws-autoscaling-hooktargets.QueueHook.bind
+incompatible-argument:@aws-cdk/aws-autoscaling-hooktargets.TopicHook.bind
+incompatible-argument:@aws-cdk/aws-autoscaling.ILifecycleHookTarget.bind
+
+# removed properties from kafka eventsources as they are not supported
+removed:@aws-cdk/aws-lambda-event-sources.KafkaEventSourceProps.bisectBatchOnError
+removed:@aws-cdk/aws-lambda-event-sources.KafkaEventSourceProps.maxRecordAge
+removed:@aws-cdk/aws-lambda-event-sources.KafkaEventSourceProps.parallelizationFactor
+removed:@aws-cdk/aws-lambda-event-sources.KafkaEventSourceProps.reportBatchItemFailures
+removed:@aws-cdk/aws-lambda-event-sources.KafkaEventSourceProps.retryAttempts
+removed:@aws-cdk/aws-lambda-event-sources.KafkaEventSourceProps.tumblingWindow
+removed:@aws-cdk/aws-lambda-event-sources.ManagedKafkaEventSourceProps.bisectBatchOnError
+removed:@aws-cdk/aws-lambda-event-sources.ManagedKafkaEventSourceProps.maxRecordAge
+removed:@aws-cdk/aws-lambda-event-sources.ManagedKafkaEventSourceProps.parallelizationFactor
+removed:@aws-cdk/aws-lambda-event-sources.ManagedKafkaEventSourceProps.reportBatchItemFailures
+removed:@aws-cdk/aws-lambda-event-sources.ManagedKafkaEventSourceProps.retryAttempts
+removed:@aws-cdk/aws-lambda-event-sources.ManagedKafkaEventSourceProps.tumblingWindow 
+removed:@aws-cdk/aws-lambda-event-sources.SelfManagedKafkaEventSourceProps.bisectBatchOnError
+removed:@aws-cdk/aws-lambda-event-sources.SelfManagedKafkaEventSourceProps.maxRecordAge
+removed:@aws-cdk/aws-lambda-event-sources.SelfManagedKafkaEventSourceProps.parallelizationFactor
+removed:@aws-cdk/aws-lambda-event-sources.SelfManagedKafkaEventSourceProps.reportBatchItemFailures
+removed:@aws-cdk/aws-lambda-event-sources.SelfManagedKafkaEventSourceProps.retryAttempts
+removed:@aws-cdk/aws-lambda-event-sources.SelfManagedKafkaEventSourceProps.tumblingWindow
+base-types:@aws-cdk/aws-lambda-event-sources.KafkaEventSourceProps
+base-types:@aws-cdk/aws-lambda-event-sources.ManagedKafkaEventSourceProps
+base-types:@aws-cdk/aws-lambda-event-sources.SelfManagedKafkaEventSourceProps

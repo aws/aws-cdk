@@ -572,6 +572,17 @@ Read more about the [limitations of Aurora Serverless](https://docs.aws.amazon.c
 
 Learn more about using Amazon Aurora Serverless by reading the [documentation](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless.html)
 
+Use `ServerlessClusterFromSnapshot` to create a serverless cluster from a snapshot:
+
+```ts
+declare const vpc: ec2.Vpc;
+new rds.ServerlessClusterFromSnapshot(this, 'Cluster', {
+  engine: rds.DatabaseClusterEngine.AURORA_MYSQL,
+  vpc,
+  snapshotIdentifier: 'mySnapshot',
+});
+```
+
 ### Data API
 
 You can access your Aurora Serverless DB cluster using the built-in Data API. The Data API doesn't require a persistent connection to the DB cluster. Instead, it provides a secure HTTP endpoint and integration with AWS SDKs.

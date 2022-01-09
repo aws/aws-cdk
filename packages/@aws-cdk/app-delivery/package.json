@@ -66,8 +66,8 @@
     "@aws-cdk/cdk-integ-tools": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/jest": "^27.0.3",
-    "fast-check": "^2.19.0",
-    "jest": "^27.3.1"
+    "fast-check": "^2.20.0",
+    "jest": "^27.4.5"
   },
   "repository": {
     "type": "git",
