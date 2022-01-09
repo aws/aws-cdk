@@ -91,7 +91,7 @@ export interface EbsDeviceOptions extends EbsDeviceOptionsBase {
   readonly encrypted?: boolean;
 
   /**
-   * The AWS Key Management Service (AWS KMS) CMK used for encryption.
+   * The ARN of the AWS Key Management Service (AWS KMS) CMK used for encryption.
    *
    * You have to ensure that the KMS CMK has the correct permissions to be used by the service launching the ec2 instances.
    *
@@ -99,7 +99,7 @@ export interface EbsDeviceOptions extends EbsDeviceOptionsBase {
    *
    * @default - If encrypted is true, the default aws/ebs KMS key will be used.
    */
-  readonly kmsKey?: IKey;
+  readonly kmsKeyId?: string;
 }
 
 /**
@@ -170,7 +170,7 @@ export class BlockDeviceVolume {
    * @param ebsDevice EBS device info
    * @param virtualName Virtual device name
    */
-  protected constructor(public readonly ebsDevice?: EbsDeviceProps, public readonly virtualName?: string) {
+  protected constructor(public readonly ebsDevice?: EbsDeviceProps | EbsDeviceOptions, public readonly virtualName?: string) {
   }
 }
 

@@ -1,6 +1,7 @@
 import * as path from 'path';
 import '@aws-cdk/assert-internal/jest';
 import { arrayWith, ResourcePart, stringLike, SynthUtils } from '@aws-cdk/assert-internal';
+import { Key } from '@aws-cdk/aws-kms';
 import { Asset } from '@aws-cdk/aws-s3-assets';
 import { StringParameter } from '@aws-cdk/aws-ssm';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
@@ -214,6 +215,7 @@ describe('instance', () => {
   describe('blockDeviceMappings', () => {
     test('can set blockDeviceMappings', () => {
       // WHEN
+      const kmsKey = new Key(stack, 'EbsKey');
       new Instance(stack, 'Instance', {
         vpc,
         machineImage: new AmazonLinuxImage(),
@@ -224,6 +226,16 @@ describe('instance', () => {
           volume: BlockDeviceVolume.ebs(15, {
             deleteOnTermination: true,
             encrypted: true,
+            volumeType: EbsDeviceVolumeType.IO1,
+            iops: 5000,
+          }),
+        }, {
+          deviceName: 'ebs-cmk',
+          mappingEnabled: true,
+          volume: BlockDeviceVolume.ebs(15, {
+            deleteOnTermination: true,
+            encrypted: true,
+            kmsKeyId: kmsKey.keyArn,
             volumeType: EbsDeviceVolumeType.IO1,
             iops: 5000,
           }),
@@ -249,6 +261,22 @@ describe('instance', () => {
             Ebs: {
               DeleteOnTermination: true,
               Encrypted: true,
+              Iops: 5000,
+              VolumeSize: 15,
+              VolumeType: 'io1',
+            },
+          },
+          {
+            DeviceName: 'ebs-cmk',
+            Ebs: {
+              DeleteOnTermination: true,
+              Encrypted: true,
+              KmsKeyId: {
+                'Fn::GetAtt': [
+                  'EbsKeyD3FEE551',
+                  'Arn',
+                ],
+              },
               Iops: 5000,
               VolumeSize: 15,
               VolumeType: 'io1',

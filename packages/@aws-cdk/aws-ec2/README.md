@@ -1011,6 +1011,34 @@ new ec2.Instance(this, 'Instance', {
 
 ```
 
+It is also possible to encrypt the block devices. In this example we will create an customer managed key encrypted EBS-backed root device:
+
+```ts
+declare const vpc: ec2.Vpc;
+declare const instanceType: ec2.InstanceType;
+declare const machineImage: ec2.IMachineImage;
+
+kmsKey = new Key(this, 'KmsKey')
+
+new ec2.Instance(this, 'Instance', {
+  vpc,
+  instanceType,
+  machineImage,
+
+  // ...
+
+  blockDevices: [
+    {
+      deviceName: '/dev/sda1',
+      volume: ec2.BlockDeviceVolume.ebs(50),
+      encrypted: true,
+      kmsKeyId: kmsKey.keyArn
+    },
+  ],
+});
+
+```
+
 ### Volumes
 
 Whereas a `BlockDeviceVolume` is an EBS volume that is created and destroyed as part of the creation and destruction of a specific instance. A `Volume` is for when you want an EBS volume separate from any particular instance. A `Volume` is an EBS block device that can be attached to, or detached from, any instance at any time. Some types of `Volume`s can also be attached to multiple instances at the same time to allow you to have shared storage between those instances.
