@@ -170,7 +170,7 @@ export class BlockDeviceVolume {
    * @param ebsDevice EBS device info
    * @param virtualName Virtual device name
    */
-  protected constructor(public readonly ebsDevice?: EbsDeviceProps | EbsDeviceOptions, public readonly virtualName?: string) {
+  protected constructor(public readonly ebsDevice?: EbsDeviceProps, public readonly virtualName?: string) {
   }
 }
 
