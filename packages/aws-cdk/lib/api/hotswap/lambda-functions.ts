@@ -307,13 +307,13 @@ class LambdaFunctionHotswapOperation implements HotswapOperation {
  * Compress a string as a file, returning a promise for the zip buffer
  * https://github.com/archiverjs/node-archiver/issues/342
  */
-function zipString(fileName: string, rawString: string):Promise<Buffer> {
+function zipString(fileName: string, rawString: string): Promise<Buffer> {
   return new Promise((resolve, reject) => {
     const buffs: Buffer[] = [];
 
     const converter = new Writable();
 
-    converter._write = (chunk:Buffer, _: string, cb: () => void) => {
+    converter._write = (chunk: Buffer, _: string, cb: () => void) => {
       buffs.push(chunk);
       process.nextTick(cb);
     };
@@ -324,7 +324,7 @@ function zipString(fileName: string, rawString: string):Promise<Buffer> {
 
     const archive = archiver('zip');
 
-    archive.on('error', err => {
+    archive.on('error', (err) => {
       reject(err);
     });
 
@@ -340,7 +340,7 @@ function zipString(fileName: string, rawString: string):Promise<Buffer> {
  * Get file extension from Lambda runtime string.
  * We use this extension to create a deployment package from Lambda inline code.
  */
-function getExtensionFromRuntime(runtime: string):string {
+function getExtensionFromRuntime(runtime: string): string {
   if (runtime.startsWith('node')) {
     return 'js';
   }
