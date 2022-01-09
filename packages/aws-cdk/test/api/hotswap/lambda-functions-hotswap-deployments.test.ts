@@ -37,7 +37,7 @@ test('returns undefined when a new Lambda function is added to the Stack', async
   expect(deployStackResult).toBeUndefined();
 });
 
-test('calls the updateLambdaCode() API when it receives only a code difference in a Lambda function', async () => {
+test('calls the updateLambdaCode() API when it receives only a code difference in a Lambda function (S3 code)', async () => {
   // GIVEN
   setup.setCurrentCfnStackTemplate({
     Resources: {
@@ -85,6 +85,142 @@ test('calls the updateLambdaCode() API when it receives only a code difference i
     FunctionName: 'my-function',
     S3Bucket: 'current-bucket',
     S3Key: 'new-key',
+  });
+});
+
+test('calls the updateLambdaCode() API when it receives only a code difference in a Lambda function (Docker Image code)', async () => {
+  // GIVEN
+  setup.setCurrentCfnStackTemplate({
+    Resources: {
+      Func: {
+        Type: 'AWS::Lambda::Function',
+        Properties: {
+          Code: {
+            ImageUri: 'current-image',
+          },
+          FunctionName: 'my-function',
+        },
+        Metadata: {
+          'aws:asset:path': 'old-path',
+        },
+      },
+    },
+  });
+  const cdkStackArtifact = setup.cdkStackArtifactOf({
+    template: {
+      Resources: {
+        Func: {
+          Type: 'AWS::Lambda::Function',
+          Properties: {
+            Code: {
+              ImageUri: 'new-image',
+            },
+            FunctionName: 'my-function',
+          },
+          Metadata: {
+            'aws:asset:path': 'new-path',
+          },
+        },
+      },
+    },
+  });
+
+  // WHEN
+  const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(cdkStackArtifact);
+
+  // THEN
+  expect(deployStackResult).not.toBeUndefined();
+  expect(mockUpdateLambdaCode).toHaveBeenCalledWith({
+    FunctionName: 'my-function',
+    ImageUri: 'new-image',
+  });
+});
+
+test('calls the updateLambdaCode() API when it receives only a code difference in a Lambda function (Inline Node.js code)', async () => {
+  // GIVEN
+  setup.setCurrentCfnStackTemplate({
+    Resources: {
+      Func: {
+        Type: 'AWS::Lambda::Function',
+        Properties: {
+          Code: {
+            ZipFile: 'exports.handler = () => {return true}',
+          },
+          Runtime: 'nodejs14.x',
+          FunctionName: 'my-function',
+        },
+      },
+    },
+  });
+  const cdkStackArtifact = setup.cdkStackArtifactOf({
+    template: {
+      Resources: {
+        Func: {
+          Type: 'AWS::Lambda::Function',
+          Properties: {
+            Code: {
+              ZipFile: 'exports.handler = () => {return false}',
+            },
+            Runtime: 'nodejs14.x',
+            FunctionName: 'my-function',
+          },
+        },
+      },
+    },
+  });
+
+  // WHEN
+  const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(cdkStackArtifact);
+
+  // THEN
+  expect(deployStackResult).not.toBeUndefined();
+  expect(mockUpdateLambdaCode).toHaveBeenCalledWith({
+    FunctionName: 'my-function',
+    ZipFile: Buffer.from('UEsDBBQACAAIAAAAIQAAAAAAAAAAAAAAAAAIAAAAaW5kZXguanNLrSjILyop1stIzEvJSS1SsFXQ0FSwtVOoLkotKS3KU0hLzClOrQUAUEsHCLjDGtsoAAAAJgAAAFBLAQItAxQACAAIAAAAIQC4wxrbKAAAACYAAAAIAAAAAAAAAAAAIACkgQAAAABpbmRleC5qc1BLBQYAAAAAAQABADYAAABeAAAAAAA=', 'base64'),
+  });
+});
+
+test('calls the updateLambdaCode() API when it receives only a code difference in a Lambda function (Inline Python code)', async () => {
+  // GIVEN
+  setup.setCurrentCfnStackTemplate({
+    Resources: {
+      Func: {
+        Type: 'AWS::Lambda::Function',
+        Properties: {
+          Code: {
+            ZipFile: 'def handler(event, context):\n  return True',
+          },
+          Runtime: 'python3.9',
+          FunctionName: 'my-function',
+        },
+      },
+    },
+  });
+  const cdkStackArtifact = setup.cdkStackArtifactOf({
+    template: {
+      Resources: {
+        Func: {
+          Type: 'AWS::Lambda::Function',
+          Properties: {
+            Code: {
+              ZipFile: 'def handler(event, context):\n  return False',
+            },
+            Runtime: 'python3.9',
+            FunctionName: 'my-function',
+          },
+        },
+      },
+    },
+  });
+
+  // WHEN
+  const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(cdkStackArtifact);
+
+  // THEN
+  expect(deployStackResult).not.toBeUndefined();
+  expect(mockUpdateLambdaCode).toHaveBeenCalledWith({
+    FunctionName: 'my-function',
+    ZipFile: Buffer.from('UEsDBBQACAAIAAAAIQAAAAAAAAAAAAAAAAAIAAAAaW5kZXgucHlLSU1TyEjMS8lJLdJILUvNK9FRSM7PK0mtKNG04lJQKEotKS3KU3BLzClOBQBQSwcI3xfZry0AAAArAAAAUEsBAi0DFAAIAAgAAAAhAN8X2a8tAAAAKwAAAAgAAAAAAAAAAAAgAKSBAAAAAGluZGV4LnB5UEsFBgAAAAABAAEANgAAAGMAAAAAAA==', 'base64'),
   });
 });
 

@@ -330,7 +330,10 @@ function zipString(fileName: string, rawString: string): Promise<Buffer> {
 
     archive.pipe(converter);
 
-    archive.append(rawString, { name: fileName });
+    archive.append(rawString, {
+      name: fileName,
+      date: new Date('1980-01-01T00:00:00.000Z'), // Add date to make resulting zip file deterministic
+    });
 
     void archive.finalize();
   });
