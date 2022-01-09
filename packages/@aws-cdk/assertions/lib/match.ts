@@ -79,6 +79,13 @@ export abstract class Match {
   public static anyValue(): Matcher {
     return new AnyMatch('anyValue');
   }
+
+  /**
+   * Resolves a join and Matches it.
+   */
+  public static resolveCfnIntrinsic(pattern: any, options:): Matcher {
+    return new ResolveJoin('resolveJoin', pattern);
+  } 
 }
 
 /**
@@ -375,6 +382,60 @@ class AnyMatch extends Matcher {
         message: 'Expected a value but found none',
       });
     }
+    return result;
+  }
+}
+
+interface ResolveCfnIntrinsicOptions {
+  readonly recursive?: boolean
+}
+
+class ResolveCfnIntrinsic extends Matcher {
+  constructor(
+    public readonly name: string,
+    private readonly pattern: any,
+    options: ResolveCfnIntrinsicOptions = {}
+  ) {
+    super();
+  };
+
+  public static resolveIntrinsic(object: any, options: ResolveCfnIntrinsicOptions): any {
+    if (typeof object === 'object') {
+      // Handle { "Fn::Join" : [ "delimiter", [ comma-delimited list of values ] ] }
+      if ( object['Fn::Join'] instanceof Array && object['Fn::Join'].length == 2 && object['Fn::Join'][1] instanceof Array ) {
+      }
+      // Handle { "Fn::GetAtt" : [ "logicalNameOfResource", "attributeName" ] }
+      if ( object['Fn::GetAtt'] instanceof Array) {
+      }
+      // Handle { "Fn::ImportValue" : sharedValueToImport } - TODO:
+      if ( object['Fn::ImportValue'] instanceof object ) {
+      }
+      // Handle { "Fn::Sub" : [ String, { Var1Name: Var1Value, Var2Name: Var2Value } ] }
+      if ( object['Fn::Sub'] instanceof Array ) {
+      }
+      // Handle { "Fn::FindInMap" : [ "MapName", "TopLevelKey", "SecondLevelKey"] }
+      if ( object['Fn::FindInMap'] instanceof Array ) {
+      }
+      // Handle { "Fn::GetAZs" : "region" }
+      if ( object['Fn::GetAZs'] !== undefined ) {
+      }
+      // Handle { "Fn::Select" : [ index, listOfObjects ] }
+      if ( object['Fn::Select'] instanceof Array ) {
+      }
+      else {
+        for (var property in object) {
+          object[property] = this.resolveIntrinsic(object[property], options);
+        }
+      }
+  }
+
+  public test(actual: any): MatchResult {
+    const result = new MatchResult(actual);
+    const parsed = resolveIntrinsic(actual) // actual is holding the contant of the actual subtree - resolveIntrinsic will be the "magic"
+
+    const matcher = Matcher.isMatcher(this.pattern) ? this.pattern : new LiteralMatch(this.name, this.pattern);
+    const innerResult = matcher.test(parsed);
+    result.compose(`(${this.name})`, innerResult);
     return result;
   }
 }
