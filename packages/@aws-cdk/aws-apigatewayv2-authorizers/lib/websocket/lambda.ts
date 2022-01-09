@@ -28,7 +28,11 @@ export interface WebSocketLambdaAuthorizerProps {
   /**
    * The identity source for which authorization is requested.
    *
-   * @default ['$request.header.Authorization']
+   * Request parameter match `'route.request.querystring|header.[a-zA-z0-9._-]+'`.
+   * Staged variable match `'stageVariables.[a-zA-Z0-9._-]+'`.
+   * Context parameter match `'context.[a-zA-Z0-9._-]+'`.
+   *
+   * @default ['route.request.header.Authorization']
    */
   readonly identitySource?: string[];
 }
@@ -56,7 +60,7 @@ export class WebSocketLambdaAuthorizer implements IWebSocketRouteAuthorizer {
       this.authorizer = new WebSocketAuthorizer(options.scope, this.id, {
         webSocketApi: options.route.webSocketApi,
         identitySource: this.props.identitySource ?? [
-          '$request.header.Authorization',
+          'route.request.header.Authorization',
         ],
         type: WebSocketAuthorizerType.LAMBDA,
         authorizerName: this.props.authorizerName ?? this.id,

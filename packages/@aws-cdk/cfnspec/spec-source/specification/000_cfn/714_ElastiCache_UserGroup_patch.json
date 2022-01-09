@@ -1,0 +1,19 @@
+{
+  "ResourceTypes": {
+    "AWS::ElastiCache::UserGroup": {
+      "patch": {
+        "description": "Remove the PendingChanges and ReplicationGroupIds attributes from the AWS::ElastiCache::UserGroup resource type, as they have a complex type",
+        "operations": [
+          {
+            "op": "remove",
+            "path": "/Attributes/PendingChanges"
+          },
+          {
+            "op": "remove",
+            "path": "/Attributes/ReplicationGroupIds"
+          }
+        ]
+      }
+    }
+  }
+}
