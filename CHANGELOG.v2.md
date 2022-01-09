@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.5.0](https://github.com/aws/aws-cdk/compare/v2.4.0...v2.5.0) (2022-01-09)
+
+
+### Bug Fixes
+
+* **aws-kinesis:** remove default shard count when stream mode is on-demand and set default mode to provisioned ([#18221](https://github.com/aws/aws-cdk/issues/18221)) ([cac11bb](https://github.com/aws/aws-cdk/commit/cac11bba2ea0714dec8e23b069496d1b9d940685)), closes [#18139](https://github.com/aws/aws-cdk/issues/18139)
+* **cli:** breaks due to faulty version of `colors` ([#18324](https://github.com/aws/aws-cdk/issues/18324)) ([#18328](https://github.com/aws/aws-cdk/issues/18328)) ([b851bc3](https://github.com/aws/aws-cdk/commit/b851bc340ce0aeb0f6b99c6f54bceda892bfad0e))
+
 ## [2.4.0](https://github.com/aws/aws-cdk/compare/v2.3.0...v2.4.0) (2022-01-06)
 
 
