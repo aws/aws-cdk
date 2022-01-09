@@ -1018,7 +1018,7 @@ declare const vpc: ec2.Vpc;
 declare const instanceType: ec2.InstanceType;
 declare const machineImage: ec2.IMachineImage;
 
-const kmsKey = new Key(this, 'KmsKey')
+const kmsKey = new kms.Key(this, 'KmsKey')
 
 new ec2.Instance(this, 'Instance', {
   vpc,
@@ -1030,9 +1030,10 @@ new ec2.Instance(this, 'Instance', {
   blockDevices: [
     {
       deviceName: '/dev/sda1',
-      volume: ec2.BlockDeviceVolume.ebs(50),
-      encrypted: true,
-      kmsKeyId: kmsKey.keyArn
+      volume: ec2.BlockDeviceVolume.ebs(50, {
+        encrypted: true,
+        kmsKeyId: kmsKey.keyArn
+      }),
     },
   ],
 });
