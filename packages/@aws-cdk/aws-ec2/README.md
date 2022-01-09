@@ -1018,7 +1018,7 @@ declare const vpc: ec2.Vpc;
 declare const instanceType: ec2.InstanceType;
 declare const machineImage: ec2.IMachineImage;
 
-kmsKey = new Key(this, 'KmsKey')
+const kmsKey = new Key(this, 'KmsKey')
 
 new ec2.Instance(this, 'Instance', {
   vpc,
