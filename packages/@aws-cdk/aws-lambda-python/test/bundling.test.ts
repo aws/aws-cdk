@@ -1,3 +1,4 @@
+import * as fs from 'fs';
 import * as path from 'path';
 import { Architecture, Code, Runtime } from '@aws-cdk/aws-lambda';
 import { DockerImage } from '@aws-cdk/core';
@@ -25,7 +26,7 @@ beforeEach(() => {
 
 test('Bundling a function without dependencies', () => {
   const entry = path.join(__dirname, 'lambda-handler-nodeps');
-  Bundling.bundle({
+  const assetCode = Bundling.bundle({
     entry: entry,
     runtime: Runtime.PYTHON_3_7,
     architecture: Architecture.X86_64,
@@ -47,11 +48,14 @@ test('Bundling a function without dependencies', () => {
     }),
     platform: 'linux/amd64',
   }));
+
+  const files = fs.readdirSync(assetCode.path);
+  expect(files).toContain('index.py');
 });
 
 test('Bundling a function with requirements.txt', () => {
   const entry = path.join(__dirname, 'lambda-handler');
-  Bundling.bundle({
+  const assetCode = Bundling.bundle({
     entry: entry,
     runtime: Runtime.PYTHON_3_7,
     architecture: Architecture.X86_64,
@@ -66,6 +70,10 @@ test('Bundling a function with requirements.txt', () => {
       ],
     }),
   }));
+
+  const files = fs.readdirSync(assetCode.path);
+  expect(files).toContain('index.py');
+  expect(files).toContain('requirements.txt');
 });
 
 test('Bundling Python 2.7 with requirements.txt installed', () => {
@@ -130,7 +138,7 @@ test('Bundling a python code layer', () => {
 test('Bundling a function with pipenv dependencies', () => {
   const entry = path.join(__dirname, 'lambda-handler-pipenv');
 
-  Bundling.bundle({
+  const assetCode = Bundling.bundle({
     entry: path.join(entry, '.'),
     runtime: Runtime.PYTHON_3_9,
     architecture: Architecture.X86_64,
@@ -145,12 +153,19 @@ test('Bundling a function with pipenv dependencies', () => {
       ],
     }),
   }));
+
+  const files = fs.readdirSync(assetCode.path);
+  expect(files).toContain('index.py');
+  expect(files).toContain('Pipfile');
+  expect(files).toContain('Pipfile.lock');
+  // Contains hidden files.
+  expect(files).toContain('.gitignore');
 });
 
 test('Bundling a function with poetry dependencies', () => {
   const entry = path.join(__dirname, 'lambda-handler-poetry');
 
-  Bundling.bundle({
+  const assetCode = Bundling.bundle({
     entry: path.join(entry, '.'),
     runtime: Runtime.PYTHON_3_9,
     architecture: Architecture.X86_64,
@@ -165,6 +180,13 @@ test('Bundling a function with poetry dependencies', () => {
       ],
     }),
   }));
+
+  const files = fs.readdirSync(assetCode.path);
+  expect(files).toContain('index.py');
+  expect(files).toContain('pyproject.toml');
+  expect(files).toContain('poetry.lock');
+  // Contains hidden files.
+  expect(files).toContain('.gitignore');
 });
 
 test('Bundling a function with custom bundling image', () => {
