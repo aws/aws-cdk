@@ -1,3 +1,19 @@
+
+# Serverless Application Model (SAM) Resource Specification v2016-10-31
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+* AWS::Serverless::Function Architectures (__added__)
+
+## Property Type Changes
+
+
 # CloudFormation Resource Specification v51.0.0
 
 ## New Resource Types

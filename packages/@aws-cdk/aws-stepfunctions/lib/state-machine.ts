@@ -268,10 +268,7 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
    * @default - sum over 5 minutes
    */
   public metricFailed(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.cannedMetric(StatesMetrics.executionsFailedAverage, {
-      statistic: 'sum',
-      ...props,
-    });
+    return this.cannedMetric(StatesMetrics.executionsFailedSum, props);
   }
 
   /**
@@ -290,10 +287,7 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
    * @default - sum over 5 minutes
    */
   public metricAborted(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.cannedMetric(StatesMetrics.executionsAbortedAverage, {
-      statistic: 'sum',
-      ...props,
-    });
+    return this.cannedMetric(StatesMetrics.executionsAbortedSum, props);
   }
 
   /**
@@ -302,10 +296,7 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
    * @default - sum over 5 minutes
    */
   public metricSucceeded(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.cannedMetric(StatesMetrics.executionsSucceededAverage, {
-      statistic: 'sum',
-      ...props,
-    });
+    return this.cannedMetric(StatesMetrics.executionsSucceededSum, props);
   }
 
   /**
@@ -314,10 +305,7 @@ abstract class StateMachineBase extends Resource implements IStateMachine {
    * @default - sum over 5 minutes
    */
   public metricTimedOut(props?: cloudwatch.MetricOptions): cloudwatch.Metric {
-    return this.cannedMetric(StatesMetrics.executionsTimedOutAverage, {
-      statistic: 'sum',
-      ...props,
-    });
+    return this.cannedMetric(StatesMetrics.executionsTimedOutSum, props);
   }
 
   /**

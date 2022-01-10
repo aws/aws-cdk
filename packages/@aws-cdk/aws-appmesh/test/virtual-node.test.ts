@@ -41,24 +41,18 @@ describe('virtual node', () => {
             Backends: [
               {
                 VirtualService: {
-                  VirtualServiceName: {
-                    'Fn::GetAtt': ['service1A48078CF', 'VirtualServiceName'],
-                  },
+                  VirtualServiceName: 'service1.domain.local',
                 },
               },
               {
                 VirtualService: {
-                  VirtualServiceName: {
-                    'Fn::GetAtt': ['service27C65CF7D', 'VirtualServiceName'],
-                  },
+                  VirtualServiceName: 'service2.domain.local',
                 },
               },
             ],
           },
           MeshOwner: ABSENT,
         });
-
-
       });
     });
 
@@ -458,9 +452,7 @@ describe('virtual node', () => {
             Backends: [
               {
                 VirtualService: {
-                  VirtualServiceName: {
-                    'Fn::GetAtt': ['service1A48078CF', 'VirtualServiceName'],
-                  },
+                  VirtualServiceName: 'service1.domain.local',
                   ClientPolicy: {
                     TLS: {
                       Ports: [8080, 8081],
@@ -478,8 +470,75 @@ describe('virtual node', () => {
             ],
           },
         });
+      });
 
+      test('you can add a Virtual Service as a backend to a Virtual Node which is the provider for that Virtual Service', () => {
+        // GIVEN
+        const stack = new cdk.Stack();
 
+        // WHEN
+        const mesh = new appmesh.Mesh(stack, 'mesh', {
+          meshName: 'test-mesh',
+        });
+
+        const node = new appmesh.VirtualNode(stack, 'test-node', {
+          mesh,
+          serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
+        });
+
+        const myVirtualService = new appmesh.VirtualService(stack, 'service-1', {
+          virtualServiceProvider: appmesh.VirtualServiceProvider.virtualNode(node),
+          virtualServiceName: 'service1.domain.local',
+        });
+
+        node.addBackend(appmesh.Backend.virtualService(myVirtualService));
+
+        // THEN
+        expect(stack).toHaveResourceLike('AWS::AppMesh::VirtualNode', {
+          Spec: {
+            Backends: [
+              {
+                VirtualService: {
+                  VirtualServiceName: 'service1.domain.local',
+                },
+              },
+            ],
+          },
+        });
+      });
+
+      test('you can add a Virtual Service with an automated name as a backend to a Virtual Node which is the provider for that Virtual Service, ', () => {
+        // GIVEN
+        const stack = new cdk.Stack();
+
+        // WHEN
+        const mesh = new appmesh.Mesh(stack, 'mesh', {
+          meshName: 'test-mesh',
+        });
+
+        const node = new appmesh.VirtualNode(stack, 'test-node', {
+          mesh,
+          serviceDiscovery: appmesh.ServiceDiscovery.dns('test'),
+        });
+
+        const myVirtualService = new appmesh.VirtualService(stack, 'service-1', {
+          virtualServiceProvider: appmesh.VirtualServiceProvider.virtualNode(node),
+        });
+
+        node.addBackend(appmesh.Backend.virtualService(myVirtualService));
+
+        // THEN
+        expect(stack).toHaveResourceLike('AWS::AppMesh::VirtualNode', {
+          Spec: {
+            Backends: [
+              {
+                VirtualService: {
+                  VirtualServiceName: 'service1',
+                },
+              },
+            ],
+          },
+        });
       });
     });
 

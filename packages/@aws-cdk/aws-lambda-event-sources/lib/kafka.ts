@@ -4,7 +4,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import { Stack, Names } from '@aws-cdk/core';
-import { StreamEventSource, StreamEventSourceProps } from './stream';
+import { StreamEventSource, BaseStreamEventSourceProps } from './stream';
 
 // keep this import separate from other imports to reduce chance for merge conflicts with v2-main
 // eslint-disable-next-line no-duplicate-imports, import/order
@@ -13,7 +13,7 @@ import { Construct } from '@aws-cdk/core';
 /**
  * Properties for a Kafka event source
  */
-export interface KafkaEventSourceProps extends StreamEventSourceProps {
+export interface KafkaEventSourceProps extends BaseStreamEventSourceProps{
   /**
    * The Kafka topic to subscribe to
    */

@@ -184,10 +184,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
    * @default Average over 5 minutes
    */
   public metricActiveFlowCount(props?: cloudwatch.MetricOptions) {
-    return this.cannedMetric(NetworkELBMetrics.activeFlowCountSum, {
-      statistic: 'Average', // Doesn't make sense to me but backwards compatibility and all that
-      ...props,
-    });
+    return this.cannedMetric(NetworkELBMetrics.activeFlowCountAverage, props);
   }
 
   /**
@@ -209,7 +206,10 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
    * @deprecated use ``NetworkTargetGroup.metricHealthyHostCount`` instead
    */
   public metricHealthyHostCount(props?: cloudwatch.MetricOptions) {
-    return this.cannedMetric(NetworkELBMetrics.healthyHostCountAverage, props);
+    return this.metric('HealthyHostCount', {
+      statistic: 'Average',
+      ...props,
+    });
   }
 
   /**
@@ -219,7 +219,10 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
    * @deprecated use ``NetworkTargetGroup.metricUnHealthyHostCount`` instead
    */
   public metricUnHealthyHostCount(props?: cloudwatch.MetricOptions) {
-    return this.cannedMetric(NetworkELBMetrics.unHealthyHostCountAverage, props);
+    return this.metric('UnHealthyHostCount', {
+      statistic: 'Average',
+      ...props,
+    });
   }
 
   /**

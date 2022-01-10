@@ -35,6 +35,20 @@
       "UpdateReplacePolicy": "Delete",
       "DeletionPolicy": "Delete"
     },
+    "PipelineArtifactsBucketEncryptionKeyAlias5C510EEE": {
+      "Type": "AWS::KMS::Alias",
+      "Properties": {
+        "AliasName": "alias/codepipeline-pipelinestackpipeline9db740af",
+        "TargetKeyId": {
+          "Fn::GetAtt": [
+            "PipelineArtifactsBucketEncryptionKey01D58D69",
+            "Arn"
+          ]
+        }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
     "PipelineArtifactsBucket22248F97": {
       "Type": "AWS::S3::Bucket",
       "Properties": {
@@ -63,19 +77,52 @@
       "UpdateReplacePolicy": "Retain",
       "DeletionPolicy": "Retain"
     },
-    "PipelineArtifactsBucketEncryptionKeyAlias5C510EEE": {
-      "Type": "AWS::KMS::Alias",
+    "PipelineArtifactsBucketPolicyD4F9712A": {
+      "Type": "AWS::S3::BucketPolicy",
       "Properties": {
-        "AliasName": "alias/codepipeline-pipelinestackpipeline9db740af",
-        "TargetKeyId": {
-          "Fn::GetAtt": [
-            "PipelineArtifactsBucketEncryptionKey01D58D69",
-            "Arn"
-          ]
+        "Bucket": {
+          "Ref": "PipelineArtifactsBucket22248F97"
+        },
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "s3:*",
+              "Condition": {
+                "Bool": {
+                  "aws:SecureTransport": "false"
+                }
+              },
+              "Effect": "Deny",
+              "Principal": {
+                "AWS": "*"
+              },
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "PipelineArtifactsBucket22248F97",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "PipelineArtifactsBucket22248F97",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            }
+          ],
+          "Version": "2012-10-17"
         }
-      },
-      "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete"
+      }
     },
     "PipelineRoleD68726F7": {
       "Type": "AWS::IAM::Role",
@@ -1394,6 +1441,9 @@
           "BuildSpec": "{\n  \"version\": \"0.2\",\n  \"phases\": {\n    \"install\": {\n      \"commands\": \"npm install\"\n    },\n    \"build\": {\n      \"commands\": [\n        \"npm run build\",\n        \"npm run cdk synth LambdaStack -- -o .\"\n      ]\n    }\n  },\n  \"artifacts\": {\n    \"files\": \"LambdaStack.template.yaml\"\n  }\n}",
           "Type": "NO_SOURCE"
         },
+        "Cache": {
+          "Type": "NO_CACHE"
+        },
         "EncryptionKey": {
           "Fn::GetAtt": [
             "PipelineArtifactsBucketEncryptionKey01D58D69",
@@ -1612,6 +1662,9 @@
         "Source": {
           "BuildSpec": "{\n  \"version\": \"0.2\",\n  \"phases\": {\n    \"install\": {\n      \"commands\": \"npm install\"\n    },\n    \"build\": {\n      \"commands\": \"npm run build\"\n    }\n  },\n  \"artifacts\": {\n    \"files\": [\n      \"index.js\",\n      \"node_modules/**/*\"\n    ]\n  }\n}",
           "Type": "NO_SOURCE"
+        },
+        "Cache": {
+          "Type": "NO_CACHE"
         },
         "EncryptionKey": {
           "Fn::GetAtt": [
