@@ -1,6 +1,7 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
-import { SdkProvider, replaceEnvPlaceholders } from '../api';
+import { SdkProvider } from '../api';
+import { replaceEnvPlaceholders } from '../api/cloudformation-deployments';
 import { debug } from '../logging';
 import { Context, TRANSIENT_CONTEXT_KEY } from '../settings';
 import { AmiContextProviderPlugin } from './ami';
