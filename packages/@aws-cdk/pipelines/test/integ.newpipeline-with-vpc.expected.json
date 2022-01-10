@@ -577,61 +577,6 @@
                   ]
                 }
               ]
-            },
-            {
-              "Action": [
-                "s3:GetObject*",
-                "s3:GetBucket*",
-                "s3:List*"
-              ],
-              "Effect": "Allow",
-              "Principal": {
-                "AWS": {
-                  "Fn::Join": [
-                    "",
-                    [
-                      "arn:",
-                      {
-                        "Ref": "AWS::Partition"
-                      },
-                      ":iam::",
-                      {
-                        "Ref": "AWS::AccountId"
-                      },
-                      ":role/cdk-hnb659fds-deploy-role-",
-                      {
-                        "Ref": "AWS::AccountId"
-                      },
-                      "-",
-                      {
-                        "Ref": "AWS::Region"
-                      }
-                    ]
-                  ]
-                }
-              },
-              "Resource": [
-                {
-                  "Fn::GetAtt": [
-                    "PipelineArtifactsBucketAEA9A052",
-                    "Arn"
-                  ]
-                },
-                {
-                  "Fn::Join": [
-                    "",
-                    [
-                      {
-                        "Fn::GetAtt": [
-                          "PipelineArtifactsBucketAEA9A052",
-                          "Arn"
-                        ]
-                      },
-                      "/*"
-                    ]
-                  ]
-                }
-              ]
             }
           ],
           "Version": "2012-10-17"
