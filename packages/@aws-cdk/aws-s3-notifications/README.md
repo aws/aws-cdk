@@ -18,10 +18,10 @@ The following example shows how to send a notification to an SNS
 topic when an object is created in an S3 bucket:
 
 ```ts
-import * as s3n from '@aws-cdk/aws-s3-notifications';
+import * as sns from '@aws-cdk/aws-sns';
 
-const bucket = new s3.Bucket(stack, 'Bucket');
-const topic = new sns.Topic(stack, 'Topic');
+const bucket = new s3.Bucket(this, 'Bucket');
+const topic = new sns.Topic(this, 'Topic');
 
 bucket.addEventNotification(s3.EventType.OBJECT_CREATED_PUT, new s3n.SnsDestination(topic));
 ```
@@ -29,13 +29,13 @@ bucket.addEventNotification(s3.EventType.OBJECT_CREATED_PUT, new s3n.SnsDestinat
 The following example shows how to send a notification to a Lambda function when an object is created in an S3 bucket:
 
 ```ts
-import * as s3n from '@aws-cdk/aws-s3-notifications';
+import * as lambda from '@aws-cdk/aws-lambda';
 
-const bucket = new s3.Bucket(stack, 'Bucket');
-const fn = new Function(this, 'MyFunction', {
-  runtime: Runtime.NODEJS_12_X,
+const bucket = new s3.Bucket(this, 'Bucket');
+const fn = new lambda.Function(this, 'MyFunction', {
+  runtime: lambda.Runtime.NODEJS_12_X,
   handler: 'index.handler',
-  code: Code.fromAsset(path.join(__dirname, 'lambda-handler')),
+  code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
 });
 
 bucket.addEventNotification(s3.EventType.OBJECT_CREATED, new s3n.LambdaDestination(fn));
