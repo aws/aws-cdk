@@ -307,7 +307,7 @@ class LambdaFunctionHotswapOperation implements HotswapOperation {
  * Compress a string as a file, returning a promise for the zip buffer
  * https://github.com/archiverjs/node-archiver/issues/342
  */
-function zipString(fileName: string, rawString: string): Promise<Buffer> {
+export function zipString(fileName: string, rawString: string): Promise<Buffer> {
   return new Promise((resolve, reject) => {
     const buffs: Buffer[] = [];
 

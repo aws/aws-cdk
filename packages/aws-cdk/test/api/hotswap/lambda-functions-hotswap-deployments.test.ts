@@ -1,5 +1,6 @@
 import { Lambda } from 'aws-sdk';
 import * as setup from './hotswap-test-setup';
+import { zipString } from '../../../lib/api/hotswap/lambda-functions';
 
 let mockUpdateLambdaCode: (params: Lambda.Types.UpdateFunctionCodeRequest) => Lambda.Types.FunctionConfiguration;
 let mockTagResource: (params: Lambda.Types.TagResourceRequest) => {};
@@ -152,6 +153,7 @@ test('calls the updateLambdaCode() API when it receives only a code difference i
       },
     },
   });
+  const newCode = 'exports.handler = () => {return false}';
   const cdkStackArtifact = setup.cdkStackArtifactOf({
     template: {
       Resources: {
@@ -159,7 +161,7 @@ test('calls the updateLambdaCode() API when it receives only a code difference i
           Type: 'AWS::Lambda::Function',
           Properties: {
             Code: {
-              ZipFile: 'exports.handler = () => {return false}',
+              ZipFile: newCode,
             },
             Runtime: 'nodejs14.x',
             FunctionName: 'my-function',
@@ -176,7 +178,7 @@ test('calls the updateLambdaCode() API when it receives only a code difference i
   expect(deployStackResult).not.toBeUndefined();
   expect(mockUpdateLambdaCode).toHaveBeenCalledWith({
     FunctionName: 'my-function',
-    ZipFile: Buffer.from('UEsDBBQACAAIAAAAIQAAAAAAAAAAAAAAAAAIAAAAaW5kZXguanNLrSjILyop1stIzEvJSS1SsFXQ0FSwtVOoLkotKS3KU0hLzClOrQUAUEsHCLjDGtsoAAAAJgAAAFBLAQItAxQACAAIAAAAIQC4wxrbKAAAACYAAAAIAAAAAAAAAAAAIACkgQAAAABpbmRleC5qc1BLBQYAAAAAAQABADYAAABeAAAAAAA=', 'base64'),
+    ZipFile: await zipString('index.js', newCode),
   });
 });
 
@@ -196,6 +198,7 @@ test('calls the updateLambdaCode() API when it receives only a code difference i
       },
     },
   });
+  const newCode = 'def handler(event, context):\n  return False';
   const cdkStackArtifact = setup.cdkStackArtifactOf({
     template: {
       Resources: {
@@ -203,7 +206,7 @@ test('calls the updateLambdaCode() API when it receives only a code difference i
           Type: 'AWS::Lambda::Function',
           Properties: {
             Code: {
-              ZipFile: 'def handler(event, context):\n  return False',
+              ZipFile: newCode,
             },
             Runtime: 'python3.9',
             FunctionName: 'my-function',
@@ -220,7 +223,7 @@ test('calls the updateLambdaCode() API when it receives only a code difference i
   expect(deployStackResult).not.toBeUndefined();
   expect(mockUpdateLambdaCode).toHaveBeenCalledWith({
     FunctionName: 'my-function',
-    ZipFile: Buffer.from('UEsDBBQACAAIAAAAIQAAAAAAAAAAAAAAAAAIAAAAaW5kZXgucHlLSU1TyEjMS8lJLdJILUvNK9FRSM7PK0mtKNG04lJQKEotKS3KU3BLzClOBQBQSwcI3xfZry0AAAArAAAAUEsBAi0DFAAIAAgAAAAhAN8X2a8tAAAAKwAAAAgAAAAAAAAAAAAgAKSBAAAAAGluZGV4LnB5UEsFBgAAAAABAAEANgAAAGMAAAAAAA==', 'base64'),
+    ZipFile: await zipString('index.py', newCode),
   });
 });
 
