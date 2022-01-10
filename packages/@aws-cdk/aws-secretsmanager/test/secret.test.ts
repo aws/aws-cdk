@@ -206,7 +206,7 @@ describe('secretStringBeta1', () => {
 
   test('toToken allows referencing a construct attribute', () => {
     new secretsmanager.Secret(stack, 'Secret', {
-      secretStringBeta1: secretsmanager.SecretStringValueBeta1.fromToken(accessKey.secretAccessKey),
+      secretStringBeta1: secretsmanager.SecretStringValueBeta1.fromToken(accessKey.secretAccessKey.toString()),
     });
 
     expect(stack).toHaveResource('AWS::SecretsManager::Secret', {
@@ -217,7 +217,7 @@ describe('secretStringBeta1', () => {
 
   test('toToken allows referencing a construct attribute in nested JSON', () => {
     const secretString = secretsmanager.SecretStringValueBeta1.fromToken(JSON.stringify({
-      key: accessKey.secretAccessKey,
+      key: accessKey.secretAccessKey.toString(),
       username: 'myUser',
     }));
     new secretsmanager.Secret(stack, 'Secret', {
@@ -260,7 +260,7 @@ describe('secretStringBeta1', () => {
         generateStringKey: 'username',
         secretStringTemplate: JSON.stringify({ username: 'username' }),
       },
-      secretStringBeta1: secretsmanager.SecretStringValueBeta1.fromToken(accessKey.secretAccessKey),
+      secretStringBeta1: secretsmanager.SecretStringValueBeta1.fromToken(accessKey.secretAccessKey.toString()),
     })).toThrow(/Cannot specify both `generateSecretString` and `secretStringBeta1`./);
   });
 
