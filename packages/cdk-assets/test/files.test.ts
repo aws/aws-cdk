@@ -183,7 +183,7 @@ test('upload with server side encryption AES256 header', async () => {
   // We'll just have to assume the contents are correct
 });
 
-test('upload with server side encryption aws:kms header and key ID', async () => {
+test('upload with server side encryption aws:kms header and key id', async () => {
   const pub = new AssetPublishing(AssetManifest.fromPath('/simple/cdk.out'), { aws });
 
   aws.mockS3.getBucketEncryption = mockedApiResult({
