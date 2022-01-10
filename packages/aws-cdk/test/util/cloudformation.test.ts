@@ -21,7 +21,7 @@ beforeEach(async () => {
       .mockImplementation(() => ({ Stacks: [] })),
   };
   sdkProvider.stubCloudFormation(cfnMocks as any);
-  cfn = (await sdkProvider.forEnvironment()).cloudFormation();
+  cfn = (await sdkProvider.forEnvironment()).sdk.cloudFormation();
 });
 
 test('A non-existent stack pretends to have an empty template', async () => {

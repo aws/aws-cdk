@@ -15,7 +15,7 @@ export class VpcNetworkContextProviderPlugin implements ContextProviderPlugin {
     const region: string = args.region!;
 
     const options = { assumeRoleArn: args.lookupRoleArn };
-    const ec2 = (await this.aws.forEnvironment(cxapi.EnvironmentUtils.make(account, region), Mode.ForReading, options)).ec2();
+    const ec2 = (await this.aws.forEnvironment(cxapi.EnvironmentUtils.make(account, region), Mode.ForReading, options)).sdk.ec2();
 
     const vpcId = await this.findVpc(ec2, args);
 
