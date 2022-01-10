@@ -71,7 +71,8 @@ If no value is specified, the retention period is set to 35 days which is the ma
 Property `moveToColdStorageAfter` must not be specified because PITR does not support this option.
 This example defines an AWS Backup rule with PITR and a retention period set to 14 days:
 
-```ts fixture=with-plan
+```ts
+declare const plan: backup.BackupPlan;
 plan.addRule(new backup.BackupPlanRule({
   enableContinuousBackup: true,
   deleteAfter: Duration.days(14),
