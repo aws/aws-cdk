@@ -6,10 +6,12 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import { AsgCapacityProvider } from '@aws-cdk/aws-ecs';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as sqs from '@aws-cdk/aws-sqs';
-import { testDeprecated } from '@aws-cdk/cdk-build-tools';
+import { testDeprecated, testFutureBehavior } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as ecsPatterns from '../../lib';
+
+const flags = { [cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT]: true };
 
 test('test fargate queue worker service construct - with only required props', () => {
   // GIVEN
@@ -33,7 +35,6 @@ test('test fargate queue worker service construct - with only required props', (
 
   // THEN - QueueWorker is of FARGATE launch type, an SQS queue is created and all default properties are set.
   expect(stack).toHaveResource('AWS::ECS::Service', {
-    DesiredCount: 1,
     LaunchType: 'FARGATE',
   });
 
@@ -110,11 +111,9 @@ test('test fargate queue worker service construct - with only required props', (
   });
 });
 
-test('test fargate queue worker service construct - with remove default desiredCount feature flag', () => {
+testFutureBehavior('test fargate queue worker service construct - with remove default desiredCount feature flag', flags, cdk.App, (app) => {
   // GIVEN
-  const stack = new cdk.Stack();
-  stack.node.setContext(cxapi.ECS_REMOVE_DEFAULT_DESIRED_COUNT, true);
-
+  const stack = new cdk.Stack(app);
   const vpc = new ec2.Vpc(stack, 'VPC');
   const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
@@ -157,7 +156,6 @@ test('test fargate queue worker service construct - with optional props for queu
 
   // THEN - QueueWorker is of FARGATE launch type, an SQS queue is created and all default properties are set.
   expect(stack).toHaveResource('AWS::ECS::Service', {
-    DesiredCount: 1,
     LaunchType: 'FARGATE',
   });
 
@@ -353,7 +351,6 @@ testDeprecated('test Fargate queue worker service construct - with optional prop
     image: ecs.ContainerImage.fromRegistry('test'),
     command: ['-c', '4', 'amazon.com'],
     enableLogging: false,
-    desiredTaskCount: 2,
     environment: {
       TEST_ENVIRONMENT_VARIABLE1: 'test environment variable 1 value',
       TEST_ENVIRONMENT_VARIABLE2: 'test environment variable 2 value',
@@ -370,7 +367,6 @@ testDeprecated('test Fargate queue worker service construct - with optional prop
 
   // THEN - QueueWorker is of FARGATE launch type, an SQS queue is created and all optional properties are set.
   expect(stack).toHaveResource('AWS::ECS::Service', {
-    DesiredCount: 2,
     DeploymentConfiguration: {
       MinimumHealthyPercent: 60,
       MaximumPercent: 150,
