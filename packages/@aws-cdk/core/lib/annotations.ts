@@ -44,7 +44,7 @@ export class Annotations {
 
   /**
    * Adds an { "error": <message> } metadata entry to this construct.
-   * The toolkit will fail synthesis when errors are reported.
+   * The toolkit will fail deployment of any stack that has errors reported against it.
    * @param message The error message.
    */
   public addError(message: string) {
