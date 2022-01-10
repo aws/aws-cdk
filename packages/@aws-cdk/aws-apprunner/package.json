@@ -7,6 +7,13 @@
   "jsii": {
     "outdir": "dist",
     "projectReferences": true,
+    "metadata": {
+      "jsii": {
+        "rosetta": {
+          "strict": true
+        }
+      }
+    },
     "targets": {
       "dotnet": {
         "namespace": "Amazon.CDK.AWS.AppRunner",
