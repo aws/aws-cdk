@@ -1014,11 +1014,13 @@ new ec2.Instance(this, 'Instance', {
 It is also possible to encrypt the block devices. In this example we will create an customer managed key encrypted EBS-backed root device:
 
 ```ts
+import { Key } from '@aws-cdk/aws-kms';
+
 declare const vpc: ec2.Vpc;
 declare const instanceType: ec2.InstanceType;
 declare const machineImage: ec2.IMachineImage;
 
-const kmsKey = new kms.Key(this, 'KmsKey')
+const kmsKey = new Key(this, 'KmsKey')
 
 new ec2.Instance(this, 'Instance', {
   vpc,
