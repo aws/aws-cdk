@@ -1,5 +1,38 @@
 
 /**
+ * Information needed to access an IAM role created
+ * as part of the bootstrap process
+ */
+export interface BootstrapRole {
+  /**
+   * The ARN of the IAM role created as part of bootrapping
+   * e.g. lookupRoleArn
+   */
+  readonly arn: string;
+
+  /**
+   * External ID to use when assuming the bootstrap role
+   *
+   * @default - No external ID
+   */
+  readonly assumeRoleExternalId?: string;
+
+  /**
+   * Version of bootstrap stack required to use this role
+   *
+   * @default - No bootstrap stack required
+   */
+  readonly requiresBootstrapStackVersion?: number;
+
+  /**
+   * Name of SSM parameter with bootstrap stack version
+   *
+   * @default - Discover SSM parameter by reading stack
+   */
+  readonly bootstrapStackVersionSsmParameter?: string;
+}
+
+/**
  * Artifact properties for CloudFormation stacks.
  */
 export interface AwsCloudFormationStackProperties {
@@ -55,6 +88,13 @@ export interface AwsCloudFormationStackProperties {
    * @default - No role is passed (currently assumed role/credentials are used)
    */
   readonly cloudFormationExecutionRoleArn?: string;
+
+  /**
+   * The role to use to look up values from the target AWS account
+   *
+   * @default - No role is assumed (current credentials are used)
+   */
+  readonly lookupRole?: BootstrapRole;
 
   /**
    * If the stack template has already been included in the asset manifest, its asset URL
