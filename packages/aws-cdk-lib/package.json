@@ -39,7 +39,8 @@
     "stripDeprecated": true,
     "post": [
       "node ./scripts/verify-imports-resolve-same.js",
-      "node ./scripts/verify-imports-shielded.js"
+      "node ./scripts/verify-imports-shielded.js",
+      "/bin/bash ./scripts/minify-sources.sh"
     ]
   },
   "cdk-package": {
@@ -107,7 +108,7 @@
     "@balena/dockerignore": "^1.0.2",
     "case": "1.6.3",
     "fs-extra": "^9.1.0",
-    "ignore": "^5.1.9",
+    "ignore": "^5.2.0",
     "jsonschema": "^1.4.0",
     "minimatch": "^3.0.4",
     "punycode": "^2.1.1",
@@ -345,6 +346,7 @@
     "@types/fs-extra": "^8.1.2",
     "@types/node": "^10.17.60",
     "constructs": "^3.3.69",
+    "esbuild": "^0.14.9",
     "fs-extra": "^9.1.0",
     "ts-node": "^9.1.1",
     "typescript": "~3.8.3"
@@ -371,6 +373,9 @@
   },
   "exports": {
     ".": "./index.js",
+    "./package.json": "./package.json",
+    "./.jsii": "./.jsii",
+    "./.warnings.jsii.js": "./.warnings.jsii.js",
     "./alexa-ask": "./alexa-ask/index.js",
     "./assertions": "./assertions/index.js",
     "./assets": "./assets/index.js",
@@ -378,6 +383,7 @@
     "./aws-acmpca": "./aws-acmpca/index.js",
     "./aws-amazonmq": "./aws-amazonmq/index.js",
     "./aws-amplify": "./aws-amplify/index.js",
+    "./aws-amplifyuibuilder": "./aws-amplifyuibuilder/index.js",
     "./aws-apigateway": "./aws-apigateway/index.js",
     "./aws-apigatewayv2": "./aws-apigatewayv2/index.js",
     "./aws-appconfig": "./aws-appconfig/index.js",
@@ -456,6 +462,7 @@
     "./aws-events": "./aws-events/index.js",
     "./aws-events-targets": "./aws-events-targets/index.js",
     "./aws-eventschemas": "./aws-eventschemas/index.js",
+    "./aws-evidently": "./aws-evidently/index.js",
     "./aws-finspace": "./aws-finspace/index.js",
     "./aws-fis": "./aws-fis/index.js",
     "./aws-fms": "./aws-fms/index.js",
@@ -493,6 +500,7 @@
     "./aws-lambda-destinations": "./aws-lambda-destinations/index.js",
     "./aws-lambda-event-sources": "./aws-lambda-event-sources/index.js",
     "./aws-lambda-nodejs": "./aws-lambda-nodejs/index.js",
+    "./aws-lex": "./aws-lex/index.js",
     "./aws-licensemanager": "./aws-licensemanager/index.js",
     "./aws-lightsail": "./aws-lightsail/index.js",
     "./aws-location": "./aws-location/index.js",
@@ -526,7 +534,9 @@
     "./aws-ram": "./aws-ram/index.js",
     "./aws-rds": "./aws-rds/index.js",
     "./aws-redshift": "./aws-redshift/index.js",
+    "./aws-refactorspaces": "./aws-refactorspaces/index.js",
     "./aws-rekognition": "./aws-rekognition/index.js",
+    "./aws-resiliencehub": "./aws-resiliencehub/index.js",
     "./aws-resourcegroups": "./aws-resourcegroups/index.js",
     "./aws-robomaker": "./aws-robomaker/index.js",
     "./aws-route53": "./aws-route53/index.js",
@@ -535,6 +545,7 @@
     "./aws-route53recoverycontrol": "./aws-route53recoverycontrol/index.js",
     "./aws-route53recoveryreadiness": "./aws-route53recoveryreadiness/index.js",
     "./aws-route53resolver": "./aws-route53resolver/index.js",
+    "./aws-rum": "./aws-rum/index.js",
     "./aws-s3": "./aws-s3/index.js",
     "./aws-s3-assets": "./aws-s3-assets/index.js",
     "./aws-s3-deployment": "./aws-s3-deployment/index.js",
@@ -578,6 +589,9 @@
     "./lambda-layer-kubectl": "./lambda-layer-kubectl/index.js",
     "./lambda-layer-node-proxy-agent": "./lambda-layer-node-proxy-agent/index.js",
     "./pipelines": "./pipelines/index.js",
+    "./pipelines/package.json": "./pipelines/package.json",
+    "./pipelines/.jsii": "./pipelines/.jsii",
+    "./pipelines/.warnings.jsii.js": "./pipelines/.warnings.jsii.js",
     "./pipelines/lib/helpers-internal": "./pipelines/lib/helpers-internal/index.js",
     "./region-info": "./region-info/index.js"
   }
