@@ -48,7 +48,7 @@ new cdk.CfnOutput(stack, 'TESTACCESSKEYID', {
 });
 
 new cdk.CfnOutput(stack, 'TESTSECRETACCESSKEY', {
-  value: userAccessKey.secretAccessKey,
+  value: userAccessKey.secretAccessKey.toString(),
 });
 
 new cdk.CfnOutput(stack, 'TESTREGION', {
