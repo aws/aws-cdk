@@ -83,9 +83,9 @@ export abstract class Match {
   /**
    * Resolves a join and Matches it.
    */
-  public static resolveCfnIntrinsic(pattern: any, options:): Matcher {
-    return new ResolveJoin('resolveJoin', pattern);
-  } 
+  public static resolveCfnIntrinsic(pattern: any, options: ResolveCfnIntrinsicOptions = {}, mocks: ResolveCfnIntrinsicMocks = {}): Matcher {
+    return new ResolveCfnIntrinsic('resolveCfnIntrinsic', pattern, options, mocks);
+  }
 }
 
 /**
@@ -386,186 +386,271 @@ class AnyMatch extends Matcher {
   }
 }
 
-interface ResolveCfnIntrinsicMockResourceAttributes {
-  [attribute: string]: string | string[] | number | number []
+/**
+ * TODO Doc
+ */
+export interface ResolveCfnIntrinsicMockResourceAttributes {
+  readonly [attribute: string]: string | string[] | number | number [];
 }
 
-interface ResolveCfnIntrinsicMockResources {
-  [resourceLogicalId: string]: ResolveCfnIntrinsicMockResourceAttributes
+/**
+ * TODO Doc
+ */
+
+export interface ResolveCfnIntrinsicMockResources {
+  readonly [resourceLogicalId: string]: ResolveCfnIntrinsicMockResourceAttributes
 }
 
-interface ResolveCfnIntrinsicMockPseudoParameters {
+/**
+ * TODO Doc
+ */
+export interface ResolveCfnIntrinsicMockPseudoParameters {
   /**
    * Returns the AWS account ID of the account in which the stack is being created
-   * 
+   *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/pseudo-parameter-reference.html#cfn-pseudo-param-accountid
    * @default 123456789012
    */
-  "AWS::AccountId"?: string;
+  readonly awsAccountId?: string;
   /**
    * Returns the list of notification Amazon Resource Names (ARNs) for the current stack.
-   * 
+   *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/pseudo-parameter-reference.html#cfn-pseudo-param-notificationarns
    * @default []
    */
-  "AWS::NotificationARNs"?: string[];
+  readonly awsNotificationARNs?: string[];
   /**
-   * Returns the partition that the resource is in. For standard AWS Regions, the partition is aws. 
-   * For resources in other partitions, the partition is aws-partitionname. 
-   * For example, the partition for resources in the China (Beijing and Ningxia) Region is aws-cn 
+   * Returns the partition that the resource is in. For standard AWS Regions, the partition is aws.
+   * For resources in other partitions, the partition is aws-partitionname.
+   * For example, the partition for resources in the China (Beijing and Ningxia) Region is aws-cn
    * and the partition for resources in the AWS GovCloud (US-West) region is aws-us-gov.
-   * 
+   *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/pseudo-parameter-reference.html#cfn-pseudo-param-partition
    * @default aws
    */
-  "AWS::Partition"?: string;
+  readonly awsPartition?: string;
   /**
    * Returns a string representing the Region in which the encompassing resource is being created.
-   * 
+   *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/pseudo-parameter-reference.html#cfn-pseudo-param-region
    * @default us-east-1
    */
-  "AWS::Region"?: string;
+  readonly awsRegion?: string;
   /**
    * Returns the ID of the stack as specified with the aws cloudformation create-stack command.
-   * 
+   *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/pseudo-parameter-reference.html#cfn-pseudo-param-stackid
    * @default arn:aws:cloudformation:us-east-1:123456789012:stack/teststack/51af3dc0-da77-11e4-872e-1234567db123
    */
-  "AWS::StackId"?: string;
+  readonly awsStackId?: string;
   /**
    * Returns the name of the stack as specified with the aws cloudformation create-stack command.
-   * 
+   *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/pseudo-parameter-reference.html#cfn-pseudo-param-stackname
    * @default teststack
    */
-  "AWS::StackName"?: string;
+  readonly awsStackName?: string;
   /**
-   * Returns the suffix for a domain. The suffix is typically amazonaws.com, but might differ by Region. 
+   * Returns the suffix for a domain. The suffix is typically amazonaws.com, but might differ by Region.
    * For example, the suffix for the China (Beijing) Region is amazonaws.com.cn.
-   * 
+   *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/pseudo-parameter-reference.html#cfn-pseudo-param-urlsuffix
    * @default amazonaws.com
    */
-  "AWS::URLSuffix"?: string;
+  readonly awsURLSuffix?: string;
 }
 
+/**
+ * TODO Doc
+ */
 export interface ResolveCfnIntrinsicMocks {
   /**
    * Mock attribute values of cloudformation resources
-   * 
+   *
    * @default {}
    */
-  CfnResources?: ResolveCfnIntrinsicMockResources;
+  readonly cfnResources?: ResolveCfnIntrinsicMockResources;
   /**
    * Mock exports of other cloudformation stacks
-   * 
+   *
    * @default {}
    */
-  CfnExports?: ResolveCfnIntrinsicMockResourceAttributes;
+  readonly cfnExports?: ResolveCfnIntrinsicMockResourceAttributes;
   /**
    * Overwrite mock values of cloudformation pseudo parameters
    * @default - { see defaults of ResolveCfnIntrinsicMockPseudoParameters }
    */
-  CfnPseudoParameters?: ResolveCfnIntrinsicMockPseudoParameters
+  readonly cfnPseudoParameters?: ResolveCfnIntrinsicMockPseudoParameters
 }
 
-interface ResolveCfnIntrinsicOptions {
+/**
+ * TODO Doc
+ */
+export interface ResolveCfnIntrinsicOptions {
+  /**
+   * recursivele resolve intrinsic functions?
+   * @default true
+   */
   readonly recursive?: boolean;
+  /**
+   * resolve PseudoParameters?
+   *
+   * @default true
+   */
+  readonly resolvePseudoParameters?: boolean;
+  /**
+   * resolve Fn::Join?
+   *
+   * @default true
+   */
   readonly resolveFnJoin?: boolean;
+  /**
+   * resolve Fn::GetAtt?
+   *
+   * @default true
+   */
   readonly resolveFnGetAtt?: boolean;
+  /**
+   * resolve Fn::ImportValue?
+   *
+   * @default true
+   */
   readonly resolveFnImportValue?: boolean;
+  /**
+   * resolve Fn::Select?
+   *
+   * @default true
+   */
+  readonly resolveFnSelect?: boolean;
 }
 
 class ResolveCfnIntrinsic extends Matcher {
 
-  private readonly options: ResolveCfnIntrinsicOptions;
-  private readonly mocks: ResolveCfnIntrinsicMocks;
-  constructor(
-    public readonly name: string,
-    private readonly pattern: any,
-    options: ResolveCfnIntrinsicOptions = {},
-    mocks: ResolveCfnIntrinsicMocks = {},
-  ) {
-    super();
-    this.mocks = {
-      CfnExports: mocks.CfnExports ?? {},
-      CfnResources: mocks.CfnResources ?? {},
-      CfnPseudoParameters: {
-        "AWS::AccountId": mocks.CfnPseudoParameters?.['AWS::AccountId'] ?? '123456789012',
-        "AWS::NotificationARNs": mocks.CfnPseudoParameters?.['AWS::NotificationARNs'] ?? [],
-        "AWS::Partition": mocks.CfnPseudoParameters?.['AWS::Partition'] ?? 'aws',
-        "AWS::Region": mocks.CfnPseudoParameters?.['AWS::Region'] ?? 'us-east-1',
-        "AWS::StackId": mocks.CfnPseudoParameters?.['AWS::StackId'] ?? 'arn:aws:cloudformation:us-east-1:123456789012:stack/teststack/51af3dc0-da77-11e4-872e-1234567db123',
-        "AWS::StackName": mocks.CfnPseudoParameters?.['AWS::StackName'] ?? 'teststack',
-        "AWS::URLSuffix": mocks.CfnPseudoParameters?.['AWS::URLSuffix'] ?? 'amazonaws.com',
-      },
-    };
-    this.options = {
-      recursive: true ?? options.recursive,
-      resolveFnJoin: true ?? options.resolveFnJoin,
-      resolveFnGetAtt: true ?? options.resolveFnGetAtt,
-      resolveFnImportValue: true ?? options.resolveFnImportValue,
-    };
-  };
-
-  public static resolveIntrinsic(object: any, options: ResolveCfnIntrinsicOptions, mocks: ResolveCfnIntrinsicMocks): any {
+  private static resolveIntrinsic(object: any, options: ResolveCfnIntrinsicOptions, mocks: ResolveCfnIntrinsicMocks): any {
     if (typeof object === 'object') {
+      // Handle PseudoParameter
+      if ( options.resolvePseudoParameters && ['AWS::AccountId', 'AWS::NotificationARNs', 'AWS::Partition', 'AWS::Region', 'AWS::StackId', 'AWS::StackName', 'AWS::URLSuffix'].includes(object.Ref) ) {
+        const pseudoParameter: 'awsAccountId' | 'awsNotificationARNs' | 'awsPartition' | 'awsRegion' | 'awsStackId'| 'awsStackName'| 'awsURLSuffix' = object.Ref.replace('AWS::', 'aws');
+        return mocks.cfnPseudoParameters![pseudoParameter];
+      }
       // Handle { "Fn::Join" : [ "delimiter", [ comma-delimited list of values ] ] }
       if ( options.resolveFnJoin && object['Fn::Join'] instanceof Array && object['Fn::Join'].length == 2 && object['Fn::Join'][1] instanceof Array ) {
         const delimiter = object['Fn::Join'][0];
-        const valuesList = object['Fn::Join'][1];
+        let valuesList = object['Fn::Join'][1];
         if (options.recursive) {
-          return valuesList.map( (attr) => this.resolveIntrinsic(attr, options, mocks)).join(delimiter);
-        } else {
-          // TODO: maybe throw error, if there are objects inside the [ comma-delimited list of values ]
-          valuesList.join(delimiter);
+          valuesList = valuesList.map( (attr) => ResolveCfnIntrinsic.resolveIntrinsic(attr, options, mocks));
         }
+        valuesList.forEach( (value) => {
+          if ( typeof value === 'object' ) {
+            throw new Error('Fn::Join valueList are not allowed to contain objects');
+          }
+        });
+        if ( typeof delimiter !== 'string' ) {
+          throw new Error('Fn::Join delimiter must be a string value');
+        }
+        return valuesList.join(delimiter);
+      }
       // Handle { "Fn::GetAtt" : [ "logicalNameOfResource", "attributeName" ] }
-      if ( options.resolveFnGetAtt && object['Fn::GetAtt'] instanceof Array ) {
-        const logicalNameOfResource = object['Fn::GetAtt'][0];
-        const attributeName = object['Fn::GetAtt'][1];
-        if ( options.mocks !== undefined && options.mocks.CfnResources !== undefined && options.mocks?.CfnResources[logicalNameOfResource] !== undefined && options.mocks?.CfnResources[logicalNameOfResource][attributeName] !== undefined ) {
-          // Return the mock value
-          return options.mocks.CfnResources[logicalNameOfResource][attributeName];
-        } 
-        throw new Error(`Could not resolve { "Fn::GetAtt": [ "${logicalNameOfResource}", "${attributeName}" ] }`);
-      }
-      // Handle { "Fn::ImportValue" : sharedValueToImport }
-      if ( options.resolveFnImportValue && object['Fn::ImportValue'] instanceof object ) {
-        const sharedValueToImport = object['Fn::ImportValue'];
-        if ( options.mocks !== undefined && options.mocks.CfnExports !== undefined && options.mocks.CfnExports[sharedValueToImport] !== undefined ) {
-          return options.mocks.CfnExports[sharedValueToImport];
-        }
-        throw new Error(`Could not resolve { "Fn::ImportValue": "${sharedValueToImport}" }`);
-      }
+      //if ( options.resolveFnGetAtt && object['Fn::GetAtt'] instanceof Array ) {
+      //  const logicalNameOfResource = object['Fn::GetAtt'][0];
+      //  const attributeName = object['Fn::GetAtt'][1];
+      //  if ( mocks !== undefined &&
+      //    mocks.cfnResources !== undefined &&
+      //    mocks?.cfnResources[logicalNameOfResource] !== undefined &&
+      //    mocks?.cfnResources[logicalNameOfResource][attributeName] !== undefined ) {
+      //    // Return the mock value
+      //    return mocks.cfnResources[logicalNameOfResource][attributeName];
+      //  }
+      //  throw new Error(`Could not resolve { "Fn::GetAtt": [ "${logicalNameOfResource}", "${attributeName}" ] }`);
+      //}
+      //// Handle { "Fn::ImportValue" : sharedValueToImport }
+      //if ( options.resolveFnImportValue && object['Fn::ImportValue'] instanceof object ) {
+      //  const sharedValueToImport = object['Fn::ImportValue'];
+      //  if ( mocks !== undefined && mocks.cfnExports !== undefined && mocks.cfnExports[sharedValueToImport] !== undefined ) {
+      //    return mocks.cfnExports[sharedValueToImport];
+      //  }
+      //  throw new Error(`Could not resolve { "Fn::ImportValue": "${sharedValueToImport}" }`);
+      //}
       // Handle { "Fn::Sub" : [ String, { Var1Name: Var1Value, Var2Name: Var2Value } ] }
-      if ( object['Fn::Sub'] instanceof Array ) {
-      }
+      //if ( object['Fn::Sub'] instanceof Array ) {
+      //}
       // Handle { "Fn::FindInMap" : [ "MapName", "TopLevelKey", "SecondLevelKey"] }
-      if ( object['Fn::FindInMap'] instanceof Array ) {
-      }
+      //if ( object['Fn::FindInMap'] instanceof Array ) {
+      //}
       // Handle { "Fn::GetAZs" : "region" }
-      if ( object['Fn::GetAZs'] !== undefined ) {
-      }
-      // Handle { "Fn::Select" : [ index, listOfObjects ] }
-      if ( object['Fn::Select'] instanceof Array ) {
-      }
-      else {
-        for (var property in object) {
-          object[property] = this.resolveIntrinsic(object[property], options);
-        }
+      //if ( object['Fn::GetAZs'] !== undefined ) {
+      //}
+      // Handle { "Fn::Select" : [ index, [ list of objects ] ] }
+      //if ( options.resolveFnSelect && object['Fn::Select'] instanceof Array ) {
+      //  // Check if the select looks like expected
+      //  if ( typeof object['Fn::Select'][0] == 'number' && object['Fn::Select'][1] instanceof Array ) {
+      //    if ( options.recursive ) {
+      //      return ResolveCfnIntrinsic.resolveIntrinsic(object['Fn::Select'][1][object['Fn::Select'][0]], options, mocks);
+      //    }
+      //    return object['Fn::Select'][1][object['Fn::Select'][0]];
+      //  }
+      //}
+      for (var property in object) {
+        object[property] = ResolveCfnIntrinsic.resolveIntrinsic(object[property], options, mocks);
       }
     }
+    return object;
   }
+
+  private readonly options: ResolveCfnIntrinsicOptions;
+  private readonly mocks: ResolveCfnIntrinsicMocks;
+
+  constructor(
+    public readonly name: string,
+    private readonly pattern: any,
+    options: ResolveCfnIntrinsicOptions,
+    mocks: ResolveCfnIntrinsicMocks,
+  ) {
+    super();
+    this.mocks = {
+      cfnExports: mocks.cfnExports ?? {},
+      cfnResources: mocks.cfnResources ?? {},
+      cfnPseudoParameters: {
+        awsAccountId: mocks.cfnPseudoParameters?.awsAccountId ?? '123456789012',
+        awsNotificationARNs: mocks.cfnPseudoParameters?.awsNotificationARNs ?? [],
+        awsPartition: mocks.cfnPseudoParameters?.awsPartition ?? 'aws',
+        awsRegion: mocks.cfnPseudoParameters?.awsRegion ?? 'us-east-1',
+        awsStackId: mocks.cfnPseudoParameters?.awsStackId ?? 'arn:aws:cloudformation:us-east-1:123456789012:stack/teststack/51af3dc0-da77-11e4-872e-1234567db123',
+        awsStackName: mocks.cfnPseudoParameters?.awsStackName ?? 'teststack',
+        awsURLSuffix: mocks.cfnPseudoParameters?.awsURLSuffix ?? 'amazonaws.com',
+      },
+    };
+    this.options = {
+      recursive: options.recursive ?? true,
+      resolvePseudoParameters: options.resolvePseudoParameters ?? true,
+      resolveFnJoin: options.resolveFnJoin ?? true,
+      resolveFnGetAtt: options.resolveFnGetAtt ?? true,
+      resolveFnImportValue: options.resolveFnImportValue ?? true,
+      resolveFnSelect: options.resolveFnSelect ?? true,
+    };
+  };
 
   public test(actual: any): MatchResult {
     const result = new MatchResult(actual);
-    const parsed = resolveIntrinsic(actual, this.options) // actual is holding the contant of the actual subtree - resolveIntrinsic will be the "magic"
 
-    const matcher = Matcher.isMatcher(this.pattern) ? this.pattern : new LiteralMatch(this.name, this.pattern);
-    const innerResult = matcher.test(parsed);
-    result.compose(`(${this.name})`, innerResult);
+    try {
+      const parsed = ResolveCfnIntrinsic.resolveIntrinsic(actual, this.options, this.mocks);
+      // eslint-disable-next-line no-console
+      console.log(parsed);
+      const matcher = Matcher.isMatcher(this.pattern) ? this.pattern : new LiteralMatch(this.name, this.pattern);
+      const innerResult = matcher.test(parsed);
+      result.compose(`(${this.name})`, innerResult);
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.log(e);
+      result.recordFailure({
+        matcher: this,
+        path: [],
+        message: '' + e,
+      });
+    }
+
+
     return result;
   }
 }

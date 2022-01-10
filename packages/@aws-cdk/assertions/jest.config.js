@@ -7,5 +7,6 @@ module.exports = {
             branches: 60,
         },
     },
-    collectCoverageFrom: ['lib/**', '!lib/vendored/**']
+    collectCoverageFrom: ['lib/**', '!lib/vendored/**'],
+    testRunner: "jest-jasmine2"
 };
