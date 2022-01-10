@@ -8,9 +8,27 @@ import { debug, warning } from '../../logging';
 import { cached } from '../../util/functions';
 import { CredentialPlugins } from '../aws-auth/credential-plugins';
 import { Mode } from '../aws-auth/credentials';
+import { ToolkitInfo } from '../toolkit-info';
 import { AwsCliCompatible } from './awscli-compatible';
 import { ISDK, SDK } from './sdk';
 
+/**
+ * Replace the {ACCOUNT} and {REGION} placeholders in all strings found in a complex object.
+ */
+export async function replaceEnvPlaceholders<A extends { }>(object: A, env: cxapi.Environment, sdkProvider: SdkProvider): Promise<A> {
+  return cxapi.EnvironmentPlaceholders.replaceAsync(object, {
+    accountId: () => Promise.resolve(env.account),
+    region: () => Promise.resolve(env.region),
+    partition: async () => {
+      // There's no good way to get the partition!
+      // We should have had it already, except we don't.
+      //
+      // Best we can do is ask the "base credentials" for this environment for their partition. Cross-partition
+      // AssumeRole'ing will never work anyway, so this answer won't be wrong (it will just be slow!)
+      return (await sdkProvider.baseCredentialsPartition(env, Mode.ForReading)) ?? 'aws';
+    },
+  });
+}
 
 // Some configuration that can only be achieved by setting
 // environment variables.
@@ -105,6 +123,31 @@ export interface SdkForEnvironment {
 }
 
 /**
+ * SDK obtained by assuming the lookup role
+ * for a given environment
+ */
+export interface PreparedSdkWithLookupRoleForEnvironment {
+  /**
+   * The SDK for the given environment
+   */
+  readonly sdk: ISDK;
+
+  /**
+   * The resolved environment for the stack
+   * (no more 'unknown-account/unknown-region')
+   */
+  readonly resolvedEnvironment: cxapi.Environment;
+
+  /**
+   * Whether or not the assume role was successful.
+   * If the assume role was not successful (false)
+   * then that means that the 'sdk' returned contains
+   * the default credentials (not the assume role credentials)
+   */
+  readonly didAssumeRole: boolean;
+}
+
+/**
  * Creates instances of the AWS SDK appropriate for a given account/region.
  *
  * Behavior is as follows:
@@ -160,6 +203,59 @@ export class SdkProvider {
      */
     public readonly defaultRegion: string,
     private readonly sdkOptions: ConfigurationOptions = {}) {
+  }
+
+  /**
+   * Try to use the bootstrap lookupRole. There are two scenarios that are handled here
+   *  1. The lookup role may not exist (it was added in bootstrap stack version 7)
+   *  2. The lookup role may not have the correct permissions (ReadOnlyAccess was added in
+   *      bootstrap stack version 8)
+   *
+   * In the case of 1 (lookup role doesn't exist) `forEnvironment` will either:
+   *   1. Return the default credentials if the default credentials are for the stack account
+   *   2. Throw an error if the default credentials are not for the stack account.
+   *
+   * If we successfully assume the lookup role we then proceed to 2 and check whether the bootstrap
+   * stack version is valid. If it is not we throw an error which should be handled in the calling
+   * function (and fallback to use a different role, etc)
+   *
+   * If we do not successfully assume the lookup role, but do get back the default credentials
+   * then return those and note that we are returning the default credentials. The calling
+   * function can then decide to use them or fallback to another role.
+   */
+  public async prepareSdkWithLookupRoleFor(stack: cxapi.CloudFormationStackArtifact): Promise<PreparedSdkWithLookupRoleForEnvironment> {
+    const resolvedEnvironment = await this.resolveEnvironment(stack.environment);
+
+    // Substitute any placeholders with information about the current environment
+    const arns = await replaceEnvPlaceholders({
+      lookupRoleArn: stack.lookupRole?.arn,
+    }, resolvedEnvironment, this);
+
+    // try to assume the lookup role
+    const warningMessage = `Could not assume ${arns.lookupRoleArn}, proceeding anyway.`;
+    const upgradeMessage = `(To get rid of this warning, please upgrade to bootstrap version >= ${stack.lookupRole?.requiresBootstrapStackVersion})`;
+    try {
+      const stackSdk = await this.forEnvironment(resolvedEnvironment, Mode.ForReading, {
+        assumeRoleArn: arns.lookupRoleArn,
+        assumeRoleExternalId: stack.lookupRole?.assumeRoleExternalId,
+      });
+
+      // if we succeed in assuming the lookup role, make sure we have the correct bootstrap stack version
+      if (stackSdk.didAssumeRole && stack.lookupRole?.bootstrapStackVersionSsmParameter && stack.lookupRole.requiresBootstrapStackVersion) {
+        const version = await ToolkitInfo.versionFromSsmParameter(stackSdk.sdk, stack.lookupRole.bootstrapStackVersionSsmParameter);
+        if (version < stack.lookupRole.requiresBootstrapStackVersion) {
+          throw new Error(`Bootstrap stack version '${stack.lookupRole.requiresBootstrapStackVersion}' is required, found version '${version}'.`);
+        }
+      } else if (!stackSdk.didAssumeRole) {
+        warning(upgradeMessage);
+      }
+      return { ...stackSdk, resolvedEnvironment };
+    } catch (e) {
+      debug(e);
+      warning(warningMessage);
+      warning(upgradeMessage);
+      throw (e);
+    }
   }
 
   /**

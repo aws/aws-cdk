@@ -1,5 +1,5 @@
 import * as cxapi from '@aws-cdk/cx-api';
-import { Mode, SdkProvider, ISDK } from '../aws-auth';
+import { SdkProvider, ISDK } from '../aws-auth';
 import { EvaluateCloudFormationTemplate, LazyListStackResources } from '../evaluate-cloudformation-template';
 
 // resource types that have associated CloudWatch Log Groups that should _not_ be monitored
@@ -15,16 +15,15 @@ export async function findCloudWatchLogGroups(
   sdkProvider: SdkProvider,
   stackArtifact: cxapi.CloudFormationStackArtifact,
 ): Promise<{ env: cxapi.Environment, sdk: ISDK, logGroupNames: string[] }> {
-  // TODO: update this to use the lookup role once https://github.com/aws/aws-cdk/pull/18277 is merged
-  const resolvedEnv = await sdkProvider.resolveEnvironment(stackArtifact.environment);
-  const sdk = await sdkProvider.forEnvironment(resolvedEnv, Mode.ForReading);
+  // try to assume the lookup role and fallback to default credentials
+  const { sdk, resolvedEnvironment } = await sdkProvider.prepareSdkWithLookupRoleFor(stackArtifact);
 
   const listStackResources = new LazyListStackResources(sdk, stackArtifact.stackName);
   const evaluateCfnTemplate = new EvaluateCloudFormationTemplate({
     stackArtifact,
     parameters: {},
-    account: resolvedEnv.account,
-    region: resolvedEnv.region,
+    account: resolvedEnvironment.account,
+    region: resolvedEnvironment.region,
     partition: (await sdk.currentAccount()).partition,
     urlSuffix: sdk.getEndpointSuffix,
     listStackResources,
@@ -84,7 +83,7 @@ export async function findCloudWatchLogGroups(
   }
 
   return {
-    env: resolvedEnv,
+    env: resolvedEnvironment,
     sdk,
     logGroupNames,
   };
