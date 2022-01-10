@@ -216,7 +216,7 @@ export class SecretStringValueBeta1 {
    *     const secretValue = secretsmanager.SecretStringValueBeta1.fromToken(JSON.stringify({
    *       username: user.userName,
    *       database: 'foo',
-   *       password: accessKey.secretAccessKey
+   *       password: accessKey.secretAccessKey.toString(),
    *     }));
    *
    * Note that the value being a Token does *not* guarantee safety. For example, a Lazy-evaluated string
