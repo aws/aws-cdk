@@ -16,7 +16,7 @@ export class KeyContextProviderPlugin implements ContextProviderPlugin {
     const region: string = args.region!;
 
     const options = { assumeRoleArn: args.lookupRoleArn };
-    const kms = (await this.aws.forEnvironment(cxapi.EnvironmentUtils.make(account, region), Mode.ForReading, options)).kms();
+    const kms = (await this.aws.forEnvironment(cxapi.EnvironmentUtils.make(account, region), Mode.ForReading, options)).sdk.kms();
 
     const aliasListEntry = await this.findKey(kms, args);
 
