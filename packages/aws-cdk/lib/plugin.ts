@@ -1,5 +1,5 @@
 import { inspect } from 'util';
-import { green } from 'colors/safe';
+import * as chalk from 'chalk';
 
 import { CredentialProviderSource } from './api/aws-auth/credentials';
 import { registerContextProvider } from './context-providers';
@@ -67,12 +67,12 @@ export class PluginHost {
       const plugin = require(moduleSpec);
       /* eslint-enable */
       if (!isPlugin(plugin)) {
-        error(`Module ${green(moduleSpec)} is not a valid plug-in, or has an unsupported version.`);
+        error(`Module ${chalk.green(moduleSpec)} is not a valid plug-in, or has an unsupported version.`);
         throw new Error(`Module ${moduleSpec} does not define a valid plug-in.`);
       }
       if (plugin.init) { plugin.init(PluginHost.instance); }
     } catch (e) {
-      error(`Unable to load ${green(moduleSpec)}: ${e.stack}`);
+      error(`Unable to load ${chalk.green(moduleSpec)}: ${e.stack}`);
       throw new Error(`Unable to load plug-in: ${moduleSpec}`);
     }
 
