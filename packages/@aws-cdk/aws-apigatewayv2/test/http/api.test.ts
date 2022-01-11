@@ -1,11 +1,12 @@
 import { Match, Template } from '@aws-cdk/assertions';
+import { Certificate } from '@aws-cdk/aws-certificatemanager';
 import { Metric } from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import { Duration, Stack } from '@aws-cdk/core';
 import {
-  CorsHttpMethod,
+  CorsHttpMethod, DomainName,
   HttpApi, HttpAuthorizer, HttpIntegrationType, HttpMethod, HttpRouteAuthorizerBindOptions, HttpRouteAuthorizerConfig,
-  HttpRouteIntegrationBindOptions, HttpRouteIntegrationConfig, IHttpRouteAuthorizer, IHttpRouteIntegration, HttpNoneAuthorizer, PayloadFormatVersion,
+  HttpRouteIntegrationBindOptions, HttpRouteIntegrationConfig, IHttpRouteAuthorizer, HttpRouteIntegration, HttpNoneAuthorizer, PayloadFormatVersion,
 } from '../../lib';
 
 describe('HttpApi', () => {
@@ -127,7 +128,7 @@ describe('HttpApi', () => {
       new HttpApi(stack, 'HttpApi');
 
       Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Api', {
-        CorsConfiguration: Match.absentProperty(),
+        CorsConfiguration: Match.absent(),
       });
     });
 
@@ -267,9 +268,9 @@ describe('HttpApi', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::VpcLink', {
       Name: 'Link-1',
     });
-    expect(Template.fromStack(stack).findResources('AWS::ApiGatewayV2::VpcLink', {
+    expect(Object.keys(Template.fromStack(stack).findResources('AWS::ApiGatewayV2::VpcLink', {
       Name: 'Link-2',
-    }).length).toEqual(0);
+    })).length).toEqual(0);
   });
 
   test('apiEndpoint is exported', () => {
@@ -374,6 +375,27 @@ describe('HttpApi', () => {
     expect(() => api.apiEndpoint).toThrow(/apiEndpoint is not configured/);
   });
 
+  test('domainUrl can be retrieved for default stage', () => {
+    const stack = new Stack();
+    const dn = new DomainName(stack, 'DN', {
+      domainName: 'example.com',
+      certificate: Certificate.fromCertificateArn(stack, 'cert', 'arn:aws:acm:us-east-1:111111111111:certificate'),
+    });
+
+    const api = new HttpApi(stack, 'Api', {
+      createDefaultStage: true,
+      defaultDomainMapping: {
+        domainName: dn,
+      },
+    });
+
+    expect(stack.resolve(api.defaultStage?.domainUrl)).toEqual({
+      'Fn::Join': ['', [
+        'https://', { Ref: 'DNFDC76583' }, '/',
+      ]],
+    });
+  });
+
 
   describe('default authorization settings', () => {
     test('can add default authorizer', () => {
@@ -447,7 +469,7 @@ describe('HttpApi', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Route', {
         RouteKey: 'GET /chickens',
         AuthorizationType: 'NONE',
-        AuthorizerId: Match.absentProperty(),
+        AuthorizerId: Match.absent(),
       });
     });
 
@@ -469,7 +491,7 @@ describe('HttpApi', () => {
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Route', {
-        AuthorizationScopes: Match.absentProperty(),
+        AuthorizationScopes: Match.absent(),
       });
     });
 
@@ -509,7 +531,11 @@ describe('HttpApi', () => {
   });
 });
 
-class DummyRouteIntegration implements IHttpRouteIntegration {
+class DummyRouteIntegration extends HttpRouteIntegration {
+  constructor() {
+    super('DummyRouteIntegration');
+  }
+
   public bind(_: HttpRouteIntegrationBindOptions): HttpRouteIntegrationConfig {
     return {
       payloadFormatVersion: PayloadFormatVersion.VERSION_2_0,

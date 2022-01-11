@@ -4,6 +4,7 @@ import * as notifications from '../lib';
 import {
   FakeCodeBuild,
   FakeCodePipeline,
+  FakeCodeCommit,
   FakeSlackTarget,
   FakeSnsTopicTarget,
 } from './helpers';
@@ -26,6 +27,26 @@ describe('NotificationRule', () => {
     expect(stack).toHaveResourceLike('AWS::CodeStarNotifications::NotificationRule', {
       Resource: project.projectArn,
       EventTypeIds: ['codebuild-project-build-state-succeeded'],
+    });
+  });
+
+  test('created new notification rule from repository source', () => {
+    const repository = new FakeCodeCommit();
+
+    new notifications.NotificationRule(stack, 'MyNotificationRule', {
+      source: repository,
+      events: [
+        'codecommit-repository-pull-request-created',
+        'codecommit-repository-pull-request-merged',
+      ],
+    });
+
+    expect(stack).toHaveResourceLike('AWS::CodeStarNotifications::NotificationRule', {
+      Resource: repository.repositoryArn,
+      EventTypeIds: [
+        'codecommit-repository-pull-request-created',
+        'codecommit-repository-pull-request-merged',
+      ],
     });
   });
 

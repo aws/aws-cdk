@@ -77,7 +77,7 @@ async function parseCommandLineArguments() {
       .option('bootstrap-bucket-name', { type: 'string', alias: ['b', 'toolkit-bucket-name'], desc: 'The name of the CDK toolkit bucket; bucket will be created and must not exist', default: undefined })
       .option('bootstrap-kms-key-id', { type: 'string', desc: 'AWS KMS master key ID used for the SSE-KMS encryption', default: undefined, conflicts: 'bootstrap-customer-key' })
       .option('bootstrap-customer-key', { type: 'boolean', desc: 'Create a Customer Master Key (CMK) for the bootstrap bucket (you will be charged but can customize permissions, modern bootstrapping only)', default: undefined, conflicts: 'bootstrap-kms-key-id' })
-      .option('qualifier', { type: 'string', desc: 'Unique string to distinguish multiple bootstrap stacks', default: undefined })
+      .option('qualifier', { type: 'string', desc: 'String which must be unique for each bootstrap stack. You must configure it on your CDK app if you change this from the default.', default: undefined })
       .option('public-access-block-configuration', { type: 'boolean', desc: 'Block public access configuration on CDK toolkit bucket (enabled by default) ', default: undefined })
       .option('tags', { type: 'array', alias: 't', desc: 'Tags to add for the stack (KEY=VALUE)', nargs: 1, requiresArg: true, default: [] })
       .option('execute', { type: 'boolean', desc: 'Whether to execute ChangeSet (--no-execute will NOT execute the ChangeSet)', default: true })
@@ -104,7 +104,60 @@ async function parseCommandLineArguments() {
       .option('parameters', { type: 'array', desc: 'Additional parameters passed to CloudFormation at deploy time (STACK:KEY=VALUE)', nargs: 1, requiresArg: true, default: {} })
       .option('outputs-file', { type: 'string', alias: 'O', desc: 'Path to file where stack outputs will be written as JSON', requiresArg: true })
       .option('previous-parameters', { type: 'boolean', default: true, desc: 'Use previous values for existing parameters (you must specify all parameters on every deployment if this is disabled)' })
-      .option('progress', { type: 'string', choices: [StackActivityProgress.BAR, StackActivityProgress.EVENTS], desc: 'Display mode for stack activity events' }),
+      .option('progress', { type: 'string', choices: [StackActivityProgress.BAR, StackActivityProgress.EVENTS], desc: 'Display mode for stack activity events' })
+      .option('rollback', {
+        type: 'boolean',
+        desc: "Rollback stack to stable state on failure. Defaults to 'true', iterate more rapidly with --no-rollback or -R. " +
+          'Note: do **not** disable this flag for deployments with resource replacements, as that will always fail',
+      })
+      // Hack to get '-R' as an alias for '--no-rollback', suggested by: https://github.com/yargs/yargs/issues/1729
+      .option('R', { type: 'boolean', hidden: true }).middleware(yargsNegativeAlias('R', 'rollback'), true)
+      .option('hotswap', {
+        type: 'boolean',
+        desc: "Attempts to perform a 'hotswap' deployment, " +
+          'which skips CloudFormation and updates the resources directly, ' +
+          'and falls back to a full deployment if that is not possible. ' +
+          'Do not use this in production environments',
+      })
+      .option('watch', {
+        type: 'boolean',
+        desc: 'Continuously observe the project files, ' +
+          'and deploy the given stack(s) automatically when changes are detected. ' +
+          'Implies --hotswap by default',
+      }),
+    )
+    .command('watch [STACKS..]', "Shortcut for 'deploy --watch'", yargs => yargs
+      // I'm fairly certain none of these options, present for 'deploy', make sense for 'watch':
+      // .option('all', { type: 'boolean', default: false, desc: 'Deploy all available stacks' })
+      // .option('ci', { type: 'boolean', desc: 'Force CI detection', default: process.env.CI !== undefined })
+      // @deprecated(v2) -- tags are part of the Cloud Assembly and tags specified here will be overwritten on the next deployment
+      // .option('tags', { type: 'array', alias: 't', desc: 'Tags to add to the stack (KEY=VALUE), overrides tags from Cloud Assembly (deprecated)', nargs: 1, requiresArg: true })
+      // .option('execute', { type: 'boolean', desc: 'Whether to execute ChangeSet (--no-execute will NOT execute the ChangeSet)', default: true })
+      // These options, however, are more subtle - I could be convinced some of these should also be available for 'watch':
+      // .option('require-approval', { type: 'string', choices: [RequireApproval.Never, RequireApproval.AnyChange, RequireApproval.Broadening], desc: 'What security-sensitive changes need manual approval' })
+      // .option('parameters', { type: 'array', desc: 'Additional parameters passed to CloudFormation at deploy time (STACK:KEY=VALUE)', nargs: 1, requiresArg: true, default: {} })
+      // .option('previous-parameters', { type: 'boolean', default: true, desc: 'Use previous values for existing parameters (you must specify all parameters on every deployment if this is disabled)' })
+      // .option('outputs-file', { type: 'string', alias: 'O', desc: 'Path to file where stack outputs will be written as JSON', requiresArg: true })
+      // .option('notification-arns', { type: 'array', desc: 'ARNs of SNS topics that CloudFormation will notify with stack related events', nargs: 1, requiresArg: true })
+      .option('build-exclude', { type: 'array', alias: 'E', nargs: 1, desc: 'Do not rebuild asset with the given ID. Can be specified multiple times', default: [] })
+      .option('exclusively', { type: 'boolean', alias: 'e', desc: 'Only deploy requested stacks, don\'t include dependencies' })
+      .option('change-set-name', { type: 'string', desc: 'Name of the CloudFormation change set to create' })
+      .option('force', { alias: 'f', type: 'boolean', desc: 'Always deploy stack even if templates are identical', default: false })
+      .option('progress', { type: 'string', choices: [StackActivityProgress.BAR, StackActivityProgress.EVENTS], desc: 'Display mode for stack activity events' })
+      .option('rollback', {
+        type: 'boolean',
+        desc: "Rollback stack to stable state on failure. Defaults to 'true', iterate more rapidly with --no-rollback or -R. " +
+          'Note: do **not** disable this flag for deployments with resource replacements, as that will always fail',
+      })
+      // same hack for -R as above in 'deploy'
+      .option('R', { type: 'boolean', hidden: true }).middleware(yargsNegativeAlias('R', 'rollback'), true)
+      .option('hotswap', {
+        type: 'boolean',
+        desc: "Attempts to perform a 'hotswap' deployment, " +
+          'which skips CloudFormation and updates the resources directly, ' +
+          'and falls back to a full deployment if that is not possible. ' +
+          "'true' by default, use --no-hotswap to turn off",
+      }),
     )
     .command('destroy [STACKS..]', 'Destroy the stack(s) named STACKS', yargs => yargs
       .option('all', { type: 'boolean', default: false, desc: 'Destroy all available stacks' })
@@ -319,6 +372,28 @@ async function initCommandLine() {
           outputsFile: configuration.settings.get(['outputsFile']),
           progress: configuration.settings.get(['progress']),
           ci: args.ci,
+          rollback: configuration.settings.get(['rollback']),
+          hotswap: args.hotswap,
+          watch: args.watch,
+        });
+
+      case 'watch':
+        return cli.watch({
+          selector,
+          // parameters: parameterMap,
+          // usePreviousParameters: args['previous-parameters'],
+          // outputsFile: configuration.settings.get(['outputsFile']),
+          // requireApproval: configuration.settings.get(['requireApproval']),
+          // notificationArns: args.notificationArns,
+          exclusively: args.exclusively,
+          toolkitStackName,
+          roleArn: args.roleArn,
+          reuseAssets: args['build-exclude'],
+          changeSetName: args.changeSetName,
+          force: args.force,
+          progress: configuration.settings.get(['progress']),
+          rollback: configuration.settings.get(['rollback']),
+          hotswap: args.hotswap,
         });
 
       case 'destroy':
@@ -419,6 +494,15 @@ function isFeatureEnabled(configuration: Configuration, featureFlag: string) {
 function arrayFromYargs(xs: string[]): string[] | undefined {
   if (xs.length === 0) { return undefined; }
   return xs.filter(x => x !== '');
+}
+
+function yargsNegativeAlias<T extends { [x in S | L ]: boolean | undefined }, S extends string, L extends string>(shortName: S, longName: L) {
+  return (argv: T) => {
+    if (shortName in argv && argv[shortName]) {
+      (argv as any)[longName] = false;
+    }
+    return argv;
+  };
 }
 
 initCommandLine()

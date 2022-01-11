@@ -1,21 +1,20 @@
-import { expect, haveResourceLike } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
 import * as cdk from '@aws-cdk/core';
-import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as ecs from '../lib';
 
 let stack: cdk.Stack;
 let td: ecs.TaskDefinition;
 const image = ecs.ContainerImage.fromRegistry('test-image');
 
-nodeunitShim({
-  'setUp'(cb: () => void) {
+describe('json file log driver', () => {
+  beforeEach(() => {
     stack = new cdk.Stack();
     td = new ecs.Ec2TaskDefinition(stack, 'TaskDefinition');
 
-    cb();
-  },
 
-  'create a json-file log driver with options'(test: Test) {
+  });
+
+  test('create a json-file log driver with options', () => {
     // WHEN
     td.addContainer('Container', {
       image,
@@ -26,7 +25,7 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+    expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
         {
           LogConfiguration: {
@@ -37,12 +36,12 @@ nodeunitShim({
           },
         },
       ],
-    }));
+    });
 
-    test.done();
-  },
 
-  'create a json-file log driver without options'(test: Test) {
+  });
+
+  test('create a json-file log driver without options', () => {
     // WHEN
     td.addContainer('Container', {
       image,
@@ -51,7 +50,7 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+    expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
         {
           LogConfiguration: {
@@ -59,12 +58,12 @@ nodeunitShim({
           },
         },
       ],
-    }));
+    });
 
-    test.done();
-  },
 
-  'create a json-file log driver using json-file'(test: Test) {
+  });
+
+  test('create a json-file log driver using json-file', () => {
     // WHEN
     td.addContainer('Container', {
       image,
@@ -73,7 +72,7 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResourceLike('AWS::ECS::TaskDefinition', {
+    expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
       ContainerDefinitions: [
         {
           LogConfiguration: {
@@ -82,8 +81,8 @@ nodeunitShim({
           },
         },
       ],
-    }));
+    });
 
-    test.done();
-  },
+
+  });
 });

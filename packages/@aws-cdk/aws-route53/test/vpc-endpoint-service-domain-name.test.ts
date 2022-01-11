@@ -1,4 +1,3 @@
-/* eslint-disable jest/no-disabled-tests */
 import { expect as cdkExpect, haveResource, haveResourceLike, ResourcePart } from '@aws-cdk/assert-internal';
 import '@aws-cdk/assert-internal/jest';
 import { IVpcEndpointServiceLoadBalancer, VpcEndpointService } from '@aws-cdk/aws-ec2';
@@ -265,4 +264,20 @@ test('throws if creating multiple domains for a single service', () => {
       publicHostedZone: zone,
     });
   }).toThrow(/Cannot create a VpcEndpointServiceDomainName for service/);
+});
+
+
+test('endpoint domain name property equals input domain name', () => {
+  // GIVEN
+  vpces = new VpcEndpointService(stack, 'NameTest', {
+    vpcEndpointServiceLoadBalancers: [nlb],
+  });
+
+  const dn = new VpcEndpointServiceDomainName(stack, 'EndpointDomain', {
+    endpointService: vpces,
+    domainName: 'name-test.aws-cdk.dev',
+    publicHostedZone: zone,
+  });
+  expect(dn.domainName).toEqual('name-test.aws-cdk.dev');
+
 });

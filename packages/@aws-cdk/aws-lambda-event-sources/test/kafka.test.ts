@@ -240,7 +240,7 @@ describe('KafkaEventSource', () => {
             topic: kafkaTopic,
             startingPosition: lambda.StartingPosition.TRIM_HORIZON,
             vpc: vpc,
-            vpcSubnets: { subnetType: SubnetType.PRIVATE },
+            vpcSubnets: { subnetType: SubnetType.PRIVATE_WITH_NAT },
             securityGroup: sg,
           }));
 
@@ -300,7 +300,7 @@ describe('KafkaEventSource', () => {
             secret: secret,
             startingPosition: lambda.StartingPosition.TRIM_HORIZON,
             vpc: vpc,
-            vpcSubnets: { subnetType: SubnetType.PRIVATE },
+            vpcSubnets: { subnetType: SubnetType.PRIVATE_WITH_NAT },
             securityGroup: sg,
           }));
 
@@ -411,7 +411,7 @@ describe('KafkaEventSource', () => {
               secret: secret,
               startingPosition: lambda.StartingPosition.TRIM_HORIZON,
               vpc: vpc,
-              vpcSubnets: { subnetType: SubnetType.PRIVATE },
+              vpcSubnets: { subnetType: SubnetType.PRIVATE_WITH_NAT },
             }));
         }).toThrow(/securityGroup must be set/);
 
@@ -437,7 +437,7 @@ describe('KafkaEventSource', () => {
           secret: secret,
           startingPosition: lambda.StartingPosition.TRIM_HORIZON,
           vpc: vpc,
-          vpcSubnets: { subnetType: SubnetType.PRIVATE },
+          vpcSubnets: { subnetType: SubnetType.PRIVATE_WITH_NAT },
           securityGroup: sg,
           authenticationMethod: sources.AuthenticationMethod.SASL_SCRAM_256_AUTH,
         }));
@@ -452,9 +452,95 @@ describe('KafkaEventSource', () => {
           },
         ]),
       });
+    });
 
+    test('using BASIC_AUTH', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const fn = new TestFunction(stack, 'Fn');
+      const kafkaTopic = 'some-topic';
+      const secret = new Secret(stack, 'Secret', { secretName: 'AmazonMSK_KafkaSecret' });
+      const bootstrapServers = ['kafka-broker:9092'];
+      const sg = SecurityGroup.fromSecurityGroupId(stack, 'SecurityGroup', 'sg-0123456789');
+      const vpc = new Vpc(stack, 'Vpc');
 
+      // WHEN
+      fn.addEventSource(new sources.SelfManagedKafkaEventSource(
+        {
+          bootstrapServers: bootstrapServers,
+          topic: kafkaTopic,
+          secret: secret,
+          startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+          vpc: vpc,
+          vpcSubnets: { subnetType: SubnetType.PRIVATE_WITH_NAT },
+          securityGroup: sg,
+          authenticationMethod: sources.AuthenticationMethod.BASIC_AUTH,
+        }));
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+        SourceAccessConfigurations: Match.arrayWith([
+          {
+            Type: 'BASIC_AUTH',
+            URI: {
+              Ref: 'SecretA720EF05',
+            },
+          },
+        ]),
+      });
+    });
+
+    test('using CLIENT_CERTIFICATE_TLS_AUTH', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const fn = new TestFunction(stack, 'Fn');
+      const kafkaTopic = 'some-topic';
+      const secret = new Secret(stack, 'Secret', { secretName: 'AmazonMSK_KafkaSecret' });
+      const bootstrapServers = ['kafka-broker:9092'];
+      const sg = SecurityGroup.fromSecurityGroupId(stack, 'SecurityGroup', 'sg-0123456789');
+      const vpc = new Vpc(stack, 'Vpc');
+
+      // WHEN
+      fn.addEventSource(new sources.SelfManagedKafkaEventSource(
+        {
+          bootstrapServers: bootstrapServers,
+          topic: kafkaTopic,
+          secret: secret,
+          startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+          vpc: vpc,
+          vpcSubnets: { subnetType: SubnetType.PRIVATE_WITH_NAT },
+          securityGroup: sg,
+          authenticationMethod: sources.AuthenticationMethod.CLIENT_CERTIFICATE_TLS_AUTH,
+        }));
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+        SourceAccessConfigurations: Match.arrayWith([
+          {
+            Type: 'CLIENT_CERTIFICATE_TLS_AUTH',
+            URI: {
+              Ref: 'SecretA720EF05',
+            },
+          },
+        ]),
+      });
+    });
+
+    test('ManagedKafkaEventSource name conforms to construct id rules', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const fn = new TestFunction(stack, 'Fn');
+      const clusterArn = 'some-arn';
+      const kafkaTopic = 'some-topic';
+
+      const mskEventMapping = new sources.ManagedKafkaEventSource(
+        {
+          clusterArn,
+          topic: kafkaTopic,
+          startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+        });
+
+      // WHEN
+      fn.addEventSource(mskEventMapping);
+      expect(mskEventMapping.eventSourceMappingId).toBeDefined();
     });
   });
-
 });

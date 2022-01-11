@@ -1,6 +1,5 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import { anything, arrayWith, Capture, deepObjectLike, encodedJson, objectLike } from '@aws-cdk/assert-internal';
-import '@aws-cdk/assert-internal/jest';
+import { Capture, Match, Template } from '@aws-cdk/assertions';
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as ec2 from '@aws-cdk/aws-ec2';
@@ -9,7 +8,7 @@ import * as s3 from '@aws-cdk/aws-s3';
 import { Stack } from '@aws-cdk/core';
 import * as cdkp from '../../lib';
 import { CodePipelineSource, ShellStep } from '../../lib';
-import { AppWithOutput, behavior, LegacyTestGitHubNpmPipeline, ModernTestGitHubNpmPipeline, OneStackApp, PIPELINE_ENV, sortedByRunOrder, StageWithStackOutput, stringNoLongerThan, TestApp, TwoStackApp } from '../testhelpers';
+import { AppWithOutput, behavior, LegacyTestGitHubNpmPipeline, ModernTestGitHubNpmPipeline, OneStackApp, PIPELINE_ENV, sortByRunOrder, StageWithStackOutput, stringNoLongerThan, TestApp, TwoStackApp } from '../testhelpers';
 
 let app: TestApp;
 let pipelineStack: Stack;
@@ -37,17 +36,17 @@ behavior('can add manual approval after app', (suite) => {
     });
 
     // THEN
-    expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
-      Stages: arrayWith({
+    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+      Stages: Match.arrayWith([{
         Name: 'MyApp',
-        Actions: sortedByRunOrder([
-          objectLike({ Name: 'Stack1.Prepare' }),
-          objectLike({ Name: 'Stack1.Deploy' }),
-          objectLike({ Name: 'Stack2.Prepare' }),
-          objectLike({ Name: 'Stack2.Deploy' }),
-          objectLike({ Name: 'Approve' }),
+        Actions: sortByRunOrder([
+          Match.objectLike({ Name: 'Stack1.Prepare' }),
+          Match.objectLike({ Name: 'Stack1.Deploy' }),
+          Match.objectLike({ Name: 'Stack2.Prepare' }),
+          Match.objectLike({ Name: 'Stack2.Deploy' }),
+          Match.objectLike({ Name: 'Approve' }),
         ]),
-      }),
+      }]),
     });
   });
 });
@@ -69,19 +68,19 @@ behavior('can add steps to wave', (suite) => {
     wave.addStage(new OneStackApp(pipelineStack, 'Stage3'));
 
     // THEN
-    expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
-      Stages: arrayWith({
+    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+      Stages: Match.arrayWith([{
         Name: 'MyWave',
-        Actions: sortedByRunOrder([
-          objectLike({ Name: 'Stage1.Stack.Prepare' }),
-          objectLike({ Name: 'Stage2.Stack.Prepare' }),
-          objectLike({ Name: 'Stage3.Stack.Prepare' }),
-          objectLike({ Name: 'Stage1.Stack.Deploy' }),
-          objectLike({ Name: 'Stage2.Stack.Deploy' }),
-          objectLike({ Name: 'Stage3.Stack.Deploy' }),
-          objectLike({ Name: 'Approve' }),
+        Actions: sortByRunOrder([
+          Match.objectLike({ Name: 'Stage1.Stack.Prepare' }),
+          Match.objectLike({ Name: 'Stage2.Stack.Prepare' }),
+          Match.objectLike({ Name: 'Stage3.Stack.Prepare' }),
+          Match.objectLike({ Name: 'Stage1.Stack.Deploy' }),
+          Match.objectLike({ Name: 'Stage2.Stack.Deploy' }),
+          Match.objectLike({ Name: 'Stage3.Stack.Deploy' }),
+          Match.objectLike({ Name: 'Approve' }),
         ]),
-      }),
+      }]),
     });
   });
 });
@@ -104,37 +103,37 @@ behavior('script validation steps can use stack outputs as environment variables
     }));
 
     // THEN
-    expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
-      Stages: arrayWith({
+    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+      Stages: Match.arrayWith([{
         Name: 'MyApp',
-        Actions: arrayWith(
-          deepObjectLike({
-            Name: 'Stack.Deploy',
-            OutputArtifacts: [{ Name: anything() }],
-            Configuration: {
-              OutputFileName: 'outputs.json',
-            },
-          }),
-          deepObjectLike({
+        Actions: Match.arrayWith([
+          Match.objectLike({
             ActionTypeId: {
               Provider: 'CodeBuild',
             },
             Configuration: {
-              ProjectName: anything(),
+              ProjectName: Match.anyValue(),
             },
-            InputArtifacts: [{ Name: anything() }],
+            InputArtifacts: [{ Name: Match.anyValue() }],
             Name: 'TestOutput',
           }),
-        ),
-      }),
+          Match.objectLike({
+            Name: 'Stack.Deploy',
+            OutputArtifacts: [{ Name: Match.anyValue() }],
+            Configuration: {
+              OutputFileName: 'outputs.json',
+            },
+          }),
+        ]),
+      }]),
     });
 
-    expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
+    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
       Environment: {
         Image: 'aws/codebuild/standard:5.0',
       },
       Source: {
-        BuildSpec: encodedJson(deepObjectLike({
+        BuildSpec: Match.serializedJson(Match.objectLike({
           phases: {
             build: {
               commands: [
@@ -164,24 +163,24 @@ behavior('script validation steps can use stack outputs as environment variables
     });
 
     // THEN
-    expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
-      Stages: arrayWith({
+    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+      Stages: Match.arrayWith([{
         Name: 'Alpha',
-        Actions: arrayWith(
-          objectLike({
+        Actions: Match.arrayWith([
+          Match.objectLike({
             Name: 'Stack.Deploy',
             Namespace: 'AlphaStack6B3389FA',
           }),
-          objectLike({
+          Match.objectLike({
             Name: 'Approve',
-            Configuration: objectLike({
-              EnvironmentVariables: encodedJson([
+            Configuration: Match.objectLike({
+              EnvironmentVariables: Match.serializedJson([
                 { name: 'THE_OUTPUT', value: '#{AlphaStack6B3389FA.MyOutput}', type: 'PLAINTEXT' },
               ]),
             }),
           }),
-        ),
-      }),
+        ]),
+      }]),
     });
   });
 });
@@ -200,29 +199,29 @@ behavior('stackOutput generates names limited to 100 characters', (suite) => {
     }));
 
     // THEN
-    expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
-      Stages: arrayWith({
+    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+      Stages: Match.arrayWith([{
         Name: 'APreposterouslyLongAndComplicatedNameMadeUpJustToMakeItExceedTheLimitDefinedByCodeBuild',
-        Actions: arrayWith(
-          deepObjectLike({
+        Actions: Match.arrayWith([
+          Match.objectLike({
+            ActionTypeId: {
+              Provider: 'CodeBuild',
+            },
+            Configuration: {
+              ProjectName: Match.anyValue(),
+            },
+            InputArtifacts: [{ Name: stringNoLongerThan(100) }],
+            Name: 'TestOutput',
+          }),
+          Match.objectLike({
             Name: 'Stack.Deploy',
             OutputArtifacts: [{ Name: stringNoLongerThan(100) }],
             Configuration: {
               OutputFileName: 'outputs.json',
             },
           }),
-          deepObjectLike({
-            ActionTypeId: {
-              Provider: 'CodeBuild',
-            },
-            Configuration: {
-              ProjectName: anything(),
-            },
-            InputArtifacts: [{ Name: stringNoLongerThan(100) }],
-            Name: 'TestOutput',
-          }),
-        ),
-      }),
+        ]),
+      }]),
     });
   });
 
@@ -240,16 +239,16 @@ behavior('stackOutput generates names limited to 100 characters', (suite) => {
       ],
     });
 
-    expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
-      Stages: arrayWith({
+    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+      Stages: Match.arrayWith([{
         Name: 'APreposterouslyLongAndComplicatedNameMadeUpJustToMakeItExceedTheLimitDefinedByCodeBuild',
-        Actions: arrayWith(
-          deepObjectLike({
+        Actions: Match.arrayWith([
+          Match.objectLike({
             Name: 'Stack.Deploy',
             Namespace: stringNoLongerThan(100),
           }),
-        ),
-      }),
+        ]),
+      }]),
     });
   });
 });
@@ -283,35 +282,35 @@ behavior('validation step can run from scripts in source', (suite) => {
   });
 
   function THEN_codePipelineExpectation() {
-    const sourceArtifact = Capture.aString();
+    const sourceArtifact = new Capture();
 
-    expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
-      Stages: arrayWith({
+    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+      Stages: Match.arrayWith([{
         Name: 'Source',
         Actions: [
-          deepObjectLike({
-            OutputArtifacts: [{ Name: sourceArtifact.capture() }],
+          Match.objectLike({
+            OutputArtifacts: [{ Name: sourceArtifact }],
           }),
         ],
-      }),
+      }]),
     });
-    expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
-      Stages: arrayWith({
+    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+      Stages: Match.arrayWith([{
         Name: 'Test',
-        Actions: arrayWith(
-          deepObjectLike({
+        Actions: Match.arrayWith([
+          Match.objectLike({
             Name: 'UseSources',
-            InputArtifacts: [{ Name: sourceArtifact.capturedValue }],
+            InputArtifacts: [{ Name: sourceArtifact.asString() }],
           }),
-        ),
-      }),
+        ]),
+      }]),
     });
-    expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
+    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
       Environment: {
         Image: 'aws/codebuild/standard:5.0',
       },
       Source: {
-        BuildSpec: encodedJson(deepObjectLike({
+        BuildSpec: Match.serializedJson(Match.objectLike({
           phases: {
             build: {
               commands: [
@@ -361,40 +360,40 @@ behavior('can use additional output artifacts from build', (suite) => {
   });
 
   function THEN_codePipelineExpectation() {
-    const integArtifact = Capture.aString();
+    const integArtifact = new Capture();
 
-    expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
-      Stages: arrayWith({
+    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+      Stages: Match.arrayWith([{
         Name: 'Build',
         Actions: [
-          deepObjectLike({
+          Match.objectLike({
             Name: 'Synth',
             OutputArtifacts: [
-              { Name: anything() }, // It's not the first output
-              { Name: integArtifact.capture() },
+              { Name: Match.anyValue() }, // It's not the first output
+              { Name: integArtifact },
             ],
           }),
         ],
-      }),
+      }]),
     });
 
-    expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
-      Stages: arrayWith({
+    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+      Stages: Match.arrayWith([{
         Name: 'Test',
-        Actions: arrayWith(
-          deepObjectLike({
+        Actions: Match.arrayWith([
+          Match.objectLike({
             Name: 'UseBuildArtifact',
-            InputArtifacts: [{ Name: integArtifact.capturedValue }],
+            InputArtifacts: [{ Name: integArtifact.asString() }],
           }),
-        ),
-      }),
+        ]),
+      }]),
     });
-    expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
+    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
       Environment: {
         Image: 'aws/codebuild/standard:5.0',
       },
       Source: {
-        BuildSpec: encodedJson(deepObjectLike({
+        BuildSpec: Match.serializedJson(Match.objectLike({
           phases: {
             build: {
               commands: [
@@ -450,12 +449,12 @@ behavior('can add policy statements to shell script action', (suite) => {
 
   function THEN_codePipelineExpectation() {
     // THEN
-    expect(pipelineStack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(pipelineStack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
-        Statement: arrayWith(deepObjectLike({
+        Statement: Match.arrayWith([Match.objectLike({
           Action: 's3:Banana',
           Resource: '*',
-        })),
+        })]),
       },
     });
   }
@@ -464,7 +463,7 @@ behavior('can add policy statements to shell script action', (suite) => {
 behavior('can grant permissions to shell script action', (suite) => {
   let bucket: s3.IBucket;
   beforeEach(() => {
-    bucket = s3.Bucket.fromBucketArn(pipelineStack, 'Bucket', 'arn:aws:s3:::ThisParticularBucket');
+    bucket = s3.Bucket.fromBucketArn(pipelineStack, 'Bucket', 'arn:aws:s3:::this-particular-bucket');
   });
 
   suite.legacy(() => {
@@ -502,12 +501,12 @@ behavior('can grant permissions to shell script action', (suite) => {
 
   function THEN_codePipelineExpectation() {
     // THEN
-    expect(pipelineStack).toHaveResourceLike('AWS::IAM::Policy', {
+    Template.fromStack(pipelineStack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
-        Statement: arrayWith(deepObjectLike({
+        Statement: Match.arrayWith([Match.objectLike({
           Action: ['s3:GetObject*', 's3:GetBucket*', 's3:List*'],
-          Resource: ['arn:aws:s3:::ThisParticularBucket', 'arn:aws:s3:::ThisParticularBucket/*'],
-        })),
+          Resource: ['arn:aws:s3:::this-particular-bucket', 'arn:aws:s3:::this-particular-bucket/*'],
+        })]),
       },
     });
   }
@@ -562,7 +561,7 @@ behavior('can run shell script actions in a VPC', (suite) => {
   });
 
   function THEN_codePipelineExpectation() {
-    expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
+    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
       Environment: {
         Image: 'aws/codebuild/standard:5.0',
       },
@@ -583,7 +582,7 @@ behavior('can run shell script actions in a VPC', (suite) => {
         },
       },
       Source: {
-        BuildSpec: encodedJson(deepObjectLike({
+        BuildSpec: Match.serializedJson(Match.objectLike({
           phases: {
             build: {
               commands: [
@@ -636,17 +635,17 @@ behavior('can run shell script actions with a specific SecurityGroup', (suite) =
   });
 
   function THEN_codePipelineExpectation() {
-    expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
-      Stages: arrayWith({
+    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+      Stages: Match.arrayWith([{
         Name: 'Test',
-        Actions: arrayWith(
-          deepObjectLike({
+        Actions: Match.arrayWith([
+          Match.objectLike({
             Name: 'sgAction',
           }),
-        ),
-      }),
+        ]),
+      }]),
     });
-    expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
+    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
       VpcConfig: {
         SecurityGroupIds: [
           {
@@ -714,7 +713,7 @@ behavior('can run scripts with specified BuildEnvironment', (suite) => {
   });
 
   function THEN_codePipelineExpectation() {
-    expect(pipelineStack).toHaveResourceLike('AWS::CodeBuild::Project', {
+    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
       Environment: {
         Image: 'aws/codebuild/standard:2.0',
       },
@@ -755,14 +754,14 @@ behavior('can run scripts with magic environment variables', (suite) => {
 
   function THEN_codePipelineExpectation() {
     // THEN
-    expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
-      Stages: arrayWith({
+    Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+      Stages: Match.arrayWith([{
         Name: 'Test',
-        Actions: arrayWith(
-          objectLike({
+        Actions: Match.arrayWith([
+          Match.objectLike({
             Name: 'imageAction',
-            Configuration: objectLike({
-              EnvironmentVariables: encodedJson([
+            Configuration: Match.objectLike({
+              EnvironmentVariables: Match.serializedJson([
                 {
                   name: 'VERSION',
                   type: 'PLAINTEXT',
@@ -771,8 +770,8 @@ behavior('can run scripts with magic environment variables', (suite) => {
               ]),
             }),
           }),
-        ),
-      }),
+        ]),
+      }]),
     });
   }
 });

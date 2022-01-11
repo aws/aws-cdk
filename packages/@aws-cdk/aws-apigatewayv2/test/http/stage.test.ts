@@ -140,7 +140,11 @@ describe('HttpStage with domain mapping', () => {
       },
     });
 
-    expect(stage.domainUrl).toBe(`https://${domainName}/`);
+    expect(stack.resolve(stage.domainUrl)).toEqual({
+      'Fn::Join': ['', [
+        'https://', { Ref: 'DNFDC76583' }, '/',
+      ]],
+    });
   });
 
   test('domainUrl throws error if domainMapping is not configured', () => {

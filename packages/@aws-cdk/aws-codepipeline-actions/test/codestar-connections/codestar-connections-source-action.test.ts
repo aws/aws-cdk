@@ -1,22 +1,22 @@
-import { arrayWith, expect, haveResourceLike, objectLike } from '@aws-cdk/assert-internal';
+import '@aws-cdk/assert-internal/jest';
+import { arrayWith, objectLike, SynthUtils } from '@aws-cdk/assert-internal';
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import { Stack } from '@aws-cdk/core';
-import { nodeunitShim, Test } from 'nodeunit-shim';
 import * as cpactions from '../../lib';
 
 /* eslint-disable quote-props */
 
-nodeunitShim({
-  'CodeStar Connections source Action': {
-    'produces the correct configuration when added to a pipeline'(test: Test) {
+describe('CodeStar Connections source Action', () => {
+  describe('CodeStar Connections source Action', () => {
+    test('produces the correct configuration when added to a pipeline', () => {
       const stack = new Stack();
 
       createBitBucketAndCodeBuildPipeline(stack, {
         codeBuildCloneOutput: false,
       });
 
-      expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+      expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
         'Stages': [
           {
             'Name': 'Source',
@@ -44,20 +44,20 @@ nodeunitShim({
             ],
           },
         ],
-      }));
+      });
 
-      test.done();
-    },
-  },
 
-  'setting codeBuildCloneOutput=true adds permission to use the connection to the following CodeBuild Project'(test: Test) {
+    });
+  });
+
+  test('setting codeBuildCloneOutput=true adds permission to use the connection to the following CodeBuild Project', () => {
     const stack = new Stack();
 
     createBitBucketAndCodeBuildPipeline(stack, {
       codeBuildCloneOutput: true,
     });
 
-    expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
       'PolicyDocument': {
         'Statement': [
           {
@@ -78,19 +78,19 @@ nodeunitShim({
           },
         ],
       },
-    }));
+    });
 
-    test.done();
-  },
 
-  'grant s3 putObjectACL to the following CodeBuild Project'(test: Test) {
+  });
+
+  test('grant s3 putObjectACL to the following CodeBuild Project', () => {
     const stack = new Stack();
 
     createBitBucketAndCodeBuildPipeline(stack, {
       codeBuildCloneOutput: true,
     });
 
-    expect(stack).to(haveResourceLike('AWS::IAM::Policy', {
+    expect(stack).toHaveResourceLike('AWS::IAM::Policy', {
       'PolicyDocument': {
         'Statement': arrayWith(
           objectLike({
@@ -105,19 +105,19 @@ nodeunitShim({
           }),
         ),
       },
-    }));
+    });
 
-    test.done();
-  },
 
-  'setting triggerOnPush=false reflects in the configuration'(test: Test) {
+  });
+
+  test('setting triggerOnPush=false reflects in the configuration', () => {
     const stack = new Stack();
 
     createBitBucketAndCodeBuildPipeline(stack, {
       triggerOnPush: false,
     });
 
-    expect(stack).to(haveResourceLike('AWS::CodePipeline::Pipeline', {
+    expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
       'Stages': [
         {
           'Name': 'Source',
@@ -146,28 +146,141 @@ nodeunitShim({
           ],
         },
       ],
-    }));
+    });
 
-    test.done();
-  },
+  });
+
+  test('exposes variables', () => {
+    const stack = new Stack();
+    createBitBucketAndCodeBuildPipeline(stack);
+
+    expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+      'Stages': [
+        {
+          'Name': 'Source',
+        },
+        {
+          'Name': 'Build',
+          'Actions': [
+            {
+              'Name': 'CodeBuild',
+              'Configuration': {
+                'EnvironmentVariables': '[{"name":"CommitId","type":"PLAINTEXT","value":"#{Source_BitBucket_NS.CommitId}"}]',
+              },
+            },
+          ],
+        },
+      ],
+    });
+  });
+
+  test('exposes variables with custom namespace', () => {
+    const stack = new Stack();
+    createBitBucketAndCodeBuildPipeline(stack, {
+      variablesNamespace: 'kornicameister',
+    });
+
+    expect(stack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
+      'Stages': [
+        {
+          'Name': 'Source',
+          'Actions': [
+            {
+              'Name': 'BitBucket',
+              'Namespace': 'kornicameister',
+            },
+          ],
+        },
+        {
+          'Name': 'Build',
+          'Actions': [
+            {
+              'Name': 'CodeBuild',
+              'Configuration': {
+                'EnvironmentVariables': '[{"name":"CommitId","type":"PLAINTEXT","value":"#{kornicameister.CommitId}"}]',
+              },
+            },
+          ],
+        },
+      ],
+    });
+  });
+
+  test('fail if variable from unused action is referenced', () => {
+    const stack = new Stack();
+    const pipeline = createBitBucketAndCodeBuildPipeline(stack);
+
+    const unusedSourceOutput = new codepipeline.Artifact();
+    const unusedSourceAction = new cpactions.CodeStarConnectionsSourceAction({
+      actionName: 'UnusedBitBucket',
+      owner: 'aws',
+      repo: 'aws-cdk',
+      output: unusedSourceOutput,
+      connectionArn: 'arn:aws:codestar-connections:us-east-1:123456789012:connection/12345678-abcd-12ab-34cdef5678gh',
+    });
+    const unusedBuildAction = new cpactions.CodeBuildAction({
+      actionName: 'UnusedCodeBuild',
+      project: new codebuild.PipelineProject(stack, 'UnusedMyProject'),
+      input: unusedSourceOutput,
+      environmentVariables: {
+        CommitId: { value: unusedSourceAction.variables.commitId },
+      },
+    });
+    pipeline.stage('Build').addAction(unusedBuildAction);
+
+    expect(() => {
+      SynthUtils.synthesize(stack);
+    }).toThrow(/Cannot reference variables of action 'UnusedBitBucket', as that action was never added to a pipeline/);
+  });
+
+  test('fail if variable from unused action with custom namespace is referenced', () => {
+    const stack = new Stack();
+    const pipeline = createBitBucketAndCodeBuildPipeline(stack, {
+      variablesNamespace: 'kornicameister',
+    });
+    const unusedSourceOutput = new codepipeline.Artifact();
+    const unusedSourceAction = new cpactions.CodeStarConnectionsSourceAction({
+      actionName: 'UnusedBitBucket',
+      owner: 'aws',
+      repo: 'aws-cdk',
+      output: unusedSourceOutput,
+      connectionArn: 'arn:aws:codestar-connections:us-east-1:123456789012:connection/12345678-abcd-12ab-34cdef5678gh',
+      variablesNamespace: 'kornicameister',
+    });
+    const unusedBuildAction = new cpactions.CodeBuildAction({
+      actionName: 'UnusedCodeBuild',
+      project: new codebuild.PipelineProject(stack, 'UnusedProject'),
+      input: unusedSourceOutput,
+      environmentVariables: {
+        CommitId: { value: unusedSourceAction.variables.commitId },
+      },
+    });
+    pipeline.stage('Build').addAction(unusedBuildAction);
+
+    expect(() => {
+      SynthUtils.synthesize(stack);
+    }).toThrow(/Cannot reference variables of action 'UnusedBitBucket', as that action was never added to a pipeline/);
+  });
 });
 
-function createBitBucketAndCodeBuildPipeline(stack: Stack, props: Partial<cpactions.BitBucketSourceActionProps>): void {
+function createBitBucketAndCodeBuildPipeline(
+  stack: Stack, props: Partial<cpactions.CodeStarConnectionsSourceActionProps> = {},
+): codepipeline.Pipeline {
   const sourceOutput = new codepipeline.Artifact();
-  new codepipeline.Pipeline(stack, 'Pipeline', {
+  const sourceAction = new cpactions.CodeStarConnectionsSourceAction({
+    actionName: 'BitBucket',
+    owner: 'aws',
+    repo: 'aws-cdk',
+    output: sourceOutput,
+    connectionArn: 'arn:aws:codestar-connections:us-east-1:123456789012:connection/12345678-abcd-12ab-34cdef5678gh',
+    ...props,
+  });
+
+  return new codepipeline.Pipeline(stack, 'Pipeline', {
     stages: [
       {
         stageName: 'Source',
-        actions: [
-          new cpactions.CodeStarConnectionsSourceAction({
-            actionName: 'BitBucket',
-            owner: 'aws',
-            repo: 'aws-cdk',
-            output: sourceOutput,
-            connectionArn: 'arn:aws:codestar-connections:us-east-1:123456789012:connection/12345678-abcd-12ab-34cdef5678gh',
-            ...props,
-          }),
-        ],
+        actions: [sourceAction],
       },
       {
         stageName: 'Build',
@@ -177,6 +290,9 @@ function createBitBucketAndCodeBuildPipeline(stack: Stack, props: Partial<cpacti
             project: new codebuild.PipelineProject(stack, 'MyProject'),
             input: sourceOutput,
             outputs: [new codepipeline.Artifact()],
+            environmentVariables: {
+              CommitId: { value: sourceAction.variables.commitId },
+            },
           }),
         ],
       },

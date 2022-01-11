@@ -10,8 +10,8 @@ export interface AthenaGetQueryResultsProps extends sfn.TaskStateBaseProps {
   /**
    * Query that will be retrieved
    *
-   *  @example 'adfsaf-23trf23-f23rt23'
-  */
+   * Example value: `adfsaf-23trf23-f23rt23`
+   */
   readonly queryExecutionId: string;
 
   /**

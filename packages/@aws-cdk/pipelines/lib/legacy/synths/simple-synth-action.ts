@@ -19,6 +19,8 @@ import { Construct } from '@aws-cdk/core';
 
 /**
  * Configuration options for a SimpleSynth
+ *
+ * @deprecated This class is part of the old API. Use the API based on the `CodePipeline` class instead
  */
 export interface SimpleSynthOptions {
   /**
@@ -128,6 +130,8 @@ export interface SimpleSynthOptions {
 
 /**
  * Construction props for SimpleSynthAction
+ *
+ * @deprecated This class is part of the old API. Use the API based on the `CodePipeline` class instead
  */
 export interface SimpleSynthActionProps extends SimpleSynthOptions {
   /**
@@ -192,6 +196,8 @@ export interface SimpleSynthActionProps extends SimpleSynthOptions {
 
 /**
  * Specification of an additional artifact to generate
+ *
+ * @deprecated This class is part of the old API. Use the API based on the `CodePipeline` class instead
  */
 export interface AdditionalArtifact {
   /**
@@ -207,6 +213,8 @@ export interface AdditionalArtifact {
 
 /**
  * A standard synth with a generated buildspec
+ *
+ * @deprecated This class is part of the old API. Use the API based on the `CodePipeline` class instead
  */
 export class SimpleSynthAction implements codepipeline.IAction, iam.IGrantable {
 
@@ -479,6 +487,8 @@ export class SimpleSynthAction implements codepipeline.IAction, iam.IGrantable {
 
 /**
  * Options for a convention-based synth using NPM
+ *
+ * @deprecated This class is part of the old API. Use the API based on the `CodePipeline` class instead
  */
 export interface StandardNpmSynthOptions extends SimpleSynthOptions {
   /**
@@ -520,6 +530,8 @@ export interface StandardNpmSynthOptions extends SimpleSynthOptions {
 
 /**
  * Options for a convention-based synth using Yarn
+ *
+ * @deprecated This class is part of the old API. Use the API based on the `CodePipeline` class instead
  */
 export interface StandardYarnSynthOptions extends SimpleSynthOptions {
   /**

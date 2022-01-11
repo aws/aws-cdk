@@ -1,22 +1,23 @@
 import { Match } from '../match';
 import { Matcher, MatchResult } from '../matcher';
 
-export type MatchSuccess = { match: true, matches: any[] };
+export type MatchSuccess = { match: true, matches: {[key: string]: any} };
 export type MatchFailure = { match: false, closestResult?: MatchResult, analyzedCount: number };
 
 export function matchSection(section: any, props: any): MatchSuccess | MatchFailure {
   const matcher = Matcher.isMatcher(props) ? props : Match.objectLike(props);
   let closestResult: MatchResult | undefined = undefined;
-  let matching: any[] = [];
+  let matching: {[key: string]: any} = {};
   let count = 0;
 
   eachEntryInSection(
     section,
 
-    (entry) => {
+    (logicalId, entry) => {
       const result = matcher.test(entry);
+      result.finished();
       if (!result.hasFailed()) {
-        matching.push(entry);
+        matching[logicalId] = entry;
       } else {
         count++;
         if (closestResult === undefined || closestResult.failCount > result.failCount) {
@@ -25,8 +26,7 @@ export function matchSection(section: any, props: any): MatchSuccess | MatchFail
       }
     },
   );
-
-  if (matching.length > 0) {
+  if (Object.keys(matching).length > 0) {
     return { match: true, matches: matching };
   } else {
     return { match: false, closestResult, analyzedCount: count };
@@ -35,11 +35,11 @@ export function matchSection(section: any, props: any): MatchSuccess | MatchFail
 
 function eachEntryInSection(
   section: any,
-  cb: (entry: {[key: string]: any}) => void): void {
+  cb: (logicalId: string, entry: {[key: string]: any}) => void): void {
 
   for (const logicalId of Object.keys(section ?? {})) {
     const resource: { [key: string]: any } = section[logicalId];
-    cb(resource);
+    cb(logicalId, resource);
   }
 }
 
@@ -55,4 +55,13 @@ export function formatFailure(closestResult: MatchResult): string {
 function leftPad(x: string, indent: number = 2): string {
   const pad = ' '.repeat(indent);
   return pad + x.split('\n').join(`\n${pad}`);
+}
+
+export function filterLogicalId(section: { [key: string]: {} }, logicalId: string): { [key: string]: {} } {
+  // default signal for all logicalIds is '*'
+  if (logicalId === '*') return section;
+
+  return Object.entries(section ?? {})
+    .filter(([k, _]) => k === logicalId)
+    .reduce((agg, [k, v]) => { return { ...agg, [k]: v }; }, {});
 }

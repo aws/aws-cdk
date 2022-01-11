@@ -120,6 +120,53 @@
       "UpdateReplacePolicy": "Retain",
       "DeletionPolicy": "Retain"
     },
+    "MyPipelineArtifactsBucketPolicyDFDA675B": {
+      "Type": "AWS::S3::BucketPolicy",
+      "Properties": {
+        "Bucket": {
+          "Ref": "MyPipelineArtifactsBucket727923DD"
+        },
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "s3:*",
+              "Condition": {
+                "Bool": {
+                  "aws:SecureTransport": "false"
+                }
+              },
+              "Effect": "Deny",
+              "Principal": {
+                "AWS": "*"
+              },
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "MyPipelineArtifactsBucket727923DD",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "MyPipelineArtifactsBucket727923DD",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      }
+    },
     "MyPipelineRoleC0D47CA4": {
       "Type": "AWS::IAM::Role",
       "Properties": {

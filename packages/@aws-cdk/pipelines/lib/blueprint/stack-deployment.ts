@@ -4,6 +4,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import { AssetManifestReader, DockerImageManifestEntry, FileManifestEntry } from '../private/asset-manifest';
 import { isAssetManifest } from '../private/cloud-assembly-internals';
 import { AssetType } from './asset-type';
+import { Step } from './step';
 
 /**
  * Properties for a `StackDeployment`
@@ -182,7 +183,7 @@ export class StackDeployment {
    * This is `undefined` if the stack template is not published. Use the
    * `DefaultStackSynthesizer` to ensure it is.
    *
-   * @example https://bucket.s3.amazonaws.com/object/key
+   * Example value: `https://bucket.s3.amazonaws.com/object/key`
    */
   public readonly templateUrl?: string;
 
@@ -190,6 +191,21 @@ export class StackDeployment {
    * Template path on disk to CloudAssembly
    */
   public readonly absoluteTemplatePath: string;
+
+  /**
+   * Steps that take place before stack is prepared. If your pipeline engine disables 'prepareStep', then this will happen before stack deploys
+   */
+  public readonly pre: Step[] = [];
+
+  /**
+   * Steps that take place after stack is prepared but before stack deploys. Your pipeline engine may not disable `prepareStep`.
+   */
+  public readonly changeSet: Step[] = [];
+
+  /**
+   * Steps to execute after stack deploys
+   */
+  public readonly post: Step[] = [];
 
   private constructor(props: StackDeploymentProps) {
     this.stackArtifactId = props.stackArtifactId;
@@ -219,6 +235,18 @@ export class StackDeployment {
    */
   public addStackDependency(stackDeployment: StackDeployment) {
     this.stackDependencies.push(stackDeployment);
+  }
+
+  /**
+   * Adds steps to each phase of the stack
+   * @param pre steps executed before stack.prepare
+   * @param changeSet steps executed after stack.prepare and before stack.deploy
+   * @param post steps executed after stack.deploy
+   */
+  public addStackSteps(pre: Step[], changeSet: Step[], post: Step[]) {
+    this.pre.push(...pre);
+    this.changeSet.push(...changeSet);
+    this.post.push(...post);
   }
 }
 

@@ -1,4 +1,4 @@
-import { Token } from '@aws-cdk/core';
+import { Stack, Token } from '@aws-cdk/core';
 import { FileSet, IFileSetProducer } from './file-set';
 
 /**
@@ -11,6 +11,16 @@ import { FileSet, IFileSetProducer } from './file-set';
  * useful steps to add to your Pipeline
  */
 export abstract class Step implements IFileSetProducer {
+  /**
+   * Define a sequence of steps to be executed in order.
+   */
+  public static sequence(steps: Step[]): Step[] {
+    for (let i = 1; i < steps.length; i++) {
+      steps[i].addStepDependency(steps[i-1]);
+    }
+    return steps;
+  }
+
   /**
    * The list of FileSets consumed by this Step
    */
@@ -25,6 +35,8 @@ export abstract class Step implements IFileSetProducer {
 
   private _primaryOutput?: FileSet;
 
+  private _dependencies: Step[] = [];
+
   constructor(
     /** Identifier for this step */
     public readonly id: string) {
@@ -38,7 +50,7 @@ export abstract class Step implements IFileSetProducer {
    * Return the steps this step depends on, based on the FileSets it requires
    */
   public get dependencies(): Step[] {
-    return this.dependencyFileSets.map(f => f.producer);
+    return this.dependencyFileSets.map(f => f.producer).concat(this._dependencies);
   }
 
   /**
@@ -60,6 +72,13 @@ export abstract class Step implements IFileSetProducer {
   }
 
   /**
+   * Add a dependency on another step.
+   */
+  public addStepDependency(step: Step) {
+    this._dependencies.push(step);
+  }
+
+  /**
    * Add an additional FileSet to the set of file sets required by this step
    *
    * This will lead to a dependency on the producer of that file set.
@@ -74,4 +93,36 @@ export abstract class Step implements IFileSetProducer {
   protected configurePrimaryOutput(fs: FileSet) {
     this._primaryOutput = fs;
   }
+}
+
+/**
+ * Instructions for additional steps that are run at stack level
+ */
+export interface StackSteps {
+  /**
+   * The stack you want the steps to run in
+   */
+  readonly stack: Stack;
+
+  /**
+   * Steps that execute before stack is prepared
+   *
+   * @default - no additional steps
+   */
+  readonly pre?: Step[];
+
+  /**
+   * Steps that execute after stack is prepared but before stack is deployed
+   *
+   * @default - no additional steps
+   */
+  readonly changeSet?: Step[];
+
+  /**
+   * Steps that execute after stack is deployed
+   *
+   * @default - no additional steps
+   */
+  readonly post?: Step[];
+
 }

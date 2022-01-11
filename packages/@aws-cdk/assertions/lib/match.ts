@@ -1,5 +1,6 @@
 import { Matcher, MatchResult } from './matcher';
-import { ABSENT } from './vendored/assert';
+import { AbsentMatch } from './private/matchers/absent';
+import { getType } from './private/type';
 
 /**
  * Partial and special matching during template assertions.
@@ -8,8 +9,8 @@ export abstract class Match {
   /**
    * Use this matcher in the place of a field's value, if the field must not be present.
    */
-  public static absentProperty(): string {
-    return ABSENT;
+  public static absent(): Matcher {
+    return new AbsentMatch('absent');
   }
 
   /**
@@ -55,6 +56,29 @@ export abstract class Match {
   public static objectEquals(pattern: {[key: string]: any}): Matcher {
     return new ObjectMatch('objectEquals', pattern, { partial: false });
   }
+
+  /**
+   * Matches any target which does NOT follow the specified pattern.
+   * @param pattern the pattern to NOT match
+   */
+  public static not(pattern: any): Matcher {
+    return new NotMatch('not', pattern);
+  }
+
+  /**
+   * Matches any string-encoded JSON and applies the specified pattern after parsing it.
+   * @param pattern the pattern to match after parsing the encoded JSON.
+   */
+  public static serializedJson(pattern: any): Matcher {
+    return new SerializedJson('serializedJson', pattern);
+  }
+
+  /**
+   * Matches any non-null value at the target.
+   */
+  public static anyValue(): Matcher {
+    return new AnyMatch('anyValue');
+  }
 }
 
 /**
@@ -82,7 +106,6 @@ class LiteralMatch extends Matcher {
 
     super();
     this.partialObjects = options.partialObjects ?? false;
-    this.name = 'exact';
 
     if (Matcher.isMatcher(this.pattern)) {
       throw new Error('LiteralMatch cannot directly contain another matcher. ' +
@@ -101,16 +124,20 @@ class LiteralMatch extends Matcher {
 
     const result = new MatchResult(actual);
     if (typeof this.pattern !== typeof actual) {
-      result.push(this, [], `Expected type ${typeof this.pattern} but received ${getType(actual)}`);
+      result.recordFailure({
+        matcher: this,
+        path: [],
+        message: `Expected type ${typeof this.pattern} but received ${getType(actual)}`,
+      });
       return result;
     }
 
-    if (this.pattern === ABSENT) {
-      throw new Error('absentProperty() can only be used in an object matcher');
-    }
-
     if (actual !== this.pattern) {
-      result.push(this, [], `Expected ${this.pattern} but received ${actual}`);
+      result.recordFailure({
+        matcher: this,
+        path: [],
+        message: `Expected ${this.pattern} but received ${actual}`,
+      });
     }
 
     return result;
@@ -134,7 +161,7 @@ interface ArrayMatchOptions {
  * Match class that matches arrays.
  */
 class ArrayMatch extends Matcher {
-  private readonly partial: boolean;
+  private readonly subsequence: boolean;
 
   constructor(
     public readonly name: string,
@@ -142,20 +169,23 @@ class ArrayMatch extends Matcher {
     options: ArrayMatchOptions = {}) {
 
     super();
-    this.partial = options.subsequence ?? true;
-    if (this.partial) {
-      this.name = 'arrayWith';
-    } else {
-      this.name = 'arrayEquals';
-    }
+    this.subsequence = options.subsequence ?? true;
   }
 
   public test(actual: any): MatchResult {
     if (!Array.isArray(actual)) {
-      return new MatchResult(actual).push(this, [], `Expected type array but received ${getType(actual)}`);
+      return new MatchResult(actual).recordFailure({
+        matcher: this,
+        path: [],
+        message: `Expected type array but received ${getType(actual)}`,
+      });
     }
-    if (!this.partial && this.pattern.length !== actual.length) {
-      return new MatchResult(actual).push(this, [], `Expected array of length ${this.pattern.length} but received ${actual.length}`);
+    if (!this.subsequence && this.pattern.length !== actual.length) {
+      return new MatchResult(actual).recordFailure({
+        matcher: this,
+        path: [],
+        message: `Expected array of length ${this.pattern.length} but received ${actual.length}`,
+      });
     }
 
     let patternIdx = 0;
@@ -164,10 +194,17 @@ class ArrayMatch extends Matcher {
     const result = new MatchResult(actual);
     while (patternIdx < this.pattern.length && actualIdx < actual.length) {
       const patternElement = this.pattern[patternIdx];
+
       const matcher = Matcher.isMatcher(patternElement) ? patternElement : new LiteralMatch(this.name, patternElement);
+      const matcherName = matcher.name;
+      if (this.subsequence && (matcherName == 'absent' || matcherName == 'anyValue')) {
+        // array subsequence matcher is not compatible with anyValue() or absent() matcher. They don't make sense to be used together.
+        throw new Error(`The Matcher ${matcherName}() cannot be nested within arrayWith()`);
+      }
+
       const innerResult = matcher.test(actual[actualIdx]);
 
-      if (!this.partial || !innerResult.hasFailed()) {
+      if (!this.subsequence || !innerResult.hasFailed()) {
         result.compose(`[${actualIdx}]`, innerResult);
         patternIdx++;
         actualIdx++;
@@ -179,7 +216,11 @@ class ArrayMatch extends Matcher {
     for (; patternIdx < this.pattern.length; patternIdx++) {
       const pattern = this.pattern[patternIdx];
       const element = (Matcher.isMatcher(pattern) || typeof pattern === 'object') ? ' ' : ` [${pattern}] `;
-      result.push(this, [], `Missing element${element}at pattern index ${patternIdx}`);
+      result.recordFailure({
+        matcher: this,
+        path: [],
+        message: `Missing element${element}at pattern index ${patternIdx}`,
+      });
     }
 
     return result;
@@ -211,36 +252,37 @@ class ObjectMatch extends Matcher {
 
     super();
     this.partial = options.partial ?? true;
-    if (this.partial) {
-      this.name = 'objectLike';
-    } else {
-      this.name = 'objectEquals';
-    }
   }
 
   public test(actual: any): MatchResult {
     if (typeof actual !== 'object' || Array.isArray(actual)) {
-      return new MatchResult(actual).push(this, [], `Expected type object but received ${getType(actual)}`);
+      return new MatchResult(actual).recordFailure({
+        matcher: this,
+        path: [],
+        message: `Expected type object but received ${getType(actual)}`,
+      });
     }
 
     const result = new MatchResult(actual);
     if (!this.partial) {
       for (const a of Object.keys(actual)) {
         if (!(a in this.pattern)) {
-          result.push(this, [`/${a}`], 'Unexpected key');
+          result.recordFailure({
+            matcher: this,
+            path: [`/${a}`],
+            message: 'Unexpected key',
+          });
         }
       }
     }
 
     for (const [patternKey, patternVal] of Object.entries(this.pattern)) {
-      if (patternVal === ABSENT) {
-        if (patternKey in actual) {
-          result.push(this, [`/${patternKey}`], 'Key should be absent');
-        }
-        continue;
-      }
-      if (!(patternKey in actual)) {
-        result.push(this, [`/${patternKey}`], 'Missing key');
+      if (!(patternKey in actual) && !(patternVal instanceof AbsentMatch)) {
+        result.recordFailure({
+          matcher: this,
+          path: [`/${patternKey}`],
+          message: 'Missing key',
+        });
         continue;
       }
       const matcher = Matcher.isMatcher(patternVal) ?
@@ -254,6 +296,85 @@ class ObjectMatch extends Matcher {
   }
 }
 
-function getType(obj: any): string {
-  return Array.isArray(obj) ? 'array' : typeof obj;
+class SerializedJson extends Matcher {
+  constructor(
+    public readonly name: string,
+    private readonly pattern: any,
+  ) {
+    super();
+  };
+
+  public test(actual: any): MatchResult {
+    const result = new MatchResult(actual);
+    if (getType(actual) !== 'string') {
+      result.recordFailure({
+        matcher: this,
+        path: [],
+        message: `Expected JSON as a string but found ${getType(actual)}`,
+      });
+      return result;
+    }
+    let parsed;
+    try {
+      parsed = JSON.parse(actual);
+    } catch (err) {
+      if (err instanceof SyntaxError) {
+        result.recordFailure({
+          matcher: this,
+          path: [],
+          message: `Invalid JSON string: ${actual}`,
+        });
+        return result;
+      } else {
+        throw err;
+      }
+    }
+
+    const matcher = Matcher.isMatcher(this.pattern) ? this.pattern : new LiteralMatch(this.name, this.pattern);
+    const innerResult = matcher.test(parsed);
+    result.compose(`(${this.name})`, innerResult);
+    return result;
+  }
+}
+
+class NotMatch extends Matcher {
+  constructor(
+    public readonly name: string,
+    private readonly pattern: {[key: string]: any}) {
+
+    super();
+  }
+
+  public test(actual: any): MatchResult {
+    const matcher = Matcher.isMatcher(this.pattern) ? this.pattern : new LiteralMatch(this.name, this.pattern);
+
+    const innerResult = matcher.test(actual);
+    const result = new MatchResult(actual);
+    if (innerResult.failCount === 0) {
+      result.recordFailure({
+        matcher: this,
+        path: [],
+        message: `Found unexpected match: ${JSON.stringify(actual, undefined, 2)}`,
+      });
+    }
+    return result;
+  }
+}
+
+class AnyMatch extends Matcher {
+  constructor(public readonly name: string) {
+    super();
+  }
+
+  public test(actual: any): MatchResult {
+    const result = new MatchResult(actual);
+    if (actual == null) {
+      result.recordFailure({
+        matcher: this,
+        path: [],
+        message: 'Expected a value but found none',
+      });
+    }
+    return result;
+  }
 }

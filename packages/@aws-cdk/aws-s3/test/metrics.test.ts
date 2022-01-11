@@ -1,10 +1,9 @@
-import { expect, haveResource } from '@aws-cdk/assert-internal';
+import { Template } from '@aws-cdk/assertions';
 import { Stack } from '@aws-cdk/core';
-import { nodeunitShim, Test } from 'nodeunit-shim';
 import { Bucket } from '../lib';
 
-nodeunitShim({
-  'Can use addMetrics() to add a metric configuration'(test: Test) {
+describe('metrics', () => {
+  test('Can use addMetrics() to add a metric configuration', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -15,16 +14,14 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::S3::Bucket', {
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
       MetricsConfigurations: [{
         Id: 'test',
       }],
-    }));
+    });
+  });
 
-    test.done();
-  },
-
-  'Bucket with metrics on prefix'(test: Test) {
+  test('Bucket with metrics on prefix', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -37,17 +34,15 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::S3::Bucket', {
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
       MetricsConfigurations: [{
         Id: 'test',
         Prefix: 'prefix',
       }],
-    }));
+    });
+  });
 
-    test.done();
-  },
-
-  'Bucket with metrics on tag filter'(test: Test) {
+  test('Bucket with metrics on tag filter', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -60,7 +55,7 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::S3::Bucket', {
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
       MetricsConfigurations: [{
         Id: 'test',
         TagFilters: [
@@ -68,12 +63,10 @@ nodeunitShim({
           { Key: 'tagname2', Value: 'tagvalue2' },
         ],
       }],
-    }));
+    });
+  });
 
-    test.done();
-  },
-
-  'Bucket with multiple metric configurations'(test: Test) {
+  test('Bucket with multiple metric configurations', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -93,7 +86,7 @@ nodeunitShim({
     });
 
     // THEN
-    expect(stack).to(haveResource('AWS::S3::Bucket', {
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
       MetricsConfigurations: [{
         Id: 'test',
         TagFilters: [
@@ -105,8 +98,6 @@ nodeunitShim({
         Id: 'test2',
         Prefix: 'prefix',
       }],
-    }));
-
-    test.done();
-  },
+    });
+  });
 });

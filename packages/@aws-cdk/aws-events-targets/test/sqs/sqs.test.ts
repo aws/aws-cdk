@@ -180,3 +180,75 @@ test('fifo queues are synthesized correctly', () => {
     ],
   }));
 });
+
+test('dead letter queue is configured correctly', () => {
+  const stack = new Stack();
+  const queue = new sqs.Queue(stack, 'MyQueue', { fifo: true });
+  const deadLetterQueue = new sqs.Queue(stack, 'MyDeadLetterQueue');
+  const rule = new events.Rule(stack, 'MyRule', {
+    schedule: events.Schedule.rate(Duration.hours(1)),
+  });
+
+  // WHEN
+  rule.addTarget(new targets.SqsQueue(queue, {
+    deadLetterQueue,
+  }));
+
+  cdkExpect(stack).to(haveResource('AWS::Events::Rule', {
+    ScheduleExpression: 'rate(1 hour)',
+    State: 'ENABLED',
+    Targets: [
+      {
+        Arn: {
+          'Fn::GetAtt': [
+            'MyQueueE6CA6235',
+            'Arn',
+          ],
+        },
+        Id: 'Target0',
+        DeadLetterConfig: {
+          Arn: {
+            'Fn::GetAtt': [
+              'MyDeadLetterQueueD997968A',
+              'Arn',
+            ],
+          },
+        },
+      },
+    ],
+  }));
+});
+
+test('specifying retry policy', () => {
+  const stack = new Stack();
+  const queue = new sqs.Queue(stack, 'MyQueue', { fifo: true });
+  const rule = new events.Rule(stack, 'MyRule', {
+    schedule: events.Schedule.rate(Duration.hours(1)),
+  });
+
+  // WHEN
+  rule.addTarget(new targets.SqsQueue(queue, {
+    retryAttempts: 2,
+    maxEventAge: Duration.hours(2),
+  }));
+
+  cdkExpect(stack).to(haveResource('AWS::Events::Rule', {
+    ScheduleExpression: 'rate(1 hour)',
+    State: 'ENABLED',
+    Targets: [
+      {
+        Arn: {
+          'Fn::GetAtt': [
+            'MyQueueE6CA6235',
+            'Arn',
+          ],
+        },
+        Id: 'Target0',
+        RetryPolicy: {
+          MaximumEventAgeInSeconds: 7200,
+          MaximumRetryAttempts: 2,
+        },
+      },
+    ],
+  }));
+});

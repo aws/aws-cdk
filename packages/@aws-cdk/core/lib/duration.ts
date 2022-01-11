@@ -105,8 +105,17 @@ export class Duration {
    */
   public plus(rhs: Duration): Duration {
     const targetUnit = finestUnit(this.unit, rhs.unit);
-    const total = convert(this.amount, this.unit, targetUnit, {}) + convert(rhs.amount, rhs.unit, targetUnit, {});
-    return new Duration(total, targetUnit);
+    const res = convert(this.amount, this.unit, targetUnit, {}) + convert(rhs.amount, rhs.unit, targetUnit, {});
+    return new Duration(res, targetUnit);
+  }
+
+  /**
+   * Substract two Durations together
+   */
+  public minus(rhs: Duration): Duration {
+    const targetUnit = finestUnit(this.unit, rhs.unit);
+    const res = convert(this.amount, this.unit, targetUnit, {}) - convert(rhs.amount, rhs.unit, targetUnit, {});
+    return new Duration(res, targetUnit);
   }
 
   /**
@@ -211,17 +220,13 @@ export class Duration {
   }
 
   /**
-   * Returns a string representation of this `Duration` that is also a Token that cannot be successfully resolved. This
-   * protects users against inadvertently stringifying a `Duration` object, when they should have called one of the
-   * `to*` methods instead.
+   * Returns a string representation of this `Duration`
+   *
+   * This is is never the right function to use when you want to use the `Duration`
+   * object in a template. Use `toSeconds()`, `toMinutes()`, `toDays()`, etc. instead.
    */
   public toString(): string {
-    return Token.asString(
-      () => {
-        throw new Error('Duration.toString() was used, but .toSeconds, .toMinutes or .toDays should have been called instead');
-      },
-      { displayHint: `${this.amount} ${this.unit.label}` },
-    );
+    return `Duration.${this.unit.label}(${this.amount})`;
   }
 
   /**

@@ -3,13 +3,7 @@
 
 ---
 
-![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
-
-> The APIs of higher level constructs in this module are experimental and under active development.
-> They are subject to non-backward compatible changes or removal in any future version. These are
-> not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be
-> announced in the release notes. This means that while you may use them, you may need to update
-> your source code when upgrading to a newer version of this package.
+![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
 
@@ -21,20 +15,20 @@ The `Template` class includes a set of methods for writing assertions against Cl
 
 To create `Template` from CDK stack, start off with:
 
-```ts
+```ts nofixture
 import { Stack } from '@aws-cdk/core';
 import { Template } from '@aws-cdk/assertions';
 
-const stack = new Stack(...)
-...
-const assert = Template.fromStack(stack);
+const stack = new Stack(/* ... */);
+// ...
+const template = Template.fromStack(stack);
 ```
 
 Alternatively, assertions can be run on an existing CloudFormation template -
 
-```ts
-const template = fs.readFileSync('/path/to/template/file');
-const assert = Template.fromString(template);
+```ts fixture=init
+const templateJson = '{ "Resources": ... }'; /* The CloudFormation template as JSON serialized string. */
+const template = Template.fromString(templateJson);
 ```
 
 ## Full Template Match
@@ -43,26 +37,32 @@ The simplest assertion would be to assert that the template matches a given
 template.
 
 ```ts
-assert.templateMatches({
+template.templateMatches({
   Resources: {
-    Type: 'Foo::Bar',
-    Properties: {
-      Baz: 'Qux',
+    BarLogicalId: {
+      Type: 'Foo::Bar',
+      Properties: {
+        Baz: 'Qux',
+      },
     },
   },
 });
 ```
 
-The `Template` class also supports [snapshot
-testing](https://jestjs.io/docs/snapshot-testing) using jest.
+By default, the `templateMatches()` API will use the an 'object-like' comparison,
+which means that it will allow for the actual template to be a superset of the
+given expectation. See [Special Matchers](#special-matchers) for details on how
+to change this.
 
-```ts
-// using jest
-expect(Template.fromStack(stack)).toMatchSnapshot();
-```
+Snapshot testing is a common technique to store a snapshot of the output and
+compare it during future changes. Since CloudFormation templates are human readable,
+they are a good target for snapshot testing.
 
-For non-javascript languages, the `toJSON()` can be called to get an in-memory object
-of the template.
+The `toJSON()` method on the `Template` can be used to produce a well formatted JSON
+of the CloudFormation template that can be used as a snapshot.
+
+See [Snapshot Testing in Jest](https://jestjs.io/docs/snapshot-testing) and [Snapshot
+Testing in Java](https://json-snapshot.github.io/).
 
 ## Counting Resources
 
@@ -70,7 +70,7 @@ This module allows asserting the number of resources of a specific type found
 in a template.
 
 ```ts
-assert.resourceCountIs('Foo::Bar', 2);
+template.resourceCountIs('Foo::Bar', 2);
 ```
 
 ## Resource Matching & Retrieval
@@ -82,7 +82,7 @@ The following code asserts that the `Properties` section of a resource of type
 `Foo::Bar` contains the specified properties -
 
 ```ts
-assert.hasResourceProperties('Foo::Bar', {
+template.hasResourceProperties('Foo::Bar', {
   Foo: 'Bar',
   Baz: 5,
   Qux: [ 'Waldo', 'Fred' ],
@@ -93,7 +93,7 @@ Alternatively, if you would like to assert the entire resource definition, you
 can use the `hasResource()` API.
 
 ```ts
-assert.hasResource('Foo::Bar', {
+template.hasResource('Foo::Bar', {
   Properties: { Foo: 'Bar' },
   DependsOn: [ 'Waldo', 'Fred' ],
 });
@@ -107,22 +107,45 @@ By default, the `hasResource()` and `hasResourceProperties()` APIs perform deep
 partial object matching. This behavior can be configured using matchers.
 See subsequent section on [special matchers](#special-matchers).
 
-## Other Sections
+## Output and Mapping sections
 
-Similar to the `hasResource()` and `findResources()`, we have equivalent methods
-to check and find other sections of the CloudFormation resources.
+The module allows you to assert that the CloudFormation template contains an Output
+that matches specific properties. The following code asserts that a template contains
+an Output with a `logicalId` of `Foo` and the specified properties -
 
-* Outputs - `hasOutput()` and `findOutputs()`
-* Mapping - `hasMapping()` and `findMappings()`
+```ts
+const expected = { 
+  Value: 'Bar',
+  Export: { Name: 'ExportBaz' }, 
+};
+template.hasOutput('Foo', expected);
+```
 
-All of the defaults and behaviour documented for `hasResource()` and
-`findResources()` apply to these methods.
+If you want to match against all Outputs in the template, use `*` as the `logicalId`.
+
+```ts
+template.hasOutput('*', {
+  Value: 'Bar',
+  Export: { Name: 'ExportBaz' },
+});
+```
+
+`findOutputs()` will return a set of outputs that match the `logicalId` and `props`,
+and you can use the `'*'` special case as well.
+
+```ts
+const result = template.findOutputs('*', { Value: 'Fred' });
+expect(result.Foo).toEqual({ Value: 'Fred', Description: 'FooFred' });
+expect(result.Bar).toEqual({ Value: 'Fred', Description: 'BarFred' });
+```
+
+The APIs `hasMapping()` and `findMappings()` provide similar functionalities.
 
 ## Special Matchers
 
-The expectation provided to the `hasXXX()` and `findXXX()` methods, besides
-carrying literal values, as seen in the above examples, also accept special
-matchers. 
+The expectation provided to the `hasXxx()`, `findXxx()` and `templateMatches()`
+APIs, besides carrying literal values, as seen in the above examples, also accept
+special matchers. 
 
 They are available as part of the `Match` class.
 
@@ -151,25 +174,27 @@ level, the list of keys in the target is a subset of the provided pattern.
 // }
 
 // The following will NOT throw an assertion error
-assert.hasResourceProperties('Foo::Bar', {
+template.hasResourceProperties('Foo::Bar', {
   Fred: Match.objectLike({
     Wobble: 'Flob',
   }),
 });
 
 // The following will throw an assertion error
-assert.hasResourceProperties('Foo::Bar', {
+template.hasResourceProperties('Foo::Bar', {
   Fred: Match.objectLike({
     Brew: 'Coffee',
-  })
+  }),
 });
 ```
 
 The `Match.objectEquals()` API can be used to assert a target as a deep exact
 match.
 
-In addition, the `Match.absentProperty()` can be used to specify that a specific
-property should not exist on the target. This can be used within `Match.objectLike()`
+### Presence and Absence
+
+The `Match.absent()` matcher can be used to specify that a specific
+value should not exist on the target. This can be used within `Match.objectLike()`
 or outside of any matchers.
 
 ```ts
@@ -188,17 +213,53 @@ or outside of any matchers.
 // }
 
 // The following will NOT throw an assertion error
-assert.hasResourceProperties('Foo::Bar', {
+template.hasResourceProperties('Foo::Bar', {
   Fred: Match.objectLike({
-    Bob: Match.absentProperty(),
+    Bob: Match.absent(),
   }),
 });
 
 // The following will throw an assertion error
-assert.hasResourceProperties('Foo::Bar', {
+template.hasResourceProperties('Foo::Bar', {
   Fred: Match.objectLike({
-    Wobble: Match.absentProperty(),
-  })
+    Wobble: Match.absent(),
+  }),
+});
+```
+
+The `Match.anyValue()` matcher can be used to specify that a specific value should be found
+at the location. This matcher will fail if when the target location has null-ish values
+(i.e., `null` or `undefined`).
+
+This matcher can be combined with any of the other matchers.
+
+```ts
+// Given a template -
+// {
+//   "Resources": {
+//     "MyBar": {
+//       "Type": "Foo::Bar",
+//       "Properties": {
+//         "Fred": {
+//           "Wobble": ["Flob", "Flib"],
+//         }
+//       }
+//     }
+//   }
+// }
+
+// The following will NOT throw an assertion error
+template.hasResourceProperties('Foo::Bar', {
+  Fred: {
+    Wobble: [ Match.anyValue(), "Flip" ],
+  },
+});
+
+// The following will throw an assertion error
+template.hasResourceProperties('Foo::Bar', {
+  Fred: {
+    Wimble: Match.anyValue(),
+  },
 });
 ```
 
@@ -222,14 +283,14 @@ This API will perform subset match on the target.
 // }
 
 // The following will NOT throw an assertion error
-assert.hasResourceProperties('Foo::Bar', {
+template.hasResourceProperties('Foo::Bar', {
   Fred: Match.arrayWith(['Flob']),
 });
 
 // The following will throw an assertion error
-assert.hasResourceProperties('Foo::Bar', Match.objectLike({
-  Fred: Match.arrayWith(['Wobble']);
-}});
+template.hasResourceProperties('Foo::Bar', Match.objectLike({
+  Fred: Match.arrayWith(['Wobble']),
+}));
 ```
 
 *Note:* The list of items in the pattern array should be in order as they appear in the
@@ -238,28 +299,167 @@ target array. Out of order will be recorded as a match failure.
 Alternatively, the `Match.arrayEquals()` API can be used to assert that the target is
 exactly equal to the pattern array.
 
-## Strongly typed languages
+### Not Matcher
 
-Some of the APIs documented above, such as `templateMatches()` and
-`hasResourceProperties()` accept fluently an arbitrary JSON (like) structure 
-its parameter.
-This fluency is available only in dynamically typed languages like javascript
-and Python.
+The not matcher inverts the search pattern and matches all patterns in the path that does
+not match the pattern specified.
 
-For strongly typed languages, like Java, you can achieve similar fluency using
-any popular JSON deserializer. The following Java example uses `Gson` -
+```ts
+// Given a template -
+// {
+//   "Resources": {
+//     "MyBar": {
+//       "Type": "Foo::Bar",
+//       "Properties": {
+//         "Fred": ["Flob", "Cat"]
+//       }
+//     }
+//   }
+// }
 
-```java
-// In Java, using text blocks and Gson
-import com.google.gson.Gson;
+// The following will NOT throw an assertion error
+template.hasResourceProperties('Foo::Bar', {
+  Fred: Match.not(['Flob']),
+});
 
-String json = """
-  {
-    "Foo": "Bar",
-    "Baz": 5,
-    "Qux": [ "Waldo", "Fred" ],
-  } """;
+// The following will throw an assertion error
+template.hasResourceProperties('Foo::Bar', Match.objectLike({
+  Fred: Match.not(['Flob', 'Cat']),
+}));
+```
 
-Map expected = new Gson().fromJson(json, Map.class);
-assert.hasResourceProperties("Foo::Bar", expected);
+### Serialized JSON
+
+Often, we find that some CloudFormation Resource types declare properties as a string,
+but actually expect JSON serialized as a string.
+For example, the [`BuildSpec` property of `AWS::CodeBuild::Project`][Pipeline BuildSpec],
+the [`Definition` property of `AWS::StepFunctions::StateMachine`][StateMachine Definition],
+to name a couple.
+
+The `Match.serializedJson()` matcher allows deep matching within a stringified JSON.
+
+```ts
+// Given a template -
+// {
+//   "Resources": {
+//     "MyBar": {
+//       "Type": "Foo::Bar",
+//       "Properties": {
+//         "Baz": "{ \"Fred\": [\"Waldo\", \"Willow\"] }"
+//       }
+//     }
+//   }
+// }
+
+// The following will NOT throw an assertion error
+template.hasResourceProperties('Foo::Bar', {
+  Baz: Match.serializedJson({
+    Fred: Match.arrayWith(["Waldo"]),
+  }),
+});
+
+// The following will throw an assertion error
+template.hasResourceProperties('Foo::Bar', {
+  Baz: Match.serializedJson({
+    Fred: ["Waldo", "Johnny"],
+  }),
+});
+```
+
+[Pipeline BuildSpec]: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codebuild-project-source.html#cfn-codebuild-project-source-buildspec
+[StateMachine Definition]: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-stepfunctions-statemachine.html#cfn-stepfunctions-statemachine-definition
+
+## Capturing Values
+
+This matcher APIs documented above allow capturing values in the matching entry
+(Resource, Output, Mapping, etc.). The following code captures a string from a
+matching resource.
+
+```ts
+// Given a template -
+// {
+//   "Resources": {
+//     "MyBar": {
+//       "Type": "Foo::Bar",
+//       "Properties": {
+//         "Fred": ["Flob", "Cat"],
+//         "Waldo": ["Qix", "Qux"],
+//       }
+//     }
+//   }
+// }
+
+const fredCapture = new Capture();
+const waldoCapture = new Capture();
+template.hasResourceProperties('Foo::Bar', {
+  Fred: fredCapture,
+  Waldo: ["Qix", waldoCapture],
+});
+
+fredCapture.asArray(); // returns ["Flob", "Cat"]
+waldoCapture.asString(); // returns "Qux"
+```
+
+With captures, a nested pattern can also be specified, so that only targets
+that match the nested pattern will be captured. This pattern can be literals or
+further Matchers.
+
+```ts
+// Given a template -
+// {
+//   "Resources": {
+//     "MyBar1": {
+//       "Type": "Foo::Bar",
+//       "Properties": {
+//         "Fred": ["Flob", "Cat"],
+//       }
+//     }
+//     "MyBar2": {
+//       "Type": "Foo::Bar",
+//       "Properties": {
+//         "Fred": ["Qix", "Qux"],
+//       }
+//     }
+//   }
+// }
+
+const capture = new Capture(Match.arrayWith(['Cat']));
+template.hasResourceProperties('Foo::Bar', {
+  Fred: capture,
+});
+
+capture.asArray(); // returns ['Flob', 'Cat']
+```
+
+When multiple resources match the given condition, each `Capture` defined in
+the condition will capture all matching values. They can be paged through using
+the `next()` API. The following example illustrates this -
+
+```ts
+// Given a template -
+// {
+//   "Resources": {
+//     "MyBar": {
+//       "Type": "Foo::Bar",
+//       "Properties": {
+//         "Fred": "Flob",
+//       }
+//     },
+//     "MyBaz": {
+//       "Type": "Foo::Bar",
+//       "Properties": {
+//         "Fred": "Quib",
+//       }
+//     }
+//   }
+// }
+
+const fredCapture = new Capture();
+template.hasResourceProperties('Foo::Bar', {
+  Fred: fredCapture,
+});
+
+fredCapture.asString(); // returns "Flob"
+fredCapture.next();     // returns true
+fredCapture.asString(); // returns "Quib"
 ```

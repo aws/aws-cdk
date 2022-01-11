@@ -101,6 +101,13 @@ export interface IInstanceEngine extends IEngine {
   readonly multiUserRotationApplication: secretsmanager.SecretRotationApplication;
 
   /**
+   * Whether this engine supports automatic backups of a read replica instance.
+   *
+   * @default false
+   */
+  readonly supportsReadReplicaBackups?: boolean;
+
+  /**
    * Method called when the engine is used to create a new instance.
    */
   bindToInstance(scope: Construct, options: InstanceEngineBindOptions): InstanceEngineConfig;
@@ -123,6 +130,7 @@ abstract class InstanceEngineBase implements IInstanceEngine {
   public readonly singleUserRotationApplication: secretsmanager.SecretRotationApplication;
   public readonly multiUserRotationApplication: secretsmanager.SecretRotationApplication;
   public readonly engineFamily?: string;
+  public readonly supportsReadReplicaBackups?: boolean;
 
   private readonly features?: InstanceEngineFeatures;
 
@@ -247,6 +255,12 @@ export class MariaDbEngineVersion {
   public static readonly VER_10_2_32 = MariaDbEngineVersion.of('10.2.32', '10.2');
   /** Version "10.2.37". */
   public static readonly VER_10_2_37 = MariaDbEngineVersion.of('10.2.37', '10.2');
+  /** Version "10.2.39". */
+  public static readonly VER_10_2_39 = MariaDbEngineVersion.of('10.2.39', '10.2');
+  /** Version "10.2.40". */
+  public static readonly VER_10_2_40 = MariaDbEngineVersion.of('10.2.40', '10.2');
+  /** Version "10.2.41". */
+  public static readonly VER_10_2_41 = MariaDbEngineVersion.of('10.2.41', '10.2');
 
   /** Version "10.3" (only a major version, without a specific minor version). */
   public static readonly VER_10_3 = MariaDbEngineVersion.of('10.3', '10.3');
@@ -260,6 +274,10 @@ export class MariaDbEngineVersion {
   public static readonly VER_10_3_23 = MariaDbEngineVersion.of('10.3.23', '10.3');
   /** Version "10.3.28". */
   public static readonly VER_10_3_28 = MariaDbEngineVersion.of('10.3.28', '10.3');
+  /** Version "10.3.31". */
+  public static readonly VER_10_3_31 = MariaDbEngineVersion.of('10.3.31', '10.3');
+  /** Version "10.3.32". */
+  public static readonly VER_10_3_32 = MariaDbEngineVersion.of('10.3.32', '10.3');
 
   /** Version "10.4" (only a major version, without a specific minor version). */
   public static readonly VER_10_4 = MariaDbEngineVersion.of('10.4', '10.4');
@@ -269,6 +287,10 @@ export class MariaDbEngineVersion {
   public static readonly VER_10_4_13 = MariaDbEngineVersion.of('10.4.13', '10.4');
   /** Version "10.4.18". */
   public static readonly VER_10_4_18 = MariaDbEngineVersion.of('10.4.18', '10.4');
+  /** Version "10.4.21". */
+  public static readonly VER_10_4_21 = MariaDbEngineVersion.of('10.4.21', '10.4');
+  /** Version "10.4.22". */
+  public static readonly VER_10_4_22 = MariaDbEngineVersion.of('10.4.22', '10.4');
 
   /** Version "10.5" (only a major version, without a specific minor version). */
   public static readonly VER_10_5 = MariaDbEngineVersion.of('10.5', '10.5');
@@ -276,6 +298,10 @@ export class MariaDbEngineVersion {
   public static readonly VER_10_5_8 = MariaDbEngineVersion.of('10.5.8', '10.5');
   /** Version "10.5.9". */
   public static readonly VER_10_5_9 = MariaDbEngineVersion.of('10.5.9', '10.5');
+  /** Version "10.5.12". */
+  public static readonly VER_10_5_12 = MariaDbEngineVersion.of('10.5.12', '10.5');
+  /** Version "10.5.13". */
+  public static readonly VER_10_5_13 = MariaDbEngineVersion.of('10.5.13', '10.5');
 
   /**
    * Create a new MariaDbEngineVersion with an arbitrary version.
@@ -310,6 +336,8 @@ export interface MariaDbInstanceEngineProps {
 }
 
 class MariaDbInstanceEngine extends InstanceEngineBase {
+  public readonly supportsReadReplicaBackups = true;
+
   constructor(version?: MariaDbEngineVersion) {
     super({
       engineType: 'mariadb',
@@ -462,6 +490,8 @@ export class MysqlEngineVersion {
   public static readonly VER_5_7_31 = MysqlEngineVersion.of('5.7.31', '5.7');
   /** Version "5.7.33". */
   public static readonly VER_5_7_33 = MysqlEngineVersion.of('5.7.33', '5.7');
+  /** Version "5.7.34". */
+  public static readonly VER_5_7_34 = MysqlEngineVersion.of('5.7.34', '5.7');
 
   /** Version "8.0" (only a major version, without a specific minor version). */
   public static readonly VER_8_0 = MysqlEngineVersion.of('8.0', '8.0');
@@ -485,6 +515,8 @@ export class MysqlEngineVersion {
   public static readonly VER_8_0_23 = MysqlEngineVersion.of('8.0.23', '8.0');
   /** Version "8.0.25". */
   public static readonly VER_8_0_25 = MysqlEngineVersion.of('8.0.25', '8.0');
+  /** Version "8.0.26". */
+  public static readonly VER_8_0_26 = MysqlEngineVersion.of('8.0.26', '8.0');
 
   /**
    * Create a new MysqlEngineVersion with an arbitrary version.
@@ -519,6 +551,8 @@ export interface MySqlInstanceEngineProps {
 }
 
 class MySqlInstanceEngine extends InstanceEngineBase {
+  public readonly supportsReadReplicaBackups = true;
+
   constructor(version?: MysqlEngineVersion) {
     super({
       engineType: 'mysql',
@@ -545,6 +579,13 @@ export interface PostgresEngineFeatures {
    * @default false
    */
   readonly s3Import?: boolean;
+
+  /**
+   * Whether this version of the Postgres engine supports the S3 data export feature.
+   *
+   * @default false
+   */
+  readonly s3Export?: boolean;
 }
 
 /**
@@ -750,9 +791,14 @@ export class PostgresEngineVersion {
   public static readonly VER_9_6_21 = PostgresEngineVersion.of('9.6.21', '9.6');
   /**
    * Version "9.6.22".
-   * @deprecated PostgreSQL 9.6 will reach end of life in November 2022
+   * @deprecated PostgreSQL 9.6 will reach end of life in November 2021
   */
   public static readonly VER_9_6_22 = PostgresEngineVersion.of('9.6.22', '9.6');
+  /**
+   * Version "9.6.23".
+   * @deprecated PostgreSQL 9.6 will reach end of life in November 2021
+  */
+  public static readonly VER_9_6_23 = PostgresEngineVersion.of('9.6.23', '9.6');
 
   /** Version "10" (only a major version, without a specific minor version). */
   public static readonly VER_10 = PostgresEngineVersion.of('10', '10');
@@ -779,13 +825,15 @@ export class PostgresEngineVersion {
   /** Version "10.13". */
   public static readonly VER_10_13 = PostgresEngineVersion.of('10.13', '10', { s3Import: true });
   /** Version "10.14". */
-  public static readonly VER_10_14 = PostgresEngineVersion.of('10.14', '10', { s3Import: true });
+  public static readonly VER_10_14 = PostgresEngineVersion.of('10.14', '10', { s3Import: true, s3Export: true });
   /** Version "10.15". */
-  public static readonly VER_10_15 = PostgresEngineVersion.of('10.15', '10', { s3Import: true });
+  public static readonly VER_10_15 = PostgresEngineVersion.of('10.15', '10', { s3Import: true, s3Export: true });
   /** Version "10.16". */
-  public static readonly VER_10_16 = PostgresEngineVersion.of('10.16', '10', { s3Import: true });
+  public static readonly VER_10_16 = PostgresEngineVersion.of('10.16', '10', { s3Import: true, s3Export: true });
   /** Version "10.17". */
-  public static readonly VER_10_17 = PostgresEngineVersion.of('10.17', '10', { s3Import: true });
+  public static readonly VER_10_17 = PostgresEngineVersion.of('10.17', '10', { s3Import: true, s3Export: true });
+  /** Version "10.18". */
+  public static readonly VER_10_18 = PostgresEngineVersion.of('10.18', '10', { s3Import: true, s3Export: true });
 
   /** Version "11" (only a major version, without a specific minor version). */
   public static readonly VER_11 = PostgresEngineVersion.of('11', '11', { s3Import: true });
@@ -804,13 +852,15 @@ export class PostgresEngineVersion {
   /** Version "11.8". */
   public static readonly VER_11_8 = PostgresEngineVersion.of('11.8', '11', { s3Import: true });
   /** Version "11.9". */
-  public static readonly VER_11_9 = PostgresEngineVersion.of('11.9', '11', { s3Import: true });
+  public static readonly VER_11_9 = PostgresEngineVersion.of('11.9', '11', { s3Import: true, s3Export: true });
   /** Version "11.10". */
-  public static readonly VER_11_10 = PostgresEngineVersion.of('11.10', '11', { s3Import: true });
+  public static readonly VER_11_10 = PostgresEngineVersion.of('11.10', '11', { s3Import: true, s3Export: true });
   /** Version "11.11". */
-  public static readonly VER_11_11 = PostgresEngineVersion.of('11.11', '11', { s3Import: true });
+  public static readonly VER_11_11 = PostgresEngineVersion.of('11.11', '11', { s3Import: true, s3Export: true });
   /** Version "11.12". */
-  public static readonly VER_11_12 = PostgresEngineVersion.of('11.12', '11', { s3Import: true });
+  public static readonly VER_11_12 = PostgresEngineVersion.of('11.12', '11', { s3Import: true, s3Export: true });
+  /** Version "11.13". */
+  public static readonly VER_11_13 = PostgresEngineVersion.of('11.13', '11', { s3Import: true, s3Export: true });
 
   /** Version "12" (only a major version, without a specific minor version). */
   public static readonly VER_12 = PostgresEngineVersion.of('12', '12', { s3Import: true });
@@ -819,22 +869,26 @@ export class PostgresEngineVersion {
   /** Version "12.3". */
   public static readonly VER_12_3 = PostgresEngineVersion.of('12.3', '12', { s3Import: true });
   /** Version "12.4". */
-  public static readonly VER_12_4 = PostgresEngineVersion.of('12.4', '12', { s3Import: true });
+  public static readonly VER_12_4 = PostgresEngineVersion.of('12.4', '12', { s3Import: true, s3Export: true });
   /** Version "12.5". */
-  public static readonly VER_12_5 = PostgresEngineVersion.of('12.5', '12', { s3Import: true });
+  public static readonly VER_12_5 = PostgresEngineVersion.of('12.5', '12', { s3Import: true, s3Export: true });
   /** Version "12.6". */
-  public static readonly VER_12_6 = PostgresEngineVersion.of('12.6', '12', { s3Import: true });
+  public static readonly VER_12_6 = PostgresEngineVersion.of('12.6', '12', { s3Import: true, s3Export: true });
   /** Version "12.7". */
-  public static readonly VER_12_7 = PostgresEngineVersion.of('12.7', '12', { s3Import: true });
+  public static readonly VER_12_7 = PostgresEngineVersion.of('12.7', '12', { s3Import: true, s3Export: true });
+  /** Version "12.8". */
+  public static readonly VER_12_8 = PostgresEngineVersion.of('12.8', '12', { s3Import: true, s3Export: true });
 
   /** Version "13" (only a major version, without a specific minor version). */
-  public static readonly VER_13 = PostgresEngineVersion.of('13', '13', { s3Import: true });
+  public static readonly VER_13 = PostgresEngineVersion.of('13', '13', { s3Import: true, s3Export: true });
   /** Version "13.1". */
-  public static readonly VER_13_1 = PostgresEngineVersion.of('13.1', '13', { s3Import: true });
+  public static readonly VER_13_1 = PostgresEngineVersion.of('13.1', '13', { s3Import: true, s3Export: true });
   /** Version "13.2". */
-  public static readonly VER_13_2 = PostgresEngineVersion.of('13.2', '13', { s3Import: true });
+  public static readonly VER_13_2 = PostgresEngineVersion.of('13.2', '13', { s3Import: true, s3Export: true });
   /** Version "13.3". */
-  public static readonly VER_13_3 = PostgresEngineVersion.of('13.3', '13', { s3Import: true });
+  public static readonly VER_13_3 = PostgresEngineVersion.of('13.3', '13', { s3Import: true, s3Export: true });
+  /** Version "13.4". */
+  public static readonly VER_13_4 = PostgresEngineVersion.of('13.4', '13', { s3Import: true, s3Export: true });
 
   /**
    * Create a new PostgresEngineVersion with an arbitrary version.
@@ -864,6 +918,7 @@ export class PostgresEngineVersion {
     this.postgresMajorVersion = postgresMajorVersion;
     this._features = {
       s3Import: postgresFeatures?.s3Import ? 's3Import' : undefined,
+      s3Export: postgresFeatures?.s3Export ? 's3Export' : undefined,
     };
   }
 }
@@ -1322,6 +1377,10 @@ export class SqlServerEngineVersion {
   public static readonly VER_13_00_5598_27_V1 = SqlServerEngineVersion.of('13.00.5598.27.v1', '13.00');
   /** Version "13.00.5820.21.v1". */
   public static readonly VER_13_00_5820_21_V1 = SqlServerEngineVersion.of('13.00.5820.21.v1', '13.00');
+  /** Version "13.00.5850.14.v1". */
+  public static readonly VER_13_00_5850_14_V1 = SqlServerEngineVersion.of('13.00.5850.14.v1', '13.00');
+  /** Version "13.00.5882.1.v1". */
+  public static readonly VER_13_00_5882_1_V1 = SqlServerEngineVersion.of('13.00.5882.1.v1', '13.00');
 
   /** Version "14.00" (only a major version, without a specific minor version). */
   public static readonly VER_14 = SqlServerEngineVersion.of('14.00', '14.00');
@@ -1350,8 +1409,13 @@ export class SqlServerEngineVersion {
   public static readonly VER_15 = SqlServerEngineVersion.of('15.00', '15.00');
   /** Version "15.00.4043.16.v1". */
   public static readonly VER_15_00_4043_16_V1 = SqlServerEngineVersion.of('15.00.4043.16.v1', '15.00');
-  /** Version "15.00.4043.23.v1". */
+  /**
+   * Version "15.00.4043.23.v1".
+   * @deprecated This version is erroneous. You might be looking for {@link SqlServerEngineVersion.VER_15_00_4073_23_V1}, instead.
+   */
   public static readonly VER_15_00_4043_23_V1 = SqlServerEngineVersion.of('15.00.4043.23.v1', '15.00');
+  /** Version "15.00.4073.23.v1". */
+  public static readonly VER_15_00_4073_23_V1 = SqlServerEngineVersion.of('15.00.4073.23.v1', '15.00');
 
   /**
    * Create a new SqlServerEngineVersion with an arbitrary version.
@@ -1516,7 +1580,7 @@ export class DatabaseInstanceEngine {
   /**
    * The unversioned 'mariadb' instance engine.
    *
-   * @deprecated using unversioned engines is an availability risk.
+   * NOTE: using unversioned engines is an availability risk.
    *   We recommend using versioned engines created using the {@link mariaDb()} method
    */
   public static readonly MARIADB: IInstanceEngine = new MariaDbInstanceEngine();
@@ -1524,7 +1588,7 @@ export class DatabaseInstanceEngine {
   /**
    * The unversioned 'mysql' instance engine.
    *
-   * @deprecated using unversioned engines is an availability risk.
+   * NOTE: using unversioned engines is an availability risk.
    *   We recommend using versioned engines created using the {@link mysql()} method
    */
   public static readonly MYSQL: IInstanceEngine = new MySqlInstanceEngine();
@@ -1532,7 +1596,7 @@ export class DatabaseInstanceEngine {
   /**
    * The unversioned 'oracle-ee' instance engine.
    *
-   * @deprecated using unversioned engines is an availability risk.
+   * NOTE: using unversioned engines is an availability risk.
    *   We recommend using versioned engines created using the {@link oracleEe()} method
    */
   public static readonly ORACLE_EE: IInstanceEngine = new OracleEeInstanceEngine();
@@ -1540,7 +1604,7 @@ export class DatabaseInstanceEngine {
   /**
    * The unversioned 'oracle-se2' instance engine.
    *
-   * @deprecated using unversioned engines is an availability risk.
+   * NOTE: using unversioned engines is an availability risk.
    *   We recommend using versioned engines created using the {@link oracleSe2()} method
    */
   public static readonly ORACLE_SE2: IInstanceEngine = new OracleSe2InstanceEngine();
@@ -1562,7 +1626,7 @@ export class DatabaseInstanceEngine {
   /**
    * The unversioned 'postgres' instance engine.
    *
-   * @deprecated using unversioned engines is an availability risk.
+   * NOTE: using unversioned engines is an availability risk.
    *   We recommend using versioned engines created using the {@link postgres()} method
    */
   public static readonly POSTGRES: IInstanceEngine = new PostgresInstanceEngine();
@@ -1570,7 +1634,7 @@ export class DatabaseInstanceEngine {
   /**
    * The unversioned 'sqlserver-ee' instance engine.
    *
-   * @deprecated using unversioned engines is an availability risk.
+   * NOTE: using unversioned engines is an availability risk.
    *   We recommend using versioned engines created using the {@link sqlServerEe()} method
    */
   public static readonly SQL_SERVER_EE: IInstanceEngine = new SqlServerEeInstanceEngine();
@@ -1578,7 +1642,7 @@ export class DatabaseInstanceEngine {
   /**
    * The unversioned 'sqlserver-se' instance engine.
    *
-   * @deprecated using unversioned engines is an availability risk.
+   * NOTE: using unversioned engines is an availability risk.
    *   We recommend using versioned engines created using the {@link sqlServerSe()} method
    */
   public static readonly SQL_SERVER_SE: IInstanceEngine = new SqlServerSeInstanceEngine();
@@ -1586,7 +1650,7 @@ export class DatabaseInstanceEngine {
   /**
    * The unversioned 'sqlserver-ex' instance engine.
    *
-   * @deprecated using unversioned engines is an availability risk.
+   * NOTE: using unversioned engines is an availability risk.
    *   We recommend using versioned engines created using the {@link sqlServerEx()} method
    */
   public static readonly SQL_SERVER_EX: IInstanceEngine = new SqlServerExInstanceEngine();
@@ -1594,7 +1658,7 @@ export class DatabaseInstanceEngine {
   /**
    * The unversioned 'sqlserver-web' instance engine.
    *
-   * @deprecated using unversioned engines is an availability risk.
+   * NOTE: using unversioned engines is an availability risk.
    *   We recommend using versioned engines created using the {@link sqlServerWeb()} method
    */
   public static readonly SQL_SERVER_WEB: IInstanceEngine = new SqlServerWebInstanceEngine();

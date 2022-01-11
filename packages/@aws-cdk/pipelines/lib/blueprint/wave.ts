@@ -1,6 +1,6 @@
 import * as cdk from '@aws-cdk/core';
 import { StageDeployment } from './stage-deployment';
-import { Step } from './step';
+import { StackSteps, Step } from './step';
 
 /**
  * Construction properties for a `Wave`
@@ -91,6 +91,13 @@ export interface AddStageOpts {
    * @default - No additional steps
    */
   readonly post?: Step[];
+
+  /**
+   * Instructions for stack level steps
+   *
+   * @default - No additional instructions
+   */
+  readonly stackSteps?: StackSteps[];
 }
 
 /**

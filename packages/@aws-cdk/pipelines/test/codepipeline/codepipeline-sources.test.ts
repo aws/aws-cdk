@@ -1,5 +1,4 @@
-import { anything, arrayWith, Capture, objectLike } from '@aws-cdk/assert-internal';
-import '@aws-cdk/assert-internal/jest';
+import { Capture, Match, Template } from '@aws-cdk/assertions';
 import * as ccommit from '@aws-cdk/aws-codecommit';
 import { CodeCommitTrigger, GitHubTrigger } from '@aws-cdk/aws-codepipeline-actions';
 import { AnyPrincipal, Role } from '@aws-cdk/aws-iam';
@@ -28,18 +27,18 @@ test('CodeCommit source handles tokenized names correctly', () => {
     input: cdkp.CodePipelineSource.codeCommit(repo, 'main'),
   });
 
-  expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
-    Stages: arrayWith({
+  Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+    Stages: Match.arrayWith([{
       Name: 'Source',
       Actions: [
-        objectLike({
-          Configuration: objectLike({
-            RepositoryName: { 'Fn::GetAtt': [anything(), 'Name'] },
+        Match.objectLike({
+          Configuration: Match.objectLike({
+            RepositoryName: { 'Fn::GetAtt': [Match.anyValue(), 'Name'] },
           }),
-          Name: { 'Fn::GetAtt': [anything(), 'Name'] },
+          Name: { 'Fn::GetAtt': [Match.anyValue(), 'Name'] },
         }),
       ],
-    }),
+    }]),
   });
 });
 
@@ -58,20 +57,20 @@ test('CodeCommit source honors all valid properties', () => {
     }),
   });
 
-  expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
-    Stages: arrayWith({
+  Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+    Stages: Match.arrayWith([{
       Name: 'Source',
       Actions: [
-        objectLike({
-          Configuration: objectLike({
+        Match.objectLike({
+          Configuration: Match.objectLike({
             BranchName: 'main',
             PollForSourceChanges: true,
             OutputArtifactFormat: 'CODEBUILD_CLONE_REF',
           }),
-          RoleArn: { 'Fn::GetAtt': [anything(), 'Arn'] },
+          RoleArn: { 'Fn::GetAtt': [Match.anyValue(), 'Arn'] },
         }),
       ],
-    }),
+    }]),
   });
 });
 
@@ -81,19 +80,19 @@ test('S3 source handles tokenized names correctly', () => {
     input: cdkp.CodePipelineSource.s3(buckit, 'thefile.zip'),
   });
 
-  expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
-    Stages: arrayWith({
+  Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+    Stages: Match.arrayWith([{
       Name: 'Source',
       Actions: [
-        objectLike({
-          Configuration: objectLike({
-            S3Bucket: { Ref: anything() },
+        Match.objectLike({
+          Configuration: Match.objectLike({
+            S3Bucket: { Ref: Match.anyValue() },
             S3ObjectKey: 'thefile.zip',
           }),
-          Name: { Ref: anything() },
+          Name: { Ref: Match.anyValue() },
         }),
       ],
-    }),
+    }]),
   });
 });
 
@@ -105,12 +104,12 @@ test('GitHub source honors all valid properties', () => {
     }),
   });
 
-  expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
-    Stages: arrayWith({
+  Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+    Stages: Match.arrayWith([{
       Name: 'Source',
       Actions: [
-        objectLike({
-          Configuration: objectLike({
+        Match.objectLike({
+          Configuration: Match.objectLike({
             Owner: 'owner',
             Repo: 'repo',
             Branch: 'main',
@@ -120,7 +119,7 @@ test('GitHub source honors all valid properties', () => {
           Name: 'owner_repo',
         }),
       ],
-    }),
+    }]),
   });
 });
 
@@ -145,17 +144,17 @@ test('Dashes in repo names are removed from artifact names', () => {
     input: cdkp.CodePipelineSource.gitHub('owner/my-repo', 'main'),
   });
 
-  expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
-    Stages: arrayWith({
+  Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+    Stages: Match.arrayWith([{
       Name: 'Source',
       Actions: [
-        objectLike({
+        Match.objectLike({
           OutputArtifacts: [
             { Name: 'owner_my_repo_Source' },
           ],
         }),
       ],
-    }),
+    }]),
   });
 });
 
@@ -164,19 +163,19 @@ test('artifact names are never longer than 128 characters', () => {
     input: cdkp.CodePipelineSource.gitHub('owner/' + 'my-repo'.repeat(100), 'main'),
   });
 
-  const artifactId = Capture.aString();
-  expect(pipelineStack).toHaveResourceLike('AWS::CodePipeline::Pipeline', {
-    Stages: arrayWith({
+  const artifactId = new Capture();
+  Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+    Stages: Match.arrayWith([{
       Name: 'Source',
       Actions: [
-        objectLike({
+        Match.objectLike({
           OutputArtifacts: [
-            { Name: artifactId.capture() },
+            { Name: artifactId },
           ],
         }),
       ],
-    }),
+    }]),
   });
 
-  expect(artifactId.capturedValue.length).toBeLessThanOrEqual(128);
+  expect(artifactId.asString().length).toBeLessThanOrEqual(128);
 });

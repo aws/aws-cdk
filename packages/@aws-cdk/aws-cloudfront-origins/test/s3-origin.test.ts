@@ -1,7 +1,7 @@
 import '@aws-cdk/assert-internal/jest';
 import * as cloudfront from '@aws-cdk/aws-cloudfront';
 import * as s3 from '@aws-cdk/aws-s3';
-import { App, Stack } from '@aws-cdk/core';
+import { App, Duration, Stack } from '@aws-cdk/core';
 import { S3Origin } from '../lib';
 
 let app: App;
@@ -34,16 +34,27 @@ describe('With bucket', () => {
     });
   });
 
-  test('can customize originPath property', () => {
+  test('can customize base origin properties', () => {
     const bucket = new s3.Bucket(stack, 'Bucket');
 
-    const origin = new S3Origin(bucket, { originPath: '/assets' });
+    const origin = new S3Origin(bucket, {
+      originPath: '/assets',
+      connectionTimeout: Duration.seconds(5),
+      connectionAttempts: 2,
+      customHeaders: { AUTH: 'NONE' },
+    });
     const originBindConfig = origin.bind(stack, { originId: 'StackOrigin029E19582' });
 
     expect(stack.resolve(originBindConfig.originProperty)).toEqual({
       id: 'StackOrigin029E19582',
       domainName: { 'Fn::GetAtt': ['Bucket83908E77', 'RegionalDomainName'] },
       originPath: '/assets',
+      connectionTimeout: 5,
+      connectionAttempts: 2,
+      originCustomHeaders: [{
+        headerName: 'AUTH',
+        headerValue: 'NONE',
+      }],
       s3OriginConfig: {
         originAccessIdentity: {
           'Fn::Join': ['',
@@ -69,6 +80,20 @@ describe('With bucket', () => {
     expect(stack).toHaveResourceLike('AWS::CloudFront::CloudFrontOriginAccessIdentity', {
       CloudFrontOriginAccessIdentityConfig: {
         Comment: 'Identity for bucket provided by test',
+      },
+    });
+
+    expect(stack).toHaveResourceLike('AWS::S3::BucketPolicy', {
+      PolicyDocument: {
+        Statement: [{
+          Action: 's3:GetObject',
+          Principal: {
+            CanonicalUser: { 'Fn::GetAtt': ['OriginAccessIdentityDF1E3CAC', 'S3CanonicalUserId'] },
+          },
+          Resource: {
+            'Fn::Join': ['', [{ 'Fn::GetAtt': ['Bucket83908E77', 'Arn'] }, '/*']],
+          },
+        }],
       },
     });
   });

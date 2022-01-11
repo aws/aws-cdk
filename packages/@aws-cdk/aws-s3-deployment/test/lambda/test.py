@@ -242,23 +242,54 @@ class TestHandler(unittest.TestCase):
         )
 
     def test_delete_no_retain(self):
-        invoke_handler("Delete", {
-            "SourceBucketNames": ["<source-bucket>"],
-            "SourceObjectKeys": ["<source-object-key>"],
-            "DestinationBucketName": "<dest-bucket-name>",
-            "RetainOnDelete": "false"
-        }, physical_id="<physicalid>")
+        def mock_make_api_call(self, operation_name, kwarg):
+            if operation_name == 'GetBucketTagging':
+                assert kwarg['Bucket'] == '<dest-bucket-name>'
+                return {'TagSet': [{'Key': 'random', 'Value': '<logical-resource-id>'}]}
+            raise ClientError({'Error': {'Code': '500', 'Message': 'Unsupported operation'}}, operation_name)
+        with patch('botocore.client.BaseClient._make_api_call', new=mock_make_api_call):
+            invoke_handler("Delete", {
+                "SourceBucketNames": ["<source-bucket>"],
+                "SourceObjectKeys": ["<source-object-key>"],
+                "DestinationBucketName": "<dest-bucket-name>",
+                "RetainOnDelete": "false"
+            }, physical_id="<physicalid>")
 
         self.assertAwsCommands(["s3", "rm", "s3://<dest-bucket-name>/", "--recursive"])
 
+    # In a replace the logcal id of the custom resource will change
+    # so the custom resource that gets the Delete event will no longer
+    # "own" the bucket
+    def test_replace_no_retain(self):
+        def mock_make_api_call(self, operation_name, kwarg):
+            if operation_name == 'GetBucketTagging':
+                assert kwarg['Bucket'] == '<dest-bucket-name>'
+                return {'TagSet': [{'Key': 'aws-cdk:cr-owned:-bucket>', 'Value': '<some-other-logical-id>'}]}
+            raise ClientError({'Error': {'Code': '500', 'Message': 'Unsupported operation'}}, operation_name)
+        with patch('botocore.client.BaseClient._make_api_call', new=mock_make_api_call):
+            invoke_handler("Delete", {
+                "SourceBucketNames": ["<source-bucket>"],
+                "SourceObjectKeys": ["<source-object-key>"],
+                "DestinationBucketName": "<dest-bucket-name>",
+                "RetainOnDelete": "false"
+            }, physical_id="<physicalid>")
+
+        self.assertAwsCommands()
+
     def test_delete_with_dest_key(self):
-        invoke_handler("Delete", {
-            "SourceBucketNames": ["<source-bucket>"],
-            "SourceObjectKeys": ["<source-object-key>"],
-            "DestinationBucketName": "<dest-bucket-name>",
-            "DestinationBucketKeyPrefix": "<dest-key-prefix>",
-            "RetainOnDelete": "false"
-        }, physical_id="<physicalid>")
+        def mock_make_api_call(self, operation_name, kwarg):
+            if operation_name == 'GetBucketTagging':
+                assert kwarg['Bucket'] == '<dest-bucket-name>'
+                return {'TagSet': [{'Key': 'random-key', 'Value': '<logical-resource-id>'}]}
+            raise ClientError({'Error': {'Code': '500', 'Message': 'Unsupported operation'}}, operation_name)
+        with patch('botocore.client.BaseClient._make_api_call', new=mock_make_api_call):
+            invoke_handler("Delete", {
+                "SourceBucketNames": ["<source-bucket>"],
+                "SourceObjectKeys": ["<source-object-key>"],
+                "DestinationBucketName": "<dest-bucket-name>",
+                "DestinationBucketKeyPrefix": "<dest-key-prefix>",
+                "RetainOnDelete": "false"
+            }, physical_id="<physicalid>")
 
         self.assertAwsCommands(["s3", "rm", "s3://<dest-bucket-name>/<dest-key-prefix>", "--recursive"])
 
@@ -285,12 +316,18 @@ class TestHandler(unittest.TestCase):
         self.assertAwsCommands()
 
     def test_delete_with_retain_explicitly_false(self):
-        invoke_handler("Delete", {
-            "SourceBucketNames": ["<source-bucket>"],
-            "SourceObjectKeys": ["<source-object-key>"],
-            "DestinationBucketName": "<dest-bucket-name>",
-            "RetainOnDelete": "false"
-        }, physical_id="<physicalid>")
+        def mock_make_api_call(self, operation_name, kwarg):
+            if operation_name == 'GetBucketTagging':
+                assert kwarg['Bucket'] == '<dest-bucket-name>'
+                return {'TagSet': [{'Key': 'random-key', 'Value': '<logical-resource-id>'}]}
+            raise ClientError({'Error': {'Code': '500', 'Message': 'Unsupported operation'}}, operation_name)
+        with patch('botocore.client.BaseClient._make_api_call', new=mock_make_api_call):
+            invoke_handler("Delete", {
+                "SourceBucketNames": ["<source-bucket>"],
+                "SourceObjectKeys": ["<source-object-key>"],
+                "DestinationBucketName": "<dest-bucket-name>",
+                "RetainOnDelete": "false"
+            }, physical_id="<physicalid>")
 
         self.assertAwsCommands(
             ["s3", "rm", "s3://<dest-bucket-name>/", "--recursive"]
@@ -466,6 +503,7 @@ class TestHandler(unittest.TestCase):
     #
 
     def test_physical_id_allocated_on_create_and_reused_afterwards(self):
+
         create_resp = invoke_handler("Create", {
             "SourceBucketNames": ["<source-bucket>"],
             "SourceObjectKeys": ["<source-object-key>"],
@@ -487,12 +525,17 @@ class TestHandler(unittest.TestCase):
         self.assertEqual(update_resp['PhysicalResourceId'], phid)
 
         # now issue a delete, and make sure this also applies
-        delete_resp = invoke_handler("Delete", {
-            "SourceBucketNames": ["<source-bucket>"],
-            "SourceObjectKeys": ["<source-object-key>"],
-            "DestinationBucketName": "<dest-bucket-name>",
-            "RetainOnDelete": "false"
-        }, physical_id=phid)
+        def mock_make_api_call(self, operation_name, kwarg):
+            if operation_name == 'GetBucketTagging':
+                return {'TagSet': [{'Key': 'aws-cdk:cr-owned:-bucket>', 'Value': '<logical-resource-id>'}]}
+            raise ClientError({'Error': {'Code': '500', 'Message': 'Unsupported operation'}}, operation_name)
+        with patch('botocore.client.BaseClient._make_api_call', new=mock_make_api_call):
+            delete_resp = invoke_handler("Delete", {
+                "SourceBucketNames": ["<source-bucket>"],
+                "SourceObjectKeys": ["<source-object-key>"],
+                "DestinationBucketName": "<dest-bucket-name>",
+                "RetainOnDelete": "false"
+            }, physical_id=phid)
         self.assertEqual(delete_resp['PhysicalResourceId'], phid)
 
     def test_fails_when_physical_id_not_present_in_update(self):
@@ -507,15 +550,41 @@ class TestHandler(unittest.TestCase):
         self.assertEqual(update_resp['Reason'], "invalid request: request type is 'Update' but 'PhysicalResourceId' is not defined")
 
     def test_fails_when_physical_id_not_present_in_delete(self):
-        update_resp = invoke_handler("Delete", {
-            "SourceBucketNames": ["<source-bucket>"],
-            "SourceObjectKeys": ["<source-object-key>"],
-            "DestinationBucketName": "<new-dest-bucket-name>",
-        }, old_resource_props={
-            "DestinationBucketName": "<dest-bucket-name>",
-        }, expected_status="FAILED")
+        def mock_make_api_call(self, operation_name, kwarg):
+            if operation_name == 'GetBucketTagging':
+                return {'TagSet': [{'Key': 'aws-cdk:cr-owned:-bucket>', 'Value': '<logical-resource-id>'}]}
+            raise ClientError({'Error': {'Code': '500', 'Message': 'Unsupported operation'}}, operation_name)
+
+        with patch('botocore.client.BaseClient._make_api_call', new=mock_make_api_call):
+            update_resp = invoke_handler("Delete", {
+                "SourceBucketNames": ["<source-bucket>"],
+                "SourceObjectKeys": ["<source-object-key>"],
+                "DestinationBucketName": "<new-dest-bucket-name>",
+            }, old_resource_props={
+                "DestinationBucketName": "<dest-bucket-name>",
+            }, expected_status="FAILED")
 
         self.assertEqual(update_resp['Reason'], "invalid request: request type is 'Delete' but 'PhysicalResourceId' is not defined")
+
+    # no bucket tags removes content
+    def test_no_tags_on_bucket(self):
+        def mock_make_api_call(self, operation_name, kwarg):
+            if operation_name == 'GetBucketTagging':
+                raise ClientError({'Error': {'Code': 'NoSuchTagSet', 'Message': 'The TagSet does not exist'}}, operation_name)
+            raise ClientError({'Error': {'Code': '500', 'Message': 'Unsupported operation'}}, operation_name)
+
+        with patch('botocore.client.BaseClient._make_api_call', new=mock_make_api_call):
+            invoke_handler("Delete", {
+                "SourceBucketNames": ["<source-bucket>"],
+                "SourceObjectKeys": ["<source-object-key>"],
+                "DestinationBucketName": "<dest-bucket-name>",
+                "RetainOnDelete": "false"
+            }, physical_id="<physicalid>")
+
+        self.assertAwsCommands(
+            ["s3", "rm", "s3://<dest-bucket-name>/", "--recursive"]
+        )
+
 
 
     # asserts that a given list of "aws xxx" commands have been invoked (in order)

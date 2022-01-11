@@ -1,5 +1,4 @@
-import { arrayWith } from '@aws-cdk/assert-internal';
-import '@aws-cdk/assert-internal/jest';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecr from '@aws-cdk/aws-ecr';
 import * as iam from '@aws-cdk/aws-iam';
@@ -30,7 +29,7 @@ describe('ExternalDockerCredential', () => {
   test('dockerHub defaults registry domain', () => {
     const creds = cdkp.DockerCredential.dockerHub(secret);
 
-    expect(Object.keys(creds._renderCdkAssetsConfig())).toEqual(['index.docker.io']);
+    expect(Object.keys(creds._renderCdkAssetsConfig())).toEqual(['https://index.docker.io/v1/']);
   });
 
   test('minimal example only renders secret', () => {
@@ -44,7 +43,7 @@ describe('ExternalDockerCredential', () => {
     });
   });
 
-  test('maximmum example includes all expected properties', () => {
+  test('maximum example includes all expected properties', () => {
     const roleArn = 'arn:aws:iam::0123456789012:role/MyRole';
     const creds = cdkp.DockerCredential.customRegistry('example.com', secret, {
       secretUsernameField: 'login',
@@ -71,7 +70,7 @@ describe('ExternalDockerCredential', () => {
       const user = new iam.User(stack, 'User');
       creds.grantRead(user, cdkp.DockerCredentialUsage.ASSET_PUBLISHING);
 
-      expect(stack).toHaveResource('AWS::IAM::Policy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         PolicyDocument: {
           Statement: [
             {
@@ -93,7 +92,7 @@ describe('ExternalDockerCredential', () => {
       const user = new iam.User(stack, 'User');
       creds.grantRead(user, cdkp.DockerCredentialUsage.ASSET_PUBLISHING);
 
-      expect(stack).toHaveResource('AWS::IAM::Policy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         PolicyDocument: {
           Statement: [{
             Action: ['secretsmanager:GetSecretValue', 'secretsmanager:DescribeSecret'],
@@ -104,7 +103,7 @@ describe('ExternalDockerCredential', () => {
         },
         Roles: ['MyRole'],
       });
-      expect(stack).toHaveResource('AWS::IAM::Policy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         PolicyDocument: {
           Statement: [{
             Action: 'sts:AssumeRole',
@@ -127,7 +126,7 @@ describe('ExternalDockerCredential', () => {
       const user = new iam.User(stack, 'User');
       creds.grantRead(user, cdkp.DockerCredentialUsage.SELF_UPDATE);
 
-      expect(stack).not.toHaveResource('AWS::IAM::Policy');
+      Template.fromStack(stack).resourceCountIs('AWS::IAM::Policy', 0);
     });
 
   });
@@ -193,7 +192,7 @@ describe('EcrDockerCredential', () => {
       const user = new iam.User(stack, 'User');
       creds.grantRead(user, cdkp.DockerCredentialUsage.ASSET_PUBLISHING);
 
-      expect(stack).toHaveResource('AWS::IAM::Policy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         PolicyDocument: {
           Statement: [{
             Action: [
@@ -222,7 +221,7 @@ describe('EcrDockerCredential', () => {
       const user = new iam.User(stack, 'User');
       creds.grantRead(user, cdkp.DockerCredentialUsage.ASSET_PUBLISHING);
 
-      expect(stack).toHaveResource('AWS::IAM::Policy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         PolicyDocument: {
           Statement: [{
             Action: [
@@ -242,7 +241,7 @@ describe('EcrDockerCredential', () => {
         },
         Roles: ['MyRole'],
       });
-      expect(stack).toHaveResource('AWS::IAM::Policy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         PolicyDocument: {
           Statement: [{
             Action: 'sts:AssumeRole',
@@ -262,9 +261,9 @@ describe('EcrDockerCredential', () => {
       const user = new iam.User(stack, 'User');
       creds.grantRead(user, cdkp.DockerCredentialUsage.ASSET_PUBLISHING);
 
-      expect(stack).toHaveResource('AWS::IAM::Policy', {
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         PolicyDocument: {
-          Statement: arrayWith({
+          Statement: Match.arrayWith([{
             Action: [
               'ecr:BatchCheckLayerAvailability',
               'ecr:GetDownloadUrlForLayer',
@@ -274,6 +273,11 @@ describe('EcrDockerCredential', () => {
             Resource: 'arn:aws:ecr:eu-west-1:0123456789012:repository/Repo',
           },
           {
+            Action: 'ecr:GetAuthorizationToken',
+            Effect: 'Allow',
+            Resource: '*',
+          },
+          {
             Action: [
               'ecr:BatchCheckLayerAvailability',
               'ecr:GetDownloadUrlForLayer',
@@ -281,12 +285,7 @@ describe('EcrDockerCredential', () => {
             ],
             Effect: 'Allow',
             Resource: 'arn:aws:ecr:eu-west-1:0123456789012:repository/Repo2',
-          },
-          {
-            Action: 'ecr:GetAuthorizationToken',
-            Effect: 'Allow',
-            Resource: '*',
-          }),
+          }]),
           Version: '2012-10-17',
         },
         Users: [{ Ref: 'User00B015A1' }],
@@ -299,7 +298,7 @@ describe('EcrDockerCredential', () => {
       const user = new iam.User(stack, 'User');
       creds.grantRead(user, cdkp.DockerCredentialUsage.ASSET_PUBLISHING);
 
-      expect(stack).not.toHaveResource('AWS::IAM::Policy');
+      Template.fromStack(stack).resourceCountIs('AWS::IAM::Policy', 0);
     });
   });
 

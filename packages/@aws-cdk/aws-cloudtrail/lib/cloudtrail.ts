@@ -334,6 +334,7 @@ export class Trail extends Resource {
         values: dataResourceValues,
       }],
       includeManagementEvents: options.includeManagementEvents,
+      excludeManagementEventSources: options.excludeManagementEventSources,
       readWriteType: options.readWriteType,
     });
   }
@@ -424,6 +425,28 @@ export interface AddEventSelectorOptions {
    * @default true
    */
   readonly includeManagementEvents?: boolean;
+
+  /**
+   * An optional list of service event sources from which you do not want management events to be logged on your trail.
+   *
+   * @default []
+   */
+  readonly excludeManagementEventSources?: ManagementEventSources[];
+}
+
+/**
+ * Types of management event sources that can be excluded
+ */
+export enum ManagementEventSources {
+  /**
+   * AWS Key Management Service (AWS KMS) events
+   */
+  KMS = 'kms.amazonaws.com',
+
+  /**
+   * Data API events
+   */
+  RDS_DATA_API = 'rdsdata.amazonaws.com',
 }
 
 /**
@@ -457,6 +480,7 @@ export enum DataResourceType {
 
 interface EventSelector {
   readonly includeManagementEvents?: boolean;
+  readonly excludeManagementEventSources?: string[];
   readonly readWriteType?: ReadWriteType;
   readonly dataResources?: EventSelectorData[];
 }

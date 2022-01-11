@@ -20,13 +20,13 @@ enabled and populates it from a local directory on disk.
 ```ts
 const websiteBucket = new s3.Bucket(this, 'WebsiteBucket', {
   websiteIndexDocument: 'index.html',
-  publicReadAccess: true
+  publicReadAccess: true,
 });
 
 new s3deploy.BucketDeployment(this, 'DeployWebsite', {
   sources: [s3deploy.Source.asset('./website-dist')],
   destinationBucket: websiteBucket,
-  destinationKeyPrefix: 'web/static' // optional prefix in destination bucket
+  destinationKeyPrefix: 'web/static', // optional prefix in destination bucket
 });
 ```
 
@@ -44,19 +44,18 @@ This is what happens under the hood:
    `websiteBucket`). If there is more than one source, the sources will be
    downloaded and merged pre-deployment at this step.
 
-
 ## Supported sources
 
 The following source types are supported for bucket deployments:
 
- - Local .zip file: `s3deploy.Source.asset('/path/to/local/file.zip')`
- - Local directory: `s3deploy.Source.asset('/path/to/local/directory')`
- - Another bucket: `s3deploy.Source.bucket(bucket, zipObjectKey)`
+- Local .zip file: `s3deploy.Source.asset('/path/to/local/file.zip')`
+- Local directory: `s3deploy.Source.asset('/path/to/local/directory')`
+- Another bucket: `s3deploy.Source.bucket(bucket, zipObjectKey)`
 
 To create a source from a single file, you can pass `AssetOptions` to exclude
 all but a single file:
 
- - Single file: `s3deploy.Source.asset('/path/to/local/directory', { exclude: ['**', '!onlyThisFile.txt'] })`
+- Single file: `s3deploy.Source.asset('/path/to/local/directory', { exclude: ['**', '!onlyThisFile.txt'] })`
 
 **IMPORTANT** The `aws-s3-deployment` module is only intended to be used with
 zip files from trusted sources. Directories bundled by the CDK CLI (by using
@@ -111,6 +110,7 @@ when the `BucketDeployment` resource is created or updated. You can use the opti
 this behavior, in which case the files will not be deleted.
 
 ```ts
+declare const destinationBucket: s3.Bucket;
 new s3deploy.BucketDeployment(this, 'DeployMeWithoutDeletingFilesOnDestination', {
   sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
   destinationBucket,
@@ -123,17 +123,18 @@ each with its own characteristics. For example, you can set different cache-cont
 based on file extensions:
 
 ```ts
-new BucketDeployment(this, 'BucketDeployment', {
-  sources: [Source.asset('./website', { exclude: ['index.html'] })],
-  destinationBucket: bucket,
-  cacheControl: [CacheControl.fromString('max-age=31536000,public,immutable')],
+declare const destinationBucket: s3.Bucket;
+new s3deploy.BucketDeployment(this, 'BucketDeployment', {
+  sources: [s3deploy.Source.asset('./website', { exclude: ['index.html'] })],
+  destinationBucket,
+  cacheControl: [s3deploy.CacheControl.fromString('max-age=31536000,public,immutable')],
   prune: false,
 });
 
-new BucketDeployment(this, 'HTMLBucketDeployment', {
-  sources: [Source.asset('./website', { exclude: ['*', '!index.html'] })],
-  destinationBucket: bucket,
-  cacheControl: [CacheControl.fromString('max-age=0,no-cache,no-store,must-revalidate')],
+new s3deploy.BucketDeployment(this, 'HTMLBucketDeployment', {
+  sources: [s3deploy.Source.asset('./website', { exclude: ['*', '!index.html'] })],
+  destinationBucket,
+  cacheControl: [s3deploy.CacheControl.fromString('max-age=0,no-cache,no-store,must-revalidate')],
   prune: false,
 });
 ```
@@ -143,19 +144,21 @@ new BucketDeployment(this, 'HTMLBucketDeployment', {
 There are two points at which filters are evaluated in a deployment: asset bundling and the actual deployment. If you simply want to exclude files in the asset bundling process, you should leverage the `exclude` property of `AssetOptions` when defining your source:
 
 ```ts
-new BucketDeployment(this, 'HTMLBucketDeployment', {
-  sources: [Source.asset('./website', { exclude: ['*', '!index.html'] })],
-  destinationBucket: bucket,
+declare const destinationBucket: s3.Bucket;
+new s3deploy.BucketDeployment(this, 'HTMLBucketDeployment', {
+  sources: [s3deploy.Source.asset('./website', { exclude: ['*', '!index.html'] })],
+  destinationBucket,
 });
 ```
 
 If you want to specify filters to be used in the deployment process, you can use the `exclude` and `include` filters on `BucketDeployment`.  If excluded, these files will not be deployed to the destination bucket. In addition, if the file already exists in the destination bucket, it will not be deleted if you are using the `prune` option:
 
 ```ts
+declare const destinationBucket: s3.Bucket;
 new s3deploy.BucketDeployment(this, 'DeployButExcludeSpecificFiles', {
   sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
   destinationBucket,
-  exclude: ['*.txt']
+  exclude: ['*.txt'],
 });
 ```
 
@@ -190,7 +193,7 @@ and [`aws s3 sync` documentation](https://docs.aws.amazon.com/cli/latest/referen
 ```ts
 const websiteBucket = new s3.Bucket(this, 'WebsiteBucket', {
   websiteIndexDocument: 'index.html',
-  publicReadAccess: true
+  publicReadAccess: true,
 });
 
 new s3deploy.BucketDeployment(this, 'DeployWebsite', {
@@ -202,9 +205,12 @@ new s3deploy.BucketDeployment(this, 'DeployWebsite', {
   // system-defined metadata
   contentType: "text/html",
   contentLanguage: "en",
-  storageClass: StorageClass.INTELLIGENT_TIERING,
-  serverSideEncryption: ServerSideEncryption.AES_256,
-  cacheControl: [CacheControl.setPublic(), CacheControl.maxAge(cdk.Duration.hours(1))],
+  storageClass: s3deploy.StorageClass.INTELLIGENT_TIERING,
+  serverSideEncryption: s3deploy.ServerSideEncryption.AES_256,
+  cacheControl: [
+    s3deploy.CacheControl.setPublic(),
+    s3deploy.CacheControl.maxAge(Duration.hours(1)),
+  ],
   accessControl: s3.BucketAccessControl.BUCKET_OWNER_FULL_CONTROL,
 });
 ```
@@ -241,6 +247,29 @@ size of the AWS Lambda resource handler.
 > NOTE: a new AWS Lambda handler will be created in your stack for each memory
 > limit configuration.
 
+## EFS Support
+
+If your workflow needs more disk space than default (512 MB) disk space, you may attach an EFS storage to underlying
+lambda function. To Enable EFS support set `efs` and `vpc` props for BucketDeployment.
+
+Check sample usage below.
+Please note that creating VPC inline may cause stack deletion failures. It is shown as below for simplicity.
+To avoid such condition, keep your network infra (VPC) in a separate stack and pass as props.
+
+```ts
+declare const destinationBucket: s3.Bucket;
+declare const vpc: ec2.Vpc;
+
+new s3deploy.BucketDeployment(this, 'DeployMeWithEfsStorage', {
+  sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+  destinationBucket,
+  destinationKeyPrefix: 'efs/',
+  useEfs: true,
+  vpc,
+  retainOnDelete: false,
+});
+```
+
 ## Notes
 
 - This library uses an AWS CloudFormation custom resource which about 10MiB in
@@ -268,4 +297,4 @@ might be tricky to build on Windows.
 
 ## Roadmap
 
- - [ ] Support "blue/green" deployments ([#954](https://github.com/aws/aws-cdk/issues/954))
+- [ ] Support "blue/green" deployments ([#954](https://github.com/aws/aws-cdk/issues/954))
