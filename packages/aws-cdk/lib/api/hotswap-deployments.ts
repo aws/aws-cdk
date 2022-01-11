@@ -1,7 +1,7 @@
 import * as cfn_diff from '@aws-cdk/cloudformation-diff';
 import * as cxapi from '@aws-cdk/cx-api';
 import { CloudFormation } from 'aws-sdk';
-import * as colors from 'colors/safe';
+import * as chalk from 'chalk';
 import { print } from '../logging';
 import { ISDK, Mode, SdkProvider } from './aws-auth';
 import { DeployStackResult } from './deploy-stack';
@@ -227,12 +227,12 @@ async function applyHotswappableChange(sdk: ISDK, hotswapOperation: HotswapOpera
 
   try {
     for (const name of hotswapOperation.resourceNames) {
-      print(`   ${ICON} %s`, colors.bold(name));
+      print(`   ${ICON} %s`, chalk.bold(name));
     }
     return await hotswapOperation.apply(sdk);
   } finally {
     for (const name of hotswapOperation.resourceNames) {
-      print(`${ICON} %s %s`, colors.bold(name), colors.green('hotswapped!'));
+      print(`${ICON} %s %s`, chalk.bold(name), chalk.green('hotswapped!'));
     }
     sdk.removeCustomUserAgent(customUserAgent);
   }

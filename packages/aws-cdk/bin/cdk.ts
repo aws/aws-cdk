@@ -2,7 +2,7 @@
 import 'source-map-support/register';
 import * as cxapi from '@aws-cdk/cx-api';
 import '@jsii/check-node/run';
-import * as colors from 'colors/safe';
+import * as chalk from 'chalk';
 import * as yargs from 'yargs';
 
 import { SdkProvider } from '../lib/api/aws-auth';
@@ -190,7 +190,8 @@ async function parseCommandLineArguments() {
 }
 
 if (!process.stdout.isTTY) {
-  colors.disable();
+  // Disable chalk color highlighting
+  process.env.FORCE_COLOR = '0';
 }
 
 async function initCommandLine() {
@@ -234,7 +235,7 @@ async function initCommandLine() {
       for (const plugin of plugins) {
         const resolved = tryResolve(plugin);
         if (loaded.has(resolved)) { continue; }
-        debug(`Loading plug-in: ${colors.green(plugin)} from ${colors.blue(resolved)}`);
+        debug(`Loading plug-in: ${chalk.green(plugin)} from ${chalk.blue(resolved)}`);
         PluginHost.instance.load(plugin);
         loaded.add(resolved);
       }
@@ -244,7 +245,7 @@ async function initCommandLine() {
       try {
         return require.resolve(plugin);
       } catch (e) {
-        error(`Unable to resolve plugin ${colors.green(plugin)}: ${e.stack}`);
+        error(`Unable to resolve plugin ${chalk.green(plugin)}: ${e.stack}`);
         throw new Error(`Unable to resolve plug-in: ${plugin}`);
       }
     }
@@ -278,7 +279,7 @@ async function initCommandLine() {
 
   async function main(command: string, args: any): Promise<number | string | {} | void> {
     const toolkitStackName: string = ToolkitInfo.determineName(configuration.settings.get(['toolkitStackName']));
-    debug(`Toolkit stack: ${colors.bold(toolkitStackName)}`);
+    debug(`Toolkit stack: ${chalk.bold(toolkitStackName)}`);
 
     if (args.all && args.STACKS) {
       throw new Error('You must either specify a list of Stacks or the `--all` argument');
