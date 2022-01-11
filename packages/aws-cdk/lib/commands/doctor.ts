@@ -1,6 +1,6 @@
 import * as process from 'process';
 import * as cxapi from '@aws-cdk/cx-api';
-import * as colors from 'colors/safe';
+import * as chalk from 'chalk';
 import * as yargs from 'yargs';
 import { print } from '../../lib/logging';
 import * as version from '../../lib/version';
@@ -34,7 +34,7 @@ const verifications: Array<() => boolean | Promise<boolean>> = [
 // ### Verifications ###
 
 function displayVersionInformation() {
-  print(`ℹ️ CDK Version: ${colors.green(version.DISPLAY_VERSION)}`);
+  print(`ℹ️ CDK Version: ${chalk.green(version.DISPLAY_VERSION)}`);
   return true;
 }
 
@@ -46,7 +46,7 @@ function displayAwsEnvironmentVariables() {
   }
   print('ℹ️ AWS environment variables:');
   for (const key of keys) {
-    print(`  - ${colors.blue(key)} = ${colors.green(anonymizeAwsVariable(key, process.env[key]!))}`);
+    print(`  - ${chalk.blue(key)} = ${chalk.green(anonymizeAwsVariable(key, process.env[key]!))}`);
   }
   return true;
 }
@@ -61,10 +61,10 @@ function displayCdkEnvironmentVariables() {
   let healthy = true;
   for (const key of keys.sort()) {
     if (key === cxapi.CONTEXT_ENV || key === cxapi.OUTDIR_ENV) {
-      print(`  - ${colors.red(key)} = ${colors.green(process.env[key]!)} (⚠️ reserved for use by the CDK toolkit)`);
+      print(`  - ${chalk.red(key)} = ${chalk.green(process.env[key]!)} (⚠️ reserved for use by the CDK toolkit)`);
       healthy = false;
     } else {
-      print(`  - ${colors.blue(key)} = ${colors.green(process.env[key]!)}`);
+      print(`  - ${chalk.blue(key)} = ${chalk.green(process.env[key]!)}`);
     }
   }
   return healthy;

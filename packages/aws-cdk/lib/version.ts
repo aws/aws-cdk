@@ -1,5 +1,5 @@
 import * as path from 'path';
-import * as colors from 'colors/safe';
+import * as chalk from 'chalk';
 import * as fs from 'fs-extra';
 import * as semver from 'semver';
 import { debug, print } from '../lib/logging';
@@ -100,7 +100,7 @@ function getMajorVersionUpgradeMessage(currentVersion: string): string | void {
 
 function getVersionMessage(currentVersion: string, laterVersion: string): string[] {
   return [
-    `Newer version of CDK is available [${colors.green(laterVersion as string)}]`,
+    `Newer version of CDK is available [${chalk.green(laterVersion as string)}]`,
     getMajorVersionUpgradeMessage(currentVersion),
     'Upgrade recommended (npm install -g aws-cdk)',
   ].filter(Boolean) as string[];
