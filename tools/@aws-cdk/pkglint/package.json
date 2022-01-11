@@ -54,11 +54,14 @@
     "typescript": "~3.9.10"
   },
   "nozem": {
-     "ostools": ["chmod", "cp"]
+    "ostools": [
+      "chmod",
+      "cp"
+    ]
   },
   "dependencies": {
     "case": "^1.6.3",
-    "colors": "^1.4.0",
+    "colors": "1.4.0",
     "fs-extra": "^9.1.0",
     "glob": "^7.2.0",
     "npm-bundled": "^1.1.2",
