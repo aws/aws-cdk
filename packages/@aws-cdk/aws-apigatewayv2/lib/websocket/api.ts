@@ -22,17 +22,17 @@ export interface IWebSocketApi extends IApi {
  * Represents the currently available API Key Selection Expressions
  */
 export class WebSocketApiKeySelectionExpression {
+  
   /**
- * x-api-key type
- * This represents an API Key that is provided via an `x-api-key` header in the user request.
- */
+   * The API will extract the key value from the `x-api-key` header in the user request.
+   */
   public static HEADER_X_API_KEY = new WebSocketApiKeySelectionExpression('$request.header.x-api-key');
 
-  /**
- * usageIdentifierKey type
- * This represents an API Key that is provided via the context of an Lambda Authorizer
- * See https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-lambda-authorizer-output.html
- */
+   /**
+    * The API will extract the key value from the `usageIdentifierKey` attribute in the `context` map,
+    * returned by the Lambda Authorizer.
+    * See https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-lambda-authorizer-output.html
+    */
    public static AUTHORIZER_USAGE_IDENTIFIER_KEY = new WebSocketApiKeySelectionExpression('$context.authorizer.usageIdentifierKey');
 
    public constructor(public readonly customApiKeySelector: string) {}
