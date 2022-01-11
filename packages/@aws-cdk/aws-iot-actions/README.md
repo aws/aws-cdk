@@ -189,9 +189,9 @@ const stream = new firehose.DeliveryStream(this, 'MyStream', {
 const topicRule = new iot.TopicRule(this, 'TopicRule', {
   sql: iot.IotSql.fromStringAsVer20160323("SELECT * FROM 'device/+/data'"),
   actions: [
-    new actions.FirehoseStreamAction(stream, {
+    new actions.FirehosePutRecordAction(stream, {
       batchMode: true,
-      recordSeparator: actions.FirehoseStreamRecordSeparator.NEWLINE,
+      recordSeparator: actions.FirehoseRecordSeparator.NEWLINE,
     }),
   ],
 });
