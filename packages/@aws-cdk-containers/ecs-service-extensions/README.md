@@ -132,7 +132,7 @@ nameDescription.add(new Container({
 }));
 ```
 
-This logging behavior is the supported by default for the ECS Service Extensions module from version 1.140.0 and later. For enabling this behavior for previous versions, ensure that the `ECS_SERVICE_EXTENSIONS_ENABLE_DEFAULT_LOG_DRIVER` flag within the application stack context is set to true, like so:
+This logging behavior is supported by default if using CDK v1.140.0 or v2.6.0 and later. For enabling this behavior for previous versions, ensure that the `ECS_SERVICE_EXTENSIONS_ENABLE_DEFAULT_LOG_DRIVER` flag within the application stack context is set to true, like so:
 
 ```ts
 stack.node.setContext(cxapi.ECS_SERVICE_EXTENSIONS_ENABLE_DEFAULT_LOG_DRIVER, true);
