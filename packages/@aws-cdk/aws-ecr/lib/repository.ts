@@ -332,7 +332,7 @@ export interface RepositoryProps {
    * The kind of server-side encryption to apply to this repository.
    *
    * If you choose KMS, you can specify a KMS key via `encryptionKey`. If
-   * encryption key is not specified, an AWS managed KMS key is used.
+   * encryptionKey is not specified, an AWS managed KMS key is used.
    *
    * @default - `KMS` if `encryptionKey` is specified, or `AES256` otherwise.
    */
@@ -514,7 +514,7 @@ export class Repository extends RepositoryBase {
         scanOnPush: true,
       },
       imageTagMutability: props.imageTagMutability || undefined,
-      encryptionConfiguration: encryptionConfiguration,
+      encryptionConfiguration: this.parseEncryption(props),
     });
 
     resource.applyRemovalPolicy(props.removalPolicy);
@@ -635,10 +635,7 @@ export class Repository extends RepositoryBase {
   private parseEncryption(props: RepositoryProps): CfnRepository.EncryptionConfigurationProperty | undefined {
 
     // default based on whether encryptionKey is specified
-    let encryptionType = props.encryption;
-    if (encryptionType === undefined) {
-      encryptionType = props.encryptionKey ? RepositoryEncryption.KMS : RepositoryEncryption.AES_256;
-    }
+    const encryptionType = props.encryption ?? (props.encryptionKey ? RepositoryEncryption.KMS : RepositoryEncryption.AES_256);
 
     // if encryption key is set, encryption must be set to KMS.
     if (encryptionType !== RepositoryEncryption.KMS && props.encryptionKey) {
@@ -650,13 +647,10 @@ export class Repository extends RepositoryBase {
     }
 
     if (encryptionType === RepositoryEncryption.KMS) {
-      const encryptionKey = props.encryptionKey;
-
-      const encryptionConfiguration = {
+      return {
         encryptionType: 'KMS',
-        kmsKey: encryptionKey?.keyArn,
+        kmsKey: props.encryptionKey?.keyArn,
       };
-      return encryptionConfiguration;
     }
 
     throw new Error(`Unexpected 'encryptionType': ${encryptionType}`);
