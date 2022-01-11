@@ -19,7 +19,7 @@
     "cdk-generate-synthetic-examples": "^0.1.1",
     "conventional-changelog-cli": "^2.2.2",
     "fs-extra": "^9.1.0",
-    "graceful-fs": "^4.2.8",
+    "graceful-fs": "^4.2.9",
     "jest-junit": "^13.0.0",
     "jsii-diff": "^1.50.0",
     "jsii-pacmak": "^1.50.0",
@@ -31,6 +31,7 @@
     "typescript": "~3.9.10"
   },
   "resolutions": {
+    "colors": "1.4.0",
     "string-width": "^4.2.3"
   },
   "repository": {
