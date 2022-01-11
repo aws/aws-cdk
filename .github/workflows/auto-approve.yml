@@ -1,4 +1,4 @@
-# Approve PRs with "pr/auto-approve". mergify takes care of the actual merge.
+# Approve PRs with "auto-approve". mergify takes care of the actual merge.
 
 name: auto-approve
 on:
@@ -7,7 +7,7 @@ on:
 
 jobs:
   auto-approve:
-    if: contains(github.event.pull_request.labels.*.name, 'pr/auto-approve')
+    if: contains(github.event.pull_request.labels.*.name, 'auto-approve')
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write

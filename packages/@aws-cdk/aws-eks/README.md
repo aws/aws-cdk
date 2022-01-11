@@ -539,7 +539,7 @@ To deploy the controller on your EKS cluster, configure the `albController` prop
 new eks.Cluster(this, 'HelloEKS', {
   version: eks.KubernetesVersion.V1_21,
   albController: {
-    version: eks.AlbControllerVersion.V2_3_0,
+    version: eks.AlbControllerVersion.V2_3_1,
   },
 });
 ```
@@ -639,6 +639,22 @@ const cluster = new eks.Cluster(this, 'hello-eks', {
 ### Kubectl Support
 
 The resources are created in the cluster by running `kubectl apply` from a python lambda function.
+
+By default, CDK will create a new python lambda function to apply your k8s manifests. If you want to use an existing kubectl provider function, for example with tight trusted entities on your IAM Roles - you can import the existing provider and then use the imported provider when importing the cluster:
+
+```ts
+const handlerRole = iam.Role.fromRoleArn(this, 'HandlerRole', 'arn:aws:iam::123456789012:role/lambda-role');
+const kubectlProvider = eks.KubectlProvider.fromKubectlProviderAttributes(this, 'KubectlProvider', {
+  functionArn: 'arn:aws:lambda:us-east-2:123456789012:function:my-function:1',
+  kubectlRoleArn: 'arn:aws:iam::123456789012:role/kubectl-role',
+  handlerRole,
+});
+
+const cluster = eks.Cluster.fromClusterAttributes(this, 'Cluster', {
+  clusterName: 'cluster',
+  kubectlProvider,
+});
+```
 
 #### Environment
 

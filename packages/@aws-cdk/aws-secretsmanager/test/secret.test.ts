@@ -1,5 +1,5 @@
 import '@aws-cdk/assert-internal/jest';
-import { expect as assertExpect, ResourcePart } from '@aws-cdk/assert-internal';
+import { ABSENT, expect as assertExpect, ResourcePart } from '@aws-cdk/assert-internal';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as lambda from '@aws-cdk/aws-lambda';
@@ -176,6 +176,94 @@ test('templated secret string', () => {
       GenerateStringKey: 'password',
     },
   });
+});
+
+describe('secretStringBeta1', () => {
+  let user: iam.User;
+  let accessKey: iam.AccessKey;
+
+  beforeEach(() => {
+    user = new iam.User(stack, 'User');
+    accessKey = new iam.AccessKey(stack, 'MyKey', { user });
+  });
+
+  test('fromUnsafePlaintext allows specifying a plaintext string', () => {
+    new secretsmanager.Secret(stack, 'Secret', {
+      secretStringBeta1: secretsmanager.SecretStringValueBeta1.fromUnsafePlaintext('unsafeP@$$'),
+    });
+
+    expect(stack).toHaveResource('AWS::SecretsManager::Secret', {
+      GenerateSecretString: ABSENT,
+      SecretString: 'unsafeP@$$',
+    });
+  });
+
+  test('toToken throws when provided an unsafe plaintext string', () => {
+    expect(() => new secretsmanager.Secret(stack, 'Secret', {
+      secretStringBeta1: secretsmanager.SecretStringValueBeta1.fromToken('unsafeP@$$'),
+    })).toThrow(/appears to be plaintext/);
+  });
+
+  test('toToken allows referencing a construct attribute', () => {
+    new secretsmanager.Secret(stack, 'Secret', {
+      secretStringBeta1: secretsmanager.SecretStringValueBeta1.fromToken(accessKey.secretAccessKey.toString()),
+    });
+
+    expect(stack).toHaveResource('AWS::SecretsManager::Secret', {
+      GenerateSecretString: ABSENT,
+      SecretString: { 'Fn::GetAtt': ['MyKey6AB29FA6', 'SecretAccessKey'] },
+    });
+  });
+
+  test('toToken allows referencing a construct attribute in nested JSON', () => {
+    const secretString = secretsmanager.SecretStringValueBeta1.fromToken(JSON.stringify({
+      key: accessKey.secretAccessKey.toString(),
+      username: 'myUser',
+    }));
+    new secretsmanager.Secret(stack, 'Secret', {
+      secretStringBeta1: secretString,
+    });
+
+    expect(stack).toHaveResource('AWS::SecretsManager::Secret', {
+      GenerateSecretString: ABSENT,
+      SecretString: {
+        'Fn::Join': [
+          '',
+          [
+            '{"key":"',
+            {
+              'Fn::GetAtt': [
+                'MyKey6AB29FA6',
+                'SecretAccessKey',
+              ],
+            },
+            '","username":"myUser"}',
+          ],
+        ],
+      },
+    });
+  });
+
+  test('toToken throws if provided a resolved token', () => {
+    // NOTE - This is actually not desired behavior, but the simple `!Token.isUnresolved`
+    // check is the simplest and most consistent to implement. Covering this edge case of
+    // a resolved Token representing a Ref/Fn::GetAtt is out of scope for this initial pass.
+    const secretKey = stack.resolve(accessKey.secretAccessKey);
+    expect(() => new secretsmanager.Secret(stack, 'Secret', {
+      secretStringBeta1: secretsmanager.SecretStringValueBeta1.fromToken(secretKey),
+    })).toThrow(/appears to be plaintext/);
+  });
+
+  test('throws if both generateSecretString and secretStringBeta1 are provided', () => {
+    expect(() => new secretsmanager.Secret(stack, 'Secret', {
+      generateSecretString: {
+        generateStringKey: 'username',
+        secretStringTemplate: JSON.stringify({ username: 'username' }),
+      },
+      secretStringBeta1: secretsmanager.SecretStringValueBeta1.fromToken(accessKey.secretAccessKey.toString()),
+    })).toThrow(/Cannot specify both `generateSecretString` and `secretStringBeta1`./);
+  });
+
 });
 
 test('grantRead', () => {

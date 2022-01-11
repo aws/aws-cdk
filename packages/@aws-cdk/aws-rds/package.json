@@ -87,8 +87,8 @@
     "@aws-cdk/cfn2ts": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/jest": "^27.0.3",
-    "jest": "^27.4.3"
+    "@types/jest": "^27.4.0",
+    "jest": "^27.4.7"
   },
   "dependencies": {
     "@aws-cdk/aws-cloudwatch": "0.0.0",
@@ -132,6 +132,7 @@
       "props-physical-name:@aws-cdk/aws-rds.DatabaseInstanceReadReplicaProps",
       "props-physical-name:@aws-cdk/aws-rds.DatabaseSecretProps",
       "props-physical-name:@aws-cdk/aws-rds.ServerlessClusterProps",
+      "props-physical-name:@aws-cdk/aws-rds.ServerlessClusterFromSnapshotProps",
       "props-physical-name:@aws-cdk/aws-rds.OptionGroupProps",
       "props-physical-name:@aws-cdk/aws-rds.SubnetGroupProps",
       "docs-public-apis:@aws-cdk/aws-rds.SecretRotationApplication.semanticVersion",

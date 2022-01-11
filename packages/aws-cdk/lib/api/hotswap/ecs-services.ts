@@ -1,6 +1,6 @@
 import * as AWS from 'aws-sdk';
 import { ISDK } from '../aws-auth';
-import { ChangeHotswapImpact, ChangeHotswapResult, establishResourcePhysicalName, HotswapOperation, HotswappableChangeCandidate } from './common';
+import { ChangeHotswapImpact, ChangeHotswapResult, establishResourcePhysicalName, HotswapOperation, HotswappableChangeCandidate, lowerCaseFirstCharacter, transformObjectKeys } from './common';
 import { EvaluateCloudFormationTemplate } from './evaluate-cloudformation-template';
 
 export async function isHotswappableEcsServiceChange(
@@ -77,17 +77,21 @@ interface EcsService {
 
 class EcsServiceHotswapOperation implements HotswapOperation {
   public readonly service = 'ecs-service';
+  public readonly resourceNames: string[] = [];
 
   constructor(
     private readonly taskDefinitionResource: any,
     private readonly servicesReferencingTaskDef: EcsService[],
-  ) {}
+  ) {
+    this.resourceNames = servicesReferencingTaskDef.map(ecsService =>
+      `ECS Service '${ecsService.serviceArn.split('/')[2]}'`);
+  }
 
   public async apply(sdk: ISDK): Promise<any> {
     // Step 1 - update the changed TaskDefinition, creating a new TaskDefinition Revision
     // we need to lowercase the evaluated TaskDef from CloudFormation,
     // as the AWS SDK uses lowercase property names for these
-    const lowercasedTaskDef = lowerCaseFirstCharacterOfObjectKeys(this.taskDefinitionResource);
+    const lowercasedTaskDef = transformObjectKeys(this.taskDefinitionResource, lowerCaseFirstCharacter);
     const registerTaskDefResponse = await sdk.ecs().registerTaskDefinition(lowercasedTaskDef).promise();
     const taskDefRevArn = registerTaskDefResponse.taskDefinition?.taskDefinitionArn;
 
@@ -168,22 +172,4 @@ class EcsServiceHotswapOperation implements HotswapOperation {
       }).promise();
     }));
   }
-}
-
-function lowerCaseFirstCharacterOfObjectKeys(val: any): any {
-  if (val == null || typeof val !== 'object') {
-    return val;
-  }
-  if (Array.isArray(val)) {
-    return val.map(lowerCaseFirstCharacterOfObjectKeys);
-  }
-  const ret: { [k: string]: any; } = {};
-  for (const [k, v] of Object.entries(val)) {
-    ret[lowerCaseFirstCharacter(k)] = lowerCaseFirstCharacterOfObjectKeys(v);
-  }
-  return ret;
-}
-
-function lowerCaseFirstCharacter(str: string): string {
-  return str.length > 0 ? `${str[0].toLowerCase()}${str.substr(1)}` : str;
 }

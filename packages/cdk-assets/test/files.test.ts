@@ -183,7 +183,7 @@ test('upload with server side encryption AES256 header', async () => {
   // We'll just have to assume the contents are correct
 });
 
-test('upload with server side encryption aws:kms header', async () => {
+test('upload with server side encryption aws:kms header and key id', async () => {
   const pub = new AssetPublishing(AssetManifest.fromPath('/simple/cdk.out'), { aws });
 
   aws.mockS3.getBucketEncryption = mockedApiResult({
@@ -192,6 +192,7 @@ test('upload with server side encryption aws:kms header', async () => {
         {
           ApplyServerSideEncryptionByDefault: {
             SSEAlgorithm: 'aws:kms',
+            KMSMasterKeyID: 'the-key-id',
           },
           BucketKeyEnabled: false,
         },
@@ -209,6 +210,7 @@ test('upload with server side encryption aws:kms header', async () => {
     Key: 'some_key',
     ContentType: 'application/octet-stream',
     ServerSideEncryption: 'aws:kms',
+    SSEKMSKeyId: 'the-key-id',
   }));
 
   // We'll just have to assume the contents are correct
@@ -244,9 +246,6 @@ test('no server side encryption header if access denied for bucket encryption', 
   expect(aws.mockS3.upload).toHaveBeenCalledWith(expect.not.objectContaining({
     ServerSideEncryption: 'AES256',
   }));
-
-  // Error message references target_account, not current_account
-  expect(progressListener.messages).toContainEqual(expect.stringMatching(/ACCES_DENIED.*target_account/));
 });
 
 test('correctly looks up content type', async () => {

@@ -30,24 +30,24 @@
   "devDependencies": {
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/changelog-parser": "^2.8.0",
+    "@types/changelog-parser": "^2.8.1",
     "@types/fs-extra": "^8.1.2",
-    "@types/jest": "^27.0.3",
+    "@types/jest": "^27.4.0",
     "@types/yargs": "^15.0.14",
-    "jest": "^27.4.3"
+    "jest": "^27.4.7"
   },
   "dependencies": {
     "@lerna/project": "^4.0.0",
     "changelog-parser": "^2.8.0",
-    "conventional-changelog": "^3.1.24",
+    "conventional-changelog": "^3.1.25",
     "conventional-changelog-config-spec": "^2.1.0",
     "conventional-changelog-preset-loader": "^2.3.4",
     "conventional-changelog-writer": "^4.1.0",
-    "conventional-commits-parser": "^3.2.3",
+    "conventional-commits-parser": "^3.2.4",
     "detect-indent": "^6.1.0",
     "detect-newline": "^3.1.0",
     "fs-extra": "^9.1.0",
-    "git-raw-commits": "^2.0.10",
+    "git-raw-commits": "^2.0.11",
     "semver": "^7.3.5",
     "stringify-package": "^1.0.1"
   },
