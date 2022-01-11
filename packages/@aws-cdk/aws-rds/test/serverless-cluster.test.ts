@@ -822,41 +822,29 @@ describe('serverless cluster', () => {
     });
   });
 
-  test('can create a Serverless cluster without vpc but with imported security group', () => {
+  test('cannot create a Serverless cluster without VPC but specifying a security group', () => {
     // GIVEN
     const stack = testStack();
     const sg = ec2.SecurityGroup.fromSecurityGroupId(stack, 'SG', 'SecurityGroupId12345');
 
-    // WHEN
-    new ServerlessCluster(stack, 'Database', {
+    // THEN
+    expect(() => new ServerlessCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA_MYSQL,
       securityGroups: [sg],
-    });
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
-      VpcSecurityGroupIds: ['SecurityGroupId12345'],
-      DbSubnetGroupName: ABSENT,
-    });
+    })).toThrow(/A VPC is required to use securityGroups in ServerlessCluster. Please add a VPC or remove securityGroups/);
   });
 
-  test('can create a Serverless cluster without VPC but with imported subnet group', () => {
+  test('cannot create a Serverless cluster without VPC but specifying a subnet group', () => {
     // GIVEN
     const stack = testStack();
     const SubnetGroupName = 'SubnetGroupId12345';
     const subnetGroup = SubnetGroup.fromSubnetGroupName(stack, 'SubnetGroup12345', SubnetGroupName);
 
-    // WHEN
-    new ServerlessCluster(stack, 'Database', {
+    // THEN
+    expect(() => new ServerlessCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA_MYSQL,
       subnetGroup,
-    });
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
-      DBSubnetGroupName: SubnetGroupName,
-      VpcSecurityGroupIds: ABSENT,
-    });
+    })).toThrow(/A VPC is required to use subnetGroup in ServerlessCluster. Please add a VPC or remove subnetGroup/);
   });
 
   test('cannot create a Serverless cluster without VPC but specifying VPC subnets', () => {

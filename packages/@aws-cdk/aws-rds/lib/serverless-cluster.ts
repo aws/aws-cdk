@@ -356,8 +356,16 @@ abstract class ServerlessClusterNew extends ServerlessClusterBase {
   constructor(scope: Construct, id: string, props: ServerlessClusterNewProps) {
     super(scope, id);
 
-    if (props.vpc === undefined && props.vpcSubnets !== undefined) {
-      throw new Error('A VPC is required to use vpcSubnets in ServerlessCluster. Please add a VPC or remove vpcSubnets');
+    if (props.vpc === undefined) {
+      if (props.vpcSubnets !== undefined) {
+        throw new Error('A VPC is required to use vpcSubnets in ServerlessCluster. Please add a VPC or remove vpcSubnets');
+      }
+      if (props.subnetGroup !== undefined) {
+        throw new Error('A VPC is required to use subnetGroup in ServerlessCluster. Please add a VPC or remove subnetGroup');
+      }
+      if (props.securityGroups !== undefined) {
+        throw new Error('A VPC is required to use securityGroups in ServerlessCluster. Please add a VPC or remove securityGroups');
+      }
     }
 
     let subnetGroup: ISubnetGroup | undefined = props.subnetGroup;
