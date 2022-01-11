@@ -109,22 +109,13 @@ nameDescription.add(new Container({
 Every `ServiceDescription` requires at minimum that you add a `Container` extension
 which defines the main application (essential) container to run for the service.
 
-### Enable default logging using `awslogs` log driver
+### Logging using `awslogs` log driver
 
-The `ECS_SERVICE_EXTENSIONS_ENABLE_DEFAULT_LOG_DRIVER` feature flag is used to enable default logging for the ECS Service Extensions. When this flag is set, the `awslogs` log driver is enabled for the application container of the service to send the container logs to CloudWatch Logs.
+If no observability extensions have been configured for a service, the ECS Service Extensions configure an `awslogs` log driver for the application container of the service to send the container logs to CloudWatch Logs. You can either provide a log group to the `Container` extension or one will be created for you by the CDK.
 
-To enable the feature flag, ensure that the `ECS_SERVICE_EXTENSIONS_ENABLE_DEFAULT_LOG_DRIVER` flag within an application stack context is set to true, like so:
-
-```ts
-stack.node.setContext(cxapi.ECS_SERVICE_EXTENSIONS_ENABLE_DEFAULT_LOG_DRIVER, true);
-```
-
-Following is an example of an application with the `ECS_SERVICE_EXTENSIONS_ENABLE_DEFAULT_LOG_DRIVER` feature flag enabled:
+Following is an example of an application with an `awslogs` log driver configured for the application container:
 
 ```ts
-const stack = new cdk.Stack();
-stack.node.setContext(cxapi.ECS_SERVICE_EXTENSIONS_ENABLE_DEFAULT_LOG_DRIVER, true);
-
 const environment = new Environment(stack, 'production');
 
 const nameDescription = new ServiceDescription();
@@ -137,9 +128,17 @@ nameDescription.add(new Container({
     PORT: '80',
   },
   // Optionally provide a log group to send the application container logs to (If not provided, a log group will be created on your behalf)
-  logging: new awslogs.LogGroup(stack, 'MyLogGroup'),
+  logGroup: new awslogs.LogGroup(stack, 'MyLogGroup'),
 }));
 ```
+
+This logging behavior is the supported by default for the ECS Service Extensions module from version 1.140.0 and later. For enabling this behavior for previous versions, ensure that the `ECS_SERVICE_EXTENSIONS_ENABLE_DEFAULT_LOG_DRIVER` flag within the application stack context is set to true, like so:
+
+```ts
+stack.node.setContext(cxapi.ECS_SERVICE_EXTENSIONS_ENABLE_DEFAULT_LOG_DRIVER, true);
+```
+
+Alternatively, you can also set the feature flag in the `cdk.json` file. For more information, refer the [docs](https://docs.aws.amazon.com/cdk/v2/guide/featureflags.html).  
 
 After adding the `Container` extension, you can optionally enable additional features for the service using the `ServiceDescription.add()` method:
 

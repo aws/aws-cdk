@@ -1,9 +1,8 @@
 import { ABSENT } from '@aws-cdk/assert-internal';
 import '@aws-cdk/assert-internal/jest';
 import * as ecs from '@aws-cdk/aws-ecs';
-import * as awslogs from '@aws-cdk/aws-logs';
 import * as cdk from '@aws-cdk/core';
-import { Container, Environment, FireLensExtension, Service, ServiceDescription } from '../lib';
+import { Container, Environment, Service, ServiceDescription } from '../lib';
 
 describe('service', () => {
   test('should error if a service is prepared with no addons', () => {
@@ -23,32 +22,6 @@ describe('service', () => {
     }).toThrow(/Service 'my-service' must have a Container extension/);
 
 
-  });
-
-  test('should error when log group is provided in the container extension and another observability extension is added', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-
-    // WHEN
-    const environment = new Environment(stack, 'production');
-    const serviceDescription = new ServiceDescription();
-
-    serviceDescription.add(new Container({
-      cpu: 256,
-      memoryMiB: 512,
-      trafficPort: 80,
-      image: ecs.ContainerImage.fromRegistry('nathanpeck/name'),
-      logGroup: new awslogs.LogGroup(stack, 'MyLogGroup'),
-    }));
-    serviceDescription.add(new FireLensExtension());
-
-    // THEN
-    expect(() => {
-      new Service(stack, 'my-service', {
-        environment,
-        serviceDescription,
-      });
-    }).toThrow(/Log configuration already specified. You cannot provide a default log group for the application container of service 'my-service' while also adding log configuration separately using service extensions./);
   });
 
   test('allows scaling on a target CPU utilization', () => {

@@ -6,7 +6,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as awslogs from '@aws-cdk/aws-logs';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import { Container, Environment, EnvironmentCapacityType, Service, ServiceDescription } from '../lib';
+import { Container, Environment, EnvironmentCapacityType, FireLensExtension, Service, ServiceDescription } from '../lib';
 
 describe('container', () => {
   test('should be able to add a container to the service', () => {
@@ -287,7 +287,7 @@ describe('container', () => {
 
   });
 
-  test('should error when log group is provided but feature flag is not set', () => {
+  test('should error when log group is provided in the container extension and another observability extension is added', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -302,6 +302,7 @@ describe('container', () => {
       image: ecs.ContainerImage.fromRegistry('nathanpeck/name'),
       logGroup: new awslogs.LogGroup(stack, 'MyLogGroup'),
     }));
+    serviceDescription.add(new FireLensExtension());
 
     // THEN
     expect(() => {
@@ -309,7 +310,7 @@ describe('container', () => {
         environment,
         serviceDescription,
       });
-    }).toThrow(/You cannot provide a default log group for the application container of service 'my-service' when the '@aws-cdk-containers\/ecs-service-extensions:enableDefaultLogDriver' feature flag is not set./);
+    }).toThrow(/Log configuration already specified. You cannot provide a log group for the application container of service 'my-service' while also adding log configuration separately using service extensions./);
   });
 
 });
