@@ -66,7 +66,7 @@ describe('WebSocketRoute', () => {
           [
             'integrations/',
             {
-              Ref: 'RouteWebSocketIntegrationb7742333c7ab20d7b2b178df59bb17f20338431E',
+              Ref: 'RouteDummyIntegrationE40E82B4',
             },
           ],
         ],
