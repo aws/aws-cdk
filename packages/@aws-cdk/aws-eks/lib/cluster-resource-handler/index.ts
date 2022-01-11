@@ -8,7 +8,13 @@ import { EksClient } from './common';
 import * as consts from './consts';
 import { FargateProfileResourceHandler } from './fargate';
 
+// eslint-disable-next-line @typescript-eslint/no-require-imports, import/no-extraneous-dependencies
+const ProxyAgent = require('proxy-agent');
+
 aws.config.logger = console;
+aws.config.update({
+  httpOptions: { agent: new ProxyAgent() },
+});
 
 let eks: aws.EKS | undefined;
 

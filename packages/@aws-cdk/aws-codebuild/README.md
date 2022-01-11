@@ -184,23 +184,53 @@ You can save time when your project builds by using a cache. A cache can store r
 
 ### S3 Caching
 
-With S3 caching, the cache is stored in an S3 bucket which is available from multiple hosts.
+With S3 caching, the cache is stored in an S3 bucket which is available
+regardless from what CodeBuild instance gets selected to run your CodeBuild job
+on. When using S3 caching, you must also add in a `cache` section to your
+buildspec which indicates the files to be cached:
 
 ```ts
+declare const myCachingBucket: s3.Bucket;
+
 new codebuild.Project(this, 'Project', {
   source: codebuild.Source.bitBucket({
     owner: 'awslabs',
     repo: 'aws-cdk',
   }),
-  cache: codebuild.Cache.bucket(new s3.Bucket(this, 'Bucket'))
+
+  cache: codebuild.Cache.bucket(myCachingBucket),
+
+  // BuildSpec with a 'cache' section necessary for S3 caching. This can
+  // also come from 'buildspec.yml' in your source.
+  buildSpec: codebuild.BuildSpec.fromObject({
+    version: '0.2',
+    phases: {
+      build: {
+        commands: ['...'],
+      },
+    },
+    cache: {
+      paths: [
+        // The '**/*' is required to indicate all files in this directory
+        '/root/cachedir/**/*',
+      ],
+    },
+  }),
 });
 ```
 
+Note that two different CodeBuild Projects using the same S3 bucket will *not*
+share their cache: each Project will get a unique file in the S3 bucket to store
+the cache in.
+
 ### Local Caching
 
-With local caching, the cache is stored on the codebuild instance itself. This is simple,
-cheap and fast, but CodeBuild cannot guarantee a reuse of instance and hence cannot
-guarantee cache hits. For example, when a build starts and caches files locally, if two subsequent builds start at the same time afterwards only one of those builds would get the cache. Three different cache modes are supported, which can be turned on individually.
+With local caching, the cache is stored on the codebuild instance itself. This
+is simple, cheap and fast, but CodeBuild cannot guarantee a reuse of instance
+and hence cannot guarantee cache hits. For example, when a build starts and
+caches files locally, if two subsequent builds start at the same time afterwards
+only one of those builds would get the cache. Three different cache modes are
+supported, which can be turned on individually.
 
 * `LocalCacheMode.SOURCE` caches Git metadata for primary and secondary sources.
 * `LocalCacheMode.DOCKER_LAYER` caches existing Docker layers.
@@ -213,7 +243,24 @@ new codebuild.Project(this, 'Project', {
   }),
 
   // Enable Docker AND custom caching
-  cache: codebuild.Cache.local(codebuild.LocalCacheMode.DOCKER_LAYER, codebuild.LocalCacheMode.CUSTOM)
+  cache: codebuild.Cache.local(codebuild.LocalCacheMode.DOCKER_LAYER, codebuild.LocalCacheMode.CUSTOM),
+
+  // BuildSpec with a 'cache' section necessary for 'CUSTOM' caching. This can
+  // also come from 'buildspec.yml' in your source.
+  buildSpec: codebuild.BuildSpec.fromObject({
+    version: '0.2',
+    phases: {
+      build: {
+        commands: ['...'],
+      },
+    },
+    cache: {
+      paths: [
+        // The '**/*' is required to indicate all files in this directory
+        '/root/cachedir/**/*',
+      ],
+    },
+  }),
 });
 ```
 
@@ -319,6 +366,8 @@ new codebuild.Project(this, 'Project', {
   // ...
 })
 ```
+
+Alternatively, you can reference an image available in an ECR repository using the `LinuxGpuBuildImage.fromEcrRepository(repo[, tag])` method.
 
 ## Logs
 

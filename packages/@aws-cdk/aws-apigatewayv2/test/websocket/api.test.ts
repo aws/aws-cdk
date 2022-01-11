@@ -1,8 +1,13 @@
-import { Template } from '@aws-cdk/assertions';
+import { Match, Template } from '@aws-cdk/assertions';
+import { User } from '@aws-cdk/aws-iam';
 import { Stack } from '@aws-cdk/core';
 import {
-  IWebSocketRouteIntegration, WebSocketApi, WebSocketIntegrationType,
-  WebSocketRouteIntegrationBindOptions, WebSocketRouteIntegrationConfig,
+  WebSocketRouteIntegration,
+  WebSocketApi,
+  WebSocketApiKeySelectionExpression,
+  WebSocketIntegrationType,
+  WebSocketRouteIntegrationBindOptions,
+  WebSocketRouteIntegrationConfig,
 } from '../../lib';
 
 describe('WebSocketApi', () => {
@@ -15,6 +20,27 @@ describe('WebSocketApi', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Api', {
+      Name: 'api',
+      ProtocolType: 'WEBSOCKET',
+    });
+
+    Template.fromStack(stack).resourceCountIs('AWS::ApiGatewayV2::Stage', 0);
+    Template.fromStack(stack).resourceCountIs('AWS::ApiGatewayV2::Route', 0);
+    Template.fromStack(stack).resourceCountIs('AWS::ApiGatewayV2::Integration', 0);
+  });
+
+  test('apiKeySelectionExpression: given a value', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new WebSocketApi(stack, 'api', {
+      apiKeySelectionExpression: WebSocketApiKeySelectionExpression.AUTHORIZER_USAGE_IDENTIFIER_KEY,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Api', {
+      ApiKeySelectionExpression: '$context.authorizer.usageIdentifierKey',
       Name: 'api',
       ProtocolType: 'WEBSOCKET',
     });
@@ -80,9 +106,56 @@ describe('WebSocketApi', () => {
       RouteKey: '$default',
     });
   });
+
+  describe('grantManageConnections', () => {
+    test('adds an IAM policy to the principal', () => {
+      // GIVEN
+      const stack = new Stack();
+      const api = new WebSocketApi(stack, 'api');
+      const principal = new User(stack, 'user');
+
+      // WHEN
+      api.grantManageConnections(principal);
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: Match.arrayWith([{
+            Action: 'execute-api:ManageConnections',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::Join': ['', [
+                'arn:',
+                {
+                  Ref: 'AWS::Partition',
+                },
+                ':execute-api:',
+                {
+                  Ref: 'AWS::Region',
+                },
+                ':',
+                {
+                  Ref: 'AWS::AccountId',
+                },
+                ':',
+                {
+                  Ref: 'apiC8550315',
+                },
+                '/*/POST/@connections/*',
+              ]],
+            },
+          }]),
+        },
+      });
+    });
+  });
 });
 
-class DummyIntegration implements IWebSocketRouteIntegration {
+class DummyIntegration extends WebSocketRouteIntegration {
+  constructor() {
+    super('DummyIntegration');
+  }
+
   bind(_options: WebSocketRouteIntegrationBindOptions): WebSocketRouteIntegrationConfig {
     return {
       type: WebSocketIntegrationType.AWS_PROXY,

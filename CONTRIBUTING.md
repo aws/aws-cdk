@@ -52,9 +52,8 @@ See [Gitpod section](#gitpod) on how to set up the CDK repo on Gitpod.
 
 The following tools need to be installed on your system prior to installing the CDK:
 
-- [Node.js >= 10.13.0](https://nodejs.org/download/release/latest-v10.x/)
+- [Node.js >= 14.15.0](https://nodejs.org/download/release/latest-v14.x/)
   - We recommend using a version in [Active LTS](https://nodejs.org/en/about/releases/)
-  - ⚠️ versions `13.0.0` to `13.6.0` are not supported due to compatibility issues with our dependencies.
 - [Yarn >= 1.19.1, < 2](https://yarnpkg.com/lang/en/docs/install)
 - [.NET Core SDK 3.1.x](https://www.microsoft.com/net/download)
 - [Python >= 3.6.5, < 4.0](https://www.python.org/downloads/release/python-365/)
@@ -113,7 +112,7 @@ $ yarn build
 $ yarn test
 ```
 
-However, if you wish to build the the entire repository, the following command will achieve this.
+However, if you wish to build the entire repository, the following command will achieve this.
 
 ```console
 cd <root of the CDK repo>
@@ -556,6 +555,12 @@ contain three slashes to achieve the same effect:
 For a practical example of how making sample code compilable works, see the
 `aws-ec2` package.
 
+> ⚠️ NOTE: README files often contain code snippets that refer to modules that are consumers
+> of the current module, and hence not present in the current module's dependency closure.
+> Compilation of these snippets will fail if the module referenced has not been built.
+> For the best experience when working on snippets, a full build of the CDK repo is required.
+> However, it may be prudent to "build up" these modules as required.
+
 #### Recommendations
 
 In order to offer a consistent documentation style throughout the AWS CDK
@@ -978,3 +983,4 @@ $ node --inspect-brk /path/to/aws-cdk/node_modules/.bin/jest -i -t 'TESTNAME'
 * [Workshop](https://github.com/aws-samples/aws-cdk-intro-workshop): source for https://cdkworkshop.com
 * [Developer Guide](https://github.com/awsdocs/aws-cdk-guide): markdown source for developer guide
 * [jsii](https://github.com/aws/jsii): the technology we use for multi-language support. If you are looking to help us support new languages, start there.
+

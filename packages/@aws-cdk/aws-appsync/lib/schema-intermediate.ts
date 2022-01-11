@@ -381,7 +381,7 @@ export class UnionType implements IIntermediateType {
     if (options.field && !(options.field.intermediateType instanceof ObjectType)) {
       throw new Error('Fields for Union Types must be Object Types.');
     }
-    this.definition[options.field?.toString() + 'id'] = options.field;
+    this.definition[options.field.toString()] = options.field;
   }
 
   /**

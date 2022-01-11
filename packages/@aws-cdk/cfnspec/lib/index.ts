@@ -3,7 +3,6 @@ import { CfnLintFileSchema } from './_private_schema/cfn-lint';
 import * as schema from './schema';
 export { schema };
 export * from './canned-metrics';
-export * from './library-creation';
 
 /**
  * The complete AWS CloudFormation Resource specification, having any CDK patches and enhancements included in it.
@@ -12,6 +11,15 @@ export function specification(): schema.Specification {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   return require('../spec/specification.json');
 }
+
+/**
+ * The complete AWS CloudFormation Resource specification, having any CDK patches and enhancements included in it.
+ */
+export function docs(): schema.CloudFormationDocsFile {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  return require('../spec/cfn-docs.json');
+}
+
 
 /**
  * Return the resource specification for the given typename
@@ -23,6 +31,21 @@ export function resourceSpecification(typeName: string): schema.ResourceType {
   const ret = specification().ResourceTypes[typeName];
   if (!ret) {
     throw new Error(`No such resource type: ${typeName}`);
+  }
+  return ret;
+}
+
+/**
+ * Return documentation for the given type
+ */
+export function typeDocs(resourceName: string, propertyTypeName?: string): schema.CloudFormationTypeDocs {
+  const key = propertyTypeName ? `${resourceName}.${propertyTypeName}` : resourceName;
+  const ret = docs().Types[key];
+  if (!ret) {
+    return {
+      description: '',
+      properties: {},
+    };
   }
   return ret;
 }

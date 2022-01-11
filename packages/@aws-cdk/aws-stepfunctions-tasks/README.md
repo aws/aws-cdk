@@ -60,6 +60,10 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
     - [Cancel Step](#cancel-step)
     - [Modify Instance Fleet](#modify-instance-fleet)
     - [Modify Instance Group](#modify-instance-group)
+  - [EMR on EKS](#emr-on-eks)
+    - [Create Virtual Cluster](#create-virtual-cluster)
+    - [Delete Virtual Cluster](#delete-virtual-cluster)
+    - [Start Job Run](#start-job-run)
   - [EKS](#eks)
     - [Call](#call)
   - [EventBridge](#eventbridge)
@@ -110,9 +114,10 @@ The following example provides the field named `input` as the input to the `Task
 state that runs a Lambda function.
 
 ```ts
+declare const fn: lambda.Function;
 const submitJob = new tasks.LambdaInvoke(this, 'Invoke Handler', {
   lambdaFunction: fn,
-  inputPath: '$.input'
+  inputPath: '$.input',
 });
 ```
 
@@ -130,9 +135,10 @@ as well as other metadata.
 The following example assigns the output from the Task to a field named `result`
 
 ```ts
+declare const fn: lambda.Function;
 const submitJob = new tasks.LambdaInvoke(this, 'Invoke Handler', {
   lambdaFunction: fn,
-  outputPath: '$.Payload.result'
+  outputPath: '$.Payload.result',
 });
 ```
 
@@ -149,6 +155,7 @@ The following example extracts the output payload of a Lambda function Task and 
 it with some static values and the state name from the context object.
 
 ```ts
+declare const fn: lambda.Function;
 new tasks.LambdaInvoke(this, 'Invoke Handler', {
   lambdaFunction: fn,
   resultSelector: {
@@ -159,7 +166,7 @@ new tasks.LambdaInvoke(this, 'Invoke Handler', {
     },
     stateName: sfn.JsonPath.stringAt('$$.State.Name'),
   },
-})
+});
 ```
 
 ### ResultPath
@@ -174,9 +181,10 @@ The following example adds the item from calling DynamoDB's `getItem` API to the
 input and passes it to the next state.
 
 ```ts
+declare const myTable: dynamodb.Table;
 new tasks.DynamoPutItem(this, 'PutItem', {
   item: {
-    MessageId: tasks.DynamoAttributeValue.fromString('message-id')
+    MessageId: tasks.DynamoAttributeValue.fromString('message-id'),
   },
   table: myTable,
   resultPath: `$.Item`,
@@ -199,6 +207,7 @@ The following example provides the field named `input` as the input to the Lambd
 and invokes it asynchronously.
 
 ```ts
+declare const fn: lambda.Function;
 const submitJob = new tasks.LambdaInvoke(this, 'Invoke Handler', {
   lambdaFunction: fn,
   payload: sfn.TaskInput.fromJsonPathAt('$.input'),
@@ -258,14 +267,14 @@ const publishMessage = new tasks.SnsPublish(this, 'Publish message', {
 });
 
 const wait = new sfn.Wait(this, 'Wait', {
-  time: sfn.WaitTime.secondsPath('$.waitSeconds')
+  time: sfn.WaitTime.secondsPath('$.waitSeconds'),
 });
 
 new sfn.StateMachine(this, 'StateMachine', {
   definition: convertToSeconds
     .next(createMessage)
     .next(publishMessage)
-    .next(wait)
+    .next(wait),
 });
 ```
 
@@ -286,15 +295,13 @@ Previous-generation REST APIs currently offer more features. More details can be
 The `CallApiGatewayRestApiEndpoint` calls the REST API endpoint.
 
 ```ts
-import * as sfn from '@aws-cdk/aws-stepfunctions';
-import * as tasks from `@aws-cdk/aws-stepfunctions-tasks`;
+import * as apigateway from '@aws-cdk/aws-apigateway';
+const restApi = new apigateway.RestApi(this, 'MyRestApi');
 
-const restApi = new apigateway.RestApi(stack, 'MyRestApi');
-
-const invokeTask = new tasks.CallApiGatewayRestApiEndpoint(stack, 'Call REST API', {
+const invokeTask = new tasks.CallApiGatewayRestApiEndpoint(this, 'Call REST API', {
   api: restApi,
   stageName: 'prod',
-  method: HttpMethod.GET,
+  method: tasks.HttpMethod.GET,
 });
 ```
 
@@ -303,15 +310,13 @@ const invokeTask = new tasks.CallApiGatewayRestApiEndpoint(stack, 'Call REST API
 The `CallApiGatewayHttpApiEndpoint` calls the HTTP API endpoint.
 
 ```ts
-import * as sfn from '@aws-cdk/aws-stepfunctions';
-import * as tasks from `@aws-cdk/aws-stepfunctions-tasks`;
+import * as apigatewayv2 from '@aws-cdk/aws-apigatewayv2';
+const httpApi = new apigatewayv2.HttpApi(this, 'MyHttpApi');
 
-const httpApi = new apigatewayv2.HttpApi(stack, 'MyHttpApi');
-
-const invokeTask = new tasks.CallApiGatewayHttpApiEndpoint(stack, 'Call HTTP API', {
+const invokeTask = new tasks.CallApiGatewayHttpApiEndpoint(this, 'Call HTTP API', {
   apiId: httpApi.apiId,
-  apiStack: cdk.Stack.of(httpApi),
-  method: HttpMethod.GET,
+  apiStack: Stack.of(httpApi),
+  method: tasks.HttpMethod.GET,
 });
 ```
 
@@ -324,6 +329,7 @@ You can use Step Functions' AWS SDK integrations to call any of the over two hun
 directly from your state machine, giving you access to over nine thousand API actions.
 
 ```ts
+declare const myBucket: s3.Bucket;
 const getObject = new tasks.CallAwsService(this, 'GetObject', {
   service: 's3',
   action: 'getObject',
@@ -346,9 +352,9 @@ action name does not match with the API service/action name:
 ```ts
 const listBuckets = new tasks.CallAwsService(this, 'ListBuckets', {
   service: 's3',
-  action: 'ListBuckets',
+  action: 'listBuckets',
   iamResources: ['*'],
-  iamAction: 's3:ListAllMyBuckets'
+  iamAction: 's3:ListAllMyBuckets',
 });
 ```
 
@@ -416,11 +422,15 @@ Step Functions supports [Batch](https://docs.aws.amazon.com/step-functions/lates
 
 The [SubmitJob](https://docs.aws.amazon.com/batch/latest/APIReference/API_SubmitJob.html) API submits an AWS Batch job from a job definition.
 
-```ts fixture=with-batch-job
+```ts
+import * as batch from '@aws-cdk/aws-batch';
+declare const batchJobDefinition: batch.JobDefinition;
+declare const batchQueue: batch.JobQueue;
+
 const task = new tasks.BatchSubmitJob(this, 'Submit Job', {
-  jobDefinitionArn: batchJobDefinitionArn,
+  jobDefinitionArn: batchJobDefinition.jobDefinitionArn,
   jobName: 'MyJob',
-  jobQueueArn: batchQueueArn,
+  jobQueueArn: batchQueue.jobQueueArn,
 });
 ```
 
@@ -471,6 +481,7 @@ Read more about calling DynamoDB APIs [here](https://docs.aws.amazon.com/step-fu
 The [GetItem](https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_GetItem.html) operation returns a set of attributes for the item with the given primary key.
 
 ```ts
+declare const myTable: dynamodb.Table;
 new tasks.DynamoGetItem(this, 'Get Item', {
   key: { messageId: tasks.DynamoAttributeValue.fromString('message-007') },
   table: myTable,
@@ -482,6 +493,7 @@ new tasks.DynamoGetItem(this, 'Get Item', {
 The [PutItem](https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_PutItem.html) operation creates a new item, or replaces an old item with a new item.
 
 ```ts
+declare const myTable: dynamodb.Table;
 new tasks.DynamoPutItem(this, 'PutItem', {
   item: {
     MessageId: tasks.DynamoAttributeValue.fromString('message-007'),
@@ -497,6 +509,7 @@ new tasks.DynamoPutItem(this, 'PutItem', {
 The [DeleteItem](https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_DeleteItem.html) operation deletes a single item in a table by primary key.
 
 ```ts
+declare const myTable: dynamodb.Table;
 new tasks.DynamoDeleteItem(this, 'DeleteItem', {
   key: { MessageId: tasks.DynamoAttributeValue.fromString('message-007') },
   table: myTable,
@@ -510,6 +523,7 @@ The [UpdateItem](https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/
 to the table if it does not already exist.
 
 ```ts
+declare const myTable: dynamodb.Table;
 new tasks.DynamoUpdateItem(this, 'UpdateItem', {
   key: {
     MessageId: tasks.DynamoAttributeValue.fromString('message-007')
@@ -547,8 +561,6 @@ The latest ACTIVE revision of the passed task definition is used for running the
 The following example runs a job from a task definition on EC2
 
 ```ts
-import * as ecs from '@aws-cdk/aws-ecs';
-
 const vpc = ec2.Vpc.fromLookup(this, 'Vpc', {
   isDefault: true,
 });
@@ -579,7 +591,7 @@ const runTask = new tasks.EcsRunTask(this, 'Run', {
       ecs.PlacementStrategy.randomly(),
     ],
     placementConstraints: [
-      ecs.PlacementConstraint.memberOf('blieptuut')
+      ecs.PlacementConstraint.memberOf('blieptuut'),
     ],
   }),
 });
@@ -602,8 +614,6 @@ task definition is used for running the task. Learn more about
 The following example runs a job from a task definition on Fargate
 
 ```ts
-import * as ecs from '@aws-cdk/aws-ecs';
-
 const vpc = ec2.Vpc.fromLookup(this, 'Vpc', {
   isDefault: true,
 });
@@ -648,7 +658,6 @@ Creates and starts running a cluster (job flow).
 Corresponds to the [`runJobFlow`](https://docs.aws.amazon.com/emr/latest/APIReference/API_RunJobFlow.html) API in EMR.
 
 ```ts
-
 const clusterRole = new iam.Role(this, 'ClusterRole', {
   assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
 });
@@ -689,7 +698,8 @@ and 256 inclusive, where the default concurrency of 1 means no step concurrency 
 
 ```ts
 new tasks.EmrCreateCluster(this, 'Create Cluster', {
-  // ...
+  instances: {},
+  name: sfn.TaskInput.fromJsonPathAt('$.ClusterName').value,
   stepConcurrencyLevel: 10,
 });
 ```
@@ -715,7 +725,7 @@ Corresponds to the [`terminateJobFlows`](https://docs.aws.amazon.com/emr/latest/
 
 ```ts
 new tasks.EmrTerminateCluster(this, 'Task', {
-  clusterId: 'ClusterId'
+  clusterId: 'ClusterId',
 });
 ```
 
@@ -777,6 +787,169 @@ new tasks.EmrModifyInstanceGroupByName(this, 'Task', {
 });
 ```
 
+## EMR on EKS
+
+Step Functions supports Amazon EMR on EKS through the service integration pattern.
+The service integration APIs correspond to Amazon EMR on EKS APIs, but differ in the parameters that are used.
+
+[Read more](https://docs.aws.amazon.com/step-functions/latest/dg/connect-emr-eks.html) about the differences when using these service integrations.
+
+[Setting up](https://docs.aws.amazon.com/emr/latest/EMR-on-EKS-DevelopmentGuide/setting-up.html) the EKS cluster is required.
+
+### Create Virtual Cluster
+
+The [CreateVirtualCluster](https://docs.aws.amazon.com/emr-on-eks/latest/APIReference/API_CreateVirtualCluster.html) API creates a single virtual cluster that's mapped to a single Kubernetes namespace. 
+
+The EKS cluster containing the Kubernetes namespace where the virtual cluster will be mapped can be passed in from the task input.
+
+```ts
+new tasks.EmrContainersCreateVirtualCluster(this, 'Create a Virtual Cluster', {
+  eksCluster: tasks.EksClusterInput.fromTaskInput(sfn.TaskInput.fromText('clusterId')),
+});
+```
+
+The EKS cluster can also be passed in directly.
+
+```ts
+import * as eks from '@aws-cdk/aws-eks';
+
+declare const eksCluster: eks.Cluster;
+
+new tasks.EmrContainersCreateVirtualCluster(this, 'Create a Virtual Cluster', {
+  eksCluster: tasks.EksClusterInput.fromCluster(eksCluster),
+});
+```
+
+By default, the Kubernetes namespace that a virtual cluster maps to is "default", but a specific namespace within an EKS cluster can be selected.
+
+```ts
+new tasks.EmrContainersCreateVirtualCluster(this, 'Create a Virtual Cluster', {
+  eksCluster: tasks.EksClusterInput.fromTaskInput(sfn.TaskInput.fromText('clusterId')),
+  eksNamespace: 'specified-namespace',
+});
+```
+
+### Delete Virtual Cluster
+
+The [DeleteVirtualCluster](https://docs.aws.amazon.com/emr-on-eks/latest/APIReference/API_DeleteVirtualCluster.html) API deletes a virtual cluster.
+
+```ts
+new tasks.EmrContainersDeleteVirtualCluster(this, 'Delete a Virtual Cluster', {
+  virtualClusterId: sfn.TaskInput.fromJsonPathAt('$.virtualCluster'),
+});
+```
+
+### Start Job Run
+
+The [StartJobRun](https://docs.aws.amazon.com/emr-on-eks/latest/APIReference/API_StartJobRun.html) API starts a job run. A job is a unit of work that you submit to Amazon EMR on EKS for execution. The work performed by the job can be defined by a Spark jar, PySpark script, or SparkSQL query. A job run is an execution of the job on the virtual cluster.
+
+Required setup:
+
+ - If not done already, follow the [steps](https://docs.aws.amazon.com/emr/latest/EMR-on-EKS-DevelopmentGuide/setting-up.html) to setup EMR on EKS and [create an EKS Cluster](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-eks-readme.html#quick-start).
+ - Enable [Cluster access](https://docs.aws.amazon.com/emr/latest/EMR-on-EKS-DevelopmentGuide/setting-up-cluster-access.html)
+ - Enable [IAM Role access](https://docs.aws.amazon.com/emr/latest/EMR-on-EKS-DevelopmentGuide/setting-up-enable-IAM.html)
+
+The following actions must be performed if the virtual cluster ID is supplied from the task input. Otherwise, if it is supplied statically in the state machine definition, these actions will be done automatically.
+
+ - Create an [IAM role](https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_aws-iam.Role.html)
+ - Update the [Role Trust Policy](https://docs.aws.amazon.com/emr/latest/EMR-on-EKS-DevelopmentGuide/setting-up-trust-policy.html) of the Job Execution Role.
+
+The job can be configured with spark submit parameters:
+
+```ts
+new tasks.EmrContainersStartJobRun(this, 'EMR Containers Start Job Run', {
+  virtualCluster: tasks.VirtualClusterInput.fromVirtualClusterId('de92jdei2910fwedz'),
+  releaseLabel: tasks.ReleaseLabel.EMR_6_2_0,
+  jobDriver: {
+    sparkSubmitJobDriver: {
+      entryPoint: sfn.TaskInput.fromText('local:///usr/lib/spark/examples/src/main/python/pi.py'),
+      sparkSubmitParameters: '--conf spark.executor.instances=2 --conf spark.executor.memory=2G --conf spark.executor.cores=2 --conf spark.driver.cores=1',
+    },
+  },
+});
+```
+
+Configuring the job can also be done via application configuration:
+
+```ts
+new tasks.EmrContainersStartJobRun(this, 'EMR Containers Start Job Run', {
+  virtualCluster: tasks.VirtualClusterInput.fromVirtualClusterId('de92jdei2910fwedz'),
+  releaseLabel: tasks.ReleaseLabel.EMR_6_2_0,
+  jobName: 'EMR-Containers-Job',
+  jobDriver: {
+    sparkSubmitJobDriver: {
+      entryPoint: sfn.TaskInput.fromText('local:///usr/lib/spark/examples/src/main/python/pi.py'),
+    },
+  },
+  applicationConfig: [{
+    classification: tasks.Classification.SPARK_DEFAULTS,
+    properties: {
+      'spark.executor.instances': '1',
+      'spark.executor.memory': '512M',
+    },
+  }],
+});
+```
+
+Job monitoring can be enabled if `monitoring.logging` is set true. This automatically generates an S3 bucket and CloudWatch logs.
+
+```ts
+new tasks.EmrContainersStartJobRun(this, 'EMR Containers Start Job Run', {
+  virtualCluster: tasks.VirtualClusterInput.fromVirtualClusterId('de92jdei2910fwedz'),
+  releaseLabel: tasks.ReleaseLabel.EMR_6_2_0,
+  jobDriver: {
+    sparkSubmitJobDriver: {
+      entryPoint: sfn.TaskInput.fromText('local:///usr/lib/spark/examples/src/main/python/pi.py'),
+      sparkSubmitParameters: '--conf spark.executor.instances=2 --conf spark.executor.memory=2G --conf spark.executor.cores=2 --conf spark.driver.cores=1',
+    },
+  },
+  monitoring: {
+    logging: true,
+  },
+});
+```
+
+Otherwise, providing monitoring for jobs with existing log groups and log buckets is also available.
+
+```ts
+import * as logs from '@aws-cdk/aws-logs';
+
+const logGroup = new logs.LogGroup(this, 'Log Group');
+const logBucket = new s3.Bucket(this, 'S3 Bucket')
+
+new tasks.EmrContainersStartJobRun(this, 'EMR Containers Start Job Run', {
+  virtualCluster: tasks.VirtualClusterInput.fromVirtualClusterId('de92jdei2910fwedz'),
+  releaseLabel: tasks.ReleaseLabel.EMR_6_2_0,
+  jobDriver: {
+    sparkSubmitJobDriver: {
+      entryPoint: sfn.TaskInput.fromText('local:///usr/lib/spark/examples/src/main/python/pi.py'),
+      sparkSubmitParameters: '--conf spark.executor.instances=2 --conf spark.executor.memory=2G --conf spark.executor.cores=2 --conf spark.driver.cores=1',
+    },
+  },
+  monitoring: {
+    logGroup: logGroup,
+    logBucket: logBucket,
+  },
+});
+```
+
+Users can provide their own existing Job Execution Role.
+
+```ts
+new tasks.EmrContainersStartJobRun(this, 'EMR Containers Start Job Run', {
+  virtualCluster:tasks.VirtualClusterInput.fromTaskInput(sfn.TaskInput.fromJsonPathAt('$.VirtualClusterId')),
+  releaseLabel: tasks.ReleaseLabel.EMR_6_2_0,
+  jobName: 'EMR-Containers-Job',
+  executionRole: iam.Role.fromRoleArn(this, 'Job-Execution-Role', 'arn:aws:iam::xxxxxxxxxxxx:role/JobExecutionRole'),
+  jobDriver: {
+    sparkSubmitJobDriver: {
+      entryPoint: sfn.TaskInput.fromText('local:///usr/lib/spark/examples/src/main/python/pi.py'),
+      sparkSubmitParameters: '--conf spark.executor.instances=2 --conf spark.executor.memory=2G --conf spark.executor.cores=2 --conf spark.driver.cores=1',
+    },
+  },
+});
+```
+
 ## EKS
 
 Step Functions supports Amazon EKS through the service integration pattern.
@@ -793,17 +966,15 @@ The following code snippet includes a Task state that uses eks:call to list the 
 
 ```ts
 import * as eks from '@aws-cdk/aws-eks';
-import * as sfn from '@aws-cdk/aws-stepfunctions';
-import * as tasks from '@aws-cdk/aws-stepfunctions-tasks';
 
 const myEksCluster = new eks.Cluster(this, 'my sample cluster', {
   version: eks.KubernetesVersion.V1_18,
   clusterName: 'myEksCluster',
 });
 
-new tasks.EksCall(stack, 'Call a EKS Endpoint', {
+new tasks.EksCall(this, 'Call a EKS Endpoint', {
   cluster: myEksCluster,
-  httpMethod: MethodType.GET,
+  httpMethod: tasks.HttpMethods.GET,
   httpPath: '/api/v1/namespaces/default/pods',
 });
 ```
@@ -824,14 +995,12 @@ The following code snippet includes a Task state that uses events:putevents to s
 
 ```ts
 import * as events from '@aws-cdk/aws-events';
-import * as sfn from '@aws-cdk/aws-stepfunctions';
-import * as tasks from '@aws-cdk/aws-stepfunctions-tasks';
 
-const myEventBus = events.EventBus(stack, 'EventBus', {
+const myEventBus = new events.EventBus(this, 'EventBus', {
   eventBusName: 'MyEventBus1',
 });
 
-new tasks.EventBridgePutEvents(stack, 'Send an event to EventBridge', {
+new tasks.EventBridgePutEvents(this, 'Send an event to EventBridge', {
   entries: [{
     detail: sfn.TaskInput.fromObject({
       Message: 'Hello from Step Functions!',
@@ -855,8 +1024,8 @@ new tasks.GlueStartJobRun(this, 'Task', {
   arguments: sfn.TaskInput.fromObject({
     key: 'value',
   }),
-  timeout: cdk.Duration.minutes(30),
-  notifyDelayAfter: cdk.Duration.minutes(5),
+  timeout: Duration.minutes(30),
+  notifyDelayAfter: Duration.minutes(5),
 });
 ```
 
@@ -884,6 +1053,7 @@ The following snippet invokes a Lambda Function with the state input as the payl
 by referencing the `$` path.
 
 ```ts
+declare const fn: lambda.Function;
 new tasks.LambdaInvoke(this, 'Invoke with state input', {
   lambdaFunction: fn,
 });
@@ -899,6 +1069,7 @@ The following snippet invokes a Lambda Function by referencing the `$.Payload` p
 to reference the output of a Lambda executed before it.
 
 ```ts
+declare const fn: lambda.Function;
 new tasks.LambdaInvoke(this, 'Invoke with empty object as payload', {
   lambdaFunction: fn,
   payload: sfn.TaskInput.fromObject({}),
@@ -915,6 +1086,7 @@ The following snippet invokes a Lambda and sets the task output to only include
 the Lambda function response.
 
 ```ts
+declare const fn: lambda.Function;
 new tasks.LambdaInvoke(this, 'Invoke and set function response as task output', {
   lambdaFunction: fn,
   outputPath: '$.Payload',
@@ -927,6 +1099,7 @@ Lambda function ARN directly in the "Resource" string, but it conflicts with the
 integrationPattern, invocationType, clientContext, and qualifier properties.
 
 ```ts
+declare const fn: lambda.Function;
 new tasks.LambdaInvoke(this, 'Invoke and combine function response with task input', {
   lambdaFunction: fn,
   payloadResponseOnly: true,
@@ -945,6 +1118,7 @@ The following snippet invokes a Lambda with the task token as part of the input
 to the Lambda.
 
 ```ts
+declare const fn: lambda.Function;
 new tasks.LambdaInvoke(this, 'Invoke with callback', {
   lambdaFunction: fn,
   integrationPattern: sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN,
@@ -998,11 +1172,11 @@ new tasks.SageMakerCreateTrainingJob(this, 'TrainSagemaker', {
   },
   resourceConfig: {
     instanceCount: 1,
-    instanceType: new ec2.InstanceType(JsonPath.stringAt('$.InstanceType')),
-    volumeSize: cdk.Size.gibibytes(50),
+    instanceType: new ec2.InstanceType(sfn.JsonPath.stringAt('$.InstanceType')),
+    volumeSize: Size.gibibytes(50),
   }, // optional: default is 1 instance of EC2 `M4.XLarge` with `10GB` volume
   stoppingCondition: {
-    maxRuntime: cdk.Duration.hours(2),
+    maxRuntime: Duration.hours(2),
   }, // optional: default is 1 hour
 });
 ```
@@ -1017,7 +1191,7 @@ new tasks.SageMakerCreateTransformJob(this, 'Batch Inference', {
   modelName: 'MyModelName',
   modelClientOptions: {
     invocationsMaxRetries: 3,  // default is 0
-    invocationsTimeout: cdk.Duration.minutes(5),  // default is 60 seconds
+    invocationsTimeout: Duration.minutes(5),  // default is 60 seconds
   },
   transformInput: {
     transformDataSource: {
@@ -1111,7 +1285,7 @@ const task1 = new tasks.SnsPublish(this, 'Publish1', {
     },
     pic: {
       // BINARY must be explicitly set
-      type: MessageAttributeDataType.BINARY,
+      dataType: tasks.MessageAttributeDataType.BINARY,
       value: sfn.JsonPath.stringAt('$.pic'),
     },
     people: {
@@ -1170,6 +1344,7 @@ via the `associateWithParent` property. This allows the Step Functions UI to lin
 executions from parent executions, making it easier to trace execution flow across state machines.
 
 ```ts
+declare const child: sfn.StateMachine;
 const task = new tasks.StepFunctionsStartExecution(this, 'ChildTask', {
   stateMachine: child,
   associateWithParent: true,

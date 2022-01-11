@@ -201,7 +201,7 @@ describe('resource', () => {
     const cResource = aResource.addResource('b').addResource('c');
 
     // THEN
-    expect(stack.resolve(aResource.url)).toEqual({
+    expect(stack.resolve(api.urlForPath(aResource.path))).toEqual({
       'Fn::Join': [
         '',
         [
@@ -217,7 +217,7 @@ describe('resource', () => {
         ],
       ],
     });
-    expect(stack.resolve(cResource.url)).toEqual({
+    expect(stack.resolve(api.urlForPath(cResource.path))).toEqual({
       'Fn::Join': [
         '',
         [
