@@ -1,5 +1,5 @@
 import * as iam from '@aws-cdk/aws-iam';
-import { IResource as IResourceBase, Resource, Stack } from '@aws-cdk/core';
+import { ArnFormat, IResource as IResourceBase, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnApiKey } from './apigateway.generated';
 import { ResourceOptions } from './resource';
@@ -146,7 +146,7 @@ export class ApiKey extends ApiKeyBase {
         service: 'apigateway',
         account: '',
         resource: '/apikeys',
-        sep: '/',
+        arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
         resourceName: apiKeyId,
       });
     }
@@ -177,7 +177,7 @@ export class ApiKey extends ApiKeyBase {
       service: 'apigateway',
       account: '',
       resource: '/apikeys',
-      sep: '/',
+      arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
       resourceName: this.keyId,
     });
   }
@@ -236,12 +236,12 @@ export class RateLimitedApiKey extends ApiKeyBase {
     const resource = new ApiKey(this, 'Resource', props);
 
     if (props.apiStages || props.quota || props.throttle) {
-      new UsagePlan(this, 'UsagePlanResource', {
-        apiKey: resource,
+      const usageplan = new UsagePlan(this, 'UsagePlanResource', {
         apiStages: props.apiStages,
         quota: props.quota,
         throttle: props.throttle,
       });
+      usageplan.addApiKey(resource);
     }
 
     this.keyId = resource.keyId;

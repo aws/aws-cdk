@@ -60,6 +60,10 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
     - [Cancel Step](#cancel-step)
     - [Modify Instance Fleet](#modify-instance-fleet)
     - [Modify Instance Group](#modify-instance-group)
+  - [EMR on EKS](#emr-on-eks)
+    - [Create Virtual Cluster](#create-virtual-cluster)
+    - [Delete Virtual Cluster](#delete-virtual-cluster)
+    - [Start Job Run](#start-job-run)
   - [EKS](#eks)
     - [Call](#call)
   - [EventBridge](#eventbridge)
@@ -700,20 +704,6 @@ new tasks.EmrCreateCluster(this, 'Create Cluster', {
 });
 ```
 
-If you want to use an [auto-termination policy](https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-auto-termination-policy.html),
-you can specify the `autoTerminationPolicy` property. Set the `idleTimeout` as a `Duration` between 60 seconds and 7 days.
-`autoTerminationPolicy` requires the EMR release label to be 5.30.0 or above.
-
-```ts
-new tasks.EmrCreateCluster(this, 'Create Cluster', {
-  instances: {},
-  name: 'ClusterName',
-  autoTerminationPolicy: {
-    idleTimeout: Duration.seconds(120),
-  },
-});
-```
-
 ### Termination Protection
 
 Locks a cluster (job flow) so the EC2 instances in the cluster cannot be
@@ -793,6 +783,169 @@ new tasks.EmrModifyInstanceGroupByName(this, 'Task', {
   instanceGroupName: sfn.JsonPath.stringAt('$.InstanceGroupName'),
   instanceGroup: {
     instanceCount: 1,
+  },
+});
+```
+
+## EMR on EKS
+
+Step Functions supports Amazon EMR on EKS through the service integration pattern.
+The service integration APIs correspond to Amazon EMR on EKS APIs, but differ in the parameters that are used.
+
+[Read more](https://docs.aws.amazon.com/step-functions/latest/dg/connect-emr-eks.html) about the differences when using these service integrations.
+
+[Setting up](https://docs.aws.amazon.com/emr/latest/EMR-on-EKS-DevelopmentGuide/setting-up.html) the EKS cluster is required.
+
+### Create Virtual Cluster
+
+The [CreateVirtualCluster](https://docs.aws.amazon.com/emr-on-eks/latest/APIReference/API_CreateVirtualCluster.html) API creates a single virtual cluster that's mapped to a single Kubernetes namespace. 
+
+The EKS cluster containing the Kubernetes namespace where the virtual cluster will be mapped can be passed in from the task input.
+
+```ts
+new tasks.EmrContainersCreateVirtualCluster(this, 'Create a Virtual Cluster', {
+  eksCluster: tasks.EksClusterInput.fromTaskInput(sfn.TaskInput.fromText('clusterId')),
+});
+```
+
+The EKS cluster can also be passed in directly.
+
+```ts
+import * as eks from '@aws-cdk/aws-eks';
+
+declare const eksCluster: eks.Cluster;
+
+new tasks.EmrContainersCreateVirtualCluster(this, 'Create a Virtual Cluster', {
+  eksCluster: tasks.EksClusterInput.fromCluster(eksCluster),
+});
+```
+
+By default, the Kubernetes namespace that a virtual cluster maps to is "default", but a specific namespace within an EKS cluster can be selected.
+
+```ts
+new tasks.EmrContainersCreateVirtualCluster(this, 'Create a Virtual Cluster', {
+  eksCluster: tasks.EksClusterInput.fromTaskInput(sfn.TaskInput.fromText('clusterId')),
+  eksNamespace: 'specified-namespace',
+});
+```
+
+### Delete Virtual Cluster
+
+The [DeleteVirtualCluster](https://docs.aws.amazon.com/emr-on-eks/latest/APIReference/API_DeleteVirtualCluster.html) API deletes a virtual cluster.
+
+```ts
+new tasks.EmrContainersDeleteVirtualCluster(this, 'Delete a Virtual Cluster', {
+  virtualClusterId: sfn.TaskInput.fromJsonPathAt('$.virtualCluster'),
+});
+```
+
+### Start Job Run
+
+The [StartJobRun](https://docs.aws.amazon.com/emr-on-eks/latest/APIReference/API_StartJobRun.html) API starts a job run. A job is a unit of work that you submit to Amazon EMR on EKS for execution. The work performed by the job can be defined by a Spark jar, PySpark script, or SparkSQL query. A job run is an execution of the job on the virtual cluster.
+
+Required setup:
+
+ - If not done already, follow the [steps](https://docs.aws.amazon.com/emr/latest/EMR-on-EKS-DevelopmentGuide/setting-up.html) to setup EMR on EKS and [create an EKS Cluster](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-eks-readme.html#quick-start).
+ - Enable [Cluster access](https://docs.aws.amazon.com/emr/latest/EMR-on-EKS-DevelopmentGuide/setting-up-cluster-access.html)
+ - Enable [IAM Role access](https://docs.aws.amazon.com/emr/latest/EMR-on-EKS-DevelopmentGuide/setting-up-enable-IAM.html)
+
+The following actions must be performed if the virtual cluster ID is supplied from the task input. Otherwise, if it is supplied statically in the state machine definition, these actions will be done automatically.
+
+ - Create an [IAM role](https://docs.aws.amazon.com/cdk/api/latest/docs/@aws-cdk_aws-iam.Role.html)
+ - Update the [Role Trust Policy](https://docs.aws.amazon.com/emr/latest/EMR-on-EKS-DevelopmentGuide/setting-up-trust-policy.html) of the Job Execution Role.
+
+The job can be configured with spark submit parameters:
+
+```ts
+new tasks.EmrContainersStartJobRun(this, 'EMR Containers Start Job Run', {
+  virtualCluster: tasks.VirtualClusterInput.fromVirtualClusterId('de92jdei2910fwedz'),
+  releaseLabel: tasks.ReleaseLabel.EMR_6_2_0,
+  jobDriver: {
+    sparkSubmitJobDriver: {
+      entryPoint: sfn.TaskInput.fromText('local:///usr/lib/spark/examples/src/main/python/pi.py'),
+      sparkSubmitParameters: '--conf spark.executor.instances=2 --conf spark.executor.memory=2G --conf spark.executor.cores=2 --conf spark.driver.cores=1',
+    },
+  },
+});
+```
+
+Configuring the job can also be done via application configuration:
+
+```ts
+new tasks.EmrContainersStartJobRun(this, 'EMR Containers Start Job Run', {
+  virtualCluster: tasks.VirtualClusterInput.fromVirtualClusterId('de92jdei2910fwedz'),
+  releaseLabel: tasks.ReleaseLabel.EMR_6_2_0,
+  jobName: 'EMR-Containers-Job',
+  jobDriver: {
+    sparkSubmitJobDriver: {
+      entryPoint: sfn.TaskInput.fromText('local:///usr/lib/spark/examples/src/main/python/pi.py'),
+    },
+  },
+  applicationConfig: [{
+    classification: tasks.Classification.SPARK_DEFAULTS,
+    properties: {
+      'spark.executor.instances': '1',
+      'spark.executor.memory': '512M',
+    },
+  }],
+});
+```
+
+Job monitoring can be enabled if `monitoring.logging` is set true. This automatically generates an S3 bucket and CloudWatch logs.
+
+```ts
+new tasks.EmrContainersStartJobRun(this, 'EMR Containers Start Job Run', {
+  virtualCluster: tasks.VirtualClusterInput.fromVirtualClusterId('de92jdei2910fwedz'),
+  releaseLabel: tasks.ReleaseLabel.EMR_6_2_0,
+  jobDriver: {
+    sparkSubmitJobDriver: {
+      entryPoint: sfn.TaskInput.fromText('local:///usr/lib/spark/examples/src/main/python/pi.py'),
+      sparkSubmitParameters: '--conf spark.executor.instances=2 --conf spark.executor.memory=2G --conf spark.executor.cores=2 --conf spark.driver.cores=1',
+    },
+  },
+  monitoring: {
+    logging: true,
+  },
+});
+```
+
+Otherwise, providing monitoring for jobs with existing log groups and log buckets is also available.
+
+```ts
+import * as logs from '@aws-cdk/aws-logs';
+
+const logGroup = new logs.LogGroup(this, 'Log Group');
+const logBucket = new s3.Bucket(this, 'S3 Bucket')
+
+new tasks.EmrContainersStartJobRun(this, 'EMR Containers Start Job Run', {
+  virtualCluster: tasks.VirtualClusterInput.fromVirtualClusterId('de92jdei2910fwedz'),
+  releaseLabel: tasks.ReleaseLabel.EMR_6_2_0,
+  jobDriver: {
+    sparkSubmitJobDriver: {
+      entryPoint: sfn.TaskInput.fromText('local:///usr/lib/spark/examples/src/main/python/pi.py'),
+      sparkSubmitParameters: '--conf spark.executor.instances=2 --conf spark.executor.memory=2G --conf spark.executor.cores=2 --conf spark.driver.cores=1',
+    },
+  },
+  monitoring: {
+    logGroup: logGroup,
+    logBucket: logBucket,
+  },
+});
+```
+
+Users can provide their own existing Job Execution Role.
+
+```ts
+new tasks.EmrContainersStartJobRun(this, 'EMR Containers Start Job Run', {
+  virtualCluster:tasks.VirtualClusterInput.fromTaskInput(sfn.TaskInput.fromJsonPathAt('$.VirtualClusterId')),
+  releaseLabel: tasks.ReleaseLabel.EMR_6_2_0,
+  jobName: 'EMR-Containers-Job',
+  executionRole: iam.Role.fromRoleArn(this, 'Job-Execution-Role', 'arn:aws:iam::xxxxxxxxxxxx:role/JobExecutionRole'),
+  jobDriver: {
+    sparkSubmitJobDriver: {
+      entryPoint: sfn.TaskInput.fromText('local:///usr/lib/spark/examples/src/main/python/pi.py'),
+      sparkSubmitParameters: '--conf spark.executor.instances=2 --conf spark.executor.memory=2G --conf spark.executor.cores=2 --conf spark.driver.cores=1',
+    },
   },
 });
 ```

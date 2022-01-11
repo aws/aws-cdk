@@ -11,7 +11,7 @@ export interface ResourcePolicyProps {
    * Name of the log group resource policy
    * @default - Uses a unique id based on the construct path
    */
-  readonly policyName?: string;
+  readonly resourcePolicyName?: string;
 
   /**
    * Initial statements to add to the resource policy
@@ -22,7 +22,18 @@ export interface ResourcePolicyProps {
 }
 
 /**
- * Creates Cloudwatch log group resource policies
+ * Resource Policy for CloudWatch Log Groups
+ *
+ * Policies define the operations that are allowed on this resource.
+ *
+ * You almost never need to define this construct directly.
+ *
+ * All AWS resources that support resource policies have a method called
+ * `addToResourcePolicy()`, which will automatically create a new resource
+ * policy if one doesn't exist yet, otherwise it will add to the existing
+ * policy.
+ *
+ * Prefer to use `addToResourcePolicy()` instead.
  */
 export class ResourcePolicy extends Resource {
   /**
@@ -31,15 +42,19 @@ export class ResourcePolicy extends Resource {
   public readonly document = new PolicyDocument();
 
   constructor(scope: Construct, id: string, props?: ResourcePolicyProps) {
-    super(scope, id);
-    new CfnResourcePolicy(this, 'Resource', {
+    super(scope, id, {
+      physicalName: props?.resourcePolicyName,
+    });
+
+    new CfnResourcePolicy(this, 'ResourcePolicy', {
       policyName: Lazy.string({
-        produce: () => props?.policyName ?? Names.uniqueId(this),
+        produce: () => props?.resourcePolicyName ?? Names.uniqueId(this),
       }),
       policyDocument: Lazy.string({
         produce: () => JSON.stringify(this.document),
       }),
     });
+
     if (props?.policyStatements) {
       this.document.addStatements(...props.policyStatements);
     }

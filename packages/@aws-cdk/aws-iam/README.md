@@ -209,12 +209,30 @@ The `WebIdentityPrincipal` class can be used as a principal for web identities l
 Cognito, Amazon, Google or Facebook, for example:
 
 ```ts
-const principal = new iam.WebIdentityPrincipal('cognito-identity.amazonaws.com')
-  .withConditions({
-    "StringEquals": { "cognito-identity.amazonaws.com:aud": "us-east-2:12345678-abcd-abcd-abcd-123456" },
-    "ForAnyValue:StringLike": {"cognito-identity.amazonaws.com:amr": "unauthenticated" },
-  });
+const principal = new iam.WebIdentityPrincipal('cognito-identity.amazonaws.com', {
+  'StringEquals': { 'cognito-identity.amazonaws.com:aud': 'us-east-2:12345678-abcd-abcd-abcd-123456' },
+  'ForAnyValue:StringLike': {'cognito-identity.amazonaws.com:amr': 'unauthenticated' },
+});
 ```
+
+If your identity provider is configured to assume a Role with [session
+tags](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_session-tags.html), you
+need to call `.withSessionTags()` to add the required permissions to the Role's
+policy document:
+
+```ts
+new iam.Role(this, 'Role', {
+  assumedBy: new iam.WebIdentityPrincipal('cognito-identity.amazonaws.com', {
+    'StringEquals': {
+      'cognito-identity.amazonaws.com:aud': 'us-east-2:12345678-abcd-abcd-abcd-123456',
+     },
+    'ForAnyValue:StringLike': {
+      'cognito-identity.amazonaws.com:amr': 'unauthenticated',
+    },
+  }).withSessionTags(),
+});
+```
+
 
 ## Parsing JSON Policy Documents
 
@@ -329,7 +347,7 @@ Identity Pools Developer Guide].
 
 The following examples defines an OpenID Connect provider. Two client IDs
 (audiences) are will be able to send authentication requests to
-https://openid/connect.
+<https://openid/connect>.
 
 ```ts
 const provider = new iam.OpenIdConnectProvider(this, 'MyProvider', {
@@ -439,6 +457,26 @@ const user = iam.User.fromUserAttributes(this, 'MyImportedUserByAttributes', {
 });
 ```
 
+## Groups
+
+An IAM user group is a collection of IAM users. User groups let you specify permissions for multiple users.
+
+```ts
+const group = new iam.Group(this, 'MyGroup');
+```
+
+To import an existing group by ARN:
+
+```ts
+const group = iam.Group.fromGroupArn(this, 'MyImportedGroupByArn', 'arn:aws:iam::account-id:group/group-name');
+```
+
+To import an existing group by name [with path](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_identifiers.html#identifiers-friendly-names):
+
+```ts
+const group = iam.Group.fromGroupName(this, 'MyImportedGroupByName', 'group-name');
+```
+
 To add a user to a group (both for a new and imported user/group):
 
 ```ts
@@ -450,12 +488,11 @@ user.addToGroup(group);
 group.addUser(user);
 ```
 
-
 ## Features
 
-  * Policy name uniqueness is enforced. If two policies by the same name are attached to the same
+* Policy name uniqueness is enforced. If two policies by the same name are attached to the same
     principal, the attachment will fail.
-  * Policy names are not required - the CDK logical ID will be used and ensured to be unique.
-  * Policies are validated during synthesis to ensure that they have actions, and that policies
+* Policy names are not required - the CDK logical ID will be used and ensured to be unique.
+* Policies are validated during synthesis to ensure that they have actions, and that policies
     attached to IAM principals specify relevant resources, while policies attached to resources
     specify which IAM principals they apply to.

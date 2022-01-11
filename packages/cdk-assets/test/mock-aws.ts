@@ -8,6 +8,7 @@ export function mockAws() {
 
   // Sane defaults which can be overridden
   mockS3.getBucketLocation = mockedApiResult({});
+  mockS3.getBucketEncryption = mockedApiResult({});
   mockEcr.describeRepositories = mockedApiResult({
     repositories: [
       {
@@ -23,6 +24,7 @@ export function mockAws() {
     discoverPartition: jest.fn(() => Promise.resolve('swa')),
     discoverCurrentAccount: jest.fn(() => Promise.resolve({ accountId: 'current_account', partition: 'swa' })),
     discoverDefaultRegion: jest.fn(() => Promise.resolve('current_region')),
+    discoverTargetAccount: jest.fn(() => Promise.resolve({ accountId: 'target_account', partition: 'swa' })),
     ecrClient: jest.fn(() => Promise.resolve(mockEcr)),
     s3Client: jest.fn(() => Promise.resolve(mockS3)),
     secretsManagerClient: jest.fn(() => Promise.resolve(mockSecretsManager)),

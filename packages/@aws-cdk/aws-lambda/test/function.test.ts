@@ -10,6 +10,7 @@ import * as logs from '@aws-cdk/aws-logs';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as signer from '@aws-cdk/aws-signer';
 import * as sqs from '@aws-cdk/aws-sqs';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import * as constructs from 'constructs';
 import * as _ from 'lodash';
@@ -156,7 +157,7 @@ describe('function', () => {
               'Arn',
             ],
           },
-          Runtime: 'python2.7',
+          Runtime: 'python3.9',
         },
         DependsOn: [
           'MyLambdaServiceRole4539ECB6',
@@ -294,6 +295,35 @@ describe('function', () => {
     // THEN
     expect(imported.functionArn).toEqual('arn:aws:lambda:us-east-1:123456789012:function:ProcessKinesisRecords');
     expect(imported.functionName).toEqual('ProcessKinesisRecords');
+  });
+
+  describe('Function.fromFunctionAttributes()', () => {
+    let stack: cdk.Stack;
+
+    beforeEach(() => {
+      const app = new cdk.App();
+      stack = new cdk.Stack(app, 'Base', {
+        env: { account: '111111111111', region: 'stack-region' },
+      });
+    });
+
+    describe('for a function in a different account and region', () => {
+      let func: lambda.IFunction;
+
+      beforeEach(() => {
+        func = lambda.Function.fromFunctionAttributes(stack, 'iFunc', {
+          functionArn: 'arn:aws:lambda:function-region:222222222222:function:function-name',
+        });
+      });
+
+      test("the function's region is taken from the ARN", () => {
+        expect(func.env.region).toBe('function-region');
+      });
+
+      test("the function's account is taken from the ARN", () => {
+        expect(func.env.account).toBe('222222222222');
+      });
+    });
   });
 
   describe('addPermissions', () => {
@@ -1382,7 +1412,7 @@ describe('function', () => {
     });
   });
 
-  test('add a version with event invoke config', () => {
+  testDeprecated('add a version with event invoke config', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new lambda.Function(stack, 'fn', {
@@ -1841,6 +1871,39 @@ describe('function', () => {
     });
   });
 
+  describe('lambda.Function timeout', () => {
+    test('should be a cdk.Duration when defined', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      const { timeout } = new lambda.Function(stack, 'MyFunction', {
+        handler: 'foo',
+        runtime: lambda.Runtime.NODEJS_12_X,
+        code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
+        timeout: cdk.Duration.minutes(2),
+      });
+
+      // THEN
+      expect(timeout).toEqual(cdk.Duration.minutes(2));
+    });
+
+    test('should be optional', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      const { timeout } = new lambda.Function(stack, 'MyFunction', {
+        handler: 'foo',
+        runtime: lambda.Runtime.NODEJS_12_X,
+        code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
+      });
+
+      // THEN
+      expect(timeout).not.toBeDefined();
+    });
+  });
+
   describe('currentVersion', () => {
     // see test.function-hash.ts for more coverage for this
     test('logical id of version is based on the function hash', () => {
@@ -2174,7 +2237,7 @@ describe('function', () => {
     })).toThrow(/Layers are not supported for container image functions/);
   });
 
-  test('specified architectures is recognized', () => {
+  testDeprecated('specified architectures is recognized', () => {
     const stack = new cdk.Stack();
     new lambda.Function(stack, 'MyFunction', {
       code: lambda.Code.fromInline('foo'),
@@ -2204,7 +2267,7 @@ describe('function', () => {
     });
   });
 
-  test('both architectures and architecture are not recognized', () => {
+  testDeprecated('both architectures and architecture are not recognized', () => {
     const stack = new cdk.Stack();
     expect(() => new lambda.Function(stack, 'MyFunction', {
       code: lambda.Code.fromInline('foo'),
@@ -2216,7 +2279,7 @@ describe('function', () => {
     })).toThrow(/architecture or architectures must be specified/);
   });
 
-  test('Only one architecture allowed', () => {
+  testDeprecated('Only one architecture allowed', () => {
     const stack = new cdk.Stack();
     expect(() => new lambda.Function(stack, 'MyFunction', {
       code: lambda.Code.fromInline('foo'),
@@ -2226,13 +2289,22 @@ describe('function', () => {
       architectures: [lambda.Architecture.X86_64, lambda.Architecture.ARM_64],
     })).toThrow(/one architecture must be specified/);
   });
-
+  test('Architecture is properly readable from the function', () => {
+    const stack = new cdk.Stack();
+    const fn = new lambda.Function(stack, 'MyFunction', {
+      code: lambda.Code.fromInline('foo'),
+      runtime: lambda.Runtime.NODEJS_14_X,
+      handler: 'index.handler',
+      architecture: lambda.Architecture.ARM_64,
+    });
+    expect(fn.architecture?.name).toEqual('arm64');
+  });
 });
 
 function newTestLambda(scope: constructs.Construct) {
   return new lambda.Function(scope, 'MyLambda', {
     code: new lambda.InlineCode('foo'),
     handler: 'bar',
-    runtime: lambda.Runtime.PYTHON_2_7,
+    runtime: lambda.Runtime.PYTHON_3_9,
   });
 }

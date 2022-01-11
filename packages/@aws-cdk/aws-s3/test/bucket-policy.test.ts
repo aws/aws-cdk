@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import { Template } from '@aws-cdk/assertions';
 import { AnyPrincipal, PolicyStatement } from '@aws-cdk/aws-iam';
 import { RemovalPolicy, Stack, App } from '@aws-cdk/core';
 import * as s3 from '../lib';
@@ -20,7 +20,7 @@ describe('bucket policy', () => {
       principals: [new AnyPrincipal()],
     }));
 
-    expect(stack).toHaveResource('AWS::S3::BucketPolicy', {
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
       Bucket: {
         'Ref': 'MyBucketF68F3FF0',
       },
@@ -36,8 +36,6 @@ describe('bucket policy', () => {
         ],
       },
     });
-
-
   });
 
   test('when specifying a removalPolicy at creation', () => {
@@ -54,7 +52,7 @@ describe('bucket policy', () => {
       principals: [new AnyPrincipal()],
     }));
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       'Resources': {
         'MyBucketF68F3FF0': {
           'Type': 'AWS::S3::Bucket',
@@ -84,8 +82,6 @@ describe('bucket policy', () => {
         },
       },
     });
-
-
   });
 
   test('when specifying a removalPolicy after creation', () => {
@@ -99,7 +95,7 @@ describe('bucket policy', () => {
     }));
     myBucket.policy?.applyRemovalPolicy(RemovalPolicy.RETAIN);
 
-    expect(stack).toMatchTemplate({
+    Template.fromStack(stack).templateMatches({
       'Resources': {
         'MyBucketF68F3FF0': {
           'Type': 'AWS::S3::Bucket',
@@ -129,8 +125,6 @@ describe('bucket policy', () => {
         },
       },
     });
-
-
   });
 
   test('fails if bucket policy has no actions', () => {
@@ -143,8 +137,6 @@ describe('bucket policy', () => {
     }));
 
     expect(() => app.synth()).toThrow(/A PolicyStatement must specify at least one \'action\' or \'notAction\'/);
-
-
   });
 
   test('fails if bucket policy has no IAM principals', () => {
@@ -157,7 +149,5 @@ describe('bucket policy', () => {
     }));
 
     expect(() => app.synth()).toThrow(/A PolicyStatement used in a resource-based policy must specify at least one IAM principal/);
-
-
   });
 });

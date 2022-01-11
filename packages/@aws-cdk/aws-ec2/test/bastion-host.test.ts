@@ -1,6 +1,7 @@
 import '@aws-cdk/assert-internal/jest';
-import { Stack } from '@aws-cdk/core';
-import { BastionHostLinux, BlockDeviceVolume, InstanceClass, InstanceSize, InstanceType, SubnetType, Vpc } from '../lib';
+import { ResourcePart } from '@aws-cdk/assert-internal';
+import { Duration, Stack } from '@aws-cdk/core';
+import { BastionHostLinux, BlockDeviceVolume, CloudFormationInit, InitCommand, InstanceClass, InstanceSize, InstanceType, SubnetType, Vpc } from '../lib';
 
 describe('bastion host', () => {
   test('default instance is created in basic', () => {
@@ -122,5 +123,42 @@ describe('bastion host', () => {
     });
 
 
+  });
+
+  test('add CloudFormation Init to instance', () => {
+    // GIVEN
+    const stack = new Stack();
+    const vpc = new Vpc(stack, 'VPC');
+
+    // WHEN
+    new BastionHostLinux(stack, 'Bastion', {
+      vpc,
+      initOptions: {
+        timeout: Duration.minutes(30),
+      },
+      init: CloudFormationInit.fromElements(
+        InitCommand.shellCommand('echo hello'),
+      ),
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::EC2::Instance', {
+      CreationPolicy: {
+        ResourceSignal: {
+          Timeout: 'PT30M',
+        },
+      },
+      Metadata: {
+        'AWS::CloudFormation::Init': {
+          config: {
+            commands: {
+              '000': {
+                command: 'echo hello',
+              },
+            },
+          },
+        },
+      },
+    }, ResourcePart.CompleteDefinition);
   });
 });

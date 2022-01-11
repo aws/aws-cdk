@@ -928,11 +928,13 @@ describe('import', () => {
 
   test('static fromDomainEndpoint(endpoint) allows importing an external/existing domain', () => {
     const domainName = 'test-domain-2w2x2u3tifly';
-    const domainEndpoint = `https://${domainName}-jcjotrt6f7otem4sqcwbch3c4u.testregion.es.amazonaws.com`;
+    const domainEndpointWithoutHttps = `${domainName}-jcjotrt6f7otem4sqcwbch3c4u.testregion.es.amazonaws.com`;
+    const domainEndpoint = `https://${domainEndpointWithoutHttps}`;
     const imported = Domain.fromDomainEndpoint(stack, 'Domain', domainEndpoint);
 
     expect(imported.domainName).toEqual(domainName);
     expect(imported.domainArn).toMatch(RegExp(`es:testregion:1234:domain/${domainName}$`));
+    expect(imported.domainEndpoint).toEqual(domainEndpointWithoutHttps);
 
     expect(stack).not.toHaveResource('AWS::Elasticsearch::Domain');
   });
@@ -940,7 +942,8 @@ describe('import', () => {
   test('static fromDomainAttributes(attributes) allows importing an external/existing domain', () => {
     const domainName = 'test-domain-2w2x2u3tifly';
     const domainArn = `arn:aws:es:testregion:1234:domain/${domainName}`;
-    const domainEndpoint = `https://${domainName}-jcjotrt6f7otem4sqcwbch3c4u.testregion.es.amazonaws.com`;
+    const domainEndpointWithoutHttps = `${domainName}-jcjotrt6f7otem4sqcwbch3c4u.testregion.es.amazonaws.com`;
+    const domainEndpoint = `https://${domainEndpointWithoutHttps}`;
     const imported = Domain.fromDomainAttributes(stack, 'Domain', {
       domainArn,
       domainEndpoint,
@@ -948,6 +951,7 @@ describe('import', () => {
 
     expect(imported.domainName).toEqual(domainName);
     expect(imported.domainArn).toEqual(domainArn);
+    expect(imported.domainEndpoint).toEqual(domainEndpointWithoutHttps);
 
     expect(stack).not.toHaveResource('AWS::Elasticsearch::Domain');
   });
@@ -1437,11 +1441,21 @@ describe('custom error responses', () => {
     })).toThrow(/Node-to-node encryption requires Elasticsearch version 6.0 or later/);
   });
 
-  test('error when i3 instance types are specified with EBS enabled', () => {
+  test('error when i3 or r6g instance types are specified with EBS enabled', () => {
     expect(() => new Domain(stack, 'Domain1', {
       version: ElasticsearchVersion.V7_4,
       capacity: {
         dataNodeInstanceType: 'i3.2xlarge.elasticsearch',
+      },
+      ebs: {
+        volumeSize: 100,
+        volumeType: EbsDeviceVolumeType.GENERAL_PURPOSE_SSD,
+      },
+    })).toThrow(/I3 and R6GD instance types do not support EBS storage volumes/);
+    expect(() => new Domain(stack, 'Domain2', {
+      version: ElasticsearchVersion.V7_4,
+      capacity: {
+        dataNodeInstanceType: 'r6gd.large.elasticsearch',
       },
       ebs: {
         volumeSize: 100,
@@ -1500,6 +1514,41 @@ describe('custom error responses', () => {
         masterNodeInstanceType: 'm5.large.elasticsearch',
       },
     })).toThrow(/EBS volumes are required when using instance types other than r3, i3 or r6gd/);
+    expect(() => new Domain(stack, 'Domain2', {
+      version: ElasticsearchVersion.V7_4,
+      ebs: {
+        enabled: false,
+      },
+      capacity: {
+        dataNodeInstanceType: 'm5.large.elasticsearch',
+      },
+    })).toThrow(/EBS volumes are required when using instance types other than r3, i3 or r6gd/);
+  });
+
+  test('can use compatible master instance types that does not have local storage when data node type is i3 or r6gd', () => {
+    new Domain(stack, 'Domain1', {
+      version: ElasticsearchVersion.V7_4,
+      ebs: {
+        enabled: false,
+      },
+      capacity: {
+        masterNodeInstanceType: 'c5.2xlarge.elasticsearch',
+        dataNodeInstanceType: 'i3.2xlarge.elasticsearch',
+      },
+    });
+    new Domain(stack, 'Domain2', {
+      version: ElasticsearchVersion.V7_4,
+      ebs: {
+        enabled: false,
+      },
+      capacity: {
+        masterNodes: 3,
+        masterNodeInstanceType: 'c6g.large.elasticsearch',
+        dataNodeInstanceType: 'r6gd.large.elasticsearch',
+      },
+    });
+    // both configurations pass synth-time validation
+    expect(stack).toCountResources('AWS::Elasticsearch::Domain', 2);
   });
 
   test('error when availabilityZoneCount is not 2 or 3', () => {

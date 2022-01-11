@@ -155,6 +155,9 @@ describe('default properties', () => {
               'ComputeType': 'BUILD_GENERAL1_SMALL',
             },
             'EncryptionKey': 'alias/aws/s3',
+            'Cache': {
+              'Type': 'NO_CACHE',
+            },
           },
         },
       },
@@ -335,6 +338,9 @@ describe('default properties', () => {
               'Type': 'CODECOMMIT',
             },
             'EncryptionKey': 'alias/aws/s3',
+            'Cache': {
+              'Type': 'NO_CACHE',
+            },
           },
         },
       },
@@ -539,6 +545,9 @@ describe('default properties', () => {
               'Type': 'S3',
             },
             'EncryptionKey': 'alias/aws/s3',
+            'Cache': {
+              'Type': 'NO_CACHE',
+            },
           },
         },
       },

@@ -88,7 +88,7 @@ export interface BasicTargetTrackingScalingPolicyProps extends BaseTargetTrackin
    *
    * Only used for predefined metric ALBRequestCountPerTarget.
    *
-   * @example app/<load-balancer-name>/<load-balancer-id>/targetgroup/<target-group-name>/<target-group-id>
+   * Example value: `app/<load-balancer-name>/<load-balancer-id>/targetgroup/<target-group-name>/<target-group-id>`
    *
    * @default - No resource label.
    */
@@ -243,4 +243,19 @@ export enum PredefinedMetric {
    * @see https://docs.aws.amazon.com/autoscaling/application/APIReference/API_PredefinedMetricSpecification.html
    */
   KAFKA_BROKER_STORAGE_UTILIZATION = 'KafkaBrokerStorageUtilization',
+  /**
+   * ELASTIC_CACHE_PRIMARY_ENGINE_CPU_UTILIZATION
+   * @see https://docs.aws.amazon.com/autoscaling/application/APIReference/API_PredefinedMetricSpecification.html
+   */
+  ELASTICACHE_PRIMARY_ENGINE_CPU_UTILIZATION = 'ElastiCachePrimaryEngineCPUUtilization',
+  /**
+   * ELASTIC_CACHE_REPLICA_ENGINE_CPU_UTILIZATION
+   * @see https://docs.aws.amazon.com/autoscaling/application/APIReference/API_PredefinedMetricSpecification.html
+   */
+  ELASTICACHE_REPLICA_ENGINE_CPU_UTILIZATION = 'ElastiCacheReplicaEngineCPUUtilization',
+  /**
+   * ELASTIC_CACHE_REPLICA_ENGINE_CPU_UTILIZATION
+   * @see https://docs.aws.amazon.com/autoscaling/application/APIReference/API_PredefinedMetricSpecification.html
+   */
+  ELASTICACHE_DATABASE_MEMORY_USAGE_COUNTED_FOR_EVICT_PERCENTAGE = 'ElastiCacheDatabaseMemoryUsageCountedForEvictPercentage',
 }

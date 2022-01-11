@@ -226,6 +226,7 @@ export class Canary extends cdk.Resource {
 
     this.artifactsBucket = props.artifactsBucketLocation?.bucket ?? new s3.Bucket(this, 'ArtifactsBucket', {
       encryption: s3.BucketEncryption.KMS_MANAGED,
+      enforceSSL: true,
     });
 
     this.role = props.role ?? this.createDefaultRole(props.artifactsBucketLocation?.prefix);
@@ -256,7 +257,11 @@ export class Canary extends cdk.Resource {
    * @default avg over 5 minutes
    */
   public metricDuration(options?: MetricOptions): Metric {
-    return this.cannedMetric(CloudWatchSyntheticsMetrics.durationAverage, options);
+    return new Metric({
+      ...CloudWatchSyntheticsMetrics.durationMaximum({ CanaryName: this.canaryName }),
+      ...{ statistic: 'Average' },
+      ...options,
+    }).attachTo(this);
   }
 
   /**

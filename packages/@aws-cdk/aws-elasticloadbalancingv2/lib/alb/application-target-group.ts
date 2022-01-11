@@ -166,6 +166,10 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
       const result = target.attachToApplicationTargetGroup(this);
       this.addLoadBalancerTarget(result);
     }
+
+    if (this.targetType === TargetType.LAMBDA) {
+      this.setAttribute('stickiness.enabled', undefined);
+    }
   }
 
   /**
@@ -254,7 +258,7 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
     return new cloudwatch.Metric({
       namespace: 'AWS/ApplicationELB',
       metricName,
-      dimensions: {
+      dimensionsMap: {
         TargetGroup: this.targetGroupFullName,
         LoadBalancer: this.firstLoadBalancerFullName,
       },
