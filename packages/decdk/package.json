@@ -260,10 +260,10 @@
   },
   "devDependencies": {
     "@types/fs-extra": "^8.1.2",
-    "@types/jest": "^27.0.3",
+    "@types/jest": "^27.4.0",
     "@types/yaml": "1.9.7",
     "@types/yargs": "^15.0.14",
-    "jest": "^27.4.5",
+    "jest": "^27.4.7",
     "jsii": "^1.50.0"
   },
   "keywords": [

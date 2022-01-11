@@ -22,6 +22,12 @@ export const BOOTSTRAP_QUALIFIER_CONTEXT = '@aws-cdk/core:bootstrapQualifier';
 const MIN_BOOTSTRAP_STACK_VERSION = 6;
 
 /**
+ * The minimum bootstrap stack version required
+ * to use the lookup role.
+ */
+const MIN_LOOKUP_ROLE_BOOTSTRAP_STACK_VERSION = 8;
+
+/**
  * Configuration properties for DefaultStackSynthesizer
  */
 export interface DefaultStackSynthesizerProps {
@@ -90,6 +96,25 @@ export interface DefaultStackSynthesizerProps {
    * @default - None
    */
   readonly lookupRoleArn?: string;
+
+  /**
+   * External ID to use when assuming lookup role
+   *
+   * @default - No external ID
+   */
+  readonly lookupRoleExternalId?: string;
+
+  /**
+   * Use the bootstrapped lookup role for (read-only) stack operations
+   *
+   * Use the lookup role when performing a `cdk diff`. If set to `false`, the
+   * `deploy role` credentials will be used to perform a `cdk diff`.
+   *
+   * Requires bootstrap stack version 8.
+   *
+   * @default true
+   */
+  readonly useLookupRoleForStackOperations?: boolean;
 
   /**
    * External ID to use when assuming role for image asset publishing
@@ -269,6 +294,7 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
   private fileAssetPublishingRoleArn?: string;
   private imageAssetPublishingRoleArn?: string;
   private lookupRoleArn?: string;
+  private useLookupRoleForStackOperations: boolean;
   private qualifier?: string;
   private bucketPrefix?: string;
   private dockerTagPrefix?: string;
@@ -279,6 +305,7 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
 
   constructor(private readonly props: DefaultStackSynthesizerProps = {}) {
     super();
+    this.useLookupRoleForStackOperations = props.useLookupRoleForStackOperations ?? true;
 
     for (const key in props) {
       if (props.hasOwnProperty(key)) {
@@ -453,6 +480,12 @@ export class DefaultStackSynthesizer extends StackSynthesizer {
       requiresBootstrapStackVersion: MIN_BOOTSTRAP_STACK_VERSION,
       bootstrapStackVersionSsmParameter: this.bootstrapStackVersionSsmParameter,
       additionalDependencies: [artifactId],
+      lookupRole: this.useLookupRoleForStackOperations && this.lookupRoleArn ? {
+        arn: this.lookupRoleArn,
+        assumeRoleExternalId: this.props.lookupRoleExternalId,
+        requiresBootstrapStackVersion: MIN_LOOKUP_ROLE_BOOTSTRAP_STACK_VERSION,
+        bootstrapStackVersionSsmParameter: this.bootstrapStackVersionSsmParameter,
+      } : undefined,
     });
   }
 

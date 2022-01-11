@@ -117,6 +117,7 @@ export default class CodeGenerator {
     this.docLink(spec.Documentation,
       `Properties for defining a \`${resourceContext.className}\``,
       '',
+      '@struct', // Make this interface ALWAYS be treated as a struct, event if it's named `IPSet...` or something...
       '@stability external');
     this.code.openBlock(`export interface ${name.className}`);
 
@@ -861,6 +862,8 @@ export default class CodeGenerator {
     this.docLink(
       propTypeSpec.Documentation,
       docs.description,
+      '',
+      '@struct', // Make this interface ALWAYS be treated as a struct, event if it's named `IPSet...` or something...
       '@stability external',
     );
     /*

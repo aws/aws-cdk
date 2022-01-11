@@ -61,7 +61,11 @@ Use `FirewallDomainList.fromFirewallDomainListId()` to import an existing or [AW
 
 ```ts
 // AWSManagedDomainsMalwareDomainList in us-east-1
-const malwareList = route53resolver.FirewallDomainList.fromFirewallDomainListId(this, 'Malware', 'rslvr-fdl-2c46f2ecbfec4dcc');
+const malwareList = route53resolver.FirewallDomainList.fromFirewallDomainListId(
+  this,
+  'Malware',
+  'rslvr-fdl-2c46f2ecbfec4dcc',
+);
 ```
 
 ### Rule group
@@ -69,6 +73,7 @@ const malwareList = route53resolver.FirewallDomainList.fromFirewallDomainListId(
 Create a rule group:
 
 ```ts
+declare const myBlockList: route53resolver.FirewallDomainList;
 new route53resolver.FirewallRuleGroup(this, 'RuleGroup', {
   rules: [
     {
@@ -84,16 +89,19 @@ new route53resolver.FirewallRuleGroup(this, 'RuleGroup', {
 Rules can be added at construction time or using `addRule()`:
 
 ```ts
+declare const myBlockList: route53resolver.FirewallDomainList;
+declare const ruleGroup: route53resolver.FirewallRuleGroup;
+
 ruleGroup.addRule({
   priority: 10,
-  firewallDomainList: blockList,
+  firewallDomainList: myBlockList,
   // block and reply with NXDOMAIN
   action: route53resolver.FirewallRuleAction.block(route53resolver.DnsBlockResponse.nxDomain()),
 });
 
 ruleGroup.addRule({
   priority: 20,
-  firewallDomainList: blockList,
+  firewallDomainList: myBlockList,
   // block and override DNS response with a custom domain
   action: route53resolver.FirewallRuleAction.block(route53resolver.DnsBlockResponse.override('amazon.com')),
 });
@@ -102,7 +110,12 @@ ruleGroup.addRule({
 Use `associate()` to associate a rule group with a VPC:
 
 ```ts
-ruleGroup.associate({
+import * as ec2 from '@aws-cdk/aws-ec2';
+
+declare const ruleGroup: route53resolver.FirewallRuleGroup;
+declare const myVpc: ec2.Vpc;
+
+ruleGroup.associate('Association', {
   priority: 101,
   vpc: myVpc,
 })

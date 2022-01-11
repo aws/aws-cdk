@@ -616,6 +616,9 @@
         "Source": {
           "Type": "CODEPIPELINE"
         },
+        "Cache": {
+          "Type": "NO_CACHE"
+        },
         "EncryptionKey": "alias/aws/s3"
       }
     }

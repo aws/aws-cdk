@@ -21,7 +21,7 @@ export class AmiContextProviderPlugin implements ContextProviderPlugin {
     debug(`AMI search parameters: ${JSON.stringify(args)}`);
 
     const options = { assumeRoleArn: args.lookupRoleArn };
-    const ec2 = (await this.aws.forEnvironment(cxapi.EnvironmentUtils.make(account, region), Mode.ForReading, options)).ec2();
+    const ec2 = (await this.aws.forEnvironment(cxapi.EnvironmentUtils.make(account, region), Mode.ForReading, options)).sdk.ec2();
     const response = await ec2.describeImages({
       Owners: args.owners,
       Filters: Object.entries(args.filters).map(([key, values]) => ({
