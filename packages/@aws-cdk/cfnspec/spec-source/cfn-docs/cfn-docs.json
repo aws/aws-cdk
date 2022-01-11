@@ -5999,7 +5999,7 @@
       "description": "`DomainValidationOption` is a property of the [AWS::CertificateManager::Certificate](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-certificatemanager-certificate.html) resource that specifies the AWS Certificate Manager ( ACM ) certificate domain to validate. Depending on the chosen validation method, ACM checks the domain's DNS record for a validation CNAME, or it attempts to send a validation email message to the domain owner.",
       "properties": {
         "DomainName": "A fully qualified domain name (FQDN) in the certificate request.",
-        "HostedZoneId": "The `HostedZoneId` option, which is available if you are using Route 53 as your domain registrar, causes ACM to add your CNAME to the domain record. Your list of `DomainValidationOptions` must contain one and only one of the domain-validation options, and the `HostedZoneId` can be used only when `DNS` is specified as your validation method.\n\nUse the Route 53 `ListHostedZones` API to discover IDs for available hosted zones.\n\n> The `ListHostedZones` API returns IDs in the format \"/hostedzone/Z111111QQQQQQQ\", but CloudFormation requires the IDs to be in the format \"Z111111QQQQQQQ\". \n\nWhen you change your `DomainValidationOptions` , a new resource is created.",
+        "HostedZoneId": "The `HostedZoneId` option, which is available if you are using Route 53 as your domain registrar, causes ACM to add your CNAME to the domain record. Your list of `DomainValidationOptions` must contain one and only one of the domain-validation options, and the `HostedZoneId` can be used only when `DNS` is specified as your validation method.\n\nUse the Route 53 `ListHostedZones` API to discover IDs for available hosted zones.\n\nThis option is required for publicly trusted certificates.\n\n> The `ListHostedZones` API returns IDs in the format \"/hostedzone/Z111111QQQQQQQ\", but CloudFormation requires the IDs to be in the format \"Z111111QQQQQQQ\". \n\nWhen you change your `DomainValidationOptions` , a new resource is created.",
         "ValidationDomain": "The domain name to which you want ACM to send validation emails. This domain name is the suffix of the email addresses that you want ACM to use. This must be the same as the `DomainName` value or a superdomain of the `DomainName` value. For example, if you request a certificate for `testing.example.com` , you can specify `example.com` as this value. In that case, ACM sends domain validation emails to the following five addresses:\n\n- admin@example.com\n- administrator@example.com\n- hostmaster@example.com\n- postmaster@example.com\n- webmaster@example.com"
       }
     },
@@ -9633,7 +9633,7 @@
       "description": "The `AWS::DMS::Endpoint` resource creates an AWS DMS endpoint.\n\nCurrently, the only endpoint setting types that AWS CloudFormation supports are *DynamoDBSettings* , *ElasticSearchSettings* , and *NeptuneSettings* .",
       "properties": {
         "CertificateArn": "The Amazon Resource Name (ARN) for the certificate.",
-        "DatabaseName": "The name of the endpoint database. For a MySQL source or target endpoint, do not specify DatabaseName.",
+        "DatabaseName": "The name of the endpoint database. For a MySQL source or target endpoint, do not specify DatabaseName. To migrate to a specific database, use this setting and `targetDbType` .",
         "DocDbSettings": "Settings in JSON format for the source DocumentDB endpoint. For more information about the available settings, see the configuration properties section in [Using DocumentDB as a Target for AWS Database Migration Service](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Source.DocumentDB.html) in the *AWS Database Migration Service User Guide.*",
         "DynamoDbSettings": "Settings in JSON format for the target Amazon DynamoDB endpoint. For information about other available settings, see [Using Object Mapping to Migrate Data to DynamoDB](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Target.DynamoDB.html#CHAP_Target.DynamoDB.ObjectMapping) in the *AWS Database Migration Service User Guide.*",
         "ElasticsearchSettings": "Settings in JSON format for the target OpenSearch endpoint. For more information about the available settings, see [Extra Connection Attributes When Using OpenSearch as a Target for AWS DMS](https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Target.Elasticsearch.html#CHAP_Target.Elasticsearch.Configuration) in the *AWS Database Migration Service User Guide* .",
@@ -10835,8 +10835,8 @@
         "InstanceMatchCriteria": "Indicates the type of instance launches that the Capacity Reservation accepts. The options include:\n\n- `open` - The Capacity Reservation automatically matches all instances that have matching attributes (instance type, platform, and Availability Zone). Instances that have matching attributes run in the Capacity Reservation automatically without specifying any additional parameters.\n- `targeted` - The Capacity Reservation only accepts instances that have matching attributes (instance type, platform, and Availability Zone), and explicitly target the Capacity Reservation. This ensures that only permitted instances can use the reserved capacity.\n\nDefault: `open`",
         "InstancePlatform": "The type of operating system for which to reserve capacity.",
         "InstanceType": "The instance type for which to reserve capacity. For more information, see [Instance types](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-types.html) in the *Amazon EC2 User Guide* .",
-        "OutPostArn": "The Amazon Resource Name (ARN) of the Outpost on which the Capacity Reservation was created.",
-        "PlacementGroupArn": "",
+        "OutPostArn": "The Amazon Resource Name (ARN) of the Outpost on which to create the Capacity Reservation.",
+        "PlacementGroupArn": "The Amazon Resource Name (ARN) of the cluster placement group in which to create the Capacity Reservation. For more information, see [Capacity Reservations for cluster placement groups](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/cr-cpg.html) in the *Amazon EC2 User Guide* .",
         "TagSpecifications": "The tags to apply to the Capacity Reservation during launch.",
         "Tenancy": "Indicates the tenancy of the Capacity Reservation. A Capacity Reservation can have one of the following tenancy settings:\n\n- `default` - The Capacity Reservation is created on hardware that is shared with other AWS accounts .\n- `dedicated` - The Capacity Reservation is created on single-tenant hardware that is dedicated to a single AWS account ."
       }
@@ -11054,7 +11054,7 @@
         "TagSpecifications": "The key-value pair for tagging the EC2 Fleet request on creation. For more information, see [Tagging your resources](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/Using_Tags.html#tag-resources) .\n\nIf the fleet type is `instant` , specify a resource type of `fleet` to tag the fleet or `instance` to tag the instances at launch.\n\nIf the fleet type is `maintain` or `request` , specify a resource type of `fleet` to tag the fleet. You cannot specify a resource type of `instance` . To tag instances at launch, specify the tags in a [launch template](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-launch-templates.html#create-launch-template) .",
         "TargetCapacitySpecification": "The number of units to request.",
         "TerminateInstancesWithExpiration": "Indicates whether running instances should be terminated when the EC2 Fleet expires.",
-        "Type": "The fleet type. The default value is `maintain` .\n\n- `maintain` - The EC2 Fleet places an asynchronous request for your desired capacity, and continues to maintain your desired Spot capacity by replenishing interrupted Spot Instances.\n- `request` - The EC2 Fleet places an asynchronous one-time request for your desired capacity, but does submit Spot requests in alternative capacity pools if Spot capacity is unavailable, and does not maintain Spot capacity if Spot Instances are interrupted.\n- `instant` - The EC2 Fleet places a synchronous one-time request for your desired capacity, and returns errors for any instances that could not be launched.\n\nFor more information, see [EC2 Fleet request types](https://docs.aws.amazon.com/https://docs.aws.amazon.com/ec2-fleet-request-type.html) in the *Amazon EC2 User Guide* .",
+        "Type": "The fleet type. The default value is `maintain` .\n\n- `maintain` - The EC2 Fleet places an asynchronous request for your desired capacity, and continues to maintain your desired Spot capacity by replenishing interrupted Spot Instances.\n- `request` - The EC2 Fleet places an asynchronous one-time request for your desired capacity, but does submit Spot requests in alternative capacity pools if Spot capacity is unavailable, and does not maintain Spot capacity if Spot Instances are interrupted.\n- `instant` - The EC2 Fleet places a synchronous one-time request for your desired capacity, and returns errors for any instances that could not be launched.\n\nFor more information, see [EC2 Fleet request types](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-fleet-request-type.html) in the *Amazon EC2 User Guide* .",
         "ValidFrom": "The start date and time of the request, in UTC format (for example, *YYYY* - *MM* - *DD* T *HH* : *MM* : *SS* Z). The default is to start fulfilling the request immediately.",
         "ValidUntil": "The end date and time of the request, in UTC format (for example, *YYYY* - *MM* - *DD* T *HH* : *MM* : *SS* Z). At this point, no new EC2 Fleet requests are placed or able to fulfill the request. If no value is specified, the request remains until you cancel it."
       }
@@ -11175,8 +11175,8 @@
       "attributes": {},
       "description": "The minimum and maximum amount of memory, in MiB.",
       "properties": {
-        "Max": "",
-        "Min": ""
+        "Max": "The maximum amount of memory, in MiB. To specify no maximum limit, omit this parameter.",
+        "Min": "The minimum amount of memory, in MiB. To specify no minimum limit, specify `0` ."
       }
     },
     "AWS::EC2::EC2Fleet.NetworkInterfaceCountRequest": {
@@ -11327,7 +11327,7 @@
         "MaxAggregationInterval": "The maximum interval of time during which a flow of packets is captured and aggregated into a flow log record. You can specify 60 seconds (1 minute) or 600 seconds (10 minutes).\n\nWhen a network interface is attached to a [Nitro-based instance](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-types.html#ec2-nitro-instances) , the aggregation interval is always 60 seconds or less, regardless of the value that you specify.\n\nDefault: 600",
         "ResourceId": "The ID of the subnet, network interface, or VPC for which you want to create a flow log.",
         "ResourceType": "The type of resource for which to create the flow log. For example, if you specified a VPC ID for the `ResourceId` property, specify `VPC` for this property.",
-        "Tags": "The tags for the flow log.",
+        "Tags": "The tags to apply to the flow logs.",
         "TrafficType": "The type of traffic to log. You can log traffic that the resource accepts or rejects, or all traffic."
       }
     },
@@ -11360,8 +11360,8 @@
         "IpamId": "The ID of the IPAM.",
         "PrivateDefaultScopeId": "The ID of the IPAM's default private scope.",
         "PublicDefaultScopeId": "The ID of the IPAM's default public scope.",
-        "Ref": "`Ref` returns the IPAM ID.",
-        "ScopeCount": "The number of scopes in the IPAM. The scope quota is 5."
+        "Ref": "",
+        "ScopeCount": "The number of scopes in the IPAM."
       },
       "description": "IPAM is a VPC feature that you can use to automate your IP address management workflows including assigning, tracking, troubleshooting, and auditing IP addresses across AWS Regions and accounts throughout your AWS Organization. For more information, see [What is IPAM?](https://docs.aws.amazon.com//vpc/latest/ipam/what-is-it-ipam.html) in the *Amazon VPC IPAM User Guide* .",
       "properties": {
@@ -11379,27 +11379,27 @@
     },
     "AWS::EC2::IPAMAllocation": {
       "attributes": {
-        "IpamPoolAllocationId": "The ID of an allocation.",
-        "Ref": "`Ref` returns the pool ID, allocation ID, and CIDR."
+        "IpamPoolAllocationId": "The ID of the allocation.",
+        "Ref": ""
       },
-      "description": "In IPAM, an allocation is a CIDR assignment from an IPAM pool to another resource or IPAM pool.",
+      "description": "",
       "properties": {
         "Cidr": "The CIDR you would like to allocate from the IPAM pool. Note the following:\n\n- If there is no DefaultNetmaskLength allocation rule set on the pool, you must specify either the NetmaskLength or the CIDR.\n- If the DefaultNetmaskLength allocation rule is set on the pool, you can specify either the NetmaskLength or the CIDR and the DefaultNetmaskLength allocation rule will be ignored.\n\nPossible values: Any available IPv4 or IPv6 CIDR.",
-        "Description": "A description for the allocation.",
+        "Description": "A description of the pool allocation.",
         "IpamPoolId": "The ID of the IPAM pool from which you would like to allocate a CIDR.",
         "NetmaskLength": "The netmask length of the CIDR you would like to allocate from the IPAM pool. Note the following:\n\n- If there is no DefaultNetmaskLength allocation rule set on the pool, you must specify either the NetmaskLength or the CIDR.\n- If the DefaultNetmaskLength allocation rule is set on the pool, you can specify either the NetmaskLength or the CIDR and the DefaultNetmaskLength allocation rule will be ignored.\n\nPossible netmask lengths for IPv4 addresses are 0 - 32. Possible netmask lengths for IPv6 addresses are 0 - 128."
       }
     },
     "AWS::EC2::IPAMPool": {
       "attributes": {
-        "Arn": "The ARN of the IPAM pool.",
-        "IpamArn": "The ARN of the IPAM.",
+        "Arn": "The ARN of the IPAM.",
+        "IpamArn": "The ARN of the IPAM pool.",
         "IpamPoolId": "The ID of the IPAM pool.",
         "IpamScopeArn": "The ARN of the scope of the IPAM pool.",
-        "IpamScopeType": "The scope of the IPAM.",
-        "PoolDepth": "The depth of pools in your IPAM pool. The pool depth quota is 10.",
-        "Ref": "`Ref` returns the IPAM pool ID.",
-        "State": "The state of the IPAM pool.",
+        "IpamScopeType": "The IPAM scope type (public | private).",
+        "PoolDepth": "The depth of pools in your IPAM pool.",
+        "Ref": "",
+        "State": "The state of the IPAM pool (create-in-progress | create-complete | create-failed | modify-in-progress | modify-complete | modify-failed | delete-in-progress | delete-complete | delete-failed).",
         "StateMessage": "A message related to the failed creation of an IPAM pool."
       },
       "description": "In IPAM, a pool is a collection of contiguous IP addresses CIDRs. Pools enable you to organize your IP addresses according to your routing and security needs. For example, if you have separate routing and security needs for development and production applications, you can create a pool for each.",
@@ -11411,9 +11411,9 @@
         "AllocationResourceTags": "Tags that are required for resources that use CIDRs from this IPAM pool. Resources that do not have these tags will not be allowed to allocate space from the pool. If the resources have their tags changed after they have allocated space or if the allocation tagging requirements are changed on the pool, the resource may be marked as noncompliant.",
         "AutoImport": "If selected, IPAM will continuously look for resources within the CIDR range of this pool and automatically import them as allocations into your IPAM. The CIDRs that will be allocated for these resources must not already be allocated to other resources in order for the import to succeed. IPAM will import a CIDR regardless of its compliance with the pool's allocation rules, so a resource might be imported and subsequently marked as noncompliant. If IPAM discovers multiple CIDRs that overlap, IPAM will import the largest CIDR only. If IPAM discovers multiple CIDRs with matching CIDRs, IPAM will randomly import one of them only.\n\nA locale must be set on the pool for this feature to work.",
         "Description": "The description of the IPAM pool.",
-        "IpamScopeId": "The ID of the scope in which you would like to create the IPAM pool.",
+        "IpamScopeId": "",
         "Locale": "The locale of the IPAM pool. In IPAM, the locale is the AWS Region where you want to make an IPAM pool available for allocations. Only resources in the same Region as the locale of the pool can get IP address allocations from the pool. You can only allocate a CIDR for a VPC, for example, from an IPAM pool that shares a locale with the VPC\u2019s Region. Note that once you choose a Locale for a pool, you cannot modify it. If you choose an AWS Region for locale that has not been configured as an operating Region for the IPAM, you'll get an error.",
-        "ProvisionedCidrs": "Information about the CIDRs provisioned to an IPAM pool.",
+        "ProvisionedCidrs": "",
         "PubliclyAdvertisable": "Determines if a pool is publicly advertisable. This option is not available for pools with AddressFamily set to `ipv4` .",
         "SourceIpamPoolId": "The ID of the source IPAM pool. You can use this option to create an IPAM pool within an existing source pool.",
         "Tags": "The key/value combination of a tag assigned to the resource. Use the tag key in the filter name and the tag value as the filter value. For example, to find all resources that have a tag with the key `Owner` and the value `TeamA` , specify `tag:Owner` for the filter name and `TeamA` for the filter value."
@@ -11421,24 +11421,24 @@
     },
     "AWS::EC2::IPAMPool.ProvisionedCidr": {
       "attributes": {},
-      "description": "The CIDR provisioned to the IPAM pool. A CIDR is a representation of an IP address and its associated network mask (or netmask) and refers to a range of IP addresses. An IPv4 CIDR example is `10.24.34.0/23` . An IPv6 CIDR example is `2001:DB8::/32` .",
+      "description": "",
       "properties": {
-        "Cidr": "The CIDR provisioned to the IPAM pool. A CIDR is a representation of an IP address and its associated network mask (or netmask) and refers to a range of IP addresses. An IPv4 CIDR example is `10.24.34.0/23` . An IPv6 CIDR example is `2001:DB8::/32` ."
+        "Cidr": ""
       }
     },
     "AWS::EC2::IPAMScope": {
       "attributes": {
         "Arn": "The ARN of the scope.",
-        "IpamArn": "The ARN of an IPAM.",
-        "IpamScopeId": "The ID of an IPAM scope.",
-        "IsDefault": "Defines if the scope is the default scope or not.",
-        "PoolCount": "The number of pools in a scope.",
-        "Ref": "`Ref` returns the IPAM scope ID."
+        "IpamArn": "The ARN of the IPAM.",
+        "IpamScopeId": "The ID of the scope.",
+        "IsDefault": "Indicates whether the scope is the default scope.",
+        "PoolCount": "The number of pools in the scope.",
+        "Ref": ""
       },
       "description": "In IPAM, a scope is the highest-level container within IPAM. An IPAM contains two default scopes. Each scope represents the IP space for a single network. The private scope is intended for all private IP address space. The public scope is intended for all public IP address space. Scopes enable you to reuse IP addresses across multiple unconnected networks without causing IP address overlap or conflict.\n\nFor more information, see [How IPAM works](https://docs.aws.amazon.com//vpc/latest/ipam/how-it-works-ipam.html) in the *Amazon VPC IPAM User Guide*",
       "properties": {
         "Description": "The description of the scope.",
-        "IpamId": "The ID of the IPAM for which you're creating this scope.",
+        "IpamId": "",
         "IpamScopeType": "The type of the scope.",
         "Tags": "The key/value combination of a tag assigned to the resource. Use the tag key in the filter name and the tag value as the filter value. For example, to find all resources that have a tag with the key `Owner` and the value `TeamA` , specify `tag:Owner` for the filter name and `TeamA` for the filter value."
       }
@@ -11482,7 +11482,7 @@
         "NetworkInterfaces": "The network interfaces to associate with the instance.\n\n> If you use this property to point to a network interface, you must terminate the original interface before attaching a new one to allow the update of the instance to succeed.\n> \n> If this resource has a public IP address and is also in a VPC that is defined in the same template, you must use the [DependsOn Attribute](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-dependson.html) to declare a dependency on the VPC-gateway attachment.",
         "PlacementGroupName": "The name of an existing placement group that you want to launch the instance into (cluster | partition | spread).",
         "PrivateIpAddress": "[EC2-VPC] The primary IPv4 address. You must specify a value from the IPv4 address range of the subnet.\n\nOnly one private IP address can be designated as primary. You can't specify this option if you've specified the option to designate a private IP address as the primary IP address in a network interface specification. You cannot specify this option if you're launching more than one instance in the request.\n\nYou cannot specify this option and the network interfaces option in the same request.\n\nIf you make an update to an instance that requires replacement, you must assign a new private IP address. During a replacement, AWS CloudFormation creates a new instance but doesn't delete the old instance until the stack has successfully updated. If the stack update fails, AWS CloudFormation uses the old instance to roll back the stack to the previous working state. The old and new instances cannot have the same private IP address.",
-        "PropagateTagsToVolumeOnCreation": "Whether to propagate the EC2 instance tags to the EBS volumes.",
+        "PropagateTagsToVolumeOnCreation": "",
         "RamdiskId": "The ID of the RAM disk to select. Some kernels require additional drivers at launch. Check the kernel requirements for information about whether you need to specify a RAM disk. To find kernel requirements, go to the AWS Resource Center and search for the kernel ID.\n\n> We recommend that you use PV-GRUB instead of kernels and RAM disks. For more information, see [PV-GRUB](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/UserProvidedkernels.html) in the *Amazon EC2 User Guide* .",
         "SecurityGroupIds": "The IDs of the security groups. You can create a security group using [CreateSecurityGroup](https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_CreateSecurityGroup.html) .\n\nIf you specify a network interface, you must specify any security groups as part of the network interface.",
         "SecurityGroups": "[EC2-Classic, default VPC] The names of the security groups. For a nondefault VPC, you must use security group IDs instead.\n\nYou cannot specify this option and the network interfaces option in the same request. The list can contain both the name of existing Amazon EC2 security groups or references to AWS::EC2::SecurityGroup resources created in the template.\n\nDefault: Amazon EC2 uses the default security group.",
@@ -12076,11 +12076,11 @@
     },
     "AWS::EC2::NetworkInsightsAccessScope": {
       "attributes": {
-        "CreatedDate": "",
-        "NetworkInsightsAccessScopeArn": "",
-        "NetworkInsightsAccessScopeId": "",
+        "CreatedDate": "The creation date.",
+        "NetworkInsightsAccessScopeArn": "The ARN of the Network Access Scope.",
+        "NetworkInsightsAccessScopeId": "The ID of the Network Access Scope.",
         "Ref": "",
-        "UpdatedDate": ""
+        "UpdatedDate": "The last updated date."
       },
       "description": "Describes a Network Access Scope.",
       "properties": {
@@ -12136,15 +12136,15 @@
     },
     "AWS::EC2::NetworkInsightsAccessScopeAnalysis": {
       "attributes": {
-        "AnalyzedEniCount": "",
-        "EndDate": "",
-        "FindingsFound": "",
-        "NetworkInsightsAccessScopeAnalysisArn": "",
-        "NetworkInsightsAccessScopeAnalysisId": "",
+        "AnalyzedEniCount": "The number of network interfaces analyzed.",
+        "EndDate": "The end date of the analysis.",
+        "FindingsFound": "Indicates whether there are findings (true | false | unknown).",
+        "NetworkInsightsAccessScopeAnalysisArn": "The ARN of the Network Access Scope analysis.",
+        "NetworkInsightsAccessScopeAnalysisId": "The ID of the Network Access Scope analysis.",
         "Ref": "",
-        "StartDate": "",
-        "Status": "",
-        "StatusMessage": ""
+        "StartDate": "The start date of the analysis.",
+        "Status": "The status of the analysis (running | succeeded | failed).",
+        "StatusMessage": "The status message."
       },
       "description": "Describes a Network Access Scope analysis.",
       "properties": {
@@ -12928,7 +12928,7 @@
     },
     "AWS::EC2::SubnetRouteTableAssociation": {
       "attributes": {
-        "Id": "",
+        "Id": "The ID of the subnet route table association.",
         "Ref": "`Ref` returns the ID of the subnet route table association."
       },
       "description": "Associates a subnet with a route table. The subnet and route table must be in the same VPC. This association causes traffic originating from the subnet to be routed according to the routes in the route table. A route table can be associated with multiple subnets. If you want to associate a route table with a VPC, see [AWS::EC2::RouteTable](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-route-table.html) .",
@@ -13221,8 +13221,8 @@
         "EnableDnsHostnames": "Indicates whether the instances launched in the VPC get DNS hostnames. If enabled, instances in the VPC get DNS hostnames; otherwise, they do not. Disabled by default for nondefault VPCs. For more information, see [DNS Support in Your VPC](https://docs.aws.amazon.com/vpc/latest/userguide/vpc-dns.html#vpc-dns-support) .\n\nYou can only enable DNS hostnames if you've enabled DNS support.",
         "EnableDnsSupport": "Indicates whether the DNS resolution is supported for the VPC. If enabled, queries to the Amazon provided DNS server at the 169.254.169.253 IP address, or the reserved IP address at the base of the VPC network range \"plus two\" succeed. If disabled, the Amazon provided DNS service in the VPC that resolves public DNS hostnames to IP addresses is not enabled. Enabled by default. For more information, see [DNS Support in Your VPC](https://docs.aws.amazon.com/vpc/latest/userguide/vpc-dns.html#vpc-dns-support) .",
         "InstanceTenancy": "The allowed tenancy of instances launched into the VPC.\n\n- `\"default\"` : An instance launched into the VPC runs on shared hardware by default, unless you explicitly specify a different tenancy during instance launch.\n- `\"dedicated\"` : An instance launched into the VPC is a Dedicated Instance by default, unless you explicitly specify a tenancy of host during instance launch. You cannot specify a tenancy of default during instance launch.\n\nUpdating `InstanceTenancy` requires no replacement only if you are updating its value from `\"dedicated\"` to `\"default\"` . Updating `InstanceTenancy` from `\"default\"` to `\"dedicated\"` requires replacement.",
-        "Ipv4IpamPoolId": "The ID of an IPv4 IPAM pool you want to use for allocating this VPC's CIDR. For more information, see [What is IPAM?](https://docs.aws.amazon.com//vpc/latest/ipam/what-is-it-ipam.html) in the *Amazon VPC IPAM User Guide* .",
-        "Ipv4NetmaskLength": "The netmask length of the IPv4 CIDR you want to allocate to this VPC from an Amazon VPC IP Address Manager (IPAM) pool. For more information about IPAM, see [What is IPAM?](https://docs.aws.amazon.com//vpc/latest/ipam/what-is-it-ipam.html) in the *Amazon VPC IPAM User Guide* .",
+        "Ipv4IpamPoolId": "",
+        "Ipv4NetmaskLength": "",
         "Tags": "The tags for the VPC."
       }
     },
@@ -13234,18 +13234,18 @@
       "properties": {
         "AmazonProvidedIpv6CidrBlock": "Requests an Amazon-provided IPv6 CIDR block with a /56 prefix length for the VPC. You cannot specify the range of IPv6 addresses, or the size of the CIDR block.",
         "CidrBlock": "An IPv4 CIDR block to associate with the VPC.",
-        "Ipv4IpamPoolId": "Associate a CIDR allocated from an IPv4 IPAM pool to a VPC. For more information about Amazon VPC IP Address Manager (IPAM), see [What is IPAM?](https://docs.aws.amazon.com//vpc/latest/ipam/what-is-it-ipam.html) in the *Amazon VPC IPAM User Guide* .",
-        "Ipv4NetmaskLength": "The netmask length of the IPv4 CIDR you would like to associate from an Amazon VPC IP Address Manager (IPAM) pool. For more information about IPAM, see [What is IPAM?](https://docs.aws.amazon.com//vpc/latest/ipam/what-is-it-ipam.html) in the *Amazon VPC IPAM User Guide* .",
+        "Ipv4IpamPoolId": "",
+        "Ipv4NetmaskLength": "",
         "Ipv6CidrBlock": "An IPv6 CIDR block from the IPv6 address pool. You must also specify `Ipv6Pool` in the request.\n\nTo let Amazon choose the IPv6 CIDR block for you, omit this parameter.",
-        "Ipv6IpamPoolId": "Associates a CIDR allocated from an IPv6 IPAM pool to a VPC. For more information about Amazon VPC IP Address Manager (IPAM), see [What is IPAM?](https://docs.aws.amazon.com//vpc/latest/ipam/what-is-it-ipam.html) in the *Amazon VPC IPAM User Guide* .",
-        "Ipv6NetmaskLength": "The netmask length of the IPv6 CIDR you would like to associate from an Amazon VPC IP Address Manager (IPAM) pool. For more information about IPAM, see [What is IPAM?](https://docs.aws.amazon.com//vpc/latest/ipam/what-is-it-ipam.html) in the *Amazon VPC IPAM User Guide* .",
+        "Ipv6IpamPoolId": "",
+        "Ipv6NetmaskLength": "",
         "Ipv6Pool": "The ID of an IPv6 address pool from which to allocate the IPv6 CIDR block.",
         "VpcId": "The ID of the VPC."
       }
     },
     "AWS::EC2::VPCDHCPOptionsAssociation": {
       "attributes": {
-        "Id": "",
+        "Id": "The ID of the DHCP options set.",
         "Ref": "`Ref` returns the ID of the DHCP options association."
       },
       "description": "Associates a set of DHCP options with a VPC, or associates no DHCP options with the VPC.\n\nAfter you associate the options with the VPC, any existing instances and all new instances that you launch in that VPC use the options. You don't need to restart or relaunch the instances. They automatically pick up the changes within a few hours, depending on how frequently the instance renews its DHCP lease. You can explicitly renew the lease using the operating system on the instance.",
@@ -13294,7 +13294,7 @@
         "AcceptanceRequired": "Indicates whether requests from service consumers to create an endpoint to your service must be accepted.",
         "GatewayLoadBalancerArns": "The Amazon Resource Names (ARNs) of one or more Gateway Load Balancers.",
         "NetworkLoadBalancerArns": "The Amazon Resource Names (ARNs) of one or more Network Load Balancers for your service.",
-        "PayerResponsibility": ""
+        "PayerResponsibility": "The entity that is responsible for the endpoint costs. The default is the endpoint owner. If you set the payer responsibility to the service owner, you cannot set it back to the endpoint owner."
       }
     },
     "AWS::EC2::VPCEndpointServicePermissions": {
@@ -15996,7 +15996,7 @@
         "DomainEndpoint": "The domain-specific endpoint that's used for requests to the OpenSearch APIs, such as `search-mystack-elasti-1ab2cdefghij-ab1c2deckoyb3hofw7wpqa3cm.us-west-1.es.amazonaws.com` .",
         "Ref": "When the logical ID of this resource is provided to the Ref intrinsic function, Ref returns the resource name, such as `mystack-elasticsea-abc1d2efg3h4.` For more information about using the Ref function, see [Ref](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-ref.html) ."
       },
-      "description": "The AWS::Elasticsearch::Domain resource creates an Amazon OpenSearch Service (successor to Amazon Elasticsearch Service) domain.\n\n> The `AWS::Elasticsearch::Domain` resource is being replaced by the [AWS::OpenSearchService::Domain](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-opensearchservice-domain.html) resource. While the legacy Elasticsearch resource and options are still supported, we recommend modifying your existing Cloudformation templates to use the new OpenSearch Service resource, which supports both OpenSearch and Elasticsearch. For more information about the service rename, see [New resource types](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/rename.html#rename-resource) in the *Amazon OpenSearch Service Developer Guide* .",
+      "description": "The AWS::Elasticsearch::Domain resource creates an Amazon OpenSearch Service (successor to Amazon Elasticsearch Service) domain.\n\n> The `AWS::Elasticsearch::Domain` resource is being replaced by the [AWS::OpenSearchService::Domain](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-opensearchservice-domain.html) resource. While the legacy Elasticsearch resource and options are still supported, we recommend modifying your existing Cloudformation templates to use the new OpenSearch Service resource, which supports both OpenSearch and legacy Elasticsearch. For instructions to upgrade domains defined within CloudFormation from Elasticsearch to OpenSearch, see [Remarks](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-opensearchservice-domain.html#aws-resource-opensearchservice-domain--remarks) .",
       "properties": {
         "AccessPolicies": "An AWS Identity and Access Management ( IAM ) policy document that specifies who can access the OpenSearch Service domain and their permissions. For more information, see [Configuring access policies](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/ac.html#ac-creating) in the *Amazon OpenSearch Service Developer Guid* e.",
         "AdvancedOptions": "Additional options to specify for the OpenSearch Service domain. For more information, see [Advanced cluster parameters](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/createupdatedomains.html#createdomain-configure-advanced-options) in the *Amazon OpenSearch Service Developer Guide* .",
@@ -16763,7 +16763,7 @@
         "ResourceType": "The type of resource protected by or in scope of the policy. This is in the format shown in the [AWS Resource Types Reference](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-template-resource-type-ref.html) . To apply this policy to multiple resource types, specify a resource type of `ResourceTypeList` and then specify the resource types in a `ResourceTypeList` .\n\nFor AWS WAF and Shield Advanced, example resource types include `AWS::ElasticLoadBalancingV2::LoadBalancer` and `AWS::CloudFront::Distribution` . For a security group common policy, valid values are `AWS::EC2::NetworkInterface` and `AWS::EC2::Instance` . For a security group content audit policy, valid values are `AWS::EC2::SecurityGroup` , `AWS::EC2::NetworkInterface` , and `AWS::EC2::Instance` . For a security group usage audit policy, the value is `AWS::EC2::SecurityGroup` . For an AWS Network Firewall policy or DNS Firewall policy, the value is `AWS::EC2::VPC` .",
         "ResourceTypeList": "An array of `ResourceType` objects. Use this only to specify multiple resource types. To specify a single resource type, use `ResourceType` .",
         "ResourcesCleanUp": "Indicates whether AWS Firewall Manager should automatically remove protections from resources that leave the policy scope and clean up resources that Firewall Manager is managing for accounts when those accounts leave policy scope. For example, Firewall Manager will disassociate a Firewall Manager managed web ACL from a protected customer resource when the customer resource leaves policy scope.\n\nBy default, Firewall Manager doesn't remove protections or delete Firewall Manager managed resources.\n\nThis option is not available for Shield Advanced or AWS WAF Classic policies.",
-        "SecurityServicePolicyData": "Details about the security service that is being used to protect the resources.\n\nThis contains the following settings:\n\n- Type - Indicates the service type that the policy uses to protect the resource. For security group policies, Firewall Manager supports one security group for each common policy and for each content audit policy. This is an adjustable limit that you can increase by contacting AWS Support .\n\nValid values: `WAFV2` | `WAF` | `SHIELD_ADVANCED` | `SECURITY_GROUPS_COMMON` | `SECURITY_GROUPS_CONTENT_AUDIT` | `SECURITY_GROUPS_USAGE_AUDIT` | `NETWORK_FIREWALL` | `DNS_FIREWALL` .\n- ManagedServiceData - Details about the service that are specific to the service type, in JSON format. For `SHIELD_ADVANCED` , this is an empty string.\n\n- Example: `WAFV2`\n\n`\"ManagedServiceData\": \"{\\\"type\\\":\\\"WAFV2\\\",\\\"preProcessRuleGroups\\\":[{\\\"ruleGroupArn\\\":null,\\\"overrideAction\\\":{\\\"type\\\":\\\"NONE\\\"},\\\"managedRuleGroupIdentifier\\\":{\\\"version\\\":null,\\\"vendorName\\\":\\\"AWS\\\",\\\"managedRuleGroupName\\\":\\\"AWSManagedRulesAmazonIpReputationList\\\"},\\\"ruleGroupType\\\":\\\"ManagedRuleGroup\\\",\\\"excludeRules\\\":[]}],\\\"postProcessRuleGroups\\\":[],\\\"defaultAction\\\":{\\\"type\\\":\\\"ALLOW\\\"},\\\"overrideCustomerWebACLAssociation\\\":false,\\\"loggingConfiguration\\\":{\\\"logDestinationConfigs\\\":[\\\"arn:aws:firehose:us-west-2:12345678912:deliverystream/aws-waf-logs-fms-admin-destination\\\"],\\\"redactedFields\\\":[{\\\"redactedFieldType\\\":\\\"SingleHeader\\\",\\\"redactedFieldValue\\\":\\\"Cookies\\\"},{\\\"redactedFieldType\\\":\\\"Method\\\"}]}}\"`\n\nIn the `loggingConfiguration` , you can specify one `logDestinationConfigs` , you can optionally provide up to 20 `redactedFields` , and the `RedactedFieldType` must be one of `URI` , `QUERY_STRING` , `HEADER` , or `METHOD` .\n- Example: `WAF Classic`\n\n`\"ManagedServiceData\": \"{\\\"type\\\": \\\"WAF\\\", \\\"ruleGroups\\\": [{\\\"id\\\":\\\"12345678-1bcd-9012-efga-0987654321ab\\\", \\\"overrideAction\\\" : {\\\"type\\\": \\\"COUNT\\\"}}],\\\"defaultAction\\\": {\\\"type\\\": \\\"BLOCK\\\"}}`\n\nAWS WAF Classic doesn't support rule groups in CloudFront . To create a WAF Classic policy through CloudFormation, create your rule groups outside of CloudFront , then provide the rule group IDs in the WAF managed service data specification.\n- Example: `SECURITY_GROUPS_COMMON`\n\n`\"SecurityServicePolicyData\":{\"Type\":\"SECURITY_GROUPS_COMMON\",\"ManagedServiceData\":\"{\\\"type\\\":\\\"SECURITY_GROUPS_COMMON\\\",\\\"revertManualSecurityGroupChanges\\\":false,\\\"exclusiveResourceSecurityGroupManagement\\\":false,\\\"securityGroups\\\":[{\\\"id\\\":\\\" sg-000e55995d61a06bd\\\"}]}\"},\"RemediationEnabled\":false,\"ResourceType\":\"AWS::EC2::NetworkInterface\"}`\n- Example: `SECURITY_GROUPS_CONTENT_AUDIT`\n\n`\"SecurityServicePolicyData\":{\"Type\":\"SECURITY_GROUPS_CONTENT_AUDIT\",\"ManagedServiceData\":\"{\\\"type\\\":\\\"SECURITY_GROUPS_CONTENT_AUDIT\\\",\\\"securityGroups\\\":[{\\\"id\\\":\\\" sg-000e55995d61a06bd \\\"}],\\\"securityGroupAction\\\":{\\\"type\\\":\\\"ALLOW\\\"}}\"},\"RemediationEnabled\":false,\"ResourceType\":\"AWS::EC2::NetworkInterface\"}`\n\nThe security group action for content audit can be `ALLOW` or `DENY` . For `ALLOW` , all in-scope security group rules must be within the allowed range of the policy's security group rules. For `DENY` , all in-scope security group rules must not contain a value or a range that matches a rule value or range in the policy security group.\n- Example: `SECURITY_GROUPS_USAGE_AUDIT`\n\n`\"SecurityServicePolicyData\":{\"Type\":\"SECURITY_GROUPS_USAGE_AUDIT\",\"ManagedServiceData\":\"{\\\"type\\\":\\\"SECURITY_GROUPS_USAGE_AUDIT\\\",\\\"deleteUnusedSecurityGroups\\\":true,\\\"coalesceRedundantSecurityGroups\\\":true}\"},\"RemediationEnabled\":false,\"Resou rceType\":\"AWS::EC2::SecurityGroup\"}`\n- Example: `NETWORK_FIREWALL`\n\n`\"ManagedServiceData\":\"{\\\"type\\\":\\\"NETWORK_FIREWALL\\\",\\\"networkFirewallStatelessRuleGroupReferences\\\":[{\\\"resourceARN\\\":\\\"arn:aws:network-firewall:us-east-1:000000000000:stateless-rulegroup\\/example\\\",\\\"priority\\\":1}],\\\"networkFirewallStatelessDefaultActions\\\":[\\\"aws:drop\\\",\\\"example\\\"],\\\"networkFirewallStatelessFragmentDefaultActions\\\":[\\\"aws:drop\\\",\\\"example\\\"],\\\"networkFirewallStatelessCustomActions\\\":[{\\\"actionName\\\":\\\"example\\\",\\\"actionDefinition\\\":{\\\"publishMetricAction\\\":{\\\"dimensions\\\":[{\\\"value\\\":\\\"example\\\"}]}}}],\\\"networkFirewallStatefulRuleGroupReferences\\\":[{\\\"resourceARN\\\":\\\"arn:aws:network-firewall:us-east-1:000000000000:stateful-rulegroup\\/example\\\"}],\\\"networkFirewallOrchestrationConfig\\\":{\\\"singleFirewallEndpointPerVPC\\\":false,\\\"allowedIPV4CidrList\\\":[]}}\"`\n- Example: `DNS_FIREWALL`\n\n`\"ManagedServiceData\": \"{ \\\"type\\\": \\\"DNS_FIREWALL\\\", \\\"preProcessRuleGroups\\\": [{\\\"ruleGroupId\\\": \\\"rslvr-frg-123456\\\", \\\"priority\\\": 11}], \\\"postProcessRuleGroups\\\": [{\\\"ruleGroupId\\\": \\\"rslvr-frg-123456\\\", \\\"priority\\\": 9902}]}\"`",
+        "SecurityServicePolicyData": "Details about the security service that is being used to protect the resources.\n\nThis contains the following settings:\n\n- Type - Indicates the service type that the policy uses to protect the resource. For security group policies, Firewall Manager supports one security group for each common policy and for each content audit policy. This is an adjustable limit that you can increase by contacting AWS Support .\n\nValid values: `DNS_FIREWALL` | `NETWORK_FIREWALL` | `SECURITY_GROUPS_COMMON` | `SECURITY_GROUPS_CONTENT_AUDIT` | `SECURITY_GROUPS_USAGE_AUDIT` | `SHIELD_ADVANCED` | `WAFV2` | `WAF`\n- ManagedServiceData - Details about the service that are specific to the service type, in JSON format.\n\n- Example: `DNS_FIREWALL`\n\n`\"ManagedServiceData\": \"{ \\\"type\\\": \\\"DNS_FIREWALL\\\", \\\"preProcessRuleGroups\\\": [{\\\"ruleGroupId\\\": \\\"rslvr-frg-123456\\\", \\\"priority\\\": 11}], \\\"postProcessRuleGroups\\\": [{\\\"ruleGroupId\\\": \\\"rslvr-frg-123456\\\", \\\"priority\\\": 9902}]}\"`\n- Example: `NETWORK_FIREWALL`\n\n`\"ManagedServiceData\":\"{\\\"type\\\":\\\"NETWORK_FIREWALL\\\",\\\"networkFirewallStatelessRuleGroupReferences\\\":[{\\\"resourceARN\\\":\\\"arn:aws:network-firewall:us-east-1:000000000000:stateless-rulegroup\\/example\\\",\\\"priority\\\":1}],\\\"networkFirewallStatelessDefaultActions\\\":[\\\"aws:drop\\\",\\\"example\\\"],\\\"networkFirewallStatelessFragmentDefaultActions\\\":[\\\"aws:drop\\\",\\\"example\\\"],\\\"networkFirewallStatelessCustomActions\\\":[{\\\"actionName\\\":\\\"example\\\",\\\"actionDefinition\\\":{\\\"publishMetricAction\\\":{\\\"dimensions\\\":[{\\\"value\\\":\\\"example\\\"}]}}}],\\\"networkFirewallStatefulRuleGroupReferences\\\":[{\\\"resourceARN\\\":\\\"arn:aws:network-firewall:us-east-1:000000000000:stateful-rulegroup\\/example\\\"}],\\\"networkFirewallOrchestrationConfig\\\":{\\\"singleFirewallEndpointPerVPC\\\":false,\\\"allowedIPV4CidrList\\\":[]}}\"`\n- Example: `SECURITY_GROUPS_COMMON`\n\n`\"SecurityServicePolicyData\":{\"Type\":\"SECURITY_GROUPS_COMMON\",\"ManagedServiceData\":\"{\\\"type\\\":\\\"SECURITY_GROUPS_COMMON\\\",\\\"revertManualSecurityGroupChanges\\\":false,\\\"exclusiveResourceSecurityGroupManagement\\\":false,\\\"securityGroups\\\":[{\\\"id\\\":\\\" sg-000e55995d61a06bd\\\"}]}\"},\"RemediationEnabled\":false,\"ResourceType\":\"AWS::EC2::NetworkInterface\"}`\n- Example: `SECURITY_GROUPS_CONTENT_AUDIT`\n\n`\"SecurityServicePolicyData\":{\"Type\":\"SECURITY_GROUPS_CONTENT_AUDIT\",\"ManagedServiceData\":\"{\\\"type\\\":\\\"SECURITY_GROUPS_CONTENT_AUDIT\\\",\\\"securityGroups\\\":[{\\\"id\\\":\\\" sg-000e55995d61a06bd \\\"}],\\\"securityGroupAction\\\":{\\\"type\\\":\\\"ALLOW\\\"}}\"},\"RemediationEnabled\":false,\"ResourceType\":\"AWS::EC2::NetworkInterface\"}`\n\nThe security group action for content audit can be `ALLOW` or `DENY` . For `ALLOW` , all in-scope security group rules must be within the allowed range of the policy's security group rules. For `DENY` , all in-scope security group rules must not contain a value or a range that matches a rule value or range in the policy security group.\n- Example: `SECURITY_GROUPS_USAGE_AUDIT`\n\n`\"SecurityServicePolicyData\":{\"Type\":\"SECURITY_GROUPS_USAGE_AUDIT\",\"ManagedServiceData\":\"{\\\"type\\\":\\\"SECURITY_GROUPS_USAGE_AUDIT\\\",\\\"deleteUnusedSecurityGroups\\\":true,\\\"coalesceRedundantSecurityGroups\\\":true}\"},\"RemediationEnabled\":false,\"Resou rceType\":\"AWS::EC2::SecurityGroup\"}`\n- Specification for `SHIELD_ADVANCED` for Amazon CloudFront distributions\n\n`\"ManagedServiceData\": \"{\\\"type\\\": \\\"SHIELD_ADVANCED\\\", \\\"automaticResponseConfiguration\\\": {\\\"automaticResponseStatus\\\":\\\"ENABLED|IGNORED|DISABLED\\\", \\\"automaticResponseAction\\\":\\\"BLOCK|COUNT\\\"}, \\\"overrideCustomerWebaclClassic\\\":true|false}\"`\n\nFor example: `\"ManagedServiceData\": \"{\\\"type\\\":\\\"SHIELD_ADVANCED\\\",\\\"automaticResponseConfiguration\\\": {\\\"automaticResponseStatus\\\":\\\"ENABLED\\\", \\\"automaticResponseAction\\\":\\\"COUNT\\\"}}\"`\n\nThe default value for `automaticResponseStatus` is `IGNORED` . The value for `automaticResponseAction` is only required when `automaticResponseStatus` is set to `ENABLED` . The default value for `overrideCustomerWebaclClassic` is `false` .\n\nFor other resource types that you can protect with a Shield Advanced policy, this `ManagedServiceData` configuration is an empty string.\n- Example: `WAFV2`\n\n`\"ManagedServiceData\": \"{\\\"type\\\":\\\"WAFV2\\\",\\\"preProcessRuleGroups\\\":[{\\\"ruleGroupArn\\\":null,\\\"overrideAction\\\":{\\\"type\\\":\\\"NONE\\\"},\\\"managedRuleGroupIdentifier\\\":{\\\"version\\\":null,\\\"vendorName\\\":\\\"AWS\\\",\\\"managedRuleGroupName\\\":\\\"AWSManagedRulesAmazonIpReputationList\\\"},\\\"ruleGroupType\\\":\\\"ManagedRuleGroup\\\",\\\"excludeRules\\\":[]}],\\\"postProcessRuleGroups\\\":[],\\\"defaultAction\\\":{\\\"type\\\":\\\"ALLOW\\\"},\\\"overrideCustomerWebACLAssociation\\\":false,\\\"loggingConfiguration\\\":{\\\"logDestinationConfigs\\\":[\\\"arn:aws:firehose:us-west-2:12345678912:deliverystream/aws-waf-logs-fms-admin-destination\\\"],\\\"redactedFields\\\":[{\\\"redactedFieldType\\\":\\\"SingleHeader\\\",\\\"redactedFieldValue\\\":\\\"Cookies\\\"},{\\\"redactedFieldType\\\":\\\"Method\\\"}]}}\"`\n\nIn the `loggingConfiguration` , you can specify one `logDestinationConfigs` , you can optionally provide up to 20 `redactedFields` , and the `RedactedFieldType` must be one of `URI` , `QUERY_STRING` , `HEADER` , or `METHOD` .\n- Example: `WAF Classic`\n\n`\"ManagedServiceData\": \"{\\\"type\\\": \\\"WAF\\\", \\\"ruleGroups\\\": [{\\\"id\\\":\\\"12345678-1bcd-9012-efga-0987654321ab\\\", \\\"overrideAction\\\" : {\\\"type\\\": \\\"COUNT\\\"}}],\\\"defaultAction\\\": {\\\"type\\\": \\\"BLOCK\\\"}}`\n\nAWS WAF Classic doesn't support rule groups in CloudFront . To create a WAF Classic policy through CloudFormation, create your rule groups outside of CloudFront , then provide the rule group IDs in the WAF managed service data specification.",
         "Tags": "A collection of key:value pairs associated with an AWS resource. The key:value pair can be anything you define. Typically, the tag key represents a category (such as \"environment\") and the tag value represents a specific value within that category (such as \"test,\" \"development,\" or \"production\"). You can add up to 50 tags to each AWS resource."
       }
     },
@@ -25672,9 +25672,11 @@
     },
     "AWS::Location::GeofenceCollection": {
       "attributes": {
-        "Arn": "",
-        "CreateTime": "",
-        "Ref": ""
+        "Arn": "The Amazon Resource Name (ARN) for the geofence collection resource. Used when you need to specify a resource across all AWS .\n\n- Format example: `arn:aws:geo:region:account-id:geofence-collection/ExampleGeofenceCollection`",
+        "CollectionArn": "Synonym for `Arn` . The Amazon Resource Name (ARN) for the geofence collection resource. Used when you need to specify a resource across all AWS .\n\n- Format example: `arn:aws:geo:region:account-id:geofence-collection/ExampleGeofenceCollection`",
+        "CreateTime": "The timestamp for when the geofence collection resource was created in [ISO 8601](https://docs.aws.amazon.com/https://www.iso.org/iso-8601-date-and-time-format.html) format: `YYYY-MM-DDThh:mm:ss.sssZ` .",
+        "Ref": "`Ref` returns the `GeofenceCollection` ARN.",
+        "UpdateTime": "The timestamp for when the geofence collection resource was last updated in [ISO 8601](https://docs.aws.amazon.com/https://www.iso.org/iso-8601-date-and-time-format.html) format: `YYYY-MM-DDThh:mm:ss.sssZ` ."
       },
       "description": "The `AWS::Location::GeofenceCollection` resource specifies the ability to detect and act when a tracked device enters or exits a defined geographical boundary known as a geofence.",
       "properties": {
@@ -25688,9 +25690,11 @@
     "AWS::Location::Map": {
       "attributes": {
         "Arn": "The Amazon Resource Name (ARN) for the map resource. Used to specify a resource across all AWS .\n\n- Format example: `arn:aws:geo:region:account-id:maps/ExampleMap`",
-        "DataSource": "",
-        "Ref": "",
-        "UpdateTime": ""
+        "CreateTime": "The timestamp for when the map resource was created in [ISO 8601](https://docs.aws.amazon.com/https://www.iso.org/iso-8601-date-and-time-format.html) format: `YYYY-MM-DDThh:mm:ss.sssZ` .",
+        "DataSource": "The data provider for the associated map tiles.",
+        "MapArn": "Synonym for `Arn` . The Amazon Resource Name (ARN) for the map resource. Used to specify a resource across all AWS .\n\n- Format example: `arn:aws:geo:region:account-id:maps/ExampleMap`",
+        "Ref": "`Ref` returns the `Map` ARN.",
+        "UpdateTime": "The timestamp for when the map resource was last updated in [ISO 8601](https://docs.aws.amazon.com/https://www.iso.org/iso-8601-date-and-time-format.html) format: `YYYY-MM-DDThh:mm:ss.sssZ` ."
       },
       "description": "The `AWS::Location::Map` resource specifies a map resource in your AWS account, which provides map tiles of different styles sourced from global location data providers.",
       "properties": {
@@ -25704,11 +25708,17 @@
       "attributes": {},
       "description": "Specifies the map tile style selected from an available provider.",
       "properties": {
-        "Style": "Specifies the map style selected from an available data provider.\n\nValid styles: `VectorEsriStreets` , `VectorEsriTopographic` , `VectorEsriNavigation` , `VectorEsriDarkGrayCanvas` , `VectorEsriLightGrayCanvas` , `VectorHereBerlin` .\n\n> When using HERE as your data provider, and selecting the Style `VectorHereBerlin` , you may not use HERE Maps for Asset Management. See the [AWS Service Terms](https://docs.aws.amazon.com/service-terms/) for Amazon Location Service."
+        "Style": "Specifies the map style selected from an available data provider.\n\nValid styles: `VectorEsriStreets` , `VectorEsriTopographic` , `VectorEsriNavigation` , `VectorEsriDarkGrayCanvas` , `VectorEsriLightGrayCanvas` , `VectorHereBerlin` .\n\n> When using HERE as your data provider, and selecting the Style `VectorHereBerlin` , you may not use HERE Technologies maps for Asset Management. See the [AWS Service Terms](https://docs.aws.amazon.com/service-terms/) for Amazon Location Service."
       }
     },
     "AWS::Location::PlaceIndex": {
-      "attributes": {},
+      "attributes": {
+        "Arn": "The Amazon Resource Name (ARN) for the place index resource. Used to specify a resource across AWS .\n\n- Format example: `arn:aws:geo:region:account-id:place-index/ExamplePlaceIndex`",
+        "CreateTime": "The timestamp for when the place index resource was created in [ISO 8601](https://docs.aws.amazon.com/https://www.iso.org/iso-8601-date-and-time-format.html) format: `YYYY-MM-DDThh:mm:ss.sssZ` .",
+        "IndexArn": "Synonym for `Arn` . The Amazon Resource Name (ARN) for the place index resource. Used to specify a resource across AWS .\n\n- Format example: `arn:aws:geo:region:account-id:place-index/ExamplePlaceIndex`",
+        "Ref": "`Ref` returns the `PlaceIndex` ARN.",
+        "UpdateTime": "The timestamp for when the place index resource was last updated in [ISO 8601](https://docs.aws.amazon.com/https://www.iso.org/iso-8601-date-and-time-format.html) format: `YYYY-MM-DDThh:mm:ss.sssZ` ."
+      },
       "description": "The `AWS::Location::PlaceIndex` resource specifies a place index resource in your AWS account, which supports Places functions with geospatial data sourced from your chosen data provider.",
       "properties": {
         "DataSource": "Specifies the data provider of geospatial data.\n\n> This field is case-sensitive. Enter the valid values as shown. For example, entering `HERE` will return an error. \n\nValid values include:\n\n- `Esri`\n- `Here`\n\n> Place index resources using HERE as a data provider can't be used to [store](https://docs.aws.amazon.com/location-places/latest/APIReference/API_DataSourceConfiguration.html) results for locations in Japan. For more information, see the [AWS Service Terms](https://docs.aws.amazon.com/service-terms/) for Amazon Location Service.\n\nFor additional details on data providers, see the [Amazon Location Service data providers page](https://docs.aws.amazon.com/location/latest/developerguide/what-is-data-provider.html) .",
@@ -25726,7 +25736,13 @@
       }
     },
     "AWS::Location::RouteCalculator": {
-      "attributes": {},
+      "attributes": {
+        "Arn": "The Amazon Resource Name (ARN) for the route calculator resource. Use the ARN when you specify a resource across all AWS .\n\n- Format example: `arn:aws:geo:region:account-id:route-calculator/ExampleCalculator`",
+        "CalculatorArn": "Synonym for `Arn` . The Amazon Resource Name (ARN) for the route calculator resource. Use the ARN when you specify a resource across all AWS .\n\n- Format example: `arn:aws:geo:region:account-id:route-calculator/ExampleCalculator`",
+        "CreateTime": "The timestamp for when the route calculator resource was created in [ISO 8601](https://docs.aws.amazon.com/https://www.iso.org/iso-8601-date-and-time-format.html) format: `YYYY-MM-DDThh:mm:ss.sssZ` .",
+        "Ref": "`Ref` returns the `RouteCalculator` ARN.",
+        "UpdateTime": "The timestamp for when the route calculator resource was last updated in [ISO 8601](https://docs.aws.amazon.com/https://www.iso.org/iso-8601-date-and-time-format.html) format: `YYYY-MM-DDThh:mm:ss.sssZ` ."
+      },
       "description": "The `AWS::Location::RouteCalculator` resource specifies a route calculator resource in your AWS account.\n\nYou can send requests to a route calculator resource to estimate travel time, distance, and get directions. A route calculator sources traffic and road network data from your chosen data provider.",
       "properties": {
         "CalculatorName": "The name of the route calculator resource.\n\nRequirements:\n\n- Can use alphanumeric characters (A\u2013Z, a\u2013z, 0\u20139) , hyphens (-), periods (.), and underscores (_).\n- Must be a unique route calculator resource name.\n- No spaces allowed. For example, `ExampleRouteCalculator` .",
@@ -25736,7 +25752,13 @@
       }
     },
     "AWS::Location::Tracker": {
-      "attributes": {},
+      "attributes": {
+        "Arn": "The Amazon Resource Name (ARN) for the tracker resource. Used when you need to specify a resource across all AWS .\n\n- Format example: `arn:aws:geo:region:account-id:tracker/ExampleTracker`",
+        "CreateTime": "The timestamp for when the tracker resource was created in [ISO 8601](https://docs.aws.amazon.com/https://www.iso.org/iso-8601-date-and-time-format.html) format: `YYYY-MM-DDThh:mm:ss.sssZ` .",
+        "Ref": "`Ref` returns the `Tracker` ARN.",
+        "TrackerArn": "Synonym for `Arn` . The Amazon Resource Name (ARN) for the tracker resource. Used when you need to specify a resource across all AWS .\n\n- Format example: `arn:aws:geo:region:account-id:tracker/ExampleTracker`",
+        "UpdateTime": "The timestamp for when the tracker resource was last updated in [ISO 8601](https://docs.aws.amazon.com/https://www.iso.org/iso-8601-date-and-time-format.html) format: `YYYY-MM-DDThh:mm:ss.sssZ` ."
+      },
       "description": "The `AWS::Location::Tracker` resource specifies a tracker resource in your AWS account , which lets you receive current and historical location of devices.",
       "properties": {
         "Description": "An optional description for the tracker resource.",
@@ -25748,10 +25770,12 @@
       }
     },
     "AWS::Location::TrackerConsumer": {
-      "attributes": {},
-      "description": "The `AWS::Location::TrackerConsumer` resource specifies an association between a geofence collection and a tracker resource. This allows the tracker resource to communicate location data to the linked geofence collection.\n\n> Currently not supported \u2014 Cross-account configurations, such as creating associations between a tracker resource in one account and a geofence collection in another account.",
+      "attributes": {
+        "Ref": "`Ref` returns the `GeofenceCollection` ARN."
+      },
+      "description": "The `AWS::Location::TrackerConsumer` resource specifies an association between a geofence collection and a tracker resource. The geofence collection is referred to as the *consumer* of the tracker. This allows the tracker resource to communicate location data to the linked geofence collection.\n\n> Currently not supported \u2014 Cross-account configurations, such as creating associations between a tracker resource in one account and a geofence collection in another account.",
       "properties": {
-        "ConsumerArn": "The Amazon Resource Name (ARN) for the geofence collection to be disassociated from the tracker resource. Used when you need to specify a resource across all AWS .\n\n- Format example: `arn:aws:geo:region:account-id:geofence-collection/ExampleGeofenceCollectionConsumer`",
+        "ConsumerArn": "The Amazon Resource Name (ARN) for the geofence collection that consumes the tracker resource updates.\n\n- Format example: `arn:aws:geo:region:account-id:geofence-collection/ExampleGeofenceCollectionConsumer`",
         "TrackerName": "The name for the tracker resource.\n\nRequirements:\n\n- Contain only alphanumeric characters (A-Z, a-z, 0-9) , hyphens (-), periods (.), and underscores (_).\n- Must be a unique tracker resource name.\n- No spaces allowed. For example, `ExampleTracker` ."
       }
     },
@@ -29612,7 +29636,7 @@
         "Id": "",
         "Ref": "When the logical ID of this resource is provided to the Ref intrinsic function, Ref returns the resource name, such as `mystack-abc1d2efg3h4.` For more information about using the Ref function, see [Ref](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-ref.html) ."
       },
-      "description": "The AWS::OpenSearchService::Domain resource creates an Amazon OpenSearch Service (successor to Amazon Elasticsearch Service) domain.",
+      "description": "The AWS::OpenSearchService::Domain resource creates an Amazon OpenSearch Service (successor to Amazon Elasticsearch Service) domain.\n\n*Important* : For instructions to upgrade domains defined within CloudFormation from Elasticsearch to OpenSearch, see [Remarks](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-opensearchservice-domain.html#aws-resource-opensearchservice-domain--remarks) .",
       "properties": {
         "AccessPolicies": "An AWS Identity and Access Management ( IAM ) policy document that specifies who can access the OpenSearch Service domain and their permissions. For more information, see [Configuring access policies](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/ac.html#ac-creating) in the *Amazon OpenSearch Service Developer Guide* .",
         "AdvancedOptions": "Additional options to specify for the OpenSearch Service domain. For more information, see [Advanced cluster parameters](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/createupdatedomains.html#createdomain-configure-advanced-options) in the *Amazon OpenSearch Service Developer Guide* .",
@@ -32132,7 +32156,7 @@
         "AllowMajorVersionUpgrade": "A value that indicates whether major version upgrades are allowed. Changing this parameter doesn't result in an outage and the change is asynchronously applied as soon as possible.\n\nConstraints: Major version upgrades must be allowed when specifying a value for the `EngineVersion` parameter that is a different major version than the DB instance's current version.",
         "AssociatedRoles": "The AWS Identity and Access Management (IAM) roles associated with the DB instance.",
         "AutoMinorVersionUpgrade": "A value that indicates whether minor engine upgrades are applied automatically to the DB instance during the maintenance window. By default, minor engine upgrades are applied automatically.",
-        "AvailabilityZone": "The Availability Zone (AZ) where the database will be created. For information on AWS Regions and Availability Zones, see [Regions and Availability Zones](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.RegionsAndAvailabilityZones.html) .\n\n*Amazon Aurora*\n\nNot applicable. Availability Zones are managed by the DB cluster.\n\nDefault: A random, system-chosen Availability Zone in the endpoint's AWS Region.\n\nExample: `us-east-1d`\n\nConstraint: The `AvailabilityZone` parameter can't be specified if the DB instance is a Multi-AZ deployment. The specified Availability Zone must be in the same AWS Region as the current endpoint.\n\n> If you're creating a DB instance in an RDS on VMware environment, specify the identifier of the custom Availability Zone to create the DB instance in.\n> \n> For more information about RDS on VMware, see the [RDS on VMware User Guide.](https://docs.aws.amazon.com/AmazonRDS/latest/RDSonVMwareUserGuide/rds-on-vmware.html)",
+        "AvailabilityZone": "The Availability Zone that the database instance will be created in.\n\nDefault: A random, system-chosen Availability Zone in the endpoint's region.\n\nExample: `us-east-1d`\n\nConstraint: The AvailabilityZone parameter cannot be specified if the MultiAZ parameter is set to `true` . The specified Availability Zone must be in the same region as the current endpoint.",
         "BackupRetentionPeriod": "The number of days for which automated backups are retained. Setting this parameter to a positive number enables backups. Setting this parameter to 0 disables automated backups.\n\n*Amazon Aurora*\n\nNot applicable. The retention period for automated backups is managed by the DB cluster.\n\nDefault: 1\n\nConstraints:\n\n- Must be a value from 0 to 35\n- Can't be set to 0 if the DB instance is a source to read replicas",
         "CACertificateIdentifier": "The identifier of the CA certificate for this DB instance.\n\n> Specifying or updating this property triggers a reboot. \n\nFor more information about CA certificate identifiers for RDS DB engines, see [Rotating Your SSL/TLS Certificate](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.SSL-certificate-rotation.html) in the *Amazon RDS User Guide* .\n\nFor more information about CA certificate identifiers for Aurora DB engines, see [Rotating Your SSL/TLS Certificate](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/UsingWithRDS.SSL-certificate-rotation.html) in the *Amazon Aurora User Guide* .",
         "CharacterSetName": "For supported engines, indicates that the DB instance should be associated with the specified character set.\n\n*Amazon Aurora*\n\nNot applicable. The character set is managed by the DB cluster. For more information, see [AWS::RDS::DBCluster](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rds-dbcluster.html) .",
@@ -32204,7 +32228,7 @@
       },
       "description": "The `AWS::RDS::DBParameterGroup` resource creates a custom parameter group for an RDS database family.\n\nThis type can be declared in a template and referenced in the `DBParameterGroupName` property of an `[AWS::RDS::DBInstance](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rds-database-instance.html)` resource.\n\nFor information about configuring parameters for Amazon RDS DB instances, see [Working with DB parameter groups](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_WorkingWithParamGroups.html) in the *Amazon RDS User Guide* .\n\nFor information about configuring parameters for Amazon Aurora DB instances, see [Working with DB parameter groups and DB cluster parameter groups](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/USER_WorkingWithParamGroups.html) in the *Amazon Aurora User Guide* .\n\n> Applying a parameter group to a DB instance may require the DB instance to reboot, resulting in a database outage for the duration of the reboot.",
       "properties": {
-        "Description": "Provides the customer-specified description for this DB parameter group.",
+        "Description": "Provides the customer-specified description for this DB Parameter Group.",
         "Family": "The DB parameter group family name. A DB parameter group can be associated with one and only one DB parameter group family, and can be applied only to a DB instance running a DB engine and engine version compatible with that DB parameter group family.\n\n> The DB parameter group family can't be changed when updating a DB parameter group. \n\nTo list all of the available parameter group families, use the following command:\n\n`aws rds describe-db-engine-versions --query \"DBEngineVersions[].DBParameterGroupFamily\"`\n\nThe output contains duplicates.\n\nFor more information, see `[CreateDBParameterGroup](https://docs.aws.amazon.com//AmazonRDS/latest/APIReference/API_CreateDBParameterGroup.html)` .",
         "Parameters": "An array of parameter names and values for the parameter update. At least one parameter name and value must be supplied. Subsequent arguments are optional.\n\nFor more information about DB parameters and DB parameter groups for Amazon RDS DB engines, see [Working with DB Parameter Groups](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_WorkingWithParamGroups.html) in the *Amazon RDS User Guide* .\n\nFor more information about DB cluster and DB instance parameters and parameter groups for Amazon Aurora DB engines, see [Working with DB Parameter Groups and DB Cluster Parameter Groups](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/USER_WorkingWithParamGroups.html) in the *Amazon Aurora User Guide* .\n\n> AWS CloudFormation doesn't support specifying an apply method for each individual parameter. The default apply method for each parameter is used.",
         "Tags": "Tags to assign to the DB parameter group."
@@ -32308,7 +32332,7 @@
       "properties": {
         "DBSecurityGroupIngress": "Ingress rules to be applied to the DB security group.",
         "EC2VpcId": "The identifier of an Amazon VPC. This property indicates the VPC that this DB security group belongs to.\n\n> The `EC2VpcId` property is for backward compatibility with older regions, and is no longer recommended for providing security information to an RDS DB instance.",
-        "GroupDescription": "Provides the description of the DB security group.",
+        "GroupDescription": "Provides the description of the DB Security Group.",
         "Tags": "Tags to assign to the DB security group."
       }
     },
@@ -32317,9 +32341,9 @@
       "description": "The `Ingress` property type specifies an individual ingress rule within an `AWS::RDS::DBSecurityGroup` resource.",
       "properties": {
         "CIDRIP": "The IP range to authorize.",
-        "EC2SecurityGroupId": "Id of the EC2 security group to authorize. For VPC DB security groups, `EC2SecurityGroupId` must be provided. Otherwise, `EC2SecurityGroupOwnerId` and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided.",
-        "EC2SecurityGroupName": "Name of the EC2 security group to authorize. For VPC DB security groups, `EC2SecurityGroupId` must be provided. Otherwise, `EC2SecurityGroupOwnerId` and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided.",
-        "EC2SecurityGroupOwnerId": "AWS account number of the owner of the EC2 security group specified in the `EC2SecurityGroupName` parameter. The AWS access key ID isn't an acceptable value. For VPC DB security groups, `EC2SecurityGroupId` must be provided. Otherwise, `EC2SecurityGroupOwnerId` and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided."
+        "EC2SecurityGroupId": "Id of the EC2 Security Group to authorize. For VPC DB Security Groups, `EC2SecurityGroupId` must be provided. Otherwise, EC2SecurityGroupOwnerId and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided.",
+        "EC2SecurityGroupName": "Name of the EC2 Security Group to authorize. For VPC DB Security Groups, `EC2SecurityGroupId` must be provided. Otherwise, EC2SecurityGroupOwnerId and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided.",
+        "EC2SecurityGroupOwnerId": "AWS Account Number of the owner of the EC2 Security Group specified in the EC2SecurityGroupName parameter. The AWS Access Key ID is not an acceptable value. For VPC DB Security Groups, `EC2SecurityGroupId` must be provided. Otherwise, EC2SecurityGroupOwnerId and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided."
       }
     },
     "AWS::RDS::DBSecurityGroupIngress": {
@@ -32329,10 +32353,10 @@
       "description": "The `AWS::RDS::DBSecurityGroupIngress` resource enables ingress to a DB security group using one of two forms of authorization. First, you can add EC2 or VPC security groups to the DB security group if the application using the database is running on EC2 or VPC instances. Second, IP ranges are available if the application accessing your database is running on the Internet.\n\nThis type supports updates. For more information about updating stacks, see [AWS CloudFormation Stacks Updates](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks.html) .\n\nFor details about the settings for DB security group ingress, see [AuthorizeDBSecurityGroupIngress](https://docs.aws.amazon.com/AmazonRDS/latest/APIReference/API_AuthorizeDBSecurityGroupIngress.html) .",
       "properties": {
         "CIDRIP": "The IP range to authorize.",
-        "DBSecurityGroupName": "The name of the DB security group to add authorization to.",
-        "EC2SecurityGroupId": "Id of the EC2 security group to authorize. For VPC DB security groups, `EC2SecurityGroupId` must be provided. Otherwise, `EC2SecurityGroupOwnerId` and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided.",
-        "EC2SecurityGroupName": "Name of the EC2 security group to authorize. For VPC DB security groups, `EC2SecurityGroupId` must be provided. Otherwise, `EC2SecurityGroupOwnerId` and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided.",
-        "EC2SecurityGroupOwnerId": "AWS account number of the owner of the EC2 security group specified in the `EC2SecurityGroupName` parameter. The AWS access key ID isn't an acceptable value. For VPC DB security groups, `EC2SecurityGroupId` must be provided. Otherwise, `EC2SecurityGroupOwnerId` and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided."
+        "DBSecurityGroupName": "The name of the DB Security Group to add authorization to.",
+        "EC2SecurityGroupId": "Id of the EC2 Security Group to authorize. For VPC DB Security Groups, `EC2SecurityGroupId` must be provided. Otherwise, EC2SecurityGroupOwnerId and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided.",
+        "EC2SecurityGroupName": "Name of the EC2 Security Group to authorize. For VPC DB Security Groups, `EC2SecurityGroupId` must be provided. Otherwise, EC2SecurityGroupOwnerId and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided.",
+        "EC2SecurityGroupOwnerId": "AWS Account Number of the owner of the EC2 Security Group specified in the EC2SecurityGroupName parameter. The AWS Access Key ID is not an acceptable value. For VPC DB Security Groups, `EC2SecurityGroupId` must be provided. Otherwise, EC2SecurityGroupOwnerId and either `EC2SecurityGroupName` or `EC2SecurityGroupId` must be provided."
       }
     },
     "AWS::RDS::DBSubnetGroup": {
@@ -32341,9 +32365,9 @@
       },
       "description": "The `AWS::RDS::DBSubnetGroup` resource creates a database subnet group. Subnet groups must contain at least two subnets in two different Availability Zones in the same region.\n\nFor more information, see [Working with DB subnet groups](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_VPC.WorkingWithRDSInstanceinaVPC.html#USER_VPC.Subnets) in the *Amazon RDS User Guide* .",
       "properties": {
-        "DBSubnetGroupDescription": "The description for the DB subnet group.",
+        "DBSubnetGroupDescription": "The description for the DB Subnet Group.",
         "DBSubnetGroupName": "The name for the DB subnet group. This value is stored as a lowercase string.\n\nConstraints: Must contain no more than 255 lowercase alphanumeric characters or hyphens. Must not be \"Default\".\n\nExample: `mysubnetgroup`",
-        "SubnetIds": "The EC2 Subnet IDs for the DB subnet group.",
+        "SubnetIds": "The EC2 Subnet IDs for the DB Subnet Group.",
         "Tags": "Tags to assign to the DB subnet group."
       }
     },
@@ -32353,8 +32377,8 @@
       },
       "description": "The `AWS::RDS::EventSubscription` resource allows you to receive notifications for Amazon Relational Database Service events through the Amazon Simple Notification Service (Amazon SNS). For more information, see [Using Amazon RDS Event Notification](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_Events.html) in the *Amazon RDS User Guide* .",
       "properties": {
-        "Enabled": "A value that indicates whether to activate the subscription. If the event notification subscription isn't activated, the subscription is created but not active.",
-        "EventCategories": "A list of event categories for a particular source type ( `SourceType` ) that you want to subscribe to. You can see a list of the categories for a given source type in [Events](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_Events.html) in the *Amazon RDS User Guide* or by using the `DescribeEventCategories` operation.",
+        "Enabled": "A Boolean value; set to *true* to activate the subscription, set to *false* to create the subscription but not active it.",
+        "EventCategories": "A list of event categories for a SourceType that you want to subscribe to. You can see a list of the categories for a given SourceType in the [Events](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_Events.html) topic in the Amazon RDS User Guide or by using the *DescribeEventCategories* action.",
         "SnsTopicArn": "The Amazon Resource Name (ARN) of the SNS topic created for event notification. The ARN is created by Amazon SNS when you create a topic and subscribe to it.",
         "SourceIds": "The list of identifiers of the event sources for which events are returned. If not specified, then all sources are included in the response. An identifier must begin with a letter and must contain only ASCII letters, digits, and hyphens. It can't end with a hyphen or contain two consecutive hyphens.\n\nConstraints:\n\n- If a `SourceIds` value is supplied, `SourceType` must also be provided.\n- If the source type is a DB instance, a `DBInstanceIdentifier` value must be supplied.\n- If the source type is a DB cluster, a `DBClusterIdentifier` value must be supplied.\n- If the source type is a DB parameter group, a `DBParameterGroupName` value must be supplied.\n- If the source type is a DB security group, a `DBSecurityGroupName` value must be supplied.\n- If the source type is a DB snapshot, a `DBSnapshotIdentifier` value must be supplied.\n- If the source type is a DB cluster snapshot, a `DBClusterSnapshotIdentifier` value must be supplied.",
         "SourceType": "The type of source that is generating the events. For example, if you want to be notified of events generated by a DB instance, set this parameter to `db-instance` . If this value isn't specified, all events are returned.\n\nValid values: `db-instance` | `db-cluster` | `db-parameter-group` | `db-security-group` | `db-snapshot` | `db-cluster-snapshot`"
