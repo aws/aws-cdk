@@ -28,7 +28,14 @@
         ]
       }
     },
-    "projectReferences": true
+    "projectReferences": true,
+    "metadata": {
+      "jsii": {
+        "rosetta": {
+          "strict": true
+        }
+      }
+    }
   },
   "repository": {
     "type": "git",
@@ -79,7 +86,7 @@
     "@aws-cdk/pkglint": "0.0.0",
     "@types/jest": "^27.0.3",
     "aws-sdk": "^2.848.0",
-    "colors": "^1.4.0",
+    "colors": "1.4.0",
     "jest": "^27.4.5"
   },
   "dependencies": {
