@@ -1,0 +1,15 @@
+{
+  "ResourceTypes": {
+    "AWS::MWAA::Environment": {
+      "patch": {
+        "description": "Remove the LastUpdate attribute from the AWS::MWAA::Environment resource type, as it has a complex type",
+        "operations": [
+          {
+            "op": "remove",
+            "path": "/Attributes/LastUpdate"
+          }
+        ]
+      }
+    }
+  }
+}
