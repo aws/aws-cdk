@@ -1,12 +1,29 @@
 {
   "Resources": {
-    "Logs6819BB44": {
-      "Type": "AWS::Logs::LogGroup",
+    "TopicRule40A4EA44": {
+      "Type": "AWS::IoT::TopicRule",
       "Properties": {
-        "RetentionInDays": 731
-      },
-      "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete"
+        "TopicRulePayload": {
+          "Actions": [
+            {
+              "Kinesis": {
+                "PartitionKey": "${timestamp()}",
+                "RoleArn": {
+                  "Fn::GetAtt": [
+                    "TopicRuleTopicRuleActionRole246C4F77",
+                    "Arn"
+                  ]
+                },
+                "StreamName": {
+                  "Ref": "MyStream5C050E93"
+                }
+              }
+            }
+          ],
+          "AwsIotSqlVersion": "2016-03-23",
+          "Sql": "SELECT * FROM 'device/+/data'"
+        }
+      }
     },
     "TopicRuleTopicRuleActionRole246C4F77": {
       "Type": "AWS::IAM::Role",
@@ -31,29 +48,6 @@
         "PolicyDocument": {
           "Statement": [
             {
-              "Action": [
-                "logs:CreateLogStream",
-                "logs:PutLogEvents"
-              ],
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "Logs6819BB44",
-                  "Arn"
-                ]
-              }
-            },
-            {
-              "Action": "logs:DescribeLogStreams",
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::GetAtt": [
-                  "Logs6819BB44",
-                  "Arn"
-                ]
-              }
-            },
-            {
               "Action": "kinesis:PutRecord",
               "Effect": "Allow",
               "Resource": {
@@ -72,44 +66,6 @@
             "Ref": "TopicRuleTopicRuleActionRole246C4F77"
           }
         ]
-      }
-    },
-    "TopicRule40A4EA44": {
-      "Type": "AWS::IoT::TopicRule",
-      "Properties": {
-        "TopicRulePayload": {
-          "Actions": [
-            {
-              "Kinesis": {
-                "PartitionKey": "${timestamp()}",
-                "RoleArn": {
-                  "Fn::GetAtt": [
-                    "TopicRuleTopicRuleActionRole246C4F77",
-                    "Arn"
-                  ]
-                },
-                "StreamName": {
-                  "Ref": "MyStream5C050E93"
-                }
-              }
-            }
-          ],
-          "AwsIotSqlVersion": "2016-03-23",
-          "ErrorAction": {
-            "CloudwatchLogs": {
-              "LogGroupName": {
-                "Ref": "Logs6819BB44"
-              },
-              "RoleArn": {
-                "Fn::GetAtt": [
-                  "TopicRuleTopicRuleActionRole246C4F77",
-                  "Arn"
-                ]
-              }
-            }
-          },
-          "Sql": "SELECT * FROM 'device/+/data'"
-        }
       }
     },
     "MyStream5C050E93": {

@@ -11,8 +11,8 @@ export interface KinesisPutRecordActionProps extends CommonActionProps {
   /**
    * The partition key used to determine to which shard the data is written.
    * The partition key is usually composed of an expression (for example, ${topic()} or ${timestamp()}).
-   * For more information @see https://docs.aws.amazon.com/kinesis/latest/APIReference/API_PutRecord.html#API_PutRecord_RequestParameters
    *
+   * @see https://docs.aws.amazon.com/kinesis/latest/APIReference/API_PutRecord.html#API_PutRecord_RequestParameters
    * @default - None
    */
   readonly partitionKey?: string;

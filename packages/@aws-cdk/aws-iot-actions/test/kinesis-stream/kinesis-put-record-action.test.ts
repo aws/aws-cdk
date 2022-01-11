@@ -14,9 +14,7 @@ test('Default kinesis stream action', () => {
   const stream = kinesis.Stream.fromStreamArn(stack, 'MyStream', 'arn:aws:kinesis:xx-west-1:111122223333:stream/my-stream');
 
   // WHEN
-  topicRule.addAction(
-    new actions.KinesisPutRecordAction(stream),
-  );
+  topicRule.addAction(new actions.KinesisPutRecordAction(stream));
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::IoT::TopicRule', {
@@ -76,9 +74,9 @@ test('can set partitionKey', () => {
   const stream = kinesis.Stream.fromStreamArn(stack, 'MyStream', 'arn:aws:kinesis:xx-west-1:111122223333:stream/my-stream');
 
   // WHEN
-  topicRule.addAction(
-    new actions.KinesisPutRecordAction(stream, { partitionKey: '${timestamp()}' }),
-  );
+  topicRule.addAction(new actions.KinesisPutRecordAction(stream, {
+    partitionKey: '${timestamp()}',
+  }));
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::IoT::TopicRule', {
@@ -100,9 +98,7 @@ test('can set role', () => {
   const role = iam.Role.fromRoleArn(stack, 'MyRole', 'arn:aws:iam::123456789012:role/ForTest');
 
   // WHEN
-  topicRule.addAction(
-    new actions.KinesisPutRecordAction(stream, { role }),
-  );
+  topicRule.addAction(new actions.KinesisPutRecordAction(stream, { role }));
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::IoT::TopicRule', {
