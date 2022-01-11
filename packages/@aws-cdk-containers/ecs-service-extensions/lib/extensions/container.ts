@@ -62,7 +62,7 @@ export class Container extends ServiceExtension {
   public readonly trafficPort: number;
 
   /**
-   * The default log group into which application container logs should be routed.
+   * The log group into which application container logs should be routed.
    */
   public logGroup?: awslogs.ILogGroup;
 
