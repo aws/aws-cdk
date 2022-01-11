@@ -78,6 +78,9 @@ describe('WebSocketRoute', () => {
       IntegrationType: 'AWS_PROXY',
       IntegrationUri: 'some-uri',
     });
+  });
+
+
   test('integration cannot be used across WebSocketApis', () => {
     // GIVEN
     const integration = new DummyIntegration();
