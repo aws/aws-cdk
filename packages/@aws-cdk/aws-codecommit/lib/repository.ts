@@ -1,8 +1,9 @@
 import * as notifications from '@aws-cdk/aws-codestarnotifications';
 import * as events from '@aws-cdk/aws-events';
 import * as iam from '@aws-cdk/aws-iam';
-import { IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
+import { ArnFormat, IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
+import { Code } from './code';
 import { CfnRepository } from './codecommit.generated';
 
 /**
@@ -177,8 +178,18 @@ export interface IRepository extends IResource, notifications.INotificationRuleS
 
   /**
    * Defines a CodeStar Notification rule which triggers when a pull request is merged.
+   * @deprecated this method has a typo in its name, use notifyOnPullRequestMerged instead
    */
   notifiyOnPullRequestMerged(
+    id: string,
+    target: notifications.INotificationRuleTarget,
+    options?: notifications.NotificationRuleOptions,
+  ): notifications.INotificationRule;
+
+  /**
+   * Defines a CodeStar Notification rule which triggers when a pull request is merged.
+   */
+  notifyOnPullRequestMerged(
     id: string,
     target: notifications.INotificationRuleTarget,
     options?: notifications.NotificationRuleOptions,
@@ -420,6 +431,14 @@ abstract class RepositoryBase extends Resource implements IRepository {
     target: notifications.INotificationRuleTarget,
     options?: notifications.NotificationRuleOptions,
   ): notifications.INotificationRule {
+    return this.notifyOnPullRequestMerged(id, target, options);
+  }
+
+  public notifyOnPullRequestMerged(
+    id: string,
+    target: notifications.INotificationRuleTarget,
+    options?: notifications.NotificationRuleOptions,
+  ): notifications.INotificationRule {
     return this.notifyOn(id, target, {
       ...options,
       events: [RepositoryNotificationEvents.PULL_REQUEST_MERGED],
@@ -470,6 +489,13 @@ export interface RepositoryProps {
    * @default - No description.
    */
   readonly description?: string;
+
+  /**
+   * The contents with which to initialize the repository after it has been created.
+   *
+   * @default - No initialization (create empty repo)
+   */
+  readonly code?: Code;
 }
 
 /**
@@ -483,7 +509,7 @@ export class Repository extends RepositoryBase {
    */
   public static fromRepositoryArn(scope: Construct, id: string, repositoryArn: string): IRepository {
     const stack = Stack.of(scope);
-    const arn = stack.parseArn(repositoryArn);
+    const arn = stack.splitArn(repositoryArn, ArnFormat.NO_RESOURCE_NAME);
     const repositoryName = arn.resource;
     const region = arn.region;
 
@@ -534,6 +560,7 @@ export class Repository extends RepositoryBase {
       repositoryName: props.repositoryName,
       repositoryDescription: props.description,
       triggers: Lazy.any({ produce: () => this.triggers }, { omitEmptyArray: true }),
+      code: (props.code?.bind(this))?.code,
     });
 
     this.repositoryName = this.getResourceNameAttribute(repository.attrName);

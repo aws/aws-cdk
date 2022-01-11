@@ -1,5 +1,6 @@
 import * as path from 'path';
 import { Match, Template } from '@aws-cdk/assertions';
+import * as sns from '@aws-cdk/aws-sns';
 import * as cdk from '@aws-cdk/core';
 import * as servicecatalog from '../lib';
 
@@ -101,6 +102,93 @@ describe('Product', () => {
     expect(synthesized.assets.length).toEqual(2);
   }),
 
+  test('product test from product stack', () => {
+    const productStack = new servicecatalog.ProductStack(stack, 'ProductStack');
+
+    new sns.Topic(productStack, 'SNSTopicProductStack');
+
+    new servicecatalog.CloudFormationProduct(stack, 'MyProduct', {
+      productName: 'testProduct',
+      owner: 'testOwner',
+      productVersions: [
+        {
+          productVersionName: 'v1',
+          cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromProductStack(productStack),
+        },
+      ],
+    });
+
+    const assembly = app.synth();
+    expect(assembly.artifacts.length).toEqual(2);
+    expect(assembly.stacks[0].assets.length).toBe(1);
+    expect(assembly.stacks[0].assets[0].path).toEqual('ProductStack.product.template.json');
+  }),
+
+  test('multiple product versions from product stack', () => {
+    const productStackVersion1 = new servicecatalog.ProductStack(stack, 'ProductStackV1');
+    const productStackVersion2 = new servicecatalog.ProductStack(stack, 'ProductStackV2');
+
+    new sns.Topic(productStackVersion1, 'SNSTopicProductStack1');
+
+    new sns.Topic(productStackVersion2, 'SNSTopicProductStack2', {
+      displayName: 'a test',
+    });
+
+    new servicecatalog.CloudFormationProduct(stack, 'MyProduct', {
+      productName: 'testProduct',
+      owner: 'testOwner',
+      productVersions: [
+        {
+          productVersionName: 'v1',
+          cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromProductStack(productStackVersion1),
+        },
+        {
+          productVersionName: 'v2',
+          cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromProductStack(productStackVersion2),
+        },
+      ],
+    });
+
+    const assembly = app.synth();
+
+    expect(assembly.stacks[0].assets.length).toBe(2);
+    expect(assembly.stacks[0].assets[0].path).toEqual('ProductStackV1.product.template.json');
+    expect(assembly.stacks[0].assets[1].path).toEqual('ProductStackV2.product.template.json');
+  }),
+
+  test('identical product versions from product stack creates one asset', () => {
+    class TestProductStack extends servicecatalog.ProductStack {
+      constructor(scope: any, id: string) {
+        super(scope, id);
+
+        new sns.Topic(this, 'TopicProduct');
+      }
+    }
+
+    new servicecatalog.CloudFormationProduct(stack, 'MyProduct', {
+      productName: 'testProduct',
+      owner: 'testOwner',
+      productVersions: [
+        {
+          productVersionName: 'v1',
+          cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromProductStack(new TestProductStack(stack, 'v1')),
+        },
+        {
+          productVersionName: 'v2',
+          cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromProductStack(new TestProductStack(stack, 'v2')),
+        },
+        {
+          productVersionName: 'v3',
+          cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromProductStack(new TestProductStack(stack, 'v3')),
+        },
+      ],
+    });
+
+    const assembly = app.synth();
+
+    expect(assembly.stacks[0].assets.length).toBe(1);
+  }),
+
   test('product test from multiple sources', () => {
     new servicecatalog.CloudFormationProduct(stack, 'MyProduct', {
       productName: 'testProduct',
@@ -183,5 +271,94 @@ describe('Product', () => {
         productVersions: [],
       });
     }).toThrowError(/Invalid product versions for resource Default\/MyProduct/);
+  }),
+
+  describe('adding and associating TagOptions to a product', () => {
+    let product: servicecatalog.IProduct;
+
+    beforeEach(() => {
+      product = new servicecatalog.CloudFormationProduct(stack, 'MyProduct', {
+        productName: 'testProduct',
+        owner: 'testOwner',
+        productVersions: [
+          {
+            cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromUrl('https://awsdocs.s3.amazonaws.com/servicecatalog/development-environment.template'),
+          },
+        ],
+      });
+    }),
+
+    test('add tag options to product', () => {
+      const tagOptions = new servicecatalog.TagOptions({
+        key1: ['value1', 'value2'],
+        key2: ['value1'],
+      });
+
+      product.associateTagOptions(tagOptions);
+
+      Template.fromStack(stack).resourceCountIs('AWS::ServiceCatalog::TagOption', 3); //Generates a resource for each unique key-value pair
+      Template.fromStack(stack).resourceCountIs('AWS::ServiceCatalog::TagOptionAssociation', 3);
+    }),
+
+    test('add tag options as input to product in props', () => {
+      const tagOptions = new servicecatalog.TagOptions({
+        key1: ['value1', 'value2'],
+        key2: ['value1'],
+      });
+
+      new servicecatalog.CloudFormationProduct(stack, 'MyProductWithTagOptions', {
+        productName: 'testProduct',
+        owner: 'testOwner',
+        productVersions: [
+          {
+            cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromUrl('https://awsdocs.s3.amazonaws.com/servicecatalog/development-environment.template'),
+          },
+        ],
+        tagOptions: tagOptions,
+      });
+
+      Template.fromStack(stack).resourceCountIs('AWS::ServiceCatalog::TagOption', 3); //Generates a resource for each unique key-value pair
+      Template.fromStack(stack).resourceCountIs('AWS::ServiceCatalog::TagOptionAssociation', 3);
+    }),
+
+    test('adding identical tag options to product is idempotent', () => {
+      const tagOptions1 = new servicecatalog.TagOptions({
+        key1: ['value1', 'value2'],
+        key2: ['value1'],
+      });
+
+      const tagOptions2 = new servicecatalog.TagOptions({
+        key1: ['value1', 'value2'],
+      });
+
+      product.associateTagOptions(tagOptions1);
+      product.associateTagOptions(tagOptions2); // If not idempotent this would fail
+
+      Template.fromStack(stack).resourceCountIs('AWS::ServiceCatalog::TagOption', 3); //Generates a resource for each unique key-value pair
+      Template.fromStack(stack).resourceCountIs('AWS::ServiceCatalog::TagOptionAssociation', 3);
+    }),
+
+    test('adding duplicate tag options to portfolio and product creates unique tag options and enumerated associations', () => {
+      const tagOptions1 = new servicecatalog.TagOptions({
+        key1: ['value1', 'value2'],
+        key2: ['value1'],
+      });
+
+      const tagOptions2 = new servicecatalog.TagOptions({
+        key1: ['value1', 'value2'],
+        key2: ['value2'],
+      });
+
+      const portfolio = new servicecatalog.Portfolio(stack, 'MyPortfolio', {
+        displayName: 'testPortfolio',
+        providerName: 'testProvider',
+      });
+
+      portfolio.associateTagOptions(tagOptions1);
+      product.associateTagOptions(tagOptions2); // If not idempotent this would fail
+
+      Template.fromStack(stack).resourceCountIs('AWS::ServiceCatalog::TagOption', 4); //Generates a resource for each unique key-value pair
+      Template.fromStack(stack).resourceCountIs('AWS::ServiceCatalog::TagOptionAssociation', 6);
+    });
   });
 });

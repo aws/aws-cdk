@@ -23,8 +23,8 @@
 
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
-```ts
-import aps = require('@aws-cdk/aws-aps');
+```ts nofixture
+import * as aps from '@aws-cdk/aws-aps';
 ```
 
 ## Introduction

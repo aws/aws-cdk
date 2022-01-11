@@ -27,6 +27,8 @@ export interface ClusterResourceProps {
   readonly subnets?: ec2.ISubnet[];
   readonly secretsEncryptionKey?: kms.IKey;
   readonly onEventLayer?: lambda.ILayerVersion;
+  readonly clusterHandlerSecurityGroup?: ec2.ISecurityGroup;
+  readonly tags?: { [key: string]: string };
 }
 
 /**
@@ -66,6 +68,7 @@ export class ClusterResource extends CoreConstruct {
       vpc: props.vpc,
       environment: props.environment,
       onEventLayer: props.onEventLayer,
+      securityGroup: props.clusterHandlerSecurityGroup,
     });
 
     const resource = new CustomResource(this, 'Resource', {
@@ -87,6 +90,7 @@ export class ClusterResource extends CoreConstruct {
             endpointPrivateAccess: props.endpointPrivateAccess,
             publicAccessCidrs: props.publicAccessCidrs,
           },
+          tags: props.tags,
         },
         AssumeRoleArn: this.adminRole.roleArn,
 

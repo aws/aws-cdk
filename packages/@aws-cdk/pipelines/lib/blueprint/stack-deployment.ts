@@ -183,7 +183,7 @@ export class StackDeployment {
    * This is `undefined` if the stack template is not published. Use the
    * `DefaultStackSynthesizer` to ensure it is.
    *
-   * @example https://bucket.s3.amazonaws.com/object/key
+   * Example value: `https://bucket.s3.amazonaws.com/object/key`
    */
   public readonly templateUrl?: string;
 

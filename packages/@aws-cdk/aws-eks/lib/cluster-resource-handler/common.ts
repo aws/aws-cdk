@@ -41,12 +41,6 @@ export abstract class ResourceHandler {
   }
 
   public onEvent() {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports, import/no-extraneous-dependencies
-    const ProxyAgent: any = require('proxy-agent');
-    aws.config.update({
-      httpOptions: { agent: new ProxyAgent() },
-    });
-
     switch (this.requestType) {
       case 'Create': return this.onCreate();
       case 'Update': return this.onUpdate();

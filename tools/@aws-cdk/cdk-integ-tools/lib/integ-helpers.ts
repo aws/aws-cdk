@@ -1,7 +1,7 @@
 // Helper functions for integration tests
 import { spawnSync } from 'child_process';
 import * as path from 'path';
-import { AVAILABILITY_ZONE_FALLBACK_CONTEXT_KEY, FUTURE_FLAGS } from '@aws-cdk/cx-api';
+import { AVAILABILITY_ZONE_FALLBACK_CONTEXT_KEY, FUTURE_FLAGS, TARGET_PARTITIONS } from '@aws-cdk/cx-api';
 import * as fs from 'fs-extra';
 
 const CDK_OUTDIR = 'cdk-integ.out';
@@ -353,6 +353,12 @@ export const DEFAULT_SYNTH_OPTIONS = {
     },
     // Enable feature flags for all integ tests
     ...FUTURE_FLAGS,
+
+    // Restricting to these target partitions makes most service principals synthesize to
+    // `service.${URL_SUFFIX}`, which is technically *incorrect* (it's only `amazonaws.com`
+    // or `amazonaws.com.cn`, never UrlSuffix for any of the restricted regions) but it's what
+    // most existing integ tests contain, and we want to disturb as few as possible.
+    [TARGET_PARTITIONS]: ['aws', 'aws-cn'],
   },
   env: {
     CDK_INTEG_ACCOUNT: '12345678',

@@ -1,9 +1,13 @@
 import { ABSENT } from '@aws-cdk/assert-internal';
 import '@aws-cdk/assert-internal/jest';
+import { AutoScalingGroup } from '@aws-cdk/aws-autoscaling';
 import * as autoscaling from '@aws-cdk/aws-autoscaling';
+import { MachineImage } from '@aws-cdk/aws-ec2';
 import * as ec2 from '@aws-cdk/aws-ec2';
+import { AsgCapacityProvider } from '@aws-cdk/aws-ecs';
 import * as ecs from '@aws-cdk/aws-ecs';
 import * as sqs from '@aws-cdk/aws-sqs';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as ecsPatterns from '../../lib';
@@ -13,7 +17,13 @@ test('test ECS queue worker service construct - with only required props', () =>
   const stack = new cdk.Stack();
   const vpc = new ec2.Vpc(stack, 'VPC');
   const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
-  cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+  cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+    autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+      vpc,
+      instanceType: new ec2.InstanceType('t2.micro'),
+      machineImage: MachineImage.latestAmazonLinux(),
+    }),
+  }));
 
   // WHEN
   new ecsPatterns.QueueProcessingEc2Service(stack, 'Service', {
@@ -86,7 +96,13 @@ test('test ECS queue worker service construct - with remove default desiredCount
 
   const vpc = new ec2.Vpc(stack, 'VPC');
   const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
-  cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+  cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+    autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+      vpc,
+      instanceType: new ec2.InstanceType('t2.micro'),
+      machineImage: MachineImage.latestAmazonLinux(),
+    }),
+  }));
 
   // WHEN
   new ecsPatterns.QueueProcessingEc2Service(stack, 'Service', {
@@ -107,7 +123,13 @@ test('test ECS queue worker service construct - with optional props for queues',
   const stack = new cdk.Stack();
   const vpc = new ec2.Vpc(stack, 'VPC');
   const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
-  cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+  cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+    autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+      vpc,
+      instanceType: new ec2.InstanceType('t2.micro'),
+      machineImage: MachineImage.latestAmazonLinux(),
+    }),
+  }));
 
   // WHEN
   new ecsPatterns.QueueProcessingEc2Service(stack, 'Service', {
@@ -177,12 +199,18 @@ test('test ECS queue worker service construct - with optional props for queues',
   });
 });
 
-test('test ECS queue worker service construct - with optional props', () => {
+testDeprecated('test ECS queue worker service construct - with optional props', () => {
   // GIVEN
   const stack = new cdk.Stack();
   const vpc = new ec2.Vpc(stack, 'VPC');
   const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
-  cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+  cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+    autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+      vpc,
+      instanceType: new ec2.InstanceType('t2.micro'),
+      machineImage: MachineImage.latestAmazonLinux(),
+    }),
+  }));
   const queue = new sqs.Queue(stack, 'ecs-test-queue', {
     queueName: 'ecs-test-sqs-queue',
   });
@@ -272,12 +300,18 @@ test('test ECS queue worker service construct - with optional props', () => {
   });
 });
 
-test('can set desiredTaskCount to 0', () => {
+testDeprecated('can set desiredTaskCount to 0', () => {
   // GIVEN
   const stack = new cdk.Stack();
   const vpc = new ec2.Vpc(stack, 'VPC');
   const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
-  cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+  cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+    autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+      vpc,
+      instanceType: new ec2.InstanceType('t2.micro'),
+      machineImage: MachineImage.latestAmazonLinux(),
+    }),
+  }));
 
   // WHEN
   new ecsPatterns.QueueProcessingEc2Service(stack, 'Service', {
@@ -295,12 +329,18 @@ test('can set desiredTaskCount to 0', () => {
   });
 });
 
-test('throws if desiredTaskCount and maxScalingCapacity are 0', () => {
+testDeprecated('throws if desiredTaskCount and maxScalingCapacity are 0', () => {
   // GIVEN
   const stack = new cdk.Stack();
   const vpc = new ec2.Vpc(stack, 'VPC');
   const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
-  cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+  cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+    autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+      vpc,
+      instanceType: new ec2.InstanceType('t2.micro'),
+      machineImage: MachineImage.latestAmazonLinux(),
+    }),
+  }));
 
   // THEN
   expect(() =>
@@ -318,7 +358,13 @@ test('can set custom containerName', () => {
   const stack = new cdk.Stack();
   const vpc = new ec2.Vpc(stack, 'VPC');
   const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
-  cluster.addCapacity('DefaultAutoScalingGroup', { instanceType: new ec2.InstanceType('t2.micro') });
+  cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+    autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+      vpc,
+      instanceType: new ec2.InstanceType('t2.micro'),
+      machineImage: MachineImage.latestAmazonLinux(),
+    }),
+  }));
 
   // WHEN
   new ecsPatterns.QueueProcessingEc2Service(stack, 'Service', {

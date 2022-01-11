@@ -154,43 +154,68 @@ const nameService = new Service(stack, 'name', {
 });
 ```
 
+## Task Auto-Scaling
+
+You can configure the task count of a service to match demand. The recommended way of achieving this is to configure target tracking policies for your service which scales in and out in order to keep metrics around target values.
+
+You need to configure an auto scaling target for the service by setting the `minTaskCount` (defaults to 1) and `maxTaskCount` in the `Service` construct. Then you can specify target values for "CPU Utilization" or "Memory Utilization" across all tasks in your service. Note that the `desiredCount` value will be set to `undefined` if the auto scaling target is configured.
+
+If you want to configure auto-scaling policies based on resources like Application Load Balancer or SQS Queues, you can set the corresponding resource-specific fields in the extension. For example, you can enable target tracking scaling based on Application Load Balancer request count as follows:
+
+```ts
+const stack = new cdk.Stack();
+const environment = new Environment(stack, 'production');
+const serviceDescription = new ServiceDescription();
+
+serviceDescription.add(new Container({
+  cpu: 256,
+  memoryMiB: 512,
+  trafficPort: 80,
+  image: ecs.ContainerImage.fromRegistry('my-alb'),
+}));
+
+// Add the extension with target `requestsPerTarget` value set
+serviceDescription.add(new HttpLoadBalancerExtension({ requestsPerTarget: 10 }));
+
+// Configure the auto scaling target
+new Service(stack, 'my-service', {
+  environment,
+  serviceDescription,
+  desiredCount: 5,
+  // Task auto-scaling constuct for the service
+  autoScaleTaskCount: {
+    maxTaskCount: 10,
+    targetCpuUtilization: 70,
+    targetMemoryUtilization: 50,
+  },
+});
+```
+
+You can also define your own service extensions for [other auto-scaling policies](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/service-auto-scaling.html) for your service by making use of the `scalableTaskCount` attribute of the `Service` class.
+
 ## Creating your own custom `ServiceExtension`
 
 In addition to using the default service extensions that come with this module, you
 can choose to implement your own custom service extensions. The `ServiceExtension`
 class is an abstract class you can implement yourself. The following example
 implements a custom service extension that could be added to a service in order to
-autoscale it based on CPU:
+autoscale it based on scaling intervals of SQS Queue size:
 
 ```ts
 export class MyCustomAutoscaling extends ServiceExtension {
   constructor() {
     super('my-custom-autoscaling');
-  }
-
-  // This function modifies properties of the service prior
-  // to construct creation.
-  public modifyServiceProps(props: ServiceBuild) {
-    return {
-      ...props,
-
-      // Initially launch 10 copies of the service
-      desiredCount: 10
-    } as ServiceBuild;
+    // Scaling intervals for the step scaling policy
+    this.scalingSteps = [{ upper: 0, change: -1 }, { lower: 100, change: +1 }, { lower: 500, change: +5 }];
+    this.sqsQueue = new sqs.Queue(this.scope, 'my-queue');
   }
 
   // This hook utilizes the resulting service construct
   // once it is created
   public useService(service: ecs.Ec2Service | ecs.FargateService) {
-    const scalingTarget = service.autoScaleTaskCount({
-      minCapacity: 5, // Min 5 tasks
-      maxCapacity: 20 // Max 20 tasks
-    });
-
-    scalingTarget.scaleOnCpuUtilization('TargetCpuUtilization50', {
-      targetUtilizationPercent: 50,
-      scaleInCooldown: cdk.Duration.seconds(60),
-      scaleOutCooldown: cdk.Duration.seconds(60),
+    this.parentService.scalableTaskCount.scaleOnMetric('QueueMessagesVisibleScaling', {
+      metric: this.sqsQueue.metricApproximateNumberOfMessagesVisible(),
+      scalingSteps: this.scalingSteps,
     });
   }
 }
@@ -367,11 +392,42 @@ For setting up a topic-specific queue subscription, you can provide a custom que
 
 ```ts
 nameDescription.add(new QueueExtension({
-  queue: myEventsQueue,
+  eventsQueue: myEventsQueue,
   subscriptions: [new TopicSubscription({
     topic: new sns.Topic(stack, 'my-topic'),
     // `myTopicQueue` will subscribe to the `my-topic` instead of `eventsQueue`
-    queue: myTopicQueue,
+    topicSubscriptionQueue: {
+      queue: myTopicQueue,
+    },
+  }],
+}));
+```
+
+### Configuring auto scaling based on SQS Queues
+
+You can scale your service up or down to maintain an acceptable queue latency by tracking the backlog per task. It configures a target tracking scaling policy with target value (acceptable backlog per task) calculated by dividing the `acceptableLatency` by `messageProcessingTime`. For example, if the maximum acceptable latency for a message to be processed after its arrival in the SQS Queue is 10 mins and the average processing time for a task is 250 milliseconds per message, then `acceptableBacklogPerTask = 10 *  60 / 0.25 = 2400`. Therefore, each queue can hold up to 2400 messages before the service starts to scale up. For this, a target tracking policy will be attached to the scaling target for your service with target value `2400`. For more information, please refer: https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-using-sqs-queue.html .
+
+You can configure auto scaling based on SQS Queue for your service as follows:
+
+```ts
+nameDescription.add(new QueueExtension({
+  eventsQueue: myEventsQueue,
+  // Need to specify `scaleOnLatency` to configure auto scaling based on SQS Queue
+  scaleOnLatency: {
+    acceptableLatency: cdk.Duration.minutes(10),
+    messageProcessingTime: cdk.Duration.millis(250),
+  },
+  subscriptions: [new TopicSubscription({
+    topic: new sns.Topic(stack, 'my-topic'),
+    // `myTopicQueue` will subscribe to the `my-topic` instead of `eventsQueue`
+    topicSubscriptionQueue: {
+      queue: myTopicQueue,
+      // Optionally provide `scaleOnLatency` for configuring separate autoscaling for `myTopicQueue`
+      scaleOnLatency: {
+        acceptableLatency: cdk.Duration.minutes(10),
+        messageProcessingTime: cdk.Duration.millis(250),
+      }
+    },
   }],
 }));
 ```

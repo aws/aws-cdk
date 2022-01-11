@@ -55,7 +55,7 @@ describe('Job', () => {
 
   describe('new', () => {
     const className = 'com.amazon.test.ClassName';
-    const codeBucketName = 'bucketName';
+    const codeBucketName = 'bucketname';
     const codeBucketAccessStatement = {
       Action: [
         's3:GetObject*',
@@ -166,7 +166,7 @@ describe('Job', () => {
         Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
           Command: {
             Name: 'glueetl',
-            ScriptLocation: 's3://bucketName/script',
+            ScriptLocation: 's3://bucketname/script',
           },
           Role: {
             'Fn::GetAtt': [
@@ -383,7 +383,7 @@ describe('Job', () => {
       });
 
       describe('with bucket provided', () => {
-        const sparkUIBucketName = 'sparkBucketName';
+        const sparkUIBucketName = 'sparkbucketname';
         let sparkUIBucket: s3.IBucket;
 
         beforeEach(() => {
@@ -420,7 +420,7 @@ describe('Job', () => {
                           {
                             Ref: 'AWS::Partition',
                           },
-                          ':s3:::sparkBucketName',
+                          ':s3:::sparkbucketname',
                         ],
                       ],
                     },
@@ -432,7 +432,7 @@ describe('Job', () => {
                           {
                             Ref: 'AWS::Partition',
                           },
-                          ':s3:::sparkBucketName/*',
+                          ':s3:::sparkbucketname/*',
                         ],
                       ],
                     },
@@ -460,7 +460,7 @@ describe('Job', () => {
       });
 
       describe('with bucket and path provided', () => {
-        const sparkUIBucketName = 'sparkBucketName';
+        const sparkUIBucketName = 'sparkbucketname';
         const prefix = 'some/path/';
         let sparkUIBucket: s3.IBucket;
 
@@ -516,7 +516,7 @@ describe('Job', () => {
         Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
           Command: {
             Name: 'glueetl',
-            ScriptLocation: 's3://bucketName/script',
+            ScriptLocation: 's3://bucketname/script',
           },
           Role: {
             'Fn::GetAtt': [
@@ -614,7 +614,7 @@ describe('Job', () => {
         GlueVersion: '2.0',
         Command: {
           Name: 'glueetl',
-          ScriptLocation: 's3://bucketName/script',
+          ScriptLocation: 's3://bucketname/script',
           PythonVersion: '3',
         },
         Role: {
@@ -625,9 +625,9 @@ describe('Job', () => {
         },
         DefaultArguments: {
           '--job-language': 'python',
-          '--extra-jars': 's3://bucketName/file1.jar,s3://bucketName/file2.jar',
-          '--extra-py-files': 's3://bucketName/file1.py,s3://bucketName/file2.py',
-          '--extra-files': 's3://bucketName/file1.txt,s3://bucketName/file2.txt',
+          '--extra-jars': 's3://bucketname/file1.jar,s3://bucketname/file2.jar',
+          '--extra-py-files': 's3://bucketname/file1.py,s3://bucketname/file2.py',
+          '--extra-files': 's3://bucketname/file1.txt,s3://bucketname/file2.txt',
           '--user-jars-first': 'true',
         },
       });
@@ -649,7 +649,7 @@ describe('Job', () => {
         GlueVersion: '2.0',
         Command: {
           Name: 'gluestreaming',
-          ScriptLocation: 's3://bucketName/script',
+          ScriptLocation: 's3://bucketname/script',
         },
         Role: {
           'Fn::GetAtt': [
@@ -660,8 +660,8 @@ describe('Job', () => {
         DefaultArguments: {
           '--job-language': 'scala',
           '--class': 'com.amazon.test.ClassName',
-          '--extra-jars': 's3://bucketName/file1.jar,s3://bucketName/file2.jar',
-          '--extra-files': 's3://bucketName/file1.txt,s3://bucketName/file2.txt',
+          '--extra-jars': 's3://bucketname/file1.jar,s3://bucketname/file2.jar',
+          '--extra-files': 's3://bucketname/file1.txt,s3://bucketname/file2.txt',
           '--user-jars-first': 'true',
         },
       });
@@ -757,7 +757,7 @@ describe('Job', () => {
           testCase.invoke(job);
 
           expect(metric).toEqual(new cloudwatch.Metric({
-            dimensions: {
+            dimensionsMap: {
               RuleName: (job.node.findChild(testCase.ruleId) as events.Rule).ruleName,
             },
             metricName: 'TriggeredRules',
@@ -814,7 +814,7 @@ describe('Job', () => {
           metricName,
           statistic: 'Sum',
           namespace: 'Glue',
-          dimensions: {
+          dimensionsMap: {
             JobName: job.jobName,
             JobRunId: 'ALL',
             Type: 'count',
@@ -830,7 +830,7 @@ describe('Job', () => {
           metricName,
           statistic: 'Average',
           namespace: 'Glue',
-          dimensions: {
+          dimensionsMap: {
             JobName: job.jobName,
             JobRunId: 'ALL',
             Type: 'gauge',

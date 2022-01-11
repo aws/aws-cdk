@@ -56,7 +56,6 @@ export abstract class IotSql {
   public abstract bind(scope: Construct): IotSqlConfig;
 }
 
-
 class IotSqlImpl extends IotSql {
   constructor(private readonly version: string, private readonly sql: string) {
     super();
