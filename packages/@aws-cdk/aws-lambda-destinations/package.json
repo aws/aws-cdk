@@ -28,7 +28,14 @@
         ]
       }
     },
-    "projectReferences": true
+    "projectReferences": true,
+    "metadata": {
+      "jsii": {
+        "rosetta": {
+          "strict": true
+        }
+      }
+    }
   },
   "repository": {
     "type": "git",
@@ -47,7 +54,9 @@
     "build+test+package": "yarn build+test && yarn package",
     "build+test": "yarn build && yarn test",
     "compat": "cdk-compat",
-    "rosetta:extract": "yarn --silent jsii-rosetta extract"
+    "rosetta:extract": "yarn --silent jsii-rosetta extract",
+    "build+extract": "yarn build && yarn rosetta:extract",
+    "build+test+extract": "yarn build+test && yarn rosetta:extract"
   },
   "keywords": [
     "aws",
@@ -62,13 +71,13 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/jest": "^26.0.23",
-    "cdk-build-tools": "0.0.0",
-    "cdk-integ-tools": "0.0.0",
-    "cfn2ts": "0.0.0",
-    "jest": "^26.6.3",
-    "pkglint": "0.0.0",
-    "@aws-cdk/assert-internal": "0.0.0"
+    "@aws-cdk/assert-internal": "0.0.0",
+    "@aws-cdk/cdk-build-tools": "0.0.0",
+    "@aws-cdk/cdk-integ-tools": "0.0.0",
+    "@aws-cdk/cfn2ts": "0.0.0",
+    "@aws-cdk/pkglint": "0.0.0",
+    "@types/jest": "^27.0.3",
+    "jest": "^27.4.5"
   },
   "dependencies": {
     "@aws-cdk/aws-events": "0.0.0",
@@ -101,7 +110,6 @@
   },
   "maturity": "stable",
   "cdk-build": {
-    "jest": true,
     "env": {
       "AWSLINT_BASE_CONSTRUCT": true
     }

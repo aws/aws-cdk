@@ -96,14 +96,14 @@
     "VPCPublicSubnet1NATGatewayE0556630": {
       "Type": "AWS::EC2::NatGateway",
       "Properties": {
+        "SubnetId": {
+          "Ref": "VPCPublicSubnet1SubnetB4246D30"
+        },
         "AllocationId": {
           "Fn::GetAtt": [
             "VPCPublicSubnet1EIP6AD938E8",
             "AllocationId"
           ]
-        },
-        "SubnetId": {
-          "Ref": "VPCPublicSubnet1SubnetB4246D30"
         },
         "Tags": [
           {
@@ -193,14 +193,14 @@
     "VPCPublicSubnet2NATGateway3C070193": {
       "Type": "AWS::EC2::NatGateway",
       "Properties": {
+        "SubnetId": {
+          "Ref": "VPCPublicSubnet2Subnet74179F39"
+        },
         "AllocationId": {
           "Fn::GetAtt": [
             "VPCPublicSubnet2EIP4947BC00",
             "AllocationId"
           ]
-        },
-        "SubnetId": {
-          "Ref": "VPCPublicSubnet2Subnet74179F39"
         },
         "Tags": [
           {
@@ -554,7 +554,9 @@
           "PasswordLength": 30,
           "SecretStringTemplate": "{\"username\":\"syscdk\"}"
         }
-      }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
     },
     "InstanceSecretAttachment83BEE581": {
       "Type": "AWS::SecretsManager::SecretTargetAttachment",
@@ -813,8 +815,24 @@
       "Type": "AWS::Serverless::Application",
       "Properties": {
         "Location": {
-          "ApplicationId": "arn:aws:serverlessrepo:us-east-1:297356227824:applications/SecretsManagerRDSOracleRotationSingleUser",
-          "SemanticVersion": "1.1.60"
+          "ApplicationId": {
+            "Fn::FindInMap": [
+              "InstanceRotationSingleUserSARMappingFEA0C86E",
+              {
+                "Ref": "AWS::Partition"
+              },
+              "applicationId"
+            ]
+          },
+          "SemanticVersion": {
+            "Fn::FindInMap": [
+              "InstanceRotationSingleUserSARMappingFEA0C86E",
+              {
+                "Ref": "AWS::Partition"
+              },
+              "semanticVersion"
+            ]
+          }
         },
         "Parameters": {
           "endpoint": {
@@ -987,10 +1005,10 @@
       "Type": "AWS::Lambda::Function",
       "Properties": {
         "Handler": "index.handler",
-        "Runtime": "nodejs12.x",
+        "Runtime": "nodejs14.x",
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParameters884431e2bc651d2b61bd699a29dc9684b0f66911f06bd3ed0635f854bf18e147S3BucketAE1150B3"
+            "Ref": "AssetParametersdd4b26cf376ea5894e31041be239fc518713becdafb8f2894b069a53984fafe9S3BucketE7DA8D4B"
           },
           "S3Key": {
             "Fn::Join": [
@@ -1003,7 +1021,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameters884431e2bc651d2b61bd699a29dc9684b0f66911f06bd3ed0635f854bf18e147S3VersionKeyC76660C1"
+                          "Ref": "AssetParametersdd4b26cf376ea5894e31041be239fc518713becdafb8f2894b069a53984fafe9S3VersionKey534293E7"
                         }
                       ]
                     }
@@ -1016,7 +1034,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameters884431e2bc651d2b61bd699a29dc9684b0f66911f06bd3ed0635f854bf18e147S3VersionKeyC76660C1"
+                          "Ref": "AssetParametersdd4b26cf376ea5894e31041be239fc518713becdafb8f2894b069a53984fafe9S3VersionKey534293E7"
                         }
                       ]
                     }
@@ -1102,25 +1120,41 @@
           ]
         },
         "Handler": "index.handler",
-        "Runtime": "nodejs10.x"
+        "Runtime": "nodejs12.x"
       },
       "DependsOn": [
         "FunctionServiceRole675BB04A"
       ]
     }
   },
+  "Mappings": {
+    "InstanceRotationSingleUserSARMappingFEA0C86E": {
+      "aws": {
+        "applicationId": "arn:aws:serverlessrepo:us-east-1:297356227824:applications/SecretsManagerRDSOracleRotationSingleUser",
+        "semanticVersion": "1.1.60"
+      },
+      "aws-cn": {
+        "applicationId": "arn:aws-cn:serverlessrepo:cn-north-1:193023089310:applications/SecretsManagerRDSOracleRotationSingleUser",
+        "semanticVersion": "1.1.37"
+      },
+      "aws-us-gov": {
+        "applicationId": "arn:aws-us-gov:serverlessrepo:us-gov-west-1:023102451235:applications/SecretsManagerRDSOracleRotationSingleUser",
+        "semanticVersion": "1.1.93"
+      }
+    }
+  },
   "Parameters": {
-    "AssetParameters884431e2bc651d2b61bd699a29dc9684b0f66911f06bd3ed0635f854bf18e147S3BucketAE1150B3": {
+    "AssetParametersdd4b26cf376ea5894e31041be239fc518713becdafb8f2894b069a53984fafe9S3BucketE7DA8D4B": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"884431e2bc651d2b61bd699a29dc9684b0f66911f06bd3ed0635f854bf18e147\""
+      "Description": "S3 bucket for asset \"dd4b26cf376ea5894e31041be239fc518713becdafb8f2894b069a53984fafe9\""
     },
-    "AssetParameters884431e2bc651d2b61bd699a29dc9684b0f66911f06bd3ed0635f854bf18e147S3VersionKeyC76660C1": {
+    "AssetParametersdd4b26cf376ea5894e31041be239fc518713becdafb8f2894b069a53984fafe9S3VersionKey534293E7": {
       "Type": "String",
-      "Description": "S3 key for asset version \"884431e2bc651d2b61bd699a29dc9684b0f66911f06bd3ed0635f854bf18e147\""
+      "Description": "S3 key for asset version \"dd4b26cf376ea5894e31041be239fc518713becdafb8f2894b069a53984fafe9\""
     },
-    "AssetParameters884431e2bc651d2b61bd699a29dc9684b0f66911f06bd3ed0635f854bf18e147ArtifactHash717FC602": {
+    "AssetParametersdd4b26cf376ea5894e31041be239fc518713becdafb8f2894b069a53984fafe9ArtifactHash3CB520C3": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"884431e2bc651d2b61bd699a29dc9684b0f66911f06bd3ed0635f854bf18e147\""
+      "Description": "Artifact hash for asset \"dd4b26cf376ea5894e31041be239fc518713becdafb8f2894b069a53984fafe9\""
     }
   }
 }

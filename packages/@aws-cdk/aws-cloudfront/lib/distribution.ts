@@ -1,7 +1,8 @@
 import * as acm from '@aws-cdk/aws-certificatemanager';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
-import { IResource, Lazy, Resource, Stack, Token, Duration, Names } from '@aws-cdk/core';
+import { ArnFormat, IResource, Lazy, Resource, Stack, Token, Duration, Names, FeatureFlags } from '@aws-cdk/core';
+import { CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021 } from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { ICachePolicy } from './cache-policy';
 import { CfnDistribution } from './cloudfront.generated';
@@ -11,6 +12,7 @@ import { IKeyGroup } from './key-group';
 import { IOrigin, OriginBindConfig, OriginBindOptions } from './origin';
 import { IOriginRequestPolicy } from './origin-request-policy';
 import { CacheBehavior } from './private/cache-behavior';
+import { IResponseHeadersPolicy } from './response-headers-policy';
 
 // v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
 // eslint-disable-next-line
@@ -215,7 +217,7 @@ export interface DistributionProps {
     * CloudFront serves your objects only to browsers or devices that support at
     * least the SSL version that you specify.
     *
-    * @default SecurityPolicyProtocol.TLS_V1_2_2019
+    * @default - SecurityPolicyProtocol.TLS_V1_2_2021 if the '@aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2_2021' feature flag is set; otherwise, SecurityPolicyProtocol.TLS_V1_2_2019.
     */
   readonly minimumProtocolVersion?: SecurityPolicyProtocol;
 }
@@ -259,7 +261,7 @@ export class Distribution extends Resource implements IDistribution {
     super(scope, id);
 
     if (props.certificate) {
-      const certificateRegion = Stack.of(this).parseArn(props.certificate.certificateArn).region;
+      const certificateRegion = Stack.of(this).splitArn(props.certificate.certificateArn, ArnFormat.SLASH_RESOURCE_NAME).region;
       if (!Token.isUnresolved(certificateRegion) && certificateRegion !== 'us-east-1') {
         throw new Error(`Distribution certificates must be in the us-east-1 region and the certificate you provided is in ${certificateRegion}.`);
       }
@@ -428,7 +430,10 @@ export class Distribution extends Resource implements IDistribution {
       throw new Error('Explicitly disabled logging but provided a logging bucket.');
     }
 
-    const bucket = props.logBucket ?? new s3.Bucket(this, 'LoggingBucket');
+    const bucket = props.logBucket ?? new s3.Bucket(this, 'LoggingBucket', {
+      encryption: s3.BucketEncryption.S3_MANAGED,
+      enforceSSL: true,
+    });
     return {
       bucket: bucket.bucketRegionalDomainName,
       includeCookies: props.logIncludesCookies,
@@ -446,7 +451,12 @@ export class Distribution extends Resource implements IDistribution {
   }
 
   private renderViewerCertificate(certificate: acm.ICertificate,
-    minimumProtocolVersion: SecurityPolicyProtocol = SecurityPolicyProtocol.TLS_V1_2_2019): CfnDistribution.ViewerCertificateProperty {
+    minimumProtocolVersionProp?: SecurityPolicyProtocol): CfnDistribution.ViewerCertificateProperty {
+
+    const defaultVersion = FeatureFlags.of(this).isEnabled(CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021)
+      ? SecurityPolicyProtocol.TLS_V1_2_2021 : SecurityPolicyProtocol.TLS_V1_2_2019;
+    const minimumProtocolVersion = minimumProtocolVersionProp ?? defaultVersion;
+
     return {
       acmCertificateArn: certificate.certificateArn,
       sslSupportMethod: SSLMethod.SNI,
@@ -531,7 +541,8 @@ export enum SecurityPolicyProtocol {
   TLS_V1_2016 = 'TLSv1_2016',
   TLS_V1_1_2016 = 'TLSv1.1_2016',
   TLS_V1_2_2018 = 'TLSv1.2_2018',
-  TLS_V1_2_2019 = 'TLSv1.2_2019'
+  TLS_V1_2_2019 = 'TLSv1.2_2019',
+  TLS_V1_2_2021 = 'TLSv1.2_2021'
 }
 
 /**
@@ -692,6 +703,13 @@ export interface AddBehaviorOptions {
    * @default - none
    */
   readonly originRequestPolicy?: IOriginRequestPolicy;
+
+  /**
+   * The response headers policy for this behavior. The response headers policy determines which headers are included in responses
+   *
+   * @default - none
+   */
+  readonly responseHeadersPolicy?: IResponseHeadersPolicy;
 
   /**
    * Set this to true to indicate you want to distribute media files in the Microsoft Smooth Streaming format using this behavior.

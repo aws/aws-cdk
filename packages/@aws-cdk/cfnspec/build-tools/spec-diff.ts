@@ -106,6 +106,11 @@ async function main() {
             });
           }
           break;
+        case 'Documentation':
+          describeChanges(resourceType, key, update.Documentation).forEach(change => {
+            attributeChanges.push(change);
+          });
+          break;
         default:
           throw new Error(`Unexpected update to ${resourceType}: ${key}`);
       }

@@ -1,5 +1,6 @@
 import '@aws-cdk/assert-internal/jest';
 import { Connections, Peer, SubnetType, Vpc } from '@aws-cdk/aws-ec2';
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Duration, Stack } from '@aws-cdk/core';
 import { ILoadBalancerTarget, LoadBalancer, LoadBalancingProtocol } from '../lib';
 
@@ -177,7 +178,7 @@ describe('tests', () => {
     });
   });
 
-  test('does not fail when deprecated property sslCertificateId is used', () => {
+  testDeprecated('does not fail when deprecated property sslCertificateId is used', () => {
     // GIVEN
     const sslCertificateArn = 'arn:aws:acm:us-east-1:12345:test/12345';
     const stack = new Stack();
@@ -231,7 +232,7 @@ describe('tests', () => {
     });
   });
 
-  test('throws error when both sslCertificateId and sslCertificateArn are used', () => {
+  testDeprecated('throws error when both sslCertificateId and sslCertificateArn are used', () => {
     // GIVEN
     const sslCertificateArn = 'arn:aws:acm:us-east-1:12345:test/12345';
     const stack = new Stack();
@@ -248,6 +249,52 @@ describe('tests', () => {
         sslCertificateArn: sslCertificateArn,
         sslCertificateId: sslCertificateArn,
       })).toThrow(/"sslCertificateId" is deprecated, please use "sslCertificateArn" only./);
+  });
+
+  test('enable load balancer access logs', () => {
+    // GIVEN
+    const stack = new Stack();
+    const vpc = new Vpc(stack, 'VCP');
+
+    // WHEN
+    new LoadBalancer(stack, 'LB', {
+      vpc,
+      accessLoggingPolicy: {
+        enabled: true,
+        s3BucketName: 'fakeBucket',
+      },
+    });
+
+    // THEN
+    expect(stack).toHaveResource('AWS::ElasticLoadBalancing::LoadBalancer', {
+      AccessLoggingPolicy: {
+        Enabled: true,
+        S3BucketName: 'fakeBucket',
+      },
+    });
+  });
+
+  test('disable load balancer access logs', () => {
+    // GIVEN
+    const stack = new Stack();
+    const vpc = new Vpc(stack, 'VCP');
+
+    // WHEN
+    new LoadBalancer(stack, 'LB', {
+      vpc,
+      accessLoggingPolicy: {
+        enabled: false,
+        s3BucketName: 'fakeBucket',
+      },
+    });
+
+    // THEN
+    expect(stack).toHaveResource('AWS::ElasticLoadBalancing::LoadBalancer', {
+      AccessLoggingPolicy: {
+        Enabled: false,
+        S3BucketName: 'fakeBucket',
+      },
+    });
   });
 });
 

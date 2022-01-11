@@ -356,12 +356,19 @@
       }
     },
     "FargateCPCluster668E71F2": {
-      "Type": "AWS::ECS::Cluster",
+      "Type": "AWS::ECS::Cluster"
+    },
+    "FargateCPClusterBFD66A36": {
+      "Type": "AWS::ECS::ClusterCapacityProviderAssociations",
       "Properties": {
         "CapacityProviders": [
           "FARGATE",
           "FARGATE_SPOT"
-        ]
+        ],
+        "Cluster": {
+          "Ref": "FargateCPCluster668E71F2"
+        },
+        "DefaultCapacityProviderStrategy": []
       }
     },
     "TaskDefTaskRole1EDB4A67": {

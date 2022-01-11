@@ -5,9 +5,9 @@ import * as ecr_assets from '@aws-cdk/aws-ecr-assets';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import * as ssm from '@aws-cdk/aws-ssm';
+import { testFutureBehavior } from '@aws-cdk/cdk-build-tools/lib/feature-flag';
 import * as cdk from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
-import { testFutureBehavior } from 'cdk-build-tools/lib/feature-flag';
 import * as ecs from '../lib';
 
 describe('container definition', () => {
@@ -85,6 +85,9 @@ describe('container definition', () => {
         secrets: {
           SECRET: ecs.Secret.fromSecretsManager(secret),
         },
+        systemControls: [
+          { namespace: 'SomeNamespace', value: 'SomeValue' },
+        ],
       });
 
       // THEN
@@ -218,6 +221,12 @@ describe('container definition', () => {
             ],
             StartTimeout: 2,
             StopTimeout: 5,
+            SystemControls: [
+              {
+                Namespace: 'SomeNamespace',
+                Value: 'SomeValue',
+              },
+            ],
             User: 'rootUser',
             WorkingDirectory: 'a/b/c',
           },
@@ -681,13 +690,14 @@ describe('container definition', () => {
     const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
 
     // WHEN
-    taskDefinition.addContainer('cont', {
+    const container = taskDefinition.addContainer('cont', {
       image: ecs.ContainerImage.fromRegistry('test'),
       memoryLimitMiB: 1024,
       environment: {
         TEST_ENVIRONMENT_VARIABLE: 'test environment variable value',
       },
     });
+    container.addEnvironment('SECOND_ENVIRONEMENT_VARIABLE', 'second test value');
 
     // THEN
     expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
@@ -696,6 +706,37 @@ describe('container definition', () => {
           Environment: [{
             Name: 'TEST_ENVIRONMENT_VARIABLE',
             Value: 'test environment variable value',
+          },
+          {
+            Name: 'SECOND_ENVIRONEMENT_VARIABLE',
+            Value: 'second test value',
+          }],
+        },
+      ],
+    });
+
+
+  });
+
+  test('can add environment variables to container definition with no environment', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+
+    // WHEN
+    const container = taskDefinition.addContainer('cont', {
+      image: ecs.ContainerImage.fromRegistry('test'),
+      memoryLimitMiB: 1024,
+    });
+    container.addEnvironment('SECOND_ENVIRONEMENT_VARIABLE', 'second test value');
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+      ContainerDefinitions: [
+        {
+          Environment: [{
+            Name: 'SECOND_ENVIRONEMENT_VARIABLE',
+            Value: 'second test value',
           }],
         },
       ],
@@ -747,6 +788,40 @@ describe('container definition', () => {
           PortMappings: [
             { ContainerPort: 80 },
             { ContainerPort: 443 },
+          ],
+        },
+      ],
+    });
+  });
+
+  test('can specify system controls', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+
+    // WHEN
+    taskDefinition.addContainer('cont', {
+      image: ecs.ContainerImage.fromRegistry('test'),
+      memoryLimitMiB: 1024,
+      systemControls: [
+        { namespace: 'SomeNamespace1', value: 'SomeValue1' },
+        { namespace: 'SomeNamespace2', value: 'SomeValue2' },
+      ],
+    });
+
+    // THEN
+    expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+      ContainerDefinitions: [
+        {
+          SystemControls: [
+            {
+              Namespace: 'SomeNamespace1',
+              Value: 'SomeValue1',
+            },
+            {
+              Namespace: 'SomeNamespace2',
+              Value: 'SomeValue2',
+            },
           ],
         },
       ],
@@ -1892,7 +1967,7 @@ describe('container definition', () => {
                 { Ref: 'AWS::Region' },
                 '.',
                 { Ref: 'AWS::URLSuffix' },
-                '/aws-cdk/assets:b2c69bfbfe983b634456574587443159b3b7258849856a118ad3d2772238f1a5',
+                '/aws-cdk/assets:8c1d9ca9f5d37b1c4870c13a9f855301bb42c1848dbcdd5edc8fe2c6c7261d48',
               ],
             ],
           },
@@ -1948,11 +2023,11 @@ describe('container definition', () => {
     const asm = app.synth();
     expect(asm.getStackArtifact(stack.artifactId).assets[0]).toEqual({
       repositoryName: 'aws-cdk/assets',
-      imageTag: 'ce3419d7c5d2d44e2789b13ccbd2d54ddf682557669f68bcee753231f5f1c0a5',
-      id: 'ce3419d7c5d2d44e2789b13ccbd2d54ddf682557669f68bcee753231f5f1c0a5',
+      imageTag: '9d913132f812bc1ad436aeb5a51f9216c5776b8079318c1883ad2f79f0ef1a4b',
+      id: '9d913132f812bc1ad436aeb5a51f9216c5776b8079318c1883ad2f79f0ef1a4b',
       packaging: 'container-image',
-      path: 'asset.ce3419d7c5d2d44e2789b13ccbd2d54ddf682557669f68bcee753231f5f1c0a5',
-      sourceHash: 'ce3419d7c5d2d44e2789b13ccbd2d54ddf682557669f68bcee753231f5f1c0a5',
+      path: 'asset.9d913132f812bc1ad436aeb5a51f9216c5776b8079318c1883ad2f79f0ef1a4b',
+      sourceHash: '9d913132f812bc1ad436aeb5a51f9216c5776b8079318c1883ad2f79f0ef1a4b',
       target: 'build-target',
       file: 'index.py',
     });

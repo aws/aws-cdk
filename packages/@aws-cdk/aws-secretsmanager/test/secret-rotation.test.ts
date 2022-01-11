@@ -74,8 +74,12 @@ test('secret rotation single user', () => {
 
   expect(stack).toHaveResource('AWS::Serverless::Application', {
     Location: {
-      ApplicationId: 'arn:aws:serverlessrepo:us-east-1:297356227824:applications/SecretsManagerRDSMySQLRotationSingleUser',
-      SemanticVersion: '1.1.60',
+      ApplicationId: {
+        'Fn::FindInMap': ['SecretRotationSARMappingC10A2F5D', { Ref: 'AWS::Partition' }, 'applicationId'],
+      },
+      SemanticVersion: {
+        'Fn::FindInMap': ['SecretRotationSARMappingC10A2F5D', { Ref: 'AWS::Partition' }, 'semanticVersion'],
+      },
     },
     Parameters: {
       endpoint: {
@@ -337,6 +341,40 @@ test('rotation function name does not exceed 64 chars', () => {
             },
           ],
         ],
+      },
+    },
+  });
+});
+
+
+test('with interface vpc endpoint', () => {
+  // GIVEN
+  const endpoint = new ec2.InterfaceVpcEndpoint(stack, 'SecretsManagerEndpoint', {
+    service: ec2.InterfaceVpcEndpointAwsService.SECRETS_MANAGER,
+    vpc,
+  });
+
+  // WHEN
+  new secretsmanager.SecretRotation(stack, 'SecretRotation', {
+    application: secretsmanager.SecretRotationApplication.MYSQL_ROTATION_SINGLE_USER,
+    secret,
+    target,
+    vpc,
+    endpoint,
+  });
+
+  // THEN
+  expect(stack).toHaveResourceLike('AWS::Serverless::Application', {
+    Parameters: {
+      endpoint: {
+        'Fn::Join': ['', [
+          'https://',
+          { Ref: 'SecretsManagerEndpoint5E83C66B' },
+          '.secretsmanager.',
+          { Ref: 'AWS::Region' },
+          '.',
+          { Ref: 'AWS::URLSuffix' },
+        ]],
       },
     },
   });

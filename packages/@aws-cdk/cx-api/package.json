@@ -32,7 +32,7 @@
     "metadata": {
       "jsii": {
         "rosetta": {
-          "strict": true
+          "strict": false
         }
       }
     }
@@ -48,7 +48,9 @@
     "build+test+package": "yarn build+test && yarn package",
     "build+test": "yarn build && yarn test",
     "compat": "cdk-compat",
-    "rosetta:extract": "yarn --silent jsii-rosetta extract"
+    "rosetta:extract": "yarn --silent jsii-rosetta extract",
+    "build+extract": "yarn build && yarn rosetta:extract",
+    "build+test+extract": "yarn build+test && yarn rosetta:extract"
   },
   "author": {
     "name": "Amazon Web Services",
@@ -64,13 +66,13 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/jest": "^26.0.23",
-    "@types/mock-fs": "^4.13.0",
-    "@types/semver": "^7.3.6",
-    "cdk-build-tools": "0.0.0",
-    "jest": "^26.6.3",
-    "mock-fs": "^4.14.0",
-    "pkglint": "0.0.0"
+    "@aws-cdk/cdk-build-tools": "0.0.0",
+    "@aws-cdk/pkglint": "0.0.0",
+    "@types/jest": "^27.0.3",
+    "@types/mock-fs": "^4.13.1",
+    "@types/semver": "^7.3.9",
+    "jest": "^27.4.5",
+    "mock-fs": "^4.14.0"
   },
   "repository": {
     "url": "https://github.com/aws/aws-cdk.git",
@@ -154,10 +156,7 @@
   "awscdkio": {
     "announce": false
   },
-  "cdk-build": {
-    "jest": true
-  },
   "publishConfig": {
-    "tag": "latest"
+    "tag": "latest-1"
   }
 }

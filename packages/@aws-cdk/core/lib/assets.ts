@@ -44,7 +44,8 @@ export interface AssetOptions {
   readonly assetHashType?: AssetHashType;
 
   /**
-   * Bundle the asset by executing a command in a Docker container.
+   * Bundle the asset by executing a command in a Docker container or a custom bundling provider.
+   *
    * The asset path will be mounted at `/asset-input`. The Docker
    * container is responsible for putting content at `/asset-output`.
    * The content at `/asset-output` will be zipped and used as the
@@ -246,14 +247,14 @@ export interface FileAssetLocation {
   /**
    * The HTTP URL of this asset on Amazon S3.
    *
-   * @example https://s3-us-east-1.amazonaws.com/mybucket/myobject
+   * Example value: `https://s3-us-east-1.amazonaws.com/mybucket/myobject`
    */
   readonly httpUrl: string;
 
   /**
    * The S3 URL of this asset on Amazon S3.
    *
-   * @example s3://mybucket/myobject
+   * Example value: `s3://mybucket/myobject`
    */
   readonly s3ObjectUrl: string;
 

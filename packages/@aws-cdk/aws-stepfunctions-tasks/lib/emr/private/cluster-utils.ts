@@ -123,6 +123,7 @@ export function InstanceTypeConfigPropertyToJson(property: EmrCreateCluster.Inst
 export function InstanceFleetProvisioningSpecificationsPropertyToJson(property: EmrCreateCluster.InstanceFleetProvisioningSpecificationsProperty) {
   return {
     SpotSpecification: {
+      AllocationStrategy: cdk.stringToCloudFormation(property.spotSpecification.allocationStrategy),
       BlockDurationMinutes: cdk.numberToCloudFormation(property.spotSpecification.blockDurationMinutes),
       TimeoutAction: cdk.stringToCloudFormation(property.spotSpecification.timeoutAction?.valueOf()),
       TimeoutDurationMinutes: cdk.numberToCloudFormation(property.spotSpecification.timeoutDurationMinutes),

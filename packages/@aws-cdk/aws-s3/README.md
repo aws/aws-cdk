@@ -14,7 +14,7 @@
 Define an unencrypted S3 bucket.
 
 ```ts
-new Bucket(this, 'MyFirstBucket');
+const bucket = new s3.Bucket(this, 'MyFirstBucket');
 ```
 
 `Bucket` constructs expose the following deploy-time attributes:
@@ -43,8 +43,8 @@ new Bucket(this, 'MyFirstBucket');
 Define a KMS-encrypted bucket:
 
 ```ts
-const bucket = new Bucket(this, 'MyEncryptedBucket', {
-    encryption: BucketEncryption.KMS
+const bucket = new s3.Bucket(this, 'MyEncryptedBucket', {
+  encryption: s3.BucketEncryption.KMS,
 });
 
 // you can access the encryption key:
@@ -56,9 +56,9 @@ You can also supply your own key:
 ```ts
 const myKmsKey = new kms.Key(this, 'MyKey');
 
-const bucket = new Bucket(this, 'MyEncryptedBucket', {
-    encryption: BucketEncryption.KMS,
-    encryptionKey: myKmsKey
+const bucket = new s3.Bucket(this, 'MyEncryptedBucket', {
+  encryption: s3.BucketEncryption.KMS,
+  encryptionKey: myKmsKey,
 });
 
 assert(bucket.encryptionKey === myKmsKey);
@@ -67,19 +67,17 @@ assert(bucket.encryptionKey === myKmsKey);
 Enable KMS-SSE encryption via [S3 Bucket Keys](https://docs.aws.amazon.com/AmazonS3/latest/dev/bucket-key.html):
 
 ```ts
-const bucket = new Bucket(this, 'MyEncryptedBucket', {
-    encryption: BucketEncryption.KMS,
-    bucketKeyEnabled: true
+const bucket = new s3.Bucket(this, 'MyEncryptedBucket', {
+  encryption: s3.BucketEncryption.KMS,
+  bucketKeyEnabled: true,
 });
-
-assert(bucket.bucketKeyEnabled === true);
 ```
 
 Use `BucketEncryption.ManagedKms` to use the S3 master KMS key:
 
 ```ts
-const bucket = new Bucket(this, 'Buck', {
-    encryption: BucketEncryption.KMS_MANAGED
+const bucket = new s3.Bucket(this, 'Buck', {
+  encryption: s3.BucketEncryption.KMS_MANAGED,
 });
 
 assert(bucket.encryptionKey == null);
@@ -91,19 +89,51 @@ A bucket policy will be automatically created for the bucket upon the first call
 `addToResourcePolicy(statement)`:
 
 ```ts
-const bucket = new Bucket(this, 'MyBucket');
-bucket.addToResourcePolicy(new iam.PolicyStatement({
+const bucket = new s3.Bucket(this, 'MyBucket');
+const result = bucket.addToResourcePolicy(new iam.PolicyStatement({
   actions: ['s3:GetObject'],
   resources: [bucket.arnForObjects('file.txt')],
   principals: [new iam.AccountRootPrincipal()],
 }));
 ```
 
+If you try to add a policy statement to an existing bucket, this method will
+not do anything:
+
+```ts
+const bucket = s3.Bucket.fromBucketName(this, 'existingBucket', 'bucket-name');
+
+// No policy statement will be added to the resource
+const result = bucket.addToResourcePolicy(new iam.PolicyStatement({
+  actions: ['s3:GetObject'],
+  resources: [bucket.arnForObjects('file.txt')],
+  principals: [new iam.AccountRootPrincipal()],
+}));
+```
+
+That's because it's not possible to tell whether the bucket
+already has a policy attached, let alone to re-use that policy to add more
+statements to it. We recommend that you always check the result of the call:
+
+```ts
+const bucket = new s3.Bucket(this, 'MyBucket');
+const result = bucket.addToResourcePolicy(new iam.PolicyStatement({
+  actions: ['s3:GetObject'],
+  resources: [bucket.arnForObjects('file.txt')],
+  principals: [new iam.AccountRootPrincipal()],
+}));
+
+if (!result.statementAdded) {
+  // Uh-oh! Someone probably made a mistake here.
+}
+```
+
 The bucket policy can be directly accessed after creation to add statements or
 adjust the removal policy.
 
 ```ts
-bucket.policy?.applyRemovalPolicy(RemovalPolicy.RETAIN);
+const bucket = new s3.Bucket(this, 'MyBucket');
+bucket.policy?.applyRemovalPolicy(cdk.RemovalPolicy.RETAIN);
 ```
 
 Most of the time, you won't have to manipulate the bucket policy directly.
@@ -111,10 +141,10 @@ Instead, buckets have "grant" methods called to give prepackaged sets of permiss
 to other resources. For example:
 
 ```ts
-const lambda = new lambda.Function(this, 'Lambda', { /* ... */ });
+declare const myLambda: lambda.Function;
 
-const bucket = new Bucket(this, 'MyBucket');
-bucket.grantReadWrite(lambda);
+const bucket = new s3.Bucket(this, 'MyBucket');
+bucket.grantReadWrite(myLambda);
 ```
 
 Will give the Lambda's execution role permissions to read and write
@@ -127,8 +157,8 @@ from the bucket.
 To require all requests use Secure Socket Layer (SSL):
 
 ```ts
-const bucket = new Bucket(this, 'Bucket', {
-    enforceSSL: true
+const bucket = new s3.Bucket(this, 'Bucket', {
+  enforceSSL: true,
 });
 ```
 
@@ -145,12 +175,13 @@ factory method. This method accepts `BucketAttributes` which describes the prope
 existing bucket:
 
 ```ts
-const bucket = Bucket.fromBucketAttributes(this, 'ImportedBucket', {
-    bucketArn: 'arn:aws:s3:::my-bucket'
+declare const myLambda: lambda.Function;
+const bucket = s3.Bucket.fromBucketAttributes(this, 'ImportedBucket', {
+  bucketArn: 'arn:aws:s3:::my-bucket',
 });
 
 // now you can just call methods on the bucket
-bucket.grantReadWrite(user);
+bucket.addEventNotification(s3.EventType.OBJECT_CREATED, new s3n.LambdaDestination(myLambda), {prefix: 'home/myusername/*'});
 ```
 
 Alternatively, short-hand factories are available as `Bucket.fromBucketName` and
@@ -158,15 +189,15 @@ Alternatively, short-hand factories are available as `Bucket.fromBucketName` and
 name or ARN respectively:
 
 ```ts
-const byName = Bucket.fromBucketName(this, 'BucketByName', 'my-bucket');
-const byArn  = Bucket.fromBucketArn(this, 'BucketByArn', 'arn:aws:s3:::my-bucket');
+const byName = s3.Bucket.fromBucketName(this, 'BucketByName', 'my-bucket');
+const byArn  = s3.Bucket.fromBucketArn(this, 'BucketByArn', 'arn:aws:s3:::my-bucket');
 ```
 
 The bucket's region defaults to the current stack's region, but can also be explicitly set in cases where one of the bucket's
 regional properties needs to contain the correct values.
 
 ```ts
-const myCrossRegionBucket = Bucket.fromBucketAttributes(this, 'CrossRegionImport', {
+const myCrossRegionBucket = s3.Bucket.fromBucketAttributes(this, 'CrossRegionImport', {
   bucketArn: 'arn:aws:s3:::my-bucket',
   region: 'us-east-1',
 });
@@ -186,9 +217,8 @@ these common use cases.
 The following example will subscribe an SNS topic to be notified of all `s3:ObjectCreated:*` events:
 
 ```ts
-import * as s3n from '@aws-cdk/aws-s3-notifications';
-
-const myTopic = new sns.Topic(this, 'MyTopic');
+const bucket = new s3.Bucket(this, 'MyBucket');
+const topic = new sns.Topic(this, 'MyTopic');
 bucket.addEventNotification(s3.EventType.OBJECT_CREATED, new s3n.SnsDestination(topic));
 ```
 
@@ -202,13 +232,40 @@ following example will notify `myQueue` when objects prefixed with `foo/` and
 have the `.jpg` suffix are removed from the bucket.
 
 ```ts
+declare const myQueue: sqs.Queue;
+const bucket = new s3.Bucket(this, 'MyBucket');
 bucket.addEventNotification(s3.EventType.OBJECT_REMOVED,
   new s3n.SqsDestination(myQueue),
   { prefix: 'foo/', suffix: '.jpg' });
 ```
 
+Adding notifications on existing buckets:
+
+```ts
+declare const topic: sns.Topic;
+const bucket = s3.Bucket.fromBucketAttributes(this, 'ImportedBucket', {
+  bucketArn: 'arn:aws:s3:::my-bucket',
+});
+bucket.addEventNotification(s3.EventType.OBJECT_CREATED, new s3n.SnsDestination(topic));
+```
+
 [S3 Bucket Notifications]: https://docs.aws.amazon.com/AmazonS3/latest/dev/NotificationHowTo.html
 
+
+### EventBridge notifications
+
+Amazon S3 can send events to Amazon EventBridge whenever certain events happen in your bucket.
+Unlike other destinations, you don't need to select which event types you want to deliver.
+
+The following example will enable EventBridge notifications:
+
+```ts
+const bucket = new s3.Bucket(this, 'MyEventBridgeBucket', {
+  eventBridgeEnabled: true,
+});
+```
+
+[S3 EventBridge notifications]: https://docs.aws.amazon.com/AmazonS3/latest/userguide/EventBridge.html
 
 ## Block Public Access
 
@@ -217,24 +274,24 @@ Use `blockPublicAccess` to specify [block public access settings] on the bucket.
 Enable all block public access settings:
 
 ```ts
-const bucket = new Bucket(this, 'MyBlockedBucket', {
-    blockPublicAccess: BlockPublicAccess.BLOCK_ALL
+const bucket = new s3.Bucket(this, 'MyBlockedBucket', {
+  blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
 });
 ```
 
 Block and ignore public ACLs:
 
 ```ts
-const bucket = new Bucket(this, 'MyBlockedBucket', {
-    blockPublicAccess: BlockPublicAccess.BLOCK_ACLS
+const bucket = new s3.Bucket(this, 'MyBlockedBucket', {
+  blockPublicAccess: s3.BlockPublicAccess.BLOCK_ACLS,
 });
 ```
 
 Alternatively, specify the settings manually:
 
 ```ts
-const bucket = new Bucket(this, 'MyBlockedBucket', {
-    blockPublicAccess: new BlockPublicAccess({ blockPublicPolicy: true })
+const bucket = new s3.Bucket(this, 'MyBlockedBucket', {
+  blockPublicAccess: new s3.BlockPublicAccess({ blockPublicPolicy: true }),
 });
 ```
 
@@ -247,9 +304,9 @@ When `blockPublicPolicy` is set to `true`, `grantPublicRead()` throws an error.
 Use `serverAccessLogsBucket` to describe where server access logs are to be stored.
 
 ```ts
-const accessLogsBucket = new Bucket(this, 'AccessLogsBucket');
+const accessLogsBucket = new s3.Bucket(this, 'AccessLogsBucket');
 
-const bucket = new Bucket(this, 'MyBucket', {
+const bucket = new s3.Bucket(this, 'MyBucket', {
   serverAccessLogsBucket: accessLogsBucket,
 });
 ```
@@ -257,9 +314,11 @@ const bucket = new Bucket(this, 'MyBucket', {
 It's also possible to specify a prefix for Amazon S3 to assign to all log object keys.
 
 ```ts
-const bucket = new Bucket(this, 'MyBucket', {
+const accessLogsBucket = new s3.Bucket(this, 'AccessLogsBucket');
+
+const bucket = new s3.Bucket(this, 'MyBucket', {
   serverAccessLogsBucket: accessLogsBucket,
-  serverAccessLogsPrefix: 'logs'
+  serverAccessLogsPrefix: 'logs',
 });
 ```
 
@@ -290,8 +349,8 @@ const dataBucket = new s3.Bucket(this, 'DataBucket', {
         bucket: inventoryBucket,
         prefix: 'with-all-versions',
       },
-    }
-  ]
+    },
+  ],
 });
 ```
 
@@ -324,8 +383,8 @@ You can use the two following properties to specify the bucket [redirection poli
 You can statically redirect a to a given Bucket URL or any other host name with `websiteRedirect`:
 
 ```ts
-const bucket = new Bucket(this, 'MyRedirectedBucket', {
-    websiteRedirect: { hostName: 'www.example.com' }
+const bucket = new s3.Bucket(this, 'MyRedirectedBucket', {
+  websiteRedirect: { hostName: 'www.example.com' },
 });
 ```
 
@@ -334,17 +393,17 @@ const bucket = new Bucket(this, 'MyRedirectedBucket', {
 Alternatively, you can also define multiple `websiteRoutingRules`, to define complex, conditional redirections:
 
 ```ts
-const bucket = new Bucket(this, 'MyRedirectedBucket', {
+const bucket = new s3.Bucket(this, 'MyRedirectedBucket', {
   websiteRoutingRules: [{
     hostName: 'www.example.com',
     httpRedirectCode: '302',
-    protocol: RedirectProtocol.HTTPS,
-    replaceKey: ReplaceKey.prefixWith('test/'),
+    protocol: s3.RedirectProtocol.HTTPS,
+    replaceKey: s3.ReplaceKey.prefixWith('test/'),
     condition: {
       httpErrorCodeReturnedEquals: '200',
       keyPrefixEquals: 'prefix',
-    }
-  }]
+    },
+  }],
 });
 ```
 
@@ -365,18 +424,19 @@ We recommend to use Virtual Hosted-Style URL for newly made bucket.
 You can generate both of them.
 
 ```ts
+const bucket = new s3.Bucket(this, 'MyBucket');
 bucket.urlForObject('objectname'); // Path-Style URL
 bucket.virtualHostedUrlForObject('objectname'); // Virtual Hosted-Style URL
 bucket.virtualHostedUrlForObject('objectname', { regional: false }); // Virtual Hosted-Style URL but non-regional
 ```
 
-### Object Ownership
+## Object Ownership
 
-You can use the two following properties to specify the bucket [object Ownership].
+You can use one of following properties to specify the bucket [object Ownership].
 
 [object Ownership]: https://docs.aws.amazon.com/AmazonS3/latest/dev/about-object-ownership.html
 
-#### Object writer
+### Object writer
 
 The Uploading account will own the object.
 
@@ -386,7 +446,7 @@ new s3.Bucket(this, 'MyBucket', {
 });
 ```
 
-#### Bucket owner preferred
+### Bucket owner preferred
 
 The bucket owner will own the object if the object is uploaded with the bucket-owner-full-control canned ACL. Without this setting and canned ACL, the object is uploaded and remains owned by the uploading account.
 
@@ -396,7 +456,17 @@ new s3.Bucket(this, 'MyBucket', {
 });
 ```
 
-### Bucket deletion
+### Bucket owner enforced (recommended)
+
+ACLs are disabled, and the bucket owner automatically owns and has full control over every object in the bucket. ACLs no longer affect permissions to data in the S3 bucket. The bucket uses policies to define access control.
+
+```ts
+new s3.Bucket(this, 'MyBucket', {
+  objectOwnership: s3.ObjectOwnership.BUCKET_OWNER_ENFORCED,
+});
+```
+
+## Bucket deletion
 
 When a bucket is removed from a stack (or the stack is deleted), the S3
 bucket will be removed according to its removal policy (which by default will
@@ -408,8 +478,49 @@ To override this and force all objects to get deleted during bucket deletion,
 enable the`autoDeleteObjects` option.
 
 ```ts
-const bucket = new Bucket(this, 'MyTempFileBucket', {
-  removalPolicy: RemovalPolicy.DESTROY,
+const bucket = new s3.Bucket(this, 'MyTempFileBucket', {
+  removalPolicy: cdk.RemovalPolicy.DESTROY,
   autoDeleteObjects: true,
 });
+```
+
+**Warning** if you have deployed a bucket with `autoDeleteObjects: true`,
+switching this to `false` in a CDK version *before* `1.126.0` will lead to
+all objects in the bucket being deleted. Be sure to update your bucket resources
+by deploying with CDK version `1.126.0` or later **before** switching this value to `false`.
+
+## Transfer Acceleration
+
+[Transfer Acceleration](https://docs.aws.amazon.com/AmazonS3/latest/userguide/transfer-acceleration.html) can be configured to enable fast, easy, and secure transfers of files over long distances:
+
+```ts
+const bucket = new s3.Bucket(this, 'MyBucket', {
+   transferAcceleration: true,
+});
+```
+
+To access the bucket that is enabled for Transfer Acceleration, you must use a special endpoint. The URL can be generated using method `transferAccelerationUrlForObject`:
+
+```ts
+const bucket = new s3.Bucket(this, 'MyBucket', {
+   transferAcceleration: true,
+});
+bucket.transferAccelerationUrlForObject('objectname');
+```
+
+## Intelligent Tiering
+
+[Intelligent Tiering](https://docs.aws.amazon.com/AmazonS3/latest/userguide/intelligent-tiering.html) can be configured to automatically move files to glacier:
+
+```ts
+    new s3.Bucket(this, 'MyBucket', {
+   intelligentTieringConfigurations: [{
+      name: 'foo',
+      prefix: 'folder/name',
+      archiveAccessTierTime: cdk.Duration.days(90),
+      deepArchiveAccessTierTime: cdk.Duration.days(180),
+      tags: [{key: 'tagname', value: 'tagvalue'}]
+   }],
+});
+
 ```

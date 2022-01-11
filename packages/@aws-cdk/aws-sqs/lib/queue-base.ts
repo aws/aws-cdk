@@ -275,4 +275,13 @@ export interface QueueAttributes {
    * @default - None
    */
   readonly keyArn?: string;
+
+  /**
+   * Whether this queue is an Amazon SQS FIFO queue. If false, this is a standard queue.
+   *
+   * In case of a FIFO queue which is imported from a token, this value has to be explicitly set to true.
+   *
+   * @default - if fifo is not specified, the property will be determined based on the queue name (not possible for FIFO queues imported from a token)
+   */
+  readonly fifo?: boolean;
 }

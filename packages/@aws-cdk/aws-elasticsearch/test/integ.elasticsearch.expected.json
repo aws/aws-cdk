@@ -107,6 +107,11 @@
     "Domain19FCBCB91": {
       "Type": "AWS::Elasticsearch::Domain",
       "Properties": {
+        "AdvancedOptions": {
+          "rest.action.multi.allow_explicit_index": "false",
+          "indices.fielddata.cache.size": "25",
+          "indices.query.bool.max_clause_count": "2048"
+        },
         "CognitoOptions": {
           "Enabled": false
         },
@@ -206,7 +211,15 @@
               {
                 "Ref": "Domain19FCBCB91"
               },
-              "\",\"AccessPolicies\":\"{\\\"Statement\\\":[{\\\"Action\\\":\\\"es:ESHttp*\\\",\\\"Effect\\\":\\\"Allow\\\",\\\"Principal\\\":\\\"*\\\",\\\"Resource\\\":\\\"*\\\"}],\\\"Version\\\":\\\"2012-10-17\\\"}\"},\"outputPath\":\"DomainConfig.ElasticsearchClusterConfig.AccessPolicies\",\"physicalResourceId\":{\"id\":\"",
+              "\",\"AccessPolicies\":\"{\\\"Statement\\\":[{\\\"Action\\\":\\\"es:ESHttp*\\\",\\\"Effect\\\":\\\"Allow\\\",\\\"Principal\\\":{\\\"AWS\\\":\\\"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":iam::",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":root\\\"},\\\"Resource\\\":\\\"*\\\"}],\\\"Version\\\":\\\"2012-10-17\\\"}\"},\"outputPaths\":[\"DomainConfig.ElasticsearchClusterConfig.AccessPolicies\"],\"physicalResourceId\":{\"id\":\"",
               {
                 "Ref": "Domain19FCBCB91"
               },
@@ -222,7 +235,15 @@
               {
                 "Ref": "Domain19FCBCB91"
               },
-              "\",\"AccessPolicies\":\"{\\\"Statement\\\":[{\\\"Action\\\":\\\"es:ESHttp*\\\",\\\"Effect\\\":\\\"Allow\\\",\\\"Principal\\\":\\\"*\\\",\\\"Resource\\\":\\\"*\\\"}],\\\"Version\\\":\\\"2012-10-17\\\"}\"},\"outputPath\":\"DomainConfig.ElasticsearchClusterConfig.AccessPolicies\",\"physicalResourceId\":{\"id\":\"",
+              "\",\"AccessPolicies\":\"{\\\"Statement\\\":[{\\\"Action\\\":\\\"es:ESHttp*\\\",\\\"Effect\\\":\\\"Allow\\\",\\\"Principal\\\":{\\\"AWS\\\":\\\"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":iam::",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":root\\\"},\\\"Resource\\\":\\\"*\\\"}],\\\"Version\\\":\\\"2012-10-17\\\"}\"},\"outputPaths\":[\"DomainConfig.ElasticsearchClusterConfig.AccessPolicies\"],\"physicalResourceId\":{\"id\":\"",
               {
                 "Ref": "Domain19FCBCB91"
               },
@@ -275,7 +296,7 @@
       "Properties": {
         "Code": {
           "S3Bucket": {
-            "Ref": "AssetParameters4600faecd25ab407ff0a9d16f935c93062aaea5d415e97046bb8befe6c8ec02cS3BucketD609D0D9"
+            "Ref": "AssetParameters6ee0a36dd10d630708c265bcf7616c64030040c1bbc383b34150db74b744cad2S3BucketF482197E"
           },
           "S3Key": {
             "Fn::Join": [
@@ -288,7 +309,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameters4600faecd25ab407ff0a9d16f935c93062aaea5d415e97046bb8befe6c8ec02cS3VersionKey77CF589B"
+                          "Ref": "AssetParameters6ee0a36dd10d630708c265bcf7616c64030040c1bbc383b34150db74b744cad2S3VersionKey38B69632"
                         }
                       ]
                     }
@@ -301,7 +322,7 @@
                       "Fn::Split": [
                         "||",
                         {
-                          "Ref": "AssetParameters4600faecd25ab407ff0a9d16f935c93062aaea5d415e97046bb8befe6c8ec02cS3VersionKey77CF589B"
+                          "Ref": "AssetParameters6ee0a36dd10d630708c265bcf7616c64030040c1bbc383b34150db74b744cad2S3VersionKey38B69632"
                         }
                       ]
                     }
@@ -432,6 +453,11 @@
     "Domain2644FE48C": {
       "Type": "AWS::Elasticsearch::Domain",
       "Properties": {
+        "AdvancedOptions": {
+          "rest.action.multi.allow_explicit_index": "false",
+          "indices.fielddata.cache.size": "25",
+          "indices.query.bool.max_clause_count": "2048"
+        },
         "CognitoOptions": {
           "Enabled": false
         },
@@ -531,7 +557,15 @@
               {
                 "Ref": "Domain2644FE48C"
               },
-              "\",\"AccessPolicies\":\"{\\\"Statement\\\":[{\\\"Action\\\":\\\"es:ESHttp*\\\",\\\"Effect\\\":\\\"Allow\\\",\\\"Principal\\\":\\\"*\\\",\\\"Resource\\\":\\\"*\\\"}],\\\"Version\\\":\\\"2012-10-17\\\"}\"},\"outputPath\":\"DomainConfig.ElasticsearchClusterConfig.AccessPolicies\",\"physicalResourceId\":{\"id\":\"",
+              "\",\"AccessPolicies\":\"{\\\"Statement\\\":[{\\\"Action\\\":\\\"es:ESHttp*\\\",\\\"Effect\\\":\\\"Allow\\\",\\\"Principal\\\":{\\\"AWS\\\":\\\"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":iam::",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":root\\\"},\\\"Resource\\\":\\\"*\\\"}],\\\"Version\\\":\\\"2012-10-17\\\"}\"},\"outputPaths\":[\"DomainConfig.ElasticsearchClusterConfig.AccessPolicies\"],\"physicalResourceId\":{\"id\":\"",
               {
                 "Ref": "Domain2644FE48C"
               },
@@ -547,7 +581,15 @@
               {
                 "Ref": "Domain2644FE48C"
               },
-              "\",\"AccessPolicies\":\"{\\\"Statement\\\":[{\\\"Action\\\":\\\"es:ESHttp*\\\",\\\"Effect\\\":\\\"Allow\\\",\\\"Principal\\\":\\\"*\\\",\\\"Resource\\\":\\\"*\\\"}],\\\"Version\\\":\\\"2012-10-17\\\"}\"},\"outputPath\":\"DomainConfig.ElasticsearchClusterConfig.AccessPolicies\",\"physicalResourceId\":{\"id\":\"",
+              "\",\"AccessPolicies\":\"{\\\"Statement\\\":[{\\\"Action\\\":\\\"es:ESHttp*\\\",\\\"Effect\\\":\\\"Allow\\\",\\\"Principal\\\":{\\\"AWS\\\":\\\"arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":iam::",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":root\\\"},\\\"Resource\\\":\\\"*\\\"}],\\\"Version\\\":\\\"2012-10-17\\\"}\"},\"outputPaths\":[\"DomainConfig.ElasticsearchClusterConfig.AccessPolicies\"],\"physicalResourceId\":{\"id\":\"",
               {
                 "Ref": "Domain2644FE48C"
               },
@@ -566,17 +608,17 @@
     }
   },
   "Parameters": {
-    "AssetParameters4600faecd25ab407ff0a9d16f935c93062aaea5d415e97046bb8befe6c8ec02cS3BucketD609D0D9": {
+    "AssetParameters6ee0a36dd10d630708c265bcf7616c64030040c1bbc383b34150db74b744cad2S3BucketF482197E": {
       "Type": "String",
-      "Description": "S3 bucket for asset \"4600faecd25ab407ff0a9d16f935c93062aaea5d415e97046bb8befe6c8ec02c\""
+      "Description": "S3 bucket for asset \"6ee0a36dd10d630708c265bcf7616c64030040c1bbc383b34150db74b744cad2\""
     },
-    "AssetParameters4600faecd25ab407ff0a9d16f935c93062aaea5d415e97046bb8befe6c8ec02cS3VersionKey77CF589B": {
+    "AssetParameters6ee0a36dd10d630708c265bcf7616c64030040c1bbc383b34150db74b744cad2S3VersionKey38B69632": {
       "Type": "String",
-      "Description": "S3 key for asset version \"4600faecd25ab407ff0a9d16f935c93062aaea5d415e97046bb8befe6c8ec02c\""
+      "Description": "S3 key for asset version \"6ee0a36dd10d630708c265bcf7616c64030040c1bbc383b34150db74b744cad2\""
     },
-    "AssetParameters4600faecd25ab407ff0a9d16f935c93062aaea5d415e97046bb8befe6c8ec02cArtifactHash86CFA15D": {
+    "AssetParameters6ee0a36dd10d630708c265bcf7616c64030040c1bbc383b34150db74b744cad2ArtifactHash4BE92B79": {
       "Type": "String",
-      "Description": "Artifact hash for asset \"4600faecd25ab407ff0a9d16f935c93062aaea5d415e97046bb8befe6c8ec02c\""
+      "Description": "Artifact hash for asset \"6ee0a36dd10d630708c265bcf7616c64030040c1bbc383b34150db74b744cad2\""
     }
   }
 }

@@ -1,4 +1,4 @@
-import { Resource, Stack } from '@aws-cdk/core';
+import { ArnFormat, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { IBaseService } from '../base/base-service';
 import { ICluster } from '../cluster';
@@ -47,12 +47,14 @@ export function fromServiceAtrributes(scope: Construct, id: string, attrs: Servi
     });
   } else {
     arn = attrs.serviceArn as string;
-    name = stack.parseArn(arn).resourceName as string;
+    name = stack.splitArn(arn, ArnFormat.SLASH_RESOURCE_NAME).resourceName as string;
   }
   class Import extends Resource implements IBaseService {
     public readonly serviceArn = arn;
     public readonly serviceName = name;
     public readonly cluster = attrs.cluster;
   }
-  return new Import(scope, id);
+  return new Import(scope, id, {
+    environmentFromArn: arn,
+  });
 }

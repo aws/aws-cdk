@@ -1,4 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
+import '@aws-cdk/assertions';
 import {} from '../lib';
 
 test('No tests are specified for this package', () => {

@@ -23,7 +23,7 @@ The following example creates an Amazon ECS cluster, adds capacity to it, and
 runs a service on it:
 
 ```ts
-import * as ecs from '@aws-cdk/aws-ecs';
+declare const vpc: ec2.Vpc;
 
 // Create an ECS cluster
 const cluster = new ecs.Cluster(this, 'Cluster', {
@@ -60,6 +60,7 @@ one to run tasks on AWS Fargate.
 - Use the `Ec2TaskDefinition` and `Ec2Service` constructs to run tasks on Amazon EC2 instances running in your account.
 - Use the `FargateTaskDefinition` and `FargateService` constructs to run tasks on
   instances that are managed for you by AWS.
+- Use the `ExternalTaskDefinition` and `ExternalService` constructs to run AWS ECS Anywhere tasks on self-managed infrastructure.
 
 Here are the main differences:
 
@@ -73,10 +74,12 @@ Here are the main differences:
   Application/Network Load Balancers. Only the AWS log driver is supported.
   Many host features are not supported such as adding kernel capabilities
   and mounting host devices/volumes inside the container.
+- **AWS ECSAnywhere**: tasks are run and managed by AWS ECS Anywhere on infrastructure owned by the customer. Only Bridge networking mode is supported. Does not support autoscaling, load balancing, cloudmap or attachment of volumes.
 
-For more information on Amazon EC2 vs AWS Fargate and networking see the AWS Documentation:
-[AWS Fargate](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/AWS_Fargate.html) and
-[Task Networking](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-networking.html).
+For more information on Amazon EC2 vs AWS Fargate, networking and ECS Anywhere see the AWS Documentation:
+[AWS Fargate](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/AWS_Fargate.html),
+[Task Networking](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-networking.html),
+[ECS Anywhere](https://aws.amazon.com/ecs/anywhere/)
 
 ## Clusters
 
@@ -86,8 +89,10 @@ tasks on. You can run many tasks on a single cluster.
 The following code creates a cluster that can run AWS Fargate tasks:
 
 ```ts
+declare const vpc: ec2.Vpc;
+
 const cluster = new ecs.Cluster(this, 'Cluster', {
-  vpc: vpc
+  vpc,
 });
 ```
 
@@ -102,8 +107,10 @@ with various instance types.
 The following example creates an Amazon ECS cluster and adds capacity to it:
 
 ```ts
+declare const vpc: ec2.Vpc;
+
 const cluster = new ecs.Cluster(this, 'Cluster', {
-  vpc: vpc
+  vpc,
 });
 
 // Either add default capacity
@@ -116,7 +123,7 @@ cluster.addCapacity('DefaultAutoScalingGroupCapacity', {
 const autoScalingGroup = new autoscaling.AutoScalingGroup(this, 'ASG', {
   vpc,
   instanceType: new ec2.InstanceType('t2.xlarge'),
-  machineImage: EcsOptimizedImage.amazonLinux(),
+  machineImage: ecs.EcsOptimizedImage.amazonLinux(),
   // Or use Amazon ECS-Optimized Amazon Linux 2 AMI
   // machineImage: EcsOptimizedImage.amazonLinux2(),
   desiredCapacity: 3,
@@ -128,25 +135,42 @@ cluster.addAutoScalingGroup(autoScalingGroup);
 
 If you omit the property `vpc`, the construct will create a new VPC with two AZs.
 
+By default, all machine images will auto-update to the latest version
+on each deployment, causing a replacement of the instances in your AutoScalingGroup
+if the AMI has been updated since the last deployment.
+
+If task draining is enabled, ECS will transparently reschedule tasks on to the new
+instances before terminating your old instances. If you have disabled task draining,
+the tasks will be terminated along with the instance. To prevent that, you
+can pick a non-updating AMI by passing `cacheInContext: true`, but be sure
+to periodically update to the latest AMI manually by using the [CDK CLI
+context management commands](https://docs.aws.amazon.com/cdk/latest/guide/context.html):
+
+```ts
+declare const vpc: ec2.Vpc;
+const autoScalingGroup = new autoscaling.AutoScalingGroup(this, 'ASG', {
+  machineImage: ecs.EcsOptimizedImage.amazonLinux({ cachedInContext: true }),
+  vpc,
+  instanceType: new ec2.InstanceType('t2.micro'),
+});
+```
 
 ### Bottlerocket
 
 [Bottlerocket](https://aws.amazon.com/bottlerocket/) is a Linux-based open source operating system that is
 purpose-built by AWS for running containers. You can launch Amazon ECS container instances with the Bottlerocket AMI.
 
-> **NOTICE**: The Bottlerocket AMI is in developer preview release for Amazon ECS and is subject to change.
-
 The following example will create a capacity with self-managed Amazon EC2 capacity of 2 `c5.large` Linux instances running with `Bottlerocket` AMI.
-
-Note that you must specify either a `machineImage` or `machineImageType`, at least one, not both.
 
 The following example adds Bottlerocket capacity to the cluster:
 
 ```ts
+declare const cluster: ecs.Cluster;
+
 cluster.addCapacity('bottlerocket-asg', {
   minCapacity: 2,
   instanceType: new ec2.InstanceType('c5.large'),
-  machineImageType: ecs.MachineImageType.BOTTLEROCKET,
+  machineImage: new ecs.BottleRocketImage(),
 });
 ```
 
@@ -158,12 +182,25 @@ for use when launching your EC2 instances that are powered by Arm-based AWS
 Graviton Processors.
 
 ```ts
+declare const cluster: ecs.Cluster;
+
 cluster.addCapacity('graviton-cluster', {
   minCapacity: 2,
   instanceType: new ec2.InstanceType('c6g.large'),
   machineImage: ecs.EcsOptimizedImage.amazonLinux2(ecs.AmiHardwareType.ARM),
 });
+```
 
+Bottlerocket is also supported:
+
+```ts
+declare const cluster: ecs.Cluster;
+
+cluster.addCapacity('graviton-cluster', {
+  minCapacity: 2,
+  instanceType: new ec2.InstanceType('c6g.large'),
+  machineImageType: ecs.MachineImageType.BOTTLEROCKET,
+});
 ```
 
 ### Spot Instances
@@ -171,6 +208,8 @@ cluster.addCapacity('graviton-cluster', {
 To add spot instances into the cluster, you must specify the `spotPrice` in the `ecs.AddCapacityOptions` and optionally enable the `spotInstanceDraining` property.
 
 ```ts
+declare const cluster: ecs.Cluster;
+
 // Add an AutoScalingGroup with spot instances to the existing cluster
 cluster.addCapacity('AsgSpot', {
   maxCapacity: 2,
@@ -192,7 +231,8 @@ then you may do so by providing a KMS key for the `topicEncryptionKey` property 
 
 ```ts
 // Given
-const key = kms.Key(...);
+declare const cluster: ecs.Cluster;
+declare const key: kms.Key;
 // Then, use that key to encrypt the lifecycle-event SNS Topic.
 cluster.addCapacity('ASGEncryptedSNS', {
   instanceType: new ec2.InstanceType("t2.xlarge"),
@@ -211,21 +251,36 @@ some supporting containers which are used to support the main container,
 doings things like upload logs or metrics to monitoring services.
 
 To run a task or service with Amazon EC2 launch type, use the `Ec2TaskDefinition`. For AWS Fargate tasks/services, use the
-`FargateTaskDefinition`. These classes provide a simplified API that only contain
-properties relevant for that specific launch type.
+`FargateTaskDefinition`. For AWS ECS Anywhere use the `ExternalTaskDefinition`. These classes
+provide simplified APIs that only contain properties relevant for each specific launch type.
 
 For a `FargateTaskDefinition`, specify the task size (`memoryLimitMiB` and `cpu`):
 
 ```ts
 const fargateTaskDefinition = new ecs.FargateTaskDefinition(this, 'TaskDef', {
   memoryLimitMiB: 512,
-  cpu: 256
+  cpu: 256,
+});
+```
+
+On Fargate Platform Version 1.4.0 or later, you may specify up to 200GiB of
+[ephemeral storage](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/fargate-task-storage.html#fargate-task-storage-pv14):
+
+```ts
+const fargateTaskDefinition = new ecs.FargateTaskDefinition(this, 'TaskDef', {
+  memoryLimitMiB: 512,
+  cpu: 256,
+  ephemeralStorageGiB: 100,
 });
 ```
 
 To add containers to a task definition, call `addContainer()`:
 
 ```ts
+const fargateTaskDefinition = new ecs.FargateTaskDefinition(this, 'TaskDef', {
+  memoryLimitMiB: 512,
+  cpu: 256,
+});
 const container = fargateTaskDefinition.addContainer("WebContainer", {
   // Use an image from DockerHub
   image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
@@ -237,13 +292,26 @@ For a `Ec2TaskDefinition`:
 
 ```ts
 const ec2TaskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef', {
-  networkMode: NetworkMode.BRIDGE
+  networkMode: ecs.NetworkMode.BRIDGE,
 });
 
 const container = ec2TaskDefinition.addContainer("WebContainer", {
   // Use an image from DockerHub
   image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
-  memoryLimitMiB: 1024
+  memoryLimitMiB: 1024,
+  // ... other options here ...
+});
+```
+
+For an `ExternalTaskDefinition`:
+
+```ts
+const externalTaskDefinition = new ecs.ExternalTaskDefinition(this, 'TaskDef');
+
+const container = externalTaskDefinition.addContainer("WebContainer", {
+  // Use an image from DockerHub
+  image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+  memoryLimitMiB: 1024,
   // ... other options here ...
 });
 ```
@@ -253,35 +321,45 @@ You can specify container properties when you add them to the task definition, o
 To add a port mapping when adding a container to the task definition, specify the `portMappings` option:
 
 ```ts
+declare const taskDefinition: ecs.TaskDefinition;
+
 taskDefinition.addContainer("WebContainer", {
   image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
   memoryLimitMiB: 1024,
-  portMappings: [{ containerPort: 3000 }]
+  portMappings: [{ containerPort: 3000 }],
 });
 ```
 
 To add port mappings directly to a container definition, call `addPortMappings()`:
 
 ```ts
+declare const container: ecs.ContainerDefinition;
+
 container.addPortMappings({
-  containerPort: 3000
+  containerPort: 3000,
 });
 ```
 
 To add data volumes to a task definition, call `addVolume()`:
 
 ```ts
+const fargateTaskDefinition = new ecs.FargateTaskDefinition(this, 'TaskDef', {
+  memoryLimitMiB: 512,
+  cpu: 256,
+});
 const volume = {
   // Use an Elastic FileSystem
   name: "mydatavolume",
-  efsVolumeConfiguration: ecs.EfsVolumeConfiguration({
-    fileSystemId: "EFS"
+  efsVolumeConfiguration: {
+    fileSystemId: "EFS",
     // ... other options here ...
-  })
+  },
 };
 
-const container = fargateTaskDefinition.addVolume("mydatavolume");
+const container = fargateTaskDefinition.addVolume(volume);
 ```
+
+> Note: ECS Anywhere doesn't support volume attachments in the task definition.
 
 To use a TaskDefinition that can be used with either Amazon EC2 or
 AWS Fargate launch types, use the `TaskDefinition` construct.
@@ -294,7 +372,7 @@ The following example uses both:
 const taskDefinition = new ecs.TaskDefinition(this, 'TaskDef', {
   memoryMiB: '512',
   cpu: '256',
-  networkMode: NetworkMode.AWS_VPC,
+  networkMode: ecs.NetworkMode.AWS_VPC,
   compatibility: ecs.Compatibility.EC2_AND_FARGATE,
 });
 ```
@@ -302,7 +380,7 @@ const taskDefinition = new ecs.TaskDefinition(this, 'TaskDef', {
 ### Images
 
 Images supply the software that runs inside the container. Images can be
-obtained from either DockerHub or from ECR repositories, or built directly from a local Dockerfile.
+obtained from either DockerHub or from ECR repositories, built directly from a local Dockerfile, or use an existing tarball.
 
 - `ecs.ContainerImage.fromRegistry(imageName)`: use a public image.
 - `ecs.ContainerImage.fromRegistry(imageName, { credentials: mySecret })`: use a private image that requires credentials.
@@ -312,7 +390,8 @@ obtained from either DockerHub or from ECR repositories, or built directly from 
   image directly from a `Dockerfile` in your source directory.
 - `ecs.ContainerImage.fromDockerImageAsset(asset)`: uses an existing
   `@aws-cdk/aws-ecr-assets.DockerImageAsset` as a container image.
-- `new ecs.TagParameterContainerImage(repository)`: use the given ECR repository as the image 
+- `ecs.ContainerImage.fromTarball(file)`: use an existing tarball.
+- `new ecs.TagParameterContainerImage(repository)`: use the given ECR repository as the image
   but a CloudFormation parameter as the tag.
 
 ### Environment variables
@@ -320,7 +399,13 @@ obtained from either DockerHub or from ECR repositories, or built directly from 
 To pass environment variables to the container, you can use the `environment`, `environmentFiles`, and `secrets` props.
 
 ```ts
-taskDefinition.addContainer('container', {
+declare const secret: secretsmanager.Secret;
+declare const dbSecret: secretsmanager.Secret;
+declare const parameter: ssm.StringParameter;
+declare const taskDefinition: ecs.TaskDefinition;
+declare const s3Bucket: s3.Bucket;
+
+const newContainer = taskDefinition.addContainer('container', {
   image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
   memoryLimitMiB: 1024,
   environment: { // clear text, not for sensitive data
@@ -334,13 +419,33 @@ taskDefinition.addContainer('container', {
     SECRET: ecs.Secret.fromSecretsManager(secret),
     DB_PASSWORD: ecs.Secret.fromSecretsManager(dbSecret, 'password'), // Reference a specific JSON field, (requires platform version 1.4.0 or later for Fargate tasks)
     PARAMETER: ecs.Secret.fromSsmParameter(parameter),
-  }
+  },
 });
+newContainer.addEnvironment('QUEUE_NAME', 'MyQueue');
 ```
 
 The task execution role is automatically granted read permissions on the secrets/parameters. Support for environment
 files is restricted to the EC2 launch type for files hosted on S3. Further details provided in the AWS documentation
 about [specifying environment variables](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/taskdef-envfiles.html).
+
+### System controls
+
+To set system controls (kernel parameters) on the container, use the `systemControls` prop:
+
+```ts
+declare const taskDefinition: ecs.TaskDefinition;
+
+taskDefinition.addContainer('container', {
+  image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+  memoryLimitMiB: 1024,
+  systemControls: [
+    {
+      namespace: 'net',
+      value: 'ipv4.tcp_tw_recycle',
+    },
+  ],
+});
+```
 
 ## Service
 
@@ -350,12 +455,26 @@ If a task fails,
 Amazon ECS automatically restarts the task.
 
 ```ts
-const taskDefinition;
+declare const cluster: ecs.Cluster;
+declare const taskDefinition: ecs.TaskDefinition;
 
 const service = new ecs.FargateService(this, 'Service', {
   cluster,
   taskDefinition,
-  desiredCount: 5
+  desiredCount: 5,
+});
+```
+
+ECS Anywhere service definition looks like:
+
+```ts
+declare const cluster: ecs.Cluster;
+declare const taskDefinition: ecs.TaskDefinition;
+
+const service = new ecs.ExternalService(this, 'Service', {
+  cluster,
+  taskDefinition,
+  desiredCount: 5,
 });
 ```
 
@@ -370,45 +489,53 @@ deployment circuit breaker and optionally enable `rollback` for automatic rollba
 for more details.
 
 ```ts
-const service = new ecs.FargateService(stack, 'Service', {
+declare const cluster: ecs.Cluster;
+declare const taskDefinition: ecs.TaskDefinition;
+const service = new ecs.FargateService(this, 'Service', {
   cluster,
   taskDefinition,
   circuitBreaker: { rollback: true },
 });
 ```
 
+> Note: ECS Anywhere doesn't support deployment circuit breakers and rollback.
+
 ### Include an application/network load balancer
 
 `Services` are load balancing targets and can be added to a target group, which will be attached to an application/network load balancers:
 
 ```ts
-import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
-
-const service = new ecs.FargateService(this, 'Service', { /* ... */ });
+declare const vpc: ec2.Vpc;
+declare const cluster: ecs.Cluster;
+declare const taskDefinition: ecs.TaskDefinition;
+const service = new ecs.FargateService(this, 'Service', { cluster, taskDefinition });
 
 const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', { vpc, internetFacing: true });
 const listener = lb.addListener('Listener', { port: 80 });
 const targetGroup1 = listener.addTargets('ECS1', {
   port: 80,
-  targets: [service]
+  targets: [service],
 });
 const targetGroup2 = listener.addTargets('ECS2', {
   port: 80,
   targets: [service.loadBalancerTarget({
     containerName: 'MyContainer',
     containerPort: 8080
-  })]
+  })],
 });
 ```
+
+> Note: ECS Anywhere doesn't support application/network load balancers.
 
 Note that in the example above, the default `service` only allows you to register the first essential container or the first mapped port on the container as a target and add it to a new target group. To have more control over which container and port to register as targets, you can use `service.loadBalancerTarget()` to return a load balancing target for a specific container and port.
 
 Alternatively, you can also create all load balancer targets to be registered in this service, add them to target groups, and attach target groups to listeners accordingly.
 
 ```ts
-import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
-
-const service = new ecs.FargateService(this, 'Service', { /* ... */ });
+declare const cluster: ecs.Cluster;
+declare const taskDefinition: ecs.TaskDefinition;
+declare const vpc: ec2.Vpc;
+const service = new ecs.FargateService(this, 'Service', { cluster, taskDefinition });
 
 const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', { vpc, internetFacing: true });
 const listener = lb.addListener('Listener', { port: 80 });
@@ -444,11 +571,12 @@ for the alternatives.
 `Services` can also be directly attached to a classic load balancer as targets:
 
 ```ts
-import * as elb from '@aws-cdk/aws-elasticloadbalancing';
+declare const cluster: ecs.Cluster;
+declare const taskDefinition: ecs.TaskDefinition;
+declare const vpc: ec2.Vpc;
+const service = new ecs.Ec2Service(this, 'Service', { cluster, taskDefinition });
 
-const service = new ecs.Ec2Service(this, 'Service', { /* ... */ });
-
-const lb = new elb.LoadBalancer(stack, 'LB', { vpc });
+const lb = new elb.LoadBalancer(this, 'LB', { vpc });
 lb.addListener({ externalPort: 80 });
 lb.addTarget(service);
 ```
@@ -456,15 +584,16 @@ lb.addTarget(service);
 Similarly, if you want to have more control over load balancer targeting:
 
 ```ts
-import * as elb from '@aws-cdk/aws-elasticloadbalancing';
+declare const cluster: ecs.Cluster;
+declare const taskDefinition: ecs.TaskDefinition;
+declare const vpc: ec2.Vpc;
+const service = new ecs.Ec2Service(this, 'Service', { cluster, taskDefinition });
 
-const service = new ecs.Ec2Service(this, 'Service', { /* ... */ });
-
-const lb = new elb.LoadBalancer(stack, 'LB', { vpc });
+const lb = new elb.LoadBalancer(this, 'LB', { vpc });
 lb.addListener({ externalPort: 80 });
 lb.addTarget(service.loadBalancerTarget({
   containerName: 'MyContainer',
-  containerPort: 80
+  containerPort: 80,
 }));
 ```
 
@@ -479,15 +608,17 @@ You can configure the task count of a service to match demand. Task auto-scaling
 configured by calling `autoScaleTaskCount()`:
 
 ```ts
+declare const target: elbv2.ApplicationTargetGroup;
+declare const service: ecs.BaseService;
 const scaling = service.autoScaleTaskCount({ maxCapacity: 10 });
 scaling.scaleOnCpuUtilization('CpuScaling', {
-  targetUtilizationPercent: 50
+  targetUtilizationPercent: 50,
 });
 
 scaling.scaleOnRequestCount('RequestScaling', {
   requestsPerTarget: 10000,
-  targetGroup: target
-})
+  targetGroup: target,
+});
 ```
 
 Task auto-scaling is powered by *Application Auto-Scaling*.
@@ -499,19 +630,18 @@ To start an Amazon ECS task on an Amazon EC2-backed Cluster, instantiate an
 `@aws-cdk/aws-events-targets.EcsTask` instead of an `Ec2Service`:
 
 ```ts
-import * as targets from '@aws-cdk/aws-events-targets';
-
+declare const cluster: ecs.Cluster;
 // Create a Task Definition for the container to start
 const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
 taskDefinition.addContainer('TheContainer', {
   image: ecs.ContainerImage.fromAsset(path.resolve(__dirname, '..', 'eventhandler-image')),
   memoryLimitMiB: 256,
-  logging: new ecs.AwsLogDriver({ streamPrefix: 'EventDemo', mode: AwsLogDriverMode.NON_BLOCKING })
+  logging: new ecs.AwsLogDriver({ streamPrefix: 'EventDemo', mode: ecs.AwsLogDriverMode.NON_BLOCKING }),
 });
 
 // An Rule that describes the event trigger (in this case a scheduled run)
 const rule = new events.Rule(this, 'Rule', {
-  schedule: events.Schedule.expression('rate(1 min)')
+  schedule: events.Schedule.expression('rate(1 min)'),
 });
 
 // Pass an environment variable to the container 'TheContainer' in the task
@@ -524,8 +654,8 @@ rule.addTarget(new targets.EcsTask({
     environment: [{
       name: 'I_WAS_TRIGGERED',
       value: 'From CloudWatch Events'
-    }]
-  }]
+    }],
+  }],
 }));
 ```
 
@@ -541,6 +671,7 @@ Currently Supported Log Drivers:
 - splunk
 - syslog
 - awsfirelens
+- Generic
 
 ### awslogs Log Driver
 
@@ -550,7 +681,7 @@ const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
 taskDefinition.addContainer('TheContainer', {
   image: ecs.ContainerImage.fromRegistry('example-image'),
   memoryLimitMiB: 256,
-  logging: ecs.LogDrivers.awsLogs({ streamPrefix: 'EventDemo' })
+  logging: ecs.LogDrivers.awsLogs({ streamPrefix: 'EventDemo' }),
 });
 ```
 
@@ -562,7 +693,7 @@ const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
 taskDefinition.addContainer('TheContainer', {
   image: ecs.ContainerImage.fromRegistry('example-image'),
   memoryLimitMiB: 256,
-  logging: ecs.LogDrivers.fluentd()
+  logging: ecs.LogDrivers.fluentd(),
 });
 ```
 
@@ -574,7 +705,7 @@ const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
 taskDefinition.addContainer('TheContainer', {
   image: ecs.ContainerImage.fromRegistry('example-image'),
   memoryLimitMiB: 256,
-  logging: ecs.LogDrivers.gelf({ address: 'my-gelf-address' })
+  logging: ecs.LogDrivers.gelf({ address: 'my-gelf-address' }),
 });
 ```
 
@@ -586,7 +717,7 @@ const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
 taskDefinition.addContainer('TheContainer', {
   image: ecs.ContainerImage.fromRegistry('example-image'),
   memoryLimitMiB: 256,
-  logging: ecs.LogDrivers.journald()
+  logging: ecs.LogDrivers.journald(),
 });
 ```
 
@@ -598,7 +729,7 @@ const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
 taskDefinition.addContainer('TheContainer', {
   image: ecs.ContainerImage.fromRegistry('example-image'),
   memoryLimitMiB: 256,
-  logging: ecs.LogDrivers.jsonFile()
+  logging: ecs.LogDrivers.jsonFile(),
 });
 ```
 
@@ -611,9 +742,9 @@ taskDefinition.addContainer('TheContainer', {
   image: ecs.ContainerImage.fromRegistry('example-image'),
   memoryLimitMiB: 256,
   logging: ecs.LogDrivers.splunk({
-    token: cdk.SecretValue.secretsManager('my-splunk-token'),
-    url: 'my-splunk-url'
-  })
+    token: SecretValue.secretsManager('my-splunk-token'),
+    url: 'my-splunk-url',
+  }),
 });
 ```
 
@@ -625,7 +756,7 @@ const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
 taskDefinition.addContainer('TheContainer', {
   image: ecs.ContainerImage.fromRegistry('example-image'),
   memoryLimitMiB: 256,
-  logging: ecs.LogDrivers.syslog()
+  logging: ecs.LogDrivers.syslog(),
 });
 ```
 
@@ -642,8 +773,30 @@ taskDefinition.addContainer('TheContainer', {
         Name: 'firehose',
         region: 'us-west-2',
         delivery_stream: 'my-stream',
-    }
-  })
+    },
+  }),
+});
+```
+
+To pass secrets to the log configuration, use the `secretOptions` property of the log configuration. The task execution role is automatically granted read permissions on the secrets/parameters.
+
+```ts
+declare const secret: secretsmanager.Secret;
+declare const parameter: ssm.StringParameter;
+
+const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
+taskDefinition.addContainer('TheContainer', {
+  image: ecs.ContainerImage.fromRegistry('example-image'),
+  memoryLimitMiB: 256,
+  logging: ecs.LogDrivers.firelens({
+    options: {
+      // ... log driver options here ...
+    },
+    secretOptions: { // Retrieved from AWS Secrets Manager or AWS Systems Manager Parameter Store
+      apikey: ecs.Secret.fromSecretsManager(secret),
+      host: ecs.Secret.fromSsmParameter(parameter),
+    },
+  }),
 });
 ```
 
@@ -660,9 +813,9 @@ taskDefinition.addContainer('TheContainer', {
   logging: new ecs.GenericLogDriver({
     logDriver: 'fluentd',
     options: {
-      tag: 'example-tag'
-    }
-  })
+      tag: 'example-tag',
+    },
+  }),
 });
 ```
 
@@ -672,7 +825,10 @@ To register your ECS service with a CloudMap Service Registry, you may add the
 `cloudMapOptions` property to your service:
 
 ```ts
-const service = new ecs.Ec2Service(stack, 'Service', {
+declare const taskDefinition: ecs.TaskDefinition;
+declare const cluster: ecs.Cluster;
+
+const service = new ecs.Ec2Service(this, 'Service', {
   cluster,
   taskDefinition,
   cloudMapOptions: {
@@ -682,13 +838,19 @@ const service = new ecs.Ec2Service(stack, 'Service', {
 });
 ```
 
-With `bridge` or `host` network modes, only `SRV` DNS record types are supported. 
+With `bridge` or `host` network modes, only `SRV` DNS record types are supported.
 By default, `SRV` DNS record types will target the default container and default
 port. However, you may target a different container and port on the same ECS task:
 
 ```ts
+declare const taskDefinition: ecs.TaskDefinition;
+declare const cluster: ecs.Cluster;
+
 // Add a container to the task definition
-const specificContainer = taskDefinition.addContainer(...);
+const specificContainer = taskDefinition.addContainer('Container', {
+  image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+  memoryLimitMiB: 2048,
+});
 
 // Add a port mapping
 specificContainer.addPortMappings({
@@ -696,7 +858,7 @@ specificContainer.addPortMappings({
   protocol: ecs.Protocol.TCP,
 });
 
-new ecs.Ec2Service(stack, 'Service', {
+new ecs.Ec2Service(this, 'Service', {
   cluster,
   taskDefinition,
   cloudMapOptions: {
@@ -715,8 +877,8 @@ You may associate an ECS service with a specific CloudMap service. To do
 this, use the service's `associateCloudMapService` method:
 
 ```ts
-const cloudMapService = new cloudmap.Service(...);
-const ecsService = new ecs.FargateService(...);
+declare const cloudMapService: cloudmap.Service;
+declare const ecsService: ecs.FargateService;
 
 ecsService.associateCloudMapService({
   service: cloudMapService,
@@ -740,18 +902,20 @@ cluster. This will add both `FARGATE` and `FARGATE_SPOT` as available capacity
 providers on your cluster.
 
 ```ts
-const cluster = new ecs.Cluster(stack, 'FargateCPCluster', {
+declare const vpc: ec2.Vpc;
+
+const cluster = new ecs.Cluster(this, 'FargateCPCluster', {
   vpc,
   enableFargateCapacityProviders: true,
 });
 
-const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
+const taskDefinition = new ecs.FargateTaskDefinition(this, 'TaskDef');
 
 taskDefinition.addContainer('web', {
   image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
 });
 
-new ecs.FargateService(stack, 'FargateService', {
+new ecs.FargateService(this, 'FargateService', {
   cluster,
   taskDefinition,
   capacityProviderStrategies: [
@@ -762,7 +926,7 @@ new ecs.FargateService(stack, 'FargateService', {
     {
       capacityProvider: 'FARGATE',
       weight: 1,
-    }
+    },
   ],
 });
 ```
@@ -782,11 +946,13 @@ running on them. If you want to disable this behavior, set both
 `enableManagedScaling` to and `enableManagedTerminationProtection` to `false`.
 
 ```ts
-const cluster = new ecs.Cluster(stack, 'Cluster', {
+declare const vpc: ec2.Vpc;
+
+const cluster = new ecs.Cluster(this, 'Cluster', {
   vpc,
 });
 
-const autoScalingGroup = new autoscaling.AutoScalingGroup(stack, 'ASG', {
+const autoScalingGroup = new autoscaling.AutoScalingGroup(this, 'ASG', {
   vpc,
   instanceType: new ec2.InstanceType('t2.micro'),
   machineImage: ecs.EcsOptimizedImage.amazonLinux2(),
@@ -794,26 +960,26 @@ const autoScalingGroup = new autoscaling.AutoScalingGroup(stack, 'ASG', {
   maxCapacity: 100,
 });
 
-const capacityProvider = new ecs.AsgCapacityProvider(stack, 'AsgCapacityProvider', {
+const capacityProvider = new ecs.AsgCapacityProvider(this, 'AsgCapacityProvider', {
   autoScalingGroup,
 });
 cluster.addAsgCapacityProvider(capacityProvider);
 
-const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
 
 taskDefinition.addContainer('web', {
-  image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample',
+  image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
   memoryReservationMiB: 256,
 });
 
-new ecs.Ec2Service(stack, 'EC2Service', {
+new ecs.Ec2Service(this, 'EC2Service', {
   cluster,
   taskDefinition,
   capacityProviderStrategies: [
     {
       capacityProvider: capacityProvider.capacityProviderName,
       weight: 1,
-    }
+    },
   ],
 });
 ```
@@ -832,16 +998,17 @@ const inferenceAccelerators = [{
   deviceType: 'eia2.medium',
 }];
 
-const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
+const taskDefinition = new ecs.Ec2TaskDefinition(this, 'Ec2TaskDef', {
   inferenceAccelerators,
 });
 ```
 
 To enable using the inference accelerators in the containers, add `inferenceAcceleratorResources`
 field and set it to a list of device names used for the inference accelerators. Each value in the
-list should match a `DeviceName` for an `InferenceAccelerator` specified in the task definition. 
+list should match a `DeviceName` for an `InferenceAccelerator` specified in the task definition.
 
 ```ts
+declare const taskDefinition: ecs.TaskDefinition;
 const inferenceAcceleratorResources = ['device1'];
 
 taskDefinition.addContainer('cont', {
@@ -855,13 +1022,16 @@ taskDefinition.addContainer('cont', {
 
 Please note, ECS Exec leverages AWS Systems Manager (SSM). So as a prerequisite for the exec command
 to work, you need to have the SSM plugin for the AWS CLI installed locally. For more information, see
-[Install Session Manager plugin for AWS CLI] (https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html).
+[Install Session Manager plugin for AWS CLI](https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html).
 
 To enable the ECS Exec feature for your containers, set the boolean flag `enableExecuteCommand` to `true` in
 your `Ec2Service` or `FargateService`.
 
 ```ts
-const service = new ecs.Ec2Service(stack, 'Service', {
+declare const cluster: ecs.Cluster;
+declare const taskDefinition: ecs.TaskDefinition;
+
+const service = new ecs.Ec2Service(this, 'Service', {
   cluster,
   taskDefinition,
   enableExecuteCommand: true,
@@ -873,26 +1043,27 @@ const service = new ecs.Ec2Service(stack, 'Service', {
 You can enable sending logs of your execute session commands to a CloudWatch log group or S3 bucket by configuring
 the `executeCommandConfiguration` property for your cluster. The default configuration will send the
 logs to the CloudWatch Logs using the `awslogs` log driver that is configured in your task definition. Please note,
-when using your own `logConfiguration` the log group or S3 Bucket specified must already be created. 
+when using your own `logConfiguration` the log group or S3 Bucket specified must already be created.
 
 To encrypt data using your own KMS Customer Key (CMK), you must create a CMK and provide the key in the `kmsKey` field
 of the `executeCommandConfiguration`. To use this key for encrypting CloudWatch log data or S3 bucket, make sure to associate the key
-to these resources on creation. 
+to these resources on creation.
 
 ```ts
-const kmsKey = new kms.Key(stack, 'KmsKey');
+declare const vpc: ec2.Vpc;
+const kmsKey = new kms.Key(this, 'KmsKey');
 
 // Pass the KMS key in the `encryptionKey` field to associate the key to the log group
-const logGroup = new logs.LogGroup(stack, 'LogGroup', {
+const logGroup = new logs.LogGroup(this, 'LogGroup', {
   encryptionKey: kmsKey,
 });
 
 // Pass the KMS key in the `encryptionKey` field to associate the key to the S3 bucket
-const execBucket = new s3.Bucket(stack, 'EcsExecBucket', {
+const execBucket = new s3.Bucket(this, 'EcsExecBucket', {
   encryptionKey: kmsKey,
 });
 
-const cluster = new ecs.Cluster(stack, 'Cluster', {
+const cluster = new ecs.Cluster(this, 'Cluster', {
   vpc,
   executeCommandConfiguration: {
     kmsKey,

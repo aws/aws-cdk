@@ -2,6 +2,7 @@ import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnGatewayRoute } from './appmesh.generated';
 import { GatewayRouteSpec } from './gateway-route-spec';
+import { renderMeshOwner } from './private/utils';
 import { IVirtualGateway, VirtualGateway } from './virtual-gateway';
 
 /**
@@ -67,7 +68,7 @@ export class GatewayRoute extends cdk.Resource implements IGatewayRoute {
   public static fromGatewayRouteArn(scope: Construct, id: string, gatewayRouteArn: string): IGatewayRoute {
     return new class extends cdk.Resource implements IGatewayRoute {
       readonly gatewayRouteArn = gatewayRouteArn;
-      readonly gatewayRouteName = cdk.Fn.select(4, cdk.Fn.split('/', cdk.Stack.of(scope).parseArn(gatewayRouteArn).resourceName!));
+      readonly gatewayRouteName = cdk.Fn.select(4, cdk.Fn.split('/', cdk.Stack.of(scope).splitArn(gatewayRouteArn, cdk.ArnFormat.SLASH_RESOURCE_NAME).resourceName!));
       readonly virtualGateway = VirtualGateway.fromVirtualGatewayArn(this, 'virtualGateway', gatewayRouteArn);
     }(scope, id);
   }
@@ -104,7 +105,7 @@ export class GatewayRoute extends cdk.Resource implements IGatewayRoute {
 
   constructor(scope: Construct, id: string, props: GatewayRouteProps) {
     super(scope, id, {
-      physicalName: props.gatewayRouteName || cdk.Lazy.stringValue({ produce: () => this.node.uniqueId }),
+      physicalName: props.gatewayRouteName || cdk.Lazy.string({ produce: () => cdk.Names.uniqueId(this) }),
     });
 
     this.virtualGateway = props.virtualGateway;
@@ -113,10 +114,12 @@ export class GatewayRoute extends cdk.Resource implements IGatewayRoute {
     const gatewayRoute = new CfnGatewayRoute(this, 'Resource', {
       gatewayRouteName: this.physicalName,
       meshName: props.virtualGateway.mesh.meshName,
+      meshOwner: renderMeshOwner(this.env.account, this.virtualGateway.mesh.env.account),
       spec: {
         httpRoute: routeSpecConfig.httpSpecConfig,
         http2Route: routeSpecConfig.http2SpecConfig,
         grpcRoute: routeSpecConfig.grpcSpecConfig,
+        priority: routeSpecConfig.priority,
       },
       virtualGatewayName: this.virtualGateway.virtualGatewayName,
     });

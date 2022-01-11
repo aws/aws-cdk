@@ -5,7 +5,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import { IConstruct, Construct, Node } from 'constructs';
 import { Annotations } from './annotations';
 import { App } from './app';
-import { Arn, ArnComponents } from './arn';
+import { Arn, ArnComponents, ArnFormat } from './arn';
 import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource } from './assets';
 import { CfnElement } from './cfn-element';
 import { Fn } from './cfn-fn';
@@ -280,7 +280,7 @@ export class Stack extends CoreConstruct implements ITaggable {
    * The name of the CloudFormation template file emitted to the output
    * directory during synthesis.
    *
-   * @example 'MyStack.template.json'
+   * Example value: `MyStack.template.json`
    */
   public readonly templateFile: string;
 
@@ -609,9 +609,25 @@ export class Stack extends CoreConstruct implements ITaggable {
    *
    * @returns an ArnComponents object which allows access to the various
    *      components of the ARN.
+   *
+   * @deprecated use splitArn instead
    */
   public parseArn(arn: string, sepIfToken: string = '/', hasName: boolean = true): ArnComponents {
     return Arn.parse(arn, sepIfToken, hasName);
+  }
+
+  /**
+   * Splits the provided ARN into its components.
+   * Works both if 'arn' is a string like 'arn:aws:s3:::bucket',
+   * and a Token representing a dynamic CloudFormation expression
+   * (in which case the returned components will also be dynamic CloudFormation expressions,
+   * encoded as Tokens).
+   *
+   * @param arn the ARN to split into its components
+   * @param arnFormat the expected format of 'arn' - depends on what format the service 'arn' represents uses
+   */
+  public splitArn(arn: string, arnFormat: ArnFormat): ArnComponents {
+    return Arn.split(arn, arnFormat);
   }
 
   /**
@@ -695,11 +711,13 @@ export class Stack extends CoreConstruct implements ITaggable {
    *
    * Duplicate values are removed when stack is synthesized.
    *
-   * @example stack.addTransform('AWS::Serverless-2016-10-31')
-   *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/transform-section-structure.html
-   *
    * @param transform The transform to add
+   *
+   * @example
+   * declare const stack: Stack;
+   *
+   * stack.addTransform('AWS::Serverless-2016-10-31')
    */
   public addTransform(transform: string) {
     if (!this.templateOptions.transforms) {
@@ -769,7 +787,7 @@ export class Stack extends CoreConstruct implements ITaggable {
       const numberOfResources = Object.keys(resources).length;
 
       if (numberOfResources > this.maxResources) {
-        throw new Error(`Number of resources: ${numberOfResources} is greater than allowed maximum of ${this.maxResources}`);
+        throw new Error(`Number of resources in stack '${this.node.path}': ${numberOfResources} is greater than allowed maximum of ${this.maxResources}`);
       } else if (numberOfResources >= (this.maxResources * 0.8)) {
         Annotations.of(this).addInfo(`Number of resources: ${numberOfResources} is approaching allowed maximum of ${this.maxResources}`);
       }
@@ -784,6 +802,45 @@ export class Stack extends CoreConstruct implements ITaggable {
       }
     }
   }
+
+  /**
+   * Look up a fact value for the given fact for the region of this stack
+   *
+   * Will return a definite value only if the region of the current stack is resolved.
+   * If not, a lookup map will be added to the stack and the lookup will be done at
+   * CDK deployment time.
+   *
+   * What regions will be included in the lookup map is controlled by the
+   * `@aws-cdk/core:target-partitions` context value: it must be set to a list
+   * of partitions, and only regions from the given partitions will be included.
+   * If no such context key is set, all regions will be included.
+   *
+   * This function is intended to be used by construct library authors. Application
+   * builders can rely on the abstractions offered by construct libraries and do
+   * not have to worry about regional facts.
+   *
+   * If `defaultValue` is not given, it is an error if the fact is unknown for
+   * the given region.
+   */
+  public regionalFact(factName: string, defaultValue?: string): string {
+    if (!Token.isUnresolved(this.region)) {
+      const ret = Fact.find(this.region, factName) ?? defaultValue;
+      if (ret === undefined) {
+        throw new Error(`region-info: don't know ${factName} for region ${this.region}. Use 'Fact.register' to provide this value.`);
+      }
+      return ret;
+    }
+
+    const partitions = Node.of(this).tryGetContext(cxapi.TARGET_PARTITIONS);
+    if (partitions !== undefined && !Array.isArray(partitions)) {
+      throw new Error(`Context value '${cxapi.TARGET_PARTITIONS}' should be a list of strings, got: ${JSON.stringify(cxapi.TARGET_PARTITIONS)}`);
+    }
+
+    const lookupMap = partitions ? RegionInfo.limitedRegionMap(factName, partitions) : RegionInfo.regionMap(factName);
+
+    return deployTimeLookup(this, factName, lookupMap, defaultValue);
+  }
+
 
   /**
    * Create a CloudFormation Export for a value
@@ -1295,3 +1352,6 @@ import { Stage } from './stage';
 import { ITaggable, TagManager } from './tag-manager';
 import { Token, Tokenization } from './token';
 import { referenceNestedStackValueInParent } from './private/refs';
+import { Fact, RegionInfo } from '@aws-cdk/region-info';
+import { deployTimeLookup } from './private/region-lookup';
+

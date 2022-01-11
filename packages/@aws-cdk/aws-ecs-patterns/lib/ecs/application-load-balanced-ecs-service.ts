@@ -110,6 +110,7 @@ export class ApplicationLoadBalancedEc2Service extends ApplicationLoadBalancedSe
         environment: taskImageOptions.environment,
         secrets: taskImageOptions.secrets,
         logging: logDriver,
+        dockerLabels: taskImageOptions.dockerLabels,
       });
       container.addPortMappings({
         containerPort: taskImageOptions.containerPort || 80,

@@ -11,22 +11,24 @@
 
 This module allows bundling Docker images as assets.
 
+## Images from Dockerfile
+
 Images are built from a local Docker context directory (with a `Dockerfile`),
-uploaded to ECR by the CDK toolkit and/or your app's CI-CD pipeline, and can be
-naturally referenced in your CDK app.
+uploaded to Amazon Elastic Container Registry (ECR) by the CDK toolkit
+and/or your app's CI/CD pipeline, and can be naturally referenced in your CDK app.
 
 ```ts
 import { DockerImageAsset } from '@aws-cdk/aws-ecr-assets';
 
 const asset = new DockerImageAsset(this, 'MyBuildImage', {
-  directory: path.join(__dirname, 'my-image')
+  directory: path.join(__dirname, 'my-image'),
 });
 ```
 
 The directory `my-image` must include a `Dockerfile`.
 
 This will instruct the toolkit to build a Docker image from `my-image`, push it
-to an AWS ECR repository and wire the name of the repository as CloudFormation
+to an Amazon ECR repository and wire the name of the repository as CloudFormation
 parameters to your stack.
 
 By default, all files in the given directory will be copied into the docker
@@ -44,18 +46,25 @@ interpreted. The recommended setting for Docker image assets is
 old projects) then `IgnoreMode.DOCKER` is the default and you don't need to
 configure it on the asset itself.
 
-Use `asset.imageUri` to reference the image (it includes both the ECR image URL
+Use `asset.imageUri` to reference the image. It includes both the ECR image URL
 and tag.
 
 You can optionally pass build args to the `docker build` command by specifying
-the `buildArgs` property:
+the `buildArgs` property. It is recommended to skip hashing of `buildArgs` for
+values that can change between different machines to maintain a consistent
+asset hash.
 
 ```ts
+import { DockerImageAsset } from '@aws-cdk/aws-ecr-assets';
+
 const asset = new DockerImageAsset(this, 'MyBuildImage', {
   directory: path.join(__dirname, 'my-image'),
   buildArgs: {
-    HTTP_PROXY: 'http://10.20.30.2:1234'
-  }
+    HTTP_PROXY: 'http://10.20.30.2:1234',
+  },
+  invalidation: {
+    buildArgs: false,
+  },
 });
 ```
 
@@ -63,11 +72,30 @@ You can optionally pass a target to the `docker build` command by specifying
 the `target` property:
 
 ```ts
+import { DockerImageAsset } from '@aws-cdk/aws-ecr-assets';
+
 const asset = new DockerImageAsset(this, 'MyBuildImage', {
   directory: path.join(__dirname, 'my-image'),
-  target: 'a-target'
-})
+  target: 'a-target',
+});
 ```
+
+## Images from Tarball
+
+Images are loaded from a local tarball, uploaded to ECR by the CDK toolkit and/or your app's CI-CD pipeline, and can be
+naturally referenced in your CDK app.
+
+```ts
+import { TarballImageAsset } from '@aws-cdk/aws-ecr-assets';
+
+const asset = new TarballImageAsset(this, 'MyBuildImage', {
+  tarballFile: 'local-image.tar',
+});
+```
+
+This will instruct the toolkit to add the tarball as a file asset. During deployment it will load the container image
+from `local-image.tar`, push it to an Amazon ECR repository and wire the name of the repository as CloudFormation parameters
+to your stack.
 
 ## Publishing images to ECR repositories
 
@@ -77,12 +105,15 @@ The mechanics of where these images are published and how are intentionally kept
 does not support customizations such as specifying the ECR repository name or tags.
 
 If you are looking for a way to _publish_ image assets to an ECR repository in your control, you should consider using
-[wchaws/cdk-ecr-deployment], which is able to replicate an image asset from the CDK-controlled ECR repository to a repository of
+[cdklabs/cdk-ecr-deployment], which is able to replicate an image asset from the CDK-controlled ECR repository to a repository of
 your choice.
 
-Here an example from the [wchaws/cdk-ecr-deployment] project:
+Here an example from the [cdklabs/cdk-ecr-deployment] project:
 
-```ts
+```text
+// This example available in TypeScript only
+
+import { DockerImageAsset } from '@aws-cdk/aws-ecr-assets';
 import * as ecrdeploy from 'cdk-ecr-deployment';
 
 const image = new DockerImageAsset(this, 'CDKDockerImage', {
@@ -99,7 +130,7 @@ new ecrdeploy.ECRDeployment(this, 'DeployDockerImage', {
 You are welcome to +1 [this GitHub issue](https://github.com/aws/aws-cdk/issues/12597) if you would like to see
 native support for this use-case in the AWS CDK.
 
-[wchaws/cdk-ecr-deployment]: https://github.com/wchaws/cdk-ecr-deployment
+[cdklabs/cdk-ecr-deployment]: https://github.com/cdklabs/cdk-ecr-deployment
 
 ## Pull Permissions
 

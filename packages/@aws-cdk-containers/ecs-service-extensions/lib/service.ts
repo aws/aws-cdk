@@ -11,6 +11,19 @@ import { ServiceDescription } from './service-description';
 import { Construct } from '@aws-cdk/core';
 
 /**
+ * connectToProps will have all the extra parameters which are required for connecting services.
+ */
+export interface ConnectToProps {
+  /**
+   * local_bind_port is the local port that this application should
+   * use when calling the upstream service in ECS Consul Mesh Extension
+   * Currently, this parameter will only be used in the ECSConsulMeshExtension
+   * https://github.com/aws-ia/ecs-consul-mesh-extension
+   */
+  readonly local_bind_port?: number;
+}
+
+/**
  * The settings for an ECS Service.
  */
 export interface ServiceProps {
@@ -30,6 +43,43 @@ export interface ServiceProps {
    * @default - A task role is automatically created for you.
    */
   readonly taskRole?: iam.IRole;
+
+  /**
+   * The desired number of instantiations of the task definition to keep running on the service.
+   *
+   * @default - When creating the service, default is 1; when updating the service, default uses
+   * the current task number.
+   */
+  readonly desiredCount?: number;
+
+  /**
+   * The options for configuring the auto scaling target.
+   */
+  readonly autoScaleTaskCount?: AutoScalingOptions;
+}
+
+export interface AutoScalingOptions {
+  /**
+   * The minimum number of tasks when scaling in.
+   *
+   * @default - 1
+   */
+  readonly minTaskCount?: number;
+
+  /**
+    * The maximum number of tasks when scaling out.
+    */
+  readonly maxTaskCount: number;
+
+  /**
+   * The target value for CPU utilization across all tasks in the service.
+   */
+  readonly targetCpuUtilization?: number;
+
+  /**
+   * The target value for memory utilization across all tasks in the service.
+   */
+  readonly targetMemoryUtilization?: number;
 }
 
 /**
@@ -74,6 +124,17 @@ export class Service extends Construct {
    * The environment where this service was launched.
    */
   public readonly environment: IEnvironment;
+
+  /**
+   * The scalable attribute representing task count.
+   */
+  public readonly scalableTaskCount?: ecs.ScalableTaskCount;
+
+  /**
+   * The flag to track if auto scaling policies have been configured
+   * for the service.
+   */
+  private autoScalingPoliciesEnabled: boolean = false;
 
   /**
    * The generated task definition for this service. It is only
@@ -160,6 +221,9 @@ export class Service extends Construct {
       }
     }
 
+    // Set desiredCount to `undefined` if auto scaling is configured for the service
+    const desiredCount = props.autoScaleTaskCount ? undefined : (props.desiredCount || 1);
+
     // Give each extension a chance to mutate the service props before
     // service creation
     let serviceProps = {
@@ -167,7 +231,7 @@ export class Service extends Construct {
       taskDefinition: this.taskDefinition,
       minHealthyPercent: 100,
       maxHealthyPercent: 200,
-      desiredCount: 1,
+      desiredCount,
     } as ServiceBuild;
 
     for (const extensions in this.serviceDescription.extensions) {
@@ -219,11 +283,40 @@ export class Service extends Construct {
       throw new Error(`Unknown capacity type for service ${this.id}`);
     }
 
+    // Create the auto scaling target and configure target tracking policies after the service is created
+    if (props.autoScaleTaskCount) {
+      this.scalableTaskCount = this.ecsService.autoScaleTaskCount({
+        maxCapacity: props.autoScaleTaskCount.maxTaskCount,
+        minCapacity: props.autoScaleTaskCount.minTaskCount,
+      });
+
+      if (props.autoScaleTaskCount.targetCpuUtilization) {
+        const targetUtilizationPercent = props.autoScaleTaskCount.targetCpuUtilization;
+        this.scalableTaskCount.scaleOnCpuUtilization(`${this.id}-target-cpu-utilization-${targetUtilizationPercent}`, {
+          targetUtilizationPercent,
+        });
+        this.enableAutoScalingPolicy();
+      }
+
+      if (props.autoScaleTaskCount.targetMemoryUtilization) {
+        const targetUtilizationPercent = props.autoScaleTaskCount.targetMemoryUtilization;
+        this.scalableTaskCount.scaleOnMemoryUtilization(`${this.id}-target-memory-utilization-${targetUtilizationPercent}`, {
+          targetUtilizationPercent,
+        });
+        this.enableAutoScalingPolicy();
+      }
+    }
+
     // Now give all extensions a chance to use the service
     for (const extensions in this.serviceDescription.extensions) {
       if (this.serviceDescription.extensions[extensions]) {
         this.serviceDescription.extensions[extensions].useService(this.ecsService);
       }
+    }
+
+    // Error out if the auto scaling target is created but no scaling policies have been configured
+    if (this.scalableTaskCount && !this.autoScalingPoliciesEnabled) {
+      throw Error(`The auto scaling target for the service '${this.id}' has been created but no auto scaling policies have been configured.`);
     }
   }
 
@@ -233,10 +326,10 @@ export class Service extends Construct {
    *
    * @param service
    */
-  public connectTo(service: Service) {
+  public connectTo(service: Service, connectToProps: ConnectToProps = {}) {
     for (const extensions in this.serviceDescription.extensions) {
       if (this.serviceDescription.extensions[extensions]) {
-        this.serviceDescription.extensions[extensions].connectToService(service);
+        this.serviceDescription.extensions[extensions].connectToService(service, connectToProps);
       }
     }
   }
@@ -265,5 +358,13 @@ export class Service extends Construct {
     }
 
     return this.urls[urlName];
+  }
+
+  /**
+   * This helper method is used to set the `autoScalingPoliciesEnabled` attribute
+   * whenever an auto scaling policy is configured for the service.
+   */
+  public enableAutoScalingPolicy() {
+    this.autoScalingPoliciesEnabled = true;
   }
 }

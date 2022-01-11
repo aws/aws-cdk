@@ -1,10 +1,10 @@
 import '@aws-cdk/assert-internal/jest';
-import { expect as assertExpect, ResourcePart } from '@aws-cdk/assert-internal';
+import { ABSENT, expect as assertExpect, ResourcePart } from '@aws-cdk/assert-internal';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
 import * as lambda from '@aws-cdk/aws-lambda';
+import { testDeprecated, testFutureBehavior, testLegacyBehavior } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
-import { testFutureBehavior, testLegacyBehavior } from 'cdk-build-tools/lib/feature-flag';
 import * as secretsmanager from '../lib';
 
 let app: cdk.App;
@@ -178,6 +178,94 @@ test('templated secret string', () => {
   });
 });
 
+describe('secretStringBeta1', () => {
+  let user: iam.User;
+  let accessKey: iam.CfnAccessKey;
+
+  beforeEach(() => {
+    user = new iam.User(stack, 'User');
+    accessKey = new iam.CfnAccessKey(stack, 'MyKey', { userName: user.userName });
+  });
+
+  test('fromUnsafePlaintext allows specifying a plaintext string', () => {
+    new secretsmanager.Secret(stack, 'Secret', {
+      secretStringBeta1: secretsmanager.SecretStringValueBeta1.fromUnsafePlaintext('unsafeP@$$'),
+    });
+
+    expect(stack).toHaveResource('AWS::SecretsManager::Secret', {
+      GenerateSecretString: ABSENT,
+      SecretString: 'unsafeP@$$',
+    });
+  });
+
+  test('toToken throws when provided an unsafe plaintext string', () => {
+    expect(() => new secretsmanager.Secret(stack, 'Secret', {
+      secretStringBeta1: secretsmanager.SecretStringValueBeta1.fromToken('unsafeP@$$'),
+    })).toThrow(/appears to be plaintext/);
+  });
+
+  test('toToken allows referencing a construct attribute', () => {
+    new secretsmanager.Secret(stack, 'Secret', {
+      secretStringBeta1: secretsmanager.SecretStringValueBeta1.fromToken(accessKey.attrSecretAccessKey),
+    });
+
+    expect(stack).toHaveResource('AWS::SecretsManager::Secret', {
+      GenerateSecretString: ABSENT,
+      SecretString: { 'Fn::GetAtt': ['MyKey', 'SecretAccessKey'] },
+    });
+  });
+
+  test('toToken allows referencing a construct attribute in nested JSON', () => {
+    const secretString = secretsmanager.SecretStringValueBeta1.fromToken(JSON.stringify({
+      key: accessKey.attrSecretAccessKey,
+      username: 'myUser',
+    }));
+    new secretsmanager.Secret(stack, 'Secret', {
+      secretStringBeta1: secretString,
+    });
+
+    expect(stack).toHaveResource('AWS::SecretsManager::Secret', {
+      GenerateSecretString: ABSENT,
+      SecretString: {
+        'Fn::Join': [
+          '',
+          [
+            '{"key":"',
+            {
+              'Fn::GetAtt': [
+                'MyKey',
+                'SecretAccessKey',
+              ],
+            },
+            '","username":"myUser"}',
+          ],
+        ],
+      },
+    });
+  });
+
+  test('toToken throws if provided a resolved token', () => {
+    // NOTE - This is actually not desired behavior, but the simple `!Token.isUnresolved`
+    // check is the simplest and most consistent to implement. Covering this edge case of
+    // a resolved Token representing a Ref/Fn::GetAtt is out of scope for this initial pass.
+    const secretKey = stack.resolve(accessKey.attrSecretAccessKey);
+    expect(() => new secretsmanager.Secret(stack, 'Secret', {
+      secretStringBeta1: secretsmanager.SecretStringValueBeta1.fromToken(secretKey),
+    })).toThrow(/appears to be plaintext/);
+  });
+
+  test('throws if both generateSecretString and secretStringBeta1 are provided', () => {
+    expect(() => new secretsmanager.Secret(stack, 'Secret', {
+      generateSecretString: {
+        generateStringKey: 'username',
+        secretStringTemplate: JSON.stringify({ username: 'username' }),
+      },
+      secretStringBeta1: secretsmanager.SecretStringValueBeta1.fromToken(accessKey.attrSecretAccessKey),
+    })).toThrow(/Cannot specify both `generateSecretString` and `secretStringBeta1`./);
+  });
+
+});
+
 test('grantRead', () => {
   // GIVEN
   const key = new kms.Key(stack, 'KMS');
@@ -231,6 +319,106 @@ test('grantRead', () => {
               'Fn::GetAtt': [
                 'Role1ABCC5F0',
                 'Arn',
+              ],
+            },
+          },
+          Resource: '*',
+        },
+      ],
+      Version: '2012-10-17',
+    },
+  });
+});
+
+test('grantRead cross account', () => {
+  // GIVEN
+  const key = new kms.Key(stack, 'KMS');
+  const secret = new secretsmanager.Secret(stack, 'Secret', { encryptionKey: key });
+  const principal = new iam.AccountPrincipal('1234');
+
+  // WHEN
+  secret.grantRead(principal, ['FOO', 'bar']).assertSuccess();
+
+  // THEN
+  expect(stack).toHaveResource('AWS::SecretsManager::ResourcePolicy', {
+    ResourcePolicy: {
+      Statement: [
+        {
+          Action: [
+            'secretsmanager:GetSecretValue',
+            'secretsmanager:DescribeSecret',
+          ],
+          Effect: 'Allow',
+          Condition: {
+            'ForAnyValue:StringEquals': {
+              'secretsmanager:VersionStage': [
+                'FOO',
+                'bar',
+              ],
+            },
+          },
+          Principal: {
+            AWS: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':iam::1234:root',
+                ],
+              ],
+            },
+          },
+          Resource: {
+            Ref: 'SecretA720EF05',
+          },
+        },
+      ],
+      Version: '2012-10-17',
+    },
+    SecretId: {
+      Ref: 'SecretA720EF05',
+    },
+  });
+
+  expect(stack).toHaveResourceLike('AWS::KMS::Key', {
+    KeyPolicy: {
+      Statement: [
+        {},
+        {},
+        {},
+        {
+          Action: 'kms:Decrypt',
+          Condition: {
+            StringEquals: {
+              'kms:ViaService': {
+                'Fn::Join': [
+                  '',
+                  [
+                    'secretsmanager.',
+                    {
+                      Ref: 'AWS::Region',
+                    },
+                    '.amazonaws.com',
+                  ],
+                ],
+              },
+            },
+          },
+          Effect: 'Allow',
+          Principal: {
+            AWS: {
+              'Fn::Join': [
+                '',
+                [
+                  'arn:',
+                  {
+                    Ref: 'AWS::Partition',
+                  },
+                  ':iam::1234:root',
+                ],
               ],
             },
           },
@@ -557,7 +745,7 @@ describe('secretName', () => {
   });
 });
 
-test('import by secretArn', () => {
+testDeprecated('import by secretArn', () => {
   // GIVEN
   const secretArn = 'arn:aws:secretsmanager:eu-west-1:111111111111:secret:MySecret-f3gDy9';
 
@@ -578,10 +766,12 @@ test('import by secretArn throws if ARN is malformed', () => {
   const arnWithoutResourceName = 'arn:aws:secretsmanager:eu-west-1:111111111111:secret';
 
   // WHEN
-  expect(() => secretsmanager.Secret.fromSecretArn(stack, 'Secret1', arnWithoutResourceName)).toThrow(/invalid ARN format/);
+  expect(() => secretsmanager.Secret.fromSecretAttributes(stack, 'Secret1', {
+    secretPartialArn: arnWithoutResourceName,
+  })).toThrow(/invalid ARN format/);
 });
 
-test('import by secretArn supports secret ARNs without suffixes', () => {
+testDeprecated('import by secretArn supports secret ARNs without suffixes', () => {
   // GIVEN
   const arnWithoutSecretsManagerSuffix = 'arn:aws:secretsmanager:eu-west-1:111111111111:secret:MySecret';
 
@@ -593,7 +783,7 @@ test('import by secretArn supports secret ARNs without suffixes', () => {
   expect(secret.secretName).toBe('MySecret');
 });
 
-test('import by secretArn does not strip suffixes unless the suffix length is six', () => {
+testDeprecated('import by secretArn does not strip suffixes unless the suffix length is six', () => {
   // GIVEN
   const arnWith5CharacterSuffix = 'arn:aws:secretsmanager:eu-west-1:111111111111:secret:github-token';
   const arnWith6CharacterSuffix = 'arn:aws:secretsmanager:eu-west-1:111111111111:secret:github-token-f3gDy9';
@@ -612,7 +802,7 @@ test('import by secretArn supports tokens for ARNs', () => {
   const secretA = new secretsmanager.Secret(stackA, 'SecretA');
 
   // WHEN
-  const secretB = secretsmanager.Secret.fromSecretArn(stackB, 'SecretB', secretA.secretArn);
+  const secretB = secretsmanager.Secret.fromSecretCompleteArn(stackB, 'SecretB', secretA.secretArn);
   new cdk.CfnOutput(stackB, 'secretBSecretName', { value: secretB.secretName });
 
   // THEN
@@ -623,7 +813,7 @@ test('import by secretArn supports tokens for ARNs', () => {
   });
 });
 
-test('import by secretArn guesses at complete or partial ARN', () => {
+testDeprecated('import by secretArn guesses at complete or partial ARN', () => {
   // GIVEN
   const secretArnWithSuffix = 'arn:aws:secretsmanager:eu-west-1:111111111111:secret:MySecret-f3gDy9';
   const secretArnWithoutSuffix = 'arn:aws:secretsmanager:eu-west-1:111111111111:secret:MySecret';
@@ -687,6 +877,25 @@ test('fromSecretCompleteArn - grants', () => {
   });
 });
 
+test('fromSecretCompleteArn - can be assigned to a property with type number', () => {
+  // GIVEN
+  const secretArn = 'arn:aws:secretsmanager:eu-west-1:111111111111:secret:MySecret-f3gDy9';
+  const secret = secretsmanager.Secret.fromSecretCompleteArn(stack, 'Secret', secretArn);
+
+  // WHEN
+  new lambda.Function(stack, 'MyFunction', {
+    code: lambda.Code.fromInline('foo'),
+    handler: 'bar',
+    runtime: lambda.Runtime.NODEJS,
+    memorySize: cdk.Token.asNumber(secret.secretValueFromJson('LambdaFunctionMemorySize')),
+  });
+
+  // THEN
+  expect(stack).toHaveResourceLike('AWS::Lambda::Function', {
+    MemorySize: `{{resolve:secretsmanager:${secretArn}:SecretString:LambdaFunctionMemorySize::}}`,
+  });
+});
+
 test('fromSecretPartialArn', () => {
   // GIVEN
   const secretArn = 'arn:aws:secretsmanager:eu-west-1:111111111111:secret:MySecret';
@@ -745,7 +954,7 @@ describe('fromSecretAttributes', () => {
 
     // WHEN
     const secret = secretsmanager.Secret.fromSecretAttributes(stack, 'Secret', {
-      secretArn, encryptionKey,
+      secretCompleteArn: secretArn, encryptionKey,
     });
 
     // THEN
@@ -757,7 +966,7 @@ describe('fromSecretAttributes', () => {
     expect(stack.resolve(secret.secretValueFromJson('password'))).toBe(`{{resolve:secretsmanager:${secretArn}:SecretString:password::}}`);
   });
 
-  test('throws if secretArn and either secretCompleteArn or secretPartialArn are provided', () => {
+  testDeprecated('throws if secretArn and either secretCompleteArn or secretPartialArn are provided', () => {
     const secretArn = 'arn:aws:secretsmanager:eu-west-1:111111111111:secret:MySecret-f3gDy9';
 
     const error = /cannot use `secretArn` with `secretCompleteArn` or `secretPartialArn`/;
@@ -788,9 +997,22 @@ describe('fromSecretAttributes', () => {
       secretCompleteArn: 'arn:aws:secretsmanager:eu-west-1:111111111111:secret:MySecret',
     })).toThrow(/does not appear to be complete/);
   });
+
+  test('parses environment from secretArn', () => {
+    // GIVEN
+    const secretAccount = '222222222222';
+
+    // WHEN
+    const secret = secretsmanager.Secret.fromSecretAttributes(stack, 'Secret', {
+      secretCompleteArn: `arn:aws:secretsmanager:eu-west-1:${secretAccount}:secret:MySecret-f3gDy9`,
+    });
+
+    // THEN
+    expect(secret.env.account).toBe(secretAccount);
+  });
 });
 
-test('import by secret name', () => {
+testDeprecated('import by secret name', () => {
   // GIVEN
   const secretName = 'MySecret';
 
@@ -805,7 +1027,7 @@ test('import by secret name', () => {
   expect(stack.resolve(secret.secretValueFromJson('password'))).toBe(`{{resolve:secretsmanager:${secretName}:SecretString:password::}}`);
 });
 
-test('import by secret name with grants', () => {
+testDeprecated('import by secret name with grants', () => {
   // GIVEN
   const role = new iam.Role(stack, 'Role', { assumedBy: new iam.AccountRootPrincipal() });
   const secret = secretsmanager.Secret.fromSecretName(stack, 'Secret', 'MySecret');
@@ -1003,7 +1225,7 @@ test('equivalence of SecretValue and Secret.fromSecretAttributes', () => {
   const secretArn = 'arn:aws:secretsmanager:eu-west-1:111111111111:secret:MySecret-f3gDy9';
 
   // WHEN
-  const imported = secretsmanager.Secret.fromSecretAttributes(stack, 'Imported', { secretArn: secretArn }).secretValueFromJson('password');
+  const imported = secretsmanager.Secret.fromSecretAttributes(stack, 'Imported', { secretCompleteArn: secretArn }).secretValueFromJson('password');
   const value = cdk.SecretValue.secretsManager(secretArn, { jsonField: 'password' });
 
   // THEN

@@ -2,6 +2,7 @@ import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnVirtualRouter } from './appmesh.generated';
 import { IMesh, Mesh } from './mesh';
+import { renderMeshOwner } from './private/utils';
 import { Route, RouteBaseProps } from './route';
 import { VirtualRouterListener } from './virtual-router-listener';
 
@@ -101,7 +102,7 @@ export class VirtualRouter extends VirtualRouterBase {
   public static fromVirtualRouterArn(scope: Construct, id: string, virtualRouterArn: string): IVirtualRouter {
     return new class extends VirtualRouterBase {
       readonly virtualRouterArn = virtualRouterArn;
-      private readonly parsedArn = cdk.Fn.split('/', cdk.Stack.of(scope).parseArn(virtualRouterArn).resourceName!);
+      private readonly parsedArn = cdk.Fn.split('/', cdk.Stack.of(scope).splitArn(virtualRouterArn, cdk.ArnFormat.SLASH_RESOURCE_NAME).resourceName!);
       readonly virtualRouterName = cdk.Fn.select(2, this.parsedArn);
       readonly mesh = Mesh.fromMeshName(this, 'Mesh', cdk.Fn.select(0, this.parsedArn));
     }(scope, id);
@@ -154,6 +155,7 @@ export class VirtualRouter extends VirtualRouterBase {
     const router = new CfnVirtualRouter(this, 'Resource', {
       virtualRouterName: this.physicalName,
       meshName: this.mesh.meshName,
+      meshOwner: renderMeshOwner(this.env.account, this.mesh.env.account),
       spec: {
         listeners: this.listeners,
       },

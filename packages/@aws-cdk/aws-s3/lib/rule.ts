@@ -185,6 +185,17 @@ export class StorageClass {
   public static readonly GLACIER = new StorageClass('GLACIER');
 
   /**
+   * Storage class for long-term archival that can be accessed in a few milliseconds.
+   *
+   * It is ideal for data that is accessed once or twice per quarter, and
+   * that requires immediate access. Data stored in the GLACIER_IR storage class
+   * has a minimum storage duration period of 90 days and can be accessed in
+   * as milliseconds. If you delete an object before the 90-day minimum,
+   * you are charged for 90 days.
+   */
+  public static readonly GLACIER_INSTANT_RETRIEVAL = new StorageClass('GLACIER_IR');
+
+  /**
    * Use for archiving data that rarely needs to be accessed. Data stored in the
    * DEEP_ARCHIVE storage class has a minimum storage duration period of 180
    * days and a default retrieval time of 12 hours. If you delete an object

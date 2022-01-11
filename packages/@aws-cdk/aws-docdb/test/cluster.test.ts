@@ -1,6 +1,7 @@
-import { expect as expectCDK, haveResource, ResourcePart, arrayWith } from '@aws-cdk/assert-internal';
+import { expect as expectCDK, haveResource, ResourcePart, arrayWith, haveResourceLike, objectLike } from '@aws-cdk/assert-internal';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as kms from '@aws-cdk/aws-kms';
+import * as logs from '@aws-cdk/aws-logs';
 import * as cdk from '@aws-cdk/core';
 
 import { ClusterParameterGroup, DatabaseCluster, DatabaseSecret } from '../lib';
@@ -167,6 +168,27 @@ describe('DatabaseCluster', () => {
     }));
   });
 
+  test('can configure cluster deletion protection', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      masterUser: {
+        username: 'admin',
+      },
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+      vpc,
+      deletionProtection: true,
+    });
+
+    // THEN
+    expectCDK(stack).to(haveResource('AWS::DocDB::DBCluster', {
+      DeletionProtection: true,
+    }));
+  });
+
   test('cluster with parameter group', () => {
     // GIVEN
     const stack = testStack();
@@ -269,6 +291,50 @@ describe('DatabaseCluster', () => {
         PasswordLength: 41,
         SecretStringTemplate: '{"username":"admin"}',
       },
+    }));
+  });
+
+  test('creates a secret with excludeCharacters', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      masterUser: {
+        username: 'admin',
+        excludeCharacters: '"@/()[]',
+      },
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+      vpc,
+    });
+
+    // THEN
+    expectCDK(stack).to(haveResourceLike('AWS::SecretsManager::Secret', {
+      GenerateSecretString: objectLike({
+        ExcludeCharacters: '\"@/()[]',
+      }),
+    }));
+  });
+
+  test('creates a secret with secretName set', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      masterUser: {
+        username: 'admin',
+        secretName: '/myapp/mydocdb/masteruser',
+      },
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+      vpc,
+    });
+
+    // THEN
+    expectCDK(stack).to(haveResourceLike('AWS::SecretsManager::Secret', {
+      Name: '/myapp/mydocdb/masteruser',
     }));
   });
 
@@ -523,6 +589,110 @@ describe('DatabaseCluster', () => {
     }));
   });
 
+  test('can configure CloudWatchLogs for audit', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      masterUser: {
+        username: 'admin',
+      },
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+      vpc,
+      exportAuditLogsToCloudWatch: true,
+    });
+
+    // THEN
+    expectCDK(stack).to(haveResource('AWS::DocDB::DBCluster', {
+      EnableCloudwatchLogsExports: ['audit'],
+    }));
+  });
+
+  test('can configure CloudWatchLogs for profiler', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      masterUser: {
+        username: 'admin',
+      },
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+      vpc,
+      exportProfilerLogsToCloudWatch: true,
+    });
+
+    // THEN
+    expectCDK(stack).to(haveResource('AWS::DocDB::DBCluster', {
+      EnableCloudwatchLogsExports: ['profiler'],
+    }));
+  });
+
+  test('can configure CloudWatchLogs for all logs', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      masterUser: {
+        username: 'admin',
+      },
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+      vpc,
+      exportAuditLogsToCloudWatch: true,
+      exportProfilerLogsToCloudWatch: true,
+    });
+
+    // THEN
+    expectCDK(stack).to(haveResource('AWS::DocDB::DBCluster', {
+      EnableCloudwatchLogsExports: ['audit', 'profiler'],
+    }));
+  });
+
+  test('can set CloudWatch log retention', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      masterUser: {
+        username: 'admin',
+      },
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+      vpc,
+      exportAuditLogsToCloudWatch: true,
+      exportProfilerLogsToCloudWatch: true,
+      cloudWatchLogsRetention: logs.RetentionDays.THREE_MONTHS,
+    });
+
+    // THEN
+    expectCDK(stack).to(haveResource('Custom::LogRetention', {
+      ServiceToken: {
+        'Fn::GetAtt': [
+          'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A',
+          'Arn',
+        ],
+      },
+      LogGroupName: { 'Fn::Join': ['', ['/aws/docdb/', { Ref: 'DatabaseB269D8BB' }, '/audit']] },
+      RetentionInDays: 90,
+    }));
+    expectCDK(stack).to(haveResource('Custom::LogRetention', {
+      ServiceToken: {
+        'Fn::GetAtt': [
+          'LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A',
+          'Arn',
+        ],
+      },
+      LogGroupName: { 'Fn::Join': ['', ['/aws/docdb/', { Ref: 'DatabaseB269D8BB' }, '/profiler']] },
+      RetentionInDays: 90,
+    }));
+  });
+
   test('single user rotation', () => {
     // GIVEN
     const stack = testStack();
@@ -541,8 +711,8 @@ describe('DatabaseCluster', () => {
     // THEN
     expectCDK(stack).to(haveResource('AWS::Serverless::Application', {
       Location: {
-        ApplicationId: 'arn:aws:serverlessrepo:us-east-1:297356227824:applications/SecretsManagerMongoDBRotationSingleUser',
-        SemanticVersion: '1.1.60',
+        ApplicationId: { 'Fn::FindInMap': ['DatabaseRotationSingleUserSARMapping9AEB3E55', { Ref: 'AWS::Partition' }, 'applicationId'] },
+        SemanticVersion: { 'Fn::FindInMap': ['DatabaseRotationSingleUserSARMapping9AEB3E55', { Ref: 'AWS::Partition' }, 'semanticVersion'] },
       },
       Parameters: {
         endpoint: {
@@ -555,6 +725,7 @@ describe('DatabaseCluster', () => {
           ],
         },
         functionName: 'DatabaseRotationSingleUser458A45BE',
+        excludeCharacters: '\"@/',
         vpcSubnetIds: {
           'Fn::Join': [
             '',
@@ -653,8 +824,8 @@ describe('DatabaseCluster', () => {
     // THEN
     expectCDK(stack).to(haveResource('AWS::Serverless::Application', {
       Location: {
-        ApplicationId: 'arn:aws:serverlessrepo:us-east-1:297356227824:applications/SecretsManagerMongoDBRotationMultiUser',
-        SemanticVersion: '1.1.60',
+        ApplicationId: { 'Fn::FindInMap': ['DatabaseRotationSARMappingE46CFA92', { Ref: 'AWS::Partition' }, 'applicationId'] },
+        SemanticVersion: { 'Fn::FindInMap': ['DatabaseRotationSARMappingE46CFA92', { Ref: 'AWS::Partition' }, 'semanticVersion'] },
       },
       Parameters: {
         endpoint: {
@@ -667,6 +838,7 @@ describe('DatabaseCluster', () => {
           ],
         },
         functionName: 'DatabaseRotation0D47EBD2',
+        excludeCharacters: '\"@/',
         vpcSubnetIds: {
           'Fn::Join': [
             '',

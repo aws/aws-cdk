@@ -126,19 +126,6 @@ describe('tests', () => {
     });
   });
 
-  test('Throws error for unacceptable protocol', () => {
-    const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'Vpc');
-
-    expect(() => {
-      new elbv2.NetworkTargetGroup(stack, 'Group', {
-        vpc,
-        port: 80,
-        protocol: elbv2.Protocol.HTTPS,
-      });
-    }).toThrow();
-  });
-
   test('Throws error for invalid health check interval', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'Stack');
@@ -157,42 +144,243 @@ describe('tests', () => {
     }).toThrow(/Health check interval '5' not supported. Must be one of the following values '10,30'./);
   });
 
-  test('Throws error for invalid health check protocol', () => {
-    const app = new cdk.App();
-    const stack = new cdk.Stack(app, 'Stack');
-    const vpc = new ec2.Vpc(stack, 'Vpc');
+  test.each([elbv2.Protocol.UDP, elbv2.Protocol.TCP_UDP, elbv2.Protocol.TLS])(
+    'Throws validation error, when `healthCheck` has `protocol` set to %s',
+    (protocol) => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'Stack');
+      const vpc = new ec2.Vpc(stack, 'VPC', {});
 
-    new elbv2.NetworkTargetGroup(stack, 'Group', {
-      vpc,
-      port: 80,
-      healthCheck: {
-        protocol: elbv2.Protocol.UDP,
-      },
+      // WHEN
+      new elbv2.NetworkTargetGroup(stack, 'TargetGroup', {
+        vpc,
+        port: 80,
+        healthCheck: {
+          protocol: protocol,
+        },
+      });
+
+      // THEN
+      expect(() => {
+        app.synth();
+      }).toThrow(`Health check protocol '${protocol}' is not supported. Must be one of [HTTP, HTTPS, TCP]`);
     });
 
-    expect(() => {
-      app.synth();
-    }).toThrow(/Health check protocol 'UDP' is not supported. Must be one of \[HTTP, HTTPS, TCP\]/);
-  });
+  test.each([elbv2.Protocol.UDP, elbv2.Protocol.TCP_UDP, elbv2.Protocol.TLS])(
+    'Throws validation error, when `configureHealthCheck()` has `protocol` set to %s',
+    (protocol) => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'Stack');
+      const vpc = new ec2.Vpc(stack, 'VPC', {});
+      const tg = new elbv2.NetworkTargetGroup(stack, 'TargetGroup', {
+        vpc,
+        port: 80,
+      });
 
-  test('Throws error for health check path property when protocol does not support it', () => {
-    const app = new cdk.App();
-    const stack = new cdk.Stack(app, 'Stack');
-    const vpc = new ec2.Vpc(stack, 'Vpc');
+      // WHEN
+      tg.configureHealthCheck({
+        protocol: protocol,
+      });
 
-    new elbv2.NetworkTargetGroup(stack, 'Group', {
-      vpc,
-      port: 80,
-      healthCheck: {
+      // THEN
+      expect(() => {
+        app.synth();
+      }).toThrow(`Health check protocol '${protocol}' is not supported. Must be one of [HTTP, HTTPS, TCP]`);
+    });
+
+  test.each([elbv2.Protocol.HTTP, elbv2.Protocol.HTTPS, elbv2.Protocol.TCP])(
+    'Does not throw validation error, when `healthCheck` has `protocol` set to %s',
+    (protocol) => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'Stack');
+      const vpc = new ec2.Vpc(stack, 'VPC', {});
+
+      // WHEN
+      new elbv2.NetworkTargetGroup(stack, 'TargetGroup', {
+        vpc,
+        port: 80,
+        healthCheck: {
+          protocol: protocol,
+        },
+      });
+
+      // THEN
+      expect(() => {
+        app.synth();
+      }).not.toThrowError();
+    });
+
+  test.each([elbv2.Protocol.HTTP, elbv2.Protocol.HTTPS, elbv2.Protocol.TCP])(
+    'Does not throw validation error, when `configureHealthCheck()` has `protocol` set to %s',
+    (protocol) => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'Stack');
+      const vpc = new ec2.Vpc(stack, 'VPC', {});
+      const tg = new elbv2.NetworkTargetGroup(stack, 'TargetGroup', {
+        vpc,
+        port: 80,
+      });
+
+      // WHEN
+      tg.configureHealthCheck({
+        protocol: protocol,
+      });
+
+      // THEN
+      expect(() => {
+        app.synth();
+      }).not.toThrowError();
+    });
+
+  test.each([elbv2.Protocol.TCP, elbv2.Protocol.HTTPS])(
+    'Does not throw a validation error, when `healthCheck` has `protocol` set to %s and `interval` is equal to `timeout`',
+    (protocol) => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'Stack');
+      const vpc = new ec2.Vpc(stack, 'VPC', {});
+
+      // WHEN
+      new elbv2.NetworkTargetGroup(stack, 'TargetGroup', {
+        vpc,
+        port: 80,
+        healthCheck: {
+          interval: cdk.Duration.seconds(10),
+          timeout: cdk.Duration.seconds(10),
+          protocol: protocol,
+        },
+      });
+
+      // THEN
+      expect(() => {
+        app.synth();
+      }).not.toThrowError();
+    });
+
+  test.each([elbv2.Protocol.TCP, elbv2.Protocol.HTTPS])(
+    'Does not throw a validation error, when `configureHealthCheck()` has `protocol` set to %s and `interval` is equal to `timeout`',
+    (protocol) => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'Stack');
+      const vpc = new ec2.Vpc(stack, 'VPC', {});
+      const tg = new elbv2.NetworkTargetGroup(stack, 'TargetGroup', {
+        vpc,
+        port: 80,
+      });
+
+      // WHEN
+      tg.configureHealthCheck({
+        interval: cdk.Duration.seconds(10),
+        timeout: cdk.Duration.seconds(10),
+        protocol: protocol,
+      });
+
+      // THEN
+      expect(() => {
+        app.synth();
+      }).not.toThrowError();
+    });
+
+  test.each([elbv2.Protocol.UDP, elbv2.Protocol.TCP_UDP, elbv2.Protocol.TLS])(
+    'Throws validation error,`healthCheck` has `protocol` set to %s and `path` is provided',
+    (protocol) => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'Stack');
+      const vpc = new ec2.Vpc(stack, 'VPC', {});
+
+      // WHEN
+      new elbv2.NetworkTargetGroup(stack, 'TargetGroup', {
+        vpc,
+        port: 80,
+        healthCheck: {
+          path: '/my-path',
+          protocol: protocol,
+        },
+      });
+
+      // THEN
+      expect(() => {
+        app.synth();
+      }).toThrow(`'${protocol}' health checks do not support the path property. Must be one of [HTTP, HTTPS]`);
+    });
+
+  test.each([elbv2.Protocol.UDP, elbv2.Protocol.TCP_UDP, elbv2.Protocol.TLS])(
+    'Throws validation error, when `configureHealthCheck()` has `protocol` set to %s and  `path` is provided',
+    (protocol) => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'Stack');
+      const vpc = new ec2.Vpc(stack, 'VPC', {});
+      const tg = new elbv2.NetworkTargetGroup(stack, 'TargetGroup', {
+        vpc,
+        port: 80,
+      });
+
+      // WHEN
+      tg.configureHealthCheck({
         path: '/my-path',
-        protocol: elbv2.Protocol.TCP,
-      },
+        protocol: protocol,
+      });
+
+      // THEN
+      expect(() => {
+        app.synth();
+      }).toThrow(`'${protocol}' health checks do not support the path property. Must be one of [HTTP, HTTPS]`);
     });
 
-    expect(() => {
-      app.synth();
-    }).toThrow(/'TCP' health checks do not support the path property. Must be one of \[HTTP, HTTPS\]/);
-  });
+  test.each([elbv2.Protocol.HTTP, elbv2.Protocol.HTTPS])(
+    'Does not throw validation error, when `healthCheck` has `protocol` set to %s and `path` is provided',
+    (protocol) => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'Stack');
+      const vpc = new ec2.Vpc(stack, 'VPC', {});
+
+      // WHEN
+      new elbv2.NetworkTargetGroup(stack, 'TargetGroup', {
+        vpc,
+        port: 80,
+        healthCheck: {
+          path: '/my-path',
+          protocol: protocol,
+        },
+      });
+
+      // THEN
+      expect(() => {
+        app.synth();
+      }).not.toThrowError();
+    });
+
+  test.each([elbv2.Protocol.HTTP, elbv2.Protocol.HTTPS])(
+    'Does not throw validation error, when `configureHealthCheck()` has `protocol` set to %s and `path` is provided',
+    (protocol) => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'Stack');
+      const vpc = new ec2.Vpc(stack, 'VPC', {});
+      const tg = new elbv2.NetworkTargetGroup(stack, 'TargetGroup', {
+        vpc,
+        port: 80,
+      });
+
+      // WHEN
+      tg.configureHealthCheck({
+        path: '/my-path',
+        protocol: protocol,
+      });
+
+      // THEN
+      expect(() => {
+        app.synth();
+      }).not.toThrowError();
+    });
 
   test('Throws error for invalid health check healthy threshold', () => {
     const app = new cdk.App();
@@ -310,5 +498,19 @@ describe('tests', () => {
     // THEN
     expect(() => targetGroup.metricHealthyHostCount()).toThrow(/The TargetGroup needs to be attached to a LoadBalancer/);
     expect(() => targetGroup.metricUnHealthyHostCount()).toThrow(/The TargetGroup needs to be attached to a LoadBalancer/);
+  });
+
+  test('imported targetGroup has targetGroupName', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack');
+
+    // WHEN
+    const importedTg = elbv2.NetworkTargetGroup.fromTargetGroupAttributes(stack, 'importedTg', {
+      targetGroupArn: 'arn:aws:elasticloadbalancing:us-west-2:123456789012:targetgroup/myNlbTargetGroup/73e2d6bc24d8a067',
+    });
+
+    // THEN
+    expect(importedTg.targetGroupName).toEqual('myNlbTargetGroup');
   });
 });

@@ -160,6 +160,15 @@ export interface BaseServiceOptions {
   readonly propagateTags?: PropagatedTagSource;
 
   /**
+   * Specifies whether to propagate the tags from the task definition or the service to the tasks in the service.
+   * Tags can only be propagated to the tasks within the service during service creation.
+   *
+   * @deprecated Use `propagateTags` instead.
+   * @default PropagatedTagSource.NONE
+   */
+  readonly propagateTaskTagsFrom?: PropagatedTagSource;
+
+  /**
    * Specifies whether to enable Amazon ECS managed tags for the tasks within the service. For more information, see
    * [Tagging Your Amazon ECS Resources](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-using-tags.html)
    *
@@ -373,12 +382,18 @@ export abstract class BaseService extends Resource
       physicalName: props.serviceName,
     });
 
+    if (props.propagateTags && props.propagateTaskTagsFrom) {
+      throw new Error('You can only specify either propagateTags or propagateTaskTagsFrom. Alternatively, you can leave both blank');
+    }
+
     this.taskDefinition = taskDefinition;
 
     // launchType will set to undefined if using external DeploymentController or capacityProviderStrategies
     const launchType = props.deploymentController?.type === DeploymentControllerType.EXTERNAL ||
       props.capacityProviderStrategies !== undefined ?
       undefined : props.launchType;
+
+    const propagateTagsFromSource = props.propagateTaskTagsFrom ?? props.propagateTags ?? PropagatedTagSource.NONE;
 
     this.resource = new CfnService(this, 'Service', {
       desiredCount: props.desiredCount,
@@ -392,7 +407,7 @@ export abstract class BaseService extends Resource
           rollback: props.circuitBreaker.rollback ?? false,
         } : undefined,
       },
-      propagateTags: props.propagateTags === PropagatedTagSource.NONE ? undefined : props.propagateTags,
+      propagateTags: propagateTagsFromSource === PropagatedTagSource.NONE ? undefined : props.propagateTags,
       enableEcsManagedTags: props.enableECSManagedTags ?? false,
       deploymentController: props.circuitBreaker ? {
         type: DeploymentControllerType.ECS,
@@ -555,6 +570,8 @@ export abstract class BaseService extends Resource
    *
    * @example
    *
+   * declare const listener: elbv2.ApplicationListener;
+   * declare const service: ecs.BaseService;
    * listener.addTargets('ECS', {
    *   port: 80,
    *   targets: [service.loadBalancerTarget({
@@ -590,6 +607,8 @@ export abstract class BaseService extends Resource
    *
    * @example
    *
+   * declare const listener: elbv2.ApplicationListener;
+   * declare const service: ecs.BaseService;
    * service.registerLoadBalancerTargets(
    *   {
    *     containerName: 'web',
@@ -731,7 +750,7 @@ export abstract class BaseService extends Resource
     return new cloudwatch.Metric({
       namespace: 'AWS/ECS',
       metricName,
-      dimensions: { ClusterName: this.cluster.clusterName, ServiceName: this.serviceName },
+      dimensionsMap: { ClusterName: this.cluster.clusterName, ServiceName: this.serviceName },
       ...props,
     }).attachTo(this);
   }
@@ -930,7 +949,7 @@ export interface CloudMapOptions {
   /**
    * The amount of time that you want DNS resolvers to cache the settings for this record.
    *
-   * @default 60
+   * @default Duration.minutes(1)
    */
   readonly dnsTtl?: Duration;
 
