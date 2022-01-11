@@ -93,10 +93,10 @@ class PublishingAws implements cdk_assets.IAws {
       return maybeSdk;
     }
 
-    const sdk = await this.aws.forEnvironment(env, Mode.ForWriting, {
+    const sdk = (await this.aws.forEnvironment(env, Mode.ForWriting, {
       assumeRoleArn: options.assumeRoleArn,
       assumeRoleExternalId: options.assumeRoleExternalId,
-    });
+    })).sdk;
     this.sdkCache.set(cacheKey, sdk);
 
     return sdk;
