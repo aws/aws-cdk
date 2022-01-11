@@ -158,10 +158,11 @@ function findLockFile(depsLockFilePath?: string): string {
  * 1. Given entry file
  * 2. A .ts file named as the defining file with id as suffix (defining-file.id.ts)
  * 3. A .js file name as the defining file with id as suffix (defining-file.id.js)
+ * 4. A .mjs file name as the defining file with id as suffix (defining-file.id.mjs)
  */
 function findEntry(id: string, entry?: string): string {
   if (entry) {
-    if (!/\.(jsx?|tsx?)$/.test(entry)) {
+    if (!/\.(jsx?|tsx?|mjs)$/.test(entry)) {
       throw new Error('Only JavaScript or TypeScript entry files are supported.');
     }
     if (!fs.existsSync(entry)) {
@@ -183,7 +184,12 @@ function findEntry(id: string, entry?: string): string {
     return jsHandlerFile;
   }
 
-  throw new Error(`Cannot find handler file ${tsHandlerFile} or ${jsHandlerFile}`);
+  const mjsHandlerFile = definingFile.replace(new RegExp(`${extname}$`), `.${id}.mjs`);
+  if (fs.existsSync(mjsHandlerFile)) {
+    return mjsHandlerFile;
+  }
+
+  throw new Error(`Cannot find handler file ${tsHandlerFile}, ${jsHandlerFile} or ${mjsHandlerFile}`);
 }
 
 /**
