@@ -112,8 +112,9 @@ export class Bundling implements cdk.BundlingOptions {
       throw new Error('preCompilation can only be used with typescript files');
     }
 
-    if (props.format === OutputFormat.ESM && props.runtime === Runtime.NODEJS_12_X) {
-      throw new Error('ECMAScript module output format is not supported by the Node.js 12.x runtime');
+    if (props.format === OutputFormat.ESM
+        && (props.runtime === Runtime.NODEJS_10_X || props.runtime === Runtime.NODEJS_12_X)) {
+      throw new Error(`ECMAScript module output format is not supported by the ${props.runtime.name} runtime`);
     }
 
     this.externals = [

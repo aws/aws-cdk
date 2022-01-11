@@ -243,7 +243,7 @@ test('throws with ESM and NODEJS_12_X', () => {
     runtime: Runtime.NODEJS_12_X,
     architecture: Architecture.X86_64,
     format: OutputFormat.ESM,
-  })).toThrow(/ECMAScript module output format is not supported by the Node.js 12.x runtime/);
+  })).toThrow(/ECMAScript module output format is not supported by the nodejs12.x runtime/);
 });
 
 test('esbuild bundling source map default', () => {
