@@ -42,6 +42,7 @@ export * from './log-drivers/log-drivers';
 export * from './proxy-configuration/app-mesh-proxy-configuration';
 export * from './proxy-configuration/proxy-configuration';
 export * from './proxy-configuration/proxy-configurations';
+export * from './runtime-platform';
 
 // AWS::ECS CloudFormation Resources:
 //

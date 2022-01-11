@@ -58,6 +58,10 @@ describe('fargate task definition', () => {
           assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
         }),
         ephemeralStorageGiB: 21,
+        runtimePlatform: {
+          cpuArchitecture: ecs.CpuArchitecture.X86_64,
+          operatingSystemFamily: ecs.OperatingSystemFamily.LINUX,
+        },
       });
 
       taskDefinition.addVolume({
@@ -85,6 +89,10 @@ describe('fargate task definition', () => {
         RequiresCompatibilities: [
           ecs.LaunchType.FARGATE,
         ],
+        RuntimePlatform: {
+          CpuArchitecture: 'X86_64',
+          OperatingSystemFamily: 'LINUX',
+        },
         TaskRoleArn: {
           'Fn::GetAtt': [
             'TaskRole30FC0FBB',
@@ -241,8 +249,116 @@ describe('fargate task definition', () => {
         taskDefinition.taskRole;
       }).toThrow('This operation requires the taskRole in ImportedTaskDefinition to be defined. ' +
         'Add the \'taskRole\' in ImportedTaskDefinitionProps to instantiate ImportedTaskDefinition');
+    });
 
+
+    test('runtime testing for windows container', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      new ecs.FargateTaskDefinition(stack, 'FargateTaskDef', {
+        cpu: 1024,
+        memoryLimitMiB: 2048,
+        runtimePlatform: {
+          operatingSystemFamily: ecs.OperatingSystemFamily.WINDOWS_SERVER_2019_CORE,
+          cpuArchitecture: ecs.CpuArchitecture.X86_64,
+        },
+      });
+
+      // THEN
+      expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+        Cpu: '1024',
+        Family: 'FargateTaskDef',
+        Memory: '2048',
+        NetworkMode: 'awsvpc',
+        RequiresCompatibilities: [
+          ecs.LaunchType.FARGATE,
+        ],
+        RuntimePlatform: {
+          CpuArchitecture: 'X86_64',
+          OperatingSystemFamily: 'WINDOWS_SERVER_2019_CORE',
+        },
+        TaskRoleArn: {
+          'Fn::GetAtt': [
+            'FargateTaskDefTaskRole0B257552',
+            'Arn',
+          ],
+        },
+      });
+    });
+
+    test('runtime testing for linux container', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      new ecs.FargateTaskDefinition(stack, 'FargateTaskDef', {
+        cpu: 1024,
+        memoryLimitMiB: 2048,
+        runtimePlatform: {
+          operatingSystemFamily: ecs.OperatingSystemFamily.LINUX,
+          cpuArchitecture: ecs.CpuArchitecture.ARM64,
+        },
+      });
+
+      // THEN
+      expect(stack).toHaveResourceLike('AWS::ECS::TaskDefinition', {
+        Cpu: '1024',
+        Family: 'FargateTaskDef',
+        Memory: '2048',
+        NetworkMode: 'awsvpc',
+        RequiresCompatibilities: [
+          ecs.LaunchType.FARGATE,
+        ],
+        RuntimePlatform: {
+          CpuArchitecture: 'ARM64',
+          OperatingSystemFamily: 'LINUX',
+        },
+        TaskRoleArn: {
+          'Fn::GetAtt': [
+            'FargateTaskDefTaskRole0B257552',
+            'Arn',
+          ],
+        },
+      });
+    });
+
+    test('creating a Fargate TaskDefinition with WINDOWS_SERVER_X operatingSystemFamily and incorrect cpu throws an error', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // Not in CPU Ranage.
+      expect(() => {
+        new ecs.FargateTaskDefinition(stack, 'FargateTaskDefCPU', {
+          cpu: 128,
+          memoryLimitMiB: 1024,
+          runtimePlatform: {
+            cpuArchitecture: ecs.CpuArchitecture.X86_64,
+            operatingSystemFamily: ecs.OperatingSystemFamily.WINDOWS_SERVER_2019_CORE,
+          },
+        });
+      }).toThrowError(`If operatingSystemFamily is ${ecs.OperatingSystemFamily.WINDOWS_SERVER_2019_CORE._operatingSystemFamily}, then cpu must be in 1024 (1 vCPU), 2048 (2 vCPU), or 4096 (4 vCPU).`);
+
+      // Memory is not in 1 GB increments.
+      expect(() => {
+        new ecs.FargateTaskDefinition(stack, 'FargateTaskDefMemory', {
+          cpu: 1024,
+          memoryLimitMiB: 1025,
+          runtimePlatform: {
+            cpuArchitecture: ecs.CpuArchitecture.X86_64,
+            operatingSystemFamily: ecs.OperatingSystemFamily.WINDOWS_SERVER_2019_CORE,
+          },
+        });
+      }).toThrowError('If provided cpu is 1024, then memoryMiB must have a min of 1024 and a max of 8192, in 1024 increments. Provided memoryMiB was 1025.');
+
+      // Check runtimePlatform was been defined ,but not undefined cpu and memoryLimitMiB.
+      expect(() => {
+        new ecs.FargateTaskDefinition(stack, 'FargateTaskDef', {
+          runtimePlatform: {
+            cpuArchitecture: ecs.CpuArchitecture.X86_64,
+            operatingSystemFamily: ecs.OperatingSystemFamily.WINDOWS_SERVER_2004_CORE,
+          },
+        });
+      }).toThrowError('If operatingSystemFamily is WINDOWS_SERVER_2004_CORE, then cpu must be in 1024 (1 vCPU), 2048 (2 vCPU), or 4096 (4 vCPU). Provided value was: 256');
 
     });
+
   });
 });
