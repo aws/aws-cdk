@@ -23,11 +23,9 @@ class TestStack extends cdk.Stack {
     const stream = new kinesis.Stream(this, 'MyStream', {
       shardCount: 3,
     });
-    topicRule.addAction(
-      new actions.KinesisPutRecordAction(stream, {
-        partitionKey: '${timestamp()}',
-      }),
-    );
+    topicRule.addAction(new actions.KinesisPutRecordAction(stream, {
+      partitionKey: '${timestamp()}',
+    }));
   }
 }
 
