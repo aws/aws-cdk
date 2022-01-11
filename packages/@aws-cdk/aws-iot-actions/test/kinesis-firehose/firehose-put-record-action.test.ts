@@ -15,7 +15,7 @@ test('Default firehose stream action', () => {
 
   // WHEN
   topicRule.addAction(
-    new actions.FirehoseStreamAction(stream),
+    new actions.FirehosePutRecordAction(stream),
   );
 
   // THEN
@@ -77,7 +77,7 @@ test('can set batchMode', () => {
 
   // WHEN
   topicRule.addAction(
-    new actions.FirehoseStreamAction(stream, { batchMode: true }),
+    new actions.FirehosePutRecordAction(stream, { batchMode: true }),
   );
 
   // THEN
@@ -100,7 +100,7 @@ test('can set separotor', () => {
 
   // WHEN
   topicRule.addAction(
-    new actions.FirehoseStreamAction(stream, { recordSeparator: actions.FirehoseStreamRecordSeparator.NEWLINE }),
+    new actions.FirehosePutRecordAction(stream, { recordSeparator: actions.FirehoseRecordSeparator.NEWLINE }),
   );
 
   // THEN
@@ -124,7 +124,7 @@ test('can set role', () => {
 
   // WHEN
   topicRule.addAction(
-    new actions.FirehoseStreamAction(stream, { role }),
+    new actions.FirehosePutRecordAction(stream, { role }),
   );
 
   // THEN
