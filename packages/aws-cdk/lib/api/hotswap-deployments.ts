@@ -1,6 +1,5 @@
 import * as cfn_diff from '@aws-cdk/cloudformation-diff';
 import * as cxapi from '@aws-cdk/cx-api';
-import { CloudFormation } from 'aws-sdk';
 import * as chalk from 'chalk';
 import { print } from '../logging';
 import { ISDK, Mode, SdkProvider } from './aws-auth';

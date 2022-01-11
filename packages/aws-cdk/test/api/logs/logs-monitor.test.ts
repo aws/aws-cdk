@@ -1,4 +1,4 @@
-import { blue, yellow } from 'colors/safe';
+import { blue, yellow } from 'chalk';
 import { CloudWatchLogEventMonitor } from '../../../lib/api/logs/logs-monitor';
 import { sleep } from '../../integ/helpers/aws';
 import { MockSdk } from '../../util/mock-sdk';

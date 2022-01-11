@@ -1,6 +1,6 @@
 import * as util from 'util';
 import * as cxapi from '@aws-cdk/cx-api';
-import * as colors from 'colors/safe';
+import * as chalk from 'chalk';
 import { print, error } from '../../logging';
 import { flatten } from '../../util/arrays';
 import { ISDK } from '../aws-auth';
@@ -148,8 +148,8 @@ export class CloudWatchLogEventMonitor {
    */
   private print(event: CloudWatchLogEvent): void {
     print(util.format('[%s] %s %s',
-      colors.blue(event.logGroupName),
-      colors.yellow(event.timestamp.toLocaleTimeString()),
+      chalk.blue(event.logGroupName),
+      chalk.yellow(event.timestamp.toLocaleTimeString()),
       event.message.trim()));
   }
 
