@@ -80,7 +80,6 @@
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/cfn2ts": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-<<<<<<< HEAD
     "@types/jest": "^26.0.24",
     "constructs": "^3.3.69",
     "@types/yaml": "1.9.6",
@@ -90,9 +89,6 @@
     "attribution": [
       "yaml"
     ]
-=======
-    "@types/jest": "^27.0.3"
->>>>>>> f28b867f14daea30ecef8a29c8703445502be95a
   },
   "dependencies": {
     "@aws-cdk/core": "0.0.0",
