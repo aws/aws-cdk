@@ -2,7 +2,7 @@
 /* eslint-disable no-console */
 import * as child_process from 'child_process';
 import * as path from 'path';
-import * as colors from 'colors';
+import * as chalk from 'chalk';
 import * as fs from 'fs-extra';
 import * as reflect from 'jsii-reflect';
 import * as yargs from 'yargs';
@@ -40,7 +40,8 @@ async function main() {
     .example('awslint --save', 'updated "package.json" with "exclude"s for all failing rules');
 
   if (!process.stdout.isTTY) {
-    colors.disable();
+    // Disable chalk color highlighting
+    process.env.FORCE_COLOR = '0';
   }
 
   const args = argv.argv;
@@ -59,7 +60,7 @@ async function main() {
 
   if (command === 'list') {
     for (const rule of ALL_RULES_LINTER.rules) {
-      console.info(`${colors.cyan(rule.code)}: ${rule.message}`);
+      console.info(`${chalk.cyan(rule.code)}: ${rule.message}`);
     }
     return;
   }
@@ -124,30 +125,30 @@ async function main() {
       switch (diag.level) {
         case DiagnosticLevel.Success:
           if (args.verbose) {
-            color = colors.gray;
+            color = chalk.gray;
           }
           break;
         case DiagnosticLevel.Error:
           errors++;
-          color = colors.red;
+          color = chalk.red;
           if (args.save) {
             excludesToSave.push(suppressionKey);
           }
           break;
         case DiagnosticLevel.Warning:
           if (!args.quiet) {
-            color = colors.yellow;
+            color = chalk.yellow;
           }
           break;
         case DiagnosticLevel.Skipped:
           if (!args.quiet) {
-            color = colors.blue;
+            color = chalk.blue;
           }
           break;
       }
 
       if (color) {
-        console.error(color(`${DiagnosticLevel[diag.level].toLowerCase()}: [${colors.bold(`awslint:${diag.rule.code}`)}:${colors.bold(diag.scope)}] ${diag.message}`));
+        console.error(color(`${DiagnosticLevel[diag.level].toLowerCase()}: [${chalk.bold(`awslint:${diag.rule.code}`)}:${chalk.bold(diag.scope)}] ${diag.message}`));
       }
     }
 
@@ -207,7 +208,7 @@ async function main() {
 }
 
 main().catch(e => {
-  console.error(colors.red(e.message));
+  console.error(chalk.red(e.message));
   if (stackTrace) {
     console.error(e.stack);
   }

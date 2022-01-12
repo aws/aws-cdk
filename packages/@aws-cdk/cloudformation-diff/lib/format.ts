@@ -1,5 +1,5 @@
 import { format } from 'util';
-import * as colors from 'colors/safe';
+import * as chalk from 'chalk';
 import { Difference, isPropertyDifference, ResourceDifference, ResourceImpact } from './diff-template';
 import { DifferenceCollection, TemplateDiff } from './diff/types';
 import { deepEqual } from './diff/util';
@@ -75,10 +75,10 @@ function formatSecurityChangesWithBanner(formatter: Formatter, templateDiff: Tem
   formatter.printSectionFooter();
 }
 
-const ADDITION = colors.green('[+]');
-const CONTEXT = colors.grey('[ ]');
-const UPDATE = colors.yellow('[~]');
-const REMOVAL = colors.red('[-]');
+const ADDITION = chalk.green('[+]');
+const CONTEXT = chalk.grey('[ ]');
+const UPDATE = chalk.yellow('[~]');
+const REMOVAL = chalk.red('[-]');
 
 class Formatter {
   constructor(
@@ -93,11 +93,11 @@ class Formatter {
   }
 
   public print(fmt: string, ...args: any[]) {
-    this.stream.write(colors.white(format(fmt, ...args)) + '\n');
+    this.stream.write(chalk.white(format(fmt, ...args)) + '\n');
   }
 
   public warning(fmt: string, ...args: any[]) {
-    this.stream.write(colors.yellow(format(fmt, ...args)) + '\n');
+    this.stream.write(chalk.yellow(format(fmt, ...args)) + '\n');
   }
 
   public formatSection<V, T extends Difference<V>>(
@@ -116,7 +116,7 @@ class Formatter {
   }
 
   public printSectionHeader(title: string) {
-    this.print(colors.underline(colors.bold(title)));
+    this.print(chalk.underline(chalk.bold(title)));
   }
 
   public printSectionFooter() {
@@ -134,8 +134,8 @@ class Formatter {
 
     let value;
 
-    const oldValue = this.formatValue(diff.oldValue, colors.red);
-    const newValue = this.formatValue(diff.newValue, colors.green);
+    const oldValue = this.formatValue(diff.oldValue, chalk.red);
+    const newValue = this.formatValue(diff.newValue, chalk.green);
     if (diff.isAddition) {
       value = newValue;
     } else if (diff.isUpdate) {
@@ -144,7 +144,7 @@ class Formatter {
       value = oldValue;
     }
 
-    this.print(`${this.formatPrefix(diff)} ${colors.cyan(type)} ${this.formatLogicalId(logicalId)}: ${value}`);
+    this.print(`${this.formatPrefix(diff)} ${chalk.cyan(type)} ${this.formatLogicalId(logicalId)}: ${value}`);
   }
 
   /**
@@ -159,7 +159,7 @@ class Formatter {
     const resourceType = diff.isRemoval ? diff.oldResourceType : diff.newResourceType;
 
     // eslint-disable-next-line max-len
-    this.print(`${this.formatPrefix(diff)} ${this.formatValue(resourceType, colors.cyan)} ${this.formatLogicalId(logicalId)} ${this.formatImpact(diff.changeImpact)}`);
+    this.print(`${this.formatPrefix(diff)} ${this.formatValue(resourceType, chalk.cyan)} ${this.formatLogicalId(logicalId)} ${this.formatImpact(diff.changeImpact)}`);
 
     if (diff.isUpdate) {
       const differenceCount = diff.differenceCount;
@@ -175,7 +175,7 @@ class Formatter {
     if (diff.isAddition) { return ADDITION; }
     if (diff.isUpdate) { return UPDATE; }
     if (diff.isRemoval) { return REMOVAL; }
-    return colors.white('[?]');
+    return chalk.white('[?]');
   }
 
   /**
@@ -197,13 +197,13 @@ class Formatter {
   public formatImpact(impact: ResourceImpact) {
     switch (impact) {
       case ResourceImpact.MAY_REPLACE:
-        return colors.italic(colors.yellow('may be replaced'));
+        return chalk.italic(chalk.yellow('may be replaced'));
       case ResourceImpact.WILL_REPLACE:
-        return colors.italic(colors.bold(colors.red('replace')));
+        return chalk.italic(chalk.bold(chalk.red('replace')));
       case ResourceImpact.WILL_DESTROY:
-        return colors.italic(colors.bold(colors.red('destroy')));
+        return chalk.italic(chalk.bold(chalk.red('destroy')));
       case ResourceImpact.WILL_ORPHAN:
-        return colors.italic(colors.yellow('orphan'));
+        return chalk.italic(chalk.yellow('orphan'));
       case ResourceImpact.WILL_UPDATE:
       case ResourceImpact.WILL_CREATE:
       case ResourceImpact.NO_CHANGE:
@@ -249,13 +249,13 @@ class Formatter {
             this.print('%s   %s %s', linePrefix, i === 0 ? '└─' : '  ', diff[i]);
           }
         } else {
-          this.print('%s   ├─ %s %s', linePrefix, REMOVAL, this.formatValue(oldObject, colors.red));
-          this.print('%s   └─ %s %s', linePrefix, ADDITION, this.formatValue(newObject, colors.green));
+          this.print('%s   ├─ %s %s', linePrefix, REMOVAL, this.formatValue(oldObject, chalk.red));
+          this.print('%s   └─ %s %s', linePrefix, ADDITION, this.formatValue(newObject, chalk.green));
         }
       } else if (oldObject !== undefined /* && newObject === undefined */) {
-        this.print('%s   └─ %s', linePrefix, this.formatValue(oldObject, colors.red));
+        this.print('%s   └─ %s', linePrefix, this.formatValue(oldObject, chalk.red));
       } else /* if (oldObject === undefined && newObject !== undefined) */ {
-        this.print('%s   └─ %s', linePrefix, this.formatValue(newObject, colors.green));
+        this.print('%s   └─ %s', linePrefix, this.formatValue(newObject, chalk.green));
       }
       return;
     }
@@ -268,12 +268,12 @@ class Formatter {
       const newValue = newObject[key];
       const treePrefix = key === lastKey ? '└' : '├';
       if (oldValue !== undefined && newValue !== undefined) {
-        this.print('%s   %s─ %s %s:', linePrefix, treePrefix, this.changeTag(oldValue, newValue), colors.blue(`.${key}`));
+        this.print('%s   %s─ %s %s:', linePrefix, treePrefix, this.changeTag(oldValue, newValue), chalk.blue(`.${key}`));
         this.formatObjectDiff(oldValue, newValue, `${linePrefix}   ${key === lastKey ? ' ' : '│'}`);
       } else if (oldValue !== undefined /* && newValue === undefined */) {
-        this.print('%s   %s─ %s Removed: %s', linePrefix, treePrefix, REMOVAL, colors.blue(`.${key}`));
+        this.print('%s   %s─ %s Removed: %s', linePrefix, treePrefix, REMOVAL, chalk.blue(`.${key}`));
       } else /* if (oldValue === undefined && newValue !== undefined */ {
-        this.print('%s   %s─ %s Added: %s', linePrefix, treePrefix, ADDITION, colors.blue(`.${key}`));
+        this.print('%s   %s─ %s Added: %s', linePrefix, treePrefix, ADDITION, chalk.blue(`.${key}`));
       }
     }
   }
@@ -322,7 +322,7 @@ class Formatter {
     const normalized = this.normalizedLogicalIdPath(logicalId);
 
     if (normalized) {
-      return `${normalized} ${colors.gray(logicalId)}`;
+      return `${normalized} ${chalk.gray(logicalId)}`;
     }
 
     return logicalId;
@@ -430,7 +430,7 @@ function _diffStrings(oldStr: string, newStr: string, context: number): string[]
   const patch: Patch = structuredPatch(null, null, oldStr, newStr, null, null, { context });
   const result = new Array<string>();
   for (const hunk of patch.hunks) {
-    result.push(colors.magenta(`@@ -${hunk.oldStart},${hunk.oldLines} +${hunk.newStart},${hunk.newLines} @@`));
+    result.push(chalk.magenta(`@@ -${hunk.oldStart},${hunk.oldLines} +${hunk.newStart},${hunk.newLines} @@`));
     const baseIndent = _findIndent(hunk.lines);
     for (const line of hunk.lines) {
       // Don't care about termination newline.
@@ -442,10 +442,10 @@ function _diffStrings(oldStr: string, newStr: string, context: number): string[]
           result.push(`${CONTEXT} ${text}`);
           break;
         case '+':
-          result.push(colors.bold(`${ADDITION} ${colors.green(text)}`));
+          result.push(chalk.bold(`${ADDITION} ${chalk.green(text)}`));
           break;
         case '-':
-          result.push(colors.bold(`${REMOVAL} ${colors.red(text)}`));
+          result.push(chalk.bold(`${REMOVAL} ${chalk.red(text)}`));
           break;
         default:
           throw new Error(`Unexpected diff marker: ${marker} (full line: ${line})`);

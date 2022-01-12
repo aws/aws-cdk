@@ -27,7 +27,7 @@ export class BootstrapStack {
     toolkitStackName = toolkitStackName ?? DEFAULT_TOOLKIT_STACK_NAME;
 
     const resolvedEnvironment = await sdkProvider.resolveEnvironment(environment);
-    const sdk = await sdkProvider.forEnvironment(resolvedEnvironment, Mode.ForWriting);
+    const sdk = (await sdkProvider.forEnvironment(resolvedEnvironment, Mode.ForWriting)).sdk;
 
     const currentToolkitInfo = await ToolkitInfo.lookup(resolvedEnvironment, sdk, toolkitStackName);
 
