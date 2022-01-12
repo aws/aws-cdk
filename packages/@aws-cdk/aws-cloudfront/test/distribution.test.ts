@@ -3,9 +3,9 @@ import '@aws-cdk/assert-internal/jest';
 import * as acm from '@aws-cdk/aws-certificatemanager';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as s3 from '@aws-cdk/aws-s3';
+import { testFutureBehavior, testLegacyBehavior } from '@aws-cdk/cdk-build-tools/lib/feature-flag';
 import { App, Duration, Stack } from '@aws-cdk/core';
 import { CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021 } from '@aws-cdk/cx-api';
-import { testFutureBehavior, testLegacyBehavior } from '@aws-cdk/cdk-build-tools/lib/feature-flag';
 import {
   CfnDistribution,
   Distribution,
@@ -595,7 +595,7 @@ describe('with Lambda@Edge functions', () => {
               EventType: 'origin-request',
               IncludeBody: true,
               LambdaFunctionARN: {
-                Ref: 'FunctionCurrentVersion4E2B2261477a5ae8059bbaa7813f752292c0f65e',
+                Ref: 'FunctionCurrentVersion4E2B2261f9b8c8b9c774af866281167c3323362d',
               },
             },
           ],
@@ -665,7 +665,7 @@ describe('with Lambda@Edge functions', () => {
               {
                 EventType: 'viewer-request',
                 LambdaFunctionARN: {
-                  Ref: 'FunctionCurrentVersion4E2B2261477a5ae8059bbaa7813f752292c0f65e',
+                  Ref: 'FunctionCurrentVersion4E2B2261f9b8c8b9c774af866281167c3323362d',
                 },
               },
             ],
@@ -771,7 +771,7 @@ describe('with Lambda@Edge functions', () => {
             {
               EventType: 'origin-request',
               LambdaFunctionARN: {
-                Ref: 'SingletonLambdasingletonforcloudfrontCurrentVersion0078406348a0962a52448a200cd0dbc0e22edb2a',
+                Ref: 'SingletonLambdasingletonforcloudfrontCurrentVersion00784063de5dfb6e46a8d2a0436a69c9a8bfabae',
               },
             },
           ],

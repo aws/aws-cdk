@@ -480,7 +480,10 @@ function determineV2BootstrapSource(args: { template?: string }): BootstrapSourc
 }
 
 function isFeatureEnabled(configuration: Configuration, featureFlag: string) {
-  return configuration.context.get(featureFlag) ?? cxapi.futureFlagDefault(featureFlag);
+  const context = configuration.context.get(featureFlag);
+  return cxapi.FUTURE_FLAGS_EXPIRED.includes(featureFlag)
+    ? true
+    : context ?? cxapi.futureFlagDefault(featureFlag);
 }
 
 /**
