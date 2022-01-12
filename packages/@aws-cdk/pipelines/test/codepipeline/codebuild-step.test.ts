@@ -128,6 +128,14 @@ test('envFromOutputs works even with very long stage and stack names', () => {
 });
 
 test('role passed it used for project and code build action', () => {
+  const projectRole = new iam.Role(
+    pipelineStack,
+    'ProjectRole',
+    {
+      roleName: 'ProjectRole',
+      assumedBy: new iam.ServicePrincipal('codebuild.amazon.com'),
+    },
+  );
   const buildRole = new iam.Role(
     pipelineStack,
     'BuildRole',
@@ -141,7 +149,8 @@ test('role passed it used for project and code build action', () => {
     synth: new cdkp.CodeBuildStep('Synth', {
       commands: ['/bin/true'],
       input: cdkp.CodePipelineSource.gitHub('test/test', 'main'),
-      role: buildRole,
+      role: projectRole,
+      buildActionRole: buildRole,
     }),
   });
 
@@ -149,7 +158,7 @@ test('role passed it used for project and code build action', () => {
   Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
     ServiceRole: {
       'Fn::GetAtt': [
-        'BuildRole41B77417',
+        'ProjectRole5B707505',
         'Arn',
       ],
     },

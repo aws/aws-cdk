@@ -1,7 +1,7 @@
-import { Duration } from '@aws-cdk/core';
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
+import { Duration } from '@aws-cdk/core';
 import { ShellStep, ShellStepProps } from '../blueprint';
 
 /**
@@ -63,6 +63,13 @@ export interface CodeBuildStepProps extends ShellStepProps {
    * @default - A role is automatically created
    */
   readonly role?: iam.IRole;
+
+  /**
+   * Custom execution role to be used for the Code Build Action
+   *
+   * @default - A role is automatically created
+   */
+  readonly buildActionRole?: iam.IRole;
 
   /**
    * Changes to environment
@@ -141,6 +148,13 @@ export class CodeBuildStep extends ShellStep {
   public readonly role?: iam.IRole;
 
   /**
+   * Custom execution role to be used for the Code Build Action
+   *
+   * @default - A role is automatically created
+   */
+  readonly buildActionRole?: iam.IRole;
+
+  /**
    * Build environment
    *
    * @default - No value specified at construction time, use defaults
@@ -174,6 +188,7 @@ export class CodeBuildStep extends ShellStep {
     this.vpc = props.vpc;
     this.subnetSelection = props.subnetSelection;
     this.role = props.role;
+    this.buildActionRole = props.buildActionRole;
     this.rolePolicyStatements = props.rolePolicyStatements;
     this.securityGroups = props.securityGroups;
     this.timeout = props.timeout;
