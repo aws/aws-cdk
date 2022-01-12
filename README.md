@@ -21,7 +21,6 @@ The CDK is available in the following languages:
 
 * JavaScript, TypeScript ([Node.js ≥ 14.15.0](https://nodejs.org/download/release/latest-v14.x/))
   - We recommend using a version in [Active LTS](https://nodejs.org/en/about/releases/)
-  - ⚠️ versions `13.0.0` to `13.6.0` are not supported due to compatibility issues with our dependencies.
 * Python ([Python ≥ 3.6](https://www.python.org/downloads/))
 * Java ([Java ≥ 8](https://www.oracle.com/technetwork/java/javase/downloads/index.html) and [Maven ≥ 3.5.4](https://maven.apache.org/download.cgi))
 * .NET ([.NET Core ≥ 3.1](https://dotnet.microsoft.com/download))
@@ -78,7 +77,6 @@ For a detailed walkthrough, see the [tutorial](https://docs.aws.amazon.com/cdk/l
 
 ### At a glance
 Install or update the [AWS CDK CLI] from npm (requires [Node.js ≥ 14.15.0](https://nodejs.org/download/release/latest-v14.x/)). We recommend using a version in [Active LTS](https://nodejs.org/en/about/releases/)
-⚠️ versions `13.0.0` to `13.6.0` are not supported due to compatibility issues with our dependencies.
 
 ```console
 $ npm i -g aws-cdk
