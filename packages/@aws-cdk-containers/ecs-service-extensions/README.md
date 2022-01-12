@@ -111,7 +111,9 @@ which defines the main application (essential) container to run for the service.
 
 ### Logging using `awslogs` log driver
 
-If no observability extensions have been configured for a service, the ECS Service Extensions configure an `awslogs` log driver for the application container of the service to send the container logs to CloudWatch Logs. You can either provide a log group to the `Container` extension or one will be created for you by the CDK.
+If no observability extensions have been configured for a service, the ECS Service Extensions configures an `awslogs` log driver for the application container of the service to send the container logs to CloudWatch Logs.
+
+You can either provide a log group to the `Container` extension or one will be created for you by the CDK.
 
 Following is an example of an application with an `awslogs` log driver configured for the application container:
 
@@ -127,12 +129,15 @@ nameDescription.add(new Container({
   environment: {
     PORT: '80',
   },
-  // Optionally provide a log group to send the application container logs to (If not provided, a log group will be created on your behalf)
   logGroup: new awslogs.LogGroup(stack, 'MyLogGroup'),
 }));
 ```
 
-This logging behavior is supported by default if using CDK v1.140.0 or v2.6.0 and later. For enabling this behavior for previous versions, ensure that the `ECS_SERVICE_EXTENSIONS_ENABLE_DEFAULT_LOG_DRIVER` flag within the application stack context is set to true, like so:
+If a log group is not provided, no observability extensions have been created, and the `ECS_SERVICE_EXTENSIONS_ENABLE_DEFAULT_LOG_DRIVER` feature flag is enabled, then logging will be configured by default and a log group will be created for you.
+ 
+The `ECS_SERVICE_EXTENSIONS_ENABLE_DEFAULT_LOG_DRIVER` feature flag is enabled by default in any CDK apps that are created with CDK v1.140.0 or v2.8.0 and later.
+
+To enable default logging for previous versions, ensure that the `ECS_SERVICE_EXTENSIONS_ENABLE_DEFAULT_LOG_DRIVER` flag within the application stack context is set to true, like so:
 
 ```ts
 stack.node.setContext(cxapi.ECS_SERVICE_EXTENSIONS_ENABLE_DEFAULT_LOG_DRIVER, true);
