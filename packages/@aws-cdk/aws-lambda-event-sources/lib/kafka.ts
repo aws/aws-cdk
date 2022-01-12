@@ -4,13 +4,13 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import { Stack, Names } from '@aws-cdk/core';
+import { StreamEventSource, BaseStreamEventSourceProps } from './stream';
 import { Construct } from 'constructs';
-import { StreamEventSource, StreamEventSourceProps } from './stream';
 
 /**
  * Properties for a Kafka event source
  */
-export interface KafkaEventSourceProps extends StreamEventSourceProps {
+export interface KafkaEventSourceProps extends BaseStreamEventSourceProps{
   /**
    * The Kafka topic to subscribe to
    */
