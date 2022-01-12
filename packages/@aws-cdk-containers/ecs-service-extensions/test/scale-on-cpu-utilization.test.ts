@@ -174,7 +174,7 @@ describe('scale on cpu utilization', () => {
           maxTaskCount: 5,
         },
       });
-    }).toThrow('Cannot specify \'minTaskCount\' or \'maxTaskCount\' in the Service construct and also provide a  \'ScaleOnCpuUtilization\' extension. \'ScaleOnCpuUtilization\' is deprecated. Please only provide \'minTaskCount\' and \'maxTaskCount\'.');
+    }).toThrow('Cannot specify \'autoScaleTaskCount\' in the Service construct and also provide a  \'ScaleOnCpuUtilization\' extension. \'ScaleOnCpuUtilization\' is deprecated. Please only provide \'autoScaleTaskCount\'.');
   });
 
 });

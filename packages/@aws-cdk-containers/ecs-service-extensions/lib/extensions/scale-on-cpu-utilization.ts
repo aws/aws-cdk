@@ -135,7 +135,7 @@ export class ScaleOnCpuUtilization extends ServiceExtension {
   // once it is created.
   public useService(service: ecs.Ec2Service | ecs.FargateService) {
     if (this.parentService.scalableTaskCount) {
-      throw Error('Cannot specify \'minTaskCount\' or \'maxTaskCount\' in the Service construct and also provide a  \'ScaleOnCpuUtilization\' extension. \'ScaleOnCpuUtilization\' is deprecated. Please only provide \'minTaskCount\' and \'maxTaskCount\'.');
+      throw Error('Cannot specify \'autoScaleTaskCount\' in the Service construct and also provide a  \'ScaleOnCpuUtilization\' extension. \'ScaleOnCpuUtilization\' is deprecated. Please only provide \'autoScaleTaskCount\'.');
     }
     const scalingTarget = service.autoScaleTaskCount({
       minCapacity: this.minTaskCount,
