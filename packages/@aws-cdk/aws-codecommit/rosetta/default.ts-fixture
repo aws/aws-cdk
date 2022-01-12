@@ -1,0 +1,13 @@
+// Fixture with packages imported, but nothing else
+import { Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
+import * as codecommit from '@aws-cdk/aws-codecommit';
+import * as codebuild from '@aws-cdk/aws-codebuild';
+import * as path from 'path';
+
+class Fixture extends Stack {
+  constructor(scope: Construct, id: string) {
+    super(scope, id);
+    /// here
+  }
+}
