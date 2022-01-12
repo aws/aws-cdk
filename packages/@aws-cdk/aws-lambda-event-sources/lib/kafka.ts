@@ -50,6 +50,10 @@ export enum AuthenticationMethod {
    * BASIC_AUTH (SASL/PLAIN) authentication method for your Kafka cluster
    */
   BASIC_AUTH = 'BASIC_AUTH',
+  /**
+   * CLIENT_CERTIFICATE_TLS_AUTH (mTLS) authentication method for your Kafka cluster
+   */
+  CLIENT_CERTIFICATE_TLS_AUTH = 'CLIENT_CERTIFICATE_TLS_AUTH',
 }
 
 /**
@@ -209,6 +213,9 @@ export class SelfManagedKafkaEventSource extends StreamEventSource {
     switch (this.innerProps.authenticationMethod) {
       case AuthenticationMethod.BASIC_AUTH:
         authType = lambda.SourceAccessConfigurationType.BASIC_AUTH;
+        break;
+      case AuthenticationMethod.CLIENT_CERTIFICATE_TLS_AUTH:
+        authType = lambda.SourceAccessConfigurationType.CLIENT_CERTIFICATE_TLS_AUTH;
         break;
       case AuthenticationMethod.SASL_SCRAM_256_AUTH:
         authType = lambda.SourceAccessConfigurationType.SASL_SCRAM_256_AUTH;
