@@ -1,4 +1,5 @@
 import * as cdk from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import { CfnLaunchTemplate } from '../ec2.generated';
 import { Instance } from '../instance';
 import { LaunchTemplate } from '../launch-template';
@@ -90,7 +91,11 @@ export class InstanceRequireImdsv2Aspect extends RequireImdsv2Aspect {
         },
       },
     });
-    launchTemplate.launchTemplateName = cdk.Names.uniqueId(launchTemplate);
+    if (node.node.tryGetContext(cxapi.EC2_UNIQUE_IMDSV2_LAUNCH_TEMPLATE_NAME)) {
+      launchTemplate.launchTemplateName = cdk.Names.uniqueId(launchTemplate);
+    } else {
+      launchTemplate.launchTemplateName = `${node.node.id}LaunchTemplate`;
+    }
     node.instance.launchTemplate = {
       launchTemplateName: launchTemplate.launchTemplateName,
       version: launchTemplate.getAtt('LatestVersionNumber').toString(),

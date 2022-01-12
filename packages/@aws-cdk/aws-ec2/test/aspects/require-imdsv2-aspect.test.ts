@@ -5,6 +5,7 @@ import {
 } from '@aws-cdk/assert-internal';
 import '@aws-cdk/assert-internal/jest';
 import * as cdk from '@aws-cdk/core';
+import * as cxapi from '@aws-cdk/cx-api';
 import {
   CfnLaunchTemplate,
   Instance,
@@ -136,7 +137,7 @@ describe('RequireImdsv2Aspect', () => {
       });
     });
 
-    test('launch template name is unique', () => {
+    test('launch template name is unique with feature flag', () => {
       // GIVEN
       const otherStack = new cdk.Stack(app, 'OtherStack');
       const otherVpc = new Vpc(otherStack, 'OtherVpc');
@@ -145,15 +146,18 @@ describe('RequireImdsv2Aspect', () => {
         instanceType: new InstanceType('t2.micro'),
         machineImage: MachineImage.latestAmazonLinux(),
       });
-      const instance = new Instance(stack, 'Instance', {
-        vpc,
+      const imdsv2Stack = new cdk.Stack(app, 'RequireImdsv2Stack');
+      imdsv2Stack.node.setContext(cxapi.EC2_UNIQUE_IMDSV2_LAUNCH_TEMPLATE_NAME, true);
+      const imdsv2Vpc = new Vpc(imdsv2Stack, 'Vpc');
+      const instance = new Instance(imdsv2Stack, 'Instance', {
+        vpc: imdsv2Vpc,
         instanceType: new InstanceType('t2.micro'),
         machineImage: MachineImage.latestAmazonLinux(),
       });
       const aspect = new InstanceRequireImdsv2Aspect();
 
       // WHEN
-      cdk.Aspects.of(stack).add(aspect);
+      cdk.Aspects.of(imdsv2Stack).add(aspect);
       cdk.Aspects.of(otherStack).add(aspect);
       app.synth();
 
@@ -163,6 +167,27 @@ describe('RequireImdsv2Aspect', () => {
       expect(launchTemplate).toBeDefined();
       expect(otherLaunchTemplate).toBeDefined();
       expect(launchTemplate.launchTemplateName !== otherLaunchTemplate.launchTemplateName);
+    });
+
+    test('launch template name uses legacy id without feature flag', () => {
+      // GIVEN
+      const imdsv2Stack = new cdk.Stack(app, 'RequireImdsv2Stack');
+      imdsv2Stack.node.setContext(cxapi.EC2_UNIQUE_IMDSV2_LAUNCH_TEMPLATE_NAME, false);
+      const imdsv2Vpc = new Vpc(imdsv2Stack, 'Vpc');
+      const instance = new Instance(imdsv2Stack, 'Instance', {
+        vpc: imdsv2Vpc,
+        instanceType: new InstanceType('t2.micro'),
+        machineImage: MachineImage.latestAmazonLinux(),
+      });
+      const aspect = new InstanceRequireImdsv2Aspect();
+
+      // WHEN
+      cdk.Aspects.of(imdsv2Stack).add(aspect);
+      app.synth();
+
+      // THEN
+      const launchTemplate = instance.node.tryFindChild('LaunchTemplate') as LaunchTemplate;
+      expect(launchTemplate.launchTemplateName).toEqual(`${instance.node.id}LaunchTemplate`);
     });
   });
 
