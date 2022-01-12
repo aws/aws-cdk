@@ -740,13 +740,19 @@ export interface ClusterProps extends ClusterOptions {
    */
   readonly defaultCapacityType?: DefaultCapacityType;
 
-
   /**
    * The IAM role to pass to the Kubectl Lambda Handler.
    *
    * @default - Default Lambda IAM Execution Role
    */
   readonly kubectlLambdaRole?: iam.IRole;
+
+  /**
+   * The tags assigned to the EKS cluster
+   *
+   * @default - none
+   */
+  readonly tags?: { [key: string]: string };
 }
 
 /**
@@ -1368,6 +1374,7 @@ export class Cluster extends ClusterBase {
       subnets: placeClusterHandlerInVpc ? privateSubnets : undefined,
       clusterHandlerSecurityGroup: this.clusterHandlerSecurityGroup,
       onEventLayer: this.onEventLayer,
+      tags: props.tags,
     });
 
     if (this.endpointAccess._config.privateAccess && privateSubnets.length !== 0) {

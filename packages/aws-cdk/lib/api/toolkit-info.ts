@@ -1,5 +1,5 @@
 import * as cxapi from '@aws-cdk/cx-api';
-import * as colors from 'colors/safe';
+import * as chalk from 'chalk';
 import { debug, warning } from '../logging';
 import { ISDK } from './aws-auth';
 import { BOOTSTRAP_VERSION_OUTPUT, BUCKET_DOMAIN_NAME_OUTPUT, BUCKET_NAME_OUTPUT } from './bootstrap';
@@ -45,13 +45,13 @@ export abstract class ToolkitInfo {
     const stack = await stabilizeStack(cfn, stackName ?? DEFAULT_TOOLKIT_STACK_NAME);
     if (!stack) {
       debug('The environment %s doesn\'t have the CDK toolkit stack (%s) installed. Use %s to setup your environment for use with the toolkit.',
-        environment.name, stackName, colors.blue(`cdk bootstrap "${environment.name}"`));
+        environment.name, stackName, chalk.blue(`cdk bootstrap "${environment.name}"`));
       return ToolkitInfo.bootstrapStackNotFoundInfo(sdk);
     }
     if (stack.stackStatus.isCreationFailure) {
       // Treat a "failed to create" bootstrap stack as an absent one.
       debug('The environment %s has a CDK toolkit stack (%s) that failed to create. Use %s to try provisioning it again.',
-        environment.name, stackName, colors.blue(`cdk bootstrap "${environment.name}"`));
+        environment.name, stackName, chalk.blue(`cdk bootstrap "${environment.name}"`));
       return ToolkitInfo.bootstrapStackNotFoundInfo(sdk);
     }
 
@@ -70,27 +70,14 @@ export abstract class ToolkitInfo {
     return new BootstrapStackNotFoundInfo(sdk, 'This deployment requires a bootstrap stack with a known name; pass \'--toolkit-stack-name\' or switch to using the \'DefaultStackSynthesizer\' (see https://docs.aws.amazon.com/cdk/latest/guide/bootstrapping.html)');
   }
 
-  public abstract readonly found: boolean;
-  public abstract readonly bucketUrl: string;
-  public abstract readonly bucketName: string;
-  public abstract readonly version: number;
-  public abstract readonly bootstrapStack: CloudFormationStack;
-
-  private readonly ssmCache = new Map<string, number>();
-
-  constructor(protected readonly sdk: ISDK) {
-  }
-  public abstract validateVersion(expectedVersion: number, ssmParameterName: string | undefined): Promise<void>;
-  public abstract prepareEcrRepository(repositoryName: string): Promise<EcrRepositoryInfo>;
-
   /**
    * Read a version from an SSM parameter, cached
    */
-  protected async versionFromSsmParameter(parameterName: string): Promise<number> {
-    const existing = this.ssmCache.get(parameterName);
+  public static async versionFromSsmParameter(sdk: ISDK, parameterName: string, ssmCache?: Map<string, number>): Promise<number> {
+    const existing = ssmCache?.get(parameterName);
     if (existing !== undefined) { return existing; }
 
-    const ssm = this.sdk.ssm();
+    const ssm = sdk.ssm();
 
     try {
       const result = await ssm.getParameter({ Name: parameterName }).promise();
@@ -100,7 +87,7 @@ export abstract class ToolkitInfo {
         throw new Error(`SSM parameter ${parameterName} not a number: ${result.Parameter?.Value}`);
       }
 
-      this.ssmCache.set(parameterName, asNumber);
+      ssmCache?.set(parameterName, asNumber);
       return asNumber;
     } catch (e) {
       if (e.code === 'ParameterNotFound') {
@@ -109,6 +96,18 @@ export abstract class ToolkitInfo {
       throw e;
     }
   }
+
+  protected readonly ssmCache = new Map<string, number>();
+  public abstract readonly found: boolean;
+  public abstract readonly bucketUrl: string;
+  public abstract readonly bucketName: string;
+  public abstract readonly version: number;
+  public abstract readonly bootstrapStack: CloudFormationStack;
+
+  constructor(protected readonly sdk: ISDK) {
+  }
+  public abstract validateVersion(expectedVersion: number, ssmParameterName: string | undefined): Promise<void>;
+  public abstract prepareEcrRepository(repositoryName: string): Promise<EcrRepositoryInfo>;
 }
 
 /**
@@ -155,7 +154,7 @@ class ExistingToolkitInfo extends ToolkitInfo {
 
     if (ssmParameterName !== undefined) {
       try {
-        version = await this.versionFromSsmParameter(ssmParameterName);
+        version = await ToolkitInfo.versionFromSsmParameter(this.sdk, ssmParameterName, this.ssmCache);
       } catch (e) {
         if (e.code !== 'AccessDeniedException') { throw e; }
 
@@ -266,7 +265,7 @@ class BootstrapStackNotFoundInfo extends ToolkitInfo {
 
     let version: number;
     try {
-      version = await this.versionFromSsmParameter(ssmParameterName);
+      version = await ToolkitInfo.versionFromSsmParameter(this.sdk, ssmParameterName, this.ssmCache);
     } catch (e) {
       if (e.code !== 'AccessDeniedException') { throw e; }
 

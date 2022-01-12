@@ -25,9 +25,9 @@ class TestStack extends cdk.Stack {
       destinations: [new destinations.S3Bucket(bucket)],
     });
     topicRule.addAction(
-      new actions.FirehoseStreamAction(stream, {
+      new actions.FirehosePutRecordAction(stream, {
         batchMode: true,
-        recordSeparator: actions.FirehoseStreamRecordSeparator.NEWLINE,
+        recordSeparator: actions.FirehoseRecordSeparator.NEWLINE,
       }),
     );
   }

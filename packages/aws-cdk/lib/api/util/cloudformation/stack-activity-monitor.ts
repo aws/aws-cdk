@@ -2,7 +2,7 @@ import * as util from 'util';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as aws from 'aws-sdk';
-import * as colors from 'colors/safe';
+import * as chalk from 'chalk';
 import { error, logLevel, LogLevel, setLogLevel } from '../../../logging';
 import { RewritableBlock } from '../display';
 
@@ -508,13 +508,13 @@ export class HistoryActivityPrinter extends ActivityPrinterBase {
   private printOne(activity: StackActivity, progress?: boolean) {
     const e = activity.event;
     const color = colorFromStatusResult(e.ResourceStatus);
-    let reasonColor = colors.cyan;
+    let reasonColor = chalk.cyan;
 
     let stackTrace = '';
     const md = activity.metadata;
     if (md && e.ResourceStatus && e.ResourceStatus.indexOf('FAILED') !== -1) {
       stackTrace = md.entry.trace ? `\n\t${md.entry.trace.join('\n\t\\_ ')}` : '';
-      reasonColor = colors.red;
+      reasonColor = chalk.red;
     }
 
     const resourceName = md ? md.constructPath : (e.LogicalResourceId || '');
@@ -529,9 +529,9 @@ export class HistoryActivityPrinter extends ActivityPrinterBase {
         new Date(e.Timestamp).toLocaleTimeString(),
         color(padRight(STATUS_WIDTH, (e.ResourceStatus || '').substr(0, STATUS_WIDTH))), // pad left and trim
         padRight(this.props.resourceTypeColumnWidth, e.ResourceType || ''),
-        color(colors.bold(resourceName)),
+        color(chalk.bold(resourceName)),
         logicalId,
-        reasonColor(colors.bold(e.ResourceStatusReason ? e.ResourceStatusReason : '')),
+        reasonColor(chalk.bold(e.ResourceStatusReason ? e.ResourceStatusReason : '')),
         reasonColor(stackTrace),
       ),
     );
@@ -564,7 +564,7 @@ export class HistoryActivityPrinter extends ActivityPrinterBase {
     if (Object.keys(this.resourcesInProgress).length > 0) {
       this.stream.write(util.format('%s Currently in progress: %s\n',
         this.progress(),
-        colors.bold(Object.keys(this.resourcesInProgress).join(', '))));
+        chalk.bold(Object.keys(this.resourcesInProgress).join(', '))));
     }
 
     // We cheat a bit here. To prevent printInProgress() from repeatedly triggering,
@@ -625,7 +625,7 @@ export class CurrentActivityPrinter extends ActivityPrinterBase {
         padLeft(TIMESTAMP_WIDTH, new Date(res.event.Timestamp).toLocaleTimeString()),
         color(padRight(STATUS_WIDTH, (res.event.ResourceStatus || '').substr(0, STATUS_WIDTH))),
         padRight(this.props.resourceTypeColumnWidth, res.event.ResourceType || ''),
-        color(colors.bold(shorten(40, resourceName))),
+        color(chalk.bold(shorten(40, resourceName))),
         this.failureReasonOnNextLine(res));
     }));
 
@@ -650,7 +650,7 @@ export class CurrentActivityPrinter extends ActivityPrinterBase {
         continue;
       }
 
-      lines.push(util.format(colors.red('%s | %s | %s | %s%s') + '\n',
+      lines.push(util.format(chalk.red('%s | %s | %s | %s%s') + '\n',
         padLeft(TIMESTAMP_WIDTH, new Date(failure.event.Timestamp).toLocaleTimeString()),
         padRight(STATUS_WIDTH, (failure.event.ResourceStatus || '').substr(0, STATUS_WIDTH)),
         padRight(this.props.resourceTypeColumnWidth, failure.event.ResourceType || ''),
@@ -659,7 +659,7 @@ export class CurrentActivityPrinter extends ActivityPrinterBase {
 
       const trace = failure.metadata?.entry?.trace;
       if (trace) {
-        lines.push(colors.red(`\t${trace.join('\n\t\\_ ')}\n`));
+        lines.push(chalk.red(`\t${trace.join('\n\t\\_ ')}\n`));
       }
     }
 
@@ -678,14 +678,14 @@ export class CurrentActivityPrinter extends ActivityPrinterBase {
     const partialChar = PARTIAL_BLOCK[Math.floor(remainder * PARTIAL_BLOCK.length)];
     const filler = '·'.repeat(innerWidth - Math.floor(chars) - (partialChar ? 1 : 0));
 
-    const color = this.rollingBack ? colors.yellow : colors.green;
+    const color = this.rollingBack ? chalk.yellow : chalk.green;
 
     return '[' + color(fullChars + partialChar) + filler + `] (${this.resourcesDone}/${this.resourcesTotal})`;
   }
 
   private failureReasonOnNextLine(activity: StackActivity) {
     return hasErrorMessage(activity.event.ResourceStatus ?? '')
-      ? `\n${' '.repeat(TIMESTAMP_WIDTH + STATUS_WIDTH + 6)}${colors.red(activity.event.ResourceStatusReason ?? '')}`
+      ? `\n${' '.repeat(TIMESTAMP_WIDTH + STATUS_WIDTH + 6)}${chalk.red(activity.event.ResourceStatusReason ?? '')}`
       : '';
   }
 }
@@ -702,43 +702,43 @@ function hasErrorMessage(status: string) {
 
 function colorFromStatusResult(status?: string) {
   if (!status) {
-    return colors.reset;
+    return chalk.reset;
   }
 
   if (status.indexOf('FAILED') !== -1) {
-    return colors.red;
+    return chalk.red;
   }
   if (status.indexOf('ROLLBACK') !== -1) {
-    return colors.yellow;
+    return chalk.yellow;
   }
   if (status.indexOf('COMPLETE') !== -1) {
-    return colors.green;
+    return chalk.green;
   }
 
-  return colors.reset;
+  return chalk.reset;
 }
 
 function colorFromStatusActivity(status?: string) {
   if (!status) {
-    return colors.reset;
+    return chalk.reset;
   }
 
   if (status.endsWith('_FAILED')) {
-    return colors.red;
+    return chalk.red;
   }
 
   if (status.startsWith('CREATE_') || status.startsWith('UPDATE_')) {
-    return colors.green;
+    return chalk.green;
   }
   // For stacks, it may also be 'UPDDATE_ROLLBACK_IN_PROGRESS'
   if (status.indexOf('ROLLBACK_') !== -1) {
-    return colors.yellow;
+    return chalk.yellow;
   }
   if (status.startsWith('DELETE_')) {
-    return colors.yellow;
+    return chalk.yellow;
   }
 
-  return colors.reset;
+  return chalk.reset;
 }
 
 function shorten(maxWidth: number, p: string) {

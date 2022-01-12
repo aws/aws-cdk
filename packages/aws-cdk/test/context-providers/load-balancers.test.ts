@@ -40,7 +40,7 @@ describe('utilities', () => {
       });
     });
 
-    const elbv2 = await (await mockSDK.forEnvironment()).elbv2();
+    const elbv2 = (await mockSDK.forEnvironment()).sdk.elbv2();
 
     const resourceTagsOut: Record<string, aws.ELBv2.TagDescription> = {};
     for await (const tagDescription of describeTags(elbv2, Object.keys(resourceTags))) {
@@ -68,7 +68,7 @@ describe('utilities', () => {
       });
     });
 
-    const elbv2 = await (await mockSDK.forEnvironment()).elbv2();
+    const elbv2 = (await mockSDK.forEnvironment()).sdk.elbv2();
 
     const listenerArnsFromPages = Array<string>();
     for await (const listener of describeListenersByLoadBalancerArn(elbv2, ['arn:load-balancer'])) {
@@ -95,7 +95,7 @@ describe('utilities', () => {
       });
     });
 
-    const elbv2 = await (await mockSDK.forEnvironment()).elbv2();
+    const elbv2 = (await mockSDK.forEnvironment()).sdk.elbv2();
     const loadBalancerArnsFromPages = (await describeLoadBalancers(elbv2, {})).map(l => l.LoadBalancerArn!);
 
     expect(loadBalancerArnsFromPages).toEqual(loadBalancerArns);

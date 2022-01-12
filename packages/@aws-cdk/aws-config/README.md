@@ -59,16 +59,15 @@ For example, you could create a managed rule that checks whether active access k
 within the number of days specified.
 
 ```ts
-import * as config from '@aws-cdk/aws-config';
-import * as cdk from '@aws-cdk/core';
-
 // https://docs.aws.amazon.com/config/latest/developerguide/access-keys-rotated.html
 new config.ManagedRule(this, 'AccessKeysRotated', {
   identifier: config.ManagedRuleIdentifiers.ACCESS_KEYS_ROTATED,
   inputParameters: {
-     maxAccessKeyAge: 60 // default is 90 days
+    maxAccessKeyAge: 60, // default is 90 days
   },
-  maximumExecutionFrequency: config.MaximumExecutionFrequency.TWELVE_HOURS // default is 24 hours
+
+  // default is 24 hours
+  maximumExecutionFrequency: config.MaximumExecutionFrequency.TWELVE_HOURS,
 });
 ```
 
@@ -82,9 +81,6 @@ The following higher level constructs for AWS managed rules are available.
 Checks whether your active access keys are rotated within the number of days specified.
 
 ```ts
-import * as config from '@aws-cdk/aws-config';
-import * as cdk from '@aws-cdk/aws-cdk';
-
 // compliant if access keys have been rotated within the last 90 days
 new config.AccessKeysRotated(this, 'AccessKeyRotated');
 ```
@@ -95,12 +91,9 @@ Checks whether your CloudFormation stack's actual configuration differs, or has 
 from it's expected configuration. 
 
 ```ts
-import * as config from '@aws-cdk/aws-config';
-import * as cdk from '@aws-cdk/aws-cdk';
-
 // compliant if stack's status is 'IN_SYNC'
 // non-compliant if the stack's drift status is 'DRIFTED'
-new config.CloudFormationStackDriftDetectionCheck(stack, 'Drift', {
+new config.CloudFormationStackDriftDetectionCheck(this, 'Drift', {
   ownStackOnly: true, // checks only the stack containing the rule
 });
 ```
@@ -110,17 +103,14 @@ new config.CloudFormationStackDriftDetectionCheck(stack, 'Drift', {
 Checks whether your CloudFormation stacks are sending event notifications to a SNS topic.
 
 ```ts
-import * as config from '@aws-cdk/aws-config';
-import * as cdk from '@aws-cdk/aws-cdk';
-
 // topics to which CloudFormation stacks may send event notifications
-const topic1 = new sns.Topic(stack, 'AllowedTopic1');
-const topic2 = new sns.Topic(stack, 'AllowedTopic2');
+const topic1 = new sns.Topic(this, 'AllowedTopic1');
+const topic2 = new sns.Topic(this, 'AllowedTopic2');
 
 // non-compliant if CloudFormation stack does not send notifications to 'topic1' or 'topic2'
 new config.CloudFormationStackNotificationCheck(this, 'NotificationCheck', {
   topics: [topic1, topic2],
-})
+});
 ```
 
 ### Custom rules
@@ -140,13 +130,15 @@ To create a custom rule, define a `CustomRule` and specify the Lambda Function
 to run and the trigger types.
 
 ```ts
-import * as config from '@aws-cdk/aws-config';
+declare const evalComplianceFn: lambda.Function;
 
 new config.CustomRule(this, 'CustomRule', {
   lambdaFunction: evalComplianceFn,
   configurationChanges: true,
   periodic: true,
-  maximumExecutionFrequency: config.MaximumExecutionFrequency.SIX_HOURS, // default is 24 hours
+
+  // default is 24 hours
+  maximumExecutionFrequency: config.MaximumExecutionFrequency.SIX_HOURS,
 });
 ```
 
@@ -165,22 +157,21 @@ Use the `RuleScope` APIs (`fromResource()`, `fromResources()` or `fromTag()`) to
 the scope of both managed and custom rules:
 
 ```ts
-import * as config from '@aws-cdk/aws-config';
-
 const sshRule = new config.ManagedRule(this, 'SSH', {
   identifier: config.ManagedRuleIdentifiers.EC2_SECURITY_GROUPS_INCOMING_SSH_DISABLED,
   ruleScope: config.RuleScope.fromResource(config.ResourceType.EC2_SECURITY_GROUP, 'sg-1234567890abcdefgh'), // restrict to specific security group
 });
 
+declare const evalComplianceFn: lambda.Function;
 const customRule = new config.CustomRule(this, 'Lambda', {
   lambdaFunction: evalComplianceFn,
-  configurationChanges: true
+  configurationChanges: true,
   ruleScope: config.RuleScope.fromResources([config.ResourceType.CLOUDFORMATION_STACK, config.ResourceType.S3_BUCKET]), // restrict to all CloudFormation stacks and S3 buckets
 });
 
 const tagRule = new config.CustomRule(this, 'CostCenterTagRule', {
   lambdaFunction: evalComplianceFn,
-  configurationChanges: true
+  configurationChanges: true,
   ruleScope: config.RuleScope.fromTag('Cost Center', 'MyApp'), // restrict to a specific tag
 });
 ```
@@ -194,10 +185,6 @@ Use the `onComplianceChange()` APIs to trigger an EventBridge event when a compl
 of your AWS Config Rule fails:
 
 ```ts
-import * as config from '@aws-cdk/aws-config';
-import * as sns from '@aws-cdk/aws-sns';
-import * as targets from '@aws-cdk/aws-events-targets';
-
 // Topic to which compliance notification events will be published
 const complianceTopic = new sns.Topic(this, 'ComplianceTopic');
 
@@ -211,15 +198,13 @@ Use the `onReEvaluationStatus()` status to trigger an EventBridge event when an 
 rule is re-evaluated.
 
 ```ts
-import * as config from '@aws-cdk/aws-config';
-import * as sns from '@aws-cdk/aws-sns';
-import * as targets from '@aws-cdk/aws-events-targets';
-
 // Topic to which re-evaluation notification events will be published
 const reEvaluationTopic = new sns.Topic(this, 'ComplianceTopic');
+
+const rule = new config.CloudFormationStackDriftDetectionCheck(this, 'Drift');
 rule.onReEvaluationStatus('ReEvaluationEvent', {
   target: new targets.SnsTopic(reEvaluationTopic),
-})
+});
 ```
 
 ### Example
@@ -228,11 +213,6 @@ The following example creates a custom rule that evaluates whether EC2 instances
 Compliance events are published to an SNS topic.
 
 ```ts
-import * as config from '@aws-cdk/aws-config';
-import * as lambda from '@aws-cdk/aws-lambda';
-import * as sns from '@aws-cdk/aws-sns';
-import * as targets from '@aws-cdk/aws-events-targets';
-
 // Lambda function containing logic that evaluates compliance with the rule.
 const evalComplianceFn = new lambda.Function(this, 'CustomFunction', {
   code: lambda.AssetCode.fromInline('exports.handler = (event) => console.log(event);'),
@@ -244,7 +224,7 @@ const evalComplianceFn = new lambda.Function(this, 'CustomFunction', {
 const customRule = new config.CustomRule(this, 'Custom', {
   configurationChanges: true,
   lambdaFunction: evalComplianceFn,
-  ruleScope: config.RuleScope.fromResource([config.ResourceType.EC2_INSTANCE]),
+  ruleScope: config.RuleScope.fromResource(config.ResourceType.EC2_INSTANCE),
 });
 
 // A rule to detect stack drifts

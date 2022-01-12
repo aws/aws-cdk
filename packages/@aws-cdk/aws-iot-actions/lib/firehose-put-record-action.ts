@@ -7,7 +7,7 @@ import { singletonActionRole } from './private/role';
 /**
  * Record Separator to be used to separate records.
  */
-export enum FirehoseStreamRecordSeparator {
+export enum FirehoseRecordSeparator {
   /**
    * Separate by a new line
    */
@@ -32,7 +32,7 @@ export enum FirehoseStreamRecordSeparator {
 /**
  * Configuration properties of an action for the Kinesis Data Firehose stream.
  */
-export interface FirehoseStreamActionProps extends CommonActionProps {
+export interface FirehosePutRecordActionProps extends CommonActionProps {
   /**
    * Whether to deliver the Kinesis Data Firehose stream as a batch by using `PutRecordBatch`.
    * When batchMode is true and the rule's SQL statement evaluates to an Array, each Array
@@ -48,14 +48,14 @@ export interface FirehoseStreamActionProps extends CommonActionProps {
    *
    * @default - none -- the stream does not use a separator
    */
-  readonly recordSeparator?: FirehoseStreamRecordSeparator;
+  readonly recordSeparator?: FirehoseRecordSeparator;
 }
 
 
 /**
  * The action to put the record from an MQTT message to the Kinesis Data Firehose stream.
  */
-export class FirehoseStreamAction implements iot.IAction {
+export class FirehosePutRecordAction implements iot.IAction {
   private readonly batchMode?: boolean;
   private readonly recordSeparator?: string;
   private readonly role?: iam.IRole;
@@ -64,7 +64,7 @@ export class FirehoseStreamAction implements iot.IAction {
    * @param stream The Kinesis Data Firehose stream to which to put records.
    * @param props Optional properties to not use default
    */
-  constructor(private readonly stream: firehose.IDeliveryStream, props: FirehoseStreamActionProps = {}) {
+  constructor(private readonly stream: firehose.IDeliveryStream, props: FirehosePutRecordActionProps = {}) {
     this.batchMode = props.batchMode;
     this.recordSeparator = props.recordSeparator;
     this.role = props.role;

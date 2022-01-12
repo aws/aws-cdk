@@ -27,6 +27,8 @@ phases:
       - /bin/bash ./scripts/transform.sh
   post_build:
     commands:
+      # Short-circuit: Don't run pack if the above build failed.
+      - '[ ${CODEBUILD_BUILD_SUCCEEDING:-0} -eq 1 ] || exit 1'
       - "[ -f .BUILD_COMPLETED ] && /bin/bash ./pack.sh"
       - /bin/bash ./scripts/cache-store.sh
 artifacts:

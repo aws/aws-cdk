@@ -38,11 +38,11 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@monocdk-experiment/rewrite-imports": "0.0.0",
-    "@types/jest": "^27.0.3",
+    "@types/jest": "^27.4.0",
     "@types/node": "^10.17.60",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "constructs": "^10.0.0",
-    "jest": "^27.4.5",
+    "jest": "^27.4.7",
     "monocdk": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "ts-jest": "^27.1.2"
@@ -52,7 +52,7 @@
   },
   "peerDependencies": {
     "constructs": "^10.0.0",
-    "jest": "^27.4.5",
+    "jest": "^27.4.7",
     "monocdk": "^0.0.0"
   },
   "repository": {

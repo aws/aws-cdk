@@ -20,56 +20,58 @@ Create a receipt rule set with rules and actions (actions can be found in the
 
 ```ts
 import * as s3 from '@aws-cdk/aws-s3';
-import * as ses from '@aws-cdk/aws-ses';
 import * as actions from '@aws-cdk/aws-ses-actions';
-import * as sns from '@aws-cdk/aws-sns';
 
-const bucket = new s3.Bucket(stack, 'Bucket');
-const topic = new sns.Topic(stack, 'Topic');
+const bucket = new s3.Bucket(this, 'Bucket');
+const topic = new sns.Topic(this, 'Topic');
 
-new ses.ReceiptRuleSet(stack, 'RuleSet', {
+new ses.ReceiptRuleSet(this, 'RuleSet', {
   rules: [
     {
       recipients: ['hello@aws.com'],
       actions: [
         new actions.AddHeader({
           name: 'X-Special-Header',
-          value: 'aws'
+          value: 'aws',
         }),
         new actions.S3({
           bucket,
           objectKeyPrefix: 'emails/',
-          topic
-        })
+          topic,
+        }),
       ],
     },
     {
       recipients: ['aws.com'],
       actions: [
         new actions.Sns({
-          topic
-        })
-      ]
-    }
-  ]
+          topic,
+        }),
+      ],
+    },
+  ],
 });
 ```
 
 Alternatively, rules can be added to a rule set:
 
 ```ts
-const ruleSet = new ses.ReceiptRuleSet(this, 'RuleSet'):
+const ruleSet = new ses.ReceiptRuleSet(this, 'RuleSet');
 
 const awsRule = ruleSet.addRule('Aws', {
-  recipients: ['aws.com']
+  recipients: ['aws.com'],
 });
 ```
 
 And actions to rules:
 
 ```ts
+import * as actions from '@aws-cdk/aws-ses-actions';
+
+declare const awsRule: ses.ReceiptRule;
+declare const topic: sns.Topic;
 awsRule.addAction(new actions.Sns({
-  topic
+  topic,
 }));
 ```
 
@@ -81,7 +83,7 @@ A rule to drop spam can be added by setting `dropSpam` to `true`:
 
 ```ts
 new ses.ReceiptRuleSet(this, 'RuleSet', {
-  dropSpam: true
+  dropSpam: true,
 });
 ```
 
@@ -94,8 +96,8 @@ Create a receipt filter:
 
 ```ts
 new ses.ReceiptFilter(this, 'Filter', {
-  ip: '1.2.3.4/16' // Will be blocked
-})
+  ip: '1.2.3.4/16', // Will be blocked
+});
 ```
 
 An allow list filter is also available:
@@ -105,7 +107,7 @@ new ses.AllowListReceiptFilter(this, 'AllowList', {
   ips: [
     '10.0.0.0/16',
     '1.2.3.4/16',
-  ]
+  ],
 });
 ```
 
