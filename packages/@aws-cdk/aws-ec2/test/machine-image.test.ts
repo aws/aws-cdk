@@ -136,6 +136,7 @@ test('LookupMachineImage default search', () => {
       props: {
         account: '1234',
         region: 'testregion',
+        lookupRoleArn: 'arn:${AWS::Partition}:iam::1234:role/cdk-hnb659fds-lookup-role-1234-testregion',
         owners: ['amazon'],
         filters: {
           'name': ['bla*'],
@@ -169,6 +170,7 @@ test('cached lookups of Amazon Linux', () => {
       key: 'ssm:account=1234:parameterName=/aws/service/ami-amazon-linux-latest/amzn-ami-hvm-x86_64-gp2:region=testregion',
       props: {
         account: '1234',
+        lookupRoleArn: 'arn:${AWS::Partition}:iam::1234:role/cdk-hnb659fds-lookup-role-1234-testregion',
         region: 'testregion',
         parameterName: '/aws/service/ami-amazon-linux-latest/amzn-ami-hvm-x86_64-gp2',
       },

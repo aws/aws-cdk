@@ -566,7 +566,7 @@ describe('LaunchTemplate marketOptions', () => {
     });
 
     // THEN
-    expect(template.node.metadataEntry).toHaveLength(expectedErrors);
+    expect(template.node.metadata).toHaveLength(expectedErrors);
   });
 
   test('for bad duration', () => {
