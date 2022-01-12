@@ -90,7 +90,7 @@
     "aws-sdk": "^2.848.0",
     "aws-sdk-mock": "^5.5.1",
     "jest": "^27.4.7",
-    "nock": "^13.2.1",
+    "nock": "^13.2.2",
     "sinon": "^9.2.4"
   },
   "dependencies": {
