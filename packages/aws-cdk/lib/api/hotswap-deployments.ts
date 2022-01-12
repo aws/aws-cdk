@@ -39,7 +39,7 @@ export async function tryHotswapDeployment(
     account: resolvedEnv.account,
     region: resolvedEnv.region,
     partition: (await sdk.currentAccount()).partition,
-    urlSuffix: sdk.getEndpointSuffix(resolvedEnv.region),
+    urlSuffix: (region) => sdk.getEndpointSuffix(region),
     listStackResources,
   });
 

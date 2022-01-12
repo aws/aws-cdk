@@ -48,7 +48,7 @@ export interface EvaluateCloudFormationTemplateProps {
   readonly account: string;
   readonly region: string;
   readonly partition: string;
-  readonly urlSuffix: string;
+  readonly urlSuffix: (region: string) => string;
   readonly listStackResources: ListStackResources;
 }
 
@@ -59,7 +59,7 @@ export class EvaluateCloudFormationTemplate {
   private readonly account: string;
   private readonly region: string;
   private readonly partition: string;
-  private readonly urlSuffix: string;
+  private readonly urlSuffix: (region: string) => string;
   private cachedUrlSuffix: string | undefined;
 
   constructor(props: EvaluateCloudFormationTemplateProps) {
@@ -240,7 +240,7 @@ export class EvaluateCloudFormationTemplate {
     // first, check to see if the Ref is a Parameter who's value we have
     if (logicalId === 'AWS::URLSuffix') {
       if (!this.cachedUrlSuffix) {
-        this.cachedUrlSuffix = this.urlSuffix;
+        this.cachedUrlSuffix = this.urlSuffix(this.region);
       }
 
       return this.cachedUrlSuffix;
