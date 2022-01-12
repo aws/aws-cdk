@@ -1097,15 +1097,7 @@ You can configure [tag propagation on volume creation](https://docs.aws.amazon.c
 You can configure [EC2 Instance Metadata Service](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-metadata.html) options to either
 allow both IMDSv1 and IMDSv2 or enforce IMDSv2 when interacting with the IMDS.
 
----
-
-_**Note**: The following examples also set the `uniqueLaunchTemplateNames` property to `true`, which we highly recommend you to do for your applications.
-To require IMDSv2 on an instance, a Launch Template with an IMDS configuration that requires IMDSv2 is created and associated with the instance.
-By setting this property to `true`, the names generated for these Launch Templates will be made unique to avoid name collisions._
-
----
-
-To do this for a single `Instance`, you can use the `requireImdsv2Options` property.
+To do this for a single `Instance`, you can use the `requireImdsv2` property.
 The example below demonstrates IMDSv2 being required on a single `Instance`:
 
 ```ts
@@ -1120,12 +1112,7 @@ new ec2.Instance(this, 'Instance', {
 
   // ...
 
-  requireImdsv2Options: {
-    required: true,
-    
-    // It is highly recommend to set this property to true to avoid Launch Template name collisions.
-    uniqueLaunchTemplateNames: true,
-  },
+  requireImdsv2: true,
 });
 ```
 
@@ -1135,10 +1122,7 @@ to apply the operation to multiple instances or launch templates, respectively.
 The following example demonstrates how to use the `InstanceRequireImdsv2Aspect` to require IMDSv2 for all EC2 instances in a stack:
 
 ```ts
-const aspect = new ec2.InstanceRequireImdsv2Aspect({
-  // It is highly recommend to set this property to true to avoid Launch Template name collisions.
-  uniqueLaunchTemplateNames: true,
-});
+const aspect = new ec2.InstanceRequireImdsv2Aspect();
 Aspects.of(this).add(aspect);
 ```
 

@@ -136,27 +136,21 @@ describe('RequireImdsv2Aspect', () => {
       });
     });
 
-    test.each([
-      [true],
-      [false],
-    ])('launch template name is unique only when uniqueLaunchTemplateNames is true (uniqueLaunchTemplateNames=%s)', (unique) => {
+    test('launch template name is unique', () => {
       // GIVEN
-      const instanceId = 'Instance';
       const otherStack = new cdk.Stack(app, 'OtherStack');
       const otherVpc = new Vpc(otherStack, 'OtherVpc');
-      const otherInstance = new Instance(otherStack, instanceId, {
+      const otherInstance = new Instance(otherStack, 'OtherInstance', {
         vpc: otherVpc,
         instanceType: new InstanceType('t2.micro'),
         machineImage: MachineImage.latestAmazonLinux(),
       });
-      const instance = new Instance(stack, instanceId, {
+      const instance = new Instance(stack, 'Instance', {
         vpc,
         instanceType: new InstanceType('t2.micro'),
         machineImage: MachineImage.latestAmazonLinux(),
       });
-      const aspect = new InstanceRequireImdsv2Aspect({
-        uniqueLaunchTemplateNames: unique,
-      });
+      const aspect = new InstanceRequireImdsv2Aspect();
 
       // WHEN
       cdk.Aspects.of(stack).add(aspect);
@@ -168,11 +162,7 @@ describe('RequireImdsv2Aspect', () => {
       const otherLaunchTemplate = otherInstance.node.tryFindChild('LaunchTemplate') as LaunchTemplate;
       expect(launchTemplate).toBeDefined();
       expect(otherLaunchTemplate).toBeDefined();
-      if (unique) {
-        expect(stack.resolve(launchTemplate.launchTemplateName)).not.toEqual(otherStack.resolve(otherLaunchTemplate.launchTemplateName));
-      } else {
-        expect(stack.resolve(launchTemplate.launchTemplateName)).toEqual(otherStack.resolve(otherLaunchTemplate.launchTemplateName));
-      }
+      expect(launchTemplate.launchTemplateName !== otherLaunchTemplate.launchTemplateName);
     });
   });
 

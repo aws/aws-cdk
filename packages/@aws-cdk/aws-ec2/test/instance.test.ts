@@ -382,7 +382,7 @@ describe('instance', () => {
       vpc,
       machineImage: new AmazonLinuxImage(),
       instanceType: new InstanceType('t2.micro'),
-      requireImdsv2Options: { required: true },
+      requireImdsv2: true,
     });
 
     // Force stack synth so the InstanceRequireImdsv2Aspect is applied
