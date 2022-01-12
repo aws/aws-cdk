@@ -103,9 +103,12 @@ export class FargateService extends BaseService implements IFargateService {
    * Imports from the specified service ARN.
    */
   public static fromFargateServiceArn(scope: Construct, id: string, fargateServiceArn: string): IFargateService {
+    const resourceName = cdk.Stack.of(scope).splitArn(fargateServiceArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName as string;
+    const resourceNameSplit = resourceName.split('/');
+    const serviceName = resourceNameSplit.length === 1 ? resourceName : resourceNameSplit[1];
     class Import extends cdk.Resource implements IFargateService {
       public readonly serviceArn = fargateServiceArn;
-      public readonly serviceName = cdk.Stack.of(scope).splitArn(fargateServiceArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName as string;
+      public readonly serviceName = serviceName;
     }
     return new Import(scope, id);
   }

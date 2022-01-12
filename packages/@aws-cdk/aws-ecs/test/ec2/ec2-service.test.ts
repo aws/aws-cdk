@@ -54,9 +54,36 @@ describe('ec2 service', () => {
 
       expect(service.node.defaultChild).toBeDefined();
 
-
     });
 
+    test('token param', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      addDefaultCapacityProvider(cluster, stack, vpc);
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+
+      taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        memoryLimitMiB: 512,
+      });
+
+      const service = new ecs.Ec2Service(stack, 'Ec2Service', {
+        cluster,
+        taskDefinition,
+      });
+
+      expect(service.serviceArn).toContain(`service/${cluster.clusterName}/${service.serviceName}`);
+
+      const importService = ecs.Ec2Service.fromEc2ServiceAttributes(stack, 'importService', {
+        cluster: cluster,
+        serviceArn: service.serviceArn,
+      });
+      expect(importService.serviceArn).toContain(`service/${cluster.clusterName}/${service.serviceName}`);
+      expect(importService.serviceName).toEqual(service.serviceName);
+
+    });
     test('allows setting enable execute command', () => {
       // GIVEN
       const stack = new cdk.Stack();
@@ -3280,23 +3307,60 @@ describe('ec2 service', () => {
   });
 
   describe('When import an EC2 Service', () => {
-    test('with serviceArn', () => {
+    test('with old serviceArn', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const cluster = new ecs.Cluster(stack, 'EcsCluster');
+      const serviceArn = 'arn:aws:ecs:us-west-2:123456789012:service/my-http-service';
 
       // WHEN
       const service = ecs.Ec2Service.fromEc2ServiceAttributes(stack, 'EcsService', {
-        serviceArn: 'arn:aws:ecs:us-west-2:123456789012:service/my-http-service',
+        serviceArn: serviceArn,
         cluster,
       });
 
       // THEN
-      expect(service.serviceArn).toEqual('arn:aws:ecs:us-west-2:123456789012:service/my-http-service');
+      expect(service.serviceArn).toEqual(serviceArn);
       expect(service.serviceName).toEqual('my-http-service');
 
       expect(service.env.account).toEqual('123456789012');
       expect(service.env.region).toEqual('us-west-2');
+
+      // WHEN
+      const ecsService = ecs.Ec2Service.fromEc2ServiceArn(stack, 'EcsServiceArn',
+        serviceArn,
+      );
+      // THEN
+      expect(ecsService.serviceName).toEqual('my-http-service');
+      expect(ecsService.serviceArn).toEqual(serviceArn);
+
+    });
+
+    test('with new serviceArn', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const cluster = new ecs.Cluster(stack, 'EcsCluster');
+      const serviceArn = 'arn:aws:ecs:us-west-2:123456789012:service/cluster/my-http-service';
+
+      // WHEN
+      const service = ecs.Ec2Service.fromEc2ServiceAttributes(stack, 'EcsService', {
+        serviceArn: serviceArn,
+        cluster,
+      });
+
+      // THEN
+      expect(service.serviceArn).toEqual(serviceArn);
+      expect(service.serviceName).toEqual('my-http-service');
+
+      expect(service.env.account).toEqual('123456789012');
+      expect(service.env.region).toEqual('us-west-2');
+
+      const ecsService = ecs.Ec2Service.fromEc2ServiceArn(stack, 'EcsServiceArn',
+        serviceArn,
+      );
+      // THEN
+      expect(ecsService.serviceName).toEqual('my-http-service');
+      expect(ecsService.serviceArn).toEqual(serviceArn);
 
     });
 

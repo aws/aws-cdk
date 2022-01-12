@@ -426,12 +426,12 @@ export abstract class BaseService extends Resource
       Annotations.of(this).addWarning('taskDefinition and launchType are blanked out when using external deployment controller.');
     }
 
-    this.serviceArn = this.getResourceArnAttribute(this.resource.ref, {
+    this.serviceName = this.getResourceNameAttribute(this.resource.attrName);
+    this.serviceArn = Stack.of(this).formatArn({
       service: 'ecs',
       resource: 'service',
-      resourceName: `${props.cluster.clusterName}/${this.physicalName}`,
+      resourceName: `${props.cluster.clusterName}/${this.serviceName}`,
     });
-    this.serviceName = this.getResourceNameAttribute(this.resource.attrName);
 
     this.cluster = props.cluster;
 
