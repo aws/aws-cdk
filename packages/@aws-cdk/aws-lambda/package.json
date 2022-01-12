@@ -89,10 +89,10 @@
     "@aws-cdk/cfn2ts": "0.0.0",
     "@aws-cdk/cfnspec": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/aws-lambda": "^8.10.86",
-    "@types/jest": "^27.0.3",
-    "@types/lodash": "^4.14.177",
-    "jest": "^27.4.3",
+    "@types/aws-lambda": "^8.10.89",
+    "@types/jest": "^27.4.0",
+    "@types/lodash": "^4.14.178",
+    "jest": "^27.4.7",
     "lodash": "^4.17.21"
   },
   "dependencies": {
