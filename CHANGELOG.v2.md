@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.7.0](https://github.com/aws/aws-cdk/compare/v2.6.0...v2.7.0) (2022-01-12)
+
+
+### Features
+
+* **aws-ecs:** support runtime platform property for create fargate windows runtime. ([#17622](https://github.com/aws/aws-cdk/issues/17622)) ([fa8f2e2](https://github.com/aws/aws-cdk/commit/fa8f2e2180d60e5621d2ae9606a3d1b2dcb681d9)), closes [#17242](https://github.com/aws/aws-cdk/issues/17242)
+* **cli:** diff now uses the lookup Role for new-style synthesis ([#18277](https://github.com/aws/aws-cdk/issues/18277)) ([2256680](https://github.com/aws/aws-cdk/commit/225668050caef9bfdaa25b8ae984d3886108397f))
+* **eks:** cluster tagging ([#4995](https://github.com/aws/aws-cdk/issues/4995)) ([#18109](https://github.com/aws/aws-cdk/issues/18109)) ([304f5b6](https://github.com/aws/aws-cdk/commit/304f5b6974f1121a8a5ff802076dffe2eff9f407))
+* **iam:** generate AccessKeys ([#18180](https://github.com/aws/aws-cdk/issues/18180)) ([beb5706](https://github.com/aws/aws-cdk/commit/beb5706e0c80300c8adba2b75b573f6c6def3de6)), closes [#8432](https://github.com/aws/aws-cdk/issues/8432)
+* **lambda-event-sources:** adds `AuthenticationMethod.CLIENT_CERTIFICATE_TLS_AUTH` to kafka ([#17920](https://github.com/aws/aws-cdk/issues/17920)) ([93cd776](https://github.com/aws/aws-cdk/commit/93cd7769b7b68ab6985c357c4d2f2137bb631553))
+* **lambda-nodejs:** ES modules ([#18346](https://github.com/aws/aws-cdk/issues/18346)) ([e23b63f](https://github.com/aws/aws-cdk/commit/e23b63fc106c4781e3dd39a16d4a3e3c81bdd874)), closes [#13274](https://github.com/aws/aws-cdk/issues/13274)
+* **s3:** add EventBridge bucket notifications ([#18150](https://github.com/aws/aws-cdk/issues/18150)) ([912aeda](https://github.com/aws/aws-cdk/commit/912aeda295820920ed880b9c85a98c56421647b8)), closes [#18076](https://github.com/aws/aws-cdk/issues/18076)
+
+
+### Bug Fixes
+
+* **aws-lambda-event-sources:** unsupported properties for SelfManagedKafkaEventSource and ManagedKafkaEventSource ([#17965](https://github.com/aws/aws-cdk/issues/17965)) ([5ddaef4](https://github.com/aws/aws-cdk/commit/5ddaef491d7962616f75f170cf7547cd9229338f)), closes [#17934](https://github.com/aws/aws-cdk/issues/17934)
+* **cli:** assets are KMS-encrypted using wrong key ([#18340](https://github.com/aws/aws-cdk/issues/18340)) ([64ae9f3](https://github.com/aws/aws-cdk/commit/64ae9f3dc8a169ad0a7a2d02cb04f857debd3653)), closes [#17668](https://github.com/aws/aws-cdk/issues/17668) [#18262](https://github.com/aws/aws-cdk/issues/18262)
+* **cli:** breaks due to faulty version of `colors` ([#18324](https://github.com/aws/aws-cdk/issues/18324)) ([43bf9ae](https://github.com/aws/aws-cdk/commit/43bf9aec0b3c5e06d5382b29f4e8e0c91cd796ca))
+* **cli:** breaks due to faulty version of `colors` ([#18324](https://github.com/aws/aws-cdk/issues/18324)) ([ddc2bc6](https://github.com/aws/aws-cdk/commit/ddc2bc6ae64fe14ddb4a03122c90dfcf954f149f))
+* **pipelines:** `DockerCredential.dockerHub()` silently fails auth ([#18313](https://github.com/aws/aws-cdk/issues/18313)) ([c2c87d9](https://github.com/aws/aws-cdk/commit/c2c87d9dd861a25dcbd9aa830e81ecb4d76ba509)), closes [/github.com/moby/moby/blob/1e71c6cffedb79e3def696652753ea43cdc47b99/registry/config.go#L35](https://github.com/aws//github.com/moby/moby/blob/1e71c6cffedb79e3def696652753ea43cdc47b99/registry/config.go/issues/L35) [/github.com/aws/aws-cdk/blob/4fb0309e3b93be276ab3e2d510ffc2ce35823dcd/packages/cdk-assets/bin/docker-credential-cdk-assets.ts#L32-L38](https://github.com/aws//github.com/aws/aws-cdk/blob/4fb0309e3b93be276ab3e2d510ffc2ce35823dcd/packages/cdk-assets/bin/docker-credential-cdk-assets.ts/issues/L32-L38) [#15737](https://github.com/aws/aws-cdk/issues/15737)
+
 ## [2.6.0](https://github.com/aws/aws-cdk/compare/v2.5.0...v2.6.0) (2022-01-12)
 
 
