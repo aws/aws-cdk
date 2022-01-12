@@ -28,7 +28,6 @@ export interface DeployStackResult {
   readonly noOp: boolean;
   readonly outputs: { [name: string]: string };
   readonly stackArn: string;
-  readonly stackArtifact: cxapi.CloudFormationStackArtifact;
 }
 
 export interface DeployStackOptions {
@@ -241,7 +240,6 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
       noOp: true,
       outputs: cloudFormationStack.outputs,
       stackArn: cloudFormationStack.stackId,
-      stackArtifact,
     };
   } else {
     debug(`${deployName}: deploying...`);
@@ -330,7 +328,7 @@ async function prepareAndExecuteChangeSet(
       debug('Deleting empty change set %s', changeSet.Id);
       await cfn.deleteChangeSet({ StackName: deployName, ChangeSetName: changeSetName }).promise();
     }
-    return { noOp: true, outputs: cloudFormationStack.outputs, stackArn: changeSet.StackId!, stackArtifact };
+    return { noOp: true, outputs: cloudFormationStack.outputs, stackArn: changeSet.StackId! };
   }
 
   const execute = options.execute === undefined ? true : options.execute;
@@ -367,7 +365,7 @@ async function prepareAndExecuteChangeSet(
     print('Changeset %s created and waiting in review for manual execution (--no-execute)', changeSet.Id);
   }
 
-  return { noOp: false, outputs: cloudFormationStack.outputs, stackArn: changeSet.StackId!, stackArtifact };
+  return { noOp: false, outputs: cloudFormationStack.outputs, stackArn: changeSet.StackId! };
 }
 
 /**
