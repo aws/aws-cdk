@@ -1,8 +1,9 @@
 // Fixture with packages imported, but nothing else
-import * as cdk from '@aws-cdk/core';
+import { App, Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
 import * as appreg from '@aws-cdk/aws-servicecatalogappregistry';
 
-class Fixture extends cdk.Stack {
+class Fixture extends Stack {
   constructor(scope: Construct, id: string) {
     super(scope, id);
 

@@ -5,6 +5,8 @@ import urllib.request
 
 s3 = boto3.client("s3")
 
+EVENTBRIDGE_CONFIGURATION = 'EventBridgeConfiguration'
+
 CONFIGURATION_TYPES = ["TopicConfigurations", "QueueConfigurations", "LambdaFunctionConfigurations"]
 
 def handler(event: dict, context):
@@ -57,6 +59,13 @@ def handle_unmanaged(bucket, stack_id, request_type, notification_configuration)
     external = external_notifications.get(t, [])
     incoming = [with_id(n) for n in notification_configuration.get(t, [])]
     notifications[t] = external + incoming
+
+  # EventBridge configuration is a special case because it's just an empty object if it exists
+  if EVENTBRIDGE_CONFIGURATION in notification_configuration:
+    notifications[EVENTBRIDGE_CONFIGURATION] = notification_configuration[EVENTBRIDGE_CONFIGURATION]
+  elif EVENTBRIDGE_CONFIGURATION in external_notifications:
+    notifications[EVENTBRIDGE_CONFIGURATION] = external_notifications[EVENTBRIDGE_CONFIGURATION]
+
   return notifications
 
 
@@ -67,6 +76,11 @@ def find_external_notifications(bucket, stack_id):
     # if the notification was created by us, we know what id to expect
     # so we can filter by it.
     external_notifications[t] = [n for n in existing_notifications.get(t, []) if not n['Id'].startswith(f"{stack_id}-")]
+
+  # always treat EventBridge configuration as an external config if it already exists
+  # as there is no way to determine whether it's managed by us or not
+  if EVENTBRIDGE_CONFIGURATION in existing_notifications:
+    external_notifications[EVENTBRIDGE_CONFIGURATION] = existing_notifications[EVENTBRIDGE_CONFIGURATION]
 
   return external_notifications
 

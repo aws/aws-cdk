@@ -1,4 +1,5 @@
-import * as colors from 'colors/safe';
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const stripAnsi = require('strip-ansi');
 
 /**
  * Returns a set of strings when printed on the console produces a banner msg. The message is in the following format -
@@ -18,7 +19,7 @@ import * as colors from 'colors/safe';
  * @returns array of strings containing the message formatted as a banner
  */
 export function formatAsBanner(msgs: string[]): string[] {
-  const printLen = (str: string) => colors.strip(str).length;
+  const printLen = (str: string) => stripAnsi(str).length;
 
   if (msgs.length === 0) {
     return [];

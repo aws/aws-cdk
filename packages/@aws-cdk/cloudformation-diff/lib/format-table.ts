@@ -1,4 +1,4 @@
-import * as colors from 'colors/safe';
+import * as chalk from 'chalk';
 import * as stringWidth from 'string-width';
 import * as table from 'table';
 
@@ -93,7 +93,7 @@ function sum(xs: number[]): number {
 }
 
 // What color the table is going to be
-const tableColor = colors.gray;
+const tableColor = chalk.gray;
 
 // Unicode table characters with a color
 const TABLE_BORDER_CHARACTERS = {
