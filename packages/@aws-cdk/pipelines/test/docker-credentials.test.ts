@@ -29,7 +29,7 @@ describe('ExternalDockerCredential', () => {
   test('dockerHub defaults registry domain', () => {
     const creds = cdkp.DockerCredential.dockerHub(secret);
 
-    expect(Object.keys(creds._renderCdkAssetsConfig())).toEqual(['index.docker.io']);
+    expect(Object.keys(creds._renderCdkAssetsConfig())).toEqual(['https://index.docker.io/v1/']);
   });
 
   test('minimal example only renders secret', () => {

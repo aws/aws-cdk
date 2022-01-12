@@ -902,6 +902,7 @@
     },
     "AWS::ApiGateway::Deployment": {
       "attributes": {
+        "DeploymentId": "",
         "Ref": "`Ref` returns the deployment ID, such as `123abc` ."
       },
       "description": "The `AWS::ApiGateway::Deployment` resource deploys an API Gateway `RestApi` resource to a stage so that clients can call the API over the internet. The stage acts as an environment.",
@@ -3933,6 +3934,17 @@
         "S3Key": "The S3 key of the S3 object."
       }
     },
+    "AWS::AppStream::ApplicationEntitlementAssociation": {
+      "attributes": {
+        "Ref": "When you pass the logical ID of this resource to the intrinsic `Ref` function, `Ref` returns the combination of the `StackName` , `EntitlementName` , and `ApplicationIdentifier` , such as `abcdefStack|abcdefEntitlement|abcdefApplication` .\n\nFor more information about using the `Ref` function, see [Ref](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-ref.html) ."
+      },
+      "description": "Associates an application to an entitlement.",
+      "properties": {
+        "ApplicationIdentifier": "The identifier of the application.",
+        "EntitlementName": "The name of the entitlement.",
+        "StackName": "The name of the stack."
+      }
+    },
     "AWS::AppStream::ApplicationFleetAssociation": {
       "attributes": {
         "Ref": "When you pass the logical ID of this resource to the intrinsic `Ref` function, `Ref` returns a combination of the `FleetName` and `ApplicationArn` , such as `aabcdefgFleet|arn:aws:appstream:us-west-2:123456789123:application/abcdefg` .\n\nFor more information about using the `Ref` function, see [Ref](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-ref.html) ."
@@ -3958,6 +3970,29 @@
       "properties": {
         "AccountName": "The user name of the account. This account must have the following privileges: create computer objects, join computers to the domain, and change/reset the password on descendant computer objects for the organizational units specified.",
         "AccountPassword": "The password for the account."
+      }
+    },
+    "AWS::AppStream::Entitlement": {
+      "attributes": {
+        "CreatedTime": "The time when the entitlement was created.",
+        "LastModifiedTime": "The time when the entitlement was last modified.",
+        "Ref": "When you pass the logical ID of this resource to the intrinsic `Ref` function, `Ref` returns the combination of the `StackName` and `Name` , such as `abcdefStack|abcdefEntitlement` .\n\nFor more information about using the `Ref` function, see [Ref](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-ref.html) ."
+      },
+      "description": "Creates an entitlement to control access, based on user attributes, to specific applications within a stack. Entitlements apply to SAML 2.0 federated user identities. Amazon AppStream 2.0 user pool and streaming URL users are entitled to all applications in a stack. Entitlements don't apply to the desktop stream view application or to applications managed by a dynamic app provider using the Dynamic Application Framework.",
+      "properties": {
+        "AppVisibility": "Specifies whether to entitle all apps or only selected apps.",
+        "Attributes": "The attributes of the entitlement.",
+        "Description": "The description of the entitlement.",
+        "Name": "The name of the entitlement.",
+        "StackName": "The name of the stack."
+      }
+    },
+    "AWS::AppStream::Entitlement.Attribute": {
+      "attributes": {},
+      "description": "An attribute that belongs to an entitlement. Application entitlements work by matching a supported SAML 2.0 attribute name to a value when a user identity federates to an AppStream 2.0 SAML application.",
+      "properties": {
+        "Name": "A supported AWS IAM SAML PrincipalTag attribute that is matched to a value when a user identity federates to an AppStream 2.0 SAML application.\n\nThe following are supported values:\n\n- roles\n- department\n- organization\n- groups\n- title\n- costCenter\n- userType",
+        "Value": "A value that is matched to a supported SAML attribute name when a user identity federates to an AppStream 2.0 SAML application."
       }
     },
     "AWS::AppStream::Fleet": {
@@ -6989,7 +7024,7 @@
       "description": "Use event selectors to further specify the management and data event settings for your trail. By default, trails created without specific event selectors will be configured to log all read and write management events, and no data events. When an event occurs in your account, CloudTrail evaluates the event selector for all trails. For each trail, if the event matches any event selector, the trail processes and logs the event. If the event doesn't match any event selector, the trail doesn't log the event.\n\nYou can configure up to five event selectors for a trail.\n\nYou cannot apply both event selectors and advanced event selectors to a trail.",
       "properties": {
         "DataResources": "CloudTrail supports data event logging for Amazon S3 objects and AWS Lambda functions. You can specify up to 250 resources for an individual event selector, but the total number of data resources cannot exceed 250 across all event selectors in a trail. This limit does not apply if you configure resource logging for all data events.\n\nFor more information, see [Data Events](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/logging-management-and-data-events-with-cloudtrail.html#logging-data-events) and [Limits in AWS CloudTrail](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/WhatIsCloudTrail-Limits.html) in the *AWS CloudTrail User Guide* .",
-        "ExcludeManagementEventSources": "An optional list of service event sources from which you do not want management events to be logged on your trail. In this release, the list can be empty (disables the filter), or it can filter out AWS Key Management Service or Amazon RDS Data API events by containing `kms.amazonaws.com` or `rdsdata.amazonaws.com` . By default, `ExcludeManagementEventSources` is empty, and AWS KMS and Amazon RDS Data API events are logged to your trail. You can exclude management event sources only in regions that support the event source.",
+        "ExcludeManagementEventSources": "An optional list of service event sources from which you do not want management events to be logged on your trail. In this release, the list can be empty (disables the filter), or it can filter out AWS Key Management Service or Amazon RDS Data API events by containing `kms.amazonaws.com` or `rdsdata.amazonaws.com` . By default, `ExcludeManagementEventSources` is empty, and AWS KMS and Amazon RDS Data API events are logged to your trail.",
         "IncludeManagementEvents": "Specify if you want your event selector to include management events for your trail.\n\nFor more information, see [Management Events](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/logging-management-and-data-events-with-cloudtrail.html#logging-management-events) in the *AWS CloudTrail User Guide* .\n\nBy default, the value is `true` .\n\nThe first copy of management events is free. You are charged for additional copies of management events that you are logging on any subsequent trail in the same region. For more information about CloudTrail pricing, see [AWS CloudTrail Pricing](https://docs.aws.amazon.com/cloudtrail/pricing/) .",
         "ReadWriteType": "Specify if you want your trail to log read-only events, write-only events, or all. For example, the EC2 `GetConsoleOutput` is a read-only API operation and `RunInstances` is a write-only API operation.\n\nBy default, the value is `All` ."
       }
@@ -8831,8 +8866,26 @@
       "properties": {
         "ExcludedAccounts": "A comma-separated list of accounts excluded from organization config rule.",
         "OrganizationConfigRuleName": "The name that you assign to organization config rule.",
+        "OrganizationCustomCodeRuleMetadata": "",
         "OrganizationCustomRuleMetadata": "An `OrganizationCustomRuleMetadata` object.",
         "OrganizationManagedRuleMetadata": "An `OrganizationManagedRuleMetadata` object."
+      }
+    },
+    "AWS::Config::OrganizationConfigRule.OrganizationCustomCodeRuleMetadata": {
+      "attributes": {},
+      "description": "",
+      "properties": {
+        "CodeText": "",
+        "DebugLogDeliveryAccounts": "",
+        "Description": "",
+        "InputParameters": "",
+        "MaximumExecutionFrequency": "",
+        "OrganizationConfigRuleTriggerTypes": "",
+        "ResourceIdScope": "",
+        "ResourceTypesScope": "",
+        "Runtime": "",
+        "TagKeyScope": "",
+        "TagValueScope": ""
       }
     },
     "AWS::Config::OrganizationConfigRule.OrganizationCustomRuleMetadata": {
@@ -11266,6 +11319,7 @@
       "description": "Specifies a VPC flow log that captures IP traffic for a specified network interface, subnet, or VPC. To view the log data, use Amazon CloudWatch Logs (CloudWatch Logs) to help troubleshoot connection issues. For example, you can use a flow log to investigate why certain traffic isn't reaching an instance, which can help you diagnose overly restrictive security group rules. For more information, see [VPC Flow Logs](https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs.html) in the *Amazon VPC User Guide* .",
       "properties": {
         "DeliverLogsPermissionArn": "The ARN for the IAM role that permits Amazon EC2 to publish flow logs to a CloudWatch Logs log group in your account.\n\nIf you specify `LogDestinationType` as `s3` , do not specify `DeliverLogsPermissionArn` or `LogGroupName` .",
+        "DestinationOptions": "The destination options.",
         "LogDestination": "The destination to which the flow log data is to be published. Flow log data can be published to a CloudWatch Logs log group or an Amazon S3 bucket. The value specified for this parameter depends on the value specified for `LogDestinationType` .\n\nIf `LogDestinationType` is not specified or `cloud-watch-logs` , specify the Amazon Resource Name (ARN) of the CloudWatch Logs log group. For example, to publish to a log group called `my-logs` , specify `arn:aws:logs:us-east-1:123456789012:log-group:my-logs` . Alternatively, use `LogGroupName` instead.\n\nIf LogDestinationType is `s3` , specify the ARN of the Amazon S3 bucket. You can also specify a subfolder in the bucket. To specify a subfolder in the bucket, use the following ARN format: `bucket_ARN/subfolder_name/` . For example, to specify a subfolder named `my-logs` in a bucket named `my-bucket` , use the following ARN: `arn:aws:s3:::my-bucket/my-logs/` . You cannot use `AWSLogs` as a subfolder name. This is a reserved term.",
         "LogDestinationType": "The type of destination to which the flow log data is to be published. Flow log data can be published to CloudWatch Logs or Amazon S3. To publish flow log data to CloudWatch Logs, specify `cloud-watch-logs` . To publish flow log data to Amazon S3, specify `s3` .\n\nIf you specify `LogDestinationType` as `s3` , do not specify `DeliverLogsPermissionArn` or `LogGroupName` .\n\nDefault: `cloud-watch-logs`",
         "LogFormat": "The fields to include in the flow log record, in the order in which they should appear. For a list of available fields, see [Flow Log Records](https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs.html#flow-log-records) . If you omit this parameter, the flow log is created using the default format. If you specify this parameter, you must specify at least one field.\n\nSpecify the fields using the `${field-id}` format, separated by spaces.",
@@ -11392,6 +11446,7 @@
     "AWS::EC2::Instance": {
       "attributes": {
         "AvailabilityZone": "The Availability Zone where the specified instance is launched. For example: `us-east-1b` .\n\nYou can retrieve a list of all Availability Zones for a Region by using the [Fn::GetAZs](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-getavailabilityzones.html) intrinsic function.",
+        "PrivateDnsName": "The private DNS name of the specified instance. For example: `ip-10-24-34-0.ec2.internal` .",
         "PrivateIp": "The private IP address of the specified instance. For example: `10.24.34.0` .",
         "PublicDnsName": "The public DNS name of the specified instance. For example: `ec2-107-20-50-45.compute-1.amazonaws.com` .",
         "PublicIp": "The public IP address of the specified instance. For example: `192.0.2.0` .",
@@ -11725,6 +11780,33 @@
         "SpotOptions": "The options for Spot Instances."
       }
     },
+    "AWS::EC2::LaunchTemplate.InstanceRequirements": {
+      "attributes": {},
+      "description": "The attributes for the instance types. When you specify instance attributes, Amazon EC2 will identify instance types with these attributes.\n\nWhen you specify multiple parameters, you get instance types that satisfy all of the specified parameters. If you specify multiple values for a parameter, you get instance types that satisfy any of the specified values.\n\n> You must specify `VCpuCount` and `MemoryMiB` . All other parameters are optional. Any unspecified optional parameter is set to its default. \n\nFor more information, see [Attribute-based instance type selection for EC2 Fleet](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-fleet-attribute-based-instance-type-selection.html) , [Attribute-based instance type selection for Spot Fleet](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-fleet-attribute-based-instance-type-selection.html) , and [Spot placement score](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-placement-score.html) in the *Amazon EC2 User Guide* .",
+      "properties": {
+        "AcceleratorCount": "The minimum and maximum number of accelerators (GPUs, FPGAs, or AWS Inferentia chips) on an instance.\n\nTo exclude accelerator-enabled instance types, set `Max` to `0` .\n\nDefault: No minimum or maximum limits",
+        "AcceleratorManufacturers": "Indicates whether instance types must have accelerators by specific manufacturers.\n\n- For instance types with NVIDIA devices, specify `nvidia` .\n- For instance types with AMD devices, specify `amd` .\n- For instance types with AWS devices, specify `amazon-web-services` .\n- For instance types with Xilinx devices, specify `xilinx` .\n\nDefault: Any manufacturer",
+        "AcceleratorNames": "The accelerators that must be on the instance type.\n\n- For instance types with NVIDIA A100 GPUs, specify `a100` .\n- For instance types with NVIDIA V100 GPUs, specify `v100` .\n- For instance types with NVIDIA K80 GPUs, specify `k80` .\n- For instance types with NVIDIA T4 GPUs, specify `t4` .\n- For instance types with NVIDIA M60 GPUs, specify `m60` .\n- For instance types with AMD Radeon Pro V520 GPUs, specify `radeon-pro-v520` .\n- For instance types with Xilinx VU9P FPGAs, specify `vu9p` .\n\nDefault: Any accelerator",
+        "AcceleratorTotalMemoryMiB": "The minimum and maximum amount of total accelerator memory, in MiB.\n\nDefault: No minimum or maximum limits",
+        "AcceleratorTypes": "The accelerator types that must be on the instance type.\n\n- For instance types with GPU accelerators, specify `gpu` .\n- For instance types with FPGA accelerators, specify `fpga` .\n- For instance types with inference accelerators, specify `inference` .\n\nDefault: Any accelerator type",
+        "BareMetal": "Indicates whether bare metal instance types must be included, excluded, or required.\n\n- To include bare metal instance types, specify `included` .\n- To require only bare metal instance types, specify `required` .\n- To exclude bare metal instance types, specify `excluded` .\n\nDefault: `excluded`",
+        "BaselineEbsBandwidthMbps": "The minimum and maximum baseline bandwidth to Amazon EBS, in Mbps. For more information, see [Amazon EBS\u2013optimized instances](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-optimized.html) in the *Amazon EC2 User Guide* .\n\nDefault: No minimum or maximum limits",
+        "BurstablePerformance": "Indicates whether burstable performance T instance types are included, excluded, or required. For more information, see [Burstable performance instances](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/burstable-performance-instances.html) .\n\n- To include burstable performance instance types, specify `included` .\n- To require only burstable performance instance types, specify `required` .\n- To exclude burstable performance instance types, specify `excluded` .\n\nDefault: `excluded`",
+        "CpuManufacturers": "The CPU manufacturers to include.\n\n- For instance types with Intel CPUs, specify `intel` .\n- For instance types with AMD CPUs, specify `amd` .\n- For instance types with AWS CPUs, specify `amazon-web-services` .\n\n> Don't confuse the CPU manufacturer with the CPU architecture. Instances will be launched with a compatible CPU architecture based on the Amazon Machine Image (AMI) that you specify in your launch template. \n\nDefault: Any manufacturer",
+        "ExcludedInstanceTypes": "The instance types to exclude. You can use strings with one or more wild cards, represented by an asterisk ( `*` ), to exclude an instance type, size, or generation. The following are examples: `m5.8xlarge` , `c5*.*` , `m5a.*` , `r*` , `*3*` .\n\nFor example, if you specify `c5*` ,Amazon EC2 will exclude the entire C5 instance family, which includes all C5a and C5n instance types. If you specify `m5a.*` , Amazon EC2 will exclude all the M5a instance types, but not the M5n instance types.\n\nDefault: No excluded instance types",
+        "InstanceGenerations": "Indicates whether current or previous generation instance types are included. The current generation instance types are recommended for use. Current generation instance types are typically the latest two to three generations in each instance family. For more information, see [Instance types](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-types.html) in the *Amazon EC2 User Guide* .\n\nFor current generation instance types, specify `current` .\n\nFor previous generation instance types, specify `previous` .\n\nDefault: Current and previous generation instance types",
+        "LocalStorage": "Indicates whether instance types with instance store volumes are included, excluded, or required. For more information, [Amazon EC2 instance store](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/InstanceStorage.html) in the *Amazon EC2 User Guide* .\n\n- To include instance types with instance store volumes, specify `included` .\n- To require only instance types with instance store volumes, specify `required` .\n- To exclude instance types with instance store volumes, specify `excluded` .\n\nDefault: `included`",
+        "LocalStorageTypes": "The type of local storage that is required.\n\n- For instance types with hard disk drive (HDD) storage, specify `hdd` .\n- For instance types with solid state drive (SDD) storage, specify `sdd` .\n\nDefault: `hdd` and `sdd`",
+        "MemoryGiBPerVCpu": "The minimum and maximum amount of memory per vCPU, in GiB.\n\nDefault: No minimum or maximum limits",
+        "MemoryMiB": "The minimum and maximum amount of memory, in MiB.",
+        "NetworkInterfaceCount": "The minimum and maximum number of network interfaces.\n\nDefault: No minimum or maximum limits",
+        "OnDemandMaxPricePercentageOverLowestPrice": "The price protection threshold for On-Demand Instances. This is the maximum you\u2019ll pay for an On-Demand Instance, expressed as a percentage above the cheapest M, C, or R instance type with your specified attributes. When Amazon EC2 selects instance types with your attributes, it excludes instance types priced above your threshold.\n\nThe parameter accepts an integer, which Amazon EC2 interprets as a percentage.\n\nTo turn off price protection, specify a high value, such as `999999` .\n\nThis parameter is not supported for [GetSpotPlacementScores](https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_GetSpotPlacementScores.html) and [GetInstanceTypesFromInstanceRequirements](https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_GetInstanceTypesFromInstanceRequirements.html) .\n\nDefault: `20`",
+        "RequireHibernateSupport": "Indicates whether instance types must support hibernation for On-Demand Instances.\n\nThis parameter is not supported for [GetSpotPlacementScores](https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_GetSpotPlacementScores.html) .\n\nDefault: `false`",
+        "SpotMaxPricePercentageOverLowestPrice": "The price protection threshold for Spot Instances. This is the maximum you\u2019ll pay for a Spot Instance, expressed as a percentage above the cheapest M, C, or R instance type with your specified attributes. When Amazon EC2 selects instance types with your attributes, it excludes instance types priced above your threshold.\n\nThe parameter accepts an integer, which Amazon EC2 interprets as a percentage.\n\nTo turn off price protection, specify a high value, such as `999999` .\n\nThis parameter is not supported for [GetSpotPlacementScores](https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_GetSpotPlacementScores.html) and [GetInstanceTypesFromInstanceRequirements](https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_GetInstanceTypesFromInstanceRequirements.html) .\n\nDefault: `100`",
+        "TotalLocalStorageGB": "The minimum and maximum amount of total local storage, in GB.\n\nDefault: No minimum or maximum limits",
+        "VCpuCount": "The minimum and maximum number of vCPUs."
+      }
+    },
     "AWS::EC2::LaunchTemplate.Ipv6Add": {
       "attributes": {},
       "description": "Specifies an IPv6 address in an Amazon EC2 launch template.\n\n`Ipv6Add` is a property of [AWS::EC2::LaunchTemplate NetworkInterface](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-networkinterface.html) .",
@@ -11750,6 +11832,7 @@
         "ImageId": "The ID of the AMI.",
         "InstanceInitiatedShutdownBehavior": "Indicates whether an instance stops or terminates when you initiate shutdown from the instance (using the operating system command for system shutdown).\n\nDefault: `stop`",
         "InstanceMarketOptions": "The market (purchasing) option for the instances.",
+        "InstanceRequirements": "",
         "InstanceType": "The instance type. For more information, see [Instance Types](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-types.html) in the *Amazon Elastic Compute Cloud User Guide* .\n\nIf you specify `InstanceTypes` , you can't specify `InstanceRequirements` .",
         "KernelId": "The ID of the kernel.\n\nWe recommend that you use PV-GRUB instead of kernels and RAM disks. For more information, see [User Provided Kernels](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/UserProvidedkernels.html) in the *Amazon EC2 User Guide* .",
         "KeyName": "The name of the key pair. You can create a key pair using [CreateKeyPair](https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_CreateKeyPair.html) or [ImportKeyPair](https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_ImportKeyPair.html) .\n\n> If you do not specify a key pair, you can't connect to the instance unless you choose an AMI that is configured to allow users another way to log in.",
@@ -13175,7 +13258,6 @@
       "attributes": {
         "CreationTimestamp": "The date and time the VPC endpoint was created. For example: `Fri Sep 28 23:34:36 UTC 2018.`",
         "DnsEntries": "(Interface endpoint) The DNS entries for the endpoint. Each entry is a combination of the hosted zone ID and the DNS name. The entries are ordered as follows: regional public DNS, zonal public DNS, private DNS, and wildcard DNS. This order is not enforced for AWS Marketplace services.\n\nThe following is an example. In the first entry, the hosted zone ID is Z1HUB23UULQXV and the DNS name is vpce-01abc23456de78f9g-12abccd3.ec2.us-east-1.vpce.amazonaws.com.\n\n[\"Z1HUB23UULQXV:vpce-01abc23456de78f9g-12abccd3.ec2.us-east-1.vpce.amazonaws.com\", \"Z1HUB23UULQXV:vpce-01abc23456de78f9g-12abccd3-us-east-1a.ec2.us-east-1.vpce.amazonaws.com\", \"Z1C12344VYDITB0:ec2.us-east-1.amazonaws.com\"]\n\nIf you update the `PrivateDnsEnabled` or `SubnetIds` properties, the DNS entries in the list will change.",
-        "Id": "",
         "NetworkInterfaceIds": "(Interface endpoint) One or more network interface IDs. If you update the `PrivateDnsEnabled` or `SubnetIds` properties, the items in this list might change.",
         "Ref": "`Ref` returns the ID of the VPC endpoint."
       },
@@ -13211,7 +13293,8 @@
       "properties": {
         "AcceptanceRequired": "Indicates whether requests from service consumers to create an endpoint to your service must be accepted.",
         "GatewayLoadBalancerArns": "The Amazon Resource Names (ARNs) of one or more Gateway Load Balancers.",
-        "NetworkLoadBalancerArns": "The Amazon Resource Names (ARNs) of one or more Network Load Balancers for your service."
+        "NetworkLoadBalancerArns": "The Amazon Resource Names (ARNs) of one or more Network Load Balancers for your service.",
+        "PayerResponsibility": ""
       }
     },
     "AWS::EC2::VPCEndpointServicePermissions": {
@@ -14185,7 +14268,7 @@
         "ClusterSecurityGroupId": "The cluster security group that was created by Amazon EKS for the cluster. Managed node groups use this security group for control plane to data plane communication.\n\nThis parameter is only returned by Amazon EKS clusters that support managed node groups. For more information, see [Managed node groups](https://docs.aws.amazon.com/eks/latest/userguide/managed-node-groups.html) in the *Amazon EKS User Guide* .",
         "EncryptionConfigKeyArn": "Amazon Resource Name (ARN) or alias of the customer master key (CMK).",
         "Endpoint": "The endpoint for your Kubernetes API server, such as `https://5E1D0CEXAMPLEA591B746AFC5AB30262.yl4.us-west-2.eks.amazonaws.com` .",
-        "KubernetesNetworkConfig.ServiceIpv6Cidr": "",
+        "KubernetesNetworkConfig.ServiceIpv6Cidr": "The CIDR block that Kubernetes Service IP addresses are assigned from if you created a 1.21 or later cluster with version 1.10.1 or later of the Amazon VPC CNI add-on and specified `ipv6` for *ipFamily* when you created the cluster. Kubernetes assigns Service addresses from the unique local address range ( `fc00::/7` ) because you can't specify a custom IPv6 CIDR block when you create the cluster.",
         "OpenIdConnectIssuerUrl": "The issuer URL for the OIDC identity provider of the cluster, such as `https://oidc.eks.us-west-2.amazonaws.com/id/EXAMPLED539D4633E53DE1B716D3041E` . If you need to remove `https://` from this output value, you can include the following code in your template.\n\n`!Select [1, !Split [\"//\", !GetAtt EKSCluster.OpenIdConnectIssuerUrl]]`",
         "Ref": "`Ref` returns the resource name. For example:\n\n`{ \"Ref\": \"myCluster\" }`\n\nFor the Amazon EKS cluster `myCluster` , `Ref` returns the name of the cluster."
       },
@@ -14220,9 +14303,9 @@
       "attributes": {},
       "description": "The Kubernetes network configuration for the cluster.",
       "properties": {
-        "IpFamily": "",
-        "ServiceIpv4Cidr": "The CIDR block to assign Kubernetes service IP addresses from. If you don't specify a block, Kubernetes assigns addresses from either the 10.100.0.0/16 or 172.20.0.0/16 CIDR blocks. We recommend that you specify a block that does not overlap with resources in other networks that are peered or connected to your VPC. The block must meet the following requirements:\n\n- Within one of the following private IP address blocks: 10.0.0.0/8, 172.16.0.0/12, or 192.168.0.0/16.\n- Doesn't overlap with any CIDR block assigned to the VPC that you selected for VPC.\n- Between /24 and /12.\n\n> You can only specify a custom CIDR block when you create a cluster and can't change this value once the cluster is created.",
-        "ServiceIpv6Cidr": ""
+        "IpFamily": "Specify which IP family is used to assign Kubernetes Pod and Service IP addresses. If you don't specify a value, `ipv4` is used by default. You can only specify an IP family when you create a cluster and can't change this value once the cluster is created. If you specify `ipv6` , the VPC and subnets that you specify for cluster creation must have both IPv4 and IPv6 CIDR blocks assigned to them.\n\nYou can only specify `ipv6` for 1.21 and later clusters that use version 1.10.1 or later of the Amazon VPC CNI add-on. If you specify `ipv6` , then ensure that your VPC meets the requirements listed in the considerations listed in [Assigning IPv6 addresses to Pods and Services](https://docs.aws.amazon.com/eks/latest/userguide/cni-ipv6.html) in the Amazon EKS User Guide. Kubernetes assigns Services IPv6 addresses from the unique local address range (fc00::/7). You can't specify a custom IPv6 CIDR block. Pod addresses are assigned from the subnet's IPv6 CIDR.",
+        "ServiceIpv4Cidr": "Don't specify a value if you select `ipv6` for *ipFamily* . The CIDR block to assign Kubernetes service IP addresses from. If you don't specify a block, Kubernetes assigns addresses from either the 10.100.0.0/16 or 172.20.0.0/16 CIDR blocks. We recommend that you specify a block that does not overlap with resources in other networks that are peered or connected to your VPC. The block must meet the following requirements:\n\n- Within one of the following private IP address blocks: 10.0.0.0/8, 172.16.0.0/12, or 192.168.0.0/16.\n- Doesn't overlap with any CIDR block assigned to the VPC that you selected for VPC.\n- Between /24 and /12.\n\n> You can only specify a custom CIDR block when you create a cluster and can't change this value once the cluster is created.",
+        "ServiceIpv6Cidr": "The CIDR block that Kubernetes Pod and Service IP addresses are assigned from if you created a 1.21 or later cluster with version 1.10.1 or later of the Amazon VPC CNI add-on and specified `ipv6` for *ipFamily* when you created the cluster. Kubernetes assigns Service addresses from the unique local address range ( `fc00::/7` ) because you can't specify a custom IPv6 CIDR block when you create the cluster."
       }
     },
     "AWS::EKS::Cluster.Logging": {
@@ -14288,9 +14371,9 @@
         "NodegroupName": "The name associated with an Amazon EKS managed node group.",
         "Ref": "`Ref` returns the resource name. For example:\n\n`{ \"Ref\": \"myNodegroup\" }`\n\nFor the Amazon EKS node group `myNodegroup` , Ref returns the physical resource ID of the node group. For example, `<cluster_name>/<nodegroup_name>` ."
       },
-      "description": "Creates a managed node group for an Amazon EKS cluster. You can only create a node group for your cluster that is equal to the current Kubernetes version for the cluster.\n\nAn Amazon EKS managed node group is an Amazon EC2 Auto Scaling group and associated Amazon EC2 instances that are managed by AWS for an Amazon EKS cluster. Each node group uses a version of the Amazon EKS optimized Amazon Linux 2 AMI. For more information, see [Managed Node Groups](https://docs.aws.amazon.com/eks/latest/userguide/managed-node-groups.html) in the *Amazon EKS User Guide* .",
+      "description": "Creates a managed node group for an Amazon EKS cluster. You can only create a node group for your cluster that is equal to the current Kubernetes version for the cluster. All node groups are created with the latest AMI release version for the respective minor Kubernetes version of the cluster, unless you deploy a custom AMI using a launch template. For more information about using launch templates, see [Launch template support](https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html) .\n\nAn Amazon EKS managed node group is an Amazon EC2 Auto Scaling group and associated Amazon EC2 instances that are managed by AWS for an Amazon EKS cluster. Each node group uses a version of the Amazon EKS optimized Amazon Linux 2 AMI. For more information, see [Managed Node Groups](https://docs.aws.amazon.com/eks/latest/userguide/managed-node-groups.html) in the *Amazon EKS User Guide* .",
       "properties": {
-        "AmiType": "The AMI type for your node group. The following values are examples:\n\n- `AL2_x86_64` \u2013 Use for Amazon Linux 2 non-GPU instances.\n- `AL2_x86_64_GPU` \u2013 Use for Amazon Linux 2 GPU instances.\n- `AL2_ARM_64` \u2013 Use for Amazon Linux 2 Arm instances.\n- `CUSTOM` \u2013 Use when specifying a custom AMI ID with a launch template. For more information, see [Specifying an AMI](https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html#launch-template-custom-ami) in the *Amazon EKS User Guide* .\n- `BOTTLEROCKET_ARM_64` \u2013 Use for Bottlerocket Arm instances.\n- `BOTTLEROCKET_x86_64` \u2013 Use for Bottlerocket x86_64 instances.\n\nIf you specify `launchTemplate` , and your launch template uses a custom AMI, then don't specify `amiType` , or the node group deployment will fail. For more information about using launch templates with Amazon EKS, see [Launch template support](https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html) in the *Amazon EKS User Guide* .",
+        "AmiType": "The AMI type for your node group. GPU instance types should use the `AL2_x86_64_GPU` AMI type. Non-GPU instances should use the `AL2_x86_64` AMI type. Arm instances should use the `AL2_ARM_64` AMI type. All types use the Amazon EKS optimized Amazon Linux 2 AMI. If you specify `launchTemplate` , and your launch template uses a custom AMI, then don't specify `amiType` , or the node group deployment will fail. For more information about using launch templates with Amazon EKS, see [Launch template support](https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html) in the *Amazon EKS User Guide* .",
         "CapacityType": "The capacity type of your managed node group.",
         "ClusterName": "The name of the cluster to create the node group in.",
         "DiskSize": "The root device disk size (in GiB) for your node group instances. The default disk size is 20 GiB. If you specify `launchTemplate` , then don't specify `diskSize` , or the node group deployment will fail. For more information about using launch templates with Amazon EKS, see [Launch template support](https://docs.aws.amazon.com/eks/latest/userguide/launch-templates.html) in the *Amazon EKS User Guide* .",
@@ -15082,7 +15165,7 @@
       "properties": {
         "ReplicationGroupId": "The replication group id of the Global datastore member.",
         "ReplicationGroupRegion": "The Amazon region of the Global datastore member.",
-        "Role": "Indicates the role of the replication group, primary or secondary."
+        "Role": "Indicates the role of the replication group, `PRIMARY` or `SECONDARY` ."
       }
     },
     "AWS::ElastiCache::GlobalReplicationGroup.RegionalConfiguration": {
@@ -16185,7 +16268,16 @@
       "description": "Creates a new event bus within your account. This can be a custom event bus which you can use to receive events from your custom applications and services, or it can be a partner event bus which can be matched to a partner event source.",
       "properties": {
         "EventSourceName": "If you are creating a partner event bus, this specifies the partner event source that the new event bus will be matched with.",
-        "Name": "The name of the new event bus.\n\nEvent bus names cannot contain the / character. You can't use the name `default` for a custom event bus, as this name is already used for your account's default event bus.\n\nIf this is a partner event bus, the name must exactly match the name of the partner event source that this event bus is matched to."
+        "Name": "The name of the new event bus.\n\nEvent bus names cannot contain the / character. You can't use the name `default` for a custom event bus, as this name is already used for your account's default event bus.\n\nIf this is a partner event bus, the name must exactly match the name of the partner event source that this event bus is matched to.",
+        "Tags": ""
+      }
+    },
+    "AWS::Events::EventBus.TagEntry": {
+      "attributes": {},
+      "description": "",
+      "properties": {
+        "Key": "",
+        "Value": ""
       }
     },
     "AWS::Events::EventBusPolicy": {
@@ -17470,6 +17562,7 @@
         "NotificationTarget": "An SNS topic ARN that is set up to receive game session placement notifications. See [Setting up notifications for game session placement](https://docs.aws.amazon.com/gamelift/latest/developerguide/queue-notification.html) .",
         "PlayerLatencyPolicies": "A set of policies that act as a sliding cap on player latency. FleetIQ works to deliver low latency for most players in a game session. These policies ensure that no individual player can be placed into a game with unreasonably high latency. Use multiple policies to gradually relax latency requirements a step at a time. Multiple policies are applied based on their maximum allowed latency, starting with the lowest value.",
         "PriorityConfiguration": "Custom settings to use when prioritizing destinations and locations for game session placements. This configuration replaces the FleetIQ default prioritization process. Priority types that are not explicitly named will be automatically applied at the end of the prioritization process.",
+        "Tags": "A list of labels to assign to the new game session queue resource. Tags are developer-defined key-value pairs. Tagging AWS resources are useful for resource management, access management and cost allocation. For more information, see [Tagging AWS Resources](https://docs.aws.amazon.com/general/latest/gr/aws_tagging.html) in the *AWS General Reference* . Once the resource is created, you can use `TagResource` , `UntagResource` , and `ListTagsForResource` to add, remove, and view tags. The maximum tag limit may be lower than stated. See the AWS General Reference for actual tagging limits.",
         "TimeoutInSeconds": "The maximum time, in seconds, that a new game session placement request remains in the queue. When a request exceeds this time, the game session placement changes to a `TIMED_OUT` status."
       }
     },
@@ -17524,7 +17617,8 @@
         "Name": "A unique identifier for a matchmaking configuration. Matchmaking requests use this name to identify which matchmaking configuration to use.",
         "NotificationTarget": "An SNS topic ARN that is set up to receive matchmaking notifications. See [Setting up notifications for matchmaking](https://docs.aws.amazon.com/gamelift/latest/flexmatchguide/match-notification.html) for more information.",
         "RequestTimeoutSeconds": "The maximum duration, in seconds, that a matchmaking ticket can remain in process before timing out. Requests that fail due to timing out can be resubmitted as needed.",
-        "RuleSetName": "A unique identifier for the matchmaking rule set to use with this configuration. You can use either the rule set name or ARN value. A matchmaking configuration can only use rule sets that are defined in the same Region."
+        "RuleSetName": "A unique identifier for the matchmaking rule set to use with this configuration. You can use either the rule set name or ARN value. A matchmaking configuration can only use rule sets that are defined in the same Region.",
+        "Tags": "A list of labels to assign to the new matchmaking configuration resource. Tags are developer-defined key-value pairs. Tagging AWS resources are useful for resource management, access management and cost allocation. For more information, see [Tagging AWS Resources](https://docs.aws.amazon.com/general/latest/gr/aws_tagging.html) in the *AWS General Reference* . Once the resource is created, you can use `TagResource` , `UntagResource` , and `ListTagsForResource` to add, remove, and view tags. The maximum tag limit may be lower than stated. See the AWS General Reference for actual tagging limits."
       }
     },
     "AWS::GameLift::MatchmakingConfiguration.GameProperty": {
@@ -17544,7 +17638,8 @@
       "description": "The `AWS::GameLift::MatchmakingRuleSet` resource creates a new rule set for FlexMatch matchmaking. A rule set describes the type of match to create, such as the number and size of teams. It also sets the parameters for acceptable player matches, such as minimum skill level or character type. A rule set is used by a matchmaking configuration.",
       "properties": {
         "Name": "A unique identifier for the matchmaking rule set. A matchmaking configuration identifies the rule set it uses by this name value. Note that the rule set name is different from the optional `name` field in the rule set body.",
-        "RuleSetBody": "A collection of matchmaking rules, formatted as a JSON string. Comments are not allowed in JSON, but most elements support a description field."
+        "RuleSetBody": "A collection of matchmaking rules, formatted as a JSON string. Comments are not allowed in JSON, but most elements support a description field.",
+        "Tags": "A list of labels to assign to the new matchmaking rule set resource. Tags are developer-defined key-value pairs. Tagging AWS resources are useful for resource management, access management and cost allocation. For more information, see [Tagging AWS Resources](https://docs.aws.amazon.com/general/latest/gr/aws_tagging.html) in the *AWS General Reference* . Once the resource is created, you can use `TagResource` , `UntagResource` , and `ListTagsForResource` to add, remove, and view tags. The maximum tag limit may be lower than stated. See the AWS General Reference for actual tagging limits."
       }
     },
     "AWS::GameLift::Script": {
@@ -17557,6 +17652,7 @@
       "properties": {
         "Name": "A descriptive label that is associated with a script. Script names do not need to be unique.",
         "StorageLocation": "The location in Amazon S3 where build or script files are stored for access by Amazon GameLift.",
+        "Tags": "",
         "Version": "The version that is associated with a build or script. Version strings do not need to be unique."
       }
     },
@@ -20421,6 +20517,7 @@
         "Document": "The job document.\n\nRequired if you don't specify a value for `documentSource` .",
         "DocumentSource": "An S3 link to the job document to use in the template. Required if you don't specify a value for `document` .\n\n> If the job document resides in an S3 bucket, you must use a placeholder link when specifying the document.\n> \n> The placeholder link is of the following form:\n> \n> `${aws:iot:s3-presigned-url:https://s3.amazonaws.com/ *bucket* / *key* }`\n> \n> where *bucket* is your bucket name and *key* is the object in the bucket to which you are linking.",
         "JobArn": "The ARN of the job to use as the basis for the job template.",
+        "JobExecutionsRetryConfig": "Allows you to create the criteria to retry a job.",
         "JobExecutionsRolloutConfig": "Allows you to create a staged rollout of a job.",
         "JobTemplateId": "A unique identifier for the job template. We recommend using a UUID. Alpha-numeric characters, \"-\", and \"_\" are valid for use here.",
         "PresignedUrlConfig": "Configuration for pre-signed S3 URLs.",
@@ -20430,13 +20527,13 @@
     },
     "AWS::IoT::Logging": {
       "attributes": {
-        "Ref": "`Ref` returns\n\n`{ \"Ref\": \"AccountId\" }`"
+        "Ref": ""
       },
-      "description": "Sets the logging options in the V2 logging service.",
+      "description": "",
       "properties": {
-        "AccountId": "The unique identifier of the account to use when writing to CloudWatch logs.",
-        "DefaultLogLevel": "The logging level. Valid values are `DEBUG` , `INFO` , `ERROR` , `WARN` , and `DISABLED` .",
-        "RoleArn": "The ARN of the role that allows IoT to write to Cloudwatch logs."
+        "AccountId": "",
+        "DefaultLogLevel": "",
+        "RoleArn": ""
       }
     },
     "AWS::IoT::MitigationAction": {
@@ -20554,14 +20651,14 @@
     },
     "AWS::IoT::ResourceSpecificLogging": {
       "attributes": {
-        "Ref": "`Ref` returns\n\n`{ \"Ref\": \"TargetType:TargetName\" }`",
-        "TargetId": "The unique identifier of the log target."
+        "Ref": "",
+        "TargetId": ""
       },
-      "description": "Sets the logging options for a specific resource in the V2 logging service.",
+      "description": "",
       "properties": {
-        "LogLevel": "The logging level. Valid values are `DEBUG` , `INFO` , `ERROR` , `WARN` , and `DISABLED` .",
-        "TargetName": "The log target name.",
-        "TargetType": "The log target type."
+        "LogLevel": "",
+        "TargetName": "",
+        "TargetType": ""
       }
     },
     "AWS::IoT::ScheduledAudit": {
@@ -23490,11 +23587,6 @@
         "S3ContentLocation": "The location of the custom artifacts."
       }
     },
-    "AWS::KinesisAnalyticsV2::Application.CustomArtifactsConfiguration": {
-      "attributes": {},
-      "description": "A list of `CustomArtifactConfiguration` objects.",
-      "properties": {}
-    },
     "AWS::KinesisAnalyticsV2::Application.DeployAsApplicationConfiguration": {
       "attributes": {},
       "description": "The information required to deploy a Kinesis Data Analytics Studio notebook as an application with durable state.",
@@ -24709,6 +24801,13 @@
         "Enabled": "Indicates whether an intent uses the dialog code hook during a conversation with a user."
       }
     },
+    "AWS::Lex::Bot.ExternalSourceSetting": {
+      "attributes": {},
+      "description": "Provides information about the external source of the slot type's definition.",
+      "properties": {
+        "GrammarSlotTypeSetting": "Settings required for a slot type based on a grammar that you provide."
+      }
+    },
     "AWS::Lex::Bot.FulfillmentCodeHookSetting": {
       "attributes": {},
       "description": "Determines if a Lambda function should be invoked for a specific intent.",
@@ -24744,6 +24843,22 @@
         "StartResponse": "Provides configuration information for the message sent to users when the fulfillment Lambda functions starts running.",
         "TimeoutInSeconds": "The length of time that the fulfillment Lambda function should run before it times out.",
         "UpdateResponse": "Provides configuration information for messages sent periodically to the user while the fulfillment Lambda function is running."
+      }
+    },
+    "AWS::Lex::Bot.GrammarSlotTypeSetting": {
+      "attributes": {},
+      "description": "Settings required for a slot type based on a grammar that you provide.",
+      "properties": {
+        "Source": "The source of the grammar used to create the slot type."
+      }
+    },
+    "AWS::Lex::Bot.GrammarSlotTypeSource": {
+      "attributes": {},
+      "description": "Describes the Amazon S3 bucket name and location for the grammar that is the source of the slot type.",
+      "properties": {
+        "KmsKeyArn": "The AWS Key Management Service key required to decrypt the contents of the grammar, if any.",
+        "S3BucketName": "The name of the S3 bucket that contains the grammar source.",
+        "S3ObjectKey": "The path to the grammar in the S3 bucket."
       }
     },
     "AWS::Lex::Bot.ImageResponseCard": {
@@ -24951,6 +25066,7 @@
       "description": "Describes a slot type.",
       "properties": {
         "Description": "A description of the slot type. Use the description to help identify the slot type in lists.",
+        "ExternalSourceSetting": "Sets the type of external information used to create the slot type.",
         "Name": "The name of the slot type. A slot type name must be unique withing the account.",
         "ParentSlotTypeSignature": "The built-in slot type used as a parent of this slot type. When you define a parent slot type, the new slot type has the configuration of the parent lot type.\n\nOnly AMAZON.AlphaNumeric is supported.",
         "SlotTypeValues": "A list of SlotTypeValue objects that defines the values that the slot type can take. Each value can have a list of synonyms, additional values that help train the machine learning model about the values that it resolves for the slot.",
@@ -25140,6 +25256,14 @@
         "SourceBotVersion": "The version of a bot used for a bot locale."
       }
     },
+    "AWS::Lex::BotVersion.BotVersionLocaleSpecification": {
+      "attributes": {},
+      "description": "Specifies the locale that Amazon Lex adds to this version. You can choose the Draft version or any other previously published version for each locale. When you specify a source version, the locale data is copied from the source version to the new version.",
+      "properties": {
+        "BotVersionLocaleDetails": "The version of a bot used for a bot locale.",
+        "LocaleId": "The identifier of the locale to add to the version."
+      }
+    },
     "AWS::Lex::BotVersion.BotVersionLocaleSpecificationItem": {
       "attributes": {},
       "description": "Specifies the details of a locale in a bot version.",
@@ -25157,6 +25281,11 @@
         "Policy": "A resource policy to add to the resource. The policy is a JSON structure that contains one or more statements that define the policy. The policy must follow IAM syntax. If the policy isn't valid, Amazon Lex returns a validation exception.",
         "ResourceArn": "The Amazon Resource Name (ARN) of the bot or bot alias that the resource policy is attached to."
       }
+    },
+    "AWS::Lex::ResourcePolicy.Policy": {
+      "attributes": {},
+      "description": "The resource policy to add to the resource. The policy is a JSON structure that contains one or more statements that define the policy. The policy must follow the IAM policy syntax. For more information about the contents of a JSON policy document, see the [IAM JSON policy reference](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies.html) .",
+      "properties": {}
     },
     "AWS::LicenseManager::Grant": {
       "attributes": {
@@ -25255,6 +25384,53 @@
         "End": "End of the time range."
       }
     },
+    "AWS::Lightsail::Alarm": {
+      "attributes": {
+        "AlarmArn": "The Amazon Resource Name (ARN) of the alarm.",
+        "Ref": "",
+        "State": "The current state of the alarm.\n\nAn alarm has the following possible states:\n\n- `ALARM` - The metric is outside of the defined threshold.\n- `INSUFFICIENT_DATA` - The alarm has recently started, the metric is not available, or not enough data is available for the metric to determine the alarm state.\n- `OK` - The metric is within the defined threshold."
+      },
+      "description": "The `AWS::Lightsail::Alarm` resource specifies an alarm that can be used to monitor a single metric for one of your Lightsail resources.",
+      "properties": {
+        "AlarmName": "The name of the alarm.",
+        "ComparisonOperator": "The arithmetic operation to use when comparing the specified statistic and threshold.",
+        "ContactProtocols": "The contact protocols for the alarm, such as `Email` , `SMS` (text messaging), or both.\n\n*Allowed Values* : `Email` | `SMS`",
+        "DatapointsToAlarm": "The number of data points within the evaluation periods that must be breaching to cause the alarm to go to the `ALARM` state.",
+        "EvaluationPeriods": "The number of periods over which data is compared to the specified threshold.",
+        "MetricName": "The name of the metric associated with the alarm.",
+        "MonitoredResourceName": "The name of the Lightsail resource that the alarm monitors.",
+        "NotificationEnabled": "A Boolean value indicating whether the alarm is enabled.",
+        "NotificationTriggers": "The alarm states that trigger a notification.\n\n> To specify the `OK` and `INSUFFICIENT_DATA` values, you must also specify `ContactProtocols` values. Otherwise, the `OK` and `INSUFFICIENT_DATA` values will not take effect and the stack will drift. \n\n*Allowed Values* : `OK` | `ALARM` | `INSUFFICIENT_DATA`",
+        "Threshold": "The value against which the specified statistic is compared.",
+        "TreatMissingData": "Specifies how the alarm handles missing data points.\n\nAn alarm can treat missing data in the following ways:\n\n- `breaching` - Assumes the missing data is not within the threshold. Missing data counts towards the number of times that the metric is not within the threshold.\n- `notBreaching` - Assumes the missing data is within the threshold. Missing data does not count towards the number of times that the metric is not within the threshold.\n- `ignore` - Ignores the missing data. Maintains the current alarm state.\n- `missing` - Missing data is treated as missing."
+      }
+    },
+    "AWS::Lightsail::Bucket": {
+      "attributes": {
+        "AbleToUpdateBundle": "A Boolean value indicating whether the bundle that is currently applied to your distribution can be changed to another bundle.",
+        "BucketArn": "The Amazon Resource Name (ARN) of the bucket.",
+        "Ref": "",
+        "Url": "The URL of the bucket."
+      },
+      "description": "The `AWS::Lightsail::Bucket` resource specifies a bucket.",
+      "properties": {
+        "AccessRules": "An object that describes the access rules for the bucket.",
+        "BucketName": "The name of the bucket.",
+        "BundleId": "The bundle ID for the bucket (for example, `small_1_0` ).\n\nA bucket bundle specifies the monthly cost, storage space, and data transfer quota for a bucket.",
+        "ObjectVersioning": "Indicates whether object versioning is enabled for the bucket.\n\nThe following options can be configured:\n\n- `Enabled` - Object versioning is enabled.\n- `Suspended` - Object versioning was previously enabled but is currently suspended. Existing object versions are retained.\n- `NeverEnabled` - Object versioning has never been enabled.",
+        "ReadOnlyAccessAccounts": "An array of AWS account IDs that have read-only access to the bucket.",
+        "ResourcesReceivingAccess": "An array of Lightsail instances that have access to the bucket.",
+        "Tags": "An array of key-value pairs to apply to this resource.\n\nFor more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) in the *AWS CloudFormation User Guide* .\n\n> The `Value` of `Tags` is optional for Lightsail resources."
+      }
+    },
+    "AWS::Lightsail::Bucket.AccessRules": {
+      "attributes": {},
+      "description": "`AccessRules` is a property of the [AWS::Lightsail::Bucket](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lightsail-bucket.html) resource. It describes access rules for a bucket.",
+      "properties": {
+        "AllowPublicOverrides": "A Boolean value indicating whether the access control list (ACL) permissions that are applied to individual objects override the `GetObject` option that is currently specified.\n\nWhen this is true, you can use the [PutObjectAcl](https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutObjectAcl.html) Amazon S3 API operation to set individual objects to public (read-only) or private, using either the `public-read` ACL or the `private` ACL.",
+        "GetObject": "Specifies the anonymous access to all objects in a bucket.\n\nThe following options can be specified:\n\n- `public` - Sets all objects in the bucket to public (read-only), making them readable by everyone on the internet.\n\nIf the `GetObject` value is set to `public` , then all objects in the bucket default to public regardless of the `allowPublicOverrides` value.\n- `private` - Sets all objects in the bucket to private, making them readable only by you and anyone that you grant access to.\n\nIf the `GetObject` value is set to `private` , and the `allowPublicOverrides` value is set to `true` , then all objects in the bucket default to private unless they are configured with a `public-read` ACL. Individual objects with a `public-read` ACL are readable by everyone on the internet."
+      }
+    },
     "AWS::Lightsail::Database": {
       "attributes": {
         "DatabaseArn": "The Amazon Resource Name (ARN) of the database (for example, `arn:aws:lightsail:us-east-2:123456789101:RelationalDatabase/244ad76f-8aad-4741-809f-12345EXAMPLE` ).",
@@ -25275,7 +25451,7 @@
         "RelationalDatabaseBundleId": "The bundle ID for the database (for example, `medium_1_0` ).",
         "RelationalDatabaseName": "The name of the instance.",
         "RelationalDatabaseParameters": "An array of parameters for the database.",
-        "RotateMasterUserPassword": "A boolean value indicating whether to change the primary user password to a new, strong password generated by Lightsail .\n\n> The `RotateMasterUserPassword` and `MasterUserPassword` parameters cannot be used together in the same template.",
+        "RotateMasterUserPassword": "A Boolean value indicating whether to change the primary user password to a new, strong password generated by Lightsail .\n\n> The `RotateMasterUserPassword` and `MasterUserPassword` parameters cannot be used together in the same template.",
         "Tags": "An array of key-value pairs to apply to this resource.\n\nFor more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) in the *AWS CloudFormation User Guide* .\n\n> The `Value` of `Tags` is optional for Lightsail resources."
       }
     },
@@ -25447,6 +25623,38 @@
       "properties": {
         "Code": "The status code of the instance.",
         "Name": "The state of the instance (for example, `running` or `pending` )."
+      }
+    },
+    "AWS::Lightsail::LoadBalancer": {
+      "attributes": {
+        "LoadBalancerArn": "The Amazon Resource Name (ARN) of the load balancer.",
+        "Ref": ""
+      },
+      "description": "The `AWS::Lightsail::LoadBalancer` resource specifies a load balancer that can be used with Lightsail instances.\n\n> You cannot attach attach TLS certificates to a load balancer using the `AWS::Lightsail::LoadBalancer` resource type. Instead, use the `LoadBalancerTlsCertificate` resource type to create a certificate and attach it to a load balancer.",
+      "properties": {
+        "AttachedInstances": "The Lightsail instances to attach to the load balancer.",
+        "HealthCheckPath": "The path on the attached instance where the health check will be performed. If no path is specified, the load balancer tries to make a request to the default (root) page ( `/index.html` ).",
+        "InstancePort": "The port that the load balancer uses to direct traffic to your Lightsail instances. For HTTP traffic, specify port `80` . For HTTPS traffic, specify port `443` .",
+        "IpAddressType": "The IP address type of the load balancer.\n\nThe possible values are `ipv4` for IPv4 only, and `dualstack` for both IPv4 and IPv6.",
+        "LoadBalancerName": "The name of the load balancer.",
+        "SessionStickinessEnabled": "A Boolean value indicating whether session stickiness is enabled.\n\nEnable session stickiness (also known as *session affinity* ) to bind a user's session to a specific instance. This ensures that all requests from the user during the session are sent to the same instance.",
+        "SessionStickinessLBCookieDurationSeconds": "The time period, in seconds, after which the load balancer session stickiness cookie should be considered stale. If you do not specify this parameter, the default value is 0, which indicates that the sticky session should last for the duration of the browser session.",
+        "Tags": "An array of key-value pairs to apply to this resource.\n\nFor more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) in the *AWS CloudFormation User Guide* .\n\n> The `Value` of `Tags` is optional for Lightsail resources."
+      }
+    },
+    "AWS::Lightsail::LoadBalancerTlsCertificate": {
+      "attributes": {
+        "LoadBalancerTlsCertificateArn": "The Amazon Resource Name (ARN) of the SSL/TLS certificate.",
+        "Ref": "",
+        "Status": "The validation status of the SSL/TLS certificate.\n\nValid Values: `PENDING_VALIDATION` | `ISSUED` | `INACTIVE` | `EXPIRED` | `VALIDATION_TIMED_OUT` | `REVOKED` | `FAILED` | `UNKNOWN`"
+      },
+      "description": "The `AWS::Lightsail::LoadBalancerTlsCertificate` resource specifies a TLS certificate that can be used with a Lightsail load balancer.",
+      "properties": {
+        "CertificateAlternativeNames": "An array of alternative domain names and subdomain names for your SSL/TLS certificate.\n\nIn addition to the primary domain name, you can have up to nine alternative domain names. Wildcards (such as `*.example.com` ) are not supported.",
+        "CertificateDomainName": "The domain name for the SSL/TLS certificate. For example, `example.com` or `www.example.com` .",
+        "CertificateName": "The name of the SSL/TLS certificate.",
+        "IsAttached": "A Boolean value indicating whether the SSL/TLS certificate is attached to a Lightsail load balancer.",
+        "LoadBalancerName": "The name of the load balancer that the SSL/TLS certificate is attached to."
       }
     },
     "AWS::Lightsail::StaticIp": {
@@ -27331,6 +27539,7 @@
         "Mode": "If \"vod,\" all segments are indexed and kept permanently in the destination and manifest. If \"live,\" only the number segments specified in keepSegments and indexNSegments are kept. Newer segments replace older segments, which might prevent players from rewinding all the way to the beginning of the channel. VOD mode uses HLS EXT-X-PLAYLIST-TYPE of EVENT while the channel is running, converting it to a \"VOD\" type manifest on completion of the stream.",
         "OutputSelection": "MANIFESTSANDSEGMENTS: Generates manifests (the master manifest, if applicable, and media manifests) for this output group. SEGMENTSONLY: Doesn't generate any manifests for this output group.",
         "ProgramDateTime": "Includes or excludes the EXT-X-PROGRAM-DATE-TIME tag in .m3u8 manifest files. The value is calculated as follows: Either the program date and time are initialized using the input timecode source, or the time is initialized using the input timecode source and the date is initialized using the timestampOffset.",
+        "ProgramDateTimeClock": "",
         "ProgramDateTimePeriod": "The period of insertion of the EXT-X-PROGRAM-DATE-TIME entry, in seconds.",
         "RedundantManifest": "ENABLED: The master manifest (.m3u8 file) for each pipeline includes information about both pipelines: first its own media files, then the media files of the other pipeline. This feature allows a playout device that supports stale manifest detection to switch from one manifest to the other, when the current manifest seems to be stale. There are still two destinations and two master manifests, but both master manifests reference the media files from both pipelines. DISABLED: The master manifest (.m3u8 file) for each pipeline includes information about its own pipeline only. For an HLS output group with MediaPackage as the destination, the DISABLED behavior is always followed. MediaPackage regenerates the manifests it serves to players, so a redundant manifest from MediaLive is irrelevant.",
         "SegmentLength": "The length of the MPEG-2 Transport Stream segments to create, in seconds. Note that segments will end on the next keyframe after this number of seconds, so the actual segment length might be longer.",
@@ -27464,6 +27673,7 @@
         "FilterStrength": "Adjusts the magnitude of filtering from 1 (minimal) to 5 (strongest).",
         "InputFilter": "Turns on the filter for this input. MPEG-2 inputs have the deblocking filter enabled by default. 1) auto - filtering is applied depending on input type/quality 2) disabled - no filtering is applied to the input 3) forced - filtering is applied regardless of the input type.",
         "NetworkInputSettings": "Information about how to connect to the upstream system.",
+        "Scte35Pid": "",
         "Smpte2038DataPreference": "Specifies whether to extract applicable ancillary data from a SMPTE-2038 source in this input. Applicable data types are captions, timecode, AFD, and SCTE-104 messages.\n- PREFER: Extract from SMPTE-2038 if present in this input, otherwise extract from another source (if any).\n- IGNORE: Never extract any ancillary data from SMPTE-2038.",
         "SourceEndBehavior": "The loop input if it is a file.",
         "VideoSelector": "Information about one video to extract from the input."
@@ -29243,7 +29453,25 @@
         "ClipboardMode": "Enable or disable the use of the system clipboard to copy and paste between the streaming session and streaming client.",
         "Ec2InstanceTypes": "The EC2 instance types that users can select from when launching a streaming session with this launch profile.",
         "MaxSessionLengthInMinutes": "The length of time, in minutes, that a streaming session can be active before it is stopped or terminated. After this point, Nimble Studio automatically terminates or stops the session. The default length of time is 690 minutes, and the maximum length of time is 30 days.",
+        "MaxStoppedSessionLengthInMinutes": "Integer that determines if you can start and stop your sessions and how long a session can stay in the STOPPED state. The default value is 0. The maximum value is 5760.\n\nIf the value is missing or set to 0, your sessions can\u2019t be stopped. If you then call `StopStreamingSession` , the session fails. If the time that a session stays in the READY state exceeds the `maxSessionLengthInMinutes` value, the session will automatically be terminated (instead of stopped).\n\nIf the value is set to a positive number, the session can be stopped. You can call `StopStreamingSession` to stop sessions in the READY state. If the time that a session stays in the READY state exceeds the `maxSessionLengthInMinutes` value, the session will automatically be stopped (instead of terminated).",
+        "SessionStorage": "(Optional) The upload storage for a streaming session.",
         "StreamingImageIds": "The streaming images that users can select from when launching a streaming session with this launch profile."
+      }
+    },
+    "AWS::NimbleStudio::LaunchProfile.StreamConfigurationSessionStorage": {
+      "attributes": {},
+      "description": "The configuration for a streaming session\u2019s upload storage.",
+      "properties": {
+        "Mode": "Allows artists to upload files to their workstations. The only valid option is `UPLOAD` .",
+        "Root": "The configuration for the upload storage root of the streaming session."
+      }
+    },
+    "AWS::NimbleStudio::LaunchProfile.StreamingSessionStorageRoot": {
+      "attributes": {},
+      "description": "The upload storage root location (folder) on streaming workstations where files are uploaded.",
+      "properties": {
+        "Linux": "The folder path in Linux workstations where files are uploaded.",
+        "Windows": "The folder path in Windows workstations where files are uploaded."
       }
     },
     "AWS::NimbleStudio::StreamingImage": {
@@ -31986,8 +32214,7 @@
       "attributes": {
         "DBProxyArn": "The Amazon Resource Name (ARN) representing the target group.",
         "Endpoint": "The writer endpoint for the RDS DB instance or Aurora DB cluster.",
-        "Ref": "`Ref` returns the name of the DB proxy.",
-        "VpcId": "The VPC ID to associate with the DB proxy."
+        "Ref": "`Ref` returns the name of the DB proxy."
       },
       "description": "The `AWS::RDS::DBProxy` resource creates or updates a DB proxy.\n\nFor information about RDS Proxy for Amazon RDS, see [Managing Connections with Amazon RDS Proxy](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-proxy.html) in the *Amazon RDS User Guide* .\n\nFor information about RDS Proxy for Amazon Aurora, see [Managing Connections with Amazon RDS Proxy](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/rds-proxy.html) in the *Amazon Aurora User Guide* .\n\n> Limitations apply to RDS Proxy, including DB engine version limitations and AWS Region limitations.\n> \n> For information about limitations that apply to RDS Proxy for Amazon RDS, see [Limitations for RDS Proxy](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-proxy.html#rds-proxy.limitations) in the *Amazon RDS User Guide* .\n> \n> For information about that apply to RDS Proxy for Amazon Aurora, see [Limitations for RDS Proxy](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/rds-proxy.html#rds-proxy.limitations) in the *Amazon Aurora User Guide* .",
       "properties": {
@@ -32853,7 +33080,7 @@
         "HostedZoneConfig": "A complex type that contains an optional comment.\n\nIf you don't want to specify a comment, omit the `HostedZoneConfig` and `Comment` elements.",
         "HostedZoneTags": "Adds, edits, or deletes tags for a health check or a hosted zone.\n\nFor information about using tags for cost allocation, see [Using Cost Allocation Tags](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/cost-alloc-tags.html) in the *AWS Billing and Cost Management User Guide* .",
         "Name": "The name of the domain. Specify a fully qualified domain name, for example, *www.example.com* . The trailing dot is optional; Amazon Route 53 assumes that the domain name is fully qualified. This means that Route 53 treats *www.example.com* (without a trailing dot) and *www.example.com.* (with a trailing dot) as identical.\n\nIf you're creating a public hosted zone, this is the name you have registered with your DNS registrar. If your domain name is registered with a registrar other than Route 53, change the name servers for your domain to the set of `NameServers` that are returned by the `Fn::GetAtt` intrinsic function.",
-        "QueryLoggingConfig": "Creates a configuration for DNS query logging. After you create a query logging configuration, Amazon Route 53 begins to publish log data to an Amazon CloudWatch Logs log group.\n\nDNS query logs contain information about the queries that Route 53 receives for a specified public hosted zone, such as the following:\n\n- Route 53 edge location that responded to the DNS query\n- Domain or subdomain that was requested\n- DNS record type, such as A or AAAA\n- DNS response code, such as `NoError` or `ServFail`\n\n- **Log Group and Resource Policy** - Before you create a query logging configuration, perform the following operations.\n\n> If you create a query logging configuration using the Route 53 console, Route 53 performs these operations automatically. \n\n- Create a CloudWatch Logs log group, and make note of the ARN, which you specify when you create a query logging configuration. Note the following:\n\n- You must create the log group in the us-east-1 region.\n- You must use the same AWS account to create the log group and the hosted zone that you want to configure query logging for.\n- When you create log groups for query logging, we recommend that you use a consistent prefix, for example:\n\n`/aws/route53/ *hosted zone name*`\n\nIn the next step, you'll create a resource policy, which controls access to one or more log groups and the associated AWS resources, such as Route 53 hosted zones. There's a limit on the number of resource policies that you can create, so we recommend that you use a consistent prefix so you can use the same resource policy for all the log groups that you create for query logging.\n- Create a CloudWatch Logs resource policy, and give it the permissions that Route 53 needs to create log streams and to send query logs to log streams. For the value of `Resource` , specify the ARN for the log group that you created in the previous step. To use the same resource policy for all the CloudWatch Logs log groups that you created for query logging configurations, replace the hosted zone name with `*` , for example:\n\n`arn:aws:logs:us-east-1:123412341234:log-group:/aws/route53/*`\n\n> You can't use the CloudWatch console to create or edit a resource policy. You must use the CloudWatch API, one of the AWS SDKs, or the AWS CLI .\n- **Log Streams and Edge Locations** - When Route 53 finishes creating the configuration for DNS query logging, it does the following:\n\n- Creates a log stream for an edge location the first time that the edge location responds to DNS queries for the specified hosted zone. That log stream is used to log all queries that Route 53 responds to for that edge location.\n- Begins to send query logs to the applicable log stream.\n\nThe name of each log stream is in the following format:\n\n`*hosted zone ID* / *edge location code*`\n\nThe edge location code is a three-letter code and an arbitrarily assigned number, for example, DFW3. The three-letter code typically corresponds with the International Air Transport Association airport code for an airport near the edge location. (These abbreviations might change in the future.) For a list of edge locations, see \"The Route 53 Global Network\" on the [Route 53 Product Details](https://docs.aws.amazon.com/route53/details/) page.\n- **Queries That Are Logged** - Query logs contain only the queries that DNS resolvers forward to Route 53. If a DNS resolver has already cached the response to a query (such as the IP address for a load balancer for example.com), the resolver will continue to return the cached response. It doesn't forward another query to Route 53 until the TTL for the corresponding resource record set expires. Depending on how many DNS queries are submitted for a resource record set, and depending on the TTL for that resource record set, query logs might contain information about only one query out of every several thousand queries that are submitted to DNS. For more information about how DNS works, see [Routing Internet Traffic to Your Website or Web Application](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/welcome-dns-service.html) in the *Amazon Route 53 Developer Guide* .\n- **Log File Format** - For a list of the values in each query log and the format of each value, see [Logging DNS Queries](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/query-logs.html) in the *Amazon Route 53 Developer Guide* .\n- **Pricing** - For information about charges for query logs, see [Amazon CloudWatch Pricing](https://docs.aws.amazon.com/cloudwatch/pricing/) .\n- **How to Stop Logging** - If you want Route 53 to stop sending query logs to CloudWatch Logs, delete the query logging configuration. For more information, see [DeleteQueryLoggingConfig](https://docs.aws.amazon.com/Route53/latest/APIReference/API_DeleteQueryLoggingConfig.html) .",
+        "QueryLoggingConfig": "Creates a configuration for DNS query logging. After you create a query logging configuration, Amazon Route 53 begins to publish log data to an Amazon CloudWatch Logs log group.\n\nDNS query logs contain information about the queries that Route 53 receives for a specified public hosted zone, such as the following:\n\n- Route 53 edge location that responded to the DNS query\n- Domain or subdomain that was requested\n- DNS record type, such as A or AAAA\n- DNS response code, such as `NoError` or `ServFail`\n\n- **Log Group and Resource Policy** - Before you create a query logging configuration, perform the following operations.\n\n> If you create a query logging configuration using the Route 53 console, Route 53 performs these operations automatically. \n\n- Create a CloudWatch Logs log group, and make note of the ARN, which you specify when you create a query logging configuration. Note the following:\n\n- You must create the log group in the us-east-1 region.\n- You must use the same AWS account to create the log group and the hosted zone that you want to configure query logging for.\n- When you create log groups for query logging, we recommend that you use a consistent prefix, for example:\n\n`/aws/route53/ *hosted zone name*`\n\nIn the next step, you'll create a resource policy, which controls access to one or more log groups and the associated AWS resources, such as Route 53 hosted zones. There's a limit on the number of resource policies that you can create, so we recommend that you use a consistent prefix so you can use the same resource policy for all the log groups that you create for query logging.\n- Create a CloudWatch Logs resource policy, and give it the permissions that Route 53 needs to create log streams and to send query logs to log streams. For the value of `Resource` , specify the ARN for the log group that you created in the previous step. To use the same resource policy for all the CloudWatch Logs log groups that you created for query logging configurations, replace the hosted zone name with `*` , for example:\n\n`arn:aws:logs:us-east-1:123412341234:log-group:/aws/route53/*`\n\nTo avoid the confused deputy problem, a security issue where an entity without a permission for an action can coerce a more-privileged entity to perform it, you can optionally limit the permissions that a service has to a resource in a resource-based policy by supplying the following values:\n\n- For `aws:SourceArn` , supply the hosted zone ARN used in creating the query logging configuration. For example, `aws:SourceArn: arn:aws:route53:::hostedzone/hosted zone ID` .\n- For `aws:SourceAccount` , supply the account ID for the account that creates the query logging configuration. For example, `aws:SourceAccount:111111111111` .\n\nFor more information, see [The confused deputy problem](https://docs.aws.amazon.com/IAM/latest/UserGuide/confused-deputy.html) in the *AWS IAM User Guide* .\n\n> You can't use the CloudWatch console to create or edit a resource policy. You must use the CloudWatch API, one of the AWS SDKs, or the AWS CLI .\n- **Log Streams and Edge Locations** - When Route 53 finishes creating the configuration for DNS query logging, it does the following:\n\n- Creates a log stream for an edge location the first time that the edge location responds to DNS queries for the specified hosted zone. That log stream is used to log all queries that Route 53 responds to for that edge location.\n- Begins to send query logs to the applicable log stream.\n\nThe name of each log stream is in the following format:\n\n`*hosted zone ID* / *edge location code*`\n\nThe edge location code is a three-letter code and an arbitrarily assigned number, for example, DFW3. The three-letter code typically corresponds with the International Air Transport Association airport code for an airport near the edge location. (These abbreviations might change in the future.) For a list of edge locations, see \"The Route 53 Global Network\" on the [Route 53 Product Details](https://docs.aws.amazon.com/route53/details/) page.\n- **Queries That Are Logged** - Query logs contain only the queries that DNS resolvers forward to Route 53. If a DNS resolver has already cached the response to a query (such as the IP address for a load balancer for example.com), the resolver will continue to return the cached response. It doesn't forward another query to Route 53 until the TTL for the corresponding resource record set expires. Depending on how many DNS queries are submitted for a resource record set, and depending on the TTL for that resource record set, query logs might contain information about only one query out of every several thousand queries that are submitted to DNS. For more information about how DNS works, see [Routing Internet Traffic to Your Website or Web Application](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/welcome-dns-service.html) in the *Amazon Route 53 Developer Guide* .\n- **Log File Format** - For a list of the values in each query log and the format of each value, see [Logging DNS Queries](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/query-logs.html) in the *Amazon Route 53 Developer Guide* .\n- **Pricing** - For information about charges for query logs, see [Amazon CloudWatch Pricing](https://docs.aws.amazon.com/cloudwatch/pricing/) .\n- **How to Stop Logging** - If you want Route 53 to stop sending query logs to CloudWatch Logs, delete the query logging configuration. For more information, see [DeleteQueryLoggingConfig](https://docs.aws.amazon.com/Route53/latest/APIReference/API_DeleteQueryLoggingConfig.html) .",
         "VPCs": "*Private hosted zones:* A complex type that contains information about the VPCs that are associated with the specified hosted zone.\n\n> For public hosted zones, omit `VPCs` , `VPCId` , and `VPCRegion` ."
       }
     },
@@ -34783,7 +35010,7 @@
         "AllowedPattern": "A regular expression used to validate the parameter value. For example, for String types with values restricted to numbers, you can specify the following: `AllowedPattern=^\\d+$`",
         "DataType": "The data type of the parameter, such as `text` or `aws:ec2:image` . The default is `text` .",
         "Description": "Information about the parameter.",
-        "Name": "The name of the parameter.",
+        "Name": "The name of the parameter.\n\n> The maximum length constraint listed below includes capacity for additional system attributes that aren't part of the name. The maximum length for a parameter name, including the full length of the parameter ARN, is 1011 characters. For example, the length of the following parameter name is 65 characters, not 20 characters: `arn:aws:ssm:us-east-2:111222333444:parameter/ExampleParameterName`",
         "Policies": "Information about the policies assigned to a parameter.\n\n[Assigning parameter policies](https://docs.aws.amazon.com/systems-manager/latest/userguide/parameter-store-policies.html) in the *AWS Systems Manager User Guide* .",
         "Tags": "Optional metadata that you assign to a resource in the form of an arbitrary set of tags (key-value pairs). Tags enable you to categorize a resource in different ways, such as by purpose, owner, or environment. For example, you might want to tag a Systems Manager parameter to identify the type of resource to which it applies, the environment, or the type of configuration data referenced by the parameter.",
         "Tier": "The parameter tier.",
@@ -37491,7 +37718,8 @@
       "attributes": {},
       "description": "Protocol settings that are configured for your server.",
       "properties": {
-        "PassiveIp": "Indicates passive mode, for FTP and FTPS protocols. Enter a single dotted-quad IPv4 address, such as the external IP address of a firewall, router, or load balancer."
+        "PassiveIp": "Indicates passive mode, for FTP and FTPS protocols. Enter a single dotted-quad IPv4 address, such as the external IP address of a firewall, router, or load balancer.",
+        "TlsSessionResumptionMode": "A property used with Transfer servers that use the FTPS protocol. TLS Session Resumption provides a mechanism to resume or share a negotiated secret key between the control and data connection for an FTPS session. `TlsSessionResumptionMode` determines whether or not the server resumes recent, negotiated sessions through a unique session ID. This property is available during `CreateServer` and `UpdateServer` calls. If a `TlsSessionResumptionMode` value is not specified during CreateServer, it is set to `ENFORCED` by default.\n\n- `DISABLED` : the server does not process TLS session resumption client requests and creates a new TLS session for each request.\n- `ENABLED` : the server processes and accepts clients that are performing TLS session resumption. The server doesn't reject client data connections that do not perform the TLS session resumption client processing.\n- `ENFORCED` : the server processes and accepts clients that are performing TLS session resumption. The server rejects client data connections that do not perform the TLS session resumption client processing. Before you set the value to `ENFORCED` , test your clients.\n\n> Not all FTPS clients perform TLS session resumption. So, if you choose to enforce TLS session resumption, you prevent any connections from FTPS clients that don't perform the protocol negotiation. To determine whether or not you can use the `ENFORCED` value, you need to test your clients."
       }
     },
     "AWS::Transfer::Server.WorkflowDetail": {
