@@ -1,7 +1,7 @@
 import { flatMap } from '../../util';
 import { ISDK } from '../aws-auth';
-import { ChangeHotswapImpact, ChangeHotswapResult, establishResourcePhysicalName, HotswapOperation, HotswappableChangeCandidate } from './common';
-import { EvaluateCloudFormationTemplate } from './evaluate-cloudformation-template';
+import { EvaluateCloudFormationTemplate } from '../evaluate-cloudformation-template';
+import { ChangeHotswapImpact, ChangeHotswapResult, HotswapOperation, HotswappableChangeCandidate } from './common';
 
 /**
  * Returns `ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT` if the change cannot be short-circuited,
@@ -30,7 +30,7 @@ export async function isHotswappableLambdaFunctionChange(
     return lambdaCodeChange;
   }
 
-  const functionName = await establishResourcePhysicalName(logicalId, change.newValue.Properties?.FunctionName, evaluateCfnTemplate);
+  const functionName = await evaluateCfnTemplate.establishResourcePhysicalName(logicalId, change.newValue.Properties?.FunctionName);
   if (!functionName) {
     return ChangeHotswapImpact.REQUIRES_FULL_DEPLOYMENT;
   }
