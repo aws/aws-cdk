@@ -29,6 +29,7 @@ test('add log groups from lambda function', async () => {
       },
     },
   });
+  pushStackResourceSummaries(stackSummaryOf('Func', 'AWS::Lambda::Function', 'my-function'));
 
   // WHEN
   const result = await findCloudWatchLogGroups(logsMockSdkProvider.mockSdkProvider, cdkStackArtifact);
@@ -100,6 +101,7 @@ test('add log groups from ECS Task Definitions', async () => {
       },
     },
   });
+  pushStackResourceSummaries(stackSummaryOf('LogGroup', 'AWS::Logs::LogGroup', 'log_group'));
 
   // WHEN
   const result = await findCloudWatchLogGroups(logsMockSdkProvider.mockSdkProvider, cdkStackArtifact);
@@ -138,6 +140,7 @@ test('add log groups from State Machines', async () => {
       },
     },
   });
+  pushStackResourceSummaries(stackSummaryOf('LogGroup', 'AWS::Logs::LogGroup', 'log_group'));
 
   // WHEN
   const result = await findCloudWatchLogGroups(logsMockSdkProvider.mockSdkProvider, cdkStackArtifact);
@@ -191,6 +194,11 @@ test('excluded log groups are not added', async () => {
       },
     },
   });
+  pushStackResourceSummaries(stackSummaryOf('LogGroup', 'AWS::Logs::LogGroup', 'log_group'));
+  pushStackResourceSummaries(stackSummaryOf('LogGroup2', 'AWS::Logs::LogGroup', 'log_group2'));
+  pushStackResourceSummaries(stackSummaryOf('FlowLog', 'AWS::EC2::FlowLog', 'flow_log'));
+  pushStackResourceSummaries(stackSummaryOf('FlowLog2', 'AWS::EC2::FlowLog', 'flow_log2'));
+  pushStackResourceSummaries(stackSummaryOf('Def', 'AWS::CodeBuild:Project', 'project'));
 
   // WHEN
   const result = await findCloudWatchLogGroups(logsMockSdkProvider.mockSdkProvider, cdkStackArtifact);
@@ -213,6 +221,7 @@ test('unassociated log groups are added', async () => {
       },
     },
   });
+  pushStackResourceSummaries(stackSummaryOf('LogGroup', 'AWS::Logs::LogGroup', 'log_group'));
 
   // WHEN
   const result = await findCloudWatchLogGroups(logsMockSdkProvider.mockSdkProvider, cdkStackArtifact);

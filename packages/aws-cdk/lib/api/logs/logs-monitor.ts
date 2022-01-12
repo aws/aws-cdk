@@ -5,7 +5,13 @@ import { print, error } from '../../logging';
 import { flatten } from '../../util/arrays';
 import { ISDK } from '../aws-auth';
 
-// how often we should read events from CloudWatchLogs
+/**
+ * After reading events from all CloudWatch log groups
+ * how long should we wait to read more events.
+ *
+ * If there is some error with reading events (i.e. Throttle)
+ * then this is also how long we wait until we try again
+ */
 const SLEEP = 2_000;
 
 /**
@@ -126,6 +132,7 @@ export class CloudWatchLogEventMonitor {
     } catch (e) {
       error('Error occurred while monitoring logs: %s', e);
     }
+
     this.scheduleNextTick(SLEEP);
   }
 
@@ -170,30 +177,36 @@ export class CloudWatchLogEventMonitor {
     const startTime = logGroupsAccessSettings.logGroupsStartTimes[logGroupName] ?? this.startTime;
     let endTime = startTime;
     try {
-      let nextToken: string | undefined;
-      do {
-        const response = await logGroupsAccessSettings.sdk.cloudWatchLogs().filterLogEvents({
-          logGroupName: logGroupName,
-          nextToken,
-          limit: 100,
-          startTime: startTime,
-        }).promise();
+      const response = await logGroupsAccessSettings.sdk.cloudWatchLogs().filterLogEvents({
+        logGroupName: logGroupName,
+        limit: 100,
+        startTime: startTime,
+      }).promise();
 
-        for (const event of response.events ?? []) {
-          if (event.message) {
-            events.push({
-              message: event.message,
-              logGroupName,
-              timestamp: event.timestamp ? new Date(event.timestamp) : new Date(),
-            });
+      for (const event of response.events ?? []) {
+        if (event.message) {
+          events.push({
+            message: event.message,
+            logGroupName,
+            timestamp: event.timestamp ? new Date(event.timestamp) : new Date(),
+          });
 
-            if (event.timestamp && endTime < event.timestamp) {
-              endTime = event.timestamp;
-            }
+          if (event.timestamp && endTime < event.timestamp) {
+            endTime = event.timestamp;
           }
+
         }
-        nextToken = response.nextToken;
-      } while (nextToken);
+      }
+      // if we have > 100 events let the user know some
+      // messages have been supressed. We are essentially
+      // showing them a sampling (10000 events printed out is not very useful)
+      if (response.nextToken) {
+        events.push({
+          message: '(...messages supressed...)',
+          logGroupName,
+          timestamp: new Date(endTime),
+        });
+      }
     } catch (e) {
       // with Lambda functions the CloudWatch is not created
       // until something is logged, so just keep polling until

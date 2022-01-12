@@ -1,4 +1,5 @@
 import * as cxapi from '@aws-cdk/cx-api';
+import { CloudFormation } from 'aws-sdk';
 import { Mode, SdkProvider, ISDK } from '../aws-auth';
 import { prepareSdkWithLookupRoleFor } from '../cloudformation-deployments';
 import { EvaluateCloudFormationTemplate, LazyListStackResources } from '../evaluate-cloudformation-template';
@@ -60,18 +61,12 @@ export async function findCloudWatchLogGroups(
     account: resolvedEnv.account,
     region: resolvedEnv.region,
     partition: (await sdk.currentAccount()).partition,
-    urlSuffix: sdk.getEndpointSuffix,
+    urlSuffix: sdk.getEndpointSuffix(resolvedEnv.region),
     listStackResources,
   });
 
-  const template = stackArtifact.template as { [section: string]: any };
-
-  let logGroupResources = findAllLogGroupResources(template.Resources);
-  filterLogGroupResources(logGroupResources, evaluateCfnTemplate);
-  const logGroupNames = await getLogGroupPhysicalNames(logGroupResources.logGroupLogicalIds, template.Resources, evaluateCfnTemplate);
-  logGroupNames.push(
-    ...(await getImplicitLogGroupPhysicalNames(logGroupResources.logicalIdsOfImplicitLogServices, template.Resources, evaluateCfnTemplate)),
-  );
+  const stackResources = await listStackResources.listStackResources();
+  const logGroupNames = findAllLogGroupNames(stackResources, evaluateCfnTemplate);
 
   return {
     env: resolvedEnv,
@@ -80,105 +75,46 @@ export async function findCloudWatchLogGroups(
   };
 }
 
-interface LogGroupResources {
-  /**
-   * List of LogicalIds of CloudWatch Log Groups
-   */
-  readonly logGroupLogicalIds: Set<string>;
-
-  /**
-   * map of logicalId to CloudFormation type
-   * e.g. 'mylambdaFunction': 'AWS::Lambda::Function'
-   */
-  readonly logicalIdsOfImplicitLogServices: Map<string, string>;
-}
-
 /**
- * Find all AWS::Logs::LogGroup resources along with
- * any resources that implicitely create log groups (RESOURCE_TYPES_WITH_IMPLICIT_LOGS)
+ * Determine if a CloudWatch Log Group is associated
+ * with an ignored resource
  */
-function findAllLogGroupResources(
-  templateResources: { [logicalId: string]: any },
-): LogGroupResources {
-  const logicalIdsOfImplicitLogServices = new Map<string, string>();
-  const logGroupLogicalIds = new Set<string>();
-  for (const [logicalId, resource] of Object.entries(templateResources ?? {})) {
-    const definition = resource as { [attributeName: string]: any };
-    if (definition.Type === 'AWS::Logs::LogGroup') {
-      logGroupLogicalIds.add(logicalId);
-    } else if (RESOURCE_TYPES_WITH_IMPLICIT_LOGS[definition.Type]) {
-      logicalIdsOfImplicitLogServices.set(logicalId, definition.Type);
+function isReferencedFromIgnoredResource(
+  logGroupResource: CloudFormation.StackResourceSummary,
+  evaluateCfnTemplate: EvaluateCloudFormationTemplate,
+): boolean {
+  let foundReference = false;
+  const resourcesReferencingLogGroup = evaluateCfnTemplate.findReferencesTo(logGroupResource.LogicalResourceId);
+  for (const reference of resourcesReferencingLogGroup) {
+    if (IGNORE_LOGS_RESOURCE_TYPES.includes(reference.Type)) {
+      foundReference = true;
     }
   }
-  return { logGroupLogicalIds, logicalIdsOfImplicitLogServices };
+  return foundReference;
 }
 
 /**
- * For each log group in the template:
- * 1. make sure it is not associated with an excluded type
- * 2. see if it is associated with a resource type that implicitely
- *   creates a log group so we know not to add the implicit log group later
+ * Find all CloudWatch Log Groups in the deployed template.
+ * This will find both explicitely created Log Groups (excluding those associated with ignored resources)
+ * as well as Log Groups created implicitely (i.e. Lambda Functions)
  */
-function filterLogGroupResources(
-  logGroupResources: LogGroupResources,
+function findAllLogGroupNames(
+  stackResources: CloudFormation.StackResourceSummary[],
   evaluateCfnTemplate: EvaluateCloudFormationTemplate,
-) {
-  for (const logGroupLogicalId of logGroupResources.logGroupLogicalIds) {
-    const resourcesReferencingLogGroup = evaluateCfnTemplate.findReferencesTo(logGroupLogicalId);
-    for (const reference of resourcesReferencingLogGroup) {
-      if (IGNORE_LOGS_RESOURCE_TYPES.includes(reference.Type)) {
-        logGroupResources.logGroupLogicalIds.delete(logGroupLogicalId);
-      } else if (RESOURCE_TYPES_WITH_IMPLICIT_LOGS[reference.Type]) {
-        logGroupResources.logicalIdsOfImplicitLogServices.delete(reference.LogicalId);
+): string[] {
+  return stackResources.reduce((logGroupNames: string[], resource) => {
+    let logGroupName;
+    if (resource.ResourceType === 'AWS::Logs::LogGroup') {
+      if (!isReferencedFromIgnoredResource(resource, evaluateCfnTemplate)) {
+        logGroupName = resource.PhysicalResourceId;
       }
+    } else if (RESOURCE_TYPES_WITH_IMPLICIT_LOGS[resource.ResourceType]) {
+      const servicePart = RESOURCE_TYPES_WITH_IMPLICIT_LOGS[resource.ResourceType].LogGroupServiceName;
+      logGroupName = `/aws/${servicePart}/${resource.PhysicalResourceId}`;
     }
-  }
-}
-
-/**
- * Get the PhysicalNames of all the CloudWatch log groups in the template
- */
-async function getLogGroupPhysicalNames(
-  logGroupLogicalIds: Set<string>,
-  templateResources: { [logicalId: string]: any },
-  evaluateCfnTemplate: EvaluateCloudFormationTemplate,
-): Promise<string[]> {
-  const logGroupNames: string[] = [];
-  for (const logicalId of logGroupLogicalIds) {
-    const physicalNameInTemplate = getPhysicalNameProperty(templateResources[logicalId], 'LogGroupName');
-    const groupName = await evaluateCfnTemplate.establishResourcePhysicalName(logicalId, physicalNameInTemplate);
-    if (groupName) {
-      logGroupNames.push(groupName);
+    if (logGroupName) {
+      logGroupNames.push(logGroupName);
     }
-  }
-  return logGroupNames;
-}
-
-/**
- * Some resources will automatically create a CloudWatch log group if
- * one is not explicitely created (tracked with RESOURCE_TYPES_WITH_IMPLICIT_LOGS)
- *
- * If a custom log group is not created, then the service will create one with a
- * specific name i.e. '/aws/lambda/function-name'
- */
-async function getImplicitLogGroupPhysicalNames(
-  logicalIdsOfImplicitLogServices: Map<string, string>,
-  templateResources: { [logicalId: string]: any },
-  evaluateCfnTemplate: EvaluateCloudFormationTemplate,
-): Promise<string[]> {
-  const logGroupNames: string[] = [];
-  for (const [logicalId, cfnResourceType] of logicalIdsOfImplicitLogServices) {
-    const physicalNameProperty = RESOURCE_TYPES_WITH_IMPLICIT_LOGS[cfnResourceType].PhysicalNamePropertyName;
-    const physicalNameInTemplate = getPhysicalNameProperty(templateResources[logicalId], physicalNameProperty);
-    const name = await evaluateCfnTemplate.establishResourcePhysicalName(logicalId, physicalNameInTemplate);
-    if (name) {
-      const servicePart = RESOURCE_TYPES_WITH_IMPLICIT_LOGS[cfnResourceType].LogGroupServiceName;
-      logGroupNames.push(`/aws/${servicePart}/${name}`);
-    }
-  }
-  return logGroupNames;
-}
-
-function getPhysicalNameProperty(templateResource: { [key: string]: any }, physicalNameProperty: string): any | undefined {
-  return (templateResource.Properties ?? {})[physicalNameProperty];
+    return logGroupNames;
+  }, []);
 }
