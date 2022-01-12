@@ -77,9 +77,9 @@
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/cfn2ts": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/jest": "^27.0.3",
-    "jest": "^27.4.3",
-    "ts-jest": "^27.1.1"
+    "@types/jest": "^27.4.0",
+    "jest": "^27.4.7",
+    "ts-jest": "^27.1.2"
   },
   "dependencies": {
     "@aws-cdk/core": "0.0.0",

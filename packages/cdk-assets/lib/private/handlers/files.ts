@@ -30,7 +30,7 @@ export class FileAssetHandler implements IAssetHandler {
 
     // A thunk for describing the current account. Used when we need to format an error
     // message, not in the success case.
-    const account = async () => (await this.host.aws.discoverCurrentAccount())?.accountId;
+    const account = async () => (await this.host.aws.discoverTargetAccount(destination))?.accountId;
     switch (await bucketInfo.bucketOwnership(s3, destination.bucketName)) {
       case BucketOwnership.MINE:
         break;
@@ -49,20 +49,24 @@ export class FileAssetHandler implements IAssetHandler {
     // required for SCP rules denying uploads without encryption header
     let paramsEncryption: {[index: string]:any}= {};
     const encryption2 = await bucketInfo.bucketEncryption(s3, destination.bucketName);
-    switch (encryption2) {
-      case BucketEncryption.NO_ENCRYPTION:
+    switch (encryption2.type) {
+      case 'no_encryption':
         break;
-      case BucketEncryption.SSEAlgorithm_AES256:
+      case 'aes256':
         paramsEncryption = { ServerSideEncryption: 'AES256' };
         break;
-      case BucketEncryption.SSEAlgorithm_aws_kms:
-        paramsEncryption = { ServerSideEncryption: 'aws:kms' };
+      case 'kms':
+        // We must include the key ID otherwise S3 will encrypt with the default key
+        paramsEncryption = {
+          ServerSideEncryption: 'aws:kms',
+          SSEKMSKeyId: encryption2.kmsKeyId,
+        };
         break;
-      case BucketEncryption.DOES_NOT_EXIST:
+      case 'does_not_exist':
         this.host.emitMessage(EventType.DEBUG, `No bucket named '${destination.bucketName}'. Is account ${await account()} bootstrapped?`);
         break;
-      case BucketEncryption.ACCES_DENIED:
-        this.host.emitMessage(EventType.DEBUG, `ACCES_DENIED for getting encryption of bucket '${destination.bucketName}'. Either wrong account ${await account()} or s3:GetEncryptionConfiguration not set for cdk role. Try "cdk bootstrap" again.`);
+      case 'access_denied':
+        this.host.emitMessage(EventType.DEBUG, `Could not read encryption settings of bucket '${destination.bucketName}': uploading with default settings ("cdk bootstrap" to version 9 if your organization's policies prevent a successful upload or to get rid of this message).`);
         break;
     }
 
@@ -126,13 +130,13 @@ enum BucketOwnership {
   SOMEONE_ELSES_OR_NO_ACCESS
 }
 
-enum BucketEncryption {
-  NO_ENCRYPTION,
-  SSEAlgorithm_AES256,
-  SSEAlgorithm_aws_kms,
-  ACCES_DENIED,
-  DOES_NOT_EXIST
-}
+type BucketEncryption =
+  | { readonly type: 'no_encryption' }
+  | { readonly type: 'aes256' }
+  | { readonly type: 'kms'; readonly kmsKeyId?: string }
+  | { readonly type: 'access_denied' }
+  | { readonly type: 'does_not_exist' }
+  ;
 
 async function objectExists(s3: AWS.S3, bucket: string, key: string) {
   /*
@@ -218,23 +222,24 @@ class BucketInformation {
       const encryption = await s3.getBucketEncryption({ Bucket: bucket }).promise();
       const l = encryption?.ServerSideEncryptionConfiguration?.Rules?.length ?? 0;
       if (l > 0) {
-        let ssealgo = encryption?.ServerSideEncryptionConfiguration?.Rules[0]?.ApplyServerSideEncryptionByDefault?.SSEAlgorithm;
-        if (ssealgo === 'AES256') return BucketEncryption.SSEAlgorithm_AES256;
-        if (ssealgo === 'aws:kms') return BucketEncryption.SSEAlgorithm_aws_kms;
+        const apply = encryption?.ServerSideEncryptionConfiguration?.Rules[0]?.ApplyServerSideEncryptionByDefault;
+        let ssealgo = apply?.SSEAlgorithm;
+        if (ssealgo === 'AES256') return { type: 'aes256' };
+        if (ssealgo === 'aws:kms') return { type: 'kms', kmsKeyId: apply?.KMSMasterKeyID };
       }
-      return BucketEncryption.NO_ENCRYPTION;
+      return { type: 'no_encryption' };
     } catch (e) {
       if (e.code === 'NoSuchBucket') {
-        return BucketEncryption.DOES_NOT_EXIST;
+        return { type: 'does_not_exist' };
       }
       if (e.code === 'ServerSideEncryptionConfigurationNotFoundError') {
-        return BucketEncryption.NO_ENCRYPTION;
+        return { type: 'no_encryption' };
       }
 
       if (['AccessDenied', 'AllAccessDisabled'].includes(e.code)) {
-        return BucketEncryption.ACCES_DENIED;
+        return { type: 'access_denied' };
       }
-      return BucketEncryption.NO_ENCRYPTION;
+      return { type: 'no_encryption' };
     }
   }
 }

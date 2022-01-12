@@ -15,7 +15,18 @@ export interface ResourcePolicyProps {
 }
 
 /**
- * Secret Resource Policy
+ * Resource Policy for SecretsManager Secrets
+ *
+ * Policies define the operations that are allowed on this resource.
+ *
+ * You almost never need to define this construct directly.
+ *
+ * All AWS resources that support resource policies have a method called
+ * `addToResourcePolicy()`, which will automatically create a new resource
+ * policy if one doesn't exist yet, otherwise it will add to the existing
+ * policy.
+ *
+ * Prefer to use `addToResourcePolicy()` instead.
  */
 export class ResourcePolicy extends Resource {
   /**

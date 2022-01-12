@@ -4,19 +4,20 @@ import * as cp from '@aws-cdk/aws-codepipeline';
 import * as cpa from '@aws-cdk/aws-codepipeline-actions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
-import { Aws, CfnCapabilities, Fn, Lazy, PhysicalName, Stack } from '@aws-cdk/core';
+import { Aws, CfnCapabilities, Duration, Fn, Lazy, PhysicalName, Stack } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct, Node } from 'constructs';
 import { AssetType, FileSet, IFileSetProducer, ManualApprovalStep, ShellStep, StackAsset, StackDeployment, Step } from '../blueprint';
 import { DockerCredential, dockerCredentialsInstallCommands, DockerCredentialUsage } from '../docker-credentials';
-import { GraphNode, GraphNodeCollection, isGraph, AGraphNode, PipelineGraph } from '../helpers-internal';
+import { GraphNodeCollection, isGraph, AGraphNode, PipelineGraph } from '../helpers-internal';
 import { PipelineBase } from '../main';
 import { AssetSingletonRole } from '../private/asset-singleton-role';
 import { appOf, assemblyBuilderOf, embeddedAsmPath, obtainScope } from '../private/construct-internals';
 import { toPosixPath } from '../private/fs';
+import { actionName, stackVariableNamespace } from '../private/identifiers';
 import { enumerate, flatten, maybeSuffix, noUndefined } from '../private/javascript';
 import { writeTemplateConfiguration } from '../private/template-configuration';
-import { CodeBuildFactory, mergeCodeBuildOptions, stackVariableNamespace } from './_codebuild-factory';
+import { CodeBuildFactory, mergeCodeBuildOptions } from './_codebuild-factory';
 import { ArtifactMap } from './artifact-map';
 import { CodeBuildStep } from './codebuild-step';
 import { CodePipelineActionFactoryResult, ICodePipelineActionFactory } from './codepipeline-action-factory';
@@ -196,6 +197,13 @@ export interface CodePipelineProps {
    * @default - a new underlying pipeline is created.
    */
   readonly codePipeline?: cp.Pipeline;
+
+  /**
+   * Reuse the same cross region support stack for all pipelines in the App.
+   *
+   * @default - true (Use the same support stack for all pipelines in App)
+   */
+  readonly reuseCrossRegionSupportStacks?: boolean;
 }
 
 /**
@@ -250,6 +258,15 @@ export interface CodeBuildOptions {
    * @default - All private subnets.
    */
   readonly subnetSelection?: ec2.SubnetSelection;
+
+  /**
+   * The number of minutes after which AWS CodeBuild stops the build if it's
+   * not complete. For valid values, see the timeoutInMinutes field in the AWS
+   * CodeBuild User Guide.
+   *
+   * @default Duration.hours(1)
+   */
+  readonly timeout?: Duration;
 }
 
 
@@ -340,6 +357,7 @@ export class CodePipeline extends PipelineBase {
       this._pipeline = new cp.Pipeline(this, 'Pipeline', {
         pipelineName: this.props.pipelineName,
         crossAccountKeys: this.props.crossAccountKeys ?? false,
+        reuseCrossRegionSupportStacks: this.props.reuseCrossRegionSupportStacks,
         // This is necessary to make self-mutation work (deployments are guaranteed
         // to happen only after the builds of the latest pipeline definition).
         restartExecutionOnUpdate: true,
@@ -837,15 +855,6 @@ enum CodeBuildProjectType {
   ASSETS = 'ASSETS',
   SELF_MUTATE = 'SELF_MUTATE',
   STEP = 'STEP',
-}
-
-function actionName<A>(node: GraphNode<A>, parent: GraphNode<A>) {
-  const names = node.ancestorPath(parent).map(n => n.id);
-  return names.map(sanitizeName).join('.').substr(0, 100); // Cannot exceed 100 chars
-}
-
-function sanitizeName(x: string): string {
-  return x.replace(/[^A-Za-z0-9.@\-_]/g, '_');
 }
 
 /**

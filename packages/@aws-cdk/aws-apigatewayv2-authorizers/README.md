@@ -22,9 +22,12 @@
 - [HTTP APIs](#http-apis)
   - [Default Authorization](#default-authorization)
   - [Route Authorization](#route-authorization)
-- [JWT Authorizers](#jwt-authorizers)
-  - [User Pool Authorizer](#user-pool-authorizer)
-- [Lambda Authorizers](#lambda-authorizers)
+  - [JWT Authorizers](#jwt-authorizers)
+    - [User Pool Authorizer](#user-pool-authorizer)
+  - [Lambda Authorizers](#lambda-authorizers)
+  - [IAM Authorizers](#iam-authorizers)
+- [WebSocket APIs](#websocket-apis)
+  - [Lambda Authorizer](#lambda-authorizer)
 
 ## Introduction
 
@@ -37,7 +40,7 @@ API](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-acces
 
 Access control for Http Apis is managed by restricting which routes can be invoked via.
 
-Authorizers, and scopes can either be applied to the api, or specifically for each route.
+Authorizers and scopes can either be applied to the api, or specifically for each route.
 
 ### Default Authorization
 
@@ -110,7 +113,7 @@ api.addRoutes({
 });
 ```
 
-## JWT Authorizers
+### JWT Authorizers
 
 JWT authorizers allow the use of JSON Web Tokens (JWTs) as part of [OpenID Connect](https://openid.net/specs/openid-connect-core-1_0.html) and [OAuth 2.0](https://oauth.net/2/) frameworks to allow and restrict clients from accessing HTTP APIs.
 
@@ -144,7 +147,7 @@ api.addRoutes({
 });
 ```
 
-### User Pool Authorizer
+#### User Pool Authorizer
 
 User Pool Authorizer is a type of JWT Authorizer that uses a Cognito user pool and app client to control who can access your Api. After a successful authorization from the app client, the generated access token will be used as the JWT.
 
@@ -170,7 +173,7 @@ api.addRoutes({
 });
 ```
 
-## Lambda Authorizers
+### Lambda Authorizers
 
 Lambda authorizers use a Lambda function to control access to your HTTP API. When a client calls your API, API Gateway invokes your Lambda function and uses the response to determine whether the client can access your API.
 
@@ -194,5 +197,62 @@ api.addRoutes({
   integration: new HttpUrlIntegration('BooksIntegration', 'https://get-books-proxy.myproxy.internal'),
   path: '/books',
   authorizer,
+});
+```
+
+### IAM Authorizers
+
+API Gateway supports IAM via the included `HttpIamAuthorizer` and grant syntax:
+
+```ts
+import { HttpIamAuthorizer } from '@aws-cdk/aws-apigatewayv2-authorizers';
+import { HttpUrlIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
+
+declare const principal: iam.AnyPrincipal;
+
+const authorizer = new HttpIamAuthorizer();
+
+const httpApi = new apigwv2.HttpApi(this, 'HttpApi', {
+  defaultAuthorizer: authorizer,
+});
+
+const routes = httpApi.addRoutes({
+  integration: new HttpUrlIntegration('BooksIntegration', 'https://get-books-proxy.myproxy.internal'),
+  path: '/books/{book}',
+});
+
+routes[0].grantInvoke(principal);
+```
+
+## WebSocket APIs
+
+You can set an authorizer to your WebSocket API's `$connect` route to control access to your API.
+
+### Lambda Authorizer
+
+Lambda authorizers use a Lambda function to control access to your WebSocket API. When a client connects to your API, API Gateway invokes your Lambda function and uses the response to determine whether the client can access your API.
+
+```ts
+import { WebSocketLambdaAuthorizer } from '@aws-cdk/aws-apigatewayv2-authorizers';
+import { WebSocketLambdaIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
+
+// This function handles your auth logic
+declare const authHandler: lambda.Function;
+
+// This function handles your WebSocket requests
+declare const handler: lambda.Function;
+
+const authorizer = new WebSocketLambdaAuthorizer('Authorizer', authHandler);
+
+const integration = new WebSocketLambdaIntegration(
+  'Integration',
+  handler,
+);
+
+new apigwv2.WebSocketApi(this, 'WebSocketApi', {
+  connectRouteOptions: {
+    integration,
+    authorizer,
+  },
 });
 ```

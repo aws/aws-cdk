@@ -1,9 +1,9 @@
-import { Duration, IResource, Resource, Stack, Token } from '@aws-cdk/core';
+import { ArnFormat, Duration, IResource, Resource, Stack, Token } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { AccessLogFormat, IAccessLogDestination } from './access-log';
 import { CfnStage } from './apigateway.generated';
 import { Deployment } from './deployment';
-import { IRestApi } from './restapi';
+import { IRestApi, RestApiBase } from './restapi';
 import { parseMethodOptionsPath } from './util';
 
 /**
@@ -256,6 +256,10 @@ export class Stage extends Resource implements IStage {
 
     this.stageName = resource.ref;
     this.restApi = props.deployment.api;
+
+    if (RestApiBase._isRestApiBase(this.restApi)) {
+      this.restApi._attachStage(this);
+    }
   }
 
   /**
@@ -267,6 +271,26 @@ export class Stage extends Resource implements IStage {
       throw new Error(`Path must begin with "/": ${path}`);
     }
     return `https://${this.restApi.restApiId}.execute-api.${Stack.of(this).region}.${Stack.of(this).urlSuffix}/${this.stageName}${path}`;
+  }
+
+  /**
+   * Returns the resource ARN for this stage:
+   *
+   *   arn:aws:apigateway:{region}::/restapis/{restApiId}/stages/{stageName}
+   *
+   * Note that this is separate from the execute-api ARN for methods and resources
+   * within this stage.
+   *
+   * @attribute
+   */
+  public get stageArn() {
+    return Stack.of(this).formatArn({
+      arnFormat: ArnFormat.SLASH_RESOURCE_SLASH_RESOURCE_NAME,
+      service: 'apigateway',
+      account: '',
+      resource: 'restapis',
+      resourceName: `${this.restApi.restApiId}/stages/${this.stageName}`,
+    });
   }
 
   private renderMethodSettings(props: StageProps): CfnStage.MethodSettingProperty[] | undefined {

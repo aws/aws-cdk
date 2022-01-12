@@ -68,10 +68,10 @@
   "devDependencies": {
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/jest": "^27.0.3",
+    "@types/jest": "^27.4.0",
     "@types/mock-fs": "^4.13.1",
     "@types/semver": "^7.3.9",
-    "jest": "^27.4.3",
+    "jest": "^27.4.7",
     "mock-fs": "^4.14.0"
   },
   "repository": {

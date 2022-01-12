@@ -252,6 +252,21 @@ bucket.addEventNotification(s3.EventType.OBJECT_CREATED, new s3n.SnsDestination(
 [S3 Bucket Notifications]: https://docs.aws.amazon.com/AmazonS3/latest/dev/NotificationHowTo.html
 
 
+### EventBridge notifications
+
+Amazon S3 can send events to Amazon EventBridge whenever certain events happen in your bucket.
+Unlike other destinations, you don't need to select which event types you want to deliver.
+
+The following example will enable EventBridge notifications:
+
+```ts
+const bucket = new s3.Bucket(this, 'MyEventBridgeBucket', {
+  eventBridgeEnabled: true,
+});
+```
+
+[S3 EventBridge notifications]: https://docs.aws.amazon.com/AmazonS3/latest/userguide/EventBridge.html
+
 ## Block Public Access
 
 Use `blockPublicAccess` to specify [block public access settings] on the bucket.
@@ -480,7 +495,7 @@ by deploying with CDK version `1.126.0` or later **before** switching this value
 
 ```ts
 const bucket = new s3.Bucket(this, 'MyBucket', {
-  transferAcceleration: true,
+   transferAcceleration: true,
 });
 ```
 
@@ -488,7 +503,24 @@ To access the bucket that is enabled for Transfer Acceleration, you must use a s
 
 ```ts
 const bucket = new s3.Bucket(this, 'MyBucket', {
-  transferAcceleration: true,
+   transferAcceleration: true,
 });
 bucket.transferAccelerationUrlForObject('objectname');
+```
+
+## Intelligent Tiering
+
+[Intelligent Tiering](https://docs.aws.amazon.com/AmazonS3/latest/userguide/intelligent-tiering.html) can be configured to automatically move files to glacier:
+
+```ts
+    new s3.Bucket(this, 'MyBucket', {
+   intelligentTieringConfigurations: [{
+      name: 'foo',
+      prefix: 'folder/name',
+      archiveAccessTierTime: cdk.Duration.days(90),
+      deepArchiveAccessTierTime: cdk.Duration.days(180),
+      tags: [{key: 'tagname', value: 'tagvalue'}]
+   }],
+});
+
 ```

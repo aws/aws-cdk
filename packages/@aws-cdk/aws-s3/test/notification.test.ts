@@ -1,5 +1,4 @@
-import '@aws-cdk/assert-internal/jest';
-import { ResourcePart } from '@aws-cdk/assert-internal';
+import { Template } from '@aws-cdk/assertions';
 import * as cdk from '@aws-cdk/core';
 import * as s3 from '../lib';
 
@@ -16,8 +15,8 @@ describe('notification', () => {
       }),
     });
 
-    expect(stack).toHaveResource('AWS::S3::Bucket');
-    expect(stack).toHaveResource('Custom::S3BucketNotifications', {
+    Template.fromStack(stack).resourceCountIs('AWS::S3::Bucket', 1);
+    Template.fromStack(stack).hasResourceProperties('Custom::S3BucketNotifications', {
       NotificationConfiguration: {
         TopicConfigurations: [
           {
@@ -29,8 +28,6 @@ describe('notification', () => {
         ],
       },
     });
-
-
   });
 
   test('can specify prefix and suffix filter rules', () => {
@@ -45,7 +42,7 @@ describe('notification', () => {
       }),
     }, { prefix: 'images/', suffix: '.png' });
 
-    expect(stack).toHaveResource('Custom::S3BucketNotifications', {
+    Template.fromStack(stack).hasResourceProperties('Custom::S3BucketNotifications', {
       NotificationConfiguration: {
         TopicConfigurations: [
           {
@@ -71,8 +68,6 @@ describe('notification', () => {
         ],
       },
     });
-
-
   });
 
   test('the notification lambda handler must depend on the role to prevent executing too early', () => {
@@ -87,7 +82,7 @@ describe('notification', () => {
       }),
     });
 
-    expect(stack).toHaveResourceLike('AWS::Lambda::Function', {
+    Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
       Type: 'AWS::Lambda::Function',
       Properties: {
         Role: {
@@ -99,9 +94,7 @@ describe('notification', () => {
       },
       DependsOn: ['BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleDefaultPolicy2CF63D36',
         'BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC'],
-    }, ResourcePart.CompleteDefinition );
-
-
+    });
   });
 
   test('throws with multiple prefix rules in a filter', () => {
@@ -115,8 +108,6 @@ describe('notification', () => {
         type: s3.BucketNotificationDestinationType.TOPIC,
       }),
     }, { prefix: 'images/' }, { prefix: 'archive/' })).toThrow(/prefix rule/);
-
-
   });
 
   test('throws with multiple suffix rules in a filter', () => {
@@ -130,7 +121,23 @@ describe('notification', () => {
         type: s3.BucketNotificationDestinationType.TOPIC,
       }),
     }, { suffix: '.png' }, { suffix: '.zip' })).toThrow(/suffix rule/);
+  });
 
+  test('EventBridge notification custom resource', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
 
+    // WHEN
+    new s3.Bucket(stack, 'MyBucket', {
+      eventBridgeEnabled: true,
+    });
+
+    // THEN
+    Template.fromStack(stack).resourceCountIs('AWS::S3::Bucket', 1);
+    Template.fromStack(stack).hasResourceProperties('Custom::S3BucketNotifications', {
+      NotificationConfiguration: {
+        EventBridgeConfiguration: {},
+      },
+    });
   });
 });

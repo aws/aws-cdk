@@ -3,6 +3,7 @@ jest.mock('child_process');
 import { Manifest } from '@aws-cdk/cloud-assembly-schema';
 import * as mockfs from 'mock-fs';
 import { AssetManifest, AssetPublishing } from '../lib';
+import { FakeListener } from './fake-listener';
 import { mockAws, mockedApiFailure, mockedApiResult, mockUpload } from './mock-aws';
 import { mockSpawn } from './mock-child_process';
 
@@ -182,7 +183,7 @@ test('upload with server side encryption AES256 header', async () => {
   // We'll just have to assume the contents are correct
 });
 
-test('upload with server side encryption aws:kms header', async () => {
+test('upload with server side encryption aws:kms header and key id', async () => {
   const pub = new AssetPublishing(AssetManifest.fromPath('/simple/cdk.out'), { aws });
 
   aws.mockS3.getBucketEncryption = mockedApiResult({
@@ -191,6 +192,7 @@ test('upload with server side encryption aws:kms header', async () => {
         {
           ApplyServerSideEncryptionByDefault: {
             SSEAlgorithm: 'aws:kms',
+            KMSMasterKeyID: 'the-key-id',
           },
           BucketKeyEnabled: false,
         },
@@ -208,6 +210,7 @@ test('upload with server side encryption aws:kms header', async () => {
     Key: 'some_key',
     ContentType: 'application/octet-stream',
     ServerSideEncryption: 'aws:kms',
+    SSEKMSKeyId: 'the-key-id',
   }));
 
   // We'll just have to assume the contents are correct
@@ -226,7 +229,8 @@ test('will only read bucketEncryption once even for multiple assets', async () =
 });
 
 test('no server side encryption header if access denied for bucket encryption', async () => {
-  const pub = new AssetPublishing(AssetManifest.fromPath('/simple/cdk.out'), { aws });
+  const progressListener = new FakeListener();
+  const pub = new AssetPublishing(AssetManifest.fromPath('/simple/cdk.out'), { aws, progressListener });
 
   aws.mockS3.getBucketEncryption = mockedApiFailure('AccessDenied', 'Access Denied');
 
@@ -242,8 +246,6 @@ test('no server side encryption header if access denied for bucket encryption', 
   expect(aws.mockS3.upload).toHaveBeenCalledWith(expect.not.objectContaining({
     ServerSideEncryption: 'AES256',
   }));
-
-  // We'll just have to assume the contents are correct
 });
 
 test('correctly looks up content type', async () => {
@@ -294,6 +296,7 @@ test('successful run does not need to query account ID', async () => {
   await pub.publish();
 
   expect(aws.discoverCurrentAccount).not.toHaveBeenCalled();
+  expect(aws.discoverTargetAccount).not.toHaveBeenCalled();
 });
 
 test('correctly identify asset path if path is absolute', async () => {

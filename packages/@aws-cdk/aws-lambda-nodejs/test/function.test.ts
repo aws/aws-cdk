@@ -56,6 +56,17 @@ test('NodejsFunction with .js handler', () => {
   }));
 });
 
+test('NodejsFunction with .mjs handler', () => {
+  // WHEN
+  new NodejsFunction(stack, 'handler3');
+
+
+  // THEN
+  expect(Bundling.bundle).toHaveBeenCalledWith(expect.objectContaining({
+    entry: expect.stringContaining('function.test.handler3.mjs'), // Automatically finds .mjs handler file
+  }));
+});
+
 test('NodejsFunction with container env vars', () => {
   // WHEN
   new NodejsFunction(stack, 'handler1', {
@@ -98,7 +109,7 @@ test('throws when entry does not exist', () => {
 });
 
 test('throws when entry cannot be automatically found', () => {
-  expect(() => new NodejsFunction(stack, 'Fn')).toThrow(/Cannot find handler file .*function.test.Fn.ts or .*function.test.Fn.js/);
+  expect(() => new NodejsFunction(stack, 'Fn')).toThrow(/Cannot find handler file .*function.test.Fn.ts, .*function.test.Fn.js or .*function.test.Fn.mjs/);
 });
 
 test('throws with the wrong runtime family', () => {

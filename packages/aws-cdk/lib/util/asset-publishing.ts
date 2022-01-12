@@ -50,7 +50,15 @@ class PublishingAws implements cdk_assets.IAws {
   }
 
   public async discoverCurrentAccount(): Promise<cdk_assets.Account> {
-    return (await this.sdk({})).currentAccount();
+    const account = await this.aws.defaultAccount();
+    return account ?? {
+      accountId: '<unknown account>',
+      partition: 'aws',
+    };
+  }
+
+  public async discoverTargetAccount(options: cdk_assets.ClientOptions): Promise<cdk_assets.Account> {
+    return (await this.sdk(options)).currentAccount();
   }
 
   public async s3Client(options: cdk_assets.ClientOptions): Promise<AWS.S3> {
@@ -85,10 +93,10 @@ class PublishingAws implements cdk_assets.IAws {
       return maybeSdk;
     }
 
-    const sdk = await this.aws.forEnvironment(env, Mode.ForWriting, {
+    const sdk = (await this.aws.forEnvironment(env, Mode.ForWriting, {
       assumeRoleArn: options.assumeRoleArn,
       assumeRoleExternalId: options.assumeRoleExternalId,
-    });
+    })).sdk;
     this.sdkCache.set(cacheKey, sdk);
 
     return sdk;

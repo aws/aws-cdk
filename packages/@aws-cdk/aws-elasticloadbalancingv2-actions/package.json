@@ -69,8 +69,8 @@
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/cdk-integ-tools": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/jest": "^27.0.3",
-    "jest": "^27.4.3"
+    "@types/jest": "^27.4.0",
+    "jest": "^27.4.7"
   },
   "dependencies": {
     "@aws-cdk/aws-cognito": "0.0.0",
