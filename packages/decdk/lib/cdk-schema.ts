@@ -1,4 +1,4 @@
-import * as colors from 'colors/safe';
+import * as chalk from 'chalk';
 import * as jsiiReflect from 'jsii-reflect';
 import { SchemaContext, schemaForTypeReference } from '../lib/jsii2schema';
 
@@ -16,7 +16,8 @@ export interface RenderSchemaOptions {
 
 export function renderFullSchema(typeSystem: jsiiReflect.TypeSystem, options: RenderSchemaOptions = { }) {
   if (!process.stdin.isTTY || options.colors === false) {
-    colors.disable();
+     // Disable chalk color highlighting
+     process.env.FORCE_COLOR = '0';
   }
 
   // Find all constructs for which the props interface
@@ -61,11 +62,11 @@ function printWarnings(node: SchemaContext, indent = '') {
   console.error(indent + node.name);
 
   for (const warning of node.warnings) {
-    console.error(colors.yellow(indent + '  ' + warning));
+    console.error(chalk.yellow(indent + '  ' + warning));
   }
 
   for (const error of node.errors) {
-    console.error(colors.red(indent + '  ' + error));
+    console.error(chalk.red(indent + '  ' + error));
   }
 
   if (!node.root) {

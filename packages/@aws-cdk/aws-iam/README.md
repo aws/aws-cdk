@@ -457,6 +457,27 @@ const user = iam.User.fromUserAttributes(this, 'MyImportedUserByAttributes', {
 });
 ```
 
+### Access Keys
+
+The ability for a user to make API calls via the CLI or an SDK is enabled by the user having an
+access key pair. To create an access key:
+
+```ts
+const user = new iam.User(this, 'MyUser');
+const accessKey = new iam.AccessKey(this, 'MyAccessKey', { user: user });
+```
+
+You can force CloudFormation to rotate the access key by providing a monotonically increasing `serial`
+property. Simply provide a higher serial value than any number used previously: 
+
+```ts
+const user = new iam.User(this, 'MyUser');
+const accessKey = new iam.AccessKey(this, 'MyAccessKey', { user: user, serial: 1 });
+```
+
+An access key may only be associated with a single user and cannot be "moved" between users. Changing
+the user associated with an access key replaces the access key (and its ID and secret value).
+
 ## Groups
 
 An IAM user group is a collection of IAM users. User groups let you specify permissions for multiple users.

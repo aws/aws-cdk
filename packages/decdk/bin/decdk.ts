@@ -1,5 +1,5 @@
 import * as cdk from '@aws-cdk/core';
-import * as colors from 'colors/safe';
+import * as chalk from 'chalk';
 import { DeclarativeStack, loadTypeSystem, readTemplate, stackNameFromFileName } from '../lib';
 
 async function main() {
@@ -21,6 +21,6 @@ async function main() {
 
 main().catch(e => {
   // eslint-disable-next-line no-console
-  console.error(colors.red(e));
+  console.error(chalk.red(e));
   process.exit(1);
 });

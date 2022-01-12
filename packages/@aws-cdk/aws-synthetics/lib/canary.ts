@@ -226,6 +226,7 @@ export class Canary extends cdk.Resource {
 
     this.artifactsBucket = props.artifactsBucketLocation?.bucket ?? new s3.Bucket(this, 'ArtifactsBucket', {
       encryption: s3.BucketEncryption.KMS_MANAGED,
+      enforceSSL: true,
     });
 
     this.role = props.role ?? this.createDefaultRole(props.artifactsBucketLocation?.prefix);
