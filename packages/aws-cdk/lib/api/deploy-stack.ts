@@ -328,7 +328,7 @@ async function prepareAndExecuteChangeSet(
       debug('Deleting empty change set %s', changeSet.Id);
       await cfn.deleteChangeSet({ StackName: deployName, ChangeSetName: changeSetName }).promise();
     }
-    return { noOp: true, outputs: cloudFormationStack.outputs, stackArn: changeSet.StackId!/*, stackArtifact */ };
+    return { noOp: true, outputs: cloudFormationStack.outputs, stackArn: changeSet.StackId! };
   }
 
   const execute = options.execute === undefined ? true : options.execute;

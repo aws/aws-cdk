@@ -55,7 +55,7 @@ export async function tryHotswapDeployment(
   // apply the short-circuitable changes
   await applyAllHotswappableChanges(sdk, hotswappableChanges);
 
-  return { noOp: hotswappableChanges.length === 0, stackArn: cloudFormationStack.stackId, outputs: cloudFormationStack.outputs /*, stackArtifact */ };
+  return { noOp: hotswappableChanges.length === 0, stackArn: cloudFormationStack.stackId, outputs: cloudFormationStack.outputs };
 }
 
 async function findAllHotswappableChanges(
